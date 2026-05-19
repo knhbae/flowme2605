@@ -37,6 +37,13 @@ Start with validation before heavy development.
 - If implementing dependency-based execution, test `shift_item` and cycle detection before UI polish.
 - Keep UI mobile-first for user-facing flow consumption. Studio/admin screens can use denser desktop layouts.
 
+## Remote Session Access
+
+- Happy CLI is available globally for mobile/web remote control of future Codex sessions.
+- Start remote-capable sessions from the project root with `happy codex`.
+- Use `happy.cmd codex` on Windows if PowerShell command resolution blocks `happy`.
+- See `docs/happy-integration.md` for pairing and app links.
+
 ## UX Principles
 
 - Public flow detail is the landing/conversion page.
