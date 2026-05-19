@@ -28,3 +28,8 @@ Thumbs.db
 
 # Codex/Superpowers local scratch
 .superpowers/
+
+# Vercel local project link
+.vercel/
+
+.vercel
