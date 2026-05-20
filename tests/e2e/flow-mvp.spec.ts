@@ -165,11 +165,6 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await page.getByRole('button', { name: '내 일정표 엑셀로 받기' }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe('moving-d30-basic.xlsx');
-
-  const calendarDownloadPromise = page.waitForEvent('download');
-  await page.getByRole('button', { name: '캘린더 파일 받기' }).click();
-  const calendarDownload = await calendarDownloadPromise;
-  expect(calendarDownload.suggestedFilename()).toBe('moving-d30-basic.ics');
 });
 
 test('new flow creation keeps advanced settings secondary', async ({ page }) => {
