@@ -24,7 +24,7 @@ export const realContentPilotSources: PilotSource[] = [
   {
     slug: 'samsung-washer-filter-cleaning',
     category: '가전관리',
-    sourceTitle: '삼성전자서비스 세탁기 필터 청소 안내',
+    sourceTitle: '삼성전자서비스 미세플라스틱 저감장치 필터 청소 안내',
     sourceUrl: 'https://www.samsungsvc.co.kr/solution/1477182',
     sourceType: 'official',
     riskLevel: 'low',
@@ -132,17 +132,22 @@ const samsungAirconText = `@계절 시작 전 1회
 - 물 맺힘이나 누수 흔적 확인하기
 - 전문 세척 필요 여부 결정하기`;
 
-const samsungWasherText = `@월 1회
-## 필터 점검
-- 세탁기 전원 끄고 물기 주변 정리하기
-- 필터 분리 가능 여부와 모델 안내 확인하기
-- 필터 이물질 제거하고 손상 여부 확인하기
-- 필터 재조립 후 배수 오류가 없는지 확인하기
+const samsungWasherText = `@필터 LED 점등 시
+## 청소 전 확인
+- 미세플라스틱 저감장치 필터 LED 상태 확인하기
+- 본 제품과 연결된 세탁기 전원 끄기
+- 필터 손잡이와 분리 방향 확인하기
 
-## 세탁 환경 관리
-- 세탁조 냄새와 이물질 발생 여부 기록하기
-- 세탁실 습기와 곰팡이 흔적 확인하기
-- 전문 세척 또는 소모품 교체 필요 여부 판단하기`;
+## 필터 분해와 이물질 제거
+- 필터 손잡이를 돌려 필터 분리하기
+- 필터를 손잡이에서 분리하기
+- 필터 이물질을 물세척 없이 제거하기
+- 손상이나 변형 여부 확인하기
+
+## 재조립과 리셋
+- 필터 손잡이를 다시 조립하기
+- 필터를 시계 방향으로 밀어 넣기
+- 전원을 연결하고 필터 버튼 3초 리셋하기`;
 
 const vehicleInspectionText = `## D-14 검사 기간 확인
 - 자동차검사 유효기간과 예약 가능일 확인하기 D-14
@@ -279,8 +284,8 @@ export const realContentPilotBundles: FlowBundle[] = [
       {
         id: 'flow-samsung-washer-filter-cleaning',
         slug: samsungWasherSource.slug,
-        title: '삼성 세탁기 필터 청소 Flow',
-        description: '월 1회 세탁기 필터와 배수 상태, 세탁실 환경을 확인해 냄새와 오류를 줄입니다.',
+        title: '삼성 미세플라스틱 저감장치 필터 청소 Flow',
+        description: '삼성전자서비스 안내 범위에 맞춰 미세플라스틱 저감장치 필터 분리, 이물질 제거, 재조립, 리셋을 확인합니다.',
         category: samsungWasherSource.category,
         structure_type: 'routine',
         content_type: 'default',
@@ -294,29 +299,30 @@ export const realContentPilotBundles: FlowBundle[] = [
     ),
     samsungWasherSource,
     {
-      '필터 분리 가능 여부와 모델 안내 확인하기': {
-        description: '사용 중인 모델의 필터 위치와 분리 가능 여부를 먼저 확인합니다.',
-        why: '모델별 필터 구조가 달라 무리하게 분리하면 부품 손상으로 이어질 수 있습니다.',
-        how: '제품 모델명과 공식 안내를 확인한 뒤 안내된 방식으로만 필터를 분리합니다.',
-        completion_criteria: '모델별 필터 위치와 분리 방법을 확인했다.',
+      '미세플라스틱 저감장치 필터 LED 상태 확인하기': {
+        description: '필터 LED가 깜빡이는지 확인해 청소 필요 상태인지 먼저 봅니다.',
+        why: '공식 안내는 필터 LED 점등을 청소 필요 신호로 설명합니다.',
+        how: '제품 표시부에서 필터 LED 상태를 확인하고 청소 시작 여부를 결정합니다.',
+        completion_criteria: '필터 LED 상태와 청소 필요 여부를 확인했다.',
         links: [{ label: samsungWasherSource.sourceTitle, url: samsungWasherSource.sourceUrl, type: 'official' }],
         source_type: samsungWasherSource.sourceType,
         risk_level: samsungWasherSource.riskLevel,
       },
-      '필터 이물질 제거하고 손상 여부 확인하기': {
-        description: '필터 안의 먼지, 섬유, 이물질을 제거하고 균열이나 변형이 있는지 봅니다.',
-        why: '필터 막힘은 배수 오류나 냄새의 원인이 될 수 있습니다.',
-        how: '물기를 받을 준비를 한 뒤 필터를 청소하고 손상된 부품은 교체 필요 여부를 기록합니다.',
-        completion_criteria: '필터 이물질을 제거하고 손상 여부를 확인했다.',
+      '필터 이물질을 물세척 없이 제거하기': {
+        description: '분리한 필터의 이물질을 쓰레기통에 버리고 물로 세척하지 않습니다.',
+        why: '공식 안내는 수거된 이물질을 물과 함께 배출하지 않도록 물세척을 피하라고 설명합니다.',
+        how: '필터 안 이물질을 마른 상태로 제거하고, 청소 중 나온 이물질은 쓰레기통에 버립니다.',
+        completion_criteria: '필터 이물질을 물세척 없이 제거했다.',
         links: [{ label: samsungWasherSource.sourceTitle, url: samsungWasherSource.sourceUrl, type: 'official' }],
         source_type: samsungWasherSource.sourceType,
         risk_level: samsungWasherSource.riskLevel,
       },
-      '전문 세척 또는 소모품 교체 필요 여부 판단하기': {
-        description: '냄새, 배수 오류, 곰팡이가 반복되면 전문 세척이나 소모품 교체를 검토합니다.',
-        why: '필터 청소만으로 해결되지 않는 문제는 내부 오염이나 부품 상태 확인이 필요할 수 있습니다.',
-        how: '최근 오류 코드, 냄새 발생 시점, 세탁실 습기 상태를 함께 기록합니다.',
-        completion_criteria: '자가 청소 후에도 남은 문제와 다음 조치를 정했다.',
+      '전원을 연결하고 필터 버튼 3초 리셋하기': {
+        description: '필터를 재조립한 뒤 전원을 연결하고 필터 버튼을 3초 동안 눌러 리셋합니다.',
+        why: '청소 후 리셋까지 해야 표시 상태를 정리하고 다음 사용 상태를 확인할 수 있습니다.',
+        how: '필터를 시계 방향으로 밀어 넣고 전원을 연결한 뒤 필터 버튼을 3초간 누릅니다.',
+        completion_criteria: '필터 재조립과 버튼 리셋까지 완료했다.',
+        links: [{ label: samsungWasherSource.sourceTitle, url: samsungWasherSource.sourceUrl, type: 'official' }],
         source_type: samsungWasherSource.sourceType,
         risk_level: samsungWasherSource.riskLevel,
       },
