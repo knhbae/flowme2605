@@ -193,7 +193,7 @@ test('real content pilot covers 10 converted flows across five categories', () =
   const categories = new Set(
     pilotSlugs.map((slug) => seedBundles.find((entry) => entry.flow.slug === slug)?.flow.category),
   );
-  assert.ok(categories.has('가전/관리'));
+  assert.ok(categories.has('가전관리'));
   assert.ok(categories.has('자동차/검사'));
   assert.ok(categories.has('운동/루틴'));
   assert.ok(categories.has('자격증/시험'));

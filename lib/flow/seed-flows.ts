@@ -1210,8 +1210,7 @@ const creatorInspiredBundles: FlowBundle[] = [
 ];
 
 function enrichSeedMeta(bundle: FlowBundle, index: number): FlowBundle {
-  const category = bundle.flow.category === '가전관리' ? '가전/관리' : bundle.flow.category;
-  const normalizedBundle = { ...bundle, flow: { ...bundle.flow, category } };
+  const category = bundle.flow.category;
   const creatorByCategory = category.includes('자동차')
     ? creatorMeta('차근차근 모빌리티', '자동차 생활 크리에이터', '구매와 관리에서 놓치기 쉬운 확인 순서를 정리합니다.', 420 + index * 37, 88 + index * 9)
     : category.includes('자격증') || category.includes('공부')
@@ -1227,11 +1226,11 @@ function enrichSeedMeta(bundle: FlowBundle, index: number): FlowBundle {
               : creatorMeta('FLOW 큐레이션팀', '경험 콘텐츠 큐레이터', '반복되는 생활 과제를 실행 가능한 Flow로 정리합니다.', 480 + index * 24, 96 + index * 6);
 
   return {
-    ...normalizedBundle,
+    ...bundle,
     flow: {
-      ...normalizedBundle.flow,
-      ...(normalizedBundle.flow.creator_name ? {} : creatorByCategory),
-      tags: normalizedBundle.flow.tags ?? buildSeedTags(normalizedBundle),
+      ...bundle.flow,
+      ...(bundle.flow.creator_name ? {} : creatorByCategory),
+      tags: bundle.flow.tags ?? buildSeedTags(bundle),
     },
   };
 }
