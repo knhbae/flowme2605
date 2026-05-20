@@ -7,6 +7,11 @@ out/
 dist/
 build/
 coverage/
+test-results/
+artifacts/
+
+# Generated QA exports
+prod-smoke-*.xlsx
 
 # Local environment
 .env
@@ -28,6 +33,8 @@ Thumbs.db
 
 # Codex/Superpowers local scratch
 .superpowers/
+docs/superpowers/
+demo/
 
 # Vercel local project link
 .vercel/

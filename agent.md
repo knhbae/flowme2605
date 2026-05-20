@@ -1,5 +1,58 @@
 # FLOW 에이전트/개발 운영 가이드
 
+> **AI-agnostic root guide.** 이 문서는 Codex, Claude Code, Gemini CLI, Copilot CLI, Cursor, 또는 다른 AI 개발 도구가 공통으로 따라야 하는 운영 기준이다. 특정 벤더의 명령이나 파일명에 의존하지 않는다.
+>
+> **Project:** [README.md](./README.md) | **Status:** [docs/STATUS.md](./docs/STATUS.md) | **Roadmap:** [docs/ROADMAP.md](./docs/ROADMAP.md) | **History:** [docs/HISTORY.md](./docs/HISTORY.md) | **Harness:** [docs/harness/README.md](./docs/harness/README.md)
+
+## 0) Agent Harness Rules
+
+### Session Role
+- 기본 역할은 **orchestrator**다. 먼저 문서와 코드를 읽고, 변경 범위와 검증 방법을 명확히 한다.
+- 코드/문서 수정은 요청 범위에 맞게 최소화한다. 기존 사용자 변경을 되돌리지 않는다.
+- 별도 subagent 기능이 있으면 구현자/리뷰어/브라우저 테스터 역할을 분리한다. subagent 기능이 없으면 같은 AI가 단계별로 컨텍스트를 분리해 수행하고, 리뷰 단계에서는 변경자 관점이 아니라 검토자 관점으로 본다.
+- Claude 전용 `/plan`, `/qa` 같은 slash command가 없어도 같은 절차를 [docs/harness/SDLC.md](./docs/harness/SDLC.md)에 따라 수동 실행한다.
+
+### Required Reading Order
+1. `agent.md`
+2. `docs/STATUS.md`
+3. `docs/ROADMAP.md`
+4. 변경 대상과 관련된 `design.md`, `docs/harness/*.md`, `docs/superpowers/*`, `old_reference/*`
+5. 실제 코드와 테스트
+
+### Development Commands
+```powershell
+npm install
+npm test
+npm run build
+npm run test:e2e
+npm run dev
+```
+
+### Service URLs
+- Local app: `http://localhost:3000`
+- Playwright app under test: `http://127.0.0.1:3104/flows`
+- Deployment: Vercel, see `vercel.json` and `demo/vercel.json`
+
+### Quality Gates
+- Pure logic changes: run `npm test`.
+- App/runtime changes: run `npm test` and `npm run build`.
+- User-facing flow changes: also run `npm run test:e2e` or document why it could not run.
+- Visual/frontend changes: inspect in browser and capture screenshots when possible.
+- Sensitive FLOW content must preserve source/risk separation and must not imply medical, legal, or financial certainty.
+
+### Documentation Memory
+- `docs/STATUS.md`: current state and health.
+- `docs/ROADMAP.md`: planned versions and backlog index.
+- `docs/HISTORY.md`: released changes only.
+- `docs/harness/`: AI-agnostic process, roles, and verification rules.
+- `docs/superpowers/`: detailed specs/plans produced by agent workflows.
+
+### Safety Rules
+- Never edit `.env`, credentials, API keys, or deployment secrets unless the user explicitly asks.
+- Never modify `old/`, `claude_ver/`, or legacy source dumps unless explicitly asked.
+- Do not call a route, feature, or plan "검증됨" before real user behavior data exists.
+- Prefer explicit evidence: command output, test results, screenshots, or linked documents.
+
 ## 1) Project Identity
 FLOW는 경험 콘텐츠와 사용자 도구 사이의 **실행 레이어**다. 블로그, 영상, 제작자 노하우, 실사용 경험을 구조화된 실행 플랜으로 변환해 사용자가 캘린더/할 일/시트/개인 도구로 복사·내보내기하고 즉시 실행하게 돕는다. FLOW는 단순 체크리스트 앱, Notion 템플릿 갤러리, 육아 버티컬 앱, Reddit형 커뮤니티, 범용 생산성 앱이 아니다. FLOW는 **실행형 경험 위키**, **실생활 루트 시스템**, **first-flag-first 제품**, **실행 발자국(footprint) 데이터 레이어**다.
 
@@ -194,7 +247,7 @@ type Item = {
 - Supabase PostgreSQL
 - Supabase Auth
 - (제한적) GCP: Google Calendar/Sheets API 연동 시
-- Claude API: AI 초안 생성
+- AI provider API: 초안 생성(Claude, OpenAI, Gemini 등으로 교체 가능)
 - Jina AI Reader: URL→텍스트 추출
 
 초기에는 무거운 인프라 도입 금지.
