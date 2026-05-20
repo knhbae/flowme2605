@@ -165,6 +165,11 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await page.getByRole('button', { name: '내 일정표 엑셀로 받기' }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe('moving-d30-basic.xlsx');
+
+  const calendarDownloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: '캘린더 파일 받기' }).click();
+  const calendarDownload = await calendarDownloadPromise;
+  expect(calendarDownload.suggestedFilename()).toBe('moving-d30-basic.ics');
 });
 
 test('new flow creation keeps advanced settings secondary', async ({ page }) => {
@@ -237,4 +242,18 @@ test('public flow can be copied into an editable draft', async ({ page }) => {
   await expect(page).toHaveURL(/\/flows\/.+\/edit/);
   await expect(page.getByRole('heading', { name: /이사 D-30 준비 Flow 사본/ })).toBeVisible();
   await expect(page.getByText('초안 Flow')).toBeVisible();
+});
+
+test('flow lab shows converted pilot and scale validation boards', async ({ page }) => {
+  await page.goto('/flow-lab');
+
+  await expect(page.getByRole('heading', { name: '실제 제작자 콘텐츠가 여러 Flow로 관리되는지 검증' })).toBeVisible();
+  await expect(page.getByText('3 x 4 파일럿 검증')).toBeVisible();
+  await expect(page.getByText('B 파일럿 실제 Flow 변환')).toBeVisible();
+  await expect(page.getByText('10 x 20 확장 후보 검증')).toBeVisible();
+  await expect(page.getByText('10', { exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: /삼성전자서비스 에어컨/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /자동차검사 준비/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Q-Net 원서접수/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /다이어트 식단·운동 기록/ })).toBeVisible();
 });
