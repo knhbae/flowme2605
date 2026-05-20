@@ -158,3 +158,37 @@ test('seed flows expose creator and popularity signals for discovery', () => {
     assert.ok(bundle.flow.tags?.length, bundle.flow.slug);
   }
 });
+
+test('real content pilot covers 10 converted flows across five categories', () => {
+  const pilotSlugs = [
+    'samsung-aircon-seasonal-check',
+    'samsung-washer-filter-cleaning',
+    'vehicle-inspection-prep',
+    'driver-license-renewal-check',
+    'home-workout-20min',
+    'running-5k-4week',
+    'qnet-exam-application-prep',
+    'computer-skills-d30-study',
+    'diet-meal-exercise-log',
+    'diet-reset-2week',
+  ];
+
+  for (const slug of pilotSlugs) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+    assert.ok(bundle, slug);
+    assert.equal(bundle.flow.status, 'published', slug);
+    assert.ok(bundle.flow.source_title, slug);
+    assert.ok(bundle.flow.source_url?.startsWith('https://'), slug);
+    assert.ok(bundle.items.length >= 4, slug);
+    assert.ok(bundle.itemDetails?.some((detail) => detail.completion_criteria), slug);
+  }
+
+  const categories = new Set(
+    pilotSlugs.map((slug) => seedBundles.find((entry) => entry.flow.slug === slug)?.flow.category),
+  );
+  assert.ok(categories.has('가전관리'));
+  assert.ok(categories.has('자동차/검사'));
+  assert.ok(categories.has('운동/루틴'));
+  assert.ok(categories.has('자격증/시험'));
+  assert.ok(categories.has('다이어트/기록'));
+});
