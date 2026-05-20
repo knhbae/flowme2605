@@ -4,14 +4,17 @@ import { seedBundles } from './seed-flows';
 import { virtualUsers } from './users';
 
 test('seed pack contains public Korean Flow bundles across practical categories', () => {
-  assert.equal(seedBundles.length, 24);
+  assert.equal(seedBundles.length, 31);
   assert.deepEqual(
     seedBundles.map((bundle) => bundle.flow.slug).sort(),
     [
       'baby-food-menu-recipe',
       'business-registration-basic',
       'car-care-monthly-routine',
+      'computer-skills-d30-study',
       'diet-habit-2week',
+      'diet-meal-exercise-log',
+      'diet-reset-2week',
       'driver-license-renewal-check',
       'english-study-30day-routine',
       'family-certificate-issue',
@@ -25,11 +28,15 @@ test('seed pack contains public Korean Flow bundles across practical categories'
       'overseas-travel-d14',
       'passport-renewal-docs',
       'pet-registration-basic',
+      'qnet-exam-application-prep',
       'resident-register-copy-issue',
       'running-5k-4week',
+      'samsung-aircon-seasonal-check',
+      'samsung-washer-filter-cleaning',
       'study-exam-d30-plan',
       'used-car-buying-check',
       'vaccination-certificate-issue',
+      'vehicle-inspection-prep',
       'wedding-d180-basic',
       'year-end-tax-docs',
     ],
@@ -186,9 +193,56 @@ test('real content pilot covers 10 converted flows across five categories', () =
   const categories = new Set(
     pilotSlugs.map((slug) => seedBundles.find((entry) => entry.flow.slug === slug)?.flow.category),
   );
-  assert.ok(categories.has('가전관리'));
+  assert.ok(categories.has('가전/관리'));
   assert.ok(categories.has('자동차/검사'));
   assert.ok(categories.has('운동/루틴'));
   assert.ok(categories.has('자격증/시험'));
   assert.ok(categories.has('다이어트/기록'));
+});
+
+test('existing pilot flows use upgraded source metadata and matching detail links', () => {
+  const expected = [
+    {
+      slug: 'driver-license-renewal-check',
+      category: '자동차/검사',
+      source_title: '한국도로교통공단 안전운전 통합민원 면허갱신 안내',
+      source_url: 'https://www.safedriving.or.kr/diGuide/selectDiGuide02.do',
+    },
+    {
+      slug: 'home-workout-20min',
+      category: '운동/루틴',
+      source_title: 'ThankyouBUBU 홈트 루틴 콘텐츠 참고',
+      source_url: 'https://www.youtube.com/@ThankyouBUBU',
+    },
+    {
+      slug: 'running-5k-4week',
+      category: '운동/루틴',
+      source_title: '런데이 초보 러닝 콘텐츠 참고',
+      source_url: 'https://www.runday.co.kr/',
+    },
+    {
+      slug: 'diet-habit-2week',
+      category: '다이어트/기록',
+      source_title: '핏블리 다이어트 습관 콘텐츠 참고',
+      source_url: 'https://fashionbiz.co.kr/article/204870',
+    },
+  ];
+
+  for (const expectedFlow of expected) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === expectedFlow.slug);
+    assert.ok(bundle, expectedFlow.slug);
+    assert.equal(bundle.flow.category, expectedFlow.category, expectedFlow.slug);
+    assert.equal(bundle.flow.source_title, expectedFlow.source_title, expectedFlow.slug);
+    assert.equal(bundle.flow.source_url, expectedFlow.source_url, expectedFlow.slug);
+
+    const expectedHost = new URL(expectedFlow.source_url).host;
+    assert.ok(
+      bundle.itemDetails?.some(
+        (detail) =>
+          detail.completion_criteria &&
+          detail.links?.some((link) => new URL(link.url).host === expectedHost),
+      ),
+      expectedFlow.slug,
+    );
+  }
 });
