@@ -1238,6 +1238,17 @@ function enrichSeedMeta(bundle: FlowBundle, index: number): FlowBundle {
 function buildSeedTags(bundle: FlowBundle): string[] {
   const tags = new Set<string>();
   const { flow } = bundle;
+  const officialSourceDomains = [
+    'gov.kr',
+    'nhis.or.kr',
+    'hometax',
+    'safedriving.or.kr',
+    'samsungsvc.co.kr',
+    'kotsa.or.kr',
+    'q-net.or.kr',
+  ];
+  const sourceUrl = flow.source_url ?? '';
+  const isOfficialSource = officialSourceDomains.some((domain) => sourceUrl.includes(domain));
 
   if (flow.structure_type === 'timeline') tags.add('D-Day 준비');
   if (flow.structure_type === 'routine') tags.add('매일 루틴');
@@ -1245,7 +1256,7 @@ function buildSeedTags(bundle: FlowBundle): string[] {
   if (flow.content_type === 'meal_plan') tags.add('식단·레시피');
   if (flow.risk_level === 'financial_sensitive') tags.add('돈이 걸린 결정');
   if (flow.risk_level === 'medical_sensitive') tags.add('건강주의');
-  if (flow.source_url?.includes('gov.kr') || flow.source_url?.includes('nhis.or.kr') || flow.source_url?.includes('hometax')) tags.add('공식확인');
+  if (isOfficialSource) tags.add('공식확인');
   if (!tags.has('공식확인')) tags.add('블로그 따라하기');
   if (flow.category.includes('공부')) tags.add('공부');
   if (flow.category.includes('자동차')) tags.add('자동차');

@@ -200,6 +200,25 @@ test('real content pilot covers 10 converted flows across five categories', () =
   assert.ok(categories.has('다이어트/기록'));
 });
 
+test('official pilot source domains use official tags instead of blog-following tags', () => {
+  const officialPilotSources = [
+    { slug: 'samsung-aircon-seasonal-check', host: 'samsungsvc.co.kr' },
+    { slug: 'samsung-washer-filter-cleaning', host: 'samsungsvc.co.kr' },
+    { slug: 'vehicle-inspection-prep', host: 'kotsa.or.kr' },
+    { slug: 'driver-license-renewal-check', host: 'safedriving.or.kr' },
+    { slug: 'qnet-exam-application-prep', host: 'q-net.or.kr' },
+  ];
+
+  for (const { slug, host } of officialPilotSources) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+
+    assert.ok(bundle, slug);
+    assert.ok(bundle.flow.source_url?.includes(host), slug);
+    assert.ok(bundle.flow.tags?.includes('공식확인'), slug);
+    assert.ok(!bundle.flow.tags?.includes('블로그 따라하기'), slug);
+  }
+});
+
 test('existing pilot flows use upgraded source metadata and matching detail links', () => {
   const expected = [
     {
