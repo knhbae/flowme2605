@@ -257,15 +257,25 @@ test('representative real content pilot flows are executable', async ({ page }) 
   await page.goto('/f/samsung-aircon-seasonal-check');
   await expect(page.getByRole('heading', { name: /에어컨/ })).toBeVisible();
   await expect(page.getByText('출처와 주의 정보')).toBeVisible();
+  await expect(page.getByRole('link', { name: '삼성전자서비스 Samsung Care+ 에어컨 관리 안내' }).first()).toHaveAttribute(
+    'href',
+    'https://www.samsungsvc.co.kr/info/carePlus',
+  );
   await expect(page.getByRole('button', { name: '내 날짜 입력' })).toBeVisible();
   await page.getByRole('button', { name: '내 날짜 입력' }).click();
-  await page.getByLabel(/시작일|기준일|관리 시작일/).fill('2026-06-01');
+  await page.getByLabel('시작일').fill('2026-06-01');
   await expect(page.getByRole('heading', { name: '지금 먼저 체크할 일' })).toBeVisible();
   await expect(page.getByText('2026-06-01').first()).toBeVisible();
+  await page.locator('label').filter({ hasText: '전원 연결과 리모컨 배터리 확인하기' }).first().click();
+  await expect(page.getByText('1 / 8').first()).toBeVisible();
 
   await page.goto('/f/qnet-exam-application-prep');
   await expect(page.getByRole('heading', { name: /Q-Net/ })).toBeVisible();
   await expect(page.getByText('출처와 주의 정보')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Q-Net 원서접수 안내' }).first()).toHaveAttribute(
+    'href',
+    'https://q-net.or.kr/rcv001.do?gSite=Q&id=rcv00103&rcvPFlag=Y',
+  );
   await page.getByRole('button', { name: '내 날짜 입력' }).click();
   await page.getByLabel(/^기준 종료일$/).fill('2026-07-15');
   await expect(page.getByText('2026-06-15').first()).toBeVisible();
