@@ -195,7 +195,7 @@ export const convertedPilotSlugs = [
   'computer-skills-d30-study',
   'diet-meal-exercise-log',
   'diet-reset-2week',
-];
+] as const;
 
 const sourceProfiles = [
   {
@@ -333,7 +333,8 @@ export function scoreCandidate(candidate: FlowCandidate): number {
 export function getContentLabSummary(bundles: FlowBundle[]) {
   const slugs = new Set(bundles.map((bundle) => bundle.flow.slug));
   const pilotSlugs = pilotCreatorLabs.flatMap((creator) => creator.flowSlugs);
-  const convertedPilotBundles = bundles.filter((bundle) => convertedPilotSlugs.includes(bundle.flow.slug));
+  const convertedPilotSlugList = convertedPilotSlugs as readonly string[];
+  const convertedPilotBundles = bundles.filter((bundle) => convertedPilotSlugList.includes(bundle.flow.slug));
   const expansionCandidates = expansionCreatorLabs.flatMap((creator) => creator.candidates);
 
   return {

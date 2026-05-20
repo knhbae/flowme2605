@@ -1,12 +1,34 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  convertedPilotSlugs,
   expansionCreatorLabs,
   getContentLabSummary,
   pilotCreatorLabs,
   scoreCandidate,
 } from './content-lab';
 import { seedBundles } from './seed-flows';
+
+const expectedConvertedPilotSlugs = [
+  'samsung-aircon-seasonal-check',
+  'samsung-washer-filter-cleaning',
+  'vehicle-inspection-prep',
+  'driver-license-renewal-check',
+  'home-workout-20min',
+  'running-5k-4week',
+  'qnet-exam-application-prep',
+  'computer-skills-d30-study',
+  'diet-meal-exercise-log',
+  'diet-reset-2week',
+] as const;
+
+type Equal<Actual, Expected> =
+  (<Value>() => Value extends Actual ? 1 : 2) extends <Value>() => Value extends Expected ? 1 : 2
+    ? true
+    : false;
+
+const convertedPilotSlugsTypeCheck: Equal<typeof convertedPilotSlugs, typeof expectedConvertedPilotSlugs> = true;
+void convertedPilotSlugsTypeCheck;
 
 test('pilot content lab maps 3 creators to 12 existing working flows', () => {
   const summary = getContentLabSummary(seedBundles);
@@ -56,6 +78,7 @@ test('candidate scoring rewards executable and externally portable content', () 
 test('converted pilot lab exposes 10 real-source flows for B validation', () => {
   const summary = getContentLabSummary(seedBundles);
 
+  assert.deepEqual(convertedPilotSlugs, expectedConvertedPilotSlugs);
   assert.equal(summary.convertedPilotFlowCount, 10);
   assert.deepEqual(summary.convertedPilotCategories.sort(), [
     '가전관리',
