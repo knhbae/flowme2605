@@ -8,6 +8,8 @@ import {
 } from '@/lib/flow/content-lab';
 import { seedBundles } from '@/lib/flow/seed-flows';
 
+type SeedBundle = (typeof seedBundles)[number];
+
 function targetLabel(value: string): string {
   const labels: Record<string, string> = {
     calendar: 'Calendar',
@@ -38,12 +40,16 @@ function convertedPilotLinkLabel(slug: string, title: string): string {
   return labels[slug] ?? title;
 }
 
+function isSeedBundle(bundle: SeedBundle | undefined): bundle is SeedBundle {
+  return Boolean(bundle);
+}
+
 export function ContentLab() {
   const summary = getContentLabSummary(seedBundles);
   const bundleBySlug = new Map(seedBundles.map((bundle) => [bundle.flow.slug, bundle]));
   const convertedPilotBundles = convertedPilotSlugs
     .map((slug) => bundleBySlug.get(slug))
-    .filter(Boolean) as typeof seedBundles;
+    .filter(isSeedBundle);
 
   return (
     <main className="mx-auto max-w-7xl px-5 py-8">
@@ -99,7 +105,7 @@ export function ContentLab() {
         </div>
         <div className="grid gap-4 lg:grid-cols-3">
           {pilotCreatorLabs.map((creator) => (
-            <article key={creator.id} className="rounded-lg border border-gray-200 bg-white p-5">
+            <article key={creator.id} className="border-t border-gray-200 py-5">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h3 className="text-xl font-semibold text-gray-950">{creator.name}</h3>
@@ -125,7 +131,7 @@ export function ContentLab() {
                   const bundle = bundleBySlug.get(slug);
                   const source = creator.sources.find((item) => item.flowSlug === slug);
                   return (
-                    <div key={slug} className="rounded-md border border-gray-200 p-3 text-sm">
+                    <div key={slug} className="border-t border-gray-200 py-3 text-sm first:border-t-0 first:pt-0">
                       <Link
                         className="block hover:text-blue-700"
                         href={bundle ? `/f/${bundle.flow.slug}` : '/flows'}
@@ -205,7 +211,7 @@ export function ContentLab() {
                   creator.candidates.length,
               );
             return (
-              <article key={creator.id} className="rounded-lg border border-gray-200 bg-white p-5">
+              <article key={creator.id} className="border-t border-gray-200 py-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <p className="text-sm font-semibold text-gray-500">{creator.category}</p>
