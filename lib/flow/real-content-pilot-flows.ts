@@ -1,4 +1,4 @@
-import { Flow, FlowBundle, FlowItemDetail, RiskLevel } from './types';
+import { Flow, FlowBundle, FlowItemDetail, RiskLevel, SourceType } from './types';
 import { parseTextFlow } from './parser';
 
 const now = '2026-05-21T00:00:00.000Z';
@@ -8,7 +8,7 @@ type PilotSource = {
   category: string;
   sourceTitle: string;
   sourceUrl: string;
-  sourceType: 'official' | 'creator_experience' | 'reference';
+  sourceType: SourceType;
   riskLevel: RiskLevel;
 };
 
@@ -87,20 +87,19 @@ function makePilotBundle(flow: Omit<Flow, 'created_at' | 'updated_at'>, rawText:
 
 function withPilotDetails(
   bundle: FlowBundle,
-  details: Record<string, Pick<FlowBundle['items'][number], 'description' | 'source_type' | 'risk_level'> & Omit<FlowItemDetail, 'item_id'>>,
+  source: Pick<PilotSource, 'sourceType' | 'riskLevel'>,
+  details: Record<string, Partial<Pick<FlowBundle['items'][number], 'description' | 'source_type' | 'risk_level'>> & Omit<FlowItemDetail, 'item_id'>>,
 ): FlowBundle {
   return {
     ...bundle,
     items: bundle.items.map((item) => {
       const detail = details[item.title];
-      return detail
-        ? {
-            ...item,
-            description: detail.description,
-            source_type: detail.source_type,
-            risk_level: detail.risk_level,
-          }
-        : item;
+      return {
+        ...item,
+        description: detail?.description ?? item.description,
+        source_type: detail?.source_type ?? source.sourceType,
+        risk_level: detail?.risk_level ?? source.riskLevel,
+      };
     }),
     itemDetails: bundle.items
       .map((item) => {
@@ -245,6 +244,7 @@ export const realContentPilotBundles: FlowBundle[] = [
       },
       samsungAirconText,
     ),
+    samsungAirconSource,
     {
       '실외기 주변 통풍 공간 정리하기': {
         description: '실외기 주변 장애물을 치워 통풍 공간을 확보합니다.',
@@ -292,6 +292,7 @@ export const realContentPilotBundles: FlowBundle[] = [
       },
       samsungWasherText,
     ),
+    samsungWasherSource,
     {
       '필터 분리 가능 여부와 모델 안내 확인하기': {
         description: '사용 중인 모델의 필터 위치와 분리 가능 여부를 먼저 확인합니다.',
@@ -340,6 +341,7 @@ export const realContentPilotBundles: FlowBundle[] = [
       },
       vehicleInspectionText,
     ),
+    vehicleInspectionSource,
     {
       '자동차검사 유효기간과 예약 가능일 확인하기': {
         description: '검사 유효기간과 예약 가능한 날짜를 먼저 확인합니다.',
@@ -388,6 +390,7 @@ export const realContentPilotBundles: FlowBundle[] = [
       },
       qnetExamText,
     ),
+    qnetExamSource,
     {
       '응시 자격과 제출 서류 필요 여부 확인하기': {
         description: '응시하려는 종목의 자격 요건과 사전 제출 서류 필요 여부를 확인합니다.',
@@ -435,6 +438,7 @@ export const realContentPilotBundles: FlowBundle[] = [
       },
       computerSkillsText,
     ),
+    computerSkillsSource,
     {
       '필기와 실기 시험 범위 나누기': {
         description: '필기 이론과 실기 기능을 분리해 남은 기간의 학습 범위를 나눕니다.',
@@ -482,6 +486,7 @@ export const realContentPilotBundles: FlowBundle[] = [
       },
       dietLogText,
     ),
+    dietLogSource,
     {
       '단백질과 채소 포함 여부 계획하기': {
         description: '끼니마다 단백질과 채소가 들어가는지 먼저 계획합니다.',
@@ -531,6 +536,7 @@ export const realContentPilotBundles: FlowBundle[] = [
       },
       dietResetText,
     ),
+    dietResetSource,
     {
       '시작 체중보다 식사 패턴 먼저 기록하기': {
         description: '체중보다 식사 시간, 간식, 외식 빈도 같은 패턴을 먼저 기록합니다.',
