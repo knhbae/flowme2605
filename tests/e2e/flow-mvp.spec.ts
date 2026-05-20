@@ -261,9 +261,11 @@ test('representative real content pilot flows are executable', async ({ page }) 
   await page.getByRole('button', { name: '내 날짜 입력' }).click();
   await page.getByLabel(/시작일|기준일|관리 시작일/).fill('2026-06-01');
   await expect(page.getByRole('heading', { name: '지금 먼저 체크할 일' })).toBeVisible();
+  await expect(page.getByText('2026-06-01').first()).toBeVisible();
 
   await page.goto('/f/qnet-exam-application-prep');
   await expect(page.getByRole('heading', { name: /Q-Net/ })).toBeVisible();
+  await expect(page.getByText('출처와 주의 정보')).toBeVisible();
   await page.getByRole('button', { name: '내 날짜 입력' }).click();
   await page.getByLabel(/^기준 종료일$/).fill('2026-07-15');
   await expect(page.getByText('2026-06-15').first()).toBeVisible();
