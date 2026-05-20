@@ -33,6 +33,7 @@ Thumbs.db
 
 # Codex/Superpowers local scratch
 .superpowers/
+.worktrees/
 docs/superpowers/
 demo/
 
