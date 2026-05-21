@@ -64,14 +64,24 @@ Use [QA.md](./QA.md). Do not move to PR/release until required checks pass or sk
 
 ## 6. PR / Review
 
+Before opening a PR, create or update a PR history entry under `docs/pr-history/` using the naming pattern:
+
+```text
+docs/pr-history/YYYY-MM-DD-short-topic.md
+```
+
 Package changes with:
 
 - Summary
 - Related roadmap/spec/issue links
+- PR history file link
 - Test evidence
 - Known risks
+- Not-done items and follow-ups
 
 Review independently. If the same AI implemented the work, switch to reviewer stance and look for failure modes first.
+
+After the PR is opened, update the PR history entry with the PR URL/number. If the PR is deployed, merged, reverted, or materially rescoped, update its status, deploy URL, smoke-test result, risks, rollback notes, and follow-ups.
 
 ## 7. Release
 
@@ -92,3 +102,4 @@ Before deployment:
 - Deploy.
 - Smoke test the deployed URL.
 - Record rollback notes when relevant.
+- Update the matching `docs/pr-history/` entry with deploy URL, smoke-test evidence, and rollback notes.

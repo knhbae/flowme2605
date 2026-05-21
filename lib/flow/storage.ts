@@ -1,5 +1,5 @@
 import { seedBundles } from './seed-flows';
-import { FlowBundle, ReactionLog } from './types';
+import { FlowBundle, FlowItemState, ReactionLog } from './types';
 
 const BUNDLES_KEY = 'flow_builder_mvp_bundles_v11';
 const PREVIOUS_BUNDLES_KEYS = [
@@ -14,6 +14,14 @@ const PREVIOUS_BUNDLES_KEYS = [
 ];
 const CHECKS_KEY_PREFIX = 'flow_builder_mvp_checks_';
 const REACTIONS_KEY_PREFIX = 'flow_builder_mvp_reactions_';
+const ANCHOR_KEY_PREFIX = 'flow:';
+const ITEM_STATE_KEY_PREFIX = 'flow_builder_mvp_item_state_';
+const NOTICE_KEY = 'flow_builder_mvp_storage_notice_dismissed';
+
+export type StoredAnchor = {
+  mode: string;
+  anchor: string;
+};
 
 function canUseStorage(): boolean {
   return typeof window !== 'undefined' && Boolean(window.localStorage);
@@ -76,6 +84,47 @@ export function getChecks(slug: string): Record<string, boolean> {
 export function saveChecks(slug: string, value: Record<string, boolean>): void {
   if (!canUseStorage()) return;
   localStorage.setItem(`${CHECKS_KEY_PREFIX}${slug}`, JSON.stringify(value));
+  localStorage.setItem('flow:meta:last-visit', new Date().toISOString());
+}
+
+export function getStoredAnchor(slug: string): StoredAnchor {
+  if (!canUseStorage()) return { mode: 'custom', anchor: '' };
+  try {
+    return JSON.parse(localStorage.getItem(`${ANCHOR_KEY_PREFIX}${slug}:anchorDate`) || '{"mode":"custom","anchor":""}');
+  } catch {
+    return { mode: 'custom', anchor: '' };
+  }
+}
+
+export function saveStoredAnchor(slug: string, value: StoredAnchor): void {
+  if (!canUseStorage()) return;
+  localStorage.setItem(`${ANCHOR_KEY_PREFIX}${slug}:anchorDate`, JSON.stringify(value));
+  localStorage.setItem('flow:meta:last-visit', new Date().toISOString());
+}
+
+export function getItemStates(slug: string): Record<string, FlowItemState> {
+  if (!canUseStorage()) return {};
+  try {
+    return JSON.parse(localStorage.getItem(`${ITEM_STATE_KEY_PREFIX}${slug}`) || '{}');
+  } catch {
+    return {};
+  }
+}
+
+export function saveItemStates(slug: string, value: Record<string, FlowItemState>): void {
+  if (!canUseStorage()) return;
+  localStorage.setItem(`${ITEM_STATE_KEY_PREFIX}${slug}`, JSON.stringify(value));
+  localStorage.setItem('flow:meta:last-visit', new Date().toISOString());
+}
+
+export function hasDismissedStorageNotice(): boolean {
+  if (!canUseStorage()) return true;
+  return localStorage.getItem(NOTICE_KEY) === 'true';
+}
+
+export function dismissStorageNotice(): void {
+  if (!canUseStorage()) return;
+  localStorage.setItem(NOTICE_KEY, 'true');
 }
 
 export function getReactionLogs(slug: string): Record<string, ReactionLog> {

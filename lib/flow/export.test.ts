@@ -15,6 +15,52 @@ test('timeline text export includes calculated dates when anchor exists', () => 
   assert.match(text, /이사 방식 정하기/);
 });
 
+test('text and workbook exports include item notes and skipped state', () => {
+  const wedding = seedBundles.find((bundle) => bundle.flow.slug === 'wedding-d180-basic');
+  assert.ok(wedding);
+  const first = wedding.items[0];
+  const second = wedding.items[1];
+  assert.ok(first);
+  assert.ok(second);
+
+  const itemStates = {
+    [first.id]: { note: '양가 협의는 6월 첫째 주에 다시 확인' },
+    [second.id]: { skipped: true, note: '스몰웨딩이라 후보 비교 범위를 줄임' },
+  };
+
+  const text = buildText(wedding, { [first.id]: true }, '2026-09-15', itemStates);
+
+  assert.match(text, /예식 날짜와 예상 하객 규모 정하기 \(완료\)/);
+  assert.match(text, /메모: 양가 협의는 6월 첫째 주에 다시 확인/);
+  assert.match(text, /웨딩홀 후보와 예산 범위 비교하기 \(스킵\)/);
+  assert.match(text, /메모: 스몰웨딩이라 후보 비교 범위를 줄임/);
+
+  const sheets = buildWorkbookSheets(wedding, { [first.id]: true }, '2026-09-15', { itemStates });
+  const execution = sheets.find((sheet) => sheet.name === '실행표');
+  assert.ok(execution);
+  assert.deepEqual(execution.columns, ['상태', '시점', '날짜', '섹션', '실행 내용', '완료 기준', '바로가기', '내 메모']);
+  assert.equal(execution.rows[0][0], '완료');
+  assert.equal(execution.rows[0][7], '양가 협의는 6월 첫째 주에 다시 확인');
+  assert.equal(execution.rows[1][0], '스킵');
+  assert.equal(execution.rows[1][7], '스몰웨딩이라 후보 비교 범위를 줄임');
+});
+
+test('ics export omits skipped dated flow items', () => {
+  const wedding = seedBundles.find((bundle) => bundle.flow.slug === 'wedding-d180-basic');
+  assert.ok(wedding);
+  const first = wedding.items[0];
+  const second = wedding.items[1];
+  assert.ok(first);
+  assert.ok(second);
+
+  const ics = buildIcsCalendar(wedding, { [first.id]: true }, '2026-09-15', {
+    [second.id]: { skipped: true },
+  });
+
+  assert.match(ics, /예식 날짜와 예상 하객 규모 정하기/);
+  assert.doesNotMatch(ics, /웨딩홀 후보와 예산 범위 비교하기/);
+});
+
 test('workbook export uses user-facing Korean columns instead of raw db fields', () => {
   const moving = seedBundles.find((bundle) => bundle.flow.slug === 'moving-d30-basic');
   assert.ok(moving);
@@ -29,7 +75,7 @@ test('workbook export uses user-facing Korean columns instead of raw db fields',
   const execution = sheets.find((sheet) => sheet.name === '실행표');
   assert.ok(execution);
 
-  assert.deepEqual(execution.columns, ['상태', '시점', '날짜', '섹션', '실행 내용', '완료 기준', '바로가기']);
+  assert.deepEqual(execution.columns, ['상태', '시점', '날짜', '섹션', '실행 내용', '완료 기준', '바로가기', '내 메모']);
   assert.doesNotMatch(execution.columns.join(','), /flow_title|structure_type|day_offset|done|why|how/);
   assert.deepEqual(execution.rows[0], [
     '완료',
@@ -37,6 +83,7 @@ test('workbook export uses user-facing Korean columns instead of raw db fields',
     '2026-06-15',
     'D-30 큰 준비',
     '이사 방식 정하기',
+    '',
     '',
     '',
   ]);
@@ -85,6 +132,7 @@ test('meal plan workbook includes execution, recipe, and reaction log sheets', (
     '쌀미음',
     '새 재료: 쌀',
     '레시피: 쌀미음',
+    '',
   ]);
 
   const recipes = sheets.find((sheet) => sheet.name === '레시피');

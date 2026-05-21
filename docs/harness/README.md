@@ -36,6 +36,7 @@ References: [OpenAI Codex AGENTS.md](https://developers.openai.com/codex/guides/
 | [../ROADMAP.md](../ROADMAP.md) | Upcoming versions and backlog index |
 | [../IDEAS.md](../IDEAS.md) | Deferred ideas and conversation context worth preserving |
 | [../REFERENCE.md](../REFERENCE.md) | External UX/UI and productivity-method references |
+| [../pr-history/README.md](../pr-history/README.md) | PR-level changes, decisions, verification, risks, and follow-ups |
 | [../HISTORY.md](../HISTORY.md) | Released changes |
 | [ROLES.md](./ROLES.md) | AI/human role definitions |
 | [SDLC.md](./SDLC.md) | Repeatable development cycle |
