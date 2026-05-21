@@ -130,6 +130,7 @@ function Badge({
 
 function FlowBadges({ bundle }: { bundle: FlowBundle }) {
   const { flow } = bundle;
+  const sourcePrecisionLabel = getSourcePrecisionLabel(bundle);
   return (
     <div className="flex flex-wrap gap-2">
       <Badge className={flow.status === 'published' ? 'border-green-200 bg-green-50 text-green-800' : 'border-gray-200 bg-white text-gray-700'}>
@@ -142,7 +143,10 @@ function FlowBadges({ bundle }: { bundle: FlowBundle }) {
         <Badge className={riskClasses[flow.risk_level]}>{riskLabels[flow.risk_level]}</Badge>
       ) : null}
       <Badge className="border-blue-100 bg-blue-50 text-blue-800">제작자 경험</Badge>
-      {flow.source_url ? <Badge className="border-gray-200 bg-gray-50 text-gray-600">참고 자료</Badge> : null}
+      {flow.source_url ? <Badge className="border-gray-200 bg-gray-50 text-gray-600">{getSourceStatusLabel(bundle)}</Badge> : null}
+      {sourcePrecisionLabel ? (
+        <Badge className="border-indigo-100 bg-indigo-50 text-indigo-800">{sourcePrecisionLabel}</Badge>
+      ) : null}
     </div>
   );
 }
@@ -180,7 +184,7 @@ function getStructureLabel(bundle: FlowBundle): string {
 }
 
 function getAnchorLabel(bundle: FlowBundle): string {
-  if (bundle.flow.anchor_type === 'none') return '기준값 없음';
+  if (bundle.flow.anchor_type === 'none') return '날짜 입력 없이 바로 체크';
   if (bundle.flow.content_type === 'meal_plan') return '이유식 시작일 입력';
   if (bundle.flow.category.includes('결혼')) return '예식일 입력';
   if (bundle.flow.category.includes('공부/시험')) return '시험일 입력';
@@ -312,6 +316,7 @@ function FlowCard({
 }) {
   const count = getFlowItemCount(bundle);
   const color = categoryColors[bundle.flow.category] ?? '#6B7280';
+  const firstActionTitle = getFirstActionTitle(bundle);
 
   return (
     <article className="flex h-full flex-col justify-between rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
@@ -339,6 +344,11 @@ function FlowCard({
             </Link>
           </h2>
           <p className="mt-2 line-clamp-3 text-sm leading-6 text-gray-600">{getFlowResultText(bundle)}</p>
+          {firstActionTitle ? (
+            <p className="mt-2 text-sm text-gray-700">
+              <span className="font-semibold text-gray-900">첫 행동:</span> {firstActionTitle}
+            </p>
+          ) : null}
           <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-gray-500">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-700">
               {getCreatorAvatar(bundle)}
@@ -630,10 +640,20 @@ function StatCard({ label, value, compact = false }: { label: string; value: str
 }
 
 function getSourceStatusLabel(bundle: FlowBundle) {
-  if (bundle.flow.source_status === 'real') return 'Real source';
-  if (bundle.flow.source_status === 'preview') return 'Preview';
-  if (bundle.flow.source_status === 'needs_review') return 'Needs review';
-  return bundle.flow.source_url ? 'Source linked' : 'Draft source';
+  if (bundle.flow.source_status === 'real') return '출처 확인';
+  if (bundle.flow.source_status === 'preview') return '샘플';
+  if (bundle.flow.source_status === 'needs_review') return '검수 필요';
+  return bundle.flow.source_url ? '출처 연결' : '초안';
+}
+
+function getSourcePrecisionLabel(bundle: FlowBundle): string | undefined {
+  if (bundle.flow.source_precision === 'exact') return '정확한 출처 페이지';
+  if (bundle.flow.source_precision === 'broad') return '넓은 출처';
+  return undefined;
+}
+
+function getFirstActionTitle(bundle: FlowBundle): string | undefined {
+  return bundle.items[0]?.title;
 }
 
 export function CreatorDirectory() {
@@ -654,13 +674,13 @@ export function CreatorDirectory() {
         <p className="text-sm font-semibold text-blue-700">Creator Channels</p>
         <h1 className="mt-2 text-4xl font-semibold tracking-tight">제작자 채널</h1>
         <p className="mt-3 max-w-3xl leading-7 text-gray-600">
-          채널별 콘텐츠가 실제 실행 Flow로 얼마나 잘 전환되는지 확인하는 Preview입니다.
+          채널별 콘텐츠가 실제 실행 Flow로 얼마나 잘 전환되는지 확인하는 미리보기입니다.
         </p>
         <div className="mt-5 grid gap-3 sm:grid-cols-5">
           <StatCard label="채널" value={`${summaries.length}`} />
           <StatCard label="Flow화 콘텐츠" value={`${totalFlows}+`} />
-          <StatCard label="Real source" value={`${totalRealFlows}`} />
-          <StatCard label="Preview" value={`${totalPreviewFlows}`} />
+          <StatCard label="출처 확인" value={`${totalRealFlows}`} />
+          <StatCard label="샘플" value={`${totalPreviewFlows}`} />
           <StatCard label="평균 실행성 점수" value={`${averageScore}`} />
         </div>
         <div className="mt-5 flex flex-wrap gap-2">
@@ -690,8 +710,8 @@ export function CreatorDirectory() {
             </div>
             <p className="mt-3 text-sm leading-6 text-gray-600">{channel.bio}</p>
             <div className="mt-4 grid grid-cols-3 gap-2 text-sm">
-              <StatCard label="Real" value={`${channel.real_flow_count}`} compact />
-              <StatCard label="Preview" value={`${channel.preview_flow_count}`} compact />
+              <StatCard label="출처 확인" value={`${channel.real_flow_count}`} compact />
+              <StatCard label="샘플" value={`${channel.preview_flow_count}`} compact />
               <StatCard label="실행성 점수" value={`${channel.execution_score}`} compact />
             </div>
           </Link>
@@ -1011,8 +1031,8 @@ export function CreatorProfile({ slug }: { slug: string }) {
         {previewSummary ? (
           <section className="mt-5 grid gap-3 sm:grid-cols-7">
             <StatCard label="Flow화 콘텐츠" value={`${previewSummary.flow_count}`} compact />
-            <StatCard label="Real source" value={`${previewSummary.real_flow_count}`} compact />
-            <StatCard label="Preview" value={`${previewSummary.preview_flow_count}`} compact />
+            <StatCard label="출처 확인" value={`${previewSummary.real_flow_count}`} compact />
+            <StatCard label="샘플" value={`${previewSummary.preview_flow_count}`} compact />
             <StatCard label="실행 항목" value={`${previewSummary.executable_item_count}`} compact />
             <StatCard label="앵커 커버리지" value={`${previewSummary.anchor_coverage}%`} compact />
             <StatCard label="출처 커버리지" value={`${previewSummary.source_coverage}%`} compact />
@@ -1032,8 +1052,8 @@ export function CreatorProfile({ slug }: { slug: string }) {
         <div className="mb-3 flex flex-wrap gap-2">
           {[
             ['all', 'All'],
-            ['real', 'Real source'],
-            ['preview', 'Preview'],
+            ['real', '출처 확인'],
+            ['preview', '샘플'],
           ].map(([key, label]) => (
             <button
               key={key}
@@ -1970,6 +1990,15 @@ export function PublicFlow({ slug }: { slug: string }) {
             <p className="text-gray-600">
               마지막 업데이트: {bundle.flow.updated_at ? formatDate(new Date(bundle.flow.updated_at)) : '확인 필요'}
             </p>
+            {bundle.flow.source_checked_at ? (
+              <p className="text-gray-600">출처 확인일: {bundle.flow.source_checked_at}</p>
+            ) : null}
+            {bundle.flow.conversion_note ? (
+              <p className="text-gray-600">Flow 전환 방식: {bundle.flow.conversion_note}</p>
+            ) : null}
+            {getSourcePrecisionLabel(bundle) ? (
+              <p className="text-gray-600">출처 정밀도: {getSourcePrecisionLabel(bundle)}</p>
+            ) : null}
             {bundle.flow.source_url ? (
               <a className="inline-flex text-blue-700 underline-offset-2 hover:underline" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
                 {bundle.flow.source_title ?? '참고 자료'} 열기
@@ -1982,8 +2011,14 @@ export function PublicFlow({ slug }: { slug: string }) {
       <section className="my-6 rounded-xl border border-blue-100 bg-white p-4 shadow-sm">
         <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr_0.9fr]">
           <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
-            <p className="text-sm font-semibold text-blue-700">1. 기준 날짜 선택</p>
-            <p className="mt-1 text-sm text-gray-600">내 상황의 시작일 또는 종료일을 넣으면 날짜가 자동 계산됩니다.</p>
+            <p className="text-sm font-semibold text-blue-700">
+              {bundle.flow.anchor_type === 'none' ? '1. 바로 체크 준비' : '1. 기준 날짜 선택'}
+            </p>
+            <p className="mt-1 text-sm text-gray-600">
+              {bundle.flow.anchor_type === 'none'
+                ? '날짜 입력 없이 첫 항목부터 바로 실행하면 됩니다.'
+                : '내 상황의 시작일 또는 종료일을 넣으면 날짜가 자동 계산됩니다.'}
+            </p>
             <div className="mt-4">
               <AnchorInput bundle={bundle} anchor={anchor} displayAnchor={displayAnchor} mode={anchorMode} onModeChange={setAnchorMode} onChange={setAnchor} weekdays={weekdaySelection} onWeekdaysChange={setWeekdaySelection} />
             </div>
@@ -2086,7 +2121,7 @@ function AnchorInput({
   onWeekdaysChange: (value: string[]) => void;
 }) {
   if (bundle.flow.anchor_type === 'none') {
-    return <div className="rounded-md bg-gray-50 p-4 text-sm text-gray-600">기준값 없음</div>;
+    return <div className="rounded-md bg-gray-50 p-4 text-sm text-gray-600">날짜 입력 없이 바로 체크</div>;
   }
 
   const label =
