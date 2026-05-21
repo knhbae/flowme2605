@@ -1,4 +1,3 @@
-import { addDays, formatDate } from './date';
 import { inferPrimaryDestination } from './destination';
 import { FlowBundle, PrimaryDestination } from './types';
 
@@ -64,8 +63,8 @@ export function inferFlowSurfaceType(bundle: FlowBundle): FlowSurfaceType {
 
 export function getFlowSurfaceModel(bundle: FlowBundle, options: SurfaceModelOptions = {}): FlowSurfaceModel {
   const type = inferFlowSurfaceType(bundle);
-  const anchorDate = options.anchorDate || new Date().toISOString().slice(0, 10);
-  const weekdays = options.weekdays?.length ? options.weekdays : defaultWeekdays(type);
+  const anchorDate = normalizeAnchorDate(options.anchorDate);
+  const weekdays = normalizeWeekdays(type, options.weekdays);
   const firstAction = getFirstAction(bundle);
 
   if (type === 'calendar_routine') {
@@ -138,7 +137,7 @@ export function getFlowSurfaceModel(bundle: FlowBundle, options: SurfaceModelOpt
       ],
       previewEntries: bundle.items.slice(0, 5).map((item, index) => ({
         id: item.id,
-        date: formatDate(addDays(new Date(`${anchorDate}T00:00:00`), item.day_offset ?? index)),
+        date: addDaysToDateOnly(anchorDate, item.day_offset ?? index),
         label: '시트 행',
         title: item.title,
         note: item.description,
@@ -201,6 +200,69 @@ function defaultWeekdays(type: FlowSurfaceType): string[] {
   return ['월'];
 }
 
+function normalizeWeekdays(type: FlowSurfaceType, weekdays?: string[]): string[] {
+  const validWeekdays = weekdays?.filter((day) => WEEKDAYS.includes(day)) ?? [];
+  return validWeekdays.length ? validWeekdays : defaultWeekdays(type);
+}
+
+function normalizeAnchorDate(anchorDate?: string): string {
+  if (anchorDate && parseDateOnly(anchorDate)) return anchorDate;
+  return formatLocalDate(new Date());
+}
+
+function parseDateOnly(value: string): { year: number; month: number; day: number } | undefined {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return undefined;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(Date.UTC(year, month - 1, day));
+
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) {
+    return undefined;
+  }
+
+  return { year, month, day };
+}
+
+function formatLocalDate(date: Date): string {
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, '0'),
+    String(date.getDate()).padStart(2, '0'),
+  ].join('-');
+}
+
+function formatUtcDate(date: Date): string {
+  return [
+    date.getUTCFullYear(),
+    String(date.getUTCMonth() + 1).padStart(2, '0'),
+    String(date.getUTCDate()).padStart(2, '0'),
+  ].join('-');
+}
+
+function addDaysToDateOnly(dateValue: string, days: number): string {
+  const parsed = parseDateOnly(dateValue) ?? parseDateOnly(formatLocalDate(new Date()));
+  if (!parsed) return formatLocalDate(new Date());
+
+  const date = new Date(Date.UTC(parsed.year, parsed.month - 1, parsed.day));
+  date.setUTCDate(date.getUTCDate() + days);
+  return formatUtcDate(date);
+}
+
+function getWeekdayLabel(dateValue: string): string {
+  const parsed = parseDateOnly(dateValue) ?? parseDateOnly(formatLocalDate(new Date()));
+  if (!parsed) return WEEKDAYS[0];
+
+  const date = new Date(Date.UTC(parsed.year, parsed.month - 1, parsed.day));
+  return WEEKDAYS[(date.getUTCDay() + 6) % 7];
+}
+
 function getFirstAction(bundle: FlowBundle): string {
   return bundle.items[0]?.title ?? bundle.flow.description ?? bundle.flow.title;
 }
@@ -212,23 +274,21 @@ function makeRecurringEntries(
   count: number,
   label: string,
 ): SurfacePreviewEntry[] {
-  const start = new Date(`${anchorDate}T00:00:00`);
   const itemTitle = getFirstAction(bundle);
   const entries: SurfacePreviewEntry[] = [];
-  let cursor = new Date(start);
 
-  while (entries.length < count) {
-    const day = WEEKDAYS[(cursor.getDay() + 6) % 7];
+  for (let offset = 0; entries.length < count && offset < 60; offset += 1) {
+    const date = addDaysToDateOnly(anchorDate, offset);
+    const day = getWeekdayLabel(date);
     if (weekdays.includes(day)) {
       entries.push({
         id: `${bundle.flow.id}-${entries.length}`,
-        date: formatDate(cursor),
+        date,
         day,
         label,
         title: itemTitle,
       });
     }
-    cursor = addDays(cursor, 1);
   }
 
   return entries;

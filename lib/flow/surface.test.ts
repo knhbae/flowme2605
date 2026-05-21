@@ -60,6 +60,37 @@ test('creator card metadata exposes source task rhythm and tool', () => {
   assert.match(meta.firstSetting, /시작일|요일/);
 });
 
+test('surface preview preserves supplied anchor date without timezone drift', () => {
+  const model = getFlowSurfaceModel(bySlug('real-thankyou-bubu-video-full-body-no-jump'), {
+    anchorDate: '2026-05-25',
+    weekdays: ['월'],
+  });
+
+  assert.equal(model.previewEntries[0]?.date, '2026-05-25');
+  assert.equal(model.previewEntries[0]?.day, '월');
+});
+
+test('surface preview falls back safely for unknown weekday labels', () => {
+  const model = getFlowSurfaceModel(bySlug('real-thankyou-bubu-video-full-body-no-jump'), {
+    anchorDate: '2026-05-25',
+    weekdays: ['Mon'],
+  });
+
+  assert.equal(model.rhythmLabel, '주 3회');
+  assert.ok(model.previewEntries.length >= 3);
+  assert.equal(model.previewEntries[0]?.day, '월');
+});
+
+test('surface preview falls back safely for invalid anchor date', () => {
+  const model = getFlowSurfaceModel(bySlug('real-thankyou-bubu-video-full-body-no-jump'), {
+    anchorDate: 'not-a-date',
+    weekdays: ['월'],
+  });
+
+  assert.ok(/^\d{4}-\d{2}-\d{2}$/.test(model.previewEntries[0]?.date ?? ''));
+  assert.equal(model.previewEntries[0]?.day, '월');
+});
+
 test('title quality helper catches internal abstraction titles', () => {
   assert.equal(hasGenericInternalTitle('FITVELY 탄수화물 기준 Flow'), true);
   assert.equal(hasGenericInternalTitle('운동/홈트 목표와 기준 정하기'), true);
