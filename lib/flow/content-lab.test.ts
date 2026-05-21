@@ -52,6 +52,7 @@ test('scale content lab covers 10 creators and 200 flow candidates', () => {
   assert.equal(expansionCreatorLabs.length, 10);
   assert.equal(summary.expansionCreatorCount, 10);
   assert.equal(summary.expansionCandidateCount, 200);
+  assert.ok(summary.previewGeneratedFlowCount >= 200);
   assert.deepEqual(summary.structureCoverage.sort(), ['checklist', 'phase', 'routine', 'timeline']);
   assert.ok(summary.categoryCoverage.includes('가전관리'));
   assert.ok(summary.categoryCoverage.includes('자동차'));

@@ -198,9 +198,10 @@ export function ContentLab() {
       <section>
         <div className="mb-4">
           <p className="text-sm font-semibold text-gray-500">Phase 2</p>
-          <h2 className="text-2xl font-semibold text-gray-950">10 x 20 확장 후보 검증</h2>
+          <h2 className="text-2xl font-semibold text-gray-950">200+ 제작자 채널 Flow 검증</h2>
           <p className="mt-2 text-sm text-gray-600">
-            후보는 아직 완성 Flow 본문이 아니라, 실제 소스에서 Flow화 우선순위를 정하기 위한 검증 단위입니다.
+            후보 매트릭스가 아니라, 제작자 채널 안에서 실제 열 수 있는 Preview Flow로 전환된 항목입니다.
+            현재 {summary.previewGeneratedFlowCount}개가 공개 Flow 라우트로 연결됩니다.
           </p>
         </div>
         <div className="space-y-4">

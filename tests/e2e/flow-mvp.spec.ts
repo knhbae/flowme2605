@@ -266,7 +266,7 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(page.getByRole('heading', { name: '실제 제작자 콘텐츠가 여러 Flow로 관리되는지 검증' })).toBeVisible();
   await expect(page.getByText('3 x 4 파일럿 검증')).toBeVisible();
   await expect(page.getByText('B 파일럿 실제 Flow 변환')).toBeVisible();
-  await expect(page.getByText('10 x 20 확장 후보 검증')).toBeVisible();
+  await expect(page.getByText('200+ 제작자 채널 Flow 검증')).toBeVisible();
   await expect(page.getByText('10 converted')).toBeVisible();
   await expect(page.getByRole('link', { name: /삼성전자서비스 에어컨/ })).toBeVisible();
   await expect(page.getByRole('link', { name: /자동차검사 준비/ })).toBeVisible();
