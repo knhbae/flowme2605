@@ -34,6 +34,7 @@ import {
   StructureType,
 } from '@/lib/flow/types';
 import { getCurrentUser, getVirtualUser, findVirtualUserByName, findVirtualUserBySlug } from '@/lib/flow/users';
+import { ToolSurfaceEditor } from '@/components/flow/ToolSurfaceEditor';
 import { ToolSurfacePreview } from '@/components/flow/ToolSurfacePreview';
 
 const categoryPresets = [
@@ -1416,7 +1417,11 @@ export function Editor({ id }: { id: string }) {
   return bundle.flow.content_type === 'meal_plan' ? (
     <MealPlanEditor bundle={bundle} onSave={save} />
   ) : (
-    <TextFlowEditor bundle={bundle} onSave={save} />
+    <ToolSurfaceEditor
+      bundle={bundle}
+      onSave={save}
+      renderHeader={({ onSave, onPublish }) => <EditorHeader bundle={bundle} onSave={onSave} onPublish={onPublish} />}
+    />
   );
 }
 

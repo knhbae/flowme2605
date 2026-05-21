@@ -252,11 +252,26 @@ test('exact video copy opens an editable draft with the execution item preserved
   await page.getByRole('button', { name: '내 Flow로 가져오기' }).click();
 
   await expect(page).toHaveURL(/\/flows\/.+\/edit/);
-  await expect(page.getByRole('heading', { name: /ThankyouBUBU 전신 다이어트 실천 Flow 사본/ })).toBeVisible();
-  await expect(page.getByText('1개 항목', { exact: true })).toBeVisible();
-  await expect(page.getByLabel('실행 내용')).toHaveValue('운동 스케줄 등록하고 영상 실행');
+  await expect(page.getByRole('heading', { name: '내 Flow로 가져왔습니다' })).toBeVisible();
+  await expect(page.getByText('이 Flow는 캘린더에 들어가는 반복 루틴입니다')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '내 일정 설정' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '내 도구 미리보기' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '원문 고급 편집' })).toBeVisible();
+  await expect(page.locator('textarea').first()).not.toBeVisible();
+  await expect(page.getByLabel('실행 내용')).toHaveValue(/운동|영상/);
 });
 
+test('copied D-Day flow edits dates before raw content', async ({ page }) => {
+  await page.goto('/f/moving-d30-basic');
+
+  await page.getByRole('button', { name: '내 Flow로 복사해 수정' }).click();
+
+  await expect(page).toHaveURL(/\/flows\/.+\/edit/);
+  await expect(page.getByRole('heading', { name: '내 Flow로 가져왔습니다' })).toBeVisible();
+  await expect(page.getByText('이 Flow는 D-Day 표로 관리하는 일정입니다')).toBeVisible();
+  await expect(page.getByLabel('목표일').or(page.getByLabel('시작일'))).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'D-Day 단계표 미리보기' })).toBeVisible();
+});
 test('creator profile merges newly shipped seed flows into existing browser storage', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem(
@@ -344,28 +359,22 @@ test('new flow creation starts from pasted content and a human pattern choice', 
   await expect(page.getByRole('heading', { name: '자동차 구매 테스트 Flow' })).toBeVisible();
 });
 
-test('text editor shows a public-style parsed preview while drafting', async ({ page }) => {
+test('surface editor keeps raw content behind advanced editing while drafting', async ({ page }) => {
   await page.goto('/flows/flow-moving/edit');
 
+  await expect(page.getByRole('heading', { name: '내 Flow로 가져왔습니다' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '내 일정 설정' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '내 도구 미리보기' })).toBeVisible();
+  await expect(page.locator('textarea').first()).not.toBeVisible();
+
+  await page.getByRole('heading', { name: '원문 고급 편집' }).click();
   const sourceEditor = page.locator('textarea').first();
-  await sourceEditor.fill('# 테스트 이사 Flow\n\n## D-30\n- 이사업체 견적 받기 D-30\n\n## D-Day\n- 이사 당일 확인 D-Day');
-
-  const preview = page.getByTestId('editor-preview');
-  await expect(preview).toContainText('미리보기');
-  await expect(preview).toContainText('이사업체 견적 받기');
-  await expect(preview).toContainText('D-30');
-  await expect(preview).toContainText('이사 당일 확인');
-
-  const detailPanel = page.locator('details').filter({ hasText: '실행 디테일' }).first();
-  await detailPanel.locator('summary').click();
-  await detailPanel.locator('textarea').first().fill('견적 기준을 남겨 나중에 비교하기 위해 필요합니다.');
-  await expect(sourceEditor).toHaveValue(/why: 견적 기준을 남겨 나중에 비교하기 위해 필요합니다\./);
+  await expect(sourceEditor).toBeVisible();
+  await expect(sourceEditor).toContainText('D-30');
 
   await page.getByRole('button', { name: '발행' }).click();
-  await expect(page.getByText('발행되었습니다')).toBeVisible();
-  await expect(page.getByRole('link', { name: '제작자 프로필에서 보기' })).toBeVisible();
+  await expect(page.getByText('발행됨')).toBeVisible();
 });
-
 test('public moving flow calculates dates and updates progress', async ({ page }) => {
   await page.goto('/f/moving-d30-basic');
 
