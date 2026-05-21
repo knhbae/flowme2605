@@ -5,6 +5,7 @@ import {
   previewCreatorChannels,
   previewFlowBundles,
 } from './creator-channel-preview';
+import { inferPrimaryDestination } from './destination';
 import { seedBundles } from './seed-flows';
 import { virtualUsers } from './users';
 
@@ -409,6 +410,23 @@ test('fitness exact video flows keep one action with clear execution detail', ()
   assert.equal(workoutPlan.items[0].title, '이번 주 분할·세트·휴식 기준 정하기');
   assert.match(workoutPlan.itemDetails?.[0]?.how ?? '', /운동표|분할|세트|휴식/);
   assert.doesNotMatch(workoutPlan.itemDetails?.[0]?.how ?? '', /식사 한 끼/);
+});
+
+test('source-backed flows expose primary destination for portable UX', () => {
+  const workout = seedBundles.find((bundle) => bundle.flow.slug === 'real-thankyou-bubu-video-full-body-no-jump');
+  const diet = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-body-fat-6kg-method');
+  const workoutPlan = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-workout-split-science');
+  const qnet = seedBundles.find((bundle) => bundle.flow.slug === 'real-qnet-application-examday-check');
+
+  assert.ok(workout);
+  assert.ok(diet);
+  assert.ok(workoutPlan);
+  assert.ok(qnet);
+
+  assert.equal(inferPrimaryDestination(workout), 'calendar');
+  assert.equal(inferPrimaryDestination(diet), 'memo');
+  assert.equal(inferPrimaryDestination(workoutPlan), 'hybrid');
+  assert.equal(inferPrimaryDestination(qnet), 'hybrid');
 });
 
 test('preview-generated creator channel flows are explicitly marked preview', () => {

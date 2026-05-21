@@ -4,6 +4,7 @@ import {
   FlowItem,
   FlowItemDetail,
   FlowUser,
+  PrimaryDestination,
   RiskLevel,
   SourcePrecision,
   SourceType,
@@ -35,6 +36,7 @@ type RealSourceSpec = {
   source_url: string;
   source_type: SourceType;
   source_precision: SourcePrecision;
+  primary_destination?: PrimaryDestination;
   risk_level: RiskLevel;
   conversion_note: string;
   warning?: string;
@@ -129,6 +131,7 @@ function buildBundle(spec: RealSourceSpec): FlowBundle {
       status: 'published',
       source_status: 'real',
       source_precision: spec.source_precision,
+      primary_destination: spec.primary_destination,
       source_title: spec.source_title,
       source_url: spec.source_url,
       source_checked_at: checkedAt,
@@ -443,6 +446,11 @@ function makeCreatorVideoSpec(video: CreatorVideoSpec): RealSourceSpec {
     source_url: sourceUrl,
     source_type: 'creator_experience' as SourceType,
     source_precision: 'exact' as SourcePrecision,
+    primary_destination: (video.mode === 'workout'
+      ? 'calendar'
+      : video.mode === 'workout-plan'
+        ? 'hybrid'
+        : 'memo') as PrimaryDestination,
     risk_level: 'medical_sensitive' as RiskLevel,
     warning:
       '운동과 체중 관리 콘텐츠는 개인 건강 상태에 따라 맞지 않을 수 있습니다. 통증, 어지러움, 기존 질환이 있으면 중단하고 전문가 상담을 우선하세요.',

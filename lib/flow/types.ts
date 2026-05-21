@@ -18,6 +18,8 @@ export type SourceStatus = 'real' | 'preview' | 'needs_review';
 
 export type SourcePrecision = 'exact' | 'broad';
 
+export type PrimaryDestination = 'calendar' | 'sheet' | 'memo' | 'internal_check' | 'hybrid';
+
 export type FlowItemLinkType = 'official' | 'reference' | 'tool' | 'creator';
 
 export type FlowUser = {
@@ -48,6 +50,7 @@ export type Flow = {
   source_url?: string;
   source_status?: SourceStatus;
   source_precision?: SourcePrecision;
+  primary_destination?: PrimaryDestination;
   source_checked_at?: string;
   conversion_note?: string;
   risk_level?: RiskLevel;

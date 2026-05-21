@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { addDays, formatDate, getRangeEnd } from '@/lib/flow/date';
+import { inferPrimaryDestination } from '@/lib/flow/destination';
 import { buildCalendarIcs, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
 import { getCreatorChannelSummaries } from '@/lib/flow/creator-channel-preview';
 import { parseTextFlow, serializeTextFlow, timingLabel } from '@/lib/flow/parser';
@@ -25,6 +26,7 @@ import {
   FlowItemLinkType,
   FlowUser,
   MealSlot,
+  PrimaryDestination,
   ReactionLog,
   Recipe,
   RiskLevel,
@@ -1988,6 +1990,8 @@ export function PublicFlow({ slug }: { slug: string }) {
   const firstActionTitle = getFirstActionTitle(bundle);
   const showTodayExecution = isFitnessExactVideoFlow(bundle);
   const isWorkoutFlow = bundle.flow.slug.startsWith('real-thankyou-bubu-video-');
+  const primaryDestination = inferPrimaryDestination(bundle);
+  const exactVideoCopy = showTodayExecution ? getExactVideoCopy(primaryDestination) : null;
 
   const toggle = (id: string) => {
     setChecks((value) => {
@@ -2099,7 +2103,7 @@ export function PublicFlow({ slug }: { slug: string }) {
             {bundle.flow.warning}
           </div>
         ) : null}
-        <details className="mt-4 rounded-lg border border-gray-200 bg-white p-3 text-sm" open>
+        <details className="mt-4 rounded-lg border border-gray-200 bg-white p-3 text-sm" open={!showTodayExecution}>
           <summary className="cursor-pointer font-semibold text-gray-700">출처와 주의 정보</summary>
           <div className="mt-3 space-y-3">
             <FlowBadges bundle={bundle} />
@@ -2148,12 +2152,12 @@ export function PublicFlow({ slug }: { slug: string }) {
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             <div className="rounded-lg border border-emerald-100 bg-white p-3">
               <p className="text-sm font-semibold text-gray-800">
-                {isWorkoutFlow ? '운동 스케줄 등록' : '오늘 적용할 행동 하나'}
+                {exactVideoCopy?.primaryTitle ?? (isWorkoutFlow ? '운동 스케줄 등록' : '오늘 적용할 행동 하나')}
               </p>
               <p className="mt-2 text-sm leading-6 text-gray-600">
-                {isWorkoutFlow
+                {exactVideoCopy?.primaryDescription ?? (isWorkoutFlow
                   ? '이번 주에 할 요일만 정하고, 영상은 그날 한 번 실행하면 됩니다.'
-                  : '영상에서 기준을 하나만 확인하고 다음 식사나 운동 전후 행동 하나에만 적용합니다.'}
+                  : '영상에서 기준을 하나만 확인하고 다음 식사나 운동 전후 행동 하나에만 적용합니다.')}
               </p>
             </div>
             <div className="rounded-lg border border-emerald-100 bg-white p-3">
@@ -2188,10 +2192,12 @@ export function PublicFlow({ slug }: { slug: string }) {
         <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr_0.9fr]">
           <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
             <p className="text-sm font-semibold text-blue-700">
-              {bundle.flow.anchor_type === 'none' ? '1. 바로 체크 준비' : '1. 기준 날짜 선택'}
+              {showTodayExecution ? getExactSetupTitle(primaryDestination) : bundle.flow.anchor_type === 'none' ? '1. 바로 체크 준비' : '1. 기준 날짜 선택'}
             </p>
             <p className="mt-1 text-sm text-gray-600">
-              {bundle.flow.anchor_type === 'none'
+              {showTodayExecution
+                ? getExactSetupDescription(primaryDestination)
+                : bundle.flow.anchor_type === 'none'
                 ? '날짜 입력 없이 첫 항목부터 바로 실행하면 됩니다.'
                 : '내 상황의 시작일 또는 종료일을 넣으면 날짜가 자동 계산됩니다.'}
             </p>
@@ -2200,14 +2206,16 @@ export function PublicFlow({ slug }: { slug: string }) {
             </div>
           </div>
           <div className="rounded-lg border border-gray-200 bg-white p-4">
-            <p className="text-sm font-semibold text-blue-700">2. 바로 실행</p>
-            <p className="mt-1 text-sm text-gray-600">가까운 항목부터 체크하면 진행률과 다운로드 파일에 반영됩니다.</p>
+            <p className="text-sm font-semibold text-blue-700">{showTodayExecution ? '2. 오늘 실행 체크' : '2. 바로 실행'}</p>
+            <p className="mt-1 text-sm text-gray-600">
+              {showTodayExecution ? '영상이나 적용 기준을 실행한 뒤 이 페이지에서 완료 여부만 표시합니다.' : '가까운 항목부터 체크하면 진행률과 다운로드 파일에 반영됩니다.'}
+            </p>
             <div className="mt-4">
               <ProgressBar done={done} total={executableCount} />
             </div>
           </div>
           <div className="rounded-lg border border-gray-200 bg-white p-4">
-            <p className="text-sm font-semibold text-blue-700">3. 저장/공유</p>
+            <p className="text-sm font-semibold text-blue-700">{showTodayExecution ? '3. 내 Flow로 수정' : '3. 저장/공유'}</p>
             <p className="mt-1 text-sm text-gray-600">
               {showTodayExecution
                 ? '캘린더, 엑셀, 메모/노션 중 실제로 관리할 도구를 고르세요.'
@@ -2243,32 +2251,38 @@ export function PublicFlow({ slug }: { slug: string }) {
         </div>
       </section>
 
-      <FlowOverview bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} />
-
-      {views.length > 1 ? (
-        <div className="mb-5 flex flex-wrap gap-2">
-          {views.map((item) => (
-            <button key={item.id} className={`rounded-md border px-3 py-2 text-sm font-semibold ${activeView === item.id ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-300 bg-white text-gray-700'}`} onClick={() => setView(item.id)}>
-              {item.label}
-            </button>
-          ))}
-        </div>
-      ) : null}
-
-      {activeView === 'week' ? (
-        <WeekRenderer bundle={bundle} anchor={displayAnchor} weekdays={weekdaySelection} checks={checks} onToggle={toggle} />
-      ) : activeView === 'month' ? (
-        <MonthRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} />
-      ) : activeView === 'recipes' ? (
-        <RecipeListRenderer bundle={bundle} anchor={displayAnchor} />
-      ) : bundle.flow.content_type === 'meal_plan' ? (
-        <MealPlanRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} reactionLogs={reactionLogs} onReactionChange={updateReaction} />
-      ) : bundle.flow.structure_type === 'timeline' ? (
-        <TimelineRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} />
-      ) : bundle.flow.structure_type === 'routine' ? (
-        <RoutineRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} weekdays={weekdaySelection} />
+      {showTodayExecution ? (
+        <ExactVideoRenderer bundle={bundle} checks={checks} onToggle={toggle} />
       ) : (
-        <ChecklistRenderer bundle={bundle} checks={checks} onToggle={toggle} />
+        <>
+          <FlowOverview bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} />
+
+          {views.length > 1 ? (
+            <div className="mb-5 flex flex-wrap gap-2">
+              {views.map((item) => (
+                <button key={item.id} className={`rounded-md border px-3 py-2 text-sm font-semibold ${activeView === item.id ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-300 bg-white text-gray-700'}`} onClick={() => setView(item.id)}>
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          ) : null}
+
+          {activeView === 'week' ? (
+            <WeekRenderer bundle={bundle} anchor={displayAnchor} weekdays={weekdaySelection} checks={checks} onToggle={toggle} />
+          ) : activeView === 'month' ? (
+            <MonthRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} />
+          ) : activeView === 'recipes' ? (
+            <RecipeListRenderer bundle={bundle} anchor={displayAnchor} />
+          ) : bundle.flow.content_type === 'meal_plan' ? (
+            <MealPlanRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} reactionLogs={reactionLogs} onReactionChange={updateReaction} />
+          ) : bundle.flow.structure_type === 'timeline' ? (
+            <TimelineRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} />
+          ) : bundle.flow.structure_type === 'routine' ? (
+            <RoutineRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} weekdays={weekdaySelection} />
+          ) : (
+            <ChecklistRenderer bundle={bundle} checks={checks} onToggle={toggle} />
+          )}
+        </>
       )}
 
       <div className={`fixed inset-x-0 bottom-0 z-20 border-t border-gray-200 bg-white/95 px-4 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur transition duration-200 md:hidden ${showMobileActions ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}>
@@ -2395,6 +2409,37 @@ function getWeekdaySelectionLabel(bundle: FlowBundle): string {
   if (bundle.flow.slug.startsWith('real-fitvely-video-')) return '적용 요일';
   if (bundle.flow.category.includes('운동')) return '운동 요일';
   return '반복 요일';
+}
+
+function getExactVideoCopy(destination: PrimaryDestination): { primaryTitle: string; primaryDescription: string } {
+  if (destination === 'calendar') {
+    return {
+      primaryTitle: '캘린더 일정으로 시작',
+      primaryDescription: '이번 주에 할 요일만 정하고, 영상은 그날 열어 실행 여부만 표시합니다.',
+    };
+  }
+  if (destination === 'hybrid' || destination === 'sheet') {
+    return {
+      primaryTitle: '운동표에 기준 반영',
+      primaryDescription: '영상에서 고른 기준 하나를 이번 주 운동표나 실행표에 넣고 오늘 적용합니다.',
+    };
+  }
+  return {
+    primaryTitle: '오늘 적용 기준만 고르기',
+    primaryDescription: '영상에서 기준 하나만 고르고 다음 식사나 운동 전후 행동 하나에만 적용합니다.',
+  };
+}
+
+function getExactSetupTitle(destination: PrimaryDestination): string {
+  if (destination === 'calendar') return '1. 요일 정하기';
+  if (destination === 'hybrid' || destination === 'sheet') return '1. 운동표 기준일 정하기';
+  return '1. 적용일 정하기';
+}
+
+function getExactSetupDescription(destination: PrimaryDestination): string {
+  if (destination === 'calendar') return '캘린더에 넣을 반복 요일을 고르면 됩니다.';
+  if (destination === 'hybrid' || destination === 'sheet') return '이번 주 운동표에 반영할 기준 날짜와 요일을 정합니다.';
+  return '오늘 적용할 날짜와 반복 여부만 가볍게 정합니다.';
 }
 
 function itemDate(anchor: string, item: FlowItem) {
@@ -3089,6 +3134,50 @@ function MealPlanRenderer({
         </section>
       ))}
     </div>
+  );
+}
+
+function ExactVideoRenderer({
+  bundle,
+  checks,
+  onToggle,
+}: {
+  bundle: FlowBundle;
+  checks: Record<string, boolean>;
+  onToggle: (id: string) => void;
+}) {
+  const item = bundle.items[0];
+  const detail = item ? getItemDetail(bundle, item.id) : undefined;
+
+  if (!item) return null;
+
+  return (
+    <section className="rounded-xl border border-gray-200 bg-white p-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="text-2xl font-semibold text-gray-950">실행 항목</h2>
+          <p className="mt-1 text-sm font-semibold text-blue-700">{bundle.sections[0]?.title ?? '오늘 실행'}</p>
+        </div>
+        {bundle.flow.source_url ? (
+          <a className="rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
+            원본 열기
+          </a>
+        ) : null}
+      </div>
+      <div className="mt-4 rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+        <label className="flex gap-3">
+          <input className="mt-1" type="checkbox" checked={Boolean(checks[item.id])} onChange={() => onToggle(item.id)} />
+          <span className="min-w-0 flex-1">
+            <span className="block text-base font-semibold text-gray-950">{item.title}</span>
+            <DetailPreview detail={detail} />
+          </span>
+        </label>
+        <div className="mt-3">
+          <InlineItemLinks detail={detail} />
+        </div>
+        <ItemDetailPanel detail={detail} />
+      </div>
+    </section>
   );
 }
 

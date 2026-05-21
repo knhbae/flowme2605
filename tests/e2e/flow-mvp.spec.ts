@@ -152,8 +152,15 @@ test('fitness exact video flow keeps the execution panel minimal', async ({ page
 
   await expect(page.getByRole('heading', { name: '오늘 실행' })).toBeVisible();
   await expect(page.getByRole('link', { name: /영상 열기/ })).toBeVisible();
-  await expect(page.getByText('운동 스케줄 등록', { exact: true })).toBeVisible();
+  await expect(page.getByText('캘린더 일정으로 시작', { exact: true })).toBeVisible();
   await expect(page.getByText('체크리스트 1개', { exact: true })).toBeVisible();
+  await expect(page.getByText('1. 요일 정하기')).toBeVisible();
+  await expect(page.getByText('2. 오늘 실행 체크')).toBeVisible();
+  await expect(page.getByText('3. 내 Flow로 수정')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '실행 항목' })).toBeVisible();
+  await expect(page.getByText('한눈에 보는 전체 루트')).toHaveCount(0);
+  await expect(page.getByText('이번 주 루틴 설정')).toHaveCount(0);
+  await expect(page.locator('details').filter({ hasText: '출처와 주의 정보' })).not.toHaveAttribute('open', '');
   await expect(page.getByRole('button', { name: '캘린더에 넣기' })).toBeVisible();
   await expect(page.getByRole('button', { name: '엑셀 실행표 받기' })).toBeVisible();
   await expect(page.getByRole('button', { name: '초보' })).toHaveCount(0);
@@ -176,7 +183,8 @@ test('fitness exact video flow keeps the execution panel minimal', async ({ page
 test('diet exact video flow uses application language instead of workout scheduling', async ({ page }) => {
   await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
 
-  await expect(page.getByText('오늘 적용할 행동 하나', { exact: true })).toBeVisible();
+  await expect(page.getByText('오늘 적용 기준만 고르기', { exact: true })).toBeVisible();
+  await expect(page.getByText('1. 적용일 정하기')).toBeVisible();
   await expect(page.getByText('적용 요일').first()).toBeVisible();
   await expect(page.getByText('운동 요일')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '전체 루틴' })).toHaveCount(0);
