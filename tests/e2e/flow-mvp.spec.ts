@@ -95,7 +95,7 @@ test('creator directory exposes channel-scale preview library', async ({ page })
 
   await expect(page.getByRole('heading', { name: '제작자 채널' })).toBeVisible();
   await expect(page.getByText(/2\d{2}\+/)).toBeVisible();
-  await expect(page.getByText('Real source')).toBeVisible();
+  await expect(page.locator('header').getByText('출처 확인')).toBeVisible();
   await expect(page.getByRole('link', { name: /삼성전자서비스/ })).toBeVisible();
   await expect(page.getByRole('link', { name: /ThankyouBUBU/ })).toBeVisible();
   await expect(page.getByText('실행성 점수').first()).toBeVisible();
@@ -115,11 +115,21 @@ test('preview creator channel supports browsing 20+ flowified entries', async ({
 test('creator channel can filter real source-backed flows', async ({ page }) => {
   await page.goto('/u/samsung-service');
 
-  await expect(page.getByText('Real source').first()).toBeVisible();
-  await page.getByRole('button', { name: 'Real source' }).click();
+  await expect(page.getByText('출처 확인').first()).toBeVisible();
+  await expect(page.getByText('첫 행동:').first()).toBeVisible();
+  await page.getByRole('button', { name: '출처 확인' }).click();
 
   await expect(page.locator('a[href="/f/real-samsung-aircon-seasonal-care"]').first()).toBeVisible();
   await expect(page.locator('a[href^="/f/channel-samsung-service-"]')).toHaveCount(0);
+});
+
+test('real source public flow exposes source QA metadata and first action', async ({ page }) => {
+  await page.goto('/f/real-samsung-aircon-seasonal-care');
+
+  await expect(page.getByText('출처 확인일: 2026-05-21')).toBeVisible();
+  await expect(page.getByText('Flow 전환 방식:')).toBeVisible();
+  await expect(page.getByText('출처 정밀도: 정확한 출처 페이지')).toBeVisible();
+  await expect(page.getByText('첫 행동:').first()).toBeVisible();
 });
 
 test('preview creator flow route opens encoded Korean slug', async ({ page }) => {
@@ -197,8 +207,8 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await expect(page.getByText('월', { exact: true }).first()).toBeVisible();
   await expect(page.getByText('일', { exact: true }).first()).toBeVisible();
 
-  await page.getByText('이사 방식 정하기').first().click();
-  await page.getByText('이사할 집 하자 점검하기').first().click();
+  await page.getByRole('checkbox', { name: /이사 방식 정하기/ }).first().check();
+  await page.getByRole('checkbox', { name: /이사할 집 하자 점검하기/ }).first().check();
   await expect(page.getByText('2 / 24').first()).toBeVisible();
 
   const downloadPromise = page.waitForEvent('download');
