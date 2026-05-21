@@ -203,6 +203,16 @@ export function ContentLab() {
             후보 매트릭스가 아니라, 제작자 채널 안에서 실제 열 수 있는 Preview Flow로 전환된 항목입니다.
             현재 {summary.previewGeneratedFlowCount}개가 공개 Flow 라우트로 연결됩니다.
           </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-md border border-emerald-200 bg-emerald-50 p-3">
+              <p className="text-sm font-semibold text-emerald-800">Actual source-backed batch</p>
+              <p className="mt-1 text-2xl font-semibold text-emerald-950">{summary.realSourceFlowCount}</p>
+            </div>
+            <div className="rounded-md border border-blue-200 bg-blue-50 p-3">
+              <p className="text-sm font-semibold text-blue-800">Preview-generated library</p>
+              <p className="mt-1 text-2xl font-semibold text-blue-950">{summary.previewGeneratedFlowCount}</p>
+            </div>
+          </div>
         </div>
         <div className="space-y-4">
           {expansionCreatorLabs.map((creator) => {

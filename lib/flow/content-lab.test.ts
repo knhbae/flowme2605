@@ -66,6 +66,13 @@ test('scale content lab covers 10 creators and 200 flow candidates', () => {
   );
 });
 
+test('content lab separates real source batch from preview generated flows', () => {
+  const summary = getContentLabSummary(seedBundles);
+
+  assert.ok(summary.realSourceFlowCount >= 20);
+  assert.ok(summary.previewGeneratedFlowCount >= 200);
+});
+
 test('candidate scoring rewards executable and externally portable content', () => {
   const candidate = expansionCreatorLabs[0].candidates[0];
   const score = scoreCandidate(candidate);
