@@ -14,6 +14,8 @@ export type RiskLevel =
 
 export type SourceType = 'official' | 'creator_experience' | 'reference';
 
+export type SourceStatus = 'real' | 'preview' | 'needs_review';
+
 export type FlowItemLinkType = 'official' | 'reference' | 'tool' | 'creator';
 
 export type FlowUser = {
@@ -25,6 +27,9 @@ export type FlowUser = {
   avatar_initial: string;
   specialty_tags: string[];
   is_current_user?: boolean;
+  source_url?: string;
+  channel_type?: 'creator' | 'official' | 'brand' | 'community' | 'curation';
+  is_preview_channel?: boolean;
 };
 
 export type Flow = {
@@ -39,6 +44,9 @@ export type Flow = {
   status: FlowStatus;
   source_title?: string;
   source_url?: string;
+  source_status?: SourceStatus;
+  source_checked_at?: string;
+  conversion_note?: string;
   risk_level?: RiskLevel;
   created_at: string;
   updated_at: string;

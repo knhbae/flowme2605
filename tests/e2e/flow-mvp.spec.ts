@@ -90,6 +90,46 @@ test('creator profile aggregates creator flows from byline links', async ({ page
   await expect(page.getByRole('heading', { name: '결혼 준비 D-180 Flow' })).toBeVisible();
 });
 
+test('creator directory exposes channel-scale preview library', async ({ page }) => {
+  await page.goto('/creators');
+
+  await expect(page.getByRole('heading', { name: '제작자 채널' })).toBeVisible();
+  await expect(page.getByText(/2\d{2}\+/)).toBeVisible();
+  await expect(page.getByText('Real source')).toBeVisible();
+  await expect(page.getByRole('link', { name: /삼성전자서비스/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /ThankyouBUBU/ })).toBeVisible();
+  await expect(page.getByText('실행성 점수').first()).toBeVisible();
+});
+
+test('preview creator channel supports browsing 20+ flowified entries', async ({ page }) => {
+  await page.goto('/u/samsung-service');
+
+  await expect(page.getByRole('heading', { name: '삼성전자서비스' })).toBeVisible();
+  await expect(page.getByText('Flow화 콘텐츠')).toBeVisible();
+  await expect(page.getByText('20').first()).toBeVisible();
+  await expect(page.getByText('출처 커버리지')).toBeVisible();
+  await expect(page.getByText('채널 Flow 라이브러리')).toBeVisible();
+  await expect(page.getByRole('link', { name: /가전관리 월간 점검 루틴/ })).toBeVisible();
+});
+
+test('creator channel can filter real source-backed flows', async ({ page }) => {
+  await page.goto('/u/samsung-service');
+
+  await expect(page.getByText('Real source').first()).toBeVisible();
+  await page.getByRole('button', { name: 'Real source' }).click();
+
+  await expect(page.locator('a[href="/f/real-samsung-aircon-seasonal-care"]').first()).toBeVisible();
+  await expect(page.locator('a[href^="/f/channel-samsung-service-"]')).toHaveCount(0);
+});
+
+test('preview creator flow route opens encoded Korean slug', async ({ page }) => {
+  await page.goto('/f/channel-samsung-service-%EC%9B%94%EA%B0%84-%EC%A0%90%EA%B2%80-%EB%A3%A8%ED%8B%B4');
+
+  await expect(page).toHaveURL(/\/f\/channel-samsung-service-/);
+  await expect(page.locator('main.p-8')).toHaveCount(0);
+  await expect(page.locator('h1')).toHaveCount(1);
+});
+
 test('new flow creation starts from pasted content and a human pattern choice', async ({ page }) => {
   await page.goto('/flows/new');
 
@@ -237,4 +277,46 @@ test('public flow can be copied into an editable draft', async ({ page }) => {
   await expect(page).toHaveURL(/\/flows\/.+\/edit/);
   await expect(page.getByRole('heading', { name: /이사 D-30 준비 Flow 사본/ })).toBeVisible();
   await expect(page.getByText('초안 Flow')).toBeVisible();
+});
+
+test('flow lab shows converted pilot and scale validation boards', async ({ page }) => {
+  await page.goto('/flow-lab');
+
+  await expect(page.getByRole('heading', { name: '실제 제작자 콘텐츠가 여러 Flow로 관리되는지 검증' })).toBeVisible();
+  await expect(page.getByText('3 x 4 파일럿 검증')).toBeVisible();
+  await expect(page.getByText('B 파일럿 실제 Flow 변환')).toBeVisible();
+  await expect(page.getByText('200+ 제작자 채널 Flow 검증')).toBeVisible();
+  await expect(page.getByText('10 converted')).toBeVisible();
+  await expect(page.getByRole('link', { name: /삼성전자서비스 에어컨/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /자동차검사 준비/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Q-Net 원서접수/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /다이어트 식단·운동 기록/ })).toBeVisible();
+});
+
+test('representative real content pilot flows are executable', async ({ page }) => {
+  await page.goto('/f/samsung-aircon-seasonal-check');
+  await expect(page.getByRole('heading', { name: /에어컨/ })).toBeVisible();
+  await expect(page.getByText('출처와 주의 정보')).toBeVisible();
+  await expect(page.getByRole('link', { name: '삼성전자서비스 Samsung Care+ 에어컨 관리 안내' }).first()).toHaveAttribute(
+    'href',
+    'https://www.samsungsvc.co.kr/info/carePlus',
+  );
+  await expect(page.getByRole('button', { name: '내 날짜 입력' })).toBeVisible();
+  await page.getByRole('button', { name: '내 날짜 입력' }).click();
+  await page.getByLabel('시작일').fill('2026-06-01');
+  await expect(page.getByRole('heading', { name: '지금 먼저 체크할 일' })).toBeVisible();
+  await expect(page.getByText('2026-06-01').first()).toBeVisible();
+  await page.locator('label').filter({ hasText: '전원 연결과 리모컨 배터리 확인하기' }).first().click();
+  await expect(page.getByText('1 / 8').first()).toBeVisible();
+
+  await page.goto('/f/qnet-exam-application-prep');
+  await expect(page.getByRole('heading', { name: /Q-Net/ })).toBeVisible();
+  await expect(page.getByText('출처와 주의 정보')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Q-Net 원서접수 안내' }).first()).toHaveAttribute(
+    'href',
+    'https://q-net.or.kr/rcv001.do?gSite=Q&id=rcv00103&rcvPFlag=Y',
+  );
+  await page.getByRole('button', { name: '내 날짜 입력' }).click();
+  await page.getByLabel(/^기준 종료일$/).fill('2026-07-15');
+  await expect(page.getByText('2026-06-15').first()).toBeVisible();
 });

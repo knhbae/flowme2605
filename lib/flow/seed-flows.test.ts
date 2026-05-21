@@ -1,39 +1,50 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import {
+  getCreatorChannelSummaries,
+  previewCreatorChannels,
+  previewFlowBundles,
+} from './creator-channel-preview';
 import { seedBundles } from './seed-flows';
 import { virtualUsers } from './users';
 
 test('seed pack contains public Korean Flow bundles across practical categories', () => {
-  assert.equal(seedBundles.length, 24);
-  assert.deepEqual(
-    seedBundles.map((bundle) => bundle.flow.slug).sort(),
-    [
-      'baby-food-menu-recipe',
-      'business-registration-basic',
-      'car-care-monthly-routine',
-      'diet-habit-2week',
-      'driver-license-renewal-check',
-      'english-study-30day-routine',
-      'family-certificate-issue',
-      'happy-birth-service-check',
-      'home-workout-20min',
-      'industrial-accident-claim-docs',
-      'job-change-risk-check',
-      'moving-d30-basic',
-      'national-health-checkup-d7',
-      'new-car-delivery-check',
-      'overseas-travel-d14',
-      'passport-renewal-docs',
-      'pet-registration-basic',
-      'resident-register-copy-issue',
-      'running-5k-4week',
-      'study-exam-d30-plan',
-      'used-car-buying-check',
-      'vaccination-certificate-issue',
-      'wedding-d180-basic',
-      'year-end-tax-docs',
-    ],
-  );
+  assert.ok(seedBundles.length >= 231);
+  const slugs = new Set(seedBundles.map((bundle) => bundle.flow.slug));
+  const originalSlugs = [
+    'baby-food-menu-recipe',
+    'business-registration-basic',
+    'car-care-monthly-routine',
+    'computer-skills-d30-study',
+    'diet-habit-2week',
+    'diet-meal-exercise-log',
+    'diet-reset-2week',
+    'driver-license-renewal-check',
+    'english-study-30day-routine',
+    'family-certificate-issue',
+    'happy-birth-service-check',
+    'home-workout-20min',
+    'industrial-accident-claim-docs',
+    'job-change-risk-check',
+    'moving-d30-basic',
+    'national-health-checkup-d7',
+    'new-car-delivery-check',
+    'overseas-travel-d14',
+    'passport-renewal-docs',
+    'pet-registration-basic',
+    'qnet-exam-application-prep',
+    'resident-register-copy-issue',
+    'running-5k-4week',
+    'samsung-aircon-seasonal-check',
+    'samsung-washer-filter-cleaning',
+    'study-exam-d30-plan',
+    'used-car-buying-check',
+    'vaccination-certificate-issue',
+    'vehicle-inspection-prep',
+    'wedding-d180-basic',
+    'year-end-tax-docs',
+  ];
+  assert.ok(originalSlugs.every((slug) => slugs.has(slug)));
   assert.ok(seedBundles.every((bundle) => bundle.flow.status === 'published'));
   assert.ok(seedBundles.some((bundle) => bundle.flow.title === '이사 D-30 준비 Flow'));
   assert.ok(seedBundles.some((bundle) => bundle.flow.title === '초기 이유식 메뉴·레시피 Flow'));
@@ -157,4 +168,166 @@ test('seed flows expose creator and popularity signals for discovery', () => {
     assert.equal(typeof bundle.flow.copy_count, 'number', bundle.flow.slug);
     assert.ok(bundle.flow.tags?.length, bundle.flow.slug);
   }
+});
+
+test('real content pilot covers 10 converted flows across five categories', () => {
+  const pilotSlugs = [
+    'samsung-aircon-seasonal-check',
+    'samsung-washer-filter-cleaning',
+    'vehicle-inspection-prep',
+    'driver-license-renewal-check',
+    'home-workout-20min',
+    'running-5k-4week',
+    'qnet-exam-application-prep',
+    'computer-skills-d30-study',
+    'diet-meal-exercise-log',
+    'diet-reset-2week',
+  ];
+
+  for (const slug of pilotSlugs) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+    assert.ok(bundle, slug);
+    assert.equal(bundle.flow.status, 'published', slug);
+    assert.ok(bundle.flow.source_title, slug);
+    assert.ok(bundle.flow.source_url?.startsWith('https://'), slug);
+    assert.ok(bundle.items.length >= 4, slug);
+    assert.ok(bundle.itemDetails?.some((detail) => detail.completion_criteria), slug);
+  }
+
+  const categories = new Set(
+    pilotSlugs.map((slug) => seedBundles.find((entry) => entry.flow.slug === slug)?.flow.category),
+  );
+  assert.ok(categories.has('가전관리'));
+  assert.ok(categories.has('자동차/검사'));
+  assert.ok(categories.has('운동/루틴'));
+  assert.ok(categories.has('자격증/시험'));
+  assert.ok(categories.has('다이어트/기록'));
+});
+
+test('official pilot source domains use official tags instead of blog-following tags', () => {
+  const officialPilotSources = [
+    { slug: 'samsung-aircon-seasonal-check', host: 'samsungsvc.co.kr' },
+    { slug: 'samsung-washer-filter-cleaning', host: 'samsungsvc.co.kr' },
+    { slug: 'vehicle-inspection-prep', host: 'kotsa.or.kr' },
+    { slug: 'driver-license-renewal-check', host: 'safedriving.or.kr' },
+    { slug: 'qnet-exam-application-prep', host: 'q-net.or.kr' },
+  ];
+
+  for (const { slug, host } of officialPilotSources) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+
+    assert.ok(bundle, slug);
+    assert.ok(bundle.flow.source_url?.includes(host), slug);
+    assert.ok(bundle.flow.tags?.includes('공식확인'), slug);
+    assert.ok(!bundle.flow.tags?.includes('블로그 따라하기'), slug);
+  }
+});
+
+test('existing pilot flows use upgraded source metadata and matching detail links', () => {
+  const expected = [
+    {
+      slug: 'driver-license-renewal-check',
+      category: '자동차/검사',
+      source_title: '한국도로교통공단 안전운전 통합민원 면허갱신 안내',
+      source_url: 'https://www.safedriving.or.kr/diGuide/selectDiGuide02.do',
+    },
+    {
+      slug: 'home-workout-20min',
+      category: '운동/루틴',
+      source_title: 'ThankyouBUBU 홈트 루틴 콘텐츠 참고',
+      source_url: 'https://www.youtube.com/@ThankyouBUBU',
+    },
+    {
+      slug: 'running-5k-4week',
+      category: '운동/루틴',
+      source_title: '런데이 초보 러닝 콘텐츠 참고',
+      source_url: 'https://www.runday.co.kr/',
+    },
+    {
+      slug: 'diet-habit-2week',
+      category: '다이어트/기록',
+      source_title: '핏블리 다이어트 습관 콘텐츠 참고',
+      source_url: 'https://fashionbiz.co.kr/article/204870',
+    },
+  ];
+
+  for (const expectedFlow of expected) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === expectedFlow.slug);
+    assert.ok(bundle, expectedFlow.slug);
+    assert.equal(bundle.flow.category, expectedFlow.category, expectedFlow.slug);
+    assert.equal(bundle.flow.source_title, expectedFlow.source_title, expectedFlow.slug);
+    assert.equal(bundle.flow.source_url, expectedFlow.source_url, expectedFlow.slug);
+
+    const expectedHost = new URL(expectedFlow.source_url).host;
+    assert.ok(
+      bundle.itemDetails?.some(
+        (detail) =>
+          detail.completion_criteria &&
+          detail.links?.some((link) => new URL(link.url).host === expectedHost),
+      ),
+      expectedFlow.slug,
+    );
+  }
+});
+
+test('creator channel preview exposes 10 channels and 200+ published flows', () => {
+  assert.ok(previewCreatorChannels.length >= 10);
+  assert.ok(previewFlowBundles.length >= 200);
+  assert.ok(previewFlowBundles.every((bundle) => bundle.flow.status === 'published'));
+
+  const summaries = getCreatorChannelSummaries(seedBundles);
+  const previewSummaries = summaries.filter((summary) => summary.is_preview_channel);
+
+  assert.ok(previewSummaries.length >= 10);
+  assert.ok(previewSummaries.every((summary) => summary.flow_count >= 20));
+  assert.ok(previewSummaries.every((summary) => summary.source_coverage === 100));
+  assert.ok(previewSummaries.every((summary) => summary.execution_score >= 70));
+});
+
+test('generated preview flows are executable and source-backed', () => {
+  const generated = seedBundles.filter((bundle) => bundle.flow.id.startsWith('flow-preview-'));
+
+  assert.ok(generated.length >= 200);
+  for (const bundle of generated) {
+    assert.ok(bundle.flow.slug.startsWith('channel-'), bundle.flow.slug);
+    assert.ok(bundle.flow.owner_user_id, bundle.flow.slug);
+    assert.ok(bundle.flow.creator_name, bundle.flow.slug);
+    assert.ok(bundle.flow.source_title, bundle.flow.slug);
+    assert.ok(bundle.flow.source_url?.startsWith('https://'), bundle.flow.slug);
+    assert.ok(bundle.items.length >= 4, bundle.flow.slug);
+    assert.ok(bundle.itemDetails?.some((detail) => detail.completion_criteria), bundle.flow.slug);
+  }
+});
+
+test('real source-backed channel batch covers every preview channel', () => {
+  const real = seedBundles.filter((bundle) => bundle.flow.source_status === 'real');
+  assert.ok(real.length >= 20);
+
+  for (const channel of previewCreatorChannels) {
+    const count = real.filter((bundle) => bundle.flow.owner_user_id === channel.id).length;
+    assert.ok(count >= 2, `${channel.slug} expected at least 2 real source-backed flows`);
+  }
+});
+
+test('real source-backed flows include attribution and executable details', () => {
+  const real = seedBundles.filter((bundle) => bundle.flow.source_status === 'real');
+  assert.ok(real.length >= 20);
+
+  for (const bundle of real) {
+    assert.ok(bundle.flow.source_url, `${bundle.flow.slug} missing source_url`);
+    assert.ok(bundle.flow.source_title, `${bundle.flow.slug} missing source_title`);
+    assert.ok(bundle.flow.source_checked_at, `${bundle.flow.slug} missing source_checked_at`);
+    assert.ok(bundle.flow.conversion_note, `${bundle.flow.slug} missing conversion_note`);
+    assert.ok(bundle.items.length >= 5, `${bundle.flow.slug} expected 5+ items`);
+    assert.ok(
+      bundle.itemDetails?.some((detail) => detail.completion_criteria),
+      `${bundle.flow.slug} expected completion criteria`,
+    );
+  }
+});
+
+test('preview-generated creator channel flows are explicitly marked preview', () => {
+  const generated = seedBundles.filter((bundle) => bundle.flow.id.startsWith('flow-preview-'));
+  assert.ok(generated.length >= 200);
+  assert.ok(generated.every((bundle) => bundle.flow.source_status === 'preview'));
 });

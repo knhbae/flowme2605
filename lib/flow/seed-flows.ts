@@ -1,4 +1,7 @@
 import { parseTextFlow } from './parser';
+import { previewFlowBundles } from './creator-channel-preview';
+import { realContentPilotBundles } from './real-content-pilot-flows';
+import { realSourceChannelBundles } from './real-source-channel-batch';
 import { Flow, FlowBundle, FlowItemDetail, Recipe } from './types';
 
 const now = '2026-05-20T00:00:00.000Z';
@@ -840,21 +843,21 @@ const additionalOnlineBundles: FlowBundle[] = [
         slug: 'driver-license-renewal-check',
         title: '운전면허 갱신 준비 Flow',
         description: '갱신·적성검사 기간, 사진, 신분증, 수수료와 온라인/방문 신청 경로를 확인합니다.',
-        category: '자동차/면허',
+        category: '자동차/검사',
         structure_type: 'checklist',
         content_type: 'default',
         anchor_type: 'none',
         status: 'published',
         risk_level: 'medium',
-        source_title: '정부24 운전면허 정보 공지 참고',
-        source_url: 'https://www.gov.kr/portal/ntcItm/123533?Mcode=11226',
+        source_title: '한국도로교통공단 안전운전 통합민원 면허갱신 안내',
+        source_url: 'https://www.safedriving.or.kr/diGuide/selectDiGuide02.do',
         warning: '면허 갱신 기간과 적성검사 요건은 개인 면허 종류와 상태에 따라 달라질 수 있습니다.',
       },
       driverLicenseRenewalText,
     ),
     {
-      label: '정부24 운전면허 정보 공지 참고',
-      url: 'https://www.gov.kr/portal/ntcItm/123533?Mcode=11226',
+      label: '한국도로교통공단 안전운전 통합민원 면허갱신 안내',
+      url: 'https://www.safedriving.or.kr/diGuide/selectDiGuide02.do',
     },
     'medium',
   ),
@@ -1163,21 +1166,21 @@ const creatorInspiredBundles: FlowBundle[] = [
         slug: 'running-5k-4week',
         title: '초보 러너 5km 4주 완주 Flow',
         description: '걷기와 조깅을 섞어 4주 동안 첫 5km 완주를 준비하는 주 3회 루틴입니다.',
-        category: '운동/러닝',
+        category: '운동/루틴',
         structure_type: 'routine',
         content_type: 'default',
         anchor_type: 'start_date',
         status: 'published',
         risk_level: 'medium',
-        source_title: '초보 러너 5km 루틴 참고',
-        source_url: 'https://headrock.tistory.com/entry/%F0%9F%8F%83%E2%80%8D%E2%99%80%EF%B8%8F-%EC%B4%88%EB%B3%B4-%EB%9F%AC%EB%84%88%EB%A5%BC-%EC%9C%84%ED%95%9C-5km-%EB%8B%AC%EB%A6%AC%EA%B8%B0-%ED%9B%88%EB%A0%A8%EB%B2%95-%E2%80%94-%EC%9D%B4%EB%A0%87%EA%B2%8C-%EC%8B%9C%EC%9E%91%ED%95%B4%EB%B3%B4%EC%84%B8%EC%9A%94',
+        source_title: '런데이 초보 러닝 콘텐츠 참고',
+        source_url: 'https://www.runday.co.kr/',
         warning: '통증, 어지러움, 기존 질환이 있으면 운동 강도를 낮추고 전문가와 상담하세요.',
       },
       running5kRoutineText,
     ),
     {
-      label: '초보 러너 5km 4주 루틴',
-      url: 'https://headrock.tistory.com/entry/%F0%9F%8F%83%E2%80%8D%E2%99%80%EF%B8%8F-%EC%B4%88%EB%B3%B4-%EB%9F%AC%EB%84%88%EB%A5%BC-%EC%9C%84%ED%95%9C-5km-%EB%8B%AC%EB%A6%AC%EA%B8%B0-%ED%9B%88%EB%A0%A8%EB%B2%95-%E2%80%94-%EC%9D%B4%EB%A0%87%EA%B2%8C-%EC%8B%9C%EC%9E%91%ED%95%B4%EB%B3%B4%EC%84%B8%EC%9A%94',
+      label: '런데이 초보 러닝 콘텐츠 참고',
+      url: 'https://www.runday.co.kr/',
     },
     'medium',
   ),
@@ -1188,38 +1191,41 @@ const creatorInspiredBundles: FlowBundle[] = [
         slug: 'diet-habit-2week',
         title: '2주 다이어트 습관 기록 Flow',
         description: '체중 숫자보다 식사, 물, 운동, 수면 패턴을 먼저 보는 2주 기록 루틴입니다.',
-        category: '다이어트/습관',
+        category: '다이어트/기록',
         structure_type: 'routine',
         content_type: 'default',
         anchor_type: 'start_date',
         status: 'published',
         risk_level: 'medical_sensitive',
-        source_title: '다이어트 식단·운동 습관 콘텐츠 참고',
-        source_url: 'https://pdf.idaegu.com/data/20260507_13.pdf',
+        source_title: '핏블리 다이어트 습관 콘텐츠 참고',
+        source_url: 'https://fashionbiz.co.kr/article/204870',
         warning: '이 Flow는 일반적인 습관 기록용입니다. 질환, 임신·수유, 섭식장애 경험, 약물 복용이 있으면 전문가 상담을 우선하세요.',
       },
       dietHabitText,
     ),
     {
-      label: '식단과 운동 습관 기사 참고',
-      url: 'https://pdf.idaegu.com/data/20260507_13.pdf',
+      label: '핏블리 다이어트 습관 콘텐츠 참고',
+      url: 'https://fashionbiz.co.kr/article/204870',
     },
     'medical_sensitive',
   ),
 ];
 
 function enrichSeedMeta(bundle: FlowBundle, index: number): FlowBundle {
-  const creatorByCategory = bundle.flow.category.includes('자동차')
+  const category = bundle.flow.category;
+  const creatorByCategory = category.includes('자동차')
     ? creatorMeta('차근차근 모빌리티', '자동차 생활 크리에이터', '구매와 관리에서 놓치기 쉬운 확인 순서를 정리합니다.', 420 + index * 37, 88 + index * 9)
-    : bundle.flow.category.includes('공부')
+    : category.includes('자격증') || category.includes('공부')
       ? creatorMeta('루틴 공부방', '학습 루틴 크리에이터', '시험과 자기계발 콘텐츠를 실행 단위로 쪼개 정리합니다.', 510 + index * 31, 102 + index * 8)
-      : bundle.flow.category.includes('결혼')
-        ? creatorMeta('웨딩 체크메이트', '결혼 준비 경험자', '준비 기간별 의사결정과 업체 확인 순서를 정리합니다.', 760 + index * 21, 164 + index * 7)
-        : bundle.flow.category.includes('운동') || bundle.flow.category.includes('다이어트')
-          ? creatorMeta('생활 루틴 코치', '운동·습관 크리에이터', '무리하지 않고 반복할 수 있는 루틴을 실행표로 정리합니다.', 690 + index * 25, 141 + index * 6)
-          : bundle.flow.category.includes('서류') || bundle.flow.category.includes('사업') || bundle.flow.category.includes('노무')
-            ? creatorMeta('생활 행정 노트', '공식자료 큐레이터', '공식 안내를 신청 전 확인 순서로 재구성합니다.', 360 + index * 18, 72 + index * 5)
-            : creatorMeta('FLOW 큐레이션팀', '경험 콘텐츠 큐레이터', '반복되는 생활 과제를 실행 가능한 Flow로 정리합니다.', 480 + index * 24, 96 + index * 6);
+      : category.includes('가전')
+        ? creatorMeta('FLOW 큐레이션팀', '공식자료 큐레이터', '공식 관리 안내를 반복 실행표로 재구성합니다.', 480 + index * 24, 96 + index * 6)
+        : category.includes('결혼')
+          ? creatorMeta('웨딩 체크메이트', '결혼 준비 경험자', '준비 기간별 의사결정과 업체 확인 순서를 정리합니다.', 760 + index * 21, 164 + index * 7)
+          : category.includes('운동') || category.includes('다이어트')
+            ? creatorMeta('생활 루틴 코치', '운동·습관 크리에이터', '무리하지 않고 반복할 수 있는 루틴을 실행표로 정리합니다.', 690 + index * 25, 141 + index * 6)
+            : category.includes('서류') || category.includes('사업') || category.includes('노무')
+              ? creatorMeta('생활 행정 노트', '공식자료 큐레이터', '공식 안내를 신청 전 확인 순서로 재구성합니다.', 360 + index * 18, 72 + index * 5)
+              : creatorMeta('FLOW 큐레이션팀', '경험 콘텐츠 큐레이터', '반복되는 생활 과제를 실행 가능한 Flow로 정리합니다.', 480 + index * 24, 96 + index * 6);
 
   return {
     ...bundle,
@@ -1234,6 +1240,17 @@ function enrichSeedMeta(bundle: FlowBundle, index: number): FlowBundle {
 function buildSeedTags(bundle: FlowBundle): string[] {
   const tags = new Set<string>();
   const { flow } = bundle;
+  const officialSourceDomains = [
+    'gov.kr',
+    'nhis.or.kr',
+    'hometax',
+    'safedriving.or.kr',
+    'samsungsvc.co.kr',
+    'kotsa.or.kr',
+    'q-net.or.kr',
+  ];
+  const sourceUrl = flow.source_url ?? '';
+  const isOfficialSource = officialSourceDomains.some((domain) => sourceUrl.includes(domain));
 
   if (flow.structure_type === 'timeline') tags.add('D-Day 준비');
   if (flow.structure_type === 'routine') tags.add('매일 루틴');
@@ -1241,7 +1258,7 @@ function buildSeedTags(bundle: FlowBundle): string[] {
   if (flow.content_type === 'meal_plan') tags.add('식단·레시피');
   if (flow.risk_level === 'financial_sensitive') tags.add('돈이 걸린 결정');
   if (flow.risk_level === 'medical_sensitive') tags.add('건강주의');
-  if (flow.source_url?.includes('gov.kr') || flow.source_url?.includes('nhis.or.kr') || flow.source_url?.includes('hometax')) tags.add('공식확인');
+  if (isOfficialSource) tags.add('공식확인');
   if (!tags.has('공식확인')) tags.add('블로그 따라하기');
   if (flow.category.includes('공부')) tags.add('공부');
   if (flow.category.includes('자동차')) tags.add('자동차');
@@ -1360,14 +1377,14 @@ const baseSeedBundles: FlowBundle[] = [
         slug: 'home-workout-20min',
         title: '하루 20분 전신 홈트 Flow',
         description: '운동 시작일과 요일을 정하고 주 3회 루틴을 체크합니다. 준비 운동, 본 운동, 마무리 기록까지 포함합니다.',
-        category: '운동/홈트',
+        category: '운동/루틴',
         structure_type: 'routine',
         content_type: 'default',
         anchor_type: 'start_date',
         status: 'published',
         risk_level: 'medium',
-        source_title: '홈트 루틴 참고',
-        source_url: 'https://hyeondams.tistory.com/185',
+        source_title: 'ThankyouBUBU 홈트 루틴 콘텐츠 참고',
+        source_url: 'https://www.youtube.com/@ThankyouBUBU',
         warning: '통증이 있거나 질환이 있는 경우 무리하지 말고 전문가와 상담하세요.',
       },
       workoutText,
@@ -1393,6 +1410,11 @@ const baseSeedBundles: FlowBundle[] = [
             label: 'CDC 신체활동 가이드',
             url: 'https://www.cdc.gov/physical-activity-basics/guidelines/adults.html',
             type: 'official',
+          },
+          {
+            label: 'ThankyouBUBU 홈트 루틴 콘텐츠 참고',
+            url: 'https://www.youtube.com/@ThankyouBUBU',
+            type: 'reference',
           },
         ],
         source_type: 'official',
@@ -1599,6 +1621,9 @@ const baseSeedBundles: FlowBundle[] = [
   ),
   ...additionalOnlineBundles,
   ...creatorInspiredBundles,
+  ...realContentPilotBundles,
+  ...realSourceChannelBundles,
+  ...previewFlowBundles,
 ];
 
 export const seedBundles: FlowBundle[] = baseSeedBundles.map(enrichSeedMeta);

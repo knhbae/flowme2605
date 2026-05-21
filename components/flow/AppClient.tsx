@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { addDays, formatDate, getRangeEnd } from '@/lib/flow/date';
 import { buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
+import { getCreatorChannelSummaries } from '@/lib/flow/creator-channel-preview';
 import { parseTextFlow, serializeTextFlow, timingLabel } from '@/lib/flow/parser';
 import {
   getBundles,
@@ -319,6 +320,17 @@ function FlowCard({
           <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
           <span className="text-sm font-medium text-gray-600">{bundle.flow.category}</span>
           <Badge className="border-gray-200 bg-gray-50 text-gray-600">{getStructureLabel(bundle)}</Badge>
+          <Badge
+            className={
+              bundle.flow.source_status === 'real'
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                : bundle.flow.source_status === 'preview'
+                  ? 'border-blue-200 bg-blue-50 text-blue-700'
+                  : 'border-gray-200 bg-gray-50 text-gray-600'
+            }
+          >
+            {getSourceStatusLabel(bundle)}
+          </Badge>
         </div>
         <div>
           <h2 className="text-lg font-semibold leading-snug text-gray-950">
@@ -594,6 +606,9 @@ function PlatformNav() {
         <Link className="rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-white" href="/flows">
           탐색
         </Link>
+        <Link className="rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-white" href="/creators">
+          제작자
+        </Link>
         <Link className="rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-white" href="/my">
           내 Flow
         </Link>
@@ -602,6 +617,87 @@ function PlatformNav() {
         </Link>
       </div>
     </nav>
+  );
+}
+
+function StatCard({ label, value, compact = false }: { label: string; value: string; compact?: boolean }) {
+  return (
+    <div className={`rounded-lg bg-gray-50 ${compact ? 'p-3' : 'p-4'}`}>
+      <p className="text-xs font-medium text-gray-500">{label}</p>
+      <p className={`${compact ? 'text-lg' : 'text-2xl'} mt-1 font-semibold text-gray-950`}>{value}</p>
+    </div>
+  );
+}
+
+function getSourceStatusLabel(bundle: FlowBundle) {
+  if (bundle.flow.source_status === 'real') return 'Real source';
+  if (bundle.flow.source_status === 'preview') return 'Preview';
+  if (bundle.flow.source_status === 'needs_review') return 'Needs review';
+  return bundle.flow.source_url ? 'Source linked' : 'Draft source';
+}
+
+export function CreatorDirectory() {
+  const { bundles } = useBundles();
+  const summaries = getCreatorChannelSummaries(bundles);
+  const totalFlows = summaries.reduce((sum, item) => sum + item.flow_count, 0);
+  const totalRealFlows = summaries.reduce((sum, item) => sum + item.real_flow_count, 0);
+  const totalPreviewFlows = summaries.reduce((sum, item) => sum + item.preview_flow_count, 0);
+  const averageScore = Math.round(
+    summaries.reduce((sum, item) => sum + item.execution_score, 0) / Math.max(summaries.length, 1),
+  );
+  const categories = Array.from(new Set(summaries.flatMap((item) => item.specialty_tags))).slice(0, 10);
+
+  return (
+    <main className="mx-auto max-w-7xl px-5 py-8">
+      <PlatformNav />
+      <header className="border-b border-gray-200 pb-6">
+        <p className="text-sm font-semibold text-blue-700">Creator Channels</p>
+        <h1 className="mt-2 text-4xl font-semibold tracking-tight">제작자 채널</h1>
+        <p className="mt-3 max-w-3xl leading-7 text-gray-600">
+          채널별 콘텐츠가 실제 실행 Flow로 얼마나 잘 전환되는지 확인하는 Preview입니다.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-5">
+          <StatCard label="채널" value={`${summaries.length}`} />
+          <StatCard label="Flow화 콘텐츠" value={`${totalFlows}+`} />
+          <StatCard label="Real source" value={`${totalRealFlows}`} />
+          <StatCard label="Preview" value={`${totalPreviewFlows}`} />
+          <StatCard label="평균 실행성 점수" value={`${averageScore}`} />
+        </div>
+        <div className="mt-5 flex flex-wrap gap-2">
+          {categories.map((category) => (
+            <span key={category} className="rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
+              {category}
+            </span>
+          ))}
+        </div>
+      </header>
+      <section className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {summaries.map((channel) => (
+          <Link
+            key={channel.id}
+            className="rounded-lg border border-gray-200 bg-white p-5 hover:border-blue-300"
+            href={`/u/${channel.slug}`}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-blue-700">{channel.channel_type}</p>
+                <h2 className="mt-1 text-xl font-semibold">{channel.name}</h2>
+                <p className="mt-1 text-sm text-gray-600">{channel.role}</p>
+              </div>
+              <span className="rounded-md bg-blue-50 px-2 py-1 text-sm font-semibold text-blue-700">
+                {channel.flow_count} flows
+              </span>
+            </div>
+            <p className="mt-3 text-sm leading-6 text-gray-600">{channel.bio}</p>
+            <div className="mt-4 grid grid-cols-3 gap-2 text-sm">
+              <StatCard label="Real" value={`${channel.real_flow_count}`} compact />
+              <StatCard label="Preview" value={`${channel.preview_flow_count}`} compact />
+              <StatCard label="실행성 점수" value={`${channel.execution_score}`} compact />
+            </div>
+          </Link>
+        ))}
+      </section>
+    </main>
   );
 }
 
@@ -841,16 +937,27 @@ export function CreatorProfile({ slug }: { slug: string }) {
   const { bundles } = useBundles();
   const normalized = normalizeCreatorSlug(slug);
   const user = findVirtualUserBySlug(normalized);
+  const previewSummary = getCreatorChannelSummaries(bundles).find((item) => item.slug === normalized);
   const creatorBundles = bundles.filter((bundle) => {
     const creator = getCreatorUser(bundle);
     if (user) return creator?.id === user.id;
     return normalizeCreatorSlug(creator?.slug ?? creatorSlug(getCreatorName(bundle))) === normalized;
   });
+  const [categoryFilter, setCategoryFilter] = useState('전체');
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'real' | 'preview'>('all');
   const first = creatorBundles[0];
   const profile = user ?? (first ? getCreatorUser(first) : undefined);
   const totalUsage = creatorBundles.reduce((sum, bundle) => sum + (bundle.flow.usage_count ?? 0), 0);
   const totalCopies = creatorBundles.reduce((sum, bundle) => sum + (bundle.flow.copy_count ?? 0), 0);
   const categories = Array.from(new Set(creatorBundles.map((bundle) => bundle.flow.category))).slice(0, 6);
+  const allCategories = ['전체', ...Array.from(new Set(creatorBundles.map((bundle) => bundle.flow.category)))];
+  const visibleCreatorBundles = creatorBundles
+    .filter((bundle) => (categoryFilter === '전체' ? true : bundle.flow.category === categoryFilter))
+    .filter((bundle) => {
+      if (sourceFilter === 'real') return bundle.flow.source_status === 'real';
+      if (sourceFilter === 'preview') return bundle.flow.source_status === 'preview';
+      return true;
+    });
 
   if (!first && !profile) {
     return (
@@ -901,18 +1008,65 @@ export function CreatorProfile({ slug }: { slug: string }) {
             <span key={category} className="rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">{category}</span>
           ))}
         </div>
+        {previewSummary ? (
+          <section className="mt-5 grid gap-3 sm:grid-cols-7">
+            <StatCard label="Flow화 콘텐츠" value={`${previewSummary.flow_count}`} compact />
+            <StatCard label="Real source" value={`${previewSummary.real_flow_count}`} compact />
+            <StatCard label="Preview" value={`${previewSummary.preview_flow_count}`} compact />
+            <StatCard label="실행 항목" value={`${previewSummary.executable_item_count}`} compact />
+            <StatCard label="앵커 커버리지" value={`${previewSummary.anchor_coverage}%`} compact />
+            <StatCard label="출처 커버리지" value={`${previewSummary.source_coverage}%`} compact />
+            <StatCard label="실행성 점수" value={`${previewSummary.execution_score}`} compact />
+          </section>
+        ) : null}
       </header>
 
       <section className="mt-8">
         <div className="mb-4 flex items-end justify-between gap-4">
           <div>
             <p className="text-sm font-semibold text-gray-500">Published Flows</p>
-            <h2 className="text-2xl font-semibold">이 제작자의 Flow</h2>
+            <h2 className="text-2xl font-semibold">채널 Flow 라이브러리</h2>
           </div>
           <Link className="text-sm font-semibold text-blue-700" href="/flows/new">내 콘텐츠로 만들기</Link>
         </div>
+        <div className="mb-3 flex flex-wrap gap-2">
+          {[
+            ['all', 'All'],
+            ['real', 'Real source'],
+            ['preview', 'Preview'],
+          ].map(([key, label]) => (
+            <button
+              key={key}
+              className={`rounded-md border px-3 py-2 text-sm font-semibold ${
+                sourceFilter === key
+                  ? 'border-blue-600 bg-blue-50 text-blue-700'
+                  : 'border-gray-200 bg-white text-gray-700'
+              }`}
+              type="button"
+              onClick={() => setSourceFilter(key as 'all' | 'real' | 'preview')}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className="mb-4 flex flex-wrap gap-2">
+          {allCategories.map((category) => (
+            <button
+              key={category}
+              className={`rounded-full border px-3 py-1.5 text-sm font-semibold ${
+                categoryFilter === category
+                  ? 'border-blue-600 bg-blue-50 text-blue-700'
+                  : 'border-gray-200 bg-white text-gray-700'
+              }`}
+              type="button"
+              onClick={() => setCategoryFilter(category)}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {creatorBundles.map((bundle) => (
+          {visibleCreatorBundles.map((bundle) => (
             <FlowCard key={bundle.flow.id} bundle={bundle} />
           ))}
         </div>
