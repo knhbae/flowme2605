@@ -4,7 +4,9 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { addDays, formatDate, getRangeEnd } from '@/lib/flow/date';
-import { buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
+import { inferPrimaryDestination } from '@/lib/flow/destination';
+import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
+import { getCreatorChannelSummaries } from '@/lib/flow/creator-channel-preview';
 import { parseTextFlow, serializeTextFlow, timingLabel } from '@/lib/flow/parser';
 import {
   getBundles,
@@ -24,6 +26,7 @@ import {
   FlowItemLinkType,
   FlowUser,
   MealSlot,
+  PrimaryDestination,
   ReactionLog,
   Recipe,
   RiskLevel,
@@ -129,6 +132,7 @@ function Badge({
 
 function FlowBadges({ bundle }: { bundle: FlowBundle }) {
   const { flow } = bundle;
+  const sourcePrecisionLabel = getSourcePrecisionLabel(bundle);
   return (
     <div className="flex flex-wrap gap-2">
       <Badge className={flow.status === 'published' ? 'border-green-200 bg-green-50 text-green-800' : 'border-gray-200 bg-white text-gray-700'}>
@@ -141,7 +145,10 @@ function FlowBadges({ bundle }: { bundle: FlowBundle }) {
         <Badge className={riskClasses[flow.risk_level]}>{riskLabels[flow.risk_level]}</Badge>
       ) : null}
       <Badge className="border-blue-100 bg-blue-50 text-blue-800">제작자 경험</Badge>
-      {flow.source_url ? <Badge className="border-gray-200 bg-gray-50 text-gray-600">참고 자료</Badge> : null}
+      {flow.source_url ? <Badge className="border-gray-200 bg-gray-50 text-gray-600">{getSourceStatusLabel(bundle)}</Badge> : null}
+      {sourcePrecisionLabel ? (
+        <Badge className="border-indigo-100 bg-indigo-50 text-indigo-800">{sourcePrecisionLabel}</Badge>
+      ) : null}
     </div>
   );
 }
@@ -210,9 +217,13 @@ function getSetupStepHelp(bundle: FlowBundle): string {
   return `${getAnchorInputLabel(bundle)} 기준으로 날짜가 계산됩니다.`;
 }
 
-function hasCalendarSchedule(bundle: FlowBundle): boolean {
+function hasDatedCalendarSchedule(bundle: FlowBundle): boolean {
   if (bundle.mealSlots?.some((slot) => slot.day_offset !== undefined)) return true;
   return bundle.items.some((item) => item.day_offset !== undefined);
+}
+
+function hasCalendarSchedule(bundle: FlowBundle): boolean {
+  return hasDatedCalendarSchedule(bundle) || isFitnessExactVideoFlow(bundle);
 }
 
 function getFlowResultText(bundle: FlowBundle): string {
@@ -307,6 +318,7 @@ function cloneBundleForEditing(bundle: FlowBundle): FlowBundle {
       slug: `${copied.flow.slug}-copy-${Date.now()}`,
       title: `${copied.flow.title} 사본`,
       status: 'draft',
+      raw_text: copied.flow.raw_text ?? serializeTextFlow(copied.sections, copied.items, copied.itemDetails, copied.warnings),
       owner_user_id: getCurrentUser().id,
       creator_name: getCurrentUser().name,
       creator_role: getCurrentUser().role,
@@ -336,6 +348,7 @@ function FlowCard({
 }) {
   const count = getFlowItemCount(bundle);
   const color = categoryColors[bundle.flow.category] ?? '#6B7280';
+  const firstActionTitle = getFirstActionTitle(bundle);
 
   return (
     <article className="flex h-full flex-col justify-between rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
@@ -344,6 +357,17 @@ function FlowCard({
           <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
           <span className="text-sm font-medium text-gray-600">{bundle.flow.category}</span>
           <Badge className="border-gray-200 bg-gray-50 text-gray-600">{getStructureLabel(bundle)}</Badge>
+          <Badge
+            className={
+              bundle.flow.source_status === 'real'
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                : bundle.flow.source_status === 'preview'
+                  ? 'border-blue-200 bg-blue-50 text-blue-700'
+                  : 'border-gray-200 bg-gray-50 text-gray-600'
+            }
+          >
+            {getSourceStatusLabel(bundle)}
+          </Badge>
         </div>
         <div>
           <h2 className="text-lg font-semibold leading-snug text-gray-950">
@@ -352,6 +376,11 @@ function FlowCard({
             </Link>
           </h2>
           <p className="mt-2 line-clamp-3 text-sm leading-6 text-gray-600">{getFlowResultText(bundle)}</p>
+          {firstActionTitle ? (
+            <p className="mt-2 text-sm text-gray-700">
+              <span className="font-semibold text-gray-900">첫 행동:</span> {firstActionTitle}
+            </p>
+          ) : null}
           <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-gray-500">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-700">
               {getCreatorAvatar(bundle)}
@@ -619,6 +648,9 @@ function PlatformNav() {
         <Link className="rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-white" href="/flows">
           탐색
         </Link>
+        <Link className="rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-white" href="/creators">
+          제작자
+        </Link>
         <Link className="rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-white" href="/my">
           내 Flow
         </Link>
@@ -630,6 +662,134 @@ function PlatformNav() {
         </Link>
       </div>
     </nav>
+  );
+}
+
+function StatCard({ label, value, compact = false }: { label: string; value: string; compact?: boolean }) {
+  return (
+    <div className={`rounded-lg bg-gray-50 ${compact ? 'p-3' : 'p-4'}`}>
+      <p className="text-xs font-medium text-gray-500">{label}</p>
+      <p className={`${compact ? 'text-lg' : 'text-2xl'} mt-1 font-semibold text-gray-950`}>{value}</p>
+    </div>
+  );
+}
+
+function getSourceStatusLabel(bundle: FlowBundle) {
+  if (bundle.flow.source_status === 'real') return '출처 확인';
+  if (bundle.flow.source_status === 'preview') return '샘플';
+  if (bundle.flow.source_status === 'needs_review') return '검수 필요';
+  return bundle.flow.source_url ? '출처 연결' : '초안';
+}
+
+function getSourcePrecisionLabel(bundle: FlowBundle): string | undefined {
+  if (bundle.flow.source_precision === 'exact') return '정확한 출처 페이지';
+  if (bundle.flow.source_precision === 'broad') return '넓은 출처';
+  return undefined;
+}
+
+function getFirstActionTitle(bundle: FlowBundle): string | undefined {
+  return bundle.items[0]?.title;
+}
+
+function isFitnessExactVideoFlow(bundle: FlowBundle): boolean {
+  return Boolean(bundle.flow.tags?.includes('exact-video') && bundle.flow.source_url?.includes('youtube.com/watch'));
+}
+
+function getCreatorBundlePriority(bundle: FlowBundle): number {
+  if (bundle.flow.source_status === 'real' && bundle.flow.source_precision === 'exact') return 0;
+  if (bundle.flow.source_status === 'real') return 1;
+  if (bundle.flow.source_status === 'needs_review') return 2;
+  return 3;
+}
+
+export function CreatorDirectory() {
+  const { bundles } = useBundles();
+  const summaries = getCreatorChannelSummaries(bundles);
+  const totalFlows = summaries.reduce((sum, item) => sum + item.flow_count, 0);
+  const totalRealFlows = summaries.reduce((sum, item) => sum + item.real_flow_count, 0);
+  const totalPreviewFlows = summaries.reduce((sum, item) => sum + item.preview_flow_count, 0);
+  const averageScore = Math.round(
+    summaries.reduce((sum, item) => sum + item.execution_score, 0) / Math.max(summaries.length, 1),
+  );
+  const categories = Array.from(new Set(summaries.flatMap((item) => item.specialty_tags))).slice(0, 10);
+
+  return (
+    <main className="mx-auto max-w-7xl px-5 py-8">
+      <PlatformNav />
+      <header className="border-b border-gray-200 pb-6">
+        <p className="text-sm font-semibold text-blue-700">Creator Channels</p>
+        <h1 className="mt-2 text-4xl font-semibold tracking-tight">제작자 채널</h1>
+        <p className="mt-3 max-w-3xl leading-7 text-gray-600">
+          채널별 콘텐츠가 실제 실행 Flow로 얼마나 잘 전환되는지 확인하는 미리보기입니다.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-5">
+          <StatCard label="채널" value={`${summaries.length}`} />
+          <StatCard label="Flow화 콘텐츠" value={`${totalFlows}+`} />
+          <StatCard label="출처 확인" value={`${totalRealFlows}`} />
+          <StatCard label="샘플" value={`${totalPreviewFlows}`} />
+          <StatCard label="평균 실행성 점수" value={`${averageScore}`} />
+        </div>
+        <div className="mt-5 flex flex-wrap gap-2">
+          {categories.map((category) => (
+            <span key={category} className="rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
+              {category}
+            </span>
+          ))}
+        </div>
+      </header>
+      <section className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {summaries.map((channel) => {
+          const representativeFlows = bundles
+            .filter((bundle) => bundle.flow.owner_user_id === channel.id)
+            .sort((a, b) => getCreatorBundlePriority(a) - getCreatorBundlePriority(b))
+            .slice(0, 3);
+
+          return (
+          <article
+            key={channel.id}
+            className="rounded-lg border border-gray-200 bg-white p-5 hover:border-blue-300"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-blue-700">{channel.channel_type}</p>
+                <h2 className="mt-1 text-xl font-semibold">
+                  <Link className="underline-offset-4 hover:text-blue-700 hover:underline" href={`/u/${channel.slug}`}>
+                    {channel.name}
+                  </Link>
+                </h2>
+                <p className="mt-1 text-sm text-gray-600">{channel.role}</p>
+              </div>
+              <span className="rounded-md bg-blue-50 px-2 py-1 text-sm font-semibold text-blue-700">
+                {channel.flow_count} flows
+              </span>
+            </div>
+            <p className="mt-3 text-sm leading-6 text-gray-600">{channel.bio}</p>
+            <div className="mt-4 grid grid-cols-3 gap-2 text-sm">
+              <StatCard label="출처 확인" value={`${channel.real_flow_count}`} compact />
+              <StatCard label="샘플" value={`${channel.preview_flow_count}`} compact />
+              <StatCard label="실행성 점수" value={`${channel.execution_score}`} compact />
+            </div>
+            {representativeFlows.length ? (
+              <div className="mt-4 border-t border-gray-100 pt-4">
+                <p className="text-xs font-semibold text-gray-500">대표 Flow</p>
+                <div className="mt-2 space-y-2">
+                  {representativeFlows.map((bundle) => (
+                    <Link
+                      key={bundle.flow.id}
+                      className="block rounded-md bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-700"
+                      href={`/f/${bundle.flow.slug}`}
+                    >
+                      {bundle.flow.title}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </article>
+          );
+        })}
+      </section>
+    </main>
   );
 }
 
@@ -869,16 +1029,47 @@ export function CreatorProfile({ slug }: { slug: string }) {
   const { bundles } = useBundles();
   const normalized = normalizeCreatorSlug(slug);
   const user = findVirtualUserBySlug(normalized);
+  const previewSummary = getCreatorChannelSummaries(bundles).find((item) => item.slug === normalized);
   const creatorBundles = bundles.filter((bundle) => {
     const creator = getCreatorUser(bundle);
     if (user) return creator?.id === user.id;
     return normalizeCreatorSlug(creator?.slug ?? creatorSlug(getCreatorName(bundle))) === normalized;
-  });
+  }).sort((a, b) => getCreatorBundlePriority(a) - getCreatorBundlePriority(b));
+  const [categoryFilter, setCategoryFilter] = useState('전체');
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'real' | 'preview'>('all');
+  const [libraryQuery, setLibraryQuery] = useState('');
   const first = creatorBundles[0];
   const profile = user ?? (first ? getCreatorUser(first) : undefined);
   const totalUsage = creatorBundles.reduce((sum, bundle) => sum + (bundle.flow.usage_count ?? 0), 0);
   const totalCopies = creatorBundles.reduce((sum, bundle) => sum + (bundle.flow.copy_count ?? 0), 0);
   const categories = Array.from(new Set(creatorBundles.map((bundle) => bundle.flow.category))).slice(0, 6);
+  const allCategories = ['전체', ...Array.from(new Set(creatorBundles.map((bundle) => bundle.flow.category)))];
+  const normalizedLibraryQuery = libraryQuery.trim().toLowerCase();
+  const visibleCreatorBundles = creatorBundles
+    .filter((bundle) => (categoryFilter === '전체' ? true : bundle.flow.category === categoryFilter))
+    .filter((bundle) => {
+      if (sourceFilter === 'real') return bundle.flow.source_status === 'real';
+      if (sourceFilter === 'preview') return bundle.flow.source_status === 'preview';
+      return true;
+    })
+    .filter((bundle) => {
+      if (!normalizedLibraryQuery) return true;
+      const searchable = [
+        bundle.flow.title,
+        bundle.flow.description,
+        bundle.flow.category,
+        bundle.flow.source_title,
+        ...(bundle.flow.tags ?? []),
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      return searchable.includes(normalizedLibraryQuery);
+    });
+  const exactRealBundles = creatorBundles.filter(
+    (bundle) => bundle.flow.source_status === 'real' && bundle.flow.source_precision === 'exact',
+  );
+  const recommendedBundles = exactRealBundles.slice(0, 3);
 
   if (!first && !profile) {
     return (
@@ -929,18 +1120,103 @@ export function CreatorProfile({ slug }: { slug: string }) {
             <span key={category} className="rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">{category}</span>
           ))}
         </div>
+        {previewSummary ? (
+          <section className="mt-5 grid gap-3 sm:grid-cols-7">
+            <StatCard label="Flow화 콘텐츠" value={`${previewSummary.flow_count}`} compact />
+            <StatCard label="출처 확인" value={`${previewSummary.real_flow_count}`} compact />
+            <StatCard label="샘플" value={`${previewSummary.preview_flow_count}`} compact />
+            <StatCard label="실행 항목" value={`${previewSummary.executable_item_count}`} compact />
+            <StatCard label="앵커 커버리지" value={`${previewSummary.anchor_coverage}%`} compact />
+            <StatCard label="출처 커버리지" value={`${previewSummary.source_coverage}%`} compact />
+            <StatCard label="실행성 점수" value={`${previewSummary.execution_score}`} compact />
+          </section>
+        ) : null}
       </header>
+
+      {recommendedBundles.length ? (
+        <section className="mt-8 border-y border-gray-200 bg-gray-50 py-5">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-emerald-700">Exact Source</p>
+              <h2 className="mt-1 text-2xl font-semibold">실제 콘텐츠로 바로 시작</h2>
+              <p className="mt-1 text-sm leading-6 text-gray-600">
+                운동/다이어트 앱처럼 출처가 분명한 콘텐츠를 먼저 고르고, 오늘 실행한 기록과 다음 반복 날짜까지 남기게 구성했습니다.
+              </p>
+            </div>
+            <button
+              className="rounded-md border border-emerald-300 bg-white px-3 py-2 text-sm font-semibold text-emerald-700"
+              type="button"
+              onClick={() => setSourceFilter('real')}
+            >
+              실제 Flow만 보기
+            </button>
+          </div>
+          <div className="mt-4 grid gap-4 md:grid-cols-3">
+            {recommendedBundles.map((bundle) => (
+              <FlowCard key={`recommended-${bundle.flow.id}`} bundle={bundle} variant="compact" />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="mt-8">
         <div className="mb-4 flex items-end justify-between gap-4">
           <div>
             <p className="text-sm font-semibold text-gray-500">Published Flows</p>
-            <h2 className="text-2xl font-semibold">이 제작자의 Flow</h2>
+            <h2 className="text-2xl font-semibold">채널 Flow 라이브러리</h2>
+            <p className="mt-1 text-sm text-gray-600">
+              {visibleCreatorBundles.length}개 표시 / 전체 {creatorBundles.length}개
+            </p>
           </div>
           <Link className="text-sm font-semibold text-blue-700" href="/flows/new">내 콘텐츠로 만들기</Link>
         </div>
+        <label className="mb-3 block">
+          <span className="text-sm font-semibold text-gray-700">Flow 검색</span>
+          <input
+            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            placeholder="제목, 카테고리, 태그, 출처로 검색"
+            value={libraryQuery}
+            onChange={(event) => setLibraryQuery(event.target.value)}
+          />
+        </label>
+        <div className="mb-3 flex flex-wrap gap-2">
+          {[
+            ['all', 'All'],
+            ['real', '출처 확인'],
+            ['preview', '샘플'],
+          ].map(([key, label]) => (
+            <button
+              key={key}
+              className={`rounded-md border px-3 py-2 text-sm font-semibold ${
+                sourceFilter === key
+                  ? 'border-blue-600 bg-blue-50 text-blue-700'
+                  : 'border-gray-200 bg-white text-gray-700'
+              }`}
+              type="button"
+              onClick={() => setSourceFilter(key as 'all' | 'real' | 'preview')}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className="mb-4 flex flex-wrap gap-2">
+          {allCategories.map((category) => (
+            <button
+              key={category}
+              className={`rounded-full border px-3 py-1.5 text-sm font-semibold ${
+                categoryFilter === category
+                  ? 'border-blue-600 bg-blue-50 text-blue-700'
+                  : 'border-gray-200 bg-white text-gray-700'
+              }`}
+              type="button"
+              onClick={() => setCategoryFilter(category)}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {creatorBundles.map((bundle) => (
+          {visibleCreatorBundles.map((bundle) => (
             <FlowCard key={bundle.flow.id} bundle={bundle} />
           ))}
         </div>
@@ -1710,6 +1986,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [reactionLogs, setReactionLogs] = useState<Record<string, ReactionLog>>({});
   const [copyState, setCopyState] = useState('');
   const [downloadState, setDownloadState] = useState('');
+  const [calendarState, setCalendarState] = useState('');
   const [view, setView] = useState<PublicView>('list');
   const [showMobileActions, setShowMobileActions] = useState(false);
 
@@ -1744,6 +2021,9 @@ export function PublicFlow({ slug }: { slug: string }) {
   const executableCount = executableIds.length;
   const done = executableIds.filter((id) => checks[id]).length;
   const canExportCalendar = hasCalendarSchedule(bundle);
+  const firstActionTitle = getFirstActionTitle(bundle);
+  const showTodayExecution = isFitnessExactVideoFlow(bundle);
+  const primaryDestination = inferPrimaryDestination(bundle);
 
   const toggle = (id: string) => {
     setChecks((value) => {
@@ -1799,18 +2079,18 @@ export function PublicFlow({ slug }: { slug: string }) {
     window.setTimeout(() => setDownloadState(''), 1600);
   };
   const downloadCalendar = () => {
-    setDownloadState('생성 중');
-    const ics = buildIcsCalendar(bundle, checks, displayAnchor);
-    const blob = new Blob([ics], {
-      type: 'text/calendar;charset=utf-8',
-    });
+    setCalendarState('생성 중');
+    const ics = hasDatedCalendarSchedule(bundle)
+      ? buildIcsCalendar(bundle, checks, displayAnchor)
+      : buildCalendarIcs(bundle, displayAnchor, weekdaySelection);
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `${bundle.flow.slug}.ics`;
     link.click();
     window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-    setDownloadState('완료');
-    window.setTimeout(() => setDownloadState(''), 1600);
+    setCalendarState('완료');
+    window.setTimeout(() => setCalendarState(''), 1600);
   };
   const copyToEditableDraft = () => {
     if (!bundle) return;
@@ -1829,6 +2109,11 @@ export function PublicFlow({ slug }: { slug: string }) {
         </div>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight">{bundle.flow.title}</h1>
         {bundle.flow.description ? <p className="mt-3 max-w-3xl text-gray-600">{bundle.flow.description}</p> : null}
+        {firstActionTitle ? (
+          <p className="mt-3 text-sm text-gray-700">
+            <span className="font-semibold text-gray-950">첫 행동:</span> {firstActionTitle}
+          </p>
+        ) : null}
         <div className="mt-4">
           <FlowBadges bundle={bundle} />
         </div>
@@ -1852,13 +2137,22 @@ export function PublicFlow({ slug }: { slug: string }) {
             {bundle.flow.warning}
           </div>
         ) : null}
-        <details className="mt-4 rounded-lg border border-gray-200 bg-white p-3 text-sm">
+        <details className="mt-4 rounded-lg border border-gray-200 bg-white p-3 text-sm" open={!showTodayExecution}>
           <summary className="cursor-pointer font-semibold text-gray-700">출처와 주의 정보</summary>
           <div className="mt-3 space-y-3">
             <FlowBadges bundle={bundle} />
             <p className="text-gray-600">
               마지막 업데이트: {bundle.flow.updated_at ? formatDate(new Date(bundle.flow.updated_at)) : '확인 필요'}
             </p>
+            {bundle.flow.source_checked_at ? (
+              <p className="text-gray-600">출처 확인일: {bundle.flow.source_checked_at}</p>
+            ) : null}
+            {bundle.flow.conversion_note ? (
+              <p className="text-gray-600">Flow 전환 방식: {bundle.flow.conversion_note}</p>
+            ) : null}
+            {getSourcePrecisionLabel(bundle) ? (
+              <p className="text-gray-600">출처 정밀도: {getSourcePrecisionLabel(bundle)}</p>
+            ) : null}
             {bundle.flow.source_url ? (
               <a className="inline-flex text-blue-700 underline-offset-2 hover:underline" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
                 {bundle.flow.source_title ?? '참고 자료'} 열기
@@ -1868,6 +2162,28 @@ export function PublicFlow({ slug }: { slug: string }) {
         </details>
       </header>
 
+      {showTodayExecution ? (
+        <ExactVideoToolPreview
+          bundle={bundle}
+          anchor={anchor}
+          displayAnchor={displayAnchor}
+          anchorMode={anchorMode}
+          onAnchorModeChange={setAnchorMode}
+          onAnchorChange={setAnchor}
+          weekdays={weekdaySelection}
+          onWeekdaysChange={setWeekdaySelection}
+          destination={primaryDestination}
+          onCopyText={copy}
+          onDownloadExcel={downloadExcel}
+          onDownloadCalendar={downloadCalendar}
+          onCopyToEditableDraft={copyToEditableDraft}
+          copyState={copyState}
+          downloadState={downloadState}
+          calendarState={calendarState}
+        />
+      ) : null}
+
+      {!showTodayExecution ? (
       <section className="my-6 rounded-xl border border-blue-100 bg-white p-4 shadow-sm">
         <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr_0.9fr]">
           <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
@@ -1879,63 +2195,89 @@ export function PublicFlow({ slug }: { slug: string }) {
             </div>
           </div>
           <div className="rounded-lg border border-gray-200 bg-white p-4">
-            <p className="text-sm font-semibold text-blue-700">2. 바로 실행</p>
-            <p className="mt-1 text-sm text-gray-600">가까운 항목부터 체크하면 진행률과 다운로드 파일에 반영됩니다.</p>
+            <p className="text-sm font-semibold text-blue-700">{showTodayExecution ? '2. 오늘 실행 체크' : '2. 바로 실행'}</p>
+            <p className="mt-1 text-sm text-gray-600">
+              {showTodayExecution ? '영상이나 적용 기준을 실행한 뒤 이 페이지에서 완료 여부만 표시합니다.' : '가까운 항목부터 체크하면 진행률과 다운로드 파일에 반영됩니다.'}
+            </p>
             <div className="mt-4">
               <ProgressBar done={done} total={executableCount} />
             </div>
           </div>
           <div className="rounded-lg border border-gray-200 bg-white p-4">
-            <p className="text-sm font-semibold text-blue-700">3. 저장/공유</p>
-            <p className="mt-1 text-sm text-gray-600">메모장에는 텍스트로, 엑셀에는 실행표와 주간/월간 보기로 저장됩니다.</p>
+            <p className="text-sm font-semibold text-blue-700">{showTodayExecution ? '3. 내 Flow로 수정' : '3. 저장/공유'}</p>
+            <p className="mt-1 text-sm text-gray-600">
+              {showTodayExecution
+                ? '캘린더, 엑셀, 메모/노션 중 실제로 관리할 도구를 고르세요.'
+                : '메모장에는 텍스트로, 엑셀에는 실행표와 주간/월간 보기로 저장됩니다.'}
+            </p>
             <div className="mt-4 flex flex-wrap gap-2">
-              <button className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white" onClick={copy}>
-                체크리스트 복사하기
-              </button>
-              <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={downloadExcel}>
-                내 일정표 엑셀로 받기
-              </button>
-              {canExportCalendar ? (
-                <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={downloadCalendar}>
-                  캘린더 파일 받기
-                </button>
-              ) : null}
-              <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={copyToEditableDraft}>
+              {showTodayExecution ? null : (
+                <>
+                  <button className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white" onClick={copy}>
+                    체크리스트 복사하기
+                  </button>
+                  <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={downloadExcel}>
+                    내 일정표 엑셀로 받기
+                  </button>
+                  {canExportCalendar ? (
+                    <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={downloadCalendar}>
+                      캘린더 파일 받기
+                    </button>
+                  ) : null}
+                </>
+              )}
+              <button
+                className={showTodayExecution ? 'rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white' : 'rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold'}
+                onClick={copyToEditableDraft}
+              >
                 내 Flow로 복사해 수정
               </button>
+              {showTodayExecution ? (
+                <p className="w-full text-sm text-gray-500">
+                  캘린더, 엑셀, 메모/노션 내보내기는 위의 내 도구로 옮기기 영역에서 바로 실행할 수 있습니다.
+                </p>
+              ) : null}
               {copyState ? <span className="py-2 text-sm text-green-700">{copyState}</span> : null}
               {downloadState ? <span className="py-2 text-sm text-blue-700">{downloadState}</span> : null}
+              {calendarState ? <span className="py-2 text-sm text-blue-700">{calendarState}</span> : null}
             </div>
           </div>
         </div>
       </section>
-
-      <FlowOverview bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} />
-
-      {views.length > 1 ? (
-        <div className="mb-5 flex flex-wrap gap-2">
-          {views.map((item) => (
-            <button key={item.id} className={`rounded-md border px-3 py-2 text-sm font-semibold ${activeView === item.id ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-300 bg-white text-gray-700'}`} onClick={() => setView(item.id)}>
-              {item.label}
-            </button>
-          ))}
-        </div>
       ) : null}
 
-      {activeView === 'week' ? (
-        <WeekRenderer bundle={bundle} anchor={displayAnchor} weekdays={weekdaySelection} checks={checks} onToggle={toggle} />
-      ) : activeView === 'month' ? (
-        <MonthRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} />
-      ) : activeView === 'recipes' ? (
-        <RecipeListRenderer bundle={bundle} anchor={displayAnchor} />
-      ) : bundle.flow.content_type === 'meal_plan' ? (
-        <MealPlanRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} reactionLogs={reactionLogs} onReactionChange={updateReaction} />
-      ) : bundle.flow.structure_type === 'timeline' ? (
-        <TimelineRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} />
-      ) : bundle.flow.structure_type === 'routine' ? (
-        <RoutineRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} weekdays={weekdaySelection} />
+      {showTodayExecution ? (
+        <ExactVideoRenderer bundle={bundle} checks={checks} onToggle={toggle} />
       ) : (
-        <ChecklistRenderer bundle={bundle} checks={checks} onToggle={toggle} />
+        <>
+          <FlowOverview bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} />
+
+          {views.length > 1 ? (
+            <div className="mb-5 flex flex-wrap gap-2">
+              {views.map((item) => (
+                <button key={item.id} className={`rounded-md border px-3 py-2 text-sm font-semibold ${activeView === item.id ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-300 bg-white text-gray-700'}`} onClick={() => setView(item.id)}>
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          ) : null}
+
+          {activeView === 'week' ? (
+            <WeekRenderer bundle={bundle} anchor={displayAnchor} weekdays={weekdaySelection} checks={checks} onToggle={toggle} />
+          ) : activeView === 'month' ? (
+            <MonthRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} />
+          ) : activeView === 'recipes' ? (
+            <RecipeListRenderer bundle={bundle} anchor={displayAnchor} />
+          ) : bundle.flow.content_type === 'meal_plan' ? (
+            <MealPlanRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} reactionLogs={reactionLogs} onReactionChange={updateReaction} />
+          ) : bundle.flow.structure_type === 'timeline' ? (
+            <TimelineRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} />
+          ) : bundle.flow.structure_type === 'routine' ? (
+            <RoutineRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} weekdays={weekdaySelection} />
+          ) : (
+            <ChecklistRenderer bundle={bundle} checks={checks} onToggle={toggle} />
+          )}
+        </>
       )}
 
       <div className={`fixed inset-x-0 bottom-0 z-20 border-t border-gray-200 bg-white/95 px-4 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur transition duration-200 md:hidden ${showMobileActions ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}>
@@ -2021,7 +2363,7 @@ function AnchorInput({
       ) : null}
       {bundle.flow.structure_type === 'routine' ? (
         <div>
-          <p className="mb-2 text-sm font-semibold">운동 요일</p>
+          <p className="mb-2 text-sm font-semibold">{getWeekdaySelectionLabel(bundle)}</p>
           <div className="flex flex-wrap gap-2">
             {['월', '화', '수', '목', '금', '토', '일'].map((day) => (
               <label key={day} className="inline-flex items-center gap-1 rounded-md border border-gray-200 px-2 py-1 text-sm">
@@ -2044,6 +2386,113 @@ function AnchorInput({
       ) : null}
     </div>
   );
+}
+
+function getWeekdaySelectionLabel(bundle: FlowBundle): string {
+  if (bundle.flow.slug.startsWith('real-fitvely-video-')) return '적용 요일';
+  if (bundle.flow.category.includes('운동')) return '운동 요일';
+  return '반복 요일';
+}
+
+function getEmbeddedToolCopy(destination: PrimaryDestination): {
+  title: string;
+  description: string;
+  rhythm: string;
+  tool: string;
+  previewTitle: string;
+} {
+  if (destination === 'calendar') {
+    return {
+      title: '캘린더에 이미 들어간 운동 일정',
+      description: '영상 하나가 월간 달력의 반복 운동 일정으로 먼저 들어갑니다. 사용자는 시작일과 요일만 바꾸면 됩니다.',
+      rhythm: '주 3회',
+      tool: '캘린더',
+      previewTitle: '월간 미리보기',
+    };
+  }
+  if (destination === 'hybrid' || destination === 'sheet') {
+    return {
+      title: '운동표에 이미 들어간 기준',
+      description: '영상의 핵심 기준을 이번 주 운동표에 먼저 넣어두고, 사용자는 날짜와 요일만 조정합니다.',
+      rhythm: '주 3회',
+      tool: '운동표',
+      previewTitle: '주간 운동표 미리보기',
+    };
+  }
+  return {
+    title: '식사 체크표에 이미 들어간 적용 Flow',
+    description: '영상의 원칙을 오늘부터 일별 체크표에 넣어둡니다. 필요하면 적용일과 요일만 가볍게 바꿉니다.',
+    rhythm: '매일',
+    tool: '체크표',
+    previewTitle: '일별 적용 체크표',
+  };
+}
+
+const weekdayIndex: Record<string, number> = {
+  일: 0,
+  월: 1,
+  화: 2,
+  수: 3,
+  목: 4,
+  금: 5,
+  토: 6,
+};
+
+function getExactVideoSchedule(
+  anchor: string,
+  weekdays: string[],
+  title: string,
+  destination: PrimaryDestination,
+): { date: string; day: string; label: string; title: string }[] {
+  if (!anchor) return [];
+
+  const start = new Date(anchor);
+  if (Number.isNaN(start.getTime())) return [];
+
+  const selected = weekdays.length ? weekdays : ['월', '수', '금'];
+  const label =
+    destination === 'calendar'
+      ? '캘린더 일정'
+      : destination === 'hybrid' || destination === 'sheet'
+        ? '운동표 반영'
+        : '메모 적용';
+
+  return [...selected]
+    .filter((day) => weekdayIndex[day] !== undefined)
+    .sort((a, b) => weekdayIndex[a] - weekdayIndex[b])
+    .map((day) => {
+      const offset = (weekdayIndex[day] - start.getDay() + 7) % 7;
+      return {
+        date: formatDate(addDays(start, offset)),
+        day,
+        label,
+        title,
+      };
+    });
+}
+
+function getExactToolPreview(
+  anchor: string,
+  weekdays: string[],
+  title: string,
+  destination: PrimaryDestination,
+): { date: string; day: string; label: string; title: string }[] {
+  if (destination !== 'memo') return getExactVideoSchedule(anchor, weekdays, title, destination);
+  if (!anchor) return [];
+
+  const start = new Date(anchor);
+  if (Number.isNaN(start.getTime())) return [];
+
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = addDays(start, index);
+    const day = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()];
+    return {
+      date: formatDate(date),
+      day,
+      label: '적용 체크',
+      title,
+    };
+  });
 }
 
 function itemDate(anchor: string, item: FlowItem) {
@@ -2131,6 +2580,9 @@ function isBaseEntryChecked(bundle: FlowBundle, id: string, anchor: string, chec
 }
 
 function getPublicViews(bundle: FlowBundle): { id: PublicView; label: string }[] {
+  if (isFitnessExactVideoFlow(bundle)) {
+    return [{ id: 'list', label: '실행 항목' }];
+  }
   if (bundle.flow.content_type === 'meal_plan') {
     return [
       { id: 'list', label: '전체 할 일' },
@@ -2839,6 +3291,211 @@ function MealPlanRenderer({
   );
 }
 
+function ExactVideoToolPreview({
+  bundle,
+  anchor,
+  displayAnchor,
+  anchorMode,
+  onAnchorModeChange,
+  onAnchorChange,
+  weekdays,
+  onWeekdaysChange,
+  destination,
+  onCopyText,
+  onDownloadExcel,
+  onDownloadCalendar,
+  onCopyToEditableDraft,
+  copyState,
+  downloadState,
+  calendarState,
+}: {
+  bundle: FlowBundle;
+  anchor: string;
+  displayAnchor: string;
+  anchorMode: AnchorMode;
+  onAnchorModeChange: (value: AnchorMode) => void;
+  onAnchorChange: (value: string) => void;
+  weekdays: string[];
+  onWeekdaysChange: (value: string[]) => void;
+  destination: PrimaryDestination;
+  onCopyText: () => void;
+  onDownloadExcel: () => void;
+  onDownloadCalendar: () => void;
+  onCopyToEditableDraft: () => void;
+  copyState: string;
+  downloadState: string;
+  calendarState: string;
+}) {
+  const item = bundle.items[0];
+  const preview = item ? getExactToolPreview(displayAnchor, weekdays, item.title, destination) : [];
+  const copy = getEmbeddedToolCopy(destination);
+
+  return (
+    <section className="my-6 rounded-xl border border-blue-100 bg-white p-5 shadow-sm">
+      <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+        <div>
+          <h2 className="text-sm font-semibold text-blue-700">내 도구에 들어간 모습</h2>
+          <h3 className="mt-1 text-2xl font-semibold text-gray-950">{copy.title}</h3>
+          <p className="mt-2 text-sm leading-6 text-gray-600">{copy.description}</p>
+          <div className="mt-3 flex flex-wrap gap-2 text-sm">
+            <span className="rounded-full bg-blue-50 px-3 py-1 font-semibold text-blue-700">추천 리듬: {copy.rhythm}</span>
+            <span className="rounded-full bg-gray-100 px-3 py-1 font-semibold text-gray-700">{copy.tool}</span>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-start justify-start gap-2 lg:justify-end">
+          {bundle.flow.source_url ? (
+            <a className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
+              영상 열기
+            </a>
+          ) : null}
+          <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={onCopyToEditableDraft}>
+            내 Flow로 복사해 수정
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_0.8fr]">
+        <section aria-label="이번 주 등록 미리보기" className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-950">{copy.previewTitle}</h3>
+              <p className="mt-1 text-sm text-gray-600">미리 들어간 내용을 보고 시작일과 요일만 바꿉니다.</p>
+            </div>
+            <span className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-gray-700">{preview.length}개 표시</span>
+          </div>
+          <ExactToolPreviewGrid entries={preview} destination={destination} />
+        </section>
+
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <div className="grid gap-4">
+            <div>
+              <p className="text-sm font-semibold text-gray-950">시작일</p>
+              <div className="mt-2">
+                <AnchorInput
+                  bundle={bundle}
+                  anchor={anchor}
+                  displayAnchor={displayAnchor}
+                  mode={anchorMode}
+                  onModeChange={onAnchorModeChange}
+                  onChange={onAnchorChange}
+                  weekdays={weekdays}
+                  onWeekdaysChange={onWeekdaysChange}
+                />
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-950">가져가기</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <button className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white" onClick={onDownloadCalendar}>
+                  캘린더에 넣기
+                </button>
+                <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={onDownloadExcel}>
+                  엑셀 실행표 받기
+                </button>
+                <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={onCopyText}>
+                  메모/노션에 복사
+                </button>
+              </div>
+              <div className="mt-2 flex flex-wrap gap-3 text-sm">
+                {calendarState ? <span className="text-blue-700">{calendarState}</span> : null}
+                {downloadState ? <span className="text-blue-700">{downloadState}</span> : null}
+                {copyState ? <span className="text-green-700">{copyState}</span> : null}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ExactToolPreviewGrid({
+  entries,
+  destination,
+}: {
+  entries: { date: string; day: string; label: string; title: string }[];
+  destination: PrimaryDestination;
+}) {
+  if (destination === 'memo') {
+    return (
+      <div className="mt-4">
+        <p className="mb-2 text-sm font-semibold text-gray-700">일별 적용 체크표</p>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {entries.map((entry) => (
+            <div key={entry.date} className="rounded-md border border-gray-200 bg-white p-3">
+              <p className="text-sm font-semibold text-gray-950">{entry.day}요일</p>
+              <p className="mt-1 text-sm text-gray-500">{entry.date}</p>
+              <p className="mt-2 text-xs font-medium text-blue-700">{entry.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-4">
+      <p className="mb-2 text-sm font-semibold text-gray-700">월간 미리보기</p>
+      <div className="grid gap-2 sm:grid-cols-3">
+        {entries.map((entry) => (
+          <div key={entry.date} className="rounded-md border border-blue-100 bg-white p-3">
+            <p className="text-sm font-semibold text-blue-700">{entry.day}요일</p>
+            <p className="mt-1 text-lg font-semibold text-gray-950">{entry.date}</p>
+            <p className="mt-2 text-sm text-gray-600">{entry.label}</p>
+            <p className="mt-1 line-clamp-2 text-sm font-medium text-gray-950">{entry.title}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ExactVideoRenderer({
+  bundle,
+  checks,
+  onToggle,
+}: {
+  bundle: FlowBundle;
+  checks: Record<string, boolean>;
+  onToggle: (id: string) => void;
+}) {
+  const item = bundle.items[0];
+  const detail = item ? getItemDetail(bundle, item.id) : undefined;
+
+  if (!item) return null;
+
+  return (
+    <div className="space-y-4">
+      <section className="rounded-xl border border-gray-200 bg-white p-5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-950">실행 항목</h2>
+            <p className="mt-1 text-sm font-semibold text-blue-700">{bundle.sections[0]?.title ?? '오늘 실행'}</p>
+          </div>
+          {bundle.flow.source_url ? (
+            <a className="rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
+              원본 열기
+            </a>
+          ) : null}
+        </div>
+        <div className="mt-4 rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+          <label className="flex gap-3">
+            <input className="mt-1" type="checkbox" checked={Boolean(checks[item.id])} onChange={() => onToggle(item.id)} />
+            <span className="min-w-0 flex-1">
+              <span className="block text-base font-semibold text-gray-950">{item.title}</span>
+              <DetailPreview detail={detail} />
+            </span>
+          </label>
+          <div className="mt-3">
+            <InlineItemLinks detail={detail} />
+          </div>
+          <ItemDetailPanel detail={detail} />
+        </div>
+      </section>
+    </div>
+  );
+}
+
 function RoutineRenderer({
   bundle,
   anchor,
@@ -2856,18 +3513,22 @@ function RoutineRenderer({
   const firstSection = bundle.sections[0];
   const firstItems = firstSection ? bundle.items.filter((item) => item.section_id === firstSection.id).slice(0, 3) : [];
   const showSafetyNote = hasAttentionRisk(bundle.flow.risk_level) || Boolean(bundle.flow.warning);
+  const isExactVideo = isFitnessExactVideoFlow(bundle);
+  const weekdayLabel = getWeekdaySelectionLabel(bundle);
+  const setupLabel = bundle.flow.slug.startsWith('real-fitvely-video-') ? '이번 주 적용 설정' : '이번 주 루틴 설정';
+  const previewLabel = bundle.flow.slug.startsWith('real-fitvely-video-') ? '첫 적용 미리보기' : '첫 루틴 미리보기';
 
   return (
     <div className="space-y-5">
       <section className="rounded-xl border border-red-100 bg-red-50/50 p-5">
-        <p className="text-sm font-semibold text-red-700">이번 주 루틴 설정</p>
+        <p className="text-sm font-semibold text-red-700">{setupLabel}</p>
         <div className="mt-3 grid gap-3 md:grid-cols-3">
           <div className="border-l border-red-200 pl-3">
             <p className="text-xs font-semibold text-gray-500">시작일</p>
             <p className="mt-1 font-semibold text-gray-950">{anchor || '미입력'}</p>
           </div>
           <div className="border-l border-red-200 pl-3">
-            <p className="text-xs font-semibold text-gray-500">운동 요일</p>
+            <p className="text-xs font-semibold text-gray-500">{weekdayLabel}</p>
             <div className="mt-2 flex flex-wrap gap-1">
               {weekdays.length ? weekdays.map((day) => (
                 <span key={day} className="rounded-full bg-red-50 px-2 py-1 text-xs font-semibold text-red-700">{day}</span>
@@ -2893,7 +3554,7 @@ function RoutineRenderer({
         </div>
         {firstItems.length ? (
           <div className="mt-4 rounded-lg bg-white p-3">
-            <p className="text-sm font-semibold text-gray-700">첫 루틴 미리보기</p>
+            <p className="text-sm font-semibold text-gray-700">{previewLabel}</p>
             <ul className="mt-2 space-y-1 text-sm text-gray-600">
               {firstItems.map((item) => (
                 <li key={item.id}>- {item.title}</li>
@@ -2915,7 +3576,7 @@ function RoutineRenderer({
                       <label className="flex gap-3">
                         <input className="mt-1" type="checkbox" checked={Boolean(checks[item.id])} onChange={() => onToggle(item.id)} />
                         <span className="min-w-0 flex-1">
-                          {item.repeat_rule ? <span className="rounded-full bg-red-50 px-2 py-1 font-mono text-xs font-semibold text-red-700">{item.repeat_rule}</span> : null}
+                          {item.repeat_rule && !isExactVideo ? <span className="rounded-full bg-red-50 px-2 py-1 font-mono text-xs font-semibold text-red-700">{item.repeat_rule}</span> : null}
                           <ExecutionMetaBadges badges={getActionBadges(bundle, item, detail)} />
                           <span className="mt-2 block text-base font-semibold text-gray-950">{item.title}</span>
                         </span>

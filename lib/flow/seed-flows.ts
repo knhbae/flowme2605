@@ -1,5 +1,7 @@
 import { parseTextFlow } from './parser';
+import { previewFlowBundles } from './creator-channel-preview';
 import { realContentPilotBundles } from './real-content-pilot-flows';
+import { realSourceChannelBundles } from './real-source-channel-batch';
 import { Flow, FlowBundle, FlowItemDetail, Recipe } from './types';
 
 const now = '2026-05-20T00:00:00.000Z';
@@ -1620,6 +1622,8 @@ const baseSeedBundles: FlowBundle[] = [
   ...additionalOnlineBundles,
   ...creatorInspiredBundles,
   ...realContentPilotBundles,
+  ...realSourceChannelBundles,
+  ...previewFlowBundles,
 ];
 
 export const seedBundles: FlowBundle[] = baseSeedBundles.map(enrichSeedMeta);

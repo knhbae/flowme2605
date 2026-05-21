@@ -1,4 +1,5 @@
 import { FlowUser } from './types';
+import { previewCreatorChannels } from './creator-channel-preview';
 
 export const CURRENT_USER_ID = 'user-my-studio';
 
@@ -76,6 +77,7 @@ export const virtualUsers: FlowUser[] = [
     avatar_initial: '행',
     specialty_tags: ['서류', '행정', '공식자료'],
   },
+  ...previewCreatorChannels,
 ];
 
 export function getVirtualUser(id?: string): FlowUser | undefined {

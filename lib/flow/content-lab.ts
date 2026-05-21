@@ -336,6 +336,8 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   const convertedPilotSlugList = convertedPilotSlugs as readonly string[];
   const convertedPilotBundles = bundles.filter((bundle) => convertedPilotSlugList.includes(bundle.flow.slug));
   const expansionCandidates = expansionCreatorLabs.flatMap((creator) => creator.candidates);
+  const previewGeneratedBundles = bundles.filter((bundle) => bundle.flow.id.startsWith('flow-preview-'));
+  const realSourceBundles = bundles.filter((bundle) => bundle.flow.source_status === 'real');
 
   return {
     pilotCreatorCount: pilotCreatorLabs.length,
@@ -344,6 +346,8 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     convertedPilotFlowCount: convertedPilotSlugs.length,
     missingConvertedPilotSlugs: convertedPilotSlugs.filter((slug) => !slugs.has(slug)),
     convertedPilotCategories: Array.from(new Set(convertedPilotBundles.map((bundle) => bundle.flow.category))).sort(),
+    realSourceFlowCount: realSourceBundles.length,
+    previewGeneratedFlowCount: previewGeneratedBundles.length,
     expansionCreatorCount: expansionCreatorLabs.length,
     expansionCandidateCount: expansionCandidates.length,
     structureCoverage: Array.from(new Set(expansionCandidates.map((candidate) => candidate.structure_type))).sort(),

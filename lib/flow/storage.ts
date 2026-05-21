@@ -23,13 +23,18 @@ export function cloneSeedBundles(): FlowBundle[] {
   return JSON.parse(JSON.stringify(seedBundles)) as FlowBundle[];
 }
 
+export function mergeSeedBundles(stored: FlowBundle[], seeds: FlowBundle[]): FlowBundle[] {
+  const seedIds = new Set(seeds.map((bundle) => bundle.flow.id));
+  const localOnly = stored.filter((bundle) => !seedIds.has(bundle.flow.id));
+  return [...seeds, ...localOnly];
+}
+
 export function getBundles(): FlowBundle[] {
   if (!canUseStorage()) return cloneSeedBundles();
 
+  const seeds = cloneSeedBundles();
   const raw = localStorage.getItem(BUNDLES_KEY);
   if (!raw) {
-    const seeds = cloneSeedBundles();
-    const seedIds = new Set(seeds.map((bundle) => bundle.flow.id));
     const previous = PREVIOUS_BUNDLES_KEYS
       .map((key) => localStorage.getItem(key))
       .filter(Boolean)
@@ -40,16 +45,19 @@ export function getBundles(): FlowBundle[] {
           return [];
         }
       })
-      .filter((bundle) => !seedIds.has(bundle.flow.id));
-    const migrated = [...seeds, ...previous];
+    const migrated = mergeSeedBundles(previous, seeds);
     localStorage.setItem(BUNDLES_KEY, JSON.stringify(migrated));
     return migrated;
   }
 
   try {
-    return JSON.parse(raw) as FlowBundle[];
+    const stored = JSON.parse(raw) as FlowBundle[];
+    const merged = mergeSeedBundles(stored, seeds);
+    if (merged.length !== stored.length) {
+      localStorage.setItem(BUNDLES_KEY, JSON.stringify(merged));
+    }
+    return merged;
   } catch {
-    const seeds = cloneSeedBundles();
     localStorage.setItem(BUNDLES_KEY, JSON.stringify(seeds));
     return seeds;
   }

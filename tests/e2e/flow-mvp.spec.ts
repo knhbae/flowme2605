@@ -90,6 +90,185 @@ test('creator profile aggregates creator flows from byline links', async ({ page
   await expect(page.getByRole('heading', { name: '결혼 준비 D-180 Flow' })).toBeVisible();
 });
 
+test('creator directory exposes channel-scale preview library', async ({ page }) => {
+  await page.goto('/creators');
+
+  await expect(page.getByRole('heading', { name: '제작자 채널' })).toBeVisible();
+  await expect(page.getByText(/4\d{2}\+/)).toBeVisible();
+  await expect(page.locator('header').getByText('출처 확인')).toBeVisible();
+  await expect(page.getByRole('link', { name: /삼성전자서비스/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'ThankyouBUBU', exact: true })).toBeVisible();
+  await expect(page.getByText('실행성 점수').first()).toBeVisible();
+});
+
+test('creator directory exposes representative creator content links', async ({ page }) => {
+  await page.goto('/creators');
+
+  await expect(page.getByText('대표 Flow').first()).toBeVisible();
+  await expect(page.locator('a[href="/f/real-thankyou-bubu-video-full-body-no-jump"]').first()).toBeVisible();
+  await expect(page.locator('a[href="/f/real-fitvely-video-body-fat-6kg-method"]').first()).toBeVisible();
+});
+
+test('preview creator channel supports browsing 20+ flowified entries', async ({ page }) => {
+  await page.goto('/u/samsung-service');
+
+  await expect(page.getByRole('heading', { name: '삼성전자서비스' })).toBeVisible();
+  await expect(page.getByText('Flow화 콘텐츠')).toBeVisible();
+  await expect(page.getByText(/4\d/).first()).toBeVisible();
+  await expect(page.getByText('출처 커버리지')).toBeVisible();
+  await expect(page.getByText('채널 Flow 라이브러리')).toBeVisible();
+  await expect(page.getByLabel('Flow 검색')).toBeVisible();
+  await expect(page.getByRole('link', { name: /가전관리 월간 점검 루틴/ })).toBeVisible();
+  await page.getByLabel('Flow 검색').fill('비상 상황');
+  await expect(page.getByRole('link', { name: /가전관리 비상 상황 대응표/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /가전관리 월간 점검 루틴/ })).not.toBeVisible();
+});
+
+test('creator channel can filter real source-backed flows', async ({ page }) => {
+  await page.goto('/u/samsung-service');
+
+  await expect(page.getByText('출처 확인').first()).toBeVisible();
+  await expect(page.getByText('첫 행동:').first()).toBeVisible();
+  await page.getByRole('button', { name: '출처 확인' }).click();
+
+  await expect(page.locator('a[href="/f/real-samsung-aircon-seasonal-care"]').first()).toBeVisible();
+  await expect(page.locator('a[href^="/f/channel-samsung-service-"]')).toHaveCount(0);
+});
+
+test('fitness creator profile highlights exact video flows before samples', async ({ page }) => {
+  await page.goto('/u/thankyou-bubu');
+
+  await expect(page.getByText('실제 콘텐츠로 바로 시작')).toBeVisible();
+  await expect(page.locator('a[href="/f/real-thankyou-bubu-video-full-body-no-jump"]').first()).toBeVisible();
+
+  await page.locator('button').first().click();
+
+  await expect(page.locator('a[href="/f/real-thankyou-bubu-video-full-body-no-jump"]').first()).toBeVisible();
+  await expect(page.locator('a[href^="/f/channel-thankyou-bubu-"]')).toHaveCount(0);
+});
+
+test('fitness exact video flow keeps the execution panel minimal', async ({ page }) => {
+  await page.goto('/f/real-thankyou-bubu-video-full-body-no-jump');
+
+  await expect(page.getByRole('heading', { name: '내 도구에 들어간 모습' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '캘린더에 이미 들어간 운동 일정' })).toBeVisible();
+  await expect(page.getByText('추천 리듬: 주 3회')).toBeVisible();
+  await expect(page.getByText('시작일', { exact: true })).toBeVisible();
+  await expect(page.getByText('운동 요일')).toBeVisible();
+  await expect(page.getByText('월간 미리보기', { exact: true }).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: /영상 열기/ })).toBeVisible();
+  await expect(page.getByText('캘린더 일정으로 시작')).toHaveCount(0);
+  await expect(page.getByText('1. 요일 정하기')).toHaveCount(0);
+  await expect(page.getByText('2. 오늘 실행 체크')).toHaveCount(0);
+  await expect(page.getByText('3. 내 Flow로 수정')).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: '실행 항목' })).toBeVisible();
+  const schedulePreview = page.getByRole('region', { name: '이번 주 등록 미리보기' });
+  await expect(schedulePreview).toBeVisible();
+  await expect(schedulePreview.getByText('월요일')).toBeVisible();
+  await expect(schedulePreview.getByText('수요일')).toBeVisible();
+  await expect(schedulePreview.getByText('금요일')).toBeVisible();
+  await expect(page.getByText('한눈에 보는 전체 루트')).toHaveCount(0);
+  await expect(page.getByText('이번 주 루틴 설정')).toHaveCount(0);
+  await expect(page.locator('details').filter({ hasText: '출처와 주의 정보' })).not.toHaveAttribute('open', '');
+  await expect(page.getByRole('button', { name: '캘린더에 넣기' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '엑셀 실행표 받기' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '초보' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '절반' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '전체 루틴' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '주별 보기' })).toHaveCount(0);
+  await expect(page.getByText('weekly')).toHaveCount(0);
+
+  const calendarDownloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: '캘린더에 넣기' }).click();
+  const calendarDownload = await calendarDownloadPromise;
+  expect(calendarDownload.suggestedFilename()).toBe('real-thankyou-bubu-video-full-body-no-jump.ics');
+
+  const excelDownloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: '엑셀 실행표 받기' }).click();
+  const excelDownload = await excelDownloadPromise;
+  expect(excelDownload.suggestedFilename()).toBe('real-thankyou-bubu-video-full-body-no-jump.xlsx');
+});
+
+test('diet exact video flow uses application language instead of workout scheduling', async ({ page }) => {
+  await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
+
+  await expect(page.getByRole('heading', { name: '식사 체크표에 이미 들어간 적용 Flow' })).toBeVisible();
+  await expect(page.getByText('추천 리듬: 매일')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '일별 적용 체크표' })).toBeVisible();
+  await expect(page.getByText('오늘 적용 기준만 고르기')).toHaveCount(0);
+  await expect(page.getByText('1. 적용일 정하기')).toHaveCount(0);
+  await expect(page.getByText('적용 요일').first()).toBeVisible();
+  await expect(page.getByText('운동 요일')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '전체 루틴' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '주별 보기' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '캘린더에 넣기' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '메모/노션에 복사' })).toBeVisible();
+});
+
+test('exact video copy opens an editable draft with the execution item preserved', async ({ page }) => {
+  await page.goto('/f/real-thankyou-bubu-video-full-body-no-jump');
+
+  await page.getByRole('button', { name: '내 Flow로 복사해 수정' }).click();
+
+  await expect(page).toHaveURL(/\/flows\/.+\/edit/);
+  await expect(page.getByRole('heading', { name: /ThankyouBUBU 전신 다이어트 실천 Flow 사본/ })).toBeVisible();
+  await expect(page.getByText('1개 항목', { exact: true })).toBeVisible();
+  await expect(page.getByLabel('실행 내용')).toHaveValue('운동 스케줄 등록하고 영상 실행');
+});
+
+test('creator profile merges newly shipped seed flows into existing browser storage', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      'flow_builder_mvp_bundles_v11',
+      JSON.stringify([
+        {
+          flow: {
+            id: 'flow-local-only',
+            slug: 'local-only',
+            title: 'Local only old flow',
+            description: 'Old browser storage entry',
+            category: '운동/홈트',
+            structure_type: 'routine',
+            anchor_type: 'start_date',
+            status: 'published',
+            owner_user_id: 'channel-thankyou-bubu',
+            creator_name: 'ThankyouBUBU',
+            creator_role: '홈트 루틴 채널',
+            creator_note: 'old storage',
+            created_at: '2026-05-20T00:00:00.000Z',
+            updated_at: '2026-05-20T00:00:00.000Z',
+          },
+          sections: [],
+          items: [],
+        },
+      ]),
+    );
+  });
+
+  await page.goto('/u/thankyou-bubu');
+
+  await expect(page.getByText('실제 콘텐츠로 바로 시작')).toBeVisible();
+  await expect(page.locator('a[href="/f/real-thankyou-bubu-video-full-body-no-jump"]').first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Local only old flow' })).toBeVisible();
+});
+
+test('real source public flow exposes source QA metadata and first action', async ({ page }) => {
+  await page.goto('/f/real-samsung-aircon-seasonal-care');
+
+  await expect(page.getByText('출처 확인일: 2026-05-21')).toBeVisible();
+  await expect(page.getByText('Flow 전환 방식:')).toBeVisible();
+  await expect(page.getByText('출처 정밀도: 정확한 출처 페이지')).toBeVisible();
+  await expect(page.getByText('첫 행동:').first()).toBeVisible();
+});
+
+test('preview creator flow route opens encoded Korean slug', async ({ page }) => {
+  await page.goto('/f/channel-samsung-service-%EC%9B%94%EA%B0%84-%EC%A0%90%EA%B2%80-%EB%A3%A8%ED%8B%B4');
+
+  await expect(page).toHaveURL(/\/f\/channel-samsung-service-/);
+  await expect(page.locator('main.p-8')).toHaveCount(0);
+  await expect(page.locator('h1')).toHaveCount(1);
+});
+
 test('new flow creation starts from pasted content and a human pattern choice', async ({ page }) => {
   await page.goto('/flows/new');
 
@@ -160,8 +339,8 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await expect(page.getByText('월', { exact: true }).first()).toBeVisible();
   await expect(page.getByText('일', { exact: true }).first()).toBeVisible();
 
-  await page.getByText('이사 방식 정하기').first().click();
-  await page.getByText('이사할 집 하자 점검하기').first().click();
+  await page.getByRole('checkbox', { name: /이사 방식 정하기/ }).first().check();
+  await page.getByRole('checkbox', { name: /이사할 집 하자 점검하기/ }).first().check();
   await expect(page.getByText('2 / 24').first()).toBeVisible();
 
   const downloadPromise = page.waitForEvent('download');
@@ -272,7 +451,7 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(page.getByRole('heading', { name: '실제 제작자 콘텐츠가 여러 Flow로 관리되는지 검증' })).toBeVisible();
   await expect(page.getByText('3 x 4 파일럿 검증')).toBeVisible();
   await expect(page.getByText('B 파일럿 실제 Flow 변환')).toBeVisible();
-  await expect(page.getByText('10 x 20 확장 후보 검증')).toBeVisible();
+  await expect(page.getByText('200+ 제작자 채널 Flow 검증')).toBeVisible();
   await expect(page.getByText('10 converted')).toBeVisible();
   await expect(page.getByRole('link', { name: /삼성전자서비스 에어컨/ })).toBeVisible();
   await expect(page.getByRole('link', { name: /자동차검사 준비/ })).toBeVisible();

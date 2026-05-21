@@ -1,46 +1,51 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import {
+  getCreatorChannelSummaries,
+  previewCreatorChannels,
+  previewFlowBundles,
+} from './creator-channel-preview';
+import { inferPrimaryDestination } from './destination';
 import { seedBundles } from './seed-flows';
 import { virtualUsers } from './users';
 
 test('seed pack contains public Korean Flow bundles across practical categories', () => {
-  assert.equal(seedBundles.length, 31);
-  assert.deepEqual(
-    seedBundles.map((bundle) => bundle.flow.slug).sort(),
-    [
-      'baby-food-menu-recipe',
-      'business-registration-basic',
-      'car-care-monthly-routine',
-      'computer-skills-d30-study',
-      'diet-habit-2week',
-      'diet-meal-exercise-log',
-      'diet-reset-2week',
-      'driver-license-renewal-check',
-      'english-study-30day-routine',
-      'family-certificate-issue',
-      'happy-birth-service-check',
-      'home-workout-20min',
-      'industrial-accident-claim-docs',
-      'job-change-risk-check',
-      'moving-d30-basic',
-      'national-health-checkup-d7',
-      'new-car-delivery-check',
-      'overseas-travel-d14',
-      'passport-renewal-docs',
-      'pet-registration-basic',
-      'qnet-exam-application-prep',
-      'resident-register-copy-issue',
-      'running-5k-4week',
-      'samsung-aircon-seasonal-check',
-      'samsung-washer-filter-cleaning',
-      'study-exam-d30-plan',
-      'used-car-buying-check',
-      'vaccination-certificate-issue',
-      'vehicle-inspection-prep',
-      'wedding-d180-basic',
-      'year-end-tax-docs',
-    ],
-  );
+  assert.ok(seedBundles.length >= 231);
+  const slugs = new Set(seedBundles.map((bundle) => bundle.flow.slug));
+  const originalSlugs = [
+    'baby-food-menu-recipe',
+    'business-registration-basic',
+    'car-care-monthly-routine',
+    'computer-skills-d30-study',
+    'diet-habit-2week',
+    'diet-meal-exercise-log',
+    'diet-reset-2week',
+    'driver-license-renewal-check',
+    'english-study-30day-routine',
+    'family-certificate-issue',
+    'happy-birth-service-check',
+    'home-workout-20min',
+    'industrial-accident-claim-docs',
+    'job-change-risk-check',
+    'moving-d30-basic',
+    'national-health-checkup-d7',
+    'new-car-delivery-check',
+    'overseas-travel-d14',
+    'passport-renewal-docs',
+    'pet-registration-basic',
+    'qnet-exam-application-prep',
+    'resident-register-copy-issue',
+    'running-5k-4week',
+    'samsung-aircon-seasonal-check',
+    'samsung-washer-filter-cleaning',
+    'study-exam-d30-plan',
+    'used-car-buying-check',
+    'vaccination-certificate-issue',
+    'vehicle-inspection-prep',
+    'wedding-d180-basic',
+    'year-end-tax-docs',
+  ];
+  assert.ok(originalSlugs.every((slug) => slugs.has(slug)));
   assert.ok(seedBundles.every((bundle) => bundle.flow.status === 'published'));
   assert.ok(seedBundles.some((bundle) => bundle.flow.title === '이사 D-30 준비 Flow'));
   assert.ok(seedBundles.some((bundle) => bundle.flow.title === '초기 이유식 메뉴·레시피 Flow'));
@@ -264,4 +269,182 @@ test('existing pilot flows use upgraded source metadata and matching detail link
       expectedFlow.slug,
     );
   }
+});
+
+test('creator channel preview exposes 10 channels and 400+ published flows', () => {
+  assert.ok(previewCreatorChannels.length >= 10);
+  assert.ok(previewFlowBundles.length >= 400);
+  assert.ok(previewFlowBundles.every((bundle) => bundle.flow.status === 'published'));
+
+  const summaries = getCreatorChannelSummaries(seedBundles);
+  const previewSummaries = summaries.filter((summary) => summary.is_preview_channel);
+
+  assert.ok(previewSummaries.length >= 10);
+  assert.ok(previewSummaries.every((summary) => summary.flow_count >= 40));
+  assert.ok(previewSummaries.every((summary) => summary.source_coverage === 100));
+  assert.ok(previewSummaries.every((summary) => summary.execution_score >= 70));
+});
+
+test('generated preview flows are executable and source-backed', () => {
+  const generated = seedBundles.filter((bundle) => bundle.flow.id.startsWith('flow-preview-'));
+
+  assert.ok(generated.length >= 400);
+  for (const bundle of generated) {
+    assert.ok(bundle.flow.slug.startsWith('channel-'), bundle.flow.slug);
+    assert.ok(bundle.flow.owner_user_id, bundle.flow.slug);
+    assert.ok(bundle.flow.creator_name, bundle.flow.slug);
+    assert.ok(bundle.flow.source_title, bundle.flow.slug);
+    assert.ok(bundle.flow.source_url?.startsWith('https://'), bundle.flow.slug);
+    assert.ok(bundle.items.length >= 4, bundle.flow.slug);
+    assert.ok(bundle.itemDetails?.some((detail) => detail.completion_criteria), bundle.flow.slug);
+  }
+});
+
+test('real source-backed channel batch covers every preview channel', () => {
+  const real = seedBundles.filter((bundle) => bundle.flow.source_status === 'real');
+  assert.ok(real.length >= 20);
+
+  for (const channel of previewCreatorChannels) {
+    const count = real.filter((bundle) => bundle.flow.owner_user_id === channel.id).length;
+    assert.ok(count >= 2, `${channel.slug} expected at least 2 real source-backed flows`);
+  }
+});
+
+test('real source-backed flows include precision and tailored executable details', () => {
+  const real = seedBundles.filter((bundle) => bundle.flow.source_status === 'real');
+  assert.ok(real.length >= 20);
+
+  for (const bundle of real) {
+    assert.ok(bundle.flow.source_url, `${bundle.flow.slug} missing source_url`);
+    assert.ok(bundle.flow.source_title, `${bundle.flow.slug} missing source_title`);
+    assert.ok(bundle.flow.source_checked_at, `${bundle.flow.slug} missing source_checked_at`);
+    assert.ok(bundle.flow.conversion_note, `${bundle.flow.slug} missing conversion_note`);
+    assert.ok(bundle.flow.source_precision, `${bundle.flow.slug} missing source_precision`);
+    assert.ok(['exact', 'broad'].includes(bundle.flow.source_precision), bundle.flow.slug);
+    const expectedItemCount = bundle.flow.tags?.includes('exact-video') ? 1 : 5;
+    assert.equal(bundle.items.length, expectedItemCount, `${bundle.flow.slug} expected ${expectedItemCount} items`);
+    assert.equal(
+      bundle.itemDetails?.length,
+      expectedItemCount,
+      `${bundle.flow.slug} expected ${expectedItemCount} item details`,
+    );
+
+    const detailByItem = new Map(bundle.itemDetails?.map((detail) => [detail.item_id, detail]));
+    const whyTexts = new Set<string>();
+    const howTexts = new Set<string>();
+    const completionTexts = new Set<string>();
+
+    for (const item of bundle.items) {
+      const detail = detailByItem.get(item.id);
+      assert.ok(detail, `${bundle.flow.slug} missing detail for ${item.title}`);
+      assert.ok(detail.why && detail.why.length >= 20, `${bundle.flow.slug} weak why for ${item.title}`);
+      assert.ok(detail.how && detail.how.length >= 20, `${bundle.flow.slug} weak how for ${item.title}`);
+      assert.ok(
+        detail.completion_criteria && detail.completion_criteria.length >= 15,
+        `${bundle.flow.slug} weak completion criteria for ${item.title}`,
+      );
+      assert.ok(detail.links?.length, `${bundle.flow.slug} missing detail link for ${item.title}`);
+      whyTexts.add(detail.why);
+      howTexts.add(detail.how);
+      completionTexts.add(detail.completion_criteria);
+    }
+
+    if (!bundle.flow.tags?.includes('exact-video')) {
+      assert.ok(whyTexts.size >= 4, `${bundle.flow.slug} uses generic why text`);
+      assert.ok(howTexts.size >= 4, `${bundle.flow.slug} uses generic how text`);
+      assert.ok(completionTexts.size >= 4, `${bundle.flow.slug} uses generic completion text`);
+    }
+  }
+});
+
+test('fitness creator deep dive converts exact videos into executable flows', () => {
+  const expected = [
+    { creator: 'ThankyouBUBU', slugPrefix: 'real-thankyou-bubu-video-', minimum: 10 },
+    { creator: 'FITVELY', slugPrefix: 'real-fitvely-video-', minimum: 10 },
+  ];
+
+  for (const { creator, slugPrefix, minimum } of expected) {
+    const exactVideoFlows = seedBundles.filter(
+      (bundle) =>
+        bundle.flow.source_status === 'real' &&
+        bundle.flow.source_precision === 'exact' &&
+        bundle.flow.slug.startsWith(slugPrefix),
+    );
+
+    assert.ok(exactVideoFlows.length >= minimum, `${creator} needs ${minimum}+ exact video flows`);
+
+    for (const bundle of exactVideoFlows) {
+      assert.match(bundle.flow.source_url ?? '', /^https:\/\/www\.youtube\.com\/watch\?v=/, bundle.flow.slug);
+      assert.equal(bundle.items.length, 1, `${bundle.flow.slug} should keep creator video execution to one checklist item`);
+      assert.equal(bundle.itemDetails?.length, 1, `${bundle.flow.slug} should keep creator video detail in one panel`);
+      assert.ok(bundle.items.every((item) => item.repeat_rule === 'weekly'), bundle.flow.slug);
+      assert.ok(bundle.items.every((item) => item.source_type === 'creator_experience'), bundle.flow.slug);
+      assert.ok(
+        bundle.itemDetails?.every((detail) =>
+          detail.completion_criteria &&
+          detail.links?.some((link) => link.type === 'creator') &&
+          detail.how?.includes('준비') &&
+          detail.how?.includes('실행') &&
+          detail.how?.includes('마무리'),
+        ),
+        bundle.flow.slug,
+      );
+      assert.ok(bundle.flow.tags?.includes('exact-video'), bundle.flow.slug);
+    }
+  }
+});
+
+test('fitness exact video flows keep one action with clear execution detail', () => {
+  const workout = seedBundles.find((bundle) => bundle.flow.slug === 'real-thankyou-bubu-video-full-body-no-jump');
+  const diet = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-body-fat-6kg-method');
+  const workoutPlan = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-workout-split-science');
+
+  assert.ok(workout);
+  assert.ok(diet);
+  assert.ok(workoutPlan);
+
+  assert.equal(workout.items[0].title, '운동 스케줄 등록하고 영상 실행');
+  assert.match(workout.itemDetails?.[0]?.how ?? '', /준비:.*실행:.*마무리:/);
+  assert.equal(diet.items[0].title, '다음 식사 한 끼에 감량 기준 적용');
+  assert.match(diet.itemDetails?.[0]?.how ?? '', /준비:.*실행:.*마무리:/);
+  assert.equal(workoutPlan.items[0].title, '이번 주 분할·세트·휴식 기준 정하기');
+  assert.match(workoutPlan.itemDetails?.[0]?.how ?? '', /운동표|분할|세트|휴식/);
+  assert.doesNotMatch(workoutPlan.itemDetails?.[0]?.how ?? '', /식사 한 끼/);
+});
+
+test('source-backed flows expose primary destination for portable UX', () => {
+  const workout = seedBundles.find((bundle) => bundle.flow.slug === 'real-thankyou-bubu-video-full-body-no-jump');
+  const diet = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-body-fat-6kg-method');
+  const workoutPlan = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-workout-split-science');
+  const qnet = seedBundles.find((bundle) => bundle.flow.slug === 'real-qnet-application-examday-check');
+
+  assert.ok(workout);
+  assert.ok(diet);
+  assert.ok(workoutPlan);
+  assert.ok(qnet);
+
+  assert.equal(inferPrimaryDestination(workout), 'calendar');
+  assert.equal(inferPrimaryDestination(diet), 'memo');
+  assert.equal(inferPrimaryDestination(workoutPlan), 'hybrid');
+  assert.equal(inferPrimaryDestination(qnet), 'hybrid');
+});
+
+test('fitness exact video flow titles preserve the original content premise', () => {
+  const exactVideos = seedBundles.filter((bundle) => bundle.flow.tags?.includes('exact-video'));
+  const carb = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-carb-reason');
+
+  assert.ok(carb);
+  assert.equal(carb.flow.title, 'FITVELY 탄수화물을 먹어야 하는 이유 Flow');
+  assert.match(carb.flow.source_title ?? '', /다이어트할 때 탄수화물을 꼭 먹어야 하는 이유/);
+
+  for (const bundle of exactVideos) {
+    assert.doesNotMatch(bundle.flow.title, /기준 Flow$/, bundle.flow.slug);
+    assert.doesNotMatch(bundle.flow.title, /^FITVELY 다음 식사/, bundle.flow.slug);
+  }
+});
+
+test('preview-generated creator channel flows are explicitly marked preview', () => {
+  const generated = seedBundles.filter((bundle) => bundle.flow.id.startsWith('flow-preview-'));
+  assert.ok(generated.length >= 400);
+  assert.ok(generated.every((bundle) => bundle.flow.source_status === 'preview'));
 });
