@@ -429,6 +429,18 @@ test('source-backed flows expose primary destination for portable UX', () => {
   assert.equal(inferPrimaryDestination(qnet), 'hybrid');
 });
 
+test('fitness exact video flow titles describe the user action, not abstract criteria', () => {
+  const exactVideos = seedBundles.filter((bundle) => bundle.flow.tags?.includes('exact-video'));
+  const carb = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-carb-reason');
+
+  assert.ok(carb);
+  assert.equal(carb.flow.title, 'FITVELY 다음 식사 탄수화물 적용 Flow');
+
+  for (const bundle of exactVideos) {
+    assert.doesNotMatch(bundle.flow.title, /기준 Flow$/, bundle.flow.slug);
+  }
+});
+
 test('preview-generated creator channel flows are explicitly marked preview', () => {
   const generated = seedBundles.filter((bundle) => bundle.flow.id.startsWith('flow-preview-'));
   assert.ok(generated.length >= 400);

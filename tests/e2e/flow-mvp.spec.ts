@@ -158,6 +158,11 @@ test('fitness exact video flow keeps the execution panel minimal', async ({ page
   await expect(page.getByText('2. 오늘 실행 체크')).toBeVisible();
   await expect(page.getByText('3. 내 Flow로 수정')).toBeVisible();
   await expect(page.getByRole('heading', { name: '실행 항목' })).toBeVisible();
+  const schedulePreview = page.getByRole('region', { name: '이번 주 등록 미리보기' });
+  await expect(schedulePreview).toBeVisible();
+  await expect(schedulePreview.getByText('월요일')).toBeVisible();
+  await expect(schedulePreview.getByText('수요일')).toBeVisible();
+  await expect(schedulePreview.getByText('금요일')).toBeVisible();
   await expect(page.getByText('한눈에 보는 전체 루트')).toHaveCount(0);
   await expect(page.getByText('이번 주 루틴 설정')).toHaveCount(0);
   await expect(page.locator('details').filter({ hasText: '출처와 주의 정보' })).not.toHaveAttribute('open', '');
@@ -191,6 +196,17 @@ test('diet exact video flow uses application language instead of workout schedul
   await expect(page.getByRole('button', { name: '주별 보기' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '캘린더에 넣기' })).toBeVisible();
   await expect(page.getByRole('button', { name: '메모/노션에 복사' })).toBeVisible();
+});
+
+test('exact video copy opens an editable draft with the execution item preserved', async ({ page }) => {
+  await page.goto('/f/real-thankyou-bubu-video-full-body-no-jump');
+
+  await page.getByRole('button', { name: '내 Flow로 복사해 수정' }).click();
+
+  await expect(page).toHaveURL(/\/flows\/.+\/edit/);
+  await expect(page.getByRole('heading', { name: /ThankyouBUBU 전신 다이어트 실천 Flow 사본/ })).toBeVisible();
+  await expect(page.getByText('1개 항목', { exact: true })).toBeVisible();
+  await expect(page.getByLabel('실행 내용')).toHaveValue('운동 스케줄 등록하고 영상 실행');
 });
 
 test('creator profile merges newly shipped seed flows into existing browser storage', async ({ page }) => {

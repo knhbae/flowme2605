@@ -289,6 +289,7 @@ function cloneBundleForEditing(bundle: FlowBundle): FlowBundle {
       slug: `${copied.flow.slug}-copy-${Date.now()}`,
       title: `${copied.flow.title} 사본`,
       status: 'draft',
+      raw_text: copied.flow.raw_text ?? serializeTextFlow(copied.sections, copied.items, copied.itemDetails, copied.warnings),
       owner_user_id: getCurrentUser().id,
       creator_name: getCurrentUser().name,
       creator_role: getCurrentUser().role,
@@ -2252,7 +2253,7 @@ export function PublicFlow({ slug }: { slug: string }) {
       </section>
 
       {showTodayExecution ? (
-        <ExactVideoRenderer bundle={bundle} checks={checks} onToggle={toggle} />
+        <ExactVideoRenderer bundle={bundle} anchor={displayAnchor} weekdays={weekdaySelection} checks={checks} onToggle={toggle} destination={primaryDestination} />
       ) : (
         <>
           <FlowOverview bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} />
@@ -2440,6 +2441,49 @@ function getExactSetupDescription(destination: PrimaryDestination): string {
   if (destination === 'calendar') return '캘린더에 넣을 반복 요일을 고르면 됩니다.';
   if (destination === 'hybrid' || destination === 'sheet') return '이번 주 운동표에 반영할 기준 날짜와 요일을 정합니다.';
   return '오늘 적용할 날짜와 반복 여부만 가볍게 정합니다.';
+}
+
+const weekdayIndex: Record<string, number> = {
+  일: 0,
+  월: 1,
+  화: 2,
+  수: 3,
+  목: 4,
+  금: 5,
+  토: 6,
+};
+
+function getExactVideoSchedule(
+  anchor: string,
+  weekdays: string[],
+  title: string,
+  destination: PrimaryDestination,
+): { date: string; day: string; label: string; title: string }[] {
+  if (!anchor) return [];
+
+  const start = new Date(anchor);
+  if (Number.isNaN(start.getTime())) return [];
+
+  const selected = weekdays.length ? weekdays : ['월', '수', '금'];
+  const label =
+    destination === 'calendar'
+      ? '캘린더 일정'
+      : destination === 'hybrid' || destination === 'sheet'
+        ? '운동표 반영'
+        : '메모 적용';
+
+  return [...selected]
+    .filter((day) => weekdayIndex[day] !== undefined)
+    .sort((a, b) => weekdayIndex[a] - weekdayIndex[b])
+    .map((day) => {
+      const offset = (weekdayIndex[day] - start.getDay() + 7) % 7;
+      return {
+        date: formatDate(addDays(start, offset)),
+        day,
+        label,
+        title,
+      };
+    });
 }
 
 function itemDate(anchor: string, item: FlowItem) {
@@ -3139,45 +3183,76 @@ function MealPlanRenderer({
 
 function ExactVideoRenderer({
   bundle,
+  anchor,
+  weekdays,
   checks,
   onToggle,
+  destination,
 }: {
   bundle: FlowBundle;
+  anchor: string;
+  weekdays: string[];
   checks: Record<string, boolean>;
   onToggle: (id: string) => void;
+  destination: PrimaryDestination;
 }) {
   const item = bundle.items[0];
   const detail = item ? getItemDetail(bundle, item.id) : undefined;
+  const schedule = item ? getExactVideoSchedule(anchor, weekdays, item.title, destination) : [];
 
   if (!item) return null;
 
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-950">실행 항목</h2>
-          <p className="mt-1 text-sm font-semibold text-blue-700">{bundle.sections[0]?.title ?? '오늘 실행'}</p>
+    <div className="space-y-4">
+      {schedule.length ? (
+        <section aria-label="이번 주 등록 미리보기" className="rounded-xl border border-blue-100 bg-blue-50 p-5">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-950">이번 주 등록 미리보기</h2>
+              <p className="mt-1 text-sm text-blue-900">사용자가 실제 캘린더나 메모에 넣게 될 날짜입니다.</p>
+            </div>
+            <span className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-blue-700">{schedule.length}회</span>
+          </div>
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            {schedule.map((entry) => (
+              <div key={entry.date} className="rounded-lg border border-blue-100 bg-white p-3">
+                <p className="text-sm font-semibold text-blue-700">{entry.day}요일</p>
+                <p className="mt-1 text-lg font-semibold text-gray-950">{entry.date}</p>
+                <p className="mt-2 text-sm text-gray-600">{entry.label}</p>
+                <p className="mt-2 text-sm font-medium text-gray-900">{entry.title}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      <section className="rounded-xl border border-gray-200 bg-white p-5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-950">실행 항목</h2>
+            <p className="mt-1 text-sm font-semibold text-blue-700">{bundle.sections[0]?.title ?? '오늘 실행'}</p>
+          </div>
+          {bundle.flow.source_url ? (
+            <a className="rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
+              원본 열기
+            </a>
+          ) : null}
         </div>
-        {bundle.flow.source_url ? (
-          <a className="rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
-            원본 열기
-          </a>
-        ) : null}
-      </div>
-      <div className="mt-4 rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
-        <label className="flex gap-3">
-          <input className="mt-1" type="checkbox" checked={Boolean(checks[item.id])} onChange={() => onToggle(item.id)} />
-          <span className="min-w-0 flex-1">
-            <span className="block text-base font-semibold text-gray-950">{item.title}</span>
-            <DetailPreview detail={detail} />
-          </span>
-        </label>
-        <div className="mt-3">
-          <InlineItemLinks detail={detail} />
+        <div className="mt-4 rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+          <label className="flex gap-3">
+            <input className="mt-1" type="checkbox" checked={Boolean(checks[item.id])} onChange={() => onToggle(item.id)} />
+            <span className="min-w-0 flex-1">
+              <span className="block text-base font-semibold text-gray-950">{item.title}</span>
+              <DetailPreview detail={detail} />
+            </span>
+          </label>
+          <div className="mt-3">
+            <InlineItemLinks detail={detail} />
+          </div>
+          <ItemDetailPanel detail={detail} />
         </div>
-        <ItemDetailPanel detail={detail} />
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }
 
