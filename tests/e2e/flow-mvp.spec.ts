@@ -116,12 +116,24 @@ test('preview creator channel supports browsing 20+ flowified entries', async ({
   await expect(page.getByText('Flow화 콘텐츠')).toBeVisible();
   await expect(page.getByText(/4\d/).first()).toBeVisible();
   await expect(page.getByText('출처 커버리지')).toBeVisible();
-  await expect(page.getByText('채널 Flow 라이브러리')).toBeVisible();
+  await expect(page.getByText('목적별 Flow 라이브러리')).toBeVisible();
   await expect(page.getByLabel('Flow 검색')).toBeVisible();
   await expect(page.getByRole('link', { name: /가전관리 월간 점검 루틴/ })).toBeVisible();
   await page.getByLabel('Flow 검색').fill('비상 상황');
   await expect(page.getByRole('link', { name: /가전관리 비상 상황 대응표/ })).toBeVisible();
   await expect(page.getByRole('link', { name: /가전관리 월간 점검 루틴/ })).not.toBeVisible();
+});
+
+test('creator channel cards show source task rhythm and tool', async ({ page }) => {
+  await page.goto('/u/thankyou-bubu');
+
+  await expect(page.getByRole('heading', { name: '목적별 Flow 라이브러리' })).toBeVisible();
+  await expect(page.getByText('정확한 출처').first()).toBeVisible();
+  await expect(page.getByText('도구: 캘린더').first()).toBeVisible();
+  await expect(page.getByText('리듬: 주 3회').first()).toBeVisible();
+  await expect(page.getByText('첫 설정: 시작일').first()).toBeVisible();
+  await expect(page.getByRole('button', { name: '캘린더형' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '체크표형' })).toBeVisible();
 });
 
 test('creator channel can filter real source-backed flows', async ({ page }) => {

@@ -8,7 +8,13 @@ import { inferPrimaryDestination } from '@/lib/flow/destination';
 import { buildCalendarIcs, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
 import { getCreatorChannelSummaries } from '@/lib/flow/creator-channel-preview';
 import { parseTextFlow, serializeTextFlow, timingLabel } from '@/lib/flow/parser';
-import { getFlowSurfaceModel, inferFlowSurfaceType, type FlowSurfaceType, type SurfaceExportKind } from '@/lib/flow/surface';
+import {
+  getCreatorCardSurfaceMeta,
+  getFlowSurfaceModel,
+  inferFlowSurfaceType,
+  type FlowSurfaceType,
+  type SurfaceExportKind,
+} from '@/lib/flow/surface';
 import {
   getBundles,
   getChecks,
@@ -325,6 +331,7 @@ function FlowCard({
   const count = getFlowItemCount(bundle);
   const color = categoryColors[bundle.flow.category] ?? '#6B7280';
   const firstActionTitle = getFirstActionTitle(bundle);
+  const surfaceMeta = getCreatorCardSurfaceMeta(bundle);
 
   return (
     <article className="flex h-full flex-col justify-between rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
@@ -357,6 +364,33 @@ function FlowCard({
               <span className="font-semibold text-gray-900">첫 행동:</span> {firstActionTitle}
             </p>
           ) : null}
+          <dl className="mt-3 grid gap-1 text-sm text-gray-700">
+            <div className="flex gap-1">
+              <dt className="font-semibold">출처:</dt>
+              {' '}
+              <dd>{surfaceMeta.sourceKind}</dd>
+            </div>
+            <div className="flex gap-1">
+              <dt className="font-semibold">할 일:</dt>
+              {' '}
+              <dd>{surfaceMeta.task}</dd>
+            </div>
+            <div className="flex gap-1">
+              <dt className="font-semibold">리듬:</dt>
+              {' '}
+              <dd>{surfaceMeta.rhythm}</dd>
+            </div>
+            <div className="flex gap-1">
+              <dt className="font-semibold">도구:</dt>
+              {' '}
+              <dd>{surfaceMeta.tool}</dd>
+            </div>
+            <div className="flex gap-1">
+              <dt className="font-semibold">첫 설정:</dt>
+              {' '}
+              <dd>{surfaceMeta.firstSetting}</dd>
+            </div>
+          </dl>
           <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-gray-500">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-700">
               {getCreatorAvatar(bundle)}
@@ -1010,6 +1044,7 @@ export function CreatorProfile({ slug }: { slug: string }) {
   }).sort((a, b) => getCreatorBundlePriority(a) - getCreatorBundlePriority(b));
   const [categoryFilter, setCategoryFilter] = useState('전체');
   const [sourceFilter, setSourceFilter] = useState<'all' | 'real' | 'preview'>('all');
+  const [surfaceFilter, setSurfaceFilter] = useState<'all' | FlowSurfaceType>('all');
   const [libraryQuery, setLibraryQuery] = useState('');
   const first = creatorBundles[0];
   const profile = user ?? (first ? getCreatorUser(first) : undefined);
@@ -1025,6 +1060,7 @@ export function CreatorProfile({ slug }: { slug: string }) {
       if (sourceFilter === 'preview') return bundle.flow.source_status === 'preview';
       return true;
     })
+    .filter((bundle) => (surfaceFilter === 'all' ? true : inferFlowSurfaceType(bundle) === surfaceFilter))
     .filter((bundle) => {
       if (!normalizedLibraryQuery) return true;
       const searchable = [
@@ -1136,7 +1172,7 @@ export function CreatorProfile({ slug }: { slug: string }) {
         <div className="mb-4 flex items-end justify-between gap-4">
           <div>
             <p className="text-sm font-semibold text-gray-500">Published Flows</p>
-            <h2 className="text-2xl font-semibold">채널 Flow 라이브러리</h2>
+            <h2 className="text-2xl font-semibold">목적별 Flow 라이브러리</h2>
             <p className="mt-1 text-sm text-gray-600">
               {visibleCreatorBundles.length}개 표시 / 전체 {creatorBundles.length}개
             </p>
@@ -1167,6 +1203,27 @@ export function CreatorProfile({ slug }: { slug: string }) {
               }`}
               type="button"
               onClick={() => setSourceFilter(key as 'all' | 'real' | 'preview')}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className="mb-3 flex flex-wrap gap-2">
+          {[
+            ['all', '전체'],
+            ['calendar_routine', '캘린더형'],
+            ['daily_check', '체크표형'],
+            ['dday_timeline', 'D-Day형'],
+            ['sheet_tracker', '시트형'],
+            ['single_action', '메모형'],
+          ].map(([key, label]) => (
+            <button
+              key={key}
+              className={`rounded-md border px-3 py-2 text-sm font-semibold ${
+                surfaceFilter === key ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'
+              }`}
+              type="button"
+              onClick={() => setSurfaceFilter(key as 'all' | FlowSurfaceType)}
             >
               {label}
             </button>
