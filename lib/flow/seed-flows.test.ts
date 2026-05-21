@@ -1,5 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import {
+  getCreatorChannelSummaries,
+  previewCreatorChannels,
+  previewFlowBundles,
+} from './creator-channel-preview';
 import { seedBundles } from './seed-flows';
 import { virtualUsers } from './users';
 
@@ -263,5 +268,34 @@ test('existing pilot flows use upgraded source metadata and matching detail link
       ),
       expectedFlow.slug,
     );
+  }
+});
+
+test('creator channel preview exposes 10 channels and 200+ published flows', () => {
+  assert.ok(previewCreatorChannels.length >= 10);
+  assert.ok(previewFlowBundles.length >= 200);
+  assert.ok(previewFlowBundles.every((bundle) => bundle.flow.status === 'published'));
+
+  const summaries = getCreatorChannelSummaries(seedBundles);
+  const previewSummaries = summaries.filter((summary) => summary.is_preview_channel);
+
+  assert.ok(previewSummaries.length >= 10);
+  assert.ok(previewSummaries.every((summary) => summary.flow_count >= 20));
+  assert.ok(previewSummaries.every((summary) => summary.source_coverage === 100));
+  assert.ok(previewSummaries.every((summary) => summary.execution_score >= 70));
+});
+
+test('generated preview flows are executable and source-backed', () => {
+  const generated = seedBundles.filter((bundle) => bundle.flow.id.startsWith('flow-preview-'));
+
+  assert.ok(generated.length >= 200);
+  for (const bundle of generated) {
+    assert.ok(bundle.flow.slug.startsWith('channel-'), bundle.flow.slug);
+    assert.ok(bundle.flow.owner_user_id, bundle.flow.slug);
+    assert.ok(bundle.flow.creator_name, bundle.flow.slug);
+    assert.ok(bundle.flow.source_title, bundle.flow.slug);
+    assert.ok(bundle.flow.source_url?.startsWith('https://'), bundle.flow.slug);
+    assert.ok(bundle.items.length >= 4, bundle.flow.slug);
+    assert.ok(bundle.itemDetails?.some((detail) => detail.completion_criteria), bundle.flow.slug);
   }
 });
