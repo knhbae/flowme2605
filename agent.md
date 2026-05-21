@@ -39,6 +39,7 @@ npm run dev
 - User-facing flow changes: also run `npm run test:e2e` or document why it could not run.
 - Visual/frontend changes: inspect in browser and capture screenshots when possible.
 - Sensitive FLOW content must preserve source/risk separation and must not imply medical, legal, or financial certainty.
+- Content/UX changes must use the FLOW quality system in [docs/flow-rules/README.md](./docs/flow-rules/README.md). Apply broad principles first, score the result with the rubric, then use pattern playbooks only as defaults with explicit exceptions.
 
 ### Documentation Memory
 - `docs/STATUS.md`: current state and health.
@@ -46,6 +47,7 @@ npm run dev
 - `docs/HISTORY.md`: released changes only.
 - `docs/harness/`: AI-agnostic process, roles, and verification rules.
 - `docs/superpowers/`: detailed specs/plans produced by agent workflows.
+- `docs/flow-rules/`: product-quality principles, rubric, pattern playbooks, UX copy rules, and review gates for FLOW content and UI.
 
 ### Safety Rules
 - Never edit `.env`, credentials, API keys, or deployment secrets unless the user explicitly asks.
@@ -87,6 +89,15 @@ FLOW는 경험 콘텐츠와 사용자 도구 사이의 **실행 레이어**다. 
 8. 예쁜 데모는 검증이 아니다.
 9. 첫 측정 행동은 **open → anchor 입력 → copy/export → check → feedback** 이다.
 10. 장기 해자는 콘텐츠 양이 아니라 **실행 footprint 데이터**다.
+
+### FLOW Quality System
+FLOW 품질 기준은 좁은 금지 규칙이 아니라 3층 구조로 운영한다.
+
+1. **Principles:** 모든 카테고리에 적용되는 넓은 원칙. 사용자의 실제 니즈, 출처/위험 분리, 목적지 기반 실행, 적정 복잡도를 본다.
+2. **Rubric:** `docs/flow-rules/quality-rubric.md`의 점수 기준으로 실행성, 원본 충실도, 휴대성, 인지부하, 문장 구체성, 접근성/안전을 평가한다.
+3. **Pattern Playbooks:** `docs/flow-rules/content-conversion-playbooks.md`의 카테고리별 기본값을 사용하되, 원본 콘텐츠 구조와 사용자 목적이 다르면 예외를 명시한다.
+
+작업자는 “운동 영상은 무조건 1개 action” 같은 절대 규칙을 만들지 않는다. 대신 “단일 운동 영상은 기본 1개 action, 프로그램/챌린지/재활 루틴은 다중 단계 허용”처럼 기본값과 예외를 함께 둔다.
 
 ## 4) Product Structure Types
 

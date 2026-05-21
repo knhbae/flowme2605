@@ -1,0 +1,200 @@
+# Content Conversion Playbooks
+
+Playbooks are defaults, not laws. Use them to start quickly, then override when the original content or user need requires another structure.
+
+## Pattern Selection
+
+Before writing items, decide:
+
+1. What is the original content shape?
+2. What user need does it serve?
+3. Where should the user manage it?
+4. How much structure is necessary?
+5. What source/risk separation is required?
+
+## Single Fitness Video
+
+Default:
+
+- `structure_type`: `routine`
+- `primary_destination`: `calendar`
+- Action count: 1
+- Export: ICS + lightweight sheet + memo copy
+
+Good when:
+
+- One follow-along workout video
+- User only needs to schedule and execute
+- The video itself contains the detailed instruction
+
+Default action shape:
+
+```text
+Title: [운동 스케줄 등록하고 영상 실행]
+How: 준비: 이번 주 할 요일/시간을 정한다. 실행: 영상을 열어 오늘 가능한 강도로 따라간다. 마무리: 실행 여부와 다음 반복 여부만 체크한다.
+Completion: 캘린더 일정이 있고, 오늘 실행 여부를 체크했다.
+```
+
+Override:
+
+- Use 3-5 actions if the original video is a multi-part program, assessment, rehab sequence, or challenge where separate completion matters.
+- Use `checklist` if it is a one-time form check, equipment setup, or safety assessment rather than repeated exercise.
+
+## Diet / Body Composition Knowledge
+
+Default:
+
+- `structure_type`: `checklist` or light `routine`
+- `primary_destination`: `memo` or `internal_check`
+- Action count: 1-3
+
+Good when:
+
+- The content is a principle, tip, myth-busting video, or meal decision guide
+- User should try one behavior, not replace their whole diet
+
+Default action shape:
+
+```text
+Title: [다음 식사 한 끼에 적용할 기준 선택]
+How: 준비: 영상에서 오늘 쓸 기준 하나만 고른다. 실행: 다음 식사 또는 운동 전후 행동 하나에 적용한다. 마무리: 과한 제한감, 통증, 어지러움, 폭식 유발감이 있으면 중단한다.
+Completion: 오늘 한 끼 또는 운동 전후 행동 하나에 적용했고 유지/중단을 정했다.
+```
+
+Avoid:
+
+- Weight-loss guarantees
+- “운동 요일” when the user is applying a diet principle
+- Whole-diet restructuring unless the original content is a structured plan
+
+Override:
+
+- Use `routine` with calendar when the original is a repeated habit program.
+- Use `sheet` when measurement logs are central to the user need.
+
+## Exam / Certification Prep
+
+Default:
+
+- `structure_type`: `timeline + routine`
+- `primary_destination`: `hybrid`
+- Export: calendar milestones + sheet study tracker
+
+Include:
+
+- Exam date
+- Application/registration deadline
+- Study blocks
+- Past exam or source links
+- Supplies and exam-day checklist
+
+Avoid:
+
+- “열심히 공부하기”
+- Study tasks without dates, materials, or completion criteria
+
+Override:
+
+- Use `checklist` for administrative-only flows like application submission.
+
+## Home Appliance / Car Maintenance
+
+Default:
+
+- `structure_type`: `routine` or `timeline`
+- `primary_destination`: `calendar`
+- Action count: 2-5
+
+Include:
+
+- Inspection interval
+- Required materials/tools
+- Normal vs warning signs
+- Service booking trigger
+- Official manual/source link when available
+
+Avoid:
+
+- Advice that could damage equipment without safety caveats
+- Turning every sub-step into a separate checklist item
+
+Override:
+
+- Use `memo` for troubleshooting reference content.
+- Use `sheet` for fleet/multiple-car management.
+
+## Moving / Administrative Timeline
+
+Default:
+
+- `structure_type`: `timeline`
+- `primary_destination`: `hybrid`
+- Export: calendar deadlines + sheet checklist
+
+Include:
+
+- Anchor date
+- D-day offsets
+- Dependencies
+- Document links
+- Vendor/contact placeholders when useful
+
+Avoid:
+
+- One huge checklist without dates
+- Duplicate tasks across week/month views
+
+## Baby / Family / Health Logistics
+
+Default:
+
+- `structure_type`: `phase`, `timeline`, or `checklist`
+- `primary_destination`: `hybrid`
+- Action count: as needed, but source/risk separation is mandatory
+
+Include:
+
+- Official source
+- Parent/caregiver experience separated from official guidance
+- What to prepare
+- What to watch for
+- When to contact a professional
+
+Avoid:
+
+- Medical certainty
+- AI-generated prescriptions
+- Mixing anecdotal tips into official instructions
+
+## Creator Channel Collection
+
+Default:
+
+- Channel page groups many Flow candidates.
+- Individual Flow pages stay focused on one user job.
+
+Include on channel:
+
+- Representative Flow
+- Category tags
+- Source precision
+- Conversion maturity level
+- Manageability cues for creators
+
+Avoid on individual Flow:
+
+- Channel-level explanation that does not help this one execution
+- Generic creator praise
+
+## Generic Conversion Checklist
+
+For every new Flow:
+
+1. Write the user need.
+2. Pick primary destination.
+3. Pick structure type.
+4. Pick action count based on user decision points.
+5. Write first action before writing any supporting explanation.
+6. Add source and caution separately.
+7. Score with the rubric.
+8. Revise the lowest scoring dimension first.
