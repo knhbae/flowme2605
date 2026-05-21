@@ -309,7 +309,7 @@ test('real source-backed channel batch covers every preview channel', () => {
   }
 });
 
-test('real source-backed flows include attribution and executable details', () => {
+test('real source-backed flows include precision and tailored executable details', () => {
   const real = seedBundles.filter((bundle) => bundle.flow.source_status === 'real');
   assert.ok(real.length >= 20);
 
@@ -318,11 +318,34 @@ test('real source-backed flows include attribution and executable details', () =
     assert.ok(bundle.flow.source_title, `${bundle.flow.slug} missing source_title`);
     assert.ok(bundle.flow.source_checked_at, `${bundle.flow.slug} missing source_checked_at`);
     assert.ok(bundle.flow.conversion_note, `${bundle.flow.slug} missing conversion_note`);
-    assert.ok(bundle.items.length >= 5, `${bundle.flow.slug} expected 5+ items`);
-    assert.ok(
-      bundle.itemDetails?.some((detail) => detail.completion_criteria),
-      `${bundle.flow.slug} expected completion criteria`,
-    );
+    assert.ok(bundle.flow.source_precision, `${bundle.flow.slug} missing source_precision`);
+    assert.ok(['exact', 'broad'].includes(bundle.flow.source_precision), bundle.flow.slug);
+    assert.equal(bundle.items.length, 5, `${bundle.flow.slug} expected exactly 5 items`);
+    assert.equal(bundle.itemDetails?.length, 5, `${bundle.flow.slug} expected exactly 5 item details`);
+
+    const detailByItem = new Map(bundle.itemDetails?.map((detail) => [detail.item_id, detail]));
+    const whyTexts = new Set<string>();
+    const howTexts = new Set<string>();
+    const completionTexts = new Set<string>();
+
+    for (const item of bundle.items) {
+      const detail = detailByItem.get(item.id);
+      assert.ok(detail, `${bundle.flow.slug} missing detail for ${item.title}`);
+      assert.ok(detail.why && detail.why.length >= 20, `${bundle.flow.slug} weak why for ${item.title}`);
+      assert.ok(detail.how && detail.how.length >= 20, `${bundle.flow.slug} weak how for ${item.title}`);
+      assert.ok(
+        detail.completion_criteria && detail.completion_criteria.length >= 15,
+        `${bundle.flow.slug} weak completion criteria for ${item.title}`,
+      );
+      assert.ok(detail.links?.length, `${bundle.flow.slug} missing detail link for ${item.title}`);
+      whyTexts.add(detail.why);
+      howTexts.add(detail.how);
+      completionTexts.add(detail.completion_criteria);
+    }
+
+    assert.ok(whyTexts.size >= 4, `${bundle.flow.slug} uses generic why text`);
+    assert.ok(howTexts.size >= 4, `${bundle.flow.slug} uses generic how text`);
+    assert.ok(completionTexts.size >= 4, `${bundle.flow.slug} uses generic completion text`);
   }
 });
 
