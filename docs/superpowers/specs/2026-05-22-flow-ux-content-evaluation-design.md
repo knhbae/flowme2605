@@ -8,6 +8,8 @@ The core question is not only "does the feature work?" It is: can a person use t
 
 The evaluation must not assume unusually high user patience, intelligence, or domain fluency. It should explicitly account for a spectrum of users: low-context users who skim and need plain language, average users who know the goal but not the steps, and confident users who want speed and detail.
 
+Every Flow must be checked through a low-context lens. A route is not acceptable simply because an expert evaluator can infer what the screen means.
+
 ## Approved Approach
 
 Use persona-based simulation as the default evaluation method.
@@ -16,7 +18,11 @@ The evaluation starts with 5 representative Flows and expands up to 8 if coverag
 
 This approach is heavier than a quick heuristic review but still practical before real user interviews. It directly tests FLOW's current Stage 0 priorities: open, anchor input, copy/export, check, and source/risk confidence.
 
-Each round must include at least one low-context or average persona. For health, finance, legal, administrative, and safety-adjacent Flows, the default persona should be low-context unless there is a clear reason to test an expert user.
+Each Flow must include a low-context check, either as the primary persona or as a separate first-screen pass. For health, finance, legal, administrative, and safety-adjacent Flows, the default persona should be low-context unless there is a clear reason to test an expert user.
+
+The first screen must pass a strict 10-second test: a low-context user should be able to understand what the Flow is for, what input is required, what to do next, and whether there is an important caution or trust boundary. Failure on the primary action, required input, or major caution is at least `P1`; unsafe misunderstanding is `P0`.
+
+Evaluators must apply a no added explanation rule. If the screen only works because the evaluator explains terms, infers hidden context, or mentally connects source details that are not visible, that is recorded as friction rather than treated as success.
 
 ## Reusable Harness
 
@@ -30,6 +36,8 @@ It defines:
 - Source review requirements.
 - Persona format.
 - Comprehension spectrum lanes.
+- First-screen 10-second test.
+- No added explanation rule.
 - Screen simulation path.
 - 0-3 scoring checklist.
 - Findings format.
@@ -58,6 +66,7 @@ Create an evaluation report under `docs/superpowers/specs/` for the current roun
 - Selected Flow list and why each was chosen.
 - One persona per Flow.
 - The comprehension lane for each persona.
+- A low-context first-screen result for every Flow.
 - Source review summary for each source URL.
 - Screen simulation notes and screenshots where useful.
 - Score table using the harness checklist.
@@ -103,6 +112,7 @@ After the final evaluation and tests pass, deploy to Vercel. The deployment step
 Deployment readiness requires:
 
 - No open `P0`.
+- No unresolved `P1` from first-screen clarity.
 - No unresolved source/risk separation problem.
 - No accepted `P1` unless explicitly approved.
 - Passing automated checks.

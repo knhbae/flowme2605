@@ -72,7 +72,7 @@ The persona should be realistic and specific enough to expose usability friction
 
 ## Comprehension Spectrum
 
-Do not assume users are highly analytical, patient, or already familiar with the domain. Evaluate at least one low-context or average user in every round.
+Do not assume users are highly analytical, patient, or already familiar with the domain. Every evaluated Flow must be checked through a low-context lens, even when the primary persona is average or confident.
 
 Use these lanes:
 
@@ -83,6 +83,34 @@ Use these lanes:
 | Confident | Knows the domain or has done similar tasks before, wants speed and control | Fast scanning, shortcuts, exports, details on demand |
 
 For sensitive Flows, bias toward low-context users because misunderstanding can create higher risk.
+
+## First-Screen 10-Second Test
+
+Every Flow must pass a strict first-screen test. Without opening details, source links, exports, or external explanations, a low-context user should be able to answer these questions within 10 seconds:
+
+- What is this Flow for?
+- What date, start point, or context do I need to enter?
+- What should I do next?
+- Is there any important caution or trust boundary?
+
+If the primary action, required input, or major caution is not understandable from the visible screen, record at least a `P1` finding. If the screen could cause unsafe, medical, legal, financial, or official-procedure misunderstanding, record `P0`.
+
+## No Added Explanation Rule
+
+The evaluator must not rescue the interface by explaining it. If a persona would only understand the Flow because the evaluator inferred missing meaning, translated jargon, or mentally connected hidden details, record that as friction.
+
+Allowed:
+
+- Reading visible screen copy.
+- Opening details as part of the task path.
+- Opening the source URL when the persona would reasonably need verification.
+
+Not allowed:
+
+- Assuming the user knows the source content.
+- Explaining domain terms that the screen does not explain.
+- Treating hidden details as visible guidance.
+- Ignoring confusing labels because the evaluator understands the product model.
 
 ## Screen Simulation
 
@@ -101,6 +129,7 @@ Minimum task path:
 9. For routines, evaluate how a missed session is handled.
 10. On mobile, verify that primary actions and text do not overlap or hide each other.
 11. Re-read the first screen as a low-context user and note any term, label, or action that requires unexplained prior knowledge.
+12. Apply the no added explanation rule: if the evaluator had to infer or explain meaning beyond the screen, record it as friction.
 
 Capture screenshots for evidence when the finding is visual.
 
@@ -119,6 +148,7 @@ Evaluate:
 
 - **Understanding:** Can the user tell what this Flow is for, why it matters, and what to do first?
 - **Plain language:** Would a low-context user understand labels, warnings, and primary actions without knowing the source content?
+- **First-screen clarity:** Can a low-context user answer the 10-second test questions from the visible screen?
 - **Moment-by-moment guidance:** Does each screen state answer "what now" without making the user read everything?
 - **Content fit:** Does the Flow match the source and persona goal without over-converting or under-explaining?
 - **Actionability:** Are steps concrete, checkable, and sequenced realistically?
@@ -144,6 +174,7 @@ For each Flow, write:
 | --- | ---: | --- |
 | Understanding | 0-3 | [specific screen, copy, or behavior evidence] |
 | Plain language | 0-3 | [specific unclear or easy-to-understand wording evidence] |
+| First-screen clarity | 0-3 | [specific evidence from the 10-second test] |
 | Moment-by-moment guidance | 0-3 | [specific screen, copy, or behavior evidence] |
 | Content fit | 0-3 | [specific source/persona fit evidence] |
 | Actionability | 0-3 | [specific step or completion evidence] |
@@ -182,6 +213,7 @@ Do not ship with open `P0` issues. Avoid deployment with open `P1` issues unless
 A Flow is acceptable for the current iteration when:
 
 - No `P0` findings remain.
+- No unresolved `P1` finding from the 10-second first-screen test remains.
 - No unresolved source/risk separation issue remains.
 - The user can identify the next action within 10 seconds.
 - A low-context user can understand the primary action and the most important caution without opening the source.
