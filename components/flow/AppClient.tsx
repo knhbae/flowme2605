@@ -699,16 +699,25 @@ export function CreatorDirectory() {
         </div>
       </header>
       <section className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {summaries.map((channel) => (
-          <Link
+        {summaries.map((channel) => {
+          const representativeFlows = bundles
+            .filter((bundle) => bundle.flow.owner_user_id === channel.id)
+            .sort((a, b) => getCreatorBundlePriority(a) - getCreatorBundlePriority(b))
+            .slice(0, 3);
+
+          return (
+          <article
             key={channel.id}
             className="rounded-lg border border-gray-200 bg-white p-5 hover:border-blue-300"
-            href={`/u/${channel.slug}`}
           >
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-blue-700">{channel.channel_type}</p>
-                <h2 className="mt-1 text-xl font-semibold">{channel.name}</h2>
+                <h2 className="mt-1 text-xl font-semibold">
+                  <Link className="underline-offset-4 hover:text-blue-700 hover:underline" href={`/u/${channel.slug}`}>
+                    {channel.name}
+                  </Link>
+                </h2>
                 <p className="mt-1 text-sm text-gray-600">{channel.role}</p>
               </div>
               <span className="rounded-md bg-blue-50 px-2 py-1 text-sm font-semibold text-blue-700">
@@ -721,8 +730,25 @@ export function CreatorDirectory() {
               <StatCard label="샘플" value={`${channel.preview_flow_count}`} compact />
               <StatCard label="실행성 점수" value={`${channel.execution_score}`} compact />
             </div>
-          </Link>
-        ))}
+            {representativeFlows.length ? (
+              <div className="mt-4 border-t border-gray-100 pt-4">
+                <p className="text-xs font-semibold text-gray-500">대표 Flow</p>
+                <div className="mt-2 space-y-2">
+                  {representativeFlows.map((bundle) => (
+                    <Link
+                      key={bundle.flow.id}
+                      className="block rounded-md bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-700"
+                      href={`/f/${bundle.flow.slug}`}
+                    >
+                      {bundle.flow.title}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </article>
+          );
+        })}
       </section>
     </main>
   );

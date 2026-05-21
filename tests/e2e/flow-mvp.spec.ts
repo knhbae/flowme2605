@@ -97,8 +97,16 @@ test('creator directory exposes channel-scale preview library', async ({ page })
   await expect(page.getByText(/4\d{2}\+/)).toBeVisible();
   await expect(page.locator('header').getByText('출처 확인')).toBeVisible();
   await expect(page.getByRole('link', { name: /삼성전자서비스/ })).toBeVisible();
-  await expect(page.getByRole('link', { name: /ThankyouBUBU/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'ThankyouBUBU', exact: true })).toBeVisible();
   await expect(page.getByText('실행성 점수').first()).toBeVisible();
+});
+
+test('creator directory exposes representative creator content links', async ({ page }) => {
+  await page.goto('/creators');
+
+  await expect(page.getByText('대표 Flow').first()).toBeVisible();
+  await expect(page.locator('a[href="/f/real-thankyou-bubu-video-full-body-no-jump"]').first()).toBeVisible();
+  await expect(page.locator('a[href="/f/real-fitvely-video-body-fat-6kg-method"]').first()).toBeVisible();
 });
 
 test('preview creator channel supports browsing 20+ flowified entries', async ({ page }) => {
