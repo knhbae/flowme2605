@@ -159,7 +159,7 @@ type CreatorVideoSpec = {
   slugPrefix: string;
   slug: string;
   title: string;
-  flowTitle: string;
+  titleShort: string;
   videoId: string;
   category: string;
   focus: string;
@@ -175,7 +175,7 @@ const thankyouBubuExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-thankyou-bubu-video',
     slug: 'full-body-no-jump',
     title: '전신 다이어트 최고의 운동 [점프 없음, 눕는동작 없음, 반복 없음, 토크 없음]',
-    flowTitle: 'ThankyouBUBU 전신 다이어트 실천 Flow',
+    titleShort: '전신운동',
     videoId: 'pcyrlkHXAdE',
     category: '운동/홈트',
     focus: '점프, 눕는 동작, 반복, 토크를 줄인 전신 루틴',
@@ -187,7 +187,7 @@ const thankyouBubuExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-thankyou-bubu-video',
     slug: 'daily-stretch-9min',
     title: '하루 9분! 전신 스트레칭 BEST',
-    flowTitle: 'ThankyouBUBU 9분 스트레칭 Flow',
+    titleShort: '9분 스트레칭',
     videoId: 'aob4Lh1Vebk',
     category: '운동/홈트',
     focus: '운동 전후 전신 스트레칭',
@@ -199,7 +199,7 @@ const thankyouBubuExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-thankyou-bubu-video',
     slug: 'belly-side-all-in-one',
     title: 'NO관절부담 뱃살 옆구리살 빼는 운동 [뱃살 올인원]',
-    flowTitle: 'ThankyouBUBU 뱃살 옆구리 루틴 Flow',
+    titleShort: '뱃살·옆구리 운동',
     videoId: 'toAUho9bEw0',
     category: '운동/홈트',
     focus: '관절 부담을 줄인 복부와 옆구리 루틴',
@@ -211,7 +211,7 @@ const thankyouBubuExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-thankyou-bubu-video',
     slug: 'no-knee-cardio-strength',
     title: 'NO무릎부담 전신유산소 근력 다이어트 [칼소폭 올인원]',
-    flowTitle: 'ThankyouBUBU 무릎부담 낮춘 전신 Flow',
+    titleShort: '무릎부담 낮춘 전신운동',
     videoId: 'hesjApxDlj0',
     category: '운동/홈트',
     focus: '무릎 부담을 낮춘 전신 유산소와 근력',
@@ -223,7 +223,7 @@ const thankyouBubuExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-thankyou-bubu-video',
     slug: 'arm-back-shoulder',
     title: '팔뚝살 5cm 줄어드는 다이어트운동 [팔뚝살 등살 가슴 어깨]',
-    flowTitle: 'ThankyouBUBU 팔뚝 등살 루틴 Flow',
+    titleShort: '팔뚝·등살 운동',
     videoId: '73IrtWDDby0',
     category: '운동/홈트',
     focus: '팔뚝, 등, 어깨 중심 상체 루틴',
@@ -235,7 +235,7 @@ const thankyouBubuExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-thankyou-bubu-video',
     slug: 'waist-8cm',
     title: '허리둘레 8cm 줄어드는 운동 [뱃살 옆구리살]',
-    flowTitle: 'ThankyouBUBU 허리둘레 집중 Flow',
+    titleShort: '허리둘레 집중 운동',
     videoId: 'k3MznPQvUEk',
     category: '운동/홈트',
     focus: '허리와 옆구리 중심 코어 루틴',
@@ -247,7 +247,7 @@ const thankyouBubuExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-thankyou-bubu-video',
     slug: '8min-cardio',
     title: '8분 완벽한 전신유산소 다이어트',
-    flowTitle: 'ThankyouBUBU 8분 전신유산소 Flow',
+    titleShort: '8분 전신유산소',
     videoId: 'O87gkL1cKSc',
     category: '운동/홈트',
     focus: '짧은 시간 전신 유산소 루틴',
@@ -259,7 +259,7 @@ const thankyouBubuExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-thankyou-bubu-video',
     slug: '3min-arm',
     title: '3분 최고의 팔뚝살빼는운동',
-    flowTitle: 'ThankyouBUBU 3분 팔뚝 Flow',
+    titleShort: '3분 팔뚝 운동',
     videoId: 'Kl9Dmx86Z0Q',
     category: '운동/홈트',
     focus: '3분 팔뚝 집중 루틴',
@@ -271,7 +271,7 @@ const thankyouBubuExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-thankyou-bubu-video',
     slug: '3min-abs',
     title: '3분 최고의 복근운동',
-    flowTitle: 'ThankyouBUBU 3분 복근 Flow',
+    titleShort: '3분 복근 운동',
     videoId: '6IUL8-nGetA',
     category: '운동/홈트',
     focus: '3분 복근 집중 루틴',
@@ -283,7 +283,7 @@ const thankyouBubuExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-thankyou-bubu-video',
     slug: 'lower-belly-8min',
     title: '8분! 아랫뱃살 똥배 빼는 최고의 운동',
-    flowTitle: 'ThankyouBUBU 8분 아랫뱃살 Flow',
+    titleShort: '8분 아랫뱃살 운동',
     videoId: '9xxCFu21CLM',
     category: '운동/홈트',
     focus: '아랫배 중심 복부 루틴',
@@ -298,7 +298,7 @@ const fitvelyExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-fitvely-video',
     slug: 'body-fat-6kg-method',
     title: '핏블리가 체지방 6kg을 감량한 비법',
-    flowTitle: 'FITVELY 체지방 6kg 감량 비법 Flow',
+    titleShort: '체지방 감량 원칙',
     videoId: 'EQcoKqDO8Ds',
     category: '다이어트/기록',
     focus: '체지방 감량 원칙을 이번 주 기준으로 바꾸기',
@@ -312,7 +312,7 @@ const fitvelyExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-fitvely-video',
     slug: 'carb-reason',
     title: '다이어트할 때 탄수화물을 꼭 먹어야 하는 이유',
-    flowTitle: 'FITVELY 탄수화물을 먹어야 하는 이유 Flow',
+    titleShort: '탄수화물 원칙',
     videoId: '_h3u30M9ECc',
     category: '다이어트/기록',
     focus: '탄수화물 제한보다 섭취 기준을 세우기',
@@ -326,7 +326,7 @@ const fitvelyExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-fitvely-video',
     slug: 'three-week-check',
     title: '3주만에 -13kg 감량한 여자의 팩트폭행',
-    flowTitle: 'FITVELY 3주 감량 점검 Flow',
+    titleShort: '3주 감량 점검',
     videoId: 'nfdIpPXfIc8',
     category: '다이어트/기록',
     focus: '단기 감량 사례를 현실적인 점검표로 바꾸기',
@@ -340,7 +340,7 @@ const fitvelyExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-fitvely-video',
     slug: 'post-workout-nutrition',
     title: '운동직후 “이것” 섭취 가장 중요, 단백질 아님',
-    flowTitle: 'FITVELY 운동직후 섭취 Flow',
+    titleShort: '운동직후 섭취 기준',
     videoId: 'J8YmqzhPS2Q',
     category: '다이어트/기록',
     focus: '운동 후 영양 섭취 기준 만들기',
@@ -354,7 +354,7 @@ const fitvelyExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-fitvely-video',
     slug: 'carb-amount-shorts',
     title: '탄수화물 얼마나 섭취해야 할까',
-    flowTitle: 'FITVELY 오늘 탄수화물 기록 Flow',
+    titleShort: '오늘 탄수화물 기록',
     videoId: 't630vnDGIWw',
     category: '다이어트/기록',
     focus: '탄수화물 섭취량을 기록 기반으로 조정하기',
@@ -368,7 +368,7 @@ const fitvelyExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-fitvely-video',
     slug: 'after-work-nutrition',
     title: '퇴근 후 운동하는 사람을 위한 영양 섭취 방법과 잘못된 경우 Top3',
-    flowTitle: 'FITVELY 퇴근후 운동 영양 Flow',
+    titleShort: '퇴근후 운동 영양 기준',
     videoId: 'zipquv7TErU',
     category: '다이어트/기록',
     focus: '퇴근 후 운동 전후 식사 타이밍 만들기',
@@ -382,7 +382,7 @@ const fitvelyExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-fitvely-video',
     slug: 'weight-class-method',
     title: '체중 별 다이어트 방법 정리',
-    flowTitle: 'FITVELY 체중별 다이어트 Flow',
+    titleShort: '체중별 다이어트 기준',
     videoId: 'qADmhOJemTs',
     category: '다이어트/기록',
     focus: '현재 체중 구간에 맞는 실행 기준 고르기',
@@ -396,7 +396,7 @@ const fitvelyExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-fitvely-video',
     slug: 'bulk-up-method',
     title: '핏블리가 경험하고 알려주는 벌크업 운동 방법',
-    flowTitle: 'FITVELY 벌크업 운동표 적용 Flow',
+    titleShort: '벌크업 운동 기준',
     videoId: 'JurCSqpjl5I',
     category: '운동/홈트',
     focus: '벌크업 운동 기준을 주간 루틴으로 바꾸기',
@@ -409,7 +409,7 @@ const fitvelyExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-fitvely-video',
     slug: 'workout-order',
     title: '다이어트에 가장 중요한 운동 순서! 유산소 먼저? 무산소 먼저?',
-    flowTitle: 'FITVELY 운동 순서 결정 Flow',
+    titleShort: '운동 순서 기준',
     videoId: 'oPBA8E_WtXY',
     category: '운동/홈트',
     focus: '유산소와 무산소 순서를 내 루틴에 적용하기',
@@ -422,7 +422,7 @@ const fitvelyExactVideos: CreatorVideoSpec[] = [
     slugPrefix: 'real-fitvely-video',
     slug: 'workout-split-science',
     title: '과학적으로 운동루틴 짜는법',
-    flowTitle: 'FITVELY 운동루틴 설계 Flow',
+    titleShort: '운동루틴 설계 기준',
     videoId: '-GJMwcES45A',
     category: '운동/홈트',
     focus: '분할, 세트수, 휴식을 주간 운동표로 정리하기',
@@ -435,10 +435,17 @@ const fitvelyExactVideos: CreatorVideoSpec[] = [
 function makeCreatorVideoSpec(video: CreatorVideoSpec): RealSourceSpec {
   const sourceUrl = `https://www.youtube.com/watch?v=${video.videoId}`;
   const sourceTitle = `${video.title} - ${video.channelSlug === 'thankyou-bubu' ? 'ThankyouBUBU' : '핏블리 FITVELY'}`;
+  const channelName = video.channelSlug === 'thankyou-bubu' ? 'ThankyouBUBU' : 'FITVELY';
+  const title =
+    video.channelSlug === 'thankyou-bubu'
+      ? `${channelName} ${video.titleShort}을 주 3회 캘린더에 넣기`
+      : video.mode === 'diet'
+        ? `${channelName} ${video.titleShort}을 7일 체크표로 적용하기`
+        : `${channelName} ${video.titleShort}을 캘린더 루틴으로 실행하기`;
   const common = {
     channelSlug: video.channelSlug,
     slug: `${video.slugPrefix}-${video.slug}`,
-    title: video.flowTitle,
+    title,
     category: video.category,
     structure_type: 'routine' as StructureType,
     anchor_type: 'start_date' as AnchorType,
@@ -855,7 +862,7 @@ const realSourceSpecs: RealSourceSpec[] = [
   {
     channelSlug: 'sinagong',
     slug: 'real-qnet-application-examday-check',
-    title: 'Q-Net 원서접수와 시험당일 Flow',
+    title: 'Q-Net 시험 준비물을 D-Day 체크표로 관리하기',
     category: '자격증 시험',
     structure_type: 'timeline',
     anchor_type: 'end_date',

@@ -19,7 +19,7 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(page.getByLabel('카테고리')).toBeVisible();
   await expect(page.getByLabel('Flow 방식')).toBeVisible();
   await expect(page.getByLabel('정렬')).toBeVisible();
-  await expect(page.getByRole('heading', { name: '이사 D-30 준비 Flow' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '이사 D-30 할 일을 월간 일정표로 준비하기' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '초기 이유식 메뉴·레시피 Flow' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '하루 20분 전신 홈트 Flow' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '이직 전 리스크 점검 Flow' })).toBeVisible();
@@ -73,7 +73,7 @@ test('my flow workspace separates copied or drafted flows from public discovery'
   await page.goto('/my');
   await expect(page.getByText('발행 Flow')).toBeVisible();
   await expect(page.getByRole('button', { name: /초안/ })).toBeVisible();
-  await expect(page.getByRole('heading', { name: /이사 D-30 준비 Flow 사본/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /이사 D-30 할 일을 월간 일정표로 준비하기 사본/ })).toBeVisible();
   await page.getByRole('link', { name: '내 제작자 프로필' }).click();
   await expect(page.getByRole('heading', { name: '내 Flow 스튜디오' })).toBeVisible();
 });
@@ -530,7 +530,7 @@ test('public flow can be copied into an editable draft', async ({ page }) => {
   await page.getByRole('button', { name: '내 Flow로 가져오기' }).click();
 
   await expect(page).toHaveURL(/\/flows\/.+\/edit/);
-  await expect(page.getByRole('heading', { name: /이사 D-30 준비 Flow 사본/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /이사 D-30 할 일을 월간 일정표로 준비하기 사본/ })).toBeVisible();
   await expect(page.getByText('초안 Flow')).toBeVisible();
 });
 

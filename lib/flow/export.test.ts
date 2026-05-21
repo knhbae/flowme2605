@@ -9,7 +9,7 @@ test('timeline text export includes calculated dates when anchor exists', () => 
 
   const text = buildText(moving, {}, '2026-07-15');
 
-  assert.match(text, /이사 D-30 준비 Flow/);
+  assert.match(text, /이사 D-30 할 일을 월간 일정표로 준비하기/);
   assert.match(text, /이사일: 2026-07-15/);
   assert.match(text, /\[D-30 \/ 2026-06-15\]/);
   assert.match(text, /이사 방식 정하기/);
@@ -22,7 +22,7 @@ test('workbook export uses user-facing Korean columns instead of raw db fields',
   const sheets = buildWorkbookSheets(moving, { 'flow-moving-item-0': true }, '2026-07-15');
   const summary = sheets.find((sheet) => sheet.name === '실행 요약');
   assert.ok(summary);
-  assert.deepEqual(summary.rows[0], ['FLOW', '이사 D-30 준비 Flow']);
+  assert.deepEqual(summary.rows[0], ['FLOW', '이사 D-30 할 일을 월간 일정표로 준비하기']);
   assert.deepEqual(summary.rows[2], ['진행률', '1 / 24 (4%)']);
   assert.ok(summary.rows.some((row) => row.includes('오늘/기준일 항목')));
 
@@ -154,7 +154,7 @@ test('calendar export creates a portable weekly event for exact video flows', ()
 
   assert.match(ics, /BEGIN:VCALENDAR/);
   assert.match(ics, /BEGIN:VEVENT/);
-  assert.match(ics, /SUMMARY:ThankyouBUBU 전신 다이어트 실천 Flow/);
+  assert.match(ics, /SUMMARY:ThankyouBUBU 전신운동을 주 3회 캘린더에 넣기/);
   assert.match(ics, /DTSTART;VALUE=DATE:20260525/);
   assert.match(ics, /RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR/);
   assert.match(ics, /URL:https:\/\/www\.youtube\.com\/watch\?v=/);

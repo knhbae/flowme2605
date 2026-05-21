@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "tsx --test lib/flow/date.test.ts lib/flow/parser.test.ts lib/flow/seed-flows.test.ts lib/flow/export.test.ts lib/flow/storage.test.ts lib/flow/surface.test.ts",
+    "test": "node scripts/run-tests.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {

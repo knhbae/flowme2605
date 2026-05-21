@@ -1279,7 +1279,7 @@ const baseSeedBundles: FlowBundle[] = [
       {
         id: 'flow-moving',
         slug: 'moving-d30-basic',
-        title: '이사 D-30 준비 Flow',
+        title: '이사 D-30 할 일을 월간 일정표로 준비하기',
         description: '이사일을 기준으로 D-30부터 당일과 행정 마무리까지 필요한 일을 날짜별로 실행합니다.',
         category: '이사',
         structure_type: 'timeline',

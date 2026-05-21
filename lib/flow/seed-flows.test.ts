@@ -7,6 +7,7 @@ import {
 } from './creator-channel-preview';
 import { inferPrimaryDestination } from './destination';
 import { seedBundles } from './seed-flows';
+import { hasGenericInternalTitle } from './surface';
 import { virtualUsers } from './users';
 
 test('seed pack contains public Korean Flow bundles across practical categories', () => {
@@ -47,7 +48,7 @@ test('seed pack contains public Korean Flow bundles across practical categories'
   ];
   assert.ok(originalSlugs.every((slug) => slugs.has(slug)));
   assert.ok(seedBundles.every((bundle) => bundle.flow.status === 'published'));
-  assert.ok(seedBundles.some((bundle) => bundle.flow.title === '이사 D-30 준비 Flow'));
+  assert.ok(seedBundles.some((bundle) => bundle.flow.title === '이사 D-30 할 일을 월간 일정표로 준비하기'));
   assert.ok(seedBundles.some((bundle) => bundle.flow.title === '초기 이유식 메뉴·레시피 Flow'));
   assert.ok(seedBundles.some((bundle) => bundle.flow.title === '해외여행 출국 준비 Flow'));
   assert.ok(seedBundles.some((bundle) => bundle.flow.title === '연말정산 서류 준비 Flow'));
@@ -434,12 +435,47 @@ test('fitness exact video flow titles preserve the original content premise', ()
   const carb = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-carb-reason');
 
   assert.ok(carb);
-  assert.equal(carb.flow.title, 'FITVELY 탄수화물을 먹어야 하는 이유 Flow');
+  assert.equal(carb.flow.title, 'FITVELY 탄수화물 원칙을 7일 체크표로 적용하기');
   assert.match(carb.flow.source_title ?? '', /다이어트할 때 탄수화물을 꼭 먹어야 하는 이유/);
 
   for (const bundle of exactVideos) {
     assert.doesNotMatch(bundle.flow.title, /기준 Flow$/, bundle.flow.slug);
     assert.doesNotMatch(bundle.flow.title, /^FITVELY 다음 식사/, bundle.flow.slug);
+  }
+});
+
+test('representative source-backed flows use action and tool oriented titles', () => {
+  const representativeSlugs = [
+    'real-thankyou-bubu-video-full-body-no-jump',
+    'real-fitvely-video-body-fat-6kg-method',
+    'real-fitvely-video-carb-reason',
+    'moving-d30-basic',
+    'real-qnet-application-examday-check',
+  ];
+  const actionOrToolPattern = new RegExp(
+    [
+      '\uCE98\uB9B0\uB354',
+      '\uCCB4\uD06C\uD45C',
+      'D-Day',
+      '\uC77C\uC815\uD45C',
+      '\uC2E4\uD589\uD45C',
+      '\uBA54\uBAA8',
+      '\uAD00\uB9AC',
+      '\uB123\uAE30',
+      '\uC801\uC6A9\uD558\uAE30',
+      '\uC900\uBE44\uD558\uAE30',
+    ].join('|'),
+  );
+
+  for (const slug of representativeSlugs) {
+    const bundle = seedBundles.find((item) => item.flow.slug === slug);
+    assert.ok(bundle, `missing ${slug}`);
+    assert.equal(hasGenericInternalTitle(bundle.flow.title), false, `${slug} has generic title: ${bundle.flow.title}`);
+    assert.match(
+      bundle.flow.title,
+      actionOrToolPattern,
+      `${slug} title does not show action/tool: ${bundle.flow.title}`,
+    );
   }
 });
 
