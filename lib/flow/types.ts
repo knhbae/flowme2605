@@ -103,6 +103,11 @@ export type FlowItemDetail = {
   }[];
 };
 
+export type FlowItemState = {
+  skipped?: boolean;
+  note?: string;
+};
+
 export type MealSlot = {
   id: string;
   flow_id: string;

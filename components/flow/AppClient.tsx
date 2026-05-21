@@ -11,11 +11,17 @@ import { parseTextFlow, serializeTextFlow, timingLabel } from '@/lib/flow/parser
 import {
   getBundles,
   getChecks,
+  getItemStates,
   getReactionLogs,
+  getStoredAnchor,
+  hasDismissedStorageNotice,
   cloneSeedBundles,
+  dismissStorageNotice,
   saveBundles,
   saveChecks,
+  saveItemStates,
   saveReactionLogs,
+  saveStoredAnchor,
 } from '@/lib/flow/storage';
 import {
   AnchorType,
@@ -24,6 +30,7 @@ import {
   FlowItem,
   FlowItemDetail,
   FlowItemLinkType,
+  FlowItemState,
   FlowUser,
   MealSlot,
   PrimaryDestination,
@@ -112,6 +119,13 @@ const linkTypeLabels: Record<string, string> = {
   creator: '제작자 링크',
 };
 
+const genericCompletionCriteria = '이 항목을 완료했어요.';
+
+function visibleCompletionCriteria(detail?: FlowItemDetail): string | undefined {
+  if (!detail?.completion_criteria || detail.completion_criteria === genericCompletionCriteria) return undefined;
+  return detail.completion_criteria;
+}
+
 function getItemDetail(bundle: FlowBundle, itemId: string): FlowItemDetail | undefined {
   return bundle.itemDetails?.find((detail) => detail.item_id === itemId);
 }
@@ -150,6 +164,41 @@ function FlowBadges({ bundle }: { bundle: FlowBundle }) {
         <Badge className="border-indigo-100 bg-indigo-50 text-indigo-800">{sourcePrecisionLabel}</Badge>
       ) : null}
     </div>
+  );
+}
+
+function FlowHeroMeta({ bundle }: { bundle: FlowBundle }) {
+  const count = getFlowItemCount(bundle);
+  const anchorLabel = bundle.flow.anchor_type === 'none' ? '바로 체크 시작' : `${getAnchorInputLabel(bundle)} 입력으로 시작`;
+  return (
+    <div className="mt-4 flex flex-wrap gap-2 text-sm">
+      <span className="rounded-full border border-gray-200 bg-white px-3 py-1.5 font-semibold text-gray-800">{getFlowDurationLabel(bundle)}</span>
+      <span className="rounded-full border border-gray-200 bg-white px-3 py-1.5 font-semibold text-gray-800">{count}개 항목</span>
+      <span className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1.5 font-semibold text-blue-700">{anchorLabel}</span>
+    </div>
+  );
+}
+
+function SourceContentCard({ bundle }: { bundle: FlowBundle }) {
+  if (!bundle.flow.source_title && !bundle.flow.source_url) return null;
+
+  const domain = getSourceDomain(bundle.flow.source_url);
+
+  return (
+    <section className="mt-5 rounded-lg border border-gray-200 bg-white p-4">
+      <p className="text-sm font-semibold text-gray-700">이 Flow는 아래 콘텐츠를 기반으로</p>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="text-base font-semibold text-gray-950">{bundle.flow.source_title ?? '원본 콘텐츠'}</h2>
+          <p className="mt-1 text-sm text-gray-500">{[domain, bundle.flow.source_checked_at ? `${bundle.flow.source_checked_at} 확인` : null].filter(Boolean).join(' · ')}</p>
+        </div>
+        {bundle.flow.source_url ? (
+          <a className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-800 hover:border-blue-300 hover:text-blue-700" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
+            원문 보기
+          </a>
+        ) : null}
+      </div>
+    </section>
   );
 }
 
@@ -204,7 +253,7 @@ function getAnchorLabel(bundle: FlowBundle): string {
 }
 
 function getSetupStepTitle(bundle: FlowBundle): string {
-  return bundle.flow.anchor_type === 'none' ? '1. 바로 확인' : '1. 기준 날짜 선택';
+  return bundle.flow.anchor_type === 'none' ? '1. 바로 확인' : `1. ${getAnchorInputLabel(bundle)} 입력하기`;
 }
 
 function getSetupStepDescription(bundle: FlowBundle): string {
@@ -238,8 +287,32 @@ function getFlowItemCount(bundle: FlowBundle): number {
   return bundle.flow.content_type === 'meal_plan' ? bundle.mealSlots?.length ?? 0 : bundle.items.length;
 }
 
+function getFlowDurationLabel(bundle: FlowBundle): string {
+  if (bundle.flow.content_type === 'meal_plan') return '첫 식단표 기준';
+  if (bundle.flow.structure_type === 'routine') return bundle.repeatRules?.[1]?.replace('@', '') ?? bundle.repeatRules?.[0]?.replace('@', '') ?? '반복 실행';
+  const offsets = bundle.items.map((item) => item.day_offset).filter((value): value is number => value !== undefined);
+  if (!offsets.length) return '체크리스트';
+  const min = Math.min(...offsets);
+  const max = Math.max(...offsets);
+  if (min < 0 && max <= 0) {
+    const days = Math.abs(min);
+    if (days >= 90 && days % 30 === 0) return `평균 소요 ${days / 30}개월`;
+    return `평균 소요 ${days}일`;
+  }
+  return `${max - min + 1}일 흐름`;
+}
+
 function formatCount(value?: number): string {
   return new Intl.NumberFormat('ko-KR').format(value ?? 0);
+}
+
+function getSourceDomain(url?: string): string {
+  if (!url) return '';
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return '';
+  }
 }
 
 function getCreatorName(bundle: FlowBundle): string {
@@ -378,7 +451,7 @@ function FlowCard({
           <p className="mt-2 line-clamp-3 text-sm leading-6 text-gray-600">{getFlowResultText(bundle)}</p>
           {firstActionTitle ? (
             <p className="mt-2 text-sm text-gray-700">
-              <span className="font-semibold text-gray-900">첫 행동:</span> {firstActionTitle}
+              <span className="font-semibold text-gray-900">대표 항목:</span> {firstActionTitle}
             </p>
           ) : null}
           <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-gray-500">
@@ -388,8 +461,7 @@ function FlowCard({
             <Link className="font-medium underline-offset-2 hover:text-blue-700 hover:underline" href={getCreatorPath(bundle)}>
               by {getCreatorName(bundle)}
             </Link>
-            <span>실행 {formatCount(bundle.flow.usage_count)}</span>
-            <span>복사 {formatCount(bundle.flow.copy_count)}</span>
+            <span>베타 운영 중</span>
             <span>{count}개 항목</span>
           </div>
         </div>
@@ -1980,8 +2052,9 @@ export function PublicFlow({ slug }: { slug: string }) {
   const { bundles, persist } = useBundles();
   const [bundle, setBundle] = useState<FlowBundle | null>(() => cloneSeedBundles().find((item) => item.flow.slug === slug) ?? null);
   const [anchor, setAnchor] = useState('');
-  const [anchorMode, setAnchorMode] = useState<AnchorMode>('example');
+  const [anchorMode, setAnchorMode] = useState<AnchorMode>('custom');
   const [checks, setChecks] = useState<Record<string, boolean>>({});
+  const [itemStates, setItemStates] = useState<Record<string, FlowItemState>>({});
   const [weekdaySelection, setWeekdaySelection] = useState(['월', '수', '금']);
   const [reactionLogs, setReactionLogs] = useState<Record<string, ReactionLog>>({});
   const [copyState, setCopyState] = useState('');
@@ -1989,17 +2062,33 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [calendarState, setCalendarState] = useState('');
   const [view, setView] = useState<PublicView>('list');
   const [showMobileActions, setShowMobileActions] = useState(false);
+  const [showStorageNotice, setShowStorageNotice] = useState(false);
 
   useEffect(() => {
     const found = getBundles().find((item) => item.flow.slug === slug) ?? null;
+    const storedAnchor = getStoredAnchor(slug);
+    const hasStoredAnchor = Boolean(storedAnchor.anchor) || storedAnchor.mode !== 'custom';
+    const defaultAnchorMode: AnchorMode = found && isFitnessExactVideoFlow(found) ? 'example' : 'custom';
     setBundle(found);
+    setAnchor(storedAnchor.anchor);
+    setAnchorMode(hasStoredAnchor && isAnchorMode(storedAnchor.mode) ? storedAnchor.mode : defaultAnchorMode);
     setChecks(getChecks(slug));
+    setItemStates(getItemStates(slug));
     setReactionLogs(getReactionLogs(slug));
+    setShowStorageNotice(!hasDismissedStorageNotice());
   }, [slug]);
 
   useEffect(() => {
     saveChecks(slug, checks);
   }, [checks, slug]);
+
+  useEffect(() => {
+    saveStoredAnchor(slug, { mode: anchorMode, anchor });
+  }, [anchor, anchorMode, slug]);
+
+  useEffect(() => {
+    saveItemStates(slug, itemStates);
+  }, [itemStates, slug]);
 
   useEffect(() => {
     saveReactionLogs(slug, reactionLogs);
@@ -2017,11 +2106,10 @@ export function PublicFlow({ slug }: { slug: string }) {
   const views = getPublicViews(bundle);
   const activeView = views.some((item) => item.id === view) ? view : 'list';
   const displayAnchor = getPreviewAnchor(bundle, anchorMode, anchor);
-  const executableIds = getExecutableCheckIds(bundle, displayAnchor);
+  const executableIds = getExecutableCheckIds(bundle, displayAnchor).filter((id) => !isItemStateSkipped(itemStates, id));
   const executableCount = executableIds.length;
   const done = executableIds.filter((id) => checks[id]).length;
   const canExportCalendar = hasCalendarSchedule(bundle);
-  const firstActionTitle = getFirstActionTitle(bundle);
   const showTodayExecution = isFitnessExactVideoFlow(bundle);
   const primaryDestination = inferPrimaryDestination(bundle);
 
@@ -2041,8 +2129,29 @@ export function PublicFlow({ slug }: { slug: string }) {
   const updateReaction = (slotId: string, patch: ReactionLog) => {
     setReactionLogs((value) => ({ ...value, [slotId]: { ...value[slotId], ...patch } }));
   };
+  const updateItemNote = (id: string, note: string) => {
+    setItemStates((value) => ({
+      ...value,
+      [id]: {
+        ...value[id],
+        note,
+      },
+    }));
+  };
+  const toggleItemSkipped = (id: string) => {
+    setItemStates((value) => {
+      const current = value[id] ?? {};
+      return {
+        ...value,
+        [id]: {
+          ...current,
+          skipped: !current.skipped,
+        },
+      };
+    });
+  };
   const copy = async () => {
-    const text = buildText(bundle, checks, displayAnchor);
+    const text = buildText(bundle, checks, displayAnchor, itemStates);
     try {
       await navigator.clipboard.writeText(text);
       setCopyState('복사됨');
@@ -2065,6 +2174,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     const sheets = buildWorkbookSheets(bundle, checks, displayAnchor, {
       weekdays: weekdaySelection,
       reactionLogs,
+      itemStates,
     });
     const buffer = await buildXlsxBuffer(sheets);
     const blob = new Blob([buffer], {
@@ -2081,7 +2191,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const downloadCalendar = () => {
     setCalendarState('생성 중');
     const ics = hasDatedCalendarSchedule(bundle)
-      ? buildIcsCalendar(bundle, checks, displayAnchor)
+      ? buildIcsCalendar(bundle, checks, displayAnchor, itemStates)
       : buildCalendarIcs(bundle, displayAnchor, weekdaySelection);
     const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
     const link = document.createElement('a');
@@ -2109,79 +2219,11 @@ export function PublicFlow({ slug }: { slug: string }) {
         </div>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight">{bundle.flow.title}</h1>
         {bundle.flow.description ? <p className="mt-3 max-w-3xl text-gray-600">{bundle.flow.description}</p> : null}
-        {firstActionTitle ? (
-          <p className="mt-3 text-sm text-gray-700">
-            <span className="font-semibold text-gray-950">첫 행동:</span> {firstActionTitle}
-          </p>
-        ) : null}
+        <FlowHeroMeta bundle={bundle} />
         <div className="mt-4">
           <FlowBadges bundle={bundle} />
         </div>
-        <div className="mt-5 rounded-lg border border-gray-200 bg-white p-4">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <Link className="text-sm font-semibold text-gray-950 underline-offset-2 hover:text-blue-700 hover:underline" href={getCreatorPath(bundle)}>
-                by {getCreatorName(bundle)}
-              </Link>
-              {getCreatorRole(bundle) ? <p className="mt-1 text-sm text-gray-500">{getCreatorRole(bundle)}</p> : null}
-              {getCreatorNote(bundle) ? <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600">{getCreatorNote(bundle)}</p> : null}
-            </div>
-            <div className="flex gap-2 text-sm">
-              <span className="rounded-md bg-gray-50 px-3 py-2 font-semibold text-gray-800">실행 {formatCount(bundle.flow.usage_count)}</span>
-              <span className="rounded-md bg-gray-50 px-3 py-2 font-semibold text-gray-800">복사 {formatCount(bundle.flow.copy_count)}</span>
-            </div>
-          </div>
-        </div>
-        {bundle.flow.warning ? (
-          <div className="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
-            {bundle.flow.warning}
-          </div>
-        ) : null}
-        <details className="mt-4 rounded-lg border border-gray-200 bg-white p-3 text-sm" open={!showTodayExecution}>
-          <summary className="cursor-pointer font-semibold text-gray-700">출처와 주의 정보</summary>
-          <div className="mt-3 space-y-3">
-            <FlowBadges bundle={bundle} />
-            <p className="text-gray-600">
-              마지막 업데이트: {bundle.flow.updated_at ? formatDate(new Date(bundle.flow.updated_at)) : '확인 필요'}
-            </p>
-            {bundle.flow.source_checked_at ? (
-              <p className="text-gray-600">출처 확인일: {bundle.flow.source_checked_at}</p>
-            ) : null}
-            {bundle.flow.conversion_note ? (
-              <p className="text-gray-600">Flow 전환 방식: {bundle.flow.conversion_note}</p>
-            ) : null}
-            {getSourcePrecisionLabel(bundle) ? (
-              <p className="text-gray-600">출처 정밀도: {getSourcePrecisionLabel(bundle)}</p>
-            ) : null}
-            {bundle.flow.source_url ? (
-              <a className="inline-flex text-blue-700 underline-offset-2 hover:underline" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
-                {bundle.flow.source_title ?? '참고 자료'} 열기
-              </a>
-            ) : null}
-          </div>
-        </details>
       </header>
-
-      {showTodayExecution ? (
-        <ExactVideoToolPreview
-          bundle={bundle}
-          anchor={anchor}
-          displayAnchor={displayAnchor}
-          anchorMode={anchorMode}
-          onAnchorModeChange={setAnchorMode}
-          onAnchorChange={setAnchor}
-          weekdays={weekdaySelection}
-          onWeekdaysChange={setWeekdaySelection}
-          destination={primaryDestination}
-          onCopyText={copy}
-          onDownloadExcel={downloadExcel}
-          onDownloadCalendar={downloadCalendar}
-          onCopyToEditableDraft={copyToEditableDraft}
-          copyState={copyState}
-          downloadState={downloadState}
-          calendarState={calendarState}
-        />
-      ) : null}
 
       {!showTodayExecution ? (
       <section className="my-6 rounded-xl border border-blue-100 bg-white p-4 shadow-sm">
@@ -2195,7 +2237,7 @@ export function PublicFlow({ slug }: { slug: string }) {
             </div>
           </div>
           <div className="rounded-lg border border-gray-200 bg-white p-4">
-            <p className="text-sm font-semibold text-blue-700">{showTodayExecution ? '2. 오늘 실행 체크' : '2. 바로 실행'}</p>
+            <p className="text-sm font-semibold text-blue-700">{showTodayExecution ? '2. 오늘 실행 체크' : '2. 실행 항목 체크'}</p>
             <p className="mt-1 text-sm text-gray-600">
               {showTodayExecution ? '영상이나 적용 기준을 실행한 뒤 이 페이지에서 완료 여부만 표시합니다.' : '가까운 항목부터 체크하면 진행률과 다운로드 파일에 반영됩니다.'}
             </p>
@@ -2204,23 +2246,25 @@ export function PublicFlow({ slug }: { slug: string }) {
             </div>
           </div>
           <div className="rounded-lg border border-gray-200 bg-white p-4">
-            <p className="text-sm font-semibold text-blue-700">{showTodayExecution ? '3. 내 Flow로 수정' : '3. 저장/공유'}</p>
+            <p className="text-sm font-semibold text-blue-700">{showTodayExecution ? '3. 내 Flow로 수정' : '3. 내보내기와 백업'}</p>
             <p className="mt-1 text-sm text-gray-600">
               {showTodayExecution
                 ? '캘린더, 엑셀, 메모/노션 중 실제로 관리할 도구를 고르세요.'
-                : '메모장에는 텍스트로, 엑셀에는 실행표와 주간/월간 보기로 저장됩니다.'}
+                : done > 0
+                  ? '체크 상태, 스킵, 메모까지 텍스트와 엑셀 실행표에 함께 저장됩니다.'
+                  : '항목을 하나라도 체크하면 내 진행 상태를 백업할 수 있어요.'}
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               {showTodayExecution ? null : (
                 <>
-                  <button className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white" onClick={copy}>
+                  <button className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white disabled:bg-gray-300" disabled={done === 0} title={done === 0 ? '항목을 하나라도 체크하면 받을 수 있어요' : undefined} onClick={copy}>
                     체크리스트 복사하기
                   </button>
-                  <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={downloadExcel}>
+                  <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold disabled:border-gray-200 disabled:text-gray-400" disabled={done === 0} title={done === 0 ? '항목을 하나라도 체크하면 받을 수 있어요' : undefined} onClick={downloadExcel}>
                     내 일정표 엑셀로 받기
                   </button>
                   {canExportCalendar ? (
-                    <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={downloadCalendar}>
+                    <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold disabled:border-gray-200 disabled:text-gray-400" disabled={done === 0} title={done === 0 ? '항목을 하나라도 체크하면 받을 수 있어요' : undefined} onClick={downloadCalendar}>
                       캘린더 파일 받기
                     </button>
                   ) : null}
@@ -2246,11 +2290,98 @@ export function PublicFlow({ slug }: { slug: string }) {
       </section>
       ) : null}
 
+      {showStorageNotice ? (
+        <section className="my-5 rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm text-blue-950">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <p>
+              <span className="font-semibold">진행 상황은 이 브라우저에 자동 저장됩니다.</span> 다른 기기에서 보거나 백업하려면 엑셀 실행표를 받아두세요.
+            </p>
+            <button
+              className="rounded-md border border-blue-200 bg-white px-3 py-1.5 text-sm font-semibold text-blue-700"
+              onClick={() => {
+                dismissStorageNotice();
+                setShowStorageNotice(false);
+              }}
+            >
+              확인
+            </button>
+          </div>
+        </section>
+      ) : null}
+
+      <section className="my-5 rounded-lg border border-gray-200 bg-white p-4">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <Link className="text-sm font-semibold text-gray-950 underline-offset-2 hover:text-blue-700 hover:underline" href={getCreatorPath(bundle)}>
+              by {getCreatorName(bundle)}
+            </Link>
+            {getCreatorRole(bundle) ? <p className="mt-1 text-sm text-gray-500">{getCreatorRole(bundle)}</p> : null}
+            {getCreatorNote(bundle) ? <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600">{getCreatorNote(bundle)}</p> : null}
+          </div>
+          <div className="flex gap-2 text-sm">
+            <span className="rounded-md bg-gray-50 px-3 py-2 font-semibold text-gray-800">베타 운영 중</span>
+          </div>
+        </div>
+      </section>
+
+      <SourceContentCard bundle={bundle} />
+
+      {bundle.flow.warning ? (
+        <div className="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
+          {bundle.flow.warning}
+        </div>
+      ) : null}
+
+      <details className="mt-4 rounded-lg border border-gray-200 bg-white p-3 text-sm" open={!showTodayExecution}>
+        <summary className="cursor-pointer font-semibold text-gray-700">출처와 주의 정보</summary>
+        <div className="mt-3 space-y-3">
+          <FlowBadges bundle={bundle} />
+          <p className="text-gray-600">
+            마지막 업데이트: {bundle.flow.updated_at ? formatDate(new Date(bundle.flow.updated_at)) : '확인 필요'}
+          </p>
+          {bundle.flow.source_checked_at ? (
+            <p className="text-gray-600">출처 확인일: {bundle.flow.source_checked_at}</p>
+          ) : null}
+          {bundle.flow.conversion_note ? (
+            <p className="text-gray-600">Flow 전환 방식: {bundle.flow.conversion_note}</p>
+          ) : null}
+          {getSourcePrecisionLabel(bundle) ? (
+            <p className="text-gray-600">출처 정밀도: {getSourcePrecisionLabel(bundle)}</p>
+          ) : null}
+          {bundle.flow.source_url ? (
+            <a className="inline-flex text-blue-700 underline-offset-2 hover:underline" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
+              {bundle.flow.source_title ?? '참고 자료'} 열기
+            </a>
+          ) : null}
+        </div>
+      </details>
+
+      {showTodayExecution ? (
+        <ExactVideoToolPreview
+          bundle={bundle}
+          anchor={anchor}
+          displayAnchor={displayAnchor}
+          anchorMode={anchorMode}
+          onAnchorModeChange={setAnchorMode}
+          onAnchorChange={setAnchor}
+          weekdays={weekdaySelection}
+          onWeekdaysChange={setWeekdaySelection}
+          destination={primaryDestination}
+          onCopyText={copy}
+          onDownloadExcel={downloadExcel}
+          onDownloadCalendar={downloadCalendar}
+          onCopyToEditableDraft={copyToEditableDraft}
+          copyState={copyState}
+          downloadState={downloadState}
+          calendarState={calendarState}
+        />
+      ) : null}
+
       {showTodayExecution ? (
         <ExactVideoRenderer bundle={bundle} checks={checks} onToggle={toggle} />
       ) : (
         <>
-          <FlowOverview bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} />
+          <FlowOverview bundle={bundle} anchor={displayAnchor} checks={checks} itemStates={itemStates} onToggle={toggle} />
 
           {views.length > 1 ? (
             <div className="mb-5 flex flex-wrap gap-2">
@@ -2271,11 +2402,11 @@ export function PublicFlow({ slug }: { slug: string }) {
           ) : bundle.flow.content_type === 'meal_plan' ? (
             <MealPlanRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} reactionLogs={reactionLogs} onReactionChange={updateReaction} />
           ) : bundle.flow.structure_type === 'timeline' ? (
-            <TimelineRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} />
+            <TimelineRenderer bundle={bundle} anchor={displayAnchor} checks={checks} itemStates={itemStates} onToggle={toggle} onNoteChange={updateItemNote} onSkipToggle={toggleItemSkipped} />
           ) : bundle.flow.structure_type === 'routine' ? (
-            <RoutineRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} weekdays={weekdaySelection} />
+            <RoutineRenderer bundle={bundle} anchor={displayAnchor} checks={checks} itemStates={itemStates} onToggle={toggle} weekdays={weekdaySelection} onNoteChange={updateItemNote} onSkipToggle={toggleItemSkipped} />
           ) : (
-            <ChecklistRenderer bundle={bundle} checks={checks} onToggle={toggle} />
+            <ChecklistRenderer bundle={bundle} checks={checks} itemStates={itemStates} onToggle={toggle} onNoteChange={updateItemNote} onSkipToggle={toggleItemSkipped} />
           )}
         </>
       )}
@@ -2287,14 +2418,14 @@ export function PublicFlow({ slug }: { slug: string }) {
             <span className="font-semibold">{done} / {executableCount}</span>
           </div>
           <div className="flex gap-2">
-            <button className="flex-1 rounded-md bg-[#2563EB] px-3 py-2 text-sm font-semibold text-white" onClick={copy}>
+            <button className="flex-1 rounded-md bg-[#2563EB] px-3 py-2 text-sm font-semibold text-white disabled:bg-gray-300" disabled={done === 0} onClick={copy}>
               체크리스트 복사
             </button>
-            <button className="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold" onClick={downloadExcel}>
+            <button className="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold disabled:border-gray-200 disabled:text-gray-400" disabled={done === 0} onClick={downloadExcel}>
               엑셀 받기
             </button>
             {canExportCalendar ? (
-              <button className="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold" onClick={downloadCalendar}>
+              <button className="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold disabled:border-gray-200 disabled:text-gray-400" disabled={done === 0} onClick={downloadCalendar}>
                 캘린더
               </button>
             ) : null}
@@ -2332,34 +2463,64 @@ function AnchorInput({
   }
 
   const label = getAnchorInputLabel(bundle);
+  const anchorDate = anchor ? new Date(anchor) : null;
+  const today = new Date();
+  const daysUntil = anchorDate && !Number.isNaN(anchorDate.getTime())
+    ? Math.ceil((anchorDate.getTime() - new Date(formatDate(today)).getTime()) / 86400000)
+    : null;
+  const earliestOffset = getEarliestOffset(bundle);
+  const isPast = daysUntil !== null && daysUntil < 0;
+  const isClose = daysUntil !== null && earliestOffset < 0 && daysUntil >= 0 && daysUntil < Math.abs(earliestOffset);
 
   return (
     <div className="space-y-4">
-      <div className="space-y-2">
+      <label className="block space-y-2">
+        <span className="text-sm font-semibold">{label}</span>
         <div className="flex flex-wrap gap-2">
-          {[
-            ['example', '예시 날짜'],
-            ['today', '오늘 기준'],
-            ['custom', '내 날짜 입력'],
-          ].map(([value, text]) => (
-            <button
-              key={value}
-              className={`rounded-md border px-3 py-1.5 text-sm font-semibold ${mode === value ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-300 bg-white text-gray-700'}`}
-              onClick={() => onModeChange(value as AnchorMode)}
-            >
-              {text}
-            </button>
-          ))}
+          <input
+            aria-label={label}
+            className="min-w-[220px] flex-1 rounded-md border border-gray-300 px-3 py-2"
+            type="date"
+            value={anchor}
+            onChange={(event) => {
+              onModeChange('custom');
+              onChange(event.target.value);
+            }}
+          />
+          <button className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white" type="button" onClick={() => onModeChange('custom')}>
+            입력
+          </button>
         </div>
-        <p className="text-sm text-gray-600">
-          {getAnchorModeLabel(mode)} · {label} {displayAnchor}
-        </p>
+      </label>
+      <div className="flex items-center gap-3 text-xs font-semibold text-gray-400">
+        <span className="h-px flex-1 bg-gray-200" />
+        또는
+        <span className="h-px flex-1 bg-gray-200" />
       </div>
-      {mode === 'custom' ? (
-        <label className="block space-y-2">
-          <span className="text-sm font-semibold">{label}</span>
-          <input aria-label={label} className="w-full rounded-md border border-gray-300 px-3 py-2" type="date" value={anchor} onChange={(event) => onChange(event.target.value)} />
-        </label>
+      <div className="grid gap-2 sm:grid-cols-2">
+        <button className={`rounded-md border px-3 py-2 text-left text-sm font-semibold ${mode === 'undecided' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`} type="button" onClick={() => onModeChange('undecided')}>
+          아직 날짜가 안 정해졌어요
+        </button>
+        <button className={`rounded-md border px-3 py-2 text-left text-sm font-semibold ${mode === 'example' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`} type="button" onClick={() => onModeChange('example')}>
+          그냥 예시로 둘러볼게요
+        </button>
+      </div>
+      {mode === 'custom' && anchor ? (
+        <div className={`rounded-md border p-3 text-sm ${isPast ? 'border-red-200 bg-red-50 text-red-800' : isClose ? 'border-amber-200 bg-amber-50 text-amber-900' : 'border-emerald-200 bg-emerald-50 text-emerald-800'}`}>
+          {isPast ? (
+            `${label}이 이미 지났어요. 다른 날짜를 입력하시겠어요?`
+          ) : (
+            <>
+              <span className="font-semibold">{label}: {anchor}</span>
+              {daysUntil !== null ? ` (D-${daysUntil})` : ''} 으로 모든 항목이 자동 조정됐어요.
+              {isClose ? ` ${label}까지 ${daysUntil}일밖에 남지 않아 일부 초기 단계는 빠르게 처리하거나 건너뛸 수 있어요.` : null}
+            </>
+          )}
+        </div>
+      ) : mode === 'example' ? (
+        <p className="rounded-md border border-gray-200 bg-white p-3 text-sm text-gray-600">예시 날짜로 미리보기 · {label} {displayAnchor}</p>
+      ) : mode === 'undecided' ? (
+        <p className="rounded-md border border-gray-200 bg-white p-3 text-sm text-gray-600">날짜 없이 항목만 먼저 둘러봅니다. 날짜를 넣으면 모든 일정이 다시 계산됩니다.</p>
       ) : null}
       {bundle.flow.structure_type === 'routine' ? (
         <div>
@@ -2501,7 +2662,7 @@ function itemDate(anchor: string, item: FlowItem) {
 }
 
 type PublicView = 'list' | 'week' | 'month' | 'recipes';
-type AnchorMode = 'example' | 'today' | 'custom';
+type AnchorMode = 'custom' | 'example' | 'undecided';
 
 function nextMonday(date: Date): Date {
   const day = date.getDay();
@@ -2512,9 +2673,10 @@ function nextMonday(date: Date): Date {
 function getPreviewAnchor(bundle: FlowBundle, mode: AnchorMode, customAnchor: string): string {
   if (bundle.flow.anchor_type === 'none') return '';
   if (mode === 'custom') return customAnchor;
+  if (mode === 'undecided') return '';
   const today = new Date();
-  if (mode === 'today') return formatDate(today);
   if (bundle.flow.content_type === 'meal_plan') return formatDate(today);
+  if (bundle.flow.category.includes('결혼')) return formatDate(addDays(today, 180));
   if (bundle.flow.category.includes('이사')) return formatDate(addDays(today, 30));
   if (bundle.flow.category.includes('여행')) return formatDate(addDays(today, 14));
   if (bundle.flow.structure_type === 'routine') return formatDate(nextMonday(today));
@@ -2523,8 +2685,18 @@ function getPreviewAnchor(bundle: FlowBundle, mode: AnchorMode, customAnchor: st
 
 function getAnchorModeLabel(mode: AnchorMode): string {
   if (mode === 'custom') return '내 날짜 기준';
-  if (mode === 'today') return '오늘 기준';
+  if (mode === 'undecided') return '날짜 미정';
   return '예시 날짜로 미리보기';
+}
+
+function isAnchorMode(value: string): value is AnchorMode {
+  return value === 'custom' || value === 'example' || value === 'undecided';
+}
+
+function getEarliestOffset(bundle: FlowBundle): number {
+  const itemOffsets = bundle.items.map((item) => item.day_offset).filter((value): value is number => value !== undefined);
+  const mealOffsets = (bundle.mealSlots ?? []).map((slot) => slot.day_offset);
+  return Math.min(0, ...itemOffsets, ...mealOffsets);
 }
 
 type ScheduleEntry = {
@@ -2577,6 +2749,14 @@ function getToggleCheckIds(bundle: FlowBundle, id: string, anchor: string): stri
 function isBaseEntryChecked(bundle: FlowBundle, id: string, anchor: string, checks: Record<string, boolean>): boolean {
   const ids = getToggleCheckIds(bundle, id, anchor);
   return ids.length > 0 && ids.every((checkId) => checks[checkId]);
+}
+
+function baseStateId(id: string): string {
+  return id.split('__')[0];
+}
+
+function isItemStateSkipped(itemStates: Record<string, FlowItemState>, id: string): boolean {
+  return Boolean(itemStates[baseStateId(id)]?.skipped);
 }
 
 function getPublicViews(bundle: FlowBundle): { id: PublicView; label: string }[] {
@@ -2900,10 +3080,10 @@ function ItemDetailPanel({ detail }: { detail?: FlowItemDetail }) {
             <p className="mt-1 leading-6">{detail.how}</p>
           </div>
         ) : null}
-        {detail.completion_criteria ? (
+        {visibleCompletionCriteria(detail) ? (
           <div>
             <p className="text-xs font-semibold text-gray-500">완료 기준</p>
-            <p className="mt-1 leading-6">{detail.completion_criteria}</p>
+            <p className="mt-1 leading-6">{visibleCompletionCriteria(detail)}</p>
           </div>
         ) : null}
         {detail.caution ? (
@@ -2943,9 +3123,43 @@ function InlineItemLinks({ detail }: { detail?: FlowItemDetail }) {
 }
 
 function DetailPreview({ detail }: { detail?: FlowItemDetail }) {
-  const text = detail?.completion_criteria ?? detail?.why ?? detail?.how ?? detail?.caution;
+  const text = visibleCompletionCriteria(detail) ?? detail?.why ?? detail?.how ?? detail?.caution;
   if (!text) return null;
   return <p className="mt-2 line-clamp-2 text-sm leading-6 text-gray-600">{text}</p>;
+}
+
+function ItemPersonalControls({
+  item,
+  state,
+  onNoteChange,
+  onSkipToggle,
+}: {
+  item: FlowItem;
+  state?: FlowItemState;
+  onNoteChange: (id: string, note: string) => void;
+  onSkipToggle: (id: string) => void;
+}) {
+  return (
+    <div className="mt-3 grid gap-2 rounded-md border border-gray-100 bg-[#FAFAF8] p-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+      <label className="grid gap-1 text-sm">
+        <span className="font-semibold text-gray-700">내 메모</span>
+        <textarea
+          aria-label={`${item.title} 메모`}
+          className="min-h-16 w-full resize-y rounded-md border border-gray-300 bg-white px-3 py-2 text-sm leading-5"
+          placeholder="결정, 비용, 담당자, 보류 이유를 적어두세요."
+          value={state?.note ?? ''}
+          onChange={(event) => onNoteChange(item.id, event.target.value)}
+        />
+      </label>
+      <button
+        className={`rounded-md border px-3 py-2 text-sm font-semibold ${state?.skipped ? 'border-gray-300 bg-white text-gray-700' : 'border-amber-200 bg-amber-50 text-amber-800'}`}
+        type="button"
+        onClick={() => onSkipToggle(item.id)}
+      >
+        {state?.skipped ? '스킵 해제' : '내 상황엔 해당 없음'}
+      </button>
+    </div>
+  );
 }
 
 function getSectionItemIds(bundle: FlowBundle, sectionId: string): string[] {
@@ -2955,11 +3169,16 @@ function getSectionItemIds(bundle: FlowBundle, sectionId: string): string[] {
   return bundle.items.filter((item) => item.section_id === sectionId).map((item) => item.id);
 }
 
-function getNextEntries(bundle: FlowBundle, anchor: string, checks: Record<string, boolean>): ScheduleEntry[] {
-  const entries = getScheduleEntries(bundle, anchor).filter((entry) => !isBaseEntryChecked(bundle, entry.id, anchor, checks));
-  if (!entries.length && (bundle.flow.structure_type === 'checklist' || bundle.flow.structure_type === 'routine')) {
+function getNextEntries(
+  bundle: FlowBundle,
+  anchor: string,
+  checks: Record<string, boolean>,
+  itemStates: Record<string, FlowItemState> = {},
+): ScheduleEntry[] {
+  const entries = getScheduleEntries(bundle, anchor).filter((entry) => !isItemStateSkipped(itemStates, entry.id) && !isBaseEntryChecked(bundle, entry.id, anchor, checks));
+  if (!entries.length && (bundle.flow.structure_type === 'checklist' || bundle.flow.structure_type === 'routine' || bundle.flow.structure_type === 'timeline')) {
     return bundle.items
-      .filter((item) => !checks[item.id])
+      .filter((item) => !checks[item.id] && !itemStates[item.id]?.skipped)
       .slice(0, 3)
       .map((item) => ({
         id: item.id,
@@ -2996,8 +3215,14 @@ function getAttentionCount(bundle: FlowBundle) {
   }).length;
 }
 
-function getExecutionSummary(bundle: FlowBundle, anchor: string, checks: Record<string, boolean>, nextEntries: ScheduleEntry[]) {
-  const executableIds = getExecutableCheckIds(bundle, anchor);
+function getExecutionSummary(
+  bundle: FlowBundle,
+  anchor: string,
+  checks: Record<string, boolean>,
+  nextEntries: ScheduleEntry[],
+  itemStates: Record<string, FlowItemState> = {},
+) {
+  const executableIds = getExecutableCheckIds(bundle, anchor).filter((id) => !isItemStateSkipped(itemStates, id));
   const fallbackTotal = bundle.flow.content_type === 'meal_plan' ? (bundle.mealSlots ?? []).length : bundle.items.length;
   const total = executableIds.length || fallbackTotal;
   const done = executableIds.filter((id) => checks[id]).length;
@@ -3033,7 +3258,7 @@ function getActionBadges(bundle: FlowBundle, item: FlowItem, detail?: FlowItemDe
     badges.push({ label: '할 일', className: 'border-gray-200 bg-gray-50 text-gray-700' });
   }
 
-  if (detail?.completion_criteria) {
+  if (visibleCompletionCriteria(detail)) {
     badges.push({ label: '완료 기준', className: 'border-emerald-100 bg-emerald-50 text-emerald-700' });
   }
 
@@ -3066,18 +3291,25 @@ function FlowOverview({
   bundle,
   anchor,
   checks,
+  itemStates,
   onToggle,
 }: {
   bundle: FlowBundle;
   anchor: string;
   checks: Record<string, boolean>;
+  itemStates: Record<string, FlowItemState>;
   onToggle: (id: string) => void;
 }) {
-  const nextEntries = getNextEntries(bundle, anchor, checks);
-  const summaryItems = getExecutionSummary(bundle, anchor, checks, nextEntries);
+  const executableIds = getExecutableCheckIds(bundle, anchor).filter((id) => !isItemStateSkipped(itemStates, id));
+  const done = executableIds.filter((id) => checks[id]).length;
+  const total = executableIds.length || (bundle.flow.content_type === 'meal_plan' ? bundle.mealSlots?.length ?? 0 : bundle.items.filter((item) => !itemStates[item.id]?.skipped).length);
+  const showNext = done > 0 && done < total;
+  const nextEntries = showNext ? getNextEntries(bundle, anchor, checks, itemStates) : [];
+  const summaryItems = getExecutionSummary(bundle, anchor, checks, nextEntries, itemStates);
 
   return (
-    <section className="mb-5 grid items-start gap-4 lg:grid-cols-[minmax(320px,0.75fr)_minmax(0,1.25fr)]">
+    <section className={`mb-5 grid items-start gap-4 ${showNext ? 'lg:grid-cols-[minmax(320px,0.75fr)_minmax(0,1.25fr)]' : ''}`}>
+      {showNext ? (
       <div className="min-w-0 rounded-xl border border-blue-200 bg-blue-50 p-5 shadow-sm">
         <p className="text-sm font-semibold text-blue-700">다음 행동</p>
         <h2 className="mt-1 text-2xl font-semibold">지금 먼저 체크할 일</h2>
@@ -3112,6 +3344,7 @@ function FlowOverview({
           )}
         </div>
       </div>
+      ) : null}
 
       <div className="min-w-0 rounded-lg border border-gray-200 bg-white p-4">
         <div className="mb-3 flex items-center justify-between gap-3">
@@ -3158,12 +3391,18 @@ function TimelineRenderer({
   bundle,
   anchor,
   checks,
+  itemStates,
   onToggle,
+  onNoteChange,
+  onSkipToggle,
 }: {
   bundle: FlowBundle;
   anchor: string;
   checks: Record<string, boolean>;
+  itemStates: Record<string, FlowItemState>;
   onToggle: (id: string) => void;
+  onNoteChange: (id: string, note: string) => void;
+  onSkipToggle: (id: string) => void;
 }) {
   return (
     <div className="space-y-5">
@@ -3172,13 +3411,13 @@ function TimelineRenderer({
           <h2 className="text-xl font-semibold">{section.title}</h2>
           <div className="mt-4 space-y-3">
             {bundle.items.filter((item) => item.section_id === section.id).map((item) => (
-              <div key={item.id} className="rounded-lg border border-gray-200 bg-white p-4">
+              <div key={item.id} data-testid="flow-item-card" className={`rounded-lg border border-gray-200 bg-white p-4 ${itemStates[item.id]?.skipped ? 'opacity-60' : ''}`}>
                 {(() => {
                   const detail = getItemDetail(bundle, item.id);
                   return (
                     <>
                       <label className="flex gap-3">
-                        <input className="mt-1" type="checkbox" checked={isBaseEntryChecked(bundle, item.id, anchor, checks)} onChange={() => onToggle(item.id)} />
+                        <input className="mt-1" type="checkbox" disabled={itemStates[item.id]?.skipped} checked={isBaseEntryChecked(bundle, item.id, anchor, checks)} onChange={() => onToggle(item.id)} />
                         <span className="min-w-0 flex-1">
                           <span className="flex flex-wrap items-center gap-2 text-xs">
                             <span className="rounded-full bg-blue-50 px-2 py-1 font-mono font-semibold text-blue-700">{timingLabel(item.day_offset, item.duration_days)}</span>
@@ -3191,6 +3430,7 @@ function TimelineRenderer({
                       <DetailPreview detail={detail} />
                       <InlineItemLinks detail={detail} />
                       <ItemDetailPanel detail={detail} />
+                      <ItemPersonalControls item={item} state={itemStates[item.id]} onNoteChange={onNoteChange} onSkipToggle={onSkipToggle} />
                     </>
                   );
                 })()}
@@ -3500,14 +3740,20 @@ function RoutineRenderer({
   bundle,
   anchor,
   checks,
+  itemStates,
   onToggle,
   weekdays,
+  onNoteChange,
+  onSkipToggle,
 }: {
   bundle: FlowBundle;
   anchor: string;
   checks: Record<string, boolean>;
+  itemStates: Record<string, FlowItemState>;
   onToggle: (id: string) => void;
   weekdays: string[];
+  onNoteChange: (id: string, note: string) => void;
+  onSkipToggle: (id: string) => void;
 }) {
   const rules = (bundle.repeatRules ?? []).join(', ') || '주 3회';
   const firstSection = bundle.sections[0];
@@ -3568,13 +3814,13 @@ function RoutineRenderer({
           <h2 className="text-xl font-semibold">{section.title}</h2>
           <div className="mt-4 space-y-3">
             {bundle.items.filter((item) => item.section_id === section.id).map((item) => (
-              <div key={item.id} className="rounded-lg border border-gray-200 bg-white p-4">
+              <div key={item.id} data-testid="flow-item-card" className={`rounded-lg border border-gray-200 bg-white p-4 ${itemStates[item.id]?.skipped ? 'opacity-60' : ''}`}>
                 {(() => {
                   const detail = getItemDetail(bundle, item.id);
                   return (
                     <>
                       <label className="flex gap-3">
-                        <input className="mt-1" type="checkbox" checked={Boolean(checks[item.id])} onChange={() => onToggle(item.id)} />
+                        <input className="mt-1" type="checkbox" disabled={itemStates[item.id]?.skipped} checked={Boolean(checks[item.id])} onChange={() => onToggle(item.id)} />
                         <span className="min-w-0 flex-1">
                           {item.repeat_rule && !isExactVideo ? <span className="rounded-full bg-red-50 px-2 py-1 font-mono text-xs font-semibold text-red-700">{item.repeat_rule}</span> : null}
                           <ExecutionMetaBadges badges={getActionBadges(bundle, item, detail)} />
@@ -3584,6 +3830,7 @@ function RoutineRenderer({
                       <DetailPreview detail={detail} />
                       <InlineItemLinks detail={detail} />
                       <ItemDetailPanel detail={detail} />
+                      <ItemPersonalControls item={item} state={itemStates[item.id]} onNoteChange={onNoteChange} onSkipToggle={onSkipToggle} />
                     </>
                   );
                 })()}
@@ -3599,11 +3846,17 @@ function RoutineRenderer({
 function ChecklistRenderer({
   bundle,
   checks,
+  itemStates,
   onToggle,
+  onNoteChange,
+  onSkipToggle,
 }: {
   bundle: FlowBundle;
   checks: Record<string, boolean>;
+  itemStates: Record<string, FlowItemState>;
   onToggle: (id: string) => void;
+  onNoteChange: (id: string, note: string) => void;
+  onSkipToggle: (id: string) => void;
 }) {
   return (
     <div className="space-y-5">
@@ -3612,13 +3865,13 @@ function ChecklistRenderer({
           <h2 className="text-xl font-semibold">{section.title}</h2>
           <div className="mt-4 space-y-3">
             {bundle.items.filter((item) => item.section_id === section.id).map((item) => (
-              <div key={item.id} className="rounded-lg border border-gray-200 bg-white p-4">
+              <div key={item.id} data-testid="flow-item-card" className={`rounded-lg border border-gray-200 bg-white p-4 ${itemStates[item.id]?.skipped ? 'opacity-60' : ''}`}>
                 {(() => {
                   const detail = getItemDetail(bundle, item.id);
                   return (
                     <>
                       <label className="flex gap-3">
-                        <input className="mt-1" type="checkbox" checked={Boolean(checks[item.id])} onChange={() => onToggle(item.id)} />
+                        <input className="mt-1" type="checkbox" disabled={itemStates[item.id]?.skipped} checked={Boolean(checks[item.id])} onChange={() => onToggle(item.id)} />
                         <span className="min-w-0 flex-1">
                           <ExecutionMetaBadges badges={getActionBadges(bundle, item, detail)} />
                           <span className="mt-2 block text-base font-semibold text-gray-950">{item.title}</span>
@@ -3627,6 +3880,7 @@ function ChecklistRenderer({
                       <DetailPreview detail={detail} />
                       <InlineItemLinks detail={detail} />
                       <ItemDetailPanel detail={detail} />
+                      <ItemPersonalControls item={item} state={itemStates[item.id]} onNoteChange={onNoteChange} onSkipToggle={onSkipToggle} />
                     </>
                   );
                 })()}

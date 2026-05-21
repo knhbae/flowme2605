@@ -263,9 +263,7 @@ function withReferenceSourceDetails(
     })),
     itemDetails: bundle.items.map((item) => ({
       item_id: item.id,
-      why: '블로그·유튜브형 경험 콘텐츠를 바로 실행 가능한 단계로 바꾼 항목입니다.',
-      how: '원문 링크를 참고해 본인 상황에 맞는 기준, 예산, 난이도, 일정을 조정합니다.',
-      completion_criteria: `${item.title}을 실행했거나 내 상황에 맞게 조정했다.`,
+      completion_criteria: '이 항목을 완료했어요.',
       links: [{ ...source, type: 'reference' as const }],
     })),
   };
@@ -498,6 +496,128 @@ const weddingD180Text = `## D-180 큰 일정 확정
 - 최종 하객 수와 식대 기준 확인하기 D-14
 - 본식 당일 시간표와 연락망 공유하기 D-7
 - 결제 잔금과 준비물 체크하기 D-1`;
+
+const weddingChecklistLink = {
+  label: '결혼식 준비 체크리스트',
+  url: 'https://www.ohprint.me/blog/wedding-checklist',
+  type: 'reference' as const,
+};
+
+const weddingD180Details: Parameters<typeof withItemDetails>[1] = {
+  '예식 날짜와 예상 하객 규모 정하기': {
+    description: '예식 후보일과 하객 규모 구간을 정해 웨딩홀 탐색 기준을 만듭니다.',
+    why: '예식일과 하객 규모가 정해져야 웨딩홀 후보, 식대 예산, 청첩장 수량을 현실적으로 좁힐 수 있습니다.',
+    how: '양가와 가능한 주말 후보 1~3개를 추리고, 친척·지인·회사 동료 명단을 100명 단위로 합산해 150명 이하, 150~250명, 250명 이상 중 어디에 가까운지 정합니다.',
+    completion_criteria: '예식일 후보 1~3개와 예상 하객 규모 구간을 기록했다.',
+    caution: '양가 일정 충돌이 생기기 쉬우므로 후보일은 하나만 두지 않습니다.',
+    links: [weddingChecklistLink],
+    source_type: 'creator_experience',
+    risk_level: 'financial_sensitive',
+  },
+  '웨딩홀 후보와 예산 범위 비교하기': {
+    description: '위치, 보증인원, 식대, 대관료, 포함 항목을 한 표에서 비교합니다.',
+    why: '웨딩홀 비용은 보증인원과 포함 항목에 따라 크게 달라져 제목 견적만으로는 비교하기 어렵습니다.',
+    how: '후보 3~5곳의 위치, 가능한 날짜, 보증인원, 1인 식대, 대관료, 꽃장식·음향 포함 여부를 같은 기준으로 적습니다.',
+    completion_criteria: '후보 3곳 이상을 같은 기준으로 비교했고 우선 방문할 곳을 정했다.',
+    caution: '계약금 환불 조건과 보증인원 변경 가능 시점을 함께 확인합니다.',
+    links: [weddingChecklistLink],
+    source_type: 'creator_experience',
+    risk_level: 'financial_sensitive',
+  },
+  '양가 주요 일정과 우선순위 맞추기': {
+    description: '상견례, 예단·예물, 혼주 준비처럼 양가 협의가 필요한 항목을 먼저 정렬합니다.',
+    why: '양가 기대치가 늦게 드러나면 이미 예약한 일정이나 예산을 다시 조정해야 할 수 있습니다.',
+    how: '양가 부모님과 반드시 맞춰야 하는 항목, 각자 결정해도 되는 항목, 아직 보류할 항목을 나눕니다.',
+    completion_criteria: '양가 협의 필요 항목과 담당자를 정리했다.',
+    links: [weddingChecklistLink],
+    source_type: 'creator_experience',
+    risk_level: 'financial_sensitive',
+  },
+  '스튜디오, 드레스, 메이크업 후보 비교하기': {
+    description: '스드메 패키지와 개별 계약의 포함 범위, 추가금 기준을 비교합니다.',
+    why: '스드메는 기본가보다 촬영 원본, 헬퍼비, 드레스 업그레이드, 메이크업 추가 비용에서 차이가 납니다.',
+    how: '패키지 후보별 포함 항목, 원본·수정본 비용, 헬퍼비, 촬영 가능일, 취소 조건을 적습니다.',
+    completion_criteria: '후보별 포함/추가 비용을 비교했고 상담 또는 계약 후보를 정했다.',
+    caution: '추가금 기준을 구두로만 듣지 말고 견적서나 메시지로 남깁니다.',
+    links: [weddingChecklistLink],
+    source_type: 'creator_experience',
+    risk_level: 'financial_sensitive',
+  },
+  '본식 스냅과 영상 필요 여부 정하기': {
+    description: '본식 사진, 영상, 원판, 앨범 구성의 필요 여부와 예산 상한을 정합니다.',
+    why: '본식 기록 상품은 촬영 범위와 보정본 수에 따라 비용 차이가 커서 뒤늦게 고르면 예산이 흔들립니다.',
+    how: '원하는 결과물이 사진 중심인지 영상 중심인지 정하고, 필수 컷과 필요 없는 구성을 표시합니다.',
+    completion_criteria: '스냅/영상 필요 여부와 예산 상한을 기록했다.',
+    links: [weddingChecklistLink],
+    source_type: 'creator_experience',
+    risk_level: 'financial_sensitive',
+  },
+  '신혼여행 예산과 일정 후보 정리하기': {
+    description: '휴가 가능일, 항공권, 숙소, 환율, 보험을 포함한 대략 예산을 잡습니다.',
+    why: '신혼여행은 예식 준비와 비용 지출 시기가 겹치므로 큰 예산 항목을 먼저 분리해야 합니다.',
+    how: '가능한 출발일 2~3개와 목적지 후보를 정하고 항공·숙소·현지 비용을 대략 합산합니다.',
+    completion_criteria: '여행 후보지와 총예산 범위를 정했고 예약 검토 시점을 정했다.',
+    links: [weddingChecklistLink],
+    source_type: 'creator_experience',
+    risk_level: 'financial_sensitive',
+  },
+  '청첩장 문구와 발송 명단 정리하기': {
+    description: '종이/모바일 청첩장 문구, 주소록, 발송 대상을 정리합니다.',
+    why: '청첩장은 하객 수 확정, 식대 예산, 답례품 수량과 직접 연결됩니다.',
+    how: '양가 명단과 본인 지인 명단을 나누고, 주소가 필요한 대상과 모바일 발송 대상을 분리합니다.',
+    completion_criteria: '발송 명단과 문구 초안을 만들었고 검토 담당자를 정했다.',
+    links: [weddingChecklistLink],
+    source_type: 'creator_experience',
+    risk_level: 'financial_sensitive',
+  },
+  '식순, 사회자, 축가, 혼주 동선 확인하기': {
+    description: '본식 진행 순서와 사람별 역할, 리허설이 필요한 동선을 확인합니다.',
+    why: '식순과 동선이 늦게 정해지면 사회자, 축가, 혼주, 스냅 촬영팀이 서로 다른 정보를 갖게 됩니다.',
+    how: '식순 초안, 입장 순서, 축가 위치, 혼주 인사 동선, 촬영 요청 컷을 한 문서로 정리합니다.',
+    completion_criteria: '사회자와 양가 혼주에게 공유할 본식 진행 초안을 만들었다.',
+    links: [weddingChecklistLink],
+    source_type: 'creator_experience',
+    risk_level: 'low',
+  },
+  '예복, 한복, 부케, 답례품 진행 상태 확인하기': {
+    description: '주문·대여·수령일이 있는 세부 준비물을 한 번에 점검합니다.',
+    why: '세부 준비물은 담당자가 흩어지기 쉬워 누가 언제 찾는지 기록하지 않으면 본식 직전에 몰립니다.',
+    how: '품목별 담당자, 주문처, 결제 여부, 수령 예정일, 보관 위치를 적습니다.',
+    completion_criteria: '각 품목의 담당자와 수령일을 정리했다.',
+    links: [weddingChecklistLink],
+    source_type: 'creator_experience',
+    risk_level: 'financial_sensitive',
+  },
+  '최종 하객 수와 식대 기준 확인하기': {
+    description: '보증인원, 최종 인원 통보일, 식대 정산 기준을 확정합니다.',
+    why: '최종 하객 수는 당일 식대와 좌석, 답례품 수량에 직접 영향을 줍니다.',
+    how: '참석 회신, 양가 추가 명단, 업체 최종 통보 마감일을 맞춰 보증인원과 예상 인원을 분리해 적습니다.',
+    completion_criteria: '보증인원과 예상 참석 인원을 구분해 기록했고 업체 통보일을 확인했다.',
+    caution: '보증인원 변경 마감 이후에는 비용이 늘 수 있으므로 계약 조건을 다시 봅니다.',
+    links: [weddingChecklistLink],
+    source_type: 'creator_experience',
+    risk_level: 'financial_sensitive',
+  },
+  '본식 당일 시간표와 연락망 공유하기': {
+    description: '신랑·신부, 혼주, 사회자, 업체 담당자의 당일 시간표와 연락처를 공유합니다.',
+    why: '본식 당일에는 질문이 한 사람에게 몰리기 쉬워 연락망과 시간표가 있어야 지연을 줄일 수 있습니다.',
+    how: '메이크업 시작, 이동, 리허설, 본식, 사진 촬영, 정산 시간을 순서대로 적고 담당자 연락처를 붙입니다.',
+    completion_criteria: '당일 시간표와 연락망을 양가와 주요 담당자에게 공유했다.',
+    links: [weddingChecklistLink],
+    source_type: 'creator_experience',
+    risk_level: 'low',
+  },
+  '결제 잔금과 준비물 체크하기': {
+    description: '잔금, 봉투, 신분증, 계약서, 개인 준비물을 전날 한 번에 확인합니다.',
+    why: '본식 전날에는 시간이 부족하므로 결제와 준비물을 분리해 마지막 누락을 줄여야 합니다.',
+    how: '업체별 잔금 금액과 결제 수단, 당일 가져갈 물건, 전달할 봉투와 보관 담당자를 적습니다.',
+    completion_criteria: '잔금 목록과 당일 준비물 체크가 끝났고 보관 담당자를 정했다.',
+    caution: '현금이나 귀중품은 보관 담당자와 전달 시점을 명확히 합니다.',
+    links: [weddingChecklistLink],
+    source_type: 'creator_experience',
+    risk_level: 'financial_sensitive',
+  },
+};
 
 const running5kRoutineText = `@주 3회
 @4주 완주 루틴
@@ -1134,13 +1254,13 @@ const creatorInspiredBundles: FlowBundle[] = [
     },
     'medium',
   ),
-  withReferenceSourceDetails(
+  withItemDetails(
     makeTextBundle(
       {
         id: 'flow-wedding-d180',
         slug: 'wedding-d180-basic',
         title: '결혼 준비 D-180 Flow',
-        description: '예식일을 기준으로 웨딩홀, 스드메, 청첩장, 본식 디테일까지 시기별로 정리합니다.',
+        description: '예식일을 기준으로 6개월간 12개 항목을 웨딩홀, 스드메, 청첩장, 본식 디테일 순서로 정리합니다.',
         category: '결혼/준비',
         structure_type: 'timeline',
         content_type: 'default',
@@ -1153,11 +1273,7 @@ const creatorInspiredBundles: FlowBundle[] = [
       },
       weddingD180Text,
     ),
-    {
-      label: '결혼식 준비 체크리스트',
-      url: 'https://www.ohprint.me/blog/wedding-checklist',
-    },
-    'financial_sensitive',
+    weddingD180Details,
   ),
   withReferenceSourceDetails(
     makeTextBundle(

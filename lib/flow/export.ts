@@ -1,10 +1,10 @@
 import { addDays, formatDate, getRangeEnd } from './date';
 import { timingLabel } from './parser';
-import { FlowBundle, FlowItem, MealSlot, ReactionLog } from './types';
+import { FlowBundle, FlowItem, FlowItemState, MealSlot, ReactionLog } from './types';
 
 const anchorLabelByType = {
   start_date: '시작일',
-  end_date: '이사일',
+  end_date: '목표일',
   baby_age_month: '기준 월령',
   none: '기준값 없음',
 };
@@ -46,6 +46,7 @@ export type WorkbookSheet = {
 export type WorkbookExportOptions = {
   weekdays?: string[];
   reactionLogs?: Record<string, ReactionLog>;
+  itemStates?: Record<string, FlowItemState>;
 };
 
 const icsWeekdays: Record<string, string> = {
@@ -66,6 +67,7 @@ const executionColumns = [
   '실행 내용',
   '완료 기준',
   '바로가기',
+  '내 메모',
 ];
 
 const detailColumns = ['실행 내용', '섹션', '왜 필요한가', '실행 방법', '주의', '출처/링크'];
@@ -87,6 +89,7 @@ const reactionColumns = [
 const weekdayColumns = ['월', '화', '수', '목', '금', '토', '일'];
 const weeklyColumns = ['주', ...weekdayColumns];
 const monthlyColumns = ['월/주', ...weekdayColumns];
+const genericCompletionCriteria = '이 항목을 완료했어요.';
 
 function getItemDate(item: FlowItem, anchor?: string): string {
   if (!anchor || item.day_offset === undefined) return '';
@@ -122,6 +125,11 @@ function getMealDates(
 
 function doneLabel(done: boolean): string {
   return done ? '완료' : '미완료';
+}
+
+function itemStatusLabel(done: boolean, state?: FlowItemState): string {
+  if (state?.skipped) return '스킵';
+  return doneLabel(done);
 }
 
 function getTypeLabel(bundle: FlowBundle): string {
@@ -162,6 +170,11 @@ function linkLabelList(detail: ReturnType<typeof getItemDetail>): string {
   return (detail?.links ?? []).map((link) => link.label).join(', ');
 }
 
+function completionCriteria(detail: ReturnType<typeof getItemDetail>): string {
+  if (!detail?.completion_criteria || detail.completion_criteria === genericCompletionCriteria) return '';
+  return detail.completion_criteria;
+}
+
 function getExecutableIds(bundle: FlowBundle): string[] {
   return bundle.flow.content_type === 'meal_plan'
     ? (bundle.mealSlots ?? []).map((slot) => slot.id)
@@ -172,8 +185,12 @@ function isExactVideoFlow(bundle: FlowBundle): boolean {
   return Boolean(bundle.flow.tags?.includes('exact-video') && bundle.flow.source_url?.includes('youtube.com/watch'));
 }
 
-function getProgressLabel(bundle: FlowBundle, checks: Record<string, boolean>): string {
-  const ids = getExecutableIds(bundle);
+function getProgressLabel(
+  bundle: FlowBundle,
+  checks: Record<string, boolean>,
+  itemStates: Record<string, FlowItemState> = {},
+): string {
+  const ids = getExecutableIds(bundle).filter((id) => !itemStates[id]?.skipped);
   const done = ids.filter((id) => checks[id]).length;
   const total = ids.length;
   const percent = total > 0 ? Math.round((done / total) * 100) : 0;
@@ -195,7 +212,12 @@ type CalendarExportRow = {
   status: string;
 };
 
-function buildCalendarRows(bundle: FlowBundle, checks: Record<string, boolean>, anchor?: string): CalendarExportRow[] {
+function buildCalendarRows(
+  bundle: FlowBundle,
+  checks: Record<string, boolean>,
+  anchor?: string,
+  itemStates: Record<string, FlowItemState> = {},
+): CalendarExportRow[] {
   if (!anchor) return [];
   const rows: CalendarExportRow[] = [];
 
@@ -211,7 +233,7 @@ function buildCalendarRows(bundle: FlowBundle, checks: Record<string, boolean>, 
           timing: timingLabel(item.day_offset, item.duration_days),
           section: section.title,
           title: duration > 1 ? `${item.title} ${index + 1}일차` : item.title,
-          status: doneLabel(Boolean(checks[item.id])),
+          status: itemStatusLabel(Boolean(checks[item.id]), itemStates[item.id]),
         });
       }
     }
@@ -227,7 +249,7 @@ function buildCalendarRows(bundle: FlowBundle, checks: Record<string, boolean>, 
         timing: timingLabel(slot.day_offset, slot.duration_days),
         section: getSectionTitle(bundle, slot.section_id),
         title: slot.duration_days > 1 ? `${slot.menu_title} ${index + 1}일차` : slot.menu_title,
-        status: doneLabel(Boolean(checks[slot.id])),
+        status: itemStatusLabel(Boolean(checks[slot.id]), itemStates[slot.id]),
       });
     }
   }
@@ -311,9 +333,10 @@ export function buildText(
   bundle: FlowBundle,
   checks: Record<string, boolean>,
   anchor?: string,
+  itemStates: Record<string, FlowItemState> = {},
 ): string {
   const lines = [bundle.flow.title];
-  const anchorLabel = anchorLabelByType[bundle.flow.anchor_type];
+  const anchorLabel = getExportAnchorLabel(bundle);
   lines.push(`${anchorLabel}: ${anchor || (bundle.flow.anchor_type === 'none' ? '없음' : '')}`);
 
   if (bundle.flow.content_type === 'meal_plan') {
@@ -324,8 +347,10 @@ export function buildText(
         const timing = timingLabel(slot.day_offset, slot.duration_days);
         const recipe = bundle.recipes?.find((item) => item.id === slot.recipe_id);
         lines.push(`[${timing}${startDate ? ` / ${startDate} ~ ${endDate}` : ''}]`);
-        lines.push(`- ${slot.menu_title}${checks[slot.id] ? ' (완료)' : ''}`);
+        const state = itemStates[slot.id];
+        lines.push(`- ${slot.menu_title}${state?.skipped ? ' (스킵)' : checks[slot.id] ? ' (완료)' : ''}`);
         lines.push(`  새 재료: ${slot.new_ingredients.join(', ')}`);
+        if (state?.note?.trim()) lines.push(`  메모: ${state.note.trim()}`);
         if (recipe) lines.push(`  레시피: ${recipe.title}`);
       }
     }
@@ -338,7 +363,9 @@ export function buildText(
       const timing = timingLabel(item.day_offset, item.duration_days);
       const date = getItemDate(item, anchor);
       if (timing || date) lines.push(`[${timing}${date ? ` / ${date}` : ''}]`);
-      lines.push(`- ${item.title}${checks[item.id] ? ' (완료)' : ''}`);
+      const state = itemStates[item.id];
+      lines.push(`- ${item.title}${state?.skipped ? ' (스킵)' : checks[item.id] ? ' (완료)' : ''}`);
+      if (state?.note?.trim()) lines.push(`  메모: ${state.note.trim()}`);
     }
   }
 
@@ -347,6 +374,19 @@ export function buildText(
 
 function compactDate(value: string): string {
   return value.replaceAll('-', '');
+}
+
+function getExportAnchorLabel(bundle: FlowBundle): string {
+  if (bundle.flow.anchor_type === 'none') return anchorLabelByType.none;
+  if (bundle.flow.content_type === 'meal_plan') return '이유식 시작일';
+  if (bundle.flow.category.includes('건강/검진')) return '검진일';
+  if (bundle.flow.category.includes('여행')) return '출국일';
+  if (bundle.flow.category.includes('결혼')) return '예식일';
+  if (bundle.flow.category.includes('공부/시험') || bundle.flow.category.includes('시험') || bundle.flow.category.includes('자격증')) return '시험일';
+  if (bundle.flow.category.includes('자동차/관리')) return '관리 시작일';
+  if (bundle.flow.category.includes('이사')) return '이사일';
+  if (bundle.flow.category.includes('운동') || bundle.flow.category.includes('러닝')) return '운동 시작일';
+  return anchorLabelByType[bundle.flow.anchor_type];
 }
 
 function formatIcsDate(date: Date): string {
@@ -448,6 +488,7 @@ export function buildIcsCalendar(
   bundle: FlowBundle,
   checks: Record<string, boolean>,
   anchor?: string,
+  itemStates: Record<string, FlowItemState> = {},
 ): string {
   const nowStamp = new Date().toISOString().replaceAll('-', '').replaceAll(':', '').replace(/\.\d{3}Z$/, 'Z');
   const lines = [
@@ -459,7 +500,7 @@ export function buildIcsCalendar(
     `X-WR-CALNAME:${escapeIcsText(bundle.flow.title)}`,
   ];
 
-  for (const entry of buildIcsEntries(bundle, anchor)) {
+  for (const entry of buildIcsEntries(bundle, anchor).filter((item) => !itemStates[item.id]?.skipped)) {
     const end = addDays(entry.start, entry.durationDays);
     const summary = `${bundle.flow.title} - ${entry.title}`;
     const description = buildIcsDescription(
@@ -516,12 +557,13 @@ export function buildWorkbookSheets(
 ): WorkbookSheet[] {
   const accentColor = getAccentColor(bundle);
   const typeLabel = getTypeLabel(bundle);
-  const anchorLabel = anchorLabelByType[bundle.flow.anchor_type];
+  const anchorLabel = getExportAnchorLabel(bundle);
+  const itemStates = options.itemStates ?? {};
 
   const summaryRows: WorkbookCell[][] = [
     ['FLOW', bundle.flow.title],
     ['카테고리', bundle.flow.category],
-    ['진행률', getProgressLabel(bundle, checks)],
+    ['진행률', getProgressLabel(bundle, checks, itemStates)],
     ['기준값', bundle.flow.anchor_type === 'none' ? '기준값 없음' : `${anchorLabel}: ${anchor || '미입력'}`],
     ['구조', typeLabel],
     ['상태', bundle.flow.status === 'published' ? '공개 Flow' : '초안 Flow'],
@@ -546,14 +588,16 @@ export function buildWorkbookSheets(
     for (const item of bundle.items.filter((entry) => entry.section_id === section.id)) {
       const { startDate, endDate } = getItemDates(item, anchor);
       const detail = getItemDetail(bundle, item.id);
+      const state = itemStates[item.id];
       executionRows.push([
-        doneLabel(Boolean(checks[item.id])),
+        itemStatusLabel(Boolean(checks[item.id]), state),
         timingLabel(item.day_offset, item.duration_days),
         endDate ? `${startDate} ~ ${endDate}` : startDate,
         section.title,
         item.title,
-        detail?.completion_criteria ?? '',
+        completionCriteria(detail),
         linkLabelList(detail),
+        state?.note?.trim() ?? '',
       ]);
       if (detail?.why || detail?.how || detail?.caution || detail?.links?.length || item.description) {
         detailRows.push([
@@ -571,14 +615,16 @@ export function buildWorkbookSheets(
   for (const slot of bundle.mealSlots ?? []) {
     const recipe = bundle.recipes?.find((item) => item.id === slot.recipe_id);
     const { startDate, endDate } = getMealDates(slot, anchor);
+    const state = itemStates[slot.id];
     executionRows.push([
-      doneLabel(Boolean(checks[slot.id])),
+      itemStatusLabel(Boolean(checks[slot.id]), state),
       timingLabel(slot.day_offset, slot.duration_days),
       startDate && endDate ? `${startDate} ~ ${endDate}` : '',
       getSectionTitle(bundle, slot.section_id),
       slot.menu_title,
       slot.new_ingredients.length ? `새 재료: ${slot.new_ingredients.join(', ')}` : '',
       recipe ? `레시피: ${recipe.title}` : '',
+      state?.note?.trim() ?? '',
     ]);
     detailRows.push([
       slot.menu_title,
@@ -602,7 +648,7 @@ export function buildWorkbookSheets(
       : '기준일과 직접 연결된 항목이 없습니다.',
   ]);
 
-  const calendarRows = buildCalendarRows(bundle, checks, anchor);
+  const calendarRows = buildCalendarRows(bundle, checks, anchor, itemStates);
   const weeklyRows = buildWeeklyGridRows(calendarRows);
   const monthlyRows = buildMonthlyGridRows(calendarRows);
 
@@ -706,7 +752,7 @@ export function buildWorkbookSheets(
 
 function columnWidth(columnName: string): number {
   if (['실행 내용', '왜 필요한가', '실행 방법', '완료 기준', '바로가기', '출처/링크', '재료', '조리 순서'].includes(columnName)) return 34;
-  if (['내용', '주의', '다운로드 메모'].includes(columnName)) return 48;
+  if (['내용', '주의', '다운로드 메모', '내 메모'].includes(columnName)) return 48;
   if (['구분'].includes(columnName)) return 18;
   if (['주 시작일', '날짜', '월'].includes(columnName)) return 14;
   if (['요일', '상태'].includes(columnName)) return 10;

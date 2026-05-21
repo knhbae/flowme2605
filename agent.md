@@ -2,7 +2,7 @@
 
 > **AI-agnostic root guide.** 이 문서는 Codex, Claude Code, Gemini CLI, Copilot CLI, Cursor, 또는 다른 AI 개발 도구가 공통으로 따라야 하는 운영 기준이다. 특정 벤더의 명령이나 파일명에 의존하지 않는다.
 >
-> **Project:** [README.md](./README.md) | **Status:** [docs/STATUS.md](./docs/STATUS.md) | **Roadmap:** [docs/ROADMAP.md](./docs/ROADMAP.md) | **Ideas:** [docs/IDEAS.md](./docs/IDEAS.md) | **History:** [docs/HISTORY.md](./docs/HISTORY.md) | **Harness:** [docs/harness/README.md](./docs/harness/README.md)
+> **Project:** [README.md](./README.md) | **Status:** [docs/STATUS.md](./docs/STATUS.md) | **Roadmap:** [docs/ROADMAP.md](./docs/ROADMAP.md) | **Ideas:** [docs/IDEAS.md](./docs/IDEAS.md) | **PR History:** [docs/pr-history/README.md](./docs/pr-history/README.md) | **History:** [docs/HISTORY.md](./docs/HISTORY.md) | **Harness:** [docs/harness/README.md](./docs/harness/README.md)
 
 ## 0) Agent Harness Rules
 
@@ -50,6 +50,7 @@ npm run dev
 - `docs/ROADMAP.md`: planned versions and backlog index.
 - `docs/IDEAS.md`: useful ideas, deferred work, unresolved conversation context, and revisit triggers that are not yet committed roadmap items.
 - `docs/REFERENCE.md`: external UX/UI and productivity-method references for calendar, task, reminder, routine, health, and exercise execution flows.
+- `docs/pr-history/`: PR-level implementation memory. Record the reason, major changes, not-done items, decisions, verification evidence, deploy links, risks, rollback notes, and follow-ups for each PR.
 - `docs/HISTORY.md`: released changes only.
 - `docs/harness/`: AI-agnostic process, roles, and verification rules.
 - `docs/superpowers/`: detailed specs/plans produced by agent workflows.

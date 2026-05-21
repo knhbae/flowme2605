@@ -36,7 +36,7 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(page.getByRole('heading', { name: '결혼 준비 D-180 Flow' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '중고차 구매 현장 점검 Flow' })).not.toBeVisible();
   await expect(page.getByText('by 웨딩 체크메이트')).toBeVisible();
-  await expect(page.getByText(/실행 [0-9,]+/).first()).toBeVisible();
+  await expect(page.getByText('베타 운영 중').first()).toBeVisible();
   await expect(page.getByText('#D-Day 준비').first()).toBeVisible();
 });
 
@@ -128,7 +128,7 @@ test('creator channel can filter real source-backed flows', async ({ page }) => 
   await page.goto('/u/samsung-service');
 
   await expect(page.getByText('출처 확인').first()).toBeVisible();
-  await expect(page.getByText('첫 행동:').first()).toBeVisible();
+  await expect(page.getByText('대표 항목:').first()).toBeVisible();
   await page.getByRole('button', { name: '출처 확인' }).click();
 
   await expect(page.locator('a[href="/f/real-samsung-aircon-seasonal-care"]').first()).toBeVisible();
@@ -252,13 +252,14 @@ test('creator profile merges newly shipped seed flows into existing browser stor
   await expect(page.getByRole('heading', { name: 'Local only old flow' })).toBeVisible();
 });
 
-test('real source public flow exposes source QA metadata and first action', async ({ page }) => {
+test('real source public flow exposes source QA metadata and target metadata', async ({ page }) => {
   await page.goto('/f/real-samsung-aircon-seasonal-care');
 
   await expect(page.getByText('출처 확인일: 2026-05-21')).toBeVisible();
   await expect(page.getByText('Flow 전환 방식:')).toBeVisible();
   await expect(page.getByText('출처 정밀도: 정확한 출처 페이지')).toBeVisible();
-  await expect(page.getByText('첫 행동:').first()).toBeVisible();
+  await expect(page.getByText('목표일 입력으로 시작')).toBeVisible();
+  await expect(page.getByText('이 Flow는 아래 콘텐츠를 기반으로')).toBeVisible();
 });
 
 test('preview creator flow route opens encoded Korean slug', async ({ page }) => {
@@ -310,20 +311,15 @@ test('text editor shows a public-style parsed preview while drafting', async ({ 
 test('public moving flow calculates dates and updates progress', async ({ page }) => {
   await page.goto('/f/moving-d30-basic');
 
-  await expect(page.getByText('예시 날짜로 미리보기')).toBeVisible();
-  await expect(page.getByText('1. 기준 날짜 선택')).toBeVisible();
-  await expect(page.getByText('2. 바로 실행')).toBeVisible();
-  await expect(page.getByText('3. 저장/공유')).toBeVisible();
+  await expect(page.getByText('1. 이사일 입력하기')).toBeVisible();
+  await expect(page.getByText('2. 실행 항목 체크')).toBeVisible();
+  await expect(page.getByText('3. 내보내기와 백업')).toBeVisible();
   await expect(page.getByRole('button', { name: '내 일정표 엑셀로 받기' })).toBeVisible();
   await expect(page.getByText('by FLOW 큐레이션팀')).toBeVisible();
-  await expect(page.getByText(/복사 [0-9,]+/).first()).toBeVisible();
-  await page.getByRole('button', { name: '내 날짜 입력' }).click();
+  await expect(page.getByText('베타 운영 중').first()).toBeVisible();
   await page.getByLabel('이사일').fill('2026-07-15');
-  await expect(page.getByRole('heading', { name: '지금 먼저 체크할 일' })).toBeVisible();
-  await expect(page.getByText('실행 우선순위')).toBeVisible();
-  await expect(page.getByText('날짜 고정').first()).toBeVisible();
-  await expect(page.getByText('확인·주의').first()).toBeVisible();
-  await expect(page.getByText('추천 다음 항목')).toBeVisible();
+  await expect(page.getByText('이사일: 2026-07-15')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '지금 먼저 체크할 일' })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '전체 흐름' })).toBeVisible();
   await expect(page.getByText('출처와 주의 정보')).toBeVisible();
   await expect(page.getByRole('button', { name: '전체 할 일' })).toBeVisible();
@@ -342,11 +338,43 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await page.getByRole('checkbox', { name: /이사 방식 정하기/ }).first().check();
   await page.getByRole('checkbox', { name: /이사할 집 하자 점검하기/ }).first().check();
   await expect(page.getByText('2 / 24').first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: '지금 먼저 체크할 일' })).toBeVisible();
 
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: '내 일정표 엑셀로 받기' }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe('moving-d30-basic.xlsx');
+});
+
+test('wedding flow answers first-screen questions and persists date note and skip state', async ({ page }) => {
+  await page.goto('/f/wedding-d180-basic');
+
+  await expect(page.getByRole('heading', { name: '결혼 준비 D-180 Flow' })).toBeVisible();
+  await expect(page.getByText('평균 소요 6개월')).toBeVisible();
+  await expect(page.getByText('12개 항목', { exact: true })).toBeVisible();
+  await expect(page.getByText('예식일 입력으로 시작')).toBeVisible();
+  await expect(page.getByText('첫 행동:')).toHaveCount(0);
+  await expect(page.getByText('이 Flow는 아래 콘텐츠를 기반으로')).toBeVisible();
+  await expect(page.getByText('ohprint.me')).toBeVisible();
+  await expect(page.getByLabel('예식일')).toBeVisible();
+
+  await page.getByLabel('예식일').fill('2026-09-15');
+  await expect(page.getByText('예식일: 2026-09-15')).toBeVisible();
+  await expect(page.getByText(/모든 항목이 자동 조정/)).toBeVisible();
+
+  const firstItem = page.locator('[data-testid="flow-item-card"]').filter({ hasText: '예식 날짜와 예상 하객 규모 정하기' }).first();
+  await firstItem.getByRole('checkbox').check();
+  await firstItem.getByLabel('예식 날짜와 예상 하객 규모 정하기 메모').fill('양가 협의는 6월 첫째 주에 다시 확인');
+
+  const secondItem = page.locator('[data-testid="flow-item-card"]').filter({ hasText: '웨딩홀 후보와 예산 범위 비교하기' }).first();
+  await secondItem.getByRole('button', { name: '내 상황엔 해당 없음' }).click();
+  await expect(page.getByText('1 / 11').first()).toBeVisible();
+
+  await page.reload();
+  await expect(page.getByLabel('예식일')).toHaveValue('2026-09-15');
+  await expect(firstItem.getByLabel('예식 날짜와 예상 하객 규모 정하기 메모')).toHaveValue('양가 협의는 6월 첫째 주에 다시 확인');
+  await expect(secondItem.getByRole('button', { name: '스킵 해제' })).toBeVisible();
+  await expect(page.getByText('1 / 11').first()).toBeVisible();
 });
 
 test('new flow creation keeps advanced settings secondary', async ({ page }) => {
@@ -361,7 +389,6 @@ test('new flow creation keeps advanced settings secondary', async ({ page }) => 
 test('meal plan flow exposes recipe and reaction log', async ({ page }) => {
   await page.goto('/f/baby-food-menu-recipe');
 
-  await page.getByRole('button', { name: '내 날짜 입력' }).click();
   await page.getByLabel('이유식 시작일').fill('2026-06-01');
   await expect(page.getByText('2026-06-01 ~ 2026-06-03')).toBeVisible();
   await expect(page.getByRole('button', { name: '주별 보기' })).toBeVisible();
@@ -386,7 +413,6 @@ test('meal plan flow exposes recipe and reaction log', async ({ page }) => {
 test('duration calendar checks only one day at a time', async ({ page }) => {
   await page.goto('/f/baby-food-menu-recipe');
 
-  await page.getByRole('button', { name: '내 날짜 입력' }).click();
   await page.getByLabel('이유식 시작일').fill('2026-06-01');
   await page.getByRole('button', { name: '달력 보기' }).click();
 
@@ -403,22 +429,23 @@ test('duration calendar checks only one day at a time', async ({ page }) => {
 test('routine flow highlights weekly routine setup', async ({ page }) => {
   await page.goto('/f/running-5k-4week');
 
-  await page.getByRole('button', { name: '내 날짜 입력' }).click();
   await page.getByLabel('운동 시작일').fill('2026-06-01');
 
-  await expect(page.getByText('추천 다음 항목')).toBeVisible();
+  await expect(page.getByText('추천 다음 항목')).toHaveCount(0);
   await expect(page.getByText('이번 주 루틴 설정')).toBeVisible();
   await expect(page.getByText('운동 요일').first()).toBeVisible();
   await expect(page.getByText('첫 루틴 미리보기')).toBeVisible();
   await expect(page.getByText('리셋 규칙')).toBeVisible();
   await expect(page.getByText('놓친 날은 부채로 쌓지 않고 다음 가능한 세션부터 다시 시작합니다.')).toBeVisible();
+
+  await page.locator('[data-testid="flow-item-card"]').first().getByRole('checkbox').check();
+  await expect(page.getByText('추천 다음 항목')).toBeVisible();
 });
 
 test('low-context date labels explain the required anchor', async ({ page }) => {
   await page.goto('/f/national-health-checkup-d7');
 
   await expect(page.getByText('입력할 날짜: 검진일')).toBeVisible();
-  await page.getByRole('button', { name: '내 날짜 입력' }).click();
   await page.getByLabel('검진일').fill('2026-06-20');
 
   await expect(page.getByText('검진일 기준으로 날짜가 계산됩니다.')).toBeVisible();
@@ -461,29 +488,27 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
 
 test('representative real content pilot flows are executable', async ({ page }) => {
   await page.goto('/f/samsung-aircon-seasonal-check');
-  await expect(page.getByRole('heading', { name: /에어컨/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '삼성 에어컨 계절 전 점검 Flow' })).toBeVisible();
   await expect(page.getByText('출처와 주의 정보')).toBeVisible();
   await expect(page.getByRole('link', { name: '삼성전자서비스 Samsung Care+ 에어컨 관리 안내' }).first()).toHaveAttribute(
     'href',
     'https://www.samsungsvc.co.kr/info/carePlus',
   );
-  await expect(page.getByRole('button', { name: '내 날짜 입력' })).toBeVisible();
-  await page.getByRole('button', { name: '내 날짜 입력' }).click();
   await page.getByLabel('시작일').fill('2026-06-01');
-  await expect(page.getByRole('heading', { name: '지금 먼저 체크할 일' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '지금 먼저 체크할 일' })).toHaveCount(0);
   await expect(page.getByText('2026-06-01').first()).toBeVisible();
   await page.locator('label').filter({ hasText: '전원 연결과 리모컨 배터리 확인하기' }).first().click();
   await expect(page.getByText('1 / 8').first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: '지금 먼저 체크할 일' })).toBeVisible();
 
   await page.goto('/f/qnet-exam-application-prep');
-  await expect(page.getByRole('heading', { name: /Q-Net/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Q-Net 원서접수 준비 Flow' })).toBeVisible();
   await expect(page.getByText('출처와 주의 정보')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Q-Net 원서접수 안내' }).first()).toHaveAttribute(
     'href',
     'https://q-net.or.kr/rcv001.do?gSite=Q&id=rcv00103&rcvPFlag=Y',
   );
   await expect(page.getByText('입력할 날짜: 시험일')).toBeVisible();
-  await page.getByRole('button', { name: '내 날짜 입력' }).click();
   await page.getByLabel('시험일').fill('2026-07-15');
   await expect(page.getByText('2026-06-15').first()).toBeVisible();
 });
