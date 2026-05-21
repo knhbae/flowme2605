@@ -83,13 +83,33 @@ function makeDetails(spec: RealSourceSpec, items: FlowItem[]): FlowItemDetail[] 
       : spec.source_type === 'creator_experience'
         ? 'creator'
         : 'reference';
+  const shouldAddPortableCue = !spec.tags.includes('exact-video');
+  const destinationLabel =
+    spec.primary_destination === 'calendar'
+      ? '캘린더'
+      : spec.primary_destination === 'sheet'
+        ? '실행표'
+        : spec.primary_destination === 'memo'
+          ? '메모'
+          : spec.primary_destination === 'hybrid'
+            ? '일정표/체크표'
+            : spec.structure_type === 'timeline'
+              ? 'D-Day 일정표'
+              : spec.structure_type === 'routine'
+                ? '반복 루틴표'
+                : spec.structure_type === 'checklist'
+                  ? '체크표'
+                  : '단계별 기록표';
 
   return items.map((item, index) => {
     const action = spec.actions[index];
+    const portableCue = shouldAddPortableCue
+      ? ` 내 도구에 옮길 때는 ${destinationLabel}의 "${item.title}" 칸에 기록합니다.`
+      : '';
     return {
       item_id: item.id,
       why: action.why,
-      how: action.how,
+      how: `${action.how}${portableCue}`,
       completion_criteria: action.completion_criteria,
       caution: action.caution ?? spec.warning,
       links: [
@@ -135,7 +155,9 @@ function buildBundle(spec: RealSourceSpec): FlowBundle {
       source_title: spec.source_title,
       source_url: spec.source_url,
       source_checked_at: checkedAt,
-      conversion_note: spec.conversion_note,
+      conversion_note: spec.conversion_note.startsWith('원본 URL')
+        ? spec.conversion_note
+        : `원본 URL에서 출처 페이지를 확인했고, ${spec.conversion_note}`,
       risk_level: spec.risk_level,
       warning: spec.warning,
       owner_user_id: channel.id,
@@ -474,7 +496,7 @@ function makeCreatorVideoSpec(video: CreatorVideoSpec): RealSourceSpec {
         {
           title: '운동 스케줄 등록하고 영상 실행',
           why: '사용자가 해야 할 일은 복잡한 체크리스트를 관리하는 것이 아니라 운동할 날짜를 정하고 영상을 한 번 실행하는 것입니다.',
-          how: `준비: 캘린더 제목을 "${video.titleShort} - ${channelName}"으로 만들고 이번 주 운동할 요일과 영상 링크를 붙입니다. 반복: 주 3회 또는 내가 가능한 횟수로 시작합니다. 실행: ${video.focus} 영상을 오늘 가능한 강도로 따라갑니다. 마무리: 완료 여부와 다음 반복일만 표시합니다.`,
+          how: `준비: 캘린더 제목 이름을 "${video.titleShort} - ${channelName}"라고 적고 이번 주 운동할 요일과 영상 링크를 붙입니다. 반복: 주 3회 또는 내가 가능한 횟수로 시작합니다. 실행: ${video.focus} 영상을 오늘 가능한 강도로 따라갑니다. 마무리: 완료 여부와 다음 반복일만 표시합니다.`,
           completion_criteria: '캘린더에 운동 일정과 원본 영상 링크를 넣었고, 오늘 실행 여부를 체크했습니다.',
         },
       ],
@@ -490,7 +512,7 @@ function makeCreatorVideoSpec(video: CreatorVideoSpec): RealSourceSpec {
         {
           title: video.actionTitle ?? '이번 주 운동 기준 정하기',
           why: `${video.focus}는 정보로만 저장하면 실행으로 이어지기 어려우므로 이번 주 운동표의 한 칸으로 옮겨야 합니다.`,
-          how: `준비: 운동표 칸을 "${video.titleShort}"으로 만들고 이번 주에 고칠 기준 하나를 정합니다. 실행: 이번 주 운동표에 순서, 분할, 세트, 무게, 휴식, 운동 종류 중 이 영상에 해당하는 값을 적습니다. 마무리: 오늘 운동 후 유지할지 수정할지 표시합니다.`,
+          how: `준비: 운동표 칸 이름을 "${video.titleShort}"라고 적고 이번 주에 고칠 기준 하나를 정합니다. 실행: 이번 주 운동표에 순서, 분할, 세트, 무게, 휴식, 운동 종류 중 이 영상에 해당하는 값을 적습니다. 마무리: 오늘 운동 후 유지할지 수정할지 표시합니다.`,
           completion_criteria: '이번 주 운동표에 적용할 기준 1개와 원본 영상 링크를 적고, 오늘 운동 후 유지/수정 여부를 정했습니다.',
         },
       ],
@@ -505,7 +527,7 @@ function makeCreatorVideoSpec(video: CreatorVideoSpec): RealSourceSpec {
       {
         title: video.actionTitle ?? '다음 식사 한 끼에 적용할 기준 선택',
         why: `${video.focus}는 정보로 끝나기 쉬우므로 사용자가 바로 할 수 있는 한 가지 행동으로 좁혀야 합니다.`,
-        how: `준비: 체크표 항목을 "${video.titleShort}"으로 만들고 오늘 한 끼에만 적용할 기준을 씁니다. 실행: ${video.applicationTarget ?? '다음 식사 한 끼나 오늘 운동 전후 행동 하나'}에만 적용합니다. 마무리: 무리한 제한, 통증, 어지러움, 폭식 유발감이 있었는지 보고 유지할지 멈출지 정합니다.`,
+        how: `준비: 체크표 항목 이름을 "${video.titleShort}"라고 적고 오늘 한 끼에만 적용할 기준을 씁니다. 실행: ${video.applicationTarget ?? '다음 식사 한 끼나 오늘 운동 전후 행동 하나'}에만 적용합니다. 마무리: 무리한 제한, 통증, 어지러움, 폭식 유발감이 있었는지 보고 유지할지 멈출지 정합니다.`,
         completion_criteria: '오늘 한 끼 또는 운동 전후 행동에 적용할 기준 1개와 원본 영상 링크를 기록했고, 유지/중단 여부를 정했습니다.',
       },
     ],
@@ -526,7 +548,7 @@ const realSourceSpecs: RealSourceSpec[] = [
     category: '가전관리',
     structure_type: 'timeline',
     anchor_type: 'end_date',
-    source_title: '삼성전자서비스 에어컨 세척 서비스 안내',
+    source_title: '삼성전자서비스 유지보수/세척안내 - 에어컨',
     source_url: 'https://www.samsungsvc.co.kr/info/maintenance',
     source_type: 'official',
     source_precision: 'exact',
@@ -574,7 +596,7 @@ const realSourceSpecs: RealSourceSpec[] = [
     category: '가전관리',
     structure_type: 'routine',
     anchor_type: 'start_date',
-    source_title: '삼성전자서비스 세탁기 배수필터 청소 안내',
+    source_title: '[삼성 세탁기] 비스포크 AI 콤보 배수필터 청소, 잔수 제거 방법',
     source_url: 'https://www.samsungsvc.co.kr/solution/1978102',
     source_type: 'official',
     source_precision: 'exact',
@@ -1204,7 +1226,7 @@ const realSourceSpecs: RealSourceSpec[] = [
     category: '이사/주거',
     structure_type: 'timeline',
     anchor_type: 'end_date',
-    source_title: '오늘의집 원룸 이사 준비 순서 가이드',
+    source_title: '원룸 이사 준비 순서 가이드 (이사 체크리스트 총정리) - 오늘의집',
     source_url: 'https://ohou.se/advices/12199',
     source_type: 'reference',
     source_precision: 'exact',
@@ -1252,7 +1274,7 @@ const realSourceSpecs: RealSourceSpec[] = [
     category: '이사/주거',
     structure_type: 'checklist',
     anchor_type: 'none',
-    source_title: '오늘의집 원룸 입주청소 가격표',
+    source_title: '원룸 입주청소 가격표｜평수별 비용 가이드 - 오늘의집',
     source_url: 'https://ohou.se/advices/12375',
     source_type: 'reference',
     source_precision: 'exact',
@@ -1348,8 +1370,9 @@ const realSourceSpecs: RealSourceSpec[] = [
     category: '여행',
     structure_type: 'timeline',
     anchor_type: 'end_date',
-    source_title: '질병관리청 해외여행 전 건강정보',
-    source_url: 'https://www.kdca.go.kr/menu.es?mid=a20102060200',
+    source_title: '건강하게, 안전하게! 여름 여행 안전 가이드 - 질병관리청 국가건강정보포털',
+    source_url:
+      'https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=71',
     source_type: 'official',
     source_precision: 'exact',
     risk_level: 'medical_sensitive',
@@ -1397,7 +1420,7 @@ const realSourceSpecs: RealSourceSpec[] = [
     category: '자동차 관리',
     structure_type: 'timeline',
     anchor_type: 'end_date',
-    source_title: '한국교통안전공단 자동차검사 절차 안내',
+    source_title: '검사 절차 안내 - TS한국교통안전공단',
     source_url: 'https://main.kotsa.or.kr/portal/contents.do?menuCode=01010104',
     source_type: 'official',
     source_precision: 'exact',

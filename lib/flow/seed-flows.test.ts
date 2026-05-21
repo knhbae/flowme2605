@@ -488,12 +488,79 @@ test('fitness exact video flows name the portable tool users should move the con
   assert.ok(workout);
   assert.ok(diet);
   assert.ok(workoutPlan);
-  assert.match(workout.itemDetails?.[0]?.how ?? '', /캘린더 제목/);
+  assert.match(workout.itemDetails?.[0]?.how ?? '', /캘린더 제목 이름/);
   assert.match(workout.itemDetails?.[0]?.how ?? '', /반복:/);
-  assert.match(diet.itemDetails?.[0]?.how ?? '', /체크표 항목/);
+  assert.match(diet.itemDetails?.[0]?.how ?? '', /체크표 항목 이름/);
   assert.match(diet.itemDetails?.[0]?.how ?? '', /오늘 한 끼/);
-  assert.match(workoutPlan.itemDetails?.[0]?.how ?? '', /운동표 칸/);
+  assert.match(workoutPlan.itemDetails?.[0]?.how ?? '', /운동표 칸 이름/);
   assert.match(workoutPlan.itemDetails?.[0]?.how ?? '', /이번 주/);
+});
+
+test('other channel source flows record original URL review and portable destination copy', () => {
+  const nonVideoRealFlows = seedBundles.filter(
+    (bundle) => bundle.flow.source_status === 'real' && !bundle.flow.tags?.includes('exact-video'),
+  );
+
+  assert.ok(nonVideoRealFlows.length >= 20);
+
+  const destinationPattern = /내 도구에 옮길 때는 .+의 ".+" 칸에 기록합니다\./;
+
+  for (const bundle of nonVideoRealFlows) {
+    assert.match(bundle.flow.conversion_note ?? '', /원본 URL에서/, bundle.flow.slug);
+    assert.ok(
+      bundle.itemDetails?.every((detail) => destinationPattern.test(detail.how ?? '')),
+      `${bundle.flow.slug} needs portable destination copy in every action detail`,
+    );
+  }
+});
+
+test('other channel flows preserve representative titles from visited original URLs', () => {
+  const expectedSources = new Map([
+    [
+      'real-samsung-aircon-seasonal-care',
+      {
+        title: '삼성전자서비스 유지보수/세척안내 - 에어컨',
+        url: 'https://www.samsungsvc.co.kr/info/maintenance',
+      },
+    ],
+    [
+      'real-samsung-washer-filter-care',
+      {
+        title: '[삼성 세탁기] 비스포크 AI 콤보 배수필터 청소, 잔수 제거 방법',
+        url: 'https://www.samsungsvc.co.kr/solution/1978102',
+      },
+    ],
+    [
+      'real-ohouse-moving-d30-prep',
+      {
+        title: '원룸 이사 준비 순서 가이드 (이사 체크리스트 총정리) - 오늘의집',
+        url: 'https://ohou.se/advices/12199',
+      },
+    ],
+    [
+      'real-kdca-travel-health-check',
+      {
+        title: '건강하게, 안전하게! 여름 여행 안전 가이드 - 질병관리청 국가건강정보포털',
+        url: 'https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=71',
+      },
+    ],
+    [
+      'real-ts-vehicle-inspection-prep',
+      {
+        title: '검사 절차 안내 - TS한국교통안전공단',
+        url: 'https://main.kotsa.or.kr/portal/contents.do?menuCode=01010104',
+      },
+    ],
+  ]);
+
+  for (const [slug, expected] of expectedSources) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+
+    assert.ok(bundle, slug);
+    assert.equal(bundle.flow.source_title, expected.title, slug);
+    assert.equal(bundle.flow.source_url, expected.url, slug);
+    assert.equal(bundle.flow.source_checked_at, '2026-05-21', slug);
+  }
 });
 
 test('representative source-backed flows use action and tool oriented titles', () => {
