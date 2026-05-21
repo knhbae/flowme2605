@@ -147,6 +147,16 @@ test('fitness creator profile highlights exact video flows before samples', asyn
   await expect(page.locator('a[href^="/f/channel-thankyou-bubu-"]')).toHaveCount(0);
 });
 
+test('fitness exact video flow exposes a lightweight today execution panel', async ({ page }) => {
+  await page.goto('/f/real-thankyou-bubu-video-full-body-no-jump');
+
+  await expect(page.getByRole('heading', { name: '오늘 실행' })).toBeVisible();
+  await expect(page.getByRole('link', { name: /영상 열기/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: '초보' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '완료' })).toBeVisible();
+  await expect(page.getByText('기록은 최소만 남깁니다')).toBeVisible();
+});
+
 test('creator profile merges newly shipped seed flows into existing browser storage', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem(

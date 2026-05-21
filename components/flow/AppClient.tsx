@@ -656,6 +656,10 @@ function getFirstActionTitle(bundle: FlowBundle): string | undefined {
   return bundle.items[0]?.title;
 }
 
+function isFitnessExactVideoFlow(bundle: FlowBundle): boolean {
+  return Boolean(bundle.flow.tags?.includes('exact-video') && bundle.flow.source_url?.includes('youtube.com/watch'));
+}
+
 function getCreatorBundlePriority(bundle: FlowBundle): number {
   if (bundle.flow.source_status === 'real' && bundle.flow.source_precision === 'exact') return 0;
   if (bundle.flow.source_status === 'real') return 1;
@@ -1949,6 +1953,8 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [downloadState, setDownloadState] = useState('');
   const [view, setView] = useState<PublicView>('list');
   const [showMobileActions, setShowMobileActions] = useState(false);
+  const [todayMode, setTodayMode] = useState('초보');
+  const [todayResult, setTodayResult] = useState('');
 
   useEffect(() => {
     const found = getBundles().find((item) => item.flow.slug === slug) ?? null;
@@ -1981,6 +1987,8 @@ export function PublicFlow({ slug }: { slug: string }) {
   const executableCount = executableIds.length;
   const done = executableIds.filter((id) => checks[id]).length;
   const firstActionTitle = getFirstActionTitle(bundle);
+  const showTodayExecution = isFitnessExactVideoFlow(bundle);
+  const isWorkoutFlow = bundle.flow.slug.startsWith('real-thankyou-bubu-video-');
 
   const toggle = (id: string) => {
     setChecks((value) => {
@@ -2104,6 +2112,72 @@ export function PublicFlow({ slug }: { slug: string }) {
           </div>
         </details>
       </header>
+
+      {showTodayExecution ? (
+        <section className="my-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold text-emerald-700">가벼운 실행 모드</p>
+              <h2 className="mt-1 text-2xl font-semibold text-gray-950">오늘 실행</h2>
+              <p className="mt-1 text-sm leading-6 text-gray-700">
+                기록은 최소만 남깁니다. 콘텐츠를 열고, 오늘 방식 하나를 고른 뒤 완료 상태만 체크하세요.
+              </p>
+            </div>
+            {bundle.flow.source_url ? (
+              <a
+                className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white"
+                href={bundle.flow.source_url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                영상 열기
+              </a>
+            ) : null}
+          </div>
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            <div className="rounded-lg border border-emerald-100 bg-white p-3">
+              <p className="text-sm font-semibold text-gray-800">
+                {isWorkoutFlow ? '오늘 가능한 방식' : '오늘 적용 방식'}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {(isWorkoutFlow ? ['초보', '보통', '낮은 강도'] : ['한 끼 적용', '운동 전후 적용', '관찰만']).map((mode) => (
+                  <button
+                    key={mode}
+                    className={`rounded-md border px-3 py-2 text-sm font-semibold ${
+                      todayMode === mode
+                        ? 'border-emerald-600 bg-emerald-50 text-emerald-800'
+                        : 'border-gray-200 bg-white text-gray-700'
+                    }`}
+                    type="button"
+                    onClick={() => setTodayMode(mode)}
+                  >
+                    {mode}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="rounded-lg border border-emerald-100 bg-white p-3">
+              <p className="text-sm font-semibold text-gray-800">완료 상태</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {['완료', '절반', '못함'].map((result) => (
+                  <button
+                    key={result}
+                    className={`rounded-md border px-3 py-2 text-sm font-semibold ${
+                      todayResult === result
+                        ? 'border-blue-600 bg-blue-50 text-blue-800'
+                        : 'border-gray-200 bg-white text-gray-700'
+                    }`}
+                    type="button"
+                    onClick={() => setTodayResult(result)}
+                  >
+                    {result}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       <section className="my-6 rounded-xl border border-blue-100 bg-white p-4 shadow-sm">
         <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr_0.9fr]">

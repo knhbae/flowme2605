@@ -382,6 +382,23 @@ test('fitness creator deep dive converts exact videos into executable flows', ()
   }
 });
 
+test('fitness exact video flows start with a lightweight execution sequence', () => {
+  const workout = seedBundles.find((bundle) => bundle.flow.slug === 'real-thankyou-bubu-video-full-body-no-jump');
+  const diet = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-body-fat-6kg-method');
+
+  assert.ok(workout);
+  assert.ok(diet);
+
+  assert.deepEqual(
+    workout.items.slice(0, 3).map((item) => item.title),
+    ['영상 열기', '오늘 가능한 방식 선택', '점프와 눕는 동작을 줄인 전신 루틴 실행 후 완료 상태 체크'],
+  );
+  assert.deepEqual(
+    diet.items.slice(0, 3).map((item) => item.title),
+    ['핵심 기준 확인', '오늘 적용 방식 선택', '한 끼 또는 운동에 적용하고 완료 상태 체크'],
+  );
+});
+
 test('preview-generated creator channel flows are explicitly marked preview', () => {
   const generated = seedBundles.filter((bundle) => bundle.flow.id.startsWith('flow-preview-'));
   assert.ok(generated.length >= 400);
