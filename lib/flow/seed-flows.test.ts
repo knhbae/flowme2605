@@ -298,3 +298,36 @@ test('generated preview flows are executable and source-backed', () => {
     assert.ok(bundle.itemDetails?.some((detail) => detail.completion_criteria), bundle.flow.slug);
   }
 });
+
+test('real source-backed channel batch covers every preview channel', () => {
+  const real = seedBundles.filter((bundle) => bundle.flow.source_status === 'real');
+  assert.ok(real.length >= 20);
+
+  for (const channel of previewCreatorChannels) {
+    const count = real.filter((bundle) => bundle.flow.owner_user_id === channel.id).length;
+    assert.ok(count >= 2, `${channel.slug} expected at least 2 real source-backed flows`);
+  }
+});
+
+test('real source-backed flows include attribution and executable details', () => {
+  const real = seedBundles.filter((bundle) => bundle.flow.source_status === 'real');
+  assert.ok(real.length >= 20);
+
+  for (const bundle of real) {
+    assert.ok(bundle.flow.source_url, `${bundle.flow.slug} missing source_url`);
+    assert.ok(bundle.flow.source_title, `${bundle.flow.slug} missing source_title`);
+    assert.ok(bundle.flow.source_checked_at, `${bundle.flow.slug} missing source_checked_at`);
+    assert.ok(bundle.flow.conversion_note, `${bundle.flow.slug} missing conversion_note`);
+    assert.ok(bundle.items.length >= 5, `${bundle.flow.slug} expected 5+ items`);
+    assert.ok(
+      bundle.itemDetails?.some((detail) => detail.completion_criteria),
+      `${bundle.flow.slug} expected completion criteria`,
+    );
+  }
+});
+
+test('preview-generated creator channel flows are explicitly marked preview', () => {
+  const generated = seedBundles.filter((bundle) => bundle.flow.id.startsWith('flow-preview-'));
+  assert.ok(generated.length >= 200);
+  assert.ok(generated.every((bundle) => bundle.flow.source_status === 'preview'));
+});
