@@ -320,8 +320,13 @@ test('real source-backed flows include precision and tailored executable details
     assert.ok(bundle.flow.conversion_note, `${bundle.flow.slug} missing conversion_note`);
     assert.ok(bundle.flow.source_precision, `${bundle.flow.slug} missing source_precision`);
     assert.ok(['exact', 'broad'].includes(bundle.flow.source_precision), bundle.flow.slug);
-    assert.equal(bundle.items.length, 5, `${bundle.flow.slug} expected exactly 5 items`);
-    assert.equal(bundle.itemDetails?.length, 5, `${bundle.flow.slug} expected exactly 5 item details`);
+    const expectedItemCount = bundle.flow.tags?.includes('exact-video') ? 1 : 5;
+    assert.equal(bundle.items.length, expectedItemCount, `${bundle.flow.slug} expected ${expectedItemCount} items`);
+    assert.equal(
+      bundle.itemDetails?.length,
+      expectedItemCount,
+      `${bundle.flow.slug} expected ${expectedItemCount} item details`,
+    );
 
     const detailByItem = new Map(bundle.itemDetails?.map((detail) => [detail.item_id, detail]));
     const whyTexts = new Set<string>();
@@ -343,9 +348,11 @@ test('real source-backed flows include precision and tailored executable details
       completionTexts.add(detail.completion_criteria);
     }
 
-    assert.ok(whyTexts.size >= 4, `${bundle.flow.slug} uses generic why text`);
-    assert.ok(howTexts.size >= 4, `${bundle.flow.slug} uses generic how text`);
-    assert.ok(completionTexts.size >= 4, `${bundle.flow.slug} uses generic completion text`);
+    if (!bundle.flow.tags?.includes('exact-video')) {
+      assert.ok(whyTexts.size >= 4, `${bundle.flow.slug} uses generic why text`);
+      assert.ok(howTexts.size >= 4, `${bundle.flow.slug} uses generic how text`);
+      assert.ok(completionTexts.size >= 4, `${bundle.flow.slug} uses generic completion text`);
+    }
   }
 });
 
@@ -367,13 +374,17 @@ test('fitness creator deep dive converts exact videos into executable flows', ()
 
     for (const bundle of exactVideoFlows) {
       assert.match(bundle.flow.source_url ?? '', /^https:\/\/www\.youtube\.com\/watch\?v=/, bundle.flow.slug);
-      assert.equal(bundle.items.length, 5, bundle.flow.slug);
-      assert.equal(bundle.itemDetails?.length, 5, bundle.flow.slug);
+      assert.equal(bundle.items.length, 1, `${bundle.flow.slug} should keep creator video execution to one checklist item`);
+      assert.equal(bundle.itemDetails?.length, 1, `${bundle.flow.slug} should keep creator video detail in one panel`);
       assert.ok(bundle.items.every((item) => item.repeat_rule === 'weekly'), bundle.flow.slug);
       assert.ok(bundle.items.every((item) => item.source_type === 'creator_experience'), bundle.flow.slug);
       assert.ok(
         bundle.itemDetails?.every((detail) =>
-          detail.completion_criteria && detail.links?.some((link) => link.type === 'creator'),
+          detail.completion_criteria &&
+          detail.links?.some((link) => link.type === 'creator') &&
+          detail.how?.includes('준비') &&
+          detail.how?.includes('실행') &&
+          detail.how?.includes('마무리'),
         ),
         bundle.flow.slug,
       );
@@ -382,21 +393,17 @@ test('fitness creator deep dive converts exact videos into executable flows', ()
   }
 });
 
-test('fitness exact video flows start with a lightweight execution sequence', () => {
+test('fitness exact video flows keep one action with clear execution detail', () => {
   const workout = seedBundles.find((bundle) => bundle.flow.slug === 'real-thankyou-bubu-video-full-body-no-jump');
   const diet = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-body-fat-6kg-method');
 
   assert.ok(workout);
   assert.ok(diet);
 
-  assert.deepEqual(
-    workout.items.slice(0, 3).map((item) => item.title),
-    ['영상 열기', '오늘 가능한 방식 선택', '점프와 눕는 동작을 줄인 전신 루틴 실행 후 완료 상태 체크'],
-  );
-  assert.deepEqual(
-    diet.items.slice(0, 3).map((item) => item.title),
-    ['핵심 기준 확인', '오늘 적용 방식 선택', '한 끼 또는 운동에 적용하고 완료 상태 체크'],
-  );
+  assert.equal(workout.items[0].title, '운동 스케줄 등록하고 영상 실행');
+  assert.match(workout.itemDetails?.[0]?.how ?? '', /준비:.*실행:.*마무리:/);
+  assert.equal(diet.items[0].title, '오늘 적용할 한 가지 행동 실행');
+  assert.match(diet.itemDetails?.[0]?.how ?? '', /준비:.*실행:.*마무리:/);
 });
 
 test('preview-generated creator channel flows are explicitly marked preview', () => {

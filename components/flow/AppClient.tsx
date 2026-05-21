@@ -1953,8 +1953,6 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [downloadState, setDownloadState] = useState('');
   const [view, setView] = useState<PublicView>('list');
   const [showMobileActions, setShowMobileActions] = useState(false);
-  const [todayMode, setTodayMode] = useState('초보');
-  const [todayResult, setTodayResult] = useState('');
 
   useEffect(() => {
     const found = getBundles().find((item) => item.flow.slug === slug) ?? null;
@@ -2137,43 +2135,19 @@ export function PublicFlow({ slug }: { slug: string }) {
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             <div className="rounded-lg border border-emerald-100 bg-white p-3">
               <p className="text-sm font-semibold text-gray-800">
-                {isWorkoutFlow ? '오늘 가능한 방식' : '오늘 적용 방식'}
+                {isWorkoutFlow ? '운동 스케줄 등록' : '오늘 적용할 행동 하나'}
               </p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {(isWorkoutFlow ? ['초보', '보통', '낮은 강도'] : ['한 끼 적용', '운동 전후 적용', '관찰만']).map((mode) => (
-                  <button
-                    key={mode}
-                    className={`rounded-md border px-3 py-2 text-sm font-semibold ${
-                      todayMode === mode
-                        ? 'border-emerald-600 bg-emerald-50 text-emerald-800'
-                        : 'border-gray-200 bg-white text-gray-700'
-                    }`}
-                    type="button"
-                    onClick={() => setTodayMode(mode)}
-                  >
-                    {mode}
-                  </button>
-                ))}
-              </div>
+              <p className="mt-2 text-sm leading-6 text-gray-600">
+                {isWorkoutFlow
+                  ? '이번 주에 할 요일만 정하고, 영상은 그날 한 번 실행하면 됩니다.'
+                  : '영상에서 기준을 하나만 확인하고 다음 식사나 운동 전후 행동 하나에만 적용합니다.'}
+              </p>
             </div>
             <div className="rounded-lg border border-emerald-100 bg-white p-3">
-              <p className="text-sm font-semibold text-gray-800">완료 상태</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {['완료', '절반', '못함'].map((result) => (
-                  <button
-                    key={result}
-                    className={`rounded-md border px-3 py-2 text-sm font-semibold ${
-                      todayResult === result
-                        ? 'border-blue-600 bg-blue-50 text-blue-800'
-                        : 'border-gray-200 bg-white text-gray-700'
-                    }`}
-                    type="button"
-                    onClick={() => setTodayResult(result)}
-                  >
-                    {result}
-                  </button>
-                ))}
-              </div>
+              <p className="text-sm font-semibold text-gray-800">체크리스트 1개</p>
+              <p className="mt-2 text-sm leading-6 text-gray-600">
+                준비, 실행, 마무리 디테일은 아래 한 항목 안에 넣었습니다. 별도 기록 앱처럼 늘리지 않습니다.
+              </p>
             </div>
           </div>
         </section>

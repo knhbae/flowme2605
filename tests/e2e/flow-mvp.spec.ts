@@ -147,14 +147,15 @@ test('fitness creator profile highlights exact video flows before samples', asyn
   await expect(page.locator('a[href^="/f/channel-thankyou-bubu-"]')).toHaveCount(0);
 });
 
-test('fitness exact video flow exposes a lightweight today execution panel', async ({ page }) => {
+test('fitness exact video flow keeps the execution panel minimal', async ({ page }) => {
   await page.goto('/f/real-thankyou-bubu-video-full-body-no-jump');
 
   await expect(page.getByRole('heading', { name: '오늘 실행' })).toBeVisible();
   await expect(page.getByRole('link', { name: /영상 열기/ })).toBeVisible();
-  await expect(page.getByRole('button', { name: '초보' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '완료' })).toBeVisible();
-  await expect(page.getByText('기록은 최소만 남깁니다')).toBeVisible();
+  await expect(page.getByText('운동 스케줄 등록', { exact: true })).toBeVisible();
+  await expect(page.getByText('체크리스트 1개', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: '초보' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '절반' })).toHaveCount(0);
 });
 
 test('creator profile merges newly shipped seed flows into existing browser storage', async ({ page }) => {
