@@ -16,6 +16,8 @@ export type SourceType = 'official' | 'creator_experience' | 'reference';
 
 export type SourceStatus = 'real' | 'preview' | 'needs_review';
 
+export type SourcePrecision = 'exact' | 'broad';
+
 export type FlowItemLinkType = 'official' | 'reference' | 'tool' | 'creator';
 
 export type FlowUser = {
@@ -45,6 +47,7 @@ export type Flow = {
   source_title?: string;
   source_url?: string;
   source_status?: SourceStatus;
+  source_precision?: SourcePrecision;
   source_checked_at?: string;
   conversion_note?: string;
   risk_level?: RiskLevel;
