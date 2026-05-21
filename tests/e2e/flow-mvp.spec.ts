@@ -261,6 +261,8 @@ test('exact video copy opens an editable draft with the execution item preserved
   await expect(page.getByRole('heading', { name: '원문 고급 편집' })).toBeVisible();
   await expect(page.locator('textarea').first()).not.toBeVisible();
   await expect(page.getByLabel('실행 내용')).toHaveValue(/운동|영상/);
+  await expect(page.getByRole('button', { name: '내 Flow로 가져오기' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '캘린더에 넣기' })).toHaveCount(0);
 });
 
 test('copied D-Day flow edits dates before raw content', async ({ page }) => {
@@ -273,6 +275,18 @@ test('copied D-Day flow edits dates before raw content', async ({ page }) => {
   await expect(page.getByText('이 Flow는 D-Day 표로 관리하는 일정입니다')).toBeVisible();
   await expect(page.getByLabel('목표일').or(page.getByLabel('시작일'))).toBeVisible();
   await expect(page.getByRole('heading', { name: 'D-Day 단계표 미리보기' })).toBeVisible();
+});
+
+test('daily-check editor defaults copied Fitvely flow to every day', async ({ page }) => {
+  await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
+
+  await page.getByRole('button', { name: '내 Flow로 가져오기' }).click();
+
+  await expect(page).toHaveURL(/\/flows\/.+\/edit/);
+  await expect(page.getByRole('heading', { name: '내 Flow로 가져왔습니다' })).toBeVisible();
+  await expect(page.getByText('리듬: 매일')).toBeVisible();
+  await expect(page.getByText('토요일')).toBeVisible();
+  await expect(page.getByText('일요일')).toBeVisible();
 });
 test('creator profile merges newly shipped seed flows into existing browser storage', async ({ page }) => {
   await page.addInitScript(() => {
@@ -361,8 +375,9 @@ test('new flow creation starts from pasted content and a human pattern choice', 
   await expect(page.getByRole('heading', { name: '자동차 구매 테스트 Flow' })).toBeVisible();
 });
 
-test('surface editor keeps raw content behind advanced editing while drafting', async ({ page }) => {
-  await page.goto('/flows/flow-moving/edit');
+test('raw advanced edits persist after save and reload', async ({ page }) => {
+  await page.goto('/f/moving-d30-basic');
+  await page.getByRole('button', { name: '내 Flow로 가져오기' }).click();
 
   await expect(page.getByRole('heading', { name: '내 Flow로 가져왔습니다' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '내 일정 설정' })).toBeVisible();
@@ -373,6 +388,14 @@ test('surface editor keeps raw content behind advanced editing while drafting', 
   const sourceEditor = page.locator('textarea').first();
   await expect(sourceEditor).toBeVisible();
   await expect(sourceEditor).toContainText('D-30');
+  await sourceEditor.fill('# raw advanced persistence\n\n## D-1\n- edited raw item D-1');
+
+  await page.getByRole('button', { name: '초안 저장' }).click();
+  await expect(page.getByText(/초안 저장됨|발행됨/)).toBeVisible();
+
+  await page.reload();
+  await page.getByRole('heading', { name: '원문 고급 편집' }).click();
+  await expect(page.locator('textarea').first()).toHaveValue(/edited raw item D-1/);
 
   await page.getByRole('button', { name: '발행' }).click();
   await expect(page.getByText('발행됨')).toBeVisible();

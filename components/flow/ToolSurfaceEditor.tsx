@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from 'react';
 import { serializeTextFlow } from '@/lib/flow/parser';
-import { getFlowSurfaceModel, type FlowSurfaceType } from '@/lib/flow/surface';
+import { getFlowSurfaceModel, inferFlowSurfaceType, type FlowSurfaceType } from '@/lib/flow/surface';
 import type { FlowBundle, FlowItem, FlowStatus } from '@/lib/flow/types';
 import { ToolSurfacePreview } from '@/components/flow/ToolSurfacePreview';
 
@@ -12,12 +12,15 @@ type ToolSurfaceEditorProps = {
   renderHeader: (actions: { onSave: () => void; onPublish: () => void }) => ReactNode;
 };
 
-const weekdays = ['월', '화', '수', '목', '금', '토', '일'];
+const weekdayLabels = ['월', '화', '수', '목', '금', '토', '일'];
+const calendarRoutineWeekdays = ['월', '수', '금'];
 
 export function ToolSurfaceEditor({ bundle, onSave, renderHeader }: ToolSurfaceEditorProps) {
   const [anchorDate, setAnchorDate] = useState(new Date().toISOString().slice(0, 10));
-  const [selectedWeekdays, setSelectedWeekdays] = useState(['월', '수', '금']);
+  const [selectedWeekdays, setSelectedWeekdays] = useState(() => getInitialWeekdays(bundle));
   const [items, setItems] = useState<FlowItem[]>(bundle.items);
+  const [rawText, setRawText] = useState(() => getInitialRawText(bundle, bundle.items));
+  const [rawTextEdited, setRawTextEdited] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
   const model = useMemo(
@@ -26,13 +29,14 @@ export function ToolSurfaceEditor({ bundle, onSave, renderHeader }: ToolSurfaceE
   );
 
   const save = (status: FlowStatus = bundle.flow.status) => {
+    const nextRawText = rawTextEdited ? rawText : serializeCurrentText(bundle, items);
     onSave({
       ...bundle,
       items,
       flow: {
         ...bundle.flow,
         status,
-        raw_text: bundle.flow.raw_text ?? serializeTextFlow(bundle.sections, items, bundle.itemDetails ?? [], bundle.warnings ?? []),
+        raw_text: nextRawText,
         updated_at: new Date().toISOString(),
       },
     });
@@ -41,7 +45,11 @@ export function ToolSurfaceEditor({ bundle, onSave, renderHeader }: ToolSurfaceE
   };
 
   const updateItemTitle = (id: string, title: string) => {
-    setItems((value) => value.map((item) => (item.id === id ? { ...item, title } : item)));
+    setItems((value) => {
+      const nextItems = value.map((item) => (item.id === id ? { ...item, title } : item));
+      if (!rawTextEdited) setRawText(serializeCurrentText(bundle, nextItems));
+      return nextItems;
+    });
   };
 
   return (
@@ -71,7 +79,7 @@ export function ToolSurfaceEditor({ bundle, onSave, renderHeader }: ToolSurfaceE
             <fieldset className="mt-4">
               <legend className="text-sm font-semibold text-gray-700">{model.type === 'daily_check' ? '적용 요일' : '반복 요일'}</legend>
               <div className="mt-2 flex flex-wrap gap-2">
-                {weekdays.map((day) => (
+                {weekdayLabels.map((day) => (
                   <label key={day} className="rounded-md border border-gray-200 px-3 py-2 text-sm">
                     <input
                       className="mr-1"
@@ -105,7 +113,7 @@ export function ToolSurfaceEditor({ bundle, onSave, renderHeader }: ToolSurfaceE
 
         <section className="space-y-3">
           <h2 className="text-xl font-semibold text-gray-950">내 도구 미리보기</h2>
-          <ToolSurfacePreview model={model} onExport={() => save()} onCopyToEditableDraft={() => save()} />
+          <ToolSurfacePreview model={model} onExport={() => save()} onCopyToEditableDraft={() => save()} showActions={false} />
         </section>
       </div>
 
@@ -119,11 +127,30 @@ export function ToolSurfaceEditor({ bundle, onSave, renderHeader }: ToolSurfaceE
         </summary>
         <textarea
           className="mt-4 min-h-72 w-full rounded-md border border-gray-300 p-3 font-mono text-sm"
-          defaultValue={bundle.flow.raw_text ?? serializeTextFlow(bundle.sections, items, bundle.itemDetails ?? [], bundle.warnings ?? [])}
+          value={rawText}
+          onChange={(event) => {
+            setRawText(event.target.value);
+            setRawTextEdited(true);
+          }}
         />
       </details>
     </main>
   );
+}
+
+function getInitialWeekdays(bundle: FlowBundle): string[] {
+  const type = inferFlowSurfaceType(bundle);
+  if (type === 'daily_check') return [...weekdayLabels];
+  if (type === 'calendar_routine') return [...calendarRoutineWeekdays];
+  return ['월'];
+}
+
+function getInitialRawText(bundle: FlowBundle, items: FlowItem[]): string {
+  return bundle.flow.raw_text ?? serializeTextFlow(bundle.sections, items, bundle.itemDetails ?? [], bundle.warnings ?? []);
+}
+
+function serializeCurrentText(bundle: FlowBundle, items: FlowItem[]): string {
+  return serializeTextFlow(bundle.sections, items, bundle.itemDetails ?? [], bundle.warnings ?? []);
 }
 
 function getEditorIntro(type: FlowSurfaceType): string {

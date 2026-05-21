@@ -7,6 +7,7 @@ type ToolSurfacePreviewProps = {
   model: FlowSurfaceModel;
   onExport: (kind: SurfaceExportKind) => void;
   onCopyToEditableDraft: () => void;
+  showActions?: boolean;
   copyState?: string;
   downloadState?: string;
   calendarState?: string;
@@ -16,6 +17,7 @@ export function ToolSurfacePreview({
   model,
   onExport,
   onCopyToEditableDraft,
+  showActions = true,
   copyState,
   downloadState,
   calendarState,
@@ -32,9 +34,11 @@ export function ToolSurfacePreview({
             <span className="rounded-full bg-gray-100 px-3 py-1 font-semibold text-gray-700">리듬: {model.rhythmLabel}</span>
           </div>
         </div>
-        <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={onCopyToEditableDraft}>
-          내 Flow로 가져오기
-        </button>
+        {showActions ? (
+          <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={onCopyToEditableDraft}>
+            내 Flow로 가져오기
+          </button>
+        ) : null}
       </div>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_0.8fr]">
@@ -49,27 +53,31 @@ export function ToolSurfacePreview({
               </div>
             ))}
           </dl>
-          <h3 className="mt-4 text-sm font-semibold text-gray-950">가져가기</h3>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {[model.primaryExport, ...model.secondaryExports].map((kind, index) => (
-              <button
-                key={kind}
-                className={
-                  index === 0
-                    ? 'rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white'
-                    : 'rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold'
-                }
-                onClick={() => onExport(kind)}
-              >
-                {getSurfaceExportLabel(kind)}
-              </button>
-            ))}
-          </div>
-          <div className="mt-2 flex flex-wrap gap-3 text-sm">
-            {calendarState ? <span className="text-blue-700">{calendarState}</span> : null}
-            {downloadState ? <span className="text-blue-700">{downloadState}</span> : null}
-            {copyState ? <span className="text-green-700">{copyState}</span> : null}
-          </div>
+          {showActions ? (
+            <>
+              <h3 className="mt-4 text-sm font-semibold text-gray-950">가져가기</h3>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {[model.primaryExport, ...model.secondaryExports].map((kind, index) => (
+                  <button
+                    key={kind}
+                    className={
+                      index === 0
+                        ? 'rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white'
+                        : 'rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold'
+                    }
+                    onClick={() => onExport(kind)}
+                  >
+                    {getSurfaceExportLabel(kind)}
+                  </button>
+                ))}
+              </div>
+              <div className="mt-2 flex flex-wrap gap-3 text-sm">
+                {calendarState ? <span className="text-blue-700">{calendarState}</span> : null}
+                {downloadState ? <span className="text-blue-700">{downloadState}</span> : null}
+                {copyState ? <span className="text-green-700">{copyState}</span> : null}
+              </div>
+            </>
+          ) : null}
         </section>
       </div>
     </section>
