@@ -109,7 +109,11 @@ test('preview creator channel supports browsing 20+ flowified entries', async ({
   await expect(page.getByText(/4\d/).first()).toBeVisible();
   await expect(page.getByText('출처 커버리지')).toBeVisible();
   await expect(page.getByText('채널 Flow 라이브러리')).toBeVisible();
+  await expect(page.getByLabel('Flow 검색')).toBeVisible();
   await expect(page.getByRole('link', { name: /가전관리 월간 점검 루틴/ })).toBeVisible();
+  await page.getByLabel('Flow 검색').fill('비상 상황');
+  await expect(page.getByRole('link', { name: /가전관리 비상 상황 대응표/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /가전관리 월간 점검 루틴/ })).not.toBeVisible();
 });
 
 test('creator channel can filter real source-backed flows', async ({ page }) => {

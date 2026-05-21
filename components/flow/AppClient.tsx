@@ -965,18 +965,34 @@ export function CreatorProfile({ slug }: { slug: string }) {
   });
   const [categoryFilter, setCategoryFilter] = useState('전체');
   const [sourceFilter, setSourceFilter] = useState<'all' | 'real' | 'preview'>('all');
+  const [libraryQuery, setLibraryQuery] = useState('');
   const first = creatorBundles[0];
   const profile = user ?? (first ? getCreatorUser(first) : undefined);
   const totalUsage = creatorBundles.reduce((sum, bundle) => sum + (bundle.flow.usage_count ?? 0), 0);
   const totalCopies = creatorBundles.reduce((sum, bundle) => sum + (bundle.flow.copy_count ?? 0), 0);
   const categories = Array.from(new Set(creatorBundles.map((bundle) => bundle.flow.category))).slice(0, 6);
   const allCategories = ['전체', ...Array.from(new Set(creatorBundles.map((bundle) => bundle.flow.category)))];
+  const normalizedLibraryQuery = libraryQuery.trim().toLowerCase();
   const visibleCreatorBundles = creatorBundles
     .filter((bundle) => (categoryFilter === '전체' ? true : bundle.flow.category === categoryFilter))
     .filter((bundle) => {
       if (sourceFilter === 'real') return bundle.flow.source_status === 'real';
       if (sourceFilter === 'preview') return bundle.flow.source_status === 'preview';
       return true;
+    })
+    .filter((bundle) => {
+      if (!normalizedLibraryQuery) return true;
+      const searchable = [
+        bundle.flow.title,
+        bundle.flow.description,
+        bundle.flow.category,
+        bundle.flow.source_title,
+        ...(bundle.flow.tags ?? []),
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      return searchable.includes(normalizedLibraryQuery);
     });
 
   if (!first && !profile) {
@@ -1046,9 +1062,21 @@ export function CreatorProfile({ slug }: { slug: string }) {
           <div>
             <p className="text-sm font-semibold text-gray-500">Published Flows</p>
             <h2 className="text-2xl font-semibold">채널 Flow 라이브러리</h2>
+            <p className="mt-1 text-sm text-gray-600">
+              {visibleCreatorBundles.length}개 표시 / 전체 {creatorBundles.length}개
+            </p>
           </div>
           <Link className="text-sm font-semibold text-blue-700" href="/flows/new">내 콘텐츠로 만들기</Link>
         </div>
+        <label className="mb-3 block">
+          <span className="text-sm font-semibold text-gray-700">Flow 검색</span>
+          <input
+            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            placeholder="제목, 카테고리, 태그, 출처로 검색"
+            value={libraryQuery}
+            onChange={(event) => setLibraryQuery(event.target.value)}
+          />
+        </label>
         <div className="mb-3 flex flex-wrap gap-2">
           {[
             ['all', 'All'],
