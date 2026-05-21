@@ -265,6 +265,7 @@ function makePreviewBundle(channel: PreviewChannel, topicIndex: number): FlowBun
       content_type: 'default',
       anchor_type,
       status: 'published',
+      source_status: 'preview',
       source_title: channel.source_title,
       source_url: channel.source_url,
       risk_level: channel.risk_level,
@@ -313,6 +314,9 @@ export type CreatorChannelSummary = {
   anchor_coverage: number;
   source_coverage: number;
   sensitive_count: number;
+  real_flow_count: number;
+  preview_flow_count: number;
+  needs_review_flow_count: number;
   execution_score: number;
 };
 
@@ -326,6 +330,9 @@ export function getCreatorChannelSummaries(bundles: FlowBundle[]): CreatorChanne
     const sourceCoverage = Math.round((sourceBacked / Math.max(channelBundles.length, 1)) * 100);
     const anchorCoverage = Math.round((anchored / Math.max(channelBundles.length, 1)) * 100);
     const sensitiveCount = channelBundles.filter((bundle) => bundle.flow.risk_level?.includes('sensitive')).length;
+    const realFlowCount = channelBundles.filter((bundle) => bundle.flow.source_status === 'real').length;
+    const previewFlowCount = channelBundles.filter((bundle) => bundle.flow.source_status === 'preview').length;
+    const needsReviewFlowCount = channelBundles.filter((bundle) => bundle.flow.source_status === 'needs_review').length;
 
     return {
       id: channel.id,
@@ -344,6 +351,9 @@ export function getCreatorChannelSummaries(bundles: FlowBundle[]): CreatorChanne
       anchor_coverage: anchorCoverage,
       source_coverage: sourceCoverage,
       sensitive_count: sensitiveCount,
+      real_flow_count: realFlowCount,
+      preview_flow_count: previewFlowCount,
+      needs_review_flow_count: needsReviewFlowCount,
       execution_score: Math.min(
         100,
         Math.round(sourceCoverage * 0.35 + anchorCoverage * 0.25 + Math.min(executableItemCount / 100, 1) * 40),
