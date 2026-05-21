@@ -2,8 +2,8 @@
 
 - Date: 2026-05-22
 - Branch: `codex/implement-flow-builder-mvp`
-- PR: Not opened yet
-- Status: `Draft`
+- PR: https://github.com/knhbae/flowme2605/pull/6
+- Status: `Open`
 - Deploy URL: Not deployed separately
 
 ## Why
