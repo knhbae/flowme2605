@@ -1,4 +1,5 @@
 import { parseTextFlow } from './parser';
+import { previewFlowBundles } from './creator-channel-preview';
 import { realContentPilotBundles } from './real-content-pilot-flows';
 import { Flow, FlowBundle, FlowItemDetail, Recipe } from './types';
 
@@ -1620,6 +1621,7 @@ const baseSeedBundles: FlowBundle[] = [
   ...additionalOnlineBundles,
   ...creatorInspiredBundles,
   ...realContentPilotBundles,
+  ...previewFlowBundles,
 ];
 
 export const seedBundles: FlowBundle[] = baseSeedBundles.map(enrichSeedMeta);

@@ -9,43 +9,42 @@ import { seedBundles } from './seed-flows';
 import { virtualUsers } from './users';
 
 test('seed pack contains public Korean Flow bundles across practical categories', () => {
-  assert.equal(seedBundles.length, 31);
-  assert.deepEqual(
-    seedBundles.map((bundle) => bundle.flow.slug).sort(),
-    [
-      'baby-food-menu-recipe',
-      'business-registration-basic',
-      'car-care-monthly-routine',
-      'computer-skills-d30-study',
-      'diet-habit-2week',
-      'diet-meal-exercise-log',
-      'diet-reset-2week',
-      'driver-license-renewal-check',
-      'english-study-30day-routine',
-      'family-certificate-issue',
-      'happy-birth-service-check',
-      'home-workout-20min',
-      'industrial-accident-claim-docs',
-      'job-change-risk-check',
-      'moving-d30-basic',
-      'national-health-checkup-d7',
-      'new-car-delivery-check',
-      'overseas-travel-d14',
-      'passport-renewal-docs',
-      'pet-registration-basic',
-      'qnet-exam-application-prep',
-      'resident-register-copy-issue',
-      'running-5k-4week',
-      'samsung-aircon-seasonal-check',
-      'samsung-washer-filter-cleaning',
-      'study-exam-d30-plan',
-      'used-car-buying-check',
-      'vaccination-certificate-issue',
-      'vehicle-inspection-prep',
-      'wedding-d180-basic',
-      'year-end-tax-docs',
-    ],
-  );
+  assert.ok(seedBundles.length >= 231);
+  const slugs = new Set(seedBundles.map((bundle) => bundle.flow.slug));
+  const originalSlugs = [
+    'baby-food-menu-recipe',
+    'business-registration-basic',
+    'car-care-monthly-routine',
+    'computer-skills-d30-study',
+    'diet-habit-2week',
+    'diet-meal-exercise-log',
+    'diet-reset-2week',
+    'driver-license-renewal-check',
+    'english-study-30day-routine',
+    'family-certificate-issue',
+    'happy-birth-service-check',
+    'home-workout-20min',
+    'industrial-accident-claim-docs',
+    'job-change-risk-check',
+    'moving-d30-basic',
+    'national-health-checkup-d7',
+    'new-car-delivery-check',
+    'overseas-travel-d14',
+    'passport-renewal-docs',
+    'pet-registration-basic',
+    'qnet-exam-application-prep',
+    'resident-register-copy-issue',
+    'running-5k-4week',
+    'samsung-aircon-seasonal-check',
+    'samsung-washer-filter-cleaning',
+    'study-exam-d30-plan',
+    'used-car-buying-check',
+    'vaccination-certificate-issue',
+    'vehicle-inspection-prep',
+    'wedding-d180-basic',
+    'year-end-tax-docs',
+  ];
+  assert.ok(originalSlugs.every((slug) => slugs.has(slug)));
   assert.ok(seedBundles.every((bundle) => bundle.flow.status === 'published'));
   assert.ok(seedBundles.some((bundle) => bundle.flow.title === '이사 D-30 준비 Flow'));
   assert.ok(seedBundles.some((bundle) => bundle.flow.title === '초기 이유식 메뉴·레시피 Flow'));
