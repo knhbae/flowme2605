@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Download } from '@playwright/test';
 
 test('home presents FLOW as an executable content platform', async ({ page }) => {
   await page.goto('/');
@@ -165,6 +165,12 @@ test('fitness exact video flow keeps the execution panel minimal', async ({ page
   await expect(page.getByRole('heading', { name: '실행 항목' })).toBeVisible();
   const schedulePreview = page.getByTestId('tool-surface-preview');
   await expect(schedulePreview).toBeVisible();
+  await expect(
+    schedulePreview.evaluate((surface) => {
+      const heading = Array.from(document.querySelectorAll('h2')).find((element) => element.textContent?.trim() === '실행 항목');
+      return heading ? Boolean(surface.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING) : false;
+    }),
+  ).resolves.toBe(true);
   await expect(schedulePreview.getByText('월요일')).toBeVisible();
   await expect(schedulePreview.getByText('수요일')).toBeVisible();
   await expect(schedulePreview.getByText('금요일')).toBeVisible();
@@ -212,6 +218,16 @@ test('daily check flow detail uses checklist surface', async ({ page }) => {
   await expect(page.getByText('리듬: 매일')).toBeVisible();
   await expect(page.getByRole('heading', { name: '7일 체크표 미리보기' })).toBeVisible();
   await expect(page.getByText('적용 체크').first()).toBeVisible();
+  await expect(page.getByText('토요일')).toBeVisible();
+  await expect(page.getByText('일요일')).toBeVisible();
+
+  const excelDownloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: '엑셀 실행표 받기' }).click();
+  const excelDownload = await excelDownloadPromise;
+  expect(excelDownload.suggestedFilename()).toBe('real-fitvely-video-body-fat-6kg-method.xlsx');
+
+  const selectedWeekdays = await readSelectedWeekdaysFromWorkbook(excelDownload);
+  expect(selectedWeekdays).toBe('월 / 화 / 수 / 목 / 금 / 토 / 일');
 });
 
 test('diet exact video flow uses application language instead of workout scheduling', async ({ page }) => {
@@ -293,6 +309,24 @@ test('preview creator flow route opens encoded Korean slug', async ({ page }) =>
   await expect(page.locator('main.p-8')).toHaveCount(0);
   await expect(page.locator('h1')).toHaveCount(1);
 });
+
+async function readSelectedWeekdaysFromWorkbook(download: Download) {
+  const path = await download.path();
+  expect(path).toBeTruthy();
+
+  const ExcelJSModule = await import('exceljs');
+  const ExcelJS = ((ExcelJSModule as unknown as { default?: typeof ExcelJSModule }).default ?? ExcelJSModule) as typeof ExcelJSModule;
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.readFile(path as string);
+
+  const summary = workbook.getWorksheet('실행 요약');
+  expect(summary).toBeTruthy();
+  const weekdayRow = summary
+    ?.getRows(1, summary.rowCount)
+    ?.find((row) => row.getCell(1).value === '선택 요일');
+
+  return String(weekdayRow?.getCell(2).value ?? '');
+}
 
 test('new flow creation starts from pasted content and a human pattern choice', async ({ page }) => {
   await page.goto('/flows/new');

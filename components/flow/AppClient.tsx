@@ -8,7 +8,7 @@ import { inferPrimaryDestination } from '@/lib/flow/destination';
 import { buildCalendarIcs, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
 import { getCreatorChannelSummaries } from '@/lib/flow/creator-channel-preview';
 import { parseTextFlow, serializeTextFlow, timingLabel } from '@/lib/flow/parser';
-import { getFlowSurfaceModel, type SurfaceExportKind } from '@/lib/flow/surface';
+import { getFlowSurfaceModel, inferFlowSurfaceType, type FlowSurfaceType, type SurfaceExportKind } from '@/lib/flow/surface';
 import {
   getBundles,
   getChecks,
@@ -80,6 +80,8 @@ const riskClasses: Record<RiskLevel, string> = {
   medical_sensitive: 'border-red-200 bg-red-50 text-red-800',
   financial_sensitive: 'border-teal-200 bg-teal-50 text-teal-800',
 };
+
+const allWeekdays = ['월', '화', '수', '목', '금', '토', '일'];
 
 const categoryColors: Record<string, string> = {
   이사: '#1264F0',
@@ -1992,10 +1994,11 @@ export function PublicFlow({ slug }: { slug: string }) {
   const done = executableIds.filter((id) => checks[id]).length;
   const firstActionTitle = getFirstActionTitle(bundle);
   const showTodayExecution = isFitnessExactVideoFlow(bundle);
-  const primaryDestination = inferPrimaryDestination(bundle);
+  const surfaceType = inferFlowSurfaceType(bundle);
+  const surfaceWeekdays = getSurfaceWeekdays(surfaceType, weekdaySelection);
   const surfaceModel = getFlowSurfaceModel(bundle, {
     anchorDate: displayAnchor,
-    weekdays: primaryDestination === 'calendar' ? weekdaySelection : undefined,
+    weekdays: surfaceWeekdays,
   });
 
   const toggle = (id: string) => {
@@ -2036,7 +2039,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const downloadExcel = async () => {
     setDownloadState('생성 중');
     const sheets = buildWorkbookSheets(bundle, checks, displayAnchor, {
-      weekdays: weekdaySelection,
+      weekdays: surfaceWeekdays,
       reactionLogs,
     });
     const buffer = await buildXlsxBuffer(sheets);
@@ -2053,7 +2056,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   };
   const downloadCalendar = () => {
     setCalendarState('생성 중');
-    const ics = buildCalendarIcs(bundle, displayAnchor, weekdaySelection);
+    const ics = buildCalendarIcs(bundle, displayAnchor, surfaceWeekdays);
     const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -2273,6 +2276,12 @@ export function PublicFlow({ slug }: { slug: string }) {
       </div>
     </main>
   );
+}
+
+function getSurfaceWeekdays(surfaceType: FlowSurfaceType, selectedWeekdays: string[]): string[] | undefined {
+  if (surfaceType === 'calendar_routine') return selectedWeekdays;
+  if (surfaceType === 'daily_check') return [...allWeekdays];
+  return undefined;
 }
 
 function AnchorInput({
