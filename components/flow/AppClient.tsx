@@ -8,6 +8,7 @@ import { inferPrimaryDestination } from '@/lib/flow/destination';
 import { buildCalendarIcs, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
 import { getCreatorChannelSummaries } from '@/lib/flow/creator-channel-preview';
 import { parseTextFlow, serializeTextFlow, timingLabel } from '@/lib/flow/parser';
+import { getFlowSurfaceModel, type SurfaceExportKind } from '@/lib/flow/surface';
 import {
   getBundles,
   getChecks,
@@ -33,6 +34,7 @@ import {
   StructureType,
 } from '@/lib/flow/types';
 import { getCurrentUser, getVirtualUser, findVirtualUserByName, findVirtualUserBySlug } from '@/lib/flow/users';
+import { ToolSurfacePreview } from '@/components/flow/ToolSurfacePreview';
 
 const categoryPresets = [
   {
@@ -1991,6 +1993,10 @@ export function PublicFlow({ slug }: { slug: string }) {
   const firstActionTitle = getFirstActionTitle(bundle);
   const showTodayExecution = isFitnessExactVideoFlow(bundle);
   const primaryDestination = inferPrimaryDestination(bundle);
+  const surfaceModel = getFlowSurfaceModel(bundle, {
+    anchorDate: displayAnchor,
+    weekdays: primaryDestination === 'calendar' ? weekdaySelection : undefined,
+  });
 
   const toggle = (id: string) => {
     setChecks((value) => {
@@ -2056,6 +2062,17 @@ export function PublicFlow({ slug }: { slug: string }) {
     window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
     setCalendarState('완료');
     window.setTimeout(() => setCalendarState(''), 1600);
+  };
+  const exportSurface = (kind: SurfaceExportKind) => {
+    if (kind === 'calendar') {
+      downloadCalendar();
+      return;
+    }
+    if (kind === 'sheet') {
+      void downloadExcel();
+      return;
+    }
+    void copy();
   };
   const copyToEditableDraft = () => {
     if (!bundle) return;
@@ -2128,19 +2145,9 @@ export function PublicFlow({ slug }: { slug: string }) {
       </header>
 
       {showTodayExecution ? (
-        <ExactVideoToolPreview
-          bundle={bundle}
-          anchor={anchor}
-          displayAnchor={displayAnchor}
-          anchorMode={anchorMode}
-          onAnchorModeChange={setAnchorMode}
-          onAnchorChange={setAnchor}
-          weekdays={weekdaySelection}
-          onWeekdaysChange={setWeekdaySelection}
-          destination={primaryDestination}
-          onCopyText={copy}
-          onDownloadExcel={downloadExcel}
-          onDownloadCalendar={downloadCalendar}
+        <ToolSurfacePreview
+          model={surfaceModel}
+          onExport={exportSurface}
           onCopyToEditableDraft={copyToEditableDraft}
           copyState={copyState}
           downloadState={downloadState}
