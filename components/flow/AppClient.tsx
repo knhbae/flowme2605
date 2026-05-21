@@ -2274,7 +2274,7 @@ export function PublicFlow({ slug }: { slug: string }) {
               엑셀 받기
             </button>
             <button className="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold" onClick={copyToEditableDraft}>
-              복사해 수정
+              내 Flow로 가져오기
             </button>
           </div>
         </div>
