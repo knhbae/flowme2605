@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, type ReactNode } from 'react';
-import { serializeTextFlow } from '@/lib/flow/parser';
+import { parseTextFlow, serializeTextFlow } from '@/lib/flow/parser';
 import { getFlowSurfaceModel, inferFlowSurfaceType, type FlowSurfaceType } from '@/lib/flow/surface';
 import type { FlowBundle, FlowItem, FlowStatus } from '@/lib/flow/types';
 import { ToolSurfacePreview } from '@/components/flow/ToolSurfacePreview';
@@ -23,16 +23,40 @@ export function ToolSurfaceEditor({ bundle, onSave, renderHeader }: ToolSurfaceE
   const [rawTextEdited, setRawTextEdited] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
+  const parsedRawText = useMemo(() => parseTextFlow(rawText, bundle.flow.id), [bundle.flow.id, rawText]);
+  const previewBundle = useMemo(
+    () =>
+      rawTextEdited
+        ? {
+            ...bundle,
+            sections: parsedRawText.sections,
+            items: parsedRawText.items,
+            itemDetails: parsedRawText.itemDetails,
+            repeatRules: parsedRawText.repeatRules,
+            warnings: parsedRawText.warnings,
+          }
+        : { ...bundle, items },
+    [bundle, items, parsedRawText, rawTextEdited],
+  );
   const model = useMemo(
-    () => getFlowSurfaceModel({ ...bundle, items }, { anchorDate, weekdays: selectedWeekdays }),
-    [anchorDate, bundle, items, selectedWeekdays],
+    () => getFlowSurfaceModel(previewBundle, { anchorDate, weekdays: selectedWeekdays }),
+    [anchorDate, previewBundle, selectedWeekdays],
   );
 
   const save = (status: FlowStatus = bundle.flow.status) => {
     const nextRawText = rawTextEdited ? rawText : serializeCurrentText(bundle, items);
+    const nextBundle = rawTextEdited
+      ? {
+          ...bundle,
+          sections: parsedRawText.sections,
+          items: parsedRawText.items,
+          itemDetails: parsedRawText.itemDetails,
+          repeatRules: parsedRawText.repeatRules,
+          warnings: parsedRawText.warnings,
+        }
+      : { ...bundle, items };
     onSave({
-      ...bundle,
-      items,
+      ...nextBundle,
       flow: {
         ...bundle.flow,
         status,
@@ -40,6 +64,10 @@ export function ToolSurfaceEditor({ bundle, onSave, renderHeader }: ToolSurfaceE
         updated_at: new Date().toISOString(),
       },
     });
+    if (rawTextEdited) {
+      setItems(parsedRawText.items);
+      setRawTextEdited(false);
+    }
     setSaveMessage(status === 'published' ? '발행됨' : '초안 저장됨');
     window.setTimeout(() => setSaveMessage(''), 1600);
   };

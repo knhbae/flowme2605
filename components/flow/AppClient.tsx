@@ -2060,6 +2060,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const done = executableIds.filter((id) => checks[id]).length;
   const firstActionTitle = getFirstActionTitle(bundle);
   const showTodayExecution = isFitnessExactVideoFlow(bundle);
+  const showSurfacePreview = bundle.flow.content_type !== 'meal_plan';
   const surfaceType = inferFlowSurfaceType(bundle);
   const surfaceWeekdays = getSurfaceWeekdays(surfaceType, weekdaySelection);
   const surfaceModel = getFlowSurfaceModel(bundle, {
@@ -2213,7 +2214,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         </details>
       </header>
 
-      {showTodayExecution ? (
+      {showSurfacePreview ? (
         <ToolSurfacePreview
           model={surfaceModel}
           onExport={exportSurface}
@@ -2267,12 +2268,14 @@ export function PublicFlow({ slug }: { slug: string }) {
                   </button>
                 </>
               )}
-              <button
-                className={showTodayExecution ? 'rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white' : 'rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold'}
-                onClick={copyToEditableDraft}
-              >
-                내 Flow로 가져오기
-              </button>
+              {!showSurfacePreview ? (
+                <button
+                  className={showTodayExecution ? 'rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white' : 'rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold'}
+                  onClick={copyToEditableDraft}
+                >
+                  내 Flow로 가져오기
+                </button>
+              ) : null}
               {showTodayExecution ? (
                 <p className="w-full text-sm text-gray-500">
                   캘린더, 엑셀, 메모/노션 내보내기는 위의 내 도구로 옮기기 영역에서 바로 실행할 수 있습니다.

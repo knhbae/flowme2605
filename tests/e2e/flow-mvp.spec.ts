@@ -233,6 +233,15 @@ test('public flow detail shows primary tool surface before execution details', a
   await expect(surface).toContainText('운동');
 });
 
+test('public D-Day flow detail uses the shared tool surface', async ({ page }) => {
+  await page.goto('/f/moving-d30-basic');
+
+  const surface = page.getByTestId('tool-surface-preview');
+  await expect(surface).toBeVisible();
+  await expect(surface).toContainText('D-Day');
+  await expect(surface).toContainText('단계표');
+});
+
 test('daily check flow detail uses checklist surface', async ({ page }) => {
   await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
 
@@ -423,6 +432,19 @@ test('raw advanced edits persist after save and reload', async ({ page }) => {
   await page.getByRole('button', { name: '발행' }).click();
   await expect(page.getByText('발행됨')).toBeVisible();
 });
+test('raw advanced edits update the published flow items', async ({ page }) => {
+  await page.goto('/f/moving-d30-basic');
+  await page.getByRole('button', { name: '내 Flow로 가져오기' }).click();
+
+  await page.getByRole('heading', { name: '원문 고급 편집' }).click();
+  await page.locator('textarea').first().fill('# raw advanced publish\n\n## D-1\n- edited raw publish item D-1');
+
+  await page.getByRole('button', { name: '발행' }).click();
+  await page.locator('a[href^="/f/moving-d30-basic-copy-"]').click();
+
+  await expect(page.getByTestId('tool-surface-preview').getByText('edited raw publish item')).toBeVisible();
+});
+
 test('public moving flow calculates dates and updates progress', async ({ page }) => {
   await page.goto('/f/moving-d30-basic');
 
