@@ -94,7 +94,8 @@ test('creator directory exposes channel-scale preview library', async ({ page })
   await page.goto('/creators');
 
   await expect(page.getByRole('heading', { name: '제작자 채널' })).toBeVisible();
-  await expect(page.getByText('200+')).toBeVisible();
+  await expect(page.getByText(/2\d{2}\+/)).toBeVisible();
+  await expect(page.getByText('Real source')).toBeVisible();
   await expect(page.getByRole('link', { name: /삼성전자서비스/ })).toBeVisible();
   await expect(page.getByRole('link', { name: /ThankyouBUBU/ })).toBeVisible();
   await expect(page.getByText('실행성 점수').first()).toBeVisible();
