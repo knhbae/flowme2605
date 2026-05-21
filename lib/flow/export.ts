@@ -48,6 +48,16 @@ export type WorkbookExportOptions = {
   reactionLogs?: Record<string, ReactionLog>;
 };
 
+const icsWeekdays: Record<string, string> = {
+  월: 'MO',
+  화: 'TU',
+  수: 'WE',
+  목: 'TH',
+  금: 'FR',
+  토: 'SA',
+  일: 'SU',
+};
+
 const executionColumns = [
   '상태',
   '시점',
@@ -156,6 +166,10 @@ function getExecutableIds(bundle: FlowBundle): string[] {
   return bundle.flow.content_type === 'meal_plan'
     ? (bundle.mealSlots ?? []).map((slot) => slot.id)
     : bundle.items.map((item) => item.id);
+}
+
+function isExactVideoFlow(bundle: FlowBundle): boolean {
+  return Boolean(bundle.flow.tags?.includes('exact-video') && bundle.flow.source_url?.includes('youtube.com/watch'));
 }
 
 function getProgressLabel(bundle: FlowBundle, checks: Record<string, boolean>): string {
@@ -331,6 +345,51 @@ export function buildText(
   return lines.join('\n').trim();
 }
 
+function compactDate(value: string): string {
+  return value.replaceAll('-', '');
+}
+
+function escapeIcsText(value: string): string {
+  return value
+    .replaceAll('\\', '\\\\')
+    .replaceAll('\n', '\\n')
+    .replaceAll(',', '\\,')
+    .replaceAll(';', '\\;');
+}
+
+function buildIcsDescription(bundle: FlowBundle): string {
+  const detail = bundle.itemDetails?.[0];
+  return [
+    bundle.items[0]?.title,
+    detail?.how,
+    detail?.completion_criteria,
+    bundle.flow.source_url ? `영상: ${bundle.flow.source_url}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n');
+}
+
+export function buildCalendarIcs(bundle: FlowBundle, anchor: string, weekdays: string[] = []): string {
+  const startDate = anchor || formatDate(new Date());
+  const byday = weekdays.map((day) => icsWeekdays[day]).filter(Boolean).join(',');
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//FLOW MVP//Personal Flow Export//KO',
+    'CALSCALE:GREGORIAN',
+    'BEGIN:VEVENT',
+    `UID:${bundle.flow.slug}-${compactDate(startDate)}@flow.local`,
+    `DTSTAMP:${compactDate(formatDate(new Date()))}T000000Z`,
+    `DTSTART;VALUE=DATE:${compactDate(startDate)}`,
+    `SUMMARY:${escapeIcsText(bundle.flow.title)}`,
+    `DESCRIPTION:${escapeIcsText(buildIcsDescription(bundle))}`,
+  ];
+  if (byday) lines.push(`RRULE:FREQ=WEEKLY;BYDAY=${byday}`);
+  if (bundle.flow.source_url) lines.push(`URL:${bundle.flow.source_url}`);
+  lines.push('END:VEVENT', 'END:VCALENDAR');
+  return `${lines.join('\r\n')}\r\n`;
+}
+
 export function buildWorkbookSheets(
   bundle: FlowBundle,
   checks: Record<string, boolean>,
@@ -444,7 +503,7 @@ export function buildWorkbookSheets(
     },
   ];
 
-  if (calendarRows.length) {
+  if (calendarRows.length && !isExactVideoFlow(bundle)) {
     sheets.push(
       {
         name: '주간 보기',

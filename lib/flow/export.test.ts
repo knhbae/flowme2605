@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { buildText, buildWorkbookSheets, buildXlsxBuffer } from './export';
+import { buildCalendarIcs, buildText, buildWorkbookSheets, buildXlsxBuffer } from './export';
 import { seedBundles } from './seed-flows';
 
 test('timeline text export includes calculated dates when anchor exists', () => {
@@ -129,4 +129,33 @@ test('xlsx export builds a valid workbook archive', async () => {
 
   assert.ok(bytes.byteLength > 1000);
   assert.equal(bytes.subarray(0, 2).toString('utf8'), 'PK');
+});
+
+test('exact video workbook stays lightweight for personal sheets', () => {
+  const workout = seedBundles.find((bundle) => bundle.flow.slug === 'real-thankyou-bubu-video-full-body-no-jump');
+  const diet = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-body-fat-6kg-method');
+  assert.ok(workout);
+  assert.ok(diet);
+
+  const workoutSheets = buildWorkbookSheets(workout, {}, '2026-05-25', { weekdays: ['월', '수', '금'] });
+  const dietSheets = buildWorkbookSheets(diet, {}, '2026-05-25', { weekdays: ['월', '수', '금'] });
+
+  assert.deepEqual(workoutSheets.map((sheet) => sheet.name), ['실행 요약', '실행표', '상세']);
+  assert.deepEqual(dietSheets.map((sheet) => sheet.name), ['실행 요약', '실행표', '상세']);
+  assert.equal(workoutSheets.find((sheet) => sheet.name === '실행표')?.rows.length, 1);
+  assert.equal(dietSheets.find((sheet) => sheet.name === '실행표')?.rows.length, 1);
+});
+
+test('calendar export creates a portable weekly event for exact video flows', () => {
+  const workout = seedBundles.find((bundle) => bundle.flow.slug === 'real-thankyou-bubu-video-full-body-no-jump');
+  assert.ok(workout);
+
+  const ics = buildCalendarIcs(workout, '2026-05-25', ['월', '수', '금']);
+
+  assert.match(ics, /BEGIN:VCALENDAR/);
+  assert.match(ics, /BEGIN:VEVENT/);
+  assert.match(ics, /SUMMARY:ThankyouBUBU 전신 다이어트 실천 Flow/);
+  assert.match(ics, /DTSTART;VALUE=DATE:20260525/);
+  assert.match(ics, /RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR/);
+  assert.match(ics, /URL:https:\/\/www\.youtube\.com\/watch\?v=/);
 });

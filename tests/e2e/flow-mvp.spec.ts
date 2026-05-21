@@ -154,8 +154,35 @@ test('fitness exact video flow keeps the execution panel minimal', async ({ page
   await expect(page.getByRole('link', { name: /영상 열기/ })).toBeVisible();
   await expect(page.getByText('운동 스케줄 등록', { exact: true })).toBeVisible();
   await expect(page.getByText('체크리스트 1개', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: '캘린더에 넣기' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '엑셀 실행표 받기' })).toBeVisible();
   await expect(page.getByRole('button', { name: '초보' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '절반' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '전체 루틴' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '주별 보기' })).toHaveCount(0);
+  await expect(page.getByText('weekly')).toHaveCount(0);
+
+  const calendarDownloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: '캘린더에 넣기' }).click();
+  const calendarDownload = await calendarDownloadPromise;
+  expect(calendarDownload.suggestedFilename()).toBe('real-thankyou-bubu-video-full-body-no-jump.ics');
+
+  const excelDownloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: '엑셀 실행표 받기' }).click();
+  const excelDownload = await excelDownloadPromise;
+  expect(excelDownload.suggestedFilename()).toBe('real-thankyou-bubu-video-full-body-no-jump.xlsx');
+});
+
+test('diet exact video flow uses application language instead of workout scheduling', async ({ page }) => {
+  await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
+
+  await expect(page.getByText('오늘 적용할 행동 하나', { exact: true })).toBeVisible();
+  await expect(page.getByText('적용 요일').first()).toBeVisible();
+  await expect(page.getByText('운동 요일')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '전체 루틴' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '주별 보기' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '캘린더에 넣기' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '메모/노션에 복사' })).toBeVisible();
 });
 
 test('creator profile merges newly shipped seed flows into existing browser storage', async ({ page }) => {
