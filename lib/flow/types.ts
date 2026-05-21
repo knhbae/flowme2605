@@ -25,6 +25,9 @@ export type FlowUser = {
   avatar_initial: string;
   specialty_tags: string[];
   is_current_user?: boolean;
+  source_url?: string;
+  channel_type?: 'creator' | 'official' | 'brand' | 'community' | 'curation';
+  is_preview_channel?: boolean;
 };
 
 export type Flow = {
