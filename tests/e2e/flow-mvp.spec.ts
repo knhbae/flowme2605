@@ -111,6 +111,14 @@ test('preview creator channel supports browsing 20+ flowified entries', async ({
   await expect(page.getByRole('link', { name: /가전관리 월간 점검 루틴/ })).toBeVisible();
 });
 
+test('preview creator flow route opens encoded Korean slug', async ({ page }) => {
+  await page.goto('/f/channel-samsung-service-%EC%9B%94%EA%B0%84-%EC%A0%90%EA%B2%80-%EB%A3%A8%ED%8B%B4');
+
+  await expect(page).toHaveURL(/\/f\/channel-samsung-service-/);
+  await expect(page.locator('main.p-8')).toHaveCount(0);
+  await expect(page.locator('h1')).toHaveCount(1);
+});
+
 test('new flow creation starts from pasted content and a human pattern choice', async ({ page }) => {
   await page.goto('/flows/new');
 
