@@ -2210,7 +2210,7 @@ export function PublicFlow({ slug }: { slug: string }) {
                 className={showTodayExecution ? 'rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white' : 'rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold'}
                 onClick={copyToEditableDraft}
               >
-                내 Flow로 복사해 수정
+                내 Flow로 가져오기
               </button>
               {showTodayExecution ? (
                 <p className="w-full text-sm text-gray-500">
@@ -3246,7 +3246,7 @@ function ExactVideoToolPreview({
             </a>
           ) : null}
           <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={onCopyToEditableDraft}>
-            내 Flow로 복사해 수정
+            내 Flow로 가져오기
           </button>
         </div>
       </div>

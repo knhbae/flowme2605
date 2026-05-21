@@ -103,8 +103,8 @@ export function ToolSurfaceEditor({ bundle, onSave, renderHeader }: ToolSurfaceE
           </div>
         </section>
 
-        <section>
-          <h2 className="sr-only">내 도구 미리보기</h2>
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold text-gray-950">내 도구 미리보기</h2>
           <ToolSurfacePreview model={model} onExport={() => save()} onCopyToEditableDraft={() => save()} />
         </section>
       </div>

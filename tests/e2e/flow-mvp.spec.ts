@@ -67,7 +67,7 @@ test('my flow workspace separates copied or drafted flows from public discovery'
   await expect(page.getByText('아직 내 Flow가 없습니다')).toBeVisible();
 
   await page.goto('/f/moving-d30-basic');
-  await page.getByRole('button', { name: '내 Flow로 복사해 수정' }).click();
+  await page.getByRole('button', { name: '내 Flow로 가져오기' }).click();
   await expect(page).toHaveURL(/\/flows\/.+\/edit/);
 
   await page.goto('/my');
@@ -255,7 +255,9 @@ test('exact video copy opens an editable draft with the execution item preserved
   await expect(page.getByRole('heading', { name: '내 Flow로 가져왔습니다' })).toBeVisible();
   await expect(page.getByText('이 Flow는 캘린더에 들어가는 반복 루틴입니다')).toBeVisible();
   await expect(page.getByRole('heading', { name: '내 일정 설정' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '내 도구 미리보기' })).toBeVisible();
+  const toolPreviewHeading = page.getByRole('heading', { name: '내 도구 미리보기' });
+  await expect(toolPreviewHeading).toBeVisible();
+  await expect(toolPreviewHeading).not.toHaveClass(/sr-only/);
   await expect(page.getByRole('heading', { name: '원문 고급 편집' })).toBeVisible();
   await expect(page.locator('textarea').first()).not.toBeVisible();
   await expect(page.getByLabel('실행 내용')).toHaveValue(/운동|영상/);
@@ -264,7 +266,7 @@ test('exact video copy opens an editable draft with the execution item preserved
 test('copied D-Day flow edits dates before raw content', async ({ page }) => {
   await page.goto('/f/moving-d30-basic');
 
-  await page.getByRole('button', { name: '내 Flow로 복사해 수정' }).click();
+  await page.getByRole('button', { name: '내 Flow로 가져오기' }).click();
 
   await expect(page).toHaveURL(/\/flows\/.+\/edit/);
   await expect(page.getByRole('heading', { name: '내 Flow로 가져왔습니다' })).toBeVisible();
@@ -479,7 +481,7 @@ test('routine flow highlights weekly routine setup', async ({ page }) => {
 test('public flow can be copied into an editable draft', async ({ page }) => {
   await page.goto('/f/moving-d30-basic');
 
-  await page.getByRole('button', { name: '내 Flow로 복사해 수정' }).click();
+  await page.getByRole('button', { name: '내 Flow로 가져오기' }).click();
 
   await expect(page).toHaveURL(/\/flows\/.+\/edit/);
   await expect(page.getByRole('heading', { name: /이사 D-30 준비 Flow 사본/ })).toBeVisible();
