@@ -396,14 +396,19 @@ test('fitness creator deep dive converts exact videos into executable flows', ()
 test('fitness exact video flows keep one action with clear execution detail', () => {
   const workout = seedBundles.find((bundle) => bundle.flow.slug === 'real-thankyou-bubu-video-full-body-no-jump');
   const diet = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-body-fat-6kg-method');
+  const workoutPlan = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-workout-split-science');
 
   assert.ok(workout);
   assert.ok(diet);
+  assert.ok(workoutPlan);
 
   assert.equal(workout.items[0].title, '운동 스케줄 등록하고 영상 실행');
   assert.match(workout.itemDetails?.[0]?.how ?? '', /준비:.*실행:.*마무리:/);
-  assert.equal(diet.items[0].title, '오늘 적용할 한 가지 행동 실행');
+  assert.equal(diet.items[0].title, '다음 식사 한 끼에 감량 기준 적용');
   assert.match(diet.itemDetails?.[0]?.how ?? '', /준비:.*실행:.*마무리:/);
+  assert.equal(workoutPlan.items[0].title, '이번 주 분할·세트·휴식 기준 정하기');
+  assert.match(workoutPlan.itemDetails?.[0]?.how ?? '', /운동표|분할|세트|휴식/);
+  assert.doesNotMatch(workoutPlan.itemDetails?.[0]?.how ?? '', /식사 한 끼/);
 });
 
 test('preview-generated creator channel flows are explicitly marked preview', () => {
