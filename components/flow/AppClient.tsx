@@ -320,6 +320,17 @@ function FlowCard({
           <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
           <span className="text-sm font-medium text-gray-600">{bundle.flow.category}</span>
           <Badge className="border-gray-200 bg-gray-50 text-gray-600">{getStructureLabel(bundle)}</Badge>
+          <Badge
+            className={
+              bundle.flow.source_status === 'real'
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                : bundle.flow.source_status === 'preview'
+                  ? 'border-blue-200 bg-blue-50 text-blue-700'
+                  : 'border-gray-200 bg-gray-50 text-gray-600'
+            }
+          >
+            {getSourceStatusLabel(bundle)}
+          </Badge>
         </div>
         <div>
           <h2 className="text-lg font-semibold leading-snug text-gray-950">
@@ -618,10 +629,19 @@ function StatCard({ label, value, compact = false }: { label: string; value: str
   );
 }
 
+function getSourceStatusLabel(bundle: FlowBundle) {
+  if (bundle.flow.source_status === 'real') return 'Real source';
+  if (bundle.flow.source_status === 'preview') return 'Preview';
+  if (bundle.flow.source_status === 'needs_review') return 'Needs review';
+  return bundle.flow.source_url ? 'Source linked' : 'Draft source';
+}
+
 export function CreatorDirectory() {
   const { bundles } = useBundles();
   const summaries = getCreatorChannelSummaries(bundles);
   const totalFlows = summaries.reduce((sum, item) => sum + item.flow_count, 0);
+  const totalRealFlows = summaries.reduce((sum, item) => sum + item.real_flow_count, 0);
+  const totalPreviewFlows = summaries.reduce((sum, item) => sum + item.preview_flow_count, 0);
   const averageScore = Math.round(
     summaries.reduce((sum, item) => sum + item.execution_score, 0) / Math.max(summaries.length, 1),
   );
@@ -636,11 +656,12 @@ export function CreatorDirectory() {
         <p className="mt-3 max-w-3xl leading-7 text-gray-600">
           채널별 콘텐츠가 실제 실행 Flow로 얼마나 잘 전환되는지 확인하는 Preview입니다.
         </p>
-        <div className="mt-5 grid gap-3 sm:grid-cols-4">
+        <div className="mt-5 grid gap-3 sm:grid-cols-5">
           <StatCard label="채널" value={`${summaries.length}`} />
           <StatCard label="Flow화 콘텐츠" value={`${totalFlows}+`} />
+          <StatCard label="Real source" value={`${totalRealFlows}`} />
+          <StatCard label="Preview" value={`${totalPreviewFlows}`} />
           <StatCard label="평균 실행성 점수" value={`${averageScore}`} />
-          <StatCard label="검증 상태" value="Preview" />
         </div>
         <div className="mt-5 flex flex-wrap gap-2">
           {categories.map((category) => (
@@ -669,9 +690,9 @@ export function CreatorDirectory() {
             </div>
             <p className="mt-3 text-sm leading-6 text-gray-600">{channel.bio}</p>
             <div className="mt-4 grid grid-cols-3 gap-2 text-sm">
+              <StatCard label="Real" value={`${channel.real_flow_count}`} compact />
+              <StatCard label="Preview" value={`${channel.preview_flow_count}`} compact />
               <StatCard label="실행성 점수" value={`${channel.execution_score}`} compact />
-              <StatCard label="출처" value={`${channel.source_coverage}%`} compact />
-              <StatCard label="항목" value={`${channel.executable_item_count}`} compact />
             </div>
           </Link>
         ))}
@@ -923,16 +944,20 @@ export function CreatorProfile({ slug }: { slug: string }) {
     return normalizeCreatorSlug(creator?.slug ?? creatorSlug(getCreatorName(bundle))) === normalized;
   });
   const [categoryFilter, setCategoryFilter] = useState('전체');
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'real' | 'preview'>('all');
   const first = creatorBundles[0];
   const profile = user ?? (first ? getCreatorUser(first) : undefined);
   const totalUsage = creatorBundles.reduce((sum, bundle) => sum + (bundle.flow.usage_count ?? 0), 0);
   const totalCopies = creatorBundles.reduce((sum, bundle) => sum + (bundle.flow.copy_count ?? 0), 0);
   const categories = Array.from(new Set(creatorBundles.map((bundle) => bundle.flow.category))).slice(0, 6);
   const allCategories = ['전체', ...Array.from(new Set(creatorBundles.map((bundle) => bundle.flow.category)))];
-  const visibleCreatorBundles =
-    categoryFilter === '전체'
-      ? creatorBundles
-      : creatorBundles.filter((bundle) => bundle.flow.category === categoryFilter);
+  const visibleCreatorBundles = creatorBundles
+    .filter((bundle) => (categoryFilter === '전체' ? true : bundle.flow.category === categoryFilter))
+    .filter((bundle) => {
+      if (sourceFilter === 'real') return bundle.flow.source_status === 'real';
+      if (sourceFilter === 'preview') return bundle.flow.source_status === 'preview';
+      return true;
+    });
 
   if (!first && !profile) {
     return (
@@ -984,8 +1009,10 @@ export function CreatorProfile({ slug }: { slug: string }) {
           ))}
         </div>
         {previewSummary ? (
-          <section className="mt-5 grid gap-3 sm:grid-cols-5">
+          <section className="mt-5 grid gap-3 sm:grid-cols-7">
             <StatCard label="Flow화 콘텐츠" value={`${previewSummary.flow_count}`} compact />
+            <StatCard label="Real source" value={`${previewSummary.real_flow_count}`} compact />
+            <StatCard label="Preview" value={`${previewSummary.preview_flow_count}`} compact />
             <StatCard label="실행 항목" value={`${previewSummary.executable_item_count}`} compact />
             <StatCard label="앵커 커버리지" value={`${previewSummary.anchor_coverage}%`} compact />
             <StatCard label="출처 커버리지" value={`${previewSummary.source_coverage}%`} compact />
@@ -1001,6 +1028,26 @@ export function CreatorProfile({ slug }: { slug: string }) {
             <h2 className="text-2xl font-semibold">채널 Flow 라이브러리</h2>
           </div>
           <Link className="text-sm font-semibold text-blue-700" href="/flows/new">내 콘텐츠로 만들기</Link>
+        </div>
+        <div className="mb-3 flex flex-wrap gap-2">
+          {[
+            ['all', 'All'],
+            ['real', 'Real source'],
+            ['preview', 'Preview'],
+          ].map(([key, label]) => (
+            <button
+              key={key}
+              className={`rounded-md border px-3 py-2 text-sm font-semibold ${
+                sourceFilter === key
+                  ? 'border-blue-600 bg-blue-50 text-blue-700'
+                  : 'border-gray-200 bg-white text-gray-700'
+              }`}
+              type="button"
+              onClick={() => setSourceFilter(key as 'all' | 'real' | 'preview')}
+            >
+              {label}
+            </button>
+          ))}
         </div>
         <div className="mb-4 flex flex-wrap gap-2">
           {allCategories.map((category) => (

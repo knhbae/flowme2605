@@ -111,6 +111,16 @@ test('preview creator channel supports browsing 20+ flowified entries', async ({
   await expect(page.getByRole('link', { name: /가전관리 월간 점검 루틴/ })).toBeVisible();
 });
 
+test('creator channel can filter real source-backed flows', async ({ page }) => {
+  await page.goto('/u/samsung-service');
+
+  await expect(page.getByText('Real source').first()).toBeVisible();
+  await page.getByRole('button', { name: 'Real source' }).click();
+
+  await expect(page.locator('a[href="/f/real-samsung-aircon-seasonal-care"]').first()).toBeVisible();
+  await expect(page.locator('a[href^="/f/channel-samsung-service-"]')).toHaveCount(0);
+});
+
 test('preview creator flow route opens encoded Korean slug', async ({ page }) => {
   await page.goto('/f/channel-samsung-service-%EC%9B%94%EA%B0%84-%EC%A0%90%EA%B2%80-%EB%A3%A8%ED%8B%B4');
 
