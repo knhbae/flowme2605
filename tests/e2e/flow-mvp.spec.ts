@@ -139,6 +139,42 @@ test('fitness creator profile highlights exact video flows before samples', asyn
   await expect(page.locator('a[href^="/f/channel-thankyou-bubu-"]')).toHaveCount(0);
 });
 
+test('creator profile merges newly shipped seed flows into existing browser storage', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      'flow_builder_mvp_bundles_v11',
+      JSON.stringify([
+        {
+          flow: {
+            id: 'flow-local-only',
+            slug: 'local-only',
+            title: 'Local only old flow',
+            description: 'Old browser storage entry',
+            category: '운동/홈트',
+            structure_type: 'routine',
+            anchor_type: 'start_date',
+            status: 'published',
+            owner_user_id: 'channel-thankyou-bubu',
+            creator_name: 'ThankyouBUBU',
+            creator_role: '홈트 루틴 채널',
+            creator_note: 'old storage',
+            created_at: '2026-05-20T00:00:00.000Z',
+            updated_at: '2026-05-20T00:00:00.000Z',
+          },
+          sections: [],
+          items: [],
+        },
+      ]),
+    );
+  });
+
+  await page.goto('/u/thankyou-bubu');
+
+  await expect(page.getByText('실제 콘텐츠로 바로 시작')).toBeVisible();
+  await expect(page.locator('a[href="/f/real-thankyou-bubu-video-full-body-no-jump"]').first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Local only old flow' })).toBeVisible();
+});
+
 test('real source public flow exposes source QA metadata and first action', async ({ page }) => {
   await page.goto('/f/real-samsung-aircon-seasonal-care');
 
