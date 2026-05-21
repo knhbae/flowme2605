@@ -444,6 +444,58 @@ test('fitness exact video flow titles preserve the original content premise', ()
   }
 });
 
+test('fitness exact video flows preserve titles verified from original YouTube URLs', () => {
+  const expectedSourceTitles = new Map([
+    [
+      'real-thankyou-bubu-video-full-body-no-jump',
+      '전신 다이어트 최고의 운동 [점프❌ 눕는동작❌ 반복❌ 토크❌] - Thankyou BUBU',
+    ],
+    [
+      'real-thankyou-bubu-video-daily-stretch-9min',
+      '하루 9분! 전신 스트레칭 BEST (운동전후⭕) - Thankyou BUBU',
+    ],
+    [
+      'real-thankyou-bubu-video-8min-cardio',
+      '8분 완벽한 전신유산소 다이어트 [칼소폭 미친맛💀] - Thankyou BUBU',
+    ],
+    ['real-fitvely-video-body-fat-6kg-method', '핏블리가 체지방 6kg을 감량한 비법 - 핏블리 FITVELY'],
+    [
+      'real-fitvely-video-carb-amount-shorts',
+      '탄수화물 얼마나 섭취해야 할까? #shorts - 핏블리 FITVELY',
+    ],
+    [
+      'real-fitvely-video-workout-split-science',
+      "【운동루틴】 이렇게 하면 '무조건' 몸 좋아집니다. 과학적으로 운동루틴 짜는법(분할법, 세트수, 무게, 휴식, 종류) - 핏블리 FITVELY",
+    ],
+  ]);
+
+  for (const [slug, expectedSourceTitle] of expectedSourceTitles) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+
+    assert.ok(bundle, slug);
+    assert.equal(bundle.flow.source_title, expectedSourceTitle, slug);
+    assert.equal(bundle.flow.source_checked_at, '2026-05-21', slug);
+    assert.match(bundle.flow.source_url ?? '', /^https:\/\/www\.youtube\.com\/watch\?v=/, slug);
+    assert.match(bundle.flow.conversion_note ?? '', /원본 URL에서 제목과 채널명을 확인/, slug);
+  }
+});
+
+test('fitness exact video flows name the portable tool users should move the content into', () => {
+  const workout = seedBundles.find((bundle) => bundle.flow.slug === 'real-thankyou-bubu-video-full-body-no-jump');
+  const diet = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-carb-reason');
+  const workoutPlan = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-workout-split-science');
+
+  assert.ok(workout);
+  assert.ok(diet);
+  assert.ok(workoutPlan);
+  assert.match(workout.itemDetails?.[0]?.how ?? '', /캘린더 제목/);
+  assert.match(workout.itemDetails?.[0]?.how ?? '', /반복:/);
+  assert.match(diet.itemDetails?.[0]?.how ?? '', /체크표 항목/);
+  assert.match(diet.itemDetails?.[0]?.how ?? '', /오늘 한 끼/);
+  assert.match(workoutPlan.itemDetails?.[0]?.how ?? '', /운동표 칸/);
+  assert.match(workoutPlan.itemDetails?.[0]?.how ?? '', /이번 주/);
+});
+
 test('representative source-backed flows use action and tool oriented titles', () => {
   const representativeSlugs = [
     'real-thankyou-bubu-video-full-body-no-jump',

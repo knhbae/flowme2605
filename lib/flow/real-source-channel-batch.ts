@@ -174,7 +174,7 @@ const thankyouBubuExactVideos: CreatorVideoSpec[] = [
     channelSlug: 'thankyou-bubu',
     slugPrefix: 'real-thankyou-bubu-video',
     slug: 'full-body-no-jump',
-    title: '전신 다이어트 최고의 운동 [점프 없음, 눕는동작 없음, 반복 없음, 토크 없음]',
+    title: '전신 다이어트 최고의 운동 [점프❌ 눕는동작❌ 반복❌ 토크❌]',
     titleShort: '전신운동',
     videoId: 'pcyrlkHXAdE',
     category: '운동/홈트',
@@ -186,7 +186,7 @@ const thankyouBubuExactVideos: CreatorVideoSpec[] = [
     channelSlug: 'thankyou-bubu',
     slugPrefix: 'real-thankyou-bubu-video',
     slug: 'daily-stretch-9min',
-    title: '하루 9분! 전신 스트레칭 BEST',
+    title: '하루 9분! 전신 스트레칭 BEST (운동전후⭕)',
     titleShort: '9분 스트레칭',
     videoId: 'aob4Lh1Vebk',
     category: '운동/홈트',
@@ -198,7 +198,7 @@ const thankyouBubuExactVideos: CreatorVideoSpec[] = [
     channelSlug: 'thankyou-bubu',
     slugPrefix: 'real-thankyou-bubu-video',
     slug: 'belly-side-all-in-one',
-    title: 'NO관절부담 뱃살 옆구리살 빼는 운동 [뱃살 올인원]',
+    title: 'NO관절부담 뱃살 옆구리살 빼는 운동 [뱃살 올인원🏆]',
     titleShort: '뱃살·옆구리 운동',
     videoId: 'toAUho9bEw0',
     category: '운동/홈트',
@@ -210,7 +210,7 @@ const thankyouBubuExactVideos: CreatorVideoSpec[] = [
     channelSlug: 'thankyou-bubu',
     slugPrefix: 'real-thankyou-bubu-video',
     slug: 'no-knee-cardio-strength',
-    title: 'NO무릎부담 전신유산소 근력 다이어트 [칼소폭 올인원]',
+    title: 'NO무릎부담 전신유산소 근력 다이어트 [칼소폭 올인원🏆]',
     titleShort: '무릎부담 낮춘 전신운동',
     videoId: 'hesjApxDlj0',
     category: '운동/홈트',
@@ -222,7 +222,7 @@ const thankyouBubuExactVideos: CreatorVideoSpec[] = [
     channelSlug: 'thankyou-bubu',
     slugPrefix: 'real-thankyou-bubu-video',
     slug: 'arm-back-shoulder',
-    title: '팔뚝살 5cm 줄어드는 다이어트운동 [팔뚝살 등살 가슴 어깨]',
+    title: '팔뚝살 5cm 줄어드는 다이어트운동 [팔뚝살 등살가슴어깨 미친맛💀]',
     titleShort: '팔뚝·등살 운동',
     videoId: '73IrtWDDby0',
     category: '운동/홈트',
@@ -234,7 +234,7 @@ const thankyouBubuExactVideos: CreatorVideoSpec[] = [
     channelSlug: 'thankyou-bubu',
     slugPrefix: 'real-thankyou-bubu-video',
     slug: 'waist-8cm',
-    title: '허리둘레 8cm 줄어드는 운동 [뱃살 옆구리살]',
+    title: '허리둘레 8cm 줄어드는 운동 [뱃살 옆구리살 미친맛💀]',
     titleShort: '허리둘레 집중 운동',
     videoId: 'k3MznPQvUEk',
     category: '운동/홈트',
@@ -246,7 +246,7 @@ const thankyouBubuExactVideos: CreatorVideoSpec[] = [
     channelSlug: 'thankyou-bubu',
     slugPrefix: 'real-thankyou-bubu-video',
     slug: '8min-cardio',
-    title: '8분 완벽한 전신유산소 다이어트',
+    title: '8분 완벽한 전신유산소 다이어트 [칼소폭 미친맛💀]',
     titleShort: '8분 전신유산소',
     videoId: 'O87gkL1cKSc',
     category: '운동/홈트',
@@ -258,7 +258,7 @@ const thankyouBubuExactVideos: CreatorVideoSpec[] = [
     channelSlug: 'thankyou-bubu',
     slugPrefix: 'real-thankyou-bubu-video',
     slug: '3min-arm',
-    title: '3분 최고의 팔뚝살빼는운동',
+    title: '3분 최고의 팔뚝살빼는운동 3MIN ARM WORKOUT',
     titleShort: '3분 팔뚝 운동',
     videoId: 'Kl9Dmx86Z0Q',
     category: '운동/홈트',
@@ -270,7 +270,7 @@ const thankyouBubuExactVideos: CreatorVideoSpec[] = [
     channelSlug: 'thankyou-bubu',
     slugPrefix: 'real-thankyou-bubu-video',
     slug: '3min-abs',
-    title: '3분 최고의 복근운동',
+    title: '3분 최고의 복근운동 3MIN ABS WORKOUT',
     titleShort: '3분 복근 운동',
     videoId: '6IUL8-nGetA',
     category: '운동/홈트',
@@ -353,7 +353,7 @@ const fitvelyExactVideos: CreatorVideoSpec[] = [
     channelSlug: 'fitvely',
     slugPrefix: 'real-fitvely-video',
     slug: 'carb-amount-shorts',
-    title: '탄수화물 얼마나 섭취해야 할까',
+    title: '탄수화물 얼마나 섭취해야 할까? #shorts',
     titleShort: '오늘 탄수화물 기록',
     videoId: 't630vnDGIWw',
     category: '다이어트/기록',
@@ -381,7 +381,7 @@ const fitvelyExactVideos: CreatorVideoSpec[] = [
     channelSlug: 'fitvely',
     slugPrefix: 'real-fitvely-video',
     slug: 'weight-class-method',
-    title: '체중 별 다이어트 방법 정리',
+    title: '체중 별 다이어트 방법 싹 정리해서 알려드립니다!(비만-과체중-통통)',
     titleShort: '체중별 다이어트 기준',
     videoId: 'qADmhOJemTs',
     category: '다이어트/기록',
@@ -421,7 +421,7 @@ const fitvelyExactVideos: CreatorVideoSpec[] = [
     channelSlug: 'fitvely',
     slugPrefix: 'real-fitvely-video',
     slug: 'workout-split-science',
-    title: '과학적으로 운동루틴 짜는법',
+    title: "【운동루틴】 이렇게 하면 '무조건' 몸 좋아집니다. 과학적으로 운동루틴 짜는법(분할법, 세트수, 무게, 휴식, 종류)",
     titleShort: '운동루틴 설계 기준',
     videoId: '-GJMwcES45A',
     category: '운동/홈트',
@@ -434,7 +434,8 @@ const fitvelyExactVideos: CreatorVideoSpec[] = [
 
 function makeCreatorVideoSpec(video: CreatorVideoSpec): RealSourceSpec {
   const sourceUrl = `https://www.youtube.com/watch?v=${video.videoId}`;
-  const sourceTitle = `${video.title} - ${video.channelSlug === 'thankyou-bubu' ? 'ThankyouBUBU' : '핏블리 FITVELY'}`;
+  const sourceAuthorName = video.channelSlug === 'thankyou-bubu' ? 'Thankyou BUBU' : '핏블리 FITVELY';
+  const sourceTitle = `${video.title} - ${sourceAuthorName}`;
   const channelName = video.channelSlug === 'thankyou-bubu' ? 'ThankyouBUBU' : 'FITVELY';
   const title =
     video.channelSlug === 'thankyou-bubu'
@@ -467,14 +468,14 @@ function makeCreatorVideoSpec(video: CreatorVideoSpec): RealSourceSpec {
   if (video.mode === 'workout') {
     return {
       ...common,
-      conversion_note: `영상 "${video.title}"를 운동 스케줄에 등록하고 한 번 실행하는 단일 체크리스트로 전환했습니다.`,
+      conversion_note: `원본 URL에서 제목과 채널명을 확인했고, 영상 "${video.title}"를 운동 스케줄에 등록하고 한 번 실행하는 단일 체크리스트로 전환했습니다.`,
       sections: ['오늘 운동'],
       actions: [
         {
           title: '운동 스케줄 등록하고 영상 실행',
           why: '사용자가 해야 할 일은 복잡한 체크리스트를 관리하는 것이 아니라 운동할 날짜를 정하고 영상을 한 번 실행하는 것입니다.',
-          how: `준비: 이번 주 운동할 요일을 정하고 영상 링크를 엽니다. 실행: ${video.focus} 영상을 오늘 가능한 강도로 따라갑니다. 마무리: 완료했는지와 다음에 같은 영상을 반복할지만 정합니다.`,
-          completion_criteria: '운동 스케줄을 등록했고, 영상을 열어 오늘 실행 여부를 체크했습니다.',
+          how: `준비: 캘린더 제목을 "${video.titleShort} - ${channelName}"으로 만들고 이번 주 운동할 요일과 영상 링크를 붙입니다. 반복: 주 3회 또는 내가 가능한 횟수로 시작합니다. 실행: ${video.focus} 영상을 오늘 가능한 강도로 따라갑니다. 마무리: 완료 여부와 다음 반복일만 표시합니다.`,
+          completion_criteria: '캘린더에 운동 일정과 원본 영상 링크를 넣었고, 오늘 실행 여부를 체크했습니다.',
         },
       ],
     };
@@ -483,14 +484,14 @@ function makeCreatorVideoSpec(video: CreatorVideoSpec): RealSourceSpec {
   if (video.mode === 'workout-plan') {
     return {
       ...common,
-      conversion_note: `영상 "${video.title}"를 이번 주 운동표에 반영할 기준 1개로 전환했습니다.`,
+      conversion_note: `원본 URL에서 제목과 채널명을 확인했고, 영상 "${video.title}"를 이번 주 운동표에 반영할 기준 1개로 전환했습니다.`,
       sections: ['이번 주 운동표'],
       actions: [
         {
           title: video.actionTitle ?? '이번 주 운동 기준 정하기',
           why: `${video.focus}는 정보로만 저장하면 실행으로 이어지기 어려우므로 이번 주 운동표의 한 칸으로 옮겨야 합니다.`,
-          how: `준비: 영상 링크를 열고 ${video.focus}에서 내게 필요한 기준 하나를 고릅니다. 실행: 이번 주 운동표에 순서, 분할, 세트, 휴식, 식사 타이밍 중 이 영상에 해당하는 값을 적습니다. 마무리: 오늘 운동 후 유지할지 수정할지 표시합니다.`,
-          completion_criteria: '이번 주 운동표에 적용할 기준 1개를 적고, 오늘 운동 후 유지/수정 여부를 정했습니다.',
+          how: `준비: 운동표 칸을 "${video.titleShort}"으로 만들고 이번 주에 고칠 기준 하나를 정합니다. 실행: 이번 주 운동표에 순서, 분할, 세트, 무게, 휴식, 운동 종류 중 이 영상에 해당하는 값을 적습니다. 마무리: 오늘 운동 후 유지할지 수정할지 표시합니다.`,
+          completion_criteria: '이번 주 운동표에 적용할 기준 1개와 원본 영상 링크를 적고, 오늘 운동 후 유지/수정 여부를 정했습니다.',
         },
       ],
     };
@@ -498,14 +499,14 @@ function makeCreatorVideoSpec(video: CreatorVideoSpec): RealSourceSpec {
 
   return {
     ...common,
-    conversion_note: `영상 "${video.title}"를 오늘 적용할 한 가지 식단/운동 행동으로 전환했습니다.`,
+    conversion_note: `원본 URL에서 제목과 채널명을 확인했고, 영상 "${video.title}"를 오늘 적용할 한 가지 식단/운동 행동으로 전환했습니다.`,
     sections: ['오늘 적용'],
     actions: [
       {
         title: video.actionTitle ?? '다음 식사 한 끼에 적용할 기준 선택',
         why: `${video.focus}는 정보로 끝나기 쉬우므로 사용자가 바로 할 수 있는 한 가지 행동으로 좁혀야 합니다.`,
-        how: `준비: 영상 링크를 열고 ${video.focus}에서 오늘 쓸 기준만 확인합니다. 실행: ${video.applicationTarget ?? '다음 식사 한 끼나 오늘 운동 전후 행동 하나'}에만 적용합니다. 마무리: 무리한 제한, 통증, 어지러움, 폭식 유발감이 있었는지 보고 유지할지 멈출지 정합니다.`,
-        completion_criteria: '오늘 적용할 기준 1개를 실제 식사나 운동 전후 행동에 반영했고, 유지/중단 여부를 정했습니다.',
+        how: `준비: 체크표 항목을 "${video.titleShort}"으로 만들고 오늘 한 끼에만 적용할 기준을 씁니다. 실행: ${video.applicationTarget ?? '다음 식사 한 끼나 오늘 운동 전후 행동 하나'}에만 적용합니다. 마무리: 무리한 제한, 통증, 어지러움, 폭식 유발감이 있었는지 보고 유지할지 멈출지 정합니다.`,
+        completion_criteria: '오늘 한 끼 또는 운동 전후 행동에 적용할 기준 1개와 원본 영상 링크를 기록했고, 유지/중단 여부를 정했습니다.',
       },
     ],
   };
