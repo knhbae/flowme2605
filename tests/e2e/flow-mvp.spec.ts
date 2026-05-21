@@ -141,6 +141,9 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await page.getByRole('button', { name: '내 날짜 입력' }).click();
   await page.getByLabel('이사일').fill('2026-07-15');
   await expect(page.getByRole('heading', { name: '지금 먼저 체크할 일' })).toBeVisible();
+  await expect(page.getByText('실행 우선순위')).toBeVisible();
+  await expect(page.getByText('날짜 고정').first()).toBeVisible();
+  await expect(page.getByText('확인·주의').first()).toBeVisible();
   await expect(page.getByText('추천 다음 항목')).toBeVisible();
   await expect(page.getByRole('heading', { name: '전체 흐름' })).toBeVisible();
   await expect(page.getByText('출처와 주의 정보')).toBeVisible();
@@ -224,9 +227,33 @@ test('routine flow highlights weekly routine setup', async ({ page }) => {
   await page.getByRole('button', { name: '내 날짜 입력' }).click();
   await page.getByLabel('운동 시작일').fill('2026-06-01');
 
+  await expect(page.getByText('추천 다음 항목')).toBeVisible();
   await expect(page.getByText('이번 주 루틴 설정')).toBeVisible();
   await expect(page.getByText('운동 요일').first()).toBeVisible();
   await expect(page.getByText('첫 루틴 미리보기')).toBeVisible();
+  await expect(page.getByText('리셋 규칙')).toBeVisible();
+  await expect(page.getByText('놓친 날은 부채로 쌓지 않고 다음 가능한 세션부터 다시 시작합니다.')).toBeVisible();
+});
+
+test('low-context date labels explain the required anchor', async ({ page }) => {
+  await page.goto('/f/national-health-checkup-d7');
+
+  await expect(page.getByText('입력할 날짜: 검진일')).toBeVisible();
+  await page.getByRole('button', { name: '내 날짜 입력' }).click();
+  await page.getByLabel('검진일').fill('2026-06-20');
+
+  await expect(page.getByText('검진일 기준으로 날짜가 계산됩니다.')).toBeVisible();
+  await expect(page.getByText('2026-06-13').first()).toBeVisible();
+});
+
+test('no-anchor checklist skips date setup and hides calendar export', async ({ page }) => {
+  await page.goto('/f/year-end-tax-docs');
+
+  await expect(page.getByText('날짜 입력 없이 바로 확인합니다')).toBeVisible();
+  await expect(page.getByText('이 Flow는 날짜 입력이 필요 없는 체크리스트입니다.')).toBeVisible();
+  await expect(page.getByText('아래 항목을 하나씩 확인하고 완료한 것은 체크하세요.')).toBeVisible();
+  await expect(page.getByRole('button', { name: '캘린더 파일 받기' })).not.toBeVisible();
+  await expect(page.getByRole('button', { name: '체크리스트 복사하기' })).toBeVisible();
 });
 
 test('public flow can be copied into an editable draft', async ({ page }) => {
@@ -276,7 +303,8 @@ test('representative real content pilot flows are executable', async ({ page }) 
     'href',
     'https://q-net.or.kr/rcv001.do?gSite=Q&id=rcv00103&rcvPFlag=Y',
   );
+  await expect(page.getByText('입력할 날짜: 시험일')).toBeVisible();
   await page.getByRole('button', { name: '내 날짜 입력' }).click();
-  await page.getByLabel(/^기준 종료일$/).fill('2026-07-15');
+  await page.getByLabel('시험일').fill('2026-07-15');
   await expect(page.getByText('2026-06-15').first()).toBeVisible();
 });

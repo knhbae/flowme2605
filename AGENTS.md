@@ -1,11 +1,14 @@
 # FLOW Agent Entry Point
 
-This repository uses an AI-agnostic harness. Any coding agent should start with:
+This repository uses an AI-agnostic harness. This file is the auto-discovered entry point for agents that support `AGENTS.md`; `agent.md` is the expanded operating guide.
+
+Any coding agent should start with:
 
 1. [agent.md](./agent.md)
 2. [docs/STATUS.md](./docs/STATUS.md)
 3. [docs/ROADMAP.md](./docs/ROADMAP.md)
-4. [docs/harness/README.md](./docs/harness/README.md)
+4. [docs/IDEAS.md](./docs/IDEAS.md)
+5. [docs/harness/README.md](./docs/harness/README.md)
 
 Do not assume Claude-specific tools are available. If a tool supports subagents, use the roles in [docs/harness/ROLES.md](./docs/harness/ROLES.md). If not, run the same phases manually and keep implementation, review, and QA as separate passes.
 
@@ -13,9 +16,9 @@ Core commands:
 
 ```powershell
 npm install
+npm run docs:check
 npm test
 npm run build
 npm run test:e2e
 npm run dev
 ```
-

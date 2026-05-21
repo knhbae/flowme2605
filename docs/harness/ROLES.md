@@ -4,7 +4,7 @@ These roles describe responsibilities, not specific AI products. Use subagents w
 
 ## Orchestrator
 
-- Reads `agent.md`, `docs/STATUS.md`, `docs/ROADMAP.md`, and relevant code before changing files.
+- Reads `AGENTS.md`, `agent.md`, `docs/STATUS.md`, `docs/ROADMAP.md`, `docs/IDEAS.md`, and relevant code before changing files.
 - Clarifies scope, writes plans, delegates work, and reports evidence.
 - Keeps changes focused and protects existing user edits.
 - Does not claim completion without verification output.
@@ -33,4 +33,3 @@ These roles describe responsibilities, not specific AI products. Use subagents w
 - Verifies user-facing behavior in a real browser.
 - Checks console errors, screenshots, layout issues, and core flows.
 - Uses Playwright or an in-app browser depending on available tools.
-

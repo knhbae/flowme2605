@@ -331,6 +331,139 @@ export function buildText(
   return lines.join('\n').trim();
 }
 
+function formatIcsDate(date: Date): string {
+  return formatDate(date).replaceAll('-', '');
+}
+
+function escapeIcsText(value: string): string {
+  return value
+    .replaceAll('\\', '\\\\')
+    .replaceAll(';', '\\;')
+    .replaceAll(',', '\\,')
+    .replaceAll(/\r?\n/g, '\\n');
+}
+
+function foldIcsLine(line: string): string {
+  const limit = 74;
+  if (line.length <= limit) return line;
+  const chunks = [];
+  let cursor = line;
+  while (cursor.length > limit) {
+    chunks.push(cursor.slice(0, limit));
+    cursor = ` ${cursor.slice(limit)}`;
+  }
+  chunks.push(cursor);
+  return chunks.join('\r\n');
+}
+
+function buildIcsDescription(
+  bundle: FlowBundle,
+  sectionTitle: string,
+  timing: string,
+  completionCriteria?: string,
+  links?: string,
+): string {
+  return [
+    bundle.flow.description,
+    sectionTitle ? `Section: ${sectionTitle}` : '',
+    timing ? `Timing: ${timing}` : '',
+    completionCriteria ? `Done when: ${completionCriteria}` : '',
+    bundle.flow.warning ? `Caution: ${bundle.flow.warning}` : '',
+    links ? `Links:\n${links}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n');
+}
+
+type IcsEntry = {
+  id: string;
+  title: string;
+  sectionTitle: string;
+  start: Date;
+  durationDays: number;
+  timing: string;
+  completionCriteria?: string;
+  links?: string;
+};
+
+function buildIcsEntries(bundle: FlowBundle, anchor?: string): IcsEntry[] {
+  if (!anchor) return [];
+
+  const entries: IcsEntry[] = [];
+  for (const item of bundle.items.filter((entry) => entry.day_offset !== undefined)) {
+    const detail = getItemDetail(bundle, item.id);
+    entries.push({
+      id: item.id,
+      title: item.title,
+      sectionTitle: getSectionTitle(bundle, item.section_id),
+      start: addDays(new Date(anchor), item.day_offset ?? 0),
+      durationDays: Math.max(item.duration_days ?? 1, 1),
+      timing: timingLabel(item.day_offset, item.duration_days),
+      completionCriteria: detail?.completion_criteria,
+      links: linkList(detail),
+    });
+  }
+
+  for (const slot of bundle.mealSlots ?? []) {
+    const recipe = bundle.recipes?.find((item) => item.id === slot.recipe_id);
+    entries.push({
+      id: slot.id,
+      title: slot.menu_title,
+      sectionTitle: getSectionTitle(bundle, slot.section_id),
+      start: addDays(new Date(anchor), slot.day_offset),
+      durationDays: Math.max(slot.duration_days, 1),
+      timing: timingLabel(slot.day_offset, slot.duration_days),
+      completionCriteria: slot.new_ingredients.length ? `New ingredients: ${slot.new_ingredients.join(', ')}` : '',
+      links: recipe ? sourceNote(bundle, recipe.risk_level) : sourceNote(bundle),
+    });
+  }
+
+  return entries.sort((a, b) => a.start.getTime() - b.start.getTime() || a.title.localeCompare(b.title));
+}
+
+export function buildIcsCalendar(
+  bundle: FlowBundle,
+  checks: Record<string, boolean>,
+  anchor?: string,
+): string {
+  const nowStamp = new Date().toISOString().replaceAll('-', '').replaceAll(':', '').replace(/\.\d{3}Z$/, 'Z');
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//FLOW MVP//KO',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    `X-WR-CALNAME:${escapeIcsText(bundle.flow.title)}`,
+  ];
+
+  for (const entry of buildIcsEntries(bundle, anchor)) {
+    const end = addDays(entry.start, entry.durationDays);
+    const summary = `${bundle.flow.title} - ${entry.title}`;
+    const description = buildIcsDescription(
+      bundle,
+      entry.sectionTitle,
+      entry.timing,
+      entry.completionCriteria,
+      entry.links,
+    );
+    lines.push(
+      'BEGIN:VEVENT',
+      `UID:${escapeIcsText(`${bundle.flow.id}-${entry.id}@flow-mvp`)}`,
+      `DTSTAMP:${nowStamp}`,
+      `DTSTART;VALUE=DATE:${formatIcsDate(entry.start)}`,
+      `DTEND;VALUE=DATE:${formatIcsDate(end)}`,
+      `SUMMARY:${escapeIcsText(summary)}`,
+      `DESCRIPTION:${escapeIcsText(description)}`,
+      `STATUS:${checks[entry.id] ? 'CONFIRMED' : 'TENTATIVE'}`,
+      'TRANSP:TRANSPARENT',
+      'END:VEVENT',
+    );
+  }
+
+  lines.push('END:VCALENDAR');
+  return lines.map(foldIcsLine).join('\r\n');
+}
+
 export function buildWorkbookSheets(
   bundle: FlowBundle,
   checks: Record<string, boolean>,

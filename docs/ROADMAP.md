@@ -38,6 +38,7 @@ No tagged releases yet.
 ### Product
 - Expand only after Stage 0 behavior evidence exists.
 - Keep ROADMAP entries short; detailed specs belong in issues or `docs/superpowers/specs/`.
+- Use [IDEAS.md](./IDEAS.md) for promising but uncommitted ideas.
 
 ### Technical
 - Add persistent storage only when local-only validation is insufficient.
@@ -46,4 +47,3 @@ No tagged releases yet.
 ## Long-term Direction
 
 FLOW should become an execution-oriented experience wiki where trusted routes, versioning, and user footprints compound into product value.
-

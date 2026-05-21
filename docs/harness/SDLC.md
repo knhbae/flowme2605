@@ -7,9 +7,11 @@ This cycle mirrors the referenced harness guide while staying AI-agnostic.
 Read:
 
 ```powershell
+Get-Content -Raw AGENTS.md
 Get-Content -Raw agent.md
 Get-Content -Raw docs/STATUS.md
 Get-Content -Raw docs/ROADMAP.md
+Get-Content -Raw docs/IDEAS.md
 git status --short --branch
 ```
 
@@ -24,8 +26,11 @@ For new work, define:
 - Product constraints from `agent.md`
 - Verification commands
 - Out-of-scope items
+- Deferred ideas from `docs/IDEAS.md` that should influence or stay out of scope
 
 Keep detailed specs in `docs/superpowers/specs/` or a tracker issue. Keep `docs/ROADMAP.md` short.
+
+If a useful idea appears during implementation but is not part of the current scope, append it to `docs/IDEAS.md` instead of expanding the task.
 
 ## 3. Plan
 
@@ -51,6 +56,7 @@ For behavior changes:
 4. Run broader checks required by [QA.md](./QA.md).
 
 For documentation/config-only changes, verify with file inspection and project commands that are relevant.
+For agent or docs graph changes, run `npm run docs:check`.
 
 ## 5. QA
 
@@ -86,4 +92,3 @@ Before deployment:
 - Deploy.
 - Smoke test the deployed URL.
 - Record rollback notes when relevant.
-

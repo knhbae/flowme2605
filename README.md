@@ -7,7 +7,7 @@ Flow/FlowMe MVP workspace.
 - `old_reference/`: curated reference distilled from the legacy `old/` and `claude_ver/` folders.
 - `agent.md`: AI-agnostic operating guide for future agent sessions.
 - `AGENTS.md`: short entry point for tools that auto-detect agent instructions.
-- `docs/STATUS.md`, `docs/ROADMAP.md`, `docs/HISTORY.md`: document memory for current state, future work, and releases.
+- `docs/STATUS.md`, `docs/ROADMAP.md`, `docs/IDEAS.md`, `docs/REFERENCE.md`, `docs/HISTORY.md`: document memory for current state, planned work, deferred ideas, external references, and releases.
 - `docs/harness/`: AI-agnostic harness roles, SDLC, and QA rules.
 - `docs/happy-integration.md`: how to start this project through Happy for mobile/web remote control.
 
