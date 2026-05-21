@@ -22,6 +22,7 @@ export function ToolSurfaceEditor({ bundle, onSave, renderHeader }: ToolSurfaceE
   const [rawText, setRawText] = useState(() => getInitialRawText(bundle, bundle.items));
   const [rawTextEdited, setRawTextEdited] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showAllItems, setShowAllItems] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
   const parsedRawText = useMemo(() => parseTextFlow(rawText, bundle.flow.id), [bundle.flow.id, rawText]);
   const previewBundle = useMemo(
@@ -42,6 +43,8 @@ export function ToolSurfaceEditor({ bundle, onSave, renderHeader }: ToolSurfaceE
     () => getFlowSurfaceModel(previewBundle, { anchorDate, weekdays: selectedWeekdays }),
     [anchorDate, previewBundle, selectedWeekdays],
   );
+  const visibleItems = showAllItems ? items : items.slice(0, 6);
+  const hiddenItemCount = Math.max(items.length - visibleItems.length, 0);
 
   const save = (status: FlowStatus = bundle.flow.status) => {
     const nextRawText = rawTextEdited ? rawText : serializeCurrentText(bundle, items);
@@ -126,7 +129,7 @@ export function ToolSurfaceEditor({ bundle, onSave, renderHeader }: ToolSurfaceE
             </fieldset>
           ) : null}
           <div className="mt-5 space-y-3">
-            {items.map((item) => (
+            {visibleItems.map((item) => (
               <label key={item.id} className="block">
                 <span className="text-sm font-semibold text-gray-700">실행 내용</span>
                 <input
@@ -136,6 +139,15 @@ export function ToolSurfaceEditor({ bundle, onSave, renderHeader }: ToolSurfaceE
                 />
               </label>
             ))}
+            {hiddenItemCount > 0 ? (
+              <button
+                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-800"
+                type="button"
+                onClick={() => setShowAllItems(true)}
+              >
+                나머지 실행 항목 펼치기
+              </button>
+            ) : null}
           </div>
         </section>
 
@@ -151,7 +163,10 @@ export function ToolSurfaceEditor({ bundle, onSave, renderHeader }: ToolSurfaceE
         onToggle={(event) => setShowAdvanced(event.currentTarget.open)}
       >
         <summary className="cursor-pointer">
-          <h2 className="inline text-xl font-semibold text-gray-950">원문 고급 편집</h2>
+          <h2 className="inline text-xl font-semibold text-gray-950">전문가용 원문 편집</h2>
+          <p className="mt-2 text-sm leading-6 text-gray-600">
+            일반 사용자는 위 일정 설정과 실행 내용만 바꿔도 충분합니다. 원문 고급 편집은 Markdown 구조를 직접 조정해야 할 때만 사용하세요.
+          </p>
         </summary>
         <textarea
           className="mt-4 min-h-72 w-full rounded-md border border-gray-300 p-3 font-mono text-sm"

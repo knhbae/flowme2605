@@ -591,6 +591,24 @@ export function FlowList() {
         </Link>
       </div>
 
+      <section className="mb-5 rounded-lg border border-blue-100 bg-blue-50 p-4">
+        <h2 className="text-lg font-semibold text-gray-950">처음이면 여기서 시작</h2>
+        <p className="mt-1 text-sm leading-6 text-gray-700">
+          {filtered.length}개 전체를 훑기보다 목적과 도구를 먼저 고르면 빠릅니다.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Link className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-blue-700" href="/flows?tag=D-Day%20%EC%A4%80%EB%B9%84">
+            D-Day 일정부터 보기
+          </Link>
+          <Link className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-blue-700" href="/u/thankyou-bubu">
+            운동 제작자 채널 보기
+          </Link>
+          <Link className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-blue-700" href="/flows/new">
+            내 콘텐츠 변환하기
+          </Link>
+        </div>
+      </section>
+
       <section className="mb-6 rounded-lg border border-gray-200 bg-white p-4">
         <div className="mb-4 flex flex-wrap gap-2">
           {quickTags.map((item) => (
@@ -2067,7 +2085,6 @@ export function PublicFlow({ slug }: { slug: string }) {
     anchorDate: displayAnchor,
     weekdays: surfaceWeekdays,
   });
-
   const toggle = (id: string) => {
     setChecks((value) => {
       const ids = getToggleCheckIds(bundle, id, displayAnchor);
@@ -2150,7 +2167,6 @@ export function PublicFlow({ slug }: { slug: string }) {
     persist([...bundles, next]);
     window.location.href = `/flows/${next.flow.id}/edit`;
   };
-
   return (
     <main className="mx-auto max-w-5xl px-5 py-8 pb-28 md:pb-8">
       <header className="border-b border-gray-200 pb-6">
@@ -2169,6 +2185,16 @@ export function PublicFlow({ slug }: { slug: string }) {
         <div className="mt-4">
           <FlowBadges bundle={bundle} />
         </div>
+        {showSurfacePreview ? (
+          <ToolSurfacePreview
+            model={surfaceModel}
+            onExport={exportSurface}
+            onCopyToEditableDraft={copyToEditableDraft}
+            copyState={copyState}
+            downloadState={downloadState}
+            calendarState={calendarState}
+          />
+        ) : null}
         <div className="mt-5 rounded-lg border border-gray-200 bg-white p-4">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -2214,17 +2240,6 @@ export function PublicFlow({ slug }: { slug: string }) {
         </details>
       </header>
 
-      {showSurfacePreview ? (
-        <ToolSurfacePreview
-          model={surfaceModel}
-          onExport={exportSurface}
-          onCopyToEditableDraft={copyToEditableDraft}
-          copyState={copyState}
-          downloadState={downloadState}
-          calendarState={calendarState}
-        />
-      ) : null}
-
       {!showTodayExecution ? (
       <section className="my-6 rounded-xl border border-blue-100 bg-white p-4 shadow-sm">
         <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr_0.9fr]">
@@ -2250,6 +2265,7 @@ export function PublicFlow({ slug }: { slug: string }) {
               <ProgressBar done={done} total={executableCount} />
             </div>
           </div>
+          {!showSurfacePreview ? (
           <div className="rounded-lg border border-gray-200 bg-white p-4">
             <p className="text-sm font-semibold text-blue-700">{showTodayExecution ? '3. 내 Flow로 수정' : '3. 저장/공유'}</p>
             <p className="mt-1 text-sm text-gray-600">
@@ -2286,6 +2302,7 @@ export function PublicFlow({ slug }: { slug: string }) {
               {calendarState ? <span className="py-2 text-sm text-blue-700">{calendarState}</span> : null}
             </div>
           </div>
+          ) : null}
         </div>
       </section>
       ) : null}
@@ -2324,6 +2341,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         </>
       )}
 
+      {!showSurfacePreview ? (
       <div className={`fixed inset-x-0 bottom-0 z-20 border-t border-gray-200 bg-white/95 px-4 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur transition duration-200 md:hidden ${showMobileActions ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}>
         <div className="mx-auto max-w-5xl">
           <div className="mb-2 flex items-center justify-between text-sm">
@@ -2343,6 +2361,7 @@ export function PublicFlow({ slug }: { slug: string }) {
           </div>
         </div>
       </div>
+      ) : null}
     </main>
   );
 }

@@ -15,6 +15,8 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await page.goto('/flows');
 
   await expect(page.getByRole('heading', { name: '공개 Flow 탐색' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '처음이면 여기서 시작' })).toBeVisible();
+  await expect(page.getByText('511개 전체를 훑기보다 목적과 도구를 먼저 고르면 빠릅니다.')).toBeVisible();
   await expect(page.getByLabel('태그')).toBeVisible();
   await expect(page.getByLabel('카테고리')).toBeVisible();
   await expect(page.getByLabel('Flow 방식')).toBeVisible();
@@ -242,6 +244,35 @@ test('public D-Day flow detail uses the shared tool surface', async ({ page }) =
   await expect(surface).toContainText('단계표');
 });
 
+test('mobile public flow shows the tool surface before source metadata', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/moving-d30-basic');
+
+  const positions = await page.evaluate(() => {
+    const surface = document.querySelector('[data-testid="tool-surface-preview"]');
+    const sourceCard = Array.from(document.querySelectorAll('section,div')).find((element) =>
+      element.textContent?.includes('by FLOW 큐레이션팀'),
+    );
+
+    return {
+      surfaceTop: surface?.getBoundingClientRect().top ?? 9999,
+      sourceTop: sourceCard?.getBoundingClientRect().top ?? 9999,
+    };
+  });
+
+  expect(positions.surfaceTop).toBeLessThan(844);
+  expect(positions.surfaceTop).toBeLessThan(positions.sourceTop);
+});
+
+test('public D-Day flow uses the surface export actions without legacy duplicates', async ({ page }) => {
+  await page.goto('/f/moving-d30-basic');
+
+  const surface = page.getByTestId('tool-surface-preview');
+  await expect(surface.getByRole('button', { name: '엑셀 실행표 받기' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '체크리스트 복사하기' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '내 일정표 엑셀로 받기' })).toHaveCount(0);
+});
+
 test('daily check flow detail uses checklist surface', async ({ page }) => {
   await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
 
@@ -290,7 +321,7 @@ test('exact video copy opens an editable draft with the execution item preserved
   const toolPreviewHeading = page.getByRole('heading', { name: '내 도구 미리보기' });
   await expect(toolPreviewHeading).toBeVisible();
   await expect(toolPreviewHeading).not.toHaveClass(/sr-only/);
-  await expect(page.getByRole('heading', { name: '원문 고급 편집' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '전문가용 원문 편집' })).toBeVisible();
   await expect(page.locator('textarea').first()).not.toBeVisible();
   await expect(page.getByLabel('실행 내용')).toHaveValue(/운동|영상/);
   await expect(page.getByRole('button', { name: '내 Flow로 가져오기' })).toHaveCount(0);
@@ -416,7 +447,7 @@ test('raw advanced edits persist after save and reload', async ({ page }) => {
   await expect(page.getByRole('heading', { name: '내 도구 미리보기' })).toBeVisible();
   await expect(page.locator('textarea').first()).not.toBeVisible();
 
-  await page.getByRole('heading', { name: '원문 고급 편집' }).click();
+  await page.getByRole('heading', { name: '전문가용 원문 편집' }).click();
   const sourceEditor = page.locator('textarea').first();
   await expect(sourceEditor).toBeVisible();
   await expect(sourceEditor).toContainText('D-30');
@@ -426,17 +457,28 @@ test('raw advanced edits persist after save and reload', async ({ page }) => {
   await expect(page.getByText(/초안 저장됨|발행됨/)).toBeVisible();
 
   await page.reload();
-  await page.getByRole('heading', { name: '원문 고급 편집' }).click();
+  await page.getByRole('heading', { name: '전문가용 원문 편집' }).click();
   await expect(page.locator('textarea').first()).toHaveValue(/edited raw item D-1/);
 
   await page.getByRole('button', { name: '발행' }).click();
   await expect(page.getByText('발행됨')).toBeVisible();
 });
+
+test('copied editor keeps long item lists collapsed and marks raw editing as expert-only', async ({ page }) => {
+  await page.goto('/f/moving-d30-basic');
+  await page.getByRole('button', { name: '내 Flow로 가져오기' }).click();
+
+  await expect(page.locator('label').filter({ hasText: '실행 내용' })).toHaveCount(6);
+  await expect(page.getByRole('button', { name: '나머지 실행 항목 펼치기' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '전문가용 원문 편집' })).toBeVisible();
+  await expect(page.getByText('일반 사용자는 위 일정 설정과 실행 내용만 바꿔도 충분합니다.')).toBeVisible();
+});
+
 test('raw advanced edits update the published flow items', async ({ page }) => {
   await page.goto('/f/moving-d30-basic');
   await page.getByRole('button', { name: '내 Flow로 가져오기' }).click();
 
-  await page.getByRole('heading', { name: '원문 고급 편집' }).click();
+  await page.getByRole('heading', { name: '전문가용 원문 편집' }).click();
   await page.locator('textarea').first().fill('# raw advanced publish\n\n## D-1\n- edited raw publish item D-1');
 
   await page.getByRole('button', { name: '발행' }).click();
@@ -451,8 +493,8 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await expect(page.getByText('예시 날짜로 미리보기')).toBeVisible();
   await expect(page.getByText('1. 기준 날짜 선택')).toBeVisible();
   await expect(page.getByText('2. 바로 실행')).toBeVisible();
-  await expect(page.getByText('3. 저장/공유')).toBeVisible();
-  await expect(page.getByRole('button', { name: '내 일정표 엑셀로 받기' })).toBeVisible();
+  await expect(page.getByText('3. 저장/공유')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '내 일정표 엑셀로 받기' })).toHaveCount(0);
   await expect(page.getByText('by FLOW 큐레이션팀')).toBeVisible();
   await expect(page.getByText(/복사 [0-9,]+/).first()).toBeVisible();
   await page.getByRole('button', { name: '내 날짜 입력' }).click();
@@ -479,7 +521,7 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await expect(page.getByText('2 / 24').first()).toBeVisible();
 
   const downloadPromise = page.waitForEvent('download');
-  await page.getByRole('button', { name: '내 일정표 엑셀로 받기' }).click();
+  await page.getByRole('button', { name: '엑셀 실행표 받기' }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe('moving-d30-basic.xlsx');
 });
