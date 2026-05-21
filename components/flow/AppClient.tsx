@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { addDays, formatDate, getRangeEnd } from '@/lib/flow/date';
 import { inferPrimaryDestination } from '@/lib/flow/destination';
-import { buildCalendarIcs, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
+import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
 import { getCreatorChannelSummaries } from '@/lib/flow/creator-channel-preview';
 import { parseTextFlow, serializeTextFlow, timingLabel } from '@/lib/flow/parser';
 import {
@@ -185,16 +185,45 @@ function getStructureLabel(bundle: FlowBundle): string {
   return '체크리스트형';
 }
 
+function getAnchorInputLabel(bundle: FlowBundle): string {
+  if (bundle.flow.anchor_type === 'none') return '날짜 입력 없음';
+  if (bundle.flow.content_type === 'meal_plan') return '이유식 시작일';
+  if (bundle.flow.category.includes('건강/검진')) return '검진일';
+  if (bundle.flow.category.includes('여행')) return '출국일';
+  if (bundle.flow.category.includes('결혼')) return '예식일';
+  if (bundle.flow.category.includes('공부/시험') || bundle.flow.category.includes('시험') || bundle.flow.category.includes('자격증')) return '시험일';
+  if (bundle.flow.category.includes('자동차/관리')) return '관리 시작일';
+  if (bundle.flow.category.includes('이사')) return '이사일';
+  if (bundle.flow.category.includes('운동') || bundle.flow.category.includes('러닝')) return '운동 시작일';
+  return bundle.flow.anchor_type === 'end_date' ? '목표일' : '시작일';
+}
+
 function getAnchorLabel(bundle: FlowBundle): string {
-  if (bundle.flow.anchor_type === 'none') return '날짜 입력 없이 바로 체크';
-  if (bundle.flow.content_type === 'meal_plan') return '이유식 시작일 입력';
-  if (bundle.flow.category.includes('결혼')) return '예식일 입력';
-  if (bundle.flow.category.includes('공부/시험')) return '시험일 입력';
-  if (bundle.flow.category.includes('여행')) return '출국일 입력';
-  if (bundle.flow.category.includes('이사')) return '이사일 입력';
-  if (bundle.flow.category.includes('운동') || bundle.flow.category.includes('러닝')) return '운동 시작일 입력';
-  if (bundle.flow.anchor_type === 'end_date') return '종료일 입력';
-  return '시작일 입력';
+  if (bundle.flow.anchor_type === 'none') return '기준값 없음';
+  return `${getAnchorInputLabel(bundle)} 입력`;
+}
+
+function getSetupStepTitle(bundle: FlowBundle): string {
+  return bundle.flow.anchor_type === 'none' ? '1. 바로 확인' : '1. 기준 날짜 선택';
+}
+
+function getSetupStepDescription(bundle: FlowBundle): string {
+  if (bundle.flow.anchor_type === 'none') return '날짜 입력 없이 바로 확인합니다.';
+  return `입력할 날짜: ${getAnchorInputLabel(bundle)}`;
+}
+
+function getSetupStepHelp(bundle: FlowBundle): string {
+  if (bundle.flow.anchor_type === 'none') return '이 Flow는 날짜 입력이 필요 없는 체크리스트입니다.';
+  return `${getAnchorInputLabel(bundle)} 기준으로 날짜가 계산됩니다.`;
+}
+
+function hasDatedCalendarSchedule(bundle: FlowBundle): boolean {
+  if (bundle.mealSlots?.some((slot) => slot.day_offset !== undefined)) return true;
+  return bundle.items.some((item) => item.day_offset !== undefined);
+}
+
+function hasCalendarSchedule(bundle: FlowBundle): boolean {
+  return hasDatedCalendarSchedule(bundle) || isFitnessExactVideoFlow(bundle);
 }
 
 function getFlowResultText(bundle: FlowBundle): string {
@@ -624,6 +653,9 @@ function PlatformNav() {
         </Link>
         <Link className="rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-white" href="/my">
           내 Flow
+        </Link>
+        <Link className="rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-white" href="/flow-lab">
+          Flow Lab
         </Link>
         <Link className="rounded-md bg-[#2563EB] px-3 py-2 font-semibold text-white" href="/flows/new">
           만들기
@@ -1988,6 +2020,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const executableIds = getExecutableCheckIds(bundle, displayAnchor);
   const executableCount = executableIds.length;
   const done = executableIds.filter((id) => checks[id]).length;
+  const canExportCalendar = hasCalendarSchedule(bundle);
   const firstActionTitle = getFirstActionTitle(bundle);
   const showTodayExecution = isFitnessExactVideoFlow(bundle);
   const primaryDestination = inferPrimaryDestination(bundle);
@@ -2047,7 +2080,9 @@ export function PublicFlow({ slug }: { slug: string }) {
   };
   const downloadCalendar = () => {
     setCalendarState('생성 중');
-    const ics = buildCalendarIcs(bundle, displayAnchor, weekdaySelection);
+    const ics = hasDatedCalendarSchedule(bundle)
+      ? buildIcsCalendar(bundle, checks, displayAnchor)
+      : buildCalendarIcs(bundle, displayAnchor, weekdaySelection);
     const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -2152,14 +2187,9 @@ export function PublicFlow({ slug }: { slug: string }) {
       <section className="my-6 rounded-xl border border-blue-100 bg-white p-4 shadow-sm">
         <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr_0.9fr]">
           <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
-            <p className="text-sm font-semibold text-blue-700">
-              {bundle.flow.anchor_type === 'none' ? '1. 바로 체크 준비' : '1. 기준 날짜 선택'}
-            </p>
-            <p className="mt-1 text-sm text-gray-600">
-              {bundle.flow.anchor_type === 'none'
-                ? '날짜 입력 없이 첫 항목부터 바로 실행하면 됩니다.'
-                : '내 상황의 시작일 또는 종료일을 넣으면 날짜가 자동 계산됩니다.'}
-            </p>
+            <p className="text-sm font-semibold text-blue-700">{getSetupStepTitle(bundle)}</p>
+            <p className="mt-1 text-sm text-gray-600">{getSetupStepDescription(bundle)}</p>
+            <p className="mt-1 text-sm text-gray-500">{getSetupStepHelp(bundle)}</p>
             <div className="mt-4">
               <AnchorInput bundle={bundle} anchor={anchor} displayAnchor={displayAnchor} mode={anchorMode} onModeChange={setAnchorMode} onChange={setAnchor} weekdays={weekdaySelection} onWeekdaysChange={setWeekdaySelection} />
             </div>
@@ -2189,6 +2219,11 @@ export function PublicFlow({ slug }: { slug: string }) {
                   <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={downloadExcel}>
                     내 일정표 엑셀로 받기
                   </button>
+                  {canExportCalendar ? (
+                    <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={downloadCalendar}>
+                      캘린더 파일 받기
+                    </button>
+                  ) : null}
                 </>
               )}
               <button
@@ -2258,6 +2293,11 @@ export function PublicFlow({ slug }: { slug: string }) {
             <button className="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold" onClick={downloadExcel}>
               엑셀 받기
             </button>
+            {canExportCalendar ? (
+              <button className="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold" onClick={downloadCalendar}>
+                캘린더
+              </button>
+            ) : null}
             <button className="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold" onClick={copyToEditableDraft}>
               복사해 수정
             </button>
@@ -2288,27 +2328,10 @@ function AnchorInput({
   onWeekdaysChange: (value: string[]) => void;
 }) {
   if (bundle.flow.anchor_type === 'none') {
-    return <div className="rounded-md bg-gray-50 p-4 text-sm text-gray-600">날짜 입력 없이 바로 체크</div>;
+    return <div className="rounded-md bg-gray-50 p-4 text-sm text-gray-600">아래 항목을 하나씩 확인하고 완료한 것은 체크하세요.</div>;
   }
 
-  const label =
-    bundle.flow.content_type === 'meal_plan'
-      ? '이유식 시작일'
-      : bundle.flow.category.includes('여행')
-        ? '출국일'
-        : bundle.flow.category.includes('결혼')
-          ? '예식일'
-          : bundle.flow.category.includes('공부/시험')
-            ? '시험일'
-            : bundle.flow.category.includes('자동차/관리')
-              ? '관리 시작일'
-        : bundle.flow.category.includes('이사')
-          ? '이사일'
-          : bundle.flow.category.includes('운동')
-            ? '운동 시작일'
-            : bundle.flow.anchor_type === 'end_date'
-              ? '기준 종료일'
-              : '시작일';
+  const label = getAnchorInputLabel(bundle);
 
   return (
     <div className="space-y-4">
@@ -2329,7 +2352,7 @@ function AnchorInput({
           ))}
         </div>
         <p className="text-sm text-gray-600">
-          {getAnchorModeLabel(mode)} · 기준 날짜 {displayAnchor}
+          {getAnchorModeLabel(mode)} · {label} {displayAnchor}
         </p>
       </div>
       {mode === 'custom' ? (
@@ -2934,7 +2957,7 @@ function getSectionItemIds(bundle: FlowBundle, sectionId: string): string[] {
 
 function getNextEntries(bundle: FlowBundle, anchor: string, checks: Record<string, boolean>): ScheduleEntry[] {
   const entries = getScheduleEntries(bundle, anchor).filter((entry) => !isBaseEntryChecked(bundle, entry.id, anchor, checks));
-  if (!entries.length && bundle.flow.structure_type === 'checklist') {
+  if (!entries.length && (bundle.flow.structure_type === 'checklist' || bundle.flow.structure_type === 'routine')) {
     return bundle.items
       .filter((item) => !checks[item.id])
       .slice(0, 3)
@@ -2942,13 +2965,101 @@ function getNextEntries(bundle: FlowBundle, anchor: string, checks: Record<strin
         id: item.id,
         title: item.title,
         section: getSectionTitleForBundle(bundle, item.section_id),
-        timing: '',
+        timing: bundle.flow.structure_type === 'routine' ? item.repeat_rule ?? '이번 주 루틴' : '',
         startDate: '',
       }));
   }
   return entries
     .sort((a, b) => (a.startDate || '9999').localeCompare(b.startDate || '9999'))
     .slice(0, 3);
+}
+
+type ActionBadge = {
+  label: string;
+  className: string;
+};
+
+function hasAttentionRisk(risk?: RiskLevel) {
+  return risk === 'medium' || risk === 'medical_sensitive' || risk === 'financial_sensitive';
+}
+
+function getDateBoundCount(bundle: FlowBundle) {
+  if (bundle.flow.content_type === 'meal_plan') return bundle.mealSlots?.length ?? 0;
+  return bundle.items.filter((item) => item.day_offset !== undefined || Boolean(item.repeat_rule)).length;
+}
+
+function getAttentionCount(bundle: FlowBundle) {
+  if (bundle.flow.warning) return Math.max(1, bundle.items.length || bundle.recipes?.length || 1);
+  return bundle.items.filter((item) => {
+    const detail = getItemDetail(bundle, item.id);
+    return Boolean(detail?.caution) || hasAttentionRisk(item.risk_level);
+  }).length;
+}
+
+function getExecutionSummary(bundle: FlowBundle, anchor: string, checks: Record<string, boolean>, nextEntries: ScheduleEntry[]) {
+  const executableIds = getExecutableCheckIds(bundle, anchor);
+  const fallbackTotal = bundle.flow.content_type === 'meal_plan' ? (bundle.mealSlots ?? []).length : bundle.items.length;
+  const total = executableIds.length || fallbackTotal;
+  const done = executableIds.filter((id) => checks[id]).length;
+
+  return [
+    {
+      label: '다음',
+      value: nextEntries[0]?.timing || (nextEntries.length ? `${nextEntries.length}개` : '없음'),
+    },
+    {
+      label: '날짜 고정',
+      value: `${getDateBoundCount(bundle)}개`,
+    },
+    {
+      label: '확인·주의',
+      value: `${getAttentionCount(bundle)}개`,
+    },
+    {
+      label: '완료',
+      value: `${done} / ${total}`,
+    },
+  ];
+}
+
+function getActionBadges(bundle: FlowBundle, item: FlowItem, detail?: FlowItemDetail): ActionBadge[] {
+  const badges: ActionBadge[] = [];
+
+  if (bundle.flow.structure_type === 'routine' || item.repeat_rule) {
+    badges.push({ label: '루틴', className: 'border-red-100 bg-red-50 text-red-700' });
+  } else if (item.day_offset !== undefined) {
+    badges.push({ label: '날짜 고정', className: 'border-blue-100 bg-blue-50 text-blue-700' });
+  } else {
+    badges.push({ label: '할 일', className: 'border-gray-200 bg-gray-50 text-gray-700' });
+  }
+
+  if (detail?.completion_criteria) {
+    badges.push({ label: '완료 기준', className: 'border-emerald-100 bg-emerald-50 text-emerald-700' });
+  }
+
+  if (detail?.caution || hasAttentionRisk(item.risk_level)) {
+    badges.push({ label: '확인·주의', className: 'border-amber-100 bg-amber-50 text-amber-800' });
+  }
+
+  if (item.source_type === 'official') {
+    badges.push({ label: '공식 확인', className: 'border-teal-100 bg-teal-50 text-teal-700' });
+  }
+
+  return badges;
+}
+
+function ExecutionMetaBadges({ badges }: { badges: ActionBadge[] }) {
+  if (!badges.length) return null;
+
+  return (
+    <span className="mt-2 flex flex-wrap items-center gap-1.5 text-xs">
+      {badges.map((badge) => (
+        <span key={badge.label} className={`rounded-full border px-2 py-0.5 font-semibold ${badge.className}`}>
+          {badge.label}
+        </span>
+      ))}
+    </span>
+  );
 }
 
 function FlowOverview({
@@ -2963,13 +3074,25 @@ function FlowOverview({
   onToggle: (id: string) => void;
 }) {
   const nextEntries = getNextEntries(bundle, anchor, checks);
+  const summaryItems = getExecutionSummary(bundle, anchor, checks, nextEntries);
 
   return (
     <section className="mb-5 grid items-start gap-4 lg:grid-cols-[minmax(320px,0.75fr)_minmax(0,1.25fr)]">
       <div className="min-w-0 rounded-xl border border-blue-200 bg-blue-50 p-5 shadow-sm">
         <p className="text-sm font-semibold text-blue-700">다음 행동</p>
         <h2 className="mt-1 text-2xl font-semibold">지금 먼저 체크할 일</h2>
-        <p className="mt-1 text-sm text-blue-900/70">가까운 날짜 또는 첫 미완료 항목부터 보여줍니다.</p>
+        <p className="mt-1 text-sm text-blue-900/70">가까운 항목을 먼저 처리하고, 날짜 고정·주의 항목은 놓치지 않게 따로 확인하세요.</p>
+        <div className="mt-4 border-t border-blue-100 pt-3">
+          <p className="text-xs font-semibold text-blue-700">실행 우선순위</p>
+          <div className="mt-2 grid grid-cols-2 gap-3">
+            {summaryItems.map((item) => (
+              <div key={item.label} className="border-l border-blue-200 pl-3">
+                <p className="text-xs font-medium text-blue-900/60">{item.label}</p>
+                <p className="mt-0.5 text-sm font-semibold text-gray-950">{item.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
         <div className="mt-3 space-y-2">
           {nextEntries.length ? nextEntries.map((entry, index) => (
             <label key={entry.id} className={`block rounded-lg border bg-white p-3 ${index === 0 ? 'border-blue-300 ring-2 ring-blue-100' : 'border-blue-100'}`}>
@@ -3061,6 +3184,7 @@ function TimelineRenderer({
                             <span className="rounded-full bg-blue-50 px-2 py-1 font-mono font-semibold text-blue-700">{timingLabel(item.day_offset, item.duration_days)}</span>
                             {itemDate(anchor, item) ? <span className="rounded-full bg-gray-100 px-2 py-1 text-gray-600">{itemDate(anchor, item)}</span> : null}
                           </span>
+                          <ExecutionMetaBadges badges={getActionBadges(bundle, item, detail)} />
                           <span className="mt-2 block text-base font-semibold text-gray-950">{item.title}</span>
                         </span>
                       </label>
@@ -3388,6 +3512,7 @@ function RoutineRenderer({
   const rules = (bundle.repeatRules ?? []).join(', ') || '주 3회';
   const firstSection = bundle.sections[0];
   const firstItems = firstSection ? bundle.items.filter((item) => item.section_id === firstSection.id).slice(0, 3) : [];
+  const showSafetyNote = hasAttentionRisk(bundle.flow.risk_level) || Boolean(bundle.flow.warning);
   const isExactVideo = isFitnessExactVideoFlow(bundle);
   const weekdayLabel = getWeekdaySelectionLabel(bundle);
   const setupLabel = bundle.flow.slug.startsWith('real-fitvely-video-') ? '이번 주 적용 설정' : '이번 주 루틴 설정';
@@ -3398,11 +3523,11 @@ function RoutineRenderer({
       <section className="rounded-xl border border-red-100 bg-red-50/50 p-5">
         <p className="text-sm font-semibold text-red-700">{setupLabel}</p>
         <div className="mt-3 grid gap-3 md:grid-cols-3">
-          <div className="rounded-lg bg-white p-3">
+          <div className="border-l border-red-200 pl-3">
             <p className="text-xs font-semibold text-gray-500">시작일</p>
             <p className="mt-1 font-semibold text-gray-950">{anchor || '미입력'}</p>
           </div>
-          <div className="rounded-lg bg-white p-3">
+          <div className="border-l border-red-200 pl-3">
             <p className="text-xs font-semibold text-gray-500">{weekdayLabel}</p>
             <div className="mt-2 flex flex-wrap gap-1">
               {weekdays.length ? weekdays.map((day) => (
@@ -3410,10 +3535,22 @@ function RoutineRenderer({
               )) : <span className="text-sm text-gray-500">미선택</span>}
             </div>
           </div>
-          <div className="rounded-lg bg-white p-3">
+          <div className="border-l border-red-200 pl-3">
             <p className="text-xs font-semibold text-gray-500">반복 규칙</p>
             <p className="mt-1 font-semibold text-gray-950">{rules}</p>
           </div>
+        </div>
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+          <div className="border-l border-red-200 pl-3">
+            <p className="text-sm font-semibold text-gray-700">리셋 규칙</p>
+            <p className="mt-1 text-sm leading-6 text-gray-600">놓친 날은 부채로 쌓지 않고 다음 가능한 세션부터 다시 시작합니다.</p>
+          </div>
+          {showSafetyNote ? (
+            <div className="border-l border-amber-200 pl-3">
+              <p className="text-sm font-semibold text-gray-700">몸 상태 체크</p>
+              <p className="mt-1 text-sm leading-6 text-gray-600">{bundle.flow.warning ?? '통증·어지러움이 있으면 강도를 낮추거나 중단합니다.'}</p>
+            </div>
+          ) : null}
         </div>
         {firstItems.length ? (
           <div className="mt-4 rounded-lg bg-white p-3">
@@ -3440,6 +3577,7 @@ function RoutineRenderer({
                         <input className="mt-1" type="checkbox" checked={Boolean(checks[item.id])} onChange={() => onToggle(item.id)} />
                         <span className="min-w-0 flex-1">
                           {item.repeat_rule && !isExactVideo ? <span className="rounded-full bg-red-50 px-2 py-1 font-mono text-xs font-semibold text-red-700">{item.repeat_rule}</span> : null}
+                          <ExecutionMetaBadges badges={getActionBadges(bundle, item, detail)} />
                           <span className="mt-2 block text-base font-semibold text-gray-950">{item.title}</span>
                         </span>
                       </label>
@@ -3481,7 +3619,10 @@ function ChecklistRenderer({
                     <>
                       <label className="flex gap-3">
                         <input className="mt-1" type="checkbox" checked={Boolean(checks[item.id])} onChange={() => onToggle(item.id)} />
-                        <span className="text-base font-semibold text-gray-950">{item.title}</span>
+                        <span className="min-w-0 flex-1">
+                          <ExecutionMetaBadges badges={getActionBadges(bundle, item, detail)} />
+                          <span className="mt-2 block text-base font-semibold text-gray-950">{item.title}</span>
+                        </span>
                       </label>
                       <DetailPreview detail={detail} />
                       <InlineItemLinks detail={detail} />

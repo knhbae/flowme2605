@@ -2,7 +2,7 @@
 
 > **AI-agnostic root guide.** 이 문서는 Codex, Claude Code, Gemini CLI, Copilot CLI, Cursor, 또는 다른 AI 개발 도구가 공통으로 따라야 하는 운영 기준이다. 특정 벤더의 명령이나 파일명에 의존하지 않는다.
 >
-> **Project:** [README.md](./README.md) | **Status:** [docs/STATUS.md](./docs/STATUS.md) | **Roadmap:** [docs/ROADMAP.md](./docs/ROADMAP.md) | **History:** [docs/HISTORY.md](./docs/HISTORY.md) | **Harness:** [docs/harness/README.md](./docs/harness/README.md)
+> **Project:** [README.md](./README.md) | **Status:** [docs/STATUS.md](./docs/STATUS.md) | **Roadmap:** [docs/ROADMAP.md](./docs/ROADMAP.md) | **Ideas:** [docs/IDEAS.md](./docs/IDEAS.md) | **History:** [docs/HISTORY.md](./docs/HISTORY.md) | **Harness:** [docs/harness/README.md](./docs/harness/README.md)
 
 ## 0) Agent Harness Rules
 
@@ -16,12 +16,15 @@
 1. `agent.md`
 2. `docs/STATUS.md`
 3. `docs/ROADMAP.md`
-4. 변경 대상과 관련된 `design.md`, `docs/harness/*.md`, `docs/superpowers/*`, `old_reference/*`
-5. 실제 코드와 테스트
+4. `docs/IDEAS.md`
+5. UX, 일정, 투두, 루틴, 건강/운동 실행 흐름과 관련된 작업이면 `docs/REFERENCE.md`
+6. 변경 대상과 관련된 `design.md`, `docs/harness/*.md`, `docs/superpowers/*`, `old_reference/*`
+7. 실제 코드와 테스트
 
 ### Development Commands
 ```powershell
 npm install
+npm run docs:check
 npm test
 npm run build
 npm run test:e2e
@@ -31,9 +34,10 @@ npm run dev
 ### Service URLs
 - Local app: `http://localhost:3000`
 - Playwright app under test: `http://127.0.0.1:3104/flows`
-- Deployment: Vercel, see `vercel.json` and `demo/vercel.json`
+- Deployment: Vercel, see `vercel.json`
 
 ### Quality Gates
+- Documentation/config changes: run `npm run docs:check`.
 - Pure logic changes: run `npm test`.
 - App/runtime changes: run `npm test` and `npm run build`.
 - User-facing flow changes: also run `npm run test:e2e` or document why it could not run.
@@ -44,10 +48,18 @@ npm run dev
 ### Documentation Memory
 - `docs/STATUS.md`: current state and health.
 - `docs/ROADMAP.md`: planned versions and backlog index.
+- `docs/IDEAS.md`: useful ideas, deferred work, unresolved conversation context, and revisit triggers that are not yet committed roadmap items.
+- `docs/REFERENCE.md`: external UX/UI and productivity-method references for calendar, task, reminder, routine, health, and exercise execution flows.
 - `docs/HISTORY.md`: released changes only.
 - `docs/harness/`: AI-agnostic process, roles, and verification rules.
 - `docs/superpowers/`: detailed specs/plans produced by agent workflows.
 - `docs/flow-rules/`: product-quality principles, rubric, pattern playbooks, UX copy rules, and review gates for FLOW content and UI.
+
+### Idea Capture
+- 작업 중 좋은 아이디어가 나왔지만 이번 범위에 적용하지 않으면 `docs/IDEAS.md`에 기록한다.
+- 기록 형식은 날짜, 아이디어, 왜 지금 안 하는지, 다시 볼 조건, 출처 대화/작업 맥락을 포함한다.
+- 실행하기로 확정된 항목만 `docs/ROADMAP.md`로 승격한다.
+- 중요한 기술/제품 판단은 아이디어가 아니라 관련 spec, plan, 또는 `docs/STATUS.md`의 최근 변경/제약으로 옮긴다.
 
 ### Safety Rules
 - Never edit `.env`, credentials, API keys, or deployment secrets unless the user explicitly asks.

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { buildCalendarIcs, buildText, buildWorkbookSheets, buildXlsxBuffer } from './export';
+import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from './export';
 import { seedBundles } from './seed-flows';
 
 test('timeline text export includes calculated dates when anchor exists', () => {
@@ -129,6 +129,35 @@ test('xlsx export builds a valid workbook archive', async () => {
 
   assert.ok(bytes.byteLength > 1000);
   assert.equal(bytes.subarray(0, 2).toString('utf8'), 'PK');
+});
+
+test('ics export creates all-day calendar events from dated flow items', () => {
+  const moving = seedBundles.find((bundle) => bundle.flow.slug === 'moving-d30-basic');
+  assert.ok(moving);
+
+  const ics = buildIcsCalendar(moving, {}, '2026-07-15');
+
+  assert.match(ics, /^BEGIN:VCALENDAR/m);
+  assert.match(ics, /VERSION:2.0/);
+  assert.match(ics, /PRODID:-\/\/FLOW MVP\/\/KO/);
+  assert.match(ics, /BEGIN:VEVENT/);
+  assert.match(ics, /SUMMARY:이사 D-30 준비 Flow - 이사 방식 정하기/);
+  assert.match(ics, /DTSTART;VALUE=DATE:20260615/);
+  assert.match(ics, /DTEND;VALUE=DATE:20260616/);
+  assert.match(ics, /DESCRIPTION:/);
+  assert.match(ics, /END:VCALENDAR$/);
+});
+
+test('ics export expands multi-day meal slots into calendar ranges', () => {
+  const baby = seedBundles.find((bundle) => bundle.flow.slug === 'baby-food-menu-recipe');
+  assert.ok(baby);
+
+  const ics = buildIcsCalendar(baby, { 'meal-rice-0': true }, '2026-06-01');
+
+  assert.match(ics, /SUMMARY:초기 이유식 메뉴·레시피 Flow - 쌀미음/);
+  assert.match(ics, /DTSTART;VALUE=DATE:20260601/);
+  assert.match(ics, /DTEND;VALUE=DATE:20260604/);
+  assert.match(ics, /STATUS:CONFIRMED/);
 });
 
 test('exact video workbook stays lightweight for personal sheets', () => {

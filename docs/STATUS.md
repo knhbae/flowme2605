@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated:** 2026-05-20  
+**Last Updated:** 2026-05-21
 **Status:** v0.1.0 IN DEVELOPMENT  
 **Current Version:** v0.1.0  
 **Primary Focus:** Stage 0 / First Flag validation for FLOW execution behavior.
@@ -9,7 +9,8 @@
 
 | Area | Command | Current Expectation |
 |------|---------|---------------------|
-| Unit tests | `npm test` | Flow date/parser/seed/export tests pass |
+| Documentation harness | `npm run docs:check` | Required agent docs exist and local Markdown links resolve |
+| Unit tests | `npm test` | Flow date/parser/seed/export/content-lab tests pass |
 | Production build | `npm run build` | Next.js build succeeds |
 | E2E tests | `npm run test:e2e` | Playwright runs against `/flows` on port 3104 |
 | Local dev | `npm run dev` | Next.js serves on port 3000 |
@@ -26,8 +27,8 @@
 - Flow MVP implementation exists in the Next.js app.
 - Local unit tests and Playwright E2E tests are configured.
 - AI-agnostic harness documents were added from the Claude Harness guide principles without copying Claude-specific runtime assumptions.
+- Documentation harness now has a local `docs:check` command and an `AGENTS.md` auto-discovery entry point.
 
 ## Next Up
 
 v0.1.0 should stabilize the first public FLOW loop: open, anchor input, copy/export, check, and feedback.
-
