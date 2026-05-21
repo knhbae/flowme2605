@@ -429,15 +429,17 @@ test('source-backed flows expose primary destination for portable UX', () => {
   assert.equal(inferPrimaryDestination(qnet), 'hybrid');
 });
 
-test('fitness exact video flow titles describe the user action, not abstract criteria', () => {
+test('fitness exact video flow titles preserve the original content premise', () => {
   const exactVideos = seedBundles.filter((bundle) => bundle.flow.tags?.includes('exact-video'));
   const carb = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-carb-reason');
 
   assert.ok(carb);
-  assert.equal(carb.flow.title, 'FITVELY 다음 식사 탄수화물 적용 Flow');
+  assert.equal(carb.flow.title, 'FITVELY 탄수화물을 먹어야 하는 이유 Flow');
+  assert.match(carb.flow.source_title ?? '', /다이어트할 때 탄수화물을 꼭 먹어야 하는 이유/);
 
   for (const bundle of exactVideos) {
     assert.doesNotMatch(bundle.flow.title, /기준 Flow$/, bundle.flow.slug);
+    assert.doesNotMatch(bundle.flow.title, /^FITVELY 다음 식사/, bundle.flow.slug);
   }
 });
 
