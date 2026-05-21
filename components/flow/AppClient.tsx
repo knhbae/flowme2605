@@ -321,17 +321,19 @@ function FlowCard({
   bundle,
   variant = 'default',
   editable = false,
+  showSurfaceMeta = false,
   onCopy,
 }: {
   bundle: FlowBundle;
   variant?: 'default' | 'compact';
   editable?: boolean;
+  showSurfaceMeta?: boolean;
   onCopy?: (bundle: FlowBundle) => void;
 }) {
   const count = getFlowItemCount(bundle);
   const color = categoryColors[bundle.flow.category] ?? '#6B7280';
   const firstActionTitle = getFirstActionTitle(bundle);
-  const surfaceMeta = getCreatorCardSurfaceMeta(bundle);
+  const surfaceMeta = showSurfaceMeta ? getCreatorCardSurfaceMeta(bundle) : undefined;
 
   return (
     <article className="flex h-full flex-col justify-between rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
@@ -359,38 +361,40 @@ function FlowCard({
             </Link>
           </h2>
           <p className="mt-2 line-clamp-3 text-sm leading-6 text-gray-600">{getFlowResultText(bundle)}</p>
-          {firstActionTitle ? (
+          {firstActionTitle && !showSurfaceMeta ? (
             <p className="mt-2 text-sm text-gray-700">
               <span className="font-semibold text-gray-900">첫 행동:</span> {firstActionTitle}
             </p>
           ) : null}
-          <dl className="mt-3 grid gap-1 text-sm text-gray-700">
-            <div className="flex gap-1">
-              <dt className="font-semibold">출처:</dt>
-              {' '}
-              <dd>{surfaceMeta.sourceKind}</dd>
-            </div>
-            <div className="flex gap-1">
-              <dt className="font-semibold">할 일:</dt>
-              {' '}
-              <dd>{surfaceMeta.task}</dd>
-            </div>
-            <div className="flex gap-1">
-              <dt className="font-semibold">리듬:</dt>
-              {' '}
-              <dd>{surfaceMeta.rhythm}</dd>
-            </div>
-            <div className="flex gap-1">
-              <dt className="font-semibold">도구:</dt>
-              {' '}
-              <dd>{surfaceMeta.tool}</dd>
-            </div>
-            <div className="flex gap-1">
-              <dt className="font-semibold">첫 설정:</dt>
-              {' '}
-              <dd>{surfaceMeta.firstSetting}</dd>
-            </div>
-          </dl>
+          {surfaceMeta ? (
+            <dl className="mt-3 grid gap-1 text-sm text-gray-700">
+              <div className="flex gap-1">
+                <dt className="font-semibold">출처:</dt>
+                {' '}
+                <dd>{surfaceMeta.sourceKind}</dd>
+              </div>
+              <div className="flex gap-1">
+                <dt className="font-semibold">할 일:</dt>
+                {' '}
+                <dd>{surfaceMeta.task}</dd>
+              </div>
+              <div className="flex gap-1">
+                <dt className="font-semibold">리듬:</dt>
+                {' '}
+                <dd>{surfaceMeta.rhythm}</dd>
+              </div>
+              <div className="flex gap-1">
+                <dt className="font-semibold">도구:</dt>
+                {' '}
+                <dd>{surfaceMeta.tool}</dd>
+              </div>
+              <div className="flex gap-1">
+                <dt className="font-semibold">첫 설정:</dt>
+                {' '}
+                <dd>{surfaceMeta.firstSetting}</dd>
+              </div>
+            </dl>
+          ) : null}
           <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-gray-500">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-700">
               {getCreatorAvatar(bundle)}
@@ -1162,7 +1166,7 @@ export function CreatorProfile({ slug }: { slug: string }) {
           </div>
           <div className="mt-4 grid gap-4 md:grid-cols-3">
             {recommendedBundles.map((bundle) => (
-              <FlowCard key={`recommended-${bundle.flow.id}`} bundle={bundle} variant="compact" />
+              <FlowCard key={`recommended-${bundle.flow.id}`} bundle={bundle} variant="compact" showSurfaceMeta />
             ))}
           </div>
         </section>
@@ -1247,7 +1251,7 @@ export function CreatorProfile({ slug }: { slug: string }) {
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {visibleCreatorBundles.map((bundle) => (
-            <FlowCard key={bundle.flow.id} bundle={bundle} />
+            <FlowCard key={bundle.flow.id} bundle={bundle} showSurfaceMeta />
           ))}
         </div>
       </section>

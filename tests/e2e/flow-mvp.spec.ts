@@ -127,6 +127,8 @@ test('preview creator channel supports browsing 20+ flowified entries', async ({
 test('creator channel cards show source task rhythm and tool', async ({ page }) => {
   await page.goto('/u/thankyou-bubu');
 
+  const library = page.locator('section').filter({ has: page.getByRole('heading', { name: '목적별 Flow 라이브러리' }) });
+
   await expect(page.getByRole('heading', { name: '목적별 Flow 라이브러리' })).toBeVisible();
   await expect(page.getByText('정확한 출처').first()).toBeVisible();
   await expect(page.getByText('도구: 캘린더').first()).toBeVisible();
@@ -134,13 +136,22 @@ test('creator channel cards show source task rhythm and tool', async ({ page }) 
   await expect(page.getByText('첫 설정: 시작일').first()).toBeVisible();
   await expect(page.getByRole('button', { name: '캘린더형' })).toBeVisible();
   await expect(page.getByRole('button', { name: '체크표형' })).toBeVisible();
+  await expect(page.getByText('첫 행동:')).toHaveCount(0);
+
+  await page.getByRole('button', { name: '체크표형' }).click();
+  await expect(library.locator('a[href="/f/real-thankyou-bubu-video-full-body-no-jump"]')).toHaveCount(0);
+  await expect(library.getByRole('link', { name: /운동\/홈트 초보자 시작 체크/ })).toBeVisible();
+
+  await page.goto('/flows');
+  await expect(page.getByText('도구: 캘린더')).toHaveCount(0);
+  await expect(page.getByText('첫 행동:').first()).toBeVisible();
 });
 
 test('creator channel can filter real source-backed flows', async ({ page }) => {
   await page.goto('/u/samsung-service');
 
   await expect(page.getByText('출처 확인').first()).toBeVisible();
-  await expect(page.getByText('첫 행동:').first()).toBeVisible();
+  await expect(page.getByText('할 일:').first()).toBeVisible();
   await page.getByRole('button', { name: '출처 확인' }).click();
 
   await expect(page.locator('a[href="/f/real-samsung-aircon-seasonal-care"]').first()).toBeVisible();
