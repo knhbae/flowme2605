@@ -1889,6 +1889,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const executableIds = getExecutableCheckIds(bundle, displayAnchor);
   const executableCount = executableIds.length;
   const done = executableIds.filter((id) => checks[id]).length;
+  const firstActionTitle = getFirstActionTitle(bundle);
 
   const toggle = (id: string) => {
     setChecks((value) => {
@@ -1960,6 +1961,11 @@ export function PublicFlow({ slug }: { slug: string }) {
         </div>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight">{bundle.flow.title}</h1>
         {bundle.flow.description ? <p className="mt-3 max-w-3xl text-gray-600">{bundle.flow.description}</p> : null}
+        {firstActionTitle ? (
+          <p className="mt-3 text-sm text-gray-700">
+            <span className="font-semibold text-gray-950">첫 행동:</span> {firstActionTitle}
+          </p>
+        ) : null}
         <div className="mt-4">
           <FlowBadges bundle={bundle} />
         </div>
@@ -1983,7 +1989,7 @@ export function PublicFlow({ slug }: { slug: string }) {
             {bundle.flow.warning}
           </div>
         ) : null}
-        <details className="mt-4 rounded-lg border border-gray-200 bg-white p-3 text-sm">
+        <details className="mt-4 rounded-lg border border-gray-200 bg-white p-3 text-sm" open>
           <summary className="cursor-pointer font-semibold text-gray-700">출처와 주의 정보</summary>
           <div className="mt-3 space-y-3">
             <FlowBadges bundle={bundle} />
