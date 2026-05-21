@@ -127,6 +127,18 @@ test('creator channel can filter real source-backed flows', async ({ page }) => 
   await expect(page.locator('a[href^="/f/channel-samsung-service-"]')).toHaveCount(0);
 });
 
+test('fitness creator profile highlights exact video flows before samples', async ({ page }) => {
+  await page.goto('/u/thankyou-bubu');
+
+  await expect(page.getByText('실제 콘텐츠로 바로 시작')).toBeVisible();
+  await expect(page.locator('a[href="/f/real-thankyou-bubu-video-full-body-no-jump"]').first()).toBeVisible();
+
+  await page.locator('button').first().click();
+
+  await expect(page.locator('a[href="/f/real-thankyou-bubu-video-full-body-no-jump"]').first()).toBeVisible();
+  await expect(page.locator('a[href^="/f/channel-thankyou-bubu-"]')).toHaveCount(0);
+});
+
 test('real source public flow exposes source QA metadata and first action', async ({ page }) => {
   await page.goto('/f/real-samsung-aircon-seasonal-care');
 

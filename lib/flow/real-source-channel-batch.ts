@@ -151,7 +151,371 @@ function buildBundle(spec: RealSourceSpec): FlowBundle {
   };
 }
 
+type CreatorVideoSpec = {
+  channelSlug: 'thankyou-bubu' | 'fitvely';
+  slugPrefix: string;
+  slug: string;
+  title: string;
+  flowTitle: string;
+  videoId: string;
+  category: string;
+  focus: string;
+  mode: 'workout' | 'diet';
+  tags: string[];
+};
+
+const thankyouBubuExactVideos: CreatorVideoSpec[] = [
+  {
+    channelSlug: 'thankyou-bubu',
+    slugPrefix: 'real-thankyou-bubu-video',
+    slug: 'full-body-no-jump',
+    title: '전신 다이어트 최고의 운동',
+    flowTitle: 'ThankyouBUBU 전신 다이어트 실천 Flow',
+    videoId: 'pcyrlkHXAdE',
+    category: '운동/홈트',
+    focus: '점프와 눕는 동작을 줄인 전신 루틴',
+    mode: 'workout',
+    tags: ['운동', '홈트', '전신', 'exact-video'],
+  },
+  {
+    channelSlug: 'thankyou-bubu',
+    slugPrefix: 'real-thankyou-bubu-video',
+    slug: 'daily-stretch-9min',
+    title: '하루 9분 전신 스트레칭 BEST',
+    flowTitle: 'ThankyouBUBU 9분 스트레칭 Flow',
+    videoId: 'aob4Lh1Vebk',
+    category: '운동/홈트',
+    focus: '운동 전후 전신 스트레칭',
+    mode: 'workout',
+    tags: ['운동', '스트레칭', '회복', 'exact-video'],
+  },
+  {
+    channelSlug: 'thankyou-bubu',
+    slugPrefix: 'real-thankyou-bubu-video',
+    slug: 'belly-side-all-in-one',
+    title: 'NO관절부담 뱃살 옆구리살 빼는 운동',
+    flowTitle: 'ThankyouBUBU 뱃살 옆구리 루틴 Flow',
+    videoId: 'toAUho9bEw0',
+    category: '운동/홈트',
+    focus: '관절 부담을 줄인 복부와 옆구리 루틴',
+    mode: 'workout',
+    tags: ['운동', '복부', '관절부담낮춤', 'exact-video'],
+  },
+  {
+    channelSlug: 'thankyou-bubu',
+    slugPrefix: 'real-thankyou-bubu-video',
+    slug: 'no-knee-cardio-strength',
+    title: 'NO무릎부담 전신유산소 근력 다이어트',
+    flowTitle: 'ThankyouBUBU 무릎부담 낮춘 전신 Flow',
+    videoId: 'hesjApxDlj0',
+    category: '운동/홈트',
+    focus: '무릎 부담을 낮춘 전신 유산소와 근력',
+    mode: 'workout',
+    tags: ['운동', '전신유산소', '무릎부담낮춤', 'exact-video'],
+  },
+  {
+    channelSlug: 'thankyou-bubu',
+    slugPrefix: 'real-thankyou-bubu-video',
+    slug: 'arm-back-shoulder',
+    title: '팔뚝살 5cm 줄어드는 다이어트운동',
+    flowTitle: 'ThankyouBUBU 팔뚝 등살 루틴 Flow',
+    videoId: '73IrtWDDby0',
+    category: '운동/홈트',
+    focus: '팔뚝, 등, 어깨 중심 상체 루틴',
+    mode: 'workout',
+    tags: ['운동', '상체', '팔뚝', 'exact-video'],
+  },
+  {
+    channelSlug: 'thankyou-bubu',
+    slugPrefix: 'real-thankyou-bubu-video',
+    slug: 'waist-8cm',
+    title: '허리둘레 8cm 줄어드는 운동',
+    flowTitle: 'ThankyouBUBU 허리둘레 집중 Flow',
+    videoId: 'k3MznPQvUEk',
+    category: '운동/홈트',
+    focus: '허리와 옆구리 중심 코어 루틴',
+    mode: 'workout',
+    tags: ['운동', '허리', '코어', 'exact-video'],
+  },
+  {
+    channelSlug: 'thankyou-bubu',
+    slugPrefix: 'real-thankyou-bubu-video',
+    slug: '8min-cardio',
+    title: '8분 완벽한 전신유산소 다이어트',
+    flowTitle: 'ThankyouBUBU 8분 전신유산소 Flow',
+    videoId: 'O87gkL1cKSc',
+    category: '운동/홈트',
+    focus: '짧은 시간 전신 유산소 루틴',
+    mode: 'workout',
+    tags: ['운동', '8분', '전신유산소', 'exact-video'],
+  },
+  {
+    channelSlug: 'thankyou-bubu',
+    slugPrefix: 'real-thankyou-bubu-video',
+    slug: '3min-arm',
+    title: '3분 최고의 팔뚝살빼는운동',
+    flowTitle: 'ThankyouBUBU 3분 팔뚝 Flow',
+    videoId: 'Kl9Dmx86Z0Q',
+    category: '운동/홈트',
+    focus: '3분 팔뚝 집중 루틴',
+    mode: 'workout',
+    tags: ['운동', '3분', '팔뚝', 'exact-video'],
+  },
+  {
+    channelSlug: 'thankyou-bubu',
+    slugPrefix: 'real-thankyou-bubu-video',
+    slug: '3min-abs',
+    title: '3분 최고의 복근운동',
+    flowTitle: 'ThankyouBUBU 3분 복근 Flow',
+    videoId: '6IUL8-nGetA',
+    category: '운동/홈트',
+    focus: '3분 복근 집중 루틴',
+    mode: 'workout',
+    tags: ['운동', '3분', '복근', 'exact-video'],
+  },
+  {
+    channelSlug: 'thankyou-bubu',
+    slugPrefix: 'real-thankyou-bubu-video',
+    slug: 'lower-belly-8min',
+    title: '8분 아랫뱃살 빼는 최고의 운동',
+    flowTitle: 'ThankyouBUBU 8분 아랫뱃살 Flow',
+    videoId: '9xxCFu21CLM',
+    category: '운동/홈트',
+    focus: '아랫배 중심 복부 루틴',
+    mode: 'workout',
+    tags: ['운동', '복부', '8분', 'exact-video'],
+  },
+];
+
+const fitvelyExactVideos: CreatorVideoSpec[] = [
+  {
+    channelSlug: 'fitvely',
+    slugPrefix: 'real-fitvely-video',
+    slug: 'body-fat-6kg-method',
+    title: '핏블리가 체지방 6kg을 감량한 비법',
+    flowTitle: 'FITVELY 체지방 감량 기준 Flow',
+    videoId: 'EQcoKqDO8Ds',
+    category: '다이어트/기록',
+    focus: '체지방 감량 원칙을 이번 주 기준으로 바꾸기',
+    mode: 'diet',
+    tags: ['다이어트', '체지방', '기록', 'exact-video'],
+  },
+  {
+    channelSlug: 'fitvely',
+    slugPrefix: 'real-fitvely-video',
+    slug: 'carb-reason',
+    title: '다이어트할 때 탄수화물을 꼭 먹어야 하는 이유',
+    flowTitle: 'FITVELY 탄수화물 기준 Flow',
+    videoId: '_h3u30M9ECc',
+    category: '다이어트/기록',
+    focus: '탄수화물 제한보다 섭취 기준을 세우기',
+    mode: 'diet',
+    tags: ['다이어트', '탄수화물', '식단', 'exact-video'],
+  },
+  {
+    channelSlug: 'fitvely',
+    slugPrefix: 'real-fitvely-video',
+    slug: 'three-week-check',
+    title: '3주만에 -13kg 감량한 여자의 팩트폭행',
+    flowTitle: 'FITVELY 3주 감량 점검 Flow',
+    videoId: 'nfdIpPXfIc8',
+    category: '다이어트/기록',
+    focus: '단기 감량 사례를 현실적인 점검표로 바꾸기',
+    mode: 'diet',
+    tags: ['다이어트', '점검', '습관', 'exact-video'],
+  },
+  {
+    channelSlug: 'fitvely',
+    slugPrefix: 'real-fitvely-video',
+    slug: 'post-workout-nutrition',
+    title: '운동직후 섭취가 중요한 것',
+    flowTitle: 'FITVELY 운동직후 섭취 Flow',
+    videoId: 'J8YmqzhPS2Q',
+    category: '다이어트/기록',
+    focus: '운동 후 영양 섭취 기준 만들기',
+    mode: 'diet',
+    tags: ['운동', '영양', '기록', 'exact-video'],
+  },
+  {
+    channelSlug: 'fitvely',
+    slugPrefix: 'real-fitvely-video',
+    slug: 'carb-amount-shorts',
+    title: '탄수화물 얼마나 섭취해야 할까',
+    flowTitle: 'FITVELY 탄수화물 양 조정 Flow',
+    videoId: 't630vnDGIWw',
+    category: '다이어트/기록',
+    focus: '탄수화물 섭취량을 기록 기반으로 조정하기',
+    mode: 'diet',
+    tags: ['다이어트', '탄수화물', 'shorts', 'exact-video'],
+  },
+  {
+    channelSlug: 'fitvely',
+    slugPrefix: 'real-fitvely-video',
+    slug: 'after-work-nutrition',
+    title: '퇴근 후 운동하는 사람을 위한 영양 섭취 방법',
+    flowTitle: 'FITVELY 퇴근후 운동 영양 Flow',
+    videoId: 'zipquv7TErU',
+    category: '다이어트/기록',
+    focus: '퇴근 후 운동 전후 식사 타이밍 만들기',
+    mode: 'diet',
+    tags: ['운동', '식단', '퇴근후운동', 'exact-video'],
+  },
+  {
+    channelSlug: 'fitvely',
+    slugPrefix: 'real-fitvely-video',
+    slug: 'weight-class-method',
+    title: '체중 별 다이어트 방법 정리',
+    flowTitle: 'FITVELY 체중별 다이어트 Flow',
+    videoId: 'qADmhOJemTs',
+    category: '다이어트/기록',
+    focus: '현재 체중 구간에 맞는 실행 기준 고르기',
+    mode: 'diet',
+    tags: ['다이어트', '체중구간', '기준', 'exact-video'],
+  },
+  {
+    channelSlug: 'fitvely',
+    slugPrefix: 'real-fitvely-video',
+    slug: 'bulk-up-method',
+    title: '핏블리가 경험하고 알려주는 벌크업 운동 방법',
+    flowTitle: 'FITVELY 벌크업 기준 Flow',
+    videoId: 'JurCSqpjl5I',
+    category: '운동/홈트',
+    focus: '벌크업 운동 기준을 주간 루틴으로 바꾸기',
+    mode: 'diet',
+    tags: ['운동', '벌크업', '루틴', 'exact-video'],
+  },
+  {
+    channelSlug: 'fitvely',
+    slugPrefix: 'real-fitvely-video',
+    slug: 'workout-order',
+    title: '다이어트에 가장 중요한 운동 순서',
+    flowTitle: 'FITVELY 운동 순서 결정 Flow',
+    videoId: 'oPBA8E_WtXY',
+    category: '운동/홈트',
+    focus: '유산소와 무산소 순서를 내 루틴에 적용하기',
+    mode: 'diet',
+    tags: ['운동', '운동순서', '다이어트', 'exact-video'],
+  },
+  {
+    channelSlug: 'fitvely',
+    slugPrefix: 'real-fitvely-video',
+    slug: 'workout-split-science',
+    title: '과학적으로 운동루틴 짜는법',
+    flowTitle: 'FITVELY 운동루틴 설계 Flow',
+    videoId: '-GJMwcES45A',
+    category: '운동/홈트',
+    focus: '분할, 세트수, 휴식을 주간 운동표로 정리하기',
+    mode: 'diet',
+    tags: ['운동', '루틴설계', '분할법', 'exact-video'],
+  },
+];
+
+function makeCreatorVideoSpec(video: CreatorVideoSpec): RealSourceSpec {
+  const sourceUrl = `https://www.youtube.com/watch?v=${video.videoId}`;
+  const sourceTitle = `${video.title} - ${video.channelSlug === 'thankyou-bubu' ? 'ThankyouBUBU' : '핏블리 FITVELY'}`;
+  const common = {
+    channelSlug: video.channelSlug,
+    slug: `${video.slugPrefix}-${video.slug}`,
+    title: video.flowTitle,
+    category: video.category,
+    structure_type: 'routine' as StructureType,
+    anchor_type: 'start_date' as AnchorType,
+    source_title: sourceTitle,
+    source_url: sourceUrl,
+    source_type: 'creator_experience' as SourceType,
+    source_precision: 'exact' as SourcePrecision,
+    risk_level: 'medical_sensitive' as RiskLevel,
+    warning:
+      '운동과 체중 관리 콘텐츠는 개인 건강 상태에 따라 맞지 않을 수 있습니다. 통증, 어지러움, 기존 질환이 있으면 중단하고 전문가 상담을 우선하세요.',
+    tags: video.tags,
+  };
+
+  if (video.mode === 'workout') {
+    return {
+      ...common,
+      conversion_note: `영상 "${video.title}"를 오늘 실행할 운동 세션, 강도 조절, 완료 기록 루틴으로 전환했습니다.`,
+      sections: ['운동 전 준비', '운동 후 기록'],
+      actions: [
+        {
+          title: '오늘 컨디션과 관절 부담 체크',
+          why: `${video.focus}을 따라 하기 전에 통증이나 피로도를 확인해야 중도 포기와 부상 위험을 줄일 수 있습니다.`,
+          how: '무릎, 허리, 어깨, 손목 상태를 1분 동안 확인하고 불편한 부위가 있으면 낮은 강도나 스트레칭 Flow로 바꿉니다.',
+          completion_criteria: '오늘 가능한 강도와 주의할 관절 부위를 한 줄로 기록했습니다.',
+        },
+        {
+          title: '운동 공간과 영상 재생 준비',
+          why: '홈트는 시작 직전의 준비 마찰이 크면 실행률이 떨어지므로 재생, 매트, 물, 수건을 먼저 고정해야 합니다.',
+          how: '영상 링크를 열고 매트 한 장 크기의 공간을 비운 뒤 물과 수건을 손 닿는 위치에 둡니다.',
+          completion_criteria: '영상이 재생 가능한 상태이고 운동 공간에 방해물이 없습니다.',
+        },
+        {
+          title: `${video.focus} 끝까지 따라가기`,
+          why: 'FLOW의 핵심은 영상을 저장하는 것이 아니라 실제 세션을 끝까지 수행한 기록을 남기는 것입니다.',
+          how: '영상의 동작 순서를 그대로 따르되 호흡이 무너지거나 자세가 흔들리면 반복 수를 줄이고 멈추지 않는 쪽을 선택합니다.',
+          completion_criteria: '전체 영상 또는 조정한 버전을 끝까지 수행했습니다.',
+        },
+        {
+          title: '강도 조절 지점 표시',
+          why: '다음 반복 때 같은 실패 지점에서 멈추지 않으려면 힘들었던 동작과 쉬웠던 동작을 구분해야 합니다.',
+          how: '가장 힘들었던 동작 1개, 다음에 줄일 동작 1개, 유지할 동작 1개를 운동 직후 적습니다.',
+          completion_criteria: '다음 반복을 위한 유지/감소/주의 동작을 각각 1개씩 남겼습니다.',
+        },
+        {
+          title: '다음 반복 날짜 예약',
+          why: '운동 앱의 좋은 루틴 UX처럼 완료 직후 다음 세션이 잡혀야 단발성 시청에서 반복 습관으로 넘어갑니다.',
+          how: '48시간 이내 또는 이번 주 안의 다음 가능 시간을 정하고 같은 영상 또는 낮은 강도 영상을 연결합니다.',
+          completion_criteria: '다음 실행 날짜와 예상 강도를 기록했습니다.',
+        },
+      ],
+    };
+  }
+
+  return {
+    ...common,
+    conversion_note: `영상 "${video.title}"를 식단/운동 앱처럼 기준 선택, 오늘 적용, 7일 리뷰 루틴으로 전환했습니다.`,
+    sections: ['기준 선택', '기록과 조정'],
+    actions: [
+      {
+        title: '영상에서 오늘 적용할 기준 하나 고르기',
+        why: `${video.focus}는 정보로 끝나기 쉬워서 한 번에 하나의 행동 기준으로 줄여야 실제 생활에 반영됩니다.`,
+        how: '영상을 보면서 식사량, 탄수화물, 운동 순서, 운동 후 섭취 중 오늘 바꿀 기준 하나만 선택합니다.',
+        completion_criteria: '이번 주에 적용할 기준 1개를 문장으로 적었습니다.',
+      },
+      {
+        title: '현재 식단과 운동 기록 점검',
+        why: '다이어트 앱들이 먼저 기록을 요구하는 이유는 현재 패턴 없이 조언을 적용하면 과한 제한으로 흐르기 쉽기 때문입니다.',
+        how: '최근 2일의 식사 시간, 운동 여부, 수면 시간을 적고 선택한 기준과 충돌하는 지점을 찾습니다.',
+        completion_criteria: '현재 기록에서 바꿀 수 있는 지점 1개를 찾았습니다.',
+      },
+      {
+        title: '오늘 한 끼 또는 운동 순서에 반영',
+        why: '거대한 목표보다 오늘 한 끼나 오늘 운동 순서에 반영해야 사용자가 즉시 도움을 체감할 수 있습니다.',
+        how: '선택한 기준을 다음 식사 한 번, 운동 전후 섭취, 유산소/무산소 순서 중 하나에만 적용합니다.',
+        completion_criteria: '오늘 적용한 식사 또는 운동 행동을 체크했습니다.',
+      },
+      {
+        title: '무리한 제한 여부 확인',
+        why: '체중 관리 콘텐츠는 실행성이 높을수록 과도한 제한 위험도 같이 커져 안전 점검이 Flow 안에 있어야 합니다.',
+        how: '배고픔, 어지러움, 폭식 충동, 운동 중 통증이 있었는지 확인하고 있으면 강도를 낮추거나 전문가 상담 메모를 남깁니다.',
+        completion_criteria: '무리한 제한 신호가 있었는지 예/아니오로 기록했습니다.',
+      },
+      {
+        title: '7일 후 리뷰 항목 예약',
+        why: '다이어트 앱 UX처럼 단기 체감보다 7일 단위의 반복 기록을 봐야 기준을 유지할지 바꿀지 판단할 수 있습니다.',
+        how: '7일 뒤 확인할 항목을 식단 기록률, 운동 횟수, 컨디션 중 2개로 정하고 알림 날짜를 잡습니다.',
+        completion_criteria: '7일 리뷰 날짜와 확인 항목 2개를 정했습니다.',
+      },
+    ],
+  };
+}
+
+const fitnessCreatorDeepDiveSpecs: RealSourceSpec[] = [
+  ...thankyouBubuExactVideos.map(makeCreatorVideoSpec),
+  ...fitvelyExactVideos.map(makeCreatorVideoSpec),
+];
+
 const realSourceSpecs: RealSourceSpec[] = [
+  ...fitnessCreatorDeepDiveSpecs,
   {
     channelSlug: 'samsung-service',
     slug: 'real-samsung-aircon-seasonal-care',

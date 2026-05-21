@@ -656,6 +656,13 @@ function getFirstActionTitle(bundle: FlowBundle): string | undefined {
   return bundle.items[0]?.title;
 }
 
+function getCreatorBundlePriority(bundle: FlowBundle): number {
+  if (bundle.flow.source_status === 'real' && bundle.flow.source_precision === 'exact') return 0;
+  if (bundle.flow.source_status === 'real') return 1;
+  if (bundle.flow.source_status === 'needs_review') return 2;
+  return 3;
+}
+
 export function CreatorDirectory() {
   const { bundles } = useBundles();
   const summaries = getCreatorChannelSummaries(bundles);
@@ -962,7 +969,7 @@ export function CreatorProfile({ slug }: { slug: string }) {
     const creator = getCreatorUser(bundle);
     if (user) return creator?.id === user.id;
     return normalizeCreatorSlug(creator?.slug ?? creatorSlug(getCreatorName(bundle))) === normalized;
-  });
+  }).sort((a, b) => getCreatorBundlePriority(a) - getCreatorBundlePriority(b));
   const [categoryFilter, setCategoryFilter] = useState('전체');
   const [sourceFilter, setSourceFilter] = useState<'all' | 'real' | 'preview'>('all');
   const [libraryQuery, setLibraryQuery] = useState('');
@@ -994,6 +1001,10 @@ export function CreatorProfile({ slug }: { slug: string }) {
         .toLowerCase();
       return searchable.includes(normalizedLibraryQuery);
     });
+  const exactRealBundles = creatorBundles.filter(
+    (bundle) => bundle.flow.source_status === 'real' && bundle.flow.source_precision === 'exact',
+  );
+  const recommendedBundles = exactRealBundles.slice(0, 3);
 
   if (!first && !profile) {
     return (
@@ -1056,6 +1067,32 @@ export function CreatorProfile({ slug }: { slug: string }) {
           </section>
         ) : null}
       </header>
+
+      {recommendedBundles.length ? (
+        <section className="mt-8 border-y border-gray-200 bg-gray-50 py-5">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-emerald-700">Exact Source</p>
+              <h2 className="mt-1 text-2xl font-semibold">실제 콘텐츠로 바로 시작</h2>
+              <p className="mt-1 text-sm leading-6 text-gray-600">
+                운동/다이어트 앱처럼 출처가 분명한 콘텐츠를 먼저 고르고, 오늘 실행한 기록과 다음 반복 날짜까지 남기게 구성했습니다.
+              </p>
+            </div>
+            <button
+              className="rounded-md border border-emerald-300 bg-white px-3 py-2 text-sm font-semibold text-emerald-700"
+              type="button"
+              onClick={() => setSourceFilter('real')}
+            >
+              실제 Flow만 보기
+            </button>
+          </div>
+          <div className="mt-4 grid gap-4 md:grid-cols-3">
+            {recommendedBundles.map((bundle) => (
+              <FlowCard key={`recommended-${bundle.flow.id}`} bundle={bundle} variant="compact" />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="mt-8">
         <div className="mb-4 flex items-end justify-between gap-4">

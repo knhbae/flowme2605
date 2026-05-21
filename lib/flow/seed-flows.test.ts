@@ -349,6 +349,39 @@ test('real source-backed flows include precision and tailored executable details
   }
 });
 
+test('fitness creator deep dive converts exact videos into executable flows', () => {
+  const expected = [
+    { creator: 'ThankyouBUBU', slugPrefix: 'real-thankyou-bubu-video-', minimum: 10 },
+    { creator: 'FITVELY', slugPrefix: 'real-fitvely-video-', minimum: 10 },
+  ];
+
+  for (const { creator, slugPrefix, minimum } of expected) {
+    const exactVideoFlows = seedBundles.filter(
+      (bundle) =>
+        bundle.flow.source_status === 'real' &&
+        bundle.flow.source_precision === 'exact' &&
+        bundle.flow.slug.startsWith(slugPrefix),
+    );
+
+    assert.ok(exactVideoFlows.length >= minimum, `${creator} needs ${minimum}+ exact video flows`);
+
+    for (const bundle of exactVideoFlows) {
+      assert.match(bundle.flow.source_url ?? '', /^https:\/\/www\.youtube\.com\/watch\?v=/, bundle.flow.slug);
+      assert.equal(bundle.items.length, 5, bundle.flow.slug);
+      assert.equal(bundle.itemDetails?.length, 5, bundle.flow.slug);
+      assert.ok(bundle.items.every((item) => item.repeat_rule === 'weekly'), bundle.flow.slug);
+      assert.ok(bundle.items.every((item) => item.source_type === 'creator_experience'), bundle.flow.slug);
+      assert.ok(
+        bundle.itemDetails?.every((detail) =>
+          detail.completion_criteria && detail.links?.some((link) => link.type === 'creator'),
+        ),
+        bundle.flow.slug,
+      );
+      assert.ok(bundle.flow.tags?.includes('exact-video'), bundle.flow.slug);
+    }
+  }
+});
+
 test('preview-generated creator channel flows are explicitly marked preview', () => {
   const generated = seedBundles.filter((bundle) => bundle.flow.id.startsWith('flow-preview-'));
   assert.ok(generated.length >= 400);
