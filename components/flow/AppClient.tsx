@@ -1990,9 +1990,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const done = executableIds.filter((id) => checks[id]).length;
   const firstActionTitle = getFirstActionTitle(bundle);
   const showTodayExecution = isFitnessExactVideoFlow(bundle);
-  const isWorkoutFlow = bundle.flow.slug.startsWith('real-thankyou-bubu-video-');
   const primaryDestination = inferPrimaryDestination(bundle);
-  const exactVideoCopy = showTodayExecution ? getExactVideoCopy(primaryDestination) : null;
 
   const toggle = (id: string) => {
     setChecks((value) => {
@@ -2130,75 +2128,35 @@ export function PublicFlow({ slug }: { slug: string }) {
       </header>
 
       {showTodayExecution ? (
-        <section className="my-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold text-emerald-700">가벼운 실행 모드</p>
-              <h2 className="mt-1 text-2xl font-semibold text-gray-950">오늘 실행</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-700">
-                기록은 최소만 남깁니다. 콘텐츠를 열고, 오늘 방식 하나를 고른 뒤 완료 상태만 체크하세요.
-              </p>
-            </div>
-            {bundle.flow.source_url ? (
-              <a
-                className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white"
-                href={bundle.flow.source_url}
-                target="_blank"
-                rel="noreferrer"
-              >
-                영상 열기
-              </a>
-            ) : null}
-          </div>
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
-            <div className="rounded-lg border border-emerald-100 bg-white p-3">
-              <p className="text-sm font-semibold text-gray-800">
-                {exactVideoCopy?.primaryTitle ?? (isWorkoutFlow ? '운동 스케줄 등록' : '오늘 적용할 행동 하나')}
-              </p>
-              <p className="mt-2 text-sm leading-6 text-gray-600">
-                {exactVideoCopy?.primaryDescription ?? (isWorkoutFlow
-                  ? '이번 주에 할 요일만 정하고, 영상은 그날 한 번 실행하면 됩니다.'
-                  : '영상에서 기준을 하나만 확인하고 다음 식사나 운동 전후 행동 하나에만 적용합니다.')}
-              </p>
-            </div>
-            <div className="rounded-lg border border-emerald-100 bg-white p-3">
-              <p className="text-sm font-semibold text-gray-800">체크리스트 1개</p>
-              <p className="mt-2 text-sm leading-6 text-gray-600">
-                준비, 실행, 마무리 디테일은 아래 한 항목 안에 넣었습니다. 별도 기록 앱처럼 늘리지 않습니다.
-              </p>
-            </div>
-          </div>
-          <div className="mt-4 rounded-lg border border-emerald-100 bg-white p-3">
-            <p className="text-sm font-semibold text-gray-800">내 도구로 옮기기</p>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
-              캘린더에는 반복 일정으로, 엑셀에는 1개 실행표로, 메모장이나 노션에는 복사용 텍스트로 가져갈 수 있습니다.
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <button className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white" onClick={downloadCalendar}>
-                캘린더에 넣기
-              </button>
-              <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={downloadExcel}>
-                엑셀 실행표 받기
-              </button>
-              <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={copy}>
-                메모/노션에 복사
-              </button>
-              {calendarState ? <span className="py-2 text-sm text-blue-700">{calendarState}</span> : null}
-            </div>
-          </div>
-        </section>
+        <ExactVideoToolPreview
+          bundle={bundle}
+          anchor={anchor}
+          displayAnchor={displayAnchor}
+          anchorMode={anchorMode}
+          onAnchorModeChange={setAnchorMode}
+          onAnchorChange={setAnchor}
+          weekdays={weekdaySelection}
+          onWeekdaysChange={setWeekdaySelection}
+          destination={primaryDestination}
+          onCopyText={copy}
+          onDownloadExcel={downloadExcel}
+          onDownloadCalendar={downloadCalendar}
+          onCopyToEditableDraft={copyToEditableDraft}
+          copyState={copyState}
+          downloadState={downloadState}
+          calendarState={calendarState}
+        />
       ) : null}
 
+      {!showTodayExecution ? (
       <section className="my-6 rounded-xl border border-blue-100 bg-white p-4 shadow-sm">
         <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr_0.9fr]">
           <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
             <p className="text-sm font-semibold text-blue-700">
-              {showTodayExecution ? getExactSetupTitle(primaryDestination) : bundle.flow.anchor_type === 'none' ? '1. 바로 체크 준비' : '1. 기준 날짜 선택'}
+              {bundle.flow.anchor_type === 'none' ? '1. 바로 체크 준비' : '1. 기준 날짜 선택'}
             </p>
             <p className="mt-1 text-sm text-gray-600">
-              {showTodayExecution
-                ? getExactSetupDescription(primaryDestination)
-                : bundle.flow.anchor_type === 'none'
+              {bundle.flow.anchor_type === 'none'
                 ? '날짜 입력 없이 첫 항목부터 바로 실행하면 됩니다.'
                 : '내 상황의 시작일 또는 종료일을 넣으면 날짜가 자동 계산됩니다.'}
             </p>
@@ -2251,9 +2209,10 @@ export function PublicFlow({ slug }: { slug: string }) {
           </div>
         </div>
       </section>
+      ) : null}
 
       {showTodayExecution ? (
-        <ExactVideoRenderer bundle={bundle} anchor={displayAnchor} weekdays={weekdaySelection} checks={checks} onToggle={toggle} destination={primaryDestination} />
+        <ExactVideoRenderer bundle={bundle} checks={checks} onToggle={toggle} />
       ) : (
         <>
           <FlowOverview bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} />
@@ -2412,35 +2371,38 @@ function getWeekdaySelectionLabel(bundle: FlowBundle): string {
   return '반복 요일';
 }
 
-function getExactVideoCopy(destination: PrimaryDestination): { primaryTitle: string; primaryDescription: string } {
+function getEmbeddedToolCopy(destination: PrimaryDestination): {
+  title: string;
+  description: string;
+  rhythm: string;
+  tool: string;
+  previewTitle: string;
+} {
   if (destination === 'calendar') {
     return {
-      primaryTitle: '캘린더 일정으로 시작',
-      primaryDescription: '이번 주에 할 요일만 정하고, 영상은 그날 열어 실행 여부만 표시합니다.',
+      title: '캘린더에 이미 들어간 운동 일정',
+      description: '영상 하나가 월간 달력의 반복 운동 일정으로 먼저 들어갑니다. 사용자는 시작일과 요일만 바꾸면 됩니다.',
+      rhythm: '주 3회',
+      tool: '캘린더',
+      previewTitle: '월간 미리보기',
     };
   }
   if (destination === 'hybrid' || destination === 'sheet') {
     return {
-      primaryTitle: '운동표에 기준 반영',
-      primaryDescription: '영상에서 고른 기준 하나를 이번 주 운동표나 실행표에 넣고 오늘 적용합니다.',
+      title: '운동표에 이미 들어간 기준',
+      description: '영상의 핵심 기준을 이번 주 운동표에 먼저 넣어두고, 사용자는 날짜와 요일만 조정합니다.',
+      rhythm: '주 3회',
+      tool: '운동표',
+      previewTitle: '주간 운동표 미리보기',
     };
   }
   return {
-    primaryTitle: '오늘 적용 기준만 고르기',
-    primaryDescription: '영상에서 기준 하나만 고르고 다음 식사나 운동 전후 행동 하나에만 적용합니다.',
+    title: '식사 체크표에 이미 들어간 적용 Flow',
+    description: '영상의 원칙을 오늘부터 일별 체크표에 넣어둡니다. 필요하면 적용일과 요일만 가볍게 바꿉니다.',
+    rhythm: '매일',
+    tool: '체크표',
+    previewTitle: '일별 적용 체크표',
   };
-}
-
-function getExactSetupTitle(destination: PrimaryDestination): string {
-  if (destination === 'calendar') return '1. 요일 정하기';
-  if (destination === 'hybrid' || destination === 'sheet') return '1. 운동표 기준일 정하기';
-  return '1. 적용일 정하기';
-}
-
-function getExactSetupDescription(destination: PrimaryDestination): string {
-  if (destination === 'calendar') return '캘린더에 넣을 반복 요일을 고르면 됩니다.';
-  if (destination === 'hybrid' || destination === 'sheet') return '이번 주 운동표에 반영할 기준 날짜와 요일을 정합니다.';
-  return '오늘 적용할 날짜와 반복 여부만 가볍게 정합니다.';
 }
 
 const weekdayIndex: Record<string, number> = {
@@ -2484,6 +2446,30 @@ function getExactVideoSchedule(
         title,
       };
     });
+}
+
+function getExactToolPreview(
+  anchor: string,
+  weekdays: string[],
+  title: string,
+  destination: PrimaryDestination,
+): { date: string; day: string; label: string; title: string }[] {
+  if (destination !== 'memo') return getExactVideoSchedule(anchor, weekdays, title, destination);
+  if (!anchor) return [];
+
+  const start = new Date(anchor);
+  if (Number.isNaN(start.getTime())) return [];
+
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = addDays(start, index);
+    const day = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()];
+    return {
+      date: formatDate(date),
+      day,
+      label: '적용 체크',
+      title,
+    };
+  });
 }
 
 function itemDate(anchor: string, item: FlowItem) {
@@ -3181,51 +3167,181 @@ function MealPlanRenderer({
   );
 }
 
-function ExactVideoRenderer({
+function ExactVideoToolPreview({
   bundle,
   anchor,
+  displayAnchor,
+  anchorMode,
+  onAnchorModeChange,
+  onAnchorChange,
   weekdays,
-  checks,
-  onToggle,
+  onWeekdaysChange,
   destination,
+  onCopyText,
+  onDownloadExcel,
+  onDownloadCalendar,
+  onCopyToEditableDraft,
+  copyState,
+  downloadState,
+  calendarState,
 }: {
   bundle: FlowBundle;
   anchor: string;
+  displayAnchor: string;
+  anchorMode: AnchorMode;
+  onAnchorModeChange: (value: AnchorMode) => void;
+  onAnchorChange: (value: string) => void;
   weekdays: string[];
+  onWeekdaysChange: (value: string[]) => void;
+  destination: PrimaryDestination;
+  onCopyText: () => void;
+  onDownloadExcel: () => void;
+  onDownloadCalendar: () => void;
+  onCopyToEditableDraft: () => void;
+  copyState: string;
+  downloadState: string;
+  calendarState: string;
+}) {
+  const item = bundle.items[0];
+  const preview = item ? getExactToolPreview(displayAnchor, weekdays, item.title, destination) : [];
+  const copy = getEmbeddedToolCopy(destination);
+
+  return (
+    <section className="my-6 rounded-xl border border-blue-100 bg-white p-5 shadow-sm">
+      <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+        <div>
+          <h2 className="text-sm font-semibold text-blue-700">내 도구에 들어간 모습</h2>
+          <h3 className="mt-1 text-2xl font-semibold text-gray-950">{copy.title}</h3>
+          <p className="mt-2 text-sm leading-6 text-gray-600">{copy.description}</p>
+          <div className="mt-3 flex flex-wrap gap-2 text-sm">
+            <span className="rounded-full bg-blue-50 px-3 py-1 font-semibold text-blue-700">추천 리듬: {copy.rhythm}</span>
+            <span className="rounded-full bg-gray-100 px-3 py-1 font-semibold text-gray-700">{copy.tool}</span>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-start justify-start gap-2 lg:justify-end">
+          {bundle.flow.source_url ? (
+            <a className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
+              영상 열기
+            </a>
+          ) : null}
+          <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={onCopyToEditableDraft}>
+            내 Flow로 복사해 수정
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_0.8fr]">
+        <section aria-label="이번 주 등록 미리보기" className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-950">{copy.previewTitle}</h3>
+              <p className="mt-1 text-sm text-gray-600">미리 들어간 내용을 보고 시작일과 요일만 바꿉니다.</p>
+            </div>
+            <span className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-gray-700">{preview.length}개 표시</span>
+          </div>
+          <ExactToolPreviewGrid entries={preview} destination={destination} />
+        </section>
+
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <div className="grid gap-4">
+            <div>
+              <p className="text-sm font-semibold text-gray-950">시작일</p>
+              <div className="mt-2">
+                <AnchorInput
+                  bundle={bundle}
+                  anchor={anchor}
+                  displayAnchor={displayAnchor}
+                  mode={anchorMode}
+                  onModeChange={onAnchorModeChange}
+                  onChange={onAnchorChange}
+                  weekdays={weekdays}
+                  onWeekdaysChange={onWeekdaysChange}
+                />
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-950">가져가기</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <button className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white" onClick={onDownloadCalendar}>
+                  캘린더에 넣기
+                </button>
+                <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={onDownloadExcel}>
+                  엑셀 실행표 받기
+                </button>
+                <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={onCopyText}>
+                  메모/노션에 복사
+                </button>
+              </div>
+              <div className="mt-2 flex flex-wrap gap-3 text-sm">
+                {calendarState ? <span className="text-blue-700">{calendarState}</span> : null}
+                {downloadState ? <span className="text-blue-700">{downloadState}</span> : null}
+                {copyState ? <span className="text-green-700">{copyState}</span> : null}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ExactToolPreviewGrid({
+  entries,
+  destination,
+}: {
+  entries: { date: string; day: string; label: string; title: string }[];
+  destination: PrimaryDestination;
+}) {
+  if (destination === 'memo') {
+    return (
+      <div className="mt-4">
+        <p className="mb-2 text-sm font-semibold text-gray-700">일별 적용 체크표</p>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {entries.map((entry) => (
+            <div key={entry.date} className="rounded-md border border-gray-200 bg-white p-3">
+              <p className="text-sm font-semibold text-gray-950">{entry.day}요일</p>
+              <p className="mt-1 text-sm text-gray-500">{entry.date}</p>
+              <p className="mt-2 text-xs font-medium text-blue-700">{entry.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-4">
+      <p className="mb-2 text-sm font-semibold text-gray-700">월간 미리보기</p>
+      <div className="grid gap-2 sm:grid-cols-3">
+        {entries.map((entry) => (
+          <div key={entry.date} className="rounded-md border border-blue-100 bg-white p-3">
+            <p className="text-sm font-semibold text-blue-700">{entry.day}요일</p>
+            <p className="mt-1 text-lg font-semibold text-gray-950">{entry.date}</p>
+            <p className="mt-2 text-sm text-gray-600">{entry.label}</p>
+            <p className="mt-1 line-clamp-2 text-sm font-medium text-gray-950">{entry.title}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ExactVideoRenderer({
+  bundle,
+  checks,
+  onToggle,
+}: {
+  bundle: FlowBundle;
   checks: Record<string, boolean>;
   onToggle: (id: string) => void;
-  destination: PrimaryDestination;
 }) {
   const item = bundle.items[0];
   const detail = item ? getItemDetail(bundle, item.id) : undefined;
-  const schedule = item ? getExactVideoSchedule(anchor, weekdays, item.title, destination) : [];
 
   if (!item) return null;
 
   return (
     <div className="space-y-4">
-      {schedule.length ? (
-        <section aria-label="이번 주 등록 미리보기" className="rounded-xl border border-blue-100 bg-blue-50 p-5">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-950">이번 주 등록 미리보기</h2>
-              <p className="mt-1 text-sm text-blue-900">사용자가 실제 캘린더나 메모에 넣게 될 날짜입니다.</p>
-            </div>
-            <span className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-blue-700">{schedule.length}회</span>
-          </div>
-          <div className="mt-4 grid gap-3 md:grid-cols-3">
-            {schedule.map((entry) => (
-              <div key={entry.date} className="rounded-lg border border-blue-100 bg-white p-3">
-                <p className="text-sm font-semibold text-blue-700">{entry.day}요일</p>
-                <p className="mt-1 text-lg font-semibold text-gray-950">{entry.date}</p>
-                <p className="mt-2 text-sm text-gray-600">{entry.label}</p>
-                <p className="mt-2 text-sm font-medium text-gray-900">{entry.title}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      ) : null}
-
       <section className="rounded-xl border border-gray-200 bg-white p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>

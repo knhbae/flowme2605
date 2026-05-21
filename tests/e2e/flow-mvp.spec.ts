@@ -150,13 +150,17 @@ test('fitness creator profile highlights exact video flows before samples', asyn
 test('fitness exact video flow keeps the execution panel minimal', async ({ page }) => {
   await page.goto('/f/real-thankyou-bubu-video-full-body-no-jump');
 
-  await expect(page.getByRole('heading', { name: '오늘 실행' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '내 도구에 들어간 모습' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '캘린더에 이미 들어간 운동 일정' })).toBeVisible();
+  await expect(page.getByText('추천 리듬: 주 3회')).toBeVisible();
+  await expect(page.getByText('시작일', { exact: true })).toBeVisible();
+  await expect(page.getByText('운동 요일')).toBeVisible();
+  await expect(page.getByText('월간 미리보기', { exact: true }).first()).toBeVisible();
   await expect(page.getByRole('link', { name: /영상 열기/ })).toBeVisible();
-  await expect(page.getByText('캘린더 일정으로 시작', { exact: true })).toBeVisible();
-  await expect(page.getByText('체크리스트 1개', { exact: true })).toBeVisible();
-  await expect(page.getByText('1. 요일 정하기')).toBeVisible();
-  await expect(page.getByText('2. 오늘 실행 체크')).toBeVisible();
-  await expect(page.getByText('3. 내 Flow로 수정')).toBeVisible();
+  await expect(page.getByText('캘린더 일정으로 시작')).toHaveCount(0);
+  await expect(page.getByText('1. 요일 정하기')).toHaveCount(0);
+  await expect(page.getByText('2. 오늘 실행 체크')).toHaveCount(0);
+  await expect(page.getByText('3. 내 Flow로 수정')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '실행 항목' })).toBeVisible();
   const schedulePreview = page.getByRole('region', { name: '이번 주 등록 미리보기' });
   await expect(schedulePreview).toBeVisible();
@@ -188,8 +192,11 @@ test('fitness exact video flow keeps the execution panel minimal', async ({ page
 test('diet exact video flow uses application language instead of workout scheduling', async ({ page }) => {
   await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
 
-  await expect(page.getByText('오늘 적용 기준만 고르기', { exact: true })).toBeVisible();
-  await expect(page.getByText('1. 적용일 정하기')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '식사 체크표에 이미 들어간 적용 Flow' })).toBeVisible();
+  await expect(page.getByText('추천 리듬: 매일')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '일별 적용 체크표' })).toBeVisible();
+  await expect(page.getByText('오늘 적용 기준만 고르기')).toHaveCount(0);
+  await expect(page.getByText('1. 적용일 정하기')).toHaveCount(0);
   await expect(page.getByText('적용 요일').first()).toBeVisible();
   await expect(page.getByText('운동 요일')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '전체 루틴' })).toHaveCount(0);
