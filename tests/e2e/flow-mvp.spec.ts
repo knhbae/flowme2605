@@ -4,6 +4,7 @@ test('home presents FLOW as an executable content platform', async ({ page }) =>
   await page.goto('/');
 
   await expect(page.getByRole('link', { name: '둘러보기', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: '채널' })).toHaveAttribute('href', '/creators');
   await expect(page.getByRole('link', { name: '내 Flow' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Flow Lab' })).toHaveCount(0);
   await expect(page.getByRole('link', { name: '제작자' })).toHaveCount(0);

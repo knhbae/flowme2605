@@ -31,6 +31,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Kept completion criteria inside the expanded detail area instead of previewing it as duplicate card body text.
 - Removed duplicated inline external links from normal item cards; links live in the expanded detail area.
 - Simplified public navigation to `둘러보기` and `내 Flow`; internal `/flow-lab`, `/creators`, and `/flows/new` remain directly accessible but are no longer first-level public nav.
+- Restored channel browsing in public navigation as `채널` after review clarified that channel-by-channel discovery is required for demos and product comprehension.
 - Simplified the landing hero copy and moved creator entry to a lower-weight text link.
 - Removed hero tag chips and representative-item text from public Flow cards.
 - Kept demo-safe metadata such as `베타 운영 중`, item count, category, and duration instead of fake numeric social proof.
@@ -56,6 +57,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Used text labels instead of new icon dependencies to keep this PR focused.
 - Kept calendar/schedule demo value by preserving `일정 보기` instead of removing dated views entirely.
 - Avoided fake production-looking numeric stats; demo trust is represented through beta/status metadata and concrete Flow scope.
+- Kept `Flow Lab` hidden from public nav, but kept channel discovery visible because it represents actual content organization rather than an internal validation tool.
 
 ## Files Touched
 
@@ -76,6 +78,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `npm test` passed.
 - `npm run build` passed after demo UX polish.
 - `npm run test:e2e -- --grep "home presents|my flow workspace|public moving flow|meal plan flow|duration calendar|real source public flow|representative real content"` passed: 7 tests.
+- `npm run test:e2e -- --grep "home presents|creator directory exposes"` passed after restoring the `채널` nav link: 3 tests.
 - `npm run test:e2e` passed: 30 tests.
 - Local visual smoke via Playwright passed:
   - Home: no `/flow-lab` or `/creators` nav links; headline is `따라하기 쉬운 실행 가이드, Flow`.

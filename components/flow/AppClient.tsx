@@ -717,6 +717,9 @@ function PlatformNav() {
         <Link className="rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-white" href="/flows">
           둘러보기
         </Link>
+        <Link className="rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-white" href="/creators">
+          채널
+        </Link>
         <Link className="rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-white" href="/my">
           내 Flow
         </Link>
