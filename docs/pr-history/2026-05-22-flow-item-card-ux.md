@@ -11,8 +11,10 @@
 - Production deploy: https://flowme2605.vercel.app
 - Deployment URL: https://flowme2605-20g5fe610-flowme.vercel.app
 - Demo UX deployment URL: https://flowme2605-qqsm8zzac-flowme.vercel.app
+- Channel-nav deployment URL: https://flowme2605-feri2di46-flowme.vercel.app
 - Vercel inspect: https://vercel.com/flowme/flowme2605/E8vL2nQMrzoF8qjf7aow8tkTUZsb
 - Demo UX Vercel inspect: https://vercel.com/flowme/flowme2605/ERjP9Gtj2GjbA7FCRQNQCYz8a1TV
+- Channel-nav Vercel inspect: https://vercel.com/flowme/flowme2605/8JjefxX9MPrtkkBJ84SqzHiYxibt
 
 ## Why
 
@@ -94,6 +96,10 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
   - Home had 0 `/flow-lab` links, 0 `/creators` links, and the updated headline.
   - Moving Flow had no duplicate source details, no `주별 보기`, and 1 `일정 보기` tab.
   - `/my` had title/H1 `내 Flow` and no `Creator Studio` text.
+- Channel-nav production smoke tests passed:
+  - `/` and `/creators` returned 200 on the production alias.
+  - Home nav had 0 `/flow-lab` links and 1 `/creators` link labeled `채널`.
+  - `/creators` rendered the `제작자 채널` heading.
 - Direct deployment URL required Vercel authentication, so public smoke testing used the production alias.
 - Manual screenshots captured:
   - `test-results/manual/item-card-mobile-full.png`
