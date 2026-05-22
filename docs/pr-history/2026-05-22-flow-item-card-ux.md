@@ -21,6 +21,7 @@
 - P1-content-migration deployment URL: https://flowme2605-7jrc2lvj6-flowme.vercel.app
 - P1-routine-migration deployment URL: https://flowme2605-ce5uskzab-flowme.vercel.app
 - Source-fit audit/public exposure deployment URL: https://flowme2605-l4dzz6clk-flowme.vercel.app
+- Content-inventory deployment URL: https://flowme2605-3jzctx605-flowme.vercel.app
 - Content-inventory local screenshots:
   - `artifacts/qa-flow-inventory/flow-lab.png`
   - `artifacts/qa-flow-inventory/creators.png`
@@ -35,6 +36,7 @@
 - P1-content-migration Vercel inspect: https://vercel.com/flowme/flowme2605/9miBqirmAVcGB7vtLPPuZzKqZCan
 - P1-routine-migration Vercel inspect: https://vercel.com/flowme/flowme2605/FurPwVBiTZEH1USEcPcQoZFZLi8i
 - Source-fit audit/public exposure Vercel inspect: https://vercel.com/flowme/flowme2605/2EYPWHU18XHyHSewpvtgBu89Fpjc
+- Content-inventory Vercel inspect: https://vercel.com/flowme/flowme2605/GeEcMqNukkszYmm7M3NNBETcExVU
 
 ## Why
 
@@ -208,6 +210,11 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
   - `artifacts/qa-flow-inventory/flow-lab.png`
   - `artifacts/qa-flow-inventory/creators.png`
   - `artifacts/qa-flow-inventory/samsung-channel.png`
+- Content-inventory production deploy passed and aliased to `https://flowme2605.vercel.app`.
+- Content-inventory production smoke passed:
+  - `/flow-lab` renders `전체 콘텐츠 인벤토리`, `샘플 후보`, and `수동 Source-Fit Audit`.
+  - `/creators` renders `실제 원본`, `샘플 후보`, and `원본 검토` without `실행성 점수`.
+  - `/u/samsung-service` renders `Flow 후보`, `실제 원본`, and `샘플 후보`.
 - `npm run test:e2e -- --grep "wedding flow answers"` passed.
 - `npm run test:e2e -- --grep "public moving flow|routine flow highlights|no-anchor checklist|representative real content"` passed.
 - `npm run docs:check` passed.
