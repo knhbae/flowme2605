@@ -4,7 +4,9 @@
 - Branch: `codex/flow-item-card-ux`
 - Base: `codex/implement-flow-builder-mvp`
 - Stacked PR: https://github.com/knhbae/flowme2605/pull/7
-- Mainline PR: https://github.com/knhbae/flowme2605/pull/8
+- Mainline PRs:
+  - Item-card promotion: https://github.com/knhbae/flowme2605/pull/8
+  - Demo UX polish: https://github.com/knhbae/flowme2605/pull/9
 - Status: `Open`, `Pending redeploy`
 - Production deploy: https://flowme2605.vercel.app
 - Deployment URL: https://flowme2605-20g5fe610-flowme.vercel.app
