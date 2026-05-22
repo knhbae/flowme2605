@@ -143,6 +143,8 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Closed the eighth batch across the remaining broad ThankyouBUBU channel and FITVELY official-site sources, keeping them in catalog review until exact source replacements are assigned.
 - Surfaced the real-source natural artifact audit coverage in `/flow-lab`, including audited count, remaining real-source count, decisions, and sample simulated inputs.
 - Updated `docs/content-audit/2026-05-22-real-source-natural-artifact-audit.md` as the readable report for all eight audit batches.
+- Added `docs/content-audit/2026-05-22-real-source-flow-action-matrix.md` to translate the 40-flow audit into product actions, implementation buckets, and representative targets.
+- Added an artifact-first UX design spec and implementation plan for the next product pass.
 
 ## Not Done
 
@@ -201,8 +203,11 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `app/my/page.tsx`
 - `tests/e2e/flow-mvp.spec.ts`
 - `docs/content-audit/2026-05-22-source-fit-audit.md`
+- `docs/content-audit/2026-05-22-real-source-flow-action-matrix.md`
 - `docs/superpowers/specs/2026-05-22-flow-source-fit-audit-design.md`
+- `docs/superpowers/specs/2026-05-22-artifact-first-flow-ux-design.md`
 - `docs/superpowers/plans/2026-05-22-flow-source-fit-audit.md`
+- `docs/superpowers/plans/2026-05-22-artifact-first-flow-ux.md`
 - `docs/superpowers/specs/2026-05-22-flow-channel-content-inventory-design.md`
 - `docs/superpowers/plans/2026-05-22-flow-channel-content-inventory.md`
 - `docs/superpowers/plans/2026-05-22-flow-item-card-ux.md`
