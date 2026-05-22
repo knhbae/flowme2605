@@ -616,6 +616,36 @@ test('representative flows show artifact-first previews on the first screen', as
   await expect(artifactPreview).toContainText('반복 리마인더');
 });
 
+test('artifact workbench shows the primary usable surface first', async ({ page }) => {
+  await page.goto('/f/moving-d30-basic');
+  let workbench = page.getByLabel('Flow artifact workbench');
+  await expect(workbench).toBeVisible();
+  await expect(workbench).toContainText('내 실행판');
+  await expect(workbench).toContainText('전체 할 일');
+  await expect(workbench).toContainText('월간 캘린더');
+
+  await page.goto('/f/used-car-buying-check');
+  workbench = page.getByLabel('Flow artifact workbench');
+  await expect(workbench).toBeVisible();
+  await expect(workbench).toContainText('후보 비교표');
+  await expect(workbench.getByLabel('후보 1 이름')).toBeVisible();
+
+  await page.goto('/f/home-workout-20min');
+  workbench = page.getByLabel('Flow artifact workbench');
+  await expect(workbench).toBeVisible();
+  await expect(workbench).toContainText('반복 캘린더');
+  await expect(workbench).toContainText('회차');
+
+  await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
+  workbench = page.getByLabel('Flow artifact workbench');
+  await expect(workbench).toBeVisible();
+  await expect(workbench).toContainText('기록표');
+  await expect(workbench).toContainText('식단');
+  await expect(workbench).toContainText('운동');
+  await expect(workbench).toContainText('측정');
+  await expect(workbench).toContainText('컨디션');
+});
+
 test('decision flow comparison table edits and persists candidate notes', async ({ page }) => {
   await page.goto('/f/used-car-buying-check');
 
