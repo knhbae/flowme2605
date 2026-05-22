@@ -671,6 +671,20 @@ test('artifact workbench saves local execution entries', async ({ page }) => {
   await expect(restoredMovingWorkbench.getByLabel('이사 업체 견적 금액 / 후보 1 메모')).toHaveValue('포장이사 85만원');
   await expect(restoredMovingWorkbench.getByLabel('견적서/계약서 위치')).toHaveValue('문자 견적 캡처');
 
+  await page.goto('/f/overseas-travel-d14');
+  await page.getByLabel('출국일').fill('2026-07-18');
+  const travelWorkbench = page.getByLabel('Flow artifact workbench');
+  await expect(travelWorkbench.getByRole('heading', { name: '공식 확인·비상 카드' })).toBeVisible();
+  await travelWorkbench.getByLabel('방문 국가/도시').fill('일본 도쿄');
+  await travelWorkbench.getByLabel('입국 조건 확인 결과').fill('무비자 90일, 여권 6개월 이상 확인');
+  await travelWorkbench.getByLabel('영사콜센터·현지 공관').fill('영사콜센터 +82-2-3210-0404 / 주일본대사관');
+
+  await page.reload();
+  const restoredTravelWorkbench = page.getByLabel('Flow artifact workbench');
+  await expect(restoredTravelWorkbench.getByLabel('방문 국가/도시')).toHaveValue('일본 도쿄');
+  await expect(restoredTravelWorkbench.getByLabel('입국 조건 확인 결과')).toHaveValue('무비자 90일, 여권 6개월 이상 확인');
+  await expect(restoredTravelWorkbench.getByLabel('영사콜센터·현지 공관')).toHaveValue('영사콜센터 +82-2-3210-0404 / 주일본대사관');
+
   await page.goto('/f/study-exam-d30-plan');
   const routineWorkbench = page.getByLabel('Flow artifact workbench');
   await routineWorkbench.getByLabel('회차 완료: 1회차').check();

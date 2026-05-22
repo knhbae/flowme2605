@@ -123,6 +123,33 @@ test('moving export includes vendor comparison and proof memo records', () => {
   assert.ok(workbench.rows.some((row) => row.includes('견적서/계약서 위치') && row.includes('문자 견적 캡처')));
 });
 
+test('travel export includes official confirmation and emergency memo records', () => {
+  const travel = seedBundles.find((bundle) => bundle.flow.slug === 'overseas-travel-d14');
+  assert.ok(travel);
+
+  const workbenchState = {
+    occurrences: {},
+    logRows: {},
+    memoCards: {
+      'travel-destination': '일본 도쿄',
+      'travel-entry-condition': '무비자 90일, 여권 6개월 이상 확인',
+      'travel-emergency-contact': '영사콜센터 +82-2-3210-0404 / 주일본대사관',
+    },
+  };
+
+  const text = buildText(travel, {}, '2026-07-18', {}, undefined, workbenchState);
+
+  assert.match(text, /방문 국가\/도시: 일본 도쿄/);
+  assert.match(text, /입국 조건 확인 결과: 무비자 90일, 여권 6개월 이상 확인/);
+  assert.match(text, /영사콜센터·현지 공관: 영사콜센터 \+82-2-3210-0404 \/ 주일본대사관/);
+
+  const sheets = buildWorkbookSheets(travel, {}, '2026-07-18', { workbenchState });
+  const workbench = sheets.find((sheet) => sheet.name === '실행판 기록');
+  assert.ok(workbench);
+  assert.ok(workbench.rows.some((row) => row.includes('방문 국가/도시') && row.includes('일본 도쿄')));
+  assert.ok(workbench.rows.some((row) => row.includes('영사콜센터·현지 공관') && row.some((cell) => String(cell).includes('주일본대사관'))));
+});
+
 test('diet log text export starts with record table guidance', () => {
   const diet = seedBundles.find((entry) => entry.flow.slug === 'real-fitvely-video-body-fat-6kg-method');
   assert.ok(diet);
