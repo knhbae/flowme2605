@@ -9,9 +9,13 @@ export type ArtifactMemoField = {
   id: string;
   label: string;
   placeholder: string;
+  groupTitle?: string;
+  groupEyebrow?: string;
+  groupDescription?: string;
 };
 
 const movingSlugs = new Set(['moving-d30-basic', 'real-ohouse-moving-d30-prep']);
+const travelSlugs = new Set(['overseas-travel-d14', 'real-mofa-overseas-travel-prep']);
 
 const movingVendorComparisonRows: ArtifactComparisonRow[] = [
   { id: 'moving-vendor-price', title: '이사 업체 견적 금액' },
@@ -26,6 +30,9 @@ const movingProofMemoFields: ArtifactMemoField[] = [
     id: 'moving-proof-contract-location',
     label: '견적서/계약서 위치',
     placeholder: '예) 문자 견적 캡처, PDF 파일명, 카카오톡 대화 위치',
+    groupEyebrow: '계약·결제 증빙',
+    groupTitle: '증빙 메모',
+    groupDescription: '견적, 계약금, 잔금, 보상 기준을 흩어진 캡처 대신 한곳에 남겨둡니다.',
   },
   {
     id: 'moving-proof-deposit',
@@ -49,6 +56,42 @@ const movingProofMemoFields: ArtifactMemoField[] = [
   },
 ];
 
+const travelProofMemoFields: ArtifactMemoField[] = [
+  {
+    id: 'travel-destination',
+    label: '방문 국가/도시',
+    placeholder: '예) 일본 도쿄',
+    groupEyebrow: '공식 확인·비상 카드',
+    groupTitle: '공식 확인·비상 카드',
+    groupDescription: '국가별 입국 조건과 비상 연락처를 한 장에 남겨둡니다.',
+  },
+  {
+    id: 'travel-entry-condition',
+    label: '입국 조건 확인 결과',
+    placeholder: '예) 무비자 90일, 여권 6개월 이상 확인',
+  },
+  {
+    id: 'travel-alert-status',
+    label: '여행경보 확인 결과',
+    placeholder: '예) 외교부 안전공지 2026-07-16 확인',
+  },
+  {
+    id: 'travel-baggage-rule',
+    label: '항공·수하물 규정 확인',
+    placeholder: '예) 보조배터리 기내만, 액체류 100ml',
+  },
+  {
+    id: 'travel-emergency-contact',
+    label: '영사콜센터·현지 공관',
+    placeholder: '예) 영사콜센터 +82-2-3210-0404 / 주일본대사관',
+  },
+  {
+    id: 'travel-share-note',
+    label: '숙소·보험·가족 공유 메모',
+    placeholder: '예) 호텔 주소와 보험 연락처를 가족 단톡방에 공유',
+  },
+];
+
 export function getComparisonRows(bundle: FlowBundle): ArtifactComparisonRow[] {
   if (movingSlugs.has(bundle.flow.slug)) return movingVendorComparisonRows;
   return bundle.items.map((item) => ({ id: item.id, title: item.title }));
@@ -56,5 +99,6 @@ export function getComparisonRows(bundle: FlowBundle): ArtifactComparisonRow[] {
 
 export function getMemoCardFields(bundle: FlowBundle): ArtifactMemoField[] {
   if (movingSlugs.has(bundle.flow.slug)) return movingProofMemoFields;
+  if (travelSlugs.has(bundle.flow.slug)) return travelProofMemoFields;
   return [];
 }

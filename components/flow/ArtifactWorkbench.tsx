@@ -439,11 +439,16 @@ function ProofMemoCard({
   workbenchState: FlowWorkbenchState;
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
 }) {
+  const metadata = fields[0];
+  const eyebrow = metadata?.groupEyebrow ?? '계약·결제 증빙';
+  const title = metadata?.groupTitle ?? '증빙 메모';
+  const description = metadata?.groupDescription ?? '견적, 계약금, 잔금, 보상 기준을 흩어진 캡처 대신 한곳에 남겨둡니다.';
+
   return (
     <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
-      <p className="text-sm font-semibold text-blue-700">계약·결제 증빙</p>
-      <h3 className="mt-1 text-base font-semibold text-gray-950">증빙 메모</h3>
-      <p className="mt-2 text-sm leading-6 text-gray-600">견적, 계약금, 잔금, 보상 기준을 흩어진 캡처 대신 한곳에 남겨둡니다.</p>
+      <p className="text-sm font-semibold text-blue-700">{eyebrow}</p>
+      <h3 className="mt-1 text-base font-semibold text-gray-950">{title}</h3>
+      <p className="mt-2 text-sm leading-6 text-gray-600">{description}</p>
       <div className="mt-3 space-y-3">
         {fields.map((field) => (
           <label key={field.id} className="block">
