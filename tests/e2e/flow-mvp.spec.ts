@@ -660,6 +660,8 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   const artifactAudit = page.locator('section').filter({ hasText: 'Natural Artifact Audit' });
   await expect(artifactAudit).toBeVisible();
   await expect(artifactAudit.getByText('사용자가 실제로 만들 산출물 기준 검토')).toBeVisible();
+  await expect(artifactAudit.getByText('exact source')).toBeVisible();
+  await expect(artifactAudit.getByText('catalog review')).toBeVisible();
   await expect(artifactAudit.getByText('감사 완료')).toBeVisible();
   await expect(artifactAudit.getByText('40', { exact: true }).first()).toBeVisible();
   const sourceFitAudit = page.locator('section').filter({ hasText: '수동 Source-Fit Audit' });

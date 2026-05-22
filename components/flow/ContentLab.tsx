@@ -174,6 +174,7 @@ export function ContentLab() {
             <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
               원본을 보고 사용자가 FLOW 없이 만들 법한 달력, 체크리스트, 메모, 엑셀표를 실제 입력값으로 먼저
               시뮬레이션한 뒤 현재 Flow 콘텐츠와 UX가 얼마나 맞는지 비교합니다.
+              Broad channel/site sources stay in catalog review until an exact source URL is assigned.
             </p>
           </div>
           <div className="grid min-w-[260px] grid-cols-2 gap-2 text-sm">
