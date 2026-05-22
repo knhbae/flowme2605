@@ -3,9 +3,10 @@
 - Date: 2026-05-23
 - Branch: `codex/moving-vendor-proof-workbench`
 - PR: https://github.com/knhbae/flowme2605/pull/15
-- Status: `Open`
-- Production deploy: TBD
-- Vercel inspect: TBD
+- Status: `Merged`, `Deployed`
+- Production deploy: https://flowme2605.vercel.app
+- Vercel inspect: https://vercel.com/flowme/flowme2605/4J6JHZgYSDvzFDRBruqa3BKVWy1k
+- Merge commit: `aed7b4427aabc52b90f5fa85deff67256fbc8172`
 
 ## Why
 
@@ -58,6 +59,9 @@ The moving Flow should not stop at a dated checklist. A realistic moving workflo
 - `npm test` passed: 88 tests.
 - `npm run build` passed.
 - `npm run test:e2e` passed: 38 tests.
+- Vercel preview passed for PR head `ee38cf1032ecf8b98147b4e4ba2fc738be64d0f0`.
+- Production Vercel passed for merge commit `aed7b4427aabc52b90f5fa85deff67256fbc8172`.
+- Production smoke passed on `https://flowme2605.vercel.app/f/moving-d30-basic`: vendor name, quote memo, and contract proof memo persisted after reload.
 
 ## Risks
 
