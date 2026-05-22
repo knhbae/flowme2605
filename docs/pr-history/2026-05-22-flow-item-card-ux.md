@@ -3,7 +3,8 @@
 - Date: 2026-05-22
 - Branch: `codex/flow-item-card-ux`
 - Base: `codex/implement-flow-builder-mvp`
-- PR: https://github.com/knhbae/flowme2605/pull/7
+- Stacked PR: https://github.com/knhbae/flowme2605/pull/7
+- Mainline PR: https://github.com/knhbae/flowme2605/pull/8
 - Status: `Open`, `Deployed`
 - Production deploy: https://flowme2605.vercel.app
 - Deployment URL: https://flowme2605-20g5fe610-flowme.vercel.app
@@ -34,6 +35,7 @@ The item card is the core repeated component on Flow detail pages. The prior car
 ## Decisions
 
 - Built on top of PR #6 as a stacked PR because the item-card work depends on the memo/skip/localStorage changes there.
+- PR #7 merged into the parent branch after PR #6 had already merged to `main`, so PR #8 was opened to promote the same deployed work to `main`.
 - Kept implementation local to `AppClient.tsx` to limit blast radius; a future component split should happen separately.
 - Used text labels instead of new icon dependencies to keep this PR focused.
 
