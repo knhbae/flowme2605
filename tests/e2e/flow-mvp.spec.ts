@@ -458,6 +458,20 @@ test('promoted P1 flows expose new execution model surfaces', async ({ page }) =
   await expect(page.getByText('반복 달력 preview')).toBeVisible();
   await expect(page.getByText('한 회차에 하는 일')).toBeVisible();
   await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
+
+  for (const [slug, title] of [
+    ['home-workout-20min', '하루 20분 전신 홈트 Flow'],
+    ['english-study-30day-routine', '직장인 영어공부 30일 루틴 Flow'],
+    ['car-care-monthly-routine', '월 1회 자동차 관리 루틴 Flow'],
+  ] as const) {
+    await page.goto(`/f/${slug}`);
+
+    await expect(page.getByRole('heading', { name: title })).toBeVisible();
+    await expect(page.getByText('새 실행모델로 전환 중')).toHaveCount(0);
+    await expect(page.getByText('반복 달력 preview')).toBeVisible();
+    await expect(page.getByText('한 회차에 하는 일')).toBeVisible();
+    await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
+  }
 });
 
 test('new flow creation keeps advanced settings secondary', async ({ page }) => {

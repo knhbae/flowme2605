@@ -158,7 +158,13 @@ test('creator-inspired seed flows cover followable blog and video-like routines'
 });
 
 test('P1 migrated representative candidates include tailored executable item details', () => {
-  const migratedSlugs = ['wedding-d180-basic', 'study-exam-d30-plan'];
+  const migratedSlugs = [
+    'wedding-d180-basic',
+    'study-exam-d30-plan',
+    'home-workout-20min',
+    'english-study-30day-routine',
+    'car-care-monthly-routine',
+  ];
 
   for (const slug of migratedSlugs) {
     const bundle = seedBundles.find((entry) => entry.flow.slug === slug);

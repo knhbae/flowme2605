@@ -18,6 +18,7 @@
 - Comparison-export deployment URL: https://flowme2605-ctyehe39h-flowme.vercel.app
 - Mobile-export deployment URL: https://flowme2605-5ilocoxrc-flowme.vercel.app
 - P1-content-migration deployment URL: https://flowme2605-7jrc2lvj6-flowme.vercel.app
+- P1-routine-migration deployment URL: pending
 - Vercel inspect: https://vercel.com/flowme/flowme2605/E8vL2nQMrzoF8qjf7aow8tkTUZsb
 - Demo UX Vercel inspect: https://vercel.com/flowme/flowme2605/ERjP9Gtj2GjbA7FCRQNQCYz8a1TV
 - Channel-nav Vercel inspect: https://vercel.com/flowme/flowme2605/8JjefxX9MPrtkkBJ84SqzHiYxibt
@@ -26,6 +27,7 @@
 - Comparison-export Vercel inspect: https://vercel.com/flowme/flowme2605/5SRdATNfKEmJcv9BZi4BreFMmfVZ
 - Mobile-export Vercel inspect: https://vercel.com/flowme/flowme2605/2S7cmp7v29DrPJDQmNE7koBRMC9m
 - P1-content-migration Vercel inspect: https://vercel.com/flowme/flowme2605/9miBqirmAVcGB7vtLPPuZzKqZCan
+- P1-routine-migration Vercel inspect: pending
 
 ## Why
 
@@ -83,6 +85,12 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
   - Added a daily `매일 60~90분` routine rule for recurrence/calendar previews.
   - Added tailored why/how/completion details and reference links for all 12 study items.
   - It now shows `반복 달력 preview`, `한 회차에 하는 일`, and `월별 달력`.
+- Promoted three P1 routine candidates into the representative execution-model set:
+  - `home-workout-20min`
+  - `english-study-30day-routine`
+  - `car-care-monthly-routine`
+- Added tailored why/how/completion details and reference links for every item in those three routine flows.
+- Removed their `새 실행모델로 전환 중` banner by clearing them from the migration-candidate set.
 
 ## Not Done
 
@@ -161,6 +169,11 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `npm test` passed after P1 content migration: 48 tests.
 - `npm run build` passed after P1 content migration.
 - `npm run test:e2e` passed after P1 content migration: 34 tests.
+- `npm test -- lib/flow/execution-model.test.ts lib/flow/seed-flows.test.ts` first failed as expected for missing routine representative classification and weak Home Workout details, then passed after implementation.
+- `npm run docs:check` passed after P1 routine migration.
+- `npm test` passed after P1 routine migration: 48 tests.
+- `npm run build` passed after P1 routine migration.
+- `npm run test:e2e` passed after P1 routine migration: 34 tests.
 - Execution-model production deploy passed and aliased to `https://flowme2605.vercel.app`.
 - Production smoke passed for:
   - Home representative flow card and output target preview.

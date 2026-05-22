@@ -147,6 +147,183 @@ const workoutText = `@주 3회
 - 복식 호흡으로 마무리
 - 통증 또는 어지러움 여부 기록하기`;
 
+const workoutReferenceLink = {
+  label: 'ThankyouBUBU 홈트 루틴 콘텐츠 참고',
+  url: 'https://www.youtube.com/@ThankyouBUBU',
+  type: 'reference' as const,
+};
+
+const workoutOfficialGuideLink = {
+  label: 'CDC 신체활동 가이드',
+  url: 'https://www.cdc.gov/physical-activity-basics/guidelines/adults.html',
+  type: 'official' as const,
+};
+
+const workoutDetails: Parameters<typeof withItemDetails>[1] = {
+  '제자리 걷기 1분': {
+    description: '운동 전 심박을 천천히 올리는 준비 동작입니다.',
+    why: '갑자기 강한 동작으로 들어가면 관절과 호흡에 부담이 생길 수 있어 낮은 강도의 시작이 필요합니다.',
+    how: '허리를 세우고 팔을 자연스럽게 흔들며 제자리에서 1분간 걷습니다. 숨이 차지 않는 속도로 시작합니다.',
+    completion_criteria: '1분 동안 제자리 걷기를 마치고 호흡이 안정적인지 확인했다.',
+    links: [workoutReferenceLink, workoutOfficialGuideLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '팔 돌리기 앞/뒤 각 30초': {
+    description: '어깨 관절을 앞뒤로 풀어 상체 동작을 준비합니다.',
+    why: '푸시업이나 숄더탭 전에 어깨 가동성을 확인하면 통증 신호를 더 빨리 알아차릴 수 있습니다.',
+    how: '팔을 크게 벌리고 앞 방향 30초, 뒤 방향 30초를 천천히 돌립니다. 어깨가 찝히면 범위를 줄입니다.',
+    completion_criteria: '앞뒤 각 30초를 완료했고 어깨 통증 여부를 확인했다.',
+    links: [workoutReferenceLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '무릎 들어 걷기 1분': {
+    description: '고관절과 코어를 깨우는 낮은 강도의 준비 동작입니다.',
+    why: '스쿼트와 런지 전에 고관절을 움직이면 하체 동작에서 균형을 잡기 쉽습니다.',
+    how: '무릎을 배꼽 방향으로 번갈아 들어 올리고 상체가 뒤로 젖혀지지 않게 1분간 반복합니다.',
+    completion_criteria: '좌우 무릎 들기를 1분간 완료했고 균형이 크게 흔들리지 않았다.',
+    links: [workoutReferenceLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '가벼운 점핑잭 또는 스텝터치 1분': {
+    description: '관절 부담이 크면 점핑잭 대신 스텝터치처럼 충격이 낮은 동작으로 바꿉니다.',
+    why: '본 운동 전 체온을 올리되 무릎이나 발목 부담을 본인 상태에 맞춰 조절해야 합니다.',
+    how: '점프가 괜찮으면 점핑잭을 하고, 충격이 부담되면 좌우로 한 발씩 이동하는 스텝터치로 1분 진행합니다.',
+    completion_criteria: '1분간 워밍업을 마치고 관절 불편감이 없는지 확인했다.',
+    links: [workoutReferenceLink, workoutOfficialGuideLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '스쿼트 15회': {
+    description: '하체와 코어를 함께 쓰는 본 운동 첫 동작입니다.',
+    why: '스쿼트는 홈트 루틴의 기본 하체 동작이지만 무릎 방향과 허리 자세가 무너지기 쉽습니다.',
+    how: '발을 어깨너비로 두고 무릎이 안쪽으로 모이지 않게 15회 앉았다 일어납니다. 깊이는 자세가 유지되는 범위로 제한합니다.',
+    completion_criteria: '스쿼트 15회를 자세 흐트러짐 없이 완료했다.',
+    links: [workoutReferenceLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '런지 양쪽 10회씩': {
+    description: '좌우 하체 균형과 둔근 사용을 확인하는 동작입니다.',
+    why: '런지는 한쪽씩 진행되기 때문에 좌우 근력 차이와 균형 문제를 발견하기 좋습니다.',
+    how: '한 발을 뒤로 보내고 앞 무릎이 발끝보다 과하게 나가지 않게 내려갑니다. 양쪽 10회씩 진행합니다.',
+    completion_criteria: '양쪽 런지 10회씩을 마치고 좌우 불편감 차이를 기록했다.',
+    links: [workoutReferenceLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '점핑잭 30초': {
+    description: '짧게 심박을 올리는 전신 유산소 동작입니다.',
+    why: '근력 동작 사이에 심박을 올려 20분 루틴의 운동 밀도를 높입니다.',
+    how: '30초 동안 리듬을 유지합니다. 무릎이나 발목 부담이 있으면 팔 동작과 스텝터치로 대체합니다.',
+    completion_criteria: '30초 동안 본인에게 맞는 강도로 점핑잭 또는 대체 동작을 완료했다.',
+    links: [workoutReferenceLink, workoutOfficialGuideLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '푸시업 10~15회': {
+    description: '가슴, 어깨, 팔, 코어를 함께 쓰는 상체 동작입니다.',
+    why: '푸시업은 상체 근력 확인에 좋지만 손목과 어깨 부담이 생기기 쉬워 난이도 조절이 필요합니다.',
+    how: '바닥 푸시업이 어렵다면 무릎을 대거나 벽 푸시업으로 바꿉니다. 몸통이 꺾이지 않는 범위에서 10~15회 진행합니다.',
+    completion_criteria: '본인에게 맞는 버전으로 푸시업 10~15회를 완료했다.',
+    links: [workoutReferenceLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '플랭크 숄더탭 30초': {
+    description: '플랭크 자세에서 어깨를 번갈아 터치해 코어 안정성을 확인합니다.',
+    why: '몸통 흔들림을 줄이는 훈련은 다른 전신 동작의 자세 유지에도 도움이 됩니다.',
+    how: '손을 어깨 아래에 두고 플랭크 자세를 잡은 뒤 좌우 어깨를 천천히 터치합니다. 골반이 크게 흔들리면 무릎을 댑니다.',
+    completion_criteria: '30초 동안 숄더탭을 진행했고 허리 통증이 없었다.',
+    links: [workoutReferenceLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '크런치 15회': {
+    description: '복부를 짧게 수축해 코어 감각을 확인하는 동작입니다.',
+    why: '복부 운동은 목으로 당기거나 허리가 뜨면 효과보다 불편감이 커질 수 있습니다.',
+    how: '손으로 목을 잡아당기지 않고 갈비뼈를 골반 쪽으로 말아 올리는 느낌으로 15회 진행합니다.',
+    completion_criteria: '목이나 허리 부담 없이 크런치 15회를 완료했다.',
+    links: [workoutReferenceLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '러시안 트위스트 20회': {
+    description: '몸통 회전과 복부 긴장을 함께 쓰는 코어 동작입니다.',
+    why: '회전 동작은 속도를 내기 쉬워 허리 부담을 만들 수 있으므로 통제된 범위가 중요합니다.',
+    how: '등을 길게 세운 상태에서 좌우로 천천히 회전합니다. 허리가 불편하면 발을 바닥에 두고 범위를 줄입니다.',
+    completion_criteria: '좌우 합산 20회를 천천히 완료했고 허리 불편감이 없었다.',
+    links: [workoutReferenceLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '플랭크 30초': {
+    description: '루틴 마지막 코어 고정 동작입니다.',
+    why: '플랭크는 전신 긴장을 확인하기 좋지만 허리가 꺾이면 부담이 커질 수 있습니다.',
+    how: '팔꿈치를 어깨 아래에 두고 머리부터 발끝까지 일직선을 유지합니다. 어려우면 무릎 플랭크로 30초 진행합니다.',
+    completion_criteria: '30초 플랭크를 본인에게 맞는 버전으로 완료했다.',
+    links: [workoutReferenceLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '세트 사이 45~60초 쉬기': {
+    description: '호흡이 너무 가쁘거나 자세가 흐트러지면 휴식 시간을 늘리고 반복 수를 줄입니다.',
+    why: '휴식 없이 밀어붙이면 다음 세트 자세가 무너지고 부상 위험이 커질 수 있습니다.',
+    how: '세트가 끝나면 45~60초 쉬면서 호흡을 고릅니다. 말하기 어려울 정도면 더 쉬고 강도를 낮춥니다.',
+    completion_criteria: '각 세트 사이에 휴식 시간을 지켰고 다음 세트 자세를 유지했다.',
+    links: [workoutReferenceLink, workoutOfficialGuideLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '햄스트링 늘리기': {
+    description: '운동 후 뒤허벅지를 천천히 늘려 하체 긴장을 줄입니다.',
+    why: '스쿼트와 런지 후 하체 근육을 천천히 풀어야 다음 운동까지 뻐근함을 관리하기 쉽습니다.',
+    how: '한쪽 다리를 앞으로 두고 허리를 길게 편 상태에서 뒤허벅지가 당기는 범위까지만 숙입니다.',
+    completion_criteria: '양쪽 햄스트링을 무리 없는 범위에서 늘렸다.',
+    links: [workoutReferenceLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '고양이-소 자세': {
+    description: '등과 허리를 부드럽게 움직여 마무리하는 스트레칭입니다.',
+    why: '코어 동작 후 허리와 흉추 움직임을 회복하면 긴장감을 낮추는 데 도움이 됩니다.',
+    how: '네발기기 자세에서 등을 둥글게 말았다가 천천히 펴는 동작을 호흡과 함께 반복합니다.',
+    completion_criteria: '통증 없이 고양이-소 자세를 여러 번 반복했다.',
+    links: [workoutReferenceLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '어깨/팔/목 스트레칭': {
+    description: '상체 동작 후 어깨와 목 주변 긴장을 풀어줍니다.',
+    why: '푸시업과 숄더탭 후 어깨와 목에 힘이 남아 있으면 다음 날 뻐근함이 커질 수 있습니다.',
+    how: '어깨를 낮추고 목을 좌우로 천천히 기울입니다. 팔은 가슴 앞으로 당겨 어깨 뒤쪽을 늘립니다.',
+    completion_criteria: '어깨, 팔, 목을 각각 무리 없는 범위에서 풀었다.',
+    links: [workoutReferenceLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '복식 호흡으로 마무리': {
+    description: '호흡을 낮춰 운동 상태에서 일상 상태로 돌아옵니다.',
+    why: '짧은 홈트라도 마무리 호흡을 하면 심박과 긴장을 낮추고 운동 종료 신호를 만들 수 있습니다.',
+    how: '앉거나 누워 코로 들이마시고 입으로 길게 내쉬며 5~8회 반복합니다.',
+    completion_criteria: '복식 호흡을 마치고 호흡과 어지러움 여부를 확인했다.',
+    links: [workoutReferenceLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '통증 또는 어지러움 여부 기록하기': {
+    description: '통증, 어지러움, 호흡 곤란이 있으면 중단하고 몸 상태를 확인합니다.',
+    why: '운동 루틴은 반복 실행이 목적이므로 무리한 신호를 빨리 발견해야 지속할 수 있습니다.',
+    how: '운동 직후 통증 부위, 어지러움, 호흡 상태를 짧게 기록합니다. 이상이 있으면 다음 운동 강도를 낮춥니다.',
+    completion_criteria: '몸 상태를 기록했고 필요하면 다음 운동 강도를 낮추기로 결정했다.',
+    links: [workoutReferenceLink, workoutOfficialGuideLink],
+    source_type: 'official',
+    risk_level: 'medium',
+  },
+};
+
 const jobChangeText = `## 1. 퇴사 가능 상태 확인
 - 근로계약서에서 퇴사 통보 기한 확인하기
 - 취업규칙 또는 사내 퇴사 프로세스 확인하기
@@ -540,6 +717,123 @@ const englishStudyRoutineText = `@매일 30분
 - 가장 잘 맞은 공부 시간대 기록하기
 - 다음 30일 목표를 듣기/말하기/쓰기 중 하나로 좁히기`;
 
+const englishRoutineLink = {
+  label: '직장인 30일 영어 독학 루틴',
+  url: 'https://www.new1eng.com/blog/adult-english-30day-self-study',
+  type: 'reference' as const,
+};
+
+const englishStudyRoutineDetails: Parameters<typeof withItemDetails>[1] = {
+  '짧은 영상 또는 오디오 10분 듣기': {
+    description: '매일 부담 없이 들을 수 있는 짧은 입력 자료를 정합니다.',
+    why: '초반에는 긴 강의보다 반복 가능한 10분 입력이 루틴을 만드는 데 더 안정적입니다.',
+    how: '출퇴근이나 점심시간에 들을 5~10분 영상 또는 오디오를 고르고, 처음에는 전체 뜻보다 흐름을 잡습니다.',
+    completion_criteria: '오늘 들을 10분 입력 자료를 듣고 제목이나 링크를 기록했다.',
+    links: [englishRoutineLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '모르는 표현 5개만 저장하기': {
+    description: '하루에 저장할 표현 수를 5개로 제한합니다.',
+    why: '모르는 표현을 모두 저장하면 복습 부담이 커져 루틴이 빨리 무너질 수 있습니다.',
+    how: '오늘 들은 자료에서 다시 쓸 가능성이 높은 표현만 5개 골라 뜻과 짧은 예문을 함께 적습니다.',
+    completion_criteria: '표현 5개와 짧은 예문을 저장했다.',
+    links: [englishRoutineLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '같은 주제의 짧은 글 1개 읽기': {
+    description: '들은 내용과 비슷한 주제의 짧은 글을 읽어 입력을 연결합니다.',
+    why: '듣기와 읽기를 같은 주제로 묶으면 새 단어가 반복되어 기억에 남기 쉽습니다.',
+    how: '영상 주제와 비슷한 블로그, 뉴스, 짧은 설명 글을 하나 읽고 아는 표현이 다시 나오는지 표시합니다.',
+    completion_criteria: '같은 주제의 짧은 글 1개를 읽고 반복 표현을 표시했다.',
+    links: [englishRoutineLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '저장한 표현으로 예문 3개 만들기': {
+    description: '저장한 표현을 본인 상황에 맞는 문장으로 바꿉니다.',
+    why: '표현을 보기만 하면 실제 말하기나 쓰기에서 떠오르지 않으므로 직접 문장으로 바꿔야 합니다.',
+    how: '저장한 표현 중 3개를 골라 회사, 일상, 취미 상황에 맞는 짧은 예문을 만듭니다.',
+    completion_criteria: '저장한 표현으로 개인 예문 3개를 작성했다.',
+    links: [englishRoutineLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '1분 음성으로 따라 말하고 녹음하기': {
+    description: '예문 또는 입력 자료를 1분 동안 따라 말하고 녹음합니다.',
+    why: '말하기는 입 밖으로 내는 횟수가 필요하므로 짧게라도 녹음해야 실제 막힘을 확인할 수 있습니다.',
+    how: '문장 3~5개를 천천히 읽고 휴대폰으로 1분 녹음합니다. 완벽한 발음보다 끊기지 않는 흐름을 봅니다.',
+    completion_criteria: '1분 음성 파일을 남기고 막힌 표현을 표시했다.',
+    links: [englishRoutineLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '발음보다 끊기지 않는 흐름 확인하기': {
+    description: '녹음 파일에서 말이 끊기는 구간을 확인합니다.',
+    why: '초기 루틴에서는 원어민 같은 발음보다 문장을 끝까지 이어 말하는 경험이 더 중요합니다.',
+    how: '녹음을 한 번 듣고 멈춘 지점, 다시 시작한 지점, 단어가 떠오르지 않은 지점을 메모합니다.',
+    completion_criteria: '녹음에서 끊긴 구간과 다음 연습 표현을 기록했다.',
+    links: [englishRoutineLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '하루 일과를 영어 5문장으로 쓰기': {
+    description: '오늘 있었던 일을 영어 5문장으로 짧게 씁니다.',
+    why: '일상 문장은 반복해서 쓰기 쉬워 말하기 소재로도 바로 전환할 수 있습니다.',
+    how: '시간 순서대로 오늘 한 일, 느낀 점, 내일 할 일을 5문장으로 쓰고 모르는 단어는 쉬운 표현으로 바꿉니다.',
+    completion_criteria: '하루 일과 영어 문장 5개를 작성했다.',
+    links: [englishRoutineLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '같은 내용을 1분 말하기로 녹음하기': {
+    description: '방금 쓴 5문장을 보며 1분 말하기로 전환합니다.',
+    why: '쓰기에서 말하기로 옮겨야 실제 대화에서 사용할 수 있는 표현이 됩니다.',
+    how: '쓴 문장을 한 번 읽고, 두 번째에는 문장을 보되 자연스럽게 말하듯 1분 녹음합니다.',
+    completion_criteria: '같은 내용을 1분 말하기로 녹음했다.',
+    links: [englishRoutineLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '자주 막히는 단어를 다음 날 입력 자료로 고르기': {
+    description: '말할 때 막힌 단어를 다음 날 듣기·읽기 자료의 주제로 연결합니다.',
+    why: '막힌 단어를 바로 다음 입력으로 연결하면 루틴이 본인 약점 중심으로 조정됩니다.',
+    how: '녹음 중 떠오르지 않은 단어 1~3개를 적고, 그 단어가 들어간 짧은 영상이나 글을 다음 날 자료로 고릅니다.',
+    completion_criteria: '다음 날 입력 자료의 키워드와 링크를 정했다.',
+    links: [englishRoutineLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '한 달 동안 쌓인 표현 20개 복습하기': {
+    description: '30일 동안 저장한 표현 중 다시 쓸 표현 20개를 고릅니다.',
+    why: '많이 모은 표현보다 실제로 다시 쓸 수 있는 표현을 추리는 것이 다음 루틴으로 이어집니다.',
+    how: '저장한 표현을 훑고 업무, 일상, 자기소개에 바로 쓸 수 있는 표현 20개만 남깁니다.',
+    completion_criteria: '다음 달에도 유지할 핵심 표현 20개를 골랐다.',
+    links: [englishRoutineLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '가장 잘 맞은 공부 시간대 기록하기': {
+    description: '30일 동안 실제로 지킨 공부 시간대를 확인합니다.',
+    why: '영어 루틴은 시간대가 맞아야 이어지므로 성공한 시간대를 기준으로 다음 계획을 잡아야 합니다.',
+    how: '아침, 점심, 퇴근 후, 자기 전 중 가장 완료율이 높았던 시간대를 보고 다음 달 기본 시간으로 정합니다.',
+    completion_criteria: '가장 완료율이 높았던 공부 시간대를 기록했다.',
+    links: [englishRoutineLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '다음 30일 목표를 듣기/말하기/쓰기 중 하나로 좁히기': {
+    description: '다음 달 루틴의 핵심 방향을 하나로 좁힙니다.',
+    why: '한 번에 듣기, 말하기, 쓰기를 모두 키우려 하면 루틴이 복잡해져 지속하기 어렵습니다.',
+    how: '지난 30일 기록을 보고 가장 약하거나 가장 필요한 영역 하나를 고르고 다음 달 완료 기준을 적습니다.',
+    completion_criteria: '다음 30일의 우선 목표와 완료 기준을 하나로 정했다.',
+    links: [englishRoutineLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+};
+
 const usedCarBuyingText = `## 예산과 후보 정리
 - 총예산을 차량가, 이전비, 보험료, 정비비로 나누기
 - 원하는 차종의 연식·주행거리별 시세 확인하기
@@ -598,6 +892,98 @@ const carCareMonthlyText = `@월 1회
 - 전조등, 브레이크등, 방향지시등 확인하기
 - 블랙박스 녹화와 메모리 상태 확인하기
 - 실내 비상용품과 충전 케이블 위치 확인하기`;
+
+const carCareLink = {
+  label: '타이어 공기압·셀프정비 체크리스트',
+  url: 'https://gnsl0879.tistory.com/717',
+  type: 'reference' as const,
+};
+
+const carCareMonthlyDetails: Parameters<typeof withItemDetails>[1] = {
+  '타이어 공기압 확인하기': {
+    description: '월 1회 타이어 공기압을 확인하고 장거리 전에는 한 번 더 봅니다.',
+    why: '공기압이 부족하거나 과하면 연비, 제동, 타이어 마모에 영향을 줄 수 있습니다.',
+    how: '차량 권장 공기압 기준을 확인하고 주유소 또는 휴대용 게이지로 네 바퀴를 확인합니다.',
+    completion_criteria: '네 바퀴 공기압을 확인했고 필요하면 보충했다.',
+    links: [carCareLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '마모한계선과 편마모 확인하기': {
+    description: '타이어 홈 깊이와 한쪽만 닳는 편마모를 확인합니다.',
+    why: '마모 상태는 제동거리와 빗길 안전에 직접 영향을 줄 수 있습니다.',
+    how: '타이어 홈의 마모한계선과 안쪽·바깥쪽 마모 차이를 보고 이상하면 정비소 점검 대상으로 표시합니다.',
+    completion_criteria: '마모한계선과 편마모 여부를 확인했다.',
+    links: [carCareLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '브레이크 소음이나 밀림 느낌 기록하기': {
+    description: '주행 중 브레이크 소음, 떨림, 밀림 느낌을 기록합니다.',
+    why: '브레이크 이상은 안전과 직결되므로 느낌이 반복되면 자가 점검으로 끝내면 안 됩니다.',
+    how: '최근 주행에서 끼익 소리, 페달 떨림, 제동거리 증가가 있었는지 적고 반복되면 정비 예약합니다.',
+    completion_criteria: '브레이크 이상 느낌 여부와 후속 조치 필요성을 기록했다.',
+    caution: '제동 이상이 있으면 운행을 줄이고 정비소 점검을 우선하세요.',
+    links: [carCareLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '엔진오일 교체 주기와 잔량 확인하기': {
+    description: '엔진오일 교체 시점과 잔량 또는 경고 상태를 확인합니다.',
+    why: '엔진오일 관리는 차량 상태 유지의 기본이며 교체 주기를 놓치면 고장 위험이 커질 수 있습니다.',
+    how: '정비 기록에서 마지막 교체일과 주행거리를 확인하고, 차량 안내 기준에 맞춰 다음 교체 시점을 적습니다.',
+    completion_criteria: '마지막 교체 기록과 다음 교체 후보 시점을 기록했다.',
+    links: [carCareLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '냉각수와 워셔액 보충 필요 여부 확인하기': {
+    description: '냉각수와 워셔액 잔량을 확인하고 부족하면 보충합니다.',
+    why: '냉각수 부족은 과열 위험을 만들고 워셔액 부족은 시야 확보에 영향을 줍니다.',
+    how: '엔진이 식은 상태에서 냉각수 탱크 눈금을 확인하고, 워셔액은 계절에 맞는 제품으로 보충합니다.',
+    completion_criteria: '냉각수와 워셔액 잔량을 확인했고 부족분을 보충했다.',
+    caution: '뜨거운 엔진 상태에서 냉각수 캡을 열지 않습니다.',
+    links: [carCareLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '와이퍼 떨림과 닦임 상태 확인하기': {
+    description: '와이퍼 작동 시 떨림, 소음, 줄무늬가 남는지 확인합니다.',
+    why: '비 오는 날 시야 확보가 안 되면 운전 위험이 커지므로 미리 교체 필요성을 봐야 합니다.',
+    how: '워셔액을 뿌리고 와이퍼를 작동해 닦임 상태를 본 뒤 고무 갈라짐이나 소음을 확인합니다.',
+    completion_criteria: '와이퍼 닦임 상태를 확인했고 교체 필요 여부를 결정했다.',
+    links: [carCareLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '전조등, 브레이크등, 방향지시등 확인하기': {
+    description: '외부 등화장치가 모두 켜지는지 확인합니다.',
+    why: '등화장치 고장은 야간 시야와 주변 차량에게 보내는 신호에 영향을 줍니다.',
+    how: '전조등, 상향등, 브레이크등, 후진등, 방향지시등을 순서대로 켜고 외부에서 확인합니다.',
+    completion_criteria: '주요 등화장치 작동 여부를 확인했다.',
+    links: [carCareLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '블랙박스 녹화와 메모리 상태 확인하기': {
+    description: '블랙박스가 정상 녹화되고 메모리 오류가 없는지 확인합니다.',
+    why: '사고나 분쟁 상황에서 녹화가 안 되어 있으면 블랙박스가 있어도 도움이 되지 않습니다.',
+    how: '최근 영상이 저장되는지 재생해 보고 날짜, 시간, 메모리 오류, 전원 연결 상태를 확인합니다.',
+    completion_criteria: '최근 녹화 파일을 재생했고 저장 상태를 확인했다.',
+    links: [carCareLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+  '실내 비상용품과 충전 케이블 위치 확인하기': {
+    description: '비상용품과 충전 케이블이 필요한 위치에 있는지 확인합니다.',
+    why: '장거리나 야간 운전 중 필요한 물건은 트렁크 깊숙한 곳보다 바로 찾을 수 있어야 합니다.',
+    how: '삼각대, 조끼, 휴대폰 충전 케이블, 물티슈, 간단 공구의 위치를 확인하고 부족한 물품을 적습니다.',
+    completion_criteria: '실내 비상용품 위치와 보충 필요 목록을 확인했다.',
+    links: [carCareLink],
+    source_type: 'reference',
+    risk_level: 'medium',
+  },
+};
 
 const weddingD180Text = `## D-180 큰 일정 확정
 - 예식 날짜와 예상 하객 규모 정하기 D-180
@@ -1273,7 +1659,7 @@ const creatorInspiredBundles: FlowBundle[] = [
     ),
     studyExamD30Details,
   ),
-  withReferenceSourceDetails(
+  withItemDetails(
     makeTextBundle(
       {
         id: 'flow-english-study-30day',
@@ -1291,11 +1677,7 @@ const creatorInspiredBundles: FlowBundle[] = [
       },
       englishStudyRoutineText,
     ),
-    {
-      label: '직장인 30일 영어 독학 루틴',
-      url: 'https://www.new1eng.com/blog/adult-english-30day-self-study',
-    },
-    'low',
+    englishStudyRoutineDetails,
   ),
   withReferenceSourceDetails(
     makeTextBundle(
@@ -1347,7 +1729,7 @@ const creatorInspiredBundles: FlowBundle[] = [
     },
     'financial_sensitive',
   ),
-  withReferenceSourceDetails(
+  withItemDetails(
     makeTextBundle(
       {
         id: 'flow-car-care-monthly',
@@ -1366,11 +1748,7 @@ const creatorInspiredBundles: FlowBundle[] = [
       },
       carCareMonthlyText,
     ),
-    {
-      label: '타이어 공기압·셀프정비 체크리스트',
-      url: 'https://gnsl0879.tistory.com/717',
-    },
-    'medium',
+    carCareMonthlyDetails,
   ),
   withItemDetails(
     makeTextBundle(
@@ -1623,38 +2001,7 @@ const baseSeedBundles: FlowBundle[] = [
       },
       workoutText,
     ),
-    {
-      '가벼운 점핑잭 또는 스텝터치 1분': {
-        description: '관절 부담이 크면 점핑잭 대신 스텝터치처럼 충격이 낮은 동작으로 바꿉니다.',
-        source_type: 'reference',
-        risk_level: 'medium',
-      },
-      '세트 사이 45~60초 쉬기': {
-        description: '호흡이 너무 가쁘거나 자세가 흐트러지면 휴식 시간을 늘리고 반복 수를 줄입니다.',
-        source_type: 'reference',
-        risk_level: 'medium',
-      },
-      '통증 또는 어지러움 여부 기록하기': {
-        description: '통증, 어지러움, 호흡 곤란이 있으면 중단하고 몸 상태를 확인합니다.',
-        why: '운동 루틴은 반복 실행이 목적이므로 무리한 신호를 빨리 발견해야 지속할 수 있습니다.',
-        how: '운동 직후 통증 부위, 어지러움, 호흡 상태를 짧게 기록합니다.',
-        completion_criteria: '몸 상태를 기록했고 필요하면 다음 운동 강도를 낮추기로 결정했다.',
-        links: [
-          {
-            label: 'CDC 신체활동 가이드',
-            url: 'https://www.cdc.gov/physical-activity-basics/guidelines/adults.html',
-            type: 'official',
-          },
-          {
-            label: 'ThankyouBUBU 홈트 루틴 콘텐츠 참고',
-            url: 'https://www.youtube.com/@ThankyouBUBU',
-            type: 'reference',
-          },
-        ],
-        source_type: 'official',
-        risk_level: 'medium',
-      },
-    },
+    workoutDetails,
   ),
   withItemDetails(
     makeTextBundle(

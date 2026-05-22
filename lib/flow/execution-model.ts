@@ -45,6 +45,9 @@ const representativeFlowSlugs = [
   'overseas-travel-d14',
   'wedding-d180-basic',
   'study-exam-d30-plan',
+  'home-workout-20min',
+  'english-study-30day-routine',
+  'car-care-monthly-routine',
 ] as const;
 
 const decisionFlowSlugs = new Set([
@@ -59,9 +62,6 @@ const programFlowSlugs = new Set([
 ]);
 
 const migrationCandidateSlugs = new Set([
-  'home-workout-20min',
-  'english-study-30day-routine',
-  'car-care-monthly-routine',
   'national-health-checkup-d7',
   'passport-renewal-docs',
   'year-end-tax-docs',
