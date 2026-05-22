@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { ArtifactPreview } from './ArtifactPreview';
 import { addDays, formatDate, getRangeEnd } from '@/lib/flow/date';
 import { inferPrimaryDestination } from '@/lib/flow/destination';
 import { getRepresentativeFlowSlugs, normalizeExecutionModel, type FlowExportTarget } from '@/lib/flow/execution-model';
@@ -2424,6 +2425,8 @@ export function PublicFlow({ slug }: { slug: string }) {
       ) : null}
 
       <TopExecutionPreview bundle={bundle} anchor={displayAnchor} weekdays={weekdaySelection} comparisonState={comparisonState} onComparisonChange={setComparisonState} />
+
+      <ArtifactPreview bundle={bundle} />
 
       {showTodayExecution ? (
         <ExactVideoToolPreview

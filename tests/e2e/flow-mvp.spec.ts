@@ -590,6 +590,32 @@ test('used-car checklist shows decision preview instead of calendar by default',
   await expect(page.getByText('총예산을 차량가, 이전비, 보험료, 정비비로 나누기').first()).toBeVisible();
 });
 
+test('representative flows show artifact-first previews on the first screen', async ({ page }) => {
+  await page.goto('/f/moving-d30-basic');
+  let artifactPreview = page.getByLabel('Flow artifact preview');
+  await expect(artifactPreview).toBeVisible();
+  await expect(artifactPreview).toContainText('실행 리스트');
+  await expect(artifactPreview).toContainText('월간 캘린더');
+
+  await page.goto('/f/used-car-buying-check');
+  artifactPreview = page.getByLabel('Flow artifact preview');
+  await expect(artifactPreview).toBeVisible();
+  await expect(artifactPreview).toContainText('후보 비교표');
+  await expect(artifactPreview).toContainText('현장 체크리스트');
+
+  await page.goto('/f/real-thankyou-bubu-video-full-body-no-jump');
+  artifactPreview = page.getByLabel('Flow artifact preview');
+  await expect(artifactPreview).toBeVisible();
+  await expect(artifactPreview).toContainText('반복 캘린더');
+  await expect(artifactPreview).toContainText('회차 메모');
+
+  await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
+  artifactPreview = page.getByLabel('Flow artifact preview');
+  await expect(artifactPreview).toBeVisible();
+  await expect(artifactPreview).toContainText('기록표');
+  await expect(artifactPreview).toContainText('반복 리마인더');
+});
+
 test('decision flow comparison table edits and persists candidate notes', async ({ page }) => {
   await page.goto('/f/used-car-buying-check');
 
