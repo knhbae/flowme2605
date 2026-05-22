@@ -19,6 +19,7 @@
 - Mobile-export deployment URL: https://flowme2605-5ilocoxrc-flowme.vercel.app
 - P1-content-migration deployment URL: https://flowme2605-7jrc2lvj6-flowme.vercel.app
 - P1-routine-migration deployment URL: https://flowme2605-ce5uskzab-flowme.vercel.app
+- Source-fit audit: local branch change, not deployed yet.
 - Vercel inspect: https://vercel.com/flowme/flowme2605/E8vL2nQMrzoF8qjf7aow8tkTUZsb
 - Demo UX Vercel inspect: https://vercel.com/flowme/flowme2605/ERjP9Gtj2GjbA7FCRQNQCYz8a1TV
 - Channel-nav Vercel inspect: https://vercel.com/flowme/flowme2605/8JjefxX9MPrtkkBJ84SqzHiYxibt
@@ -91,6 +92,18 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
   - `car-care-monthly-routine`
 - Added tailored why/how/completion details and reference links for every item in those three routine flows.
 - Removed their `새 실행모델로 전환 중` banner by clearing them from the migration-candidate set.
+- Added a source-fit audit framework for deciding whether original content deserves FLOW conversion:
+  - 0-100 scoring across action density, timing structure, external management need, completion clarity, personalization, return value, source trust, and risk boundary clarity.
+  - Decision bands: representative keep, reshape before featured, catalog preview only, and public catalog hide.
+  - First audit batch covers the 10 representative Flow slugs.
+- Documented the source-fit product design and content-type reconstruction models for timeline, checklist, routine, program, decision, and meal-plan Flows.
+- Added a source-fit audit report for the representative batch, including keep/reshape/preview decisions and next content/UX actions.
+- Exposed the source-fit audit summary in `/flow-lab`:
+  - audited count
+  - average score
+  - decision counts
+  - per-Flow score, decision, source precision, gap, and next action
+- Added tests for source-fit scoring, representative audit coverage, Content Lab summary integration, and Flow Lab E2E visibility.
 
 ## Not Done
 
@@ -103,6 +116,8 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Did not migrate every legacy Flow into the new execution-model content standard; older flows remain migration candidates.
 - Did not add account sync, external calendar API integration, or server-side recurrence storage.
 - Did not convert the mobile bottom sheet to a reusable design-system primitive yet; it remains scoped to public Flow detail.
+- Did not delete or demote public Flows based on the first source-fit audit; this batch records the decision layer first, with public exposure changes deferred.
+- Did not audit all 500+ preview/generated Flows one-by-one; representative Flows were prioritized, and the remaining catalog audit is follow-up work.
 
 ## Decisions
 
@@ -117,6 +132,8 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Chose a representative-set landing strategy over showing many half-migrated flows first; broader catalog items remain discoverable elsewhere.
 - Kept the current client-side data model and derived recurrence in UI because Stage 0 has no auth, DB, or server persistence.
 - Kept decision flow execution as checklist-first, with the comparison table as a top-level decision aid rather than replacing the checklist.
+- Chose a tiered source audit approach: audit representative/real-source content first, classify the generated catalog later.
+- Kept weak-source representative routes accessible for now so the next PR can decide demotion/hiding with a visible audit trail.
 
 ## Files Touched
 
@@ -127,9 +144,17 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `lib/flow/recurrence.test.ts`
 - `lib/flow/seed-flows.ts`
 - `lib/flow/seed-flows.test.ts`
+- `lib/flow/source-fit.ts`
+- `lib/flow/source-fit.test.ts`
 - `lib/flow/storage.ts`
+- `lib/flow/content-lab.ts`
+- `lib/flow/content-lab.test.ts`
+- `components/flow/ContentLab.tsx`
 - `app/my/page.tsx`
 - `tests/e2e/flow-mvp.spec.ts`
+- `docs/content-audit/2026-05-22-source-fit-audit.md`
+- `docs/superpowers/specs/2026-05-22-flow-source-fit-audit-design.md`
+- `docs/superpowers/plans/2026-05-22-flow-source-fit-audit.md`
 - `docs/superpowers/plans/2026-05-22-flow-item-card-ux.md`
 - `docs/superpowers/plans/2026-05-22-flow-demo-ux-polish.md`
 - `docs/superpowers/plans/2026-05-22-flow-execution-model-p0.md`
@@ -174,6 +199,16 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `npm test` passed after P1 routine migration: 48 tests.
 - `npm run build` passed after P1 routine migration.
 - `npm run test:e2e` passed after P1 routine migration: 34 tests.
+- `npx tsx --test lib/flow/source-fit.test.ts` passed after source-fit audit module: 5 tests.
+- `npm run docs:check` passed after source-fit docs: 12 required files, 50 local links.
+- `npm test` passed after source-fit audit integration: 54 tests.
+- `npm run build` passed after source-fit audit integration.
+- Local production smoke for `/flow-lab` passed via Playwright:
+  - `Source Fit Audit` section visible.
+  - 10 audit table rows rendered.
+  - screenshot captured at `.next/source-fit-flowlab.png`.
+- `npx playwright test tests/e2e/flow-mvp.spec.ts -g "flow lab shows converted pilot"` passed after adding Source Fit Audit E2E coverage.
+- `npm run test:e2e` passed after Source Fit Audit E2E coverage: 34 tests.
 - Execution-model production deploy passed and aliased to `https://flowme2605.vercel.app`.
 - Production smoke passed for:
   - Home representative flow card and output target preview.
@@ -230,6 +265,8 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Existing mobile sticky export bar can overlap the bottom of a long expanded item detail; bottom-bar redesign is tracked as follow-up.
 - `/my` progress summaries intentionally count base Flow items, not expanded multi-day occurrence rows.
 - `/flow-lab` and `/creators` are still routable directly and still have internal/demo-oriented copy.
+- Source-fit scores are first-pass product judgments, not final user validation; the next audit batch should revisit low-score sources before public removal.
+- Some source pages are broad or crawler-limited, so audit decisions distinguish exact source precision from channel/homepage or indexed-only evidence.
 
 ## Follow-ups
 
@@ -238,6 +275,12 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Add a true export bottom sheet for mobile.
 - Continue seed content improvements for older Flow categories.
 - Consider a separate demo mode if fake numeric social proof is needed for investor/internal demos.
+- Apply source-fit decisions to public exposure in a follow-up PR:
+  - demote or rename `study-exam-d30-plan`
+  - replace broad-channel sources for `home-workout-20min` and `running-5k-4week`
+  - convert `overseas-travel-d14` to a multi-source official Flow
+  - split car care items into inspection, DIY, and service-trigger boundaries
+- Audit the remaining migration candidates and generated preview catalog using the same rubric.
 
 ## Links
 

@@ -97,3 +97,13 @@ test('converted pilot lab exposes 10 real-source flows for B validation', () => 
   ].sort());
   assert.equal(summary.missingConvertedPilotSlugs.length, 0);
 });
+
+test('content lab exposes source-fit audit summary for representative cleanup', () => {
+  const summary = getContentLabSummary(seedBundles);
+
+  assert.equal(summary.sourceFitAuditedCount, 10);
+  assert.ok(summary.sourceFitAverageScore >= 70);
+  assert.ok(summary.sourceFitDecisionCounts.keep_representative >= 5);
+  assert.ok(summary.sourceFitDecisionCounts.reshape_before_featured >= 1);
+  assert.ok(summary.sourceFitDecisionCounts.catalog_preview_only >= 1);
+});

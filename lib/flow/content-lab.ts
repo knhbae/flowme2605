@@ -1,4 +1,5 @@
 import { AnchorType, FlowBundle, StructureType } from './types';
+import { getSourceFitSummary } from './source-fit';
 
 export type ExternalTarget = 'calendar' | 'todo' | 'notion' | 'sheet';
 
@@ -338,6 +339,7 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   const expansionCandidates = expansionCreatorLabs.flatMap((creator) => creator.candidates);
   const previewGeneratedBundles = bundles.filter((bundle) => bundle.flow.id.startsWith('flow-preview-'));
   const realSourceBundles = bundles.filter((bundle) => bundle.flow.source_status === 'real');
+  const sourceFitSummary = getSourceFitSummary();
 
   return {
     pilotCreatorCount: pilotCreatorLabs.length,
@@ -357,5 +359,8 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
         expansionCandidates.reduce((sum, candidate) => sum + scoreCandidate(candidate), 0) /
           Math.max(expansionCandidates.length, 1),
       ),
+    sourceFitAuditedCount: sourceFitSummary.auditedCount,
+    sourceFitAverageScore: sourceFitSummary.averageScore,
+    sourceFitDecisionCounts: sourceFitSummary.decisionCounts,
   };
 }
