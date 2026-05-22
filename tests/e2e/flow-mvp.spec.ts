@@ -663,12 +663,17 @@ test('artifact workbench saves local execution entries', async ({ page }) => {
   await page.goto('/f/study-exam-d30-plan');
   const routineWorkbench = page.getByLabel('Flow artifact workbench');
   await routineWorkbench.getByLabel('회차 완료: 1회차').check();
-  await routineWorkbench.getByLabel('1회차 메모').fill('오답노트 20분 추가');
+  await routineWorkbench.getByLabel('회차 메모: 1회차').fill('오답노트 20분 추가');
+  await routineWorkbench.getByLabel('회차 완료: 2회차').check();
+  await routineWorkbench.getByLabel('회차 메모: 2회차').fill('듣기 20분, 단어 30개');
+  await expect(routineWorkbench.getByLabel('회차 완료: 2회차')).toBeChecked();
 
   await page.reload();
   const reloadedRoutineWorkbench = page.getByLabel('Flow artifact workbench');
   await expect(reloadedRoutineWorkbench.getByLabel('회차 완료: 1회차')).toBeChecked();
-  await expect(reloadedRoutineWorkbench.getByLabel('1회차 메모')).toHaveValue('오답노트 20분 추가');
+  await expect(reloadedRoutineWorkbench.getByLabel('회차 메모: 1회차')).toHaveValue('오답노트 20분 추가');
+  await expect(reloadedRoutineWorkbench.getByLabel('회차 완료: 2회차')).toBeChecked();
+  await expect(reloadedRoutineWorkbench.getByLabel('회차 메모: 2회차')).toHaveValue('듣기 20분, 단어 30개');
 
   await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
   const logWorkbench = page.getByLabel('Flow artifact workbench');

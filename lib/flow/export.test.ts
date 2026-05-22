@@ -98,6 +98,7 @@ test('workbench records are included in text and workbook exports', () => {
   const workbenchState = {
     occurrences: {
       '2026-05-22:1': { done: true, note: '컨디션 좋아서 강도 유지' },
+      '2026-05-25:2': { done: true, note: '듣기 20분, 단어 30개' },
     },
     logRows: {
       '2026-05-22': {
@@ -114,12 +115,14 @@ test('workbench records are included in text and workbook exports', () => {
   assert.match(text, /## 실행판 기록/);
   assert.match(text, /2026-05-22 식단: 현미밥, 닭가슴살, 샐러드/);
   assert.match(text, /1회차: 완료 - 컨디션 좋아서 강도 유지/);
+  assert.match(text, /2회차: 완료 - 듣기 20분, 단어 30개/);
   assert.match(text, /주간 리뷰: 저녁 탄수화물을 절반으로 줄여보기/);
 
   const sheets = buildWorkbookSheets(diet, {}, '2026-05-22', { workbenchState });
   const workbench = sheets.find((sheet) => sheet.name === '실행판 기록');
   assert.ok(workbench);
   assert.deepEqual(workbench.columns, ['유형', '날짜/회차', '항목', '값']);
+  assert.ok(workbench.rows.some((row) => row.some((cell) => String(cell).includes('듣기 20분, 단어 30개'))));
   assert.ok(workbench.rows.some((row) => row.includes('현미밥, 닭가슴살, 샐러드')));
   assert.ok(workbench.rows.some((row) => row.includes('저녁 탄수화물을 절반으로 줄여보기')));
 });

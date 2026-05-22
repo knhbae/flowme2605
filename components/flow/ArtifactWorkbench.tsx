@@ -239,6 +239,97 @@ function MiniMonthCalendar({
   );
 }
 
+function RoutineOccurrenceCalendar({
+  month,
+  rows,
+  workbenchState,
+  onWorkbenchChange,
+}: {
+  month: string;
+  rows: ScheduleRow[];
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
+}) {
+  const days = getMonthCalendarDays(month || formatDate(new Date()).slice(0, 7));
+  const visibleRows = rows.slice(0, 12);
+  return (
+    <div className="rounded-lg border border-gray-200 bg-white p-4">
+      <div className="flex items-center justify-between gap-2">
+        <div>
+          <p className="text-sm font-semibold text-blue-700">반복 캘린더</p>
+          <h3 className="text-base font-semibold text-gray-950">월간 회차 관리</h3>
+        </div>
+        <span className="text-sm font-semibold text-gray-500">{month}</span>
+      </div>
+      <div className="mt-3 grid grid-cols-7 gap-1 text-center text-xs font-semibold text-gray-500">
+        {weekdayOrder.map((day) => (
+          <span key={day}>{day}</span>
+        ))}
+      </div>
+      <div className="mt-2 grid grid-cols-7 gap-1">
+        {days.map((date, index) => {
+          const dayRows = date ? rows.filter((row) => row.startDate === date) : [];
+          return (
+            <div key={`${month}-${index}`} className={`min-h-16 rounded-md border p-1 text-xs ${date ? 'border-gray-200 bg-[#FAFAF8]' : 'border-gray-100 bg-gray-50'}`}>
+              {date ? <p className="font-semibold text-gray-600">{date.slice(8)}</p> : null}
+              <div className="mt-1 space-y-1">
+                {dayRows.slice(0, 2).map((row) => {
+                  const state = workbenchState.occurrences[row.id] ?? {};
+                  return (
+                    <label key={row.id} className={`flex items-center gap-1 rounded border px-1 py-0.5 ${state.done ? 'border-green-200 bg-green-50 text-green-700' : 'border-gray-100 bg-white text-blue-700'}`}>
+                      <input
+                        aria-label={`캘린더 회차 체크: ${row.title}`}
+                        className="h-3 w-3 rounded border-gray-300"
+                        checked={Boolean(state.done)}
+                        onChange={(event) => onWorkbenchChange(updateOccurrenceDone(workbenchState, row.id, event.currentTarget.checked))}
+                        type="checkbox"
+                      />
+                      <span className="truncate text-[11px] font-semibold">{state.done ? '완료 ' : ''}{row.title}</span>
+                    </label>
+                  );
+                })}
+                {dayRows.length > 2 ? <p className="text-[11px] text-gray-500">+{dayRows.length - 2}</p> : null}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-4 rounded-lg border border-gray-200 bg-[#FAFAF8] p-3">
+        <div className="flex items-center justify-between gap-2">
+          <h4 className="text-sm font-semibold text-gray-950">회차 기록</h4>
+          <span className="text-xs font-semibold text-gray-500">최대 12회차</span>
+        </div>
+        <div className="mt-3 space-y-2">
+          {visibleRows.map((row) => {
+            const state = workbenchState.occurrences[row.id] ?? {};
+            return (
+              <div key={row.id} className={`rounded-md border bg-white p-3 ${state.done ? 'border-green-200' : 'border-gray-100'}`}>
+                <label className="flex items-center gap-2 text-sm font-semibold text-blue-700">
+                  <input
+                    aria-label={`회차 완료: ${row.title}`}
+                    className="h-4 w-4 rounded border-gray-300"
+                    checked={Boolean(state.done)}
+                    onChange={(event) => onWorkbenchChange(updateOccurrenceDone(workbenchState, row.id, event.currentTarget.checked))}
+                    type="checkbox"
+                  />
+                  <span>{row.title} · {row.startDate} · {row.timing}</span>
+                </label>
+                <textarea
+                  aria-label={`회차 메모: ${row.title}`}
+                  className="mt-2 min-h-16 w-full resize-y rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800"
+                  placeholder="컨디션, 조정한 강도, 다음 회차 메모"
+                  value={state.note ?? ''}
+                  onChange={(event) => onWorkbenchChange(updateOccurrenceNote(workbenchState, row.id, event.currentTarget.value))}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function DecisionWorkbench({
   bundle,
   checks,
@@ -446,16 +537,11 @@ function RoutineWorkbench({
   const nextKey = next ? occurrenceKey(next) : '';
   const nextLabel = next ? `${next.sessionIndex}회차` : '';
   const nextState = nextKey ? workbenchState.occurrences[nextKey] ?? {} : {};
-  const doneIds = new Set(
-    Object.entries(workbenchState.occurrences)
-      .filter(([, state]) => state.done)
-      .map(([key]) => key),
-  );
   const sessionItems = bundle.items.slice(0, 5);
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
-      <MiniMonthCalendar title="반복 캘린더" month={month} rows={rows} doneIds={doneIds} />
+      <RoutineOccurrenceCalendar month={month} rows={rows} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
       <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
         <p className="text-sm font-semibold text-blue-700">반복 달력 preview</p>
         <h3 className="mt-1 text-base font-semibold text-gray-950">한 회차에 하는 일</h3>
@@ -464,7 +550,7 @@ function RoutineWorkbench({
           <div className="mt-2 rounded-md border border-gray-200 bg-white p-3">
             <label className="flex items-center gap-2 text-sm font-semibold text-blue-700">
               <input
-                aria-label={`회차 완료: ${nextLabel}`}
+                aria-label={`다음 세션 체크: ${nextLabel}`}
                 className="h-4 w-4 rounded border-gray-300"
                 checked={Boolean(nextState.done)}
                 onChange={(event) => onWorkbenchChange(updateOccurrenceDone(workbenchState, nextKey, event.currentTarget.checked))}
@@ -473,7 +559,7 @@ function RoutineWorkbench({
               <span>{nextLabel} · {next.date} · {next.weekday}</span>
             </label>
             <textarea
-              aria-label={`${nextLabel} 메모`}
+              aria-label={`다음 세션 메모: ${nextLabel}`}
               className="mt-3 min-h-20 w-full resize-y rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-800"
               placeholder="오늘 컨디션, 조정할 강도, 다음 회차 메모"
               value={nextState.note ?? ''}
