@@ -145,6 +145,12 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Updated `docs/content-audit/2026-05-22-real-source-natural-artifact-audit.md` as the readable report for all eight audit batches.
 - Added `docs/content-audit/2026-05-22-real-source-flow-action-matrix.md` to translate the 40-flow audit into product actions, implementation buckets, and representative targets.
 - Added an artifact-first UX design spec and implementation plan for the next product pass.
+- Added an artifact-plan layer that maps each Flow to a primary user artifact surface: timeline calendar, routine calendar, spreadsheet log, decision table, memo card, or checklist.
+- Added first-screen `ArtifactPreview` cards on public Flow detail pages so users see what the Flow will become before reading the full item list.
+- Aligned text export order with artifact priority:
+  - spreadsheet-first diet/log Flows now start with a `기록표` guidance section.
+  - decision Flows now put the `후보 비교표` before checklist items.
+- Added Flow Lab source-gating copy: broad channel/site sources stay in `catalog review` until an `exact source` URL is assigned.
 
 ## Not Done
 
@@ -163,6 +169,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Did not assign exact source URLs to the 440 generated preview candidates.
 - Did not add natural artifact simulations to the 440 generated preview candidates yet; that is a separate catalog audit pass.
 - Did not replace broad channel/site sources with exact URLs in this pass; those routes remain catalog review until source replacement.
+- Did not implement the full interactive artifact workbench yet; this pass adds artifact promise cards and export ordering, while deeper monthly calendar/routine/spreadsheet editing remains follow-up.
 
 ## Decisions
 
@@ -180,12 +187,19 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Chose a tiered source audit approach: audit representative/real-source content first, classify the generated catalog later.
 - Kept weak-source routes accessible while demoting them from representative exposure so route history and demos remain stable.
 - Chose a two-tier inventory cleanup: manual source-fit audits are treated as deep review, `source_status=real` routes are treated as derived review, and generated preview routes are explicitly sample candidates.
+- Chose a central artifact-plan helper instead of hardcoding per-slug preview UI in `AppClient.tsx`.
+- Kept broad channel/site sources visible in Lab for catalog review, but not eligible for representative promotion until exact source URLs are assigned.
 
 ## Files Touched
 
 - `components/flow/AppClient.tsx`
+- `components/flow/ArtifactPreview.tsx`
 - `lib/flow/execution-model.ts`
 - `lib/flow/execution-model.test.ts`
+- `lib/flow/artifact-plan.ts`
+- `lib/flow/artifact-plan.test.ts`
+- `lib/flow/export.ts`
+- `lib/flow/export.test.ts`
 - `lib/flow/recurrence.ts`
 - `lib/flow/recurrence.test.ts`
 - `lib/flow/seed-flows.ts`
@@ -201,6 +215,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `lib/flow/content-lab.test.ts`
 - `components/flow/ContentLab.tsx`
 - `app/my/page.tsx`
+- `package.json`
 - `tests/e2e/flow-mvp.spec.ts`
 - `docs/content-audit/2026-05-22-source-fit-audit.md`
 - `docs/content-audit/2026-05-22-real-source-flow-action-matrix.md`
@@ -221,6 +236,17 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 
 ## Verification
 
+- `npx tsx --test lib/flow/artifact-plan.test.ts` first failed as expected because `lib/flow/artifact-plan.ts` did not exist, then passed after adding the artifact-plan mapping: 5 tests.
+- `npm test` passed after adding artifact-plan coverage: 82 tests.
+- `npm run test:e2e -- --grep "artifact-first previews"` first failed as expected because `Flow artifact preview` was not rendered, then passed after adding `ArtifactPreview`: 1 test.
+- `npx tsx --test lib/flow/export.test.ts` first failed as expected because diet text exports lacked `기록표` guidance and decision comparison appeared after checklist items, then passed after aligning export order: 13 tests.
+- `npm test` passed after export alignment: 84 tests.
+- `npm run test:e2e -- --grep "flow lab shows converted pilot"` first failed as expected because Flow Lab did not expose `exact source` / `catalog review` copy, then passed after adding source-gating copy: 1 test.
+- `npm run docs:check` passed after PR-history update: 12 required files, 50 local links.
+- `npm test` passed after PR-history update: 84 tests.
+- `npm run build` passed after the artifact-first implementation pass.
+- `npm run test:e2e -- --grep "artifact-first previews|flow lab shows converted pilot"` passed after the final build: 2 tests.
+- `npm run test:e2e` first failed on a strict selector ambiguity because `ArtifactPreview` added additional `후보 비교표` text, then passed after scoping the comparison-table test to the candidate-name input: 36 tests.
 - `npx tsx --test lib/flow/source-fit.test.ts` first failed as expected for missing `naturalArtifacts`, then passed after adding concrete simulations: 7 tests.
 - `npx tsx --test lib/flow/natural-artifact-audit.test.ts` first failed as expected for the missing module, then passed after adding the first real-source audit batch: 5 tests.
 - `npx tsx --test lib/flow/natural-artifact-audit.test.ts` failed as expected when raising audit coverage from 8 to 16, then passed after adding the second real-source audit batch: 6 tests.
