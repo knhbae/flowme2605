@@ -15,12 +15,14 @@
 - Execution-model deployment URL: https://flowme2605-dvsk1atld-flowme.vercel.app
 - Comparison-followup deployment URL: https://flowme2605-6avh7mj1a-flowme.vercel.app
 - Comparison-export deployment URL: https://flowme2605-ctyehe39h-flowme.vercel.app
+- Mobile-export deployment URL: https://flowme2605-5ilocoxrc-flowme.vercel.app
 - Vercel inspect: https://vercel.com/flowme/flowme2605/E8vL2nQMrzoF8qjf7aow8tkTUZsb
 - Demo UX Vercel inspect: https://vercel.com/flowme/flowme2605/ERjP9Gtj2GjbA7FCRQNQCYz8a1TV
 - Channel-nav Vercel inspect: https://vercel.com/flowme/flowme2605/8JjefxX9MPrtkkBJ84SqzHiYxibt
 - Execution-model Vercel inspect: https://vercel.com/flowme/flowme2605/BLPBytJZnTEzSUDA9NAdCyxXBRAw
 - Comparison-followup Vercel inspect: https://vercel.com/flowme/flowme2605/2hMiyV5fNvJND71EkutgMf5vT3mW
 - Comparison-export Vercel inspect: https://vercel.com/flowme/flowme2605/5SRdATNfKEmJcv9BZi4BreFMmfVZ
+- Mobile-export Vercel inspect: https://vercel.com/flowme/flowme2605/2S7cmp7v29DrPJDQmNE7koBRMC9m
 
 ## Why
 
@@ -152,6 +154,8 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
   - Wedding Flow rendered the `새 실행모델로 전환 중` migration banner.
 - Comparison-export production deploy passed and aliased to `https://flowme2605.vercel.app`.
 - Comparison-export production smoke passed: Used-car Flow copied text included `후보 비교표`, candidate name, and row memo after user input.
+- Mobile-export production deploy passed and aliased to `https://flowme2605.vercel.app`.
+- Mobile-export production smoke passed: Moving Flow mobile sticky bar opened the `내보내기와 백업` bottom sheet with `텍스트로 복사`.
 - Local visual smoke via Playwright passed:
   - Home: no `/flow-lab` nav link; channel discovery remains as `/creators` labeled `채널`; headline is `따라하기 쉬운 실행 가이드, Flow`.
   - Moving schedule: no duplicated `출처와 주의 정보`; no `주별 보기`; one `월별 달력` tab.
