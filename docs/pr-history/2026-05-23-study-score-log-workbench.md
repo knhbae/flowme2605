@@ -2,9 +2,12 @@
 
 - Date: 2026-05-23
 - Branch: `codex/study-score-log-workbench`
-- PR: pending
-- Status: `In progress`
-- Production deploy: pending
+- PR: https://github.com/knhbae/flowme2605/pull/17
+- Status: `Merged`, `Deployed`
+- Production deploy: https://flowme2605.vercel.app
+- Vercel preview inspect: https://vercel.com/flowme/flowme2605/4JYAdCb67Lz8BtpVz38EPDNy4gh7
+- Vercel production inspect: https://vercel.com/flowme/flowme2605/ENyzy4gY2HjRgcc5R2CEHs6TEx4E
+- Merge commit: `3adecfc1325248ea25b3178bfc0c1de002c96544`
 
 ## Why
 
@@ -59,6 +62,9 @@ The natural artifact audit for `real-sinagong-computer-d30-study` found that a c
 - `npm run build` passed.
 - `npm run test:e2e` passed: 38 tests.
 - Local visual smoke captured `test-results/study-score-log-workbench.png` for `real-sinagong-computer-d30-study` after entering `시험일=2026-07-05`.
+- Vercel preview passed for PR head `919e65133c39fc1f1d01ec15d31fe34a3e29d3a2`.
+- Production Vercel passed for merge commit `3adecfc1325248ea25b3178bfc0c1de002c96544`.
+- Production smoke passed on `https://flowme2605.vercel.app/f/real-sinagong-computer-d30-study`: date input worked, two study log tables rendered, and chapter scope plus mock score persisted after reload.
 
 ## Risks
 
