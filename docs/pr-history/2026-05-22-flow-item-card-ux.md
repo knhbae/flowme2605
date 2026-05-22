@@ -8,6 +8,7 @@
   - Item-card promotion: https://github.com/knhbae/flowme2605/pull/8
   - Demo UX polish: https://github.com/knhbae/flowme2605/pull/9
   - Mobile export and P1 content migration: https://github.com/knhbae/flowme2605/pull/10
+  - Source-fit audit framework: https://github.com/knhbae/flowme2605/pull/11
 - Status: `Open`, `Deployed`
 - Production deploy: https://flowme2605.vercel.app
 - Deployment URL: https://flowme2605-20g5fe610-flowme.vercel.app
