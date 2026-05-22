@@ -131,6 +131,8 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Updated `/flow-lab` with an `전체 콘텐츠 인벤토리` section showing total inventory, actual sources, sample candidates, manual review, derived review, and legacy access counts.
 - Updated `/creators` and `/u/[creator]` channel stats from `실행성 점수`/coverage language to `실제 원본`, `샘플 후보`, and `원본 검토`.
 - Kept channel browsing and generated preview Flow routes visible because they are useful for demo/product comprehension, but changed their language to avoid implying source validation.
+- Added concrete `naturalArtifacts` to manual source-fit audits so each representative Flow now simulates real input values, expected user-made checklist/calendar/sheet/memo outputs, current Flow match, current UX support, and the remaining gap.
+- Updated the UX/content evaluation harness and source-fit design so reviewers must build the natural artifact before scoring source fit or judging the UI.
 
 ## Not Done
 
@@ -147,6 +149,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Did not audit all 500+ preview/generated Flows one-by-one; representative Flows were prioritized, and the remaining catalog audit is follow-up work.
 - Did not manually open and audit the 40 `source_status=real` routes in this batch; they are derived reviews based on existing source metadata.
 - Did not assign exact source URLs to the 440 generated preview candidates.
+- Did not add natural artifact simulations to the 40 derived real-source flows or 440 preview candidates yet; that is the next manual audit pass.
 
 ## Decisions
 
@@ -200,6 +203,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 
 ## Verification
 
+- `npx tsx --test lib/flow/source-fit.test.ts` first failed as expected for missing `naturalArtifacts`, then passed after adding concrete simulations: 7 tests.
 - `npm run build` passed.
 - `npm test` first failed as expected for missing `content-inventory` module, then passed after implementation: 62 tests.
 - `npx tsx --test lib/flow/content-lab.test.ts` first failed as expected for missing inventory summary fields, then passed.

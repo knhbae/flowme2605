@@ -41,6 +41,33 @@ Decision bands:
 | 40-59 | Catalog preview only | Do not present as representative; keep only as preview or direct-access candidate. |
 | 0-39 | Hide from public catalog | Remove from public catalog until a better source or user job exists. |
 
+## Natural Artifact Simulation Requirement
+
+Source-fit audit must not stop at "this Flow needs a date" or "this Flow could export to a sheet." The reviewer must create the artifact that a real user would have made after reading or watching the source, using realistic sample values.
+
+For each audited Flow, record `naturalArtifacts` before `userJourney`.
+
+Each artifact includes:
+
+- Artifact kind: checklist, monthly calendar, routine calendar, spreadsheet, memo, comparison table, or todo list.
+- Artifact title: the concrete thing the user would make.
+- Simulated input values: realistic `key=value` samples, such as `이사일=2026-06-27` or `운동요일=화/목/토`.
+- Expected output: actual dates, recurring sessions, columns, sample rows, memo fields, or checklist groups.
+- Current Flow match: whether the existing Flow content covers the same work.
+- Current UX support: whether the current screen lets the user enter, preview, edit, and export that artifact.
+- Gap: the specific content or UX change required.
+
+This turns the audit order into:
+
+1. Open the original source.
+2. Infer what the user would naturally create outside FLOW.
+3. Build one or more concrete natural artifacts with sample input values.
+4. Compare those artifacts against current Flow content.
+5. Compare those artifacts against current UX/UI and export affordances.
+6. Only then score source fit and decide public handling.
+
+The first implementation adds this requirement to all 10 manual source-fit audits. The remaining `source_status=real`, preview, and legacy flows should be audited with the same artifact-first method before promotion.
+
 ## Content Type Reconstruction Models
 
 ### Timeline
@@ -200,4 +227,3 @@ Next:
 - Add exact video/source alternatives for broad-channel routine Flows.
 - Make calendar/month views and routine recurrence visible for timeline, routine, and program Flow types.
 - Define a public removal checklist for low-fit generated previews.
-

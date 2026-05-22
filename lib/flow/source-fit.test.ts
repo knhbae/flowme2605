@@ -62,6 +62,29 @@ test('representative source-fit audit includes source and gap notes', () => {
   assert.ok(moving.sourceUrl.startsWith('https://'));
 });
 
+test('source-fit audits include concrete natural artifact simulations', () => {
+  for (const audit of sourceFitAudits) {
+    assert.ok(audit.naturalArtifacts.length > 0, audit.slug);
+
+    for (const artifact of audit.naturalArtifacts) {
+      assert.match(artifact.simulatedInputs.join(' '), /=/, `${audit.slug} needs concrete input values`);
+      assert.ok(artifact.expectedOutput.length > 0, `${audit.slug} needs expected artifact output`);
+      assert.ok(artifact.currentFlowMatch.length > 0, `${audit.slug} needs current Flow comparison`);
+      assert.ok(artifact.currentUxSupport.length > 0, `${audit.slug} needs UX support comparison`);
+      assert.ok(artifact.gap.length > 0, `${audit.slug} needs artifact gap`);
+    }
+  }
+});
+
+test('moving audit simulates calendar and spreadsheet artifacts before comparing the Flow', () => {
+  const moving = getSourceFitAudit('moving-d30-basic');
+  assert.ok(moving);
+
+  const artifactKinds = new Set(moving.naturalArtifacts.map((artifact) => artifact.kind));
+  assert.ok(artifactKinds.has('monthly_calendar'));
+  assert.ok(artifactKinds.has('spreadsheet'));
+});
+
 test('source-fit summary captures keep, reshape, and preview decisions', () => {
   const summary = getSourceFitSummary();
 
@@ -71,4 +94,3 @@ test('source-fit summary captures keep, reshape, and preview decisions', () => {
   assert.ok(summary.decisionCounts.reshape_before_featured >= 1);
   assert.ok(summary.decisionCounts.catalog_preview_only >= 1);
 });
-
