@@ -31,7 +31,7 @@
 - Source-fit audit scoring now gates representative public exposure for the first real-source Flow batch while keeping direct routes accessible.
 - Content inventory review now separates manual source-fit audits, metadata-derived real-source reviews, generated preview candidates, and legacy accessible routes in Content Lab and creator channel UX.
 - Source-fit audits now require concrete natural artifact simulations: sample user input values, expected checklist/calendar/sheet/memo outputs, and current Flow/UX gap comparisons.
-- Real-source natural artifact audit now covers 16 of 40 real-source Flows and is surfaced in Flow Lab with remaining audit count.
+- Real-source natural artifact audit now covers 20 of 40 real-source Flows and is surfaced in Flow Lab with remaining audit count.
 
 ## Next Up
 

@@ -198,7 +198,7 @@ export function ContentLab() {
           ))}
         </div>
         <div className="mt-5 grid gap-3 lg:grid-cols-2">
-          {realSourceNaturalArtifactAudits.slice(0, 8).map((audit) => (
+          {realSourceNaturalArtifactAudits.slice(-8).map((audit) => (
             <div key={audit.slug} className="rounded-lg border border-gray-200 p-4">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>

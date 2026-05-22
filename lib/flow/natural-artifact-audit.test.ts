@@ -14,7 +14,7 @@ function bundleBySlug(slug: string) {
 }
 
 test('real-source natural artifact audits only cover real-source flows', () => {
-  assert.equal(realSourceNaturalArtifactAudits.length, 16);
+  assert.equal(realSourceNaturalArtifactAudits.length, 20);
 
   for (const audit of realSourceNaturalArtifactAudits) {
     const bundle = bundleBySlug(audit.slug);
@@ -58,7 +58,7 @@ test('real-source natural artifact coverage summary tracks remaining work', () =
 
   assert.equal(summary.realSourceCount, 40);
   assert.equal(summary.auditedRealSourceCount, realSourceNaturalArtifactAudits.length);
-  assert.equal(summary.remainingRealSourceCount, 24);
+  assert.equal(summary.remainingRealSourceCount, 20);
   assert.ok(summary.decisionCounts.promote_to_manual_source_fit >= 1);
   assert.ok(summary.decisionCounts.reshape_content_or_ux >= 1);
 });
@@ -88,6 +88,24 @@ test('second real-source artifact batch covers routine, study, travel, and vehic
     assert.ok(
       audit.naturalArtifacts.some((artifact) => artifact.kind === 'routine_calendar' || artifact.kind === 'monthly_calendar'),
       `${slug} should simulate a calendar-like natural artifact`,
+    );
+  }
+});
+
+test('third real-source artifact batch covers admin, childcare, pet, and moving decision flows', () => {
+  const expectedThirdBatchSlugs = [
+    'real-gov24-resident-register-copy',
+    'real-childcare-support-application-check',
+    'real-pet-health-visit-routine',
+    'real-ohouse-movein-cleaning-check',
+  ];
+
+  for (const slug of expectedThirdBatchSlugs) {
+    const audit = getNaturalArtifactAudit(slug);
+    assert.ok(audit, `missing third-batch audit: ${slug}`);
+    assert.ok(
+      audit.naturalArtifacts.some((artifact) => artifact.kind === 'checklist' || artifact.kind === 'comparison_table'),
+      `${slug} should simulate a checklist or decision artifact`,
     );
   }
 });

@@ -7,10 +7,10 @@ This report starts the full review of the 40 `source_status=real` Flows. It uses
 | Metric | Count |
 | --- | ---: |
 | Real-source Flows | 40 |
-| Audited real-source Flows | 16 |
-| Remaining real-source Flows | 24 |
+| Audited real-source Flows | 20 |
+| Remaining real-source Flows | 20 |
 
-The first two batches intentionally avoid auditing only one cluster. They cover official service pages, household routines, exact workout videos, diet/logging videos, exam/admin deadlines, childcare/medical-sensitive content, pet registration, moving/financial-sensitive content, travel safety, travel health, and vehicle administration.
+The first three batches intentionally avoid auditing only one cluster. They cover official service pages, household routines, exact workout videos, diet/logging videos, exam/admin deadlines, childcare/medical-sensitive content, pet registration, pet health broad sources, moving/financial-sensitive content, travel safety, travel health, and vehicle administration.
 
 ## Method
 
@@ -45,6 +45,10 @@ For each source, record:
 | `real-mofa-overseas-travel-prep` | Monthly calendar, memo | Reshape content or UX | Needs destination-specific official check fields and an emergency contact card export. |
 | `real-ts-vehicle-inspection-prep` | Monthly calendar, checklist | Promote to manual source-fit | Needs reservation card, official inspection steps, and post-inspection repair follow-up. |
 | `real-safe-driving-license-renewal` | Monthly calendar, comparison table | Reshape content or UX | Needs license type branching and optional deadline input instead of a flat checklist. |
+| `real-gov24-resident-register-copy` | Checklist, memo | Reshape content or UX | Needs submitter requirement, visibility options, and proof memo fields. |
+| `real-childcare-support-application-check` | Checklist, comparison table | Reshape content or UX | Needs child age/area/time inputs and childcare-center candidate comparison. |
+| `real-pet-health-visit-routine` | Checklist, routine calendar | Keep catalog review | Current source is a registration/admin FAQ, not a direct pet health visit guide. |
+| `real-ohouse-movein-cleaning-check` | Comparison table, checklist | Reshape content or UX | Needs vendor estimate comparison and post-cleaning proof/reclean request checklist. |
 
 ## Source Evidence Used
 
@@ -62,6 +66,10 @@ For each source, record:
 - MOFA overseas safety page: the service exposes country/region travel alerts, travel pre-checks, crisis manuals, consular safety call center, and itinerary registration at `https://www.0404.go.kr/`.
 - TS vehicle inspection page: the page describes inspection procedure groups including 관능검사, ABS, 하체, 전조등, 배출가스, and result explanation at `https://main.kotsa.or.kr/portal/contents.do?menuCode=01010104`.
 - SafeDriving license guide: the page separates license/aptitude/renewal cases with fees, photo requirements, online/delegated application availability, and receipt restrictions at `https://www.safedriving.or.kr/guide/larGuide10.do?menuCode=MN-PO-12111o`.
+- Gov24 resident register page: direct page body access was crawler-limited, so the audit keeps it as indexed/official 민원 evidence and focuses on known execution artifacts: application channel, immediate issue, online-free issue, visibility options, PDF/print, and submission proof at `https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000015&HighCtgCD=A1004`.
+- Childcare time-care page: the page exposes 대상 age bands, 월 60시간 support, operating hours, hourly reservation, fee split, first-visit documents, and individual supplies at `https://www.childcare.go.kr/?menuno=202`.
+- Animal FAQ page: the page is an admin FAQ with animal registration agency and certificate-printing content, and explicitly says FAQ answers have no legal effect; it is broad evidence for a pet-health Flow and should stay catalog review until a direct health-visit source is found at `https://www.animal.go.kr/front/awtis/faq/faqList.do?menuNo=2000000021`.
+- Ohouse move-in cleaning page: the page gives 10-pyeong cost range, cost drivers, weekend/peak surcharge, vendor comparison criteria, extra-cost risk, and a short cleaning checklist at `https://ohou.se/advices/12375`.
 
 ## Output-Type Findings
 
@@ -95,6 +103,9 @@ Examples:
 - Gov24 moving report: proof fields should include receipt number, status, screenshot location, and follow-up tasks.
 - Pet registration: registration number, agency, owner contact, and change-report conditions should be stored as a durable memo card.
 - SafeDriving license renewal: the user must first choose a case such as 2종 갱신, 1종 적성검사, or 재발급; the checklist should then filter preparation items by that case.
+- Gov24 resident register copy: `제출처=은행 대출`, `공개범위=주민번호 뒷자리 비공개` should produce a pre-issue checklist and a post-submission proof memo.
+- Childcare time-care application: `아이월령=24개월`, `지역=마포구`, `이용시간=13:00-16:00` should produce eligibility checks, reservation steps, first-visit documents, and personal supplies.
+- Pet health visit: the current source does not directly justify the health visit routine; the user artifact still needs symptoms/questions and follow-up reminders, but the source should be replaced or supplemented.
 
 ### Comparison Table
 
@@ -103,8 +114,10 @@ Some timeline sources naturally create comparison tables.
 Example:
 
 - Ohouse moving: `후보A=용달 18만원`, `후보B=반포장 32만원` should produce a mover/vendor comparison table before the user commits.
+- Ohouse move-in cleaning: `후보A=18만원 기본청소`, `후보B=24만원 창틀 포함` should produce a vendor estimate comparison table plus a cleaning-after proof checklist.
 - FITVELY workout design: `후보A=무분할 주3회`, `후보B=상하체 주4회`, `후보C=3분할 주5회` should produce a split-routine comparison table before calendar generation.
 - SafeDriving license guide: case comparison should include preparation items, photo count, fees, online availability, delegated application, and receipt restrictions.
+- Childcare support: `후보A=센터A 13:00-16:00`, `후보B=센터B 10:00-13:00` should compare distance, time, first-visit paperwork, and reservation availability before the checklist is finalized.
 
 ### Spreadsheet / Log
 
@@ -126,10 +139,10 @@ Examples:
 
 ## Next Batch
 
-Audit the remaining 24 real-source Flows in this order:
+Audit the remaining 20 real-source Flows in this order:
 
-1. Finish remaining official/admin sources with exact pages: resident register copy, childcare support, pet health visit, move-in cleaning.
-2. Finish the exact video clusters with a reusable but still source-specific routine/log template: remaining ThankyouBUBU exact videos and FITVELY exact videos.
-3. Review broad-source flows last: FITVELY broad pages, ThankyouBUBU channel pages, pet health broad source, and any source that needs replacement before public promotion.
+1. Finish the exact video clusters with a reusable but still source-specific routine/log template: remaining ThankyouBUBU exact videos and FITVELY exact videos.
+2. Review broad-source flows last: FITVELY broad pages, ThankyouBUBU channel pages, and any source that needs replacement before public promotion.
+3. Revisit crawler-limited official pages only when a stable official body or mirrored 민원 안내 can be captured without weakening source attribution.
 
 Do not promote any real-source Flow from derived review to manual source-fit without at least one concrete natural artifact simulation.
