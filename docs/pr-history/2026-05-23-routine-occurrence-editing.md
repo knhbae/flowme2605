@@ -3,8 +3,9 @@
 - Date: 2026-05-23
 - Branch: `codex/routine-occurrence-editing`
 - PR: https://github.com/knhbae/flowme2605/pull/14
-- Status: `Open`
-- Production deploy: pending
+- Status: `Merged`, `Deployed`
+- Production deploy: https://flowme2605.vercel.app
+- Vercel inspect: https://vercel.com/flowme/flowme2605/4CCvykQfg6ne1ELTG3zEjkTcFYuv
 
 ## Why
 
@@ -52,6 +53,8 @@ Routine Flows need to feel like real recurring schedules, not a checklist with a
 - `npm test` passed: 87 tests.
 - `npm run test:e2e` passed: 38 tests.
 - Mobile screenshot captured: `test-results/manual/routine-occurrence-mobile.png`.
+- Production Vercel status passed for merge commit `1670aa9fbf8a4f08b9f25c3303cf60c9e8735be0`.
+- Production smoke passed on `https://flowme2605.vercel.app/f/study-exam-d30-plan`: `2회차` checkbox persisted, `회차 메모: 2회차` persisted, and the Workbench rendered `월간 회차 관리` plus `회차 기록`.
 
 ## Risks
 
