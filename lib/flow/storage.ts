@@ -1,5 +1,5 @@
 import { seedBundles } from './seed-flows';
-import { FlowBundle, FlowComparisonState, FlowItemState, ReactionLog } from './types';
+import { FlowBundle, FlowComparisonState, FlowItemState, FlowWorkbenchState, ReactionLog } from './types';
 
 const BUNDLES_KEY = 'flow_builder_mvp_bundles_v11';
 const PREVIOUS_BUNDLES_KEYS = [
@@ -15,6 +15,7 @@ const PREVIOUS_BUNDLES_KEYS = [
 const CHECKS_KEY_PREFIX = 'flow_builder_mvp_checks_';
 const REACTIONS_KEY_PREFIX = 'flow_builder_mvp_reactions_';
 const COMPARISON_KEY_PREFIX = 'flow_builder_mvp_comparison_';
+const WORKBENCH_KEY_PREFIX = 'flow_builder_mvp_workbench_';
 const ANCHOR_KEY_PREFIX = 'flow:';
 const ITEM_STATE_KEY_PREFIX = 'flow_builder_mvp_item_state_';
 const NOTICE_KEY = 'flow_builder_mvp_storage_notice_dismissed';
@@ -171,6 +172,41 @@ export function saveComparisonState(slug: string, value: FlowComparisonState): v
   localStorage.setItem('flow:meta:last-visit', new Date().toISOString());
 }
 
+function emptyWorkbenchState(): FlowWorkbenchState {
+  return { occurrences: {}, logRows: {} };
+}
+
+export function normalizeWorkbenchState(value: Partial<FlowWorkbenchState> | null | undefined): FlowWorkbenchState {
+  return {
+    occurrences: value?.occurrences && typeof value.occurrences === 'object' ? value.occurrences : {},
+    logRows: value?.logRows && typeof value.logRows === 'object' ? value.logRows : {},
+    weeklyReview: typeof value?.weeklyReview === 'string' ? value.weeklyReview : undefined,
+  };
+}
+
+export function getWorkbenchState(slug: string): FlowWorkbenchState {
+  if (!canUseStorage()) return emptyWorkbenchState();
+  try {
+    return normalizeWorkbenchState(JSON.parse(localStorage.getItem(`${WORKBENCH_KEY_PREFIX}${slug}`) || '{}') as Partial<FlowWorkbenchState>);
+  } catch {
+    return emptyWorkbenchState();
+  }
+}
+
+export function saveWorkbenchState(slug: string, value: FlowWorkbenchState): void {
+  if (!canUseStorage()) return;
+  localStorage.setItem(`${WORKBENCH_KEY_PREFIX}${slug}`, JSON.stringify(normalizeWorkbenchState(value)));
+  localStorage.setItem('flow:meta:last-visit', new Date().toISOString());
+}
+
+function hasWorkbenchProgress(state: FlowWorkbenchState): boolean {
+  return (
+    Object.values(state.occurrences).some((entry) => Boolean(entry.done) || Boolean(entry.note?.trim())) ||
+    Object.values(state.logRows).some((row) => Object.values(row).some((value) => value.trim())) ||
+    Boolean(state.weeklyReview?.trim())
+  );
+}
+
 export function getActiveFlowProgress(): ActiveFlowProgress[] {
   if (!canUseStorage()) return [];
 
@@ -181,6 +217,7 @@ export function getActiveFlowProgress(): ActiveFlowProgress[] {
     const checks = getChecks(bundle.flow.slug);
     const itemStates = getItemStates(bundle.flow.slug);
     const comparisonState = getComparisonState(bundle.flow.slug);
+    const workbenchState = getWorkbenchState(bundle.flow.slug);
     const storedAnchor = getStoredAnchor(bundle.flow.slug);
     const ids = bundle.flow.content_type === 'meal_plan'
       ? (bundle.mealSlots ?? []).map((slot) => slot.id)
@@ -196,7 +233,8 @@ export function getActiveFlowProgress(): ActiveFlowProgress[] {
       storedAnchor.mode === 'undecided' ||
       Object.values(itemStates).some((state) => Boolean(state.note)) ||
       comparisonState.candidates.some((candidate) => candidate.name.trim()) ||
-      Object.values(comparisonState.notes).some((row) => Object.values(row).some((note) => note.trim()));
+      Object.values(comparisonState.notes).some((row) => Object.values(row).some((note) => note.trim())) ||
+      hasWorkbenchProgress(workbenchState);
 
     if (hasProgress) {
       progress.push({

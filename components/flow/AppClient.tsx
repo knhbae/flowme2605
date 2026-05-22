@@ -21,6 +21,7 @@ import {
   getItemStates,
   getReactionLogs,
   getStoredAnchor,
+  getWorkbenchState,
   hasDismissedStorageNotice,
   cloneSeedBundles,
   dismissStorageNotice,
@@ -30,6 +31,7 @@ import {
   saveItemStates,
   saveReactionLogs,
   saveStoredAnchor,
+  saveWorkbenchState,
 } from '@/lib/flow/storage';
 import {
   AnchorType,
@@ -40,6 +42,7 @@ import {
   FlowItemDetail,
   FlowItemLinkType,
   FlowItemState,
+  FlowWorkbenchState,
   FlowUser,
   MealSlot,
   PrimaryDestination,
@@ -2155,6 +2158,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [checks, setChecks] = useState<Record<string, boolean>>({});
   const [itemStates, setItemStates] = useState<Record<string, FlowItemState>>({});
   const [comparisonState, setComparisonState] = useState<FlowComparisonState>(() => getComparisonState(slug));
+  const [workbenchState, setWorkbenchState] = useState<FlowWorkbenchState>(() => getWorkbenchState(slug));
   const [weekdaySelection, setWeekdaySelection] = useState(['월', '수', '금']);
   const [reactionLogs, setReactionLogs] = useState<Record<string, ReactionLog>>({});
   const [copyState, setCopyState] = useState('');
@@ -2176,6 +2180,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     setChecks(getChecks(slug));
     setItemStates(getItemStates(slug));
     setComparisonState(getComparisonState(slug));
+    setWorkbenchState(getWorkbenchState(slug));
     setReactionLogs(getReactionLogs(slug));
     setShowStorageNotice(!hasDismissedStorageNotice());
   }, [slug]);
@@ -2195,6 +2200,10 @@ export function PublicFlow({ slug }: { slug: string }) {
   useEffect(() => {
     saveComparisonState(slug, comparisonState);
   }, [comparisonState, slug]);
+
+  useEffect(() => {
+    saveWorkbenchState(slug, workbenchState);
+  }, [workbenchState, slug]);
 
   useEffect(() => {
     saveReactionLogs(slug, reactionLogs);
@@ -2257,7 +2266,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     });
   };
   const copy = async () => {
-    const text = buildText(bundle, checks, displayAnchor, itemStates, comparisonState);
+    const text = buildText(bundle, checks, displayAnchor, itemStates, comparisonState, workbenchState);
     try {
       await navigator.clipboard.writeText(text);
       setCopyState('복사됨');
@@ -2282,6 +2291,7 @@ export function PublicFlow({ slug }: { slug: string }) {
       reactionLogs,
       itemStates,
       comparisonState,
+      workbenchState,
     });
     const buffer = await buildXlsxBuffer(sheets);
     const blob = new Blob([buffer], {
@@ -2391,6 +2401,9 @@ export function PublicFlow({ slug }: { slug: string }) {
         itemStates={itemStates}
         comparisonState={comparisonState}
         onComparisonChange={setComparisonState}
+        workbenchState={workbenchState}
+        onWorkbenchChange={setWorkbenchState}
+        onToggleItem={toggle}
       />
 
       {showStorageNotice ? (
