@@ -7,10 +7,12 @@
 - Mainline PRs:
   - Item-card promotion: https://github.com/knhbae/flowme2605/pull/8
   - Demo UX polish: https://github.com/knhbae/flowme2605/pull/9
-- Status: `Open`, `Pending redeploy`
+- Status: `Open`, `Deployed`
 - Production deploy: https://flowme2605.vercel.app
 - Deployment URL: https://flowme2605-20g5fe610-flowme.vercel.app
+- Demo UX deployment URL: https://flowme2605-qqsm8zzac-flowme.vercel.app
 - Vercel inspect: https://vercel.com/flowme/flowme2605/E8vL2nQMrzoF8qjf7aow8tkTUZsb
+- Demo UX Vercel inspect: https://vercel.com/flowme/flowme2605/ERjP9Gtj2GjbA7FCRQNQCYz8a1TV
 
 ## Why
 
@@ -79,11 +81,16 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
   - Home: no `/flow-lab` or `/creators` nav links; headline is `따라하기 쉬운 실행 가이드, Flow`.
   - Moving schedule: no duplicated `출처와 주의 정보`; no `주별 보기`; one `일정 보기` tab.
   - `/my`: document title and H1 are `내 Flow`; no `Creator Studio` text.
-- Vercel production build passed.
+- Vercel production build passed for both item-card and demo UX deployments.
 - Production smoke tests passed:
   - `https://flowme2605.vercel.app` returned 200.
   - `https://flowme2605.vercel.app/f/wedding-d180-basic` returned 200.
   - Production item-card DOM check found 12 cards, 3 buttons, and 1 checkbox in the first card.
+- Demo UX production smoke tests passed:
+  - `/`, `/f/moving-d30-basic`, and `/my` returned 200 on the production alias.
+  - Home had 0 `/flow-lab` links, 0 `/creators` links, and the updated headline.
+  - Moving Flow had no duplicate source details, no `주별 보기`, and 1 `일정 보기` tab.
+  - `/my` had title/H1 `내 Flow` and no `Creator Studio` text.
 - Direct deployment URL required Vercel authentication, so public smoke testing used the production alias.
 - Manual screenshots captured:
   - `test-results/manual/item-card-mobile-full.png`
