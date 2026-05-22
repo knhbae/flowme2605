@@ -1,5 +1,6 @@
 import { addDays, formatDate, getRangeEnd } from './date';
 import { getArtifactPlan } from './artifact-plan';
+import { getComparisonRows, getMemoCardFields } from './artifact-fields';
 import { timingLabel } from './parser';
 import { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState, MealSlot, ReactionLog } from './types';
 
@@ -360,9 +361,9 @@ function buildComparisonExport(
   const candidates = comparisonCandidates(comparisonState);
   return {
     columns: [comparisonFirstColumn, ...candidates.map((candidate) => candidate.name)],
-    rows: bundle.items.map((item) => [
-      item.title,
-      ...candidates.map((candidate) => comparisonState?.notes?.[item.id]?.[candidate.id]?.trim() ?? ''),
+    rows: getComparisonRows(bundle).map((row) => [
+      row.title,
+      ...candidates.map((candidate) => comparisonState?.notes?.[row.id]?.[candidate.id]?.trim() ?? ''),
     ]),
   };
 }
@@ -394,7 +395,7 @@ function occurrenceLabel(key: string): { date: string; session: string } {
   };
 }
 
-function buildWorkbenchRows(state?: FlowWorkbenchState): WorkbookCell[][] {
+function buildWorkbenchRows(bundle: FlowBundle, state?: FlowWorkbenchState): WorkbookCell[][] {
   if (!state) return [];
   const rows: WorkbookCell[][] = [];
 
@@ -417,11 +418,26 @@ function buildWorkbenchRows(state?: FlowWorkbenchState): WorkbookCell[][] {
     }
   }
 
+  for (const field of getMemoCardFieldsFromState(bundle, state)) {
+    const value = state.memoCards?.[field.id]?.trim() ?? '';
+    if (!value) continue;
+    rows.push(['메모', '', field.label, value]);
+  }
+
   if (state.weeklyReview?.trim()) {
     rows.push(['리뷰', '', '주간 리뷰', state.weeklyReview.trim()]);
   }
 
   return rows;
+}
+
+function getMemoCardFieldsFromState(bundle: FlowBundle, state: FlowWorkbenchState) {
+  const fields = getMemoCardFields(bundle);
+  const known = new Set(fields.map((field) => field.id));
+  const dynamicFields = Object.keys(state.memoCards ?? {})
+    .filter((id) => !known.has(id))
+    .map((id) => ({ id, label: id, placeholder: '' }));
+  return [...fields, ...dynamicFields];
 }
 
 function appendWorkbenchText(lines: string[], rows: WorkbookCell[][]) {
@@ -452,7 +468,7 @@ export function buildText(
   lines.push(`${anchorLabel}: ${anchor || (bundle.flow.anchor_type === 'none' ? '없음' : '')}`);
   const artifactPlan = getArtifactPlan(bundle);
   const comparison = buildComparisonExport(bundle, comparisonState);
-  const workbenchRows = buildWorkbenchRows(workbenchState);
+  const workbenchRows = buildWorkbenchRows(bundle, workbenchState);
 
   if (bundle.flow.content_type === 'meal_plan') {
     for (const section of bundle.sections) {
@@ -690,7 +706,7 @@ export function buildWorkbookSheets(
   const anchorLabel = getExportAnchorLabel(bundle);
   const itemStates = options.itemStates ?? {};
   const comparison = buildComparisonExport(bundle, options.comparisonState);
-  const workbenchRows = buildWorkbenchRows(options.workbenchState);
+  const workbenchRows = buildWorkbenchRows(bundle, options.workbenchState);
 
   const summaryRows: WorkbookCell[][] = [
     ['FLOW', bundle.flow.title],

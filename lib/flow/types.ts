@@ -128,6 +128,7 @@ export type FlowWorkbenchLogRow = Record<string, string>;
 export type FlowWorkbenchState = {
   occurrences: Record<string, FlowWorkbenchOccurrenceState>;
   logRows: Record<string, FlowWorkbenchLogRow>;
+  memoCards: Record<string, string>;
   weeklyReview?: string;
 };
 

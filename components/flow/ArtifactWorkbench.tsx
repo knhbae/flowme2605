@@ -1,6 +1,7 @@
 'use client';
 
 import { getArtifactPlan } from '@/lib/flow/artifact-plan';
+import { getComparisonRows, getMemoCardFields, type ArtifactComparisonRow, type ArtifactMemoField } from '@/lib/flow/artifact-fields';
 import { addDays, formatDate, getRangeEnd } from '@/lib/flow/date';
 import { timingLabel } from '@/lib/flow/parser';
 import type { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState } from '@/lib/flow/types';
@@ -77,7 +78,16 @@ export function ArtifactWorkbench({
         ) : plan.primarySurface === 'spreadsheet_log' ? (
           <SpreadsheetWorkbench anchor={anchor} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
         ) : plan.primarySurface === 'timeline_calendar' ? (
-          <TimelineWorkbench bundle={bundle} anchor={anchor} checks={checks} onToggleItem={onToggleItem} />
+          <TimelineWorkbench
+            bundle={bundle}
+            anchor={anchor}
+            checks={checks}
+            comparisonState={comparisonState}
+            onComparisonChange={onComparisonChange}
+            workbenchState={workbenchState}
+            onWorkbenchChange={onWorkbenchChange}
+            onToggleItem={onToggleItem}
+          />
         ) : (
           <ChecklistWorkbench bundle={bundle} checks={checks} onToggleItem={onToggleItem} />
         )}
@@ -144,14 +154,24 @@ function TimelineWorkbench({
   bundle,
   anchor,
   checks,
+  comparisonState,
+  onComparisonChange,
+  workbenchState,
+  onWorkbenchChange,
   onToggleItem,
 }: {
   bundle: FlowBundle;
   anchor: string;
   checks: Record<string, boolean>;
+  comparisonState: FlowComparisonState;
+  onComparisonChange: (state: FlowComparisonState) => void;
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
   onToggleItem: (id: string) => void;
 }) {
   const rows = scheduleRows(bundle, anchor);
+  const comparisonRows = getComparisonRows(bundle);
+  const memoFields = getMemoCardFields(bundle);
   const listRows = rows.length
     ? rows.slice(0, 8)
     : getExecutableItems(bundle)
@@ -166,27 +186,41 @@ function TimelineWorkbench({
   const month = rows[0]?.startDate.slice(0, 7) ?? anchor.slice(0, 7);
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1fr_1.05fr]">
-      <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
-        <p className="text-sm font-semibold text-blue-700">실행 리스트 미리보기</p>
-        <h3 className="text-base font-semibold text-gray-950">전체 할 일</h3>
-        <div className="mt-3 space-y-2">
-          {listRows.map((row) => (
-            <label key={row.id} className="grid grid-cols-[22px_92px_1fr] gap-3 rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
-              <input
-                aria-label={`실행판 체크: ${row.title}`}
-                className="mt-0.5 h-4 w-4 rounded border-gray-300"
-                checked={Boolean(checks[row.id])}
-                onChange={() => onToggleItem(row.id)}
-                type="checkbox"
-              />
-              <span className="font-mono text-xs font-semibold text-blue-700">{row.startDate ? `${row.timing} · ${row.startDate.slice(5)}` : row.timing}</span>
-              <span className={`font-medium ${checks[row.id] ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{row.title}</span>
-            </label>
-          ))}
+    <div className="space-y-4">
+      <div className="grid gap-4 lg:grid-cols-[1fr_1.05fr]">
+        <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+          <p className="text-sm font-semibold text-blue-700">실행 리스트 미리보기</p>
+          <h3 className="text-base font-semibold text-gray-950">전체 할 일</h3>
+          <div className="mt-3 space-y-2">
+            {listRows.map((row) => (
+              <label key={row.id} className="grid grid-cols-[22px_92px_1fr] gap-3 rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
+                <input
+                  aria-label={`실행판 체크: ${row.title}`}
+                  className="mt-0.5 h-4 w-4 rounded border-gray-300"
+                  checked={Boolean(checks[row.id])}
+                  onChange={() => onToggleItem(row.id)}
+                  type="checkbox"
+                />
+                <span className="font-mono text-xs font-semibold text-blue-700">{row.startDate ? `${row.timing} · ${row.startDate.slice(5)}` : row.timing}</span>
+                <span className={`font-medium ${checks[row.id] ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{row.title}</span>
+              </label>
+            ))}
+          </div>
         </div>
+        <MiniMonthCalendar title="월간 캘린더" eyebrow="월별 달력 preview" month={month} rows={rows} />
       </div>
-      <MiniMonthCalendar title="월간 캘린더" eyebrow="월별 달력 preview" month={month} rows={rows} />
+      {memoFields.length ? (
+        <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+          <ComparisonTable
+            title="이사 업체 후보 비교"
+            eyebrow="업체 비교표"
+            rows={comparisonRows}
+            comparisonState={comparisonState}
+            onComparisonChange={onComparisonChange}
+          />
+          <ProofMemoCard fields={memoFields} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -330,6 +364,104 @@ function RoutineOccurrenceCalendar({
   );
 }
 
+function ComparisonTable({
+  title,
+  eyebrow,
+  rows,
+  comparisonState,
+  onComparisonChange,
+}: {
+  title: string;
+  eyebrow: string;
+  rows: ArtifactComparisonRow[];
+  comparisonState: FlowComparisonState;
+  onComparisonChange: (state: FlowComparisonState) => void;
+}) {
+  const comparison = ensureComparisonState(comparisonState);
+
+  return (
+    <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-gray-100 px-3 py-3">
+        <div>
+          <p className="text-sm font-semibold text-blue-700">{eyebrow}</p>
+          <h3 className="mt-1 text-base font-semibold text-gray-950">{title}</h3>
+        </div>
+        <button className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-800" onClick={() => onComparisonChange(addComparisonCandidate(comparison))}>
+          후보 추가
+        </button>
+      </div>
+      <div
+        className="grid min-w-[720px] bg-gray-50 text-xs font-semibold text-gray-600"
+        style={{ gridTemplateColumns: `minmax(220px,1.1fr) repeat(${comparison.candidates.length}, minmax(170px,1fr))` }}
+      >
+        <span className="px-3 py-2">비교 항목</span>
+        {comparison.candidates.map((candidate, index) => (
+          <label key={candidate.id} className="px-3 py-2">
+            <input
+              aria-label={`후보 ${index + 1} 이름`}
+              className="w-full rounded-md border border-gray-200 bg-white px-2 py-1 text-sm font-semibold text-gray-900"
+              value={candidate.name}
+              onChange={(event) => onComparisonChange(updateComparisonCandidateName(comparison, candidate.id, event.target.value))}
+            />
+          </label>
+        ))}
+      </div>
+      {rows.slice(0, 8).map((row) => (
+        <div
+          key={row.id}
+          className="grid min-w-[720px] border-t border-gray-100"
+          style={{ gridTemplateColumns: `minmax(220px,1.1fr) repeat(${comparison.candidates.length}, minmax(170px,1fr))` }}
+        >
+          <span className="px-3 py-3 text-sm font-medium text-gray-800">{row.title}</span>
+          {comparison.candidates.map((candidate, index) => (
+            <label key={`${row.id}-${candidate.id}`} className="px-3 py-2">
+              <textarea
+                aria-label={`${row.title} / 후보 ${index + 1} 메모`}
+                className="min-h-14 w-full resize-y rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
+                placeholder="가격, 조건, 확인할 점"
+                value={comparison.notes[row.id]?.[candidate.id] ?? ''}
+                onChange={(event) => onComparisonChange(updateComparisonNote(comparison, row.id, candidate.id, event.target.value))}
+              />
+            </label>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ProofMemoCard({
+  fields,
+  workbenchState,
+  onWorkbenchChange,
+}: {
+  fields: ArtifactMemoField[];
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
+}) {
+  return (
+    <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+      <p className="text-sm font-semibold text-blue-700">계약·결제 증빙</p>
+      <h3 className="mt-1 text-base font-semibold text-gray-950">증빙 메모</h3>
+      <p className="mt-2 text-sm leading-6 text-gray-600">견적, 계약금, 잔금, 보상 기준을 흩어진 캡처 대신 한곳에 남겨둡니다.</p>
+      <div className="mt-3 space-y-3">
+        {fields.map((field) => (
+          <label key={field.id} className="block">
+            <span className="text-sm font-semibold text-gray-800">{field.label}</span>
+            <textarea
+              aria-label={field.label}
+              className="mt-1 min-h-16 w-full resize-y rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800"
+              placeholder={field.placeholder}
+              value={workbenchState.memoCards?.[field.id] ?? ''}
+              onChange={(event) => onWorkbenchChange(updateMemoCard(workbenchState, field.id, event.currentTarget.value))}
+            />
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function DecisionWorkbench({
   bundle,
   checks,
@@ -343,62 +475,22 @@ function DecisionWorkbench({
   onComparisonChange: (state: FlowComparisonState) => void;
   onToggleItem: (id: string) => void;
 }) {
-  const comparison = ensureComparisonState(comparisonState);
-  const rows = bundle.items;
+  const comparisonRows = getComparisonRows(bundle);
+  const checklistItems = bundle.items;
   return (
     <div className="grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
-      <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
-        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-gray-100 px-3 py-3">
-          <div>
-            <p className="text-sm font-semibold text-blue-700">후보 비교 preview</p>
-            <h3 className="mt-1 text-base font-semibold text-gray-950">후보 비교표</h3>
-          </div>
-          <button className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-800" onClick={() => onComparisonChange(addComparisonCandidate(comparison))}>
-            후보 추가
-          </button>
-        </div>
-        <div
-          className="grid min-w-[720px] bg-gray-50 text-xs font-semibold text-gray-600"
-          style={{ gridTemplateColumns: `minmax(220px,1.1fr) repeat(${comparison.candidates.length}, minmax(170px,1fr))` }}
-        >
-          <span className="px-3 py-2">비교 항목</span>
-          {comparison.candidates.map((candidate, index) => (
-            <label key={candidate.id} className="px-3 py-2">
-              <input
-                aria-label={`후보 ${index + 1} 이름`}
-                className="w-full rounded-md border border-gray-200 bg-white px-2 py-1 text-sm font-semibold text-gray-900"
-                value={candidate.name}
-                onChange={(event) => onComparisonChange(updateComparisonCandidateName(comparison, candidate.id, event.target.value))}
-              />
-            </label>
-          ))}
-        </div>
-        {rows.slice(0, 8).map((item) => (
-          <div
-            key={item.id}
-            className="grid min-w-[720px] border-t border-gray-100"
-            style={{ gridTemplateColumns: `minmax(220px,1.1fr) repeat(${comparison.candidates.length}, minmax(170px,1fr))` }}
-          >
-            <span className="px-3 py-3 text-sm font-medium text-gray-800">{item.title}</span>
-            {comparison.candidates.map((candidate, index) => (
-              <label key={`${item.id}-${candidate.id}`} className="px-3 py-2">
-                <textarea
-                  aria-label={`${item.title} / 후보 ${index + 1} 메모`}
-                  className="min-h-14 w-full resize-y rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
-                  placeholder="가격, 상태, 조건 메모"
-                  value={comparison.notes[item.id]?.[candidate.id] ?? ''}
-                  onChange={(event) => onComparisonChange(updateComparisonNote(comparison, item.id, candidate.id, event.target.value))}
-                />
-              </label>
-            ))}
-          </div>
-        ))}
-      </div>
+      <ComparisonTable
+        title="후보 비교표"
+        eyebrow="후보 비교 preview"
+        rows={comparisonRows}
+        comparisonState={comparisonState}
+        onComparisonChange={onComparisonChange}
+      />
       <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
         <p className="text-sm font-semibold text-blue-700">현장에서 바로 체크</p>
         <h3 className="mt-1 text-base font-semibold text-gray-950">현장 체크리스트</h3>
         <ul className="mt-3 space-y-2 text-sm text-gray-700">
-          {rows.slice(0, 5).map((item) => (
+          {checklistItems.slice(0, 5).map((item) => (
             <li key={item.id}>
               <label className="flex gap-2">
                 <input
@@ -494,6 +586,16 @@ function updateLogField(state: FlowWorkbenchState, date: string, field: string, 
         ...(state.logRows[date] ?? {}),
         [field]: value,
       },
+    },
+  };
+}
+
+function updateMemoCard(state: FlowWorkbenchState, field: string, value: string): FlowWorkbenchState {
+  return {
+    ...state,
+    memoCards: {
+      ...state.memoCards,
+      [field]: value,
     },
   };
 }
