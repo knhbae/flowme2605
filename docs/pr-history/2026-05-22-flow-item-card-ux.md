@@ -133,12 +133,13 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Kept channel browsing and generated preview Flow routes visible because they are useful for demo/product comprehension, but changed their language to avoid implying source validation.
 - Added concrete `naturalArtifacts` to manual source-fit audits so each representative Flow now simulates real input values, expected user-made checklist/calendar/sheet/memo outputs, current Flow match, current UX support, and the remaining gap.
 - Updated the UX/content evaluation harness and source-fit design so reviewers must build the natural artifact before scoring source fit or judging the UI.
-- Added real-source natural artifact audit coverage for 24 of 40 `source_status=real` Flows.
+- Added real-source natural artifact audit coverage for 28 of 40 `source_status=real` Flows.
 - Expanded the second batch across exact workout videos, diet/logging videos, study planning, travel safety, vehicle inspection, and license renewal Flows.
 - Expanded the third batch across resident register copy, time-care childcare application, pet-health visit broad source review, and move-in cleaning estimate comparison Flows.
 - Expanded the fourth batch across four ThankyouBUBU exact workout videos, emphasizing recurring workout calendars, safety/condition memos, and measurement logs.
+- Expanded the fifth batch across the remaining four ThankyouBUBU exact workout videos, covering short-cardio, micro-routine, recovery-day, and lower-belly measurement-log cases.
 - Surfaced the real-source natural artifact audit coverage in `/flow-lab`, including audited count, remaining real-source count, decisions, and sample simulated inputs.
-- Updated `docs/content-audit/2026-05-22-real-source-natural-artifact-audit.md` as the readable report for the first four audit batches.
+- Updated `docs/content-audit/2026-05-22-real-source-natural-artifact-audit.md` as the readable report for the first five audit batches.
 
 ## Not Done
 
@@ -155,8 +156,8 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Did not audit all 500+ preview/generated Flows one-by-one; representative Flows were prioritized, and the remaining catalog audit is follow-up work.
 - Did not manually open and audit the 40 `source_status=real` routes in this batch; they are derived reviews based on existing source metadata.
 - Did not assign exact source URLs to the 440 generated preview candidates.
-- Did not add natural artifact simulations to the remaining 16 derived real-source flows or 440 preview candidates yet; that is the next manual audit pass.
-- Did not complete the remaining 16 real-source natural artifact audits in this pass.
+- Did not add natural artifact simulations to the remaining 12 derived real-source flows or 440 preview candidates yet; that is the next manual audit pass.
+- Did not complete the remaining 12 real-source natural artifact audits in this pass.
 
 ## Decisions
 
@@ -215,9 +216,16 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `npx tsx --test lib/flow/natural-artifact-audit.test.ts` failed as expected when raising audit coverage from 8 to 16, then passed after adding the second real-source audit batch: 6 tests.
 - `npx tsx --test lib/flow/natural-artifact-audit.test.ts` failed as expected when raising audit coverage from 16 to 20, then passed after adding the third real-source audit batch: 7 tests.
 - `npx tsx --test lib/flow/natural-artifact-audit.test.ts` failed as expected when raising audit coverage from 20 to 24, then passed after adding the fourth real-source audit batch: 8 tests.
+- `npx tsx --test lib/flow/natural-artifact-audit.test.ts` failed as expected when raising audit coverage from 24 to 28, then passed after adding the fifth real-source audit batch: 9 tests.
 - `npx tsx --test lib/flow/content-lab.test.ts` first failed as expected for missing natural artifact coverage fields, then passed after connecting the summary.
 - `npx tsx --test lib/flow/content-lab.test.ts` passed after updating the natural artifact summary to 20 audited real-source Flows: 8 tests.
 - `npx tsx --test lib/flow/content-lab.test.ts` passed after updating the natural artifact summary to 24 audited real-source Flows: 8 tests.
+- `npx tsx --test lib/flow/content-lab.test.ts` passed after updating the natural artifact summary to 28 audited real-source Flows: 8 tests.
+- `npm run docs:check` passed after the fifth natural artifact audit batch: 12 required files, 50 local links.
+- `npm test` passed after the fifth natural artifact audit batch: 74 tests.
+- `npm run build` passed after the fifth natural artifact audit batch.
+- `npm run test:e2e -- --grep "flow lab shows converted pilot"` passed after updating Flow Lab audit count to 28: 1 test.
+- `npm run test:e2e` passed after the fifth natural artifact audit batch: 35 tests.
 - `npm run docs:check` passed after the fourth natural artifact audit batch: 12 required files, 50 local links.
 - `npm test` passed after the fourth natural artifact audit batch: 73 tests.
 - `npm run build` passed after the fourth natural artifact audit batch.

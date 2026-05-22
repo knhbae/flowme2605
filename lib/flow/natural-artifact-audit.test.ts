@@ -14,7 +14,7 @@ function bundleBySlug(slug: string) {
 }
 
 test('real-source natural artifact audits only cover real-source flows', () => {
-  assert.equal(realSourceNaturalArtifactAudits.length, 24);
+  assert.equal(realSourceNaturalArtifactAudits.length, 28);
 
   for (const audit of realSourceNaturalArtifactAudits) {
     const bundle = bundleBySlug(audit.slug);
@@ -58,7 +58,7 @@ test('real-source natural artifact coverage summary tracks remaining work', () =
 
   assert.equal(summary.realSourceCount, 40);
   assert.equal(summary.auditedRealSourceCount, realSourceNaturalArtifactAudits.length);
-  assert.equal(summary.remainingRealSourceCount, 16);
+  assert.equal(summary.remainingRealSourceCount, 12);
   assert.ok(summary.decisionCounts.promote_to_manual_source_fit >= 1);
   assert.ok(summary.decisionCounts.reshape_content_or_ux >= 1);
 });
@@ -128,6 +128,28 @@ test('fourth real-source artifact batch covers exact workout video routines', ()
     assert.ok(
       audit.naturalArtifacts.some((artifact) => artifact.kind === 'memo' || artifact.kind === 'spreadsheet'),
       `${slug} should simulate a workout condition note or measurement log`,
+    );
+  }
+});
+
+test('fifth real-source artifact batch completes remaining ThankyouBUBU exact videos', () => {
+  const expectedFifthBatchSlugs = [
+    'real-thankyou-bubu-video-8min-cardio',
+    'real-thankyou-bubu-video-3min-arm',
+    'real-thankyou-bubu-video-3min-abs',
+    'real-thankyou-bubu-video-lower-belly-8min',
+  ];
+
+  for (const slug of expectedFifthBatchSlugs) {
+    const audit = getNaturalArtifactAudit(slug);
+    assert.ok(audit, `missing fifth-batch audit: ${slug}`);
+    assert.ok(
+      audit.naturalArtifacts.some((artifact) => artifact.kind === 'routine_calendar'),
+      `${slug} should simulate a recurring workout calendar`,
+    );
+    assert.ok(
+      audit.currentUxGap.includes('캘린더') || audit.currentUxGap.includes('로그'),
+      `${slug} should compare against current routine calendar/log UX`,
     );
   }
 });
