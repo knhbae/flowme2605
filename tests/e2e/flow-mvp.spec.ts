@@ -376,6 +376,34 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   expect(download.suggestedFilename()).toBe('moving-d30-basic.xlsx');
 });
 
+test('mobile export actions open from a bottom sheet', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/moving-d30-basic');
+
+  await page.getByLabel('이사일').fill('2026-07-15');
+  await page.getByRole('checkbox', { name: /이사 방식 정하기/ }).first().check();
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+
+  const mobileBar = page.getByTestId('mobile-export-bar');
+  await expect(mobileBar).toBeVisible();
+  await expect(mobileBar.getByText('1 / 24')).toBeVisible();
+  await expect(mobileBar.getByRole('button', { name: '내보내기' })).toBeVisible();
+  await expect(mobileBar.getByRole('button', { name: '체크리스트 복사' })).toHaveCount(0);
+  await expect(mobileBar.getByRole('button', { name: '엑셀 받기' })).toHaveCount(0);
+
+  await mobileBar.getByRole('button', { name: '내보내기' }).click();
+
+  const sheet = page.getByTestId('mobile-export-sheet');
+  await expect(sheet.getByRole('heading', { name: '내보내기와 백업' })).toBeVisible();
+  await expect(sheet.getByRole('button', { name: '텍스트로 복사' })).toBeEnabled();
+  await expect(sheet.getByRole('button', { name: '엑셀로 받기' })).toBeEnabled();
+  await expect(sheet.getByRole('button', { name: '캘린더 파일 받기' })).toBeEnabled();
+  await expect(sheet.getByRole('button', { name: '내 버전 만들기' })).toBeEnabled();
+
+  await sheet.getByRole('button', { name: '닫기' }).click();
+  await expect(page.getByTestId('mobile-export-sheet')).toHaveCount(0);
+});
+
 test('wedding flow answers first-screen questions and persists date note and skip state', async ({ page }) => {
   await page.goto('/f/wedding-d180-basic');
 

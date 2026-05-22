@@ -2128,6 +2128,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [calendarState, setCalendarState] = useState('');
   const [view, setView] = useState<PublicView>('list');
   const [showMobileActions, setShowMobileActions] = useState(false);
+  const [showMobileExportSheet, setShowMobileExportSheet] = useState(false);
   const [showStorageNotice, setShowStorageNotice] = useState(false);
 
   useEffect(() => {
@@ -2448,26 +2449,61 @@ export function PublicFlow({ slug }: { slug: string }) {
         </>
       )}
 
-      <div className={`fixed inset-x-0 bottom-0 z-20 border-t border-gray-200 bg-white/95 px-4 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur transition duration-200 md:hidden ${showMobileActions ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}>
-        <div className="mx-auto max-w-5xl">
-          <div className="mb-2 flex items-center justify-between text-sm">
-            <span className="font-medium text-gray-600">진행률</span>
-            <span className="font-semibold">{done} / {executableCount}</span>
-          </div>
-          <div className="flex gap-2">
-            <button className="flex-1 rounded-md bg-[#2563EB] px-3 py-2 text-sm font-semibold text-white disabled:bg-gray-300" disabled={done === 0} onClick={copy}>
-              체크리스트 복사
-            </button>
-            <button className="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold disabled:border-gray-200 disabled:text-gray-400" disabled={done === 0} onClick={downloadExcel}>
-              엑셀 받기
-            </button>
-            {canExportCalendar ? (
-              <button className="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold disabled:border-gray-200 disabled:text-gray-400" disabled={done === 0} onClick={downloadCalendar}>
-                캘린더
+      {showMobileExportSheet ? (
+        <div className="fixed inset-0 z-30 md:hidden" data-testid="mobile-export-sheet" role="dialog" aria-modal="true" aria-labelledby="mobile-export-title">
+          <button className="absolute inset-0 bg-black/30" aria-label="배경" onClick={() => setShowMobileExportSheet(false)} />
+          <section className="absolute inset-x-0 bottom-0 rounded-t-2xl bg-white p-5 shadow-[0_-16px_40px_rgba(15,23,42,0.18)]">
+            <div className="mx-auto h-1.5 w-12 rounded-full bg-gray-200" />
+            <div className="mt-4 flex items-start justify-between gap-4">
+              <div>
+                <h2 id="mobile-export-title" className="text-lg font-semibold text-gray-950">내보내기와 백업</h2>
+                <p className="mt-1 text-sm text-gray-600">
+                  {done > 0 ? '현재 진행 상태, 메모, 스킵, 비교표를 함께 백업합니다.' : '항목을 체크하면 텍스트, 엑셀, 캘린더로 백업할 수 있어요.'}
+                </p>
+              </div>
+              <button className="rounded-md border border-gray-200 px-3 py-1.5 text-sm font-semibold text-gray-700" onClick={() => setShowMobileExportSheet(false)}>
+                닫기
               </button>
-            ) : null}
-            <button className="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold" onClick={copyToEditableDraft}>
-              내 버전
+            </div>
+            <div className="mt-5 grid gap-2">
+              <button className="rounded-md bg-[#2563EB] px-4 py-3 text-left text-sm font-semibold text-white disabled:bg-gray-300" disabled={done === 0} onClick={copy}>
+                텍스트로 복사
+              </button>
+              <button className="rounded-md border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-800 disabled:border-gray-200 disabled:text-gray-400" disabled={done === 0} onClick={downloadExcel}>
+                엑셀로 받기
+              </button>
+              {canExportCalendar ? (
+                <button className="rounded-md border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-800 disabled:border-gray-200 disabled:text-gray-400" disabled={done === 0} onClick={downloadCalendar}>
+                  캘린더 파일 받기
+                </button>
+              ) : null}
+              <button className="rounded-md border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-800" onClick={copyToEditableDraft}>
+                내 버전 만들기
+              </button>
+            </div>
+            <div className="mt-3 min-h-5 text-sm">
+              {copyState ? <span className="text-green-700">{copyState}</span> : null}
+              {downloadState ? <span className="text-blue-700">{downloadState}</span> : null}
+              {calendarState ? <span className="text-blue-700">{calendarState}</span> : null}
+            </div>
+          </section>
+        </div>
+      ) : null}
+
+      <div data-testid="mobile-export-bar" className={`fixed inset-x-0 bottom-0 z-20 border-t border-gray-200 bg-white/95 px-4 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur transition duration-200 md:hidden ${showMobileActions ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}>
+        <div className="mx-auto max-w-5xl">
+          <div className="flex items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="mb-1 flex items-center justify-between text-sm">
+                <span className="font-medium text-gray-600">진행률</span>
+                <span className="font-semibold">{done} / {executableCount}</span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-gray-200">
+                <div className="h-full bg-[#2563EB]" style={{ width: `${executableCount > 0 ? Math.round((done / executableCount) * 100) : 0}%` }} />
+              </div>
+            </div>
+            <button className="shrink-0 rounded-md bg-[#2563EB] px-4 py-3 text-sm font-semibold text-white" onClick={() => setShowMobileExportSheet(true)}>
+              내보내기
             </button>
           </div>
         </div>

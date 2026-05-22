@@ -65,6 +65,10 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Added comparison-table data to text copy and XLSX workbook export:
   - Text export appends a `후보 비교표` section.
   - Workbook export adds a `후보 비교` sheet with candidate columns and row-level notes.
+- Replaced the crowded mobile sticky export buttons with a bottom sheet:
+  - Mobile sticky bar now shows progress and one `내보내기` action.
+  - Tapping `내보내기` opens `텍스트로 복사`, `엑셀로 받기`, `캘린더 파일 받기`, and `내 버전 만들기`.
+  - Desktop export controls remain unchanged.
 - Added a migration-candidate banner so older flows remain usable while clearly indicating they are being moved to the new execution model.
 
 ## Not Done
@@ -77,6 +81,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Did not add comparison data to `.ics` calendar export because candidate comparison is not a dated reminder surface.
 - Did not migrate every legacy Flow into the new execution-model content standard; older flows remain migration candidates.
 - Did not add account sync, external calendar API integration, or server-side recurrence storage.
+- Did not convert the mobile bottom sheet to a reusable design-system primitive yet; it remains scoped to public Flow detail.
 
 ## Decisions
 
@@ -132,6 +137,10 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `npm test` passed after comparison export integration: 47 tests.
 - `npm run build` passed after comparison export integration.
 - `npm run test:e2e` passed after comparison export integration: 33 tests.
+- `npm run test:e2e -- --grep "mobile export actions"` passed after mobile bottom sheet: 1 test.
+- `npm test` passed after mobile bottom sheet: 47 tests.
+- `npm run build` passed after mobile bottom sheet.
+- `npm run test:e2e` passed after mobile bottom sheet: 34 tests.
 - Execution-model production deploy passed and aliased to `https://flowme2605.vercel.app`.
 - Production smoke passed for:
   - Home representative flow card and output target preview.
