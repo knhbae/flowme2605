@@ -2,7 +2,8 @@
 
 - Date: 2026-05-23
 - Branch: `codex/routine-occurrence-editing`
-- Status: `Draft`
+- PR: https://github.com/knhbae/flowme2605/pull/14
+- Status: `Open`
 - Production deploy: pending
 
 ## Why
