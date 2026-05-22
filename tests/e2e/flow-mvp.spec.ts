@@ -363,17 +363,25 @@ test('wedding flow answers first-screen questions and persists date note and ski
   await expect(page.getByText(/모든 항목이 자동 조정/)).toBeVisible();
 
   const firstItem = page.locator('[data-testid="flow-item-card"]').filter({ hasText: '예식 날짜와 예상 하객 규모 정하기' }).first();
-  await firstItem.getByRole('checkbox').check();
+  await expect(firstItem.getByLabel('완료: 예식 날짜와 예상 하객 규모 정하기')).toBeVisible();
+  await expect(firstItem.getByText(/D-180/)).toBeVisible();
+  await expect(firstItem.getByRole('button', { name: '메모 추가' })).toBeVisible();
+  await expect(firstItem.getByRole('button', { name: '해당 없음' })).toBeVisible();
+  await expect(firstItem.getByRole('button', { name: '자세히' })).toBeVisible();
+  await firstItem.getByLabel('완료: 예식 날짜와 예상 하객 규모 정하기').check();
+  await firstItem.getByRole('button', { name: '메모 추가' }).click();
+  await expect(firstItem.getByText('자동 저장됨 · 이 기기에만 저장')).toBeVisible();
   await firstItem.getByLabel('예식 날짜와 예상 하객 규모 정하기 메모').fill('양가 협의는 6월 첫째 주에 다시 확인');
 
   const secondItem = page.locator('[data-testid="flow-item-card"]').filter({ hasText: '웨딩홀 후보와 예산 범위 비교하기' }).first();
-  await secondItem.getByRole('button', { name: '내 상황엔 해당 없음' }).click();
+  await secondItem.getByRole('button', { name: '해당 없음' }).click();
   await expect(page.getByText('1 / 11').first()).toBeVisible();
 
   await page.reload();
   await expect(page.getByLabel('예식일')).toHaveValue('2026-09-15');
+  await firstItem.getByRole('button', { name: '메모' }).click();
   await expect(firstItem.getByLabel('예식 날짜와 예상 하객 규모 정하기 메모')).toHaveValue('양가 협의는 6월 첫째 주에 다시 확인');
-  await expect(secondItem.getByRole('button', { name: '스킵 해제' })).toBeVisible();
+  await expect(secondItem.getByRole('button', { name: '다시 포함' })).toBeVisible();
   await expect(page.getByText('1 / 11').first()).toBeVisible();
 });
 
@@ -497,7 +505,7 @@ test('representative real content pilot flows are executable', async ({ page }) 
   await page.getByLabel('시작일').fill('2026-06-01');
   await expect(page.getByRole('heading', { name: '지금 먼저 체크할 일' })).toHaveCount(0);
   await expect(page.getByText('2026-06-01').first()).toBeVisible();
-  await page.locator('label').filter({ hasText: '전원 연결과 리모컨 배터리 확인하기' }).first().click();
+  await page.getByLabel('완료: 전원 연결과 리모컨 배터리 확인하기').check();
   await expect(page.getByText('1 / 8').first()).toBeVisible();
   await expect(page.getByRole('heading', { name: '지금 먼저 체크할 일' })).toBeVisible();
 
