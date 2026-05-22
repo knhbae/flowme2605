@@ -173,13 +173,14 @@ export function saveComparisonState(slug: string, value: FlowComparisonState): v
 }
 
 function emptyWorkbenchState(): FlowWorkbenchState {
-  return { occurrences: {}, logRows: {} };
+  return { occurrences: {}, logRows: {}, memoCards: {} };
 }
 
 export function normalizeWorkbenchState(value: Partial<FlowWorkbenchState> | null | undefined): FlowWorkbenchState {
   return {
     occurrences: value?.occurrences && typeof value.occurrences === 'object' ? value.occurrences : {},
     logRows: value?.logRows && typeof value.logRows === 'object' ? value.logRows : {},
+    memoCards: value?.memoCards && typeof value.memoCards === 'object' ? value.memoCards : {},
     weeklyReview: typeof value?.weeklyReview === 'string' ? value.weeklyReview : undefined,
   };
 }
@@ -203,6 +204,7 @@ function hasWorkbenchProgress(state: FlowWorkbenchState): boolean {
   return (
     Object.values(state.occurrences).some((entry) => Boolean(entry.done) || Boolean(entry.note?.trim())) ||
     Object.values(state.logRows).some((row) => Object.values(row).some((value) => value.trim())) ||
+    Object.values(state.memoCards).some((value) => value.trim()) ||
     Boolean(state.weeklyReview?.trim())
   );
 }

@@ -651,14 +651,25 @@ test('artifact workbench saves local execution entries', async ({ page }) => {
 
   await page.getByLabel('이사일').fill('2026-07-15');
   const workbench = page.getByLabel('Flow artifact workbench');
-  await workbench.getByLabel('실행판 체크: 이사 방식 정하기').check();
+  await expect(workbench.getByText('0/24 완료')).toBeVisible();
+  await workbench.getByLabel('실행판 체크: 이사 방식 정하기').click();
   await expect(workbench.getByLabel('실행판 체크: 이사 방식 정하기')).toBeChecked();
-  await expect(page.getByText('1 / 24').first()).toBeVisible();
+  await expect(workbench.getByText('1/24 완료')).toBeVisible();
 
   await page.reload();
   await expect(page.getByLabel('이사일')).toHaveValue('2026-07-15');
   await expect(page.getByLabel('Flow artifact workbench').getByLabel('실행판 체크: 이사 방식 정하기')).toBeChecked();
-  await expect(page.getByText('1 / 24').first()).toBeVisible();
+  await expect(page.getByLabel('Flow artifact workbench').getByText('1/24 완료')).toBeVisible();
+  const reloadedMovingWorkbench = page.getByLabel('Flow artifact workbench');
+  await reloadedMovingWorkbench.getByLabel('후보 1 이름').fill('한빛이사');
+  await reloadedMovingWorkbench.getByLabel('이사 업체 견적 금액 / 후보 1 메모').fill('포장이사 85만원');
+  await reloadedMovingWorkbench.getByLabel('견적서/계약서 위치').fill('문자 견적 캡처');
+
+  await page.reload();
+  const restoredMovingWorkbench = page.getByLabel('Flow artifact workbench');
+  await expect(restoredMovingWorkbench.getByLabel('후보 1 이름')).toHaveValue('한빛이사');
+  await expect(restoredMovingWorkbench.getByLabel('이사 업체 견적 금액 / 후보 1 메모')).toHaveValue('포장이사 85만원');
+  await expect(restoredMovingWorkbench.getByLabel('견적서/계약서 위치')).toHaveValue('문자 견적 캡처');
 
   await page.goto('/f/study-exam-d30-plan');
   const routineWorkbench = page.getByLabel('Flow artifact workbench');

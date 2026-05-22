@@ -81,6 +81,48 @@ test('decision exports include comparison candidate notes', () => {
   ]);
 });
 
+test('moving export includes vendor comparison and proof memo records', () => {
+  const moving = seedBundles.find((bundle) => bundle.flow.slug === 'moving-d30-basic');
+  assert.ok(moving);
+
+  const comparisonState = {
+    candidates: [
+      { id: 'candidate-1', name: '한빛이사' },
+      { id: 'candidate-2', name: '빠른이사' },
+    ],
+    notes: {
+      'moving-vendor-price': {
+        'candidate-1': '포장이사 85만원',
+        'candidate-2': '반포장이사 62만원',
+      },
+    },
+  };
+  const workbenchState = {
+    occurrences: {},
+    logRows: {},
+    memoCards: {
+      'moving-proof-contract-location': '문자 견적 캡처',
+      'moving-proof-deposit': '예약금 10만원 이체 완료',
+    },
+  };
+
+  const text = buildText(moving, {}, '2026-07-15', {}, comparisonState, workbenchState);
+
+  assert.match(text, /\[후보 비교표\]/);
+  assert.match(text, /비교 항목 \| 한빛이사 \| 빠른이사/);
+  assert.match(text, /이사 업체 견적 금액 \| 포장이사 85만원 \| 반포장이사 62만원/);
+  assert.match(text, /견적서\/계약서 위치: 문자 견적 캡처/);
+  assert.match(text, /계약금\/예약금 증빙: 예약금 10만원 이체 완료/);
+
+  const sheets = buildWorkbookSheets(moving, {}, '2026-07-15', { comparisonState, workbenchState });
+  const comparison = sheets.find((sheet) => sheet.name === '후보 비교');
+  const workbench = sheets.find((sheet) => sheet.name === '실행판 기록');
+  assert.ok(comparison);
+  assert.deepEqual(comparison.rows[0], ['이사 업체 견적 금액', '포장이사 85만원', '반포장이사 62만원']);
+  assert.ok(workbench);
+  assert.ok(workbench.rows.some((row) => row.includes('견적서/계약서 위치') && row.includes('문자 견적 캡처')));
+});
+
 test('diet log text export starts with record table guidance', () => {
   const diet = seedBundles.find((entry) => entry.flow.slug === 'real-fitvely-video-body-fat-6kg-method');
   assert.ok(diet);
@@ -107,6 +149,7 @@ test('workbench records are included in text and workbook exports', () => {
         컨디션: '수면 7시간',
       },
     },
+    memoCards: {},
     weeklyReview: '저녁 탄수화물을 절반으로 줄여보기',
   };
 
