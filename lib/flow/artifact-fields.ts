@@ -5,6 +5,12 @@ export type ArtifactComparisonRow = {
   title: string;
 };
 
+export type ArtifactComparisonConfig = {
+  title: string;
+  eyebrow: string;
+  rows: ArtifactComparisonRow[];
+};
+
 export type ArtifactMemoField = {
   id: string;
   label: string;
@@ -14,8 +20,29 @@ export type ArtifactMemoField = {
   groupDescription?: string;
 };
 
+export type ArtifactLogColumn = {
+  id: string;
+  label: string;
+  placeholder: string;
+};
+
+export type ArtifactLogRow = {
+  id: string;
+  label: string;
+};
+
+export type ArtifactLogTable = {
+  id: string;
+  title: string;
+  eyebrow: string;
+  description: string;
+  rows: ArtifactLogRow[];
+  columns: ArtifactLogColumn[];
+};
+
 const movingSlugs = new Set(['moving-d30-basic', 'real-ohouse-moving-d30-prep']);
 const travelSlugs = new Set(['overseas-travel-d14', 'real-mofa-overseas-travel-prep']);
+const studySlugs = new Set(['real-sinagong-computer-d30-study']);
 
 const movingVendorComparisonRows: ArtifactComparisonRow[] = [
   { id: 'moving-vendor-price', title: '이사 업체 견적 금액' },
@@ -92,13 +119,69 @@ const travelProofMemoFields: ArtifactMemoField[] = [
   },
 ];
 
+const studyLogTables: ArtifactLogTable[] = [
+  {
+    id: 'study-chapter-progress',
+    eyebrow: '학습 진도표',
+    title: '챕터 진도표',
+    description: '원본 자료와 교재 범위를 주차별 목표일로 나눠 적습니다.',
+    rows: [
+      { id: 'study-chapter-week-1', label: '1주차 개념 1회독' },
+      { id: 'study-chapter-week-2', label: '2주차 기출 풀이' },
+      { id: 'study-chapter-week-3', label: '3주차 오답 보완' },
+      { id: 'study-chapter-final', label: '마지막 주 실전 점검' },
+    ],
+    columns: [
+      { id: 'scope', label: '범위', placeholder: '예) 1~3장' },
+      { id: 'targetDate', label: '목표일', placeholder: '예) 2026-06-12' },
+      { id: 'status', label: '상태', placeholder: '예) 예정/진행/완료' },
+      { id: 'note', label: '메모', placeholder: '예) 요약노트 작성' },
+    ],
+  },
+  {
+    id: 'study-mock-scores',
+    eyebrow: '기출 기록표',
+    title: '기출 점수·오답 기록',
+    description: '기출 회차별 점수, 오답, 재풀이 날짜를 남겨 약점을 좁힙니다.',
+    rows: [
+      { id: 'study-mock-1', label: '기출 1회차' },
+      { id: 'study-mock-2', label: '기출 2회차' },
+      { id: 'study-mock-3', label: '기출 3회차' },
+    ],
+    columns: [
+      { id: 'solvedDate', label: '풀이일', placeholder: '예) 2026-06-13' },
+      { id: 'score', label: '점수', placeholder: '예) 78점' },
+      { id: 'wrongAnswers', label: '오답', placeholder: '예) 계산 문제 4개' },
+      { id: 'retryDate', label: '재풀이일', placeholder: '예) 2026-06-15' },
+      { id: 'weaknessNote', label: '약점 메모', placeholder: '예) 스프레드시트 함수' },
+    ],
+  },
+];
+
 export function getComparisonRows(bundle: FlowBundle): ArtifactComparisonRow[] {
-  if (movingSlugs.has(bundle.flow.slug)) return movingVendorComparisonRows;
+  const config = getComparisonConfig(bundle);
+  if (config) return config.rows;
   return bundle.items.map((item) => ({ id: item.id, title: item.title }));
+}
+
+export function getComparisonConfig(bundle: FlowBundle): ArtifactComparisonConfig | undefined {
+  if (movingSlugs.has(bundle.flow.slug)) {
+    return {
+      title: '이사 업체 후보 비교',
+      eyebrow: '업체 비교표',
+      rows: movingVendorComparisonRows,
+    };
+  }
+  return undefined;
 }
 
 export function getMemoCardFields(bundle: FlowBundle): ArtifactMemoField[] {
   if (movingSlugs.has(bundle.flow.slug)) return movingProofMemoFields;
   if (travelSlugs.has(bundle.flow.slug)) return travelProofMemoFields;
+  return [];
+}
+
+export function getLogTables(bundle: FlowBundle): ArtifactLogTable[] {
+  if (studySlugs.has(bundle.flow.slug)) return studyLogTables;
   return [];
 }

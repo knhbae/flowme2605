@@ -48,6 +48,17 @@ test('artifact plan maps promoted study program to routine calendar first', () =
   assert.ok(plan.exportTargets.includes('calendar'));
 });
 
+test('artifact plan keeps certification study timeline calendar before logs', () => {
+  const plan = getArtifactPlan(bundle('real-sinagong-computer-d30-study'));
+
+  assert.equal(plan.primarySurface, 'timeline_calendar');
+  assert.deepEqual(
+    plan.surfaces.slice(0, 2).map((surface) => surface.kind),
+    ['execution_list', 'month_calendar'],
+  );
+  assert.ok(plan.exportTargets.includes('calendar'));
+});
+
 test('artifact plan maps exact workout video to routine calendar and condition memo', () => {
   const plan = getArtifactPlan(bundle('real-thankyou-bubu-video-full-body-no-jump'));
 
