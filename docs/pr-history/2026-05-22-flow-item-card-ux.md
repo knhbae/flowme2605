@@ -37,6 +37,7 @@
 - P1-routine-migration Vercel inspect: https://vercel.com/flowme/flowme2605/FurPwVBiTZEH1USEcPcQoZFZLi8i
 - Source-fit audit/public exposure Vercel inspect: https://vercel.com/flowme/flowme2605/2EYPWHU18XHyHSewpvtgBu89Fpjc
 - Content-inventory Vercel inspect: https://vercel.com/flowme/flowme2605/GeEcMqNukkszYmm7M3NNBETcExVU
+- Artifact-first UX Vercel inspect: https://vercel.com/flowme/flowme2605/3FNaj8N1YYspMEHqEMjdEEVzCFju
 
 ## Why
 
@@ -247,6 +248,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `npm run build` passed after the artifact-first implementation pass.
 - `npm run test:e2e -- --grep "artifact-first previews|flow lab shows converted pilot"` passed after the final build: 2 tests.
 - `npm run test:e2e` first failed on a strict selector ambiguity because `ArtifactPreview` added additional `후보 비교표` text, then passed after scoping the comparison-table test to the candidate-name input: 36 tests.
+- GitHub commit status for `39957a90a24e1798b28ed93772181aa72a1627fa` reported Vercel `success` with inspect URL `https://vercel.com/flowme/flowme2605/3FNaj8N1YYspMEHqEMjdEEVzCFju`.
 - `npx tsx --test lib/flow/source-fit.test.ts` first failed as expected for missing `naturalArtifacts`, then passed after adding concrete simulations: 7 tests.
 - `npx tsx --test lib/flow/natural-artifact-audit.test.ts` first failed as expected for the missing module, then passed after adding the first real-source audit batch: 5 tests.
 - `npx tsx --test lib/flow/natural-artifact-audit.test.ts` failed as expected when raising audit coverage from 8 to 16, then passed after adding the second real-source audit batch: 6 tests.
