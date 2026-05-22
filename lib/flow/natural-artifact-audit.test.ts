@@ -14,7 +14,7 @@ function bundleBySlug(slug: string) {
 }
 
 test('real-source natural artifact audits only cover real-source flows', () => {
-  assert.equal(realSourceNaturalArtifactAudits.length, 36);
+  assert.equal(realSourceNaturalArtifactAudits.length, 40);
 
   for (const audit of realSourceNaturalArtifactAudits) {
     const bundle = bundleBySlug(audit.slug);
@@ -58,7 +58,7 @@ test('real-source natural artifact coverage summary tracks remaining work', () =
 
   assert.equal(summary.realSourceCount, 40);
   assert.equal(summary.auditedRealSourceCount, realSourceNaturalArtifactAudits.length);
-  assert.equal(summary.remainingRealSourceCount, 4);
+  assert.equal(summary.remainingRealSourceCount, 0);
   assert.ok(summary.decisionCounts.promote_to_manual_source_fit >= 1);
   assert.ok(summary.decisionCounts.reshape_content_or_ux >= 1);
 });
@@ -188,6 +188,30 @@ test('seventh real-source artifact batch covers remaining FITVELY exact videos',
         (artifact) => artifact.kind === 'comparison_table' || artifact.kind === 'routine_calendar' || artifact.kind === 'spreadsheet',
       ),
       `${slug} should simulate a decision, schedule, or tracking artifact`,
+    );
+  }
+});
+
+test('eighth real-source artifact batch closes broad channel and site sources', () => {
+  const expectedEighthBatchSlugs = [
+    'real-thankyou-bubu-home-workout-starter',
+    'real-thankyou-bubu-20min-routine',
+    'real-fitvely-diet-record-routine',
+    'real-fitvely-weekly-body-check',
+  ];
+
+  for (const slug of expectedEighthBatchSlugs) {
+    const audit = getNaturalArtifactAudit(slug);
+    assert.ok(audit, `missing eighth-batch audit: ${slug}`);
+    assert.ok(
+      audit.decision === 'keep_catalog_review' || audit.decision === 'replace_or_hide_source',
+      `${slug} should not be promoted from a broad source without an exact source replacement`,
+    );
+    assert.ok(
+      audit.naturalArtifacts.some(
+        (artifact) => artifact.kind === 'routine_calendar' || artifact.kind === 'spreadsheet' || artifact.kind === 'memo',
+      ),
+      `${slug} should still simulate the user's natural artifact before judging the source gap`,
     );
   }
 });

@@ -7,10 +7,10 @@ This report starts the full review of the 40 `source_status=real` Flows. It uses
 | Metric | Count |
 | --- | ---: |
 | Real-source Flows | 40 |
-| Audited real-source Flows | 36 |
-| Remaining real-source Flows | 4 |
+| Audited real-source Flows | 40 |
+| Remaining real-source Flows | 0 |
 
-The first seven batches intentionally avoid auditing only one cluster. They cover official service pages, household routines, exact workout videos, diet/logging videos, workout planning videos, exam/admin deadlines, childcare/medical-sensitive content, pet registration, pet health broad sources, moving/financial-sensitive content, travel safety, travel health, and vehicle administration.
+The eight batches intentionally avoid auditing only one cluster. They cover official service pages, household routines, exact workout videos, diet/logging videos, workout planning videos, broad channel/site sources, exam/admin deadlines, childcare/medical-sensitive content, pet registration, pet health broad sources, moving/financial-sensitive content, travel safety, travel health, and vehicle administration.
 
 ## Method
 
@@ -65,6 +65,10 @@ For each source, record:
 | `real-fitvely-video-weight-class-method` | Comparison table, spreadsheet | Reshape content or UX | Needs user condition input and generated tracking table. |
 | `real-fitvely-video-bulk-up-method` | Routine calendar, spreadsheet | Reshape content or UX | Needs workout split plus weight/load/meal logs. |
 | `real-fitvely-video-workout-order` | Comparison table, routine calendar | Reshape content or UX | Needs goal-based order selection and schedule block output. |
+| `real-thankyou-bubu-home-workout-starter` | Comparison table, routine calendar | Keep catalog review | Broad channel source needs exact starter video or playlist before promotion. |
+| `real-thankyou-bubu-20min-routine` | Routine calendar, memo | Keep catalog review | Broad channel source needs exact 20-minute routine source and rest-day summary. |
+| `real-fitvely-diet-record-routine` | Spreadsheet, routine calendar | Keep catalog review | Broad official site needs exact diet-log source and spreadsheet-first UX. |
+| `real-fitvely-weekly-body-check` | Spreadsheet, memo | Keep catalog review | Broad official site needs exact weekly check-in source and measurement sheet. |
 
 ## Source Evidence Used
 
@@ -90,6 +94,7 @@ For each source, record:
 - ThankyouBUBU remaining exact videos: search results and channel-index snippets confirm the 8-minute cardio, 3-minute arm, 3-minute abs, and lower-belly workout titles and durations; source URLs are `https://www.youtube.com/watch?v=O87gkL1cKSc`, `https://www.youtube.com/watch?v=Kl9Dmx86Z0Q`, `https://www.youtube.com/watch?v=6IUL8-nGetA`, and `https://www.youtube.com/watch?v=9xxCFu21CLM`.
 - FITVELY diet/nutrition exact videos: search results and source metadata identify carb reason, 3-week check, post-workout nutrition, and carb amount shorts as diet/nutrition guidance; source URLs are `https://www.youtube.com/watch?v=_h3u30M9ECc`, `https://www.youtube.com/watch?v=nfdIpPXfIc8`, `https://www.youtube.com/watch?v=J8YmqzhPS2Q`, and `https://www.youtube.com/watch?v=t630vnDGIWw`.
 - FITVELY workout-plan exact videos: search/source metadata identify after-work nutrition, weight-class method, bulk-up, and workout order as workout planning guidance; source URLs are `https://www.youtube.com/watch?v=zipquv7TErU`, `https://www.youtube.com/watch?v=qADmhOJemTs`, `https://www.youtube.com/watch?v=JurCSqpjl5I`, and `https://www.youtube.com/watch?v=oPBA8E_WtXY`.
+- Broad channel/site sources: ThankyouBUBU channel and FITVELY official site support broad catalog discovery, but each route needs an exact source replacement before representative promotion; source URLs are `https://www.youtube.com/@ThankyouBUBU` and `https://www.fitvely.com/`.
 
 ## Output-Type Findings
 
@@ -123,6 +128,7 @@ Example:
 - FITVELY split routine: `분할=상체/하체`, `운동일=월/화/목/금` should first compare routine candidates, then generate the selected split calendar.
 - FITVELY after-work nutrition: `퇴근=19:00`, `운동=20:30`, `운동일=화/목/토` should create pre-workout snack reminders, post-workout dinner reminders, and a reusable meal-timing memo.
 - FITVELY bulk-up: `분할=상체/하체`, `운동일=월/화/목/금`, `식사=하루 4회` should show workout sessions, meal-block reminders, and weekly weight/load review events.
+- ThankyouBUBU 20-minute broad routine: `반복=화/목/토/일`, `휴식=월/수/금`, `회차시간=20분` should show workout days, rest days, weekly completion count, and fatigue notes.
 
 ### Checklist
 
@@ -148,6 +154,7 @@ Example:
 - FITVELY workout design: `후보A=무분할 주3회`, `후보B=상하체 주4회`, `후보C=3분할 주5회` should produce a split-routine comparison table before calendar generation.
 - FITVELY weight-class method: `현재체중=82kg`, `목표=12주 감량`, `운동경험=초보` should first choose a weight-class method and then generate a tracking table.
 - FITVELY workout order: `목표=체지방 감량`, `운동가능=60분`, `운동일=월/수/금` should compare cardio-first and strength-first order before producing schedule blocks.
+- ThankyouBUBU starter broad channel: `운동경험=초보`, `무릎상태=불편함`, `가능시간=20분` should first compare candidate starter videos before creating the first 4-week calendar.
 - SafeDriving license guide: case comparison should include preparation items, photo count, fees, online availability, delegated application, and receipt restrictions.
 - Childcare support: `후보A=센터A 13:00-16:00`, `후보B=센터B 10:00-13:00` should compare distance, time, first-visit paperwork, and reservation availability before the checklist is finalized.
 
@@ -165,6 +172,8 @@ Examples:
 - FITVELY carb amount shorts: `아침=식빵 1장`, `점심=밥 반공기`, `저녁계획=고구마 1개` should produce a quick daily carb log and next-meal adjustment memo.
 - FITVELY post-workout nutrition is calendar-linked but still needs a reusable nutrition memo: `운동일=월/수/금`, `섭취시점=운동 후 30분` should create follow-up reminders plus a food 기준 card.
 - FITVELY bulk-up tracking: `시작체중=70kg`, `목표=월 +1kg`, `주요운동=스쿼트/벤치/로우` should produce weekly body-weight, training-load, and meal-compliance rows.
+- FITVELY diet record broad site: `기록=아침/점심/저녁/간식`, `체중측정=월/목`, `리뷰=일요일` should produce a spreadsheet-first diet/workout log and recurring review reminders.
+- FITVELY weekly body check broad site: `체크일=매주 월요일`, `측정=체중/허리/사진`, `목표=8주` should produce weekly measurement rows plus an adjustment memo for the next week.
 
 ### Emergency / Proof Memo
 
@@ -175,12 +184,13 @@ Examples:
 - MOFA travel safety: emergency memo should include consular call center, local embassy, insurance, accommodation, family contact, and passport-copy location.
 - TS vehicle inspection: inspection result memo should include result sheet, recommended repairs, deadline, estimated cost, and next inspection reminder.
 
-## Next Batch
+## Next Content Actions
 
-Audit the remaining 4 real-source Flows in this order:
+All 40 current real-source Flows now have a natural-artifact audit. Follow-up work should focus on source replacement and UX implementation:
 
-1. Review broad-source flows last: FITVELY broad pages, ThankyouBUBU channel pages, and any source that needs replacement before public promotion.
-2. Decide whether broad/channel source Flows should be kept for catalog review, replaced with exact source URLs, or hidden from representative exposure.
+1. Replace broad channel/site sources with exact video, playlist, article, or program URLs before representative promotion.
+2. Convert high-gap routine and diet Flows into spreadsheet/calendar-first UX where the natural artifact demands it.
 3. Revisit crawler-limited official pages only when a stable official body or mirrored 민원 안내 can be captured without weakening source attribution.
+4. Audit the 440 generated preview candidates separately; this report only closes the 40 `source_status=real` Flows.
 
 Do not promote any real-source Flow from derived review to manual source-fit without at least one concrete natural artifact simulation.
