@@ -1,7 +1,7 @@
 # FLOW Channel Content Inventory Design
 
 > 작성일: 2026-05-22  
-> 적용 선택지: 2번 - 실제 원본 40개는 전수 분류하고, 생성형 프리뷰 440개는 검증된 Flow가 아닌 샘플 후보로 격리한다.
+> 적용 선택지: 2번 - `source_status=real` 40개는 전수 1차 분류하고, 수동 source-fit audit 10개는 별도 검토 완료군으로 유지하며, 생성형 프리뷰 440개는 검증된 Flow가 아닌 샘플 후보로 격리한다.
 
 ## 배경
 
@@ -9,17 +9,18 @@
 
 | 구분 | 수량 | 현재 문제 |
 |---|---:|---|
-| 실제 원본 링크가 있는 Flow | 40 | 10개만 수동 source-fit audit이 있고, 30개는 검토 상태가 UI에 드러나지 않는다. |
+| 수동 source-fit audit Flow | 10 | 원본 적합성, 사용자 여정, 간극, 수정 방향이 수동 문서화되어 있다. 현재 seed에서는 `source_status`가 비어 있어 status-real 40개와 별도군이다. |
+| `source_status=real` Flow | 40 | 실제 원본 metadata가 있으나 수동 source-fit audit은 아직 없다. 이번 작업에서 전부 derived review로 분류한다. |
 | 생성형 채널 프리뷰 Flow | 440 | 채널별 미리보기 샘플인데 실행성 점수와 channel card 때문에 검증된 콘텐츠처럼 보일 수 있다. |
-| legacy/기타 seed Flow | 31 | 기존 데모 접근성을 위해 직접 route는 유지하되 대표 검증 Flow처럼 보이면 안 된다. |
+| legacy/기타 seed Flow | 21 | 기존 데모 접근성을 위해 직접 route는 유지하되 대표 검증 Flow처럼 보이면 안 된다. |
 
 이 작업의 목적은 모든 콘텐츠를 한 번에 완성하는 것이 아니다. 사용자가 "이 Flow는 원본을 보고 실행형으로 정리할 가치가 있는가"와 "아직 샘플 후보인가"를 구분할 수 있게 만드는 것이 첫 단계다.
 
 ## 제품 원칙
 
-1. 실제 원본 source가 있는 Flow 40개는 전부 inventory review 대상으로 분류한다.
+1. `source_status=real` Flow 40개는 전부 inventory review 대상으로 분류한다.
 2. 수동 source-fit audit 10개는 깊은 검토가 끝난 Flow로 유지한다.
-3. 나머지 실제 원본 30개는 source metadata 기반의 derived review로 표시한다. 이것은 "원본 페이지를 사람이 다시 열어 검토했다"는 뜻이 아니다.
+3. 실제 원본 metadata가 있으나 수동 audit이 없는 40개는 source metadata 기반의 derived review로 표시한다. 이것은 "원본 페이지를 사람이 다시 열어 검토했다"는 뜻이 아니다.
 4. 생성형 preview 440개는 검증 Flow가 아니라 "채널 샘플 후보"로 표시한다.
 5. 어떤 Flow도 실제 사용자 행동 데이터 없이 "검증됨"이라고 부르지 않는다.
 6. 공개 route는 삭제하지 않는다. 다만 catalog, channel, lab에서 노출 등급과 다음 작업을 정확히 표시한다.
@@ -94,9 +95,10 @@ Content Lab은 source-fit audit 10개만 보여주는 화면에서 inventory cov
 - derived real-source review 수
 - generated preview candidate 수
 - legacy accessible 수
-- real-source coverage: `manual + derived === real source count`
+- source-status-real coverage: `derived === source_status=real count`
+- source-backed inventory coverage: `manual + derived`
 
-수동 audit table은 유지한다. 단, 제목을 "수동 Source-Fit Audit"로 바꿔 40개 전수 분류와 혼동하지 않게 한다.
+수동 audit table은 유지한다. 단, 제목을 "수동 Source-Fit Audit"로 바꿔 metadata 기반 1차 분류와 혼동하지 않게 한다.
 
 ### Channel Directory
 
@@ -146,7 +148,7 @@ summarizeContentInventory(bundles: FlowBundle[]): ContentInventorySummary
 ## 테스트 기준
 
 1. 511개 전체 bundle이 정확히 하나의 inventory review를 가진다.
-2. real source 40개는 manual 또는 derived review로 전부 커버된다.
+2. `source_status=real` 40개는 derived review로 전부 커버된다.
 3. manual audit 수는 10개로 유지된다.
 4. generated preview 440개는 모두 `generated_preview_candidate`로 분류된다.
 5. Content Lab summary가 real-source coverage와 preview candidate count를 노출한다.

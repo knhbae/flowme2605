@@ -1,5 +1,6 @@
 import { AnchorType, FlowBundle, StructureType } from './types';
 import { getSourceFitSummary } from './source-fit';
+import { summarizeContentInventory } from './content-inventory';
 
 export type ExternalTarget = 'calendar' | 'todo' | 'notion' | 'sheet';
 
@@ -340,6 +341,7 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   const previewGeneratedBundles = bundles.filter((bundle) => bundle.flow.id.startsWith('flow-preview-'));
   const realSourceBundles = bundles.filter((bundle) => bundle.flow.source_status === 'real');
   const sourceFitSummary = getSourceFitSummary();
+  const inventorySummary = summarizeContentInventory(bundles);
 
   return {
     pilotCreatorCount: pilotCreatorLabs.length,
@@ -362,5 +364,15 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     sourceFitAuditedCount: sourceFitSummary.auditedCount,
     sourceFitAverageScore: sourceFitSummary.averageScore,
     sourceFitDecisionCounts: sourceFitSummary.decisionCounts,
+    inventoryTotalCount: inventorySummary.totalCount,
+    realSourceInventoryReviewedCount: inventorySummary.realSourceReviewedCount,
+    sourceBackedInventoryReviewedCount: inventorySummary.sourceBackedReviewedCount,
+    manualSourceFitAuditedCount: inventorySummary.manualSourceFitCount,
+    derivedRealSourceReviewedCount: inventorySummary.derivedRealSourceCount,
+    previewCandidateFlowCount: inventorySummary.generatedPreviewCandidateCount,
+    legacyAccessibleFlowCount: inventorySummary.legacyAccessibleCount,
+    inventoryLevelCounts: inventorySummary.levelCounts,
+    inventoryPublicHandlingCounts: inventorySummary.publicHandlingCounts,
+    inventoryAverageDerivedScore: inventorySummary.averageDerivedScore,
   };
 }

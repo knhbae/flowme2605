@@ -8,6 +8,8 @@
 
 **Tech Stack:** Next.js, React, TypeScript, Node test runner via `tsx --test`, existing FLOW seed data and Tailwind UI.
 
+**Implementation note:** While executing the plan, the seed inventory showed that the 10 manual source-fit audits and the 40 `source_status=real` flows are disjoint. The implemented UI therefore reports `수동 검토 10`, `실제 원본 40`, `1차 분류 40`, and source-backed coverage `50` instead of treating the manual 10 as a subset of the status-real 40.
+
 ---
 
 ## File Structure
@@ -712,7 +714,7 @@ Add a dated section to `docs/pr-history/2026-05-22-flow-item-card-ux.md`:
 - Updated channel stats from execution score to source/sample/review counts.
 
 ### Not Done
-- 30 unaudited real-source flows are derived reviews only, not manual source-page audits.
+- 40 `source_status=real` flows are derived reviews only, not manual source-page audits.
 - 440 preview flows remain sample candidates until exact sources are assigned.
 
 ### Verification
@@ -751,4 +753,4 @@ Expected: commit succeeds.
 - Spec coverage: all approved option-2 requirements map to tasks: inventory classification, real-source coverage, preview candidate separation, Content Lab, channel UI, tests, docs.
 - Placeholder scan: no empty tasks or unresolved choices remain.
 - Type consistency: `ContentInventoryReview`, `ContentInventorySummary`, and channel summary field names are introduced before use.
-- Scope control: public exposure gating remains unchanged; manual audits for the remaining 30 real sources and UX work for calendars/routines are separate follow-ups.
+- Scope control: public exposure gating remains unchanged; manual audits for the remaining derived real-source flows and UX work for calendars/routines are separate follow-ups.

@@ -831,8 +831,8 @@ function StatCard({ label, value, compact = false }: { label: string; value: str
 }
 
 function getSourceStatusLabel(bundle: FlowBundle) {
-  if (bundle.flow.source_status === 'real') return '출처 확인';
-  if (bundle.flow.source_status === 'preview') return '샘플';
+  if (bundle.flow.source_status === 'real') return '실제 원본';
+  if (bundle.flow.source_status === 'preview') return '샘플 후보';
   if (bundle.flow.source_status === 'needs_review') return '검수 필요';
   return bundle.flow.source_url ? '출처 연결' : '초안';
 }
@@ -859,10 +859,8 @@ export function CreatorDirectory() {
   const summaries = getCreatorChannelSummaries(bundles);
   const totalFlows = summaries.reduce((sum, item) => sum + item.flow_count, 0);
   const totalRealFlows = summaries.reduce((sum, item) => sum + item.real_flow_count, 0);
-  const totalPreviewFlows = summaries.reduce((sum, item) => sum + item.preview_flow_count, 0);
-  const averageScore = Math.round(
-    summaries.reduce((sum, item) => sum + item.execution_score, 0) / Math.max(summaries.length, 1),
-  );
+  const totalSampleCandidates = summaries.reduce((sum, item) => sum + item.sample_candidate_count, 0);
+  const totalSourceReviewFlows = summaries.reduce((sum, item) => sum + item.source_review_count, 0);
   const categories = Array.from(new Set(summaries.flatMap((item) => item.specialty_tags))).slice(0, 10);
 
   return (
@@ -876,10 +874,10 @@ export function CreatorDirectory() {
         </p>
         <div className="mt-5 grid gap-3 sm:grid-cols-5">
           <StatCard label="채널" value={`${summaries.length}`} />
-          <StatCard label="Flow화 콘텐츠" value={`${totalFlows}+`} />
-          <StatCard label="출처 확인" value={`${totalRealFlows}`} />
-          <StatCard label="샘플" value={`${totalPreviewFlows}`} />
-          <StatCard label="평균 실행성 점수" value={`${averageScore}`} />
+          <StatCard label="Flow 후보" value={`${totalFlows}+`} />
+          <StatCard label="실제 원본" value={`${totalRealFlows}`} />
+          <StatCard label="샘플 후보" value={`${totalSampleCandidates}`} />
+          <StatCard label="원본 검토" value={`${totalSourceReviewFlows}`} />
         </div>
         <div className="mt-5 flex flex-wrap gap-2">
           {categories.map((category) => (
@@ -912,15 +910,18 @@ export function CreatorDirectory() {
                 <p className="mt-1 text-sm text-gray-600">{channel.role}</p>
               </div>
               <span className="rounded-md bg-blue-50 px-2 py-1 text-sm font-semibold text-blue-700">
-                {channel.flow_count} flows
+                {channel.real_flow_count} 실제 · {channel.sample_candidate_count} 샘플
               </span>
             </div>
             <p className="mt-3 text-sm leading-6 text-gray-600">{channel.bio}</p>
             <div className="mt-4 grid grid-cols-3 gap-2 text-sm">
-              <StatCard label="출처 확인" value={`${channel.real_flow_count}`} compact />
-              <StatCard label="샘플" value={`${channel.preview_flow_count}`} compact />
-              <StatCard label="실행성 점수" value={`${channel.execution_score}`} compact />
+              <StatCard label="실제 원본" value={`${channel.real_flow_count}`} compact />
+              <StatCard label="샘플 후보" value={`${channel.sample_candidate_count}`} compact />
+              <StatCard label="원본 검토" value={`${channel.source_review_count}`} compact />
             </div>
+            <p className="mt-3 rounded-md bg-gray-50 px-3 py-2 text-xs font-medium leading-5 text-gray-600">
+              {channel.next_content_action}
+            </p>
             {representativeFlows.length ? (
               <div className="mt-4 border-t border-gray-100 pt-4">
                 <p className="text-xs font-semibold text-gray-500">대표 Flow</p>
@@ -1290,13 +1291,13 @@ export function CreatorProfile({ slug }: { slug: string }) {
         </div>
         {previewSummary ? (
           <section className="mt-5 grid gap-3 sm:grid-cols-7">
-            <StatCard label="Flow화 콘텐츠" value={`${previewSummary.flow_count}`} compact />
-            <StatCard label="출처 확인" value={`${previewSummary.real_flow_count}`} compact />
-            <StatCard label="샘플" value={`${previewSummary.preview_flow_count}`} compact />
+            <StatCard label="Flow 후보" value={`${previewSummary.flow_count}`} compact />
+            <StatCard label="실제 원본" value={`${previewSummary.real_flow_count}`} compact />
+            <StatCard label="샘플 후보" value={`${previewSummary.sample_candidate_count}`} compact />
             <StatCard label="실행 항목" value={`${previewSummary.executable_item_count}`} compact />
-            <StatCard label="앵커 커버리지" value={`${previewSummary.anchor_coverage}%`} compact />
-            <StatCard label="출처 커버리지" value={`${previewSummary.source_coverage}%`} compact />
-            <StatCard label="실행성 점수" value={`${previewSummary.execution_score}`} compact />
+            <StatCard label="원본 검토" value={`${previewSummary.source_review_count}`} compact />
+            <StatCard label="수동 검토" value={`${previewSummary.manual_source_fit_count}`} compact />
+            <StatCard label="1차 분류" value={`${previewSummary.derived_source_review_count}`} compact />
           </section>
         ) : null}
       </header>
@@ -1350,8 +1351,8 @@ export function CreatorProfile({ slug }: { slug: string }) {
         <div className="mb-3 flex flex-wrap gap-2">
           {[
             ['all', 'All'],
-            ['real', '출처 확인'],
-            ['preview', '샘플'],
+            ['real', '실제 원본'],
+            ['preview', '샘플 후보'],
           ].map(([key, label]) => (
             <button
               key={key}

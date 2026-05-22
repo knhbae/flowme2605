@@ -119,10 +119,12 @@ test('creator directory exposes channel-scale preview library', async ({ page })
 
   await expect(page.getByRole('heading', { name: '제작자 채널' })).toBeVisible();
   await expect(page.getByText(/4\d{2}\+/)).toBeVisible();
-  await expect(page.locator('header').getByText('출처 확인')).toBeVisible();
+  await expect(page.locator('header').getByText('실제 원본')).toBeVisible();
+  await expect(page.locator('header').getByText('샘플 후보')).toBeVisible();
+  await expect(page.locator('header').getByText('원본 검토')).toBeVisible();
   await expect(page.getByRole('link', { name: /삼성전자서비스/ })).toBeVisible();
   await expect(page.getByRole('link', { name: 'ThankyouBUBU', exact: true })).toBeVisible();
-  await expect(page.getByText('실행성 점수').first()).toBeVisible();
+  await expect(page.getByText('실행성 점수')).toHaveCount(0);
 });
 
 test('creator directory exposes representative creator content links', async ({ page }) => {
@@ -137,9 +139,12 @@ test('preview creator channel supports browsing 20+ flowified entries', async ({
   await page.goto('/u/samsung-service');
 
   await expect(page.getByRole('heading', { name: '삼성전자서비스' })).toBeVisible();
-  await expect(page.getByText('Flow화 콘텐츠')).toBeVisible();
-  await expect(page.getByText(/4\d/).first()).toBeVisible();
-  await expect(page.getByText('출처 커버리지')).toBeVisible();
+  const channelHeader = page.locator('header');
+  await expect(channelHeader).toContainText('Flow 후보');
+  await expect(channelHeader.getByText(/4\d/).first()).toBeVisible();
+  await expect(channelHeader).toContainText('실제 원본');
+  await expect(channelHeader).toContainText('샘플 후보');
+  await expect(channelHeader).toContainText('원본 검토');
   await expect(page.getByText('채널 Flow 라이브러리')).toBeVisible();
   await expect(page.getByLabel('Flow 검색')).toBeVisible();
   await expect(page.getByRole('link', { name: /가전관리 월간 점검 루틴/ })).toBeVisible();
@@ -151,9 +156,9 @@ test('preview creator channel supports browsing 20+ flowified entries', async ({
 test('creator channel can filter real source-backed flows', async ({ page }) => {
   await page.goto('/u/samsung-service');
 
-  await expect(page.getByText('출처 확인').first()).toBeVisible();
+  await expect(page.getByText('실제 원본').first()).toBeVisible();
   await expect(page.getByText('대표 항목:')).toHaveCount(0);
-  await page.getByRole('button', { name: '출처 확인' }).click();
+  await page.getByRole('button', { name: '실제 원본' }).click();
 
   await expect(page.locator('a[href="/f/real-samsung-aircon-seasonal-care"]').first()).toBeVisible();
   await expect(page.locator('a[href^="/f/channel-samsung-service-"]')).toHaveCount(0);
@@ -616,7 +621,15 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
 
   await expect(page.getByRole('heading', { name: '실제 제작자 콘텐츠가 여러 Flow로 관리되는지 검증' })).toBeVisible();
   await expect(page.getByText('3 x 4 파일럿 검증')).toBeVisible();
-  await expect(page.getByText('Source Fit Audit')).toBeVisible();
+  const inventory = page.locator('section').filter({ hasText: '전체 콘텐츠 인벤토리' });
+  await expect(inventory).toBeVisible();
+  await expect(inventory.getByText('실제 원본', { exact: true })).toBeVisible();
+  await expect(inventory.getByText('40', { exact: true }).first()).toBeVisible();
+  await expect(inventory.getByText('샘플 후보', { exact: true })).toBeVisible();
+  await expect(inventory.getByText('440', { exact: true }).first()).toBeVisible();
+  await expect(inventory.getByText('수동 검토', { exact: true })).toBeVisible();
+  await expect(inventory.getByText('10', { exact: true }).first()).toBeVisible();
+  await expect(page.getByText('수동 Source-Fit Audit')).toBeVisible();
   await expect(page.getByText('원본 콘텐츠가 FLOW화될 가치가 있는지 점검')).toBeVisible();
   await expect(page.getByText('감사 완료')).toBeVisible();
   await expect(page.getByText('카탈로그 미리보기 1')).toBeVisible();

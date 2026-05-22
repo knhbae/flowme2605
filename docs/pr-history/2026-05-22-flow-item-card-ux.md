@@ -21,6 +21,10 @@
 - P1-content-migration deployment URL: https://flowme2605-7jrc2lvj6-flowme.vercel.app
 - P1-routine-migration deployment URL: https://flowme2605-ce5uskzab-flowme.vercel.app
 - Source-fit audit/public exposure deployment URL: https://flowme2605-l4dzz6clk-flowme.vercel.app
+- Content-inventory local screenshots:
+  - `artifacts/qa-flow-inventory/flow-lab.png`
+  - `artifacts/qa-flow-inventory/creators.png`
+  - `artifacts/qa-flow-inventory/samsung-channel.png`
 - Vercel inspect: https://vercel.com/flowme/flowme2605/E8vL2nQMrzoF8qjf7aow8tkTUZsb
 - Demo UX Vercel inspect: https://vercel.com/flowme/flowme2605/ERjP9Gtj2GjbA7FCRQNQCYz8a1TV
 - Channel-nav Vercel inspect: https://vercel.com/flowme/flowme2605/8JjefxX9MPrtkkBJ84SqzHiYxibt
@@ -117,6 +121,14 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
   - `baby-food-menu-recipe`
   - `wedding-d180-basic`
   - `english-study-30day-routine`
+- Added a content inventory review layer for option-2 channel/content cleanup:
+  - Manual source-fit audit Flow count remains 10.
+  - `source_status=real` Flow count is 40 and is fully covered by metadata-derived review.
+  - Generated channel preview Flow count is 440 and is labeled as sample candidate instead of validated content.
+  - Remaining legacy accessible routes are kept direct-accessible but not framed as reviewed/representative.
+- Updated `/flow-lab` with an `전체 콘텐츠 인벤토리` section showing total inventory, actual sources, sample candidates, manual review, derived review, and legacy access counts.
+- Updated `/creators` and `/u/[creator]` channel stats from `실행성 점수`/coverage language to `실제 원본`, `샘플 후보`, and `원본 검토`.
+- Kept channel browsing and generated preview Flow routes visible because they are useful for demo/product comprehension, but changed their language to avoid implying source validation.
 
 ## Not Done
 
@@ -131,6 +143,8 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Did not convert the mobile bottom sheet to a reusable design-system primitive yet; it remains scoped to public Flow detail.
 - Did not delete any public Flow route based on the first source-fit audit; weaker routes are demoted from representative exposure but remain directly accessible.
 - Did not audit all 500+ preview/generated Flows one-by-one; representative Flows were prioritized, and the remaining catalog audit is follow-up work.
+- Did not manually open and audit the 40 `source_status=real` routes in this batch; they are derived reviews based on existing source metadata.
+- Did not assign exact source URLs to the 440 generated preview candidates.
 
 ## Decisions
 
@@ -147,6 +161,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Kept decision flow execution as checklist-first, with the comparison table as a top-level decision aid rather than replacing the checklist.
 - Chose a tiered source audit approach: audit representative/real-source content first, classify the generated catalog later.
 - Kept weak-source routes accessible while demoting them from representative exposure so route history and demos remain stable.
+- Chose a two-tier inventory cleanup: manual source-fit audits are treated as deep review, `source_status=real` routes are treated as derived review, and generated preview routes are explicitly sample candidates.
 
 ## Files Touched
 
@@ -159,6 +174,8 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `lib/flow/seed-flows.test.ts`
 - `lib/flow/source-fit.ts`
 - `lib/flow/source-fit.test.ts`
+- `lib/flow/content-inventory.ts`
+- `lib/flow/content-inventory.test.ts`
 - `lib/flow/storage.ts`
 - `lib/flow/content-lab.ts`
 - `lib/flow/content-lab.test.ts`
@@ -168,6 +185,8 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `docs/content-audit/2026-05-22-source-fit-audit.md`
 - `docs/superpowers/specs/2026-05-22-flow-source-fit-audit-design.md`
 - `docs/superpowers/plans/2026-05-22-flow-source-fit-audit.md`
+- `docs/superpowers/specs/2026-05-22-flow-channel-content-inventory-design.md`
+- `docs/superpowers/plans/2026-05-22-flow-channel-content-inventory.md`
 - `docs/superpowers/plans/2026-05-22-flow-item-card-ux.md`
 - `docs/superpowers/plans/2026-05-22-flow-demo-ux-polish.md`
 - `docs/superpowers/plans/2026-05-22-flow-execution-model-p0.md`
@@ -180,6 +199,15 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 ## Verification
 
 - `npm run build` passed.
+- `npm test` first failed as expected for missing `content-inventory` module, then passed after implementation: 62 tests.
+- `npx tsx --test lib/flow/content-lab.test.ts` first failed as expected for missing inventory summary fields, then passed.
+- `npx tsx --test lib/flow/seed-flows.test.ts` first failed as expected for missing channel inventory summary fields, then passed.
+- `npm run build` first failed on an over-broad TypeScript type predicate in `content-inventory.ts`, then passed after narrowing link source mapping.
+- `npm run test:e2e` first failed on strict selector ambiguity after the new labels appeared in multiple places, then passed after narrowing assertions: 35 tests.
+- Local visual screenshots passed for `/flow-lab`, `/creators`, and `/u/samsung-service`:
+  - `artifacts/qa-flow-inventory/flow-lab.png`
+  - `artifacts/qa-flow-inventory/creators.png`
+  - `artifacts/qa-flow-inventory/samsung-channel.png`
 - `npm run test:e2e -- --grep "wedding flow answers"` passed.
 - `npm run test:e2e -- --grep "public moving flow|routine flow highlights|no-anchor checklist|representative real content"` passed.
 - `npm run docs:check` passed.

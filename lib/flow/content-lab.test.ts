@@ -107,3 +107,15 @@ test('content lab exposes source-fit audit summary for representative cleanup', 
   assert.ok(summary.sourceFitDecisionCounts.reshape_before_featured >= 1);
   assert.ok(summary.sourceFitDecisionCounts.catalog_preview_only >= 1);
 });
+
+test('content lab exposes full content inventory coverage', () => {
+  const summary = getContentLabSummary(seedBundles);
+
+  assert.equal(summary.inventoryTotalCount, seedBundles.length);
+  assert.equal(summary.realSourceInventoryReviewedCount, summary.realSourceFlowCount);
+  assert.equal(summary.manualSourceFitAuditedCount, 10);
+  assert.equal(summary.derivedRealSourceReviewedCount, summary.realSourceFlowCount);
+  assert.equal(summary.sourceBackedInventoryReviewedCount, summary.realSourceFlowCount + summary.manualSourceFitAuditedCount);
+  assert.equal(summary.previewCandidateFlowCount, summary.previewGeneratedFlowCount);
+  assert.ok(summary.inventoryPublicHandlingCounts.preview_candidate >= 440);
+});
