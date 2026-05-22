@@ -1,5 +1,5 @@
 import { seedBundles } from './seed-flows';
-import { FlowBundle, FlowItemState, ReactionLog } from './types';
+import { FlowBundle, FlowComparisonState, FlowItemState, ReactionLog } from './types';
 
 const BUNDLES_KEY = 'flow_builder_mvp_bundles_v11';
 const PREVIOUS_BUNDLES_KEYS = [
@@ -14,6 +14,7 @@ const PREVIOUS_BUNDLES_KEYS = [
 ];
 const CHECKS_KEY_PREFIX = 'flow_builder_mvp_checks_';
 const REACTIONS_KEY_PREFIX = 'flow_builder_mvp_reactions_';
+const COMPARISON_KEY_PREFIX = 'flow_builder_mvp_comparison_';
 const ANCHOR_KEY_PREFIX = 'flow:';
 const ITEM_STATE_KEY_PREFIX = 'flow_builder_mvp_item_state_';
 const NOTICE_KEY = 'flow_builder_mvp_storage_notice_dismissed';
@@ -21,6 +22,17 @@ const NOTICE_KEY = 'flow_builder_mvp_storage_notice_dismissed';
 export type StoredAnchor = {
   mode: string;
   anchor: string;
+};
+
+export type ActiveFlowProgress = {
+  slug: string;
+  title: string;
+  done: number;
+  total: number;
+  skipped: number;
+  anchor?: string;
+  anchorMode?: string;
+  lastVisited?: string;
 };
 
 function canUseStorage(): boolean {
@@ -138,4 +150,67 @@ export function saveReactionLogs(
 ): void {
   if (!canUseStorage()) return;
   localStorage.setItem(`${REACTIONS_KEY_PREFIX}${slug}`, JSON.stringify(value));
+}
+
+export function getComparisonState(slug: string): FlowComparisonState {
+  if (!canUseStorage()) return { candidates: [], notes: {} };
+  try {
+    const parsed = JSON.parse(localStorage.getItem(`${COMPARISON_KEY_PREFIX}${slug}`) || '{"candidates":[],"notes":{}}') as FlowComparisonState;
+    return {
+      candidates: Array.isArray(parsed.candidates) ? parsed.candidates : [],
+      notes: parsed.notes && typeof parsed.notes === 'object' ? parsed.notes : {},
+    };
+  } catch {
+    return { candidates: [], notes: {} };
+  }
+}
+
+export function saveComparisonState(slug: string, value: FlowComparisonState): void {
+  if (!canUseStorage()) return;
+  localStorage.setItem(`${COMPARISON_KEY_PREFIX}${slug}`, JSON.stringify(value));
+  localStorage.setItem('flow:meta:last-visit', new Date().toISOString());
+}
+
+export function getActiveFlowProgress(): ActiveFlowProgress[] {
+  if (!canUseStorage()) return [];
+
+  const lastVisited = localStorage.getItem('flow:meta:last-visit') ?? undefined;
+  const progress: ActiveFlowProgress[] = [];
+
+  for (const bundle of getBundles()) {
+    const checks = getChecks(bundle.flow.slug);
+    const itemStates = getItemStates(bundle.flow.slug);
+    const comparisonState = getComparisonState(bundle.flow.slug);
+    const storedAnchor = getStoredAnchor(bundle.flow.slug);
+    const ids = bundle.flow.content_type === 'meal_plan'
+      ? (bundle.mealSlots ?? []).map((slot) => slot.id)
+      : bundle.items.map((item) => item.id);
+    const skipped = ids.filter((id) => itemStates[id]?.skipped).length;
+    const total = Math.max(ids.length - skipped, 0);
+    const done = ids.filter((id) => checks[id] && !itemStates[id]?.skipped).length;
+    const hasProgress =
+      done > 0 ||
+      skipped > 0 ||
+      Boolean(storedAnchor.anchor) ||
+      storedAnchor.mode === 'example' ||
+      storedAnchor.mode === 'undecided' ||
+      Object.values(itemStates).some((state) => Boolean(state.note)) ||
+      comparisonState.candidates.some((candidate) => candidate.name.trim()) ||
+      Object.values(comparisonState.notes).some((row) => Object.values(row).some((note) => note.trim()));
+
+    if (hasProgress) {
+      progress.push({
+        slug: bundle.flow.slug,
+        title: bundle.flow.title,
+        done,
+        total,
+        skipped,
+        anchor: storedAnchor.anchor,
+        anchorMode: storedAnchor.mode,
+        lastVisited,
+      });
+    }
+  }
+
+  return progress;
 }

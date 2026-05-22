@@ -1,6 +1,6 @@
 import { addDays, formatDate, getRangeEnd } from './date';
 import { timingLabel } from './parser';
-import { FlowBundle, FlowItem, FlowItemState, MealSlot, ReactionLog } from './types';
+import { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, MealSlot, ReactionLog } from './types';
 
 const anchorLabelByType = {
   start_date: '시작일',
@@ -47,6 +47,7 @@ export type WorkbookExportOptions = {
   weekdays?: string[];
   reactionLogs?: Record<string, ReactionLog>;
   itemStates?: Record<string, FlowItemState>;
+  comparisonState?: FlowComparisonState;
 };
 
 const icsWeekdays: Record<string, string> = {
@@ -71,6 +72,7 @@ const executionColumns = [
 ];
 
 const detailColumns = ['실행 내용', '섹션', '왜 필요한가', '실행 방법', '주의', '출처/링크'];
+const comparisonFirstColumn = '비교 항목';
 
 const reactionColumns = [
   '시점',
@@ -329,11 +331,46 @@ function buildMonthlyGridRows(rows: CalendarExportRow[]): WorkbookCell[][] {
   return gridRows;
 }
 
+function comparisonCandidates(comparisonState?: FlowComparisonState): { id: string; name: string }[] {
+  return (comparisonState?.candidates ?? [])
+    .map((candidate, index) => ({
+      id: candidate.id,
+      name: candidate.name.trim() || `후보 ${index + 1}`,
+    }))
+    .filter((candidate) => candidate.id);
+}
+
+function hasComparisonData(comparisonState?: FlowComparisonState): boolean {
+  const candidates = comparisonCandidates(comparisonState);
+  if (!candidates.length) return false;
+  if (candidates.some((candidate) => candidate.name.trim())) return true;
+  return Object.values(comparisonState?.notes ?? {}).some((row) =>
+    Object.values(row).some((note) => note.trim()),
+  );
+}
+
+function buildComparisonExport(
+  bundle: FlowBundle,
+  comparisonState?: FlowComparisonState,
+): { columns: string[]; rows: WorkbookCell[][] } | undefined {
+  if (!hasComparisonData(comparisonState)) return undefined;
+
+  const candidates = comparisonCandidates(comparisonState);
+  return {
+    columns: [comparisonFirstColumn, ...candidates.map((candidate) => candidate.name)],
+    rows: bundle.items.map((item) => [
+      item.title,
+      ...candidates.map((candidate) => comparisonState?.notes?.[item.id]?.[candidate.id]?.trim() ?? ''),
+    ]),
+  };
+}
+
 export function buildText(
   bundle: FlowBundle,
   checks: Record<string, boolean>,
   anchor?: string,
   itemStates: Record<string, FlowItemState> = {},
+  comparisonState?: FlowComparisonState,
 ): string {
   const lines = [bundle.flow.title];
   const anchorLabel = getExportAnchorLabel(bundle);
@@ -366,6 +403,15 @@ export function buildText(
       const state = itemStates[item.id];
       lines.push(`- ${item.title}${state?.skipped ? ' (스킵)' : checks[item.id] ? ' (완료)' : ''}`);
       if (state?.note?.trim()) lines.push(`  메모: ${state.note.trim()}`);
+    }
+  }
+
+  const comparison = buildComparisonExport(bundle, comparisonState);
+  if (comparison) {
+    lines.push('', '[후보 비교표]');
+    lines.push(comparison.columns.join(' | '));
+    for (const row of comparison.rows) {
+      lines.push(row.map((cell) => String(cell)).join(' | '));
     }
   }
 
@@ -559,6 +605,7 @@ export function buildWorkbookSheets(
   const typeLabel = getTypeLabel(bundle);
   const anchorLabel = getExportAnchorLabel(bundle);
   const itemStates = options.itemStates ?? {};
+  const comparison = buildComparisonExport(bundle, options.comparisonState);
 
   const summaryRows: WorkbookCell[][] = [
     ['FLOW', bundle.flow.title],
@@ -684,6 +731,16 @@ export function buildWorkbookSheets(
         note: '월간 보기는 웹의 달력 보기와 동일하게 날짜별 실행 항목을 펼친 시트입니다. 기간형 식단은 매일 표시됩니다.',
       },
     );
+  }
+
+  if (comparison) {
+    sheets.push({
+      name: '후보 비교',
+      columns: comparison.columns,
+      rows: comparison.rows,
+      accentColor,
+      note: '후보 비교표는 이 브라우저에 입력한 후보명과 항목별 메모를 백업한 시트입니다.',
+    });
   }
 
   sheets.push({
