@@ -2,8 +2,8 @@
 
 - Date: 2026-05-23
 - Branch: `codex/travel-proof-emergency-workbench`
-- PR: TBD
-- Status: `Draft`
+- PR: https://github.com/knhbae/flowme2605/pull/16
+- Status: `Open`
 - Production deploy: TBD
 - Vercel inspect: TBD
 
