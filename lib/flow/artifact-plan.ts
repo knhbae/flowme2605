@@ -54,13 +54,13 @@ function getSourceHandling(bundle: FlowBundle): SourceHandling {
   return decisionToHandling[audit.decision];
 }
 
-function getPrimarySurface(bundle: FlowBundle): PrimaryArtifactSurface {
+function getPrimarySurface(bundle: FlowBundle, model = normalizeExecutionModel(bundle)): PrimaryArtifactSurface {
   const audit = getNaturalArtifactAudit(bundle.flow.slug);
   if (bundle.flow.slug === 'used-car-buying-check') return 'decision_table';
-  if (hasArtifact(bundle, 'comparison_table') && bundle.flow.structure_type === 'checklist') return 'decision_table';
+  if (model.views.includes('comparison_table') || (hasArtifact(bundle, 'comparison_table') && bundle.flow.structure_type === 'checklist')) return 'decision_table';
   if (hasArtifact(bundle, 'spreadsheet')) return 'spreadsheet_log';
-  if (hasArtifact(bundle, 'routine_calendar') || bundle.flow.structure_type === 'routine') return 'routine_calendar';
-  if (hasArtifact(bundle, 'monthly_calendar') || bundle.flow.structure_type === 'timeline') return 'timeline_calendar';
+  if (hasArtifact(bundle, 'routine_calendar') || model.views.includes('routine_sessions') || bundle.flow.structure_type === 'routine') return 'routine_calendar';
+  if (hasArtifact(bundle, 'monthly_calendar') || model.views.includes('month_calendar') || bundle.flow.structure_type === 'timeline') return 'timeline_calendar';
   if (audit?.naturalArtifacts.some((artifact) => artifact.kind === 'memo')) return 'memo_card';
   return 'checklist';
 }
@@ -108,9 +108,13 @@ function getSurfaces(primary: PrimaryArtifactSurface): ArtifactSurface[] {
 
 export function getArtifactPlan(bundle: FlowBundle): ArtifactPlan {
   const model = normalizeExecutionModel(bundle);
-  const primarySurface = getPrimarySurface(bundle);
+  const primarySurface = getPrimarySurface(bundle, model);
   const sourceHandling = getSourceHandling(bundle);
   const audit = getNaturalArtifactAudit(bundle.flow.slug);
+  const exportTargets: FlowExportTarget[] =
+    model.views.includes('month_calendar') && !model.exportTargets.includes('calendar')
+      ? [...model.exportTargets, 'calendar']
+      : model.exportTargets;
 
   return {
     flowSlug: bundle.flow.slug,
@@ -122,6 +126,6 @@ export function getArtifactPlan(bundle: FlowBundle): ArtifactPlan {
         ? 'Assign an exact source URL before representative promotion.'
         : audit?.nextContentAction ?? 'Keep content aligned to the selected artifact surface.',
     surfaces: getSurfaces(primarySurface),
-    exportTargets: model.exportTargets,
+    exportTargets,
   };
 }

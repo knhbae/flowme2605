@@ -152,6 +152,7 @@ function TimelineWorkbench({ bundle, anchor }: { bundle: FlowBundle; anchor: str
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_1.05fr]">
       <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+        <p className="text-sm font-semibold text-blue-700">실행 리스트 미리보기</p>
         <h3 className="text-base font-semibold text-gray-950">전체 할 일</h3>
         <div className="mt-3 space-y-2">
           {listRows.map((row) => (
@@ -162,17 +163,20 @@ function TimelineWorkbench({ bundle, anchor }: { bundle: FlowBundle; anchor: str
           ))}
         </div>
       </div>
-      <MiniMonthCalendar title="월간 캘린더" month={month} rows={rows} />
+      <MiniMonthCalendar title="월간 캘린더" eyebrow="월별 달력 preview" month={month} rows={rows} />
     </div>
   );
 }
 
-function MiniMonthCalendar({ title, month, rows }: { title: string; month: string; rows: ScheduleRow[] }) {
+function MiniMonthCalendar({ title, eyebrow, month, rows }: { title: string; eyebrow?: string; month: string; rows: ScheduleRow[] }) {
   const days = getMonthCalendarDays(month || formatDate(new Date()).slice(0, 7));
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-4">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="text-base font-semibold text-gray-950">{title}</h3>
+        <div>
+          {eyebrow ? <p className="text-sm font-semibold text-blue-700">{eyebrow}</p> : null}
+          <h3 className="text-base font-semibold text-gray-950">{title}</h3>
+        </div>
         <span className="text-sm font-semibold text-gray-500">{month}</span>
       </div>
       <div className="mt-3 grid grid-cols-7 gap-1 text-center text-xs font-semibold text-gray-500">
