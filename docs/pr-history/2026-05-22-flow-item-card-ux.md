@@ -12,9 +12,11 @@
 - Deployment URL: https://flowme2605-20g5fe610-flowme.vercel.app
 - Demo UX deployment URL: https://flowme2605-qqsm8zzac-flowme.vercel.app
 - Channel-nav deployment URL: https://flowme2605-feri2di46-flowme.vercel.app
+- Execution-model deployment URL: https://flowme2605-dvsk1atld-flowme.vercel.app
 - Vercel inspect: https://vercel.com/flowme/flowme2605/E8vL2nQMrzoF8qjf7aow8tkTUZsb
 - Demo UX Vercel inspect: https://vercel.com/flowme/flowme2605/ERjP9Gtj2GjbA7FCRQNQCYz8a1TV
 - Channel-nav Vercel inspect: https://vercel.com/flowme/flowme2605/8JjefxX9MPrtkkBJ84SqzHiYxibt
+- Execution-model Vercel inspect: https://vercel.com/flowme/flowme2605/BLPBytJZnTEzSUDA9NAdCyxXBRAw
 
 ## Why
 
@@ -109,9 +111,14 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `npm run build` passed after adding landing previews and routine monthly calendar.
 - `npm run test:e2e -- --grep "home presents|public moving flow|routine flow highlights|no-anchor checklist|used-car checklist"` passed: 5 tests.
 - `npm run test:e2e` passed after execution-model P0 UI: 31 tests.
+- Execution-model production deploy passed and aliased to `https://flowme2605.vercel.app`.
+- Production smoke passed for:
+  - Home representative flow card and output target preview.
+  - Running Flow `반복 달력 preview` and `월별 달력`.
+  - Used-car Flow `후보 비교 preview` and `현장에서 바로 체크`.
 - Local visual smoke via Playwright passed:
-  - Home: no `/flow-lab` or `/creators` nav links; headline is `따라하기 쉬운 실행 가이드, Flow`.
-  - Moving schedule: no duplicated `출처와 주의 정보`; no `주별 보기`; one `일정 보기` tab.
+  - Home: no `/flow-lab` nav link; channel discovery remains as `/creators` labeled `채널`; headline is `따라하기 쉬운 실행 가이드, Flow`.
+  - Moving schedule: no duplicated `출처와 주의 정보`; no `주별 보기`; one `월별 달력` tab.
   - `/my`: document title and H1 are `내 Flow`; no `Creator Studio` text.
 - Vercel production build passed for both item-card and demo UX deployments.
 - Production smoke tests passed:
