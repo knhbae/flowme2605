@@ -123,13 +123,13 @@ test('content lab exposes full content inventory coverage', () => {
 test('content lab exposes natural artifact audit coverage for real-source flows', () => {
   const summary = getContentLabSummary(seedBundles);
 
-  assert.equal(summary.naturalArtifactRealSourceAuditedCount, 32);
-  assert.equal(summary.naturalArtifactRealSourceRemainingCount, summary.realSourceFlowCount - 32);
+  assert.equal(summary.naturalArtifactRealSourceAuditedCount, 36);
+  assert.equal(summary.naturalArtifactRealSourceRemainingCount, summary.realSourceFlowCount - 36);
   assert.ok(summary.naturalArtifactDecisionCounts.promote_to_manual_source_fit >= 1);
   assert.ok(summary.naturalArtifactDecisionCounts.reshape_content_or_ux >= 1);
   assert.ok(summary.naturalArtifactCategoryCounts['가전관리'] >= 2);
-  assert.ok(summary.naturalArtifactCategoryCounts['운동/홈트'] >= 11);
-  assert.ok(summary.naturalArtifactCategoryCounts['다이어트/기록'] >= 5);
+  assert.ok(summary.naturalArtifactCategoryCounts['운동/홈트'] >= 13);
+  assert.ok(summary.naturalArtifactCategoryCounts['다이어트/기록'] >= 7);
   assert.ok(summary.naturalArtifactCategoryCounts['생활행정'] >= 2);
   assert.ok(summary.naturalArtifactCategoryCounts['육아/돌봄'] >= 2);
   assert.ok(summary.naturalArtifactCategoryCounts['반려동물'] >= 2);

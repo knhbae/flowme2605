@@ -7,10 +7,10 @@ This report starts the full review of the 40 `source_status=real` Flows. It uses
 | Metric | Count |
 | --- | ---: |
 | Real-source Flows | 40 |
-| Audited real-source Flows | 32 |
-| Remaining real-source Flows | 8 |
+| Audited real-source Flows | 36 |
+| Remaining real-source Flows | 4 |
 
-The first six batches intentionally avoid auditing only one cluster. They cover official service pages, household routines, exact workout videos, diet/logging videos, exam/admin deadlines, childcare/medical-sensitive content, pet registration, pet health broad sources, moving/financial-sensitive content, travel safety, travel health, and vehicle administration.
+The first seven batches intentionally avoid auditing only one cluster. They cover official service pages, household routines, exact workout videos, diet/logging videos, workout planning videos, exam/admin deadlines, childcare/medical-sensitive content, pet registration, pet health broad sources, moving/financial-sensitive content, travel safety, travel health, and vehicle administration.
 
 ## Method
 
@@ -61,6 +61,10 @@ For each source, record:
 | `real-fitvely-video-three-week-check` | Spreadsheet, memo | Reshape content or UX | Needs safe 3-week measurement review instead of result promises. |
 | `real-fitvely-video-post-workout-nutrition` | Routine calendar, memo | Reshape content or UX | Needs workout-linked follow-up nutrition reminders. |
 | `real-fitvely-video-carb-amount-shorts` | Spreadsheet, memo | Reshape content or UX | Needs quick daily carb log and next-meal adjustment memo. |
+| `real-fitvely-video-after-work-nutrition` | Routine calendar, memo | Reshape content or UX | Needs workout-linked meal timing and relative reminders. |
+| `real-fitvely-video-weight-class-method` | Comparison table, spreadsheet | Reshape content or UX | Needs user condition input and generated tracking table. |
+| `real-fitvely-video-bulk-up-method` | Routine calendar, spreadsheet | Reshape content or UX | Needs workout split plus weight/load/meal logs. |
+| `real-fitvely-video-workout-order` | Comparison table, routine calendar | Reshape content or UX | Needs goal-based order selection and schedule block output. |
 
 ## Source Evidence Used
 
@@ -85,6 +89,7 @@ For each source, record:
 - ThankyouBUBU exact video pages: automated YouTube body fetch was throttled, so the fourth batch uses exact source URLs, seed metadata, and searchable title/channel evidence for belly/side, no-knee cardio+strength, arm/back/shoulder, and waist-focused routines at `https://www.youtube.com/watch?v=toAUho9bEw0`, `https://www.youtube.com/watch?v=hesjApxDlj0`, `https://www.youtube.com/watch?v=73IrtWDDby0`, and `https://www.youtube.com/watch?v=k3MznPQvUEk`.
 - ThankyouBUBU remaining exact videos: search results and channel-index snippets confirm the 8-minute cardio, 3-minute arm, 3-minute abs, and lower-belly workout titles and durations; source URLs are `https://www.youtube.com/watch?v=O87gkL1cKSc`, `https://www.youtube.com/watch?v=Kl9Dmx86Z0Q`, `https://www.youtube.com/watch?v=6IUL8-nGetA`, and `https://www.youtube.com/watch?v=9xxCFu21CLM`.
 - FITVELY diet/nutrition exact videos: search results and source metadata identify carb reason, 3-week check, post-workout nutrition, and carb amount shorts as diet/nutrition guidance; source URLs are `https://www.youtube.com/watch?v=_h3u30M9ECc`, `https://www.youtube.com/watch?v=nfdIpPXfIc8`, `https://www.youtube.com/watch?v=J8YmqzhPS2Q`, and `https://www.youtube.com/watch?v=t630vnDGIWw`.
+- FITVELY workout-plan exact videos: search/source metadata identify after-work nutrition, weight-class method, bulk-up, and workout order as workout planning guidance; source URLs are `https://www.youtube.com/watch?v=zipquv7TErU`, `https://www.youtube.com/watch?v=qADmhOJemTs`, `https://www.youtube.com/watch?v=JurCSqpjl5I`, and `https://www.youtube.com/watch?v=oPBA8E_WtXY`.
 
 ## Output-Type Findings
 
@@ -116,6 +121,8 @@ Example:
 - ThankyouBUBU 3-minute abs: `반복=월/수/금/일`, `회복=화/목/토` should show workout days and recovery days together.
 - ThankyouBUBU lower belly: `기간=5주`, `측정=매주 수요일 아침` should combine target-area workout events with optional measurement logs.
 - FITVELY split routine: `분할=상체/하체`, `운동일=월/화/목/금` should first compare routine candidates, then generate the selected split calendar.
+- FITVELY after-work nutrition: `퇴근=19:00`, `운동=20:30`, `운동일=화/목/토` should create pre-workout snack reminders, post-workout dinner reminders, and a reusable meal-timing memo.
+- FITVELY bulk-up: `분할=상체/하체`, `운동일=월/화/목/금`, `식사=하루 4회` should show workout sessions, meal-block reminders, and weekly weight/load review events.
 
 ### Checklist
 
@@ -139,6 +146,8 @@ Example:
 - Ohouse moving: `후보A=용달 18만원`, `후보B=반포장 32만원` should produce a mover/vendor comparison table before the user commits.
 - Ohouse move-in cleaning: `후보A=18만원 기본청소`, `후보B=24만원 창틀 포함` should produce a vendor estimate comparison table plus a cleaning-after proof checklist.
 - FITVELY workout design: `후보A=무분할 주3회`, `후보B=상하체 주4회`, `후보C=3분할 주5회` should produce a split-routine comparison table before calendar generation.
+- FITVELY weight-class method: `현재체중=82kg`, `목표=12주 감량`, `운동경험=초보` should first choose a weight-class method and then generate a tracking table.
+- FITVELY workout order: `목표=체지방 감량`, `운동가능=60분`, `운동일=월/수/금` should compare cardio-first and strength-first order before producing schedule blocks.
 - SafeDriving license guide: case comparison should include preparation items, photo count, fees, online availability, delegated application, and receipt restrictions.
 - Childcare support: `후보A=센터A 13:00-16:00`, `후보B=센터B 10:00-13:00` should compare distance, time, first-visit paperwork, and reservation availability before the checklist is finalized.
 
@@ -155,6 +164,7 @@ Examples:
 - FITVELY 3-week check: `시작체중=68kg`, `측정=매주 월요일` should produce a 3-week measurement/review table plus safety notes.
 - FITVELY carb amount shorts: `아침=식빵 1장`, `점심=밥 반공기`, `저녁계획=고구마 1개` should produce a quick daily carb log and next-meal adjustment memo.
 - FITVELY post-workout nutrition is calendar-linked but still needs a reusable nutrition memo: `운동일=월/수/금`, `섭취시점=운동 후 30분` should create follow-up reminders plus a food 기준 card.
+- FITVELY bulk-up tracking: `시작체중=70kg`, `목표=월 +1kg`, `주요운동=스쿼트/벤치/로우` should produce weekly body-weight, training-load, and meal-compliance rows.
 
 ### Emergency / Proof Memo
 
@@ -167,10 +177,10 @@ Examples:
 
 ## Next Batch
 
-Audit the remaining 8 real-source Flows in this order:
+Audit the remaining 4 real-source Flows in this order:
 
-1. Finish FITVELY workout-plan exact videos: weight-class method, bulk-up method, workout order, and remaining workout-plan sources.
-2. Review broad-source flows last: FITVELY broad pages, ThankyouBUBU channel pages, and any source that needs replacement before public promotion.
+1. Review broad-source flows last: FITVELY broad pages, ThankyouBUBU channel pages, and any source that needs replacement before public promotion.
+2. Decide whether broad/channel source Flows should be kept for catalog review, replaced with exact source URLs, or hidden from representative exposure.
 3. Revisit crawler-limited official pages only when a stable official body or mirrored 민원 안내 can be captured without weakening source attribution.
 
 Do not promote any real-source Flow from derived review to manual source-fit without at least one concrete natural artifact simulation.

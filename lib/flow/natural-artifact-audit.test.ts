@@ -14,7 +14,7 @@ function bundleBySlug(slug: string) {
 }
 
 test('real-source natural artifact audits only cover real-source flows', () => {
-  assert.equal(realSourceNaturalArtifactAudits.length, 32);
+  assert.equal(realSourceNaturalArtifactAudits.length, 36);
 
   for (const audit of realSourceNaturalArtifactAudits) {
     const bundle = bundleBySlug(audit.slug);
@@ -58,7 +58,7 @@ test('real-source natural artifact coverage summary tracks remaining work', () =
 
   assert.equal(summary.realSourceCount, 40);
   assert.equal(summary.auditedRealSourceCount, realSourceNaturalArtifactAudits.length);
-  assert.equal(summary.remainingRealSourceCount, 8);
+  assert.equal(summary.remainingRealSourceCount, 4);
   assert.ok(summary.decisionCounts.promote_to_manual_source_fit >= 1);
   assert.ok(summary.decisionCounts.reshape_content_or_ux >= 1);
 });
@@ -168,6 +168,26 @@ test('sixth real-source artifact batch covers FITVELY diet and nutrition exact v
     assert.ok(
       audit.naturalArtifacts.some((artifact) => artifact.kind === 'spreadsheet' || artifact.kind === 'memo'),
       `${slug} should simulate a diet/nutrition log artifact`,
+    );
+  }
+});
+
+test('seventh real-source artifact batch covers remaining FITVELY exact videos', () => {
+  const expectedSeventhBatchSlugs = [
+    'real-fitvely-video-after-work-nutrition',
+    'real-fitvely-video-weight-class-method',
+    'real-fitvely-video-bulk-up-method',
+    'real-fitvely-video-workout-order',
+  ];
+
+  for (const slug of expectedSeventhBatchSlugs) {
+    const audit = getNaturalArtifactAudit(slug);
+    assert.ok(audit, `missing seventh-batch audit: ${slug}`);
+    assert.ok(
+      audit.naturalArtifacts.some(
+        (artifact) => artifact.kind === 'comparison_table' || artifact.kind === 'routine_calendar' || artifact.kind === 'spreadsheet',
+      ),
+      `${slug} should simulate a decision, schedule, or tracking artifact`,
     );
   }
 });
