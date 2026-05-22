@@ -619,7 +619,7 @@ test('representative flows show artifact-first previews on the first screen', as
 test('decision flow comparison table edits and persists candidate notes', async ({ page }) => {
   await page.goto('/f/used-car-buying-check');
 
-  await expect(page.getByText('후보 비교표')).toBeVisible();
+  await expect(page.getByLabel('후보 1 이름')).toBeVisible();
   await page.getByLabel('후보 1 이름').fill('아반떼 2021');
   await page.getByLabel('총예산을 차량가, 이전비, 보험료, 정비비로 나누기 / 후보 1 메모').fill('총 1,250만원');
   await page.getByRole('button', { name: '후보 추가' }).click();
