@@ -3,9 +3,10 @@
 - Date: 2026-05-23
 - Branch: `codex/travel-proof-emergency-workbench`
 - PR: https://github.com/knhbae/flowme2605/pull/16
-- Status: `Open`
-- Production deploy: TBD
-- Vercel inspect: TBD
+- Status: `Merged`, `Deployed`
+- Production deploy: https://flowme2605.vercel.app
+- Vercel inspect: https://vercel.com/flowme/flowme2605/BcuuVRofvNSSMLQJbgVbgHFNghEc
+- Merge commit: `e60669788ae51bc8d6eef71b86635cd276619fe1`
 
 ## Why
 
@@ -52,6 +53,9 @@ Travel Flows need a different natural artifact from moving or vehicle comparison
 - `npm test` passed: 89 tests.
 - `npm run build` passed.
 - `npm run test:e2e` passed: 38 tests.
+- Vercel preview passed for PR head `aa49c40c0363796983e6264c225da86d42043220`.
+- Production Vercel passed for merge commit `e60669788ae51bc8d6eef71b86635cd276619fe1`.
+- Production smoke passed on `https://flowme2605.vercel.app/f/overseas-travel-d14`: destination, entry-condition memo, and emergency contact memo persisted after reload.
 - Mobile screenshot was attempted but the command was not approved in the tool prompt, so no screenshot artifact was captured in this pass.
 
 ## Risks
