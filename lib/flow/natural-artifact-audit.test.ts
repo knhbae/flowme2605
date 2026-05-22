@@ -14,7 +14,7 @@ function bundleBySlug(slug: string) {
 }
 
 test('real-source natural artifact audits only cover real-source flows', () => {
-  assert.equal(realSourceNaturalArtifactAudits.length, 20);
+  assert.equal(realSourceNaturalArtifactAudits.length, 24);
 
   for (const audit of realSourceNaturalArtifactAudits) {
     const bundle = bundleBySlug(audit.slug);
@@ -58,7 +58,7 @@ test('real-source natural artifact coverage summary tracks remaining work', () =
 
   assert.equal(summary.realSourceCount, 40);
   assert.equal(summary.auditedRealSourceCount, realSourceNaturalArtifactAudits.length);
-  assert.equal(summary.remainingRealSourceCount, 20);
+  assert.equal(summary.remainingRealSourceCount, 16);
   assert.ok(summary.decisionCounts.promote_to_manual_source_fit >= 1);
   assert.ok(summary.decisionCounts.reshape_content_or_ux >= 1);
 });
@@ -106,6 +106,28 @@ test('third real-source artifact batch covers admin, childcare, pet, and moving 
     assert.ok(
       audit.naturalArtifacts.some((artifact) => artifact.kind === 'checklist' || artifact.kind === 'comparison_table'),
       `${slug} should simulate a checklist or decision artifact`,
+    );
+  }
+});
+
+test('fourth real-source artifact batch covers exact workout video routines', () => {
+  const expectedFourthBatchSlugs = [
+    'real-thankyou-bubu-video-belly-side-all-in-one',
+    'real-thankyou-bubu-video-no-knee-cardio-strength',
+    'real-thankyou-bubu-video-arm-back-shoulder',
+    'real-thankyou-bubu-video-waist-8cm',
+  ];
+
+  for (const slug of expectedFourthBatchSlugs) {
+    const audit = getNaturalArtifactAudit(slug);
+    assert.ok(audit, `missing fourth-batch audit: ${slug}`);
+    assert.ok(
+      audit.naturalArtifacts.some((artifact) => artifact.kind === 'routine_calendar'),
+      `${slug} should simulate a recurring workout calendar`,
+    );
+    assert.ok(
+      audit.naturalArtifacts.some((artifact) => artifact.kind === 'memo' || artifact.kind === 'spreadsheet'),
+      `${slug} should simulate a workout condition note or measurement log`,
     );
   }
 });

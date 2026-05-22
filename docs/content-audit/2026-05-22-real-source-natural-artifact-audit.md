@@ -7,10 +7,10 @@ This report starts the full review of the 40 `source_status=real` Flows. It uses
 | Metric | Count |
 | --- | ---: |
 | Real-source Flows | 40 |
-| Audited real-source Flows | 20 |
-| Remaining real-source Flows | 20 |
+| Audited real-source Flows | 24 |
+| Remaining real-source Flows | 16 |
 
-The first three batches intentionally avoid auditing only one cluster. They cover official service pages, household routines, exact workout videos, diet/logging videos, exam/admin deadlines, childcare/medical-sensitive content, pet registration, pet health broad sources, moving/financial-sensitive content, travel safety, travel health, and vehicle administration.
+The first four batches intentionally avoid auditing only one cluster. They cover official service pages, household routines, exact workout videos, diet/logging videos, exam/admin deadlines, childcare/medical-sensitive content, pet registration, pet health broad sources, moving/financial-sensitive content, travel safety, travel health, and vehicle administration.
 
 ## Method
 
@@ -49,6 +49,10 @@ For each source, record:
 | `real-childcare-support-application-check` | Checklist, comparison table | Reshape content or UX | Needs child age/area/time inputs and childcare-center candidate comparison. |
 | `real-pet-health-visit-routine` | Checklist, routine calendar | Keep catalog review | Current source is a registration/admin FAQ, not a direct pet health visit guide. |
 | `real-ohouse-movein-cleaning-check` | Comparison table, checklist | Reshape content or UX | Needs vendor estimate comparison and post-cleaning proof/reclean request checklist. |
+| `real-thankyou-bubu-video-belly-side-all-in-one` | Routine calendar, memo | Reshape content or UX | Needs target-area recurrence, body-condition notes, and measurement fields. |
+| `real-thankyou-bubu-video-no-knee-cardio-strength` | Routine calendar, memo | Reshape content or UX | Needs knee-condition safety feedback and intensity adjustment per occurrence. |
+| `real-thankyou-bubu-video-arm-back-shoulder` | Routine calendar, spreadsheet | Reshape content or UX | Needs upper-body measurement log alongside repeated workout events. |
+| `real-thankyou-bubu-video-waist-8cm` | Routine calendar, spreadsheet | Reshape content or UX | Needs safe expectation copy and weekly waist measurement log. |
 
 ## Source Evidence Used
 
@@ -70,6 +74,7 @@ For each source, record:
 - Childcare time-care page: the page exposes 대상 age bands, 월 60시간 support, operating hours, hourly reservation, fee split, first-visit documents, and individual supplies at `https://www.childcare.go.kr/?menuno=202`.
 - Animal FAQ page: the page is an admin FAQ with animal registration agency and certificate-printing content, and explicitly says FAQ answers have no legal effect; it is broad evidence for a pet-health Flow and should stay catalog review until a direct health-visit source is found at `https://www.animal.go.kr/front/awtis/faq/faqList.do?menuNo=2000000021`.
 - Ohouse move-in cleaning page: the page gives 10-pyeong cost range, cost drivers, weekend/peak surcharge, vendor comparison criteria, extra-cost risk, and a short cleaning checklist at `https://ohou.se/advices/12375`.
+- ThankyouBUBU exact video pages: automated YouTube body fetch was throttled, so the fourth batch uses exact source URLs, seed metadata, and searchable title/channel evidence for belly/side, no-knee cardio+strength, arm/back/shoulder, and waist-focused routines at `https://www.youtube.com/watch?v=toAUho9bEw0`, `https://www.youtube.com/watch?v=hesjApxDlj0`, `https://www.youtube.com/watch?v=73IrtWDDby0`, and `https://www.youtube.com/watch?v=k3MznPQvUEk`.
 
 ## Output-Type Findings
 
@@ -92,6 +97,10 @@ Example:
 - Washer filter: `시작일=2026-06-06`, `반복=매주 토요일 오전` should produce a weekly drain-filter event with remaining-water/reassembly warnings.
 - ThankyouBUBU full-body: `시작일=2026-06-01`, `반복=월/수/금 20:30`, `기간=4주` should produce visible workout instances across the month plus post-workout condition notes.
 - ThankyouBUBU stretch: `반복=평일 07:40`, `휴식=토/일` should produce only weekday events and show rest days explicitly.
+- ThankyouBUBU belly/side: `반복=월/수/금 20:30`, `기간=4주`, `강도=초보` should produce target-area workout events plus condition notes.
+- ThankyouBUBU no-knee cardio+strength: `무릎상태=계단 내려갈 때 불편`, `강도=절반부터` should produce a recurring calendar that keeps safety feedback and next-session intensity adjustment.
+- ThankyouBUBU arm/back/shoulder: `반복=월/수/토`, `측정=매주 월요일 아침` should show workout occurrences and a separate weekly upper-body measurement occurrence.
+- ThankyouBUBU waist: `기간=6주`, `운동횟수목표=주4회` should show weekly waist measurement, execution count, and safe expectation notes.
 - FITVELY split routine: `분할=상체/하체`, `운동일=월/화/목/금` should first compare routine candidates, then generate the selected split calendar.
 
 ### Checklist
@@ -127,6 +136,7 @@ Examples:
 
 - FITVELY body-fat: `목표=체지방 -2kg`, `측정=월요일 아침` should produce a daily diet/workout log plus weekly measurement summary.
 - Sinagong study: `시험일=2026-07-05`, `평일공부=90분` should produce both a D-30 study calendar and a score/wrong-answer spreadsheet.
+- ThankyouBUBU waist and upper-body videos need light spreadsheet logs when the title implies body measurements. FLOW should avoid promising the exact numeric outcome and instead track baseline, execution count, condition, and review notes.
 
 ### Emergency / Proof Memo
 
@@ -139,10 +149,11 @@ Examples:
 
 ## Next Batch
 
-Audit the remaining 20 real-source Flows in this order:
+Audit the remaining 16 real-source Flows in this order:
 
-1. Finish the exact video clusters with a reusable but still source-specific routine/log template: remaining ThankyouBUBU exact videos and FITVELY exact videos.
-2. Review broad-source flows last: FITVELY broad pages, ThankyouBUBU channel pages, and any source that needs replacement before public promotion.
-3. Revisit crawler-limited official pages only when a stable official body or mirrored 민원 안내 can be captured without weakening source attribution.
+1. Finish the remaining ThankyouBUBU exact videos with source-specific routine/log templates.
+2. Finish FITVELY exact videos, splitting diet/logging videos from workout-plan videos.
+3. Review broad-source flows last: FITVELY broad pages, ThankyouBUBU channel pages, and any source that needs replacement before public promotion.
+4. Revisit crawler-limited official pages only when a stable official body or mirrored 민원 안내 can be captured without weakening source attribution.
 
 Do not promote any real-source Flow from derived review to manual source-fit without at least one concrete natural artifact simulation.
