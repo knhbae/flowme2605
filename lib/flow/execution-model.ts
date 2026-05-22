@@ -43,6 +43,11 @@ const representativeFlowSlugs = [
   'running-5k-4week',
   'baby-food-menu-recipe',
   'overseas-travel-d14',
+  'wedding-d180-basic',
+  'study-exam-d30-plan',
+  'home-workout-20min',
+  'english-study-30day-routine',
+  'car-care-monthly-routine',
 ] as const;
 
 const decisionFlowSlugs = new Set([
@@ -53,14 +58,10 @@ const decisionFlowSlugs = new Set([
 
 const programFlowSlugs = new Set([
   'running-5k-4week',
+  'study-exam-d30-plan',
 ]);
 
 const migrationCandidateSlugs = new Set([
-  'wedding-d180-basic',
-  'study-exam-d30-plan',
-  'home-workout-20min',
-  'english-study-30day-routine',
-  'car-care-monthly-routine',
   'national-health-checkup-d7',
   'passport-renewal-docs',
   'year-end-tax-docs',
@@ -86,7 +87,7 @@ export function normalizeExecutionModel(bundle: FlowBundle): FlowExecutionModel 
     uxType,
     exposureStatus,
     sourceMode: getSourceMode(bundle),
-    views: getViewsForUxType(uxType),
+    views: getViewsForBundle(bundle, uxType),
     exportTargets: getExportTargetsForUxType(uxType),
     migrationGaps: getMigrationGaps(bundle, uxType),
   };
@@ -148,6 +149,14 @@ function getViewsForUxType(uxType: FlowUxType): FlowView[] {
   }
 }
 
+function getViewsForBundle(bundle: FlowBundle, uxType: FlowUxType): FlowView[] {
+  if (bundle.flow.slug === 'wedding-d180-basic') {
+    return ['list', 'agenda', 'month_calendar', 'comparison_table', 'export_preview'];
+  }
+
+  return getViewsForUxType(uxType);
+}
+
 function getExportTargetsForUxType(uxType: FlowUxType): FlowExportTarget[] {
   switch (uxType) {
     case 'timeline':
@@ -178,7 +187,7 @@ function getMigrationGaps(bundle: FlowBundle, uxType: FlowUxType): string[] {
   if ((uxType === 'timeline' || uxType === 'program') && !bundle.items.some((item) => item.day_offset !== undefined) && uxType !== 'program') {
     gaps.push('dated_offsets_missing');
   }
-  if (uxType === 'decision' && bundle.flow.slug !== 'used-car-buying-check') {
+  if (uxType === 'decision' && !['used-car-buying-check', 'wedding-d180-basic'].includes(bundle.flow.slug)) {
     gaps.push('comparison_table_preview_needed');
   }
 

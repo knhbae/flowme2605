@@ -7,6 +7,7 @@
 - Mainline PRs:
   - Item-card promotion: https://github.com/knhbae/flowme2605/pull/8
   - Demo UX polish: https://github.com/knhbae/flowme2605/pull/9
+  - Mobile export and P1 content migration: https://github.com/knhbae/flowme2605/pull/10
 - Status: `Open`, `Deployed`
 - Production deploy: https://flowme2605.vercel.app
 - Deployment URL: https://flowme2605-20g5fe610-flowme.vercel.app
@@ -15,12 +16,18 @@
 - Execution-model deployment URL: https://flowme2605-dvsk1atld-flowme.vercel.app
 - Comparison-followup deployment URL: https://flowme2605-6avh7mj1a-flowme.vercel.app
 - Comparison-export deployment URL: https://flowme2605-ctyehe39h-flowme.vercel.app
+- Mobile-export deployment URL: https://flowme2605-5ilocoxrc-flowme.vercel.app
+- P1-content-migration deployment URL: https://flowme2605-7jrc2lvj6-flowme.vercel.app
+- P1-routine-migration deployment URL: https://flowme2605-ce5uskzab-flowme.vercel.app
 - Vercel inspect: https://vercel.com/flowme/flowme2605/E8vL2nQMrzoF8qjf7aow8tkTUZsb
 - Demo UX Vercel inspect: https://vercel.com/flowme/flowme2605/ERjP9Gtj2GjbA7FCRQNQCYz8a1TV
 - Channel-nav Vercel inspect: https://vercel.com/flowme/flowme2605/8JjefxX9MPrtkkBJ84SqzHiYxibt
 - Execution-model Vercel inspect: https://vercel.com/flowme/flowme2605/BLPBytJZnTEzSUDA9NAdCyxXBRAw
 - Comparison-followup Vercel inspect: https://vercel.com/flowme/flowme2605/2hMiyV5fNvJND71EkutgMf5vT3mW
 - Comparison-export Vercel inspect: https://vercel.com/flowme/flowme2605/5SRdATNfKEmJcv9BZi4BreFMmfVZ
+- Mobile-export Vercel inspect: https://vercel.com/flowme/flowme2605/2S7cmp7v29DrPJDQmNE7koBRMC9m
+- P1-content-migration Vercel inspect: https://vercel.com/flowme/flowme2605/9miBqirmAVcGB7vtLPPuZzKqZCan
+- P1-routine-migration Vercel inspect: https://vercel.com/flowme/flowme2605/FurPwVBiTZEH1USEcPcQoZFZLi8i
 
 ## Why
 
@@ -65,7 +72,25 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Added comparison-table data to text copy and XLSX workbook export:
   - Text export appends a `후보 비교표` section.
   - Workbook export adds a `후보 비교` sheet with candidate columns and row-level notes.
+- Replaced the crowded mobile sticky export buttons with a bottom sheet:
+  - Mobile sticky bar now shows progress and one `내보내기` action.
+  - Tapping `내보내기` opens `텍스트로 복사`, `엑셀로 받기`, `캘린더 파일 받기`, and `내 버전 만들기`.
+  - Desktop export controls remain unchanged.
 - Added a migration-candidate banner so older flows remain usable while clearly indicating they are being moved to the new execution model.
+- Promoted `wedding-d180-basic` and `study-exam-d30-plan` from migration candidates into the representative execution-model set.
+- Kept Wedding as a hybrid decision/timeline Flow:
+  - It now keeps `후보 비교 preview` and also exposes `월별 달력`.
+  - It no longer shows the `새 실행모델로 전환 중` banner.
+- Upgraded Study D-30 into a program-style Flow:
+  - Added a daily `매일 60~90분` routine rule for recurrence/calendar previews.
+  - Added tailored why/how/completion details and reference links for all 12 study items.
+  - It now shows `반복 달력 preview`, `한 회차에 하는 일`, and `월별 달력`.
+- Promoted three P1 routine candidates into the representative execution-model set:
+  - `home-workout-20min`
+  - `english-study-30day-routine`
+  - `car-care-monthly-routine`
+- Added tailored why/how/completion details and reference links for every item in those three routine flows.
+- Removed their `새 실행모델로 전환 중` banner by clearing them from the migration-candidate set.
 
 ## Not Done
 
@@ -77,6 +102,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Did not add comparison data to `.ics` calendar export because candidate comparison is not a dated reminder surface.
 - Did not migrate every legacy Flow into the new execution-model content standard; older flows remain migration candidates.
 - Did not add account sync, external calendar API integration, or server-side recurrence storage.
+- Did not convert the mobile bottom sheet to a reusable design-system primitive yet; it remains scoped to public Flow detail.
 
 ## Decisions
 
@@ -99,6 +125,8 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `lib/flow/execution-model.test.ts`
 - `lib/flow/recurrence.ts`
 - `lib/flow/recurrence.test.ts`
+- `lib/flow/seed-flows.ts`
+- `lib/flow/seed-flows.test.ts`
 - `lib/flow/storage.ts`
 - `app/my/page.tsx`
 - `tests/e2e/flow-mvp.spec.ts`
@@ -132,6 +160,20 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `npm test` passed after comparison export integration: 47 tests.
 - `npm run build` passed after comparison export integration.
 - `npm run test:e2e` passed after comparison export integration: 33 tests.
+- `npm run test:e2e -- --grep "mobile export actions"` passed after mobile bottom sheet: 1 test.
+- `npm test` passed after mobile bottom sheet: 47 tests.
+- `npm run build` passed after mobile bottom sheet.
+- `npm run test:e2e` passed after mobile bottom sheet: 34 tests.
+- `npm test -- lib/flow/execution-model.test.ts lib/flow/seed-flows.test.ts` first failed as expected for missing representative classification and weak Study details, then passed after implementation.
+- `npm run docs:check` passed after P1 content migration.
+- `npm test` passed after P1 content migration: 48 tests.
+- `npm run build` passed after P1 content migration.
+- `npm run test:e2e` passed after P1 content migration: 34 tests.
+- `npm test -- lib/flow/execution-model.test.ts lib/flow/seed-flows.test.ts` first failed as expected for missing routine representative classification and weak Home Workout details, then passed after implementation.
+- `npm run docs:check` passed after P1 routine migration.
+- `npm test` passed after P1 routine migration: 48 tests.
+- `npm run build` passed after P1 routine migration.
+- `npm run test:e2e` passed after P1 routine migration: 34 tests.
 - Execution-model production deploy passed and aliased to `https://flowme2605.vercel.app`.
 - Production smoke passed for:
   - Home representative flow card and output target preview.
@@ -143,6 +185,16 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
   - Wedding Flow rendered the `새 실행모델로 전환 중` migration banner.
 - Comparison-export production deploy passed and aliased to `https://flowme2605.vercel.app`.
 - Comparison-export production smoke passed: Used-car Flow copied text included `후보 비교표`, candidate name, and row memo after user input.
+- Mobile-export production deploy passed and aliased to `https://flowme2605.vercel.app`.
+- Mobile-export production smoke passed: Moving Flow mobile sticky bar opened the `내보내기와 백업` bottom sheet with `텍스트로 복사`.
+- P1-content-migration production deploy passed and aliased to `https://flowme2605.vercel.app`.
+- P1-content-migration production smoke passed:
+  - Wedding Flow no longer shows the migration banner and keeps `후보 비교 preview` plus `월별 달력`.
+  - Study D-30 no longer shows the migration banner and shows `반복 달력 preview`, `한 회차에 하는 일`, and `월별 달력`.
+- P1-routine-migration production deploy passed and aliased to `https://flowme2605.vercel.app`.
+- P1-routine-migration production smoke passed:
+  - Home Workout, English Study, and Car Care no longer show the migration banner.
+  - All three render `반복 달력 preview`, `한 회차에 하는 일`, and `월별 달력`.
 - Local visual smoke via Playwright passed:
   - Home: no `/flow-lab` nav link; channel discovery remains as `/creators` labeled `채널`; headline is `따라하기 쉬운 실행 가이드, Flow`.
   - Moving schedule: no duplicated `출처와 주의 정보`; no `주별 보기`; one `월별 달력` tab.

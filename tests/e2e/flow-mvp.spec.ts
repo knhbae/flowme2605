@@ -376,6 +376,34 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   expect(download.suggestedFilename()).toBe('moving-d30-basic.xlsx');
 });
 
+test('mobile export actions open from a bottom sheet', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/moving-d30-basic');
+
+  await page.getByLabel('이사일').fill('2026-07-15');
+  await page.getByRole('checkbox', { name: /이사 방식 정하기/ }).first().check();
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+
+  const mobileBar = page.getByTestId('mobile-export-bar');
+  await expect(mobileBar).toBeVisible();
+  await expect(mobileBar.getByText('1 / 24')).toBeVisible();
+  await expect(mobileBar.getByRole('button', { name: '내보내기' })).toBeVisible();
+  await expect(mobileBar.getByRole('button', { name: '체크리스트 복사' })).toHaveCount(0);
+  await expect(mobileBar.getByRole('button', { name: '엑셀 받기' })).toHaveCount(0);
+
+  await mobileBar.getByRole('button', { name: '내보내기' }).click();
+
+  const sheet = page.getByTestId('mobile-export-sheet');
+  await expect(sheet.getByRole('heading', { name: '내보내기와 백업' })).toBeVisible();
+  await expect(sheet.getByRole('button', { name: '텍스트로 복사' })).toBeEnabled();
+  await expect(sheet.getByRole('button', { name: '엑셀로 받기' })).toBeEnabled();
+  await expect(sheet.getByRole('button', { name: '캘린더 파일 받기' })).toBeEnabled();
+  await expect(sheet.getByRole('button', { name: '내 버전 만들기' })).toBeEnabled();
+
+  await sheet.getByRole('button', { name: '닫기' }).click();
+  await expect(page.getByTestId('mobile-export-sheet')).toHaveCount(0);
+});
+
 test('wedding flow answers first-screen questions and persists date note and skip state', async ({ page }) => {
   await page.goto('/f/wedding-d180-basic');
 
@@ -415,12 +443,35 @@ test('wedding flow answers first-screen questions and persists date note and ski
   await expect(page.getByText('1 / 11').first()).toBeVisible();
 });
 
-test('migration candidate flow remains reachable with upgrade status', async ({ page }) => {
+test('promoted P1 flows expose new execution model surfaces', async ({ page }) => {
   await page.goto('/f/wedding-d180-basic');
 
   await expect(page.getByRole('heading', { name: '결혼 준비 D-180 Flow' })).toBeVisible();
-  await expect(page.getByText('새 실행모델로 전환 중')).toBeVisible();
-  await expect(page.getByText('전체 항목은 그대로 이용할 수 있어요')).toBeVisible();
+  await expect(page.getByText('새 실행모델로 전환 중')).toHaveCount(0);
+  await expect(page.getByText('후보 비교 preview')).toBeVisible();
+  await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
+
+  await page.goto('/f/study-exam-d30-plan');
+
+  await expect(page.getByRole('heading', { name: '시험 D-30 공부 계획 Flow' })).toBeVisible();
+  await expect(page.getByText('새 실행모델로 전환 중')).toHaveCount(0);
+  await expect(page.getByText('반복 달력 preview')).toBeVisible();
+  await expect(page.getByText('한 회차에 하는 일')).toBeVisible();
+  await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
+
+  for (const [slug, title] of [
+    ['home-workout-20min', '하루 20분 전신 홈트 Flow'],
+    ['english-study-30day-routine', '직장인 영어공부 30일 루틴 Flow'],
+    ['car-care-monthly-routine', '월 1회 자동차 관리 루틴 Flow'],
+  ] as const) {
+    await page.goto(`/f/${slug}`);
+
+    await expect(page.getByRole('heading', { name: title })).toBeVisible();
+    await expect(page.getByText('새 실행모델로 전환 중')).toHaveCount(0);
+    await expect(page.getByText('반복 달력 preview')).toBeVisible();
+    await expect(page.getByText('한 회차에 하는 일')).toBeVisible();
+    await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
+  }
 });
 
 test('new flow creation keeps advanced settings secondary', async ({ page }) => {

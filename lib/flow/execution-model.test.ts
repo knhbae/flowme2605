@@ -19,6 +19,11 @@ test('P0 representative flows are explicitly classified for landing and QA', () 
     'running-5k-4week',
     'baby-food-menu-recipe',
     'overseas-travel-d14',
+    'wedding-d180-basic',
+    'study-exam-d30-plan',
+    'home-workout-20min',
+    'english-study-30day-routine',
+    'car-care-monthly-routine',
   ]);
 
   for (const slug of getRepresentativeFlowSlugs()) {
@@ -45,6 +50,22 @@ test('execution model maps representative flows to the correct UX views', () => 
 
   assert.equal(normalizeExecutionModel(bySlug('baby-food-menu-recipe')).uxType, 'meal_plan');
   assert.ok(normalizeExecutionModel(bySlug('baby-food-menu-recipe')).views.includes('agenda'));
+
+  assert.equal(normalizeExecutionModel(bySlug('wedding-d180-basic')).uxType, 'decision');
+  assert.ok(normalizeExecutionModel(bySlug('wedding-d180-basic')).views.includes('comparison_table'));
+  assert.ok(normalizeExecutionModel(bySlug('wedding-d180-basic')).views.includes('month_calendar'));
+
+  assert.equal(normalizeExecutionModel(bySlug('study-exam-d30-plan')).uxType, 'program');
+  assert.ok(normalizeExecutionModel(bySlug('study-exam-d30-plan')).views.includes('routine_sessions'));
+  assert.ok(normalizeExecutionModel(bySlug('study-exam-d30-plan')).views.includes('month_calendar'));
+
+  for (const slug of ['home-workout-20min', 'english-study-30day-routine', 'car-care-monthly-routine']) {
+    const model = normalizeExecutionModel(bySlug(slug));
+    assert.equal(model.uxType, 'routine', slug);
+    assert.ok(model.views.includes('routine_sessions'), slug);
+    assert.ok(model.views.includes('month_calendar'), slug);
+    assert.deepEqual(model.migrationGaps, [], slug);
+  }
 });
 
 test('preview and exact-video flows do not pollute representative landing set', () => {
