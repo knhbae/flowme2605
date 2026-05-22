@@ -81,6 +81,32 @@ test('decision exports include comparison candidate notes', () => {
   ]);
 });
 
+test('diet log text export starts with record table guidance', () => {
+  const diet = seedBundles.find((entry) => entry.flow.slug === 'real-fitvely-video-body-fat-6kg-method');
+  assert.ok(diet);
+
+  const text = buildText(diet, {}, undefined, {}, undefined);
+
+  assert.match(text, /## 기록표/);
+  assert.match(text, /식단, 운동, 측정, 컨디션/);
+});
+
+test('decision text export includes comparison section before checklist items', () => {
+  const usedCar = seedBundles.find((entry) => entry.flow.slug === 'used-car-buying-check');
+  assert.ok(usedCar);
+
+  const text = buildText(usedCar, {}, undefined, {}, {
+    candidates: [
+      { id: 'candidate-1', name: '후보 A' },
+      { id: 'candidate-2', name: '후보 B' },
+    ],
+    notes: {},
+  });
+
+  assert.ok(text.indexOf('[후보 비교표]') > -1);
+  assert.ok(text.indexOf('[후보 비교표]') < text.indexOf('총예산을 차량가, 이전비, 보험료, 정비비로 나누기'));
+});
+
 test('ics export omits skipped dated flow items', () => {
   const wedding = seedBundles.find((bundle) => bundle.flow.slug === 'wedding-d180-basic');
   assert.ok(wedding);

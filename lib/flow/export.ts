@@ -1,4 +1,5 @@
 import { addDays, formatDate, getRangeEnd } from './date';
+import { getArtifactPlan } from './artifact-plan';
 import { timingLabel } from './parser';
 import { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, MealSlot, ReactionLog } from './types';
 
@@ -365,6 +366,19 @@ function buildComparisonExport(
   };
 }
 
+function appendComparisonExport(
+  lines: string[],
+  comparison: { columns: string[]; rows: WorkbookCell[][] } | undefined,
+) {
+  if (!comparison) return;
+
+  lines.push('', '[후보 비교표]');
+  lines.push(comparison.columns.join(' | '));
+  for (const row of comparison.rows) {
+    lines.push(row.map((cell) => String(cell)).join(' | '));
+  }
+}
+
 export function buildText(
   bundle: FlowBundle,
   checks: Record<string, boolean>,
@@ -375,6 +389,8 @@ export function buildText(
   const lines = [bundle.flow.title];
   const anchorLabel = getExportAnchorLabel(bundle);
   lines.push(`${anchorLabel}: ${anchor || (bundle.flow.anchor_type === 'none' ? '없음' : '')}`);
+  const artifactPlan = getArtifactPlan(bundle);
+  const comparison = buildComparisonExport(bundle, comparisonState);
 
   if (bundle.flow.content_type === 'meal_plan') {
     for (const section of bundle.sections) {
@@ -394,6 +410,15 @@ export function buildText(
     return lines.join('\n').trim();
   }
 
+  if (artifactPlan.primarySurface === 'spreadsheet_log') {
+    lines.push('', '## 기록표');
+    lines.push('날짜별 식단, 운동, 측정, 컨디션을 기록하세요.');
+  }
+
+  if (artifactPlan.primarySurface === 'decision_table') {
+    appendComparisonExport(lines, comparison);
+  }
+
   for (const section of bundle.sections) {
     lines.push('', `[${section.title}]`);
     for (const item of bundle.items.filter((entry) => entry.section_id === section.id)) {
@@ -406,13 +431,8 @@ export function buildText(
     }
   }
 
-  const comparison = buildComparisonExport(bundle, comparisonState);
-  if (comparison) {
-    lines.push('', '[후보 비교표]');
-    lines.push(comparison.columns.join(' | '));
-    for (const row of comparison.rows) {
-      lines.push(row.map((cell) => String(cell)).join(' | '));
-    }
+  if (artifactPlan.primarySurface !== 'decision_table') {
+    appendComparisonExport(lines, comparison);
   }
 
   return lines.join('\n').trim();
