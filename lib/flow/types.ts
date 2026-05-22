@@ -108,6 +108,16 @@ export type FlowItemState = {
   note?: string;
 };
 
+export type FlowComparisonCandidate = {
+  id: string;
+  name: string;
+};
+
+export type FlowComparisonState = {
+  candidates: FlowComparisonCandidate[];
+  notes: Record<string, Record<string, string>>;
+};
+
 export type MealSlot = {
   id: string;
   flow_id: string;

@@ -415,6 +415,14 @@ test('wedding flow answers first-screen questions and persists date note and ski
   await expect(page.getByText('1 / 11').first()).toBeVisible();
 });
 
+test('migration candidate flow remains reachable with upgrade status', async ({ page }) => {
+  await page.goto('/f/wedding-d180-basic');
+
+  await expect(page.getByRole('heading', { name: '결혼 준비 D-180 Flow' })).toBeVisible();
+  await expect(page.getByText('새 실행모델로 전환 중')).toBeVisible();
+  await expect(page.getByText('전체 항목은 그대로 이용할 수 있어요')).toBeVisible();
+});
+
 test('new flow creation keeps advanced settings secondary', async ({ page }) => {
   await page.goto('/flows/new');
 
@@ -516,6 +524,22 @@ test('used-car checklist shows decision preview instead of calendar by default',
   await expect(page.getByText('현장에서 바로 체크')).toBeVisible();
   await expect(page.getByRole('button', { name: '월별 달력' })).toHaveCount(0);
   await expect(page.getByText('총예산을 차량가, 이전비, 보험료, 정비비로 나누기').first()).toBeVisible();
+});
+
+test('decision flow comparison table edits and persists candidate notes', async ({ page }) => {
+  await page.goto('/f/used-car-buying-check');
+
+  await expect(page.getByText('후보 비교표')).toBeVisible();
+  await page.getByLabel('후보 1 이름').fill('아반떼 2021');
+  await page.getByLabel('총예산을 차량가, 이전비, 보험료, 정비비로 나누기 / 후보 1 메모').fill('총 1,250만원');
+  await page.getByRole('button', { name: '후보 추가' }).click();
+  await page.getByLabel('후보 3 이름').fill('K3 2020');
+
+  await page.reload();
+
+  await expect(page.getByLabel('후보 1 이름')).toHaveValue('아반떼 2021');
+  await expect(page.getByLabel('총예산을 차량가, 이전비, 보험료, 정비비로 나누기 / 후보 1 메모')).toHaveValue('총 1,250만원');
+  await expect(page.getByLabel('후보 3 이름')).toHaveValue('K3 2020');
 });
 
 test('public flow can be copied into an editable draft', async ({ page }) => {

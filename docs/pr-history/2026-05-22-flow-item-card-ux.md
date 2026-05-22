@@ -53,6 +53,12 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
   - Decision/checklist flows show `후보 비교 preview` plus `현장에서 바로 체크`.
 - Changed schedule tabs from generic `일정 보기` to explicit `월별 달력`.
 - Added a routine recurrence helper and monthly routine calendar that expands selected weekdays into visible `n회차` sessions.
+- Added an editable decision comparison table for decision/checklist flows:
+  - Candidate names are editable.
+  - Candidate notes can be entered per comparison row.
+  - Additional candidates can be added.
+  - Comparison state persists in localStorage.
+- Added a migration-candidate banner so older flows remain usable while clearly indicating they are being moved to the new execution model.
 
 ## Not Done
 
@@ -61,7 +67,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Did not add login, DB persistence, or cross-device sync for `/my`; progress recovery remains browser-local.
 - Did not rewrite all seed Flow content in this PR; content quality work remains incremental.
 - Did not redesign the mobile sticky export bar into a bottom sheet.
-- Did not implement a full editable comparison table for decision flows; this PR adds the first-screen preview and keeps the checklist as the execution surface.
+- Did not wire comparison table data into text/XLSX export yet; comparison state is now typed and stored so export integration can follow without changing the UI state shape.
 - Did not migrate every legacy Flow into the new execution-model content standard; older flows remain migration candidates.
 - Did not add account sync, external calendar API integration, or server-side recurrence storage.
 
@@ -77,6 +83,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Kept calendar views as a core demo affordance after review clarified that timeline and routine content must visibly become a calendar, not only a list.
 - Chose a representative-set landing strategy over showing many half-migrated flows first; broader catalog items remain discoverable elsewhere.
 - Kept the current client-side data model and derived recurrence in UI because Stage 0 has no auth, DB, or server persistence.
+- Kept decision flow execution as checklist-first, with the comparison table as a top-level decision aid rather than replacing the checklist.
 
 ## Files Touched
 
@@ -91,6 +98,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `docs/superpowers/plans/2026-05-22-flow-item-card-ux.md`
 - `docs/superpowers/plans/2026-05-22-flow-demo-ux-polish.md`
 - `docs/superpowers/plans/2026-05-22-flow-execution-model-p0.md`
+- `docs/superpowers/plans/2026-05-22-flow-execution-model-followups.md`
 - `docs/superpowers/specs/2026-05-22-flow-execution-model-redesign.md`
 - `docs/superpowers/specs/2026-05-22-flow-execution-model-wireframes.md`
 - `docs/superpowers/specs/2026-05-22-existing-flow-content-migration.md`
@@ -111,6 +119,8 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `npm run build` passed after adding landing previews and routine monthly calendar.
 - `npm run test:e2e -- --grep "home presents|public moving flow|routine flow highlights|no-anchor checklist|used-car checklist"` passed: 5 tests.
 - `npm run test:e2e` passed after execution-model P0 UI: 31 tests.
+- `npm run test:e2e -- --grep "migration candidate|decision flow comparison"` passed: 2 tests.
+- `npm run test:e2e` passed after comparison-table follow-up: 33 tests.
 - Execution-model production deploy passed and aliased to `https://flowme2605.vercel.app`.
 - Production smoke passed for:
   - Home representative flow card and output target preview.

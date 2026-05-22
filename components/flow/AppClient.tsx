@@ -14,6 +14,7 @@ import {
   getBundles,
   getActiveFlowProgress,
   getChecks,
+  getComparisonState,
   getItemStates,
   getReactionLogs,
   getStoredAnchor,
@@ -22,6 +23,7 @@ import {
   dismissStorageNotice,
   saveBundles,
   saveChecks,
+  saveComparisonState,
   saveItemStates,
   saveReactionLogs,
   saveStoredAnchor,
@@ -30,6 +32,7 @@ import {
   AnchorType,
   ContentType,
   FlowBundle,
+  FlowComparisonState,
   FlowItem,
   FlowItemDetail,
   FlowItemLinkType,
@@ -174,6 +177,20 @@ function FlowHeroMeta({ bundle }: { bundle: FlowBundle }) {
       <span className="rounded-full border border-gray-200 bg-white px-3 py-1.5 font-semibold text-gray-800">{count}개 항목</span>
       <span className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1.5 font-semibold text-blue-700">{anchorLabel}</span>
     </div>
+  );
+}
+
+function FlowMigrationStatus({ bundle }: { bundle: FlowBundle }) {
+  const model = normalizeExecutionModel(bundle);
+  if (model.exposureStatus !== 'migration_candidate') return null;
+
+  return (
+    <section className="mt-4 rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm leading-6 text-blue-950">
+      <p className="font-semibold">새 실행모델로 전환 중</p>
+      <p className="mt-1">
+        전체 항목은 그대로 이용할 수 있어요. 다만 일부 Flow는 후보 비교표, 루틴 회차, 월별 달력 같은 새 UX 기준으로 순차 보강 중입니다.
+      </p>
+    </section>
   );
 }
 
@@ -2103,6 +2120,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [anchorMode, setAnchorMode] = useState<AnchorMode>('custom');
   const [checks, setChecks] = useState<Record<string, boolean>>({});
   const [itemStates, setItemStates] = useState<Record<string, FlowItemState>>({});
+  const [comparisonState, setComparisonState] = useState<FlowComparisonState>(() => getComparisonState(slug));
   const [weekdaySelection, setWeekdaySelection] = useState(['월', '수', '금']);
   const [reactionLogs, setReactionLogs] = useState<Record<string, ReactionLog>>({});
   const [copyState, setCopyState] = useState('');
@@ -2122,6 +2140,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     setAnchorMode(hasStoredAnchor && isAnchorMode(storedAnchor.mode) ? storedAnchor.mode : defaultAnchorMode);
     setChecks(getChecks(slug));
     setItemStates(getItemStates(slug));
+    setComparisonState(getComparisonState(slug));
     setReactionLogs(getReactionLogs(slug));
     setShowStorageNotice(!hasDismissedStorageNotice());
   }, [slug]);
@@ -2137,6 +2156,10 @@ export function PublicFlow({ slug }: { slug: string }) {
   useEffect(() => {
     saveItemStates(slug, itemStates);
   }, [itemStates, slug]);
+
+  useEffect(() => {
+    saveComparisonState(slug, comparisonState);
+  }, [comparisonState, slug]);
 
   useEffect(() => {
     saveReactionLogs(slug, reactionLogs);
@@ -2271,6 +2294,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         <div className="mt-4">
           <FlowBadges bundle={bundle} />
         </div>
+        <FlowMigrationStatus bundle={bundle} />
       </header>
 
       {!showTodayExecution ? (
@@ -2364,7 +2388,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         </div>
       ) : null}
 
-      <TopExecutionPreview bundle={bundle} anchor={displayAnchor} weekdays={weekdaySelection} />
+      <TopExecutionPreview bundle={bundle} anchor={displayAnchor} weekdays={weekdaySelection} comparisonState={comparisonState} onComparisonChange={setComparisonState} />
 
       {showTodayExecution ? (
         <ExactVideoToolPreview
@@ -2850,14 +2874,76 @@ function expandCalendarEntries(entries: ScheduleEntry[]): CalendarEntry[] {
   });
 }
 
-function TopExecutionPreview({ bundle, anchor, weekdays }: { bundle: FlowBundle; anchor: string; weekdays: string[] }) {
+const defaultComparisonCandidates = [
+  { id: 'candidate-1', name: '후보 A' },
+  { id: 'candidate-2', name: '후보 B' },
+];
+
+function ensureComparisonState(state: FlowComparisonState): FlowComparisonState {
+  return {
+    candidates: state.candidates.length ? state.candidates : defaultComparisonCandidates,
+    notes: state.notes ?? {},
+  };
+}
+
+function updateComparisonCandidateName(state: FlowComparisonState, candidateId: string, name: string): FlowComparisonState {
+  const current = ensureComparisonState(state);
+  return {
+    ...current,
+    candidates: current.candidates.map((candidate) => (candidate.id === candidateId ? { ...candidate, name } : candidate)),
+  };
+}
+
+function updateComparisonNote(state: FlowComparisonState, itemId: string, candidateId: string, note: string): FlowComparisonState {
+  const current = ensureComparisonState(state);
+  return {
+    ...current,
+    notes: {
+      ...current.notes,
+      [itemId]: {
+        ...(current.notes[itemId] ?? {}),
+        [candidateId]: note,
+      },
+    },
+  };
+}
+
+function addComparisonCandidate(state: FlowComparisonState): FlowComparisonState {
+  const current = ensureComparisonState(state);
+  const nextIndex = current.candidates.length + 1;
+  return {
+    ...current,
+    candidates: [
+      ...current.candidates,
+      {
+        id: `candidate-${Date.now()}-${nextIndex}`,
+        name: `후보 ${nextIndex}`,
+      },
+    ],
+  };
+}
+
+function TopExecutionPreview({
+  bundle,
+  anchor,
+  weekdays,
+  comparisonState,
+  onComparisonChange,
+}: {
+  bundle: FlowBundle;
+  anchor: string;
+  weekdays: string[];
+  comparisonState: FlowComparisonState;
+  onComparisonChange: (state: FlowComparisonState) => void;
+}) {
   const model = normalizeExecutionModel(bundle);
   const previewItems = getFlowPreviewItems(bundle, 5);
 
   if (isFitnessExactVideoFlow(bundle)) return null;
 
   if (model.uxType === 'decision') {
-    const criteria = bundle.items.slice(0, 4);
+    const criteria = bundle.items;
+    const comparison = ensureComparisonState(comparisonState);
     return (
       <section className="my-5 grid gap-4 lg:grid-cols-[1fr_1fr]">
         <div className="rounded-lg border border-gray-200 bg-white p-4">
@@ -2872,18 +2958,53 @@ function TopExecutionPreview({ bundle, anchor, weekdays }: { bundle: FlowBundle;
           </ul>
         </div>
         <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
-          <p className="text-sm font-semibold text-blue-700">후보 비교 preview</p>
-          <div className="mt-3 overflow-hidden rounded-md border border-gray-200 bg-white text-sm">
-            <div className="grid grid-cols-[1.2fr_1fr_1fr] bg-gray-50 text-xs font-semibold text-gray-600">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-blue-700">후보 비교 preview</p>
+              <h2 className="mt-1 text-lg font-semibold text-gray-950">후보 비교표</h2>
+              <p className="mt-1 text-sm text-gray-600">후보별 가격, 상태, 조건을 적어두고 아래 체크리스트로 현장 확인을 이어갑니다.</p>
+            </div>
+            <button className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-800" onClick={() => onComparisonChange(addComparisonCandidate(comparisonState))}>
+              후보 추가
+            </button>
+          </div>
+          <div className="mt-3 overflow-x-auto rounded-md border border-gray-200 bg-white text-sm">
+            <div
+              className="grid min-w-[760px] bg-gray-50 text-xs font-semibold text-gray-600"
+              style={{ gridTemplateColumns: `minmax(220px,1.2fr) repeat(${comparison.candidates.length}, minmax(180px,1fr))` }}
+            >
               <span className="px-3 py-2">비교 항목</span>
-              <span className="px-3 py-2">후보 A</span>
-              <span className="px-3 py-2">후보 B</span>
+              {comparison.candidates.map((candidate, index) => (
+                <label key={candidate.id} className="px-3 py-2">
+                  <span className="sr-only">후보 {index + 1} 이름</span>
+                  <input
+                    aria-label={`후보 ${index + 1} 이름`}
+                    className="w-full rounded border border-gray-200 bg-white px-2 py-1 text-sm font-semibold text-gray-800"
+                    value={candidate.name}
+                    onChange={(event) => onComparisonChange(updateComparisonCandidateName(comparisonState, candidate.id, event.target.value))}
+                  />
+                </label>
+              ))}
             </div>
             {criteria.map((item) => (
-              <div key={item.id} className="grid grid-cols-[1.2fr_1fr_1fr] border-t border-gray-100">
-                <span className="px-3 py-2 font-medium text-gray-800">{item.title}</span>
-                <span className="px-3 py-2 text-gray-400">메모</span>
-                <span className="px-3 py-2 text-gray-400">메모</span>
+              <div
+                key={item.id}
+                className="grid min-w-[760px] border-t border-gray-100"
+                style={{ gridTemplateColumns: `minmax(220px,1.2fr) repeat(${comparison.candidates.length}, minmax(180px,1fr))` }}
+              >
+                <span className="px-3 py-3 font-medium text-gray-800">{item.title}</span>
+                {comparison.candidates.map((candidate, index) => (
+                  <label key={`${item.id}-${candidate.id}`} className="px-3 py-2">
+                    <span className="sr-only">{item.title} / 후보 {index + 1} 메모</span>
+                    <textarea
+                      aria-label={`${item.title} / 후보 ${index + 1} 메모`}
+                      className="min-h-16 w-full resize-y rounded border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
+                      placeholder="가격, 상태, 조건 메모"
+                      value={comparison.notes[item.id]?.[candidate.id] ?? ''}
+                      onChange={(event) => onComparisonChange(updateComparisonNote(comparisonState, item.id, candidate.id, event.target.value))}
+                    />
+                  </label>
+                ))}
               </div>
             ))}
           </div>
