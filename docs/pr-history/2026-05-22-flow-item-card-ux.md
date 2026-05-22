@@ -20,7 +20,7 @@
 - Mobile-export deployment URL: https://flowme2605-5ilocoxrc-flowme.vercel.app
 - P1-content-migration deployment URL: https://flowme2605-7jrc2lvj6-flowme.vercel.app
 - P1-routine-migration deployment URL: https://flowme2605-ce5uskzab-flowme.vercel.app
-- Source-fit audit/public exposure: local branch change, not deployed yet.
+- Source-fit audit/public exposure deployment URL: https://flowme2605-l4dzz6clk-flowme.vercel.app
 - Vercel inspect: https://vercel.com/flowme/flowme2605/E8vL2nQMrzoF8qjf7aow8tkTUZsb
 - Demo UX Vercel inspect: https://vercel.com/flowme/flowme2605/ERjP9Gtj2GjbA7FCRQNQCYz8a1TV
 - Channel-nav Vercel inspect: https://vercel.com/flowme/flowme2605/8JjefxX9MPrtkkBJ84SqzHiYxibt
@@ -30,6 +30,7 @@
 - Mobile-export Vercel inspect: https://vercel.com/flowme/flowme2605/2S7cmp7v29DrPJDQmNE7koBRMC9m
 - P1-content-migration Vercel inspect: https://vercel.com/flowme/flowme2605/9miBqirmAVcGB7vtLPPuZzKqZCan
 - P1-routine-migration Vercel inspect: https://vercel.com/flowme/flowme2605/FurPwVBiTZEH1USEcPcQoZFZLi8i
+- Source-fit audit/public exposure Vercel inspect: https://vercel.com/flowme/flowme2605/2EYPWHU18XHyHSewpvtgBu89Fpjc
 
 ## Why
 
@@ -224,6 +225,12 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `npm test -- lib/flow/execution-model.test.ts` first failed as expected for source-fit exposure gating, then passed after implementation.
 - `npm run build` passed after applying source-fit public exposure.
 - `npx playwright test tests/e2e/flow-mvp.spec.ts --grep "source-fit decisions"` first failed as expected for the missing direct-access status banner, then passed after implementation.
+- `npm run test:e2e` passed after applying source-fit public exposure: 35 tests.
+- Source-fit audit/public exposure production deploy passed and aliased to `https://flowme2605.vercel.app`.
+- Source-fit audit/public exposure production smoke passed:
+  - Home representative links include the 5 high-fit Flow slugs.
+  - `study-exam-d30-plan` renders `data-decision="catalog_preview_only"`.
+  - `running-5k-4week` renders `data-decision="reshape_before_featured"`.
 - Execution-model production deploy passed and aliased to `https://flowme2605.vercel.app`.
 - Production smoke passed for:
   - Home representative flow card and output target preview.
