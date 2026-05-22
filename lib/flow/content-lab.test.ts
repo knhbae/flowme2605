@@ -119,3 +119,13 @@ test('content lab exposes full content inventory coverage', () => {
   assert.equal(summary.previewCandidateFlowCount, summary.previewGeneratedFlowCount);
   assert.ok(summary.inventoryPublicHandlingCounts.preview_candidate >= 440);
 });
+
+test('content lab exposes natural artifact audit coverage for real-source flows', () => {
+  const summary = getContentLabSummary(seedBundles);
+
+  assert.equal(summary.naturalArtifactRealSourceAuditedCount, 8);
+  assert.equal(summary.naturalArtifactRealSourceRemainingCount, summary.realSourceFlowCount - 8);
+  assert.ok(summary.naturalArtifactDecisionCounts.promote_to_manual_source_fit >= 1);
+  assert.ok(summary.naturalArtifactDecisionCounts.reshape_content_or_ux >= 1);
+  assert.ok(summary.naturalArtifactCategoryCounts['가전관리'] >= 2);
+});

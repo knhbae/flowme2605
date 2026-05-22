@@ -1,6 +1,7 @@
 import { AnchorType, FlowBundle, StructureType } from './types';
 import { getSourceFitSummary } from './source-fit';
 import { summarizeContentInventory } from './content-inventory';
+import { summarizeNaturalArtifactAuditCoverage } from './natural-artifact-audit';
 
 export type ExternalTarget = 'calendar' | 'todo' | 'notion' | 'sheet';
 
@@ -342,6 +343,7 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   const realSourceBundles = bundles.filter((bundle) => bundle.flow.source_status === 'real');
   const sourceFitSummary = getSourceFitSummary();
   const inventorySummary = summarizeContentInventory(bundles);
+  const naturalArtifactSummary = summarizeNaturalArtifactAuditCoverage(bundles);
 
   return {
     pilotCreatorCount: pilotCreatorLabs.length,
@@ -374,5 +376,9 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     inventoryLevelCounts: inventorySummary.levelCounts,
     inventoryPublicHandlingCounts: inventorySummary.publicHandlingCounts,
     inventoryAverageDerivedScore: inventorySummary.averageDerivedScore,
+    naturalArtifactRealSourceAuditedCount: naturalArtifactSummary.auditedRealSourceCount,
+    naturalArtifactRealSourceRemainingCount: naturalArtifactSummary.remainingRealSourceCount,
+    naturalArtifactCategoryCounts: naturalArtifactSummary.auditedCategoryCounts,
+    naturalArtifactDecisionCounts: naturalArtifactSummary.decisionCounts,
   };
 }

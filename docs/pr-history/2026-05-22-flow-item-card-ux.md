@@ -133,6 +133,9 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Kept channel browsing and generated preview Flow routes visible because they are useful for demo/product comprehension, but changed their language to avoid implying source validation.
 - Added concrete `naturalArtifacts` to manual source-fit audits so each representative Flow now simulates real input values, expected user-made checklist/calendar/sheet/memo outputs, current Flow match, current UX support, and the remaining gap.
 - Updated the UX/content evaluation harness and source-fit design so reviewers must build the natural artifact before scoring source fit or judging the UI.
+- Added a separate real-source natural artifact audit batch for 8 of 40 `source_status=real` Flows.
+- Surfaced the real-source natural artifact audit coverage in `/flow-lab`, including first batch count, remaining real-source count, decisions, and sample simulated inputs.
+- Added `docs/content-audit/2026-05-22-real-source-natural-artifact-audit.md` as the first readable report for this audit method.
 
 ## Not Done
 
@@ -150,6 +153,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Did not manually open and audit the 40 `source_status=real` routes in this batch; they are derived reviews based on existing source metadata.
 - Did not assign exact source URLs to the 440 generated preview candidates.
 - Did not add natural artifact simulations to the 40 derived real-source flows or 440 preview candidates yet; that is the next manual audit pass.
+- Did not complete the remaining 32 real-source natural artifact audits in this pass.
 
 ## Decisions
 
@@ -204,6 +208,8 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 ## Verification
 
 - `npx tsx --test lib/flow/source-fit.test.ts` first failed as expected for missing `naturalArtifacts`, then passed after adding concrete simulations: 7 tests.
+- `npx tsx --test lib/flow/natural-artifact-audit.test.ts` first failed as expected for the missing module, then passed after adding the first real-source audit batch: 5 tests.
+- `npx tsx --test lib/flow/content-lab.test.ts` first failed as expected for missing natural artifact coverage fields, then passed after connecting the summary.
 - `npm run build` passed.
 - `npm test` first failed as expected for missing `content-inventory` module, then passed after implementation: 62 tests.
 - `npx tsx --test lib/flow/content-lab.test.ts` first failed as expected for missing inventory summary fields, then passed.
