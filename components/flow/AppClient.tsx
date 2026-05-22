@@ -3059,36 +3059,35 @@ function EmptyScheduleMessage() {
   );
 }
 
-function ItemDetailPanel({ detail }: { detail?: FlowItemDetail }) {
+function ItemDetailContent({ detail }: { detail?: FlowItemDetail }) {
   if (!detail?.why && !detail?.how && !detail?.completion_criteria && !detail?.caution && !detail?.links?.length) {
     return null;
   }
 
   return (
-    <details className="mt-3 rounded-md border border-gray-100 bg-[#FAFAF8] p-3 text-sm">
-      <summary className="cursor-pointer font-semibold text-gray-700">더 자세히 보기</summary>
-      <div className="mt-3 grid gap-3 text-gray-700 md:grid-cols-2">
+    <div className="mt-3 rounded-md border border-gray-100 bg-[#FAFAF8] p-3 text-sm">
+      <div className="grid gap-3 text-gray-700 md:grid-cols-2">
         {detail.why ? (
           <div>
-            <p className="text-xs font-semibold text-gray-500">왜 필요한가</p>
+            <p className="text-xs font-semibold text-gray-500">💡 왜 필요한가요</p>
             <p className="mt-1 leading-6">{detail.why}</p>
           </div>
         ) : null}
         {detail.how ? (
           <div>
-            <p className="text-xs font-semibold text-gray-500">어떻게 실행하나</p>
+            <p className="text-xs font-semibold text-gray-500">🔧 어떻게 하나요</p>
             <p className="mt-1 leading-6">{detail.how}</p>
           </div>
         ) : null}
         {visibleCompletionCriteria(detail) ? (
           <div>
-            <p className="text-xs font-semibold text-gray-500">완료 기준</p>
+            <p className="text-xs font-semibold text-gray-500">✅ 완료 조건</p>
             <p className="mt-1 leading-6">{visibleCompletionCriteria(detail)}</p>
           </div>
         ) : null}
         {detail.caution ? (
           <div className="text-amber-800">
-            <p className="text-xs font-semibold">주의</p>
+            <p className="text-xs font-semibold">⚠️ 주의</p>
             <p className="mt-1 leading-6">{detail.caution}</p>
           </div>
         ) : null}
@@ -3105,59 +3104,126 @@ function ItemDetailPanel({ detail }: { detail?: FlowItemDetail }) {
           </div>
         ) : null}
       </div>
-    </details>
-  );
-}
-
-function InlineItemLinks({ detail }: { detail?: FlowItemDetail }) {
-  if (!detail?.links?.length) return null;
-  return (
-    <div className="mt-3 flex flex-wrap gap-2">
-      {detail.links.slice(0, 2).map((link) => (
-        <a key={`${link.label}-${link.url}`} className="rounded-md border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-700 hover:border-blue-300 hover:text-blue-700" href={link.url} target="_blank" rel="noreferrer">
-          {link.label}
-        </a>
-      ))}
     </div>
   );
 }
 
 function DetailPreview({ detail }: { detail?: FlowItemDetail }) {
-  const text = visibleCompletionCriteria(detail) ?? detail?.why ?? detail?.how ?? detail?.caution;
+  const text = detail?.why ?? detail?.how ?? detail?.caution;
   if (!text) return null;
   return <p className="mt-2 line-clamp-2 text-sm leading-6 text-gray-600">{text}</p>;
 }
 
-function ItemPersonalControls({
+function ItemCardBadges({ badges }: { badges: ActionBadge[] }) {
+  const visibleBadges = badges.filter((badge) => !['날짜 고정', '완료 기준', '할 일', '루틴'].includes(badge.label));
+  return <ExecutionMetaBadges badges={visibleBadges} />;
+}
+
+function ItemMetaText({ parts }: { parts: string[] }) {
+  const text = parts.filter(Boolean).join(' · ');
+  if (!text) return null;
+  return <span className="shrink-0 text-xs font-semibold leading-6 text-gray-500">{text}</span>;
+}
+
+function FlowItemCard({
+  bundle,
   item,
+  anchor,
+  checked,
   state,
+  onToggle,
   onNoteChange,
   onSkipToggle,
 }: {
+  bundle: FlowBundle;
   item: FlowItem;
+  anchor?: string;
+  checked: boolean;
   state?: FlowItemState;
+  onToggle: (id: string) => void;
   onNoteChange: (id: string, note: string) => void;
   onSkipToggle: (id: string) => void;
 }) {
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [memoOpen, setMemoOpen] = useState(false);
+  const detail = getItemDetail(bundle, item.id);
+  const skipped = Boolean(state?.skipped);
+  const date = item.day_offset !== undefined && anchor ? itemDate(anchor, item) : '';
+  const timing = item.day_offset !== undefined ? timingLabel(item.day_offset, item.duration_days) : '';
+  const repeat = item.repeat_rule && !timing ? item.repeat_rule : '';
+  const hasDetail = Boolean(detail?.why || detail?.how || detail?.completion_criteria || detail?.caution || detail?.links?.length);
+  const memoButtonLabel = state?.note ? '메모' : '메모 추가';
+
   return (
-    <div className="mt-3 grid gap-2 rounded-md border border-gray-100 bg-[#FAFAF8] p-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
-      <label className="grid gap-1 text-sm">
-        <span className="font-semibold text-gray-700">내 메모</span>
-        <textarea
-          aria-label={`${item.title} 메모`}
-          className="min-h-16 w-full resize-y rounded-md border border-gray-300 bg-white px-3 py-2 text-sm leading-5"
-          placeholder="결정, 비용, 담당자, 보류 이유를 적어두세요."
-          value={state?.note ?? ''}
-          onChange={(event) => onNoteChange(item.id, event.target.value)}
+    <div data-testid="flow-item-card" className={`rounded-lg border border-gray-200 bg-white p-4 transition ${skipped ? 'opacity-60' : 'hover:border-gray-300'}`}>
+      <div className="flex gap-3">
+        <input
+          aria-label={`완료: ${item.title}`}
+          className="mt-0.5 h-5 w-5 shrink-0 rounded border-gray-300"
+          type="checkbox"
+          disabled={skipped}
+          checked={checked}
+          onChange={() => onToggle(item.id)}
         />
-      </label>
-      <button
-        className={`rounded-md border px-3 py-2 text-sm font-semibold ${state?.skipped ? 'border-gray-300 bg-white text-gray-700' : 'border-amber-200 bg-amber-50 text-amber-800'}`}
-        type="button"
-        onClick={() => onSkipToggle(item.id)}
-      >
-        {state?.skipped ? '스킵 해제' : '내 상황엔 해당 없음'}
-      </button>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-3">
+            <h3 className="text-base font-semibold leading-6 text-gray-950">{item.title}</h3>
+            <ItemMetaText parts={[repeat, timing, date]} />
+          </div>
+          <ItemCardBadges badges={getActionBadges(bundle, item, detail)} />
+          <DetailPreview detail={detail} />
+        </div>
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center gap-2 pl-8">
+        <button
+          className="min-h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-700 hover:border-blue-300 hover:text-blue-700"
+          type="button"
+          onClick={() => setMemoOpen((value) => !value)}
+        >
+          {memoButtonLabel}
+        </button>
+        <button
+          className={`min-h-10 rounded-md border px-3 py-2 text-sm font-semibold ${skipped ? 'border-gray-300 bg-white text-gray-700' : 'border-amber-200 bg-amber-50 text-amber-800'}`}
+          type="button"
+          aria-pressed={skipped}
+          onClick={() => onSkipToggle(item.id)}
+        >
+          {skipped ? '다시 포함' : '해당 없음'}
+        </button>
+        {hasDetail ? (
+          <button
+            className="min-h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-700 hover:border-blue-300 hover:text-blue-700"
+            type="button"
+            aria-expanded={detailsOpen}
+            onClick={() => setDetailsOpen((value) => !value)}
+          >
+            {detailsOpen ? '접기' : '자세히'}
+          </button>
+        ) : null}
+      </div>
+
+      {memoOpen ? (
+        <div className="mt-3 pl-8">
+          <label className="grid gap-1 text-sm">
+            <span className="font-semibold text-gray-700">메모</span>
+            <textarea
+              aria-label={`${item.title} 메모`}
+              className="min-h-20 w-full resize-y rounded-md border border-gray-300 bg-white px-3 py-2 text-sm leading-5 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              placeholder="예) 우리는 포장이사로 결정됨, 견적은 다음 주 비교"
+              value={state?.note ?? ''}
+              onChange={(event) => onNoteChange(item.id, event.target.value)}
+            />
+          </label>
+          <p className="mt-1 text-xs font-medium text-gray-500">자동 저장됨 · 이 기기에만 저장</p>
+        </div>
+      ) : null}
+
+      {detailsOpen ? (
+        <div className="pl-8">
+          <ItemDetailContent detail={detail} />
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -3411,30 +3477,17 @@ function TimelineRenderer({
           <h2 className="text-xl font-semibold">{section.title}</h2>
           <div className="mt-4 space-y-3">
             {bundle.items.filter((item) => item.section_id === section.id).map((item) => (
-              <div key={item.id} data-testid="flow-item-card" className={`rounded-lg border border-gray-200 bg-white p-4 ${itemStates[item.id]?.skipped ? 'opacity-60' : ''}`}>
-                {(() => {
-                  const detail = getItemDetail(bundle, item.id);
-                  return (
-                    <>
-                      <label className="flex gap-3">
-                        <input className="mt-1" type="checkbox" disabled={itemStates[item.id]?.skipped} checked={isBaseEntryChecked(bundle, item.id, anchor, checks)} onChange={() => onToggle(item.id)} />
-                        <span className="min-w-0 flex-1">
-                          <span className="flex flex-wrap items-center gap-2 text-xs">
-                            <span className="rounded-full bg-blue-50 px-2 py-1 font-mono font-semibold text-blue-700">{timingLabel(item.day_offset, item.duration_days)}</span>
-                            {itemDate(anchor, item) ? <span className="rounded-full bg-gray-100 px-2 py-1 text-gray-600">{itemDate(anchor, item)}</span> : null}
-                          </span>
-                          <ExecutionMetaBadges badges={getActionBadges(bundle, item, detail)} />
-                          <span className="mt-2 block text-base font-semibold text-gray-950">{item.title}</span>
-                        </span>
-                      </label>
-                      <DetailPreview detail={detail} />
-                      <InlineItemLinks detail={detail} />
-                      <ItemDetailPanel detail={detail} />
-                      <ItemPersonalControls item={item} state={itemStates[item.id]} onNoteChange={onNoteChange} onSkipToggle={onSkipToggle} />
-                    </>
-                  );
-                })()}
-              </div>
+              <FlowItemCard
+                key={item.id}
+                bundle={bundle}
+                item={item}
+                anchor={anchor}
+                checked={isBaseEntryChecked(bundle, item.id, anchor, checks)}
+                state={itemStates[item.id]}
+                onToggle={onToggle}
+                onNoteChange={onNoteChange}
+                onSkipToggle={onSkipToggle}
+              />
             ))}
           </div>
         </section>
@@ -3726,10 +3779,7 @@ function ExactVideoRenderer({
               <DetailPreview detail={detail} />
             </span>
           </label>
-          <div className="mt-3">
-            <InlineItemLinks detail={detail} />
-          </div>
-          <ItemDetailPanel detail={detail} />
+          <ItemDetailContent detail={detail} />
         </div>
       </section>
     </div>
@@ -3759,7 +3809,6 @@ function RoutineRenderer({
   const firstSection = bundle.sections[0];
   const firstItems = firstSection ? bundle.items.filter((item) => item.section_id === firstSection.id).slice(0, 3) : [];
   const showSafetyNote = hasAttentionRisk(bundle.flow.risk_level) || Boolean(bundle.flow.warning);
-  const isExactVideo = isFitnessExactVideoFlow(bundle);
   const weekdayLabel = getWeekdaySelectionLabel(bundle);
   const setupLabel = bundle.flow.slug.startsWith('real-fitvely-video-') ? '이번 주 적용 설정' : '이번 주 루틴 설정';
   const previewLabel = bundle.flow.slug.startsWith('real-fitvely-video-') ? '첫 적용 미리보기' : '첫 루틴 미리보기';
@@ -3814,27 +3863,17 @@ function RoutineRenderer({
           <h2 className="text-xl font-semibold">{section.title}</h2>
           <div className="mt-4 space-y-3">
             {bundle.items.filter((item) => item.section_id === section.id).map((item) => (
-              <div key={item.id} data-testid="flow-item-card" className={`rounded-lg border border-gray-200 bg-white p-4 ${itemStates[item.id]?.skipped ? 'opacity-60' : ''}`}>
-                {(() => {
-                  const detail = getItemDetail(bundle, item.id);
-                  return (
-                    <>
-                      <label className="flex gap-3">
-                        <input className="mt-1" type="checkbox" disabled={itemStates[item.id]?.skipped} checked={Boolean(checks[item.id])} onChange={() => onToggle(item.id)} />
-                        <span className="min-w-0 flex-1">
-                          {item.repeat_rule && !isExactVideo ? <span className="rounded-full bg-red-50 px-2 py-1 font-mono text-xs font-semibold text-red-700">{item.repeat_rule}</span> : null}
-                          <ExecutionMetaBadges badges={getActionBadges(bundle, item, detail)} />
-                          <span className="mt-2 block text-base font-semibold text-gray-950">{item.title}</span>
-                        </span>
-                      </label>
-                      <DetailPreview detail={detail} />
-                      <InlineItemLinks detail={detail} />
-                      <ItemDetailPanel detail={detail} />
-                      <ItemPersonalControls item={item} state={itemStates[item.id]} onNoteChange={onNoteChange} onSkipToggle={onSkipToggle} />
-                    </>
-                  );
-                })()}
-              </div>
+              <FlowItemCard
+                key={item.id}
+                bundle={bundle}
+                item={item}
+                anchor={anchor}
+                checked={Boolean(checks[item.id])}
+                state={itemStates[item.id]}
+                onToggle={onToggle}
+                onNoteChange={onNoteChange}
+                onSkipToggle={onSkipToggle}
+              />
             ))}
           </div>
         </section>
@@ -3865,26 +3904,16 @@ function ChecklistRenderer({
           <h2 className="text-xl font-semibold">{section.title}</h2>
           <div className="mt-4 space-y-3">
             {bundle.items.filter((item) => item.section_id === section.id).map((item) => (
-              <div key={item.id} data-testid="flow-item-card" className={`rounded-lg border border-gray-200 bg-white p-4 ${itemStates[item.id]?.skipped ? 'opacity-60' : ''}`}>
-                {(() => {
-                  const detail = getItemDetail(bundle, item.id);
-                  return (
-                    <>
-                      <label className="flex gap-3">
-                        <input className="mt-1" type="checkbox" disabled={itemStates[item.id]?.skipped} checked={Boolean(checks[item.id])} onChange={() => onToggle(item.id)} />
-                        <span className="min-w-0 flex-1">
-                          <ExecutionMetaBadges badges={getActionBadges(bundle, item, detail)} />
-                          <span className="mt-2 block text-base font-semibold text-gray-950">{item.title}</span>
-                        </span>
-                      </label>
-                      <DetailPreview detail={detail} />
-                      <InlineItemLinks detail={detail} />
-                      <ItemDetailPanel detail={detail} />
-                      <ItemPersonalControls item={item} state={itemStates[item.id]} onNoteChange={onNoteChange} onSkipToggle={onSkipToggle} />
-                    </>
-                  );
-                })()}
-              </div>
+              <FlowItemCard
+                key={item.id}
+                bundle={bundle}
+                item={item}
+                checked={Boolean(checks[item.id])}
+                state={itemStates[item.id]}
+                onToggle={onToggle}
+                onNoteChange={onNoteChange}
+                onSkipToggle={onSkipToggle}
+              />
             ))}
           </div>
         </section>
