@@ -3,11 +3,15 @@ import { expect, test } from '@playwright/test';
 test('home presents FLOW as an executable content platform', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page.getByRole('heading', { name: '경험을 바로 따라 할 수 있는 Flow로' })).toBeVisible();
+  await expect(page.getByRole('link', { name: '둘러보기', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: '내 Flow' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Flow Lab' })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: '제작자' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: '따라하기 쉬운 실행 가이드, Flow' })).toBeVisible();
   await expect(page.getByText('바로 따라할 수 있는 Flow')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Flow 둘러보기' })).toBeVisible();
-  await expect(page.getByRole('link', { name: '내 콘텐츠로 만들기' }).first()).toBeVisible();
-  await expect(page.getByRole('link', { name: '#D-Day 준비' })).toHaveAttribute('href', '/flows?tag=D-Day%20%EC%A4%80%EB%B9%84');
+  await expect(page.getByRole('link', { name: '내 콘텐츠로 Flow 만들기' }).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: '#D-Day 준비' })).toHaveCount(0);
   await expect(page.getByText('시험 D-30 공부 계획 Flow').first()).toBeVisible();
 });
 
@@ -61,13 +65,26 @@ test('flow discovery restores tag filter from URL query', async ({ page }) => {
 test('my flow workspace separates copied or drafted flows from public discovery', async ({ page }) => {
   await page.goto('/my');
 
-  await expect(page.getByRole('heading', { name: '제작자 스튜디오' })).toBeVisible();
-  await expect(page.getByText('현재 사용자 · 제작자')).toBeVisible();
+  await expect(page).toHaveTitle(/내 Flow/);
+  await expect(page.getByRole('heading', { name: '내 Flow', exact: true })).toBeVisible();
+  await expect(page.getByText('Creator Studio')).toHaveCount(0);
+  await expect(page.getByText('사용자가 곧 제작자입니다')).toHaveCount(0);
+  await expect(page.getByText('현재 사용자', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: '내 제작자 프로필' })).toHaveAttribute('href', '/u/my-flow-studio');
-  await expect(page.getByText('아직 내 Flow가 없습니다')).toBeVisible();
+  await expect(page.getByText('아직 만든 내 버전이 없습니다')).toBeVisible();
 
   await page.goto('/f/moving-d30-basic');
-  await page.getByRole('button', { name: '내 Flow로 복사해 수정' }).click();
+  await page.getByLabel('이사일').fill('2026-07-15');
+  await page.getByLabel('완료: 이사 방식 정하기').check();
+
+  await page.goto('/my');
+  await expect(page.getByRole('heading', { name: '진행 중인 Flow' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '이사 D-30 준비 Flow' })).toBeVisible();
+  await expect(page.getByText('1 / 24 완료')).toBeVisible();
+  await expect(page.getByRole('link', { name: '이어서 하기' })).toHaveAttribute('href', '/f/moving-d30-basic');
+
+  await page.goto('/f/moving-d30-basic');
+  await page.getByRole('button', { name: '내 버전 만들기' }).click();
   await expect(page).toHaveURL(/\/flows\/.+\/edit/);
 
   await page.goto('/my');
@@ -128,7 +145,7 @@ test('creator channel can filter real source-backed flows', async ({ page }) => 
   await page.goto('/u/samsung-service');
 
   await expect(page.getByText('출처 확인').first()).toBeVisible();
-  await expect(page.getByText('대표 항목:').first()).toBeVisible();
+  await expect(page.getByText('대표 항목:')).toHaveCount(0);
   await page.getByRole('button', { name: '출처 확인' }).click();
 
   await expect(page.locator('a[href="/f/real-samsung-aircon-seasonal-care"]').first()).toBeVisible();
@@ -169,7 +186,7 @@ test('fitness exact video flow keeps the execution panel minimal', async ({ page
   await expect(schedulePreview.getByText('금요일')).toBeVisible();
   await expect(page.getByText('한눈에 보는 전체 루트')).toHaveCount(0);
   await expect(page.getByText('이번 주 루틴 설정')).toHaveCount(0);
-  await expect(page.locator('details').filter({ hasText: '출처와 주의 정보' })).not.toHaveAttribute('open', '');
+  await expect(page.getByText('출처와 주의 정보')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '캘린더에 넣기' })).toBeVisible();
   await expect(page.getByRole('button', { name: '엑셀 실행표 받기' })).toBeVisible();
   await expect(page.getByRole('button', { name: '초보' })).toHaveCount(0);
@@ -208,7 +225,7 @@ test('diet exact video flow uses application language instead of workout schedul
 test('exact video copy opens an editable draft with the execution item preserved', async ({ page }) => {
   await page.goto('/f/real-thankyou-bubu-video-full-body-no-jump');
 
-  await page.getByRole('button', { name: '내 Flow로 복사해 수정' }).click();
+  await page.getByRole('button', { name: '내 버전 만들기' }).click();
 
   await expect(page).toHaveURL(/\/flows\/.+\/edit/);
   await expect(page.getByRole('heading', { name: /ThankyouBUBU 전신 다이어트 실천 Flow 사본/ })).toBeVisible();
@@ -255,9 +272,9 @@ test('creator profile merges newly shipped seed flows into existing browser stor
 test('real source public flow exposes source QA metadata and target metadata', async ({ page }) => {
   await page.goto('/f/real-samsung-aircon-seasonal-care');
 
-  await expect(page.getByText('출처 확인일: 2026-05-21')).toBeVisible();
+  await expect(page.getByText('2026-05-21 확인')).toBeVisible();
   await expect(page.getByText('Flow 전환 방식:')).toBeVisible();
-  await expect(page.getByText('출처 정밀도: 정확한 출처 페이지')).toBeVisible();
+  await expect(page.getByText('정확한 출처 페이지')).toBeVisible();
   await expect(page.getByText('목표일 입력으로 시작')).toBeVisible();
   await expect(page.getByText('이 Flow는 아래 콘텐츠를 기반으로')).toBeVisible();
 });
@@ -312,29 +329,31 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await page.goto('/f/moving-d30-basic');
 
   await expect(page.getByText('1. 이사일 입력하기')).toBeVisible();
-  await expect(page.getByText('2. 실행 항목 체크')).toBeVisible();
-  await expect(page.getByText('3. 내보내기와 백업')).toBeVisible();
+  await expect(page.getByText('2. 실행 항목 체크')).toHaveCount(0);
+  await expect(page.getByText('3. 내보내기와 백업')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '일정 보기' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '내 일정표 엑셀로 받기' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '내 일정표 엑셀로 받기' })).toBeDisabled();
   await expect(page.getByText('by FLOW 큐레이션팀')).toBeVisible();
   await expect(page.getByText('베타 운영 중').first()).toBeVisible();
   await page.getByLabel('이사일').fill('2026-07-15');
   await expect(page.getByText('이사일: 2026-07-15')).toBeVisible();
   await expect(page.getByRole('heading', { name: '지금 먼저 체크할 일' })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '전체 흐름' })).toBeVisible();
-  await expect(page.getByText('출처와 주의 정보')).toBeVisible();
+  await expect(page.getByText('출처와 주의 정보')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '전체 할 일' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'D-30 큰 준비', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'D-30 큰 준비', exact: true })).toHaveCount(0);
   await expect(page.getByText('2026-06-15').first()).toBeVisible();
-  await expect(page.getByRole('button', { name: '주별 보기' })).toBeVisible();
-  await page.getByRole('button', { name: '주별 보기' }).click();
-  await expect(page.getByText('월', { exact: true }).first()).toBeVisible();
-  await expect(page.getByText('화', { exact: true }).first()).toBeVisible();
-  await page.getByRole('button', { name: '달력 보기' }).click();
+  await expect(page.getByRole('button', { name: '주별 보기' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '달력 보기' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '일정 보기' })).toBeVisible();
+  await page.getByRole('button', { name: '일정 보기' }).click();
   await expect(page.getByRole('heading', { name: '2026-06' })).toBeVisible();
   await expect(page.getByText('이번 달 핵심').first()).toBeVisible();
   await expect(page.getByText('월', { exact: true }).first()).toBeVisible();
   await expect(page.getByText('일', { exact: true }).first()).toBeVisible();
 
+  await page.getByRole('button', { name: '전체 할 일' }).click();
   await page.getByRole('checkbox', { name: /이사 방식 정하기/ }).first().check();
   await page.getByRole('checkbox', { name: /이사할 집 하자 점검하기/ }).first().check();
   await expect(page.getByText('2 / 24').first()).toBeVisible();
@@ -399,12 +418,14 @@ test('meal plan flow exposes recipe and reaction log', async ({ page }) => {
 
   await page.getByLabel('이유식 시작일').fill('2026-06-01');
   await expect(page.getByText('2026-06-01 ~ 2026-06-03')).toBeVisible();
-  await expect(page.getByRole('button', { name: '주별 보기' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '주별 보기' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '달력 보기' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '일정 보기' })).toBeVisible();
   await page.getByRole('button', { name: '레시피' }).click();
   await expect(page.getByText('연결된 식단').first()).toBeVisible();
   await expect(page.getByText('D+0~D+2 / 2026-06-01 ~ 2026-06-03')).toBeVisible();
 
-  await page.getByRole('button', { name: '달력 보기' }).click();
+  await page.getByRole('button', { name: '일정 보기' }).click();
   await expect(page.getByText('쌀미음 1일차', { exact: true })).toBeVisible();
   await expect(page.getByText('쌀미음 2일차', { exact: true })).toBeVisible();
   await expect(page.getByText('쌀미음 3일차', { exact: true })).toBeVisible();
@@ -422,7 +443,7 @@ test('duration calendar checks only one day at a time', async ({ page }) => {
   await page.goto('/f/baby-food-menu-recipe');
 
   await page.getByLabel('이유식 시작일').fill('2026-06-01');
-  await page.getByRole('button', { name: '달력 보기' }).click();
+  await page.getByRole('button', { name: '일정 보기' }).click();
 
   const firstDay = page.locator('label').filter({ hasText: '쌀미음 1일차' }).first();
   const secondDay = page.locator('label').filter({ hasText: '쌀미음 2일차' }).first();
@@ -473,7 +494,7 @@ test('no-anchor checklist skips date setup and hides calendar export', async ({ 
 test('public flow can be copied into an editable draft', async ({ page }) => {
   await page.goto('/f/moving-d30-basic');
 
-  await page.getByRole('button', { name: '내 Flow로 복사해 수정' }).click();
+  await page.getByRole('button', { name: '내 버전 만들기' }).click();
 
   await expect(page).toHaveURL(/\/flows\/.+\/edit/);
   await expect(page.getByRole('heading', { name: /이사 D-30 준비 Flow 사본/ })).toBeVisible();
@@ -497,8 +518,9 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
 test('representative real content pilot flows are executable', async ({ page }) => {
   await page.goto('/f/samsung-aircon-seasonal-check');
   await expect(page.getByRole('heading', { name: '삼성 에어컨 계절 전 점검 Flow' })).toBeVisible();
-  await expect(page.getByText('출처와 주의 정보')).toBeVisible();
-  await expect(page.getByRole('link', { name: '삼성전자서비스 Samsung Care+ 에어컨 관리 안내' }).first()).toHaveAttribute(
+  await expect(page.getByText('출처와 주의 정보')).toHaveCount(0);
+  await expect(page.getByText('삼성전자서비스 Samsung Care+ 에어컨 관리 안내').first()).toBeVisible();
+  await expect(page.getByRole('link', { name: '원문 보기' }).first()).toHaveAttribute(
     'href',
     'https://www.samsungsvc.co.kr/info/carePlus',
   );
@@ -511,8 +533,9 @@ test('representative real content pilot flows are executable', async ({ page }) 
 
   await page.goto('/f/qnet-exam-application-prep');
   await expect(page.getByRole('heading', { name: 'Q-Net 원서접수 준비 Flow' })).toBeVisible();
-  await expect(page.getByText('출처와 주의 정보')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Q-Net 원서접수 안내' }).first()).toHaveAttribute(
+  await expect(page.getByText('출처와 주의 정보')).toHaveCount(0);
+  await expect(page.getByText('Q-Net 원서접수 안내').first()).toBeVisible();
+  await expect(page.getByRole('link', { name: '원문 보기' }).first()).toHaveAttribute(
     'href',
     'https://q-net.or.kr/rcv001.do?gSite=Q&id=rcv00103&rcvPFlag=Y',
   );

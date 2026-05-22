@@ -23,6 +23,17 @@ export type StoredAnchor = {
   anchor: string;
 };
 
+export type ActiveFlowProgress = {
+  slug: string;
+  title: string;
+  done: number;
+  total: number;
+  skipped: number;
+  anchor?: string;
+  anchorMode?: string;
+  lastVisited?: string;
+};
+
 function canUseStorage(): boolean {
   return typeof window !== 'undefined' && Boolean(window.localStorage);
 }
@@ -138,4 +149,45 @@ export function saveReactionLogs(
 ): void {
   if (!canUseStorage()) return;
   localStorage.setItem(`${REACTIONS_KEY_PREFIX}${slug}`, JSON.stringify(value));
+}
+
+export function getActiveFlowProgress(): ActiveFlowProgress[] {
+  if (!canUseStorage()) return [];
+
+  const lastVisited = localStorage.getItem('flow:meta:last-visit') ?? undefined;
+  const progress: ActiveFlowProgress[] = [];
+
+  for (const bundle of getBundles()) {
+    const checks = getChecks(bundle.flow.slug);
+    const itemStates = getItemStates(bundle.flow.slug);
+    const storedAnchor = getStoredAnchor(bundle.flow.slug);
+    const ids = bundle.flow.content_type === 'meal_plan'
+      ? (bundle.mealSlots ?? []).map((slot) => slot.id)
+      : bundle.items.map((item) => item.id);
+    const skipped = ids.filter((id) => itemStates[id]?.skipped).length;
+    const total = Math.max(ids.length - skipped, 0);
+    const done = ids.filter((id) => checks[id] && !itemStates[id]?.skipped).length;
+    const hasProgress =
+      done > 0 ||
+      skipped > 0 ||
+      Boolean(storedAnchor.anchor) ||
+      storedAnchor.mode === 'example' ||
+      storedAnchor.mode === 'undecided' ||
+      Object.values(itemStates).some((state) => Boolean(state.note));
+
+    if (hasProgress) {
+      progress.push({
+        slug: bundle.flow.slug,
+        title: bundle.flow.title,
+        done,
+        total,
+        skipped,
+        anchor: storedAnchor.anchor,
+        anchorMode: storedAnchor.mode,
+        lastVisited,
+      });
+    }
+  }
+
+  return progress;
 }
