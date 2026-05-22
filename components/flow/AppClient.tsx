@@ -5,9 +5,11 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { addDays, formatDate, getRangeEnd } from '@/lib/flow/date';
 import { inferPrimaryDestination } from '@/lib/flow/destination';
+import { getRepresentativeFlowSlugs, normalizeExecutionModel, type FlowExportTarget } from '@/lib/flow/execution-model';
 import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
 import { getCreatorChannelSummaries } from '@/lib/flow/creator-channel-preview';
 import { parseTextFlow, serializeTextFlow, timingLabel } from '@/lib/flow/parser';
+import { expandRoutineOccurrences, getRoutineWeekdayLabels } from '@/lib/flow/recurrence';
 import {
   getBundles,
   getActiveFlowProgress,
@@ -203,6 +205,34 @@ function SourceContentCard({ bundle }: { bundle: FlowBundle }) {
       </div>
     </section>
   );
+}
+
+const exportTargetLabels: Record<FlowExportTarget, string> = {
+  memo: '메모',
+  sheet: '엑셀',
+  calendar: '캘린더',
+  todo: '투두',
+};
+
+function getExportTargetsText(bundle: FlowBundle): string {
+  return normalizeExecutionModel(bundle).exportTargets.map((target) => exportTargetLabels[target]).join(' · ');
+}
+
+function getFlowPreviewItems(bundle: FlowBundle, count = 3): string[] {
+  if (bundle.flow.content_type === 'meal_plan') {
+    return (bundle.mealSlots ?? []).slice(0, count).map((slot) => slot.menu_title);
+  }
+
+  return bundle.items.slice(0, count).map((item) => item.title);
+}
+
+function getPreviewTypeLabel(bundle: FlowBundle): string {
+  const model = normalizeExecutionModel(bundle);
+  if (model.uxType === 'decision') return '후보 비교 + 현장 체크';
+  if (model.uxType === 'routine' || model.uxType === 'program') return '반복 달력';
+  if (model.uxType === 'meal_plan') return '식단 달력';
+  if (model.uxType === 'timeline') return '월별 달력';
+  return '체크리스트';
 }
 
 function ProgressBar({ done, total }: { done: number; total: number }) {
@@ -424,6 +454,7 @@ function FlowCard({
 }) {
   const count = getFlowItemCount(bundle);
   const color = categoryColors[bundle.flow.category] ?? '#6B7280';
+  const previewItems = getFlowPreviewItems(bundle, variant === 'compact' ? 3 : 4);
 
   return (
     <article className="flex h-full flex-col justify-between rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
@@ -468,6 +499,20 @@ function FlowCard({
               #{tag}
             </span>
           ))}
+        </div>
+        <div className="rounded-md border border-gray-100 bg-[#FAFAF8] p-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs font-semibold text-gray-500">미리보기</p>
+            <span className="text-xs font-semibold text-blue-700">{getPreviewTypeLabel(bundle)}</span>
+          </div>
+          <ul className="mt-2 space-y-1 text-sm text-gray-700">
+            {previewItems.map((item) => (
+              <li key={item} className="line-clamp-1">
+                {item}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-xs font-semibold text-gray-500">출력: {getExportTargetsText(bundle)}</p>
         </div>
         {variant === 'default' ? <p className="text-sm font-medium text-gray-600">{getAnchorLabel(bundle)}</p> : null}
       </div>
@@ -854,16 +899,12 @@ export function CreatorDirectory() {
 
 export function HomeLanding() {
   const { bundles, persist } = useBundles();
-  const featured = [
-    'study-exam-d30-plan',
-    'wedding-d180-basic',
-    'used-car-buying-check',
-    'running-5k-4week',
-  ]
+  const representativeSlugs = getRepresentativeFlowSlugs();
+  const featured = representativeSlugs
     .map((slug) => bundles.find((bundle) => bundle.flow.slug === slug))
     .filter(Boolean) as FlowBundle[];
-  const timeline = bundles.filter((bundle) => bundle.flow.structure_type === 'timeline').slice(0, 4);
-  const routines = bundles.filter((bundle) => bundle.flow.structure_type === 'routine').slice(0, 4);
+  const timeline = bundles.filter((bundle) => normalizeExecutionModel(bundle).views.includes('month_calendar')).slice(0, 4);
+  const routines = bundles.filter((bundle) => ['routine', 'program'].includes(normalizeExecutionModel(bundle).uxType)).slice(0, 4);
   const categories = ['공부', '자동차', '결혼', '운동·습관', '육아', '생활서류', '이사', '여행'];
   const copyFlow = (bundle: FlowBundle) => {
     const next = cloneBundleForEditing(bundle);
@@ -915,7 +956,7 @@ export function HomeLanding() {
           </div>
           <Link className="text-sm font-semibold text-blue-700" href="/flows">전체 보기</Link>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {featured.map((bundle) => (
             <FlowCard key={bundle.flow.id} bundle={bundle} variant="compact" onCopy={copyFlow} />
           ))}
@@ -2075,7 +2116,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     const found = getBundles().find((item) => item.flow.slug === slug) ?? null;
     const storedAnchor = getStoredAnchor(slug);
     const hasStoredAnchor = Boolean(storedAnchor.anchor) || storedAnchor.mode !== 'custom';
-    const defaultAnchorMode: AnchorMode = found && isFitnessExactVideoFlow(found) ? 'example' : 'custom';
+    const defaultAnchorMode: AnchorMode = found && found.flow.anchor_type !== 'none' ? 'example' : 'custom';
     setBundle(found);
     setAnchor(storedAnchor.anchor);
     setAnchorMode(hasStoredAnchor && isAnchorMode(storedAnchor.mode) ? storedAnchor.mode : defaultAnchorMode);
@@ -2323,6 +2364,8 @@ export function PublicFlow({ slug }: { slug: string }) {
         </div>
       ) : null}
 
+      <TopExecutionPreview bundle={bundle} anchor={displayAnchor} weekdays={weekdaySelection} />
+
       {showTodayExecution ? (
         <ExactVideoToolPreview
           bundle={bundle}
@@ -2362,6 +2405,8 @@ export function PublicFlow({ slug }: { slug: string }) {
 
           {activeView === 'week' ? (
             <WeekRenderer bundle={bundle} anchor={displayAnchor} weekdays={weekdaySelection} checks={checks} onToggle={toggle} />
+          ) : activeView === 'month' && bundle.flow.structure_type === 'routine' ? (
+            <RoutineMonthRenderer bundle={bundle} anchor={displayAnchor} weekdays={weekdaySelection} />
           ) : activeView === 'month' ? (
             <MonthRenderer bundle={bundle} anchor={displayAnchor} checks={checks} onToggle={toggle} />
           ) : activeView === 'recipes' ? (
@@ -2733,20 +2778,20 @@ function getPublicViews(bundle: FlowBundle, hasScheduleAnchor = false): { id: Pu
   if (bundle.flow.content_type === 'meal_plan') {
     return [
       { id: 'list', label: '전체 할 일' },
-      ...(hasScheduleAnchor ? [{ id: 'month' as PublicView, label: '일정 보기' }] : []),
+      ...(hasScheduleAnchor ? [{ id: 'month' as PublicView, label: '월별 달력' }] : []),
       { id: 'recipes', label: '레시피' },
     ];
   }
   if (bundle.flow.structure_type === 'timeline') {
     return [
       { id: 'list', label: '전체 할 일' },
-      ...(hasScheduleAnchor ? [{ id: 'month' as PublicView, label: '일정 보기' }] : []),
+      ...(hasScheduleAnchor ? [{ id: 'month' as PublicView, label: '월별 달력' }] : []),
     ];
   }
   if (bundle.flow.structure_type === 'routine') {
     return [
       { id: 'list', label: '전체 루틴' },
-      ...(hasScheduleAnchor ? [{ id: 'week' as PublicView, label: '일정 보기' }] : []),
+      ...(hasScheduleAnchor ? [{ id: 'month' as PublicView, label: '월별 달력' }] : []),
     ];
   }
   return [{ id: 'list', label: '전체 할 일' }];
@@ -2803,6 +2848,139 @@ function expandCalendarEntries(entries: ScheduleEntry[]): CalendarEntry[] {
       };
     });
   });
+}
+
+function TopExecutionPreview({ bundle, anchor, weekdays }: { bundle: FlowBundle; anchor: string; weekdays: string[] }) {
+  const model = normalizeExecutionModel(bundle);
+  const previewItems = getFlowPreviewItems(bundle, 5);
+
+  if (isFitnessExactVideoFlow(bundle)) return null;
+
+  if (model.uxType === 'decision') {
+    const criteria = bundle.items.slice(0, 4);
+    return (
+      <section className="my-5 grid gap-4 lg:grid-cols-[1fr_1fr]">
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <p className="text-sm font-semibold text-blue-700">현장에서 바로 체크</p>
+          <ul className="mt-3 space-y-2 text-sm text-gray-700">
+            {previewItems.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="mt-0.5 inline-block h-4 w-4 rounded border border-gray-300" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+          <p className="text-sm font-semibold text-blue-700">후보 비교 preview</p>
+          <div className="mt-3 overflow-hidden rounded-md border border-gray-200 bg-white text-sm">
+            <div className="grid grid-cols-[1.2fr_1fr_1fr] bg-gray-50 text-xs font-semibold text-gray-600">
+              <span className="px-3 py-2">비교 항목</span>
+              <span className="px-3 py-2">후보 A</span>
+              <span className="px-3 py-2">후보 B</span>
+            </div>
+            {criteria.map((item) => (
+              <div key={item.id} className="grid grid-cols-[1.2fr_1fr_1fr] border-t border-gray-100">
+                <span className="px-3 py-2 font-medium text-gray-800">{item.title}</span>
+                <span className="px-3 py-2 text-gray-400">메모</span>
+                <span className="px-3 py-2 text-gray-400">메모</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (model.uxType === 'routine' || model.uxType === 'program') {
+    const repeatLabel = bundle.repeatRules?.[0] ?? '주 3회';
+    const selectedWeekdays = getRoutineWeekdayLabels(repeatLabel, weekdays);
+    const startDate = anchor || formatDate(nextMonday(new Date()));
+    const occurrences = expandRoutineOccurrences({
+      startDate,
+      repeatLabel,
+      weekdays: selectedWeekdays,
+      weeks: 2,
+    }).slice(0, 6);
+    const firstSection = bundle.sections[0];
+    const sessionItems = bundle.items.filter((item) => item.section_id === firstSection?.id).slice(0, 5);
+
+    return (
+      <section className="my-5 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm font-semibold text-blue-700">반복 달력 preview</p>
+            <span className="text-xs font-semibold text-gray-500">{selectedWeekdays.join(' · ')} 반복</span>
+          </div>
+          <div className="mt-3 grid gap-2 sm:grid-cols-3">
+            {occurrences.map((occurrence) => (
+              <div key={`${occurrence.date}-${occurrence.sessionIndex}`} className="rounded-md border border-gray-200 bg-[#FAFAF8] p-3">
+                <p className="text-xs font-semibold text-gray-500">{occurrence.weekday}요일</p>
+                <p className="mt-1 font-semibold text-gray-950">{occurrence.sessionIndex}회차</p>
+                <p className="text-sm text-gray-600">{occurrence.date.slice(5)}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <p className="text-sm font-semibold text-blue-700">한 회차에 하는 일</p>
+          <p className="mt-1 text-sm text-gray-500">{firstSection?.title ?? '루틴 항목'}</p>
+          <ul className="mt-3 space-y-2 text-sm text-gray-700">
+            {sessionItems.map((item) => (
+              <li key={item.id} className="flex gap-2">
+                <span className="text-blue-700">•</span>
+                <span>{item.title}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    );
+  }
+
+  if (model.views.includes('month_calendar')) {
+    const entries = anchor ? getScheduleEntries(bundle, anchor).slice(0, 5) : [];
+    return (
+      <section className="my-5 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <p className="text-sm font-semibold text-blue-700">월별 달력 preview</p>
+          <div className="mt-3 space-y-2">
+            {(entries.length ? entries : getFlowPreviewItems(bundle, 5).map((title, index) => ({ id: title, title, startDate: '', timing: `항목 ${index + 1}` }))).map((entry) => (
+              <div key={entry.id} className="flex items-center justify-between gap-3 rounded-md border border-gray-100 bg-[#FAFAF8] px-3 py-2 text-sm">
+                <span className="font-medium text-gray-800">{entry.title}</span>
+                <span className="shrink-0 text-xs font-semibold text-blue-700">{entry.startDate ? entry.startDate.slice(5) : entry.timing}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <p className="text-sm font-semibold text-blue-700">실행 리스트 미리보기</p>
+          <ul className="mt-3 space-y-2 text-sm text-gray-700">
+            {previewItems.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="mt-0.5 inline-block h-4 w-4 rounded border border-gray-300" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="my-5 rounded-lg border border-gray-200 bg-white p-4">
+      <p className="text-sm font-semibold text-blue-700">실행 리스트 미리보기</p>
+      <ul className="mt-3 space-y-2 text-sm text-gray-700">
+        {previewItems.map((item) => (
+          <li key={item} className="flex gap-2">
+            <span className="mt-0.5 inline-block h-4 w-4 rounded border border-gray-300" />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
 }
 
 function getSectionTitleForBundle(bundle: FlowBundle, sectionId?: string): string {
@@ -2963,6 +3141,76 @@ function MonthRenderer({
                         </label>
                       ))}
                     </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      ))}
+    </div>
+  );
+}
+
+function RoutineMonthRenderer({
+  bundle,
+  anchor,
+  weekdays,
+}: {
+  bundle: FlowBundle;
+  anchor: string;
+  weekdays: string[];
+}) {
+  if (!anchor) return <EmptyScheduleMessage />;
+
+  const repeatLabel = bundle.repeatRules?.[0] ?? '주 3회';
+  const selectedWeekdays = getRoutineWeekdayLabels(repeatLabel, weekdays);
+  const occurrences = expandRoutineOccurrences({
+    startDate: anchor,
+    repeatLabel,
+    weekdays: selectedWeekdays,
+    weeks: 4,
+  });
+  const months = Array.from(new Set(occurrences.map((occurrence) => monthKey(occurrence.date)))).sort();
+  const sessionSummary = bundle.sections
+    .map((section) => {
+      const count = bundle.items.filter((item) => item.section_id === section.id).length;
+      return count ? `${section.title} ${count}개` : section.title;
+    })
+    .slice(0, 2);
+
+  return (
+    <div className="space-y-5">
+      {months.map((month) => (
+        <section key={month} className="rounded-lg border border-gray-200 bg-white p-5">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-semibold">{month}</h2>
+              <p className="mt-1 text-sm font-semibold text-blue-700">루틴 회차</p>
+            </div>
+            <p className="text-sm font-semibold text-gray-600">{selectedWeekdays.join(' · ')} 반복</p>
+          </div>
+          <div className="mt-4 overflow-x-auto">
+            <div className="grid min-w-[760px] grid-cols-7 gap-2">
+              {['일', '월', '화', '수', '목', '금', '토'].map((day) => (
+                <div key={day} className="rounded-md bg-gray-50 px-2 py-2 text-center text-xs font-semibold text-gray-600">
+                  {day}
+                </div>
+              ))}
+              {getMonthCalendarDays(month).map((date, index) => {
+                const occurrence = date ? occurrences.find((item) => item.date === date) : undefined;
+                return (
+                  <div key={`${month}-${index}`} className={`min-h-32 rounded-md border p-2 ${date ? 'border-gray-200 bg-[#FAFAF8]' : 'border-gray-100 bg-gray-50/60'}`}>
+                    {date ? <p className="text-xs font-medium text-gray-500">{date.slice(8)}</p> : null}
+                    {occurrence ? (
+                      <div className="mt-2 rounded border border-blue-100 bg-white p-2 text-xs leading-4">
+                        <p className="font-semibold text-blue-700">{occurrence.sessionIndex}회차</p>
+                        <p className="mt-1 font-medium text-gray-800">{bundle.flow.title}</p>
+                        {sessionSummary.map((summary) => (
+                          <p key={summary} className="mt-1 text-gray-500">{summary}</p>
+                        ))}
+                      </div>
+                    ) : null}
                   </div>
                 );
               })}

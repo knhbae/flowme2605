@@ -39,9 +39,18 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Kept demo-safe metadata such as `베타 운영 중`, item count, category, and duration instead of fake numeric social proof.
 - Reduced public Flow status badges to source confirmation and meaningful risk signals.
 - Consolidated source metadata into `SourceContentCard` and removed the duplicated `출처와 주의 정보` details block.
-- Replaced separate `주별 보기` and `달력 보기` tabs with a single `일정 보기` tab after a date/example anchor exists.
+- Replaced separate `주별 보기` and `달력 보기` tabs with a single explicit `월별 달력` tab after a date/example anchor exists.
 - Removed the duplicate `섹션 바로가기` component; the `전체 흐름` cards remain section anchors.
 - Reframed `/my` as `내 Flow`, added title metadata, and added localStorage-based `진행 중인 Flow` recovery cards.
+- Added an execution-model planning pass for Timeline, Checklist/Decision, Routine/Program, Meal Plan, and Mini Flow content types.
+- Classified five representative demo flows for landing and QA: moving timeline, used-car decision checklist, running program routine, baby-food meal plan, and overseas-travel timeline.
+- Added landing-card previews that show sample list items and expected export targets instead of only abstract badges.
+- Added Flow-detail first-screen previews:
+  - Timeline and meal-plan flows show `월별 달력 preview` plus an execution list preview.
+  - Routine/program flows show `반복 달력 preview` plus `한 회차에 하는 일`.
+  - Decision/checklist flows show `후보 비교 preview` plus `현장에서 바로 체크`.
+- Changed schedule tabs from generic `일정 보기` to explicit `월별 달력`.
+- Added a routine recurrence helper and monthly routine calendar that expands selected weekdays into visible `n회차` sessions.
 
 ## Not Done
 
@@ -50,6 +59,9 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Did not add login, DB persistence, or cross-device sync for `/my`; progress recovery remains browser-local.
 - Did not rewrite all seed Flow content in this PR; content quality work remains incremental.
 - Did not redesign the mobile sticky export bar into a bottom sheet.
+- Did not implement a full editable comparison table for decision flows; this PR adds the first-screen preview and keeps the checklist as the execution surface.
+- Did not migrate every legacy Flow into the new execution-model content standard; older flows remain migration candidates.
+- Did not add account sync, external calendar API integration, or server-side recurrence storage.
 
 ## Decisions
 
@@ -57,18 +69,29 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - PR #7 merged into the parent branch after PR #6 had already merged to `main`, so PR #8 was opened to promote the same deployed work to `main`.
 - Kept implementation local to `AppClient.tsx` to limit blast radius; a future component split should happen separately.
 - Used text labels instead of new icon dependencies to keep this PR focused.
-- Kept calendar/schedule demo value by preserving `일정 보기` instead of removing dated views entirely.
+- Kept calendar/schedule demo value by preserving an explicit `월별 달력` view instead of removing dated views entirely.
 - Avoided fake production-looking numeric stats; demo trust is represented through beta/status metadata and concrete Flow scope.
 - Kept `Flow Lab` hidden from public nav, but kept channel discovery visible because it represents actual content organization rather than an internal validation tool.
+- Kept calendar views as a core demo affordance after review clarified that timeline and routine content must visibly become a calendar, not only a list.
+- Chose a representative-set landing strategy over showing many half-migrated flows first; broader catalog items remain discoverable elsewhere.
+- Kept the current client-side data model and derived recurrence in UI because Stage 0 has no auth, DB, or server persistence.
 
 ## Files Touched
 
 - `components/flow/AppClient.tsx`
+- `lib/flow/execution-model.ts`
+- `lib/flow/execution-model.test.ts`
+- `lib/flow/recurrence.ts`
+- `lib/flow/recurrence.test.ts`
 - `lib/flow/storage.ts`
 - `app/my/page.tsx`
 - `tests/e2e/flow-mvp.spec.ts`
 - `docs/superpowers/plans/2026-05-22-flow-item-card-ux.md`
 - `docs/superpowers/plans/2026-05-22-flow-demo-ux-polish.md`
+- `docs/superpowers/plans/2026-05-22-flow-execution-model-p0.md`
+- `docs/superpowers/specs/2026-05-22-flow-execution-model-redesign.md`
+- `docs/superpowers/specs/2026-05-22-flow-execution-model-wireframes.md`
+- `docs/superpowers/specs/2026-05-22-existing-flow-content-migration.md`
 - `docs/pr-history/2026-05-22-flow-item-card-ux.md`
 
 ## Verification
@@ -82,6 +105,10 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `npm run test:e2e -- --grep "home presents|my flow workspace|public moving flow|meal plan flow|duration calendar|real source public flow|representative real content"` passed: 7 tests.
 - `npm run test:e2e -- --grep "home presents|creator directory exposes"` passed after restoring the `채널` nav link: 3 tests.
 - `npm run test:e2e` passed: 30 tests.
+- `npm test` passed after execution-model and recurrence tests were added: 46 tests.
+- `npm run build` passed after adding landing previews and routine monthly calendar.
+- `npm run test:e2e -- --grep "home presents|public moving flow|routine flow highlights|no-anchor checklist|used-car checklist"` passed: 5 tests.
+- `npm run test:e2e` passed after execution-model P0 UI: 31 tests.
 - Local visual smoke via Playwright passed:
   - Home: no `/flow-lab` or `/creators` nav links; headline is `따라하기 쉬운 실행 가이드, Flow`.
   - Moving schedule: no duplicated `출처와 주의 정보`; no `주별 보기`; one `일정 보기` tab.

@@ -13,7 +13,13 @@ test('home presents FLOW as an executable content platform', async ({ page }) =>
   await expect(page.getByRole('link', { name: 'Flow 둘러보기' })).toBeVisible();
   await expect(page.getByRole('link', { name: '내 콘텐츠로 Flow 만들기' }).first()).toBeVisible();
   await expect(page.getByRole('link', { name: '#D-Day 준비' })).toHaveCount(0);
-  await expect(page.getByText('시험 D-30 공부 계획 Flow').first()).toBeVisible();
+  await expect(page.getByText('이사 D-30 준비 Flow').first()).toBeVisible();
+  await expect(page.getByText('중고차 구매 현장 점검 Flow').first()).toBeVisible();
+  await expect(page.getByText('초보 러너 5km 4주 완주 Flow').first()).toBeVisible();
+  await expect(page.getByText('초기 이유식 메뉴·레시피 Flow').first()).toBeVisible();
+  await expect(page.getByText('해외여행 출국 준비 Flow').first()).toBeVisible();
+  await expect(page.getByText('미리보기').first()).toBeVisible();
+  await expect(page.getByText('출력:').first()).toBeVisible();
 });
 
 test('flow list exposes the seed and online-sourced flows', async ({ page }) => {
@@ -330,9 +336,13 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await page.goto('/f/moving-d30-basic');
 
   await expect(page.getByText('1. 이사일 입력하기')).toBeVisible();
+  await expect(page.getByText('예시 날짜로 미리보기')).toBeVisible();
+  await expect(page.getByText('월별 달력 preview')).toBeVisible();
+  await expect(page.getByText('실행 리스트 미리보기')).toBeVisible();
+  await expect(page.getByText('이사 방식 정하기').first()).toBeVisible();
   await expect(page.getByText('2. 실행 항목 체크')).toHaveCount(0);
   await expect(page.getByText('3. 내보내기와 백업')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '일정 보기' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
   await expect(page.getByRole('button', { name: '내 일정표 엑셀로 받기' })).toBeVisible();
   await expect(page.getByRole('button', { name: '내 일정표 엑셀로 받기' })).toBeDisabled();
   await expect(page.getByText('by FLOW 큐레이션팀')).toBeVisible();
@@ -347,8 +357,8 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await expect(page.getByText('2026-06-15').first()).toBeVisible();
   await expect(page.getByRole('button', { name: '주별 보기' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '달력 보기' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '일정 보기' })).toBeVisible();
-  await page.getByRole('button', { name: '일정 보기' }).click();
+  await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
+  await page.getByRole('button', { name: '월별 달력' }).click();
   await expect(page.getByRole('heading', { name: '2026-06' })).toBeVisible();
   await expect(page.getByText('이번 달 핵심').first()).toBeVisible();
   await expect(page.getByText('월', { exact: true }).first()).toBeVisible();
@@ -421,12 +431,12 @@ test('meal plan flow exposes recipe and reaction log', async ({ page }) => {
   await expect(page.getByText('2026-06-01 ~ 2026-06-03')).toBeVisible();
   await expect(page.getByRole('button', { name: '주별 보기' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '달력 보기' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '일정 보기' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
   await page.getByRole('button', { name: '레시피' }).click();
   await expect(page.getByText('연결된 식단').first()).toBeVisible();
   await expect(page.getByText('D+0~D+2 / 2026-06-01 ~ 2026-06-03')).toBeVisible();
 
-  await page.getByRole('button', { name: '일정 보기' }).click();
+  await page.getByRole('button', { name: '월별 달력' }).click();
   await expect(page.getByText('쌀미음 1일차', { exact: true })).toBeVisible();
   await expect(page.getByText('쌀미음 2일차', { exact: true })).toBeVisible();
   await expect(page.getByText('쌀미음 3일차', { exact: true })).toBeVisible();
@@ -444,7 +454,7 @@ test('duration calendar checks only one day at a time', async ({ page }) => {
   await page.goto('/f/baby-food-menu-recipe');
 
   await page.getByLabel('이유식 시작일').fill('2026-06-01');
-  await page.getByRole('button', { name: '일정 보기' }).click();
+  await page.getByRole('button', { name: '월별 달력' }).click();
 
   const firstDay = page.locator('label').filter({ hasText: '쌀미음 1일차' }).first();
   const secondDay = page.locator('label').filter({ hasText: '쌀미음 2일차' }).first();
@@ -459,6 +469,9 @@ test('duration calendar checks only one day at a time', async ({ page }) => {
 test('routine flow highlights weekly routine setup', async ({ page }) => {
   await page.goto('/f/running-5k-4week');
 
+  await expect(page.getByText('반복 달력 preview')).toBeVisible();
+  await expect(page.getByText('한 회차에 하는 일')).toBeVisible();
+  await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
   await page.getByLabel('운동 시작일').fill('2026-06-01');
 
   await expect(page.getByText('추천 다음 항목')).toHaveCount(0);
@@ -467,7 +480,11 @@ test('routine flow highlights weekly routine setup', async ({ page }) => {
   await expect(page.getByText('첫 루틴 미리보기')).toBeVisible();
   await expect(page.getByText('리셋 규칙')).toBeVisible();
   await expect(page.getByText('놓친 날은 부채로 쌓지 않고 다음 가능한 세션부터 다시 시작합니다.')).toBeVisible();
+  await page.getByRole('button', { name: '월별 달력' }).click();
+  await expect(page.getByText('루틴 회차')).toBeVisible();
+  await expect(page.getByText('1회차').first()).toBeVisible();
 
+  await page.getByRole('button', { name: '전체 루틴' }).click();
   await page.locator('[data-testid="flow-item-card"]').first().getByRole('checkbox').check();
   await expect(page.getByText('추천 다음 항목')).toBeVisible();
 });
@@ -490,6 +507,15 @@ test('no-anchor checklist skips date setup and hides calendar export', async ({ 
   await expect(page.getByText('아래 항목을 하나씩 확인하고 완료한 것은 체크하세요.')).toBeVisible();
   await expect(page.getByRole('button', { name: '캘린더 파일 받기' })).not.toBeVisible();
   await expect(page.getByRole('button', { name: '체크리스트 복사하기' })).toBeVisible();
+});
+
+test('used-car checklist shows decision preview instead of calendar by default', async ({ page }) => {
+  await page.goto('/f/used-car-buying-check');
+
+  await expect(page.getByText('후보 비교 preview')).toBeVisible();
+  await expect(page.getByText('현장에서 바로 체크')).toBeVisible();
+  await expect(page.getByRole('button', { name: '월별 달력' })).toHaveCount(0);
+  await expect(page.getByText('총예산을 차량가, 이전비, 보험료, 정비비로 나누기').first()).toBeVisible();
 });
 
 test('public flow can be copied into an editable draft', async ({ page }) => {
