@@ -18,7 +18,7 @@
 - Comparison-export deployment URL: https://flowme2605-ctyehe39h-flowme.vercel.app
 - Mobile-export deployment URL: https://flowme2605-5ilocoxrc-flowme.vercel.app
 - P1-content-migration deployment URL: https://flowme2605-7jrc2lvj6-flowme.vercel.app
-- P1-routine-migration deployment URL: pending
+- P1-routine-migration deployment URL: https://flowme2605-ce5uskzab-flowme.vercel.app
 - Vercel inspect: https://vercel.com/flowme/flowme2605/E8vL2nQMrzoF8qjf7aow8tkTUZsb
 - Demo UX Vercel inspect: https://vercel.com/flowme/flowme2605/ERjP9Gtj2GjbA7FCRQNQCYz8a1TV
 - Channel-nav Vercel inspect: https://vercel.com/flowme/flowme2605/8JjefxX9MPrtkkBJ84SqzHiYxibt
@@ -27,7 +27,7 @@
 - Comparison-export Vercel inspect: https://vercel.com/flowme/flowme2605/5SRdATNfKEmJcv9BZi4BreFMmfVZ
 - Mobile-export Vercel inspect: https://vercel.com/flowme/flowme2605/2S7cmp7v29DrPJDQmNE7koBRMC9m
 - P1-content-migration Vercel inspect: https://vercel.com/flowme/flowme2605/9miBqirmAVcGB7vtLPPuZzKqZCan
-- P1-routine-migration Vercel inspect: pending
+- P1-routine-migration Vercel inspect: https://vercel.com/flowme/flowme2605/FurPwVBiTZEH1USEcPcQoZFZLi8i
 
 ## Why
 
@@ -191,6 +191,10 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - P1-content-migration production smoke passed:
   - Wedding Flow no longer shows the migration banner and keeps `후보 비교 preview` plus `월별 달력`.
   - Study D-30 no longer shows the migration banner and shows `반복 달력 preview`, `한 회차에 하는 일`, and `월별 달력`.
+- P1-routine-migration production deploy passed and aliased to `https://flowme2605.vercel.app`.
+- P1-routine-migration production smoke passed:
+  - Home Workout, English Study, and Car Care no longer show the migration banner.
+  - All three render `반복 달력 preview`, `한 회차에 하는 일`, and `월별 달력`.
 - Local visual smoke via Playwright passed:
   - Home: no `/flow-lab` nav link; channel discovery remains as `/creators` labeled `채널`; headline is `따라하기 쉬운 실행 가이드, Flow`.
   - Moving schedule: no duplicated `출처와 주의 정보`; no `주별 보기`; one `월별 달력` tab.
