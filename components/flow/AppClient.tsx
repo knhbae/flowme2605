@@ -2222,7 +2222,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     });
   };
   const copy = async () => {
-    const text = buildText(bundle, checks, displayAnchor, itemStates);
+    const text = buildText(bundle, checks, displayAnchor, itemStates, comparisonState);
     try {
       await navigator.clipboard.writeText(text);
       setCopyState('복사됨');
@@ -2246,6 +2246,7 @@ export function PublicFlow({ slug }: { slug: string }) {
       weekdays: weekdaySelection,
       reactionLogs,
       itemStates,
+      comparisonState,
     });
     const buffer = await buildXlsxBuffer(sheets);
     const blob = new Blob([buffer], {

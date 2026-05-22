@@ -60,6 +60,9 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
   - Candidate notes can be entered per comparison row.
   - Additional candidates can be added.
   - Comparison state persists in localStorage.
+- Added comparison-table data to text copy and XLSX workbook export:
+  - Text export appends a `후보 비교표` section.
+  - Workbook export adds a `후보 비교` sheet with candidate columns and row-level notes.
 - Added a migration-candidate banner so older flows remain usable while clearly indicating they are being moved to the new execution model.
 
 ## Not Done
@@ -69,7 +72,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Did not add login, DB persistence, or cross-device sync for `/my`; progress recovery remains browser-local.
 - Did not rewrite all seed Flow content in this PR; content quality work remains incremental.
 - Did not redesign the mobile sticky export bar into a bottom sheet.
-- Did not wire comparison table data into text/XLSX export yet; comparison state is now typed and stored so export integration can follow without changing the UI state shape.
+- Did not add comparison data to `.ics` calendar export because candidate comparison is not a dated reminder surface.
 - Did not migrate every legacy Flow into the new execution-model content standard; older flows remain migration candidates.
 - Did not add account sync, external calendar API integration, or server-side recurrence storage.
 
@@ -123,6 +126,10 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `npm run test:e2e` passed after execution-model P0 UI: 31 tests.
 - `npm run test:e2e -- --grep "migration candidate|decision flow comparison"` passed: 2 tests.
 - `npm run test:e2e` passed after comparison-table follow-up: 33 tests.
+- `npx tsx --test lib/flow/export.test.ts` passed after comparison export integration: 11 tests.
+- `npm test` passed after comparison export integration: 47 tests.
+- `npm run build` passed after comparison export integration.
+- `npm run test:e2e` passed after comparison export integration: 33 tests.
 - Execution-model production deploy passed and aliased to `https://flowme2605.vercel.app`.
 - Production smoke passed for:
   - Home representative flow card and output target preview.
