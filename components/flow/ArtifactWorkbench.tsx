@@ -3,7 +3,7 @@
 import { getArtifactPlan } from '@/lib/flow/artifact-plan';
 import { addDays, formatDate, getRangeEnd } from '@/lib/flow/date';
 import { timingLabel } from '@/lib/flow/parser';
-import type { FlowBundle, FlowComparisonState, FlowItem, FlowItemState } from '@/lib/flow/types';
+import type { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState } from '@/lib/flow/types';
 
 type ArtifactWorkbenchProps = {
   bundle: FlowBundle;
@@ -13,6 +13,9 @@ type ArtifactWorkbenchProps = {
   itemStates: Record<string, FlowItemState>;
   comparisonState: FlowComparisonState;
   onComparisonChange: (state: FlowComparisonState) => void;
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
+  onToggleItem: (id: string) => void;
 };
 
 type ScheduleRow = {
@@ -45,6 +48,9 @@ export function ArtifactWorkbench({
   itemStates,
   comparisonState,
   onComparisonChange,
+  workbenchState,
+  onWorkbenchChange,
+  onToggleItem,
 }: ArtifactWorkbenchProps) {
   const plan = getArtifactPlan(bundle);
   const total = getExecutableItems(bundle).filter((item) => !itemStates[item.id]?.skipped).length;
@@ -65,15 +71,15 @@ export function ArtifactWorkbench({
 
       <div className="mt-5">
         {plan.primarySurface === 'decision_table' ? (
-          <DecisionWorkbench bundle={bundle} comparisonState={comparisonState} onComparisonChange={onComparisonChange} />
+          <DecisionWorkbench bundle={bundle} checks={checks} comparisonState={comparisonState} onComparisonChange={onComparisonChange} onToggleItem={onToggleItem} />
         ) : plan.primarySurface === 'routine_calendar' ? (
-          <RoutineWorkbench bundle={bundle} anchor={anchor} weekdays={weekdays} />
+          <RoutineWorkbench bundle={bundle} anchor={anchor} weekdays={weekdays} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
         ) : plan.primarySurface === 'spreadsheet_log' ? (
-          <SpreadsheetWorkbench anchor={anchor} />
+          <SpreadsheetWorkbench anchor={anchor} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
         ) : plan.primarySurface === 'timeline_calendar' ? (
-          <TimelineWorkbench bundle={bundle} anchor={anchor} />
+          <TimelineWorkbench bundle={bundle} anchor={anchor} checks={checks} onToggleItem={onToggleItem} />
         ) : (
-          <ChecklistWorkbench bundle={bundle} />
+          <ChecklistWorkbench bundle={bundle} checks={checks} onToggleItem={onToggleItem} />
         )}
       </div>
     </section>
@@ -134,7 +140,17 @@ function scheduleRows(bundle: FlowBundle, anchor: string): ScheduleRow[] {
     });
 }
 
-function TimelineWorkbench({ bundle, anchor }: { bundle: FlowBundle; anchor: string }) {
+function TimelineWorkbench({
+  bundle,
+  anchor,
+  checks,
+  onToggleItem,
+}: {
+  bundle: FlowBundle;
+  anchor: string;
+  checks: Record<string, boolean>;
+  onToggleItem: (id: string) => void;
+}) {
   const rows = scheduleRows(bundle, anchor);
   const listRows = rows.length
     ? rows.slice(0, 8)
@@ -156,10 +172,17 @@ function TimelineWorkbench({ bundle, anchor }: { bundle: FlowBundle; anchor: str
         <h3 className="text-base font-semibold text-gray-950">전체 할 일</h3>
         <div className="mt-3 space-y-2">
           {listRows.map((row) => (
-            <div key={row.id} className="grid grid-cols-[92px_1fr] gap-3 rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
+            <label key={row.id} className="grid grid-cols-[22px_92px_1fr] gap-3 rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
+              <input
+                aria-label={`실행판 체크: ${row.title}`}
+                className="mt-0.5 h-4 w-4 rounded border-gray-300"
+                checked={Boolean(checks[row.id])}
+                onChange={() => onToggleItem(row.id)}
+                type="checkbox"
+              />
               <span className="font-mono text-xs font-semibold text-blue-700">{row.startDate ? `${row.timing} · ${row.startDate.slice(5)}` : row.timing}</span>
-              <span className="font-medium text-gray-800">{row.title}</span>
-            </div>
+              <span className={`font-medium ${checks[row.id] ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{row.title}</span>
+            </label>
           ))}
         </div>
       </div>
@@ -168,7 +191,19 @@ function TimelineWorkbench({ bundle, anchor }: { bundle: FlowBundle; anchor: str
   );
 }
 
-function MiniMonthCalendar({ title, eyebrow, month, rows }: { title: string; eyebrow?: string; month: string; rows: ScheduleRow[] }) {
+function MiniMonthCalendar({
+  title,
+  eyebrow,
+  month,
+  rows,
+  doneIds,
+}: {
+  title: string;
+  eyebrow?: string;
+  month: string;
+  rows: ScheduleRow[];
+  doneIds?: Set<string>;
+}) {
   const days = getMonthCalendarDays(month || formatDate(new Date()).slice(0, 7));
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-4">
@@ -191,8 +226,8 @@ function MiniMonthCalendar({ title, eyebrow, month, rows }: { title: string; eye
             <div key={`${month}-${index}`} className={`min-h-16 rounded-md border p-1 text-xs ${date ? 'border-gray-200 bg-[#FAFAF8]' : 'border-gray-100 bg-gray-50'}`}>
               {date ? <p className="font-semibold text-gray-600">{date.slice(8)}</p> : null}
               {dayRows.slice(0, 2).map((row) => (
-                <p key={row.id} className="mt-1 truncate rounded bg-white px-1 py-0.5 text-left text-[11px] font-medium text-blue-700">
-                  {row.title}
+                <p key={row.id} className={`mt-1 truncate rounded px-1 py-0.5 text-left text-[11px] font-medium ${doneIds?.has(row.id) ? 'bg-green-50 text-green-700' : 'bg-white text-blue-700'}`}>
+                  {doneIds?.has(row.id) ? '완료 ' : ''}{row.title}
                 </p>
               ))}
               {dayRows.length > 2 ? <p className="mt-1 text-[11px] text-gray-500">+{dayRows.length - 2}</p> : null}
@@ -206,12 +241,16 @@ function MiniMonthCalendar({ title, eyebrow, month, rows }: { title: string; eye
 
 function DecisionWorkbench({
   bundle,
+  checks,
   comparisonState,
   onComparisonChange,
+  onToggleItem,
 }: {
   bundle: FlowBundle;
+  checks: Record<string, boolean>;
   comparisonState: FlowComparisonState;
   onComparisonChange: (state: FlowComparisonState) => void;
+  onToggleItem: (id: string) => void;
 }) {
   const comparison = ensureComparisonState(comparisonState);
   const rows = bundle.items;
@@ -269,9 +308,17 @@ function DecisionWorkbench({
         <h3 className="mt-1 text-base font-semibold text-gray-950">현장 체크리스트</h3>
         <ul className="mt-3 space-y-2 text-sm text-gray-700">
           {rows.slice(0, 5).map((item) => (
-            <li key={item.id} className="flex gap-2">
-              <span className="mt-0.5 h-4 w-4 shrink-0 rounded border border-gray-300 bg-white" />
-              <span>{item.title}</span>
+            <li key={item.id}>
+              <label className="flex gap-2">
+                <input
+                  aria-label={`실행판 체크: ${item.title}`}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
+                  checked={Boolean(checks[item.id])}
+                  onChange={() => onToggleItem(item.id)}
+                  type="checkbox"
+                />
+                <span className={checks[item.id] ? 'text-gray-400 line-through' : ''}>{item.title}</span>
+              </label>
             </li>
           ))}
         </ul>
@@ -321,32 +368,118 @@ function addComparisonCandidate(state: FlowComparisonState): FlowComparisonState
   };
 }
 
-function RoutineWorkbench({ bundle, anchor, weekdays }: { bundle: FlowBundle; anchor: string; weekdays: string[] }) {
+function updateOccurrenceDone(state: FlowWorkbenchState, key: string, done: boolean): FlowWorkbenchState {
+  return {
+    ...state,
+    occurrences: {
+      ...state.occurrences,
+      [key]: {
+        ...(state.occurrences[key] ?? {}),
+        done,
+      },
+    },
+  };
+}
+
+function updateOccurrenceNote(state: FlowWorkbenchState, key: string, note: string): FlowWorkbenchState {
+  return {
+    ...state,
+    occurrences: {
+      ...state.occurrences,
+      [key]: {
+        ...(state.occurrences[key] ?? {}),
+        note,
+      },
+    },
+  };
+}
+
+function updateLogField(state: FlowWorkbenchState, date: string, field: string, value: string): FlowWorkbenchState {
+  return {
+    ...state,
+    logRows: {
+      ...state.logRows,
+      [date]: {
+        ...(state.logRows[date] ?? {}),
+        [field]: value,
+      },
+    },
+  };
+}
+
+function updateWeeklyReview(state: FlowWorkbenchState, weeklyReview: string): FlowWorkbenchState {
+  return {
+    ...state,
+    weeklyReview,
+  };
+}
+
+function occurrenceKey(occurrence: RoutineOccurrence): string {
+  return `${occurrence.date}:${occurrence.sessionIndex}`;
+}
+
+function RoutineWorkbench({
+  bundle,
+  anchor,
+  weekdays,
+  workbenchState,
+  onWorkbenchChange,
+}: {
+  bundle: FlowBundle;
+  anchor: string;
+  weekdays: string[];
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
+}) {
   const startDate = anchor || formatDate(nextMonday(new Date()));
   const selectedWeekdays = weekdays.length ? weekdays : inferWeekdays(bundle.repeatRules?.[0] ?? '');
   const occurrences = expandRoutineOccurrences(startDate, selectedWeekdays, 4);
   const month = occurrences[0]?.date.slice(0, 7) ?? startDate.slice(0, 7);
   const rows = occurrences.map((occurrence) => ({
-    id: `${occurrence.date}-${occurrence.sessionIndex}`,
+    id: occurrenceKey(occurrence),
     title: `${occurrence.sessionIndex}회차`,
     section: '반복',
     timing: occurrence.weekday,
     startDate: occurrence.date,
   }));
   const next = occurrences[0];
+  const nextKey = next ? occurrenceKey(next) : '';
+  const nextLabel = next ? `${next.sessionIndex}회차` : '';
+  const nextState = nextKey ? workbenchState.occurrences[nextKey] ?? {} : {};
+  const doneIds = new Set(
+    Object.entries(workbenchState.occurrences)
+      .filter(([, state]) => state.done)
+      .map(([key]) => key),
+  );
   const sessionItems = bundle.items.slice(0, 5);
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
-      <MiniMonthCalendar title="반복 캘린더" month={month} rows={rows} />
+      <MiniMonthCalendar title="반복 캘린더" month={month} rows={rows} doneIds={doneIds} />
       <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
         <p className="text-sm font-semibold text-blue-700">반복 달력 preview</p>
         <h3 className="mt-1 text-base font-semibold text-gray-950">한 회차에 하는 일</h3>
         <p className="mt-2 text-sm font-semibold text-gray-700">다음 회차</p>
         {next ? (
-          <p className="mt-2 text-sm font-semibold text-blue-700">
-            {next.sessionIndex}회차 · {next.date} · {next.weekday}
-          </p>
+          <div className="mt-2 rounded-md border border-gray-200 bg-white p-3">
+            <label className="flex items-center gap-2 text-sm font-semibold text-blue-700">
+              <input
+                aria-label={`회차 완료: ${nextLabel}`}
+                className="h-4 w-4 rounded border-gray-300"
+                checked={Boolean(nextState.done)}
+                onChange={(event) => onWorkbenchChange(updateOccurrenceDone(workbenchState, nextKey, event.currentTarget.checked))}
+                type="checkbox"
+              />
+              <span>{nextLabel} · {next.date} · {next.weekday}</span>
+            </label>
+            <textarea
+              aria-label={`${nextLabel} 메모`}
+              className="mt-3 min-h-20 w-full resize-y rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-800"
+              placeholder="오늘 컨디션, 조정할 강도, 다음 회차 메모"
+              value={nextState.note ?? ''}
+              onChange={(event) => onWorkbenchChange(updateOccurrenceNote(workbenchState, nextKey, event.currentTarget.value))}
+            />
+          </div>
         ) : null}
         <ul className="mt-3 space-y-2 text-sm text-gray-700">
           {sessionItems.map((item) => (
@@ -394,7 +527,17 @@ function expandRoutineOccurrences(startDate: string, weekdays: string[], weeks: 
   return occurrences;
 }
 
-function SpreadsheetWorkbench({ anchor }: { anchor: string }) {
+const spreadsheetColumns = ['식단', '운동', '측정', '컨디션', '리뷰'];
+
+function SpreadsheetWorkbench({
+  anchor,
+  workbenchState,
+  onWorkbenchChange,
+}: {
+  anchor: string;
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
+}) {
   const start = anchor || formatDate(new Date());
   const rows = Array.from({ length: 7 }, (_, index) => formatDate(addDays(new Date(start), index)));
   return (
@@ -403,20 +546,26 @@ function SpreadsheetWorkbench({ anchor }: { anchor: string }) {
         <table className="min-w-[760px] text-left text-sm">
           <thead className="bg-gray-50 text-xs font-semibold text-gray-600">
             <tr>
-              {['날짜', '식단', '운동', '측정', '컨디션', '리뷰'].map((column) => (
+              {['날짜', ...spreadsheetColumns].map((column) => (
                 <th key={column} className="px-3 py-2">{column}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {rows.map((date, index) => (
+            {rows.map((date) => (
               <tr key={date} className="border-t border-gray-100">
                 <td className="px-3 py-3 font-semibold text-gray-900">{date}</td>
-                <td className="px-3 py-3 text-gray-500">아침/점심/저녁 메모</td>
-                <td className="px-3 py-3 text-gray-500">운동 여부</td>
-                <td className="px-3 py-3 text-gray-500">{index === 0 ? '체중/허리' : '선택'}</td>
-                <td className="px-3 py-3 text-gray-500">피로도/수면</td>
-                <td className="px-3 py-3 text-gray-500">{index === 6 ? '주간 조정' : ''}</td>
+                {spreadsheetColumns.map((column) => (
+                  <td key={`${date}-${column}`} className="px-2 py-2">
+                    <input
+                      aria-label={`${date} ${column}`}
+                      className="w-full min-w-28 rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
+                      placeholder={column === '식단' ? '아침/점심/저녁' : column}
+                      value={workbenchState.logRows[date]?.[column] ?? ''}
+                      onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, date, column, event.currentTarget.value))}
+                    />
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
@@ -424,24 +573,42 @@ function SpreadsheetWorkbench({ anchor }: { anchor: string }) {
       </div>
       <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
         <h3 className="text-base font-semibold text-gray-950">주간 리뷰 메모</h3>
-        <p className="mt-2 text-sm leading-6 text-gray-600">
-          체중 결과보다 기록 누락, 식사 패턴, 운동 지속 여부를 보고 다음 주 기준을 조정합니다.
-        </p>
+        <textarea
+          aria-label="주간 리뷰 메모"
+          className="mt-3 min-h-32 w-full resize-y rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800"
+          placeholder="기록 누락, 식사 패턴, 운동 지속 여부를 보고 다음 주 기준을 적어두세요."
+          value={workbenchState.weeklyReview ?? ''}
+          onChange={(event) => onWorkbenchChange(updateWeeklyReview(workbenchState, event.currentTarget.value))}
+        />
       </div>
     </div>
   );
 }
 
-function ChecklistWorkbench({ bundle }: { bundle: FlowBundle }) {
+function ChecklistWorkbench({
+  bundle,
+  checks,
+  onToggleItem,
+}: {
+  bundle: FlowBundle;
+  checks: Record<string, boolean>;
+  onToggleItem: (id: string) => void;
+}) {
   return (
     <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
       <h3 className="text-base font-semibold text-gray-950">전체 할 일</h3>
       <div className="mt-3 grid gap-2 md:grid-cols-2">
         {getExecutableItems(bundle).slice(0, 10).map((item) => (
-          <div key={item.id} className="flex gap-2 rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
-            <span className="mt-0.5 h-4 w-4 shrink-0 rounded border border-gray-300" />
-            <span className="font-medium text-gray-800">{item.title}</span>
-          </div>
+          <label key={item.id} className="flex gap-2 rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
+            <input
+              aria-label={`실행판 체크: ${item.title}`}
+              className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
+              checked={Boolean(checks[item.id])}
+              onChange={() => onToggleItem(item.id)}
+              type="checkbox"
+            />
+            <span className={`font-medium ${checks[item.id] ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{item.title}</span>
+          </label>
         ))}
       </div>
     </div>

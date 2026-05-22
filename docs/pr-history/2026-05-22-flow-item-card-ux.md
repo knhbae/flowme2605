@@ -10,6 +10,7 @@
   - Mobile export and P1 content migration: https://github.com/knhbae/flowme2605/pull/10
   - Source-fit audit framework: https://github.com/knhbae/flowme2605/pull/11
   - Artifact Workbench v1: https://github.com/knhbae/flowme2605/pull/12
+  - Workbench local entries: https://github.com/knhbae/flowme2605/pull/13
 - Status: `Open`, `Deployed`
 - Production deploy: https://flowme2605.vercel.app
 - Deployment URL: https://flowme2605-20g5fe610-flowme.vercel.app
@@ -156,6 +157,14 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
   - Spreadsheet/log flows show a seven-day record table and weekly review memo.
   - Checklist flows show the first checklist rows as the primary usable surface.
 - Moved creator, source, and warning information below the main execution area so the first screen prioritizes setup, progress/export, and the usable artifact before provenance details.
+- Added local Workbench state so the first-screen artifact can now store real user input:
+  - Timeline/checklist/decision Workbench rows toggle the existing item completion state.
+  - Routine Workbench stores next occurrence completion and a short occurrence memo.
+  - Spreadsheet/log Workbench stores seven days of `식단`, `운동`, `측정`, `컨디션`, `리뷰` inputs plus a weekly review memo.
+  - Workbench records persist in localStorage and make the Flow appear in `/my` progress recovery.
+- Added Workbench records to exports:
+  - Text export appends `## 실행판 기록`.
+  - Workbook export adds an `실행판 기록` sheet.
 - Aligned text export order with artifact priority:
   - spreadsheet-first diet/log Flows now start with a `기록표` guidance section.
   - decision Flows now put the `후보 비교표` before checklist items.
@@ -179,7 +188,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Did not add natural artifact simulations to the 440 generated preview candidates yet; that is a separate catalog audit pass.
 - Did not replace broad channel/site sources with exact URLs in this pass; those routes remain catalog review until source replacement.
 - Did not implement the full interactive artifact workbench yet; this pass adds artifact promise cards and export ordering, while deeper monthly calendar/routine/spreadsheet editing remains follow-up.
-- Did not add occurrence-level persistence for Workbench calendar sessions; item completion still belongs to the existing full execution list.
+- Did not move all progress math to occurrence-level completion; item completion remains the primary progress model, while routine occurrence state is saved as Workbench artifact data.
 - Did not add external calendar, Todo, Notion, or spreadsheet API integrations; exports remain file/clipboard based.
 - Did not migrate every generated preview Flow into a hand-authored artifact model; broad catalog cleanup remains staged.
 
@@ -213,6 +222,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `lib/flow/artifact-plan.test.ts`
 - `lib/flow/export.ts`
 - `lib/flow/export.test.ts`
+- `lib/flow/types.ts`
 - `lib/flow/recurrence.ts`
 - `lib/flow/recurrence.test.ts`
 - `lib/flow/seed-flows.ts`
@@ -235,9 +245,11 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `docs/superpowers/specs/2026-05-22-flow-source-fit-audit-design.md`
 - `docs/superpowers/specs/2026-05-22-artifact-first-flow-ux-design.md`
 - `docs/superpowers/specs/2026-05-22-artifact-workbench-v1-design.md`
+- `docs/superpowers/specs/2026-05-22-workbench-local-state-design.md`
 - `docs/superpowers/plans/2026-05-22-flow-source-fit-audit.md`
 - `docs/superpowers/plans/2026-05-22-artifact-first-flow-ux.md`
 - `docs/superpowers/plans/2026-05-22-artifact-workbench-v1.md`
+- `docs/superpowers/plans/2026-05-22-workbench-local-state.md`
 - `docs/superpowers/specs/2026-05-22-flow-channel-content-inventory-design.md`
 - `docs/superpowers/plans/2026-05-22-flow-channel-content-inventory.md`
 - `docs/superpowers/plans/2026-05-22-flow-item-card-ux.md`
@@ -251,6 +263,13 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 
 ## Verification
 
+- `npm run test:e2e -- --grep "artifact workbench saves local execution entries"` first failed as expected because Workbench rows had no local check/log inputs, then passed after wiring Workbench state: 1 test.
+- `npx tsx --test lib/flow/export.test.ts` first failed as expected because text exports lacked `## 실행판 기록`, then passed after adding Workbench text/workbook export rows: 14 tests.
+- `npm run docs:check` passed after Workbench local-state docs and PR-history updates: 12 required files, 50 local links.
+- `npm test` passed after Workbench local-state export coverage: 87 tests.
+- `npm run build` passed after Workbench local-state implementation.
+- `npm run test:e2e -- --grep "my flow workspace|artifact workbench saves local execution entries"` passed after changing Workbench checkbox labels to `실행판 체크: ...` to avoid an accessible-name collision with existing full-list `완료: ...` labels: 2 tests.
+- `npm run test:e2e` first failed on that accessible-name collision, then passed after the label fix: 38 tests.
 - `npm run test:e2e -- --grep "artifact workbench"` first failed as expected because `Flow artifact workbench` did not exist yet, then passed after adding `ArtifactWorkbench`.
 - `npm run test:e2e -- --grep "artifact workbench|artifact-first previews|decision flow comparison|routine flow highlights|used-car checklist"` passed after Workbench integration and source/creator repositioning: 5 tests.
 - `npx tsx --test lib/flow/artifact-plan.test.ts` first failed after adding promoted Wedding/Study regression coverage because `artifact-plan` ignored execution-model `comparison_table` and `routine_sessions`; it passed after mapping primary Workbench surfaces from execution-model views: 7 tests.

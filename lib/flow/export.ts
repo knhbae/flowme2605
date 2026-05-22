@@ -1,7 +1,7 @@
 import { addDays, formatDate, getRangeEnd } from './date';
 import { getArtifactPlan } from './artifact-plan';
 import { timingLabel } from './parser';
-import { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, MealSlot, ReactionLog } from './types';
+import { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState, MealSlot, ReactionLog } from './types';
 
 const anchorLabelByType = {
   start_date: '시작일',
@@ -49,6 +49,7 @@ export type WorkbookExportOptions = {
   reactionLogs?: Record<string, ReactionLog>;
   itemStates?: Record<string, FlowItemState>;
   comparisonState?: FlowComparisonState;
+  workbenchState?: FlowWorkbenchState;
 };
 
 const icsWeekdays: Record<string, string> = {
@@ -379,18 +380,79 @@ function appendComparisonExport(
   }
 }
 
+const workbenchColumns = ['유형', '날짜/회차', '항목', '값'];
+
+function sortedEntries<T>(value: Record<string, T>): [string, T][] {
+  return Object.entries(value).sort(([left], [right]) => left.localeCompare(right));
+}
+
+function occurrenceLabel(key: string): { date: string; session: string } {
+  const [date, session] = key.split(':');
+  return {
+    date: date || key,
+    session: session ? `${session}회차` : key,
+  };
+}
+
+function buildWorkbenchRows(state?: FlowWorkbenchState): WorkbookCell[][] {
+  if (!state) return [];
+  const rows: WorkbookCell[][] = [];
+
+  for (const [key, entry] of sortedEntries(state.occurrences ?? {})) {
+    const note = entry.note?.trim() ?? '';
+    if (!entry.done && !note) continue;
+    const label = occurrenceLabel(key);
+    rows.push([
+      '회차',
+      label.date,
+      label.session,
+      [entry.done ? '완료' : '', note].filter(Boolean).join(' - '),
+    ]);
+  }
+
+  for (const [date, logRow] of sortedEntries(state.logRows ?? {})) {
+    for (const [field, value] of sortedEntries(logRow)) {
+      if (!value.trim()) continue;
+      rows.push(['기록', date, field, value.trim()]);
+    }
+  }
+
+  if (state.weeklyReview?.trim()) {
+    rows.push(['리뷰', '', '주간 리뷰', state.weeklyReview.trim()]);
+  }
+
+  return rows;
+}
+
+function appendWorkbenchText(lines: string[], rows: WorkbookCell[][]) {
+  if (!rows.length) return;
+  lines.push('', '## 실행판 기록');
+  for (const row of rows) {
+    const [kind, dateOrSession, item, value] = row.map((cell) => String(cell));
+    if (kind === '회차') {
+      lines.push(`${item}: ${value}`);
+    } else if (kind === '기록') {
+      lines.push(`${dateOrSession} ${item}: ${value}`);
+    } else {
+      lines.push(`${item}: ${value}`);
+    }
+  }
+}
+
 export function buildText(
   bundle: FlowBundle,
   checks: Record<string, boolean>,
   anchor?: string,
   itemStates: Record<string, FlowItemState> = {},
   comparisonState?: FlowComparisonState,
+  workbenchState?: FlowWorkbenchState,
 ): string {
   const lines = [bundle.flow.title];
   const anchorLabel = getExportAnchorLabel(bundle);
   lines.push(`${anchorLabel}: ${anchor || (bundle.flow.anchor_type === 'none' ? '없음' : '')}`);
   const artifactPlan = getArtifactPlan(bundle);
   const comparison = buildComparisonExport(bundle, comparisonState);
+  const workbenchRows = buildWorkbenchRows(workbenchState);
 
   if (bundle.flow.content_type === 'meal_plan') {
     for (const section of bundle.sections) {
@@ -407,6 +469,7 @@ export function buildText(
         if (recipe) lines.push(`  레시피: ${recipe.title}`);
       }
     }
+    appendWorkbenchText(lines, workbenchRows);
     return lines.join('\n').trim();
   }
 
@@ -434,6 +497,7 @@ export function buildText(
   if (artifactPlan.primarySurface !== 'decision_table') {
     appendComparisonExport(lines, comparison);
   }
+  appendWorkbenchText(lines, workbenchRows);
 
   return lines.join('\n').trim();
 }
@@ -626,6 +690,7 @@ export function buildWorkbookSheets(
   const anchorLabel = getExportAnchorLabel(bundle);
   const itemStates = options.itemStates ?? {};
   const comparison = buildComparisonExport(bundle, options.comparisonState);
+  const workbenchRows = buildWorkbenchRows(options.workbenchState);
 
   const summaryRows: WorkbookCell[][] = [
     ['FLOW', bundle.flow.title],
@@ -760,6 +825,16 @@ export function buildWorkbookSheets(
       rows: comparison.rows,
       accentColor,
       note: '후보 비교표는 이 브라우저에 입력한 후보명과 항목별 메모를 백업한 시트입니다.',
+    });
+  }
+
+  if (workbenchRows.length) {
+    sheets.push({
+      name: '실행판 기록',
+      columns: workbenchColumns,
+      rows: workbenchRows,
+      accentColor,
+      note: '첫 화면 실행판에서 입력한 회차 완료, 회차 메모, 기록표 값, 주간 리뷰를 백업합니다.',
     });
   }
 

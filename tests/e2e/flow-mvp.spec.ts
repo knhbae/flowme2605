@@ -646,6 +646,41 @@ test('artifact workbench shows the primary usable surface first', async ({ page 
   await expect(workbench).toContainText('컨디션');
 });
 
+test('artifact workbench saves local execution entries', async ({ page }) => {
+  await page.goto('/f/moving-d30-basic');
+
+  await page.getByLabel('이사일').fill('2026-07-15');
+  const workbench = page.getByLabel('Flow artifact workbench');
+  await workbench.getByLabel('실행판 체크: 이사 방식 정하기').check();
+  await expect(workbench.getByLabel('실행판 체크: 이사 방식 정하기')).toBeChecked();
+  await expect(page.getByText('1 / 24').first()).toBeVisible();
+
+  await page.reload();
+  await expect(page.getByLabel('이사일')).toHaveValue('2026-07-15');
+  await expect(page.getByLabel('Flow artifact workbench').getByLabel('실행판 체크: 이사 방식 정하기')).toBeChecked();
+  await expect(page.getByText('1 / 24').first()).toBeVisible();
+
+  await page.goto('/f/study-exam-d30-plan');
+  const routineWorkbench = page.getByLabel('Flow artifact workbench');
+  await routineWorkbench.getByLabel('회차 완료: 1회차').check();
+  await routineWorkbench.getByLabel('1회차 메모').fill('오답노트 20분 추가');
+
+  await page.reload();
+  const reloadedRoutineWorkbench = page.getByLabel('Flow artifact workbench');
+  await expect(reloadedRoutineWorkbench.getByLabel('회차 완료: 1회차')).toBeChecked();
+  await expect(reloadedRoutineWorkbench.getByLabel('1회차 메모')).toHaveValue('오답노트 20분 추가');
+
+  await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
+  const logWorkbench = page.getByLabel('Flow artifact workbench');
+  await logWorkbench.getByLabel(/식단$/).first().fill('현미밥, 닭가슴살, 샐러드');
+  await logWorkbench.getByLabel('주간 리뷰 메모').fill('저녁 탄수화물을 절반으로 줄여보기');
+
+  await page.reload();
+  const reloadedLogWorkbench = page.getByLabel('Flow artifact workbench');
+  await expect(reloadedLogWorkbench.getByLabel(/식단$/).first()).toHaveValue('현미밥, 닭가슴살, 샐러드');
+  await expect(reloadedLogWorkbench.getByLabel('주간 리뷰 메모')).toHaveValue('저녁 탄수화물을 절반으로 줄여보기');
+});
+
 test('decision flow comparison table edits and persists candidate notes', async ({ page }) => {
   await page.goto('/f/used-car-buying-check');
 

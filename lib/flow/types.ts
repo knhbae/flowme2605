@@ -118,6 +118,19 @@ export type FlowComparisonState = {
   notes: Record<string, Record<string, string>>;
 };
 
+export type FlowWorkbenchOccurrenceState = {
+  done?: boolean;
+  note?: string;
+};
+
+export type FlowWorkbenchLogRow = Record<string, string>;
+
+export type FlowWorkbenchState = {
+  occurrences: Record<string, FlowWorkbenchOccurrenceState>;
+  logRows: Record<string, FlowWorkbenchLogRow>;
+  weeklyReview?: string;
+};
+
 export type MealSlot = {
   id: string;
   flow_id: string;
