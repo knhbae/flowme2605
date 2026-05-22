@@ -16,18 +16,28 @@ test('P0 representative flows are explicitly classified for landing and QA', () 
   assert.deepEqual(getRepresentativeFlowSlugs(), [
     'moving-d30-basic',
     'used-car-buying-check',
-    'running-5k-4week',
     'baby-food-menu-recipe',
-    'overseas-travel-d14',
     'wedding-d180-basic',
-    'study-exam-d30-plan',
-    'home-workout-20min',
     'english-study-30day-routine',
-    'car-care-monthly-routine',
   ]);
 
   for (const slug of getRepresentativeFlowSlugs()) {
     assert.equal(normalizeExecutionModel(bySlug(slug)).exposureStatus, 'representative', slug);
+  }
+});
+
+test('source-fit audit decisions gate public exposure without removing direct access', () => {
+  assert.equal(normalizeExecutionModel(bySlug('study-exam-d30-plan')).exposureStatus, 'catalog_preview');
+
+  for (const slug of [
+    'running-5k-4week',
+    'overseas-travel-d14',
+    'home-workout-20min',
+    'car-care-monthly-routine',
+  ]) {
+    const model = normalizeExecutionModel(bySlug(slug));
+    assert.equal(model.exposureStatus, 'source_review', slug);
+    assert.ok(model.migrationGaps.includes('source_fit_reshape_needed'), slug);
   }
 });
 
@@ -64,7 +74,6 @@ test('execution model maps representative flows to the correct UX views', () => 
     assert.equal(model.uxType, 'routine', slug);
     assert.ok(model.views.includes('routine_sessions'), slug);
     assert.ok(model.views.includes('month_calendar'), slug);
-    assert.deepEqual(model.migrationGaps, [], slug);
   }
 });
 

@@ -20,7 +20,7 @@
 - Mobile-export deployment URL: https://flowme2605-5ilocoxrc-flowme.vercel.app
 - P1-content-migration deployment URL: https://flowme2605-7jrc2lvj6-flowme.vercel.app
 - P1-routine-migration deployment URL: https://flowme2605-ce5uskzab-flowme.vercel.app
-- Source-fit audit: local branch change, not deployed yet.
+- Source-fit audit/public exposure: local branch change, not deployed yet.
 - Vercel inspect: https://vercel.com/flowme/flowme2605/E8vL2nQMrzoF8qjf7aow8tkTUZsb
 - Demo UX Vercel inspect: https://vercel.com/flowme/flowme2605/ERjP9Gtj2GjbA7FCRQNQCYz8a1TV
 - Channel-nav Vercel inspect: https://vercel.com/flowme/flowme2605/8JjefxX9MPrtkkBJ84SqzHiYxibt
@@ -105,6 +105,17 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
   - decision counts
   - per-Flow score, decision, source precision, gap, and next action
 - Added tests for source-fit scoring, representative audit coverage, Content Lab summary integration, and Flow Lab E2E visibility.
+- Applied source-fit decisions to public exposure:
+  - `keep_representative` flows remain eligible for landing representative exposure.
+  - `reshape_before_featured` flows stay directly accessible but are removed from representative exposure.
+  - `catalog_preview_only` flows stay directly accessible but are removed from representative exposure.
+- Added a public source-fit status banner on direct-access Flow pages for `reshape_before_featured` and `catalog_preview_only` routes.
+- Reduced the representative landing/QA set from 10 to 5 audited high-fit Flows:
+  - `moving-d30-basic`
+  - `used-car-buying-check`
+  - `baby-food-menu-recipe`
+  - `wedding-d180-basic`
+  - `english-study-30day-routine`
 
 ## Not Done
 
@@ -117,7 +128,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Did not migrate every legacy Flow into the new execution-model content standard; older flows remain migration candidates.
 - Did not add account sync, external calendar API integration, or server-side recurrence storage.
 - Did not convert the mobile bottom sheet to a reusable design-system primitive yet; it remains scoped to public Flow detail.
-- Did not delete or demote public Flows based on the first source-fit audit; this batch records the decision layer first, with public exposure changes deferred.
+- Did not delete any public Flow route based on the first source-fit audit; weaker routes are demoted from representative exposure but remain directly accessible.
 - Did not audit all 500+ preview/generated Flows one-by-one; representative Flows were prioritized, and the remaining catalog audit is follow-up work.
 
 ## Decisions
@@ -134,7 +145,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Kept the current client-side data model and derived recurrence in UI because Stage 0 has no auth, DB, or server persistence.
 - Kept decision flow execution as checklist-first, with the comparison table as a top-level decision aid rather than replacing the checklist.
 - Chose a tiered source audit approach: audit representative/real-source content first, classify the generated catalog later.
-- Kept weak-source representative routes accessible for now so the next PR can decide demotion/hiding with a visible audit trail.
+- Kept weak-source routes accessible while demoting them from representative exposure so route history and demos remain stable.
 
 ## Files Touched
 
@@ -210,6 +221,9 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
   - screenshot captured at `.next/source-fit-flowlab.png`.
 - `npx playwright test tests/e2e/flow-mvp.spec.ts -g "flow lab shows converted pilot"` passed after adding Source Fit Audit E2E coverage.
 - `npm run test:e2e` passed after Source Fit Audit E2E coverage: 34 tests.
+- `npm test -- lib/flow/execution-model.test.ts` first failed as expected for source-fit exposure gating, then passed after implementation.
+- `npm run build` passed after applying source-fit public exposure.
+- `npx playwright test tests/e2e/flow-mvp.spec.ts --grep "source-fit decisions"` first failed as expected for the missing direct-access status banner, then passed after implementation.
 - Execution-model production deploy passed and aliased to `https://flowme2605.vercel.app`.
 - Production smoke passed for:
   - Home representative flow card and output target preview.
@@ -276,8 +290,8 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Add a true export bottom sheet for mobile.
 - Continue seed content improvements for older Flow categories.
 - Consider a separate demo mode if fake numeric social proof is needed for investor/internal demos.
-- Apply source-fit decisions to public exposure in a follow-up PR:
-  - demote or rename `study-exam-d30-plan`
+- Continue source-fit cleanup:
+  - rename or replace the source for `study-exam-d30-plan`
   - replace broad-channel sources for `home-workout-20min` and `running-5k-4week`
   - convert `overseas-travel-d14` to a multi-source official Flow
   - split car care items into inspection, DIY, and service-trigger boundaries

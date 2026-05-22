@@ -15,9 +15,9 @@ test('home presents FLOW as an executable content platform', async ({ page }) =>
   await expect(page.getByRole('link', { name: '#D-Day 준비' })).toHaveCount(0);
   await expect(page.getByText('이사 D-30 준비 Flow').first()).toBeVisible();
   await expect(page.getByText('중고차 구매 현장 점검 Flow').first()).toBeVisible();
-  await expect(page.getByText('초보 러너 5km 4주 완주 Flow').first()).toBeVisible();
   await expect(page.getByText('초기 이유식 메뉴·레시피 Flow').first()).toBeVisible();
-  await expect(page.getByText('해외여행 출국 준비 Flow').first()).toBeVisible();
+  await expect(page.getByText('결혼 준비 D-180 Flow').first()).toBeVisible();
+  await expect(page.getByText('직장인 영어공부 30일 루틴 Flow').first()).toBeVisible();
   await expect(page.getByText('미리보기').first()).toBeVisible();
   await expect(page.getByText('출력:').first()).toBeVisible();
 });
@@ -374,6 +374,14 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await page.getByRole('button', { name: '내 일정표 엑셀로 받기' }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe('moving-d30-basic.xlsx');
+});
+
+test('source-fit decisions are visible on direct-access public flow pages', async ({ page }) => {
+  await page.goto('/f/study-exam-d30-plan');
+  await expect(page.getByTestId('source-fit-status')).toHaveAttribute('data-decision', 'catalog_preview_only');
+
+  await page.goto('/f/running-5k-4week');
+  await expect(page.getByTestId('source-fit-status')).toHaveAttribute('data-decision', 'reshape_before_featured');
 });
 
 test('mobile export actions open from a bottom sheet', async ({ page }) => {

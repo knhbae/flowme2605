@@ -8,6 +8,7 @@ import { inferPrimaryDestination } from '@/lib/flow/destination';
 import { getRepresentativeFlowSlugs, normalizeExecutionModel, type FlowExportTarget } from '@/lib/flow/execution-model';
 import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
 import { getCreatorChannelSummaries } from '@/lib/flow/creator-channel-preview';
+import { getSourceFitAudit } from '@/lib/flow/source-fit';
 import { parseTextFlow, serializeTextFlow, timingLabel } from '@/lib/flow/parser';
 import { expandRoutineOccurrences, getRoutineWeekdayLabels } from '@/lib/flow/recurrence';
 import {
@@ -190,6 +191,36 @@ function FlowMigrationStatus({ bundle }: { bundle: FlowBundle }) {
       <p className="mt-1">
         전체 항목은 그대로 이용할 수 있어요. 다만 일부 Flow는 후보 비교표, 루틴 회차, 월별 달력 같은 새 UX 기준으로 순차 보강 중입니다.
       </p>
+    </section>
+  );
+}
+
+function FlowSourceFitStatus({ bundle }: { bundle: FlowBundle }) {
+  const audit = getSourceFitAudit(bundle.flow.slug);
+  if (!audit || audit.decision === 'keep_representative') return null;
+
+  const isPreviewOnly = audit.decision === 'catalog_preview_only';
+  const title = isPreviewOnly ? '원본 재검토 중' : '대표 노출 전 보강 중';
+  const body = isPreviewOnly
+    ? '이 Flow는 직접 열람은 가능하지만, 원본과 제목/구성이 맞는지 다시 확인하기 전까지 대표 추천에서는 제외합니다.'
+    : '원본은 FLOW로 만들 가치가 있지만, 반복 주기·캘린더 반영·항목 설명을 보강한 뒤 대표 추천에 올립니다.';
+
+  return (
+    <section
+      className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950"
+      data-decision={audit.decision}
+      data-testid="source-fit-status"
+    >
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="font-semibold">{title}</p>
+          <p className="mt-1">{body}</p>
+        </div>
+        <span className="rounded-full border border-amber-300 bg-white px-2.5 py-1 text-xs font-semibold text-amber-800">
+          적합도 {audit.score}/100
+        </span>
+      </div>
+      <p className="mt-2 text-xs text-amber-800">보강 기준: {audit.contentAction}</p>
     </section>
   );
 }
@@ -2297,6 +2328,7 @@ export function PublicFlow({ slug }: { slug: string }) {
           <FlowBadges bundle={bundle} />
         </div>
         <FlowMigrationStatus bundle={bundle} />
+        <FlowSourceFitStatus bundle={bundle} />
       </header>
 
       {!showTodayExecution ? (

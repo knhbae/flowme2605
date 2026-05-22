@@ -1,4 +1,5 @@
 import { FlowBundle } from './types';
+import { getSourceFitAudit } from './source-fit';
 
 export type FlowUxType =
   | 'timeline'
@@ -12,6 +13,7 @@ export type FlowUxType =
 
 export type FlowExposureStatus =
   | 'representative'
+  | 'source_review'
   | 'migration_candidate'
   | 'catalog_preview'
   | 'legacy_accessible'
@@ -37,7 +39,7 @@ export type FlowExecutionModel = {
   migrationGaps: string[];
 };
 
-const representativeFlowSlugs = [
+const representativeCandidateFlowSlugs = [
   'moving-d30-basic',
   'used-car-buying-check',
   'running-5k-4week',
@@ -71,11 +73,14 @@ const migrationCandidateSlugs = new Set([
 ]);
 
 export function getRepresentativeFlowSlugs(): string[] {
-  return [...representativeFlowSlugs];
+  return representativeCandidateFlowSlugs.filter((slug) => {
+    const audit = getSourceFitAudit(slug);
+    return !audit || audit.decision === 'keep_representative';
+  });
 }
 
 export function isRepresentativeFlow(bundle: FlowBundle): boolean {
-  return representativeFlowSlugs.includes(bundle.flow.slug as (typeof representativeFlowSlugs)[number]);
+  return getRepresentativeFlowSlugs().includes(bundle.flow.slug);
 }
 
 export function normalizeExecutionModel(bundle: FlowBundle): FlowExecutionModel {
@@ -111,6 +116,10 @@ function inferUxType(bundle: FlowBundle): FlowUxType {
 }
 
 function inferExposureStatus(bundle: FlowBundle, uxType: FlowUxType): FlowExposureStatus {
+  const sourceFitAudit = getSourceFitAudit(bundle.flow.slug);
+  if (sourceFitAudit?.decision === 'hide_from_public_catalog') return 'hidden';
+  if (sourceFitAudit?.decision === 'catalog_preview_only') return 'catalog_preview';
+  if (sourceFitAudit?.decision === 'reshape_before_featured') return 'source_review';
   if (isRepresentativeFlow(bundle)) return 'representative';
   if (bundle.flow.source_status === 'preview') return 'catalog_preview';
   if (uxType === 'mini_flow') return 'catalog_preview';
@@ -177,7 +186,11 @@ function getExportTargetsForUxType(uxType: FlowUxType): FlowExportTarget[] {
 
 function getMigrationGaps(bundle: FlowBundle, uxType: FlowUxType): string[] {
   const gaps: string[] = [];
+  const sourceFitAudit = getSourceFitAudit(bundle.flow.slug);
 
+  if (sourceFitAudit?.decision === 'reshape_before_featured') {
+    gaps.push('source_fit_reshape_needed');
+  }
   if (!bundle.itemDetails?.length && bundle.flow.content_type !== 'meal_plan') {
     gaps.push('item_details_missing');
   }

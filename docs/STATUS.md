@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated:** 2026-05-21
+**Last Updated:** 2026-05-22
 **Status:** v0.1.0 IN DEVELOPMENT  
 **Current Version:** v0.1.0  
 **Primary Focus:** Stage 0 / First Flag validation for FLOW execution behavior.
@@ -28,6 +28,7 @@
 - Local unit tests and Playwright E2E tests are configured.
 - AI-agnostic harness documents were added from the Claude Harness guide principles without copying Claude-specific runtime assumptions.
 - Documentation harness now has a local `docs:check` command and an `AGENTS.md` auto-discovery entry point.
+- Source-fit audit scoring now gates representative public exposure for the first real-source Flow batch while keeping direct routes accessible.
 
 ## Next Up
 

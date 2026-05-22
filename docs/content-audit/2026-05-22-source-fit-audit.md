@@ -139,5 +139,13 @@ Action:
 
 ## Public Handling Rule For This Batch
 
-No route is deleted in this batch. The audit is now explicit so the next implementation can safely demote or hide weak items without losing route history.
+No route is deleted in this batch.
 
+Applied handling:
+
+- `keep_representative` remains eligible for landing representative exposure.
+- `reshape_before_featured` stays directly accessible but is removed from representative exposure and shows a public "source/content strengthening" status banner.
+- `catalog_preview_only` stays directly accessible but is removed from representative exposure and shows a public "source review" status banner.
+- `hide_from_public_catalog` is reserved for later; no audited route uses it yet.
+
+This keeps demo routes stable while preventing weak-source flows from looking equally validated in the public first screen.
