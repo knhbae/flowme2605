@@ -494,3 +494,17 @@ test('preview-generated creator channel flows are explicitly marked preview', ()
   assert.ok(generated.length >= 400);
   assert.ok(generated.every((bundle) => bundle.flow.source_status === 'preview'));
 });
+
+test('creator channel summaries separate sample candidates from reviewed source inventory', () => {
+  const summaries = getCreatorChannelSummaries(seedBundles);
+  const samsung = summaries.find((summary) => summary.slug === 'samsung-service');
+  const fitvely = summaries.find((summary) => summary.slug === 'fitvely');
+
+  assert.ok(samsung);
+  assert.ok(fitvely);
+  assert.equal(samsung.sample_candidate_count, samsung.preview_flow_count);
+  assert.ok(samsung.source_review_count >= samsung.real_flow_count);
+  assert.ok(samsung.next_content_action.includes('원본'));
+  assert.equal(fitvely.sample_candidate_count, fitvely.preview_flow_count);
+  assert.ok(fitvely.sensitive_count > 0);
+});

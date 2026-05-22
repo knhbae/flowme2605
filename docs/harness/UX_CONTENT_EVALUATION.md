@@ -55,6 +55,38 @@ Record:
 
 Do not copy source text into evaluation artifacts beyond short labels. Summarize in your own words.
 
+## Natural Artifact Simulation
+
+Before judging whether the current Flow or UI is good, create the artifacts a user would naturally make from the original source without knowing FLOW's intended structure. This is mandatory for every source-fit or UX/content evaluation.
+
+For each Flow, simulate at least one concrete user input set. Use realistic values, not field names.
+
+Examples:
+
+- `moving-d30-basic`: `이사일=2026-06-27`, `이사유형=포장이사`, `입주형태=전세`.
+- `home-workout-20min`: `시작일=2026-06-02`, `운동요일=화/목/토`, `운동시간=21:00`.
+- `used-car-buying-check`: `후보A=2020 아반떼 1,450만원 6만km`, `후보B=2019 K3 1,250만원 8만km`.
+
+Then write the expected user-created artifact:
+
+- Checklist: actual item groups and completion criteria.
+- Monthly calendar: actual dates or recurring weekdays that would appear.
+- Routine calendar: actual repeat pattern, session title, and missed-session handling.
+- Spreadsheet: actual columns and sample rows.
+- Memo: actual note fields and safety/source reminders.
+- Comparison table: actual candidates, criteria, and decision fields.
+- Todo list: actual due dates or no-date items.
+
+Finally compare the simulated artifact with the app:
+
+- Does current Flow content include the same actions, dates, recurrence, notes, comparison rows, and completion criteria?
+- Does the current UX let the user enter the same values?
+- Does the first screen preview the artifact the user expects?
+- Can export/copy/calendar/sheet output preserve enough of the simulated artifact?
+- Which missing artifact is a content gap, and which is a UX/UI gap?
+
+Natural artifact findings must be evidence-based. Do not write only "needs start date" or "needs calendar." Write the concrete simulated value and the concrete output the user would expect.
+
 ## Persona
 
 Create one persona per Flow.
@@ -169,6 +201,12 @@ For each Flow, write:
 **Persona:** [one paragraph]
 **Source read:** [source title and URL, checked date]
 **Scenario:** [what the user tries to do]
+
+**Natural artifact simulation:**
+
+| Artifact | Simulated input values | Expected output | Current Flow match | Current UX support | Gap |
+| --- | --- | --- | --- | --- | --- |
+| [monthly calendar/checklist/spreadsheet/etc.] | [`key=value`, `key=value`] | [specific sample dates, rows, or notes] | [strong/partial/weak with evidence] | [supported/partial/unsupported with evidence] | [content or UX gap] |
 
 | Area | Score | Evidence |
 | --- | ---: | --- |

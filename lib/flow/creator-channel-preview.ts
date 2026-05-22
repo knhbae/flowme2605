@@ -8,6 +8,7 @@ import {
   SourceType,
   StructureType,
 } from './types';
+import { reviewContentInventory } from './content-inventory';
 
 const now = '2026-05-21T00:00:00.000Z';
 
@@ -341,6 +342,12 @@ export type CreatorChannelSummary = {
   real_flow_count: number;
   preview_flow_count: number;
   needs_review_flow_count: number;
+  sample_candidate_count: number;
+  manual_source_fit_count: number;
+  derived_source_review_count: number;
+  source_review_count: number;
+  representative_ready_count: number;
+  next_content_action: string;
   execution_score: number;
 };
 
@@ -357,6 +364,18 @@ export function getCreatorChannelSummaries(bundles: FlowBundle[]): CreatorChanne
     const realFlowCount = channelBundles.filter((bundle) => bundle.flow.source_status === 'real').length;
     const previewFlowCount = channelBundles.filter((bundle) => bundle.flow.source_status === 'preview').length;
     const needsReviewFlowCount = channelBundles.filter((bundle) => bundle.flow.source_status === 'needs_review').length;
+    const inventoryReviews = channelBundles.map(reviewContentInventory);
+    const sampleCandidateCount = inventoryReviews.filter((review) => review.level === 'generated_preview_candidate').length;
+    const manualSourceFitCount = inventoryReviews.filter((review) => review.level === 'manual_source_fit').length;
+    const derivedSourceReviewCount = inventoryReviews.filter((review) => review.level === 'derived_real_source').length;
+    const representativeReadyCount = inventoryReviews.filter(
+      (review) => review.publicHandling === 'representative_eligible',
+    ).length;
+    const sourceReviewCount = manualSourceFitCount + derivedSourceReviewCount;
+    const nextContentAction =
+      sampleCandidateCount > sourceReviewCount
+        ? '샘플 후보에 실제 원본 URL을 붙이고 원본별 검토를 진행하세요.'
+        : '대표 후보를 고르고 수동 source-fit audit을 보강하세요.';
 
     return {
       id: channel.id,
@@ -378,6 +397,12 @@ export function getCreatorChannelSummaries(bundles: FlowBundle[]): CreatorChanne
       real_flow_count: realFlowCount,
       preview_flow_count: previewFlowCount,
       needs_review_flow_count: needsReviewFlowCount,
+      sample_candidate_count: sampleCandidateCount,
+      manual_source_fit_count: manualSourceFitCount,
+      derived_source_review_count: derivedSourceReviewCount,
+      source_review_count: sourceReviewCount,
+      representative_ready_count: representativeReadyCount,
+      next_content_action: nextContentAction,
       execution_score: Math.min(
         100,
         Math.round(sourceCoverage * 0.35 + anchorCoverage * 0.25 + Math.min(executableItemCount / 100, 1) * 40),

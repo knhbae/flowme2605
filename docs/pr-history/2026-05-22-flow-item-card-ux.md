@@ -8,6 +8,7 @@
   - Item-card promotion: https://github.com/knhbae/flowme2605/pull/8
   - Demo UX polish: https://github.com/knhbae/flowme2605/pull/9
   - Mobile export and P1 content migration: https://github.com/knhbae/flowme2605/pull/10
+  - Source-fit audit framework: https://github.com/knhbae/flowme2605/pull/11
 - Status: `Open`, `Deployed`
 - Production deploy: https://flowme2605.vercel.app
 - Deployment URL: https://flowme2605-20g5fe610-flowme.vercel.app
@@ -19,6 +20,12 @@
 - Mobile-export deployment URL: https://flowme2605-5ilocoxrc-flowme.vercel.app
 - P1-content-migration deployment URL: https://flowme2605-7jrc2lvj6-flowme.vercel.app
 - P1-routine-migration deployment URL: https://flowme2605-ce5uskzab-flowme.vercel.app
+- Source-fit audit/public exposure deployment URL: https://flowme2605-l4dzz6clk-flowme.vercel.app
+- Content-inventory deployment URL: https://flowme2605-3jzctx605-flowme.vercel.app
+- Content-inventory local screenshots:
+  - `artifacts/qa-flow-inventory/flow-lab.png`
+  - `artifacts/qa-flow-inventory/creators.png`
+  - `artifacts/qa-flow-inventory/samsung-channel.png`
 - Vercel inspect: https://vercel.com/flowme/flowme2605/E8vL2nQMrzoF8qjf7aow8tkTUZsb
 - Demo UX Vercel inspect: https://vercel.com/flowme/flowme2605/ERjP9Gtj2GjbA7FCRQNQCYz8a1TV
 - Channel-nav Vercel inspect: https://vercel.com/flowme/flowme2605/8JjefxX9MPrtkkBJ84SqzHiYxibt
@@ -28,6 +35,9 @@
 - Mobile-export Vercel inspect: https://vercel.com/flowme/flowme2605/2S7cmp7v29DrPJDQmNE7koBRMC9m
 - P1-content-migration Vercel inspect: https://vercel.com/flowme/flowme2605/9miBqirmAVcGB7vtLPPuZzKqZCan
 - P1-routine-migration Vercel inspect: https://vercel.com/flowme/flowme2605/FurPwVBiTZEH1USEcPcQoZFZLi8i
+- Source-fit audit/public exposure Vercel inspect: https://vercel.com/flowme/flowme2605/2EYPWHU18XHyHSewpvtgBu89Fpjc
+- Content-inventory Vercel inspect: https://vercel.com/flowme/flowme2605/GeEcMqNukkszYmm7M3NNBETcExVU
+- Artifact-first UX Vercel inspect: https://vercel.com/flowme/flowme2605/3FNaj8N1YYspMEHqEMjdEEVzCFju
 
 ## Why
 
@@ -91,6 +101,57 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
   - `car-care-monthly-routine`
 - Added tailored why/how/completion details and reference links for every item in those three routine flows.
 - Removed their `새 실행모델로 전환 중` banner by clearing them from the migration-candidate set.
+- Added a source-fit audit framework for deciding whether original content deserves FLOW conversion:
+  - 0-100 scoring across action density, timing structure, external management need, completion clarity, personalization, return value, source trust, and risk boundary clarity.
+  - Decision bands: representative keep, reshape before featured, catalog preview only, and public catalog hide.
+  - First audit batch covers the 10 representative Flow slugs.
+- Documented the source-fit product design and content-type reconstruction models for timeline, checklist, routine, program, decision, and meal-plan Flows.
+- Added a source-fit audit report for the representative batch, including keep/reshape/preview decisions and next content/UX actions.
+- Exposed the source-fit audit summary in `/flow-lab`:
+  - audited count
+  - average score
+  - decision counts
+  - per-Flow score, decision, source precision, gap, and next action
+- Added tests for source-fit scoring, representative audit coverage, Content Lab summary integration, and Flow Lab E2E visibility.
+- Applied source-fit decisions to public exposure:
+  - `keep_representative` flows remain eligible for landing representative exposure.
+  - `reshape_before_featured` flows stay directly accessible but are removed from representative exposure.
+  - `catalog_preview_only` flows stay directly accessible but are removed from representative exposure.
+- Added a public source-fit status banner on direct-access Flow pages for `reshape_before_featured` and `catalog_preview_only` routes.
+- Reduced the representative landing/QA set from 10 to 5 audited high-fit Flows:
+  - `moving-d30-basic`
+  - `used-car-buying-check`
+  - `baby-food-menu-recipe`
+  - `wedding-d180-basic`
+  - `english-study-30day-routine`
+- Added a content inventory review layer for option-2 channel/content cleanup:
+  - Manual source-fit audit Flow count remains 10.
+  - `source_status=real` Flow count is 40 and is fully covered by metadata-derived review.
+  - Generated channel preview Flow count is 440 and is labeled as sample candidate instead of validated content.
+  - Remaining legacy accessible routes are kept direct-accessible but not framed as reviewed/representative.
+- Updated `/flow-lab` with an `전체 콘텐츠 인벤토리` section showing total inventory, actual sources, sample candidates, manual review, derived review, and legacy access counts.
+- Updated `/creators` and `/u/[creator]` channel stats from `실행성 점수`/coverage language to `실제 원본`, `샘플 후보`, and `원본 검토`.
+- Kept channel browsing and generated preview Flow routes visible because they are useful for demo/product comprehension, but changed their language to avoid implying source validation.
+- Added concrete `naturalArtifacts` to manual source-fit audits so each representative Flow now simulates real input values, expected user-made checklist/calendar/sheet/memo outputs, current Flow match, current UX support, and the remaining gap.
+- Updated the UX/content evaluation harness and source-fit design so reviewers must build the natural artifact before scoring source fit or judging the UI.
+- Added real-source natural artifact audit coverage for all 40 `source_status=real` Flows.
+- Expanded the second batch across exact workout videos, diet/logging videos, study planning, travel safety, vehicle inspection, and license renewal Flows.
+- Expanded the third batch across resident register copy, time-care childcare application, pet-health visit broad source review, and move-in cleaning estimate comparison Flows.
+- Expanded the fourth batch across four ThankyouBUBU exact workout videos, emphasizing recurring workout calendars, safety/condition memos, and measurement logs.
+- Expanded the fifth batch across the remaining four ThankyouBUBU exact workout videos, covering short-cardio, micro-routine, recovery-day, and lower-belly measurement-log cases.
+- Expanded the sixth batch across four FITVELY diet/nutrition exact videos, covering carb logs, 3-week safe measurement review, post-workout nutrition reminders, and next-meal adjustment memos.
+- Expanded the seventh batch across four FITVELY workout-planning exact videos, covering after-work nutrition timing, weight-class method selection, bulk-up tracking, and workout-order scheduling.
+- Closed the eighth batch across the remaining broad ThankyouBUBU channel and FITVELY official-site sources, keeping them in catalog review until exact source replacements are assigned.
+- Surfaced the real-source natural artifact audit coverage in `/flow-lab`, including audited count, remaining real-source count, decisions, and sample simulated inputs.
+- Updated `docs/content-audit/2026-05-22-real-source-natural-artifact-audit.md` as the readable report for all eight audit batches.
+- Added `docs/content-audit/2026-05-22-real-source-flow-action-matrix.md` to translate the 40-flow audit into product actions, implementation buckets, and representative targets.
+- Added an artifact-first UX design spec and implementation plan for the next product pass.
+- Added an artifact-plan layer that maps each Flow to a primary user artifact surface: timeline calendar, routine calendar, spreadsheet log, decision table, memo card, or checklist.
+- Added first-screen `ArtifactPreview` cards on public Flow detail pages so users see what the Flow will become before reading the full item list.
+- Aligned text export order with artifact priority:
+  - spreadsheet-first diet/log Flows now start with a `기록표` guidance section.
+  - decision Flows now put the `후보 비교표` before checklist items.
+- Added Flow Lab source-gating copy: broad channel/site sources stay in `catalog review` until an `exact source` URL is assigned.
 
 ## Not Done
 
@@ -103,6 +164,13 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Did not migrate every legacy Flow into the new execution-model content standard; older flows remain migration candidates.
 - Did not add account sync, external calendar API integration, or server-side recurrence storage.
 - Did not convert the mobile bottom sheet to a reusable design-system primitive yet; it remains scoped to public Flow detail.
+- Did not delete any public Flow route based on the first source-fit audit; weaker routes are demoted from representative exposure but remain directly accessible.
+- Did not audit all 500+ preview/generated Flows one-by-one; representative Flows were prioritized, and the remaining catalog audit is follow-up work.
+- Did not manually open and audit the 40 `source_status=real` routes in this batch; they are derived reviews based on existing source metadata.
+- Did not assign exact source URLs to the 440 generated preview candidates.
+- Did not add natural artifact simulations to the 440 generated preview candidates yet; that is a separate catalog audit pass.
+- Did not replace broad channel/site sources with exact URLs in this pass; those routes remain catalog review until source replacement.
+- Did not implement the full interactive artifact workbench yet; this pass adds artifact promise cards and export ordering, while deeper monthly calendar/routine/spreadsheet editing remains follow-up.
 
 ## Decisions
 
@@ -117,19 +185,47 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Chose a representative-set landing strategy over showing many half-migrated flows first; broader catalog items remain discoverable elsewhere.
 - Kept the current client-side data model and derived recurrence in UI because Stage 0 has no auth, DB, or server persistence.
 - Kept decision flow execution as checklist-first, with the comparison table as a top-level decision aid rather than replacing the checklist.
+- Chose a tiered source audit approach: audit representative/real-source content first, classify the generated catalog later.
+- Kept weak-source routes accessible while demoting them from representative exposure so route history and demos remain stable.
+- Chose a two-tier inventory cleanup: manual source-fit audits are treated as deep review, `source_status=real` routes are treated as derived review, and generated preview routes are explicitly sample candidates.
+- Chose a central artifact-plan helper instead of hardcoding per-slug preview UI in `AppClient.tsx`.
+- Kept broad channel/site sources visible in Lab for catalog review, but not eligible for representative promotion until exact source URLs are assigned.
 
 ## Files Touched
 
 - `components/flow/AppClient.tsx`
+- `components/flow/ArtifactPreview.tsx`
 - `lib/flow/execution-model.ts`
 - `lib/flow/execution-model.test.ts`
+- `lib/flow/artifact-plan.ts`
+- `lib/flow/artifact-plan.test.ts`
+- `lib/flow/export.ts`
+- `lib/flow/export.test.ts`
 - `lib/flow/recurrence.ts`
 - `lib/flow/recurrence.test.ts`
 - `lib/flow/seed-flows.ts`
 - `lib/flow/seed-flows.test.ts`
+- `lib/flow/source-fit.ts`
+- `lib/flow/source-fit.test.ts`
+- `lib/flow/content-inventory.ts`
+- `lib/flow/content-inventory.test.ts`
+- `lib/flow/natural-artifact-audit.ts`
+- `lib/flow/natural-artifact-audit.test.ts`
 - `lib/flow/storage.ts`
+- `lib/flow/content-lab.ts`
+- `lib/flow/content-lab.test.ts`
+- `components/flow/ContentLab.tsx`
 - `app/my/page.tsx`
+- `package.json`
 - `tests/e2e/flow-mvp.spec.ts`
+- `docs/content-audit/2026-05-22-source-fit-audit.md`
+- `docs/content-audit/2026-05-22-real-source-flow-action-matrix.md`
+- `docs/superpowers/specs/2026-05-22-flow-source-fit-audit-design.md`
+- `docs/superpowers/specs/2026-05-22-artifact-first-flow-ux-design.md`
+- `docs/superpowers/plans/2026-05-22-flow-source-fit-audit.md`
+- `docs/superpowers/plans/2026-05-22-artifact-first-flow-ux.md`
+- `docs/superpowers/specs/2026-05-22-flow-channel-content-inventory-design.md`
+- `docs/superpowers/plans/2026-05-22-flow-channel-content-inventory.md`
 - `docs/superpowers/plans/2026-05-22-flow-item-card-ux.md`
 - `docs/superpowers/plans/2026-05-22-flow-demo-ux-polish.md`
 - `docs/superpowers/plans/2026-05-22-flow-execution-model-p0.md`
@@ -141,7 +237,84 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 
 ## Verification
 
+- `npx tsx --test lib/flow/artifact-plan.test.ts` first failed as expected because `lib/flow/artifact-plan.ts` did not exist, then passed after adding the artifact-plan mapping: 5 tests.
+- `npm test` passed after adding artifact-plan coverage: 82 tests.
+- `npm run test:e2e -- --grep "artifact-first previews"` first failed as expected because `Flow artifact preview` was not rendered, then passed after adding `ArtifactPreview`: 1 test.
+- `npx tsx --test lib/flow/export.test.ts` first failed as expected because diet text exports lacked `기록표` guidance and decision comparison appeared after checklist items, then passed after aligning export order: 13 tests.
+- `npm test` passed after export alignment: 84 tests.
+- `npm run test:e2e -- --grep "flow lab shows converted pilot"` first failed as expected because Flow Lab did not expose `exact source` / `catalog review` copy, then passed after adding source-gating copy: 1 test.
+- `npm run docs:check` passed after PR-history update: 12 required files, 50 local links.
+- `npm test` passed after PR-history update: 84 tests.
+- `npm run build` passed after the artifact-first implementation pass.
+- `npm run test:e2e -- --grep "artifact-first previews|flow lab shows converted pilot"` passed after the final build: 2 tests.
+- `npm run test:e2e` first failed on a strict selector ambiguity because `ArtifactPreview` added additional `후보 비교표` text, then passed after scoping the comparison-table test to the candidate-name input: 36 tests.
+- GitHub commit status for `39957a90a24e1798b28ed93772181aa72a1627fa` reported Vercel `success` with inspect URL `https://vercel.com/flowme/flowme2605/3FNaj8N1YYspMEHqEMjdEEVzCFju`.
+- `npx tsx --test lib/flow/source-fit.test.ts` first failed as expected for missing `naturalArtifacts`, then passed after adding concrete simulations: 7 tests.
+- `npx tsx --test lib/flow/natural-artifact-audit.test.ts` first failed as expected for the missing module, then passed after adding the first real-source audit batch: 5 tests.
+- `npx tsx --test lib/flow/natural-artifact-audit.test.ts` failed as expected when raising audit coverage from 8 to 16, then passed after adding the second real-source audit batch: 6 tests.
+- `npx tsx --test lib/flow/natural-artifact-audit.test.ts` failed as expected when raising audit coverage from 16 to 20, then passed after adding the third real-source audit batch: 7 tests.
+- `npx tsx --test lib/flow/natural-artifact-audit.test.ts` failed as expected when raising audit coverage from 20 to 24, then passed after adding the fourth real-source audit batch: 8 tests.
+- `npx tsx --test lib/flow/natural-artifact-audit.test.ts` failed as expected when raising audit coverage from 24 to 28, then passed after adding the fifth real-source audit batch: 9 tests.
+- `npx tsx --test lib/flow/natural-artifact-audit.test.ts` failed as expected when raising audit coverage from 28 to 32, then passed after adding the sixth real-source audit batch: 10 tests.
+- `npx tsx --test lib/flow/natural-artifact-audit.test.ts` failed as expected when raising audit coverage from 32 to 36, then passed after adding the seventh real-source audit batch: 11 tests.
+- `npx tsx --test lib/flow/natural-artifact-audit.test.ts` failed as expected when raising audit coverage from 36 to 40, then passed after adding the eighth real-source audit batch: 12 tests.
+- `npx tsx --test lib/flow/content-lab.test.ts` first failed as expected for missing natural artifact coverage fields, then passed after connecting the summary.
+- `npx tsx --test lib/flow/content-lab.test.ts` passed after updating the natural artifact summary to 20 audited real-source Flows: 8 tests.
+- `npx tsx --test lib/flow/content-lab.test.ts` passed after updating the natural artifact summary to 24 audited real-source Flows: 8 tests.
+- `npx tsx --test lib/flow/content-lab.test.ts` passed after updating the natural artifact summary to 28 audited real-source Flows: 8 tests.
+- `npx tsx --test lib/flow/content-lab.test.ts` passed after updating the natural artifact summary to 32 audited real-source Flows: 8 tests.
+- `npx tsx --test lib/flow/content-lab.test.ts` passed after updating the natural artifact summary to 36 audited real-source Flows: 8 tests.
+- `npx tsx --test lib/flow/content-lab.test.ts` passed after updating the natural artifact summary to all 40 real-source Flows: 8 tests.
+- `npm run docs:check` passed after the sixth natural artifact audit batch: 12 required files, 50 local links.
+- `npm test` passed after the sixth natural artifact audit batch: 75 tests.
+- `npm run build` passed after the sixth natural artifact audit batch.
+- `npm run test:e2e -- --grep "flow lab shows converted pilot"` passed after updating Flow Lab audit count to 32: 1 test.
+- `npm run test:e2e` passed after the sixth natural artifact audit batch: 35 tests.
+- `npm run docs:check` passed after the seventh natural artifact audit batch: 12 required files, 50 local links.
+- `npm test` passed after the seventh natural artifact audit batch: 76 tests.
+- `npm run build` passed after the seventh natural artifact audit batch.
+- `npm run test:e2e -- --grep "flow lab shows converted pilot"` passed after updating Flow Lab audit count to 36: 1 test.
+- `npm run test:e2e` passed after the seventh natural artifact audit batch: 35 tests.
+- `npm run docs:check` passed after closing all 40 real-source natural artifact audits: 12 required files, 50 local links.
+- `npm test` passed after closing all 40 real-source natural artifact audits: 77 tests.
+- `npm run build` passed after closing all 40 real-source natural artifact audits.
+- `npm run test:e2e -- --grep "flow lab shows converted pilot"` passed after updating Flow Lab audit count to 40: 1 test.
+- `npm run test:e2e` passed after closing all 40 real-source natural artifact audits: 35 tests.
+- `npm run docs:check` passed after the fifth natural artifact audit batch: 12 required files, 50 local links.
+- `npm test` passed after the fifth natural artifact audit batch: 74 tests.
+- `npm run build` passed after the fifth natural artifact audit batch.
+- `npm run test:e2e -- --grep "flow lab shows converted pilot"` passed after updating Flow Lab audit count to 28: 1 test.
+- `npm run test:e2e` passed after the fifth natural artifact audit batch: 35 tests.
+- `npm run docs:check` passed after the fourth natural artifact audit batch: 12 required files, 50 local links.
+- `npm test` passed after the fourth natural artifact audit batch: 73 tests.
+- `npm run build` passed after the fourth natural artifact audit batch.
+- `npm run test:e2e -- --grep "flow lab shows converted pilot"` passed after updating Flow Lab audit count to 24: 1 test.
+- `npm run test:e2e` passed after the fourth natural artifact audit batch: 35 tests.
+- `npm run docs:check` passed after the third natural artifact audit batch: 12 required files, 50 local links.
+- `npm test` passed after the third natural artifact audit batch: 72 tests.
+- `npm run build` passed after the third natural artifact audit batch.
+- `npm run test:e2e -- --grep "flow lab shows converted pilot"` passed after updating Flow Lab audit count to 20: 1 test.
+- `npm run test:e2e` passed after the third natural artifact audit batch: 35 tests.
+- `npm run docs:check` passed after the second natural artifact audit batch: 12 required files, 50 local links.
+- `npm test` passed after the second natural artifact audit batch: 71 tests.
+- `npm run build` passed after the second natural artifact audit batch.
+- `npm run test:e2e -- --grep "flow lab shows converted pilot"` first failed on a strict selector ambiguity caused by the new `감사 완료` label, then passed after scoping the assertion to the Source-Fit section.
+- `npm run test:e2e` passed after the second natural artifact audit batch: 35 tests.
 - `npm run build` passed.
+- `npm test` first failed as expected for missing `content-inventory` module, then passed after implementation: 62 tests.
+- `npx tsx --test lib/flow/content-lab.test.ts` first failed as expected for missing inventory summary fields, then passed.
+- `npx tsx --test lib/flow/seed-flows.test.ts` first failed as expected for missing channel inventory summary fields, then passed.
+- `npm run build` first failed on an over-broad TypeScript type predicate in `content-inventory.ts`, then passed after narrowing link source mapping.
+- `npm run test:e2e` first failed on strict selector ambiguity after the new labels appeared in multiple places, then passed after narrowing assertions: 35 tests.
+- Local visual screenshots passed for `/flow-lab`, `/creators`, and `/u/samsung-service`:
+  - `artifacts/qa-flow-inventory/flow-lab.png`
+  - `artifacts/qa-flow-inventory/creators.png`
+  - `artifacts/qa-flow-inventory/samsung-channel.png`
+- Content-inventory production deploy passed and aliased to `https://flowme2605.vercel.app`.
+- Content-inventory production smoke passed:
+  - `/flow-lab` renders `전체 콘텐츠 인벤토리`, `샘플 후보`, and `수동 Source-Fit Audit`.
+  - `/creators` renders `실제 원본`, `샘플 후보`, and `원본 검토` without `실행성 점수`.
+  - `/u/samsung-service` renders `Flow 후보`, `실제 원본`, and `샘플 후보`.
 - `npm run test:e2e -- --grep "wedding flow answers"` passed.
 - `npm run test:e2e -- --grep "public moving flow|routine flow highlights|no-anchor checklist|representative real content"` passed.
 - `npm run docs:check` passed.
@@ -174,6 +347,25 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `npm test` passed after P1 routine migration: 48 tests.
 - `npm run build` passed after P1 routine migration.
 - `npm run test:e2e` passed after P1 routine migration: 34 tests.
+- `npx tsx --test lib/flow/source-fit.test.ts` passed after source-fit audit module: 5 tests.
+- `npm run docs:check` passed after source-fit docs: 12 required files, 50 local links.
+- `npm test` passed after source-fit audit integration: 54 tests.
+- `npm run build` passed after source-fit audit integration.
+- Local production smoke for `/flow-lab` passed via Playwright:
+  - `Source Fit Audit` section visible.
+  - 10 audit table rows rendered.
+  - screenshot captured at `.next/source-fit-flowlab.png`.
+- `npx playwright test tests/e2e/flow-mvp.spec.ts -g "flow lab shows converted pilot"` passed after adding Source Fit Audit E2E coverage.
+- `npm run test:e2e` passed after Source Fit Audit E2E coverage: 34 tests.
+- `npm test -- lib/flow/execution-model.test.ts` first failed as expected for source-fit exposure gating, then passed after implementation.
+- `npm run build` passed after applying source-fit public exposure.
+- `npx playwright test tests/e2e/flow-mvp.spec.ts --grep "source-fit decisions"` first failed as expected for the missing direct-access status banner, then passed after implementation.
+- `npm run test:e2e` passed after applying source-fit public exposure: 35 tests.
+- Source-fit audit/public exposure production deploy passed and aliased to `https://flowme2605.vercel.app`.
+- Source-fit audit/public exposure production smoke passed:
+  - Home representative links include the 5 high-fit Flow slugs.
+  - `study-exam-d30-plan` renders `data-decision="catalog_preview_only"`.
+  - `running-5k-4week` renders `data-decision="reshape_before_featured"`.
 - Execution-model production deploy passed and aliased to `https://flowme2605.vercel.app`.
 - Production smoke passed for:
   - Home representative flow card and output target preview.
@@ -230,6 +422,8 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Existing mobile sticky export bar can overlap the bottom of a long expanded item detail; bottom-bar redesign is tracked as follow-up.
 - `/my` progress summaries intentionally count base Flow items, not expanded multi-day occurrence rows.
 - `/flow-lab` and `/creators` are still routable directly and still have internal/demo-oriented copy.
+- Source-fit scores are first-pass product judgments, not final user validation; the next audit batch should revisit low-score sources before public removal.
+- Some source pages are broad or crawler-limited, so audit decisions distinguish exact source precision from channel/homepage or indexed-only evidence.
 
 ## Follow-ups
 
@@ -238,6 +432,12 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Add a true export bottom sheet for mobile.
 - Continue seed content improvements for older Flow categories.
 - Consider a separate demo mode if fake numeric social proof is needed for investor/internal demos.
+- Continue source-fit cleanup:
+  - rename or replace the source for `study-exam-d30-plan`
+  - replace broad-channel sources for `home-workout-20min` and `running-5k-4week`
+  - convert `overseas-travel-d14` to a multi-source official Flow
+  - split car care items into inspection, DIY, and service-trigger boundaries
+- Audit the remaining migration candidates and generated preview catalog using the same rubric.
 
 ## Links
 

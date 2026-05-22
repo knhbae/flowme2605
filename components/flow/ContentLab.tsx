@@ -7,6 +7,11 @@ import {
   scoreCandidate,
 } from '@/lib/flow/content-lab';
 import { seedBundles } from '@/lib/flow/seed-flows';
+import { sourceFitAudits, type SourceFitDecision } from '@/lib/flow/source-fit';
+import {
+  realSourceNaturalArtifactAudits,
+  type NaturalArtifactAuditDecision,
+} from '@/lib/flow/natural-artifact-audit';
 
 type SeedBundle = (typeof seedBundles)[number];
 
@@ -38,6 +43,46 @@ function convertedPilotLinkLabel(slug: string, title: string): string {
     'diet-meal-exercise-log': '다이어트 식단·운동 기록 Flow',
   };
   return labels[slug] ?? title;
+}
+
+function sourceFitDecisionLabel(value: SourceFitDecision): string {
+  const labels: Record<SourceFitDecision, string> = {
+    keep_representative: '대표 유지',
+    reshape_before_featured: '보강 후 대표',
+    catalog_preview_only: '카탈로그 미리보기',
+    hide_from_public_catalog: '공개 숨김',
+  };
+  return labels[value];
+}
+
+function sourceFitDecisionClass(value: SourceFitDecision): string {
+  const classes: Record<SourceFitDecision, string> = {
+    keep_representative: 'bg-emerald-50 text-emerald-800',
+    reshape_before_featured: 'bg-amber-50 text-amber-800',
+    catalog_preview_only: 'bg-blue-50 text-blue-800',
+    hide_from_public_catalog: 'bg-red-50 text-red-800',
+  };
+  return classes[value];
+}
+
+function naturalArtifactDecisionLabel(value: NaturalArtifactAuditDecision): string {
+  const labels: Record<NaturalArtifactAuditDecision, string> = {
+    promote_to_manual_source_fit: '수동 audit 승격',
+    reshape_content_or_ux: '콘텐츠/UX 보강',
+    keep_catalog_review: '카탈로그 검토',
+    replace_or_hide_source: '교체/숨김 후보',
+  };
+  return labels[value];
+}
+
+function naturalArtifactDecisionClass(value: NaturalArtifactAuditDecision): string {
+  const classes: Record<NaturalArtifactAuditDecision, string> = {
+    promote_to_manual_source_fit: 'bg-emerald-50 text-emerald-800',
+    reshape_content_or_ux: 'bg-amber-50 text-amber-800',
+    keep_catalog_review: 'bg-blue-50 text-blue-800',
+    replace_or_hide_source: 'bg-red-50 text-red-800',
+  };
+  return classes[value];
 }
 
 function isSeedBundle(bundle: SeedBundle | undefined): bundle is SeedBundle {
@@ -91,6 +136,164 @@ export function ContentLab() {
             <p className="mt-2 text-2xl font-semibold text-gray-950">{value}</p>
           </div>
         ))}
+      </section>
+
+      <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
+        <p className="text-sm font-semibold text-blue-700">Content Inventory</p>
+        <h2 className="mt-1 text-2xl font-semibold text-gray-950">전체 콘텐츠 인벤토리</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+          실제 원본 Flow는 전수 분류하고, 생성형 채널 Flow는 검증 완료 콘텐츠가 아닌 샘플 후보로 분리합니다.
+          현재 seed 기준으로 수동 audit 10개와 원본 metadata 기반 1차 분류 40개가 별도 관리됩니다.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+          {[
+            { label: '전체', value: summary.inventoryTotalCount, className: 'bg-gray-50 text-gray-950' },
+            { label: '실제 원본', value: summary.realSourceFlowCount, className: 'bg-emerald-50 text-emerald-950' },
+            { label: '샘플 후보', value: summary.previewCandidateFlowCount, className: 'bg-blue-50 text-blue-950' },
+            { label: '수동 검토', value: summary.manualSourceFitAuditedCount, className: 'bg-amber-50 text-amber-950' },
+            { label: '1차 분류', value: summary.derivedRealSourceReviewedCount, className: 'bg-gray-50 text-gray-950' },
+            { label: 'legacy 접근', value: summary.legacyAccessibleFlowCount, className: 'bg-gray-50 text-gray-950' },
+          ].map((item) => (
+            <div key={item.label} className={`rounded-lg p-3 ${item.className}`}>
+              <p className="text-sm opacity-75">{item.label}</p>
+              <p className="mt-1 text-2xl font-semibold">{item.value}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-4 text-sm font-medium text-gray-600">
+          원본 기반 분류 커버리지: {summary.sourceBackedInventoryReviewedCount}개
+          {' '}· preview candidate: {summary.inventoryPublicHandlingCounts.preview_candidate}개
+        </p>
+      </section>
+
+      <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold text-blue-700">Natural Artifact Audit</p>
+            <h2 className="mt-1 text-2xl font-semibold text-gray-950">사용자가 실제로 만들 산출물 기준 검토</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+              원본을 보고 사용자가 FLOW 없이 만들 법한 달력, 체크리스트, 메모, 엑셀표를 실제 입력값으로 먼저
+              시뮬레이션한 뒤 현재 Flow 콘텐츠와 UX가 얼마나 맞는지 비교합니다.
+              Broad channel/site sources stay in catalog review until an exact source URL is assigned.
+            </p>
+          </div>
+          <div className="grid min-w-[260px] grid-cols-2 gap-2 text-sm">
+            <div className="rounded-lg bg-emerald-50 p-3 text-emerald-950">
+              <p className="text-emerald-800">감사 완료</p>
+              <p className="mt-1 text-2xl font-semibold">{summary.naturalArtifactRealSourceAuditedCount}</p>
+            </div>
+            <div className="rounded-lg bg-gray-50 p-3 text-gray-950">
+              <p className="text-gray-500">남은 real-source</p>
+              <p className="mt-1 text-2xl font-semibold">{summary.naturalArtifactRealSourceRemainingCount}</p>
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2 text-sm">
+          {Object.entries(summary.naturalArtifactDecisionCounts).map(([decision, count]) => (
+            <span
+              key={decision}
+              className={`rounded-full px-3 py-1 font-semibold ${naturalArtifactDecisionClass(decision as NaturalArtifactAuditDecision)}`}
+            >
+              {naturalArtifactDecisionLabel(decision as NaturalArtifactAuditDecision)} {count}
+            </span>
+          ))}
+        </div>
+        <div className="mt-5 grid gap-3 lg:grid-cols-2">
+          {realSourceNaturalArtifactAudits.slice(-8).map((audit) => (
+            <div key={audit.slug} className="rounded-lg border border-gray-200 p-4">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <p className="text-xs font-semibold text-gray-500">{audit.slug}</p>
+                  <h3 className="mt-1 text-base font-semibold text-gray-950">{audit.sourceTitle}</h3>
+                </div>
+                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${naturalArtifactDecisionClass(audit.decision)}`}>
+                  {naturalArtifactDecisionLabel(audit.decision)}
+                </span>
+              </div>
+              <p className="mt-3 text-sm leading-6 text-gray-600">{audit.naturalArtifacts[0]?.artifactTitle}</p>
+              <p className="mt-2 text-sm leading-6 text-gray-700">
+                입력값: {audit.naturalArtifacts[0]?.simulatedInputs.join(' · ')}
+              </p>
+              <p className="mt-2 text-sm leading-6 text-gray-600">Gap: {audit.naturalArtifacts[0]?.gap}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold text-blue-700">수동 Source-Fit Audit</p>
+            <h2 className="mt-1 text-2xl font-semibold text-gray-950">원본 콘텐츠가 FLOW화될 가치가 있는지 점검</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+              대표 Flow 10개를 먼저 실제 원본 기준으로 평가했습니다. 이번 배치에서는 공개 삭제를 하지 않고,
+              원본 적합성 점수와 보강 필요 지점을 내부 Lab에 먼저 노출합니다.
+            </p>
+          </div>
+          <div className="grid min-w-[220px] grid-cols-2 gap-2 text-sm">
+            <div className="rounded-lg bg-gray-50 p-3">
+              <p className="text-gray-500">감사 완료</p>
+              <p className="mt-1 text-2xl font-semibold text-gray-950">{summary.sourceFitAuditedCount}</p>
+            </div>
+            <div className="rounded-lg bg-gray-50 p-3">
+              <p className="text-gray-500">평균 점수</p>
+              <p className="mt-1 text-2xl font-semibold text-gray-950">{summary.sourceFitAverageScore}</p>
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2 text-sm">
+          {Object.entries(summary.sourceFitDecisionCounts).map(([decision, count]) => (
+            <span
+              key={decision}
+              className={`rounded-full px-3 py-1 font-semibold ${sourceFitDecisionClass(decision as SourceFitDecision)}`}
+            >
+              {sourceFitDecisionLabel(decision as SourceFitDecision)} {count}
+            </span>
+          ))}
+        </div>
+        <div className="mt-5 overflow-x-auto">
+          <table className="min-w-full border-separate border-spacing-0 text-left text-sm">
+            <thead>
+              <tr className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                <th className="border-b border-gray-200 py-2 pr-4">Flow</th>
+                <th className="border-b border-gray-200 py-2 pr-4">점수</th>
+                <th className="border-b border-gray-200 py-2 pr-4">판정</th>
+                <th className="border-b border-gray-200 py-2 pr-4">원본</th>
+                <th className="border-b border-gray-200 py-2 pr-4">간극</th>
+                <th className="border-b border-gray-200 py-2">다음 액션</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sourceFitAudits.map((audit) => {
+                const bundle = bundleBySlug.get(audit.slug);
+                return (
+                  <tr key={audit.slug} className="align-top">
+                    <td className="border-b border-gray-100 py-3 pr-4">
+                      <Link className="font-semibold text-gray-950 hover:text-blue-700" href={bundle ? `/f/${bundle.flow.slug}` : '/flows'}>
+                        {bundle?.flow.title ?? audit.slug}
+                      </Link>
+                      <p className="mt-1 text-xs text-gray-500">{audit.slug}</p>
+                    </td>
+                    <td className="border-b border-gray-100 py-3 pr-4 font-semibold text-gray-950">{audit.score}</td>
+                    <td className="border-b border-gray-100 py-3 pr-4">
+                      <span className={`rounded-full px-2 py-1 text-xs font-semibold ${sourceFitDecisionClass(audit.decision)}`}>
+                        {sourceFitDecisionLabel(audit.decision)}
+                      </span>
+                    </td>
+                    <td className="border-b border-gray-100 py-3 pr-4">
+                      <a className="font-medium text-blue-700 hover:text-blue-900" href={audit.sourceUrl} target="_blank" rel="noreferrer">
+                        {audit.sourcePrecision}
+                      </a>
+                      <p className="mt-1 line-clamp-2 text-xs text-gray-500">{audit.sourceTitle}</p>
+                    </td>
+                    <td className="max-w-[280px] border-b border-gray-100 py-3 pr-4 text-gray-600">{audit.currentGap}</td>
+                    <td className="max-w-[280px] border-b border-gray-100 py-3 text-gray-600">{audit.contentAction}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section className="mb-10">

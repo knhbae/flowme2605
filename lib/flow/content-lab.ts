@@ -1,4 +1,7 @@
 import { AnchorType, FlowBundle, StructureType } from './types';
+import { getSourceFitSummary } from './source-fit';
+import { summarizeContentInventory } from './content-inventory';
+import { summarizeNaturalArtifactAuditCoverage } from './natural-artifact-audit';
 
 export type ExternalTarget = 'calendar' | 'todo' | 'notion' | 'sheet';
 
@@ -338,6 +341,9 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   const expansionCandidates = expansionCreatorLabs.flatMap((creator) => creator.candidates);
   const previewGeneratedBundles = bundles.filter((bundle) => bundle.flow.id.startsWith('flow-preview-'));
   const realSourceBundles = bundles.filter((bundle) => bundle.flow.source_status === 'real');
+  const sourceFitSummary = getSourceFitSummary();
+  const inventorySummary = summarizeContentInventory(bundles);
+  const naturalArtifactSummary = summarizeNaturalArtifactAuditCoverage(bundles);
 
   return {
     pilotCreatorCount: pilotCreatorLabs.length,
@@ -357,5 +363,22 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
         expansionCandidates.reduce((sum, candidate) => sum + scoreCandidate(candidate), 0) /
           Math.max(expansionCandidates.length, 1),
       ),
+    sourceFitAuditedCount: sourceFitSummary.auditedCount,
+    sourceFitAverageScore: sourceFitSummary.averageScore,
+    sourceFitDecisionCounts: sourceFitSummary.decisionCounts,
+    inventoryTotalCount: inventorySummary.totalCount,
+    realSourceInventoryReviewedCount: inventorySummary.realSourceReviewedCount,
+    sourceBackedInventoryReviewedCount: inventorySummary.sourceBackedReviewedCount,
+    manualSourceFitAuditedCount: inventorySummary.manualSourceFitCount,
+    derivedRealSourceReviewedCount: inventorySummary.derivedRealSourceCount,
+    previewCandidateFlowCount: inventorySummary.generatedPreviewCandidateCount,
+    legacyAccessibleFlowCount: inventorySummary.legacyAccessibleCount,
+    inventoryLevelCounts: inventorySummary.levelCounts,
+    inventoryPublicHandlingCounts: inventorySummary.publicHandlingCounts,
+    inventoryAverageDerivedScore: inventorySummary.averageDerivedScore,
+    naturalArtifactRealSourceAuditedCount: naturalArtifactSummary.auditedRealSourceCount,
+    naturalArtifactRealSourceRemainingCount: naturalArtifactSummary.remainingRealSourceCount,
+    naturalArtifactCategoryCounts: naturalArtifactSummary.auditedCategoryCounts,
+    naturalArtifactDecisionCounts: naturalArtifactSummary.decisionCounts,
   };
 }

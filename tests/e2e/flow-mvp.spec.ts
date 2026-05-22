@@ -15,9 +15,9 @@ test('home presents FLOW as an executable content platform', async ({ page }) =>
   await expect(page.getByRole('link', { name: '#D-Day 준비' })).toHaveCount(0);
   await expect(page.getByText('이사 D-30 준비 Flow').first()).toBeVisible();
   await expect(page.getByText('중고차 구매 현장 점검 Flow').first()).toBeVisible();
-  await expect(page.getByText('초보 러너 5km 4주 완주 Flow').first()).toBeVisible();
   await expect(page.getByText('초기 이유식 메뉴·레시피 Flow').first()).toBeVisible();
-  await expect(page.getByText('해외여행 출국 준비 Flow').first()).toBeVisible();
+  await expect(page.getByText('결혼 준비 D-180 Flow').first()).toBeVisible();
+  await expect(page.getByText('직장인 영어공부 30일 루틴 Flow').first()).toBeVisible();
   await expect(page.getByText('미리보기').first()).toBeVisible();
   await expect(page.getByText('출력:').first()).toBeVisible();
 });
@@ -119,10 +119,12 @@ test('creator directory exposes channel-scale preview library', async ({ page })
 
   await expect(page.getByRole('heading', { name: '제작자 채널' })).toBeVisible();
   await expect(page.getByText(/4\d{2}\+/)).toBeVisible();
-  await expect(page.locator('header').getByText('출처 확인')).toBeVisible();
+  await expect(page.locator('header').getByText('실제 원본')).toBeVisible();
+  await expect(page.locator('header').getByText('샘플 후보')).toBeVisible();
+  await expect(page.locator('header').getByText('원본 검토')).toBeVisible();
   await expect(page.getByRole('link', { name: /삼성전자서비스/ })).toBeVisible();
   await expect(page.getByRole('link', { name: 'ThankyouBUBU', exact: true })).toBeVisible();
-  await expect(page.getByText('실행성 점수').first()).toBeVisible();
+  await expect(page.getByText('실행성 점수')).toHaveCount(0);
 });
 
 test('creator directory exposes representative creator content links', async ({ page }) => {
@@ -137,9 +139,12 @@ test('preview creator channel supports browsing 20+ flowified entries', async ({
   await page.goto('/u/samsung-service');
 
   await expect(page.getByRole('heading', { name: '삼성전자서비스' })).toBeVisible();
-  await expect(page.getByText('Flow화 콘텐츠')).toBeVisible();
-  await expect(page.getByText(/4\d/).first()).toBeVisible();
-  await expect(page.getByText('출처 커버리지')).toBeVisible();
+  const channelHeader = page.locator('header');
+  await expect(channelHeader).toContainText('Flow 후보');
+  await expect(channelHeader.getByText(/4\d/).first()).toBeVisible();
+  await expect(channelHeader).toContainText('실제 원본');
+  await expect(channelHeader).toContainText('샘플 후보');
+  await expect(channelHeader).toContainText('원본 검토');
   await expect(page.getByText('채널 Flow 라이브러리')).toBeVisible();
   await expect(page.getByLabel('Flow 검색')).toBeVisible();
   await expect(page.getByRole('link', { name: /가전관리 월간 점검 루틴/ })).toBeVisible();
@@ -151,9 +156,9 @@ test('preview creator channel supports browsing 20+ flowified entries', async ({
 test('creator channel can filter real source-backed flows', async ({ page }) => {
   await page.goto('/u/samsung-service');
 
-  await expect(page.getByText('출처 확인').first()).toBeVisible();
+  await expect(page.getByText('실제 원본').first()).toBeVisible();
   await expect(page.getByText('대표 항목:')).toHaveCount(0);
-  await page.getByRole('button', { name: '출처 확인' }).click();
+  await page.getByRole('button', { name: '실제 원본' }).click();
 
   await expect(page.locator('a[href="/f/real-samsung-aircon-seasonal-care"]').first()).toBeVisible();
   await expect(page.locator('a[href^="/f/channel-samsung-service-"]')).toHaveCount(0);
@@ -376,6 +381,14 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   expect(download.suggestedFilename()).toBe('moving-d30-basic.xlsx');
 });
 
+test('source-fit decisions are visible on direct-access public flow pages', async ({ page }) => {
+  await page.goto('/f/study-exam-d30-plan');
+  await expect(page.getByTestId('source-fit-status')).toHaveAttribute('data-decision', 'catalog_preview_only');
+
+  await page.goto('/f/running-5k-4week');
+  await expect(page.getByTestId('source-fit-status')).toHaveAttribute('data-decision', 'reshape_before_featured');
+});
+
 test('mobile export actions open from a bottom sheet', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/moving-d30-basic');
@@ -577,10 +590,36 @@ test('used-car checklist shows decision preview instead of calendar by default',
   await expect(page.getByText('총예산을 차량가, 이전비, 보험료, 정비비로 나누기').first()).toBeVisible();
 });
 
+test('representative flows show artifact-first previews on the first screen', async ({ page }) => {
+  await page.goto('/f/moving-d30-basic');
+  let artifactPreview = page.getByLabel('Flow artifact preview');
+  await expect(artifactPreview).toBeVisible();
+  await expect(artifactPreview).toContainText('실행 리스트');
+  await expect(artifactPreview).toContainText('월간 캘린더');
+
+  await page.goto('/f/used-car-buying-check');
+  artifactPreview = page.getByLabel('Flow artifact preview');
+  await expect(artifactPreview).toBeVisible();
+  await expect(artifactPreview).toContainText('후보 비교표');
+  await expect(artifactPreview).toContainText('현장 체크리스트');
+
+  await page.goto('/f/real-thankyou-bubu-video-full-body-no-jump');
+  artifactPreview = page.getByLabel('Flow artifact preview');
+  await expect(artifactPreview).toBeVisible();
+  await expect(artifactPreview).toContainText('반복 캘린더');
+  await expect(artifactPreview).toContainText('회차 메모');
+
+  await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
+  artifactPreview = page.getByLabel('Flow artifact preview');
+  await expect(artifactPreview).toBeVisible();
+  await expect(artifactPreview).toContainText('기록표');
+  await expect(artifactPreview).toContainText('반복 리마인더');
+});
+
 test('decision flow comparison table edits and persists candidate notes', async ({ page }) => {
   await page.goto('/f/used-car-buying-check');
 
-  await expect(page.getByText('후보 비교표')).toBeVisible();
+  await expect(page.getByLabel('후보 1 이름')).toBeVisible();
   await page.getByLabel('후보 1 이름').fill('아반떼 2021');
   await page.getByLabel('총예산을 차량가, 이전비, 보험료, 정비비로 나누기 / 후보 1 메모').fill('총 1,250만원');
   await page.getByRole('button', { name: '후보 추가' }).click();
@@ -608,6 +647,27 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
 
   await expect(page.getByRole('heading', { name: '실제 제작자 콘텐츠가 여러 Flow로 관리되는지 검증' })).toBeVisible();
   await expect(page.getByText('3 x 4 파일럿 검증')).toBeVisible();
+  const inventory = page.locator('section').filter({ hasText: '전체 콘텐츠 인벤토리' });
+  await expect(inventory).toBeVisible();
+  await expect(inventory.getByText('실제 원본', { exact: true })).toBeVisible();
+  await expect(inventory.getByText('40', { exact: true }).first()).toBeVisible();
+  await expect(inventory.getByText('샘플 후보', { exact: true })).toBeVisible();
+  await expect(inventory.getByText('440', { exact: true }).first()).toBeVisible();
+  await expect(inventory.getByText('수동 검토', { exact: true })).toBeVisible();
+  await expect(inventory.getByText('10', { exact: true }).first()).toBeVisible();
+  await expect(page.getByText('수동 Source-Fit Audit')).toBeVisible();
+  await expect(page.getByText('원본 콘텐츠가 FLOW화될 가치가 있는지 점검')).toBeVisible();
+  const artifactAudit = page.locator('section').filter({ hasText: 'Natural Artifact Audit' });
+  await expect(artifactAudit).toBeVisible();
+  await expect(artifactAudit.getByText('사용자가 실제로 만들 산출물 기준 검토')).toBeVisible();
+  await expect(artifactAudit.getByText('exact source')).toBeVisible();
+  await expect(artifactAudit.getByText('catalog review')).toBeVisible();
+  await expect(artifactAudit.getByText('감사 완료')).toBeVisible();
+  await expect(artifactAudit.getByText('40', { exact: true }).first()).toBeVisible();
+  const sourceFitAudit = page.locator('section').filter({ hasText: '수동 Source-Fit Audit' });
+  await expect(sourceFitAudit.getByText('감사 완료')).toBeVisible();
+  await expect(sourceFitAudit.getByText('카탈로그 미리보기 1')).toBeVisible();
+  await expect(page.getByRole('link', { name: '시험 D-30 공부 계획 Flow', exact: true })).toBeVisible();
   await expect(page.getByText('B 파일럿 실제 Flow 변환')).toBeVisible();
   await expect(page.getByText('200+ 제작자 채널 Flow 검증')).toBeVisible();
   await expect(page.getByText('10 converted')).toBeVisible();

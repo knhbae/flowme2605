@@ -1,0 +1,57 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { getArtifactPlan } from './artifact-plan';
+import { seedBundles } from './seed-flows';
+
+function bundle(slug: string) {
+  const found = seedBundles.find((entry) => entry.flow.slug === slug);
+  assert.ok(found, `missing seed bundle: ${slug}`);
+  return found;
+}
+
+test('artifact plan maps moving timeline to list and month calendar first', () => {
+  const plan = getArtifactPlan(bundle('moving-d30-basic'));
+
+  assert.equal(plan.primarySurface, 'timeline_calendar');
+  assert.deepEqual(
+    plan.surfaces.slice(0, 2).map((surface) => surface.kind),
+    ['execution_list', 'month_calendar'],
+  );
+  assert.ok(plan.exportTargets.includes('calendar'));
+  assert.ok(plan.exportTargets.includes('sheet'));
+});
+
+test('artifact plan maps used-car checklist to comparison before checklist', () => {
+  const plan = getArtifactPlan(bundle('used-car-buying-check'));
+
+  assert.equal(plan.primarySurface, 'decision_table');
+  assert.deepEqual(
+    plan.surfaces.slice(0, 2).map((surface) => surface.kind),
+    ['comparison_table', 'execution_list'],
+  );
+  assert.ok(plan.exportTargets.includes('sheet'));
+});
+
+test('artifact plan maps exact workout video to routine calendar and condition memo', () => {
+  const plan = getArtifactPlan(bundle('real-thankyou-bubu-video-full-body-no-jump'));
+
+  assert.equal(plan.primarySurface, 'routine_calendar');
+  assert.ok(plan.surfaces.some((surface) => surface.kind === 'routine_month'));
+  assert.ok(plan.surfaces.some((surface) => surface.kind === 'memo_card'));
+});
+
+test('artifact plan maps diet tracking to spreadsheet-first log', () => {
+  const plan = getArtifactPlan(bundle('real-fitvely-video-body-fat-6kg-method'));
+
+  assert.equal(plan.primarySurface, 'spreadsheet_log');
+  assert.equal(plan.surfaces[0].kind, 'spreadsheet_preview');
+  assert.ok(plan.surfaces.some((surface) => surface.kind === 'routine_month'));
+});
+
+test('artifact plan keeps broad source routes out of representative promotion', () => {
+  const plan = getArtifactPlan(bundle('real-fitvely-diet-record-routine'));
+
+  assert.equal(plan.sourceHandling, 'catalog_review');
+  assert.equal(plan.canBeRepresentative, false);
+  assert.ok(plan.sourceAction.includes('exact'));
+});

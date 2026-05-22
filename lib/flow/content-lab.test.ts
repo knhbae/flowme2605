@@ -97,3 +97,41 @@ test('converted pilot lab exposes 10 real-source flows for B validation', () => 
   ].sort());
   assert.equal(summary.missingConvertedPilotSlugs.length, 0);
 });
+
+test('content lab exposes source-fit audit summary for representative cleanup', () => {
+  const summary = getContentLabSummary(seedBundles);
+
+  assert.equal(summary.sourceFitAuditedCount, 10);
+  assert.ok(summary.sourceFitAverageScore >= 70);
+  assert.ok(summary.sourceFitDecisionCounts.keep_representative >= 5);
+  assert.ok(summary.sourceFitDecisionCounts.reshape_before_featured >= 1);
+  assert.ok(summary.sourceFitDecisionCounts.catalog_preview_only >= 1);
+});
+
+test('content lab exposes full content inventory coverage', () => {
+  const summary = getContentLabSummary(seedBundles);
+
+  assert.equal(summary.inventoryTotalCount, seedBundles.length);
+  assert.equal(summary.realSourceInventoryReviewedCount, summary.realSourceFlowCount);
+  assert.equal(summary.manualSourceFitAuditedCount, 10);
+  assert.equal(summary.derivedRealSourceReviewedCount, summary.realSourceFlowCount);
+  assert.equal(summary.sourceBackedInventoryReviewedCount, summary.realSourceFlowCount + summary.manualSourceFitAuditedCount);
+  assert.equal(summary.previewCandidateFlowCount, summary.previewGeneratedFlowCount);
+  assert.ok(summary.inventoryPublicHandlingCounts.preview_candidate >= 440);
+});
+
+test('content lab exposes natural artifact audit coverage for real-source flows', () => {
+  const summary = getContentLabSummary(seedBundles);
+
+  assert.equal(summary.naturalArtifactRealSourceAuditedCount, 40);
+  assert.equal(summary.naturalArtifactRealSourceRemainingCount, 0);
+  assert.ok(summary.naturalArtifactDecisionCounts.promote_to_manual_source_fit >= 1);
+  assert.ok(summary.naturalArtifactDecisionCounts.reshape_content_or_ux >= 1);
+  assert.ok(summary.naturalArtifactCategoryCounts['가전관리'] >= 2);
+  assert.ok(summary.naturalArtifactCategoryCounts['운동/홈트'] >= 15);
+  assert.ok(summary.naturalArtifactCategoryCounts['다이어트/기록'] >= 9);
+  assert.ok(summary.naturalArtifactCategoryCounts['생활행정'] >= 2);
+  assert.ok(summary.naturalArtifactCategoryCounts['육아/돌봄'] >= 2);
+  assert.ok(summary.naturalArtifactCategoryCounts['반려동물'] >= 2);
+  assert.ok(summary.naturalArtifactCategoryCounts['이사/주거'] >= 2);
+});
