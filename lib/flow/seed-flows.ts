@@ -375,7 +375,9 @@ const industrialAccidentClaimText = `## 청구 전 정리
 - 청구서와 첨부 서류 제출하기
 - 처리 상태와 보완 요청 확인하기`;
 
-const studyExamD30Text = `## D-30 범위와 기준 잡기
+const studyExamD30Text = `@매일 60~90분
+
+## D-30 범위와 기준 잡기
 - 시험 범위와 출제 비중 정리하기 D-30
 - 남은 기간을 주차별 목표로 나누기 D-30
 - 매일 공부 가능한 시간 블록 표시하기 D-30
@@ -394,6 +396,126 @@ const studyExamD30Text = `## D-30 범위와 기준 잡기
 - 실전처럼 모의고사 1회 풀기 D-7
 - 암기표와 오답노트만 남기기 D-7
 - 시험 당일 준비물과 이동 시간 확인하기 D-1`;
+
+const studyPlanLink = {
+  label: '집에서 공부 효과 높이는 학습 팁',
+  url: 'https://englishfact.com/ko/10-tips-to-enhance-english-study-at-home/',
+  type: 'reference' as const,
+};
+
+const studyExamD30Details: Parameters<typeof withItemDetails>[1] = {
+  '시험 범위와 출제 비중 정리하기': {
+    description: '시험 범위 전체를 한 장에 모으고, 점수 비중이 큰 단원부터 표시합니다.',
+    why: '범위와 비중을 먼저 정하지 않으면 쉬운 단원만 반복하거나 중요한 단원을 뒤로 미루기 쉽습니다.',
+    how: '강의계획서, 공지, 기출 목차를 모아 단원별 출제 비중을 상·중·하로 표시하고 아직 모르는 범위에 별표를 붙입니다.',
+    completion_criteria: '시험 범위 목록과 우선순위가 정리됐다.',
+    links: [studyPlanLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '남은 기간을 주차별 목표로 나누기': {
+    description: 'D-30부터 D-Day까지 남은 기간을 1회독, 문제풀이, 실전 정리 단계로 나눕니다.',
+    why: '큰 목표를 하루 단위로 바로 쪼개면 계획이 무너지기 쉬우므로 주차별 산출물을 먼저 잡아야 합니다.',
+    how: '첫 10일은 범위 1회독, 다음 10일은 문제풀이, 마지막 7일은 오답과 모의고사처럼 각 주차 끝에 남길 결과물을 적습니다.',
+    completion_criteria: '주차별 목표와 각 주차의 완료 산출물이 정해졌다.',
+    links: [studyPlanLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '매일 공부 가능한 시간 블록 표시하기': {
+    description: '하루 중 실제로 공부 가능한 시간을 캘린더에 고정 블록으로 표시합니다.',
+    why: '공부 시간은 의지만으로 생기지 않기 때문에 출퇴근, 수업, 식사 시간을 빼고 남는 블록을 먼저 확인해야 합니다.',
+    how: '평일과 주말을 나눠 30분 이상 집중 가능한 시간을 표시하고, 피곤한 시간대에는 암기보다 가벼운 복습을 배치합니다.',
+    completion_criteria: '매일 사용할 공부 시간 블록이 캘린더나 메모에 표시됐다.',
+    caution: '처음부터 모든 빈 시간을 공부로 채우면 지속하기 어려우니 예비 시간을 남깁니다.',
+    links: [studyPlanLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '핵심 개념 1회독 시작하기': {
+    description: '전체 범위를 완벽히 외우려 하지 말고 핵심 개념을 한 번 끝까지 훑습니다.',
+    why: '첫 회독의 목적은 완벽한 이해가 아니라 범위 구조와 약한 단원을 발견하는 것입니다.',
+    how: '단원별 핵심 정의, 공식, 흐름을 읽고 이해가 안 되는 부분은 표시만 한 뒤 다음 단원으로 넘어갑니다.',
+    completion_criteria: '핵심 개념 범위를 한 번 끝까지 훑고 미해결 표시를 남겼다.',
+    links: [studyPlanLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '단원별 헷갈리는 개념 표시하기': {
+    description: '1회독 중 막힌 개념을 단원별로 모아 다음 복습의 출발점으로 만듭니다.',
+    why: '헷갈리는 개념을 따로 모아두지 않으면 문제풀이 단계에서 같은 실수를 반복합니다.',
+    how: '교재 목차 옆에 헷갈림 표시를 하고, 왜 헷갈리는지 용어, 공식, 순서, 예외 중 하나로 분류합니다.',
+    completion_criteria: '단원별 헷갈리는 개념 목록이 만들어졌다.',
+    links: [studyPlanLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '기출 또는 예제 문제를 가볍게 풀기': {
+    description: '1회독 직후 쉬운 예제나 기출을 풀어 개념이 문제로 어떻게 나오는지 확인합니다.',
+    why: '개념만 읽으면 아는 것처럼 느껴져도 실제 문제의 질문 방식에 막힐 수 있습니다.',
+    how: '시간 제한 없이 단원별 대표 문제를 조금씩 풀고, 틀린 문제는 풀이를 베끼기보다 어느 개념을 몰랐는지 표시합니다.',
+    completion_criteria: '각 주요 단원에서 대표 문제를 풀고 틀린 이유를 기록했다.',
+    links: [studyPlanLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '자주 틀리는 유형 노트 만들기': {
+    description: '틀린 문제를 유형별로 묶어 반복해서 확인할 수 있는 짧은 노트를 만듭니다.',
+    why: '오답을 문제 번호로만 모으면 시험 직전에 무엇을 다시 봐야 하는지 찾기 어렵습니다.',
+    how: '틀린 문제를 개념 누락, 계산 실수, 조건 오독, 시간 부족으로 분류하고 각 유형별 대표 문제를 1~2개만 남깁니다.',
+    completion_criteria: '반복해서 틀리는 유형과 대표 문제가 정리됐다.',
+    links: [studyPlanLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '시간 제한을 두고 문제 세트 풀기': {
+    description: '실제 시험보다 조금 짧은 시간 제한을 두고 문제 세트를 풉니다.',
+    why: '시간 압박 속에서 풀어봐야 실제로 버릴 문제와 먼저 풀 문제를 판단할 수 있습니다.',
+    how: '문제 수와 제한 시간을 정하고, 모르는 문제는 표시 후 넘어가며 끝난 뒤 못 푼 이유를 따로 기록합니다.',
+    completion_criteria: '시간 제한 문제 세트를 풀고 시간 부족 구간을 확인했다.',
+    links: [studyPlanLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '오답 원인을 개념/계산/실수로 분류하기': {
+    description: '틀린 문제를 원인별로 나눠 남은 일주일의 복습 방향을 정합니다.',
+    why: '오답 수만 세면 공부량은 늘어나도 실제 점수를 깎는 원인을 줄이기 어렵습니다.',
+    how: '각 오답 옆에 개념 부족, 계산 오류, 조건 실수, 시간 부족 중 하나를 표시하고 가장 많은 원인부터 복습합니다.',
+    completion_criteria: '오답마다 원인 태그가 붙었고 가장 많이 반복되는 원인을 확인했다.',
+    links: [studyPlanLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '실전처럼 모의고사 1회 풀기': {
+    description: '시험 시간, 준비물, 쉬는 규칙을 실제처럼 맞춰 모의고사를 한 번 풉니다.',
+    why: '마지막 주에는 지식보다 시간 배분과 긴장 상태에서의 실수가 점수를 좌우할 수 있습니다.',
+    how: '알람을 맞추고 휴대폰 알림을 끈 뒤 실제 시험 시간과 같은 길이로 풀고, 끝난 직후 채점과 시간 기록을 남깁니다.',
+    completion_criteria: '모의고사 1회를 실전 조건으로 풀고 점수와 시간 배분을 기록했다.',
+    caution: '점수가 낮아도 새 범위를 늘리기보다 반복 실수만 줄이는 쪽으로 조정합니다.',
+    links: [studyPlanLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '암기표와 오답노트만 남기기': {
+    description: '시험 직전 볼 자료를 암기표와 핵심 오답노트로 줄입니다.',
+    why: '마지막에 자료가 너무 많으면 무엇을 봐야 할지 몰라 복습 효율이 떨어집니다.',
+    how: '새 자료를 추가하지 않고 공식, 정의, 자주 틀리는 유형만 한 묶음으로 모아 이동 중에도 볼 수 있게 정리합니다.',
+    completion_criteria: '시험 전날 볼 최종 암기표와 오답노트가 한 묶음으로 정리됐다.',
+    links: [studyPlanLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+  '시험 당일 준비물과 이동 시간 확인하기': {
+    description: '수험표, 신분증, 필기구, 계산기, 교통편처럼 당일 변수들을 전날 확정합니다.',
+    why: '시험 당일 실수는 공부량과 무관하게 발생하므로 준비물과 이동 시간을 미리 고정해야 합니다.',
+    how: '시험장 주소와 도착 목표 시간을 적고, 필요한 준비물을 가방에 넣은 뒤 예비 교통편과 입실 마감 시간을 확인합니다.',
+    completion_criteria: '시험장 이동 계획과 준비물 체크가 끝났다.',
+    caution: '입실 마감 시간과 허용 준비물은 시험 공지 기준으로 다시 확인합니다.',
+    links: [studyPlanLink],
+    source_type: 'reference',
+    risk_level: 'low',
+  },
+};
 
 const englishStudyRoutineText = `@매일 30분
 @주 1회 점검
@@ -1131,7 +1253,7 @@ const additionalOnlineBundles: FlowBundle[] = [
 ];
 
 const creatorInspiredBundles: FlowBundle[] = [
-  withReferenceSourceDetails(
+  withItemDetails(
     makeTextBundle(
       {
         id: 'flow-study-exam-d30',
@@ -1149,11 +1271,7 @@ const creatorInspiredBundles: FlowBundle[] = [
       },
       studyExamD30Text,
     ),
-    {
-      label: '집에서 공부 효과 높이는 학습 팁',
-      url: 'https://englishfact.com/ko/10-tips-to-enhance-english-study-at-home/',
-    },
-    'low',
+    studyExamD30Details,
   ),
   withReferenceSourceDetails(
     makeTextBundle(

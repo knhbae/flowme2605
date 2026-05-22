@@ -16,6 +16,7 @@
 - Comparison-followup deployment URL: https://flowme2605-6avh7mj1a-flowme.vercel.app
 - Comparison-export deployment URL: https://flowme2605-ctyehe39h-flowme.vercel.app
 - Mobile-export deployment URL: https://flowme2605-5ilocoxrc-flowme.vercel.app
+- P1-content-migration deployment URL: pending
 - Vercel inspect: https://vercel.com/flowme/flowme2605/E8vL2nQMrzoF8qjf7aow8tkTUZsb
 - Demo UX Vercel inspect: https://vercel.com/flowme/flowme2605/ERjP9Gtj2GjbA7FCRQNQCYz8a1TV
 - Channel-nav Vercel inspect: https://vercel.com/flowme/flowme2605/8JjefxX9MPrtkkBJ84SqzHiYxibt
@@ -23,6 +24,7 @@
 - Comparison-followup Vercel inspect: https://vercel.com/flowme/flowme2605/2hMiyV5fNvJND71EkutgMf5vT3mW
 - Comparison-export Vercel inspect: https://vercel.com/flowme/flowme2605/5SRdATNfKEmJcv9BZi4BreFMmfVZ
 - Mobile-export Vercel inspect: https://vercel.com/flowme/flowme2605/2S7cmp7v29DrPJDQmNE7koBRMC9m
+- P1-content-migration Vercel inspect: pending
 
 ## Why
 
@@ -72,6 +74,14 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
   - Tapping `내보내기` opens `텍스트로 복사`, `엑셀로 받기`, `캘린더 파일 받기`, and `내 버전 만들기`.
   - Desktop export controls remain unchanged.
 - Added a migration-candidate banner so older flows remain usable while clearly indicating they are being moved to the new execution model.
+- Promoted `wedding-d180-basic` and `study-exam-d30-plan` from migration candidates into the representative execution-model set.
+- Kept Wedding as a hybrid decision/timeline Flow:
+  - It now keeps `후보 비교 preview` and also exposes `월별 달력`.
+  - It no longer shows the `새 실행모델로 전환 중` banner.
+- Upgraded Study D-30 into a program-style Flow:
+  - Added a daily `매일 60~90분` routine rule for recurrence/calendar previews.
+  - Added tailored why/how/completion details and reference links for all 12 study items.
+  - It now shows `반복 달력 preview`, `한 회차에 하는 일`, and `월별 달력`.
 
 ## Not Done
 
@@ -106,6 +116,8 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `lib/flow/execution-model.test.ts`
 - `lib/flow/recurrence.ts`
 - `lib/flow/recurrence.test.ts`
+- `lib/flow/seed-flows.ts`
+- `lib/flow/seed-flows.test.ts`
 - `lib/flow/storage.ts`
 - `app/my/page.tsx`
 - `tests/e2e/flow-mvp.spec.ts`
@@ -143,6 +155,11 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `npm test` passed after mobile bottom sheet: 47 tests.
 - `npm run build` passed after mobile bottom sheet.
 - `npm run test:e2e` passed after mobile bottom sheet: 34 tests.
+- `npm test -- lib/flow/execution-model.test.ts lib/flow/seed-flows.test.ts` first failed as expected for missing representative classification and weak Study details, then passed after implementation.
+- `npm run docs:check` passed after P1 content migration.
+- `npm test` passed after P1 content migration: 48 tests.
+- `npm run build` passed after P1 content migration.
+- `npm run test:e2e` passed after P1 content migration: 34 tests.
 - Execution-model production deploy passed and aliased to `https://flowme2605.vercel.app`.
 - Production smoke passed for:
   - Home representative flow card and output target preview.

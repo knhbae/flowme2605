@@ -443,12 +443,21 @@ test('wedding flow answers first-screen questions and persists date note and ski
   await expect(page.getByText('1 / 11').first()).toBeVisible();
 });
 
-test('migration candidate flow remains reachable with upgrade status', async ({ page }) => {
+test('promoted P1 flows expose new execution model surfaces', async ({ page }) => {
   await page.goto('/f/wedding-d180-basic');
 
   await expect(page.getByRole('heading', { name: '결혼 준비 D-180 Flow' })).toBeVisible();
-  await expect(page.getByText('새 실행모델로 전환 중')).toBeVisible();
-  await expect(page.getByText('전체 항목은 그대로 이용할 수 있어요')).toBeVisible();
+  await expect(page.getByText('새 실행모델로 전환 중')).toHaveCount(0);
+  await expect(page.getByText('후보 비교 preview')).toBeVisible();
+  await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
+
+  await page.goto('/f/study-exam-d30-plan');
+
+  await expect(page.getByRole('heading', { name: '시험 D-30 공부 계획 Flow' })).toBeVisible();
+  await expect(page.getByText('새 실행모델로 전환 중')).toHaveCount(0);
+  await expect(page.getByText('반복 달력 preview')).toBeVisible();
+  await expect(page.getByText('한 회차에 하는 일')).toBeVisible();
+  await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
 });
 
 test('new flow creation keeps advanced settings secondary', async ({ page }) => {

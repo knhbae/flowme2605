@@ -157,6 +157,46 @@ test('creator-inspired seed flows cover followable blog and video-like routines'
   }
 });
 
+test('P1 migrated representative candidates include tailored executable item details', () => {
+  const migratedSlugs = ['wedding-d180-basic', 'study-exam-d30-plan'];
+
+  for (const slug of migratedSlugs) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+    assert.ok(bundle, slug);
+    assert.equal(bundle.itemDetails?.length, bundle.items.length, `${slug} should detail every item`);
+
+    const detailByItem = new Map(bundle.itemDetails?.map((detail) => [detail.item_id, detail]));
+    const whyTexts = new Set<string>();
+    const howTexts = new Set<string>();
+    const completionTexts = new Set<string>();
+
+    for (const item of bundle.items) {
+      const detail = detailByItem.get(item.id);
+      assert.ok(detail, `${slug} missing detail for ${item.title}`);
+      assert.ok(detail.why && detail.why.length >= 20, `${slug} weak why for ${item.title}`);
+      assert.ok(detail.how && detail.how.length >= 20, `${slug} weak how for ${item.title}`);
+      assert.ok(
+        detail.completion_criteria && detail.completion_criteria.length >= 15,
+        `${slug} weak completion criteria for ${item.title}`,
+      );
+      assert.ok(
+        detail.links?.some((link) => link.type === 'reference'),
+        `${slug} missing reference link for ${item.title}`,
+      );
+      whyTexts.add(detail.why);
+      howTexts.add(detail.how);
+      completionTexts.add(detail.completion_criteria);
+    }
+
+    assert.ok(whyTexts.size >= Math.min(4, bundle.items.length), `${slug} uses repeated why text`);
+    assert.ok(howTexts.size >= Math.min(4, bundle.items.length), `${slug} uses repeated how text`);
+    assert.ok(
+      completionTexts.size >= Math.min(4, bundle.items.length),
+      `${slug} uses repeated completion criteria`,
+    );
+  }
+});
+
 test('seed flows expose creator and popularity signals for discovery', () => {
   const userIds = new Set(virtualUsers.map((user) => user.id));
   for (const bundle of seedBundles) {
