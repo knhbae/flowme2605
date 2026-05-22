@@ -4,8 +4,10 @@
 - Branch: `codex/flow-item-card-ux`
 - Base: `codex/implement-flow-builder-mvp`
 - PR: https://github.com/knhbae/flowme2605/pull/7
-- Status: `Open`
-- Deploy URL: Not deployed yet
+- Status: `Open`, `Deployed`
+- Production deploy: https://flowme2605.vercel.app
+- Deployment URL: https://flowme2605-20g5fe610-flowme.vercel.app
+- Vercel inspect: https://vercel.com/flowme/flowme2605/E8vL2nQMrzoF8qjf7aow8tkTUZsb
 
 ## Why
 
@@ -27,7 +29,7 @@ The item card is the core repeated component on Flow detail pages. The prior car
 - Did not redesign section headers, sticky bottom bar, navigation, landing cards, or `/my`.
 - Did not split `components/flow/AppClient.tsx` into smaller files in this PR.
 - Did not add icon assets or a global button/badge design-token system.
-- Did not deploy this branch yet.
+- Did not redesign or redeploy non-item-card UX areas such as navigation, landing cards, `/my`, section headers, or the mobile bottom sheet.
 
 ## Decisions
 
@@ -50,6 +52,12 @@ The item card is the core repeated component on Flow detail pages. The prior car
 - `npm run docs:check` passed.
 - `npm test` passed.
 - `npm run test:e2e` passed: 30 tests.
+- Vercel production build passed.
+- Production smoke tests passed:
+  - `https://flowme2605.vercel.app` returned 200.
+  - `https://flowme2605.vercel.app/f/wedding-d180-basic` returned 200.
+  - Production item-card DOM check found 12 cards, 3 buttons, and 1 checkbox in the first card.
+- Direct deployment URL required Vercel authentication, so public smoke testing used the production alias.
 - Manual screenshots captured:
   - `test-results/manual/item-card-mobile-full.png`
   - `test-results/manual/item-card-desktop-full.png`
