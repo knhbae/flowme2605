@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { ArtifactWorkbench } from './ArtifactWorkbench';
 import { ArtifactPreview } from './ArtifactPreview';
 import { addDays, formatDate, getRangeEnd } from '@/lib/flow/date';
 import { inferPrimaryDestination } from '@/lib/flow/destination';
@@ -2382,6 +2383,16 @@ export function PublicFlow({ slug }: { slug: string }) {
       </section>
       ) : null}
 
+      <ArtifactWorkbench
+        bundle={bundle}
+        anchor={displayAnchor}
+        weekdays={weekdaySelection}
+        checks={checks}
+        itemStates={itemStates}
+        comparisonState={comparisonState}
+        onComparisonChange={setComparisonState}
+      />
+
       {showStorageNotice ? (
         <section className="my-5 rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm text-blue-950">
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -2400,31 +2411,6 @@ export function PublicFlow({ slug }: { slug: string }) {
           </div>
         </section>
       ) : null}
-
-      <section className="my-5 rounded-lg border border-gray-200 bg-white p-4">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <Link className="text-sm font-semibold text-gray-950 underline-offset-2 hover:text-blue-700 hover:underline" href={getCreatorPath(bundle)}>
-              by {getCreatorName(bundle)}
-            </Link>
-            {getCreatorRole(bundle) ? <p className="mt-1 text-sm text-gray-500">{getCreatorRole(bundle)}</p> : null}
-            {getCreatorNote(bundle) ? <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600">{getCreatorNote(bundle)}</p> : null}
-          </div>
-          <div className="flex gap-2 text-sm">
-            <span className="rounded-md bg-gray-50 px-3 py-2 font-semibold text-gray-800">베타 운영 중</span>
-          </div>
-        </div>
-      </section>
-
-      <SourceContentCard bundle={bundle} />
-
-      {bundle.flow.warning ? (
-        <div className="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
-          {bundle.flow.warning}
-        </div>
-      ) : null}
-
-      <TopExecutionPreview bundle={bundle} anchor={displayAnchor} weekdays={weekdaySelection} comparisonState={comparisonState} onComparisonChange={setComparisonState} />
 
       <ArtifactPreview bundle={bundle} />
 
@@ -2484,6 +2470,29 @@ export function PublicFlow({ slug }: { slug: string }) {
           )}
         </>
       )}
+
+      <section className="my-5 rounded-lg border border-gray-200 bg-white p-4">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <Link className="text-sm font-semibold text-gray-950 underline-offset-2 hover:text-blue-700 hover:underline" href={getCreatorPath(bundle)}>
+              by {getCreatorName(bundle)}
+            </Link>
+            {getCreatorRole(bundle) ? <p className="mt-1 text-sm text-gray-500">{getCreatorRole(bundle)}</p> : null}
+            {getCreatorNote(bundle) ? <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600">{getCreatorNote(bundle)}</p> : null}
+          </div>
+          <div className="flex gap-2 text-sm">
+            <span className="rounded-md bg-gray-50 px-3 py-2 font-semibold text-gray-800">베타 운영 중</span>
+          </div>
+        </div>
+      </section>
+
+      <SourceContentCard bundle={bundle} />
+
+      {bundle.flow.warning ? (
+        <div className="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
+          {bundle.flow.warning}
+        </div>
+      ) : null}
 
       {showMobileExportSheet ? (
         <div className="fixed inset-0 z-30 md:hidden" data-testid="mobile-export-sheet" role="dialog" aria-modal="true" aria-labelledby="mobile-export-title">

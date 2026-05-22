@@ -32,6 +32,22 @@ test('artifact plan maps used-car checklist to comparison before checklist', () 
   assert.ok(plan.exportTargets.includes('sheet'));
 });
 
+test('artifact plan preserves promoted hybrid wedding comparison first', () => {
+  const plan = getArtifactPlan(bundle('wedding-d180-basic'));
+
+  assert.equal(plan.primarySurface, 'decision_table');
+  assert.equal(plan.surfaces[0].kind, 'comparison_table');
+  assert.ok(plan.exportTargets.includes('calendar'));
+});
+
+test('artifact plan maps promoted study program to routine calendar first', () => {
+  const plan = getArtifactPlan(bundle('study-exam-d30-plan'));
+
+  assert.equal(plan.primarySurface, 'routine_calendar');
+  assert.equal(plan.surfaces[0].kind, 'routine_month');
+  assert.ok(plan.exportTargets.includes('calendar'));
+});
+
 test('artifact plan maps exact workout video to routine calendar and condition memo', () => {
   const plan = getArtifactPlan(bundle('real-thankyou-bubu-video-full-body-no-jump'));
 

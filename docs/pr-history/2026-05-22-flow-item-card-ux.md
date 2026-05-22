@@ -9,6 +9,7 @@
   - Demo UX polish: https://github.com/knhbae/flowme2605/pull/9
   - Mobile export and P1 content migration: https://github.com/knhbae/flowme2605/pull/10
   - Source-fit audit framework: https://github.com/knhbae/flowme2605/pull/11
+  - Artifact Workbench v1: https://github.com/knhbae/flowme2605/pull/12
 - Status: `Open`, `Deployed`
 - Production deploy: https://flowme2605.vercel.app
 - Deployment URL: https://flowme2605-20g5fe610-flowme.vercel.app
@@ -148,6 +149,13 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Added an artifact-first UX design spec and implementation plan for the next product pass.
 - Added an artifact-plan layer that maps each Flow to a primary user artifact surface: timeline calendar, routine calendar, spreadsheet log, decision table, memo card, or checklist.
 - Added first-screen `ArtifactPreview` cards on public Flow detail pages so users see what the Flow will become before reading the full item list.
+- Added first-screen `ArtifactWorkbench` surfaces on public Flow detail pages so users can immediately see and manipulate the actual output form:
+  - Timeline flows show an execution list beside a mini monthly calendar.
+  - Decision/checklist flows show an editable candidate comparison table beside the field checklist.
+  - Routine flows show visible recurring calendar sessions and the next-session item list.
+  - Spreadsheet/log flows show a seven-day record table and weekly review memo.
+  - Checklist flows show the first checklist rows as the primary usable surface.
+- Moved creator, source, and warning information below the main execution area so the first screen prioritizes setup, progress/export, and the usable artifact before provenance details.
 - Aligned text export order with artifact priority:
   - spreadsheet-first diet/log Flows now start with a `기록표` guidance section.
   - decision Flows now put the `후보 비교표` before checklist items.
@@ -171,6 +179,9 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - Did not add natural artifact simulations to the 440 generated preview candidates yet; that is a separate catalog audit pass.
 - Did not replace broad channel/site sources with exact URLs in this pass; those routes remain catalog review until source replacement.
 - Did not implement the full interactive artifact workbench yet; this pass adds artifact promise cards and export ordering, while deeper monthly calendar/routine/spreadsheet editing remains follow-up.
+- Did not add occurrence-level persistence for Workbench calendar sessions; item completion still belongs to the existing full execution list.
+- Did not add external calendar, Todo, Notion, or spreadsheet API integrations; exports remain file/clipboard based.
+- Did not migrate every generated preview Flow into a hand-authored artifact model; broad catalog cleanup remains staged.
 
 ## Decisions
 
@@ -194,6 +205,7 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 ## Files Touched
 
 - `components/flow/AppClient.tsx`
+- `components/flow/ArtifactWorkbench.tsx`
 - `components/flow/ArtifactPreview.tsx`
 - `lib/flow/execution-model.ts`
 - `lib/flow/execution-model.test.ts`
@@ -222,8 +234,10 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 - `docs/content-audit/2026-05-22-real-source-flow-action-matrix.md`
 - `docs/superpowers/specs/2026-05-22-flow-source-fit-audit-design.md`
 - `docs/superpowers/specs/2026-05-22-artifact-first-flow-ux-design.md`
+- `docs/superpowers/specs/2026-05-22-artifact-workbench-v1-design.md`
 - `docs/superpowers/plans/2026-05-22-flow-source-fit-audit.md`
 - `docs/superpowers/plans/2026-05-22-artifact-first-flow-ux.md`
+- `docs/superpowers/plans/2026-05-22-artifact-workbench-v1.md`
 - `docs/superpowers/specs/2026-05-22-flow-channel-content-inventory-design.md`
 - `docs/superpowers/plans/2026-05-22-flow-channel-content-inventory.md`
 - `docs/superpowers/plans/2026-05-22-flow-item-card-ux.md`
@@ -237,6 +251,14 @@ After the first item-card deploy, the follow-up UX audit found broader demo issu
 
 ## Verification
 
+- `npm run test:e2e -- --grep "artifact workbench"` first failed as expected because `Flow artifact workbench` did not exist yet, then passed after adding `ArtifactWorkbench`.
+- `npm run test:e2e -- --grep "artifact workbench|artifact-first previews|decision flow comparison|routine flow highlights|used-car checklist"` passed after Workbench integration and source/creator repositioning: 5 tests.
+- `npx tsx --test lib/flow/artifact-plan.test.ts` first failed after adding promoted Wedding/Study regression coverage because `artifact-plan` ignored execution-model `comparison_table` and `routine_sessions`; it passed after mapping primary Workbench surfaces from execution-model views: 7 tests.
+- `npm run docs:check` passed after Workbench v1 PR-history updates: 12 required files, 50 local links.
+- `npm test` passed after Workbench v1 regression coverage: 86 tests.
+- `npm run build` passed after Workbench v1 implementation and follow-up fixes.
+- `npm run test:e2e -- --grep "public moving flow calculates|promoted P1 flows expose|routine flow highlights|artifact workbench|representative flows show artifact-first|used-car checklist"` passed after preserving old preview labels inside the new Workbench: 6 tests.
+- `npm run test:e2e` first failed on two stale preview-surface expectations after replacing `TopExecutionPreview`, then passed after aligning `artifact-plan` with execution-model views and keeping the preview labels in `ArtifactWorkbench`: 37 tests.
 - `npx tsx --test lib/flow/artifact-plan.test.ts` first failed as expected because `lib/flow/artifact-plan.ts` did not exist, then passed after adding the artifact-plan mapping: 5 tests.
 - `npm test` passed after adding artifact-plan coverage: 82 tests.
 - `npm run test:e2e -- --grep "artifact-first previews"` first failed as expected because `Flow artifact preview` was not rendered, then passed after adding `ArtifactPreview`: 1 test.
