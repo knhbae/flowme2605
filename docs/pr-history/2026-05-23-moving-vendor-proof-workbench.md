@@ -2,8 +2,8 @@
 
 - Date: 2026-05-23
 - Branch: `codex/moving-vendor-proof-workbench`
-- PR: TBD
-- Status: `Draft`
+- PR: https://github.com/knhbae/flowme2605/pull/15
+- Status: `Open`
 - Production deploy: TBD
 - Vercel inspect: TBD
 
