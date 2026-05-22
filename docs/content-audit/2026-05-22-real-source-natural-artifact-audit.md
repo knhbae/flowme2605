@@ -7,10 +7,10 @@ This report starts the full review of the 40 `source_status=real` Flows. It uses
 | Metric | Count |
 | --- | ---: |
 | Real-source Flows | 40 |
-| Audited real-source Flows | 28 |
-| Remaining real-source Flows | 12 |
+| Audited real-source Flows | 32 |
+| Remaining real-source Flows | 8 |
 
-The first five batches intentionally avoid auditing only one cluster. They cover official service pages, household routines, exact workout videos, diet/logging videos, exam/admin deadlines, childcare/medical-sensitive content, pet registration, pet health broad sources, moving/financial-sensitive content, travel safety, travel health, and vehicle administration.
+The first six batches intentionally avoid auditing only one cluster. They cover official service pages, household routines, exact workout videos, diet/logging videos, exam/admin deadlines, childcare/medical-sensitive content, pet registration, pet health broad sources, moving/financial-sensitive content, travel safety, travel health, and vehicle administration.
 
 ## Method
 
@@ -57,6 +57,10 @@ For each source, record:
 | `real-thankyou-bubu-video-3min-arm` | Routine calendar, memo | Reshape content or UX | Needs trigger-based micro-routine scheduling and weekly completion summary. |
 | `real-thankyou-bubu-video-3min-abs` | Routine calendar, memo | Reshape content or UX | Needs workout/recovery-day calendar and waist/back-condition notes. |
 | `real-thankyou-bubu-video-lower-belly-8min` | Routine calendar, spreadsheet | Reshape content or UX | Needs target-area recurrence and optional measurement log export. |
+| `real-fitvely-video-carb-reason` | Spreadsheet, memo | Reshape content or UX | Needs meal-level carb logging and reusable weekly carb guideline memo. |
+| `real-fitvely-video-three-week-check` | Spreadsheet, memo | Reshape content or UX | Needs safe 3-week measurement review instead of result promises. |
+| `real-fitvely-video-post-workout-nutrition` | Routine calendar, memo | Reshape content or UX | Needs workout-linked follow-up nutrition reminders. |
+| `real-fitvely-video-carb-amount-shorts` | Spreadsheet, memo | Reshape content or UX | Needs quick daily carb log and next-meal adjustment memo. |
 
 ## Source Evidence Used
 
@@ -80,6 +84,7 @@ For each source, record:
 - Ohouse move-in cleaning page: the page gives 10-pyeong cost range, cost drivers, weekend/peak surcharge, vendor comparison criteria, extra-cost risk, and a short cleaning checklist at `https://ohou.se/advices/12375`.
 - ThankyouBUBU exact video pages: automated YouTube body fetch was throttled, so the fourth batch uses exact source URLs, seed metadata, and searchable title/channel evidence for belly/side, no-knee cardio+strength, arm/back/shoulder, and waist-focused routines at `https://www.youtube.com/watch?v=toAUho9bEw0`, `https://www.youtube.com/watch?v=hesjApxDlj0`, `https://www.youtube.com/watch?v=73IrtWDDby0`, and `https://www.youtube.com/watch?v=k3MznPQvUEk`.
 - ThankyouBUBU remaining exact videos: search results and channel-index snippets confirm the 8-minute cardio, 3-minute arm, 3-minute abs, and lower-belly workout titles and durations; source URLs are `https://www.youtube.com/watch?v=O87gkL1cKSc`, `https://www.youtube.com/watch?v=Kl9Dmx86Z0Q`, `https://www.youtube.com/watch?v=6IUL8-nGetA`, and `https://www.youtube.com/watch?v=9xxCFu21CLM`.
+- FITVELY diet/nutrition exact videos: search results and source metadata identify carb reason, 3-week check, post-workout nutrition, and carb amount shorts as diet/nutrition guidance; source URLs are `https://www.youtube.com/watch?v=_h3u30M9ECc`, `https://www.youtube.com/watch?v=nfdIpPXfIc8`, `https://www.youtube.com/watch?v=J8YmqzhPS2Q`, and `https://www.youtube.com/watch?v=t630vnDGIWw`.
 
 ## Output-Type Findings
 
@@ -146,6 +151,10 @@ Examples:
 - FITVELY body-fat: `목표=체지방 -2kg`, `측정=월요일 아침` should produce a daily diet/workout log plus weekly measurement summary.
 - Sinagong study: `시험일=2026-07-05`, `평일공부=90분` should produce both a D-30 study calendar and a score/wrong-answer spreadsheet.
 - ThankyouBUBU waist, upper-body, and lower-belly videos need light spreadsheet logs when the title implies body measurements. FLOW should avoid promising the exact numeric outcome and instead track baseline, execution count, condition, and review notes.
+- FITVELY carb reason: `운동일=월/수/금`, `탄수화물원=현미밥/고구마/과일` should produce a meal-level carb log and a weekly adjustment memo.
+- FITVELY 3-week check: `시작체중=68kg`, `측정=매주 월요일` should produce a 3-week measurement/review table plus safety notes.
+- FITVELY carb amount shorts: `아침=식빵 1장`, `점심=밥 반공기`, `저녁계획=고구마 1개` should produce a quick daily carb log and next-meal adjustment memo.
+- FITVELY post-workout nutrition is calendar-linked but still needs a reusable nutrition memo: `운동일=월/수/금`, `섭취시점=운동 후 30분` should create follow-up reminders plus a food 기준 card.
 
 ### Emergency / Proof Memo
 
@@ -158,9 +167,9 @@ Examples:
 
 ## Next Batch
 
-Audit the remaining 12 real-source Flows in this order:
+Audit the remaining 8 real-source Flows in this order:
 
-1. Finish FITVELY exact videos, splitting diet/logging videos from workout-plan videos.
+1. Finish FITVELY workout-plan exact videos: weight-class method, bulk-up method, workout order, and remaining workout-plan sources.
 2. Review broad-source flows last: FITVELY broad pages, ThankyouBUBU channel pages, and any source that needs replacement before public promotion.
 3. Revisit crawler-limited official pages only when a stable official body or mirrored 민원 안내 can be captured without weakening source attribution.
 
