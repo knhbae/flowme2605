@@ -1,6 +1,6 @@
 import { addDays, formatDate, getRangeEnd } from './date';
 import { getArtifactPlan } from './artifact-plan';
-import { getComparisonRows, getMemoCardFields } from './artifact-fields';
+import { getComparisonRows, getLogTables, getMemoCardFields } from './artifact-fields';
 import { timingLabel } from './parser';
 import { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState, MealSlot, ReactionLog } from './types';
 
@@ -398,6 +398,12 @@ function occurrenceLabel(key: string): { date: string; session: string } {
 function buildWorkbenchRows(bundle: FlowBundle, state?: FlowWorkbenchState): WorkbookCell[][] {
   if (!state) return [];
   const rows: WorkbookCell[][] = [];
+  const logRowLabels = new Map<string, string>();
+  const logFieldLabels = new Map<string, string>();
+  for (const table of getLogTables(bundle)) {
+    for (const row of table.rows) logRowLabels.set(row.id, row.label);
+    for (const column of table.columns) logFieldLabels.set(column.id, column.label);
+  }
 
   for (const [key, entry] of sortedEntries(state.occurrences ?? {})) {
     const note = entry.note?.trim() ?? '';
@@ -414,7 +420,7 @@ function buildWorkbenchRows(bundle: FlowBundle, state?: FlowWorkbenchState): Wor
   for (const [date, logRow] of sortedEntries(state.logRows ?? {})) {
     for (const [field, value] of sortedEntries(logRow)) {
       if (!value.trim()) continue;
-      rows.push(['기록', date, field, value.trim()]);
+      rows.push(['기록', logRowLabels.get(date) ?? date, logFieldLabels.get(field) ?? field, value.trim()]);
     }
   }
 

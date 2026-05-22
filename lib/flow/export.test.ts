@@ -150,6 +150,44 @@ test('travel export includes official confirmation and emergency memo records', 
   assert.ok(workbench.rows.some((row) => row.includes('영사콜센터·현지 공관') && row.some((cell) => String(cell).includes('주일본대사관'))));
 });
 
+test('study export includes chapter progress and mock score records', () => {
+  const study = seedBundles.find((bundle) => bundle.flow.slug === 'real-sinagong-computer-d30-study');
+  assert.ok(study);
+
+  const workbenchState = {
+    occurrences: {},
+    logRows: {
+      'study-chapter-week-1': {
+        scope: '1~3장',
+        targetDate: '2026-06-12',
+        status: '완료',
+        note: '요약노트 작성',
+      },
+      'study-mock-1': {
+        solvedDate: '2026-06-13',
+        score: '78점',
+        wrongAnswers: '계산 문제 4개',
+        retryDate: '2026-06-15',
+        weaknessNote: '스프레드시트 함수',
+      },
+    },
+    memoCards: {},
+  };
+
+  const text = buildText(study, {}, '2026-07-05', {}, undefined, workbenchState);
+
+  assert.match(text, /1주차 개념 1회독 범위: 1~3장/);
+  assert.match(text, /1주차 개념 1회독 목표일: 2026-06-12/);
+  assert.match(text, /기출 1회차 점수: 78점/);
+  assert.match(text, /기출 1회차 오답: 계산 문제 4개/);
+
+  const sheets = buildWorkbookSheets(study, {}, '2026-07-05', { workbenchState });
+  const workbench = sheets.find((sheet) => sheet.name === '실행판 기록');
+  assert.ok(workbench);
+  assert.ok(workbench.rows.some((row) => row.includes('1주차 개념 1회독') && row.includes('범위') && row.includes('1~3장')));
+  assert.ok(workbench.rows.some((row) => row.includes('기출 1회차') && row.includes('점수') && row.includes('78점')));
+});
+
 test('diet log text export starts with record table guidance', () => {
   const diet = seedBundles.find((entry) => entry.flow.slug === 'real-fitvely-video-body-fat-6kg-method');
   assert.ok(diet);

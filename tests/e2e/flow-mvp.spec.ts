@@ -675,6 +675,7 @@ test('artifact workbench saves local execution entries', async ({ page }) => {
   await page.getByLabel('출국일').fill('2026-07-18');
   const travelWorkbench = page.getByLabel('Flow artifact workbench');
   await expect(travelWorkbench.getByRole('heading', { name: '공식 확인·비상 카드' })).toBeVisible();
+  await expect(travelWorkbench.getByRole('heading', { name: '이사 업체 후보 비교' })).toHaveCount(0);
   await travelWorkbench.getByLabel('방문 국가/도시').fill('일본 도쿄');
   await travelWorkbench.getByLabel('입국 조건 확인 결과').fill('무비자 90일, 여권 6개월 이상 확인');
   await travelWorkbench.getByLabel('영사콜센터·현지 공관').fill('영사콜센터 +82-2-3210-0404 / 주일본대사관');
@@ -684,6 +685,23 @@ test('artifact workbench saves local execution entries', async ({ page }) => {
   await expect(restoredTravelWorkbench.getByLabel('방문 국가/도시')).toHaveValue('일본 도쿄');
   await expect(restoredTravelWorkbench.getByLabel('입국 조건 확인 결과')).toHaveValue('무비자 90일, 여권 6개월 이상 확인');
   await expect(restoredTravelWorkbench.getByLabel('영사콜센터·현지 공관')).toHaveValue('영사콜센터 +82-2-3210-0404 / 주일본대사관');
+
+  await page.goto('/f/real-sinagong-computer-d30-study');
+  await page.getByRole('textbox', { name: '시험일' }).fill('2026-07-05');
+  const studyWorkbench = page.getByLabel('Flow artifact workbench');
+  await expect(studyWorkbench.getByRole('heading', { name: '챕터 진도표' })).toBeVisible();
+  await expect(studyWorkbench.getByRole('heading', { name: '기출 점수·오답 기록' })).toBeVisible();
+  await studyWorkbench.getByLabel('1주차 개념 1회독 / 범위').fill('1~3장');
+  await studyWorkbench.getByLabel('1주차 개념 1회독 / 목표일').fill('2026-06-12');
+  await studyWorkbench.getByLabel('기출 1회차 / 점수').fill('78점');
+  await studyWorkbench.getByLabel('기출 1회차 / 오답').fill('계산 문제 4개');
+
+  await page.reload();
+  const restoredStudyWorkbench = page.getByLabel('Flow artifact workbench');
+  await expect(restoredStudyWorkbench.getByLabel('1주차 개념 1회독 / 범위')).toHaveValue('1~3장');
+  await expect(restoredStudyWorkbench.getByLabel('1주차 개념 1회독 / 목표일')).toHaveValue('2026-06-12');
+  await expect(restoredStudyWorkbench.getByLabel('기출 1회차 / 점수')).toHaveValue('78점');
+  await expect(restoredStudyWorkbench.getByLabel('기출 1회차 / 오답')).toHaveValue('계산 문제 4개');
 
   await page.goto('/f/study-exam-d30-plan');
   const routineWorkbench = page.getByLabel('Flow artifact workbench');

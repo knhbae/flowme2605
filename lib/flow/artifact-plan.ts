@@ -58,6 +58,8 @@ function getPrimarySurface(bundle: FlowBundle, model = normalizeExecutionModel(b
   const audit = getNaturalArtifactAudit(bundle.flow.slug);
   if (bundle.flow.slug === 'used-car-buying-check') return 'decision_table';
   if (model.views.includes('comparison_table') || (hasArtifact(bundle, 'comparison_table') && bundle.flow.structure_type === 'checklist')) return 'decision_table';
+  if ((hasArtifact(bundle, 'routine_calendar') || model.views.includes('routine_sessions') || bundle.flow.structure_type === 'routine') && !hasArtifact(bundle, 'spreadsheet')) return 'routine_calendar';
+  if (bundle.flow.structure_type === 'timeline' && (hasArtifact(bundle, 'monthly_calendar') || model.views.includes('month_calendar'))) return 'timeline_calendar';
   if (hasArtifact(bundle, 'spreadsheet')) return 'spreadsheet_log';
   if (hasArtifact(bundle, 'routine_calendar') || model.views.includes('routine_sessions') || bundle.flow.structure_type === 'routine') return 'routine_calendar';
   if (hasArtifact(bundle, 'monthly_calendar') || model.views.includes('month_calendar') || bundle.flow.structure_type === 'timeline') return 'timeline_calendar';

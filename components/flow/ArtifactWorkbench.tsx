@@ -1,7 +1,15 @@
 'use client';
 
 import { getArtifactPlan } from '@/lib/flow/artifact-plan';
-import { getComparisonRows, getMemoCardFields, type ArtifactComparisonRow, type ArtifactMemoField } from '@/lib/flow/artifact-fields';
+import {
+  getComparisonConfig,
+  getComparisonRows,
+  getLogTables,
+  getMemoCardFields,
+  type ArtifactComparisonRow,
+  type ArtifactLogTable,
+  type ArtifactMemoField,
+} from '@/lib/flow/artifact-fields';
 import { addDays, formatDate, getRangeEnd } from '@/lib/flow/date';
 import { timingLabel } from '@/lib/flow/parser';
 import type { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState } from '@/lib/flow/types';
@@ -170,7 +178,8 @@ function TimelineWorkbench({
   onToggleItem: (id: string) => void;
 }) {
   const rows = scheduleRows(bundle, anchor);
-  const comparisonRows = getComparisonRows(bundle);
+  const comparisonConfig = getComparisonConfig(bundle);
+  const logTables = getLogTables(bundle);
   const memoFields = getMemoCardFields(bundle);
   const listRows = rows.length
     ? rows.slice(0, 8)
@@ -209,16 +218,25 @@ function TimelineWorkbench({
         </div>
         <MiniMonthCalendar title="월간 캘린더" eyebrow="월별 달력 preview" month={month} rows={rows} />
       </div>
-      {memoFields.length ? (
-        <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-          <ComparisonTable
-            title="이사 업체 후보 비교"
-            eyebrow="업체 비교표"
-            rows={comparisonRows}
-            comparisonState={comparisonState}
-            onComparisonChange={onComparisonChange}
-          />
-          <ProofMemoCard fields={memoFields} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
+      {logTables.length ? (
+        <div className="grid gap-4">
+          {logTables.map((table) => (
+            <LogTableCard key={table.id} table={table} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
+          ))}
+        </div>
+      ) : null}
+      {comparisonConfig || memoFields.length ? (
+        <div className={`grid gap-4 ${comparisonConfig && memoFields.length ? 'lg:grid-cols-[1.15fr_0.85fr]' : ''}`}>
+          {comparisonConfig ? (
+            <ComparisonTable
+              title={comparisonConfig.title}
+              eyebrow={comparisonConfig.eyebrow}
+              rows={comparisonConfig.rows}
+              comparisonState={comparisonState}
+              onComparisonChange={onComparisonChange}
+            />
+          ) : null}
+          {memoFields.length ? <ProofMemoCard fields={memoFields} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} /> : null}
         </div>
       ) : null}
     </div>
@@ -463,6 +481,54 @@ function ProofMemoCard({
           </label>
         ))}
       </div>
+    </div>
+  );
+}
+
+function LogTableCard({
+  table,
+  workbenchState,
+  onWorkbenchChange,
+}: {
+  table: ArtifactLogTable;
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
+}) {
+  return (
+    <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+      <div className="border-b border-gray-100 px-3 py-3">
+        <p className="text-sm font-semibold text-blue-700">{table.eyebrow}</p>
+        <h3 className="mt-1 text-base font-semibold text-gray-950">{table.title}</h3>
+        <p className="mt-2 text-sm leading-6 text-gray-600">{table.description}</p>
+      </div>
+      <table className="min-w-[760px] text-left text-sm">
+        <thead className="bg-gray-50 text-xs font-semibold text-gray-600">
+          <tr>
+            <th className="px-3 py-2">항목</th>
+            {table.columns.map((column) => (
+              <th key={column.id} className="px-3 py-2">{column.label}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {table.rows.map((row) => (
+            <tr key={row.id} className="border-t border-gray-100">
+              <th className="px-3 py-3 text-sm font-semibold text-gray-900">{row.label}</th>
+              {table.columns.map((column) => (
+                <td key={`${row.id}-${column.id}`} className="px-2 py-2">
+                  <input
+                    aria-label={`${row.label} / ${column.label}`}
+                    className="w-full min-w-28 rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
+                    placeholder={column.placeholder}
+                    value={workbenchState.logRows[row.id]?.[column.id] ?? ''}
+                    onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, row.id, column.id, event.currentTarget.value))}
+                  />
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
