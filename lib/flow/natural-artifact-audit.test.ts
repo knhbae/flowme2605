@@ -13,8 +13,8 @@ function bundleBySlug(slug: string) {
   return bundle;
 }
 
-test('real-source natural artifact audit batch only covers real-source flows', () => {
-  assert.equal(realSourceNaturalArtifactAudits.length, 8);
+test('real-source natural artifact audits only cover real-source flows', () => {
+  assert.equal(realSourceNaturalArtifactAudits.length, 16);
 
   for (const audit of realSourceNaturalArtifactAudits) {
     const bundle = bundleBySlug(audit.slug);
@@ -58,7 +58,7 @@ test('real-source natural artifact coverage summary tracks remaining work', () =
 
   assert.equal(summary.realSourceCount, 40);
   assert.equal(summary.auditedRealSourceCount, realSourceNaturalArtifactAudits.length);
-  assert.equal(summary.remainingRealSourceCount, 32);
+  assert.equal(summary.remainingRealSourceCount, 24);
   assert.ok(summary.decisionCounts.promote_to_manual_source_fit >= 1);
   assert.ok(summary.decisionCounts.reshape_content_or_ux >= 1);
 });
@@ -68,4 +68,26 @@ test('natural artifact audit lookup returns the audited batch record', () => {
 
   assert.ok(audit);
   assert.equal(audit.naturalArtifacts[0]?.kind, 'routine_calendar');
+});
+
+test('second real-source artifact batch covers routine, study, travel, and vehicle flows', () => {
+  const expectedSecondBatchSlugs = [
+    'real-thankyou-bubu-video-full-body-no-jump',
+    'real-thankyou-bubu-video-daily-stretch-9min',
+    'real-fitvely-video-body-fat-6kg-method',
+    'real-fitvely-video-workout-split-science',
+    'real-sinagong-computer-d30-study',
+    'real-mofa-overseas-travel-prep',
+    'real-ts-vehicle-inspection-prep',
+    'real-safe-driving-license-renewal',
+  ];
+
+  for (const slug of expectedSecondBatchSlugs) {
+    const audit = getNaturalArtifactAudit(slug);
+    assert.ok(audit, `missing second-batch audit: ${slug}`);
+    assert.ok(
+      audit.naturalArtifacts.some((artifact) => artifact.kind === 'routine_calendar' || artifact.kind === 'monthly_calendar'),
+      `${slug} should simulate a calendar-like natural artifact`,
+    );
+  }
 });

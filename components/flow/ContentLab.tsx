@@ -178,7 +178,7 @@ export function ContentLab() {
           </div>
           <div className="grid min-w-[260px] grid-cols-2 gap-2 text-sm">
             <div className="rounded-lg bg-emerald-50 p-3 text-emerald-950">
-              <p className="text-emerald-800">첫 batch</p>
+              <p className="text-emerald-800">감사 완료</p>
               <p className="mt-1 text-2xl font-semibold">{summary.naturalArtifactRealSourceAuditedCount}</p>
             </div>
             <div className="rounded-lg bg-gray-50 p-3 text-gray-950">
@@ -198,7 +198,7 @@ export function ContentLab() {
           ))}
         </div>
         <div className="mt-5 grid gap-3 lg:grid-cols-2">
-          {realSourceNaturalArtifactAudits.slice(0, 4).map((audit) => (
+          {realSourceNaturalArtifactAudits.slice(0, 8).map((audit) => (
             <div key={audit.slug} className="rounded-lg border border-gray-200 p-4">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>

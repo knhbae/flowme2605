@@ -634,10 +634,11 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   const artifactAudit = page.locator('section').filter({ hasText: 'Natural Artifact Audit' });
   await expect(artifactAudit).toBeVisible();
   await expect(artifactAudit.getByText('사용자가 실제로 만들 산출물 기준 검토')).toBeVisible();
-  await expect(artifactAudit.getByText('첫 batch')).toBeVisible();
-  await expect(artifactAudit.getByText('8', { exact: true }).first()).toBeVisible();
-  await expect(page.getByText('감사 완료')).toBeVisible();
-  await expect(page.getByText('카탈로그 미리보기 1')).toBeVisible();
+  await expect(artifactAudit.getByText('감사 완료')).toBeVisible();
+  await expect(artifactAudit.getByText('16', { exact: true }).first()).toBeVisible();
+  const sourceFitAudit = page.locator('section').filter({ hasText: '수동 Source-Fit Audit' });
+  await expect(sourceFitAudit.getByText('감사 완료')).toBeVisible();
+  await expect(sourceFitAudit.getByText('카탈로그 미리보기 1')).toBeVisible();
   await expect(page.getByRole('link', { name: '시험 D-30 공부 계획 Flow', exact: true })).toBeVisible();
   await expect(page.getByText('B 파일럿 실제 Flow 변환')).toBeVisible();
   await expect(page.getByText('200+ 제작자 채널 Flow 검증')).toBeVisible();
