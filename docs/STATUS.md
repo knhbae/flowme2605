@@ -20,6 +20,7 @@
 - Focus on copy/export/check behavior before platform expansion.
 - Treat FLOW as export-first in Stage 0: convert outside content into a user's existing calendar, checklist, spreadsheet, or memo before asking them to manage records inside FLOW.
 - Preserve the long-term path toward native FLOW execution records, but keep save/record features secondary until export behavior proves repeat use.
+- Keep product decisions aligned with [PRODUCT_PRINCIPLES.md](./PRODUCT_PRINCIPLES.md).
 - Keep official information and creator/user experience tips visually and structurally separate.
 - Do not label any route as validated until real user behavior data exists.
 - Avoid login, payment, AI auto-publishing, full community, and heavy integrations before Stage 0 evidence.
