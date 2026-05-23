@@ -101,11 +101,11 @@ test('converted pilot lab exposes 10 real-source flows for B validation', () => 
 test('content lab exposes source-fit audit summary for representative cleanup', () => {
   const summary = getContentLabSummary(seedBundles);
 
-  assert.equal(summary.sourceFitAuditedCount, 31);
+  assert.equal(summary.sourceFitAuditedCount, 71);
   assert.ok(summary.sourceFitAverageScore >= 70);
-  assert.equal(summary.sourceFitDecisionCounts.keep_representative, 10);
-  assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 20);
-  assert.equal(summary.sourceFitDecisionCounts.catalog_preview_only, 1);
+  assert.equal(summary.sourceFitDecisionCounts.keep_representative, 14);
+  assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 50);
+  assert.equal(summary.sourceFitDecisionCounts.catalog_preview_only, 7);
 });
 
 test('content lab exposes full content inventory coverage', () => {
@@ -113,11 +113,11 @@ test('content lab exposes full content inventory coverage', () => {
 
   assert.equal(summary.inventoryTotalCount, seedBundles.length);
   assert.equal(summary.realSourceInventoryReviewedCount, summary.realSourceFlowCount);
-  assert.equal(summary.manualSourceFitAuditedCount, 31);
-  assert.equal(summary.derivedRealSourceReviewedCount, summary.realSourceFlowCount);
+  assert.equal(summary.manualSourceFitAuditedCount, 71);
+  assert.equal(summary.derivedRealSourceReviewedCount, 0);
   assert.equal(
     summary.sourceBackedInventoryReviewedCount,
-    summary.realSourceFlowCount + summary.manualSourceFitAuditedCount + summary.sourceNeedsReviewInventoryCount,
+    summary.manualSourceFitAuditedCount + summary.derivedRealSourceReviewedCount + summary.sourceNeedsReviewInventoryCount,
   );
   assert.equal(summary.previewCandidateFlowCount, summary.previewGeneratedFlowCount);
   assert.ok(summary.inventoryPublicHandlingCounts.preview_candidate >= 440);
@@ -147,11 +147,11 @@ test('content lab exposes lifecycle buckets for keep, fix, preview, and removal 
 
   assert.equal(summary.lifecycleTotalCount, seedBundles.length);
   assert.equal(countSum, seedBundles.length);
-  assert.equal(summary.lifecycleBucketCounts.keep, 10);
+  assert.equal(summary.lifecycleBucketCounts.keep, 14);
   assert.equal(summary.lifecycleBucketCounts.hide, 0);
   assert.equal(summary.lifecycleBucketCounts.preview_only, summary.previewGeneratedFlowCount);
   assert.equal(summary.lifecycleBucketCounts.remove_candidate, 0);
-  assert.equal(summary.lifecycleBucketCounts.fix, 61);
+  assert.equal(summary.lifecycleBucketCounts.fix, 57);
   assert.equal(summary.lifecycleHideSlugs.length, 0);
   assert.ok(summary.lifecycleFixSlugs.includes('real-sinagong-computer-d30-study'));
   assert.ok(summary.lifecycleFixSlugs.includes('driver-license-renewal-check'));

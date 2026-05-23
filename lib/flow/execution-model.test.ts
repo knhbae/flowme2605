@@ -85,6 +85,6 @@ test('preview and exact-video flows do not pollute representative landing set', 
   const exact = bySlug('real-thankyou-bubu-video-daily-stretch-9min');
   const model = normalizeExecutionModel(exact);
   assert.equal(model.uxType, 'mini_flow');
-  assert.equal(model.exposureStatus, 'catalog_preview');
+  assert.equal(model.exposureStatus, 'source_review');
   assert.deepEqual(model.views, ['list', 'export_preview']);
 });

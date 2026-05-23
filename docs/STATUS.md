@@ -35,6 +35,7 @@
 - Flow lifecycle classification now groups all 511 bundles into keep/fix/preview-only/hide/remove-candidate buckets and surfaces the counts in Content Lab.
 - The source replacement and risk review `needs_review` batch is now manually audited: 31 manual audits total, 0 remaining needs-review priority routes.
 - Source-backed `needs_review` routes now have no remaining Content Lab priority queue; audited `reshape_before_featured` routes still need item/content/UX reshaping before stronger exposure.
+- Real-source manual source-fit promotion is in progress: the 40 natural-artifact audits are being projected into source-fit decisions, moving manual source-fit coverage from 31 to 71 routes.
 
 ## Next Up
 

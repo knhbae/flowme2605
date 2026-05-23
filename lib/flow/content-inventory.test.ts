@@ -22,21 +22,23 @@ test('inventory review preserves manual source-fit decisions', () => {
   assert.ok(review.reason.includes('수동'));
 });
 
-test('inventory review marks unaudited real sources as derived reviews', () => {
+test('inventory review promotes real sources to manual source-fit reviews', () => {
   const review = reviewContentInventory(bundleBySlug('real-samsung-aircon-seasonal-care'));
 
-  assert.equal(review.level, 'derived_real_source');
-  assert.notEqual(review.decision, 'preview_candidate');
+  assert.equal(review.level, 'manual_source_fit');
+  assert.equal(review.decision, 'keep_representative');
+  assert.equal(review.publicHandling, 'representative_eligible');
   assert.equal(review.sourcePrecision, 'exact');
-  assert.ok(review.nextAction.includes('수동'));
+  assert.ok(review.reason.includes('수동'));
 });
 
-test('inventory review keeps exact health videos out of representative validation', () => {
+test('inventory review keeps exact health videos in source review after manual audit', () => {
   const review = reviewContentInventory(bundleBySlug('real-thankyou-bubu-video-daily-stretch-9min'));
 
-  assert.equal(review.level, 'derived_real_source');
-  assert.equal(review.publicHandling, 'catalog_preview');
-  assert.ok(review.reason.includes('민감'));
+  assert.equal(review.level, 'manual_source_fit');
+  assert.equal(review.decision, 'reshape_before_featured');
+  assert.equal(review.publicHandling, 'source_review');
+  assert.ok(review.reason.includes('수동'));
 });
 
 test('inventory review labels generated channel flows as preview candidates', () => {
@@ -69,10 +71,10 @@ test('inventory summary covers all current seed bundles', () => {
   assert.equal(summary.realSourceReviewedCount, summary.realSourceCount);
   assert.equal(
     summary.sourceBackedReviewedCount,
-    summary.realSourceCount + summary.manualSourceFitCount + summary.sourceNeedsReviewCount,
+    summary.manualSourceFitCount + summary.derivedRealSourceCount + summary.sourceNeedsReviewCount,
   );
-  assert.equal(summary.manualSourceFitCount, 31);
-  assert.equal(summary.derivedRealSourceCount, summary.realSourceCount);
+  assert.equal(summary.manualSourceFitCount, 71);
+  assert.equal(summary.derivedRealSourceCount, 0);
   assert.equal(summary.sourceNeedsReviewCount, 0);
   assert.equal(summary.legacyAccessibleCount, 0);
   assert.equal(summary.generatedPreviewCandidateCount, summary.previewSourceCount);

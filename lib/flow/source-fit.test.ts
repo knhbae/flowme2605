@@ -8,6 +8,7 @@ import {
   scoreSourceFit,
   sourceFitAudits,
 } from './source-fit';
+import { seedBundles } from './seed-flows';
 
 test('source-fit scoring clamps each dimension to its maximum and returns a 0-100 score', () => {
   assert.equal(
@@ -88,11 +89,28 @@ test('moving audit simulates calendar and spreadsheet artifacts before comparing
 test('source-fit summary captures keep, reshape, and preview decisions', () => {
   const summary = getSourceFitSummary();
 
-  assert.equal(summary.auditedCount, 31);
+  assert.equal(summary.auditedCount, 71);
   assert.ok(summary.averageScore >= 70);
-  assert.equal(summary.decisionCounts.keep_representative, 10);
-  assert.equal(summary.decisionCounts.reshape_before_featured, 20);
-  assert.equal(summary.decisionCounts.catalog_preview_only, 1);
+  assert.equal(summary.decisionCounts.keep_representative, 14);
+  assert.equal(summary.decisionCounts.reshape_before_featured, 50);
+  assert.equal(summary.decisionCounts.catalog_preview_only, 7);
+});
+
+test('source-fit audits cover every real-source route after manual promotion pass', () => {
+  const auditedSlugs = new Set(sourceFitAudits.map((audit) => audit.slug));
+  const realSourceSlugs = seedBundles
+    .filter((bundle) => bundle.flow.source_status === 'real')
+    .map((bundle) => bundle.flow.slug);
+
+  assert.equal(realSourceSlugs.length, 40);
+  for (const slug of realSourceSlugs) {
+    assert.ok(auditedSlugs.has(slug), slug);
+    const audit = getSourceFitAudit(slug);
+    assert.ok(audit?.naturalArtifacts.length, slug);
+    assert.ok(audit.currentGap.length > 0, slug);
+    assert.ok(audit.contentAction.length > 0, slug);
+    assert.ok(audit.uxAction.length > 0, slug);
+  }
 });
 
 test('source-fit audit covers the first needs-review audit-now batch', () => {

@@ -25,13 +25,13 @@ test('lifecycle classification assigns keep and fix buckets to audited source-fi
   assert.ok(study.nextAction.length > 0);
 });
 
-test('lifecycle classification keeps derived real-source flows in fix until manually promoted', () => {
+test('lifecycle classification applies manual source-fit decisions to real-source flows', () => {
   const aircon = classifyFlowLifecycle(bundleBySlug('real-samsung-aircon-seasonal-care'));
   const studyWorkbench = classifyFlowLifecycle(bundleBySlug('real-sinagong-computer-d30-study'));
 
-  assert.equal(aircon.bucket, 'fix');
-  assert.equal(aircon.auditDecision, 'promote_to_manual_source_fit');
-  assert.ok(aircon.nextAction.includes('수동'));
+  assert.equal(aircon.bucket, 'keep');
+  assert.equal(aircon.auditDecision, 'keep_representative');
+  assert.equal(aircon.reviewLevel, 'manual_source_fit');
   assert.equal(studyWorkbench.bucket, 'fix');
   assert.equal(studyWorkbench.auditDecision, 'reshape_content_or_ux');
 });
