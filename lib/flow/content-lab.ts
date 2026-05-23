@@ -5,6 +5,7 @@ import { summarizeNaturalArtifactAuditCoverage } from './natural-artifact-audit'
 import { summarizeFlowLifecycle } from './content-lifecycle';
 import { summarizeSourceNeedsReviewPriority } from './source-review-priority';
 import { summarizeRepresentativeReadinessReviews } from './representative-readiness-review';
+import { summarizeExportFirstSimulationReviews } from './export-first-simulation-review';
 
 export type ExternalTarget = 'calendar' | 'todo' | 'notion' | 'sheet';
 
@@ -351,6 +352,7 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   const lifecycleSummary = summarizeFlowLifecycle(bundles);
   const sourceReviewPrioritySummary = summarizeSourceNeedsReviewPriority(bundles);
   const representativeReadinessSummary = summarizeRepresentativeReadinessReviews(bundles);
+  const exportFirstSimulationSummary = summarizeExportFirstSimulationReviews(bundles);
 
   return {
     pilotCreatorCount: pilotCreatorLabs.length,
@@ -402,5 +404,9 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     representativeReadinessDecisionCounts: representativeReadinessSummary.decisionCounts,
     representativeReadinessSlugs: representativeReadinessSummary.slugs,
     representativeReadinessReviews: representativeReadinessSummary.reviews,
+    exportFirstSimulationTotalCount: exportFirstSimulationSummary.totalCount,
+    exportFirstSimulationDecisionCounts: exportFirstSimulationSummary.decisionCounts,
+    exportFirstSimulationSlugs: exportFirstSimulationSummary.slugs,
+    exportFirstSimulationReviews: exportFirstSimulationSummary.reviews,
   };
 }

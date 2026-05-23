@@ -132,6 +132,24 @@ function representativeReadinessLabel(value: string): string {
   return labels[value] ?? value;
 }
 
+function exportFirstSimulationClass(value: string): string {
+  const classes: Record<string, string> = {
+    ready_for_final_promotion_qa: 'bg-emerald-50 text-emerald-950',
+    public_mvp_after_ux_fix: 'bg-blue-50 text-blue-950',
+    keep_fix: 'bg-amber-50 text-amber-950',
+  };
+  return classes[value] ?? 'bg-gray-50 text-gray-950';
+}
+
+function exportFirstSimulationLabel(value: string): string {
+  const labels: Record<string, string> = {
+    ready_for_final_promotion_qa: 'Final QA candidate',
+    public_mvp_after_ux_fix: 'Public MVP after UX fix',
+    keep_fix: 'Keep fixing',
+  };
+  return labels[value] ?? value;
+}
+
 function isSeedBundle(bundle: SeedBundle | undefined): bundle is SeedBundle {
   return Boolean(bundle);
 }
@@ -290,6 +308,50 @@ export function ContentLab() {
               <p className="mt-3 text-sm leading-6 text-gray-700">{review.userNeed}</p>
               <p className="mt-2 text-sm leading-6 text-gray-600">산출물: {review.destination}</p>
               <p className="mt-2 text-sm leading-6 text-gray-600">다음: {review.nextAction}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
+        <p className="text-sm font-semibold text-blue-700">Export-first Simulation</p>
+        <h2 className="mt-1 text-2xl font-semibold text-gray-950">User execution simulation batch 1</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+          This queue reviews the same three candidates as real user rehearsals: anchor input, natural artifact rows,
+          copy/export destination, risk boundary, and feature diet. It keeps FLOW export-first before native record
+          keeping becomes the primary behavior.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          {Object.entries(summary.exportFirstSimulationDecisionCounts).map(([decision, count]) => (
+            <div key={decision} className={`rounded-lg p-3 ${exportFirstSimulationClass(decision)}`}>
+              <p className="text-sm opacity-75">{exportFirstSimulationLabel(decision)}</p>
+              <p className="mt-1 text-2xl font-semibold">{count}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 grid gap-3 lg:grid-cols-3">
+          {summary.exportFirstSimulationReviews.map((review) => (
+            <article key={review.slug} className="rounded-lg border border-gray-200 p-4">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <p className="text-xs font-semibold text-gray-500">{review.slug}</p>
+                  <Link className="mt-1 block font-semibold text-gray-950 hover:text-blue-700" href={`/f/${review.slug}`}>
+                    {bundleBySlug.get(review.slug)?.flow.title ?? review.slug}
+                  </Link>
+                </div>
+                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${exportFirstSimulationClass(review.decision)}`}>
+                  {review.label}
+                </span>
+              </div>
+              <p className="mt-3 text-sm leading-6 text-gray-700">{review.userScenario}</p>
+              <p className="mt-2 text-sm leading-6 text-gray-600">External tool: {review.externalTool}</p>
+              <p className="mt-2 text-sm leading-6 text-gray-600">First action: {review.firstAction}</p>
+              <ul className="mt-2 space-y-1 text-sm leading-6 text-gray-600">
+                {review.artifactRows.slice(0, 3).map((row) => (
+                  <li key={row}>Sample: {row}</li>
+                ))}
+              </ul>
+              <p className="mt-2 text-sm leading-6 text-gray-600">Next: {review.nextAction}</p>
             </article>
           ))}
         </div>

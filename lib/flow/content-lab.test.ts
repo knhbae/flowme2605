@@ -11,6 +11,10 @@ import {
   getRepresentativeReadinessReview,
   summarizeRepresentativeReadinessReviews,
 } from './representative-readiness-review';
+import {
+  getExportFirstSimulationReview,
+  summarizeExportFirstSimulationReviews,
+} from './export-first-simulation-review';
 import { seedBundles } from './seed-flows';
 
 const expectedConvertedPilotSlugs = [
@@ -196,4 +200,40 @@ test('source-risk representative review classifies first three routes without pr
     const lifecycle = summary.lifecycleFixSlugs.includes(slug);
     assert.equal(lifecycle, true, `${slug} should remain reshape_before_featured until final promotion`);
   }
+});
+
+test('export-first simulation review records user artifacts and UX gaps for the first three candidates', () => {
+  const summary = getContentLabSummary(seedBundles);
+  const simulation = summarizeExportFirstSimulationReviews(seedBundles);
+
+  assert.equal(summary.exportFirstSimulationTotalCount, 3);
+  assert.equal(summary.exportFirstSimulationDecisionCounts.ready_for_final_promotion_qa, 1);
+  assert.equal(summary.exportFirstSimulationDecisionCounts.public_mvp_after_ux_fix, 2);
+  assert.equal(summary.exportFirstSimulationDecisionCounts.keep_fix, 0);
+  assert.deepEqual(summary.exportFirstSimulationSlugs, [
+    'computer-skills-d30-study',
+    'new-car-delivery-check',
+    'diet-habit-2week',
+  ]);
+  assert.deepEqual(simulation.decisionCounts, summary.exportFirstSimulationDecisionCounts);
+
+  const computer = getExportFirstSimulationReview('computer-skills-d30-study');
+  assert.ok(computer);
+  assert.equal(computer.externalTool, 'calendar + sheet');
+  assert.equal(computer.firstAction, 'Enter exam date and create a D-30 calendar plus score log.');
+  assert.ok(computer.simulatedInputs.includes('examDate=2026-06-22'));
+  assert.ok(computer.artifactRows.some((row) => row.includes('mockScore=68')));
+  assert.ok(computer.uxGaps.some((gap) => gap.includes('export preview')));
+
+  const newCar = getExportFirstSimulationReview('new-car-delivery-check');
+  assert.ok(newCar);
+  assert.equal(newCar.externalTool, 'sheet + memo');
+  assert.ok(newCar.artifactRows.some((row) => row.includes('dealerConfirmed=hold delivery until written confirmation')));
+  assert.ok(newCar.riskBoundary.includes('does not decide whether the user should sign'));
+
+  const diet = getExportFirstSimulationReview('diet-habit-2week');
+  assert.ok(diet);
+  assert.equal(diet.externalTool, 'sheet');
+  assert.ok(diet.artifactRows.some((row) => row.includes('stopCondition=consult professional if dizziness repeats')));
+  assert.ok(diet.riskBoundary.includes('observation log'));
 });
