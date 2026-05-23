@@ -2,8 +2,8 @@
 
 **Date:** 2026-05-23
 **Branch:** `codex/real-source-manual-source-fit`
-**PR URL:** TBD
-**Status:** Draft
+**PR URL:** https://github.com/knhbae/flowme2605/pull/23
+**Status:** Open
 
 ## Why
 
