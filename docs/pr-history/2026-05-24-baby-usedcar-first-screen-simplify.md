@@ -2,8 +2,8 @@
 
 **Date:** 2026-05-24
 **Branch:** `codex/baby-usedcar-first-screen-simplify`
-**PR:** TBD
-**Status:** Draft
+**PR:** [#32 Simplify baby food and used car first screens](https://github.com/knhbae/flowme2605/pull/32)
+**Status:** Open
 **Related spec:** [2026-05-24-baby-usedcar-first-screen-simplify](../specs/2026-05-24-baby-usedcar-first-screen-simplify/spec.md)
 **Related audit:** [2026-05-24-baby-usedcar-first-screen-simplify.md](../content-audit/2026-05-24-baby-usedcar-first-screen-simplify.md)
 
