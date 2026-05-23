@@ -172,7 +172,8 @@ export function ContentLab() {
         <h2 className="mt-1 text-2xl font-semibold text-gray-950">전체 콘텐츠 인벤토리</h2>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
           실제 원본 Flow는 전수 분류하고, 생성형 채널 Flow는 검증 완료 콘텐츠가 아닌 샘플 후보로 분리합니다.
-          현재 seed 기준으로 수동 audit 10개와 원본 metadata 기반 1차 분류 40개가 별도 관리됩니다.
+          현재 seed 기준으로 수동 audit {summary.manualSourceFitAuditedCount}개와 원본 metadata 기반 1차 분류{' '}
+          {summary.derivedRealSourceReviewedCount}개가 별도 관리됩니다.
         </p>
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-7">
           {[
@@ -336,7 +337,7 @@ export function ContentLab() {
             <p className="text-sm font-semibold text-blue-700">수동 Source-Fit Audit</p>
             <h2 className="mt-1 text-2xl font-semibold text-gray-950">원본 콘텐츠가 FLOW화될 가치가 있는지 점검</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
-              대표 Flow 10개를 먼저 실제 원본 기준으로 평가했습니다. 이번 배치에서는 공개 삭제를 하지 않고,
+              대표 Flow {summary.sourceFitAuditedCount}개를 먼저 실제 원본 기준으로 평가했습니다. 이번 배치에서는 공개 삭제를 하지 않고,
               원본 적합성 점수와 보강 필요 지점을 내부 Lab에 먼저 노출합니다.
             </p>
           </div>

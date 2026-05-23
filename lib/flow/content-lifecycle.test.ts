@@ -41,7 +41,7 @@ test('lifecycle classification separates generated previews and source-backed le
   assert.ok(preview);
 
   const sourceBackedLegacy = seedBundles.find(
-    (entry) => entry.flow.slug === 'samsung-aircon-seasonal-check' && !getSourceFitAudit(entry.flow.slug),
+    (entry) => entry.flow.slug === 'business-registration-basic' && !getSourceFitAudit(entry.flow.slug),
   );
   assert.ok(sourceBackedLegacy);
 

@@ -767,9 +767,9 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(inventory.getByText('샘플 후보', { exact: true })).toBeVisible();
   await expect(inventory.getByText('440', { exact: true }).first()).toBeVisible();
   await expect(inventory.getByText('수동 검토', { exact: true })).toBeVisible();
-  await expect(inventory.getByText('10', { exact: true }).first()).toBeVisible();
+  await expect(inventory.getByText('19', { exact: true }).first()).toBeVisible();
   await expect(inventory.getByText('검토 대기', { exact: true })).toBeVisible();
-  await expect(inventory.getByText('21', { exact: true }).first()).toBeVisible();
+  await expect(inventory.getByText('12', { exact: true }).first()).toBeVisible();
   await expect(inventory.getByText('legacy 접근', { exact: true })).toBeVisible();
   await expect(inventory.getByText('0', { exact: true }).first()).toBeVisible();
   const lifecycle = page.locator('section').filter({ hasText: '전체 Flow 운영 분류' });
@@ -784,7 +784,7 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(needsReviewPriority.getByText('바로 audit', { exact: true }).first()).toBeVisible();
   await expect(needsReviewPriority.getByText('원본 교체', { exact: true }).first()).toBeVisible();
   await expect(needsReviewPriority.getByText('리스크 검토', { exact: true }).first()).toBeVisible();
-  await expect(needsReviewPriority.getByText('21개')).toBeVisible();
+  await expect(needsReviewPriority.getByText('12개')).toBeVisible();
   const sourceFitAudit = page.locator('section').filter({ hasText: '원본 콘텐츠가 FLOW화될 가치가 있는지 점검' });
   await expect(sourceFitAudit).toBeVisible();
   await expect(sourceFitAudit.getByText('수동 Source-Fit Audit')).toBeVisible();
@@ -801,10 +801,11 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(page.getByText('B 파일럿 실제 Flow 변환')).toBeVisible();
   await expect(page.getByText('200+ 제작자 채널 Flow 검증')).toBeVisible();
   await expect(page.getByText('10 converted')).toBeVisible();
-  await expect(page.getByRole('link', { name: /삼성전자서비스 에어컨/ })).toBeVisible();
-  await expect(page.getByRole('link', { name: /자동차검사 준비/ })).toBeVisible();
-  await expect(page.getByRole('link', { name: /Q-Net 원서접수/ })).toBeVisible();
-  await expect(page.getByRole('link', { name: /다이어트 식단·운동 기록/ })).toBeVisible();
+  const convertedPilot = page.locator('section').filter({ hasText: 'B 파일럿 실제 Flow 변환' });
+  await expect(convertedPilot.getByRole('link', { name: /삼성전자서비스 에어컨/ })).toBeVisible();
+  await expect(convertedPilot.getByRole('link', { name: /자동차검사 준비/ })).toBeVisible();
+  await expect(convertedPilot.getByRole('link', { name: /Q-Net 원서접수/ })).toBeVisible();
+  await expect(convertedPilot.getByRole('link', { name: /다이어트 식단·운동 기록/ })).toBeVisible();
 });
 
 test('representative real content pilot flows are executable', async ({ page }) => {

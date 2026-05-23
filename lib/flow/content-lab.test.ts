@@ -101,11 +101,11 @@ test('converted pilot lab exposes 10 real-source flows for B validation', () => 
 test('content lab exposes source-fit audit summary for representative cleanup', () => {
   const summary = getContentLabSummary(seedBundles);
 
-  assert.equal(summary.sourceFitAuditedCount, 10);
+  assert.equal(summary.sourceFitAuditedCount, 19);
   assert.ok(summary.sourceFitAverageScore >= 70);
-  assert.ok(summary.sourceFitDecisionCounts.keep_representative >= 5);
-  assert.ok(summary.sourceFitDecisionCounts.reshape_before_featured >= 1);
-  assert.ok(summary.sourceFitDecisionCounts.catalog_preview_only >= 1);
+  assert.equal(summary.sourceFitDecisionCounts.keep_representative, 10);
+  assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 8);
+  assert.equal(summary.sourceFitDecisionCounts.catalog_preview_only, 1);
 });
 
 test('content lab exposes full content inventory coverage', () => {
@@ -113,7 +113,7 @@ test('content lab exposes full content inventory coverage', () => {
 
   assert.equal(summary.inventoryTotalCount, seedBundles.length);
   assert.equal(summary.realSourceInventoryReviewedCount, summary.realSourceFlowCount);
-  assert.equal(summary.manualSourceFitAuditedCount, 10);
+  assert.equal(summary.manualSourceFitAuditedCount, 19);
   assert.equal(summary.derivedRealSourceReviewedCount, summary.realSourceFlowCount);
   assert.equal(
     summary.sourceBackedInventoryReviewedCount,
@@ -121,7 +121,7 @@ test('content lab exposes full content inventory coverage', () => {
   );
   assert.equal(summary.previewCandidateFlowCount, summary.previewGeneratedFlowCount);
   assert.ok(summary.inventoryPublicHandlingCounts.preview_candidate >= 440);
-  assert.equal(summary.sourceNeedsReviewInventoryCount, 21);
+  assert.equal(summary.sourceNeedsReviewInventoryCount, 12);
   assert.equal(summary.legacyAccessibleFlowCount, 0);
 });
 
@@ -147,26 +147,25 @@ test('content lab exposes lifecycle buckets for keep, fix, preview, and removal 
 
   assert.equal(summary.lifecycleTotalCount, seedBundles.length);
   assert.equal(countSum, seedBundles.length);
-  assert.equal(summary.lifecycleBucketCounts.keep, 5);
+  assert.equal(summary.lifecycleBucketCounts.keep, 10);
   assert.equal(summary.lifecycleBucketCounts.hide, 0);
   assert.equal(summary.lifecycleBucketCounts.preview_only, summary.previewGeneratedFlowCount);
   assert.equal(summary.lifecycleBucketCounts.remove_candidate, 0);
-  assert.equal(summary.lifecycleBucketCounts.fix, 66);
+  assert.equal(summary.lifecycleBucketCounts.fix, 61);
   assert.equal(summary.lifecycleHideSlugs.length, 0);
   assert.ok(summary.lifecycleFixSlugs.includes('real-sinagong-computer-d30-study'));
-  assert.ok(summary.lifecycleFixSlugs.includes('passport-renewal-docs'));
+  assert.ok(summary.lifecycleFixSlugs.includes('driver-license-renewal-check'));
 });
 
 test('content lab exposes source needs-review priorities for the next audit batch', () => {
   const summary = getContentLabSummary(seedBundles);
   const countSum = Object.values(summary.sourceReviewPriorityCounts).reduce((sum, count) => sum + count, 0);
 
-  assert.equal(summary.sourceReviewPriorityTotalCount, 21);
-  assert.equal(countSum, 21);
-  assert.ok(summary.sourceReviewPriorityCounts.audit_now >= 5);
-  assert.ok(summary.sourceReviewPriorityCounts.source_replacement >= 1);
-  assert.ok(summary.sourceReviewPriorityCounts.risk_review >= 1);
-  assert.equal(summary.sourceReviewPriorityItems.length, 21);
-  assert.equal(summary.sourceReviewPriorityItems[0].priority, 'audit_now');
+  assert.equal(summary.sourceReviewPriorityTotalCount, 12);
+  assert.equal(countSum, 12);
+  assert.equal(summary.sourceReviewPriorityCounts.audit_now, 0);
+  assert.equal(summary.sourceReviewPriorityCounts.source_replacement, 6);
+  assert.equal(summary.sourceReviewPriorityCounts.risk_review, 6);
+  assert.equal(summary.sourceReviewPriorityItems.length, 12);
   assert.ok(summary.sourceReviewPriorityItems[0].score >= summary.sourceReviewPriorityItems.at(-1)!.score);
 });
