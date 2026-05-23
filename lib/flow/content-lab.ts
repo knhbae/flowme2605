@@ -2,6 +2,8 @@ import { AnchorType, FlowBundle, StructureType } from './types';
 import { getSourceFitSummary } from './source-fit';
 import { summarizeContentInventory } from './content-inventory';
 import { summarizeNaturalArtifactAuditCoverage } from './natural-artifact-audit';
+import { summarizeFlowLifecycle } from './content-lifecycle';
+import { summarizeSourceNeedsReviewPriority } from './source-review-priority';
 
 export type ExternalTarget = 'calendar' | 'todo' | 'notion' | 'sheet';
 
@@ -344,6 +346,8 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   const sourceFitSummary = getSourceFitSummary();
   const inventorySummary = summarizeContentInventory(bundles);
   const naturalArtifactSummary = summarizeNaturalArtifactAuditCoverage(bundles);
+  const lifecycleSummary = summarizeFlowLifecycle(bundles);
+  const sourceReviewPrioritySummary = summarizeSourceNeedsReviewPriority(bundles);
 
   return {
     pilotCreatorCount: pilotCreatorLabs.length,
@@ -371,6 +375,7 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     sourceBackedInventoryReviewedCount: inventorySummary.sourceBackedReviewedCount,
     manualSourceFitAuditedCount: inventorySummary.manualSourceFitCount,
     derivedRealSourceReviewedCount: inventorySummary.derivedRealSourceCount,
+    sourceNeedsReviewInventoryCount: inventorySummary.sourceNeedsReviewCount,
     previewCandidateFlowCount: inventorySummary.generatedPreviewCandidateCount,
     legacyAccessibleFlowCount: inventorySummary.legacyAccessibleCount,
     inventoryLevelCounts: inventorySummary.levelCounts,
@@ -380,5 +385,15 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     naturalArtifactRealSourceRemainingCount: naturalArtifactSummary.remainingRealSourceCount,
     naturalArtifactCategoryCounts: naturalArtifactSummary.auditedCategoryCounts,
     naturalArtifactDecisionCounts: naturalArtifactSummary.decisionCounts,
+    lifecycleTotalCount: lifecycleSummary.totalCount,
+    lifecycleBucketCounts: lifecycleSummary.bucketCounts,
+    lifecycleKeepSlugs: lifecycleSummary.keepSlugs,
+    lifecycleFixSlugs: lifecycleSummary.fixSlugs,
+    lifecyclePreviewOnlySlugs: lifecycleSummary.previewOnlySlugs,
+    lifecycleHideSlugs: lifecycleSummary.hideSlugs,
+    lifecycleRemoveCandidateSlugs: lifecycleSummary.removeCandidateSlugs,
+    sourceReviewPriorityTotalCount: sourceReviewPrioritySummary.totalCount,
+    sourceReviewPriorityCounts: sourceReviewPrioritySummary.priorityCounts,
+    sourceReviewPriorityItems: sourceReviewPrioritySummary.items,
   };
 }

@@ -115,9 +115,14 @@ test('content lab exposes full content inventory coverage', () => {
   assert.equal(summary.realSourceInventoryReviewedCount, summary.realSourceFlowCount);
   assert.equal(summary.manualSourceFitAuditedCount, 10);
   assert.equal(summary.derivedRealSourceReviewedCount, summary.realSourceFlowCount);
-  assert.equal(summary.sourceBackedInventoryReviewedCount, summary.realSourceFlowCount + summary.manualSourceFitAuditedCount);
+  assert.equal(
+    summary.sourceBackedInventoryReviewedCount,
+    summary.realSourceFlowCount + summary.manualSourceFitAuditedCount + summary.sourceNeedsReviewInventoryCount,
+  );
   assert.equal(summary.previewCandidateFlowCount, summary.previewGeneratedFlowCount);
   assert.ok(summary.inventoryPublicHandlingCounts.preview_candidate >= 440);
+  assert.equal(summary.sourceNeedsReviewInventoryCount, 21);
+  assert.equal(summary.legacyAccessibleFlowCount, 0);
 });
 
 test('content lab exposes natural artifact audit coverage for real-source flows', () => {
@@ -134,4 +139,34 @@ test('content lab exposes natural artifact audit coverage for real-source flows'
   assert.ok(summary.naturalArtifactCategoryCounts['육아/돌봄'] >= 2);
   assert.ok(summary.naturalArtifactCategoryCounts['반려동물'] >= 2);
   assert.ok(summary.naturalArtifactCategoryCounts['이사/주거'] >= 2);
+});
+
+test('content lab exposes lifecycle buckets for keep, fix, preview, and removal review', () => {
+  const summary = getContentLabSummary(seedBundles);
+  const countSum = Object.values(summary.lifecycleBucketCounts).reduce((sum, count) => sum + count, 0);
+
+  assert.equal(summary.lifecycleTotalCount, seedBundles.length);
+  assert.equal(countSum, seedBundles.length);
+  assert.equal(summary.lifecycleBucketCounts.keep, 5);
+  assert.equal(summary.lifecycleBucketCounts.hide, 0);
+  assert.equal(summary.lifecycleBucketCounts.preview_only, summary.previewGeneratedFlowCount);
+  assert.equal(summary.lifecycleBucketCounts.remove_candidate, 0);
+  assert.equal(summary.lifecycleBucketCounts.fix, 66);
+  assert.equal(summary.lifecycleHideSlugs.length, 0);
+  assert.ok(summary.lifecycleFixSlugs.includes('real-sinagong-computer-d30-study'));
+  assert.ok(summary.lifecycleFixSlugs.includes('passport-renewal-docs'));
+});
+
+test('content lab exposes source needs-review priorities for the next audit batch', () => {
+  const summary = getContentLabSummary(seedBundles);
+  const countSum = Object.values(summary.sourceReviewPriorityCounts).reduce((sum, count) => sum + count, 0);
+
+  assert.equal(summary.sourceReviewPriorityTotalCount, 21);
+  assert.equal(countSum, 21);
+  assert.ok(summary.sourceReviewPriorityCounts.audit_now >= 5);
+  assert.ok(summary.sourceReviewPriorityCounts.source_replacement >= 1);
+  assert.ok(summary.sourceReviewPriorityCounts.risk_review >= 1);
+  assert.equal(summary.sourceReviewPriorityItems.length, 21);
+  assert.equal(summary.sourceReviewPriorityItems[0].priority, 'audit_now');
+  assert.ok(summary.sourceReviewPriorityItems[0].score >= summary.sourceReviewPriorityItems.at(-1)!.score);
 });

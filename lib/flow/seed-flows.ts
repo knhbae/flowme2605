@@ -51,6 +51,159 @@ function tagMeta(tags: string[]): Pick<Flow, 'tags'> {
   return { tags };
 }
 
+const sourceNeedsReviewMeta: Record<
+  string,
+  Pick<Flow, 'source_status' | 'source_precision' | 'source_checked_at' | 'conversion_note' | 'primary_destination'>
+> = {
+  'job-change-risk-check': {
+    source_status: 'needs_review',
+    source_precision: 'exact',
+    source_checked_at: '2026-05-23',
+    conversion_note: '퇴사/이직 의사결정 체크리스트를 source-fit audit 전 검토 대기 Flow로 정규화했습니다.',
+    primary_destination: 'memo',
+  },
+  'year-end-tax-docs': {
+    source_status: 'needs_review',
+    source_precision: 'broad',
+    source_checked_at: '2026-05-23',
+    conversion_note: '홈택스 기반 연말정산 서류 Flow입니다. 연도별 공식 안내 확인 후 real-source 승격이 필요합니다.',
+    primary_destination: 'sheet',
+  },
+  'passport-renewal-docs': {
+    source_status: 'needs_review',
+    source_precision: 'exact',
+    source_checked_at: '2026-05-23',
+    conversion_note: '정부24 여권 발급 안내 기반 Flow입니다. 사용자 여정 audit 전 검토 대기 상태입니다.',
+    primary_destination: 'memo',
+  },
+  'national-health-checkup-d7': {
+    source_status: 'needs_review',
+    source_precision: 'exact',
+    source_checked_at: '2026-05-23',
+    conversion_note: '건강검진 공식 안내 기반 Flow입니다. 민감 영역이라 대표 노출 전 수동 검토가 필요합니다.',
+    primary_destination: 'calendar',
+  },
+  'business-registration-basic': {
+    source_status: 'needs_review',
+    source_precision: 'exact',
+    source_checked_at: '2026-05-23',
+    conversion_note: '사업자등록 서류 안내 기반 Flow입니다. 세무/행정 리스크 검토 후 승격합니다.',
+    primary_destination: 'memo',
+  },
+  'driver-license-renewal-check': {
+    source_status: 'needs_review',
+    source_precision: 'exact',
+    source_checked_at: '2026-05-23',
+    conversion_note: '안전운전 통합민원 안내 기반 Flow입니다. 면허 조건별 분기 audit이 필요합니다.',
+    primary_destination: 'calendar',
+  },
+  'happy-birth-service-check': {
+    source_status: 'needs_review',
+    source_precision: 'exact',
+    source_checked_at: '2026-05-23',
+    conversion_note: '행복출산 원스톱서비스 안내 기반 Flow입니다. 민감 행정/육아 정보를 수동 검토해야 합니다.',
+    primary_destination: 'memo',
+  },
+  'pet-registration-basic': {
+    source_status: 'needs_review',
+    source_precision: 'exact',
+    source_checked_at: '2026-05-23',
+    conversion_note: '정부24 동물등록 안내 기반 Flow입니다. 등록번호 보관 산출물 검토가 필요합니다.',
+    primary_destination: 'memo',
+  },
+  'vaccination-certificate-issue': {
+    source_status: 'needs_review',
+    source_precision: 'exact',
+    source_checked_at: '2026-05-23',
+    conversion_note: '예방접종증명 발급 안내 기반 Flow입니다. 의료 민감 영역이라 수동 검토가 필요합니다.',
+    primary_destination: 'memo',
+  },
+  'family-certificate-issue': {
+    source_status: 'needs_review',
+    source_precision: 'exact',
+    source_checked_at: '2026-05-23',
+    conversion_note: '가족관계등록부 증명서 안내 기반 Flow입니다. 제출처별 요구사항 audit이 필요합니다.',
+    primary_destination: 'memo',
+  },
+  'resident-register-copy-issue': {
+    source_status: 'needs_review',
+    source_precision: 'exact',
+    source_checked_at: '2026-05-23',
+    conversion_note: '주민등록표 등본/초본 안내 기반 Flow입니다. 표시 항목 선택과 증빙 보관 UX 검토가 필요합니다.',
+    primary_destination: 'memo',
+  },
+  'industrial-accident-claim-docs': {
+    source_status: 'needs_review',
+    source_precision: 'exact',
+    source_checked_at: '2026-05-23',
+    conversion_note: '산재보험 요양비청구 안내 기반 Flow입니다. 재정/노무 민감성 검토가 필요합니다.',
+    primary_destination: 'sheet',
+  },
+  'new-car-delivery-check': {
+    source_status: 'needs_review',
+    source_precision: 'broad',
+    source_checked_at: '2026-05-23',
+    conversion_note: '차량 인수 점검 Flow입니다. 현재 원본 URL은 broad/reference라 정확한 source replacement가 필요합니다.',
+    primary_destination: 'sheet',
+  },
+  'diet-habit-2week': {
+    source_status: 'needs_review',
+    source_precision: 'broad',
+    source_checked_at: '2026-05-23',
+    conversion_note: '다이어트 습관 루틴 Flow입니다. 건강 민감 영역이라 정확한 원본과 안전 기준 검토가 필요합니다.',
+    primary_destination: 'sheet',
+  },
+  'samsung-aircon-seasonal-check': {
+    source_status: 'needs_review',
+    source_precision: 'exact',
+    source_checked_at: '2026-05-23',
+    conversion_note: '공식 가전관리 Flow입니다. 실제 원본 배치 승격 전 상담/예약 메모 gap 검토가 필요합니다.',
+    primary_destination: 'calendar',
+  },
+  'samsung-washer-filter-cleaning': {
+    source_status: 'needs_review',
+    source_precision: 'exact',
+    source_checked_at: '2026-05-23',
+    conversion_note: '공식 가전관리 루틴 Flow입니다. 반복 주기와 안전 경고 UX audit 후 승격합니다.',
+    primary_destination: 'calendar',
+  },
+  'vehicle-inspection-prep': {
+    source_status: 'needs_review',
+    source_precision: 'exact',
+    source_checked_at: '2026-05-23',
+    conversion_note: 'TS 자동차검사 안내 기반 Flow입니다. 검사 결과 후속 memo gap 검토가 필요합니다.',
+    primary_destination: 'hybrid',
+  },
+  'qnet-exam-application-prep': {
+    source_status: 'needs_review',
+    source_precision: 'exact',
+    source_checked_at: '2026-05-23',
+    conversion_note: 'Q-Net 원서접수 안내 기반 Flow입니다. 일정/서류/결제 증빙 산출물 audit이 필요합니다.',
+    primary_destination: 'hybrid',
+  },
+  'computer-skills-d30-study': {
+    source_status: 'needs_review',
+    source_precision: 'broad',
+    source_checked_at: '2026-05-23',
+    conversion_note: '시나공 학습 자료 기반 Flow입니다. exact source 지정 후 점수/오답 산출물과 연결해야 합니다.',
+    primary_destination: 'hybrid',
+  },
+  'diet-meal-exercise-log': {
+    source_status: 'needs_review',
+    source_precision: 'broad',
+    source_checked_at: '2026-05-23',
+    conversion_note: '다이어트 식단/운동 기록 Flow입니다. 민감 건강 영역이라 정확한 원본과 sheet-first audit이 필요합니다.',
+    primary_destination: 'sheet',
+  },
+  'diet-reset-2week': {
+    source_status: 'needs_review',
+    source_precision: 'broad',
+    source_checked_at: '2026-05-23',
+    conversion_note: '다이어트 습관 리셋 Flow입니다. 민감 건강 영역이라 정확한 원본과 안전 기준 audit이 필요합니다.',
+    primary_destination: 'sheet',
+  },
+};
+
 function withItemDetails(
   bundle: FlowBundle,
   details: Record<string, Pick<FlowBundle['items'][number], 'description' | 'source_type' | 'risk_level'> & Omit<FlowItemDetail, 'item_id'>>,
@@ -1825,6 +1978,7 @@ const creatorInspiredBundles: FlowBundle[] = [
 
 function enrichSeedMeta(bundle: FlowBundle, index: number): FlowBundle {
   const category = bundle.flow.category;
+  const needsReviewMeta = sourceNeedsReviewMeta[bundle.flow.slug];
   const creatorByCategory = category.includes('자동차')
     ? creatorMeta('차근차근 모빌리티', '자동차 생활 크리에이터', '구매와 관리에서 놓치기 쉬운 확인 순서를 정리합니다.', 420 + index * 37, 88 + index * 9)
     : category.includes('자격증') || category.includes('공부')
@@ -1843,6 +1997,7 @@ function enrichSeedMeta(bundle: FlowBundle, index: number): FlowBundle {
     ...bundle,
     flow: {
       ...bundle.flow,
+      ...needsReviewMeta,
       ...(bundle.flow.creator_name ? {} : creatorByCategory),
       tags: bundle.flow.tags ?? buildSeedTags(bundle),
     },

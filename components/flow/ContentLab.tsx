@@ -6,6 +6,14 @@ import {
   pilotCreatorLabs,
   scoreCandidate,
 } from '@/lib/flow/content-lab';
+import {
+  FLOW_LIFECYCLE_BUCKET_LABELS,
+  type FlowLifecycleBucket,
+} from '@/lib/flow/content-lifecycle';
+import {
+  SOURCE_REVIEW_PRIORITY_LABELS,
+  type SourceReviewPriority,
+} from '@/lib/flow/source-review-priority';
 import { seedBundles } from '@/lib/flow/seed-flows';
 import { sourceFitAudits, type SourceFitDecision } from '@/lib/flow/source-fit';
 import {
@@ -85,6 +93,27 @@ function naturalArtifactDecisionClass(value: NaturalArtifactAuditDecision): stri
   return classes[value];
 }
 
+function lifecycleBucketClass(value: FlowLifecycleBucket): string {
+  const classes: Record<FlowLifecycleBucket, string> = {
+    keep: 'bg-emerald-50 text-emerald-950',
+    fix: 'bg-amber-50 text-amber-950',
+    preview_only: 'bg-blue-50 text-blue-950',
+    hide: 'bg-red-50 text-red-950',
+    remove_candidate: 'bg-gray-100 text-gray-950',
+  };
+  return classes[value];
+}
+
+function sourceReviewPriorityClass(value: SourceReviewPriority): string {
+  const classes: Record<SourceReviewPriority, string> = {
+    audit_now: 'bg-emerald-50 text-emerald-950',
+    source_replacement: 'bg-blue-50 text-blue-950',
+    risk_review: 'bg-red-50 text-red-950',
+    content_backlog: 'bg-amber-50 text-amber-950',
+  };
+  return classes[value];
+}
+
 function isSeedBundle(bundle: SeedBundle | undefined): bundle is SeedBundle {
   return Boolean(bundle);
 }
@@ -145,13 +174,14 @@ export function ContentLab() {
           실제 원본 Flow는 전수 분류하고, 생성형 채널 Flow는 검증 완료 콘텐츠가 아닌 샘플 후보로 분리합니다.
           현재 seed 기준으로 수동 audit 10개와 원본 metadata 기반 1차 분류 40개가 별도 관리됩니다.
         </p>
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-7">
           {[
             { label: '전체', value: summary.inventoryTotalCount, className: 'bg-gray-50 text-gray-950' },
             { label: '실제 원본', value: summary.realSourceFlowCount, className: 'bg-emerald-50 text-emerald-950' },
             { label: '샘플 후보', value: summary.previewCandidateFlowCount, className: 'bg-blue-50 text-blue-950' },
             { label: '수동 검토', value: summary.manualSourceFitAuditedCount, className: 'bg-amber-50 text-amber-950' },
             { label: '1차 분류', value: summary.derivedRealSourceReviewedCount, className: 'bg-gray-50 text-gray-950' },
+            { label: '검토 대기', value: summary.sourceNeedsReviewInventoryCount, className: 'bg-amber-50 text-amber-950' },
             { label: 'legacy 접근', value: summary.legacyAccessibleFlowCount, className: 'bg-gray-50 text-gray-950' },
           ].map((item) => (
             <div key={item.label} className={`rounded-lg p-3 ${item.className}`}>
@@ -164,6 +194,86 @@ export function ContentLab() {
           원본 기반 분류 커버리지: {summary.sourceBackedInventoryReviewedCount}개
           {' '}· preview candidate: {summary.inventoryPublicHandlingCounts.preview_candidate}개
         </p>
+      </section>
+
+      <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
+        <p className="text-sm font-semibold text-blue-700">Lifecycle Classification</p>
+        <h2 className="mt-1 text-2xl font-semibold text-gray-950">전체 Flow 운영 분류</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+          Source-fit audit, real-source 자연 산출물 audit, preview/legacy inventory를 합쳐 현재 서비스에서
+          유지할 것과 보강할 것, 미리보기로 둘 것, 정리 후보를 분리합니다. 이번 기준에서는 실제 원본 Flow의
+          즉시 공개 숨김 대상은 없습니다.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          {(Object.keys(summary.lifecycleBucketCounts) as FlowLifecycleBucket[]).map((bucket) => (
+            <div key={bucket} className={`rounded-lg p-3 ${lifecycleBucketClass(bucket)}`}>
+              <p className="text-sm opacity-75">{FLOW_LIFECYCLE_BUCKET_LABELS[bucket]}</p>
+              <p className="mt-1 text-2xl font-semibold">{summary.lifecycleBucketCounts[bucket]}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 grid gap-4 lg:grid-cols-3">
+          <div className="rounded-lg border border-emerald-100 bg-emerald-50 p-4">
+            <p className="text-sm font-semibold text-emerald-900">대표 유지</p>
+            <p className="mt-2 text-sm leading-6 text-emerald-950">
+              {summary.lifecycleKeepSlugs.join(' · ')}
+            </p>
+          </div>
+          <div className="rounded-lg border border-amber-100 bg-amber-50 p-4">
+            <p className="text-sm font-semibold text-amber-900">보강 우선 샘플</p>
+            <p className="mt-2 text-sm leading-6 text-amber-950">
+              {summary.lifecycleFixSlugs.slice(0, 8).join(' · ')}
+            </p>
+          </div>
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm font-semibold text-gray-900">삭제 후보 샘플</p>
+            <p className="mt-2 text-sm leading-6 text-gray-700">
+              {summary.lifecycleRemoveCandidateSlugs.length > 0
+                ? summary.lifecycleRemoveCandidateSlugs.slice(0, 8).join(' · ')
+                : '현재 삭제 후보 없음'}
+            </p>
+            <p className="mt-3 text-xs leading-5 text-gray-500">
+              원본 URL이 있는 legacy 항목은 삭제 후보가 아니라 보강 필요로 분류합니다. route 삭제는 별도 검토 후 진행합니다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
+        <p className="text-sm font-semibold text-blue-700">Needs-review Priority</p>
+        <h2 className="mt-1 text-2xl font-semibold text-gray-950">검토 대기 우선순위</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+          source URL은 있지만 아직 수동 source-fit audit을 통과하지 않은 {summary.sourceReviewPriorityTotalCount}개를
+          다음 작업 순서로 나눕니다. exact source와 실행 구조가 있는 Flow는 바로 audit하고, broad source는 원본을 먼저
+          교체하며, 민감 영역은 공식 기준과 고지를 먼저 확인합니다.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {(Object.keys(summary.sourceReviewPriorityCounts) as SourceReviewPriority[]).map((priority) => (
+            <div key={priority} className={`rounded-lg p-3 ${sourceReviewPriorityClass(priority)}`}>
+              <p className="text-sm opacity-75">{SOURCE_REVIEW_PRIORITY_LABELS[priority]}</p>
+              <p className="mt-1 text-2xl font-semibold">{summary.sourceReviewPriorityCounts[priority]}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 grid gap-3 lg:grid-cols-2">
+          {summary.sourceReviewPriorityItems.slice(0, 6).map((item) => (
+            <article key={item.slug} className="rounded-lg border border-gray-200 p-4">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <p className="text-xs font-semibold text-gray-500">{item.slug}</p>
+                  <Link className="mt-1 block font-semibold text-gray-950 hover:text-blue-700" href={`/f/${item.slug}`}>
+                    {item.title}
+                  </Link>
+                </div>
+                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${sourceReviewPriorityClass(item.priority)}`}>
+                  {item.label} · {item.score}
+                </span>
+              </div>
+              <p className="mt-3 text-sm leading-6 text-gray-600">{item.reason}</p>
+              <p className="mt-2 text-sm leading-6 text-gray-700">다음: {item.nextAction}</p>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">

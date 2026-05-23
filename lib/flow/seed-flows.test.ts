@@ -317,6 +317,43 @@ test('existing pilot flows use upgraded source metadata and matching detail link
   }
 });
 
+test('source-backed legacy flows are normalized as needs-review inventory', () => {
+  const needsReviewSlugs = [
+    'job-change-risk-check',
+    'year-end-tax-docs',
+    'passport-renewal-docs',
+    'national-health-checkup-d7',
+    'business-registration-basic',
+    'driver-license-renewal-check',
+    'happy-birth-service-check',
+    'pet-registration-basic',
+    'vaccination-certificate-issue',
+    'family-certificate-issue',
+    'resident-register-copy-issue',
+    'industrial-accident-claim-docs',
+    'new-car-delivery-check',
+    'diet-habit-2week',
+    'samsung-aircon-seasonal-check',
+    'samsung-washer-filter-cleaning',
+    'vehicle-inspection-prep',
+    'qnet-exam-application-prep',
+    'computer-skills-d30-study',
+    'diet-meal-exercise-log',
+    'diet-reset-2week',
+  ];
+
+  for (const slug of needsReviewSlugs) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+    assert.ok(bundle, slug);
+    assert.equal(bundle.flow.source_status, 'needs_review', slug);
+    assert.ok(bundle.flow.source_url?.startsWith('https://'), slug);
+    assert.ok(bundle.flow.source_title, slug);
+    assert.ok(bundle.flow.source_checked_at, slug);
+    assert.ok(bundle.flow.conversion_note, slug);
+    assert.ok(bundle.flow.source_precision, slug);
+  }
+});
+
 test('creator channel preview exposes 10 channels and 400+ published flows', () => {
   assert.ok(previewCreatorChannels.length >= 10);
   assert.ok(previewFlowBundles.length >= 400);
