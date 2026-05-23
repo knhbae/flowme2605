@@ -4,7 +4,7 @@
 **Branch:** `codex/flow-lifecycle-classification`  
 **Status:** Open  
 **PR URL:** https://github.com/knhbae/flowme2605/pull/18  
-**Deploy URL:** https://vercel.com/flowme/flowme2605/JEJLrBCpDX4QeCLKc7agGshPF6y8
+**Deploy URL:** https://vercel.com/flowme/flowme2605/GnGGQWVK6YG2f8HBp42CA6wkJgNi
 
 ## Why
 
