@@ -101,3 +101,13 @@ Do not use this for:
 **Revisit when:** FLOW has repeated evidence that users copy/export/check flows and creators want to publish or maintain flows. Before payments or tokens, define asset types, ownership, versioning, quality signals, and revenue splits.
 
 **Source context:** Product brainstorming conversation on 2026-05-21. User wants FLOW-derived content/data/add-ons to be exchangeable with coins or cash but sees standardization as difficult.
+
+### 2026-05-23 - Export-first now, native execution records later
+
+**Idea:** Position FLOW first as an action compiler that turns outside content into a user's existing calendar, checklist, spreadsheet, or memo. Keep the long-term product direction open for users to save, continue, and record execution inside FLOW once export-first behavior proves repeat value.
+
+**Why not now:** Pushing native record keeping too early would make FLOW look like a Notion, calendar, or task-app replacement before the simpler conversion loop is validated. It would also add screen complexity during Stage 0, when the product still needs to prove that users can open a Flow, add an anchor, export, check, and return.
+
+**Revisit when:** Users repeatedly export, check, or modify Flows and ask to continue the same execution record inside FLOW instead of moving everything to external tools.
+
+**Source context:** Product direction conversation on 2026-05-23. User clarified that the initial goal is moving content into existing tools, while the later goal is to let FLOW become the place where execution records accumulate.
