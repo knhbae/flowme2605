@@ -2,8 +2,8 @@
 
 **Date:** 2026-05-23  
 **Branch:** `codex/flow-lifecycle-classification`  
-**Status:** Draft  
-**PR URL:** TBD  
+**Status:** Open  
+**PR URL:** https://github.com/knhbae/flowme2605/pull/18  
 **Deploy URL:** TBD
 
 ## Why
