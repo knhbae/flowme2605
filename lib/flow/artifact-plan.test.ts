@@ -82,3 +82,23 @@ test('artifact plan keeps broad source routes out of representative promotion', 
   assert.equal(plan.canBeRepresentative, false);
   assert.ok(plan.sourceAction.includes('exact'));
 });
+
+test('artifact plan maps official document issue routes to memo cards first', () => {
+  const family = getArtifactPlan(bundle('family-certificate-issue'));
+  const resident = getArtifactPlan(bundle('resident-register-copy-issue'));
+
+  assert.equal(family.primarySurface, 'memo_card');
+  assert.equal(resident.primarySurface, 'memo_card');
+  assert.deepEqual(family.surfaces.map((surface) => surface.kind), ['memo_card', 'execution_list']);
+  assert.deepEqual(resident.surfaces.map((surface) => surface.kind), ['memo_card', 'execution_list']);
+  assert.ok(family.exportTargets.includes('memo'));
+  assert.ok(resident.exportTargets.includes('memo'));
+});
+
+test('artifact plan maps driver renewal reshaping to condition comparison first', () => {
+  const plan = getArtifactPlan(bundle('driver-license-renewal-check'));
+
+  assert.equal(plan.primarySurface, 'decision_table');
+  assert.equal(plan.surfaces[0].kind, 'comparison_table');
+  assert.equal(plan.sourceHandling, 'reshape_before_featured');
+});
