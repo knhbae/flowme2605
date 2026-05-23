@@ -19,6 +19,10 @@ import {
   getRiskBoundaryQaReview,
   summarizeRiskBoundaryQaReviews,
 } from './risk-boundary-qa';
+import {
+  getUxContentSimplificationAudit,
+  summarizeUxContentSimplificationAudits,
+} from './ux-content-simplification-audit';
 import { seedBundles } from './seed-flows';
 
 const expectedConvertedPilotSlugs = [
@@ -270,4 +274,63 @@ test('risk-boundary QA records public MVP fixes without representative promotion
   assert.equal(summary.lifecycleFixSlugs.includes('diet-habit-2week'), true);
   assert.equal(summary.lifecycleKeepSlugs.includes('new-car-delivery-check'), false);
   assert.equal(summary.lifecycleKeepSlugs.includes('diet-habit-2week'), false);
+});
+
+test('UX content simplification audit records representative export-first gaps', () => {
+  const summary = getContentLabSummary(seedBundles);
+  const audit = summarizeUxContentSimplificationAudits(seedBundles);
+
+  assert.equal(summary.uxContentSimplificationTotalCount, 7);
+  assert.equal(summary.uxContentSimplificationDecisionCounts.keep_simple, 3);
+  assert.equal(summary.uxContentSimplificationDecisionCounts.simplify_first_screen, 2);
+  assert.equal(summary.uxContentSimplificationDecisionCounts.public_mvp_with_guardrails, 2);
+  assert.deepEqual(summary.uxContentSimplificationSlugs, [
+    'moving-d30-basic',
+    'baby-food-menu-recipe',
+    'passport-renewal-docs',
+    'used-car-buying-check',
+    'computer-skills-d30-study',
+    'new-car-delivery-check',
+    'diet-habit-2week',
+  ]);
+  assert.deepEqual(audit.decisionCounts, summary.uxContentSimplificationDecisionCounts);
+
+  const moving = getUxContentSimplificationAudit('moving-d30-basic');
+  assert.ok(moving);
+  assert.equal(moving.primaryDestination, 'hybrid');
+  assert.ok(moving.naturalArtifactSimulation.some((row) => row.includes('moveDate=2026-06-27')));
+  assert.ok(moving.firstScreenFinding.includes('calendar and checklist'));
+
+  const baby = getUxContentSimplificationAudit('baby-food-menu-recipe');
+  assert.ok(baby);
+  assert.equal(baby.decision, 'simplify_first_screen');
+  assert.ok(baby.moveBelowFold.some((item) => item.includes('recipe details')));
+  assert.ok(baby.riskBoundary.includes('allergy'));
+
+  const passport = getUxContentSimplificationAudit('passport-renewal-docs');
+  assert.ok(passport);
+  assert.equal(passport.decision, 'keep_simple');
+  assert.ok(passport.copyFix.includes('submission requirement memo'));
+
+  const usedCar = getUxContentSimplificationAudit('used-car-buying-check');
+  assert.ok(usedCar);
+  assert.equal(usedCar.decision, 'simplify_first_screen');
+  assert.ok(usedCar.currentFlowGap.includes('comparison'));
+
+  const computer = getUxContentSimplificationAudit('computer-skills-d30-study');
+  assert.ok(computer);
+  assert.equal(computer.decision, 'keep_simple');
+  assert.ok(computer.keepOnFirstScreen.some((item) => item.includes('D-30')));
+
+  const newCar = getUxContentSimplificationAudit('new-car-delivery-check');
+  assert.ok(newCar);
+  assert.equal(newCar.decision, 'public_mvp_with_guardrails');
+  assert.ok(newCar.contentUxReinforcement.includes('evidence memo'));
+  assert.ok(newCar.riskBoundary.includes('does not decide whether to sign'));
+
+  const diet = getUxContentSimplificationAudit('diet-habit-2week');
+  assert.ok(diet);
+  assert.equal(diet.decision, 'public_mvp_with_guardrails');
+  assert.ok(diet.currentFlowGap.includes('warning'));
+  assert.ok(diet.copyFix.includes('observation'));
 });

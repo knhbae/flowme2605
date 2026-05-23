@@ -7,6 +7,7 @@ import { summarizeSourceNeedsReviewPriority } from './source-review-priority';
 import { summarizeRepresentativeReadinessReviews } from './representative-readiness-review';
 import { summarizeExportFirstSimulationReviews } from './export-first-simulation-review';
 import { summarizeRiskBoundaryQaReviews } from './risk-boundary-qa';
+import { summarizeUxContentSimplificationAudits } from './ux-content-simplification-audit';
 
 export type ExternalTarget = 'calendar' | 'todo' | 'notion' | 'sheet';
 
@@ -355,6 +356,7 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   const representativeReadinessSummary = summarizeRepresentativeReadinessReviews(bundles);
   const exportFirstSimulationSummary = summarizeExportFirstSimulationReviews(bundles);
   const riskBoundaryQaSummary = summarizeRiskBoundaryQaReviews(bundles);
+  const uxContentSimplificationSummary = summarizeUxContentSimplificationAudits(bundles);
 
   return {
     pilotCreatorCount: pilotCreatorLabs.length,
@@ -414,5 +416,9 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     riskBoundaryQaDecisionCounts: riskBoundaryQaSummary.decisionCounts,
     riskBoundaryQaSlugs: riskBoundaryQaSummary.slugs,
     riskBoundaryQaReviews: riskBoundaryQaSummary.reviews,
+    uxContentSimplificationTotalCount: uxContentSimplificationSummary.totalCount,
+    uxContentSimplificationDecisionCounts: uxContentSimplificationSummary.decisionCounts,
+    uxContentSimplificationSlugs: uxContentSimplificationSummary.slugs,
+    uxContentSimplificationAudits: uxContentSimplificationSummary.audits,
   };
 }
