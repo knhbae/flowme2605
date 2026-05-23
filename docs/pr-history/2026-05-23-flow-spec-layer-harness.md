@@ -2,8 +2,8 @@
 
 **Date:** 2026-05-23  
 **Branch:** `codex/flow-spec-layer-harness`  
-**PR URL:** Pending  
-**Status:** Draft  
+**PR URL:** https://github.com/knhbae/flowme2605/pull/21
+**Status:** Open
 **Deploy URL:** Not applicable
 
 ## Why
