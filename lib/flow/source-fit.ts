@@ -1,3 +1,4 @@
+import { getFinalPromotionQaReview } from './final-promotion-qa';
 import { realSourceNaturalArtifactAudits, type NaturalArtifactAuditDecision } from './natural-artifact-audit';
 
 export type SourceFitDecision =
@@ -90,10 +91,12 @@ function defineAudit(
   audit: Omit<SourceFitAudit, 'score' | 'decision'> & { decision?: SourceFitDecision },
 ): SourceFitAudit {
   const score = scoreSourceFit(audit.scores);
+  const promotionQa = getFinalPromotionQaReview(audit.slug);
   return {
     ...audit,
+    uxAction: promotionQa ? `${audit.uxAction} ${promotionQa.uxEvidence}` : audit.uxAction,
     score,
-    decision: audit.decision ?? getSourceFitDecision(score),
+    decision: promotionQa?.sourceFitDecision ?? audit.decision ?? getSourceFitDecision(score),
   };
 }
 
