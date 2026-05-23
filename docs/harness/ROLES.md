@@ -26,7 +26,14 @@ These roles describe responsibilities, not specific AI products. Use subagents w
 
 - Evaluates tradeoffs before larger structural decisions.
 - Keeps Stage 0 constraints visible and rejects premature platform expansion.
-- Records decisions in `docs/superpowers/specs/` or architecture docs when needed.
+- Records durable decisions in `docs/specs/` or architecture docs when needed.
+
+## Spec Steward
+
+- Promotes committed work from `docs/IDEAS.md` or user requests into `docs/specs/YYYY-MM-DD-short-topic/`.
+- Checks that each spec names Stage fit, first user action, artifact destination, source/risk boundary, natural artifact, and verification.
+- Links generated `docs/superpowers/` artifacts from the durable spec when a tool-specific workflow is used.
+- Keeps `docs/ROADMAP.md` short and prevents specs from becoming unbounded backlog dumps.
 
 ## Browser Tester
 

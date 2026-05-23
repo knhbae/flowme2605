@@ -12,6 +12,7 @@ Get-Content -Raw agent.md
 Get-Content -Raw docs/STATUS.md
 Get-Content -Raw docs/ROADMAP.md
 Get-Content -Raw docs/IDEAS.md
+Get-Content -Raw docs/specs/README.md
 git status --short --branch
 ```
 
@@ -28,11 +29,26 @@ For new work, define:
 - Out-of-scope items
 - Deferred ideas from `docs/IDEAS.md` that should influence or stay out of scope
 
-Keep detailed specs in `docs/superpowers/specs/` or a tracker issue. Keep `docs/ROADMAP.md` short.
+Keep detailed specs in `docs/specs/` or a tracker issue. Keep `docs/ROADMAP.md` short.
 
 If a useful idea appears during implementation but is not part of the current scope, append it to `docs/IDEAS.md` instead of expanding the task.
 
-## 3. Plan
+## 3. Spec Gate
+
+Create a `docs/specs/YYYY-MM-DD-short-topic/` folder before implementation when the work is multi-step, user-facing, content/risk-sensitive, security-sensitive, deployment-sensitive, or changes the harness itself.
+
+The folder should contain:
+
+- `spec.md`: user need, Stage fit, scope, FlowMe gates, and acceptance criteria.
+- `plan.md`: files, sequence, dependencies, and risk controls.
+- `tasks.md`: executable checklist.
+- `qa.md`: required checks and evidence table.
+
+Tiny docs or local code fixes may skip a spec, but the final report should say why a spec was unnecessary.
+
+If a tool-specific skill writes artifacts under `docs/superpowers/`, keep them there and link them from the relevant `docs/specs/` folder when the work becomes durable product direction.
+
+## 4. Plan
 
 For multi-step work, write a plan with:
 
@@ -44,7 +60,7 @@ For multi-step work, write a plan with:
 
 Small documentation-only changes may use a short inline plan.
 
-## 4. Implement
+## 5. Implement
 
 Follow existing patterns. Keep edits scoped. Preserve user changes.
 
@@ -58,11 +74,11 @@ For behavior changes:
 For documentation/config-only changes, verify with file inspection and project commands that are relevant.
 For agent or docs graph changes, run `npm run docs:check`.
 
-## 5. QA
+## 6. QA
 
 Use [QA.md](./QA.md). Do not move to PR/release until required checks pass or skipped checks are explicitly explained.
 
-## 6. PR / Review
+## 7. PR / Review
 
 Before opening a PR, create or update a PR history entry under `docs/pr-history/` using the naming pattern:
 
@@ -73,7 +89,7 @@ docs/pr-history/YYYY-MM-DD-short-topic.md
 Package changes with:
 
 - Summary
-- Related roadmap/spec/issue links
+- Related roadmap, `docs/specs/`, generated `docs/superpowers/`, or issue links
 - PR history file link
 - Test evidence
 - Known risks
@@ -83,7 +99,7 @@ Review independently. If the same AI implemented the work, switch to reviewer st
 
 After the PR is opened, update the PR history entry with the PR URL/number. If the PR is deployed, merged, reverted, or materially rescoped, update its status, deploy URL, smoke-test result, risks, rollback notes, and follow-ups.
 
-## 7. Release
+## 8. Release
 
 On release:
 
@@ -93,7 +109,7 @@ On release:
 4. Update `docs/STATUS.md`, `docs/ROADMAP.md`, and `docs/HISTORY.md`.
 5. Record user-facing changes and verification evidence.
 
-## 8. Deploy
+## 9. Deploy
 
 Before deployment:
 

@@ -14,7 +14,7 @@ Do not use this for:
 - Work already committed to a version plan. Put that in [ROADMAP.md](./ROADMAP.md).
 - Current health or active blockers. Put those in [STATUS.md](./STATUS.md).
 - Released changes. Put those in [HISTORY.md](./HISTORY.md).
-- Detailed approved designs or implementation plans. Put those under `docs/superpowers/`.
+- Detailed approved designs or implementation plans. Put durable project specs under `docs/specs/`; keep tool-generated artifacts under `docs/superpowers/`.
 
 ## Capture Template
 

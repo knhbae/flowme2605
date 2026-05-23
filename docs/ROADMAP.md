@@ -37,7 +37,7 @@ No tagged releases yet.
 
 ### Product
 - Expand only after Stage 0 behavior evidence exists.
-- Keep ROADMAP entries short; detailed specs belong in issues or `docs/superpowers/specs/`.
+- Keep ROADMAP entries short; durable specs belong in `docs/specs/`, while tool-generated plans may remain in `docs/superpowers/`.
 - Use [IDEAS.md](./IDEAS.md) for promising but uncommitted ideas.
 
 ### Technical
