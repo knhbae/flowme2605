@@ -3,6 +3,8 @@
 **Date:** 2026-05-23
 **Branch:** `codex/source-replacement-risk-reshape`
 **PR:** [#25](https://github.com/knhbae/flowme2605/pull/25)
+**Merge:** `7d6729d2f88dceb0d96647d8094b55d85338aaa0`
+**Vercel:** `success` for `f0498916ed696f75d5686ad20d9685db405ac9f3`
 **Related audit:** [2026-05-23-source-replacement-risk-reshape.md](../content-audit/2026-05-23-source-replacement-risk-reshape.md)
 **Related spec:** [2026-05-23-source-replacement-risk-reshape](../specs/2026-05-23-source-replacement-risk-reshape/spec.md)
 

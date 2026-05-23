@@ -11,4 +11,4 @@
 - [x] Run `git diff --check`.
 - [x] Run `npm run build`.
 - [x] Run `npm run test:e2e`.
-- [ ] Open PR and update PR history.
+- [x] Open PR and update PR history.
