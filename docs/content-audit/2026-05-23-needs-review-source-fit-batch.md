@@ -2,6 +2,8 @@
 
 This document records the first manual source-fit audit pass for the `needs_review` routes that were previously marked `audit_now`.
 
+> Follow-up: the remaining 12-route source replacement and risk review queue was cleared later on 2026-05-23 in [2026-05-23-source-replacement-risk-review-batch.md](./2026-05-23-source-replacement-risk-review-batch.md).
+
 ## Batch Scope
 
 The batch covers 9 exact-source routes:

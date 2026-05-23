@@ -88,10 +88,10 @@ test('moving audit simulates calendar and spreadsheet artifacts before comparing
 test('source-fit summary captures keep, reshape, and preview decisions', () => {
   const summary = getSourceFitSummary();
 
-  assert.equal(summary.auditedCount, 19);
+  assert.equal(summary.auditedCount, 31);
   assert.ok(summary.averageScore >= 70);
   assert.equal(summary.decisionCounts.keep_representative, 10);
-  assert.equal(summary.decisionCounts.reshape_before_featured, 8);
+  assert.equal(summary.decisionCounts.reshape_before_featured, 20);
   assert.equal(summary.decisionCounts.catalog_preview_only, 1);
 });
 
@@ -112,6 +112,35 @@ test('source-fit audit covers the first needs-review audit-now batch', () => {
     const audit = getSourceFitAudit(slug);
     assert.ok(audit, slug);
     assert.equal(audit.sourcePrecision, 'exact', slug);
+    assert.ok(audit.naturalArtifacts.length > 0, slug);
+    assert.ok(audit.userJourney.length >= 3, slug);
+    assert.ok(audit.currentGap.length > 0, slug);
+    assert.ok(audit.contentAction.length > 0, slug);
+    assert.ok(audit.uxAction.length > 0, slug);
+  }
+});
+
+test('source-fit audit covers remaining source replacement and risk review routes', () => {
+  const remainingNeedsReviewSlugs = [
+    'computer-skills-d30-study',
+    'diet-habit-2week',
+    'new-car-delivery-check',
+    'year-end-tax-docs',
+    'diet-meal-exercise-log',
+    'diet-reset-2week',
+    'business-registration-basic',
+    'happy-birth-service-check',
+    'industrial-accident-claim-docs',
+    'national-health-checkup-d7',
+    'vaccination-certificate-issue',
+    'job-change-risk-check',
+  ];
+
+  for (const slug of remainingNeedsReviewSlugs) {
+    const audit = getSourceFitAudit(slug);
+    assert.ok(audit, slug);
+    assert.equal(audit.sourcePrecision, 'exact', slug);
+    assert.ok(audit.sourceUrl.startsWith('https://'), slug);
     assert.ok(audit.naturalArtifacts.length > 0, slug);
     assert.ok(audit.userJourney.length >= 3, slug);
     assert.ok(audit.currentGap.length > 0, slug);
