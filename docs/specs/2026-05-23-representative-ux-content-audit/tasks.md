@@ -7,4 +7,4 @@
 - [x] Add content-audit, spec, QA, and PR-history documents.
 - [x] Capture desktop/mobile screenshots for audited sample routes.
 - [x] Run final verification.
-- [ ] Open PR and update PR history.
+- [x] Open PR and update PR history.

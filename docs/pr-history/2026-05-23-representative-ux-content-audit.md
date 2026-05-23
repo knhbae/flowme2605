@@ -1,7 +1,7 @@
 # Representative UX Content Audit PR History
 
 **Branch:** `codex/representative-ux-content-audit`
-**PR:** Pending
+**PR:** [#31 Add representative UX content audit](https://github.com/knhbae/flowme2605/pull/31)
 **Related audit:** [2026-05-23-representative-ux-content-simplification.md](../content-audit/2026-05-23-representative-ux-content-simplification.md)
 **Related spec:** [2026-05-23-representative-ux-content-audit](../specs/2026-05-23-representative-ux-content-audit/spec.md)
 
