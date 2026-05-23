@@ -43,10 +43,13 @@ export type ArtifactLogTable = {
 const movingSlugs = new Set(['moving-d30-basic', 'real-ohouse-moving-d30-prep']);
 const travelSlugs = new Set(['overseas-travel-d14', 'real-mofa-overseas-travel-prep']);
 const studySlugs = new Set(['real-sinagong-computer-d30-study']);
-const driverLicenseSlugs = new Set(['driver-license-renewal-check']);
+const driverLicenseSlugs = new Set(['driver-license-renewal-check', 'real-safe-driving-license-renewal']);
 const familyCertificateSlugs = new Set(['family-certificate-issue']);
-const residentRegisterSlugs = new Set(['resident-register-copy-issue']);
-const qnetExamSlugs = new Set(['qnet-exam-application-prep']);
+const residentRegisterSlugs = new Set(['resident-register-copy-issue', 'real-gov24-resident-register-copy']);
+const qnetExamSlugs = new Set(['qnet-exam-application-prep', 'real-qnet-application-examday-check']);
+const childcareVisitSlugs = new Set(['real-childcare-vaccination-visit-prep']);
+const kdcaTravelHealthSlugs = new Set(['real-kdca-travel-health-check']);
+const childcareSupportSlugs = new Set(['real-childcare-support-application-check']);
 
 const driverLicenseComparisonRows: ArtifactComparisonRow[] = [
   { id: 'driver-license-renewal-type', title: '면허/갱신 유형' },
@@ -117,6 +120,68 @@ const residentRegisterMemoFields: ArtifactMemoField[] = [
   },
 ];
 
+const childcareVisitMemoFields: ArtifactMemoField[] = [
+  {
+    id: 'childcare-visit-purpose',
+    label: '방문 목적과 예약 시간',
+    placeholder: '예: 4개월 예방접종 + 영유아 검진, 2026-06-03 10:30',
+    groupEyebrow: '의료 방문 메모',
+    groupTitle: '영유아 검진/접종 방문 카드',
+    groupDescription: '의료진 판단이 필요한 내용과 보호자 관찰 메모를 분리해 방문 전후 기록으로 남깁니다.',
+  },
+  {
+    id: 'childcare-recent-symptoms',
+    label: '최근 증상/복용/특이사항',
+    placeholder: '예: 최근 발열 없음, 감기약 복용 없음, 수면이 평소보다 짧음',
+  },
+  {
+    id: 'childcare-questions',
+    label: '진료실에서 물어볼 질문',
+    placeholder: '예: 접종 후 목욕 가능 여부, 다음 접종 전 관찰할 증상',
+  },
+  {
+    id: 'childcare-post-visit-observation',
+    label: '방문 후 관찰 메모',
+    placeholder: '예: 접종 부위 붓기 없음, 24시간 체온 관찰',
+  },
+  {
+    id: 'childcare-next-visit',
+    label: '다음 방문/접종 일정',
+    placeholder: '예: 다음 접종 2026-07-05, 예약 필요',
+  },
+];
+
+const kdcaTravelHealthMemoFields: ArtifactMemoField[] = [
+  {
+    id: 'kdca-destination',
+    label: '여행 국가/지역',
+    placeholder: '예: 태국 방콕, 2026-07-18 출국',
+    groupEyebrow: '질병관리청 확인 메모',
+    groupTitle: '해외여행 건강 준비 카드',
+    groupDescription: '국가별 공식 확인일, 상담 필요 여부, 재확인 날짜를 여행 일정과 분리해 기록합니다.',
+  },
+  {
+    id: 'kdca-official-check-date',
+    label: '공식 정보 확인일',
+    placeholder: '예: KDCA 해외여행 건강정보 2026-06-20 확인',
+  },
+  {
+    id: 'kdca-vaccine-consultation',
+    label: '예방접종/예방약 상담 메모',
+    placeholder: '예: 출국 4주 전 여행클리닉 상담 예약 필요',
+  },
+  {
+    id: 'kdca-medicine-kit',
+    label: '상비약/개인 의약품 준비',
+    placeholder: '예: 평소 복용약, 해열제, 처방전 영문명 메모',
+  },
+  {
+    id: 'kdca-recheck-date',
+    label: '출국 전 재확인 날짜',
+    placeholder: '예: 출국 7일 전 KDCA/외교부 공지 재확인',
+  },
+];
+
 const qnetLogTables: ArtifactLogTable[] = [
   {
     id: 'qnet-application-deadlines',
@@ -150,6 +215,13 @@ const qnetLogTables: ArtifactLogTable[] = [
       { id: 'evidence', label: '증빙/메모', placeholder: '예: 수험표 PDF, 교통편 40분' },
     ],
   },
+];
+
+const childcareSupportComparisonRows: ArtifactComparisonRow[] = [
+  { id: 'childcare-support-age-condition', title: '아이 월령/반 유형 조건' },
+  { id: 'childcare-support-monthly-hours', title: '월 지원 시간과 본인부담 확인' },
+  { id: 'childcare-support-center-slot', title: '제공기관 후보와 가능한 시간대' },
+  { id: 'childcare-support-first-visit-docs', title: '첫 방문 서류와 준비물' },
 ];
 
 const movingVendorComparisonRows: ArtifactComparisonRow[] = [
@@ -287,12 +359,21 @@ export function getComparisonConfig(bundle: FlowBundle): ArtifactComparisonConfi
       rows: movingVendorComparisonRows,
     };
   }
+  if (childcareSupportSlugs.has(bundle.flow.slug)) {
+    return {
+      title: '시간제보육 이용 조건 비교표',
+      eyebrow: '기관/예약 비교',
+      rows: childcareSupportComparisonRows,
+    };
+  }
   return undefined;
 }
 
 export function getMemoCardFields(bundle: FlowBundle): ArtifactMemoField[] {
   if (familyCertificateSlugs.has(bundle.flow.slug)) return familyCertificateMemoFields;
   if (residentRegisterSlugs.has(bundle.flow.slug)) return residentRegisterMemoFields;
+  if (childcareVisitSlugs.has(bundle.flow.slug)) return childcareVisitMemoFields;
+  if (kdcaTravelHealthSlugs.has(bundle.flow.slug)) return kdcaTravelHealthMemoFields;
   if (movingSlugs.has(bundle.flow.slug)) return movingProofMemoFields;
   if (travelSlugs.has(bundle.flow.slug)) return travelProofMemoFields;
   return [];

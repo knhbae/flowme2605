@@ -22,6 +22,38 @@ test('driver license route exposes condition comparison rows for renewal choices
   ]);
 });
 
+test('real-source official reshape batch exposes route-specific workbench records', () => {
+  assert.deepEqual(
+    getLogTables(bundle('real-qnet-application-examday-check')).map((table) => table.id),
+    ['qnet-application-deadlines', 'qnet-exam-day-records'],
+  );
+
+  assert.deepEqual(
+    getComparisonConfig(bundle('real-safe-driving-license-renewal'))?.rows.map((row) => row.id),
+    ['driver-license-renewal-type', 'driver-license-health-check', 'driver-license-materials-fee', 'driver-license-apply-pickup'],
+  );
+
+  assert.deepEqual(
+    getMemoCardFields(bundle('real-gov24-resident-register-copy')).map((field) => field.id),
+    ['resident-submitter-requirement', 'resident-document-kind', 'resident-display-items', 'resident-disclosure-scope', 'resident-file-location'],
+  );
+
+  assert.deepEqual(
+    getMemoCardFields(bundle('real-childcare-vaccination-visit-prep')).map((field) => field.id),
+    ['childcare-visit-purpose', 'childcare-recent-symptoms', 'childcare-questions', 'childcare-post-visit-observation', 'childcare-next-visit'],
+  );
+
+  assert.deepEqual(
+    getMemoCardFields(bundle('real-kdca-travel-health-check')).map((field) => field.id),
+    ['kdca-destination', 'kdca-official-check-date', 'kdca-vaccine-consultation', 'kdca-medicine-kit', 'kdca-recheck-date'],
+  );
+
+  assert.deepEqual(
+    getComparisonConfig(bundle('real-childcare-support-application-check'))?.rows.map((row) => row.id),
+    ['childcare-support-age-condition', 'childcare-support-monthly-hours', 'childcare-support-center-slot', 'childcare-support-first-visit-docs'],
+  );
+});
+
 test('official document routes expose submitter requirement memo fields', () => {
   const familyFields = getMemoCardFields(bundle('family-certificate-issue'));
   const residentFields = getMemoCardFields(bundle('resident-register-copy-issue'));
