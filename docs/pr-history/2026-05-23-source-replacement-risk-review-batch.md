@@ -2,8 +2,9 @@
 
 **Date:** 2026-05-23  
 **Branch:** `codex/source-replacement-risk-review`  
-**Status:** Open  
+**Status:** Merged
 **PR URL:** https://github.com/knhbae/flowme2605/pull/20
+**Merge SHA:** `93f0ae5b3353034a0fa6ae73a91e1d666772d78f`
 **Deploy URL:** See PR checks for the current Vercel preview.
 
 ## Why
