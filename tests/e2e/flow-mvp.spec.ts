@@ -779,6 +779,13 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(lifecycle.getByText('미리보기 전용', { exact: true }).first()).toBeVisible();
   await expect(lifecycle.getByText('삭제 후보', { exact: true }).first()).toBeVisible();
   await expect(lifecycle.getByText('실제 원본 Flow의')).toBeVisible();
+  const readiness = page.locator('section').filter({ hasText: '대표 승격 1차 심사' });
+  await expect(readiness).toBeVisible();
+  await expect(readiness.getByText('대표 후보', { exact: true }).first()).toBeVisible();
+  await expect(readiness.getByText('Public MVP 후보', { exact: true }).first()).toBeVisible();
+  await expect(readiness.getByRole('link', { name: '컴퓨터활용능력 D-30 학습 Flow' })).toBeVisible();
+  await expect(readiness.getByRole('link', { name: '신차 인수 점검 Flow' })).toBeVisible();
+  await expect(readiness.getByRole('link', { name: '2주 다이어트 습관 기록 Flow' })).toBeVisible();
   const needsReviewPriority = page.locator('section').filter({ hasText: '검토 대기 우선순위' });
   await expect(needsReviewPriority).toBeVisible();
   await expect(needsReviewPriority.getByText('바로 audit', { exact: true }).first()).toBeVisible();
