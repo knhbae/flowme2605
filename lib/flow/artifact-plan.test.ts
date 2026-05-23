@@ -32,6 +32,18 @@ test('artifact plan maps used-car checklist to comparison before checklist', () 
   assert.ok(plan.exportTargets.includes('sheet'));
 });
 
+test('artifact plan maps baby food to meal calendar and reaction log first', () => {
+  const plan = getArtifactPlan(bundle('baby-food-menu-recipe'));
+
+  assert.equal(plan.primarySurface, 'meal_reaction_log');
+  assert.deepEqual(
+    plan.surfaces.slice(0, 2).map((surface) => surface.kind),
+    ['meal_calendar', 'reaction_log'],
+  );
+  assert.ok(plan.exportTargets.includes('calendar'));
+  assert.ok(plan.exportTargets.includes('sheet'));
+});
+
 test('artifact plan preserves promoted hybrid wedding comparison first', () => {
   const plan = getArtifactPlan(bundle('wedding-d180-basic'));
 

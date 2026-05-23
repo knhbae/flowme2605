@@ -49,6 +49,15 @@ const defaultComparisonCandidates = [
 
 const weekdayOrder = ['일', '월', '화', '수', '목', '금', '토'];
 
+const mealReactionColumns = [
+  { id: 'amount', label: '먹은 양', placeholder: '예: 40ml, 3숟갈' },
+  { id: 'skin', label: '피부 반응', placeholder: '예: 발진 없음' },
+  { id: 'vomitingOrDiarrhea', label: '구토/설사', placeholder: '예: 없음' },
+  { id: 'stool', label: '변 상태', placeholder: '예: 평소와 같음' },
+  { id: 'sleep', label: '수면/컨디션', placeholder: '예: 평소와 같음' },
+  { id: 'preferenceNote', label: '거부/선호 메모', placeholder: '예: 두 숟갈 후 거부' },
+];
+
 export function ArtifactWorkbench({
   bundle,
   anchor,
@@ -93,6 +102,15 @@ export function ArtifactWorkbench({
           <RoutineWorkbench bundle={bundle} anchor={anchor} weekdays={weekdays} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
         ) : plan.primarySurface === 'spreadsheet_log' ? (
           <SpreadsheetWorkbench bundle={bundle} anchor={anchor} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
+        ) : plan.primarySurface === 'meal_reaction_log' ? (
+          <MealReactionWorkbench
+            bundle={bundle}
+            anchor={anchor}
+            checks={checks}
+            workbenchState={workbenchState}
+            onWorkbenchChange={onWorkbenchChange}
+            onToggleItem={onToggleItem}
+          />
         ) : plan.primarySurface === 'timeline_calendar' ? (
           <TimelineWorkbench
             bundle={bundle}
@@ -115,6 +133,7 @@ export function ArtifactWorkbench({
 }
 
 function surfaceTitle(surface: string): string {
+  if (surface === 'meal_reaction_log') return '식단표 + 반응 기록';
   if (surface === 'decision_table') return '후보 비교표';
   if (surface === 'routine_calendar') return '반복 캘린더';
   if (surface === 'spreadsheet_log') return '기록표';
@@ -124,6 +143,7 @@ function surfaceTitle(surface: string): string {
 }
 
 function surfaceDescription(surface: string): string {
+  if (surface === 'meal_reaction_log') return '시작일 기준 메뉴와 새 재료를 먼저 보고, 먹은 뒤 반응을 기록합니다.';
   if (surface === 'decision_table') return '먼저 후보를 비교하고, 아래 체크리스트로 현장에서 확인할 일을 이어갑니다.';
   if (surface === 'routine_calendar') return '시작일과 반복 요일을 기준으로 회차가 달력에 박히는 모습을 먼저 보여줍니다.';
   if (surface === 'spreadsheet_log') return '매일 남길 기록 열과 주간 리뷰 메모를 먼저 잡아둡니다.';
@@ -251,6 +271,109 @@ function TimelineWorkbench({
       ) : null}
     </div>
   );
+}
+
+function MealReactionWorkbench({
+  bundle,
+  anchor,
+  checks,
+  workbenchState,
+  onWorkbenchChange,
+  onToggleItem,
+}: {
+  bundle: FlowBundle;
+  anchor: string;
+  checks: Record<string, boolean>;
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
+  onToggleItem: (id: string) => void;
+}) {
+  const slots = (bundle.mealSlots ?? []).slice().sort((a, b) => a.order - b.order);
+  const calendarSlots = slots.slice(0, 6);
+  const reactionSlots = slots.slice(0, 3);
+
+  return (
+    <div data-testid="meal-reaction-workbench" className="space-y-4">
+      {bundle.flow.warning ? (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
+          <p className="text-sm font-semibold text-amber-900">알레르기·전문가 확인</p>
+          <p className="mt-1 text-sm leading-6 text-amber-950">{bundle.flow.warning}</p>
+        </div>
+      ) : null}
+      <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+        <div data-testid="meal-calendar-card" className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+          <p className="text-sm font-semibold text-blue-700">식단 일정 preview</p>
+          <h3 className="mt-1 text-base font-semibold text-gray-950">처음 6개 식단</h3>
+          <div className="mt-3 space-y-2">
+            {calendarSlots.map((slot) => (
+              <label key={slot.id} className="grid grid-cols-[22px_112px_1fr] gap-3 rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
+                <input
+                  aria-label={`이유식 완료: ${slot.menu_title}`}
+                  className="mt-0.5 h-4 w-4 rounded border-gray-300"
+                  checked={Boolean(checks[slot.id])}
+                  onChange={() => onToggleItem(slot.id)}
+                  type="checkbox"
+                />
+                <span className="font-mono text-xs font-semibold text-blue-700">{mealSlotTiming(slot.day_offset, slot.duration_days, anchor)}</span>
+                <span className={checks[slot.id] ? 'text-gray-400 line-through' : 'text-gray-800'}>
+                  <span className="block font-medium">{slot.menu_title}</span>
+                  {slot.new_ingredients.length ? (
+                    <span className="mt-1 block text-xs text-gray-500">새 재료: {slot.new_ingredients.join(', ')}</span>
+                  ) : null}
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+        <div data-testid="meal-reaction-log-card" className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+          <div className="border-b border-gray-100 px-3 py-3">
+            <p className="text-sm font-semibold text-blue-700">먹은 뒤 기록</p>
+            <h3 className="mt-1 text-base font-semibold text-gray-950">반응 기록표</h3>
+            <p className="mt-2 text-sm leading-6 text-gray-600">레시피 평가는 뒤로 미루고, 먹은 양과 이상 반응을 먼저 남깁니다.</p>
+          </div>
+          <table className="min-w-[860px] text-left text-sm">
+            <thead className="bg-gray-50 text-xs font-semibold text-gray-600">
+              <tr>
+                <th className="px-3 py-2">식단</th>
+                {mealReactionColumns.map((column) => (
+                  <th key={column.id} className="px-3 py-2">{column.label}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {reactionSlots.map((slot) => (
+                <tr key={slot.id} className="border-t border-gray-100">
+                  <th className="px-3 py-3 text-sm font-semibold text-gray-900">
+                    <span className="block">{slot.menu_title}</span>
+                    <span className="mt-1 block text-xs font-medium text-gray-500">{mealSlotTiming(slot.day_offset, slot.duration_days, anchor)}</span>
+                  </th>
+                  {mealReactionColumns.map((column) => (
+                    <td key={`${slot.id}-${column.id}`} className="px-2 py-2">
+                      <input
+                        aria-label={`${slot.menu_title} / ${column.label}`}
+                        className="w-full min-w-28 rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
+                        placeholder={column.placeholder}
+                        value={workbenchState.logRows[slot.id]?.[column.id] ?? ''}
+                        onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, slot.id, column.id, event.currentTarget.value))}
+                      />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function mealSlotTiming(dayOffset: number, durationDays: number, anchor: string): string {
+  const timing = timingLabel(dayOffset, durationDays);
+  if (!anchor) return timing;
+  const start = addDays(new Date(anchor), dayOffset);
+  const end = durationDays > 1 ? getRangeEnd(start, durationDays) : undefined;
+  return end ? `${timing} · ${formatDate(start).slice(5)}~${formatDate(end).slice(5)}` : `${timing} · ${formatDate(start).slice(5)}`;
 }
 
 function MiniMonthCalendar({
@@ -584,19 +707,21 @@ function DecisionWorkbench({
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
   onToggleItem: (id: string) => void;
 }) {
+  const comparisonConfig = getComparisonConfig(bundle);
   const comparisonRows = getComparisonRows(bundle);
   const checklistItems = bundle.items;
   const memoFields = getMemoCardFields(bundle);
   return (
     <div className="grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
       <ComparisonTable
-        title="후보 비교표"
-        eyebrow="후보 비교 preview"
+        title={comparisonConfig?.title ?? '후보 비교표'}
+        eyebrow={comparisonConfig?.eyebrow ?? '후보 비교 preview'}
         rows={comparisonRows}
         comparisonState={comparisonState}
         onComparisonChange={onComparisonChange}
       />
       <div className="space-y-4">
+        {memoFields.length ? <ProofMemoCard fields={memoFields} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} /> : null}
         <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
           <p className="text-sm font-semibold text-blue-700">현장에서 바로 체크</p>
           <h3 className="mt-1 text-base font-semibold text-gray-950">현장 체크리스트</h3>
@@ -617,7 +742,6 @@ function DecisionWorkbench({
             ))}
           </ul>
         </div>
-        {memoFields.length ? <ProofMemoCard fields={memoFields} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} /> : null}
       </div>
     </div>
   );

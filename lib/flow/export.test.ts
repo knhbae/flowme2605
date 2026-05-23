@@ -48,16 +48,13 @@ test('text and workbook exports include item notes and skipped state', () => {
 test('decision exports include comparison candidate notes', () => {
   const usedCar = seedBundles.find((bundle) => bundle.flow.slug === 'used-car-buying-check');
   assert.ok(usedCar);
-  const first = usedCar.items[0];
-  assert.ok(first);
-
   const comparisonState = {
     candidates: [
       { id: 'candidate-1', name: '아반떼 2021' },
       { id: 'candidate-2', name: 'K3 2020' },
     ],
     notes: {
-      [first.id]: {
+      'used-car-price-mileage': {
         'candidate-1': '총 1,250만원',
         'candidate-2': '보험료 별도 확인',
       },
@@ -68,14 +65,14 @@ test('decision exports include comparison candidate notes', () => {
 
   assert.match(text, /\[후보 비교표\]/);
   assert.match(text, /비교 항목 \| 아반떼 2021 \| K3 2020/);
-  assert.match(text, /총예산을 차량가, 이전비, 보험료, 정비비로 나누기 \| 총 1,250만원 \| 보험료 별도 확인/);
+  assert.match(text, /후보별 가격·주행거리 \| 총 1,250만원 \| 보험료 별도 확인/);
 
   const sheets = buildWorkbookSheets(usedCar, {}, undefined, { comparisonState });
   const comparison = sheets.find((sheet) => sheet.name === '후보 비교');
   assert.ok(comparison);
   assert.deepEqual(comparison.columns, ['비교 항목', '아반떼 2021', 'K3 2020']);
   assert.deepEqual(comparison.rows[0], [
-    '총예산을 차량가, 이전비, 보험료, 정비비로 나누기',
+    '후보별 가격·주행거리',
     '총 1,250만원',
     '보험료 별도 확인',
   ]);

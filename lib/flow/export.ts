@@ -359,12 +359,20 @@ function buildComparisonExport(
   if (!hasComparisonData(comparisonState)) return undefined;
 
   const candidates = comparisonCandidates(comparisonState);
+  const comparisonRows = getComparisonRows(bundle);
   return {
     columns: [comparisonFirstColumn, ...candidates.map((candidate) => candidate.name)],
-    rows: getComparisonRows(bundle).map((row) => [
-      row.title,
-      ...candidates.map((candidate) => comparisonState?.notes?.[row.id]?.[candidate.id]?.trim() ?? ''),
-    ]),
+    rows: comparisonRows.map((row, index) => {
+      const legacyItemId = bundle.items[index]?.id;
+      return [
+        row.title,
+        ...candidates.map((candidate) => (
+          comparisonState?.notes?.[row.id]?.[candidate.id]?.trim()
+          ?? (legacyItemId ? comparisonState?.notes?.[legacyItemId]?.[candidate.id]?.trim() : undefined)
+          ?? ''
+        )),
+      ];
+    }),
   };
 }
 
