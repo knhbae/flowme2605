@@ -3,7 +3,9 @@
 **Date:** 2026-05-23
 **Branch:** `codex/real-source-reshape-official-batch`
 **PR URL:** https://github.com/knhbae/flowme2605/pull/24
-**Status:** In Progress
+**Status:** Merged
+**Merge SHA:** `d427e4df4fcde0e27b5a8414ad3840a1e541d692`
+**Preview:** https://vercel.com/flowme/flowme2605/81z717whHtzp2TqaoLhzF7CVkBP1
 
 ## Why
 
