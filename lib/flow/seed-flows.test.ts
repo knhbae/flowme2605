@@ -203,6 +203,50 @@ test('P1 migrated representative candidates include tailored executable item det
   }
 });
 
+test('source replacement and risk review routes have artifact-specific item copy', () => {
+  const slugs = [
+    'computer-skills-d30-study',
+    'diet-habit-2week',
+    'new-car-delivery-check',
+    'year-end-tax-docs',
+    'diet-meal-exercise-log',
+    'diet-reset-2week',
+    'business-registration-basic',
+    'happy-birth-service-check',
+    'industrial-accident-claim-docs',
+    'national-health-checkup-d7',
+    'vaccination-certificate-issue',
+    'job-change-risk-check',
+  ];
+  const genericWhy = '공식 안내의 신청 조건, 제출 서류, 처리 절차를 실행 전에 확인하기 위한 항목입니다.';
+  const genericHow = '링크의 최신 안내를 열어 본인 상황에 해당하는 신청 자격, 구비서류, 수수료, 처리기간을 확인합니다.';
+  const genericCompletion = '이 항목을 완료했어요.';
+  const artifactWords = /메모|기록|표|파일|캘린더|질문|증빙|상태|점수|사진|제출|공식|기관|회사|중단/;
+
+  for (const slug of slugs) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+    assert.ok(bundle, slug);
+    assert.equal(bundle.itemDetails?.length, bundle.items.length, `${slug} should detail every item`);
+
+    const details = new Map(bundle.itemDetails?.map((detail) => [detail.item_id, detail]));
+    for (const item of bundle.items) {
+      const detail = details.get(item.id);
+      assert.ok(detail, `${slug} missing detail for ${item.title}`);
+      assert.ok(detail.why && detail.why.length >= 20, `${slug} weak why for ${item.title}`);
+      assert.ok(detail.how && detail.how.length >= 20, `${slug} weak how for ${item.title}`);
+      assert.ok(detail.completion_criteria && detail.completion_criteria.length >= 15, `${slug} weak completion for ${item.title}`);
+      assert.notEqual(detail.why, genericWhy, `${slug} generic why for ${item.title}`);
+      assert.notEqual(detail.how, genericHow, `${slug} generic how for ${item.title}`);
+      assert.notEqual(detail.completion_criteria, genericCompletion, `${slug} generic completion for ${item.title}`);
+      assert.match(
+        `${item.title} ${item.description ?? ''} ${detail.why} ${detail.how} ${detail.completion_criteria} ${detail.caution ?? ''}`,
+        artifactWords,
+        `${slug} should point ${item.title} to an artifact, official question, or stop condition`,
+      );
+    }
+  }
+});
+
 test('seed flows expose creator and popularity signals for discovery', () => {
   const userIds = new Set(virtualUsers.map((user) => user.id));
   for (const bundle of seedBundles) {
