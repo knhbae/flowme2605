@@ -156,3 +156,17 @@ test('content lab exposes lifecycle buckets for keep, fix, preview, and removal 
   assert.ok(summary.lifecycleFixSlugs.includes('real-sinagong-computer-d30-study'));
   assert.ok(summary.lifecycleFixSlugs.includes('passport-renewal-docs'));
 });
+
+test('content lab exposes source needs-review priorities for the next audit batch', () => {
+  const summary = getContentLabSummary(seedBundles);
+  const countSum = Object.values(summary.sourceReviewPriorityCounts).reduce((sum, count) => sum + count, 0);
+
+  assert.equal(summary.sourceReviewPriorityTotalCount, 21);
+  assert.equal(countSum, 21);
+  assert.ok(summary.sourceReviewPriorityCounts.audit_now >= 5);
+  assert.ok(summary.sourceReviewPriorityCounts.source_replacement >= 1);
+  assert.ok(summary.sourceReviewPriorityCounts.risk_review >= 1);
+  assert.equal(summary.sourceReviewPriorityItems.length, 21);
+  assert.equal(summary.sourceReviewPriorityItems[0].priority, 'audit_now');
+  assert.ok(summary.sourceReviewPriorityItems[0].score >= summary.sourceReviewPriorityItems.at(-1)!.score);
+});

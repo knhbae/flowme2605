@@ -17,6 +17,7 @@ The product now has source-fit audit, content inventory, and natural artifact au
 - Wired lifecycle counts into Content Lab.
 - Documented the current bucket counts and deletion policy.
 - Normalized 21 source-backed legacy routes into `source_status=needs_review` with source precision, checked date, conversion note, and primary destination metadata.
+- Added needs-review priority scoring and surfaced the next audit queue in Content Lab.
 
 Current lifecycle counts:
 
@@ -26,11 +27,18 @@ Current lifecycle counts:
 - 공개 숨김: 0
 - 삭제 후보: 0
 
+Needs-review priority counts:
+
+- 바로 audit: 9
+- 원본 교체: 6
+- 리스크 검토: 6
+- 콘텐츠 보강: 0
+
 ## Not Done
 
 - No public route deletion.
 - No generated preview promotion.
-- No manual source-fit audit promotion for the 21 `needs_review` routes yet.
+- No manual source-fit audit promotion for the 21 `needs_review` routes yet; they are only prioritized.
 - No visual redesign beyond the internal Content Lab summary section.
 
 ## Decisions
@@ -45,6 +53,8 @@ Current lifecycle counts:
 - `lib/flow/content-lifecycle.test.ts`
 - `lib/flow/content-lab.ts`
 - `lib/flow/content-lab.test.ts`
+- `lib/flow/source-review-priority.ts`
+- `lib/flow/source-review-priority.test.ts`
 - `components/flow/ContentLab.tsx`
 - `tests/e2e/flow-mvp.spec.ts`
 - `docs/content-audit/2026-05-23-flow-lifecycle-classification.md`
@@ -53,7 +63,7 @@ Current lifecycle counts:
 
 ## Verification
 
-- `npm test` passed locally. Latest run: 99/99 pass.
+- `npm test` passed locally. Latest run: 105/105 pass.
 - `npm run docs:check` passed locally.
 - `npm run build` passed locally.
 - `npm run test:e2e -- --grep "flow lab"` passed locally.
@@ -66,6 +76,6 @@ Current lifecycle counts:
 
 ## Follow-Ups
 
-- Audit source-backed `needs_review` routes and promote the ones that pass into real-source inventory.
+- Start with the 9 `audit_now` needs-review routes, then broad-source replacements and risk reviews.
 - Add lifecycle bucket filters to internal Flow Lab if the list grows.
 - Use lifecycle `fix` bucket to drive the next content/UX cleanup batch.

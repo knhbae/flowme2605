@@ -3,6 +3,7 @@ import { getSourceFitSummary } from './source-fit';
 import { summarizeContentInventory } from './content-inventory';
 import { summarizeNaturalArtifactAuditCoverage } from './natural-artifact-audit';
 import { summarizeFlowLifecycle } from './content-lifecycle';
+import { summarizeSourceNeedsReviewPriority } from './source-review-priority';
 
 export type ExternalTarget = 'calendar' | 'todo' | 'notion' | 'sheet';
 
@@ -346,6 +347,7 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   const inventorySummary = summarizeContentInventory(bundles);
   const naturalArtifactSummary = summarizeNaturalArtifactAuditCoverage(bundles);
   const lifecycleSummary = summarizeFlowLifecycle(bundles);
+  const sourceReviewPrioritySummary = summarizeSourceNeedsReviewPriority(bundles);
 
   return {
     pilotCreatorCount: pilotCreatorLabs.length,
@@ -390,5 +392,8 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     lifecyclePreviewOnlySlugs: lifecycleSummary.previewOnlySlugs,
     lifecycleHideSlugs: lifecycleSummary.hideSlugs,
     lifecycleRemoveCandidateSlugs: lifecycleSummary.removeCandidateSlugs,
+    sourceReviewPriorityTotalCount: sourceReviewPrioritySummary.totalCount,
+    sourceReviewPriorityCounts: sourceReviewPrioritySummary.priorityCounts,
+    sourceReviewPriorityItems: sourceReviewPrioritySummary.items,
   };
 }

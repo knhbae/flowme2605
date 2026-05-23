@@ -26,6 +26,28 @@ The 21 source-backed legacy routes were normalized to `source_status=needs_revie
 
 This keeps them out of deletion candidates without overstating them as fully reviewed `real` sources.
 
+## Needs-review Priority
+
+The 21 `source_status=needs_review` routes are now split into the next audit queue:
+
+| Priority | Count | Meaning |
+| --- | ---: | --- |
+| 바로 audit (`audit_now`) | 9 | Exact source, usable execution structure, and no sensitive first-pass blocker. These can move straight into manual source-fit audit. |
+| 원본 교체 (`source_replacement`) | 6 | Broad source URL. Find an exact source before promoting or auditing as representative content. |
+| 리스크 검토 (`risk_review`) | 6 | Medical, financial, government, or similarly sensitive scope. Confirm official basis, warnings, and user input/output boundaries first. |
+| 콘텐츠 보강 (`content_backlog`) | 0 | No current needs-review route is low enough to require generic content backlog handling before the above work. |
+
+Highest priority samples:
+
+- `driver-license-renewal-check` — audit_now, score 100.
+- `family-certificate-issue` — audit_now, score 100.
+- `passport-renewal-docs` — audit_now, score 100.
+- `pet-registration-basic` — audit_now, score 100.
+- `resident-register-copy-issue` — audit_now, score 100.
+- `business-registration-basic` — risk_review, score 90.
+- `happy-birth-service-check` — risk_review, score 90.
+- `industrial-accident-claim-docs` — risk_review, score 90.
+
 ## Keep
 
 These 5 can remain the representative baseline while each product surface continues to improve:
@@ -87,10 +109,12 @@ Deletion should require one of:
 
 ## App Reflection
 
-Content Lab now exposes the lifecycle summary next to the inventory and natural artifact audit sections. Public routes are not deleted by this change.
+Content Lab now exposes the lifecycle summary and needs-review priority summary next to the inventory and natural artifact audit sections. Public routes are not deleted by this change.
 
 ## Next Work
 
-1. Audit the 21 `source_status=needs_review` routes and promote the ones that pass into `source_status=real` or manual source-fit.
-2. Promote real-source Flows only after their artifact workbench gap is closed and source-fit audit is updated.
-3. Keep generated preview Flows separated from representative search/catalog surfaces.
+1. Run manual source-fit audit for the 9 `audit_now` needs-review routes.
+2. Replace broad source URLs for the 6 `source_replacement` routes.
+3. Run official/warning/input-output review for the 6 `risk_review` routes.
+4. Promote real-source Flows only after their artifact workbench gap is closed and source-fit audit is updated.
+5. Keep generated preview Flows separated from representative search/catalog surfaces.

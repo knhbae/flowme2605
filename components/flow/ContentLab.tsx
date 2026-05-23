@@ -10,6 +10,10 @@ import {
   FLOW_LIFECYCLE_BUCKET_LABELS,
   type FlowLifecycleBucket,
 } from '@/lib/flow/content-lifecycle';
+import {
+  SOURCE_REVIEW_PRIORITY_LABELS,
+  type SourceReviewPriority,
+} from '@/lib/flow/source-review-priority';
 import { seedBundles } from '@/lib/flow/seed-flows';
 import { sourceFitAudits, type SourceFitDecision } from '@/lib/flow/source-fit';
 import {
@@ -96,6 +100,16 @@ function lifecycleBucketClass(value: FlowLifecycleBucket): string {
     preview_only: 'bg-blue-50 text-blue-950',
     hide: 'bg-red-50 text-red-950',
     remove_candidate: 'bg-gray-100 text-gray-950',
+  };
+  return classes[value];
+}
+
+function sourceReviewPriorityClass(value: SourceReviewPriority): string {
+  const classes: Record<SourceReviewPriority, string> = {
+    audit_now: 'bg-emerald-50 text-emerald-950',
+    source_replacement: 'bg-blue-50 text-blue-950',
+    risk_review: 'bg-red-50 text-red-950',
+    content_backlog: 'bg-amber-50 text-amber-950',
   };
   return classes[value];
 }
@@ -222,6 +236,43 @@ export function ContentLab() {
               원본 URL이 있는 legacy 항목은 삭제 후보가 아니라 보강 필요로 분류합니다. route 삭제는 별도 검토 후 진행합니다.
             </p>
           </div>
+        </div>
+      </section>
+
+      <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
+        <p className="text-sm font-semibold text-blue-700">Needs-review Priority</p>
+        <h2 className="mt-1 text-2xl font-semibold text-gray-950">검토 대기 우선순위</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+          source URL은 있지만 아직 수동 source-fit audit을 통과하지 않은 {summary.sourceReviewPriorityTotalCount}개를
+          다음 작업 순서로 나눕니다. exact source와 실행 구조가 있는 Flow는 바로 audit하고, broad source는 원본을 먼저
+          교체하며, 민감 영역은 공식 기준과 고지를 먼저 확인합니다.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {(Object.keys(summary.sourceReviewPriorityCounts) as SourceReviewPriority[]).map((priority) => (
+            <div key={priority} className={`rounded-lg p-3 ${sourceReviewPriorityClass(priority)}`}>
+              <p className="text-sm opacity-75">{SOURCE_REVIEW_PRIORITY_LABELS[priority]}</p>
+              <p className="mt-1 text-2xl font-semibold">{summary.sourceReviewPriorityCounts[priority]}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 grid gap-3 lg:grid-cols-2">
+          {summary.sourceReviewPriorityItems.slice(0, 6).map((item) => (
+            <article key={item.slug} className="rounded-lg border border-gray-200 p-4">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <p className="text-xs font-semibold text-gray-500">{item.slug}</p>
+                  <Link className="mt-1 block font-semibold text-gray-950 hover:text-blue-700" href={`/f/${item.slug}`}>
+                    {item.title}
+                  </Link>
+                </div>
+                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${sourceReviewPriorityClass(item.priority)}`}>
+                  {item.label} · {item.score}
+                </span>
+              </div>
+              <p className="mt-3 text-sm leading-6 text-gray-600">{item.reason}</p>
+              <p className="mt-2 text-sm leading-6 text-gray-700">다음: {item.nextAction}</p>
+            </article>
+          ))}
         </div>
       </section>
 

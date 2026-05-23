@@ -33,6 +33,7 @@
 - Source-fit audits now require concrete natural artifact simulations: sample user input values, expected checklist/calendar/sheet/memo outputs, and current Flow/UX gap comparisons.
 - Real-source natural artifact audit now covers all 40 real-source Flows and is surfaced in Flow Lab with remaining audit count.
 - Flow lifecycle classification now groups all 511 bundles into keep/fix/preview-only/hide/remove-candidate buckets and surfaces the counts in Content Lab.
+- Source-backed `needs_review` routes now have a Content Lab priority queue: 9 바로 audit, 6 원본 교체, 6 리스크 검토.
 
 ## Next Up
 
