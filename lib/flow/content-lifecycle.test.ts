@@ -36,23 +36,21 @@ test('lifecycle classification keeps derived real-source flows in fix until manu
   assert.equal(studyWorkbench.auditDecision, 'reshape_content_or_ux');
 });
 
-test('lifecycle classification separates generated previews and source-backed legacy fixes', () => {
+test('lifecycle classification separates generated previews and audited needs-review fixes', () => {
   const preview = seedBundles.find((entry) => entry.flow.source_status === 'preview');
   assert.ok(preview);
 
-  const sourceBackedLegacy = seedBundles.find(
-    (entry) => entry.flow.slug === 'business-registration-basic' && !getSourceFitAudit(entry.flow.slug),
-  );
-  assert.ok(sourceBackedLegacy);
+  const auditedNeedsReview = bundleBySlug('business-registration-basic');
+  assert.ok(getSourceFitAudit(auditedNeedsReview.flow.slug));
 
   const previewReview = classifyFlowLifecycle(preview);
-  const legacyReview = classifyFlowLifecycle(sourceBackedLegacy);
+  const auditedReview = classifyFlowLifecycle(auditedNeedsReview);
 
   assert.equal(previewReview.bucket, 'preview_only');
   assert.equal(previewReview.publicAction, '채널/카탈로그 미리보기만 유지');
-  assert.equal(legacyReview.bucket, 'fix');
-  assert.ok(legacyReview.reason.includes('원본 URL'));
-  assert.ok(legacyReview.nextAction.includes('source-fit audit'));
+  assert.equal(auditedReview.bucket, 'fix');
+  assert.ok(auditedReview.reason.includes('source-fit'));
+  assert.ok(auditedReview.nextAction.includes('공식 확인'));
 });
 
 test('lifecycle summary covers every seed bundle exactly once', () => {

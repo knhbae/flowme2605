@@ -101,10 +101,10 @@ test('converted pilot lab exposes 10 real-source flows for B validation', () => 
 test('content lab exposes source-fit audit summary for representative cleanup', () => {
   const summary = getContentLabSummary(seedBundles);
 
-  assert.equal(summary.sourceFitAuditedCount, 19);
+  assert.equal(summary.sourceFitAuditedCount, 31);
   assert.ok(summary.sourceFitAverageScore >= 70);
   assert.equal(summary.sourceFitDecisionCounts.keep_representative, 10);
-  assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 8);
+  assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 20);
   assert.equal(summary.sourceFitDecisionCounts.catalog_preview_only, 1);
 });
 
@@ -113,7 +113,7 @@ test('content lab exposes full content inventory coverage', () => {
 
   assert.equal(summary.inventoryTotalCount, seedBundles.length);
   assert.equal(summary.realSourceInventoryReviewedCount, summary.realSourceFlowCount);
-  assert.equal(summary.manualSourceFitAuditedCount, 19);
+  assert.equal(summary.manualSourceFitAuditedCount, 31);
   assert.equal(summary.derivedRealSourceReviewedCount, summary.realSourceFlowCount);
   assert.equal(
     summary.sourceBackedInventoryReviewedCount,
@@ -121,7 +121,7 @@ test('content lab exposes full content inventory coverage', () => {
   );
   assert.equal(summary.previewCandidateFlowCount, summary.previewGeneratedFlowCount);
   assert.ok(summary.inventoryPublicHandlingCounts.preview_candidate >= 440);
-  assert.equal(summary.sourceNeedsReviewInventoryCount, 12);
+  assert.equal(summary.sourceNeedsReviewInventoryCount, 0);
   assert.equal(summary.legacyAccessibleFlowCount, 0);
 });
 
@@ -157,15 +157,14 @@ test('content lab exposes lifecycle buckets for keep, fix, preview, and removal 
   assert.ok(summary.lifecycleFixSlugs.includes('driver-license-renewal-check'));
 });
 
-test('content lab exposes source needs-review priorities for the next audit batch', () => {
+test('content lab clears source needs-review priorities after the next audit batch', () => {
   const summary = getContentLabSummary(seedBundles);
   const countSum = Object.values(summary.sourceReviewPriorityCounts).reduce((sum, count) => sum + count, 0);
 
-  assert.equal(summary.sourceReviewPriorityTotalCount, 12);
-  assert.equal(countSum, 12);
+  assert.equal(summary.sourceReviewPriorityTotalCount, 0);
+  assert.equal(countSum, 0);
   assert.equal(summary.sourceReviewPriorityCounts.audit_now, 0);
-  assert.equal(summary.sourceReviewPriorityCounts.source_replacement, 6);
-  assert.equal(summary.sourceReviewPriorityCounts.risk_review, 6);
-  assert.equal(summary.sourceReviewPriorityItems.length, 12);
-  assert.ok(summary.sourceReviewPriorityItems[0].score >= summary.sourceReviewPriorityItems.at(-1)!.score);
+  assert.equal(summary.sourceReviewPriorityCounts.source_replacement, 0);
+  assert.equal(summary.sourceReviewPriorityCounts.risk_review, 0);
+  assert.equal(summary.sourceReviewPriorityItems.length, 0);
 });

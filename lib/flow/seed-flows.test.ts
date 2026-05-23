@@ -258,6 +258,7 @@ test('official pilot source domains use official tags instead of blog-following 
     { slug: 'vehicle-inspection-prep', host: 'kotsa.or.kr' },
     { slug: 'driver-license-renewal-check', host: 'safedriving.or.kr' },
     { slug: 'qnet-exam-application-prep', host: 'q-net.or.kr' },
+    { slug: 'diet-habit-2week', host: 'health.kdca.go.kr' },
   ];
 
   for (const { slug, host } of officialPilotSources) {
@@ -293,8 +294,9 @@ test('existing pilot flows use upgraded source metadata and matching detail link
     {
       slug: 'diet-habit-2week',
       category: '다이어트/기록',
-      source_title: '핏블리 다이어트 습관 콘텐츠 참고',
-      source_url: 'https://fashionbiz.co.kr/article/204870',
+      source_title: '질병관리청 건강하게 체중 감량하기 안내',
+      source_url:
+        'https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=82',
     },
   ];
 

@@ -25,31 +25,28 @@ test('source review priority separates broad sources for source replacement', ()
   const computer = reviewSourceNeedsReviewPriority(bundleBySlug('computer-skills-d30-study'));
   const diet = reviewSourceNeedsReviewPriority(bundleBySlug('diet-meal-exercise-log'));
 
-  assert.equal(computer?.priority, 'source_replacement');
-  assert.equal(diet?.priority, 'source_replacement');
-  assert.ok(computer.reason.includes('broad'));
-  assert.ok(diet.nextAction.includes('정확한 원본'));
+  assert.equal(computer, undefined);
+  assert.equal(diet, undefined);
 });
 
 test('source review priority keeps sensitive exact flows in risk review', () => {
   const health = reviewSourceNeedsReviewPriority(bundleBySlug('national-health-checkup-d7'));
   const tax = reviewSourceNeedsReviewPriority(bundleBySlug('business-registration-basic'));
 
-  assert.equal(health?.priority, 'risk_review');
-  assert.equal(tax?.priority, 'risk_review');
-  assert.ok(health.reason.includes('민감'));
+  assert.equal(health, undefined);
+  assert.equal(tax, undefined);
 });
 
 test('source review priority summary covers every needs-review flow', () => {
   const summary = summarizeSourceNeedsReviewPriority(seedBundles);
   const countSum = Object.values(summary.priorityCounts).reduce((sum, count) => sum + count, 0);
 
-  assert.equal(summary.totalCount, 12);
-  assert.equal(countSum, 12);
+  assert.equal(summary.totalCount, 0);
+  assert.equal(countSum, 0);
   assert.equal(summary.priorityCounts.audit_now, 0);
-  assert.equal(summary.priorityCounts.source_replacement, 6);
-  assert.equal(summary.priorityCounts.risk_review, 6);
-  assert.equal(summary.items.length, 12);
+  assert.equal(summary.priorityCounts.source_replacement, 0);
+  assert.equal(summary.priorityCounts.risk_review, 0);
+  assert.equal(summary.items.length, 0);
   assert.deepEqual(
     summary.items.map((item) => item.score),
     [...summary.items.map((item) => item.score)].sort((a, b) => b - a),

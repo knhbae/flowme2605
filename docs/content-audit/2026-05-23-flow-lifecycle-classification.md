@@ -16,7 +16,7 @@ Total classified: 511 Flow bundles.
 
 ## Inventory Normalization
 
-The 21 source-backed legacy routes were normalized to `source_status=needs_review` on 2026-05-23. The first 9 `audit_now` routes were then manually source-fit audited, leaving 12 routes in the active needs-review queue.
+The 21 source-backed legacy routes were normalized to `source_status=needs_review` on 2026-05-23. The first 9 `audit_now` routes were manually source-fit audited in PR #19, and the later source replacement/risk review batch cleared the remaining 12 priority routes.
 
 All 21 still keep their source metadata:
 
@@ -30,23 +30,16 @@ This keeps them out of deletion candidates without overstating them as fully rev
 
 ## Needs-review Priority
 
-The remaining 12 `source_status=needs_review` routes are now split into the next audit queue:
+The remaining `source_status=needs_review` priority queue is now empty:
 
 | Priority | Count | Meaning |
 | --- | ---: | --- |
-| 바로 audit (`audit_now`) | 0 | The first exact-source batch has been audited. |
-| 원본 교체 (`source_replacement`) | 6 | Broad source URL. Find an exact source before promoting or auditing as representative content. |
-| 리스크 검토 (`risk_review`) | 6 | Medical, financial, government, or similarly sensitive scope. Confirm official basis, warnings, and user input/output boundaries first. |
-| 콘텐츠 보강 (`content_backlog`) | 0 | No current needs-review route is low enough to require generic content backlog handling before the above work. |
+| 바로 audit (`audit_now`) | 0 | No current route remains in immediate audit queue. |
+| 원본 교체 (`source_replacement`) | 0 | Cleared by exact source replacement and manual source-fit audit. |
+| 리스크 검토 (`risk_review`) | 0 | Cleared by official/risk boundary review and manual source-fit audit. |
+| 콘텐츠 보강 (`content_backlog`) | 0 | No generic backlog-only route remains. |
 
-Remaining priority samples:
-
-- `business-registration-basic` — risk_review, score 90.
-- `happy-birth-service-check` — risk_review, score 90.
-- `industrial-accident-claim-docs` — risk_review, score 90.
-- `computer-skills-d30-study` — source_replacement, score 70.
-- `diet-habit-2week` — source_replacement, score 70.
-- `new-car-delivery-check` — source_replacement, score 70.
+The source replacement and risk review batch is recorded in `docs/content-audit/2026-05-23-source-replacement-risk-review-batch.md`.
 
 ## Keep
 
@@ -69,7 +62,7 @@ The 61 fix candidates include:
 
 - manual source-fit entries that were marked `reshape_before_featured` or `catalog_preview_only`
 - all 40 `source_status=real` entries until manual promotion
-- source-backed `needs_review` entries whose source URL exists but source-fit audit is not complete
+- audited `needs_review` entries whose source-fit result is `reshape_before_featured`
 
 High-value fix samples:
 
@@ -118,8 +111,6 @@ Content Lab now exposes the lifecycle summary and needs-review priority summary 
 
 ## Next Work
 
-1. Replace broad source URLs for the 6 `source_replacement` routes.
-2. Run official/warning/input-output review for the 6 `risk_review` routes.
-3. Apply content/UX reshaping for the 4 audited `reshape_before_featured` routes from the audit-now batch.
-4. Promote real-source Flows only after their artifact workbench gap is closed and source-fit audit is updated.
-5. Keep generated preview Flows separated from representative search/catalog surfaces.
+1. Apply content/UX reshaping for audited `reshape_before_featured` routes.
+2. Promote real-source Flows only after their artifact workbench gap is closed and source-fit audit is updated.
+3. Keep generated preview Flows separated from representative search/catalog surfaces.

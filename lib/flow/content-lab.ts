@@ -63,9 +63,9 @@ const pilotSources: Record<string, CreatorSource[]> = {
     {
       flowSlug: 'new-car-delivery-check',
       creatorName: '픽플러스',
-      sourceTitle: '신차 인수와 차량 점검 콘텐츠',
-      sourceUrl: 'https://www.youtube.com/results?search_query=%ED%94%BD%ED%94%8C%EB%9F%AC%EC%8A%A4+%EC%8B%A0%EC%B0%A8+%EC%9D%B8%EC%88%98+%EC%A0%90%EA%B2%80',
-      sourceKind: 'channel',
+      sourceTitle: '겟차 신차 검수 체크리스트 가이드',
+      sourceUrl: 'https://web.getcha.kr/blog/new-car-inspection-checklist-complete-guide-2026',
+      sourceKind: 'article',
     },
     {
       flowSlug: 'car-care-monthly-routine',
@@ -99,10 +99,11 @@ const pilotSources: Record<string, CreatorSource[]> = {
     },
     {
       flowSlug: 'diet-habit-2week',
-      creatorName: '핏블리 FITVELY',
-      sourceTitle: '다이어트와 운동 루틴 콘텐츠',
-      sourceUrl: 'https://www.fitvely.com/',
-      sourceKind: 'channel',
+      creatorName: '질병관리청',
+      sourceTitle: '건강하게 체중 감량하기 안내',
+      sourceUrl:
+        'https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=82',
+      sourceKind: 'official',
     },
     {
       flowSlug: 'national-health-checkup-d7',
