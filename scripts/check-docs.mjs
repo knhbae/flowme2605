@@ -10,6 +10,8 @@ const requiredFiles = [
   'docs/STATUS.md',
   'docs/ROADMAP.md',
   'docs/IDEAS.md',
+  'docs/specs/README.md',
+  'docs/specs/TEMPLATE.md',
   'docs/REFERENCE.md',
   'docs/HISTORY.md',
   'docs/harness/README.md',

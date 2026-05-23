@@ -8,6 +8,7 @@ This harness adapts the ideas from `junu0723/claude-harness` for this project wi
 - A repeatable SDLC loop: status, issue, plan, implement, QA, PR, review, release, deploy.
 - Role separation between orchestration, implementation, review, architecture, and browser testing.
 - Verification gates before claims of completion.
+- A FlowMe-specific spec layer for committed multi-step work.
 
 ## What Was Changed
 
@@ -15,6 +16,18 @@ This harness adapts the ideas from `junu0723/claude-harness` for this project wi
 - Role and command docs live under `docs/harness/` so Codex, Claude, Gemini, Copilot, Cursor, or a human can follow them.
 - Tool names are descriptive, not slash-command dependent.
 - Claude-specific hooks are represented as safety rules and optional local automation, not required runtime behavior.
+- Durable product and harness specs live under `docs/specs/`; tool-generated specs and plans may remain under `docs/superpowers/`.
+
+## FLOW Harness Shape
+
+FlowMe uses four durable memory layers:
+
+1. `AGENTS.md` and `agent.md` define how agents enter the repo and which product constraints are non-negotiable.
+2. `docs/STATUS.md`, `docs/ROADMAP.md`, and `docs/IDEAS.md` keep current health, committed direction, and deferred context separate.
+3. `docs/specs/` holds committed multi-step specs before implementation, with stage fit, natural artifact, source/risk, and verification gates.
+4. `docs/pr-history/` records what actually changed, how it was verified, and what remains after PR-sized work.
+
+The goal is not more paperwork. The goal is to keep Stage 0 focused on measurable execution behavior: open, anchor input, copy/export, check, and feedback.
 
 ## Compatibility Position
 
@@ -35,6 +48,7 @@ References: [OpenAI Codex AGENTS.md](https://developers.openai.com/codex/guides/
 | [../STATUS.md](../STATUS.md) | Current version, health, and active constraints |
 | [../ROADMAP.md](../ROADMAP.md) | Upcoming versions and backlog index |
 | [../IDEAS.md](../IDEAS.md) | Deferred ideas and conversation context worth preserving |
+| [../specs/README.md](../specs/README.md) | Durable feature, content, security, and harness specs |
 | [../REFERENCE.md](../REFERENCE.md) | External UX/UI and productivity-method references |
 | [../pr-history/README.md](../pr-history/README.md) | PR-level changes, decisions, verification, risks, and follow-ups |
 | [../HISTORY.md](../HISTORY.md) | Released changes |
