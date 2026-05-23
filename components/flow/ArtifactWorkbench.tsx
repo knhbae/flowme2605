@@ -80,7 +80,15 @@ export function ArtifactWorkbench({
 
       <div className="mt-5">
         {plan.primarySurface === 'decision_table' ? (
-          <DecisionWorkbench bundle={bundle} checks={checks} comparisonState={comparisonState} onComparisonChange={onComparisonChange} onToggleItem={onToggleItem} />
+          <DecisionWorkbench
+            bundle={bundle}
+            checks={checks}
+            comparisonState={comparisonState}
+            onComparisonChange={onComparisonChange}
+            workbenchState={workbenchState}
+            onWorkbenchChange={onWorkbenchChange}
+            onToggleItem={onToggleItem}
+          />
         ) : plan.primarySurface === 'routine_calendar' ? (
           <RoutineWorkbench bundle={bundle} anchor={anchor} weekdays={weekdays} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
         ) : plan.primarySurface === 'spreadsheet_log' ? (
@@ -564,16 +572,21 @@ function DecisionWorkbench({
   checks,
   comparisonState,
   onComparisonChange,
+  workbenchState,
+  onWorkbenchChange,
   onToggleItem,
 }: {
   bundle: FlowBundle;
   checks: Record<string, boolean>;
   comparisonState: FlowComparisonState;
   onComparisonChange: (state: FlowComparisonState) => void;
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
   onToggleItem: (id: string) => void;
 }) {
   const comparisonRows = getComparisonRows(bundle);
   const checklistItems = bundle.items;
+  const memoFields = getMemoCardFields(bundle);
   return (
     <div className="grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
       <ComparisonTable
@@ -583,25 +596,28 @@ function DecisionWorkbench({
         comparisonState={comparisonState}
         onComparisonChange={onComparisonChange}
       />
-      <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
-        <p className="text-sm font-semibold text-blue-700">현장에서 바로 체크</p>
-        <h3 className="mt-1 text-base font-semibold text-gray-950">현장 체크리스트</h3>
-        <ul className="mt-3 space-y-2 text-sm text-gray-700">
-          {checklistItems.slice(0, 5).map((item) => (
-            <li key={item.id}>
-              <label className="flex gap-2">
-                <input
-                  aria-label={`실행판 체크: ${item.title}`}
-                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
-                  checked={Boolean(checks[item.id])}
-                  onChange={() => onToggleItem(item.id)}
-                  type="checkbox"
-                />
-                <span className={checks[item.id] ? 'text-gray-400 line-through' : ''}>{item.title}</span>
-              </label>
-            </li>
-          ))}
-        </ul>
+      <div className="space-y-4">
+        <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+          <p className="text-sm font-semibold text-blue-700">현장에서 바로 체크</p>
+          <h3 className="mt-1 text-base font-semibold text-gray-950">현장 체크리스트</h3>
+          <ul className="mt-3 space-y-2 text-sm text-gray-700">
+            {checklistItems.slice(0, 5).map((item) => (
+              <li key={item.id}>
+                <label className="flex gap-2">
+                  <input
+                    aria-label={`실행판 체크: ${item.title}`}
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
+                    checked={Boolean(checks[item.id])}
+                    onChange={() => onToggleItem(item.id)}
+                    type="checkbox"
+                  />
+                  <span className={checks[item.id] ? 'text-gray-400 line-through' : ''}>{item.title}</span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        </div>
+        {memoFields.length ? <ProofMemoCard fields={memoFields} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} /> : null}
       </div>
     </div>
   );

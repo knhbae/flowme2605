@@ -42,7 +42,7 @@ export type ArtifactLogTable = {
 
 const movingSlugs = new Set(['moving-d30-basic', 'real-ohouse-moving-d30-prep']);
 const travelSlugs = new Set(['overseas-travel-d14', 'real-mofa-overseas-travel-prep']);
-const studySlugs = new Set(['real-sinagong-computer-d30-study']);
+const studySlugs = new Set(['real-sinagong-computer-d30-study', 'computer-skills-d30-study']);
 const driverLicenseSlugs = new Set(['driver-license-renewal-check', 'real-safe-driving-license-renewal']);
 const familyCertificateSlugs = new Set(['family-certificate-issue']);
 const residentRegisterSlugs = new Set(['resident-register-copy-issue', 'real-gov24-resident-register-copy']);
@@ -50,6 +50,14 @@ const qnetExamSlugs = new Set(['qnet-exam-application-prep', 'real-qnet-applicat
 const childcareVisitSlugs = new Set(['real-childcare-vaccination-visit-prep']);
 const kdcaTravelHealthSlugs = new Set(['real-kdca-travel-health-check']);
 const childcareSupportSlugs = new Set(['real-childcare-support-application-check']);
+const newCarDeliverySlugs = new Set(['new-car-delivery-check']);
+const taxDocumentSlugs = new Set(['year-end-tax-docs']);
+const businessRegistrationSlugs = new Set(['business-registration-basic']);
+const happyBirthSlugs = new Set(['happy-birth-service-check']);
+const industrialAccidentSlugs = new Set(['industrial-accident-claim-docs']);
+const healthCheckupSlugs = new Set(['national-health-checkup-d7']);
+const vaccinationCertificateSlugs = new Set(['vaccination-certificate-issue']);
+const jobChangeRiskSlugs = new Set(['job-change-risk-check']);
 
 const driverLicenseComparisonRows: ArtifactComparisonRow[] = [
   { id: 'driver-license-renewal-type', title: '면허/갱신 유형' },
@@ -224,6 +232,118 @@ const childcareSupportComparisonRows: ArtifactComparisonRow[] = [
   { id: 'childcare-support-first-visit-docs', title: '첫 방문 서류와 준비물' },
 ];
 
+const newCarDeliveryComparisonRows: ArtifactComparisonRow[] = [
+  { id: 'new-car-exterior-interior', title: '외관/실내 하자와 사진 증빙' },
+  { id: 'new-car-electronics-options', title: '전자장비와 옵션 작동 확인' },
+  { id: 'new-car-documents', title: '등록/보험/인수 서류 확인' },
+  { id: 'new-car-defect-dealer-confirmation', title: '하자 발견 시 딜러 확인과 인수 보류 메모' },
+];
+
+const taxDocumentMemoFields: ArtifactMemoField[] = [
+  {
+    id: 'tax-company-deadline',
+    label: '회사 제출 마감',
+    placeholder: '예: 2026-01-23 18:00, 회사 시스템 업로드',
+    groupEyebrow: '공식 일정/회사 제출',
+    groupTitle: '연말정산 제출 메모',
+    groupDescription: '공제 가능 여부를 Flow가 판단하지 않고, 공식 자료 확인일과 회사 제출 상태를 분리해 기록합니다.',
+  },
+  { id: 'tax-final-data-date', label: '최종자료 확인일', placeholder: '예: 간소화 최종자료 2026-01-20 확인' },
+  { id: 'tax-extra-documents', label: '추가 증빙 목록', placeholder: '예: 월세 계약서, 기부금 영수증, 안경 구입비' },
+  { id: 'tax-deduction-caution', label: '공제 판단 주의', placeholder: '예: 부양가족/월세 공제 가능 여부는 회사 또는 국세청 확인' },
+  { id: 'tax-submission-status', label: '제출 상태와 증빙 위치', placeholder: '예: PDF 업로드 완료, 원본 파일 D:\\tax\\2026' },
+];
+
+const businessRegistrationMemoFields: ArtifactMemoField[] = [
+  {
+    id: 'business-type-question',
+    label: '업종/과세유형 확인 질문',
+    placeholder: '예: 온라인 소매, 간이/일반 과세 여부는 세무서 확인',
+    groupEyebrow: '공식 확인 질문',
+    groupTitle: '사업자등록 준비 메모',
+    groupDescription: '업종·인허가·세무 판단은 확정하지 않고, 신청 전 공식 확인 질문과 준비 증빙만 남깁니다.',
+  },
+  { id: 'business-place-document', label: '사업장/임대차 증빙', placeholder: '예: 자택 사업장, 임대차계약서 해당 없음 확인 필요' },
+  { id: 'business-license-permit', label: '인허가 별도 확인', placeholder: '예: 통신판매업 신고 별도 확인' },
+  { id: 'business-tax-office-question', label: '세무서/홈택스 확인 질문', placeholder: '예: 업종코드, 첨부서류, 처리기간 질문' },
+  { id: 'business-submission-proof', label: '신청 증빙 위치', placeholder: '예: 접수번호, 캡처 파일, 보완 요청 여부' },
+];
+
+const happyBirthMemoFields: ArtifactMemoField[] = [
+  {
+    id: 'happy-birth-child-date',
+    label: '출생일/신청 기준일',
+    placeholder: '예: 출생일 2026-06-04, 신청 예정일 2026-06-10',
+    groupEyebrow: '가족정보 주의',
+    groupTitle: '행복출산 신청 준비 메모',
+    groupDescription: '거주지·가구 조건과 지급 여부는 공식 확인 대상으로 두고, 민감 가족정보는 필요한 범위만 기록합니다.',
+  },
+  { id: 'happy-birth-household-area', label: '거주지/가구 조건 확인', placeholder: '예: 서울 마포구, 주민센터 또는 정부24에서 지원 항목 확인' },
+  { id: 'happy-birth-guardian-account', label: '보호자/계좌 준비', placeholder: '예: 부모급여 수령 계좌 확인, 보호자 신분증 준비' },
+  { id: 'happy-birth-official-question', label: '공식 확인 질문', placeholder: '예: 우리 구 추가 지원, 신청 가능 기간, 중복 신청 여부' },
+  { id: 'happy-birth-submission-proof', label: '제출 증빙 위치', placeholder: '예: 신청 완료 캡처, 접수번호, 보완 안내' },
+];
+
+const industrialAccidentMemoFields: ArtifactMemoField[] = [
+  {
+    id: 'industrial-claim-type',
+    label: '청구 유형',
+    placeholder: '예: 요양비, 이송비, 보조기, 약제비',
+    groupEyebrow: '증빙 수집/공식 판단 분리',
+    groupTitle: '산재 요양비 청구 증빙 메모',
+    groupDescription: '지급 가능성은 확정하지 않고, 청구 유형·금액·파일·보완요청을 증빙표로 남깁니다.',
+  },
+  { id: 'industrial-receipt-files', label: '영수증/진료비 파일명', placeholder: '예: receipt-2026-05-12.pdf, detail-claim.xlsx' },
+  { id: 'industrial-amount-record', label: '금액 기록', placeholder: '예: 본인부담 128,000원, 청구 검토 대상' },
+  { id: 'industrial-official-question', label: '근로복지공단 확인 질문', placeholder: '예: 보완서류, 청구 가능 항목, 제출 경로' },
+  { id: 'industrial-supplement-request', label: '보완 요청/처리 상태', placeholder: '예: 2026-06-03 보완 요청, 진료확인서 추가' },
+];
+
+const healthCheckupMemoFields: ArtifactMemoField[] = [
+  {
+    id: 'health-check-date-place',
+    label: '검진기관/예약시간',
+    placeholder: '예: 2026-06-19 08:30, OO검진센터',
+    groupEyebrow: '의료기관 확인 질문',
+    groupTitle: '건강검진 준비 질문 메모',
+    groupDescription: '금식·복용약·내시경 이동은 Flow 지시가 아니라 기관/의료진에게 확인할 질문으로 기록합니다.',
+  },
+  { id: 'health-check-medicine-question', label: '복용약 확인 질문', placeholder: '예: 혈압약 복용 여부를 검진기관에 문의' },
+  { id: 'health-check-fasting-confirmation', label: '금식 안내 확인', placeholder: '예: 기관 안내 문자 기준, 물/약 복용 가능 여부 확인' },
+  { id: 'health-check-endoscopy-transport', label: '수면내시경 이동 계획', placeholder: '예: 보호자 동행, 자가운전 안 함' },
+  { id: 'health-check-result-method', label: '결과 수령 방법', placeholder: '예: 모바일/우편/방문 수령, 재상담 필요 여부' },
+];
+
+const vaccinationCertificateMemoFields: ArtifactMemoField[] = [
+  {
+    id: 'vaccination-certificate-target',
+    label: '대상자',
+    placeholder: '예: 자녀 이름, 생년월일, 보호자 관계',
+    groupEyebrow: '의료기록 증명 메모',
+    groupTitle: '예방접종증명서 제출 메모',
+    groupDescription: '접종 이력 누락이나 수정 판단은 공식 기관 확인으로 분리하고, 제출처 요구사항만 기록합니다.',
+  },
+  { id: 'vaccination-certificate-language', label: '언어/발급 형식', placeholder: '예: 국문 PDF, 영문 필요 여부 확인' },
+  { id: 'vaccination-certificate-submit-requirement', label: '제출처 요구사항', placeholder: '예: 어린이집 제출, 최근 3개월 이내 발급본' },
+  { id: 'vaccination-certificate-missing-record', label: '누락/수정 공식 확인', placeholder: '예: 누락 기록은 보건소/접종기관 확인' },
+  { id: 'vaccination-certificate-file-location', label: '파일/출력 위치', placeholder: '예: PDF 저장 위치, 출력본 보관 위치' },
+];
+
+const jobChangeRiskMemoFields: ArtifactMemoField[] = [
+  {
+    id: 'job-change-company-question',
+    label: '회사 확인 질문',
+    placeholder: '예: 퇴사 통보 기한, 인수인계, 연차 정산 기준',
+    groupEyebrow: '개인 판단/공식 확인 분리',
+    groupTitle: '이직 전 리스크 메모',
+    groupDescription: '재정·노무 결론을 내리지 않고 회사 질문, 공공기관 확인, 개인 현금흐름 메모를 분리합니다.',
+  },
+  { id: 'job-change-public-insurance-check', label: '고용보험/건강보험 확인', placeholder: '예: 이직확인서 처리, 자격 이력, 공백 기간 보험 처리' },
+  { id: 'job-change-retirement-pay-note', label: '퇴직급여/IRP 메모', placeholder: '예: 지급 예정일, 필요 계좌, 회사 확인 담당자' },
+  { id: 'job-change-gap-budget', label: '공백 기간 생활비 메모', placeholder: '예: 14일 공백, 월세/카드/보험료 현금흐름' },
+  { id: 'job-change-decision-boundary', label: '확정하지 않을 판단', placeholder: '예: 실업급여 가능 여부, 법적 분쟁 가능성은 공식 상담' },
+];
+
 const movingVendorComparisonRows: ArtifactComparisonRow[] = [
   { id: 'moving-vendor-price', title: '이사 업체 견적 금액' },
   { id: 'moving-vendor-included-service', title: '포함 서비스' },
@@ -366,6 +486,13 @@ export function getComparisonConfig(bundle: FlowBundle): ArtifactComparisonConfi
       rows: childcareSupportComparisonRows,
     };
   }
+  if (newCarDeliverySlugs.has(bundle.flow.slug)) {
+    return {
+      title: '신차 인수 증빙 비교표',
+      eyebrow: '하자/인수 결정',
+      rows: newCarDeliveryComparisonRows,
+    };
+  }
   return undefined;
 }
 
@@ -374,6 +501,13 @@ export function getMemoCardFields(bundle: FlowBundle): ArtifactMemoField[] {
   if (residentRegisterSlugs.has(bundle.flow.slug)) return residentRegisterMemoFields;
   if (childcareVisitSlugs.has(bundle.flow.slug)) return childcareVisitMemoFields;
   if (kdcaTravelHealthSlugs.has(bundle.flow.slug)) return kdcaTravelHealthMemoFields;
+  if (taxDocumentSlugs.has(bundle.flow.slug)) return taxDocumentMemoFields;
+  if (businessRegistrationSlugs.has(bundle.flow.slug)) return businessRegistrationMemoFields;
+  if (happyBirthSlugs.has(bundle.flow.slug)) return happyBirthMemoFields;
+  if (industrialAccidentSlugs.has(bundle.flow.slug)) return industrialAccidentMemoFields;
+  if (healthCheckupSlugs.has(bundle.flow.slug)) return healthCheckupMemoFields;
+  if (vaccinationCertificateSlugs.has(bundle.flow.slug)) return vaccinationCertificateMemoFields;
+  if (jobChangeRiskSlugs.has(bundle.flow.slug)) return jobChangeRiskMemoFields;
   if (movingSlugs.has(bundle.flow.slug)) return movingProofMemoFields;
   if (travelSlugs.has(bundle.flow.slug)) return travelProofMemoFields;
   return [];

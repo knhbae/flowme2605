@@ -43,8 +43,17 @@ const decisionToHandling = {
   replace_or_hide_source: 'catalog_review',
 } as const;
 
-const decisionTableOverrideSlugs = new Set(['driver-license-renewal-check']);
-const memoCardOverrideSlugs = new Set(['family-certificate-issue', 'resident-register-copy-issue']);
+const decisionTableOverrideSlugs = new Set(['driver-license-renewal-check', 'new-car-delivery-check']);
+const memoCardOverrideSlugs = new Set([
+  'family-certificate-issue',
+  'resident-register-copy-issue',
+  'year-end-tax-docs',
+  'business-registration-basic',
+  'happy-birth-service-check',
+  'industrial-accident-claim-docs',
+  'vaccination-certificate-issue',
+]);
+const spreadsheetOverrideSlugs = new Set(['diet-habit-2week', 'diet-meal-exercise-log', 'diet-reset-2week']);
 
 function hasArtifact(bundle: FlowBundle, kind: string) {
   const audit = getNaturalArtifactAudit(bundle.flow.slug);
@@ -62,6 +71,7 @@ function getPrimarySurface(bundle: FlowBundle, model = normalizeExecutionModel(b
   if (bundle.flow.slug === 'used-car-buying-check') return 'decision_table';
   if (decisionTableOverrideSlugs.has(bundle.flow.slug)) return 'decision_table';
   if (memoCardOverrideSlugs.has(bundle.flow.slug)) return 'memo_card';
+  if (spreadsheetOverrideSlugs.has(bundle.flow.slug)) return 'spreadsheet_log';
   if (model.views.includes('comparison_table') || (hasArtifact(bundle, 'comparison_table') && bundle.flow.structure_type === 'checklist')) return 'decision_table';
   if ((hasArtifact(bundle, 'routine_calendar') || model.views.includes('routine_sessions') || bundle.flow.structure_type === 'routine') && !hasArtifact(bundle, 'spreadsheet')) return 'routine_calendar';
   if (bundle.flow.structure_type === 'timeline' && (hasArtifact(bundle, 'monthly_calendar') || model.views.includes('month_calendar'))) return 'timeline_calendar';
