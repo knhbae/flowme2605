@@ -38,11 +38,11 @@ The 40 `source_status=real` flows had natural-artifact audits but still appeared
 
 - RED check: `npm test -- lib/flow/source-fit.test.ts` failed before implementation because source-fit count stayed 31 and real-source slugs were missing.
 - Targeted post-implementation unit checks passed for source-fit, inventory, Content Lab, lifecycle, and execution model tests.
-- `npm test` passed: 108 tests, 0 failures.
-- `npm run docs:check` passed: 14 required files, 60 local links.
-- `npm run build` passed: Next.js production build compiled and type-checked successfully.
+- After syncing with PR #22 / `main`, `npm test` passed: 115 tests, 0 failures.
+- After syncing with PR #22 / `main`, `npm run docs:check` passed: 14 required files, 60 local links.
+- After syncing with PR #22 / `main`, `npm run build` passed: Next.js production build compiled and type-checked successfully.
 - `npm run test:e2e -- --grep "flow lab"` passed: 1 targeted Playwright test.
-- `npm run test:e2e` passed: 38 Playwright tests.
+- After syncing with PR #22 / `main`, `npm run test:e2e` passed: 39 Playwright tests.
 
 ## Risks
 

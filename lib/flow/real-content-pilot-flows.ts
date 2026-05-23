@@ -170,17 +170,17 @@ const vehicleInspectionText = `## D-14 검사 기간 확인
 const qnetExamText = `## D-30 응시 조건 확인
 - 응시 자격과 제출 서류 필요 여부 확인하기 D-30
 - Q-Net 회원 정보와 사진 등록 상태 확인하기 D-30
-- 원서접수 시작일과 결제 수단 준비하기 D-21
+- 원서접수 시작일, 마감 시각, 결제 수단 기록하기 D-21
 
 ## D-14 접수 후 확인
-- 접수 내역과 시험장 위치 확인하기 D-14
-- 환불과 변경 마감일 기록하기 D-14
-- 수험표 출력 가능 시점 확인하기 D-7
+- 접수 내역, 결제 완료, 접수번호 저장하기 D-14
+- 환불과 변경 마감일을 별도 deadline으로 기록하기 D-14
+- 수험표 출력 가능 시점과 PDF 보관 위치 확인하기 D-7
 
 ## D-Day 시험 당일
 - 신분증과 수험표 챙기기 D-Day
-- 허용 필기구와 계산기 기준 확인하기 D-Day
-- 시험 후 합격자 발표일 기록하기 D-Day`;
+- 허용 필기구, 계산기 기준, 입실 시간 확인하기 D-Day
+- 시험장 이동 시간과 합격자 발표일 기록하기 D-Day`;
 
 const computerSkillsText = `## D-30 범위 쪼개기
 - 필기와 실기 시험 범위 나누기 D-30
@@ -409,11 +409,11 @@ export const realContentPilotBundles: FlowBundle[] = [
         source_type: qnetExamSource.sourceType,
         risk_level: qnetExamSource.riskLevel,
       },
-      '접수 내역과 시험장 위치 확인하기': {
-        description: '접수 완료 후 시험장, 일시, 과목 정보를 다시 확인합니다.',
-        why: '접수만 완료하고 시험장 위치나 시간을 놓치면 당일 이동 계획이 흔들릴 수 있습니다.',
-        how: 'Q-Net 접수 내역에서 시험장 주소, 입실 시간, 변경 가능 여부를 확인합니다.',
-        completion_criteria: '시험장 위치와 접수 내역을 저장했다.',
+      '접수 내역, 결제 완료, 접수번호 저장하기': {
+        description: '접수 완료 후 결제 상태, 접수번호, 시험장, 일시, 과목 정보를 다시 확인합니다.',
+        why: '접수만 완료하고 결제나 접수번호 저장을 놓치면 이후 수험표와 변경 확인이 흔들릴 수 있습니다.',
+        how: 'Q-Net 접수 내역에서 결제 완료 여부, 접수번호, 시험장 주소, 입실 시간, 변경 가능 여부를 확인합니다.',
+        completion_criteria: '결제 상태, 접수번호, 시험장 위치를 저장했다.',
         links: [{ label: qnetExamSource.sourceTitle, url: qnetExamSource.sourceUrl, type: 'official' }],
         source_type: qnetExamSource.sourceType,
         risk_level: qnetExamSource.riskLevel,

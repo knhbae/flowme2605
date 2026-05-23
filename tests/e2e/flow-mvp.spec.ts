@@ -836,3 +836,24 @@ test('representative real content pilot flows are executable', async ({ page }) 
   await page.getByLabel('시험일').fill('2026-07-15');
   await expect(page.getByText('2026-06-15').first()).toBeVisible();
 });
+
+test('reshaped official route workbenches expose natural artifact fields', async ({ page }) => {
+  await page.goto('/f/family-certificate-issue');
+  await expect(page.getByRole('heading', { name: '가족관계증명서 발급 Flow' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '메모 카드' })).toBeVisible();
+  await expect(page.getByRole('textbox', { name: '제출처 요구사항' })).toBeVisible();
+  await expect(page.getByRole('textbox', { name: '주민등록번호 공개 범위' })).toBeVisible();
+
+  await page.goto('/f/driver-license-renewal-check');
+  await expect(page.getByRole('heading', { name: '운전면허 갱신 준비 Flow' })).toBeVisible();
+  const driverWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(driverWorkbench.getByRole('heading', { name: '후보 비교표' }).first()).toBeVisible();
+  await expect(driverWorkbench.getByText('면허/갱신 유형')).toBeVisible();
+
+  await page.goto('/f/qnet-exam-application-prep');
+  await expect(page.getByRole('heading', { name: 'Q-Net 원서접수 준비 Flow' })).toBeVisible();
+  await page.getByLabel('시험일').fill('2026-07-15');
+  await expect(page.getByText('접수·결제 마감 기록')).toBeVisible();
+  await expect(page.getByLabel('원서접수 마감 / 마감/시점')).toBeVisible();
+  await expect(page.getByLabel('시험장·입실 시간 / 상태/결정')).toBeVisible();
+});

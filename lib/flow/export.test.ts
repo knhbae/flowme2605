@@ -374,6 +374,67 @@ test('meal plan workbook includes execution, recipe, and reaction log sheets', (
   assert.ok(monthly.rows.some((row) => String(row[3]).includes('쌀미음 3일차')));
 });
 
+test('document issue exports include structured submitter memo records', () => {
+  const family = seedBundles.find((bundle) => bundle.flow.slug === 'family-certificate-issue');
+  assert.ok(family);
+
+  const workbenchState = {
+    occurrences: {},
+    logRows: {},
+    memoCards: {
+      'family-submitter-requirement': '은행 제출, 상세 증명서 요구',
+      'family-disclosure-scope': '주민등록번호 뒷자리 비공개',
+      'family-file-location': 'PDF 파일명 family-bank-2026.pdf',
+    },
+  };
+
+  const text = buildText(family, {}, undefined, {}, undefined, workbenchState);
+
+  assert.match(text, /제출처 요구사항: 은행 제출, 상세 증명서 요구/);
+  assert.match(text, /주민등록번호 공개 범위: 주민등록번호 뒷자리 비공개/);
+  assert.match(text, /파일\/출력 위치: PDF 파일명 family-bank-2026\.pdf/);
+
+  const sheets = buildWorkbookSheets(family, {}, undefined, { workbenchState });
+  const workbench = sheets.find((sheet) => sheet.name === '실행판 기록');
+  assert.ok(workbench);
+  assert.ok(workbench.rows.some((row) => row.includes('제출처 요구사항') && row.includes('은행 제출, 상세 증명서 요구')));
+  assert.ok(workbench.rows.some((row) => row.includes('파일/출력 위치') && row.includes('PDF 파일명 family-bank-2026.pdf')));
+});
+
+test('qnet exports include multi-deadline application records with user values', () => {
+  const qnet = seedBundles.find((bundle) => bundle.flow.slug === 'qnet-exam-application-prep');
+  assert.ok(qnet);
+
+  const workbenchState = {
+    occurrences: {},
+    logRows: {
+      'qnet-application-deadline': {
+        due: '2026-06-10 18:00',
+        status: '접수 전',
+        evidence: 'Q-Net 공지 캡처',
+      },
+      'qnet-exam-site': {
+        due: '2026-07-15 09:00',
+        status: '서울동부 시험장',
+        evidence: '교통편 40분',
+      },
+    },
+    memoCards: {},
+  };
+
+  const text = buildText(qnet, {}, '2026-07-15', {}, undefined, workbenchState);
+
+  assert.match(text, /원서접수 마감 마감\/시점: 2026-06-10 18:00/);
+  assert.match(text, /원서접수 마감 증빙\/메모: Q-Net 공지 캡처/);
+  assert.match(text, /시험장·입실 시간 상태\/결정: 서울동부 시험장/);
+
+  const sheets = buildWorkbookSheets(qnet, {}, '2026-07-15', { workbenchState });
+  const workbench = sheets.find((sheet) => sheet.name === '실행판 기록');
+  assert.ok(workbench);
+  assert.ok(workbench.rows.some((row) => row.includes('원서접수 마감') && row.includes('마감/시점') && row.includes('2026-06-10 18:00')));
+  assert.ok(workbench.rows.some((row) => row.includes('시험장·입실 시간') && row.includes('상태/결정') && row.includes('서울동부 시험장')));
+});
+
 test('xlsx export builds a valid workbook archive', async () => {
   const moving = seedBundles.find((bundle) => bundle.flow.slug === 'moving-d30-basic');
   assert.ok(moving);
