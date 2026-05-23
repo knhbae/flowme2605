@@ -2005,6 +2005,153 @@ function enrichSeedMeta(bundle: FlowBundle, index: number): FlowBundle {
   };
 }
 
+type CopyPolishConfig = {
+  artifact: string;
+  record: string;
+  sourceCheck: string;
+  boundary: string;
+  sourceType: FlowBundle['items'][number]['source_type'];
+  riskLevel: FlowBundle['flow']['risk_level'];
+};
+
+const sourceRiskCopyPolish: Record<string, CopyPolishConfig> = {
+  'computer-skills-d30-study': {
+    artifact: 'D-30 학습표와 모의점수 로그',
+    record: '시험일, 단원, 오답 유형, 점수, 실기 파일 상태',
+    sourceCheck: '교재 목차와 최신 기출 범위',
+    boundary: '새 범위를 늘리기보다 오답 재풀이와 실기 환경 확인을 우선합니다.',
+    sourceType: 'reference',
+    riskLevel: 'low',
+  },
+  'diet-habit-2week': {
+    artifact: '2주 식사·활동 기록표',
+    record: '식사, 물, 야식, 운동, 컨디션, 중단 신호',
+    sourceCheck: '질병관리청의 점진적 체중관리 원칙',
+    boundary: '통증, 어지러움, 섭식 문제, 질환이 있으면 기록을 멈추고 전문가 상담을 우선합니다.',
+    sourceType: 'official',
+    riskLevel: 'medical_sensitive',
+  },
+  'new-car-delivery-check': {
+    artifact: '신차 인수 증빙표',
+    record: '계약 옵션, 사진 파일명, 하자 위치, 딜러 확인, 인수 보류 여부',
+    sourceCheck: '신차 검수 체크리스트의 외관·실내·서류 확인 순서',
+    boundary: '하자를 발견하면 서명 전에 사진과 딜러 확인 메모를 남깁니다.',
+    sourceType: 'reference',
+    riskLevel: 'financial_sensitive',
+  },
+  'year-end-tax-docs': {
+    artifact: '연말정산 회사 제출 메모',
+    record: '회사 마감, 간소화 확인일, 추가 증빙, 공제 판단 질문, 제출 상태',
+    sourceCheck: '국세청 간소화 일정과 회사 제출 기준',
+    boundary: '공제 가능 여부는 Flow가 확정하지 않고 회사 또는 국세청 확인 질문으로 남깁니다.',
+    sourceType: 'official',
+    riskLevel: 'financial_sensitive',
+  },
+  'diet-meal-exercise-log': {
+    artifact: '식사·운동·컨디션 관찰표',
+    record: '끼니, 간식, 운동 시간, 강도, 배고픔, 통증이나 어지러움',
+    sourceCheck: '질병관리청의 식사·활동·생활습관 기록 원칙',
+    boundary: '체중감량 처방이 아니라 관찰 기록이며 이상 신호가 있으면 중단합니다.',
+    sourceType: 'official',
+    riskLevel: 'medical_sensitive',
+  },
+  'diet-reset-2week': {
+    artifact: '2주 리셋 관찰표와 다음 규칙 메모',
+    record: '식사 시간, 간식 패턴, 대체 행동, 운동, 수면, 유지할 규칙',
+    sourceCheck: '질병관리청의 무리하지 않는 체중관리 원칙',
+    boundary: '끼니를 건너뛰거나 극단적으로 제한하지 않고 유지 가능한 규칙만 남깁니다.',
+    sourceType: 'official',
+    riskLevel: 'medical_sensitive',
+  },
+  'business-registration-basic': {
+    artifact: '사업자등록 신청 전 공식 질문 메모',
+    record: '업종, 사업장 증빙, 인허가 후보, 세무서 질문, 접수 증빙',
+    sourceCheck: '홈택스 제출서류 안내',
+    boundary: '업종코드, 과세유형, 인허가 판단은 공식 확인 질문으로 분리합니다.',
+    sourceType: 'official',
+    riskLevel: 'financial_sensitive',
+  },
+  'happy-birth-service-check': {
+    artifact: '행복출산 신청 가족정보 메모',
+    record: '출생일, 거주지, 보호자 계좌, 지원 항목 질문, 제출 증빙',
+    sourceCheck: '정부24 행복출산 통합신청 안내',
+    boundary: '지원 대상과 지급 여부는 거주지·가구 조건에 따라 달라져 공식 확인으로 남깁니다.',
+    sourceType: 'official',
+    riskLevel: 'medical_sensitive',
+  },
+  'industrial-accident-claim-docs': {
+    artifact: '산재 요양비 청구 증빙 메모',
+    record: '청구 유형, 영수증 파일명, 금액, 공단 질문, 보완 요청 상태',
+    sourceCheck: '정부24 산재보험 요양비청구 안내',
+    boundary: '산재 인정이나 지급 가능성은 Flow가 판단하지 않고 공단 확인 질문으로 남깁니다.',
+    sourceType: 'official',
+    riskLevel: 'financial_sensitive',
+  },
+  'national-health-checkup-d7': {
+    artifact: '건강검진 D-7 캘린더와 기관 질문 메모',
+    record: '검진기관, 복용약 질문, 금식 안내 확인, 수면내시경 이동, 결과 수령 방법',
+    sourceCheck: '국민건강보험 건강검진 안내와 검진기관 안내',
+    boundary: '금식, 약 복용, 내시경 이동은 의료진 또는 검진기관 확인 질문으로 기록합니다.',
+    sourceType: 'official',
+    riskLevel: 'medical_sensitive',
+  },
+  'vaccination-certificate-issue': {
+    artifact: '예방접종증명서 제출 메모',
+    record: '대상자, 언어, 제출처 요구 형식, 누락 기록 확인, 파일 위치',
+    sourceCheck: '정부24 예방접종증명 민원 안내',
+    boundary: '접종 이력 누락이나 정정은 보건소 또는 접종기관 확인으로 분리합니다.',
+    sourceType: 'official',
+    riskLevel: 'medical_sensitive',
+  },
+  'job-change-risk-check': {
+    artifact: '이직 전 회사·보험·현금흐름 리스크 메모',
+    record: '회사 질문, 인수인계, 퇴직급여, 고용보험, 공백 기간 생활비, 결정 기준선',
+    sourceCheck: '회사 규정, 고용보험, 건강보험, 퇴직급여 공식 확인 경로',
+    boundary: '법적·재정적 결론을 내리지 않고 회사와 공공기관에 확인할 질문으로 분리합니다.',
+    sourceType: 'reference',
+    riskLevel: 'financial_sensitive',
+  },
+};
+
+function polishSourceRiskItemCopy(bundle: FlowBundle): FlowBundle {
+  const config = sourceRiskCopyPolish[bundle.flow.slug];
+  if (!config) return bundle;
+
+  const previousDetails = new Map(bundle.itemDetails?.map((detail) => [detail.item_id, detail]));
+  return {
+    ...bundle,
+    items: bundle.items.map((item) => ({
+      ...item,
+      description:
+        item.description && item.description.length >= 20
+          ? item.description
+          : `${config.artifact}에 ${item.title} 결과를 남겨 다음 단계에서 바로 확인할 수 있게 합니다.`,
+      source_type: item.source_type ?? config.sourceType,
+      risk_level: item.risk_level ?? config.riskLevel,
+    })),
+    itemDetails: bundle.items.map((item) => {
+      const existing = previousDetails.get(item.id);
+      return {
+        item_id: item.id,
+        why:
+          existing?.why && existing.why.length >= 20
+            ? `${existing.why} 이 결과는 ${config.artifact}에 남길 값과 연결됩니다.`
+            : `${config.artifact}은 ${config.record}를 한곳에 모아야 쓸모가 있습니다. 이 항목은 "${item.title}" 판단을 빠뜨리지 않게 합니다.`,
+        how:
+          existing?.how && existing.how.length >= 20
+            ? `${existing.how} 확인한 값은 ${config.artifact}의 메모나 상태 칸에 적습니다.`
+            : `${config.sourceCheck}를 확인한 뒤, 실행판의 ${config.artifact}에 ${config.record} 중 해당 값을 적습니다.`,
+        completion_criteria:
+          existing?.completion_criteria && existing.completion_criteria.length >= 15 && existing.completion_criteria !== '이 항목을 완료했어요.'
+            ? `${existing.completion_criteria} ${config.artifact}에도 같은 상태를 기록했다.`
+            : `${config.artifact}에 "${item.title}"의 날짜, 상태, 증빙, 질문 중 필요한 값이 기록됐다.`,
+        caution: existing?.caution ?? config.boundary,
+        links: existing?.links,
+      };
+    }),
+  };
+}
+
 function buildSeedTags(bundle: FlowBundle): string[] {
   const tags = new Set<string>();
   const { flow } = bundle;
@@ -2366,4 +2513,4 @@ const baseSeedBundles: FlowBundle[] = [
   ...previewFlowBundles,
 ];
 
-export const seedBundles: FlowBundle[] = baseSeedBundles.map(enrichSeedMeta);
+export const seedBundles: FlowBundle[] = baseSeedBundles.map((bundle, index) => polishSourceRiskItemCopy(enrichSeedMeta(bundle, index)));
