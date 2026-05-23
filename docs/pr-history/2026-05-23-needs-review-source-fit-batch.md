@@ -2,8 +2,8 @@
 
 **Date:** 2026-05-23  
 **Branch:** `codex/audit-needs-review-flows`  
-**Status:** Ready for PR  
-**PR URL:** TBD  
+**Status:** Open
+**PR URL:** https://github.com/knhbae/flowme2605/pull/19
 **Deploy URL:** TBD
 
 ## Why
