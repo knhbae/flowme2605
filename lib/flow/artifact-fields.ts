@@ -51,6 +51,7 @@ const childcareVisitSlugs = new Set(['real-childcare-vaccination-visit-prep']);
 const kdcaTravelHealthSlugs = new Set(['real-kdca-travel-health-check']);
 const childcareSupportSlugs = new Set(['real-childcare-support-application-check']);
 const newCarDeliverySlugs = new Set(['new-car-delivery-check']);
+const usedCarSlugs = new Set(['used-car-buying-check']);
 const taxDocumentSlugs = new Set(['year-end-tax-docs']);
 const businessRegistrationSlugs = new Set(['business-registration-basic']);
 const happyBirthSlugs = new Set(['happy-birth-service-check']);
@@ -262,6 +263,39 @@ const newCarDeliveryMemoFields: ArtifactMemoField[] = [
     id: 'new-car-handover-boundary',
     label: '인수 보류/서명 경계 메모',
     placeholder: '예: 보수 일정과 문서 확인 전 인수 서명하지 않음',
+  },
+];
+
+const usedCarComparisonRows: ArtifactComparisonRow[] = [
+  { id: 'used-car-price-mileage', title: '후보별 가격·주행거리' },
+  { id: 'used-car-history-record', title: '사고 이력·성능점검기록부' },
+  { id: 'used-car-seller-memo', title: '판매자 설명·현장 확인 메모' },
+  { id: 'used-car-hold-reason', title: '구매 보류 사유' },
+];
+
+const usedCarDecisionMemoFields: ArtifactMemoField[] = [
+  {
+    id: 'used-car-target-need',
+    label: '구매 목적과 예산 경계',
+    placeholder: '예: 출퇴근용, 총예산 1,500만원, 수리비 100만원 넘으면 보류',
+    groupEyebrow: '구매 판단 메모',
+    groupTitle: '후보 비교·증빙·보류 메모',
+    groupDescription: 'FLOW가 구매 여부를 대신 판단하지 않고, 후보별 증빙과 보류 사유를 사용자가 남기도록 돕습니다.',
+  },
+  {
+    id: 'used-car-proof-files',
+    label: '사진/조회 파일명',
+    placeholder: '예: avante-performance-record.pdf, tire-front.jpg',
+  },
+  {
+    id: 'used-car-expert-check',
+    label: '정비사/전문가 확인 내용',
+    placeholder: '예: 하부 누유 확인 필요, 리프트 점검 전 계약 보류',
+  },
+  {
+    id: 'used-car-buy-hold-memo',
+    label: '구매 보류/진행 메모',
+    placeholder: '예: 사고 이력 설명과 성능점검표가 맞지 않으면 진행하지 않음',
   },
 ];
 
@@ -519,6 +553,13 @@ export function getComparisonConfig(bundle: FlowBundle): ArtifactComparisonConfi
       rows: newCarDeliveryComparisonRows,
     };
   }
+  if (usedCarSlugs.has(bundle.flow.slug)) {
+    return {
+      title: '중고차 후보 비교표',
+      eyebrow: '구매 전 후보 비교',
+      rows: usedCarComparisonRows,
+    };
+  }
   return undefined;
 }
 
@@ -537,6 +578,7 @@ export function getMemoCardFields(bundle: FlowBundle): ArtifactMemoField[] {
   if (movingSlugs.has(bundle.flow.slug)) return movingProofMemoFields;
   if (travelSlugs.has(bundle.flow.slug)) return travelProofMemoFields;
   if (newCarDeliverySlugs.has(bundle.flow.slug)) return newCarDeliveryMemoFields;
+  if (usedCarSlugs.has(bundle.flow.slug)) return usedCarDecisionMemoFields;
   return [];
 }
 

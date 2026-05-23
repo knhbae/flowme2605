@@ -8,12 +8,15 @@ export type ArtifactSurfaceKind =
   | 'routine_month'
   | 'spreadsheet_preview'
   | 'comparison_table'
+  | 'meal_calendar'
+  | 'reaction_log'
   | 'memo_card';
 
 export type PrimaryArtifactSurface =
   | 'timeline_calendar'
   | 'routine_calendar'
   | 'spreadsheet_log'
+  | 'meal_reaction_log'
   | 'decision_table'
   | 'memo_card'
   | 'checklist';
@@ -68,6 +71,7 @@ function getSourceHandling(bundle: FlowBundle): SourceHandling {
 
 function getPrimarySurface(bundle: FlowBundle, model = normalizeExecutionModel(bundle)): PrimaryArtifactSurface {
   const audit = getNaturalArtifactAudit(bundle.flow.slug);
+  if (bundle.flow.content_type === 'meal_plan') return 'meal_reaction_log';
   if (bundle.flow.slug === 'used-car-buying-check') return 'decision_table';
   if (decisionTableOverrideSlugs.has(bundle.flow.slug)) return 'decision_table';
   if (memoCardOverrideSlugs.has(bundle.flow.slug)) return 'memo_card';
@@ -87,6 +91,13 @@ function surface(kind: ArtifactSurfaceKind, title: string, description: string):
 }
 
 function getSurfaces(primary: PrimaryArtifactSurface): ArtifactSurface[] {
+  if (primary === 'meal_reaction_log') {
+    return [
+      surface('meal_calendar', '이유식 일정표', '시작일 기준 메뉴와 새 재료를 먼저 확인합니다.'),
+      surface('reaction_log', '반응 기록표', '먹은 양, 피부, 구토/설사, 변, 수면, 거부/선호를 기록합니다.'),
+      surface('memo_card', '주의 메모', '알레르기와 전문가 확인 조건을 별도로 남깁니다.'),
+    ];
+  }
   if (primary === 'decision_table') {
     return [
       surface('comparison_table', '후보 비교표', '선택지를 먼저 비교하고 그 다음 실행 체크리스트로 내려갑니다.'),

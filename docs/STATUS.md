@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated:** 2026-05-23
+**Last Updated:** 2026-05-24
 **Status:** v0.1.0 IN DEVELOPMENT  
 **Current Version:** v0.1.0  
 **Primary Focus:** Stage 0 / First Flag validation for FLOW execution behavior.
@@ -47,7 +47,8 @@
 - Export-first UX/content simulation batch 1 has landed for the same three routes; Flow Lab now tracks realistic user inputs, external artifacts, UX gaps, feature-diet decisions, and risk boundaries before any promotion.
 - Computer-skills final promotion QA has landed: desktop/mobile screenshots and xlsx/ics downloads passed for `computer-skills-d30-study`, and the route is now representative-eligible.
 - New-car and diet risk-boundary QA has landed: delivery proof memo fields, diet warning hierarchy, export tests, E2E downloads, and desktop/mobile screenshots are recorded while both routes remain in fix.
-- Representative/public-MVP UX content simplification audit is in progress: 7 routes are being reviewed for first-screen clarity, export-first fit, cognitive load, and source/risk separation before any new feature expansion.
+- Representative/public-MVP UX content simplification audit has landed: 7 routes were reviewed for first-screen clarity, export-first fit, cognitive load, and source/risk separation before any new feature expansion.
+- Baby-food and used-car first-screen simplification is in progress: `baby-food-menu-recipe` now prioritizes meal calendar plus reaction log, and `used-car-buying-check` now prioritizes candidate comparison plus buy/hold memo before checklist density.
 
 ## Next Up
 

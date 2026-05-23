@@ -106,6 +106,22 @@ test('source replacement and risk review routes expose review-specific artifact 
   );
 });
 
+test('used-car route exposes candidate comparison rows and decision memo fields', () => {
+  assert.deepEqual(
+    getComparisonConfig(bundle('used-car-buying-check'))?.rows.map((row) => row.id),
+    [
+      'used-car-price-mileage',
+      'used-car-history-record',
+      'used-car-seller-memo',
+      'used-car-hold-reason',
+    ],
+  );
+  assert.deepEqual(
+    getMemoCardFields(bundle('used-car-buying-check')).map((field) => field.id),
+    ['used-car-target-need', 'used-car-proof-files', 'used-car-expert-check', 'used-car-buy-hold-memo'],
+  );
+});
+
 test('official document routes expose submitter requirement memo fields', () => {
   const familyFields = getMemoCardFields(bundle('family-certificate-issue'));
   const residentFields = getMemoCardFields(bundle('resident-register-copy-issue'));

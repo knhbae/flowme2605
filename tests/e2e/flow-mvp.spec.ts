@@ -597,6 +597,16 @@ test('meal plan flow exposes recipe and reaction log', async ({ page }) => {
   await expect(reactionLog.getByLabel('먹은 양')).toBeVisible();
 });
 
+test('baby food first screen prioritizes reaction logging over recipe details', async ({ page }) => {
+  await page.goto('/f/baby-food-menu-recipe');
+
+  const workbench = page.getByLabel('Flow artifact workbench');
+  await expect(workbench.getByTestId('meal-reaction-workbench')).toBeVisible();
+  await expect(workbench.getByTestId('meal-reaction-log-card')).toBeVisible();
+  await expect(workbench.getByTestId('meal-recipe-detail-card')).toHaveCount(0);
+  await expect(workbench).toContainText('전문가');
+});
+
 test('duration calendar checks only one day at a time', async ({ page }) => {
   await page.goto('/f/baby-food-menu-recipe');
 
@@ -659,10 +669,20 @@ test('no-anchor checklist skips date setup and hides calendar export', async ({ 
 test('used-car checklist shows decision preview instead of calendar by default', async ({ page }) => {
   await page.goto('/f/used-car-buying-check');
 
-  await expect(page.getByText('후보 비교 preview')).toBeVisible();
+  await expect(page.getByText('구매 전 후보 비교')).toBeVisible();
+  await expect(page.getByText('구매 판단 메모')).toBeVisible();
   await expect(page.getByText('현장에서 바로 체크')).toBeVisible();
   await expect(page.getByRole('button', { name: '월별 달력' })).toHaveCount(0);
-  await expect(page.getByText('총예산을 차량가, 이전비, 보험료, 정비비로 나누기').first()).toBeVisible();
+  await expect(page.getByText('후보별 가격·주행거리').first()).toBeVisible();
+});
+
+test('used-car first screen keeps candidate comparison and hold memo before checklist density', async ({ page }) => {
+  await page.goto('/f/used-car-buying-check');
+
+  const workbench = page.getByLabel('Flow artifact workbench');
+  await expect(workbench.getByLabel('구매 보류/진행 메모')).toBeVisible();
+  await expect(workbench.getByText('후보별 가격·주행거리')).toBeVisible();
+  await expect(workbench.getByText('구매 보류 사유')).toBeVisible();
 });
 
 test('representative flows show artifact-first previews on the first screen', async ({ page }) => {
@@ -809,14 +829,14 @@ test('decision flow comparison table edits and persists candidate notes', async 
 
   await expect(page.getByLabel('후보 1 이름')).toBeVisible();
   await page.getByLabel('후보 1 이름').fill('아반떼 2021');
-  await page.getByLabel('총예산을 차량가, 이전비, 보험료, 정비비로 나누기 / 후보 1 메모').fill('총 1,250만원');
+  await page.getByLabel('후보별 가격·주행거리 / 후보 1 메모').fill('총 1,250만원');
   await page.getByRole('button', { name: '후보 추가' }).click();
   await page.getByLabel('후보 3 이름').fill('K3 2020');
 
   await page.reload();
 
   await expect(page.getByLabel('후보 1 이름')).toHaveValue('아반떼 2021');
-  await expect(page.getByLabel('총예산을 차량가, 이전비, 보험료, 정비비로 나누기 / 후보 1 메모')).toHaveValue('총 1,250만원');
+  await expect(page.getByLabel('후보별 가격·주행거리 / 후보 1 메모')).toHaveValue('총 1,250만원');
   await expect(page.getByLabel('후보 3 이름')).toHaveValue('K3 2020');
 });
 
