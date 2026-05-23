@@ -3,7 +3,9 @@
 **Date:** 2026-05-23
 **Branch:** `codex/real-source-manual-source-fit`
 **PR URL:** https://github.com/knhbae/flowme2605/pull/23
-**Status:** Open
+**Status:** Merged
+**Merge SHA:** `d9acc75ae8df874cdd960619cb0e96332aaad5f5`
+**Preview:** https://vercel.com/flowme/flowme2605/FUQo2xQxhFhVkUpVsHTPHCfFbALk
 
 ## Why
 
