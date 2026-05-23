@@ -1,9 +1,9 @@
 # Admin Route Reshaping
 
-**Date:** 2026-05-23  
-**Branch:** `codex/reshape-audited-admin-routes`  
-**PR URL:** TBD  
-**Status:** Draft
+**Date:** 2026-05-23
+**Branch:** `codex/reshape-audited-admin-routes`
+**PR URL:** https://github.com/knhbae/flowme2605/pull/22
+**Status:** Open
 
 ## Why
 
