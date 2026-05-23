@@ -39,7 +39,7 @@
 - Real-source manual source-fit promotion has landed: the 40 natural-artifact audits are projected into source-fit decisions, moving manual source-fit coverage from 31 to 71 routes.
 - Real-source official/service reshaping has landed for Q-Net, childcare vaccination visits, KDCA travel health, safe-driving license renewal, Gov24 resident-register copy, and childcare support application routes.
 - Source replacement and risk review route reshaping has landed for 12 routes: study logs, diet sheets, new-car evidence rows, and official/risk memo cards now have tests and docs.
-- Source replacement and risk review item copy polish is in progress: the same 12 routes now reject missing/generic item detail copy and remain `reshape_before_featured` pending deeper review and user evidence.
+- Source replacement and risk review item copy polish has landed: the same 12 routes now reject missing/generic item detail copy and remain `reshape_before_featured` pending deeper review and user evidence.
 
 ## Next Up
 
