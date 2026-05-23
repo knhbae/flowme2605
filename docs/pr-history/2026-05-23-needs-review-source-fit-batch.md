@@ -4,7 +4,7 @@
 **Branch:** `codex/audit-needs-review-flows`  
 **Status:** Open
 **PR URL:** https://github.com/knhbae/flowme2605/pull/19
-**Deploy URL:** TBD
+**Deploy URL:** https://vercel.com/flowme/flowme2605/HVEeYZX1aciKDb8r55w98HhLaCY9
 
 ## Why
 
@@ -75,6 +75,7 @@ PR #18 created the lifecycle queue and identified 9 `needs_review` routes that w
 - `npm run build` passed locally.
 - `npm run test:e2e -- --grep "flow lab"` passed locally: 1/1.
 - `npm run test:e2e` passed locally: 38/38.
+- Vercel PR preview check passed for latest head.
 
 ## Risks
 
