@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-23
 **Branch:** `codex/real-source-reshape-official-batch`
-**PR URL:** Pending
+**PR URL:** https://github.com/knhbae/flowme2605/pull/24
 **Status:** In Progress
 
 ## Why
