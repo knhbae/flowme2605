@@ -36,8 +36,8 @@
    - 자연 산출물 audit의 `promote_to_manual_source_fit`도 아직 수동 source-fit으로 승격되기 전까지는 `fix`로 둔다.
    - 대표 후보로 올리려면 UX gap close PR과 수동 source-fit audit 승격이 필요하다.
 6. Generated preview candidate는 `preview_only`.
-7. Legacy accessible 중 원본 URL이 있으면 `fix`.
-   - source metadata가 완전히 정규화되지는 않았지만 삭제 후보는 아니다.
+7. Legacy accessible 중 원본 URL이 있으면 `source_status=needs_review`로 정규화하고 `fix`로 본다.
+   - source metadata가 정규화됐지만 수동 audit 전이므로 삭제 후보는 아니다.
    - `source_status=real` 승격 또는 수동 source-fit audit이 필요하다.
 8. Legacy accessible 중 원본 URL도 없으면 `remove_candidate`.
    - route 삭제는 하지 않는다. 기존 URL 호환은 유지하되, 새 catalog 대표 노출에서는 제외하는 후보로 본다.
@@ -82,7 +82,7 @@ PR마다 lifecycle 기준 변경, 실제 숨김/삭제 여부, 남은 보강 buc
 3. 대표 수동 audit Flow는 `keep`이다.
 4. source/title mismatch가 있는 대표 후보는 `fix`다.
 5. generated preview는 `preview_only`다.
-6. source URL이 있는 legacy accessible은 `fix`다.
+6. source URL이 있는 legacy accessible은 `source_status=needs_review` 정규화 후 `fix`다.
 7. source URL도 없는 legacy accessible만 `remove_candidate`다.
 8. 현재 real-source audit에는 `hide`가 없음을 테스트로 확인한다.
 9. Content Lab summary가 lifecycle count를 반환한다.

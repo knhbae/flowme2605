@@ -22,7 +22,7 @@
 - `fix`: manual source-fit `reshape_before_featured` / `catalog_preview_only` and all derived real-source Flow until manual promotion.
 - `preview_only`: generated preview candidates.
 - `hide`: explicit hidden or natural artifact `replace_or_hide_source`.
-- `remove_candidate`: legacy accessible Flow with no source URL. Source-backed legacy items stay in `fix`.
+- `remove_candidate`: legacy accessible Flow with no source URL. Source-backed legacy items are normalized to `needs_review` and stay in `fix`.
 
 ## Verification
 

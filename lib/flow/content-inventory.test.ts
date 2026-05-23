@@ -51,14 +51,30 @@ test('inventory review labels generated channel flows as preview candidates', ()
   assert.equal(review.score, 0);
 });
 
+test('inventory review separates source-backed needs-review flows from legacy access', () => {
+  const review = reviewContentInventory(bundleBySlug('passport-renewal-docs'));
+
+  assert.equal(review.level, 'source_needs_review');
+  assert.equal(review.decision, 'reshape_before_featured');
+  assert.equal(review.publicHandling, 'source_review');
+  assert.equal(review.sourcePrecision, 'exact');
+  assert.ok(review.reason.includes('원본 URL'));
+  assert.ok(review.nextAction.includes('source-fit'));
+});
+
 test('inventory summary covers all current seed bundles', () => {
   const summary = summarizeContentInventory(seedBundles);
 
   assert.equal(summary.totalCount, seedBundles.length);
   assert.equal(summary.realSourceReviewedCount, summary.realSourceCount);
-  assert.equal(summary.sourceBackedReviewedCount, summary.realSourceCount + summary.manualSourceFitCount);
+  assert.equal(
+    summary.sourceBackedReviewedCount,
+    summary.realSourceCount + summary.manualSourceFitCount + summary.sourceNeedsReviewCount,
+  );
   assert.equal(summary.manualSourceFitCount, 10);
   assert.equal(summary.derivedRealSourceCount, summary.realSourceCount);
+  assert.equal(summary.sourceNeedsReviewCount, 21);
+  assert.equal(summary.legacyAccessibleCount, 0);
   assert.equal(summary.generatedPreviewCandidateCount, summary.previewSourceCount);
   assert.equal(summary.generatedPreviewCandidateCount, 440);
 });

@@ -51,7 +51,7 @@ test('lifecycle classification separates generated previews and source-backed le
   assert.equal(previewReview.bucket, 'preview_only');
   assert.equal(previewReview.publicAction, '채널/카탈로그 미리보기만 유지');
   assert.equal(legacyReview.bucket, 'fix');
-  assert.ok(legacyReview.reason.includes('원본 URL은 있으나'));
+  assert.ok(legacyReview.reason.includes('원본 URL'));
   assert.ok(legacyReview.nextAction.includes('source-fit audit'));
 });
 

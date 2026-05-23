@@ -29,7 +29,7 @@
 - AI-agnostic harness documents were added from the Claude Harness guide principles without copying Claude-specific runtime assumptions.
 - Documentation harness now has a local `docs:check` command and an `AGENTS.md` auto-discovery entry point.
 - Source-fit audit scoring now gates representative public exposure for the first real-source Flow batch while keeping direct routes accessible.
-- Content inventory review now separates manual source-fit audits, metadata-derived real-source reviews, generated preview candidates, and legacy accessible routes in Content Lab and creator channel UX.
+- Content inventory review now separates manual source-fit audits, metadata-derived real-source reviews, source-backed needs-review routes, generated preview candidates, and legacy accessible routes in Content Lab and creator channel UX.
 - Source-fit audits now require concrete natural artifact simulations: sample user input values, expected checklist/calendar/sheet/memo outputs, and current Flow/UX gap comparisons.
 - Real-source natural artifact audit now covers all 40 real-source Flows and is surfaced in Flow Lab with remaining audit count.
 - Flow lifecycle classification now groups all 511 bundles into keep/fix/preview-only/hide/remove-candidate buckets and surfaces the counts in Content Lab.

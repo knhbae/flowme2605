@@ -160,13 +160,14 @@ export function ContentLab() {
           실제 원본 Flow는 전수 분류하고, 생성형 채널 Flow는 검증 완료 콘텐츠가 아닌 샘플 후보로 분리합니다.
           현재 seed 기준으로 수동 audit 10개와 원본 metadata 기반 1차 분류 40개가 별도 관리됩니다.
         </p>
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-7">
           {[
             { label: '전체', value: summary.inventoryTotalCount, className: 'bg-gray-50 text-gray-950' },
             { label: '실제 원본', value: summary.realSourceFlowCount, className: 'bg-emerald-50 text-emerald-950' },
             { label: '샘플 후보', value: summary.previewCandidateFlowCount, className: 'bg-blue-50 text-blue-950' },
             { label: '수동 검토', value: summary.manualSourceFitAuditedCount, className: 'bg-amber-50 text-amber-950' },
             { label: '1차 분류', value: summary.derivedRealSourceReviewedCount, className: 'bg-gray-50 text-gray-950' },
+            { label: '검토 대기', value: summary.sourceNeedsReviewInventoryCount, className: 'bg-amber-50 text-amber-950' },
             { label: 'legacy 접근', value: summary.legacyAccessibleFlowCount, className: 'bg-gray-50 text-gray-950' },
           ].map((item) => (
             <div key={item.label} className={`rounded-lg p-3 ${item.className}`}>

@@ -14,6 +14,18 @@ This document converts the existing source-fit, content inventory, and natural a
 
 Total classified: 511 Flow bundles.
 
+## Inventory Normalization
+
+The 21 source-backed legacy routes were normalized to `source_status=needs_review` on 2026-05-23. They now have:
+
+- `source_status=needs_review`
+- `source_precision`
+- `source_checked_at`
+- `conversion_note`
+- `primary_destination`
+
+This keeps them out of deletion candidates without overstating them as fully reviewed `real` sources.
+
 ## Keep
 
 These 5 can remain the representative baseline while each product surface continues to improve:
@@ -30,7 +42,7 @@ The 66 fix candidates include:
 
 - manual source-fit entries that were marked `reshape_before_featured` or `catalog_preview_only`
 - all 40 `source_status=real` entries until manual promotion
-- source-backed legacy entries whose source URL exists but source status/audit metadata is not normalized
+- source-backed `needs_review` entries whose source URL exists but source-fit audit is not complete
 
 High-value fix samples:
 
@@ -38,7 +50,7 @@ High-value fix samples:
 - `overseas-travel-d14`: country-specific official confirmation and emergency card are the natural outputs.
 - `study-exam-d30-plan`: source/title mismatch must be fixed before representative use.
 - `real-sinagong-computer-d30-study`: score/wrong-answer workbench exists, but source-fit promotion still needs a manual audit update.
-- `passport-renewal-docs`: source-backed legacy route; should be normalized into real-source inventory or replaced.
+- `passport-renewal-docs`: source-backed needs-review route; should be audited before real-source promotion.
 
 ## Preview Only
 
@@ -79,7 +91,6 @@ Content Lab now exposes the lifecycle summary next to the inventory and natural 
 
 ## Next Work
 
-1. Normalize the 21 source-backed legacy routes into `source_status=real` or add manual source-fit audit where needed.
+1. Audit the 21 `source_status=needs_review` routes and promote the ones that pass into `source_status=real` or manual source-fit.
 2. Promote real-source Flows only after their artifact workbench gap is closed and source-fit audit is updated.
 3. Keep generated preview Flows separated from representative search/catalog surfaces.
-

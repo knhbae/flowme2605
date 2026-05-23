@@ -768,6 +768,10 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(inventory.getByText('440', { exact: true }).first()).toBeVisible();
   await expect(inventory.getByText('수동 검토', { exact: true })).toBeVisible();
   await expect(inventory.getByText('10', { exact: true }).first()).toBeVisible();
+  await expect(inventory.getByText('검토 대기', { exact: true })).toBeVisible();
+  await expect(inventory.getByText('21', { exact: true }).first()).toBeVisible();
+  await expect(inventory.getByText('legacy 접근', { exact: true })).toBeVisible();
+  await expect(inventory.getByText('0', { exact: true }).first()).toBeVisible();
   const lifecycle = page.locator('section').filter({ hasText: '전체 Flow 운영 분류' });
   await expect(lifecycle).toBeVisible();
   await expect(lifecycle.getByText('대표 유지', { exact: true }).first()).toBeVisible();

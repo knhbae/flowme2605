@@ -16,6 +16,7 @@ The product now has source-fit audit, content inventory, and natural artifact au
 - Added tests that enforce one lifecycle bucket per Flow.
 - Wired lifecycle counts into Content Lab.
 - Documented the current bucket counts and deletion policy.
+- Normalized 21 source-backed legacy routes into `source_status=needs_review` with source precision, checked date, conversion note, and primary destination metadata.
 
 Current lifecycle counts:
 
@@ -29,12 +30,12 @@ Current lifecycle counts:
 
 - No public route deletion.
 - No generated preview promotion.
-- No source-status normalization for the 21 source-backed legacy routes yet.
+- No manual source-fit audit promotion for the 21 `needs_review` routes yet.
 - No visual redesign beyond the internal Content Lab summary section.
 
 ## Decisions
 
-- Source-backed legacy entries are `fix`, not `remove_candidate`.
+- Source-backed needs-review entries are `fix`, not `remove_candidate`.
 - Delete candidates require no source URL or an explicit hide/replace audit.
 - Derived real-source Flows stay in `fix` until their UX/content gap is closed and manual source-fit is updated.
 
@@ -65,6 +66,6 @@ Current lifecycle counts:
 
 ## Follow-Ups
 
-- Normalize source-backed legacy routes into real-source inventory.
+- Audit source-backed `needs_review` routes and promote the ones that pass into real-source inventory.
 - Add lifecycle bucket filters to internal Flow Lab if the list grows.
 - Use lifecycle `fix` bucket to drive the next content/UX cleanup batch.

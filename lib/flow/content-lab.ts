@@ -373,6 +373,7 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     sourceBackedInventoryReviewedCount: inventorySummary.sourceBackedReviewedCount,
     manualSourceFitAuditedCount: inventorySummary.manualSourceFitCount,
     derivedRealSourceReviewedCount: inventorySummary.derivedRealSourceCount,
+    sourceNeedsReviewInventoryCount: inventorySummary.sourceNeedsReviewCount,
     previewCandidateFlowCount: inventorySummary.generatedPreviewCandidateCount,
     legacyAccessibleFlowCount: inventorySummary.legacyAccessibleCount,
     inventoryLevelCounts: inventorySummary.levelCounts,

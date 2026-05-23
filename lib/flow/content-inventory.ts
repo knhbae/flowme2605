@@ -4,6 +4,7 @@ import type { FlowBundle, SourcePrecision, SourceType } from './types';
 export type ContentInventoryLevel =
   | 'manual_source_fit'
   | 'derived_real_source'
+  | 'source_needs_review'
   | 'generated_preview_candidate'
   | 'legacy_accessible';
 
@@ -36,6 +37,7 @@ export type ContentInventorySummary = {
   legacyAccessibleCount: number;
   manualSourceFitCount: number;
   derivedRealSourceCount: number;
+  sourceNeedsReviewCount: number;
   realSourceReviewedCount: number;
   sourceBackedReviewedCount: number;
   generatedPreviewCandidateCount: number;
@@ -47,6 +49,7 @@ export type ContentInventorySummary = {
 const emptyLevelCounts: Record<ContentInventoryLevel, number> = {
   manual_source_fit: 0,
   derived_real_source: 0,
+  source_needs_review: 0,
   generated_preview_candidate: 0,
   legacy_accessible: 0,
 };
@@ -171,6 +174,22 @@ export function reviewContentInventory(bundle: FlowBundle): ContentInventoryRevi
     };
   }
 
+  if (bundle.flow.source_status === 'needs_review') {
+    const score = scoreDerivedReview(bundle);
+    const publicHandling = derivedHandling(bundle, score);
+    return {
+      slug: bundle.flow.slug,
+      title: bundle.flow.title,
+      level: 'source_needs_review',
+      decision: decisionFromDerivedHandling(publicHandling),
+      score,
+      sourcePrecision: bundle.flow.source_precision ?? 'none',
+      publicHandling,
+      reason: '원본 URL과 실행 구조는 있으나 source-fit audit 전이라 보강 필요 상태입니다.',
+      nextAction: '원본을 열어 사용자 여정, 간극, 콘텐츠/UX 보강안을 source-fit audit으로 남깁니다.',
+    };
+  }
+
   return {
     slug: bundle.flow.slug,
     title: bundle.flow.title,
@@ -205,8 +224,10 @@ export function summarizeContentInventory(bundles: FlowBundle[]): ContentInvento
     legacyAccessibleCount: levelCounts.legacy_accessible,
     manualSourceFitCount: levelCounts.manual_source_fit,
     derivedRealSourceCount: levelCounts.derived_real_source,
+    sourceNeedsReviewCount: levelCounts.source_needs_review,
     realSourceReviewedCount: levelCounts.derived_real_source,
-    sourceBackedReviewedCount: levelCounts.manual_source_fit + levelCounts.derived_real_source,
+    sourceBackedReviewedCount:
+      levelCounts.manual_source_fit + levelCounts.derived_real_source + levelCounts.source_needs_review,
     generatedPreviewCandidateCount: levelCounts.generated_preview_candidate,
     averageDerivedScore: Math.round(
       derivedReviews.reduce((sum, review) => sum + review.score, 0) / Math.max(derivedReviews.length, 1),
