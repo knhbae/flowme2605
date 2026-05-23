@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-23
 **Branch:** `codex/source-risk-item-copy-polish`
-**PR:** Pending
+**PR:** [#26](https://github.com/knhbae/flowme2605/pull/26)
 **Related audit:** [2026-05-23-source-risk-item-copy-polish.md](../content-audit/2026-05-23-source-risk-item-copy-polish.md)
 **Related spec:** [2026-05-23-source-risk-item-copy-polish](../specs/2026-05-23-source-risk-item-copy-polish/spec.md)
 
