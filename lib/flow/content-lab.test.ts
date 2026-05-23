@@ -7,6 +7,10 @@ import {
   pilotCreatorLabs,
   scoreCandidate,
 } from './content-lab';
+import {
+  getRepresentativeReadinessReview,
+  summarizeRepresentativeReadinessReviews,
+} from './representative-readiness-review';
 import { seedBundles } from './seed-flows';
 
 const expectedConvertedPilotSlugs = [
@@ -167,4 +171,29 @@ test('content lab clears source needs-review priorities after the next audit bat
   assert.equal(summary.sourceReviewPriorityCounts.source_replacement, 0);
   assert.equal(summary.sourceReviewPriorityCounts.risk_review, 0);
   assert.equal(summary.sourceReviewPriorityItems.length, 0);
+});
+
+test('source-risk representative review classifies first three routes without promoting them', () => {
+  const summary = getContentLabSummary(seedBundles);
+  const readiness = summarizeRepresentativeReadinessReviews(seedBundles);
+
+  assert.equal(summary.representativeReadinessTotalCount, 3);
+  assert.equal(summary.representativeReadinessDecisionCounts.representative_candidate, 1);
+  assert.equal(summary.representativeReadinessDecisionCounts.public_mvp_candidate, 2);
+  assert.equal(summary.representativeReadinessDecisionCounts.keep_fix, 0);
+  assert.deepEqual(summary.representativeReadinessSlugs, [
+    'computer-skills-d30-study',
+    'new-car-delivery-check',
+    'diet-habit-2week',
+  ]);
+
+  assert.deepEqual(readiness.decisionCounts, summary.representativeReadinessDecisionCounts);
+  assert.equal(getRepresentativeReadinessReview('computer-skills-d30-study')?.decision, 'representative_candidate');
+  assert.equal(getRepresentativeReadinessReview('new-car-delivery-check')?.decision, 'public_mvp_candidate');
+  assert.equal(getRepresentativeReadinessReview('diet-habit-2week')?.decision, 'public_mvp_candidate');
+
+  for (const slug of summary.representativeReadinessSlugs) {
+    const lifecycle = summary.lifecycleFixSlugs.includes(slug);
+    assert.equal(lifecycle, true, `${slug} should remain reshape_before_featured until final promotion`);
+  }
 });

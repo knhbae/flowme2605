@@ -114,6 +114,24 @@ function sourceReviewPriorityClass(value: SourceReviewPriority): string {
   return classes[value];
 }
 
+function representativeReadinessClass(value: string): string {
+  const classes: Record<string, string> = {
+    representative_candidate: 'bg-emerald-50 text-emerald-950',
+    public_mvp_candidate: 'bg-blue-50 text-blue-950',
+    keep_fix: 'bg-amber-50 text-amber-950',
+  };
+  return classes[value] ?? 'bg-gray-50 text-gray-950';
+}
+
+function representativeReadinessLabel(value: string): string {
+  const labels: Record<string, string> = {
+    representative_candidate: '대표 후보',
+    public_mvp_candidate: 'Public MVP 후보',
+    keep_fix: '보강 유지',
+  };
+  return labels[value] ?? value;
+}
+
 function isSeedBundle(bundle: SeedBundle | undefined): bundle is SeedBundle {
   return Boolean(bundle);
 }
@@ -237,6 +255,43 @@ export function ContentLab() {
               원본 URL이 있는 legacy 항목은 삭제 후보가 아니라 보강 필요로 분류합니다. route 삭제는 별도 검토 후 진행합니다.
             </p>
           </div>
+        </div>
+      </section>
+
+      <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
+        <p className="text-sm font-semibold text-blue-700">Representative Readiness</p>
+        <h2 className="mt-1 text-2xl font-semibold text-gray-950">대표 승격 1차 심사</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+          PR #25와 #26에서 산출물 surface와 item copy를 보강한 source/risk route 중 먼저 3개만 평가합니다.
+          실제 대표 노출은 바꾸지 않고, 사용자 행동 데이터와 화면 QA가 쌓일 때까지 운영 분류는 보강 필요로 유지합니다.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          {Object.entries(summary.representativeReadinessDecisionCounts).map(([decision, count]) => (
+            <div key={decision} className={`rounded-lg p-3 ${representativeReadinessClass(decision)}`}>
+              <p className="text-sm opacity-75">{representativeReadinessLabel(decision)}</p>
+              <p className="mt-1 text-2xl font-semibold">{count}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 grid gap-3 lg:grid-cols-3">
+          {summary.representativeReadinessReviews.map((review) => (
+            <article key={review.slug} className="rounded-lg border border-gray-200 p-4">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <p className="text-xs font-semibold text-gray-500">{review.slug}</p>
+                  <Link className="mt-1 block font-semibold text-gray-950 hover:text-blue-700" href={`/f/${review.slug}`}>
+                    {bundleBySlug.get(review.slug)?.flow.title ?? review.slug}
+                  </Link>
+                </div>
+                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${representativeReadinessClass(review.decision)}`}>
+                  {review.label} · {review.score}
+                </span>
+              </div>
+              <p className="mt-3 text-sm leading-6 text-gray-700">{review.userNeed}</p>
+              <p className="mt-2 text-sm leading-6 text-gray-600">산출물: {review.destination}</p>
+              <p className="mt-2 text-sm leading-6 text-gray-600">다음: {review.nextAction}</p>
+            </article>
+          ))}
         </div>
       </section>
 
