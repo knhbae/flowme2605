@@ -66,6 +66,11 @@ test('source replacement and risk review routes expose review-specific artifact 
   );
 
   assert.deepEqual(
+    getMemoCardFields(bundle('new-car-delivery-check')).map((field) => field.id),
+    ['new-car-delivery-place', 'new-car-photo-files', 'new-car-dealer-confirmation', 'new-car-handover-boundary'],
+  );
+
+  assert.deepEqual(
     getMemoCardFields(bundle('year-end-tax-docs')).map((field) => field.id),
     ['tax-company-deadline', 'tax-final-data-date', 'tax-extra-documents', 'tax-deduction-caution', 'tax-submission-status'],
   );

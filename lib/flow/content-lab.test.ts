@@ -15,6 +15,10 @@ import {
   getExportFirstSimulationReview,
   summarizeExportFirstSimulationReviews,
 } from './export-first-simulation-review';
+import {
+  getRiskBoundaryQaReview,
+  summarizeRiskBoundaryQaReviews,
+} from './risk-boundary-qa';
 import { seedBundles } from './seed-flows';
 
 const expectedConvertedPilotSlugs = [
@@ -235,4 +239,35 @@ test('export-first simulation review records user artifacts and UX gaps for the 
   assert.equal(diet.externalTool, 'sheet');
   assert.ok(diet.artifactRows.some((row) => row.includes('stopCondition=consult professional if dizziness repeats')));
   assert.ok(diet.riskBoundary.includes('observation log'));
+});
+
+test('risk-boundary QA records public MVP fixes without representative promotion', () => {
+  const summary = getContentLabSummary(seedBundles);
+  const qa = summarizeRiskBoundaryQaReviews(seedBundles);
+
+  assert.equal(summary.riskBoundaryQaTotalCount, 2);
+  assert.equal(summary.riskBoundaryQaDecisionCounts.public_mvp_after_risk_qa, 2);
+  assert.deepEqual(summary.riskBoundaryQaSlugs, ['new-car-delivery-check', 'diet-habit-2week']);
+  assert.deepEqual(qa.decisionCounts, summary.riskBoundaryQaDecisionCounts);
+
+  const newCar = getRiskBoundaryQaReview('new-car-delivery-check');
+  assert.ok(newCar);
+  assert.equal(newCar.primaryArtifact, 'evidence_sheet_plus_memo');
+  assert.ok(newCar.naturalArtifactRows.some((row) => row.includes('dealer confirmation')));
+  assert.ok(newCar.currentUxGap.includes('photo filename'));
+  assert.ok(newCar.contentUxFix.includes('handover boundary memo'));
+  assert.ok(newCar.riskBoundary.includes('does not decide whether to sign'));
+
+  const diet = getRiskBoundaryQaReview('diet-habit-2week');
+  assert.ok(diet);
+  assert.equal(diet.primaryArtifact, 'observation_sheet');
+  assert.ok(diet.naturalArtifactRows.some((row) => row.includes('dizziness')));
+  assert.ok(diet.currentUxGap.includes('warning'));
+  assert.ok(diet.contentUxFix.includes('observation-first'));
+  assert.ok(diet.riskBoundary.includes('does not prescribe'));
+
+  assert.equal(summary.lifecycleFixSlugs.includes('new-car-delivery-check'), true);
+  assert.equal(summary.lifecycleFixSlugs.includes('diet-habit-2week'), true);
+  assert.equal(summary.lifecycleKeepSlugs.includes('new-car-delivery-check'), false);
+  assert.equal(summary.lifecycleKeepSlugs.includes('diet-habit-2week'), false);
 });

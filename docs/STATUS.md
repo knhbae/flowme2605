@@ -45,7 +45,8 @@
 - Source replacement and risk review item copy polish has landed: the same 12 routes now reject missing/generic item detail copy and remain `reshape_before_featured` pending deeper review and user evidence.
 - Source-risk representative readiness review has landed for `computer-skills-d30-study`, `new-car-delivery-check`, and `diet-habit-2week`; Flow Lab now tracks one representative candidate and two public MVP candidates without changing exposure.
 - Export-first UX/content simulation batch 1 has landed for the same three routes; Flow Lab now tracks realistic user inputs, external artifacts, UX gaps, feature-diet decisions, and risk boundaries before any promotion.
-- Computer-skills final promotion QA is in progress: desktop/mobile screenshots and xlsx/ics downloads passed for `computer-skills-d30-study`, and the route is being promoted to representative-eligible while new-car and diet remain in fix.
+- Computer-skills final promotion QA has landed: desktop/mobile screenshots and xlsx/ics downloads passed for `computer-skills-d30-study`, and the route is now representative-eligible.
+- New-car and diet risk-boundary QA is in progress: delivery proof memo fields, diet warning hierarchy, export tests, E2E downloads, and desktop/mobile screenshots are being recorded while both routes remain in fix.
 
 ## Next Up
 

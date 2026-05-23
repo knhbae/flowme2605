@@ -424,6 +424,46 @@ test('computer skills final QA exports study calendar and score sheet records', 
   expect(calendarDownload.suggestedFilename()).toBe('computer-skills-d30-study.ics');
 });
 
+test('risk-boundary QA exports new-car evidence memo and diet observation sheet', async ({ page }) => {
+  await page.goto('/f/new-car-delivery-check');
+
+  let workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(workbench).toBeVisible();
+  await expect(workbench.getByText('사진·딜러 확인·인수 보류 기록')).toBeVisible();
+  await workbench.locator('textarea').first().fill('driver door scratch, photo door-scratch-4821.jpg');
+  await workbench.getByLabel('사진/영상 파일명').fill('door-scratch-4821.jpg, hud-test-20260603.mp4');
+  await workbench.getByLabel('딜러 확인 내용').fill('dealer confirmed scratch and will send written repair date');
+  await workbench.getByLabel('인수 보류/서명 경계 메모').fill('do not sign until repair memo is attached');
+  await workbench.locator('input[type="checkbox"]').first().check();
+  await expect(page.getByRole('button', { name: '내 일정표 엑셀로 받기' })).toBeEnabled();
+
+  let excelDownloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: '내 일정표 엑셀로 받기' }).click();
+  let excelDownload = await excelDownloadPromise;
+  expect(excelDownload.suggestedFilename()).toBe('new-car-delivery-check.xlsx');
+
+  await page.goto('/f/diet-habit-2week');
+  await page.locator('input[type="date"]').first().fill('2026-06-01');
+
+  workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(workbench).toBeVisible();
+  await expect(workbench.getByText('기록 전 확인')).toBeVisible();
+  await workbench.locator('input').nth(0).fill('breakfast oatmeal, lunch kimbap, dinner tofu');
+  await workbench.locator('input').nth(1).fill('30m walk');
+  await workbench.locator('input').nth(2).fill('waist 82cm');
+  await workbench.locator('input').nth(3).fill('normal');
+  await workbench.locator('input').nth(4).fill('observe late dinner trigger');
+  await workbench.locator('input').nth(13).fill('dizziness repeated, stop and consult professional');
+  await workbench.locator('textarea').first().fill('late dinner and low sleep correlate with snack cravings');
+  await page.locator('[data-testid="flow-item-card"]').first().getByRole('checkbox').check();
+  await expect(page.getByRole('button', { name: '내 일정표 엑셀로 받기' })).toBeEnabled();
+
+  excelDownloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: '내 일정표 엑셀로 받기' }).click();
+  excelDownload = await excelDownloadPromise;
+  expect(excelDownload.suggestedFilename()).toBe('diet-habit-2week.xlsx');
+});
+
 test('mobile export actions open from a bottom sheet', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/moving-d30-basic');
