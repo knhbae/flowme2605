@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-23
 **Branch:** `codex/computer-skills-final-qa`
-**PR:** Pending
+**PR:** [#29](https://github.com/knhbae/flowme2605/pull/29)
 **Related audit:** [2026-05-23-computer-skills-final-promotion-qa.md](../content-audit/2026-05-23-computer-skills-final-promotion-qa.md)
 **Related spec:** [2026-05-23-computer-skills-final-promotion-qa](../specs/2026-05-23-computer-skills-final-promotion-qa/spec.md)
 
