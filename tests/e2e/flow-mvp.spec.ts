@@ -786,6 +786,15 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(readiness.getByRole('link', { name: '컴퓨터활용능력 D-30 학습 Flow' })).toBeVisible();
   await expect(readiness.getByRole('link', { name: '신차 인수 점검 Flow' })).toBeVisible();
   await expect(readiness.getByRole('link', { name: '2주 다이어트 습관 기록 Flow' })).toBeVisible();
+  const exportFirstSimulation = page.locator('section').filter({ hasText: 'Export-first Simulation' });
+  await expect(exportFirstSimulation).toBeVisible();
+  await expect(exportFirstSimulation.getByText('Final QA candidate', { exact: true }).first()).toBeVisible();
+  await expect(exportFirstSimulation.getByText('Public MVP after UX fix', { exact: true }).first()).toBeVisible();
+  await expect(exportFirstSimulation.getByText('calendar + sheet')).toBeVisible();
+  await expect(exportFirstSimulation.getByText('sheet + memo')).toBeVisible();
+  await expect(exportFirstSimulation.getByText('mockScore=68')).toBeVisible();
+  await expect(exportFirstSimulation.getByText('dealerConfirmed=hold delivery until written confirmation')).toBeVisible();
+  await expect(exportFirstSimulation.getByText('stopCondition=consult professional if dizziness repeats')).toBeVisible();
   const needsReviewPriority = page.locator('section').filter({ hasText: '검토 대기 우선순위' });
   await expect(needsReviewPriority).toBeVisible();
   await expect(needsReviewPriority.getByText('바로 audit', { exact: true }).first()).toBeVisible();
