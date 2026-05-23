@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-23
 **Branch:** `codex/source-replacement-risk-reshape`
-**PR:** Pending
+**PR:** [#25](https://github.com/knhbae/flowme2605/pull/25)
 **Related audit:** [2026-05-23-source-replacement-risk-reshape.md](../content-audit/2026-05-23-source-replacement-risk-reshape.md)
 **Related spec:** [2026-05-23-source-replacement-risk-reshape](../specs/2026-05-23-source-replacement-risk-reshape/spec.md)
 
