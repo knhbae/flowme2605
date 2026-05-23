@@ -2,6 +2,7 @@ import { AnchorType, FlowBundle, StructureType } from './types';
 import { getSourceFitSummary } from './source-fit';
 import { summarizeContentInventory } from './content-inventory';
 import { summarizeNaturalArtifactAuditCoverage } from './natural-artifact-audit';
+import { summarizeFlowLifecycle } from './content-lifecycle';
 
 export type ExternalTarget = 'calendar' | 'todo' | 'notion' | 'sheet';
 
@@ -344,6 +345,7 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   const sourceFitSummary = getSourceFitSummary();
   const inventorySummary = summarizeContentInventory(bundles);
   const naturalArtifactSummary = summarizeNaturalArtifactAuditCoverage(bundles);
+  const lifecycleSummary = summarizeFlowLifecycle(bundles);
 
   return {
     pilotCreatorCount: pilotCreatorLabs.length,
@@ -380,5 +382,12 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     naturalArtifactRealSourceRemainingCount: naturalArtifactSummary.remainingRealSourceCount,
     naturalArtifactCategoryCounts: naturalArtifactSummary.auditedCategoryCounts,
     naturalArtifactDecisionCounts: naturalArtifactSummary.decisionCounts,
+    lifecycleTotalCount: lifecycleSummary.totalCount,
+    lifecycleBucketCounts: lifecycleSummary.bucketCounts,
+    lifecycleKeepSlugs: lifecycleSummary.keepSlugs,
+    lifecycleFixSlugs: lifecycleSummary.fixSlugs,
+    lifecyclePreviewOnlySlugs: lifecycleSummary.previewOnlySlugs,
+    lifecycleHideSlugs: lifecycleSummary.hideSlugs,
+    lifecycleRemoveCandidateSlugs: lifecycleSummary.removeCandidateSlugs,
   };
 }

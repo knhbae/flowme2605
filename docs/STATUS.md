@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated:** 2026-05-22
+**Last Updated:** 2026-05-23
 **Status:** v0.1.0 IN DEVELOPMENT  
 **Current Version:** v0.1.0  
 **Primary Focus:** Stage 0 / First Flag validation for FLOW execution behavior.
@@ -32,6 +32,7 @@
 - Content inventory review now separates manual source-fit audits, metadata-derived real-source reviews, generated preview candidates, and legacy accessible routes in Content Lab and creator channel UX.
 - Source-fit audits now require concrete natural artifact simulations: sample user input values, expected checklist/calendar/sheet/memo outputs, and current Flow/UX gap comparisons.
 - Real-source natural artifact audit now covers all 40 real-source Flows and is surfaced in Flow Lab with remaining audit count.
+- Flow lifecycle classification now groups all 511 bundles into keep/fix/preview-only/hide/remove-candidate buckets and surfaces the counts in Content Lab.
 
 ## Next Up
 

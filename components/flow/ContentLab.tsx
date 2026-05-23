@@ -6,6 +6,10 @@ import {
   pilotCreatorLabs,
   scoreCandidate,
 } from '@/lib/flow/content-lab';
+import {
+  FLOW_LIFECYCLE_BUCKET_LABELS,
+  type FlowLifecycleBucket,
+} from '@/lib/flow/content-lifecycle';
 import { seedBundles } from '@/lib/flow/seed-flows';
 import { sourceFitAudits, type SourceFitDecision } from '@/lib/flow/source-fit';
 import {
@@ -81,6 +85,17 @@ function naturalArtifactDecisionClass(value: NaturalArtifactAuditDecision): stri
     reshape_content_or_ux: 'bg-amber-50 text-amber-800',
     keep_catalog_review: 'bg-blue-50 text-blue-800',
     replace_or_hide_source: 'bg-red-50 text-red-800',
+  };
+  return classes[value];
+}
+
+function lifecycleBucketClass(value: FlowLifecycleBucket): string {
+  const classes: Record<FlowLifecycleBucket, string> = {
+    keep: 'bg-emerald-50 text-emerald-950',
+    fix: 'bg-amber-50 text-amber-950',
+    preview_only: 'bg-blue-50 text-blue-950',
+    hide: 'bg-red-50 text-red-950',
+    remove_candidate: 'bg-gray-100 text-gray-950',
   };
   return classes[value];
 }
@@ -164,6 +179,49 @@ export function ContentLab() {
           원본 기반 분류 커버리지: {summary.sourceBackedInventoryReviewedCount}개
           {' '}· preview candidate: {summary.inventoryPublicHandlingCounts.preview_candidate}개
         </p>
+      </section>
+
+      <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
+        <p className="text-sm font-semibold text-blue-700">Lifecycle Classification</p>
+        <h2 className="mt-1 text-2xl font-semibold text-gray-950">전체 Flow 운영 분류</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+          Source-fit audit, real-source 자연 산출물 audit, preview/legacy inventory를 합쳐 현재 서비스에서
+          유지할 것과 보강할 것, 미리보기로 둘 것, 정리 후보를 분리합니다. 이번 기준에서는 실제 원본 Flow의
+          즉시 공개 숨김 대상은 없습니다.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          {(Object.keys(summary.lifecycleBucketCounts) as FlowLifecycleBucket[]).map((bucket) => (
+            <div key={bucket} className={`rounded-lg p-3 ${lifecycleBucketClass(bucket)}`}>
+              <p className="text-sm opacity-75">{FLOW_LIFECYCLE_BUCKET_LABELS[bucket]}</p>
+              <p className="mt-1 text-2xl font-semibold">{summary.lifecycleBucketCounts[bucket]}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 grid gap-4 lg:grid-cols-3">
+          <div className="rounded-lg border border-emerald-100 bg-emerald-50 p-4">
+            <p className="text-sm font-semibold text-emerald-900">대표 유지</p>
+            <p className="mt-2 text-sm leading-6 text-emerald-950">
+              {summary.lifecycleKeepSlugs.join(' · ')}
+            </p>
+          </div>
+          <div className="rounded-lg border border-amber-100 bg-amber-50 p-4">
+            <p className="text-sm font-semibold text-amber-900">보강 우선 샘플</p>
+            <p className="mt-2 text-sm leading-6 text-amber-950">
+              {summary.lifecycleFixSlugs.slice(0, 8).join(' · ')}
+            </p>
+          </div>
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+            <p className="text-sm font-semibold text-gray-900">삭제 후보 샘플</p>
+            <p className="mt-2 text-sm leading-6 text-gray-700">
+              {summary.lifecycleRemoveCandidateSlugs.length > 0
+                ? summary.lifecycleRemoveCandidateSlugs.slice(0, 8).join(' · ')
+                : '현재 삭제 후보 없음'}
+            </p>
+            <p className="mt-3 text-xs leading-5 text-gray-500">
+              원본 URL이 있는 legacy 항목은 삭제 후보가 아니라 보강 필요로 분류합니다. route 삭제는 별도 검토 후 진행합니다.
+            </p>
+          </div>
+        </div>
       </section>
 
       <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">

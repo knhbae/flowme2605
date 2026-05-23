@@ -135,3 +135,18 @@ test('content lab exposes natural artifact audit coverage for real-source flows'
   assert.ok(summary.naturalArtifactCategoryCounts['반려동물'] >= 2);
   assert.ok(summary.naturalArtifactCategoryCounts['이사/주거'] >= 2);
 });
+
+test('content lab exposes lifecycle buckets for keep, fix, preview, and removal review', () => {
+  const summary = getContentLabSummary(seedBundles);
+  const countSum = Object.values(summary.lifecycleBucketCounts).reduce((sum, count) => sum + count, 0);
+
+  assert.equal(summary.lifecycleTotalCount, seedBundles.length);
+  assert.equal(countSum, seedBundles.length);
+  assert.equal(summary.lifecycleBucketCounts.keep, 5);
+  assert.equal(summary.lifecycleBucketCounts.hide, 0);
+  assert.equal(summary.lifecycleBucketCounts.preview_only, summary.previewGeneratedFlowCount);
+  assert.equal(summary.lifecycleBucketCounts.remove_candidate, 0);
+  assert.equal(summary.lifecycleHideSlugs.length, 0);
+  assert.ok(summary.lifecycleFixSlugs.includes('real-sinagong-computer-d30-study'));
+  assert.ok(summary.lifecycleFixSlugs.includes('passport-renewal-docs'));
+});
