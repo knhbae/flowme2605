@@ -91,9 +91,17 @@ test('source-fit summary captures keep, reshape, and preview decisions', () => {
 
   assert.equal(summary.auditedCount, 71);
   assert.ok(summary.averageScore >= 70);
-  assert.equal(summary.decisionCounts.keep_representative, 14);
-  assert.equal(summary.decisionCounts.reshape_before_featured, 50);
+  assert.equal(summary.decisionCounts.keep_representative, 15);
+  assert.equal(summary.decisionCounts.reshape_before_featured, 49);
   assert.equal(summary.decisionCounts.catalog_preview_only, 7);
+});
+
+test('computer skills final QA promotes the route to representative source fit', () => {
+  const audit = getSourceFitAudit('computer-skills-d30-study');
+
+  assert.ok(audit);
+  assert.equal(audit.decision, 'keep_representative');
+  assert.ok(audit.uxAction.includes('desktop/mobile screenshot QA passed'));
 });
 
 test('source-fit audits cover every real-source route after manual promotion pass', () => {

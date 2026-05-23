@@ -389,6 +389,41 @@ test('source-fit decisions are visible on direct-access public flow pages', asyn
   await expect(page.getByTestId('source-fit-status')).toHaveAttribute('data-decision', 'reshape_before_featured');
 });
 
+test('computer skills final QA exports study calendar and score sheet records', async ({ page }) => {
+  await page.goto('/f/computer-skills-d30-study');
+
+  await expect(page.getByRole('heading', { name: '컴퓨터활용능력 D-30 학습 Flow' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '챕터 진도표' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '기출 점수·오답 기록' })).toBeVisible();
+
+  await page.getByLabel('시험일').fill('2026-06-22');
+  await expect(page.getByText('05-23').first()).toBeVisible();
+
+  await page.getByLabel('1주차 개념 1회독 / 범위').fill('스프레드시트 함수와 피벗테이블');
+  await page.getByLabel('1주차 개념 1회독 / 목표일').fill('2026-05-29');
+  await page.getByLabel('1주차 개념 1회독 / 상태').fill('진행 중');
+  await page.getByLabel('기출 1회차 / 풀이일').fill('2026-06-01');
+  await page.getByLabel('기출 1회차 / 점수').fill('68점');
+  await page.getByLabel('기출 1회차 / 오답').fill('함수식, 피벗테이블');
+  await page.getByLabel('기출 1회차 / 재풀이일').fill('2026-06-02');
+
+  await page.getByLabel('실행판 체크: 필기와 실기 시험 범위 나누기').check();
+  await expect(page.getByText('1 / 9').first()).toBeVisible();
+  await expect(page.getByRole('button', { name: '내 일정표 엑셀로 받기' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: '캘린더 파일 받기' })).toBeEnabled();
+
+  const excelDownloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: '내 일정표 엑셀로 받기' }).click();
+  const excelDownload = await excelDownloadPromise;
+  expect(excelDownload.suggestedFilename()).toBe('computer-skills-d30-study.xlsx');
+
+  const calendarDownloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: '캘린더 파일 받기' }).click();
+  const calendarDownload = await calendarDownloadPromise;
+  expect(calendarDownload.suggestedFilename()).toBe('computer-skills-d30-study.ics');
+});
+
 test('mobile export actions open from a bottom sheet', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/moving-d30-basic');

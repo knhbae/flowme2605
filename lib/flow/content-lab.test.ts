@@ -111,8 +111,8 @@ test('content lab exposes source-fit audit summary for representative cleanup', 
 
   assert.equal(summary.sourceFitAuditedCount, 71);
   assert.ok(summary.sourceFitAverageScore >= 70);
-  assert.equal(summary.sourceFitDecisionCounts.keep_representative, 14);
-  assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 50);
+  assert.equal(summary.sourceFitDecisionCounts.keep_representative, 15);
+  assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 49);
   assert.equal(summary.sourceFitDecisionCounts.catalog_preview_only, 7);
 });
 
@@ -155,11 +155,11 @@ test('content lab exposes lifecycle buckets for keep, fix, preview, and removal 
 
   assert.equal(summary.lifecycleTotalCount, seedBundles.length);
   assert.equal(countSum, seedBundles.length);
-  assert.equal(summary.lifecycleBucketCounts.keep, 14);
+  assert.equal(summary.lifecycleBucketCounts.keep, 15);
   assert.equal(summary.lifecycleBucketCounts.hide, 0);
   assert.equal(summary.lifecycleBucketCounts.preview_only, summary.previewGeneratedFlowCount);
   assert.equal(summary.lifecycleBucketCounts.remove_candidate, 0);
-  assert.equal(summary.lifecycleBucketCounts.fix, 57);
+  assert.equal(summary.lifecycleBucketCounts.fix, 56);
   assert.equal(summary.lifecycleHideSlugs.length, 0);
   assert.ok(summary.lifecycleFixSlugs.includes('real-sinagong-computer-d30-study'));
   assert.ok(summary.lifecycleFixSlugs.includes('driver-license-renewal-check'));
@@ -177,7 +177,7 @@ test('content lab clears source needs-review priorities after the next audit bat
   assert.equal(summary.sourceReviewPriorityItems.length, 0);
 });
 
-test('source-risk representative review classifies first three routes without promoting them', () => {
+test('source-risk representative review keeps only the final QA route promoted', () => {
   const summary = getContentLabSummary(seedBundles);
   const readiness = summarizeRepresentativeReadinessReviews(seedBundles);
 
@@ -196,10 +196,9 @@ test('source-risk representative review classifies first three routes without pr
   assert.equal(getRepresentativeReadinessReview('new-car-delivery-check')?.decision, 'public_mvp_candidate');
   assert.equal(getRepresentativeReadinessReview('diet-habit-2week')?.decision, 'public_mvp_candidate');
 
-  for (const slug of summary.representativeReadinessSlugs) {
-    const lifecycle = summary.lifecycleFixSlugs.includes(slug);
-    assert.equal(lifecycle, true, `${slug} should remain reshape_before_featured until final promotion`);
-  }
+  assert.equal(summary.lifecycleKeepSlugs.includes('computer-skills-d30-study'), true);
+  assert.equal(summary.lifecycleFixSlugs.includes('new-car-delivery-check'), true);
+  assert.equal(summary.lifecycleFixSlugs.includes('diet-habit-2week'), true);
 });
 
 test('export-first simulation review records user artifacts and UX gaps for the first three candidates', () => {
