@@ -214,6 +214,11 @@ export function summarizeContentInventory(bundles: FlowBundle[]): ContentInvento
   }
 
   const derivedReviews = reviews.filter((review) => review.level === 'derived_real_source');
+  const realSourceReviewedCount = reviews.filter(
+    (review, index) =>
+      bundles[index]?.flow.source_status === 'real' &&
+      (review.level === 'manual_source_fit' || review.level === 'derived_real_source'),
+  ).length;
   const realSourceCount = bundles.filter((bundle) => bundle.flow.source_status === 'real').length;
   const previewSourceCount = bundles.filter((bundle) => bundle.flow.source_status === 'preview').length;
 
@@ -225,7 +230,7 @@ export function summarizeContentInventory(bundles: FlowBundle[]): ContentInvento
     manualSourceFitCount: levelCounts.manual_source_fit,
     derivedRealSourceCount: levelCounts.derived_real_source,
     sourceNeedsReviewCount: levelCounts.source_needs_review,
-    realSourceReviewedCount: levelCounts.derived_real_source,
+    realSourceReviewedCount,
     sourceBackedReviewedCount:
       levelCounts.manual_source_fit + levelCounts.derived_real_source + levelCounts.source_needs_review,
     generatedPreviewCandidateCount: levelCounts.generated_preview_candidate,

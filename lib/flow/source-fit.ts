@@ -1,3 +1,5 @@
+import { realSourceNaturalArtifactAudits, type NaturalArtifactAuditDecision } from './natural-artifact-audit';
+
 export type SourceFitDecision =
   | 'keep_representative'
   | 'reshape_before_featured'
@@ -94,6 +96,95 @@ function defineAudit(
     decision: audit.decision ?? getSourceFitDecision(score),
   };
 }
+
+const realSourceDecisionMap: Record<NaturalArtifactAuditDecision, SourceFitDecision> = {
+  promote_to_manual_source_fit: 'keep_representative',
+  reshape_content_or_ux: 'reshape_before_featured',
+  keep_catalog_review: 'catalog_preview_only',
+  replace_or_hide_source: 'catalog_preview_only',
+};
+
+const realSourceScoreProfiles: Record<SourceFitDecision, SourceFitScores> = {
+  keep_representative: {
+    actionDensity: 14,
+    temporalStructure: 12,
+    externalManagementNeed: 17,
+    completionClarity: 13,
+    personalizationNeed: 8,
+    returnValue: 8,
+    sourceSpecificityTrust: 9,
+    riskBoundaryClarity: 4,
+  },
+  reshape_before_featured: {
+    actionDensity: 12,
+    temporalStructure: 10,
+    externalManagementNeed: 16,
+    completionClarity: 12,
+    personalizationNeed: 8,
+    returnValue: 7,
+    sourceSpecificityTrust: 9,
+    riskBoundaryClarity: 4,
+  },
+  catalog_preview_only: {
+    actionDensity: 9,
+    temporalStructure: 6,
+    externalManagementNeed: 12,
+    completionClarity: 9,
+    personalizationNeed: 6,
+    returnValue: 5,
+    sourceSpecificityTrust: 5,
+    riskBoundaryClarity: 3,
+  },
+  hide_from_public_catalog: {
+    actionDensity: 4,
+    temporalStructure: 3,
+    externalManagementNeed: 6,
+    completionClarity: 4,
+    personalizationNeed: 3,
+    returnValue: 2,
+    sourceSpecificityTrust: 2,
+    riskBoundaryClarity: 2,
+  },
+};
+
+function inferRealSourcePrecision(sourceTitle: string, sourceUrl: string): SourcePrecisionForAudit {
+  const broadMarkers = ['YouTube', '공식 사이트', '채널'];
+  if (broadMarkers.some((marker) => sourceTitle.includes(marker))) return 'broad';
+  if (/youtube\.com\/@/.test(sourceUrl)) return 'broad';
+  return 'exact';
+}
+
+function buildRealSourceIdealReconstruction(
+  naturalArtifacts: SourceFitAudit['naturalArtifacts'],
+): string {
+  return naturalArtifacts
+    .map((artifact) => `${artifact.artifactTitle}: ${artifact.expectedOutput.join(', ')}`)
+    .join(' / ');
+}
+
+const realSourceManualSourceFitAudits: SourceFitAudit[] = realSourceNaturalArtifactAudits.map((audit) => {
+  const decision = realSourceDecisionMap[audit.decision];
+  return defineAudit({
+    slug: audit.slug,
+    checkedAt: '2026-05-23',
+    sourceTitle: audit.sourceTitle,
+    sourceUrl: audit.sourceUrl,
+    sourcePrecision: inferRealSourcePrecision(audit.sourceTitle, audit.sourceUrl),
+    sourceUsefulness: audit.sourceEvidence.join(' '),
+    idealReconstruction: buildRealSourceIdealReconstruction(audit.naturalArtifacts),
+    naturalArtifacts: audit.naturalArtifacts,
+    userJourney: [
+      audit.userScenario,
+      ...audit.naturalArtifacts.map((artifact) => `${artifact.artifactTitle} 산출물을 만든다.`),
+      'FLOW에서 체크, 메모, 기록, export로 옮긴다.',
+    ],
+    currentGap: `${audit.currentContentGap} ${audit.currentUxGap}`,
+    contentAction: audit.nextContentAction,
+    uxAction: audit.nextUxAction,
+    decision,
+    scores: realSourceScoreProfiles[decision],
+  });
+});
 
 export const sourceFitAudits: SourceFitAudit[] = [
   defineAudit({
@@ -1378,6 +1469,8 @@ export const sourceFitAudits: SourceFitAudit[] = [
     },
   }),
 ];
+
+sourceFitAudits.push(...realSourceManualSourceFitAudits);
 
 export function getSourceFitAudit(slug: string): SourceFitAudit | undefined {
   return sourceFitAudits.find((audit) => audit.slug === slug);

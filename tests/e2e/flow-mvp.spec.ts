@@ -767,7 +767,7 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(inventory.getByText('샘플 후보', { exact: true })).toBeVisible();
   await expect(inventory.getByText('440', { exact: true }).first()).toBeVisible();
   await expect(inventory.getByText('수동 검토', { exact: true })).toBeVisible();
-  await expect(inventory.getByText('31', { exact: true }).first()).toBeVisible();
+  await expect(inventory.getByText('71', { exact: true }).first()).toBeVisible();
   await expect(inventory.getByText('검토 대기', { exact: true })).toBeVisible();
   await expect(inventory.getByText('0', { exact: true }).first()).toBeVisible();
   await expect(inventory.getByText('legacy 접근', { exact: true })).toBeVisible();
@@ -796,7 +796,7 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(artifactAudit.getByText('감사 완료')).toBeVisible();
   await expect(artifactAudit.getByText('40', { exact: true }).first()).toBeVisible();
   await expect(sourceFitAudit.getByText('감사 완료')).toBeVisible();
-  await expect(sourceFitAudit.getByText('카탈로그 미리보기 1')).toBeVisible();
+  await expect(sourceFitAudit.getByText('카탈로그 미리보기 7')).toBeVisible();
   await expect(page.getByRole('link', { name: '시험 D-30 공부 계획 Flow', exact: true })).toBeVisible();
   await expect(page.getByText('B 파일럿 실제 Flow 변환')).toBeVisible();
   await expect(page.getByText('200+ 제작자 채널 Flow 검증')).toBeVisible();

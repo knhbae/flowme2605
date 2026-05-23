@@ -3,7 +3,9 @@
 **Date:** 2026-05-23
 **Branch:** `codex/reshape-audited-admin-routes`
 **PR URL:** https://github.com/knhbae/flowme2605/pull/22
-**Status:** Open
+**Status:** Merged
+**Merge SHA:** `00ca5f96f7fe84cb1bd568c77966562fe321b1db`
+**Preview:** https://vercel.com/flowme/flowme2605/EnmeAoaJMzV4sx7EVahsoyoHqa4e
 
 ## Why
 

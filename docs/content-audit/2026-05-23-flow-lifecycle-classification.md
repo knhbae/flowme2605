@@ -6,8 +6,8 @@ This document converts the existing source-fit, content inventory, and natural a
 
 | Lifecycle Bucket | Count | Meaning |
 | --- | ---: | --- |
-| 대표 유지 (`keep`) | 10 | Strong representative candidates backed by manual source-fit audit. |
-| 보강 필요 (`fix`) | 61 | Source-backed or audited Flows that should stay accessible but need content/UX/source-status work before broader promotion. |
+| 대표 유지 (`keep`) | 14 | Strong representative or source-fit-eligible candidates backed by manual source-fit audit. |
+| 보강 필요 (`fix`) | 57 | Source-backed or audited Flows that should stay accessible but need content/UX/source-status work before broader promotion. |
 | 미리보기 전용 (`preview_only`) | 440 | Generated channel preview candidates. Useful for channel exploration, not validated representative content. |
 | 공개 숨김 (`hide`) | 0 | No current audit says a source-backed Flow must be hidden from the public catalog. |
 | 삭제 후보 (`remove_candidate`) | 0 | No current Flow lacks both source URL and review basis. Source-backed legacy items are fix candidates, not deletion candidates. |
@@ -41,9 +41,11 @@ The remaining `source_status=needs_review` priority queue is now empty:
 
 The source replacement and risk review batch is recorded in `docs/content-audit/2026-05-23-source-replacement-risk-review-batch.md`.
 
+The 40 real-source natural-artifact audits were projected into source-fit decisions later on 2026-05-23. That promotion is recorded in `docs/content-audit/2026-05-23-real-source-manual-source-fit.md`.
+
 ## Keep
 
-These 10 can remain the representative baseline while each product surface continues to improve:
+These 14 can remain the representative baseline or source-fit-eligible pool while each product surface continues to improve:
 
 - `moving-d30-basic`
 - `baby-food-menu-recipe`
@@ -55,13 +57,17 @@ These 10 can remain the representative baseline while each product surface conti
 - `samsung-aircon-seasonal-check`
 - `samsung-washer-filter-cleaning`
 - `vehicle-inspection-prep`
+- `real-samsung-aircon-seasonal-care`
+- `real-samsung-washer-filter-care`
+- `real-pet-registration-check`
+- `real-ts-vehicle-inspection-prep`
 
 ## Fix
 
-The 61 fix candidates include:
+The 57 fix candidates include:
 
 - manual source-fit entries that were marked `reshape_before_featured` or `catalog_preview_only`
-- all 40 `source_status=real` entries until manual promotion
+- real-source entries marked `reshape_before_featured` or `catalog_preview_only`
 - audited `needs_review` entries whose source-fit result is `reshape_before_featured`
 
 High-value fix samples:
@@ -69,7 +75,7 @@ High-value fix samples:
 - `home-workout-20min`: routine calendar and condition memo still need stronger first-screen proof.
 - `overseas-travel-d14`: country-specific official confirmation and emergency card are the natural outputs.
 - `study-exam-d30-plan`: source/title mismatch must be fixed before representative use.
-- `real-sinagong-computer-d30-study`: score/wrong-answer workbench exists, but source-fit promotion still needs a manual audit update.
+- `real-sinagong-computer-d30-study`: score/wrong-answer workbench exists, but source-fit still requires route-level UX shaping before broader exposure.
 - `driver-license-renewal-check`: manual source-fit audit says the source is useful, but the Flow needs license-type branching before broader promotion.
 
 ## Preview Only
@@ -112,5 +118,5 @@ Content Lab now exposes the lifecycle summary and needs-review priority summary 
 ## Next Work
 
 1. Apply content/UX reshaping for audited `reshape_before_featured` routes.
-2. Promote real-source Flows only after their artifact workbench gap is closed and source-fit audit is updated.
+2. Reshape real-source Flows according to their source-fit content/UX actions before broader exposure.
 3. Keep generated preview Flows separated from representative search/catalog surfaces.
