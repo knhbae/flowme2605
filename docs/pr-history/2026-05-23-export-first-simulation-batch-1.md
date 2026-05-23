@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-23
 **Branch:** `codex/export-first-simulation-batch-1`
-**PR:** Pending
+**PR:** [#28](https://github.com/knhbae/flowme2605/pull/28)
 **Related audit:** [2026-05-23-export-first-simulation-batch-1.md](../content-audit/2026-05-23-export-first-simulation-batch-1.md)
 **Related spec:** [2026-05-23-export-first-simulation-batch-1](../specs/2026-05-23-export-first-simulation-batch-1/spec.md)
 
