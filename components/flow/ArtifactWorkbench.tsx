@@ -96,6 +96,8 @@ export function ArtifactWorkbench({
             onWorkbenchChange={onWorkbenchChange}
             onToggleItem={onToggleItem}
           />
+        ) : plan.primarySurface === 'memo_card' ? (
+          <MemoCardWorkbench bundle={bundle} checks={checks} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} onToggleItem={onToggleItem} />
         ) : (
           <ChecklistWorkbench bundle={bundle} checks={checks} onToggleItem={onToggleItem} />
         )}
@@ -529,6 +531,30 @@ function LogTableCard({
           ))}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+function MemoCardWorkbench({
+  bundle,
+  checks,
+  workbenchState,
+  onWorkbenchChange,
+  onToggleItem,
+}: {
+  bundle: FlowBundle;
+  checks: Record<string, boolean>;
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
+  onToggleItem: (id: string) => void;
+}) {
+  const fields = getMemoCardFields(bundle);
+  if (!fields.length) return <ChecklistWorkbench bundle={bundle} checks={checks} onToggleItem={onToggleItem} />;
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+      <ChecklistWorkbench bundle={bundle} checks={checks} onToggleItem={onToggleItem} />
+      <ProofMemoCard fields={fields} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
     </div>
   );
 }

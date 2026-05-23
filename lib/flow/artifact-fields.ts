@@ -43,6 +43,114 @@ export type ArtifactLogTable = {
 const movingSlugs = new Set(['moving-d30-basic', 'real-ohouse-moving-d30-prep']);
 const travelSlugs = new Set(['overseas-travel-d14', 'real-mofa-overseas-travel-prep']);
 const studySlugs = new Set(['real-sinagong-computer-d30-study']);
+const driverLicenseSlugs = new Set(['driver-license-renewal-check']);
+const familyCertificateSlugs = new Set(['family-certificate-issue']);
+const residentRegisterSlugs = new Set(['resident-register-copy-issue']);
+const qnetExamSlugs = new Set(['qnet-exam-application-prep']);
+
+const driverLicenseComparisonRows: ArtifactComparisonRow[] = [
+  { id: 'driver-license-renewal-type', title: '면허/갱신 유형' },
+  { id: 'driver-license-health-check', title: '건강검진 자료 활용 가능 여부' },
+  { id: 'driver-license-materials-fee', title: '사진·신분증·수수료 준비' },
+  { id: 'driver-license-apply-pickup', title: '온라인 신청 또는 방문 수령 경로' },
+];
+
+const familyCertificateMemoFields: ArtifactMemoField[] = [
+  {
+    id: 'family-submitter-requirement',
+    label: '제출처 요구사항',
+    placeholder: '예: 은행 제출, 상세 증명서 요구, 3개월 이내 발급본',
+    groupEyebrow: '제출 전 요구사항',
+    groupTitle: '가족관계증명서 제출 메모',
+    groupDescription: '제출처가 요구한 증명서 종류와 공개 범위를 발급 전에 한곳에 정리합니다.',
+  },
+  {
+    id: 'family-certificate-kind',
+    label: '증명서 종류',
+    placeholder: '예: 가족관계증명서 / 혼인관계증명서 / 기본증명서',
+  },
+  {
+    id: 'family-detail-scope',
+    label: '일반/상세/특정 범위',
+    placeholder: '예: 상세, 본인 기준, 배우자와 자녀 표시 필요',
+  },
+  {
+    id: 'family-disclosure-scope',
+    label: '주민등록번호 공개 범위',
+    placeholder: '예: 뒷자리 비공개, 제출처 확인 완료',
+  },
+  {
+    id: 'family-file-location',
+    label: '파일/출력 위치',
+    placeholder: '예: PDF 파일명, 출력본 보관 위치, 제출 완료 여부',
+  },
+];
+
+const residentRegisterMemoFields: ArtifactMemoField[] = [
+  {
+    id: 'resident-submitter-requirement',
+    label: '제출처 요구사항',
+    placeholder: '예: 회사 제출, 초본, 주소 변동 전체 필요',
+    groupEyebrow: '개인정보 공개 범위',
+    groupTitle: '등본·초본 제출 메모',
+    groupDescription: '제출처 요구사항과 표시 항목을 먼저 적어 개인정보 공개 범위 실수를 줄입니다.',
+  },
+  {
+    id: 'resident-document-kind',
+    label: '등본/초본 선택',
+    placeholder: '예: 초본, 개인 인적사항 중심',
+  },
+  {
+    id: 'resident-display-items',
+    label: '주소 변동·세대원·병역 표시',
+    placeholder: '예: 주소 변동 전체, 세대원 미표시, 병역 표시',
+  },
+  {
+    id: 'resident-disclosure-scope',
+    label: '주민등록번호 공개 범위',
+    placeholder: '예: 뒷자리 비공개, 제출처 확인 완료',
+  },
+  {
+    id: 'resident-file-location',
+    label: '발급일·파일 위치',
+    placeholder: '예: 2026-05-23 발급, PDF 파일명 또는 출력본 위치',
+  },
+];
+
+const qnetLogTables: ArtifactLogTable[] = [
+  {
+    id: 'qnet-application-deadlines',
+    eyebrow: '접수 deadline',
+    title: '접수·결제 마감 기록',
+    description: '시험일과 별도로 움직이는 접수 마감, 결제 완료, 환불·변경 마감을 기록합니다.',
+    rows: [
+      { id: 'qnet-application-deadline', label: '원서접수 마감' },
+      { id: 'qnet-payment-complete', label: '결제 완료' },
+      { id: 'qnet-change-refund-deadline', label: '환불·변경 마감' },
+    ],
+    columns: [
+      { id: 'due', label: '마감/시점', placeholder: '예: 2026-06-10 18:00' },
+      { id: 'status', label: '상태/결정', placeholder: '예: 접수 완료, 결제 대기' },
+      { id: 'evidence', label: '증빙/메모', placeholder: '예: Q-Net 접수 내역 캡처' },
+    ],
+  },
+  {
+    id: 'qnet-exam-day-records',
+    eyebrow: '시험 당일',
+    title: '수험표·시험장 준비 기록',
+    description: '수험표 출력, 시험장 위치, 입실 시간, 합격자 발표일을 당일 준비 메모로 묶습니다.',
+    rows: [
+      { id: 'qnet-admission-ticket', label: '수험표 출력' },
+      { id: 'qnet-exam-site', label: '시험장·입실 시간' },
+      { id: 'qnet-result-date', label: '합격자 발표일' },
+    ],
+    columns: [
+      { id: 'due', label: '마감/시점', placeholder: '예: 2026-07-15 09:00' },
+      { id: 'status', label: '상태/결정', placeholder: '예: 서울동부 시험장, 08:30 도착' },
+      { id: 'evidence', label: '증빙/메모', placeholder: '예: 수험표 PDF, 교통편 40분' },
+    ],
+  },
+];
 
 const movingVendorComparisonRows: ArtifactComparisonRow[] = [
   { id: 'moving-vendor-price', title: '이사 업체 견적 금액' },
@@ -165,6 +273,13 @@ export function getComparisonRows(bundle: FlowBundle): ArtifactComparisonRow[] {
 }
 
 export function getComparisonConfig(bundle: FlowBundle): ArtifactComparisonConfig | undefined {
+  if (driverLicenseSlugs.has(bundle.flow.slug)) {
+    return {
+      title: '면허 갱신/적성검사 조건표',
+      eyebrow: '조건 비교',
+      rows: driverLicenseComparisonRows,
+    };
+  }
   if (movingSlugs.has(bundle.flow.slug)) {
     return {
       title: '이사 업체 후보 비교',
@@ -176,12 +291,15 @@ export function getComparisonConfig(bundle: FlowBundle): ArtifactComparisonConfi
 }
 
 export function getMemoCardFields(bundle: FlowBundle): ArtifactMemoField[] {
+  if (familyCertificateSlugs.has(bundle.flow.slug)) return familyCertificateMemoFields;
+  if (residentRegisterSlugs.has(bundle.flow.slug)) return residentRegisterMemoFields;
   if (movingSlugs.has(bundle.flow.slug)) return movingProofMemoFields;
   if (travelSlugs.has(bundle.flow.slug)) return travelProofMemoFields;
   return [];
 }
 
 export function getLogTables(bundle: FlowBundle): ArtifactLogTable[] {
+  if (qnetExamSlugs.has(bundle.flow.slug)) return qnetLogTables;
   if (studySlugs.has(bundle.flow.slug)) return studyLogTables;
   return [];
 }
