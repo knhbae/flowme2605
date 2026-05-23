@@ -4,7 +4,7 @@
 **Branch:** `codex/flow-lifecycle-classification`  
 **Status:** Open  
 **PR URL:** https://github.com/knhbae/flowme2605/pull/18  
-**Deploy URL:** https://vercel.com/flowme/flowme2605/oUM6w4jdzxMbyXwW7JYKTKMrEWTK
+**Deploy URL:** https://vercel.com/flowme/flowme2605/JEJLrBCpDX4QeCLKc7agGshPF6y8
 
 ## Why
 
@@ -53,11 +53,11 @@ Current lifecycle counts:
 
 ## Verification
 
-- `npm test` passed locally.
+- `npm test` passed locally. Latest run: 99/99 pass.
 - `npm run docs:check` passed locally.
 - `npm run build` passed locally.
 - `npm run test:e2e -- --grep "flow lab"` passed locally.
-- Vercel PR preview check passed.
+- Vercel PR preview check passed for latest head.
 
 ## Risks
 
