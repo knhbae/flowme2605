@@ -9,4 +9,4 @@
 - [x] Capture desktop/mobile screenshots for both routes.
 - [x] Add audit/spec/QA/PR-history documents.
 - [x] Run final verification.
-- [ ] Open PR and update PR history.
+- [x] Open PR and update PR history.

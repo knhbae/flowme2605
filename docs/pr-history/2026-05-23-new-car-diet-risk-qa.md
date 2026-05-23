@@ -1,7 +1,7 @@
 # New Car + Diet Risk QA PR History
 
 **Branch:** `codex/new-car-diet-risk-qa`
-**PR:** Pending
+**PR:** [#30 Add new car and diet risk QA](https://github.com/knhbae/flowme2605/pull/30)
 **Related audit:** [2026-05-23-new-car-diet-risk-qa.md](../content-audit/2026-05-23-new-car-diet-risk-qa.md)
 **Related spec:** [2026-05-23-new-car-diet-risk-qa](../specs/2026-05-23-new-car-diet-risk-qa/spec.md)
 
