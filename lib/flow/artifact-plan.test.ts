@@ -102,3 +102,16 @@ test('artifact plan maps driver renewal reshaping to condition comparison first'
   assert.equal(plan.surfaces[0].kind, 'comparison_table');
   assert.equal(plan.sourceHandling, 'reshape_before_featured');
 });
+
+test('artifact plan maps source replacement and risk review reshaping to artifact-first surfaces', () => {
+  assert.equal(getArtifactPlan(bundle('computer-skills-d30-study')).primarySurface, 'timeline_calendar');
+  assert.equal(getArtifactPlan(bundle('diet-habit-2week')).primarySurface, 'spreadsheet_log');
+  assert.equal(getArtifactPlan(bundle('diet-meal-exercise-log')).primarySurface, 'spreadsheet_log');
+  assert.equal(getArtifactPlan(bundle('diet-reset-2week')).primarySurface, 'spreadsheet_log');
+  assert.equal(getArtifactPlan(bundle('new-car-delivery-check')).primarySurface, 'decision_table');
+  assert.equal(getArtifactPlan(bundle('year-end-tax-docs')).primarySurface, 'memo_card');
+  assert.equal(getArtifactPlan(bundle('business-registration-basic')).primarySurface, 'memo_card');
+  assert.equal(getArtifactPlan(bundle('happy-birth-service-check')).primarySurface, 'memo_card');
+  assert.equal(getArtifactPlan(bundle('industrial-accident-claim-docs')).primarySurface, 'memo_card');
+  assert.equal(getArtifactPlan(bundle('vaccination-certificate-issue')).primarySurface, 'memo_card');
+});

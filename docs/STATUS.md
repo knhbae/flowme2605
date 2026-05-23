@@ -38,6 +38,7 @@
 - Admin/official `reshape_before_featured` route reshaping has landed for driver license renewal, family certificate, resident register copy, and Q-Net application: route-specific tables/memo/log fields now improve direct-route execution before broader exposure.
 - Real-source manual source-fit promotion has landed: the 40 natural-artifact audits are projected into source-fit decisions, moving manual source-fit coverage from 31 to 71 routes.
 - Real-source official/service reshaping has landed for Q-Net, childcare vaccination visits, KDCA travel health, safe-driving license renewal, Gov24 resident-register copy, and childcare support application routes.
+- Source replacement and risk review route reshaping is in progress for 12 routes: study logs, diet sheets, new-car evidence rows, and official/risk memo cards now have tests and docs before PR verification.
 
 ## Next Up
 

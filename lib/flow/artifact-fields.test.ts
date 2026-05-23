@@ -54,6 +54,53 @@ test('real-source official reshape batch exposes route-specific workbench record
   );
 });
 
+test('source replacement and risk review routes expose review-specific artifact records', () => {
+  assert.deepEqual(
+    getLogTables(bundle('computer-skills-d30-study')).map((table) => table.id),
+    ['study-chapter-progress', 'study-mock-scores'],
+  );
+
+  assert.deepEqual(
+    getComparisonConfig(bundle('new-car-delivery-check'))?.rows.map((row) => row.id),
+    ['new-car-exterior-interior', 'new-car-electronics-options', 'new-car-documents', 'new-car-defect-dealer-confirmation'],
+  );
+
+  assert.deepEqual(
+    getMemoCardFields(bundle('year-end-tax-docs')).map((field) => field.id),
+    ['tax-company-deadline', 'tax-final-data-date', 'tax-extra-documents', 'tax-deduction-caution', 'tax-submission-status'],
+  );
+
+  assert.deepEqual(
+    getMemoCardFields(bundle('business-registration-basic')).map((field) => field.id),
+    ['business-type-question', 'business-place-document', 'business-license-permit', 'business-tax-office-question', 'business-submission-proof'],
+  );
+
+  assert.deepEqual(
+    getMemoCardFields(bundle('happy-birth-service-check')).map((field) => field.id),
+    ['happy-birth-child-date', 'happy-birth-household-area', 'happy-birth-guardian-account', 'happy-birth-official-question', 'happy-birth-submission-proof'],
+  );
+
+  assert.deepEqual(
+    getMemoCardFields(bundle('industrial-accident-claim-docs')).map((field) => field.id),
+    ['industrial-claim-type', 'industrial-receipt-files', 'industrial-amount-record', 'industrial-official-question', 'industrial-supplement-request'],
+  );
+
+  assert.deepEqual(
+    getMemoCardFields(bundle('national-health-checkup-d7')).map((field) => field.id),
+    ['health-check-date-place', 'health-check-medicine-question', 'health-check-fasting-confirmation', 'health-check-endoscopy-transport', 'health-check-result-method'],
+  );
+
+  assert.deepEqual(
+    getMemoCardFields(bundle('vaccination-certificate-issue')).map((field) => field.id),
+    ['vaccination-certificate-target', 'vaccination-certificate-language', 'vaccination-certificate-submit-requirement', 'vaccination-certificate-missing-record', 'vaccination-certificate-file-location'],
+  );
+
+  assert.deepEqual(
+    getMemoCardFields(bundle('job-change-risk-check')).map((field) => field.id),
+    ['job-change-company-question', 'job-change-public-insurance-check', 'job-change-retirement-pay-note', 'job-change-gap-budget', 'job-change-decision-boundary'],
+  );
+});
+
 test('official document routes expose submitter requirement memo fields', () => {
   const familyFields = getMemoCardFields(bundle('family-certificate-issue'));
   const residentFields = getMemoCardFields(bundle('resident-register-copy-issue'));
