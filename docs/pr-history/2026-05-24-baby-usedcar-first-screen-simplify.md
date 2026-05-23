@@ -3,7 +3,8 @@
 **Date:** 2026-05-24
 **Branch:** `codex/baby-usedcar-first-screen-simplify`
 **PR:** [#32 Simplify baby food and used car first screens](https://github.com/knhbae/flowme2605/pull/32)
-**Status:** Open
+**Status:** Merged
+**Merge commit:** `84c29ab63812cd550027e5b2d930ac4479640bcd`
 **Related spec:** [2026-05-24-baby-usedcar-first-screen-simplify](../specs/2026-05-24-baby-usedcar-first-screen-simplify/spec.md)
 **Related audit:** [2026-05-24-baby-usedcar-first-screen-simplify.md](../content-audit/2026-05-24-baby-usedcar-first-screen-simplify.md)
 
@@ -65,5 +66,4 @@ The representative UX/content audit found that `baby-food-menu-recipe` and `used
 
 ## Follow-Ups
 
-- Run full verification before PR.
-- Update this file with PR URL, CI/deploy status, and merge result.
+- Continue the next representative/public-MVP simplification pass only after choosing the next narrow pair of routes.
