@@ -88,9 +88,34 @@ test('moving audit simulates calendar and spreadsheet artifacts before comparing
 test('source-fit summary captures keep, reshape, and preview decisions', () => {
   const summary = getSourceFitSummary();
 
-  assert.equal(summary.auditedCount, 10);
+  assert.equal(summary.auditedCount, 19);
   assert.ok(summary.averageScore >= 70);
-  assert.ok(summary.decisionCounts.keep_representative >= 5);
-  assert.ok(summary.decisionCounts.reshape_before_featured >= 1);
-  assert.ok(summary.decisionCounts.catalog_preview_only >= 1);
+  assert.equal(summary.decisionCounts.keep_representative, 10);
+  assert.equal(summary.decisionCounts.reshape_before_featured, 8);
+  assert.equal(summary.decisionCounts.catalog_preview_only, 1);
+});
+
+test('source-fit audit covers the first needs-review audit-now batch', () => {
+  const auditNowSlugs = [
+    'driver-license-renewal-check',
+    'family-certificate-issue',
+    'passport-renewal-docs',
+    'pet-registration-basic',
+    'resident-register-copy-issue',
+    'qnet-exam-application-prep',
+    'samsung-aircon-seasonal-check',
+    'samsung-washer-filter-cleaning',
+    'vehicle-inspection-prep',
+  ];
+
+  for (const slug of auditNowSlugs) {
+    const audit = getSourceFitAudit(slug);
+    assert.ok(audit, slug);
+    assert.equal(audit.sourcePrecision, 'exact', slug);
+    assert.ok(audit.naturalArtifacts.length > 0, slug);
+    assert.ok(audit.userJourney.length >= 3, slug);
+    assert.ok(audit.currentGap.length > 0, slug);
+    assert.ok(audit.contentAction.length > 0, slug);
+    assert.ok(audit.uxAction.length > 0, slug);
+  }
 });

@@ -1,4 +1,5 @@
 import type { FlowBundle, SourceType } from './types';
+import { getSourceFitAudit } from './source-fit';
 
 export type SourceReviewPriority =
   | 'audit_now'
@@ -37,7 +38,7 @@ const emptyPriorityCounts: Record<SourceReviewPriority, number> = {
 };
 
 function isNeedsReview(bundle: FlowBundle): boolean {
-  return bundle.flow.source_status === 'needs_review';
+  return bundle.flow.source_status === 'needs_review' && !getSourceFitAudit(bundle.flow.slug);
 }
 
 function isSensitive(bundle: FlowBundle): boolean {

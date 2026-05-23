@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-23  
 **Branch:** `codex/flow-lifecycle-classification`  
-**Status:** Open  
+**Status:** Merged
 **PR URL:** https://github.com/knhbae/flowme2605/pull/18  
 **Deploy URL:** https://vercel.com/flowme/flowme2605/GnGGQWVK6YG2f8HBp42CA6wkJgNi
 

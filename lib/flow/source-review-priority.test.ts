@@ -13,14 +13,12 @@ function bundleBySlug(slug: string) {
   return bundle;
 }
 
-test('source review priority classifies exact official flows as audit-now candidates', () => {
+test('source review priority skips needs-review flows that already have manual source-fit audits', () => {
   const passport = reviewSourceNeedsReviewPriority(bundleBySlug('passport-renewal-docs'));
   const vehicle = reviewSourceNeedsReviewPriority(bundleBySlug('vehicle-inspection-prep'));
 
-  assert.equal(passport?.priority, 'audit_now');
-  assert.equal(vehicle?.priority, 'audit_now');
-  assert.ok(passport.score >= 70);
-  assert.ok(vehicle.nextAction.includes('수동 source-fit audit'));
+  assert.equal(passport, undefined);
+  assert.equal(vehicle, undefined);
 });
 
 test('source review priority separates broad sources for source replacement', () => {
@@ -46,12 +44,12 @@ test('source review priority summary covers every needs-review flow', () => {
   const summary = summarizeSourceNeedsReviewPriority(seedBundles);
   const countSum = Object.values(summary.priorityCounts).reduce((sum, count) => sum + count, 0);
 
-  assert.equal(summary.totalCount, 21);
-  assert.equal(countSum, 21);
-  assert.ok(summary.priorityCounts.audit_now >= 5);
-  assert.ok(summary.priorityCounts.source_replacement >= 1);
-  assert.ok(summary.priorityCounts.risk_review >= 1);
-  assert.equal(summary.items.length, 21);
+  assert.equal(summary.totalCount, 12);
+  assert.equal(countSum, 12);
+  assert.equal(summary.priorityCounts.audit_now, 0);
+  assert.equal(summary.priorityCounts.source_replacement, 6);
+  assert.equal(summary.priorityCounts.risk_review, 6);
+  assert.equal(summary.items.length, 12);
   assert.deepEqual(
     summary.items.map((item) => item.score),
     [...summary.items.map((item) => item.score)].sort((a, b) => b - a),
