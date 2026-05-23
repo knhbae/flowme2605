@@ -92,7 +92,7 @@ export function ArtifactWorkbench({
         ) : plan.primarySurface === 'routine_calendar' ? (
           <RoutineWorkbench bundle={bundle} anchor={anchor} weekdays={weekdays} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
         ) : plan.primarySurface === 'spreadsheet_log' ? (
-          <SpreadsheetWorkbench anchor={anchor} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
+          <SpreadsheetWorkbench bundle={bundle} anchor={anchor} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
         ) : plan.primarySurface === 'timeline_calendar' ? (
           <TimelineWorkbench
             bundle={bundle}
@@ -831,16 +831,19 @@ function expandRoutineOccurrences(startDate: string, weekdays: string[], weeks: 
 const spreadsheetColumns = ['식단', '운동', '측정', '컨디션', '리뷰'];
 
 function SpreadsheetWorkbench({
+  bundle,
   anchor,
   workbenchState,
   onWorkbenchChange,
 }: {
+  bundle: FlowBundle;
   anchor: string;
   workbenchState: FlowWorkbenchState;
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
 }) {
   const start = anchor || formatDate(new Date());
   const rows = Array.from({ length: 7 }, (_, index) => formatDate(addDays(new Date(start), index)));
+  const showRiskBoundary = bundle.flow.risk_level === 'medical_sensitive' && Boolean(bundle.flow.warning);
   return (
     <div className="grid gap-4 lg:grid-cols-[1.25fr_0.75fr]">
       <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
@@ -873,6 +876,12 @@ function SpreadsheetWorkbench({
         </table>
       </div>
       <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+        {showRiskBoundary ? (
+          <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3">
+            <p className="text-sm font-semibold text-amber-900">기록 전 확인</p>
+            <p className="mt-1 text-sm leading-6 text-amber-950">{bundle.flow.warning}</p>
+          </div>
+        ) : null}
         <h3 className="text-base font-semibold text-gray-950">주간 리뷰 메모</h3>
         <textarea
           aria-label="주간 리뷰 메모"

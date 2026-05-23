@@ -239,6 +239,32 @@ const newCarDeliveryComparisonRows: ArtifactComparisonRow[] = [
   { id: 'new-car-defect-dealer-confirmation', title: '하자 발견 시 딜러 확인과 인수 보류 메모' },
 ];
 
+const newCarDeliveryMemoFields: ArtifactMemoField[] = [
+  {
+    id: 'new-car-delivery-place',
+    label: '인수 장소와 담당자',
+    placeholder: '예: 마포 전시장 인도장, 김OO 매니저',
+    groupEyebrow: '인수 증빙 메모',
+    groupTitle: '사진·딜러 확인·인수 보류 기록',
+    groupDescription: '하자 여부를 FLOW가 판단하지 않고, 인수 전 사용자가 남긴 사진 파일명과 딜러 확인 내용을 독립 증빙으로 묶습니다.',
+  },
+  {
+    id: 'new-car-photo-files',
+    label: '사진/영상 파일명',
+    placeholder: '예: door-scratch-4821.jpg, hud-test-20260603.mp4',
+  },
+  {
+    id: 'new-car-dealer-confirmation',
+    label: '딜러 확인 내용',
+    placeholder: '예: 운전석 도어 하단 스크래치 확인, 보수 일정 문자로 받기로 함',
+  },
+  {
+    id: 'new-car-handover-boundary',
+    label: '인수 보류/서명 경계 메모',
+    placeholder: '예: 보수 일정과 문서 확인 전 인수 서명하지 않음',
+  },
+];
+
 const taxDocumentMemoFields: ArtifactMemoField[] = [
   {
     id: 'tax-company-deadline',
@@ -510,6 +536,7 @@ export function getMemoCardFields(bundle: FlowBundle): ArtifactMemoField[] {
   if (jobChangeRiskSlugs.has(bundle.flow.slug)) return jobChangeRiskMemoFields;
   if (movingSlugs.has(bundle.flow.slug)) return movingProofMemoFields;
   if (travelSlugs.has(bundle.flow.slug)) return travelProofMemoFields;
+  if (newCarDeliverySlugs.has(bundle.flow.slug)) return newCarDeliveryMemoFields;
   return [];
 }
 

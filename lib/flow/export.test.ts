@@ -251,6 +251,67 @@ test('decision text export includes comparison section before checklist items', 
   assert.ok(text.indexOf('[후보 비교표]') < text.indexOf('총예산을 차량가, 이전비, 보험료, 정비비로 나누기'));
 });
 
+test('risk-boundary exports preserve delivery evidence and diet observation values', () => {
+  const newCar = seedBundles.find((entry) => entry.flow.slug === 'new-car-delivery-check');
+  const diet = seedBundles.find((entry) => entry.flow.slug === 'diet-habit-2week');
+  assert.ok(newCar);
+  assert.ok(diet);
+
+  const newCarWorkbench = {
+    occurrences: {},
+    logRows: {},
+    memoCards: {
+      'new-car-delivery-place': 'Mapo delivery bay / Kim manager',
+      'new-car-photo-files': 'door-scratch-4821.jpg, hud-test-20260603.mp4',
+      'new-car-dealer-confirmation': 'dealer confirmed scratch and will send written repair date',
+      'new-car-handover-boundary': 'do not sign until repair memo is attached',
+    },
+  };
+  const newCarText = buildText(newCar, {}, undefined, {}, {
+    candidates: [{ id: 'candidate-1', name: 'Avante CN7 VIN 4821' }],
+    notes: {
+      'new-car-defect-dealer-confirmation': {
+        'candidate-1': 'hold delivery until written confirmation',
+      },
+    },
+  }, newCarWorkbench);
+  assert.match(newCarText, /door-scratch-4821\.jpg/);
+  assert.match(newCarText, /do not sign until repair memo is attached/);
+
+  const newCarSheets = buildWorkbookSheets(newCar, {}, undefined, { workbenchState: newCarWorkbench });
+  const newCarWorkbenchSheet = newCarSheets.find((sheet) => sheet.name === '실행판 기록');
+  assert.ok(newCarWorkbenchSheet);
+  assert.ok(newCarWorkbenchSheet.rows.some((row) => row.includes('door-scratch-4821.jpg, hud-test-20260603.mp4')));
+  assert.ok(newCarWorkbenchSheet.rows.some((row) => row.includes('do not sign until repair memo is attached')));
+
+  const dietWorkbench = {
+    occurrences: {},
+    logRows: {
+      '2026-06-01': {
+        식단: 'breakfast oatmeal, lunch kimbap, dinner tofu',
+        운동: '30m walk',
+        측정: 'waist 82cm',
+        컨디션: 'normal',
+        리뷰: 'observe late dinner trigger',
+      },
+      '2026-06-03': {
+        컨디션: 'dizziness repeated, stop and consult professional',
+      },
+    },
+    memoCards: {},
+    weeklyReview: 'late dinner and low sleep correlate with snack cravings',
+  };
+  const dietText = buildText(diet, {}, '2026-06-01', {}, undefined, dietWorkbench);
+  assert.match(dietText, /dizziness repeated, stop and consult professional/);
+  assert.match(dietText, /late dinner and low sleep correlate with snack cravings/);
+
+  const dietSheets = buildWorkbookSheets(diet, {}, '2026-06-01', { workbenchState: dietWorkbench });
+  const dietWorkbenchSheet = dietSheets.find((sheet) => sheet.name === '실행판 기록');
+  assert.ok(dietWorkbenchSheet);
+  assert.ok(dietWorkbenchSheet.rows.some((row) => row.includes('observe late dinner trigger')));
+  assert.ok(dietWorkbenchSheet.rows.some((row) => row.includes('dizziness repeated, stop and consult professional')));
+});
+
 test('ics export omits skipped dated flow items', () => {
   const wedding = seedBundles.find((bundle) => bundle.flow.slug === 'wedding-d180-basic');
   assert.ok(wedding);
