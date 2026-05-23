@@ -3,6 +3,7 @@
 **Date:** 2026-05-23
 **Branch:** `codex/source-risk-representative-review`
 **PR:** [#27](https://github.com/knhbae/flowme2605/pull/27)
+**Merge SHA:** `0f3378bf5201f7399d3683e3d54e57a5cd2dcbd0`
 **Related audit:** [2026-05-23-source-risk-representative-review.md](../content-audit/2026-05-23-source-risk-representative-review.md)
 **Related spec:** [2026-05-23-source-risk-representative-review](../specs/2026-05-23-source-risk-representative-review/spec.md)
 
@@ -31,6 +32,7 @@ Review the strongest three routes from the PR #25/#26 source-risk hardening queu
 | `git diff --check` | Pass | No whitespace errors reported. |
 | `npm run build` | Pass | Next.js production build compiled, type-checked, and generated 9 static pages. |
 | `npm run test:e2e` | Pass | 39 Playwright tests passed. |
+| Vercel PR check | Pass | Vercel succeeded for PR head `d245c2f583bf6247a2b3fed32844bc7739dab0c0`. |
 
 ## Residual Risk
 
