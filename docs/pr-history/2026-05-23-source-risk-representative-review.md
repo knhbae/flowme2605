@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-23
 **Branch:** `codex/source-risk-representative-review`
-**PR:** Pending
+**PR:** [#27](https://github.com/knhbae/flowme2605/pull/27)
 **Related audit:** [2026-05-23-source-risk-representative-review.md](../content-audit/2026-05-23-source-risk-representative-review.md)
 **Related spec:** [2026-05-23-source-risk-representative-review](../specs/2026-05-23-source-risk-representative-review/spec.md)
 
