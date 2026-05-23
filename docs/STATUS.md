@@ -46,7 +46,8 @@
 - Source-risk representative readiness review has landed for `computer-skills-d30-study`, `new-car-delivery-check`, and `diet-habit-2week`; Flow Lab now tracks one representative candidate and two public MVP candidates without changing exposure.
 - Export-first UX/content simulation batch 1 has landed for the same three routes; Flow Lab now tracks realistic user inputs, external artifacts, UX gaps, feature-diet decisions, and risk boundaries before any promotion.
 - Computer-skills final promotion QA has landed: desktop/mobile screenshots and xlsx/ics downloads passed for `computer-skills-d30-study`, and the route is now representative-eligible.
-- New-car and diet risk-boundary QA is in progress: delivery proof memo fields, diet warning hierarchy, export tests, E2E downloads, and desktop/mobile screenshots are being recorded while both routes remain in fix.
+- New-car and diet risk-boundary QA has landed: delivery proof memo fields, diet warning hierarchy, export tests, E2E downloads, and desktop/mobile screenshots are recorded while both routes remain in fix.
+- Representative/public-MVP UX content simplification audit is in progress: 7 routes are being reviewed for first-screen clarity, export-first fit, cognitive load, and source/risk separation before any new feature expansion.
 
 ## Next Up
 
