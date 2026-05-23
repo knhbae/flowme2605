@@ -35,8 +35,9 @@
 - Flow lifecycle classification now groups all 511 bundles into keep/fix/preview-only/hide/remove-candidate buckets and surfaces the counts in Content Lab.
 - The source replacement and risk review `needs_review` batch is now manually audited: 31 manual audits total, 0 remaining needs-review priority routes.
 - Source-backed `needs_review` routes now have no remaining Content Lab priority queue; audited `reshape_before_featured` routes still need item/content/UX reshaping before stronger exposure.
-- Admin/official `reshape_before_featured` route reshaping is in progress for driver license renewal, family certificate, resident register copy, and Q-Net application: route-specific tables/memo/log fields are being added before broader exposure.
-- Real-source manual source-fit promotion is in progress: the 40 natural-artifact audits are being projected into source-fit decisions, moving manual source-fit coverage from 31 to 71 routes.
+- Admin/official `reshape_before_featured` route reshaping has landed for driver license renewal, family certificate, resident register copy, and Q-Net application: route-specific tables/memo/log fields now improve direct-route execution before broader exposure.
+- Real-source manual source-fit promotion has landed: the 40 natural-artifact audits are projected into source-fit decisions, moving manual source-fit coverage from 31 to 71 routes.
+- Real-source official/service reshaping is in progress for Q-Net, childcare vaccination visits, KDCA travel health, safe-driving license renewal, Gov24 resident-register copy, and childcare support application routes.
 
 ## Next Up
 
