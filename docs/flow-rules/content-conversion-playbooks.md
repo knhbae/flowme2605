@@ -35,6 +35,13 @@ How: 준비: 이번 주 할 요일/시간을 정한다. 실행: 영상을 열어
 Completion: 캘린더 일정이 있고, 오늘 실행 여부를 체크했다.
 ```
 
+Execution specificity requirement:
+
+- Keep one follow-along video as one action, but the detail panel must separate summary, detailed execution guide, original video link, post-workout record, and stop condition.
+- The detail guide may describe how to prepare, open the source, follow the source, and record condition. It must not invent a movement sequence unless the sequence was extracted from the source.
+- Add post-session fields or copy cues for completion, intensity, pain/dizziness, and next-session adjustment.
+- Add a stop/consult condition for pain, dizziness, breathing difficulty, or known condition worsening.
+
 Override:
 
 - Use 3-5 actions if the original video is a multi-part program, assessment, rehab sequence, or challenge where separate completion matters.
