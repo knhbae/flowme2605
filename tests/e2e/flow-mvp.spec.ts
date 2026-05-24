@@ -402,10 +402,10 @@ test('computer skills final QA exports study calendar and score sheet records', 
 
   await page.getByLabel('시험일').fill('2026-06-22');
   await expect(page.getByText('05-23').first()).toBeVisible();
-  await expect(page.getByLabel('필기 핵심 개념 정리 / 범위')).toHaveValue('컴퓨터 일반·스프레드시트 핵심 개념');
+  await expect(page.getByTestId('artifact-readonly-cell-study-chapter-week-1-scope')).toContainText('컴퓨터 일반·스프레드시트 핵심 개념');
+  await expect(page.getByLabel('필기 핵심 개념 정리 / 범위')).toHaveCount(0);
   await expect(page.getByLabel('스프레드시트 실기 함수·피벗 / 상태')).toHaveValue('원본에서 가져온 진도');
 
-  await page.getByLabel('필기 핵심 개념 정리 / 범위').fill('스프레드시트 함수와 피벗테이블');
   await page.getByLabel('필기 핵심 개념 정리 / 목표일').fill('2026-05-29');
   await page.getByLabel('필기 핵심 개념 정리 / 상태').fill('진행 중');
   await page.getByLabel('기출 1회차 / 풀이일').fill('2026-06-01');
@@ -840,6 +840,9 @@ test('study progress table exposes source-derived guard metadata', async ({ page
   await expect(progressTable).toHaveAttribute('data-source-kind', 'source_derived');
   await expect(progressTable).toHaveAttribute('data-read-only-columns', 'scope');
   await expect(progressTable).toHaveAttribute('data-user-editable-columns', 'targetDate,status,note');
+  await expect(progressTable.getByTestId('artifact-readonly-cell-study-chapter-week-1-scope')).toContainText('컴퓨터 일반·스프레드시트 핵심 개념');
+  await expect(progressTable.getByLabel('필기 핵심 개념 정리 / 범위')).toHaveCount(0);
+  await expect(progressTable.getByLabel('필기 핵심 개념 정리 / 목표일')).toBeVisible();
 });
 
 test('mobile sensitive routes collapse secondary execution sections below the first artifact', async ({ page }) => {
