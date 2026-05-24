@@ -408,9 +408,21 @@ function buildWorkbenchRows(bundle: FlowBundle, state?: FlowWorkbenchState): Wor
   const rows: WorkbookCell[][] = [];
   const logRowLabels = new Map<string, string>();
   const logFieldLabels = new Map<string, string>();
+  const knownLogRows = new Set<string>();
   for (const table of getLogTables(bundle)) {
-    for (const row of table.rows) logRowLabels.set(row.id, row.label);
     for (const column of table.columns) logFieldLabels.set(column.id, column.label);
+    for (const row of table.rows) {
+      knownLogRows.add(row.id);
+      logRowLabels.set(row.id, row.label);
+      const mergedValues = {
+        ...(row.defaultValues ?? {}),
+        ...(state.logRows?.[row.id] ?? {}),
+      };
+      for (const [field, value] of sortedEntries(mergedValues)) {
+        if (!value.trim()) continue;
+        rows.push(['기록', row.label, logFieldLabels.get(field) ?? field, value.trim()]);
+      }
+    }
   }
 
   for (const [key, entry] of sortedEntries(state.occurrences ?? {})) {
@@ -426,6 +438,7 @@ function buildWorkbenchRows(bundle: FlowBundle, state?: FlowWorkbenchState): Wor
   }
 
   for (const [date, logRow] of sortedEntries(state.logRows ?? {})) {
+    if (knownLogRows.has(date)) continue;
     for (const [field, value] of sortedEntries(logRow)) {
       if (!value.trim()) continue;
       rows.push(['기록', logRowLabels.get(date) ?? date, logFieldLabels.get(field) ?? field, value.trim()]);

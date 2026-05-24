@@ -29,6 +29,7 @@ export type ArtifactLogColumn = {
 export type ArtifactLogRow = {
   id: string;
   label: string;
+  defaultValues?: Record<string, string>;
 };
 
 export type ArtifactLogTable = {
@@ -550,6 +551,60 @@ const studyLogTables: ArtifactLogTable[] = [
   },
 ];
 
+const computerSkillsStudyLogTables: ArtifactLogTable[] = [
+  {
+    id: 'study-chapter-progress',
+    eyebrow: '원본 기반 진도표',
+    title: '챕터 진도표',
+    description: '원본 시험 범위에서 가져온 기본 진도 row를 먼저 두고, 날짜와 상태만 조정합니다.',
+    rows: [
+      {
+        id: 'study-chapter-week-1',
+        label: '필기 핵심 개념 정리',
+        defaultValues: {
+          scope: '컴퓨터 일반·스프레드시트 핵심 개념',
+          status: '원본에서 가져온 진도',
+          note: '시험일까지 먼저 배치하고 약한 단원만 조정',
+        },
+      },
+      {
+        id: 'study-chapter-week-2',
+        label: '스프레드시트 실기 함수·피벗',
+        defaultValues: {
+          scope: '함수식, 피벗테이블, 차트 작업',
+          status: '원본에서 가져온 진도',
+          note: '기출에서 틀린 함수 유형을 약점 메모로 남김',
+        },
+      },
+      {
+        id: 'study-chapter-week-3',
+        label: '데이터베이스 실기 쿼리·폼',
+        defaultValues: {
+          scope: '쿼리, 폼, 보고서, 처리 조건',
+          status: '원본에서 가져온 진도',
+          note: '실기 환경 점검 후 재풀이 날짜 지정',
+        },
+      },
+      {
+        id: 'study-chapter-final',
+        label: '기출 오답 보완과 실전 점검',
+        defaultValues: {
+          scope: '기출 회차, 오답 유형, 시험장 준비',
+          status: '원본에서 가져온 진도',
+          note: '마지막 주에는 새 범위보다 반복 실수 제거',
+        },
+      },
+    ],
+    columns: [
+      { id: 'scope', label: '범위', placeholder: '예) 함수식, 피벗테이블' },
+      { id: 'targetDate', label: '목표일', placeholder: '예) 2026-06-12' },
+      { id: 'status', label: '상태', placeholder: '예) 예정/진행/완료' },
+      { id: 'note', label: '메모', placeholder: '예) 요약노트 작성' },
+    ],
+  },
+  studyLogTables[1],
+];
+
 export function getComparisonRows(bundle: FlowBundle): ArtifactComparisonRow[] {
   const config = getComparisonConfig(bundle);
   if (config) return config.rows;
@@ -617,6 +672,7 @@ export function getMemoCardFields(bundle: FlowBundle): ArtifactMemoField[] {
 
 export function getLogTables(bundle: FlowBundle): ArtifactLogTable[] {
   if (qnetExamSlugs.has(bundle.flow.slug)) return qnetLogTables;
+  if (bundle.flow.slug === 'computer-skills-d30-study') return computerSkillsStudyLogTables;
   if (studySlugs.has(bundle.flow.slug)) return studyLogTables;
   return [];
 }

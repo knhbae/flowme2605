@@ -51,6 +51,7 @@
 - Baby-food and used-car first-screen simplification has landed: `baby-food-menu-recipe` now prioritizes meal calendar plus reaction log, and `used-car-buying-check` now prioritizes candidate comparison plus buy/hold memo before checklist density.
 - New-car and diet guardrail first-screen pass has landed: `new-car-delivery-check` keeps the handover warning inside the evidence workbench, and `diet-habit-2week` now frames the first sheet as observation plus stop/consult condition logging.
 - Passport submission memo first-screen pass has landed: `passport-renewal-docs` now opens with a portable submission memo for travel timing, photo readiness, application proof, and pickup/storage before checklist density.
+- Export-first study UX direction is in progress: product principles now record first-action/natural-artifact UI direction, study content is framed as source-derived curriculum conversion, and `computer-skills-d30-study` starts with editable source-derived progress rows.
 
 ## Next Up
 

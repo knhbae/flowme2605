@@ -47,6 +47,25 @@ Native save, record, and workspace features should stay secondary until export-f
 - Prefer concrete output previews over explanatory copy.
 - Do not describe a Flow as validated until real user behavior supports that claim.
 
+## Current UX/UI Direction
+
+Stage 0 UI should feel like a conversion workbench, not a full productivity suite.
+
+- Put one first action and one natural artifact ahead of feature lists.
+- Choose the artifact from the content shape: calendar, checklist, sheet, memo, comparison table, or reaction log.
+- Keep export controls tied to the artifact they produce.
+- Move supporting source notes, full-flow previews, and secondary checklists below the first artifact when they compete for attention.
+- Preserve the long-term path toward native FLOW records, but do not make record keeping the first-screen value until export-first behavior shows repeat demand.
+
+### Study Content Direction
+
+Study content should not ask users to build a blank progress table from scratch. FLOW should start from the outside course, textbook, exam scope, or curriculum and produce a source-derived study structure that the user can review, adjust, and export.
+
+- Exam prep needs a date-based calendar, source-derived progress rows, and score/wrong-answer tracking.
+- Habit study needs routine sessions, completion state, and learning notes.
+- Course/curriculum study needs lesson or chapter rows that come from the source before the user edits them.
+- Certification/problem-solving study needs mock score, wrong-answer type, retry date, and weak-area notes.
+
 ## Content Review Principles
 
 Review content through execution simulation, not only editorial judgment.
