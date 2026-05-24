@@ -7,5 +7,5 @@
 - [x] Document UX gap and natural artifact simulation.
 - [x] Capture screenshots.
 - [x] Run full verification.
-- [ ] Open PR and update PR history.
+- [x] Open PR and update PR history.
 - [ ] Merge if checks pass and sync main.

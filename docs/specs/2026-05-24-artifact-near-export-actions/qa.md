@@ -22,5 +22,4 @@
 
 ## Remaining Verification
 
-- `npm run docs:check`
 - PR URL and post-merge checks

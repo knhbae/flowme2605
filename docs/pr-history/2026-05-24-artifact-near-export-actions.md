@@ -2,8 +2,8 @@
 
 **Date:** 2026-05-24
 **Branch:** `codex/artifact-near-export-actions`
-**PR:** Pending
-**Status:** In progress
+**PR:** [#37 Add artifact-near export actions](https://github.com/knhbae/flowme2605/pull/37)
+**Status:** In review
 **Related spec:** [2026-05-24-artifact-near-export-actions](../specs/2026-05-24-artifact-near-export-actions/spec.md)
 **Related audit:** [artifact-near export actions](../content-audit/2026-05-24-artifact-near-export-actions.md)
 
