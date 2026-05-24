@@ -40,6 +40,8 @@ type ArtifactExportActions = {
   onCopyToEditableDraft: () => void;
 };
 
+type ArtifactExportActionKind = 'copy' | 'excel' | 'calendar' | 'draft';
+
 type ScheduleRow = {
   id: string;
   title: string;
@@ -103,8 +105,6 @@ export function ArtifactWorkbench({
           {done}/{total} 완료
         </span>
       </div>
-      {exportActions ? <ArtifactExportActionRow actions={exportActions} /> : null}
-
       <div className="mt-5">
         {plan.primarySurface === 'decision_table' ? (
           <DecisionWorkbench
@@ -115,11 +115,12 @@ export function ArtifactWorkbench({
             workbenchState={workbenchState}
             onWorkbenchChange={onWorkbenchChange}
             onToggleItem={onToggleItem}
+            exportActions={exportActions}
           />
         ) : plan.primarySurface === 'routine_calendar' ? (
-          <RoutineWorkbench bundle={bundle} anchor={anchor} weekdays={weekdays} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
+          <RoutineWorkbench bundle={bundle} anchor={anchor} weekdays={weekdays} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
         ) : plan.primarySurface === 'spreadsheet_log' ? (
-          <SpreadsheetWorkbench bundle={bundle} anchor={anchor} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
+          <SpreadsheetWorkbench bundle={bundle} anchor={anchor} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
         ) : plan.primarySurface === 'meal_reaction_log' ? (
           <MealReactionWorkbench
             bundle={bundle}
@@ -128,6 +129,7 @@ export function ArtifactWorkbench({
             workbenchState={workbenchState}
             onWorkbenchChange={onWorkbenchChange}
             onToggleItem={onToggleItem}
+            exportActions={exportActions}
           />
         ) : plan.primarySurface === 'timeline_calendar' ? (
           <TimelineWorkbench
@@ -139,45 +141,68 @@ export function ArtifactWorkbench({
             workbenchState={workbenchState}
             onWorkbenchChange={onWorkbenchChange}
             onToggleItem={onToggleItem}
+            exportActions={exportActions}
           />
         ) : plan.primarySurface === 'memo_card' ? (
-          <MemoCardWorkbench bundle={bundle} checks={checks} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} onToggleItem={onToggleItem} />
+          <MemoCardWorkbench bundle={bundle} checks={checks} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} onToggleItem={onToggleItem} exportActions={exportActions} />
         ) : (
-          <ChecklistWorkbench bundle={bundle} checks={checks} onToggleItem={onToggleItem} />
+          <ChecklistWorkbench bundle={bundle} checks={checks} onToggleItem={onToggleItem} exportActions={exportActions} />
         )}
       </div>
     </section>
   );
 }
 
-function ArtifactExportActionRow({ actions }: { actions: ArtifactExportActions }) {
+function ArtifactExportButtons({ actions, kinds }: { actions?: ArtifactExportActions; kinds: ArtifactExportActionKind[] }) {
+  if (!actions) return null;
+
   const disabled = actions.done === 0;
   const disabledTitle = disabled ? '항목을 하나라도 체크하면 받을 수 있어요' : undefined;
 
   return (
-    <div className="mt-4 rounded-lg border border-blue-100 bg-blue-50/60 px-3 py-3">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm font-medium text-blue-950">실행판에서 체크한 내용을 내 도구로 옮깁니다.</p>
-        <div className="flex flex-wrap gap-2">
-          <button className="rounded-md bg-[#2563EB] px-3 py-2 text-sm font-semibold text-white disabled:bg-gray-300" disabled={disabled} title={disabledTitle} onClick={actions.onCopyText}>
-            체크리스트 복사
-          </button>
-          <button className="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-800 disabled:border-gray-200 disabled:text-gray-400" disabled={disabled} title={disabledTitle} onClick={actions.onDownloadExcel}>
-            엑셀로 받기
-          </button>
-          {actions.canExportCalendar ? (
-            <button className="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-800 disabled:border-gray-200 disabled:text-gray-400" disabled={disabled} title={disabledTitle} onClick={actions.onDownloadCalendar}>
+    <div className="flex flex-wrap gap-2">
+      {kinds.map((kind) => {
+        if (kind === 'copy') {
+          return (
+            <button key={kind} className="rounded-md bg-[#2563EB] px-3 py-2 text-sm font-semibold text-white disabled:bg-gray-300" disabled={disabled} title={disabledTitle} onClick={actions.onCopyText}>
+              체크리스트 복사
+            </button>
+          );
+        }
+        if (kind === 'excel') {
+          return (
+            <button key={kind} className="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-800 disabled:border-gray-200 disabled:text-gray-400" disabled={disabled} title={disabledTitle} onClick={actions.onDownloadExcel}>
+              엑셀로 받기
+            </button>
+          );
+        }
+        if (kind === 'calendar' && actions.canExportCalendar) {
+          return (
+            <button key={kind} className="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-800 disabled:border-gray-200 disabled:text-gray-400" disabled={disabled} title={disabledTitle} onClick={actions.onDownloadCalendar}>
               캘린더 받기
             </button>
-          ) : null}
-          <button className="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-gray-800" onClick={actions.onCopyToEditableDraft}>
-            내 버전
-          </button>
-        </div>
-      </div>
-      {actions.copyState || actions.downloadState || actions.calendarState ? (
-        <p className="mt-2 text-sm font-semibold text-blue-700">{[actions.copyState, actions.downloadState, actions.calendarState].filter(Boolean).join(' · ')}</p>
-      ) : null}
+          );
+        }
+        if (kind === 'draft') {
+          return (
+            <button key={kind} className="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-gray-800" onClick={actions.onCopyToEditableDraft}>
+              내 버전
+            </button>
+          );
+        }
+
+        return null;
+      })}
+    </div>
+  );
+}
+
+function ArtifactExportStatus({ actions }: { actions?: ArtifactExportActions }) {
+  if (!actions || (!actions.copyState && !actions.downloadState && !actions.calendarState)) return null;
+
+  return (
+    <div className="mt-2 text-sm font-semibold text-blue-700">
+      {[actions.copyState, actions.downloadState, actions.calendarState].filter(Boolean).join(' · ')}
     </div>
   );
 }
@@ -247,6 +272,7 @@ function TimelineWorkbench({
   workbenchState,
   onWorkbenchChange,
   onToggleItem,
+  exportActions,
 }: {
   bundle: FlowBundle;
   anchor: string;
@@ -256,6 +282,7 @@ function TimelineWorkbench({
   workbenchState: FlowWorkbenchState;
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
   onToggleItem: (id: string) => void;
+  exportActions?: ArtifactExportActions;
 }) {
   const rows = scheduleRows(bundle, anchor);
   const comparisonConfig = getComparisonConfig(bundle);
@@ -277,9 +304,15 @@ function TimelineWorkbench({
   return (
     <div className="space-y-4">
       <div className="grid gap-4 lg:grid-cols-[1fr_1.05fr]">
-        <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
-          <p className="text-sm font-semibold text-blue-700">실행 리스트 미리보기</p>
-          <h3 className="text-base font-semibold text-gray-950">전체 할 일</h3>
+        <div data-testid="artifact-list-card" className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-blue-700">실행 리스트 미리보기</p>
+              <h3 className="text-base font-semibold text-gray-950">전체 할 일</h3>
+            </div>
+            <ArtifactExportButtons actions={exportActions} kinds={logTables.length ? ['copy', 'draft'] : ['copy', 'excel', 'draft']} />
+          </div>
+          <ArtifactExportStatus actions={exportActions} />
           <div className="mt-3 space-y-2">
             {listRows.map((row) => (
               <label key={row.id} className="grid grid-cols-[22px_92px_1fr] gap-3 rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
@@ -296,12 +329,12 @@ function TimelineWorkbench({
             ))}
           </div>
         </div>
-        <MiniMonthCalendar title="월간 캘린더" eyebrow="월별 달력 preview" month={month} rows={rows} />
+        <MiniMonthCalendar title="월간 캘린더" eyebrow="월별 달력 preview" month={month} rows={rows} exportActions={exportActions} />
       </div>
       {logTables.length ? (
         <div className="grid gap-4">
-          {logTables.map((table) => (
-            <LogTableCard key={table.id} table={table} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
+          {logTables.map((table, index) => (
+            <LogTableCard key={table.id} table={table} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={index === 0 ? exportActions : undefined} />
           ))}
         </div>
       ) : null}
@@ -330,6 +363,7 @@ function MealReactionWorkbench({
   workbenchState,
   onWorkbenchChange,
   onToggleItem,
+  exportActions,
 }: {
   bundle: FlowBundle;
   anchor: string;
@@ -337,6 +371,7 @@ function MealReactionWorkbench({
   workbenchState: FlowWorkbenchState;
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
   onToggleItem: (id: string) => void;
+  exportActions?: ArtifactExportActions;
 }) {
   const slots = (bundle.mealSlots ?? []).slice().sort((a, b) => a.order - b.order);
   const calendarSlots = slots.slice(0, 6);
@@ -351,9 +386,15 @@ function MealReactionWorkbench({
         </div>
       ) : null}
       <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
-        <div data-testid="meal-calendar-card" className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
-          <p className="text-sm font-semibold text-blue-700">식단 일정 preview</p>
-          <h3 className="mt-1 text-base font-semibold text-gray-950">처음 6개 식단</h3>
+        <div data-testid="artifact-calendar-card" className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-blue-700">식단 일정 preview</p>
+              <h3 className="mt-1 text-base font-semibold text-gray-950">처음 6개 식단</h3>
+            </div>
+            <ArtifactExportButtons actions={exportActions} kinds={['calendar']} />
+          </div>
+          <ArtifactExportStatus actions={exportActions} />
           <div className="mt-3 space-y-2">
             {calendarSlots.map((slot) => (
               <label key={slot.id} className="grid grid-cols-[22px_112px_1fr] gap-3 rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
@@ -377,8 +418,14 @@ function MealReactionWorkbench({
         </div>
         <div data-testid="meal-reaction-log-card" className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
           <div className="border-b border-gray-100 px-3 py-3">
-            <p className="text-sm font-semibold text-blue-700">먹은 뒤 기록</p>
-            <h3 className="mt-1 text-base font-semibold text-gray-950">반응 기록표</h3>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-blue-700">먹은 뒤 기록</p>
+                <h3 className="mt-1 text-base font-semibold text-gray-950">반응 기록표</h3>
+              </div>
+              <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} />
+            </div>
+            <ArtifactExportStatus actions={exportActions} />
             <p className="mt-2 text-sm leading-6 text-gray-600">레시피 평가는 뒤로 미루고, 먹은 양과 이상 반응을 먼저 남깁니다.</p>
           </div>
           <table className="min-w-[860px] text-left text-sm">
@@ -432,23 +479,29 @@ function MiniMonthCalendar({
   month,
   rows,
   doneIds,
+  exportActions,
 }: {
   title: string;
   eyebrow?: string;
   month: string;
   rows: ScheduleRow[];
   doneIds?: Set<string>;
+  exportActions?: ArtifactExportActions;
 }) {
   const days = getMonthCalendarDays(month || formatDate(new Date()).slice(0, 7));
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4">
-      <div className="flex items-center justify-between gap-2">
+    <div data-testid="artifact-calendar-card" className="rounded-lg border border-gray-200 bg-white p-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           {eyebrow ? <p className="text-sm font-semibold text-blue-700">{eyebrow}</p> : null}
           <h3 className="text-base font-semibold text-gray-950">{title}</h3>
         </div>
-        <span className="text-sm font-semibold text-gray-500">{month}</span>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <span className="text-sm font-semibold text-gray-500">{month}</span>
+          <ArtifactExportButtons actions={exportActions} kinds={['calendar']} />
+        </div>
       </div>
+      <ArtifactExportStatus actions={exportActions} />
       <div className="mt-3 grid grid-cols-7 gap-1 text-center text-xs font-semibold text-gray-500">
         {weekdayOrder.map((day) => (
           <span key={day}>{day}</span>
@@ -479,23 +532,29 @@ function RoutineOccurrenceCalendar({
   rows,
   workbenchState,
   onWorkbenchChange,
+  exportActions,
 }: {
   month: string;
   rows: ScheduleRow[];
   workbenchState: FlowWorkbenchState;
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
+  exportActions?: ArtifactExportActions;
 }) {
   const days = getMonthCalendarDays(month || formatDate(new Date()).slice(0, 7));
   const visibleRows = rows.slice(0, 12);
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4">
-      <div className="flex items-center justify-between gap-2">
+    <div data-testid="artifact-calendar-card" className="rounded-lg border border-gray-200 bg-white p-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-sm font-semibold text-blue-700">반복 캘린더</p>
           <h3 className="text-base font-semibold text-gray-950">월간 회차 관리</h3>
         </div>
-        <span className="text-sm font-semibold text-gray-500">{month}</span>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <span className="text-sm font-semibold text-gray-500">{month}</span>
+          <ArtifactExportButtons actions={exportActions} kinds={['calendar', 'excel', 'draft']} />
+        </div>
       </div>
+      <ArtifactExportStatus actions={exportActions} />
       <div className="mt-3 grid grid-cols-7 gap-1 text-center text-xs font-semibold text-gray-500">
         {weekdayOrder.map((day) => (
           <span key={day}>{day}</span>
@@ -571,12 +630,14 @@ function ComparisonTable({
   rows,
   comparisonState,
   onComparisonChange,
+  exportActions,
 }: {
   title: string;
   eyebrow: string;
   rows: ArtifactComparisonRow[];
   comparisonState: FlowComparisonState;
   onComparisonChange: (state: FlowComparisonState) => void;
+  exportActions?: ArtifactExportActions;
 }) {
   const comparison = ensureComparisonState(comparisonState);
 
@@ -587,10 +648,14 @@ function ComparisonTable({
           <p className="text-sm font-semibold text-blue-700">{eyebrow}</p>
           <h3 className="mt-1 text-base font-semibold text-gray-950">{title}</h3>
         </div>
-        <button className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-800" onClick={() => onComparisonChange(addComparisonCandidate(comparison))}>
-          후보 추가
-        </button>
+        <div className="flex flex-wrap justify-end gap-2">
+          <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} />
+          <button className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-800" onClick={() => onComparisonChange(addComparisonCandidate(comparison))}>
+            후보 추가
+          </button>
+        </div>
       </div>
+      <ArtifactExportStatus actions={exportActions} />
       <div
         className="grid min-w-[720px] bg-gray-50 text-xs font-semibold text-gray-600"
         style={{ gridTemplateColumns: `minmax(220px,1.1fr) repeat(${comparison.candidates.length}, minmax(170px,1fr))` }}
@@ -672,16 +737,24 @@ function LogTableCard({
   table,
   workbenchState,
   onWorkbenchChange,
+  exportActions,
 }: {
   table: ArtifactLogTable;
   workbenchState: FlowWorkbenchState;
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
+  exportActions?: ArtifactExportActions;
 }) {
   return (
-    <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+    <div data-testid={`artifact-log-table-${table.id}`} className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
       <div className="border-b border-gray-100 px-3 py-3">
-        <p className="text-sm font-semibold text-blue-700">{table.eyebrow}</p>
-        <h3 className="mt-1 text-base font-semibold text-gray-950">{table.title}</h3>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-blue-700">{table.eyebrow}</p>
+            <h3 className="mt-1 text-base font-semibold text-gray-950">{table.title}</h3>
+          </div>
+          <ArtifactExportButtons actions={exportActions} kinds={['excel']} />
+        </div>
+        <ArtifactExportStatus actions={exportActions} />
         <p className="mt-2 text-sm leading-6 text-gray-600">{table.description}</p>
       </div>
       <table className="min-w-[760px] text-left text-sm">
@@ -722,19 +795,21 @@ function MemoCardWorkbench({
   workbenchState,
   onWorkbenchChange,
   onToggleItem,
+  exportActions,
 }: {
   bundle: FlowBundle;
   checks: Record<string, boolean>;
   workbenchState: FlowWorkbenchState;
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
   onToggleItem: (id: string) => void;
+  exportActions?: ArtifactExportActions;
 }) {
   const fields = getMemoCardFields(bundle);
-  if (!fields.length) return <ChecklistWorkbench bundle={bundle} checks={checks} onToggleItem={onToggleItem} />;
+  if (!fields.length) return <ChecklistWorkbench bundle={bundle} checks={checks} onToggleItem={onToggleItem} exportActions={exportActions} />;
 
   return (
     <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
-      <ChecklistWorkbench bundle={bundle} checks={checks} onToggleItem={onToggleItem} />
+      <ChecklistWorkbench bundle={bundle} checks={checks} onToggleItem={onToggleItem} exportActions={exportActions} />
       <ProofMemoCard fields={fields} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
     </div>
   );
@@ -748,6 +823,7 @@ function DecisionWorkbench({
   workbenchState,
   onWorkbenchChange,
   onToggleItem,
+  exportActions,
 }: {
   bundle: FlowBundle;
   checks: Record<string, boolean>;
@@ -756,6 +832,7 @@ function DecisionWorkbench({
   workbenchState: FlowWorkbenchState;
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
   onToggleItem: (id: string) => void;
+  exportActions?: ArtifactExportActions;
 }) {
   const comparisonConfig = getComparisonConfig(bundle);
   const comparisonRows = getComparisonRows(bundle);
@@ -769,6 +846,7 @@ function DecisionWorkbench({
         rows={comparisonRows}
         comparisonState={comparisonState}
         onComparisonChange={onComparisonChange}
+        exportActions={exportActions}
       />
       <div className="space-y-4">
         {bundle.flow.warning ? <RiskBoundaryCard bundle={bundle} /> : null}
@@ -921,12 +999,14 @@ function RoutineWorkbench({
   weekdays,
   workbenchState,
   onWorkbenchChange,
+  exportActions,
 }: {
   bundle: FlowBundle;
   anchor: string;
   weekdays: string[];
   workbenchState: FlowWorkbenchState;
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
+  exportActions?: ArtifactExportActions;
 }) {
   const startDate = anchor || formatDate(nextMonday(new Date()));
   const selectedWeekdays = weekdays.length ? weekdays : inferWeekdays(bundle.repeatRules?.[0] ?? '');
@@ -947,7 +1027,7 @@ function RoutineWorkbench({
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
-      <RoutineOccurrenceCalendar month={month} rows={rows} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
+      <RoutineOccurrenceCalendar month={month} rows={rows} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
       <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
         <p className="text-sm font-semibold text-blue-700">반복 달력 preview</p>
         <h3 className="mt-1 text-base font-semibold text-gray-950">한 회차에 하는 일</h3>
@@ -1024,11 +1104,13 @@ function SpreadsheetWorkbench({
   anchor,
   workbenchState,
   onWorkbenchChange,
+  exportActions,
 }: {
   bundle: FlowBundle;
   anchor: string;
   workbenchState: FlowWorkbenchState;
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
+  exportActions?: ArtifactExportActions;
 }) {
   const start = anchor || formatDate(new Date());
   const rows = Array.from({ length: 7 }, (_, index) => formatDate(addDays(new Date(start), index)));
@@ -1041,10 +1123,16 @@ function SpreadsheetWorkbench({
       : '날짜별로 남길 기록 값을 먼저 정리합니다.';
   return (
     <div className="grid gap-4 lg:grid-cols-[1.25fr_0.75fr]">
-      <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+      <div data-testid="artifact-log-table-spreadsheet" className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
         <div className="border-b border-gray-100 px-3 py-3">
-          <p className="text-sm font-semibold text-blue-700">기록표 preview</p>
-          <h3 className="mt-1 text-base font-semibold text-gray-950">{title}</h3>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-blue-700">기록표 preview</p>
+              <h3 className="mt-1 text-base font-semibold text-gray-950">{title}</h3>
+            </div>
+            <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} />
+          </div>
+          <ArtifactExportStatus actions={exportActions} />
           <p className="mt-2 text-sm leading-6 text-gray-600">{description}</p>
         </div>
         <table className="min-w-[760px] text-left text-sm">
@@ -1111,14 +1199,20 @@ function ChecklistWorkbench({
   bundle,
   checks,
   onToggleItem,
+  exportActions,
 }: {
   bundle: FlowBundle;
   checks: Record<string, boolean>;
   onToggleItem: (id: string) => void;
+  exportActions?: ArtifactExportActions;
 }) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
-      <h3 className="text-base font-semibold text-gray-950">전체 할 일</h3>
+    <div data-testid="artifact-list-card" className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <h3 className="text-base font-semibold text-gray-950">전체 할 일</h3>
+        <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} />
+      </div>
+      <ArtifactExportStatus actions={exportActions} />
       <div className="mt-3 grid gap-2 md:grid-cols-2">
         {getExecutableItems(bundle).slice(0, 10).map((item) => (
           <label key={item.id} className="flex gap-2 rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
