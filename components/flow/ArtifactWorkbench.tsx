@@ -656,7 +656,7 @@ function LogTableCard({
                     aria-label={`${row.label} / ${column.label}`}
                     className="w-full min-w-28 rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
                     placeholder={column.placeholder}
-                    value={workbenchState.logRows[row.id]?.[column.id] ?? ''}
+                    value={workbenchState.logRows[row.id]?.[column.id] ?? row.defaultValues?.[column.id] ?? ''}
                     onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, row.id, column.id, event.currentTarget.value))}
                   />
                 </td>

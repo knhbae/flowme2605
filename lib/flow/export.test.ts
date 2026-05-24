@@ -185,6 +185,27 @@ test('study export includes chapter progress and mock score records', () => {
   assert.ok(workbench.rows.some((row) => row.includes('기출 1회차') && row.includes('점수') && row.includes('78점')));
 });
 
+test('study export includes source-derived chapter defaults before user edits', () => {
+  const study = seedBundles.find((bundle) => bundle.flow.slug === 'computer-skills-d30-study');
+  assert.ok(study);
+
+  const workbenchState = {
+    occurrences: {},
+    logRows: {},
+    memoCards: {},
+  };
+
+  const text = buildText(study, {}, '2026-06-22', {}, undefined, workbenchState);
+
+  assert.match(text, /필기 핵심 개념 정리 범위: 컴퓨터 일반·스프레드시트 핵심 개념/);
+  assert.match(text, /필기 핵심 개념 정리 상태: 원본에서 가져온 진도/);
+
+  const sheets = buildWorkbookSheets(study, {}, '2026-06-22', { workbenchState });
+  const workbench = sheets.find((sheet) => sheet.name === '실행판 기록');
+  assert.ok(workbench);
+  assert.ok(workbench.rows.some((row) => row.includes('필기 핵심 개념 정리') && row.includes('범위') && row.includes('컴퓨터 일반·스프레드시트 핵심 개념')));
+});
+
 test('diet log text export starts with record table guidance', () => {
   const diet = seedBundles.find((entry) => entry.flow.slug === 'real-fitvely-video-body-fat-6kg-method');
   assert.ok(diet);
