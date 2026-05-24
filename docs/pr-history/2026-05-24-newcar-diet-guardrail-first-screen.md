@@ -3,7 +3,8 @@
 **Date:** 2026-05-24
 **Branch:** `codex/newcar-diet-guardrail-first-screen`
 **PR:** [#33 Clarify new car and diet guardrail screens](https://github.com/knhbae/flowme2605/pull/33)
-**Status:** Open
+**Status:** Merged
+**Merge commit:** `9e546471faf4a10a5d6c72ef66bed7ae234c2e29`
 **Related spec:** [2026-05-24-newcar-diet-guardrail-first-screen](../specs/2026-05-24-newcar-diet-guardrail-first-screen/spec.md)
 **Related audit:** [2026-05-24-newcar-diet-guardrail-first-screen.md](../content-audit/2026-05-24-newcar-diet-guardrail-first-screen.md)
 
@@ -57,5 +58,4 @@ After the baby-food and used-car simplification PR, the remaining public-MVP gua
 
 ## Follow-Ups
 
-- Run full verification before PR.
-- Update this file with PR URL, CI/deploy status, and merge result.
+- Use the same guardrail pattern for future sensitive public-MVP routes before considering broader exposure.
