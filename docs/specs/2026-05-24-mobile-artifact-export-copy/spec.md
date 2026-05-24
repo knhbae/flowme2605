@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-24
 **Branch:** `codex/mobile-artifact-export-copy`
-**Status:** In progress
+**Status:** Landed in PR #40
 
 ## Goal
 

@@ -2,8 +2,9 @@
 
 **Date:** 2026-05-24
 **Branch:** `codex/mobile-artifact-export-copy`
-**PR:** Pending
-**Status:** In progress
+**PR:** [#40 Align mobile export copy with artifacts](https://github.com/knhbae/flowme2605/pull/40)
+**Status:** Integrated to `main`
+**Main merge commit:** `103091c38dee303158155c43cc776b2d070ad92e`
 **Related spec:** [2026-05-24-mobile-artifact-export-copy](../specs/2026-05-24-mobile-artifact-export-copy/spec.md)
 **Related audit:** [mobile artifact export copy](../content-audit/2026-05-24-mobile-artifact-export-copy.md)
 

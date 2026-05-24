@@ -6,5 +6,5 @@
 - [x] Align mobile sheet buttons with artifact-card labels.
 - [x] Capture mobile sheet screenshot.
 - [x] Run full verification.
-- [ ] Create PR and update PR history.
-- [ ] Merge if checks allow, then sync `main`.
+- [x] Create PR and update PR history.
+- [x] Merge if checks allow, then sync `main`.
