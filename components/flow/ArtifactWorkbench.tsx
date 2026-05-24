@@ -776,17 +776,31 @@ function LogTableCard({
           {table.rows.map((row) => (
             <tr key={row.id} className="border-t border-gray-100">
               <th className="px-3 py-3 text-sm font-semibold text-gray-900">{row.label}</th>
-              {table.columns.map((column) => (
-                <td key={`${row.id}-${column.id}`} className="px-2 py-2">
-                  <input
-                    aria-label={`${row.label} / ${column.label}`}
-                    className="w-full min-w-28 rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
-                    placeholder={column.placeholder}
-                    value={workbenchState.logRows[row.id]?.[column.id] ?? row.defaultValues?.[column.id] ?? ''}
-                    onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, row.id, column.id, event.currentTarget.value))}
-                  />
-                </td>
-              ))}
+              {table.columns.map((column) => {
+                const isReadOnly = table.readOnlyColumnIds?.includes(column.id) ?? false;
+                const value = isReadOnly ? row.defaultValues?.[column.id] ?? '' : workbenchState.logRows[row.id]?.[column.id] ?? row.defaultValues?.[column.id] ?? '';
+
+                return (
+                  <td key={`${row.id}-${column.id}`} className="px-2 py-2">
+                    {isReadOnly ? (
+                      <div
+                        data-testid={`artifact-readonly-cell-${row.id}-${column.id}`}
+                        className="min-w-36 rounded-md border border-gray-200 bg-gray-50 px-2 py-1.5 text-sm leading-5 text-gray-700"
+                      >
+                        {value || '-'}
+                      </div>
+                    ) : (
+                      <input
+                        aria-label={`${row.label} / ${column.label}`}
+                        className="w-full min-w-28 rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
+                        placeholder={column.placeholder}
+                        value={value}
+                        onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, row.id, column.id, event.currentTarget.value))}
+                      />
+                    )}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>

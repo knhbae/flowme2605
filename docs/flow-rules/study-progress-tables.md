@@ -34,6 +34,7 @@ Before publishing a study Flow, the creator checks:
 - Which rows came from the source table of contents, curriculum, exam scope, past-exam rounds, or weekly plan?
 - Are row names concrete enough that the learner can recognize the source material?
 - Did FLOW leave only user-editable fields such as target date, status, memo, wrong-answer note, retry date, weak area, or score?
+- Are source-derived row/category/scope cells shown as source values rather than editable blank-table fields where the UI supports it?
 - Are source-derived rows framed as editable defaults, not as an auto-generated or guaranteed study plan?
 - Are score and wrong-answer records separated from any claim about exam outcome?
 
@@ -57,6 +58,7 @@ Avoid asking users to design row categories, decide every chapter grouping, or b
 
 - The Flow uses an exam-date anchor and source-derived progress rows.
 - The progress table starts with chapter or skill rows instead of empty week labels.
+- The source scope cells are displayed as source-derived values, while target dates, status, and notes remain editable.
 - The user edits target dates, status, notes, mock scores, wrong answers, retry dates, and weak areas.
 - The natural artifact is a D-30 calendar plus spreadsheet, not a native FLOW study dashboard.
 
