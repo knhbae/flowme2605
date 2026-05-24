@@ -55,6 +55,7 @@ const memoCardOverrideSlugs = new Set([
   'happy-birth-service-check',
   'industrial-accident-claim-docs',
   'vaccination-certificate-issue',
+  'passport-renewal-docs',
 ]);
 const spreadsheetOverrideSlugs = new Set(['diet-habit-2week', 'diet-meal-exercise-log', 'diet-reset-2week']);
 

@@ -59,6 +59,7 @@ const industrialAccidentSlugs = new Set(['industrial-accident-claim-docs']);
 const healthCheckupSlugs = new Set(['national-health-checkup-d7']);
 const vaccinationCertificateSlugs = new Set(['vaccination-certificate-issue']);
 const jobChangeRiskSlugs = new Set(['job-change-risk-check']);
+const passportRenewalSlugs = new Set(['passport-renewal-docs']);
 
 const driverLicenseComparisonRows: ArtifactComparisonRow[] = [
   { id: 'driver-license-renewal-type', title: '면허/갱신 유형' },
@@ -126,6 +127,37 @@ const residentRegisterMemoFields: ArtifactMemoField[] = [
     id: 'resident-file-location',
     label: '발급일·파일 위치',
     placeholder: '예: 2026-05-23 발급, PDF 파일명 또는 출력본 위치',
+  },
+];
+
+const passportRenewalMemoFields: ArtifactMemoField[] = [
+  {
+    id: 'passport-applicant-context',
+    label: '여행일·신청자·신청 경로',
+    placeholder: '예: 2026-08-15 출국, 본인 성인 재발급, 정부24 온라인 신청',
+    groupEyebrow: '신청 전 제출 메모',
+    groupTitle: '여권 재발급 제출 메모',
+    groupDescription: '여행 일정, 사진 확인, 접수번호, 수령·보관 정보를 한 장에 남겨 신청 후 다시 찾는 일을 줄입니다.',
+  },
+  {
+    id: 'passport-photo-check',
+    label: '사진 규격 확인',
+    placeholder: '예: 2026-05 촬영, 6개월 이내, 배경·크기 공식 안내 확인',
+  },
+  {
+    id: 'passport-old-passport-status',
+    label: '기존 여권 상태',
+    placeholder: '예: 만료일 2026-07-10, 훼손 없음, 반납/지참 필요 여부 확인',
+  },
+  {
+    id: 'passport-application-proof',
+    label: '접수번호·상태 캡처',
+    placeholder: '예: 접수번호 2026-000000, 정부24 처리상태 캡처 passport-receipt.png',
+  },
+  {
+    id: 'passport-pickup-storage',
+    label: '수령일·보관 위치',
+    placeholder: '예: 2026-06-20 구청 수령, 여권 지갑과 스캔본 보관 위치',
   },
 ];
 
@@ -575,6 +607,7 @@ export function getMemoCardFields(bundle: FlowBundle): ArtifactMemoField[] {
   if (healthCheckupSlugs.has(bundle.flow.slug)) return healthCheckupMemoFields;
   if (vaccinationCertificateSlugs.has(bundle.flow.slug)) return vaccinationCertificateMemoFields;
   if (jobChangeRiskSlugs.has(bundle.flow.slug)) return jobChangeRiskMemoFields;
+  if (passportRenewalSlugs.has(bundle.flow.slug)) return passportRenewalMemoFields;
   if (movingSlugs.has(bundle.flow.slug)) return movingProofMemoFields;
   if (travelSlugs.has(bundle.flow.slug)) return travelProofMemoFields;
   if (newCarDeliverySlugs.has(bundle.flow.slug)) return newCarDeliveryMemoFields;
