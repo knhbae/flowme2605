@@ -9,5 +9,5 @@
 - [x] Preserve existing export handlers and disabled state.
 - [x] Capture desktop/mobile screenshots.
 - [x] Run full verification.
-- [ ] Create PR and update PR history.
-- [ ] Merge if checks allow, then sync `main`.
+- [x] Create PR and update PR history.
+- [x] Merge if checks allow, then sync `main`.

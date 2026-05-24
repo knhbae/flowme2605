@@ -55,7 +55,7 @@
 - Common first-screen reduction has landed: the shared Flow detail page no longer shows duplicate page-level progress before the artifact workbench, keeping first screens closer to first action plus natural artifact.
 - Artifact-near export actions have landed: copy, xlsx, and calendar actions now appear inside the workbench area while existing export formats remain unchanged.
 - Setup export card reduction has landed on main: the normal Flow setup area is now anchor-input only, while export actions remain in the workbench and mobile bottom sheet.
-- Artifact subcard export placement is in progress: workbench export actions now move toward the specific list, calendar, progress table, and log cards that produce each external artifact.
+- Artifact subcard export placement has landed: workbench export actions now sit beside the specific list, calendar, progress table, and log cards that produce each external artifact.
 
 ## Next Up
 

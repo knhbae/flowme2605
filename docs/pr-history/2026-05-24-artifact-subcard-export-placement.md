@@ -3,7 +3,8 @@
 **Date:** 2026-05-24
 **Branch:** `codex/artifact-subcard-export-placement`
 **PR:** [#39 Move artifact export actions into subcards](https://github.com/knhbae/flowme2605/pull/39)
-**Status:** Open
+**Status:** Integrated to `main`
+**Main merge commit:** `65ceb8055c8bb0aa99ca75bf1c77f419cdd3b80d`
 **Related spec:** [2026-05-24-artifact-subcard-export-placement](../specs/2026-05-24-artifact-subcard-export-placement/spec.md)
 **Related audit:** [artifact subcard export placement](../content-audit/2026-05-24-artifact-subcard-export-placement.md)
 

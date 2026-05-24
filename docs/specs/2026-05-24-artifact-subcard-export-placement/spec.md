@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-24
 **Branch:** `codex/artifact-subcard-export-placement`
-**Status:** In progress
+**Status:** Landed in PR #39
 
 ## Goal
 
