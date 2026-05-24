@@ -4,8 +4,9 @@
 **Branch:** `codex/setup-export-card-reduction`
 **PR:** [#38 Remove setup export card](https://github.com/knhbae/flowme2605/pull/38)
 **Status:** Integrated to `main`
-**Main commit:** `751b867fe0d91d1522f13386c145ba3da413d9d5`
-**GitHub PR note:** GitHub merge API timed out twice, so the branch was squash-merged locally and pushed to `main`. The PR page may still display open even though `main` contains the PR change.
+**Main change commit:** `751b867fe0d91d1522f13386c145ba3da413d9d5`
+**GitHub merge marker:** `8e92177168d0b0ee68d756c7908b9d88c0fbcc99`
+**GitHub PR note:** GitHub merge API timed out twice, so the branch was squash-merged locally and pushed to `main`; the delayed GitHub merge request later added an empty merge marker commit. If the PR page lags, treat `main` as the source of truth.
 **Related spec:** [2026-05-24-setup-export-card-reduction](../specs/2026-05-24-setup-export-card-reduction/spec.md)
 **Related audit:** [setup export card reduction](../content-audit/2026-05-24-setup-export-card-reduction.md)
 
