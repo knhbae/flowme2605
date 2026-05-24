@@ -3,7 +3,9 @@
 **Date:** 2026-05-24
 **Branch:** `ux/mobile-route-density`
 **PR:** [#45 Reduce sensitive route mobile density](https://github.com/knhbae/flowme2605/pull/45)
-**Status:** Open
+**Status:** Merged
+**Vercel:** [Deploy check](https://vercel.com/flowme/flowme2605/G9RfwtoR8JcCFJtVP1aZ7QFTrimF)
+**Merge commit:** `b369bd58e2f9ae4395172fe5b1ebd2ba254ccb9c`
 **Related spec:** [2026-05-24-mobile-route-density-collapse](../specs/2026-05-24-mobile-route-density-collapse/spec.md)
 **Related audit:** [mobile route density collapse](../content-audit/2026-05-24-mobile-route-density-collapse.md)
 
@@ -37,4 +39,4 @@ After the mobile bottom-sheet audit, the remaining density issue was page-level 
 - GREEN: `npm test` passed: 129 tests.
 - GREEN: `npm run build` passed.
 - GREEN: `npm run test:e2e` passed: 48 tests.
-- Vercel check is tracked on PR #45.
+- Vercel check passed on PR #45 before merge.
