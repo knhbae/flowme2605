@@ -2,8 +2,8 @@
 
 **Date:** 2026-05-24
 **Branch:** `codex/newcar-diet-guardrail-first-screen`
-**PR:** TBD
-**Status:** Draft
+**PR:** [#33 Clarify new car and diet guardrail screens](https://github.com/knhbae/flowme2605/pull/33)
+**Status:** Open
 **Related spec:** [2026-05-24-newcar-diet-guardrail-first-screen](../specs/2026-05-24-newcar-diet-guardrail-first-screen/spec.md)
 **Related audit:** [2026-05-24-newcar-diet-guardrail-first-screen.md](../content-audit/2026-05-24-newcar-diet-guardrail-first-screen.md)
 
