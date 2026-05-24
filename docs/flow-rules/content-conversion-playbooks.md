@@ -97,6 +97,16 @@ Override:
 
 - Use `checklist` for administrative-only flows like application submission.
 
+### Study Progress Table Eligibility
+
+Use [study progress table rules](./study-progress-tables.md) before adding a study progress table.
+
+Progress tables are allowed only when the source has rows the creator can bring into FLOW, such as a table of contents, curriculum, exam scope, past-exam rounds, weekly plan, lesson list, or assignment set.
+
+Do not force a progress table for reviews, tips, advice, motivation posts, or single explainers without source sequence. Use checklist, memo, routine, comparison table, or score/wrong-answer log instead.
+
+For eligible study content, the creator pre-fills rows from the source. The user edits only execution fields such as target date, status, memo, wrong-answer note, retry date, weak area, or score. `computer-skills-d30-study` is the current example.
+
 ## Home Appliance / Car Maintenance
 
 Default:

@@ -2,6 +2,10 @@
 
 FLOW 품질 기준은 좁고 딱딱한 금지 목록이 아니다. 콘텐츠 유형과 사용자 목적에 따라 달라지는 실행 품질을 판단하기 위한 운영 체계다.
 
+## Current Addendum
+
+- [Study progress table rules](./study-progress-tables.md): use a progress table only when the source has table-of-contents, curriculum, exam-scope, past-exam, weekly-plan, lesson, or assignment rows the creator can bring into FLOW.
+
 ## How To Use
 
 1. [Research basis](./research-basis.md)를 확인해 외부 UX/content 기준이 어떤 방향을 가리키는지 이해한다.
