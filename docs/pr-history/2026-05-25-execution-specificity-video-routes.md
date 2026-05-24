@@ -3,6 +3,8 @@
 Date: 2026-05-25
 Branch: `content/execution-specificity-video-routes`
 PR: #51
+Status: Merged and Vercel check passed
+Vercel: https://vercel.com/flowme/flowme2605/Gj2fjZQ3oLYmBepDiJmYHLKms6Hs
 
 ## Why
 
@@ -38,6 +40,7 @@ Full verification:
 - `npm run build` passed.
 - `npm run test:e2e` passed.
 - `git diff --check` passed.
+- Vercel PR check passed before merge.
 
 ## Risks
 
