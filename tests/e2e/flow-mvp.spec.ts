@@ -972,6 +972,15 @@ test('reshaped official route workbenches expose natural artifact fields', async
   await expect(page.getByRole('textbox', { name: '제출처 요구사항' })).toBeVisible();
   await expect(page.getByRole('textbox', { name: '주민등록번호 공개 범위' })).toBeVisible();
 
+  await page.goto('/f/passport-renewal-docs');
+  await expect(page.getByRole('heading', { name: '여권 재발급 준비 Flow' })).toBeVisible();
+  const passportWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(passportWorkbench.getByRole('heading', { name: '메모 카드' })).toBeVisible();
+  await expect(passportWorkbench.getByRole('textbox', { name: '여행일·신청자·신청 경로' })).toBeVisible();
+  await expect(passportWorkbench.getByRole('textbox', { name: '사진 규격 확인' })).toBeVisible();
+  await expect(passportWorkbench.getByRole('textbox', { name: '접수번호·상태 캡처' })).toBeVisible();
+  await expect(passportWorkbench.getByRole('textbox', { name: '수령일·보관 위치' })).toBeVisible();
+
   await page.goto('/f/driver-license-renewal-check');
   await expect(page.getByRole('heading', { name: '운전면허 갱신 준비 Flow' })).toBeVisible();
   const driverWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });

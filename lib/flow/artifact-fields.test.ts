@@ -125,6 +125,7 @@ test('used-car route exposes candidate comparison rows and decision memo fields'
 test('official document routes expose submitter requirement memo fields', () => {
   const familyFields = getMemoCardFields(bundle('family-certificate-issue'));
   const residentFields = getMemoCardFields(bundle('resident-register-copy-issue'));
+  const passportFields = getMemoCardFields(bundle('passport-renewal-docs'));
 
   assert.deepEqual(familyFields.map((field) => field.label), [
     '제출처 요구사항',
@@ -139,6 +140,13 @@ test('official document routes expose submitter requirement memo fields', () => 
     '주소 변동·세대원·병역 표시',
     '주민등록번호 공개 범위',
     '발급일·파일 위치',
+  ]);
+  assert.deepEqual(passportFields.map((field) => field.id), [
+    'passport-applicant-context',
+    'passport-photo-check',
+    'passport-old-passport-status',
+    'passport-application-proof',
+    'passport-pickup-storage',
   ]);
 });
 
