@@ -464,6 +464,23 @@ test('risk-boundary QA exports new-car evidence memo and diet observation sheet'
   expect(excelDownload.suggestedFilename()).toBe('diet-habit-2week.xlsx');
 });
 
+test('public MVP guardrail screens keep evidence and stop conditions first', async ({ page }) => {
+  await page.goto('/f/new-car-delivery-check');
+
+  let workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(workbench.getByText('인수 전 보류 기준')).toBeVisible();
+  await expect(workbench.getByLabel('인수 보류/서명 경계 메모')).toBeVisible();
+  await expect(workbench.getByText('현장에서 바로 체크')).toBeVisible();
+
+  await page.goto('/f/diet-habit-2week');
+  await page.locator('input[type="date"]').first().fill('2026-06-01');
+
+  workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(workbench.getByRole('heading', { name: '관찰 기록표' })).toBeVisible();
+  await expect(workbench.getByRole('cell', { name: '중단/상담 조건' })).toBeVisible();
+  await expect(workbench.getByText('기록 전 확인')).toBeVisible();
+});
+
 test('mobile export actions open from a bottom sheet', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/moving-d30-basic');
