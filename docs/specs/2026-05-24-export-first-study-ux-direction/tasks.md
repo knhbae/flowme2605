@@ -9,4 +9,4 @@
 - [x] Capture desktop and mobile screenshots.
 - [x] Run full verification.
 - [x] Open PR [#35](https://github.com/knhbae/flowme2605/pull/35) and update PR number.
-- [ ] Merge after checks pass, then sync `main`.
+- [x] Merge after checks pass, then sync `main`.

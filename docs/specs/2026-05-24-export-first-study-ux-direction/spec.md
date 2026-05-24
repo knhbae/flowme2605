@@ -1,7 +1,7 @@
 # Export-First Study UX Direction Spec
 
 **Date:** 2026-05-24
-**Status:** In Progress
+**Status:** Landed
 **Owner:** Codex
 **Related direction:** [Product Principles](../../PRODUCT_PRINCIPLES.md), [UX Content Simplification](../../content-audit/2026-05-23-representative-ux-content-simplification.md)
 
