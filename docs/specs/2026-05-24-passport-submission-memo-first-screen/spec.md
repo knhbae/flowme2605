@@ -1,7 +1,7 @@
 # Passport Submission Memo First-Screen Spec
 
 **Date:** 2026-05-24
-**Status:** In Progress
+**Status:** Landed
 **Owner:** Codex
 **Related audits:** [Representative UX Content Simplification](../../content-audit/2026-05-23-representative-ux-content-simplification.md)
 

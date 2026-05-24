@@ -3,7 +3,8 @@
 **Date:** 2026-05-24
 **Branch:** `codex/passport-submission-memo-first-screen`
 **PR:** [#34 Make passport renewal memo-first](https://github.com/knhbae/flowme2605/pull/34)
-**Status:** In Progress
+**Status:** Merged
+**Merge commit:** `580dd2520922e942bda3efeee8cc6a08194c69c9`
 **Related spec:** [2026-05-24-passport-submission-memo-first-screen](../specs/2026-05-24-passport-submission-memo-first-screen/spec.md)
 **Related audit:** [2026-05-24-passport-submission-memo-first-screen.md](../content-audit/2026-05-24-passport-submission-memo-first-screen.md)
 
