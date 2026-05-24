@@ -809,6 +809,30 @@ test('artifact workbench exposes export actions next to the natural artifact', a
   await expect(studyCalendarCard.getByRole('button', { name: '캘린더 받기' })).toBeVisible();
 });
 
+test('mobile workbench keeps export buttons in the sticky sheet instead of artifact cards', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/computer-skills-d30-study');
+
+  await page.getByLabel('시험일').fill('2026-06-22');
+  await page.getByLabel('실행판 체크: 필기와 실기 시험 범위 나누기').check();
+
+  const workbench = page.getByLabel('Flow artifact workbench');
+  const studyLogCard = workbench.getByTestId('artifact-log-table-study-chapter-progress');
+  const studyCalendarCard = workbench.getByTestId('artifact-calendar-card');
+
+  await expect(studyLogCard.getByRole('button', { name: '엑셀로 받기' })).toHaveCount(0);
+  await expect(studyCalendarCard.getByRole('button', { name: '캘린더 받기' })).toHaveCount(0);
+
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  const mobileBar = page.getByTestId('mobile-export-bar');
+  await expect(mobileBar.getByRole('button', { name: '산출물 받기' })).toBeVisible();
+
+  await mobileBar.getByRole('button', { name: '산출물 받기' }).click();
+  const sheet = page.getByTestId('mobile-export-sheet');
+  await expect(sheet.getByRole('button', { name: '엑셀로 받기' })).toBeEnabled();
+  await expect(sheet.getByRole('button', { name: '캘린더 받기' })).toBeEnabled();
+});
+
 test('artifact workbench saves local execution entries', async ({ page }) => {
   await page.goto('/f/moving-d30-basic');
 

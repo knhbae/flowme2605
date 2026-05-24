@@ -160,7 +160,7 @@ function ArtifactExportButtons({ actions, kinds }: { actions?: ArtifactExportAct
   const disabledTitle = disabled ? '항목을 하나라도 체크하면 받을 수 있어요' : undefined;
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="hidden flex-wrap gap-2 sm:flex">
       {kinds.map((kind) => {
         if (kind === 'copy') {
           return (

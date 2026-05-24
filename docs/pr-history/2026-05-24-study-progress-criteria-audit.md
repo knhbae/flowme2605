@@ -3,7 +3,7 @@
 **Date:** 2026-05-24
 **Branch:** `docs/study-progress-audit-criteria`
 **PR:** [#41 Document study progress criteria and export audit](https://github.com/knhbae/flowme2605/pull/41)
-**Status:** Open
+**Status:** Merged
 **Vercel:** [Deploy check](https://vercel.com/flowme/flowme2605/HQdCyfihekpthD7F57PmBntP253s)
 **Related spec:** [2026-05-24-study-progress-criteria-audit](../specs/2026-05-24-study-progress-criteria-audit/spec.md)
 **Related audits:** [study progress criteria](../content-audit/2026-05-24-study-progress-table-criteria.md), [export-first user audit](../content-audit/2026-05-24-export-first-user-audit.md)
@@ -54,6 +54,7 @@ The current product direction says study content should not ask users to design 
 - `npm run build` passed.
 - `npm run test:e2e` passed: 46 tests.
 - Vercel check passed for commit `31d65623ce47e0589a49042ade8998e36b94305d`.
+- Merged as squash commit `da8f287a045102e394e7c2a0ff1fa50baef78d94`.
 
 ## Risks
 
