@@ -3,7 +3,8 @@
 **Date:** 2026-05-24
 **Branch:** `codex/common-first-screen-reduction`
 **PR:** [#36 Reduce common Flow first-screen progress](https://github.com/knhbae/flowme2605/pull/36)
-**Status:** In review
+**Status:** Merged
+**Merge commit:** `a2900dde8a070c06a5d358a0792854deff5e94fb`
 **Related spec:** [2026-05-24-common-first-screen-reduction](../specs/2026-05-24-common-first-screen-reduction/spec.md)
 **Related audit:** [common first-screen reduction](../content-audit/2026-05-24-common-first-screen-reduction.md)
 
@@ -37,6 +38,8 @@ The agreed UX/UI direction is export-first and artifact-first. A separate page-l
 - GREEN: `npm run docs:check` passed after screenshot links: 14 required files, 169 local links.
 - GREEN: `npm run test:e2e` passed: 45 tests.
 - Browser: captured moving desktop and study mobile screenshots; in-app Browser confirmed duplicate progress copy is absent.
+- GREEN post-merge: `npm test` passed: 129 tests.
+- GREEN post-merge: `npm run docs:check` passed: 14 required files, 169 local links.
 
 ## Risks
 

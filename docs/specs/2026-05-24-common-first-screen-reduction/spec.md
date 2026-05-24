@@ -1,7 +1,7 @@
 # Common First-Screen Reduction Spec
 
 **Date:** 2026-05-24
-**Status:** In review
+**Status:** Landed
 **Owner:** Codex
 **Related direction:** [Product Principles](../../PRODUCT_PRINCIPLES.md), [Common First-Screen UX Audit](../../content-audit/2026-05-24-common-first-screen-ux-audit.md)
 

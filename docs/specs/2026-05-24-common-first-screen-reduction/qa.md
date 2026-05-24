@@ -21,4 +21,4 @@
 
 ## Remaining Verification
 
-- Post-merge checks
+- None.
