@@ -64,6 +64,7 @@
 
 - Post-mobile-density route re-evaluation is documented: `computer-skills-d30-study` remains representative-eligible but not validated, while `diet-habit-2week` and `new-car-delivery-check` remain public MVP candidates with guardrails and no exposure change.
 - Mobile bottom-sheet screenshots are documented for `diet-habit-2week` and `new-car-delivery-check`: the sheet itself is acceptable after the mobile artifact-button reduction, while the next density risk is page-level artifact and caution stacking.
+- Mobile page density is reduced for `diet-habit-2week` and `new-car-delivery-check`: secondary execution sections now start collapsed on mobile, while first actions, artifacts, risk context, and desktop expanded sections remain unchanged.
 
 ## Next Up
 

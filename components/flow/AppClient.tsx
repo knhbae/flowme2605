@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { ArtifactWorkbench } from './ArtifactWorkbench';
 import { ArtifactPreview } from './ArtifactPreview';
 import { addDays, formatDate, getRangeEnd } from '@/lib/flow/date';
@@ -41,6 +41,7 @@ import {
   FlowItem,
   FlowItemDetail,
   FlowItemLinkType,
+  FlowSection,
   FlowItemState,
   FlowWorkbenchState,
   FlowUser,
@@ -3634,6 +3635,45 @@ function FlowItemCard({
   );
 }
 
+function shouldCollapseSecondaryExecutionSections(bundle: FlowBundle) {
+  return bundle.flow.slug === 'diet-habit-2week' || bundle.flow.slug === 'new-car-delivery-check';
+}
+
+function FlowExecutionSectionShell({
+  section,
+  collapsed,
+  children,
+}: {
+  section: FlowSection;
+  collapsed: boolean;
+  children: ReactNode;
+}) {
+  if (collapsed) {
+    return (
+      <>
+        <details data-testid="mobile-collapsed-section" id={`section-${section.id}`} className="scroll-mt-6 rounded-lg border border-gray-200 bg-white p-4 md:hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
+            <span className="text-base font-semibold text-gray-950">{section.title}</span>
+            <span className="shrink-0 rounded-md border border-gray-200 px-2 py-1 text-xs font-semibold text-gray-600">펼치기</span>
+          </summary>
+          <div className="mt-4 space-y-3">{children}</div>
+        </details>
+        <section id={`section-${section.id}`} className="hidden scroll-mt-6 rounded-lg border border-gray-200 bg-white p-5 md:block">
+          <h2 className="text-xl font-semibold">{section.title}</h2>
+          <div className="mt-4 space-y-3">{children}</div>
+        </section>
+      </>
+    );
+  }
+
+  return (
+    <section id={`section-${section.id}`} className="scroll-mt-6 rounded-lg border border-gray-200 bg-white p-5">
+      <h2 className="text-xl font-semibold">{section.title}</h2>
+      <div className="mt-4 space-y-3">{children}</div>
+    </section>
+  );
+}
+
 function getSectionItemIds(bundle: FlowBundle, sectionId: string): string[] {
   if (bundle.flow.content_type === 'meal_plan') {
     return (bundle.mealSlots ?? []).filter((slot) => slot.section_id === sectionId).map((slot) => slot.id);
@@ -3866,13 +3906,13 @@ function TimelineRenderer({
   onNoteChange: (id: string, note: string) => void;
   onSkipToggle: (id: string) => void;
 }) {
+  const collapseSecondarySections = shouldCollapseSecondaryExecutionSections(bundle);
+
   return (
     <div className="space-y-5">
-      {bundle.sections.map((section) => (
-        <section id={`section-${section.id}`} key={section.id} className="scroll-mt-6 rounded-lg border border-gray-200 bg-white p-5">
-          <h2 className="text-xl font-semibold">{section.title}</h2>
-          <div className="mt-4 space-y-3">
-            {bundle.items.filter((item) => item.section_id === section.id).map((item) => (
+      {bundle.sections.map((section, index) => (
+        <FlowExecutionSectionShell key={section.id} section={section} collapsed={collapseSecondarySections && index > 0}>
+          {bundle.items.filter((item) => item.section_id === section.id).map((item) => (
               <FlowItemCard
                 key={item.id}
                 bundle={bundle}
@@ -3884,9 +3924,8 @@ function TimelineRenderer({
                 onNoteChange={onNoteChange}
                 onSkipToggle={onSkipToggle}
               />
-            ))}
-          </div>
-        </section>
+          ))}
+        </FlowExecutionSectionShell>
       ))}
     </div>
   );
@@ -4202,6 +4241,7 @@ function RoutineRenderer({
   onSkipToggle: (id: string) => void;
 }) {
   const rules = (bundle.repeatRules ?? []).join(', ') || '주 3회';
+  const collapseSecondarySections = shouldCollapseSecondaryExecutionSections(bundle);
   const firstSection = bundle.sections[0];
   const firstItems = firstSection ? bundle.items.filter((item) => item.section_id === firstSection.id).slice(0, 3) : [];
   const showSafetyNote = hasAttentionRisk(bundle.flow.risk_level) || Boolean(bundle.flow.warning);
@@ -4254,11 +4294,9 @@ function RoutineRenderer({
           </div>
         ) : null}
       </section>
-      {bundle.sections.map((section) => (
-        <section id={`section-${section.id}`} key={section.id} className="scroll-mt-6 rounded-lg border border-gray-200 bg-white p-5">
-          <h2 className="text-xl font-semibold">{section.title}</h2>
-          <div className="mt-4 space-y-3">
-            {bundle.items.filter((item) => item.section_id === section.id).map((item) => (
+      {bundle.sections.map((section, index) => (
+        <FlowExecutionSectionShell key={section.id} section={section} collapsed={collapseSecondarySections && index > 0}>
+          {bundle.items.filter((item) => item.section_id === section.id).map((item) => (
               <FlowItemCard
                 key={item.id}
                 bundle={bundle}
@@ -4270,9 +4308,8 @@ function RoutineRenderer({
                 onNoteChange={onNoteChange}
                 onSkipToggle={onSkipToggle}
               />
-            ))}
-          </div>
-        </section>
+          ))}
+        </FlowExecutionSectionShell>
       ))}
     </div>
   );
@@ -4293,13 +4330,13 @@ function ChecklistRenderer({
   onNoteChange: (id: string, note: string) => void;
   onSkipToggle: (id: string) => void;
 }) {
+  const collapseSecondarySections = shouldCollapseSecondaryExecutionSections(bundle);
+
   return (
     <div className="space-y-5">
-      {bundle.sections.map((section) => (
-        <section id={`section-${section.id}`} key={section.id} className="scroll-mt-6 rounded-lg border border-gray-200 bg-white p-5">
-          <h2 className="text-xl font-semibold">{section.title}</h2>
-          <div className="mt-4 space-y-3">
-            {bundle.items.filter((item) => item.section_id === section.id).map((item) => (
+      {bundle.sections.map((section, index) => (
+        <FlowExecutionSectionShell key={section.id} section={section} collapsed={collapseSecondarySections && index > 0}>
+          {bundle.items.filter((item) => item.section_id === section.id).map((item) => (
               <FlowItemCard
                 key={item.id}
                 bundle={bundle}
@@ -4310,9 +4347,8 @@ function ChecklistRenderer({
                 onNoteChange={onNoteChange}
                 onSkipToggle={onSkipToggle}
               />
-            ))}
-          </div>
-        </section>
+          ))}
+        </FlowExecutionSectionShell>
       ))}
     </div>
   );

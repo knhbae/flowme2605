@@ -833,6 +833,23 @@ test('mobile workbench keeps export buttons in the sticky sheet instead of artif
   await expect(sheet.getByRole('button', { name: '캘린더 받기' })).toBeEnabled();
 });
 
+test('mobile sensitive routes collapse secondary execution sections below the first artifact', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await page.goto('/f/new-car-delivery-check');
+  let collapsedSections = page.getByTestId('mobile-collapsed-section');
+  await expect(collapsedSections.first()).toBeVisible();
+  expect(await collapsedSections.first().evaluate((node) => (node as HTMLDetailsElement).open)).toBe(false);
+  await collapsedSections.first().locator('summary').click();
+  expect(await collapsedSections.first().evaluate((node) => (node as HTMLDetailsElement).open)).toBe(true);
+  await expect(collapsedSections.first().getByTestId('flow-item-card').first()).toBeVisible();
+
+  await page.goto('/f/diet-habit-2week');
+  collapsedSections = page.getByTestId('mobile-collapsed-section');
+  await expect(collapsedSections.first()).toBeVisible();
+  expect(await collapsedSections.first().evaluate((node) => (node as HTMLDetailsElement).open)).toBe(false);
+});
+
 test('artifact workbench saves local execution entries', async ({ page }) => {
   await page.goto('/f/moving-d30-basic');
 
