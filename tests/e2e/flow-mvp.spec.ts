@@ -760,6 +760,26 @@ test('artifact workbench shows the primary usable surface first', async ({ page 
   await expect(workbench).toContainText('컨디션');
 });
 
+test('common first screen keeps progress inside the artifact workbench', async ({ page }) => {
+  await page.goto('/f/moving-d30-basic');
+
+  const workbench = page.getByLabel('Flow artifact workbench');
+  await expect(workbench).toBeVisible();
+  await expect(workbench.getByText('0/24 완료')).toBeVisible();
+  await expect(page.getByText('항목을 체크하면 이 브라우저에 자동 저장됩니다.')).toHaveCount(0);
+
+  const order = await page.locator('body').evaluate((body) => {
+    const text = body.innerText;
+
+    return {
+      workbench: text.indexOf('내 실행판'),
+      overview: text.indexOf('한눈에 보는 전체 루트'),
+    };
+  });
+  expect(order.workbench).toBeGreaterThanOrEqual(0);
+  expect(order.overview).toBeGreaterThan(order.workbench);
+});
+
 test('artifact workbench saves local execution entries', async ({ page }) => {
   await page.goto('/f/moving-d30-basic');
 

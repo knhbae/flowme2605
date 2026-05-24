@@ -52,6 +52,7 @@
 - New-car and diet guardrail first-screen pass has landed: `new-car-delivery-check` keeps the handover warning inside the evidence workbench, and `diet-habit-2week` now frames the first sheet as observation plus stop/consult condition logging.
 - Passport submission memo first-screen pass has landed: `passport-renewal-docs` now opens with a portable submission memo for travel timing, photo readiness, application proof, and pickup/storage before checklist density.
 - Export-first study UX direction has landed: product principles now record first-action/natural-artifact UI direction, study content is framed as source-derived curriculum conversion, and `computer-skills-d30-study` starts with editable source-derived progress rows.
+- Common first-screen reduction is in progress: the shared Flow detail page is dropping duplicate page-level progress so the artifact workbench remains the primary execution surface.
 
 ## Next Up
 
