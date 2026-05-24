@@ -70,6 +70,7 @@
 - First-user validation script has landed: the next evidence step for `computer-skills-d30-study`, `diet-habit-2week`, and `new-car-delivery-check` is an observed export-first loop, not more internal validation language.
 - Validation session templates have landed: observed user sessions now have a reusable note format, and the first internal study baseline is explicitly marked `no signal` rather than validation.
 - Execution-specificity video route pass has landed: `source reviewed` is now treated as a source boundary only, exact workout video details must separate summary, detailed guide, original video, post-workout record, and stop condition, and the first ThankyouBUBU exact-workout routes keep one action without being called validated.
+- Diet exact-video execution-specificity pass is in progress: FITVELY diet/body-composition videos stay one-action and memo-first, with details narrowed to one selected rule, one application, one observation record, and one stop condition without outcome claims.
 
 ## Next Up
 
