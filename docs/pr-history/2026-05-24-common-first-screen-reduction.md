@@ -2,8 +2,8 @@
 
 **Date:** 2026-05-24
 **Branch:** `codex/common-first-screen-reduction`
-**PR:** Pending
-**Status:** In progress
+**PR:** [#36 Reduce common Flow first-screen progress](https://github.com/knhbae/flowme2605/pull/36)
+**Status:** In review
 **Related spec:** [2026-05-24-common-first-screen-reduction](../specs/2026-05-24-common-first-screen-reduction/spec.md)
 **Related audit:** [common first-screen reduction](../content-audit/2026-05-24-common-first-screen-reduction.md)
 
