@@ -37,6 +37,9 @@ export type ArtifactLogTable = {
   title: string;
   eyebrow: string;
   description: string;
+  sourceKind?: 'source_derived';
+  readOnlyColumnIds?: string[];
+  userEditableColumnIds?: string[];
   rows: ArtifactLogRow[];
   columns: ArtifactLogColumn[];
 };
@@ -554,6 +557,9 @@ const studyLogTables: ArtifactLogTable[] = [
 const computerSkillsStudyLogTables: ArtifactLogTable[] = [
   {
     id: 'study-chapter-progress',
+    sourceKind: 'source_derived',
+    readOnlyColumnIds: ['scope'],
+    userEditableColumnIds: ['targetDate', 'status', 'note'],
     eyebrow: '원본 기반 진도표',
     title: '챕터 진도표',
     description: '원본 시험 범위에서 가져온 기본 진도 row를 먼저 두고, 날짜와 상태만 조정합니다.',

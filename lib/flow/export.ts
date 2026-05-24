@@ -414,9 +414,13 @@ function buildWorkbenchRows(bundle: FlowBundle, state?: FlowWorkbenchState): Wor
     for (const row of table.rows) {
       knownLogRows.add(row.id);
       logRowLabels.set(row.id, row.label);
+      const userValues = { ...(state.logRows?.[row.id] ?? {}) };
+      for (const columnId of table.readOnlyColumnIds ?? []) {
+        delete userValues[columnId];
+      }
       const mergedValues = {
         ...(row.defaultValues ?? {}),
-        ...(state.logRows?.[row.id] ?? {}),
+        ...userValues,
       };
       for (const [field, value] of sortedEntries(mergedValues)) {
         if (!value.trim()) continue;

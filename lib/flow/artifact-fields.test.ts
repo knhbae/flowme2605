@@ -118,6 +118,24 @@ test('source replacement and risk review routes expose review-specific artifact 
   );
 });
 
+test('computer skills progress table keeps source rows separate from user-editable fields', () => {
+  const [progressTable] = getLogTables(bundle('computer-skills-d30-study'));
+
+  assert.equal(progressTable?.id, 'study-chapter-progress');
+  assert.equal(progressTable?.sourceKind, 'source_derived');
+  assert.deepEqual(progressTable?.readOnlyColumnIds, ['scope']);
+  assert.deepEqual(progressTable?.userEditableColumnIds, ['targetDate', 'status', 'note']);
+  assert.deepEqual(
+    progressTable?.rows.map((row) => Object.keys(row.defaultValues ?? {}).sort()),
+    [
+      ['note', 'scope', 'status'],
+      ['note', 'scope', 'status'],
+      ['note', 'scope', 'status'],
+      ['note', 'scope', 'status'],
+    ],
+  );
+});
+
 test('used-car route exposes candidate comparison rows and decision memo fields', () => {
   assert.deepEqual(
     getComparisonConfig(bundle('used-car-buying-check'))?.rows.map((row) => row.id),
