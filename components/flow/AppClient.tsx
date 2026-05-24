@@ -2357,16 +2357,9 @@ export function PublicFlow({ slug }: { slug: string }) {
           </div>
           <div className="space-y-4">
             <div className="rounded-lg border border-gray-200 bg-white p-4">
-              <p className="text-sm font-semibold text-blue-700">진행률</p>
-              <p className="mt-1 text-sm text-gray-600">항목을 체크하면 이 브라우저에 자동 저장됩니다.</p>
-              <div className="mt-4">
-              <ProgressBar done={done} total={executableCount} />
-              </div>
-            </div>
-            <div className="rounded-lg border border-gray-200 bg-white p-4">
               <p className="text-sm font-semibold text-blue-700">내보내기와 백업</p>
               <p className="mt-1 text-sm text-gray-600">
-                {done > 0 ? '체크 상태, 스킵, 메모까지 함께 저장됩니다.' : '항목을 체크하면 텍스트, 엑셀, 캘린더로 백업할 수 있어요.'}
+                {done > 0 ? '체크 상태, 스킵, 메모까지 함께 저장됩니다.' : '실행판에서 항목을 체크한 뒤 텍스트, 엑셀, 캘린더로 옮깁니다.'}
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 <button className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white disabled:bg-gray-300" disabled={done === 0} title={done === 0 ? '항목을 하나라도 체크하면 받을 수 있어요' : undefined} onClick={copy}>
