@@ -58,6 +58,8 @@
 - Artifact subcard export placement has landed: workbench export actions now sit beside the specific list, calendar, progress table, and log cards that produce each external artifact.
 - Mobile artifact export copy has landed: the sticky mobile shortcut now uses artifact-card labels so it reads as `산출물 받기`, not a separate backup feature.
 
+- Study progress-table criteria and six-route export-first audit are now documented: study tables require source rows such as curriculum, exam scope, past-exam rounds, weekly plans, lessons, or assignments; `computer-skills-d30-study` remains the current example, while `diet-habit-2week` and `new-car-delivery-check` remain public MVP candidates with guardrails and no route is called validated.
+
 ## Next Up
 
 v0.1.0 should stabilize the first public FLOW loop: open, anchor input, copy/export, check, and feedback.
