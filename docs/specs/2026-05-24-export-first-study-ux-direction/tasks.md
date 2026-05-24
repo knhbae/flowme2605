@@ -8,5 +8,5 @@
 - [x] Implement editable/exportable study defaults.
 - [x] Capture desktop and mobile screenshots.
 - [x] Run full verification.
-- [ ] Open PR and update PR number.
+- [x] Open PR [#35](https://github.com/knhbae/flowme2605/pull/35) and update PR number.
 - [ ] Merge after checks pass, then sync `main`.

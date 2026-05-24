@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-24
 **Branch:** `codex/export-first-study-ux-direction`
-**PR:** TBD
+**PR:** [#35 Clarify export-first study UX direction](https://github.com/knhbae/flowme2605/pull/35)
 **Status:** In Progress
 **Related spec:** [2026-05-24-export-first-study-ux-direction](../specs/2026-05-24-export-first-study-ux-direction/spec.md)
 **Related audits:** [study gap](../content-audit/2026-05-24-study-source-curriculum-ux-gap.md), [common first-screen audit](../content-audit/2026-05-24-common-first-screen-ux-audit.md)
