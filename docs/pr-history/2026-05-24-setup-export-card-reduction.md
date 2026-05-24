@@ -3,7 +3,9 @@
 **Date:** 2026-05-24
 **Branch:** `codex/setup-export-card-reduction`
 **PR:** [#38 Remove setup export card](https://github.com/knhbae/flowme2605/pull/38)
-**Status:** In review
+**Status:** Integrated to `main`
+**Main commit:** `751b867fe0d91d1522f13386c145ba3da413d9d5`
+**GitHub PR note:** GitHub merge API timed out twice, so the branch was squash-merged locally and pushed to `main`. The PR page may still display open even though `main` contains the PR change.
 **Related spec:** [2026-05-24-setup-export-card-reduction](../specs/2026-05-24-setup-export-card-reduction/spec.md)
 **Related audit:** [setup export card reduction](../content-audit/2026-05-24-setup-export-card-reduction.md)
 
@@ -38,6 +40,8 @@ PR #37 intentionally left the setup export card as a fallback while adding artif
 - RED/GREEN selector cleanup: full E2E first failed because two draft-copy tests still targeted the removed setup button `내 버전 만들기`; `npm run test:e2e -- --grep "my flow workspace|public flow can be copied"` passed after moving those selectors to the workbench `내 버전` button.
 - GREEN: `npm run test:e2e` passed: 46 tests.
 - Browser: captured moving desktop and study mobile screenshots; in-app Browser confirmed setup export card is absent and workbench export remains available.
+- GREEN post-main-push: `npm test` passed: 129 tests.
+- GREEN post-main-push: `npm run docs:check` passed: 14 required files, 183 local links.
 
 ## Risks
 
