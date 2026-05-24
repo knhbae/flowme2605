@@ -789,18 +789,23 @@ test('common first screen keeps progress inside the artifact workbench', async (
 test('artifact workbench exposes export actions next to the natural artifact', async ({ page }) => {
   await page.goto('/f/moving-d30-basic');
   let workbench = page.getByLabel('Flow artifact workbench');
+  const movingListCard = workbench.getByTestId('artifact-list-card');
+  const movingCalendarCard = workbench.getByTestId('artifact-calendar-card');
   await expect(workbench).toBeVisible();
-  await expect(workbench.getByRole('button', { name: '체크리스트 복사' })).toBeVisible();
-  await expect(workbench.getByRole('button', { name: '엑셀로 받기' })).toBeVisible();
-  await expect(workbench.getByRole('button', { name: '캘린더 받기' })).toBeVisible();
-  await expect(workbench.getByText('실행판에서 체크한 내용을 내 도구로 옮깁니다.')).toBeVisible();
+  await expect(movingListCard.getByRole('button', { name: '체크리스트 복사' })).toBeVisible();
+  await expect(movingListCard.getByRole('button', { name: '엑셀로 받기' })).toBeVisible();
+  await expect(movingListCard.getByRole('button', { name: '내 버전' })).toBeVisible();
+  await expect(movingCalendarCard.getByRole('button', { name: '캘린더 받기' })).toBeVisible();
+  await expect(workbench.getByText('실행판에서 체크한 내용을 내 도구로 옮깁니다.')).toHaveCount(0);
 
   await page.goto('/f/computer-skills-d30-study');
   workbench = page.getByLabel('Flow artifact workbench');
+  const studyLogCard = workbench.getByTestId('artifact-log-table-study-chapter-progress');
+  const studyCalendarCard = workbench.getByTestId('artifact-calendar-card');
   await expect(workbench).toBeVisible();
   await expect(workbench).toContainText('기록표');
-  await expect(workbench.getByRole('button', { name: '엑셀로 받기' })).toBeVisible();
-  await expect(workbench.getByRole('button', { name: '캘린더 받기' })).toBeVisible();
+  await expect(studyLogCard.getByRole('button', { name: '엑셀로 받기' })).toBeVisible();
+  await expect(studyCalendarCard.getByRole('button', { name: '캘린더 받기' })).toBeVisible();
 });
 
 test('artifact workbench saves local execution entries', async ({ page }) => {
