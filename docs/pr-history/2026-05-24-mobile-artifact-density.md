@@ -3,8 +3,9 @@
 **Date:** 2026-05-24
 **Branch:** `ux/mobile-artifact-density`
 **PR:** [#42 Reduce mobile artifact export density](https://github.com/knhbae/flowme2605/pull/42)
-**Status:** Open
-**Vercel:** [Deploy check](https://vercel.com/flowme/flowme2605/A6LuGvB5hKboeTWnfPX3MaCEpVNV)
+**Status:** Merged
+**Vercel:** [Deploy check](https://vercel.com/flowme/flowme2605/7hgsru4R7iePiUCsAbWXhVL7VYh4)
+**Merge commit:** `f73ef819f7da8e6b96eed41a82b7363d95e3a06f`
 **Related spec:** [2026-05-24-mobile-artifact-density](../specs/2026-05-24-mobile-artifact-density/spec.md)
 **Related audit:** [mobile artifact density](../content-audit/2026-05-24-mobile-artifact-density.md)
 
@@ -51,7 +52,7 @@ The export-first audit found that mobile screens can become dense when every art
 - GREEN: `npm run docs:check` passed: 14 required files, 205 local links.
 - GREEN: `npm test` passed: 129 tests.
 - GREEN: `npm run test:e2e` passed: 47 tests.
-- Vercel check pending for commit `89eb5a5a15f032188a6195814fc442056d56d51d`.
+- Vercel check passed for head commit `30d62e1f3af6691db667e833985bdb6e00924100`.
 
 ## Risks
 
