@@ -8,4 +8,4 @@
 - [x] Capture screenshots.
 - [x] Run full verification.
 - [x] Open PR and update PR history.
-- [ ] Merge if checks pass and sync main.
+- [x] Merge if checks pass and sync main.

@@ -1,7 +1,7 @@
 # Artifact-Near Export Actions Spec
 
 **Date:** 2026-05-24
-**Status:** In review
+**Status:** Landed
 **Owner:** Codex
 **Related direction:** [Product Principles](../../PRODUCT_PRINCIPLES.md), [Common First-Screen Reduction](../2026-05-24-common-first-screen-reduction/spec.md)
 

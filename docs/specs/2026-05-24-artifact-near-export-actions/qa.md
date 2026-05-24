@@ -22,4 +22,4 @@
 
 ## Remaining Verification
 
-- PR URL and post-merge checks
+- None.
