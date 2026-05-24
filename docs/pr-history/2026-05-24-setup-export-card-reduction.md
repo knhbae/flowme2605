@@ -2,8 +2,8 @@
 
 **Date:** 2026-05-24
 **Branch:** `codex/setup-export-card-reduction`
-**PR:** Pending
-**Status:** In progress
+**PR:** [#38 Remove setup export card](https://github.com/knhbae/flowme2605/pull/38)
+**Status:** In review
 **Related spec:** [2026-05-24-setup-export-card-reduction](../specs/2026-05-24-setup-export-card-reduction/spec.md)
 **Related audit:** [setup export card reduction](../content-audit/2026-05-24-setup-export-card-reduction.md)
 

@@ -1,7 +1,7 @@
 # Setup Export Card Reduction Spec
 
 **Date:** 2026-05-24
-**Status:** In progress
+**Status:** In review
 **Owner:** Codex
 **Related direction:** [Product Principles](../../PRODUCT_PRINCIPLES.md), [Artifact-Near Export Actions](../2026-05-24-artifact-near-export-actions/spec.md)
 
