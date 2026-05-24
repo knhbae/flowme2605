@@ -91,7 +91,7 @@ test('my flow workspace separates copied or drafted flows from public discovery'
   await expect(page.getByRole('link', { name: '이어서 하기' })).toHaveAttribute('href', '/f/moving-d30-basic');
 
   await page.goto('/f/moving-d30-basic');
-  await page.getByRole('button', { name: '내 버전 만들기' }).click();
+  await page.getByRole('region', { name: 'Flow artifact workbench' }).getByRole('button', { name: '내 버전' }).click();
   await expect(page).toHaveURL(/\/flows\/.+\/edit/);
 
   await page.goto('/my');
@@ -348,8 +348,10 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await expect(page.getByText('2. 실행 항목 체크')).toHaveCount(0);
   await expect(page.getByText('3. 내보내기와 백업')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '내 일정표 엑셀로 받기' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '내 일정표 엑셀로 받기' })).toBeDisabled();
+  await expect(page.getByText('내보내기와 백업')).toHaveCount(0);
+  let workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(workbench.getByRole('button', { name: '엑셀로 받기' })).toBeVisible();
+  await expect(workbench.getByRole('button', { name: '엑셀로 받기' })).toBeDisabled();
   await expect(page.getByText('by FLOW 큐레이션팀')).toBeVisible();
   await expect(page.getByText('베타 운영 중').first()).toBeVisible();
   await page.getByLabel('이사일').fill('2026-07-15');
@@ -376,7 +378,8 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await expect(page.getByRole('heading', { name: '지금 먼저 체크할 일' })).toBeVisible();
 
   const downloadPromise = page.waitForEvent('download');
-  await page.getByRole('button', { name: '내 일정표 엑셀로 받기' }).click();
+  workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await workbench.getByRole('button', { name: '엑셀로 받기' }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe('moving-d30-basic.xlsx');
 });
@@ -412,16 +415,18 @@ test('computer skills final QA exports study calendar and score sheet records', 
 
   await page.getByLabel('실행판 체크: 필기와 실기 시험 범위 나누기').check();
   await expect(page.getByText('1 / 9').first()).toBeVisible();
-  await expect(page.getByRole('button', { name: '내 일정표 엑셀로 받기' })).toBeEnabled();
-  await expect(page.getByRole('button', { name: '캘린더 파일 받기' })).toBeEnabled();
+  let studyWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(studyWorkbench.getByRole('button', { name: '엑셀로 받기' })).toBeEnabled();
+  await expect(studyWorkbench.getByRole('button', { name: '캘린더 받기' })).toBeEnabled();
 
   const excelDownloadPromise = page.waitForEvent('download');
-  await page.getByRole('button', { name: '내 일정표 엑셀로 받기' }).click();
+  await studyWorkbench.getByRole('button', { name: '엑셀로 받기' }).click();
   const excelDownload = await excelDownloadPromise;
   expect(excelDownload.suggestedFilename()).toBe('computer-skills-d30-study.xlsx');
 
   const calendarDownloadPromise = page.waitForEvent('download');
-  await page.getByRole('button', { name: '캘린더 파일 받기' }).click();
+  studyWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await studyWorkbench.getByRole('button', { name: '캘린더 받기' }).click();
   const calendarDownload = await calendarDownloadPromise;
   expect(calendarDownload.suggestedFilename()).toBe('computer-skills-d30-study.ics');
 });
@@ -437,10 +442,10 @@ test('risk-boundary QA exports new-car evidence memo and diet observation sheet'
   await workbench.getByLabel('딜러 확인 내용').fill('dealer confirmed scratch and will send written repair date');
   await workbench.getByLabel('인수 보류/서명 경계 메모').fill('do not sign until repair memo is attached');
   await workbench.locator('input[type="checkbox"]').first().check();
-  await expect(page.getByRole('button', { name: '내 일정표 엑셀로 받기' })).toBeEnabled();
+  await expect(workbench.getByRole('button', { name: '엑셀로 받기' })).toBeEnabled();
 
   let excelDownloadPromise = page.waitForEvent('download');
-  await page.getByRole('button', { name: '내 일정표 엑셀로 받기' }).click();
+  await workbench.getByRole('button', { name: '엑셀로 받기' }).click();
   let excelDownload = await excelDownloadPromise;
   expect(excelDownload.suggestedFilename()).toBe('new-car-delivery-check.xlsx');
 
@@ -458,10 +463,10 @@ test('risk-boundary QA exports new-car evidence memo and diet observation sheet'
   await workbench.locator('input').nth(13).fill('dizziness repeated, stop and consult professional');
   await workbench.locator('textarea').first().fill('late dinner and low sleep correlate with snack cravings');
   await page.locator('[data-testid="flow-item-card"]').first().getByRole('checkbox').check();
-  await expect(page.getByRole('button', { name: '내 일정표 엑셀로 받기' })).toBeEnabled();
+  await expect(workbench.getByRole('button', { name: '엑셀로 받기' })).toBeEnabled();
 
   excelDownloadPromise = page.waitForEvent('download');
-  await page.getByRole('button', { name: '내 일정표 엑셀로 받기' }).click();
+  await workbench.getByRole('button', { name: '엑셀로 받기' }).click();
   excelDownload = await excelDownloadPromise;
   expect(excelDownload.suggestedFilename()).toBe('diet-habit-2week.xlsx');
 });
@@ -681,8 +686,9 @@ test('no-anchor checklist skips date setup and hides calendar export', async ({ 
   await expect(page.getByText('날짜 입력 없이 바로 확인합니다')).toBeVisible();
   await expect(page.getByText('이 Flow는 날짜 입력이 필요 없는 체크리스트입니다.')).toBeVisible();
   await expect(page.getByText('아래 항목을 하나씩 확인하고 완료한 것은 체크하세요.')).toBeVisible();
-  await expect(page.getByRole('button', { name: '캘린더 파일 받기' })).not.toBeVisible();
-  await expect(page.getByRole('button', { name: '체크리스트 복사하기' })).toBeVisible();
+  const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(workbench.getByRole('button', { name: '캘린더 받기' })).not.toBeVisible();
+  await expect(workbench.getByRole('button', { name: '체크리스트 복사' })).toBeVisible();
 });
 
 test('used-car checklist shows decision preview instead of calendar by default', async ({ page }) => {
@@ -899,7 +905,7 @@ test('decision flow comparison table edits and persists candidate notes', async 
 test('public flow can be copied into an editable draft', async ({ page }) => {
   await page.goto('/f/moving-d30-basic');
 
-  await page.getByRole('button', { name: '내 버전 만들기' }).click();
+  await page.getByRole('region', { name: 'Flow artifact workbench' }).getByRole('button', { name: '내 버전' }).click();
 
   await expect(page).toHaveURL(/\/flows\/.+\/edit/);
   await expect(page.getByRole('heading', { name: /이사 D-30 준비 Flow 사본/ })).toBeVisible();

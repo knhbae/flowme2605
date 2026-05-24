@@ -2346,40 +2346,13 @@ export function PublicFlow({ slug }: { slug: string }) {
 
       {!showTodayExecution ? (
       <section className="my-6 rounded-xl border border-blue-100 bg-white p-4 shadow-sm">
-        <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+        <div className="grid gap-4">
           <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
             <p className="text-sm font-semibold text-blue-700">{getSetupStepTitle(bundle)}</p>
             <p className="mt-1 text-sm text-gray-600">{getSetupStepDescription(bundle)}</p>
             <p className="mt-1 text-sm text-gray-500">{getSetupStepHelp(bundle)}</p>
             <div className="mt-4">
               <AnchorInput bundle={bundle} anchor={anchor} displayAnchor={displayAnchor} mode={anchorMode} onModeChange={setAnchorMode} onChange={setAnchor} weekdays={weekdaySelection} onWeekdaysChange={setWeekdaySelection} />
-            </div>
-          </div>
-          <div className="space-y-4">
-            <div className="rounded-lg border border-gray-200 bg-white p-4">
-              <p className="text-sm font-semibold text-blue-700">내보내기와 백업</p>
-              <p className="mt-1 text-sm text-gray-600">
-                {done > 0 ? '체크 상태, 스킵, 메모까지 함께 저장됩니다.' : '실행판에서 항목을 체크한 뒤 텍스트, 엑셀, 캘린더로 옮깁니다.'}
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <button className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white disabled:bg-gray-300" disabled={done === 0} title={done === 0 ? '항목을 하나라도 체크하면 받을 수 있어요' : undefined} onClick={copy}>
-                  체크리스트 복사하기
-                </button>
-                <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold disabled:border-gray-200 disabled:text-gray-400" disabled={done === 0} title={done === 0 ? '항목을 하나라도 체크하면 받을 수 있어요' : undefined} onClick={downloadExcel}>
-                  내 일정표 엑셀로 받기
-                </button>
-                {canExportCalendar ? (
-                  <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold disabled:border-gray-200 disabled:text-gray-400" disabled={done === 0} title={done === 0 ? '항목을 하나라도 체크하면 받을 수 있어요' : undefined} onClick={downloadCalendar}>
-                    캘린더 파일 받기
-                  </button>
-                ) : null}
-                <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={copyToEditableDraft}>
-                  내 버전 만들기
-                </button>
-                {copyState ? <span className="py-2 text-sm text-green-700">{copyState}</span> : null}
-                {downloadState ? <span className="py-2 text-sm text-blue-700">{downloadState}</span> : null}
-                {calendarState ? <span className="py-2 text-sm text-blue-700">{calendarState}</span> : null}
-              </div>
             </div>
           </div>
         </div>
