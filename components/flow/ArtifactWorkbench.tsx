@@ -25,6 +25,19 @@ type ArtifactWorkbenchProps = {
   workbenchState: FlowWorkbenchState;
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
   onToggleItem: (id: string) => void;
+  exportActions?: ArtifactExportActions;
+};
+
+type ArtifactExportActions = {
+  done: number;
+  canExportCalendar: boolean;
+  copyState: string;
+  downloadState: string;
+  calendarState: string;
+  onCopyText: () => void;
+  onDownloadExcel: () => void;
+  onDownloadCalendar: () => void;
+  onCopyToEditableDraft: () => void;
 };
 
 type ScheduleRow = {
@@ -72,6 +85,7 @@ export function ArtifactWorkbench({
   workbenchState,
   onWorkbenchChange,
   onToggleItem,
+  exportActions,
 }: ArtifactWorkbenchProps) {
   const plan = getArtifactPlan(bundle);
   const total = getExecutableItems(bundle).filter((item) => !itemStates[item.id]?.skipped).length;
@@ -89,6 +103,7 @@ export function ArtifactWorkbench({
           {done}/{total} 완료
         </span>
       </div>
+      {exportActions ? <ArtifactExportActionRow actions={exportActions} /> : null}
 
       <div className="mt-5">
         {plan.primarySurface === 'decision_table' ? (
@@ -132,6 +147,38 @@ export function ArtifactWorkbench({
         )}
       </div>
     </section>
+  );
+}
+
+function ArtifactExportActionRow({ actions }: { actions: ArtifactExportActions }) {
+  const disabled = actions.done === 0;
+  const disabledTitle = disabled ? '항목을 하나라도 체크하면 받을 수 있어요' : undefined;
+
+  return (
+    <div className="mt-4 rounded-lg border border-blue-100 bg-blue-50/60 px-3 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm font-medium text-blue-950">실행판에서 체크한 내용을 내 도구로 옮깁니다.</p>
+        <div className="flex flex-wrap gap-2">
+          <button className="rounded-md bg-[#2563EB] px-3 py-2 text-sm font-semibold text-white disabled:bg-gray-300" disabled={disabled} title={disabledTitle} onClick={actions.onCopyText}>
+            체크리스트 복사
+          </button>
+          <button className="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-800 disabled:border-gray-200 disabled:text-gray-400" disabled={disabled} title={disabledTitle} onClick={actions.onDownloadExcel}>
+            엑셀로 받기
+          </button>
+          {actions.canExportCalendar ? (
+            <button className="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-800 disabled:border-gray-200 disabled:text-gray-400" disabled={disabled} title={disabledTitle} onClick={actions.onDownloadCalendar}>
+              캘린더 받기
+            </button>
+          ) : null}
+          <button className="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-gray-800" onClick={actions.onCopyToEditableDraft}>
+            내 버전
+          </button>
+        </div>
+      </div>
+      {actions.copyState || actions.downloadState || actions.calendarState ? (
+        <p className="mt-2 text-sm font-semibold text-blue-700">{[actions.copyState, actions.downloadState, actions.calendarState].filter(Boolean).join(' · ')}</p>
+      ) : null}
+    </div>
   );
 }
 
