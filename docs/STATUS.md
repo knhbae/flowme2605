@@ -68,6 +68,7 @@
 - Study source-derived guard has landed: `computer-skills-d30-study` now keeps source scope values separate from user-editable target date/status/note values during export, and validation evidence rules clarify that representative-eligible is not validated without user behavior data.
 - Study read-only progress cells have landed: the `computer-skills-d30-study` source scope column now renders as source-derived text while target date/status/note remain editable, with desktop/mobile screenshots recorded.
 - First-user validation script has landed: the next evidence step for `computer-skills-d30-study`, `diet-habit-2week`, and `new-car-delivery-check` is an observed export-first loop, not more internal validation language.
+- Validation session templates have landed: observed user sessions now have a reusable note format, and the first internal study baseline is explicitly marked `no signal` rather than validation.
 
 ## Next Up
 

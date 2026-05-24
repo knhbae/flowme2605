@@ -4,6 +4,8 @@
 
 Use this script before calling any route validated. The goal is to observe whether a target user can turn the Flow into a useful outside artifact, not whether they like the UI in a demo.
 
+Record each session with [validation-sessions/TEMPLATE.md](../validation-sessions/TEMPLATE.md).
+
 ## Session Rules
 
 - Do not explain the intended path before the user starts.
