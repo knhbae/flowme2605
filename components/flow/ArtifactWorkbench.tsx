@@ -58,6 +58,9 @@ const mealReactionColumns = [
   { id: 'preferenceNote', label: '거부/선호 메모', placeholder: '예: 두 숟갈 후 거부' },
 ];
 
+const defaultSpreadsheetColumns = ['식단', '운동', '측정', '컨디션', '리뷰'];
+const dietObservationColumns = ['식사 관찰', '활동', '측정', '컨디션', '중단/상담 조건'];
+
 export function ArtifactWorkbench({
   bundle,
   anchor,
@@ -721,6 +724,7 @@ function DecisionWorkbench({
         onComparisonChange={onComparisonChange}
       />
       <div className="space-y-4">
+        {bundle.flow.warning ? <RiskBoundaryCard bundle={bundle} /> : null}
         {memoFields.length ? <ProofMemoCard fields={memoFields} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} /> : null}
         <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
           <p className="text-sm font-semibold text-blue-700">현장에서 바로 체크</p>
@@ -745,6 +749,22 @@ function DecisionWorkbench({
       </div>
     </div>
   );
+}
+
+function RiskBoundaryCard({ bundle }: { bundle: FlowBundle }) {
+  return (
+    <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
+      <p className="text-sm font-semibold text-amber-900">{riskBoundaryTitle(bundle)}</p>
+      <p className="mt-1 text-sm leading-6 text-amber-950">{bundle.flow.warning}</p>
+    </div>
+  );
+}
+
+function riskBoundaryTitle(bundle: FlowBundle): string {
+  if (bundle.flow.slug === 'new-car-delivery-check') return '인수 전 보류 기준';
+  if (bundle.flow.risk_level === 'financial_sensitive') return '결정 전 확인';
+  if (bundle.flow.risk_level === 'medical_sensitive') return '기록 전 확인';
+  return '주의할 점';
 }
 
 function ensureComparisonState(state: FlowComparisonState): FlowComparisonState {
@@ -952,8 +972,6 @@ function expandRoutineOccurrences(startDate: string, weekdays: string[], weeks: 
   return occurrences;
 }
 
-const spreadsheetColumns = ['식단', '운동', '측정', '컨디션', '리뷰'];
-
 function SpreadsheetWorkbench({
   bundle,
   anchor,
@@ -968,9 +986,20 @@ function SpreadsheetWorkbench({
   const start = anchor || formatDate(new Date());
   const rows = Array.from({ length: 7 }, (_, index) => formatDate(addDays(new Date(start), index)));
   const showRiskBoundary = bundle.flow.risk_level === 'medical_sensitive' && Boolean(bundle.flow.warning);
+  const spreadsheetColumns = getSpreadsheetColumns(bundle);
+  const title = bundle.flow.slug === 'diet-habit-2week' ? '관찰 기록표' : '날짜별 기록표';
+  const description =
+    bundle.flow.slug === 'diet-habit-2week'
+      ? '결과를 판단하지 않고 식사, 활동, 측정, 컨디션, 중단/상담 조건을 같은 줄에 남깁니다.'
+      : '날짜별로 남길 기록 값을 먼저 정리합니다.';
   return (
     <div className="grid gap-4 lg:grid-cols-[1.25fr_0.75fr]">
       <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+        <div className="border-b border-gray-100 px-3 py-3">
+          <p className="text-sm font-semibold text-blue-700">기록표 preview</p>
+          <h3 className="mt-1 text-base font-semibold text-gray-950">{title}</h3>
+          <p className="mt-2 text-sm leading-6 text-gray-600">{description}</p>
+        </div>
         <table className="min-w-[760px] text-left text-sm">
           <thead className="bg-gray-50 text-xs font-semibold text-gray-600">
             <tr>
@@ -988,7 +1017,7 @@ function SpreadsheetWorkbench({
                     <input
                       aria-label={`${date} ${column}`}
                       className="w-full min-w-28 rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
-                      placeholder={column === '식단' ? '아침/점심/저녁' : column}
+                      placeholder={spreadsheetPlaceholder(column)}
                       value={workbenchState.logRows[date]?.[column] ?? ''}
                       onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, date, column, event.currentTarget.value))}
                     />
@@ -1017,6 +1046,18 @@ function SpreadsheetWorkbench({
       </div>
     </div>
   );
+}
+
+function getSpreadsheetColumns(bundle: FlowBundle): string[] {
+  if (bundle.flow.slug === 'diet-habit-2week') return dietObservationColumns;
+  return defaultSpreadsheetColumns;
+}
+
+function spreadsheetPlaceholder(column: string): string {
+  if (column === '식단' || column === '식사 관찰') return '아침/점심/저녁';
+  if (column === '활동') return '예: 30분 걷기';
+  if (column === '중단/상담 조건') return '예: 어지러움 반복 시 중단 후 상담';
+  return column;
 }
 
 function ChecklistWorkbench({
