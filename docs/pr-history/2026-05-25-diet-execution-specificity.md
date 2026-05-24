@@ -3,6 +3,8 @@
 Date: 2026-05-25
 Branch: `content/diet-execution-specificity`
 PR: #53
+Status: Merged and Vercel check passed
+Vercel: https://vercel.com/flowme/flowme2605/9bdwcSGdxpdSCdrP4QDjxzGAX2jW
 
 ## Why
 
@@ -37,6 +39,7 @@ Full verification:
 - `npm run build` passed.
 - `npm run test:e2e` passed.
 - `git diff --check` passed.
+- Vercel PR check passed before merge.
 
 ## Risks
 
