@@ -58,6 +58,10 @@ Do not:
 - Turn a principle video into a full diet plan unless the source is an explicit program.
 - Promise weight loss or body-size outcomes.
 
+Current examples:
+
+- `real-fitvely-video-body-fat-6kg-method`, `real-fitvely-video-carb-reason`, and `real-fitvely-video-post-workout-nutrition` stay memo-first and limit the source to one selected rule, one application, one observation record, and one stop condition.
+
 ### Study Or Exam Content
 
 Use a progress table only when the source has rows: table of contents, curriculum, exam scope, past-exam rounds, weekly plan, lesson list, or assignment set.

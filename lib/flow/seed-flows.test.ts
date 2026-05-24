@@ -569,6 +569,32 @@ test('exact workout video details separate summary, guide, source, and safety re
   }
 });
 
+test('diet exact video details stay limited to one application and record', () => {
+  const slugs = [
+    'real-fitvely-video-body-fat-6kg-method',
+    'real-fitvely-video-carb-reason',
+    'real-fitvely-video-post-workout-nutrition',
+  ];
+
+  for (const slug of slugs) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+
+    assert.ok(bundle, slug);
+    assert.equal(bundle.items.length, 1, `${slug} should keep one diet application action`);
+    assert.equal(inferPrimaryDestination(bundle), 'memo', `${slug} should remain memo-first`);
+
+    const detail = bundle.itemDetails?.[0];
+    assert.ok(detail, `${slug} missing detail`);
+
+    assert.match(detail.how ?? '', /요약:/, `${slug} needs a narrow application summary`);
+    assert.match(detail.how ?? '', /적용 기준:/, `${slug} needs one selected rule`);
+    assert.match(detail.how ?? '', /원본 영상:/, `${slug} needs source-video authority`);
+    assert.match(detail.how ?? '', /기록:/, `${slug} needs an observation record`);
+    assert.match(detail.how ?? '', /중단 조건:/, `${slug} needs a stop condition`);
+    assert.match(detail.caution ?? '', /제한|폭식|어지러움|중단|전문가/, `${slug} needs diet-sensitive caution`);
+  }
+});
+
 test('source-backed flows expose primary destination for portable UX', () => {
   const workout = seedBundles.find((bundle) => bundle.flow.slug === 'real-thankyou-bubu-video-full-body-no-jump');
   const diet = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-body-fat-6kg-method');
