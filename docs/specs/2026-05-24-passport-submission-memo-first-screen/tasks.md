@@ -8,5 +8,5 @@
 - [x] Capture desktop and mobile screenshots.
 - [x] Document natural artifact simulation and UX reinforcement.
 - [x] Run full verification.
-- [ ] Open PR and update PR number.
+- [x] Open PR [#34](https://github.com/knhbae/flowme2605/pull/34) and update PR number.
 - [ ] Merge after checks pass, then sync `main`.
