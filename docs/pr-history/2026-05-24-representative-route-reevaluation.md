@@ -3,7 +3,8 @@
 **Date:** 2026-05-24
 **Branch:** `docs/representative-route-reevaluation`
 **PR:** [#43 Document representative route re-evaluation](https://github.com/knhbae/flowme2605/pull/43)
-**Status:** Open
+**Status:** Merged
+**Merge commit:** `937789bfe62daf1220e21b37403c1072b73f8de0`
 **Related spec:** [2026-05-24-representative-route-reevaluation](../specs/2026-05-24-representative-route-reevaluation/spec.md)
 **Related audit:** [representative route re-evaluation](../content-audit/2026-05-24-representative-route-reevaluation.md)
 
@@ -31,4 +32,4 @@ After the study progress-table criteria and mobile artifact density work landed,
 - Post-merge main: `npm run docs:check` passed with 14 required files and 205 local links.
 - Branch: `npm run docs:check` passed with 14 required files and 210 local links.
 - Branch: `git diff --check` reported only CRLF warnings for Markdown files.
-- Vercel check is tracked on PR #43.
+- Vercel check passed on PR #43 before merge.
