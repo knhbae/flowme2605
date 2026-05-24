@@ -2397,6 +2397,17 @@ export function PublicFlow({ slug }: { slug: string }) {
         workbenchState={workbenchState}
         onWorkbenchChange={setWorkbenchState}
         onToggleItem={toggle}
+        exportActions={{
+          done,
+          canExportCalendar,
+          copyState,
+          downloadState,
+          calendarState,
+          onCopyText: copy,
+          onDownloadExcel: downloadExcel,
+          onDownloadCalendar: downloadCalendar,
+          onCopyToEditableDraft: copyToEditableDraft,
+        }}
       />
 
       {showStorageNotice ? (

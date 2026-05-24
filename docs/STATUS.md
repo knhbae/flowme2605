@@ -53,6 +53,7 @@
 - Passport submission memo first-screen pass has landed: `passport-renewal-docs` now opens with a portable submission memo for travel timing, photo readiness, application proof, and pickup/storage before checklist density.
 - Export-first study UX direction has landed: product principles now record first-action/natural-artifact UI direction, study content is framed as source-derived curriculum conversion, and `computer-skills-d30-study` starts with editable source-derived progress rows.
 - Common first-screen reduction has landed: the shared Flow detail page no longer shows duplicate page-level progress before the artifact workbench, keeping first screens closer to first action plus natural artifact.
+- Artifact-near export actions are in progress: copy, xlsx, and calendar actions are being moved into the workbench area while existing export formats remain unchanged.
 
 ## Next Up
 
