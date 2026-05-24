@@ -499,18 +499,19 @@ test('mobile export actions open from a bottom sheet', async ({ page }) => {
   const mobileBar = page.getByTestId('mobile-export-bar');
   await expect(mobileBar).toBeVisible();
   await expect(mobileBar.getByText('1 / 24')).toBeVisible();
-  await expect(mobileBar.getByRole('button', { name: '내보내기' })).toBeVisible();
+  await expect(mobileBar.getByRole('button', { name: '산출물 받기' })).toBeVisible();
   await expect(mobileBar.getByRole('button', { name: '체크리스트 복사' })).toHaveCount(0);
   await expect(mobileBar.getByRole('button', { name: '엑셀 받기' })).toHaveCount(0);
 
-  await mobileBar.getByRole('button', { name: '내보내기' }).click();
+  await mobileBar.getByRole('button', { name: '산출물 받기' }).click();
 
   const sheet = page.getByTestId('mobile-export-sheet');
-  await expect(sheet.getByRole('heading', { name: '내보내기와 백업' })).toBeVisible();
-  await expect(sheet.getByRole('button', { name: '텍스트로 복사' })).toBeEnabled();
+  await expect(sheet.getByRole('heading', { name: '산출물 받기' })).toBeVisible();
+  await expect(sheet.getByText('카드 안 버튼과 같은 산출물을 한곳에 모았습니다.')).toBeVisible();
+  await expect(sheet.getByRole('button', { name: '체크리스트 복사' })).toBeEnabled();
   await expect(sheet.getByRole('button', { name: '엑셀로 받기' })).toBeEnabled();
-  await expect(sheet.getByRole('button', { name: '캘린더 파일 받기' })).toBeEnabled();
-  await expect(sheet.getByRole('button', { name: '내 버전 만들기' })).toBeEnabled();
+  await expect(sheet.getByRole('button', { name: '캘린더 받기' })).toBeEnabled();
+  await expect(sheet.getByRole('button', { name: '내 버전' })).toBeEnabled();
 
   await sheet.getByRole('button', { name: '닫기' }).click();
   await expect(page.getByTestId('mobile-export-sheet')).toHaveCount(0);

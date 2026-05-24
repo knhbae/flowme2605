@@ -2491,29 +2491,29 @@ export function PublicFlow({ slug }: { slug: string }) {
             <div className="mx-auto h-1.5 w-12 rounded-full bg-gray-200" />
             <div className="mt-4 flex items-start justify-between gap-4">
               <div>
-                <h2 id="mobile-export-title" className="text-lg font-semibold text-gray-950">내보내기와 백업</h2>
+                <h2 id="mobile-export-title" className="text-lg font-semibold text-gray-950">산출물 받기</h2>
                 <p className="mt-1 text-sm text-gray-600">
-                  {done > 0 ? '현재 진행 상태, 메모, 스킵, 비교표를 함께 백업합니다.' : '항목을 체크하면 텍스트, 엑셀, 캘린더로 백업할 수 있어요.'}
+                  {done > 0 ? '카드 안 버튼과 같은 산출물을 한곳에 모았습니다.' : '항목을 체크하면 체크리스트, 엑셀, 캘린더 산출물을 받을 수 있어요.'}
                 </p>
               </div>
-              <button className="rounded-md border border-gray-200 px-3 py-1.5 text-sm font-semibold text-gray-700" onClick={() => setShowMobileExportSheet(false)}>
+              <button className="shrink-0 whitespace-nowrap rounded-md border border-gray-200 px-3 py-1.5 text-sm font-semibold text-gray-700" onClick={() => setShowMobileExportSheet(false)}>
                 닫기
               </button>
             </div>
             <div className="mt-5 grid gap-2">
               <button className="rounded-md bg-[#2563EB] px-4 py-3 text-left text-sm font-semibold text-white disabled:bg-gray-300" disabled={done === 0} onClick={copy}>
-                텍스트로 복사
+                체크리스트 복사
               </button>
               <button className="rounded-md border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-800 disabled:border-gray-200 disabled:text-gray-400" disabled={done === 0} onClick={downloadExcel}>
                 엑셀로 받기
               </button>
               {canExportCalendar ? (
                 <button className="rounded-md border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-800 disabled:border-gray-200 disabled:text-gray-400" disabled={done === 0} onClick={downloadCalendar}>
-                  캘린더 파일 받기
+                  캘린더 받기
                 </button>
               ) : null}
               <button className="rounded-md border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-800" onClick={copyToEditableDraft}>
-                내 버전 만들기
+                내 버전
               </button>
             </div>
             <div className="mt-3 min-h-5 text-sm">
@@ -2538,7 +2538,7 @@ export function PublicFlow({ slug }: { slug: string }) {
               </div>
             </div>
             <button className="shrink-0 rounded-md bg-[#2563EB] px-4 py-3 text-sm font-semibold text-white" onClick={() => setShowMobileExportSheet(true)}>
-              내보내기
+              산출물 받기
             </button>
           </div>
         </div>

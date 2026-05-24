@@ -56,6 +56,7 @@
 - Artifact-near export actions have landed: copy, xlsx, and calendar actions now appear inside the workbench area while existing export formats remain unchanged.
 - Setup export card reduction has landed on main: the normal Flow setup area is now anchor-input only, while export actions remain in the workbench and mobile bottom sheet.
 - Artifact subcard export placement has landed: workbench export actions now sit beside the specific list, calendar, progress table, and log cards that produce each external artifact.
+- Mobile artifact export copy is in progress: the sticky mobile shortcut is being aligned with artifact-card labels so it reads as `산출물 받기`, not a separate backup feature.
 
 ## Next Up
 
