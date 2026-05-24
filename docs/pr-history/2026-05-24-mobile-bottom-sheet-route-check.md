@@ -3,7 +3,8 @@
 **Date:** 2026-05-24
 **Branch:** `docs/mobile-bottom-sheet-route-check`
 **PR:** [#44 Document mobile bottom sheet route check](https://github.com/knhbae/flowme2605/pull/44)
-**Status:** Open
+**Status:** Merged
+**Merge commit:** `1cf0210af9bafa230d7b86a242360374e047b8de`
 **Related spec:** [2026-05-24-mobile-bottom-sheet-route-check](../specs/2026-05-24-mobile-bottom-sheet-route-check/spec.md)
 **Related audit:** [mobile bottom-sheet route check](../content-audit/2026-05-24-mobile-bottom-sheet-route-check.md)
 
@@ -31,4 +32,4 @@ The representative route re-evaluation identified `diet-habit-2week` and `new-ca
 - Screenshot capture completed against local production server on port 3104.
 - `npm run docs:check` passed with 14 required files and 215 local links.
 - `git diff --check` reported only CRLF warnings for Markdown files.
-- Vercel check is tracked on PR #44.
+- Vercel check passed on PR #44 before merge.
