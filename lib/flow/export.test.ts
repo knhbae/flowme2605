@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { getLogTables } from './artifact-fields';
 import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from './export';
 import { seedBundles } from './seed-flows';
 
@@ -204,6 +205,37 @@ test('study export includes source-derived chapter defaults before user edits', 
   const workbench = sheets.find((sheet) => sheet.name === '실행판 기록');
   assert.ok(workbench);
   assert.ok(workbench.rows.some((row) => row.includes('필기 핵심 개념 정리') && row.includes('범위') && row.includes('컴퓨터 일반·스프레드시트 핵심 개념')));
+});
+
+test('study export ignores user overrides for source-derived scope rows', () => {
+  const study = seedBundles.find((bundle) => bundle.flow.slug === 'computer-skills-d30-study');
+  assert.ok(study);
+
+  const workbenchState = {
+    occurrences: {},
+    logRows: {
+      'study-chapter-week-1': {
+        scope: 'user-authored blank tracker category',
+        targetDate: '2026-06-01',
+        status: 'reviewed',
+      },
+    },
+    memoCards: {},
+  };
+
+  const text = buildText(study, {}, '2026-06-22', {}, undefined, workbenchState);
+
+  const progressTable = getLogTables(study)[0];
+  const defaultScope = progressTable?.rows[0]?.defaultValues?.scope;
+  assert.ok(defaultScope);
+
+  const sheets = buildWorkbookSheets(study, {}, '2026-06-22', { workbenchState });
+  const allCells = sheets.flatMap((sheet) => sheet.rows.flat()).map(String);
+  assert.equal(text.includes('user-authored blank tracker category'), false);
+  assert.equal(allCells.includes('user-authored blank tracker category'), false);
+  assert.equal(allCells.includes(defaultScope), true);
+  assert.equal(allCells.includes('2026-06-01'), true);
+  assert.equal(allCells.includes('reviewed'), true);
 });
 
 test('diet log text export starts with record table guidance', () => {

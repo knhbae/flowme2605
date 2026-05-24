@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated:** 2026-05-24
+**Last Updated:** 2026-05-25
 **Status:** v0.1.0 IN DEVELOPMENT  
 **Current Version:** v0.1.0  
 **Primary Focus:** Stage 0 / First Flag validation for FLOW execution behavior.
@@ -65,6 +65,7 @@
 - Post-mobile-density route re-evaluation is documented: `computer-skills-d30-study` remains representative-eligible but not validated, while `diet-habit-2week` and `new-car-delivery-check` remain public MVP candidates with guardrails and no exposure change.
 - Mobile bottom-sheet screenshots are documented for `diet-habit-2week` and `new-car-delivery-check`: the sheet itself is acceptable after the mobile artifact-button reduction, while the next density risk is page-level artifact and caution stacking.
 - Mobile page density is reduced for `diet-habit-2week` and `new-car-delivery-check`: secondary execution sections now start collapsed on mobile, while first actions, artifacts, risk context, and desktop expanded sections remain unchanged.
+- Study source-derived guard has landed: `computer-skills-d30-study` now keeps source scope values separate from user-editable target date/status/note values during export, and validation evidence rules clarify that representative-eligible is not validated without user behavior data.
 
 ## Next Up
 

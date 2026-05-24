@@ -5,6 +5,7 @@ FLOW 품질 기준은 좁고 딱딱한 금지 목록이 아니다. 콘텐츠 유
 ## Current Addendum
 
 - [Study progress table rules](./study-progress-tables.md): use a progress table only when the source has table-of-contents, curriculum, exam-scope, past-exam, weekly-plan, lesson, or assignment rows the creator can bring into FLOW.
+- [Validation evidence](./validation-evidence.md): reserve `validated` for routes with real user behavior data, not internal QA or screenshots.
 
 ## How To Use
 

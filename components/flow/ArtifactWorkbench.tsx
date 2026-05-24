@@ -745,7 +745,13 @@ function LogTableCard({
   exportActions?: ArtifactExportActions;
 }) {
   return (
-    <div data-testid={`artifact-log-table-${table.id}`} className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+    <div
+      data-testid={`artifact-log-table-${table.id}`}
+      data-source-kind={table.sourceKind ?? undefined}
+      data-read-only-columns={table.readOnlyColumnIds?.join(',') ?? undefined}
+      data-user-editable-columns={table.userEditableColumnIds?.join(',') ?? undefined}
+      className="overflow-x-auto rounded-lg border border-gray-200 bg-white"
+    >
       <div className="border-b border-gray-100 px-3 py-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>

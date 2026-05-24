@@ -833,6 +833,15 @@ test('mobile workbench keeps export buttons in the sticky sheet instead of artif
   await expect(sheet.getByRole('button', { name: '캘린더 받기' })).toBeEnabled();
 });
 
+test('study progress table exposes source-derived guard metadata', async ({ page }) => {
+  await page.goto('/f/computer-skills-d30-study');
+
+  const progressTable = page.getByTestId('artifact-log-table-study-chapter-progress');
+  await expect(progressTable).toHaveAttribute('data-source-kind', 'source_derived');
+  await expect(progressTable).toHaveAttribute('data-read-only-columns', 'scope');
+  await expect(progressTable).toHaveAttribute('data-user-editable-columns', 'targetDate,status,note');
+});
+
 test('mobile sensitive routes collapse secondary execution sections below the first artifact', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
 
