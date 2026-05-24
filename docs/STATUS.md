@@ -62,6 +62,8 @@
 
 - Mobile artifact-card export buttons are now hidden below `sm`: desktop keeps artifact-near export buttons, while mobile uses the sticky `산출물 받기` sheet to lower repeated button density on study and other multi-artifact flows.
 
+- Post-mobile-density route re-evaluation is documented: `computer-skills-d30-study` remains representative-eligible but not validated, while `diet-habit-2week` and `new-car-delivery-check` remain public MVP candidates with guardrails and no exposure change.
+
 ## Next Up
 
 v0.1.0 should stabilize the first public FLOW loop: open, anchor input, copy/export, check, and feedback.
