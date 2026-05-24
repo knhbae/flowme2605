@@ -541,6 +541,34 @@ test('fitness exact video flows keep one action with clear execution detail', ()
   assert.doesNotMatch(workoutPlan.itemDetails?.[0]?.how ?? '', /식사 한 끼/);
 });
 
+test('exact workout video details separate summary, guide, source, and safety record', () => {
+  const slugs = [
+    'real-thankyou-bubu-video-full-body-no-jump',
+    'real-thankyou-bubu-video-daily-stretch-9min',
+    'real-thankyou-bubu-video-no-knee-cardio-strength',
+  ];
+
+  for (const slug of slugs) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+
+    assert.ok(bundle, slug);
+    assert.equal(bundle.items.length, 1, `${slug} should keep one video execution action`);
+
+    const detail = bundle.itemDetails?.[0];
+    assert.ok(detail, `${slug} missing detail`);
+
+    assert.match(detail.how ?? '', /요약:/, `${slug} needs an execution summary`);
+    assert.match(detail.how ?? '', /상세히 보기:/, `${slug} needs a detailed execution guide`);
+    assert.match(detail.how ?? '', /원본 영상:/, `${slug} needs original video instruction`);
+    assert.match(detail.how ?? '', /운동 후 기록:/, `${slug} needs post-workout log guidance`);
+    assert.match(detail.caution ?? '', /통증|어지러움|호흡|중단|전문가/, `${slug} needs explicit stop condition`);
+    assert.ok(
+      detail.links?.some((link) => link.type === 'creator' && link.url.includes('youtube.com/watch?v=')),
+      `${slug} needs creator video link`,
+    );
+  }
+});
+
 test('source-backed flows expose primary destination for portable UX', () => {
   const workout = seedBundles.find((bundle) => bundle.flow.slug === 'real-thankyou-bubu-video-full-body-no-jump');
   const diet = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-body-fat-6kg-method');
