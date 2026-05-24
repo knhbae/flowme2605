@@ -63,6 +63,7 @@
 - Mobile artifact-card export buttons are now hidden below `sm`: desktop keeps artifact-near export buttons, while mobile uses the sticky `산출물 받기` sheet to lower repeated button density on study and other multi-artifact flows.
 
 - Post-mobile-density route re-evaluation is documented: `computer-skills-d30-study` remains representative-eligible but not validated, while `diet-habit-2week` and `new-car-delivery-check` remain public MVP candidates with guardrails and no exposure change.
+- Mobile bottom-sheet screenshots are documented for `diet-habit-2week` and `new-car-delivery-check`: the sheet itself is acceptable after the mobile artifact-button reduction, while the next density risk is page-level artifact and caution stacking.
 
 ## Next Up
 
