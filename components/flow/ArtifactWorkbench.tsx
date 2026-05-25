@@ -41,6 +41,7 @@ type ArtifactExportActions = {
 };
 
 type ArtifactExportActionKind = 'copy' | 'excel' | 'calendar' | 'draft';
+type ArtifactExportLabels = Partial<Record<ArtifactExportActionKind, string>>;
 
 type ScheduleRow = {
   id: string;
@@ -153,7 +154,7 @@ export function ArtifactWorkbench({
   );
 }
 
-function ArtifactExportButtons({ actions, kinds }: { actions?: ArtifactExportActions; kinds: ArtifactExportActionKind[] }) {
+function ArtifactExportButtons({ actions, kinds, labels = {} }: { actions?: ArtifactExportActions; kinds: ArtifactExportActionKind[]; labels?: ArtifactExportLabels }) {
   if (!actions) return null;
 
   const disabled = actions.done === 0;
@@ -165,28 +166,28 @@ function ArtifactExportButtons({ actions, kinds }: { actions?: ArtifactExportAct
         if (kind === 'copy') {
           return (
             <button key={kind} className="rounded-md bg-[#2563EB] px-3 py-2 text-sm font-semibold text-white disabled:bg-gray-300" disabled={disabled} title={disabledTitle} onClick={actions.onCopyText}>
-              체크리스트 복사
+              {labels.copy ?? '체크리스트 복사'}
             </button>
           );
         }
         if (kind === 'excel') {
           return (
             <button key={kind} className="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-800 disabled:border-gray-200 disabled:text-gray-400" disabled={disabled} title={disabledTitle} onClick={actions.onDownloadExcel}>
-              엑셀로 받기
+              {labels.excel ?? '엑셀로 받기'}
             </button>
           );
         }
         if (kind === 'calendar' && actions.canExportCalendar) {
           return (
             <button key={kind} className="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-800 disabled:border-gray-200 disabled:text-gray-400" disabled={disabled} title={disabledTitle} onClick={actions.onDownloadCalendar}>
-              캘린더 받기
+              {labels.calendar ?? '캘린더 받기'}
             </button>
           );
         }
         if (kind === 'draft') {
           return (
             <button key={kind} className="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-gray-800" onClick={actions.onCopyToEditableDraft}>
-              내 버전
+              {labels.draft ?? '내 버전'}
             </button>
           );
         }
@@ -542,19 +543,29 @@ function RoutineOccurrenceCalendar({
 }) {
   const days = getMonthCalendarDays(month || formatDate(new Date()).slice(0, 7));
   const visibleRows = rows.slice(0, 12);
+  const occurrenceSummary = `4주 ${visibleRows.length}회차`;
   return (
-    <div data-testid="artifact-calendar-card" className="rounded-lg border border-gray-200 bg-white p-4">
+    <section aria-label="반복 캘린더 미리보기" data-testid="artifact-calendar-card" className="rounded-lg border border-gray-200 bg-white p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-blue-700">반복 캘린더</p>
-          <h3 className="text-base font-semibold text-gray-950">월간 회차 관리</h3>
+          <p className="text-sm font-semibold text-blue-700">반복 캘린더 · primary</p>
+          <h3 className="text-base font-semibold text-gray-950">4주 반복 캘린더</h3>
+          <p className="mt-1 text-sm text-gray-600">시작일과 요일을 바꾸면 회차가 캘린더에 들어가는 모습을 먼저 봅니다.</p>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
           <span className="text-sm font-semibold text-gray-500">{month}</span>
-          <ArtifactExportButtons actions={exportActions} kinds={['calendar', 'excel', 'draft']} />
+          <ArtifactExportButtons
+            actions={exportActions}
+            kinds={['calendar', 'excel', 'draft']}
+            labels={{ calendar: '캘린더에 넣기 · .ics', excel: '시트로 받기 · .xlsx', draft: '편집' }}
+          />
         </div>
       </div>
       <ArtifactExportStatus actions={exportActions} />
+      <div className="mt-3 flex flex-wrap gap-2 text-sm">
+        <span className="rounded-full bg-blue-50 px-3 py-1 font-semibold text-blue-700">{occurrenceSummary}</span>
+        <span className="rounded-full bg-gray-100 px-3 py-1 font-semibold text-gray-700">회차별 체크 + 메모</span>
+      </div>
       <div className="mt-3 grid grid-cols-7 gap-1 text-center text-xs font-semibold text-gray-500">
         {weekdayOrder.map((day) => (
           <span key={day}>{day}</span>
@@ -591,7 +602,7 @@ function RoutineOccurrenceCalendar({
       <div className="mt-4 rounded-lg border border-gray-200 bg-[#FAFAF8] p-3">
         <div className="flex items-center justify-between gap-2">
           <h4 className="text-sm font-semibold text-gray-950">회차 기록</h4>
-          <span className="text-xs font-semibold text-gray-500">최대 12회차</span>
+          <span className="text-xs font-semibold text-gray-500">{visibleRows.length}회차 표시</span>
         </div>
         <div className="mt-3 space-y-2">
           {visibleRows.map((row) => {
@@ -620,7 +631,7 @@ function RoutineOccurrenceCalendar({
           })}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -1051,8 +1062,9 @@ function RoutineWorkbench({
     <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
       <RoutineOccurrenceCalendar month={month} rows={rows} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
       <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
-        <p className="text-sm font-semibold text-blue-700">반복 달력 preview</p>
-        <h3 className="mt-1 text-base font-semibold text-gray-950">한 회차에 하는 일</h3>
+        <p className="text-sm font-semibold text-blue-700">회차 메모 · secondary</p>
+        <h3 className="mt-1 text-base font-semibold text-gray-950">다음 회차 메모</h3>
+        <p className="mt-2 text-sm text-gray-600">알림이 뜰 때 볼 실행 항목과 컨디션 메모를 한 회차 단위로 남깁니다.</p>
         <p className="mt-2 text-sm font-semibold text-gray-700">다음 회차</p>
         {next ? (
           <div className="mt-2 rounded-md border border-gray-200 bg-white p-3">

@@ -359,7 +359,7 @@ function hasDatedCalendarSchedule(bundle: FlowBundle): boolean {
 }
 
 function hasCalendarSchedule(bundle: FlowBundle): boolean {
-  return hasDatedCalendarSchedule(bundle) || isFitnessExactVideoFlow(bundle);
+  return hasDatedCalendarSchedule(bundle) || bundle.flow.structure_type === 'routine' || isFitnessExactVideoFlow(bundle);
 }
 
 function getFlowResultText(bundle: FlowBundle): string {
@@ -2834,11 +2834,11 @@ function getEmbeddedToolCopy(destination: PrimaryDestination): {
 } {
   if (destination === 'calendar') {
     return {
-      title: '캘린더에 이미 들어간 운동 일정',
-      description: '영상 하나가 월간 달력의 반복 운동 일정으로 먼저 들어갑니다. 사용자는 시작일과 요일만 바꾸면 됩니다.',
+      title: '4주 반복 운동 캘린더',
+      description: '같은 영상을 주 3회 반복하는 일정으로 먼저 보여줍니다. 시작일과 요일만 바꾸면 알림에서 실행 방법과 원본 영상 링크를 확인할 수 있습니다.',
       rhythm: '주 3회',
       tool: '캘린더',
-      previewTitle: '월간 미리보기',
+      previewTitle: '4주 12회차 미리보기',
       scheduleLabel: '캘린더 일정',
     };
   }
@@ -2908,6 +2908,7 @@ const weekdayIndex: Record<string, number> = {
   금: 5,
   토: 6,
 };
+const weekdayLabels = ['일', '월', '화', '수', '목', '금', '토'];
 
 function getExactVideoSchedule(
   anchor: string,
@@ -2915,6 +2916,7 @@ function getExactVideoSchedule(
   title: string,
   destination: PrimaryDestination,
   scheduleLabel?: string,
+  weeks = 1,
 ): { date: string; day: string; label: string; title: string }[] {
   if (!anchor) return [];
 
@@ -2930,18 +2932,23 @@ function getExactVideoSchedule(
         : '메모 적용'
   );
 
-  return [...selected]
-    .filter((day) => weekdayIndex[day] !== undefined)
-    .sort((a, b) => weekdayIndex[a] - weekdayIndex[b])
-    .map((day) => {
-      const offset = (weekdayIndex[day] - start.getDay() + 7) % 7;
-      return {
-        date: formatDate(addDays(start, offset)),
+  const selectedDays = new Set(selected.filter((day) => weekdayIndex[day] !== undefined));
+  const entries: { date: string; day: string; label: string; title: string }[] = [];
+
+  for (let index = 0; index < weeks * 7; index += 1) {
+    const date = addDays(start, index);
+    const day = weekdayLabels[date.getDay()];
+    if (selectedDays.has(day)) {
+      entries.push({
+        date: formatDate(date),
         day,
         label,
         title,
-      };
-    });
+      });
+    }
+  }
+
+  return entries;
 }
 
 function getExactToolPreview(
@@ -2951,6 +2958,7 @@ function getExactToolPreview(
   destination: PrimaryDestination,
   scheduleLabel?: string,
 ): { date: string; day: string; label: string; title: string }[] {
+  if (destination === 'calendar') return getExactVideoSchedule(anchor, weekdays, title, destination, scheduleLabel, 4);
   if (destination !== 'memo') return getExactVideoSchedule(anchor, weekdays, title, destination, scheduleLabel);
   if (!anchor) return [];
 
@@ -4277,10 +4285,10 @@ function ExactVideoToolPreview({
   const preview = item ? getExactToolPreview(displayAnchor, weekdays, item.title, destination, copy.scheduleLabel) : [];
 
   return (
-    <section className="my-6 rounded-xl border border-blue-100 bg-white p-5 shadow-sm">
+    <section aria-label="영상 반복 캘린더 설정" className="my-6 rounded-xl border border-blue-100 bg-white p-5 shadow-sm">
       <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
         <div>
-          <h2 className="text-sm font-semibold text-blue-700">내 도구에 들어간 모습</h2>
+          <h2 className="text-sm font-semibold text-blue-700">운동 캘린더 · primary</h2>
           <h3 className="mt-1 text-2xl font-semibold text-gray-950">{copy.title}</h3>
           <p className="mt-2 text-sm leading-6 text-gray-600">{copy.description}</p>
           <div className="mt-3 flex flex-wrap gap-2 text-sm">
@@ -4307,7 +4315,7 @@ function ExactVideoToolPreview({
               <h3 className="text-lg font-semibold text-gray-950">{copy.previewTitle}</h3>
               <p className="mt-1 text-sm text-gray-600">미리 들어간 내용을 보고 시작일과 요일만 바꿉니다.</p>
             </div>
-            <span className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-gray-700">{preview.length}개 표시</span>
+            <span className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-gray-700">{preview.length}회차 표시</span>
           </div>
           <ExactToolPreviewGrid entries={preview} destination={destination} />
         </section>
@@ -4333,10 +4341,10 @@ function ExactVideoToolPreview({
               <p className="text-sm font-semibold text-gray-950">가져가기</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 <button className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white" onClick={onDownloadCalendar}>
-                  캘린더에 넣기
+                  캘린더에 넣기 · .ics
                 </button>
                 <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={onDownloadExcel}>
-                  엑셀 실행표 받기
+                  시트로 받기 · .xlsx
                 </button>
                 <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={onCopyText}>
                   메모/노션에 복사

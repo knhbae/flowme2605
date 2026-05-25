@@ -179,12 +179,13 @@ test('fitness creator profile highlights exact video flows before samples', asyn
 test('fitness exact video flow keeps the execution panel minimal', async ({ page }) => {
   await page.goto('/f/real-thankyou-bubu-video-full-body-no-jump');
 
-  await expect(page.getByRole('heading', { name: '내 도구에 들어간 모습' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '캘린더에 이미 들어간 운동 일정' })).toBeVisible();
-  await expect(page.getByText('추천 리듬: 주 3회')).toBeVisible();
-  await expect(page.getByText('시작일', { exact: true })).toBeVisible();
-  await expect(page.getByText('운동 요일')).toBeVisible();
-  await expect(page.getByText('월간 미리보기', { exact: true }).first()).toBeVisible();
+  const exactTool = page.getByRole('region', { name: '영상 반복 캘린더 설정' });
+  await expect(exactTool.getByText('운동 캘린더 · primary')).toBeVisible();
+  await expect(exactTool.getByRole('heading', { name: '4주 반복 운동 캘린더' })).toBeVisible();
+  await expect(exactTool.getByText('추천 리듬: 주 3회')).toBeVisible();
+  await expect(exactTool.getByText('시작일', { exact: true })).toBeVisible();
+  await expect(exactTool.getByText('운동 요일')).toBeVisible();
+  await expect(exactTool.getByText('4주 12회차 미리보기', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: /영상 열기/ })).toBeVisible();
   await expect(page.getByText('캘린더 일정으로 시작')).toHaveCount(0);
   await expect(page.getByText('1. 요일 정하기')).toHaveCount(0);
@@ -193,14 +194,15 @@ test('fitness exact video flow keeps the execution panel minimal', async ({ page
   await expect(page.getByRole('heading', { name: '실행 항목' })).toBeVisible();
   const schedulePreview = page.getByRole('region', { name: '이번 주 등록 미리보기' });
   await expect(schedulePreview).toBeVisible();
-  await expect(schedulePreview.getByText('월요일')).toBeVisible();
-  await expect(schedulePreview.getByText('수요일')).toBeVisible();
-  await expect(schedulePreview.getByText('금요일')).toBeVisible();
+  await expect(schedulePreview.getByText('월요일').first()).toBeVisible();
+  await expect(schedulePreview.getByText('수요일').first()).toBeVisible();
+  await expect(schedulePreview.getByText('금요일').first()).toBeVisible();
+  await expect(schedulePreview.getByText('12회차 표시')).toBeVisible();
   await expect(page.getByText('한눈에 보는 전체 루트')).toHaveCount(0);
   await expect(page.getByText('이번 주 루틴 설정')).toHaveCount(0);
   await expect(page.getByText('출처와 주의 정보')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '캘린더에 넣기' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '엑셀 실행표 받기' })).toBeVisible();
+  await expect(exactTool.getByRole('button', { name: '캘린더에 넣기 · .ics' })).toBeVisible();
+  await expect(exactTool.getByRole('button', { name: '시트로 받기 · .xlsx' })).toBeVisible();
   await expect(page.getByRole('button', { name: '초보' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '절반' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '전체 루틴' })).toHaveCount(0);
@@ -208,12 +210,12 @@ test('fitness exact video flow keeps the execution panel minimal', async ({ page
   await expect(page.getByText('weekly')).toHaveCount(0);
 
   const calendarDownloadPromise = page.waitForEvent('download');
-  await page.getByRole('button', { name: '캘린더에 넣기' }).click();
+  await exactTool.getByRole('button', { name: '캘린더에 넣기 · .ics' }).click();
   const calendarDownload = await calendarDownloadPromise;
   expect(calendarDownload.suggestedFilename()).toBe('real-thankyou-bubu-video-full-body-no-jump.ics');
 
   const excelDownloadPromise = page.waitForEvent('download');
-  await page.getByRole('button', { name: '엑셀 실행표 받기' }).click();
+  await exactTool.getByRole('button', { name: '시트로 받기 · .xlsx' }).click();
   const excelDownload = await excelDownloadPromise;
   expect(excelDownload.suggestedFilename()).toBe('real-thankyou-bubu-video-full-body-no-jump.xlsx');
 });
@@ -239,8 +241,9 @@ test('former broad ThankyouBUBU routes now render as one exact-video action', as
     await expect(page.getByText(route.action).first()).toBeVisible();
     await expect(page.getByText(route.removed)).toHaveCount(0);
     await expect(page.getByRole('link', { name: /영상 열기/ })).toBeVisible();
-    await expect(page.getByRole('button', { name: '캘린더에 넣기' })).toBeVisible();
-    await expect(page.getByRole('button', { name: '엑셀 실행표 받기' })).toBeVisible();
+    const exactTool = page.getByRole('region', { name: '영상 반복 캘린더 설정' });
+    await expect(exactTool.getByRole('button', { name: '캘린더에 넣기 · .ics' })).toBeVisible();
+    await expect(exactTool.getByRole('button', { name: '시트로 받기 · .xlsx' })).toBeVisible();
   }
 });
 
@@ -264,8 +267,9 @@ test('diet exact video flow uses application language instead of workout schedul
   await expect(workbench.getByLabel('적용 전 기록 / 적용 전 컨디션')).toBeVisible();
   await expect(workbench.getByLabel('적용 후 기록 / 적용 후 반응')).toBeVisible();
   await expect(workbench.getByLabel('적용 후 기록 / 유지/중단 결정')).toBeVisible();
-  await expect(page.getByRole('button', { name: '엑셀 실행표 받기' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '메모/노션에 복사' })).toBeVisible();
+  const exactTool = page.getByRole('region', { name: '영상 반복 캘린더 설정' });
+  await expect(exactTool.getByRole('button', { name: '시트로 받기 · .xlsx' })).toBeVisible();
+  await expect(exactTool.getByRole('button', { name: '메모/노션에 복사' })).toBeVisible();
 });
 
 test('workout programming exact video starts from a decision table before weekly plan', async ({ page }) => {
@@ -280,8 +284,9 @@ test('workout programming exact video starts from a decision table before weekly
   await expect(page.getByText('결정 후 운동표 미리보기')).toBeVisible();
   await expect(page.getByText('선택 기준 반영').first()).toBeVisible();
   await expect(page.getByText('운동표에 이미 들어간 기준')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '캘린더에 넣기' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '엑셀 실행표 받기' })).toBeVisible();
+  const exactTool = page.getByRole('region', { name: '영상 반복 캘린더 설정' });
+  await expect(exactTool.getByRole('button', { name: '캘린더에 넣기 · .ics' })).toBeVisible();
+  await expect(exactTool.getByRole('button', { name: '시트로 받기 · .xlsx' })).toBeVisible();
 });
 
 test('FITVELY diet record route starts from a source-rule observation sheet', async ({ page }) => {
@@ -700,8 +705,8 @@ test('promoted P1 flows expose new execution model surfaces', async ({ page }) =
 
   await expect(page.getByRole('heading', { name: '시험 D-30 공부 계획 Flow' })).toBeVisible();
   await expect(page.getByText('새 실행모델로 전환 중')).toHaveCount(0);
-  await expect(page.getByText('반복 달력 preview')).toBeVisible();
-  await expect(page.getByText('한 회차에 하는 일')).toBeVisible();
+  await expect(page.getByText('반복 캘린더 · primary')).toBeVisible();
+  await expect(page.getByText('회차 메모 · secondary')).toBeVisible();
   await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
 
   for (const [slug, title] of [
@@ -713,8 +718,8 @@ test('promoted P1 flows expose new execution model surfaces', async ({ page }) =
 
     await expect(page.getByRole('heading', { name: title })).toBeVisible();
     await expect(page.getByText('새 실행모델로 전환 중')).toHaveCount(0);
-    await expect(page.getByText('반복 달력 preview')).toBeVisible();
-    await expect(page.getByText('한 회차에 하는 일')).toBeVisible();
+    await expect(page.getByText('반복 캘린더 · primary')).toBeVisible();
+    await expect(page.getByText('회차 메모 · secondary')).toBeVisible();
     await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
   }
 });
@@ -783,8 +788,13 @@ test('duration calendar checks only one day at a time', async ({ page }) => {
 test('routine flow highlights weekly routine setup', async ({ page }) => {
   await page.goto('/f/running-5k-4week');
 
-  await expect(page.getByText('반복 달력 preview')).toBeVisible();
-  await expect(page.getByText('한 회차에 하는 일')).toBeVisible();
+  await expect(page.getByText('반복 캘린더 · primary')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '4주 반복 캘린더' })).toBeVisible();
+  await expect(page.getByText('회차 메모 · secondary')).toBeVisible();
+  await expect(page.getByText('다음 회차 메모')).toBeVisible();
+  await expect(page.getByText('4주 12회차')).toBeVisible();
+  await expect(page.getByRole('region', { name: '반복 캘린더 미리보기' }).getByRole('button', { name: '캘린더에 넣기 · .ics' })).toBeVisible();
+  await expect(page.getByRole('region', { name: '반복 캘린더 미리보기' }).getByRole('button', { name: '시트로 받기 · .xlsx' })).toBeVisible();
   await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
   await page.getByLabel('운동 시작일').fill('2026-06-01');
 
