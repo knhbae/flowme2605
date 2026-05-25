@@ -92,6 +92,18 @@ test('second real-source artifact batch covers routine, study, travel, and vehic
   }
 });
 
+test('Sinagong study broad source route is replaced with an exact-source reshape record', () => {
+  const audit = getNaturalArtifactAudit('real-sinagong-computer-d30-study');
+  const bundle = bundleBySlug('real-sinagong-computer-d30-study');
+
+  assert.ok(audit);
+  assert.equal(bundle.flow.source_precision, 'exact');
+  assert.equal(bundle.flow.source_url, 'https://www.gilbut.co.kr/m/book/view?bookcode=BN004603');
+  assert.equal(audit.decision, 'reshape_content_or_ux');
+  assert.match(audit.sourceUrl, /gilbut\.co\.kr\/m\/book\/view\?bookcode=BN004603/);
+  assert.ok(audit.nextContentAction.includes('source-derived') || audit.nextContentAction.includes('exact'));
+});
+
 test('third real-source artifact batch covers admin, childcare, pet, and moving decision flows', () => {
   const expectedThirdBatchSlugs = [
     'real-gov24-resident-register-copy',

@@ -39,11 +39,10 @@ Current UX gap:
 
 ## Broad Source Guard Impact
 
-- Broad real-source route count drops from 5 to 4.
+- Broad real-source route count dropped from 5 to 4 in this batch, then to 3 after the Sinagong study source replacement.
 - Representative leak count remains 0.
 - Remaining broad queue:
   - `real-fitvely-weekly-body-check`
-  - `real-sinagong-computer-d30-study`
   - `real-pet-health-visit-routine`
   - `real-mofa-overseas-travel-prep`
 
@@ -51,4 +50,4 @@ Current UX gap:
 
 1. Reshape `real-fitvely-diet-record-routine` into a compact diet exact-video record: one selected rule, one application, one observation row, one stop condition.
 2. Keep `real-fitvely-weekly-body-check` in broad-source review until a matching measurement/check-in source is found, or demote/remove the route.
-3. Continue with Sinagong, pet health, and MOFA broad-source replacement/rewrite.
+3. Continue with pet health and MOFA broad-source replacement/rewrite.
