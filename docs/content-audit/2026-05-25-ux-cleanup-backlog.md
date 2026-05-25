@@ -63,6 +63,10 @@ The unresolved areas are no longer just scattered notes:
    - Reason: baby-food content should keep reaction logging ahead of recipe/checklist density.
    - First route candidate: `baby-food-menu-recipe`.
    - 2026-05-25 update: `baby-food-menu-recipe` now keeps secondary meal-plan execution sections collapsed on mobile so the meal calendar and reaction log stay first. It is still not validated.
+6. `workout_programming_decision_table`
+   - Reason: workout programming videos are not follow-along workout videos; users need to choose a rule or split before putting anything into a weekly workout table.
+   - First route candidates: `real-fitvely-video-bulk-up-method`, `real-fitvely-video-workout-order`, `real-fitvely-video-workout-split-science`.
+   - 2026-05-25 update: the three FITVELY workout programming routes now start from a decision table with source-rule, user-condition, weekly-plan, and revise-or-hold rows before the exact-video weekly preview. They are still not validated.
 
 ## External AI Review Readiness
 

@@ -87,6 +87,27 @@ test('artifact plan maps diet tracking to spreadsheet-first log', () => {
   assert.ok(plan.surfaces.some((surface) => surface.kind === 'routine_month'));
 });
 
+test('artifact plan maps workout programming videos to decision table before workout calendar', () => {
+  const slugs = [
+    'real-fitvely-video-bulk-up-method',
+    'real-fitvely-video-workout-order',
+    'real-fitvely-video-workout-split-science',
+  ];
+
+  for (const slug of slugs) {
+    const plan = getArtifactPlan(bundle(slug));
+
+    assert.equal(plan.primarySurface, 'decision_table', slug);
+    assert.deepEqual(
+      plan.surfaces.slice(0, 2).map((surface) => surface.kind),
+      ['comparison_table', 'execution_list'],
+      slug,
+    );
+    assert.ok(plan.exportTargets.includes('calendar'), slug);
+    assert.ok(plan.exportTargets.includes('sheet'), slug);
+  }
+});
+
 test('artifact plan keeps broad source routes out of representative promotion', () => {
   const plan = getArtifactPlan(bundle('real-fitvely-weekly-body-check'));
 

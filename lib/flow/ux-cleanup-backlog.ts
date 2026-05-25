@@ -226,7 +226,7 @@ export const uxCleanupBacklogGroups: UxCleanupBacklogGroup[] = [
       'no training outcome promise',
     ],
     nextBatch:
-      'Keep separate from follow-along workout videos and review whether the first artifact should be comparison table or weekly workout sheet.',
+      'First decision-table pass landed for the three FITVELY workout programming routes; next review should check mobile table comprehension in user sessions.',
     statusAfterCleanup: 'cleanup backlog item, not validated until real user behavior exists.',
   },
   {

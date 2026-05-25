@@ -98,6 +98,7 @@
 - Study Flow action-specificity pass has landed: `computer-skills-d30-study` now treats each dated study item as a concrete sequence action with `실행:` and `기록:` cues, keeps D-30 as FLOW's exam-date conversion rather than a source-authored curriculum, and carries item guidance into dated calendar exports without changing validation status.
 - Sinagong study merge-decision pass has landed: the `my_tests/` source-boundary finding is now carried into audit/backlog data so `real-sinagong-computer-d30-study` stays a direct-QA merge/rewrite candidate unless it gains distinct source-derived rows beyond the canonical `computer-skills-d30-study` route.
 - FITVELY diet exact-video observation-sheet pass has landed: remaining nutrition exact-video routes now move from memo-first to sheet-first, expose `기준 후보` and `관찰표` copy, and keep one source rule plus one observation row without diet outcome claims.
+- FITVELY workout-programming decision-first pass has landed: `real-fitvely-video-bulk-up-method`, `real-fitvely-video-workout-order`, and `real-fitvely-video-workout-split-science` now start from an 운동 기준 decision table before the weekly workout preview, with source-rule, user-condition, weekly-plan, and revise-or-hold rows. They are still not validated.
 
 ## Next Up
 

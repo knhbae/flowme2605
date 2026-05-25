@@ -764,8 +764,9 @@ test('workout-plan exact video details convert one rule into a weekly plan recor
     assert.ok(detail, `${slug} missing detail`);
 
     assert.match(detail.how ?? '', /요약:/, `${slug} needs a weekly-plan summary`);
+    assert.match(detail.how ?? '', /결정표:/, `${slug} needs a decision table before workout scheduling`);
     assert.match(detail.how ?? '', /선택 기준:/, `${slug} needs a selected rule`);
-    assert.match(detail.how ?? '', /주간 운동표:/, `${slug} needs weekly workout table guidance`);
+    assert.match(detail.how ?? '', /결정 후 운동표:/, `${slug} needs weekly workout table guidance after the decision`);
     assert.match(detail.how ?? '', /원본 영상:/, `${slug} needs source-video authority`);
     assert.match(detail.how ?? '', /기록:/, `${slug} needs a workout record`);
     assert.match(detail.how ?? '', /수정 조건:/, `${slug} needs a revise-or-hold condition`);
