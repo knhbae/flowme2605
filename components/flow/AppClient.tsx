@@ -3636,7 +3636,11 @@ function FlowItemCard({
 }
 
 function shouldCollapseSecondaryExecutionSections(bundle: FlowBundle) {
-  return bundle.flow.slug === 'diet-habit-2week' || bundle.flow.slug === 'new-car-delivery-check';
+  return (
+    bundle.flow.slug === 'diet-habit-2week' ||
+    bundle.flow.slug === 'new-car-delivery-check' ||
+    bundle.flow.slug === 'used-car-buying-check'
+  );
 }
 
 function FlowExecutionSectionShell({

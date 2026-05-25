@@ -90,6 +90,7 @@
 - ThankyouBUBU exact-source reshape has landed: `real-thankyou-bubu-home-workout-starter` and `real-thankyou-bubu-20min-routine` now use one calendar-first exact-video action with summary, detailed guide, original video link, post-workout record, and stop condition, but they are still not representative, public-MVP, or validated.
 - FITVELY diet record observation reshape has landed: `real-fitvely-diet-record-routine` now uses one sheet-first action, source-rule observation rows, and stop/consult copy after exact source replacement, but it is still not representative, public-MVP, or validated.
 - Vehicle inspection evidence-first pass has landed: `vehicle-inspection-prep` now separates reservation information, documents, precheck evidence, result sheet, and repair/reinspection follow-up into a memo card, but it is still not representative, public-MVP, or validated.
+- Used-car mobile density pass is in progress: `used-car-buying-check` now keeps secondary checklist sections collapsed on mobile so candidate comparison and buy/hold memo stay first, but it is still not newly validated.
 
 ## Next Up
 

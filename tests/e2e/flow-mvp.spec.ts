@@ -923,6 +923,12 @@ test('mobile sensitive routes collapse secondary execution sections below the fi
   collapsedSections = page.getByTestId('mobile-collapsed-section');
   await expect(collapsedSections.first()).toBeVisible();
   expect(await collapsedSections.first().evaluate((node) => (node as HTMLDetailsElement).open)).toBe(false);
+
+  await page.goto('/f/used-car-buying-check');
+  collapsedSections = page.getByTestId('mobile-collapsed-section');
+  await expect(collapsedSections.first()).toBeVisible();
+  expect(await collapsedSections.first().evaluate((node) => (node as HTMLDetailsElement).open)).toBe(false);
+  await expect(page.getByLabel('Flow artifact workbench').getByText('후보별 가격·주행거리')).toBeVisible();
 });
 
 test('artifact workbench saves local execution entries', async ({ page }) => {
