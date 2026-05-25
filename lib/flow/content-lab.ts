@@ -1,7 +1,10 @@
 import { AnchorType, FlowBundle, StructureType } from './types';
 import { getSourceFitSummary } from './source-fit';
 import { summarizeContentInventory } from './content-inventory';
-import { summarizeNaturalArtifactAuditCoverage } from './natural-artifact-audit';
+import {
+  getNaturalArtifactAudit,
+  summarizeNaturalArtifactAuditCoverage,
+} from './natural-artifact-audit';
 import { summarizeFlowLifecycle } from './content-lifecycle';
 import { summarizeSourceNeedsReviewPriority } from './source-review-priority';
 import { summarizeRepresentativeReadinessReviews } from './representative-readiness-review';
@@ -349,6 +352,12 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   const previewGeneratedBundles = bundles.filter((bundle) => bundle.flow.id.startsWith('flow-preview-'));
   const realSourceBundles = bundles.filter((bundle) => bundle.flow.source_status === 'real');
   const broadRealSourceBundles = realSourceBundles.filter((bundle) => bundle.flow.source_precision === 'broad');
+  const hiddenBroadRealSourceBundles = broadRealSourceBundles.filter(
+    (bundle) => getNaturalArtifactAudit(bundle.flow.slug)?.decision === 'replace_or_hide_source',
+  );
+  const activeBroadRealSourceBundles = broadRealSourceBundles.filter(
+    (bundle) => getNaturalArtifactAudit(bundle.flow.slug)?.decision !== 'replace_or_hide_source',
+  );
   const sourceFitSummary = getSourceFitSummary();
   const inventorySummary = summarizeContentInventory(bundles);
   const naturalArtifactSummary = summarizeNaturalArtifactAuditCoverage(bundles);
@@ -367,9 +376,10 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     missingConvertedPilotSlugs: convertedPilotSlugs.filter((slug) => !slugs.has(slug)),
     convertedPilotCategories: Array.from(new Set(convertedPilotBundles.map((bundle) => bundle.flow.category))).sort(),
     realSourceFlowCount: realSourceBundles.length,
-    broadRealSourceCount: broadRealSourceBundles.length,
-    broadRealSourceSlugs: broadRealSourceBundles.map((bundle) => bundle.flow.slug),
-    broadRealSourceRepresentativeLeakSlugs: broadRealSourceBundles
+    broadRealSourceCount: activeBroadRealSourceBundles.length,
+    broadRealSourceSlugs: activeBroadRealSourceBundles.map((bundle) => bundle.flow.slug),
+    broadRealSourceHiddenSlugs: hiddenBroadRealSourceBundles.map((bundle) => bundle.flow.slug),
+    broadRealSourceRepresentativeLeakSlugs: activeBroadRealSourceBundles
       .map((bundle) => bundle.flow.slug)
       .filter((slug) => lifecycleSummary.keepSlugs.includes(slug)),
     previewGeneratedFlowCount: previewGeneratedBundles.length,

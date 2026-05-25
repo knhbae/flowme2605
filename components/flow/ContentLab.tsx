@@ -295,11 +295,22 @@ export function ContentLab() {
         </div>
         <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
           <p className="text-sm font-semibold text-gray-900">Exact source replacement queue</p>
-          <p className="mt-2 text-sm leading-6 text-gray-700">{summary.broadRealSourceSlugs.join(' · ')}</p>
+          <p className="mt-2 text-sm leading-6 text-gray-700">
+            {summary.broadRealSourceSlugs.length > 0 ? summary.broadRealSourceSlugs.join(' · ') : 'none'}
+          </p>
           <p className="mt-3 text-xs leading-5 text-gray-500">
             Leak list: {summary.broadRealSourceRepresentativeLeakSlugs.length > 0
               ? summary.broadRealSourceRepresentativeLeakSlugs.join(' · ')
               : 'none'}
+          </p>
+        </div>
+        <div className="mt-4 rounded-lg border border-red-100 bg-red-50 p-4">
+          <p className="text-sm font-semibold text-red-950">Hidden broad-source decisions</p>
+          <p className="mt-2 text-sm leading-6 text-red-900">
+            {summary.broadRealSourceHiddenSlugs.length > 0 ? summary.broadRealSourceHiddenSlugs.join(' · ') : 'none'}
+          </p>
+          <p className="mt-3 text-xs leading-5 text-red-800">
+            These routes stay out of the active replacement queue until an exact route-level source is found.
           </p>
         </div>
       </section>

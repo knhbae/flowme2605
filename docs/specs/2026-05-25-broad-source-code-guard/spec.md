@@ -12,7 +12,8 @@ As a FLOW editor, I need Content Lab data to show broad-source routes and repres
 
 ## In Scope
 
-- Add Content Lab summary fields for broad real-source route count and slugs.
+- Add Content Lab summary fields for active broad real-source route count and slugs.
+- Add a separate hidden broad-source decision slug list.
 - Add a leak list for broad real-source routes that appear in lifecycle `keep`.
 - Add unit coverage.
 - Record audit/spec/status/PR history.
@@ -27,8 +28,9 @@ As a FLOW editor, I need Content Lab data to show broad-source routes and repres
 
 ## Acceptance Criteria
 
-- `getContentLabSummary(seedBundles).broadRealSourceCount` matches the current real+broad route queue.
-- After the MOFA travel source replacement batch, the current expected count is 1.
-- `broadRealSourceSlugs` lists all current real+broad routes.
+- `getContentLabSummary(seedBundles).broadRealSourceCount` matches the current active real+broad route queue.
+- After the FITVELY weekly body-check hide decision, the current active expected count is 0.
+- `broadRealSourceSlugs` lists all current active real+broad routes.
+- `broadRealSourceHiddenSlugs` lists broad routes moved to `replace_or_hide_source`, currently `real-fitvely-weekly-body-check`.
 - `broadRealSourceRepresentativeLeakSlugs` is empty.
 - Focused Content Lab test passes after a RED failure.

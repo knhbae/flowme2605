@@ -28,12 +28,15 @@ test('lifecycle classification assigns keep and fix buckets to audited source-fi
 test('lifecycle classification applies manual source-fit decisions to real-source flows', () => {
   const aircon = classifyFlowLifecycle(bundleBySlug('real-samsung-aircon-seasonal-care'));
   const studyWorkbench = classifyFlowLifecycle(bundleBySlug('real-sinagong-computer-d30-study'));
+  const fitvelyWeekly = classifyFlowLifecycle(bundleBySlug('real-fitvely-weekly-body-check'));
 
   assert.equal(aircon.bucket, 'keep');
   assert.equal(aircon.auditDecision, 'keep_representative');
   assert.equal(aircon.reviewLevel, 'manual_source_fit');
   assert.equal(studyWorkbench.bucket, 'fix');
   assert.equal(studyWorkbench.auditDecision, 'reshape_content_or_ux');
+  assert.equal(fitvelyWeekly.bucket, 'hide');
+  assert.equal(fitvelyWeekly.auditDecision, 'replace_or_hide_source');
 });
 
 test('final promotion QA keeps only the computer skills route representative eligible', () => {
@@ -73,9 +76,9 @@ test('lifecycle summary covers every seed bundle exactly once', () => {
   assert.ok(summary.bucketCounts.keep >= 5);
   assert.ok(summary.bucketCounts.fix >= 40);
   assert.ok(summary.bucketCounts.preview_only >= 400);
-  assert.equal(summary.bucketCounts.hide, 0);
+  assert.equal(summary.bucketCounts.hide, 1);
   assert.equal(summary.bucketCounts.remove_candidate, 0);
-  assert.equal(summary.hideSlugs.length, 0);
+  assert.deepEqual(summary.hideSlugs, ['real-fitvely-weekly-body-check']);
   assert.equal(summary.keepSlugs.length, summary.bucketCounts.keep);
   assert.equal(summary.removeCandidateSlugs.length, summary.bucketCounts.remove_candidate);
 });

@@ -80,6 +80,7 @@
 - Sinagong study broad-source replacement has landed: `real-sinagong-computer-d30-study` now points to the exact Gilbut/Sinagong book page, drops out of the broad-source guard, and remains a reshape route rather than representative, public-MVP, or validated.
 - Pet-health visit broad-source replacement has landed: `real-pet-health-visit-routine` now points to the exact 서울시 우리동네 동물병원 official page, drops out of the broad-source guard, and remains catalog review because the source has region and eligibility limits.
 - MOFA travel broad-source replacement has landed: `real-mofa-overseas-travel-prep` now points to the exact 외교부 베트남 국가/지역별 정보 page, drops out of the broad-source guard, and remains reshape because the route still needs country-check and emergency-card UX work.
+- FITVELY weekly body-check broad-source decision is in progress: no matching exact FITVELY weekly check-in source has been confirmed, so the route is being moved to hidden/remove candidate and the active broad-source replacement queue should be 0.
 
 ## Next Up
 

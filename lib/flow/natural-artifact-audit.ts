@@ -1601,12 +1601,13 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-fitvely-weekly-body-check',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-05-25',
     sourceTitle: 'FITVELY 공식 사이트',
     sourceUrl: 'https://www.fitvely.com/',
     sourceEvidence: [
       'seed metadata uses the broad FITVELY official site as the source for weekly body-check behavior.',
       'search results support FITVELY as a fitness/diet creator brand, but not a specific weekly check-in guide for measurements, photos, or review decisions.',
+      '2026-05-25 exact-source search did not confirm a matching FITVELY weekly body-check/check-in source, so FLOW must not invent the measurement method from the broad site.',
     ],
     userScenario: '사용자는 매주 같은 조건으로 체중, 사진, 둘레, 운동 수행률을 기록하고 다음 주 식단/운동을 조정하려 한다.',
     naturalArtifacts: [
@@ -1629,11 +1630,11 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
         gap: '주간 바디 체크는 수치 기록과 해석 메모가 같이 필요하다.',
       },
     ],
-    currentContentGap: 'broad official site source라 주간 측정 항목과 조정 기준을 직접 검증할 수 없다.',
+    currentContentGap: 'broad official site source라 주간 측정 항목과 조정 기준을 직접 검증할 수 없다. exact FITVELY weekly check-in source를 확인하지 못했으므로 active replacement queue에서는 분리한다.',
     currentUxGap: '측정 spreadsheet와 다음 주 조정 memo가 Flow의 주 산출물로 보이지 않는다.',
-    nextContentAction: 'weekly body-check Flow는 exact body-check source로 교체하고 측정/사진/조정 기준을 확정한다.',
+    nextContentAction: 'hide or remove this route from active source-replacement work unless a matching FITVELY weekly body-check source is found; do not convert the broad FITVELY site into measurement/photo/adjustment rules.',
     nextUxAction: 'diet tracking Flow에 weekly measurement sheet and review memo export를 추가한다.',
-    decision: 'keep_catalog_review',
+    decision: 'replace_or_hide_source',
   },
 ];
 

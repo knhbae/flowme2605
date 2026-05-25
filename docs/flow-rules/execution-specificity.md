@@ -116,7 +116,8 @@ Do not:
 
 Current broad-source review:
 
-- `real-fitvely-weekly-body-check` remains a broad-source route below public MVP/representative framing until the required source work is done.
+- The active broad-source replacement queue is currently empty.
+- `real-fitvely-weekly-body-check` remains broad but is now a hidden/remove candidate because no matching FITVELY weekly body-check/check-in source was confirmed. Do not convert the broad site into measurement, photo, or adjustment rules.
 - `real-thankyou-bubu-home-workout-starter` and `real-thankyou-bubu-20min-routine` now have exact video sources, but they still remain below public MVP/representative framing until exact-video first-screen reshaping is complete.
 - `real-fitvely-diet-record-routine` now has an exact diet video source, but it still remains below public MVP/representative framing until spreadsheet-first diet-log reshaping is complete.
 - `real-sinagong-computer-d30-study` now has an exact book source, but it still remains below public MVP/representative framing until source-derived progress rows and score/wrong-answer rows are reshaped or the route is merged with `computer-skills-d30-study`.

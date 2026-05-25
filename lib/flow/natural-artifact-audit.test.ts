@@ -248,6 +248,16 @@ test('eighth real-source artifact batch closes broad channel and site sources', 
   }
 });
 
+test('FITVELY weekly body check is hidden when no exact check-in source is confirmed', () => {
+  const audit = getNaturalArtifactAudit('real-fitvely-weekly-body-check');
+  const bundle = bundleBySlug('real-fitvely-weekly-body-check');
+
+  assert.ok(audit);
+  assert.equal(bundle.flow.source_precision, 'broad');
+  assert.equal(audit.decision, 'replace_or_hide_source');
+  assert.ok(audit.nextContentAction.includes('hide') || audit.nextContentAction.includes('remove'));
+});
+
 test('FITVELY diet record broad source route is replaced with an exact-source reshape record', () => {
   const audit = getNaturalArtifactAudit('real-fitvely-diet-record-routine');
   const bundle = bundleBySlug('real-fitvely-diet-record-routine');

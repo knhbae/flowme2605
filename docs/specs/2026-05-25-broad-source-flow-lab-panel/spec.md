@@ -12,7 +12,8 @@ As a FLOW editor, I need Flow Lab to show broad-source guard status, so I can pr
 
 ## In Scope
 
-- Add a compact Flow Lab panel for broad-source guard data.
+- Add a compact Flow Lab panel for active broad-source guard data.
+- Show hidden broad-source decisions separately from active replacement work.
 - Add E2E coverage for panel visibility, broad count, leak count, and representative route slugs.
 - Capture a desktop screenshot.
 - Update docs/status/PR history.
@@ -29,7 +30,8 @@ As a FLOW editor, I need Flow Lab to show broad-source guard status, so I can pr
 
 - `/flow-lab` shows `Broad Source Guard`.
 - The panel shows `Broad real sources` as the current real+broad route count.
-- After the MOFA travel source replacement batch, the current expected count is 1.
+- After the FITVELY weekly body-check hide decision, the current active expected count is 0.
 - The panel shows `Representative leaks` as 0.
-- The panel includes current broad-source queue routes such as `real-fitvely-weekly-body-check` and `real-mofa-overseas-travel-prep`.
+- The replacement queue shows `none`.
+- The hidden decision list includes `real-fitvely-weekly-body-check`.
 - Targeted E2E passes after a RED failure.
