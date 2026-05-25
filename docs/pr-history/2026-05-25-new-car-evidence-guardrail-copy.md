@@ -2,7 +2,8 @@
 
 Date: 2026-05-25
 Branch: `content/new-car-evidence-guardrail-copy`
-Status: In progress
+PR: #79
+Status: Merged
 
 ## Why
 
@@ -32,3 +33,5 @@ The representative UX/content review found that `new-car-delivery-check` had the
 - PASS: `npm test`
 - PASS: `npm run build`
 - PASS: `npm run docs:check`
+- PASS: Vercel `https://vercel.com/flowme/flowme2605/8bLp2pDKSnnDHThScEmSS769REVB`
+- Merged: PR #79 as squash commit `f044cc94a24d3eed1db16741e32e3e0ba2f9fac3`.
