@@ -343,3 +343,16 @@ test('UX content simplification audit records representative export-first gaps',
   assert.ok(diet.currentFlowGap.includes('warning'));
   assert.ok(diet.copyFix.includes('observation'));
 });
+
+test('content lab exposes the current representative UX content review queue', () => {
+  const summary = getContentLabSummary(seedBundles);
+
+  assert.equal(summary.representativeUxContentReviewTotalCount, 3);
+  assert.deepEqual(summary.representativeUxContentReviewSlugs, [
+    'computer-skills-d30-study',
+    'diet-habit-2week',
+    'new-car-delivery-check',
+  ]);
+  assert.equal(summary.representativeUxContentReviewDecisionCounts.ready_for_observed_session, 1);
+  assert.equal(summary.representativeUxContentReviewDecisionCounts.needs_guardrail_rewrite, 2);
+});

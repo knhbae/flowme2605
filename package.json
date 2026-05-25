@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "docs:check": "node scripts/check-docs.mjs",
-    "test": "tsx --test lib/flow/date.test.ts lib/flow/parser.test.ts lib/flow/seed-flows.test.ts lib/flow/export.test.ts lib/flow/content-lab.test.ts lib/flow/storage.test.ts lib/flow/execution-model.test.ts lib/flow/recurrence.test.ts lib/flow/source-fit.test.ts lib/flow/content-inventory.test.ts lib/flow/natural-artifact-audit.test.ts lib/flow/content-lifecycle.test.ts lib/flow/source-review-priority.test.ts lib/flow/artifact-plan.test.ts lib/flow/artifact-fields.test.ts",
+    "test": "tsx --test lib/flow/date.test.ts lib/flow/parser.test.ts lib/flow/seed-flows.test.ts lib/flow/export.test.ts lib/flow/content-lab.test.ts lib/flow/storage.test.ts lib/flow/execution-model.test.ts lib/flow/recurrence.test.ts lib/flow/source-fit.test.ts lib/flow/content-inventory.test.ts lib/flow/natural-artifact-audit.test.ts lib/flow/content-lifecycle.test.ts lib/flow/source-review-priority.test.ts lib/flow/artifact-plan.test.ts lib/flow/artifact-fields.test.ts lib/flow/representative-ux-content-review.test.ts",
     "test:e2e": "playwright test"
   },
   "dependencies": {
