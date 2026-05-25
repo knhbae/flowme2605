@@ -92,6 +92,7 @@
 - Vehicle inspection evidence-first pass has landed: `vehicle-inspection-prep` now separates reservation information, documents, precheck evidence, result sheet, and repair/reinspection follow-up into a memo card, but it is still not representative, public-MVP, or validated.
 - Used-car mobile density pass has landed: `used-car-buying-check` now keeps secondary checklist sections collapsed on mobile so candidate comparison and buy/hold memo stay first, but it is still not newly validated.
 - MOFA travel emergency-card pass has landed: `real-mofa-overseas-travel-prep` now opens with an official-check and emergency-contact memo card before generic travel checklist density, but it is still not representative, public-MVP, or validated.
+- Baby-food mobile density pass is in progress: `baby-food-menu-recipe` now keeps secondary meal-plan sections collapsed on mobile so meal calendar and reaction logging stay first, but it is still not newly validated.
 
 ## Next Up
 
