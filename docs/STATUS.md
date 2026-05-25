@@ -72,6 +72,7 @@
 - Execution-specificity video route pass has landed: `source reviewed` is now treated as a source boundary only, exact workout video details must separate summary, detailed guide, original video, post-workout record, and stop condition, and the first ThankyouBUBU exact-workout routes keep one action without being called validated.
 - Diet exact-video execution-specificity pass has landed: FITVELY diet/body-composition videos stay one-action and memo-first, with details narrowed to one selected rule, one application, one observation record, and one stop condition without outcome claims.
 - Workout-plan exact-video execution-specificity pass has landed: FITVELY workout programming videos stay one-action and hybrid, with details narrowed to one selected rule, weekly workout table application, record fields, and revise-or-hold conditions.
+- Broad-source route review is in progress: current real-source routes backed only by channel pages, broad sites, broad study material, FAQ pages, or official portals are being kept out of public MVP/representative framing until exact route-level sources or route-specific official references are attached.
 
 ## Next Up
 
