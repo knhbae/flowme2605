@@ -78,7 +78,7 @@
 - ThankyouBUBU broad-source replacement has landed: the two former channel-level workout routes now point to exact YouTube video sources, the broad real-source guard initially dropped from 7 to 5, and both routes remain `reshape_content_or_ux` rather than representative, public-MVP, or validated.
 - FITVELY diet broad-source replacement has landed: `real-fitvely-diet-record-routine` now points to an exact FITVELY nutrition video, while `real-fitvely-weekly-body-check` stays broad because no matching measurement/check-in source has been confirmed.
 - Sinagong study broad-source replacement has landed: `real-sinagong-computer-d30-study` now points to the exact Gilbut/Sinagong book page, drops out of the broad-source guard, and remains a reshape route rather than representative, public-MVP, or validated.
-- Pet-health visit broad-source replacement is in progress: `real-pet-health-visit-routine` now points to the exact 서울시 우리동네 동물병원 official page, drops out of the broad-source guard, and remains catalog review because the source has region and eligibility limits.
+- Pet-health visit broad-source replacement has landed: `real-pet-health-visit-routine` now points to the exact 서울시 우리동네 동물병원 official page, drops out of the broad-source guard, and remains catalog review because the source has region and eligibility limits.
 
 ## Next Up
 
