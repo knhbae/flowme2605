@@ -3,8 +3,8 @@
 Date: 2026-05-25
 Branch: `docs/broad-source-route-review`
 PR: #57
-Status: In progress
-Vercel: Pending
+Status: Merged and Vercel check passed
+Vercel: https://vercel.com/flowme/flowme2605/D952DwC2eWZk62LoqtSoXkmyTXGt
 
 ## Why
 
@@ -29,6 +29,7 @@ Exact-video execution passes improved concrete creator-content routes, but the r
 
 - `npm run docs:check` passed.
 - `git diff --check` passed with CRLF warnings only.
+- Vercel PR check passed before merge.
 
 ## Risks
 
