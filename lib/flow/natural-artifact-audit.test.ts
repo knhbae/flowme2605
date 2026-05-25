@@ -194,8 +194,6 @@ test('seventh real-source artifact batch covers remaining FITVELY exact videos',
 
 test('eighth real-source artifact batch closes broad channel and site sources', () => {
   const expectedEighthBatchSlugs = [
-    'real-thankyou-bubu-home-workout-starter',
-    'real-thankyou-bubu-20min-routine',
     'real-fitvely-diet-record-routine',
     'real-fitvely-weekly-body-check',
   ];
@@ -213,5 +211,23 @@ test('eighth real-source artifact batch closes broad channel and site sources', 
       ),
       `${slug} should still simulate the user's natural artifact before judging the source gap`,
     );
+  }
+});
+
+test('ThankyouBUBU former broad source routes are exact-source reshape records', () => {
+  const expectedExactReplacementSlugs = [
+    'real-thankyou-bubu-home-workout-starter',
+    'real-thankyou-bubu-20min-routine',
+  ];
+
+  for (const slug of expectedExactReplacementSlugs) {
+    const audit = getNaturalArtifactAudit(slug);
+    const bundle = bundleBySlug(slug);
+
+    assert.ok(audit, `missing exact replacement audit: ${slug}`);
+    assert.equal(bundle.flow.source_precision, 'exact', slug);
+    assert.equal(audit.decision, 'reshape_content_or_ux', slug);
+    assert.match(audit.sourceUrl, /youtube\.com\/watch\?v=/, slug);
+    assert.ok(audit.nextContentAction.includes('exact'), slug);
   }
 });

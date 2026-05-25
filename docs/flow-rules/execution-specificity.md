@@ -116,7 +116,8 @@ Do not:
 
 Current broad-source review:
 
-- `real-thankyou-bubu-home-workout-starter`, `real-thankyou-bubu-20min-routine`, `real-fitvely-diet-record-routine`, `real-fitvely-weekly-body-check`, `real-sinagong-computer-d30-study`, `real-pet-health-visit-routine`, and `real-mofa-overseas-travel-prep` remain below public MVP/representative framing until the required source work is done.
+- `real-fitvely-diet-record-routine`, `real-fitvely-weekly-body-check`, `real-sinagong-computer-d30-study`, `real-pet-health-visit-routine`, and `real-mofa-overseas-travel-prep` remain broad-source routes below public MVP/representative framing until the required source work is done.
+- `real-thankyou-bubu-home-workout-starter` and `real-thankyou-bubu-20min-routine` now have exact video sources, but they still remain below public MVP/representative framing until exact-video first-screen reshaping is complete.
 
 ### Moving, Admin, And Official-Service Flows
 

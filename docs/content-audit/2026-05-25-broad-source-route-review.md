@@ -3,6 +3,8 @@
 Date: 2026-05-25
 Scope: real-source routes whose current source is a channel, site, or broad reference rather than a route-level original.
 
+Update: `real-thankyou-bubu-home-workout-starter` and `real-thankyou-bubu-20min-routine` received exact YouTube source replacements later on 2026-05-25. The current broad-source guard queue is 5 routes.
+
 ## Decision
 
 Broad source routes are not representative candidates. They can remain accessible for internal catalog review or direct QA, but they need either an exact source replacement or a narrower official reference before public MVP or representative framing.
@@ -21,8 +23,8 @@ This review does not mark any route validated.
 
 | Route | Current source shape | Current UX risk | Decision | Required next source work |
 |---|---|---|---|---|
-| `real-thankyou-bubu-home-workout-starter` | ThankyouBUBU channel page | User knows the channel but not the exact starter workout to follow. | Keep out of representative/public MVP. | Replace with an exact starter video or starter playlist; preserve original video link, summary, guide, log, and stop condition. |
-| `real-thankyou-bubu-20min-routine` | ThankyouBUBU channel page | "20 minutes" sounds executable, but the route does not identify which 20-minute source. | Keep out of representative/public MVP. | Replace with one exact 20-minute video or a source-defined routine playlist before scheduling. |
+| `real-thankyou-bubu-home-workout-starter` | Exact ThankyouBUBU video assigned after this review | User no longer has to choose the video, but the route still needs exact-video first-screen reshaping. | Keep out of representative/public MVP. | Reshape around original video, execution summary, condition log, and stop condition. |
+| `real-thankyou-bubu-20min-routine` | Exact ThankyouBUBU video assigned after this review | The repeated video is now identified, but high-intensity routine guidance still needs clearer rest/stop hierarchy. | Keep out of representative/public MVP. | Reshape around original video, weekly routine calendar, adjustment memo, and stop condition. |
 | `real-fitvely-diet-record-routine` | FITVELY site | A generic site does not tell the user which diet rule or record shape to apply. | Keep out of representative/public MVP. | Replace with an exact diet/log source; keep the artifact memo- or sheet-first and avoid outcome claims. |
 | `real-fitvely-weekly-body-check` | FITVELY site | Measurement behavior needs a concrete source method and stop/consult boundary. | Keep out of representative/public MVP. | Replace with an exact body-check source; separate measurement row, observation note, and stop/consult condition. |
 | `real-sinagong-computer-d30-study` | Sinagong site / broad study material | Study progress can look source-derived, but the route needs exact curriculum, exam scope, past-exam round, or weekly-plan links. | Keep as fix/catalog review, not representative. | Attach exact source rows before any stronger study-progress framing. |
@@ -55,7 +57,7 @@ Recommended fixes:
 
 ## Follow-Up Queue
 
-1. Replace or demote the two ThankyouBUBU broad channel routes.
+1. Reshape the two ThankyouBUBU exact-source replacements before any representative/public MVP framing.
 2. Replace or demote the two FITVELY broad site routes.
 3. Attach exact curriculum/exam-scope links before using the Sinagong broad route as a study-progress example.
 4. Re-source the pet-health visit route with a route-specific visit-prep reference.

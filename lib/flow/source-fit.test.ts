@@ -92,8 +92,8 @@ test('source-fit summary captures keep, reshape, and preview decisions', () => {
   assert.equal(summary.auditedCount, 71);
   assert.ok(summary.averageScore >= 70);
   assert.equal(summary.decisionCounts.keep_representative, 15);
-  assert.equal(summary.decisionCounts.reshape_before_featured, 49);
-  assert.equal(summary.decisionCounts.catalog_preview_only, 7);
+  assert.equal(summary.decisionCounts.reshape_before_featured, 51);
+  assert.equal(summary.decisionCounts.catalog_preview_only, 5);
 });
 
 test('computer skills final QA promotes the route to representative source fit', () => {

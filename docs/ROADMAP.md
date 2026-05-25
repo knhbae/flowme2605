@@ -1,7 +1,7 @@
 # Roadmap
 
-**Last Updated:** 2026-05-20  
-**Current Version:** v0.1.0 (In Development)  
+**Last Updated:** 2026-05-25
+**Current Version:** v0.1.0 (In Development)
 **Next Version:** v0.2.0 (Post-validation polish)
 
 ## Completed Releases
@@ -21,6 +21,7 @@ No tagged releases yet.
 | First flag flow | Parenting/infant vaccination and checkup preparation route | In progress |
 | Alternate route | Moving D-30 timeline route for lower-risk comparison | In progress |
 | Execution actions | Copy, CSV export, share text, local check state | In progress |
+| Source-backed conversion readiness | Exact source replacement, natural artifact simulation, and source/risk separation before representative framing | In progress |
 | Verification | Unit tests, production build, Playwright E2E | In progress |
 
 ### v0.2.0 - Evidence Capture
@@ -37,6 +38,7 @@ No tagged releases yet.
 
 ### Product
 - Expand only after Stage 0 behavior evidence exists.
+- Continue broad-source cleanup before promoting more creator, study, health, travel, or official-service routes.
 - Keep ROADMAP entries short; durable specs belong in `docs/specs/`, while tool-generated plans may remain in `docs/superpowers/`.
 - Use [IDEAS.md](./IDEAS.md) for promising but uncommitted ideas.
 

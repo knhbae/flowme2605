@@ -999,9 +999,9 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(broadSourceGuard).toBeVisible();
   await expect(broadSourceGuard.getByText('Broad real sources', { exact: true })).toBeVisible();
   await expect(broadSourceGuard.getByText('Representative leaks', { exact: true })).toBeVisible();
-  await expect(broadSourceGuard.getByText('7', { exact: true }).first()).toBeVisible();
+  await expect(broadSourceGuard.getByText('5', { exact: true }).first()).toBeVisible();
   await expect(broadSourceGuard.getByText('0', { exact: true }).first()).toBeVisible();
-  await expect(broadSourceGuard.getByText('real-thankyou-bubu-home-workout-starter')).toBeVisible();
+  await expect(broadSourceGuard.getByText('real-fitvely-diet-record-routine')).toBeVisible();
   await expect(broadSourceGuard.getByText('real-mofa-overseas-travel-prep')).toBeVisible();
   const readiness = page.locator('section').filter({ hasText: '대표 승격 1차 심사' });
   await expect(readiness).toBeVisible();
@@ -1036,7 +1036,7 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(artifactAudit.getByText('감사 완료')).toBeVisible();
   await expect(artifactAudit.getByText('40', { exact: true }).first()).toBeVisible();
   await expect(sourceFitAudit.getByText('감사 완료')).toBeVisible();
-  await expect(sourceFitAudit.getByText('카탈로그 미리보기 7')).toBeVisible();
+  await expect(sourceFitAudit.getByText('카탈로그 미리보기 5')).toBeVisible();
   await expect(page.getByRole('link', { name: '시험 D-30 공부 계획 Flow', exact: true })).toBeVisible();
   await expect(page.getByText('B 파일럿 실제 Flow 변환')).toBeVisible();
   await expect(page.getByText('200+ 제작자 채널 Flow 검증')).toBeVisible();

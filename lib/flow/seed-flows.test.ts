@@ -639,6 +639,23 @@ test('source-backed flows expose primary destination for portable UX', () => {
   assert.equal(inferPrimaryDestination(qnet), 'hybrid');
 });
 
+test('ThankyouBUBU former broad workout routes use exact video sources', () => {
+  const starter = seedBundles.find((bundle) => bundle.flow.slug === 'real-thankyou-bubu-home-workout-starter');
+  const routine = seedBundles.find((bundle) => bundle.flow.slug === 'real-thankyou-bubu-20min-routine');
+
+  assert.ok(starter);
+  assert.equal(starter.flow.source_precision, 'exact');
+  assert.equal(starter.flow.source_url, 'https://www.youtube.com/watch?v=pcyrlkHXAdE');
+  assert.ok(starter.flow.source_title?.includes('점프'));
+  assert.ok(starter.itemDetails.every((detail) => detail.links.some((link) => link.url === starter.flow.source_url)));
+
+  assert.ok(routine);
+  assert.equal(routine.flow.source_precision, 'exact');
+  assert.equal(routine.flow.source_url, 'https://www.youtube.com/watch?v=gSz5n4sLENI');
+  assert.ok(routine.flow.source_title?.includes('칼소폭 찐 핵핵핵 매운맛'));
+  assert.ok(routine.itemDetails.every((detail) => detail.links.some((link) => link.url === routine.flow.source_url)));
+});
+
 test('fitness exact video flow titles preserve the original content premise', () => {
   const exactVideos = seedBundles.filter((bundle) => bundle.flow.tags?.includes('exact-video'));
   const carb = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-carb-reason');

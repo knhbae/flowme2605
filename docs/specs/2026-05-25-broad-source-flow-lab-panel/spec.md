@@ -28,7 +28,8 @@ As a FLOW editor, I need Flow Lab to show broad-source guard status, so I can pr
 ## Acceptance Criteria
 
 - `/flow-lab` shows `Broad Source Guard`.
-- The panel shows `Broad real sources` as 7.
+- The panel shows `Broad real sources` as the current real+broad route count.
+- After the ThankyouBUBU source replacement batch, the current expected count is 5.
 - The panel shows `Representative leaks` as 0.
-- The panel includes `real-thankyou-bubu-home-workout-starter` and `real-mofa-overseas-travel-prep`.
+- The panel includes current broad-source queue routes such as `real-fitvely-diet-record-routine` and `real-mofa-overseas-travel-prep`.
 - Targeted E2E passes after a RED failure.
