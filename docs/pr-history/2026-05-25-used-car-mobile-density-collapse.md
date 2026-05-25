@@ -4,13 +4,13 @@ Date: 2026-05-25
 
 Branch: `content/used-car-mobile-density-collapse`
 
-PR: TBD
+PR: [#93](https://github.com/knhbae/flowme2605/pull/93)
 
-Status: In progress
+Status: Merged
 
-Vercel: TBD
+Vercel: https://vercel.com/flowme/flowme2605/8wrRnSgbTm32ig6zkYUq7rHvgEFT
 
-Merged SHA: TBD
+Merged SHA: `dc1b0169199feac59aaffc447779e799a6d4379a`
 
 ## Summary
 

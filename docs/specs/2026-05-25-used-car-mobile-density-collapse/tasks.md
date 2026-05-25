@@ -6,4 +6,4 @@
 - [x] Run targeted E2E.
 - [x] Capture desktop/mobile screenshots.
 - [x] Run final verification.
-- [ ] Create PR, wait for checks, merge if green, and sync main.
+- [x] Create PR, wait for checks, merge if green, and sync main.
