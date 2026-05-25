@@ -87,6 +87,7 @@
 - Mobile simulation protocol has landed: `computer-skills-d30-study`, `diet-habit-2week`, and `new-car-delivery-check` now have scripted mobile rehearsal records with pass/failure signals, average score, and an explicit 0 validated route count.
 - Mobile simulation session notes have landed: the same three routes now have internal rehearsal findings and next observed-session script changes without changing validation status.
 - UX cleanup backlog has landed: unresolved content/UX areas are now separated from source-review status, with first rewrite batches focused on exact workout video detail, health observation guardrails, and vehicle evidence-first UX.
+- ThankyouBUBU exact-source reshape is in progress: `real-thankyou-bubu-home-workout-starter` and `real-thankyou-bubu-20min-routine` now use one calendar-first exact-video action with summary, detailed guide, original video link, post-workout record, and stop condition, but they are still not representative, public-MVP, or validated.
 
 ## Next Up
 

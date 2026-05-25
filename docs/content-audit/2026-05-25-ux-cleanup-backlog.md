@@ -44,6 +44,7 @@ The unresolved areas are no longer just scattered notes:
 1. `exact_workout_video_execution_detail`
    - Reason: user specifically flagged that workout steps can say "exercise" without enough detail.
    - First route candidates: `real-thankyou-bubu-home-workout-starter`, `real-thankyou-bubu-20min-routine`.
+   - 2026-05-25 update: first reshape pass completed for both candidates. They now keep one action and one detail panel with summary, detailed guide, original video link, post-workout record, and stop condition. They are still not validated.
 2. `health_observation_guardrail`
    - Reason: health/diet routes can imply prescription or outcomes if wording is loose.
    - First route candidates: FITVELY exact nutrition routes after `diet-habit-2week` reference.
