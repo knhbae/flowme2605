@@ -5,4 +5,4 @@
 - [x] Update STATUS.
 - [x] Add PR history.
 - [x] Run docs check.
-- [ ] Create PR and merge if checks pass.
+- [x] Create PR and merge if checks pass.

@@ -2,8 +2,8 @@
 
 Date: 2026-05-25
 Branch: `docs/mobile-simulation-session-notes`
-PR: Pending
-Status: In progress
+PR: #83
+Status: Merged
 
 ## Why
 
@@ -25,3 +25,5 @@ The protocol added in PR #81 gives a repeatable way to simulate mobile use, but 
 
 - PASS: `npm run docs:check`
 - PASS: `git diff --check` with CRLF warnings only.
+- PASS: Vercel `https://vercel.com/flowme/flowme2605/BUZzDW7HoBSoLGFDukWMi6TuGdpc`
+- Merged: PR #83 as squash commit `796eeb8bfc0d9e858f20254b15b7981c67783423`.
