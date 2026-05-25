@@ -83,6 +83,7 @@
 - FITVELY weekly body-check broad-source decision has landed: no matching exact FITVELY weekly check-in source has been confirmed, so the route moved to hidden/remove candidate and the active broad-source replacement queue is now 0.
 - Representative UX/content review has landed: `computer-skills-d30-study`, `diet-habit-2week`, and `new-car-delivery-check` now have a current simulated user-run review queue that records first action, natural output, UX gap, mobile density risk, source/risk boundary, and next small fix without calling any route validated.
 - Diet observation guardrail copy has landed: `diet-habit-2week` is reframed from diet habit coaching to a two-week food/sleep/activity/condition observation sheet with explicit stop/consult conditions and no validation claim.
+- New-car evidence guardrail copy is in progress: `new-car-delivery-check` is being tightened around photo filenames, dealer confirmation, document status, and signing hold conditions rather than generic checklist completion.
 
 ## Next Up
 

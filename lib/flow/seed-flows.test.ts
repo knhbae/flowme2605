@@ -269,6 +269,20 @@ test('diet habit route is framed as an observation sheet, not a diet prescriptio
   }
 });
 
+test('new car route is framed around evidence before handover signing', () => {
+  const newCar = seedBundles.find((entry) => entry.flow.slug === 'new-car-delivery-check');
+
+  assert.ok(newCar);
+  assert.match(newCar.flow.description, /사진 파일명|딜러 확인|서명 전 보류/);
+  assert.match(newCar.flow.warning ?? '', /서명|인수 확정/);
+
+  const detailText = newCar.itemDetails
+    ?.map((detail) => `${detail.why} ${detail.how} ${detail.completion_criteria} ${detail.caution ?? ''}`)
+    .join('\n') ?? '';
+  assert.match(detailText, /신차 인수 증빙표/);
+  assert.match(detailText, /사진|딜러 확인|서명/);
+});
+
 test('seed flows expose creator and popularity signals for discovery', () => {
   const userIds = new Set(virtualUsers.map((user) => user.id));
   for (const bundle of seedBundles) {
