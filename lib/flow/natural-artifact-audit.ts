@@ -1199,12 +1199,12 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-mofa-overseas-travel-prep',
-    checkedAt: '2026-05-22',
-    sourceTitle: '외교부 해외안전여행',
-    sourceUrl: 'https://www.0404.go.kr/',
+    checkedAt: '2026-05-25',
+    sourceTitle: '외교부 해외안전여행 베트남 국가/지역별 정보',
+    sourceUrl: 'https://www.0404.go.kr/ntnSafetyInfo/86/detail',
     sourceEvidence: [
-      '해외안전여행 서비스는 국가/지역별 여행경보, 여행 전 점검사항, 위기상황별 대처매뉴얼, 영사안전콜센터, 동행서비스를 제공한다.',
-      '앱/모바일 페이지는 여행일정 등록, 실시간 해외안전정보, 위급상황 시 가족 또는 지인에게 내 위치 전송 같은 여행 중 실행 정보를 포함한다.',
+      '외교부 베트남 국가/지역별 정보 page는 베트남의 여행경보, 안전공지, 여행경보 조정 내역, 현지 대사관/총영사관 연락처, 현지 신고 번호를 한 페이지에서 제공한다.',
+      '현재 audit scenario가 베트남 여행을 기준으로 하므로 broad portal보다 이 exact country page가 안전 확인 달력과 비상 연락처 memo를 더 직접 지원한다.',
     ],
     userScenario: '사용자는 베트남 여행 전 여행경보, 여권/비자, 영사콜센터, 가족 공유 정보를 정리하고 출국 전날까지 확인하려 한다.',
     naturalArtifacts: [

@@ -9,9 +9,9 @@ Flow Lab now renders a small internal "Broad Source Guard" panel below lifecycle
 
 Current panel values:
 
-- Broad real sources: 2
+- Broad real sources: 1
 - Representative leaks: 0
-- Replacement queue: the two remaining broad real-source route slugs
+- Replacement queue: the remaining broad real-source route slug
 
 ## Why
 
@@ -44,6 +44,10 @@ Updated screenshot after pet-health visit source replacement:
 
 ![Broad Source Flow Lab panel after pet-health source replacement](../screenshots/2026-05-25-pet-health-source-replacement-flow-lab.png)
 
+Updated screenshot after MOFA travel source replacement:
+
+![Broad Source Flow Lab panel after MOFA travel source replacement](../screenshots/2026-05-25-mofa-travel-source-replacement-flow-lab.png)
+
 ## Verification
 
 - RED: targeted Flow Lab E2E failed because the `Broad Source Guard` panel did not exist.
@@ -56,3 +60,4 @@ Update:
 - 2026-05-25: After replacing the FITVELY diet-record broad site source, the same panel should show 4 broad real sources and 0 representative leaks.
 - 2026-05-25: After replacing the Sinagong broad study source, the same panel should show 3 broad real sources and 0 representative leaks.
 - 2026-05-25: After replacing the pet-health broad FAQ source, the same panel should show 2 broad real sources and 0 representative leaks.
+- 2026-05-25: After replacing the MOFA broad portal source, the same panel should show 1 broad real source and 0 representative leaks.
