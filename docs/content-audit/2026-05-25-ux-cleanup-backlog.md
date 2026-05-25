@@ -58,6 +58,10 @@ The unresolved areas are no longer just scattered notes:
    - Reason: destination safety routes should not be generic travel checklists once an official country page exists.
    - First route candidate: `real-mofa-overseas-travel-prep`.
    - 2026-05-25 update: `real-mofa-overseas-travel-prep` now opens with a MOFA emergency memo card for official check date, alert result, embassy/consular contact, local emergency numbers, and family sharing. It is still not validated.
+5. `baby_food_reaction_first`
+   - Reason: baby-food content should keep reaction logging ahead of recipe/checklist density.
+   - First route candidate: `baby-food-menu-recipe`.
+   - 2026-05-25 update: `baby-food-menu-recipe` now keeps secondary meal-plan execution sections collapsed on mobile so the meal calendar and reaction log stay first. It is still not validated.
 
 ## External AI Review Readiness
 

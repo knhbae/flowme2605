@@ -3639,7 +3639,8 @@ function shouldCollapseSecondaryExecutionSections(bundle: FlowBundle) {
   return (
     bundle.flow.slug === 'diet-habit-2week' ||
     bundle.flow.slug === 'new-car-delivery-check' ||
-    bundle.flow.slug === 'used-car-buying-check'
+    bundle.flow.slug === 'used-car-buying-check' ||
+    bundle.flow.slug === 'baby-food-menu-recipe'
   );
 }
 
@@ -3950,12 +3951,13 @@ function MealPlanRenderer({
   reactionLogs: Record<string, ReactionLog>;
   onReactionChange: (id: string, patch: ReactionLog) => void;
 }) {
+  const collapseSecondarySections = shouldCollapseSecondaryExecutionSections(bundle);
+
   return (
     <div className="space-y-5">
-      {bundle.sections.map((section) => (
-        <section id={`section-${section.id}`} key={section.id} className="scroll-mt-6 rounded-lg border border-gray-200 bg-white p-5">
-          <h2 className="text-xl font-semibold">{section.title}</h2>
-          <div className="mt-4 space-y-4">
+      {bundle.sections.map((section, index) => (
+        <FlowExecutionSectionShell key={section.id} section={section} collapsed={collapseSecondarySections && index > 0}>
+          <div className="space-y-4">
             {(bundle.mealSlots ?? []).filter((slot) => slot.section_id === section.id).map((slot) => {
               const start = anchor ? addDays(new Date(anchor), slot.day_offset) : null;
               const end = start ? getRangeEnd(start, slot.duration_days) : null;
@@ -4017,7 +4019,7 @@ function MealPlanRenderer({
               );
             })}
           </div>
-        </section>
+        </FlowExecutionSectionShell>
       ))}
     </div>
   );

@@ -929,6 +929,12 @@ test('mobile sensitive routes collapse secondary execution sections below the fi
   await expect(collapsedSections.first()).toBeVisible();
   expect(await collapsedSections.first().evaluate((node) => (node as HTMLDetailsElement).open)).toBe(false);
   await expect(page.getByLabel('Flow artifact workbench').getByText('후보별 가격·주행거리')).toBeVisible();
+
+  await page.goto('/f/baby-food-menu-recipe');
+  collapsedSections = page.getByTestId('mobile-collapsed-section');
+  await expect(collapsedSections.first()).toBeVisible();
+  expect(await collapsedSections.first().evaluate((node) => (node as HTMLDetailsElement).open)).toBe(false);
+  await expect(page.getByLabel('Flow artifact workbench').getByTestId('meal-reaction-workbench')).toBeVisible();
 });
 
 test('artifact workbench saves local execution entries', async ({ page }) => {
