@@ -497,6 +497,7 @@ export function buildText(
   const lines = [bundle.flow.title];
   const anchorLabel = getExportAnchorLabel(bundle);
   lines.push(`${anchorLabel}: ${anchor || (bundle.flow.anchor_type === 'none' ? '없음' : '')}`);
+  if (bundle.flow.warning) lines.push(`주의: ${bundle.flow.warning}`);
   const artifactPlan = getArtifactPlan(bundle);
   const comparison = buildComparisonExport(bundle, comparisonState);
   const workbenchRows = buildWorkbenchRows(bundle, workbenchState);

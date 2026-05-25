@@ -283,6 +283,14 @@ test('new car route is framed around evidence before handover signing', () => {
   assert.match(detailText, /사진|딜러 확인|서명/);
 });
 
+test('used car route warns that the checklist does not guarantee vehicle condition', () => {
+  const usedCar = seedBundles.find((entry) => entry.flow.slug === 'used-car-buying-check');
+
+  assert.ok(usedCar);
+  assert.match(usedCar.flow.warning ?? '', /차량 상태를 보증하지 않습니다/);
+  assert.match(usedCar.flow.warning ?? '', /공식 조회와 전문가 점검/);
+});
+
 test('seed flows expose creator and popularity signals for discovery', () => {
   const userIds = new Set(virtualUsers.map((user) => user.id));
   for (const bundle of seedBundles) {

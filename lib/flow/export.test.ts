@@ -301,6 +301,19 @@ test('decision text export includes comparison section before checklist items', 
   assert.ok(text.indexOf('[후보 비교표]') < text.indexOf('총예산을 차량가, 이전비, 보험료, 정비비로 나누기'));
 });
 
+test('used-car text export carries the vehicle-condition guarantee boundary near the top', () => {
+  const usedCar = seedBundles.find((entry) => entry.flow.slug === 'used-car-buying-check');
+  assert.ok(usedCar);
+
+  const text = buildText(usedCar, {}, undefined, {}, {
+    candidates: [{ id: 'candidate-1', name: '아반떼 2021' }],
+    notes: {},
+  });
+
+  assert.match(text.split('\n').slice(0, 4).join('\n'), /차량 상태를 보증하지 않습니다/);
+  assert.ok(text.indexOf('차량 상태를 보증하지 않습니다') < text.indexOf('[후보 비교표]'));
+});
+
 test('risk-boundary exports preserve delivery evidence and diet observation values', () => {
   const newCar = seedBundles.find((entry) => entry.flow.slug === 'new-car-delivery-check');
   const diet = seedBundles.find((entry) => entry.flow.slug === 'diet-habit-2week');
