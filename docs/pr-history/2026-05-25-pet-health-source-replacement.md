@@ -2,8 +2,8 @@
 
 Date: 2026-05-25
 Branch: `content/pet-health-source-replacement`
-PR: TBD
-Status: Ready for PR
+PR: #69
+Status: Open, waiting for checks
 
 ## Why
 
