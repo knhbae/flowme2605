@@ -6,4 +6,5 @@
 - [x] Include flow warnings near the top of text exports.
 - [x] Add dated audit synthesis.
 - [x] Run full verification.
-- [ ] Create PR and merge if checks pass.
+- [x] Create PR.
+- [ ] Merge if checks pass.

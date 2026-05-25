@@ -2,8 +2,8 @@
 
 Date: 2026-05-25
 Branch: `codex/used-car-guarantee-boundary`
-Status: Draft
-PR URL: TBD
+Status: Open
+PR URL: https://github.com/knhbae/flowme2605/pull/99
 Deploy URL: TBD
 
 ## Reason
