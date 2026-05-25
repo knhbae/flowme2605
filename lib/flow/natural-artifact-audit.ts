@@ -1164,6 +1164,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
     sourceEvidence: [
       'The Gilbut book page is the exact product source already used by the representative `computer-skills-d30-study` route.',
       'This replaces the broad Sinagong site source with one exact book/source boundary for manual study-progress conversion.',
+      'The three UX/content test results should be resolved toward source fidelity: do not assume a source-authored 30-day curriculum from the book page.',
     ],
     userScenario: '사용자는 컴활 1급 필기 시험을 30일 앞두고 기출, 요약, CBT, 오답 복습을 주차별로 나누어 공부표를 만들려 한다.',
     naturalArtifacts: [
@@ -1191,10 +1192,13 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
         gap: '자격증 학습 Flow는 캘린더뿐 아니라 spreadsheet형 성과 로그가 필요하다.',
       },
     ],
-    currentContentGap: 'exact 교재 페이지는 붙었지만 실제 진도표 row는 여전히 제작자가 source-derived chapter/exam-scope rows로 더 구체화해야 한다.',
-    currentUxGap: 'D-30 일정은 가능하지만 자료 링크, 회차 점수, 오답 로그가 한 화면에 없다.',
-    nextContentAction: '시나공 Flow를 exact book source 기반 source-derived progress rows, 기출/모의 회차, 오답 재풀이 row 중심으로 보강한다.',
-    nextUxAction: 'study timeline에 점수/오답 spreadsheet preview를 결합한다.',
+    currentContentGap:
+      'exact 교재 페이지는 붙었지만 기존 대표 `computer-skills-d30-study` route와 중복된다. 별도 route로 유지하려면 실제 진도표 row를 source-derived chapter/exam-scope rows로 더 구체화해야 한다.',
+    currentUxGap: 'D-30 일정은 가능하지만 자료 링크, 회차 점수, 오답 로그가 한 화면에 없고 대표 route와 다른 산출물 이유가 약하다.',
+    nextContentAction:
+      '별도 featured/대표 route로 승격하지 말고 canonical `computer-skills-d30-study`와 merge한다. 유지하려면 exact book source 기반 source-derived progress rows, 기출/모의 회차, 오답 재풀이 row를 먼저 보강한다.',
+    nextUxAction:
+      '직접 QA route로만 두고 canonical study timeline에 점수/오답 spreadsheet preview를 결합한 뒤 대표 route 병합 여부를 다시 판단한다.',
     decision: 'reshape_content_or_ux',
   },
   {

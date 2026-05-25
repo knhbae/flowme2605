@@ -104,6 +104,17 @@ test('Sinagong study broad source route is replaced with an exact-source reshape
   assert.ok(audit.nextContentAction.includes('source-derived') || audit.nextContentAction.includes('exact'));
 });
 
+test('Sinagong exact-source route remains a merge candidate unless it has distinct source-derived rows', () => {
+  const audit = getNaturalArtifactAudit('real-sinagong-computer-d30-study');
+
+  assert.ok(audit);
+  assert.equal(audit.decision, 'reshape_content_or_ux');
+  assert.match(audit.sourceEvidence.join(' '), /computer-skills-d30-study/);
+  assert.match(audit.currentContentGap, /duplicate|중복/);
+  assert.match(audit.nextContentAction, /merge|병합|canonical|대표/);
+  assert.match(audit.nextUxAction, /direct QA|직접 QA|featured|대표/);
+});
+
 test('pet health visit route is re-sourced to an exact official visit program but not promoted', () => {
   const audit = getNaturalArtifactAudit('real-pet-health-visit-routine');
   const bundle = bundleBySlug('real-pet-health-visit-routine');
