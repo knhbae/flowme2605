@@ -16,6 +16,8 @@ Date: 2026-05-25
 - PASS: `npm run docs:check`
 - PASS: `npx playwright test tests/e2e/flow-mvp.spec.ts -g "former broad ThankyouBUBU routes"`
 - PASS: `git diff --check` with CRLF warnings only
+- PASS: Vercel preview `https://vercel.com/flowme/flowme2605/HArwpPBorrMM3jwJDwADAdxSTMTZ`
+- PASS: PR #87 squash-merged as `adacc21a60fab942e4cb844dd2bedb41b79fec3d`
 
 ## Screenshots
 
