@@ -185,6 +185,22 @@ test('content lab clears source needs-review priorities after the next audit bat
   assert.equal(summary.sourceReviewPriorityItems.length, 0);
 });
 
+test('content lab exposes broad real-source guardrails', () => {
+  const summary = getContentLabSummary(seedBundles);
+
+  assert.deepEqual(summary.broadRealSourceSlugs, [
+    'real-thankyou-bubu-home-workout-starter',
+    'real-thankyou-bubu-20min-routine',
+    'real-fitvely-diet-record-routine',
+    'real-fitvely-weekly-body-check',
+    'real-sinagong-computer-d30-study',
+    'real-pet-health-visit-routine',
+    'real-mofa-overseas-travel-prep',
+  ]);
+  assert.equal(summary.broadRealSourceCount, 7);
+  assert.deepEqual(summary.broadRealSourceRepresentativeLeakSlugs, []);
+});
+
 test('source-risk representative review keeps only the final QA route promoted', () => {
   const summary = getContentLabSummary(seedBundles);
   const readiness = summarizeRepresentativeReadinessReviews(seedBundles);
