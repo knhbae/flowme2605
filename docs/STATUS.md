@@ -93,6 +93,7 @@
 - Used-car mobile density pass has landed: `used-car-buying-check` now keeps secondary checklist sections collapsed on mobile so candidate comparison and buy/hold memo stay first, but it is still not newly validated.
 - MOFA travel emergency-card pass has landed: `real-mofa-overseas-travel-prep` now opens with an official-check and emergency-contact memo card before generic travel checklist density, but it is still not representative, public-MVP, or validated.
 - Baby-food mobile density pass has landed: `baby-food-menu-recipe` now keeps secondary meal-plan sections collapsed on mobile so meal calendar and reaction logging stay first, but it is still not newly validated.
+- External AI UX/content review synthesis has landed: the three `my_tests/` evaluations are summarized in a dated audit, with conflicts resolved toward source fidelity, export-first usefulness, and no validation claims. The first small fix adds a no-guarantee boundary to `used-car-buying-check` and carries route warnings into text exports.
 
 ## Next Up
 

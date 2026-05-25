@@ -1847,7 +1847,7 @@ const creatorInspiredBundles: FlowBundle[] = [
         risk_level: 'financial_sensitive',
         source_title: '중고차 구매 체크리스트 참고',
         source_url: 'https://www.drive-insight.net/posts/used-car-buying-checklist-ko/',
-        warning: '중고차 구매는 차량 상태, 계약 조건, 압류·저당 여부에 따라 손실 위험이 있습니다. 공식 조회와 전문가 점검을 함께 사용하세요.',
+        warning: '이 체크리스트는 참고용이며 차량 상태를 보증하지 않습니다. 사고·침수·압류·저당 여부는 공식 조회와 전문가 점검을 함께 사용하세요.',
       },
       usedCarBuyingText,
     ),
