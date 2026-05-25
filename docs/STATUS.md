@@ -75,7 +75,7 @@
 - Broad-source route review has landed: current real-source routes backed only by channel pages, broad sites, broad study material, FAQ pages, or official portals stay out of public MVP/representative framing until exact route-level sources or route-specific official references are attached.
 - Broad-source code guard has landed: Content Lab summary data now tracks the current real+broad routes and reports any lifecycle `keep` leak before representative/public MVP framing changes.
 - Broad-source Flow Lab panel has landed: editors can now see the broad real-source count, representative leak count, and exact source replacement queue in the internal Flow Lab surface.
-- ThankyouBUBU broad-source replacement is in progress: the two former channel-level workout routes now point to exact YouTube video sources, the broad real-source guard drops from 7 to 5, and both routes remain `reshape_content_or_ux` rather than representative, public-MVP, or validated.
+- ThankyouBUBU broad-source replacement has landed: the two former channel-level workout routes now point to exact YouTube video sources, the broad real-source guard drops from 7 to 5, and both routes remain `reshape_content_or_ux` rather than representative, public-MVP, or validated.
 
 ## Next Up
 

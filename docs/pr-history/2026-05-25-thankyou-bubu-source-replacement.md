@@ -3,7 +3,8 @@
 Date: 2026-05-25
 Branch: `content/thankyou-bubu-broad-source-replacement`
 PR: #63
-Status: Open, waiting for checks
+Status: Merged and Vercel check passed
+Vercel: https://vercel.com/flowme/flowme2605/4ptnKoiRjqSYye2PF49xmGANSHYb
 
 ## Why
 
@@ -34,6 +35,7 @@ The broad-source review found two ThankyouBUBU routes that looked actionable but
 - `npm run build` passed.
 - `npx playwright test tests/e2e/flow-mvp.spec.ts -g "flow lab shows converted pilot"` passed.
 - `git diff --check` passed with CRLF warnings only.
+- Vercel PR check passed before merge.
 
 ## Screenshot
 
