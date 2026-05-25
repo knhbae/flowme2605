@@ -39,8 +39,9 @@ Expected output:
 
 Remaining UX gap:
 
-- The route still has a heavier starter-flow shape than an exact-video execution route.
-- First screen should put original video execution, condition record, and stop condition ahead of extra setup copy.
+- 2026-05-25 update: the route now uses one exact-video execution action instead of five setup/planning actions.
+- It now puts original video execution, condition record, and stop condition into the single detail panel.
+- It is still not representative, public-MVP, or validated until real users demonstrate export and execution.
 
 ### Near-20-Minute Routine Route
 
@@ -58,8 +59,9 @@ Expected output:
 
 Remaining UX gap:
 
-- The route now has an exact source, but intensity and rest guidance still need stronger first-screen hierarchy.
-- It should not invent movement sequences; detailed movement execution remains in the original video.
+- 2026-05-25 update: the route now uses one exact-video execution action instead of five recurring-routine management actions.
+- It keeps movement execution in the original video and uses FLOW for schedule, completion state, difficulty, condition, and next-session adjustment.
+- It is still not representative, public-MVP, or validated until real users demonstrate export and execution.
 
 ## Broad Source Guard Impact
 
@@ -73,6 +75,6 @@ Update: `real-mofa-overseas-travel-prep` later received an exact 외교부 베�
 
 ## Follow-Up
 
-1. Reshape the two ThankyouBUBU exact-source routes into the same compact source/video/log/stop-condition pattern used by the exact-video execution-specificity pass.
+1. Completed first reshape: the two ThankyouBUBU exact-source routes now use the compact source/video/log/stop-condition pattern.
 2. Replace or demote the two FITVELY broad site routes.
 3. Attach exact curriculum, exam scope, past-exam round, or weekly-plan sources before using broad Sinagong study material for representative study-progress framing.

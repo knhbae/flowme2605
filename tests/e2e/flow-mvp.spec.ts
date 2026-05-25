@@ -218,6 +218,32 @@ test('fitness exact video flow keeps the execution panel minimal', async ({ page
   expect(excelDownload.suggestedFilename()).toBe('real-thankyou-bubu-video-full-body-no-jump.xlsx');
 });
 
+test('former broad ThankyouBUBU routes now render as one exact-video action', async ({ page }) => {
+  const routes = [
+    {
+      slug: 'real-thankyou-bubu-home-workout-starter',
+      action: '점프 없는 전신 홈트 영상 일정에 넣고 실행',
+      removed: '운동 가능한 공간과 매트 준비',
+    },
+    {
+      slug: 'real-thankyou-bubu-20min-routine',
+      action: '20분 전신 운동 영상 주 3회 일정에 넣고 실행',
+      removed: '주 3회 운동 요일 선택',
+    },
+  ];
+
+  for (const route of routes) {
+    await page.goto(`/f/${route.slug}`);
+
+    await expect(page.getByRole('heading', { name: '실행 항목' })).toBeVisible();
+    await expect(page.getByText(route.action).first()).toBeVisible();
+    await expect(page.getByText(route.removed)).toHaveCount(0);
+    await expect(page.getByRole('link', { name: /영상 열기/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: '캘린더에 넣기' })).toBeVisible();
+    await expect(page.getByRole('button', { name: '엑셀 실행표 받기' })).toBeVisible();
+  }
+});
+
 test('diet exact video flow uses application language instead of workout scheduling', async ({ page }) => {
   await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
 

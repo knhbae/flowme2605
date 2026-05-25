@@ -605,6 +605,32 @@ test('exact workout video details separate summary, guide, source, and safety re
   }
 });
 
+test('former broad ThankyouBUBU replacements use one exact-video execution action', () => {
+  const slugs = ['real-thankyou-bubu-home-workout-starter', 'real-thankyou-bubu-20min-routine'];
+
+  for (const slug of slugs) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+
+    assert.ok(bundle, slug);
+    assert.equal(bundle.flow.source_precision, 'exact', `${slug} should keep exact source precision`);
+    assert.equal(bundle.items.length, 1, `${slug} should not ask users to manage a five-step workout plan`);
+    assert.equal(bundle.itemDetails?.length, 1, `${slug} should keep the execution guidance in one detail panel`);
+
+    const detail = bundle.itemDetails?.[0];
+    assert.ok(detail, `${slug} missing detail`);
+
+    assert.match(detail.how ?? '', /요약:/, `${slug} needs a summary before detailed guidance`);
+    assert.match(detail.how ?? '', /상세히 보기:/, `${slug} needs a detailed execution guide`);
+    assert.match(detail.how ?? '', /원본 영상:/, `${slug} needs the original YouTube video as authority`);
+    assert.match(detail.how ?? '', /운동 후 기록:/, `${slug} needs post-workout record fields`);
+    assert.match(detail.caution ?? '', /통증|어지러움|중단|전문가/, `${slug} needs a clear stop condition`);
+    assert.ok(
+      detail.links?.some((link) => link.type === 'creator' && link.url.includes('youtube.com/watch?v=')),
+      `${slug} needs creator video link`,
+    );
+  }
+});
+
 test('diet exact video details stay limited to one application and record', () => {
   const slugs = [
     'real-fitvely-video-body-fat-6kg-method',
