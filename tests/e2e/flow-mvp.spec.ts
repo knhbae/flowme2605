@@ -1014,6 +1014,13 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(readiness.getByRole('link', { name: '컴퓨터활용능력 D-30 학습 Flow' })).toBeVisible();
   await expect(readiness.getByRole('link', { name: '신차 인수 점검 Flow' })).toBeVisible();
   await expect(readiness.getByRole('link', { name: '2주 다이어트 습관 기록 Flow' })).toBeVisible();
+  const representativeUxReview = page.locator('section').filter({ hasText: 'Representative UX Content Review' });
+  await expect(representativeUxReview).toBeVisible();
+  await expect(representativeUxReview.getByText('ready_for_observed_session').first()).toBeVisible();
+  await expect(representativeUxReview.getByText('needs_guardrail_rewrite').first()).toBeVisible();
+  await expect(representativeUxReview.getByText('computer-skills-d30-study')).toBeVisible();
+  await expect(representativeUxReview.getByText('diet-habit-2week')).toBeVisible();
+  await expect(representativeUxReview.getByText('new-car-delivery-check')).toBeVisible();
   const exportFirstSimulation = page.locator('section').filter({ hasText: 'Export-first Simulation' });
   await expect(exportFirstSimulation).toBeVisible();
   await expect(exportFirstSimulation.getByText('Final QA candidate', { exact: true }).first()).toBeVisible();

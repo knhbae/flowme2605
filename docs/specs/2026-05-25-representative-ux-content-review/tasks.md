@@ -1,0 +1,12 @@
+# Tasks
+
+- [x] Add RED tests for representative UX/content review coverage.
+- [x] Confirm RED failure.
+- [x] Add review records for the three candidate routes.
+- [x] Expose summary data in Content Lab.
+- [x] Add Flow Lab panel.
+- [x] Confirm targeted tests pass.
+- [x] Add audit/spec/pr-history docs.
+- [x] Capture Flow Lab screenshot.
+- [x] Run full verification.
+- [ ] Create PR and merge if checks pass.

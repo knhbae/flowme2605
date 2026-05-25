@@ -353,6 +353,44 @@ export function ContentLab() {
       </section>
 
       <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
+        <p className="text-sm font-semibold text-blue-700">Representative UX Content Review</p>
+        <h2 className="mt-1 text-2xl font-semibold text-gray-950">Current user-run review queue</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+          This panel tracks the current representative and public-MVP candidates as simulated user runs: first action,
+          external artifact, UX gap, mobile density risk, and source/risk boundary. These labels do not mean validated.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          {Object.entries(summary.representativeUxContentReviewDecisionCounts).map(([decision, count]) => (
+            <div key={decision} className="rounded-lg bg-gray-50 p-3 text-gray-950">
+              <p className="text-sm text-gray-700">{decision}</p>
+              <p className="mt-1 text-2xl font-semibold">{count}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 grid gap-3 lg:grid-cols-3">
+          {summary.representativeUxContentReviews.map((review) => (
+            <article key={review.slug} className="rounded-lg border border-gray-200 p-4">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <p className="text-xs font-semibold text-gray-500">{review.slug}</p>
+                  <Link className="mt-1 block font-semibold text-gray-950 hover:text-blue-700" href={`/f/${review.slug}`}>
+                    {bundleBySlug.get(review.slug)?.flow.title ?? review.slug}
+                  </Link>
+                </div>
+                <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-800">
+                  {review.decision}
+                </span>
+              </div>
+              <p className="mt-3 text-sm leading-6 text-gray-700">{review.firstAction}</p>
+              <p className="mt-2 text-sm leading-6 text-gray-600">Output: {review.naturalOutput}</p>
+              <p className="mt-2 text-sm leading-6 text-gray-600">Gap: {review.currentUxGap}</p>
+              <p className="mt-2 text-xs leading-5 text-gray-500">{review.statusAfterReview}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
         <p className="text-sm font-semibold text-blue-700">Export-first Simulation</p>
         <h2 className="mt-1 text-2xl font-semibold text-gray-950">User execution simulation batch 1</h2>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
