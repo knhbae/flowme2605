@@ -463,6 +463,51 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   expect(download.suggestedFilename()).toBe('moving-d30-basic.xlsx');
 });
 
+test('moving flow opens with an export-first calendar preview hero', async ({ page }) => {
+  await page.goto('/f/moving-d30-basic');
+
+  const hero = page.getByRole('region', { name: 'Export-first flow hero' });
+  await expect(hero).toBeVisible();
+  await expect(hero.getByRole('heading', { name: '이사 D-30 준비 Flow' })).toBeVisible();
+  await expect(hero.getByText('이렇게 캘린더에 들어갑니다')).toBeVisible();
+
+  await hero.getByLabel('이사일').fill('2026-06-22');
+  await expect(hero.getByText('2026-05-23', { exact: true })).toBeVisible();
+  await expect(hero.getByText('이사 방식 정하기')).toBeVisible();
+  await expect(hero.getByText('2026-06-12', { exact: true })).toBeVisible();
+  await expect(hero.getByText('우편물/카드/은행 주소 변경하기')).toBeVisible();
+  await expect(hero.getByText('2026-06-22', { exact: true })).toBeVisible();
+  await expect(hero.getByText('전기/가스/수도/관리비 정산하기')).toBeVisible();
+  await expect(hero.getByRole('button', { name: '내 도구로 가져가기' })).toBeVisible();
+
+  const firstCard = page.locator('[data-testid="flow-item-card"]').filter({ hasText: '이사 방식 정하기' }).first();
+  await expect(firstCard).toBeVisible();
+  const heroBox = await hero.boundingBox();
+  const listBox = await firstCard.boundingBox();
+  expect(heroBox?.y ?? 0).toBeLessThan(listBox?.y ?? 0);
+});
+
+test('flow item card makes detail and skipped states explicit', async ({ page }) => {
+  await page.goto('/f/moving-d30-basic');
+  await page.getByLabel('이사일').fill('2026-06-22');
+
+  const firstItem = page.locator('[data-testid="flow-item-card"]').filter({ hasText: '이사할 집 하자 점검하기' }).first();
+  await expect(firstItem.getByRole('checkbox', { name: /이사할 집 하자 점검하기/ })).toBeVisible();
+  await expect(firstItem.getByRole('button', { name: '메모' })).toBeVisible();
+  await expect(firstItem.getByRole('button', { name: '해당 없음' })).toBeVisible();
+  await expect(firstItem.getByRole('button', { name: '자세히' })).toBeVisible();
+
+  await firstItem.getByRole('button', { name: '자세히' }).click();
+  await expect(firstItem.getByText('왜 필요한가')).toBeVisible();
+  await expect(firstItem.getByText('어떻게 하나요')).toBeVisible();
+  await expect(firstItem.getByText('완료 조건')).toBeVisible();
+
+  await firstItem.getByRole('button', { name: '해당 없음' }).click();
+  await expect(firstItem).toHaveAttribute('data-skipped', 'true');
+  await expect(firstItem.getByText('진행률 계산에서 제외 · 다시 포함 가능')).toBeVisible();
+  await expect(firstItem.getByRole('button', { name: '다시 포함' })).toBeVisible();
+});
+
 test('source-fit decisions are visible on direct-access public flow pages', async ({ page }) => {
   await page.goto('/f/study-exam-d30-plan');
   await expect(page.getByTestId('source-fit-status')).toHaveAttribute('data-decision', 'catalog_preview_only');
@@ -586,19 +631,19 @@ test('mobile export actions open from a bottom sheet', async ({ page }) => {
   const mobileBar = page.getByTestId('mobile-export-bar');
   await expect(mobileBar).toBeVisible();
   await expect(mobileBar.getByText('1 / 24')).toBeVisible();
-  await expect(mobileBar.getByRole('button', { name: '산출물 받기' })).toBeVisible();
+  await expect(mobileBar.getByRole('button', { name: '내 도구로 가져가기' })).toBeVisible();
   await expect(mobileBar.getByRole('button', { name: '체크리스트 복사' })).toHaveCount(0);
   await expect(mobileBar.getByRole('button', { name: '엑셀 받기' })).toHaveCount(0);
 
-  await mobileBar.getByRole('button', { name: '산출물 받기' }).click();
+  await mobileBar.getByRole('button', { name: '내 도구로 가져가기' }).click();
 
   const sheet = page.getByTestId('mobile-export-sheet');
-  await expect(sheet.getByRole('heading', { name: '산출물 받기' })).toBeVisible();
-  await expect(sheet.getByText('카드 안 버튼과 같은 산출물을 한곳에 모았습니다.')).toBeVisible();
-  await expect(sheet.getByRole('button', { name: '체크리스트 복사' })).toBeEnabled();
-  await expect(sheet.getByRole('button', { name: '엑셀로 받기' })).toBeEnabled();
-  await expect(sheet.getByRole('button', { name: '캘린더 받기' })).toBeEnabled();
-  await expect(sheet.getByRole('button', { name: '내 버전' })).toBeEnabled();
+  await expect(sheet.getByRole('heading', { name: '어디로 가져갈까요' })).toBeVisible();
+  await expect(sheet.getByText('이사일 2026-07-15 기준 24개 항목')).toBeVisible();
+  await expect(sheet.getByRole('button', { name: /캘린더에 추가/ })).toBeEnabled();
+  await expect(sheet.getByRole('button', { name: /엑셀로 받기/ })).toBeEnabled();
+  await expect(sheet.getByRole('button', { name: /텍스트 복사/ })).toBeEnabled();
+  await expect(sheet.getByRole('button', { name: /내 버전으로 편집/ })).toBeEnabled();
 
   await sheet.getByRole('button', { name: '닫기' }).click();
   await expect(page.getByTestId('mobile-export-sheet')).toHaveCount(0);
@@ -623,11 +668,11 @@ test('wedding flow answers first-screen questions and persists date note and ski
   const firstItem = page.locator('[data-testid="flow-item-card"]').filter({ hasText: '예식 날짜와 예상 하객 규모 정하기' }).first();
   await expect(firstItem.getByLabel('완료: 예식 날짜와 예상 하객 규모 정하기')).toBeVisible();
   await expect(firstItem.getByText(/D-180/)).toBeVisible();
-  await expect(firstItem.getByRole('button', { name: '메모 추가' })).toBeVisible();
+  await expect(firstItem.getByRole('button', { name: '메모' })).toBeVisible();
   await expect(firstItem.getByRole('button', { name: '해당 없음' })).toBeVisible();
   await expect(firstItem.getByRole('button', { name: '자세히' })).toBeVisible();
   await firstItem.getByLabel('완료: 예식 날짜와 예상 하객 규모 정하기').check();
-  await firstItem.getByRole('button', { name: '메모 추가' }).click();
+  await firstItem.getByRole('button', { name: '메모' }).click();
   await expect(firstItem.getByText('자동 저장됨 · 이 기기에만 저장')).toBeVisible();
   await firstItem.getByLabel('예식 날짜와 예상 하객 규모 정하기 메모').fill('양가 협의는 6월 첫째 주에 다시 확인');
 
@@ -913,12 +958,13 @@ test('mobile workbench keeps export buttons in the sticky sheet instead of artif
 
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   const mobileBar = page.getByTestId('mobile-export-bar');
-  await expect(mobileBar.getByRole('button', { name: '산출물 받기' })).toBeVisible();
+  await expect(mobileBar.getByRole('button', { name: '내 도구로 가져가기' })).toBeVisible();
 
-  await mobileBar.getByRole('button', { name: '산출물 받기' }).click();
+  await mobileBar.getByRole('button', { name: '내 도구로 가져가기' }).click();
   const sheet = page.getByTestId('mobile-export-sheet');
+  await expect(sheet.getByRole('heading', { name: '어디로 가져갈까요' })).toBeVisible();
   await expect(sheet.getByRole('button', { name: '엑셀로 받기' })).toBeEnabled();
-  await expect(sheet.getByRole('button', { name: '캘린더 받기' })).toBeEnabled();
+  await expect(sheet.getByRole('button', { name: /캘린더에 추가/ })).toBeEnabled();
 });
 
 test('study progress table exposes source-derived guard metadata', async ({ page }) => {

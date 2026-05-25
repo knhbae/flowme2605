@@ -2227,6 +2227,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const done = executableIds.filter((id) => checks[id]).length;
   const canExportCalendar = hasCalendarSchedule(bundle);
   const showTodayExecution = isFitnessExactVideoFlow(bundle);
+  const showExportFirstHero = isExportFirstHeroRoute(bundle);
   const primaryDestination = inferPrimaryDestination(bundle);
 
   const toggle = (id: string) => {
@@ -2326,6 +2327,13 @@ export function PublicFlow({ slug }: { slug: string }) {
     persist([...bundles, next]);
     window.location.href = `/flows/${next.flow.id}/edit`;
   };
+  const openExportActions = () => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setShowMobileExportSheet(true);
+      return;
+    }
+    document.querySelector('[aria-label="Flow artifact workbench"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return (
     <main className="mx-auto max-w-5xl px-5 py-8 pb-28 md:pb-8">
@@ -2345,7 +2353,21 @@ export function PublicFlow({ slug }: { slug: string }) {
         <FlowSourceFitStatus bundle={bundle} />
       </header>
 
-      {!showTodayExecution ? (
+      {showExportFirstHero ? (
+        <ExportFirstHero
+          bundle={bundle}
+          anchor={anchor}
+          displayAnchor={displayAnchor}
+          mode={anchorMode}
+          onModeChange={setAnchorMode}
+          onAnchorChange={setAnchor}
+          weekdays={weekdaySelection}
+          onWeekdaysChange={setWeekdaySelection}
+          onTake={openExportActions}
+        />
+      ) : null}
+
+      {!showTodayExecution && !showExportFirstHero ? (
       <section className="my-6 rounded-xl border border-blue-100 bg-white p-4 shadow-sm">
         <div className="grid gap-4">
           <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
@@ -2492,9 +2514,9 @@ export function PublicFlow({ slug }: { slug: string }) {
             <div className="mx-auto h-1.5 w-12 rounded-full bg-gray-200" />
             <div className="mt-4 flex items-start justify-between gap-4">
               <div>
-                <h2 id="mobile-export-title" className="text-lg font-semibold text-gray-950">산출물 받기</h2>
+                <h2 id="mobile-export-title" className="text-lg font-semibold text-gray-950">어디로 가져갈까요</h2>
                 <p className="mt-1 text-sm text-gray-600">
-                  {done > 0 ? '카드 안 버튼과 같은 산출물을 한곳에 모았습니다.' : '항목을 체크하면 체크리스트, 엑셀, 캘린더 산출물을 받을 수 있어요.'}
+                  {getMobileExportSheetSummary(bundle, displayAnchor, executableCount)}
                 </p>
               </div>
               <button className="shrink-0 whitespace-nowrap rounded-md border border-gray-200 px-3 py-1.5 text-sm font-semibold text-gray-700" onClick={() => setShowMobileExportSheet(false)}>
@@ -2502,19 +2524,40 @@ export function PublicFlow({ slug }: { slug: string }) {
               </button>
             </div>
             <div className="mt-5 grid gap-2">
-              <button className="rounded-md bg-[#2563EB] px-4 py-3 text-left text-sm font-semibold text-white disabled:bg-gray-300" disabled={done === 0} onClick={copy}>
-                체크리스트 복사
-              </button>
-              <button className="rounded-md border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-800 disabled:border-gray-200 disabled:text-gray-400" disabled={done === 0} onClick={downloadExcel}>
-                엑셀로 받기
-              </button>
               {canExportCalendar ? (
-                <button className="rounded-md border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-800 disabled:border-gray-200 disabled:text-gray-400" disabled={done === 0} onClick={downloadCalendar}>
-                  캘린더 받기
+                <button className="flex items-center gap-3 rounded-md bg-gray-50 px-4 py-3 text-left text-sm font-semibold text-gray-950 disabled:text-gray-400" disabled={done === 0} onClick={downloadCalendar}>
+                  <span aria-hidden="true" className="text-lg">□</span>
+                  <span className="flex-1">
+                    <span className="block">캘린더에 추가</span>
+                    <span className="mt-0.5 block text-xs font-medium text-gray-500">구글 · 애플 · .ics 파일</span>
+                  </span>
+                  <span aria-hidden="true" className="text-gray-400">›</span>
                 </button>
               ) : null}
-              <button className="rounded-md border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-800" onClick={copyToEditableDraft}>
-                내 버전
+              <button className="flex items-center gap-3 rounded-md bg-gray-50 px-4 py-3 text-left text-sm font-semibold text-gray-950 disabled:text-gray-400" disabled={done === 0} onClick={downloadExcel}>
+                <span aria-hidden="true" className="text-lg">□</span>
+                <span className="flex-1">
+                  <span className="block">엑셀로 받기</span>
+                  <span className="mt-0.5 block text-xs font-medium text-gray-500">진도표와 메모 시트</span>
+                </span>
+                <span aria-hidden="true" className="text-gray-400">›</span>
+              </button>
+              <button className="flex items-center gap-3 rounded-md bg-gray-50 px-4 py-3 text-left text-sm font-semibold text-gray-950 disabled:text-gray-400" disabled={done === 0} onClick={copy}>
+                <span aria-hidden="true" className="text-lg">□</span>
+                <span className="flex-1">
+                  <span className="block">텍스트 복사</span>
+                  <span className="mt-0.5 block text-xs font-medium text-gray-500">노션 · 카카오톡 · 메모장</span>
+                </span>
+                <span aria-hidden="true" className="text-gray-400">›</span>
+              </button>
+              <div className="my-1 h-px bg-gray-100" />
+              <button className="flex items-center gap-3 rounded-md border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-800" onClick={copyToEditableDraft}>
+                <span aria-hidden="true" className="text-lg">□</span>
+                <span className="flex-1">
+                  <span className="block">내 버전으로 편집</span>
+                  <span className="mt-0.5 block text-xs font-medium text-gray-500">저장 후 내용 수정</span>
+                </span>
+                <span aria-hidden="true" className="text-gray-400">›</span>
               </button>
             </div>
             <div className="mt-3 min-h-5 text-sm">
@@ -2539,12 +2582,129 @@ export function PublicFlow({ slug }: { slug: string }) {
               </div>
             </div>
             <button className="shrink-0 rounded-md bg-[#2563EB] px-4 py-3 text-sm font-semibold text-white" onClick={() => setShowMobileExportSheet(true)}>
-              산출물 받기
+              내 도구로 가져가기
             </button>
           </div>
         </div>
       </div>
     </main>
+  );
+}
+
+function isExportFirstHeroRoute(bundle: FlowBundle) {
+  return bundle.flow.slug === 'moving-d30-basic';
+}
+
+function compactDateLabel(value: string) {
+  if (!value) return '';
+  const [, month, day] = value.split('-');
+  return month && day ? `${Number(month)}/${Number(day)}` : value;
+}
+
+function getExportFirstPreviewEntries(bundle: FlowBundle, anchor: string): ScheduleEntry[] {
+  if (!anchor) return [];
+  const seen = new Set<string>();
+  const entries = getScheduleEntries(bundle, anchor).sort((a, b) => a.startDate.localeCompare(b.startDate));
+  const grouped: ScheduleEntry[] = [];
+
+  for (const entry of entries) {
+    const key = entry.timing || entry.startDate;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    grouped.push(entry);
+  }
+
+  if (grouped.length <= 3) return grouped;
+
+  const dayOfEntry = grouped.find((entry) => entry.timing === 'D-Day' || entry.startDate === anchor);
+  return [grouped[0], grouped[1], dayOfEntry ?? grouped[2]].filter(
+    (entry, index, list): entry is ScheduleEntry => Boolean(entry) && list.findIndex((item) => item?.id === entry.id) === index,
+  );
+}
+
+function getMobileExportSheetSummary(bundle: FlowBundle, anchor: string, executableCount: number) {
+  if (bundle.flow.slug === 'moving-d30-basic' && anchor) return `이사일 ${anchor} 기준 ${executableCount}개 항목`;
+  if (anchor) return `${anchor} 기준 ${executableCount}개 항목`;
+  return `${executableCount}개 항목`;
+}
+
+function ExportFirstHero({
+  bundle,
+  anchor,
+  displayAnchor,
+  mode,
+  onModeChange,
+  onAnchorChange,
+  weekdays,
+  onWeekdaysChange,
+  onTake,
+}: {
+  bundle: FlowBundle;
+  anchor: string;
+  displayAnchor: string;
+  mode: AnchorMode;
+  onModeChange: (value: AnchorMode) => void;
+  onAnchorChange: (value: string) => void;
+  weekdays: string[];
+  onWeekdaysChange: (value: string[]) => void;
+  onTake: () => void;
+}) {
+  const previewEntries = getExportFirstPreviewEntries(bundle, displayAnchor);
+  const remainingCount = Math.max(getScheduleEntries(bundle, displayAnchor).length - previewEntries.length, 0);
+  const sourceText = bundle.flow.source_title ? `${bundle.items.length}개 항목 · ${bundle.flow.source_title}` : `${bundle.items.length}개 항목`;
+
+  return (
+    <section aria-label="Export-first flow hero" className="my-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm md:p-5">
+      <div className="grid gap-5 md:grid-cols-[1.08fr_0.92fr] md:items-start">
+        <div>
+          <h2 className="text-2xl font-semibold tracking-tight text-gray-950 md:text-3xl">{bundle.flow.title}</h2>
+          <p className="mt-2 text-sm leading-6 text-gray-600">{sourceText}</p>
+
+          <div className="mt-5 rounded-lg bg-gray-50 p-4">
+            <p className="text-sm font-semibold text-gray-700">이렇게 캘린더에 들어갑니다</p>
+            <div className="mt-3 space-y-2">
+              {previewEntries.map((entry) => (
+                <div key={entry.id} className="grid grid-cols-[3.2rem_5.8rem_1fr] items-baseline gap-2 text-sm">
+                  <span className="font-semibold text-gray-500">{entry.timing}</span>
+                  <span className="font-medium text-gray-600">{entry.startDate}</span>
+                  <span className="min-w-0 text-gray-950">{entry.title}</span>
+                </div>
+              ))}
+            </div>
+            {remainingCount > 0 ? <p className="mt-3 text-xs font-medium text-gray-500">+ 나머지 {remainingCount}개 항목</p> : null}
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <p className="text-sm font-semibold text-gray-800">{getSetupStepTitle(bundle)}</p>
+          <p className="mt-1 text-sm leading-6 text-gray-600">{getSetupStepDescription(bundle)}</p>
+          <div className="mt-4">
+            <AnchorInput
+              bundle={bundle}
+              anchor={anchor}
+              displayAnchor={displayAnchor}
+              mode={mode}
+              onModeChange={onModeChange}
+              onChange={onAnchorChange}
+              weekdays={weekdays}
+              onWeekdaysChange={onWeekdaysChange}
+            />
+          </div>
+          <button
+            type="button"
+            className="mt-4 w-full rounded-md bg-gray-950 px-4 py-3 text-sm font-semibold text-white hover:bg-gray-800"
+            onClick={onTake}
+          >
+            내 도구로 가져가기
+          </button>
+          {displayAnchor ? (
+            <p className="mt-2 text-center text-xs font-medium text-gray-500">
+              {compactDateLabel(previewEntries[0]?.startDate ?? displayAnchor)}부터 {bundle.items.length}개 항목을 옮깁니다.
+            </p>
+          ) : null}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -3520,25 +3680,25 @@ function ItemDetailContent({ detail }: { detail?: FlowItemDetail }) {
       <div className="grid gap-3 text-gray-700 md:grid-cols-2">
         {detail.why ? (
           <div>
-            <p className="text-xs font-semibold text-gray-500">💡 왜 필요한가요</p>
+            <p className="flex items-center gap-1 text-xs font-semibold text-gray-500"><span aria-hidden="true">?</span> 왜 필요한가</p>
             <p className="mt-1 leading-6">{detail.why}</p>
           </div>
         ) : null}
         {detail.how ? (
           <div>
-            <p className="text-xs font-semibold text-gray-500">🔧 어떻게 하나요</p>
+            <p className="flex items-center gap-1 text-xs font-semibold text-gray-500"><span aria-hidden="true">→</span> 어떻게 하나요</p>
             <p className="mt-1 leading-6">{detail.how}</p>
           </div>
         ) : null}
         {visibleCompletionCriteria(detail) ? (
           <div>
-            <p className="text-xs font-semibold text-gray-500">✅ 완료 조건</p>
+            <p className="flex items-center gap-1 text-xs font-semibold text-gray-500"><span aria-hidden="true">✓</span> 완료 조건</p>
             <p className="mt-1 leading-6">{visibleCompletionCriteria(detail)}</p>
           </div>
         ) : null}
         {detail.caution ? (
           <div className="text-amber-800">
-            <p className="text-xs font-semibold">⚠️ 주의</p>
+            <p className="flex items-center gap-1 text-xs font-semibold"><span aria-hidden="true">!</span> 주의</p>
             <p className="mt-1 leading-6">{detail.caution}</p>
           </div>
         ) : null}
@@ -3603,10 +3763,14 @@ function FlowItemCard({
   const timing = item.day_offset !== undefined ? timingLabel(item.day_offset, item.duration_days) : '';
   const repeat = item.repeat_rule && !timing ? item.repeat_rule : '';
   const hasDetail = Boolean(detail?.why || detail?.how || detail?.completion_criteria || detail?.caution || detail?.links?.length);
-  const memoButtonLabel = state?.note ? '메모' : '메모 추가';
+  const memoButtonLabel = '메모';
 
   return (
-    <div data-testid="flow-item-card" className={`rounded-lg border border-gray-200 bg-white p-4 transition ${skipped ? 'opacity-60' : 'hover:border-gray-300'}`}>
+    <div
+      data-testid="flow-item-card"
+      data-skipped={skipped ? 'true' : 'false'}
+      className={`rounded-lg border p-4 transition ${skipped ? 'border-gray-200 bg-gray-50 opacity-75' : 'border-gray-200 bg-white hover:border-gray-300'}`}
+    >
       <div className="flex gap-3">
         <input
           aria-label={`완료: ${item.title}`}
@@ -3618,7 +3782,7 @@ function FlowItemCard({
         />
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-3">
-            <h3 className="text-base font-semibold leading-6 text-gray-950">{item.title}</h3>
+            <h3 className={`text-base font-semibold leading-6 ${skipped ? 'text-gray-400 line-through' : 'text-gray-950'}`}>{item.title}</h3>
             <ItemMetaText parts={[repeat, timing, date]} />
           </div>
           <ItemCardBadges badges={getActionBadges(bundle, item, detail)} />
@@ -3626,30 +3790,34 @@ function FlowItemCard({
         </div>
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2 pl-8">
+      {skipped ? <p className="mt-2 pl-8 text-xs font-medium text-gray-500">진행률 계산에서 제외 · 다시 포함 가능</p> : null}
+
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 pl-8">
         <button
-          className="min-h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-700 hover:border-blue-300 hover:text-blue-700"
+          className="text-sm font-semibold text-gray-600 hover:text-blue-700"
           type="button"
           onClick={() => setMemoOpen((value) => !value)}
         >
+          <span aria-hidden="true">✎ </span>
           {memoButtonLabel}
         </button>
         <button
-          className={`min-h-10 rounded-md border px-3 py-2 text-sm font-semibold ${skipped ? 'border-gray-300 bg-white text-gray-700' : 'border-amber-200 bg-amber-50 text-amber-800'}`}
+          className={`text-sm font-semibold ${skipped ? 'text-gray-700' : 'text-amber-800 hover:text-amber-900'}`}
           type="button"
           aria-pressed={skipped}
           onClick={() => onSkipToggle(item.id)}
         >
+          <span aria-hidden="true">− </span>
           {skipped ? '다시 포함' : '해당 없음'}
         </button>
         {hasDetail ? (
           <button
-            className="min-h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-700 hover:border-blue-300 hover:text-blue-700"
+            className="ml-auto text-sm font-semibold text-gray-600 hover:text-blue-700"
             type="button"
             aria-expanded={detailsOpen}
             onClick={() => setDetailsOpen((value) => !value)}
           >
-            {detailsOpen ? '접기' : '자세히'}
+            {detailsOpen ? '접기' : '자세히'} <span aria-hidden="true">{detailsOpen ? '↑' : '↓'}</span>
           </button>
         ) : null}
       </div>

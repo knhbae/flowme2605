@@ -56,11 +56,11 @@
 - Artifact-near export actions have landed: copy, xlsx, and calendar actions now appear inside the workbench area while existing export formats remain unchanged.
 - Setup export card reduction has landed on main: the normal Flow setup area is now anchor-input only, while export actions remain in the workbench and mobile bottom sheet.
 - Artifact subcard export placement has landed: workbench export actions now sit beside the specific list, calendar, progress table, and log cards that produce each external artifact.
-- Mobile artifact export copy has landed: the sticky mobile shortcut now uses artifact-card labels so it reads as `산출물 받기`, not a separate backup feature.
+- Mobile artifact export copy has landed: earlier mobile sheets used artifact-card labels such as `산출물 받기`; the export-first redesign batch now uses the clearer destination-oriented CTA `내 도구로 가져가기`.
 
 - Study progress-table criteria and six-route export-first audit are now documented: study tables require source rows such as curriculum, exam scope, past-exam rounds, weekly plans, lessons, or assignments; `computer-skills-d30-study` remains the current example, while `diet-habit-2week` and `new-car-delivery-check` remain public MVP candidates with guardrails and no route is called validated.
 
-- Mobile artifact-card export buttons are now hidden below `sm`: desktop keeps artifact-near export buttons, while mobile uses the sticky `산출물 받기` sheet to lower repeated button density on study and other multi-artifact flows.
+- Mobile artifact-card export buttons are now hidden below `sm`: desktop keeps artifact-near export buttons, while mobile uses the sticky export sheet to lower repeated button density on study and other multi-artifact flows.
 
 - Post-mobile-density route re-evaluation is documented: `computer-skills-d30-study` remains representative-eligible but not validated, while `diet-habit-2week` and `new-car-delivery-check` remain public MVP candidates with guardrails and no exposure change.
 - Mobile bottom-sheet screenshots are documented for `diet-habit-2week` and `new-car-delivery-check`: the sheet itself is acceptable after the mobile artifact-button reduction, while the next density risk is page-level artifact and caution stacking.
@@ -72,6 +72,7 @@
 - Execution-specificity video route pass has landed: `source reviewed` is now treated as a source boundary only, exact workout video details must separate summary, detailed guide, original video, post-workout record, and stop condition, and the first ThankyouBUBU exact-workout routes keep one action without being called validated.
 - Diet exact-video execution-specificity pass has landed: FITVELY diet/body-composition videos stay one-action and sheet-first, with details narrowed to one selected rule, one application, one observation record, and one stop condition without outcome claims.
 - FITVELY nutrition exact-video action-clarity pass has landed: remaining nutrition exact-video routes now show a concrete first action, apply-before/apply-after record fields, and a portable keep-or-stop decision row for spreadsheet export without adding nutrition targets or validation claims.
+- Export-first redesign batch 1 has landed for `moving-d30-basic`: the first screen now previews the calendar artifact before item-list density, mobile export actions are destination-first, and item cards show clearer memo/skip/detail states without validation claims.
 - Workout-plan exact-video execution-specificity pass has landed: FITVELY workout programming videos stay one-action and hybrid, with details narrowed to one selected rule, weekly workout table application, record fields, and revise-or-hold conditions.
 - Broad-source route review has landed: current real-source routes backed only by channel pages, broad sites, broad study material, FAQ pages, or official portals stay out of public MVP/representative framing until exact route-level sources or route-specific official references are attached.
 - Broad-source code guard has landed: Content Lab summary data now tracks the current real+broad routes and reports any lifecycle `keep` leak before representative/public MVP framing changes.
