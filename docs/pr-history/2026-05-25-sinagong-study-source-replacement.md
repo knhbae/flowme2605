@@ -2,8 +2,8 @@
 
 Date: 2026-05-25
 Branch: `content/sinagong-study-source-replacement`
-PR: TBD
-Status: Ready for PR
+PR: #67
+Status: Open, waiting for checks
 
 ## Why
 
