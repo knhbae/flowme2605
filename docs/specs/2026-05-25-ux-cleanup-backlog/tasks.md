@@ -9,4 +9,4 @@
 - [x] Add audit/spec/pr-history docs.
 - [x] Capture Flow Lab screenshot.
 - [x] Run full verification.
-- [ ] Create PR and merge if checks pass.
+- [x] Create PR and merge if checks pass.

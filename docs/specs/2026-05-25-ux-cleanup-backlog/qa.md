@@ -19,3 +19,5 @@
 - PASS: `npm test`
 - PASS: `npm run docs:check`
 - PASS: `git diff --check` with CRLF warnings only.
+- PASS: Vercel `https://vercel.com/flowme/flowme2605/G6iy2WJ6qePH47kgtZYm2fokexDC`
+- PASS: merged PR #85 as squash commit `f86e6cc626a65ae1b7475bc17947ea9e93b7b1ca`.

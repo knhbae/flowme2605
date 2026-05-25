@@ -2,8 +2,8 @@
 
 Date: 2026-05-25
 Branch: `content/ux-cleanup-backlog`
-PR: Pending
-Status: In progress
+PR: #85
+Status: Merged
 
 ## Why
 
@@ -32,4 +32,5 @@ The product direction and review standards are now mostly organized, but the use
 - PASS: `npm test`
 - PASS: `npm run docs:check`
 - PASS: `git diff --check` with CRLF warnings only.
-- Pending: Vercel, merge.
+- PASS: Vercel `https://vercel.com/flowme/flowme2605/G6iy2WJ6qePH47kgtZYm2fokexDC`
+- Merged: PR #85 as squash commit `f86e6cc626a65ae1b7475bc17947ea9e93b7b1ca`.
