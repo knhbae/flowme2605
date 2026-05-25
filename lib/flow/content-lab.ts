@@ -348,6 +348,7 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   const expansionCandidates = expansionCreatorLabs.flatMap((creator) => creator.candidates);
   const previewGeneratedBundles = bundles.filter((bundle) => bundle.flow.id.startsWith('flow-preview-'));
   const realSourceBundles = bundles.filter((bundle) => bundle.flow.source_status === 'real');
+  const broadRealSourceBundles = realSourceBundles.filter((bundle) => bundle.flow.source_precision === 'broad');
   const sourceFitSummary = getSourceFitSummary();
   const inventorySummary = summarizeContentInventory(bundles);
   const naturalArtifactSummary = summarizeNaturalArtifactAuditCoverage(bundles);
@@ -366,6 +367,11 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     missingConvertedPilotSlugs: convertedPilotSlugs.filter((slug) => !slugs.has(slug)),
     convertedPilotCategories: Array.from(new Set(convertedPilotBundles.map((bundle) => bundle.flow.category))).sort(),
     realSourceFlowCount: realSourceBundles.length,
+    broadRealSourceCount: broadRealSourceBundles.length,
+    broadRealSourceSlugs: broadRealSourceBundles.map((bundle) => bundle.flow.slug),
+    broadRealSourceRepresentativeLeakSlugs: broadRealSourceBundles
+      .map((bundle) => bundle.flow.slug)
+      .filter((slug) => lifecycleSummary.keepSlugs.includes(slug)),
     previewGeneratedFlowCount: previewGeneratedBundles.length,
     expansionCreatorCount: expansionCreatorLabs.length,
     expansionCandidateCount: expansionCandidates.length,

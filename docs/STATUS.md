@@ -73,6 +73,7 @@
 - Diet exact-video execution-specificity pass has landed: FITVELY diet/body-composition videos stay one-action and memo-first, with details narrowed to one selected rule, one application, one observation record, and one stop condition without outcome claims.
 - Workout-plan exact-video execution-specificity pass has landed: FITVELY workout programming videos stay one-action and hybrid, with details narrowed to one selected rule, weekly workout table application, record fields, and revise-or-hold conditions.
 - Broad-source route review has landed: current real-source routes backed only by channel pages, broad sites, broad study material, FAQ pages, or official portals stay out of public MVP/representative framing until exact route-level sources or route-specific official references are attached.
+- Broad-source code guard is in progress: Content Lab summary data now tracks the seven current real+broad routes and reports any lifecycle `keep` leak before representative/public MVP framing changes.
 
 ## Next Up
 
