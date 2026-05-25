@@ -47,6 +47,11 @@ const decisionToHandling = {
 } as const;
 
 const decisionTableOverrideSlugs = new Set(['driver-license-renewal-check', 'new-car-delivery-check']);
+const workoutProgrammingDecisionSlugs = new Set([
+  'real-fitvely-video-bulk-up-method',
+  'real-fitvely-video-workout-order',
+  'real-fitvely-video-workout-split-science',
+]);
 const memoCardOverrideSlugs = new Set([
   'family-certificate-issue',
   'resident-register-copy-issue',
@@ -76,6 +81,7 @@ function getPrimarySurface(bundle: FlowBundle, model = normalizeExecutionModel(b
   if (bundle.flow.content_type === 'meal_plan') return 'meal_reaction_log';
   if (bundle.flow.slug === 'used-car-buying-check') return 'decision_table';
   if (decisionTableOverrideSlugs.has(bundle.flow.slug)) return 'decision_table';
+  if (workoutProgrammingDecisionSlugs.has(bundle.flow.slug)) return 'decision_table';
   if (memoCardOverrideSlugs.has(bundle.flow.slug)) return 'memo_card';
   if (spreadsheetOverrideSlugs.has(bundle.flow.slug)) return 'spreadsheet_log';
   if (model.views.includes('comparison_table') || (hasArtifact(bundle, 'comparison_table') && bundle.flow.structure_type === 'checklist')) return 'decision_table';
@@ -141,10 +147,14 @@ export function getArtifactPlan(bundle: FlowBundle): ArtifactPlan {
   const primarySurface = getPrimarySurface(bundle, model);
   const sourceHandling = getSourceHandling(bundle);
   const audit = getNaturalArtifactAudit(bundle.flow.slug);
-  const exportTargets: FlowExportTarget[] =
+  const modelTargets: FlowExportTarget[] =
     model.views.includes('month_calendar') && !model.exportTargets.includes('calendar')
       ? [...model.exportTargets, 'calendar']
       : model.exportTargets;
+  const exportTargets: FlowExportTarget[] =
+    primarySurface === 'decision_table' && bundle.flow.primary_destination === 'hybrid' && !modelTargets.includes('sheet')
+      ? [...modelTargets, 'sheet']
+      : modelTargets;
 
   return {
     flowSlug: bundle.flow.slug,

@@ -263,6 +263,22 @@ test('diet exact video flow uses application language instead of workout schedul
   await expect(page.getByRole('button', { name: '메모/노션에 복사' })).toBeVisible();
 });
 
+test('workout programming exact video starts from a decision table before weekly plan', async ({ page }) => {
+  await page.goto('/f/real-fitvely-video-workout-order');
+
+  const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(workbench.getByRole('heading', { name: '후보 비교표', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '운동 기준 결정표에 들어간 적용 Flow' })).toBeVisible();
+  await expect(page.getByText('영상의 운동 기준 후보를 먼저 비교하고, 고른 기준만 이번 주 운동표로 옮깁니다.')).toBeVisible();
+  await expect(page.getByText('추천 리듬: 결정 후 적용')).toBeVisible();
+  await expect(page.getByText('결정표+운동표')).toBeVisible();
+  await expect(page.getByText('결정 후 운동표 미리보기')).toBeVisible();
+  await expect(page.getByText('선택 기준 반영').first()).toBeVisible();
+  await expect(page.getByText('운동표에 이미 들어간 기준')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '캘린더에 넣기' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '엑셀 실행표 받기' })).toBeVisible();
+});
+
 test('FITVELY diet record route starts from a source-rule observation sheet', async ({ page }) => {
   await page.goto('/f/real-fitvely-diet-record-routine');
 

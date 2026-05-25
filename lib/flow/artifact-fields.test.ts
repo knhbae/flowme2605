@@ -164,6 +164,30 @@ test('used-car route exposes candidate comparison rows and decision memo fields'
   );
 });
 
+test('workout programming routes expose source-rule decision rows', () => {
+  const slugs = [
+    'real-fitvely-video-bulk-up-method',
+    'real-fitvely-video-workout-order',
+    'real-fitvely-video-workout-split-science',
+  ];
+
+  for (const slug of slugs) {
+    const config = getComparisonConfig(bundle(slug));
+
+    assert.equal(config?.title, '운동 기준 결정표', slug);
+    assert.deepEqual(
+      config?.rows.map((row) => row.id),
+      [
+        'workout-source-rule-candidate',
+        'workout-user-condition-fit',
+        'workout-weekly-plan-application',
+        'workout-revise-or-hold',
+      ],
+      slug,
+    );
+  }
+});
+
 test('vehicle inspection route exposes reservation and result follow-up memo fields', () => {
   const fields = getMemoCardFields(bundle('vehicle-inspection-prep'));
 

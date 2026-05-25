@@ -57,6 +57,11 @@ const kdcaTravelHealthSlugs = new Set(['real-kdca-travel-health-check']);
 const childcareSupportSlugs = new Set(['real-childcare-support-application-check']);
 const newCarDeliverySlugs = new Set(['new-car-delivery-check']);
 const usedCarSlugs = new Set(['used-car-buying-check']);
+const workoutProgrammingSlugs = new Set([
+  'real-fitvely-video-bulk-up-method',
+  'real-fitvely-video-workout-order',
+  'real-fitvely-video-workout-split-science',
+]);
 const vehicleInspectionSlugs = new Set(['vehicle-inspection-prep']);
 const taxDocumentSlugs = new Set(['year-end-tax-docs']);
 const businessRegistrationSlugs = new Set(['business-registration-basic']);
@@ -310,6 +315,13 @@ const usedCarComparisonRows: ArtifactComparisonRow[] = [
   { id: 'used-car-history-record', title: '사고 이력·성능점검기록부' },
   { id: 'used-car-seller-memo', title: '판매자 설명·현장 확인 메모' },
   { id: 'used-car-hold-reason', title: '구매 보류 사유' },
+];
+
+const workoutProgrammingComparisonRows: ArtifactComparisonRow[] = [
+  { id: 'workout-source-rule-candidate', title: '원본 영상에서 고른 기준 후보' },
+  { id: 'workout-user-condition-fit', title: '내 일정·회복·장비 조건 적합성' },
+  { id: 'workout-weekly-plan-application', title: '이번 주 운동표에 반영할 칸' },
+  { id: 'workout-revise-or-hold', title: '수정하거나 보류할 조건' },
 ];
 
 const usedCarDecisionMemoFields: ArtifactMemoField[] = [
@@ -738,6 +750,13 @@ export function getComparisonConfig(bundle: FlowBundle): ArtifactComparisonConfi
       title: '중고차 후보 비교표',
       eyebrow: '구매 전 후보 비교',
       rows: usedCarComparisonRows,
+    };
+  }
+  if (workoutProgrammingSlugs.has(bundle.flow.slug)) {
+    return {
+      title: '운동 기준 결정표',
+      eyebrow: '기준 선택 후 운동표 반영',
+      rows: workoutProgrammingComparisonRows,
     };
   }
   return undefined;

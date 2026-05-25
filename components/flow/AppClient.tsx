@@ -2702,7 +2702,24 @@ function getEmbeddedToolCopy(destination: PrimaryDestination): {
   };
 }
 
+const workoutProgrammingExactVideoSlugs = new Set([
+  'real-fitvely-video-bulk-up-method',
+  'real-fitvely-video-workout-order',
+  'real-fitvely-video-workout-split-science',
+]);
+
 function getExactVideoToolCopy(bundle: FlowBundle, destination: PrimaryDestination): ReturnType<typeof getEmbeddedToolCopy> {
+  if (destination === 'hybrid' && workoutProgrammingExactVideoSlugs.has(bundle.flow.slug)) {
+    return {
+      title: '운동 기준 결정표에 들어간 적용 Flow',
+      description: '영상의 운동 기준 후보를 먼저 비교하고, 고른 기준만 이번 주 운동표로 옮깁니다.',
+      rhythm: '결정 후 적용',
+      tool: '결정표+운동표',
+      previewTitle: '결정 후 운동표 미리보기',
+      scheduleLabel: '선택 기준 반영',
+    };
+  }
+
   if (
     destination === 'sheet' &&
     bundle.flow.slug.startsWith('real-fitvely-video-') &&
