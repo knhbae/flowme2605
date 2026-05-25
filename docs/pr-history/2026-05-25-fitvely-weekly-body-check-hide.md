@@ -2,8 +2,8 @@
 
 Date: 2026-05-25
 Branch: `content/fitvely-weekly-body-check-hide`
-PR: Pending
-Status: In progress
+PR: #73
+Status: Merged
 
 ## Why
 
@@ -34,4 +34,5 @@ Status: In progress
 - PASS: `npm run build` after stopping the local dev server that held `.next/trace`.
 - PASS: `npx playwright test tests/e2e/flow-mvp.spec.ts -g "flow lab shows converted pilot"`
 - PASS: `git diff --check` with CRLF warnings only.
-- Pending: Vercel.
+- PASS: Vercel `https://vercel.com/flowme/flowme2605/2EKudsfcZmFsmCGjNZvJHPaRyDEF`
+- Merged: PR #73 as squash commit `73409fe9d22a192bc67ca9be4a671b4d6f987bf7`.
