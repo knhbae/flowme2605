@@ -18,3 +18,5 @@
 - PASS: full unit tests after adding `lib/flow/mobile-simulation-protocol.test.ts` to the default `npm test` script.
 - PASS: docs check.
 - PASS: diff check with CRLF warnings only.
+- PASS: Vercel `https://vercel.com/flowme/flowme2605/7Ta71FiuHFh5SGKGovNSTHCA1uRQ`
+- PASS: merged PR #81 as squash commit `29f25e16edc2c4ed8991a5fe4325a1906c6151e5`.
