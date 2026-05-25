@@ -596,6 +596,7 @@ function buildIcsDescription(
   bundle: FlowBundle,
   sectionTitle = '',
   timing = '',
+  actionGuide?: string,
   completionCriteria?: string,
   links?: string,
 ): string {
@@ -604,6 +605,7 @@ function buildIcsDescription(
     bundle.flow.description,
     sectionTitle ? '' : bundle.items[0]?.title,
     exactVideoDetail?.how,
+    sectionTitle && actionGuide ? actionGuide : '',
     exactVideoDetail?.completion_criteria,
     sectionTitle ? `Section: ${sectionTitle}` : '',
     timing ? `Timing: ${timing}` : '',
@@ -623,6 +625,7 @@ type IcsEntry = {
   start: Date;
   durationDays: number;
   timing: string;
+  actionGuide?: string;
   completionCriteria?: string;
   links?: string;
 };
@@ -640,6 +643,7 @@ function buildIcsEntries(bundle: FlowBundle, anchor?: string): IcsEntry[] {
       start: addDays(new Date(anchor), item.day_offset ?? 0),
       durationDays: Math.max(item.duration_days ?? 1, 1),
       timing: timingLabel(item.day_offset, item.duration_days),
+      actionGuide: detail?.how,
       completionCriteria: detail?.completion_criteria,
       links: linkList(detail),
     });
@@ -654,6 +658,7 @@ function buildIcsEntries(bundle: FlowBundle, anchor?: string): IcsEntry[] {
       start: addDays(new Date(anchor), slot.day_offset),
       durationDays: Math.max(slot.duration_days, 1),
       timing: timingLabel(slot.day_offset, slot.duration_days),
+      actionGuide: '',
       completionCriteria: slot.new_ingredients.length ? `New ingredients: ${slot.new_ingredients.join(', ')}` : '',
       links: recipe ? sourceNote(bundle, recipe.risk_level) : sourceNote(bundle),
     });
@@ -685,6 +690,7 @@ export function buildIcsCalendar(
       bundle,
       entry.sectionTitle,
       entry.timing,
+      entry.actionGuide,
       entry.completionCriteria,
       entry.links,
     );

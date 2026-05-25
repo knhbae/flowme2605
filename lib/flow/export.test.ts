@@ -238,6 +238,20 @@ test('study export ignores user overrides for source-derived scope rows', () => 
   assert.equal(allCells.includes('reviewed'), true);
 });
 
+test('study calendar export keeps each dated item executable', () => {
+  const study = seedBundles.find((bundle) => bundle.flow.slug === 'computer-skills-d30-study');
+  assert.ok(study);
+
+  const ics = buildIcsCalendar(study, {}, '2026-06-22');
+
+  assert.match(ics, /SUMMARY:컴퓨터활용능력 D-30 학습 Flow - 필기와 실기 시험 범위 나누기/);
+  assert.match(ics, /실행:/);
+  assert.match(ics, /기록:/);
+  assert.match(ics, /D-30 학습표|챕터 진도표/);
+  assert.match(ics, /기출 점수·오답 기록|모의점수 로그/);
+  assert.match(ics, /FLOW가 시험일 기준으로 변환/);
+});
+
 test('diet log text export starts with record table guidance', () => {
   const diet = seedBundles.find((entry) => entry.flow.slug === 'real-fitvely-video-body-fat-6kg-method');
   assert.ok(diet);
