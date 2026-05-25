@@ -3,6 +3,8 @@
 Date: 2026-05-25
 Branch: `content/workout-plan-execution-specificity`
 PR: #55
+Status: Merged and Vercel check passed
+Vercel: https://vercel.com/flowme/flowme2605/HY1NBBCtFJH1DfaruM4vCAXm1tAM
 
 ## Why
 
@@ -37,6 +39,7 @@ Full verification:
 - `npm run build` passed.
 - `npm run test:e2e` passed.
 - `git diff --check` passed.
+- Vercel PR check passed before merge.
 
 ## Risks
 
