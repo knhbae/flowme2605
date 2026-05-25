@@ -35,6 +35,8 @@ The new source better supports a natural artifact:
   - `real-fitvely-weekly-body-check`
   - `real-mofa-overseas-travel-prep`
 
+Update: `real-mofa-overseas-travel-prep` later received an exact 외교부 베트남 국가/지역별 정보 source and dropped out of the broad queue. It remains reshape, not representative/public MVP.
+
 ## Not Done
 
 - Did not promote to representative or public MVP.

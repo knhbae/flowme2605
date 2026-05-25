@@ -43,11 +43,11 @@ Current UX gap:
 - Representative leak count remains 0.
 - Remaining broad queue:
   - `real-fitvely-weekly-body-check`
-  - `real-mofa-overseas-travel-prep`
 
 ## Follow-Up
 
 1. Reshape `real-fitvely-diet-record-routine` into a compact diet exact-video record: one selected rule, one application, one observation row, one stop condition.
 2. Keep `real-fitvely-weekly-body-check` in broad-source review until a matching measurement/check-in source is found, or demote/remove the route.
 3. `real-pet-health-visit-routine` later received an exact 서울시 우리동네 동물병원 source and dropped out of the broad queue, but remains catalog review because the source has region and eligibility limits.
+4. `real-mofa-overseas-travel-prep` later received an exact 외교부 베트남 국가/지역별 정보 source and dropped out of the broad queue, but remains reshape because country-check and emergency-card UX still need work.
 3. Continue with pet health and MOFA broad-source replacement/rewrite.

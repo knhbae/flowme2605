@@ -692,6 +692,16 @@ test('pet health visit route uses an exact official visit program source without
   assert.ok(pet.itemDetails.every((detail) => detail.links.some((link) => link.url === pet.flow.source_url)));
 });
 
+test('MOFA travel prep route uses an exact country safety source without promotion', () => {
+  const travel = seedBundles.find((bundle) => bundle.flow.slug === 'real-mofa-overseas-travel-prep');
+
+  assert.ok(travel);
+  assert.equal(travel.flow.source_precision, 'exact');
+  assert.equal(travel.flow.source_url, 'https://www.0404.go.kr/ntnSafetyInfo/86/detail');
+  assert.ok(travel.flow.source_title?.includes('베트남'));
+  assert.ok(travel.itemDetails.every((detail) => detail.links.some((link) => link.url === travel.flow.source_url)));
+});
+
 test('fitness exact video flow titles preserve the original content premise', () => {
   const exactVideos = seedBundles.filter((bundle) => bundle.flow.tags?.includes('exact-video'));
   const carb = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-carb-reason');

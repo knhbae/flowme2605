@@ -9,7 +9,7 @@ The broad-source editorial rule now has a Content Lab summary guard. The summary
 
 Current result:
 
-- Broad real-source routes: 2
+- Broad real-source routes: 1
 - Representative/lifecycle keep leaks: 0
 
 ## Why
@@ -19,7 +19,6 @@ The document-only audit prevents editorial confusion, but it does not stop futur
 ## Guarded Route List
 
 - `real-fitvely-weekly-body-check`
-- `real-mofa-overseas-travel-prep`
 
 ## Implementation Notes
 
@@ -46,3 +45,4 @@ The document-only audit prevents editorial confusion, but it does not stop futur
 - 2026-05-25: `real-fitvely-diet-record-routine` received an exact FITVELY nutrition video source. The guard now tracks the remaining four broad routes.
 - 2026-05-25: `real-sinagong-computer-d30-study` received an exact Gilbut/Sinagong book source. The guard now tracks the remaining three broad routes.
 - 2026-05-25: `real-pet-health-visit-routine` received an exact 서울시 우리동네 동물병원 official source. The guard now tracks the remaining two broad routes.
+- 2026-05-25: `real-mofa-overseas-travel-prep` received an exact 외교부 베트남 국가/지역별 정보 source. The guard now tracks the remaining one broad route.

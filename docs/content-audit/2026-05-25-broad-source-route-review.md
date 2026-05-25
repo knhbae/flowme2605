@@ -3,7 +3,7 @@
 Date: 2026-05-25
 Scope: real-source routes whose current source is a channel, site, or broad reference rather than a route-level original.
 
-Update: `real-thankyou-bubu-home-workout-starter`, `real-thankyou-bubu-20min-routine`, `real-fitvely-diet-record-routine`, `real-sinagong-computer-d30-study`, and `real-pet-health-visit-routine` received exact source replacements later on 2026-05-25. The current broad-source guard queue is 2 routes.
+Update: `real-thankyou-bubu-home-workout-starter`, `real-thankyou-bubu-20min-routine`, `real-fitvely-diet-record-routine`, `real-sinagong-computer-d30-study`, `real-pet-health-visit-routine`, and `real-mofa-overseas-travel-prep` received exact source replacements later on 2026-05-25. The current broad-source guard queue is 1 route.
 
 ## Decision
 
@@ -29,7 +29,7 @@ This review does not mark any route validated.
 | `real-fitvely-weekly-body-check` | FITVELY site | Measurement behavior needs a concrete source method and stop/consult boundary. | Keep out of representative/public MVP. | Replace with an exact body-check source; separate measurement row, observation note, and stop/consult condition. |
 | `real-sinagong-computer-d30-study` | Exact Gilbut/Sinagong book page assigned after this review | The source boundary is now exact, but the route still needs source-derived progress rows and score/wrong-answer rows. | Keep as fix/source review, not representative. | Reshape or merge with the existing `computer-skills-d30-study` representative-eligible route. |
 | `real-pet-health-visit-routine` | Exact 서울시 우리동네 동물병원 official page assigned after this review | The source now supports designated hospital visit, required documents, and essential treatment fields, but it is region/eligibility-limited. | Keep as fix/catalog review. | Reshape around Seoul eligibility, designated hospital, required documents, essential treatment items, visit result memo, and professional-contact triggers. |
-| `real-mofa-overseas-travel-prep` | MOFA safety portal | Broad official portal is useful as a safety entry point, but destination-specific details are missing. | Allow as broad official reference only; do not promote. | Add country/page-specific MOFA links or travel-safety checklist pages before public MVP or representative framing. |
+| `real-mofa-overseas-travel-prep` | Exact 외교부 베트남 국가/지역별 정보 page assigned after this review | The source now supports country-specific warning level, safety notices, embassy contacts, and local emergency numbers, but the route still needs country-check UX. | Keep as reshape, not public MVP/representative. | Reshape around country confirmation date, safety notice check, embassy/emergency card, and family-share memo. |
 
 ## Conversion Decisions
 
@@ -61,4 +61,4 @@ Recommended fixes:
 2. Keep `real-fitvely-weekly-body-check` broad until a matching measurement/check-in source is found, or demote/remove the route.
 3. Reshape or merge the Sinagong exact-source route before using it beyond direct QA.
 4. Reshape the pet-health visit route around the 서울시 support-program source before any stronger exposure.
-5. Add destination-specific MOFA links before using the travel route beyond direct QA.
+5. Reshape the MOFA travel route around the country-specific source before using it beyond direct QA.
