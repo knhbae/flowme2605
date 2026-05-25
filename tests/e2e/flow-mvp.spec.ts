@@ -995,6 +995,14 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(lifecycle.getByText('미리보기 전용', { exact: true }).first()).toBeVisible();
   await expect(lifecycle.getByText('삭제 후보', { exact: true }).first()).toBeVisible();
   await expect(lifecycle.getByText('실제 원본 Flow의')).toBeVisible();
+  const broadSourceGuard = page.locator('section').filter({ hasText: 'Broad Source Guard' });
+  await expect(broadSourceGuard).toBeVisible();
+  await expect(broadSourceGuard.getByText('Broad real sources', { exact: true })).toBeVisible();
+  await expect(broadSourceGuard.getByText('Representative leaks', { exact: true })).toBeVisible();
+  await expect(broadSourceGuard.getByText('7', { exact: true }).first()).toBeVisible();
+  await expect(broadSourceGuard.getByText('0', { exact: true }).first()).toBeVisible();
+  await expect(broadSourceGuard.getByText('real-thankyou-bubu-home-workout-starter')).toBeVisible();
+  await expect(broadSourceGuard.getByText('real-mofa-overseas-travel-prep')).toBeVisible();
   const readiness = page.locator('section').filter({ hasText: '대표 승격 1차 심사' });
   await expect(readiness).toBeVisible();
   await expect(readiness.getByText('대표 후보', { exact: true }).first()).toBeVisible();

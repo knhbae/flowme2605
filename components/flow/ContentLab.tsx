@@ -277,6 +277,34 @@ export function ContentLab() {
       </section>
 
       <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
+        <p className="text-sm font-semibold text-blue-700">Broad Source Guard</p>
+        <h2 className="mt-1 text-2xl font-semibold text-gray-950">넓은 출처 대표 승격 차단</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+          채널, 사이트, FAQ, 포털처럼 route-level 원본이 아직 넓은 실제 원본 Flow를 따로 추적합니다.
+          이 목록은 exact video, exact page, source-derived row set이 붙기 전까지 public MVP나 대표 후보로 보지 않습니다.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <div className="rounded-lg bg-blue-50 p-3 text-blue-950">
+            <p className="text-sm text-blue-800">Broad real sources</p>
+            <p className="mt-1 text-2xl font-semibold">{summary.broadRealSourceCount}</p>
+          </div>
+          <div className="rounded-lg bg-emerald-50 p-3 text-emerald-950">
+            <p className="text-sm text-emerald-800">Representative leaks</p>
+            <p className="mt-1 text-2xl font-semibold">{summary.broadRealSourceRepresentativeLeakSlugs.length}</p>
+          </div>
+        </div>
+        <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
+          <p className="text-sm font-semibold text-gray-900">Exact source replacement queue</p>
+          <p className="mt-2 text-sm leading-6 text-gray-700">{summary.broadRealSourceSlugs.join(' · ')}</p>
+          <p className="mt-3 text-xs leading-5 text-gray-500">
+            Leak list: {summary.broadRealSourceRepresentativeLeakSlugs.length > 0
+              ? summary.broadRealSourceRepresentativeLeakSlugs.join(' · ')
+              : 'none'}
+          </p>
+        </div>
+      </section>
+
+      <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
         <p className="text-sm font-semibold text-blue-700">Representative Readiness</p>
         <h2 className="mt-1 text-2xl font-semibold text-gray-950">대표 승격 1차 심사</h2>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
