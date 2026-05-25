@@ -3,7 +3,7 @@
 Date: 2026-05-25
 Branch: `content/pet-health-source-replacement`
 PR: #69
-Status: Open, waiting for checks
+Status: Merged
 
 ## Why
 
@@ -33,3 +33,5 @@ Status: Open, waiting for checks
 - PASS: `npx playwright test tests/e2e/flow-mvp.spec.ts -g "flow lab shows converted pilot"`
 - PASS: `git diff --check` with existing CRLF warnings only.
 - Screenshot: `docs/screenshots/2026-05-25-pet-health-source-replacement-flow-lab.png`
+- Vercel: https://vercel.com/flowme/flowme2605/5AagSeueXTTo9vSrUceYdiaib5n3
+- Merged: PR #69 as squash commit `0a542fa5bbf7e54fbbf53746ffd809b1ad0dd5a7`.
