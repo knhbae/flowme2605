@@ -2726,12 +2726,13 @@ function getExactVideoToolCopy(bundle: FlowBundle, destination: PrimaryDestinati
     bundle.flow.category.includes('다이어트')
   ) {
     return {
-      title: '식사 관찰표에 들어간 적용 Flow',
-      description: '영상의 기준 하나를 오늘 한 끼나 운동 전후 행동에 적용하고, 결과는 관찰표 한 줄로 남깁니다.',
-      rhythm: '적용할 때마다',
-      tool: '관찰표',
-      previewTitle: '관찰표 미리보기',
-      scheduleLabel: '관찰표 기록',
+      title: '오늘 한 끼 적용 관찰표 Flow',
+      description:
+        '영상에서 기준 1개를 고른 뒤 다음 식사나 운동 전후 행동에 한 번만 적용하고, 적용 전/후 반응을 관찰표 한 줄에 적습니다.',
+      rhythm: '한 번 적용 후 기록',
+      tool: '적용 전후 관찰표',
+      previewTitle: '오늘 적용 기록 미리보기',
+      scheduleLabel: '적용 전후 기록',
     };
   }
 

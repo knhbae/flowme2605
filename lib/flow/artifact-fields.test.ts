@@ -237,6 +237,34 @@ test('FITVELY diet record route exposes a source-rule observation log', () => {
   );
 });
 
+test('FITVELY nutrition exact-video routes expose apply-before-after observation rows', () => {
+  const slugs = [
+    'real-fitvely-video-body-fat-6kg-method',
+    'real-fitvely-video-carb-reason',
+    'real-fitvely-video-three-week-check',
+    'real-fitvely-video-post-workout-nutrition',
+    'real-fitvely-video-carb-amount-shorts',
+    'real-fitvely-video-after-work-nutrition',
+    'real-fitvely-video-weight-class-method',
+  ];
+
+  for (const slug of slugs) {
+    const tables = getLogTables(bundle(slug));
+
+    assert.deepEqual(tables.map((table) => table.id), ['fitvely-nutrition-action-observation-log'], slug);
+    assert.deepEqual(
+      tables[0]?.columns.map((column) => column.id),
+      ['date', 'targetAction', 'selectedRule', 'beforeCondition', 'afterReaction', 'keepOrStop'],
+      slug,
+    );
+    assert.deepEqual(
+      tables[0]?.rows.map((row) => row.id),
+      ['fitvely-nutrition-before', 'fitvely-nutrition-after'],
+      slug,
+    );
+  }
+});
+
 test('official document routes expose submitter requirement memo fields', () => {
   const familyFields = getMemoCardFields(bundle('family-certificate-issue'));
   const residentFields = getMemoCardFields(bundle('resident-register-copy-issue'));

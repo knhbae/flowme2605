@@ -249,16 +249,21 @@ test('diet exact video flow uses application language instead of workout schedul
 
   const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
   await expect(workbench.getByRole('heading', { name: '기록표', exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '식사 관찰표에 들어간 적용 Flow' })).toBeVisible();
-  await expect(workbench.getByRole('heading', { name: '날짜별 기록표' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '오늘 한 끼 적용 관찰표 Flow' })).toBeVisible();
+  await expect(page.getByText('영상에서 기준 1개를 고른 뒤 다음 식사나 운동 전후 행동에 한 번만 적용하고, 적용 전/후 반응을 관찰표 한 줄에 적습니다.')).toBeVisible();
+  await expect(workbench.getByRole('heading', { name: '오늘 한 끼 적용 관찰표' })).toBeVisible();
   await expect(page.getByText('오늘 적용 기준만 고르기')).toHaveCount(0);
   await expect(page.getByText('1. 적용일 정하기')).toHaveCount(0);
-  await expect(page.getByText('적용 요일').first()).toBeVisible();
+  await expect(page.getByText('적용 전후 기록').first()).toBeVisible();
   await expect(page.getByText('운동 요일')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '전체 루틴' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '주별 보기' })).toHaveCount(0);
   await expect(page.getByText('운동표에 이미 들어간 기준')).toHaveCount(0);
-  await expect(page.getByText('관찰표 기록').first()).toBeVisible();
+  await expect(page.getByText('적용 전후 관찰표').first()).toBeVisible();
+  await expect(workbench.getByLabel('적용 전 기록 / 적용할 식사·운동 전후 행동')).toBeVisible();
+  await expect(workbench.getByLabel('적용 전 기록 / 적용 전 컨디션')).toBeVisible();
+  await expect(workbench.getByLabel('적용 후 기록 / 적용 후 반응')).toBeVisible();
+  await expect(workbench.getByLabel('적용 후 기록 / 유지/중단 결정')).toBeVisible();
   await expect(page.getByRole('button', { name: '엑셀 실행표 받기' })).toBeVisible();
   await expect(page.getByRole('button', { name: '메모/노션에 복사' })).toBeVisible();
 });
@@ -843,10 +848,11 @@ test('artifact workbench shows the primary usable surface first', async ({ page 
   workbench = page.getByLabel('Flow artifact workbench');
   await expect(workbench).toBeVisible();
   await expect(workbench).toContainText('기록표');
-  await expect(workbench).toContainText('식단');
-  await expect(workbench).toContainText('운동');
-  await expect(workbench).toContainText('측정');
-  await expect(workbench).toContainText('컨디션');
+  await expect(workbench).toContainText('적용 전후 관찰표');
+  await expect(workbench).toContainText('영상에서 고른 기준');
+  await expect(workbench).toContainText('적용 전 컨디션');
+  await expect(workbench).toContainText('적용 후 반응');
+  await expect(workbench).toContainText('유지/중단 결정');
 });
 
 test('common first screen keeps progress inside the artifact workbench', async ({ page }) => {
@@ -1030,13 +1036,17 @@ test('artifact workbench saves local execution entries', async ({ page }) => {
 
   await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
   const logWorkbench = page.getByLabel('Flow artifact workbench');
-  await logWorkbench.getByLabel(/식단$/).first().fill('현미밥, 닭가슴살, 샐러드');
-  await logWorkbench.getByLabel('주간 리뷰 메모').fill('저녁 탄수화물을 절반으로 줄여보기');
+  await logWorkbench.getByLabel('적용 전 기록 / 적용할 식사·운동 전후 행동').fill('다음 점심 한 끼');
+  await logWorkbench.getByLabel('적용 전 기록 / 영상에서 고른 기준').fill('원본 영상에서 고른 기준 1개');
+  await logWorkbench.getByLabel('적용 후 기록 / 유지/중단 결정').fill('한 번 더 적용');
+  await logWorkbench.getByLabel('주간 조정 메모').fill('다음 주에도 같은 기준을 유지할지 확인');
 
   await page.reload();
   const reloadedLogWorkbench = page.getByLabel('Flow artifact workbench');
-  await expect(reloadedLogWorkbench.getByLabel(/식단$/).first()).toHaveValue('현미밥, 닭가슴살, 샐러드');
-  await expect(reloadedLogWorkbench.getByLabel('주간 리뷰 메모')).toHaveValue('저녁 탄수화물을 절반으로 줄여보기');
+  await expect(reloadedLogWorkbench.getByLabel('적용 전 기록 / 적용할 식사·운동 전후 행동')).toHaveValue('다음 점심 한 끼');
+  await expect(reloadedLogWorkbench.getByLabel('적용 전 기록 / 영상에서 고른 기준')).toHaveValue('원본 영상에서 고른 기준 1개');
+  await expect(reloadedLogWorkbench.getByLabel('적용 후 기록 / 유지/중단 결정')).toHaveValue('한 번 더 적용');
+  await expect(reloadedLogWorkbench.getByLabel('주간 조정 메모')).toHaveValue('다음 주에도 같은 기준을 유지할지 확인');
 });
 
 test('decision flow comparison table edits and persists candidate notes', async ({ page }) => {
