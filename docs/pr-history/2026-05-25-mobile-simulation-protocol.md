@@ -2,8 +2,8 @@
 
 Date: 2026-05-25
 Branch: `content/mobile-simulation-protocol`
-PR: Pending
-Status: In progress
+PR: #81
+Status: Merged
 
 ## Why
 
@@ -32,4 +32,5 @@ User recruiting is currently difficult, but the three candidate routes still nee
 - PASS: `npm test`
 - PASS: `npm run docs:check`
 - PASS: `git diff --check` with CRLF warnings only.
-- Pending: Vercel, merge.
+- PASS: Vercel `https://vercel.com/flowme/flowme2605/7Ta71FiuHFh5SGKGovNSTHCA1uRQ`
+- Merged: PR #81 as squash commit `29f25e16edc2c4ed8991a5fe4325a1906c6151e5`.

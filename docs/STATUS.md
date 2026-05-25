@@ -84,7 +84,7 @@
 - Representative UX/content review has landed: `computer-skills-d30-study`, `diet-habit-2week`, and `new-car-delivery-check` now have a current simulated user-run review queue that records first action, natural output, UX gap, mobile density risk, source/risk boundary, and next small fix without calling any route validated.
 - Diet observation guardrail copy has landed: `diet-habit-2week` is reframed from diet habit coaching to a two-week food/sleep/activity/condition observation sheet with explicit stop/consult conditions and no validation claim.
 - New-car evidence guardrail copy has landed: `new-car-delivery-check` is tightened around photo filenames, dealer confirmation, document status, and signing hold conditions rather than generic checklist completion.
-- Mobile simulation protocol is in progress: `computer-skills-d30-study`, `diet-habit-2week`, and `new-car-delivery-check` now have scripted mobile rehearsal records with pass/failure signals, average score, and an explicit 0 validated route count.
+- Mobile simulation protocol has landed: `computer-skills-d30-study`, `diet-habit-2week`, and `new-car-delivery-check` now have scripted mobile rehearsal records with pass/failure signals, average score, and an explicit 0 validated route count.
 
 ## Next Up
 
