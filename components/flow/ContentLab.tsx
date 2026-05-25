@@ -391,6 +391,55 @@ export function ContentLab() {
       </section>
 
       <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
+        <p className="text-sm font-semibold text-blue-700">Mobile Simulation Protocol</p>
+        <h2 className="mt-1 text-2xl font-semibold text-gray-950">Observed-session rehearsal script</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+          This panel turns hard-to-schedule user recruiting into a repeatable internal mobile rehearsal. It records task
+          script, required evidence, pass/failure signals, and the next observed-session action. It does not mark any
+          route as validated.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <div className="rounded-lg bg-gray-50 p-3 text-gray-950">
+            <p className="text-sm text-gray-600">Routes</p>
+            <p className="mt-1 text-2xl font-semibold">{summary.mobileSimulationProtocolTotalCount}</p>
+          </div>
+          <div className="rounded-lg bg-blue-50 p-3 text-blue-950">
+            <p className="text-sm text-blue-800">Score</p>
+            <p className="mt-1 text-2xl font-semibold">avg score {summary.mobileSimulationProtocolAverageScore}</p>
+          </div>
+          <div className="rounded-lg bg-amber-50 p-3 text-amber-950">
+            <p className="text-sm text-amber-800">Validation</p>
+            <p className="mt-1 text-2xl font-semibold">
+              {summary.mobileSimulationProtocolValidatedCount === 0
+                ? 'No validated routes'
+                : `${summary.mobileSimulationProtocolValidatedCount} validated`}
+            </p>
+          </div>
+        </div>
+        <div className="mt-5 grid gap-3 lg:grid-cols-3">
+          {summary.mobileSimulationProtocolRecords.map((protocol) => (
+            <article key={protocol.slug} className="rounded-lg border border-gray-200 p-4">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <p className="text-xs font-semibold text-gray-500">{protocol.slug}</p>
+                  <Link className="mt-1 block font-semibold text-gray-950 hover:text-blue-700" href={`/f/${protocol.slug}`}>
+                    {bundleBySlug.get(protocol.slug)?.flow.title ?? protocol.slug}
+                  </Link>
+                </div>
+                <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-800">
+                  {protocol.simulationScore}
+                </span>
+              </div>
+              <p className="mt-3 text-sm leading-6 text-gray-700">{protocol.taskScript[0]}</p>
+              <p className="mt-2 text-sm leading-6 text-gray-600">Pass: {protocol.passSignals[0]}</p>
+              <p className="mt-2 text-sm leading-6 text-gray-600">Fail: {protocol.failureSignals[0]}</p>
+              <p className="mt-2 text-xs leading-5 text-gray-500">{protocol.statusAfterSimulation}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
         <p className="text-sm font-semibold text-blue-700">Export-first Simulation</p>
         <h2 className="mt-1 text-2xl font-semibold text-gray-950">User execution simulation batch 1</h2>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">

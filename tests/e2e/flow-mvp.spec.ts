@@ -1029,6 +1029,13 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(representativeUxReview.getByText('computer-skills-d30-study')).toBeVisible();
   await expect(representativeUxReview.getByText('diet-habit-2week')).toBeVisible();
   await expect(representativeUxReview.getByText('new-car-delivery-check')).toBeVisible();
+  const mobileSimulationProtocol = page.locator('section').filter({ hasText: 'Mobile Simulation Protocol' });
+  await expect(mobileSimulationProtocol).toBeVisible();
+  await expect(mobileSimulationProtocol.getByText('No validated routes')).toBeVisible();
+  await expect(mobileSimulationProtocol.getByText('avg score 77')).toBeVisible();
+  await expect(mobileSimulationProtocol.getByText('computer-skills-d30-study')).toBeVisible();
+  await expect(mobileSimulationProtocol.getByText('diet-habit-2week')).toBeVisible();
+  await expect(mobileSimulationProtocol.getByText('new-car-delivery-check')).toBeVisible();
   const exportFirstSimulation = page.locator('section').filter({ hasText: 'Export-first Simulation' });
   await expect(exportFirstSimulation).toBeVisible();
   await expect(exportFirstSimulation.getByText('Final QA candidate', { exact: true }).first()).toBeVisible();

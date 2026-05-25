@@ -165,6 +165,31 @@ Minimum task path:
 
 Capture screenshots for evidence when the finding is visual.
 
+## Mobile Simulation Protocol
+
+When recruiting observed users is difficult, run a scripted mobile rehearsal before deciding the next UX/content edit. This protocol is an internal preparation step, not validation.
+
+For each candidate route, record:
+
+- Persona and mobile context.
+- Task script the evaluator follows without adding explanation.
+- Required natural artifacts: calendar, sheet, memo, comparison table, checklist, or hybrid output.
+- Pass signals that show the route is understandable.
+- Failure signals that show the user would likely stall, misunderstand risk, or export the wrong thing.
+- Simulation score and rationale.
+- Next observed-session action.
+- Explicit status that includes `not validated`.
+
+The current default routes are:
+
+| Flow | Simulation focus |
+| --- | --- |
+| `computer-skills-d30-study` | Can the user understand source-derived progress rows and export calendar plus sheet? |
+| `diet-habit-2week` | Can the user treat the route as observation, find stop/consult conditions, and avoid prescription interpretation? |
+| `new-car-delivery-check` | Can the user fill evidence rows before checklist completion and keep signing decisions outside FLOW? |
+
+Do not count simulation as validation. Use it to prepare better observed-session scripts and smaller UX/content fixes.
+
 ## Evaluation Checklist
 
 Score each area from 0 to 3:

@@ -356,3 +356,21 @@ test('content lab exposes the current representative UX content review queue', (
   assert.equal(summary.representativeUxContentReviewDecisionCounts.ready_for_observed_session, 1);
   assert.equal(summary.representativeUxContentReviewDecisionCounts.needs_guardrail_rewrite, 2);
 });
+
+test('content lab exposes mobile simulation protocols for current candidate routes', () => {
+  const summary = getContentLabSummary(seedBundles);
+
+  assert.equal(summary.mobileSimulationProtocolTotalCount, 3);
+  assert.deepEqual(summary.mobileSimulationProtocolSlugs, [
+    'computer-skills-d30-study',
+    'diet-habit-2week',
+    'new-car-delivery-check',
+  ]);
+  assert.equal(summary.mobileSimulationProtocolValidatedCount, 0);
+  assert.equal(summary.mobileSimulationProtocolAverageScore, 77);
+  assert.ok(
+    summary.mobileSimulationProtocolRecords.every((record) =>
+      record.statusAfterSimulation.includes('not validated'),
+    ),
+  );
+});

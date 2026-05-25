@@ -12,6 +12,7 @@ import { summarizeExportFirstSimulationReviews } from './export-first-simulation
 import { summarizeRiskBoundaryQaReviews } from './risk-boundary-qa';
 import { summarizeUxContentSimplificationAudits } from './ux-content-simplification-audit';
 import { summarizeRepresentativeUxContentReviews } from './representative-ux-content-review';
+import { summarizeMobileSimulationProtocols } from './mobile-simulation-protocol';
 
 export type ExternalTarget = 'calendar' | 'todo' | 'notion' | 'sheet';
 
@@ -369,6 +370,7 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   const riskBoundaryQaSummary = summarizeRiskBoundaryQaReviews(bundles);
   const uxContentSimplificationSummary = summarizeUxContentSimplificationAudits(bundles);
   const representativeUxContentReviewSummary = summarizeRepresentativeUxContentReviews(bundles);
+  const mobileSimulationProtocolSummary = summarizeMobileSimulationProtocols(bundles);
 
   return {
     pilotCreatorCount: pilotCreatorLabs.length,
@@ -442,5 +444,10 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     representativeUxContentReviewDecisionCounts: representativeUxContentReviewSummary.decisionCounts,
     representativeUxContentReviewSlugs: representativeUxContentReviewSummary.slugs,
     representativeUxContentReviews: representativeUxContentReviewSummary.reviews,
+    mobileSimulationProtocolTotalCount: mobileSimulationProtocolSummary.totalCount,
+    mobileSimulationProtocolSlugs: mobileSimulationProtocolSummary.slugs,
+    mobileSimulationProtocolAverageScore: mobileSimulationProtocolSummary.averageScore,
+    mobileSimulationProtocolValidatedCount: mobileSimulationProtocolSummary.validatedCount,
+    mobileSimulationProtocolRecords: mobileSimulationProtocolSummary.records,
   };
 }
