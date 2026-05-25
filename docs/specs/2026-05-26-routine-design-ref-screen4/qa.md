@@ -34,3 +34,4 @@ GREEN:
 - `npm run docs:check`: passed with 14 required files and 284 local links on 2026-05-26.
 - Related Playwright: 3 passed on 2026-05-26.
 - `npm run test:e2e`: 56 passed on 2026-05-26.
+- Post-merge `npm run docs:check`: passed with 14 required files and 284 local links on 2026-05-26.
