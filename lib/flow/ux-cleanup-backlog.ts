@@ -67,8 +67,9 @@ export const uxCleanupBacklogGroups: UxCleanupBacklogGroup[] = [
       'stop condition',
     ],
     nextBatch:
-      'Start with the two former broad-source ThankyouBUBU routes, then audit the ten exact-video routes for summary/detail/link/record/stop-condition completeness.',
-    statusAfterCleanup: 'cleanup backlog item, not validated until real user behavior exists.',
+      'ThankyouBUBU reminder detail now covers the two former broad-source routes and ten exact-video routes. Next Screen 4 / routine setup batch should reduce start-date, weekday, and session-count friction without generating unsupported exercise plans.',
+    statusAfterCleanup:
+      'ThankyouBUBU workout reminders are calendar-notification-ready, but the route family is still not validated until real user behavior exists.',
   },
   {
     id: 'health_observation_guardrail',

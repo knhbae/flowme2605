@@ -36,6 +36,8 @@ test('UX cleanup backlog records concrete category decisions and route examples'
   assert.ok(workout.requiredMinimum.includes('original video link'));
   assert.ok(workout.requiredMinimum.includes('detailed execution guide'));
   assert.ok(workout.nextBatch.includes('ThankyouBUBU'));
+  assert.match(workout.nextBatch, /Screen 4|routine setup/);
+  assert.match(workout.statusAfterCleanup, /calendar-notification-ready/);
 
   assert.ok(health);
   assert.equal(health.priority, 'P1');

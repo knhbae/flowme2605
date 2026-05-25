@@ -666,7 +666,20 @@ test('former broad ThankyouBUBU replacements use one exact-video execution actio
 });
 
 test('repeated workout video flows are written as calendar-notification-ready actions', () => {
-  const slugs = ['real-thankyou-bubu-home-workout-starter', 'real-thankyou-bubu-20min-routine'];
+  const slugs = [
+    'real-thankyou-bubu-video-full-body-no-jump',
+    'real-thankyou-bubu-video-daily-stretch-9min',
+    'real-thankyou-bubu-video-belly-side-all-in-one',
+    'real-thankyou-bubu-video-no-knee-cardio-strength',
+    'real-thankyou-bubu-video-arm-back-shoulder',
+    'real-thankyou-bubu-video-waist-8cm',
+    'real-thankyou-bubu-video-8min-cardio',
+    'real-thankyou-bubu-video-3min-arm',
+    'real-thankyou-bubu-video-3min-abs',
+    'real-thankyou-bubu-video-lower-belly-8min',
+    'real-thankyou-bubu-home-workout-starter',
+    'real-thankyou-bubu-20min-routine',
+  ];
 
   for (const slug of slugs) {
     const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
