@@ -28,3 +28,7 @@ Green check:
   - Passed on 2026-05-25: `computer skills final QA exports study calendar and score sheet records` and `study progress table exposes source-derived guard metadata`.
 - `npm run test:e2e`
   - Passed on 2026-05-25: 53 tests passed.
+- Vercel
+  - Passed on PR #101 before merge.
+- Merge
+  - PR #101 was squash-merged as `495c9cf8302760f189bb0bc3a0b77573943ff69a`.
