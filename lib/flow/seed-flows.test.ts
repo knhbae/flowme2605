@@ -682,6 +682,16 @@ test('Sinagong study route uses an exact book source without representative prom
   assert.ok(study.itemDetails.every((detail) => detail.links.some((link) => link.url === study.flow.source_url)));
 });
 
+test('pet health visit route uses an exact official visit program source without promotion', () => {
+  const pet = seedBundles.find((bundle) => bundle.flow.slug === 'real-pet-health-visit-routine');
+
+  assert.ok(pet);
+  assert.equal(pet.flow.source_precision, 'exact');
+  assert.equal(pet.flow.source_url, 'https://news.seoul.go.kr/env/archives/567583/');
+  assert.ok(pet.flow.source_title?.includes('우리동네 동물병원'));
+  assert.ok(pet.itemDetails.every((detail) => detail.links.some((link) => link.url === pet.flow.source_url)));
+});
+
 test('fitness exact video flow titles preserve the original content premise', () => {
   const exactVideos = seedBundles.filter((bundle) => bundle.flow.tags?.includes('exact-video'));
   const carb = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-carb-reason');

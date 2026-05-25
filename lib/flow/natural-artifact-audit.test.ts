@@ -104,6 +104,17 @@ test('Sinagong study broad source route is replaced with an exact-source reshape
   assert.ok(audit.nextContentAction.includes('source-derived') || audit.nextContentAction.includes('exact'));
 });
 
+test('pet health visit route is re-sourced to an exact official visit program but not promoted', () => {
+  const audit = getNaturalArtifactAudit('real-pet-health-visit-routine');
+  const bundle = bundleBySlug('real-pet-health-visit-routine');
+
+  assert.ok(audit);
+  assert.equal(bundle.flow.source_precision, 'exact');
+  assert.equal(bundle.flow.source_url, 'https://news.seoul.go.kr/env/archives/567583/');
+  assert.equal(audit.decision, 'keep_catalog_review');
+  assert.match(audit.sourceUrl, /news\.seoul\.go\.kr\/env\/archives\/567583/);
+});
+
 test('third real-source artifact batch covers admin, childcare, pet, and moving decision flows', () => {
   const expectedThirdBatchSlugs = [
     'real-gov24-resident-register-copy',

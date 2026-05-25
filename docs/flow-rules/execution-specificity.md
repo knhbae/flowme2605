@@ -116,10 +116,11 @@ Do not:
 
 Current broad-source review:
 
-- `real-fitvely-weekly-body-check`, `real-pet-health-visit-routine`, and `real-mofa-overseas-travel-prep` remain broad-source routes below public MVP/representative framing until the required source work is done.
+- `real-fitvely-weekly-body-check` and `real-mofa-overseas-travel-prep` remain broad-source routes below public MVP/representative framing until the required source work is done.
 - `real-thankyou-bubu-home-workout-starter` and `real-thankyou-bubu-20min-routine` now have exact video sources, but they still remain below public MVP/representative framing until exact-video first-screen reshaping is complete.
 - `real-fitvely-diet-record-routine` now has an exact diet video source, but it still remains below public MVP/representative framing until spreadsheet-first diet-log reshaping is complete.
 - `real-sinagong-computer-d30-study` now has an exact book source, but it still remains below public MVP/representative framing until source-derived progress rows and score/wrong-answer rows are reshaped or the route is merged with `computer-skills-d30-study`.
+- `real-pet-health-visit-routine` now has an exact 서울시 우리동네 동물병원 source, but it still remains below public MVP/representative framing because the source is a regional support-program page with eligibility limits.
 
 ### Moving, Admin, And Official-Service Flows
 
