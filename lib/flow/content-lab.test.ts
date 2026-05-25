@@ -190,11 +190,10 @@ test('content lab exposes broad real-source guardrails', () => {
 
   assert.deepEqual(summary.broadRealSourceSlugs, [
     'real-fitvely-weekly-body-check',
-    'real-sinagong-computer-d30-study',
     'real-pet-health-visit-routine',
     'real-mofa-overseas-travel-prep',
   ]);
-  assert.equal(summary.broadRealSourceCount, 4);
+  assert.equal(summary.broadRealSourceCount, 3);
   assert.deepEqual(summary.broadRealSourceRepresentativeLeakSlugs, []);
 });
 

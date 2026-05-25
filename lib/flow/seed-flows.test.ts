@@ -671,6 +671,17 @@ test('FITVELY diet record route uses an exact diet source while weekly body chec
   assert.equal(weekly.flow.source_url, 'https://www.fitvely.com/');
 });
 
+test('Sinagong study route uses an exact book source without representative promotion', () => {
+  const study = seedBundles.find((bundle) => bundle.flow.slug === 'real-sinagong-computer-d30-study');
+
+  assert.ok(study);
+  assert.equal(study.flow.source_precision, 'exact');
+  assert.equal(study.flow.source_url, 'https://www.gilbut.co.kr/m/book/view?bookcode=BN004603');
+  assert.ok(study.flow.source_title?.includes('시나공'));
+  assert.ok(study.flow.source_title?.includes('컴활'));
+  assert.ok(study.itemDetails.every((detail) => detail.links.some((link) => link.url === study.flow.source_url)));
+});
+
 test('fitness exact video flow titles preserve the original content premise', () => {
   const exactVideos = seedBundles.filter((bundle) => bundle.flow.tags?.includes('exact-video'));
   const carb = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-carb-reason');
