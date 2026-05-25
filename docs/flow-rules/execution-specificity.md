@@ -43,6 +43,28 @@ Current example:
 
 - `real-thankyou-bubu-video-full-body-no-jump` keeps one action and now separates summary, detailed execution guide, original video, post-workout log, and stop condition.
 
+### Workout-Plan Video
+
+Use when the source is one video about workout order, split, set/rest method, bulk-up method, or program design.
+
+Required:
+
+- Keep one exact-video route as one action unless the source contains a multi-week program with source-derived rows.
+- Use `hybrid` destination when the user needs both a weekly workout table and calendar/check state.
+- Narrow the video to one selected rule before applying it.
+- Add weekly workout table guidance: workout day, session order, target area, set/rest note, load or recovery note when relevant.
+- Add a record field for performed/not performed, fatigue, pain/breathing issue, and next-session adjustment.
+- Add a revise-or-hold condition for pain, excessive fatigue, breathing difficulty, poor recovery, or schedule conflict.
+
+Do not:
+
+- Treat workout programming content as a simple follow-along workout.
+- Convert a broad principle into a complete training prescription.
+
+Current examples:
+
+- `real-fitvely-video-bulk-up-method`, `real-fitvely-video-workout-order`, and `real-fitvely-video-workout-split-science` stay one-action and hybrid, but their details now convert one selected rule into a weekly workout-plan record.
+
 ### Diet Or Body Composition Content
 
 Use when the source is a diet principle, body-composition explainer, nutrition tip, or measurement habit.
