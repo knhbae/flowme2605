@@ -4,13 +4,13 @@ Date: 2026-05-25
 
 Branch: `content/vehicle-inspection-evidence-first`
 
-PR: TBD
+PR: [#91](https://github.com/knhbae/flowme2605/pull/91)
 
-Status: In progress
+Status: Merged
 
-Vercel: TBD
+Vercel: https://vercel.com/flowme/flowme2605/BrVvLyn6k9WacZqaM2i3evvd2cS9
 
-Merged SHA: TBD
+Merged SHA: `48383c0fe6baeaa991ec4dc708c7159a7bc6cbce`
 
 ## Summary
 

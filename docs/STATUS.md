@@ -89,7 +89,7 @@
 - UX cleanup backlog has landed: unresolved content/UX areas are now separated from source-review status, with first rewrite batches focused on exact workout video detail, health observation guardrails, and vehicle evidence-first UX.
 - ThankyouBUBU exact-source reshape has landed: `real-thankyou-bubu-home-workout-starter` and `real-thankyou-bubu-20min-routine` now use one calendar-first exact-video action with summary, detailed guide, original video link, post-workout record, and stop condition, but they are still not representative, public-MVP, or validated.
 - FITVELY diet record observation reshape has landed: `real-fitvely-diet-record-routine` now uses one sheet-first action, source-rule observation rows, and stop/consult copy after exact source replacement, but it is still not representative, public-MVP, or validated.
-- Vehicle inspection evidence-first pass is in progress: `vehicle-inspection-prep` now separates reservation information, documents, precheck evidence, result sheet, and repair/reinspection follow-up into a memo card, but it is still not representative, public-MVP, or validated.
+- Vehicle inspection evidence-first pass has landed: `vehicle-inspection-prep` now separates reservation information, documents, precheck evidence, result sheet, and repair/reinspection follow-up into a memo card, but it is still not representative, public-MVP, or validated.
 
 ## Next Up
 
