@@ -2,7 +2,8 @@
 
 Date: 2026-05-25
 Branch: `content/diet-observation-guardrail-copy`
-Status: In progress
+PR: #77
+Status: Merged
 
 ## Why
 
@@ -32,3 +33,5 @@ The representative UX/content review found that `diet-habit-2week` had the corre
 - PASS: `npm test`
 - PASS: `npm run build`
 - PASS: `npm run docs:check`
+- PASS: Vercel `https://vercel.com/flowme/flowme2605/5P3gqzNHWgPa8hHWJeEsXkoQXJ2K`
+- Merged: PR #77 as squash commit `1248148400b7a71702c49ac304c069118fac5732`.
