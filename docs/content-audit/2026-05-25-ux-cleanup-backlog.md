@@ -52,6 +52,7 @@ The unresolved areas are no longer just scattered notes:
 3. `vehicle_purchase_evidence_first`
    - Reason: checklist completion can be mistaken for acceptance/readiness.
    - First route candidates: `vehicle-inspection-prep`, then re-check `used-car-buying-check`.
+   - 2026-05-25 update: `vehicle-inspection-prep` now has a reservation/result follow-up memo card for reservation info, documents, precheck evidence, result sheet, and repair/reinspection follow-up. It is still not validated.
 
 ## External AI Review Readiness
 

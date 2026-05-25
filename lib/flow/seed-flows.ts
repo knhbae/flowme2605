@@ -171,7 +171,7 @@ const sourceNeedsReviewMeta: Record<
     source_status: 'needs_review',
     source_precision: 'exact',
     source_checked_at: '2026-05-23',
-    conversion_note: 'TS 자동차검사 안내 기반 Flow입니다. 검사 결과 후속 memo gap 검토가 필요합니다.',
+    conversion_note: 'TS 자동차검사 안내 기반 Flow입니다. 검사 예약, 준비 서류, 결과표, 후속 정비 메모를 분리했습니다.',
     primary_destination: 'hybrid',
   },
   'qnet-exam-application-prep': {
