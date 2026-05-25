@@ -436,7 +436,7 @@ test('risk-boundary QA exports new-car evidence memo and diet observation sheet'
 
   let workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
   await expect(workbench).toBeVisible();
-  await expect(workbench.getByText('사진·딜러 확인·인수 보류 기록')).toBeVisible();
+  await expect(workbench.getByText('사진·딜러 확인·서명 전 보류 기록')).toBeVisible();
   await workbench.locator('textarea').first().fill('driver door scratch, photo door-scratch-4821.jpg');
   await workbench.getByLabel('사진/영상 파일명').fill('door-scratch-4821.jpg, hud-test-20260603.mp4');
   await workbench.getByLabel('딜러 확인 내용').fill('dealer confirmed scratch and will send written repair date');
@@ -476,6 +476,13 @@ test('public MVP guardrail screens keep evidence and stop conditions first', asy
   await page.goto('/f/new-car-delivery-check');
 
   let workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(workbench.getByRole('heading', { name: '인수 전 하자·증빙표' })).toBeVisible();
+  await expect(workbench.getByText('사진·딜러 확인', { exact: true })).toBeVisible();
+  const newCarEvidenceTable = workbench.locator('div').filter({ hasText: '인수 전 하자·증빙표' }).first();
+  await expect(newCarEvidenceTable.getByRole('button', { name: '엑셀로 받기' })).toBeVisible();
+  await expect(workbench.getByTestId('artifact-list-card').getByRole('button', { name: '엑셀로 받기' })).toHaveCount(0);
+  await expect(workbench.getByText('사진·딜러 확인·서명 전 보류 기록')).toBeVisible();
+  await expect(workbench.getByText(/체크 완료보다 사진 파일명, 딜러 확인, 보류 조건/)).toBeVisible();
   await expect(workbench.getByText('인수 전 보류 기준')).toBeVisible();
   await expect(workbench.getByLabel('인수 보류/서명 경계 메모')).toBeVisible();
   await expect(workbench.getByText('현장에서 바로 체크')).toBeVisible();

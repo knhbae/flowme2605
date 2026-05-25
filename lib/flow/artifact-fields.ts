@@ -270,10 +270,10 @@ const childcareSupportComparisonRows: ArtifactComparisonRow[] = [
 ];
 
 const newCarDeliveryComparisonRows: ArtifactComparisonRow[] = [
-  { id: 'new-car-exterior-interior', title: '외관/실내 하자와 사진 증빙' },
-  { id: 'new-car-electronics-options', title: '전자장비와 옵션 작동 확인' },
-  { id: 'new-car-documents', title: '등록/보험/인수 서류 확인' },
-  { id: 'new-car-defect-dealer-confirmation', title: '하자 발견 시 딜러 확인과 인수 보류 메모' },
+  { id: 'new-car-exterior-interior', title: '외관/실내 하자와 사진 파일명' },
+  { id: 'new-car-electronics-options', title: '전자장비·옵션 작동과 영상 파일명' },
+  { id: 'new-car-documents', title: '등록/보험/인수 서류 확인 상태' },
+  { id: 'new-car-defect-dealer-confirmation', title: '딜러 확인과 서명 전 보류 조건' },
 ];
 
 const newCarDeliveryMemoFields: ArtifactMemoField[] = [
@@ -282,8 +282,8 @@ const newCarDeliveryMemoFields: ArtifactMemoField[] = [
     label: '인수 장소와 담당자',
     placeholder: '예: 마포 전시장 인도장, 김OO 매니저',
     groupEyebrow: '인수 증빙 메모',
-    groupTitle: '사진·딜러 확인·인수 보류 기록',
-    groupDescription: '하자 여부를 FLOW가 판단하지 않고, 인수 전 사용자가 남긴 사진 파일명과 딜러 확인 내용을 독립 증빙으로 묶습니다.',
+    groupTitle: '사진·딜러 확인·서명 전 보류 기록',
+    groupDescription: '체크 완료보다 사진 파일명, 딜러 확인, 보류 조건을 먼저 남깁니다. FLOW는 인수 여부를 대신 판단하지 않습니다.',
   },
   {
     id: 'new-car-photo-files',
@@ -641,8 +641,8 @@ export function getComparisonConfig(bundle: FlowBundle): ArtifactComparisonConfi
   }
   if (newCarDeliverySlugs.has(bundle.flow.slug)) {
     return {
-      title: '신차 인수 증빙 비교표',
-      eyebrow: '하자/인수 결정',
+      title: '인수 전 하자·증빙표',
+      eyebrow: '사진·딜러 확인',
       rows: newCarDeliveryComparisonRows,
     };
   }

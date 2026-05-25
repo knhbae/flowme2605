@@ -10,7 +10,7 @@ The next UX/content review pass starts with the three current candidate routes:
 |---|---|---|
 | `computer-skills-d30-study` | Representative-eligible, not validated | Ready for observed export-first session |
 | `diet-habit-2week` | Public MVP candidate with guardrails, not validated | Guardrail copy rewritten; needs mobile re-check and observed session |
-| `new-car-delivery-check` | Public MVP candidate with guardrails, not validated | Needs guardrail rewrite before stronger framing |
+| `new-car-delivery-check` | Public MVP candidate with guardrails, not validated | Evidence copy rewritten; needs mobile handover simulation |
 
 No route is validated by this review.
 
@@ -36,14 +36,14 @@ No route is validated by this review.
 
 - First action: enter vehicle/dealer context and fill the defect evidence sheet before treating checklist completion as progress.
 - Natural output: evidence sheet with defect row, photo filename, option/document status, dealer confirmation, follow-up owner, and personal hold/signing memo.
-- Current UX gap: checklist completion can compete with the delivery-day evidence job.
+- Current UX gap: the first artifact now names photo filenames, dealer confirmation, and signing hold conditions, but the route still needs observed handover simulation.
 - Mobile risk: medium; evidence rows, hold memo, inspection sections, documents, and payment checks are long.
-- Next small fix: tighten copy so the first success signal is a portable evidence sheet, not a completed generic checklist.
+- Next small fix: run a mobile handover simulation and check whether users fill the evidence table before treating checklist completion as progress.
 
 ## Follow-Up Queue
 
 1. Mobile first-screen re-check for rewritten `diet-habit-2week`.
-2. Route-level copy pass for `new-car-delivery-check`.
+2. Mobile handover simulation for rewritten `new-car-delivery-check`.
 3. Observed export-first session for `computer-skills-d30-study`.
 4. After the two guardrail rewrites, re-check mobile first screens before public MVP framing.
 
@@ -56,3 +56,9 @@ No route is validated by this review.
 ![Diet observation guardrail desktop](../screenshots/2026-05-25-diet-observation-guardrail-desktop.png)
 
 ![Diet observation guardrail mobile](../screenshots/2026-05-25-diet-observation-guardrail-mobile.png)
+
+## New-Car Guardrail Rewrite Screenshots
+
+![New-car evidence guardrail desktop](../screenshots/2026-05-25-new-car-evidence-guardrail-desktop.png)
+
+![New-car evidence guardrail mobile](../screenshots/2026-05-25-new-car-evidence-guardrail-mobile.png)

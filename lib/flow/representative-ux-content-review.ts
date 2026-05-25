@@ -89,7 +89,7 @@ export const representativeUxContentReviews: RepresentativeUxContentReview[] = [
     naturalOutput:
       'evidence sheet: defect row, photo filename, option/document status, dealer confirmation, follow-up owner; memo: personal hold/signing boundary.',
     currentUxGap:
-      'The evidence artifact is useful, but checklist completion can still compete with the delivery-day evidence job if photo/dealer-confirmation fields are not prominent.',
+      'The evidence artifact now names photo filenames, dealer confirmation, and signing hold conditions more directly, but the mobile first screen still needs observed use before stronger framing.',
     contentRewritePriority:
       'Keep photo filename, dealer confirmation, document status, and hold memo above general inspection copy.',
     exportFirstFit:
@@ -99,7 +99,7 @@ export const representativeUxContentReviews: RepresentativeUxContentReview[] = [
     sourceRiskSeparation:
       'Money-at-risk handover. FLOW records evidence and questions; it does not decide whether to sign or accept delivery.',
     nextSmallFix:
-      'Tighten copy so the first success signal is a portable evidence sheet, not a completed generic inspection checklist.',
+      'Run a mobile handover simulation and verify that users fill the evidence table before treating checklist completion as progress.',
     statusAfterReview: 'public MVP candidate with guardrails, not validated until real user behavior exists.',
   },
 ];
