@@ -3,7 +3,7 @@
 Date: 2026-05-25
 Branch: `content/sinagong-study-source-replacement`
 PR: #67
-Status: Open, waiting for checks
+Status: Merged
 
 ## Why
 
@@ -33,3 +33,5 @@ The broad-source queue still included `real-sinagong-computer-d30-study`, even t
 - PASS: `npx playwright test tests/e2e/flow-mvp.spec.ts -g "flow lab shows converted pilot"`
 - PASS: `git diff --check` with existing CRLF warnings only.
 - Screenshot: `docs/screenshots/2026-05-25-sinagong-study-source-replacement-flow-lab.png`
+- Vercel: https://vercel.com/flowme/flowme2605/5tE4FXJqtms8chm4JQbwv31oJhUx
+- Merged: PR #67 as squash commit `d7b1c931e6e1b850b811514456e82aabddce8ff1`.
