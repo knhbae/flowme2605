@@ -63,10 +63,9 @@ Remaining UX gap:
 
 ## Broad Source Guard Impact
 
-- Broad real-source route count drops from 7 to 5.
+- Broad real-source route count dropped from 7 to 5 in this batch, then to 4 after the FITVELY diet-record source replacement.
 - Representative leak count remains 0.
 - Remaining broad queue:
-  - `real-fitvely-diet-record-routine`
   - `real-fitvely-weekly-body-check`
   - `real-sinagong-computer-d30-study`
   - `real-pet-health-visit-routine`

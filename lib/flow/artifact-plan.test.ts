@@ -88,7 +88,7 @@ test('artifact plan maps diet tracking to spreadsheet-first log', () => {
 });
 
 test('artifact plan keeps broad source routes out of representative promotion', () => {
-  const plan = getArtifactPlan(bundle('real-fitvely-diet-record-routine'));
+  const plan = getArtifactPlan(bundle('real-fitvely-weekly-body-check'));
 
   assert.equal(plan.sourceHandling, 'catalog_review');
   assert.equal(plan.canBeRepresentative, false);

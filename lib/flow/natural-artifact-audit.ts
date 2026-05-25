@@ -1564,12 +1564,12 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-fitvely-diet-record-routine',
-    checkedAt: '2026-05-22',
-    sourceTitle: 'FITVELY 공식 사이트',
-    sourceUrl: 'https://www.fitvely.com/',
+    checkedAt: '2026-05-25',
+    sourceTitle: '【영양학】 다이어트 식단, 이 영상으로 g단위 완벽정리 해드림 - FITVELY',
+    sourceUrl: 'https://www.youtube.com/watch?v=qcTxaFMWzKs',
     sourceEvidence: [
-      'seed metadata uses the broad FITVELY official site as the source for diet-record behavior.',
-      'search results identify FITVELY as a fitness/diet creator brand, but the current source is not a specific diet-record article, video, or program page.',
+      'YouTube oEmbed confirms video id qcTxaFMWzKs is titled "【영양학】 다이어트 식단, 이 영상으로 g단위 완벽정리 해드림 (단백질/탄수화물/식이섬유/지방)" by 핏블리 FITVELY.',
+      'This replaces the former official-site source with one exact nutrition video source for diet-record conversion.',
     ],
     userScenario: '사용자는 다이어트 중 매일 식사, 운동, 체중, 컨디션을 기록하고 주 1회 무엇을 조정할지 보기 위해 엑셀형 기록표를 만들려 한다.',
     naturalArtifacts: [
@@ -1592,11 +1592,11 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
         gap: '식단 기록은 daily log와 weekly/monthly review recurrence를 함께 가져야 한다.',
       },
     ],
-    currentContentGap: '공식 사이트 broad source만으로는 식단 기록 항목과 기준 열을 검증하기 어렵다.',
+    currentContentGap: 'exact 영상은 붙었지만 FLOW가 영상의 식단 기준을 사용자 기록 열과 주간 조정 메모로 충분히 압축하지 못한다.',
     currentUxGap: '식단 기록 전용 spreadsheet, 다중 반복 리마인더, 주간 리뷰가 연결되지 않는다.',
-    nextContentAction: 'FITVELY diet record Flow는 exact diet-log video/article source로 교체하고 기록표 열을 확정한다.',
+    nextContentAction: 'FITVELY diet record Flow를 exact source 기반 식단 기록 열, 선택 기준, 중단/상담 조건 중심으로 더 줄인다.',
     nextUxAction: 'diet Flow에 spreadsheet-first preview와 multiple reminder rules를 추가한다.',
-    decision: 'keep_catalog_review',
+    decision: 'reshape_content_or_ux',
   },
   {
     slug: 'real-fitvely-weekly-body-check',
