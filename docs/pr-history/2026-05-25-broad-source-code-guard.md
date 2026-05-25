@@ -3,8 +3,8 @@
 Date: 2026-05-25
 Branch: `content/broad-source-code-guard`
 PR: #59
-Status: In progress
-Vercel: Pending
+Status: Merged and Vercel check passed
+Vercel: https://vercel.com/flowme/flowme2605/92T8FBZeHMd4jx5ZK2yMakZ9kHJf
 
 ## Why
 
@@ -31,6 +31,7 @@ The broad-source route review clarified the editorial rule, but future seed chan
 - `npm test` passed.
 - `npm run build` passed.
 - `git diff --check` passed with CRLF warnings only.
+- Vercel PR check passed before merge.
 
 ## Risks
 
