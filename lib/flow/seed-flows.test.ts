@@ -247,6 +247,29 @@ test('source replacement and risk review routes have artifact-specific item copy
   }
 });
 
+test('computer skills study items are written as sequence actions', () => {
+  const study = seedBundles.find((bundle) => bundle.flow.slug === 'computer-skills-d30-study');
+  assert.ok(study);
+  assert.equal(study.flow.primary_destination, 'hybrid');
+  assert.match(study.flow.description, /FLOW가 시험일 기준으로 변환/);
+  assert.equal(study.items.length, 9);
+  assert.equal(study.itemDetails?.length, study.items.length);
+
+  for (const item of study.items) {
+    const detail = study.itemDetails?.find((entry) => entry.item_id === item.id);
+    assert.ok(detail, `${item.title} missing detail`);
+    const portableAction = [item.title, detail.why, detail.how, detail.completion_criteria, detail.caution].join('\n');
+
+    assert.match(portableAction, /실행:/, `${item.title} should say what to do`);
+    assert.match(portableAction, /기록:/, `${item.title} should say where to record the result`);
+    assert.match(
+      portableAction,
+      /D-30 학습표|챕터 진도표|기출 점수·오답 기록|캘린더 일정|실기 환경|시험장 준비/,
+      `${item.title} should point to a concrete study artifact`,
+    );
+  }
+});
+
 test('diet habit route is framed as an observation sheet, not a diet prescription', () => {
   const diet = seedBundles.find((entry) => entry.flow.slug === 'diet-habit-2week');
 
