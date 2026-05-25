@@ -84,7 +84,7 @@ Do not:
 
 Current examples:
 
-- `real-fitvely-video-body-fat-6kg-method`, `real-fitvely-video-carb-reason`, and `real-fitvely-video-post-workout-nutrition` stay memo-first and limit the source to one selected rule, one application, one observation record, and one stop condition.
+- `real-fitvely-video-body-fat-6kg-method`, `real-fitvely-video-carb-reason`, `real-fitvely-video-post-workout-nutrition`, and the remaining FITVELY nutrition exact-video routes stay sheet-first and limit the source to one selected rule, one application, one apply-before-after observation row, and one stop condition.
 
 ### Study Or Exam Content
 

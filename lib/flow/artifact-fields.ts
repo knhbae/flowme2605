@@ -62,6 +62,15 @@ const workoutProgrammingSlugs = new Set([
   'real-fitvely-video-workout-order',
   'real-fitvely-video-workout-split-science',
 ]);
+const fitvelyNutritionExactVideoSlugs = new Set([
+  'real-fitvely-video-body-fat-6kg-method',
+  'real-fitvely-video-carb-reason',
+  'real-fitvely-video-three-week-check',
+  'real-fitvely-video-post-workout-nutrition',
+  'real-fitvely-video-carb-amount-shorts',
+  'real-fitvely-video-after-work-nutrition',
+  'real-fitvely-video-weight-class-method',
+]);
 const vehicleInspectionSlugs = new Set(['vehicle-inspection-prep']);
 const taxDocumentSlugs = new Set(['year-end-tax-docs']);
 const businessRegistrationSlugs = new Set(['business-registration-basic']);
@@ -710,6 +719,32 @@ const fitvelyDietObservationLogTables: ArtifactLogTable[] = [
   },
 ];
 
+const fitvelyNutritionActionObservationLogTables: ArtifactLogTable[] = [
+  {
+    id: 'fitvely-nutrition-action-observation-log',
+    eyebrow: '적용 전후 관찰표',
+    title: '오늘 한 끼 적용 관찰표',
+    description:
+      '원본 영상 기준 1개를 오늘 한 번만 적용하고, 적용 전 상태와 적용 후 반응, 유지/중단 결정을 같은 행에 적습니다.',
+    rows: [
+      { id: 'fitvely-nutrition-before', label: '적용 전 기록' },
+      { id: 'fitvely-nutrition-after', label: '적용 후 기록' },
+    ],
+    columns: [
+      { id: 'date', label: '날짜', placeholder: '예: 2026-06-01' },
+      {
+        id: 'targetAction',
+        label: '적용할 식사·운동 전후 행동',
+        placeholder: '예: 다음 점심 한 끼 / 운동 직후 섭취 행동',
+      },
+      { id: 'selectedRule', label: '영상에서 고른 기준', placeholder: '예: 오늘 한 번 적용할 기준 1개' },
+      { id: 'beforeCondition', label: '적용 전 컨디션', placeholder: '예: 허기, 제한감, 운동 전후 상태' },
+      { id: 'afterReaction', label: '적용 후 반응', placeholder: '예: 몸 상태, 허기, 폭식 유발감' },
+      { id: 'keepOrStop', label: '유지/중단 결정', placeholder: '예: 한 번 더 적용 / 수정 / 중단' },
+    ],
+  },
+];
+
 export function getComparisonRows(bundle: FlowBundle): ArtifactComparisonRow[] {
   const config = getComparisonConfig(bundle);
   if (config) return config.rows;
@@ -787,6 +822,7 @@ export function getMemoCardFields(bundle: FlowBundle): ArtifactMemoField[] {
 export function getLogTables(bundle: FlowBundle): ArtifactLogTable[] {
   if (qnetExamSlugs.has(bundle.flow.slug)) return qnetLogTables;
   if (fitvelyDietRecordSlugs.has(bundle.flow.slug)) return fitvelyDietObservationLogTables;
+  if (fitvelyNutritionExactVideoSlugs.has(bundle.flow.slug)) return fitvelyNutritionActionObservationLogTables;
   if (bundle.flow.slug === 'computer-skills-d30-study') return computerSkillsStudyLogTables;
   if (studySlugs.has(bundle.flow.slug)) return studyLogTables;
   return [];

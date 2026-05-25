@@ -702,6 +702,7 @@ test('diet exact video details stay limited to one application and record', () =
     'real-fitvely-video-post-workout-nutrition',
     'real-fitvely-video-carb-amount-shorts',
     'real-fitvely-video-after-work-nutrition',
+    'real-fitvely-video-weight-class-method',
   ];
 
   for (const slug of slugs) {
@@ -721,6 +722,15 @@ test('diet exact video details stay limited to one application and record', () =
     assert.match(detail.how ?? '', /원본 영상:/, `${slug} needs source-video authority`);
     assert.match(detail.how ?? '', /기록:/, `${slug} needs an observation record`);
     assert.match(detail.how ?? '', /중단 조건:/, `${slug} needs a stop condition`);
+    assert.match(detail.how ?? '', /첫 행동:/, `${slug} should start with a concrete first action`);
+    assert.match(detail.how ?? '', /적용 전 기록:/, `${slug} should say what to capture before applying the rule`);
+    assert.match(detail.how ?? '', /적용 후 기록:/, `${slug} should say what to capture after applying the rule`);
+    assert.match(detail.how ?? '', /유지\/중단 결정/, `${slug} should make the keep-or-stop decision portable`);
+    assert.match(
+      detail.completion_criteria ?? '',
+      /적용 전.*적용 후.*유지\/중단/s,
+      `${slug} completion criteria should be usable from an exported reminder or sheet row`,
+    );
     assert.match(detail.caution ?? '', /제한|폭식|어지러움|중단|전문가/, `${slug} needs diet-sensitive caution`);
   }
 });
