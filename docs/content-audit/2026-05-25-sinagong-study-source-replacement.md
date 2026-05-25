@@ -41,8 +41,9 @@ Remaining UX/content gap:
 - Representative leak count remains 0.
 - Remaining broad queue:
   - `real-fitvely-weekly-body-check`
-  - `real-pet-health-visit-routine`
   - `real-mofa-overseas-travel-prep`
+
+Update: `real-pet-health-visit-routine` later received an exact 서울시 우리동네 동물병원 official source and dropped out of the broad-source queue. It remains catalog review, not representative/public MVP.
 
 ## Follow-Up
 

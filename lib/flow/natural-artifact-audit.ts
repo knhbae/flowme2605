@@ -1407,12 +1407,13 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-pet-health-visit-routine',
-    checkedAt: '2026-05-22',
-    sourceTitle: '국가동물보호정보시스템 자주하는 질문',
-    sourceUrl: 'https://www.animal.go.kr/front/awtis/faq/faqList.do?menuNo=2000000021',
+    checkedAt: '2026-05-25',
+    sourceTitle: '서울시 우리동네 동물병원',
+    sourceUrl: 'https://news.seoul.go.kr/env/archives/567583/',
     sourceEvidence: [
-      '국가동물보호정보시스템 FAQ는 법적 효력이 없는 자주 묻는 질문임을 명시하고, 등록대행업체가 주로 동물병원이라는 점과 등록증 출력/변경 신고 같은 행정 정보를 제공한다.',
-      '현재 원본은 반려동물 건강 방문 루틴의 직접 가이드라기보다 동물등록/행정 FAQ에 가깝다.',
+      '서울시 공식 페이지는 2026 우리동네 동물병원 사업의 대상, 신청 기간, 지정 동물병원 방문 신청, 준비물, 문의처를 안내한다.',
+      '지원내용은 기초건강검진, 필수예방접종, 심장사상충 예방약 같은 필수진료와 검진 중 발견된 질병 치료 또는 중성화 수술 같은 선택진료로 나뉜다.',
+      '기존 Animal.go.kr FAQ보다 병원 방문과 준비물에 가까운 exact official source지만, 서울시/취약계층/등록동물 조건이 있어 일반 pet health route로 promotion하면 안 된다.',
     ],
     userScenario: '사용자는 동물병원 방문 전에 최근 증상, 식욕, 배변, 접종/등록 정보를 정리하고 방문 후 재진과 접종 리마인더를 남기려 한다.',
     naturalArtifacts: [

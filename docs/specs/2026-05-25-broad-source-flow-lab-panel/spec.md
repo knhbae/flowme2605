@@ -29,7 +29,7 @@ As a FLOW editor, I need Flow Lab to show broad-source guard status, so I can pr
 
 - `/flow-lab` shows `Broad Source Guard`.
 - The panel shows `Broad real sources` as the current real+broad route count.
-- After the Sinagong study source replacement batch, the current expected count is 3.
+- After the pet-health visit source replacement batch, the current expected count is 2.
 - The panel shows `Representative leaks` as 0.
 - The panel includes current broad-source queue routes such as `real-fitvely-weekly-body-check` and `real-mofa-overseas-travel-prep`.
 - Targeted E2E passes after a RED failure.
