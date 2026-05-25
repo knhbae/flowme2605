@@ -120,8 +120,8 @@ test('content lab exposes source-fit audit summary for representative cleanup', 
   assert.equal(summary.sourceFitAuditedCount, 71);
   assert.ok(summary.sourceFitAverageScore >= 70);
   assert.equal(summary.sourceFitDecisionCounts.keep_representative, 15);
-  assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 49);
-  assert.equal(summary.sourceFitDecisionCounts.catalog_preview_only, 7);
+  assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 51);
+  assert.equal(summary.sourceFitDecisionCounts.catalog_preview_only, 5);
 });
 
 test('content lab exposes full content inventory coverage', () => {
@@ -189,15 +189,13 @@ test('content lab exposes broad real-source guardrails', () => {
   const summary = getContentLabSummary(seedBundles);
 
   assert.deepEqual(summary.broadRealSourceSlugs, [
-    'real-thankyou-bubu-home-workout-starter',
-    'real-thankyou-bubu-20min-routine',
     'real-fitvely-diet-record-routine',
     'real-fitvely-weekly-body-check',
     'real-sinagong-computer-d30-study',
     'real-pet-health-visit-routine',
     'real-mofa-overseas-travel-prep',
   ]);
-  assert.equal(summary.broadRealSourceCount, 7);
+  assert.equal(summary.broadRealSourceCount, 5);
   assert.deepEqual(summary.broadRealSourceRepresentativeLeakSlugs, []);
 });
 

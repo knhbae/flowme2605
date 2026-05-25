@@ -9,9 +9,9 @@ Flow Lab now renders a small internal "Broad Source Guard" panel below lifecycle
 
 Current panel values:
 
-- Broad real sources: 7
+- Broad real sources: 5
 - Representative leaks: 0
-- Replacement queue: all seven current broad real-source route slugs
+- Replacement queue: the five remaining broad real-source route slugs
 
 ## Why
 
@@ -28,8 +28,16 @@ The code guard made the broad-source risk queryable, but editors still had to in
 
 ![Broad Source Flow Lab panel](../screenshots/2026-05-25-broad-source-flow-lab-panel-desktop.png)
 
+Updated screenshot after ThankyouBUBU source replacement:
+
+![Broad Source Flow Lab panel after source replacement](../screenshots/2026-05-25-thankyou-bubu-source-replacement-flow-lab.png)
+
 ## Verification
 
 - RED: targeted Flow Lab E2E failed because the `Broad Source Guard` panel did not exist.
 - GREEN: targeted Flow Lab E2E passed after adding the panel.
 - Screenshot captured: `docs/screenshots/2026-05-25-broad-source-flow-lab-panel-desktop.png`.
+
+Update:
+
+- 2026-05-25: After replacing the two ThankyouBUBU broad channel sources, the same panel should show 5 broad real sources and 0 representative leaks.

@@ -27,7 +27,8 @@ As a FLOW editor, I need Content Lab data to show broad-source routes and repres
 
 ## Acceptance Criteria
 
-- `getContentLabSummary(seedBundles).broadRealSourceCount` is 7.
+- `getContentLabSummary(seedBundles).broadRealSourceCount` matches the current real+broad route queue.
+- After the ThankyouBUBU source replacement batch, the current expected count is 5.
 - `broadRealSourceSlugs` lists all current real+broad routes.
 - `broadRealSourceRepresentativeLeakSlugs` is empty.
 - Focused Content Lab test passes after a RED failure.

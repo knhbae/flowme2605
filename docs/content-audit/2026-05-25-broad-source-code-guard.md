@@ -9,7 +9,7 @@ The broad-source editorial rule now has a Content Lab summary guard. The summary
 
 Current result:
 
-- Broad real-source routes: 7
+- Broad real-source routes: 5
 - Representative/lifecycle keep leaks: 0
 
 ## Why
@@ -18,8 +18,6 @@ The document-only audit prevents editorial confusion, but it does not stop futur
 
 ## Guarded Route List
 
-- `real-thankyou-bubu-home-workout-starter`
-- `real-thankyou-bubu-20min-routine`
 - `real-fitvely-diet-record-routine`
 - `real-fitvely-weekly-body-check`
 - `real-sinagong-computer-d30-study`
@@ -44,3 +42,7 @@ The document-only audit prevents editorial confusion, but it does not stop futur
 
 1. If a broad source route receives an exact route-level source, update the route metadata and revise the expected broad-source list.
 2. If Content Lab UI needs a visible internal panel, render the summary fields without changing public route exposure.
+
+## Updates
+
+- 2026-05-25: The two ThankyouBUBU channel routes received exact YouTube source replacements. The guard now tracks the remaining five broad routes.
