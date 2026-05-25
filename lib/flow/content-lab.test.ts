@@ -164,11 +164,11 @@ test('content lab exposes lifecycle buckets for keep, fix, preview, and removal 
   assert.equal(summary.lifecycleTotalCount, seedBundles.length);
   assert.equal(countSum, seedBundles.length);
   assert.equal(summary.lifecycleBucketCounts.keep, 15);
-  assert.equal(summary.lifecycleBucketCounts.hide, 0);
+  assert.equal(summary.lifecycleBucketCounts.hide, 1);
   assert.equal(summary.lifecycleBucketCounts.preview_only, summary.previewGeneratedFlowCount);
   assert.equal(summary.lifecycleBucketCounts.remove_candidate, 0);
-  assert.equal(summary.lifecycleBucketCounts.fix, 56);
-  assert.equal(summary.lifecycleHideSlugs.length, 0);
+  assert.equal(summary.lifecycleBucketCounts.fix, 55);
+  assert.deepEqual(summary.lifecycleHideSlugs, ['real-fitvely-weekly-body-check']);
   assert.ok(summary.lifecycleFixSlugs.includes('real-sinagong-computer-d30-study'));
   assert.ok(summary.lifecycleFixSlugs.includes('driver-license-renewal-check'));
 });
@@ -188,10 +188,9 @@ test('content lab clears source needs-review priorities after the next audit bat
 test('content lab exposes broad real-source guardrails', () => {
   const summary = getContentLabSummary(seedBundles);
 
-  assert.deepEqual(summary.broadRealSourceSlugs, [
-    'real-fitvely-weekly-body-check',
-  ]);
-  assert.equal(summary.broadRealSourceCount, 1);
+  assert.deepEqual(summary.broadRealSourceSlugs, []);
+  assert.equal(summary.broadRealSourceCount, 0);
+  assert.deepEqual(summary.broadRealSourceHiddenSlugs, ['real-fitvely-weekly-body-check']);
   assert.deepEqual(summary.broadRealSourceRepresentativeLeakSlugs, []);
 });
 

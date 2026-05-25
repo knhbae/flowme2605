@@ -9,9 +9,10 @@ Flow Lab now renders a small internal "Broad Source Guard" panel below lifecycle
 
 Current panel values:
 
-- Broad real sources: 1
+- Broad real sources: 0
 - Representative leaks: 0
-- Replacement queue: the remaining broad real-source route slug
+- Replacement queue: none
+- Hidden broad-source decisions: `real-fitvely-weekly-body-check`
 
 ## Why
 
@@ -23,6 +24,7 @@ The code guard made the broad-source risk queryable, but editors still had to in
 - It uses two compact metrics and one route list, avoiding another large audit table.
 - It appears after lifecycle classification because the key question is whether broad sources leak into lifecycle `keep`.
 - It does not create new public calls to action and does not label routes validated.
+- It separates active source replacement from hidden/remove decisions so editors do not treat unresolved broad routes as nearly ready.
 
 ## Screenshot
 
@@ -48,6 +50,10 @@ Updated screenshot after MOFA travel source replacement:
 
 ![Broad Source Flow Lab panel after MOFA travel source replacement](../screenshots/2026-05-25-mofa-travel-source-replacement-flow-lab.png)
 
+Updated screenshot after FITVELY weekly body-check hide decision:
+
+![Broad Source Flow Lab panel after FITVELY weekly body-check hide decision](../screenshots/2026-05-25-fitvely-weekly-body-check-hide-flow-lab.png)
+
 ## Verification
 
 - RED: targeted Flow Lab E2E failed because the `Broad Source Guard` panel did not exist.
@@ -61,3 +67,4 @@ Update:
 - 2026-05-25: After replacing the Sinagong broad study source, the same panel should show 3 broad real sources and 0 representative leaks.
 - 2026-05-25: After replacing the pet-health broad FAQ source, the same panel should show 2 broad real sources and 0 representative leaks.
 - 2026-05-25: After replacing the MOFA broad portal source, the same panel should show 1 broad real source and 0 representative leaks.
+- 2026-05-25: After moving `real-fitvely-weekly-body-check` to hidden broad-source decisions, the same panel should show 0 active broad real sources, 0 representative leaks, replacement queue `none`, and hidden decision `real-fitvely-weekly-body-check`.

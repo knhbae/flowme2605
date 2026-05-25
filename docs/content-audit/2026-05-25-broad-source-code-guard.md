@@ -5,18 +5,23 @@ Related audit: [Broad Source Route Review](./2026-05-25-broad-source-route-revie
 
 ## Decision
 
-The broad-source editorial rule now has a Content Lab summary guard. The summary counts all current real-source routes whose source precision is `broad` and reports any broad route that leaks into the lifecycle `keep` bucket.
+The broad-source editorial rule now has a Content Lab summary guard. The summary separates active real-source routes whose source precision is `broad` from broad routes already moved to `replace_or_hide_source`, and reports any active broad route that leaks into the lifecycle `keep` bucket.
 
 Current result:
 
-- Broad real-source routes: 1
+- Active broad real-source routes: 0
+- Hidden broad-source decisions: 1
 - Representative/lifecycle keep leaks: 0
 
 ## Why
 
 The document-only audit prevents editorial confusion, but it does not stop future code or seed changes from accidentally treating broad channel/site routes as representative-ready. The guard makes the risk queryable from Content Lab data and adds regression coverage.
 
-## Guarded Route List
+## Active Guarded Route List
+
+- none
+
+## Hidden Broad-Source Decisions
 
 - `real-fitvely-weekly-body-check`
 
@@ -25,8 +30,9 @@ The document-only audit prevents editorial confusion, but it does not stop futur
 - `getContentLabSummary` now returns:
   - `broadRealSourceCount`
   - `broadRealSourceSlugs`
+  - `broadRealSourceHiddenSlugs`
   - `broadRealSourceRepresentativeLeakSlugs`
-- The leak list is computed by intersecting real+broad routes with lifecycle `keep` slugs.
+- The leak list is computed by intersecting active real+broad routes with lifecycle `keep` slugs.
 - This is a guardrail only. It does not change route exposure or hide direct routes.
 
 ## Verification
@@ -46,3 +52,4 @@ The document-only audit prevents editorial confusion, but it does not stop futur
 - 2026-05-25: `real-sinagong-computer-d30-study` received an exact Gilbut/Sinagong book source. The guard now tracks the remaining three broad routes.
 - 2026-05-25: `real-pet-health-visit-routine` received an exact 서울시 우리동네 동물병원 official source. The guard now tracks the remaining two broad routes.
 - 2026-05-25: `real-mofa-overseas-travel-prep` received an exact 외교부 베트남 국가/지역별 정보 source. The guard now tracks the remaining one broad route.
+- 2026-05-25: `real-fitvely-weekly-body-check` moved to hidden broad-source decision because no matching FITVELY weekly check-in source was confirmed. The active broad-source replacement queue is now 0.

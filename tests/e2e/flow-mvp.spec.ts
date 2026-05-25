@@ -999,8 +999,11 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(broadSourceGuard).toBeVisible();
   await expect(broadSourceGuard.getByText('Broad real sources', { exact: true })).toBeVisible();
   await expect(broadSourceGuard.getByText('Representative leaks', { exact: true })).toBeVisible();
-  await expect(broadSourceGuard.getByText('1', { exact: true }).first()).toBeVisible();
+  await expect(broadSourceGuard.getByText('Exact source replacement queue', { exact: true })).toBeVisible();
+  await expect(broadSourceGuard.getByText('Hidden broad-source decisions', { exact: true })).toBeVisible();
   await expect(broadSourceGuard.getByText('0', { exact: true }).first()).toBeVisible();
+  await expect(broadSourceGuard.getByText('0', { exact: true }).first()).toBeVisible();
+  await expect(broadSourceGuard.getByText('none', { exact: true }).first()).toBeVisible();
   await expect(broadSourceGuard.getByText('real-fitvely-weekly-body-check')).toBeVisible();
   await expect(broadSourceGuard.getByText('real-pet-health-visit-routine')).toHaveCount(0);
   await expect(broadSourceGuard.getByText('real-mofa-overseas-travel-prep')).toHaveCount(0);
