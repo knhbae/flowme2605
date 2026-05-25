@@ -64,6 +64,7 @@ const defaultComparisonCandidates = [
 ];
 
 const weekdayOrder = ['일', '월', '화', '수', '목', '금', '토'];
+const routineGridWeekdayOrder = ['월', '화', '수', '목', '금', '토', '일'];
 
 const mealReactionColumns = [
   { id: 'amount', label: '먹은 양', placeholder: '예: 40ml, 3숟갈' },
@@ -377,13 +378,55 @@ function MealReactionWorkbench({
   const slots = (bundle.mealSlots ?? []).slice().sort((a, b) => a.order - b.order);
   const calendarSlots = slots.slice(0, 6);
   const reactionSlots = slots.slice(0, 3);
+  const todayReactionSlot = reactionSlots[0];
 
   return (
     <div data-testid="meal-reaction-workbench" className="space-y-4">
       {bundle.flow.warning ? (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
+        <div data-testid="meal-sensitive-warning" className="rounded-lg border border-amber-200 bg-amber-50 p-4">
           <p className="text-sm font-semibold text-amber-900">알레르기·전문가 확인</p>
-          <p className="mt-1 text-sm leading-6 text-amber-950">{bundle.flow.warning}</p>
+          <p className="mt-1 text-sm leading-6 text-amber-950 md:hidden">
+            아이 건강 상태, 알레르기, 시작 시기, 재료 선택은 전문가 또는 공식 정보를 확인하세요.
+          </p>
+          <details className="mt-2 text-sm leading-6 text-amber-950 md:hidden">
+            <summary className="cursor-pointer font-semibold text-amber-900">주의 문구 전체 보기</summary>
+            <p className="mt-1">{bundle.flow.warning}</p>
+          </details>
+          <p className="mt-1 hidden text-sm leading-6 text-amber-950 md:block">{bundle.flow.warning}</p>
+        </div>
+      ) : null}
+      {todayReactionSlot ? (
+        <div data-testid="meal-today-reaction-card" className="rounded-lg border border-blue-200 bg-white p-4 md:hidden">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-blue-700">오늘 먹은 양 기록</p>
+              <h3 className="mt-1 text-base font-semibold text-gray-950">{todayReactionSlot.menu_title}</h3>
+              <p className="mt-1 text-sm text-gray-600">{mealSlotTiming(todayReactionSlot.day_offset, todayReactionSlot.duration_days, anchor)}</p>
+            </div>
+            <button
+              data-testid="meal-reaction-sheet-export"
+              aria-label={`시트로 받기: ${todayReactionSlot.menu_title} 오늘 먹은 양 반응 기록`}
+              className="shrink-0 rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-800"
+              type="button"
+              onClick={exportActions?.onDownloadExcel}
+            >
+              시트로 받기
+            </button>
+          </div>
+          <div className="mt-3 grid gap-2">
+            {mealReactionColumns.slice(0, 4).map((column) => (
+              <label key={column.id} className="text-sm font-semibold text-gray-700">
+                {column.label}
+                <input
+                  aria-label={`${todayReactionSlot.menu_title} / ${column.label}`}
+                  className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm font-normal text-gray-800"
+                  placeholder={column.placeholder}
+                  value={workbenchState.logRows[todayReactionSlot.id]?.[column.id] ?? ''}
+                  onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, todayReactionSlot.id, column.id, event.currentTarget.value))}
+                />
+              </label>
+            ))}
+          </div>
         </div>
       ) : null}
       <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
@@ -417,7 +460,7 @@ function MealReactionWorkbench({
             ))}
           </div>
         </div>
-        <div data-testid="meal-reaction-log-card" className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+        <div data-testid="meal-reaction-log-card" className="hidden overflow-x-auto rounded-lg border border-gray-200 bg-white md:block">
           <div className="border-b border-gray-100 px-3 py-3">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
@@ -541,95 +584,173 @@ function RoutineOccurrenceCalendar({
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
   exportActions?: ArtifactExportActions;
 }) {
-  const days = getMonthCalendarDays(month || formatDate(new Date()).slice(0, 7));
   const visibleRows = rows.slice(0, 12);
   const occurrenceSummary = `4주 ${visibleRows.length}회차`;
+  const firstDate = visibleRows[0]?.startDate ?? formatDate(new Date());
+  const first = new Date(firstDate);
+  const currentRow = visibleRows.find((row) => !workbenchState.occurrences[row.id]?.done) ?? visibleRows[0];
+  const weekRows = [0, 1, 2, 3].map((weekIndex) =>
+    routineGridWeekdayOrder.map((weekday) =>
+      visibleRows.find((row) => {
+        const diff = Math.floor((new Date(row.startDate).getTime() - first.getTime()) / 86400000);
+        return Math.floor(diff / 7) === weekIndex && row.timing === weekday;
+      }),
+    ),
+  );
+
   return (
     <section aria-label="반복 캘린더 미리보기" data-testid="artifact-calendar-card" className="rounded-lg border border-gray-200 bg-white p-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="text-sm font-semibold text-blue-700">반복 캘린더 · primary</p>
-          <h3 className="text-base font-semibold text-gray-950">4주 반복 캘린더</h3>
-          <p className="mt-1 text-sm text-gray-600">시작일과 요일을 바꾸면 회차가 캘린더에 들어가는 모습을 먼저 봅니다.</p>
+      <div data-testid="routine-session-grid-card">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-blue-700">회차 그리드 · primary</p>
+            <h3 className="text-base font-semibold text-gray-950">4주 루틴 · {visibleRows.length}회 회차</h3>
+            <p className="mt-1 text-sm text-gray-600">주차와 요일별 회차를 먼저 보고, 각 회차를 캘린더와 시트로 가져갑니다.</p>
+          </div>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <span className="text-sm font-semibold text-gray-500">{month}</span>
+            <ArtifactExportButtons
+              actions={exportActions}
+              kinds={['calendar', 'excel', 'draft']}
+              labels={{ calendar: '캘린더에 넣기 · .ics', excel: '시트로 받기 · .xlsx', draft: '편집' }}
+            />
+          </div>
         </div>
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          <span className="text-sm font-semibold text-gray-500">{month}</span>
-          <ArtifactExportButtons
-            actions={exportActions}
-            kinds={['calendar', 'excel', 'draft']}
-            labels={{ calendar: '캘린더에 넣기 · .ics', excel: '시트로 받기 · .xlsx', draft: '편집' }}
-          />
+        <ArtifactExportStatus actions={exportActions} />
+        <div className="mt-3 flex flex-wrap gap-2 text-sm">
+          <span className="rounded-full bg-blue-50 px-3 py-1 font-semibold text-blue-700">{occurrenceSummary}</span>
+          <span className="rounded-full bg-gray-100 px-3 py-1 font-semibold text-gray-700">주차 × 요일 회차표</span>
+          {currentRow ? <span className="rounded-full bg-amber-50 px-3 py-1 font-semibold text-amber-800">현재 {currentRow.title}</span> : null}
         </div>
-      </div>
-      <ArtifactExportStatus actions={exportActions} />
-      <div className="mt-3 flex flex-wrap gap-2 text-sm">
-        <span className="rounded-full bg-blue-50 px-3 py-1 font-semibold text-blue-700">{occurrenceSummary}</span>
-        <span className="rounded-full bg-gray-100 px-3 py-1 font-semibold text-gray-700">회차별 체크 + 메모</span>
-      </div>
-      <div className="mt-3 grid grid-cols-7 gap-1 text-center text-xs font-semibold text-gray-500">
-        {weekdayOrder.map((day) => (
-          <span key={day}>{day}</span>
-        ))}
-      </div>
-      <div className="mt-2 grid grid-cols-7 gap-1">
-        {days.map((date, index) => {
-          const dayRows = date ? rows.filter((row) => row.startDate === date) : [];
-          return (
-            <div key={`${month}-${index}`} className={`min-h-16 rounded-md border p-1 text-xs ${date ? 'border-gray-200 bg-[#FAFAF8]' : 'border-gray-100 bg-gray-50'}`}>
-              {date ? <p className="font-semibold text-gray-600">{date.slice(8)}</p> : null}
-              <div className="mt-1 space-y-1">
-                {dayRows.slice(0, 2).map((row) => {
-                  const state = workbenchState.occurrences[row.id] ?? {};
+        <div className="mt-3 grid grid-cols-[64px_repeat(7,minmax(0,1fr))] gap-1 text-center text-xs font-semibold text-gray-500">
+          <span />
+          {routineGridWeekdayOrder.map((day) => (
+            <span key={day}>{day}</span>
+          ))}
+        </div>
+        <div className="mt-2 grid grid-cols-[64px_repeat(7,minmax(0,1fr))] gap-1">
+          {weekRows.map((week, weekIndex) => (
+            <div key={`routine-week-${weekIndex}`} className="contents">
+              <div className="rounded-md border border-gray-200 bg-[#FAFAF8] p-2">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-gray-500">WEEK {weekIndex + 1}</p>
+                <p className="mt-1 text-sm font-semibold text-gray-900">{weekIndex + 1}주차</p>
+              </div>
+              {week.map((row, dayIndex) => {
+                if (!row) {
                   return (
-                    <label key={row.id} className={`flex items-center gap-1 rounded border px-1 py-0.5 ${state.done ? 'border-green-200 bg-green-50 text-green-700' : 'border-gray-100 bg-white text-blue-700'}`}>
+                    <div key={`empty-${weekIndex}-${dayIndex}`} className="min-h-20 rounded-md border border-dashed border-gray-100 bg-gray-50 p-2 text-xs text-gray-400">
+                      -
+                    </div>
+                  );
+                }
+                  const state = workbenchState.occurrences[row.id] ?? {};
+                  const isCurrent = row.id === currentRow?.id;
+                  return (
+                    <label
+                      key={row.id}
+                      className={`min-h-20 rounded-md border p-2 text-left text-xs ${state.done ? 'border-green-200 bg-green-50 text-green-700' : isCurrent ? 'border-blue-300 bg-blue-50 text-blue-800' : 'border-gray-200 bg-white text-gray-800'}`}
+                    >
+                      <span className="flex items-center justify-between gap-1">
+                        <span className="font-mono text-[11px] font-semibold">{row.startDate.slice(5)}</span>
+                        {isCurrent ? <span className="rounded bg-white px-1.5 py-0.5 text-[10px] font-bold text-blue-700">현재</span> : null}
+                      </span>
                       <input
                         aria-label={`캘린더 회차 체크: ${row.title}`}
-                        className="h-3 w-3 rounded border-gray-300"
+                        className="mt-2 h-3 w-3 rounded border-gray-300"
                         checked={Boolean(state.done)}
                         onChange={(event) => onWorkbenchChange(updateOccurrenceDone(workbenchState, row.id, event.currentTarget.checked))}
                         type="checkbox"
                       />
-                      <span className="truncate text-[11px] font-semibold">{state.done ? '완료 ' : ''}{row.title}</span>
+                      <span className="ml-1 align-middle text-[11px] font-semibold">{state.done ? '완료 ' : ''}{row.title}</span>
+                      <span className="mt-1 block text-[11px] text-gray-500">{row.timing}</span>
                     </label>
                   );
                 })}
-                {dayRows.length > 2 ? <p className="text-[11px] text-gray-500">+{dayRows.length - 2}</p> : null}
-              </div>
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
-      <div className="mt-4 rounded-lg border border-gray-200 bg-[#FAFAF8] p-3">
-        <div className="flex items-center justify-between gap-2">
-          <h4 className="text-sm font-semibold text-gray-950">회차 기록</h4>
-          <span className="text-xs font-semibold text-gray-500">{visibleRows.length}회차 표시</span>
+    </section>
+  );
+}
+
+function RoutineSessionLogCard({
+  rows,
+  workbenchState,
+  onWorkbenchChange,
+  exportActions,
+}: {
+  rows: ScheduleRow[];
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
+  exportActions?: ArtifactExportActions;
+}) {
+  const visibleRows = rows.slice(0, 8);
+  return (
+    <section data-testid="routine-session-log-card" className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-semibold text-blue-700">회차 기록표 · secondary</p>
+          <h3 className="mt-1 text-base font-semibold text-gray-950">지난 회차 기록</h3>
+          <p className="mt-1 text-sm text-gray-600">각 회차가 끝나면 세트/강도와 한 줄 메모를 시트로 남깁니다.</p>
         </div>
-        <div className="mt-3 space-y-2">
-          {visibleRows.map((row) => {
-            const state = workbenchState.occurrences[row.id] ?? {};
-            return (
-              <div key={row.id} className={`rounded-md border bg-white p-3 ${state.done ? 'border-green-200' : 'border-gray-100'}`}>
-                <label className="flex items-center gap-2 text-sm font-semibold text-blue-700">
-                  <input
-                    aria-label={`회차 완료: ${row.title}`}
-                    className="h-4 w-4 rounded border-gray-300"
-                    checked={Boolean(state.done)}
-                    onChange={(event) => onWorkbenchChange(updateOccurrenceDone(workbenchState, row.id, event.currentTarget.checked))}
-                    type="checkbox"
-                  />
-                  <span>{row.title} · {row.startDate} · {row.timing}</span>
-                </label>
-                <textarea
-                  aria-label={`회차 메모: ${row.title}`}
-                  className="mt-2 min-h-16 w-full resize-y rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800"
-                  placeholder="컨디션, 조정한 강도, 다음 회차 메모"
-                  value={state.note ?? ''}
-                  onChange={(event) => onWorkbenchChange(updateOccurrenceNote(workbenchState, row.id, event.currentTarget.value))}
-                />
-              </div>
-            );
-          })}
-        </div>
+        <ArtifactExportButtons
+          actions={exportActions}
+          kinds={['copy', 'excel', 'draft']}
+          labels={{ copy: '오늘 기록 복사', excel: '시트로 받기 · .xlsx', draft: '편집' }}
+        />
+      </div>
+      <ArtifactExportStatus actions={exportActions} />
+      <div className="mt-3 overflow-x-auto rounded-md border border-gray-200 bg-white">
+        <table className="min-w-[720px] text-left text-sm">
+          <thead className="bg-gray-50 text-xs font-semibold text-gray-600">
+            <tr>
+              <th className="px-3 py-2">날짜</th>
+              <th className="px-3 py-2">회차</th>
+              <th className="px-3 py-2">세트/강도</th>
+              <th className="px-3 py-2">완료</th>
+              <th className="px-3 py-2">한 줄 메모</th>
+            </tr>
+          </thead>
+          <tbody>
+            {visibleRows.map((row) => {
+              const state = workbenchState.occurrences[row.id] ?? {};
+              return (
+                <tr key={row.id} className="border-t border-gray-100">
+                  <td className="px-3 py-2 font-mono text-xs font-semibold text-gray-600">{row.startDate}</td>
+                  <td className="px-3 py-2 font-semibold text-gray-900">{row.title}</td>
+                  <td className="px-3 py-2">
+                    <input
+                      aria-label={`세트/강도: ${row.title}`}
+                      className="w-full rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
+                      placeholder="예: 20분 / RPE 7"
+                      value={workbenchState.logRows[row.id]?.intensity ?? ''}
+                      onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, row.id, 'intensity', event.currentTarget.value))}
+                    />
+                  </td>
+                  <td className="px-3 py-2">
+                    <input
+                      aria-label={`회차 완료: ${row.title}`}
+                      className="h-4 w-4 rounded border-gray-300"
+                      checked={Boolean(state.done)}
+                      onChange={(event) => onWorkbenchChange(updateOccurrenceDone(workbenchState, row.id, event.currentTarget.checked))}
+                      type="checkbox"
+                    />
+                  </td>
+                  <td className="px-3 py-2">
+                    <input
+                      aria-label={`회차 메모: ${row.title}`}
+                      className="w-full rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
+                      placeholder="컨디션, 조정한 강도, 다음 회차 메모"
+                      value={state.note ?? ''}
+                      onChange={(event) => onWorkbenchChange(updateOccurrenceNote(workbenchState, row.id, event.currentTarget.value))}
+                    />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </section>
   );
@@ -1059,13 +1180,25 @@ function RoutineWorkbench({
   const sessionItems = bundle.items.slice(0, 5);
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
-      <RoutineOccurrenceCalendar month={month} rows={rows} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
-      <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
-        <p className="text-sm font-semibold text-blue-700">회차 메모 · secondary</p>
-        <h3 className="mt-1 text-base font-semibold text-gray-950">다음 회차 메모</h3>
-        <p className="mt-2 text-sm text-gray-600">알림이 뜰 때 볼 실행 항목과 컨디션 메모를 한 회차 단위로 남깁니다.</p>
-        <p className="mt-2 text-sm font-semibold text-gray-700">다음 회차</p>
+    <div className="grid gap-4 lg:grid-cols-[1.12fr_0.88fr]">
+      <div className="order-2 grid gap-4 lg:order-1">
+        <RoutineOccurrenceCalendar month={month} rows={rows} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
+        <RoutineSessionLogCard rows={rows} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
+      </div>
+      <div data-testid="routine-today-session-card" className="order-1 rounded-lg border border-gray-200 bg-[#FAFAF8] p-4 lg:order-2">
+        <p className="text-sm font-semibold text-blue-700">이번 주 요약</p>
+        <h3 className="mt-1 text-base font-semibold text-gray-950">다음 회차</h3>
+        <p className="mt-2 text-sm text-gray-600">오늘 바로 볼 회차와 실행 항목을 오른쪽에 고정해 둡니다.</p>
+        <div className="mt-3 hidden grid-cols-2 gap-2 text-sm lg:grid">
+          <div className="rounded-md border border-gray-200 bg-white p-3">
+            <p className="text-xs font-semibold text-gray-500">전체 회차</p>
+            <p className="mt-1 font-semibold text-gray-900">{rows.length}회</p>
+          </div>
+          <div className="rounded-md border border-gray-200 bg-white p-3">
+            <p className="text-xs font-semibold text-gray-500">이번 주</p>
+            <p className="mt-1 font-semibold text-gray-900">{selectedWeekdays.length}회</p>
+          </div>
+        </div>
         {next ? (
           <div className="mt-2 rounded-md border border-gray-200 bg-white p-3">
             <label className="flex items-center gap-2 text-sm font-semibold text-blue-700">
@@ -1078,6 +1211,14 @@ function RoutineWorkbench({
               />
               <span>{nextLabel} · {next.date} · {next.weekday}</span>
             </label>
+            <button
+              data-testid="routine-session-record-button"
+              className="mt-3 w-full rounded-md bg-[#2563EB] px-3 py-2 text-sm font-semibold text-white sm:w-auto"
+              type="button"
+              onClick={() => onWorkbenchChange(updateOccurrenceDone(workbenchState, nextKey, true))}
+            >
+              다음 회차 기록
+            </button>
             <textarea
               aria-label={`다음 세션 메모: ${nextLabel}`}
               className="mt-3 min-h-20 w-full resize-y rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-800"

@@ -104,6 +104,11 @@
 - FITVELY workout-programming decision-first pass has landed: `real-fitvely-video-bulk-up-method`, `real-fitvely-video-workout-order`, and `real-fitvely-video-workout-split-science` now start from an 운동 기준 decision table before the weekly workout preview, with source-rule, user-condition, weekly-plan, and revise-or-hold rows. They are still not validated.
 - Routine Screen 4 design-reference pass has landed: `design-ref/260526` now drives routine artifact language, with `반복 캘린더 · primary`, `회차 메모 · secondary`, destination-first routine export labels, and a 4-week/12-session exact workout-video preview. No route is called validated.
 
+- Routine mobile today-session pass has landed: routine routes now place the next-session card and record CTA before the calendar grid on mobile, while desktop keeps the routine calendar artifact first. Source-fit/status panels move below the mobile workbench only for routine routes, and no route is called validated.
+- Baby-food sensitive mobile pass has landed: `baby-food-menu-recipe` now opens the mobile workbench with a compact caution boundary, today's reaction-record card, and sheet CTA before the meal calendar/table density, while desktop keeps setup before the workbench. No route is called validated.
+- Export CTA accessibility pass has landed: mobile export sheet buttons and the baby-food reaction sheet CTA now receive destination-and-artifact accessible labels while visible labels stay short.
+- Routine desktop session-grid pass has landed: routine desktop workbenches now expose `회차 그리드 · primary`, a separate `회차 기록표 · secondary`, and a weekly summary/next-session rail, with Figma review artifact `Tsubuwt1wlPiUgpWbcLTw3`. No route is called validated.
+
 ## Next Up
 
 v0.1.0 should stabilize the first public FLOW loop: open, anchor input, copy/export, check, and feedback.

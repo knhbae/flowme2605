@@ -649,6 +649,9 @@ test('mobile export actions open from a bottom sheet', async ({ page }) => {
   await expect(sheet.getByRole('button', { name: /엑셀로 받기/ })).toBeEnabled();
   await expect(sheet.getByRole('button', { name: /텍스트 복사/ })).toBeEnabled();
   await expect(sheet.getByRole('button', { name: /내 버전으로 편집/ })).toBeEnabled();
+  await expect(sheet.getByTestId('mobile-export-calendar')).toHaveAttribute('aria-label', /캘린더에 추가: .* 일정/);
+  await expect(sheet.getByTestId('mobile-export-excel')).toHaveAttribute('aria-label', /엑셀로 받기: .* 실행 기록 시트/);
+  await expect(sheet.getByTestId('mobile-export-copy')).toHaveAttribute('aria-label', /텍스트 복사: .* 실행 메모/);
 
   await sheet.getByRole('button', { name: '닫기' }).click();
   await expect(page.getByTestId('mobile-export-sheet')).toHaveCount(0);
@@ -705,8 +708,8 @@ test('promoted P1 flows expose new execution model surfaces', async ({ page }) =
 
   await expect(page.getByRole('heading', { name: '시험 D-30 공부 계획 Flow' })).toBeVisible();
   await expect(page.getByText('새 실행모델로 전환 중')).toHaveCount(0);
-  await expect(page.getByText('반복 캘린더 · primary')).toBeVisible();
-  await expect(page.getByText('회차 메모 · secondary')).toBeVisible();
+  await expect(page.getByText('회차 그리드 · primary')).toBeVisible();
+  await expect(page.getByText('회차 기록표 · secondary')).toBeVisible();
   await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
 
   for (const [slug, title] of [
@@ -718,8 +721,8 @@ test('promoted P1 flows expose new execution model surfaces', async ({ page }) =
 
     await expect(page.getByRole('heading', { name: title })).toBeVisible();
     await expect(page.getByText('새 실행모델로 전환 중')).toHaveCount(0);
-    await expect(page.getByText('반복 캘린더 · primary')).toBeVisible();
-    await expect(page.getByText('회차 메모 · secondary')).toBeVisible();
+    await expect(page.getByText('회차 그리드 · primary')).toBeVisible();
+    await expect(page.getByText('회차 기록표 · secondary')).toBeVisible();
     await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
   }
 });
@@ -769,6 +772,39 @@ test('baby food first screen prioritizes reaction logging over recipe details', 
   await expect(workbench).toContainText('전문가');
 });
 
+test('baby food mobile starts with warning and today reaction record', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/baby-food-menu-recipe');
+
+  const workbench = page.getByLabel('Flow artifact workbench');
+  const warning = workbench.getByTestId('meal-sensitive-warning');
+  const todayReaction = workbench.getByTestId('meal-today-reaction-card');
+  const sheetExport = todayReaction.getByTestId('meal-reaction-sheet-export');
+  const calendarCard = workbench.getByTestId('artifact-calendar-card').first();
+
+  await expect(warning).toBeVisible();
+  await expect(todayReaction).toBeVisible();
+  await expect(todayReaction.getByRole('textbox').first()).toBeVisible();
+  await expect(sheetExport).toBeVisible();
+  await expect(sheetExport).toHaveAttribute('aria-label', /시트로 받기: .*오늘 먹은 양 반응 기록/);
+  await expect(calendarCard).toBeVisible();
+
+  const warningBox = await warning.boundingBox();
+  const reactionBox = await todayReaction.boundingBox();
+  const sheetExportBox = await sheetExport.boundingBox();
+  const calendarBox = await calendarCard.boundingBox();
+  expect(warningBox).not.toBeNull();
+  expect(reactionBox).not.toBeNull();
+  expect(sheetExportBox).not.toBeNull();
+  expect(calendarBox).not.toBeNull();
+  expect(warningBox!.y).toBeLessThan(reactionBox!.y);
+  expect(reactionBox!.y).toBeLessThan(calendarBox!.y);
+  expect(reactionBox!.y).toBeLessThan(844);
+  expect(sheetExportBox!.y).toBeLessThan(844);
+
+  await expect(page.getByText('validated')).toHaveCount(0);
+});
+
 test('duration calendar checks only one day at a time', async ({ page }) => {
   await page.goto('/f/baby-food-menu-recipe');
 
@@ -788,10 +824,10 @@ test('duration calendar checks only one day at a time', async ({ page }) => {
 test('routine flow highlights weekly routine setup', async ({ page }) => {
   await page.goto('/f/running-5k-4week');
 
-  await expect(page.getByText('반복 캘린더 · primary')).toBeVisible();
-  await expect(page.getByRole('heading', { name: '4주 반복 캘린더' })).toBeVisible();
-  await expect(page.getByText('회차 메모 · secondary')).toBeVisible();
-  await expect(page.getByText('다음 회차 메모')).toBeVisible();
+  await expect(page.getByText('회차 그리드 · primary')).toBeVisible();
+  await expect(page.getByRole('heading', { name: /4주 루틴/ })).toBeVisible();
+  await expect(page.getByText('회차 기록표 · secondary')).toBeVisible();
+  await expect(page.getByText('이번 주 요약')).toBeVisible();
   await expect(page.getByText('4주 12회차')).toBeVisible();
   await expect(page.getByRole('region', { name: '반복 캘린더 미리보기' }).getByRole('button', { name: '캘린더에 넣기 · .ics' })).toBeVisible();
   await expect(page.getByRole('region', { name: '반복 캘린더 미리보기' }).getByRole('button', { name: '시트로 받기 · .xlsx' })).toBeVisible();
@@ -811,6 +847,78 @@ test('routine flow highlights weekly routine setup', async ({ page }) => {
   await page.getByRole('button', { name: '전체 루틴' }).click();
   await page.locator('[data-testid="flow-item-card"]').first().getByRole('checkbox').check();
   await expect(page.getByText('추천 다음 항목')).toBeVisible();
+});
+
+test('routine desktop uses session grid and session log artifacts', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/f/running-5k-4week');
+
+  const workbench = page.getByLabel('Flow artifact workbench');
+  const sessionGrid = workbench.getByTestId('routine-session-grid-card');
+  const sessionLog = workbench.getByTestId('routine-session-log-card');
+  const todayCard = workbench.getByTestId('routine-today-session-card');
+
+  await expect(sessionGrid).toBeVisible();
+  await expect(sessionGrid.getByText('회차 그리드 · primary')).toBeVisible();
+  await expect(sessionGrid.getByRole('heading', { name: /4주 루틴/ })).toBeVisible();
+  await expect(sessionGrid.getByText(/WEEK 1/)).toBeVisible();
+  await expect(sessionGrid.getByText(/1회차/).first()).toBeVisible();
+
+  await expect(sessionLog).toBeVisible();
+  await expect(sessionLog.getByText('회차 기록표 · secondary')).toBeVisible();
+  await expect(sessionLog.getByRole('cell', { name: '세트/강도' })).toBeVisible();
+  await expect(sessionLog.getByRole('cell', { name: '한 줄 메모' })).toBeVisible();
+  await expect(sessionLog.getByRole('button', { name: '시트로 받기 · .xlsx' })).toBeVisible();
+
+  await expect(todayCard.getByText('이번 주 요약')).toBeVisible();
+  await expect(todayCard.getByRole('heading', { name: '다음 회차' })).toBeVisible();
+
+  const gridBox = await sessionGrid.boundingBox();
+  const logBox = await sessionLog.boundingBox();
+  expect(gridBox).not.toBeNull();
+  expect(logBox).not.toBeNull();
+  expect(gridBox!.y).toBeLessThan(logBox!.y);
+
+  await expect(page.getByText('validated')).toHaveCount(0);
+});
+
+test('routine mobile puts the session card before the calendar card', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  for (const slug of [
+    'running-5k-4week',
+    'home-workout-20min',
+    'english-study-30day-routine',
+    'car-care-monthly-routine',
+    'real-thankyou-bubu-video-full-body-no-jump',
+  ] as const) {
+    await page.goto(`/f/${slug}`);
+
+    const workbench = page.getByLabel('Flow artifact workbench');
+    const sessionCard = workbench.getByTestId('routine-today-session-card').first();
+    const calendarCard = workbench.getByTestId('artifact-calendar-card').first();
+
+    await expect(sessionCard).toBeVisible();
+    await expect(sessionCard.getByRole('checkbox')).toBeVisible();
+    await expect(sessionCard.getByTestId('routine-session-record-button')).toBeVisible();
+    await expect(calendarCard).toBeVisible();
+
+    const sessionBox = await sessionCard.boundingBox();
+    const recordButtonBox = await sessionCard.getByTestId('routine-session-record-button').boundingBox();
+    const calendarBox = await calendarCard.boundingBox();
+    expect(sessionBox).not.toBeNull();
+    expect(recordButtonBox).not.toBeNull();
+    expect(calendarBox).not.toBeNull();
+    expect(sessionBox!.y).toBeLessThan(844);
+    expect(recordButtonBox!.y).toBeLessThan(844);
+    expect(sessionBox!.y).toBeLessThan(calendarBox!.y);
+
+    await expect(page.getByText('validated')).toHaveCount(0);
+  }
+
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/f/running-5k-4week');
+  await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-calendar-card').last()).toBeVisible();
 });
 
 test('low-context date labels explain the required anchor', async ({ page }) => {
