@@ -7,4 +7,4 @@
 - [x] Add dated audit synthesis.
 - [x] Run full verification.
 - [x] Create PR.
-- [ ] Merge if checks pass.
+- [x] Merge if checks pass.

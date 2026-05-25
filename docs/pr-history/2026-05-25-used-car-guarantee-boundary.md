@@ -2,7 +2,7 @@
 
 Date: 2026-05-25
 Branch: `codex/used-car-guarantee-boundary`
-Status: Open
+Status: Merged
 PR URL: https://github.com/knhbae/flowme2605/pull/99
 Deploy URL: TBD
 
@@ -48,6 +48,8 @@ The `my_tests/` evaluation synthesis found a Blocking risk that `used-car-buying
 - `npm test` passed: 165 tests.
 - `npm run build` passed.
 - `npx playwright test tests/e2e/flow-mvp.spec.ts -g "used-car"` passed: 2 tests.
+- PR #99 Vercel status passed before merge.
+- Post-merge `npm run docs:check` passed on `main`.
 
 ## Risks
 
