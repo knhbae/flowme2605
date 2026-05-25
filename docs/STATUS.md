@@ -94,6 +94,7 @@
 - MOFA travel emergency-card pass has landed: `real-mofa-overseas-travel-prep` now opens with an official-check and emergency-contact memo card before generic travel checklist density, but it is still not representative, public-MVP, or validated.
 - Baby-food mobile density pass has landed: `baby-food-menu-recipe` now keeps secondary meal-plan sections collapsed on mobile so meal calendar and reaction logging stay first, but it is still not newly validated.
 - External AI UX/content review synthesis has landed: the three `my_tests/` evaluations are summarized in a dated audit, with conflicts resolved toward source fidelity, export-first usefulness, and no validation claims. The first small fix adds a no-guarantee boundary to `used-car-buying-check` and carries route warnings into text exports.
+- Video Flow action-specificity pass has landed: repeated single-video workout routes now carry calendar-notification-ready preparation, execution, source-video, record, and stop/consult guidance in item/export copy, while docs split repeated single-video Flows from multi-video sequence Flows. Figma is the UX/UI companion path for future layout and density batches; this batch changed content/export behavior only and does not call any route validated.
 
 ## Next Up
 
