@@ -656,6 +656,21 @@ test('ThankyouBUBU former broad workout routes use exact video sources', () => {
   assert.ok(routine.itemDetails.every((detail) => detail.links.some((link) => link.url === routine.flow.source_url)));
 });
 
+test('FITVELY diet record route uses an exact diet source while weekly body check stays broad', () => {
+  const diet = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-diet-record-routine');
+  const weekly = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-weekly-body-check');
+
+  assert.ok(diet);
+  assert.equal(diet.flow.source_precision, 'exact');
+  assert.equal(diet.flow.source_url, 'https://www.youtube.com/watch?v=qcTxaFMWzKs');
+  assert.ok(diet.flow.source_title?.includes('g단위'));
+  assert.ok(diet.itemDetails.every((detail) => detail.links.some((link) => link.url === diet.flow.source_url)));
+
+  assert.ok(weekly);
+  assert.equal(weekly.flow.source_precision, 'broad');
+  assert.equal(weekly.flow.source_url, 'https://www.fitvely.com/');
+});
+
 test('fitness exact video flow titles preserve the original content premise', () => {
   const exactVideos = seedBundles.filter((bundle) => bundle.flow.tags?.includes('exact-video'));
   const carb = seedBundles.find((bundle) => bundle.flow.slug === 'real-fitvely-video-carb-reason');

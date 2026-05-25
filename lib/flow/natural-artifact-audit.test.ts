@@ -194,7 +194,6 @@ test('seventh real-source artifact batch covers remaining FITVELY exact videos',
 
 test('eighth real-source artifact batch closes broad channel and site sources', () => {
   const expectedEighthBatchSlugs = [
-    'real-fitvely-diet-record-routine',
     'real-fitvely-weekly-body-check',
   ];
 
@@ -212,6 +211,18 @@ test('eighth real-source artifact batch closes broad channel and site sources', 
       `${slug} should still simulate the user's natural artifact before judging the source gap`,
     );
   }
+});
+
+test('FITVELY diet record broad source route is replaced with an exact-source reshape record', () => {
+  const audit = getNaturalArtifactAudit('real-fitvely-diet-record-routine');
+  const bundle = bundleBySlug('real-fitvely-diet-record-routine');
+
+  assert.ok(audit);
+  assert.equal(bundle.flow.source_precision, 'exact');
+  assert.equal(bundle.flow.source_url, 'https://www.youtube.com/watch?v=qcTxaFMWzKs');
+  assert.equal(audit.decision, 'reshape_content_or_ux');
+  assert.match(audit.sourceUrl, /youtube\.com\/watch\?v=qcTxaFMWzKs/);
+  assert.ok(audit.nextContentAction.includes('exact'));
 });
 
 test('ThankyouBUBU former broad source routes are exact-source reshape records', () => {

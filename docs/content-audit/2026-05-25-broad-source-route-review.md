@@ -3,7 +3,7 @@
 Date: 2026-05-25
 Scope: real-source routes whose current source is a channel, site, or broad reference rather than a route-level original.
 
-Update: `real-thankyou-bubu-home-workout-starter` and `real-thankyou-bubu-20min-routine` received exact YouTube source replacements later on 2026-05-25. The current broad-source guard queue is 5 routes.
+Update: `real-thankyou-bubu-home-workout-starter`, `real-thankyou-bubu-20min-routine`, and `real-fitvely-diet-record-routine` received exact YouTube source replacements later on 2026-05-25. The current broad-source guard queue is 4 routes.
 
 ## Decision
 
@@ -25,7 +25,7 @@ This review does not mark any route validated.
 |---|---|---|---|---|
 | `real-thankyou-bubu-home-workout-starter` | Exact ThankyouBUBU video assigned after this review | User no longer has to choose the video, but the route still needs exact-video first-screen reshaping. | Keep out of representative/public MVP. | Reshape around original video, execution summary, condition log, and stop condition. |
 | `real-thankyou-bubu-20min-routine` | Exact ThankyouBUBU video assigned after this review | The repeated video is now identified, but high-intensity routine guidance still needs clearer rest/stop hierarchy. | Keep out of representative/public MVP. | Reshape around original video, weekly routine calendar, adjustment memo, and stop condition. |
-| `real-fitvely-diet-record-routine` | FITVELY site | A generic site does not tell the user which diet rule or record shape to apply. | Keep out of representative/public MVP. | Replace with an exact diet/log source; keep the artifact memo- or sheet-first and avoid outcome claims. |
+| `real-fitvely-diet-record-routine` | Exact FITVELY nutrition video assigned after this review | The source is now exact, but the route still needs a tighter spreadsheet-first diet log and stop/consult condition. | Keep out of representative/public MVP. | Reshape around selected source rule, one application, one observation row, and stop condition. |
 | `real-fitvely-weekly-body-check` | FITVELY site | Measurement behavior needs a concrete source method and stop/consult boundary. | Keep out of representative/public MVP. | Replace with an exact body-check source; separate measurement row, observation note, and stop/consult condition. |
 | `real-sinagong-computer-d30-study` | Sinagong site / broad study material | Study progress can look source-derived, but the route needs exact curriculum, exam scope, past-exam round, or weekly-plan links. | Keep as fix/catalog review, not representative. | Attach exact source rows before any stronger study-progress framing. |
 | `real-pet-health-visit-routine` | Animal protection FAQ page | FAQ source is official-adjacent but not specific enough for a pet hospital visit execution memo. | Keep as fix/catalog review. | Replace or supplement with a route-specific official or veterinary visit-prep source; separate source facts, caregiver notes, and contact-professional triggers. |
@@ -58,7 +58,7 @@ Recommended fixes:
 ## Follow-Up Queue
 
 1. Reshape the two ThankyouBUBU exact-source replacements before any representative/public MVP framing.
-2. Replace or demote the two FITVELY broad site routes.
+2. Keep `real-fitvely-weekly-body-check` broad until a matching measurement/check-in source is found, or demote/remove the route.
 3. Attach exact curriculum/exam-scope links before using the Sinagong broad route as a study-progress example.
 4. Re-source the pet-health visit route with a route-specific visit-prep reference.
 5. Add destination-specific MOFA links before using the travel route beyond direct QA.

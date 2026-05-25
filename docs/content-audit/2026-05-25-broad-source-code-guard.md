@@ -9,7 +9,7 @@ The broad-source editorial rule now has a Content Lab summary guard. The summary
 
 Current result:
 
-- Broad real-source routes: 5
+- Broad real-source routes: 4
 - Representative/lifecycle keep leaks: 0
 
 ## Why
@@ -18,7 +18,6 @@ The document-only audit prevents editorial confusion, but it does not stop futur
 
 ## Guarded Route List
 
-- `real-fitvely-diet-record-routine`
 - `real-fitvely-weekly-body-check`
 - `real-sinagong-computer-d30-study`
 - `real-pet-health-visit-routine`
@@ -46,3 +45,4 @@ The document-only audit prevents editorial confusion, but it does not stop futur
 ## Updates
 
 - 2026-05-25: The two ThankyouBUBU channel routes received exact YouTube source replacements. The guard now tracks the remaining five broad routes.
+- 2026-05-25: `real-fitvely-diet-record-routine` received an exact FITVELY nutrition video source. The guard now tracks the remaining four broad routes.
