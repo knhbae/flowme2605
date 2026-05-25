@@ -153,15 +153,16 @@ export const uxCleanupBacklogGroups: UxCleanupBacklogGroup[] = [
     primaryDestination: 'hybrid',
     routeSlugs: ['real-sinagong-computer-d30-study'],
     unresolvedGap:
-      'The Sinagong exact-source route may duplicate the representative study route unless it has its own source-derived rows and score/wrong-answer shape.',
+      'The Sinagong exact-source route may duplicate the representative `computer-skills-d30-study` route unless it has its own source-derived rows and score/wrong-answer shape.',
     requiredMinimum: [
       'source-derived rows',
       'editable target date/status/note fields',
       'wrong-answer or retry field',
+      'canonical route decision',
       'merge/hide decision if redundant',
     ],
     nextBatch:
-      'Decide whether to merge with computer-skills-d30-study or rewrite with distinct Sinagong source rows before any featured framing.',
+      'Merge with the canonical computer-skills-d30-study route or rewrite with distinct Sinagong source rows before any featured framing.',
     statusAfterCleanup: 'cleanup backlog item, not validated until real user behavior exists.',
   },
   {

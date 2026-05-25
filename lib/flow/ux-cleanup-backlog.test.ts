@@ -45,7 +45,10 @@ test('UX cleanup backlog records concrete category decisions and route examples'
   assert.ok(study);
   assert.equal(study.cleanupDecision, 'merge_or_rewrite_before_featured');
   assert.ok(study.requiredMinimum.includes('source-derived rows'));
+  assert.ok(study.requiredMinimum.includes('canonical route decision'));
   assert.ok(study.routeSlugs.includes('real-sinagong-computer-d30-study'));
+  assert.match(study.unresolvedGap, /computer-skills-d30-study/);
+  assert.match(study.nextBatch, /merge|병합|canonical|대표/);
 
   assert.ok(hidden);
   assert.equal(hidden.cleanupDecision, 'hide_or_hold');
