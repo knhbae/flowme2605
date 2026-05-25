@@ -4,13 +4,13 @@ Date: 2026-05-25
 
 Branch: `content/mofa-travel-emergency-card`
 
-PR: TBD
+PR: [#95](https://github.com/knhbae/flowme2605/pull/95)
 
-Status: In progress
+Status: Merged
 
-Vercel: TBD
+Vercel: https://vercel.com/flowme/flowme2605/Gq2o9GtFZ9XSXee6SEfwAjE2xNha
 
-Merged SHA: TBD
+Merged SHA: `d1974c673a1682d84bdfbe8c3654ee85f4fed06d`
 
 ## Summary
 
