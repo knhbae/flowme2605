@@ -33,3 +33,7 @@ Green check:
   - Passed on 2026-05-25: `former broad ThankyouBUBU routes now render as one exact-video action`.
 - `npm run test:e2e`
   - Passed on 2026-05-25: 53 tests passed.
+- Vercel
+  - Passed on PR #100 before merge.
+- Merge
+  - PR #100 was squash-merged as `5dad8fed11339be223610caf46a72717cf794979`.
