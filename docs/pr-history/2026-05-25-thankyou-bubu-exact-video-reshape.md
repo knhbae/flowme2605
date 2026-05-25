@@ -4,7 +4,13 @@ Date: 2026-05-25
 
 Branch: `content/thankyoububu-workout-detail`
 
-PR: pending
+PR: [#87](https://github.com/knhbae/flowme2605/pull/87)
+
+Status: Merged
+
+Vercel: https://vercel.com/flowme/flowme2605/HArwpPBorrMM3jwJDwADAdxSTMTZ
+
+Merged SHA: `adacc21a60fab942e4cb844dd2bedb41b79fec3d`
 
 ## Summary
 

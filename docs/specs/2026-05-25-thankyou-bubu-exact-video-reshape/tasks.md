@@ -6,4 +6,4 @@
 - [x] Keep original YouTube links in the item detail link list.
 - [x] Update content audit, flow rules, status, and PR history docs.
 - [x] Run build, tests, docs check, E2E, and screenshot verification.
-- [ ] Create PR and merge when checks are green.
+- [x] Create PR and merge when checks are green.
