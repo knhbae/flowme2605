@@ -2,8 +2,8 @@
 
 Date: 2026-05-25
 Branch: `content/representative-ux-content-review`
-PR: Pending
-Status: In progress
+PR: #75
+Status: Merged
 
 ## Why
 
@@ -33,4 +33,5 @@ The source cleanup and broad-source guardrails are now mostly stable. The next r
 - PASS: `npm run build`
 - PASS: `npx playwright test tests/e2e/flow-mvp.spec.ts -g "flow lab shows converted pilot"`
 - PASS: `git diff --check` with CRLF warnings only.
-- Pending: Vercel.
+- PASS: Vercel `https://vercel.com/flowme/flowme2605/GmhZEBiACC1VkYnWFKbzNFgL91Ei`
+- Merged: PR #75 as squash commit `a3b14f3773e3a2dc373ae12548e9ac076eb76cf7`.
