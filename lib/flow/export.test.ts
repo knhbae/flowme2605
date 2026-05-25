@@ -643,17 +643,34 @@ test('calendar export creates a portable weekly event for exact video flows', ()
 });
 
 test('repeated workout video calendar export keeps each reminder executable', () => {
-  const starter = seedBundles.find((bundle) => bundle.flow.slug === 'real-thankyou-bubu-home-workout-starter');
-  assert.ok(starter);
+  const slugs = [
+    'real-thankyou-bubu-video-full-body-no-jump',
+    'real-thankyou-bubu-video-daily-stretch-9min',
+    'real-thankyou-bubu-video-belly-side-all-in-one',
+    'real-thankyou-bubu-video-no-knee-cardio-strength',
+    'real-thankyou-bubu-video-arm-back-shoulder',
+    'real-thankyou-bubu-video-waist-8cm',
+    'real-thankyou-bubu-video-8min-cardio',
+    'real-thankyou-bubu-video-3min-arm',
+    'real-thankyou-bubu-video-3min-abs',
+    'real-thankyou-bubu-video-lower-belly-8min',
+    'real-thankyou-bubu-home-workout-starter',
+    'real-thankyou-bubu-20min-routine',
+  ];
 
-  const ics = buildCalendarIcs(starter, '2026-05-25', ['월', '수', '금']);
+  for (const slug of slugs) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+    assert.ok(bundle, slug);
 
-  assert.match(ics, /RRULE:FREQ=WEEKLY/);
-  assert.match(ics, /캘린더 알림/);
-  assert.match(ics, /준비:/);
-  assert.match(ics, /실행:/);
-  assert.match(ics, /운동 후 기록:/);
-  assert.match(ics, /원본 영상:/);
-  assert.match(ics, /youtube\.com\/watch\?v=pcyrlkHXAdE/);
-  assert.match(ics, /중단|전문가/);
+    const ics = buildCalendarIcs(bundle, '2026-05-25', ['월', '수', '금']);
+
+    assert.match(ics, /RRULE:FREQ=WEEKLY/, `${slug} should export a weekly reminder`);
+    assert.match(ics, /캘린더 알림/, `${slug} reminder needs standalone guidance`);
+    assert.match(ics, /준비:/, `${slug} reminder needs preparation`);
+    assert.match(ics, /실행:/, `${slug} reminder needs execution`);
+    assert.match(ics, /운동 후 기록:/, `${slug} reminder needs record fields`);
+    assert.match(ics, /원본 영상:/, `${slug} reminder needs source-video handoff`);
+    assert.match(ics, /youtube\.com\/watch\?v=/, `${slug} reminder needs original video URL`);
+    assert.match(ics, /중단|전문가/, `${slug} reminder needs stop or consult condition`);
+  }
 });
