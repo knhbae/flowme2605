@@ -164,6 +164,21 @@ test('used-car route exposes candidate comparison rows and decision memo fields'
   );
 });
 
+test('FITVELY diet record route exposes a source-rule observation log', () => {
+  const tables = getLogTables(bundle('real-fitvely-diet-record-routine'));
+
+  assert.deepEqual(tables.map((table) => table.id), ['fitvely-diet-observation-log']);
+  assert.equal(tables[0]?.eyebrow, '관찰표');
+  assert.deepEqual(
+    tables[0]?.columns.map((column) => column.id),
+    ['date', 'mealMemo', 'selectedRule', 'condition', 'nextAdjustment'],
+  );
+  assert.deepEqual(
+    tables[0]?.rows.map((row) => row.label),
+    ['오늘 한 끼 기록', '운동/수면/컨디션', '주간 조정 메모'],
+  );
+});
+
 test('official document routes expose submitter requirement memo fields', () => {
   const familyFields = getMemoCardFields(bundle('family-certificate-issue'));
   const residentFields = getMemoCardFields(bundle('resident-register-copy-issue'));

@@ -88,6 +88,7 @@
 - Mobile simulation session notes have landed: the same three routes now have internal rehearsal findings and next observed-session script changes without changing validation status.
 - UX cleanup backlog has landed: unresolved content/UX areas are now separated from source-review status, with first rewrite batches focused on exact workout video detail, health observation guardrails, and vehicle evidence-first UX.
 - ThankyouBUBU exact-source reshape has landed: `real-thankyou-bubu-home-workout-starter` and `real-thankyou-bubu-20min-routine` now use one calendar-first exact-video action with summary, detailed guide, original video link, post-workout record, and stop condition, but they are still not representative, public-MVP, or validated.
+- FITVELY diet record observation reshape is in progress: `real-fitvely-diet-record-routine` now uses one sheet-first action, source-rule observation rows, and stop/consult copy after exact source replacement, but it is still not representative, public-MVP, or validated.
 
 ## Next Up
 
