@@ -3,7 +3,8 @@
 Date: 2026-05-25
 Branch: `content/fitvely-broad-source-review`
 PR: #65
-Status: Open, waiting for checks
+Status: Merged and Vercel check passed
+Vercel: https://vercel.com/flowme/flowme2605/Awt52GYuxrQsmhTXJWsdt1Tiao6o
 
 ## Why
 
@@ -33,6 +34,7 @@ The broad-source queue still included two FITVELY routes that pointed at the gen
 - `npm run build` passed.
 - `npx playwright test tests/e2e/flow-mvp.spec.ts -g "flow lab shows converted pilot"` passed.
 - `git diff --check` passed with CRLF warnings only.
+- Vercel PR check passed before merge.
 
 ## Screenshot
 
