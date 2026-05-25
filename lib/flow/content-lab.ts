@@ -13,6 +13,7 @@ import { summarizeRiskBoundaryQaReviews } from './risk-boundary-qa';
 import { summarizeUxContentSimplificationAudits } from './ux-content-simplification-audit';
 import { summarizeRepresentativeUxContentReviews } from './representative-ux-content-review';
 import { summarizeMobileSimulationProtocols } from './mobile-simulation-protocol';
+import { summarizeUxCleanupBacklog } from './ux-cleanup-backlog';
 
 export type ExternalTarget = 'calendar' | 'todo' | 'notion' | 'sheet';
 
@@ -371,6 +372,7 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   const uxContentSimplificationSummary = summarizeUxContentSimplificationAudits(bundles);
   const representativeUxContentReviewSummary = summarizeRepresentativeUxContentReviews(bundles);
   const mobileSimulationProtocolSummary = summarizeMobileSimulationProtocols(bundles);
+  const uxCleanupBacklogSummary = summarizeUxCleanupBacklog(bundles);
 
   return {
     pilotCreatorCount: pilotCreatorLabs.length,
@@ -449,5 +451,11 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     mobileSimulationProtocolAverageScore: mobileSimulationProtocolSummary.averageScore,
     mobileSimulationProtocolValidatedCount: mobileSimulationProtocolSummary.validatedCount,
     mobileSimulationProtocolRecords: mobileSimulationProtocolSummary.records,
+    uxCleanupBacklogTotalGroupCount: uxCleanupBacklogSummary.totalGroupCount,
+    uxCleanupBacklogTotalRouteCount: uxCleanupBacklogSummary.totalRouteCount,
+    uxCleanupBacklogValidatedCount: uxCleanupBacklogSummary.validatedCount,
+    uxCleanupBacklogPriorityCounts: uxCleanupBacklogSummary.priorityCounts,
+    uxCleanupBacklogFirstBatchGroupIds: uxCleanupBacklogSummary.firstBatchGroupIds,
+    uxCleanupBacklogGroups: uxCleanupBacklogSummary.groups,
   };
 }

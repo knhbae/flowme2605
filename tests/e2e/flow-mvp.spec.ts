@@ -1036,6 +1036,13 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(mobileSimulationProtocol.getByText('computer-skills-d30-study')).toBeVisible();
   await expect(mobileSimulationProtocol.getByText('diet-habit-2week')).toBeVisible();
   await expect(mobileSimulationProtocol.getByText('new-car-delivery-check')).toBeVisible();
+  const uxCleanupBacklog = page.locator('section').filter({ hasText: 'UX Cleanup Backlog' });
+  await expect(uxCleanupBacklog).toBeVisible();
+  await expect(uxCleanupBacklog.getByText('36 routes')).toBeVisible();
+  await expect(uxCleanupBacklog.getByText('0 validated')).toBeVisible();
+  await expect(uxCleanupBacklog.getByText('exact_workout_video_execution_detail')).toBeVisible();
+  await expect(uxCleanupBacklog.getByText('health_observation_guardrail')).toBeVisible();
+  await expect(uxCleanupBacklog.getByText('vehicle_purchase_evidence_first')).toBeVisible();
   const exportFirstSimulation = page.locator('section').filter({ hasText: 'Export-first Simulation' });
   await expect(exportFirstSimulation).toBeVisible();
   await expect(exportFirstSimulation.getByText('Final QA candidate', { exact: true }).first()).toBeVisible();
