@@ -4,13 +4,13 @@ Date: 2026-05-25
 
 Branch: `content/baby-food-mobile-density-collapse`
 
-PR: TBD
+PR: [#97](https://github.com/knhbae/flowme2605/pull/97)
 
-Status: In progress
+Status: Merged
 
-Vercel: TBD
+Vercel: https://vercel.com/flowme/flowme2605/83WZMHGAAa4pHP1Ek4Z8wyVAmbec
 
-Merged SHA: TBD
+Merged SHA: `ac5c6e471a544d06663e064fb5fcd8b953ad7a5c`
 
 ## Summary
 
