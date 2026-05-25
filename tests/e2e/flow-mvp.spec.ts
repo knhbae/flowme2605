@@ -247,16 +247,19 @@ test('former broad ThankyouBUBU routes now render as one exact-video action', as
 test('diet exact video flow uses application language instead of workout scheduling', async ({ page }) => {
   await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
 
-  await expect(page.getByRole('heading', { name: '식사 체크표에 이미 들어간 적용 Flow' })).toBeVisible();
-  await expect(page.getByText('추천 리듬: 매일')).toBeVisible();
-  await expect(page.getByRole('heading', { name: '일별 적용 체크표' })).toBeVisible();
+  const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(workbench.getByRole('heading', { name: '기록표', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '식사 관찰표에 들어간 적용 Flow' })).toBeVisible();
+  await expect(workbench.getByRole('heading', { name: '날짜별 기록표' })).toBeVisible();
   await expect(page.getByText('오늘 적용 기준만 고르기')).toHaveCount(0);
   await expect(page.getByText('1. 적용일 정하기')).toHaveCount(0);
   await expect(page.getByText('적용 요일').first()).toBeVisible();
   await expect(page.getByText('운동 요일')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '전체 루틴' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '주별 보기' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '캘린더에 넣기' })).toBeVisible();
+  await expect(page.getByText('운동표에 이미 들어간 기준')).toHaveCount(0);
+  await expect(page.getByText('관찰표 기록').first()).toBeVisible();
+  await expect(page.getByRole('button', { name: '엑셀 실행표 받기' })).toBeVisible();
   await expect(page.getByRole('button', { name: '메모/노션에 복사' })).toBeVisible();
 });
 
