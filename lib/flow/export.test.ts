@@ -627,3 +627,19 @@ test('calendar export creates a portable weekly event for exact video flows', ()
   assert.match(ics, /RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR/);
   assert.match(ics, /URL:https:\/\/www\.youtube\.com\/watch\?v=/);
 });
+
+test('repeated workout video calendar export keeps each reminder executable', () => {
+  const starter = seedBundles.find((bundle) => bundle.flow.slug === 'real-thankyou-bubu-home-workout-starter');
+  assert.ok(starter);
+
+  const ics = buildCalendarIcs(starter, '2026-05-25', ['월', '수', '금']);
+
+  assert.match(ics, /RRULE:FREQ=WEEKLY/);
+  assert.match(ics, /캘린더 알림/);
+  assert.match(ics, /준비:/);
+  assert.match(ics, /실행:/);
+  assert.match(ics, /운동 후 기록:/);
+  assert.match(ics, /원본 영상:/);
+  assert.match(ics, /youtube\.com\/watch\?v=pcyrlkHXAdE/);
+  assert.match(ics, /중단|전문가/);
+});

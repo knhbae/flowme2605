@@ -30,6 +30,7 @@ Required:
 - Put the original video link in the detail panel.
 - Include a short execution summary.
 - Include a "detailed view" guide that tells the user how to prepare, open the source, execute, and record condition.
+- If the Flow exports to a repeated calendar event, repeat the preparation, execution, source link, post-workout record cue, and stop condition in the event description so the user can act from the reminder.
 - Add a post-workout condition log: done, intensity, pain/dizziness, next-session adjustment.
 - Add a stop condition for pain, dizziness, breathing difficulty, or known condition worsening.
 
@@ -37,6 +38,7 @@ Do not:
 
 - Invent exact movement sequences that were not extracted from the source.
 - Present FLOW text as an exercise prescription.
+- Hide execution detail only in page-level copy when the natural output is a calendar reminder.
 - Split one follow-along video into many checklist items unless separate source sections have separate completion criteria.
 
 Current example:

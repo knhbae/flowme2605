@@ -642,6 +642,35 @@ test('former broad ThankyouBUBU replacements use one exact-video execution actio
   }
 });
 
+test('repeated workout video flows are written as calendar-notification-ready actions', () => {
+  const slugs = ['real-thankyou-bubu-home-workout-starter', 'real-thankyou-bubu-20min-routine'];
+
+  for (const slug of slugs) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+
+    assert.ok(bundle, slug);
+    assert.equal(bundle.items.length, 1, `${slug} should keep one repeated-video action`);
+    assert.equal(bundle.flow.primary_destination, 'calendar', `${slug} should stay calendar-first`);
+
+    const detail = bundle.itemDetails?.[0];
+    assert.ok(detail, `${slug} missing detail`);
+
+    const portableAction = [
+      bundle.items[0]?.title,
+      detail.how,
+      detail.completion_criteria,
+      detail.caution,
+    ].join('\n');
+
+    assert.match(portableAction, /캘린더 알림/, `${slug} should explain what appears in each reminder`);
+    assert.match(portableAction, /준비:/, `${slug} needs preparation instructions`);
+    assert.match(portableAction, /실행:/, `${slug} needs execution instructions`);
+    assert.match(portableAction, /운동 후 기록:/, `${slug} needs post-workout record fields`);
+    assert.match(portableAction, /원본 영상:/, `${slug} needs the source-video handoff`);
+    assert.match(portableAction, /중단|전문가/, `${slug} needs a stop or consult condition`);
+  }
+});
+
 test('diet exact video details stay limited to one application and record', () => {
   const slugs = [
     'real-fitvely-video-body-fat-6kg-method',

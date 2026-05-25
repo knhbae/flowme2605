@@ -41,11 +41,46 @@ Execution specificity requirement:
 - The detail guide may describe how to prepare, open the source, follow the source, and record condition. It must not invent a movement sequence unless the sequence was extracted from the source.
 - Add post-session fields or copy cues for completion, intensity, pain/dizziness, and next-session adjustment.
 - Add a stop/consult condition for pain, dizziness, breathing difficulty, or known condition worsening.
+- For repeated calendar use, each exported event description must stand alone. Do not put the preparation, execution, source link, record cue, or stop condition only in page-level copy.
 
 Override:
 
 - Use 3-5 actions if the original video is a multi-part program, assessment, rehab sequence, or challenge where separate completion matters.
 - Use `checklist` if it is a one-time form check, equipment setup, or safety assessment rather than repeated exercise.
+
+### Repeated Single-Video Calendar Rule
+
+Use this when the same workout, stretching, meditation, or practice video repeats across dates.
+
+The UI may keep the Flow visually compact, but every calendar reminder/exported item must still be executable from the reminder itself:
+
+- `캘린더 알림`: state that this text repeats with each scheduled event and should be enough to start without reopening FLOW.
+- `준비`: include setup such as space, equipment, water, volume, or timer when source-derived or generic enough not to invent source content.
+- `실행`: tell the user to open the original video and follow it once at a tolerable intensity; do not invent a movement sequence.
+- `원본 영상`: keep the exact video link for posture, pace, and detailed demonstration.
+- `운동 후 기록`: capture done/not done, intensity, pain or dizziness, and next-session adjustment.
+- `중단 조건`: include pain, dizziness, breathing difficulty, known condition worsening, or other source/risk boundary.
+
+### Multi-Video Sequence
+
+Use this when the original content is a playlist, course, study channel sequence, tutorial series, or source-defined multi-step program.
+
+Default:
+
+- `structure_type`: `timeline`, `routine`, or `checklist`
+- `primary_destination`: `sheet` or `hybrid`; use `calendar` only when due dates or repeated sessions matter
+- Action count: one item per source video, lesson, stage, or source-defined decision point
+- Export: progress sheet first, with calendar milestones only when useful
+
+Each item should preserve:
+
+- Source video or lesson title and link
+- Watch/read target
+- Note, practice, or apply task
+- Completion criterion
+- Next-session condition or dependency
+
+Do not convert a multi-video study sequence into one vague "study" action. Do not convert one follow-along workout video into a multi-item sequence unless the source itself has separate sections with separate completion criteria.
 
 ## Diet / Body Composition Knowledge
 
