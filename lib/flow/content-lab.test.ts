@@ -374,3 +374,22 @@ test('content lab exposes mobile simulation protocols for current candidate rout
     ),
   );
 });
+
+test('content lab exposes unresolved UX cleanup backlog before content rewrites', () => {
+  const summary = getContentLabSummary(seedBundles);
+
+  assert.equal(summary.uxCleanupBacklogTotalGroupCount, 9);
+  assert.equal(summary.uxCleanupBacklogTotalRouteCount, 36);
+  assert.equal(summary.uxCleanupBacklogValidatedCount, 0);
+  assert.deepEqual(summary.uxCleanupBacklogFirstBatchGroupIds, [
+    'exact_workout_video_execution_detail',
+    'health_observation_guardrail',
+    'vehicle_purchase_evidence_first',
+  ]);
+  assert.equal(summary.uxCleanupBacklogPriorityCounts.P1, 3);
+  assert.ok(
+    summary.uxCleanupBacklogGroups.every((group) =>
+      group.statusAfterCleanup.includes('not validated'),
+    ),
+  );
+});

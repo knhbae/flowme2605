@@ -440,6 +440,52 @@ export function ContentLab() {
       </section>
 
       <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
+        <p className="text-sm font-semibold text-blue-700">UX Cleanup Backlog</p>
+        <h2 className="mt-1 text-2xl font-semibold text-gray-950">Unresolved content and UX areas</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+          This queue separates areas that are not yet fully cleaned up from routes that merely have source review.
+          It keeps broad rewriting work ordered before asking another reviewer or AI to inspect the catalog.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-4">
+          <div className="rounded-lg bg-gray-50 p-3 text-gray-950">
+            <p className="text-sm text-gray-600">Groups</p>
+            <p className="mt-1 text-2xl font-semibold">{summary.uxCleanupBacklogTotalGroupCount}</p>
+          </div>
+          <div className="rounded-lg bg-blue-50 p-3 text-blue-950">
+            <p className="text-sm text-blue-800">Routes</p>
+            <p className="mt-1 text-2xl font-semibold">{summary.uxCleanupBacklogTotalRouteCount} routes</p>
+          </div>
+          <div className="rounded-lg bg-amber-50 p-3 text-amber-950">
+            <p className="text-sm text-amber-800">P1 groups</p>
+            <p className="mt-1 text-2xl font-semibold">{summary.uxCleanupBacklogPriorityCounts.P1}</p>
+          </div>
+          <div className="rounded-lg bg-red-50 p-3 text-red-950">
+            <p className="text-sm text-red-800">Validation</p>
+            <p className="mt-1 text-2xl font-semibold">{summary.uxCleanupBacklogValidatedCount} validated</p>
+          </div>
+        </div>
+        <div className="mt-5 grid gap-3 lg:grid-cols-3">
+          {summary.uxCleanupBacklogGroups.slice(0, 3).map((group) => (
+            <article key={group.id} className="rounded-lg border border-gray-200 p-4">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <p className="text-xs font-semibold text-gray-500">{group.id}</p>
+                  <h3 className="mt-1 font-semibold text-gray-950">{group.label}</h3>
+                </div>
+                <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-900">
+                  {group.priority}
+                </span>
+              </div>
+              <p className="mt-3 text-sm leading-6 text-gray-700">{group.unresolvedGap}</p>
+              <p className="mt-2 text-sm leading-6 text-gray-600">Minimum: {group.requiredMinimum.slice(0, 3).join(' / ')}</p>
+              <p className="mt-2 text-sm leading-6 text-gray-600">Routes: {group.routeSlugs.length}</p>
+              <p className="mt-2 text-xs leading-5 text-gray-500">{group.statusAfterCleanup}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
         <p className="text-sm font-semibold text-blue-700">Export-first Simulation</p>
         <h2 className="mt-1 text-2xl font-semibold text-gray-950">User execution simulation batch 1</h2>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
