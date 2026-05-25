@@ -514,7 +514,7 @@ test('fitness creator deep dive converts exact videos into executable flows', ()
           detail.links?.some((link) => link.type === 'creator') &&
           detail.how?.includes('준비') &&
           detail.how?.includes('실행') &&
-          detail.how?.includes('마무리'),
+          (detail.how?.includes('마무리') || detail.how?.includes('수정 조건')),
         ),
         bundle.flow.slug,
       );
@@ -592,6 +592,33 @@ test('diet exact video details stay limited to one application and record', () =
     assert.match(detail.how ?? '', /기록:/, `${slug} needs an observation record`);
     assert.match(detail.how ?? '', /중단 조건:/, `${slug} needs a stop condition`);
     assert.match(detail.caution ?? '', /제한|폭식|어지러움|중단|전문가/, `${slug} needs diet-sensitive caution`);
+  }
+});
+
+test('workout-plan exact video details convert one rule into a weekly plan record', () => {
+  const slugs = [
+    'real-fitvely-video-bulk-up-method',
+    'real-fitvely-video-workout-order',
+    'real-fitvely-video-workout-split-science',
+  ];
+
+  for (const slug of slugs) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+
+    assert.ok(bundle, slug);
+    assert.equal(bundle.items.length, 1, `${slug} should keep one workout-plan action`);
+    assert.equal(inferPrimaryDestination(bundle), 'hybrid', `${slug} should remain hybrid`);
+
+    const detail = bundle.itemDetails?.[0];
+    assert.ok(detail, `${slug} missing detail`);
+
+    assert.match(detail.how ?? '', /요약:/, `${slug} needs a weekly-plan summary`);
+    assert.match(detail.how ?? '', /선택 기준:/, `${slug} needs a selected rule`);
+    assert.match(detail.how ?? '', /주간 운동표:/, `${slug} needs weekly workout table guidance`);
+    assert.match(detail.how ?? '', /원본 영상:/, `${slug} needs source-video authority`);
+    assert.match(detail.how ?? '', /기록:/, `${slug} needs a workout record`);
+    assert.match(detail.how ?? '', /수정 조건:/, `${slug} needs a revise-or-hold condition`);
+    assert.match(detail.caution ?? '', /통증|피로|호흡|중단|전문가/, `${slug} needs workout-plan caution`);
   }
 });
 
