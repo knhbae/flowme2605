@@ -82,6 +82,7 @@
 - MOFA travel broad-source replacement has landed: `real-mofa-overseas-travel-prep` now points to the exact 외교부 베트남 국가/지역별 정보 page, drops out of the broad-source guard, and remains reshape because the route still needs country-check and emergency-card UX work.
 - FITVELY weekly body-check broad-source decision has landed: no matching exact FITVELY weekly check-in source has been confirmed, so the route moved to hidden/remove candidate and the active broad-source replacement queue is now 0.
 - Representative UX/content review has landed: `computer-skills-d30-study`, `diet-habit-2week`, and `new-car-delivery-check` now have a current simulated user-run review queue that records first action, natural output, UX gap, mobile density risk, source/risk boundary, and next small fix without calling any route validated.
+- Diet observation guardrail copy is in progress: `diet-habit-2week` is being reframed from diet habit coaching to a two-week food/sleep/activity/condition observation sheet with explicit stop/consult conditions and no validation claim.
 
 ## Next Up
 

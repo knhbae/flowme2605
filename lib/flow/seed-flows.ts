@@ -1303,23 +1303,23 @@ const running5kRoutineText = `@주 3회
 - 걷더라도 전체 5km 거리 완주하기
 - 완주 후 통증과 다음 목표 기록하기`;
 
-const dietHabitText = `@매일 기록
-@주 3회 운동
+const dietHabitText = `@매일 관찰
+@주 1회 메모
 
-## 식사 기록
-- 아침, 점심, 저녁 먹은 내용 기록하기
-- 단백질과 채소가 한 끼에 포함됐는지 확인하기
-- 물 섭취와 야식 여부 기록하기
+## 식사·수면 관찰
+- 아침·점심·저녁과 수면 시간을 관찰표에 남기기
+- 허기, 폭식 유발감, 야식 여부를 메모하기
+- 물 섭취와 늦은 식사 시간을 기록하기
 
-## 운동 기록
-- 20분 걷기 또는 가벼운 유산소 하기
-- 스쿼트, 푸시업, 플랭크 중 2개 선택하기
-- 운동 후 피로도와 통증 여부 기록하기
+## 활동·컨디션 관찰
+- 오늘 한 활동과 시간을 관찰표에 남기기
+- 무리한 운동 대신 가능했던 활동만 기록하기
+- 활동 후 피로도, 통증, 어지러움을 기록하기
 
-## 주간 점검
+## 중단·상담 관찰
 - 체중보다 식사·수면·활동 패턴을 먼저 보기
-- 무리한 제한으로 폭식이 생겼는지 확인하기
-- 다음 주 유지할 습관 2개만 고르기`;
+- 무리한 제한으로 폭식 유발감이 생겼는지 확인하기
+- 통증, 어지러움, 폭식 유발감이 반복되면 기록을 멈추고 상담 메모 남기기`;
 
 const babyWarning =
   '이 Flow는 제작자 경험 기반의 식단표와 레시피를 시작일 기준으로 정리한 것입니다. 아이의 건강 상태, 알레르기, 시작 시기, 재료 선택은 전문가 또는 공식 정보를 확인하세요. 꿀, 질식 위험 식품, 알레르기 유발 가능 식품은 공식 안전 정보를 우선 확인하세요.';
@@ -1954,8 +1954,8 @@ const creatorInspiredBundles: FlowBundle[] = [
       {
         id: 'flow-diet-habit',
         slug: 'diet-habit-2week',
-        title: '2주 다이어트 습관 기록 Flow',
-        description: '체중 숫자보다 식사, 물, 운동, 수면 패턴을 먼저 보는 2주 기록 루틴입니다.',
+        title: '2주 식사·활동 관찰 Flow',
+        description: '감량 처방이 아니라 2주 동안 식사, 수면, 물, 활동, 컨디션, 중단·상담 신호를 관찰표로 남기는 Flow입니다.',
         category: '다이어트/기록',
         structure_type: 'routine',
         content_type: 'default',
@@ -1965,7 +1965,7 @@ const creatorInspiredBundles: FlowBundle[] = [
         source_title: '질병관리청 건강하게 체중 감량하기 안내',
         source_url:
           'https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=82',
-        warning: '이 Flow는 일반적인 습관 기록용입니다. 질환, 임신·수유, 섭식장애 경험, 약물 복용이 있으면 전문가 상담을 우선하세요.',
+        warning: '이 Flow는 감량 처방이 아니라 관찰 기록용입니다. 질환, 임신·수유, 섭식장애 경험, 약물 복용, 어지러움·통증·폭식 유발감이 있으면 기록을 멈추고 전문가 상담을 우선하세요.',
       },
       dietHabitText,
     ),
@@ -2024,10 +2024,10 @@ const sourceRiskCopyPolish: Record<string, CopyPolishConfig> = {
     riskLevel: 'low',
   },
   'diet-habit-2week': {
-    artifact: '2주 식사·활동 기록표',
-    record: '식사, 물, 야식, 운동, 컨디션, 중단 신호',
+    artifact: '2주 식사·활동·컨디션 관찰표',
+    record: '식사, 수면, 물, 활동, 컨디션, 중단·상담 신호',
     sourceCheck: '질병관리청의 점진적 체중관리 원칙',
-    boundary: '통증, 어지러움, 섭식 문제, 질환이 있으면 기록을 멈추고 전문가 상담을 우선합니다.',
+    boundary: '감량 처방이 아니라 관찰 기록이며, 어지러움·통증·폭식 유발감·질환 우려가 있으면 기록을 멈추고 전문가 상담을 우선합니다.',
     sourceType: 'official',
     riskLevel: 'medical_sensitive',
   },

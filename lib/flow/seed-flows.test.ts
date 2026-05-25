@@ -247,6 +247,28 @@ test('source replacement and risk review routes have artifact-specific item copy
   }
 });
 
+test('diet habit route is framed as an observation sheet, not a diet prescription', () => {
+  const diet = seedBundles.find((entry) => entry.flow.slug === 'diet-habit-2week');
+
+  assert.ok(diet);
+  assert.equal(diet.flow.title, '2주 식사·활동 관찰 Flow');
+  assert.match(diet.flow.description, /감량 처방이 아니라/);
+  assert.match(diet.flow.warning ?? '', /감량 처방이 아니라 관찰 기록용/);
+  assert.match(diet.flow.warning ?? '', /어지러움|통증|폭식 유발감/);
+  assert.ok(diet.sections.some((section) => section.title.includes('관찰')));
+  assert.ok(diet.items.some((item) => item.title.includes('중단') || item.title.includes('상담')));
+  assert.ok(
+    diet.itemDetails?.every((detail) =>
+      `${detail.why} ${detail.how} ${detail.completion_criteria} ${detail.caution ?? ''}`.includes('관찰표'),
+    ),
+  );
+
+  for (const item of diet.items) {
+    assert.doesNotMatch(item.title, /스쿼트|푸시업|플랭크/);
+    assert.doesNotMatch(item.description ?? '', /스쿼트|푸시업|플랭크/);
+  }
+});
+
 test('seed flows expose creator and popularity signals for discovery', () => {
   const userIds = new Set(virtualUsers.map((user) => user.id));
   for (const bundle of seedBundles) {

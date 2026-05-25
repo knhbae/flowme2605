@@ -74,7 +74,7 @@ const mealReactionColumns = [
 ];
 
 const defaultSpreadsheetColumns = ['식단', '운동', '측정', '컨디션', '리뷰'];
-const dietObservationColumns = ['식사 관찰', '활동', '측정', '컨디션', '중단/상담 조건'];
+const dietObservationColumns = ['식사 관찰', '활동', '수면/측정', '컨디션', '중단/상담 조건'];
 
 export function ArtifactWorkbench({
   bundle,
@@ -1139,7 +1139,7 @@ function SpreadsheetWorkbench({
   const title = bundle.flow.slug === 'diet-habit-2week' ? '관찰 기록표' : '날짜별 기록표';
   const description =
     bundle.flow.slug === 'diet-habit-2week'
-      ? '결과를 판단하지 않고 식사, 활동, 측정, 컨디션, 중단/상담 조건을 같은 줄에 남깁니다.'
+      ? '감량 결과를 판단하지 않고 식사, 수면, 활동, 컨디션, 중단/상담 조건을 같은 줄에 남깁니다.'
       : '날짜별로 남길 기록 값을 먼저 정리합니다.';
   return (
     <div className="grid gap-4 lg:grid-cols-[1.25fr_0.75fr]">
@@ -1186,15 +1186,23 @@ function SpreadsheetWorkbench({
       <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
         {showRiskBoundary ? (
           <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3">
-            <p className="text-sm font-semibold text-amber-900">기록 전 확인</p>
+            <p className="text-sm font-semibold text-amber-900">
+              {bundle.flow.slug === 'diet-habit-2week' ? '관찰 전 중단/상담 기준' : '기록 전 확인'}
+            </p>
             <p className="mt-1 text-sm leading-6 text-amber-950">{bundle.flow.warning}</p>
           </div>
         ) : null}
-        <h3 className="text-base font-semibold text-gray-950">주간 리뷰 메모</h3>
+        <h3 className="text-base font-semibold text-gray-950">
+          {bundle.flow.slug === 'diet-habit-2week' ? '주간 관찰 메모' : '주간 리뷰 메모'}
+        </h3>
         <textarea
-          aria-label="주간 리뷰 메모"
+          aria-label={bundle.flow.slug === 'diet-habit-2week' ? '주간 관찰 메모' : '주간 리뷰 메모'}
           className="mt-3 min-h-32 w-full resize-y rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800"
-          placeholder="기록 누락, 식사 패턴, 운동 지속 여부를 보고 다음 주 기준을 적어두세요."
+          placeholder={
+            bundle.flow.slug === 'diet-habit-2week'
+              ? '반복된 식사 시간, 수면, 활동, 컨디션, 중단/상담 신호만 적어보세요.'
+              : '기록 누락, 식사 패턴, 운동 지속 여부를 보고 다음 주 기준을 적어두세요.'
+          }
           value={workbenchState.weeklyReview ?? ''}
           onChange={(event) => onWorkbenchChange(updateWeeklyReview(workbenchState, event.currentTarget.value))}
         />
@@ -1211,6 +1219,7 @@ function getSpreadsheetColumns(bundle: FlowBundle): string[] {
 function spreadsheetPlaceholder(column: string): string {
   if (column === '식단' || column === '식사 관찰') return '아침/점심/저녁';
   if (column === '활동') return '예: 30분 걷기';
+  if (column === '수면/측정') return '예: 수면 6시간 / 허리 82cm';
   if (column === '중단/상담 조건') return '예: 어지러움 반복 시 중단 후 상담';
   return column;
 }

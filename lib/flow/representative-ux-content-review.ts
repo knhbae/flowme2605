@@ -66,7 +66,7 @@ export const representativeUxContentReviews: RepresentativeUxContentReview[] = [
     naturalOutput:
       'sheet: daily meal, activity, sleep, optional measurement, condition, stop/consult condition; memo: weekly observation summary.',
     currentUxGap:
-      'The observation artifact is correct, but the route can still read like diet coaching if observation language, stop condition, and official-source boundary are not dominant.',
+      'The observation artifact has been rewritten around observation and stop/consult conditions, but it still needs a mobile re-check and observed session before stronger framing.',
     contentRewritePriority:
       'Rewrite around observation first: record meals, activity, sleep, condition, and repeated warning signs before any weekly review wording.',
     exportFirstFit:
@@ -76,7 +76,7 @@ export const representativeUxContentReviews: RepresentativeUxContentReview[] = [
     sourceRiskSeparation:
       'Health-sensitive observation. FLOW records patterns and stop/consult conditions; it does not prescribe diet or promise weight loss.',
     nextSmallFix:
-      'Tighten first-screen copy and route audit notes so the first visible artifact is the observation sheet plus stop condition.',
+      'Re-check the mobile first screen after the observation-first copy rewrite and verify that the warning, table, and weekly memo do not compete.',
     statusAfterReview: 'public MVP candidate with guardrails, not validated until real user behavior exists.',
   },
   {
