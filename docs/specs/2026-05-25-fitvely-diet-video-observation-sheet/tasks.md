@@ -10,8 +10,12 @@ Date: 2026-05-25
 - [x] Update UX cleanup backlog status for this batch.
 - [x] Capture desktop/mobile screenshots if the visible route UI changes materially.
 - [x] Run full verification before PR merge.
-- [ ] Create PR and merge only if checks pass and the branch is mergeable.
+- [x] Create PR and merge only if checks pass and the branch is mergeable.
 
 ## Figma Use Rule
 
 Use Figma only if this work becomes a visual design/layout change. This batch changes route metadata and generated copy; no Figma file is required.
+
+## Merge
+
+- PR #103 was squash-merged as `94bdeaef0e03db7079003e21e421513e56283692`.

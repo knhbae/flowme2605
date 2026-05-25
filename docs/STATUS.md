@@ -97,7 +97,7 @@
 - Video Flow action-specificity pass has landed: repeated single-video workout routes now carry calendar-notification-ready preparation, execution, source-video, record, and stop/consult guidance in item/export copy, while docs split repeated single-video Flows from multi-video sequence Flows. Figma is the UX/UI companion path for future layout and density batches; this batch changed content/export behavior only and does not call any route validated.
 - Study Flow action-specificity pass has landed: `computer-skills-d30-study` now treats each dated study item as a concrete sequence action with `실행:` and `기록:` cues, keeps D-30 as FLOW's exam-date conversion rather than a source-authored curriculum, and carries item guidance into dated calendar exports without changing validation status.
 - Sinagong study merge-decision pass has landed: the `my_tests/` source-boundary finding is now carried into audit/backlog data so `real-sinagong-computer-d30-study` stays a direct-QA merge/rewrite candidate unless it gains distinct source-derived rows beyond the canonical `computer-skills-d30-study` route.
-- FITVELY diet exact-video observation-sheet pass is in progress: remaining nutrition exact-video routes now move from memo-first to sheet-first, expose `기준 후보` and `관찰표` copy, and keep one source rule plus one observation row without diet outcome claims.
+- FITVELY diet exact-video observation-sheet pass has landed: remaining nutrition exact-video routes now move from memo-first to sheet-first, expose `기준 후보` and `관찰표` copy, and keep one source rule plus one observation row without diet outcome claims.
 
 ## Next Up
 

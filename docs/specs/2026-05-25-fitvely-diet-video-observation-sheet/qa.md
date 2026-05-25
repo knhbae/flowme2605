@@ -41,4 +41,6 @@ Green checks:
 - `npm run test:e2e`
   - Passed on 2026-05-25: 53 tests passed.
 - Vercel
-  - Pending.
+  - Passed on PR #103 before merge.
+- Merge
+  - PR #103 was squash-merged as `94bdeaef0e03db7079003e21e421513e56283692`.
