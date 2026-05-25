@@ -96,7 +96,7 @@ export const uxCleanupBacklogGroups: UxCleanupBacklogGroup[] = [
       'source/risk separation',
     ],
     nextBatch:
-      'First exact FITVELY diet-record reshape landed for real-fitvely-diet-record-routine; continue with remaining FITVELY nutrition routes around one application and one observation record.',
+      'First exact FITVELY diet-record reshape landed for real-fitvely-diet-record-routine; the remaining FITVELY nutrition exact-video routes now use sheet-first 관찰표 copy with one application and one observation record. Next review should check whether source-rule choice is understood in user sessions.',
     statusAfterCleanup: 'cleanup backlog item, not validated until real user behavior exists.',
   },
   {

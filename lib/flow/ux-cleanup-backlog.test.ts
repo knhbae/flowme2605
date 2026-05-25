@@ -41,6 +41,7 @@ test('UX cleanup backlog records concrete category decisions and route examples'
   assert.equal(health.priority, 'P1');
   assert.ok(health.requiredMinimum.includes('stop/consult condition'));
   assert.ok(health.routeSlugs.includes('diet-habit-2week'));
+  assert.match(health.nextBatch, /sheet-first|observation-sheet|관찰표/);
 
   assert.ok(study);
   assert.equal(study.cleanupDecision, 'merge_or_rewrite_before_featured');

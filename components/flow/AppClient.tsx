@@ -2670,6 +2670,7 @@ function getEmbeddedToolCopy(destination: PrimaryDestination): {
   rhythm: string;
   tool: string;
   previewTitle: string;
+  scheduleLabel: string;
 } {
   if (destination === 'calendar') {
     return {
@@ -2678,6 +2679,7 @@ function getEmbeddedToolCopy(destination: PrimaryDestination): {
       rhythm: '주 3회',
       tool: '캘린더',
       previewTitle: '월간 미리보기',
+      scheduleLabel: '캘린더 일정',
     };
   }
   if (destination === 'hybrid' || destination === 'sheet') {
@@ -2687,6 +2689,7 @@ function getEmbeddedToolCopy(destination: PrimaryDestination): {
       rhythm: '주 3회',
       tool: '운동표',
       previewTitle: '주간 운동표 미리보기',
+      scheduleLabel: '운동표 반영',
     };
   }
   return {
@@ -2695,7 +2698,27 @@ function getEmbeddedToolCopy(destination: PrimaryDestination): {
     rhythm: '매일',
     tool: '체크표',
     previewTitle: '일별 적용 체크표',
+    scheduleLabel: '메모 적용',
   };
+}
+
+function getExactVideoToolCopy(bundle: FlowBundle, destination: PrimaryDestination): ReturnType<typeof getEmbeddedToolCopy> {
+  if (
+    destination === 'sheet' &&
+    bundle.flow.slug.startsWith('real-fitvely-video-') &&
+    bundle.flow.category.includes('다이어트')
+  ) {
+    return {
+      title: '식사 관찰표에 들어간 적용 Flow',
+      description: '영상의 기준 하나를 오늘 한 끼나 운동 전후 행동에 적용하고, 결과는 관찰표 한 줄로 남깁니다.',
+      rhythm: '적용할 때마다',
+      tool: '관찰표',
+      previewTitle: '관찰표 미리보기',
+      scheduleLabel: '관찰표 기록',
+    };
+  }
+
+  return getEmbeddedToolCopy(destination);
 }
 
 const weekdayIndex: Record<string, number> = {
@@ -2713,6 +2736,7 @@ function getExactVideoSchedule(
   weekdays: string[],
   title: string,
   destination: PrimaryDestination,
+  scheduleLabel?: string,
 ): { date: string; day: string; label: string; title: string }[] {
   if (!anchor) return [];
 
@@ -2720,12 +2744,13 @@ function getExactVideoSchedule(
   if (Number.isNaN(start.getTime())) return [];
 
   const selected = weekdays.length ? weekdays : ['월', '수', '금'];
-  const label =
+  const label = scheduleLabel ?? (
     destination === 'calendar'
       ? '캘린더 일정'
       : destination === 'hybrid' || destination === 'sheet'
         ? '운동표 반영'
-        : '메모 적용';
+        : '메모 적용'
+  );
 
   return [...selected]
     .filter((day) => weekdayIndex[day] !== undefined)
@@ -2746,8 +2771,9 @@ function getExactToolPreview(
   weekdays: string[],
   title: string,
   destination: PrimaryDestination,
+  scheduleLabel?: string,
 ): { date: string; day: string; label: string; title: string }[] {
-  if (destination !== 'memo') return getExactVideoSchedule(anchor, weekdays, title, destination);
+  if (destination !== 'memo') return getExactVideoSchedule(anchor, weekdays, title, destination, scheduleLabel);
   if (!anchor) return [];
 
   const start = new Date(anchor);
@@ -4061,8 +4087,8 @@ function ExactVideoToolPreview({
   calendarState: string;
 }) {
   const item = bundle.items[0];
-  const preview = item ? getExactToolPreview(displayAnchor, weekdays, item.title, destination) : [];
-  const copy = getEmbeddedToolCopy(destination);
+  const copy = getExactVideoToolCopy(bundle, destination);
+  const preview = item ? getExactToolPreview(displayAnchor, weekdays, item.title, destination, copy.scheduleLabel) : [];
 
   return (
     <section className="my-6 rounded-xl border border-blue-100 bg-white p-5 shadow-sm">

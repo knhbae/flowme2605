@@ -698,7 +698,10 @@ test('diet exact video details stay limited to one application and record', () =
   const slugs = [
     'real-fitvely-video-body-fat-6kg-method',
     'real-fitvely-video-carb-reason',
+    'real-fitvely-video-three-week-check',
     'real-fitvely-video-post-workout-nutrition',
+    'real-fitvely-video-carb-amount-shorts',
+    'real-fitvely-video-after-work-nutrition',
   ];
 
   for (const slug of slugs) {
@@ -706,13 +709,15 @@ test('diet exact video details stay limited to one application and record', () =
 
     assert.ok(bundle, slug);
     assert.equal(bundle.items.length, 1, `${slug} should keep one diet application action`);
-    assert.equal(inferPrimaryDestination(bundle), 'memo', `${slug} should remain memo-first`);
+    assert.equal(inferPrimaryDestination(bundle), 'sheet', `${slug} should be observation-sheet first`);
 
     const detail = bundle.itemDetails?.[0];
     assert.ok(detail, `${slug} missing detail`);
 
     assert.match(detail.how ?? '', /요약:/, `${slug} needs a narrow application summary`);
+    assert.match(detail.how ?? '', /기준 후보:/, `${slug} needs visible source-rule candidates`);
     assert.match(detail.how ?? '', /적용 기준:/, `${slug} needs one selected rule`);
+    assert.match(detail.how ?? '', /관찰표:/, `${slug} needs observation-sheet guidance`);
     assert.match(detail.how ?? '', /원본 영상:/, `${slug} needs source-video authority`);
     assert.match(detail.how ?? '', /기록:/, `${slug} needs an observation record`);
     assert.match(detail.how ?? '', /중단 조건:/, `${slug} needs a stop condition`);
@@ -780,7 +785,7 @@ test('source-backed flows expose primary destination for portable UX', () => {
   assert.ok(qnet);
 
   assert.equal(inferPrimaryDestination(workout), 'calendar');
-  assert.equal(inferPrimaryDestination(diet), 'memo');
+  assert.equal(inferPrimaryDestination(diet), 'sheet');
   assert.equal(inferPrimaryDestination(workoutPlan), 'hybrid');
   assert.equal(inferPrimaryDestination(qnet), 'hybrid');
 });
