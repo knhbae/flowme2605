@@ -1576,12 +1576,12 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
     naturalArtifacts: [
       {
         kind: 'spreadsheet',
-        artifactTitle: '4주 식단/운동 기록표',
-        simulatedInputs: ['기간=2026-06-01~2026-06-28', '기록=아침/점심/저녁/간식', '운동=주3회', '체중측정=월/목'],
-        expectedOutput: ['날짜, 식사 요약, 단백질/탄수화물 기준, 운동 여부, 체중, 컨디션, 다음날 조정'],
-        currentFlowMatch: '현재 Flow는 식단 기록 루틴이라는 틀은 있으나 daily sheet의 열 구조와 주간 리뷰가 약하다.',
-        currentUxSupport: '엑셀 export는 가능하지만 식단 기록 전용 sheet가 자동 생성되는 수준은 아니다.',
-        gap: 'diet-record Flow는 체크리스트보다 spreadsheet가 1차 산출물이어야 한다.',
+        artifactTitle: '식단 기준 관찰표',
+        simulatedInputs: ['날짜=2026-06-01', '식사=점심 닭가슴살/밥/샐러드', '선택 기준=단백질 먼저 확인', '컨디션=허기와 어지러움 없음'],
+        expectedOutput: ['날짜, 식사 메모, 선택 기준, 컨디션, 다음 조정 메모'],
+        currentFlowMatch: '2026-05-25 observation reshape 이후 체크리스트 5개가 아니라 원본 영상 기준 1개와 식사 관찰표 1개로 축소됐다.',
+        currentUxSupport: '엑셀 export는 식단 기준 관찰표 행과 열을 제공하지만 실제 사용자가 영상에서 기준을 잘 고르는지는 아직 관찰되지 않았다.',
+        gap: 'diet-record Flow는 이제 spreadsheet-first 구조를 갖췄지만, 기준 선택과 중단/상담 조건을 사용자가 이해하는지는 사용자 세션에서 확인해야 한다.',
       },
       {
         kind: 'routine_calendar',
@@ -1593,10 +1593,10 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
         gap: '식단 기록은 daily log와 weekly/monthly review recurrence를 함께 가져야 한다.',
       },
     ],
-    currentContentGap: 'exact 영상은 붙었지만 FLOW가 영상의 식단 기준을 사용자 기록 열과 주간 조정 메모로 충분히 압축하지 못한다.',
-    currentUxGap: '식단 기록 전용 spreadsheet, 다중 반복 리마인더, 주간 리뷰가 연결되지 않는다.',
-    nextContentAction: 'FITVELY diet record Flow를 exact source 기반 식단 기록 열, 선택 기준, 중단/상담 조건 중심으로 더 줄인다.',
-    nextUxAction: 'diet Flow에 spreadsheet-first preview와 multiple reminder rules를 추가한다.',
+    currentContentGap: 'exact 영상의 식단 기준을 한 번에 처방하지 않고 선택 기준 1개, 식사 메모, 컨디션, 다음 조정 메모로 압축하는 1차 reshape가 끝났다.',
+    currentUxGap: '식단 기록 전용 spreadsheet는 생겼지만 다중 반복 리마인더와 주간 리뷰 요약은 아직 고급 UX 과제이며, 실제 사용자가 기준을 고르는 과정은 관찰되지 않았다.',
+    nextContentAction: 'exact source 기반 관찰표가 사용자가 원본 영상을 열고 기준 1개를 고르는 데 충분한지 시뮬레이션 또는 사용자 세션으로 확인한다.',
+    nextUxAction: 'diet Flow에 multiple reminder rules나 weekly review 요약이 필요한지 이후 관찰 결과로 결정한다.',
     decision: 'reshape_content_or_ux',
   },
   {

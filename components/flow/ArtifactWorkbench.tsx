@@ -738,11 +738,13 @@ function LogTableCard({
   workbenchState,
   onWorkbenchChange,
   exportActions,
+  exportKinds = ['excel'],
 }: {
   table: ArtifactLogTable;
   workbenchState: FlowWorkbenchState;
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
   exportActions?: ArtifactExportActions;
+  exportKinds?: ArtifactExportActionKind[];
 }) {
   return (
     <div
@@ -758,7 +760,7 @@ function LogTableCard({
             <p className="text-sm font-semibold text-blue-700">{table.eyebrow}</p>
             <h3 className="mt-1 text-base font-semibold text-gray-950">{table.title}</h3>
           </div>
-          <ArtifactExportButtons actions={exportActions} kinds={['excel']} />
+          <ArtifactExportButtons actions={exportActions} kinds={exportKinds} />
         </div>
         <ArtifactExportStatus actions={exportActions} />
         <p className="mt-2 text-sm leading-6 text-gray-600">{table.description}</p>
@@ -1132,6 +1134,7 @@ function SpreadsheetWorkbench({
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
   exportActions?: ArtifactExportActions;
 }) {
+  const routeSpecificLogTables = getLogTables(bundle);
   const start = anchor || formatDate(new Date());
   const rows = Array.from({ length: 7 }, (_, index) => formatDate(addDays(new Date(start), index)));
   const showRiskBoundary = bundle.flow.risk_level === 'medical_sensitive' && Boolean(bundle.flow.warning);
@@ -1141,6 +1144,41 @@ function SpreadsheetWorkbench({
     bundle.flow.slug === 'diet-habit-2week'
       ? '감량 결과를 판단하지 않고 식사, 수면, 활동, 컨디션, 중단/상담 조건을 같은 줄에 남깁니다.'
       : '날짜별로 남길 기록 값을 먼저 정리합니다.';
+  if (routeSpecificLogTables.length) {
+    return (
+      <div className="grid gap-4 lg:grid-cols-[1.25fr_0.75fr]">
+        <div className="grid gap-4">
+          {routeSpecificLogTables.map((table, index) => (
+            <LogTableCard
+              key={table.id}
+              table={table}
+              workbenchState={workbenchState}
+              onWorkbenchChange={onWorkbenchChange}
+              exportActions={index === 0 ? exportActions : undefined}
+              exportKinds={index === 0 ? ['copy', 'excel', 'draft'] : ['excel']}
+            />
+          ))}
+        </div>
+        <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+          {showRiskBoundary ? (
+            <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3">
+              <p className="text-sm font-semibold text-amber-900">기록 전 확인</p>
+              <p className="mt-1 text-sm leading-6 text-amber-950">{bundle.flow.warning}</p>
+            </div>
+          ) : null}
+          <h3 className="text-base font-semibold text-gray-950">주간 조정 메모</h3>
+          <textarea
+            aria-label="주간 조정 메모"
+            className="mt-3 min-h-32 w-full resize-y rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800"
+            placeholder="이번 주에 유지할 기준, 줄일 기준, 중단/상담 신호를 적어두세요."
+            value={workbenchState.weeklyReview ?? ''}
+            onChange={(event) => onWorkbenchChange(updateWeeklyReview(workbenchState, event.currentTarget.value))}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="grid gap-4 lg:grid-cols-[1.25fr_0.75fr]">
       <div data-testid="artifact-log-table-spreadsheet" className="overflow-x-auto rounded-lg border border-gray-200 bg-white">

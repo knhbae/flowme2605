@@ -64,6 +64,7 @@ const healthCheckupSlugs = new Set(['national-health-checkup-d7']);
 const vaccinationCertificateSlugs = new Set(['vaccination-certificate-issue']);
 const jobChangeRiskSlugs = new Set(['job-change-risk-check']);
 const passportRenewalSlugs = new Set(['passport-renewal-docs']);
+const fitvelyDietRecordSlugs = new Set(['real-fitvely-diet-record-routine']);
 
 const driverLicenseComparisonRows: ArtifactComparisonRow[] = [
   { id: 'driver-license-renewal-type', title: '면허/갱신 유형' },
@@ -611,6 +612,27 @@ const computerSkillsStudyLogTables: ArtifactLogTable[] = [
   studyLogTables[1],
 ];
 
+const fitvelyDietObservationLogTables: ArtifactLogTable[] = [
+  {
+    id: 'fitvely-diet-observation-log',
+    eyebrow: '관찰표',
+    title: '식단 기준 관찰표',
+    description: '원본 영상에서 고른 식단 기준 1개를 실제 식사, 컨디션, 다음 조정 메모와 함께 기록합니다.',
+    rows: [
+      { id: 'fitvely-diet-meal', label: '오늘 한 끼 기록' },
+      { id: 'fitvely-diet-condition', label: '운동/수면/컨디션' },
+      { id: 'fitvely-diet-weekly-adjustment', label: '주간 조정 메모' },
+    ],
+    columns: [
+      { id: 'date', label: '날짜', placeholder: '예) 2026-06-01' },
+      { id: 'mealMemo', label: '식사 메모', placeholder: '예) 점심: 닭가슴살, 밥, 샐러드' },
+      { id: 'selectedRule', label: '선택 기준', placeholder: '예) 단백질 먼저 확인' },
+      { id: 'condition', label: '컨디션', placeholder: '예) 허기/어지러움 없음, 수면 7시간' },
+      { id: 'nextAdjustment', label: '다음 조정', placeholder: '예) 저녁 탄수화물 양은 유지' },
+    ],
+  },
+];
+
 export function getComparisonRows(bundle: FlowBundle): ArtifactComparisonRow[] {
   const config = getComparisonConfig(bundle);
   if (config) return config.rows;
@@ -678,6 +700,7 @@ export function getMemoCardFields(bundle: FlowBundle): ArtifactMemoField[] {
 
 export function getLogTables(bundle: FlowBundle): ArtifactLogTable[] {
   if (qnetExamSlugs.has(bundle.flow.slug)) return qnetLogTables;
+  if (fitvelyDietRecordSlugs.has(bundle.flow.slug)) return fitvelyDietObservationLogTables;
   if (bundle.flow.slug === 'computer-skills-d30-study') return computerSkillsStudyLogTables;
   if (studySlugs.has(bundle.flow.slug)) return studyLogTables;
   return [];

@@ -48,6 +48,7 @@ The unresolved areas are no longer just scattered notes:
 2. `health_observation_guardrail`
    - Reason: health/diet routes can imply prescription or outcomes if wording is loose.
    - First route candidates: FITVELY exact nutrition routes after `diet-habit-2week` reference.
+   - 2026-05-25 update: first exact FITVELY route reshape completed for `real-fitvely-diet-record-routine`. It now uses one source-rule action, a spreadsheet observation table, and stop/consult copy. It is still not validated.
 3. `vehicle_purchase_evidence_first`
    - Reason: checklist completion can be mistaken for acceptance/readiness.
    - First route candidates: `vehicle-inspection-prep`, then re-check `used-car-buying-check`.

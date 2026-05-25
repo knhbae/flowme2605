@@ -260,6 +260,23 @@ test('diet exact video flow uses application language instead of workout schedul
   await expect(page.getByRole('button', { name: '메모/노션에 복사' })).toBeVisible();
 });
 
+test('FITVELY diet record route starts from a source-rule observation sheet', async ({ page }) => {
+  await page.goto('/f/real-fitvely-diet-record-routine');
+
+  await expect(page.getByRole('heading', { name: 'FITVELY 식단 기록 루틴 Flow' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '식단 기준 관찰표' })).toBeVisible();
+  await expect(page.getByText('식단 기준 1개를 골라 관찰표에 기록').first()).toBeVisible();
+  await expect(page.getByText('하루 기록 항목 정하기')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: '원문 보기' })).toHaveAttribute('href', 'https://www.youtube.com/watch?v=qcTxaFMWzKs');
+
+  const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(workbench.getByLabel('오늘 한 끼 기록 / 선택 기준')).toBeVisible();
+  await expect(workbench.getByLabel('오늘 한 끼 기록 / 컨디션')).toBeVisible();
+  await expect(workbench.getByLabel('오늘 한 끼 기록 / 다음 조정')).toBeVisible();
+  await expect(workbench.getByRole('button', { name: '엑셀로 받기' })).toBeVisible();
+  await expect(workbench.getByRole('button', { name: '체크리스트 복사' })).toBeVisible();
+});
+
 test('exact video copy opens an editable draft with the execution item preserved', async ({ page }) => {
   await page.goto('/f/real-thankyou-bubu-video-full-body-no-jump');
 

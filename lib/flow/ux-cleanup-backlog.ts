@@ -96,7 +96,7 @@ export const uxCleanupBacklogGroups: UxCleanupBacklogGroup[] = [
       'source/risk separation',
     ],
     nextBatch:
-      'Use diet-habit as the guardrail reference, then rewrite exact FITVELY nutrition routes around one application and one observation record.',
+      'First exact FITVELY diet-record reshape landed for real-fitvely-diet-record-routine; continue with remaining FITVELY nutrition routes around one application and one observation record.',
     statusAfterCleanup: 'cleanup backlog item, not validated until real user behavior exists.',
   },
   {
