@@ -1060,7 +1060,7 @@ test('artifact workbench exposes export actions next to the natural artifact', a
   await expect(studyCalendarCard.getByRole('button', { name: '캘린더 받기' })).toBeVisible();
 });
 
-test('mobile workbench keeps export buttons in the sticky sheet instead of artifact cards', async ({ page }) => {
+test('mobile export sheet remains available from the sticky fallback', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/computer-skills-d30-study');
 
@@ -1071,8 +1071,8 @@ test('mobile workbench keeps export buttons in the sticky sheet instead of artif
   const studyLogCard = workbench.getByTestId('artifact-log-table-study-chapter-progress');
   const studyCalendarCard = workbench.getByTestId('artifact-calendar-card');
 
-  await expect(studyLogCard.getByRole('button', { name: '엑셀로 받기' })).toHaveCount(0);
-  await expect(studyCalendarCard.getByRole('button', { name: '캘린더 받기' })).toHaveCount(0);
+  await expect(studyLogCard.getByTestId('mobile-artifact-export-excel')).toBeVisible();
+  await expect(studyCalendarCard.getByTestId('mobile-artifact-export-calendar')).toBeVisible();
 
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   const mobileBar = page.getByTestId('mobile-export-bar');
@@ -1083,6 +1083,42 @@ test('mobile workbench keeps export buttons in the sticky sheet instead of artif
   await expect(sheet.getByRole('heading', { name: '어디로 가져갈까요' })).toBeVisible();
   await expect(sheet.getByRole('button', { name: '엑셀로 받기' })).toBeEnabled();
   await expect(sheet.getByRole('button', { name: /캘린더에 추가/ })).toBeEnabled();
+});
+
+test('mobile workbench exposes destination CTAs on the first artifact cards', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await page.goto('/f/moving-d30-basic');
+  let workbench = page.getByLabel('Flow artifact workbench');
+  let listCard = workbench.getByTestId('artifact-list-card');
+  let calendarCard = workbench.getByTestId('artifact-calendar-card');
+
+  await expect(listCard.getByTestId('mobile-artifact-export-excel')).toBeVisible();
+  await expect(listCard.getByTestId('mobile-artifact-export-excel')).toHaveAttribute('aria-label', /시트로 받기: .*실행 리스트/);
+  await expect(calendarCard.getByTestId('mobile-artifact-export-calendar')).toBeVisible();
+  await expect(calendarCard.getByTestId('mobile-artifact-export-calendar')).toHaveAttribute('aria-label', /캘린더로 받기: .*월간 캘린더/);
+
+  await page.goto('/f/computer-skills-d30-study');
+  workbench = page.getByLabel('Flow artifact workbench');
+  const studyLogCard = workbench.getByTestId('artifact-log-table-study-chapter-progress');
+  const studyCalendarCard = workbench.getByTestId('artifact-calendar-card');
+
+  await expect(studyLogCard.getByTestId('mobile-artifact-export-excel')).toBeVisible();
+  await expect(studyLogCard.getByTestId('mobile-artifact-export-excel')).toHaveAttribute('aria-label', /시트로 받기: .*공부 기록표/);
+  await expect(studyCalendarCard.getByTestId('mobile-artifact-export-calendar')).toBeVisible();
+  await expect(studyCalendarCard.getByTestId('mobile-artifact-export-calendar')).toHaveAttribute('aria-label', /캘린더로 받기: .*월간 캘린더/);
+
+  await page.goto('/f/diet-habit-2week');
+  workbench = page.getByLabel('Flow artifact workbench');
+  const dietSheetCard = workbench.getByTestId('artifact-log-table-spreadsheet');
+  await expect(dietSheetCard.getByTestId('mobile-artifact-export-excel')).toBeVisible();
+  await expect(dietSheetCard.getByTestId('mobile-artifact-export-excel')).toHaveAttribute('aria-label', /시트로 받기: .*관찰 기록표/);
+
+  await page.goto('/f/new-car-delivery-check');
+  workbench = page.getByLabel('Flow artifact workbench');
+  const comparisonCard = workbench.getByTestId('artifact-comparison-card');
+  await expect(comparisonCard.getByTestId('mobile-artifact-export-excel')).toBeVisible();
+  await expect(comparisonCard.getByTestId('mobile-artifact-export-excel')).toHaveAttribute('aria-label', /시트로 받기: .*인수 증거표/);
 });
 
 test('study progress table exposes source-derived guard metadata', async ({ page }) => {
