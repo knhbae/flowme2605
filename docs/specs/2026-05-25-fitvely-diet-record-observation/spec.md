@@ -1,7 +1,7 @@
 # FITVELY Diet Record Observation Spec
 
 **Date:** 2026-05-25
-**Status:** In Progress
+**Status:** Implemented
 **Owner:** Codex
 **Related roadmap:** Stage 0 export-first execution behavior.
 

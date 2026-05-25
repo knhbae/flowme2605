@@ -4,13 +4,13 @@ Date: 2026-05-25
 
 Branch: `content/fitvely-diet-record-observation`
 
-PR: TBD
+PR: [#89](https://github.com/knhbae/flowme2605/pull/89)
 
-Status: In progress
+Status: Merged
 
-Vercel: TBD
+Vercel: https://vercel.com/flowme/flowme2605/22pz95DpQ3UMe8AKWq2EXsm3HX7D
 
-Merged SHA: TBD
+Merged SHA: `59631f1ecb735a42c737143a3cb81fd0453c5b5d`
 
 ## Summary
 

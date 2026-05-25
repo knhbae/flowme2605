@@ -7,4 +7,4 @@
 - [x] Add an E2E check for the direct route first screen and sheet fields.
 - [x] Update natural artifact audit, content audit, specs, status, and PR history.
 - [x] Run full verification.
-- [ ] Create PR, wait for checks, merge if green, and sync main.
+- [x] Create PR, wait for checks, merge if green, and sync main.
