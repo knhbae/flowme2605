@@ -181,6 +181,23 @@ test('vehicle inspection route exposes reservation and result follow-up memo fie
   assert.match(fields[0]?.groupDescription ?? '', /예약 정보, 준비 서류, 결과표, 후속 정비/);
 });
 
+test('MOFA travel prep route exposes country-check and emergency-card memo fields', () => {
+  const fields = getMemoCardFields(bundle('real-mofa-overseas-travel-prep'));
+
+  assert.deepEqual(
+    fields.map((field) => field.id),
+    [
+      'mofa-travel-destination-confirmation',
+      'mofa-travel-alert-notice',
+      'mofa-travel-embassy-contact',
+      'mofa-travel-local-emergency',
+      'mofa-travel-family-share',
+    ],
+  );
+  assert.match(fields[0]?.groupTitle ?? '', /비상/);
+  assert.match(fields[0]?.groupDescription ?? '', /여행경보/);
+});
+
 test('FITVELY diet record route exposes a source-rule observation log', () => {
   const tables = getLogTables(bundle('real-fitvely-diet-record-routine'));
 
