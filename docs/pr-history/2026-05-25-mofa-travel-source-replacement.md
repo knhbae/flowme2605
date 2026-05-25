@@ -3,7 +3,7 @@
 Date: 2026-05-25
 Branch: `content/mofa-travel-source-replacement`
 PR: #71
-Status: Open, waiting for checks
+Status: Merged
 
 ## Why
 
@@ -33,3 +33,5 @@ Status: Open, waiting for checks
 - PASS: `npx playwright test tests/e2e/flow-mvp.spec.ts -g "flow lab shows converted pilot"`
 - PASS: `git diff --check` with existing CRLF warnings only.
 - Screenshot: `docs/screenshots/2026-05-25-mofa-travel-source-replacement-flow-lab.png`
+- Vercel: https://vercel.com/flowme/flowme2605/5ZPWaaKQwL1ekmG5MujNGD5Ubxm4
+- Merged: PR #71 as squash commit `d0d1d7206a7da8c920131de2a7e3c308bcb6b319`.
