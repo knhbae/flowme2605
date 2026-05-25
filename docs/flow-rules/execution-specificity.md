@@ -98,6 +98,26 @@ Do not:
 
 - Force a progress table from reviews, tips, advice, or motivation content.
 
+### Broad Source Replacement
+
+Use when the current source is a channel page, creator site, broad official portal, FAQ collection, or broad study material site rather than an exact original.
+
+Required:
+
+- Keep the route out of representative and public MVP framing until the source is narrowed.
+- Replace creator channel/site URLs with exact videos, playlists, posts, program pages, or source-defined row sets.
+- Treat broad official portals as reference entry points only; add route-specific official pages before promotion.
+- Preserve the source choice in the artifact so users know which video, page, row set, or checklist they are acting on.
+
+Do not:
+
+- Add invented movement sequences, diet rules, study rows, or administrative steps to hide missing source specificity.
+- Use extra cards or explanation blocks as a substitute for exact source replacement.
+
+Current broad-source review:
+
+- `real-thankyou-bubu-home-workout-starter`, `real-thankyou-bubu-20min-routine`, `real-fitvely-diet-record-routine`, `real-fitvely-weekly-body-check`, `real-sinagong-computer-d30-study`, `real-pet-health-visit-routine`, and `real-mofa-overseas-travel-prep` remain below public MVP/representative framing until the required source work is done.
+
 ### Moving, Admin, And Official-Service Flows
 
 Required:
