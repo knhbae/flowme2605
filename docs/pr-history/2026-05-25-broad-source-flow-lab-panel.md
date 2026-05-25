@@ -3,8 +3,8 @@
 Date: 2026-05-25
 Branch: `ux/broad-source-flow-lab-panel`
 PR: #61
-Status: In progress
-Vercel: Pending
+Status: Merged and Vercel check passed
+Vercel: https://vercel.com/flowme/flowme2605/B5HJdJZPaGSXQ17MxUpFVXYFgaGJ
 
 ## Why
 
@@ -33,6 +33,7 @@ The broad-source code guard exposed the right summary data, but the internal edi
 - `npm run build` passed.
 - `npx playwright test tests/e2e/flow-mvp.spec.ts -g "flow lab shows converted pilot"` passed.
 - `git diff --check` passed with CRLF warnings only.
+- Vercel PR check passed before merge.
 
 ## Screenshot
 
