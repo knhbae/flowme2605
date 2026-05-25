@@ -2228,6 +2228,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const canExportCalendar = hasCalendarSchedule(bundle);
   const showTodayExecution = isFitnessExactVideoFlow(bundle);
   const showExportFirstHero = isExportFirstHeroRoute(bundle);
+  const showMobileWorkbenchFirst = bundle.flow.structure_type === 'routine' || bundle.flow.slug === 'baby-food-menu-recipe';
   const primaryDestination = inferPrimaryDestination(bundle);
 
   const toggle = (id: string) => {
@@ -2334,6 +2335,46 @@ export function PublicFlow({ slug }: { slug: string }) {
     }
     document.querySelector('[aria-label="Flow artifact workbench"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
+  const renderArtifactWorkbench = () => (
+    <ArtifactWorkbench
+      bundle={bundle}
+      anchor={displayAnchor}
+      weekdays={weekdaySelection}
+      checks={checks}
+      itemStates={itemStates}
+      comparisonState={comparisonState}
+      onComparisonChange={setComparisonState}
+      workbenchState={workbenchState}
+      onWorkbenchChange={setWorkbenchState}
+      onToggleItem={toggle}
+      exportActions={{
+        done,
+        canExportCalendar,
+        copyState,
+        downloadState,
+        calendarState,
+        onCopyText: copy,
+        onDownloadExcel: downloadExcel,
+        onDownloadCalendar: downloadCalendar,
+        onCopyToEditableDraft: copyToEditableDraft,
+      }}
+    />
+  );
+  const renderSetupSection = () =>
+    !showTodayExecution && !showExportFirstHero ? (
+      <section className="my-6 rounded-xl border border-blue-100 bg-white p-4 shadow-sm">
+        <div className="grid gap-4">
+          <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+            <p className="text-sm font-semibold text-blue-700">{getSetupStepTitle(bundle)}</p>
+            <p className="mt-1 text-sm text-gray-600">{getSetupStepDescription(bundle)}</p>
+            <p className="mt-1 text-sm text-gray-500">{getSetupStepHelp(bundle)}</p>
+            <div className="mt-4">
+              <AnchorInput bundle={bundle} anchor={anchor} displayAnchor={displayAnchor} mode={anchorMode} onModeChange={setAnchorMode} onChange={setAnchor} weekdays={weekdaySelection} onWeekdaysChange={setWeekdaySelection} />
+            </div>
+          </div>
+        </div>
+      </section>
+    ) : null;
 
   return (
     <main className="mx-auto max-w-5xl px-5 py-8 pb-28 md:pb-8">
@@ -2349,62 +2390,40 @@ export function PublicFlow({ slug }: { slug: string }) {
         <div className="mt-4">
           <FlowBadges bundle={bundle} />
         </div>
-        <FlowMigrationStatus bundle={bundle} />
-        <FlowSourceFitStatus bundle={bundle} />
       </header>
 
-      {showExportFirstHero ? (
-        <ExportFirstHero
-          bundle={bundle}
-          anchor={anchor}
-          displayAnchor={displayAnchor}
-          mode={anchorMode}
-          onModeChange={setAnchorMode}
-          onAnchorChange={setAnchor}
-          weekdays={weekdaySelection}
-          onWeekdaysChange={setWeekdaySelection}
-          onTake={openExportActions}
-        />
-      ) : null}
-
-      {!showTodayExecution && !showExportFirstHero ? (
-      <section className="my-6 rounded-xl border border-blue-100 bg-white p-4 shadow-sm">
-        <div className="grid gap-4">
-          <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
-            <p className="text-sm font-semibold text-blue-700">{getSetupStepTitle(bundle)}</p>
-            <p className="mt-1 text-sm text-gray-600">{getSetupStepDescription(bundle)}</p>
-            <p className="mt-1 text-sm text-gray-500">{getSetupStepHelp(bundle)}</p>
-            <div className="mt-4">
-              <AnchorInput bundle={bundle} anchor={anchor} displayAnchor={displayAnchor} mode={anchorMode} onModeChange={setAnchorMode} onChange={setAnchor} weekdays={weekdaySelection} onWeekdaysChange={setWeekdaySelection} />
-            </div>
+      {showMobileWorkbenchFirst ? (
+        <div className="flex flex-col">
+          <div className="order-3 md:order-1">
+            <FlowMigrationStatus bundle={bundle} />
+            <FlowSourceFitStatus bundle={bundle} />
           </div>
+          <div className="order-2 md:order-2">{renderSetupSection()}</div>
+          <div className="order-1 md:order-3">{renderArtifactWorkbench()}</div>
         </div>
-      </section>
-      ) : null}
+      ) : (
+        <>
+          <FlowMigrationStatus bundle={bundle} />
+          <FlowSourceFitStatus bundle={bundle} />
 
-      <ArtifactWorkbench
-        bundle={bundle}
-        anchor={displayAnchor}
-        weekdays={weekdaySelection}
-        checks={checks}
-        itemStates={itemStates}
-        comparisonState={comparisonState}
-        onComparisonChange={setComparisonState}
-        workbenchState={workbenchState}
-        onWorkbenchChange={setWorkbenchState}
-        onToggleItem={toggle}
-        exportActions={{
-          done,
-          canExportCalendar,
-          copyState,
-          downloadState,
-          calendarState,
-          onCopyText: copy,
-          onDownloadExcel: downloadExcel,
-          onDownloadCalendar: downloadCalendar,
-          onCopyToEditableDraft: copyToEditableDraft,
-        }}
-      />
+          {showExportFirstHero ? (
+            <ExportFirstHero
+              bundle={bundle}
+              anchor={anchor}
+              displayAnchor={displayAnchor}
+              mode={anchorMode}
+              onModeChange={setAnchorMode}
+              onAnchorChange={setAnchor}
+              weekdays={weekdaySelection}
+              onWeekdaysChange={setWeekdaySelection}
+              onTake={openExportActions}
+            />
+          ) : null}
+
+          {renderSetupSection()}
+          {renderArtifactWorkbench()}
+        </>
+      )}
 
       {showStorageNotice ? (
         <section className="my-5 rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm text-blue-950">
@@ -2525,7 +2544,7 @@ export function PublicFlow({ slug }: { slug: string }) {
             </div>
             <div className="mt-5 grid gap-2">
               {canExportCalendar ? (
-                <button className="flex items-center gap-3 rounded-md bg-gray-50 px-4 py-3 text-left text-sm font-semibold text-gray-950 disabled:text-gray-400" disabled={done === 0} onClick={downloadCalendar}>
+                <button data-testid="mobile-export-calendar" aria-label={`캘린더에 추가: ${bundle.flow.title} 일정`} className="flex items-center gap-3 rounded-md bg-gray-50 px-4 py-3 text-left text-sm font-semibold text-gray-950 disabled:text-gray-400" disabled={done === 0} onClick={downloadCalendar}>
                   <span aria-hidden="true" className="text-lg">□</span>
                   <span className="flex-1">
                     <span className="block">캘린더에 추가</span>
@@ -2534,7 +2553,7 @@ export function PublicFlow({ slug }: { slug: string }) {
                   <span aria-hidden="true" className="text-gray-400">›</span>
                 </button>
               ) : null}
-              <button className="flex items-center gap-3 rounded-md bg-gray-50 px-4 py-3 text-left text-sm font-semibold text-gray-950 disabled:text-gray-400" disabled={done === 0} onClick={downloadExcel}>
+              <button data-testid="mobile-export-excel" aria-label={`엑셀로 받기: ${bundle.flow.title} 실행 기록 시트`} className="flex items-center gap-3 rounded-md bg-gray-50 px-4 py-3 text-left text-sm font-semibold text-gray-950 disabled:text-gray-400" disabled={done === 0} onClick={downloadExcel}>
                 <span aria-hidden="true" className="text-lg">□</span>
                 <span className="flex-1">
                   <span className="block">엑셀로 받기</span>
@@ -2542,7 +2561,7 @@ export function PublicFlow({ slug }: { slug: string }) {
                 </span>
                 <span aria-hidden="true" className="text-gray-400">›</span>
               </button>
-              <button className="flex items-center gap-3 rounded-md bg-gray-50 px-4 py-3 text-left text-sm font-semibold text-gray-950 disabled:text-gray-400" disabled={done === 0} onClick={copy}>
+              <button data-testid="mobile-export-copy" aria-label={`텍스트 복사: ${bundle.flow.title} 실행 메모`} className="flex items-center gap-3 rounded-md bg-gray-50 px-4 py-3 text-left text-sm font-semibold text-gray-950 disabled:text-gray-400" disabled={done === 0} onClick={copy}>
                 <span aria-hidden="true" className="text-lg">□</span>
                 <span className="flex-1">
                   <span className="block">텍스트 복사</span>
