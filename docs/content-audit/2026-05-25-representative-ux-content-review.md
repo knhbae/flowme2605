@@ -9,7 +9,7 @@ The next UX/content review pass starts with the three current candidate routes:
 | Route | Current status after review | User-run decision |
 |---|---|---|
 | `computer-skills-d30-study` | Representative-eligible, not validated | Ready for observed export-first session |
-| `diet-habit-2week` | Public MVP candidate with guardrails, not validated | Needs guardrail rewrite before stronger framing |
+| `diet-habit-2week` | Public MVP candidate with guardrails, not validated | Guardrail copy rewritten; needs mobile re-check and observed session |
 | `new-car-delivery-check` | Public MVP candidate with guardrails, not validated | Needs guardrail rewrite before stronger framing |
 
 No route is validated by this review.
@@ -28,9 +28,9 @@ No route is validated by this review.
 
 - First action: enter start date and begin the two-week observation sheet.
 - Natural output: daily observation sheet with meals, activity, sleep, optional measurement, condition, stop/consult condition, and weekly observation memo.
-- Current UX gap: the route can still read like diet coaching if observation language and stop condition are not dominant.
+- Current UX gap: the route now opens as an observation sheet with stop/consult copy, but it still needs a mobile re-check to confirm warning/table/memo density.
 - Mobile risk: medium; warning/source/observation/review sections can stack.
-- Next small fix: tighten first-screen copy and notes around observation sheet plus stop condition.
+- Next small fix: capture the rewritten mobile first screen and verify that the warning, table, and weekly memo do not compete.
 
 ### `new-car-delivery-check`
 
@@ -42,7 +42,7 @@ No route is validated by this review.
 
 ## Follow-Up Queue
 
-1. Route-level copy pass for `diet-habit-2week`.
+1. Mobile first-screen re-check for rewritten `diet-habit-2week`.
 2. Route-level copy pass for `new-car-delivery-check`.
 3. Observed export-first session for `computer-skills-d30-study`.
 4. After the two guardrail rewrites, re-check mobile first screens before public MVP framing.
@@ -50,3 +50,9 @@ No route is validated by this review.
 ## Screenshot
 
 ![Representative UX Content Review Flow Lab panel](../screenshots/2026-05-25-representative-ux-content-review-flow-lab.png)
+
+## Diet Guardrail Rewrite Screenshots
+
+![Diet observation guardrail desktop](../screenshots/2026-05-25-diet-observation-guardrail-desktop.png)
+
+![Diet observation guardrail mobile](../screenshots/2026-05-25-diet-observation-guardrail-mobile.png)

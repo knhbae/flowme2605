@@ -454,13 +454,14 @@ test('risk-boundary QA exports new-car evidence memo and diet observation sheet'
 
   workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
   await expect(workbench).toBeVisible();
-  await expect(workbench.getByText('기록 전 확인')).toBeVisible();
+  await expect(workbench.getByText('관찰 전 중단/상담 기준')).toBeVisible();
   await workbench.locator('input').nth(0).fill('breakfast oatmeal, lunch kimbap, dinner tofu');
   await workbench.locator('input').nth(1).fill('30m walk');
   await workbench.locator('input').nth(2).fill('waist 82cm');
   await workbench.locator('input').nth(3).fill('normal');
   await workbench.locator('input').nth(4).fill('observe late dinner trigger');
   await workbench.locator('input').nth(13).fill('dizziness repeated, stop and consult professional');
+  await expect(workbench.getByRole('heading', { name: '주간 관찰 메모' })).toBeVisible();
   await workbench.locator('textarea').first().fill('late dinner and low sleep correlate with snack cravings');
   await page.locator('[data-testid="flow-item-card"]').first().getByRole('checkbox').check();
   await expect(workbench.getByRole('button', { name: '엑셀로 받기' })).toBeEnabled();
@@ -485,7 +486,7 @@ test('public MVP guardrail screens keep evidence and stop conditions first', asy
   workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
   await expect(workbench.getByRole('heading', { name: '관찰 기록표' })).toBeVisible();
   await expect(workbench.getByRole('cell', { name: '중단/상담 조건' })).toBeVisible();
-  await expect(workbench.getByText('기록 전 확인')).toBeVisible();
+  await expect(workbench.getByText('관찰 전 중단/상담 기준')).toBeVisible();
 });
 
 test('mobile export actions open from a bottom sheet', async ({ page }) => {
@@ -1013,7 +1014,7 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(readiness.getByText('Public MVP 후보', { exact: true }).first()).toBeVisible();
   await expect(readiness.getByRole('link', { name: '컴퓨터활용능력 D-30 학습 Flow' })).toBeVisible();
   await expect(readiness.getByRole('link', { name: '신차 인수 점검 Flow' })).toBeVisible();
-  await expect(readiness.getByRole('link', { name: '2주 다이어트 습관 기록 Flow' })).toBeVisible();
+  await expect(readiness.getByRole('link', { name: '2주 식사·활동 관찰 Flow' })).toBeVisible();
   const representativeUxReview = page.locator('section').filter({ hasText: 'Representative UX Content Review' });
   await expect(representativeUxReview).toBeVisible();
   await expect(representativeUxReview.getByText('ready_for_observed_session').first()).toBeVisible();
