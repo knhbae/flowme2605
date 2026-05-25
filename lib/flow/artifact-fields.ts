@@ -56,6 +56,7 @@ const kdcaTravelHealthSlugs = new Set(['real-kdca-travel-health-check']);
 const childcareSupportSlugs = new Set(['real-childcare-support-application-check']);
 const newCarDeliverySlugs = new Set(['new-car-delivery-check']);
 const usedCarSlugs = new Set(['used-car-buying-check']);
+const vehicleInspectionSlugs = new Set(['vehicle-inspection-prep']);
 const taxDocumentSlugs = new Set(['year-end-tax-docs']);
 const businessRegistrationSlugs = new Set(['business-registration-basic']);
 const happyBirthSlugs = new Set(['happy-birth-service-check']);
@@ -333,6 +334,37 @@ const usedCarDecisionMemoFields: ArtifactMemoField[] = [
     id: 'used-car-buy-hold-memo',
     label: '구매 보류/진행 메모',
     placeholder: '예: 사고 이력 설명과 성능점검표가 맞지 않으면 진행하지 않음',
+  },
+];
+
+const vehicleInspectionMemoFields: ArtifactMemoField[] = [
+  {
+    id: 'vehicle-inspection-reservation',
+    label: '검사 예약 정보',
+    placeholder: '예: 2026-06-18 10:30, 성산검사소, 예약번호/접수 문자',
+    groupEyebrow: '예약·결과 증빙',
+    groupTitle: '검사 예약·결과 후속 메모',
+    groupDescription: '예약 정보, 준비 서류, 결과표, 후속 정비를 체크 완료와 분리해 보관합니다.',
+  },
+  {
+    id: 'vehicle-inspection-documents',
+    label: '서류/차량 정보',
+    placeholder: '예: 자동차등록증, 보험 상태, 차량번호/차대번호 확인',
+  },
+  {
+    id: 'vehicle-inspection-precheck-evidence',
+    label: '사전 점검 증빙',
+    placeholder: '예: 등화장치 영상, 타이어 사진, 경고등 없음 메모',
+  },
+  {
+    id: 'vehicle-inspection-result-sheet',
+    label: '검사 결과표 보관',
+    placeholder: '예: 적합/부적합, 결과표 사진 또는 PDF 파일명',
+  },
+  {
+    id: 'vehicle-inspection-repair-follow-up',
+    label: '후속 정비/재검사 메모',
+    placeholder: '예: 전조등 정비 예약, 재검사 기한, 예상 비용',
   },
 ];
 
@@ -695,6 +727,7 @@ export function getMemoCardFields(bundle: FlowBundle): ArtifactMemoField[] {
   if (travelSlugs.has(bundle.flow.slug)) return travelProofMemoFields;
   if (newCarDeliverySlugs.has(bundle.flow.slug)) return newCarDeliveryMemoFields;
   if (usedCarSlugs.has(bundle.flow.slug)) return usedCarDecisionMemoFields;
+  if (vehicleInspectionSlugs.has(bundle.flow.slug)) return vehicleInspectionMemoFields;
   return [];
 }
 

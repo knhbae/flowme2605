@@ -164,6 +164,23 @@ test('used-car route exposes candidate comparison rows and decision memo fields'
   );
 });
 
+test('vehicle inspection route exposes reservation and result follow-up memo fields', () => {
+  const fields = getMemoCardFields(bundle('vehicle-inspection-prep'));
+
+  assert.deepEqual(
+    fields.map((field) => field.id),
+    [
+      'vehicle-inspection-reservation',
+      'vehicle-inspection-documents',
+      'vehicle-inspection-precheck-evidence',
+      'vehicle-inspection-result-sheet',
+      'vehicle-inspection-repair-follow-up',
+    ],
+  );
+  assert.equal(fields[0]?.groupTitle, '검사 예약·결과 후속 메모');
+  assert.match(fields[0]?.groupDescription ?? '', /예약 정보, 준비 서류, 결과표, 후속 정비/);
+});
+
 test('FITVELY diet record route exposes a source-rule observation log', () => {
   const tables = getLogTables(bundle('real-fitvely-diet-record-routine'));
 

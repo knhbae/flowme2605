@@ -116,7 +116,7 @@ export const uxCleanupBacklogGroups: UxCleanupBacklogGroup[] = [
       'no acceptance advice',
     ],
     nextBatch:
-      'Keep new-car and used-car as the vehicle references, then verify vehicle-inspection-prep uses a portable evidence/check sheet rather than generic completion.',
+      'vehicle-inspection-prep now has reservation/result follow-up memo fields; re-check used-car and vehicle inspection sessions for mobile density and evidence-first comprehension.',
     statusAfterCleanup: 'cleanup backlog item, not validated until real user behavior exists.',
   },
   {

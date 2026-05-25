@@ -334,6 +334,18 @@ test('real source public flow exposes source QA metadata and target metadata', a
   await expect(page.getByText('이 Flow는 아래 콘텐츠를 기반으로')).toBeVisible();
 });
 
+test('vehicle inspection route keeps reservation and result memo beside the timeline', async ({ page }) => {
+  await page.goto('/f/vehicle-inspection-prep');
+
+  await expect(page.getByRole('heading', { name: '자동차검사 D-14 준비 Flow' })).toBeVisible();
+  const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(workbench.getByText('검사 예약·결과 후속 메모')).toBeVisible();
+  await expect(workbench.getByLabel('검사 예약 정보')).toBeVisible();
+  await expect(workbench.getByLabel('검사 결과표 보관')).toBeVisible();
+  await expect(workbench.getByLabel('후속 정비/재검사 메모')).toBeVisible();
+  await expect(workbench.getByText('검사 결과 후속 memo gap 검토가 필요합니다.')).toHaveCount(0);
+});
+
 test('preview creator flow route opens encoded Korean slug', async ({ page }) => {
   await page.goto('/f/channel-samsung-service-%EC%9B%94%EA%B0%84-%EC%A0%90%EA%B2%80-%EB%A3%A8%ED%8B%B4');
 
