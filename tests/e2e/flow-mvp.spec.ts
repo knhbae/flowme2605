@@ -1200,3 +1200,13 @@ test('reshaped official route workbenches expose natural artifact fields', async
   await expect(page.getByLabel('원서접수 마감 / 마감/시점')).toBeVisible();
   await expect(page.getByLabel('시험장·입실 시간 / 상태/결정')).toBeVisible();
 });
+
+test('MOFA travel route opens with emergency memo card fields', async ({ page }) => {
+  await page.goto('/f/real-mofa-overseas-travel-prep');
+
+  const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(workbench.getByRole('heading', { name: '메모 카드' })).toBeVisible();
+  await expect(workbench.getByRole('textbox', { name: '방문 국가와 확인일' })).toBeVisible();
+  await expect(workbench.getByRole('textbox', { name: '영사콜센터·현지 공관 연락처' })).toBeVisible();
+  await expect(workbench.getByRole('textbox', { name: '가족 공유 메모' })).toBeVisible();
+});

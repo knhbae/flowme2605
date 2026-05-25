@@ -56,6 +56,7 @@ const memoCardOverrideSlugs = new Set([
   'industrial-accident-claim-docs',
   'vaccination-certificate-issue',
   'passport-renewal-docs',
+  'real-mofa-overseas-travel-prep',
 ]);
 const spreadsheetOverrideSlugs = new Set(['diet-habit-2week', 'diet-meal-exercise-log', 'diet-reset-2week']);
 

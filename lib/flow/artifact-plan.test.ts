@@ -111,6 +111,15 @@ test('artifact plan maps official document issue routes to memo cards first', ()
   assert.ok(passport.exportTargets.includes('memo'));
 });
 
+test('artifact plan maps MOFA travel safety to emergency memo first', () => {
+  const plan = getArtifactPlan(bundle('real-mofa-overseas-travel-prep'));
+
+  assert.equal(plan.primarySurface, 'memo_card');
+  assert.deepEqual(plan.surfaces.map((surface) => surface.kind), ['memo_card', 'execution_list']);
+  assert.equal(plan.sourceHandling, 'reshape_before_featured');
+  assert.ok(plan.exportTargets.includes('memo'));
+});
+
 test('artifact plan maps driver renewal reshaping to condition comparison first', () => {
   const plan = getArtifactPlan(bundle('driver-license-renewal-check'));
 

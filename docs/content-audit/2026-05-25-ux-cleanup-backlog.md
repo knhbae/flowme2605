@@ -54,6 +54,10 @@ The unresolved areas are no longer just scattered notes:
    - First route candidates: `vehicle-inspection-prep`, then re-check `used-car-buying-check`.
    - 2026-05-25 update: `vehicle-inspection-prep` now has a reservation/result follow-up memo card for reservation info, documents, precheck evidence, result sheet, and repair/reinspection follow-up. It is still not validated.
    - 2026-05-25 update: `used-car-buying-check` now keeps secondary checklist sections collapsed on mobile so candidate comparison and buy/hold memo stay first. It is still not validated.
+4. `travel_safety_multi_source`
+   - Reason: destination safety routes should not be generic travel checklists once an official country page exists.
+   - First route candidate: `real-mofa-overseas-travel-prep`.
+   - 2026-05-25 update: `real-mofa-overseas-travel-prep` now opens with a MOFA emergency memo card for official check date, alert result, embassy/consular contact, local emergency numbers, and family sharing. It is still not validated.
 
 ## External AI Review Readiness
 

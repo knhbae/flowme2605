@@ -46,6 +46,7 @@ export type ArtifactLogTable = {
 
 const movingSlugs = new Set(['moving-d30-basic', 'real-ohouse-moving-d30-prep']);
 const travelSlugs = new Set(['overseas-travel-d14', 'real-mofa-overseas-travel-prep']);
+const mofaTravelSlugs = new Set(['real-mofa-overseas-travel-prep']);
 const studySlugs = new Set(['real-sinagong-computer-d30-study', 'computer-skills-d30-study']);
 const driverLicenseSlugs = new Set(['driver-license-renewal-check', 'real-safe-driving-license-renewal']);
 const familyCertificateSlugs = new Set(['family-certificate-issue']);
@@ -548,6 +549,38 @@ const travelProofMemoFields: ArtifactMemoField[] = [
   },
 ];
 
+const mofaTravelEmergencyMemoFields: ArtifactMemoField[] = [
+  {
+    id: 'mofa-travel-destination-confirmation',
+    label: '방문 국가와 확인일',
+    placeholder: '예: 베트남 다낭, 2026-07-16 외교부 국가/지역별 정보 확인',
+    groupEyebrow: '공식 확인·비상 카드',
+    groupTitle: '국가별 여행경보·비상 연락 카드',
+    groupDescription:
+      '여행경보, 안전공지, 공관 연락처, 현지 신고 번호, 가족 공유 메모를 한 장에 남겨 출국 전후에 다시 확인합니다.',
+  },
+  {
+    id: 'mofa-travel-alert-notice',
+    label: '여행경보·안전공지 확인 결과',
+    placeholder: '예: 여행경보 단계와 최근 안전공지 확인, 야간 이동 주의 필요',
+  },
+  {
+    id: 'mofa-travel-embassy-contact',
+    label: '영사콜센터·현지 공관 연락처',
+    placeholder: '예: 영사콜센터 +82-2-3210-0404, 주베트남대사관/총영사관 연락처 저장',
+  },
+  {
+    id: 'mofa-travel-local-emergency',
+    label: '현지 긴급 신고 번호·보험 연락처',
+    placeholder: '예: 현지 경찰/구급 번호, 여행자보험 긴급 지원 번호, 숙소 주소',
+  },
+  {
+    id: 'mofa-travel-family-share',
+    label: '가족 공유 메모',
+    placeholder: '예: 항공편, 숙소, 동행자, 비상 연락법을 가족 단톡방에 공유',
+  },
+];
+
 const studyLogTables: ArtifactLogTable[] = [
   {
     id: 'study-chapter-progress',
@@ -724,6 +757,7 @@ export function getMemoCardFields(bundle: FlowBundle): ArtifactMemoField[] {
   if (jobChangeRiskSlugs.has(bundle.flow.slug)) return jobChangeRiskMemoFields;
   if (passportRenewalSlugs.has(bundle.flow.slug)) return passportRenewalMemoFields;
   if (movingSlugs.has(bundle.flow.slug)) return movingProofMemoFields;
+  if (mofaTravelSlugs.has(bundle.flow.slug)) return mofaTravelEmergencyMemoFields;
   if (travelSlugs.has(bundle.flow.slug)) return travelProofMemoFields;
   if (newCarDeliverySlugs.has(bundle.flow.slug)) return newCarDeliveryMemoFields;
   if (usedCarSlugs.has(bundle.flow.slug)) return usedCarDecisionMemoFields;
