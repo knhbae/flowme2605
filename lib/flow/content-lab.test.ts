@@ -398,9 +398,9 @@ test('content lab exposes design-ref gap queue for remaining alignment work', ()
   const summary = getContentLabSummary(seedBundles);
 
   assert.equal(summary.designRefGapQueueTotalCount, 8);
-  assert.equal(summary.designRefGapQueueLandedCount, 5);
-  assert.equal(summary.designRefGapQueuePendingCount, 3);
-  assert.equal(summary.designRefGapQueueP1PendingCount, 2);
+  assert.equal(summary.designRefGapQueueLandedCount, 8);
+  assert.equal(summary.designRefGapQueuePendingCount, 0);
+  assert.equal(summary.designRefGapQueueP1PendingCount, 0);
   assert.equal(summary.designRefGapQueueValidatedCount, 0);
 
   const landedRouteSlugs = new Set(summary.designRefGapQueueLandedItems.flatMap((item) => item.routeSlugs));
@@ -411,13 +411,32 @@ test('content lab exposes design-ref gap queue for remaining alignment work', ()
   assert.equal(landedRouteSlugs.has('used-car-buying-check'), true);
   assert.equal(landedRouteSlugs.has('baby-food-menu-recipe'), true);
 
-  const pendingRouteSlugs = new Set(summary.designRefGapQueuePendingItems.flatMap((item) => item.routeSlugs));
-  assert.equal(pendingRouteSlugs.has('computer-skills-d30-study'), true);
-  assert.equal(pendingRouteSlugs.has('baby-food-menu-recipe'), true);
-  assert.equal(pendingRouteSlugs.has('diet-habit-2week'), true);
+  assert.equal(summary.designRefGapQueuePendingItems.length, 0);
   assert.ok(
-    summary.designRefGapQueuePendingItems.every((item) =>
+    summary.designRefGapQueueItems.every((item) =>
       item.statusAfterAlignment.includes('not validated'),
+    ),
+  );
+});
+
+test('content lab exposes observed-session prep package without validation claims', () => {
+  const summary = getContentLabSummary(seedBundles);
+
+  assert.equal(summary.observedSessionPrepTotalCount, 3);
+  assert.deepEqual(summary.observedSessionPrepSlugs, [
+    'computer-skills-d30-study',
+    'diet-habit-2week',
+    'new-car-delivery-check',
+  ]);
+  assert.equal(summary.observedSessionPrepValidatedCount, 0);
+  assert.ok(
+    summary.observedSessionPrepRecords.every((record) =>
+      record.statusAfterPrep.includes('not validated'),
+    ),
+  );
+  assert.ok(
+    summary.observedSessionPrepRecords.every((record) =>
+      record.screenshotTargets.length >= 3 && record.failureSignals.length >= 2,
     ),
   );
 });

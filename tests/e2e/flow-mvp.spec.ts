@@ -805,6 +805,25 @@ test('baby food mobile starts with warning and today reaction record', async ({ 
   await expect(page.getByText('validated')).toHaveCount(0);
 });
 
+test('baby food mobile reaction card summarizes meal, new ingredient, and allergy cue', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/baby-food-menu-recipe');
+
+  const workbench = page.getByLabel('Flow artifact workbench');
+  const summaryCard = workbench.getByTestId('meal-reaction-summary-card');
+
+  await expect(summaryCard).toBeVisible();
+  await expect(summaryCard.getByTestId('meal-summary-slot')).toBeVisible();
+  await expect(summaryCard.getByTestId('meal-summary-new-ingredients')).toBeVisible();
+  await expect(summaryCard.getByTestId('meal-summary-reaction-fields')).toBeVisible();
+  await expect(summaryCard.getByTestId('meal-summary-allergy-cue')).toBeVisible();
+
+  const order = await workbench.locator('[data-testid="meal-reaction-summary-card"], [data-testid="artifact-calendar-card"]').evaluateAll((nodes) =>
+    nodes.map((node) => (node as HTMLElement).dataset.testid),
+  );
+  expect(order.slice(0, 2)).toEqual(['meal-reaction-summary-card', 'artifact-calendar-card']);
+});
+
 test('duration calendar checks only one day at a time', async ({ page }) => {
   await page.goto('/f/baby-food-menu-recipe');
 
@@ -1193,6 +1212,25 @@ test('mobile log artifacts show a summary card before dense tables', async ({ pa
   expect(order.slice(0, 2)).toEqual(['mobile-artifact-summary-card', 'table']);
 });
 
+test('mobile study log starts with a source-derived progress summary', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/computer-skills-d30-study');
+
+  const studyLogCard = page.getByLabel('Flow artifact workbench').getByTestId('artifact-log-table-study-chapter-progress');
+  const summaryCard = studyLogCard.getByTestId('mobile-study-log-summary-card');
+  await expect(summaryCard).toBeVisible();
+  await expect(summaryCard).toHaveAttribute('data-source-row-count', '4');
+  await expect(summaryCard).toHaveAttribute('data-editable-column-count', '3');
+  await expect(summaryCard.getByTestId('study-summary-first-source-row')).toBeVisible();
+  await expect(summaryCard.getByTestId('study-summary-editable-fields')).toBeVisible();
+
+  const order = await studyLogCard.locator('[data-testid="mobile-study-log-summary-card"], table').evaluateAll((nodes) =>
+    nodes.map((node) => (node as HTMLElement).dataset.testid ?? node.tagName.toLowerCase()),
+  );
+
+  expect(order.slice(0, 2)).toEqual(['mobile-study-log-summary-card', 'table']);
+});
+
 test('mobile comparison artifacts show a summary card before dense grids', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
 
@@ -1424,6 +1462,15 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(mobileSimulationProtocol.getByText('computer-skills-d30-study')).toBeVisible();
   await expect(mobileSimulationProtocol.getByText('diet-habit-2week')).toBeVisible();
   await expect(mobileSimulationProtocol.getByText('new-car-delivery-check')).toBeVisible();
+  const observedSessionPrep = page.getByTestId('observed-session-prep-panel');
+  await expect(observedSessionPrep).toBeVisible();
+  await expect(observedSessionPrep.getByText('Observed-session prep package', { exact: true })).toBeVisible();
+  await expect(observedSessionPrep.getByText('3 routes')).toBeVisible();
+  await expect(observedSessionPrep.getByText('0 validated')).toBeVisible();
+  await expect(observedSessionPrep.getByText('computer-skills-d30-study')).toBeVisible();
+  await expect(observedSessionPrep.getByText('diet-habit-2week')).toBeVisible();
+  await expect(observedSessionPrep.getByText('new-car-delivery-check')).toBeVisible();
+  await expect(observedSessionPrep.getByText('screenshot targets', { exact: true })).toBeVisible();
   const uxCleanupBacklog = page.locator('section').filter({ hasText: 'UX Cleanup Backlog' });
   await expect(uxCleanupBacklog).toBeVisible();
   await expect(uxCleanupBacklog.getByText('36 routes')).toBeVisible();
@@ -1435,12 +1482,12 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(designRefGapQueue).toBeVisible();
   await expect(designRefGapQueue.getByText('Design-ref gap queue')).toBeVisible();
   await expect(designRefGapQueue.getByText('8 items')).toBeVisible();
-  await expect(designRefGapQueue.getByText('5 landed')).toBeVisible();
-  await expect(designRefGapQueue.getByText('3 pending')).toBeVisible();
-  await expect(designRefGapQueue.getByText('2 P1 pending')).toBeVisible();
+  await expect(designRefGapQueue.getByText('8 landed')).toBeVisible();
+  await expect(designRefGapQueue.getByText('0 pending')).toBeVisible();
+  await expect(designRefGapQueue.getByText('0 P1 pending')).toBeVisible();
   await expect(designRefGapQueue.getByText('0 validated')).toBeVisible();
-  await expect(designRefGapQueue.getByText('desktop-reference-rail-generalization')).toBeVisible();
-  await expect(designRefGapQueue.getByText('mobile-baby-food-reaction-summary')).toBeVisible();
+  await expect(designRefGapQueue.getByText('mobile-study-log-summary')).toBeVisible();
+  await expect(designRefGapQueue.getByText('observed-session-prep')).toBeVisible();
   const exportFirstSimulation = page.locator('section').filter({ hasText: 'Export-first Simulation' });
   await expect(exportFirstSimulation).toBeVisible();
   await expect(exportFirstSimulation.getByText('Final QA candidate', { exact: true }).first()).toBeVisible();

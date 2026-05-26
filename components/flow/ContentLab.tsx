@@ -439,6 +439,45 @@ export function ContentLab() {
         </div>
       </section>
 
+      <section data-testid="observed-session-prep-panel" className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
+        <p className="text-sm font-semibold text-blue-700">Observed-session prep package</p>
+        <h2 className="mt-1 text-2xl font-semibold text-gray-950">Moderated mobile session handoff</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+          This package turns the internal mobile rehearsal into a concrete user-session handoff: moderator prompt,
+          expected artifacts, screenshot targets, pass signals, and failure signals. It does not mark any route as
+          validated.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <div className="rounded-lg bg-gray-50 p-3 text-gray-950">
+            <p className="text-sm text-gray-600">Routes</p>
+            <p className="mt-1 text-2xl font-semibold">{summary.observedSessionPrepTotalCount} routes</p>
+          </div>
+          <div className="rounded-lg bg-blue-50 p-3 text-blue-950">
+            <p className="text-sm text-blue-800">Capture</p>
+            <p className="mt-1 text-2xl font-semibold">screenshot targets</p>
+          </div>
+          <div className="rounded-lg bg-amber-50 p-3 text-amber-950">
+            <p className="text-sm text-amber-800">Validation</p>
+            <p className="mt-1 text-2xl font-semibold">{summary.observedSessionPrepValidatedCount} validated</p>
+          </div>
+        </div>
+        <div className="mt-5 grid gap-3 lg:grid-cols-3">
+          {summary.observedSessionPrepRecords.map((record) => (
+            <article key={record.slug} className="rounded-lg border border-gray-200 p-4">
+              <p className="text-xs font-semibold text-gray-500">{record.slug}</p>
+              <Link className="mt-1 block font-semibold text-gray-950 hover:text-blue-700" href={`/f/${record.slug}`}>
+                {bundleBySlug.get(record.slug)?.flow.title ?? record.slug}
+              </Link>
+              <p className="mt-3 text-sm leading-6 text-gray-700">{record.moderatorPrompt}</p>
+              <p className="mt-2 text-sm leading-6 text-gray-600">Artifact: {record.expectedArtifacts[0]}</p>
+              <p className="mt-2 text-sm leading-6 text-gray-600">Screenshot: {record.screenshotTargets.join(' / ')}</p>
+              <p className="mt-2 text-sm leading-6 text-gray-600">Fail: {record.failureSignals[0]}</p>
+              <p className="mt-2 text-xs leading-5 text-gray-500">{record.statusAfterPrep}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
         <p className="text-sm font-semibold text-blue-700">UX Cleanup Backlog</p>
         <h2 className="mt-1 text-2xl font-semibold text-gray-950">Unresolved content and UX areas</h2>

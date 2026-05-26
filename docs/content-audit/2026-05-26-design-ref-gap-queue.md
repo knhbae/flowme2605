@@ -13,8 +13,8 @@ This batch turns the latest `design-ref/` alignment audit into a visible Content
 
 ## Current queue
 
-- Landed: moving calendar-first timeline, moving desktop source rail, desktop rail generalization, mobile log summary cards, mobile comparison summary cards.
-- Pending: mobile study log summary, baby-food reaction-first mobile entry, observed-session package.
+- Landed: moving calendar-first timeline, moving desktop source rail, desktop rail generalization, mobile log summary cards, mobile comparison summary cards, mobile study log summary, baby-food reaction-first mobile entry, observed-session package.
+- Pending: none.
 
 ## Why
 

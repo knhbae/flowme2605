@@ -473,6 +473,27 @@ function MealReactionWorkbench({
               시트로 받기
             </button>
           </div>
+          <div data-testid="meal-reaction-summary-card" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3">
+            <p className="text-xs font-semibold uppercase text-blue-700">reaction summary</p>
+            <div className="mt-2 grid gap-2 text-sm">
+              <div data-testid="meal-summary-slot" className="rounded-md bg-white px-3 py-2">
+                <p className="text-xs font-semibold text-gray-500">Today slot</p>
+                <p className="mt-1 font-medium text-gray-900">{todayReactionSlot.menu_title}</p>
+                <p className="mt-1 text-gray-700">{mealSlotTiming(todayReactionSlot.day_offset, todayReactionSlot.duration_days, anchor)}</p>
+              </div>
+              <div data-testid="meal-summary-new-ingredients" className="rounded-md bg-white px-3 py-2">
+                <p className="text-xs font-semibold text-gray-500">New ingredient</p>
+                <p className="mt-1 text-gray-800">{todayReactionSlot.new_ingredients.length ? todayReactionSlot.new_ingredients.join(', ') : '-'}</p>
+              </div>
+              <div data-testid="meal-summary-reaction-fields" className="rounded-md bg-white px-3 py-2">
+                <p className="text-xs font-semibold text-gray-500">Reaction fields</p>
+                <p className="mt-1 text-gray-800">{mealReactionColumns.slice(0, 4).map((column) => column.label).join(' / ')}</p>
+              </div>
+            </div>
+            <p data-testid="meal-summary-allergy-cue" className="mt-2 text-xs font-medium text-blue-800">
+              Watch the first serving and keep any unusual reaction for professional review.
+            </p>
+          </div>
           <div className="mt-3 grid gap-2">
             {mealReactionColumns.slice(0, 4).map((column) => (
               <label key={column.id} className="text-sm font-semibold text-gray-700">
@@ -988,7 +1009,7 @@ function LogTableCard({
         </div>
         <ArtifactExportStatus actions={exportActions} />
         <p className="mt-2 text-sm leading-6 text-gray-600">{table.description}</p>
-        <MobileLogSummaryCard table={table} />
+        {table.sourceKind === 'source_derived' ? <MobileStudyLogSummaryCard table={table} /> : <MobileLogSummaryCard table={table} />}
       </div>
       <table className="min-w-[760px] text-left text-sm">
         <thead className="bg-gray-50 text-xs font-semibold text-gray-600">
@@ -1032,6 +1053,37 @@ function LogTableCard({
           ))}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+function MobileStudyLogSummaryCard({ table }: { table: ArtifactLogTable }) {
+  const firstRow = table.rows[0];
+  const editableColumns = table.columns.filter((column) => table.userEditableColumnIds?.includes(column.id));
+
+  if (!firstRow) return null;
+
+  return (
+    <div
+      data-testid="mobile-study-log-summary-card"
+      data-source-row-count={String(table.rows.length)}
+      data-editable-column-count={String(editableColumns.length)}
+      className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3 md:hidden"
+    >
+      <p className="text-xs font-semibold uppercase text-blue-700">study summary</p>
+      <h4 className="mt-1 text-sm font-semibold text-gray-950">{table.rows.length} source rows before editing</h4>
+      <div className="mt-2 grid gap-2 text-sm">
+        <div data-testid="study-summary-first-source-row" className="rounded-md bg-white px-3 py-2">
+          <p className="text-xs font-semibold text-gray-500">First source row</p>
+          <p className="mt-1 font-medium text-gray-900">{firstRow.label}</p>
+          <p className="mt-1 text-gray-700">{firstRow.defaultValues?.scope ?? '-'}</p>
+        </div>
+        <div data-testid="study-summary-editable-fields" className="rounded-md bg-white px-3 py-2">
+          <p className="text-xs font-semibold text-gray-500">Editable after export</p>
+          <p className="mt-1 text-gray-800">{editableColumns.map((column) => column.label).join(' / ')}</p>
+        </div>
+      </div>
+      <p className="mt-2 text-xs font-medium text-blue-800">Source scope stays fixed; target date, status, and note are the user's sheet fields.</p>
     </div>
   );
 }

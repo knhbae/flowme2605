@@ -15,6 +15,7 @@ import { summarizeRepresentativeUxContentReviews } from './representative-ux-con
 import { summarizeMobileSimulationProtocols } from './mobile-simulation-protocol';
 import { summarizeUxCleanupBacklog } from './ux-cleanup-backlog';
 import { summarizeDesignRefGapQueue } from './design-ref-gap-queue';
+import { summarizeObservedSessionPrep } from './observed-session-prep';
 
 export type ExternalTarget = 'calendar' | 'todo' | 'notion' | 'sheet';
 
@@ -373,6 +374,7 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   const uxContentSimplificationSummary = summarizeUxContentSimplificationAudits(bundles);
   const representativeUxContentReviewSummary = summarizeRepresentativeUxContentReviews(bundles);
   const mobileSimulationProtocolSummary = summarizeMobileSimulationProtocols(bundles);
+  const observedSessionPrepSummary = summarizeObservedSessionPrep(bundles);
   const uxCleanupBacklogSummary = summarizeUxCleanupBacklog(bundles);
   const designRefGapQueueSummary = summarizeDesignRefGapQueue(bundles);
 
@@ -453,6 +455,10 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     mobileSimulationProtocolAverageScore: mobileSimulationProtocolSummary.averageScore,
     mobileSimulationProtocolValidatedCount: mobileSimulationProtocolSummary.validatedCount,
     mobileSimulationProtocolRecords: mobileSimulationProtocolSummary.records,
+    observedSessionPrepTotalCount: observedSessionPrepSummary.totalCount,
+    observedSessionPrepSlugs: observedSessionPrepSummary.slugs,
+    observedSessionPrepValidatedCount: observedSessionPrepSummary.validatedCount,
+    observedSessionPrepRecords: observedSessionPrepSummary.records,
     uxCleanupBacklogTotalGroupCount: uxCleanupBacklogSummary.totalGroupCount,
     uxCleanupBacklogTotalRouteCount: uxCleanupBacklogSummary.totalRouteCount,
     uxCleanupBacklogValidatedCount: uxCleanupBacklogSummary.validatedCount,
