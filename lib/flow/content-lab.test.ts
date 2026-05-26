@@ -24,6 +24,8 @@ import {
   summarizeUxContentSimplificationAudits,
 } from './ux-content-simplification-audit';
 import {
+  generateObservedSessionRunSheetFilename,
+  generateObservedSessionRunSheetMarkdown,
   generateObservedSessionNoteFilename,
   generateObservedSessionNoteMarkdown,
   observedSessionNoteDecisionOptions,
@@ -503,5 +505,30 @@ test('observed-session note intake generates exportable markdown without validat
   assert.match(markdown, /Sticky fallback: used fallback sheet/);
   assert.match(markdown, /Export\/copy: copied observation sheet/);
   assert.match(markdown, /not validation/i);
+  assert.doesNotMatch(markdown, /validated candidate/);
+});
+
+test('observed-session run sheet turns prep records into moderator markdown without validation claims', () => {
+  const summary = getContentLabSummary(seedBundles);
+  const prep = summary.observedSessionPrepRecords.find(
+    (record) => record.slug === 'computer-skills-d30-study',
+  );
+  assert.ok(prep);
+
+  const markdown = generateObservedSessionRunSheetMarkdown({
+    ...prep,
+    title: '컴퓨터활용능력 30일 학습 플랜',
+  });
+
+  assert.equal(
+    generateObservedSessionRunSheetFilename(prep.slug),
+    'computer-skills-d30-study-observed-session-run-sheet.md',
+  );
+  assert.match(markdown, /^# Observed Session Run Sheet: computer-skills-d30-study/m);
+  assert.match(markdown, /Goal: Check whether a mobile learner understands/);
+  assert.match(markdown, /Moderator prompt/);
+  assert.match(markdown, /source-derived study sheet before export/);
+  assert.match(markdown, /Screenshot targets/);
+  assert.match(markdown, /Decision options: `no signal`, `friction`, `candidate signal`/);
   assert.doesNotMatch(markdown, /validated candidate/);
 });

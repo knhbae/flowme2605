@@ -21,12 +21,32 @@ export type ObservedSessionNoteDraft = {
   followUp: string;
 };
 
+export type ObservedSessionRunSheetDraft = {
+  slug: string;
+  title: string;
+  sessionGoal: string;
+  moderatorPrompt: string;
+  expectedArtifacts: string[];
+  screenshotTargets: string[];
+  passSignals: string[];
+  failureSignals: string[];
+  handoffNote: string;
+};
+
 function valueOrDash(value: string): string {
   return value.trim() || '-';
 }
 
+function listItems(items: string[]): string {
+  return items.length ? items.map((item) => `- ${item}`).join('\n') : '- -';
+}
+
 export function generateObservedSessionNoteFilename(date: string, route: string): string {
   return `${valueOrDash(date)}-${valueOrDash(route)}-session-draft.md`;
+}
+
+export function generateObservedSessionRunSheetFilename(route: string): string {
+  return `${valueOrDash(route)}-observed-session-run-sheet.md`;
 }
 
 export function generateObservedSessionNoteMarkdown(draft: ObservedSessionNoteDraft): string {
@@ -58,5 +78,43 @@ This note is not validation. Do not call this route validated until repeated tar
 ## Follow-Up
 
 ${valueOrDash(draft.followUp)}
+`;
+}
+
+export function generateObservedSessionRunSheetMarkdown(draft: ObservedSessionRunSheetDraft): string {
+  return `# Observed Session Run Sheet: ${valueOrDash(draft.slug)}
+
+Title: ${valueOrDash(draft.title)}
+Goal: ${valueOrDash(draft.sessionGoal)}
+
+## Moderator prompt
+
+${valueOrDash(draft.moderatorPrompt)}
+
+## Expected artifacts
+
+${listItems(draft.expectedArtifacts)}
+
+## Screenshot targets
+
+${listItems(draft.screenshotTargets)}
+
+## Pass signals
+
+${listItems(draft.passSignals)}
+
+## Failure signals
+
+${listItems(draft.failureSignals)}
+
+## Handoff note
+
+${valueOrDash(draft.handoffNote)}
+
+## Decision boundary
+
+Decision options: \`no signal\`, \`friction\`, \`candidate signal\`
+
+This run sheet is for observation only. Do not use validated language until repeated target-user behavior shows the full export-first loop.
 `;
 }

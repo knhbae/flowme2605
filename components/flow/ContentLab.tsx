@@ -526,10 +526,21 @@ export function ContentLab() {
           ))}
         </div>
         <ObservedSessionNoteIntake
-          routes={summary.observedSessionEvidenceRouteSummaries.map((record) => ({
-            slug: record.slug,
-            title: bundleBySlug.get(record.slug)?.flow.title ?? record.slug,
-          }))}
+          routes={summary.observedSessionEvidenceRouteSummaries.map((record) => {
+            const prep = summary.observedSessionPrepRecords.find((prepRecord) => prepRecord.slug === record.slug);
+
+            return {
+              slug: record.slug,
+              title: bundleBySlug.get(record.slug)?.flow.title ?? record.slug,
+              sessionGoal: prep?.sessionGoal ?? '',
+              moderatorPrompt: prep?.moderatorPrompt ?? '',
+              expectedArtifacts: prep?.expectedArtifacts ?? [],
+              screenshotTargets: prep?.screenshotTargets ?? [],
+              passSignals: prep?.passSignals ?? [],
+              failureSignals: prep?.failureSignals ?? [],
+              handoffNote: prep?.handoffNote ?? '',
+            };
+          })}
         />
       </section>
 

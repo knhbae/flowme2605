@@ -4,12 +4,15 @@ import { useMemo, useState } from 'react';
 import {
   generateObservedSessionNoteFilename,
   generateObservedSessionNoteMarkdown,
+  generateObservedSessionRunSheetFilename,
+  generateObservedSessionRunSheetMarkdown,
   observedSessionNoteDecisionOptions,
   type ObservedSessionNoteDecision,
   type ObservedSessionNoteDraft,
+  type ObservedSessionRunSheetDraft,
 } from '@/lib/flow/observed-session-note-intake';
 
-type ObservedSessionRouteOption = {
+export type ObservedSessionRouteOption = ObservedSessionRunSheetDraft & {
   slug: string;
   title: string;
 };
@@ -40,8 +43,27 @@ export function ObservedSessionNoteIntake({ routes }: ObservedSessionNoteIntakeP
   });
   const [copyState, setCopyState] = useState('');
 
+  const selectedRoute = routes.find((route) => route.slug === draft.route) ?? routes[0];
   const markdown = useMemo(() => generateObservedSessionNoteMarkdown(draft), [draft]);
+  const runSheetMarkdown = useMemo(
+    () =>
+      selectedRoute
+        ? generateObservedSessionRunSheetMarkdown(selectedRoute)
+        : generateObservedSessionRunSheetMarkdown({
+            slug: draft.route,
+            title: draft.route,
+            sessionGoal: '',
+            moderatorPrompt: '',
+            expectedArtifacts: [],
+            screenshotTargets: [],
+            passSignals: [],
+            failureSignals: [],
+            handoffNote: '',
+          }),
+    [draft.route, selectedRoute],
+  );
   const filename = generateObservedSessionNoteFilename(draft.date, draft.route);
+  const runSheetFilename = generateObservedSessionRunSheetFilename(draft.route);
 
   function updateDraft<K extends keyof ObservedSessionNoteDraft>(key: K, value: ObservedSessionNoteDraft[K]) {
     setDraft((current) => ({ ...current, [key]: value }));
@@ -57,12 +79,12 @@ export function ObservedSessionNoteIntake({ routes }: ObservedSessionNoteIntakeP
     }
   }
 
-  function downloadMarkdown() {
-    const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
+  function downloadMarkdownFile(text: string, downloadFilename: string) {
+    const blob = new Blob([text], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = filename;
+    link.download = downloadFilename;
     link.click();
     URL.revokeObjectURL(url);
   }
@@ -88,9 +110,16 @@ export function ObservedSessionNoteIntake({ routes }: ObservedSessionNoteIntakeP
           <button
             type="button"
             className="rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white"
-            onClick={downloadMarkdown}
+            onClick={() => downloadMarkdownFile(markdown, filename)}
           >
             Download note
+          </button>
+          <button
+            type="button"
+            className="rounded-md bg-blue-950 px-3 py-2 text-sm font-semibold text-white"
+            onClick={() => downloadMarkdownFile(runSheetMarkdown, runSheetFilename)}
+          >
+            Download run sheet
           </button>
         </div>
       </div>
@@ -213,6 +242,12 @@ export function ObservedSessionNoteIntake({ routes }: ObservedSessionNoteIntakeP
         className="mt-4 max-h-80 overflow-auto rounded-md bg-white p-3 text-xs leading-5 text-gray-800"
       >
         {markdown}
+      </pre>
+      <pre
+        data-testid="observed-session-run-sheet-preview"
+        className="mt-3 max-h-80 overflow-auto rounded-md bg-white p-3 text-xs leading-5 text-gray-800"
+      >
+        {runSheetMarkdown}
       </pre>
     </div>
   );

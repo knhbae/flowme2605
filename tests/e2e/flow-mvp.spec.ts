@@ -1496,10 +1496,17 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(sessionIntake.getByTestId('observed-session-note-preview')).toContainText('Decision: `friction`');
   await expect(sessionIntake.getByTestId('observed-session-note-preview')).toContainText('Artifact-near CTA: missed first, found after prompt');
   await expect(sessionIntake.getByTestId('observed-session-note-preview')).toContainText('This note is not validation.');
+  await expect(sessionIntake.getByTestId('observed-session-run-sheet-preview')).toContainText('# Observed Session Run Sheet: diet-habit-2week');
+  await expect(sessionIntake.getByTestId('observed-session-run-sheet-preview')).toContainText('Moderator prompt');
+  await expect(sessionIntake.getByTestId('observed-session-run-sheet-preview')).toContainText('Decision options: `no signal`, `friction`, `candidate signal`');
   const noteDownloadPromise = page.waitForEvent('download');
   await sessionIntake.getByRole('button', { name: 'Download note' }).click();
   const noteDownload = await noteDownloadPromise;
   expect(noteDownload.suggestedFilename()).toMatch(/diet-habit-2week-session-draft\.md$/);
+  const runSheetDownloadPromise = page.waitForEvent('download');
+  await sessionIntake.getByRole('button', { name: 'Download run sheet' }).click();
+  const runSheetDownload = await runSheetDownloadPromise;
+  expect(runSheetDownload.suggestedFilename()).toBe('diet-habit-2week-observed-session-run-sheet.md');
   const uxCleanupBacklog = page.locator('section').filter({ hasText: 'UX Cleanup Backlog' });
   await expect(uxCleanupBacklog).toBeVisible();
   await expect(uxCleanupBacklog.getByText('36 routes')).toBeVisible();
