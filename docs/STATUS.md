@@ -108,6 +108,7 @@
 - Baby-food sensitive mobile pass has landed: `baby-food-menu-recipe` now opens the mobile workbench with a compact caution boundary, today's reaction-record card, and sheet CTA before the meal calendar/table density, while desktop keeps setup before the workbench. No route is called validated.
 - Export CTA accessibility pass has landed: mobile export sheet buttons and the baby-food reaction sheet CTA now receive destination-and-artifact accessible labels while visible labels stay short.
 - Routine desktop session-grid pass has landed: routine desktop workbenches now expose `회차 그리드 · primary`, a separate `회차 기록표 · secondary`, and a weekly summary/next-session rail, with Figma review artifact `Tsubuwt1wlPiUgpWbcLTw3`. No route is called validated.
+- Mobile export surface cleanup is in progress: `moving-d30-basic`, `computer-skills-d30-study`, `diet-habit-2week`, and `new-car-delivery-check` now expose short mobile destination CTAs beside the first artifact card while keeping the sticky export sheet as fallback. No route is called validated.
 
 ## Next Up
 

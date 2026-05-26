@@ -42,6 +42,7 @@ type ArtifactExportActions = {
 
 type ArtifactExportActionKind = 'copy' | 'excel' | 'calendar' | 'draft';
 type ArtifactExportLabels = Partial<Record<ArtifactExportActionKind, string>>;
+type MobileArtifactKind = 'execution_list' | 'month_calendar' | 'log_table' | 'spreadsheet_log' | 'comparison_table';
 
 type ScheduleRow = {
   id: string;
@@ -77,6 +78,8 @@ const mealReactionColumns = [
 
 const defaultSpreadsheetColumns = ['식단', '운동', '측정', '컨디션', '리뷰'];
 const dietObservationColumns = ['식사 관찰', '활동', '수면/측정', '컨디션', '중단/상담 조건'];
+
+const mobileArtifactCtaSlugs = new Set(['moving-d30-basic', 'computer-skills-d30-study', 'diet-habit-2week', 'new-car-delivery-check']);
 
 export function ArtifactWorkbench({
   bundle,
@@ -155,13 +158,15 @@ export function ArtifactWorkbench({
   );
 }
 
-function ArtifactExportButtons({ actions, kinds, labels = {} }: { actions?: ArtifactExportActions; kinds: ArtifactExportActionKind[]; labels?: ArtifactExportLabels }) {
+function ArtifactExportButtons({ actions, kinds, labels = {}, mobileArtifactLabel, mobileKinds }: { actions?: ArtifactExportActions; kinds: ArtifactExportActionKind[]; labels?: ArtifactExportLabels; mobileArtifactLabel?: string; mobileKinds?: ArtifactExportActionKind[] }) {
   if (!actions) return null;
 
   const disabled = actions.done === 0;
+  const mobileExportKinds = mobileArtifactLabel ? mobileKinds ?? kinds : [];
   const disabledTitle = disabled ? '항목을 하나라도 체크하면 받을 수 있어요' : undefined;
 
   return (
+    <>
     <div className="hidden flex-wrap gap-2 sm:flex">
       {kinds.map((kind) => {
         if (kind === 'copy') {
@@ -196,7 +201,49 @@ function ArtifactExportButtons({ actions, kinds, labels = {} }: { actions?: Arti
         return null;
       })}
     </div>
+    {mobileArtifactLabel ? (
+      <div className="mt-3 grid gap-2 sm:hidden">
+        {mobileExportKinds.map((kind) => renderMobileArtifactExportButton(kind, actions, mobileArtifactLabel, disabled, disabledTitle))}
+      </div>
+    ) : null}
+    </>
   );
+}
+
+function renderMobileArtifactExportButton(kind: ArtifactExportActionKind, actions: ArtifactExportActions, artifactLabel: string, disabled: boolean, disabledTitle?: string) {
+  if (kind === 'calendar' && !actions.canExportCalendar) return null;
+
+  const config = {
+    copy: { label: '텍스트 복사', aria: `텍스트 복사: ${artifactLabel}`, onClick: actions.onCopyText, disabled },
+    excel: { label: '시트로 받기', aria: `시트로 받기: ${artifactLabel}`, onClick: actions.onDownloadExcel, disabled },
+    calendar: { label: '캘린더로 받기', aria: `캘린더로 받기: ${artifactLabel}`, onClick: actions.onDownloadCalendar, disabled },
+    draft: { label: '내 버전', aria: `내 버전 만들기: ${artifactLabel}`, onClick: actions.onCopyToEditableDraft, disabled: false },
+  }[kind];
+
+  return (
+    <button
+      key={kind}
+      data-testid={`mobile-artifact-export-${kind}`}
+      aria-label={config.aria}
+      className="w-full rounded-md border border-blue-200 bg-white px-3 py-2.5 text-sm font-semibold text-blue-800 disabled:border-gray-200 disabled:text-gray-400"
+      disabled={config.disabled}
+      title={config.disabled ? disabledTitle : undefined}
+      type="button"
+      onClick={config.onClick}
+    >
+      {config.label}
+    </button>
+  );
+}
+
+function getMobileArtifactLabel(bundle: FlowBundle, kind: MobileArtifactKind): string | undefined {
+  if (!mobileArtifactCtaSlugs.has(bundle.flow.slug)) return undefined;
+  if (kind === 'execution_list') return '실행 리스트';
+  if (kind === 'month_calendar') return '월간 캘린더';
+  if (kind === 'comparison_table') return bundle.flow.slug === 'new-car-delivery-check' ? '인수 증거표' : '비교표';
+  if (kind === 'spreadsheet_log') return bundle.flow.slug === 'diet-habit-2week' ? '관찰 기록표' : '기록표';
+  if (kind === 'log_table') return bundle.flow.slug === 'computer-skills-d30-study' ? '공부 기록표' : '기록표';
+  return undefined;
 }
 
 function ArtifactExportStatus({ actions }: { actions?: ArtifactExportActions }) {
@@ -312,7 +359,12 @@ function TimelineWorkbench({
               <p className="text-sm font-semibold text-blue-700">실행 리스트 미리보기</p>
               <h3 className="text-base font-semibold text-gray-950">전체 할 일</h3>
             </div>
-            <ArtifactExportButtons actions={exportActions} kinds={logTables.length ? ['copy', 'draft'] : ['copy', 'excel', 'draft']} />
+            <ArtifactExportButtons
+              actions={exportActions}
+              kinds={logTables.length ? ['copy', 'draft'] : ['copy', 'excel', 'draft']}
+              mobileArtifactLabel={getMobileArtifactLabel(bundle, 'execution_list')}
+              mobileKinds={['excel']}
+            />
           </div>
           <ArtifactExportStatus actions={exportActions} />
           <div className="mt-3 space-y-2">
@@ -331,12 +383,20 @@ function TimelineWorkbench({
             ))}
           </div>
         </div>
-        <MiniMonthCalendar title="월간 캘린더" eyebrow="월별 달력 preview" month={month} rows={rows} exportActions={exportActions} />
+        <MiniMonthCalendar title="월간 캘린더" eyebrow="월별 달력 preview" month={month} rows={rows} exportActions={exportActions} mobileArtifactLabel={getMobileArtifactLabel(bundle, 'month_calendar')} />
       </div>
       {logTables.length ? (
         <div className="grid gap-4">
           {logTables.map((table, index) => (
-            <LogTableCard key={table.id} table={table} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={index === 0 ? exportActions : undefined} />
+            <LogTableCard
+              key={table.id}
+              table={table}
+              workbenchState={workbenchState}
+              onWorkbenchChange={onWorkbenchChange}
+              exportActions={index === 0 ? exportActions : undefined}
+              mobileArtifactLabel={index === 0 ? getMobileArtifactLabel(bundle, 'log_table') : undefined}
+              mobileKinds={['excel']}
+            />
           ))}
         </div>
       ) : null}
@@ -524,6 +584,7 @@ function MiniMonthCalendar({
   rows,
   doneIds,
   exportActions,
+  mobileArtifactLabel,
 }: {
   title: string;
   eyebrow?: string;
@@ -531,6 +592,7 @@ function MiniMonthCalendar({
   rows: ScheduleRow[];
   doneIds?: Set<string>;
   exportActions?: ArtifactExportActions;
+  mobileArtifactLabel?: string;
 }) {
   const days = getMonthCalendarDays(month || formatDate(new Date()).slice(0, 7));
   return (
@@ -542,7 +604,7 @@ function MiniMonthCalendar({
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
           <span className="text-sm font-semibold text-gray-500">{month}</span>
-          <ArtifactExportButtons actions={exportActions} kinds={['calendar']} />
+          <ArtifactExportButtons actions={exportActions} kinds={['calendar']} mobileArtifactLabel={mobileArtifactLabel} mobileKinds={['calendar']} />
         </div>
       </div>
       <ArtifactExportStatus actions={exportActions} />
@@ -763,6 +825,7 @@ function ComparisonTable({
   comparisonState,
   onComparisonChange,
   exportActions,
+  mobileArtifactLabel,
 }: {
   title: string;
   eyebrow: string;
@@ -770,18 +833,19 @@ function ComparisonTable({
   comparisonState: FlowComparisonState;
   onComparisonChange: (state: FlowComparisonState) => void;
   exportActions?: ArtifactExportActions;
+  mobileArtifactLabel?: string;
 }) {
   const comparison = ensureComparisonState(comparisonState);
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+    <div data-testid="artifact-comparison-card" className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-gray-100 px-3 py-3">
         <div>
           <p className="text-sm font-semibold text-blue-700">{eyebrow}</p>
           <h3 className="mt-1 text-base font-semibold text-gray-950">{title}</h3>
         </div>
         <div className="flex flex-wrap justify-end gap-2">
-          <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} />
+          <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} mobileArtifactLabel={mobileArtifactLabel} mobileKinds={['excel']} />
           <button className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-800" onClick={() => onComparisonChange(addComparisonCandidate(comparison))}>
             후보 추가
           </button>
@@ -871,12 +935,16 @@ function LogTableCard({
   onWorkbenchChange,
   exportActions,
   exportKinds = ['excel'],
+  mobileArtifactLabel,
+  mobileKinds,
 }: {
   table: ArtifactLogTable;
   workbenchState: FlowWorkbenchState;
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
   exportActions?: ArtifactExportActions;
   exportKinds?: ArtifactExportActionKind[];
+  mobileArtifactLabel?: string;
+  mobileKinds?: ArtifactExportActionKind[];
 }) {
   return (
     <div
@@ -892,7 +960,7 @@ function LogTableCard({
             <p className="text-sm font-semibold text-blue-700">{table.eyebrow}</p>
             <h3 className="mt-1 text-base font-semibold text-gray-950">{table.title}</h3>
           </div>
-          <ArtifactExportButtons actions={exportActions} kinds={exportKinds} />
+          <ArtifactExportButtons actions={exportActions} kinds={exportKinds} mobileArtifactLabel={mobileArtifactLabel} mobileKinds={mobileKinds} />
         </div>
         <ArtifactExportStatus actions={exportActions} />
         <p className="mt-2 text-sm leading-6 text-gray-600">{table.description}</p>
@@ -1001,6 +1069,7 @@ function DecisionWorkbench({
         comparisonState={comparisonState}
         onComparisonChange={onComparisonChange}
         exportActions={exportActions}
+        mobileArtifactLabel={getMobileArtifactLabel(bundle, 'comparison_table')}
       />
       <div className="space-y-4">
         {bundle.flow.warning ? <RiskBoundaryCard bundle={bundle} /> : null}
@@ -1341,7 +1410,12 @@ function SpreadsheetWorkbench({
               <p className="text-sm font-semibold text-blue-700">기록표 preview</p>
               <h3 className="mt-1 text-base font-semibold text-gray-950">{title}</h3>
             </div>
-            <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} />
+            <ArtifactExportButtons
+              actions={exportActions}
+              kinds={['copy', 'excel', 'draft']}
+              mobileArtifactLabel={getMobileArtifactLabel(bundle, 'spreadsheet_log')}
+              mobileKinds={['excel']}
+            />
           </div>
           <ArtifactExportStatus actions={exportActions} />
           <p className="mt-2 text-sm leading-6 text-gray-600">{description}</p>
