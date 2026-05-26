@@ -14,6 +14,9 @@ import { summarizeUxContentSimplificationAudits } from './ux-content-simplificat
 import { summarizeRepresentativeUxContentReviews } from './representative-ux-content-review';
 import { summarizeMobileSimulationProtocols } from './mobile-simulation-protocol';
 import { summarizeUxCleanupBacklog } from './ux-cleanup-backlog';
+import { summarizeDesignRefGapQueue } from './design-ref-gap-queue';
+import { summarizeObservedSessionPrep } from './observed-session-prep';
+import { summarizeObservedSessionEvidence } from './observed-session-evidence';
 
 export type ExternalTarget = 'calendar' | 'todo' | 'notion' | 'sheet';
 
@@ -372,7 +375,10 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   const uxContentSimplificationSummary = summarizeUxContentSimplificationAudits(bundles);
   const representativeUxContentReviewSummary = summarizeRepresentativeUxContentReviews(bundles);
   const mobileSimulationProtocolSummary = summarizeMobileSimulationProtocols(bundles);
+  const observedSessionPrepSummary = summarizeObservedSessionPrep(bundles);
+  const observedSessionEvidenceSummary = summarizeObservedSessionEvidence(bundles);
   const uxCleanupBacklogSummary = summarizeUxCleanupBacklog(bundles);
+  const designRefGapQueueSummary = summarizeDesignRefGapQueue(bundles);
 
   return {
     pilotCreatorCount: pilotCreatorLabs.length,
@@ -451,11 +457,32 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     mobileSimulationProtocolAverageScore: mobileSimulationProtocolSummary.averageScore,
     mobileSimulationProtocolValidatedCount: mobileSimulationProtocolSummary.validatedCount,
     mobileSimulationProtocolRecords: mobileSimulationProtocolSummary.records,
+    observedSessionPrepTotalCount: observedSessionPrepSummary.totalCount,
+    observedSessionPrepSlugs: observedSessionPrepSummary.slugs,
+    observedSessionPrepValidatedCount: observedSessionPrepSummary.validatedCount,
+    observedSessionPrepRecords: observedSessionPrepSummary.records,
+    observedSessionEvidenceRouteCount: observedSessionEvidenceSummary.routeCount,
+    observedSessionEvidenceSlugs: observedSessionEvidenceSummary.slugs,
+    observedSessionEvidenceSessionCount: observedSessionEvidenceSummary.sessionCount,
+    observedSessionEvidenceNotRunCount: observedSessionEvidenceSummary.notRunCount,
+    observedSessionEvidenceNoSignalCount: observedSessionEvidenceSummary.noSignalCount,
+    observedSessionEvidenceFrictionCount: observedSessionEvidenceSummary.frictionCount,
+    observedSessionEvidenceCandidateSignalCount: observedSessionEvidenceSummary.candidateSignalCount,
+    observedSessionEvidenceRecords: observedSessionEvidenceSummary.records,
+    observedSessionEvidenceRouteSummaries: observedSessionEvidenceSummary.routeSummaries,
     uxCleanupBacklogTotalGroupCount: uxCleanupBacklogSummary.totalGroupCount,
     uxCleanupBacklogTotalRouteCount: uxCleanupBacklogSummary.totalRouteCount,
     uxCleanupBacklogValidatedCount: uxCleanupBacklogSummary.validatedCount,
     uxCleanupBacklogPriorityCounts: uxCleanupBacklogSummary.priorityCounts,
     uxCleanupBacklogFirstBatchGroupIds: uxCleanupBacklogSummary.firstBatchGroupIds,
     uxCleanupBacklogGroups: uxCleanupBacklogSummary.groups,
+    designRefGapQueueTotalCount: designRefGapQueueSummary.totalCount,
+    designRefGapQueueLandedCount: designRefGapQueueSummary.landedCount,
+    designRefGapQueuePendingCount: designRefGapQueueSummary.pendingCount,
+    designRefGapQueueP1PendingCount: designRefGapQueueSummary.p1PendingCount,
+    designRefGapQueueValidatedCount: designRefGapQueueSummary.validatedCount,
+    designRefGapQueueItems: designRefGapQueueSummary.items,
+    designRefGapQueueLandedItems: designRefGapQueueSummary.landedItems,
+    designRefGapQueuePendingItems: designRefGapQueueSummary.pendingItems,
   };
 }

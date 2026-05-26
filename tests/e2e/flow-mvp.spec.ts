@@ -805,6 +805,25 @@ test('baby food mobile starts with warning and today reaction record', async ({ 
   await expect(page.getByText('validated')).toHaveCount(0);
 });
 
+test('baby food mobile reaction card summarizes meal, new ingredient, and allergy cue', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/baby-food-menu-recipe');
+
+  const workbench = page.getByLabel('Flow artifact workbench');
+  const summaryCard = workbench.getByTestId('meal-reaction-summary-card');
+
+  await expect(summaryCard).toBeVisible();
+  await expect(summaryCard.getByTestId('meal-summary-slot')).toBeVisible();
+  await expect(summaryCard.getByTestId('meal-summary-new-ingredients')).toBeVisible();
+  await expect(summaryCard.getByTestId('meal-summary-reaction-fields')).toBeVisible();
+  await expect(summaryCard.getByTestId('meal-summary-allergy-cue')).toBeVisible();
+
+  const order = await workbench.locator('[data-testid="meal-reaction-summary-card"], [data-testid="artifact-calendar-card"]').evaluateAll((nodes) =>
+    nodes.map((node) => (node as HTMLElement).dataset.testid),
+  );
+  expect(order.slice(0, 2)).toEqual(['meal-reaction-summary-card', 'artifact-calendar-card']);
+});
+
 test('duration calendar checks only one day at a time', async ({ page }) => {
   await page.goto('/f/baby-food-menu-recipe');
 
@@ -1060,6 +1079,64 @@ test('artifact workbench exposes export actions next to the natural artifact', a
   await expect(studyCalendarCard.getByRole('button', { name: '캘린더 받기' })).toBeVisible();
 });
 
+test('moving desktop shows calendar artifact before execution list', async ({ page }) => {
+  await page.goto('/f/moving-d30-basic');
+
+  const workbench = page.getByLabel('Flow artifact workbench');
+  const order = await workbench.locator('[data-testid="artifact-calendar-card"], [data-testid="artifact-list-card"]').evaluateAll((nodes) =>
+    nodes.map((node) => node.getAttribute('data-testid')),
+  );
+
+  expect(order.slice(0, 2)).toEqual(['artifact-calendar-card', 'artifact-list-card']);
+});
+
+test('moving desktop keeps source context in a right rail beside the workbench', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/f/moving-d30-basic');
+
+  const layout = page.getByTestId('flow-desktop-workbench-layout');
+  const rail = page.getByTestId('flow-desktop-rail');
+  const workbench = page.getByLabel('Flow artifact workbench');
+
+  await expect(layout).toBeVisible();
+  await expect(rail.getByTestId('flow-source-card')).toBeVisible();
+
+  const railBox = await rail.boundingBox();
+  const workbenchBox = await workbench.boundingBox();
+
+  expect(railBox).not.toBeNull();
+  expect(workbenchBox).not.toBeNull();
+  expect(railBox!.x).toBeGreaterThan(workbenchBox!.x + workbenchBox!.width);
+});
+
+test('dense desktop routes keep source context in a right rail beside the workbench', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+
+  for (const slug of [
+    'computer-skills-d30-study',
+    'diet-habit-2week',
+    'new-car-delivery-check',
+    'used-car-buying-check',
+    'baby-food-menu-recipe',
+  ]) {
+    await page.goto(`/f/${slug}`);
+
+    const layout = page.getByTestId('flow-desktop-workbench-layout');
+    const rail = page.getByTestId('flow-desktop-rail');
+    const workbench = page.getByLabel('Flow artifact workbench');
+
+    await expect(layout).toBeVisible();
+    await expect(rail.getByTestId('flow-source-card')).toBeVisible();
+
+    const railBox = await rail.boundingBox();
+    const workbenchBox = await workbench.boundingBox();
+
+    expect(railBox).not.toBeNull();
+    expect(workbenchBox).not.toBeNull();
+    expect(railBox!.x).toBeGreaterThan(workbenchBox!.x + workbenchBox!.width);
+  }
+});
+
 test('mobile export sheet remains available from the sticky fallback', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/computer-skills-d30-study');
@@ -1119,6 +1196,59 @@ test('mobile workbench exposes destination CTAs on the first artifact cards', as
   const comparisonCard = workbench.getByTestId('artifact-comparison-card');
   await expect(comparisonCard.getByTestId('mobile-artifact-export-excel')).toBeVisible();
   await expect(comparisonCard.getByTestId('mobile-artifact-export-excel')).toHaveAttribute('aria-label', /시트로 받기: .*인수 증거표/);
+});
+
+test('mobile log artifacts show a summary card before dense tables', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/diet-habit-2week');
+
+  const logCard = page.getByLabel('Flow artifact workbench').getByTestId('artifact-log-table-spreadsheet');
+  await expect(logCard.getByTestId('mobile-artifact-summary-card')).toBeVisible();
+
+  const order = await logCard.locator('[data-testid="mobile-artifact-summary-card"], table').evaluateAll((nodes) =>
+    nodes.map((node) => (node as HTMLElement).dataset.testid ?? node.tagName.toLowerCase()),
+  );
+
+  expect(order.slice(0, 2)).toEqual(['mobile-artifact-summary-card', 'table']);
+});
+
+test('mobile study log starts with a source-derived progress summary', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/computer-skills-d30-study');
+
+  const studyLogCard = page.getByLabel('Flow artifact workbench').getByTestId('artifact-log-table-study-chapter-progress');
+  const summaryCard = studyLogCard.getByTestId('mobile-study-log-summary-card');
+  await expect(summaryCard).toBeVisible();
+  await expect(summaryCard).toHaveAttribute('data-source-row-count', '4');
+  await expect(summaryCard).toHaveAttribute('data-editable-column-count', '3');
+  await expect(summaryCard.getByTestId('study-summary-first-source-row')).toBeVisible();
+  await expect(summaryCard.getByTestId('study-summary-editable-fields')).toBeVisible();
+
+  const order = await studyLogCard.locator('[data-testid="mobile-study-log-summary-card"], table').evaluateAll((nodes) =>
+    nodes.map((node) => (node as HTMLElement).dataset.testid ?? node.tagName.toLowerCase()),
+  );
+
+  expect(order.slice(0, 2)).toEqual(['mobile-study-log-summary-card', 'table']);
+});
+
+test('mobile comparison artifacts show a summary card before dense grids', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await page.goto('/f/new-car-delivery-check');
+  let comparisonCard = page.getByLabel('Flow artifact workbench').getByTestId('artifact-comparison-card');
+  await expect(comparisonCard.getByTestId('mobile-comparison-summary-card')).toBeVisible();
+  let order = await comparisonCard.locator('[data-testid="mobile-comparison-summary-card"], textarea').evaluateAll((nodes) =>
+    nodes.map((node) => (node as HTMLElement).dataset.testid ?? node.tagName.toLowerCase()),
+  );
+  expect(order.slice(0, 2)).toEqual(['mobile-comparison-summary-card', 'textarea']);
+
+  await page.goto('/f/used-car-buying-check');
+  comparisonCard = page.getByLabel('Flow artifact workbench').getByTestId('artifact-comparison-card');
+  await expect(comparisonCard.getByTestId('mobile-comparison-summary-card')).toBeVisible();
+  order = await comparisonCard.locator('[data-testid="mobile-comparison-summary-card"], textarea').evaluateAll((nodes) =>
+    nodes.map((node) => (node as HTMLElement).dataset.testid ?? node.tagName.toLowerCase()),
+  );
+  expect(order.slice(0, 2)).toEqual(['mobile-comparison-summary-card', 'textarea']);
 });
 
 test('study progress table exposes source-derived guard metadata', async ({ page }) => {
@@ -1332,6 +1462,53 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(mobileSimulationProtocol.getByText('computer-skills-d30-study')).toBeVisible();
   await expect(mobileSimulationProtocol.getByText('diet-habit-2week')).toBeVisible();
   await expect(mobileSimulationProtocol.getByText('new-car-delivery-check')).toBeVisible();
+  const observedSessionPrep = page.getByTestId('observed-session-prep-panel');
+  await expect(observedSessionPrep).toBeVisible();
+  await expect(observedSessionPrep.getByText('Observed-session prep package', { exact: true })).toBeVisible();
+  await expect(observedSessionPrep.getByText('3 routes')).toBeVisible();
+  await expect(observedSessionPrep.getByText('0 validated')).toBeVisible();
+  await expect(observedSessionPrep.getByText('computer-skills-d30-study')).toBeVisible();
+  await expect(observedSessionPrep.getByText('diet-habit-2week')).toBeVisible();
+  await expect(observedSessionPrep.getByText('new-car-delivery-check')).toBeVisible();
+  await expect(observedSessionPrep.getByText('screenshot targets', { exact: true })).toBeVisible();
+  const observedSessionEvidence = page.getByTestId('observed-session-evidence-panel');
+  await expect(observedSessionEvidence).toBeVisible();
+  await expect(observedSessionEvidence.getByText('Observed-session evidence log', { exact: true })).toBeVisible();
+  await expect(observedSessionEvidence.getByText('1 session note')).toBeVisible();
+  await expect(observedSessionEvidence.getByText('2 not run')).toBeVisible();
+  await expect(observedSessionEvidence.getByText('0 candidate signals')).toBeVisible();
+  await expect(observedSessionEvidence.getByText('0 validated', { exact: true })).toHaveCount(0);
+  await expect(observedSessionEvidence.locator('span').filter({ hasText: 'no signal' })).toBeVisible();
+  await expect(observedSessionEvidence.locator('article').filter({ hasText: 'computer-skills-d30-study' })).toBeVisible();
+  await expect(observedSessionEvidence.locator('article').filter({ hasText: 'diet-habit-2week' })).toBeVisible();
+  await expect(observedSessionEvidence.locator('article').filter({ hasText: 'new-car-delivery-check' })).toBeVisible();
+  const sessionIntake = page.getByTestId('observed-session-note-intake');
+  await expect(sessionIntake).toBeVisible();
+  await expect(sessionIntake.getByRole('combobox', { name: 'Route' })).toBeVisible();
+  await expect(sessionIntake.getByRole('combobox', { name: 'Decision' })).not.toContainText('validated');
+  await sessionIntake.getByRole('combobox', { name: 'Route' }).selectOption('diet-habit-2week');
+  await sessionIntake.getByRole('spinbutton', { name: 'Session number' }).fill('1');
+  await sessionIntake.getByRole('combobox', { name: 'Decision' }).selectOption('friction');
+  await sessionIntake.getByLabel('Artifact-near CTA').fill('missed first, found after prompt');
+  await sessionIntake.getByLabel('Sticky fallback').fill('used fallback sheet');
+  await sessionIntake.getByLabel('Export/copy').fill('copied observation sheet');
+  await sessionIntake.getByRole('textbox', { name: 'Friction' }).fill('Stop condition was noticed after table editing.');
+  await sessionIntake.getByRole('textbox', { name: 'Follow-up' }).fill('Move stop cue closer to the first row.');
+  await expect(sessionIntake.getByTestId('observed-session-note-preview')).toContainText('# Observed Session Note: diet-habit-2week');
+  await expect(sessionIntake.getByTestId('observed-session-note-preview')).toContainText('Decision: `friction`');
+  await expect(sessionIntake.getByTestId('observed-session-note-preview')).toContainText('Artifact-near CTA: missed first, found after prompt');
+  await expect(sessionIntake.getByTestId('observed-session-note-preview')).toContainText('This note is not validation.');
+  await expect(sessionIntake.getByTestId('observed-session-run-sheet-preview')).toContainText('# Observed Session Run Sheet: diet-habit-2week');
+  await expect(sessionIntake.getByTestId('observed-session-run-sheet-preview')).toContainText('Moderator prompt');
+  await expect(sessionIntake.getByTestId('observed-session-run-sheet-preview')).toContainText('Decision options: `no signal`, `friction`, `candidate signal`');
+  const noteDownloadPromise = page.waitForEvent('download');
+  await sessionIntake.getByRole('button', { name: 'Download note' }).click();
+  const noteDownload = await noteDownloadPromise;
+  expect(noteDownload.suggestedFilename()).toMatch(/diet-habit-2week-session-01\.md$/);
+  const runSheetDownloadPromise = page.waitForEvent('download');
+  await sessionIntake.getByRole('button', { name: 'Download run sheet' }).click();
+  const runSheetDownload = await runSheetDownloadPromise;
+  expect(runSheetDownload.suggestedFilename()).toBe('diet-habit-2week-observed-session-run-sheet.md');
   const uxCleanupBacklog = page.locator('section').filter({ hasText: 'UX Cleanup Backlog' });
   await expect(uxCleanupBacklog).toBeVisible();
   await expect(uxCleanupBacklog.getByText('36 routes')).toBeVisible();
@@ -1339,6 +1516,16 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(uxCleanupBacklog.getByText('exact_workout_video_execution_detail')).toBeVisible();
   await expect(uxCleanupBacklog.getByText('health_observation_guardrail')).toBeVisible();
   await expect(uxCleanupBacklog.getByText('vehicle_purchase_evidence_first')).toBeVisible();
+  const designRefGapQueue = page.getByTestId('design-ref-gap-queue-panel');
+  await expect(designRefGapQueue).toBeVisible();
+  await expect(designRefGapQueue.getByText('Design-ref gap queue')).toBeVisible();
+  await expect(designRefGapQueue.getByText('8 items')).toBeVisible();
+  await expect(designRefGapQueue.getByText('8 landed')).toBeVisible();
+  await expect(designRefGapQueue.getByText('0 pending')).toBeVisible();
+  await expect(designRefGapQueue.getByText('0 P1 pending')).toBeVisible();
+  await expect(designRefGapQueue.getByText('0 validated')).toBeVisible();
+  await expect(designRefGapQueue.getByText('mobile-study-log-summary')).toBeVisible();
+  await expect(designRefGapQueue.getByText('observed-session-prep')).toBeVisible();
   const exportFirstSimulation = page.locator('section').filter({ hasText: 'Export-first Simulation' });
   await expect(exportFirstSimulation).toBeVisible();
   await expect(exportFirstSimulation.getByText('Final QA candidate', { exact: true }).first()).toBeVisible();

@@ -107,8 +107,7 @@ Fail signals:
 After a session, classify the route as:
 
 - `no signal`: user did not reach setup or artifact output.
-- `artifact understood`: user understood the natural artifact but did not export or use it.
-- `export loop completed`: user set up, edited, and exported/copied the artifact.
-- `validated candidate`: multiple target users complete the export loop and show credible outside use or return intent.
+- `friction`: user reached part of the loop, but hesitation, missed source/risk boundary, mobile density, or export confusion blocks confidence.
+- `candidate signal`: user set up, edited, and exported/copied the artifact with credible outside-use intent or real use.
 
-Do not use `validated` until observed behavior supports the complete loop.
+`candidate signal` is not validation. Do not use `validated` until repeated observed behavior supports the complete loop and the evidence has been reviewed against [validation evidence](./validation-evidence.md).

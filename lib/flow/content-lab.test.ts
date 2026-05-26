@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import {
   convertedPilotSlugs,
@@ -23,6 +24,14 @@ import {
   getUxContentSimplificationAudit,
   summarizeUxContentSimplificationAudits,
 } from './ux-content-simplification-audit';
+import {
+  generateObservedSessionRunSheetFilename,
+  generateObservedSessionRunSheetMarkdown,
+  generateObservedSessionNoteFilename,
+  generateObservedSessionNoteMarkdown,
+  observedSessionNoteDecisionOptions,
+} from './observed-session-note-intake';
+import { observedSessionEvidenceDecisionOptions } from './observed-session-evidence';
 import { seedBundles } from './seed-flows';
 
 const expectedConvertedPilotSlugs = [
@@ -392,4 +401,159 @@ test('content lab exposes unresolved UX cleanup backlog before content rewrites'
       group.statusAfterCleanup.includes('not validated'),
     ),
   );
+});
+
+test('content lab exposes design-ref gap queue for remaining alignment work', () => {
+  const summary = getContentLabSummary(seedBundles);
+
+  assert.equal(summary.designRefGapQueueTotalCount, 8);
+  assert.equal(summary.designRefGapQueueLandedCount, 8);
+  assert.equal(summary.designRefGapQueuePendingCount, 0);
+  assert.equal(summary.designRefGapQueueP1PendingCount, 0);
+  assert.equal(summary.designRefGapQueueValidatedCount, 0);
+
+  const landedRouteSlugs = new Set(summary.designRefGapQueueLandedItems.flatMap((item) => item.routeSlugs));
+  assert.equal(landedRouteSlugs.has('moving-d30-basic'), true);
+  assert.equal(landedRouteSlugs.has('computer-skills-d30-study'), true);
+  assert.equal(landedRouteSlugs.has('diet-habit-2week'), true);
+  assert.equal(landedRouteSlugs.has('new-car-delivery-check'), true);
+  assert.equal(landedRouteSlugs.has('used-car-buying-check'), true);
+  assert.equal(landedRouteSlugs.has('baby-food-menu-recipe'), true);
+
+  assert.equal(summary.designRefGapQueuePendingItems.length, 0);
+  assert.ok(
+    summary.designRefGapQueueItems.every((item) =>
+      item.statusAfterAlignment.includes('not validated'),
+    ),
+  );
+});
+
+test('content lab exposes observed-session prep package without validation claims', () => {
+  const summary = getContentLabSummary(seedBundles);
+
+  assert.equal(summary.observedSessionPrepTotalCount, 3);
+  assert.deepEqual(summary.observedSessionPrepSlugs, [
+    'computer-skills-d30-study',
+    'diet-habit-2week',
+    'new-car-delivery-check',
+  ]);
+  assert.equal(summary.observedSessionPrepValidatedCount, 0);
+  assert.ok(
+    summary.observedSessionPrepRecords.every((record) =>
+      record.statusAfterPrep.includes('not validated'),
+    ),
+  );
+  assert.ok(
+    summary.observedSessionPrepRecords.every((record) =>
+      record.screenshotTargets.length >= 3 && record.failureSignals.length >= 2,
+    ),
+  );
+});
+
+test('content lab exposes observed-session evidence without validation claims', () => {
+  const summary = getContentLabSummary(seedBundles);
+
+  assert.deepEqual(observedSessionEvidenceDecisionOptions, [
+    'not run',
+    'no signal',
+    'friction',
+    'candidate signal',
+  ]);
+  assert.equal(observedSessionEvidenceDecisionOptions.includes('validated candidate'), false);
+  assert.equal(summary.observedSessionEvidenceRouteCount, 3);
+  assert.equal(summary.observedSessionEvidenceSessionCount, 1);
+  assert.equal(summary.observedSessionEvidenceNotRunCount, 2);
+  assert.equal(summary.observedSessionEvidenceNoSignalCount, 1);
+  assert.equal(summary.observedSessionEvidenceCandidateSignalCount, 0);
+  assert.equal('observedSessionEvidenceValidatedCount' in summary, false);
+  assert.deepEqual(summary.observedSessionEvidenceSlugs, [
+    'computer-skills-d30-study',
+    'diet-habit-2week',
+    'new-car-delivery-check',
+  ]);
+
+  const studySummary = summary.observedSessionEvidenceRouteSummaries.find(
+    (record) => record.slug === 'computer-skills-d30-study',
+  );
+  assert.equal(studySummary?.latestDecision, 'no signal');
+  assert.equal(studySummary?.latestSessionId, '2026-05-25-computer-skills-d30-study-session-00-simulated');
+
+  assert.ok(
+    summary.observedSessionEvidenceRecords.every((record) =>
+      record.statusAfterSession.includes('not validated'),
+    ),
+  );
+});
+
+test('observed-session note intake generates exportable markdown without validated decisions', () => {
+  assert.deepEqual(observedSessionNoteDecisionOptions, ['no signal', 'friction', 'candidate signal']);
+  assert.equal(observedSessionNoteDecisionOptions.includes('validated candidate'), false);
+
+  const markdown = generateObservedSessionNoteMarkdown({
+    date: '2026-05-26',
+    observer: 'HUBERT',
+    route: 'diet-habit-2week',
+    device: 'iPhone 15 Safari',
+    participantType: 'target user',
+    taskRealism: 'real task',
+    sessionNumber: '01',
+    decision: 'friction',
+    artifactNearCta: 'missed first, found after prompt',
+    stickyFallback: 'used fallback sheet',
+    exportCopy: 'copied observation sheet',
+    friction: 'Stop/consult condition was noticed after table editing.',
+    followUp: 'Move stop/consult cue closer to the first row.',
+  });
+
+  assert.match(markdown, /^# Observed Session Note: diet-habit-2week/m);
+  assert.equal(
+    generateObservedSessionNoteFilename('2026-05-26', 'diet-habit-2week', '01'),
+    '2026-05-26-diet-habit-2week-session-01.md',
+  );
+  assert.match(markdown, /Session: 01/);
+  assert.match(markdown, /Decision: `friction`/);
+  assert.match(markdown, /Artifact-near CTA: missed first, found after prompt/);
+  assert.match(markdown, /Sticky fallback: used fallback sheet/);
+  assert.match(markdown, /Export\/copy: copied observation sheet/);
+  assert.match(markdown, /not validation/i);
+  assert.doesNotMatch(markdown, /validated candidate/);
+});
+
+test('observed-session run sheet turns prep records into moderator markdown without validation claims', () => {
+  const summary = getContentLabSummary(seedBundles);
+  const prep = summary.observedSessionPrepRecords.find(
+    (record) => record.slug === 'computer-skills-d30-study',
+  );
+  assert.ok(prep);
+
+  const markdown = generateObservedSessionRunSheetMarkdown({
+    ...prep,
+    title: '컴퓨터활용능력 30일 학습 플랜',
+  });
+
+  assert.equal(
+    generateObservedSessionRunSheetFilename(prep.slug),
+    'computer-skills-d30-study-observed-session-run-sheet.md',
+  );
+  assert.match(markdown, /^# Observed Session Run Sheet: computer-skills-d30-study/m);
+  assert.match(markdown, /Goal: Check whether a mobile learner understands/);
+  assert.match(markdown, /Moderator prompt/);
+  assert.match(markdown, /source-derived study sheet before export/);
+  assert.match(markdown, /Screenshot targets/);
+  assert.match(markdown, /Decision options: `no signal`, `friction`, `candidate signal`/);
+  assert.doesNotMatch(markdown, /validated candidate/);
+});
+
+test('observed-session docs use the same non-validated decision labels as Flow Lab intake', () => {
+  const template = readFileSync('docs/validation-sessions/TEMPLATE.md', 'utf8');
+  const script = readFileSync('docs/flow-rules/first-user-validation-script.md', 'utf8');
+  const docs = `${template}\n${script}`;
+
+  for (const decision of observedSessionNoteDecisionOptions) {
+    assert.match(docs, new RegExp(`- \`${decision}\``));
+  }
+
+  assert.doesNotMatch(docs, /- `artifact understood`/);
+  assert.doesNotMatch(docs, /- `export loop completed`/);
+  assert.doesNotMatch(docs, /- `validated candidate`/);
 });

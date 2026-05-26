@@ -231,7 +231,7 @@ function FlowSourceFitStatus({ bundle }: { bundle: FlowBundle }) {
   );
 }
 
-function SourceContentCard({ bundle }: { bundle: FlowBundle }) {
+function SourceContentCard({ bundle, className = 'mt-5' }: { bundle: FlowBundle; className?: string }) {
   if (!bundle.flow.source_title && !bundle.flow.source_url) return null;
 
   const domain = getSourceDomain(bundle.flow.source_url);
@@ -243,7 +243,7 @@ function SourceContentCard({ bundle }: { bundle: FlowBundle }) {
   ].filter(Boolean);
 
   return (
-    <section className="mt-5 rounded-lg border border-gray-200 bg-white p-4">
+    <section data-testid="flow-source-card" className={`${className} rounded-lg border border-gray-200 bg-white p-4`}>
       <p className="text-sm font-semibold text-gray-700">이 Flow는 아래 콘텐츠를 기반으로</p>
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
@@ -258,6 +258,16 @@ function SourceContentCard({ bundle }: { bundle: FlowBundle }) {
         ) : null}
       </div>
     </section>
+  );
+}
+
+function FlowWarningCard({ bundle, className = 'mt-5' }: { bundle: FlowBundle; className?: string }) {
+  if (!bundle.flow.warning) return null;
+
+  return (
+    <div data-testid="flow-warning-card" className={`${className} rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950`}>
+      {bundle.flow.warning}
+    </div>
   );
 }
 
@@ -2229,6 +2239,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const showTodayExecution = isFitnessExactVideoFlow(bundle);
   const showExportFirstHero = isExportFirstHeroRoute(bundle);
   const showMobileWorkbenchFirst = bundle.flow.structure_type === 'routine' || bundle.flow.slug === 'baby-food-menu-recipe';
+  const showDesktopReferenceRail = shouldUseDesktopReferenceRail(bundle);
   const primaryDestination = inferPrimaryDestination(bundle);
 
   const toggle = (id: string) => {
@@ -2392,7 +2403,39 @@ export function PublicFlow({ slug }: { slug: string }) {
         </div>
       </header>
 
-      {showMobileWorkbenchFirst ? (
+      {showDesktopReferenceRail ? (
+        <div data-testid="flow-desktop-workbench-layout" className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+          <div className={showMobileWorkbenchFirst ? 'flex min-w-0 flex-col lg:block' : 'min-w-0'}>
+            <div className={showMobileWorkbenchFirst ? 'order-3 lg:hidden' : 'lg:hidden'}>
+              <FlowMigrationStatus bundle={bundle} />
+              <FlowSourceFitStatus bundle={bundle} />
+            </div>
+
+            {showExportFirstHero ? (
+              <ExportFirstHero
+                bundle={bundle}
+                anchor={anchor}
+                displayAnchor={displayAnchor}
+                mode={anchorMode}
+                onModeChange={setAnchorMode}
+                onAnchorChange={setAnchor}
+                weekdays={weekdaySelection}
+                onWeekdaysChange={setWeekdaySelection}
+                onTake={openExportActions}
+              />
+            ) : null}
+
+            <div className={showMobileWorkbenchFirst ? 'order-2 lg:contents' : undefined}>{renderSetupSection()}</div>
+            <div className={showMobileWorkbenchFirst ? 'order-1 lg:contents' : undefined}>{renderArtifactWorkbench()}</div>
+          </div>
+          <aside data-testid="flow-desktop-rail" className="hidden space-y-4 lg:sticky lg:top-6 lg:block">
+            <FlowMigrationStatus bundle={bundle} />
+            <FlowSourceFitStatus bundle={bundle} />
+            <SourceContentCard bundle={bundle} className="mt-0" />
+            <FlowWarningCard bundle={bundle} className="mt-0" />
+          </aside>
+        </div>
+      ) : showMobileWorkbenchFirst ? (
         <div className="flex flex-col">
           <div className="order-3 md:order-1">
             <FlowMigrationStatus bundle={bundle} />
@@ -2518,13 +2561,9 @@ export function PublicFlow({ slug }: { slug: string }) {
         </div>
       </section>
 
-      <SourceContentCard bundle={bundle} />
+      <SourceContentCard bundle={bundle} className={showDesktopReferenceRail ? 'mt-5 lg:hidden' : 'mt-5'} />
 
-      {bundle.flow.warning ? (
-        <div className="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
-          {bundle.flow.warning}
-        </div>
-      ) : null}
+      <FlowWarningCard bundle={bundle} className={showDesktopReferenceRail ? 'mt-5 lg:hidden' : 'mt-5'} />
 
       {showMobileExportSheet ? (
         <div className="fixed inset-0 z-30 md:hidden" data-testid="mobile-export-sheet" role="dialog" aria-modal="true" aria-labelledby="mobile-export-title">
@@ -2612,6 +2651,17 @@ export function PublicFlow({ slug }: { slug: string }) {
 
 function isExportFirstHeroRoute(bundle: FlowBundle) {
   return bundle.flow.slug === 'moving-d30-basic';
+}
+
+function shouldUseDesktopReferenceRail(bundle: FlowBundle) {
+  return [
+    'moving-d30-basic',
+    'computer-skills-d30-study',
+    'diet-habit-2week',
+    'new-car-delivery-check',
+    'used-car-buying-check',
+    'baby-food-menu-recipe',
+  ].includes(bundle.flow.slug);
 }
 
 function compactDateLabel(value: string) {

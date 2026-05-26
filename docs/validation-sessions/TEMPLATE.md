@@ -105,11 +105,12 @@ Use factual notes, not interpretation.
 Choose one:
 
 - `no signal`
-- `artifact understood`
-- `export loop completed`
-- `validated candidate`
+- `friction`
+- `candidate signal`
 
 Decision reason:
+
+`candidate signal` is still not validation. Do not call a route validated until repeated target-user behavior is reviewed against the validation evidence rules.
 
 ## Follow-Up
 

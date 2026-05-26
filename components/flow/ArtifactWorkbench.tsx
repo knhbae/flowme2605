@@ -352,7 +352,8 @@ function TimelineWorkbench({
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 lg:grid-cols-[1fr_1.05fr]">
+      <div className="grid gap-4 lg:grid-cols-[1.05fr_1fr]">
+        <MiniMonthCalendar title="월간 캘린더" eyebrow="월별 달력 preview" month={month} rows={rows} exportActions={exportActions} mobileArtifactLabel={getMobileArtifactLabel(bundle, 'month_calendar')} />
         <div data-testid="artifact-list-card" className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
@@ -383,7 +384,6 @@ function TimelineWorkbench({
             ))}
           </div>
         </div>
-        <MiniMonthCalendar title="월간 캘린더" eyebrow="월별 달력 preview" month={month} rows={rows} exportActions={exportActions} mobileArtifactLabel={getMobileArtifactLabel(bundle, 'month_calendar')} />
       </div>
       {logTables.length ? (
         <div className="grid gap-4">
@@ -472,6 +472,27 @@ function MealReactionWorkbench({
             >
               시트로 받기
             </button>
+          </div>
+          <div data-testid="meal-reaction-summary-card" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3">
+            <p className="text-xs font-semibold uppercase text-blue-700">reaction summary</p>
+            <div className="mt-2 grid gap-2 text-sm">
+              <div data-testid="meal-summary-slot" className="rounded-md bg-white px-3 py-2">
+                <p className="text-xs font-semibold text-gray-500">Today slot</p>
+                <p className="mt-1 font-medium text-gray-900">{todayReactionSlot.menu_title}</p>
+                <p className="mt-1 text-gray-700">{mealSlotTiming(todayReactionSlot.day_offset, todayReactionSlot.duration_days, anchor)}</p>
+              </div>
+              <div data-testid="meal-summary-new-ingredients" className="rounded-md bg-white px-3 py-2">
+                <p className="text-xs font-semibold text-gray-500">New ingredient</p>
+                <p className="mt-1 text-gray-800">{todayReactionSlot.new_ingredients.length ? todayReactionSlot.new_ingredients.join(', ') : '-'}</p>
+              </div>
+              <div data-testid="meal-summary-reaction-fields" className="rounded-md bg-white px-3 py-2">
+                <p className="text-xs font-semibold text-gray-500">Reaction fields</p>
+                <p className="mt-1 text-gray-800">{mealReactionColumns.slice(0, 4).map((column) => column.label).join(' / ')}</p>
+              </div>
+            </div>
+            <p data-testid="meal-summary-allergy-cue" className="mt-2 text-xs font-medium text-blue-800">
+              Watch the first serving and keep any unusual reaction for professional review.
+            </p>
           </div>
           <div className="mt-3 grid gap-2">
             {mealReactionColumns.slice(0, 4).map((column) => (
@@ -852,6 +873,7 @@ function ComparisonTable({
         </div>
       </div>
       <ArtifactExportStatus actions={exportActions} />
+      <MobileComparisonSummaryCard rows={rows} comparison={comparison} />
       <div
         className="grid min-w-[720px] bg-gray-50 text-xs font-semibold text-gray-600"
         style={{ gridTemplateColumns: `minmax(220px,1.1fr) repeat(${comparison.candidates.length}, minmax(170px,1fr))` }}
@@ -888,6 +910,29 @@ function ComparisonTable({
           ))}
         </div>
       ))}
+    </div>
+  );
+}
+
+function MobileComparisonSummaryCard({ rows, comparison }: { rows: ArtifactComparisonRow[]; comparison: FlowComparisonState }) {
+  const previewRows = rows.slice(0, 3);
+  const primaryCandidate = comparison.candidates[0]?.name ?? '후보 A';
+
+  if (!previewRows.length) return null;
+
+  return (
+    <div data-testid="mobile-comparison-summary-card" className="m-3 rounded-md border border-blue-100 bg-blue-50 p-3 md:hidden">
+      <p className="text-xs font-semibold uppercase text-blue-700">mobile summary</p>
+      <h4 className="mt-1 text-sm font-semibold text-gray-950">{primaryCandidate} 먼저 채우기</h4>
+      <dl className="mt-2 grid gap-2 text-sm">
+        {previewRows.map((row, index) => (
+          <div key={row.id} className="rounded-md bg-white px-3 py-2">
+            <dt className="text-xs font-semibold text-gray-500">비교 항목 {index + 1}</dt>
+            <dd className="mt-1 text-gray-800" aria-label={row.title}>아래 표에서 작성</dd>
+          </div>
+        ))}
+      </dl>
+      <p className="mt-2 text-xs font-medium text-blue-800">전체 후보 비교는 아래 표에서 이어서 작성하고, 기록은 시트로 받을 수 있습니다.</p>
     </div>
   );
 }
@@ -964,6 +1009,7 @@ function LogTableCard({
         </div>
         <ArtifactExportStatus actions={exportActions} />
         <p className="mt-2 text-sm leading-6 text-gray-600">{table.description}</p>
+        {table.sourceKind === 'source_derived' ? <MobileStudyLogSummaryCard table={table} /> : <MobileLogSummaryCard table={table} />}
       </div>
       <table className="min-w-[760px] text-left text-sm">
         <thead className="bg-gray-50 text-xs font-semibold text-gray-600">
@@ -1007,6 +1053,60 @@ function LogTableCard({
           ))}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+function MobileStudyLogSummaryCard({ table }: { table: ArtifactLogTable }) {
+  const firstRow = table.rows[0];
+  const editableColumns = table.columns.filter((column) => table.userEditableColumnIds?.includes(column.id));
+
+  if (!firstRow) return null;
+
+  return (
+    <div
+      data-testid="mobile-study-log-summary-card"
+      data-source-row-count={String(table.rows.length)}
+      data-editable-column-count={String(editableColumns.length)}
+      className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3 md:hidden"
+    >
+      <p className="text-xs font-semibold uppercase text-blue-700">study summary</p>
+      <h4 className="mt-1 text-sm font-semibold text-gray-950">{table.rows.length} source rows before editing</h4>
+      <div className="mt-2 grid gap-2 text-sm">
+        <div data-testid="study-summary-first-source-row" className="rounded-md bg-white px-3 py-2">
+          <p className="text-xs font-semibold text-gray-500">First source row</p>
+          <p className="mt-1 font-medium text-gray-900">{firstRow.label}</p>
+          <p className="mt-1 text-gray-700">{firstRow.defaultValues?.scope ?? '-'}</p>
+        </div>
+        <div data-testid="study-summary-editable-fields" className="rounded-md bg-white px-3 py-2">
+          <p className="text-xs font-semibold text-gray-500">Editable after export</p>
+          <p className="mt-1 text-gray-800">{editableColumns.map((column) => column.label).join(' / ')}</p>
+        </div>
+      </div>
+      <p className="mt-2 text-xs font-medium text-blue-800">Source scope stays fixed; target date, status, and note are the user's sheet fields.</p>
+    </div>
+  );
+}
+
+function MobileLogSummaryCard({ table }: { table: ArtifactLogTable }) {
+  const firstRow = table.rows[0];
+  const previewColumns = table.columns.slice(0, 3);
+
+  if (!firstRow) return null;
+
+  return (
+    <div data-testid="mobile-artifact-summary-card" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3 md:hidden">
+      <p className="text-xs font-semibold uppercase text-blue-700">mobile summary</p>
+      <h4 className="mt-1 text-sm font-semibold text-gray-950">{firstRow.label}</h4>
+      <dl className="mt-2 grid gap-2 text-sm">
+        {previewColumns.map((column) => (
+          <div key={column.id} className="rounded-md bg-white px-3 py-2">
+            <dt className="text-xs font-semibold text-gray-500">{column.label}</dt>
+            <dd className="mt-1 text-gray-800">{firstRow.defaultValues?.[column.id] || column.placeholder || '-'}</dd>
+          </div>
+        ))}
+      </dl>
+      <p className="mt-2 text-xs font-medium text-blue-800">전체 행은 아래 표에서 확인하고, 기록은 시트로 받을 수 있습니다.</p>
     </div>
   );
 }
@@ -1419,6 +1519,7 @@ function SpreadsheetWorkbench({
           </div>
           <ArtifactExportStatus actions={exportActions} />
           <p className="mt-2 text-sm leading-6 text-gray-600">{description}</p>
+          <MobileSpreadsheetSummaryCard date={rows[0]} columns={spreadsheetColumns} bundle={bundle} />
         </div>
         <table className="min-w-[760px] text-left text-sm">
           <thead className="bg-gray-50 text-xs font-semibold text-gray-600">
@@ -1472,6 +1573,27 @@ function SpreadsheetWorkbench({
           onChange={(event) => onWorkbenchChange(updateWeeklyReview(workbenchState, event.currentTarget.value))}
         />
       </div>
+    </div>
+  );
+}
+
+function MobileSpreadsheetSummaryCard({ date, columns, bundle }: { date: string; columns: string[]; bundle: FlowBundle }) {
+  const previewColumns = columns.slice(0, 3);
+  const title = bundle.flow.slug === 'diet-habit-2week' ? '오늘 관찰 행' : '오늘 기록 행';
+
+  return (
+    <div data-testid="mobile-artifact-summary-card" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3 md:hidden">
+      <p className="text-xs font-semibold uppercase text-blue-700">mobile summary</p>
+      <h4 className="mt-1 text-sm font-semibold text-gray-950">{title} · {date}</h4>
+      <dl className="mt-2 grid gap-2 text-sm">
+        {previewColumns.map((column) => (
+          <div key={column} className="rounded-md bg-white px-3 py-2">
+            <dt className="text-xs font-semibold text-gray-500">{column}</dt>
+            <dd className="mt-1 text-gray-800">{spreadsheetPlaceholder(column)}</dd>
+          </div>
+        ))}
+      </dl>
+      <p className="mt-2 text-xs font-medium text-blue-800">전체 행은 아래 표에서 확인하고, 기록은 시트로 받을 수 있습니다.</p>
     </div>
   );
 }
