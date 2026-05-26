@@ -1173,6 +1173,7 @@ function DecisionWorkbench({
       />
       <div className="space-y-4">
         {bundle.flow.warning ? <RiskBoundaryCard bundle={bundle} /> : null}
+        <HoldSectionCard bundle={bundle} />
         {memoFields.length ? <ProofMemoCard fields={memoFields} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} /> : null}
         <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
           <p className="text-sm font-semibold text-blue-700">현장에서 바로 체크</p>
@@ -1205,6 +1206,53 @@ function RiskBoundaryCard({ bundle }: { bundle: FlowBundle }) {
       <p className="text-sm font-semibold text-amber-900">{riskBoundaryTitle(bundle)}</p>
       <p className="mt-1 text-sm leading-6 text-amber-950">{bundle.flow.warning}</p>
     </div>
+  );
+}
+
+function StopPrincipleCards({ bundle }: { bundle: FlowBundle }) {
+  if (!bundle.flow.stop_conditions?.length && !bundle.flow.principles?.length) return null;
+
+  return (
+    <div className="mb-4 space-y-3">
+      {bundle.flow.stop_conditions?.length ? (
+        <section data-testid="flow-stop-conditions" className="rounded-lg border border-red-200 bg-red-50 p-3">
+          <p className="text-sm font-semibold text-red-800">중단·상담 기준</p>
+          <ul className="mt-2 space-y-1 text-sm leading-6 text-red-950">
+            {bundle.flow.stop_conditions.map((condition) => (
+              <li key={condition}>- {condition}</li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+      {bundle.flow.principles?.length ? (
+        <section data-testid="flow-principles" className="rounded-lg border border-blue-100 bg-blue-50 p-3">
+          <p className="text-sm font-semibold text-blue-800">기록 원칙</p>
+          <ul className="mt-2 space-y-1 text-sm leading-6 text-blue-950">
+            {bundle.flow.principles.map((principle) => (
+              <li key={principle}>- {principle}</li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+    </div>
+  );
+}
+
+function HoldSectionCard({ bundle }: { bundle: FlowBundle }) {
+  const section = bundle.flow.hold_section;
+  if (!section) return null;
+
+  return (
+    <section data-testid="flow-hold-section" className="rounded-lg border border-red-200 bg-red-50 p-3">
+      <p className="text-sm font-semibold text-red-800">{section.title}</p>
+      <ul className="mt-2 space-y-1 text-sm leading-6 text-red-950">
+        {section.reasons.map((reason) => (
+          <li key={reason}>- {reason}</li>
+        ))}
+      </ul>
+      <p className="mt-2 text-sm leading-6 text-red-950">{section.consequence}</p>
+      <p className="mt-2 rounded-md bg-white px-3 py-2 text-xs font-semibold text-red-800">{section.memo_template}</p>
+    </section>
   );
 }
 
@@ -1482,6 +1530,7 @@ function SpreadsheetWorkbench({
           ))}
         </div>
         <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+          <StopPrincipleCards bundle={bundle} />
           {showRiskBoundary ? (
             <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3">
               <p className="text-sm font-semibold text-amber-900">기록 전 확인</p>
@@ -1550,6 +1599,7 @@ function SpreadsheetWorkbench({
         </table>
       </div>
       <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+        <StopPrincipleCards bundle={bundle} />
         {showRiskBoundary ? (
           <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3">
             <p className="text-sm font-semibold text-amber-900">

@@ -636,11 +636,11 @@ test('mobile export actions open from a bottom sheet', async ({ page }) => {
   const mobileBar = page.getByTestId('mobile-export-bar');
   await expect(mobileBar).toBeVisible();
   await expect(mobileBar.getByText('1 / 24')).toBeVisible();
-  await expect(mobileBar.getByRole('button', { name: '내 도구로 가져가기' })).toBeVisible();
+  await expect(mobileBar.getByRole('button', { name: '시트·캘린더로 받기' })).toBeVisible();
   await expect(mobileBar.getByRole('button', { name: '체크리스트 복사' })).toHaveCount(0);
   await expect(mobileBar.getByRole('button', { name: '엑셀 받기' })).toHaveCount(0);
 
-  await mobileBar.getByRole('button', { name: '내 도구로 가져가기' }).click();
+  await mobileBar.getByRole('button', { name: '시트·캘린더로 받기' }).click();
 
   const sheet = page.getByTestId('mobile-export-sheet');
   await expect(sheet.getByRole('heading', { name: '어디로 가져갈까요' })).toBeVisible();
@@ -1153,13 +1153,36 @@ test('mobile export sheet remains available from the sticky fallback', async ({ 
 
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   const mobileBar = page.getByTestId('mobile-export-bar');
-  await expect(mobileBar.getByRole('button', { name: '내 도구로 가져가기' })).toBeVisible();
+  await expect(mobileBar.getByRole('button', { name: '시트·캘린더로 받기' })).toBeVisible();
 
-  await mobileBar.getByRole('button', { name: '내 도구로 가져가기' }).click();
+  await mobileBar.getByRole('button', { name: '시트·캘린더로 받기' }).click();
   const sheet = page.getByTestId('mobile-export-sheet');
   await expect(sheet.getByRole('heading', { name: '어디로 가져갈까요' })).toBeVisible();
   await expect(sheet.getByRole('button', { name: '엑셀로 받기' })).toBeEnabled();
   await expect(sheet.getByRole('button', { name: /캘린더에 추가/ })).toBeEnabled();
+});
+
+test('validation fix surfaces route-specific anchors, safety panels, and mobile destination CTA labels', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await page.goto('/f/computer-skills-d30-study');
+  await expect(page.getByLabel('시험일')).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await expect(page.getByTestId('mobile-export-bar').getByRole('button', { name: '시트·캘린더로 받기' })).toBeVisible();
+
+  await page.goto('/f/diet-habit-2week');
+  await expect(page.getByLabel('관찰 시작일')).toBeVisible();
+  await expect(page.getByTestId('flow-stop-conditions')).toContainText('어지러움');
+  await expect(page.getByTestId('flow-principles')).toContainText('관찰 기록');
+  await expect(page.getByLabel('Flow artifact workbench').getByRole('checkbox', { name: /중단|상담/ })).toHaveCount(0);
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await expect(page.getByTestId('mobile-export-bar').getByRole('button', { name: '관찰표 .xlsx 받기' })).toBeVisible();
+
+  await page.goto('/f/new-car-delivery-check');
+  await expect(page.getByTestId('flow-hold-section')).toContainText('인수 보류 기준');
+  await expect(page.getByTestId('flow-hold-section')).toContainText('사진 파일명');
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await expect(page.getByTestId('mobile-export-bar').getByRole('button', { name: '증거표 .xlsx 받기' })).toBeVisible();
 });
 
 test('mobile workbench exposes destination CTAs on the first artifact cards', async ({ page }) => {

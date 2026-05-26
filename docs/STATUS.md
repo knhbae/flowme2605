@@ -122,6 +122,7 @@
 - Observed-session note filenames have landed: Flow Lab note intake now includes a session number and downloads notes using the `YYYY-MM-DD-route-session-01.md` pattern expected by `docs/validation-sessions/`, without creating evidence or marking any route validated.
 - Observed-session decision labels are aligned: the validation template and first-user script now use the same non-validated `no signal`, `friction`, and `candidate signal` choices as Flow Lab intake/run sheets, with `candidate signal` still below validation.
 - Observed-session evidence validation boundary has landed: Flow Lab evidence now counts candidate signals instead of showing a validation counter, and the evidence decision options exclude `validated candidate`.
+- Uploaded `flowme.zip` validation-fix batch has landed through PR-1 to PR-4: the 11 testable routes now carry route-specific setup anchor labels/hints, `computer-skills-d30-study` splits D-1 from D-7, `diet-habit-2week` separates stop/principle copy from checklist items, `new-car-delivery-check` exposes hold criteria, and mobile sticky export CTAs are destination-specific. No route is called validated.
 
 ## Next Up
 

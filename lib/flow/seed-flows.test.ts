@@ -279,7 +279,7 @@ test('diet habit route is framed as an observation sheet, not a diet prescriptio
   assert.match(diet.flow.warning ?? '', /감량 처방이 아니라 관찰 기록용/);
   assert.match(diet.flow.warning ?? '', /어지러움|통증|폭식 유발감/);
   assert.ok(diet.sections.some((section) => section.title.includes('관찰')));
-  assert.ok(diet.items.some((item) => item.title.includes('중단') || item.title.includes('상담')));
+  assert.ok(diet.flow.stop_conditions?.some((condition) => condition.includes('어지러움') || condition.includes('폭식')));
   assert.ok(
     diet.itemDetails?.every((detail) =>
       `${detail.why} ${detail.how} ${detail.completion_criteria} ${detail.caution ?? ''}`.includes('관찰표'),
@@ -312,6 +312,64 @@ test('used car route warns that the checklist does not guarantee vehicle conditi
   assert.ok(usedCar);
   assert.match(usedCar.flow.warning ?? '', /차량 상태를 보증하지 않습니다/);
   assert.match(usedCar.flow.warning ?? '', /공식 조회와 전문가 점검/);
+});
+
+test('validation fix routes expose route-specific setup anchors and safety metadata', () => {
+  const expectedAnchors = [
+    ['computer-skills-d30-study', '시험일'],
+    ['diet-habit-2week', '관찰 시작일'],
+    ['new-car-delivery-check', '인수일 기록'],
+    ['moving-d30-basic', '이사일'],
+    ['baby-food-menu-recipe', '이유식 시작일'],
+    ['used-car-buying-check', '방문/시승일 기록'],
+    ['passport-renewal-docs', '접수일 기록'],
+    ['real-thankyou-bubu-home-workout-starter', '운동 시작일'],
+    ['real-fitvely-diet-record-routine', '기록 시작일'],
+    ['vehicle-inspection-prep', '검사일'],
+    ['real-mofa-overseas-travel-prep', '출국일'],
+  ];
+
+  for (const [slug, label] of expectedAnchors) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+    assert.ok(bundle, slug);
+    const flow = bundle.flow as typeof bundle.flow & {
+      setup_anchor_label?: string;
+      setup_anchor_hint?: string;
+    };
+    assert.equal(flow.setup_anchor_label, label, `${slug} should expose a route-specific setup anchor label`);
+    assert.ok(flow.setup_anchor_hint && flow.setup_anchor_hint.length >= 12, `${slug} should explain how the anchor is used`);
+  }
+
+  const diet = seedBundles.find((entry) => entry.flow.slug === 'diet-habit-2week');
+  const newCar = seedBundles.find((entry) => entry.flow.slug === 'new-car-delivery-check');
+  const study = seedBundles.find((entry) => entry.flow.slug === 'computer-skills-d30-study');
+  assert.ok(diet);
+  assert.ok(newCar);
+  assert.ok(study);
+
+  const dietFlow = diet.flow as typeof diet.flow & {
+    stop_conditions?: string[];
+    principles?: string[];
+  };
+  assert.ok(dietFlow.stop_conditions?.some((condition) => condition.includes('어지러움') || condition.includes('폭식')));
+  assert.ok(dietFlow.principles?.some((principle) => principle.includes('관찰') && principle.includes('처방')));
+  assert.ok(!diet.items.some((item) => item.title.includes('중단') || item.title.includes('상담')), 'stop/consult guidance should not be a checklist item');
+
+  const newCarFlow = newCar.flow as typeof newCar.flow & {
+    hold_section?: {
+      title: string;
+      reasons: string[];
+      consequence: string;
+      memo_template: string;
+    };
+  };
+  assert.equal(newCarFlow.hold_section?.title, '인수 보류 기준');
+  assert.ok(newCarFlow.hold_section?.reasons.some((reason) => reason.includes('사진 파일명')));
+  assert.match(newCarFlow.hold_section?.memo_template ?? '', /딜러 확인|서명 보류/);
+
+  const d1Item = study.items.find((item) => item.day_offset === -1);
+  const d1Section = study.sections.find((section) => section.id === d1Item?.section_id);
+  assert.equal(d1Section?.title, 'D-1 최종 확인');
 });
 
 test('seed flows expose creator and popularity signals for discovery', () => {

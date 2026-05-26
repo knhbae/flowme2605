@@ -332,6 +332,7 @@ function getStructureLabel(bundle: FlowBundle): string {
 }
 
 function getAnchorInputLabel(bundle: FlowBundle): string {
+  if (bundle.flow.setup_anchor_label) return bundle.flow.setup_anchor_label;
   if (bundle.flow.anchor_type === 'none') return '날짜 입력 없음';
   if (bundle.flow.content_type === 'meal_plan') return '이유식 시작일';
   if (bundle.flow.category.includes('건강/검진')) return '검진일';
@@ -359,6 +360,7 @@ function getSetupStepDescription(bundle: FlowBundle): string {
 }
 
 function getSetupStepHelp(bundle: FlowBundle): string {
+  if (bundle.flow.setup_anchor_hint) return bundle.flow.setup_anchor_hint;
   if (bundle.flow.anchor_type === 'none') return '이 Flow는 날짜 입력이 필요 없는 체크리스트입니다.';
   return `${getAnchorInputLabel(bundle)} 기준으로 날짜가 계산됩니다.`;
 }
@@ -2241,6 +2243,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const showMobileWorkbenchFirst = bundle.flow.structure_type === 'routine' || bundle.flow.slug === 'baby-food-menu-recipe';
   const showDesktopReferenceRail = shouldUseDesktopReferenceRail(bundle);
   const primaryDestination = inferPrimaryDestination(bundle);
+  const mobileStickyCtaLabel = getMobileStickyCtaLabel(bundle, canExportCalendar);
 
   const toggle = (id: string) => {
     setChecks((value) => {
@@ -2640,7 +2643,7 @@ export function PublicFlow({ slug }: { slug: string }) {
               </div>
             </div>
             <button className="shrink-0 rounded-md bg-[#2563EB] px-4 py-3 text-sm font-semibold text-white" onClick={() => setShowMobileExportSheet(true)}>
-              내 도구로 가져가기
+              {mobileStickyCtaLabel}
             </button>
           </div>
         </div>
@@ -2695,6 +2698,18 @@ function getMobileExportSheetSummary(bundle: FlowBundle, anchor: string, executa
   if (bundle.flow.slug === 'moving-d30-basic' && anchor) return `이사일 ${anchor} 기준 ${executableCount}개 항목`;
   if (anchor) return `${anchor} 기준 ${executableCount}개 항목`;
   return `${executableCount}개 항목`;
+}
+
+function getMobileStickyCtaLabel(bundle: FlowBundle, canExportCalendar: boolean): string {
+  if (bundle.flow.slug === 'moving-d30-basic') return '시트·캘린더로 받기';
+  if (bundle.flow.slug === 'computer-skills-d30-study') return '시트·캘린더로 받기';
+  if (bundle.flow.slug === 'diet-habit-2week') return '관찰표 .xlsx 받기';
+  if (bundle.flow.slug === 'new-car-delivery-check') return '증거표 .xlsx 받기';
+  if (bundle.flow.primary_destination === 'hybrid') return canExportCalendar ? '시트·캘린더로 받기' : '시트·메모로 받기';
+  if (bundle.flow.primary_destination === 'calendar' || canExportCalendar) return '캘린더 .ics 받기';
+  if (bundle.flow.primary_destination === 'sheet') return '시트 .xlsx 받기';
+  if (bundle.flow.primary_destination === 'memo') return '메모로 복사하기';
+  return '내 도구로 가져가기';
 }
 
 function ExportFirstHero({

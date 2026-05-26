@@ -1977,6 +1977,149 @@ const creatorInspiredBundles: FlowBundle[] = [
   ),
 ];
 
+type ValidationFixMeta = Pick<Flow, 'setup_anchor_label' | 'setup_anchor_hint'> &
+  Partial<Pick<Flow, 'stop_conditions' | 'principles' | 'hold_section'>>;
+
+const validationFixMeta: Record<string, ValidationFixMeta> = {
+  'computer-skills-d30-study': {
+    setup_anchor_label: '시험일',
+    setup_anchor_hint: '실제 시험일을 넣으면 D-30 학습 일정과 D-1 준비 항목이 그 날짜 기준으로 계산됩니다.',
+  },
+  'diet-habit-2week': {
+    setup_anchor_label: '관찰 시작일',
+    setup_anchor_hint: '처방이나 감량 목표가 아니라 2주간 식사, 수면, 활동, 컨디션을 기록하기 시작하는 날짜입니다.',
+    stop_conditions: [
+      '어지러움, 통증, 폭식 유발감, 야식 충동이 반복되면 기록을 멈추고 상담 메모를 남깁니다.',
+      '질환, 임신·수유, 섭식장애 경험, 약물 복용 중이면 FLOW 기록보다 전문가 상담을 우선합니다.',
+    ],
+    principles: [
+      '관찰 기록은 처방이나 감량 결과 판단이 아니라 다음 상담이나 자기 점검을 위한 자료입니다.',
+      '식사 제한 성공 여부보다 식사 시간, 수면, 활동, 컨디션 신호를 같은 줄에 남깁니다.',
+    ],
+  },
+  'new-car-delivery-check': {
+    setup_anchor_label: '인수일 기록',
+    setup_anchor_hint: '날짜 입력보다 현장 증거표가 우선입니다. 실제 인수일은 보류 메모와 사진 파일명에 함께 남깁니다.',
+    hold_section: {
+      title: '인수 보류 기준',
+      reasons: [
+        '차대번호, 계약 옵션, 등록 문서가 맞지 않거나 딜러 확인이 비어 있습니다.',
+        '외관 흠집, 유리·휠 손상, 경고등 등 결함 사진 파일명이 증거표에 없습니다.',
+        '수리·교체·재방문 약속이 말로만 남고 서면 확인이나 담당자명이 없습니다.',
+      ],
+      consequence: 'FLOW는 인수 여부를 결정하지 않습니다. 보류 기준이 있으면 서명 전 딜러 확인과 사용자 판단을 분리해 기록합니다.',
+      memo_template: '딜러 확인: / 사진 파일명: / 보류 사유: / 서명 보류 여부: / 다음 확인 시점:',
+    },
+  },
+  'moving-d30-basic': {
+    setup_anchor_label: '이사일',
+    setup_anchor_hint: '이사 당일을 넣으면 D-30, D-10, D-1, D+1 준비 일정이 자동으로 배치됩니다.',
+  },
+  'baby-food-menu-recipe': {
+    setup_anchor_label: '이유식 시작일',
+    setup_anchor_hint: '첫 이유식 날짜를 기준으로 새 재료 관찰일과 반응 기록일을 계산합니다.',
+  },
+  'used-car-buying-check': {
+    setup_anchor_label: '방문/시승일 기록',
+    setup_anchor_hint: '체크리스트는 차량 상태 보증이 아닙니다. 방문일, 공식 조회 결과, 전문가 점검 여부를 메모에 남깁니다.',
+  },
+  'passport-renewal-docs': {
+    setup_anchor_label: '접수일 기록',
+    setup_anchor_hint: '접수 예정일, 사진 준비 상태, 수령·보관 메모를 기준으로 제출 준비를 확인합니다.',
+  },
+  'real-thankyou-bubu-home-workout-starter': {
+    setup_anchor_label: '운동 시작일',
+    setup_anchor_hint: '첫 운동일과 반복 요일을 정하면 영상 실행 알림과 운동 기록 항목이 만들어집니다.',
+  },
+  'real-fitvely-diet-record-routine': {
+    setup_anchor_label: '기록 시작일',
+    setup_anchor_hint: '식단 조언으로 확정하지 않고, 선택한 한 가지 기록 규칙을 시작하는 날짜입니다.',
+  },
+  'vehicle-inspection-prep': {
+    setup_anchor_label: '검사일',
+    setup_anchor_hint: '자동차검사 예약일을 기준으로 준비 서류, 증거 사진, 후속 정비 메모 일정을 계산합니다.',
+  },
+  'real-mofa-overseas-travel-prep': {
+    setup_anchor_label: '출국일',
+    setup_anchor_hint: '출국일 기준으로 안전 정보, 비상연락망, 현지 위험 확인 항목을 배치합니다.',
+  },
+};
+
+function applyValidationFixMeta(bundle: FlowBundle): FlowBundle {
+  const meta = validationFixMeta[bundle.flow.slug];
+  if (!meta) return bundle;
+
+  let next: FlowBundle = {
+    ...bundle,
+    flow: {
+      ...bundle.flow,
+      ...meta,
+    },
+  };
+
+  if (bundle.flow.slug === 'diet-habit-2week') {
+    const removedSectionIds = new Set(
+      next.sections.filter((section) => section.title.includes('중단') || section.title.includes('상담')).map((section) => section.id),
+    );
+    const removedItemIds = new Set(
+      next.items
+        .filter(
+          (item) =>
+            removedSectionIds.has(item.section_id ?? '') ||
+            item.title.includes('중단') ||
+            item.title.includes('상담'),
+        )
+        .map((item) => item.id),
+    );
+
+    next = {
+      ...next,
+      sections: next.sections.filter((section) => !removedSectionIds.has(section.id)),
+      items: next.items.filter((item) => !removedItemIds.has(item.id)),
+      itemDetails: next.itemDetails?.filter((detail) => !removedItemIds.has(detail.item_id)),
+    };
+  }
+
+  if (bundle.flow.slug === 'computer-skills-d30-study') {
+    const d1SectionId = 'flow-computer-skills-d30-study-section-d1';
+    const hasD1Section = next.sections.some((section) => section.id === d1SectionId);
+    next = {
+      ...next,
+      sections: hasD1Section
+        ? next.sections
+        : [
+            ...next.sections,
+            {
+              id: d1SectionId,
+              flow_id: bundle.flow.id,
+              title: 'D-1 최종 확인',
+              description: '시험 전날 준비물과 이동 시간을 시험일 기준으로 따로 확인합니다.',
+              order: next.sections.length,
+            },
+          ],
+      items: next.items.map((item) => (item.day_offset === -1 ? { ...item, section_id: d1SectionId } : item)),
+    };
+  }
+
+  if (bundle.flow.slug === 'new-car-delivery-check') {
+    next = {
+      ...next,
+      items: next.items.map((item) => {
+        const holdEligible = /차대번호|도장면|유리|휠|타이어|경고등|등록증|보험/.test(item.title);
+        if (!holdEligible) return item;
+        return {
+          ...item,
+          hold_eligible: true,
+          photo_filename_pattern: 'YYYYMMDD_차량번호_부위_순번.jpg',
+          status: 'check',
+        };
+      }),
+    };
+  }
+
+  return next;
+}
+
 function enrichSeedMeta(bundle: FlowBundle, index: number): FlowBundle {
   const category = bundle.flow.category;
   const needsReviewMeta = sourceNeedsReviewMeta[bundle.flow.slug];
@@ -1994,7 +2137,7 @@ function enrichSeedMeta(bundle: FlowBundle, index: number): FlowBundle {
               ? creatorMeta('생활 행정 노트', '공식자료 큐레이터', '공식 안내를 신청 전 확인 순서로 재구성합니다.', 360 + index * 18, 72 + index * 5)
               : creatorMeta('FLOW 큐레이션팀', '경험 콘텐츠 큐레이터', '반복되는 생활 과제를 실행 가능한 Flow로 정리합니다.', 480 + index * 24, 96 + index * 6);
 
-  return {
+  return applyValidationFixMeta({
     ...bundle,
     flow: {
       ...bundle.flow,
@@ -2002,7 +2145,7 @@ function enrichSeedMeta(bundle: FlowBundle, index: number): FlowBundle {
       ...(bundle.flow.creator_name ? {} : creatorByCategory),
       tags: bundle.flow.tags ?? buildSeedTags(bundle),
     },
-  };
+  });
 }
 
 type CopyPolishConfig = {
