@@ -3,6 +3,7 @@
 ## Context
 - Branch: `design-ref-full-gap-alignment`
 - PR: https://github.com/knhbae/flowme2605/pull/112
+- Latest Vercel preview: https://flowme2605-m08bbz5gg-flowme.vercel.app
 - User asked to apply `my_tests/250526_experiment_checklist.md` broadly, without further approval, then pull/push PR and deploy to Vercel.
 - Do not touch unrelated untracked `design-ref/` or `next_job.md` unless explicitly requested.
 
@@ -25,5 +26,5 @@
   - Mobile checked: `diet-habit-2week`.
 
 ## Remaining For Next Chat
-- If this file is opened after the final commit/deploy, verify the latest PR comment or final Codex message for the final Vercel preview URL.
+- PR #112 has been updated by pushing branch `design-ref-full-gap-alignment`.
 - If more UX polish is requested, focus next on copy density and source-specific labels in the checklist rows, not on adding more artifact surfaces.
