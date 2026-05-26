@@ -34,6 +34,7 @@ export function ObservedSessionNoteIntake({ routes }: ObservedSessionNoteIntakeP
     device: '',
     participantType: '',
     taskRealism: 'realistic simulation',
+    sessionNumber: '1',
     decision: 'no signal',
     artifactNearCta: '',
     stickyFallback: '',
@@ -62,7 +63,7 @@ export function ObservedSessionNoteIntake({ routes }: ObservedSessionNoteIntakeP
           }),
     [draft.route, selectedRoute],
   );
-  const filename = generateObservedSessionNoteFilename(draft.date, draft.route);
+  const filename = generateObservedSessionNoteFilename(draft.date, draft.route, draft.sessionNumber);
   const runSheetFilename = generateObservedSessionRunSheetFilename(draft.route);
 
   function updateDraft<K extends keyof ObservedSessionNoteDraft>(key: K, value: ObservedSessionNoteDraft[K]) {
@@ -162,6 +163,16 @@ export function ObservedSessionNoteIntake({ routes }: ObservedSessionNoteIntakeP
             type="date"
             value={draft.date}
             onChange={(event) => updateDraft('date', event.currentTarget.value)}
+          />
+        </label>
+        <label className="text-sm font-semibold text-blue-950">
+          Session number
+          <input
+            className="mt-1 w-full rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-normal text-gray-900"
+            min="1"
+            type="number"
+            value={draft.sessionNumber}
+            onChange={(event) => updateDraft('sessionNumber', event.currentTarget.value)}
           />
         </label>
       </div>

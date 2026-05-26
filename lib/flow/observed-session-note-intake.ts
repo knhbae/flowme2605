@@ -13,6 +13,7 @@ export type ObservedSessionNoteDraft = {
   device: string;
   participantType: string;
   taskRealism: string;
+  sessionNumber: string;
   decision: ObservedSessionNoteDecision;
   artifactNearCta: string;
   stickyFallback: string;
@@ -37,12 +38,18 @@ function valueOrDash(value: string): string {
   return value.trim() || '-';
 }
 
+function normalizeSessionNumber(value: string): string {
+  const numericValue = Number.parseInt(value, 10);
+  if (!Number.isFinite(numericValue) || numericValue <= 0) return '01';
+  return String(numericValue).padStart(2, '0');
+}
+
 function listItems(items: string[]): string {
   return items.length ? items.map((item) => `- ${item}`).join('\n') : '- -';
 }
 
-export function generateObservedSessionNoteFilename(date: string, route: string): string {
-  return `${valueOrDash(date)}-${valueOrDash(route)}-session-draft.md`;
+export function generateObservedSessionNoteFilename(date: string, route: string, sessionNumber: string): string {
+  return `${valueOrDash(date)}-${valueOrDash(route)}-session-${normalizeSessionNumber(sessionNumber)}.md`;
 }
 
 export function generateObservedSessionRunSheetFilename(route: string): string {
@@ -58,6 +65,7 @@ Route: \`${valueOrDash(draft.route)}\`
 Device: ${valueOrDash(draft.device)}
 Participant type: ${valueOrDash(draft.participantType)}
 Task realism: ${valueOrDash(draft.taskRealism)}
+Session: ${normalizeSessionNumber(draft.sessionNumber)}
 
 ## Export-First Evidence
 

@@ -1486,6 +1486,7 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(sessionIntake.getByRole('combobox', { name: 'Route' })).toBeVisible();
   await expect(sessionIntake.getByRole('combobox', { name: 'Decision' })).not.toContainText('validated');
   await sessionIntake.getByRole('combobox', { name: 'Route' }).selectOption('diet-habit-2week');
+  await sessionIntake.getByRole('spinbutton', { name: 'Session number' }).fill('1');
   await sessionIntake.getByRole('combobox', { name: 'Decision' }).selectOption('friction');
   await sessionIntake.getByLabel('Artifact-near CTA').fill('missed first, found after prompt');
   await sessionIntake.getByLabel('Sticky fallback').fill('used fallback sheet');
@@ -1502,7 +1503,7 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   const noteDownloadPromise = page.waitForEvent('download');
   await sessionIntake.getByRole('button', { name: 'Download note' }).click();
   const noteDownload = await noteDownloadPromise;
-  expect(noteDownload.suggestedFilename()).toMatch(/diet-habit-2week-session-draft\.md$/);
+  expect(noteDownload.suggestedFilename()).toMatch(/diet-habit-2week-session-01\.md$/);
   const runSheetDownloadPromise = page.waitForEvent('download');
   await sessionIntake.getByRole('button', { name: 'Download run sheet' }).click();
   const runSheetDownload = await runSheetDownloadPromise;

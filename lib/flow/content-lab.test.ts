@@ -487,6 +487,7 @@ test('observed-session note intake generates exportable markdown without validat
     device: 'iPhone 15 Safari',
     participantType: 'target user',
     taskRealism: 'real task',
+    sessionNumber: '01',
     decision: 'friction',
     artifactNearCta: 'missed first, found after prompt',
     stickyFallback: 'used fallback sheet',
@@ -497,9 +498,10 @@ test('observed-session note intake generates exportable markdown without validat
 
   assert.match(markdown, /^# Observed Session Note: diet-habit-2week/m);
   assert.equal(
-    generateObservedSessionNoteFilename('2026-05-26', 'diet-habit-2week'),
-    '2026-05-26-diet-habit-2week-session-draft.md',
+    generateObservedSessionNoteFilename('2026-05-26', 'diet-habit-2week', '01'),
+    '2026-05-26-diet-habit-2week-session-01.md',
   );
+  assert.match(markdown, /Session: 01/);
   assert.match(markdown, /Decision: `friction`/);
   assert.match(markdown, /Artifact-near CTA: missed first, found after prompt/);
   assert.match(markdown, /Sticky fallback: used fallback sheet/);
