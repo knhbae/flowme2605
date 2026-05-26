@@ -352,7 +352,8 @@ function TimelineWorkbench({
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 lg:grid-cols-[1fr_1.05fr]">
+      <div className="grid gap-4 lg:grid-cols-[1.05fr_1fr]">
+        <MiniMonthCalendar title="월간 캘린더" eyebrow="월별 달력 preview" month={month} rows={rows} exportActions={exportActions} mobileArtifactLabel={getMobileArtifactLabel(bundle, 'month_calendar')} />
         <div data-testid="artifact-list-card" className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
@@ -383,7 +384,6 @@ function TimelineWorkbench({
             ))}
           </div>
         </div>
-        <MiniMonthCalendar title="월간 캘린더" eyebrow="월별 달력 preview" month={month} rows={rows} exportActions={exportActions} mobileArtifactLabel={getMobileArtifactLabel(bundle, 'month_calendar')} />
       </div>
       {logTables.length ? (
         <div className="grid gap-4">

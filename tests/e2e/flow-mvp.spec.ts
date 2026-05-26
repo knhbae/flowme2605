@@ -1060,6 +1060,17 @@ test('artifact workbench exposes export actions next to the natural artifact', a
   await expect(studyCalendarCard.getByRole('button', { name: '캘린더 받기' })).toBeVisible();
 });
 
+test('moving desktop shows calendar artifact before execution list', async ({ page }) => {
+  await page.goto('/f/moving-d30-basic');
+
+  const workbench = page.getByLabel('Flow artifact workbench');
+  const order = await workbench.locator('[data-testid="artifact-calendar-card"], [data-testid="artifact-list-card"]').evaluateAll((nodes) =>
+    nodes.map((node) => node.getAttribute('data-testid')),
+  );
+
+  expect(order.slice(0, 2)).toEqual(['artifact-calendar-card', 'artifact-list-card']);
+});
+
 test('mobile export sheet remains available from the sticky fallback', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/computer-skills-d30-study');
