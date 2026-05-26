@@ -1471,6 +1471,16 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(observedSessionPrep.getByText('diet-habit-2week')).toBeVisible();
   await expect(observedSessionPrep.getByText('new-car-delivery-check')).toBeVisible();
   await expect(observedSessionPrep.getByText('screenshot targets', { exact: true })).toBeVisible();
+  const observedSessionEvidence = page.getByTestId('observed-session-evidence-panel');
+  await expect(observedSessionEvidence).toBeVisible();
+  await expect(observedSessionEvidence.getByText('Observed-session evidence log', { exact: true })).toBeVisible();
+  await expect(observedSessionEvidence.getByText('1 session note')).toBeVisible();
+  await expect(observedSessionEvidence.getByText('2 not run')).toBeVisible();
+  await expect(observedSessionEvidence.getByText('0 validated')).toBeVisible();
+  await expect(observedSessionEvidence.getByText('no signal', { exact: true })).toBeVisible();
+  await expect(observedSessionEvidence.getByText('computer-skills-d30-study')).toBeVisible();
+  await expect(observedSessionEvidence.getByText('diet-habit-2week')).toBeVisible();
+  await expect(observedSessionEvidence.getByText('new-car-delivery-check')).toBeVisible();
   const uxCleanupBacklog = page.locator('section').filter({ hasText: 'UX Cleanup Backlog' });
   await expect(uxCleanupBacklog).toBeVisible();
   await expect(uxCleanupBacklog.getByText('36 routes')).toBeVisible();

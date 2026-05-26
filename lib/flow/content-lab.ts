@@ -16,6 +16,7 @@ import { summarizeMobileSimulationProtocols } from './mobile-simulation-protocol
 import { summarizeUxCleanupBacklog } from './ux-cleanup-backlog';
 import { summarizeDesignRefGapQueue } from './design-ref-gap-queue';
 import { summarizeObservedSessionPrep } from './observed-session-prep';
+import { summarizeObservedSessionEvidence } from './observed-session-evidence';
 
 export type ExternalTarget = 'calendar' | 'todo' | 'notion' | 'sheet';
 
@@ -375,6 +376,7 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   const representativeUxContentReviewSummary = summarizeRepresentativeUxContentReviews(bundles);
   const mobileSimulationProtocolSummary = summarizeMobileSimulationProtocols(bundles);
   const observedSessionPrepSummary = summarizeObservedSessionPrep(bundles);
+  const observedSessionEvidenceSummary = summarizeObservedSessionEvidence(bundles);
   const uxCleanupBacklogSummary = summarizeUxCleanupBacklog(bundles);
   const designRefGapQueueSummary = summarizeDesignRefGapQueue(bundles);
 
@@ -459,6 +461,16 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     observedSessionPrepSlugs: observedSessionPrepSummary.slugs,
     observedSessionPrepValidatedCount: observedSessionPrepSummary.validatedCount,
     observedSessionPrepRecords: observedSessionPrepSummary.records,
+    observedSessionEvidenceRouteCount: observedSessionEvidenceSummary.routeCount,
+    observedSessionEvidenceSlugs: observedSessionEvidenceSummary.slugs,
+    observedSessionEvidenceSessionCount: observedSessionEvidenceSummary.sessionCount,
+    observedSessionEvidenceNotRunCount: observedSessionEvidenceSummary.notRunCount,
+    observedSessionEvidenceNoSignalCount: observedSessionEvidenceSummary.noSignalCount,
+    observedSessionEvidenceFrictionCount: observedSessionEvidenceSummary.frictionCount,
+    observedSessionEvidenceCandidateSignalCount: observedSessionEvidenceSummary.candidateSignalCount,
+    observedSessionEvidenceValidatedCount: observedSessionEvidenceSummary.validatedCount,
+    observedSessionEvidenceRecords: observedSessionEvidenceSummary.records,
+    observedSessionEvidenceRouteSummaries: observedSessionEvidenceSummary.routeSummaries,
     uxCleanupBacklogTotalGroupCount: uxCleanupBacklogSummary.totalGroupCount,
     uxCleanupBacklogTotalRouteCount: uxCleanupBacklogSummary.totalRouteCount,
     uxCleanupBacklogValidatedCount: uxCleanupBacklogSummary.validatedCount,

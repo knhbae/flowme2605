@@ -440,3 +440,31 @@ test('content lab exposes observed-session prep package without validation claim
     ),
   );
 });
+
+test('content lab exposes observed-session evidence without validation claims', () => {
+  const summary = getContentLabSummary(seedBundles);
+
+  assert.equal(summary.observedSessionEvidenceRouteCount, 3);
+  assert.equal(summary.observedSessionEvidenceSessionCount, 1);
+  assert.equal(summary.observedSessionEvidenceNotRunCount, 2);
+  assert.equal(summary.observedSessionEvidenceNoSignalCount, 1);
+  assert.equal(summary.observedSessionEvidenceCandidateSignalCount, 0);
+  assert.equal(summary.observedSessionEvidenceValidatedCount, 0);
+  assert.deepEqual(summary.observedSessionEvidenceSlugs, [
+    'computer-skills-d30-study',
+    'diet-habit-2week',
+    'new-car-delivery-check',
+  ]);
+
+  const studySummary = summary.observedSessionEvidenceRouteSummaries.find(
+    (record) => record.slug === 'computer-skills-d30-study',
+  );
+  assert.equal(studySummary?.latestDecision, 'no signal');
+  assert.equal(studySummary?.latestSessionId, '2026-05-25-computer-skills-d30-study-session-00-simulated');
+
+  assert.ok(
+    summary.observedSessionEvidenceRecords.every((record) =>
+      record.statusAfterSession.includes('not validated'),
+    ),
+  );
+});
