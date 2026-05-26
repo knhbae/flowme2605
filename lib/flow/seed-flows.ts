@@ -150,8 +150,8 @@ const sourceNeedsReviewMeta: Record<
     source_status: 'needs_review',
     source_precision: 'exact',
     source_checked_at: '2026-05-23',
-    conversion_note: '질병관리청 건강 체중감량 안내 기반 Flow입니다. 단기 감량보다 식사/운동/생활습관 기록 산출물 중심으로 audit했습니다.',
-    primary_destination: 'sheet',
+    conversion_note: '질병관리청 건강 체중감량 안내 중 수면 원칙 하나만 14일 체크로 좁힌 Flow입니다. 포괄 식단/활동 관찰표로 대표하지 않습니다.',
+    primary_destination: 'calendar',
   },
   'samsung-aircon-seasonal-check': {
     source_status: 'needs_review',
@@ -1303,23 +1303,11 @@ const running5kRoutineText = `@주 3회
 - 걷더라도 전체 5km 거리 완주하기
 - 완주 후 통증과 다음 목표 기록하기`;
 
-const dietHabitText = `@매일 관찰
-@주 1회 메모
+const dietHabitText = `@매일 체크
+@14일
 
-## 식사·수면 관찰
-- 아침·점심·저녁과 수면 시간을 관찰표에 남기기
-- 허기, 폭식 유발감, 야식 여부를 메모하기
-- 물 섭취와 늦은 식사 시간을 기록하기
-
-## 활동·컨디션 관찰
-- 오늘 한 활동과 시간을 관찰표에 남기기
-- 무리한 운동 대신 가능했던 활동만 기록하기
-- 활동 후 피로도, 통증, 어지러움을 기록하기
-
-## 중단·상담 관찰
-- 체중보다 식사·수면·활동 패턴을 먼저 보기
-- 무리한 제한으로 폭식 유발감이 생겼는지 확인하기
-- 통증, 어지러움, 폭식 유발감이 반복되면 기록을 멈추고 상담 메모 남기기`;
+## 14일 수면 체크
+- 14일 동안 8시간 이상 자기 체크하기`;
 
 const babyWarning =
   '이 Flow는 제작자 경험 기반의 식단표와 레시피를 시작일 기준으로 정리한 것입니다. 아이의 건강 상태, 알레르기, 시작 시기, 재료 선택은 전문가 또는 공식 정보를 확인하세요. 꿀, 질식 위험 식품, 알레르기 유발 가능 식품은 공식 안전 정보를 우선 확인하세요.';
@@ -1863,7 +1851,7 @@ const creatorInspiredBundles: FlowBundle[] = [
         id: 'flow-new-car-delivery',
         slug: 'new-car-delivery-check',
         title: '신차 인수 점검 Flow',
-        description: '체크 완료보다 사진 파일명, 딜러 확인, 서명 전 보류 조건을 먼저 남기는 신차 인수 증빙 Flow입니다.',
+        description: '신차 인수 현장에서 원문 체크리스트를 따라 확인하고, 이상 시 대응 기준을 서명 전에 분리해 보는 Flow입니다.',
         category: '자동차/구매',
         structure_type: 'checklist',
         content_type: 'default',
@@ -1954,9 +1942,9 @@ const creatorInspiredBundles: FlowBundle[] = [
       {
         id: 'flow-diet-habit',
         slug: 'diet-habit-2week',
-        title: '2주 식사·활동 관찰 Flow',
-        description: '감량 처방이 아니라 2주 동안 식사, 수면, 물, 활동, 컨디션, 중단·상담 신호를 관찰표로 남기는 Flow입니다.',
-        category: '다이어트/기록',
+        title: '2주 수면 체크 Flow',
+        description: '원문 전체를 포괄하지 않고, 14일 동안 늦게 자지 않고 8시간 이상 자기만 매일 체크하는 Flow입니다.',
+        category: '생활/수면',
         structure_type: 'routine',
         content_type: 'default',
         anchor_type: 'start_date',
@@ -1965,7 +1953,7 @@ const creatorInspiredBundles: FlowBundle[] = [
         source_title: '질병관리청 건강하게 체중 감량하기 안내',
         source_url:
           'https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=82',
-        warning: '이 Flow는 감량 처방이 아니라 관찰 기록용입니다. 질환, 임신·수유, 섭식장애 경험, 약물 복용, 어지러움·통증·폭식 유발감이 있으면 기록을 멈추고 전문가 상담을 우선하세요.',
+        warning: '이 Flow는 감량 처방이나 수면 치료가 아니라 14일 수면 체크용입니다. 질환, 임신·수유, 섭식장애 경험, 약물 복용, 어지러움·통증·수면 문제가 반복되면 체크보다 전문가 상담을 우선하세요.',
       },
       dietHabitText,
     ),
@@ -1986,15 +1974,15 @@ const validationFixMeta: Record<string, ValidationFixMeta> = {
     setup_anchor_hint: '실제 시험일을 넣으면 D-30 학습 일정과 D-1 준비 항목이 그 날짜 기준으로 계산됩니다.',
   },
   'diet-habit-2week': {
-    setup_anchor_label: '관찰 시작일',
-    setup_anchor_hint: '처방이나 감량 목표가 아니라 2주간 식사, 수면, 활동, 컨디션을 기록하기 시작하는 날짜입니다.',
+    setup_anchor_label: '체크 시작일',
+    setup_anchor_hint: '처방이나 감량 목표가 아니라 14일 동안 8시간 이상 자기 체크를 시작하는 날짜입니다.',
     stop_conditions: [
-      '어지러움, 통증, 폭식 유발감, 야식 충동이 반복되면 기록을 멈추고 상담 메모를 남깁니다.',
-      '질환, 임신·수유, 섭식장애 경험, 약물 복용 중이면 FLOW 기록보다 전문가 상담을 우선합니다.',
+      '어지러움, 통증, 수면 문제가 반복되면 체크를 멈추고 전문가 상담을 우선합니다.',
+      '질환, 임신·수유, 섭식장애 경험, 약물 복용 중이면 FLOW 체크보다 전문가 상담을 우선합니다.',
     ],
     principles: [
-      '관찰 기록은 처방이나 감량 결과 판단이 아니라 다음 상담이나 자기 점검을 위한 자료입니다.',
-      '식사 제한 성공 여부보다 식사 시간, 수면, 활동, 컨디션 신호를 같은 줄에 남깁니다.',
+      '수면 체크는 처방이나 감량 결과 판단이 아니라 14일 동안 한 가지 생활 규칙을 지켰는지 보는 자료입니다.',
+      '여러 습관을 동시에 관리하지 않고, 잠든 시각과 8시간 이상 수면 여부만 체크합니다.',
     ],
   },
   'new-car-delivery-check': {
@@ -2193,16 +2181,16 @@ const sourceRiskCopyPolish: Record<string, CopyPolishConfig> = {
     riskLevel: 'low',
   },
   'diet-habit-2week': {
-    artifact: '2주 식사·활동·컨디션 관찰표',
-    record: '식사, 수면, 물, 활동, 컨디션, 중단·상담 신호',
-    sourceCheck: '질병관리청의 점진적 체중관리 원칙',
-    boundary: '감량 처방이 아니라 관찰 기록이며, 어지러움·통증·폭식 유발감·질환 우려가 있으면 기록을 멈추고 전문가 상담을 우선합니다.',
+    artifact: '14일 수면 체크표',
+    record: '잠든 시각, 8시간 이상 수면 여부, 다음 날 피로감',
+    sourceCheck: '질병관리청 안내 중 충분한 수면 원칙',
+    boundary: '감량 처방이나 수면 치료가 아니라 수면 체크이며, 어지러움·통증·수면 문제가 반복되면 전문가 상담을 우선합니다.',
     sourceType: 'official',
     riskLevel: 'medical_sensitive',
   },
   'new-car-delivery-check': {
-    artifact: '신차 인수 증빙표',
-    record: '계약 옵션, 사진 파일명, 하자 위치, 딜러 확인, 서명 전 보류 조건',
+    artifact: '신차 인수 현장 체크리스트',
+    record: '계약 옵션, 하자 위치, 사진 파일명, 딜러 확인, 서명 전 보류 조건',
     sourceCheck: '신차 검수 체크리스트의 외관·실내·서류 확인 순서',
     boundary: '하자를 발견하면 서명 또는 인수 확정 전에 사진 파일명, 딜러 확인, 보류 조건을 남깁니다.',
     sourceType: 'reference',

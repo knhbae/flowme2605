@@ -2172,7 +2172,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [itemStates, setItemStates] = useState<Record<string, FlowItemState>>({});
   const [comparisonState, setComparisonState] = useState<FlowComparisonState>(() => getComparisonState(slug));
   const [workbenchState, setWorkbenchState] = useState<FlowWorkbenchState>(() => getWorkbenchState(slug));
-  const [weekdaySelection, setWeekdaySelection] = useState(['월', '수', '금']);
+  const [weekdaySelection, setWeekdaySelection] = useState(() => getInitialWeekdaySelection(bundle));
   const [reactionLogs, setReactionLogs] = useState<Record<string, ReactionLog>>({});
   const [copyState, setCopyState] = useState('');
   const [downloadState, setDownloadState] = useState('');
@@ -2707,7 +2707,7 @@ function getMobileStickyCtaLabel(bundle: FlowBundle, canExportCalendar: boolean,
   }
   if (bundle.flow.slug === 'moving-d30-basic') return '시트·캘린더로 받기';
   if (bundle.flow.slug === 'computer-skills-d30-study') return '시트·캘린더로 받기';
-  if (bundle.flow.slug === 'diet-habit-2week') return '관찰표 .xlsx 받기';
+  if (bundle.flow.slug === 'diet-habit-2week') return '수면 체크표 .xlsx 받기';
   if (bundle.flow.slug === 'new-car-delivery-check') return '증거표 .xlsx 받기';
   if (bundle.flow.primary_destination === 'hybrid') return canExportCalendar ? '시트·캘린더로 받기' : '시트·메모로 받기';
   if (bundle.flow.primary_destination === 'calendar' || canExportCalendar) return '캘린더 .ics 받기';
@@ -2926,6 +2926,12 @@ function getWeekdaySelectionLabel(bundle: FlowBundle): string {
   if (bundle.flow.slug.startsWith('real-fitvely-video-')) return '적용 요일';
   if (bundle.flow.category.includes('운동')) return '운동 요일';
   return '반복 요일';
+}
+
+function getInitialWeekdaySelection(bundle: FlowBundle | null): string[] {
+  if (!bundle) return ['월', '수', '금'];
+  if (bundle.flow.structure_type !== 'routine') return ['월', '수', '금'];
+  return getRoutineWeekdayLabels(bundle.repeatRules?.[0] ?? '', []);
 }
 
 function getEmbeddedToolCopy(destination: PrimaryDestination): {

@@ -286,13 +286,6 @@ const childcareSupportComparisonRows: ArtifactComparisonRow[] = [
   { id: 'childcare-support-first-visit-docs', title: '첫 방문 서류와 준비물' },
 ];
 
-const newCarDeliveryComparisonRows: ArtifactComparisonRow[] = [
-  { id: 'new-car-exterior-interior', title: '외관/실내 하자와 사진 파일명' },
-  { id: 'new-car-electronics-options', title: '전자장비·옵션 작동과 영상 파일명' },
-  { id: 'new-car-documents', title: '등록/보험/인수 서류 확인 상태' },
-  { id: 'new-car-defect-dealer-confirmation', title: '딜러 확인과 서명 전 보류 조건' },
-];
-
 const newCarDeliveryMemoFields: ArtifactMemoField[] = [
   {
     id: 'new-car-delivery-place',
@@ -771,13 +764,6 @@ export function getComparisonConfig(bundle: FlowBundle): ArtifactComparisonConfi
       title: '시간제보육 이용 조건 비교표',
       eyebrow: '기관/예약 비교',
       rows: childcareSupportComparisonRows,
-    };
-  }
-  if (newCarDeliverySlugs.has(bundle.flow.slug)) {
-    return {
-      title: '인수 전 하자·증빙표',
-      eyebrow: '사진·딜러 확인',
-      rows: newCarDeliveryComparisonRows,
     };
   }
   if (usedCarSlugs.has(bundle.flow.slug)) {

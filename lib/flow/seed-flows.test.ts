@@ -270,40 +270,42 @@ test('computer skills study items are written as sequence actions', () => {
   }
 });
 
-test('diet habit route is framed as an observation sheet, not a diet prescription', () => {
+test('diet habit route is reduced to one 14-day sleep check rule', () => {
   const diet = seedBundles.find((entry) => entry.flow.slug === 'diet-habit-2week');
 
   assert.ok(diet);
-  assert.equal(diet.flow.title, '2주 식사·활동 관찰 Flow');
-  assert.match(diet.flow.description, /감량 처방이 아니라/);
-  assert.match(diet.flow.warning ?? '', /감량 처방이 아니라 관찰 기록용/);
-  assert.match(diet.flow.warning ?? '', /어지러움|통증|폭식 유발감/);
-  assert.ok(diet.sections.some((section) => section.title.includes('관찰')));
-  assert.ok(diet.flow.stop_conditions?.some((condition) => condition.includes('어지러움') || condition.includes('폭식')));
+  assert.equal(diet.flow.title, '2주 수면 체크 Flow');
+  assert.match(diet.flow.description, /8시간 이상 자기/);
+  assert.equal(diet.sections.length, 1);
+  assert.equal(diet.items.length, 1);
+  assert.equal(diet.items[0]?.title, '14일 동안 8시간 이상 자기 체크하기');
+  assert.deepEqual(diet.repeatRules, ['매일 체크', '14일']);
+  assert.match(diet.flow.warning ?? '', /감량 처방|치료/);
   assert.ok(
     diet.itemDetails?.every((detail) =>
-      `${detail.why} ${detail.how} ${detail.completion_criteria} ${detail.caution ?? ''}`.includes('관찰표'),
+      `${detail.why} ${detail.how} ${detail.completion_criteria} ${detail.caution ?? ''}`.includes('수면 체크표'),
     ),
   );
 
   for (const item of diet.items) {
-    assert.doesNotMatch(item.title, /스쿼트|푸시업|플랭크/);
-    assert.doesNotMatch(item.description ?? '', /스쿼트|푸시업|플랭크/);
+    assert.doesNotMatch(item.title, /식사|물|컨디션|운동/);
+    assert.doesNotMatch(item.description ?? '', /식사|물|컨디션|운동/);
   }
 });
 
-test('new car route is framed around evidence before handover signing', () => {
+test('new car route stays a field checklist with abnormal-response detail', () => {
   const newCar = seedBundles.find((entry) => entry.flow.slug === 'new-car-delivery-check');
 
   assert.ok(newCar);
-  assert.match(newCar.flow.description, /사진 파일명|딜러 확인|서명 전 보류/);
+  assert.match(newCar.flow.description, /현장 체크리스트|이상 시 대응/);
   assert.match(newCar.flow.warning ?? '', /서명|인수 확정/);
+  assert.ok(newCar.items.length >= 8);
 
   const detailText = newCar.itemDetails
     ?.map((detail) => `${detail.why} ${detail.how} ${detail.completion_criteria} ${detail.caution ?? ''}`)
     .join('\n') ?? '';
-  assert.match(detailText, /신차 인수 증빙표/);
-  assert.match(detailText, /사진|딜러 확인|서명/);
+  assert.match(detailText, /이상 시|딜러 확인|서명/);
+  assert.match(detailText, /현장 체크리스트|사진/);
 });
 
 test('used car route warns that the checklist does not guarantee vehicle condition', () => {
@@ -317,7 +319,7 @@ test('used car route warns that the checklist does not guarantee vehicle conditi
 test('validation fix routes expose route-specific setup anchors and safety metadata', () => {
   const expectedAnchors = [
     ['computer-skills-d30-study', '시험일'],
-    ['diet-habit-2week', '관찰 시작일'],
+    ['diet-habit-2week', '체크 시작일'],
     ['new-car-delivery-check', '인수일 기록'],
     ['moving-d30-basic', '이사일'],
     ['baby-food-menu-recipe', '이유식 시작일'],
@@ -353,8 +355,8 @@ test('validation fix routes expose route-specific setup anchors and safety metad
     stop_conditions?: string[];
     principles?: string[];
   };
-  assert.ok(dietFlow.stop_conditions?.some((condition) => condition.includes('어지러움') || condition.includes('폭식')));
-  assert.ok(dietFlow.principles?.some((principle) => principle.includes('관찰') && principle.includes('처방')));
+  assert.ok(dietFlow.stop_conditions?.some((condition) => condition.includes('어지러움') || condition.includes('치료')));
+  assert.ok(dietFlow.principles?.some((principle) => principle.includes('수면') && principle.includes('처방')));
   assert.ok(!diet.items.some((item) => item.title.includes('중단') || item.title.includes('상담')), 'stop/consult guidance should not be a checklist item');
 
   const newCarFlow = newCar.flow as typeof newCar.flow & {
@@ -478,7 +480,7 @@ test('existing pilot flows use upgraded source metadata and matching detail link
     },
     {
       slug: 'diet-habit-2week',
-      category: '다이어트/기록',
+      category: '생활/수면',
       source_title: '질병관리청 건강하게 체중 감량하기 안내',
       source_url:
         'https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=82',

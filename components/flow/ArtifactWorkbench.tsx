@@ -658,22 +658,24 @@ function MiniMonthCalendar({
 function RoutineOccurrenceCalendar({
   month,
   rows,
+  weekCount,
   workbenchState,
   onWorkbenchChange,
   exportActions,
 }: {
   month: string;
   rows: ScheduleRow[];
+  weekCount: number;
   workbenchState: FlowWorkbenchState;
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
   exportActions?: ArtifactExportActions;
 }) {
-  const visibleRows = rows.slice(0, 12);
-  const occurrenceSummary = `4주 ${visibleRows.length}회차`;
+  const visibleRows = rows;
+  const occurrenceSummary = `${weekCount}주 ${visibleRows.length}회차`;
   const firstDate = visibleRows[0]?.startDate ?? formatDate(new Date());
   const first = new Date(firstDate);
   const currentRow = visibleRows.find((row) => !workbenchState.occurrences[row.id]?.done) ?? visibleRows[0];
-  const weekRows = [0, 1, 2, 3].map((weekIndex) =>
+  const weekRows = Array.from({ length: weekCount }, (_, weekIndex) =>
     routineGridWeekdayOrder.map((weekday) =>
       visibleRows.find((row) => {
         const diff = Math.floor((new Date(row.startDate).getTime() - first.getTime()) / 86400000);
@@ -683,12 +685,12 @@ function RoutineOccurrenceCalendar({
   );
 
   return (
-    <section aria-label="반복 캘린더 미리보기" data-testid="artifact-calendar-card" className="rounded-lg border border-gray-200 bg-white p-4">
+    <section aria-label="반복 캘린더 미리보기" data-testid="artifact-calendar-card" className="min-w-0 rounded-lg border border-gray-200 bg-white p-4">
       <div data-testid="routine-session-grid-card">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="text-sm font-semibold text-blue-700">회차 그리드 · primary</p>
-            <h3 className="text-base font-semibold text-gray-950">4주 루틴 · {visibleRows.length}회 회차</h3>
+            <h3 className="text-base font-semibold text-gray-950">{occurrenceSummary} 루틴</h3>
             <p className="mt-1 text-sm text-gray-600">주차와 요일별 회차를 먼저 보고, 각 회차를 캘린더와 시트로 가져갑니다.</p>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
@@ -759,24 +761,30 @@ function RoutineOccurrenceCalendar({
 }
 
 function RoutineSessionLogCard({
+  bundle,
   rows,
   workbenchState,
   onWorkbenchChange,
   exportActions,
 }: {
+  bundle: FlowBundle;
   rows: ScheduleRow[];
   workbenchState: FlowWorkbenchState;
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
   exportActions?: ArtifactExportActions;
 }) {
   const visibleRows = rows.slice(0, 8);
+  const isSleepCheck = bundle.flow.slug === 'diet-habit-2week';
+  const valueLabel = isSleepCheck ? '수면 여부' : '세트/강도';
   return (
-    <section data-testid="routine-session-log-card" className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+    <section data-testid="routine-session-log-card" className="min-w-0 rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-sm font-semibold text-blue-700">회차 기록표 · secondary</p>
           <h3 className="mt-1 text-base font-semibold text-gray-950">지난 회차 기록</h3>
-          <p className="mt-1 text-sm text-gray-600">각 회차가 끝나면 세트/강도와 한 줄 메모를 시트로 남깁니다.</p>
+          <p className="mt-1 text-sm text-gray-600">
+            {isSleepCheck ? '각 날짜가 끝나면 8시간 이상 수면 여부와 한 줄 메모를 남깁니다.' : '각 회차가 끝나면 세트/강도와 한 줄 메모를 시트로 남깁니다.'}
+          </p>
         </div>
         <ArtifactExportButtons
           actions={exportActions}
@@ -791,7 +799,7 @@ function RoutineSessionLogCard({
             <tr>
               <th className="px-3 py-2">날짜</th>
               <th className="px-3 py-2">회차</th>
-              <th className="px-3 py-2">세트/강도</th>
+              <th className="px-3 py-2">{valueLabel}</th>
               <th className="px-3 py-2">완료</th>
               <th className="px-3 py-2">한 줄 메모</th>
             </tr>
@@ -805,9 +813,9 @@ function RoutineSessionLogCard({
                   <td className="px-3 py-2 font-semibold text-gray-900">{row.title}</td>
                   <td className="px-3 py-2">
                     <input
-                      aria-label={`세트/강도: ${row.title}`}
+                      aria-label={`${valueLabel}: ${row.title}`}
                       className="w-full rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
-                      placeholder="예: 20분 / RPE 7"
+                      placeholder={isSleepCheck ? '예: 8시간 이상 / 23:30 취침' : '예: 20분 / RPE 7'}
                       value={workbenchState.logRows[row.id]?.intensity ?? ''}
                       onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, row.id, 'intensity', event.currentTarget.value))}
                     />
@@ -825,7 +833,7 @@ function RoutineSessionLogCard({
                     <input
                       aria-label={`회차 메모: ${row.title}`}
                       className="w-full rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
-                      placeholder="컨디션, 조정한 강도, 다음 회차 메모"
+                      placeholder={isSleepCheck ? '다음 날 피로감, 방해 요인, 내일 수면 메모' : '컨디션, 조정한 강도, 다음 회차 메모'}
                       value={state.note ?? ''}
                       onChange={(event) => onWorkbenchChange(updateOccurrenceNote(workbenchState, row.id, event.currentTarget.value))}
                     />
@@ -1408,7 +1416,8 @@ function RoutineWorkbench({
 }) {
   const startDate = anchor || formatDate(nextMonday(new Date()));
   const selectedWeekdays = weekdays.length ? weekdays : inferWeekdays(bundle.repeatRules?.[0] ?? '');
-  const occurrences = expandRoutineOccurrences(startDate, selectedWeekdays, 4);
+  const weekCount = getRoutineWeekCount(bundle);
+  const occurrences = expandRoutineOccurrences(startDate, selectedWeekdays, weekCount);
   const month = occurrences[0]?.date.slice(0, 7) ?? startDate.slice(0, 7);
   const rows = occurrences.map((occurrence) => ({
     id: occurrenceKey(occurrence),
@@ -1421,15 +1430,16 @@ function RoutineWorkbench({
   const nextKey = next ? occurrenceKey(next) : '';
   const nextLabel = next ? `${next.sessionIndex}회차` : '';
   const nextState = nextKey ? workbenchState.occurrences[nextKey] ?? {} : {};
+  const isSleepCheck = bundle.flow.slug === 'diet-habit-2week';
   const sessionItems = bundle.items.slice(0, 5);
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1.12fr_0.88fr]">
-      <div className="order-2 grid gap-4 lg:order-1">
-        <RoutineOccurrenceCalendar month={month} rows={rows} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
-        <RoutineSessionLogCard rows={rows} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
+      <div className="order-2 grid min-w-0 gap-4 lg:order-1">
+        <RoutineOccurrenceCalendar month={month} rows={rows} weekCount={weekCount} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
+        <RoutineSessionLogCard bundle={bundle} rows={rows} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
       </div>
-      <div data-testid="routine-today-session-card" className="order-1 rounded-lg border border-gray-200 bg-[#FAFAF8] p-4 lg:order-2">
+      <div data-testid="routine-today-session-card" className="order-1 min-w-0 rounded-lg border border-gray-200 bg-[#FAFAF8] p-4 lg:order-2">
         <p className="text-sm font-semibold text-blue-700">이번 주 요약</p>
         <h3 className="mt-1 text-base font-semibold text-gray-950">다음 회차</h3>
         <p className="mt-2 text-sm text-gray-600">오늘 바로 볼 회차와 실행 항목을 오른쪽에 고정해 둡니다.</p>
@@ -1466,7 +1476,7 @@ function RoutineWorkbench({
             <textarea
               aria-label={`다음 세션 메모: ${nextLabel}`}
               className="mt-3 min-h-20 w-full resize-y rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-800"
-              placeholder="오늘 컨디션, 조정할 강도, 다음 회차 메모"
+              placeholder={isSleepCheck ? '잠든 시각, 8시간 이상 여부, 다음 날 피로감' : '오늘 컨디션, 조정할 강도, 다음 회차 메모'}
               value={nextState.note ?? ''}
               onChange={(event) => onWorkbenchChange(updateOccurrenceNote(workbenchState, nextKey, event.currentTarget.value))}
             />
@@ -1486,10 +1496,16 @@ function RoutineWorkbench({
 }
 
 function inferWeekdays(repeatLabel: string): string[] {
+  if (repeatLabel.includes('매일 체크')) return routineGridWeekdayOrder;
   if (repeatLabel.includes('매일')) return ['월', '화', '수', '목', '금'];
   if (repeatLabel.includes('월') || repeatLabel.includes('수') || repeatLabel.includes('금')) return ['월', '수', '금'];
   if (repeatLabel.includes('화') || repeatLabel.includes('목')) return ['화', '목', '토'];
   return ['월', '수', '금'];
+}
+
+function getRoutineWeekCount(bundle: FlowBundle): number {
+  if (bundle.repeatRules?.some((rule) => rule.includes('14일'))) return 2;
+  return 4;
 }
 
 function nextMonday(date: Date): Date {

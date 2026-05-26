@@ -72,19 +72,7 @@ test('source replacement and risk review routes expose review-specific artifact 
     note: '시험일까지 먼저 배치하고 약한 단원만 조정',
   });
 
-  assert.deepEqual(
-    getComparisonConfig(bundle('new-car-delivery-check'))?.rows.map((row) => row.id),
-    ['new-car-exterior-interior', 'new-car-electronics-options', 'new-car-documents', 'new-car-defect-dealer-confirmation'],
-  );
-  const newCarComparison = getComparisonConfig(bundle('new-car-delivery-check'));
-  assert.equal(newCarComparison?.title, '인수 전 하자·증빙표');
-  assert.equal(newCarComparison?.eyebrow, '사진·딜러 확인');
-  assert.deepEqual(newCarComparison?.rows.map((row) => row.title), [
-    '외관/실내 하자와 사진 파일명',
-    '전자장비·옵션 작동과 영상 파일명',
-    '등록/보험/인수 서류 확인 상태',
-    '딜러 확인과 서명 전 보류 조건',
-  ]);
+  assert.equal(getComparisonConfig(bundle('new-car-delivery-check')), undefined);
 
   assert.deepEqual(
     getMemoCardFields(bundle('new-car-delivery-check')).map((field) => field.id),

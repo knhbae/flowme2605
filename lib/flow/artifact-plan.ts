@@ -46,7 +46,8 @@ const decisionToHandling = {
   replace_or_hide_source: 'catalog_review',
 } as const;
 
-const decisionTableOverrideSlugs = new Set(['driver-license-renewal-check', 'new-car-delivery-check']);
+const decisionTableOverrideSlugs = new Set(['driver-license-renewal-check']);
+const checklistOverrideSlugs = new Set(['new-car-delivery-check']);
 const workoutProgrammingDecisionSlugs = new Set([
   'real-fitvely-video-bulk-up-method',
   'real-fitvely-video-workout-order',
@@ -63,7 +64,7 @@ const memoCardOverrideSlugs = new Set([
   'passport-renewal-docs',
   'real-mofa-overseas-travel-prep',
 ]);
-const spreadsheetOverrideSlugs = new Set(['diet-habit-2week', 'diet-meal-exercise-log', 'diet-reset-2week']);
+const spreadsheetOverrideSlugs = new Set(['diet-meal-exercise-log', 'diet-reset-2week']);
 
 function hasArtifact(bundle: FlowBundle, kind: string) {
   const audit = getNaturalArtifactAudit(bundle.flow.slug);
@@ -80,6 +81,7 @@ function getPrimarySurface(bundle: FlowBundle, model = normalizeExecutionModel(b
   const audit = getNaturalArtifactAudit(bundle.flow.slug);
   if (bundle.flow.content_type === 'meal_plan') return 'meal_reaction_log';
   if (bundle.flow.slug === 'used-car-buying-check') return 'decision_table';
+  if (checklistOverrideSlugs.has(bundle.flow.slug)) return 'checklist';
   if (decisionTableOverrideSlugs.has(bundle.flow.slug)) return 'decision_table';
   if (workoutProgrammingDecisionSlugs.has(bundle.flow.slug)) return 'decision_table';
   if (memoCardOverrideSlugs.has(bundle.flow.slug)) return 'memo_card';
