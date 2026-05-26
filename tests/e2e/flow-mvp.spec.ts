@@ -1151,6 +1151,20 @@ test('mobile workbench exposes destination CTAs on the first artifact cards', as
   await expect(comparisonCard.getByTestId('mobile-artifact-export-excel')).toHaveAttribute('aria-label', /시트로 받기: .*인수 증거표/);
 });
 
+test('mobile log artifacts show a summary card before dense tables', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/diet-habit-2week');
+
+  const logCard = page.getByLabel('Flow artifact workbench').getByTestId('artifact-log-table-spreadsheet');
+  await expect(logCard.getByTestId('mobile-artifact-summary-card')).toBeVisible();
+
+  const order = await logCard.locator('[data-testid="mobile-artifact-summary-card"], table').evaluateAll((nodes) =>
+    nodes.map((node) => (node as HTMLElement).dataset.testid ?? node.tagName.toLowerCase()),
+  );
+
+  expect(order.slice(0, 2)).toEqual(['mobile-artifact-summary-card', 'table']);
+});
+
 test('study progress table exposes source-derived guard metadata', async ({ page }) => {
   await page.goto('/f/computer-skills-d30-study');
 

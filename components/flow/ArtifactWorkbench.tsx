@@ -964,6 +964,7 @@ function LogTableCard({
         </div>
         <ArtifactExportStatus actions={exportActions} />
         <p className="mt-2 text-sm leading-6 text-gray-600">{table.description}</p>
+        <MobileLogSummaryCard table={table} />
       </div>
       <table className="min-w-[760px] text-left text-sm">
         <thead className="bg-gray-50 text-xs font-semibold text-gray-600">
@@ -1007,6 +1008,29 @@ function LogTableCard({
           ))}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+function MobileLogSummaryCard({ table }: { table: ArtifactLogTable }) {
+  const firstRow = table.rows[0];
+  const previewColumns = table.columns.slice(0, 3);
+
+  if (!firstRow) return null;
+
+  return (
+    <div data-testid="mobile-artifact-summary-card" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3 md:hidden">
+      <p className="text-xs font-semibold uppercase text-blue-700">mobile summary</p>
+      <h4 className="mt-1 text-sm font-semibold text-gray-950">{firstRow.label}</h4>
+      <dl className="mt-2 grid gap-2 text-sm">
+        {previewColumns.map((column) => (
+          <div key={column.id} className="rounded-md bg-white px-3 py-2">
+            <dt className="text-xs font-semibold text-gray-500">{column.label}</dt>
+            <dd className="mt-1 text-gray-800">{firstRow.defaultValues?.[column.id] || column.placeholder || '-'}</dd>
+          </div>
+        ))}
+      </dl>
+      <p className="mt-2 text-xs font-medium text-blue-800">전체 행은 아래 표에서 확인하고, 기록은 시트로 받을 수 있습니다.</p>
     </div>
   );
 }
@@ -1419,6 +1443,7 @@ function SpreadsheetWorkbench({
           </div>
           <ArtifactExportStatus actions={exportActions} />
           <p className="mt-2 text-sm leading-6 text-gray-600">{description}</p>
+          <MobileSpreadsheetSummaryCard date={rows[0]} columns={spreadsheetColumns} bundle={bundle} />
         </div>
         <table className="min-w-[760px] text-left text-sm">
           <thead className="bg-gray-50 text-xs font-semibold text-gray-600">
@@ -1472,6 +1497,27 @@ function SpreadsheetWorkbench({
           onChange={(event) => onWorkbenchChange(updateWeeklyReview(workbenchState, event.currentTarget.value))}
         />
       </div>
+    </div>
+  );
+}
+
+function MobileSpreadsheetSummaryCard({ date, columns, bundle }: { date: string; columns: string[]; bundle: FlowBundle }) {
+  const previewColumns = columns.slice(0, 3);
+  const title = bundle.flow.slug === 'diet-habit-2week' ? '오늘 관찰 행' : '오늘 기록 행';
+
+  return (
+    <div data-testid="mobile-artifact-summary-card" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3 md:hidden">
+      <p className="text-xs font-semibold uppercase text-blue-700">mobile summary</p>
+      <h4 className="mt-1 text-sm font-semibold text-gray-950">{title} · {date}</h4>
+      <dl className="mt-2 grid gap-2 text-sm">
+        {previewColumns.map((column) => (
+          <div key={column} className="rounded-md bg-white px-3 py-2">
+            <dt className="text-xs font-semibold text-gray-500">{column}</dt>
+            <dd className="mt-1 text-gray-800">{spreadsheetPlaceholder(column)}</dd>
+          </div>
+        ))}
+      </dl>
+      <p className="mt-2 text-xs font-medium text-blue-800">전체 행은 아래 표에서 확인하고, 기록은 시트로 받을 수 있습니다.</p>
     </div>
   );
 }
