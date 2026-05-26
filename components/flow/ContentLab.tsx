@@ -484,7 +484,7 @@ export function ContentLab() {
         <h2 className="mt-1 text-2xl font-semibold text-gray-950">Export-first loop evidence</h2>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
           This board tracks actual session notes separately from prep and internal simulation. Current entries are
-          allowed to say no signal or not run, but they do not mark any route as validated.
+          allowed to say no signal, friction, or candidate signal, but they do not mark any route as validated.
         </p>
         <div className="mt-5 grid gap-3 sm:grid-cols-4">
           <div className="rounded-lg bg-gray-50 p-3 text-gray-950">
@@ -499,9 +499,11 @@ export function ContentLab() {
             <p className="text-sm text-amber-800">Not run</p>
             <p className="mt-1 text-2xl font-semibold">{summary.observedSessionEvidenceNotRunCount} not run</p>
           </div>
-          <div className="rounded-lg bg-red-50 p-3 text-red-950">
-            <p className="text-sm text-red-800">Validation</p>
-            <p className="mt-1 text-2xl font-semibold">{summary.observedSessionEvidenceValidatedCount} validated</p>
+          <div className="rounded-lg bg-green-50 p-3 text-green-950">
+            <p className="text-sm text-green-800">Candidate signals</p>
+            <p className="mt-1 text-2xl font-semibold">
+              {summary.observedSessionEvidenceCandidateSignalCount} candidate signals
+            </p>
           </div>
         </div>
         <div className="mt-5 grid gap-3 lg:grid-cols-3">

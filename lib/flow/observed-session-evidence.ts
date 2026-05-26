@@ -1,6 +1,13 @@
 import type { FlowBundle } from './types';
 
-export type ObservedSessionDecision = 'not run' | 'no signal' | 'friction' | 'candidate signal' | 'validated candidate';
+export const observedSessionEvidenceDecisionOptions = [
+  'not run',
+  'no signal',
+  'friction',
+  'candidate signal',
+] as const;
+
+export type ObservedSessionDecision = (typeof observedSessionEvidenceDecisionOptions)[number];
 
 export type ObservedSessionEvidenceRecord = {
   id: string;
@@ -40,7 +47,6 @@ export type ObservedSessionEvidenceSummary = {
   noSignalCount: number;
   frictionCount: number;
   candidateSignalCount: number;
-  validatedCount: number;
   records: ObservedSessionEvidenceRecord[];
   routeSummaries: ObservedSessionRouteSummary[];
 };
@@ -111,7 +117,6 @@ export function summarizeObservedSessionEvidence(
     noSignalCount: records.filter((record) => record.decision === 'no signal').length,
     frictionCount: records.filter((record) => record.decision === 'friction').length,
     candidateSignalCount: records.filter((record) => record.decision === 'candidate signal').length,
-    validatedCount: records.filter((record) => record.decision === 'validated candidate').length,
     records,
     routeSummaries,
   };

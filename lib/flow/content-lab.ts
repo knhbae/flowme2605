@@ -468,7 +468,6 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     observedSessionEvidenceNoSignalCount: observedSessionEvidenceSummary.noSignalCount,
     observedSessionEvidenceFrictionCount: observedSessionEvidenceSummary.frictionCount,
     observedSessionEvidenceCandidateSignalCount: observedSessionEvidenceSummary.candidateSignalCount,
-    observedSessionEvidenceValidatedCount: observedSessionEvidenceSummary.validatedCount,
     observedSessionEvidenceRecords: observedSessionEvidenceSummary.records,
     observedSessionEvidenceRouteSummaries: observedSessionEvidenceSummary.routeSummaries,
     uxCleanupBacklogTotalGroupCount: uxCleanupBacklogSummary.totalGroupCount,

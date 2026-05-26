@@ -1476,7 +1476,8 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(observedSessionEvidence.getByText('Observed-session evidence log', { exact: true })).toBeVisible();
   await expect(observedSessionEvidence.getByText('1 session note')).toBeVisible();
   await expect(observedSessionEvidence.getByText('2 not run')).toBeVisible();
-  await expect(observedSessionEvidence.getByText('0 validated')).toBeVisible();
+  await expect(observedSessionEvidence.getByText('0 candidate signals')).toBeVisible();
+  await expect(observedSessionEvidence.getByText('0 validated', { exact: true })).toHaveCount(0);
   await expect(observedSessionEvidence.locator('span').filter({ hasText: 'no signal' })).toBeVisible();
   await expect(observedSessionEvidence.locator('article').filter({ hasText: 'computer-skills-d30-study' })).toBeVisible();
   await expect(observedSessionEvidence.locator('article').filter({ hasText: 'diet-habit-2week' })).toBeVisible();

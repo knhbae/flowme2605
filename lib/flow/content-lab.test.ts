@@ -31,6 +31,7 @@ import {
   generateObservedSessionNoteMarkdown,
   observedSessionNoteDecisionOptions,
 } from './observed-session-note-intake';
+import { observedSessionEvidenceDecisionOptions } from './observed-session-evidence';
 import { seedBundles } from './seed-flows';
 
 const expectedConvertedPilotSlugs = [
@@ -452,12 +453,19 @@ test('content lab exposes observed-session prep package without validation claim
 test('content lab exposes observed-session evidence without validation claims', () => {
   const summary = getContentLabSummary(seedBundles);
 
+  assert.deepEqual(observedSessionEvidenceDecisionOptions, [
+    'not run',
+    'no signal',
+    'friction',
+    'candidate signal',
+  ]);
+  assert.equal(observedSessionEvidenceDecisionOptions.includes('validated candidate'), false);
   assert.equal(summary.observedSessionEvidenceRouteCount, 3);
   assert.equal(summary.observedSessionEvidenceSessionCount, 1);
   assert.equal(summary.observedSessionEvidenceNotRunCount, 2);
   assert.equal(summary.observedSessionEvidenceNoSignalCount, 1);
   assert.equal(summary.observedSessionEvidenceCandidateSignalCount, 0);
-  assert.equal(summary.observedSessionEvidenceValidatedCount, 0);
+  assert.equal('observedSessionEvidenceValidatedCount' in summary, false);
   assert.deepEqual(summary.observedSessionEvidenceSlugs, [
     'computer-skills-d30-study',
     'diet-habit-2week',
