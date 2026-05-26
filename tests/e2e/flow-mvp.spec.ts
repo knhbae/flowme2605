@@ -1403,6 +1403,16 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(uxCleanupBacklog.getByText('exact_workout_video_execution_detail')).toBeVisible();
   await expect(uxCleanupBacklog.getByText('health_observation_guardrail')).toBeVisible();
   await expect(uxCleanupBacklog.getByText('vehicle_purchase_evidence_first')).toBeVisible();
+  const designRefGapQueue = page.getByTestId('design-ref-gap-queue-panel');
+  await expect(designRefGapQueue).toBeVisible();
+  await expect(designRefGapQueue.getByText('Design-ref gap queue')).toBeVisible();
+  await expect(designRefGapQueue.getByText('8 items')).toBeVisible();
+  await expect(designRefGapQueue.getByText('4 landed')).toBeVisible();
+  await expect(designRefGapQueue.getByText('4 pending')).toBeVisible();
+  await expect(designRefGapQueue.getByText('3 P1 pending')).toBeVisible();
+  await expect(designRefGapQueue.getByText('0 validated')).toBeVisible();
+  await expect(designRefGapQueue.getByText('desktop-reference-rail-generalization')).toBeVisible();
+  await expect(designRefGapQueue.getByText('mobile-baby-food-reaction-summary')).toBeVisible();
   const exportFirstSimulation = page.locator('section').filter({ hasText: 'Export-first Simulation' });
   await expect(exportFirstSimulation).toBeVisible();
   await expect(exportFirstSimulation.getByText('Final QA candidate', { exact: true }).first()).toBeVisible();

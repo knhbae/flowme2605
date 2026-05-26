@@ -113,6 +113,7 @@
 - Moving desktop right-rail pass has landed: `moving-d30-basic` now keeps source context in a desktop rail beside the artifact workbench while mobile keeps source context below the main flow. No route is called validated.
 - Mobile log summary-card pass has landed: log-table and spreadsheet-first artifacts now show a compact mobile summary before dense tables, starting with `diet-habit-2week`. No route is called validated.
 - Mobile comparison summary-card pass has landed: `new-car-delivery-check` and `used-car-buying-check` now show a compact comparison summary before dense mobile comparison grids. No route is called validated.
+- Design-ref gap queue has landed in Content Lab: landed vs pending alignment work is now tracked with 8 queue items, 3 P1 pending items, and 0 validated routes so future layout/content batches do not rely on chat-only memory.
 
 ## Next Up
 

@@ -14,6 +14,7 @@ import { summarizeUxContentSimplificationAudits } from './ux-content-simplificat
 import { summarizeRepresentativeUxContentReviews } from './representative-ux-content-review';
 import { summarizeMobileSimulationProtocols } from './mobile-simulation-protocol';
 import { summarizeUxCleanupBacklog } from './ux-cleanup-backlog';
+import { summarizeDesignRefGapQueue } from './design-ref-gap-queue';
 
 export type ExternalTarget = 'calendar' | 'todo' | 'notion' | 'sheet';
 
@@ -373,6 +374,7 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   const representativeUxContentReviewSummary = summarizeRepresentativeUxContentReviews(bundles);
   const mobileSimulationProtocolSummary = summarizeMobileSimulationProtocols(bundles);
   const uxCleanupBacklogSummary = summarizeUxCleanupBacklog(bundles);
+  const designRefGapQueueSummary = summarizeDesignRefGapQueue(bundles);
 
   return {
     pilotCreatorCount: pilotCreatorLabs.length,
@@ -457,5 +459,13 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     uxCleanupBacklogPriorityCounts: uxCleanupBacklogSummary.priorityCounts,
     uxCleanupBacklogFirstBatchGroupIds: uxCleanupBacklogSummary.firstBatchGroupIds,
     uxCleanupBacklogGroups: uxCleanupBacklogSummary.groups,
+    designRefGapQueueTotalCount: designRefGapQueueSummary.totalCount,
+    designRefGapQueueLandedCount: designRefGapQueueSummary.landedCount,
+    designRefGapQueuePendingCount: designRefGapQueueSummary.pendingCount,
+    designRefGapQueueP1PendingCount: designRefGapQueueSummary.p1PendingCount,
+    designRefGapQueueValidatedCount: designRefGapQueueSummary.validatedCount,
+    designRefGapQueueItems: designRefGapQueueSummary.items,
+    designRefGapQueueLandedItems: designRefGapQueueSummary.landedItems,
+    designRefGapQueuePendingItems: designRefGapQueueSummary.pendingItems,
   };
 }

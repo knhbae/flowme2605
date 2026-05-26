@@ -485,6 +485,81 @@ export function ContentLab() {
         </div>
       </section>
 
+      <section data-testid="design-ref-gap-queue-panel" className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
+        <p className="text-sm font-semibold text-blue-700">Design-ref gap queue</p>
+        <h2 className="mt-1 text-2xl font-semibold text-gray-950">Reference alignment status</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+          This queue separates UI work already landed from the remaining design-ref gaps. Landed means implemented in
+          the current product surface; it does not mean validated by user behavior.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-5">
+          <div className="rounded-lg bg-gray-50 p-3 text-gray-950">
+            <p className="text-sm text-gray-600">Total</p>
+            <p className="mt-1 text-2xl font-semibold">{summary.designRefGapQueueTotalCount} items</p>
+          </div>
+          <div className="rounded-lg bg-emerald-50 p-3 text-emerald-950">
+            <p className="text-sm text-emerald-800">Landed</p>
+            <p className="mt-1 text-2xl font-semibold">{summary.designRefGapQueueLandedCount} landed</p>
+          </div>
+          <div className="rounded-lg bg-amber-50 p-3 text-amber-950">
+            <p className="text-sm text-amber-800">Pending</p>
+            <p className="mt-1 text-2xl font-semibold">{summary.designRefGapQueuePendingCount} pending</p>
+          </div>
+          <div className="rounded-lg bg-blue-50 p-3 text-blue-950">
+            <p className="text-sm text-blue-800">Priority</p>
+            <p className="mt-1 text-2xl font-semibold">{summary.designRefGapQueueP1PendingCount} P1 pending</p>
+          </div>
+          <div className="rounded-lg bg-red-50 p-3 text-red-950">
+            <p className="text-sm text-red-800">Validation</p>
+            <p className="mt-1 text-2xl font-semibold">{summary.designRefGapQueueValidatedCount} validated</p>
+          </div>
+        </div>
+        <div className="mt-5 grid gap-3 lg:grid-cols-2">
+          <div className="rounded-lg border border-amber-100 bg-amber-50 p-4">
+            <p className="text-sm font-semibold text-amber-950">Pending alignment</p>
+            <div className="mt-3 space-y-3">
+              {summary.designRefGapQueuePendingItems.map((item) => (
+                <article key={item.id} className="rounded-lg border border-amber-100 bg-white p-3">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div>
+                      <p className="text-xs font-semibold text-amber-700">{item.id}</p>
+                      <h3 className="mt-1 font-semibold text-gray-950">{item.label}</h3>
+                    </div>
+                    <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-950">
+                      {item.priority}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-gray-700">{item.nextAction}</p>
+                  <p className="mt-2 text-xs leading-5 text-gray-500">Routes: {item.routeSlugs.join(' / ')}</p>
+                  <p className="mt-1 text-xs leading-5 text-gray-500">{item.statusAfterAlignment}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-lg border border-emerald-100 bg-emerald-50 p-4">
+            <p className="text-sm font-semibold text-emerald-950">Landed alignment</p>
+            <div className="mt-3 space-y-3">
+              {summary.designRefGapQueueLandedItems.map((item) => (
+                <article key={item.id} className="rounded-lg border border-emerald-100 bg-white p-3">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div>
+                      <p className="text-xs font-semibold text-emerald-700">{item.id}</p>
+                      <h3 className="mt-1 font-semibold text-gray-950">{item.label}</h3>
+                    </div>
+                    <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-950">
+                      {item.priority}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-gray-700">{item.nextAction}</p>
+                  <p className="mt-2 text-xs leading-5 text-gray-500">Routes: {item.routeSlugs.join(' / ')}</p>
+                  <p className="mt-1 text-xs leading-5 text-gray-500">{item.statusAfterAlignment}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">
         <p className="text-sm font-semibold text-blue-700">Export-first Simulation</p>
         <h2 className="mt-1 text-2xl font-semibold text-gray-950">User execution simulation batch 1</h2>
