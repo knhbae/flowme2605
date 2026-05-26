@@ -4,6 +4,7 @@ import { getArtifactPlan } from '@/lib/flow/artifact-plan';
 import {
   getComparisonConfig,
   getComparisonRows,
+  getHoldMemoFields,
   getLogTables,
   getMemoCardFields,
   type ArtifactComparisonRow,
@@ -1173,7 +1174,7 @@ function DecisionWorkbench({
       />
       <div className="space-y-4">
         {bundle.flow.warning ? <RiskBoundaryCard bundle={bundle} /> : null}
-        <HoldSectionCard bundle={bundle} />
+        <HoldSectionCard bundle={bundle} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
         {memoFields.length ? <ProofMemoCard fields={memoFields} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} /> : null}
         <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
           <p className="text-sm font-semibold text-blue-700">현장에서 바로 체크</p>
@@ -1238,9 +1239,18 @@ function StopPrincipleCards({ bundle }: { bundle: FlowBundle }) {
   );
 }
 
-function HoldSectionCard({ bundle }: { bundle: FlowBundle }) {
+function HoldSectionCard({
+  bundle,
+  workbenchState,
+  onWorkbenchChange,
+}: {
+  bundle: FlowBundle;
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
+}) {
   const section = bundle.flow.hold_section;
   if (!section) return null;
+  const fields = getHoldMemoFields(bundle);
 
   return (
     <section data-testid="flow-hold-section" className="rounded-lg border border-red-200 bg-red-50 p-3">
@@ -1252,6 +1262,23 @@ function HoldSectionCard({ bundle }: { bundle: FlowBundle }) {
       </ul>
       <p className="mt-2 text-sm leading-6 text-red-950">{section.consequence}</p>
       <p className="mt-2 rounded-md bg-white px-3 py-2 text-xs font-semibold text-red-800">{section.memo_template}</p>
+      {fields.length ? (
+        <div data-testid="flow-hold-memo-card" className="mt-3 grid gap-3">
+          {fields.map((field) => (
+            <label key={field.id} className="grid gap-1 text-sm font-semibold text-red-950">
+              {field.label}
+              <textarea
+                data-testid={`flow-hold-field-${field.id}`}
+                aria-label={field.label}
+                className="min-h-20 rounded-md border border-red-200 bg-white px-3 py-2 text-sm font-normal text-gray-900 outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100"
+                placeholder={field.placeholder}
+                value={workbenchState.memoCards?.[field.id] ?? ''}
+                onChange={(event) => onWorkbenchChange(updateMemoCard(workbenchState, field.id, event.currentTarget.value))}
+              />
+            </label>
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 }

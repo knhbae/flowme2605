@@ -819,6 +819,37 @@ export function getMemoCardFields(bundle: FlowBundle): ArtifactMemoField[] {
   return [];
 }
 
+export function getHoldMemoFields(bundle: FlowBundle): ArtifactMemoField[] {
+  const section = bundle.flow.hold_section;
+  if (!section) return [];
+
+  return [
+    {
+      id: `${bundle.flow.slug}-hold-reason`,
+      label: '보류 사유',
+      placeholder: section.reasons.join(' / '),
+      groupEyebrow: '보류 증거 메모',
+      groupTitle: section.title,
+      groupDescription: section.consequence,
+    },
+    {
+      id: `${bundle.flow.slug}-hold-evidence-files`,
+      label: '사진/증빙 파일명',
+      placeholder: '예: door-scratch-4821.jpg, usedcar_20260526_engine_noise.mp4',
+    },
+    {
+      id: `${bundle.flow.slug}-hold-confirmation`,
+      label: '상대방 확인',
+      placeholder: '예: 딜러/판매자에게 재확인 요청한 내용과 답변',
+    },
+    {
+      id: `${bundle.flow.slug}-hold-next-check`,
+      label: '다음 확인 시점',
+      placeholder: '예: 공식 조회 후, 전문가 점검 후, 서면 확인 받은 뒤',
+    },
+  ];
+}
+
 export function getLogTables(bundle: FlowBundle): ArtifactLogTable[] {
   if (qnetExamSlugs.has(bundle.flow.slug)) return qnetLogTables;
   if (fitvelyDietRecordSlugs.has(bundle.flow.slug)) return fitvelyDietObservationLogTables;

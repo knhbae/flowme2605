@@ -342,9 +342,11 @@ test('validation fix routes expose route-specific setup anchors and safety metad
 
   const diet = seedBundles.find((entry) => entry.flow.slug === 'diet-habit-2week');
   const newCar = seedBundles.find((entry) => entry.flow.slug === 'new-car-delivery-check');
+  const usedCar = seedBundles.find((entry) => entry.flow.slug === 'used-car-buying-check');
   const study = seedBundles.find((entry) => entry.flow.slug === 'computer-skills-d30-study');
   assert.ok(diet);
   assert.ok(newCar);
+  assert.ok(usedCar);
   assert.ok(study);
 
   const dietFlow = diet.flow as typeof diet.flow & {
@@ -366,6 +368,20 @@ test('validation fix routes expose route-specific setup anchors and safety metad
   assert.equal(newCarFlow.hold_section?.title, '인수 보류 기준');
   assert.ok(newCarFlow.hold_section?.reasons.some((reason) => reason.includes('사진 파일명')));
   assert.match(newCarFlow.hold_section?.memo_template ?? '', /딜러 확인|서명 보류/);
+  assert.ok(newCar.items.some((item) => item.hold_eligible && item.photo_filename_pattern && item.status === 'check'));
+
+  const usedCarFlow = usedCar.flow as typeof usedCar.flow & {
+    hold_section?: {
+      title: string;
+      reasons: string[];
+      consequence: string;
+      memo_template: string;
+    };
+  };
+  assert.equal(usedCarFlow.hold_section?.title, '구매 보류 기준');
+  assert.ok(usedCarFlow.hold_section?.reasons.some((reason) => reason.includes('성능점검기록부') || reason.includes('보험이력')));
+  assert.match(usedCarFlow.hold_section?.memo_template ?? '', /공식 조회|전문가 점검|보류 사유/);
+  assert.ok(usedCar.items.some((item) => item.hold_eligible && item.photo_filename_pattern && item.status === 'check'));
 
   const d1Item = study.items.find((item) => item.day_offset === -1);
   const d1Section = study.sections.find((section) => section.id === d1Item?.section_id);

@@ -1185,6 +1185,26 @@ test('validation fix surfaces route-specific anchors, safety panels, and mobile 
   await expect(page.getByTestId('mobile-export-bar').getByRole('button', { name: '증거표 .xlsx 받기' })).toBeVisible();
 });
 
+test('vehicle hold memo entries update the mobile export CTA', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await page.goto('/f/new-car-delivery-check');
+  const newCarHold = page.getByTestId('flow-hold-section');
+  await expect(newCarHold).toBeVisible();
+  await newCarHold.getByTestId('flow-hold-field-new-car-delivery-check-hold-reason').fill('paint scratch needs dealer confirmation');
+  await newCarHold.getByTestId('flow-hold-field-new-car-delivery-check-hold-evidence-files').fill('door-scratch-4821.jpg');
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await expect(page.getByTestId('mobile-export-bar').getByRole('button', { name: '보류 2건 포함 .xlsx' })).toBeVisible();
+
+  await page.goto('/f/used-car-buying-check');
+  const usedCarHold = page.getByTestId('flow-hold-section');
+  await expect(usedCarHold).toContainText('구매 보류 기준');
+  await usedCarHold.getByTestId('flow-hold-field-used-car-buying-check-hold-reason').fill('insurance history conflicts with seller explanation');
+  await usedCarHold.getByTestId('flow-hold-field-used-car-buying-check-hold-evidence-files').fill('usedcar_20260526_engine_noise.mp4');
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await expect(page.getByTestId('mobile-export-bar').getByRole('button', { name: '보류 2건 포함 .xlsx' })).toBeVisible();
+});
+
 test('mobile workbench exposes destination CTAs on the first artifact cards', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
 

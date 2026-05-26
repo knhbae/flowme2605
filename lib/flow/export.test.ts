@@ -328,6 +328,39 @@ test('used-car text export carries the vehicle-condition guarantee boundary near
   assert.ok(text.indexOf('차량 상태를 보증하지 않습니다') < text.indexOf('[후보 비교표]'));
 });
 
+test('vehicle hold sections and hold memo fields export with user-facing labels', () => {
+  const usedCar = seedBundles.find((entry) => entry.flow.slug === 'used-car-buying-check');
+  assert.ok(usedCar);
+
+  const workbenchState = {
+    occurrences: {},
+    logRows: {},
+    memoCards: {
+      'used-car-buying-check-hold-reason': 'insurance history conflicts with seller explanation',
+      'used-car-buying-check-hold-evidence-files': 'usedcar_20260526_engine_noise.mp4',
+      'used-car-buying-check-hold-confirmation': 'seller will reissue inspection record',
+      'used-car-buying-check-hold-next-check': 'recheck with mechanic before deposit',
+    },
+  };
+
+  const text = buildText(usedCar, {}, undefined, {}, undefined, workbenchState);
+
+  assert.match(text, /구매 보류 기준/);
+  assert.match(text, /성능점검기록부|보험이력/);
+  assert.match(text, /보류 사유: insurance history conflicts with seller explanation/);
+  assert.match(text, /사진\/증빙 파일명: usedcar_20260526_engine_noise\.mp4/);
+  assert.doesNotMatch(text, /used-car-buying-check-hold-reason:/);
+
+  const sheets = buildWorkbookSheets(usedCar, {}, undefined, { workbenchState });
+  const summary = sheets.find((sheet) => sheet.name === '실행 요약');
+  const workbench = sheets.find((sheet) => sheet.name === '실행판 기록');
+  assert.ok(summary);
+  assert.ok(workbench);
+  assert.ok(summary.rows.some((row) => row.includes('보류 기준') && row.includes('구매 보류 기준')));
+  assert.ok(workbench.rows.some((row) => row.includes('보류 사유') && row.includes('insurance history conflicts with seller explanation')));
+  assert.ok(workbench.rows.some((row) => row.includes('사진/증빙 파일명') && row.includes('usedcar_20260526_engine_noise.mp4')));
+});
+
 test('risk-boundary exports preserve delivery evidence and diet observation values', () => {
   const newCar = seedBundles.find((entry) => entry.flow.slug === 'new-car-delivery-check');
   const diet = seedBundles.find((entry) => entry.flow.slug === 'diet-habit-2week');

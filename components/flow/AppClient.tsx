@@ -2243,7 +2243,8 @@ export function PublicFlow({ slug }: { slug: string }) {
   const showMobileWorkbenchFirst = bundle.flow.structure_type === 'routine' || bundle.flow.slug === 'baby-food-menu-recipe';
   const showDesktopReferenceRail = shouldUseDesktopReferenceRail(bundle);
   const primaryDestination = inferPrimaryDestination(bundle);
-  const mobileStickyCtaLabel = getMobileStickyCtaLabel(bundle, canExportCalendar);
+  const holdSignalCount = getHoldSignalCount(bundle, workbenchState);
+  const mobileStickyCtaLabel = getMobileStickyCtaLabel(bundle, canExportCalendar, holdSignalCount);
 
   const toggle = (id: string) => {
     setChecks((value) => {
@@ -2700,7 +2701,10 @@ function getMobileExportSheetSummary(bundle: FlowBundle, anchor: string, executa
   return `${executableCount}개 항목`;
 }
 
-function getMobileStickyCtaLabel(bundle: FlowBundle, canExportCalendar: boolean): string {
+function getMobileStickyCtaLabel(bundle: FlowBundle, canExportCalendar: boolean, holdSignalCount = 0): string {
+  if ((bundle.flow.slug === 'new-car-delivery-check' || bundle.flow.slug === 'used-car-buying-check') && holdSignalCount > 0) {
+    return `보류 ${holdSignalCount}건 포함 .xlsx`;
+  }
   if (bundle.flow.slug === 'moving-d30-basic') return '시트·캘린더로 받기';
   if (bundle.flow.slug === 'computer-skills-d30-study') return '시트·캘린더로 받기';
   if (bundle.flow.slug === 'diet-habit-2week') return '관찰표 .xlsx 받기';
@@ -2710,6 +2714,22 @@ function getMobileStickyCtaLabel(bundle: FlowBundle, canExportCalendar: boolean)
   if (bundle.flow.primary_destination === 'sheet') return '시트 .xlsx 받기';
   if (bundle.flow.primary_destination === 'memo') return '메모로 복사하기';
   return '내 도구로 가져가기';
+}
+
+function getHoldSignalCount(bundle: FlowBundle, workbenchState: FlowWorkbenchState): number {
+  if (!bundle.flow.hold_section) return 0;
+  return Object.entries(workbenchState.memoCards ?? {}).filter(([id, value]) => isHoldMemoField(bundle, id) && value.trim()).length;
+}
+
+function isHoldMemoField(bundle: FlowBundle, id: string): boolean {
+  if (id.startsWith(`${bundle.flow.slug}-hold-`)) return true;
+  if (bundle.flow.slug === 'new-car-delivery-check') {
+    return ['new-car-photo-files', 'new-car-dealer-confirmation', 'new-car-handover-boundary'].includes(id);
+  }
+  if (bundle.flow.slug === 'used-car-buying-check') {
+    return ['used-car-proof-files', 'used-car-expert-check', 'used-car-buy-hold-memo'].includes(id);
+  }
+  return false;
 }
 
 function ExportFirstHero({

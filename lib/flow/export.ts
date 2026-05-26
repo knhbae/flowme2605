@@ -1,6 +1,6 @@
 import { addDays, formatDate, getRangeEnd } from './date';
 import { getArtifactPlan } from './artifact-plan';
-import { getComparisonRows, getLogTables, getMemoCardFields } from './artifact-fields';
+import { getComparisonRows, getHoldMemoFields, getLogTables, getMemoCardFields } from './artifact-fields';
 import { timingLabel } from './parser';
 import { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState, MealSlot, ReactionLog } from './types';
 
@@ -463,12 +463,23 @@ function buildWorkbenchRows(bundle: FlowBundle, state?: FlowWorkbenchState): Wor
 }
 
 function getMemoCardFieldsFromState(bundle: FlowBundle, state: FlowWorkbenchState) {
-  const fields = getMemoCardFields(bundle);
+  const fields = [...getMemoCardFields(bundle), ...getHoldMemoFields(bundle)];
   const known = new Set(fields.map((field) => field.id));
   const dynamicFields = Object.keys(state.memoCards ?? {})
     .filter((id) => !known.has(id))
     .map((id) => ({ id, label: id, placeholder: '' }));
   return [...fields, ...dynamicFields];
+}
+
+function appendHoldSectionText(lines: string[], bundle: FlowBundle) {
+  const section = bundle.flow.hold_section;
+  if (!section) return;
+
+  lines.push(`보류 기준: ${section.title}`);
+  for (const reason of section.reasons) {
+    lines.push(`- ${reason}`);
+  }
+  lines.push(`보류 메모 양식: ${section.memo_template}`);
 }
 
 function appendWorkbenchText(lines: string[], rows: WorkbookCell[][]) {
@@ -498,6 +509,7 @@ export function buildText(
   const anchorLabel = getExportAnchorLabel(bundle);
   lines.push(`${anchorLabel}: ${anchor || (bundle.flow.anchor_type === 'none' ? '없음' : '')}`);
   if (bundle.flow.warning) lines.push(`주의: ${bundle.flow.warning}`);
+  appendHoldSectionText(lines, bundle);
   const artifactPlan = getArtifactPlan(bundle);
   const comparison = buildComparisonExport(bundle, comparisonState);
   const workbenchRows = buildWorkbenchRows(bundle, workbenchState);
@@ -758,6 +770,11 @@ export function buildWorkbookSheets(
 
   if (bundle.flow.description) summaryRows.push(['설명', bundle.flow.description]);
   if (bundle.flow.warning) summaryRows.push(['주의', bundle.flow.warning]);
+  if (bundle.flow.hold_section) {
+    summaryRows.push(['보류 기준', bundle.flow.hold_section.title]);
+    summaryRows.push(['보류 사유', bundle.flow.hold_section.reasons.join('\n')]);
+    summaryRows.push(['보류 메모 양식', bundle.flow.hold_section.memo_template]);
+  }
   if (options.weekdays?.length) summaryRows.push(['선택 요일', options.weekdays.join(' / ')]);
   if (bundle.flow.source_title || bundle.flow.source_url) {
     summaryRows.push(['참고', [bundle.flow.source_title, bundle.flow.source_url].filter(Boolean).join(' - ')]);

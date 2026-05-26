@@ -2022,6 +2022,16 @@ const validationFixMeta: Record<string, ValidationFixMeta> = {
   'used-car-buying-check': {
     setup_anchor_label: '방문/시승일 기록',
     setup_anchor_hint: '체크리스트는 차량 상태 보증이 아닙니다. 방문일, 공식 조회 결과, 전문가 점검 여부를 메모에 남깁니다.',
+    hold_section: {
+      title: '구매 보류 기준',
+      reasons: [
+        '성능점검기록부/보험이력/압류·저당 확인이 비어 있거나 서로 맞지 않습니다.',
+        '시운전 중 경고등, 소음, 변속 충격 등 확인 대상이 남았습니다.',
+        '판매자 설명, 수리 약속, 환불/보증 조건이 서면으로 남지 않았습니다.',
+      ],
+      consequence: 'FLOW는 구매 결정을 하지 않습니다. 보류 기준이 있으면 계약금/서명 전 공식 조회와 전문가 점검을 분리 기록합니다.',
+      memo_template: '공식 조회: / 전문가 점검: / 보류 사유: / 계약금 보류 여부: / 다음 확인 시점:',
+    },
   },
   'passport-renewal-docs': {
     setup_anchor_label: '접수일 기록',
@@ -2111,6 +2121,22 @@ function applyValidationFixMeta(bundle: FlowBundle): FlowBundle {
           ...item,
           hold_eligible: true,
           photo_filename_pattern: 'YYYYMMDD_차량번호_부위_순번.jpg',
+          status: 'check',
+        };
+      }),
+    };
+  }
+
+  if (bundle.flow.slug === 'used-car-buying-check') {
+    next = {
+      ...next,
+      items: next.items.map((item) => {
+        const holdEligible = /사고 이력|성능점검기록부|현장|시동|변속|제동|압류|저당|계약서|정비 계획/.test(item.title);
+        if (!holdEligible) return item;
+        return {
+          ...item,
+          hold_eligible: true,
+          photo_filename_pattern: 'YYYYMMDD_차량번호_확인항목.jpg',
           status: 'check',
         };
       }),
