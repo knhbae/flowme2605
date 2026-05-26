@@ -61,6 +61,10 @@ test('baby food seed keeps meal slots, recipes, caution, and reaction-log afford
   assert.equal(baby.flow.content_type, 'meal_plan');
   assert.equal(baby.flow.risk_level, 'medical_sensitive');
   assert.match(baby.flow.warning ?? '', /전문가 또는 공식 정보/);
+  assert.doesNotMatch(
+    `${baby.flow.description ?? ''} ${baby.flow.creator_note ?? ''} ${(baby.flow as typeof baby.flow & { setup_anchor_hint?: string }).setup_anchor_hint ?? ''}`,
+    /반응 기록/,
+  );
   assert.equal(baby.mealSlots?.length, 6);
   assert.equal(baby.recipes?.length, 6);
   assert.deepEqual(baby.mealSlots?.[0], {
@@ -264,10 +268,19 @@ test('computer skills study items are written as sequence actions', () => {
     assert.match(portableAction, /기록:/, `${item.title} should say where to record the result`);
     assert.match(
       portableAction,
-      /D-30 학습표|챕터 진도표|기출 점수·오답 기록|캘린더 일정|실기 환경|시험장 준비/,
+      /D-30 캘린더|실행 항목 메모|캘린더 일정|엑셀|실기 환경|시험장 준비/,
       `${item.title} should point to a concrete study artifact`,
     );
+    assert.doesNotMatch(
+      portableAction,
+      /챕터 진도표|모의점수 로그|기출 점수·오답 기록/,
+      `${item.title} should not mention removed study artifacts`,
+    );
   }
+
+  const firstItem = study.items.find((item) => item.title === '필기와 실기 시험 범위 나누기');
+  const firstDetail = study.itemDetails?.find((entry) => entry.item_id === firstItem?.id);
+  assert.match(firstDetail?.completion_criteria ?? '', /D-30 캘린더/);
 });
 
 test('diet habit route is reduced to one 14-day sleep check rule', () => {
@@ -949,7 +962,17 @@ test('MOFA travel prep route uses an exact country safety source without promoti
   assert.equal(travel.flow.source_precision, 'exact');
   assert.equal(travel.flow.source_url, 'https://www.0404.go.kr/ntnSafetyInfo/86/detail');
   assert.ok(travel.flow.source_title?.includes('베트남'));
+  assert.match(travel.flow.description, /외교부 해외안전여행/);
+  assert.doesNotMatch(travel.flow.description, /여행에미치다/);
+  assert.doesNotMatch(`${travel.flow.creator_name ?? ''} ${travel.flow.creator_note ?? ''}`, /여행에미치다/);
   assert.ok(travel.itemDetails.every((detail) => detail.links.some((link) => link.url === travel.flow.source_url)));
+
+  const detailText = travel.itemDetails
+    .map((detail) => `${detail.why} ${detail.how} ${detail.completion_criteria} ${detail.caution ?? ''}`)
+    .join('\n');
+  assert.match(detailText, /여행경보 단계, 확인일/);
+  assert.match(detailText, /영사콜센터/);
+  assert.doesNotMatch(detailText, /여행에미치다/);
 });
 
 test('fitness exact video flow titles preserve the original content premise', () => {

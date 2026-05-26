@@ -106,8 +106,8 @@ export function ArtifactWorkbench({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-sm font-semibold text-blue-700">내 실행판</p>
-          <h2 className="mt-1 text-2xl font-semibold text-gray-950">{surfaceTitle(plan.primarySurface)}</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600">{surfaceDescription(plan.primarySurface)}</p>
+          <h2 className="mt-1 text-2xl font-semibold text-gray-950">{surfaceTitle(plan.primarySurface, bundle)}</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600">{surfaceDescription(plan.primarySurface, bundle)}</p>
         </div>
         <span className="rounded-full bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-700">
           {done}/{total} 완료
@@ -154,7 +154,14 @@ export function ArtifactWorkbench({
         ) : plan.primarySurface === 'memo_card' ? (
           <MemoCardWorkbench bundle={bundle} checks={checks} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} onToggleItem={onToggleItem} exportActions={exportActions} />
         ) : (
-          <ChecklistWorkbench bundle={bundle} checks={checks} onToggleItem={onToggleItem} exportActions={exportActions} />
+          <ChecklistWorkbench
+            bundle={bundle}
+            checks={checks}
+            workbenchState={workbenchState}
+            onWorkbenchChange={onWorkbenchChange}
+            onToggleItem={onToggleItem}
+            exportActions={exportActions}
+          />
         )}
       </div>
     </section>
@@ -259,8 +266,8 @@ function ArtifactExportStatus({ actions }: { actions?: ArtifactExportActions }) 
   );
 }
 
-function surfaceTitle(surface: string): string {
-  if (surface === 'meal_reaction_log') return '식단표 + 반응 기록';
+function surfaceTitle(surface: string, bundle: FlowBundle): string {
+  if (surface === 'meal_reaction_log') return mealCalendarOnlySlugs.has(bundle.flow.slug) ? '식단표 + 레시피' : '식단표 + 반응 기록';
   if (surface === 'decision_table') return '후보 비교표';
   if (surface === 'routine_calendar') return '반복 캘린더';
   if (surface === 'spreadsheet_log') return '기록표';
@@ -269,8 +276,12 @@ function surfaceTitle(surface: string): string {
   return '전체 할 일';
 }
 
-function surfaceDescription(surface: string): string {
-  if (surface === 'meal_reaction_log') return '시작일 기준 메뉴와 새 재료를 먼저 보고, 먹은 뒤 반응을 기록합니다.';
+function surfaceDescription(surface: string, bundle: FlowBundle): string {
+  if (surface === 'meal_reaction_log') {
+    return mealCalendarOnlySlugs.has(bundle.flow.slug)
+      ? '시작일 기준 메뉴와 새 재료, 레시피 확인 순서를 먼저 봅니다.'
+      : '시작일 기준 메뉴와 새 재료를 먼저 보고, 먹은 뒤 반응을 기록합니다.';
+  }
   if (surface === 'decision_table') return '먼저 후보를 비교하고, 아래 체크리스트로 현장에서 확인할 일을 이어갑니다.';
   if (surface === 'routine_calendar') return '시작일과 반복 요일을 기준으로 회차가 달력에 박히는 모습을 먼저 보여줍니다.';
   if (surface === 'spreadsheet_log') return '매일 남길 기록 열과 주간 리뷰 메모를 먼저 잡아둡니다.';
@@ -1141,11 +1152,29 @@ function MemoCardWorkbench({
   exportActions?: ArtifactExportActions;
 }) {
   const fields = getMemoCardFields(bundle);
-  if (!fields.length) return <ChecklistWorkbench bundle={bundle} checks={checks} onToggleItem={onToggleItem} exportActions={exportActions} />;
+  if (!fields.length) {
+    return (
+      <ChecklistWorkbench
+        bundle={bundle}
+        checks={checks}
+        workbenchState={workbenchState}
+        onWorkbenchChange={onWorkbenchChange}
+        onToggleItem={onToggleItem}
+        exportActions={exportActions}
+      />
+    );
+  }
 
   return (
     <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
-      <ChecklistWorkbench bundle={bundle} checks={checks} onToggleItem={onToggleItem} exportActions={exportActions} />
+      <ChecklistWorkbench
+        bundle={bundle}
+        checks={checks}
+        workbenchState={workbenchState}
+        onWorkbenchChange={onWorkbenchChange}
+        onToggleItem={onToggleItem}
+        exportActions={exportActions}
+      />
       <ProofMemoCard fields={fields} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
     </div>
   );
@@ -1715,34 +1744,41 @@ function spreadsheetPlaceholder(column: string): string {
 function ChecklistWorkbench({
   bundle,
   checks,
+  workbenchState,
+  onWorkbenchChange,
   onToggleItem,
   exportActions,
 }: {
   bundle: FlowBundle;
   checks: Record<string, boolean>;
+  workbenchState?: FlowWorkbenchState;
+  onWorkbenchChange?: (state: FlowWorkbenchState) => void;
   onToggleItem: (id: string) => void;
   exportActions?: ArtifactExportActions;
 }) {
   return (
-    <div data-testid="artifact-list-card" className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <h3 className="text-base font-semibold text-gray-950">전체 할 일</h3>
-        <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} />
-      </div>
-      <ArtifactExportStatus actions={exportActions} />
-      <div className="mt-3 grid gap-2 md:grid-cols-2">
-        {getExecutableItems(bundle).slice(0, 10).map((item) => (
-          <label key={item.id} className="flex gap-2 rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
-            <input
-              aria-label={`실행판 체크: ${item.title}`}
-              className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
-              checked={Boolean(checks[item.id])}
-              onChange={() => onToggleItem(item.id)}
-              type="checkbox"
-            />
-            <span className={`font-medium ${checks[item.id] ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{item.title}</span>
-          </label>
-        ))}
+    <div className="space-y-4">
+      {workbenchState && onWorkbenchChange ? <HoldSectionCard bundle={bundle} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} /> : null}
+      <div data-testid="artifact-list-card" className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <h3 className="text-base font-semibold text-gray-950">전체 할 일</h3>
+          <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} />
+        </div>
+        <ArtifactExportStatus actions={exportActions} />
+        <div className="mt-3 grid gap-2 md:grid-cols-2">
+          {getExecutableItems(bundle).slice(0, 10).map((item) => (
+            <label key={item.id} className="flex gap-2 rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
+              <input
+                aria-label={`실행판 체크: ${item.title}`}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
+                checked={Boolean(checks[item.id])}
+                onChange={() => onToggleItem(item.id)}
+                type="checkbox"
+              />
+              <span className={`font-medium ${checks[item.id] ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{item.title}</span>
+            </label>
+          ))}
+        </div>
       </div>
     </div>
   );

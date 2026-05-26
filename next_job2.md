@@ -17,14 +17,50 @@
   - `real-thankyou-bubu-home-workout-starter`, `real-fitvely-diet-record-routine`: check-only routine/calendar treatment.
 - Updated export filtering so removed memo fields do not reappear from stale local state.
 - Updated artifact plan, field config, execution model, seed conversion, and UI rendering tests to lock these UX/content decisions.
+- Follow-up unit alignment:
+  - `computer-skills-d30-study`: removed the extra progress/log tables from the primary artifact model and ignored stale progress-table state during export.
+  - `baby-food-menu-recipe`: route UI and workbook export now keep menu calendar + recipe only and do not emit the reaction-log artifact for this experiment route.
+- Follow-up copy/visual polish:
+  - `computer-skills-d30-study`: checklist copy now points to D-30 calendar, execution item memo, Excel export, 실기 환경, 시험장 준비; removed old `챕터 진도표`, `모의점수 로그`, `기출 점수·오답 기록` language.
+  - `baby-food-menu-recipe`: visible route description, setup helper, workbench title, and byline note now say menu/recipe rather than reaction record.
+  - `real-mofa-overseas-travel-prep`: visible copy and item detail now use 외교부 해외안전여행, 여행경보, 입국 조건, 영사콜센터, 보험/이동, 가족 공유 language; creator display is official-data oriented while preserving the source-batch owner mapping.
+
+## my_tests Reflection Status
+### Done
+- `diet-habit-2week`: applied the "one rule only" direction as a 14-day sleep/check calendar.
+- `new-car-delivery-check`, `used-car-buying-check`: comparison-table-first treatment removed; checklist plus hold evidence now leads.
+- `moving-d30-basic`, `vehicle-inspection-prep`: memo/comparison surfaces removed; compact checklist + month calendar remains.
+- `passport-renewal-docs`: date/memo duplication reduced by keeping checklist-first behavior without memo card.
+- `real-thankyou-bubu-home-workout-starter`, `real-fitvely-diet-record-routine`: weekly summaries/log cards reduced to check-only routine/calendar behavior.
+- `computer-skills-d30-study`: extra chapter progress/log table no longer appears in the primary artifact config or export.
+- `baby-food-menu-recipe`: primary workbench, execution detail, and workbook export now avoid the reaction-log artifact for this route.
+- `computer-skills-d30-study`: browser-visible copy no longer references removed study artifacts and keeps the checklist/calendar model aligned.
+- `baby-food-menu-recipe`: browser-visible copy no longer references `반응 기록`; the route presents menu calendar + recipe.
+- `real-mofa-overseas-travel-prep`: checklist/detail/byline copy now reflects the exact 외교부 source and no longer shows the old travel-channel copy.
+
+### Partial / Needs Recheck
+- None from the `my_tests/250526_experiment_checklist.md` follow-up batch. Meal/reaction-capable metadata still exists in shared meal-plan structures for future reuse and other routes, but this route no longer exposes reaction-log language in the checked browser path.
+
+### Remaining To Do
+- No open implementation task from this pass.
+- If more UX polish is requested, focus on fresh user-session validation rather than adding more artifact surfaces.
 
 ## Verification Run
-- `npm test`: passed, 184/184.
+- `npm run docs:check`: passed, 14 required files and 306 local links.
+- `npm test`: passed, 182/182.
 - `npm run build`: passed.
+- Targeted Playwright for changed routes: passed, 12/12.
+- Full `npm run test:e2e`: passed, 69/69.
+- Follow-up full verification after copy/visual polish:
+  - `npm run docs:check`: passed, 14 required files and 306 local links.
+  - `npm test`: passed, 182/182.
+  - `npm run build`: passed.
+  - `npm run test:e2e`: passed, 69/69.
+  - Browser QA against `http://127.0.0.1:3000`: `computer-skills-d30-study`, `baby-food-menu-recipe`, `real-mofa-overseas-travel-prep` had no stale visible text (`챕터 진도표`, `모의점수 로그`, `기출 점수·오답 기록`, `반응 기록`, `여행에미치다`) and no horizontal overflow offenders at 1440px.
 - Browser QA against `http://localhost:3001` with Playwright:
   - Desktop routes checked: `diet-habit-2week`, `real-thankyou-bubu-home-workout-starter`, `real-fitvely-diet-record-routine`, `baby-food-menu-recipe`, `moving-d30-basic`, `used-car-buying-check`, `new-car-delivery-check`, `passport-renewal-docs`, `real-mofa-overseas-travel-prep`.
   - Mobile checked: `diet-habit-2week`.
 
 ## Remaining For Next Chat
-- PR #112 has been updated by pushing branch `design-ref-full-gap-alignment`.
-- If more UX polish is requested, focus next on copy density and source-specific labels in the checklist rows, not on adding more artifact surfaces.
+- PR #112 was previously updated by pushing branch `design-ref-full-gap-alignment`; this follow-up pass has not been pushed yet in this chat.
+- Local dev server is running on `http://127.0.0.1:3000` for manual review.

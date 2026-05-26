@@ -824,7 +824,7 @@ export function getLogTables(bundle: FlowBundle): ArtifactLogTable[] {
   if (qnetExamSlugs.has(bundle.flow.slug)) return qnetLogTables;
   if (fitvelyDietRecordSlugs.has(bundle.flow.slug)) return [];
   if (fitvelyNutritionExactVideoSlugs.has(bundle.flow.slug)) return fitvelyNutritionActionObservationLogTables;
-  if (bundle.flow.slug === 'computer-skills-d30-study') return computerSkillsStudyLogTables;
+  if (bundle.flow.slug === 'computer-skills-d30-study') return [];
   if (studySlugs.has(bundle.flow.slug)) return studyLogTables;
   return [];
 }

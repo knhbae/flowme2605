@@ -1337,7 +1337,7 @@ const babyFoodBundle: FlowBundle = {
     slug: 'baby-food-menu-recipe',
     title: '초기 이유식 메뉴·레시피 Flow',
     description:
-      '시작일을 입력하면 초기 이유식 메뉴, 새 재료, 레시피, 반응 기록을 날짜별로 확인할 수 있습니다.',
+      '시작일을 입력하면 초기 이유식 메뉴, 새 재료, 레시피를 날짜별로 확인할 수 있습니다.',
     category: '육아/이유식',
     structure_type: 'phase',
     content_type: 'meal_plan',
@@ -1347,7 +1347,7 @@ const babyFoodBundle: FlowBundle = {
     source_title: '초기 이유식 식단표 참고',
     source_url: 'https://kimstar1021.tistory.com/63',
     warning: babyWarning,
-    ...creatorMeta('초기 이유식 기록맘', '육아 경험 크리에이터', '초기 이유식 시작일 기준 메뉴와 반응 기록을 정리했습니다.', 982, 214),
+    ...creatorMeta('초기 이유식 기록맘', '육아 경험 크리에이터', '초기 이유식 시작일 기준 메뉴와 레시피를 정리했습니다.', 982, 214),
     ...tagMeta(['초보자용', '식단·레시피', '건강주의', '매일 기록', '육아']),
     created_at: now,
     updated_at: now,
@@ -2005,7 +2005,7 @@ const validationFixMeta: Record<string, ValidationFixMeta> = {
   },
   'baby-food-menu-recipe': {
     setup_anchor_label: '이유식 시작일',
-    setup_anchor_hint: '첫 이유식 날짜를 기준으로 새 재료 관찰일과 반응 기록일을 계산합니다.',
+    setup_anchor_hint: '첫 이유식 날짜를 기준으로 새 재료 관찰일과 레시피 확인일을 계산합니다.',
   },
   'used-car-buying-check': {
     setup_anchor_label: '방문/시승일 기록',
@@ -2081,6 +2081,80 @@ function applyValidationFixMeta(bundle: FlowBundle): FlowBundle {
   if (bundle.flow.slug === 'computer-skills-d30-study') {
     const d1SectionId = 'flow-computer-skills-d30-study-section-d1';
     const hasD1Section = next.sections.some((section) => section.id === d1SectionId);
+    const studyCopyByTitle: Record<
+      string,
+      {
+        description: string;
+        why: string;
+        how: string;
+        completion_criteria: string;
+        caution: string;
+      }
+    > = {
+      '필기와 실기 시험 범위 나누기': {
+        description: '필기 이론, 스프레드시트 실기, 데이터베이스 실기를 남은 30일 캘린더에 나눕니다.',
+        why: '컴활은 필기 암기와 실기 조작 시간이 달라서 범위를 먼저 나누지 않으면 마지막 주가 오답 정리보다 새 범위로 밀립니다.',
+        how: '실행: 교재 목차를 열고 필기, 스프레드시트, 데이터베이스, 기출 보완을 네 묶음으로 나눕니다. 기록: 오늘 항목의 실행 항목 메모에 범위와 보완할 단원을 적습니다.',
+        completion_criteria: '필기/스프레드시트/데이터베이스/기출 보완 묶음이 정해졌고 D-30 캘린더의 첫 주 일정과 맞습니다.',
+        caution: '새 범위를 늘리기보다 오답 재풀이, 실기 환경, 시험장 준비를 우선합니다.',
+      },
+      '매일 공부 가능한 시간 블록 정하기': {
+        description: '평일/주말에 실제로 비울 수 있는 공부 시간을 캘린더 일정 기준으로 정합니다.',
+        why: '시험일 역산 캘린더는 실제 공부 가능한 시간이 있어야 밀리지 않습니다.',
+        how: '실행: 평일 공부 시간 1개와 주말 보충 시간 1개를 정합니다. 기록: 캘린더 export 후 일정 제목이나 실행 항목 메모에 공부 시간대를 남깁니다.',
+        completion_criteria: '평일/주말 공부 시간 블록이 정해졌고 캘린더 일정으로 옮길 수 있습니다.',
+        caution: '새 범위를 늘리기보다 오답 재풀이, 실기 환경, 시험장 준비를 우선합니다.',
+      },
+      '기출 회독 목표 정하기': {
+        description: '시험 전까지 풀 기출 회차 수와 다시 풀 회차를 정합니다.',
+        why: '기출 회독 수보다 다시 풀 회차와 날짜가 있어야 마지막 주 보완이 실행됩니다.',
+        how: '실행: 풀 회차 수, 목표 점수, 재풀이 날짜를 정합니다. 기록: 실행 항목 메모에 회차와 재풀이 날짜를 남기고 엑셀 export 때 확인합니다.',
+        completion_criteria: '기출 회차 수와 재풀이 날짜가 D-30 캘린더 안에 들어갔습니다.',
+        caution: '새 범위를 늘리기보다 오답 재풀이, 실기 환경, 시험장 준비를 우선합니다.',
+      },
+      '핵심 이론 1회독 시작하기': {
+        description: '필기 핵심 개념을 첫 회독하고 약한 단원을 메모합니다.',
+        why: '첫 회독은 암기 완료가 아니라 실기와 기출에서 반복 확인할 약한 단원을 찾는 단계입니다.',
+        how: '실행: 핵심 이론을 정해진 시간만큼 읽고 바로 예제나 기출 1세트와 연결합니다. 기록: 약한 단원은 실행 항목 메모에 적어 다음 복습일에 보이게 합니다.',
+        completion_criteria: '오늘 읽은 범위와 다시 볼 단원이 실행 항목 메모에 남았습니다.',
+        caution: '새 범위를 늘리기보다 오답 재풀이, 실기 환경, 시험장 준비를 우선합니다.',
+      },
+      '자주 틀리는 기능 목록 만들기': {
+        description: '함수식, 피벗테이블, 쿼리, 폼처럼 반복 실수 유형을 목록으로 만듭니다.',
+        why: '실기는 틀린 기능을 다시 열어 직접 조작해야 점수가 오릅니다.',
+        how: '실행: 최근 틀린 문제를 보며 함수, 피벗, 차트, 쿼리, 폼/보고서 중 어디서 막혔는지 나눕니다. 기록: 기능명과 다시 풀 파일명을 실행 항목 메모에 적습니다.',
+        completion_criteria: '반복 실수 기능과 다시 풀 파일명이 최소 3개 이상 정리됐습니다.',
+        caution: '새 범위를 늘리기보다 오답 재풀이, 실기 환경, 시험장 준비를 우선합니다.',
+      },
+      '실기 프로그램 환경 점검하기': {
+        description: '실기 파일 열기, 저장, 함수 입력, 피벗/쿼리 작업이 가능한지 확인합니다.',
+        why: '시험 직전 프로그램 버전이나 저장 위치 문제를 만나면 공부한 내용을 실행하기 어렵습니다.',
+        how: '실행: 실기 프로그램을 열어 예제 파일을 저장하고 함수 입력, 피벗테이블, 쿼리 작업을 한 번씩 확인합니다. 기록: 막힌 기능이나 파일 위치 문제를 실행 항목 메모에 남깁니다.',
+        completion_criteria: '실기 파일 열기/저장과 주요 기능 조작이 확인됐고 문제 상황이 있으면 메모됐습니다.',
+        caution: '새 범위를 늘리기보다 오답 재풀이, 실기 환경, 시험장 준비를 우선합니다.',
+      },
+      '제한 시간 맞춰 모의 문제 풀기': {
+        description: '제한 시간을 두고 기출 또는 모의 문제 1회차를 풉니다.',
+        why: '시간 안에 끝내는 순서가 잡혀야 시험장에서 쉬운 문제를 놓치지 않습니다.',
+        how: '실행: 타이머를 켜고 한 회차를 멈추지 않고 풉니다. 기록: 완료 여부, 막힌 기능, 다시 풀 날짜를 실행 항목 메모에 적고 엑셀 export에서 확인합니다.',
+        completion_criteria: '한 회차를 제한 시간 기준으로 풀었고 막힌 기능과 재풀이 날짜가 남았습니다.',
+        caution: '새 범위를 늘리기보다 오답 재풀이, 실기 환경, 시험장 준비를 우선합니다.',
+      },
+      '오답을 유형별로 정리하기': {
+        description: '암기형, 계산형, 기능 조작형으로 오답을 나누고 다시 풀 날짜를 정합니다.',
+        why: '오답은 점수보다 다시 고칠 행동으로 나눠야 마지막 복습에서 바로 실행됩니다.',
+        how: '실행: 틀린 문제를 암기형, 계산형, 기능 조작형으로 표시합니다. 기록: 유형과 다시 풀 날짜를 실행 항목 메모에 남깁니다.',
+        completion_criteria: '오답 유형과 재풀이 날짜가 정리되어 다음 캘린더 일정과 연결됐습니다.',
+        caution: '새 범위를 늘리기보다 오답 재풀이, 실기 환경, 시험장 준비를 우선합니다.',
+      },
+      '시험장 준비물과 이동 시간 확인하기': {
+        description: '수험표, 신분증, 시험장 위치, 출발 시간을 전날 캘린더 메모에 남깁니다.',
+        why: '시험 전날에는 새 공부보다 준비물과 이동 시간을 확정하는 것이 시험 실패 위험을 줄입니다.',
+        how: '실행: 수험표, 신분증, 시험장 주소, 교통편, 출발 시간을 확인합니다. 기록: 전날 캘린더 일정과 실행 항목 메모에 준비물과 출발 시간을 적습니다.',
+        completion_criteria: '수험표, 신분증, 시험장 위치, 출발 시간이 시험장 준비 메모에 남았습니다.',
+        caution: '새 범위를 늘리기보다 오답 재풀이, 실기 환경, 시험장 준비를 우선합니다.',
+      },
+    };
     next = {
       ...next,
       sections: hasD1Section
@@ -2095,7 +2169,111 @@ function applyValidationFixMeta(bundle: FlowBundle): FlowBundle {
               order: next.sections.length,
             },
           ],
-      items: next.items.map((item) => (item.day_offset === -1 ? { ...item, section_id: d1SectionId } : item)),
+      items: next.items.map((item) => {
+        const copy = studyCopyByTitle[item.title];
+        return {
+          ...item,
+          ...(item.day_offset === -1 ? { section_id: d1SectionId } : {}),
+          ...(copy ? { description: copy.description } : {}),
+        };
+      }),
+      itemDetails: next.itemDetails?.map((detail) => {
+        const item = next.items.find((entry) => entry.id === detail.item_id);
+        const copy = item ? studyCopyByTitle[item.title] : undefined;
+        if (!copy) return detail;
+        return {
+          ...detail,
+          why: copy.why,
+          how: copy.how,
+          completion_criteria: copy.completion_criteria,
+          caution: copy.caution,
+        };
+      }),
+    };
+  }
+
+  if (bundle.flow.slug === 'real-mofa-overseas-travel-prep') {
+    const mofaCopyByTitle: Record<
+      string,
+      {
+        description: string;
+        why: string;
+        how: string;
+        completion_criteria: string;
+        caution: string;
+      }
+    > = {
+      '방문 국가 여행경보 확인': {
+        description: '외교부 해외안전여행에서 베트남 국가/지역별 여행경보와 최신 안전 공지를 확인합니다.',
+        why: '여행경보 단계와 최근 안전 공지는 일정 변경, 야간 이동, 보험 확인 여부를 정하는 기준입니다.',
+        how: '외교부 해외안전여행 국가/지역별 정보에서 방문 도시를 검색하고 여행경보 단계, 최근 공지, 확인일을 실행 항목 메모에 적습니다.',
+        completion_criteria: '여행경보 단계, 확인일, 피해야 할 지역/시간대가 메모에 남았습니다.',
+        caution: 'FLOW는 출국 가능 여부를 판단하지 않습니다. 외교부 공지와 항공/입국 조건을 직접 확인하세요.',
+      },
+      '여권과 비자 조건 확인': {
+        description: '여권 만료일, 무비자 체류 가능 기간, 전자허가/비자 필요 여부를 확인합니다.',
+        why: '여권 유효기간이나 입국 조건이 맞지 않으면 항공권이 있어도 출국 또는 입국이 막힐 수 있습니다.',
+        how: '여권 만료일과 항공권 정보를 놓고 외교부/방문국 공지의 입국 조건을 확인한 뒤 부족한 서류를 실행 항목 메모에 적습니다.',
+        completion_criteria: '여권 유효기간, 체류 가능 기간, 필요한 입국 서류가 적혔습니다.',
+        caution: 'FLOW는 출국 가능 여부를 판단하지 않습니다. 외교부 공지와 항공/입국 조건을 직접 확인하세요.',
+      },
+      '긴급 연락처와 영사콜센터 저장': {
+        description: '영사콜센터, 현지 공관, 보험사 긴급번호를 휴대폰과 오프라인 메모에 저장합니다.',
+        why: '분실, 사고, 통신 장애가 생기면 온라인 검색보다 저장된 연락처가 먼저 필요합니다.',
+        how: '영사콜센터, 주베트남 대한민국 대사관/총영사관, 보험사 긴급번호, 동행자 연락처를 휴대폰과 오프라인 메모에 같이 저장합니다.',
+        completion_criteria: '영사콜센터와 현지 공관 연락처가 휴대폰 및 오프라인 메모에 저장됐습니다.',
+        caution: 'FLOW는 출국 가능 여부를 판단하지 않습니다. 외교부 공지와 항공/입국 조건을 직접 확인하세요.',
+      },
+      '보험과 현지 이동 계획 점검': {
+        description: '여행자보험 보장 범위와 공항-숙소 이동, 야간 이동 피할 구간을 확인합니다.',
+        why: '보험 보장 범위와 첫 이동 경로가 정리되어야 사고나 지연 상황에서 바로 대응할 수 있습니다.',
+        how: '여행자보험 증권의 보장 범위와 긴급 연락처를 확인하고 공항-숙소 이동, 야간 이동, 피해야 할 지역을 실행 항목 메모에 적습니다.',
+        completion_criteria: '보험 증권 위치, 보험사 긴급번호, 공항-숙소 이동 경로가 저장됐습니다.',
+        caution: 'FLOW는 출국 가능 여부를 판단하지 않습니다. 외교부 공지와 항공/입국 조건을 직접 확인하세요.',
+      },
+      '가족에게 일정과 비상 연락 방법 공유': {
+        description: '항공편, 숙소, 현지 연락처, 연락 두절 시 확인 방법을 가족이나 동행자에게 보냅니다.',
+        why: '현지에서 연락이 끊겼을 때 가족이 확인할 기준 정보가 있어야 신고와 지원 요청이 빨라집니다.',
+        how: '항공편, 숙소, 주요 이동일, 영사콜센터, 보험사 연락처, 연락 두절 시 확인 순서를 가족이나 동행자에게 공유합니다.',
+        completion_criteria: '최신 일정과 비상 연락 방법이 가족 또는 동행자에게 전달됐습니다.',
+        caution: 'FLOW는 출국 가능 여부를 판단하지 않습니다. 외교부 공지와 항공/입국 조건을 직접 확인하세요.',
+      },
+    };
+
+    next = {
+      ...next,
+      flow: {
+        ...next.flow,
+        description: '외교부 해외안전여행 국가/지역별 정보를 출국일 기준 체크리스트와 캘린더로 바꾼 Flow입니다.',
+        conversion_note:
+          '외교부 해외안전여행 국가/지역별 정보를 출국일 기준 여행경보, 입국 조건, 영사 연락처, 보험/이동, 가족 공유 체크로 압축했습니다.',
+        primary_destination: 'hybrid',
+        ...creatorMeta('FLOW 큐레이션팀', '공식자료 큐레이터', '외교부 해외안전여행 정보를 출국일 기준 실행 항목으로 정리합니다.', 642, 118),
+        owner_user_id: next.flow.owner_user_id,
+      },
+      sections: next.sections.map((section) =>
+        section.title === '출국 전'
+          ? { ...section, description: '출국 전 공식 안전정보와 입국 조건을 확인합니다.' }
+          : section.title === '현지 대비'
+            ? { ...section, description: '현지에서 바로 쓸 연락처와 이동/보험 정보를 저장합니다.' }
+            : section,
+      ),
+      items: next.items.map((item) => {
+        const copy = mofaCopyByTitle[item.title];
+        return copy ? { ...item, description: copy.description } : item;
+      }),
+      itemDetails: next.itemDetails?.map((detail) => {
+        const item = next.items.find((entry) => entry.id === detail.item_id);
+        const copy = item ? mofaCopyByTitle[item.title] : undefined;
+        if (!copy) return detail;
+        return {
+          ...detail,
+          why: copy.why,
+          how: copy.how,
+          completion_criteria: copy.completion_criteria,
+          caution: copy.caution,
+        };
+      }),
     };
   }
 
@@ -2243,8 +2421,8 @@ type CopyPolishConfig = {
 
 const sourceRiskCopyPolish: Record<string, CopyPolishConfig> = {
   'computer-skills-d30-study': {
-    artifact: 'D-30 학습표와 모의점수 로그',
-    record: '시험일, 단원, 오답 유형, 점수, 실기 파일 상태',
+    artifact: 'D-30 캘린더와 실행 항목 메모',
+    record: '시험일, 단원, 오답 유형, 재풀이 날짜, 실기 파일 상태',
     sourceCheck: '교재 목차와 최신 기출 범위',
     boundary: '새 범위를 늘리기보다 오답 재풀이와 실기 환경 확인을 우선합니다.',
     sourceType: 'reference',

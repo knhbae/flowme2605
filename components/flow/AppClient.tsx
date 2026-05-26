@@ -125,6 +125,9 @@ const reactionFields: { key: keyof ReactionLog; label: string }[] = [
   { key: 'preferenceNote', label: '거부/선호 메모' },
 ];
 
+const mealCalendarOnlySlugs = new Set(['baby-food-menu-recipe']);
+const flowCreatorDisplayOverrideSlugs = new Set(['baby-food-menu-recipe', 'real-mofa-overseas-travel-prep']);
+
 const linkTypeLabels: Record<string, string> = {
   official: '공식 링크',
   reference: '참고 자료',
@@ -415,6 +418,7 @@ function getSourceDomain(url?: string): string {
 }
 
 function getCreatorName(bundle: FlowBundle): string {
+  if (flowCreatorDisplayOverrideSlugs.has(bundle.flow.slug) && bundle.flow.creator_name) return bundle.flow.creator_name;
   return getCreatorUser(bundle)?.name ?? bundle.flow.creator_name ?? 'FLOW 큐레이션팀';
 }
 
@@ -423,10 +427,12 @@ function getCreatorUser(bundle: FlowBundle): FlowUser | undefined {
 }
 
 function getCreatorRole(bundle: FlowBundle): string | undefined {
+  if (flowCreatorDisplayOverrideSlugs.has(bundle.flow.slug) && bundle.flow.creator_role) return bundle.flow.creator_role;
   return getCreatorUser(bundle)?.role ?? bundle.flow.creator_role;
 }
 
 function getCreatorNote(bundle: FlowBundle): string | undefined {
+  if (flowCreatorDisplayOverrideSlugs.has(bundle.flow.slug) && bundle.flow.creator_note) return bundle.flow.creator_note;
   return getCreatorUser(bundle)?.bio ?? bundle.flow.creator_note;
 }
 
@@ -4302,6 +4308,7 @@ function MealPlanRenderer({
   onReactionChange: (id: string, patch: ReactionLog) => void;
 }) {
   const collapseSecondarySections = shouldCollapseSecondaryExecutionSections(bundle);
+  const hideReactionDetails = mealCalendarOnlySlugs.has(bundle.flow.slug);
 
   return (
     <div className="space-y-5">
@@ -4353,17 +4360,19 @@ function MealPlanRenderer({
                         </div>
                       ) : null}
                     </details>
-                    <details data-testid={`reaction-log-${slot.id}`} className="rounded-md border border-gray-200 p-3">
-                      <summary className="cursor-pointer font-semibold">반응 기록</summary>
-                      <div className="mt-3 grid gap-2">
-                        {reactionFields.map((field) => (
-                          <label key={field.key} className="grid gap-1 text-sm">
-                            <span>{field.label}</span>
-                            <input className="rounded border border-gray-300 px-2 py-1" value={reactionLogs[slot.id]?.[field.key] ?? ''} onChange={(event) => onReactionChange(slot.id, { [field.key]: event.target.value })} />
-                          </label>
-                        ))}
-                      </div>
-                    </details>
+                    {!hideReactionDetails ? (
+                      <details data-testid={`reaction-log-${slot.id}`} className="rounded-md border border-gray-200 p-3">
+                        <summary className="cursor-pointer font-semibold">반응 기록</summary>
+                        <div className="mt-3 grid gap-2">
+                          {reactionFields.map((field) => (
+                            <label key={field.key} className="grid gap-1 text-sm">
+                              <span>{field.label}</span>
+                              <input className="rounded border border-gray-300 px-2 py-1" value={reactionLogs[slot.id]?.[field.key] ?? ''} onChange={(event) => onReactionChange(slot.id, { [field.key]: event.target.value })} />
+                            </label>
+                          ))}
+                        </div>
+                      </details>
+                    ) : null}
                   </div>
                 </div>
               );

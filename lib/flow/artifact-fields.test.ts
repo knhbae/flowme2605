@@ -56,21 +56,7 @@ test('real-source official reshape batch exposes route-specific workbench record
 
 test('source replacement and risk review routes expose review-specific artifact records', () => {
   const studyTables = getLogTables(bundle('computer-skills-d30-study'));
-  assert.deepEqual(
-    studyTables.map((table) => table.id),
-    ['study-chapter-progress', 'study-mock-scores'],
-  );
-  assert.deepEqual(studyTables[0]?.rows.map((row) => row.label), [
-    '필기 핵심 개념 정리',
-    '스프레드시트 실기 함수·피벗',
-    '데이터베이스 실기 쿼리·폼',
-    '기출 오답 보완과 실전 점검',
-  ]);
-  assert.deepEqual(studyTables[0]?.rows[0]?.defaultValues, {
-    scope: '컴퓨터 일반·스프레드시트 핵심 개념',
-    status: '원본에서 가져온 진도',
-    note: '시험일까지 먼저 배치하고 약한 단원만 조정',
-  });
+  assert.deepEqual(studyTables, []);
 
   assert.equal(getComparisonConfig(bundle('new-car-delivery-check')), undefined);
 
@@ -115,24 +101,6 @@ test('source replacement and risk review routes expose review-specific artifact 
   assert.deepEqual(
     getMemoCardFields(bundle('job-change-risk-check')).map((field) => field.id),
     ['job-change-company-question', 'job-change-public-insurance-check', 'job-change-retirement-pay-note', 'job-change-gap-budget', 'job-change-decision-boundary'],
-  );
-});
-
-test('computer skills progress table keeps source rows separate from user-editable fields', () => {
-  const [progressTable] = getLogTables(bundle('computer-skills-d30-study'));
-
-  assert.equal(progressTable?.id, 'study-chapter-progress');
-  assert.equal(progressTable?.sourceKind, 'source_derived');
-  assert.deepEqual(progressTable?.readOnlyColumnIds, ['scope']);
-  assert.deepEqual(progressTable?.userEditableColumnIds, ['targetDate', 'status', 'note']);
-  assert.deepEqual(
-    progressTable?.rows.map((row) => Object.keys(row.defaultValues ?? {}).sort()),
-    [
-      ['note', 'scope', 'status'],
-      ['note', 'scope', 'status'],
-      ['note', 'scope', 'status'],
-      ['note', 'scope', 'status'],
-    ],
   );
 });
 

@@ -91,6 +91,9 @@ const reactionColumns = [
   '거부/선호 메모',
 ];
 
+const mealCalendarOnlySlugs = new Set(['baby-food-menu-recipe']);
+const staleLogStateIgnoredSlugs = new Set(['computer-skills-d30-study']);
+
 const weekdayColumns = ['월', '화', '수', '목', '금', '토', '일'];
 const weeklyColumns = ['주', ...weekdayColumns];
 const monthlyColumns = ['월/주', ...weekdayColumns];
@@ -443,11 +446,13 @@ function buildWorkbenchRows(bundle: FlowBundle, state?: FlowWorkbenchState): Wor
     ]);
   }
 
-  for (const [date, logRow] of sortedEntries(state.logRows ?? {})) {
-    if (knownLogRows.has(date)) continue;
-    for (const [field, value] of sortedEntries(logRow)) {
-      if (!value.trim()) continue;
-      rows.push(['기록', logRowLabels.get(date) ?? date, logFieldLabels.get(field) ?? field, value.trim()]);
+  if (!staleLogStateIgnoredSlugs.has(bundle.flow.slug)) {
+    for (const [date, logRow] of sortedEntries(state.logRows ?? {})) {
+      if (knownLogRows.has(date)) continue;
+      for (const [field, value] of sortedEntries(logRow)) {
+        if (!value.trim()) continue;
+        rows.push(['기록', logRowLabels.get(date) ?? date, logFieldLabels.get(field) ?? field, value.trim()]);
+      }
     }
   }
 
@@ -948,29 +953,31 @@ export function buildWorkbookSheets(
       accentColor,
     });
 
-    sheets.push({
-      name: '반응기록',
-      columns: reactionColumns,
-      rows: (bundle.mealSlots ?? []).map((slot) => {
-        const log = options.reactionLogs?.[slot.id] ?? {};
-        const { startDate, endDate } = getMealDates(slot, anchor);
-        return [
-          timingLabel(slot.day_offset, slot.duration_days),
-          startDate && endDate ? `${startDate} ~ ${endDate}` : '',
-          slot.menu_title,
-          slot.new_ingredients.join(', '),
-          log.amount ?? '',
-          log.fedAt ?? '',
-          log.skin ?? '',
-          log.vomitingOrDiarrhea ?? '',
-          log.stool ?? '',
-          log.sleep ?? '',
-          log.preferenceNote ?? '',
-        ];
-      }),
-      accentColor,
-      note: '반응기록은 보호자가 직접 관찰해 입력한 메모용 영역입니다. 이상 반응이 의심되면 전문가 또는 공식 정보를 확인하세요.',
-    });
+    if (!mealCalendarOnlySlugs.has(bundle.flow.slug)) {
+      sheets.push({
+        name: '반응기록',
+        columns: reactionColumns,
+        rows: (bundle.mealSlots ?? []).map((slot) => {
+          const log = options.reactionLogs?.[slot.id] ?? {};
+          const { startDate, endDate } = getMealDates(slot, anchor);
+          return [
+            timingLabel(slot.day_offset, slot.duration_days),
+            startDate && endDate ? `${startDate} ~ ${endDate}` : '',
+            slot.menu_title,
+            slot.new_ingredients.join(', '),
+            log.amount ?? '',
+            log.fedAt ?? '',
+            log.skin ?? '',
+            log.vomitingOrDiarrhea ?? '',
+            log.stool ?? '',
+            log.sleep ?? '',
+            log.preferenceNote ?? '',
+          ];
+        }),
+        accentColor,
+        note: '반응기록은 보호자가 직접 관찰해 입력한 메모용 영역입니다. 이상 반응이 의심되면 전문가 또는 공식 정보를 확인하세요.',
+      });
+    }
   }
 
   return sheets;

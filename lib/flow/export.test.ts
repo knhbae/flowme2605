@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { getLogTables } from './artifact-fields';
 import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from './export';
 import { seedBundles } from './seed-flows';
 
@@ -203,28 +202,7 @@ test('study export includes chapter progress and mock score records', () => {
   assert.ok(workbench.rows.some((row) => row.includes('기출 1회차') && row.includes('점수') && row.includes('78점')));
 });
 
-test('study export includes source-derived chapter defaults before user edits', () => {
-  const study = seedBundles.find((bundle) => bundle.flow.slug === 'computer-skills-d30-study');
-  assert.ok(study);
-
-  const workbenchState = {
-    occurrences: {},
-    logRows: {},
-    memoCards: {},
-  };
-
-  const text = buildText(study, {}, '2026-06-22', {}, undefined, workbenchState);
-
-  assert.match(text, /필기 핵심 개념 정리 범위: 컴퓨터 일반·스프레드시트 핵심 개념/);
-  assert.match(text, /필기 핵심 개념 정리 상태: 원본에서 가져온 진도/);
-
-  const sheets = buildWorkbookSheets(study, {}, '2026-06-22', { workbenchState });
-  const workbench = sheets.find((sheet) => sheet.name === '실행판 기록');
-  assert.ok(workbench);
-  assert.ok(workbench.rows.some((row) => row.includes('필기 핵심 개념 정리') && row.includes('범위') && row.includes('컴퓨터 일반·스프레드시트 핵심 개념')));
-});
-
-test('study export ignores user overrides for source-derived scope rows', () => {
+test('computer skills export omits stale progress-table state from the experiment checklist route', () => {
   const study = seedBundles.find((bundle) => bundle.flow.slug === 'computer-skills-d30-study');
   assert.ok(study);
 
@@ -241,18 +219,13 @@ test('study export ignores user overrides for source-derived scope rows', () => 
   };
 
   const text = buildText(study, {}, '2026-06-22', {}, undefined, workbenchState);
-
-  const progressTable = getLogTables(study)[0];
-  const defaultScope = progressTable?.rows[0]?.defaultValues?.scope;
-  assert.ok(defaultScope);
-
   const sheets = buildWorkbookSheets(study, {}, '2026-06-22', { workbenchState });
   const allCells = sheets.flatMap((sheet) => sheet.rows.flat()).map(String);
+
   assert.equal(text.includes('user-authored blank tracker category'), false);
   assert.equal(allCells.includes('user-authored blank tracker category'), false);
-  assert.equal(allCells.includes(defaultScope), true);
-  assert.equal(allCells.includes('2026-06-01'), true);
-  assert.equal(allCells.includes('reviewed'), true);
+  assert.equal(allCells.includes('컴퓨터 일반·스프레드시트 핵심 개념'), false);
+  assert.equal(allCells.includes('reviewed'), false);
 });
 
 test('study calendar export keeps each dated item executable', () => {
@@ -264,8 +237,9 @@ test('study calendar export keeps each dated item executable', () => {
   assert.match(ics, /SUMMARY:컴퓨터활용능력 D-30 학습 Flow - 필기와 실기 시험 범위 나누기/);
   assert.match(ics, /실행:/);
   assert.match(ics, /기록:/);
-  assert.match(ics, /D-30 학습표|챕터 진도표/);
-  assert.match(ics, /기출 점수·오답 기록|모의점수 로그/);
+  assert.match(ics, /D-30 캘린더|실행 항목 메모/);
+  assert.match(ics, /재풀이 날짜|실기 환경|시험장 준비/);
+  assert.doesNotMatch(ics, /챕터 진도표|모의점수 로그|기출 점수·오답 기록/);
   assert.match(ics, /FLOW가 시험일 기준으로 변환/);
 });
 
@@ -496,7 +470,7 @@ test('workbook export uses user-facing Korean columns instead of raw db fields',
   assert.match(String(detailRow[3]), /정부24/);
 });
 
-test('meal plan workbook includes execution, recipe, and reaction log sheets', () => {
+test('baby-food workbook keeps the experiment checklist route calendar and recipe only', () => {
   const baby = seedBundles.find((bundle) => bundle.flow.slug === 'baby-food-menu-recipe');
   assert.ok(baby);
 
@@ -515,7 +489,7 @@ test('meal plan workbook includes execution, recipe, and reaction log sheets', (
     },
   );
 
-  assert.deepEqual(sheets.map((sheet) => sheet.name), ['실행 요약', '실행표', '주간 보기', '월간 보기', '상세', '레시피', '반응기록']);
+  assert.deepEqual(sheets.map((sheet) => sheet.name), ['실행 요약', '실행표', '주간 보기', '월간 보기', '상세', '레시피']);
 
   const execution = sheets.find((sheet) => sheet.name === '실행표');
   assert.ok(execution);
@@ -536,16 +510,8 @@ test('meal plan workbook includes execution, recipe, and reaction log sheets', (
   assert.match(String(recipes.rows[0][2]), /1\. 쌀 또는 쌀가루를 준비한다/);
 
   const reaction = sheets.find((sheet) => sheet.name === '반응기록');
-  assert.ok(reaction);
-  assert.deepEqual(reaction.rows[0].slice(0, 7), [
-    'D+0~D+2',
-    '2026-06-01 ~ 2026-06-03',
-    '쌀미음',
-    '쌀',
-    '30ml',
-    '08:30',
-    '없음',
-  ]);
+  assert.equal(reaction, undefined);
+  assert.equal(sheets.flatMap((sheet) => sheet.rows.flat()).map(String).includes('30ml'), false);
 
   const weekly = sheets.find((sheet) => sheet.name === '주간 보기');
   assert.ok(weekly);

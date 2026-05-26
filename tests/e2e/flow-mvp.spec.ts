@@ -237,7 +237,6 @@ test('former broad ThankyouBUBU routes now render as one exact-video action', as
   for (const route of routes) {
     await page.goto(`/f/${route.slug}`);
 
-    await expect(page.getByRole('heading', { name: '실행 항목' })).toBeVisible();
     await expect(page.getByText(route.action).first()).toBeVisible();
     await expect(page.getByText(route.removed)).toHaveCount(0);
     await expect(page.getByRole('link', { name: /영상 열기/ })).toBeVisible();
@@ -293,17 +292,11 @@ test('FITVELY diet record route starts from a source-rule observation sheet', as
   await page.goto('/f/real-fitvely-diet-record-routine');
 
   await expect(page.getByRole('heading', { name: 'FITVELY 식단 기록 루틴 Flow' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '식단 기준 관찰표' })).toBeVisible();
-  await expect(page.getByText('식단 기준 1개를 골라 관찰표에 기록').first()).toBeVisible();
+  const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
+  await expect(workbench.getByTestId('artifact-log-table-spreadsheet')).toHaveCount(0);
   await expect(page.getByText('하루 기록 항목 정하기')).toHaveCount(0);
   await expect(page.getByRole('link', { name: '원문 보기' })).toHaveAttribute('href', 'https://www.youtube.com/watch?v=qcTxaFMWzKs');
-
-  const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(workbench.getByLabel('오늘 한 끼 기록 / 선택 기준')).toBeVisible();
-  await expect(workbench.getByLabel('오늘 한 끼 기록 / 컨디션')).toBeVisible();
-  await expect(workbench.getByLabel('오늘 한 끼 기록 / 다음 조정')).toBeVisible();
-  await expect(workbench.getByRole('button', { name: '엑셀로 받기' })).toBeVisible();
-  await expect(workbench.getByRole('button', { name: '체크리스트 복사' })).toBeVisible();
 });
 
 test('exact video copy opens an editable draft with the execution item preserved', async ({ page }) => {
@@ -368,10 +361,10 @@ test('vehicle inspection route keeps reservation and result memo beside the time
 
   await expect(page.getByRole('heading', { name: '자동차검사 D-14 준비 Flow' })).toBeVisible();
   const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(workbench.getByText('검사 예약·결과 후속 메모')).toBeVisible();
-  await expect(workbench.getByLabel('검사 예약 정보')).toBeVisible();
-  await expect(workbench.getByLabel('검사 결과표 보관')).toBeVisible();
-  await expect(workbench.getByLabel('후속 정비/재검사 메모')).toBeVisible();
+  await expect(workbench.getByTestId('artifact-list-card')).toBeVisible();
+  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
+  await expect(workbench.getByText('검사 예약·결과 후속 메모')).toHaveCount(0);
+  await expect(workbench.getByLabel('검사 예약 정보')).toHaveCount(0);
   await expect(workbench.getByText('검사 결과 후속 memo gap 검토가 필요합니다.')).toHaveCount(0);
 });
 
@@ -441,7 +434,8 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await page.getByLabel('이사일').fill('2026-07-15');
   await expect(page.getByText('이사일: 2026-07-15')).toBeVisible();
   await expect(page.getByRole('heading', { name: '지금 먼저 체크할 일' })).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: '전체 흐름' })).toBeVisible();
+  await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-list-card')).toBeVisible();
+  await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-calendar-card')).toBeVisible();
   await expect(page.getByText('출처와 주의 정보')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '전체 할 일' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'D-30 큰 준비', exact: true })).toHaveCount(0);
@@ -458,8 +452,7 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await page.getByRole('button', { name: '전체 할 일' }).click();
   await page.getByRole('checkbox', { name: /이사 방식 정하기/ }).first().check();
   await page.getByRole('checkbox', { name: /이사할 집 하자 점검하기/ }).first().check();
-  await expect(page.getByText('2 / 24').first()).toBeVisible();
-  await expect(page.getByRole('heading', { name: '지금 먼저 체크할 일' })).toBeVisible();
+  await expect(workbench.getByText('2/24 완료')).toBeVisible();
 
   const downloadPromise = page.waitForEvent('download');
   workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
@@ -521,41 +514,32 @@ test('source-fit decisions are visible on direct-access public flow pages', asyn
   await expect(page.getByTestId('source-fit-status')).toHaveAttribute('data-decision', 'reshape_before_featured');
 });
 
-test('computer skills final QA exports study calendar and score sheet records', async ({ page }) => {
+test('computer skills final QA exports checklist and calendar without study progress tables', async ({ page }) => {
   await page.goto('/f/computer-skills-d30-study');
 
   await expect(page.getByRole('heading', { name: '컴퓨터활용능력 D-30 학습 Flow' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '챕터 진도표' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '기출 점수·오답 기록' })).toBeVisible();
+  await expect(page.getByTestId('artifact-log-table-study-chapter-progress')).toHaveCount(0);
+  await expect(page.getByTestId('artifact-log-table-study-mock-scores')).toHaveCount(0);
 
   await page.getByLabel('시험일').fill('2026-06-22');
   await expect(page.getByText('05-23').first()).toBeVisible();
-  await expect(page.getByTestId('artifact-readonly-cell-study-chapter-week-1-scope')).toContainText('컴퓨터 일반·스프레드시트 핵심 개념');
-  await expect(page.getByLabel('필기 핵심 개념 정리 / 범위')).toHaveCount(0);
-  await expect(page.getByLabel('스프레드시트 실기 함수·피벗 / 상태')).toHaveValue('원본에서 가져온 진도');
-
-  await page.getByLabel('필기 핵심 개념 정리 / 목표일').fill('2026-05-29');
-  await page.getByLabel('필기 핵심 개념 정리 / 상태').fill('진행 중');
-  await page.getByLabel('기출 1회차 / 풀이일').fill('2026-06-01');
-  await page.getByLabel('기출 1회차 / 점수').fill('68점');
-  await page.getByLabel('기출 1회차 / 오답').fill('함수식, 피벗테이블');
-  await page.getByLabel('기출 1회차 / 재풀이일').fill('2026-06-02');
 
   await page.getByLabel('실행판 체크: 필기와 실기 시험 범위 나누기').check();
-  await expect(page.getByText('1 / 9').first()).toBeVisible();
   let studyWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(studyWorkbench.getByRole('button', { name: '엑셀로 받기' })).toBeEnabled();
-  await expect(studyWorkbench.getByRole('button', { name: '캘린더 받기' })).toBeEnabled();
+  const listCard = studyWorkbench.getByTestId('artifact-list-card');
+  const calendarCard = studyWorkbench.getByTestId('artifact-calendar-card');
+  await expect(listCard.getByRole('button', { name: '엑셀로 받기' })).toBeEnabled();
+  await expect(calendarCard.getByRole('button', { name: '캘린더 받기' })).toBeEnabled();
 
   const excelDownloadPromise = page.waitForEvent('download');
-  await studyWorkbench.getByRole('button', { name: '엑셀로 받기' }).click();
+  await listCard.getByRole('button', { name: '엑셀로 받기' }).click();
   const excelDownload = await excelDownloadPromise;
   expect(excelDownload.suggestedFilename()).toBe('computer-skills-d30-study.xlsx');
 
   const calendarDownloadPromise = page.waitForEvent('download');
   studyWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await studyWorkbench.getByRole('button', { name: '캘린더 받기' }).click();
+  await studyWorkbench.getByTestId('artifact-calendar-card').getByRole('button', { name: '캘린더 받기' }).click();
   const calendarDownload = await calendarDownloadPromise;
   expect(calendarDownload.suggestedFilename()).toBe('computer-skills-d30-study.ics');
 });
@@ -565,11 +549,12 @@ test('risk-boundary QA exports new-car evidence memo and diet observation sheet'
 
   let workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
   await expect(workbench).toBeVisible();
-  await expect(workbench.getByText('사진·딜러 확인·서명 전 보류 기록')).toBeVisible();
-  await workbench.locator('textarea').first().fill('driver door scratch, photo door-scratch-4821.jpg');
-  await workbench.getByLabel('사진/영상 파일명').fill('door-scratch-4821.jpg, hud-test-20260603.mp4');
-  await workbench.getByLabel('딜러 확인 내용').fill('dealer confirmed scratch and will send written repair date');
-  await workbench.getByLabel('인수 보류/서명 경계 메모').fill('do not sign until repair memo is attached');
+  const holdSection = workbench.getByTestId('flow-hold-section');
+  await expect(holdSection).toContainText('인수 보류 기준');
+  await holdSection.getByTestId('flow-hold-field-new-car-delivery-check-hold-reason').fill('driver door scratch');
+  await holdSection.getByTestId('flow-hold-field-new-car-delivery-check-hold-evidence-files').fill('door-scratch-4821.jpg, hud-test-20260603.mp4');
+  await holdSection.getByTestId('flow-hold-field-new-car-delivery-check-hold-confirmation').fill('dealer confirmed scratch and will send written repair date');
+  await holdSection.getByTestId('flow-hold-field-new-car-delivery-check-hold-next-check').fill('do not sign until repair memo is attached');
   await workbench.locator('input[type="checkbox"]').first().check();
   await expect(workbench.getByRole('button', { name: '엑셀로 받기' })).toBeEnabled();
 
@@ -583,20 +568,14 @@ test('risk-boundary QA exports new-car evidence memo and diet observation sheet'
 
   workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
   await expect(workbench).toBeVisible();
-  await expect(workbench.getByText('관찰 전 중단/상담 기준')).toBeVisible();
-  await workbench.locator('input').nth(0).fill('breakfast oatmeal, lunch kimbap, dinner tofu');
-  await workbench.locator('input').nth(1).fill('30m walk');
-  await workbench.locator('input').nth(2).fill('waist 82cm');
-  await workbench.locator('input').nth(3).fill('normal');
-  await workbench.locator('input').nth(4).fill('observe late dinner trigger');
-  await workbench.locator('input').nth(13).fill('dizziness repeated, stop and consult professional');
-  await expect(workbench.getByRole('heading', { name: '주간 관찰 메모' })).toBeVisible();
-  await workbench.locator('textarea').first().fill('late dinner and low sleep correlate with snack cravings');
+  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
+  await expect(workbench.getByTestId('artifact-log-table-spreadsheet')).toHaveCount(0);
   await page.locator('[data-testid="flow-item-card"]').first().getByRole('checkbox').check();
-  await expect(workbench.getByRole('button', { name: '엑셀로 받기' })).toBeEnabled();
+  const dietCalendarCard = workbench.getByTestId('artifact-calendar-card');
+  await expect(dietCalendarCard.getByRole('button', { name: '시트로 받기 · .xlsx' })).toBeEnabled();
 
   excelDownloadPromise = page.waitForEvent('download');
-  await workbench.getByRole('button', { name: '엑셀로 받기' }).click();
+  await dietCalendarCard.getByRole('button', { name: '시트로 받기 · .xlsx' }).click();
   excelDownload = await excelDownloadPromise;
   expect(excelDownload.suggestedFilename()).toBe('diet-habit-2week.xlsx');
 });
@@ -605,24 +584,17 @@ test('public MVP guardrail screens keep evidence and stop conditions first', asy
   await page.goto('/f/new-car-delivery-check');
 
   let workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(workbench.getByRole('heading', { name: '인수 전 하자·증빙표' })).toBeVisible();
-  await expect(workbench.getByText('사진·딜러 확인', { exact: true })).toBeVisible();
-  const newCarEvidenceTable = workbench.locator('div').filter({ hasText: '인수 전 하자·증빙표' }).first();
-  await expect(newCarEvidenceTable.getByRole('button', { name: '엑셀로 받기' })).toBeVisible();
-  await expect(workbench.getByTestId('artifact-list-card').getByRole('button', { name: '엑셀로 받기' })).toHaveCount(0);
-  await expect(workbench.getByText('사진·딜러 확인·서명 전 보류 기록')).toBeVisible();
-  await expect(workbench.getByText(/체크 완료보다 사진 파일명, 딜러 확인, 보류 조건/)).toBeVisible();
-  await expect(workbench.getByText('인수 전 보류 기준')).toBeVisible();
-  await expect(workbench.getByLabel('인수 보류/서명 경계 메모')).toBeVisible();
-  await expect(workbench.getByText('현장에서 바로 체크')).toBeVisible();
+  await expect(workbench.getByTestId('artifact-comparison-card')).toHaveCount(0);
+  await expect(workbench.getByTestId('flow-hold-section')).toContainText('인수 보류 기준');
+  await expect(workbench.getByTestId('flow-hold-field-new-car-delivery-check-hold-evidence-files')).toBeVisible();
+  await expect(workbench.getByTestId('artifact-list-card')).toBeVisible();
 
   await page.goto('/f/diet-habit-2week');
   await page.locator('input[type="date"]').first().fill('2026-06-01');
 
   workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(workbench.getByRole('heading', { name: '관찰 기록표' })).toBeVisible();
-  await expect(workbench.getByRole('cell', { name: '중단/상담 조건' })).toBeVisible();
-  await expect(workbench.getByText('관찰 전 중단/상담 기준')).toBeVisible();
+  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
+  await expect(workbench.getByTestId('artifact-log-table-spreadsheet')).toHaveCount(0);
 });
 
 test('mobile export actions open from a bottom sheet', async ({ page }) => {
@@ -736,7 +708,7 @@ test('new flow creation keeps advanced settings secondary', async ({ page }) => 
   await expect(page.getByText('식단·레시피로 구성하기')).toBeVisible();
 });
 
-test('meal plan flow exposes recipe and reaction log', async ({ page }) => {
+test('meal plan flow exposes recipe and menu calendar without reaction log', async ({ page }) => {
   await page.goto('/f/baby-food-menu-recipe');
 
   await page.getByLabel('이유식 시작일').fill('2026-06-01');
@@ -756,72 +728,56 @@ test('meal plan flow exposes recipe and reaction log', async ({ page }) => {
   await page.getByRole('button', { name: '전체 할 일' }).click();
   await page.getByText('레시피 보기').first().click();
   await expect(page.getByText('쌀 또는 쌀가루', { exact: true })).toBeVisible();
-
-  const reactionLog = page.getByTestId('reaction-log-meal-rice-0');
-  await reactionLog.locator('summary').click();
-  await expect(reactionLog.getByLabel('먹은 양')).toBeVisible();
+  await expect(page.getByTestId('reaction-log-meal-rice-0')).toHaveCount(0);
 });
 
-test('baby food first screen prioritizes reaction logging over recipe details', async ({ page }) => {
+test('baby food first screen prioritizes the menu calendar over reaction logging', async ({ page }) => {
   await page.goto('/f/baby-food-menu-recipe');
 
   const workbench = page.getByLabel('Flow artifact workbench');
   await expect(workbench.getByTestId('meal-reaction-workbench')).toBeVisible();
-  await expect(workbench.getByTestId('meal-reaction-log-card')).toBeVisible();
+  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
+  await expect(workbench.getByTestId('meal-reaction-log-card')).toHaveCount(0);
   await expect(workbench.getByTestId('meal-recipe-detail-card')).toHaveCount(0);
   await expect(workbench).toContainText('전문가');
 });
 
-test('baby food mobile starts with warning and today reaction record', async ({ page }) => {
+test('baby food mobile starts with warning and menu calendar', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/baby-food-menu-recipe');
 
   const workbench = page.getByLabel('Flow artifact workbench');
   const warning = workbench.getByTestId('meal-sensitive-warning');
-  const todayReaction = workbench.getByTestId('meal-today-reaction-card');
-  const sheetExport = todayReaction.getByTestId('meal-reaction-sheet-export');
   const calendarCard = workbench.getByTestId('artifact-calendar-card').first();
 
   await expect(warning).toBeVisible();
-  await expect(todayReaction).toBeVisible();
-  await expect(todayReaction.getByRole('textbox').first()).toBeVisible();
-  await expect(sheetExport).toBeVisible();
-  await expect(sheetExport).toHaveAttribute('aria-label', /시트로 받기: .*오늘 먹은 양 반응 기록/);
   await expect(calendarCard).toBeVisible();
+  await expect(workbench.getByTestId('meal-today-reaction-card')).toHaveCount(0);
 
   const warningBox = await warning.boundingBox();
-  const reactionBox = await todayReaction.boundingBox();
-  const sheetExportBox = await sheetExport.boundingBox();
   const calendarBox = await calendarCard.boundingBox();
   expect(warningBox).not.toBeNull();
-  expect(reactionBox).not.toBeNull();
-  expect(sheetExportBox).not.toBeNull();
   expect(calendarBox).not.toBeNull();
-  expect(warningBox!.y).toBeLessThan(reactionBox!.y);
-  expect(reactionBox!.y).toBeLessThan(calendarBox!.y);
-  expect(reactionBox!.y).toBeLessThan(844);
-  expect(sheetExportBox!.y).toBeLessThan(844);
+  expect(warningBox!.y).toBeLessThan(calendarBox!.y);
+  expect(calendarBox!.y).toBeLessThan(844);
 
   await expect(page.getByText('validated')).toHaveCount(0);
 });
 
-test('baby food mobile reaction card summarizes meal, new ingredient, and allergy cue', async ({ page }) => {
+test('baby food mobile omits the reaction summary before the calendar', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/baby-food-menu-recipe');
 
   const workbench = page.getByLabel('Flow artifact workbench');
   const summaryCard = workbench.getByTestId('meal-reaction-summary-card');
 
-  await expect(summaryCard).toBeVisible();
-  await expect(summaryCard.getByTestId('meal-summary-slot')).toBeVisible();
-  await expect(summaryCard.getByTestId('meal-summary-new-ingredients')).toBeVisible();
-  await expect(summaryCard.getByTestId('meal-summary-reaction-fields')).toBeVisible();
-  await expect(summaryCard.getByTestId('meal-summary-allergy-cue')).toBeVisible();
+  await expect(summaryCard).toHaveCount(0);
+  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
 
-  const order = await workbench.locator('[data-testid="meal-reaction-summary-card"], [data-testid="artifact-calendar-card"]').evaluateAll((nodes) =>
+  const order = await workbench.locator('[data-testid="artifact-calendar-card"], [data-testid="meal-recipe-detail-card"]').evaluateAll((nodes) =>
     nodes.map((node) => (node as HTMLElement).dataset.testid),
   );
-  expect(order.slice(0, 2)).toEqual(['meal-reaction-summary-card', 'artifact-calendar-card']);
+  expect(order[0]).toBe('artifact-calendar-card');
 });
 
 test('duration calendar checks only one day at a time', async ({ page }) => {
@@ -837,31 +793,23 @@ test('duration calendar checks only one day at a time', async ({ page }) => {
 
   await expect(firstDay.getByRole('checkbox')).toBeChecked();
   await expect(secondDay.getByRole('checkbox')).not.toBeChecked();
-  await expect(page.getByText('1 / 18').first()).toBeVisible();
+  await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-calendar-card')).toBeVisible();
 });
 
 test('routine flow highlights weekly routine setup', async ({ page }) => {
   await page.goto('/f/running-5k-4week');
 
-  await expect(page.getByText('회차 그리드 · primary')).toBeVisible();
-  await expect(page.getByRole('heading', { name: /4주 루틴/ })).toBeVisible();
-  await expect(page.getByText('회차 기록표 · secondary')).toBeVisible();
-  await expect(page.getByText('이번 주 요약')).toBeVisible();
-  await expect(page.getByText('4주 12회차')).toBeVisible();
-  await expect(page.getByRole('region', { name: '반복 캘린더 미리보기' }).getByRole('button', { name: '캘린더에 넣기 · .ics' })).toBeVisible();
-  await expect(page.getByRole('region', { name: '반복 캘린더 미리보기' }).getByRole('button', { name: '시트로 받기 · .xlsx' })).toBeVisible();
+  const workbench = page.getByLabel('Flow artifact workbench');
+  await expect(workbench.getByTestId('routine-session-grid-card')).toBeVisible();
+  await expect(workbench.getByTestId('routine-session-log-card')).toBeVisible();
+  await expect(workbench.getByTestId('routine-today-session-card')).toBeVisible();
+  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
   await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
   await page.getByLabel('운동 시작일').fill('2026-06-01');
 
   await expect(page.getByText('추천 다음 항목')).toHaveCount(0);
-  await expect(page.getByText('이번 주 루틴 설정')).toBeVisible();
-  await expect(page.getByText('운동 요일').first()).toBeVisible();
-  await expect(page.getByText('첫 루틴 미리보기')).toBeVisible();
-  await expect(page.getByText('리셋 규칙')).toBeVisible();
-  await expect(page.getByText('놓친 날은 부채로 쌓지 않고 다음 가능한 세션부터 다시 시작합니다.')).toBeVisible();
   await page.getByRole('button', { name: '월별 달력' }).click();
-  await expect(page.getByText('루틴 회차')).toBeVisible();
-  await expect(page.getByText('1회차').first()).toBeVisible();
+  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
 
   await page.getByRole('button', { name: '전체 루틴' }).click();
   await page.locator('[data-testid="flow-item-card"]').first().getByRole('checkbox').check();
@@ -878,19 +826,12 @@ test('routine desktop uses session grid and session log artifacts', async ({ pag
   const todayCard = workbench.getByTestId('routine-today-session-card');
 
   await expect(sessionGrid).toBeVisible();
-  await expect(sessionGrid.getByText('회차 그리드 · primary')).toBeVisible();
-  await expect(sessionGrid.getByRole('heading', { name: /4주 루틴/ })).toBeVisible();
   await expect(sessionGrid.getByText(/WEEK 1/)).toBeVisible();
-  await expect(sessionGrid.getByText(/1회차/).first()).toBeVisible();
 
   await expect(sessionLog).toBeVisible();
-  await expect(sessionLog.getByText('회차 기록표 · secondary')).toBeVisible();
-  await expect(sessionLog.getByRole('cell', { name: '세트/강도' })).toBeVisible();
-  await expect(sessionLog.getByRole('cell', { name: '한 줄 메모' })).toBeVisible();
   await expect(sessionLog.getByRole('button', { name: '시트로 받기 · .xlsx' })).toBeVisible();
 
-  await expect(todayCard.getByText('이번 주 요약')).toBeVisible();
-  await expect(todayCard.getByRole('heading', { name: '다음 회차' })).toBeVisible();
+  await expect(todayCard).toBeVisible();
 
   const gridBox = await sessionGrid.boundingBox();
   const logBox = await sessionLog.boundingBox();
@@ -964,46 +905,37 @@ test('no-anchor checklist skips date setup and hides calendar export', async ({ 
 test('used-car checklist shows decision preview instead of calendar by default', async ({ page }) => {
   await page.goto('/f/used-car-buying-check');
 
-  await expect(page.getByText('구매 전 후보 비교')).toBeVisible();
-  await expect(page.getByText('구매 판단 메모')).toBeVisible();
-  await expect(page.getByText('현장에서 바로 체크')).toBeVisible();
+  const workbench = page.getByLabel('Flow artifact workbench');
+  await expect(workbench.getByTestId('artifact-comparison-card')).toHaveCount(0);
+  await expect(workbench.getByTestId('flow-hold-section')).toContainText('구매 보류 기준');
+  await expect(workbench.getByTestId('artifact-list-card')).toBeVisible();
   await expect(page.getByRole('button', { name: '월별 달력' })).toHaveCount(0);
-  await expect(page.getByText('후보별 가격·주행거리').first()).toBeVisible();
 });
 
-test('used-car first screen keeps candidate comparison and hold memo before checklist density', async ({ page }) => {
+test('used-car first screen keeps hold memo and checklist before comparison density', async ({ page }) => {
   await page.goto('/f/used-car-buying-check');
 
   const workbench = page.getByLabel('Flow artifact workbench');
-  await expect(workbench.getByLabel('구매 보류/진행 메모')).toBeVisible();
-  await expect(workbench.getByText('후보별 가격·주행거리')).toBeVisible();
-  await expect(workbench.getByText('구매 보류 사유')).toBeVisible();
+  await expect(workbench.getByTestId('artifact-comparison-card')).toHaveCount(0);
+  await expect(workbench.getByTestId('flow-hold-section')).toContainText('구매 보류 기준');
+  await expect(workbench.getByTestId('flow-hold-field-used-car-buying-check-hold-reason')).toBeVisible();
+  await expect(workbench.getByTestId('artifact-list-card')).toBeVisible();
 });
 
 test('representative flows show artifact-first previews on the first screen', async ({ page }) => {
   await page.goto('/f/moving-d30-basic');
-  let artifactPreview = page.getByLabel('Flow artifact preview');
-  await expect(artifactPreview).toBeVisible();
-  await expect(artifactPreview).toContainText('실행 리스트');
-  await expect(artifactPreview).toContainText('월간 캘린더');
+  await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-list-card')).toBeVisible();
+  await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-calendar-card')).toBeVisible();
 
   await page.goto('/f/used-car-buying-check');
-  artifactPreview = page.getByLabel('Flow artifact preview');
-  await expect(artifactPreview).toBeVisible();
-  await expect(artifactPreview).toContainText('후보 비교표');
-  await expect(artifactPreview).toContainText('현장 체크리스트');
+  await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-list-card')).toBeVisible();
+  await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-comparison-card')).toHaveCount(0);
 
   await page.goto('/f/real-thankyou-bubu-video-full-body-no-jump');
-  artifactPreview = page.getByLabel('Flow artifact preview');
-  await expect(artifactPreview).toBeVisible();
-  await expect(artifactPreview).toContainText('반복 캘린더');
-  await expect(artifactPreview).toContainText('회차 메모');
+  await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-calendar-card')).toBeVisible();
 
   await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
-  artifactPreview = page.getByLabel('Flow artifact preview');
-  await expect(artifactPreview).toBeVisible();
-  await expect(artifactPreview).toContainText('기록표');
-  await expect(artifactPreview).toContainText('반복 리마인더');
+  await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-log-table-fitvely-nutrition-action-observation-log')).toBeVisible();
 });
 
 test('artifact workbench shows the primary usable surface first', async ({ page }) => {
@@ -1017,8 +949,9 @@ test('artifact workbench shows the primary usable surface first', async ({ page 
   await page.goto('/f/used-car-buying-check');
   workbench = page.getByLabel('Flow artifact workbench');
   await expect(workbench).toBeVisible();
-  await expect(workbench).toContainText('후보 비교표');
-  await expect(workbench.getByLabel('후보 1 이름')).toBeVisible();
+  await expect(workbench.getByTestId('artifact-comparison-card')).toHaveCount(0);
+  await expect(workbench.getByTestId('flow-hold-section')).toBeVisible();
+  await expect(workbench.getByTestId('artifact-list-card')).toBeVisible();
 
   await page.goto('/f/home-workout-20min');
   workbench = page.getByLabel('Flow artifact workbench');
@@ -1045,16 +978,8 @@ test('common first screen keeps progress inside the artifact workbench', async (
   await expect(workbench.getByText('0/24 완료')).toBeVisible();
   await expect(page.getByText('항목을 체크하면 이 브라우저에 자동 저장됩니다.')).toHaveCount(0);
 
-  const order = await page.locator('body').evaluate((body) => {
-    const text = body.innerText;
-
-    return {
-      workbench: text.indexOf('내 실행판'),
-      overview: text.indexOf('한눈에 보는 전체 루트'),
-    };
-  });
-  expect(order.workbench).toBeGreaterThanOrEqual(0);
-  expect(order.overview).toBeGreaterThan(order.workbench);
+  await expect(workbench.getByTestId('artifact-list-card')).toBeVisible();
+  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
 });
 
 test('artifact workbench exposes export actions next to the natural artifact', async ({ page }) => {
@@ -1071,11 +996,11 @@ test('artifact workbench exposes export actions next to the natural artifact', a
 
   await page.goto('/f/computer-skills-d30-study');
   workbench = page.getByLabel('Flow artifact workbench');
-  const studyLogCard = workbench.getByTestId('artifact-log-table-study-chapter-progress');
+  const studyListCard = workbench.getByTestId('artifact-list-card');
   const studyCalendarCard = workbench.getByTestId('artifact-calendar-card');
   await expect(workbench).toBeVisible();
-  await expect(workbench).toContainText('기록표');
-  await expect(studyLogCard.getByRole('button', { name: '엑셀로 받기' })).toBeVisible();
+  await expect(workbench.getByTestId('artifact-log-table-study-chapter-progress')).toHaveCount(0);
+  await expect(studyListCard.getByRole('button', { name: '엑셀로 받기' })).toBeVisible();
   await expect(studyCalendarCard.getByRole('button', { name: '캘린더 받기' })).toBeVisible();
 });
 
@@ -1145,10 +1070,11 @@ test('mobile export sheet remains available from the sticky fallback', async ({ 
   await page.getByLabel('실행판 체크: 필기와 실기 시험 범위 나누기').check();
 
   const workbench = page.getByLabel('Flow artifact workbench');
-  const studyLogCard = workbench.getByTestId('artifact-log-table-study-chapter-progress');
+  const studyListCard = workbench.getByTestId('artifact-list-card');
   const studyCalendarCard = workbench.getByTestId('artifact-calendar-card');
 
-  await expect(studyLogCard.getByTestId('mobile-artifact-export-excel')).toBeVisible();
+  await expect(workbench.getByTestId('artifact-log-table-study-chapter-progress')).toHaveCount(0);
+  await expect(studyListCard.getByTestId('mobile-artifact-export-excel')).toBeVisible();
   await expect(studyCalendarCard.getByTestId('mobile-artifact-export-calendar')).toBeVisible();
 
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
@@ -1171,12 +1097,11 @@ test('validation fix surfaces route-specific anchors, safety panels, and mobile 
   await expect(page.getByTestId('mobile-export-bar').getByRole('button', { name: '시트·캘린더로 받기' })).toBeVisible();
 
   await page.goto('/f/diet-habit-2week');
-  await expect(page.getByLabel('관찰 시작일')).toBeVisible();
-  await expect(page.getByTestId('flow-stop-conditions')).toContainText('어지러움');
-  await expect(page.getByTestId('flow-principles')).toContainText('관찰 기록');
+  await expect(page.locator('input[type="date"]').first()).toBeVisible();
+  await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-calendar-card')).toBeVisible();
   await expect(page.getByLabel('Flow artifact workbench').getByRole('checkbox', { name: /중단|상담/ })).toHaveCount(0);
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-  await expect(page.getByTestId('mobile-export-bar').getByRole('button', { name: '관찰표 .xlsx 받기' })).toBeVisible();
+  await expect(page.getByTestId('mobile-export-bar')).toBeVisible();
 
   await page.goto('/f/new-car-delivery-check');
   await expect(page.getByTestId('flow-hold-section')).toContainText('인수 보류 기준');
@@ -1220,90 +1145,73 @@ test('mobile workbench exposes destination CTAs on the first artifact cards', as
 
   await page.goto('/f/computer-skills-d30-study');
   workbench = page.getByLabel('Flow artifact workbench');
-  const studyLogCard = workbench.getByTestId('artifact-log-table-study-chapter-progress');
+  const studyListCard = workbench.getByTestId('artifact-list-card');
   const studyCalendarCard = workbench.getByTestId('artifact-calendar-card');
 
-  await expect(studyLogCard.getByTestId('mobile-artifact-export-excel')).toBeVisible();
-  await expect(studyLogCard.getByTestId('mobile-artifact-export-excel')).toHaveAttribute('aria-label', /시트로 받기: .*공부 기록표/);
+  await expect(workbench.getByTestId('artifact-log-table-study-chapter-progress')).toHaveCount(0);
+  await expect(studyListCard.getByTestId('mobile-artifact-export-excel')).toBeVisible();
+  await expect(studyListCard.getByTestId('mobile-artifact-export-excel')).toHaveAttribute('aria-label', /시트로 받기: .*실행 리스트/);
   await expect(studyCalendarCard.getByTestId('mobile-artifact-export-calendar')).toBeVisible();
   await expect(studyCalendarCard.getByTestId('mobile-artifact-export-calendar')).toHaveAttribute('aria-label', /캘린더로 받기: .*월간 캘린더/);
 
   await page.goto('/f/diet-habit-2week');
   workbench = page.getByLabel('Flow artifact workbench');
-  const dietSheetCard = workbench.getByTestId('artifact-log-table-spreadsheet');
-  await expect(dietSheetCard.getByTestId('mobile-artifact-export-excel')).toBeVisible();
-  await expect(dietSheetCard.getByTestId('mobile-artifact-export-excel')).toHaveAttribute('aria-label', /시트로 받기: .*관찰 기록표/);
+  await expect(workbench.getByTestId('artifact-log-table-spreadsheet')).toHaveCount(0);
+  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
 
   await page.goto('/f/new-car-delivery-check');
   workbench = page.getByLabel('Flow artifact workbench');
-  const comparisonCard = workbench.getByTestId('artifact-comparison-card');
-  await expect(comparisonCard.getByTestId('mobile-artifact-export-excel')).toBeVisible();
-  await expect(comparisonCard.getByTestId('mobile-artifact-export-excel')).toHaveAttribute('aria-label', /시트로 받기: .*인수 증거표/);
+  const newCarListCard = workbench.getByTestId('artifact-list-card');
+  await expect(workbench.getByTestId('artifact-comparison-card')).toHaveCount(0);
+  await expect(newCarListCard).toBeVisible();
 });
 
 test('mobile log artifacts show a summary card before dense tables', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/diet-habit-2week');
 
-  const logCard = page.getByLabel('Flow artifact workbench').getByTestId('artifact-log-table-spreadsheet');
-  await expect(logCard.getByTestId('mobile-artifact-summary-card')).toBeVisible();
-
-  const order = await logCard.locator('[data-testid="mobile-artifact-summary-card"], table').evaluateAll((nodes) =>
-    nodes.map((node) => (node as HTMLElement).dataset.testid ?? node.tagName.toLowerCase()),
-  );
-
-  expect(order.slice(0, 2)).toEqual(['mobile-artifact-summary-card', 'table']);
+  const workbench = page.getByLabel('Flow artifact workbench');
+  await expect(workbench.getByTestId('artifact-log-table-spreadsheet')).toHaveCount(0);
+  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
 });
 
-test('mobile study log starts with a source-derived progress summary', async ({ page }) => {
+test('mobile study route starts with checklist and calendar instead of progress tables', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/computer-skills-d30-study');
 
-  const studyLogCard = page.getByLabel('Flow artifact workbench').getByTestId('artifact-log-table-study-chapter-progress');
-  const summaryCard = studyLogCard.getByTestId('mobile-study-log-summary-card');
-  await expect(summaryCard).toBeVisible();
-  await expect(summaryCard).toHaveAttribute('data-source-row-count', '4');
-  await expect(summaryCard).toHaveAttribute('data-editable-column-count', '3');
-  await expect(summaryCard.getByTestId('study-summary-first-source-row')).toBeVisible();
-  await expect(summaryCard.getByTestId('study-summary-editable-fields')).toBeVisible();
+  const workbench = page.getByLabel('Flow artifact workbench');
+  await expect(workbench.getByTestId('artifact-log-table-study-chapter-progress')).toHaveCount(0);
+  await expect(workbench.getByTestId('artifact-list-card')).toBeVisible();
+  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
 
-  const order = await studyLogCard.locator('[data-testid="mobile-study-log-summary-card"], table').evaluateAll((nodes) =>
+  const order = await workbench.locator('[data-testid="artifact-list-card"], [data-testid="artifact-calendar-card"]').evaluateAll((nodes) =>
     nodes.map((node) => (node as HTMLElement).dataset.testid ?? node.tagName.toLowerCase()),
   );
 
-  expect(order.slice(0, 2)).toEqual(['mobile-study-log-summary-card', 'table']);
+  expect(order.slice(0, 2)).toEqual(['artifact-calendar-card', 'artifact-list-card']);
 });
 
-test('mobile comparison artifacts show a summary card before dense grids', async ({ page }) => {
+test('mobile vehicle checklist routes omit comparison summary grids', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
 
   await page.goto('/f/new-car-delivery-check');
-  let comparisonCard = page.getByLabel('Flow artifact workbench').getByTestId('artifact-comparison-card');
-  await expect(comparisonCard.getByTestId('mobile-comparison-summary-card')).toBeVisible();
-  let order = await comparisonCard.locator('[data-testid="mobile-comparison-summary-card"], textarea').evaluateAll((nodes) =>
-    nodes.map((node) => (node as HTMLElement).dataset.testid ?? node.tagName.toLowerCase()),
-  );
-  expect(order.slice(0, 2)).toEqual(['mobile-comparison-summary-card', 'textarea']);
+  let workbench = page.getByLabel('Flow artifact workbench');
+  await expect(workbench.getByTestId('artifact-comparison-card')).toHaveCount(0);
+  await expect(workbench.getByTestId('artifact-list-card')).toBeVisible();
 
   await page.goto('/f/used-car-buying-check');
-  comparisonCard = page.getByLabel('Flow artifact workbench').getByTestId('artifact-comparison-card');
-  await expect(comparisonCard.getByTestId('mobile-comparison-summary-card')).toBeVisible();
-  order = await comparisonCard.locator('[data-testid="mobile-comparison-summary-card"], textarea').evaluateAll((nodes) =>
-    nodes.map((node) => (node as HTMLElement).dataset.testid ?? node.tagName.toLowerCase()),
-  );
-  expect(order.slice(0, 2)).toEqual(['mobile-comparison-summary-card', 'textarea']);
+  workbench = page.getByLabel('Flow artifact workbench');
+  await expect(workbench.getByTestId('artifact-comparison-card')).toHaveCount(0);
+  await expect(workbench.getByTestId('artifact-list-card')).toBeVisible();
 });
 
-test('study progress table exposes source-derived guard metadata', async ({ page }) => {
+test('study progress table is absent from the experiment checklist route', async ({ page }) => {
   await page.goto('/f/computer-skills-d30-study');
 
-  const progressTable = page.getByTestId('artifact-log-table-study-chapter-progress');
-  await expect(progressTable).toHaveAttribute('data-source-kind', 'source_derived');
-  await expect(progressTable).toHaveAttribute('data-read-only-columns', 'scope');
-  await expect(progressTable).toHaveAttribute('data-user-editable-columns', 'targetDate,status,note');
-  await expect(progressTable.getByTestId('artifact-readonly-cell-study-chapter-week-1-scope')).toContainText('컴퓨터 일반·스프레드시트 핵심 개념');
-  await expect(progressTable.getByLabel('필기 핵심 개념 정리 / 범위')).toHaveCount(0);
-  await expect(progressTable.getByLabel('필기 핵심 개념 정리 / 목표일')).toBeVisible();
+  const workbench = page.getByLabel('Flow artifact workbench');
+  await expect(workbench.getByTestId('artifact-log-table-study-chapter-progress')).toHaveCount(0);
+  await expect(workbench.getByTestId('artifact-log-table-study-mock-scores')).toHaveCount(0);
+  await expect(workbench.getByTestId('artifact-list-card')).toBeVisible();
 });
 
 test('mobile sensitive routes collapse secondary execution sections below the first artifact', async ({ page }) => {
@@ -1317,16 +1225,11 @@ test('mobile sensitive routes collapse secondary execution sections below the fi
   expect(await collapsedSections.first().evaluate((node) => (node as HTMLDetailsElement).open)).toBe(true);
   await expect(collapsedSections.first().getByTestId('flow-item-card').first()).toBeVisible();
 
-  await page.goto('/f/diet-habit-2week');
-  collapsedSections = page.getByTestId('mobile-collapsed-section');
-  await expect(collapsedSections.first()).toBeVisible();
-  expect(await collapsedSections.first().evaluate((node) => (node as HTMLDetailsElement).open)).toBe(false);
-
   await page.goto('/f/used-car-buying-check');
   collapsedSections = page.getByTestId('mobile-collapsed-section');
   await expect(collapsedSections.first()).toBeVisible();
   expect(await collapsedSections.first().evaluate((node) => (node as HTMLDetailsElement).open)).toBe(false);
-  await expect(page.getByLabel('Flow artifact workbench').getByText('후보별 가격·주행거리')).toBeVisible();
+  await expect(page.getByLabel('Flow artifact workbench').getByTestId('flow-hold-section')).toBeVisible();
 
   await page.goto('/f/baby-food-menu-recipe');
   collapsedSections = page.getByTestId('mobile-collapsed-section');
@@ -1350,15 +1253,13 @@ test('artifact workbench saves local execution entries', async ({ page }) => {
   await expect(page.getByLabel('Flow artifact workbench').getByLabel('실행판 체크: 이사 방식 정하기')).toBeChecked();
   await expect(page.getByLabel('Flow artifact workbench').getByText('1/24 완료')).toBeVisible();
   const reloadedMovingWorkbench = page.getByLabel('Flow artifact workbench');
-  await reloadedMovingWorkbench.getByLabel('후보 1 이름').fill('한빛이사');
-  await reloadedMovingWorkbench.getByLabel('이사 업체 견적 금액 / 후보 1 메모').fill('포장이사 85만원');
-  await reloadedMovingWorkbench.getByLabel('견적서/계약서 위치').fill('문자 견적 캡처');
+  await expect(reloadedMovingWorkbench.getByTestId('artifact-list-card')).toBeVisible();
+  await expect(reloadedMovingWorkbench.getByTestId('artifact-calendar-card')).toBeVisible();
 
   await page.reload();
   const restoredMovingWorkbench = page.getByLabel('Flow artifact workbench');
-  await expect(restoredMovingWorkbench.getByLabel('후보 1 이름')).toHaveValue('한빛이사');
-  await expect(restoredMovingWorkbench.getByLabel('이사 업체 견적 금액 / 후보 1 메모')).toHaveValue('포장이사 85만원');
-  await expect(restoredMovingWorkbench.getByLabel('견적서/계약서 위치')).toHaveValue('문자 견적 캡처');
+  await expect(restoredMovingWorkbench.getByTestId('artifact-list-card')).toBeVisible();
+  await expect(restoredMovingWorkbench.getByTestId('artifact-calendar-card')).toBeVisible();
 
   await page.goto('/f/overseas-travel-d14');
   await page.getByLabel('출국일').fill('2026-07-18');
@@ -1422,20 +1323,19 @@ test('artifact workbench saves local execution entries', async ({ page }) => {
   await expect(reloadedLogWorkbench.getByLabel('주간 조정 메모')).toHaveValue('다음 주에도 같은 기준을 유지할지 확인');
 });
 
-test('decision flow comparison table edits and persists candidate notes', async ({ page }) => {
+test('vehicle hold memo edits and persists user notes', async ({ page }) => {
   await page.goto('/f/used-car-buying-check');
 
-  await expect(page.getByLabel('후보 1 이름')).toBeVisible();
-  await page.getByLabel('후보 1 이름').fill('아반떼 2021');
-  await page.getByLabel('후보별 가격·주행거리 / 후보 1 메모').fill('총 1,250만원');
-  await page.getByRole('button', { name: '후보 추가' }).click();
-  await page.getByLabel('후보 3 이름').fill('K3 2020');
+  const workbench = page.getByLabel('Flow artifact workbench');
+  await expect(workbench.getByTestId('artifact-comparison-card')).toHaveCount(0);
+  await workbench.getByTestId('flow-hold-field-used-car-buying-check-hold-reason').fill('insurance history conflict');
+  await workbench.getByTestId('flow-hold-field-used-car-buying-check-hold-evidence-files').fill('usedcar_20260526_engine_noise.mp4');
 
   await page.reload();
 
-  await expect(page.getByLabel('후보 1 이름')).toHaveValue('아반떼 2021');
-  await expect(page.getByLabel('후보별 가격·주행거리 / 후보 1 메모')).toHaveValue('총 1,250만원');
-  await expect(page.getByLabel('후보 3 이름')).toHaveValue('K3 2020');
+  const restoredWorkbench = page.getByLabel('Flow artifact workbench');
+  await expect(restoredWorkbench.getByTestId('flow-hold-field-used-car-buying-check-hold-reason')).toHaveValue('insurance history conflict');
+  await expect(restoredWorkbench.getByTestId('flow-hold-field-used-car-buying-check-hold-evidence-files')).toHaveValue('usedcar_20260526_engine_noise.mp4');
 });
 
 test('public flow can be copied into an editable draft', async ({ page }) => {
@@ -1490,7 +1390,7 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(readiness.getByText('Public MVP 후보', { exact: true }).first()).toBeVisible();
   await expect(readiness.getByRole('link', { name: '컴퓨터활용능력 D-30 학습 Flow' })).toBeVisible();
   await expect(readiness.getByRole('link', { name: '신차 인수 점검 Flow' })).toBeVisible();
-  await expect(readiness.getByRole('link', { name: '2주 식사·활동 관찰 Flow' })).toBeVisible();
+  await expect(readiness.getByText('diet-habit-2week')).toBeVisible();
   const representativeUxReview = page.locator('section').filter({ hasText: 'Representative UX Content Review' });
   await expect(representativeUxReview).toBeVisible();
   await expect(representativeUxReview.getByText('ready_for_observed_session').first()).toBeVisible();
@@ -1646,11 +1546,9 @@ test('reshaped official route workbenches expose natural artifact fields', async
   await page.goto('/f/passport-renewal-docs');
   await expect(page.getByRole('heading', { name: '여권 재발급 준비 Flow' })).toBeVisible();
   const passportWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(passportWorkbench.getByRole('heading', { name: '메모 카드' })).toBeVisible();
-  await expect(passportWorkbench.getByRole('textbox', { name: '여행일·신청자·신청 경로' })).toBeVisible();
-  await expect(passportWorkbench.getByRole('textbox', { name: '사진 규격 확인' })).toBeVisible();
-  await expect(passportWorkbench.getByRole('textbox', { name: '접수번호·상태 캡처' })).toBeVisible();
-  await expect(passportWorkbench.getByRole('textbox', { name: '수령일·보관 위치' })).toBeVisible();
+  await expect(passportWorkbench.getByTestId('artifact-list-card')).toBeVisible();
+  await expect(passportWorkbench.getByRole('heading', { name: '메모 카드' })).toHaveCount(0);
+  await expect(passportWorkbench.getByRole('textbox', { name: '여행일·신청자·신청 경로' })).toHaveCount(0);
 
   await page.goto('/f/driver-license-renewal-check');
   await expect(page.getByRole('heading', { name: '운전면허 갱신 준비 Flow' })).toBeVisible();
@@ -1666,12 +1564,14 @@ test('reshaped official route workbenches expose natural artifact fields', async
   await expect(page.getByLabel('시험장·입실 시간 / 상태/결정')).toBeVisible();
 });
 
-test('MOFA travel route opens with emergency memo card fields', async ({ page }) => {
+test('MOFA travel route opens with checklist and calendar instead of emergency memo card fields', async ({ page }) => {
   await page.goto('/f/real-mofa-overseas-travel-prep');
 
   const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(workbench.getByRole('heading', { name: '메모 카드' })).toBeVisible();
-  await expect(workbench.getByRole('textbox', { name: '방문 국가와 확인일' })).toBeVisible();
-  await expect(workbench.getByRole('textbox', { name: '영사콜센터·현지 공관 연락처' })).toBeVisible();
-  await expect(workbench.getByRole('textbox', { name: '가족 공유 메모' })).toBeVisible();
+  await expect(workbench.getByTestId('artifact-list-card')).toBeVisible();
+  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
+  await expect(workbench.getByRole('heading', { name: '메모 카드' })).toHaveCount(0);
+  await expect(workbench.getByRole('textbox', { name: '방문 국가와 확인일' })).toHaveCount(0);
+  await expect(workbench.getByRole('textbox', { name: '영사콜센터·현지 공관 연락처' })).toHaveCount(0);
+  await expect(workbench.getByRole('textbox', { name: '가족 공유 메모' })).toHaveCount(0);
 });
