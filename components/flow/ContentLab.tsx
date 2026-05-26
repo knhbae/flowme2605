@@ -20,6 +20,7 @@ import {
   realSourceNaturalArtifactAudits,
   type NaturalArtifactAuditDecision,
 } from '@/lib/flow/natural-artifact-audit';
+import { ObservedSessionNoteIntake } from './ObservedSessionNoteIntake';
 
 type SeedBundle = (typeof seedBundles)[number];
 
@@ -524,6 +525,12 @@ export function ContentLab() {
             </article>
           ))}
         </div>
+        <ObservedSessionNoteIntake
+          routes={summary.observedSessionEvidenceRouteSummaries.map((record) => ({
+            slug: record.slug,
+            title: bundleBySlug.get(record.slug)?.flow.title ?? record.slug,
+          }))}
+        />
       </section>
 
       <section className="mb-10 rounded-xl border border-gray-200 bg-white p-5">

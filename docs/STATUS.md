@@ -117,6 +117,7 @@
 - Desktop reference rail generalization has landed: `computer-skills-d30-study`, `diet-habit-2week`, `new-car-delivery-check`, `used-car-buying-check`, and `baby-food-menu-recipe` now keep source/risk context in a desktop rail beside the workbench, while mobile ordering remains unchanged. No route is called validated.
 - Design-ref queue completion has landed: `computer-skills-d30-study` now has a source-derived mobile study summary, `baby-food-menu-recipe` now has a reaction-first mobile summary, and Flow Lab now exposes observed-session prep packages for the three current candidate routes. The queue is 8 landed / 0 pending / 0 validated.
 - Observed-session evidence log has landed: Flow Lab now tracks the three current export-first candidate routes with one internal `no signal` study baseline, two `not run` routes, zero candidate signals, and zero validated routes.
+- Observed-session note intake has landed: Flow Lab can now draft, copy, and download markdown notes for the three current export-first candidate routes while keeping `validated` out of the intake decision options.
 
 ## Next Up
 

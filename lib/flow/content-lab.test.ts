@@ -23,6 +23,11 @@ import {
   getUxContentSimplificationAudit,
   summarizeUxContentSimplificationAudits,
 } from './ux-content-simplification-audit';
+import {
+  generateObservedSessionNoteFilename,
+  generateObservedSessionNoteMarkdown,
+  observedSessionNoteDecisionOptions,
+} from './observed-session-note-intake';
 import { seedBundles } from './seed-flows';
 
 const expectedConvertedPilotSlugs = [
@@ -467,4 +472,36 @@ test('content lab exposes observed-session evidence without validation claims', 
       record.statusAfterSession.includes('not validated'),
     ),
   );
+});
+
+test('observed-session note intake generates exportable markdown without validated decisions', () => {
+  assert.deepEqual(observedSessionNoteDecisionOptions, ['no signal', 'friction', 'candidate signal']);
+  assert.equal(observedSessionNoteDecisionOptions.includes('validated candidate'), false);
+
+  const markdown = generateObservedSessionNoteMarkdown({
+    date: '2026-05-26',
+    observer: 'HUBERT',
+    route: 'diet-habit-2week',
+    device: 'iPhone 15 Safari',
+    participantType: 'target user',
+    taskRealism: 'real task',
+    decision: 'friction',
+    artifactNearCta: 'missed first, found after prompt',
+    stickyFallback: 'used fallback sheet',
+    exportCopy: 'copied observation sheet',
+    friction: 'Stop/consult condition was noticed after table editing.',
+    followUp: 'Move stop/consult cue closer to the first row.',
+  });
+
+  assert.match(markdown, /^# Observed Session Note: diet-habit-2week/m);
+  assert.equal(
+    generateObservedSessionNoteFilename('2026-05-26', 'diet-habit-2week'),
+    '2026-05-26-diet-habit-2week-session-draft.md',
+  );
+  assert.match(markdown, /Decision: `friction`/);
+  assert.match(markdown, /Artifact-near CTA: missed first, found after prompt/);
+  assert.match(markdown, /Sticky fallback: used fallback sheet/);
+  assert.match(markdown, /Export\/copy: copied observation sheet/);
+  assert.match(markdown, /not validation/i);
+  assert.doesNotMatch(markdown, /validated candidate/);
 });

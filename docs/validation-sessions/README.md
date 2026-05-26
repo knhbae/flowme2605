@@ -4,6 +4,8 @@ This folder stores observed user-session notes for Stage 0 export-first validati
 
 Use [TEMPLATE.md](./TEMPLATE.md) for every session. Keep raw notes factual: what the user did, where they hesitated, what they exported, and what they said they would do next.
 
+Flow Lab also has an observed-session note intake panel that drafts a markdown note for the current export-first candidate routes. Save generated notes in this folder after the session.
+
 ## Rules
 
 - Do not mark a route validated from one internal QA pass.
