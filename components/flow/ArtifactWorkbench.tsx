@@ -852,6 +852,7 @@ function ComparisonTable({
         </div>
       </div>
       <ArtifactExportStatus actions={exportActions} />
+      <MobileComparisonSummaryCard rows={rows} comparison={comparison} />
       <div
         className="grid min-w-[720px] bg-gray-50 text-xs font-semibold text-gray-600"
         style={{ gridTemplateColumns: `minmax(220px,1.1fr) repeat(${comparison.candidates.length}, minmax(170px,1fr))` }}
@@ -888,6 +889,29 @@ function ComparisonTable({
           ))}
         </div>
       ))}
+    </div>
+  );
+}
+
+function MobileComparisonSummaryCard({ rows, comparison }: { rows: ArtifactComparisonRow[]; comparison: FlowComparisonState }) {
+  const previewRows = rows.slice(0, 3);
+  const primaryCandidate = comparison.candidates[0]?.name ?? '후보 A';
+
+  if (!previewRows.length) return null;
+
+  return (
+    <div data-testid="mobile-comparison-summary-card" className="m-3 rounded-md border border-blue-100 bg-blue-50 p-3 md:hidden">
+      <p className="text-xs font-semibold uppercase text-blue-700">mobile summary</p>
+      <h4 className="mt-1 text-sm font-semibold text-gray-950">{primaryCandidate} 먼저 채우기</h4>
+      <dl className="mt-2 grid gap-2 text-sm">
+        {previewRows.map((row, index) => (
+          <div key={row.id} className="rounded-md bg-white px-3 py-2">
+            <dt className="text-xs font-semibold text-gray-500">비교 항목 {index + 1}</dt>
+            <dd className="mt-1 text-gray-800" aria-label={row.title}>아래 표에서 작성</dd>
+          </div>
+        ))}
+      </dl>
+      <p className="mt-2 text-xs font-medium text-blue-800">전체 후보 비교는 아래 표에서 이어서 작성하고, 기록은 시트로 받을 수 있습니다.</p>
     </div>
   );
 }

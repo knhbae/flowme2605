@@ -1165,6 +1165,26 @@ test('mobile log artifacts show a summary card before dense tables', async ({ pa
   expect(order.slice(0, 2)).toEqual(['mobile-artifact-summary-card', 'table']);
 });
 
+test('mobile comparison artifacts show a summary card before dense grids', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await page.goto('/f/new-car-delivery-check');
+  let comparisonCard = page.getByLabel('Flow artifact workbench').getByTestId('artifact-comparison-card');
+  await expect(comparisonCard.getByTestId('mobile-comparison-summary-card')).toBeVisible();
+  let order = await comparisonCard.locator('[data-testid="mobile-comparison-summary-card"], textarea').evaluateAll((nodes) =>
+    nodes.map((node) => (node as HTMLElement).dataset.testid ?? node.tagName.toLowerCase()),
+  );
+  expect(order.slice(0, 2)).toEqual(['mobile-comparison-summary-card', 'textarea']);
+
+  await page.goto('/f/used-car-buying-check');
+  comparisonCard = page.getByLabel('Flow artifact workbench').getByTestId('artifact-comparison-card');
+  await expect(comparisonCard.getByTestId('mobile-comparison-summary-card')).toBeVisible();
+  order = await comparisonCard.locator('[data-testid="mobile-comparison-summary-card"], textarea').evaluateAll((nodes) =>
+    nodes.map((node) => (node as HTMLElement).dataset.testid ?? node.tagName.toLowerCase()),
+  );
+  expect(order.slice(0, 2)).toEqual(['mobile-comparison-summary-card', 'textarea']);
+});
+
 test('study progress table exposes source-derived guard metadata', async ({ page }) => {
   await page.goto('/f/computer-skills-d30-study');
 
