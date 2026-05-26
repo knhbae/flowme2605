@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import {
   convertedPilotSlugs,
@@ -533,4 +534,18 @@ test('observed-session run sheet turns prep records into moderator markdown with
   assert.match(markdown, /Screenshot targets/);
   assert.match(markdown, /Decision options: `no signal`, `friction`, `candidate signal`/);
   assert.doesNotMatch(markdown, /validated candidate/);
+});
+
+test('observed-session docs use the same non-validated decision labels as Flow Lab intake', () => {
+  const template = readFileSync('docs/validation-sessions/TEMPLATE.md', 'utf8');
+  const script = readFileSync('docs/flow-rules/first-user-validation-script.md', 'utf8');
+  const docs = `${template}\n${script}`;
+
+  for (const decision of observedSessionNoteDecisionOptions) {
+    assert.match(docs, new RegExp(`- \`${decision}\``));
+  }
+
+  assert.doesNotMatch(docs, /- `artifact understood`/);
+  assert.doesNotMatch(docs, /- `export loop completed`/);
+  assert.doesNotMatch(docs, /- `validated candidate`/);
 });

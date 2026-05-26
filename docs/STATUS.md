@@ -120,6 +120,7 @@
 - Observed-session note intake has landed: Flow Lab can now draft, copy, and download markdown notes for the three current export-first candidate routes while keeping `validated` out of the intake decision options.
 - Observed-session run sheets have landed: Flow Lab can now generate moderator run-sheet markdown from the current prep records, including prompt, artifacts, screenshots, pass/failure signals, and allowed non-validated decisions.
 - Observed-session note filenames have landed: Flow Lab note intake now includes a session number and downloads notes using the `YYYY-MM-DD-route-session-01.md` pattern expected by `docs/validation-sessions/`, without creating evidence or marking any route validated.
+- Observed-session decision labels are aligned: the validation template and first-user script now use the same non-validated `no signal`, `friction`, and `candidate signal` choices as Flow Lab intake/run sheets, with `candidate signal` still below validation.
 
 ## Next Up
 
