@@ -47,7 +47,10 @@ const decisionToHandling = {
 } as const;
 
 const decisionTableOverrideSlugs = new Set(['driver-license-renewal-check']);
-const checklistOverrideSlugs = new Set(['new-car-delivery-check']);
+const checklistOverrideSlugs = new Set(['new-car-delivery-check', 'used-car-buying-check', 'passport-renewal-docs']);
+const compactTimelineSlugs = new Set(['moving-d30-basic', 'vehicle-inspection-prep', 'real-mofa-overseas-travel-prep']);
+const checkOnlyRoutineSlugs = new Set(['diet-habit-2week', 'real-thankyou-bubu-home-workout-starter', 'real-fitvely-diet-record-routine']);
+const mealCalendarOnlySlugs = new Set(['baby-food-menu-recipe']);
 const workoutProgrammingDecisionSlugs = new Set([
   'real-fitvely-video-bulk-up-method',
   'real-fitvely-video-workout-order',
@@ -61,8 +64,6 @@ const memoCardOverrideSlugs = new Set([
   'happy-birth-service-check',
   'industrial-accident-claim-docs',
   'vaccination-certificate-issue',
-  'passport-renewal-docs',
-  'real-mofa-overseas-travel-prep',
 ]);
 const spreadsheetOverrideSlugs = new Set(['diet-meal-exercise-log', 'diet-reset-2week']);
 
@@ -80,8 +81,8 @@ function getSourceHandling(bundle: FlowBundle): SourceHandling {
 function getPrimarySurface(bundle: FlowBundle, model = normalizeExecutionModel(bundle)): PrimaryArtifactSurface {
   const audit = getNaturalArtifactAudit(bundle.flow.slug);
   if (bundle.flow.content_type === 'meal_plan') return 'meal_reaction_log';
-  if (bundle.flow.slug === 'used-car-buying-check') return 'decision_table';
   if (checklistOverrideSlugs.has(bundle.flow.slug)) return 'checklist';
+  if (checkOnlyRoutineSlugs.has(bundle.flow.slug)) return 'routine_calendar';
   if (decisionTableOverrideSlugs.has(bundle.flow.slug)) return 'decision_table';
   if (workoutProgrammingDecisionSlugs.has(bundle.flow.slug)) return 'decision_table';
   if (memoCardOverrideSlugs.has(bundle.flow.slug)) return 'memo_card';
@@ -100,7 +101,19 @@ function surface(kind: ArtifactSurfaceKind, title: string, description: string):
   return { kind, title, description };
 }
 
-function getSurfaces(primary: PrimaryArtifactSurface): ArtifactSurface[] {
+function getSurfaces(bundle: FlowBundle, primary: PrimaryArtifactSurface): ArtifactSurface[] {
+  if (mealCalendarOnlySlugs.has(bundle.flow.slug)) {
+    return [surface('meal_calendar', '이유식 일정 캘린더', '시작일 기준 메뉴와 레시피만 날짜별로 확인합니다.')];
+  }
+  if (checkOnlyRoutineSlugs.has(bundle.flow.slug)) {
+    return [surface('routine_month', '반복 캘린더', '요일별 체크 회차만 보고 완료 여부를 남깁니다.')];
+  }
+  if (compactTimelineSlugs.has(bundle.flow.slug)) {
+    return [
+      surface('execution_list', '체크리스트', '지금 확인할 항목만 한 줄씩 체크합니다.'),
+      surface('month_calendar', '월간 캘린더', '기준 날짜로 계산된 일정을 한눈에 봅니다.'),
+    ];
+  }
   if (primary === 'meal_reaction_log') {
     return [
       surface('meal_calendar', '이유식 일정표', '시작일 기준 메뉴와 새 재료를 먼저 확인합니다.'),
@@ -167,7 +180,7 @@ export function getArtifactPlan(bundle: FlowBundle): ArtifactPlan {
       sourceHandling === 'catalog_review'
         ? 'Assign an exact source URL before representative promotion.'
         : audit?.nextContentAction ?? 'Keep content aligned to the selected artifact surface.',
-    surfaces: getSurfaces(primarySurface),
+    surfaces: getSurfaces(bundle, primarySurface),
     exportTargets,
   };
 }

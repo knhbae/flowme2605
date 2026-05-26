@@ -53,7 +53,6 @@ const representativeCandidateFlowSlugs = [
 ] as const;
 
 const decisionFlowSlugs = new Set([
-  'used-car-buying-check',
   'wedding-d180-basic',
   'job-change-risk-check',
 ]);

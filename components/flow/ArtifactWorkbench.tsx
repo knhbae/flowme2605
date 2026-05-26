@@ -81,6 +81,8 @@ const defaultSpreadsheetColumns = ['식단', '운동', '측정', '컨디션', '�
 const dietObservationColumns = ['식사 관찰', '활동', '수면/측정', '컨디션', '중단/상담 조건'];
 
 const mobileArtifactCtaSlugs = new Set(['moving-d30-basic', 'computer-skills-d30-study', 'diet-habit-2week', 'new-car-delivery-check']);
+const mealCalendarOnlySlugs = new Set(['baby-food-menu-recipe']);
+const checkOnlyRoutineSlugs = new Set(['diet-habit-2week', 'real-thankyou-bubu-home-workout-starter', 'real-fitvely-diet-record-routine']);
 
 export function ArtifactWorkbench({
   bundle,
@@ -440,6 +442,7 @@ function MealReactionWorkbench({
   const calendarSlots = slots.slice(0, 6);
   const reactionSlots = slots.slice(0, 3);
   const todayReactionSlot = reactionSlots[0];
+  const calendarOnly = mealCalendarOnlySlugs.has(bundle.flow.slug);
 
   return (
     <div data-testid="meal-reaction-workbench" className="space-y-4">
@@ -456,7 +459,7 @@ function MealReactionWorkbench({
           <p className="mt-1 hidden text-sm leading-6 text-amber-950 md:block">{bundle.flow.warning}</p>
         </div>
       ) : null}
-      {todayReactionSlot ? (
+      {todayReactionSlot && !calendarOnly ? (
         <div data-testid="meal-today-reaction-card" className="rounded-lg border border-blue-200 bg-white p-4 md:hidden">
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -511,7 +514,7 @@ function MealReactionWorkbench({
           </div>
         </div>
       ) : null}
-      <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+      <div className={`grid gap-4 ${calendarOnly ? '' : 'lg:grid-cols-[0.95fr_1.05fr]'}`}>
         <div data-testid="artifact-calendar-card" className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
@@ -542,6 +545,7 @@ function MealReactionWorkbench({
             ))}
           </div>
         </div>
+        {!calendarOnly ? (
         <div data-testid="meal-reaction-log-card" className="hidden overflow-x-auto rounded-lg border border-gray-200 bg-white md:block">
           <div className="border-b border-gray-100 px-3 py-3">
             <div className="flex flex-wrap items-start justify-between gap-3">
@@ -583,9 +587,10 @@ function MealReactionWorkbench({
                   ))}
                 </tr>
               ))}
-            </tbody>
+          </tbody>
           </table>
         </div>
+        ) : null}
       </div>
     </div>
   );
@@ -1431,13 +1436,14 @@ function RoutineWorkbench({
   const nextLabel = next ? `${next.sessionIndex}회차` : '';
   const nextState = nextKey ? workbenchState.occurrences[nextKey] ?? {} : {};
   const isSleepCheck = bundle.flow.slug === 'diet-habit-2week';
+  const isCheckOnlyRoutine = checkOnlyRoutineSlugs.has(bundle.flow.slug);
   const sessionItems = bundle.items.slice(0, 5);
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1.12fr_0.88fr]">
+    <div className={`grid gap-4 ${isCheckOnlyRoutine ? 'lg:grid-cols-[1.2fr_0.8fr]' : 'lg:grid-cols-[1.12fr_0.88fr]'}`}>
       <div className="order-2 grid min-w-0 gap-4 lg:order-1">
         <RoutineOccurrenceCalendar month={month} rows={rows} weekCount={weekCount} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
-        <RoutineSessionLogCard bundle={bundle} rows={rows} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
+        {!isCheckOnlyRoutine ? <RoutineSessionLogCard bundle={bundle} rows={rows} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} /> : null}
       </div>
       <div data-testid="routine-today-session-card" className="order-1 min-w-0 rounded-lg border border-gray-200 bg-[#FAFAF8] p-4 lg:order-2">
         <p className="text-sm font-semibold text-blue-700">이번 주 요약</p>
@@ -1473,6 +1479,7 @@ function RoutineWorkbench({
             >
               다음 회차 기록
             </button>
+            {!isCheckOnlyRoutine ? (
             <textarea
               aria-label={`다음 세션 메모: ${nextLabel}`}
               className="mt-3 min-h-20 w-full resize-y rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-800"
@@ -1480,6 +1487,7 @@ function RoutineWorkbench({
               value={nextState.note ?? ''}
               onChange={(event) => onWorkbenchChange(updateOccurrenceNote(workbenchState, nextKey, event.currentTarget.value))}
             />
+            ) : null}
           </div>
         ) : null}
         <ul className="mt-3 space-y-2 text-sm text-gray-700">

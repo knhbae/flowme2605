@@ -585,8 +585,8 @@ test('real source-backed channel batch covers every preview channel', () => {
 test('real source-backed flows include precision and tailored executable details', () => {
   const real = seedBundles.filter((bundle) => bundle.flow.source_status === 'real');
   assert.ok(real.length >= 20);
-  const oneActionRealSourceSlugs = new Set([
-    'real-fitvely-diet-record-routine',
+  const customRealSourceItemCounts = new Map<string, number>([
+    ['real-fitvely-diet-record-routine', 3],
   ]);
 
   for (const bundle of real) {
@@ -596,7 +596,7 @@ test('real source-backed flows include precision and tailored executable details
     assert.ok(bundle.flow.conversion_note, `${bundle.flow.slug} missing conversion_note`);
     assert.ok(bundle.flow.source_precision, `${bundle.flow.slug} missing source_precision`);
     assert.ok(['exact', 'broad'].includes(bundle.flow.source_precision), bundle.flow.slug);
-    const expectedItemCount = bundle.flow.tags?.includes('exact-video') || oneActionRealSourceSlugs.has(bundle.flow.slug) ? 1 : 5;
+    const expectedItemCount = customRealSourceItemCounts.get(bundle.flow.slug) ?? (bundle.flow.tags?.includes('exact-video') ? 1 : 5);
     assert.equal(bundle.items.length, expectedItemCount, `${bundle.flow.slug} expected ${expectedItemCount} items`);
     assert.equal(
       bundle.itemDetails?.length,
@@ -624,7 +624,7 @@ test('real source-backed flows include precision and tailored executable details
       completionTexts.add(detail.completion_criteria);
     }
 
-    if (!bundle.flow.tags?.includes('exact-video') && !oneActionRealSourceSlugs.has(bundle.flow.slug)) {
+    if (!bundle.flow.tags?.includes('exact-video') && !customRealSourceItemCounts.has(bundle.flow.slug)) {
       assert.ok(whyTexts.size >= 4, `${bundle.flow.slug} uses generic why text`);
       assert.ok(howTexts.size >= 4, `${bundle.flow.slug} uses generic how text`);
       assert.ok(completionTexts.size >= 4, `${bundle.flow.slug} uses generic completion text`);
@@ -824,25 +824,19 @@ test('diet exact video details stay limited to one application and record', () =
   }
 });
 
-test('FITVELY diet record exact source becomes one observation-sheet action', () => {
+test('FITVELY diet record exact source becomes three meal calendar checks', () => {
   const bundle = seedBundles.find((entry) => entry.flow.slug === 'real-fitvely-diet-record-routine');
 
   assert.ok(bundle);
   assert.equal(bundle.flow.source_precision, 'exact');
-  assert.equal(inferPrimaryDestination(bundle), 'sheet');
-  assert.equal(bundle.items.length, 1, 'diet record route should not ask users to manage five habit actions');
-  assert.equal(bundle.itemDetails?.length, 1, 'diet record route should keep guidance in one detail panel');
+  assert.equal(inferPrimaryDestination(bundle), 'calendar');
+  assert.equal(bundle.items.length, 3, 'diet record route should only expose breakfast, lunch, and dinner checks');
+  assert.equal(bundle.itemDetails?.length, 3, 'diet record route should keep one detail panel per meal check');
 
-  const detail = bundle.itemDetails?.[0];
-  assert.ok(detail);
-
-  assert.match(detail.how ?? '', /요약:/, 'diet record route needs a narrow summary');
-  assert.match(detail.how ?? '', /적용 기준:/, 'diet record route needs one selected source rule');
-  assert.match(detail.how ?? '', /관찰표:/, 'diet record route needs sheet-first observation guidance');
-  assert.match(detail.how ?? '', /원본 영상:/, 'diet record route needs source-video authority');
-  assert.match(detail.how ?? '', /기록:/, 'diet record route needs an observation row');
-  assert.match(detail.how ?? '', /중단 조건:/, 'diet record route needs stop/consult criteria');
-  assert.match(detail.caution ?? '', /제한|폭식|어지러움|중단|전문가/, 'diet record route needs diet-sensitive caution');
+  for (const detail of bundle.itemDetails ?? []) {
+    assert.match(detail.how ?? '', /메뉴|기준|원본 영상/, 'diet record route needs concrete meal-check guidance');
+    assert.match(detail.caution ?? '', /제한|폭식|어지러움|중단|전문가/, 'diet record route needs diet-sensitive caution');
+  }
 });
 
 test('workout-plan exact video details convert one rule into a weekly plan record', () => {
@@ -916,6 +910,11 @@ test('FITVELY diet record route uses an exact diet source while weekly body chec
   assert.equal(diet.flow.source_url, 'https://www.youtube.com/watch?v=qcTxaFMWzKs');
   assert.ok(diet.flow.source_title?.includes('g단위'));
   assert.ok(diet.itemDetails.every((detail) => detail.links.some((link) => link.url === diet.flow.source_url)));
+  assert.deepEqual(
+    diet.items.map((item) => item.title),
+    ['아침 식단 확인', '점심 식단 확인', '저녁 식단 확인'],
+  );
+  assert.ok(diet.items.every((item) => item.repeat_rule === '매일 체크'));
 
   assert.ok(weekly);
   assert.equal(weekly.flow.source_precision, 'broad');

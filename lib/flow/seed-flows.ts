@@ -2131,6 +2131,76 @@ function applyValidationFixMeta(bundle: FlowBundle): FlowBundle {
     };
   }
 
+  if (bundle.flow.slug === 'real-fitvely-diet-record-routine') {
+    const sectionId = next.sections[0]?.id ?? `${next.flow.id}-section-meals`;
+    const mealItems = [
+      {
+        id: `${next.flow.id}-breakfast-check`,
+        title: '아침 식단 확인',
+        description: '아침 메뉴를 보고 오늘 정한 식단 기준을 지켰는지만 체크합니다.',
+        order: 0,
+      },
+      {
+        id: `${next.flow.id}-lunch-check`,
+        title: '점심 식단 확인',
+        description: '점심 메뉴를 보고 지켰음/못 지켰음만 남깁니다.',
+        order: 1,
+      },
+      {
+        id: `${next.flow.id}-dinner-check`,
+        title: '저녁 식단 확인',
+        description: '저녁 메뉴를 보고 오늘 식단 체크를 마무리합니다.',
+        order: 2,
+      },
+    ];
+
+    next = {
+      ...next,
+      flow: {
+        ...next.flow,
+        primary_destination: 'calendar',
+        conversion_note: 'FITVELY 식단 영상을 처방표로 확장하지 않고 아침, 점심, 저녁 식단 확인 캘린더와 완료 체크로 압축했습니다.',
+      },
+      sections: [
+        {
+          id: sectionId,
+          flow_id: next.flow.id,
+          title: '하루 식단 체크',
+          description: '메모 대신 아침, 점심, 저녁을 지켰는지만 체크합니다.',
+          order: 0,
+        },
+      ],
+      items: mealItems.map((item) => ({
+        id: item.id,
+        flow_id: next.flow.id,
+        section_id: sectionId,
+        title: item.title,
+        description: item.description,
+        type: 'calendar' as const,
+        repeat_rule: '매일 체크',
+        source_type: next.items[0]?.source_type ?? 'creator_experience',
+        risk_level: next.flow.risk_level,
+        order: item.order,
+      })),
+      itemDetails: mealItems.map((item) => ({
+        item_id: item.id,
+        why: '식단 처방표를 새로 만들지 않고, 실제 식사에서 사용자가 지켰는지만 빠르게 확인합니다.',
+        how: `${item.title.replace('확인', '')} 메뉴를 보고 선택한 기준을 지켰으면 체크합니다. 자세한 식단 기준은 원본 영상을 열어 확인합니다.`,
+        completion_criteria: `${item.title} 칸이 지켰음/못 지켰음 중 하나로 판단됐다.`,
+        caution: next.flow.warning,
+        links: next.flow.source_url
+          ? [
+              {
+                label: next.flow.source_title ?? 'FITVELY 원본 영상',
+                url: next.flow.source_url,
+                type: 'creator' as const,
+              },
+            ]
+          : [],
+      })),
+    };
+  }
+
   return next;
 }
 

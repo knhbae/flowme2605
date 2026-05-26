@@ -50,8 +50,8 @@ test('execution model maps representative flows to the correct UX views', () => 
     'export_preview',
   ]);
 
-  assert.equal(normalizeExecutionModel(bySlug('used-car-buying-check')).uxType, 'decision');
-  assert.ok(normalizeExecutionModel(bySlug('used-car-buying-check')).views.includes('comparison_table'));
+  assert.equal(normalizeExecutionModel(bySlug('used-car-buying-check')).uxType, 'checklist');
+  assert.ok(!normalizeExecutionModel(bySlug('used-car-buying-check')).views.includes('comparison_table'));
   assert.ok(!normalizeExecutionModel(bySlug('used-car-buying-check')).views.includes('month_calendar'));
 
   assert.equal(normalizeExecutionModel(bySlug('running-5k-4week')).uxType, 'program');

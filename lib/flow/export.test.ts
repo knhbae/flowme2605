@@ -46,7 +46,7 @@ test('text and workbook exports include item notes and skipped state', () => {
   assert.equal(execution.rows[1][7], '스몰웨딩이라 후보 비교 범위를 줄임');
 });
 
-test('decision exports include comparison candidate notes', () => {
+test('checklist exports ignore stale used-car comparison candidate notes', () => {
   const usedCar = seedBundles.find((bundle) => bundle.flow.slug === 'used-car-buying-check');
   assert.ok(usedCar);
   const comparisonState = {
@@ -63,6 +63,13 @@ test('decision exports include comparison candidate notes', () => {
   };
 
   const text = buildText(usedCar, {}, undefined, {}, comparisonState);
+  assert.doesNotMatch(text, /K3 2020|1,250/);
+  {
+    const sheets = buildWorkbookSheets(usedCar, {}, undefined, { comparisonState });
+    const comparison = sheets.find((sheet) => sheet.name === '후보 비교' || sheet.name === '?꾨낫 鍮꾧탳');
+    assert.equal(comparison, undefined);
+  }
+  return;
 
   assert.match(text, /\[후보 비교표\]/);
   assert.match(text, /비교 항목 \| 아반떼 2021 \| K3 2020/);
@@ -79,7 +86,7 @@ test('decision exports include comparison candidate notes', () => {
   ]);
 });
 
-test('moving export includes vendor comparison and proof memo records', () => {
+test('moving export ignores stale vendor comparison and proof memo records', () => {
   const moving = seedBundles.find((bundle) => bundle.flow.slug === 'moving-d30-basic');
   assert.ok(moving);
 
@@ -105,6 +112,16 @@ test('moving export includes vendor comparison and proof memo records', () => {
   };
 
   const text = buildText(moving, {}, '2026-07-15', {}, comparisonState, workbenchState);
+  assert.equal(text.includes('85'), false);
+  assert.equal(text.includes('62'), false);
+  {
+    const sheets = buildWorkbookSheets(moving, {}, '2026-07-15', { comparisonState, workbenchState });
+    const comparison = sheets.find((sheet) => sheet.name === '후보 비교' || sheet.name === '?꾨낫 鍮꾧탳');
+    const workbench = sheets.find((sheet) => sheet.name === '실행판 기록' || sheet.name === '?ㅽ뻾??湲곕줉');
+    assert.equal(comparison, undefined);
+    assert.equal(workbench, undefined);
+  }
+  return;
 
   assert.match(text, /\[후보 비교표\]/);
   assert.match(text, /비교 항목 \| 한빛이사 \| 빠른이사/);
@@ -299,7 +316,7 @@ test('workbench records are included in text and workbook exports', () => {
   assert.ok(workbench.rows.some((row) => row.includes('저녁 탄수화물을 절반으로 줄여보기')));
 });
 
-test('decision text export includes comparison section before checklist items', () => {
+test('checklist text export omits stale used-car comparison state', () => {
   const usedCar = seedBundles.find((entry) => entry.flow.slug === 'used-car-buying-check');
   assert.ok(usedCar);
 
@@ -311,8 +328,9 @@ test('decision text export includes comparison section before checklist items', 
     notes: {},
   });
 
-  assert.ok(text.indexOf('[후보 비교표]') > -1);
-  assert.ok(text.indexOf('[후보 비교표]') < text.indexOf('총예산을 차량가, 이전비, 보험료, 정비비로 나누기'));
+  assert.equal(text.includes('[후보 비교표]'), false);
+  assert.equal(text.includes('후보 A'), false);
+  assert.match(text, /총예산을 차량가, 이전비, 보험료, 정비비로 나누기/);
 });
 
 test('used-car text export carries the vehicle-condition guarantee boundary near the top', () => {
@@ -324,8 +342,8 @@ test('used-car text export carries the vehicle-condition guarantee boundary near
     notes: {},
   });
 
-  assert.match(text.split('\n').slice(0, 4).join('\n'), /차량 상태를 보증하지 않습니다/);
-  assert.ok(text.indexOf('차량 상태를 보증하지 않습니다') < text.indexOf('[후보 비교표]'));
+  assert.match(text.split('\n').slice(0, 6).join('\n'), /차량 상태를 보증하지 않습니다/);
+  assert.equal(text.includes('[후보 비교표]'), false);
 });
 
 test('vehicle hold sections and hold memo fields export with user-facing labels', () => {

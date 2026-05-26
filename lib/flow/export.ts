@@ -1,6 +1,6 @@
 import { addDays, formatDate, getRangeEnd } from './date';
 import { getArtifactPlan } from './artifact-plan';
-import { getComparisonRows, getHoldMemoFields, getLogTables, getMemoCardFields } from './artifact-fields';
+import { getComparisonConfig, getComparisonRows, getHoldMemoFields, getLogTables, getMemoCardFields } from './artifact-fields';
 import { timingLabel } from './parser';
 import { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState, MealSlot, ReactionLog } from './types';
 
@@ -357,6 +357,8 @@ function buildComparisonExport(
   comparisonState?: FlowComparisonState,
 ): { columns: string[]; rows: WorkbookCell[][] } | undefined {
   if (!hasComparisonData(comparisonState)) return undefined;
+  const plan = getArtifactPlan(bundle);
+  if (plan.primarySurface !== 'decision_table' && !getComparisonConfig(bundle)) return undefined;
 
   const candidates = comparisonCandidates(comparisonState);
   const comparisonRows = getComparisonRows(bundle);
@@ -464,6 +466,7 @@ function buildWorkbenchRows(bundle: FlowBundle, state?: FlowWorkbenchState): Wor
 
 function getMemoCardFieldsFromState(bundle: FlowBundle, state: FlowWorkbenchState) {
   const fields = [...getMemoCardFields(bundle), ...getHoldMemoFields(bundle)];
+  if (!fields.length) return [];
   const known = new Set(fields.map((field) => field.id));
   const dynamicFields = Object.keys(state.memoCards ?? {})
     .filter((id) => !known.has(id))

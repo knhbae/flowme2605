@@ -2491,7 +2491,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         </section>
       ) : null}
 
-      <ArtifactPreview bundle={bundle} />
+      {!shouldUseSimplifiedFeedbackLayout(bundle) ? <ArtifactPreview bundle={bundle} /> : null}
 
       {showTodayExecution ? (
         <ExactVideoToolPreview
@@ -2515,10 +2515,10 @@ export function PublicFlow({ slug }: { slug: string }) {
       ) : null}
 
       {showTodayExecution ? (
-        <ExactVideoRenderer bundle={bundle} checks={checks} onToggle={toggle} />
+        shouldHideExactVideoExecutionCard(bundle) ? null : <ExactVideoRenderer bundle={bundle} checks={checks} onToggle={toggle} />
       ) : (
         <>
-          <FlowOverview bundle={bundle} anchor={displayAnchor} checks={checks} itemStates={itemStates} onToggle={toggle} />
+          {!shouldUseSimplifiedFeedbackLayout(bundle) ? <FlowOverview bundle={bundle} anchor={displayAnchor} checks={checks} itemStates={itemStates} onToggle={toggle} /> : null}
 
           {views.length > 1 ? (
             <div className="mb-5 flex flex-wrap gap-2">
@@ -3972,6 +3972,26 @@ function shouldCollapseSecondaryExecutionSections(bundle: FlowBundle) {
     bundle.flow.slug === 'used-car-buying-check' ||
     bundle.flow.slug === 'baby-food-menu-recipe'
   );
+}
+
+function shouldUseSimplifiedFeedbackLayout(bundle: FlowBundle) {
+  return (
+    bundle.flow.slug === 'computer-skills-d30-study' ||
+    bundle.flow.slug === 'diet-habit-2week' ||
+    bundle.flow.slug === 'new-car-delivery-check' ||
+    bundle.flow.slug === 'moving-d30-basic' ||
+    bundle.flow.slug === 'baby-food-menu-recipe' ||
+    bundle.flow.slug === 'used-car-buying-check' ||
+    bundle.flow.slug === 'passport-renewal-docs' ||
+    bundle.flow.slug === 'real-thankyou-bubu-home-workout-starter' ||
+    bundle.flow.slug === 'real-fitvely-diet-record-routine' ||
+    bundle.flow.slug === 'vehicle-inspection-prep' ||
+    bundle.flow.slug === 'real-mofa-overseas-travel-prep'
+  );
+}
+
+function shouldHideExactVideoExecutionCard(bundle: FlowBundle) {
+  return bundle.flow.slug === 'real-thankyou-bubu-home-workout-starter';
 }
 
 function FlowExecutionSectionShell({

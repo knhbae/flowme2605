@@ -45,8 +45,7 @@ export type ArtifactLogTable = {
 };
 
 const movingSlugs = new Set(['moving-d30-basic', 'real-ohouse-moving-d30-prep']);
-const travelSlugs = new Set(['overseas-travel-d14', 'real-mofa-overseas-travel-prep']);
-const mofaTravelSlugs = new Set(['real-mofa-overseas-travel-prep']);
+const travelSlugs = new Set(['overseas-travel-d14']);
 const studySlugs = new Set(['real-sinagong-computer-d30-study', 'computer-skills-d30-study']);
 const driverLicenseSlugs = new Set(['driver-license-renewal-check', 'real-safe-driving-license-renewal']);
 const familyCertificateSlugs = new Set(['family-certificate-issue']);
@@ -79,7 +78,6 @@ const industrialAccidentSlugs = new Set(['industrial-accident-claim-docs']);
 const healthCheckupSlugs = new Set(['national-health-checkup-d7']);
 const vaccinationCertificateSlugs = new Set(['vaccination-certificate-issue']);
 const jobChangeRiskSlugs = new Set(['job-change-risk-check']);
-const passportRenewalSlugs = new Set(['passport-renewal-docs']);
 const fitvelyDietRecordSlugs = new Set(['real-fitvely-diet-record-routine']);
 
 const driverLicenseComparisonRows: ArtifactComparisonRow[] = [
@@ -752,25 +750,11 @@ export function getComparisonConfig(bundle: FlowBundle): ArtifactComparisonConfi
       rows: driverLicenseComparisonRows,
     };
   }
-  if (movingSlugs.has(bundle.flow.slug)) {
-    return {
-      title: '이사 업체 후보 비교',
-      eyebrow: '업체 비교표',
-      rows: movingVendorComparisonRows,
-    };
-  }
   if (childcareSupportSlugs.has(bundle.flow.slug)) {
     return {
       title: '시간제보육 이용 조건 비교표',
       eyebrow: '기관/예약 비교',
       rows: childcareSupportComparisonRows,
-    };
-  }
-  if (usedCarSlugs.has(bundle.flow.slug)) {
-    return {
-      title: '중고차 후보 비교표',
-      eyebrow: '구매 전 후보 비교',
-      rows: usedCarComparisonRows,
     };
   }
   if (workoutProgrammingSlugs.has(bundle.flow.slug)) {
@@ -795,13 +779,13 @@ export function getMemoCardFields(bundle: FlowBundle): ArtifactMemoField[] {
   if (healthCheckupSlugs.has(bundle.flow.slug)) return healthCheckupMemoFields;
   if (vaccinationCertificateSlugs.has(bundle.flow.slug)) return vaccinationCertificateMemoFields;
   if (jobChangeRiskSlugs.has(bundle.flow.slug)) return jobChangeRiskMemoFields;
-  if (passportRenewalSlugs.has(bundle.flow.slug)) return passportRenewalMemoFields;
-  if (movingSlugs.has(bundle.flow.slug)) return movingProofMemoFields;
-  if (mofaTravelSlugs.has(bundle.flow.slug)) return mofaTravelEmergencyMemoFields;
+  if (bundle.flow.slug === 'passport-renewal-docs') return [];
+  if (movingSlugs.has(bundle.flow.slug)) return [];
+  if (bundle.flow.slug === 'real-mofa-overseas-travel-prep') return [];
   if (travelSlugs.has(bundle.flow.slug)) return travelProofMemoFields;
   if (newCarDeliverySlugs.has(bundle.flow.slug)) return newCarDeliveryMemoFields;
-  if (usedCarSlugs.has(bundle.flow.slug)) return usedCarDecisionMemoFields;
-  if (vehicleInspectionSlugs.has(bundle.flow.slug)) return vehicleInspectionMemoFields;
+  if (usedCarSlugs.has(bundle.flow.slug)) return [];
+  if (vehicleInspectionSlugs.has(bundle.flow.slug)) return [];
   return [];
 }
 
@@ -838,7 +822,7 @@ export function getHoldMemoFields(bundle: FlowBundle): ArtifactMemoField[] {
 
 export function getLogTables(bundle: FlowBundle): ArtifactLogTable[] {
   if (qnetExamSlugs.has(bundle.flow.slug)) return qnetLogTables;
-  if (fitvelyDietRecordSlugs.has(bundle.flow.slug)) return fitvelyDietObservationLogTables;
+  if (fitvelyDietRecordSlugs.has(bundle.flow.slug)) return [];
   if (fitvelyNutritionExactVideoSlugs.has(bundle.flow.slug)) return fitvelyNutritionActionObservationLogTables;
   if (bundle.flow.slug === 'computer-skills-d30-study') return computerSkillsStudyLogTables;
   if (studySlugs.has(bundle.flow.slug)) return studyLogTables;
