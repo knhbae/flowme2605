@@ -1071,6 +1071,25 @@ test('moving desktop shows calendar artifact before execution list', async ({ pa
   expect(order.slice(0, 2)).toEqual(['artifact-calendar-card', 'artifact-list-card']);
 });
 
+test('moving desktop keeps source context in a right rail beside the workbench', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/f/moving-d30-basic');
+
+  const layout = page.getByTestId('flow-desktop-workbench-layout');
+  const rail = page.getByTestId('flow-desktop-rail');
+  const workbench = page.getByLabel('Flow artifact workbench');
+
+  await expect(layout).toBeVisible();
+  await expect(rail.getByTestId('flow-source-card')).toBeVisible();
+
+  const railBox = await rail.boundingBox();
+  const workbenchBox = await workbench.boundingBox();
+
+  expect(railBox).not.toBeNull();
+  expect(workbenchBox).not.toBeNull();
+  expect(railBox!.x).toBeGreaterThan(workbenchBox!.x + workbenchBox!.width);
+});
+
 test('mobile export sheet remains available from the sticky fallback', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/computer-skills-d30-study');

@@ -110,6 +110,7 @@
 - Routine desktop session-grid pass has landed: routine desktop workbenches now expose `회차 그리드 · primary`, a separate `회차 기록표 · secondary`, and a weekly summary/next-session rail, with Figma review artifact `Tsubuwt1wlPiUgpWbcLTw3`. No route is called validated.
 - Mobile export surface cleanup is in progress: `moving-d30-basic`, `computer-skills-d30-study`, `diet-habit-2week`, and `new-car-delivery-check` now expose short mobile destination CTAs beside the first artifact card while keeping the sticky export sheet as fallback. No route is called validated.
 - Full design-ref gap audit has landed for `design-ref/260525-2` and `design-ref/260526`: the next alignment work is split into layout spine, mobile artifact summaries, content lifecycle audit queue, and observed-session prep. `moving-d30-basic` desktop now shows the calendar artifact before the execution list, and no route is called validated.
+- Moving desktop right-rail pass has landed: `moving-d30-basic` now keeps source context in a desktop rail beside the artifact workbench while mobile keeps source context below the main flow. No route is called validated.
 
 ## Next Up
 
