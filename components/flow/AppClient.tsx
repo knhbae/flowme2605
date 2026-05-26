@@ -2405,8 +2405,8 @@ export function PublicFlow({ slug }: { slug: string }) {
 
       {showDesktopReferenceRail ? (
         <div data-testid="flow-desktop-workbench-layout" className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
-          <div className="min-w-0">
-            <div className="lg:hidden">
+          <div className={showMobileWorkbenchFirst ? 'flex min-w-0 flex-col lg:block' : 'min-w-0'}>
+            <div className={showMobileWorkbenchFirst ? 'order-3 lg:hidden' : 'lg:hidden'}>
               <FlowMigrationStatus bundle={bundle} />
               <FlowSourceFitStatus bundle={bundle} />
             </div>
@@ -2425,8 +2425,8 @@ export function PublicFlow({ slug }: { slug: string }) {
               />
             ) : null}
 
-            {renderSetupSection()}
-            {renderArtifactWorkbench()}
+            <div className={showMobileWorkbenchFirst ? 'order-2 lg:contents' : undefined}>{renderSetupSection()}</div>
+            <div className={showMobileWorkbenchFirst ? 'order-1 lg:contents' : undefined}>{renderArtifactWorkbench()}</div>
           </div>
           <aside data-testid="flow-desktop-rail" className="hidden space-y-4 lg:sticky lg:top-6 lg:block">
             <FlowMigrationStatus bundle={bundle} />
@@ -2654,7 +2654,14 @@ function isExportFirstHeroRoute(bundle: FlowBundle) {
 }
 
 function shouldUseDesktopReferenceRail(bundle: FlowBundle) {
-  return bundle.flow.slug === 'moving-d30-basic';
+  return [
+    'moving-d30-basic',
+    'computer-skills-d30-study',
+    'diet-habit-2week',
+    'new-car-delivery-check',
+    'used-car-buying-check',
+    'baby-food-menu-recipe',
+  ].includes(bundle.flow.slug);
 }
 
 function compactDateLabel(value: string) {

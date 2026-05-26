@@ -70,7 +70,7 @@ export const designRefGapQueueItems: DesignRefGapQueueItem[] = [
   {
     id: 'desktop-reference-rail-generalization',
     label: 'Generalize desktop source rail beyond moving',
-    status: 'pending',
+    status: 'landed',
     priority: 'P1',
     routeSlugs: [
       'computer-skills-d30-study',
@@ -80,8 +80,8 @@ export const designRefGapQueueItems: DesignRefGapQueueItem[] = [
       'baby-food-menu-recipe',
     ],
     reference: 'design-ref source context stays visible beside the workbench',
-    nextAction: 'Move source context, warnings, and artifact notes into a restrained desktop rail for dense representative routes.',
-    statusAfterAlignment: 'pending design-ref alignment, not validated until real user behavior exists.',
+    nextAction: 'Keep dense desktop routes covered while mobile summary entries are finished.',
+    statusAfterAlignment: 'landed in UI, not validated until real user behavior exists.',
   },
   {
     id: 'mobile-study-log-summary',

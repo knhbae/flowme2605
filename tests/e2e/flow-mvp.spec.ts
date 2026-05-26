@@ -1090,6 +1090,34 @@ test('moving desktop keeps source context in a right rail beside the workbench',
   expect(railBox!.x).toBeGreaterThan(workbenchBox!.x + workbenchBox!.width);
 });
 
+test('dense desktop routes keep source context in a right rail beside the workbench', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+
+  for (const slug of [
+    'computer-skills-d30-study',
+    'diet-habit-2week',
+    'new-car-delivery-check',
+    'used-car-buying-check',
+    'baby-food-menu-recipe',
+  ]) {
+    await page.goto(`/f/${slug}`);
+
+    const layout = page.getByTestId('flow-desktop-workbench-layout');
+    const rail = page.getByTestId('flow-desktop-rail');
+    const workbench = page.getByLabel('Flow artifact workbench');
+
+    await expect(layout).toBeVisible();
+    await expect(rail.getByTestId('flow-source-card')).toBeVisible();
+
+    const railBox = await rail.boundingBox();
+    const workbenchBox = await workbench.boundingBox();
+
+    expect(railBox).not.toBeNull();
+    expect(workbenchBox).not.toBeNull();
+    expect(railBox!.x).toBeGreaterThan(workbenchBox!.x + workbenchBox!.width);
+  }
+});
+
 test('mobile export sheet remains available from the sticky fallback', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/computer-skills-d30-study');
@@ -1407,9 +1435,9 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(designRefGapQueue).toBeVisible();
   await expect(designRefGapQueue.getByText('Design-ref gap queue')).toBeVisible();
   await expect(designRefGapQueue.getByText('8 items')).toBeVisible();
-  await expect(designRefGapQueue.getByText('4 landed')).toBeVisible();
-  await expect(designRefGapQueue.getByText('4 pending')).toBeVisible();
-  await expect(designRefGapQueue.getByText('3 P1 pending')).toBeVisible();
+  await expect(designRefGapQueue.getByText('5 landed')).toBeVisible();
+  await expect(designRefGapQueue.getByText('3 pending')).toBeVisible();
+  await expect(designRefGapQueue.getByText('2 P1 pending')).toBeVisible();
   await expect(designRefGapQueue.getByText('0 validated')).toBeVisible();
   await expect(designRefGapQueue.getByText('desktop-reference-rail-generalization')).toBeVisible();
   await expect(designRefGapQueue.getByText('mobile-baby-food-reaction-summary')).toBeVisible();

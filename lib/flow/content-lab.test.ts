@@ -398,16 +398,18 @@ test('content lab exposes design-ref gap queue for remaining alignment work', ()
   const summary = getContentLabSummary(seedBundles);
 
   assert.equal(summary.designRefGapQueueTotalCount, 8);
-  assert.equal(summary.designRefGapQueueLandedCount, 4);
-  assert.equal(summary.designRefGapQueuePendingCount, 4);
-  assert.equal(summary.designRefGapQueueP1PendingCount, 3);
+  assert.equal(summary.designRefGapQueueLandedCount, 5);
+  assert.equal(summary.designRefGapQueuePendingCount, 3);
+  assert.equal(summary.designRefGapQueueP1PendingCount, 2);
   assert.equal(summary.designRefGapQueueValidatedCount, 0);
 
   const landedRouteSlugs = new Set(summary.designRefGapQueueLandedItems.flatMap((item) => item.routeSlugs));
   assert.equal(landedRouteSlugs.has('moving-d30-basic'), true);
+  assert.equal(landedRouteSlugs.has('computer-skills-d30-study'), true);
   assert.equal(landedRouteSlugs.has('diet-habit-2week'), true);
   assert.equal(landedRouteSlugs.has('new-car-delivery-check'), true);
   assert.equal(landedRouteSlugs.has('used-car-buying-check'), true);
+  assert.equal(landedRouteSlugs.has('baby-food-menu-recipe'), true);
 
   const pendingRouteSlugs = new Set(summary.designRefGapQueuePendingItems.flatMap((item) => item.routeSlugs));
   assert.equal(pendingRouteSlugs.has('computer-skills-d30-study'), true);
