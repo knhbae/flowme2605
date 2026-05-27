@@ -14,6 +14,7 @@ import { getSourceFitAudit } from '@/lib/flow/source-fit';
 import { parseTextFlow, serializeTextFlow, timingLabel } from '@/lib/flow/parser';
 import { expandRoutineOccurrences, getRoutineWeekdayLabels } from '@/lib/flow/recurrence';
 import {
+  clearFlowLocalProgress,
   getBundles,
   getActiveFlowProgress,
   getChecks,
@@ -1077,6 +1078,69 @@ export function HomeLanding() {
   );
 }
 
+type MyFlowRow = {
+  id: string;
+  title: string;
+  section: string;
+  timing?: string;
+  date?: string;
+  detail?: FlowItemDetail;
+};
+
+type MySavedFlow = {
+  progress: ReturnType<typeof getActiveFlowProgress>[number];
+  bundle: FlowBundle;
+  anchor: string;
+  checks: Record<string, boolean>;
+  rows: MyFlowRow[];
+  done: number;
+  total: number;
+  percent: number;
+  meta: string;
+};
+
+function getMyFlowRows(bundle: FlowBundle, anchor: string): MyFlowRow[] {
+  const scheduleRows = anchor ? getScheduleEntries(bundle, anchor) : [];
+  if (scheduleRows.length > 0) {
+    return scheduleRows.map((entry) => ({
+      id: entry.id,
+      title: entry.title,
+      section: entry.section,
+      timing: entry.timing,
+      date: entry.startDate,
+      detail: entry.detail,
+    }));
+  }
+
+  return bundle.items.map((item) => ({
+    id: item.id,
+    title: item.title,
+    section: getSectionTitleForBundle(bundle, item.section_id),
+    timing: item.repeat_rule,
+    detail: getItemDetail(bundle, item.id),
+  }));
+}
+
+function getMyFlowCheckIds(bundle: FlowBundle, rowId: string, anchor: string): string[] {
+  return getToggleCheckIds(bundle, rowId, anchor);
+}
+
+function getMyFlowMonthCells(anchor: string): (Date | null)[] {
+  const base = anchor ? new Date(anchor) : new Date();
+  const monthStart = new Date(base.getFullYear(), base.getMonth(), 1);
+  const dayCount = new Date(base.getFullYear(), base.getMonth() + 1, 0).getDate();
+  const cells: (Date | null)[] = [];
+  for (let index = 0; index < monthStart.getDay(); index += 1) cells.push(null);
+  for (let day = 1; day <= dayCount; day += 1) cells.push(new Date(base.getFullYear(), base.getMonth(), day));
+  while (cells.length % 7 !== 0) cells.push(null);
+  return cells;
+}
+
+function getMyFlowMonthLabel(anchor: string): string {
+  const base = anchor ? new Date(anchor) : new Date();
+  return `${base.getFullYear()}-${String(base.getMonth() + 1).padStart(2, '0')}`;
+}
+
 export function MyFlows() {
   const { bundles } = useBundles();
   const currentUser = getCurrentUser();
@@ -1085,6 +1149,7 @@ export function MyFlows() {
   const owned = bundles.filter((bundle) => isUserOwnedFlow(bundle, seedIds));
   const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'published' | 'copy'>('all');
   const [savedView, setSavedView] = useState<'flow' | 'calendar' | 'checklist' | 'routine'>('flow');
+  const [checksBySlug, setChecksBySlug] = useState<Record<string, Record<string, boolean>>>({});
   const published = owned.filter((bundle) => bundle.flow.status === 'published');
   const drafts = owned.filter((bundle) => bundle.flow.status === 'draft');
   const copies = owned.filter((bundle) => bundle.flow.title.endsWith('사본') || bundle.flow.slug.includes('-copy-'));
@@ -1110,9 +1175,86 @@ export function MyFlows() {
     ['routine', '루틴'],
   ] as const;
 
+  const refreshSavedFlowState = () => {
+    const progress = getActiveFlowProgress();
+    setActiveProgress(progress);
+    setChecksBySlug(Object.fromEntries(progress.map((item) => [item.slug, getChecks(item.slug)])));
+  };
+
   useEffect(() => {
-    setActiveProgress(getActiveFlowProgress());
+    refreshSavedFlowState();
   }, [bundles]);
+
+  const savedFlows: MySavedFlow[] = activeProgress
+    .map((progress) => {
+      const progressBundle = bundles.find((entry) => entry.flow.slug === progress.slug);
+      if (!progressBundle) return null;
+      const anchor = progress.anchor ?? '';
+      const checks = checksBySlug[progress.slug] ?? {};
+      const rows = getMyFlowRows(progressBundle, anchor);
+      const executableIds = getExecutableCheckIds(progressBundle, anchor);
+      const total = Math.max(executableIds.filter((id) => !isItemStateSkipped(getItemStates(progress.slug), id)).length, progress.total);
+      const done = executableIds.filter((id) => checks[id] && !isItemStateSkipped(getItemStates(progress.slug), id)).length;
+      const anchorLabel = getAnchorInputLabel(progressBundle);
+      const meta = [
+        anchor ? `${anchorLabel} ${anchor}` : null,
+        `${done}/${total} 완료`,
+        progress.skipped ? `${progress.skipped}개 제외` : null,
+      ].filter(Boolean).join(' · ');
+      return {
+        progress,
+        bundle: progressBundle,
+        anchor,
+        checks,
+        rows,
+        done,
+        total,
+        percent: total ? Math.round((done / total) * 100) : 0,
+        meta,
+      };
+    })
+    .filter((item): item is MySavedFlow => Boolean(item));
+  const calendarRows = savedFlows.flatMap((flow) =>
+    flow.rows
+      .filter((row) => row.date)
+      .map((row) => ({ ...row, flow })),
+  ).sort((a, b) => (a.date ?? '').localeCompare(b.date ?? ''));
+  const calendarAnchor = calendarRows[0]?.date ?? savedFlows[0]?.anchor ?? formatDate(new Date());
+  const calendarCells = getMyFlowMonthCells(calendarAnchor);
+  const routineFlows = savedFlows.filter((flow) => flow.bundle.flow.structure_type === 'routine');
+
+  const toggleSavedFlowItem = (flow: MySavedFlow, rowId: string) => {
+    const checkIds = getMyFlowCheckIds(flow.bundle, rowId, flow.anchor);
+    const nextChecked = !checkIds.every((id) => flow.checks[id]);
+    const nextChecks = checkIds.reduce(
+      (next, id) => ({
+        ...next,
+        [id]: nextChecked,
+      }),
+      { ...flow.checks },
+    );
+    saveChecks(flow.progress.slug, nextChecks);
+    refreshSavedFlowState();
+  };
+
+  const completeSavedFlow = (flow: MySavedFlow) => {
+    const executableIds = getExecutableCheckIds(flow.bundle, flow.anchor);
+    const nextChecks = executableIds.reduce(
+      (next, id) => ({
+        ...next,
+        [id]: true,
+      }),
+      { ...flow.checks },
+    );
+    saveChecks(flow.progress.slug, nextChecks);
+    refreshSavedFlowState();
+  };
+
+  const removeSavedFlow = (flow: MySavedFlow) => {
+    if (typeof window !== 'undefined' && !window.confirm(`${flow.progress.title} 저장 기록을 이 브라우저에서 지울까요?`)) return;
+    clearFlowLocalProgress(flow.progress.slug);
+    refreshSavedFlowState();
+  };
 
   return (
     <main className="mx-auto max-w-6xl px-5 py-8 pb-28 md:pb-8">
@@ -1128,7 +1270,7 @@ export function MyFlows() {
         </Link>
       </div>
 
-      {activeProgress.length > 0 ? (
+      {savedFlows.length > 0 ? (
         <section className="mb-6">
           <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
             <div>
@@ -1152,73 +1294,135 @@ export function MyFlows() {
 
           {savedView === 'flow' ? (
             <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-              {activeProgress.map((progress) => {
-                const progressBundle = bundles.find((entry) => entry.flow.slug === progress.slug);
-                const anchorLabel = progressBundle ? getAnchorInputLabel(progressBundle) : '기준일';
-                const progressMeta = [
-                  progress.anchor ? `${anchorLabel} ${progress.anchor}` : null,
-                  `${progress.done}/${progress.total} 완료`,
-                  progress.skipped ? `${progress.skipped}개 제외` : null,
-                ].filter(Boolean).join(' · ');
-
-                return (
-                  <article key={progress.slug} className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-                    <h3 className="text-lg font-semibold text-gray-950">{progress.title}</h3>
-                    <p className="mt-2 text-sm font-semibold text-blue-700">{progressMeta}</p>
-                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-gray-200">
-                      <div className="h-full bg-[#2563EB]" style={{ width: progress.total ? `${Math.round((progress.done / progress.total) * 100)}%` : '0%' }} />
-                    </div>
-                    <p className="mt-2 text-xs text-gray-500">
-                      {progress.done > 0 ? '체크한 항목이 저장되어 있습니다.' : '아직 체크 전입니다. 저장한 Flow를 바로 시작할 수 있습니다.'}
-                    </p>
-                    <Link className="mt-4 inline-flex rounded-md bg-[#2563EB] px-3 py-2 text-sm font-semibold text-white" href={`/f/${progress.slug}`}>
+              {savedFlows.map((flow) => (
+                <article key={flow.progress.slug} className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                  <h3 className="text-lg font-semibold text-gray-950">{flow.progress.title}</h3>
+                  <p className="mt-2 text-sm font-semibold text-blue-700">{flow.meta}</p>
+                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-gray-200">
+                    <div className="h-full bg-[#2563EB]" style={{ width: `${flow.percent}%` }} />
+                  </div>
+                  <p className="mt-2 text-xs leading-5 text-gray-500">
+                    {flow.done > 0 ? '체크한 항목이 저장되어 있습니다.' : '아직 체크 전입니다. 저장한 Flow를 바로 시작할 수 있습니다.'}
+                  </p>
+                  <div className="mt-4 grid gap-2">
+                    <Link className="inline-flex justify-center rounded-md bg-[#2563EB] px-3 py-2 text-sm font-semibold text-white" href={`/f/${flow.progress.slug}`}>
                       이어서 관리하기
                     </Link>
-                  </article>
-                );
-              })}
+                    <div className="grid grid-cols-2 gap-2">
+                      <button className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300" type="button" onClick={() => completeSavedFlow(flow)}>
+                        남은 항목 완료 처리
+                      </button>
+                      <button className="rounded-md border border-red-100 bg-white px-3 py-2 text-sm font-semibold text-red-700 hover:border-red-300" type="button" onClick={() => removeSavedFlow(flow)}>
+                        저장 해제
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))}
             </div>
           ) : null}
 
           {savedView === 'calendar' ? (
-            <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-950">캘린더 보기</h3>
-                  <p className="mt-1 text-sm text-slate-600">저장한 Flow의 기준일과 남은 항목을 날짜 중심으로 봅니다.</p>
+            <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
+              <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-950">월간 캘린더</h3>
+                    <p className="mt-1 text-sm text-slate-600">{getMyFlowMonthLabel(calendarAnchor)} 기준 저장 일정</p>
+                  </div>
+                  <span className="rounded-md bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">{calendarRows.length}개 일정</span>
                 </div>
-                <span className="rounded-md bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">{activeProgress.length}개 Flow</span>
-              </div>
-              <div className="mt-4 grid gap-2">
-                {activeProgress.map((progress) => (
-                  <Link key={progress.slug} className="rounded-md border border-slate-200 bg-slate-50 px-3 py-3 text-sm hover:border-blue-300" href={`/f/${progress.slug}`}>
-                    <span className="block font-semibold text-slate-950">{progress.title}</span>
-                    <span className="mt-1 block text-blue-700">{progress.anchor ? `${progress.anchor} 기준 · ` : ''}{progress.done}/{progress.total} 완료</span>
-                  </Link>
-                ))}
-              </div>
+                <div className="mt-4 grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-500">
+                  {['일', '월', '화', '수', '목', '금', '토'].map((day) => <div key={day}>{day}</div>)}
+                </div>
+                <div className="mt-2 grid grid-cols-7 gap-1">
+                  {calendarCells.map((day, index) => {
+                    const date = day ? formatDate(day) : '';
+                    const rows = calendarRows.filter((row) => row.date === date).slice(0, 2);
+                    return (
+                      <div key={`${date}-${index}`} className={`min-h-16 rounded-md border p-1.5 text-left ${day ? 'border-slate-200 bg-slate-50' : 'border-transparent'}`}>
+                        {day ? <p className="text-xs font-semibold text-slate-700">{String(day.getDate()).padStart(2, '0')}</p> : null}
+                        <div className="mt-1 grid gap-1">
+                          {rows.map((row) => {
+                            const checked = getMyFlowCheckIds(row.flow.bundle, row.id, row.flow.anchor).every((id) => row.flow.checks[id]);
+                            return (
+                              <button key={`${row.flow.progress.slug}-${row.id}`} className={`truncate rounded px-1 py-0.5 text-left text-[10px] font-semibold ${checked ? 'bg-emerald-50 text-emerald-700 line-through' : 'bg-blue-50 text-blue-700'}`} type="button" onClick={() => toggleSavedFlowItem(row.flow, row.id)}>
+                                {row.title}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+              <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                <h3 className="text-lg font-semibold text-slate-950">다가오는 일정</h3>
+                <div className="mt-3 grid gap-2">
+                  {calendarRows.slice(0, 8).map((row) => (
+                    <button key={`${row.flow.progress.slug}-${row.id}-upcoming`} className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-left text-sm hover:border-blue-300" type="button" onClick={() => toggleSavedFlowItem(row.flow, row.id)}>
+                      <span className="block text-xs font-semibold text-blue-700">{row.date} · {row.timing}</span>
+                      <span className="mt-1 block font-semibold text-slate-950">{row.title}</span>
+                    </button>
+                  ))}
+                </div>
+              </section>
             </div>
           ) : null}
 
           {savedView === 'checklist' ? (
-            <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-              <h3 className="text-lg font-semibold text-slate-950">체크리스트 보기</h3>
-              <div className="mt-3 divide-y divide-slate-100">
-                {activeProgress.map((progress) => (
-                  <Link key={progress.slug} className="flex items-center justify-between gap-3 py-3 text-sm hover:text-blue-700" href={`/f/${progress.slug}`}>
-                    <span className="font-semibold">{progress.title}</span>
-                    <span className="shrink-0 rounded-md bg-slate-100 px-2 py-1 font-semibold text-slate-700">{progress.done}/{progress.total}</span>
-                  </Link>
-                ))}
-              </div>
+            <div className="grid gap-4">
+              {savedFlows.map((flow) => (
+                <section key={flow.progress.slug} className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-950">{flow.progress.title}</h3>
+                      <p className="mt-1 text-sm font-semibold text-blue-700">{flow.meta}</p>
+                    </div>
+                    <button className="rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-800" type="button" onClick={() => completeSavedFlow(flow)}>
+                      전체 완료
+                    </button>
+                  </div>
+                  <div className="mt-3 divide-y divide-slate-100">
+                    {flow.rows.map((row) => {
+                      const checkIds = getMyFlowCheckIds(flow.bundle, row.id, flow.anchor);
+                      const checked = checkIds.length > 0 && checkIds.every((id) => flow.checks[id]);
+                      return (
+                        <label key={row.id} className="flex gap-3 py-3 text-sm">
+                          <input className="mt-1 h-4 w-4 shrink-0" type="checkbox" aria-label={`내 Flow 체크: ${row.title}`} checked={checked} onChange={() => toggleSavedFlowItem(flow, row.id)} />
+                          <span className="min-w-0 flex-1">
+                            <span className={`block font-semibold ${checked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>{row.title}</span>
+                            <span className="mt-1 block text-xs text-slate-500">{[row.timing, row.date, row.section].filter(Boolean).join(' · ')}</span>
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </section>
+              ))}
             </div>
           ) : null}
 
           {savedView === 'routine' ? (
-            <div className="rounded-lg border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-600">
-              <h3 className="text-lg font-semibold text-slate-950">루틴 보기</h3>
-              <p className="mt-2">반복 Flow를 저장하면 요일별 루틴과 완료 여부가 여기에 모입니다.</p>
-            </div>
+            routineFlows.length > 0 ? (
+              <div className="grid gap-3 md:grid-cols-2">
+                {routineFlows.map((flow) => (
+                  <article key={flow.progress.slug} className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                    <h3 className="text-lg font-semibold text-slate-950">{flow.progress.title}</h3>
+                    <p className="mt-1 text-sm font-semibold text-blue-700">{flow.meta}</p>
+                    <Link className="mt-4 inline-flex rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white" href={`/f/${flow.progress.slug}`}>
+                      루틴 이어서 체크하기
+                    </Link>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-lg border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-600">
+                <h3 className="text-lg font-semibold text-slate-950">저장된 루틴 Flow가 없습니다</h3>
+                <p className="mt-2">반복 Flow를 저장하면 요일별 루틴과 완료 여부가 여기에 모입니다.</p>
+              </div>
+            )
           ) : null}
         </section>
       ) : null}

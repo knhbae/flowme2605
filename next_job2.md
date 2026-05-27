@@ -8,6 +8,15 @@
 - Do not touch unrelated untracked `design-ref/` or `next_job.md` unless explicitly requested.
 
 ## Implemented
+- My Flow management home expansion:
+  - `/my` now treats saved Flows as the first execution-management surface, before profile/admin sections.
+  - Added actionable saved-Flow tabs: `Flow별`, `캘린더`, `체크리스트`, and `루틴`.
+  - `Flow별` cards now show anchor date, completion count, progress bar, continue action, complete-remaining action, and local save removal.
+  - `캘린더` now renders a compact monthly calendar plus upcoming dated saved items.
+  - `체크리스트` now exposes direct persisted checkboxes for saved Flow items.
+  - `루틴` now shows saved routine Flows when available, otherwise a quiet empty state.
+  - Added `clearFlowLocalProgress(slug)` so saved marker, checks, anchor, item states, comparison state, workbench state, and reaction logs can be cleared together.
+  - Added unit and E2E coverage for saved Flow management tabs and persisted `/my` checklist progress.
 - Rebranding-grade public detail pass, direction **B. Tool-First Operating Surface**:
   - Added a cool slate/white global surface and stronger blue primary action system.
   - Reworked public Flow detail pages into an app-like shell with FLOW wordmark, compact search affordance, strong header, artifact-first workbench, and quieter source/reference rail.
@@ -64,6 +73,13 @@
 - If more UX polish is requested, focus on fresh user-session validation rather than adding more artifact surfaces.
 
 ## Verification Run
+- My Flow management home expansion:
+  - Targeted Playwright: `my flow management tabs|my flow workspace|moving mobile saves`: passed, 3/3.
+  - `npm run build`: passed.
+  - `npm test`: passed, 184/184.
+  - `npm run docs:check`: passed, 14 required files and 306 local links.
+  - `npm run test:e2e`: passed, 75/75.
+  - Mobile screenshot QA on `http://127.0.0.1:3105/my` at 390x844 covered `Flow별`, `캘린더`, and `체크리스트`; no horizontal overflow (`scrollWidth` 390 / `innerWidth` 390).
 - Mobile save-to-My-Flow pass:
   - `moving-d30-basic` mobile now uses `내 Flow에 저장` as the primary CTA.
   - Save completion offers `내 Flow에서 관리하기` and keeps calendar/xlsx/copy as secondary actions.

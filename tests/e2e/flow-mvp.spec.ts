@@ -502,6 +502,29 @@ test('moving mobile saves to My Flow before external export', async ({ page }) =
   await expect(page.getByText('이사일 2026-06-26 · 0/24 완료')).toBeVisible();
 });
 
+test('my flow management tabs expose calendar checklist and routine views', async ({ page }) => {
+  await page.goto('/f/moving-d30-basic');
+  await page.getByLabel('이사일').fill('2026-06-26');
+  await page.getByTestId('moving-save-actions').getByRole('button', { name: '내 Flow에 저장' }).click();
+
+  await page.goto('/my');
+  await expect(page.getByRole('heading', { name: '저장한 Flow' })).toBeVisible();
+
+  await page.getByRole('button', { name: '캘린더' }).click();
+  await expect(page.getByRole('heading', { name: '월간 캘린더' })).toBeVisible();
+  await expect(page.getByText('이사 방식 정하기').first()).toBeVisible();
+  await expect(page.getByText('다가오는 일정')).toBeVisible();
+
+  await page.getByRole('button', { name: '체크리스트' }).click();
+  await page.getByLabel('내 Flow 체크: 이사 방식 정하기').check();
+
+  await page.getByRole('button', { name: 'Flow별' }).click();
+  await expect(page.getByText('이사일 2026-06-26 · 1/24 완료')).toBeVisible();
+
+  await page.getByRole('button', { name: '루틴' }).click();
+  await expect(page.getByRole('heading', { name: '저장된 루틴 Flow가 없습니다' })).toBeVisible();
+});
+
 test('flow item card makes detail and skipped states explicit', async ({ page }) => {
   await page.goto('/f/moving-d30-basic');
   await page.getByLabel('이사일').fill('2026-06-22');

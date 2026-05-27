@@ -191,6 +191,20 @@ export function saveFlowRecord(slug: string, value: Omit<SavedFlowRecord, 'slug'
   return record;
 }
 
+export function clearFlowLocalProgress(slug: string): void {
+  if (!canUseStorage()) return;
+  [
+    `${SAVED_FLOW_KEY_PREFIX}${slug}`,
+    `${CHECKS_KEY_PREFIX}${slug}`,
+    `${ANCHOR_KEY_PREFIX}${slug}:anchorDate`,
+    `${ITEM_STATE_KEY_PREFIX}${slug}`,
+    `${COMPARISON_KEY_PREFIX}${slug}`,
+    `${WORKBENCH_KEY_PREFIX}${slug}`,
+    `${REACTIONS_KEY_PREFIX}${slug}`,
+  ].forEach((key) => localStorage.removeItem(key));
+  localStorage.setItem('flow:meta:last-visit', new Date().toISOString());
+}
+
 export function getReactionLogs(slug: string): Record<string, ReactionLog> {
   if (!canUseStorage()) return {};
   return JSON.parse(localStorage.getItem(`${REACTIONS_KEY_PREFIX}${slug}`) || '{}');
