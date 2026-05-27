@@ -73,6 +73,30 @@ test('moving restart route starts from move date setup', async ({ page }) => {
   await expect(page.getByText('D-10 주소 변경과 정기 서비스 정리')).toBeVisible();
 });
 
+test('moving restart edits items before export', async ({ page }) => {
+  await page.goto('/restart/moving-d30');
+  await page.getByLabel('이사일').fill('2026-06-27');
+  await page.getByRole('button', { name: '일정 만들기' }).click();
+
+  await page.getByRole('button', { name: '주소 변경과 정기 서비스 정리 편집' }).click();
+  await page.getByLabel('항목 날짜').fill('2026-06-18');
+  await page.getByLabel('항목 메모').fill('인터넷 이전 설치는 오전 시간으로 예약');
+  await page.getByRole('button', { name: '항목 저장' }).click();
+
+  await expect(page.getByText('2026-06-18')).toBeVisible();
+  await expect(page.getByText('인터넷 이전 설치는 오전 시간으로 예약')).toBeVisible();
+
+  await page.getByRole('button', { name: '항목 추가' }).click();
+  await page.getByLabel('새 항목 제목').fill('관리사무소 엘리베이터 예약');
+  await page.getByLabel('새 항목 날짜').fill('2026-06-20');
+  await page.getByRole('button', { name: '새 항목 저장' }).click();
+  await expect(page.getByRole('heading', { name: '관리사무소 엘리베이터 예약' })).toBeVisible();
+
+  await page.getByRole('button', { name: '버릴 물건과 대형폐기물 정리 편집' }).click();
+  await page.getByRole('button', { name: '항목 삭제' }).click();
+  await expect(page.getByText('버릴 물건과 대형폐기물 정리')).toHaveCount(0);
+});
+
 test('flow discovery restores tag filter from URL query', async ({ page }) => {
   await page.goto('/flows?tag=돈이%20걸린%20결정');
 
