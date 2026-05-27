@@ -3,7 +3,7 @@
 ## Context
 - Branch: `design-ref-full-gap-alignment`
 - PR: https://github.com/knhbae/flowme2605/pull/112
-- Latest Vercel preview: https://flowme2605-j6ifs73t6-flowme.vercel.app
+- Latest Vercel preview: https://flowme2605-1eo0ye23p-flowme.vercel.app
 - User asked to apply `my_tests/250526_experiment_checklist.md` broadly, without further approval, then pull/push PR and deploy to Vercel.
 - Do not touch unrelated untracked `design-ref/` or `next_job.md` unless explicitly requested.
 
@@ -79,6 +79,6 @@
   - Playwright browser QA on `http://127.0.0.1:3104` mobile viewport passed for 10 feedback routes: no stale `체크리스트 복사`, `flow-item-card`, `운동 캘린더 · primary`, `다음 회차 기록`, `4주 12회차`, and no horizontal overflow.
 
 ## Remaining For Next Chat
-- PR #112 / branch `design-ref-full-gap-alignment` has been pushed through commit `9556e71`.
-- Latest preview deployment for the pushed implementation: https://flowme2605-j6ifs73t6-flowme.vercel.app
+- PR #112 / branch `design-ref-full-gap-alignment` has been pushed through commit `af5ef66`.
+- Latest preview deployment for the pushed implementation: https://flowme2605-1eo0ye23p-flowme.vercel.app
 - Local Playwright verification used the production test server on `http://127.0.0.1:3104`.
