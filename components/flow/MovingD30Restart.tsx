@@ -7,12 +7,16 @@ import FullCalendar from '@fullcalendar/react';
 import { useMemo, useState } from 'react';
 import {
   addMovingRestartItem,
+  buildMovingRestartChecklistText,
+  buildMovingRestartIcs,
+  buildMovingRestartSheets,
   deleteMovingRestartItem,
   generateMovingRestartItems,
   moveMovingRestartItem,
   type MovingRestartItem,
   updateMovingRestartItem,
 } from '@/lib/flow/moving-d30-restart';
+import { buildXlsxBuffer } from '@/lib/flow/export';
 
 const defaultMoveDate = '2026-06-27';
 
@@ -28,6 +32,9 @@ export function MovingD30Restart() {
   const [draftDate, setDraftDate] = useState('');
   const [draftMemo, setDraftMemo] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showAuthGate, setShowAuthGate] = useState(false);
+  const [feedback, setFeedback] = useState('');
+  const [saved, setSaved] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newDate, setNewDate] = useState(defaultMoveDate);
   const [newMemo, setNewMemo] = useState('');
@@ -104,6 +111,56 @@ export function MovingD30Restart() {
     const item = items.find((entry) => entry.id === id);
     if (!item) return;
     setItems((current) => updateMovingRestartItem(current, id, { done: !item.done }));
+  }
+
+  function downloadBlob(fileName: string, type: string, value: BlobPart) {
+    const blob = new Blob([value], { type });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function copyChecklist() {
+    const text = buildMovingRestartChecklistText(items);
+    void navigator.clipboard?.writeText(text);
+    setFeedback('체크리스트를 만들었습니다');
+  }
+
+  function downloadCalendar() {
+    downloadBlob('moving-d30-flow.ics', 'text/calendar;charset=utf-8', buildMovingRestartIcs(items));
+    setFeedback('캘린더 파일을 만들었습니다');
+  }
+
+  async function downloadSheet() {
+    const buffer = await buildXlsxBuffer(buildMovingRestartSheets(items));
+    downloadBlob('moving-d30-flow.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer);
+    setFeedback('엑셀 실행표를 만들었습니다');
+  }
+
+  function isDemoLoggedIn() {
+    return typeof window !== 'undefined' && window.localStorage.getItem('flow:auth:demo-user') === 'true';
+  }
+
+  function saveToMyFlow() {
+    if (!isDemoLoggedIn()) {
+      setShowAuthGate(true);
+      return;
+    }
+    window.localStorage.setItem(
+      'flow:saved:restart-moving-d30',
+      JSON.stringify({
+        slug: 'restart-moving-d30',
+        savedAt: new Date().toISOString(),
+        selectedArtifactMode: 'calendar',
+        anchor: moveDate,
+        items,
+      }),
+    );
+    setSaved(true);
+    setFeedback('내 Flow에 저장했습니다');
   }
 
   return (
@@ -257,6 +314,53 @@ export function MovingD30Restart() {
 
         <aside className="space-y-4">
           <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="text-lg font-bold">내 도구로 가져가기</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              수정한 일정 기준으로 캘린더, 체크리스트, 엑셀, FlowMe 저장을 선택합니다.
+            </p>
+            <div className="mt-4 grid gap-2">
+              <button
+                type="button"
+                onClick={downloadCalendar}
+                className="min-h-12 rounded-2xl bg-blue-600 px-4 text-sm font-bold text-white"
+              >
+                캘린더에 넣기
+              </button>
+              <button
+                type="button"
+                onClick={copyChecklist}
+                className="min-h-11 rounded-2xl bg-slate-100 px-4 text-sm font-bold text-slate-700"
+              >
+                체크리스트 복사
+              </button>
+              <button
+                type="button"
+                onClick={() => void downloadSheet()}
+                className="min-h-11 rounded-2xl bg-slate-100 px-4 text-sm font-bold text-slate-700"
+              >
+                엑셀 실행표
+              </button>
+              <button
+                type="button"
+                onClick={saveToMyFlow}
+                className="min-h-11 rounded-2xl bg-violet-100 px-4 text-sm font-bold text-violet-800"
+              >
+                내 Flow로 저장
+              </button>
+            </div>
+            {feedback ? (
+              <div className="mt-4 rounded-2xl bg-green-50 p-3 text-sm font-semibold text-green-800">
+                {feedback}
+                {saved ? (
+                  <a className="ml-2 underline" href="/my">
+                    내 Flow에서 보기
+                  </a>
+                ) : null}
+              </div>
+            ) : null}
+          </section>
+
+          <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
             <h2 className="text-lg font-bold">출처 분리</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">아정당 이사 준비 체크리스트</p>
             <p className="mt-2 text-sm leading-6 text-slate-600">정부24 전입신고 안내</p>
@@ -322,6 +426,41 @@ export function MovingD30Restart() {
           </section>
         </aside>
       </div>
+
+      {showAuthGate ? (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/30 px-4">
+          <section
+            role="dialog"
+            aria-label="내 Flow로 저장할까요?"
+            className="w-full max-w-sm rounded-[28px] bg-white p-6 shadow-2xl"
+          >
+            <h2 className="text-2xl font-bold">내 Flow로 저장할까요?</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-600">
+              로그인하면 수정한 이사 D-30 일정을 FlowMe에서 다시 열고 체크할 수 있습니다.
+            </p>
+            <div className="mt-5 grid gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  window.localStorage.setItem('flow:auth:demo-user', 'true');
+                  setShowAuthGate(false);
+                  saveToMyFlow();
+                }}
+                className="min-h-12 rounded-2xl bg-blue-600 px-4 text-sm font-bold text-white"
+              >
+                로그인/회원가입
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowAuthGate(false)}
+                className="min-h-11 rounded-2xl bg-slate-100 px-4 text-sm font-bold text-slate-700"
+              >
+                계속 둘러보기
+              </button>
+            </div>
+          </section>
+        </div>
+      ) : null}
     </main>
   );
 }

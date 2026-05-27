@@ -97,6 +97,29 @@ test('moving restart edits items before export', async ({ page }) => {
   await expect(page.getByText('버릴 물건과 대형폐기물 정리')).toHaveCount(0);
 });
 
+test('moving restart exports edited items and gates flow save', async ({ page }) => {
+  await page.goto('/restart/moving-d30');
+  await page.getByLabel('이사일').fill('2026-06-27');
+  await page.getByRole('button', { name: '일정 만들기' }).click();
+  await page.getByRole('button', { name: '주소 변경과 정기 서비스 정리 편집' }).click();
+  await page.getByLabel('항목 날짜').fill('2026-06-18');
+  await page.getByRole('button', { name: '항목 저장' }).click();
+
+  await page.getByRole('button', { name: '체크리스트 복사' }).click();
+  await expect(page.getByText('체크리스트를 만들었습니다')).toBeVisible();
+  await expect(page.getByText('2026-06-18')).toBeVisible();
+
+  await page.getByRole('button', { name: '내 Flow로 저장' }).click();
+  await expect(page.getByRole('dialog', { name: '내 Flow로 저장할까요?' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '로그인/회원가입' })).toBeVisible();
+
+  await page.evaluate(() => window.localStorage.setItem('flow:auth:demo-user', 'true'));
+  await page.getByRole('button', { name: '계속 둘러보기' }).click();
+  await page.getByRole('button', { name: '내 Flow로 저장' }).click();
+  await expect(page.getByText('내 Flow에 저장했습니다')).toBeVisible();
+  await expect(page.getByRole('link', { name: '내 Flow에서 보기' })).toHaveAttribute('href', '/my');
+});
+
 test('flow discovery restores tag filter from URL query', async ({ page }) => {
   await page.goto('/flows?tag=돈이%20걸린%20결정');
 
