@@ -3,7 +3,7 @@
 ## Context
 - Branch: `design-ref-full-gap-alignment`
 - PR: https://github.com/knhbae/flowme2605/pull/112
-- Latest Vercel preview: https://flowme2605-1eo0ye23p-flowme.vercel.app
+- Latest Vercel preview: https://flowme2605-rg8c48ugo-flowme.vercel.app
 - User asked to apply `my_tests/250526_experiment_checklist.md` broadly, without further approval, then pull/push PR and deploy to Vercel.
 - Do not touch unrelated untracked `design-ref/` or `next_job.md` unless explicitly requested.
 
@@ -72,6 +72,7 @@
   - Targeted Playwright before full run: `public detail rebrand`, `mobile export sheet remains`, and `moving desktop keeps source` passed, 3/3.
   - Browser QA on `http://127.0.0.1:3105/f/moving-d30-basic`: desktop 1440px and mobile 390px screenshots captured with no horizontal overflow.
   - Initial full E2E found the rebrand header pushed one routine mobile record button 3px below the first viewport; mobile header spacing was compressed and the targeted routine mobile test then passed.
+  - Vercel preview deployment: https://flowme2605-rg8c48ugo-flowme.vercel.app
 - `npm run docs:check`: passed, 14 required files and 306 local links.
 - `npm test`: passed, 182/182.
 - `npm run build`: passed.
@@ -95,5 +96,5 @@
 
 ## Remaining For Next Chat
 - PR #112 / branch `design-ref-full-gap-alignment` has been pushed with this follow-up pass.
-- Latest preview deployment for the pushed implementation: https://flowme2605-1eo0ye23p-flowme.vercel.app
+- Latest preview deployment for the pushed implementation: https://flowme2605-rg8c48ugo-flowme.vercel.app
 - Local Playwright verification used the production test server on `http://127.0.0.1:3104`.
