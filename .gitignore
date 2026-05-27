@@ -9,6 +9,7 @@ build/
 coverage/
 test-results/
 artifacts/
+output/
 
 # Generated QA exports
 prod-smoke-*.xlsx
