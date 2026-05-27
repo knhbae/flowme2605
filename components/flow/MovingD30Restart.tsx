@@ -1,6 +1,6 @@
 'use client';
 
-import type { EventClickArg, EventDropArg } from '@fullcalendar/core';
+import type { EventClickArg, EventContentArg, EventDropArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import FullCalendar from '@fullcalendar/react';
@@ -16,7 +16,6 @@ import {
   type MovingRestartItem,
   updateMovingRestartItem,
 } from '@/lib/flow/moving-d30-restart';
-import { buildXlsxBuffer } from '@/lib/flow/export';
 
 const defaultMoveDate = '2026-06-27';
 
@@ -49,7 +48,23 @@ export function MovingD30Restart() {
     start: item.date,
     allDay: true,
     classNames: item.sourceType === 'official' ? ['moving-restart-official-event'] : ['moving-restart-checklist-event'],
+    extendedProps: {
+      itemTitle: item.title,
+      offsetLabel: item.offsetLabel,
+    },
   }));
+
+  function renderEventContent(info: EventContentArg) {
+    const offsetLabel = String(info.event.extendedProps.offsetLabel ?? '');
+    const itemTitle = String(info.event.extendedProps.itemTitle ?? '');
+
+    return (
+      <span className="block truncate px-1 text-[10px] font-bold leading-5 sm:text-xs">
+        <span>{offsetLabel}</span>
+        <span className="hidden sm:inline"> {itemTitle}</span>
+      </span>
+    );
+  }
 
   function regenerate() {
     const nextItems = generateMovingRestartItems(moveDate);
@@ -135,6 +150,7 @@ export function MovingD30Restart() {
   }
 
   async function downloadSheet() {
+    const { buildXlsxBuffer } = await import('@/lib/flow/export');
     const buffer = await buildXlsxBuffer(buildMovingRestartSheets(items));
     downloadBlob('moving-d30-flow.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer);
     setFeedback('엑셀 실행표를 만들었습니다');
@@ -218,6 +234,7 @@ export function MovingD30Restart() {
                 height="auto"
                 editable
                 events={events}
+                eventContent={renderEventContent}
                 eventClick={handleEventClick}
                 eventDrop={handleEventDrop}
               />
@@ -362,8 +379,22 @@ export function MovingD30Restart() {
 
           <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
             <h2 className="text-lg font-bold">출처 분리</h2>
-            <p className="mt-3 text-sm leading-6 text-slate-600">아정당 이사 준비 체크리스트</p>
-            <p className="mt-2 text-sm leading-6 text-slate-600">정부24 전입신고 안내</p>
+            <a
+              className="mt-3 block rounded-2xl bg-slate-50 p-3 text-sm font-semibold leading-6 text-slate-700 hover:bg-slate-100"
+              href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC%ED%95%A0_%EB%95%8C_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_%EC%83%81%EC%84%B8_%EC%A0%95%EB%A6%AC-47214"
+              rel="noreferrer"
+              target="_blank"
+            >
+              AJD 이사할 때 체크리스트 상세 정리
+            </a>
+            <a
+              className="mt-2 block rounded-2xl bg-slate-50 p-3 text-sm font-semibold leading-6 text-slate-700 hover:bg-slate-100"
+              href="https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000016&HighCtgCD=A0101"
+              rel="noreferrer"
+              target="_blank"
+            >
+              정부24 전입신고 민원안내 및 신청
+            </a>
           </section>
 
           <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">

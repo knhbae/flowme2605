@@ -66,8 +66,14 @@ test('moving restart route starts from move date setup', async ({ page }) => {
   await expect(page.getByRole('heading', { name: '이사 D-30 준비' })).toBeVisible();
   await expect(page.getByLabel('이사일')).toBeVisible();
   await expect(page.getByRole('button', { name: '일정 만들기' })).toBeVisible();
-  await expect(page.getByText('아정당 이사 준비 체크리스트')).toBeVisible();
-  await expect(page.getByText('정부24 전입신고 안내')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'AJD 이사할 때 체크리스트 상세 정리' })).toHaveAttribute(
+    'href',
+    /ajd\.co\.kr\/contents\/basic-tip\/detail/,
+  );
+  await expect(page.getByRole('link', { name: '정부24 전입신고 민원안내 및 신청' })).toHaveAttribute(
+    'href',
+    /gov\.kr\/mw\/AA020InfoCappView\.do/,
+  );
   await expect(page.getByRole('region', { name: '이사 D-30 캘린더' })).toBeVisible();
   await expect(page.locator('.fc')).toBeVisible();
   await expect(page.getByText('D-10 주소 변경과 정기 서비스 정리')).toBeVisible();
