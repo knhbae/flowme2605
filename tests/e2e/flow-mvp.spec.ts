@@ -68,6 +68,9 @@ test('moving restart route starts from move date setup', async ({ page }) => {
   await expect(page.getByRole('button', { name: '일정 만들기' })).toBeVisible();
   await expect(page.getByText('아정당 이사 준비 체크리스트')).toBeVisible();
   await expect(page.getByText('정부24 전입신고 안내')).toBeVisible();
+  await expect(page.getByRole('region', { name: '이사 D-30 캘린더' })).toBeVisible();
+  await expect(page.locator('.fc')).toBeVisible();
+  await expect(page.getByText('D-10 주소 변경과 정기 서비스 정리')).toBeVisible();
 });
 
 test('flow discovery restores tag filter from URL query', async ({ page }) => {
