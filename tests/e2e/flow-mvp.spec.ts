@@ -60,6 +60,16 @@ test('flow card title opens the public execution page', async ({ page }) => {
   await expect(page.getByRole('heading', { name: '시험 D-30 공부 계획 Flow' })).toBeVisible();
 });
 
+test('moving restart route starts from move date setup', async ({ page }) => {
+  await page.goto('/restart/moving-d30');
+
+  await expect(page.getByRole('heading', { name: '이사 D-30 준비' })).toBeVisible();
+  await expect(page.getByLabel('이사일')).toBeVisible();
+  await expect(page.getByRole('button', { name: '일정 만들기' })).toBeVisible();
+  await expect(page.getByText('아정당 이사 준비 체크리스트')).toBeVisible();
+  await expect(page.getByText('정부24 전입신고 안내')).toBeVisible();
+});
+
 test('flow discovery restores tag filter from URL query', async ({ page }) => {
   await page.goto('/flows?tag=돈이%20걸린%20결정');
 
