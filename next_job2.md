@@ -79,6 +79,6 @@
   - Playwright browser QA on `http://127.0.0.1:3104` mobile viewport passed for 10 feedback routes: no stale `체크리스트 복사`, `flow-item-card`, `운동 캘린더 · primary`, `다음 회차 기록`, `4주 12회차`, and no horizontal overflow.
 
 ## Remaining For Next Chat
-- PR #112 / branch `design-ref-full-gap-alignment` has been pushed through commit `af5ef66`.
+- PR #112 / branch `design-ref-full-gap-alignment` has been pushed with this follow-up pass.
 - Latest preview deployment for the pushed implementation: https://flowme2605-1eo0ye23p-flowme.vercel.app
 - Local Playwright verification used the production test server on `http://127.0.0.1:3104`.
