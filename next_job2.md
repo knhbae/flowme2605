@@ -8,6 +8,13 @@
 - Do not touch unrelated untracked `design-ref/` or `next_job.md` unless explicitly requested.
 
 ## Implemented
+- My Flow management filter pass:
+  - Added a saved Flow filter on `/my` when multiple saved Flows exist.
+  - The filter now narrows `Flow별`, `캘린더`, `체크리스트`, and `루틴` views together.
+  - Added checklist state filters: `전체`, `남은 항목`, and `완료`.
+  - Upgraded saved routine Flows from a simple card to a weekly routine panel with weekday chips, progress, direct checkboxes, and continue action.
+  - Added quiet empty states for filtered checklist/routine cases.
+  - Added a durable spec at `docs/specs/2026-05-27-my-flow-management-filters/spec.md`.
 - My Flow management home expansion:
   - `/my` now treats saved Flows as the first execution-management surface, before profile/admin sections.
   - Added actionable saved-Flow tabs: `Flow별`, `캘린더`, `체크리스트`, and `루틴`.
@@ -73,6 +80,13 @@
 - If more UX polish is requested, focus on fresh user-session validation rather than adding more artifact surfaces.
 
 ## Verification Run
+- My Flow management filter pass:
+  - Targeted Playwright: `my flow filters|my flow management tabs|moving mobile saves`: passed, 3/3.
+  - `npm run build`: passed.
+  - `npm test`: passed, 184/184.
+  - `npm run docs:check`: passed, 14 required files and 306 local links.
+  - `npm run test:e2e`: passed, 76/76.
+  - Mobile screenshot QA on `http://127.0.0.1:3105/my` at 390x844 covered multi-Flow filter, routine, and checklist-filter states; no horizontal overflow (`scrollWidth` 390 / `innerWidth` 390).
 - My Flow management home expansion:
   - Targeted Playwright: `my flow management tabs|my flow workspace|moving mobile saves`: passed, 3/3.
   - `npm run build`: passed.

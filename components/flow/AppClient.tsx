@@ -1099,6 +1099,8 @@ type MySavedFlow = {
   meta: string;
 };
 
+type ChecklistFilter = 'all' | 'open' | 'done';
+
 function getMyFlowRows(bundle: FlowBundle, anchor: string): MyFlowRow[] {
   const scheduleRows = anchor ? getScheduleEntries(bundle, anchor) : [];
   if (scheduleRows.length > 0) {
@@ -1141,6 +1143,16 @@ function getMyFlowMonthLabel(anchor: string): string {
   return `${base.getFullYear()}-${String(base.getMonth() + 1).padStart(2, '0')}`;
 }
 
+function isMyFlowRowChecked(flow: MySavedFlow, row: MyFlowRow): boolean {
+  const checkIds = getMyFlowCheckIds(flow.bundle, row.id, flow.anchor);
+  return checkIds.length > 0 && checkIds.every((id) => flow.checks[id]);
+}
+
+function getMyFlowRoutineDays(bundle: FlowBundle): string[] {
+  const labels = getRoutineWeekdayLabels(bundle.repeatRules?.[0] ?? '', []);
+  return labels.length ? labels : ['월', '수', '금'];
+}
+
 export function MyFlows() {
   const { bundles } = useBundles();
   const currentUser = getCurrentUser();
@@ -1149,6 +1161,8 @@ export function MyFlows() {
   const owned = bundles.filter((bundle) => isUserOwnedFlow(bundle, seedIds));
   const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'published' | 'copy'>('all');
   const [savedView, setSavedView] = useState<'flow' | 'calendar' | 'checklist' | 'routine'>('flow');
+  const [selectedSavedFlowSlug, setSelectedSavedFlowSlug] = useState('all');
+  const [checklistFilter, setChecklistFilter] = useState<ChecklistFilter>('all');
   const [checksBySlug, setChecksBySlug] = useState<Record<string, Record<string, boolean>>>({});
   const published = owned.filter((bundle) => bundle.flow.status === 'published');
   const drafts = owned.filter((bundle) => bundle.flow.status === 'draft');
@@ -1173,6 +1187,11 @@ export function MyFlows() {
     ['calendar', '캘린더'],
     ['checklist', '체크리스트'],
     ['routine', '루틴'],
+  ] as const;
+  const checklistFilterTabs = [
+    ['all', '전체'],
+    ['open', '남은 항목'],
+    ['done', '완료'],
   ] as const;
 
   const refreshSavedFlowState = () => {
@@ -1214,14 +1233,35 @@ export function MyFlows() {
       };
     })
     .filter((item): item is MySavedFlow => Boolean(item));
-  const calendarRows = savedFlows.flatMap((flow) =>
+
+  useEffect(() => {
+    if (selectedSavedFlowSlug !== 'all' && !savedFlows.some((flow) => flow.progress.slug === selectedSavedFlowSlug)) {
+      setSelectedSavedFlowSlug('all');
+    }
+  }, [selectedSavedFlowSlug, savedFlows]);
+
+  const visibleSavedFlows = selectedSavedFlowSlug === 'all'
+    ? savedFlows
+    : savedFlows.filter((flow) => flow.progress.slug === selectedSavedFlowSlug);
+  const calendarRows = visibleSavedFlows.flatMap((flow) =>
     flow.rows
       .filter((row) => row.date)
       .map((row) => ({ ...row, flow })),
   ).sort((a, b) => (a.date ?? '').localeCompare(b.date ?? ''));
-  const calendarAnchor = calendarRows[0]?.date ?? savedFlows[0]?.anchor ?? formatDate(new Date());
+  const calendarAnchor = calendarRows[0]?.date ?? visibleSavedFlows[0]?.anchor ?? formatDate(new Date());
   const calendarCells = getMyFlowMonthCells(calendarAnchor);
-  const routineFlows = savedFlows.filter((flow) => flow.bundle.flow.structure_type === 'routine');
+  const routineFlows = visibleSavedFlows.filter((flow) => flow.bundle.flow.structure_type === 'routine');
+  const checklistFlowRows = visibleSavedFlows
+    .map((flow) => ({
+      flow,
+      rows: flow.rows.filter((row) => {
+        const checked = isMyFlowRowChecked(flow, row);
+        if (checklistFilter === 'done') return checked;
+        if (checklistFilter === 'open') return !checked;
+        return true;
+      }),
+    }))
+    .filter((item) => item.rows.length > 0);
 
   const toggleSavedFlowItem = (flow: MySavedFlow, rowId: string) => {
     const checkIds = getMyFlowCheckIds(flow.bundle, rowId, flow.anchor);
@@ -1279,6 +1319,37 @@ export function MyFlows() {
             </div>
             <p className="text-sm text-gray-500">내보내지 않아도 여기서 체크하고 관리할 수 있습니다.</p>
           </div>
+          {savedFlows.length > 1 ? (
+            <div className="mb-3 rounded-lg border border-slate-200 bg-white p-2 shadow-sm">
+              <div className="mb-2 flex items-center justify-between gap-3 px-1">
+                <p className="text-xs font-semibold uppercase text-slate-500">Flow 필터</p>
+                <p className="text-xs text-slate-500">{visibleSavedFlows.length}/{savedFlows.length}개 표시</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  className={`min-h-10 rounded-md px-3 py-2 text-sm font-semibold ${selectedSavedFlowSlug === 'all' ? 'bg-slate-950 text-white' : 'bg-slate-50 text-slate-700 hover:bg-slate-100'}`}
+                  type="button"
+                  aria-pressed={selectedSavedFlowSlug === 'all'}
+                  data-testid="my-flow-filter-all"
+                  onClick={() => setSelectedSavedFlowSlug('all')}
+                >
+                  전체 {savedFlows.length}
+                </button>
+                {savedFlows.map((flow) => (
+                  <button
+                    key={flow.progress.slug}
+                    className={`min-h-10 rounded-md px-3 py-2 text-left text-sm font-semibold ${selectedSavedFlowSlug === flow.progress.slug ? 'bg-blue-700 text-white' : 'bg-slate-50 text-slate-700 hover:bg-slate-100'}`}
+                    type="button"
+                    aria-pressed={selectedSavedFlowSlug === flow.progress.slug}
+                    data-testid={`my-flow-filter-${flow.progress.slug}`}
+                    onClick={() => setSelectedSavedFlowSlug(flow.progress.slug)}
+                  >
+                    {flow.progress.title}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
           <div className="mb-4 grid grid-cols-2 gap-2 rounded-lg border border-slate-200 bg-white p-1 sm:inline-grid sm:grid-cols-4">
             {savedViewTabs.map(([id, label]) => (
               <button
@@ -1294,7 +1365,7 @@ export function MyFlows() {
 
           {savedView === 'flow' ? (
             <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-              {savedFlows.map((flow) => (
+              {visibleSavedFlows.map((flow) => (
                 <article key={flow.progress.slug} className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
                   <h3 className="text-lg font-semibold text-gray-950">{flow.progress.title}</h3>
                   <p className="mt-2 text-sm font-semibold text-blue-700">{flow.meta}</p>
@@ -1373,7 +1444,21 @@ export function MyFlows() {
 
           {savedView === 'checklist' ? (
             <div className="grid gap-4">
-              {savedFlows.map((flow) => (
+              <div className="flex flex-wrap gap-2 rounded-lg border border-slate-200 bg-white p-1 shadow-sm sm:w-fit">
+                {checklistFilterTabs.map(([id, label]) => (
+                  <button
+                    key={id}
+                    className={`min-h-10 rounded-md px-3 py-2 text-sm font-semibold ${checklistFilter === id ? 'bg-blue-700 text-white' : 'text-slate-700 hover:bg-slate-50'}`}
+                    type="button"
+                    aria-pressed={checklistFilter === id}
+                    data-testid={`my-flow-checklist-filter-${id}`}
+                    onClick={() => setChecklistFilter(id)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {checklistFlowRows.map(({ flow, rows }) => (
                 <section key={flow.progress.slug} className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
@@ -1385,9 +1470,8 @@ export function MyFlows() {
                     </button>
                   </div>
                   <div className="mt-3 divide-y divide-slate-100">
-                    {flow.rows.map((row) => {
-                      const checkIds = getMyFlowCheckIds(flow.bundle, row.id, flow.anchor);
-                      const checked = checkIds.length > 0 && checkIds.every((id) => flow.checks[id]);
+                    {rows.map((row) => {
+                      const checked = isMyFlowRowChecked(flow, row);
                       return (
                         <label key={row.id} className="flex gap-3 py-3 text-sm">
                           <input className="mt-1 h-4 w-4 shrink-0" type="checkbox" aria-label={`내 Flow 체크: ${row.title}`} checked={checked} onChange={() => toggleSavedFlowItem(flow, row.id)} />
@@ -1401,6 +1485,12 @@ export function MyFlows() {
                   </div>
                 </section>
               ))}
+              {checklistFlowRows.length === 0 ? (
+                <div className="rounded-lg border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-600">
+                  <h3 className="text-lg font-semibold text-slate-950">표시할 체크 항목이 없습니다</h3>
+                  <p className="mt-2">다른 Flow나 상태 필터를 선택하면 저장된 체크 항목을 다시 볼 수 있습니다.</p>
+                </div>
+              ) : null}
             </div>
           ) : null}
 
@@ -1409,9 +1499,39 @@ export function MyFlows() {
               <div className="grid gap-3 md:grid-cols-2">
                 {routineFlows.map((flow) => (
                   <article key={flow.progress.slug} className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-                    <h3 className="text-lg font-semibold text-slate-950">{flow.progress.title}</h3>
-                    <p className="mt-1 text-sm font-semibold text-blue-700">{flow.meta}</p>
-                    <Link className="mt-4 inline-flex rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white" href={`/f/${flow.progress.slug}`}>
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-950">주간 루틴</h3>
+                        <p className="mt-1 text-sm font-semibold text-blue-700">{flow.progress.title}</p>
+                        <p className="mt-1 text-sm font-semibold text-slate-600">{flow.meta}</p>
+                      </div>
+                      <span className="rounded-md bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">{flow.percent}%</span>
+                    </div>
+                    <div className="mt-4 grid grid-cols-7 gap-1">
+                      {['일', '월', '화', '수', '목', '금', '토'].map((day) => {
+                        const active = getMyFlowRoutineDays(flow.bundle).includes(day);
+                        return (
+                          <span key={day} className={`rounded-md border px-1.5 py-2 text-center text-xs font-semibold ${active ? 'border-blue-200 bg-blue-50 text-blue-700' : 'border-slate-200 bg-slate-50 text-slate-400'}`}>
+                            {day}요일
+                          </span>
+                        );
+                      })}
+                    </div>
+                    <div className="mt-4 divide-y divide-slate-100">
+                      {flow.rows.slice(0, 5).map((row) => {
+                        const checked = isMyFlowRowChecked(flow, row);
+                        return (
+                          <label key={row.id} className="flex gap-3 py-3 text-sm">
+                            <input className="mt-1 h-4 w-4 shrink-0" type="checkbox" aria-label={`내 Flow 체크: ${row.title}`} checked={checked} onChange={() => toggleSavedFlowItem(flow, row.id)} />
+                            <span className="min-w-0 flex-1">
+                              <span className={`block font-semibold ${checked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>{row.title}</span>
+                              <span className="mt-1 block text-xs text-slate-500">{[row.timing, row.section].filter(Boolean).join(' · ')}</span>
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                    <Link className="mt-4 inline-flex w-full justify-center rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white" href={`/f/${flow.progress.slug}`}>
                       루틴 이어서 체크하기
                     </Link>
                   </article>

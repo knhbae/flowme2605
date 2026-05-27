@@ -525,6 +525,52 @@ test('my flow management tabs expose calendar checklist and routine views', asyn
   await expect(page.getByRole('heading', { name: '저장된 루틴 Flow가 없습니다' })).toBeVisible();
 });
 
+test('my flow filters narrow saved calendar checklist and routine management', async ({ page }) => {
+  await page.addInitScript(() => {
+    const savedAt = '2026-05-27T00:00:00.000Z';
+    localStorage.setItem('flow:saved:moving-d30-basic', JSON.stringify({
+      slug: 'moving-d30-basic',
+      savedAt,
+      selectedArtifactMode: 'calendar',
+      anchor: '2026-06-26',
+    }));
+    localStorage.setItem('flow:moving-d30-basic:anchorDate', JSON.stringify({
+      mode: 'custom',
+      anchor: '2026-06-26',
+    }));
+    localStorage.setItem('flow:saved:home-workout-20min', JSON.stringify({
+      slug: 'home-workout-20min',
+      savedAt,
+      selectedArtifactMode: 'calendar',
+      anchor: '2026-05-27',
+    }));
+    localStorage.setItem('flow:home-workout-20min:anchorDate', JSON.stringify({
+      mode: 'custom',
+      anchor: '2026-05-27',
+    }));
+  });
+
+  await page.goto('/my');
+  await expect(page.getByRole('heading', { name: '이사 D-30 준비 Flow' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '하루 20분 전신 홈트 Flow' })).toBeVisible();
+
+  await page.getByTestId('my-flow-filter-home-workout-20min').click();
+  await expect(page.getByRole('heading', { name: '이사 D-30 준비 Flow' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: '하루 20분 전신 홈트 Flow' })).toBeVisible();
+
+  await page.getByRole('button', { name: '루틴' }).click();
+  await expect(page.getByRole('heading', { name: '주간 루틴' })).toBeVisible();
+  await expect(page.getByText('수요일')).toBeVisible();
+
+  await page.getByRole('button', { name: '체크리스트' }).click();
+  await page.getByLabel('내 Flow 체크: 제자리 걷기 1분').check();
+  await page.getByTestId('my-flow-checklist-filter-done').click();
+  await expect(page.getByLabel('내 Flow 체크: 제자리 걷기 1분')).toBeVisible();
+
+  await page.getByTestId('my-flow-checklist-filter-open').click();
+  await expect(page.getByLabel('내 Flow 체크: 제자리 걷기 1분')).toHaveCount(0);
+});
+
 test('flow item card makes detail and skipped states explicit', async ({ page }) => {
   await page.goto('/f/moving-d30-basic');
   await page.getByLabel('이사일').fill('2026-06-22');
