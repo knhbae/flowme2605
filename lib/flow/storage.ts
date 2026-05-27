@@ -19,10 +19,20 @@ const WORKBENCH_KEY_PREFIX = 'flow_builder_mvp_workbench_';
 const ANCHOR_KEY_PREFIX = 'flow:';
 const ITEM_STATE_KEY_PREFIX = 'flow_builder_mvp_item_state_';
 const NOTICE_KEY = 'flow_builder_mvp_storage_notice_dismissed';
+const SAVED_FLOW_KEY_PREFIX = 'flow:saved:';
 
 export type StoredAnchor = {
   mode: string;
   anchor: string;
+};
+
+export type SavedFlowArtifactMode = 'calendar' | 'checklist' | 'sheet';
+
+export type SavedFlowRecord = {
+  slug: string;
+  savedAt: string;
+  selectedArtifactMode: SavedFlowArtifactMode;
+  anchor?: string;
 };
 
 export type ActiveFlowProgress = {
@@ -140,6 +150,47 @@ export function dismissStorageNotice(): void {
   localStorage.setItem(NOTICE_KEY, 'true');
 }
 
+function isSavedFlowArtifactMode(value: unknown): value is SavedFlowArtifactMode {
+  return value === 'calendar' || value === 'checklist' || value === 'sheet';
+}
+
+export function normalizeSavedFlowRecord(value: unknown): SavedFlowRecord | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const record = value as Partial<SavedFlowRecord>;
+  if (typeof record.slug !== 'string' || !record.slug.trim()) return undefined;
+  if (typeof record.savedAt !== 'string' || !record.savedAt.trim()) return undefined;
+  const anchor = typeof record.anchor === 'string' && record.anchor.trim() ? record.anchor : undefined;
+
+  return {
+    slug: record.slug,
+    savedAt: record.savedAt,
+    selectedArtifactMode: isSavedFlowArtifactMode(record.selectedArtifactMode) ? record.selectedArtifactMode : 'calendar',
+    ...(anchor ? { anchor } : {}),
+  };
+}
+
+export function getSavedFlowRecord(slug: string): SavedFlowRecord | undefined {
+  if (!canUseStorage()) return undefined;
+  try {
+    return normalizeSavedFlowRecord(JSON.parse(localStorage.getItem(`${SAVED_FLOW_KEY_PREFIX}${slug}`) || 'null'));
+  } catch {
+    return undefined;
+  }
+}
+
+export function saveFlowRecord(slug: string, value: Omit<SavedFlowRecord, 'slug' | 'savedAt'>): SavedFlowRecord | undefined {
+  if (!canUseStorage()) return undefined;
+  const record: SavedFlowRecord = {
+    slug,
+    savedAt: new Date().toISOString(),
+    selectedArtifactMode: value.selectedArtifactMode,
+    anchor: value.anchor,
+  };
+  localStorage.setItem(`${SAVED_FLOW_KEY_PREFIX}${slug}`, JSON.stringify(record));
+  localStorage.setItem('flow:meta:last-visit', record.savedAt);
+  return record;
+}
+
 export function getReactionLogs(slug: string): Record<string, ReactionLog> {
   if (!canUseStorage()) return {};
   return JSON.parse(localStorage.getItem(`${REACTIONS_KEY_PREFIX}${slug}`) || '{}');
@@ -221,6 +272,7 @@ export function getActiveFlowProgress(): ActiveFlowProgress[] {
     const comparisonState = getComparisonState(bundle.flow.slug);
     const workbenchState = getWorkbenchState(bundle.flow.slug);
     const storedAnchor = getStoredAnchor(bundle.flow.slug);
+    const savedRecord = getSavedFlowRecord(bundle.flow.slug);
     const ids = bundle.flow.content_type === 'meal_plan'
       ? (bundle.mealSlots ?? []).map((slot) => slot.id)
       : bundle.items.map((item) => item.id);
@@ -228,6 +280,7 @@ export function getActiveFlowProgress(): ActiveFlowProgress[] {
     const total = Math.max(ids.length - skipped, 0);
     const done = ids.filter((id) => checks[id] && !itemStates[id]?.skipped).length;
     const hasProgress =
+      Boolean(savedRecord) ||
       done > 0 ||
       skipped > 0 ||
       Boolean(storedAnchor.anchor) ||
@@ -245,9 +298,9 @@ export function getActiveFlowProgress(): ActiveFlowProgress[] {
         done,
         total,
         skipped,
-        anchor: storedAnchor.anchor,
+        anchor: storedAnchor.anchor || savedRecord?.anchor,
         anchorMode: storedAnchor.mode,
-        lastVisited,
+        lastVisited: savedRecord?.savedAt ?? lastVisited,
       });
     }
   }

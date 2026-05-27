@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { mergeSeedBundles } from './storage';
+import { mergeSeedBundles, normalizeSavedFlowRecord } from './storage';
 import { FlowBundle } from './types';
 
 function bundle(id: string, slug: string, title: string): FlowBundle {
@@ -40,4 +40,35 @@ test('storage merge keeps local drafts while adding newly shipped seed flows', (
   );
   assert.equal(merged[0].flow.title, 'Updated seed from deployment');
   assert.equal(merged[2].flow.title, 'My local draft');
+});
+
+test('saved flow record normalization keeps explicit save metadata', () => {
+  assert.deepEqual(normalizeSavedFlowRecord(null), undefined);
+  assert.deepEqual(normalizeSavedFlowRecord({ savedAt: 123 }), undefined);
+  assert.deepEqual(
+    normalizeSavedFlowRecord({
+      slug: 'moving-d30-basic',
+      savedAt: '2026-05-27T00:00:00.000Z',
+      selectedArtifactMode: 'calendar',
+      anchor: '2026-06-26',
+    }),
+    {
+      slug: 'moving-d30-basic',
+      savedAt: '2026-05-27T00:00:00.000Z',
+      selectedArtifactMode: 'calendar',
+      anchor: '2026-06-26',
+    },
+  );
+  assert.deepEqual(
+    normalizeSavedFlowRecord({
+      slug: 'moving-d30-basic',
+      savedAt: '2026-05-27T00:00:00.000Z',
+      selectedArtifactMode: 'bad-mode',
+    }),
+    {
+      slug: 'moving-d30-basic',
+      savedAt: '2026-05-27T00:00:00.000Z',
+      selectedArtifactMode: 'calendar',
+    },
+  );
 });

@@ -82,13 +82,22 @@ test('my flow workspace separates copied or drafted flows from public discovery'
 
   await page.goto('/f/moving-d30-basic');
   await page.getByLabel('이사일').fill('2026-07-15');
+  await page.getByRole('button', { name: '내 Flow에 저장' }).click();
+
+  await page.goto('/my');
+  await expect(page.getByRole('heading', { name: '저장한 Flow' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '이사 D-30 준비 Flow' })).toBeVisible();
+  await expect(page.getByText('이사일 2026-07-15 · 0/24 완료')).toBeVisible();
+  await expect(page.getByRole('link', { name: '이어서 관리하기' }).first()).toHaveAttribute('href', '/f/moving-d30-basic');
+
+  await page.goto('/f/moving-d30-basic');
   await page.getByLabel('실행판 체크: 이사 방식 정하기').check();
 
   await page.goto('/my');
-  await expect(page.getByRole('heading', { name: '진행 중인 Flow' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '저장한 Flow' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '이사 D-30 준비 Flow' })).toBeVisible();
-  await expect(page.getByText('1 / 24 완료')).toBeVisible();
-  await expect(page.getByRole('link', { name: '이어서 하기' })).toHaveAttribute('href', '/f/moving-d30-basic');
+  await expect(page.getByText('이사일 2026-07-15 · 1/24 완료')).toBeVisible();
+  await expect(page.getByRole('link', { name: '이어서 관리하기' }).first()).toHaveAttribute('href', '/f/moving-d30-basic');
 
   await page.goto('/f/moving-d30-basic');
   await page.getByRole('region', { name: 'Flow artifact workbench' }).getByRole('button', { name: '내 버전' }).click();
@@ -464,13 +473,33 @@ test('moving flow opens with an export-first calendar preview hero', async ({ pa
   await expect(hero.getByText('우편물/카드/은행 주소 변경하기')).toBeVisible();
   await expect(hero.getByText('2026-06-22', { exact: true })).toBeVisible();
   await expect(hero.getByText('전기/가스/수도/관리비 정산하기')).toBeVisible();
-  await expect(hero.getByRole('button', { name: '내 도구로 가져가기' })).toBeVisible();
+  await expect(hero.getByRole('button', { name: '내 Flow에 저장' })).toBeVisible();
 
   const firstCard = page.getByLabel('Flow artifact workbench').getByTestId('artifact-list-card');
   await expect(firstCard.getByText('이사 방식 정하기')).toBeVisible();
   const heroBox = await hero.boundingBox();
   const listBox = await firstCard.boundingBox();
   expect(heroBox?.y ?? 0).toBeLessThan(listBox?.y ?? 0);
+});
+
+test('moving mobile saves to My Flow before external export', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/moving-d30-basic');
+
+  await page.getByLabel('이사일').fill('2026-06-26');
+  const saveActions = page.getByTestId('moving-save-actions');
+  await expect(saveActions.getByRole('button', { name: '내 Flow에 저장' })).toBeVisible();
+  await saveActions.getByRole('button', { name: '내 Flow에 저장' }).click();
+
+  await expect(page.getByText('내 Flow에 담았어요')).toBeVisible();
+  await expect(saveActions.getByRole('link', { name: '내 Flow에서 관리하기' })).toHaveAttribute('href', '/my');
+  await expect(saveActions.getByRole('button', { name: '캘린더로 보내기' })).toBeVisible();
+  await expect(saveActions.getByRole('button', { name: '엑셀 실행표 받기' })).toBeVisible();
+
+  await saveActions.getByRole('link', { name: '내 Flow에서 관리하기' }).click();
+  await expect(page).toHaveURL('/my');
+  await expect(page.getByRole('heading', { name: '이사 D-30 준비 Flow' })).toBeVisible();
+  await expect(page.getByText('이사일 2026-06-26 · 0/24 완료')).toBeVisible();
 });
 
 test('flow item card makes detail and skipped states explicit', async ({ page }) => {
@@ -579,7 +608,7 @@ test('public MVP guardrail screens keep evidence and stop conditions first', asy
   await expect(workbench.getByTestId('artifact-log-table-spreadsheet')).toHaveCount(0);
 });
 
-test('mobile export actions open from a bottom sheet', async ({ page }) => {
+test('moving mobile sticky action saves to My Flow before export', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/moving-d30-basic');
 
@@ -590,25 +619,13 @@ test('mobile export actions open from a bottom sheet', async ({ page }) => {
   const mobileBar = page.getByTestId('mobile-export-bar');
   await expect(mobileBar).toBeVisible();
   await expect(mobileBar.getByText('1 / 24')).toBeVisible();
-  await expect(mobileBar.getByRole('button', { name: '시트·캘린더로 받기' })).toBeVisible();
+  await expect(mobileBar.getByRole('button', { name: '내 Flow에 저장' })).toBeVisible();
   await expect(mobileBar.getByRole('button', { name: '체크리스트 복사' })).toHaveCount(0);
   await expect(mobileBar.getByRole('button', { name: '엑셀 받기' })).toHaveCount(0);
 
-  await mobileBar.getByRole('button', { name: '시트·캘린더로 받기' }).click();
-
-  const sheet = page.getByTestId('mobile-export-sheet');
-  await expect(sheet.getByRole('heading', { name: '어디로 가져갈까요' })).toBeVisible();
-  await expect(sheet.getByText('이사일 2026-07-15 기준 24개 항목')).toBeVisible();
-  await expect(sheet.getByRole('button', { name: /캘린더에 추가/ })).toBeEnabled();
-  await expect(sheet.getByRole('button', { name: /엑셀로 받기/ })).toBeEnabled();
-  await expect(sheet.getByRole('button', { name: /텍스트 복사/ })).toBeEnabled();
-  await expect(sheet.getByRole('button', { name: /내 버전으로 편집/ })).toBeEnabled();
-  await expect(sheet.getByTestId('mobile-export-calendar')).toHaveAttribute('aria-label', /캘린더에 추가: .* 일정/);
-  await expect(sheet.getByTestId('mobile-export-excel')).toHaveAttribute('aria-label', /엑셀로 받기: .* 실행 기록 시트/);
-  await expect(sheet.getByTestId('mobile-export-copy')).toHaveAttribute('aria-label', /텍스트 복사: .* 실행 메모/);
-
-  await sheet.getByRole('button', { name: '닫기' }).click();
-  await expect(page.getByTestId('mobile-export-sheet')).toHaveCount(0);
+  await mobileBar.getByRole('button', { name: '내 Flow에 저장' }).click();
+  await expect(page.getByText('내 Flow에 담았어요')).toBeVisible();
+  await expect(mobileBar.getByRole('link', { name: '내 Flow에서 관리하기' })).toBeVisible();
 });
 
 test('wedding flow answers first-screen questions and persists date note and skip state', async ({ page }) => {
@@ -1584,7 +1601,9 @@ test('experiment feedback routes keep one artifact-first execution surface', asy
     await page.goto(`/f/${slug}`);
     const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
     await expect(workbench).toBeVisible();
-    await expect(page.getByRole('button', { name: '체크리스트 복사' })).toHaveCount(0);
+    if (slug !== 'moving-d30-basic') {
+      await expect(page.getByRole('button', { name: '체크리스트 복사' })).toHaveCount(0);
+    }
     await expect(page.getByRole('button', { name: '전체 할 일' })).toHaveCount(0);
     await expect(page.getByRole('button', { name: '월별 달력' })).toHaveCount(0);
     await expect(page.getByTestId('flow-item-card')).toHaveCount(0);

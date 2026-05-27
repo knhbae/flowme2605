@@ -64,6 +64,19 @@
 - If more UX polish is requested, focus on fresh user-session validation rather than adding more artifact surfaces.
 
 ## Verification Run
+- Mobile save-to-My-Flow pass:
+  - `moving-d30-basic` mobile now uses `내 Flow에 저장` as the primary CTA.
+  - Save completion offers `내 Flow에서 관리하기` and keeps calendar/xlsx/copy as secondary actions.
+  - `/my` shows saved Flows even before item completion, with `Flow별`, `캘린더`, `체크리스트`, `루틴` management modes as the first saved-Flow surface.
+  - Added explicit local saved markers under `flow:saved:<slug>` so saving and checklist progress are separate states.
+- Mobile save-to-My-Flow verification:
+  - `npx tsx --test lib/flow/storage.test.ts`: passed, 2/2.
+  - `npm run build`: passed.
+  - Targeted Playwright: `my flow workspace`, `moving flow opens`, `moving mobile saves`: passed, 3/3.
+  - Mobile screenshot QA on `http://127.0.0.1:3105/f/moving-d30-basic` and `/my` at 390x844: no horizontal overflow (`scrollWidth` 390 / `innerWidth` 390).
+  - `npm test`: passed, 183/183.
+  - `npm run docs:check`: passed, 14 required files and 306 local links.
+  - `npm run test:e2e`: passed, 74/74.
 - Rebrand verification:
   - `npm run build`: passed.
   - `npm test`: passed, 182/182.
@@ -96,5 +109,5 @@
 
 ## Remaining For Next Chat
 - PR #112 / branch `design-ref-full-gap-alignment` has been pushed with this follow-up pass.
-- Latest preview deployment for the pushed implementation: https://flowme2605-rg8c48ugo-flowme.vercel.app
+- Latest preview deployment for the pushed implementation: https://flowme2605-1ag8shbs8-flowme.vercel.app
 - Local Playwright verification used the production test server on `http://127.0.0.1:3104`.

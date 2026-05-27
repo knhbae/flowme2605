@@ -20,6 +20,7 @@ import {
   getComparisonState,
   getItemStates,
   getReactionLogs,
+  getSavedFlowRecord,
   getStoredAnchor,
   getWorkbenchState,
   hasDismissedStorageNotice,
@@ -28,6 +29,7 @@ import {
   saveBundles,
   saveChecks,
   saveComparisonState,
+  saveFlowRecord,
   saveItemStates,
   saveReactionLogs,
   saveStoredAnchor,
@@ -1082,6 +1084,7 @@ export function MyFlows() {
   const [activeProgress, setActiveProgress] = useState<ReturnType<typeof getActiveFlowProgress>>([]);
   const owned = bundles.filter((bundle) => isUserOwnedFlow(bundle, seedIds));
   const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'published' | 'copy'>('all');
+  const [savedView, setSavedView] = useState<'flow' | 'calendar' | 'checklist' | 'routine'>('flow');
   const published = owned.filter((bundle) => bundle.flow.status === 'published');
   const drafts = owned.filter((bundle) => bundle.flow.status === 'draft');
   const copies = owned.filter((bundle) => bundle.flow.title.endsWith('사본') || bundle.flow.slug.includes('-copy-'));
@@ -1100,6 +1103,12 @@ export function MyFlows() {
     ['published', `발행됨 ${published.length}`],
     ['copy', `복사본 ${copies.length}`],
   ] as const;
+  const savedViewTabs = [
+    ['flow', 'Flow별'],
+    ['calendar', '캘린더'],
+    ['checklist', '체크리스트'],
+    ['routine', '루틴'],
+  ] as const;
 
   useEffect(() => {
     setActiveProgress(getActiveFlowProgress());
@@ -1112,57 +1121,125 @@ export function MyFlows() {
         <div>
           <p className="text-sm font-medium text-gray-500">내 실행 공간</p>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight">내 Flow</h1>
-          <p className="mt-2 text-gray-600">진행 중인 Flow와 내 버전으로 만든 Flow가 여기에 모입니다.</p>
+          <p className="mt-2 text-gray-600">저장한 Flow를 체크리스트, 캘린더, 루틴 형태로 이어서 관리합니다.</p>
         </div>
         <Link className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white" href="/flows">
           Flow 둘러보기
         </Link>
       </div>
 
-      <section className="mb-6 rounded-xl border border-gray-200 bg-white p-5">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-lg font-semibold text-blue-700">
-            {currentUser.avatar_initial}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-blue-700">현재 사용자</p>
-            <h2 className="text-xl font-semibold text-gray-950">{currentUser.name}</h2>
-            <p className="mt-1 text-sm text-gray-600">{currentUser.bio}</p>
-          </div>
-          <Link className="rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-800" href={`/u/${currentUser.slug}`}>
-            내 제작자 프로필
-          </Link>
-        </div>
-      </section>
-
       {activeProgress.length > 0 ? (
         <section className="mb-6">
           <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="text-sm font-semibold text-blue-700">이 브라우저에 저장됨</p>
-              <h2 className="text-xl font-semibold">진행 중인 Flow</h2>
+              <h2 className="text-xl font-semibold">저장한 Flow</h2>
             </div>
-            <p className="text-sm text-gray-500">로그인 없이 이 기기에만 저장됩니다.</p>
+            <p className="text-sm text-gray-500">내보내지 않아도 여기서 체크하고 관리할 수 있습니다.</p>
           </div>
-          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-            {activeProgress.map((progress) => (
-              <article key={progress.slug} className="rounded-lg border border-gray-200 bg-white p-4">
-                <h3 className="text-lg font-semibold text-gray-950">{progress.title}</h3>
-                <p className="mt-2 text-sm font-semibold text-blue-700">{progress.done} / {progress.total} 완료</p>
-                <div className="mt-3 h-2 overflow-hidden rounded-full bg-gray-200">
-                  <div className="h-full bg-[#2563EB]" style={{ width: progress.total ? `${Math.round((progress.done / progress.total) * 100)}%` : '0%' }} />
-                </div>
-                <p className="mt-2 text-xs text-gray-500">
-                  {[progress.anchor ? `기준일 ${progress.anchor}` : null, progress.skipped ? `${progress.skipped}개 제외` : null].filter(Boolean).join(' · ') || '진행 상태 저장됨'}
-                </p>
-                <Link className="mt-4 inline-flex rounded-md bg-[#2563EB] px-3 py-2 text-sm font-semibold text-white" href={`/f/${progress.slug}`}>
-                  이어서 하기
-                </Link>
-              </article>
+          <div className="mb-4 grid grid-cols-2 gap-2 rounded-lg border border-slate-200 bg-white p-1 sm:inline-grid sm:grid-cols-4">
+            {savedViewTabs.map(([id, label]) => (
+              <button
+                key={id}
+                className={`rounded-md px-3 py-2 text-sm font-semibold ${savedView === id ? 'bg-blue-700 text-white' : 'text-slate-700 hover:bg-slate-50'}`}
+                type="button"
+                onClick={() => setSavedView(id)}
+              >
+                {label}
+              </button>
             ))}
           </div>
+
+          {savedView === 'flow' ? (
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+              {activeProgress.map((progress) => {
+                const progressBundle = bundles.find((entry) => entry.flow.slug === progress.slug);
+                const anchorLabel = progressBundle ? getAnchorInputLabel(progressBundle) : '기준일';
+                const progressMeta = [
+                  progress.anchor ? `${anchorLabel} ${progress.anchor}` : null,
+                  `${progress.done}/${progress.total} 완료`,
+                  progress.skipped ? `${progress.skipped}개 제외` : null,
+                ].filter(Boolean).join(' · ');
+
+                return (
+                  <article key={progress.slug} className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                    <h3 className="text-lg font-semibold text-gray-950">{progress.title}</h3>
+                    <p className="mt-2 text-sm font-semibold text-blue-700">{progressMeta}</p>
+                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-gray-200">
+                      <div className="h-full bg-[#2563EB]" style={{ width: progress.total ? `${Math.round((progress.done / progress.total) * 100)}%` : '0%' }} />
+                    </div>
+                    <p className="mt-2 text-xs text-gray-500">
+                      {progress.done > 0 ? '체크한 항목이 저장되어 있습니다.' : '아직 체크 전입니다. 저장한 Flow를 바로 시작할 수 있습니다.'}
+                    </p>
+                    <Link className="mt-4 inline-flex rounded-md bg-[#2563EB] px-3 py-2 text-sm font-semibold text-white" href={`/f/${progress.slug}`}>
+                      이어서 관리하기
+                    </Link>
+                  </article>
+                );
+              })}
+            </div>
+          ) : null}
+
+          {savedView === 'calendar' ? (
+            <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-950">캘린더 보기</h3>
+                  <p className="mt-1 text-sm text-slate-600">저장한 Flow의 기준일과 남은 항목을 날짜 중심으로 봅니다.</p>
+                </div>
+                <span className="rounded-md bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">{activeProgress.length}개 Flow</span>
+              </div>
+              <div className="mt-4 grid gap-2">
+                {activeProgress.map((progress) => (
+                  <Link key={progress.slug} className="rounded-md border border-slate-200 bg-slate-50 px-3 py-3 text-sm hover:border-blue-300" href={`/f/${progress.slug}`}>
+                    <span className="block font-semibold text-slate-950">{progress.title}</span>
+                    <span className="mt-1 block text-blue-700">{progress.anchor ? `${progress.anchor} 기준 · ` : ''}{progress.done}/{progress.total} 완료</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {savedView === 'checklist' ? (
+            <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+              <h3 className="text-lg font-semibold text-slate-950">체크리스트 보기</h3>
+              <div className="mt-3 divide-y divide-slate-100">
+                {activeProgress.map((progress) => (
+                  <Link key={progress.slug} className="flex items-center justify-between gap-3 py-3 text-sm hover:text-blue-700" href={`/f/${progress.slug}`}>
+                    <span className="font-semibold">{progress.title}</span>
+                    <span className="shrink-0 rounded-md bg-slate-100 px-2 py-1 font-semibold text-slate-700">{progress.done}/{progress.total}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {savedView === 'routine' ? (
+            <div className="rounded-lg border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-600">
+              <h3 className="text-lg font-semibold text-slate-950">루틴 보기</h3>
+              <p className="mt-2">반복 Flow를 저장하면 요일별 루틴과 완료 여부가 여기에 모입니다.</p>
+            </div>
+          ) : null}
         </section>
       ) : null}
+
+      <section className="mb-6 rounded-xl border border-gray-200 bg-white p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <div className="flex min-w-0 items-center gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-50 text-lg font-semibold text-blue-700">
+              {currentUser.avatar_initial}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-blue-700">현재 사용자</p>
+              <h2 className="text-xl font-semibold text-gray-950">{currentUser.name}</h2>
+              <p className="mt-1 text-sm text-gray-600">{currentUser.bio}</p>
+            </div>
+          </div>
+          <Link className="inline-flex w-full justify-center rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-800 sm:ml-auto sm:w-auto" href={`/u/${currentUser.slug}`}>
+            내 제작자 프로필
+          </Link>
+        </div>
+      </section>
 
       {owned.length > 0 ? (
         <>
@@ -2187,6 +2264,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [showMobileActions, setShowMobileActions] = useState(false);
   const [showMobileExportSheet, setShowMobileExportSheet] = useState(false);
   const [showStorageNotice, setShowStorageNotice] = useState(false);
+  const [savedFlowAt, setSavedFlowAt] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const found = getBundles().find((item) => item.flow.slug === slug) ?? null;
@@ -2202,6 +2280,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     setWorkbenchState(getWorkbenchState(slug));
     setReactionLogs(getReactionLogs(slug));
     setShowStorageNotice(!hasDismissedStorageNotice());
+    setSavedFlowAt(getSavedFlowRecord(slug)?.savedAt);
   }, [slug]);
 
   useEffect(() => {
@@ -2351,6 +2430,13 @@ export function PublicFlow({ slug }: { slug: string }) {
     persist([...bundles, next]);
     window.location.href = `/flows/${next.flow.id}/edit`;
   };
+  const saveToMyFlow = () => {
+    const record = saveFlowRecord(bundle.flow.slug, {
+      selectedArtifactMode: canExportCalendar ? 'calendar' : 'checklist',
+      anchor: displayAnchor || undefined,
+    });
+    setSavedFlowAt(record?.savedAt ?? new Date().toISOString());
+  };
   const openExportActions = () => {
     if (typeof window !== 'undefined' && window.innerWidth < 768) {
       setShowMobileExportSheet(true);
@@ -2455,7 +2541,11 @@ export function PublicFlow({ slug }: { slug: string }) {
                 onAnchorChange={setAnchor}
                 weekdays={weekdaySelection}
                 onWeekdaysChange={setWeekdaySelection}
-                onTake={openExportActions}
+                savedFlowAt={savedFlowAt}
+                onSaveToMyFlow={saveToMyFlow}
+                onDownloadExcel={downloadExcel}
+                onDownloadCalendar={downloadCalendar}
+                onCopyText={copy}
               />
             ) : null}
 
@@ -2493,7 +2583,11 @@ export function PublicFlow({ slug }: { slug: string }) {
               onAnchorChange={setAnchor}
               weekdays={weekdaySelection}
               onWeekdaysChange={setWeekdaySelection}
-              onTake={openExportActions}
+              savedFlowAt={savedFlowAt}
+              onSaveToMyFlow={saveToMyFlow}
+              onDownloadExcel={downloadExcel}
+              onDownloadCalendar={downloadCalendar}
+              onCopyText={copy}
             />
           ) : null}
 
@@ -2661,7 +2755,11 @@ export function PublicFlow({ slug }: { slug: string }) {
         </div>
       ) : null}
 
-      <div data-testid="mobile-export-bar" className={`fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white/95 px-4 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.10)] backdrop-blur transition duration-200 md:hidden ${showMobileActions ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}>
+      <div
+        data-testid="mobile-export-bar"
+        aria-hidden={!showMobileActions}
+        className={`fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white/95 px-4 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.10)] backdrop-blur transition duration-200 md:hidden ${showMobileActions ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}
+      >
         <div className="mx-auto max-w-5xl">
           <div className="flex items-center gap-3">
             <div className="min-w-0 flex-1">
@@ -2673,9 +2771,21 @@ export function PublicFlow({ slug }: { slug: string }) {
                 <div className="h-full bg-blue-700" style={{ width: `${executableCount > 0 ? Math.round((done / executableCount) * 100) : 0}%` }} />
               </div>
             </div>
-            <button className="shrink-0 rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm" onClick={() => setShowMobileExportSheet(true)}>
-              {mobileStickyCtaLabel}
-            </button>
+            {showExportFirstHero ? (
+              savedFlowAt ? (
+                <Link className="shrink-0 rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm" href="/my">
+                  내 Flow에서 관리하기
+                </Link>
+              ) : (
+                <button className="shrink-0 rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm" onClick={saveToMyFlow}>
+                  내 Flow에 저장
+                </button>
+              )
+            ) : (
+              <button className="shrink-0 rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm" onClick={() => setShowMobileExportSheet(true)}>
+                {mobileStickyCtaLabel}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -2736,7 +2846,7 @@ function getMobileStickyCtaLabel(bundle: FlowBundle, canExportCalendar: boolean,
   if ((bundle.flow.slug === 'new-car-delivery-check' || bundle.flow.slug === 'used-car-buying-check') && holdSignalCount > 0) {
     return `보류 ${holdSignalCount}건 포함 .xlsx`;
   }
-  if (bundle.flow.slug === 'moving-d30-basic') return '시트·캘린더로 받기';
+  if (bundle.flow.slug === 'moving-d30-basic') return '내 Flow에 저장';
   if (bundle.flow.slug === 'computer-skills-d30-study') return '시트·캘린더로 받기';
   if (bundle.flow.slug === 'diet-habit-2week') return '수면 체크표 .xlsx 받기';
   if (bundle.flow.slug === 'new-car-delivery-check') return '증거표 .xlsx 받기';
@@ -2772,7 +2882,11 @@ function ExportFirstHero({
   onAnchorChange,
   weekdays,
   onWeekdaysChange,
-  onTake,
+  savedFlowAt,
+  onSaveToMyFlow,
+  onDownloadExcel,
+  onDownloadCalendar,
+  onCopyText,
 }: {
   bundle: FlowBundle;
   anchor: string;
@@ -2782,7 +2896,11 @@ function ExportFirstHero({
   onAnchorChange: (value: string) => void;
   weekdays: string[];
   onWeekdaysChange: (value: string[]) => void;
-  onTake: () => void;
+  savedFlowAt?: string;
+  onSaveToMyFlow: () => void;
+  onDownloadExcel: () => void;
+  onDownloadCalendar: () => void;
+  onCopyText: () => void;
 }) {
   const previewEntries = getExportFirstPreviewEntries(bundle, displayAnchor);
   const remainingCount = Math.max(getScheduleEntries(bundle, displayAnchor).length - previewEntries.length, 0);
@@ -2825,13 +2943,41 @@ function ExportFirstHero({
               onWeekdaysChange={onWeekdaysChange}
             />
           </div>
-          <button
-            type="button"
-            className="mt-4 w-full rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-800"
-            onClick={onTake}
-          >
-            내 도구로 가져가기
-          </button>
+          <div className="mt-4" data-testid="moving-save-actions">
+            {savedFlowAt ? (
+              <div className="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-950">
+                <p className="font-semibold">내 Flow에 담았어요</p>
+                <p className="mt-1 text-xs leading-5 text-emerald-800">이제 FLOW 안에서 체크하거나 외부 도구로도 보낼 수 있습니다.</p>
+              </div>
+            ) : null}
+            {savedFlowAt ? (
+              <Link
+                className="mt-3 flex w-full items-center justify-center rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-800"
+                href="/my"
+              >
+                내 Flow에서 관리하기
+              </Link>
+            ) : (
+              <button
+                type="button"
+                className="w-full rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-800"
+                onClick={onSaveToMyFlow}
+              >
+                내 Flow에 저장
+              </button>
+            )}
+            <div className="mt-2 grid gap-2 sm:grid-cols-3">
+              <button className="rounded-md border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700" type="button" onClick={onDownloadCalendar}>
+                캘린더로 보내기
+              </button>
+              <button className="rounded-md border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700" type="button" onClick={onDownloadExcel}>
+                엑셀 실행표 받기
+              </button>
+              <button className="rounded-md border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700" type="button" onClick={onCopyText}>
+                체크리스트 복사
+              </button>
+            </div>
+          </div>
           {displayAnchor ? (
             <p className="mt-2 text-center text-xs font-medium text-slate-500">
               {compactDateLabel(previewEntries[0]?.startDate ?? displayAnchor)}부터 {bundle.items.length}개 항목을 옮깁니다.
