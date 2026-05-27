@@ -138,6 +138,23 @@
   - Playwright browser QA on `http://127.0.0.1:3104` mobile viewport passed for 10 feedback routes: no stale `체크리스트 복사`, `flow-item-card`, `운동 캘린더 · primary`, `다음 회차 기록`, `4주 12회차`, and no horizontal overflow.
 
 ## Remaining For Next Chat
-- PR #112 / branch `design-ref-full-gap-alignment` has been pushed with this follow-up pass.
-- Latest preview deployment for the pushed implementation: https://flowme2605-1ag8shbs8-flowme.vercel.app
-- Local Playwright verification used the production test server on `http://127.0.0.1:3104`.
+- PR #112 / branch `design-ref-full-gap-alignment` has been pushed through commit `1801a71 Add My Flow management filters`.
+- Latest preview deployment for the pushed implementation: https://flowme2605-lhuezszze-flowme.vercel.app
+- Current `/my` state:
+  - Mobile save-to-My-Flow path is implemented for `moving-d30-basic`.
+  - `/my` has `Flow별`, `캘린더`, `체크리스트`, and `루틴` management views.
+  - Multiple saved Flows can be filtered by `전체` or individual Flow.
+  - Checklist rows can be filtered by `전체`, `남은 항목`, or `완료`.
+  - Saved routine Flows show a weekly routine panel with weekday chips and direct checkboxes.
+- Current verification baseline:
+  - `npm run build`: passed.
+  - `npm test`: passed, 184/184.
+  - `npm run docs:check`: passed, 14 required files and 306 local links.
+  - `npm run test:e2e`: passed, 76/76.
+  - Mobile QA used production server `http://127.0.0.1:3105/my` at 390x844 with no horizontal overflow.
+- Suggested next product work:
+  - Run an observed mobile user session for `moving-d30-basic`: save to `/my`, choose calendar/checklist/routine view, complete one item, then decide whether to export.
+  - Based on that session, simplify whichever choice point is confusing instead of adding more management surfaces.
+  - Do not call the route validated until real user behavior evidence exists.
+- Workspace note:
+  - `design-ref/` and `next_job.md` are untracked user files and were intentionally left untouched.
