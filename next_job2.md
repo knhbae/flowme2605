@@ -24,6 +24,14 @@
   - `computer-skills-d30-study`: checklist copy now points to D-30 calendar, execution item memo, Excel export, 실기 환경, 시험장 준비; removed old `챕터 진도표`, `모의점수 로그`, `기출 점수·오답 기록` language.
   - `baby-food-menu-recipe`: visible route description, setup helper, workbench title, and byline note now say menu/recipe rather than reaction record.
   - `real-mofa-overseas-travel-prep`: visible copy and item detail now use 외교부 해외안전여행, 여행경보, 입국 조건, 영사콜센터, 보험/이동, 가족 공유 language; creator display is official-data oriented while preserving the source-batch owner mapping.
+- `250526_experiment_checklist.md` gap closure pass:
+  - Removed the duplicate lower execution surfaces for the experiment-feedback routes so the public page keeps one artifact-first workbench.
+  - Replaced `체크리스트 복사` default workbench copy with `메모/노션에 복사`.
+  - Added `자세히` disclosures inside workbench checklist rows so source reason, action, completion criteria, caution, and links are available without reopening `flow-item-card`.
+  - Kept moving/vehicle/MOFA/passport/study/checklist routes on a compact calendar/list surface and removed stale `전체 할 일`/`월별 달력` tab duplication on these routes.
+  - Reduced ThankyouBUBU starter, FITVELY diet record, and diet habit routes to check-only calendar surfaces.
+  - Kept baby food as menu calendar + recipe details in the workbench only; fixed multi-day meal slot checkbox state so export buttons activate correctly.
+  - Restored generic routine routes to `회차 그리드 · primary` / `회차 기록표 · secondary` while keeping feedback-specific routines simplified.
 
 ## my_tests Reflection Status
 ### Done
@@ -37,6 +45,9 @@
 - `computer-skills-d30-study`: browser-visible copy no longer references removed study artifacts and keeps the checklist/calendar model aligned.
 - `baby-food-menu-recipe`: browser-visible copy no longer references `반응 기록`; the route presents menu calendar + recipe.
 - `real-mofa-overseas-travel-prep`: checklist/detail/byline copy now reflects the exact 외교부 source and no longer shows the old travel-channel copy.
+- Duplicate lower execution surfaces removed for the feedback routes listed above; e2e now checks absence of `flow-item-card`, stale `전체 할 일`/`월별 달력` buttons, and generic routine session summaries on those routes.
+- `baby-food-menu-recipe`: recipe details are available from the workbench calendar rows; reaction-log UI remains hidden on this route.
+- `diet-habit-2week`, `real-thankyou-bubu-home-workout-starter`, `real-fitvely-diet-record-routine`: check-only calendars no longer show `4주 12회차`, `다음 회차 기록`, or generic session cards.
 
 ### Partial / Needs Recheck
 - None from the `my_tests/250526_experiment_checklist.md` follow-up batch. Meal/reaction-capable metadata still exists in shared meal-plan structures for future reuse and other routes, but this route no longer exposes reaction-log language in the checked browser path.
@@ -60,7 +71,13 @@
 - Browser QA against `http://localhost:3001` with Playwright:
   - Desktop routes checked: `diet-habit-2week`, `real-thankyou-bubu-home-workout-starter`, `real-fitvely-diet-record-routine`, `baby-food-menu-recipe`, `moving-d30-basic`, `used-car-buying-check`, `new-car-delivery-check`, `passport-renewal-docs`, `real-mofa-overseas-travel-prep`.
   - Mobile checked: `diet-habit-2week`.
+- Current follow-up verification:
+  - `npm run build`: passed.
+  - `npm run test:e2e`: passed, 72/72.
+  - `npm test`: passed, 182/182.
+  - `npm run docs:check`: passed, 14 required files and 306 local links.
+  - Playwright browser QA on `http://127.0.0.1:3104` mobile viewport passed for 10 feedback routes: no stale `체크리스트 복사`, `flow-item-card`, `운동 캘린더 · primary`, `다음 회차 기록`, `4주 12회차`, and no horizontal overflow.
 
 ## Remaining For Next Chat
 - PR #112 was previously updated by pushing branch `design-ref-full-gap-alignment`; this follow-up pass has not been pushed yet in this chat.
-- Local dev server is running on `http://127.0.0.1:3000` for manual review.
+- Local Playwright verification used the production test server on `http://127.0.0.1:3104`.

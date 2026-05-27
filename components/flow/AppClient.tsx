@@ -2243,6 +2243,8 @@ export function PublicFlow({ slug }: { slug: string }) {
   const executableIds = getExecutableCheckIds(bundle, displayAnchor).filter((id) => !isItemStateSkipped(itemStates, id));
   const executableCount = executableIds.length;
   const done = executableIds.filter((id) => checks[id]).length;
+  const workbenchDone = Object.values(workbenchState.occurrences).filter((state) => state.done).length;
+  const exportDone = done || workbenchDone;
   const canExportCalendar = hasCalendarSchedule(bundle);
   const showTodayExecution = isFitnessExactVideoFlow(bundle);
   const showExportFirstHero = isExportFirstHeroRoute(bundle);
@@ -2369,7 +2371,7 @@ export function PublicFlow({ slug }: { slug: string }) {
       onWorkbenchChange={setWorkbenchState}
       onToggleItem={toggle}
       exportActions={{
-        done,
+        done: exportDone,
         canExportCalendar,
         copyState,
         downloadState,
@@ -2499,7 +2501,7 @@ export function PublicFlow({ slug }: { slug: string }) {
 
       {!shouldUseSimplifiedFeedbackLayout(bundle) ? <ArtifactPreview bundle={bundle} /> : null}
 
-      {showTodayExecution ? (
+      {showTodayExecution && !shouldUseSimplifiedFeedbackLayout(bundle) ? (
         <ExactVideoToolPreview
           bundle={bundle}
           anchor={anchor}
@@ -2520,7 +2522,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         />
       ) : null}
 
-      {showTodayExecution ? (
+      {shouldUseSimplifiedFeedbackLayout(bundle) ? null : showTodayExecution ? (
         shouldHideExactVideoExecutionCard(bundle) ? null : <ExactVideoRenderer bundle={bundle} checks={checks} onToggle={toggle} />
       ) : (
         <>

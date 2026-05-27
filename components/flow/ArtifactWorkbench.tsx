@@ -44,6 +44,8 @@ type ArtifactExportActions = {
 type ArtifactExportActionKind = 'copy' | 'excel' | 'calendar' | 'draft';
 type ArtifactExportLabels = Partial<Record<ArtifactExportActionKind, string>>;
 type MobileArtifactKind = 'execution_list' | 'month_calendar' | 'log_table' | 'spreadsheet_log' | 'comparison_table';
+type WorkbenchItemDetail = NonNullable<FlowBundle['itemDetails']>[number];
+type WorkbenchRecipe = NonNullable<FlowBundle['recipes']>[number];
 
 type ScheduleRow = {
   id: string;
@@ -182,7 +184,7 @@ function ArtifactExportButtons({ actions, kinds, labels = {}, mobileArtifactLabe
         if (kind === 'copy') {
           return (
             <button key={kind} className="rounded-md bg-[#2563EB] px-3 py-2 text-sm font-semibold text-white disabled:bg-gray-300" disabled={disabled} title={disabledTitle} onClick={actions.onCopyText}>
-              {labels.copy ?? '체크리스트 복사'}
+              {labels.copy ?? '메모/노션에 복사'}
             </button>
           );
         }
@@ -271,9 +273,9 @@ function surfaceTitle(surface: string, bundle: FlowBundle): string {
   if (surface === 'decision_table') return '후보 비교표';
   if (surface === 'routine_calendar') return '반복 캘린더';
   if (surface === 'spreadsheet_log') return '기록표';
-  if (surface === 'timeline_calendar') return '전체 할 일 + 월간 캘린더';
+  if (surface === 'timeline_calendar') return '월간 캘린더 + 실행 리스트';
   if (surface === 'memo_card') return '메모 카드';
-  return '전체 할 일';
+  return '실행 리스트';
 }
 
 function surfaceDescription(surface: string, bundle: FlowBundle): string {
@@ -287,7 +289,36 @@ function surfaceDescription(surface: string, bundle: FlowBundle): string {
   if (surface === 'spreadsheet_log') return '매일 남길 기록 열과 주간 리뷰 메모를 먼저 잡아둡니다.';
   if (surface === 'timeline_calendar') return '해야 할 일을 리스트로 훑고, 같은 항목이 월간 달력에서 어느 날짜에 걸리는지 봅니다.';
   if (surface === 'memo_card') return '나중에 다시 참고할 기준과 결정 메모를 한 장으로 정리합니다.';
-  return '전체 할 일을 한눈에 보고 필요한 항목부터 실행합니다.';
+  return '필요한 항목을 체크하고, 자세히에서 원문 기준과 완료 조건만 확인합니다.';
+}
+
+function getWorkbenchItemDetail(bundle: FlowBundle, itemId: string): WorkbenchItemDetail | undefined {
+  return bundle.itemDetails?.find((detail) => detail.item_id === itemId);
+}
+
+function WorkbenchDetailDisclosure({ detail }: { detail?: WorkbenchItemDetail }) {
+  if (!detail?.why && !detail?.how && !detail?.completion_criteria && !detail?.caution && !detail?.links?.length) return null;
+
+  return (
+    <details className="mt-2 rounded-md border border-gray-100 bg-gray-50 px-3 py-2 text-sm">
+      <summary className="cursor-pointer font-semibold text-blue-700">자세히</summary>
+      <div className="mt-2 space-y-2 leading-6 text-gray-700">
+        {detail.how ? <p><b>실행:</b> {detail.how}</p> : null}
+        {detail.completion_criteria ? <p><b>완료:</b> {detail.completion_criteria}</p> : null}
+        {detail.why ? <p><b>이유:</b> {detail.why}</p> : null}
+        {detail.caution ? <p className="text-amber-800"><b>주의:</b> {detail.caution}</p> : null}
+        {detail.links?.length ? (
+          <div className="flex flex-wrap gap-2 pt-1">
+            {detail.links.map((link) => (
+              <a key={`${link.label}-${link.url}`} className="rounded-md border border-gray-200 bg-white px-2 py-1 text-xs font-semibold text-gray-700 hover:text-blue-700" href={link.url} target="_blank" rel="noreferrer">
+                {link.label}
+              </a>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </details>
+  );
 }
 
 function getExecutableItems(bundle: FlowBundle): FlowItem[] {
@@ -367,12 +398,12 @@ function TimelineWorkbench({
   return (
     <div className="space-y-4">
       <div className="grid gap-4 lg:grid-cols-[1.05fr_1fr]">
-        <MiniMonthCalendar title="월간 캘린더" eyebrow="월별 달력 preview" month={month} rows={rows} exportActions={exportActions} mobileArtifactLabel={getMobileArtifactLabel(bundle, 'month_calendar')} />
+        <MiniMonthCalendar title="월간 캘린더" eyebrow="캘린더" month={month} rows={rows} exportActions={exportActions} mobileArtifactLabel={getMobileArtifactLabel(bundle, 'month_calendar')} />
         <div data-testid="artifact-list-card" className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-blue-700">실행 리스트 미리보기</p>
-              <h3 className="text-base font-semibold text-gray-950">전체 할 일</h3>
+              <p className="text-sm font-semibold text-blue-700">체크리스트</p>
+              <h3 className="text-base font-semibold text-gray-950">실행 리스트</h3>
             </div>
             <ArtifactExportButtons
               actions={exportActions}
@@ -383,19 +414,25 @@ function TimelineWorkbench({
           </div>
           <ArtifactExportStatus actions={exportActions} />
           <div className="mt-3 space-y-2">
-            {listRows.map((row) => (
-              <label key={row.id} className="grid grid-cols-[22px_92px_1fr] gap-3 rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
-                <input
-                  aria-label={`실행판 체크: ${row.title}`}
-                  className="mt-0.5 h-4 w-4 rounded border-gray-300"
-                  checked={Boolean(checks[row.id])}
-                  onChange={() => onToggleItem(row.id)}
-                  type="checkbox"
-                />
-                <span className="font-mono text-xs font-semibold text-blue-700">{row.startDate ? `${row.timing} · ${row.startDate.slice(5)}` : row.timing}</span>
-                <span className={`font-medium ${checks[row.id] ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{row.title}</span>
-              </label>
-            ))}
+            {listRows.map((row) => {
+              const detail = getWorkbenchItemDetail(bundle, row.id);
+              return (
+                <div key={row.id} className="rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
+                  <label className="grid grid-cols-[22px_92px_1fr] gap-3">
+                    <input
+                      aria-label={`실행판 체크: ${row.title}`}
+                      className="mt-0.5 h-4 w-4 rounded border-gray-300"
+                      checked={Boolean(checks[row.id])}
+                      onChange={() => onToggleItem(row.id)}
+                      type="checkbox"
+                    />
+                    <span className="font-mono text-xs font-semibold text-blue-700">{row.startDate ? `${row.timing} · ${row.startDate.slice(5)}` : row.timing}</span>
+                    <span className={`font-medium ${checks[row.id] ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{row.title}</span>
+                  </label>
+                  <WorkbenchDetailDisclosure detail={detail} />
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -536,24 +573,31 @@ function MealReactionWorkbench({
           </div>
           <ArtifactExportStatus actions={exportActions} />
           <div className="mt-3 space-y-2">
-            {calendarSlots.map((slot) => (
-              <label key={slot.id} className="grid grid-cols-[22px_112px_1fr] gap-3 rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
-                <input
-                  aria-label={`이유식 완료: ${slot.menu_title}`}
-                  className="mt-0.5 h-4 w-4 rounded border-gray-300"
-                  checked={Boolean(checks[slot.id])}
-                  onChange={() => onToggleItem(slot.id)}
-                  type="checkbox"
-                />
-                <span className="font-mono text-xs font-semibold text-blue-700">{mealSlotTiming(slot.day_offset, slot.duration_days, anchor)}</span>
-                <span className={checks[slot.id] ? 'text-gray-400 line-through' : 'text-gray-800'}>
-                  <span className="block font-medium">{slot.menu_title}</span>
-                  {slot.new_ingredients.length ? (
-                    <span className="mt-1 block text-xs text-gray-500">새 재료: {slot.new_ingredients.join(', ')}</span>
-                  ) : null}
-                </span>
-              </label>
-            ))}
+            {calendarSlots.map((slot) => {
+              const recipe = bundle.recipes?.find((item) => item.id === slot.recipe_id);
+              const isChecked = isMealSlotChecked(slot, anchor, checks);
+              return (
+                <div key={slot.id} className="rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
+                  <label className="grid grid-cols-[22px_112px_1fr] gap-3">
+                    <input
+                      aria-label={`이유식 완료: ${slot.menu_title}`}
+                      className="mt-0.5 h-4 w-4 rounded border-gray-300"
+                      checked={isChecked}
+                      onChange={() => onToggleItem(slot.id)}
+                      type="checkbox"
+                    />
+                    <span className="font-mono text-xs font-semibold text-blue-700">{mealSlotTiming(slot.day_offset, slot.duration_days, anchor)}</span>
+                    <span className={isChecked ? 'text-gray-400 line-through' : 'text-gray-800'}>
+                      <span className="block font-medium">{slot.menu_title}</span>
+                      {slot.new_ingredients.length ? (
+                        <span className="mt-1 block text-xs text-gray-500">새 재료: {slot.new_ingredients.join(', ')}</span>
+                      ) : null}
+                    </span>
+                  </label>
+                  {calendarOnly && recipe ? <RecipeDisclosure recipe={recipe} /> : null}
+                </div>
+              );
+            })}
           </div>
         </div>
         {!calendarOnly ? (
@@ -615,6 +659,49 @@ function mealSlotTiming(dayOffset: number, durationDays: number, anchor: string)
   return end ? `${timing} · ${formatDate(start).slice(5)}~${formatDate(end).slice(5)}` : `${timing} · ${formatDate(start).slice(5)}`;
 }
 
+function RecipeDisclosure({ recipe }: { recipe: WorkbenchRecipe }) {
+  return (
+    <details className="mt-2 rounded-md border border-gray-100 bg-gray-50 px-3 py-2 text-sm">
+      <summary className="cursor-pointer font-semibold text-blue-700">레시피 보기</summary>
+      <div className="mt-2 grid gap-3 leading-6 text-gray-700 md:grid-cols-2">
+        <div>
+          <p className="font-semibold text-gray-900">재료</p>
+          <ul className="mt-1 list-disc pl-5">
+            {recipe.ingredients.map((ingredient) => (
+              <li key={ingredient.name}>{ingredient.name}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p className="font-semibold text-gray-900">조리 방법</p>
+          <ol className="mt-1 list-decimal pl-5">
+            {recipe.steps.map((step) => (
+              <li key={step.order}>{step.text}</li>
+            ))}
+          </ol>
+        </div>
+        {recipe.texture_note ? <p><b>분량/농도:</b> {recipe.texture_note}</p> : null}
+        {recipe.storage_note ? <p><b>보관:</b> {recipe.storage_note}</p> : null}
+        {recipe.caution_note ? <p className="text-amber-800"><b>주의:</b> {recipe.caution_note}</p> : null}
+      </div>
+    </details>
+  );
+}
+
+function mealSlotCheckIds(slot: NonNullable<FlowBundle['mealSlots']>[number], anchor: string): string[] {
+  const duration = Math.max(slot.duration_days ?? 1, 1);
+  if (duration <= 1) return [slot.id];
+  const baseDate = anchor || formatDate(new Date());
+  return Array.from({ length: duration }, (_, index) => {
+    const date = addDays(new Date(baseDate), slot.day_offset + index);
+    return `${slot.id}__${formatDate(date)}`;
+  });
+}
+
+function isMealSlotChecked(slot: NonNullable<FlowBundle['mealSlots']>[number], anchor: string, checks: Record<string, boolean>): boolean {
+  return mealSlotCheckIds(slot, anchor).every((id) => checks[id]);
+}
+
 function MiniMonthCalendar({
   title,
   eyebrow,
@@ -672,6 +759,7 @@ function MiniMonthCalendar({
 }
 
 function RoutineOccurrenceCalendar({
+  bundle,
   month,
   rows,
   weekCount,
@@ -679,6 +767,7 @@ function RoutineOccurrenceCalendar({
   onWorkbenchChange,
   exportActions,
 }: {
+  bundle: FlowBundle;
   month: string;
   rows: ScheduleRow[];
   weekCount: number;
@@ -688,6 +777,18 @@ function RoutineOccurrenceCalendar({
 }) {
   const visibleRows = rows;
   const occurrenceSummary = `${weekCount}주 ${visibleRows.length}회차`;
+  const isSleepCheck = bundle.flow.slug === 'diet-habit-2week';
+  const isHomeWorkout = bundle.flow.slug === 'real-thankyou-bubu-home-workout-starter';
+  const isMealCheck = bundle.flow.slug === 'real-fitvely-diet-record-routine';
+  const eyebrow = isSleepCheck ? '수면 체크 캘린더' : isHomeWorkout ? '홈트 캘린더' : isMealCheck ? '식단 체크 캘린더' : '회차 그리드 · primary';
+  const title = isSleepCheck ? '14일 수면 체크' : isHomeWorkout ? '4주 홈트 체크' : isMealCheck ? '아침·점심·저녁 식단 체크' : `${occurrenceSummary} 루틴`;
+  const description = isSleepCheck
+    ? '매일 8시간 이상 잤는지만 완료로 표시합니다.'
+    : isHomeWorkout
+      ? '운동하는 날에 홈트 완료만 표시합니다.'
+      : isMealCheck
+        ? '아침, 점심, 저녁 식단을 지켰는지만 표시합니다.'
+        : '주차와 요일별 회차를 먼저 보고, 각 회차를 캘린더와 시트로 가져갑니다.';
   const firstDate = visibleRows[0]?.startDate ?? formatDate(new Date());
   const first = new Date(firstDate);
   const currentRow = visibleRows.find((row) => !workbenchState.occurrences[row.id]?.done) ?? visibleRows[0];
@@ -705,9 +806,9 @@ function RoutineOccurrenceCalendar({
       <div data-testid="routine-session-grid-card">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-blue-700">회차 그리드 · primary</p>
-            <h3 className="text-base font-semibold text-gray-950">{occurrenceSummary} 루틴</h3>
-            <p className="mt-1 text-sm text-gray-600">주차와 요일별 회차를 먼저 보고, 각 회차를 캘린더와 시트로 가져갑니다.</p>
+            <p className="text-sm font-semibold text-blue-700">{eyebrow}</p>
+            <h3 className="text-base font-semibold text-gray-950">{title}</h3>
+            <p className="mt-1 text-sm text-gray-600">{description}</p>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
             <span className="text-sm font-semibold text-gray-500">{month}</span>
@@ -720,8 +821,8 @@ function RoutineOccurrenceCalendar({
         </div>
         <ArtifactExportStatus actions={exportActions} />
         <div className="mt-3 flex flex-wrap gap-2 text-sm">
-          <span className="rounded-full bg-blue-50 px-3 py-1 font-semibold text-blue-700">{occurrenceSummary}</span>
-          <span className="rounded-full bg-gray-100 px-3 py-1 font-semibold text-gray-700">주차 × 요일 회차표</span>
+          <span className="rounded-full bg-blue-50 px-3 py-1 font-semibold text-blue-700">{isHomeWorkout ? '주 3회 홈트' : isMealCheck ? '식사별 체크' : occurrenceSummary}</span>
+          <span className="rounded-full bg-gray-100 px-3 py-1 font-semibold text-gray-700">{isHomeWorkout ? '완료 체크만' : isMealCheck ? '아침·점심·저녁' : '주차 × 요일 회차표'}</span>
           {currentRow ? <span className="rounded-full bg-amber-50 px-3 py-1 font-semibold text-amber-800">현재 {currentRow.title}</span> : null}
         </div>
         <div className="mt-3 grid grid-cols-[64px_repeat(7,minmax(0,1fr))] gap-1 text-center text-xs font-semibold text-gray-500">
@@ -1466,12 +1567,34 @@ function RoutineWorkbench({
   const nextState = nextKey ? workbenchState.occurrences[nextKey] ?? {} : {};
   const isSleepCheck = bundle.flow.slug === 'diet-habit-2week';
   const isCheckOnlyRoutine = checkOnlyRoutineSlugs.has(bundle.flow.slug);
+  const isHomeWorkout = bundle.flow.slug === 'real-thankyou-bubu-home-workout-starter';
+  const isMealCheck = bundle.flow.slug === 'real-fitvely-diet-record-routine';
   const sessionItems = bundle.items.slice(0, 5);
+  const routineRows = rows.map((row, index) => ({
+    ...row,
+    title: isHomeWorkout ? '홈트' : isMealCheck ? bundle.items[index % Math.max(bundle.items.length, 1)]?.title ?? row.title : row.title,
+  }));
+
+  if (isCheckOnlyRoutine) {
+    return (
+      <div className="grid gap-4">
+        <RoutineOccurrenceCalendar
+          bundle={bundle}
+          month={month}
+          rows={routineRows}
+          weekCount={weekCount}
+          workbenchState={workbenchState}
+          onWorkbenchChange={onWorkbenchChange}
+          exportActions={exportActions}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={`grid gap-4 ${isCheckOnlyRoutine ? 'lg:grid-cols-[1.2fr_0.8fr]' : 'lg:grid-cols-[1.12fr_0.88fr]'}`}>
       <div className="order-2 grid min-w-0 gap-4 lg:order-1">
-        <RoutineOccurrenceCalendar month={month} rows={rows} weekCount={weekCount} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
+        <RoutineOccurrenceCalendar bundle={bundle} month={month} rows={routineRows} weekCount={weekCount} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
         {!isCheckOnlyRoutine ? <RoutineSessionLogCard bundle={bundle} rows={rows} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} /> : null}
       </div>
       <div data-testid="routine-today-session-card" className="order-1 min-w-0 rounded-lg border border-gray-200 bg-[#FAFAF8] p-4 lg:order-2">
@@ -1756,28 +1879,36 @@ function ChecklistWorkbench({
   onToggleItem: (id: string) => void;
   exportActions?: ArtifactExportActions;
 }) {
+  const listTitle = bundle.flow.slug === 'new-car-delivery-check' || bundle.flow.slug === 'used-car-buying-check' ? '현장 체크리스트' : '실행 리스트';
+
   return (
     <div className="space-y-4">
       {workbenchState && onWorkbenchChange ? <HoldSectionCard bundle={bundle} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} /> : null}
       <div data-testid="artifact-list-card" className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <h3 className="text-base font-semibold text-gray-950">전체 할 일</h3>
+          <h3 className="text-base font-semibold text-gray-950">{listTitle}</h3>
           <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} />
         </div>
         <ArtifactExportStatus actions={exportActions} />
         <div className="mt-3 grid gap-2 md:grid-cols-2">
-          {getExecutableItems(bundle).slice(0, 10).map((item) => (
-            <label key={item.id} className="flex gap-2 rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
-              <input
-                aria-label={`실행판 체크: ${item.title}`}
-                className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
-                checked={Boolean(checks[item.id])}
-                onChange={() => onToggleItem(item.id)}
-                type="checkbox"
-              />
-              <span className={`font-medium ${checks[item.id] ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{item.title}</span>
-            </label>
-          ))}
+          {getExecutableItems(bundle).slice(0, 10).map((item) => {
+            const detail = getWorkbenchItemDetail(bundle, item.id);
+            return (
+              <div key={item.id} className="rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
+                <label className="flex gap-2">
+                  <input
+                    aria-label={`실행판 체크: ${item.title}`}
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
+                    checked={Boolean(checks[item.id])}
+                    onChange={() => onToggleItem(item.id)}
+                    type="checkbox"
+                  />
+                  <span className={`font-medium ${checks[item.id] ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{item.title}</span>
+                </label>
+                <WorkbenchDetailDisclosure detail={detail} />
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
