@@ -8,6 +8,13 @@
 - Do not touch unrelated untracked `design-ref/` or `next_job.md` unless explicitly requested.
 
 ## Implemented
+- Rebranding-grade public detail pass, direction **B. Tool-First Operating Surface**:
+  - Added a cool slate/white global surface and stronger blue primary action system.
+  - Reworked public Flow detail pages into an app-like shell with FLOW wordmark, compact search affordance, strong header, artifact-first workbench, and quieter source/reference rail.
+  - Rebranded setup, storage notice, source, warning, creator, mobile export sheet, and sticky mobile export bar surfaces.
+  - Rebranded `ArtifactWorkbench` wrapper, export buttons, monthly calendar cells, checklist rows, routine grid, log tables, details disclosures, and mobile summaries toward the same tool-card language.
+  - Replaced mobile export sheet text glyphs with CSS-drawn affordance marks.
+  - Added E2E coverage for the public detail tool shell and mobile no-horizontal-overflow guard.
 - Reworked experiment-checklist routes away from unsupported leading artifacts:
   - `diet-habit-2week`: reduced to one 14-day sleep check calendar.
   - `baby-food-menu-recipe`: menu calendar only; no reaction record/log UI on the primary workbench.
@@ -57,6 +64,14 @@
 - If more UX polish is requested, focus on fresh user-session validation rather than adding more artifact surfaces.
 
 ## Verification Run
+- Rebrand verification:
+  - `npm run build`: passed.
+  - `npm test`: passed, 182/182.
+  - `npm run docs:check`: passed, 14 required files and 306 local links.
+  - `npm run test:e2e`: passed, 73/73.
+  - Targeted Playwright before full run: `public detail rebrand`, `mobile export sheet remains`, and `moving desktop keeps source` passed, 3/3.
+  - Browser QA on `http://127.0.0.1:3105/f/moving-d30-basic`: desktop 1440px and mobile 390px screenshots captured with no horizontal overflow.
+  - Initial full E2E found the rebrand header pushed one routine mobile record button 3px below the first viewport; mobile header spacing was compressed and the targeted routine mobile test then passed.
 - `npm run docs:check`: passed, 14 required files and 306 local links.
 - `npm test`: passed, 182/182.
 - `npm run build`: passed.

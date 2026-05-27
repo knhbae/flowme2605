@@ -104,14 +104,14 @@ export function ArtifactWorkbench({
   const done = getExecutableItems(bundle).filter((item) => checks[item.id]).length;
 
   return (
-    <section aria-label="Flow artifact workbench" className="my-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+    <section aria-label="Flow artifact workbench" className="my-6 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-sm font-semibold text-blue-700">내 실행판</p>
-          <h2 className="mt-1 text-2xl font-semibold text-gray-950">{surfaceTitle(plan.primarySurface, bundle)}</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600">{surfaceDescription(plan.primarySurface, bundle)}</p>
+          <h2 className="mt-1 text-2xl font-bold tracking-normal text-slate-950">{surfaceTitle(plan.primarySurface, bundle)}</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">{surfaceDescription(plan.primarySurface, bundle)}</p>
         </div>
-        <span className="rounded-full bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-700">
+        <span className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
           {done}/{total} 완료
         </span>
       </div>
@@ -183,28 +183,28 @@ function ArtifactExportButtons({ actions, kinds, labels = {}, mobileArtifactLabe
       {kinds.map((kind) => {
         if (kind === 'copy') {
           return (
-            <button key={kind} className="rounded-md bg-[#2563EB] px-3 py-2 text-sm font-semibold text-white disabled:bg-gray-300" disabled={disabled} title={disabledTitle} onClick={actions.onCopyText}>
+            <button key={kind} className="rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 disabled:bg-slate-300" disabled={disabled} title={disabledTitle} onClick={actions.onCopyText}>
               {labels.copy ?? '메모/노션에 복사'}
             </button>
           );
         }
         if (kind === 'excel') {
           return (
-            <button key={kind} className="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-800 disabled:border-gray-200 disabled:text-gray-400" disabled={disabled} title={disabledTitle} onClick={actions.onDownloadExcel}>
+            <button key={kind} className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700 disabled:border-slate-200 disabled:text-slate-400" disabled={disabled} title={disabledTitle} onClick={actions.onDownloadExcel}>
               {labels.excel ?? '엑셀로 받기'}
             </button>
           );
         }
         if (kind === 'calendar' && actions.canExportCalendar) {
           return (
-            <button key={kind} className="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-800 disabled:border-gray-200 disabled:text-gray-400" disabled={disabled} title={disabledTitle} onClick={actions.onDownloadCalendar}>
+            <button key={kind} className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700 disabled:border-slate-200 disabled:text-slate-400" disabled={disabled} title={disabledTitle} onClick={actions.onDownloadCalendar}>
               {labels.calendar ?? '캘린더 받기'}
             </button>
           );
         }
         if (kind === 'draft') {
           return (
-            <button key={kind} className="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-gray-800" onClick={actions.onCopyToEditableDraft}>
+            <button key={kind} className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700" onClick={actions.onCopyToEditableDraft}>
               {labels.draft ?? '내 버전'}
             </button>
           );
@@ -237,7 +237,7 @@ function renderMobileArtifactExportButton(kind: ArtifactExportActionKind, action
       key={kind}
       data-testid={`mobile-artifact-export-${kind}`}
       aria-label={config.aria}
-      className="w-full rounded-md border border-blue-200 bg-white px-3 py-2.5 text-sm font-semibold text-blue-800 disabled:border-gray-200 disabled:text-gray-400"
+      className="w-full rounded-md border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700 disabled:border-slate-200 disabled:text-slate-400"
       disabled={config.disabled}
       title={config.disabled ? disabledTitle : undefined}
       type="button"
@@ -300,9 +300,9 @@ function WorkbenchDetailDisclosure({ detail }: { detail?: WorkbenchItemDetail })
   if (!detail?.why && !detail?.how && !detail?.completion_criteria && !detail?.caution && !detail?.links?.length) return null;
 
   return (
-    <details className="mt-2 rounded-md border border-gray-100 bg-gray-50 px-3 py-2 text-sm">
+    <details className="mt-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
       <summary className="cursor-pointer font-semibold text-blue-700">자세히</summary>
-      <div className="mt-2 space-y-2 leading-6 text-gray-700">
+      <div className="mt-2 space-y-2 leading-6 text-slate-700">
         {detail.how ? <p><b>실행:</b> {detail.how}</p> : null}
         {detail.completion_criteria ? <p><b>완료:</b> {detail.completion_criteria}</p> : null}
         {detail.why ? <p><b>이유:</b> {detail.why}</p> : null}
@@ -310,7 +310,7 @@ function WorkbenchDetailDisclosure({ detail }: { detail?: WorkbenchItemDetail })
         {detail.links?.length ? (
           <div className="flex flex-wrap gap-2 pt-1">
             {detail.links.map((link) => (
-              <a key={`${link.label}-${link.url}`} className="rounded-md border border-gray-200 bg-white px-2 py-1 text-xs font-semibold text-gray-700 hover:text-blue-700" href={link.url} target="_blank" rel="noreferrer">
+              <a key={`${link.label}-${link.url}`} className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:border-blue-300 hover:text-blue-700" href={link.url} target="_blank" rel="noreferrer">
                 {link.label}
               </a>
             ))}
@@ -399,11 +399,11 @@ function TimelineWorkbench({
     <div className="space-y-4">
       <div className="grid gap-4 lg:grid-cols-[1.05fr_1fr]">
         <MiniMonthCalendar title="월간 캘린더" eyebrow="캘린더" month={month} rows={rows} exportActions={exportActions} mobileArtifactLabel={getMobileArtifactLabel(bundle, 'month_calendar')} />
-        <div data-testid="artifact-list-card" className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+        <div data-testid="artifact-list-card" className="rounded-lg border border-slate-200 bg-slate-50 p-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <p className="text-sm font-semibold text-blue-700">체크리스트</p>
-              <h3 className="text-base font-semibold text-gray-950">실행 리스트</h3>
+              <h3 className="text-base font-semibold text-slate-950">실행 리스트</h3>
             </div>
             <ArtifactExportButtons
               actions={exportActions}
@@ -417,17 +417,17 @@ function TimelineWorkbench({
             {listRows.map((row) => {
               const detail = getWorkbenchItemDetail(bundle, row.id);
               return (
-                <div key={row.id} className="rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
+                <div key={row.id} className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-[0_1px_0_rgba(15,23,42,0.03)]">
                   <label className="grid grid-cols-[22px_92px_1fr] gap-3">
                     <input
                       aria-label={`실행판 체크: ${row.title}`}
-                      className="mt-0.5 h-4 w-4 rounded border-gray-300"
+                      className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-700"
                       checked={Boolean(checks[row.id])}
                       onChange={() => onToggleItem(row.id)}
                       type="checkbox"
                     />
                     <span className="font-mono text-xs font-semibold text-blue-700">{row.startDate ? `${row.timing} · ${row.startDate.slice(5)}` : row.timing}</span>
-                    <span className={`font-medium ${checks[row.id] ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{row.title}</span>
+                    <span className={`font-medium ${checks[row.id] ? 'text-slate-400 line-through' : 'text-slate-800'}`}>{row.title}</span>
                   </label>
                   <WorkbenchDetailDisclosure detail={detail} />
                 </div>
@@ -563,7 +563,7 @@ function MealReactionWorkbench({
         </div>
       ) : null}
       <div className={`grid gap-4 ${calendarOnly ? '' : 'lg:grid-cols-[0.95fr_1.05fr]'}`}>
-        <div data-testid="artifact-calendar-card" className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+        <div data-testid="artifact-calendar-card" className="rounded-lg border border-slate-200 bg-slate-50 p-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <p className="text-sm font-semibold text-blue-700">식단 일정 preview</p>
@@ -721,19 +721,19 @@ function MiniMonthCalendar({
 }) {
   const days = getMonthCalendarDays(month || formatDate(new Date()).slice(0, 7));
   return (
-    <div data-testid="artifact-calendar-card" className="rounded-lg border border-gray-200 bg-white p-4">
+    <div data-testid="artifact-calendar-card" className="rounded-lg border border-slate-200 bg-white p-4 shadow-[0_1px_0_rgba(15,23,42,0.03)]">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           {eyebrow ? <p className="text-sm font-semibold text-blue-700">{eyebrow}</p> : null}
-          <h3 className="text-base font-semibold text-gray-950">{title}</h3>
+          <h3 className="text-base font-semibold text-slate-950">{title}</h3>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
-          <span className="text-sm font-semibold text-gray-500">{month}</span>
+          <span className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-sm font-semibold text-slate-600">{month}</span>
           <ArtifactExportButtons actions={exportActions} kinds={['calendar']} mobileArtifactLabel={mobileArtifactLabel} mobileKinds={['calendar']} />
         </div>
       </div>
       <ArtifactExportStatus actions={exportActions} />
-      <div className="mt-3 grid grid-cols-7 gap-1 text-center text-xs font-semibold text-gray-500">
+      <div className="mt-3 grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-500">
         {weekdayOrder.map((day) => (
           <span key={day}>{day}</span>
         ))}
@@ -742,14 +742,14 @@ function MiniMonthCalendar({
         {days.map((date, index) => {
           const dayRows = date ? rows.filter((row) => row.startDate === date) : [];
           return (
-            <div key={`${month}-${index}`} className={`min-h-16 rounded-md border p-1 text-xs ${date ? 'border-gray-200 bg-[#FAFAF8]' : 'border-gray-100 bg-gray-50'}`}>
-              {date ? <p className="font-semibold text-gray-600">{date.slice(8)}</p> : null}
+            <div key={`${month}-${index}`} className={`min-h-16 rounded-md border p-1 text-xs ${date ? 'border-slate-200 bg-slate-50' : 'border-slate-100 bg-slate-50/60'}`}>
+              {date ? <p className="font-semibold text-slate-600">{date.slice(8)}</p> : null}
               {dayRows.slice(0, 2).map((row) => (
-                <p key={row.id} className={`mt-1 truncate rounded px-1 py-0.5 text-left text-[11px] font-medium ${doneIds?.has(row.id) ? 'bg-green-50 text-green-700' : 'bg-white text-blue-700'}`}>
+                <p key={row.id} className={`mt-1 truncate rounded px-1 py-0.5 text-left text-[11px] font-medium ${doneIds?.has(row.id) ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-blue-700'}`}>
                   {doneIds?.has(row.id) ? '완료 ' : ''}{row.title}
                 </p>
               ))}
-              {dayRows.length > 2 ? <p className="mt-1 text-[11px] text-gray-500">+{dayRows.length - 2}</p> : null}
+              {dayRows.length > 2 ? <p className="mt-1 text-[11px] text-slate-500">+{dayRows.length - 2}</p> : null}
             </div>
           );
         })}
@@ -802,16 +802,16 @@ function RoutineOccurrenceCalendar({
   );
 
   return (
-    <section aria-label="반복 캘린더 미리보기" data-testid="artifact-calendar-card" className="min-w-0 rounded-lg border border-gray-200 bg-white p-4">
+    <section aria-label="반복 캘린더 미리보기" data-testid="artifact-calendar-card" className="min-w-0 rounded-lg border border-slate-200 bg-white p-4 shadow-[0_1px_0_rgba(15,23,42,0.03)]">
       <div data-testid="routine-session-grid-card">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="text-sm font-semibold text-blue-700">{eyebrow}</p>
-            <h3 className="text-base font-semibold text-gray-950">{title}</h3>
-            <p className="mt-1 text-sm text-gray-600">{description}</p>
+            <h3 className="text-base font-semibold text-slate-950">{title}</h3>
+            <p className="mt-1 text-sm text-slate-600">{description}</p>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
-            <span className="text-sm font-semibold text-gray-500">{month}</span>
+            <span className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-sm font-semibold text-slate-600">{month}</span>
             <ArtifactExportButtons
               actions={exportActions}
               kinds={['calendar', 'excel', 'draft']}
@@ -821,11 +821,11 @@ function RoutineOccurrenceCalendar({
         </div>
         <ArtifactExportStatus actions={exportActions} />
         <div className="mt-3 flex flex-wrap gap-2 text-sm">
-          <span className="rounded-full bg-blue-50 px-3 py-1 font-semibold text-blue-700">{isHomeWorkout ? '주 3회 홈트' : isMealCheck ? '식사별 체크' : occurrenceSummary}</span>
-          <span className="rounded-full bg-gray-100 px-3 py-1 font-semibold text-gray-700">{isHomeWorkout ? '완료 체크만' : isMealCheck ? '아침·점심·저녁' : '주차 × 요일 회차표'}</span>
-          {currentRow ? <span className="rounded-full bg-amber-50 px-3 py-1 font-semibold text-amber-800">현재 {currentRow.title}</span> : null}
+          <span className="rounded-md border border-blue-100 bg-blue-50 px-3 py-1 font-semibold text-blue-700">{isHomeWorkout ? '주 3회 홈트' : isMealCheck ? '식사별 체크' : occurrenceSummary}</span>
+          <span className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 font-semibold text-slate-700">{isHomeWorkout ? '완료 체크만' : isMealCheck ? '아침·점심·저녁' : '주차 × 요일 회차표'}</span>
+          {currentRow ? <span className="rounded-md border border-amber-200 bg-amber-50 px-3 py-1 font-semibold text-amber-800">현재 {currentRow.title}</span> : null}
         </div>
-        <div className="mt-3 grid grid-cols-[64px_repeat(7,minmax(0,1fr))] gap-1 text-center text-xs font-semibold text-gray-500">
+        <div className="mt-3 grid grid-cols-[64px_repeat(7,minmax(0,1fr))] gap-1 text-center text-xs font-semibold text-slate-500">
           <span />
           {routineGridWeekdayOrder.map((day) => (
             <span key={day}>{day}</span>
@@ -834,14 +834,14 @@ function RoutineOccurrenceCalendar({
         <div className="mt-2 grid grid-cols-[64px_repeat(7,minmax(0,1fr))] gap-1">
           {weekRows.map((week, weekIndex) => (
             <div key={`routine-week-${weekIndex}`} className="contents">
-              <div className="rounded-md border border-gray-200 bg-[#FAFAF8] p-2">
-                <p className="text-[10px] font-bold uppercase tracking-wide text-gray-500">WEEK {weekIndex + 1}</p>
-                <p className="mt-1 text-sm font-semibold text-gray-900">{weekIndex + 1}주차</p>
+              <div className="rounded-md border border-slate-200 bg-slate-50 p-2">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">WEEK {weekIndex + 1}</p>
+                <p className="mt-1 text-sm font-semibold text-slate-900">{weekIndex + 1}주차</p>
               </div>
               {week.map((row, dayIndex) => {
                 if (!row) {
                   return (
-                    <div key={`empty-${weekIndex}-${dayIndex}`} className="min-h-20 rounded-md border border-dashed border-gray-100 bg-gray-50 p-2 text-xs text-gray-400">
+                    <div key={`empty-${weekIndex}-${dayIndex}`} className="min-h-20 rounded-md border border-dashed border-slate-200 bg-slate-50/70 p-2 text-xs text-slate-400">
                       -
                     </div>
                   );
@@ -851,7 +851,7 @@ function RoutineOccurrenceCalendar({
                   return (
                     <label
                       key={row.id}
-                      className={`min-h-20 rounded-md border p-2 text-left text-xs ${state.done ? 'border-green-200 bg-green-50 text-green-700' : isCurrent ? 'border-blue-300 bg-blue-50 text-blue-800' : 'border-gray-200 bg-white text-gray-800'}`}
+                      className={`min-h-20 rounded-md border p-2 text-left text-xs ${state.done ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : isCurrent ? 'border-blue-300 bg-blue-50 text-blue-800' : 'border-slate-200 bg-white text-slate-800'}`}
                     >
                       <span className="flex items-center justify-between gap-1">
                         <span className="font-mono text-[11px] font-semibold">{row.startDate.slice(5)}</span>
@@ -859,13 +859,13 @@ function RoutineOccurrenceCalendar({
                       </span>
                       <input
                         aria-label={`캘린더 회차 체크: ${row.title}`}
-                        className="mt-2 h-3 w-3 rounded border-gray-300"
+                        className="mt-2 h-3 w-3 rounded border-slate-300 text-blue-700"
                         checked={Boolean(state.done)}
                         onChange={(event) => onWorkbenchChange(updateOccurrenceDone(workbenchState, row.id, event.currentTarget.checked))}
                         type="checkbox"
                       />
                       <span className="ml-1 align-middle text-[11px] font-semibold">{state.done ? '완료 ' : ''}{row.title}</span>
-                      <span className="mt-1 block text-[11px] text-gray-500">{row.timing}</span>
+                      <span className="mt-1 block text-[11px] text-slate-500">{row.timing}</span>
                     </label>
                   );
                 })}
@@ -894,7 +894,7 @@ function RoutineSessionLogCard({
   const isSleepCheck = bundle.flow.slug === 'diet-habit-2week';
   const valueLabel = isSleepCheck ? '수면 여부' : '세트/강도';
   return (
-    <section data-testid="routine-session-log-card" className="min-w-0 rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+    <section data-testid="routine-session-log-card" className="min-w-0 rounded-lg border border-slate-200 bg-slate-50 p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-sm font-semibold text-blue-700">회차 기록표 · secondary</p>
@@ -1047,7 +1047,7 @@ function MobileComparisonSummaryCard({ rows, comparison }: { rows: ArtifactCompa
   if (!previewRows.length) return null;
 
   return (
-    <div data-testid="mobile-comparison-summary-card" className="m-3 rounded-md border border-blue-100 bg-blue-50 p-3 md:hidden">
+    <div data-testid="mobile-comparison-summary-card" className="m-3 rounded-md border border-slate-200 bg-slate-50 p-3 md:hidden">
       <p className="text-xs font-semibold uppercase text-blue-700">mobile summary</p>
       <h4 className="mt-1 text-sm font-semibold text-gray-950">{primaryCandidate} 먼저 채우기</h4>
       <dl className="mt-2 grid gap-2 text-sm">
@@ -1078,7 +1078,7 @@ function ProofMemoCard({
   const description = metadata?.groupDescription ?? '견적, 계약금, 잔금, 보상 기준을 흩어진 캡처 대신 한곳에 남겨둡니다.';
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+    <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
       <p className="text-sm font-semibold text-blue-700">{eyebrow}</p>
       <h3 className="mt-1 text-base font-semibold text-gray-950">{title}</h3>
       <p className="mt-2 text-sm leading-6 text-gray-600">{description}</p>
@@ -1123,22 +1123,22 @@ function LogTableCard({
       data-source-kind={table.sourceKind ?? undefined}
       data-read-only-columns={table.readOnlyColumnIds?.join(',') ?? undefined}
       data-user-editable-columns={table.userEditableColumnIds?.join(',') ?? undefined}
-      className="overflow-x-auto rounded-lg border border-gray-200 bg-white"
+      className="overflow-x-auto rounded-lg border border-slate-200 bg-white"
     >
-      <div className="border-b border-gray-100 px-3 py-3">
+      <div className="border-b border-slate-100 px-3 py-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="text-sm font-semibold text-blue-700">{table.eyebrow}</p>
-            <h3 className="mt-1 text-base font-semibold text-gray-950">{table.title}</h3>
+            <h3 className="mt-1 text-base font-semibold text-slate-950">{table.title}</h3>
           </div>
           <ArtifactExportButtons actions={exportActions} kinds={exportKinds} mobileArtifactLabel={mobileArtifactLabel} mobileKinds={mobileKinds} />
         </div>
         <ArtifactExportStatus actions={exportActions} />
-        <p className="mt-2 text-sm leading-6 text-gray-600">{table.description}</p>
+        <p className="mt-2 text-sm leading-6 text-slate-600">{table.description}</p>
         {table.sourceKind === 'source_derived' ? <MobileStudyLogSummaryCard table={table} /> : <MobileLogSummaryCard table={table} />}
       </div>
       <table className="min-w-[760px] text-left text-sm">
-        <thead className="bg-gray-50 text-xs font-semibold text-gray-600">
+        <thead className="bg-slate-50 text-xs font-semibold text-slate-600">
           <tr>
             <th className="px-3 py-2">항목</th>
             {table.columns.map((column) => (
@@ -1148,8 +1148,8 @@ function LogTableCard({
         </thead>
         <tbody>
           {table.rows.map((row) => (
-            <tr key={row.id} className="border-t border-gray-100">
-              <th className="px-3 py-3 text-sm font-semibold text-gray-900">{row.label}</th>
+            <tr key={row.id} className="border-t border-slate-100">
+              <th className="px-3 py-3 text-sm font-semibold text-slate-900">{row.label}</th>
               {table.columns.map((column) => {
                 const isReadOnly = table.readOnlyColumnIds?.includes(column.id) ?? false;
                 const value = isReadOnly ? row.defaultValues?.[column.id] ?? '' : workbenchState.logRows[row.id]?.[column.id] ?? row.defaultValues?.[column.id] ?? '';
@@ -1159,14 +1159,14 @@ function LogTableCard({
                     {isReadOnly ? (
                       <div
                         data-testid={`artifact-readonly-cell-${row.id}-${column.id}`}
-                        className="min-w-36 rounded-md border border-gray-200 bg-gray-50 px-2 py-1.5 text-sm leading-5 text-gray-700"
+                        className="min-w-36 rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-sm leading-5 text-slate-700"
                       >
                         {value || '-'}
                       </div>
                     ) : (
                       <input
                         aria-label={`${row.label} / ${column.label}`}
-                        className="w-full min-w-28 rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
+                        className="w-full min-w-28 rounded-md border border-slate-200 px-2 py-1.5 text-sm text-slate-800"
                         placeholder={column.placeholder}
                         value={value}
                         onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, row.id, column.id, event.currentTarget.value))}
@@ -1194,7 +1194,7 @@ function MobileStudyLogSummaryCard({ table }: { table: ArtifactLogTable }) {
       data-testid="mobile-study-log-summary-card"
       data-source-row-count={String(table.rows.length)}
       data-editable-column-count={String(editableColumns.length)}
-      className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3 md:hidden"
+      className="mt-3 rounded-md border border-slate-200 bg-slate-50 p-3 md:hidden"
     >
       <p className="text-xs font-semibold uppercase text-blue-700">study summary</p>
       <h4 className="mt-1 text-sm font-semibold text-gray-950">{table.rows.length} source rows before editing</h4>
@@ -1221,7 +1221,7 @@ function MobileLogSummaryCard({ table }: { table: ArtifactLogTable }) {
   if (!firstRow) return null;
 
   return (
-    <div data-testid="mobile-artifact-summary-card" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3 md:hidden">
+    <div data-testid="mobile-artifact-summary-card" className="mt-3 rounded-md border border-slate-200 bg-slate-50 p-3 md:hidden">
       <p className="text-xs font-semibold uppercase text-blue-700">mobile summary</p>
       <h4 className="mt-1 text-sm font-semibold text-gray-950">{firstRow.label}</h4>
       <dl className="mt-2 grid gap-2 text-sm">
@@ -1319,7 +1319,7 @@ function DecisionWorkbench({
         {bundle.flow.warning ? <RiskBoundaryCard bundle={bundle} /> : null}
         <HoldSectionCard bundle={bundle} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
         {memoFields.length ? <ProofMemoCard fields={memoFields} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} /> : null}
-        <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
           <p className="text-sm font-semibold text-blue-700">현장에서 바로 체크</p>
           <h3 className="mt-1 text-base font-semibold text-gray-950">현장 체크리스트</h3>
           <ul className="mt-3 space-y-2 text-sm text-gray-700">
@@ -1369,7 +1369,7 @@ function StopPrincipleCards({ bundle }: { bundle: FlowBundle }) {
         </section>
       ) : null}
       {bundle.flow.principles?.length ? (
-        <section data-testid="flow-principles" className="rounded-lg border border-blue-100 bg-blue-50 p-3">
+        <section data-testid="flow-principles" className="rounded-lg border border-blue-200 bg-blue-50 p-3">
           <p className="text-sm font-semibold text-blue-800">기록 원칙</p>
           <ul className="mt-2 space-y-1 text-sm leading-6 text-blue-950">
             {bundle.flow.principles.map((principle) => (
@@ -1597,7 +1597,7 @@ function RoutineWorkbench({
         <RoutineOccurrenceCalendar bundle={bundle} month={month} rows={routineRows} weekCount={weekCount} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
         {!isCheckOnlyRoutine ? <RoutineSessionLogCard bundle={bundle} rows={rows} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} /> : null}
       </div>
-      <div data-testid="routine-today-session-card" className="order-1 min-w-0 rounded-lg border border-gray-200 bg-[#FAFAF8] p-4 lg:order-2">
+      <div data-testid="routine-today-session-card" className="order-1 min-w-0 rounded-lg border border-slate-200 bg-slate-50 p-4 lg:order-2">
         <p className="text-sm font-semibold text-blue-700">이번 주 요약</p>
         <h3 className="mt-1 text-base font-semibold text-gray-950">다음 회차</h3>
         <p className="mt-2 text-sm text-gray-600">오늘 바로 볼 회차와 실행 항목을 오른쪽에 고정해 둡니다.</p>
@@ -1732,7 +1732,7 @@ function SpreadsheetWorkbench({
             />
           ))}
         </div>
-        <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
           <StopPrincipleCards bundle={bundle} />
           {showRiskBoundary ? (
             <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3">
@@ -1801,7 +1801,7 @@ function SpreadsheetWorkbench({
           </tbody>
         </table>
       </div>
-      <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+      <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
         <StopPrincipleCards bundle={bundle} />
         {showRiskBoundary ? (
           <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3">
@@ -1835,7 +1835,7 @@ function MobileSpreadsheetSummaryCard({ date, columns, bundle }: { date: string;
   const title = bundle.flow.slug === 'diet-habit-2week' ? '오늘 관찰 행' : '오늘 기록 행';
 
   return (
-    <div data-testid="mobile-artifact-summary-card" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3 md:hidden">
+    <div data-testid="mobile-artifact-summary-card" className="mt-3 rounded-md border border-slate-200 bg-slate-50 p-3 md:hidden">
       <p className="text-xs font-semibold uppercase text-blue-700">mobile summary</p>
       <h4 className="mt-1 text-sm font-semibold text-gray-950">{title} · {date}</h4>
       <dl className="mt-2 grid gap-2 text-sm">
@@ -1884,9 +1884,9 @@ function ChecklistWorkbench({
   return (
     <div className="space-y-4">
       {workbenchState && onWorkbenchChange ? <HoldSectionCard bundle={bundle} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} /> : null}
-      <div data-testid="artifact-list-card" className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+      <div data-testid="artifact-list-card" className="rounded-lg border border-slate-200 bg-slate-50 p-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <h3 className="text-base font-semibold text-gray-950">{listTitle}</h3>
+          <h3 className="text-base font-semibold text-slate-950">{listTitle}</h3>
           <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} />
         </div>
         <ArtifactExportStatus actions={exportActions} />
@@ -1894,16 +1894,16 @@ function ChecklistWorkbench({
           {getExecutableItems(bundle).slice(0, 10).map((item) => {
             const detail = getWorkbenchItemDetail(bundle, item.id);
             return (
-              <div key={item.id} className="rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
+              <div key={item.id} className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-[0_1px_0_rgba(15,23,42,0.03)]">
                 <label className="flex gap-2">
                   <input
                     aria-label={`실행판 체크: ${item.title}`}
-                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-700"
                     checked={Boolean(checks[item.id])}
                     onChange={() => onToggleItem(item.id)}
                     type="checkbox"
                   />
-                  <span className={`font-medium ${checks[item.id] ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{item.title}</span>
+                  <span className={`font-medium ${checks[item.id] ? 'text-slate-400 line-through' : 'text-slate-800'}`}>{item.title}</span>
                 </label>
                 <WorkbenchDetailDisclosure detail={detail} />
               </div>

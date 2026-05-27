@@ -154,7 +154,7 @@ function Badge({
   className?: string;
 }) {
   return (
-    <span className={`inline-flex items-center rounded-full border px-2 py-1 text-xs font-medium ${className}`}>
+    <span className={`inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-semibold ${className}`}>
       {children}
     </span>
   );
@@ -166,7 +166,7 @@ function FlowBadges({ bundle, showStatus = false }: { bundle: FlowBundle; showSt
   return (
     <div className="flex flex-wrap gap-2">
       {showStatus ? (
-        <Badge className={flow.status === 'published' ? 'border-green-200 bg-green-50 text-green-800' : 'border-gray-200 bg-white text-gray-700'}>
+        <Badge className={flow.status === 'published' ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-white text-slate-700'}>
           {flow.status === 'published' ? '공개 Flow' : '초안 Flow'}
         </Badge>
       ) : null}
@@ -183,9 +183,9 @@ function FlowHeroMeta({ bundle }: { bundle: FlowBundle }) {
   const anchorLabel = bundle.flow.anchor_type === 'none' ? '바로 체크 시작' : `${getAnchorInputLabel(bundle)} 입력으로 시작`;
   return (
     <div className="mt-4 flex flex-wrap gap-2 text-sm">
-      <span className="rounded-full border border-gray-200 bg-white px-3 py-1.5 font-semibold text-gray-800">{getFlowDurationLabel(bundle)}</span>
-      <span className="rounded-full border border-gray-200 bg-white px-3 py-1.5 font-semibold text-gray-800">{count}개 항목</span>
-      <span className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1.5 font-semibold text-blue-700">{anchorLabel}</span>
+      <span className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 font-semibold text-slate-800">{getFlowDurationLabel(bundle)}</span>
+      <span className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 font-semibold text-slate-800">{count}개 항목</span>
+      <span className="rounded-md border border-blue-100 bg-blue-50 px-3 py-1.5 font-semibold text-blue-700">{anchorLabel}</span>
     </div>
   );
 }
@@ -195,7 +195,7 @@ function FlowMigrationStatus({ bundle }: { bundle: FlowBundle }) {
   if (model.exposureStatus !== 'migration_candidate') return null;
 
   return (
-    <section className="mt-4 rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm leading-6 text-blue-950">
+    <section className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-950">
       <p className="font-semibold">새 실행모델로 전환 중</p>
       <p className="mt-1">
         전체 항목은 그대로 이용할 수 있어요. 다만 일부 Flow는 후보 비교표, 루틴 회차, 월별 달력 같은 새 UX 기준으로 순차 보강 중입니다.
@@ -225,7 +225,7 @@ function FlowSourceFitStatus({ bundle }: { bundle: FlowBundle }) {
           <p className="font-semibold">{title}</p>
           <p className="mt-1">{body}</p>
         </div>
-        <span className="rounded-full border border-amber-300 bg-white px-2.5 py-1 text-xs font-semibold text-amber-800">
+        <span className="rounded-md border border-amber-300 bg-white px-2.5 py-1 text-xs font-semibold text-amber-800">
           적합도 {audit.score}/100
         </span>
       </div>
@@ -246,16 +246,16 @@ function SourceContentCard({ bundle, className = 'mt-5' }: { bundle: FlowBundle;
   ].filter(Boolean);
 
   return (
-    <section data-testid="flow-source-card" className={`${className} rounded-lg border border-gray-200 bg-white p-4`}>
-      <p className="text-sm font-semibold text-gray-700">이 Flow는 아래 콘텐츠를 기반으로</p>
+    <section data-testid="flow-source-card" className={`${className} rounded-lg border border-slate-200 bg-white p-4 shadow-sm`}>
+      <p className="text-sm font-semibold text-slate-700">이 Flow는 아래 콘텐츠를 기반으로</p>
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
-          <h2 className="text-base font-semibold text-gray-950">{bundle.flow.source_title ?? '원본 콘텐츠'}</h2>
-          <p className="mt-1 text-sm text-gray-500">{sourceMeta.join(' · ')}</p>
-          {bundle.flow.conversion_note ? <p className="mt-2 text-sm leading-6 text-gray-600">Flow 전환 방식: {bundle.flow.conversion_note}</p> : null}
+          <h2 className="text-base font-semibold text-slate-950">{bundle.flow.source_title ?? '원본 콘텐츠'}</h2>
+          <p className="mt-1 text-sm text-slate-500">{sourceMeta.join(' · ')}</p>
+          {bundle.flow.conversion_note ? <p className="mt-2 text-sm leading-6 text-slate-600">Flow 전환 방식: {bundle.flow.conversion_note}</p> : null}
         </div>
         {bundle.flow.source_url ? (
-          <a className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-800 hover:border-blue-300 hover:text-blue-700" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
+          <a className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
             원문 보기
           </a>
         ) : null}
@@ -268,7 +268,7 @@ function FlowWarningCard({ bundle, className = 'mt-5' }: { bundle: FlowBundle; c
   if (!bundle.flow.warning) return null;
 
   return (
-    <div data-testid="flow-warning-card" className={`${className} rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950`}>
+    <div data-testid="flow-warning-card" className={`${className} rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950 shadow-sm`}>
       {bundle.flow.warning}
     </div>
   );
@@ -2385,12 +2385,12 @@ export function PublicFlow({ slug }: { slug: string }) {
   );
   const renderSetupSection = () =>
     !showTodayExecution && !showExportFirstHero ? (
-      <section className="my-6 rounded-xl border border-blue-100 bg-white p-4 shadow-sm">
+      <section className="my-6 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-5">
         <div className="grid gap-4">
-          <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
             <p className="text-sm font-semibold text-blue-700">{getSetupStepTitle(bundle)}</p>
-            <p className="mt-1 text-sm text-gray-600">{getSetupStepDescription(bundle)}</p>
-            <p className="mt-1 text-sm text-gray-500">{getSetupStepHelp(bundle)}</p>
+            <p className="mt-1 text-sm text-slate-600">{getSetupStepDescription(bundle)}</p>
+            <p className="mt-1 text-sm text-slate-500">{getSetupStepHelp(bundle)}</p>
             <div className="mt-4">
               <AnchorInput bundle={bundle} anchor={anchor} displayAnchor={displayAnchor} mode={anchorMode} onModeChange={setAnchorMode} onChange={setAnchor} weekdays={weekdaySelection} onWeekdaysChange={setWeekdaySelection} />
             </div>
@@ -2400,20 +2400,42 @@ export function PublicFlow({ slug }: { slug: string }) {
     ) : null;
 
   return (
-    <main className="mx-auto max-w-5xl px-5 py-8 pb-28 md:pb-8">
-      <header className="border-b border-gray-200 pb-6">
-        <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
-          <span>{bundle.flow.category}</span>
-          <span>{bundle.flow.content_type === 'meal_plan' ? '식단/레시피' : '실행 체크리스트'}</span>
-          {bundle.flow.source_title ? <span>{bundle.flow.source_title}</span> : null}
+    <main className="min-h-screen bg-slate-50 px-4 py-3 pb-28 text-slate-950 md:px-6 md:py-6 md:pb-10">
+      <div className="mx-auto max-w-7xl">
+        <div data-testid="flow-public-shell" className="mb-3 flex min-h-12 items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-sm md:mb-4 md:min-h-14 md:px-4 md:py-3">
+          <Link className="text-xl font-black tracking-normal text-blue-700 md:text-2xl" href="/flows" aria-label="FLOW 홈">
+            FLOW
+          </Link>
+          <div className="hidden min-w-0 flex-1 justify-center md:flex">
+            <div data-testid="flow-public-search" className="flex w-full max-w-md items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500">
+              <span aria-hidden="true" className="text-slate-400">⌕</span>
+              <span className="truncate">Flow, 캘린더, 시트, 메모 검색</span>
+            </div>
+          </div>
+          <Link className="rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-800" href="/flows/new">
+            새 Flow
+          </Link>
         </div>
-        <h1 className="mt-3 text-4xl font-semibold tracking-tight">{bundle.flow.title}</h1>
-        {bundle.flow.description ? <p className="mt-3 max-w-3xl text-gray-600">{bundle.flow.description}</p> : null}
-        <FlowHeroMeta bundle={bundle} />
-        <div className="mt-4">
-          <FlowBadges bundle={bundle} />
-        </div>
-      </header>
+
+        <header className="rounded-lg border border-slate-200 bg-white px-4 py-4 shadow-sm md:px-6 md:py-5">
+          <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+            <span>{bundle.flow.category}</span>
+            <span aria-hidden="true">·</span>
+            <span>{bundle.flow.content_type === 'meal_plan' ? '식단/레시피' : '실행 체크리스트'}</span>
+            {bundle.flow.source_title ? (
+              <>
+                <span aria-hidden="true">·</span>
+                <span>{bundle.flow.source_title}</span>
+              </>
+            ) : null}
+          </div>
+          <h1 className="mt-2 max-w-4xl text-2xl font-bold tracking-normal text-slate-950 md:mt-3 md:text-4xl">{bundle.flow.title}</h1>
+          {bundle.flow.description ? <p className="mt-2 max-w-3xl text-base leading-6 text-slate-600 md:mt-3 md:leading-7">{bundle.flow.description}</p> : null}
+          <FlowHeroMeta bundle={bundle} />
+          <div className="mt-3 md:mt-4">
+            <FlowBadges bundle={bundle} />
+          </div>
+        </header>
 
       {showDesktopReferenceRail ? (
         <div data-testid="flow-desktop-workbench-layout" className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
@@ -2481,13 +2503,13 @@ export function PublicFlow({ slug }: { slug: string }) {
       )}
 
       {showStorageNotice ? (
-        <section className="my-5 rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm text-blue-950">
+        <section className="my-5 rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-700 shadow-sm">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <p>
               <span className="font-semibold">진행 상황은 이 브라우저에 자동 저장됩니다.</span> 다른 기기에서 보거나 백업하려면 엑셀 실행표를 받아두세요.
             </p>
             <button
-              className="rounded-md border border-blue-200 bg-white px-3 py-1.5 text-sm font-semibold text-blue-700"
+              className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700"
               onClick={() => {
                 dismissStorageNotice();
                 setShowStorageNotice(false);
@@ -2558,17 +2580,17 @@ export function PublicFlow({ slug }: { slug: string }) {
         </>
       )}
 
-      <section className="my-5 rounded-lg border border-gray-200 bg-white p-4">
+      <section className="my-5 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <Link className="text-sm font-semibold text-gray-950 underline-offset-2 hover:text-blue-700 hover:underline" href={getCreatorPath(bundle)}>
+            <Link className="text-sm font-semibold text-slate-950 underline-offset-2 hover:text-blue-700 hover:underline" href={getCreatorPath(bundle)}>
               by {getCreatorName(bundle)}
             </Link>
-            {getCreatorRole(bundle) ? <p className="mt-1 text-sm text-gray-500">{getCreatorRole(bundle)}</p> : null}
-            {getCreatorNote(bundle) ? <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600">{getCreatorNote(bundle)}</p> : null}
+            {getCreatorRole(bundle) ? <p className="mt-1 text-sm text-slate-500">{getCreatorRole(bundle)}</p> : null}
+            {getCreatorNote(bundle) ? <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">{getCreatorNote(bundle)}</p> : null}
           </div>
           <div className="flex gap-2 text-sm">
-            <span className="rounded-md bg-gray-50 px-3 py-2 font-semibold text-gray-800">베타 운영 중</span>
+            <span className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 font-semibold text-slate-800">베타 운영 중</span>
           </div>
         </div>
       </section>
@@ -2579,55 +2601,55 @@ export function PublicFlow({ slug }: { slug: string }) {
 
       {showMobileExportSheet ? (
         <div className="fixed inset-0 z-30 md:hidden" data-testid="mobile-export-sheet" role="dialog" aria-modal="true" aria-labelledby="mobile-export-title">
-          <button className="absolute inset-0 bg-black/30" aria-label="배경" onClick={() => setShowMobileExportSheet(false)} />
-          <section className="absolute inset-x-0 bottom-0 rounded-t-2xl bg-white p-5 shadow-[0_-16px_40px_rgba(15,23,42,0.18)]">
-            <div className="mx-auto h-1.5 w-12 rounded-full bg-gray-200" />
+          <button className="absolute inset-0 bg-slate-950/35" aria-label="배경" onClick={() => setShowMobileExportSheet(false)} />
+          <section className="absolute inset-x-0 bottom-0 rounded-t-lg border-t border-slate-200 bg-white p-5 shadow-[0_-16px_40px_rgba(15,23,42,0.18)]">
+            <div className="mx-auto h-1.5 w-12 rounded-full bg-slate-200" />
             <div className="mt-4 flex items-start justify-between gap-4">
               <div>
-                <h2 id="mobile-export-title" className="text-lg font-semibold text-gray-950">어디로 가져갈까요</h2>
-                <p className="mt-1 text-sm text-gray-600">
+                <h2 id="mobile-export-title" className="text-lg font-semibold text-slate-950">어디로 가져갈까요</h2>
+                <p className="mt-1 text-sm text-slate-600">
                   {getMobileExportSheetSummary(bundle, displayAnchor, executableCount)}
                 </p>
               </div>
-              <button className="shrink-0 whitespace-nowrap rounded-md border border-gray-200 px-3 py-1.5 text-sm font-semibold text-gray-700" onClick={() => setShowMobileExportSheet(false)}>
+              <button className="shrink-0 whitespace-nowrap rounded-md border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-700" onClick={() => setShowMobileExportSheet(false)}>
                 닫기
               </button>
             </div>
             <div className="mt-5 grid gap-2">
               {canExportCalendar ? (
-                <button data-testid="mobile-export-calendar" aria-label={`캘린더에 추가: ${bundle.flow.title} 일정`} className="flex items-center gap-3 rounded-md bg-gray-50 px-4 py-3 text-left text-sm font-semibold text-gray-950 disabled:text-gray-400" disabled={done === 0} onClick={downloadCalendar}>
-                  <span aria-hidden="true" className="text-lg">□</span>
+                <button data-testid="mobile-export-calendar" aria-label={`캘린더에 추가: ${bundle.flow.title} 일정`} className="flex items-center gap-3 rounded-md bg-blue-50 px-4 py-3 text-left text-sm font-semibold text-slate-950 disabled:text-slate-400" disabled={done === 0} onClick={downloadCalendar}>
+                  <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-blue-500 bg-white" />
                   <span className="flex-1">
                     <span className="block">캘린더에 추가</span>
-                    <span className="mt-0.5 block text-xs font-medium text-gray-500">구글 · 애플 · .ics 파일</span>
+                    <span className="mt-0.5 block text-xs font-medium text-slate-500">구글 · 애플 · .ics 파일</span>
                   </span>
-                  <span aria-hidden="true" className="text-gray-400">›</span>
+                  <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-slate-400" />
                 </button>
               ) : null}
-              <button data-testid="mobile-export-excel" aria-label={`엑셀로 받기: ${bundle.flow.title} 실행 기록 시트`} className="flex items-center gap-3 rounded-md bg-gray-50 px-4 py-3 text-left text-sm font-semibold text-gray-950 disabled:text-gray-400" disabled={done === 0} onClick={downloadExcel}>
-                <span aria-hidden="true" className="text-lg">□</span>
+              <button data-testid="mobile-export-excel" aria-label={`엑셀로 받기: ${bundle.flow.title} 실행 기록 시트`} className="flex items-center gap-3 rounded-md bg-slate-50 px-4 py-3 text-left text-sm font-semibold text-slate-950 disabled:text-slate-400" disabled={done === 0} onClick={downloadExcel}>
+                <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-slate-400 bg-white" />
                 <span className="flex-1">
                   <span className="block">엑셀로 받기</span>
-                  <span className="mt-0.5 block text-xs font-medium text-gray-500">진도표와 메모 시트</span>
+                  <span className="mt-0.5 block text-xs font-medium text-slate-500">진도표와 메모 시트</span>
                 </span>
-                <span aria-hidden="true" className="text-gray-400">›</span>
+                <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-slate-400" />
               </button>
-              <button data-testid="mobile-export-copy" aria-label={`텍스트 복사: ${bundle.flow.title} 실행 메모`} className="flex items-center gap-3 rounded-md bg-gray-50 px-4 py-3 text-left text-sm font-semibold text-gray-950 disabled:text-gray-400" disabled={done === 0} onClick={copy}>
-                <span aria-hidden="true" className="text-lg">□</span>
+              <button data-testid="mobile-export-copy" aria-label={`텍스트 복사: ${bundle.flow.title} 실행 메모`} className="flex items-center gap-3 rounded-md bg-slate-50 px-4 py-3 text-left text-sm font-semibold text-slate-950 disabled:text-slate-400" disabled={done === 0} onClick={copy}>
+                <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-slate-400 bg-white" />
                 <span className="flex-1">
                   <span className="block">텍스트 복사</span>
-                  <span className="mt-0.5 block text-xs font-medium text-gray-500">노션 · 카카오톡 · 메모장</span>
+                  <span className="mt-0.5 block text-xs font-medium text-slate-500">노션 · 카카오톡 · 메모장</span>
                 </span>
-                <span aria-hidden="true" className="text-gray-400">›</span>
+                <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-slate-400" />
               </button>
-              <div className="my-1 h-px bg-gray-100" />
-              <button className="flex items-center gap-3 rounded-md border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-800" onClick={copyToEditableDraft}>
-                <span aria-hidden="true" className="text-lg">□</span>
+              <div className="my-1 h-px bg-slate-100" />
+              <button className="flex items-center gap-3 rounded-md border border-slate-200 px-4 py-3 text-left text-sm font-semibold text-slate-800" onClick={copyToEditableDraft}>
+                <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-slate-400 bg-slate-50" />
                 <span className="flex-1">
                   <span className="block">내 버전으로 편집</span>
-                  <span className="mt-0.5 block text-xs font-medium text-gray-500">저장 후 내용 수정</span>
+                  <span className="mt-0.5 block text-xs font-medium text-slate-500">저장 후 내용 수정</span>
                 </span>
-                <span aria-hidden="true" className="text-gray-400">›</span>
+                <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-slate-400" />
               </button>
             </div>
             <div className="mt-3 min-h-5 text-sm">
@@ -2639,23 +2661,24 @@ export function PublicFlow({ slug }: { slug: string }) {
         </div>
       ) : null}
 
-      <div data-testid="mobile-export-bar" className={`fixed inset-x-0 bottom-0 z-20 border-t border-gray-200 bg-white/95 px-4 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur transition duration-200 md:hidden ${showMobileActions ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}>
+      <div data-testid="mobile-export-bar" className={`fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white/95 px-4 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.10)] backdrop-blur transition duration-200 md:hidden ${showMobileActions ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}>
         <div className="mx-auto max-w-5xl">
           <div className="flex items-center gap-3">
             <div className="min-w-0 flex-1">
               <div className="mb-1 flex items-center justify-between text-sm">
-                <span className="font-medium text-gray-600">진행률</span>
+                <span className="font-medium text-slate-600">진행률</span>
                 <span className="font-semibold">{done} / {executableCount}</span>
               </div>
-              <div className="h-2 overflow-hidden rounded-full bg-gray-200">
-                <div className="h-full bg-[#2563EB]" style={{ width: `${executableCount > 0 ? Math.round((done / executableCount) * 100) : 0}%` }} />
+              <div className="h-2 overflow-hidden rounded-full bg-slate-200">
+                <div className="h-full bg-blue-700" style={{ width: `${executableCount > 0 ? Math.round((done / executableCount) * 100) : 0}%` }} />
               </div>
             </div>
-            <button className="shrink-0 rounded-md bg-[#2563EB] px-4 py-3 text-sm font-semibold text-white" onClick={() => setShowMobileExportSheet(true)}>
+            <button className="shrink-0 rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm" onClick={() => setShowMobileExportSheet(true)}>
               {mobileStickyCtaLabel}
             </button>
           </div>
         </div>
+      </div>
       </div>
     </main>
   );
@@ -2766,30 +2789,30 @@ function ExportFirstHero({
   const sourceText = bundle.flow.source_title ? `${bundle.items.length}개 항목 · ${bundle.flow.source_title}` : `${bundle.items.length}개 항목`;
 
   return (
-    <section aria-label="Export-first flow hero" className="my-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm md:p-5">
+    <section aria-label="Export-first flow hero" className="my-6 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-5">
       <div className="grid gap-5 md:grid-cols-[1.08fr_0.92fr] md:items-start">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight text-gray-950 md:text-3xl">{bundle.flow.title}</h2>
-          <p className="mt-2 text-sm leading-6 text-gray-600">{sourceText}</p>
+          <h2 className="text-2xl font-bold tracking-normal text-slate-950 md:text-3xl">{bundle.flow.title}</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600">{sourceText}</p>
 
-          <div className="mt-5 rounded-lg bg-gray-50 p-4">
+          <div className="mt-5 rounded-lg border border-slate-200 bg-slate-50 p-4">
             <p className="text-sm font-semibold text-gray-700">이렇게 캘린더에 들어갑니다</p>
             <div className="mt-3 space-y-2">
               {previewEntries.map((entry) => (
                 <div key={entry.id} className="grid grid-cols-[3.2rem_5.8rem_1fr] items-baseline gap-2 text-sm">
-                  <span className="font-semibold text-gray-500">{entry.timing}</span>
-                  <span className="font-medium text-gray-600">{entry.startDate}</span>
-                  <span className="min-w-0 text-gray-950">{entry.title}</span>
+                  <span className="font-semibold text-slate-500">{entry.timing}</span>
+                  <span className="font-medium text-slate-600">{entry.startDate}</span>
+                  <span className="min-w-0 text-slate-950">{entry.title}</span>
                 </div>
               ))}
             </div>
-            {remainingCount > 0 ? <p className="mt-3 text-xs font-medium text-gray-500">+ 나머지 {remainingCount}개 항목</p> : null}
+            {remainingCount > 0 ? <p className="mt-3 text-xs font-medium text-slate-500">+ 나머지 {remainingCount}개 항목</p> : null}
           </div>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <p className="text-sm font-semibold text-gray-800">{getSetupStepTitle(bundle)}</p>
-          <p className="mt-1 text-sm leading-6 text-gray-600">{getSetupStepDescription(bundle)}</p>
+        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+          <p className="text-sm font-semibold text-slate-800">{getSetupStepTitle(bundle)}</p>
+          <p className="mt-1 text-sm leading-6 text-slate-600">{getSetupStepDescription(bundle)}</p>
           <div className="mt-4">
             <AnchorInput
               bundle={bundle}
@@ -2804,13 +2827,13 @@ function ExportFirstHero({
           </div>
           <button
             type="button"
-            className="mt-4 w-full rounded-md bg-gray-950 px-4 py-3 text-sm font-semibold text-white hover:bg-gray-800"
+            className="mt-4 w-full rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-800"
             onClick={onTake}
           >
             내 도구로 가져가기
           </button>
           {displayAnchor ? (
-            <p className="mt-2 text-center text-xs font-medium text-gray-500">
+            <p className="mt-2 text-center text-xs font-medium text-slate-500">
               {compactDateLabel(previewEntries[0]?.startDate ?? displayAnchor)}부터 {bundle.items.length}개 항목을 옮깁니다.
             </p>
           ) : null}

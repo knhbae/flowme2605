@@ -1038,6 +1038,28 @@ test('dense desktop routes keep source context in a right rail beside the workbe
   }
 });
 
+test('public detail rebrand keeps a tool-first shell without mobile overflow', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/f/moving-d30-basic');
+
+  await expect(page.getByTestId('flow-public-shell')).toBeVisible();
+  await expect(page.getByTestId('flow-public-search')).toBeVisible();
+  await expect(page.getByLabel('Flow artifact workbench')).toBeVisible();
+  await expect(page.getByTestId('flow-desktop-workbench-layout')).toBeVisible();
+
+  const shellBox = await page.getByTestId('flow-public-shell').boundingBox();
+  const workbenchBox = await page.getByLabel('Flow artifact workbench').boundingBox();
+  expect(shellBox).not.toBeNull();
+  expect(workbenchBox).not.toBeNull();
+  expect(shellBox!.width).toBeGreaterThan(workbenchBox!.width * 0.9);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/moving-d30-basic');
+
+  const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
+  expect(hasHorizontalOverflow).toBe(false);
+});
+
 test('mobile export sheet remains available from the sticky fallback', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/computer-skills-d30-study');
