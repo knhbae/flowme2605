@@ -146,8 +146,8 @@ test('content lab exposes full content inventory coverage', () => {
   );
   assert.equal(summary.previewCandidateFlowCount, summary.previewGeneratedFlowCount);
   assert.ok(summary.inventoryPublicHandlingCounts.preview_candidate >= 440);
-  // 2026-06-01 탐색 배치 34개가 needs_review로 추가됨(audit 전, 보강 필요).
-  assert.equal(summary.sourceNeedsReviewInventoryCount, 34);
+  // 2026-06-01 공식출처 배치 24개가 needs_review로 추가됨(audit 전, 보강 필요).
+  assert.equal(summary.sourceNeedsReviewInventoryCount, 24);
   assert.equal(summary.legacyAccessibleFlowCount, 0);
 });
 
@@ -177,26 +177,26 @@ test('content lab exposes lifecycle buckets for keep, fix, preview, and removal 
   assert.equal(summary.lifecycleBucketCounts.hide, 1);
   assert.equal(summary.lifecycleBucketCounts.preview_only, summary.previewGeneratedFlowCount);
   assert.equal(summary.lifecycleBucketCounts.remove_candidate, 0);
-  // 55 audited/needs-review fixes + 34 new 2026-06-01 batch flows = 89.
-  assert.equal(summary.lifecycleBucketCounts.fix, 89);
+  // 55 audited/needs-review fixes + 24 new 2026-06-01 official-source flows = 79.
+  assert.equal(summary.lifecycleBucketCounts.fix, 79);
   assert.deepEqual(summary.lifecycleHideSlugs, ['real-fitvely-weekly-body-check']);
   assert.ok(summary.lifecycleFixSlugs.includes('real-sinagong-computer-d30-study'));
   assert.ok(summary.lifecycleFixSlugs.includes('driver-license-renewal-check'));
 });
 
-test('content lab tracks the 2026-06-01 batch as the next source review queue', () => {
+test('content lab tracks the 2026-06-01 official batch as the next source review queue', () => {
   const summary = getContentLabSummary(seedBundles);
   const countSum = Object.values(summary.sourceReviewPriorityCounts).reduce((sum, count) => sum + count, 0);
 
-  // 직전 batch의 audit이 끝나 큐가 0이었으나, 2026-06-01 탐색 배치 34개가 needs_review로
-  // 들어오며 다음 audit 대상으로 다시 채워졌다. 민감 6개는 risk_review, 28개는 content_backlog.
-  assert.equal(summary.sourceReviewPriorityTotalCount, 34);
-  assert.equal(countSum, 34);
-  assert.equal(summary.sourceReviewPriorityCounts.audit_now, 0);
+  // 2026-06-01 공식출처 배치 24개가 needs_review로 들어오며 audit 큐를 채운다.
+  // 공식 URL + exact + 실행구조가 있어 비민감 12개는 audit_now, 민감 12개는 risk_review.
+  assert.equal(summary.sourceReviewPriorityTotalCount, 24);
+  assert.equal(countSum, 24);
+  assert.equal(summary.sourceReviewPriorityCounts.audit_now, 12);
   assert.equal(summary.sourceReviewPriorityCounts.source_replacement, 0);
-  assert.equal(summary.sourceReviewPriorityCounts.risk_review, 6);
-  assert.equal(summary.sourceReviewPriorityCounts.content_backlog, 28);
-  assert.equal(summary.sourceReviewPriorityItems.length, 34);
+  assert.equal(summary.sourceReviewPriorityCounts.risk_review, 12);
+  assert.equal(summary.sourceReviewPriorityCounts.content_backlog, 0);
+  assert.equal(summary.sourceReviewPriorityItems.length, 24);
 });
 
 test('content lab exposes broad real-source guardrails', () => {

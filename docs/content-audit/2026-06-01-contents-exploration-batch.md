@@ -1,4 +1,9 @@
-# 2026-06-01 콘텐츠 탐색 배치 (34개)
+# 2026-06-01 콘텐츠 탐색 배치 (34개) — [SUPERSEDED]
+
+> **⚠️ 후속 조치됨:** 이 generic 배치는 UX/콘텐츠 평가에서 원본 충실도가 약하다는
+> 지적을 받아 폐기되고, 공식출처 기반 배치(`contents-batch-260601-official.ts`, 24개)로
+> 교체되었다. 평가는 `2026-06-01-ux-content-evaluation.md`, 새 배치는
+> `2026-06-01-official-source-batch.md` 참고. 아래는 실험 기록으로 보존한다.
 
 ## 왜 이 작업을 했나
 `my_tests/260601_contents_check.md` 피드백을 받아, "어떤 콘텐츠가 FLOW 콘텐츠가 되기
