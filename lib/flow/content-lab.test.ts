@@ -146,8 +146,8 @@ test('content lab exposes full content inventory coverage', () => {
   );
   assert.equal(summary.previewCandidateFlowCount, summary.previewGeneratedFlowCount);
   assert.ok(summary.inventoryPublicHandlingCounts.preview_candidate >= 440);
-  // 2026-06-01 공식출처 배치 24개가 needs_review로 추가됨(audit 전, 보강 필요).
-  assert.equal(summary.sourceNeedsReviewInventoryCount, 24);
+  // 2026-06-01 공식출처(24개) + 크리에이터·블로그(20개) = 44개가 needs_review로 추가됨(audit 전, 보강 필요).
+  assert.equal(summary.sourceNeedsReviewInventoryCount, 44);
   assert.equal(summary.legacyAccessibleFlowCount, 0);
 });
 
@@ -177,8 +177,8 @@ test('content lab exposes lifecycle buckets for keep, fix, preview, and removal 
   assert.equal(summary.lifecycleBucketCounts.hide, 1);
   assert.equal(summary.lifecycleBucketCounts.preview_only, summary.previewGeneratedFlowCount);
   assert.equal(summary.lifecycleBucketCounts.remove_candidate, 0);
-  // 55 audited/needs-review fixes + 24 new 2026-06-01 official-source flows = 79.
-  assert.equal(summary.lifecycleBucketCounts.fix, 79);
+  // 55 audited/needs-review fixes + 24 official-source + 20 creator-batch flows = 99.
+  assert.equal(summary.lifecycleBucketCounts.fix, 99);
   assert.deepEqual(summary.lifecycleHideSlugs, ['real-fitvely-weekly-body-check']);
   assert.ok(summary.lifecycleFixSlugs.includes('real-sinagong-computer-d30-study'));
   assert.ok(summary.lifecycleFixSlugs.includes('driver-license-renewal-check'));
@@ -188,15 +188,15 @@ test('content lab tracks the 2026-06-01 official batch as the next source review
   const summary = getContentLabSummary(seedBundles);
   const countSum = Object.values(summary.sourceReviewPriorityCounts).reduce((sum, count) => sum + count, 0);
 
-  // 2026-06-01 공식출처 배치 24개가 needs_review로 들어오며 audit 큐를 채운다.
-  // 공식 URL + exact + 실행구조가 있어 비민감 12개는 audit_now, 민감 12개는 risk_review.
-  assert.equal(summary.sourceReviewPriorityTotalCount, 24);
-  assert.equal(countSum, 24);
-  assert.equal(summary.sourceReviewPriorityCounts.audit_now, 12);
+  // 공식출처(24개) + 크리에이터·블로그(20개) = 44개가 needs_review audit 큐를 채운다.
+  // 비민감 30개 → audit_now, 재무민감 14개 → risk_review.
+  assert.equal(summary.sourceReviewPriorityTotalCount, 44);
+  assert.equal(countSum, 44);
+  assert.equal(summary.sourceReviewPriorityCounts.audit_now, 30);
   assert.equal(summary.sourceReviewPriorityCounts.source_replacement, 0);
-  assert.equal(summary.sourceReviewPriorityCounts.risk_review, 12);
+  assert.equal(summary.sourceReviewPriorityCounts.risk_review, 14);
   assert.equal(summary.sourceReviewPriorityCounts.content_backlog, 0);
-  assert.equal(summary.sourceReviewPriorityItems.length, 24);
+  assert.equal(summary.sourceReviewPriorityItems.length, 44);
 });
 
 test('content lab exposes broad real-source guardrails', () => {

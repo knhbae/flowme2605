@@ -41,16 +41,15 @@ test('source review priority summary covers every needs-review flow', () => {
   const summary = summarizeSourceNeedsReviewPriority(seedBundles);
   const countSum = Object.values(summary.priorityCounts).reduce((sum, count) => sum + count, 0);
 
-  // 2026-06-01 공식출처 배치(24개)가 needs_review로 추가되며 audit 큐를 채운다.
-  // 공식 URL + exact source + 실행구조가 있어 비민감 12개는 audit_now,
-  // 민감(의료/재무) 12개는 risk_review로 분류된다.
-  assert.equal(summary.totalCount, 24);
-  assert.equal(countSum, 24);
-  assert.equal(summary.priorityCounts.audit_now, 12);
+  // 공식출처(24개) + 크리에이터·블로그(20개) = 44개가 needs_review audit 큐를 채운다.
+  // 비민감 30개 → audit_now, 재무민감 14개 → risk_review.
+  assert.equal(summary.totalCount, 44);
+  assert.equal(countSum, 44);
+  assert.equal(summary.priorityCounts.audit_now, 30);
   assert.equal(summary.priorityCounts.source_replacement, 0);
-  assert.equal(summary.priorityCounts.risk_review, 12);
+  assert.equal(summary.priorityCounts.risk_review, 14);
   assert.equal(summary.priorityCounts.content_backlog, 0);
-  assert.equal(summary.items.length, 24);
+  assert.equal(summary.items.length, 44);
   assert.deepEqual(
     summary.items.map((item) => item.score),
     [...summary.items.map((item) => item.score)].sort((a, b) => b - a),

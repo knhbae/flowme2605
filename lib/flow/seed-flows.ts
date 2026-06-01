@@ -3,6 +3,7 @@ import { previewFlowBundles } from './creator-channel-preview';
 import { realContentPilotBundles } from './real-content-pilot-flows';
 import { realSourceChannelBundles } from './real-source-channel-batch';
 import { contentsBatch260601OfficialBundles } from './contents-batch-260601-official';
+import { contentsBatch260601CreatorBundles } from './contents-batch-260601-creator';
 import { Flow, FlowBundle, FlowItemDetail, Recipe } from './types';
 
 const now = '2026-05-20T00:00:00.000Z';
@@ -2512,6 +2513,7 @@ const baseSeedBundles: FlowBundle[] = [
   ...realContentPilotBundles,
   ...realSourceChannelBundles,
   ...contentsBatch260601OfficialBundles,
+  ...contentsBatch260601CreatorBundles,
   ...previewFlowBundles,
 ];
 

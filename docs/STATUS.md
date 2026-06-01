@@ -126,6 +126,7 @@
   - First, 34 exploration Flows were authored across 17 thin life categories, then critically evaluated against the quality rubric from UX-designer and user perspectives (`docs/content-audit/2026-06-01-ux-content-evaluation.md`). The evaluation's core finding was weak content fidelity (only 7/34 had an exact official source).
   - Acting on that, the generic batch was **superseded**: `contents-batch-260601.ts` was removed and replaced by `lib/flow/contents-batch-260601-official.ts` — 24 Flows where **every Flow maps to a real Korean public-service portal** (정부24, 홈택스, 국민건강보험, 질병관리청, 고용보험, 한국장학재단, 청약홈, 국민연금공단, HUG, 복지로, 관세청, 외교부 등). All items are `source_type: official`.
   - All enter as `needs_review` (lifecycle `fix`, exact precision) — direct-route only, not representative/public-MVP/validated. Inventory `source_needs_review` 24; lifecycle `fix` 55→79; source-review queue 24 (audit_now 12 / risk_review 12); quality gates preserved (legacy/remove/broad-source 0). See `docs/content-audit/2026-06-01-official-source-batch.md`.
+- 2026-06-01 크리에이터·블로그 배치(20개)가 공식출처 배치에 추가됨: 백종원의 요리비책·슈카월드(YouTube), 오늘의집·만개의 레시피·브런치스토리·원티드·클래스101·네이버 펫(블로그/플랫폼) 등 실재하는 채널·플랫폼에 매핑. 요리/정리/재테크/독서/스킨케어/여행/홈카페/커리어/생활습관/반려동물 10개 카테고리. 항목 source_type: creator_experience(YouTube) / reference(블로그). Inventory source_needs_review 44(+20); lifecycle fix 99(+20); source-review 큐 44(audit_now 30 / risk_review 14). 공식출처 배치와 quality gates 유지. `docs/content-audit/2026-06-01-creator-batch.md` 참고.
 
 ## Next Up
 
