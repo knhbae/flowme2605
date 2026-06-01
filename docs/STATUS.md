@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated:** 2026-05-26
+**Last Updated:** 2026-06-01
 **Status:** v0.1.0 IN DEVELOPMENT  
 **Current Version:** v0.1.0  
 **Primary Focus:** Stage 0 / First Flag validation for FLOW execution behavior.
@@ -122,6 +122,7 @@
 - Observed-session note filenames have landed: Flow Lab note intake now includes a session number and downloads notes using the `YYYY-MM-DD-route-session-01.md` pattern expected by `docs/validation-sessions/`, without creating evidence or marking any route validated.
 - Observed-session decision labels are aligned: the validation template and first-user script now use the same non-validated `no signal`, `friction`, and `candidate signal` choices as Flow Lab intake/run sheets, with `candidate signal` still below validation.
 - Observed-session evidence validation boundary has landed: Flow Lab evidence now counts candidate signals instead of showing a validation counter, and the evidence decision options exclude `validated candidate`.
+- 2026-06-01 content exploration batch has landed: 34 new Flows across 17 thin life-admin/finance/career/housing/health/digital/safety/relationship categories were authored in `lib/flow/contents-batch-260601.ts` and merged into seed bundles. All enter as `needs_review` (lifecycle `fix`, catalog_preview) — accessible by direct route only, not representative/public-MVP/validated. Source-review queue moved 0→34 (risk_review 6 / content_backlog 28); inventory `source_needs_review` 0→34; lifecycle `fix` 55→89. See `docs/content-audit/2026-06-01-contents-exploration-batch.md` for what makes good FLOW content, the conversion pattern, UX reuse, and life-event linking learnings.
 
 ## Next Up
 

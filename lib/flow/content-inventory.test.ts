@@ -75,7 +75,8 @@ test('inventory summary covers all current seed bundles', () => {
   );
   assert.equal(summary.manualSourceFitCount, 71);
   assert.equal(summary.derivedRealSourceCount, 0);
-  assert.equal(summary.sourceNeedsReviewCount, 0);
+  // 2026-06-01 탐색 배치 34개가 needs_review(audit 전, 보강 필요)로 추가됨.
+  assert.equal(summary.sourceNeedsReviewCount, 34);
   assert.equal(summary.legacyAccessibleCount, 0);
   assert.equal(summary.generatedPreviewCandidateCount, summary.previewSourceCount);
   assert.equal(summary.generatedPreviewCandidateCount, 440);
