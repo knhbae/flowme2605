@@ -745,6 +745,117 @@ const fitvelyNutritionActionObservationLogTables: ArtifactLogTable[] = [
   },
 ];
 
+// ───────── 2026-06-01 크리에이터·블로그 배치: 카테고리별 전용 표/메모 ─────────
+const weeklyMealPlanSlugs = new Set(['weekly-meal-plan']);
+const monthlyBudgetSlugs = new Set(['monthly-household-budget']);
+const skinWeeklySlugs = new Set(['skin-weekly-check']);
+const petHealthSlugs = new Set(['pet-health-observation']);
+const paydayFinanceSlugs = new Set(['payday-finance-routine']);
+
+const weeklyMealPlanLogTables: ArtifactLogTable[] = [
+  {
+    id: 'weekly-meal-plan-table',
+    eyebrow: '주간 식단표',
+    title: '요일별 메뉴·주재료 표',
+    description: '요일별 메뉴를 먼저 정하고, 겹치는 주재료를 합쳐 장볼 목록으로 옮깁니다.',
+    rows: [
+      { id: 'meal-mon', label: '월' },
+      { id: 'meal-tue', label: '화' },
+      { id: 'meal-wed', label: '수' },
+      { id: 'meal-thu', label: '목' },
+      { id: 'meal-fri', label: '금' },
+      { id: 'meal-sat', label: '토' },
+      { id: 'meal-sun', label: '일' },
+    ],
+    columns: [
+      { id: 'menu', label: '메뉴', placeholder: '예: 된장찌개, 계란말이' },
+      { id: 'ingredients', label: '주재료', placeholder: '예: 두부, 애호박, 계란' },
+      { id: 'toBuy', label: '장볼 것', placeholder: '예: 두부 1모, 애호박 1개' },
+      { id: 'memo', label: '메모', placeholder: '예: 외식 예정 / 도시락' },
+    ],
+  },
+];
+
+const monthlyBudgetLogTables: ArtifactLogTable[] = [
+  {
+    id: 'monthly-budget-table',
+    eyebrow: '월간 가계부',
+    title: '카테고리별 예산·지출표',
+    description: '카테고리별 예산을 먼저 잡고, 한 달 지출과 잔액을 같은 줄에 기록합니다. 투자 판단이 아닌 지출 파악용입니다.',
+    rows: [
+      { id: 'budget-fixed', label: '고정지출(월세·보험·구독)' },
+      { id: 'budget-food', label: '식비' },
+      { id: 'budget-transport', label: '교통' },
+      { id: 'budget-shopping', label: '쇼핑·여가' },
+      { id: 'budget-saving', label: '저축·비상금' },
+      { id: 'budget-etc', label: '기타' },
+    ],
+    columns: [
+      { id: 'budget', label: '예산', placeholder: '예: 50만원' },
+      { id: 'spent', label: '지출', placeholder: '예: 43만원' },
+      { id: 'balance', label: '잔액', placeholder: '예: +7만원' },
+      { id: 'memo', label: '메모', placeholder: '예: 다음 달 줄일 항목' },
+    ],
+  },
+];
+
+const skinWeeklyLogTables: ArtifactLogTable[] = [
+  {
+    id: 'skin-weekly-table',
+    eyebrow: '주간 피부 관찰표',
+    title: '주차별 피부 상태 기록',
+    description: '주차별 피부 상태와 사용 제품, 반응을 같은 줄에 남겨 맞는 루틴을 좁혀갑니다. 피부 진단이 아닌 관찰 기록입니다.',
+    rows: [
+      { id: 'skin-week-1', label: '1주차' },
+      { id: 'skin-week-2', label: '2주차' },
+      { id: 'skin-week-3', label: '3주차' },
+      { id: 'skin-week-4', label: '4주차' },
+    ],
+    columns: [
+      { id: 'condition', label: '피부 상태', placeholder: '예: 유분 많음, 트러블 2개' },
+      { id: 'products', label: '사용 제품', placeholder: '예: A토너, B크림' },
+      { id: 'reaction', label: '반응', placeholder: '예: 새 제품 후 따가움 없음' },
+      { id: 'adjust', label: '다음 조정', placeholder: '예: 토너 양 줄이기' },
+    ],
+  },
+];
+
+const petHealthLogTables: ArtifactLogTable[] = [
+  {
+    id: 'pet-health-table',
+    eyebrow: '주간 건강 관찰표',
+    title: '주차별 반려동물 건강 기록',
+    description: '식욕·배변·활동·외관 변화를 주차별로 남겨 이상 징후를 조기에 파악합니다. 진단이 아니므로 이상 시 동물병원에 문의하세요.',
+    rows: [
+      { id: 'pet-week-1', label: '1주차' },
+      { id: 'pet-week-2', label: '2주차' },
+      { id: 'pet-week-3', label: '3주차' },
+      { id: 'pet-week-4', label: '4주차' },
+    ],
+    columns: [
+      { id: 'appetite', label: '식욕', placeholder: '예: 평소와 같음' },
+      { id: 'stool', label: '배변', placeholder: '예: 정상, 1일 2회' },
+      { id: 'activity', label: '활동/기분', placeholder: '예: 활발, 산책 잘함' },
+      { id: 'abnormal', label: '이상 징후', placeholder: '예: 없음 / 병원 문의 필요' },
+    ],
+  },
+];
+
+const paydayFinanceMemoFields: ArtifactMemoField[] = [
+  {
+    id: 'payday-net-income',
+    label: '이번 달 실수령액',
+    placeholder: '예: 세후 290만원',
+    groupEyebrow: '월급날 재정 메모',
+    groupTitle: '월급날 분리·이체 기록',
+    groupDescription: '투자 판단이 아니라, 실수령액을 기준으로 고정지출·저축·생활비를 먼저 분리한 결과를 한 장에 남깁니다.',
+  },
+  { id: 'payday-auto-transfer', label: '자동이체 정상 처리', placeholder: '예: 월세·보험·구독 정상, 카드값 출금 확인' },
+  { id: 'payday-savings', label: '저축·비상금 이체', placeholder: '예: 50만원 저축 계좌 이체 완료' },
+  { id: 'payday-living-budget', label: '생활비 분리', placeholder: '예: 생활비 80만원 별도 계좌/봉투' },
+  { id: 'payday-adjustment', label: '이번 달 조정 기준', placeholder: '예: 지난달 초과한 외식 20만원 이하로' },
+];
+
 export function getComparisonRows(bundle: FlowBundle): ArtifactComparisonRow[] {
   const config = getComparisonConfig(bundle);
   if (config) return config.rows;
@@ -816,6 +927,7 @@ export function getMemoCardFields(bundle: FlowBundle): ArtifactMemoField[] {
   if (newCarDeliverySlugs.has(bundle.flow.slug)) return newCarDeliveryMemoFields;
   if (usedCarSlugs.has(bundle.flow.slug)) return usedCarDecisionMemoFields;
   if (vehicleInspectionSlugs.has(bundle.flow.slug)) return vehicleInspectionMemoFields;
+  if (paydayFinanceSlugs.has(bundle.flow.slug)) return paydayFinanceMemoFields;
   return [];
 }
 
@@ -825,5 +937,9 @@ export function getLogTables(bundle: FlowBundle): ArtifactLogTable[] {
   if (fitvelyNutritionExactVideoSlugs.has(bundle.flow.slug)) return fitvelyNutritionActionObservationLogTables;
   if (bundle.flow.slug === 'computer-skills-d30-study') return computerSkillsStudyLogTables;
   if (studySlugs.has(bundle.flow.slug)) return studyLogTables;
+  if (weeklyMealPlanSlugs.has(bundle.flow.slug)) return weeklyMealPlanLogTables;
+  if (monthlyBudgetSlugs.has(bundle.flow.slug)) return monthlyBudgetLogTables;
+  if (skinWeeklySlugs.has(bundle.flow.slug)) return skinWeeklyLogTables;
+  if (petHealthSlugs.has(bundle.flow.slug)) return petHealthLogTables;
   return [];
 }
