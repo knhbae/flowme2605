@@ -11,8 +11,8 @@ import { Flow, FlowBundle } from './types';
  * 원칙:
  * - 각 Flow는 실재하는 공식 포털(정부24, 홈택스, 국민건강보험, 질병관리청,
  *   고용보험, 한국장학재단, 청약홈, 국민연금공단 등)의 서비스에 매핑한다.
- * - URL은 해당 기관의 실재 도메인(메인/서비스 랜딩)만 사용한다. 확신 없는
- *   깊은 쿼리스트링 deep-link는 만들지 않는다(허위 출처 금지).
+ * - URL은 각 서비스의 실재 랜딩 페이지를 사용한다. 확신 없는 깊은 쿼리스트링
+ *   deep-link는 만들지 않되, 최소한 해당 서비스 섹션 URL은 명시한다.
  * - 항목은 공식 정보(official) 기반이며, 대상/금액/조건은 개인 상황에 따라
  *   달라지므로 "공식 확인 질문"으로 남기고 Flow가 단정하지 않는다.
  * - 민감(의료/재무) 영역은 경고와 중단/상담 조건을 분리한다.
@@ -62,8 +62,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'financial_sensitive',
       primary_destination: 'memo',
-      source_title: '한국장학재단 국가장학금 안내',
-      source_url: 'https://www.kosaf.go.kr',
+      source_title: '한국장학재단 – 국가장학금 안내',
+      source_url: 'https://www.kosaf.go.kr/ko/scholarship.do',
       warning: '신청기간, 소득분위 기준, 지원 금액은 학기·연도마다 달라집니다. 한국장학재단 공식 공지를 반드시 확인하세요.',
     },
     text: `## D-14 신청 전 확인
@@ -71,7 +71,7 @@ const specs: BatchSpec[] = [
   why: 국가장학금은 정해진 신청기간을 지나면 해당 학기 신청이 불가능합니다.
   how: 한국장학재단 공지에서 1차/2차 신청 시작·마감일을 확인합니다.
   done: 신청 시작일과 마감일을 메모와 캘린더에 적었다.
-  link: 한국장학재단 | https://www.kosaf.go.kr | official
+  link: 한국장학재단 국가장학금 안내 | https://www.kosaf.go.kr/ko/scholarship.do | official
 - 본인·학부모 공동인증서(또는 금융인증서) 준비하기 D-14
 - 학자금 지원구간 산정용 가구원 동의 대상 확인하기 D-14
   why: 가구원(부모 등) 정보제공 동의가 늦으면 소득분위 산정이 지연됩니다.
@@ -98,8 +98,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'financial_sensitive',
       primary_destination: 'memo',
-      source_title: '청약홈(한국부동산원) 청약 안내',
-      source_url: 'https://www.applyhome.co.kr',
+      source_title: '청약홈(한국부동산원) – 청약 안내·자격 확인',
+      source_url: 'https://www.applyhome.co.kr/ai/aia/selectSubscrptGuideView.do',
       warning: '청약 자격, 가점, 특별공급 요건은 공급 유형과 지역마다 다릅니다. 청약홈 공고문과 공식 안내로 직접 확인하세요.',
     },
     text: `## 1. 통장·기본 자격
@@ -107,7 +107,7 @@ const specs: BatchSpec[] = [
   why: 주택 유형·지역별 예치금 기준을 못 맞추면 청약 자체가 제한됩니다.
   how: 청약홈에서 내 청약통장 가입내역과 납입 인정 회차를 확인합니다.
   done: 납입 회차와 예치금 상태를 메모했다.
-  link: 청약홈 | https://www.applyhome.co.kr | official
+  link: 청약홈 청약 안내 | https://www.applyhome.co.kr/ai/aia/selectSubscrptGuideView.do | official
 - 무주택 기간·세대주 여부 확인하기
   caution: 세대 구성원의 주택 소유도 무주택 요건에 영향을 줍니다.
 
@@ -133,8 +133,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'financial_sensitive',
       primary_destination: 'memo',
-      source_title: '주택도시보증공사(HUG) 전세보증금반환보증',
-      source_url: 'https://www.khug.or.kr',
+      source_title: '주택도시보증공사(HUG) – 전세보증금반환보증 상품 안내',
+      source_url: 'https://www.khug.or.kr/hug/web/ig/ga/iggaMain.jsp',
       warning: '가입 가능 대상, 보증료, 신청 기한은 물건·계약 조건마다 다릅니다. HUG 공식 안내와 상담으로 확인하세요.',
     },
     text: `## 1. 가입 가능 여부
@@ -142,7 +142,7 @@ const specs: BatchSpec[] = [
   why: 전세가율, 선순위 채권, 주택 유형에 따라 가입이 거절될 수 있습니다.
   how: HUG 전세보증금반환보증 안내에서 대상·한도 요건을 확인합니다.
   done: 가입 가능/제한 여부와 사유를 메모했다.
-  link: 주택도시보증공사 | https://www.khug.or.kr | official
+  link: HUG 전세보증금반환보증 안내 | https://www.khug.or.kr/hug/web/ig/ga/iggaMain.jsp | official
 - 보증 신청 가능 기한(잔금·전입 기준) 확인하기
   caution: 신청 가능 기간을 넘기면 가입이 불가능할 수 있습니다.
 
@@ -168,8 +168,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'low',
       primary_destination: 'memo',
-      source_title: '복지로 복지서비스 안내',
-      source_url: 'https://www.bokjiro.go.kr',
+      source_title: '복지로 – 복지서비스 검색·맞춤형 급여 안내',
+      source_url: 'https://www.bokjiro.go.kr/ssis-tbu/twatga/welfare/WelSrchMain.do',
       warning: '지원 대상과 금액은 가구 소득·재산·지역에 따라 다릅니다. 복지로와 주민센터에서 직접 확인하세요.',
     },
     text: `## 1. 내 상황 정리
@@ -181,7 +181,7 @@ const specs: BatchSpec[] = [
 - 복지로에서 맞춤형 급여안내(모의계산) 해보기
   how: 복지로의 복지서비스 검색·모의계산으로 받을 수 있는 항목을 추립니다.
   done: 받을 수 있을 것 같은 서비스를 목록으로 적었다.
-  link: 복지로 | https://www.bokjiro.go.kr | official
+  link: 복지로 서비스 검색 | https://www.bokjiro.go.kr/ssis-tbu/twatga/welfare/WelSrchMain.do | official
 - 각 서비스의 신청 방법(온라인/주민센터) 확인하기
 
 ## 3. 신청
@@ -201,8 +201,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'financial_sensitive',
       primary_destination: 'memo',
-      source_title: '소상공인시장진흥공단 안내',
-      source_url: 'https://www.semas.or.kr',
+      source_title: '소상공인시장진흥공단 – 정책자금·지원사업 안내',
+      source_url: 'https://www.semas.or.kr/web/main/index.kmdc',
       warning: '지원 대상, 한도, 금리, 신청기간은 사업과 연도마다 다릅니다. 공식 공고와 상담으로 확인하세요.',
     },
     text: `## 1. 대상 확인
@@ -210,7 +210,7 @@ const specs: BatchSpec[] = [
   why: 정책자금은 업종·업력·매출 기준으로 대상이 제한됩니다.
   how: 소상공인시장진흥공단 공지에서 현재 모집 중인 사업과 요건을 봅니다.
   done: 해당될 것 같은 지원사업을 적었다.
-  link: 소상공인시장진흥공단 | https://www.semas.or.kr | official
+  link: 소상공인시장진흥공단 정책자금 안내 | https://www.semas.or.kr/web/main/index.kmdc | official
 
 ## 2. 준비
 - 사업자등록증·매출 증빙·재무 자료 정리하기
@@ -235,8 +235,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'financial_sensitive',
       primary_destination: 'memo',
-      source_title: '고용보험 실업급여 안내',
-      source_url: 'https://www.ei.go.kr',
+      source_title: '고용보험 – 실업급여(구직급여) 수급 안내',
+      source_url: 'https://www.ei.go.kr/ei/eih/eg/eb/ebPersonBnef/retrieveEb010101.do',
       warning: '수급 자격, 이직 사유 인정, 금액·기간은 개인 상황에 따라 다릅니다. 고용보험과 고용센터 안내를 우선 확인하세요.',
     },
     text: `## 1. 자격·서류
@@ -244,7 +244,7 @@ const specs: BatchSpec[] = [
   why: 자발적 이직 등 사유에 따라 수급이 제한될 수 있어 먼저 확인해야 합니다.
   how: 고용보험 실업급여 안내에서 수급 요건을 확인합니다.
   done: 수급 가능성과 확인이 필요한 점을 메모했다.
-  link: 고용보험 | https://www.ei.go.kr | official
+  link: 고용보험 실업급여 수급 안내 | https://www.ei.go.kr/ei/eih/eg/eb/ebPersonBnef/retrieveEb010101.do | official
 - 전 직장에 이직확인서 처리 요청하기
   caution: 이직확인서가 처리돼야 수급자격 신청이 진행됩니다.
 
@@ -270,8 +270,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'financial_sensitive',
       primary_destination: 'memo',
-      source_title: '고용24(국민취업지원제도) 안내',
-      source_url: 'https://www.work24.go.kr',
+      source_title: '고용24 – 국민취업지원제도 신청 안내',
+      source_url: 'https://www.work24.go.kr/cm/c/f/UICMCCF041M.do',
       warning: '지원 유형(Ⅰ·Ⅱ), 소득·재산 요건, 수당은 개인 상황에 따라 다릅니다. 고용24와 고용센터에서 확인하세요.',
     },
     text: `## 1. 대상 확인
@@ -279,7 +279,7 @@ const specs: BatchSpec[] = [
   why: 유형에 따라 구직촉진수당 지급 여부가 달라집니다.
   how: 고용24 국민취업지원제도 안내에서 대상 요건을 확인합니다.
   done: 해당될 것 같은 유형을 메모했다.
-  link: 고용24 | https://www.work24.go.kr | official
+  link: 고용24 국민취업지원제도 신청 | https://www.work24.go.kr/cm/c/f/UICMCCF041M.do | official
 
 ## 2. 신청
 - 신청서·소득재산 증빙 준비하기
@@ -302,8 +302,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'low',
       primary_destination: 'memo',
-      source_title: '국민연금공단 내 곁에 국민연금',
-      source_url: 'https://www.nps.or.kr',
+      source_title: '국민연금공단 – 내 연금 알아보기(가입내역·예상연금 조회)',
+      source_url: 'https://www.nps.or.kr/jsppage/info/easy/easy_03_01.jsp',
       warning: '예상연금액은 가정에 따른 추정치이며 실제 수령액과 다를 수 있습니다. 국민연금공단 안내로 확인하세요.',
     },
     text: `## 1. 현황 확인
@@ -311,7 +311,7 @@ const specs: BatchSpec[] = [
   why: 가입기간이 수급 요건과 연금액을 좌우합니다.
   how: 국민연금공단에서 가입내역·예상연금 조회를 합니다.
   done: 총 가입기간과 예상연금액을 메모했다.
-  link: 국민연금공단 | https://www.nps.or.kr | official
+  link: 국민연금공단 내 연금 알아보기 | https://www.nps.or.kr/jsppage/info/easy/easy_03_01.jsp | official
 - 납부 예외·미납 기간 있는지 확인하기
 
 ## 2. 보완 검토
@@ -334,8 +334,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'low',
       primary_destination: 'memo',
-      source_title: '국민건강보험공단 피부양자 안내',
-      source_url: 'https://www.nhis.or.kr',
+      source_title: '국민건강보험공단 – 피부양자 자격 취득·신청 안내',
+      source_url: 'https://www.nhis.or.kr/nhis/minwon/wbmina1600m01.do',
       warning: '피부양자 소득·재산·부양 요건은 기준이 바뀔 수 있습니다. 국민건강보험공단 안내로 확인하세요.',
     },
     text: `## 1. 자격 확인
@@ -343,7 +343,7 @@ const specs: BatchSpec[] = [
   why: 소득·재산 기준 초과 시 피부양자에서 제외되어 지역가입자가 됩니다.
   how: 국민건강보험공단 피부양자 자격 안내를 확인합니다.
   done: 등록 가능 여부와 확인할 점을 메모했다.
-  link: 국민건강보험공단 | https://www.nhis.or.kr | official
+  link: 건강보험공단 피부양자 자격 안내 | https://www.nhis.or.kr/nhis/minwon/wbmina1600m01.do | official
 
 ## 2. 서류·신청
 - 가족관계 증빙 등 필요 서류 준비하기
@@ -365,8 +365,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'medical_sensitive',
       primary_destination: 'calendar',
-      source_title: '국민건강보험 영유아 건강검진 안내',
-      source_url: 'https://www.nhis.or.kr',
+      source_title: '국민건강보험공단 – 영유아 건강검진 시기·항목 안내',
+      source_url: 'https://www.nhis.or.kr/nhis/healthin/wbhaca1400m01.do',
       warning: '검진 시기·항목·발달평가 결과는 의료진 안내를 우선하세요. 이 Flow는 방문 일정을 챙기는 준비용입니다.',
     },
     text: `## 검진 시기 확인
@@ -374,7 +374,7 @@ const specs: BatchSpec[] = [
   why: 영유아 건강검진은 차수별로 검진 가능 기간이 정해져 있습니다.
   how: 국민건강보험 영유아 건강검진 안내에서 월령별 검진 시기를 확인합니다.
   done: 다음 검진 차수와 기간을 캘린더에 표시했다.
-  link: 국민건강보험 | https://www.nhis.or.kr | official
+  link: 국민건강보험 영유아 건강검진 안내 | https://www.nhis.or.kr/nhis/healthin/wbhaca1400m01.do | official
 - 구강검진 차수도 함께 확인하기
 
 ## 방문 준비
@@ -398,8 +398,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'medical_sensitive',
       primary_destination: 'memo',
-      source_title: '질병관리청 예방접종도우미',
-      source_url: 'https://nip.kdca.go.kr',
+      source_title: '질병관리청 예방접종도우미 – 성인·어르신 예방접종 안내',
+      source_url: 'https://nip.kdca.go.kr/irgd/introduce.do',
       warning: '접종 권장 대상, 무료 지원, 금기사항은 개인 건강상태에 따라 다릅니다. 질병관리청 안내와 의료진 상담을 우선하세요.',
     },
     text: `## 1. 대상 확인
@@ -407,7 +407,7 @@ const specs: BatchSpec[] = [
   why: 폐렴구균·대상포진·인플루엔자 등은 연령·질환별로 권장과 지원이 다릅니다.
   how: 질병관리청 예방접종도우미에서 권장 일정과 국가지원 대상을 확인합니다.
   done: 나에게 권장되는 접종과 지원 여부를 메모했다.
-  link: 예방접종도우미 | https://nip.kdca.go.kr | official
+  link: 예방접종도우미 성인 예방접종 안내 | https://nip.kdca.go.kr/irgd/introduce.do | official
 - 과거 접종 이력·금기사항 정리하기
   caution: 금기·주의 대상은 접종 전 의료진과 상담합니다.
 
@@ -428,8 +428,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'low',
       primary_destination: 'memo',
-      source_title: '정부24 국민비서 안내',
-      source_url: 'https://www.gov.kr',
+      source_title: '정부24 국민비서(구삐) – 맞춤형 행정 알림 신청',
+      source_url: 'https://www.gov.kr/portal/cloud/bizmLogMain',
       warning: '제공 알림 항목과 채널(앱/문자/카카오 등)은 변경될 수 있습니다. 국민비서 공식 안내로 확인하세요.',
     },
     text: `## 1. 항목 선택
@@ -437,7 +437,7 @@ const specs: BatchSpec[] = [
   why: 챙기기 어려운 행정 기한을 알림으로 받으면 과태료·미수령을 줄입니다.
   how: 정부24 국민비서에서 알림 가능한 항목을 확인합니다.
   done: 신청할 알림 항목을 정했다.
-  link: 정부24 국민비서 | https://www.gov.kr | official
+  link: 정부24 국민비서 알림 신청 | https://www.gov.kr/portal/cloud/bizmLogMain | official
 
 ## 2. 신청
 - 알림 받을 채널 정하고 신청하기
@@ -458,8 +458,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'medium',
       primary_destination: 'memo',
-      source_title: '외교부 여권안내',
-      source_url: 'https://www.passport.go.kr',
+      source_title: '외교부 여권안내 – 여권 발급 신청 안내',
+      source_url: 'https://www.passport.go.kr/home/kor/contents.do?menuPos=1',
       warning: '사진 규격, 미성년자·대리 신청, 수수료, 처리 기간은 공식 기준을 따릅니다. 외교부 여권안내로 확인하세요.',
     },
     text: `## 1. 사진·서류
@@ -467,7 +467,7 @@ const specs: BatchSpec[] = [
   why: 규격에 안 맞는 사진은 접수 단계에서 반려되는 가장 흔한 사유입니다.
   how: 외교부 여권안내의 사진 규격을 확인하고 촬영합니다.
   done: 규격에 맞는 사진을 준비했다.
-  link: 외교부 여권안내 | https://www.passport.go.kr | official
+  link: 외교부 여권안내 발급 신청 | https://www.passport.go.kr/home/kor/contents.do?menuPos=1 | official
 - 신분증 등 필요 서류 확인하기
   caution: 미성년자·대리 신청은 추가 서류가 필요합니다.
 
@@ -488,8 +488,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'medium',
       primary_destination: 'memo',
-      source_title: '외교부 해외안전여행',
-      source_url: 'https://www.0404.go.kr',
+      source_title: '외교부 해외안전여행 – 여행경보·영사조력 안내',
+      source_url: 'https://www.0404.go.kr/dev/main.mofa',
       warning: '여행경보 단계와 입국 요건은 수시로 바뀝니다. 외교부 해외안전여행 공지를 출발 직전 다시 확인하세요.',
     },
     text: `## 1. 위험 정보
@@ -497,7 +497,7 @@ const specs: BatchSpec[] = [
   why: 경보 단계에 따라 여행 자제·철수 권고가 달라집니다.
   how: 외교부 해외안전여행에서 국가별 여행경보와 안전공지를 봅니다.
   done: 방문국 경보 단계와 주의사항을 메모했다.
-  link: 외교부 해외안전여행 | https://www.0404.go.kr | official
+  link: 외교부 해외안전여행 경보·안전공지 | https://www.0404.go.kr/dev/main.mofa | official
 
 ## 2. 비상 대비
 - 현지 대사관·영사관 연락처와 영사콜센터 저장하기
@@ -518,8 +518,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'medium',
       primary_destination: 'memo',
-      source_title: '관세청 여행자 휴대품 안내',
-      source_url: 'https://www.customs.go.kr',
+      source_title: '관세청 – 여행자 휴대품 면세범위·신고 안내',
+      source_url: 'https://www.customs.go.kr/customs/cm/cntnts/cntntsView.do?mi=2920&cntntsId=922',
       warning: '면세범위, 신고 대상, 반입금지·제한 품목은 변경될 수 있습니다. 관세청 공식 안내를 확인하세요.',
     },
     text: `## 1. 면세범위 확인
@@ -527,7 +527,7 @@ const specs: BatchSpec[] = [
   why: 한도를 넘기면 자진신고해야 하며, 미신고 적발 시 가산세가 붙습니다.
   how: 관세청 여행자 휴대품 안내에서 현재 면세 한도를 확인합니다.
   done: 면세 한도와 내 구매 예정 항목을 비교 메모했다.
-  link: 관세청 | https://www.customs.go.kr | official
+  link: 관세청 여행자 휴대품 면세·신고 안내 | https://www.customs.go.kr/customs/cm/cntnts/cntntsView.do?mi=2920&cntntsId=922 | official
 
 ## 2. 신고·반입
 - 면세범위 초과 시 자진신고 방법 확인하기
@@ -548,8 +548,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'financial_sensitive',
       primary_destination: 'memo',
-      source_title: '자동차민원 대국민포털',
-      source_url: 'https://www.ecar.go.kr',
+      source_title: '자동차민원 대국민포털 – 이전등록 절차 안내',
+      source_url: 'https://www.ecar.go.kr/main/index.do',
       warning: '이전등록 기한, 취득세, 필요 서류는 거래 형태·지역마다 다릅니다. 자동차민원 포털과 관할 기관으로 확인하세요.',
     },
     text: `## 1. 서류·기한
@@ -557,7 +557,7 @@ const specs: BatchSpec[] = [
   why: 기한을 넘기면 과태료가 부과될 수 있습니다.
   how: 자동차민원 대국민포털에서 이전등록 절차와 기한을 확인합니다.
   done: 이전등록 마감일을 캘린더에 표시했다.
-  link: 자동차민원 대국민포털 | https://www.ecar.go.kr | official
+  link: 자동차민원 대국민포털 이전등록 | https://www.ecar.go.kr/main/index.do | official
 - 양도증명·자동차등록증·신분증 등 서류 준비하기
 
 ## 2. 보험·세금
@@ -581,8 +581,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'financial_sensitive',
       primary_destination: 'memo',
-      source_title: '무공해차 통합누리집',
-      source_url: 'https://www.ev.or.kr',
+      source_title: '무공해차 통합누리집 – 전기차 구매보조금 안내',
+      source_url: 'https://www.ev.or.kr/portal/buyersGuide/subsidy',
       warning: '보조금 금액, 잔여물량, 지원 조건은 연도·지자체마다 다르고 조기 소진될 수 있습니다. 공식 누리집으로 확인하세요.',
     },
     text: `## 1. 대상·물량
@@ -590,7 +590,7 @@ const specs: BatchSpec[] = [
   why: 보조금은 지자체별로 다르고 물량이 소진되면 받을 수 없습니다.
   how: 무공해차 통합누리집에서 차종별 보조금과 지자체 잔여물량을 확인합니다.
   done: 차종 보조금과 거주지 잔여물량을 메모했다.
-  link: 무공해차 통합누리집 | https://www.ev.or.kr | official
+  link: 무공해차 통합누리집 전기차 보조금 | https://www.ev.or.kr/portal/buyersGuide/subsidy | official
 - 거주지 신청 자격·우선순위 확인하기
 
 ## 2. 신청
@@ -610,8 +610,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'financial_sensitive',
       primary_destination: 'memo',
-      source_title: '위택스(지방세 납부)',
-      source_url: 'https://www.wetax.go.kr',
+      source_title: '위택스 – 지방세(재산세·자동차세) 조회·납부',
+      source_url: 'https://www.wetax.go.kr/main/',
       warning: '부과·납부 기한과 감면 제도는 지자체·연도마다 다릅니다. 위택스와 관할 지자체 안내로 확인하세요.',
     },
     text: `## 1. 확인
@@ -619,7 +619,7 @@ const specs: BatchSpec[] = [
   why: 납부기한을 넘기면 가산금이 붙습니다.
   how: 위택스에서 내 지방세 부과·납부 내역을 확인합니다.
   done: 항목별 금액과 기한을 메모·캘린더에 적었다.
-  link: 위택스 | https://www.wetax.go.kr | official
+  link: 위택스 지방세 조회·납부 | https://www.wetax.go.kr/main/ | official
 
 ## 2. 절세 검토
 - 자동차세 연납 할인 등 절세 제도 확인하기
@@ -641,8 +641,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'low',
       primary_destination: 'memo',
-      source_title: '국세청 홈택스 / 정부24 미환급금 조회',
-      source_url: 'https://www.gov.kr',
+      source_title: '국세청 홈택스 – 국세 환급금 조회·신청',
+      source_url: 'https://www.hometax.go.kr',
       warning: '환급 대상·금액은 개인 납세 이력에 따라 다릅니다. 홈택스·정부24 공식 조회로 확인하세요.',
     },
     text: `## 1. 조회
@@ -650,7 +650,7 @@ const specs: BatchSpec[] = [
   why: 신고 정정·과오납 등으로 받지 못한 환급금이 남아 있을 수 있습니다.
   how: 홈택스 또는 정부24 미환급금 조회 서비스로 확인합니다.
   done: 환급 대상 금액을 메모했다.
-  link: 정부24 | https://www.gov.kr | official
+  link: 국세청 홈택스 환급금 조회 | https://www.hometax.go.kr | official
 - 지방세 환급금·미수령금도 확인하기
 
 ## 2. 신청·수령
@@ -672,8 +672,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'medium',
       primary_destination: 'memo',
-      source_title: '정부24 / 대법원 전자가족관계등록시스템',
-      source_url: 'https://www.gov.kr',
+      source_title: '대법원 전자가족관계등록시스템 – 출생신고 안내',
+      source_url: 'https://efamily.scourt.go.kr',
       warning: '신고기한, 필요 서류, 동시 신청 서비스는 변경될 수 있습니다. 정부24와 전자가족관계등록 안내로 확인하세요.',
     },
     text: `## D+0 서류 준비
@@ -681,7 +681,7 @@ const specs: BatchSpec[] = [
   why: 출생신고는 신고기한이 있어 서류를 일찍 준비하는 게 좋습니다.
   how: 정부24/전자가족관계등록에서 출생신고 절차와 서류를 확인합니다.
   done: 필요 서류를 모았다.
-  link: 정부24 | https://www.gov.kr | official
+  link: 대법원 전자가족관계등록 출생신고 | https://efamily.scourt.go.kr | official
 - 아이 이름·등록기준지 정하기
 
 ## D+7 신고·연계
@@ -706,8 +706,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'financial_sensitive',
       primary_destination: 'memo',
-      source_title: '정부24 안심상속 원스톱서비스',
-      source_url: 'https://www.gov.kr',
+      source_title: '정부24 – 안심상속 원스톱서비스 (사망·상속 메뉴)',
+      source_url: 'https://www.gov.kr/main?a=AA020InfoCappListFindClss&CappBizCD=15000000016',
       warning: '신청 자격(상속인 등), 기한, 상속 처리(승인·포기)는 법적 판단이 필요합니다. 정부24 안내와 전문가 상담을 우선하세요.',
     },
     text: `## 1. 자격·서류
@@ -715,7 +715,7 @@ const specs: BatchSpec[] = [
   why: 상속 재산·채무 파악이 늦으면 한정승인·포기 결정 시점을 놓칠 수 있습니다.
   how: 정부24 안심상속 원스톱서비스 안내에서 자격·서류·기한을 확인합니다.
   done: 신청 자격과 기한을 메모했다.
-  link: 정부24 안심상속 | https://www.gov.kr | official
+  link: 정부24 안심상속 원스톱서비스 | https://www.gov.kr/main?a=AA020InfoCappListFindClss&CappBizCD=15000000016 | official
 - 사망신고·가족관계 서류 준비하기
 
 ## 2. 신청·확인
@@ -739,8 +739,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'medium',
       primary_destination: 'memo',
-      source_title: '정부24 인감/본인서명사실확인 안내',
-      source_url: 'https://www.gov.kr',
+      source_title: '정부24 – 인감증명서 발급 안내 (민원24 > 인감증명)',
+      source_url: 'https://www.gov.kr/main?a=AA020InfoCappListFindClss&CappBizCD=15000000018',
       warning: '발급 방식(방문/온라인), 용도별 요건은 다를 수 있습니다. 정부24와 주민센터 안내로 확인하세요.',
     },
     text: `## 1. 용도·종류
@@ -748,7 +748,7 @@ const specs: BatchSpec[] = [
   why: 인감증명서와 본인서명사실확인서는 용도·요구 형식이 다를 수 있습니다.
   how: 제출처 요구사항과 정부24 안내를 대조합니다.
   done: 필요한 서류 종류와 통수를 메모했다.
-  link: 정부24 | https://www.gov.kr | official
+  link: 정부24 인감증명서 발급 안내 | https://www.gov.kr/main?a=AA020InfoCappListFindClss&CappBizCD=15000000018 | official
 - 부동산 매도용 등 특정 용도 요건 확인하기
   caution: 부동산 매도용 인감증명은 별도 요건이 있습니다.
 
@@ -768,8 +768,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'medium',
       primary_destination: 'memo',
-      source_title: '복지로 / 임신육아종합포털 아이사랑',
-      source_url: 'https://www.bokjiro.go.kr',
+      source_title: '복지로 – 보육료·양육수당 지원 신청 안내',
+      source_url: 'https://www.bokjiro.go.kr/ssis-tbu/twatga/welfare/WelSrchMain.do',
       warning: '지원 종류·금액·중복 여부는 아이 연령과 보육 형태(어린이집/가정양육)에 따라 다릅니다. 복지로·아이사랑으로 확인하세요.',
     },
     text: `## 1. 대상 확인
@@ -777,7 +777,7 @@ const specs: BatchSpec[] = [
   why: 어린이집 이용과 가정양육은 받는 지원이 달라 형태를 먼저 정해야 합니다.
   how: 복지로/아이사랑에서 연령·형태별 지원을 확인합니다.
   done: 우리 아이에게 맞는 지원 항목을 메모했다.
-  link: 복지로 | https://www.bokjiro.go.kr | official
+  link: 복지로 보육료·양육수당 신청 | https://www.bokjiro.go.kr/ssis-tbu/twatga/welfare/WelSrchMain.do | official
   caution: 보육료와 양육수당은 동시 수급이 안 되는 등 중복 제한이 있습니다.
 
 ## 2. 신청
@@ -797,8 +797,8 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'medium',
       primary_destination: 'memo',
-      source_title: '병무청 안내',
-      source_url: 'https://www.mma.go.kr',
+      source_title: '병무청 – 병역판정검사 일정·준비 안내',
+      source_url: 'https://www.mma.go.kr/contents.do?mc=mma0000316',
       warning: '검사 일정·준비물·연기 사유는 개인 상황에 따라 다릅니다. 병무청 공식 안내와 통지서를 우선 확인하세요.',
     },
     text: `## 1. 일정·서류
@@ -806,7 +806,7 @@ const specs: BatchSpec[] = [
   why: 정당한 사유 없이 검사에 응하지 않으면 불이익이 있습니다.
   how: 병무청 안내와 통지서에서 일정·준비물을 확인합니다.
   done: 검사일과 장소를 캘린더에 등록했다.
-  link: 병무청 | https://www.mma.go.kr | official
+  link: 병무청 병역판정검사 안내 | https://www.mma.go.kr/contents.do?mc=mma0000316 | official
 - 신분증 등 준비물·사전 문진 확인하기
 
 ## 2. 사전 점검
