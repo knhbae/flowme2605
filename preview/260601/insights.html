@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FLOW 콘텐츠 검토 인사이트 — 다관점 분석 (2026-06-04)</title>
+<style>
+  :root{
+    --ink:#0f172a; --sub:#475569; --line:#e2e8f0; --bg:#f8fafc;
+    --blue:#2563eb; --teal:#0d9488; --amber:#d97706; --red:#dc2626;
+    --violet:#7c3aed; --green:#16a34a; --slate:#334155;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo",sans-serif;
+        color:var(--ink);background:var(--bg);line-height:1.65;font-size:15px}
+  .wrap{max-width:980px;margin:0 auto;padding:2.5rem 1.4rem 5rem}
+  header.hero{margin-bottom:2.2rem}
+  .kicker{font-size:.78rem;font-weight:700;letter-spacing:.12em;color:var(--blue);text-transform:uppercase}
+  h1{font-size:2rem;font-weight:800;line-height:1.2;margin:.35rem 0 .6rem;letter-spacing:-.02em}
+  .lede{font-size:1.02rem;color:var(--sub);max-width:46rem}
+  .meta-bar{margin-top:1rem;font-size:.82rem;color:#94a3b8}
+
+  /* dashboard */
+  .dash{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin:2rem 0 2.6rem}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:.9rem 1rem}
+  .stat .n{font-size:1.55rem;font-weight:800;letter-spacing:-.02em}
+  .stat .l{font-size:.74rem;color:var(--sub);margin-top:.1rem;line-height:1.35}
+  .stat.b .n{color:var(--blue)} .stat.t .n{color:var(--teal)}
+  .stat.a .n{color:var(--amber)} .stat.r .n{color:var(--red)}
+
+  /* distribution bars */
+  .distro{background:#fff;border:1px solid var(--line);border-radius:14px;padding:1.4rem 1.5rem;margin-bottom:2.4rem}
+  .distro h3{font-size:.95rem;margin-bottom:1rem;color:var(--slate)}
+  .barline{display:grid;grid-template-columns:130px 1fr 46px;align-items:center;gap:.7rem;margin-bottom:.5rem;font-size:.82rem}
+  .barline .lab{color:var(--sub);text-align:right}
+  .bar{height:18px;border-radius:5px;background:linear-gradient(90deg,var(--blue),#60a5fa)}
+  .bar.g{background:linear-gradient(90deg,var(--teal),#2dd4bf)}
+  .bar.v{background:linear-gradient(90deg,var(--violet),#a78bfa)}
+  .bar.a{background:linear-gradient(90deg,var(--amber),#fbbf24)}
+  .barline .v{font-weight:700;font-size:.78rem;color:var(--slate)}
+
+  /* perspective cards */
+  .persp{border-radius:16px;padding:1.7rem 1.8rem;margin-bottom:1.6rem;border:1px solid var(--line);background:#fff;position:relative;overflow:hidden}
+  .persp::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px}
+  .persp.cold::before{background:#0ea5e9}
+  .persp.creative::before{background:var(--violet)}
+  .persp.data::before{background:var(--teal)}
+  .persp.trust::before{background:var(--red)}
+  .persp.user::before{background:var(--amber)}
+  .persp.growth::before{background:var(--green)}
+  .persp .tag{display:inline-flex;align-items:center;gap:.4rem;font-size:.76rem;font-weight:700;
+              letter-spacing:.04em;padding:.25rem .6rem;border-radius:999px;margin-bottom:.7rem}
+  .cold .tag{background:#e0f2fe;color:#0369a1}
+  .creative .tag{background:#f3e8ff;color:#6b21a8}
+  .data .tag{background:#ccfbf1;color:#0f766e}
+  .trust .tag{background:#fee2e2;color:#b91c1c}
+  .user .tag{background:#fef3c7;color:#92400e}
+  .growth .tag{background:#dcfce7;color:#15803d}
+  .persp h2{font-size:1.22rem;font-weight:800;margin-bottom:.2rem;letter-spacing:-.01em}
+  .persp .sub{font-size:.86rem;color:var(--sub);margin-bottom:1rem;font-style:italic}
+  .persp p{margin-bottom:.7rem;color:#1e293b;font-size:.95rem}
+  .persp strong{color:var(--ink);font-weight:700}
+  .persp .pt{display:flex;gap:.7rem;margin-bottom:.7rem;align-items:flex-start}
+  .persp .pt .ico{flex-shrink:0;font-size:.95rem;margin-top:.1rem}
+  .quote{border-left:3px solid currentColor;padding:.3rem 0 .3rem .9rem;margin:.9rem 0;font-size:1rem;font-weight:600}
+  .cold .quote{color:#0369a1} .creative .quote{color:#6b21a8}
+  .data .quote{color:#0f766e} .trust .quote{color:#b91c1c}
+  .user .quote{color:#92400e} .growth .quote{color:#15803d}
+  .ev{background:var(--bg);border-radius:8px;padding:.55rem .8rem;font-size:.8rem;color:var(--sub);margin:.6rem 0}
+  .ev b{color:var(--slate)}
+
+  /* verdict table */
+  .verdict{background:#fff;border:1px solid var(--line);border-radius:14px;padding:1.6rem 1.7rem;margin:2rem 0}
+  .verdict h2{font-size:1.3rem;margin-bottom:1rem}
+  .road{display:grid;grid-template-columns:auto 1fr;gap:.6rem 1rem;align-items:start}
+  .road .when{font-weight:800;font-size:.8rem;padding:.2rem .6rem;border-radius:6px;white-space:nowrap;height:fit-content}
+  .w-now{background:#fee2e2;color:#b91c1c}
+  .w-next{background:#fef3c7;color:#92400e}
+  .w-later{background:#dcfce7;color:#15803d}
+  .road .act{font-size:.92rem;margin-bottom:.4rem}
+  .road .act b{font-weight:700}
+  hr.sep{border:none;border-top:1px dashed var(--line);margin:2.6rem 0 2rem}
+  .section-label{font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:1.1rem}
+  .foot{margin-top:3rem;font-size:.78rem;color:#94a3b8;border-top:1px solid var(--line);padding-top:1.2rem}
+  @media(max-width:680px){.dash{grid-template-columns:repeat(2,1fr)}.barline{grid-template-columns:96px 1fr 40px}.road{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="kicker">FLOW 콘텐츠 검토 · 다관점 인사이트</div>
+  <h1>44개를 다 만들고 나서야 보이는 것들</h1>
+  <p class="lede">WebSearch 기반으로 재작성·재채점한 44개 Flow를 카테고리·구조·점수·신뢰도 데이터로 해부했다.
+  냉정한 시각과 창의적 시각을 나란히 두어, "잘 만들어졌나"가 아니라 <strong>"이게 제품이 되는가"</strong>를 본다.</p>
+  <div class="meta-bar">2026-06-04 · 분석 대상: official 24 + creator 20 · 종합 평균 7.88 / 10 · 9점 이상 0개</div>
+</header>
+
+<!-- DASHBOARD -->
+<div class="dash">
+  <div class="stat b"><div class="n">44</div><div class="l">전체 Flow<br>(공식 24 · 크리에이터 20)</div></div>
+  <div class="stat t"><div class="n">7.88</div><div class="l">종합 평균 / 10<br>(최고 8.8, 9점↑ 없음)</div></div>
+  <div class="stat a"><div class="n">15</div><div class="l">종합 8점 미만<br>전체의 34%</div></div>
+  <div class="stat r"><div class="n">14</div><div class="l">민감(재무·의료) Flow<br>틀리면 해로운 32%</div></div>
+</div>
+
+<!-- DISTRIBUTIONS -->
+<div class="distro">
+  <h3>① 구조 양상 — 체크리스트 단일문화</h3>
+  <div class="barline"><span class="lab">checklist</span><div class="bar" style="width:100%"></div><span class="v">28 (64%)</span></div>
+  <div class="barline"><span class="lab">routine</span><div class="bar" style="width:36%"></div><span class="v">10</span></div>
+  <div class="barline"><span class="lab">timeline</span><div class="bar" style="width:18%"></div><span class="v">5</span></div>
+  <div class="barline"><span class="lab">phase</span><div class="bar" style="width:4%"></div><span class="v">1</span></div>
+  <div style="height:1rem"></div>
+  <h3>② 종착지(primary_destination) — 메모 덤프 편중</h3>
+  <div class="barline"><span class="lab">memo</span><div class="bar g" style="width:100%"></div><span class="v">30 (68%)</span></div>
+  <div class="barline"><span class="lab">calendar</span><div class="bar g" style="width:27%"></div><span class="v">8</span></div>
+  <div class="barline"><span class="lab">sheet</span><div class="bar g" style="width:17%"></div><span class="v">5</span></div>
+  <div class="barline"><span class="lab">hybrid</span><div class="bar g" style="width:3%"></div><span class="v">1</span></div>
+  <div style="height:1rem"></div>
+  <h3>③ 채점 항목별 평균 — 완결성이 구조적 최약점</h3>
+  <div class="barline"><span class="lab">단계명확성</span><div class="bar v" style="width:81.8%"></div><span class="v">8.18</span></div>
+  <div class="barline"><span class="lab">원문충실도</span><div class="bar v" style="width:81.4%"></div><span class="v">8.14</span></div>
+  <div class="barline"><span class="lab">UX적합성</span><div class="bar v" style="width:79.8%"></div><span class="v">7.98</span></div>
+  <div class="barline"><span class="lab">완결성</span><div class="bar a" style="width:78.6%"></div><span class="v">7.86</span></div>
+  <div class="ev" style="margin-top:.8rem"><b>읽는 법:</b> 단계는 명확하고(8.18) 사실 충실도도 확보됐지만(8.14),
+  <b>"이거 하나로 끝까지 되는가"(완결성 7.86)</b>가 가장 약하다. 12개 Flow가 완결성 7점에 머물렀다.</div>
+</div>
+
+<div class="section-label">— 여섯 개의 시선 —</div>
+
+<!-- COLD -->
+<section class="persp cold">
+  <span class="tag">🧊 냉정한 기획자</span>
+  <h2>"이건 제품이 아니라 콘텐츠 카탈로그다"</h2>
+  <div class="sub">팔리는가, 남는가, 이길 수 있는가만 본다</div>
+
+  <div class="quote">공식 24개가 24개의 서로 다른 카테고리다. 깊이 0, 폭만 24.</div>
+  <p>장학금 1개, 연금 1개, 상속 1개, 병역 1개… <strong>"하나씩 다 있는" 샘플러</strong>다. 그런데 사용자는 한 번에 한 문제만 갖는다.
+  20대 취준생에게 상속·연금 Flow는 0의 가치다. 폭을 늘린 건 <strong>"무엇이 먹히나 떠보는" 단계의 신호</strong>지, 한 세그먼트를 깊게 잡은 제품이 아니다.</p>
+
+  <div class="pt"><span class="ico">▪︎</span><p><strong>차별화 기능을 스스로 안 쓴다.</strong> Flow의 존재 이유는 시간축 안내(타임라인·D-day·반복 루틴)인데,
+  64%가 정적 checklist + 68%가 memo 덤프 + 64%가 anchor 없음. <strong>이 형태는 노션 템플릿과 구분되지 않는다.</strong> 진짜 'Flow'다운 건 36%뿐.</p></div>
+
+  <div class="pt"><span class="ico">▪︎</span><p><strong>9점이 0개인 건 게으름이 아니라 천장이다.</strong> 최저 5개(소상공인자금·전기차보조금·완독·주간피부·홈카페)는 두 부류로 갈린다 —
+  공식은 <em>"케이스/지역별로 다름"</em>이라 정적 콘텐츠로 단정 불가, 크리에이터는 <em>정설이 얇아</em>(책 읽기가 5단계 절차가 아니다) 채울 게 없다.
+  <strong>일부 주제는 애초에 Flow 모양이 아니다.</strong> 억지로 끼우면 필러가 나온다.</p></div>
+
+  <div class="ev"><b>냉정한 결론:</b> 44개 중 <b>15개(34%)는 8점 미만</b>. 이건 다듬어서 9점 만들 대상이 아니라,
+  <b>"Flow로 만들지 말았어야 할 후보"를 솎아낼 신호</b>다. 44개를 자랑하지 말고 28개로 줄여라.</p></div>
+</section>
+
+<!-- CREATIVE -->
+<section class="persp creative">
+  <span class="tag">🎨 창의적 기획자</span>
+  <h2>"흩어진 24개는 사실 한국 성인의 생애 지도다"</h2>
+  <div class="sub">약점을 자산으로 뒤집는다</div>
+
+  <div class="quote">정부 부처별로 흩어진 24개를, 생애 사건으로 묶으면 6개의 '인생 번들'이 된다.</div>
+  <p>냉정한 시각은 "폭만 넓다"고 했지만 — 뒤집으면 이 24개는 <strong>한국에서 어른으로 사는 데 필요한 행정의 전체 지도</strong>다.
+  카테고리를 부처(고용·복지·세금)가 아니라 <strong>생애 사건</strong>으로 재배열하면:</p>
+  <div class="ev">
+  🎓 <b>사회 진입</b>(장학금·실업급여·취업지원·첫 여권) · 🏠 <b>독립/이사</b>(청약·전세보증·국민비서) ·
+  👶 <b>출산/육아</b>(출생신고·영유아검진·보육료) · 🚗 <b>자산 취득</b>(자동차이전·전기차·지방세) ·
+  ⚰️ <b>상속/마무리</b>(안심상속·인감) · 💊 <b>건강</b>(피부양자·예방접종)</div>
+  <p>각 번들은 <strong>"한 사건 = 여러 Flow의 묶음"</strong>이 되어, 사용자가 인생 단계를 고르면 관련 Flow가 한꺼번에 따라온다. 24개가 6개 제품이 된다.</p>
+
+  <div class="pt"><span class="ico">✦</span><p><strong>크리에이터 배치는 '루틴 OS'의 씨앗.</strong> 스킨케어·가계부·산책·독서·모닝루틴 — 전부 <strong>반복(routine)</strong> 콘텐츠다.
+  공식 배치가 '한 번 끝내는 절차'라면, 크리에이터는 '매일 돌아오는 리듬'. <strong>두 배치는 경쟁이 아니라 보완</strong>:
+  일회성 행정으로 들어온 사용자를 일상 루틴으로 눌러앉힌다(리텐션).</p></div>
+
+  <div class="pt"><span class="ico">✦</span><p><strong>"케이스별로 다름"을 약점이 아니라 진입점으로.</strong> 소상공인자금·전기차가 낮은 건 답이 "너의 상황에 따라 다름"이라서다.
+  그렇다면 <strong>정적 Flow 대신 분기형(조건 입력 → 맞는 경로) Flow</strong>를 만들 신호다. 이게 곧 제품의 해자가 된다.</p></div>
+</section>
+
+<!-- DATA -->
+<section class="persp data">
+  <span class="tag">📊 데이터 분석가</span>
+  <h2>"점수가 낮은 곳에 두 가지 다른 병이 있다"</h2>
+  <div class="sub">분포가 말해주는 것</div>
+
+  <div class="pt"><span class="ico">▸</span><p><strong>상위권은 전부 '일회성 고위험 절차'.</strong> 1위 관세신고(8.8)·실업급여(8.8)·인감(8.5)·영유아검진(8.5).
+  공통점: <strong>정답이 명확하고, 기한이 있고, 틀리면 손해</strong>. → Flow가 가장 빛나는 지점은 <em>"한 번, 정확히, 제때"</em> 영역이다.</p></div>
+
+  <div class="pt"><span class="ico">▸</span><p><strong>하위권은 원인이 둘로 갈린다.</strong>
+  공식 하위(소상공인·전기차)는 <em>원문충실도가 아니라 완결성</em>이 깎였다 — 사실은 맞는데 케이스 변동 탓에 "공식 확인"으로 끝나서.
+  크리에이터 하위(완독·홈카페·주간피부)는 <em>정설 자체가 얇아</em> 단계가 부풀려졌다. <strong>같은 7점도 처방이 정반대다.</strong></p></div>
+
+  <div class="ev"><b>핵심 상관:</b> 완결성(7.86)이 최약 &middot; UX적합성(7.98)도 8 미만.
+  반면 단계명확성(8.18)·원문충실도(8.14)는 양호 →
+  <b>"문장은 잘 썼는데, 끝까지 책임지는 구조가 약하다"</b>가 데이터의 일관된 진단이다.</p></div>
+
+  <div class="pt"><span class="ico">▸</span><p><strong>크리에이터 종합(7.80)이 공식(7.94)보다 낮은 이유.</strong> 개별 항목(명확성·완결성·UX)은 크리에이터가 더 높은데
+  종합만 낮다. <strong>채점자가 "출처 신뢰도"를 종합에 반영</strong>했다는 뜻 — 블로그 6개를 미검증으로 일반 랜딩으로 강등한 그 정직성이 점수에 박혀 있다.</p></div>
+</section>
+
+<!-- TRUST -->
+<section class="persp trust">
+  <span class="tag">🛡️ 리스크·신뢰 책임자</span>
+  <h2>"두 종류의 진실이 한 UI에서 똑같이 생겼다"</h2>
+  <div class="sub">틀리면 누가 다치는가</div>
+
+  <div class="quote">'전세보증 한도 7억'(검증된 정부 규칙)과 '스킨케어는 묽은 것부터'(한 블로거 의견)가 화면에서 구별되지 않는다.</div>
+  <p>민감 Flow가 <strong>14개(재무 12 + 의료 2, 전체의 32%)</strong>. 이 영역은 틀리면 <strong>돈과 건강</strong>이 걸린다.
+  그런데 공식(권위 있는 사실)과 크리에이터(부드러운 조언)가 <strong>동일한 카드 UI</strong>로 표시된다. 사용자는 신뢰 등급을 구분할 단서가 없다.</p>
+
+  <div class="pt"><span class="ico">⚠︎</span><p><strong>검증 천장이 실재한다.</strong> 이 환경의 WebFetch는 한국 사이트에서 전부 403. 그래서 원문충실도는
+  <em>"WebSearch로 교차확인된 것"</em>까지만 보증된다. 공식 배치에서 <strong>끝내 검증 못 한 사실 6건</strong>(여권 신규발급 기간·취업지원 자산기준·전기차 모델별 금액·정책자금 정확금리·안심상속 소요일·영사콜센터 언어수)은
+  단정 대신 "공식 확인"으로 남겼다 — <strong>이게 정직한 처리지만, 동시에 제품이 책임 못 지는 구간이 있다는 뜻</strong>.</p></div>
+
+  <div class="pt"><span class="ico">⚠︎</span><p><strong>이번 라운드의 가장 큰 교훈.</strong> 이전 버전엔 "완주율 23%·체크리스트 3.2배" 같은 통계가 'UCL/Stanford' 출처로 박혀 있었다 —
+  <strong>출처 불명 블로그의 사칭</strong>이었고 이번에 제거했다. <strong>그럴듯한 숫자일수록 위험하다.</strong> 신뢰 배지/출처 등급 없이는 또 들어온다.</p></div>
+
+  <div class="ev"><b>필수 조치:</b> ① 공식/크리에이터 <b>신뢰 배지 시각 분리</b> ② 미검증 항목 <b>"확인 필요" 표식</b>
+  ③ 민감 14개는 <b>"최종 판단은 공식 기관/전문가" 고지 상시화</b>. source_status: needs_review가 전부 유지된 건 옳다 — <b>아직 공개 MVP가 아니다.</b></p></div>
+</section>
+
+<!-- USER -->
+<section class="persp user">
+  <span class="tag">🙋 사용자 대변자</span>
+  <h2>"진짜 막히는 지점은 '이거 내 얘기 맞아?'인데, Flow는 그 다음부터 시작한다"</h2>
+  <div class="sub">현실의 한 사람에게 도움이 되는가</div>
+
+  <div class="quote">복지 사각지대의 1위 원인은 '신청 안 함'(45.7%)이고, 57.6%가 '내가 받을 자격이 되는지 확신 못 함'이라 답했다.</div>
+  <p>수요는 진짜다 — 장학금 미수혜 59%, 전세사기 피해 3만 명(75%가 2030), 복지 미신청 45.7%, 청약 부적격 14만 건(가점오류 46%).
+  <strong>그런데 현재 Flow들은 "이미 신청하기로 마음먹은 사람"을 돕는다.</strong> 정작 막힌 병목은 그 앞 — <strong>"이게 나한테 해당돼?"</strong>다.</p>
+
+  <div class="pt"><span class="ico">●</span><p><strong>가장 비싼 누락 = 자격 판별(트리아지) 현관.</strong> 단계 리스트를 더 늘리는 것보다,
+  <strong>"3개 질문 → 너는 이 Flow가 맞다/아니다"</strong>를 앞단에 두는 게 데이터가 가리키는 1순위다.</p></div>
+
+  <div class="pt"><span class="ico">●</span><p><strong>memo로 끝나는 게 사용자 일은 아니다.</strong> 30개가 메모를 만들고 끝난다. 하지만 사용자의 목표는
+  <em>"메모를 갖는 것"</em>이 아니라 <em>"그 일을 해낸 것"</em>. <strong>완료 확인·결과 루프가 없다.</strong>
+  특히 기한 있는 12개(start_date/end_date)는 캘린더 내보내기 말곤 리마인드가 없어, 바로 그 "제때"를 놓친다.</p></div>
+
+  <div class="ev"><b>사용자 관점 점수:</b> "구조화된 안내문 읽기"엔 충분(명확성 8.18). 하지만
+  <b>"몇 주짜리 행정 절차를 실제로 완료"</b>엔 부족(완결성 7.86, 종착 루프 없음). <b>읽히는 제품 → 끝내주는 제품으로 가야 한다.</b></p></div>
+</section>
+
+<!-- GROWTH -->
+<section class="persp growth">
+  <span class="tag">🚀 성장·비즈니스</span>
+  <h2>"행정으로 들어와 루틴으로 남긴다"</h2>
+  <div class="sub">쐐기와 해자는 어디인가</div>
+
+  <div class="pt"><span class="ico">◆</span><p><strong>쐐기(wedge)는 '일회성 고위험 절차'.</strong> 점수 데이터가 증명했다 — 관세·실업급여·전세보증처럼
+  <strong>"한 번, 정확히, 제때, 틀리면 손해"</strong> 영역에서 Flow의 가치가 가장 크다. 검색 수요도 여기 몰려 있다(전세사기 3만·청약 부적격 14만).
+  <strong>여기로 획득</strong>한다.</p></div>
+
+  <div class="pt"><span class="ico">◆</span><p><strong>리텐션은 크리에이터 루틴.</strong> 행정 절차는 끝나면 떠난다(이탈). 스킨케어·가계부·산책·모닝루틴 같은
+  <strong>반복 루틴이 매일 돌아올 이유</strong>를 만든다. 획득(공식) → 잔류(크리에이터)의 <strong>깔때기가 두 배치 안에 이미 있다.</strong></p></div>
+
+  <div class="pt"><span class="ico">◆</span><p><strong>해자(moat)는 '검증된 한국형 분기 Flow'.</strong> 누구나 체크리스트는 만든다. 아무도 못 하는 건
+  <strong>"케이스 입력 → 검증된 맞춤 경로 + 신뢰 등급"</strong>이다. 지금 최저점 받은 "케이스별로 다름" 영역이 역설적으로 가장 깊은 해자 후보.</p></div>
+
+  <div class="ev"><b>성장 가설:</b> 44개 균등 확장이 아니라 —
+  <b>고위험 절차 8~10개를 분기형으로 깊게(획득) + 루틴 6~8개를 알림·연속성으로(잔류).</b>
+  나머지 얇은 주제는 과감히 보류. <b>적게, 깊게, 신뢰 가능하게.</b></p></div>
+</section>
+
+<hr class="sep">
+
+<!-- VERDICT / ROADMAP -->
+<div class="verdict">
+  <h2>종합 권고 — 우선순위 로드맵</h2>
+  <p style="color:var(--sub);margin-bottom:1.3rem;font-size:.92rem">여섯 시선이 한 점으로 모인다:
+  <strong>지금은 44개를 자랑할 때가 아니라, 무엇을 버리고 무엇을 깊게 팔지 정할 때.</strong></p>
+  <div class="road">
+    <span class="when w-now">지금</span>
+    <div class="act"><b>① 신뢰 레이어 먼저.</b> 공식/크리에이터 신뢰 배지 분리 + 미검증 6건·민감 14개에 "확인 필요" 표식.
+    <span style="color:#b91c1c">틀리면 다치는 제품이 신뢰 신호 없이 공개되면 안 된다.</span></div>
+    <span class="when w-now">지금</span>
+    <div class="act"><b>② 가지치기.</b> 8점 미만 15개 중 "정설이 얇아 부푼" 크리에이터 4~5개(완독·홈카페·주간피부 등) 보류.
+    <b>44 → 28~30개로 압축.</b></div>
+    <span class="when w-next">다음</span>
+    <div class="act"><b>③ 자격 판별 현관.</b> 고위험 Top 절차부터 "3문항 → 해당/비해당" 트리아지를 앞단에 추가.
+    복지 미신청 45.7%·자격확신 못함 57.6%를 정조준.</div>
+    <span class="when w-next">다음</span>
+    <div class="act"><b>④ 완결 루프.</b> memo 덤프로 끝내지 말고 완료 확인 + 기한형 12개에 리마인드.
+    <b>'읽는 Flow'를 '끝내는 Flow'로.</b></div>
+    <span class="when w-later">이후</span>
+    <div class="act"><b>⑤ 생애 사건 재배열.</b> 부처별 24개를 6개 인생 번들로 묶어 내비게이션 재설계(취업·이사·출산·자산·상속·건강).</div>
+    <span class="when w-later">이후</span>
+    <div class="act"><b>⑥ 분기형 Flow.</b> "케이스별로 다름" 영역(소상공인·전기차·연금)을 조건 입력형으로 — 경쟁자가 못 만드는 해자.</div>
+  </div>
+</div>
+
+<div class="foot">
+  근거 데이터: <code>lib/flow/contents-batch-260601-{official,creator}.ts</code> 44개 메타데이터 +
+  <code>docs/content-audit/2026-06-03-*-scores.md</code> 5항목 채점 + 2026 WebSearch 수요 통계.<br>
+  검증 한계: WebFetch가 한국 사이트에서 403 → 원문충실도는 WebSearch 교차확인 범위까지만 보증. 전 Flow source_status: needs_review (공개 MVP 아님).<br>
+  생성: 2026-06-04 · 6개 관점(냉정·창의·데이터·신뢰·사용자·성장) 종합 분석.
+</div>
+
+</div>
+</body>
+</html>
