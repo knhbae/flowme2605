@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated:** 2026-06-06
+**Last Updated:** 2026-06-06 (export 품질 감사)
 **Status:** v0.1.0 IN DEVELOPMENT  
 **Current Version:** v0.1.0  
 **Primary Focus:** Stage 0 / First Flag validation for FLOW execution behavior.
@@ -130,6 +130,8 @@
 - 2026-06-01 카테고리별 UX/UI 설계가 크리에이터 배치에 적용됨: 콘텐츠 성격별로 알맞은 아티팩트 표면을 배정하고 신규 표면 `step_progress`(단계별 실행 stepper: 진행률 바 + 단계 카드 + "현재 단계" 강조)를 추가. 순차 단계형 6개(요리/정리/창작/완독/짐싸기)→step_progress, 표 기록형 4개(식단/가계부/피부·반려 관찰)→spreadsheet_log + 카테고리 전용 표, 월급날 재정→memo_card + 재정 필드, 루틴 6개→routine_calendar, 일정 3개→timeline_calendar. `artifact-plan.ts`는 신규 슬러그에만 분기 추가(기존 표면 선택 불변), `artifact-fields.ts`에 요일/카테고리/주차 행 표와 payday 메모 필드 추가. 183 tests pass. `docs/content-audit/2026-06-01-category-ux-design.md` 참고.
 
 - 2026-06-03/06 260601 배치 컨텐츠 유효성 패스가 완료됨: 44개 플로우 프리뷰에 대해 4축(S/A/D/R) 트리아지를 수행하고 P0/P1 문제를 수정했다. 주요 수정 내용: 영아건강검진 월령 로직 버그 수정(NHIS 8차 스케줄 기반 다음 검진 차수 안내로 교체), 장학금·출생신고·국내여행 플로우의 아티팩트 destination `memo`→`calendar` 교정, payday-finance-routine structure `checklist`→`routine` 교정, 토스 소스 URL 경로 교정. WebSearch로 10개 URL 실재 확인. 트리아지 최종 결과: 🟢 40개(대표화 가능) / 🟡 3개(재구성 필요) / 🟠 0개. 183 tests pass, build clean. SHA `a3397b0`. `docs/content-audit/2026-06-03-*.md` 참고.
+
+- 2026-06-06 외부 앱 관점 export 품질 감사가 진행됨: 컨텐츠 유효성 검토가 아티팩트 destination 타입은 확인했지만 실제 외부 도구(Google Calendar/Excel/Notion 등)에서의 출력 품질은 검증하지 않았던 갭을 메웠다. (1) `infant-health-checkup-schedule`를 `baby_age_month`+`phase`(캘린더 0개 이벤트, 버튼 미표시)에서 `baby_birth_date`+`timeline`으로 재구성해 생년월일 1개 입력으로 NHIS 8차 검진 일정이 8개 ICS 이벤트로 배치되게 함. (2) 기간이 정해진 루틴(reading-habit-30day·morning-routine-30day 30일, digital-detox-weekly 28일)이 캘린더에서 영원히 반복되던 문제를 `routine_duration_days` 필드 + RRULE `UNTIL` 바운드로 수정(영구 습관 3개는 의도대로 무한 반복 유지). (3) memo destination 27개 플로우의 `buildText`가 일반 불릿·디테일 없음이던 것을 Markdown 체크박스(`- [ ]`/`- [x]`, Notion/Obsidian/메모앱에서 인터랙티브 렌더링) + 비-generic 완료 기준 + 공식 핸드오프 링크로 개선. sheet(xlsx) export 5개는 실행요약/실행표/상세 3시트로 이미 충실해 변경 불필요로 확인. 186 tests pass.
 
 ## Next Up
 

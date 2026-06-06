@@ -16,6 +16,25 @@ test('timeline text export includes calculated dates when anchor exists', () => 
   assert.match(text, /이사 방식 정하기/);
 });
 
+test('memo text export renders a checkbox checklist with done criteria and official links', () => {
+  const welfare = seedBundles.find((bundle) => bundle.flow.slug === 'welfare-benefit-finder');
+  assert.ok(welfare);
+
+  const text = buildText(welfare, {}, undefined);
+
+  // Markdown checkboxes so the pasted memo is an interactive checklist in Notion/메모앱.
+  assert.match(text, /- \[ \] 복지로에서 맞춤형급여안내\(복지멤버십\) 신청하기/);
+  // Non-generic completion criteria travel into the memo so the user knows when to check the box.
+  assert.match(text, /완료 기준: 받을 수 있을 것 같은 서비스를 목록으로 적었다\./);
+  // The official handoff link (복지로) is carried into the memo as the action target.
+  assert.match(text, /링크: 복지로 서비스 신청 - https:\/\/www\.bokjiro\.go\.kr\//);
+
+  // A completed item flips the checkbox to [x] rather than appending "(완료)".
+  const firstId = welfare.items[0].id;
+  const checked = buildText(welfare, { [firstId]: true }, undefined);
+  assert.match(checked, /- \[x\] /);
+});
+
 test('text and workbook exports include item notes and skipped state', () => {
   const wedding = seedBundles.find((bundle) => bundle.flow.slug === 'wedding-d180-basic');
   assert.ok(wedding);
@@ -31,9 +50,9 @@ test('text and workbook exports include item notes and skipped state', () => {
 
   const text = buildText(wedding, { [first.id]: true }, '2026-09-15', itemStates);
 
-  assert.match(text, /예식 날짜와 예상 하객 규모 정하기 \(완료\)/);
+  assert.match(text, /- \[x\] 예식 날짜와 예상 하객 규모 정하기/);
   assert.match(text, /메모: 양가 협의는 6월 첫째 주에 다시 확인/);
-  assert.match(text, /웨딩홀 후보와 예산 범위 비교하기 \(스킵\)/);
+  assert.match(text, /- \[ \] 웨딩홀 후보와 예산 범위 비교하기 \(스킵\)/);
   assert.match(text, /메모: 스몰웨딩이라 후보 비교 범위를 줄임/);
 
   const sheets = buildWorkbookSheets(wedding, { [first.id]: true }, '2026-09-15', { itemStates });
