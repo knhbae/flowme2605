@@ -1,249 +1,192 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>해외여행 휴대품 면세범위·신고 Flow — FLOW</title>
 <style>
 :root{
-  --bg:#fafaf9;--surface:#fff;--surface2:#f5f5f4;
-  --border:#e7e5e4;--border2:#d6d3d1;
-  --ink:#1c1917;--sub:#78716c;--muted:#a8a29e;
-  --accent:#c96442;--accent-bg:#fff7ed;--accent-light:#fed7aa;
-  --blue:#1d4ed8;--blue-bg:#eff6ff;--blue-light:#bfdbfe;
-  --teal:#0d9488;--teal-bg:#f0fdfa;--teal-light:#99f6e4;
-  --red:#b91c1c;--red-bg:#fef2f2;--red-light:#fecaca;
-  --amber:#92400e;--amber-bg:#fffbeb;--amber-light:#fde68a;
-  --green:#15803d;--green-bg:#f0fdf4;--green-light:#bbf7d0;
-  --violet:#5b21b6;--violet-bg:#f5f3ff;
-  --r:12px;--r-sm:8px;--r-xs:6px;
-  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
-  --shadow-md:0 4px 12px rgba(0,0,0,.1);
+  --bg:#faf9f7;--surface:#fff;--surface2:#f5f4f1;--surface3:#efede8;
+  --border:#e8e5e0;--border2:#d8d4cd;
+  --ink:#1c1917;--ink2:#44403c;--sub:#78716c;--muted:#a8a29e;
+  --accent:#c96442;--accent2:#b8542f;--accent-bg:#fdf6f2;--accent-line:#e9c4b3;
+  --blue:#2563eb;--blue-bg:#eff6ff;--blue-line:#bfdbfe;
+  --teal:#0d9488;--teal-bg:#f0fdfa;--teal-line:#99f6e4;
+  --amber:#b45309;--amber-bg:#fffbeb;--amber-line:#fcd34d;
+  --red:#b91c1c;--red-bg:#fef2f2;--red-line:#fecaca;
+  --green:#15803d;--green-bg:#f0fdf4;--green-line:#bbf7d0;
+  --violet:#6d28d9;--violet-bg:#f5f3ff;--violet-line:#ddd6fe;
+  --indigo:#4338ca;--indigo-bg:#eef2ff;
+  --shadow-sm:0 1px 2px rgba(28,25,23,.06);
+  --shadow:0 1px 3px rgba(28,25,23,.07),0 1px 2px rgba(28,25,23,.04);
+  --shadow-md:0 4px 14px rgba(28,25,23,.1);
+  --r:14px;--r-md:11px;--r-sm:8px;--r-xs:5px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{font-size:15px}
+html{font-size:15px;-webkit-text-size-adjust:100%}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
      background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
-a{color:var(--blue);text-decoration:none}
-a:hover{text-decoration:underline}
+a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+.page{max-width:640px;margin:0 auto;padding:1.6rem 1.1rem 5rem}
 
-/* ── layout ── */
-.page{max-width:680px;margin:0 auto;padding:2rem 1.2rem 5rem}
-header.flow-header{margin-bottom:2rem}
-
-/* ── badges ── */
-.badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.7rem;font-weight:600;
-       letter-spacing:.04em;padding:.2rem .55rem;border-radius:999px;white-space:nowrap}
-.badge-cat{background:var(--surface2);color:var(--sub);border:1px solid var(--border)}
-.badge-official{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-light)}
-.badge-reference{background:var(--violet-bg);color:var(--violet);border:1px solid #ddd6fe}
-.badge-risk-fin{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-light)}
-.badge-risk-med{background:var(--red-bg);color:var(--red);border:1px solid var(--red-light)}
-.badge-risk-low{background:var(--green-bg);color:var(--green);border:1px solid var(--green-light)}
-.badge-risk-mid{background:var(--surface2);color:var(--sub);border:1px solid var(--border)}
-.badge-struct{background:var(--teal-bg);color:var(--teal);border:1px solid var(--teal-light)}
-.badge-row{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.9rem}
-
-/* ── title block ── */
-.flow-title{font-size:1.55rem;font-weight:800;letter-spacing:-.025em;line-height:1.25;margin-bottom:.45rem}
-.flow-desc{font-size:.95rem;color:var(--sub);line-height:1.55;margin-bottom:1.1rem}
-
-/* ── source card ── */
-.source-card{display:flex;align-items:center;gap:.75rem;background:var(--surface);border:1px solid var(--border);
-             border-radius:var(--r-sm);padding:.7rem .9rem;margin-bottom:1rem;font-size:.82rem}
-.source-icon{font-size:1rem;flex-shrink:0}
-.source-title{font-weight:600;color:var(--ink);line-height:1.3}
-.source-url{color:var(--muted);font-size:.76rem;margin-top:.1rem;word-break:break-all}
-.source-url a{color:var(--blue)}
-
-/* ── warning callout ── */
-.warning-box{background:var(--amber-bg);border:1px solid var(--amber-light);border-left:3px solid #f59e0b;
-             border-radius:var(--r-xs);padding:.75rem 1rem;margin-bottom:1.4rem;font-size:.85rem;
-             color:#78350f;line-height:1.55}
-.warning-box .w-label{font-weight:700;margin-bottom:.25rem;font-size:.78rem;letter-spacing:.04em;
-                       text-transform:uppercase;display:flex;align-items:center;gap:.35rem}
-
-/* ── anchor info ── */
-.anchor-bar{display:flex;align-items:center;gap:.5rem;background:var(--surface);border:1px solid var(--border);
-            border-radius:var(--r-xs);padding:.55rem .9rem;margin-bottom:1.4rem;font-size:.82rem;color:var(--sub)}
-.anchor-bar b{color:var(--ink)}
-
-/* ── section header ── */
-.section-title{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-               color:var(--muted);padding:.3rem 0;margin:1.8rem 0 .8rem;
-               border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem}
-
-/* ── step card ── */
-.step{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
-      margin-bottom:.65rem;overflow:hidden;transition:box-shadow .15s}
-.step:hover{box-shadow:var(--shadow)}
-.step-header{display:flex;align-items:flex-start;gap:.7rem;padding:.85rem 1rem .7rem;cursor:pointer}
-.step-check{width:1.15rem;height:1.15rem;border:2px solid var(--border2);border-radius:4px;
-            flex-shrink:0;margin-top:.17rem;cursor:pointer;accent-color:var(--teal);
-            appearance:none;-webkit-appearance:none;background:#fff;position:relative}
-.step-check:checked{background:var(--teal);border-color:var(--teal)}
-.step-check:checked::after{content:"✓";position:absolute;color:#fff;font-size:.7rem;
-                            font-weight:700;top:50%;left:50%;transform:translate(-50%,-54%)}
-.step.done-step .step-header{opacity:.55}
-.step-content{flex:1;min-width:0}
-.step-name{font-size:.93rem;font-weight:600;line-height:1.4;color:var(--ink)}
-.step-day{display:inline-block;font-size:.7rem;font-weight:700;padding:.1rem .45rem;
-          border-radius:999px;margin-left:.5rem;background:var(--accent-bg);color:var(--accent);
-          vertical-align:middle;letter-spacing:.03em}
-.step-day.dday{background:#fef2f2;color:#b91c1c}
-.step-details{border-top:1px solid var(--border);padding:.7rem 1rem .85rem 2.9rem}
-.detail-row{display:grid;grid-template-columns:52px 1fr;gap:.35rem .6rem;margin-bottom:.4rem;
-            font-size:.83rem;align-items:start}
-.detail-row:last-child{margin-bottom:0}
-.detail-label{font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-              padding:.15rem .4rem;border-radius:4px;text-align:center;margin-top:.05rem}
-.lbl-why{background:#f1f5f9;color:#475569}
-.lbl-how{background:var(--teal-bg);color:var(--teal)}
-.lbl-done{background:var(--green-bg);color:var(--green)}
-.lbl-caution{background:var(--amber-bg);color:var(--amber)}
-.lbl-link{background:var(--blue-bg);color:var(--blue)}
-.detail-text{color:#44403c;line-height:1.55}
-.detail-text.caution-text{color:#78350f}
-.detail-text a{color:var(--blue);font-size:.8rem}
-.step-link-badge{font-size:.68rem;font-weight:600;padding:.1rem .35rem;border-radius:3px;margin-left:.35rem}
-.link-official{background:var(--blue-bg);color:var(--blue)}
-.link-ref{background:var(--violet-bg);color:var(--violet)}
-
-/* ── progress bar ── */
-.progress-wrap{margin-bottom:1.8rem}
-.progress-label{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-bottom:.4rem}
-.progress-bar-bg{height:5px;background:var(--surface2);border-radius:999px;overflow:hidden}
-.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--teal),#34d399);border-radius:999px;width:0%;transition:width .4s ease}
-
-/* ── back nav ── */
-.back-link{display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;color:var(--muted);
-           margin-bottom:1.5rem;padding:.35rem .6rem;border-radius:var(--r-xs);
-           border:1px solid var(--border);background:var(--surface)}
+/* back */
+.back-link{display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;color:var(--sub);
+  margin-bottom:1.3rem;padding:.35rem .7rem;border-radius:999px;border:1px solid var(--border);background:var(--surface)}
 .back-link:hover{color:var(--ink);text-decoration:none;border-color:var(--border2)}
 
-/* ── completion toast ── */
-#toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(100px);
-       background:#1c1917;color:#fafaf9;padding:.65rem 1.2rem;border-radius:var(--r-sm);
-       font-size:.85rem;font-weight:500;transition:transform .35s cubic-bezier(.34,1.56,.64,1);z-index:999}
+/* badges */
+.badge{display:inline-flex;align-items:center;gap:.28rem;font-size:.7rem;font-weight:600;
+  letter-spacing:.02em;padding:.2rem .55rem;border-radius:999px;white-space:nowrap;border:1px solid transparent}
+.b-cat{background:var(--surface2);color:var(--sub);border-color:var(--border)}
+.b-official{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-line)}
+.b-reference{background:var(--violet-bg);color:var(--violet);border-color:var(--violet-line)}
+.b-fin{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-line)}
+.b-med{background:var(--red-bg);color:var(--red);border-color:var(--red-line)}
+.b-low{background:var(--green-bg);color:var(--green);border-color:var(--green-line)}
+.b-mid{background:var(--surface2);color:var(--sub);border-color:var(--border)}
+.badge-row{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.85rem}
+
+/* header */
+.flow-title{font-size:1.55rem;font-weight:800;letter-spacing:-.025em;line-height:1.22;margin-bottom:.4rem}
+.flow-desc{font-size:.92rem;color:var(--sub);line-height:1.55;margin-bottom:1rem}
+
+/* source card */
+.source-card{display:flex;align-items:center;gap:.7rem;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-sm);padding:.65rem .85rem;margin-bottom:1rem}
+.source-icon{font-size:1.05rem;flex-shrink:0;width:2rem;height:2rem;display:grid;place-items:center;
+  border-radius:var(--r-xs);background:var(--surface2)}
+.source-body{flex:1;min-width:0}
+.source-title{font-weight:600;font-size:.82rem;line-height:1.3}
+.source-url{color:var(--muted);font-size:.72rem;margin-top:.1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* warning */
+.warning-box{background:var(--amber-bg);border:1px solid var(--amber-line);border-left:3px solid #f59e0b;
+  border-radius:var(--r-xs);padding:.7rem .95rem;margin-bottom:1.2rem;font-size:.83rem;color:#78350f;line-height:1.5}
+.warning-box .wl{font-weight:700;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;
+  display:flex;align-items:center;gap:.3rem;margin-bottom:.25rem}
+
+/* progress */
+.progress-wrap{margin:1.3rem 0 1.6rem}
+.progress-label{display:flex;justify-content:space-between;font-size:.76rem;color:var(--muted);margin-bottom:.35rem}
+.progress-bar-bg{height:6px;background:var(--surface3);border-radius:999px;overflow:hidden}
+.progress-bar-fill{height:100%;border-radius:999px;width:0;transition:width .45s cubic-bezier(.4,0,.2,1)}
+
+/* detail rows (shared) */
+.det{display:grid;grid-template-columns:46px 1fr;gap:.3rem .55rem;margin-top:.45rem;font-size:.82rem;align-items:start}
+.det-lbl{font-size:.64rem;font-weight:700;letter-spacing:.04em;padding:.13rem .35rem;border-radius:4px;text-align:center;margin-top:.05rem}
+.l-why{background:#f1f5f9;color:#475569}.l-how{background:var(--teal-bg);color:var(--teal)}
+.l-done{background:var(--green-bg);color:var(--green)}.l-caution{background:var(--amber-bg);color:var(--amber)}
+.l-link{background:var(--blue-bg);color:var(--blue)}
+.det-txt{color:var(--ink2);line-height:1.5}.det-txt.caut{color:#78350f}
+.det-txt a{font-size:.78rem}
+.link-pill{font-size:.64rem;font-weight:600;padding:.08rem .3rem;border-radius:3px;margin-left:.3rem}
+.lp-off{background:var(--blue-bg);color:var(--blue)}.lp-ref{background:var(--violet-bg);color:var(--violet)}
+
+/* checkbox */
+.cbx{width:1.1rem;height:1.1rem;border:2px solid var(--border2);border-radius:5px;flex-shrink:0;
+  cursor:pointer;accent-color:var(--teal);appearance:none;-webkit-appearance:none;background:#fff;position:relative;transition:all .15s}
+.cbx:checked{background:var(--teal);border-color:var(--teal)}
+.cbx:checked::after{content:"✓";position:absolute;color:#fff;font-size:.68rem;font-weight:800;top:50%;left:50%;transform:translate(-50%,-54%)}
+
+/* output panel */
+.output-panel{margin-top:2rem;border:1px dashed var(--border2);border-radius:var(--r);padding:1.1rem 1.2rem;background:var(--surface)}
+.output-head{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:700;color:var(--ink2);margin-bottom:.8rem}
+.output-head .oicon{font-size:1rem}
+
+/* mini calendar */
+.mcal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;font-size:.7rem}
+.mcal .dow{text-align:center;color:var(--muted);font-weight:600;padding:.2rem 0}
+.mcal .day{aspect-ratio:1;display:grid;place-items:center;border-radius:5px;color:var(--ink2);background:var(--surface2)}
+.mcal .day.mark{background:var(--accent);color:#fff;font-weight:700}
+.mcal .day.soft{background:var(--accent-bg);color:var(--accent);font-weight:600}
+.mcal .day.empty{background:transparent}
+
+/* sheet table */
+.sheet-tbl{width:100%;border-collapse:collapse;font-size:.78rem}
+.sheet-tbl th{background:var(--surface2);padding:.4rem .55rem;text-align:left;color:var(--sub);font-weight:600;border:1px solid var(--border);font-size:.72rem}
+.sheet-tbl td{padding:.4rem .55rem;border:1px solid var(--border);color:var(--ink2)}
+.sheet-tbl td.editable{background:#fffef9;color:var(--muted);font-style:italic}
+
+/* memo note */
+.memo-note{background:var(--accent-bg);border:1px solid var(--accent-line);border-radius:var(--r-sm);padding:.85rem 1rem;font-size:.82rem;color:var(--ink2);line-height:1.6}
+.memo-note .mtitle{font-weight:700;color:var(--accent2);margin-bottom:.3rem}
+
+/* toast */
+#toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(120px);
+  background:var(--ink);color:#faf9f7;padding:.65rem 1.3rem;border-radius:var(--r-sm);font-size:.85rem;
+  font-weight:600;transition:transform .4s cubic-bezier(.34,1.56,.64,1);z-index:99;box-shadow:var(--shadow-md)}
 #toast.show{transform:translateX(-50%) translateY(0)}
 
-/* ── responsive ── */
-@media(max-width:520px){
-  .flow-title{font-size:1.3rem}
-  .detail-row{grid-template-columns:44px 1fr}
-}
-</style>
-</head>
-<body>
-<div class="page">
-  <a class="back-link" href="index.html">← 전체 목록</a>
+@media(max-width:520px){.flow-title{font-size:1.3rem}.det{grid-template-columns:40px 1fr}}
 
-  <header class="flow-header">
-    <div class="badge-row">
-      <span class="badge badge-cat">여행/관세</span>
-      <span class="badge badge-struct">✓ 체크리스트</span>
-      <span class="badge badge-risk-mid">⚠ 중간</span>
-    </div>
-    <h1 class="flow-title">해외여행 휴대품 면세범위·신고 Flow</h1>
-    <p class="flow-desc">관세청 기준으로 면세범위와 자진신고 대상을 정리해 입국 시 가산세·과태료를 피합니다.</p>
-    <div class="source-card">
+.ck-section{margin-bottom:1.3rem}
+.ck-section-head{font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+  margin-bottom:.6rem;display:flex;align-items:center;gap:.5rem}
+.ck-section-head .ck-count{background:var(--surface2);color:var(--sub);padding:.05rem .4rem;border-radius:999px;font-size:.66rem}
+.ck-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:.5rem;transition:box-shadow .15s}
+.ck-item:hover{box-shadow:var(--shadow)}
+.ck-head{display:flex;gap:.7rem;align-items:flex-start;padding:.8rem .95rem;cursor:pointer}
+.ck-item.done .ck-head{opacity:.55}
+.ck-name{font-size:.92rem;font-weight:600;line-height:1.4;flex:1}
+.ck-details{border-top:1px solid var(--surface3);padding:.65rem .95rem .8rem 2.6rem}
+.progress-bar-fill{background:var(--teal)}</style>
+</head><body><div class="page">
+<a class="back-link" href="index.html">← 전체 목록</a>
+<header>
+  <div class="badge-row">
+    <span class="badge b-cat">여행/관세</span>
+    <span class="badge b-cat">✓ 체크리스트</span>
+    <span class="badge b-mid">⚠ 중간</span>
+  </div>
+  <h1 class="flow-title">해외여행 휴대품 면세범위·신고 Flow</h1>
+  <p class="flow-desc">관세청 기준으로 면세범위와 자진신고 대상을 정리해 입국 시 가산세·과태료를 피합니다.</p>
+  <a class="source-card" href="https://customs.go.kr/kcs/cm/cntnts/cntntsView.do?mi=2837&amp;cntntsId=829" target="_blank" style="text-decoration:none;color:inherit">
   <span class="source-icon">🏛</span>
-  <div>
-    <div class="source-title">관세청 – 여행자 휴대품 통관 안내</div>
-    <div class="source-url"><a href="https://customs.go.kr/kcs/cm/cntnts/cntntsView.do?mi=2837&amp;cntntsId=829" target="_blank">https://customs.go.kr/kcs/cm/cntnts/cntntsView.do?mi=2837&amp;cntntsId=829</a></div>
-  </div>
-  <span class="badge badge-official">🏛 공식출처</span>
+  <div class="source-body"><div class="source-title">관세청 – 여행자 휴대품 통관 안내</div><div class="source-url">https://customs.go.kr/kcs/cm/cntnts/cntntsView.do?mi=2837&amp;cntntsId=829</div></div>
+  <span class="badge b-official">🏛 공식출처</span>
+</a>
+</header>
+<div class="warning-box"><div class="wl">⚠️ 주의사항</div>면세범위, 신고 대상, 반입금지·제한 품목은 변경될 수 있습니다. 관세청 공식 안내를 확인하세요.</div>
+<div class="progress-wrap">
+  <div class="progress-label"><span>진행률</span><span id="ptext">0 / 3</span></div>
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="pbar"></div></div>
 </div>
-  </header>
-
-  <div class="warning-box">
-  <div class="w-label">⚠️ 주의사항</div>
-  면세범위, 신고 대상, 반입금지·제한 품목은 변경될 수 있습니다. 관세청 공식 안내를 확인하세요.
+<div class="ck-section">
+  <div class="ck-section-head"><span>1. 면세범위 확인</span><span class="ck-count">1</span></div>
+  <div class="ck-item" id="s0">
+  <label class="ck-head" for="c0">
+    <input class="cbx" type="checkbox" id="c0" style="margin-top:.18rem" onchange="onCheck(this,'s0','done')">
+    <div class="ck-name">휴대품 면세범위(총액·주류·담배·향수) 확인하기</div>
+  </label>
+  <div class="ck-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt ">한도를 넘기면 자진신고해야 하며, 미신고 적발 시 세액의 40% 가산세가 붙습니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt ">관세청 여행자 휴대품 안내에서 현재 면세 한도를 확인합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt ">면세 한도와 내 구매 예정 항목을 비교 메모했다.</span></div><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">2026년 기준 기본 면세 한도는 1인당 미화 800달러입니다. 별도 면세 허용: 주류 합계 2L·미화 400달러 이하, 담배(궐련) 200개비, 향수 100mL.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://customs.go.kr/kcs/cm/cntnts/cntntsView.do?mi=2837&amp;cntntsId=829" target="_blank">관세청 여행자 휴대품 통관 안내</a><span class="link-pill lp-off">공식</span></span></div></div>
 </div>
-  
-
-  <div class="progress-wrap">
-    <div class="progress-label">
-      <span>진행률</span>
-      <span id="prog-text">0 / 3 완료</span>
-    </div>
-    <div class="progress-bar-bg">
-      <div class="progress-bar-fill" id="prog-bar"></div>
-    </div>
-  </div>
-
-  <div id="steps">
-    <div class="section-title"><span>—</span>1. 면세범위 확인</div>
-<div class="step" id="step-0">
-  <label class="step-header" for="chk-0">
-    <input class="step-check" type="checkbox" id="chk-0" onchange="onCheck(this,'step-0')">
-    <div class="step-content">
-      <div class="step-name">휴대품 면세범위(총액·주류·담배·향수) 확인하기</div>
-    </div>
+</div><div class="ck-section">
+  <div class="ck-section-head"><span>2. 신고·반입</span><span class="ck-count">2</span></div>
+  <div class="ck-item" id="s1">
+  <label class="ck-head" for="c1">
+    <input class="cbx" type="checkbox" id="c1" style="margin-top:.18rem" onchange="onCheck(this,'s1','done')">
+    <div class="ck-name">면세범위 초과 시 자진신고 방법 확인하기</div>
   </label>
-  <div class="step-details"><div class="detail-row">
-          <span class="detail-label lbl-why">WHY</span>
-          <span class="detail-text ">한도를 넘기면 자진신고해야 하며, 미신고 적발 시 세액의 40% 가산세가 붙습니다.</span>
-        </div><div class="detail-row">
-          <span class="detail-label lbl-how">HOW</span>
-          <span class="detail-text ">관세청 여행자 휴대품 안내에서 현재 면세 한도를 확인합니다.</span>
-        </div><div class="detail-row">
-          <span class="detail-label lbl-done">완료</span>
-          <span class="detail-text ">면세 한도와 내 구매 예정 항목을 비교 메모했다.</span>
-        </div><div class="detail-row">
-          <span class="detail-label lbl-caution">주의</span>
-          <span class="detail-text caution-text">2026년 기준 기본 면세 한도는 1인당 미화 800달러입니다. 별도 면세 허용: 주류 합계 2L·미화 400달러 이하, 담배(궐련) 200개비, 향수 100mL.</span>
-        </div><div class="detail-row">
-          <span class="detail-label lbl-link">링크</span>
-          <span class="detail-text">
-            <a href="https://customs.go.kr/kcs/cm/cntnts/cntntsView.do?mi=2837&amp;cntntsId=829" target="_blank">관세청 여행자 휴대품 통관 안내</a>
-            <span class="step-link-badge link-official">공식</span>
-          </span>
-        </div></div>
-</div><div class="section-title"><span>—</span>2. 신고·반입</div>
-<div class="step" id="step-1">
-  <label class="step-header" for="chk-1">
-    <input class="step-check" type="checkbox" id="chk-1" onchange="onCheck(this,'step-1')">
-    <div class="step-content">
-      <div class="step-name">면세범위 초과 시 자진신고 방법 확인하기</div>
-    </div>
-  </label>
-  <div class="step-details"><div class="detail-row">
-          <span class="detail-label lbl-how">HOW</span>
-          <span class="detail-text ">신고물품이 있으면 신고서(종이 또는 모바일)를 제출합니다. 모바일 신고 시 즉시 고지서 발급·납부가 가능합니다.</span>
-        </div><div class="detail-row">
-          <span class="detail-label lbl-caution">주의</span>
-          <span class="detail-text caution-text">자진신고하면 관세의 30%(최대 20만원)를 감면받습니다. 미신고 적발 시 가산세 40%가 추가됩니다.</span>
-        </div></div>
-</div><div class="step" id="step-2">
-  <label class="step-header" for="chk-2">
-    <input class="step-check" type="checkbox" id="chk-2" onchange="onCheck(this,'step-2')">
-    <div class="step-content">
-      <div class="step-name">반입금지·제한 품목(식물·육류 등) 확인하기</div>
-    </div>
+  <div class="ck-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt ">신고물품이 있으면 신고서(종이 또는 모바일)를 제출합니다. 모바일 신고 시 즉시 고지서 발급·납부가 가능합니다.</span></div><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">자진신고하면 관세의 30%(최대 20만원)를 감면받습니다. 미신고 적발 시 가산세 40%가 추가됩니다.</span></div></div>
+</div><div class="ck-item" id="s2">
+  <label class="ck-head" for="c2">
+    <input class="cbx" type="checkbox" id="c2" style="margin-top:.18rem" onchange="onCheck(this,'s2','done')">
+    <div class="ck-name">반입금지·제한 품목(식물·육류 등) 확인하기</div>
   </label>
   
 </div>
-  </div>
 </div>
-
-<div id="toast">🎉 모든 단계 완료!</div>
-
+<div class="output-panel">
+  <div class="output-head"><span class="oicon">📝</span>메모로 저장 — 정리한 내용을 메모에 담아 보관합니다</div>
+  <div class="memo-note"><div class="mtitle">체크한 항목 요약</div>완료한 단계와 확인할 내용이 메모로 정리됩니다. 공식 확인이 필요한 항목은 따로 표시해 두세요.</div>
+</div>
+</div>
+<div id="toast">🎉 모두 완료했어요!</div>
 <script>
-const total = 3;
-let done = 0;
-function onCheck(el, stepId) {
-  const step = document.getElementById(stepId);
-  if (el.checked) { done++; step.classList.add('done-step'); }
-  else { done--; step.classList.remove('done-step'); }
-  document.getElementById('prog-text').textContent = done + ' / ' + total + ' 완료';
-  document.getElementById('prog-bar').style.width = (done/total*100) + '%';
-  if (done === total) {
-    const t = document.getElementById('toast');
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
-  }
+const total=3;let done=0;
+function onCheck(el,sid,cls){
+  const node=document.getElementById(sid);
+  if(el.checked){done++;node.classList.add(cls)}else{done--;node.classList.remove(cls)}
+  document.getElementById('ptext').textContent=done+' / '+total;
+  document.getElementById('pbar').style.width=(done/total*100)+'%';
+  if(done===total){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
 }
 </script>
-</body>
-</html>
+</body></html>
