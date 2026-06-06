@@ -1,22 +1,28 @@
-<!DOCTYPE html><html lang="ko"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>건강보험 피부양자 등록 준비 Flow — FLOW</title>
 <style>
+
 :root{
-  --bg:#faf9f7;--surface:#fff;--surface2:#f5f4f1;--surface3:#efede8;
+  --bg:#fafaf9;--surface:#fff;--surface2:#f5f4f1;--surface3:#efede8;
   --border:#e8e5e0;--border2:#d8d4cd;
   --ink:#1c1917;--ink2:#44403c;--sub:#78716c;--muted:#a8a29e;
   --accent:#c96442;--accent2:#b8542f;--accent-bg:#fdf6f2;--accent-line:#e9c4b3;
-  --blue:#2563eb;--blue-bg:#eff6ff;--blue-line:#bfdbfe;
+  --blue:#1d6fb5;--blue-bg:#eff6ff;--blue-line:#bfdbfe;
   --teal:#0d9488;--teal-bg:#f0fdfa;--teal-line:#99f6e4;
   --amber:#b45309;--amber-bg:#fffbeb;--amber-line:#fcd34d;
   --red:#b91c1c;--red-bg:#fef2f2;--red-line:#fecaca;
   --green:#15803d;--green-bg:#f0fdf4;--green-line:#bbf7d0;
   --violet:#6d28d9;--violet-bg:#f5f3ff;--violet-line:#ddd6fe;
-  --indigo:#4338ca;--indigo-bg:#eef2ff;
+  --indigo:#4338ca;--indigo-bg:#eef2ff;--indigo-line:#c7d2fe;
+  --rose:#be185d;--rose-bg:#fdf2f8;--rose-line:#f9a8d4;
+  --orange:#c2410c;--orange-bg:#fff7ed;--orange-line:#fed7aa;
   --shadow-sm:0 1px 2px rgba(28,25,23,.06);
   --shadow:0 1px 3px rgba(28,25,23,.07),0 1px 2px rgba(28,25,23,.04);
-  --shadow-md:0 4px 14px rgba(28,25,23,.1);
+  --shadow-md:0 4px 16px rgba(28,25,23,.1);
   --r:14px;--r-md:11px;--r-sm:8px;--r-xs:5px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -24,169 +30,216 @@ html{font-size:15px;-webkit-text-size-adjust:100%}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
      background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
 a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
-.page{max-width:640px;margin:0 auto;padding:1.6rem 1.1rem 5rem}
+.page{max-width:660px;margin:0 auto;padding:1.6rem 1.1rem 5rem}
 
-/* back */
 .back-link{display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;color:var(--sub);
-  margin-bottom:1.3rem;padding:.35rem .7rem;border-radius:999px;border:1px solid var(--border);background:var(--surface)}
+  margin-bottom:1.3rem;padding:.35rem .75rem;border-radius:999px;border:1px solid var(--border);background:var(--surface)}
 .back-link:hover{color:var(--ink);text-decoration:none;border-color:var(--border2)}
 
-/* badges */
-.badge{display:inline-flex;align-items:center;gap:.28rem;font-size:.7rem;font-weight:600;
-  letter-spacing:.02em;padding:.2rem .55rem;border-radius:999px;white-space:nowrap;border:1px solid transparent}
+.badge{display:inline-flex;align-items:center;gap:.28rem;font-size:.68rem;font-weight:600;
+  letter-spacing:.02em;padding:.2rem .6rem;border-radius:999px;white-space:nowrap;border:1px solid transparent}
 .b-cat{background:var(--surface2);color:var(--sub);border-color:var(--border)}
 .b-official{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-line)}
 .b-reference{background:var(--violet-bg);color:var(--violet);border-color:var(--violet-line)}
 .b-fin{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-line)}
 .b-med{background:var(--red-bg);color:var(--red);border-color:var(--red-line)}
 .b-low{background:var(--green-bg);color:var(--green);border-color:var(--green-line)}
-.b-mid{background:var(--surface2);color:var(--sub);border-color:var(--border)}
 .badge-row{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.85rem}
 
-/* header */
 .flow-title{font-size:1.55rem;font-weight:800;letter-spacing:-.025em;line-height:1.22;margin-bottom:.4rem}
-.flow-desc{font-size:.92rem;color:var(--sub);line-height:1.55;margin-bottom:1rem}
+.flow-desc{font-size:.9rem;color:var(--sub);line-height:1.55;margin-bottom:1rem}
 
-/* source card */
 .source-card{display:flex;align-items:center;gap:.7rem;background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r-sm);padding:.65rem .85rem;margin-bottom:1rem}
-.source-icon{font-size:1.05rem;flex-shrink:0;width:2rem;height:2rem;display:grid;place-items:center;
+  border-radius:var(--r-sm);padding:.65rem .9rem;margin-bottom:.9rem}
+.source-icon{font-size:1rem;flex-shrink:0;width:2rem;height:2rem;display:grid;place-items:center;
   border-radius:var(--r-xs);background:var(--surface2)}
 .source-body{flex:1;min-width:0}
-.source-title{font-weight:600;font-size:.82rem;line-height:1.3}
-.source-url{color:var(--muted);font-size:.72rem;margin-top:.1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.source-title{font-weight:600;font-size:.8rem;line-height:1.3}
+.source-url{color:var(--muted);font-size:.68rem;margin-top:.1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* warning */
 .warning-box{background:var(--amber-bg);border:1px solid var(--amber-line);border-left:3px solid #f59e0b;
-  border-radius:var(--r-xs);padding:.7rem .95rem;margin-bottom:1.2rem;font-size:.83rem;color:#78350f;line-height:1.5}
-.warning-box .wl{font-weight:700;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;
-  display:flex;align-items:center;gap:.3rem;margin-bottom:.25rem}
+  border-radius:var(--r-xs);padding:.7rem .95rem;margin-bottom:1.1rem;font-size:.82rem;color:#78350f;line-height:1.5}
+.warning-box .wl{font-weight:700;font-size:.7rem;letter-spacing:.04em;text-transform:uppercase;
+  display:flex;align-items:center;gap:.3rem;margin-bottom:.2rem}
 
-/* progress */
-.progress-wrap{margin:1.3rem 0 1.6rem}
-.progress-label{display:flex;justify-content:space-between;font-size:.76rem;color:var(--muted);margin-bottom:.35rem}
-.progress-bar-bg{height:6px;background:var(--surface3);border-radius:999px;overflow:hidden}
-.progress-bar-fill{height:100%;border-radius:999px;width:0;transition:width .45s cubic-bezier(.4,0,.2,1)}
-
-/* detail rows (shared) */
-.det{display:grid;grid-template-columns:46px 1fr;gap:.3rem .55rem;margin-top:.45rem;font-size:.82rem;align-items:start}
-.det-lbl{font-size:.64rem;font-weight:700;letter-spacing:.04em;padding:.13rem .35rem;border-radius:4px;text-align:center;margin-top:.05rem}
+.det{display:grid;grid-template-columns:46px 1fr;gap:.25rem .5rem;margin-top:.4rem;font-size:.8rem;align-items:start}
+.det-lbl{font-size:.62rem;font-weight:700;letter-spacing:.04em;padding:.12rem .3rem;border-radius:4px;text-align:center;margin-top:.06rem}
 .l-why{background:#f1f5f9;color:#475569}.l-how{background:var(--teal-bg);color:var(--teal)}
 .l-done{background:var(--green-bg);color:var(--green)}.l-caution{background:var(--amber-bg);color:var(--amber)}
 .l-link{background:var(--blue-bg);color:var(--blue)}
 .det-txt{color:var(--ink2);line-height:1.5}.det-txt.caut{color:#78350f}
 .det-txt a{font-size:.78rem}
-.link-pill{font-size:.64rem;font-weight:600;padding:.08rem .3rem;border-radius:3px;margin-left:.3rem}
+.link-pill{font-size:.62rem;font-weight:600;padding:.07rem .3rem;border-radius:3px;margin-left:.25rem}
 .lp-off{background:var(--blue-bg);color:var(--blue)}.lp-ref{background:var(--violet-bg);color:var(--violet)}
+.lp-cre{background:var(--rose-bg);color:var(--rose)}
 
-/* checkbox */
 .cbx{width:1.1rem;height:1.1rem;border:2px solid var(--border2);border-radius:5px;flex-shrink:0;
-  cursor:pointer;accent-color:var(--teal);appearance:none;-webkit-appearance:none;background:#fff;position:relative;transition:all .15s}
-.cbx:checked{background:var(--teal);border-color:var(--teal)}
+  cursor:pointer;appearance:none;-webkit-appearance:none;background:#fff;position:relative;transition:all .15s}
+.cbx:checked{background:var(--ck-color,var(--teal));border-color:var(--ck-color,var(--teal))}
 .cbx:checked::after{content:"✓";position:absolute;color:#fff;font-size:.68rem;font-weight:800;top:50%;left:50%;transform:translate(-50%,-54%)}
 
-/* output panel */
-.output-panel{margin-top:2rem;border:1px dashed var(--border2);border-radius:var(--r);padding:1.1rem 1.2rem;background:var(--surface)}
-.output-head{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:700;color:var(--ink2);margin-bottom:.8rem}
-.output-head .oicon{font-size:1rem}
+.progress-wrap{margin:1.1rem 0 1.5rem}
+.progress-label{display:flex;justify-content:space-between;font-size:.74rem;color:var(--muted);margin-bottom:.3rem}
+.progress-bar-bg{height:6px;background:var(--surface3);border-radius:999px;overflow:hidden}
+.progress-bar-fill{height:100%;border-radius:999px;width:0;transition:width .45s cubic-bezier(.4,0,.2,1)}
 
-/* mini calendar */
-.mcal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;font-size:.7rem}
+.output-panel{margin-top:2rem;border:1px dashed var(--border2);border-radius:var(--r);padding:1.1rem 1.2rem;background:var(--surface)}
+.output-head{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:700;color:var(--ink2);margin-bottom:.7rem}
+
+.memo-note{background:var(--accent-bg);border:1px solid var(--accent-line);border-radius:var(--r-sm);padding:.8rem 1rem;font-size:.82rem;color:var(--ink2);line-height:1.6}
+.memo-note .mtitle{font-weight:700;color:var(--accent2);margin-bottom:.25rem}
+
+.mcal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;font-size:.68rem}
 .mcal .dow{text-align:center;color:var(--muted);font-weight:600;padding:.2rem 0}
 .mcal .day{aspect-ratio:1;display:grid;place-items:center;border-radius:5px;color:var(--ink2);background:var(--surface2)}
-.mcal .day.mark{background:var(--accent);color:#fff;font-weight:700}
-.mcal .day.soft{background:var(--accent-bg);color:var(--accent);font-weight:600}
+.mcal .day.mark{background:var(--cal-mark,var(--teal));color:#fff;font-weight:700}
+.mcal .day.soft{background:var(--cal-soft,var(--teal-bg));color:var(--cal-mark,var(--teal));font-weight:600}
 .mcal .day.empty{background:transparent}
 
-/* sheet table */
 .sheet-tbl{width:100%;border-collapse:collapse;font-size:.78rem}
-.sheet-tbl th{background:var(--surface2);padding:.4rem .55rem;text-align:left;color:var(--sub);font-weight:600;border:1px solid var(--border);font-size:.72rem}
+.sheet-tbl th{background:var(--surface2);padding:.4rem .55rem;text-align:left;color:var(--sub);font-weight:600;border:1px solid var(--border);font-size:.7rem}
 .sheet-tbl td{padding:.4rem .55rem;border:1px solid var(--border);color:var(--ink2)}
-.sheet-tbl td.editable{background:#fffef9;color:var(--muted);font-style:italic}
+.sheet-tbl td.ed{background:#fffef9;color:var(--muted);font-style:italic}
 
-/* memo note */
-.memo-note{background:var(--accent-bg);border:1px solid var(--accent-line);border-radius:var(--r-sm);padding:.85rem 1rem;font-size:.82rem;color:var(--ink2);line-height:1.6}
-.memo-note .mtitle{font-weight:700;color:var(--accent2);margin-bottom:.3rem}
-
-/* toast */
 #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(120px);
-  background:var(--ink);color:#faf9f7;padding:.65rem 1.3rem;border-radius:var(--r-sm);font-size:.85rem;
+  background:var(--ink);color:#fafaf9;padding:.65rem 1.3rem;border-radius:var(--r-sm);font-size:.85rem;
   font-weight:600;transition:transform .4s cubic-bezier(.34,1.56,.64,1);z-index:99;box-shadow:var(--shadow-md)}
 #toast.show{transform:translateX(-50%) translateY(0)}
 
 @media(max-width:520px){.flow-title{font-size:1.3rem}.det{grid-template-columns:40px 1fr}}
 
-.ck-section{margin-bottom:1.3rem}
-.ck-section-head{font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
-  margin-bottom:.6rem;display:flex;align-items:center;gap:.5rem}
-.ck-section-head .ck-count{background:var(--surface2);color:var(--sub);padding:.05rem .4rem;border-radius:999px;font-size:.66rem}
-.ck-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:.5rem;transition:box-shadow .15s}
-.ck-item:hover{box-shadow:var(--shadow)}
-.ck-head{display:flex;gap:.7rem;align-items:flex-start;padding:.8rem .95rem;cursor:pointer}
-.ck-item.done .ck-head{opacity:.55}
-.ck-name{font-size:.92rem;font-weight:600;line-height:1.4;flex:1}
-.ck-details{border-top:1px solid var(--surface3);padding:.65rem .95rem .8rem 2.6rem}
-.progress-bar-fill{background:var(--teal)}</style>
-</head><body><div class="page">
+
+/* GOV WIZARD */
+--ck-color:#1d6fb5;
+.progress-bar-fill{background:#1d6fb5}
+
+.gov-step-indicator{display:flex;align-items:flex-start;gap:0;margin-bottom:1.6rem;overflow-x:auto;padding-bottom:.2rem}
+.gov-step-ind-item{display:flex;flex-direction:column;align-items:center;flex:1;min-width:0;position:relative}
+.gov-step-ind-item:not(:last-child)::after{content:"";position:absolute;top:1.1rem;left:50%;right:-50%;height:2px;background:var(--border2);z-index:0}
+.gov-step-ind-item.active:not(:last-child)::after{background:var(--blue)}
+.gov-step-num{width:2.1rem;height:2.1rem;border-radius:50%;border:2px solid var(--border2);background:var(--surface);
+  display:grid;place-items:center;font-weight:800;font-size:.82rem;color:var(--muted);z-index:1;position:relative;transition:all .2s}
+.gov-step-ind-item.active .gov-step-num{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 0 0 3px var(--blue-line)}
+.gov-step-ind-item.done .gov-step-num{background:var(--green);border-color:var(--green);color:#fff}
+.gov-step-lbl{font-size:.62rem;color:var(--muted);text-align:center;margin-top:.3rem;line-height:1.3;max-width:5rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gov-step-ind-item.active .gov-step-lbl{color:var(--blue);font-weight:600}
+
+.gov-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  margin-bottom:1rem;overflow:hidden}
+.gov-section-head{display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;
+  border-bottom:1px solid var(--surface3);background:var(--surface)}
+.gov-section-num{width:1.9rem;height:1.9rem;border-radius:50%;background:var(--blue-bg);
+  border:1.5px solid var(--blue-line);color:var(--blue);font-weight:800;font-size:.82rem;
+  display:grid;place-items:center;flex-shrink:0}
+.gov-section-title{font-weight:700;font-size:.88rem;flex:1}
+.gov-section-count{font-size:.7rem;color:var(--muted);background:var(--surface2);
+  padding:.1rem .4rem;border-radius:999px;border:1px solid var(--border)}
+.gov-section-progress{font-size:.72rem;color:var(--blue);font-weight:600}
+
+.gov-item{border-bottom:1px solid var(--surface3)}
+.gov-item:last-child{border-bottom:none}
+.gov-item-head{display:flex;align-items:flex-start;gap:.7rem;padding:.75rem 1rem;cursor:pointer}
+.gov-item.done .gov-item-head{opacity:.5}
+.gov-item-name{font-size:.9rem;font-weight:600;line-height:1.4;flex:1}
+.gov-item-status{font-size:.65rem;font-weight:600;padding:.1rem .35rem;border-radius:3px;
+  white-space:nowrap;flex-shrink:0;margin-top:.1rem}
+.status-todo{background:var(--surface2);color:var(--muted)}
+.status-done{background:var(--green-bg);color:var(--green)}
+.gov-item-details{padding:.5rem 1rem .85rem 3.4rem;border-top:1px solid var(--surface3);background:#fafaf9}
+
+</style>
+</head>
+<body>
+<div class="page">
 <a class="back-link" href="index.html">← 전체 목록</a>
 <header>
-  <div class="badge-row">
-    <span class="badge b-cat">건강보험/행정</span>
+  <div class="badge-row"><span class="badge b-cat">건강보험/행정</span>
     <span class="badge b-cat">✓ 체크리스트</span>
-    <span class="badge b-low">✓ 안전</span>
-  </div>
+    <span class="badge b-low">✓ 안전</span></div>
   <h1 class="flow-title">건강보험 피부양자 등록 준비 Flow</h1>
   <p class="flow-desc">국민건강보험 기준으로 피부양자 자격 요건, 필요 서류, 신청을 준비합니다.</p>
   <a class="source-card" href="https://www.nhis.or.kr/nhis/policy/wbhada07500m01.do" target="_blank" style="text-decoration:none;color:inherit">
-  <span class="source-icon">🏛</span>
-  <div class="source-body"><div class="source-title">국민건강보험공단 – 피부양자 자격 취득 모의계산</div><div class="source-url">https://www.nhis.or.kr/nhis/policy/wbhada07500m01.do</div></div>
-  <span class="badge b-official">🏛 공식출처</span>
-</a>
+    <span class="source-icon">🏛</span>
+    <div class="source-body">
+      <div class="source-title">국민건강보험공단 – 피부양자 자격 취득 모의계산</div>
+      <div class="source-url">https://www.nhis.or.kr/nhis/policy/wbhada07500m01.do</div>
+    </div>
+    <span class="badge b-official">🏛 공식출처</span>
+  </a>
 </header>
 <div class="warning-box"><div class="wl">⚠️ 주의사항</div>피부양자 소득·재산·부양 요건은 기준이 바뀔 수 있습니다. 국민건강보험공단 안내로 확인하세요.</div>
 <div class="progress-wrap">
   <div class="progress-label"><span>진행률</span><span id="ptext">0 / 3</span></div>
   <div class="progress-bar-bg"><div class="progress-bar-fill" id="pbar"></div></div>
 </div>
-<div class="ck-section">
-  <div class="ck-section-head"><span>1. 자격 확인</span><span class="ck-count">1</span></div>
-  <div class="ck-item" id="s0">
-  <label class="ck-head" for="c0">
-    <input class="cbx" type="checkbox" id="c0" style="margin-top:.18rem" onchange="onCheck(this,'s0','done')">
-    <div class="ck-name">대상자의 소득·재산·부양 요건 확인하기</div>
+<div class="gov-step-indicator"><div class="gov-step-ind-item active" id="gstep-0"><div class="gov-step-num">1</div><div class="gov-step-lbl">1. 자격 확인</div></div><div class="gov-step-ind-item " id="gstep-1"><div class="gov-step-num">2</div><div class="gov-step-lbl">2. 서류·신청</div></div></div><div class="gov-section" id="gsec-0">
+  <div class="gov-section-head">
+    <div class="gov-section-num">1</div>
+    <div class="gov-section-title">1. 자격 확인</div>
+    <span class="gov-section-count">1개 항목</span>
+    <span class="gov-section-progress" id="gsec-prog-0">0/1</span>
+  </div><div class="gov-item" id="s0">
+  <label class="gov-item-head" for="c0">
+    <input class="cbx" type="checkbox" id="c0" onchange="onCheck(this,'s0','done',0)">
+    <div style="flex:1"><div class="gov-item-name">대상자의 소득·재산·부양 요건 확인하기</div></div>
+    <span class="gov-item-status status-todo" id="st0">미완료</span>
   </label>
-  <div class="ck-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt ">소득·재산 기준 초과 시 피부양자에서 제외되어 지역가입자가 됩니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt ">국민건강보험공단 피부양자 자격 모의계산 또는 안내를 확인합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt ">등록 가능 여부와 확인할 점을 메모했다.</span></div><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">2026년 기준 연소득 2,000만원 이하 + 재산세 과세표준 5억4천만원 이하이어야 합니다. 사업자등록 없는 프리랜서 소득은 연 500만원 이하여야 합니다. 공단은 매년 11월 전년도 소득·재산으로 자격을 재심사합니다.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://www.nhis.or.kr/nhis/policy/wbhada07500m01.do" target="_blank">건강보험공단 피부양자 자격 모의계산</a><span class="link-pill lp-off">공식</span></span></div></div>
-</div>
-</div><div class="ck-section">
-  <div class="ck-section-head"><span>2. 서류·신청</span><span class="ck-count">2</span></div>
-  <div class="ck-item" id="s1">
-  <label class="ck-head" for="c1">
-    <input class="cbx" type="checkbox" id="c1" style="margin-top:.18rem" onchange="onCheck(this,'s1','done')">
-    <div class="ck-name">가족관계 증빙 등 필요 서류 준비하기</div>
+  <div class="gov-item-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">소득·재산 기준 초과 시 피부양자에서 제외되어 지역가입자가 됩니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">국민건강보험공단 피부양자 자격 모의계산 또는 안내를 확인합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">등록 가능 여부와 확인할 점을 메모했다.</span></div><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">2026년 기준 연소득 2,000만원 이하 + 재산세 과세표준 5억4천만원 이하이어야 합니다. 사업자등록 없는 프리랜서 소득은 연 500만원 이하여야 합니다. 공단은 매년 11월 전년도 소득·재산으로 자격을 재심사합니다.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://www.nhis.or.kr/nhis/policy/wbhada07500m01.do" target="_blank">건강보험공단 피부양자 자격 모의계산</a><span class="link-pill lp-off">공식</span></span></div></div>
+</div></div><div class="gov-section" id="gsec-1">
+  <div class="gov-section-head">
+    <div class="gov-section-num">2</div>
+    <div class="gov-section-title">2. 서류·신청</div>
+    <span class="gov-section-count">2개 항목</span>
+    <span class="gov-section-progress" id="gsec-prog-1">0/2</span>
+  </div><div class="gov-item" id="s1">
+  <label class="gov-item-head" for="c1">
+    <input class="cbx" type="checkbox" id="c1" onchange="onCheck(this,'s1','done',1)">
+    <div style="flex:1"><div class="gov-item-name">가족관계 증빙 등 필요 서류 준비하기</div></div>
+    <span class="gov-item-status status-todo" id="st1">미완료</span>
   </label>
   
-</div><div class="ck-item" id="s2">
-  <label class="ck-head" for="c2">
-    <input class="cbx" type="checkbox" id="c2" style="margin-top:.18rem" onchange="onCheck(this,'s2','done')">
-    <div class="ck-name">직장가입자(가족)가 회사 인사팀 또는 공단 홈페이지(민원여기요)를 통해 피부양자 자격 취득 신고하기</div>
+</div><div class="gov-item" id="s2">
+  <label class="gov-item-head" for="c2">
+    <input class="cbx" type="checkbox" id="c2" onchange="onCheck(this,'s2','done',1)">
+    <div style="flex:1"><div class="gov-item-name">직장가입자(가족)가 회사 인사팀 또는 공단 홈페이지(민원여기요)를 통해 피부양자 자격 취득 신고하기</div></div>
+    <span class="gov-item-status status-todo" id="st2">미완료</span>
   </label>
-  <div class="ck-details"><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt ">등록 처리 결과를 확인했다.</span></div><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">자격 변동(취업·소득 발생) 시 다시 신고가 필요합니다.</span></div></div>
-</div>
-</div>
+  <div class="gov-item-details"><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">등록 처리 결과를 확인했다.</span></div><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">자격 변동(취업·소득 발생) 시 다시 신고가 필요합니다.</span></div></div>
+</div></div>
 <div class="output-panel">
-  <div class="output-head"><span class="oicon">📝</span>메모로 저장 — 정리한 내용을 메모에 담아 보관합니다</div>
-  <div class="memo-note"><div class="mtitle">체크한 항목 요약</div>완료한 단계와 확인할 내용이 메모로 정리됩니다. 공식 확인이 필요한 항목은 따로 표시해 두세요.</div>
+  <div class="output-head"><span>📝</span>메모로 저장 — 정리한 내용을 메모에 담아 보관합니다</div>
+  <div class="memo-note"><div class="mtitle">체크한 항목 요약</div>완료한 단계와 확인할 내용이 메모로 정리됩니다.</div>
 </div>
 </div>
-<div id="toast">🎉 모두 완료했어요!</div>
+<div id="toast">🎉 모든 단계를 완료했어요!</div>
 <script>
 const total=3;let done=0;
-function onCheck(el,sid,cls){
+
+const secCounts=[1, 2];
+const secDone=[0, 0];
+function onCheck(el,sid,cls,si){
   const node=document.getElementById(sid);
-  if(el.checked){done++;node.classList.add(cls)}else{done--;node.classList.remove(cls)}
+  const st=document.getElementById('st'+sid.slice(1));
+  if(el.checked){done++;secDone[si]++;node.classList.add(cls);if(st){st.textContent='완료';st.className='gov-item-status status-done';}}
+  else{done--;secDone[si]--;node.classList.remove(cls);if(st){st.textContent='미완료';st.className='gov-item-status status-todo';}}
+  const pct=Math.round(done/total*100);
   document.getElementById('ptext').textContent=done+' / '+total;
-  document.getElementById('pbar').style.width=(done/total*100)+'%';
-  if(done===total){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+  document.getElementById('pbar').style.width=pct+'%';
+  // update section progress
+  for(let i=0;i<2;i++){
+    const sp=document.getElementById('gsec-prog-'+i);
+    if(sp)sp.textContent=secDone[i]+'/'+secCounts[i];
+    const si_el=document.getElementById('gstep-'+i);
+    if(si_el){
+      if(secDone[i]>=secCounts[i])si_el.className='gov-step-ind-item done';
+      else if(secDone[i]>0)si_el.className='gov-step-ind-item active';
+      else si_el.className='gov-step-ind-item';
+    }
+  }
+  if(done===total){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500)}
 }
+
 </script>
-</body></html>
+</body>
+</html>
