@@ -208,10 +208,10 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
   <h1 class="flow-title">국내여행 D-7 준비 Flow</h1>
   <p class="flow-desc">트립닷컴 국내여행 준비물 가이드와 브런치 국내여행 체크리스트를 참고해 숙박·이동·일정 예약과 짐 싸기까지 일주일 전 준비를 체크합니다.</p>
   <div class="artifact-frame">
-  <div class="artifact-icon">📝</div>
+  <div class="artifact-icon">📅</div>
   <div class="artifact-info">
-    <div class="artifact-label">이 Flow → 메모</div>
-    <div class="artifact-desc">체크리스트를 메모·노트에 저장합니다</div>
+    <div class="artifact-label">이 Flow → 캘린더</div>
+    <div class="artifact-desc">날짜별 일정으로 변환됩니다</div>
   </div>
   <span class="badge b-reference">📄 참고출처</span>
 </div>
@@ -310,18 +310,18 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
   </label>
 </div><div class="export-panel">
   <div class="export-panel-head">
-    <span>📝</span>내 도구로 가져가기
+    <span>📅</span>내 도구로 가져가기
   </div>
   <div class="export-btn-row">
     <button class="export-btn primary" onclick="copyFlow()">
-      📋 메모로 복사
+      📋 캘린더에 추가
     </button>
     <button class="export-btn secondary" onclick="shareText()">
       📤 공유 텍스트
     </button>
   </div>
   <div class="export-copied" id="copied-msg">✓ 클립보드에 복사됐어요</div>
-  <p class="export-note">복사된 내용을 메모·노트·메모 앱에 그대로 붙여넣으면 실행 준비 완료입니다</p>
+  <p class="export-note">복사된 내용을 메모·노트·캘린더 앱에 그대로 붙여넣으면 실행 준비 완료입니다</p>
   <textarea id="copy-payload" style="position:absolute;left:-9999px;top:-9999px;opacity:0" readonly># 국내여행 D-7 준비 Flow
 트립닷컴 국내여행 준비물 가이드와 브런치 국내여행 체크리스트를 참고해 숙박·이동·일정 예약과 짐 싸기까지 일주일 전 준비를 체크합니다.
 
@@ -346,8 +346,7 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 □ 출발 전 필수품·서류 최종 점검하고 집 잠금·가스·전기 확인하기
   HOW: 신분증·예약 바우처·충전기·상비약·날씨용품을 다시 확인하고, 가스 밸브·전기·문 잠금을 점검한 뒤 출발합니다.
 </textarea>
-</div><div class="output-panel"><div class="output-head">📝 메모 미리보기</div>
-<div class="memo-note"><div class="mtitle">체크 완료 항목 요약</div>완료한 단계가 메모·노트로 정리됩니다.</div></div>
+</div><div class="output-panel"><div class="output-head">📅 캘린더 미리보기</div><div class="mcal"><div class="dow">일</div><div class="dow">월</div><div class="dow">화</div><div class="dow">수</div><div class="dow">목</div><div class="dow">금</div><div class="dow">토</div><div class="day empty"></div><div class="day empty"></div><div class="day empty"></div><div class="day soft">1</div><div class="day soft">2</div><div class="day mark">3</div><div class="day mark">4</div><div class="day mark">5</div><div class="day mark">6</div><div class="day mark">7</div><div class="day mark">8</div><div class="day mark">9</div><div class="day mark">10</div><div class="day mark">11</div><div class="day mark">12</div><div class="day mark">13</div><div class="day mark">14</div><div class="day mark">15</div><div class="day mark">16</div><div class="day mark">17</div><div class="day mark">18</div><div class="day mark">19</div><div class="day mark">20</div><div class="day mark">21</div><div class="day mark">22</div><div class="day mark">23</div><div class="day mark">24</div><div class="day mark">25</div><div class="day mark">26</div><div class="day mark">27</div><div class="day mark">28</div></div></div>
 </div>
 <div id="toast">🎉 모든 단계 완료!</div>
 <script>

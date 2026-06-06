@@ -709,7 +709,7 @@ const specs: BatchSpec[] = [
       anchor_type: 'start_date',
       status: 'published',
       risk_level: 'medium',
-      primary_destination: 'memo',
+      primary_destination: 'calendar',
       source_title: '정부24 – 행복출산 원스톱서비스(출생신고 통합 신청)',
       source_url: 'https://www.gov.kr/portal/onestopSvc/happyBirth',
       warning: '신고기한, 필요 서류, 동시 신청 서비스는 변경될 수 있습니다. 정부24와 전자가족관계등록 안내로 확인하세요.',

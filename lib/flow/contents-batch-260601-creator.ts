@@ -291,22 +291,24 @@ const specs: BatchSpec[] = [
       title: '월급날 재정 루틴 Flow',
       description: '토스피드 "통장 쪼개기" 가이드를 참고해 월급날 당일 고정지출 확인, 저축 이체, 생활비 분리까지 한 번에 처리하는 루틴을 만듭니다.',
       category: '재테크/재무',
-      structure_type: 'checklist',
-      anchor_type: 'none',
+      structure_type: 'routine',
+      anchor_type: 'start_date',
       status: 'published',
       risk_level: 'financial_sensitive',
       primary_destination: 'sheet',
       source_title: '토스피드 – 통장쪼개기로 적정소비하는 법',
-      source_url: 'https://toss.im/tossfeed/article/bank-account-divide',
+      source_url: 'https://blog.toss.im/article/bank-account-divide',
       conversion_note: '토스피드 통장 쪼개기 가이드(선 이체·후 소비, 급여·생활비·저축·비상금 4개 통장)를 월급날 루틴 체크리스트로 전환했습니다. (이전 howtomanage-salary URL은 확인 불가로 검증된 통장쪼개기 글로 교체)',
       warning: '이 Flow는 지출 분리와 기록 습관을 돕는 체크리스트이며 투자·재무 조언이 아닙니다. 금융 결정은 공인 전문가와 상담하세요.',
       tags: ['재테크', '월급', '재무루틴', 'reference'],
     },
-    text: `## 1. 입금 확인
+    text: `@월 1회(월급날)
+
+## 1. 입금 확인
 - 월급 입금 확인하고 실수령액 기록하기
   why: 세후 실수령액을 기록해야 이번 달 가용 예산을 정확하게 알 수 있습니다.
   done: 실수령액을 시트에 기록했다.
-  link: 토스피드 통장 쪼개기 가이드 | https://toss.im/tossfeed/article/bank-account-divide | reference
+  link: 토스피드 통장 쪼개기 가이드 | https://blog.toss.im/article/bank-account-divide | reference
   caution: 투자·금융상품 선택은 이 Flow에서 다루지 않습니다. 기록과 분리가 목적입니다.
 
 ## 2. 고정지출·저축 이체
@@ -507,7 +509,7 @@ const specs: BatchSpec[] = [
       anchor_type: 'end_date',
       status: 'published',
       risk_level: 'low',
-      primary_destination: 'memo',
+      primary_destination: 'calendar',
       source_title: '트립닷컴 – 국내 여행 준비물 체크리스트! 알차게 챙겨가는 법',
       source_url: 'https://kr.trip.com/guide/info/%EA%B5%AD%EB%82%B4+%EC%97%AC%ED%96%89+%EC%A4%80%EB%B9%84%EB%AC%BC.html',
       conversion_note: '특정 브런치 포스트(@fruitful0522/24) 확인 불가로, WebSearch로 확인되는 트립닷컴 국내여행 준비물 가이드로 출처를 일반화했습니다. D-7부터 출발 전까지 타임라인으로 전환했습니다.',

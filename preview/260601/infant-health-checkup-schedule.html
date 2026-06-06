@@ -240,7 +240,7 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
   <div class="progress-label"><span>진행률</span><span id="ptext">0 / 5</span></div>
   <div class="progress-bar-bg"><div class="progress-bar-fill" id="pbar"></div></div>
 </div>
-<div class="phase-stepper"><div class="phase-step active" id="ps-0" data-age-min="0" data-age-max="5"><div class="phase-dot">1</div><div class="phase-step-lbl">검진 시기</div></div><div class="phase-step upcoming" id="ps-1" data-age-min="6" data-age-max="11"><div class="phase-dot">2</div><div class="phase-step-lbl">방문 준비</div></div><div class="phase-step upcoming" id="ps-2" data-age-min="12" data-age-max="17"><div class="phase-dot">3</div><div class="phase-step-lbl">검진 후</div></div></div><div class="pm-section" data-age-min="0" data-age-max="5">
+<div class="phase-stepper"><div class="phase-step active" id="ps-0"><div class="phase-dot">1</div><div class="phase-step-lbl">검진 시기</div></div><div class="phase-step upcoming" id="ps-1"><div class="phase-dot">2</div><div class="phase-step-lbl">방문 준비</div></div><div class="phase-step upcoming" id="ps-2"><div class="phase-dot">3</div><div class="phase-step-lbl">검진 후</div></div></div><div class="pm-section">
   <div class="pm-section-head"><span>🏥</span><div class="pm-section-title">검진 시기 확인</div></div><label class="pm-item" id="s0" for="c0">
   <div style="display:flex;gap:.65rem;align-items:flex-start">
     <input class="cbx" type="checkbox" id="c0" style="margin-top:.12rem" onchange="onCheck(this,'s0','done',0)">
@@ -251,7 +251,7 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
     <input class="cbx" type="checkbox" id="c1" style="margin-top:.12rem" onchange="onCheck(this,'s1','done',0)">
     <div class="pm-item-name">구강검진 차수도 함께 확인하기</div>
   </div>
-</label></div><div class="pm-section" data-age-min="6" data-age-max="11">
+</label></div><div class="pm-section">
   <div class="pm-section-head"><span>🏥</span><div class="pm-section-title">방문 준비</div></div><label class="pm-item" id="s2" for="c2">
   <div style="display:flex;gap:.65rem;align-items:flex-start">
     <input class="cbx" type="checkbox" id="c2" style="margin-top:.12rem" onchange="onCheck(this,'s2','done',1)">
@@ -262,7 +262,7 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
     <input class="cbx" type="checkbox" id="c3" style="margin-top:.12rem" onchange="onCheck(this,'s3','done',1)">
     <div class="pm-item-name">사전 문진표(발달 등) 미리 작성하기</div>
   </div>
-</label><div style="padding:.35rem .95rem .65rem 3.2rem"><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">발달 관련 우려가 있으면 검진 결과를 의료진과 상담합니다.</span></div></div></div><div class="pm-section" data-age-min="12" data-age-max="17">
+</label><div style="padding:.35rem .95rem .65rem 3.2rem"><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">발달 관련 우려가 있으면 검진 결과를 의료진과 상담합니다.</span></div></div></div><div class="pm-section">
   <div class="pm-section-head"><span>🏥</span><div class="pm-section-title">검진 후</div></div><label class="pm-item" id="s4" for="c4">
   <div style="display:flex;gap:.65rem;align-items:flex-start">
     <input class="cbx" type="checkbox" id="c4" style="margin-top:.12rem" onchange="onCheck(this,'s4','done',2)">
