@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>월간 가계부 시작 Flow — FLOW</title>
 <style>
 
 :root{
-  --bg:#fafaf9;--surface:#fff;--surface2:#f5f4f1;--surface3:#efede8;
-  --border:#e8e5e0;--border2:#d8d4cd;
+  --bg:#f8f7f4;--surface:#fff;--surface2:#f2f1ee;--surface3:#eae8e4;
+  --border:#e4e1dc;--border2:#d4d0c8;
   --ink:#1c1917;--ink2:#44403c;--sub:#78716c;--muted:#a8a29e;
   --accent:#c96442;--accent2:#b8542f;--accent-bg:#fdf6f2;--accent-line:#e9c4b3;
   --blue:#1d6fb5;--blue-bg:#eff6ff;--blue-line:#bfdbfe;
@@ -17,9 +16,7 @@
   --red:#b91c1c;--red-bg:#fef2f2;--red-line:#fecaca;
   --green:#15803d;--green-bg:#f0fdf4;--green-line:#bbf7d0;
   --violet:#6d28d9;--violet-bg:#f5f3ff;--violet-line:#ddd6fe;
-  --indigo:#4338ca;--indigo-bg:#eef2ff;--indigo-line:#c7d2fe;
   --rose:#be185d;--rose-bg:#fdf2f8;--rose-line:#f9a8d4;
-  --orange:#c2410c;--orange-bg:#fff7ed;--orange-line:#fed7aa;
   --shadow-sm:0 1px 2px rgba(28,25,23,.06);
   --shadow:0 1px 3px rgba(28,25,23,.07),0 1px 2px rgba(28,25,23,.04);
   --shadow-md:0 4px 16px rgba(28,25,23,.1);
@@ -30,130 +27,180 @@ html{font-size:15px;-webkit-text-size-adjust:100%}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
      background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
 a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
-.page{max-width:660px;margin:0 auto;padding:1.6rem 1.1rem 5rem}
+.page{max-width:660px;margin:0 auto;padding:1.5rem 1.1rem 6rem}
 
 .back-link{display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;color:var(--sub);
-  margin-bottom:1.3rem;padding:.35rem .75rem;border-radius:999px;border:1px solid var(--border);background:var(--surface)}
-.back-link:hover{color:var(--ink);text-decoration:none;border-color:var(--border2)}
+  margin-bottom:1.2rem;padding:.35rem .75rem;border-radius:999px;border:1px solid var(--border);background:var(--surface)}
+.back-link:hover{color:var(--ink);border-color:var(--border2)}
 
-.badge{display:inline-flex;align-items:center;gap:.28rem;font-size:.68rem;font-weight:600;
-  letter-spacing:.02em;padding:.2rem .6rem;border-radius:999px;white-space:nowrap;border:1px solid transparent}
+.badge{display:inline-flex;align-items:center;gap:.25rem;font-size:.68rem;font-weight:600;
+  letter-spacing:.02em;padding:.18rem .55rem;border-radius:999px;white-space:nowrap;border:1px solid transparent}
 .b-cat{background:var(--surface2);color:var(--sub);border-color:var(--border)}
 .b-official{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-line)}
 .b-reference{background:var(--violet-bg);color:var(--violet);border-color:var(--violet-line)}
 .b-fin{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-line)}
 .b-med{background:var(--red-bg);color:var(--red);border-color:var(--red-line)}
 .b-low{background:var(--green-bg);color:var(--green);border-color:var(--green-line)}
-.badge-row{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.85rem}
+.badge-row{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.75rem}
 
-.flow-title{font-size:1.55rem;font-weight:800;letter-spacing:-.025em;line-height:1.22;margin-bottom:.4rem}
-.flow-desc{font-size:.9rem;color:var(--sub);line-height:1.55;margin-bottom:1rem}
+.flow-title{font-size:1.5rem;font-weight:800;letter-spacing:-.025em;line-height:1.2;margin-bottom:.35rem}
+.flow-desc{font-size:.88rem;color:var(--sub);line-height:1.55;margin-bottom:.9rem}
 
-.source-card{display:flex;align-items:center;gap:.7rem;background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r-sm);padding:.65rem .9rem;margin-bottom:.9rem}
-.source-icon{font-size:1rem;flex-shrink:0;width:2rem;height:2rem;display:grid;place-items:center;
+/* ── Artifact framing ── */
+.artifact-frame{display:flex;align-items:center;gap:.7rem;background:var(--surface);
+  border:1px solid var(--border);border-radius:var(--r-sm);padding:.6rem .85rem;margin-bottom:.8rem}
+.artifact-icon{font-size:1.4rem;flex-shrink:0}
+.artifact-info{flex:1;min-width:0}
+.artifact-label{font-size:.72rem;font-weight:700;color:var(--muted);letter-spacing:.03em}
+.artifact-desc{font-size:.8rem;color:var(--ink2);font-weight:500;margin-top:.05rem}
+.artifact-dest-badge{font-size:.68rem;font-weight:700;padding:.18rem .5rem;border-radius:4px;
+  background:var(--surface2);color:var(--sub);border:1px solid var(--border);flex-shrink:0}
+
+/* ── Source card ── */
+.source-card{display:flex;align-items:center;gap:.65rem;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-xs);padding:.55rem .8rem;margin-bottom:.75rem}
+.source-icon{font-size:.95rem;flex-shrink:0;width:1.8rem;height:1.8rem;display:grid;place-items:center;
   border-radius:var(--r-xs);background:var(--surface2)}
 .source-body{flex:1;min-width:0}
-.source-title{font-weight:600;font-size:.8rem;line-height:1.3}
-.source-url{color:var(--muted);font-size:.68rem;margin-top:.1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.source-title{font-weight:600;font-size:.78rem;line-height:1.3}
+.source-url{color:var(--muted);font-size:.66rem;margin-top:.08rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
+/* ── Warning ── */
 .warning-box{background:var(--amber-bg);border:1px solid var(--amber-line);border-left:3px solid #f59e0b;
-  border-radius:var(--r-xs);padding:.7rem .95rem;margin-bottom:1.1rem;font-size:.82rem;color:#78350f;line-height:1.5}
-.warning-box .wl{font-weight:700;font-size:.7rem;letter-spacing:.04em;text-transform:uppercase;
+  border-radius:var(--r-xs);padding:.65rem .9rem;margin-bottom:1rem;font-size:.8rem;color:#78350f;line-height:1.5}
+.warning-box .wl{font-weight:700;font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;
   display:flex;align-items:center;gap:.3rem;margin-bottom:.2rem}
 
-.det{display:grid;grid-template-columns:46px 1fr;gap:.25rem .5rem;margin-top:.4rem;font-size:.8rem;align-items:start}
-.det-lbl{font-size:.62rem;font-weight:700;letter-spacing:.04em;padding:.12rem .3rem;border-radius:4px;text-align:center;margin-top:.06rem}
+/* ── Anchor panel ── */
+.anchor-panel{background:var(--surface);border:2px solid var(--border);border-radius:var(--r);
+  padding:1rem 1.1rem;margin-bottom:1.2rem;transition:border-color .2s}
+.anchor-panel.filled{border-color:var(--teal);background:var(--teal-bg)}
+.anchor-header{display:flex;align-items:center;gap:.55rem;margin-bottom:.6rem}
+.anchor-step-num{width:1.6rem;height:1.6rem;border-radius:50%;background:var(--surface2);
+  border:2px solid var(--border2);color:var(--muted);font-weight:800;font-size:.75rem;
+  display:grid;place-items:center;flex-shrink:0}
+.anchor-panel.filled .anchor-step-num{background:var(--teal);border-color:var(--teal);color:#fff}
+.anchor-header-text{font-size:.85rem;font-weight:700;color:var(--ink)}
+.anchor-header-sub{font-size:.75rem;color:var(--sub);margin-left:.2rem}
+.anchor-row{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.anchor-input{flex:1;min-width:160px;padding:.5rem .75rem;border:1.5px solid var(--border2);border-radius:var(--r-sm);
+  font-size:.9rem;font-family:inherit;color:var(--ink);background:#fff;outline:none;transition:border-color .2s}
+.anchor-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-line)}
+.anchor-btn{padding:.5rem 1rem;background:var(--teal);color:#fff;border:none;border-radius:var(--r-sm);
+  font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s}
+.anchor-btn:hover{background:#0f766e}
+.anchor-btn.ghost{background:var(--surface2);color:var(--sub);border:1px solid var(--border2)}
+.anchor-btn.ghost:hover{background:var(--surface3);color:var(--ink2)}
+.anchor-result{margin-top:.5rem;font-size:.78rem;color:var(--teal);font-weight:600;display:none}
+.anchor-panel.filled .anchor-result{display:block}
+
+/* ── Progress ── */
+.progress-wrap{margin:1rem 0 1.3rem}
+.progress-label{display:flex;justify-content:space-between;font-size:.73rem;color:var(--muted);margin-bottom:.28rem}
+.progress-bar-bg{height:5px;background:var(--surface3);border-radius:999px;overflow:hidden}
+.progress-bar-fill{height:100%;border-radius:999px;width:0;transition:width .4s cubic-bezier(.4,0,.2,1)}
+
+/* ── Detail labels ── */
+.det{display:grid;grid-template-columns:44px 1fr;gap:.22rem .45rem;margin-top:.35rem;font-size:.79rem;align-items:start}
+.det-lbl{font-size:.6rem;font-weight:700;letter-spacing:.04em;padding:.1rem .28rem;border-radius:3px;text-align:center;margin-top:.06rem}
 .l-why{background:#f1f5f9;color:#475569}.l-how{background:var(--teal-bg);color:var(--teal)}
 .l-done{background:var(--green-bg);color:var(--green)}.l-caution{background:var(--amber-bg);color:var(--amber)}
 .l-link{background:var(--blue-bg);color:var(--blue)}
 .det-txt{color:var(--ink2);line-height:1.5}.det-txt.caut{color:#78350f}
-.det-txt a{font-size:.78rem}
-.link-pill{font-size:.62rem;font-weight:600;padding:.07rem .3rem;border-radius:3px;margin-left:.25rem}
+.det-txt a{font-size:.77rem}
+.link-pill{font-size:.6rem;font-weight:600;padding:.06rem .28rem;border-radius:3px;margin-left:.22rem}
 .lp-off{background:var(--blue-bg);color:var(--blue)}.lp-ref{background:var(--violet-bg);color:var(--violet)}
 .lp-cre{background:var(--rose-bg);color:var(--rose)}
 
-.cbx{width:1.1rem;height:1.1rem;border:2px solid var(--border2);border-radius:5px;flex-shrink:0;
+/* ── Checkbox ── */
+.cbx{width:1.05rem;height:1.05rem;border:2px solid var(--border2);border-radius:4px;flex-shrink:0;
   cursor:pointer;appearance:none;-webkit-appearance:none;background:#fff;position:relative;transition:all .15s}
-.cbx:checked{background:var(--ck-color,var(--teal));border-color:var(--ck-color,var(--teal))}
-.cbx:checked::after{content:"✓";position:absolute;color:#fff;font-size:.68rem;font-weight:800;top:50%;left:50%;transform:translate(-50%,-54%)}
+.cbx:checked{background:var(--ck-color,#0d9488);border-color:var(--ck-color,#0d9488)}
+.cbx:checked::after{content:"✓";position:absolute;color:#fff;font-size:.65rem;font-weight:800;top:50%;left:50%;transform:translate(-50%,-54%)}
 
-.progress-wrap{margin:1.1rem 0 1.5rem}
-.progress-label{display:flex;justify-content:space-between;font-size:.74rem;color:var(--muted);margin-bottom:.3rem}
-.progress-bar-bg{height:6px;background:var(--surface3);border-radius:999px;overflow:hidden}
-.progress-bar-fill{height:100%;border-radius:999px;width:0;transition:width .45s cubic-bezier(.4,0,.2,1)}
+/* ── Export panel ── */
+.export-panel{margin-top:1.5rem;background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--r);padding:1rem 1.1rem}
+.export-panel-head{display:flex;align-items:center;gap:.5rem;font-size:.82rem;font-weight:700;
+  color:var(--ink2);margin-bottom:.75rem}
+.export-btn-row{display:flex;gap:.5rem;flex-wrap:wrap}
+.export-btn{display:inline-flex;align-items:center;gap:.35rem;padding:.5rem 1rem;border-radius:var(--r-sm);
+  font-size:.82rem;font-weight:700;font-family:inherit;cursor:pointer;border:none;transition:all .15s}
+.export-btn.primary{background:var(--ink);color:#fff}
+.export-btn.primary:hover{background:#292524}
+.export-btn.secondary{background:var(--surface2);color:var(--ink2);border:1px solid var(--border2)}
+.export-btn.secondary:hover{background:var(--surface3)}
+.export-note{margin-top:.6rem;font-size:.72rem;color:var(--muted);line-height:1.5}
+.export-copied{display:inline-flex;align-items:center;gap:.25rem;margin-top:.5rem;font-size:.76rem;
+  font-weight:700;color:var(--teal);display:none}
 
-.output-panel{margin-top:2rem;border:1px dashed var(--border2);border-radius:var(--r);padding:1.1rem 1.2rem;background:var(--surface)}
-.output-head{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:700;color:var(--ink2);margin-bottom:.7rem}
+/* ── Output ── */
+.output-panel{margin-top:1.3rem;border:1px dashed var(--border2);border-radius:var(--r);
+  padding:1rem 1.1rem;background:var(--surface)}
+.output-head{display:flex;align-items:center;gap:.45rem;font-size:.78rem;font-weight:700;
+  color:var(--ink2);margin-bottom:.6rem}
+.memo-note{background:var(--accent-bg);border:1px solid var(--accent-line);border-radius:var(--r-sm);
+  padding:.75rem .95rem;font-size:.8rem;color:var(--ink2);line-height:1.6}
+.memo-note .mtitle{font-weight:700;color:var(--accent2);margin-bottom:.2rem}
 
-.memo-note{background:var(--accent-bg);border:1px solid var(--accent-line);border-radius:var(--r-sm);padding:.8rem 1rem;font-size:.82rem;color:var(--ink2);line-height:1.6}
-.memo-note .mtitle{font-weight:700;color:var(--accent2);margin-bottom:.25rem}
-
-.mcal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;font-size:.68rem}
-.mcal .dow{text-align:center;color:var(--muted);font-weight:600;padding:.2rem 0}
-.mcal .day{aspect-ratio:1;display:grid;place-items:center;border-radius:5px;color:var(--ink2);background:var(--surface2)}
+/* ── mini cal ── */
+.mcal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;font-size:.67rem}
+.mcal .dow{text-align:center;color:var(--muted);font-weight:600;padding:.18rem 0}
+.mcal .day{aspect-ratio:1;display:grid;place-items:center;border-radius:4px;color:var(--ink2);background:var(--surface2)}
 .mcal .day.mark{background:var(--cal-mark,var(--teal));color:#fff;font-weight:700}
 .mcal .day.soft{background:var(--cal-soft,var(--teal-bg));color:var(--cal-mark,var(--teal));font-weight:600}
 .mcal .day.empty{background:transparent}
 
-.sheet-tbl{width:100%;border-collapse:collapse;font-size:.78rem}
-.sheet-tbl th{background:var(--surface2);padding:.4rem .55rem;text-align:left;color:var(--sub);font-weight:600;border:1px solid var(--border);font-size:.7rem}
-.sheet-tbl td{padding:.4rem .55rem;border:1px solid var(--border);color:var(--ink2)}
+/* ── Sheet table ── */
+.sheet-tbl{width:100%;border-collapse:collapse;font-size:.77rem}
+.sheet-tbl th{background:var(--surface2);padding:.35rem .5rem;text-align:left;color:var(--sub);font-weight:600;
+  border:1px solid var(--border);font-size:.68rem}
+.sheet-tbl td{padding:.35rem .5rem;border:1px solid var(--border);color:var(--ink2)}
 .sheet-tbl td.ed{background:#fffef9;color:var(--muted);font-style:italic}
 
+/* ── Toast ── */
 #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(120px);
-  background:var(--ink);color:#fafaf9;padding:.65rem 1.3rem;border-radius:var(--r-sm);font-size:.85rem;
+  background:var(--ink);color:#f8f7f4;padding:.6rem 1.2rem;border-radius:var(--r-sm);font-size:.84rem;
   font-weight:600;transition:transform .4s cubic-bezier(.34,1.56,.64,1);z-index:99;box-shadow:var(--shadow-md)}
 #toast.show{transform:translateX(-50%) translateY(0)}
 
-@media(max-width:520px){.flow-title{font-size:1.3rem}.det{grid-template-columns:40px 1fr}}
+@media(max-width:520px){.flow-title{font-size:1.28rem}.det{grid-template-columns:38px 1fr}}
 
 
 --ck-color:#2563eb;
 .progress-bar-fill{background:#2563eb}
 .cbx:checked{background:#2563eb;border-color:#2563eb}
-
-/* Habit hero with ring */
-.habit-hero{background:linear-gradient(135deg,#eff6ff,#bfdbfe);
-  border:1px solid #bfdbfe;border-radius:var(--r);
-  padding:1.2rem 1.3rem;margin-bottom:1.3rem;display:flex;align-items:center;gap:1.1rem}
+.habit-hero{background:linear-gradient(135deg,#eff6ff,#bfdbfe);border:1px solid #bfdbfe;
+  border-radius:var(--r);padding:1.1rem 1.2rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:1rem}
 .habit-hero-info{flex:1}
-.habit-streak-label{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  color:#2563eb;margin-bottom:.2rem}
-.habit-streak-val{font-size:2rem;font-weight:900;letter-spacing:-.04em;color:#2563eb}
-.habit-streak-sub{font-size:.78rem;color:var(--sub);margin-top:.15rem}
-.habit-time{display:inline-flex;align-items:center;gap:.3rem;background:rgba(255,255,255,.7);
-  border-radius:999px;padding:.2rem .6rem;font-size:.72rem;font-weight:600;color:var(--ink2);margin-top:.4rem}
-
-/* Weekly grid */
-.rt-week{margin-bottom:1.4rem}
-.rt-week-label{font-size:.72rem;color:var(--muted);margin-bottom:.4rem;font-weight:600;
+.habit-streak-label{font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#2563eb}
+.habit-streak-val{font-size:2rem;font-weight:900;letter-spacing:-.04em;color:#2563eb;line-height:1.1}
+.habit-streak-sub{font-size:.75rem;color:var(--sub);margin-top:.12rem}
+.habit-time-chip{display:inline-flex;align-items:center;gap:.25rem;background:rgba(255,255,255,.75);
+  border-radius:999px;padding:.18rem .55rem;font-size:.7rem;font-weight:600;color:var(--ink2);margin-top:.35rem}
+.rt-week{margin-bottom:1.3rem}
+.rt-week-label{font-size:.7rem;color:var(--muted);margin-bottom:.38rem;font-weight:600;
   display:flex;align-items:center;justify-content:space-between}
-.rt-streak-count{font-size:.72rem;font-weight:700;color:#2563eb}
-.rt-week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.4rem}
-.rt-day{aspect-ratio:1;border-radius:var(--r-xs);border:1.5px dashed var(--border2);
-  display:grid;place-items:center;font-size:.7rem;font-weight:700;color:var(--muted);
-  cursor:pointer;transition:all .15s;background:var(--surface)}
+.rt-streak-cnt{font-size:.7rem;font-weight:700;color:#2563eb}
+.rt-week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.38rem}
+.rt-day{aspect-ratio:1;border-radius:var(--r-xs);border:1.5px dashed var(--border2);display:grid;
+  place-items:center;font-size:.68rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s}
 .rt-day:hover{border-color:#2563eb;color:#2563eb}
-.rt-day.on{background:#2563eb;border-style:solid;border-color:#2563eb;color:#fff}
-.rt-day.on::after{content:"💰";font-size:.9rem}
-.rt-day.on span{display:none}
-
-/* Steps */
-.rt-steps{display:flex;flex-direction:column;gap:.6rem}
-.rt-step{display:flex;gap:.85rem;align-items:flex-start;padding-bottom:.9rem;position:relative}
-.rt-step::before{content:"";position:absolute;left:.92rem;top:2rem;bottom:-.1rem;width:2px;background:#bfdbfe}
+.rt-day.on{background:#2563eb;border-style:solid;border-color:#2563eb;color:#fff;font-size:.9rem}
+.rt-steps{display:flex;flex-direction:column;gap:.55rem}
+.rt-step{display:flex;gap:.8rem;align-items:flex-start;padding-bottom:.85rem;position:relative}
+.rt-step::before{content:"";position:absolute;left:.88rem;top:1.9rem;bottom:-.1rem;width:2px;background:#bfdbfe}
 .rt-step:last-child::before{display:none}
-.rt-step-num{width:1.85rem;height:1.85rem;border-radius:50%;background:#eff6ff;border:2px solid #bfdbfe;
-  color:#2563eb;font-weight:800;font-size:.8rem;display:grid;place-items:center;flex-shrink:0;z-index:1;transition:all .2s}
-.rt-step.done .rt-step-num{background:#2563eb;border-color:#2563eb;color:#fff}
+.rt-num{width:1.8rem;height:1.8rem;border-radius:50%;background:#eff6ff;border:2px solid #bfdbfe;
+  color:#2563eb;font-weight:800;font-size:.78rem;display:grid;place-items:center;flex-shrink:0;z-index:1;transition:all .2s}
+.rt-step.done .rt-num{background:#2563eb;border-color:#2563eb;color:#fff}
 .rt-card{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);
-  padding:.7rem .9rem;cursor:pointer;transition:box-shadow .15s}
+  padding:.68rem .88rem;cursor:pointer;transition:box-shadow .15s}
 .rt-card:hover{box-shadow:var(--shadow)}
-.rt-step.done .rt-card{opacity:.5}
-.rt-name{font-size:.9rem;font-weight:600;line-height:1.35}
-.rt-section-badge{font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
-  color:var(--muted);margin:1rem 0 .45rem;padding-left:.2rem}
+.rt-step.done .rt-card{opacity:.45}
+.rt-name{font-size:.88rem;font-weight:600;line-height:1.32}
+.rt-sec-badge{font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--muted);margin:.9rem 0 .38rem;padding-left:.2rem}
 
 </style>
 </head>
@@ -161,21 +208,38 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 <div class="page">
 <a class="back-link" href="index.html">← 전체 목록</a>
 <header>
-  <div class="badge-row"><span class="badge b-cat">재테크/재무</span>
-    <span class="badge b-cat">🔄 루틴</span>
-    <span class="badge b-fin">💰 재정 주의</span></div>
+  <div class="badge-row"><span class="badge b-cat">재테크/재무</span> <span class="badge b-cat">🔄 루틴</span> <span class="badge b-fin">💰 재정 주의</span></div>
   <h1 class="flow-title">월간 가계부 시작 Flow</h1>
   <p class="flow-desc">가계 예산 50/30/20 법칙을 참고해 지출 카테고리를 잡고 첫 달 가계부 기록 루틴을 만듭니다.</p>
+  <div class="artifact-frame">
+  <div class="artifact-icon">📊</div>
+  <div class="artifact-info">
+    <div class="artifact-label">이 Flow → 스프레드시트</div>
+    <div class="artifact-desc">표·기록 양식으로 내보낼 수 있습니다</div>
+  </div>
+  <span class="badge b-reference">📄 참고출처</span>
+</div>
   <a class="source-card" href="https://eknowhow.kr/budgeting-50-30-20-rule/" target="_blank" style="text-decoration:none;color:inherit">
     <span class="source-icon">📄</span>
     <div class="source-body">
       <div class="source-title">가계 예산 50/30/20 법칙 – 가계부 작성 가이드</div>
       <div class="source-url">https://eknowhow.kr/budgeting-50-30-20-rule/</div>
     </div>
-    <span class="badge b-reference">📄 참고출처</span>
   </a>
 </header>
 <div class="warning-box"><div class="wl">⚠️ 주의사항</div>이 Flow는 지출 기록과 파악을 돕는 도구이며 투자·재무 조언이 아닙니다. 금융 결정은 공인 전문가와 상담하세요.</div>
+<div class="anchor-panel" id="anchor-panel">
+  <div class="anchor-header">
+    <div class="anchor-step-num">1</div>
+    <div><span class="anchor-header-text">STEP 1 — 기준 월 입력</span>
+    <span class="anchor-header-sub">— 시작일 기준으로 날짜가 자동 계산됩니다</span></div>
+  </div>
+  <div class="anchor-row">
+    <input class="anchor-input" id="anchor-val" type="date" oninput="onAnchorInput(this.value)">
+    <button class="anchor-btn ghost" onclick="clearAnchor()">초기화</button>
+  </div>
+  <div class="anchor-result" id="anchor-result">✓ 기준 월 설정됨 — 아래 항목의 날짜가 반영되었습니다</div>
+</div>
 <div class="progress-wrap">
   <div class="progress-label"><span>진행률</span><span id="ptext">0 / 5</span></div>
   <div class="progress-bar-bg"><div class="progress-bar-fill" id="pbar"></div></div>
@@ -183,77 +247,169 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 <div class="habit-hero">
   <div class="habit-hero-info">
     <div class="habit-streak-label">연속 실천 스트릭</div>
-    <div class="habit-streak-val">0<span style="font-size:1.2rem;font-weight:400;color:var(--muted)">일</span></div>
-    <div class="habit-streak-sub">월간 반복 · 재무 루틴</div>
-    <div class="habit-time">⏱ 30–60분</div>
+    <div class="habit-streak-val" id="streak-val">0 <span style="font-size:1.1rem;font-weight:400;color:var(--muted)">일</span></div>
+    <div class="habit-streak-sub">월간 반복 · 재테크/재무</div>
+    <div class="habit-time-chip">⏱ 30–60분</div>
   </div>
-  <svg style="flex-shrink:0" id="prog-ring" width="72" height="72" viewBox="0 0 90 90">
-  <circle cx="45" cy="45" r="40" fill="none" stroke="#e7e5e4" stroke-width="8"/>
+  <div style="flex-shrink:0"><svg id="prog-ring" width="68" height="68" viewBox="0 0 90 90">
+  <circle cx="45" cy="45" r="40" fill="none" stroke="#e4e1dc" stroke-width="8"/>
   <circle class="fill" cx="45" cy="45" r="40" fill="none" stroke="#2563eb" stroke-width="8"
     stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="251.2"
-    style="transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset .45s"/>
-</svg>
+    style="transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset .4s"/>
+</svg></div>
 </div><div class="rt-week">
-  <div class="rt-week-label">
-    <span>이번 주 실천 기록</span>
-    <span class="rt-streak-count" id="streak-display">0일 연속</span>
-  </div>
-  <div class="rt-week-grid"><div class="rt-day" onclick="toggleDay(this)"><span>월</span></div><div class="rt-day" onclick="toggleDay(this)"><span>화</span></div><div class="rt-day" onclick="toggleDay(this)"><span>수</span></div><div class="rt-day" onclick="toggleDay(this)"><span>목</span></div><div class="rt-day" onclick="toggleDay(this)"><span>금</span></div><div class="rt-day" onclick="toggleDay(this)"><span>토</span></div><div class="rt-day" onclick="toggleDay(this)"><span>일</span></div></div>
-</div><div class="rt-steps"><div class="rt-section-badge">1. 지출 카테고리 설정</div><div class="rt-step" id="s0">
-  <div class="rt-step-num">1</div>
+  <div class="rt-week-label"><span>이번 주 실천 기록</span><span class="rt-streak-cnt" id="streak-cnt">0일 연속</span></div>
+  <div class="rt-week-grid"><div class="rt-day" onclick="toggleDay(this,'월')">월</div><div class="rt-day" onclick="toggleDay(this,'화')">화</div><div class="rt-day" onclick="toggleDay(this,'수')">수</div><div class="rt-day" onclick="toggleDay(this,'목')">목</div><div class="rt-day" onclick="toggleDay(this,'금')">금</div><div class="rt-day" onclick="toggleDay(this,'토')">토</div><div class="rt-day" onclick="toggleDay(this,'일')">일</div></div>
+</div><div class="rt-steps"><div class="rt-sec-badge">1. 지출 카테고리 설정</div><div class="rt-step" id="s0">
+  <div class="rt-num">1</div>
   <label class="rt-card" for="c0">
     <input class="cbx" type="checkbox" id="c0" style="float:right" onchange="onCheck(this,'s0','done')">
-    <div class="rt-name">내 지출 유형에 맞는 카테고리 4~6개 정하기</div>
-    <div class="det-wrap" style="margin-top:.4rem"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">카테고리가 너무 많으면 기록이 번거롭고, 너무 적으면 원인 파악이 어렵습니다. 초보일수록 크게 분류해 간결하게 적는 것이 지속에 유리합니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">지출을 고정지출(월세·보험·구독), 변동지출(식비·교통·쇼핑), 금융지출(저축·투자·대출상환) 3가지로 크게 나눠 시작합니다. 분배 기준은 50/30/20 법칙(필수 생활비 50%, 여유 생활비 30%, 저축·투자 20%)을 참고합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">카테고리 목록을 시트 첫 줄에 적었다.</span></div><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">투자 방식·종류는 이 Flow에서 결정하지 않습니다. 기록 습관을 먼저 만드는 게 목적입니다.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://eknowhow.kr/budgeting-50-30-20-rule/" target="_blank">가계 예산 50/30/20 법칙 가이드</a><span class="link-pill lp-ref">참고</span></span></div></div>
+    <div class="rt-name">내 지출 유형에 맞는 카테고리 4~6개 정하기</div><div style="margin-top:.35rem"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">카테고리가 너무 많으면 기록이 번거롭고, 너무 적으면 원인 파악이 어렵습니다. 초보일수록 크게 분류해 간결하게 적는 것이 지속에 유리합니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">지출을 고정지출(월세·보험·구독), 변동지출(식비·교통·쇼핑), 금융지출(저축·투자·대출상환) 3가지로 크게 나눠 시작합니다. 분배 기준은 50/30/20 법칙(필수 생활비 50%, 여유 생활비 30%, 저축·투자 20%)을 참고합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">카테고리 목록을 시트 첫 줄에 적었다.</span></div><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">투자 방식·종류는 이 Flow에서 결정하지 않습니다. 기록 습관을 먼저 만드는 게 목적입니다.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://eknowhow.kr/budgeting-50-30-20-rule/" target="_blank">가계 예산 50/30/20 법칙 가이드</a><span class="link-pill lp-ref">참고</span></span></div></div>
   </label>
 </div><div class="rt-step" id="s1">
-  <div class="rt-step-num">2</div>
+  <div class="rt-num">2</div>
   <label class="rt-card" for="c1">
     <input class="cbx" type="checkbox" id="c1" style="float:right" onchange="onCheck(this,'s1','done')">
-    <div class="rt-name">이번 달 고정지출 목록 작성하기</div>
-    <div class="det-wrap" style="margin-top:.4rem"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">월세, 대출 상환, 보험료, 구독 서비스 등 매달 나가는 금액을 먼저 기록합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">고정지출 항목과 금액을 정리했다.</span></div></div>
+    <div class="rt-name">이번 달 고정지출 목록 작성하기</div><div style="margin-top:.35rem"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">월세, 대출 상환, 보험료, 구독 서비스 등 매달 나가는 금액을 먼저 기록합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">고정지출 항목과 금액을 정리했다.</span></div></div>
   </label>
-</div><div class="rt-section-badge">2. 매일 기록 루틴</div><div class="rt-step" id="s2">
-  <div class="rt-step-num">3</div>
+</div><div class="rt-sec-badge">2. 매일 기록 루틴</div><div class="rt-step" id="s2">
+  <div class="rt-num">3</div>
   <label class="rt-card" for="c2">
     <input class="cbx" type="checkbox" id="c2" style="float:right" onchange="onCheck(this,'s2','done')">
-    <div class="rt-name">하루 기록 습관: 자기 전 5분 그날 지출 입력하기</div>
-    <div class="det-wrap" style="margin-top:.4rem"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">당일 입력하지 않으면 기억이 흐려지고 누락이 생깁니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">카드 앱이나 카카오페이·토스 내역을 확인해 카테고리별로 시트에 입력합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">오늘 지출을 시트에 기록했다.</span></div></div>
+    <div class="rt-name">하루 기록 습관: 자기 전 5분 그날 지출 입력하기</div><div style="margin-top:.35rem"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">당일 입력하지 않으면 기억이 흐려지고 누락이 생깁니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">카드 앱이나 카카오페이·토스 내역을 확인해 카테고리별로 시트에 입력합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">오늘 지출을 시트에 기록했다.</span></div></div>
   </label>
-</div><div class="rt-section-badge">3. 월말 정산</div><div class="rt-step" id="s3">
-  <div class="rt-step-num">4</div>
+</div><div class="rt-sec-badge">3. 월말 정산</div><div class="rt-step" id="s3">
+  <div class="rt-num">4</div>
   <label class="rt-card" for="c3">
     <input class="cbx" type="checkbox" id="c3" style="float:right" onchange="onCheck(this,'s3','done')">
-    <div class="rt-name">카테고리별 합계와 예산 대비 비교하기</div>
-    <div class="det-wrap" style="margin-top:.4rem"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">어느 카테고리에서 초과했는지 파악해야 다음 달 기준을 조정할 수 있습니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">카테고리별 합계와 예산 대비 결과를 기록했다.</span></div></div>
+    <div class="rt-name">카테고리별 합계와 예산 대비 비교하기</div><div style="margin-top:.35rem"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">어느 카테고리에서 초과했는지 파악해야 다음 달 기준을 조정할 수 있습니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">카테고리별 합계와 예산 대비 결과를 기록했다.</span></div></div>
   </label>
 </div><div class="rt-step" id="s4">
-  <div class="rt-step-num">5</div>
+  <div class="rt-num">5</div>
   <label class="rt-card" for="c4">
     <input class="cbx" type="checkbox" id="c4" style="float:right" onchange="onCheck(this,'s4','done')">
-    <div class="rt-name">다음 달 조정 사항 1개만 정하기</div>
-    <div class="det-wrap" style="margin-top:.4rem"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">초과 카테고리 중 하나를 골라 구체적인 조정 기준(예: 쇼핑 X만원 이하)을 정합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">다음 달 조정 기준 1개를 시트에 기록했다.</span></div><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">한 번에 모든 지출을 줄이려 하면 지속하기 어렵습니다. 한 가지씩 조정하세요.</span></div></div>
+    <div class="rt-name">다음 달 조정 사항 1개만 정하기</div><div style="margin-top:.35rem"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">초과 카테고리 중 하나를 골라 구체적인 조정 기준(예: 쇼핑 X만원 이하)을 정합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">다음 달 조정 기준 1개를 시트에 기록했다.</span></div><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">한 번에 모든 지출을 줄이려 하면 지속하기 어렵습니다. 한 가지씩 조정하세요.</span></div></div>
   </label>
-</div></div>
-<div class="output-panel">
-  <div class="output-head"><span>📊</span>시트로 기록 — 항목을 스프레드시트에 정리합니다</div>
-  <table class="sheet-tbl"><thead><tr><th>항목</th><th>내용</th><th>날짜</th></tr></thead>
-  <tbody><tr><td>항목 1</td><td class="ed">직접 입력</td><td class="ed">날짜</td></tr>
-  <tr><td>항목 2</td><td class="ed">직접 입력</td><td class="ed">날짜</td></tr></tbody></table>
-</div>
-</div>
-<div id="toast">🎉 오늘 루틴 완료!</div>
-<script>
-const total=5;let done=0;
+</div></div><div class="export-panel">
+  <div class="export-panel-head">
+    <span>📊</span>내 도구로 가져가기
+  </div>
+  <div class="export-btn-row">
+    <button class="export-btn primary" onclick="copyFlow()">
+      📋 시트로 복사
+    </button>
+    <button class="export-btn secondary" onclick="shareText()">
+      📤 공유 텍스트
+    </button>
+  </div>
+  <div class="export-copied" id="copied-msg">✓ 클립보드에 복사됐어요</div>
+  <p class="export-note">복사된 내용을 메모·노트·스프레드시트 앱에 그대로 붙여넣으면 실행 준비 완료입니다</p>
+  <textarea id="copy-payload" style="position:absolute;left:-9999px;top:-9999px;opacity:0" readonly># 월간 가계부 시작 Flow
+가계 예산 50/30/20 법칙을 참고해 지출 카테고리를 잡고 첫 달 가계부 기록 루틴을 만듭니다.
 
-let streakDays=0;
-function toggleDay(el){
+## 1. 지출 카테고리 설정
+□ 내 지출 유형에 맞는 카테고리 4~6개 정하기
+  WHY: 카테고리가 너무 많으면 기록이 번거롭고, 너무 적으면 원인 파악이 어렵습니다. 초보일수록 크게 분류해 간결하게 적는 것이 지속에 유리합니다.
+  HOW: 지출을 고정지출(월세·보험·구독), 변동지출(식비·교통·쇼핑), 금융지출(저축·투자·대출상환) 3가지로 크게 나눠 시작합니다. 분배 기준은 50/30/20 법칙(필수 생활비 50%, 여유 생활비 30%, 저축·투자 20%)을 참고합니다.
+  주의: 투자 방식·종류는 이 Flow에서 결정하지 않습니다. 기록 습관을 먼저 만드는 게 목적입니다.
+□ 이번 달 고정지출 목록 작성하기
+  HOW: 월세, 대출 상환, 보험료, 구독 서비스 등 매달 나가는 금액을 먼저 기록합니다.
+
+## 2. 매일 기록 루틴
+□ 하루 기록 습관: 자기 전 5분 그날 지출 입력하기
+  WHY: 당일 입력하지 않으면 기억이 흐려지고 누락이 생깁니다.
+  HOW: 카드 앱이나 카카오페이·토스 내역을 확인해 카테고리별로 시트에 입력합니다.
+
+## 3. 월말 정산
+□ 카테고리별 합계와 예산 대비 비교하기
+  WHY: 어느 카테고리에서 초과했는지 파악해야 다음 달 기준을 조정할 수 있습니다.
+□ 다음 달 조정 사항 1개만 정하기
+  HOW: 초과 카테고리 중 하나를 골라 구체적인 조정 기준(예: 쇼핑 X만원 이하)을 정합니다.
+  주의: 한 번에 모든 지출을 줄이려 하면 지속하기 어렵습니다. 한 가지씩 조정하세요.
+</textarea>
+</div><div class="output-panel"><div class="output-head">📊 시트 미리보기</div>
+<table class="sheet-tbl"><thead><tr><th>항목</th><th>내용</th><th>날짜</th><th>상태</th></tr></thead>
+<tbody><tr><td>항목 1</td><td class="ed">입력</td><td class="ed">날짜</td><td class="ed">-</td></tr>
+<tr><td>항목 2</td><td class="ed">입력</td><td class="ed">날짜</td><td class="ed">-</td></tr></tbody></table></div>
+</div>
+<div id="toast">💰 오늘 루틴 완료!</div>
+<script>
+
+function onAnchorInput(val){
+  const panel=document.getElementById('anchor-panel');
+  const res=document.getElementById('anchor-result');
+  if(!val){panel.classList.remove('filled');return;}
+  panel.classList.add('filled');
+  if(res)res.style.display='block';
+  const anchor=new Date(val);
+  const today=new Date(); today.setHours(0,0,0,0);
+  // update date labels
+  document.querySelectorAll('[data-day-offset]').forEach(el=>{
+    const offset=parseInt(el.dataset.dayOffset);
+    const d=new Date(anchor);
+    if('start'==='end') d.setDate(anchor.getDate()+offset);
+    else d.setDate(anchor.getDate()+offset);
+    const diff=Math.round((d-today)/(1000*60*60*24));
+    const label=diff>0?`D-${diff}`:diff===0?`오늘`:`D+${Math.abs(diff)}`;
+    el.textContent=label;
+    el.style.color=diff<=0?'#b91c1c':diff<=7?'#b45309':'#78716c';
+  });
+}
+function clearAnchor(){
+  document.getElementById('anchor-val').value='';
+  document.getElementById('anchor-panel').classList.remove('filled');
+  document.querySelectorAll('[data-day-offset]').forEach(el=>{
+    el.textContent=el.dataset.originalLabel||'';
+    el.style.color='';
+  });
+}
+
+
+function copyFlow(){
+  const ta=document.getElementById('copy-payload');
+  if(!ta)return;
+  try{
+    navigator.clipboard.writeText(ta.value).then(()=>showCopied()).catch(()=>fallbackCopy(ta));
+  }catch(e){fallbackCopy(ta);}
+}
+function fallbackCopy(ta){
+  ta.style.position='fixed';ta.style.opacity='1';
+  ta.select();document.execCommand('copy');
+  ta.style.position='absolute';ta.style.opacity='0';
+  showCopied();
+}
+function showCopied(){
+  const m=document.getElementById('copied-msg');
+  if(m){m.style.display='inline-flex';setTimeout(()=>{m.style.display='none';},2500);}
+}
+function shareText(){
+  const ta=document.getElementById('copy-payload');
+  if(!ta)return;
+  if(navigator.share){navigator.share({text:ta.value}).catch(()=>{});}
+  else copyFlow();
+}
+
+
+const total=5;let done=0;
+function onCheck(el,sid,cls){
+  const node=document.getElementById(sid);
+  if(el.checked){done++;node.classList.add(cls)}else{done--;node.classList.remove(cls)}
+  const pct=Math.round(done/total*100);
+  document.getElementById('ptext').textContent=done+' / '+total;
+  document.getElementById('pbar').style.width=pct+'%';
+  const ring=document.getElementById('prog-ring');if(ring){const c=ring.querySelector('circle.fill');if(c)c.style.strokeDashoffset=251.2*(1-done/total);}
+  if(done===total){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+}
+
+let _streakDays=0;
+function toggleDay(el,day){
   el.classList.toggle('on');
-  streakDays=document.querySelectorAll('.rt-day.on').length;
-  document.getElementById('streak-display').textContent=streakDays+'일 연속';
-  // update hero
-  const hv=document.querySelector('.habit-streak-val');
-  if(hv)hv.innerHTML=streakDays+'<span style="font-size:1.2rem;font-weight:400;color:var(--muted)">일</span>';
+  if(el.classList.contains('on'))el.textContent='💰';
+  else el.textContent=day;
+  _streakDays=document.querySelectorAll('.rt-day.on').length;
+  document.getElementById('streak-cnt').textContent=_streakDays+'일 연속';
+  const sv=document.getElementById('streak-val');
+  if(sv)sv.innerHTML=_streakDays+' <span style="font-size:1.1rem;font-weight:400;color:var(--muted)">일</span>';
 }
 function onCheck(el,sid,cls){
   const node=document.getElementById(sid);
@@ -262,10 +418,9 @@ function onCheck(el,sid,cls){
   document.getElementById('ptext').textContent=done+' / '+total;
   document.getElementById('pbar').style.width=pct+'%';
   const ring=document.getElementById('prog-ring');
-  if(ring){const c=ring.querySelector('circle.fill');if(c)c.style.strokeDashoffset=251.2*(1-done/total)}
-  if(done===total){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500)}
+  if(ring){const c=ring.querySelector('circle.fill');if(c)c.style.strokeDashoffset=251.2*(1-done/total);}
+  if(done===total){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 }
 
 </script>
-</body>
-</html>
+</body></html>

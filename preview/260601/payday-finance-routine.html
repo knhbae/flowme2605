@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>월급날 재정 루틴 Flow — FLOW</title>
 <style>
 
 :root{
-  --bg:#fafaf9;--surface:#fff;--surface2:#f5f4f1;--surface3:#efede8;
-  --border:#e8e5e0;--border2:#d8d4cd;
+  --bg:#f8f7f4;--surface:#fff;--surface2:#f2f1ee;--surface3:#eae8e4;
+  --border:#e4e1dc;--border2:#d4d0c8;
   --ink:#1c1917;--ink2:#44403c;--sub:#78716c;--muted:#a8a29e;
   --accent:#c96442;--accent2:#b8542f;--accent-bg:#fdf6f2;--accent-line:#e9c4b3;
   --blue:#1d6fb5;--blue-bg:#eff6ff;--blue-line:#bfdbfe;
@@ -17,9 +16,7 @@
   --red:#b91c1c;--red-bg:#fef2f2;--red-line:#fecaca;
   --green:#15803d;--green-bg:#f0fdf4;--green-line:#bbf7d0;
   --violet:#6d28d9;--violet-bg:#f5f3ff;--violet-line:#ddd6fe;
-  --indigo:#4338ca;--indigo-bg:#eef2ff;--indigo-line:#c7d2fe;
   --rose:#be185d;--rose-bg:#fdf2f8;--rose-line:#f9a8d4;
-  --orange:#c2410c;--orange-bg:#fff7ed;--orange-line:#fed7aa;
   --shadow-sm:0 1px 2px rgba(28,25,23,.06);
   --shadow:0 1px 3px rgba(28,25,23,.07),0 1px 2px rgba(28,25,23,.04);
   --shadow-md:0 4px 16px rgba(28,25,23,.1);
@@ -30,117 +27,168 @@ html{font-size:15px;-webkit-text-size-adjust:100%}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
      background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
 a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
-.page{max-width:660px;margin:0 auto;padding:1.6rem 1.1rem 5rem}
+.page{max-width:660px;margin:0 auto;padding:1.5rem 1.1rem 6rem}
 
 .back-link{display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;color:var(--sub);
-  margin-bottom:1.3rem;padding:.35rem .75rem;border-radius:999px;border:1px solid var(--border);background:var(--surface)}
-.back-link:hover{color:var(--ink);text-decoration:none;border-color:var(--border2)}
+  margin-bottom:1.2rem;padding:.35rem .75rem;border-radius:999px;border:1px solid var(--border);background:var(--surface)}
+.back-link:hover{color:var(--ink);border-color:var(--border2)}
 
-.badge{display:inline-flex;align-items:center;gap:.28rem;font-size:.68rem;font-weight:600;
-  letter-spacing:.02em;padding:.2rem .6rem;border-radius:999px;white-space:nowrap;border:1px solid transparent}
+.badge{display:inline-flex;align-items:center;gap:.25rem;font-size:.68rem;font-weight:600;
+  letter-spacing:.02em;padding:.18rem .55rem;border-radius:999px;white-space:nowrap;border:1px solid transparent}
 .b-cat{background:var(--surface2);color:var(--sub);border-color:var(--border)}
 .b-official{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-line)}
 .b-reference{background:var(--violet-bg);color:var(--violet);border-color:var(--violet-line)}
 .b-fin{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-line)}
 .b-med{background:var(--red-bg);color:var(--red);border-color:var(--red-line)}
 .b-low{background:var(--green-bg);color:var(--green);border-color:var(--green-line)}
-.badge-row{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.85rem}
+.badge-row{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.75rem}
 
-.flow-title{font-size:1.55rem;font-weight:800;letter-spacing:-.025em;line-height:1.22;margin-bottom:.4rem}
-.flow-desc{font-size:.9rem;color:var(--sub);line-height:1.55;margin-bottom:1rem}
+.flow-title{font-size:1.5rem;font-weight:800;letter-spacing:-.025em;line-height:1.2;margin-bottom:.35rem}
+.flow-desc{font-size:.88rem;color:var(--sub);line-height:1.55;margin-bottom:.9rem}
 
-.source-card{display:flex;align-items:center;gap:.7rem;background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r-sm);padding:.65rem .9rem;margin-bottom:.9rem}
-.source-icon{font-size:1rem;flex-shrink:0;width:2rem;height:2rem;display:grid;place-items:center;
+/* ── Artifact framing ── */
+.artifact-frame{display:flex;align-items:center;gap:.7rem;background:var(--surface);
+  border:1px solid var(--border);border-radius:var(--r-sm);padding:.6rem .85rem;margin-bottom:.8rem}
+.artifact-icon{font-size:1.4rem;flex-shrink:0}
+.artifact-info{flex:1;min-width:0}
+.artifact-label{font-size:.72rem;font-weight:700;color:var(--muted);letter-spacing:.03em}
+.artifact-desc{font-size:.8rem;color:var(--ink2);font-weight:500;margin-top:.05rem}
+.artifact-dest-badge{font-size:.68rem;font-weight:700;padding:.18rem .5rem;border-radius:4px;
+  background:var(--surface2);color:var(--sub);border:1px solid var(--border);flex-shrink:0}
+
+/* ── Source card ── */
+.source-card{display:flex;align-items:center;gap:.65rem;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-xs);padding:.55rem .8rem;margin-bottom:.75rem}
+.source-icon{font-size:.95rem;flex-shrink:0;width:1.8rem;height:1.8rem;display:grid;place-items:center;
   border-radius:var(--r-xs);background:var(--surface2)}
 .source-body{flex:1;min-width:0}
-.source-title{font-weight:600;font-size:.8rem;line-height:1.3}
-.source-url{color:var(--muted);font-size:.68rem;margin-top:.1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.source-title{font-weight:600;font-size:.78rem;line-height:1.3}
+.source-url{color:var(--muted);font-size:.66rem;margin-top:.08rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
+/* ── Warning ── */
 .warning-box{background:var(--amber-bg);border:1px solid var(--amber-line);border-left:3px solid #f59e0b;
-  border-radius:var(--r-xs);padding:.7rem .95rem;margin-bottom:1.1rem;font-size:.82rem;color:#78350f;line-height:1.5}
-.warning-box .wl{font-weight:700;font-size:.7rem;letter-spacing:.04em;text-transform:uppercase;
+  border-radius:var(--r-xs);padding:.65rem .9rem;margin-bottom:1rem;font-size:.8rem;color:#78350f;line-height:1.5}
+.warning-box .wl{font-weight:700;font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;
   display:flex;align-items:center;gap:.3rem;margin-bottom:.2rem}
 
-.det{display:grid;grid-template-columns:46px 1fr;gap:.25rem .5rem;margin-top:.4rem;font-size:.8rem;align-items:start}
-.det-lbl{font-size:.62rem;font-weight:700;letter-spacing:.04em;padding:.12rem .3rem;border-radius:4px;text-align:center;margin-top:.06rem}
+/* ── Anchor panel ── */
+.anchor-panel{background:var(--surface);border:2px solid var(--border);border-radius:var(--r);
+  padding:1rem 1.1rem;margin-bottom:1.2rem;transition:border-color .2s}
+.anchor-panel.filled{border-color:var(--teal);background:var(--teal-bg)}
+.anchor-header{display:flex;align-items:center;gap:.55rem;margin-bottom:.6rem}
+.anchor-step-num{width:1.6rem;height:1.6rem;border-radius:50%;background:var(--surface2);
+  border:2px solid var(--border2);color:var(--muted);font-weight:800;font-size:.75rem;
+  display:grid;place-items:center;flex-shrink:0}
+.anchor-panel.filled .anchor-step-num{background:var(--teal);border-color:var(--teal);color:#fff}
+.anchor-header-text{font-size:.85rem;font-weight:700;color:var(--ink)}
+.anchor-header-sub{font-size:.75rem;color:var(--sub);margin-left:.2rem}
+.anchor-row{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.anchor-input{flex:1;min-width:160px;padding:.5rem .75rem;border:1.5px solid var(--border2);border-radius:var(--r-sm);
+  font-size:.9rem;font-family:inherit;color:var(--ink);background:#fff;outline:none;transition:border-color .2s}
+.anchor-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-line)}
+.anchor-btn{padding:.5rem 1rem;background:var(--teal);color:#fff;border:none;border-radius:var(--r-sm);
+  font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s}
+.anchor-btn:hover{background:#0f766e}
+.anchor-btn.ghost{background:var(--surface2);color:var(--sub);border:1px solid var(--border2)}
+.anchor-btn.ghost:hover{background:var(--surface3);color:var(--ink2)}
+.anchor-result{margin-top:.5rem;font-size:.78rem;color:var(--teal);font-weight:600;display:none}
+.anchor-panel.filled .anchor-result{display:block}
+
+/* ── Progress ── */
+.progress-wrap{margin:1rem 0 1.3rem}
+.progress-label{display:flex;justify-content:space-between;font-size:.73rem;color:var(--muted);margin-bottom:.28rem}
+.progress-bar-bg{height:5px;background:var(--surface3);border-radius:999px;overflow:hidden}
+.progress-bar-fill{height:100%;border-radius:999px;width:0;transition:width .4s cubic-bezier(.4,0,.2,1)}
+
+/* ── Detail labels ── */
+.det{display:grid;grid-template-columns:44px 1fr;gap:.22rem .45rem;margin-top:.35rem;font-size:.79rem;align-items:start}
+.det-lbl{font-size:.6rem;font-weight:700;letter-spacing:.04em;padding:.1rem .28rem;border-radius:3px;text-align:center;margin-top:.06rem}
 .l-why{background:#f1f5f9;color:#475569}.l-how{background:var(--teal-bg);color:var(--teal)}
 .l-done{background:var(--green-bg);color:var(--green)}.l-caution{background:var(--amber-bg);color:var(--amber)}
 .l-link{background:var(--blue-bg);color:var(--blue)}
 .det-txt{color:var(--ink2);line-height:1.5}.det-txt.caut{color:#78350f}
-.det-txt a{font-size:.78rem}
-.link-pill{font-size:.62rem;font-weight:600;padding:.07rem .3rem;border-radius:3px;margin-left:.25rem}
+.det-txt a{font-size:.77rem}
+.link-pill{font-size:.6rem;font-weight:600;padding:.06rem .28rem;border-radius:3px;margin-left:.22rem}
 .lp-off{background:var(--blue-bg);color:var(--blue)}.lp-ref{background:var(--violet-bg);color:var(--violet)}
 .lp-cre{background:var(--rose-bg);color:var(--rose)}
 
-.cbx{width:1.1rem;height:1.1rem;border:2px solid var(--border2);border-radius:5px;flex-shrink:0;
+/* ── Checkbox ── */
+.cbx{width:1.05rem;height:1.05rem;border:2px solid var(--border2);border-radius:4px;flex-shrink:0;
   cursor:pointer;appearance:none;-webkit-appearance:none;background:#fff;position:relative;transition:all .15s}
-.cbx:checked{background:var(--ck-color,var(--teal));border-color:var(--ck-color,var(--teal))}
-.cbx:checked::after{content:"✓";position:absolute;color:#fff;font-size:.68rem;font-weight:800;top:50%;left:50%;transform:translate(-50%,-54%)}
+.cbx:checked{background:var(--ck-color,#0d9488);border-color:var(--ck-color,#0d9488)}
+.cbx:checked::after{content:"✓";position:absolute;color:#fff;font-size:.65rem;font-weight:800;top:50%;left:50%;transform:translate(-50%,-54%)}
 
-.progress-wrap{margin:1.1rem 0 1.5rem}
-.progress-label{display:flex;justify-content:space-between;font-size:.74rem;color:var(--muted);margin-bottom:.3rem}
-.progress-bar-bg{height:6px;background:var(--surface3);border-radius:999px;overflow:hidden}
-.progress-bar-fill{height:100%;border-radius:999px;width:0;transition:width .45s cubic-bezier(.4,0,.2,1)}
+/* ── Export panel ── */
+.export-panel{margin-top:1.5rem;background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--r);padding:1rem 1.1rem}
+.export-panel-head{display:flex;align-items:center;gap:.5rem;font-size:.82rem;font-weight:700;
+  color:var(--ink2);margin-bottom:.75rem}
+.export-btn-row{display:flex;gap:.5rem;flex-wrap:wrap}
+.export-btn{display:inline-flex;align-items:center;gap:.35rem;padding:.5rem 1rem;border-radius:var(--r-sm);
+  font-size:.82rem;font-weight:700;font-family:inherit;cursor:pointer;border:none;transition:all .15s}
+.export-btn.primary{background:var(--ink);color:#fff}
+.export-btn.primary:hover{background:#292524}
+.export-btn.secondary{background:var(--surface2);color:var(--ink2);border:1px solid var(--border2)}
+.export-btn.secondary:hover{background:var(--surface3)}
+.export-note{margin-top:.6rem;font-size:.72rem;color:var(--muted);line-height:1.5}
+.export-copied{display:inline-flex;align-items:center;gap:.25rem;margin-top:.5rem;font-size:.76rem;
+  font-weight:700;color:var(--teal);display:none}
 
-.output-panel{margin-top:2rem;border:1px dashed var(--border2);border-radius:var(--r);padding:1.1rem 1.2rem;background:var(--surface)}
-.output-head{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:700;color:var(--ink2);margin-bottom:.7rem}
+/* ── Output ── */
+.output-panel{margin-top:1.3rem;border:1px dashed var(--border2);border-radius:var(--r);
+  padding:1rem 1.1rem;background:var(--surface)}
+.output-head{display:flex;align-items:center;gap:.45rem;font-size:.78rem;font-weight:700;
+  color:var(--ink2);margin-bottom:.6rem}
+.memo-note{background:var(--accent-bg);border:1px solid var(--accent-line);border-radius:var(--r-sm);
+  padding:.75rem .95rem;font-size:.8rem;color:var(--ink2);line-height:1.6}
+.memo-note .mtitle{font-weight:700;color:var(--accent2);margin-bottom:.2rem}
 
-.memo-note{background:var(--accent-bg);border:1px solid var(--accent-line);border-radius:var(--r-sm);padding:.8rem 1rem;font-size:.82rem;color:var(--ink2);line-height:1.6}
-.memo-note .mtitle{font-weight:700;color:var(--accent2);margin-bottom:.25rem}
-
-.mcal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;font-size:.68rem}
-.mcal .dow{text-align:center;color:var(--muted);font-weight:600;padding:.2rem 0}
-.mcal .day{aspect-ratio:1;display:grid;place-items:center;border-radius:5px;color:var(--ink2);background:var(--surface2)}
+/* ── mini cal ── */
+.mcal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;font-size:.67rem}
+.mcal .dow{text-align:center;color:var(--muted);font-weight:600;padding:.18rem 0}
+.mcal .day{aspect-ratio:1;display:grid;place-items:center;border-radius:4px;color:var(--ink2);background:var(--surface2)}
 .mcal .day.mark{background:var(--cal-mark,var(--teal));color:#fff;font-weight:700}
 .mcal .day.soft{background:var(--cal-soft,var(--teal-bg));color:var(--cal-mark,var(--teal));font-weight:600}
 .mcal .day.empty{background:transparent}
 
-.sheet-tbl{width:100%;border-collapse:collapse;font-size:.78rem}
-.sheet-tbl th{background:var(--surface2);padding:.4rem .55rem;text-align:left;color:var(--sub);font-weight:600;border:1px solid var(--border);font-size:.7rem}
-.sheet-tbl td{padding:.4rem .55rem;border:1px solid var(--border);color:var(--ink2)}
+/* ── Sheet table ── */
+.sheet-tbl{width:100%;border-collapse:collapse;font-size:.77rem}
+.sheet-tbl th{background:var(--surface2);padding:.35rem .5rem;text-align:left;color:var(--sub);font-weight:600;
+  border:1px solid var(--border);font-size:.68rem}
+.sheet-tbl td{padding:.35rem .5rem;border:1px solid var(--border);color:var(--ink2)}
 .sheet-tbl td.ed{background:#fffef9;color:var(--muted);font-style:italic}
 
+/* ── Toast ── */
 #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(120px);
-  background:var(--ink);color:#fafaf9;padding:.65rem 1.3rem;border-radius:var(--r-sm);font-size:.85rem;
+  background:var(--ink);color:#f8f7f4;padding:.6rem 1.2rem;border-radius:var(--r-sm);font-size:.84rem;
   font-weight:600;transition:transform .4s cubic-bezier(.34,1.56,.64,1);z-index:99;box-shadow:var(--shadow-md)}
 #toast.show{transform:translateX(-50%) translateY(0)}
 
-@media(max-width:520px){.flow-title{font-size:1.3rem}.det{grid-template-columns:40px 1fr}}
+@media(max-width:520px){.flow-title{font-size:1.28rem}.det{grid-template-columns:38px 1fr}}
 
 
 --ck-color:#2563eb;
 .progress-bar-fill{background:#2563eb}
 .cbx:checked{background:#2563eb;border-color:#2563eb}
-
-/* Finance hero */
-.fin-hero{background:#f8fafc;border:1px solid #e2e8f0;border-radius:var(--r);
-  padding:1.1rem 1.3rem;margin-bottom:1.3rem}
-.fin-hero-label{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  color:#1d6fb5;margin-bottom:.3rem}
-.fin-kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.7rem}
-.fin-kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);
-  padding:.55rem .75rem}
-.fin-kpi-val{font-size:1.15rem;font-weight:800;letter-spacing:-.02em;color:#1c1917}
-.fin-kpi-lbl{font-size:.65rem;color:var(--muted);margin-top:.1rem}
-.fin-deadline-row{display:flex;gap:.4rem;flex-wrap:wrap}
-.fin-deadline-chip{display:inline-flex;align-items:center;gap:.3rem;background:#eff6ff;
-  border:1px solid #bfdbfe;border-radius:999px;padding:.2rem .6rem;font-size:.72rem;font-weight:600;color:#1d4ed8}
-.fin-deadline-chip.warn{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
-
-/* Steps */
-.fin-step{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);
-  margin-bottom:.6rem;overflow:hidden}
-.fin-step-head{display:flex;align-items:flex-start;gap:.75rem;padding:.8rem 1rem;cursor:pointer}
-.fin-step.done .fin-step-head{opacity:.45}
-.fin-step-number{width:1.7rem;height:1.7rem;border-radius:50%;background:var(--blue-bg);
-  border:1.5px solid var(--blue-line);color:var(--blue);font-weight:800;font-size:.78rem;
-  display:grid;place-items:center;flex-shrink:0;margin-top:.05rem}
-.fin-step.done .fin-step-number{background:#2563eb;border-color:#2563eb;color:#fff}
-.fin-step-name{font-size:.9rem;font-weight:600;line-height:1.35;flex:1}
-.fin-step-details{padding:.4rem 1rem .8rem 3.4rem;border-top:1px solid var(--surface3)}
-.fin-section-label{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-  color:var(--muted);margin:1rem 0 .4rem}
+.fin-hero{background:#f8fafc;border:1px solid #e2e8f0;border-radius:var(--r);padding:1rem 1.1rem;margin-bottom:1.2rem}
+.fin-hero-label{font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#1d6fb5;margin-bottom:.35rem}
+.fin-kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:.65rem}
+.fin-kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:.5rem .7rem}
+.fin-kpi-val{font-size:1.1rem;font-weight:800;letter-spacing:-.02em;color:var(--ink)}
+.fin-kpi-lbl{font-size:.62rem;color:var(--muted);margin-top:.08rem}
+.fin-chip-row{display:flex;gap:.38rem;flex-wrap:wrap}
+.fin-chip{display:inline-flex;align-items:center;gap:.25rem;background:#eff6ff;border:1px solid #bfdbfe;
+  border-radius:999px;padding:.17rem .55rem;font-size:.7rem;font-weight:600;color:#1d4ed8}
+.fin-chip.warn{background:var(--red-bg);border-color:var(--red-line);color:var(--red)}
+.fin-step{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:.55rem;overflow:hidden}
+.fin-step-head{display:flex;align-items:flex-start;gap:.7rem;padding:.75rem .95rem;cursor:pointer}
+.fin-step.done .fin-step-head{opacity:.4}
+.fin-step-num{width:1.65rem;height:1.65rem;border-radius:50%;background:var(--blue-bg);border:1.5px solid var(--blue-line);
+  color:var(--blue);font-weight:800;font-size:.76rem;display:grid;place-items:center;flex-shrink:0;margin-top:.06rem}
+.fin-step.done .fin-step-num{background:#2563eb;border-color:#2563eb;color:#fff}
+.fin-step-name{font-size:.88rem;font-weight:600;line-height:1.32;flex:1}
+.fin-step-details{padding:.38rem .95rem .75rem 3.3rem;border-top:1px solid var(--surface3)}
+.fin-sec-lbl{font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:1rem 0 .38rem}
 
 </style>
 </head>
@@ -148,21 +196,33 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 <div class="page">
 <a class="back-link" href="index.html">← 전체 목록</a>
 <header>
-  <div class="badge-row"><span class="badge b-cat">재테크/재무</span>
-    <span class="badge b-cat">✓ 체크리스트</span>
-    <span class="badge b-fin">💰 재정 주의</span></div>
+  <div class="badge-row"><span class="badge b-cat">재테크/재무</span> <span class="badge b-cat">✓ 체크리스트</span> <span class="badge b-fin">💰 재정 주의</span></div>
   <h1 class="flow-title">월급날 재정 루틴 Flow</h1>
   <p class="flow-desc">토스피드 &quot;통장 쪼개기&quot; 가이드를 참고해 월급날 당일 고정지출 확인, 저축 이체, 생활비 분리까지 한 번에 처리하는 루틴을 만듭니다.</p>
+  <div class="artifact-frame">
+  <div class="artifact-icon">📊</div>
+  <div class="artifact-info">
+    <div class="artifact-label">이 Flow → 스프레드시트</div>
+    <div class="artifact-desc">표·기록 양식으로 내보낼 수 있습니다</div>
+  </div>
+  <span class="badge b-reference">📄 참고출처</span>
+</div>
   <a class="source-card" href="https://toss.im/tossfeed/article/bank-account-divide" target="_blank" style="text-decoration:none;color:inherit">
     <span class="source-icon">📄</span>
     <div class="source-body">
       <div class="source-title">토스피드 – 통장쪼개기로 적정소비하는 법</div>
       <div class="source-url">https://toss.im/tossfeed/article/bank-account-divide</div>
     </div>
-    <span class="badge b-reference">📄 참고출처</span>
   </a>
 </header>
 <div class="warning-box"><div class="wl">⚠️ 주의사항</div>이 Flow는 지출 분리와 기록 습관을 돕는 체크리스트이며 투자·재무 조언이 아닙니다. 금융 결정은 공인 전문가와 상담하세요.</div>
+<div class="anchor-panel filled" id="anchor-panel">
+  <div class="anchor-header">
+    <div class="anchor-step-num">1</div>
+    <div><span class="anchor-header-text">바로 시작</span>
+    <span class="anchor-header-sub">— 날짜 입력 없이 바로 체크합니다</span></div>
+  </div>
+</div>
 <div class="progress-wrap">
   <div class="progress-label"><span>진행률</span><span id="ptext">0 / 5</span></div>
   <div class="progress-bar-bg"><div class="progress-bar-fill" id="pbar"></div></div>
@@ -170,71 +230,132 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 <div class="fin-hero">
   <div class="fin-hero-label">💰 재무 관리 Flow</div>
   <div class="fin-kpi-row">
-    <div class="fin-kpi"><div class="fin-kpi-val">D</div><div class="fin-kpi-lbl">남은 준비일</div></div>
+    <div class="fin-kpi"><div class="fin-kpi-val">—</div><div class="fin-kpi-lbl">기준일</div></div>
     <div class="fin-kpi"><div class="fin-kpi-val">5</div><div class="fin-kpi-lbl">전체 항목</div></div>
     <div class="fin-kpi"><div class="fin-kpi-val" id="fin-done">0</div><div class="fin-kpi-lbl">완료</div></div>
   </div>
-  <div class="fin-deadline-row">
-    <span class="fin-deadline-chip">📅 주요 기한 확인 필요</span>
-    <span class="fin-deadline-chip warn">⚠ 재정 민감</span>
+  <div class="fin-chip-row">
+    <span class="fin-chip">📅 주요 기한 확인 필요</span>
+    <span class="fin-chip warn">⚠ 재정 민감</span>
   </div>
-</div><div class="fin-section-label">1. 입금 확인</div><div class="fin-step" id="s0">
+</div><div class="fin-sec-lbl">1. 입금 확인</div><div class="fin-step" id="s0">
   <label class="fin-step-head" for="c0">
-    <div class="fin-step-number">1</div>
-    <input class="cbx" type="checkbox" id="c0" style="margin-top:.15rem;float:right" onchange="onCheck(this,'s0','done')">
+    <div class="fin-step-num">1</div>
+    <input class="cbx" type="checkbox" id="c0" style="margin-top:.14rem;float:right" onchange="onCheck(this,'s0','done')">
     <div class="fin-step-name">월급 입금 확인하고 실수령액 기록하기</div>
-  </label>
-  <div class="fin-step-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">세후 실수령액을 기록해야 이번 달 가용 예산을 정확하게 알 수 있습니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">실수령액을 시트에 기록했다.</span></div><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">투자·금융상품 선택은 이 Flow에서 다루지 않습니다. 기록과 분리가 목적입니다.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://toss.im/tossfeed/article/bank-account-divide" target="_blank">토스피드 통장 쪼개기 가이드</a><span class="link-pill lp-ref">참고</span></span></div></div>
-</div><div class="fin-section-label">2. 고정지출·저축 이체</div><div class="fin-step" id="s1">
+  </label><div class="fin-step-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">세후 실수령액을 기록해야 이번 달 가용 예산을 정확하게 알 수 있습니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">실수령액을 시트에 기록했다.</span></div><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">투자·금융상품 선택은 이 Flow에서 다루지 않습니다. 기록과 분리가 목적입니다.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://toss.im/tossfeed/article/bank-account-divide" target="_blank">토스피드 통장 쪼개기 가이드</a><span class="link-pill lp-ref">참고</span></span></div></div>
+</div><div class="fin-sec-lbl">2. 고정지출·저축 이체</div><div class="fin-step" id="s1">
   <label class="fin-step-head" for="c1">
-    <div class="fin-step-number">2</div>
-    <input class="cbx" type="checkbox" id="c1" style="margin-top:.15rem;float:right" onchange="onCheck(this,'s1','done')">
+    <div class="fin-step-num">2</div>
+    <input class="cbx" type="checkbox" id="c1" style="margin-top:.14rem;float:right" onchange="onCheck(this,'s1','done')">
     <div class="fin-step-name">이번 달 자동이체 항목 정상 처리 여부 확인하기</div>
-  </label>
-  <div class="fin-step-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">자동이체 실패를 당일 발견해야 연체·서비스 중단을 막을 수 있습니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">은행 앱에서 출금 예정 항목과 실제 처리 내역을 비교합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">자동이체가 모두 정상 처리됐음을 확인했다.</span></div></div>
+  </label><div class="fin-step-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">자동이체 실패를 당일 발견해야 연체·서비스 중단을 막을 수 있습니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">은행 앱에서 출금 예정 항목과 실제 처리 내역을 비교합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">자동이체가 모두 정상 처리됐음을 확인했다.</span></div></div>
 </div><div class="fin-step" id="s2">
   <label class="fin-step-head" for="c2">
-    <div class="fin-step-number">3</div>
-    <input class="cbx" type="checkbox" id="c2" style="margin-top:.15rem;float:right" onchange="onCheck(this,'s2','done')">
+    <div class="fin-step-num">3</div>
+    <input class="cbx" type="checkbox" id="c2" style="margin-top:.14rem;float:right" onchange="onCheck(this,'s2','done')">
     <div class="fin-step-name">저축·비상금 계좌로 목표 금액 이체하기</div>
-  </label>
-  <div class="fin-step-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">토스피드 가이드의 핵심 원칙: &#x27;선(先) 이체, 후(後) 소비&#x27;. 월급 당일 저축을 먼저 이체해야 &quot;남으면 저축&quot;이 아닌 &quot;먼저 저축&quot;이 됩니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">예금, 적금, ISA, 연금저축 등 목표 금액을 자동이체 또는 즉시 이체합니다. 토스피드가 제시하는 예시 분배 비율은 생활비 40% / 저축·투자 40% / 비상금 20%입니다(상황에 맞게 조정).</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">저축 금액을 이체했다.</span></div></div>
-</div><div class="fin-section-label">3. 생활비 분리</div><div class="fin-step" id="s3">
+  </label><div class="fin-step-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">토스피드 가이드의 핵심 원칙: &#x27;선(先) 이체, 후(後) 소비&#x27;. 월급 당일 저축을 먼저 이체해야 &quot;남으면 저축&quot;이 아닌 &quot;먼저 저축&quot;이 됩니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">예금, 적금, ISA, 연금저축 등 목표 금액을 자동이체 또는 즉시 이체합니다. 토스피드가 제시하는 예시 분배 비율은 생활비 40% / 저축·투자 40% / 비상금 20%입니다(상황에 맞게 조정).</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">저축 금액을 이체했다.</span></div></div>
+</div><div class="fin-sec-lbl">3. 생활비 분리</div><div class="fin-step" id="s3">
   <label class="fin-step-head" for="c3">
-    <div class="fin-step-number">4</div>
-    <input class="cbx" type="checkbox" id="c3" style="margin-top:.15rem;float:right" onchange="onCheck(this,'s3','done')">
+    <div class="fin-step-num">4</div>
+    <input class="cbx" type="checkbox" id="c3" style="margin-top:.14rem;float:right" onchange="onCheck(this,'s3','done')">
     <div class="fin-step-name">이번 달 생활비 한도를 별도 계좌나 봉투로 분리하기</div>
-  </label>
-  <div class="fin-step-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">생활비와 전체 잔액이 섞이면 실제로 쓸 수 있는 금액이 얼마인지 파악하기 어렵습니다. 통장 쪼개기는 급여통장·생활비통장·저축(투자)통장·비상금통장 4개가 기본입니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">생활비를 분리하거나 한도를 시트에 기록했다.</span></div></div>
+  </label><div class="fin-step-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">생활비와 전체 잔액이 섞이면 실제로 쓸 수 있는 금액이 얼마인지 파악하기 어렵습니다. 통장 쪼개기는 급여통장·생활비통장·저축(투자)통장·비상금통장 4개가 기본입니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">생활비를 분리하거나 한도를 시트에 기록했다.</span></div></div>
 </div><div class="fin-step" id="s4">
   <label class="fin-step-head" for="c4">
-    <div class="fin-step-number">5</div>
-    <input class="cbx" type="checkbox" id="c4" style="margin-top:.15rem;float:right" onchange="onCheck(this,'s4','done')">
+    <div class="fin-step-num">5</div>
+    <input class="cbx" type="checkbox" id="c4" style="margin-top:.14rem;float:right" onchange="onCheck(this,'s4','done')">
     <div class="fin-step-name">지난달 지출 초과 항목 이번 달 조정 기준 확인하기</div>
-  </label>
-  <div class="fin-step-details"><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">지난달 피드백과 이번 달 조정 기준을 확인했다.</span></div></div>
-</div>
-<div class="output-panel">
-  <div class="output-head"><span>📊</span>시트로 기록 — 항목을 스프레드시트에 정리합니다</div>
-  <table class="sheet-tbl"><thead><tr><th>항목</th><th>내용</th><th>날짜</th></tr></thead>
-  <tbody><tr><td>항목 1</td><td class="ed">직접 입력</td><td class="ed">날짜</td></tr>
-  <tr><td>항목 2</td><td class="ed">직접 입력</td><td class="ed">날짜</td></tr></tbody></table>
-</div>
+  </label><div class="fin-step-details"><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">지난달 피드백과 이번 달 조정 기준을 확인했다.</span></div></div>
+</div><div class="export-panel">
+  <div class="export-panel-head">
+    <span>📊</span>내 도구로 가져가기
+  </div>
+  <div class="export-btn-row">
+    <button class="export-btn primary" onclick="copyFlow()">
+      📋 시트로 복사
+    </button>
+    <button class="export-btn secondary" onclick="shareText()">
+      📤 공유 텍스트
+    </button>
+  </div>
+  <div class="export-copied" id="copied-msg">✓ 클립보드에 복사됐어요</div>
+  <p class="export-note">복사된 내용을 메모·노트·스프레드시트 앱에 그대로 붙여넣으면 실행 준비 완료입니다</p>
+  <textarea id="copy-payload" style="position:absolute;left:-9999px;top:-9999px;opacity:0" readonly># 월급날 재정 루틴 Flow
+토스피드 &quot;통장 쪼개기&quot; 가이드를 참고해 월급날 당일 고정지출 확인, 저축 이체, 생활비 분리까지 한 번에 처리하는 루틴을 만듭니다.
+
+## 1. 입금 확인
+□ 월급 입금 확인하고 실수령액 기록하기
+  WHY: 세후 실수령액을 기록해야 이번 달 가용 예산을 정확하게 알 수 있습니다.
+  주의: 투자·금융상품 선택은 이 Flow에서 다루지 않습니다. 기록과 분리가 목적입니다.
+
+## 2. 고정지출·저축 이체
+□ 이번 달 자동이체 항목 정상 처리 여부 확인하기
+  WHY: 자동이체 실패를 당일 발견해야 연체·서비스 중단을 막을 수 있습니다.
+  HOW: 은행 앱에서 출금 예정 항목과 실제 처리 내역을 비교합니다.
+□ 저축·비상금 계좌로 목표 금액 이체하기
+  WHY: 토스피드 가이드의 핵심 원칙: &#x27;선(先) 이체, 후(後) 소비&#x27;. 월급 당일 저축을 먼저 이체해야 &quot;남으면 저축&quot;이 아닌 &quot;먼저 저축&quot;이 됩니다.
+  HOW: 예금, 적금, ISA, 연금저축 등 목표 금액을 자동이체 또는 즉시 이체합니다. 토스피드가 제시하는 예시 분배 비율은 생활비 40% / 저축·투자 40% / 비상금 20%입니다(상황에 맞게 조정).
+
+## 3. 생활비 분리
+□ 이번 달 생활비 한도를 별도 계좌나 봉투로 분리하기
+  WHY: 생활비와 전체 잔액이 섞이면 실제로 쓸 수 있는 금액이 얼마인지 파악하기 어렵습니다. 통장 쪼개기는 급여통장·생활비통장·저축(투자)통장·비상금통장 4개가 기본입니다.
+□ 지난달 지출 초과 항목 이번 달 조정 기준 확인하기
+</textarea>
+</div><div class="output-panel"><div class="output-head">📊 시트 미리보기</div>
+<table class="sheet-tbl"><thead><tr><th>항목</th><th>내용</th><th>날짜</th><th>상태</th></tr></thead>
+<tbody><tr><td>항목 1</td><td class="ed">입력</td><td class="ed">날짜</td><td class="ed">-</td></tr>
+<tr><td>항목 2</td><td class="ed">입력</td><td class="ed">날짜</td><td class="ed">-</td></tr></tbody></table></div>
 </div>
 <div id="toast">💰 재무 체크 완료!</div>
 <script>
+
+
+function copyFlow(){
+  const ta=document.getElementById('copy-payload');
+  if(!ta)return;
+  try{
+    navigator.clipboard.writeText(ta.value).then(()=>showCopied()).catch(()=>fallbackCopy(ta));
+  }catch(e){fallbackCopy(ta);}
+}
+function fallbackCopy(ta){
+  ta.style.position='fixed';ta.style.opacity='1';
+  ta.select();document.execCommand('copy');
+  ta.style.position='absolute';ta.style.opacity='0';
+  showCopied();
+}
+function showCopied(){
+  const m=document.getElementById('copied-msg');
+  if(m){m.style.display='inline-flex';setTimeout(()=>{m.style.display='none';},2500);}
+}
+function shareText(){
+  const ta=document.getElementById('copy-payload');
+  if(!ta)return;
+  if(navigator.share){navigator.share({text:ta.value}).catch(()=>{});}
+  else copyFlow();
+}
+
+
 const total=5;let done=0;
+function onCheck(el,sid,cls){
+  const node=document.getElementById(sid);
+  if(el.checked){done++;node.classList.add(cls)}else{done--;node.classList.remove(cls)}
+  const pct=Math.round(done/total*100);
+  document.getElementById('ptext').textContent=done+' / '+total;
+  document.getElementById('pbar').style.width=pct+'%';
+  
+  if(done===total){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+}
 
 function onCheck(el,sid,cls){
   const node=document.getElementById(sid);
   if(el.checked){done++;node.classList.add(cls)}else{done--;node.classList.remove(cls)}
   document.getElementById('ptext').textContent=done+' / '+total;
   document.getElementById('pbar').style.width=(done/total*100)+'%';
-  const fd=document.getElementById('fin-done');
-  if(fd)fd.textContent=done;
-  if(done===total){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500)}
+  const fd=document.getElementById('fin-done');if(fd)fd.textContent=done;
+  if(done===total){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 }
 
 </script>
-</body>
-</html>
+</body></html>
