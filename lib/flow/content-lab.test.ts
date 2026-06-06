@@ -374,11 +374,12 @@ test('content lab exposes the current representative UX content review queue', (
 test('content lab exposes mobile simulation protocols for current candidate routes', () => {
   const summary = getContentLabSummary(seedBundles);
 
-  assert.equal(summary.mobileSimulationProtocolTotalCount, 3);
+  assert.equal(summary.mobileSimulationProtocolTotalCount, 4);
   assert.deepEqual(summary.mobileSimulationProtocolSlugs, [
     'computer-skills-d30-study',
     'diet-habit-2week',
     'new-car-delivery-check',
+    'infant-health-checkup-schedule',
   ]);
   assert.equal(summary.mobileSimulationProtocolValidatedCount, 0);
   assert.equal(summary.mobileSimulationProtocolAverageScore, 77);
