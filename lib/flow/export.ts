@@ -727,7 +727,18 @@ export function buildCalendarIcs(bundle: FlowBundle, anchor: string, weekdays: s
     `SUMMARY:${escapeIcsText(bundle.flow.title)}`,
     `DESCRIPTION:${escapeIcsText(buildIcsDescription(bundle))}`,
   ];
-  if (byday) lines.push(`RRULE:FREQ=WEEKLY;BYDAY=${byday}`);
+  if (byday) {
+    const durationDays = bundle.flow.routine_duration_days;
+    // Bound a fixed-length routine (e.g. a 30-day challenge) so it does not
+    // recur forever in the calendar. UNTIL is date-based, so it stops after the
+    // intended span regardless of how many weekdays the user selected. Open-ended
+    // habits leave routine_duration_days undefined and keep recurring indefinitely.
+    const until =
+      durationDays && durationDays > 0
+        ? `;UNTIL=${compactDate(formatDate(addDays(new Date(startDate), durationDays - 1)))}`
+        : '';
+    lines.push(`RRULE:FREQ=WEEKLY;BYDAY=${byday}${until}`);
+  }
   if (bundle.flow.source_url) lines.push(`URL:${bundle.flow.source_url}`);
   lines.push('END:VEVENT', 'END:VCALENDAR');
   return `${lines.join('\r\n')}\r\n`;

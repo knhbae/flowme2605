@@ -642,6 +642,36 @@ test('calendar export creates a portable weekly event for exact video flows', ()
   assert.match(ics, /URL:https:\/\/www\.youtube\.com\/watch\?v=/);
 });
 
+test('fixed-length routines bound the recurring calendar event with UNTIL', () => {
+  // 30-day challenge starting Monday 2026-06-08 → UNTIL = 2026-07-07 (start + 29 days).
+  const reading = seedBundles.find((bundle) => bundle.flow.slug === 'reading-habit-30day');
+  assert.ok(reading);
+  assert.equal(reading.flow.routine_duration_days, 30);
+  const readingIcs = buildCalendarIcs(reading, '2026-06-08', ['월', '수', '금']);
+  assert.match(readingIcs, /RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR;UNTIL=20260707/);
+
+  const morning = seedBundles.find((bundle) => bundle.flow.slug === 'morning-routine-30day');
+  assert.ok(morning);
+  assert.match(buildCalendarIcs(morning, '2026-06-08', ['월', '수', '금']), /UNTIL=20260707/);
+
+  // 28-day weekly routine → UNTIL = start + 27 days.
+  const detox = seedBundles.find((bundle) => bundle.flow.slug === 'digital-detox-weekly');
+  assert.ok(detox);
+  assert.equal(detox.flow.routine_duration_days, 28);
+  assert.match(buildCalendarIcs(detox, '2026-06-08', ['월', '수', '금']), /UNTIL=20260705/);
+});
+
+test('open-ended daily habits keep recurring without an UNTIL bound', () => {
+  for (const slug of ['morning-skincare-routine', 'home-cafe-daily', 'dog-walk-routine']) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+    assert.ok(bundle, slug);
+    assert.equal(bundle.flow.routine_duration_days, undefined, `${slug} should stay open-ended`);
+    const ics = buildCalendarIcs(bundle, '2026-06-08', ['월', '수', '금']);
+    assert.match(ics, /RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR/, `${slug} should recur weekly`);
+    assert.doesNotMatch(ics, /UNTIL=/, `${slug} should not be bounded`);
+  }
+});
+
 test('repeated workout video calendar export keeps each reminder executable', () => {
   const slugs = [
     'real-thankyou-bubu-video-full-body-no-jump',

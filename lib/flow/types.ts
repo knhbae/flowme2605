@@ -51,6 +51,14 @@ export type Flow = {
   source_status?: SourceStatus;
   source_precision?: SourcePrecision;
   primary_destination?: PrimaryDestination;
+  /**
+   * For `routine` flows exported to a recurring calendar event: the total number
+   * of days the routine is meant to run before it stops. When set, the ICS RRULE
+   * gets an `UNTIL` bound so a fixed-length routine (e.g. a 30-day challenge) does
+   * not repeat forever in the user's calendar. Leave undefined for genuinely
+   * open-ended daily habits where indefinite recurrence is the intended behavior.
+   */
+  routine_duration_days?: number;
   source_checked_at?: string;
   conversion_note?: string;
   risk_level?: RiskLevel;
