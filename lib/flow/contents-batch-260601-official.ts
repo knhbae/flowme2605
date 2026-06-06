@@ -69,7 +69,7 @@ const specs: BatchSpec[] = [
       anchor_type: 'end_date',
       status: 'published',
       risk_level: 'financial_sensitive',
-      primary_destination: 'memo',
+      primary_destination: 'calendar',
       source_title: '한국장학재단 – 국가장학금 Ⅰ유형(학생직접지원형) 안내',
       source_url: 'https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_12_01_01',
       warning: '신청기간, 소득분위 기준, 지원 금액은 학기·연도마다 달라집니다. 한국장학재단 공식 공지를 반드시 확인하세요.',

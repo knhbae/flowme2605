@@ -226,7 +226,7 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
   <div class="anchor-header">
     <div class="anchor-step-num">1</div>
     <div><span class="anchor-header-text">STEP 1 — 아이 현재 월령 입력</span>
-    <span class="anchor-header-sub">— 월령 기준으로 날짜가 자동 계산됩니다</span></div>
+    <span class="anchor-header-sub">— 월령에 맞는 다음 검진 차수를 확인합니다</span></div>
   </div>
   <div class="anchor-row">
     <input class="anchor-input" id="anchor-val" type="number" min="1" max="72"
@@ -234,7 +234,7 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
         <span style="font-size:.82rem;color:var(--sub)">개월</span>
     <button class="anchor-btn ghost" onclick="clearAnchor()">초기화</button>
   </div>
-  <div class="anchor-result" id="anchor-result">✓ 아이 현재 월령 설정됨 — 아래 항목의 날짜가 반영되었습니다</div>
+  <div class="anchor-result" id="anchor-result">✓ 월령 입력 완료</div>
 </div>
 <div class="progress-wrap">
   <div class="progress-label"><span>진행률</span><span id="ptext">0 / 5</span></div>
@@ -305,25 +305,41 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 <div id="toast">🎉 모든 검진 확인!</div>
 <script>
 
+// NHIS 영유아 건강검진 차수 (2026 기준, 실제 기간은 공단 검진일자 조회로 확인)
+const CHECKUP_SCHEDULE=[
+  {차:'1차', min:0,  max:1,  label:'생후 14~35일 (신생아)'},
+  {차:'2차', min:4,  max:5,  label:'4~5개월'},
+  {차:'3차', min:9,  max:11, label:'9~11개월'},
+  {차:'4차', min:18, max:23, label:'18~23개월'},
+  {차:'5차', min:30, max:35, label:'30~35개월'},
+  {차:'6차', min:42, max:47, label:'42~47개월'},
+  {차:'7차', min:54, max:59, label:'54~59개월'},
+  {차:'8차', min:66, max:71, label:'66~71개월'},
+];
 function onAnchorInput(val){
   const v=parseInt(val);
   const panel=document.getElementById('anchor-panel');
   const res=document.getElementById('anchor-result');
-  if(!val||isNaN(v)||v<1||v>72){panel.classList.remove('filled');return;}
+  if(!val||isNaN(v)||v<1||v>72){panel.classList.remove('filled');if(res)res.innerHTML='';return;}
   panel.classList.add('filled');
-  if(res)res.style.display='block';
-  // highlight relevant phase sections (by name containing 개월 range)
-  document.querySelectorAll('[data-age-min]').forEach(el=>{
-    const min=parseInt(el.dataset.ageMin||0);
-    const max=parseInt(el.dataset.ageMax||999);
-    el.style.opacity=(v>=min&&v<=max)?'1':'0.4';
-    if(v>=min&&v<=max)el.scrollIntoView&&false;
-  });
+  // find current (in-window) or next upcoming checkup
+  const current=CHECKUP_SCHEDULE.find(c=>v>=c.min&&v<=c.max);
+  const next=CHECKUP_SCHEDULE.find(c=>c.min>v);
+  let msg='';
+  if(current){
+    msg=`<strong>아이 ${v}개월 → 지금 ${current.차} 검진 기간</strong> (${current.label})<br><span style="font-size:.78rem;color:var(--sub)">검진 가능 기간 안에 있습니다. 아래 체크리스트로 준비하세요.</span>`;
+  } else if(next){
+    msg=`<strong>아이 ${v}개월 → 다음 ${next.차} 검진</strong> (${next.label})<br><span style="font-size:.78rem;color:var(--sub)">아직 검진 기간이 아닙니다. 가능 기간이 되면 아래 체크리스트를 진행하세요.</span>`;
+  } else {
+    msg=`<strong>아이 ${v}개월</strong> — 영유아 건강검진 대상 기간(0~71개월)을 지났습니다.`;
+  }
+  if(res){res.innerHTML=msg;res.style.display='block';}
 }
 function clearAnchor(){
   document.getElementById('anchor-val').value='';
   document.getElementById('anchor-panel').classList.remove('filled');
-  document.querySelectorAll('[data-age-min]').forEach(el=>el.style.opacity='1');
+  const res=document.getElementById('anchor-result');
+  if(res){res.innerHTML='';res.style.display='none';}
 }
 
 

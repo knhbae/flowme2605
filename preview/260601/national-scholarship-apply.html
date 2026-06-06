@@ -208,10 +208,10 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
   <h1 class="flow-title">국가장학금 신청 준비 Flow</h1>
   <p class="flow-desc">학기별 신청기간을 놓치지 않게 가구원 동의, 소득분위 산정, 서류를 미리 준비합니다.</p>
   <div class="artifact-frame">
-  <div class="artifact-icon">📝</div>
+  <div class="artifact-icon">📅</div>
   <div class="artifact-info">
-    <div class="artifact-label">이 Flow → 메모</div>
-    <div class="artifact-desc">체크리스트를 메모·노트에 저장합니다</div>
+    <div class="artifact-label">이 Flow → 캘린더</div>
+    <div class="artifact-desc">날짜별 일정으로 변환됩니다</div>
   </div>
   <span class="badge b-official">🏛 공식출처</span>
 </div>
@@ -228,7 +228,7 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
   <div class="anchor-header">
     <div class="anchor-step-num">1</div>
     <div><span class="anchor-header-text">STEP 1 — 신청 마감일 입력</span>
-    <span class="anchor-header-sub">— 목표일 기준으로 날짜가 자동 계산됩니다</span></div>
+    <span class="anchor-header-sub">— 목표일 기준으로 D-X 날짜가 역산됩니다</span></div>
   </div>
   <div class="anchor-row">
     <input class="anchor-input" id="anchor-val" type="date" oninput="onAnchorInput(this.value)">
@@ -310,18 +310,18 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
   </label>
 </div><div class="export-panel">
   <div class="export-panel-head">
-    <span>📝</span>내 도구로 가져가기
+    <span>📅</span>내 도구로 가져가기
   </div>
   <div class="export-btn-row">
     <button class="export-btn primary" onclick="copyFlow()">
-      📋 메모로 복사
+      📋 캘린더에 추가
     </button>
     <button class="export-btn secondary" onclick="shareText()">
       📤 공유 텍스트
     </button>
   </div>
   <div class="export-copied" id="copied-msg">✓ 클립보드에 복사됐어요</div>
-  <p class="export-note">복사된 내용을 메모·노트·메모 앱에 그대로 붙여넣으면 실행 준비 완료입니다</p>
+  <p class="export-note">복사된 내용을 메모·노트·캘린더 앱에 그대로 붙여넣으면 실행 준비 완료입니다</p>
   <textarea id="copy-payload" style="position:absolute;left:-9999px;top:-9999px;opacity:0" readonly># 국가장학금 신청 준비 Flow
 학기별 신청기간을 놓치지 않게 가구원 동의, 소득분위 산정, 서류를 미리 준비합니다.
 
@@ -347,8 +347,7 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 □ 서류 제출 요청(필요 시) 마감 전 처리하기
   주의: 2026학년도 Ⅰ유형 연간 지원금액은 기초·차상위 등록금 전액, 1~3구간 600만원, 4~6구간 440만원, 7~8구간 360만원, 9구간 100만원 수준입니다(학기당 절반씩). 구간 경곗값과 금액은 매학기 재단 공지로 확인하세요.
 </textarea>
-</div><div class="output-panel"><div class="output-head">📝 메모 미리보기</div>
-<div class="memo-note"><div class="mtitle">체크 완료 항목 요약</div>완료한 단계가 메모·노트로 정리됩니다.</div></div>
+</div><div class="output-panel"><div class="output-head">📅 캘린더 미리보기</div><div class="mcal"><div class="dow">일</div><div class="dow">월</div><div class="dow">화</div><div class="dow">수</div><div class="dow">목</div><div class="dow">금</div><div class="dow">토</div><div class="day empty"></div><div class="day empty"></div><div class="day empty"></div><div class="day soft">1</div><div class="day soft">2</div><div class="day mark">3</div><div class="day mark">4</div><div class="day mark">5</div><div class="day mark">6</div><div class="day mark">7</div><div class="day mark">8</div><div class="day mark">9</div><div class="day mark">10</div><div class="day mark">11</div><div class="day mark">12</div><div class="day mark">13</div><div class="day mark">14</div><div class="day mark">15</div><div class="day mark">16</div><div class="day mark">17</div><div class="day mark">18</div><div class="day mark">19</div><div class="day mark">20</div><div class="day mark">21</div><div class="day mark">22</div><div class="day mark">23</div><div class="day mark">24</div><div class="day mark">25</div><div class="day mark">26</div><div class="day mark">27</div><div class="day mark">28</div></div></div>
 </div>
 <div id="toast">🎉 모든 단계 완료!</div>
 <script>
