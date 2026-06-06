@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-06
 **Status:** v0.1.0 IN DEVELOPMENT  
 **Current Version:** v0.1.0  
 **Primary Focus:** Stage 0 / First Flag validation for FLOW execution behavior.
@@ -128,6 +128,8 @@
   - All enter as `needs_review` (lifecycle `fix`, exact precision) — direct-route only, not representative/public-MVP/validated. Inventory `source_needs_review` 24; lifecycle `fix` 55→79; source-review queue 24 (audit_now 12 / risk_review 12); quality gates preserved (legacy/remove/broad-source 0). See `docs/content-audit/2026-06-01-official-source-batch.md`.
 - 2026-06-01 크리에이터·블로그 배치(20개)가 공식출처 배치에 추가됨: 백종원의 요리비책·슈카월드(YouTube), 오늘의집·만개의 레시피·브런치스토리·원티드·클래스101·네이버 펫(블로그/플랫폼) 등 실재하는 채널·플랫폼에 매핑. 요리/정리/재테크/독서/스킨케어/여행/홈카페/커리어/생활습관/반려동물 10개 카테고리. 항목 source_type: creator_experience(YouTube) / reference(블로그). Inventory source_needs_review 44(+20); lifecycle fix 99(+20); source-review 큐 44(audit_now 30 / risk_review 14). 공식출처 배치와 quality gates 유지. `docs/content-audit/2026-06-01-creator-batch.md` 참고.
 - 2026-06-01 카테고리별 UX/UI 설계가 크리에이터 배치에 적용됨: 콘텐츠 성격별로 알맞은 아티팩트 표면을 배정하고 신규 표면 `step_progress`(단계별 실행 stepper: 진행률 바 + 단계 카드 + "현재 단계" 강조)를 추가. 순차 단계형 6개(요리/정리/창작/완독/짐싸기)→step_progress, 표 기록형 4개(식단/가계부/피부·반려 관찰)→spreadsheet_log + 카테고리 전용 표, 월급날 재정→memo_card + 재정 필드, 루틴 6개→routine_calendar, 일정 3개→timeline_calendar. `artifact-plan.ts`는 신규 슬러그에만 분기 추가(기존 표면 선택 불변), `artifact-fields.ts`에 요일/카테고리/주차 행 표와 payday 메모 필드 추가. 183 tests pass. `docs/content-audit/2026-06-01-category-ux-design.md` 참고.
+
+- 2026-06-03/06 260601 배치 컨텐츠 유효성 패스가 완료됨: 44개 플로우 프리뷰에 대해 4축(S/A/D/R) 트리아지를 수행하고 P0/P1 문제를 수정했다. 주요 수정 내용: 영아건강검진 월령 로직 버그 수정(NHIS 8차 스케줄 기반 다음 검진 차수 안내로 교체), 장학금·출생신고·국내여행 플로우의 아티팩트 destination `memo`→`calendar` 교정, payday-finance-routine structure `checklist`→`routine` 교정, 토스 소스 URL 경로 교정. WebSearch로 10개 URL 실재 확인. 트리아지 최종 결과: 🟢 40개(대표화 가능) / 🟡 3개(재구성 필요) / 🟠 0개. 183 tests pass, build clean. SHA `a3397b0`. `docs/content-audit/2026-06-03-*.md` 참고.
 
 ## Next Up
 
