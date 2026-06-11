@@ -1,7 +1,7 @@
 # Project Status
 
-**Last Updated:** 2026-06-06 (export 품질 감사)
-**Status:** v0.1.0 IN DEVELOPMENT  
+**Last Updated:** 2026-06-11 (v0.1.0 릴리즈)
+**Status:** v0.1.0 RELEASED  
 **Current Version:** v0.1.0  
 **Primary Focus:** Stage 0 / First Flag validation for FLOW execution behavior.
 
@@ -133,6 +133,8 @@
 
 - 2026-06-06 외부 앱 관점 export 품질 감사가 진행됨: 컨텐츠 유효성 검토가 아티팩트 destination 타입은 확인했지만 실제 외부 도구(Google Calendar/Excel/Notion 등)에서의 출력 품질은 검증하지 않았던 갭을 메웠다. (1) `infant-health-checkup-schedule`를 `baby_age_month`+`phase`(캘린더 0개 이벤트, 버튼 미표시)에서 `baby_birth_date`+`timeline`으로 재구성해 생년월일 1개 입력으로 NHIS 8차 검진 일정이 8개 ICS 이벤트로 배치되게 함. (2) 기간이 정해진 루틴(reading-habit-30day·morning-routine-30day 30일, digital-detox-weekly 28일)이 캘린더에서 영원히 반복되던 문제를 `routine_duration_days` 필드 + RRULE `UNTIL` 바운드로 수정(영구 습관 3개는 의도대로 무한 반복 유지). (3) memo destination 27개 플로우의 `buildText`가 일반 불릿·디테일 없음이던 것을 Markdown 체크박스(`- [ ]`/`- [x]`, Notion/Obsidian/메모앱에서 인터랙티브 렌더링) + 비-generic 완료 기준 + 공식 핸드오프 링크로 개선. sheet(xlsx) export 5개는 실행요약/실행표/상세 3시트로 이미 충실해 변경 불필요로 확인. 186 tests pass.
 
+- 2026-06-11 🟡 3개 플로우 재구성 완료 및 v0.1.0 릴리즈 공개: 컨텐츠 유효성 트리아지에서 🟡(재구성 필요)로 분류된 3개 플로우를 모두 🟢로 전환했다. (1) `new-hobby-30day`: `timeline` 구조인데 아이템에 day_offset이 없어 캘린더 export가 비어 있던 구조 버그를 D-1/D+0~1/D+1~7/D+7/D+14/D+21/D+30 마커 7개 아이템으로 재구성해 해결. (2) `ev-subsidy-apply`: 4개 중 2개가 내용 없는 빈 항목이던 것을 보조금 지원 확인서 신청(계약 전 필수 caution 포함)·취득세 감면 확인·출고 후 정산 확인 단계를 추가해 7개 아이템(why/how/done 완비, caution 3개)으로 확장. (3) `home-cafe-daily`: 물 온도·원두 신선도 확인(85~96°C 추출 온도 가이드)과 도구 즉시 헹구기 단계를 추가해 6개 아이템으로 보강. 186 tests pass. main SHA `d18f421`, GitHub 릴리즈 `v0.1.0` 공개. 트리아지 최종: 🟢 43개 / 🟡 0개.
+
 ## Next Up
 
-v0.1.0 should stabilize the first public FLOW loop: open, anchor input, copy/export, check, and feedback.
+v0.1.0 is released. Next: validate the first public FLOW loop with real usage — open, anchor input, copy/export, check, and feedback. Priority: one observed mobile session with a real parent on `infant-health-checkup-schedule` (the first-flag route), then decide which 1-2 representative flows get narrow public exposure.
