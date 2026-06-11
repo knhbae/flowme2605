@@ -1,6 +1,7 @@
 ---
 name: flow-ux-review
 description: Use when reviewing FLOW pages, creator channels, exports, or content for user journey quality, cognitive load, portability to calendar/sheet/memo, and whether users can actually execute the Flow.
+context: fork
 ---
 
 # FLOW UX Review

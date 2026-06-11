@@ -27,6 +27,6 @@ FLOW 품질 기준은 좁고 딱딱한 금지 목록이 아니다. 콘텐츠 유
 
 ## Related Repo Skills
 
-- `skills/flow-content-conversion/SKILL.md`: 원본 콘텐츠를 Flow로 변환할 때 사용한다.
-- `skills/flow-ux-review/SKILL.md`: 화면과 컨텐츠를 사용자 여정 관점에서 검토할 때 사용한다.
-- `skills/flow-copy-editor/SKILL.md`: FLOW UI copy와 action copy가 뻔하거나 추상적일 때 사용한다.
+- `.agents/skills/flow-content-conversion/SKILL.md`: 원본 콘텐츠를 Flow로 변환할 때 사용한다.
+- `.agents/skills/flow-ux-review/SKILL.md`: 화면과 컨텐츠를 사용자 여정 관점에서 검토할 때 사용한다.
+- `.agents/skills/flow-copy-editor/SKILL.md`: FLOW UI copy와 action copy가 뻔하거나 추상적일 때 사용한다.
