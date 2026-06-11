@@ -12,9 +12,11 @@ export default defineConfig({
     baseURL: `http://127.0.0.1:${port}`,
     trace: 'retain-on-failure',
     launchOptions: {
+      // Windows fallback keeps the original local-dev behavior; elsewhere leave
+      // undefined so Playwright uses its own managed browser (npx playwright install).
       executablePath:
         process.env.PLAYWRIGHT_CHROME_EXECUTABLE_PATH ??
-        'C:/Program Files/Google/Chrome/Application/chrome.exe',
+        (process.platform === 'win32' ? 'C:/Program Files/Google/Chrome/Application/chrome.exe' : undefined),
     },
   },
   webServer: {

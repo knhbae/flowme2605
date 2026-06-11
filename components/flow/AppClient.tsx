@@ -333,6 +333,7 @@ function getStructureLabel(bundle: FlowBundle): string {
 
 function getAnchorInputLabel(bundle: FlowBundle): string {
   if (bundle.flow.anchor_type === 'none') return '날짜 입력 없음';
+  if (bundle.flow.anchor_type === 'baby_birth_date') return '아이 생년월일';
   if (bundle.flow.content_type === 'meal_plan') return '이유식 시작일';
   if (bundle.flow.category.includes('건강/검진')) return '검진일';
   if (bundle.flow.category.includes('여행')) return '출국일';
@@ -1594,6 +1595,7 @@ export function NewFlow() {
                   <option value="start_date">시작일 기준</option>
                   <option value="end_date">목표일 기준</option>
                   <option value="baby_age_month">아이 월령 기준</option>
+                  <option value="baby_birth_date">아이 생년월일 기준</option>
                   <option value="none">날짜 없이 체크</option>
                 </select>
               </label>

@@ -2,7 +2,7 @@ export type StructureType = 'timeline' | 'phase' | 'routine' | 'checklist';
 
 export type ContentType = 'default' | 'meal_plan';
 
-export type AnchorType = 'start_date' | 'end_date' | 'baby_age_month' | 'none';
+export type AnchorType = 'start_date' | 'end_date' | 'baby_age_month' | 'baby_birth_date' | 'none';
 
 export type FlowStatus = 'draft' | 'published';
 

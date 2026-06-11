@@ -8,6 +8,7 @@ const anchorLabelByType = {
   start_date: '시작일',
   end_date: '목표일',
   baby_age_month: '기준 월령',
+  baby_birth_date: '아이 생년월일',
   none: '기준값 없음',
 };
 
