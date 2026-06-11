@@ -166,29 +166,7 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 
 @media(max-width:520px){.flow-title{font-size:1.28rem}.det{grid-template-columns:38px 1fr}}
 
-
---ck-color:#b45309;
-.progress-bar-fill{background:#b45309}
-.cbx:checked{background:#b45309;border-color:#b45309}
-.task-hero{background:linear-gradient(135deg,#fffbeb,#fcd34d);border:1px solid #fcd34d;
-  border-radius:var(--r);padding:1rem 1.15rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:.88rem}
-.task-hero-icon{font-size:2.1rem}
-.task-hero-label{font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#b45309}
-.task-hero-meta{font-size:.76rem;color:var(--sub);margin-top:.22rem}
-.task-section{margin-bottom:1.1rem}
-.task-sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.42rem}
-.task-sec-title{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
-.task-sec-prog-bar{flex:1;height:3.5px;background:var(--surface3);border-radius:999px;margin:0 .7rem;overflow:hidden}
-.task-sec-prog-fill{height:100%;background:#b45309;width:0;transition:width .3s;border-radius:999px}
-.task-sec-cnt{font-size:.66rem;color:var(--muted)}
-.task-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);
-  margin-bottom:.42rem;overflow:hidden;transition:box-shadow .15s}
-.task-item:hover{box-shadow:var(--shadow)}
-.task-item.done{opacity:.45}
-.task-item-head{display:flex;align-items:flex-start;gap:.65rem;padding:.72rem .9rem;cursor:pointer}
-.task-item-name{font-size:.88rem;font-weight:600;line-height:1.32;flex:1}
-.task-details{padding:.35rem .9rem .72rem 3.2rem;border-top:1px solid var(--surface3)}
-
+--ck-color:#b45309;.progress-bar-fill{background:#b45309}.cbx:checked{background:#b45309;border-color:#b45309}.task-section{margin-bottom:1.1rem}.task-sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.42rem}.task-sec-title{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}.task-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:.42rem;overflow:hidden}.task-item.done{opacity:.45}.task-item-head{display:flex;align-items:flex-start;gap:.65rem;padding:.72rem .9rem;cursor:pointer}.task-item-name{font-size:.88rem;font-weight:600;line-height:1.32;flex:1}.task-details{padding:.35rem .9rem .72rem 3.2rem;border-top:1px solid var(--surface3)}
 </style>
 </head>
 <body>
@@ -226,59 +204,7 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
   <div class="progress-label"><span>진행률</span><span id="ptext">0 / 6</span></div>
   <div class="progress-bar-bg"><div class="progress-bar-fill" id="pbar"></div></div>
 </div>
-<div class="task-hero">
-  <div class="task-hero-icon">📚</div>
-  <div>
-    <div class="task-hero-label">독서 실행 Flow</div>
-    <div style="font-size:.95rem;font-weight:800;color:var(--ink);margin-top:.1rem">책 한 권 완독 실천 Flow</div>
-    <div class="task-hero-meta">3개 섹션 · 6개 항목</div>
-  </div>
-</div><div class="task-section">
-  <div class="task-sec-head">
-    <span class="task-sec-title">1. 시작 준비</span>
-    <div class="task-sec-prog-bar"><div class="task-sec-prog-fill" id="tpb-0"></div></div>
-    <span class="task-sec-cnt" id="tpc-0">0/2</span>
-  </div><div class="task-item" id="s0">
-  <label class="task-item-head" for="c0">
-    <input class="cbx" type="checkbox" id="c0" style="margin-top:.14rem" onchange="onCheck(this,'s0','done',0)">
-    <div class="task-item-name">읽을 책과 목표 완독일 정하기</div>
-  </label><div class="task-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">완독일을 정해야 하루 분량을 역산할 수 있습니다. 독서 노하우의 공통 출발점은 &quot;책 읽을 시간을 먼저 확보하는 것&quot;입니다(아침 15분, 출퇴근 20~30분 등 고정 시간대).</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">책 총 페이지를 목표 일수로 나눠 하루 최소 페이지를 계산합니다. 집중해서 읽으면 대략 60분에 60페이지가 한 기준이 됩니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">책 제목과 완독 목표일, 하루 분량을 메모에 적었다.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://ridicorp.com/story/pr-reading-new-year-resolution/" target="_blank">리디 – 읽는 습관 들이는 다섯 가지 방법</a><span class="link-pill lp-ref">참고</span></span></div></div>
-</div><div class="task-item" id="s1">
-  <label class="task-item-head" for="c1">
-    <input class="cbx" type="checkbox" id="c1" style="margin-top:.14rem" onchange="onCheck(this,'s1','done',0)">
-    <div class="task-item-name">읽기 전 목차와 서문 훑기</div>
-  </label><div class="task-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">전체 구조를 먼저 파악하면 읽는 속도와 이해도가 올라갑니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">목차와 서문을 읽었다.</span></div></div>
-</div></div><div class="task-section">
-  <div class="task-sec-head">
-    <span class="task-sec-title">2. 읽기 실행</span>
-    <div class="task-sec-prog-bar"><div class="task-sec-prog-fill" id="tpb-1"></div></div>
-    <span class="task-sec-cnt" id="tpc-1">0/2</span>
-  </div><div class="task-item" id="s2">
-  <label class="task-item-head" for="c2">
-    <input class="cbx" type="checkbox" id="c2" style="margin-top:.14rem" onchange="onCheck(this,'s2','done',1)">
-    <div class="task-item-name">매일 목표 페이지까지 읽기</div>
-  </label><div class="task-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">자신에게 맞는 책(좋아하는 장르 우선)을 선택했다면 습관 형성이 수월해집니다. 완독 강박을 버리면 독서가 즐거워집니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">오늘 목표 페이지를 달성했다(실제 읽은 페이지 기록).</span></div></div>
-</div><div class="task-item" id="s3">
-  <label class="task-item-head" for="c3">
-    <input class="cbx" type="checkbox" id="c3" style="margin-top:.14rem" onchange="onCheck(this,'s3','done',1)">
-    <div class="task-item-name">기억에 남는 구절이나 생각 메모하기</div>
-  </label><div class="task-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">줄 긋기, 포스트잇, 메모 앱 중 편한 방식으로 남깁니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">오늘 읽은 내용에서 메모를 남겼다.</span></div></div>
-</div></div><div class="task-section">
-  <div class="task-sec-head">
-    <span class="task-sec-title">3. 완독 후</span>
-    <div class="task-sec-prog-bar"><div class="task-sec-prog-fill" id="tpb-2"></div></div>
-    <span class="task-sec-cnt" id="tpc-2">0/2</span>
-  </div><div class="task-item" id="s4">
-  <label class="task-item-head" for="c4">
-    <input class="cbx" type="checkbox" id="c4" style="margin-top:.14rem" onchange="onCheck(this,'s4','done',2)">
-    <div class="task-item-name">완독 날짜와 완독 소감 한 줄 적기</div>
-  </label><div class="task-details"><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">완독 날짜와 소감을 기록했다.</span></div></div>
-</div><div class="task-item" id="s5">
-  <label class="task-item-head" for="c5">
-    <input class="cbx" type="checkbox" id="c5" style="margin-top:.14rem" onchange="onCheck(this,'s5','done',2)">
-    <div class="task-item-name">배운 내용 중 실제로 적용할 것 1가지 정하기</div>
-  </label><div class="task-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">독서 후 행동으로 이어지지 않으면 정보가 남지 않습니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">적용할 행동 1가지를 메모했다.</span></div></div>
-</div></div><div class="export-panel">
+<div class="task-section"><div class="task-sec-head"><span class="task-sec-title">1. 시작 준비</span></div><div class="task-item" id="s0"><label class="task-item-head" for="c0"><input class="cbx" type="checkbox" id="c0" style="margin-top:.14rem" onchange="onCheck(this,'s0','done',0)"><div class="task-item-name">읽을 책과 목표 완독일 정하기</div></label><div class="task-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">완독일을 정해야 하루 분량을 역산할 수 있습니다. 독서 노하우의 공통 출발점은 &quot;책 읽을 시간을 먼저 확보하는 것&quot;입니다(아침 15분, 출퇴근 20~30분 등 고정 시간대).</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">책 총 페이지를 목표 일수로 나눠 하루 최소 페이지를 계산합니다. 집중해서 읽으면 대략 60분에 60페이지가 한 기준이 됩니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">책 제목과 완독 목표일, 하루 분량을 메모에 적었다.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://ridicorp.com/story/pr-reading-new-year-resolution/" target="_blank">리디 – 읽는 습관 들이는 다섯 가지 방법</a><span class="link-pill lp-ref">참고</span></span></div></div></div><div class="task-item" id="s1"><label class="task-item-head" for="c1"><input class="cbx" type="checkbox" id="c1" style="margin-top:.14rem" onchange="onCheck(this,'s1','done',0)"><div class="task-item-name">읽기 전 목차와 서문 훑기</div></label><div class="task-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">전체 구조를 먼저 파악하면 읽는 속도와 이해도가 올라갑니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">목차와 서문을 읽었다.</span></div></div></div></div><div class="task-section"><div class="task-sec-head"><span class="task-sec-title">2. 읽기 실행</span></div><div class="task-item" id="s2"><label class="task-item-head" for="c2"><input class="cbx" type="checkbox" id="c2" style="margin-top:.14rem" onchange="onCheck(this,'s2','done',1)"><div class="task-item-name">매일 목표 페이지까지 읽기</div></label><div class="task-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">자신에게 맞는 책(좋아하는 장르 우선)을 선택했다면 습관 형성이 수월해집니다. 완독 강박을 버리면 독서가 즐거워집니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">오늘 목표 페이지를 달성했다(실제 읽은 페이지 기록).</span></div></div></div><div class="task-item" id="s3"><label class="task-item-head" for="c3"><input class="cbx" type="checkbox" id="c3" style="margin-top:.14rem" onchange="onCheck(this,'s3','done',1)"><div class="task-item-name">기억에 남는 구절이나 생각 메모하기</div></label><div class="task-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">줄 긋기, 포스트잇, 메모 앱 중 편한 방식으로 남깁니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">오늘 읽은 내용에서 메모를 남겼다.</span></div></div></div></div><div class="task-section"><div class="task-sec-head"><span class="task-sec-title">3. 완독 후</span></div><div class="task-item" id="s4"><label class="task-item-head" for="c4"><input class="cbx" type="checkbox" id="c4" style="margin-top:.14rem" onchange="onCheck(this,'s4','done',2)"><div class="task-item-name">완독 날짜와 완독 소감 한 줄 적기</div></label><div class="task-details"><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">완독 날짜와 소감을 기록했다.</span></div></div></div><div class="task-item" id="s5"><label class="task-item-head" for="c5"><input class="cbx" type="checkbox" id="c5" style="margin-top:.14rem" onchange="onCheck(this,'s5','done',2)"><div class="task-item-name">배운 내용 중 실제로 적용할 것 1가지 정하기</div></label><div class="task-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">독서 후 행동으로 이어지지 않으면 정보가 남지 않습니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">적용할 행동 1가지를 메모했다.</span></div></div></div></div><div class="export-panel">
   <div class="export-panel-head">
     <span>📝</span>내 도구로 가져가기
   </div>
@@ -344,22 +270,7 @@ function shareText(){
   else copyFlow();
 }
 
-
-const total=6;let done=0;
-const _tc2=[2, 2, 2];const _td2=[0, 0, 0];
-function onCheck(el,sid,cls,si){
-  const node=document.getElementById(sid);
-  if(el.checked){done++;_td2[si]++;node.classList.add(cls)}else{done--;_td2[si]--;node.classList.remove(cls)}
-  document.getElementById('ptext').textContent=done+' / '+total;
-  document.getElementById('pbar').style.width=(done/total*100)+'%';
-  for(let i=0;i<3;i++){
-    const b=document.getElementById('tpb-'+i);const c=document.getElementById('tpc-'+i);
-    if(b)b.style.width=(_tc2[i]?_td2[i]/_tc2[i]*100:0)+'%';
-    if(c)c.textContent=_td2[i]+'/'+_tc2[i];
-  }
-  if(done===total){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
-}
-
+const total=6;let done=0;const _tc2=[2, 2, 2];const _td2=[0, 0, 0];function onCheck(el,sid,cls,si){const node=document.getElementById(sid);if(el.checked){done++;_td2[si]++;node.classList.add(cls)}else{done--;_td2[si]--;node.classList.remove(cls)}document.getElementById('ptext').textContent=done+' / '+total;document.getElementById('pbar').style.width=(done/total*100)+'%';if(done===total){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}}
 function copyFlow(){
   const ta=document.getElementById('copy-payload');
   if(!ta)return;
@@ -383,7 +294,6 @@ function shareText(){
   if(navigator.share){navigator.share({text:ta.value}).catch(()=>{});}
   else copyFlow();
 }
-
 
 </script>
 </body></html>

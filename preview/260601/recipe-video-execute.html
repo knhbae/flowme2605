@@ -167,25 +167,14 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 @media(max-width:520px){.flow-title{font-size:1.28rem}.det{grid-template-columns:38px 1fr}}
 
 
---ck-color:#16a34a;
-.progress-bar-fill{background:#16a34a}
-.cbx:checked{background:#16a34a;border-color:#16a34a}
-.cook-hero{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #bbf7d0;
-  border-radius:var(--r);padding:1rem 1.15rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:.9rem}
-.cook-hero-icon{font-size:2.3rem}
-.cook-hero-label{font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#15803d}
-.cook-hero-meta{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.35rem}
-.cook-chip{display:inline-flex;align-items:center;gap:.22rem;background:rgba(255,255,255,.8);
-  border:1px solid #bbf7d0;border-radius:999px;padding:.16rem .5rem;font-size:.68rem;font-weight:600;color:#15803d}
+--ck-color:#16a34a;.progress-bar-fill{background:#16a34a}.cbx:checked{background:#16a34a;border-color:#16a34a}
+.cook-hero{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #bbf7d0;border-radius:var(--r);padding:1rem 1.15rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:.9rem}
+.cook-hero-icon{font-size:2.3rem}.cook-hero-label{font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#15803d}
 .cook-section{background:var(--surface);border:1px solid #bbf7d0;border-radius:var(--r);margin-bottom:.9rem;overflow:hidden}
-.cook-sec-head{background:#f0fdf4;padding:.6rem .95rem;font-size:.78rem;font-weight:700;color:#15803d;
-  display:flex;align-items:center;gap:.45rem;border-bottom:1px solid #bbf7d0}
-.cook-item{border-bottom:1px solid #f0fdf4}
-.cook-item:last-child{border-bottom:none}
-.cook-item.done{opacity:.45}
+.cook-sec-head{background:#f0fdf4;padding:.6rem .95rem;font-size:.78rem;font-weight:700;color:#15803d;display:flex;align-items:center;gap:.45rem;border-bottom:1px solid #bbf7d0}
+.cook-item{border-bottom:1px solid #f0fdf4}.cook-item:last-child{border-bottom:none}.cook-item.done{opacity:.45}
 .cook-item-row{display:flex;align-items:flex-start;gap:.65rem;padding:.65rem .95rem;cursor:pointer}
-.cook-name{font-size:.87rem;font-weight:600;line-height:1.32;flex:1}
-.cook-details{padding:.3rem .95rem .65rem 3.2rem}
+.cook-name{font-size:.87rem;font-weight:600;line-height:1.32;flex:1}.cook-details{padding:.3rem .95rem .65rem 3.2rem}
 
 </style>
 </head>
@@ -224,50 +213,7 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
   <div class="progress-label"><span>진행률</span><span id="ptext">0 / 6</span></div>
   <div class="progress-bar-bg"><div class="progress-bar-fill" id="pbar"></div></div>
 </div>
-<div class="cook-hero">
-  <div class="cook-hero-icon">🍳</div>
-  <div>
-    <div class="cook-hero-label">레시피 실전 적용</div>
-    <div style="font-size:.95rem;font-weight:800;color:#1c1917;margin-top:.1rem">레시피 영상 실전 적용 Flow</div>
-    <div class="cook-hero-meta">
-      <span class="cook-chip">📋 6단계</span>
-      <span class="cook-chip">🔪 재료 → 조리 → 평가</span>
-    </div>
-  </div>
-</div><div class="cook-section">
-  <div class="cook-sec-head">🥕 1. 영상 선택과 재료 준비 <span style="font-size:.68rem;color:#6b7280;margin-left:auto">3단계</span></div><div class="cook-item" id="s0">
-  <label class="cook-item-row" for="c0">
-    <input class="cbx" type="checkbox" id="c0" style="margin-top:.14rem" onchange="onCheck(this,'s0','done')">
-    <div class="cook-name">오늘 만들 레시피 영상 한 편 고르기</div>
-  </label><div class="cook-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">백종원의 요리비책은 &quot;인터넷에 떠도는 잘못된 레시피를 바로잡겠다&quot;는 목적으로 시작한 채널입니다. 영상을 보고 &quot;나중에&quot;로 미루지 않으려면 만들 날짜와 메뉴를 먼저 고정해야 합니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">재생목록에서 조회수 상위 영상(초간단 김치찌개 등)을 보고, 냉장고 재료·오늘 시간·조리 난이도에 맞는 영상 1편을 선택합니다. 예: 초간단 김치찌개는 돼지고기·물 3컵·새우젓(또는 참치액) 1큰술을 센불에 끓이다 중불로 10~15분, 신김치와 고춧가루를 넣고 더 끓이는 구조입니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">영상 링크와 메뉴 이름을 메모에 저장했다.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://www.youtube.com/playlist?list=PLOYo7Q0zXMLNmYqpJrt4pNeO-IlaDBVHW" target="_blank">백종원의 요리비책 재생목록</a><span class="link-pill lp-cre">크리에이터</span></span></div></div>
-</div><div class="cook-item" id="s1">
-  <label class="cook-item-row" for="c1">
-    <input class="cbx" type="checkbox" id="c1" style="margin-top:.14rem" onchange="onCheck(this,'s1','done')">
-    <div class="cook-name">재료 목록 작성하고 없는 재료 확인하기</div>
-  </label><div class="cook-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">조리 도중 재료가 빠지면 중단하게 되므로 시작 전에 목록을 만들어야 합니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">영상 첫 30초~1분(재료 소개 부분)을 보며 재료와 양을 메모하고, 집에 없는 것만 따로 표시합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">필요한 재료 목록과 구매할 항목을 적었다.</span></div></div>
-</div><div class="cook-item" id="s2">
-  <label class="cook-item-row" for="c2">
-    <input class="cbx" type="checkbox" id="c2" style="margin-top:.14rem" onchange="onCheck(this,'s2','done')">
-    <div class="cook-name">없는 재료 구매 또는 대체재 결정하기</div>
-  </label><div class="cook-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">백종원 레시피는 대체재에 관대한 편입니다. 영상 댓글에서 대체재 팁을 확인하는 것도 방법입니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">구매하거나 대체재로 바꾸기로 결정했다.</span></div></div>
-</div></div><div class="cook-section">
-  <div class="cook-sec-head">🍳 2. 조리 실행 <span style="font-size:.68rem;color:#6b7280;margin-left:auto">2단계</span></div><div class="cook-item" id="s3">
-  <label class="cook-item-row" for="c3">
-    <input class="cbx" type="checkbox" id="c3" style="margin-top:.14rem" onchange="onCheck(this,'s3','done')">
-    <div class="cook-name">조리 전 공간·도구 세팅하기</div>
-  </label><div class="cook-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">도마, 칼, 계량컵, 팬을 꺼내두고 작업 공간을 정리합니다. 영상에서 백종원이 쓰는 도구를 미리 확인해 세팅합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">조리 도구를 꺼내 준비했다.</span></div></div>
-</div><div class="cook-item" id="s4">
-  <label class="cook-item-row" for="c4">
-    <input class="cbx" type="checkbox" id="c4" style="margin-top:.14rem" onchange="onCheck(this,'s4','done')">
-    <div class="cook-name">영상 보며 레시피 따라 조리하기</div>
-  </label><div class="cook-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">영상을 켜두고 진행해야 불 조절·타이밍 실수를 줄일 수 있습니다. 백종원 채널은 단계마다 설명이 명확합니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">영상을 단계별로 정지·재생하며 따라가고, 바꾼 재료나 다른 점을 메모합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">요리를 완성했다.</span></div><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">재료 대체나 화력 차이로 맛이 다를 수 있습니다. 실패해도 시도 자체가 다음 기준이 됩니다.</span></div></div>
-</div></div><div class="cook-section">
-  <div class="cook-sec-head">📝 3. 평가와 기록 <span style="font-size:.68rem;color:#6b7280;margin-left:auto">1단계</span></div><div class="cook-item" id="s5">
-  <label class="cook-item-row" for="c5">
-    <input class="cbx" type="checkbox" id="c5" style="margin-top:.14rem" onchange="onCheck(this,'s5','done')">
-    <div class="cook-name">맛과 결과 한 줄 평가 남기기</div>
-  </label><div class="cook-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">평가를 남겨야 다음에 같은 레시피를 다시 만들지, 수정할지 결정할 수 있습니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">간 맞음·불 강도·식감·다음에 바꿀 점을 한 줄씩 메모합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">평가와 다음에 바꿀 점을 기록했다.</span></div></div>
-</div></div><div class="export-panel">
+<div class="cook-hero"><div class="cook-hero-icon">🍳</div><div><div class="cook-hero-label">레시피 실전 적용</div><div style="font-size:.95rem;font-weight:800;color:#1c1917;margin-top:.1rem">레시피 영상 실전 적용 Flow</div></div></div><div class="cook-section"><div class="cook-sec-head">🥕 1. 영상 선택과 재료 준비</div><div class="cook-item" id="s0"><label class="cook-item-row" for="c0"><input class="cbx" type="checkbox" id="c0" style="margin-top:.14rem" onchange="onCheck(this,'s0','done')"><div class="cook-name">오늘 만들 레시피 영상 한 편 고르기</div></label><div class="cook-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">백종원의 요리비책은 &quot;인터넷에 떠도는 잘못된 레시피를 바로잡겠다&quot;는 목적으로 시작한 채널입니다. 영상을 보고 &quot;나중에&quot;로 미루지 않으려면 만들 날짜와 메뉴를 먼저 고정해야 합니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">재생목록에서 조회수 상위 영상(초간단 김치찌개 등)을 보고, 냉장고 재료·오늘 시간·조리 난이도에 맞는 영상 1편을 선택합니다. 예: 초간단 김치찌개는 돼지고기·물 3컵·새우젓(또는 참치액) 1큰술을 센불에 끓이다 중불로 10~15분, 신김치와 고춧가루를 넣고 더 끓이는 구조입니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">영상 링크와 메뉴 이름을 메모에 저장했다.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://www.youtube.com/playlist?list=PLOYo7Q0zXMLNmYqpJrt4pNeO-IlaDBVHW" target="_blank">백종원의 요리비책 재생목록</a><span class="link-pill lp-cre">크리에이터</span></span></div></div></div><div class="cook-item" id="s1"><label class="cook-item-row" for="c1"><input class="cbx" type="checkbox" id="c1" style="margin-top:.14rem" onchange="onCheck(this,'s1','done')"><div class="cook-name">재료 목록 작성하고 없는 재료 확인하기</div></label><div class="cook-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">조리 도중 재료가 빠지면 중단하게 되므로 시작 전에 목록을 만들어야 합니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">영상 첫 30초~1분(재료 소개 부분)을 보며 재료와 양을 메모하고, 집에 없는 것만 따로 표시합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">필요한 재료 목록과 구매할 항목을 적었다.</span></div></div></div><div class="cook-item" id="s2"><label class="cook-item-row" for="c2"><input class="cbx" type="checkbox" id="c2" style="margin-top:.14rem" onchange="onCheck(this,'s2','done')"><div class="cook-name">없는 재료 구매 또는 대체재 결정하기</div></label><div class="cook-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">백종원 레시피는 대체재에 관대한 편입니다. 영상 댓글에서 대체재 팁을 확인하는 것도 방법입니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">구매하거나 대체재로 바꾸기로 결정했다.</span></div></div></div></div><div class="cook-section"><div class="cook-sec-head">🍳 2. 조리 실행</div><div class="cook-item" id="s3"><label class="cook-item-row" for="c3"><input class="cbx" type="checkbox" id="c3" style="margin-top:.14rem" onchange="onCheck(this,'s3','done')"><div class="cook-name">조리 전 공간·도구 세팅하기</div></label><div class="cook-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">도마, 칼, 계량컵, 팬을 꺼내두고 작업 공간을 정리합니다. 영상에서 백종원이 쓰는 도구를 미리 확인해 세팅합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">조리 도구를 꺼내 준비했다.</span></div></div></div><div class="cook-item" id="s4"><label class="cook-item-row" for="c4"><input class="cbx" type="checkbox" id="c4" style="margin-top:.14rem" onchange="onCheck(this,'s4','done')"><div class="cook-name">영상 보며 레시피 따라 조리하기</div></label><div class="cook-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">영상을 켜두고 진행해야 불 조절·타이밍 실수를 줄일 수 있습니다. 백종원 채널은 단계마다 설명이 명확합니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">영상을 단계별로 정지·재생하며 따라가고, 바꾼 재료나 다른 점을 메모합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">요리를 완성했다.</span></div><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">재료 대체나 화력 차이로 맛이 다를 수 있습니다. 실패해도 시도 자체가 다음 기준이 됩니다.</span></div></div></div></div><div class="cook-section"><div class="cook-sec-head">📝 3. 평가와 기록</div><div class="cook-item" id="s5"><label class="cook-item-row" for="c5"><input class="cbx" type="checkbox" id="c5" style="margin-top:.14rem" onchange="onCheck(this,'s5','done')"><div class="cook-name">맛과 결과 한 줄 평가 남기기</div></label><div class="cook-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">평가를 남겨야 다음에 같은 레시피를 다시 만들지, 수정할지 결정할 수 있습니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">간 맞음·불 강도·식감·다음에 바꿀 점을 한 줄씩 메모합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">평가와 다음에 바꿀 점을 기록했다.</span></div></div></div></div><div class="export-panel">
   <div class="export-panel-head">
     <span>📝</span>내 도구로 가져가기
   </div>
@@ -349,14 +295,6 @@ function onCheck(el,sid,cls){
   
   if(done===total){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 }
-
-function onCheck(el,sid,cls){
-  const node=document.getElementById(sid);
-  if(el.checked){done++;node.classList.add(cls)}else{done--;node.classList.remove(cls)}
-  document.getElementById('ptext').textContent=done+' / '+total;
-  document.getElementById('pbar').style.width=(done/total*100)+'%';
-  if(done===total){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
-}
-
+function onCheck(el,sid,cls){const node=document.getElementById(sid);if(el.checked){done++;node.classList.add(cls)}else{done--;node.classList.remove(cls)}document.getElementById('ptext').textContent=done+' / '+total;document.getElementById('pbar').style.width=(done/total*100)+'%';if(done===total){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}}
 </script>
 </body></html>

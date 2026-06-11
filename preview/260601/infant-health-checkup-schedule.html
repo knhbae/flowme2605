@@ -361,15 +361,14 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 <script>
 
 // NHIS 영유아 건강검진 일정 (생년월일 기준)
-// 각 차수: [차수, D+ 시작, D+ 종료, 구강검진 여부]
 const CHECKUP=[
   ['1차',   14,   35, false],
   ['2차',  120,  180, false],
   ['3차',  270,  360, false],
-  ['4차',  540,  720, true ],  // 1차 구강검진
-  ['5차',  900, 1080, true ],  // 2차 구강검진
-  ['6차', 1260, 1440, true ],  // 3차 구강검진
-  ['7차', 1620, 1800, true ],  // 4차 구강검진
+  ['4차',  540,  720, true ],
+  ['5차',  900, 1080, true ],
+  ['6차', 1260, 1440, true ],
+  ['7차', 1620, 1800, true ],
   ['8차', 1980, 2130, false],
 ];
 function addDays(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r;}
@@ -386,7 +385,6 @@ function onAnchorInput(val){
   for(const [차,dStart,dEnd,구강] of CHECKUP){
     const s=addDays(birth,dStart), e=addDays(birth,dEnd);
     const isPast=e<today, isCurrent=s<=today&&today<=e;
-    const status=isPast?'완료':'진행중';
     const badge=isPast?'<span style="color:#aaa">완료</span>':isCurrent?'<strong style="color:#2563eb">지금!</strong>':'<span style="color:#666">예정</span>';
     rows+=`<tr style="opacity:${isPast?'.45':'1'}">
       <td style="padding:.2rem .4rem;font-weight:600">${차}</td>

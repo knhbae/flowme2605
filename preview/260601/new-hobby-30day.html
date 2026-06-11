@@ -237,13 +237,13 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
   <div class="anchor-result" id="anchor-result">✓ 도전 시작일 설정됨 — 루틴 기준일을 설정했습니다</div>
 </div>
 <div class="progress-wrap">
-  <div class="progress-label"><span>진행률</span><span id="ptext">0 / 6</span></div>
+  <div class="progress-label"><span>진행률</span><span id="ptext">0 / 7</span></div>
   <div class="progress-bar-bg"><div class="progress-bar-fill" id="pbar"></div></div>
 </div>
 <div class="tl-hero">
   <div class="tl-hero-left">
     <div class="tl-hero-label">완료한 항목</div>
-    <div class="tl-hero-count" id="hero-cnt">0 <span style="font-size:1.1rem;font-weight:400;color:#78716c">/ 6</span></div>
+    <div class="tl-hero-count" id="hero-cnt">0 <span style="font-size:1.1rem;font-weight:400;color:#78716c">/ 7</span></div>
     <div class="tl-hero-sub">위에서 아래로 — 마감 역산 순서</div>
   </div>
   <div style="flex-shrink:0"><svg id="prog-ring" width="68" height="68" viewBox="0 0 90 90">
@@ -252,52 +252,60 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
     stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="251.2"
     style="transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset .4s"/>
 </svg></div>
-</div><div class="tl-phase-badge urgent">🔥 D-1 시작 준비</div><div class="tl-node">
+</div><div class="tl-phase-badge normal"> 시작 전 준비</div><div class="tl-node">
   <div class="tl-marker urgent"><span data-day-offset="-1" data-original-label="D-1">D-1</span></div>
   <label class="tl-card" id="s0" for="c0">
     <div class="tl-head">
       <input class="cbx" type="checkbox" id="c0" onchange="onCheck(this,'s0','done')">
-      <div style="flex:1"><div class="tl-name">배울 취미와 강의 또는 자료 결정하기</div><div style="margin-top:.35rem"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">막연하게 시작하면 첫 주에 방향을 잃기 쉽습니다. 행동이 습관으로 자동화되는 데는 평균 약 66일(개인차 18~254일)이 걸리므로, 30일은 &quot;완성&quot;이 아니라 흐름을 만드는 출발 구간으로 잡습니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">클래스101 등에서 커리큘럼과 난이도를 보고 하나를 선택합니다. &#x27;최소 실행 기준&#x27;(예: 하루 10분 연습)을 먼저 정하고 완벽함 대신 무조건 실행을 원칙으로 삼습니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">취미 종류와 사용할 강의를 결정했다.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://class101.net" target="_blank">클래스101</a><span class="link-pill lp-ref">참고</span></span></div></div></div>
+      <div style="flex:1"><div class="tl-name">배울 취미와 강의·자료 결정하기</div><div style="margin-top:.35rem"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">막연하게 시작하면 첫 주에 방향을 잃기 쉽습니다. 행동이 습관으로 자동화되는 데는 평균 약 66일(개인차 18~254일)이 걸리므로, 30일은 &quot;완성&quot;이 아니라 흐름을 만드는 출발 구간으로 잡습니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">클래스101 등에서 커리큘럼과 난이도를 보고 하나를 선택합니다. &#x27;최소 실행 기준&#x27;(예: 하루 10분)을 먼저 정하고 완벽함 대신 무조건 실행을 원칙으로 삼습니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">취미 종류와 사용할 강의·자료를 결정했다.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://class101.net" target="_blank">클래스101</a><span class="link-pill lp-ref">참고</span></span></div></div></div>
     </div>
   </label>
 </div><div class="tl-node">
-  <div class="tl-marker urgent"><span data-day-offset="-1" data-original-label="D-1">D-1</span></div>
+  <div class="tl-marker "><span data-day-offset="0" data-original-label="D+0">D+0</span></div>
   <label class="tl-card" id="s1" for="c1">
     <div class="tl-head">
       <input class="cbx" type="checkbox" id="c1" onchange="onCheck(this,'s1','done')">
-      <div style="flex:1"><div class="tl-name">필요한 재료·도구를 파악하고 최소한만 준비하기</div><div style="margin-top:.35rem"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">처음부터 많이 사면 쓰지 않을 수 있습니다. 기본 도구만 먼저 준비합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">최소 준비물 목록을 작성하고 구매했다.</span></div></div></div>
+      <div style="flex:1"><div class="tl-name">최소 재료·도구만 파악해 준비하기</div><div style="margin-top:.35rem"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">처음부터 많이 사면 쓰지 않을 수 있습니다. 기본 도구만 먼저 준비합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">최소 준비물을 구매하거나 준비했다.</span></div></div></div>
     </div>
   </label>
-</div><div class="tl-phase-badge normal"> 1주차: 기초 익히기(1~10일)</div><div class="tl-node">
-  <div class="tl-marker "><span>·</span></div>
+</div><div class="tl-phase-badge normal"> 1주차: 기초 익히기</div><div class="tl-node">
+  <div class="tl-marker "><span data-day-offset="1" data-original-label="D+1">D+1</span></div>
   <label class="tl-card" id="s2" for="c2">
     <div class="tl-head">
       <input class="cbx" type="checkbox" id="c2" onchange="onCheck(this,'s2','done')">
-      <div style="flex:1"><div class="tl-name">첫 번째 클래스(또는 튜토리얼) 따라 하기</div><div style="margin-top:.35rem"><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">기초 과정을 한 번 완료했다.</span></div></div></div>
+      <div style="flex:1"><div class="tl-name">첫 클래스(또는 튜토리얼) 따라 하고 배운 것 메모하기</div><div style="margin-top:.35rem"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">첫 시도는 잘하려 하기보다 끝까지 한 번 완주하는 것이 목표입니다. 막힌 점은 질문으로 남겨둡니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">기초 과정을 한 번 완료하고 배운 내용과 질문을 메모했다.</span></div></div></div>
     </div>
   </label>
 </div><div class="tl-node">
-  <div class="tl-marker "><span>·</span></div>
+  <div class="tl-marker "><span data-day-offset="7" data-original-label="D+7">D+7</span></div>
   <label class="tl-card" id="s3" for="c3">
     <div class="tl-head">
       <input class="cbx" type="checkbox" id="c3" onchange="onCheck(this,'s3','done')">
-      <div style="flex:1"><div class="tl-name">오늘 배운 것과 막힌 점 메모하기</div><div style="margin-top:.35rem"><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">배운 내용과 질문을 기록했다.</span></div></div></div>
+      <div style="flex:1"><div class="tl-name">1주차 점검 — 최소 실행 기준을 지켰는지 확인하기</div><div style="margin-top:.35rem"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">초반 1~2주가 가장 그만두기 쉬운 구간입니다. 못 지킨 날 이유를 적고 다음 주 기준을 조정합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">이번 주 실행 일수와 이유를 기록했다.</span></div></div></div>
     </div>
   </label>
-</div><div class="tl-phase-badge normal"> 2~4주차: 반복과 심화(11~30일)</div><div class="tl-node">
-  <div class="tl-marker "><span>·</span></div>
+</div><div class="tl-phase-badge normal"> 2~3주차: 반복</div><div class="tl-node">
+  <div class="tl-marker "><span data-day-offset="14" data-original-label="D+14">D+14</span></div>
   <label class="tl-card" id="s4" for="c4">
     <div class="tl-head">
       <input class="cbx" type="checkbox" id="c4" onchange="onCheck(this,'s4','done')">
-      <div style="flex:1"><div class="tl-name">주 2~3회 정해진 시간에 연습하기</div><div style="margin-top:.35rem"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">진행 상황을 매일·주간으로 체크하면 중도 이탈을 줄일 수 있습니다(초반 1~2주가 가장 그만두기 쉬운 구간입니다). 익숙해지는 2주차부터는 연습 시간이나 강도를 조금씩 늘려 강화합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">이번 주 연습 횟수를 기록했다.</span></div></div></div>
+      <div style="flex:1"><div class="tl-name">2주차 점검 — 연습 패턴 유지·조정하기</div><div style="margin-top:.35rem"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">익숙해지는 2주차부터 연습 시간이나 강도를 조금씩 늘려 강화합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">2주차 진행 상황과 조정 계획을 기록했다.</span></div></div></div>
     </div>
   </label>
 </div><div class="tl-node">
-  <div class="tl-marker "><span>·</span></div>
+  <div class="tl-marker "><span data-day-offset="21" data-original-label="D+21">D+21</span></div>
   <label class="tl-card" id="s5" for="c5">
     <div class="tl-head">
       <input class="cbx" type="checkbox" id="c5" onchange="onCheck(this,'s5','done')">
-      <div style="flex:1"><div class="tl-name">30일 후 결과물이나 성장 기록 남기기</div><div style="margin-top:.35rem"><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">30일 전후 비교 결과를 메모 또는 사진으로 남겼다.</span></div></div></div>
+      <div style="flex:1"><div class="tl-name">3주차 점검 — 이어가기 어려운 요인 제거하기</div><div style="margin-top:.35rem"><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">3주차 진행 상황을 기록하고 방해 요인을 한 가지 줄였다.</span></div></div></div>
+    </div>
+  </label>
+</div><div class="tl-phase-badge normal"> 30일 마무리</div><div class="tl-node">
+  <div class="tl-marker "><span data-day-offset="30" data-original-label="D+30">D+30</span></div>
+  <label class="tl-card" id="s6" for="c6">
+    <div class="tl-head">
+      <input class="cbx" type="checkbox" id="c6" onchange="onCheck(this,'s6','done')">
+      <div style="flex:1"><div class="tl-name">30일 결과물·성장 기록 남기기</div><div style="margin-top:.35rem"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">시작 전과 비교한 변화를 메모나 사진으로 남깁니다. 계속할지, 다음 단계로 갈지를 결정합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">30일 전후 비교 결과를 기록했다.</span></div></div></div>
     </div>
   </label>
 </div><div class="export-panel">
@@ -317,21 +325,27 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
   <textarea id="copy-payload" style="position:absolute;left:-9999px;top:-9999px;opacity:0" readonly># 새 취미 30일 시작 Flow
 클래스101 플랫폼과 30일 챌린지 성공 가이드를 참고해 새 취미를 30일간 꾸준히 이어가는 실행 계획을 만듭니다.
 
-## D-1 시작 준비
-□ 배울 취미와 강의 또는 자료 결정하기
+## 시작 전 준비
+□ 배울 취미와 강의·자료 결정하기
   WHY: 막연하게 시작하면 첫 주에 방향을 잃기 쉽습니다. 행동이 습관으로 자동화되는 데는 평균 약 66일(개인차 18~254일)이 걸리므로, 30일은 &quot;완성&quot;이 아니라 흐름을 만드는 출발 구간으로 잡습니다.
-  HOW: 클래스101 등에서 커리큘럼과 난이도를 보고 하나를 선택합니다. &#x27;최소 실행 기준&#x27;(예: 하루 10분 연습)을 먼저 정하고 완벽함 대신 무조건 실행을 원칙으로 삼습니다.
-□ 필요한 재료·도구를 파악하고 최소한만 준비하기
+  HOW: 클래스101 등에서 커리큘럼과 난이도를 보고 하나를 선택합니다. &#x27;최소 실행 기준&#x27;(예: 하루 10분)을 먼저 정하고 완벽함 대신 무조건 실행을 원칙으로 삼습니다.
+□ 최소 재료·도구만 파악해 준비하기
   WHY: 처음부터 많이 사면 쓰지 않을 수 있습니다. 기본 도구만 먼저 준비합니다.
 
-## 1주차: 기초 익히기(1~10일)
-□ 첫 번째 클래스(또는 튜토리얼) 따라 하기
-□ 오늘 배운 것과 막힌 점 메모하기
+## 1주차: 기초 익히기
+□ 첫 클래스(또는 튜토리얼) 따라 하고 배운 것 메모하기
+  HOW: 첫 시도는 잘하려 하기보다 끝까지 한 번 완주하는 것이 목표입니다. 막힌 점은 질문으로 남겨둡니다.
+□ 1주차 점검 — 최소 실행 기준을 지켰는지 확인하기
+  HOW: 초반 1~2주가 가장 그만두기 쉬운 구간입니다. 못 지킨 날 이유를 적고 다음 주 기준을 조정합니다.
 
-## 2~4주차: 반복과 심화(11~30일)
-□ 주 2~3회 정해진 시간에 연습하기
-  HOW: 진행 상황을 매일·주간으로 체크하면 중도 이탈을 줄일 수 있습니다(초반 1~2주가 가장 그만두기 쉬운 구간입니다). 익숙해지는 2주차부터는 연습 시간이나 강도를 조금씩 늘려 강화합니다.
-□ 30일 후 결과물이나 성장 기록 남기기
+## 2~3주차: 반복
+□ 2주차 점검 — 연습 패턴 유지·조정하기
+  HOW: 익숙해지는 2주차부터 연습 시간이나 강도를 조금씩 늘려 강화합니다.
+□ 3주차 점검 — 이어가기 어려운 요인 제거하기
+
+## 30일 마무리
+□ 30일 결과물·성장 기록 남기기
+  HOW: 시작 전과 비교한 변화를 메모나 사진으로 남깁니다. 계속할지, 다음 단계로 갈지를 결정합니다.
 </textarea>
 </div><div class="output-panel"><div class="output-head">📅 캘린더 미리보기</div><div class="mcal"><div class="dow">일</div><div class="dow">월</div><div class="dow">화</div><div class="dow">수</div><div class="dow">목</div><div class="dow">금</div><div class="dow">토</div><div class="day empty"></div><div class="day empty"></div><div class="day empty"></div><div class="day soft">1</div><div class="day soft">2</div><div class="day mark">3</div><div class="day mark">4</div><div class="day mark">5</div><div class="day mark">6</div><div class="day mark">7</div><div class="day mark">8</div><div class="day mark">9</div><div class="day mark">10</div><div class="day mark">11</div><div class="day mark">12</div><div class="day mark">13</div><div class="day mark">14</div><div class="day mark">15</div><div class="day mark">16</div><div class="day mark">17</div><div class="day mark">18</div><div class="day mark">19</div><div class="day mark">20</div><div class="day mark">21</div><div class="day mark">22</div><div class="day mark">23</div><div class="day mark">24</div><div class="day mark">25</div><div class="day mark">26</div><div class="day mark">27</div><div class="day mark">28</div></div></div>
 </div>
@@ -346,12 +360,10 @@ function onAnchorInput(val){
   if(res)res.style.display='block';
   const anchor=new Date(val);
   const today=new Date(); today.setHours(0,0,0,0);
-  // update date labels
   document.querySelectorAll('[data-day-offset]').forEach(el=>{
     const offset=parseInt(el.dataset.dayOffset);
     const d=new Date(anchor);
-    if('start'==='end') d.setDate(anchor.getDate()+offset);
-    else d.setDate(anchor.getDate()+offset);
+    d.setDate(anchor.getDate()+offset);
     const diff=Math.round((d-today)/(1000*60*60*24));
     const label=diff>0?`D-${diff}`:diff===0?`오늘`:`D+${Math.abs(diff)}`;
     el.textContent=label;
@@ -393,7 +405,7 @@ function shareText(){
 }
 
 
-const total=6;let done=0;
+const total=7;let done=0;
 function onCheck(el,sid,cls){
   const node=document.getElementById(sid);
   if(el.checked){done++;node.classList.add(cls)}else{done--;node.classList.remove(cls)}
@@ -411,7 +423,7 @@ function onCheck(el,sid,cls){
   document.getElementById('ptext').textContent=done+' / '+total;
   document.getElementById('pbar').style.width=pct+'%';
   const c=document.getElementById('hero-cnt');
-  if(c)c.innerHTML=done+' <span style="font-size:1.1rem;font-weight:400;color:#78716c">/ 6</span>';
+  if(c)c.innerHTML=done+' <span style="font-size:1.1rem;font-weight:400;color:#78716c">/ 7</span>';
   const ring=document.getElementById('prog-ring');
   if(ring){const fc=ring.querySelector('circle.fill');if(fc)fc.style.strokeDashoffset=251.2*(1-done/total);}
   if(done===total){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}

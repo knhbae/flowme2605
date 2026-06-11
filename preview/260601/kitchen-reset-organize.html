@@ -166,29 +166,7 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 
 @media(max-width:520px){.flow-title{font-size:1.28rem}.det{grid-template-columns:38px 1fr}}
 
-
---ck-color:#7c3aed;
-.progress-bar-fill{background:#7c3aed}
-.cbx:checked{background:#7c3aed;border-color:#7c3aed}
-.task-hero{background:linear-gradient(135deg,#f5f3ff,#ddd6fe);border:1px solid #ddd6fe;
-  border-radius:var(--r);padding:1rem 1.15rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:.88rem}
-.task-hero-icon{font-size:2.1rem}
-.task-hero-label{font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7c3aed}
-.task-hero-meta{font-size:.76rem;color:var(--sub);margin-top:.22rem}
-.task-section{margin-bottom:1.1rem}
-.task-sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.42rem}
-.task-sec-title{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
-.task-sec-prog-bar{flex:1;height:3.5px;background:var(--surface3);border-radius:999px;margin:0 .7rem;overflow:hidden}
-.task-sec-prog-fill{height:100%;background:#7c3aed;width:0;transition:width .3s;border-radius:999px}
-.task-sec-cnt{font-size:.66rem;color:var(--muted)}
-.task-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);
-  margin-bottom:.42rem;overflow:hidden;transition:box-shadow .15s}
-.task-item:hover{box-shadow:var(--shadow)}
-.task-item.done{opacity:.45}
-.task-item-head{display:flex;align-items:flex-start;gap:.65rem;padding:.72rem .9rem;cursor:pointer}
-.task-item-name{font-size:.88rem;font-weight:600;line-height:1.32;flex:1}
-.task-details{padding:.35rem .9rem .72rem 3.2rem;border-top:1px solid var(--surface3)}
-
+--ck-color:#7c3aed;.progress-bar-fill{background:#7c3aed}.cbx:checked{background:#7c3aed;border-color:#7c3aed}.task-section{margin-bottom:1.1rem}.task-sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.42rem}.task-sec-title{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}.task-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:.42rem;overflow:hidden}.task-item.done{opacity:.45}.task-item-head{display:flex;align-items:flex-start;gap:.65rem;padding:.72rem .9rem;cursor:pointer}.task-item-name{font-size:.88rem;font-weight:600;line-height:1.32;flex:1}.task-details{padding:.35rem .9rem .72rem 3.2rem;border-top:1px solid var(--surface3)}
 </style>
 </head>
 <body>
@@ -226,64 +204,7 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
   <div class="progress-label"><span>진행률</span><span id="ptext">0 / 7</span></div>
   <div class="progress-bar-bg"><div class="progress-bar-fill" id="pbar"></div></div>
 </div>
-<div class="task-hero">
-  <div class="task-hero-icon">🗂</div>
-  <div>
-    <div class="task-hero-label">정리·수납 Flow</div>
-    <div style="font-size:.95rem;font-weight:800;color:var(--ink);margin-top:.1rem">주방 리셋 정리 Flow</div>
-    <div class="task-hero-meta">3개 섹션 · 7개 항목</div>
-  </div>
-</div><div class="task-section">
-  <div class="task-sec-head">
-    <span class="task-sec-title">1. 냉장고 정리</span>
-    <div class="task-sec-prog-bar"><div class="task-sec-prog-fill" id="tpb-0"></div></div>
-    <span class="task-sec-cnt" id="tpc-0">0/2</span>
-  </div><div class="task-item" id="s0">
-  <label class="task-item-head" for="c0">
-    <input class="cbx" type="checkbox" id="c0" style="margin-top:.14rem" onchange="onCheck(this,'s0','done',0)">
-    <div class="task-item-name">냉장고 유통기한 지난 식품 버리기</div>
-  </label><div class="task-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">유통기한 확인 없이 정리하면 나쁜 식품이 남아 공간을 낭비합니다. 오늘의집 가이드는 밀폐용기 사용으로 보관 기간을 늘리는 법을 강조합니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">냉장·냉동칸을 순서대로 꺼내 유통기한(소비기한)을 확인하고 폐기합니다. 이후 비닐·지퍼백 대신 투명 밀폐용기로 교체하면 산화·부패가 늦어져 보관 기간이 늘어납니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">유통기한 지난 식품을 모두 버렸다.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://ohou.se/advices/8631" target="_blank">오늘의집 냉장고 정리 가이드</a><span class="link-pill lp-ref">참고</span></span></div></div>
-</div><div class="task-item" id="s1">
-  <label class="task-item-head" for="c1">
-    <input class="cbx" type="checkbox" id="c1" style="margin-top:.14rem" onchange="onCheck(this,'s1','done',0)">
-    <div class="task-item-name">남은 식재료 종류별로 정리하기</div>
-  </label><div class="task-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">유통기한이 임박한 식품과 남은 반찬은 문을 열면 바로 보이는 전면·눈높이 칸에 둬서 먼저 소비합니다. 문칸은 온도 변화가 가장 크므로 소스·음료 등 쉽게 상하지 않는 것만 둡니다. 자주 먹는 반찬은 손 닿기 쉬운 중간 앞칸에 배치합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">식재료를 카테고리별로 배치했다.</span></div></div>
-</div></div><div class="task-section">
-  <div class="task-sec-head">
-    <span class="task-sec-title">2. 찬장·서랍 정리</span>
-    <div class="task-sec-prog-bar"><div class="task-sec-prog-fill" id="tpb-1"></div></div>
-    <span class="task-sec-cnt" id="tpc-1">0/3</span>
-  </div><div class="task-item" id="s2">
-  <label class="task-item-head" for="c2">
-    <input class="cbx" type="checkbox" id="c2" style="margin-top:.14rem" onchange="onCheck(this,'s2','done',1)">
-    <div class="task-item-name">자주 안 쓰는 그릇·도구 꺼내 한곳에 모으기</div>
-  </label><div class="task-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">사용 빈도별로 공간을 나눠야 요리 중 꺼내기가 편해집니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">자주 쓰는 것과 아닌 것을 분리했다.</span></div></div>
-</div><div class="task-item" id="s3">
-  <label class="task-item-head" for="c3">
-    <input class="cbx" type="checkbox" id="c3" style="margin-top:.14rem" onchange="onCheck(this,'s3','done',1)">
-    <div class="task-item-name">잘 안 쓰는 도구 기부·처분 결정하기</div>
-  </label><div class="task-details"><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">처분 목록과 방법을 정했다.</span></div></div>
-</div><div class="task-item" id="s4">
-  <label class="task-item-head" for="c4">
-    <input class="cbx" type="checkbox" id="c4" style="margin-top:.14rem" onchange="onCheck(this,'s4','done',1)">
-    <div class="task-item-name">자주 쓰는 도구를 손 닿는 위치로 재배치하기</div>
-  </label><div class="task-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">그릇은 종류와 높이에 따라 칸을 나눠 정리합니다. 앞쪽에는 낮게, 뒤쪽은 높게 배치하면 가리는 것 없이 잘 보입니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">배치를 바꿨다.</span></div></div>
-</div></div><div class="task-section">
-  <div class="task-sec-head">
-    <span class="task-sec-title">3. 정리 완료 확인</span>
-    <div class="task-sec-prog-bar"><div class="task-sec-prog-fill" id="tpb-2"></div></div>
-    <span class="task-sec-cnt" id="tpc-2">0/2</span>
-  </div><div class="task-item" id="s5">
-  <label class="task-item-head" for="c5">
-    <input class="cbx" type="checkbox" id="c5" style="margin-top:.14rem" onchange="onCheck(this,'s5','done',2)">
-    <div class="task-item-name">조리대 정리하고 청소하기</div>
-  </label><div class="task-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">매일 10분 루틴 청소(조리 후 싱크대 물기 닦기)가 정리된 상태를 유지하는 핵심입니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">조리대가 깨끗하게 비워졌다.</span></div></div>
-</div><div class="task-item" id="s6">
-  <label class="task-item-head" for="c6">
-    <input class="cbx" type="checkbox" id="c6" style="margin-top:.14rem" onchange="onCheck(this,'s6','done',2)">
-    <div class="task-item-name">정리 전후 사진 찍어 기록하기</div>
-  </label><div class="task-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">사진을 남기면 다음 리셋 때 기준 상태를 알 수 있습니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">정리 후 사진을 메모에 첨부했다.</span></div></div>
-</div></div><div class="export-panel">
+<div class="task-section"><div class="task-sec-head"><span class="task-sec-title">1. 냉장고 정리</span></div><div class="task-item" id="s0"><label class="task-item-head" for="c0"><input class="cbx" type="checkbox" id="c0" style="margin-top:.14rem" onchange="onCheck(this,'s0','done',0)"><div class="task-item-name">냉장고 유통기한 지난 식품 버리기</div></label><div class="task-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">유통기한 확인 없이 정리하면 나쁜 식품이 남아 공간을 낭비합니다. 오늘의집 가이드는 밀폐용기 사용으로 보관 기간을 늘리는 법을 강조합니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">냉장·냉동칸을 순서대로 꺼내 유통기한(소비기한)을 확인하고 폐기합니다. 이후 비닐·지퍼백 대신 투명 밀폐용기로 교체하면 산화·부패가 늦어져 보관 기간이 늘어납니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">유통기한 지난 식품을 모두 버렸다.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://ohou.se/advices/8631" target="_blank">오늘의집 냉장고 정리 가이드</a><span class="link-pill lp-ref">참고</span></span></div></div></div><div class="task-item" id="s1"><label class="task-item-head" for="c1"><input class="cbx" type="checkbox" id="c1" style="margin-top:.14rem" onchange="onCheck(this,'s1','done',0)"><div class="task-item-name">남은 식재료 종류별로 정리하기</div></label><div class="task-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">유통기한이 임박한 식품과 남은 반찬은 문을 열면 바로 보이는 전면·눈높이 칸에 둬서 먼저 소비합니다. 문칸은 온도 변화가 가장 크므로 소스·음료 등 쉽게 상하지 않는 것만 둡니다. 자주 먹는 반찬은 손 닿기 쉬운 중간 앞칸에 배치합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">식재료를 카테고리별로 배치했다.</span></div></div></div></div><div class="task-section"><div class="task-sec-head"><span class="task-sec-title">2. 찬장·서랍 정리</span></div><div class="task-item" id="s2"><label class="task-item-head" for="c2"><input class="cbx" type="checkbox" id="c2" style="margin-top:.14rem" onchange="onCheck(this,'s2','done',1)"><div class="task-item-name">자주 안 쓰는 그릇·도구 꺼내 한곳에 모으기</div></label><div class="task-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">사용 빈도별로 공간을 나눠야 요리 중 꺼내기가 편해집니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">자주 쓰는 것과 아닌 것을 분리했다.</span></div></div></div><div class="task-item" id="s3"><label class="task-item-head" for="c3"><input class="cbx" type="checkbox" id="c3" style="margin-top:.14rem" onchange="onCheck(this,'s3','done',1)"><div class="task-item-name">잘 안 쓰는 도구 기부·처분 결정하기</div></label><div class="task-details"><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">처분 목록과 방법을 정했다.</span></div></div></div><div class="task-item" id="s4"><label class="task-item-head" for="c4"><input class="cbx" type="checkbox" id="c4" style="margin-top:.14rem" onchange="onCheck(this,'s4','done',1)"><div class="task-item-name">자주 쓰는 도구를 손 닿는 위치로 재배치하기</div></label><div class="task-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">그릇은 종류와 높이에 따라 칸을 나눠 정리합니다. 앞쪽에는 낮게, 뒤쪽은 높게 배치하면 가리는 것 없이 잘 보입니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">배치를 바꿨다.</span></div></div></div></div><div class="task-section"><div class="task-sec-head"><span class="task-sec-title">3. 정리 완료 확인</span></div><div class="task-item" id="s5"><label class="task-item-head" for="c5"><input class="cbx" type="checkbox" id="c5" style="margin-top:.14rem" onchange="onCheck(this,'s5','done',2)"><div class="task-item-name">조리대 정리하고 청소하기</div></label><div class="task-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">매일 10분 루틴 청소(조리 후 싱크대 물기 닦기)가 정리된 상태를 유지하는 핵심입니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">조리대가 깨끗하게 비워졌다.</span></div></div></div><div class="task-item" id="s6"><label class="task-item-head" for="c6"><input class="cbx" type="checkbox" id="c6" style="margin-top:.14rem" onchange="onCheck(this,'s6','done',2)"><div class="task-item-name">정리 전후 사진 찍어 기록하기</div></label><div class="task-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">사진을 남기면 다음 리셋 때 기준 상태를 알 수 있습니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">정리 후 사진을 메모에 첨부했다.</span></div></div></div></div><div class="export-panel">
   <div class="export-panel-head">
     <span>📝</span>내 도구로 가져가기
   </div>
@@ -351,22 +272,7 @@ function shareText(){
   else copyFlow();
 }
 
-
-const total=7;let done=0;
-const _tc2=[2, 3, 2];const _td2=[0, 0, 0];
-function onCheck(el,sid,cls,si){
-  const node=document.getElementById(sid);
-  if(el.checked){done++;_td2[si]++;node.classList.add(cls)}else{done--;_td2[si]--;node.classList.remove(cls)}
-  document.getElementById('ptext').textContent=done+' / '+total;
-  document.getElementById('pbar').style.width=(done/total*100)+'%';
-  for(let i=0;i<3;i++){
-    const b=document.getElementById('tpb-'+i);const c=document.getElementById('tpc-'+i);
-    if(b)b.style.width=(_tc2[i]?_td2[i]/_tc2[i]*100:0)+'%';
-    if(c)c.textContent=_td2[i]+'/'+_tc2[i];
-  }
-  if(done===total){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
-}
-
+const total=7;let done=0;const _tc2=[2, 3, 2];const _td2=[0, 0, 0];function onCheck(el,sid,cls,si){const node=document.getElementById(sid);if(el.checked){done++;_td2[si]++;node.classList.add(cls)}else{done--;_td2[si]--;node.classList.remove(cls)}document.getElementById('ptext').textContent=done+' / '+total;document.getElementById('pbar').style.width=(done/total*100)+'%';if(done===total){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}}
 function copyFlow(){
   const ta=document.getElementById('copy-payload');
   if(!ta)return;
@@ -390,7 +296,6 @@ function shareText(){
   if(navigator.share){navigator.share({text:ta.value}).catch(()=>{});}
   else copyFlow();
 }
-
 
 </script>
 </body></html>

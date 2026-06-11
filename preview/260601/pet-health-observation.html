@@ -334,12 +334,10 @@ function onAnchorInput(val){
   if(res)res.style.display='block';
   const anchor=new Date(val);
   const today=new Date(); today.setHours(0,0,0,0);
-  // update date labels
   document.querySelectorAll('[data-day-offset]').forEach(el=>{
     const offset=parseInt(el.dataset.dayOffset);
     const d=new Date(anchor);
-    if('start'==='end') d.setDate(anchor.getDate()+offset);
-    else d.setDate(anchor.getDate()+offset);
+    d.setDate(anchor.getDate()+offset);
     const diff=Math.round((d-today)/(1000*60*60*24));
     const label=diff>0?`D-${diff}`:diff===0?`오늘`:`D+${Math.abs(diff)}`;
     el.textContent=label;

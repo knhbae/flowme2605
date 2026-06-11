@@ -232,13 +232,13 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
   </div>
 </div>
 <div class="progress-wrap">
-  <div class="progress-label"><span>진행률</span><span id="ptext">0 / 4</span></div>
+  <div class="progress-label"><span>진행률</span><span id="ptext">0 / 7</span></div>
   <div class="progress-bar-bg"><div class="progress-bar-fill" id="pbar"></div></div>
 </div>
-<div class="gov-step-indicator"><div class="gov-step-ind-item active" id="gstep-0"><div class="gov-step-num">1</div><div class="gov-step-lbl">1. 대상·물량</div></div><div class="gov-step-ind-item " id="gstep-1"><div class="gov-step-num">2</div><div class="gov-step-lbl">2. 신청</div></div></div><div class="gov-section" id="gsec-0">
+<div class="gov-step-indicator"><div class="gov-step-ind-item active" id="gstep-0"><div class="gov-step-num">1</div><div class="gov-step-lbl">1. 대상·물량 </div></div><div class="gov-step-ind-item " id="gstep-1"><div class="gov-step-num">2</div><div class="gov-step-lbl">2. 계약 전: </div></div><div class="gov-step-ind-item " id="gstep-2"><div class="gov-step-num">3</div><div class="gov-step-lbl">3. 계약·출고</div></div><div class="gov-step-ind-item " id="gstep-3"><div class="gov-step-num">4</div><div class="gov-step-lbl">4. 충전 환경 </div></div></div><div class="gov-section" id="gsec-0">
   <div class="gov-section-head">
     <div class="gov-section-num">1</div>
-    <div class="gov-section-title">1. 대상·물량</div>
+    <div class="gov-section-title">1. 대상·물량 확인</div>
     <span class="gov-section-count">2개</span>
     <span class="gov-section-progress" id="gsec-prog-0">0/2</span>
   </div><div class="gov-item" id="s0">
@@ -246,31 +246,61 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
     <input class="cbx" type="checkbox" id="c0" onchange="onCheck(this,'s0','done',0)">
     <div style="flex:1"><div class="gov-item-name">구매 예정 차종의 국고·지자체 보조금 확인하기</div></div>
     <span class="gov-item-status status-todo" id="st0">미완료</span>
-  </label><div class="gov-item-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">보조금은 지자체별로 다르고 물량이 소진되면 받을 수 없습니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">무공해차 통합누리집에서 차종별 보조금과 지자체 잔여물량을 실시간으로 확인합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">차종 보조금과 거주지 잔여물량을 메모했다.</span></div><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">국고보조금에 더해 지자체 보조금이 합산됩니다(2026년에는 노후차 폐차 후 전환 시 전환지원금이 추가되는 등 항목이 바뀌므로 정확한 금액은 누리집에서 확인). 예산이 상반기에 소진되는 경향이 있으니 공고 직후 신속하게 신청하세요.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://ev.or.kr/nportal/buySupprt/initBuySubsidySupprtAction.do" target="_blank">무공해차 통합누리집 전기차 보조금</a><span class="link-pill lp-off">공식</span></span></div></div>
+  </label><div class="gov-item-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">보조금은 지자체별로 다르고 물량이 소진되면 받을 수 없습니다. 예산이 상반기에 조기 소진되는 경향이 있어 공고 직후 빠르게 움직여야 합니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">무공해차 통합누리집에서 차종별 보조금과 거주 지자체 잔여물량을 실시간으로 확인합니다. 국고보조금 + 지자체보조금 + (노후차 폐차 시 전환지원금) 세 항목을 합산해 총액을 파악합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">차종별 보조금 금액과 거주지 잔여물량을 메모했다.</span></div><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">보조금 금액과 항목은 연도·지자체마다 변경됩니다. 정확한 금액은 반드시 공식 누리집에서 확인하세요.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://ev.or.kr/nportal/buySupprt/initBuySubsidySupprtAction.do" target="_blank">무공해차 통합누리집 전기차 보조금</a><span class="link-pill lp-off">공식</span></span></div></div>
 </div><div class="gov-item" id="s1">
   <label class="gov-item-head" for="c1">
     <input class="cbx" type="checkbox" id="c1" onchange="onCheck(this,'s1','done',0)">
     <div style="flex:1"><div class="gov-item-name">거주지 신청 자격·우선순위 확인하기</div></div>
     <span class="gov-item-status status-todo" id="st1">미완료</span>
-  </label>
+  </label><div class="gov-item-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">지자체별로 신청 자격(실거주 여부, 이전 보조금 수령 이력 등)과 우선순위 기준이 다릅니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">거주 지자체 보조금 공고문에서 신청 자격 조건과 우선순위 항목을 확인합니다. 법인·사업자와 개인 조건이 다를 수 있으므로 해당 유형을 확인하세요.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">거주지 신청 자격을 확인하고 우선순위 해당 여부를 파악했다.</span></div></div>
 </div></div><div class="gov-section" id="gsec-1">
   <div class="gov-section-head">
     <div class="gov-section-num">2</div>
-    <div class="gov-section-title">2. 신청</div>
+    <div class="gov-section-title">2. 계약 전: 보조금 지원 확인서 신청</div>
     <span class="gov-section-count">2개</span>
     <span class="gov-section-progress" id="gsec-prog-1">0/2</span>
   </div><div class="gov-item" id="s2">
   <label class="gov-item-head" for="c2">
     <input class="cbx" type="checkbox" id="c2" onchange="onCheck(this,'s2','done',1)">
-    <div style="flex:1"><div class="gov-item-name">출고·계약 일정과 신청 절차(대리신청 등) 확인하기</div></div>
+    <div style="flex:1"><div class="gov-item-name">보조금 지원 확인서 신청하기(계약 전 필수)</div></div>
     <span class="gov-item-status status-todo" id="st2">미완료</span>
-  </label><div class="gov-item-details"><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">계약·출고·신청 순서와 기한을 어기면 지원에서 제외될 수 있습니다. 보조금 지원 확인서를 받은 후 차량을 계약해야 합니다.</span></div></div>
+  </label><div class="gov-item-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">전기차 보조금은 반드시 지원 확인서를 받은 후 차량을 계약해야 합니다. 계약 먼저 하면 보조금 대상에서 제외될 수 있습니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">거주 지자체 또는 자동차 제조사 딜러를 통해 보조금 지원 확인서를 신청합니다. 신청 후 확인서 발급까지 수일이 걸릴 수 있으므로 미리 신청합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">보조금 지원 확인서를 신청했고 발급 예정일을 확인했다.</span></div><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">지원 확인서 없이 차량 계약부터 하면 보조금을 받을 수 없습니다. 이 순서는 반드시 지켜야 합니다.</span></div></div>
 </div><div class="gov-item" id="s3">
   <label class="gov-item-head" for="c3">
     <input class="cbx" type="checkbox" id="c3" onchange="onCheck(this,'s3','done',1)">
-    <div style="flex:1"><div class="gov-item-name">충전 환경(완속/급속) 미리 점검하기</div></div>
+    <div style="flex:1"><div class="gov-item-name">취득세 감면 적용 여부 확인하기</div></div>
     <span class="gov-item-status status-todo" id="st3">미완료</span>
-  </label>
+  </label><div class="gov-item-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">전기차는 취득세 감면 혜택이 있으며, 이를 미리 확인해야 계약 시 세금 처리가 정확하게 이루어집니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">지방세특례제한법 기준으로 전기차 취득세 감면 한도를 확인합니다. 딜러 또는 거주 지자체 세무과에 문의하면 정확한 감면 금액을 안내받을 수 있습니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">적용 가능한 취득세 감면 금액을 확인했다.</span></div></div>
+</div></div><div class="gov-section" id="gsec-2">
+  <div class="gov-section-head">
+    <div class="gov-section-num">3</div>
+    <div class="gov-section-title">3. 계약·출고</div>
+    <span class="gov-section-count">2개</span>
+    <span class="gov-section-progress" id="gsec-prog-2">0/2</span>
+  </div><div class="gov-item" id="s4">
+  <label class="gov-item-head" for="c4">
+    <input class="cbx" type="checkbox" id="c4" onchange="onCheck(this,'s4','done',2)">
+    <div style="flex:1"><div class="gov-item-name">보조금 지원 확인서 발급 후 차량 계약하기</div></div>
+    <span class="gov-item-status status-todo" id="st4">미완료</span>
+  </label><div class="gov-item-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">지원 확인서 발급 후 정해진 기간 내에 계약·출고해야 보조금이 유지됩니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">딜러와 계약 시 보조금 대리신청 여부, 출고 예정일, 계약 기한을 명확히 확인합니다. 대부분의 경우 딜러가 보조금 신청을 대리합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">차량 계약서를 작성했고 출고 예정일을 확인했다.</span></div><div class="det"><span class="det-lbl l-caution">주의</span><span class="det-txt caut">계약 후 지원 확인서 유효기간 내에 출고가 이루어져야 합니다. 기한을 초과하면 보조금이 취소될 수 있습니다.</span></div></div>
+</div><div class="gov-item" id="s5">
+  <label class="gov-item-head" for="c5">
+    <input class="cbx" type="checkbox" id="c5" onchange="onCheck(this,'s5','done',2)">
+    <div style="flex:1"><div class="gov-item-name">출고 후 보조금 정산 확인하기</div></div>
+    <span class="gov-item-status status-todo" id="st5">미완료</span>
+  </label><div class="gov-item-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">출고 후 실제 입금된 보조금이 사전 확인한 금액과 일치하는지 확인해야 합니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">출고 완료 후 지자체 또는 딜러를 통해 보조금 정산 내역을 확인합니다. 차량 등록 및 취득세 납부 영수증도 함께 보관합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">보조금 입금 금액과 취득세 감면 내역을 확인하고 영수증을 보관했다.</span></div></div>
+</div></div><div class="gov-section" id="gsec-3">
+  <div class="gov-section-head">
+    <div class="gov-section-num">4</div>
+    <div class="gov-section-title">4. 충전 환경 준비</div>
+    <span class="gov-section-count">1개</span>
+    <span class="gov-section-progress" id="gsec-prog-3">0/1</span>
+  </div><div class="gov-item" id="s6">
+  <label class="gov-item-head" for="c6">
+    <input class="cbx" type="checkbox" id="c6" onchange="onCheck(this,'s6','done',3)">
+    <div style="flex:1"><div class="gov-item-name">충전 환경(완속/급속) 미리 점검하기</div></div>
+    <span class="gov-item-status status-todo" id="st6">미완료</span>
+  </label><div class="gov-item-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">충전 인프라 없이 전기차를 구매하면 일상 사용이 불편해집니다. 사전에 충전 환경을 파악해야 합니다.</span></div><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">거주지 주차장 완속충전기 설치 가능 여부를 확인합니다(아파트는 관리사무소 또는 입주자 대표회의 승인 필요). 주변 급속충전소 위치와 요금도 확인합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">집 근처 충전 환경(완속·급속)을 확인하고 충전 계획을 세웠다.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://www.ev.or.kr/evcharger" target="_blank">환경부 전기차 충전소 찾기</a><span class="link-pill lp-off">공식</span></span></div></div>
 </div></div><div class="export-panel">
   <div class="export-panel-head">
     <span>📝</span>내 도구로 가져가기
@@ -288,17 +318,37 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
   <textarea id="copy-payload" style="position:absolute;left:-9999px;top:-9999px;opacity:0" readonly># 전기차 구매보조금 신청 준비 Flow
 무공해차 통합누리집 기준으로 보조금 대상·잔여물량·신청 절차를 정리합니다.
 
-## 1. 대상·물량
+## 1. 대상·물량 확인
 □ 구매 예정 차종의 국고·지자체 보조금 확인하기
-  WHY: 보조금은 지자체별로 다르고 물량이 소진되면 받을 수 없습니다.
-  HOW: 무공해차 통합누리집에서 차종별 보조금과 지자체 잔여물량을 실시간으로 확인합니다.
-  주의: 국고보조금에 더해 지자체 보조금이 합산됩니다(2026년에는 노후차 폐차 후 전환 시 전환지원금이 추가되는 등 항목이 바뀌므로 정확한 금액은 누리집에서 확인). 예산이 상반기에 소진되는 경향이 있으니 공고 직후 신속하게 신청하세요.
+  WHY: 보조금은 지자체별로 다르고 물량이 소진되면 받을 수 없습니다. 예산이 상반기에 조기 소진되는 경향이 있어 공고 직후 빠르게 움직여야 합니다.
+  HOW: 무공해차 통합누리집에서 차종별 보조금과 거주 지자체 잔여물량을 실시간으로 확인합니다. 국고보조금 + 지자체보조금 + (노후차 폐차 시 전환지원금) 세 항목을 합산해 총액을 파악합니다.
+  주의: 보조금 금액과 항목은 연도·지자체마다 변경됩니다. 정확한 금액은 반드시 공식 누리집에서 확인하세요.
 □ 거주지 신청 자격·우선순위 확인하기
+  WHY: 지자체별로 신청 자격(실거주 여부, 이전 보조금 수령 이력 등)과 우선순위 기준이 다릅니다.
+  HOW: 거주 지자체 보조금 공고문에서 신청 자격 조건과 우선순위 항목을 확인합니다. 법인·사업자와 개인 조건이 다를 수 있으므로 해당 유형을 확인하세요.
 
-## 2. 신청
-□ 출고·계약 일정과 신청 절차(대리신청 등) 확인하기
-  주의: 계약·출고·신청 순서와 기한을 어기면 지원에서 제외될 수 있습니다. 보조금 지원 확인서를 받은 후 차량을 계약해야 합니다.
+## 2. 계약 전: 보조금 지원 확인서 신청
+□ 보조금 지원 확인서 신청하기(계약 전 필수)
+  WHY: 전기차 보조금은 반드시 지원 확인서를 받은 후 차량을 계약해야 합니다. 계약 먼저 하면 보조금 대상에서 제외될 수 있습니다.
+  HOW: 거주 지자체 또는 자동차 제조사 딜러를 통해 보조금 지원 확인서를 신청합니다. 신청 후 확인서 발급까지 수일이 걸릴 수 있으므로 미리 신청합니다.
+  주의: 지원 확인서 없이 차량 계약부터 하면 보조금을 받을 수 없습니다. 이 순서는 반드시 지켜야 합니다.
+□ 취득세 감면 적용 여부 확인하기
+  WHY: 전기차는 취득세 감면 혜택이 있으며, 이를 미리 확인해야 계약 시 세금 처리가 정확하게 이루어집니다.
+  HOW: 지방세특례제한법 기준으로 전기차 취득세 감면 한도를 확인합니다. 딜러 또는 거주 지자체 세무과에 문의하면 정확한 감면 금액을 안내받을 수 있습니다.
+
+## 3. 계약·출고
+□ 보조금 지원 확인서 발급 후 차량 계약하기
+  WHY: 지원 확인서 발급 후 정해진 기간 내에 계약·출고해야 보조금이 유지됩니다.
+  HOW: 딜러와 계약 시 보조금 대리신청 여부, 출고 예정일, 계약 기한을 명확히 확인합니다. 대부분의 경우 딜러가 보조금 신청을 대리합니다.
+  주의: 계약 후 지원 확인서 유효기간 내에 출고가 이루어져야 합니다. 기한을 초과하면 보조금이 취소될 수 있습니다.
+□ 출고 후 보조금 정산 확인하기
+  WHY: 출고 후 실제 입금된 보조금이 사전 확인한 금액과 일치하는지 확인해야 합니다.
+  HOW: 출고 완료 후 지자체 또는 딜러를 통해 보조금 정산 내역을 확인합니다. 차량 등록 및 취득세 납부 영수증도 함께 보관합니다.
+
+## 4. 충전 환경 준비
 □ 충전 환경(완속/급속) 미리 점검하기
+  WHY: 충전 인프라 없이 전기차를 구매하면 일상 사용이 불편해집니다. 사전에 충전 환경을 파악해야 합니다.
+  HOW: 거주지 주차장 완속충전기 설치 가능 여부를 확인합니다(아파트는 관리사무소 또는 입주자 대표회의 승인 필요). 주변 급속충전소 위치와 요금도 확인합니다.
 </textarea>
 </div><div class="output-panel"><div class="output-head">📝 메모 미리보기</div>
 <div class="memo-note"><div class="mtitle">체크 완료 항목 요약</div>완료한 단계가 메모·노트로 정리됩니다.</div></div>
@@ -332,8 +382,8 @@ function shareText(){
 }
 
 
-const total=4;let done=0;
-const _sc=[2, 2];const _sd=[0, 0];
+const total=7;let done=0;
+const _sc=[2, 2, 2, 1];const _sd=[0, 0, 0, 0];
 function onCheck(el,sid,cls,si){
   const node=document.getElementById(sid);
   const numId=sid.replace('s','');
@@ -344,7 +394,7 @@ function onCheck(el,sid,cls,si){
   document.getElementById('ptext').textContent=done+' / '+total;
   document.getElementById('pbar').style.width=pct+'%';
   
-  for(let i=0;i<2;i++){
+  for(let i=0;i<4;i++){
     const sp=document.getElementById('gsec-prog-'+i);if(sp)sp.textContent=_sd[i]+'/'+_sc[i];
     const gs=document.getElementById('gstep-'+i);
     if(gs)gs.className='gov-step-ind-item '+(_sd[i]>=_sc[i]?'done':_sd[i]>0?'active':'');

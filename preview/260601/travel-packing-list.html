@@ -166,30 +166,7 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 
 @media(max-width:520px){.flow-title{font-size:1.28rem}.det{grid-template-columns:38px 1fr}}
 
-
---ck-color:#2563eb;
-.progress-bar-fill{background:#2563eb}
-.cbx:checked{background:#2563eb;border-color:#2563eb}
-.travel-hero{background:linear-gradient(135deg,#1e3a5f,#1d4ed8);border-radius:var(--r);
-  padding:1.1rem 1.2rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:1rem;color:#fff}
-.travel-hero-info{flex:1}
-.travel-hero-label{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:#93c5fd}
-.pack-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:.8rem;overflow:hidden}
-.pack-sec-head{display:flex;align-items:center;gap:.6rem;padding:.72rem .95rem;border-bottom:1px solid var(--surface3)}
-.pack-sec-icon{font-size:1rem}
-.pack-sec-title{font-weight:700;font-size:.86rem;flex:1}
-.pack-sec-prog{font-size:.7rem;color:var(--muted)}
-.pack-sec-bar{height:3px;background:var(--surface3)}
-.pack-sec-bar-fill{height:100%;background:#2563eb;width:0;transition:width .3s}
-.pack-item{display:flex;align-items:flex-start;gap:.65rem;padding:.62rem .95rem;
-  border-bottom:1px solid var(--surface3);cursor:pointer}
-.pack-item:last-child{border-bottom:none}
-.pack-item.done .pack-name{opacity:.4;text-decoration:line-through}
-.pack-name{font-size:.87rem;font-weight:600;line-height:1.32;flex:1}
-.pack-req{font-size:.6rem;font-weight:700;padding:.06rem .28rem;border-radius:3px;
-  background:#dbeafe;color:#1e40af;margin-left:.35rem;flex-shrink:0}
-.pack-details{padding:.28rem .95rem .6rem 3.15rem}
-
+--ck-color:#2563eb;.progress-bar-fill{background:#2563eb}.cbx:checked{background:#2563eb;border-color:#2563eb}.pack-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:.8rem;overflow:hidden}.pack-sec-head{display:flex;align-items:center;gap:.6rem;padding:.72rem .95rem;border-bottom:1px solid var(--surface3)}.pack-sec-title{font-weight:700;font-size:.86rem;flex:1}.pack-item{display:flex;align-items:flex-start;gap:.65rem;padding:.62rem .95rem;border-bottom:1px solid var(--surface3);cursor:pointer}.pack-item:last-child{border-bottom:none}.pack-item.done .pack-name{opacity:.4;text-decoration:line-through}.pack-name{font-size:.87rem;font-weight:600;line-height:1.32;flex:1}.pack-details{padding:.28rem .95rem .6rem 3.15rem}
 </style>
 </head>
 <body>
@@ -227,66 +204,7 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
   <div class="progress-label"><span>진행률</span><span id="ptext">0 / 7</span></div>
   <div class="progress-bar-bg"><div class="progress-bar-fill" id="pbar"></div></div>
 </div>
-<div class="travel-hero">
-  <div class="travel-hero-info">
-    <div class="travel-hero-label">여행 준비 체크리스트</div>
-    <div style="font-size:1.1rem;font-weight:800;color:#fff;margin-top:.15rem">여행 짐 싸기 체크리스트 Flow</div>
-    <div style="font-size:.75rem;color:#93c5fd;margin-top:.2rem">7개 항목 · 카테고리별</div>
-  </div>
-  <div style="flex-shrink:0"><svg id="prog-ring" width="68" height="68" viewBox="0 0 90 90">
-  <circle cx="45" cy="45" r="40" fill="none" stroke="#e4e1dc" stroke-width="8"/>
-  <circle class="fill" cx="45" cy="45" r="40" fill="none" stroke="#2563eb" stroke-width="8"
-    stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="251.2"
-    style="transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset .4s"/>
-</svg></div>
-</div><div class="pack-section">
-  <div class="pack-sec-head"><span class="pack-sec-icon">📦</span>
-    <div class="pack-sec-title">필수 서류·결제</div>
-    <span class="pack-sec-prog" id="pp-0">0/3</span></div>
-  <div class="pack-sec-bar"><div class="pack-sec-bar-fill" id="pb-0"></div></div><div id="s0">
-  <label class="pack-item" for="c0">
-    <input class="cbx" type="checkbox" id="c0" style="margin-top:.14rem" onchange="onCheck(this,'s0','done',0)">
-    <div class="pack-name">신분증·여권(해외) 확인하기</div>
-  </label><div class="pack-details"><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">신분증과 필요 서류를 가방에 넣었다.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist" target="_blank">KKday 여행 준비물 체크리스트</a><span class="link-pill lp-ref">참고</span></span></div></div>
-</div><div id="s1">
-  <label class="pack-item" for="c1">
-    <input class="cbx" type="checkbox" id="c1" style="margin-top:.14rem" onchange="onCheck(this,'s1','done',0)">
-    <div class="pack-name">예약 바우처·숙소 주소 오프라인 저장하기</div>
-  </label><div class="pack-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">현지에서 인터넷이 안 되는 상황을 대비해 오프라인으로 저장해야 합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">예약 확인서와 숙소 주소를 캡처해 저장했다.</span></div></div>
-</div><div id="s2">
-  <label class="pack-item" for="c2">
-    <input class="cbx" type="checkbox" id="c2" style="margin-top:.14rem" onchange="onCheck(this,'s2','done',0)">
-    <div class="pack-name">카드·현금(필요시 환전) 확인하기</div>
-  </label><div class="pack-details"><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">결제 수단을 확인했다.</span></div></div>
-</div></div><div class="pack-section">
-  <div class="pack-sec-head"><span class="pack-sec-icon">👔</span>
-    <div class="pack-sec-title">의류·생활용품</div>
-    <span class="pack-sec-prog" id="pp-1">0/2</span></div>
-  <div class="pack-sec-bar"><div class="pack-sec-bar-fill" id="pb-1"></div></div><div id="s3">
-  <label class="pack-item" for="c3">
-    <input class="cbx" type="checkbox" id="c3" style="margin-top:.14rem" onchange="onCheck(this,'s3','done',1)">
-    <div class="pack-name">여행 일수에 맞게 의류 목록 작성하기</div>
-  </label><div class="pack-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">일수보다 1~2벌 적게 챙깁니다. 숙소에 세탁기가 있다면 2~3일치만으로도 충분합니다. 겹쳐 입을 수 있는 아이템 위주로 구성합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">의류 목록을 작성하고 가방에 넣었다.</span></div></div>
-</div><div id="s4">
-  <label class="pack-item" for="c4">
-    <input class="cbx" type="checkbox" id="c4" style="margin-top:.14rem" onchange="onCheck(this,'s4','done',1)">
-    <div class="pack-name">세면도구·충전기·상비약 넣기</div>
-  </label><div class="pack-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">기내 반입 시 액체류는 100ml 이하 개별 용기에 담아 1L 지퍼백 한 개 분량까지만 가능합니다. 종류별 패킹 큐브(메쉬/투명)를 쓰면 캐리어 안이 한눈에 정리됩니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">세면도구와 충전기를 확인해 넣었다.</span></div></div>
-</div></div><div class="pack-section">
-  <div class="pack-sec-head"><span class="pack-sec-icon">📦</span>
-    <div class="pack-sec-title">마지막 확인</div>
-    <span class="pack-sec-prog" id="pp-2">0/2</span></div>
-  <div class="pack-sec-bar"><div class="pack-sec-bar-fill" id="pb-2"></div></div><div id="s5">
-  <label class="pack-item" for="c5">
-    <input class="cbx" type="checkbox" id="c5" style="margin-top:.14rem" onchange="onCheck(this,'s5','done',2)">
-    <div class="pack-name">캐리어 짐 배치 확인(무거운 것 아래, 자주 꺼낼 것 위)</div>
-  </label><div class="pack-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">신발·책 등 무거운 물건은 바퀴쪽(아래)에, 충전기·우산·세면도구 등 자주 꺼내는 것은 위쪽에 배치합니다. 부피 큰 옷·침구는 압축백으로 50% 이상 부피를 줄일 수 있고, 10일 이상 장기 여행은 압축가방 활용을 권장합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">가방 무게와 배치를 확인했다.</span></div></div>
-</div><div id="s6">
-  <label class="pack-item" for="c6">
-    <input class="cbx" type="checkbox" id="c6" style="margin-top:.14rem" onchange="onCheck(this,'s6','done',2)">
-    <div class="pack-name">집 출발 전 잠금·가스·전기 확인 목록 정하기</div>
-  </label><div class="pack-details"><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">출발 전 확인 목록을 메모에 적었다.</span></div></div>
-</div></div><div class="export-panel">
+<div class="pack-section"><div class="pack-sec-head"><span>📦</span><div class="pack-sec-title">필수 서류·결제</div></div><div id="s0"><label class="pack-item" for="c0"><input class="cbx" type="checkbox" id="c0" style="margin-top:.14rem" onchange="onCheck(this,'s0','done',0)"><div class="pack-name">신분증·여권(해외) 확인하기</div></label><div class="pack-details"><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">신분증과 필요 서류를 가방에 넣었다.</span></div><div class="det"><span class="det-lbl l-link">링크</span><span class="det-txt"><a href="https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist" target="_blank">KKday 여행 준비물 체크리스트</a><span class="link-pill lp-ref">참고</span></span></div></div></div><div id="s1"><label class="pack-item" for="c1"><input class="cbx" type="checkbox" id="c1" style="margin-top:.14rem" onchange="onCheck(this,'s1','done',0)"><div class="pack-name">예약 바우처·숙소 주소 오프라인 저장하기</div></label><div class="pack-details"><div class="det"><span class="det-lbl l-why">WHY</span><span class="det-txt">현지에서 인터넷이 안 되는 상황을 대비해 오프라인으로 저장해야 합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">예약 확인서와 숙소 주소를 캡처해 저장했다.</span></div></div></div><div id="s2"><label class="pack-item" for="c2"><input class="cbx" type="checkbox" id="c2" style="margin-top:.14rem" onchange="onCheck(this,'s2','done',0)"><div class="pack-name">카드·현금(필요시 환전) 확인하기</div></label><div class="pack-details"><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">결제 수단을 확인했다.</span></div></div></div></div><div class="pack-section"><div class="pack-sec-head"><span>👔</span><div class="pack-sec-title">의류·생활용품</div></div><div id="s3"><label class="pack-item" for="c3"><input class="cbx" type="checkbox" id="c3" style="margin-top:.14rem" onchange="onCheck(this,'s3','done',1)"><div class="pack-name">여행 일수에 맞게 의류 목록 작성하기</div></label><div class="pack-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">일수보다 1~2벌 적게 챙깁니다. 숙소에 세탁기가 있다면 2~3일치만으로도 충분합니다. 겹쳐 입을 수 있는 아이템 위주로 구성합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">의류 목록을 작성하고 가방에 넣었다.</span></div></div></div><div id="s4"><label class="pack-item" for="c4"><input class="cbx" type="checkbox" id="c4" style="margin-top:.14rem" onchange="onCheck(this,'s4','done',1)"><div class="pack-name">세면도구·충전기·상비약 넣기</div></label><div class="pack-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">기내 반입 시 액체류는 100ml 이하 개별 용기에 담아 1L 지퍼백 한 개 분량까지만 가능합니다. 종류별 패킹 큐브(메쉬/투명)를 쓰면 캐리어 안이 한눈에 정리됩니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">세면도구와 충전기를 확인해 넣었다.</span></div></div></div></div><div class="pack-section"><div class="pack-sec-head"><span>📦</span><div class="pack-sec-title">마지막 확인</div></div><div id="s5"><label class="pack-item" for="c5"><input class="cbx" type="checkbox" id="c5" style="margin-top:.14rem" onchange="onCheck(this,'s5','done',2)"><div class="pack-name">캐리어 짐 배치 확인(무거운 것 아래, 자주 꺼낼 것 위)</div></label><div class="pack-details"><div class="det"><span class="det-lbl l-how">HOW</span><span class="det-txt">신발·책 등 무거운 물건은 바퀴쪽(아래)에, 충전기·우산·세면도구 등 자주 꺼내는 것은 위쪽에 배치합니다. 부피 큰 옷·침구는 압축백으로 50% 이상 부피를 줄일 수 있고, 10일 이상 장기 여행은 압축가방 활용을 권장합니다.</span></div><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">가방 무게와 배치를 확인했다.</span></div></div></div><div id="s6"><label class="pack-item" for="c6"><input class="cbx" type="checkbox" id="c6" style="margin-top:.14rem" onchange="onCheck(this,'s6','done',2)"><div class="pack-name">집 출발 전 잠금·가스·전기 확인 목록 정하기</div></label><div class="pack-details"><div class="det"><span class="det-lbl l-done">완료</span><span class="det-txt">출발 전 확인 목록을 메모에 적었다.</span></div></div></div></div><div class="export-panel">
   <div class="export-panel-head">
     <span>📝</span>내 도구로 가져가기
   </div>
@@ -351,25 +269,7 @@ function shareText(){
   else copyFlow();
 }
 
-
-const total=7;let done=0;
-const _tc=[3, 2, 2];const _td=[0, 0, 0];
-function onCheck(el,sid,cls,si){
-  const node=document.getElementById(sid);
-  if(el.checked){done++;_td[si]++;node.classList.add(cls)}else{done--;_td[si]--;node.classList.remove(cls)}
-  const pct=Math.round(done/total*100);
-  document.getElementById('ptext').textContent=done+' / '+total;
-  document.getElementById('pbar').style.width=pct+'%';
-  const ring=document.getElementById('prog-ring');
-  if(ring){const c=ring.querySelector('circle.fill');if(c)c.style.strokeDashoffset=251.2*(1-done/total);}
-  for(let i=0;i<3;i++){
-    const b=document.getElementById('pb-'+i);const p=document.getElementById('pp-'+i);
-    if(b)b.style.width=(_tc[i]?_td[i]/_tc[i]*100:0)+'%';
-    if(p)p.textContent=_td[i]+'/'+_tc[i];
-  }
-  if(done===total){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
-}
-
+const total=7;let done=0;const _tc=[3, 2, 2];const _td=[0, 0, 0];function onCheck(el,sid,cls,si){const node=document.getElementById(sid);if(el.checked){done++;_td[si]++;node.classList.add(cls)}else{done--;_td[si]--;node.classList.remove(cls)}document.getElementById('ptext').textContent=done+' / '+total;document.getElementById('pbar').style.width=(done/total*100)+'%';if(done===total){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}}
 function copyFlow(){
   const ta=document.getElementById('copy-payload');
   if(!ta)return;
@@ -393,7 +293,6 @@ function shareText(){
   if(navigator.share){navigator.share({text:ta.value}).catch(()=>{});}
   else copyFlow();
 }
-
 
 </script>
 </body></html>
