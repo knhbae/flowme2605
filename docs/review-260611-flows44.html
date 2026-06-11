@@ -1,0 +1,3729 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FLOW 44 컨텐츠 리뷰 — 2026-06-11</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;background:#0f0f0f;color:#e0e0e0;font-size:13px;line-height:1.6}
+a{color:#60a5fa;text-decoration:none}a:hover{text-decoration:underline}
+
+/* layout */
+.layout{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:280px;flex-shrink:0;background:#161616;border-right:1px solid #2a2a2a;display:flex;flex-direction:column;overflow:hidden}
+.main{flex:1;overflow-y:auto;padding:20px}
+
+/* sidebar header */
+.sidebar-header{padding:14px 16px;border-bottom:1px solid #2a2a2a}
+.sidebar-title{font-size:14px;font-weight:700;color:#f0f0f0;margin-bottom:8px}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap}
+.filter-btn{padding:3px 8px;border-radius:4px;border:1px solid #333;background:#1e1e1e;color:#aaa;cursor:pointer;font-size:11px;white-space:nowrap}
+.filter-btn:hover,.filter-btn.active{background:#3b82f6;color:#fff;border-color:#3b82f6}
+.search-box{margin-top:8px;width:100%;padding:5px 8px;background:#1e1e1e;border:1px solid #333;border-radius:4px;color:#e0e0e0;font-size:12px}
+.search-box:focus{outline:none;border-color:#3b82f6}
+
+/* nav */
+.nav-list{flex:1;overflow-y:auto;padding:8px 0}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 16px;cursor:pointer;transition:background .15s;text-decoration:none;color:inherit;border-left:3px solid transparent}
+.nav-link:hover{background:#1e1e1e}
+.nav-link.active{background:#1a2a3a;border-left-color:#3b82f6}
+.nav-num{width:24px;text-align:right;color:#555;font-size:11px;flex-shrink:0}
+.nav-title{flex:1;font-size:12px;color:#ccc;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav-avg{font-size:12px;font-weight:600;flex-shrink:0}
+
+/* summary bar */
+.summary-bar{display:flex;gap:16px;background:#161616;border:1px solid #2a2a2a;border-radius:8px;padding:12px 20px;margin-bottom:16px;flex-wrap:wrap}
+.sum-item{display:flex;flex-direction:column;align-items:center}
+.sum-val{font-size:22px;font-weight:700;color:#f0f0f0}
+.sum-key{font-size:11px;color:#666}
+
+/* flow card */
+.flow-card{background:#161616;border:1px solid #2a2a2a;border-radius:10px;margin-bottom:20px;overflow:hidden;scroll-margin-top:20px}
+.card-header{display:flex;align-items:flex-start;gap:12px;padding:14px 18px;background:#1a1a1a;border-bottom:1px solid #2a2a2a}
+.card-num{font-size:18px;font-weight:700;color:#444;min-width:32px}
+.card-title-area{flex:1}
+.card-title{font-size:15px;font-weight:700;color:#f0f0f0;margin-bottom:6px}
+.card-meta{display:flex;gap:6px;flex-wrap:wrap}
+.card-avg{font-size:22px;font-weight:800;min-width:48px;text-align:right}
+.tag{padding:2px 7px;border-radius:4px;font-size:11px;font-weight:600}
+.tag-official{background:#064e3b;color:#6ee7b7}
+.tag-creator{background:#1e1b4b;color:#a5b4fc}
+.tag-type{background:#1c1917;color:#a8a29e}
+.tag-cat{background:#1c1c1c;color:#737373}
+.tag-dest{background:#1a2a1a;color:#86efac}
+
+.card-body{display:grid;grid-template-columns:1fr 2fr 1fr;gap:0}
+@media(max-width:1100px){.card-body{grid-template-columns:1fr}}
+.section-block{padding:16px 18px;border-right:1px solid #2a2a2a}
+.section-block:last-child{border-right:none}
+.section-label{font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+
+/* orig */
+.orig-title{font-size:13px;color:#60a5fa;margin-bottom:6px}
+.orig-meta{font-size:12px;color:#888;margin-bottom:6px}
+.orig-warning{font-size:11px;color:#fbbf24;background:#2a1f0a;padding:6px 8px;border-radius:4px;border-left:3px solid #f59e0b}
+
+/* flow items */
+.item-count{color:#555;font-weight:400;margin-left:6px}
+.flow-item{margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #222}
+.flow-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.item-title{font-size:13px;font-weight:600;color:#d1d5db;margin-bottom:4px}
+.day-badge{display:inline-block;padding:1px 5px;background:#1e3a5f;color:#60a5fa;border-radius:3px;font-size:10px;font-weight:700;margin-left:4px}
+.item-detail{font-size:11px;color:#9ca3af;margin-top:3px;padding-left:8px}
+.item-detail.caution{color:#fbbf24;background:#1a1500;padding:3px 8px;border-radius:3px;margin-top:4px}
+.detail-key{font-weight:700;color:#6b7280;margin-right:4px}
+.item-links{margin-top:4px}
+.item-link{font-size:11px;color:#34d399;background:#052e16;padding:2px 6px;border-radius:3px;margin-right:4px}
+
+/* eval */
+.score-row{display:flex;gap:0;border:1px solid #2a2a2a;border-radius:6px;overflow:hidden;margin-bottom:10px}
+.score-cell{flex:1;text-align:center;padding:8px 4px;border-right:1px solid #2a2a2a}
+.score-cell:last-child{border-right:none}
+.score-axis{font-size:10px;color:#555;margin-bottom:2px}
+.score-val{font-size:24px;font-weight:800}
+.eval-notes{font-size:12px;color:#9ca3af;line-height:1.6;margin-bottom:8px}
+.eval-issues{margin-top:8px;padding-left:16px}
+.eval-issues li{font-size:12px;color:#fb923c;margin-bottom:3px}
+
+/* hidden */
+.flow-card.hidden{display:none}
+
+/* scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#0f0f0f}
+::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">FLOW 44 컨텐츠 리뷰</div>
+      <div class="filter-row">
+        <button class="filter-btn active" data-filter="all">전체(44)</button>
+        <button class="filter-btn" data-filter-source="official">공식(24)</button>
+        <button class="filter-btn" data-filter-source="creator">크리에이터(20)</button>
+        <button class="filter-btn" data-filter-type="checklist">체크리스트</button>
+        <button class="filter-btn" data-filter-type="routine">루틴</button>
+        <button class="filter-btn" data-filter-type="timeline">타임라인</button>
+      </div>
+      <input class="search-box" type="text" placeholder="플로우 검색..." id="searchBox">
+    </div>
+    <div class="nav-list" id="navList">
+      <a href="#flow-1" class="nav-link" data-slug="national-scholarship-apply" data-source="official" data-type="timeline">
+    <span class="nav-num">1</span>
+    <span class="nav-title">국가장학금</span>
+    <span class="nav-avg" style="color:#3b82f6">4.5</span>
+  </a><a href="#flow-2" class="nav-link" data-slug="housing-subscription-account" data-source="official" data-type="checklist">
+    <span class="nav-num">2</span>
+    <span class="nav-title">주택청약 자격·통장</span>
+    <span class="nav-avg" style="color:#f59e0b">3.8</span>
+  </a><a href="#flow-3" class="nav-link" data-slug="jeonse-guarantee-apply" data-source="official" data-type="checklist">
+    <span class="nav-num">3</span>
+    <span class="nav-title">전세보증금 반환보증 가입</span>
+    <span class="nav-avg" style="color:#3b82f6">4.3</span>
+  </a><a href="#flow-4" class="nav-link" data-slug="welfare-benefit-finder" data-source="official" data-type="checklist">
+    <span class="nav-num">4</span>
+    <span class="nav-title">맞춤형 복지서비스 찾기</span>
+    <span class="nav-avg" style="color:#f59e0b">3.5</span>
+  </a><a href="#flow-5" class="nav-link" data-slug="small-business-fund-check" data-source="official" data-type="checklist">
+    <span class="nav-num">5</span>
+    <span class="nav-title">소상공인 정책자금·지원 확인</span>
+    <span class="nav-avg" style="color:#f59e0b">3.8</span>
+  </a><a href="#flow-6" class="nav-link" data-slug="unemployment-benefit-apply" data-source="official" data-type="checklist">
+    <span class="nav-num">6</span>
+    <span class="nav-title">실업급여(구직급여)</span>
+    <span class="nav-avg" style="color:#3b82f6">4.3</span>
+  </a><a href="#flow-7" class="nav-link" data-slug="job-seeker-allowance-apply" data-source="official" data-type="checklist">
+    <span class="nav-num">7</span>
+    <span class="nav-title">국민취업지원제도</span>
+    <span class="nav-avg" style="color:#f59e0b">3.5</span>
+  </a><a href="#flow-8" class="nav-link" data-slug="pension-estimate-check" data-source="official" data-type="checklist">
+    <span class="nav-num">8</span>
+    <span class="nav-title">국민연금 가입내역·예상연금 확인</span>
+    <span class="nav-avg" style="color:#f59e0b">3.8</span>
+  </a><a href="#flow-9" class="nav-link" data-slug="health-insurance-dependent" data-source="official" data-type="checklist">
+    <span class="nav-num">9</span>
+    <span class="nav-title">건강보험 피부양자 등록</span>
+    <span class="nav-avg" style="color:#f59e0b">3.8</span>
+  </a><a href="#flow-10" class="nav-link" data-slug="infant-health-checkup-schedule" data-source="official" data-type="timeline">
+    <span class="nav-num">10</span>
+    <span class="nav-title">영유아 건강검진 일정</span>
+    <span class="nav-avg" style="color:#3b82f6">4.8</span>
+  </a><a href="#flow-11" class="nav-link" data-slug="adult-vaccine-schedule-check" data-source="official" data-type="checklist">
+    <span class="nav-num">11</span>
+    <span class="nav-title">성인·어르신 예방접종 일정 확인</span>
+    <span class="nav-avg" style="color:#f59e0b">3.3</span>
+  </a><a href="#flow-12" class="nav-link" data-slug="citizen-secretary-alerts" data-source="official" data-type="checklist">
+    <span class="nav-num">12</span>
+    <span class="nav-title">국민비서 알림</span>
+    <span class="nav-avg" style="color:#f59e0b">3.0</span>
+  </a><a href="#flow-13" class="nav-link" data-slug="first-passport-issue" data-source="official" data-type="checklist">
+    <span class="nav-num">13</span>
+    <span class="nav-title">여권 신규 발급</span>
+    <span class="nav-avg" style="color:#f59e0b">3.8</span>
+  </a><a href="#flow-14" class="nav-link" data-slug="overseas-safety-register" data-source="official" data-type="checklist">
+    <span class="nav-num">14</span>
+    <span class="nav-title">해외여행 안전정보·영사조력</span>
+    <span class="nav-avg" style="color:#f59e0b">3.8</span>
+  </a><a href="#flow-15" class="nav-link" data-slug="customs-traveler-declare" data-source="official" data-type="checklist">
+    <span class="nav-num">15</span>
+    <span class="nav-title">해외여행 휴대품 면세범위·신고</span>
+    <span class="nav-avg" style="color:#f59e0b">3.8</span>
+  </a><a href="#flow-16" class="nav-link" data-slug="used-car-ownership-transfer" data-source="official" data-type="checklist">
+    <span class="nav-num">16</span>
+    <span class="nav-title">자동차 이전등록(명의이전)</span>
+    <span class="nav-avg" style="color:#3b82f6">4.3</span>
+  </a><a href="#flow-17" class="nav-link" data-slug="ev-subsidy-apply" data-source="official" data-type="checklist">
+    <span class="nav-num">17</span>
+    <span class="nav-title">전기차 구매보조금</span>
+    <span class="nav-avg" style="color:#3b82f6">4.3</span>
+  </a><a href="#flow-18" class="nav-link" data-slug="property-local-tax-pay" data-source="official" data-type="checklist">
+    <span class="nav-num">18</span>
+    <span class="nav-title">지방세(재산세·자동차세) 납부</span>
+    <span class="nav-avg" style="color:#f59e0b">3.5</span>
+  </a><a href="#flow-19" class="nav-link" data-slug="tax-refund-find" data-source="official" data-type="checklist">
+    <span class="nav-num">19</span>
+    <span class="nav-title">미환급 세금·환급금 찾기</span>
+    <span class="nav-avg" style="color:#3b82f6">4.0</span>
+  </a><a href="#flow-20" class="nav-link" data-slug="birth-registration-prep" data-source="official" data-type="timeline">
+    <span class="nav-num">20</span>
+    <span class="nav-title">출생신고</span>
+    <span class="nav-avg" style="color:#3b82f6">4.8</span>
+  </a><a href="#flow-21" class="nav-link" data-slug="safe-inheritance-onestop" data-source="official" data-type="checklist">
+    <span class="nav-num">21</span>
+    <span class="nav-title">안심상속 원스톱</span>
+    <span class="nav-avg" style="color:#3b82f6">4.3</span>
+  </a><a href="#flow-22" class="nav-link" data-slug="seal-or-signature-certificate" data-source="official" data-type="checklist">
+    <span class="nav-num">22</span>
+    <span class="nav-title">인감증명·본인서명사실확인서 발급</span>
+    <span class="nav-avg" style="color:#f59e0b">3.3</span>
+  </a><a href="#flow-23" class="nav-link" data-slug="childcare-fee-support-apply" data-source="official" data-type="checklist">
+    <span class="nav-num">23</span>
+    <span class="nav-title">보육료·양육수당 지원</span>
+    <span class="nav-avg" style="color:#3b82f6">4.0</span>
+  </a><a href="#flow-24" class="nav-link" data-slug="military-exam-prep" data-source="official" data-type="checklist">
+    <span class="nav-num">24</span>
+    <span class="nav-title">병역판정검사</span>
+    <span class="nav-avg" style="color:#f59e0b">3.8</span>
+  </a><a href="#flow-25" class="nav-link" data-slug="recipe-video-execute" data-source="creator" data-type="checklist">
+    <span class="nav-num">25</span>
+    <span class="nav-title">레시피 영상 실전 적용</span>
+    <span class="nav-avg" style="color:#f59e0b">3.5</span>
+  </a><a href="#flow-26" class="nav-link" data-slug="weekly-meal-plan" data-source="creator" data-type="routine">
+    <span class="nav-num">26</span>
+    <span class="nav-title">한 주 식단·장보기</span>
+    <span class="nav-avg" style="color:#f59e0b">3.3</span>
+  </a><a href="#flow-27" class="nav-link" data-slug="closet-organize-1day" data-source="creator" data-type="checklist">
+    <span class="nav-num">27</span>
+    <span class="nav-title">옷장 정리 1일 챌린지</span>
+    <span class="nav-avg" style="color:#f59e0b">3.3</span>
+  </a><a href="#flow-28" class="nav-link" data-slug="kitchen-reset-organize" data-source="creator" data-type="checklist">
+    <span class="nav-num">28</span>
+    <span class="nav-title">주방 리셋 정리</span>
+    <span class="nav-avg" style="color:#f59e0b">3.3</span>
+  </a><a href="#flow-29" class="nav-link" data-slug="monthly-household-budget" data-source="creator" data-type="routine">
+    <span class="nav-num">29</span>
+    <span class="nav-title">월간 가계부 시작</span>
+    <span class="nav-avg" style="color:#f59e0b">3.5</span>
+  </a><a href="#flow-30" class="nav-link" data-slug="payday-finance-routine" data-source="creator" data-type="routine">
+    <span class="nav-num">30</span>
+    <span class="nav-title">월급날 재정 루틴</span>
+    <span class="nav-avg" style="color:#f59e0b">3.5</span>
+  </a><a href="#flow-31" class="nav-link" data-slug="reading-habit-30day" data-source="creator" data-type="routine">
+    <span class="nav-num">31</span>
+    <span class="nav-title">30일 독서 습관 만들기</span>
+    <span class="nav-avg" style="color:#f59e0b">3.0</span>
+  </a><a href="#flow-32" class="nav-link" data-slug="book-finish-one" data-source="creator" data-type="checklist">
+    <span class="nav-num">32</span>
+    <span class="nav-title">책 한 권 완독 실천</span>
+    <span class="nav-avg" style="color:#ef4444">2.8</span>
+  </a><a href="#flow-33" class="nav-link" data-slug="morning-skincare-routine" data-source="creator" data-type="routine">
+    <span class="nav-num">33</span>
+    <span class="nav-title">아침 스킨케어 5분 루틴</span>
+    <span class="nav-avg" style="color:#f59e0b">3.5</span>
+  </a><a href="#flow-34" class="nav-link" data-slug="skin-weekly-check" data-source="creator" data-type="routine">
+    <span class="nav-num">34</span>
+    <span class="nav-title">주간 피부 상태 관찰</span>
+    <span class="nav-avg" style="color:#f59e0b">3.3</span>
+  </a><a href="#flow-35" class="nav-link" data-slug="domestic-trip-d7" data-source="creator" data-type="timeline">
+    <span class="nav-num">35</span>
+    <span class="nav-title">국내여행 D-7</span>
+    <span class="nav-avg" style="color:#3b82f6">4.0</span>
+  </a><a href="#flow-36" class="nav-link" data-slug="travel-packing-list" data-source="creator" data-type="checklist">
+    <span class="nav-num">36</span>
+    <span class="nav-title">여행 짐 싸기 체크리스트</span>
+    <span class="nav-avg" style="color:#f59e0b">3.8</span>
+  </a><a href="#flow-37" class="nav-link" data-slug="home-cafe-daily" data-source="creator" data-type="routine">
+    <span class="nav-num">37</span>
+    <span class="nav-title">홈카페 루틴 만들기</span>
+    <span class="nav-avg" style="color:#f59e0b">3.5</span>
+  </a><a href="#flow-38" class="nav-link" data-slug="new-hobby-30day" data-source="creator" data-type="timeline">
+    <span class="nav-num">38</span>
+    <span class="nav-title">새 취미 30일 시작</span>
+    <span class="nav-avg" style="color:#f59e0b">3.0</span>
+  </a><a href="#flow-39" class="nav-link" data-slug="portfolio-4week" data-source="creator" data-type="timeline">
+    <span class="nav-num">39</span>
+    <span class="nav-title">포트폴리오 제작 4주 플랜</span>
+    <span class="nav-avg" style="color:#f59e0b">3.5</span>
+  </a><a href="#flow-40" class="nav-link" data-slug="blog-youtube-start" data-source="creator" data-type="checklist">
+    <span class="nav-num">40</span>
+    <span class="nav-title">블로그·유튜브 첫 콘텐츠 시작</span>
+    <span class="nav-avg" style="color:#ef4444">2.8</span>
+  </a><a href="#flow-41" class="nav-link" data-slug="morning-routine-30day" data-source="creator" data-type="routine">
+    <span class="nav-num">41</span>
+    <span class="nav-title">아침 루틴 30일 챌린지</span>
+    <span class="nav-avg" style="color:#f59e0b">3.3</span>
+  </a><a href="#flow-42" class="nav-link" data-slug="digital-detox-weekly" data-source="creator" data-type="routine">
+    <span class="nav-num">42</span>
+    <span class="nav-title">디지털 디톡스 주간 루틴</span>
+    <span class="nav-avg" style="color:#f59e0b">3.0</span>
+  </a><a href="#flow-43" class="nav-link" data-slug="dog-walk-routine" data-source="creator" data-type="routine">
+    <span class="nav-num">43</span>
+    <span class="nav-title">강아지 산책 루틴</span>
+    <span class="nav-avg" style="color:#f59e0b">3.8</span>
+  </a><a href="#flow-44" class="nav-link" data-slug="pet-health-observation" data-source="creator" data-type="routine">
+    <span class="nav-num">44</span>
+    <span class="nav-title">반려동물 건강 관찰 기록</span>
+    <span class="nav-avg" style="color:#f59e0b">3.8</span>
+  </a>
+    </div>
+  </div>
+  <div class="main" id="mainArea">
+    <div class="summary-bar">
+      <div class="sum-item"><div class="sum-val">44</div><div class="sum-key">총 플로우</div></div>
+      <div class="sum-item"><div class="sum-val">24</div><div class="sum-key">공식 출처</div></div>
+      <div class="sum-item"><div class="sum-val">20</div><div class="sum-key">크리에이터</div></div>
+      <div class="sum-item"><div class="sum-val">186</div><div class="sum-key">unit tests</div></div>
+      <div class="sum-item"><div class="sum-val">4.2</div><div class="sum-key">평균 D수요</div></div>
+      <div class="sum-item"><div class="sum-val">4.0</div><div class="sum-key">평균 A적합도</div></div>
+      <div class="sum-item"><div class="sum-val">3.1</div><div class="sum-key">평균 R리스크</div></div>
+    </div>
+    
+  <div class="flow-card" id="flow-1" data-slug="national-scholarship-apply" data-source="official" data-type="timeline">
+    <div class="card-header">
+      <div class="card-num">#1</div>
+      <div class="card-title-area">
+        <div class="card-title">국가장학금 신청 준비 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">⟶ timeline</span>
+          <span class="tag tag-cat">교육/장학</span>
+          <span class="tag tag-dest">📅 캘린더</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#3b82f6">⌀4.5</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_12_01_01" target="_blank">한국장학재단 – 국가장학금 Ⅰ유형(학생직접지원형) 안내</a></div>
+        <div class="orig-meta">앵커: <strong>목표일/마감일</strong></div>
+        <div class="orig-warning">⚠ 신청기간, 소득분위 기준, 지원 금액은 학기·연도마다 달라집니다. 한국장학재단 공식 공지를 반드시 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">7개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 이번 학기 신청기간(1차/2차) 확인하기 <span class="day-badge">D+-14</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 본인·학부모 공동인증서(또는 금융인증서) 준비하기 <span class="day-badge">D+-14</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 학자금 지원구간 산정용 가구원 동의 대상 확인하기 <span class="day-badge">D+-14</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 본인 명의 계좌·학적 정보 확인하기 <span class="day-badge">D+-7</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 신청서 작성하고 가구원 동의 요청 보내기 <span class="day-badge">D+-7</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 가구원 동의 완료 여부 확인하기 <span class="day-badge">D+0</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">7. 서류 제출 요청(필요 시) 마감 전 처리하기 <span class="day-badge">D+0</span></div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#10b981">5</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#10b981">5</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 한국장학재단 공식 URL, 유효. A: timeline+end_date는 신청기간 역산에 최적. D: 대학생 수요 최상위. R: 신청기간·소득분위 변경 경고 있음, 1차/2차 구분 명시 필요.</div>
+        <ul class="eval-issues"><li>소득분위 구간별 금액이 연도마다 바뀌므로 &quot;확인&quot; 프롬프트 유지 필수</li><li>가구원 동의 절차(수일 소요) 강조 필요</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-2" data-slug="housing-subscription-account" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#2</div>
+      <div class="card-title-area">
+        <div class="card-title">주택청약 자격·통장 준비 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">주거/청약</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.8</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.applyhome.co.kr/co/coa/selectMainView.do" target="_blank">청약홈(한국부동산원) – 청약 안내·자격 확인</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 청약 자격, 가점, 특별공급 요건은 공급 유형과 지역마다 다릅니다. 청약홈 공고문과 공식 안내로 직접 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">6개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 청약통장 종류·납입 회차·예치금 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 무주택 기간·세대주 여부 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 청약가점(무주택기간·부양가족·통장기간) 계산해 보기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 일반공급/특별공급(신혼·생애최초 등) 해당 여부 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 관심 지역 입주자모집공고 알림 설정하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 공고문에서 청약일·서류·계약금 일정 메모하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 청약홈 공식. A: checklist 적합, anchor_none이나 청약 통장 개설일 anchor로 개선 가능. D: 내집마련 준비층 수요 높음. R: 납입인정금액·가점제 계산 복잡도 경고 부족.</div>
+        <ul class="eval-issues"><li>납입인정금액 월 10만원 상한 명시</li><li>가점제·추첨제 분리 설명 필요</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-3" data-slug="jeonse-guarantee-apply" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#3</div>
+      <div class="card-title-area">
+        <div class="card-title">전세보증금 반환보증 가입 준비 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">주거/금융</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#3b82f6">⌀4.3</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.khug.or.kr/hug/web/ig/dr/igdr000001.jsp" target="_blank">주택도시보증공사(HUG) – 전세보증금반환보증 상품 개요</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 가입 가능 대상, 보증료, 신청 기한은 물건·계약 조건마다 다릅니다. HUG 공식 안내(1566-9009)와 상담으로 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">6개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 전세 계약 조건이 보증 대상에 맞는지 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 보증 신청 가능 기한(잔금·전입 기준) 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 전세계약서·전입신고·확정일자·등본 등 서류 모으기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 보증료(요율) 예상액 계산하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 지사 방문 또는 모바일(네이버부동산·카카오페이·토스)로 신청하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 보증 기간·갱신 시점 캘린더에 표시하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#10b981">5</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: HUG 공식 URL. A: checklist 적합. D: 전세사기 이슈로 수요 최상. R: HUG 가입 불가 조건(보증료 연체 이력 등) 경고 있음.</div>
+        <ul class="eval-issues"><li>보증료 계산식(보증금×요율÷12) 예시 항목 부재</li><li>근저당 비율 기준 명시 여부 확인</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-4" data-slug="welfare-benefit-finder" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#4</div>
+      <div class="card-title-area">
+        <div class="card-title">맞춤형 복지서비스 찾기 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">복지/지원</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.5</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.bokjiro.go.kr/ssis-tbu/twatza/wmAplyMng/selectWmGdnc.do" target="_blank">복지로 – 복지서비스 신청(온라인 민원 신청)</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 지원 대상과 금액은 가구 소득·재산·지역에 따라 다릅니다. 복지로와 주민센터에서 직접 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">5개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 가구 구성·생애주기(임신·출산·취업·노년 등) 적어보기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 복지로에서 맞춤형급여안내(복지멤버십) 신청하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 각 서비스의 신청 방법(온라인/주민센터) 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 신청 가능한 것부터 서류 준비해 신청하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 신청 결과·지급 시점 메모하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 복지로 공식. A: checklist이지만 &quot;복지 찾기&quot;는 탐색 행동 — 단계별 wizard가 더 맞을 수 있음. D: 취약계층 수요 높으나 디지털 리터러시 낮음 문제. R: 소득재산 기준 오해 경고 부족.</div>
+        <ul class="eval-issues"><li>대상별(영아/노인/장애인) 분기 없음 → 항목이 범용적</li><li>복지로 로그인·공동인증서 필요 안내 필요</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-5" data-slug="small-business-fund-check" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#5</div>
+      <div class="card-title-area">
+        <div class="card-title">소상공인 정책자금·지원 확인 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">사업/지원</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.8</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.semas.or.kr/web/SUP01/SUP0103/SUP010301.kmdc" target="_blank">소상공인시장진흥공단 – 정책자금 신청 안내</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 지원 대상, 한도, 금리, 신청기간은 사업과 연도마다 다릅니다. 공식 공고와 상담(1533-0100)으로 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">4개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 사업자 요건(업력·매출·업종·근로자 수) 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 사업자등록증·매출 증빙·재무 자료 정리하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 교육 이수 요건 있는지 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 모집기간·접수 방식(온라인/지역센터) 확인하고 신청하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 소진공 공식. A: checklist 적합하나 항목 4개는 부족 — 소상공인 확인서 발급, 신용점수 기준 등 미포함. D: 소상공인 수요 매우 높음. R: 대출 금리·한도 변동 경고 있음.</div>
+        <ul class="eval-issues"><li>항목 4개로 체감 커버리지 낮음</li><li>업종별 제외 업종 리스트 언급 필요</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-6" data-slug="unemployment-benefit-apply" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#6</div>
+      <div class="card-title-area">
+        <div class="card-title">실업급여(구직급여) 신청 준비 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">고용/실업급여</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#3b82f6">⌀4.3</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.ei.go.kr/ei/eih/eg/eb/ebPersonBnef/retrieveEb010101.do" target="_blank">고용보험 – 구직급여 수급신청 안내(찾기쉬운 생활법령정보)</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 수급 자격, 이직 사유 인정, 금액·기간은 개인 상황에 따라 다릅니다. 고용보험과 고용센터 안내를 우선 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">6개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 피보험단위기간·이직 사유 등 수급 요건 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 전 직장에 이직확인서 처리 요청하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 워크넷(www.work.go.kr) 구직등록하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 수급자격 신청자 온라인 교육 이수하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 고용센터 방문해 수급자격 신청하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 실업인정일·구직활동 요건 캘린더에 표시하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#10b981">5</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 고용보험 공식 URL. A: checklist 적합. D: 이직/실직 경험자 수요 최상. R: 자발적 퇴직 수급 불가 경고 명시.</div>
+        <ul class="eval-issues"><li>수급일수 산정 기준(고용보험 가입기간×이직 전 임금) 항목 부재</li><li>재취업활동 4주 주기 신고 안내 필요</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-7" data-slug="job-seeker-allowance-apply" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#7</div>
+      <div class="card-title-area">
+        <div class="card-title">국민취업지원제도 신청 준비 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">고용/취업지원</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.5</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.work24.go.kr/ua/z/z/1300/selectEmssRqutIntro.do" target="_blank">고용24 – 국민취업지원제도 취업지원신청 안내</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 지원 유형(Ⅰ·Ⅱ), 소득·재산 요건, 수당은 개인 상황에 따라 다릅니다. 고용24와 고용센터에서 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">4개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 소득·재산·취업경험 기준으로 유형(Ⅰ/Ⅱ) 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 신청서·소득재산 증빙 준비하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 고용24(www.work24.go.kr) 온라인 또는 고용센터 방문 신청하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 상담 후 취업활동계획(IAP) 수립 일정 잡기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 고용24 공식. A: checklist 4개는 절차 대비 부족 — 구직활동 증빙, 참여수당 조건 미포함. D: 청년·경력단절 수요 높음. R: 가구 소득재산 요건 복잡도 경고 부족.</div>
+        <ul class="eval-issues"><li>1유형/2유형 분기 없음</li><li>상담사 연결 절차 언급 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-8" data-slug="pension-estimate-check" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#8</div>
+      <div class="card-title-area">
+        <div class="card-title">국민연금 가입내역·예상연금 확인 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">연금/노후</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.8</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://minwon.nps.or.kr/jsppage/service/personal/inquiry/memberDetail_list.jsp" target="_blank">국민연금공단 전자민원 – 개인 가입내역·예상연금 조회</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 예상연금액은 가정에 따른 추정치이며 실제 수령액과 다를 수 있습니다. 국민연금공단(1355) 안내로 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">4개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 가입내역(가입기간·납부 이력) 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 납부 예외·미납 기간 있는지 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 추후납부(추납)·임의가입 대상인지 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 예상연금과 노후 목표를 비교 메모하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 국민연금공단 공식. A: checklist 적합. D: 30~50대 은퇴준비 수요 높음. R: 예상연금이 가입 기간·소득에 따라 크게 달라진다는 경고 부족.</div>
+        <ul class="eval-issues"><li>크레딧(군복무·출산) 항목 미포함</li><li>임의가입 여부 항목 추가 고려</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-9" data-slug="health-insurance-dependent" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#9</div>
+      <div class="card-title-area">
+        <div class="card-title">건강보험 피부양자 등록 준비 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">건강보험/행정</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.8</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.nhis.or.kr/nhis/policy/wbhada07500m01.do" target="_blank">국민건강보험공단 – 피부양자 자격 취득 모의계산</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 피부양자 소득·재산·부양 요건은 기준이 바뀔 수 있습니다. 국민건강보험공단 안내로 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">3개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 대상자의 소득·재산·부양 요건 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 가족관계 증빙 등 필요 서류 준비하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 직장가입자(가족)가 회사 인사팀 또는 공단 홈페이지(민원여기요)를 통해 피부양자 자격 취득 신고하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 건보공단 공식. A: checklist 적합하나 항목 3개는 너무 적음. D: 취업/결혼/퇴직 전환기 수요 높음. R: 소득·재산 기준 모의계산 링크 있음.</div>
+        <ul class="eval-issues"><li>항목 3개 → 취득 사유별(결혼/취업불가/60세 이상) 분기 없음</li><li>탈락 조건(고소득/재산 초과) 항목 필요</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-10" data-slug="infant-health-checkup-schedule" data-source="official" data-type="timeline">
+    <div class="card-header">
+      <div class="card-num">#10</div>
+      <div class="card-title-area">
+        <div class="card-title">영유아 건강검진 일정 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">⟶ timeline</span>
+          <span class="tag tag-cat">육아/검진</span>
+          <span class="tag tag-dest">📅 캘린더</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#3b82f6">⌀4.8</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do" target="_blank">국민건강보험공단 – 영유아 건강검진 안내 및 검진일자 조회</a></div>
+        <div class="orig-meta">앵커: <strong>출생일</strong></div>
+        <div class="orig-warning">⚠ 검진 시기·항목·발달평가 결과는 의료진 안내를 우선하세요. 이 Flow는 방문 일정을 챙기는 준비용입니다.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">8개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 1차 검진 예약 <span class="day-badge">D+14</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 2차 검진 예약 <span class="day-badge">D+120</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 3차 검진 예약 <span class="day-badge">D+270</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 4차 검진 + 1차 구강검진 <span class="day-badge">D+540</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 5차 검진 + 2차 구강검진 <span class="day-badge">D+900</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 6차 검진 + 3차 구강검진 <span class="day-badge">D+1260</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">7. 7차 검진 + 4차 구강검진 <span class="day-badge">D+1620</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">8. 8차 검진 예약 <span class="day-badge">D+1980</span></div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#10b981">5</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#10b981">5</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#10b981">5</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: NHIS 공식 스케줄 기반, QA로 8 VEVENT 검증 완료. A: baby_birth_date anchor + timeline = first-flag 최적 조합. D: 영유아 부모 수요 최상, 기간 놓치면 실질 불이익. R: 검진 기관 찾기 링크 필요.</div>
+        <ul class="eval-issues"><li>구강검진 별도 예약 필요 안내 없음</li><li>검진 불이익(미수검 시 지원금 제한 등) 명시 필요</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-11" data-slug="adult-vaccine-schedule-check" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#11</div>
+      <div class="card-title-area">
+        <div class="card-title">성인·어르신 예방접종 일정 확인 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">건강/예방접종</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.3</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://nip.kdca.go.kr/irgd/introduce.do" target="_blank">질병관리청 예방접종도우미 – 성인·어르신 예방접종 안내</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 접종 권장 대상, 무료 지원, 금기사항은 개인 건강상태에 따라 다릅니다. 질병관리청 안내와 의료진 상담을 우선하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">4개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 연령·기저질환별 권장 접종 항목 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 과거 접종 이력·금기사항 정리하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 지정 의료기관(질병관리청 예방접종도우미 위탁기관 조회) 확인하고 예약하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 접종일·접종기관·이상반응 기록하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 질병관리청 공식. A: checklist 적합하나 예방접종은 연령별 스케줄 → timeline+birth_year anchor가 더 맞음. D: 일반 성인 관심도 낮음(이벤트성 수요). R: 의사 상담 권고 부족.</div>
+        <ul class="eval-issues"><li>연령별(청장년/노인) 분기 없음</li><li>독감 접종 시즌 anchor 미활용</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-12" data-slug="citizen-secretary-alerts" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#12</div>
+      <div class="card-title-area">
+        <div class="card-title">국민비서 알림 신청 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">생활행정</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.0</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.ips.go.kr/pot/svc/ntcn/selectSvcGuide.do" target="_blank">국민비서(구삐) – 알림서비스 신청·서비스 안내</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 제공 알림 항목과 채널(앱/문자/카카오 등)은 변경될 수 있습니다. 국민비서 공식 안내(1577-2558)로 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">3개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 받고 싶은 알림(건강검진·예방접종·교통과태료·자동차검사·운전면허 갱신 등) 고르기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 알림 받을 채널(카카오톡·네이버앱·토스) 정하고 신청하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 정상 수신되는지 확인하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#ef4444">2</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 국민비서(구삐) 공식. A: 알림 신청은 원샷 체크리스트지만 항목 3개로 얕음. D: 수동적 수요(알림만 받으면 됨) → 직접 실행 수요 낮음. R: 개인정보 연계 위험 경고 없음.</div>
+        <ul class="eval-issues"><li>어떤 알림이 유용한지 선택 가이드 없음</li><li>앱 설치 필요 여부 안내 미비</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-13" data-slug="first-passport-issue" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#13</div>
+      <div class="card-title-area">
+        <div class="card-title">여권 신규 발급 준비 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">여행/여권</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.8</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.passport.go.kr/home/kor/contents.do?menuPos=2" target="_blank">외교부 여권안내 – 여권 최초 발급 기본사항 안내</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 사진 규격, 미성년자·대리 신청, 수수료, 처리 기간은 공식 기준을 따릅니다. 외교부 여권안내로 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">4개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 여권 사진 규격 확인하고 촬영하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 신분증 등 필요 서류 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 가까운 여권 접수처(구청 등) 확인하고 방문 신청하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 수수료·처리 기간·수령 방법 확인하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 외교부 공식. A: checklist 적합. D: 첫 여권 발급 수요 분명. R: 여권 유효기간 6개월 기준 안내 있으나, 처리기간 변동(성수기 4주+) 경고 부족.</div>
+        <ul class="eval-issues"><li>사진 규격(3.5×4.5, 흰 배경, 6개월 내) 항목 필요</li><li>수령 대리인 규정 안내 필요</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-14" data-slug="overseas-safety-register" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#14</div>
+      <div class="card-title-area">
+        <div class="card-title">해외여행 안전정보·영사조력 준비 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">여행/안전</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.8</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.0404.go.kr/dev/main.mofa" target="_blank">외교부 해외안전여행(0404) – 여행경보·동행등록·영사콜센터</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 여행경보 단계와 입국 요건은 수시로 바뀝니다. 외교부 해외안전여행 공지를 출발 직전 다시 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">4개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 방문국 여행경보 단계 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 현지 대사관·영사관 연락처와 영사콜센터(02-3210-0404, 24시간) 저장하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 동행등록(해외여행자 인터넷등록제) 신청 검토하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 여권 사본·비상연락·보험증서 따로 보관하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 외교부 해외안전여행 공식. A: checklist 적합. D: 여행 전 인지도 낮음, 니즈는 있으나 검색 접점 약함. R: 여행경보 1~4단계 구분 설명 있음.</div>
+        <ul class="eval-issues"><li>동행등록 실제 편익(사건사고 시 영사 연락) 강조 부족</li><li>여행보험 연계 항목 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-15" data-slug="customs-traveler-declare" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#15</div>
+      <div class="card-title-area">
+        <div class="card-title">해외여행 휴대품 면세범위·신고 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">여행/관세</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.8</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://customs.go.kr/kcs/cm/cntnts/cntntsView.do?mi=2837&amp;cntntsId=829" target="_blank">관세청 – 여행자 휴대품 통관 안내</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 면세범위, 신고 대상, 반입금지·제한 품목은 변경될 수 있습니다. 관세청 공식 안내를 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">3개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 휴대품 면세범위(총액·주류·담배·향수) 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 면세범위 초과 시 자진신고 방법 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 반입금지·제한 품목(식물·육류 등) 확인하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 관세청 공식. A: 항목 3개 너무 얕음 — 면세범위·신고 절차는 품목별로 다름. D: 해외여행 귀국자 수요 실용적. R: 미신고 과태료 경고 있음.</div>
+        <ul class="eval-issues"><li>주류·담배·의약품 면세범위 각각 안내 필요</li><li>전자신고 앱 링크 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-16" data-slug="used-car-ownership-transfer" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#16</div>
+      <div class="card-title-area">
+        <div class="card-title">자동차 이전등록(명의이전) 준비 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">자동차/등록</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#3b82f6">⌀4.3</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.gov.kr/mw/AA020InfoCappView.do?HighCtgCD=A09006&amp;CappBizCD=15000000370" target="_blank">정부24 – 자동차 이전등록 신청 안내</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 이전등록 기한, 취득세, 필요 서류는 거래 형태·지역마다 다릅니다. 자동차민원 포털과 관할 기관으로 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">5개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 이전등록 기한(매수일 기준 15일 이내) 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 양도증명·자동차등록증·신분증·인감증명서(개인 간 거래) 등 서류 준비하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 책임보험 가입(명의 기준) 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 취득세 등 비용 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 이전등록 신청하고 새 등록증 확인하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#10b981">5</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 정부24 공식. A: checklist 적합. D: 중고차 거래 수요 매우 높음. R: 성능점검 기록부 허위 위험 경고 있음.</div>
+        <ul class="eval-issues"><li>양도세·취득세 계산 항목 없음</li><li>딜러 거래 vs 개인 직거래 분기 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-17" data-slug="ev-subsidy-apply" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#17</div>
+      <div class="card-title-area">
+        <div class="card-title">전기차 구매보조금 신청 준비 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">자동차/지원</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#3b82f6">⌀4.3</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://ev.or.kr/nportal/buySupprt/initBuySubsidySupprtAction.do" target="_blank">무공해차 통합누리집 – 전기차 구매보조금 지급현황·대상 차종</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 보조금 금액, 잔여물량, 지원 조건은 연도·지자체마다 다르고 조기 소진될 수 있습니다. 공식 누리집으로 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">7개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 구매 예정 차종의 국고·지자체 보조금 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 거주지 신청 자격·우선순위 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 보조금 지원 확인서 신청하기(계약 전 필수) </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 취득세 감면 적용 여부 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 보조금 지원 확인서 발급 후 차량 계약하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 출고 후 보조금 정산 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">7. 충전 환경(완속/급속) 미리 점검하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#10b981">5</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 무공해차 통합누리집 공식. A: checklist 적합, 7개 항목으로 절차 커버. D: 전기차 구매 고려층 수요 있음. R: &quot;확인서 없이 계약 → 보조금 탈락&quot; 경고 강력히 명시 (best practice).</div>
+        <ul class="eval-issues"><li>보조금 금액 자체는 연도마다 변해 단정 금지</li><li>지자체별 조기 마감 타이밍 강조 필요</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-18" data-slug="property-local-tax-pay" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#18</div>
+      <div class="card-title-area">
+        <div class="card-title">지방세(재산세·자동차세) 납부 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">세금/납부</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.5</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.wetax.go.kr/main/" target="_blank">위택스(WeTax) – 지방세 조회·납부</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 부과·납부 기한과 감면 제도는 지자체·연도마다 다릅니다. 위택스와 관할 지자체 안내로 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">3개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 부과된 지방세 항목·금액·납부기한 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 자동차세 연납 할인 등 절세 제도 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 기한 내 납부하고 영수증 보관하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 위택스 공식. A: 지방세 납부는 단순 안내라 항목 3개로 너무 얕음. D: 재산세 7·9월, 자동차세 6·12월 수요 주기적. R: 연납 신청 기간 안내 있으나 할인율 단정 금지 필요.</div>
+        <ul class="eval-issues"><li>세목별(재산세/자동차세) 분기 없음</li><li>카드 포인트·무이자 할부 안내 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-19" data-slug="tax-refund-find" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#19</div>
+      <div class="card-title-area">
+        <div class="card-title">미환급 세금·환급금 찾기 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">세금/환급</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#3b82f6">⌀4.0</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://hometax.go.kr/websquare/websquare.html?w2xPath=/ui/pp/index_pp.xml&amp;tmIdx=42&amp;tm2lIdx=4203000000&amp;tm3lIdx=4203010000" target="_blank">국세청 홈택스 – 국세환급금 찾기·원클릭 환급 서비스</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 환급 대상·금액은 개인 납세 이력에 따라 다릅니다. 홈택스·정부24 공식 조회로 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">3개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 홈택스에서 국세 환급금 조회하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 지방세 환급금·미수령금도 위택스에서 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 환급 계좌 정보 홈택스에 등록하고 신청하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#10b981">5</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 홈택스 공식. A: checklist 적합. D: &quot;숨은 돈 찾기&quot; 수요 최상 — 높은 바이럴성. R: 개인정보 입력 주의 경고 없음.</div>
+        <ul class="eval-issues"><li>미환급 종류(국세/지방세/건보료) 구분 안내 필요</li><li>원클릭 환급 vs 직접 신청 분기 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-20" data-slug="birth-registration-prep" data-source="official" data-type="timeline">
+    <div class="card-header">
+      <div class="card-num">#20</div>
+      <div class="card-title-area">
+        <div class="card-title">출생신고 준비 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">⟶ timeline</span>
+          <span class="tag tag-cat">가족/출생</span>
+          <span class="tag tag-dest">📅 캘린더</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#3b82f6">⌀4.8</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.gov.kr/portal/onestopSvc/happyBirth" target="_blank">정부24 – 행복출산 원스톱서비스(출생신고 통합 신청)</a></div>
+        <div class="orig-meta">앵커: <strong>시작일</strong></div>
+        <div class="orig-warning">⚠ 신고기한, 필요 서류, 동시 신청 서비스는 변경될 수 있습니다. 정부24와 전자가족관계등록 안내로 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">5개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 출생증명서 등 신고 서류 확인하기 <span class="day-badge">D+0</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 아이 이름·등록기준지 정하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 출생신고 접수하기 <span class="day-badge">D+7</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 행복출산 원스톱 등 함께 신청 가능한 서비스 확인하기 <span class="day-badge">D+7</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 신고기한 내 완료 여부 최종 확인하기 <span class="day-badge">D+25</span></div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#10b981">5</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#10b981">5</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#10b981">5</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 정부24 행복출산 원스톱 공식. A: timeline+start_date는 출생 D+0 기준 최적. D: 출생 신고 수요 100% 필수. R: 14일 기한 초과 과태료 경고 있음.</div>
+        <ul class="eval-issues"><li>병원 출생증명서 발급 절차 항목 부재</li><li>건강보험증 추가(출생아 피부양자) 연계 안내 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-21" data-slug="safe-inheritance-onestop" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#21</div>
+      <div class="card-title-area">
+        <div class="card-title">안심상속 원스톱 신청 준비 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">가족/상속</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#3b82f6">⌀4.3</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.gov.kr/portal/onestopSvc/safeInheritance" target="_blank">정부24 – 안심상속 원스톱서비스(사망자 재산조회)</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 신청 자격(상속인 등), 기한, 상속 처리(승인·포기)는 법적 판단이 필요합니다. 정부24 안내와 전문가 상담을 우선하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">5개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 신청 자격(상속인 등)과 신청 기한 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 사망신고·가족관계 서류, 신청인 신분증 준비하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 금융·국세·지방세·연금 등 재산조회 신청하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 조회 결과로 재산·채무 정리하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 상속 처리 방향(승인/한정승인/포기) 전문가 상담 잡기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#10b981">5</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 정부24 공식. A: checklist 적합. D: 상속 발생 시 수요 100% 필수. R: 상속포기/한정승인 기한(3개월) 경고 있음.</div>
+        <ul class="eval-issues"><li>조회 결과 해석(부채&gt;자산이면 한정승인 권고) 항목 없음</li><li>전문가 상담(법무사/변호사) 연계 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-22" data-slug="seal-or-signature-certificate" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#22</div>
+      <div class="card-title-area">
+        <div class="card-title">인감증명·본인서명사실확인서 발급 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">서류/증명</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.3</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000025" target="_blank">정부24 – 인감증명서 발급 안내</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 발급 방식(방문/온라인), 용도별 요건은 다를 수 있습니다. 정부24와 주민센터 안내로 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">3개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 제출처가 요구하는 서류 종류·통수 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 부동산 매도용 등 특정 용도 요건 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 발급 방법(주민센터 방문 또는 정부24 온라인) 확인하고 발급받기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#ef4444">2</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 정부24 공식. A: 항목 3개로 너무 단순 — 인감증명 vs 본인서명확인서 차이 설명 없음. D: 부동산/금융 서류 수요 높음. R: 용도별 위조 위험 경고 없음.</div>
+        <ul class="eval-issues"><li>용도(부동산/금융/행정) 따른 선택 가이드 없음</li><li>온라인 발급 가능 여부(정부24 vs 주민센터) 분기 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-23" data-slug="childcare-fee-support-apply" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#23</div>
+      <div class="card-title-area">
+        <div class="card-title">보육료·양육수당 지원 신청 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">육아/지원</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#3b82f6">⌀4.0</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13510000024" target="_blank">정부24 – 보육료 및 양육수당 지원신청(변경) 안내</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 지원 종류·금액·중복 여부는 아이 연령과 보육 형태(어린이집/가정양육)에 따라 다릅니다. 복지로·아이사랑으로 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">3개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 아이 연령·보육형태에 맞는 지원(보육료/양육수당/부모급여) 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 신청 방법(복지로 온라인/주민센터) 확인하고 신청하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 보육형태 변경(어린이집↔가정) 시 자격 변경 신고하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#10b981">5</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 정부24 공식. A: checklist 적합. D: 영유아 자녀 부모 수요 100%. R: 어린이집·가정양육 중복 신청 불가 경고 있음.</div>
+        <ul class="eval-issues"><li>어린이집 종류별(국공립/사립) 지원액 차이 안내 없음</li><li>아이행복카드 발급 절차 항목 필요</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-24" data-slug="military-exam-prep" data-source="official" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#24</div>
+      <div class="card-title-area">
+        <div class="card-title">병역판정검사 준비 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-official">공식</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">병역/행정</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.8</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.mma.go.kr/contents.do?mc=usr0000167" target="_blank">병무청 – 병역판정검사 대상자 안내</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        <div class="orig-warning">⚠ 검사 일정·준비물·연기 사유는 개인 상황에 따라 다릅니다. 병무청 공식 안내와 통지서를 우선 확인하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">4개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 검사 통지서의 일시·장소 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 신분증 등 준비물·사전 문진 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 기존 질환·치료 이력 관련 서류 준비 여부 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 판정 결과와 다음 절차(입영 등) 일정 메모하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 병무청 공식. A: checklist 적합. D: 해당 연령 남성 수요 100% 필수. R: 지정 병원 외 검사 불인정 경고 있음.</div>
+        <ul class="eval-issues"><li>병역 판정 결과(현역/보충역/전시근로역) 기준 설명 없음</li><li>연기 신청 절차 항목 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-25" data-slug="recipe-video-execute" data-source="creator" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#25</div>
+      <div class="card-title-area">
+        <div class="card-title">레시피 영상 실전 적용 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">요리/레시피</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.5</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.youtube.com/playlist?list=PLOYo7Q0zXMLNmYqpJrt4pNeO-IlaDBVHW" target="_blank">백종원의 요리비책 – 레시피 재생목록</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">6개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 오늘 만들 레시피 영상 한 편 고르기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 재료 목록 작성하고 없는 재료 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 없는 재료 구매 또는 대체재 결정하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 조리 전 공간·도구 세팅하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 영상 보며 레시피 따라 조리하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 맛과 결과 한 줄 평가 남기기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 백종원 유튜브 — creator 콘텐츠, URL 변동 가능성. A: checklist 적합. D: 요리 초보 수요 있음. R: 화기 주의 caution 있음.</div>
+        <ul class="eval-issues"><li>특정 레시피 종속성 — 범용 요리 실전 체크리스트로 추상화 고려</li><li>재료 계량 도구 없을 경우 대안 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-26" data-slug="weekly-meal-plan" data-source="creator" data-type="routine">
+    <div class="card-header">
+      <div class="card-num">#26</div>
+      <div class="card-title-area">
+        <div class="card-title">한 주 식단·장보기 준비 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">↻ routine</span>
+          <span class="tag tag-cat">요리/식단</span>
+          
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.3</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://ohou.se/advices/8220" target="_blank">오늘의집 – 쉬운 식단 맛있게 가벼운 5만원 이하 주간식단표</a></div>
+        <div class="orig-meta">앵커: <strong>시작일</strong></div>
+        
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">6개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 이번 주 메뉴 3~5개 후보 정하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 각 레시피의 재료 목록 합산하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 냉장고·냉동실 재고와 비교해 중복 삭제하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 카테고리별로 목록 정렬하기(채소·단백질·냉동·양념) </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 장보기 완료 후 재료 보관 방법 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 이번 주 식단 시트 최종 확인하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#ef4444">2</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 오늘의집 크리에이터 — 신뢰도 보통. A: routine+start_date 맞음. D: 식단 관리 수요 꾸준함. R: 알레르기·칼로리 경고 없음.</div>
+        <ul class="eval-issues"><li>장보기 총금액 예산 항목 없음</li><li>냉장고 재고 확인 단계 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-27" data-slug="closet-organize-1day" data-source="creator" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#27</div>
+      <div class="card-title-area">
+        <div class="card-title">옷장 정리 1일 챌린지 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">정리/수납</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.3</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://ohou.se/advices/7406" target="_blank">오늘의집 – 미니멀 옷장 정리! 옷 비우는 기준과 잘 버리는 방법</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">6개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 옷장 전체 꺼내 바닥에 펼치기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 1년 이상 안 입은 옷 분류하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 계절·종류별로 묶어 쌓기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 자주 입는 옷 위치 우선순위 정하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 정한 위치로 옷 되돌려 넣기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 처분·기부할 옷 봉투에 넣고 처리 계획 세우기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#ef4444">2</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 오늘의집 크리에이터. A: checklist 적합. D: 계절 교체기 정리 수요 명확. R: 기부/폐기 구분 가이드 없음.</div>
+        <ul class="eval-issues"><li>소요 시간 안내 없음 (1일 챌린지인데 시간 가늠 불가)</li><li>카테고리별(상의/하의/아우터) 분리 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-28" data-slug="kitchen-reset-organize" data-source="creator" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#28</div>
+      <div class="card-title-area">
+        <div class="card-title">주방 리셋 정리 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">정리/수납</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.3</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://ohou.se/advices/8631" target="_blank">오늘의집 – 보관 기간 늘려주는 냉장고 정리 노하우</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">7개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 냉장고 유통기한 지난 식품 버리기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 남은 식재료 종류별로 정리하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 자주 안 쓰는 그릇·도구 꺼내 한곳에 모으기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 잘 안 쓰는 도구 기부·처분 결정하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 자주 쓰는 도구를 손 닿는 위치로 재배치하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 조리대 정리하고 청소하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">7. 정리 전후 사진 찍어 기록하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#ef4444">2</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 오늘의집 크리에이터. A: checklist 7개 적절. D: 주방 정리 수요 있음. R: 식품 유통기한 확인 항목 있으나 냉동식품 구분 없음.</div>
+        <ul class="eval-issues"><li>냉장/냉동/상온 구역 분리 정리 순서 없음</li><li>폐기 음식물 처리 안내 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-29" data-slug="monthly-household-budget" data-source="creator" data-type="routine">
+    <div class="card-header">
+      <div class="card-num">#29</div>
+      <div class="card-title-area">
+        <div class="card-title">월간 가계부 시작 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">↻ routine</span>
+          <span class="tag tag-cat">재테크/재무</span>
+          
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.5</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://eknowhow.kr/budgeting-50-30-20-rule/" target="_blank">가계 예산 50/30/20 법칙 – 가계부 작성 가이드</a></div>
+        <div class="orig-meta">앵커: <strong>시작일</strong></div>
+        <div class="orig-warning">⚠ 이 Flow는 지출 기록과 파악을 돕는 도구이며 투자·재무 조언이 아닙니다. 금융 결정은 공인 전문가와 상담하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">5개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 내 지출 유형에 맞는 카테고리 4~6개 정하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 이번 달 고정지출 목록 작성하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 하루 기록 습관: 자기 전 5분 그날 지출 입력하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 카테고리별 합계와 예산 대비 비교하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 다음 달 조정 사항 1개만 정하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 50/30/20 법칙 가이드 크리에이터. A: routine+start_date 적합. D: 가계부 시작 수요 꾸준함. R: 고정지출 누락 경고 없음.</div>
+        <ul class="eval-issues"><li>50/30/20이 고소득층에 적합하지 않을 수 있음 경고 없음</li><li>첫 달 데이터 없이 예산 설정 어려운 문제 미언급</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-30" data-slug="payday-finance-routine" data-source="creator" data-type="routine">
+    <div class="card-header">
+      <div class="card-num">#30</div>
+      <div class="card-title-area">
+        <div class="card-title">월급날 재정 루틴 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">↻ routine</span>
+          <span class="tag tag-cat">재테크/재무</span>
+          
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.5</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://blog.toss.im/article/bank-account-divide" target="_blank">토스피드 – 통장쪼개기로 적정소비하는 법</a></div>
+        <div class="orig-meta">앵커: <strong>시작일</strong></div>
+        <div class="orig-warning">⚠ 이 Flow는 지출 분리와 기록 습관을 돕는 체크리스트이며 투자·재무 조언이 아닙니다. 금융 결정은 공인 전문가와 상담하세요.</div>
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">5개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 월급 입금 확인하고 실수령액 기록하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 이번 달 자동이체 항목 정상 처리 여부 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 저축·비상금 계좌로 목표 금액 이체하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 이번 달 생활비 한도를 별도 계좌나 봉투로 분리하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 지난달 지출 초과 항목 이번 달 조정 기준 확인하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 토스피드 크리에이터. A: routine+start_date 맞음. D: 월급일 재정 루틴 수요 높음. R: 비상금 3~6개월 항목 있음.</div>
+        <ul class="eval-issues"><li>통장 쪼개기 계좌 수 추천이 없음</li><li>자동이체 실패 시 처리 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-31" data-slug="reading-habit-30day" data-source="creator" data-type="routine">
+    <div class="card-header">
+      <div class="card-num">#31</div>
+      <div class="card-title-area">
+        <div class="card-title">30일 독서 습관 만들기 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">↻ routine</span>
+          <span class="tag tag-cat">자기계발/독서</span>
+          <span class="tag tag-dest">📅 캘린더</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.0</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://brunch.co.kr/@woochul4532/3" target="_blank">브런치스토리 @woochul4532 – 독서습관을 만들기 위한 10가지 방법</a></div>
+        <div class="orig-meta">앵커: <strong>시작일</strong></div>
+        
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">6개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 오늘 읽을 시간대 한 곳 고정하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 이번 달 읽을 책 1권 선택하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 하루 최소 15분, 반드시 책 펴기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 읽다 멈춘 페이지와 짧은 메모 남기기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 주간 읽은 페이지 합산하고 다음 주 목표 정하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 한 달 완료 후 다음 책 후보 2권 미리 정하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#ef4444">2</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 브런치 크리에이터. A: routine+start_date 맞음. D: 독서 습관 형성 수요 있으나 완주율 낮음. R: 기록 방법 안내 없음.</div>
+        <ul class="eval-issues"><li>30일 안에 책 선정 기준 없음</li><li>D+1~D+30 구체 목표(일일 페이지수) 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-32" data-slug="book-finish-one" data-source="creator" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#32</div>
+      <div class="card-title-area">
+        <div class="card-title">책 한 권 완독 실천 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">자기계발/독서</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#ef4444">⌀2.8</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://ridicorp.com/story/pr-reading-new-year-resolution/" target="_blank">리디 – 꾸준한 독서, ‘읽는 습관’ 들이는 다섯 가지 방법</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">6개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 읽을 책과 목표 완독일 정하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 읽기 전 목차와 서문 훑기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 매일 목표 페이지까지 읽기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 기억에 남는 구절이나 생각 메모하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 완독 날짜와 완독 소감 한 줄 적기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 배운 내용 중 실제로 적용할 것 1가지 정하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#ef4444">2</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 리디 블로그 크리에이터. A: checklist인데 완독은 시간 경과 기반 → routine이나 timeline이 더 맞음. D: 완독 실천 수요 있음. R: 경고 없음.</div>
+        <ul class="eval-issues"><li>structure_type 재검토 — checklist보다 timeline(완독 목표일 anchor) 적합</li><li>독서 시간 예약 항목(캘린더 등록) 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-33" data-slug="morning-skincare-routine" data-source="creator" data-type="routine">
+    <div class="card-header">
+      <div class="card-num">#33</div>
+      <div class="card-title-area">
+        <div class="card-title">아침 스킨케어 5분 루틴 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">↻ routine</span>
+          <span class="tag tag-cat">뷰티/스킨케어</span>
+          <span class="tag tag-dest">📅 캘린더</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.5</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://neultwenties.kr/%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4-%EC%88%9C%EC%84%9C-5%EB%8B%A8%EA%B3%84-%EC%99%84%EB%B2%BD%EA%B0%80%EC%9D%B4%EB%93%9C/" target="_blank">늘투엔티스 – 스킨케어 순서 완벽 가이드: 5단계로 완성하는 아침·저녁 피부 관리 루틴</a></div>
+        <div class="orig-meta">앵커: <strong>시작일</strong></div>
+        
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">6개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 미온수로 가볍게 세안하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 토너를 화장솜이나 손으로 두드려 흡수시키기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 수분 에센스 또는 앰플 얇게 바르기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 보습 크림 얇게 바르기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 자외선 차단제(SPF30 이상) 바르기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 오늘 피부 상태 한 줄 기록하기(선택) </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 늘투엔티스 크리에이터 블로그. A: routine+start_date 맞음. D: 스킨케어 입문 수요 높음. R: 자외선차단제 필수 적용 경고 있음.</div>
+        <ul class="eval-issues"><li>피부 타입별 분기 없음</li><li>제품 레이어링 흡수 대기 시간 안내 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-34" data-slug="skin-weekly-check" data-source="creator" data-type="routine">
+    <div class="card-header">
+      <div class="card-num">#34</div>
+      <div class="card-title-area">
+        <div class="card-title">주간 피부 상태 관찰 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">↻ routine</span>
+          <span class="tag tag-cat">뷰티/스킨케어</span>
+          
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.3</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://hanjicenter.kr/%EB%82%B4-%ED%94%BC%EB%B6%80-%ED%83%80%EC%9E%85-%ED%99%95%EC%9D%B8%ED%95%98%EB%8A%94-%EB%B2%95%EA%B3%BC-%EA%B7%B8%EC%97%90-%EB%A7%9E%EB%8A%94-%EB%8D%B0%EC%9D%BC%EB%A6%AC-%EB%A3%A8%ED%8B%B4-%EC%A0%95/" target="_blank">한지센터 – 내 피부 타입 확인하는 법과 그에 맞는 데일리 루틴</a></div>
+        <div class="orig-meta">앵커: <strong>시작일</strong></div>
+        
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">4개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 이번 주 피부 전반 상태 자가진단하기(유·수분, 트러블, 민감도) </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 새로 사용한 제품과 피부 반응 연결하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 이번 주 루틴 중 빠진 날과 이유 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 다음 주 유지 또는 조정할 루틴 1가지 정하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 한지센터 크리에이터. A: routine+start_date 맞음. D: 주간 피부 관찰 수요 스킨케어 관심층에 한정. R: 피부과 상담 권고 경고 있음.</div>
+        <ul class="eval-issues"><li>관찰 기록 방식(사진/메모) 안내 없음</li><li>4개 항목으로 관찰 포인트 부족</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-35" data-slug="domestic-trip-d7" data-source="creator" data-type="timeline">
+    <div class="card-header">
+      <div class="card-num">#35</div>
+      <div class="card-title-area">
+        <div class="card-title">국내여행 D-7 준비 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">⟶ timeline</span>
+          <span class="tag tag-cat">여행</span>
+          <span class="tag tag-dest">📅 캘린더</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#3b82f6">⌀4.0</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://kr.trip.com/guide/info/%EA%B5%AD%EB%82%B4+%EC%97%AC%ED%96%89+%EC%A4%80%EB%B9%84%EB%AC%BC.html" target="_blank">트립닷컴 – 국내 여행 준비물 체크리스트! 알차게 챙겨가는 법</a></div>
+        <div class="orig-meta">앵커: <strong>목표일/마감일</strong></div>
+        
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">7개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 숙소·교통(기차·버스·항공) 예약 내역 재확인하기 <span class="day-badge">D+-7</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 현지 교통과 주요 장소 이동 시간 확인하기 <span class="day-badge">D+-7</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 당일 방문할 장소 순서와 운영시간 확인하기 <span class="day-badge">D+-3</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 짐 목록 작성하고 필수품 확인하기 <span class="day-badge">D+-3</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 예약 바우처·신분증·카드 한 곳에 모으기 <span class="day-badge">D+-1</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 숙소 주소와 체크인 방법 저장하기 <span class="day-badge">D+-1</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">7. 출발 전 필수품·서류 최종 점검하고 집 잠금·가스·전기 확인하기 <span class="day-badge">D+0</span></div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#10b981">5</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#10b981">5</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 트립닷컴 크리에이터. A: timeline+end_date(여행 당일) 완벽한 조합. D: 국내여행 수요 최상, 범용성 높음. R: 날씨 확인 항목 있으나 취소 정책 경고 없음.</div>
+        <ul class="eval-issues"><li>교통편(KTX/버스) 예약 확인 항목 없음</li><li>숙소 체크인 시간 확인 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-36" data-slug="travel-packing-list" data-source="creator" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#36</div>
+      <div class="card-title-area">
+        <div class="card-title">여행 짐 싸기 체크리스트 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">여행</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.8</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist" target="_blank">KKday Korea – 2026 해외여행 준비물 체크리스트(+짐 싸는 팁)</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">7개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 신분증·여권(해외) 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 예약 바우처·숙소 주소 오프라인 저장하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 카드·현금(필요시 환전) 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 여행 일수에 맞게 의류 목록 작성하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 세면도구·충전기·상비약 넣기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 캐리어 짐 배치 확인(무거운 것 아래, 자주 꺼낼 것 위) </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">7. 집 출발 전 잠금·가스·전기 확인 목록 정하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#10b981">5</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: KKday 크리에이터. A: checklist 7개 적합. D: 여행 준비물 수요 최상, 높은 검색량. R: 액체류 기내 반입 제한 경고 있음.</div>
+        <ul class="eval-issues"><li>국내/해외 구분 없음</li><li>계절/여행 목적별 분기 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-37" data-slug="home-cafe-daily" data-source="creator" data-type="routine">
+    <div class="card-header">
+      <div class="card-num">#37</div>
+      <div class="card-title-area">
+        <div class="card-title">홈카페 루틴 만들기 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">↻ routine</span>
+          <span class="tag tag-cat">홈카페/취미</span>
+          <span class="tag tag-dest">📅 캘린더</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.5</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://morningwalkcoffee.com/ice-coffee-recipes/" target="_blank">아침산책의 커피 이야기 – 아이스 커피 맛있게 만드는 법(집에서 아메리카노)</a></div>
+        <div class="orig-meta">앵커: <strong>시작일</strong></div>
+        
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">6개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 오늘 만들 음료 1가지 정하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 물 온도·원두 상태 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 재료와 도구 준비하기(원두·우유·시럽·잔) </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 레시피 순서대로 음료 만들기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 사용한 도구 바로 헹구기(포터필터·드리퍼·잔) </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 한 줄 평가 남기기(달기·쓴기·다음에 바꿀 점) </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 개인 커피 블로그 크리에이터. A: routine+start_date 맞음. D: 홈카페 관심층 수요 명확. R: 끓는 물 직사 금지 caution 있음.</div>
+        <ul class="eval-issues"><li>원두 종류별(원산지/로스팅) 선택 가이드 없음</li><li>장비 없을 경우(핸드드립 vs 에스프레소 머신) 분기 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-38" data-slug="new-hobby-30day" data-source="creator" data-type="timeline">
+    <div class="card-header">
+      <div class="card-num">#38</div>
+      <div class="card-title-area">
+        <div class="card-title">새 취미 30일 시작 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">⟶ timeline</span>
+          <span class="tag tag-cat">취미/자기계발</span>
+          <span class="tag tag-dest">📅 캘린더</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.0</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://class101.net" target="_blank">클래스101 – 취미 클래스 / 90일 습관 챌린지 가이드</a></div>
+        <div class="orig-meta">앵커: <strong>시작일</strong></div>
+        
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">7개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 배울 취미와 강의·자료 결정하기 <span class="day-badge">D+-1</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 최소 재료·도구만 파악해 준비하기 <span class="day-badge">D+0</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 첫 클래스(또는 튜토리얼) 따라 하고 배운 것 메모하기 <span class="day-badge">D+1</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 1주차 점검 — 최소 실행 기준을 지켰는지 확인하기 <span class="day-badge">D+7</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 2주차 점검 — 연습 패턴 유지·조정하기 <span class="day-badge">D+14</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 3주차 점검 — 이어가기 어려운 요인 제거하기 <span class="day-badge">D+21</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">7. 30일 결과물·성장 기록 남기기 <span class="day-badge">D+30</span></div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#ef4444">2</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 클래스101 크리에이터. A: timeline+start_date 맞음. D: 새 취미 시작 수요 있으나 취미 불특정 — 범용성 낮음. R: 비용/장비 투자 경고 없음.</div>
+        <ul class="eval-issues"><li>어떤 취미인지 특정되지 않아 항목이 추상적</li><li>취미 선택 기준 항목 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-39" data-slug="portfolio-4week" data-source="creator" data-type="timeline">
+    <div class="card-header">
+      <div class="card-num">#39</div>
+      <div class="card-title-area">
+        <div class="card-title">포트폴리오 제작 4주 플랜 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">⟶ timeline</span>
+          <span class="tag tag-cat">커리어/취업</span>
+          <span class="tag tag-dest">🔀 혼합</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.5</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://velog.io/@vonvoyage27/%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C-IT-%EA%B0%9C%EB%B0%9C%EC%9E%90%EB%A1%9C-%EC%B7%A8%EC%97%85-%EC%A4%80%EB%B9%84%ED%95%98%EA%B8%B0-%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4-%ED%8E%B8" target="_blank">Velog @vonvoyage27 – 포트폴리오 4주 만에 준비하기</a></div>
+        <div class="orig-meta">앵커: <strong>목표일/마감일</strong></div>
+        
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">6개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 포트폴리오 목적(취업 지원·프리랜서·이직)과 대상 확인하기 <span class="day-badge">D+-28</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 넣을 프로젝트·작업물 후보 목록 만들기 <span class="day-badge">D+-28</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 각 프로젝트별 상황·역할·성과 정리하기 <span class="day-badge">D+-21</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 포트폴리오 도구 선택하고 템플릿 설정하기 <span class="day-badge">D+-14</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 포트폴리오 초안 완성하기 <span class="day-badge">D+-7</span></div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 지원 직무 관점으로 최종 검토하기 <span class="day-badge">D+-1</span></div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#10b981">5</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#ef4444">2</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: Velog 개인 블로그. A: timeline+end_date(제출일 역산) 완벽. D: 취업준비생 수요 높음. R: 포트폴리오 분야별 차이 경고 없음.</div>
+        <ul class="eval-issues"><li>분야별(개발/디자인/기획) 분기 없음</li><li>포트폴리오 피드백 받는 단계 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-40" data-slug="blog-youtube-start" data-source="creator" data-type="checklist">
+    <div class="card-header">
+      <div class="card-num">#40</div>
+      <div class="card-title-area">
+        <div class="card-title">블로그·유튜브 첫 콘텐츠 시작 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">☑ checklist</span>
+          <span class="tag tag-cat">콘텐츠 창작</span>
+          <span class="tag tag-dest">📝 메모</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#ef4444">⌀2.8</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://brunch.co.kr/@skychang44/346" target="_blank">브런치스토리 @skychang44 – 블로그를 활용해 유튜브 쉽게 시작하는 법</a></div>
+        <div class="orig-meta">앵커: <strong>날짜 없음</strong></div>
+        
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">6개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 주제·타깃·톤앤매너 한 줄로 정하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 첫 콘텐츠 아이디어 3개 적기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 블로그·유튜브 계정 만들고 채널명·프로필 설정하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 첫 번째 글·영상 주제와 발행 날짜 정하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 초안 작성하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 발행하고 링크 저장하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#ef4444">2</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 브런치 개인 블로그. A: checklist이나 &quot;시작&quot;은 지속성이 필요 → routine이 더 맞을 수 있음. D: 부업/취미 창작 수요 있음. R: 저작권·초상권 경고 없음.</div>
+        <ul class="eval-issues"><li>블로그와 유튜브를 동시에 다루어 집중도 낮음</li><li>첫 콘텐츠 주제 선정 방법 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-41" data-slug="morning-routine-30day" data-source="creator" data-type="routine">
+    <div class="card-header">
+      <div class="card-num">#41</div>
+      <div class="card-title-area">
+        <div class="card-title">아침 루틴 30일 챌린지 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">↻ routine</span>
+          <span class="tag tag-cat">생활습관</span>
+          <span class="tag tag-dest">📅 캘린더</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.3</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://brunch.co.kr/@pletalk/58" target="_blank">브런치스토리 @pletalk – 하루를 설레게 만드는 작은 습관, 모닝루틴</a></div>
+        <div class="orig-meta">앵커: <strong>시작일</strong></div>
+        
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">5개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 알람 즉시 일어나기(스누즈 없애기) </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 물 한 컵 마시기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 오늘 할 일 TOP 3 메모하기(5분) </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 가벼운 스트레칭 또는 산책(10분) </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 주간 완료율 기록하기(주 1회) </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#ef4444">2</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 브런치 크리에이터. A: routine+start_date 맞음. D: 아침 루틴 수요 꾸준함. R: 수면 부족 시 무리한 루틴 경고 없음.</div>
+        <ul class="eval-issues"><li>기상 시간 anchor 없음(몇 시 기준인지)</li><li>루틴 항목이 너무 이상적 — 현실적 단계 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-42" data-slug="digital-detox-weekly" data-source="creator" data-type="routine">
+    <div class="card-header">
+      <div class="card-num">#42</div>
+      <div class="card-title-area">
+        <div class="card-title">디지털 디톡스 주간 루틴 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">↻ routine</span>
+          <span class="tag tag-cat">디지털 웰빙</span>
+          <span class="tag tag-dest">📅 캘린더</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.0</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://honeulstudio.com/%EB%94%94%EC%A7%80%ED%84%B8-%EB%94%94%ED%86%A1%EC%8A%A4%EA%B0%80-%ED%95%84%EC%9A%94%ED%95%9C-%EC%9D%B4%EC%9C%A0-%EC%8A%A4%EB%A7%88%ED%8A%B8%ED%8F%B0-%EC%9D%98%EC%A1%B4-%EC%A4%84%EC%9D%B4%EB%8A%94/" target="_blank">honeulstudio – 디지털 디톡스가 필요한 이유(스마트폰 의존 줄이는 현실적인 방법)</a></div>
+        <div class="orig-meta">앵커: <strong>시작일</strong></div>
+        
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">5개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 취침 1시간 전 스마트폰 알림 끄기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. SNS 사용 시간 하루 총 X분 이하로 목표 설정하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 이번 주 스크린타임 확인하고 지난 주와 비교하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 스마트폰 없이 보낸 시간에 한 활동 한 줄 기록하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 다음 주 목표 조정하기(더 줄이거나 유지) </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#ef4444">2</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 개인 블로그 honeulstudio. A: routine+start_date 맞음. D: 스마트폰 과의존 수요 있으나 자발적 관심층 한정. R: 직업상 필수 사용(재택근무 등) 예외 경고 없음.</div>
+        <ul class="eval-issues"><li>스크린타임 측정 방법 없음</li><li>디톡스 수준 설정(완전 차단 vs 시간 제한) 분기 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-43" data-slug="dog-walk-routine" data-source="creator" data-type="routine">
+    <div class="card-header">
+      <div class="card-num">#43</div>
+      <div class="card-title-area">
+        <div class="card-title">강아지 산책 루틴 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">↻ routine</span>
+          <span class="tag tag-cat">반려동물</span>
+          <span class="tag tag-dest">📅 캘린더</span>
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.8</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.biteme.co.kr/blog/%EA%B0%95%EC%95%84%EC%A7%80-%EC%82%B0%EC%B1%85-%EC%96%B8%EC%A0%9C%EB%B6%80%ED%84%B0-%EA%B0%95%EC%95%84%EC%A7%80-%EC%82%B0%EC%B1%85-%EA%B0%80%EC%9D%B4%EB%93%9C/" target="_blank">바잇미 블로그 – 강아지 산책 언제부터? 초보 반려인을 위한 강아지 산책 가이드</a></div>
+        <div class="orig-meta">앵커: <strong>시작일</strong></div>
+        
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">6개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 리드줄·배변봉투·물·간식 챙기기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 강아지 상태(발바닥·다리·기분) 간단히 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 배변 처리하고 봉투 밀봉하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 강아지 컨디션 관찰하기(다리 절거나 숨가쁨 등) </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 발바닥과 몸 닦아주기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">6. 물과 간식 제공하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 바잇미 반려동물 블로그. A: routine+start_date 맞음. D: 반려견 보호자 수요 명확. R: 예방접종 미완료 강아지 외출 주의 경고 있음.</div>
+        <ul class="eval-issues"><li>견종/크기별 운동량 차이 없음</li><li>더운 날씨 발바닥 화상 주의 항목 없음</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="flow-card" id="flow-44" data-slug="pet-health-observation" data-source="creator" data-type="routine">
+    <div class="card-header">
+      <div class="card-num">#44</div>
+      <div class="card-title-area">
+        <div class="card-title">반려동물 건강 관찰 기록 Flow</div>
+        <div class="card-meta">
+          <span class="tag tag-creator">크리에이터</span>
+          <span class="tag tag-type">↻ routine</span>
+          <span class="tag tag-cat">반려동물</span>
+          
+        </div>
+      </div>
+      <div class="card-avg" style="color:#f59e0b">⌀3.8</div>
+    </div>
+
+    <div class="card-body">
+      <!-- 원 컨텐츠 -->
+      <div class="section-block orig">
+        <div class="section-label">① 원 컨텐츠</div>
+        <div class="orig-title"><a href="https://www.fitpetmall.com/blog/dog-health-checkup" target="_blank">핏펫몰 블로그 – 수의사가 알려주는 강아지 건강검진 필수 항목</a></div>
+        <div class="orig-meta">앵커: <strong>시작일</strong></div>
+        
+      </div>
+
+      <!-- 플로우 컨텐츠 -->
+      <div class="section-block flow-content">
+        <div class="section-label">② 플로우 컨텐츠 <span class="item-count">5개 항목</span></div>
+        <div class="flow-item">
+      <div class="item-title">1. 식욕 변화 확인하기(사료 남기는지, 먹는 속도 등) </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">2. 배변 상태 확인하기(횟수·굳기·색 등) </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">3. 활동량·기분 변화 확인하기(평소보다 처지거나 예민한지) </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">4. 외관 이상(피부·눈·귀·발 등) 확인하기 </div>
+      
+      
+    </div><div class="flow-item">
+      <div class="item-title">5. 이상 징후 여부와 동물병원 방문 필요성 판단하기 </div>
+      
+      
+    </div>
+      </div>
+
+      <!-- 평가 -->
+      <div class="section-block eval">
+        <div class="section-label">③ 평가</div>
+        <div class="score-row">
+          <div class="score-cell">
+            <div class="score-axis">S 출처</div>
+            <div class="score-val" style="color:#f59e0b">3</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">A 아티팩트</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">D 수요</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+          <div class="score-cell">
+            <div class="score-axis">R 리스크</div>
+            <div class="score-val" style="color:#3b82f6">4</div>
+          </div>
+        </div>
+        <div class="eval-notes">S: 핏펫몰 블로그(수의사 감수 명시). A: routine+start_date 맞음. D: 반려동물 건강 관심 보호자 수요 있음. R: 이상 증상 시 즉시 동물병원 방문 경고 있음.</div>
+        <ul class="eval-issues"><li>관찰 기록 저장 방법 없음</li><li>고양이 등 다른 반려동물 확장 여부 불명확</li></ul>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+<script>
+// filter + search
+const cards = [...document.querySelectorAll('.flow-card')];
+const navLinks = [...document.querySelectorAll('.nav-link')];
+let activeSource = null, activeType = null;
+
+function applyFilters() {
+  const q = document.getElementById('searchBox').value.toLowerCase();
+  cards.forEach((card, i) => {
+    const slug = card.dataset.slug;
+    const src = card.dataset.source;
+    const type = card.dataset.type;
+    const title = card.querySelector('.card-title').textContent.toLowerCase();
+    const matchSrc = !activeSource || src === activeSource;
+    const matchType = !activeType || type === activeType;
+    const matchQ = !q || slug.includes(q) || title.includes(q);
+    card.classList.toggle('hidden', !(matchSrc && matchType && matchQ));
+    navLinks[i].classList.toggle('hidden', !(matchSrc && matchType && matchQ));
+  });
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.dataset.filter === 'all') {
+      activeSource = null; activeType = null;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    } else if (btn.dataset.filterSource) {
+      activeSource = activeSource === btn.dataset.filterSource ? null : btn.dataset.filterSource;
+      document.querySelectorAll('[data-filter-source]').forEach(b => b.classList.remove('active'));
+      if (activeSource) btn.classList.add('active');
+    } else if (btn.dataset.filterType) {
+      activeType = activeType === btn.dataset.filterType ? null : btn.dataset.filterType;
+      document.querySelectorAll('[data-filter-type]').forEach(b => b.classList.remove('active'));
+      if (activeType) btn.classList.add('active');
+    }
+    applyFilters();
+  });
+});
+
+document.getElementById('searchBox').addEventListener('input', applyFilters);
+
+// active nav highlight on scroll
+const mainArea = document.getElementById('mainArea');
+mainArea.addEventListener('scroll', () => {
+  let found = null;
+  cards.forEach((card, i) => {
+    if (card.classList.contains('hidden')) return;
+    const rect = card.getBoundingClientRect();
+    if (rect.top <= 200) found = i;
+  });
+  navLinks.forEach((link, i) => link.classList.toggle('active', i === found));
+});
+</script>
+</body>
+</html>
