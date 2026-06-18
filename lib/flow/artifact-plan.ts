@@ -19,6 +19,7 @@ export type PrimaryArtifactSurface =
   | 'meal_reaction_log'
   | 'decision_table'
   | 'memo_card'
+  | 'step_progress'
   | 'checklist';
 
 export type SourceHandling = 'representative_candidate' | 'reshape_before_featured' | 'catalog_review';
@@ -70,6 +71,27 @@ const memoCardOverrideSlugs = new Set([
 ]);
 const spreadsheetOverrideSlugs = new Set(['diet-meal-exercise-log', 'diet-reset-2week', 'water-purifier-filter-cycle', 'fridge-cleanout-weekly-plan']);
 
+// 2026-06-01 크리에이터·블로그 배치: 카테고리별로 알맞은 아티팩트 표면을 새로 배정한다.
+// 순차 단계(요리 준비→조리→평가, 정리 비우기→분류→정리, 창작 콘셉트→세팅→발행 등)는
+// 플랫 체크리스트 대신 단계 진행 stepper(step_progress)로 보여준다.
+const creatorStepProgressSlugs = new Set([
+  'recipe-video-execute',
+  'closet-organize-1day',
+  'kitchen-reset-organize',
+  'book-finish-one',
+  'travel-packing-list',
+  'blog-youtube-start',
+]);
+// 표 기반 기록(요일별 식단, 카테고리별 가계부, 주차별 관찰)은 spreadsheet_log + 전용 표.
+const creatorSpreadsheetSlugs = new Set([
+  'weekly-meal-plan',
+  'monthly-household-budget',
+  'skin-weekly-check',
+  'pet-health-observation',
+]);
+// 월급날 재정 분리는 결과를 한 장으로 남기는 memo_card.
+const creatorMemoSlugs = new Set(['payday-finance-routine']);
+
 function hasArtifact(bundle: FlowBundle, kind: string) {
   const audit = getNaturalArtifactAudit(bundle.flow.slug);
   return audit?.naturalArtifacts.some((artifact) => artifact.kind === kind) ?? false;
@@ -91,6 +113,9 @@ function getPrimarySurface(bundle: FlowBundle, model = normalizeExecutionModel(b
   if (workoutProgrammingDecisionSlugs.has(bundle.flow.slug)) return 'decision_table';
   if (memoCardOverrideSlugs.has(bundle.flow.slug)) return 'memo_card';
   if (spreadsheetOverrideSlugs.has(bundle.flow.slug)) return 'spreadsheet_log';
+  if (creatorStepProgressSlugs.has(bundle.flow.slug)) return 'step_progress';
+  if (creatorSpreadsheetSlugs.has(bundle.flow.slug)) return 'spreadsheet_log';
+  if (creatorMemoSlugs.has(bundle.flow.slug)) return 'memo_card';
   if (model.views.includes('comparison_table') || (hasArtifact(bundle, 'comparison_table') && bundle.flow.structure_type === 'checklist')) return 'decision_table';
   if ((hasArtifact(bundle, 'routine_calendar') || model.views.includes('routine_sessions') || bundle.flow.structure_type === 'routine') && !hasArtifact(bundle, 'spreadsheet')) return 'routine_calendar';
   if (bundle.flow.structure_type === 'timeline' && (hasArtifact(bundle, 'monthly_calendar') || model.views.includes('month_calendar'))) return 'timeline_calendar';
@@ -169,6 +194,12 @@ function getSurfaces(bundle: FlowBundle, primary: PrimaryArtifactSurface): Artif
     return [
       surface('memo_card', '보관 메모', '나중에 다시 써야 하는 번호, 기준, 증빙을 저장합니다.'),
       surface('execution_list', '체크리스트', '메모를 만들기 위해 확인할 일을 체크합니다.'),
+    ];
+  }
+  if (primary === 'step_progress') {
+    return [
+      surface('execution_list', '단계별 실행', '단계 순서대로 지금 단계의 할 일만 체크하며 진행합니다.'),
+      surface('memo_card', '진행 메모', '단계마다 결과나 다음에 바꿀 점을 남깁니다.'),
     ];
   }
   return [surface('execution_list', '체크리스트', '지금 확인할 일을 한 줄씩 체크합니다.')];

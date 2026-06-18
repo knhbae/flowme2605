@@ -8,6 +8,7 @@ const anchorLabelByType = {
   start_date: '시작일',
   end_date: '목표일',
   baby_age_month: '기준 월령',
+  baby_birth_date: '아이 생년월일',
   none: '기준값 없음',
 };
 
@@ -531,7 +532,8 @@ export function buildText(
         const recipe = bundle.recipes?.find((item) => item.id === slot.recipe_id);
         lines.push(`[${timing}${startDate ? ` / ${startDate} ~ ${endDate}` : ''}]`);
         const state = itemStates[slot.id];
-        lines.push(`- ${slot.menu_title}${state?.skipped ? ' (스킵)' : checks[slot.id] ? ' (완료)' : ''}`);
+        const checkbox = checks[slot.id] ? '[x]' : '[ ]';
+        lines.push(`- ${checkbox} ${slot.menu_title}${state?.skipped ? ' (스킵)' : ''}`);
         lines.push(`  새 재료: ${slot.new_ingredients.join(', ')}`);
         if (state?.note?.trim()) lines.push(`  메모: ${state.note.trim()}`);
         if (recipe) lines.push(`  레시피: ${recipe.title}`);
@@ -557,9 +559,19 @@ export function buildText(
       const date = getItemDate(item, anchor);
       if (timing || date) lines.push(`[${timing}${date ? ` / ${date}` : ''}]`);
       const state = itemStates[item.id];
-      lines.push(`- ${item.title}${state?.skipped ? ' (스킵)' : checks[item.id] ? ' (완료)' : ''}`);
-      if (item.description?.trim()) lines.push(`  설명: ${item.description.trim()}`);
+      // Markdown checkbox so the pasted memo renders as a real checklist in
+      // Notion / Obsidian / Apple Notes / Google Keep. Skipped items stay
+      // unchecked with a (스킵) label since those apps have no skip state.
+      const checkbox = checks[item.id] ? '[x]' : '[ ]';
+      lines.push(`- ${checkbox} ${item.title}${state?.skipped ? ' (스킵)' : ''}`);
+      if (item.description?.trim()) lines.push(`  ??: ${item.description.trim()}`);
       if (state?.note?.trim()) lines.push(`  메모: ${state.note.trim()}`);
+      const detail = getItemDetail(bundle, item.id);
+      const done = completionCriteria(detail);
+      if (done) lines.push(`  완료 기준: ${done}`);
+      // Carry the official handoff link into the memo — for a memo-destination
+      // checklist this is the action target the user returns to (정부24, 복지로 등).
+      for (const link of detail?.links ?? []) lines.push(`  링크: ${link.label} - ${link.url}`);
     }
   }
 
@@ -748,7 +760,18 @@ export function buildCalendarIcs(bundle: FlowBundle, anchor: string, weekdays: s
     `SUMMARY:${escapeIcsText(bundle.flow.title)}`,
     `DESCRIPTION:${escapeIcsText(buildIcsDescription(bundle))}`,
   ];
-  if (byday) lines.push(`RRULE:FREQ=WEEKLY;BYDAY=${byday}`);
+  if (byday) {
+    const durationDays = bundle.flow.routine_duration_days;
+    // Bound a fixed-length routine (e.g. a 30-day challenge) so it does not
+    // recur forever in the calendar. UNTIL is date-based, so it stops after the
+    // intended span regardless of how many weekdays the user selected. Open-ended
+    // habits leave routine_duration_days undefined and keep recurring indefinitely.
+    const until =
+      durationDays && durationDays > 0
+        ? `;UNTIL=${compactDate(formatDate(addDays(new Date(startDate), durationDays - 1)))}`
+        : '';
+    lines.push(`RRULE:FREQ=WEEKLY;BYDAY=${byday}${until}`);
+  }
   if (bundle.flow.source_url) lines.push(`URL:${bundle.flow.source_url}`);
   lines.push('END:VEVENT', 'END:VCALENDAR');
   return `${lines.join('\r\n')}\r\n`;

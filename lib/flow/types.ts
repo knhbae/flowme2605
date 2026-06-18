@@ -2,7 +2,7 @@ export type StructureType = 'timeline' | 'phase' | 'routine' | 'checklist';
 
 export type ContentType = 'default' | 'meal_plan';
 
-export type AnchorType = 'start_date' | 'end_date' | 'baby_age_month' | 'none';
+export type AnchorType = 'start_date' | 'end_date' | 'baby_age_month' | 'baby_birth_date' | 'none';
 
 export type FlowStatus = 'draft' | 'published';
 
@@ -63,6 +63,14 @@ export type Flow = {
   stop_conditions?: string[];
   principles?: string[];
   hold_section?: FlowHoldSection;
+  /**
+   * For `routine` flows exported to a recurring calendar event: the total number
+   * of days the routine is meant to run before it stops. When set, the ICS RRULE
+   * gets an `UNTIL` bound so a fixed-length routine (e.g. a 30-day challenge) does
+   * not repeat forever in the user's calendar. Leave undefined for genuinely
+   * open-ended daily habits where indefinite recurrence is the intended behavior.
+   */
+  routine_duration_days?: number;
   source_checked_at?: string;
   conversion_note?: string;
   risk_level?: RiskLevel;

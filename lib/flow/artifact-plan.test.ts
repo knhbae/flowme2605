@@ -139,6 +139,48 @@ test('artifact plan keeps broad source routes out of representative promotion', 
   assert.ok(plan.sourceAction.includes('exact'));
 });
 
+test('artifact plan maps creator sequential-stage flows to step progress surface', () => {
+  const slugs = [
+    'recipe-video-execute',
+    'closet-organize-1day',
+    'kitchen-reset-organize',
+    'book-finish-one',
+    'travel-packing-list',
+    'blog-youtube-start',
+  ];
+
+  for (const slug of slugs) {
+    const plan = getArtifactPlan(bundle(slug));
+    assert.equal(plan.primarySurface, 'step_progress', slug);
+    assert.equal(plan.surfaces[0].kind, 'execution_list', slug);
+  }
+});
+
+test('artifact plan maps creator record-table flows to spreadsheet log surface', () => {
+  const slugs = ['weekly-meal-plan', 'monthly-household-budget', 'skin-weekly-check', 'pet-health-observation'];
+
+  for (const slug of slugs) {
+    const plan = getArtifactPlan(bundle(slug));
+    assert.equal(plan.primarySurface, 'spreadsheet_log', slug);
+  }
+});
+
+test('artifact plan maps payday finance routine to a memo card surface', () => {
+  const plan = getArtifactPlan(bundle('payday-finance-routine'));
+
+  assert.equal(plan.primarySurface, 'memo_card');
+  assert.deepEqual(plan.surfaces.map((surface) => surface.kind), ['memo_card', 'execution_list']);
+});
+
+test('artifact plan keeps creator routine and timeline flows on their structure surfaces', () => {
+  for (const slug of ['reading-habit-30day', 'morning-skincare-routine', 'dog-walk-routine']) {
+    assert.equal(getArtifactPlan(bundle(slug)).primarySurface, 'routine_calendar', slug);
+  }
+  for (const slug of ['domestic-trip-d7', 'new-hobby-30day', 'portfolio-4week']) {
+    assert.equal(getArtifactPlan(bundle(slug)).primarySurface, 'timeline_calendar', slug);
+  }
+});
+
 test('artifact plan maps official document issue routes to memo cards first except passport', () => {
   const family = getArtifactPlan(bundle('family-certificate-issue'));
   const resident = getArtifactPlan(bundle('resident-register-copy-issue'));

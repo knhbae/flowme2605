@@ -146,7 +146,8 @@ test('content lab exposes full content inventory coverage', () => {
   );
   assert.equal(summary.previewCandidateFlowCount, summary.previewGeneratedFlowCount);
   assert.ok(summary.inventoryPublicHandlingCounts.preview_candidate >= 440);
-  assert.equal(summary.sourceNeedsReviewInventoryCount, 0);
+  // 2026-06-01 공식출처(24개) + 크리에이터·블로그(20개) = 44개가 needs_review로 추가됨(audit 전, 보강 필요).
+  assert.equal(summary.sourceNeedsReviewInventoryCount, 44);
   assert.equal(summary.legacyAccessibleFlowCount, 0);
 });
 
@@ -176,22 +177,26 @@ test('content lab exposes lifecycle buckets for keep, fix, preview, and removal 
   assert.equal(summary.lifecycleBucketCounts.hide, 1);
   assert.equal(summary.lifecycleBucketCounts.preview_only, summary.previewGeneratedFlowCount);
   assert.equal(summary.lifecycleBucketCounts.remove_candidate, 0);
-  assert.equal(summary.lifecycleBucketCounts.fix, 74);
+  // Merged branch adds the 260601 official/creator batches on top of the current source-fit queue.
+  assert.equal(summary.lifecycleBucketCounts.fix, 118);
   assert.deepEqual(summary.lifecycleHideSlugs, ['real-fitvely-weekly-body-check']);
   assert.ok(summary.lifecycleFixSlugs.includes('real-sinagong-computer-d30-study'));
   assert.ok(summary.lifecycleFixSlugs.includes('driver-license-renewal-check'));
 });
 
-test('content lab clears source needs-review priorities after the next audit batch', () => {
+test('content lab tracks the 2026-06-01 official batch as the next source review queue', () => {
   const summary = getContentLabSummary(seedBundles);
   const countSum = Object.values(summary.sourceReviewPriorityCounts).reduce((sum, count) => sum + count, 0);
 
-  assert.equal(summary.sourceReviewPriorityTotalCount, 0);
-  assert.equal(countSum, 0);
-  assert.equal(summary.sourceReviewPriorityCounts.audit_now, 0);
+  // 공식출처(24개) + 크리에이터·블로그(20개) = 44개가 needs_review audit 큐를 채운다.
+  // 비민감 30개 → audit_now, 재무민감 14개 → risk_review.
+  assert.equal(summary.sourceReviewPriorityTotalCount, 44);
+  assert.equal(countSum, 44);
+  assert.equal(summary.sourceReviewPriorityCounts.audit_now, 30);
   assert.equal(summary.sourceReviewPriorityCounts.source_replacement, 0);
-  assert.equal(summary.sourceReviewPriorityCounts.risk_review, 0);
-  assert.equal(summary.sourceReviewPriorityItems.length, 0);
+  assert.equal(summary.sourceReviewPriorityCounts.risk_review, 14);
+  assert.equal(summary.sourceReviewPriorityCounts.content_backlog, 0);
+  assert.equal(summary.sourceReviewPriorityItems.length, 44);
 });
 
 test('content lab exposes broad real-source guardrails', () => {
@@ -369,11 +374,12 @@ test('content lab exposes the current representative UX content review queue', (
 test('content lab exposes mobile simulation protocols for current candidate routes', () => {
   const summary = getContentLabSummary(seedBundles);
 
-  assert.equal(summary.mobileSimulationProtocolTotalCount, 3);
+  assert.equal(summary.mobileSimulationProtocolTotalCount, 4);
   assert.deepEqual(summary.mobileSimulationProtocolSlugs, [
     'computer-skills-d30-study',
     'diet-habit-2week',
     'new-car-delivery-check',
+    'infant-health-checkup-schedule',
   ]);
   assert.equal(summary.mobileSimulationProtocolValidatedCount, 0);
   assert.equal(summary.mobileSimulationProtocolAverageScore, 77);

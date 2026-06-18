@@ -43,6 +43,25 @@ test('plank challenge exports preserve the original 30-day source table cues', (
   const details = sheets.find((sheet) => sheet.name === '상세');
   assert.ok(details);
   assert.ok(details.rows.some((row) => row.includes('Day 9 플랭크 55초') && row.some((cell) => String(cell).includes('호흡 3:3 패턴'))));
+
+});
+test('memo text export renders a checkbox checklist with done criteria and official links', () => {
+  const welfare = seedBundles.find((bundle) => bundle.flow.slug === 'welfare-benefit-finder');
+  assert.ok(welfare);
+
+  const text = buildText(welfare, {}, undefined);
+
+  // Markdown checkboxes so the pasted memo is an interactive checklist in Notion/메모앱.
+  assert.match(text, /- \[ \] 복지로에서 맞춤형급여안내\(복지멤버십\) 신청하기/);
+  // Non-generic completion criteria travel into the memo so the user knows when to check the box.
+  assert.match(text, /완료 기준: 받을 수 있을 것 같은 서비스를 목록으로 적었다\./);
+  // The official handoff link (복지로) is carried into the memo as the action target.
+  assert.match(text, /링크: 복지로 서비스 신청 - https:\/\/www\.bokjiro\.go\.kr\//);
+
+  // A completed item flips the checkbox to [x] rather than appending "(완료)".
+  const firstId = welfare.items[0].id;
+  const checked = buildText(welfare, { [firstId]: true }, undefined);
+  assert.match(checked, /- \[x\] /);
 });
 
 test('text and workbook exports include item notes and skipped state', () => {
@@ -60,9 +79,9 @@ test('text and workbook exports include item notes and skipped state', () => {
 
   const text = buildText(wedding, { [first.id]: true }, '2026-09-15', itemStates);
 
-  assert.match(text, /예식 날짜와 예상 하객 규모 정하기 \(완료\)/);
+  assert.match(text, /- \[x\] 예식 날짜와 예상 하객 규모 정하기/);
   assert.match(text, /메모: 양가 협의는 6월 첫째 주에 다시 확인/);
-  assert.match(text, /웨딩홀 후보와 예산 범위 비교하기 \(스킵\)/);
+  assert.match(text, /- \[ \] 웨딩홀 후보와 예산 범위 비교하기 \(스킵\)/);
   assert.match(text, /메모: 스몰웨딩이라 후보 비교 범위를 줄임/);
 
   const sheets = buildWorkbookSheets(wedding, { [first.id]: true }, '2026-09-15', { itemStates });
@@ -691,6 +710,36 @@ test('calendar export creates a portable weekly event for exact video flows', ()
   assert.match(ics, /DTSTART;VALUE=DATE:20260525/);
   assert.match(ics, /RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR/);
   assert.match(ics, /URL:https:\/\/www\.youtube\.com\/watch\?v=/);
+});
+
+test('fixed-length routines bound the recurring calendar event with UNTIL', () => {
+  // 30-day challenge starting Monday 2026-06-08 → UNTIL = 2026-07-07 (start + 29 days).
+  const reading = seedBundles.find((bundle) => bundle.flow.slug === 'reading-habit-30day');
+  assert.ok(reading);
+  assert.equal(reading.flow.routine_duration_days, 30);
+  const readingIcs = buildCalendarIcs(reading, '2026-06-08', ['월', '수', '금']);
+  assert.match(readingIcs, /RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR;UNTIL=20260707/);
+
+  const morning = seedBundles.find((bundle) => bundle.flow.slug === 'morning-routine-30day');
+  assert.ok(morning);
+  assert.match(buildCalendarIcs(morning, '2026-06-08', ['월', '수', '금']), /UNTIL=20260707/);
+
+  // 28-day weekly routine → UNTIL = start + 27 days.
+  const detox = seedBundles.find((bundle) => bundle.flow.slug === 'digital-detox-weekly');
+  assert.ok(detox);
+  assert.equal(detox.flow.routine_duration_days, 28);
+  assert.match(buildCalendarIcs(detox, '2026-06-08', ['월', '수', '금']), /UNTIL=20260705/);
+});
+
+test('open-ended daily habits keep recurring without an UNTIL bound', () => {
+  for (const slug of ['morning-skincare-routine', 'home-cafe-daily', 'dog-walk-routine']) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+    assert.ok(bundle, slug);
+    assert.equal(bundle.flow.routine_duration_days, undefined, `${slug} should stay open-ended`);
+    const ics = buildCalendarIcs(bundle, '2026-06-08', ['월', '수', '금']);
+    assert.match(ics, /RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR/, `${slug} should recur weekly`);
+    assert.doesNotMatch(ics, /UNTIL=/, `${slug} should not be bounded`);
+  }
 });
 
 test('repeated workout video calendar export keeps each reminder executable', () => {

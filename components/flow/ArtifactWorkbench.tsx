@@ -168,6 +168,8 @@ export function ArtifactWorkbench({
           />
         ) : plan.primarySurface === 'memo_card' ? (
           <MemoCardWorkbench bundle={bundle} checks={checks} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} onToggleItem={onToggleItem} exportActions={exportActions} />
+        ) : plan.primarySurface === 'step_progress' ? (
+          <StepProgressWorkbench bundle={bundle} checks={checks} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} onToggleItem={onToggleItem} exportActions={exportActions} />
         ) : (
           <ChecklistWorkbench
             bundle={bundle}
@@ -298,6 +300,7 @@ function surfaceTitle(surface: string, bundle: FlowBundle): string {
   }
   if (surface === 'timeline_calendar') return '월간 캘린더 + 실행 리스트';
   if (surface === 'memo_card') return '메모 카드';
+  if (surface === 'step_progress') return '??? ??';
   return '실행 리스트';
 }
 
@@ -321,6 +324,7 @@ function surfaceDescription(surface: string, bundle: FlowBundle): string {
   }
   if (surface === 'timeline_calendar') return '해야 할 일을 리스트로 훑고, 같은 항목이 월간 달력에서 어느 날짜에 걸리는지 봅니다.';
   if (surface === 'memo_card') return '나중에 다시 참고할 기준과 결정 메모를 한 장으로 정리합니다.';
+  if (surface === 'step_progress') return '?? ???? ????, ?? ??? ? ?? ???? ?? ???? ???.';
   return '필요한 항목을 체크하고, 자세히에서 원문 기준과 완료 조건만 확인합니다.';
 }
 
@@ -2864,6 +2868,119 @@ function UsedCarSourceBridge({ sourceUrl }: { sourceUrl?: string }) {
         ) : null}
       </div>
       <p className="mt-2 text-xs leading-5 text-blue-800">사진은 필수 입력이 아니라 필요할 때만 메모합니다. 구매 판단은 공식 조회와 전문가 점검 결과를 우선합니다.</p>
+    </div>
+  );
+}
+
+function StepProgressWorkbench({
+  bundle,
+  checks,
+  workbenchState,
+  onWorkbenchChange,
+  onToggleItem,
+  exportActions,
+}: {
+  bundle: FlowBundle;
+  checks: Record<string, boolean>;
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
+  onToggleItem: (id: string) => void;
+  exportActions?: ArtifactExportActions;
+}) {
+  const orderedSections = bundle.sections.slice().sort((a, b) => a.order - b.order);
+  const stages = (orderedSections.length
+    ? orderedSections
+    : [{ id: 'all', title: '단계', order: 1 }]
+  ).map((section) => ({
+    id: section.id,
+    title: section.title,
+    items: bundle.items.filter((item) => (orderedSections.length ? item.section_id === section.id : true)),
+  }));
+  const totalItems = stages.reduce((sum, stage) => sum + stage.items.length, 0);
+  const doneItems = stages.reduce((sum, stage) => sum + stage.items.filter((item) => checks[item.id]).length, 0);
+  const percent = totalItems ? Math.round((doneItems / totalItems) * 100) : 0;
+  const currentStageIndex = stages.findIndex((stage) => stage.items.some((item) => !checks[item.id]));
+
+  return (
+    <div data-testid="step-progress-workbench" className="space-y-4">
+      <div className="rounded-lg border border-gray-200 bg-white p-4">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-blue-700">단계 진행률</p>
+            <h3 className="mt-1 text-base font-semibold text-gray-950">
+              {stages.length}단계 중 {currentStageIndex === -1 ? stages.length : currentStageIndex + 1}단계 진행 중
+            </h3>
+          </div>
+          <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} />
+        </div>
+        <ArtifactExportStatus actions={exportActions} />
+        <div className="mt-3 flex items-center gap-3">
+          <div className="h-2 flex-1 overflow-hidden rounded-full bg-gray-100">
+            <div data-testid="step-progress-bar" className="h-full rounded-full bg-[#2563EB] transition-all" style={{ width: `${percent}%` }} />
+          </div>
+          <span className="shrink-0 text-sm font-semibold text-gray-700">{doneItems}/{totalItems} · {percent}%</span>
+        </div>
+      </div>
+      <ol className="space-y-3">
+        {stages.map((stage, stageIndex) => {
+          const stageDone = stage.items.length > 0 && stage.items.every((item) => checks[item.id]);
+          const isCurrent = stageIndex === currentStageIndex;
+          return (
+            <li
+              key={stage.id}
+              data-testid="step-progress-stage"
+              data-current={isCurrent ? 'true' : undefined}
+              data-complete={stageDone ? 'true' : undefined}
+              className={`rounded-lg border p-4 ${
+                stageDone
+                  ? 'border-green-200 bg-green-50'
+                  : isCurrent
+                    ? 'border-blue-300 bg-blue-50'
+                    : 'border-gray-200 bg-[#FAFAF8]'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <span
+                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
+                    stageDone ? 'bg-green-600 text-white' : isCurrent ? 'bg-[#2563EB] text-white' : 'bg-gray-200 text-gray-600'
+                  }`}
+                >
+                  {stageDone ? '✓' : stageIndex + 1}
+                </span>
+                <h4 className="text-base font-semibold text-gray-950">{stage.title}</h4>
+                {isCurrent ? (
+                  <span className="rounded-full bg-white px-2 py-0.5 text-xs font-bold text-blue-700">현재 단계</span>
+                ) : null}
+              </div>
+              <div className="mt-3 grid gap-2">
+                {stage.items.map((item) => (
+                  <label key={item.id} className="flex gap-2 rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
+                    <input
+                      aria-label={`단계 체크: ${item.title}`}
+                      className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
+                      checked={Boolean(checks[item.id])}
+                      onChange={() => onToggleItem(item.id)}
+                      type="checkbox"
+                    />
+                    <span className={`font-medium ${checks[item.id] ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{item.title}</span>
+                  </label>
+                ))}
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+      <div className="rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
+        <h3 className="text-base font-semibold text-gray-950">진행 메모</h3>
+        <p className="mt-1 text-sm text-gray-600">단계마다 결과나 다음에 바꿀 점을 한곳에 남깁니다.</p>
+        <textarea
+          aria-label="단계 진행 메모"
+          className="mt-3 min-h-24 w-full resize-y rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800"
+          placeholder="예: 2단계에서 재료가 부족해 대체함 / 다음엔 분량 절반으로"
+          value={workbenchState.weeklyReview ?? ''}
+          onChange={(event) => onWorkbenchChange(updateWeeklyReview(workbenchState, event.currentTarget.value))}
+        />
+      </div>
     </div>
   );
 }

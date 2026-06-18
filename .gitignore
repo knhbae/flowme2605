@@ -45,3 +45,4 @@ next_job.md
 public/content-audit/.vercel/
 
 .vercel
+*.tsbuildinfo
