@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FLOW Daily Briefing Example</title>
+  <style>
+    :root {
+      --bg: #f7f7f4;
+      --paper: #ffffff;
+      --ink: #161616;
+      --muted: #646464;
+      --line: #ddddd6;
+      --teal: #0f766e;
+      --blue: #2563eb;
+      --amber: #b45309;
+      --rose: #be123c;
+      --violet: #6d28d9;
+      --green-soft: #e6f4ef;
+      --blue-soft: #e8efff;
+      --amber-soft: #fff3dc;
+      --rose-soft: #ffe8ee;
+      --violet-soft: #f0e8ff;
+      --shadow: 0 18px 48px rgba(24, 24, 24, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(90deg, rgba(15, 118, 110, 0.07) 0 1px, transparent 1px 100%),
+        linear-gradient(180deg, rgba(180, 83, 9, 0.06) 0 1px, transparent 1px 100%),
+        var(--bg);
+      background-size: 42px 42px;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 44px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .topbar a {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .hero-main,
+    .brief-card,
+    .panel,
+    .timeline,
+    .source-map {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-main {
+      min-height: 300px;
+      padding: 32px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 240px;
+      gap: 24px;
+      overflow: hidden;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      max-width: 760px;
+      font-size: clamp(34px, 5vw, 70px);
+      line-height: 0.96;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      margin-top: 18px;
+      max-width: 650px;
+      color: #424242;
+      font-size: 18px;
+    }
+
+    .notice-strip {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .notice-strip span {
+      border: 1px solid var(--line);
+      background: #fafaf7;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .score-box {
+      display: grid;
+      align-content: space-between;
+      border-left: 1px solid var(--line);
+      padding-left: 24px;
+    }
+
+    .score {
+      width: 190px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      margin-left: auto;
+      background:
+        radial-gradient(circle at center, #ffffff 0 54%, transparent 55%),
+        conic-gradient(var(--teal) 0 72%, var(--amber) 72% 88%, var(--rose) 88% 100%);
+      border: 1px solid var(--line);
+    }
+
+    .score strong {
+      display: block;
+      font-size: 34px;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .score small {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+      margin-top: 6px;
+    }
+
+    .score-note {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: right;
+    }
+
+    .brief-card {
+      padding: 24px;
+      display: grid;
+      align-content: space-between;
+      min-height: 300px;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .today {
+      margin-top: 10px;
+      font-size: 34px;
+      font-weight: 850;
+      line-height: 1;
+    }
+
+    .brief-state {
+      display: grid;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .state-row {
+      display: grid;
+      grid-template-columns: 108px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+      font-size: 14px;
+    }
+
+    .state-row b {
+      color: #303030;
+    }
+
+    .state-row span {
+      color: var(--muted);
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: 0.92fr 1.08fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .panel {
+      padding: 24px;
+    }
+
+    .panel h2,
+    .timeline h2,
+    .source-map h2 {
+      font-size: 22px;
+      line-height: 1.15;
+      margin-top: 6px;
+    }
+
+    .panel-lead {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .signal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .signal {
+      min-height: 132px;
+      border: 1px solid var(--line);
+      padding: 16px;
+      display: grid;
+      align-content: space-between;
+      background: #fcfcfa;
+    }
+
+    .signal[data-tone="green"] {
+      background: var(--green-soft);
+      border-color: #b7d8cf;
+    }
+
+    .signal[data-tone="amber"] {
+      background: var(--amber-soft);
+      border-color: #edd4a8;
+    }
+
+    .signal[data-tone="blue"] {
+      background: var(--blue-soft);
+      border-color: #c5d5ff;
+    }
+
+    .signal[data-tone="rose"] {
+      background: var(--rose-soft);
+      border-color: #f3bdca;
+    }
+
+    .signal strong {
+      font-size: 16px;
+    }
+
+    .signal p {
+      margin-top: 8px;
+      color: #4f4f4f;
+      font-size: 13px;
+    }
+
+    .meter-stack {
+      display: grid;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .meter {
+      display: grid;
+      grid-template-columns: 132px minmax(0, 1fr) 56px;
+      gap: 12px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .meter b {
+      color: #333333;
+    }
+
+    .track {
+      height: 12px;
+      border: 1px solid var(--line);
+      background: #eeeeea;
+      overflow: hidden;
+    }
+
+    .bar {
+      height: 100%;
+      background: var(--teal);
+    }
+
+    .bar.blue {
+      background: var(--blue);
+    }
+
+    .bar.amber {
+      background: var(--amber);
+    }
+
+    .bar.rose {
+      background: var(--rose);
+    }
+
+    .risk-matrix {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .risk {
+      min-height: 116px;
+      border: 1px solid var(--line);
+      padding: 14px;
+      background: #fbfbf9;
+    }
+
+    .risk .axis {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .risk strong {
+      display: block;
+      margin-top: 12px;
+      font-size: 15px;
+    }
+
+    .risk p {
+      margin-top: 6px;
+      color: #555555;
+      font-size: 13px;
+    }
+
+    .timeline {
+      padding: 24px;
+      margin-bottom: 18px;
+    }
+
+    .flow-line {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .step {
+      position: relative;
+      min-height: 144px;
+      border: 1px solid var(--line);
+      background: #ffffff;
+      padding: 16px;
+    }
+
+    .step::after {
+      content: "";
+      position: absolute;
+      top: 34px;
+      right: -11px;
+      width: 11px;
+      height: 2px;
+      background: var(--line);
+    }
+
+    .step:last-child::after {
+      display: none;
+    }
+
+    .step-num {
+      display: inline-grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--line);
+      background: #fafaf7;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .step strong {
+      display: block;
+      margin-top: 14px;
+      font-size: 15px;
+    }
+
+    .step p {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .source-map {
+      padding: 24px;
+    }
+
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .source {
+      border: 1px solid var(--line);
+      min-height: 132px;
+      padding: 14px;
+      background: #ffffff;
+    }
+
+    .source a {
+      display: inline-block;
+      margin-top: 10px;
+      border-bottom: 1px solid currentColor;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .source strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .source p {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .final-strip {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.15fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .next-card {
+      border: 1px solid var(--line);
+      padding: 16px;
+      background: #ffffff;
+    }
+
+    .next-card strong {
+      display: block;
+      font-size: 15px;
+    }
+
+    .next-card p {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .footer {
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: right;
+    }
+
+    @media (max-width: 920px) {
+      .hero,
+      .hero-main,
+      .board,
+      .final-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .score-box {
+        border-left: 0;
+        border-top: 1px solid var(--line);
+        padding-left: 0;
+        padding-top: 18px;
+      }
+
+      .score,
+      .score-note {
+        margin-left: 0;
+        text-align: left;
+      }
+
+      .flow-line,
+      .source-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .step::after {
+        display: none;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .page {
+        width: min(100% - 20px, 1180px);
+        padding-top: 18px;
+      }
+
+      .hero-main,
+      .brief-card,
+      .panel,
+      .timeline,
+      .source-map {
+        padding: 18px;
+      }
+
+      .notice-strip,
+      .signal-grid,
+      .risk-matrix,
+      .flow-line,
+      .source-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .meter {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .state-row {
+        grid-template-columns: 1fr;
+        gap: 2px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar" aria-label="Document navigation">
+      <span>FLOW Harness / Daily Briefing Pattern</span>
+      <span><a href="./daily-briefing-example.md">Markdown template</a> · <a href="./README.md">Harness README</a></span>
+    </nav>
+
+    <section class="hero" aria-label="Briefing overview">
+      <div class="hero-main">
+        <div>
+          <h1>하루를 시작하기 전, 지금 믿을 수 있는 것만 먼저 본다.</h1>
+          <p class="hero-copy">
+            이 화면은 실제 상태 보고서가 아니라 브리핑 형식 예시다. 사용자의 말은 명령이 아니라 신호로 읽고,
+            근거와 가정을 분리한 뒤 오늘의 첫 행동을 정한다.
+          </p>
+          <div class="notice-strip" aria-label="Interpretation rules">
+            <span>주장은 증거로 확인</span>
+            <span>불편함은 원인 분리</span>
+            <span>다음 행동은 하나부터</span>
+          </div>
+        </div>
+        <aside class="score-box" aria-label="Evidence confidence">
+          <div class="score" role="img" aria-label="Evidence readiness seventy two percent">
+            <div>
+              <strong>72%</strong>
+              <small>예시 근거 준비도</small>
+            </div>
+          </div>
+          <p class="score-note">숫자는 예시다. 실제 브리핑에서는 docs와 git 신호로 다시 계산한다.</p>
+        </aside>
+      </div>
+
+      <aside class="brief-card" aria-label="Briefing snapshot">
+        <div>
+          <p class="label">Session start</p>
+          <p class="today">Daily Briefing</p>
+        </div>
+        <div class="brief-state">
+          <div class="state-row"><b>운영 프레임</b><span>Stage 0 / evidence first</span></div>
+          <div class="state-row"><b>현재 판단</b><span>검증 주장 금지, 관찰 증거 우선</span></div>
+          <div class="state-row"><b>작업 방식</b><span>작게 읽고, 작게 바꾸고, 검증</span></div>
+          <div class="state-row"><b>주의</b><span>이 화면은 현재 truth가 아닌 예시</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="board" aria-label="Signal and evidence board">
+      <article class="panel">
+        <p class="label">User signal decoder</p>
+        <h2>사용자 발화를 바로 지시로 바꾸지 않는다.</h2>
+        <p class="panel-lead">먼저 발화의 성격을 분류하고, 필요한 확인 질문이나 근거 확인을 붙인다.</p>
+
+        <div class="signal-grid">
+          <div class="signal" data-tone="green">
+            <strong>상황 설명</strong>
+            <p>지금 보이는 문제, 맥락, 작업 환경을 알려준다. 사실 여부는 repo와 실행 결과로 확인한다.</p>
+          </div>
+          <div class="signal" data-tone="amber">
+            <strong>불편함</strong>
+            <p>문제 원인을 바로 단정하지 않는다. UX, 정보 구조, 문체, 검증 공백을 나눠 본다.</p>
+          </div>
+          <div class="signal" data-tone="blue">
+            <strong>바라는 방향</strong>
+            <p>해결책 후보로 취급한다. 더 나은 대안이 있으면 근거와 함께 제시한다.</p>
+          </div>
+          <div class="signal" data-tone="rose">
+            <strong>명시 지시</strong>
+            <p>실행하되 범위와 위험을 확인한다. 사용자 변경을 되돌리거나 무관 파일을 섞지 않는다.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <p class="label">Evidence meters</p>
+        <h2>브리핑은 감이 아니라 신호 강도로 쓴다.</h2>
+        <p class="panel-lead">아래 막대는 예시다. 실제로는 각 문서와 git 상태를 읽어 갱신한다.</p>
+
+        <div class="meter-stack">
+          <div class="meter">
+            <b>문서 근거</b>
+            <div class="track"><div class="bar" style="width: 86%"></div></div>
+            <span>강함</span>
+          </div>
+          <div class="meter">
+            <b>사용자 관찰</b>
+            <div class="track"><div class="bar amber" style="width: 34%"></div></div>
+            <span>부족</span>
+          </div>
+          <div class="meter">
+            <b>구현 상태</b>
+            <div class="track"><div class="bar blue" style="width: 62%"></div></div>
+            <span>혼재</span>
+          </div>
+          <div class="meter">
+            <b>검증 위험</b>
+            <div class="track"><div class="bar rose" style="width: 48%"></div></div>
+            <span>주의</span>
+          </div>
+        </div>
+
+        <div class="risk-matrix" aria-label="Risk matrix">
+          <div class="risk">
+            <div class="axis"><span>High impact</span><span>Evidence gap</span></div>
+            <strong>검증됨이라고 말하는 위험</strong>
+            <p>실제 사용자 행동 데이터가 없으면 validation claim을 막는다.</p>
+          </div>
+          <div class="risk">
+            <div class="axis"><span>Medium impact</span><span>Workspace mixed</span></div>
+            <strong>무관 변경을 같이 커밋</strong>
+            <p>dirty worktree에서는 파일 범위와 staged diff를 분리한다.</p>
+          </div>
+          <div class="risk">
+            <div class="axis"><span>Medium impact</span><span>Product drift</span></div>
+            <strong>아이디어를 로드맵처럼 취급</strong>
+            <p>확정 전이면 IDEAS, 결정이면 DECISIONS, 구현이면 specs로 보낸다.</p>
+          </div>
+          <div class="risk">
+            <div class="axis"><span>Low impact</span><span>Style</span></div>
+            <strong>AI 같은 말투</strong>
+            <p>내용이 맞은 뒤 필요하면 humanize-korean skill로 문체만 다듬는다.</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="timeline" aria-label="Briefing flow">
+      <p class="label">Briefing flow</p>
+      <h2>읽는 순서가 곧 판단 순서다.</h2>
+      <div class="flow-line">
+        <div class="step">
+          <span class="step-num">1</span>
+          <strong>진입 규칙</strong>
+          <p>AGENTS와 agent guide에서 작업 방식과 사용자 발화 해석 원칙을 확인한다.</p>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <strong>현재 상태</strong>
+          <p>STATUS와 ROADMAP에서 오늘의 기준선과 아직 금지된 주장을 분리한다.</p>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <strong>결정/아이디어</strong>
+          <p>DECISIONS는 확정 판단, IDEAS는 보류 맥락으로 읽는다.</p>
+        </div>
+        <div class="step">
+          <span class="step-num">4</span>
+          <strong>작업장 신호</strong>
+          <p>git status와 최근 로그로 남의 변경, 내 변경, 커밋 가능 범위를 본다.</p>
+        </div>
+        <div class="step">
+          <span class="step-num">5</span>
+          <strong>오늘의 첫 행동</strong>
+          <p>한 번에 하나의 next action과 검증 방법을 정한다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="source-map" aria-label="Daily output shape">
+      <p class="label">One-screen output</p>
+      <h2>최종 브리핑은 네 칸이면 충분하다.</h2>
+      <div class="source-grid">
+        <div class="source">
+          <strong>Now</strong>
+          <p>현재 운영 프레임, 활성 제약, 워크스페이스 상태를 한 번에 본다.</p>
+          <a href="../STATUS.md">STATUS</a>
+        </div>
+        <div class="source">
+          <strong>Evidence</strong>
+          <p>문서, git, 실행 결과, 아직 없는 증거를 서로 섞지 않는다.</p>
+          <a href="../DECISIONS.md">DECISIONS</a>
+        </div>
+        <div class="source">
+          <strong>Risks</strong>
+          <p>검증 과장, 무관 커밋, 제품 방향 drift, 과한 문서화를 먼저 차단한다.</p>
+          <a href="./QA.md">QA</a>
+        </div>
+        <div class="source">
+          <strong>Next</strong>
+          <p>오늘 바로 할 첫 행동, 검증 명령, 아직 하지 말 일을 적는다.</p>
+          <a href="./SDLC.md">SDLC</a>
+        </div>
+      </div>
+
+      <div class="final-strip" aria-label="Next action cards">
+        <div class="next-card">
+          <strong>첫 행동</strong>
+          <p>가장 최신 근거 3개를 읽고, 변경 범위를 한 문장으로 고정한다.</p>
+        </div>
+        <div class="next-card">
+          <strong>검증</strong>
+          <p>문서만 바꾸면 `npm run docs:check`, 코드가 있으면 관련 테스트를 추가한다.</p>
+        </div>
+        <div class="next-card">
+          <strong>하지 말 것</strong>
+          <p>사용자 불편함을 즉시 제품 결정으로 승격하거나, 관찰 전 validation을 말하지 않는다.</p>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer">Static example. Open directly in a browser; no dev server required.</p>
+  </main>
+</body>
+</html>

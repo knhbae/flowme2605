@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe Integration Readiness Gate</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7f9;
+        --paper: #ffffff;
+        --soft: #f2f6fb;
+        --ink: #101828;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d9e2ec;
+        --blue: #1d4ed8;
+        --blue-soft: #e9f1ff;
+        --green: #047857;
+        --green-soft: #e7f6ef;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --purple: #6d28d9;
+        --purple-soft: #f1ebff;
+        --radius: 8px;
+        --shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+        line-height: 1.6;
+        letter-spacing: 0;
+      }
+      a { color: var(--blue); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      h1, h2, h3, p { margin: 0; }
+      h1, h2, h3 { line-height: 1.24; word-break: keep-all; }
+      p, li, td { color: var(--body); }
+      code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.94em; }
+      ul, ol { margin: 9px 0 0; padding-left: 20px; }
+      .page { width: min(1240px, calc(100% - 32px)); margin: 0 auto; padding: 22px 0 70px; }
+      .topbar {
+        display: flex; justify-content: space-between; gap: 16px; align-items: center;
+        min-height: 54px; margin-bottom: 14px; padding: 10px 14px;
+        border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper);
+        color: var(--muted); font-size: 13px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      }
+      .brand { color: var(--ink); font-weight: 900; }
+      .layout { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 18px; align-items: start; }
+      .layout > * { min-width: 0; }
+      .hero, .panel, .nav {
+        border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); box-shadow: var(--shadow);
+      }
+      .hero, .panel { padding: 28px; }
+      .panel { margin-top: 18px; }
+      .hero h1 { max-width: 940px; font-size: clamp(30px, 4vw, 48px); overflow-wrap: anywhere; }
+      .lead { max-width: 920px; margin-top: 14px; font-size: 17px; }
+      .panel h2 { margin-bottom: 10px; font-size: 24px; }
+      .section-lead { max-width: 900px; margin-bottom: 17px; color: var(--muted); }
+      .nav { position: sticky; top: 16px; padding: 18px; }
+      .nav h2 { margin-bottom: 10px; font-size: 16px; }
+      .nav a { display: block; padding: 9px 10px; border-radius: 6px; color: var(--body); font-size: 14px; }
+      .nav a:hover { background: var(--soft); color: var(--blue); text-decoration: none; }
+      .tag-row, .link-row { display: flex; flex-wrap: wrap; gap: 8px; }
+      .tag-row { margin-top: 18px; }
+      .tag {
+        display: inline-flex; align-items: center; max-width: 100%; min-height: 30px; padding: 5px 10px;
+        border: 1px solid var(--line); border-radius: 999px; background: var(--soft); color: var(--body);
+        font-size: 13px; font-weight: 800; overflow-wrap: anywhere;
+      }
+      .tag.green { border-color: #b9e6d0; background: var(--green-soft); color: var(--green); }
+      .tag.amber { border-color: #f1d28a; background: var(--amber-soft); color: var(--amber); }
+      .tag.red { border-color: #ffd0c9; background: var(--red-soft); color: var(--red); }
+      .grid-3, .grid-4, .grid-6 { display: grid; gap: 12px; }
+      .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .grid-6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .summary-grid { margin-top: 20px; }
+      .card, .gate {
+        border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); padding: 15px;
+      }
+      .card.soft, .gate { background: var(--soft); }
+      .card h3, .gate h3 { margin-bottom: 7px; font-size: 16px; }
+      .eyebrow { display: block; margin-bottom: 5px; color: var(--muted); font-size: 12px; font-weight: 900; text-transform: uppercase; }
+      .badge { display: inline-flex; padding: 3px 8px; border-radius: 999px; font-size: 12px; font-weight: 900; white-space: nowrap; }
+      .badge.stage0 { background: var(--blue-soft); color: var(--blue); }
+      .badge.stage1 { background: var(--green-soft); color: var(--green); }
+      .badge.future { background: var(--purple-soft); color: var(--purple); }
+      .badge.reject { background: var(--red-soft); color: var(--red); }
+      .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+      table { width: 100%; min-width: 960px; border-collapse: collapse; }
+      th, td { padding: 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; font-size: 14px; }
+      th { background: var(--soft); color: var(--ink); font-size: 13px; }
+      tr:last-child td { border-bottom: 0; }
+      .callout { margin-top: 16px; padding: 15px; border: 1px solid #ffd0c9; border-radius: var(--radius); background: var(--red-soft); }
+      .callout strong { color: var(--red); }
+      .source-link {
+        display: inline-flex; align-items: center; max-width: 100%; min-height: 34px; padding: 7px 10px;
+        border: 1px solid var(--line); border-radius: 6px; background: var(--paper);
+        font-size: 13px; font-weight: 800; overflow-wrap: anywhere;
+      }
+      .footer-note { margin-top: 14px; color: var(--muted); font-size: 13px; }
+      @media (max-width: 980px) {
+        .layout { grid-template-columns: 1fr; }
+        .nav { position: static; }
+        .grid-3, .grid-4, .grid-6 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+      @media (max-width: 640px) {
+        .page { width: min(100% - 20px, 1240px); padding-top: 10px; }
+        .topbar { align-items: flex-start; flex-direction: column; }
+        .hero, .panel, .nav { padding: 18px; }
+        .grid-3, .grid-4, .grid-6 { grid-template-columns: 1fr; }
+        .hero h1 { font-size: 30px; }
+        .lead { font-size: 16px; }
+        table { min-width: 900px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe Product Gate</span> / 한국어 HTML</div>
+        <div>원문 기준일 2026-06-09 · roadmap/product gate · 구현 승인 아님</div>
+      </div>
+      <div class="layout">
+        <div>
+          <section class="hero" id="top">
+            <h1>통합 준비도는 API 가능성이 아니라 증명된 export friction으로 판단한다</h1>
+            <p class="lead">
+              이 게이트는 Flow 목적지가 copy, file export, manual import를 넘어 직접 integration이 필요한지 판단한다.
+              통과해도 light integration 검토가 가능해질 뿐, OAuth, account sync, token storage, automation, platform clone을
+              바로 승인하지 않는다.
+            </p>
+            <div class="tag-row">
+              <span class="tag green">기본값: stage0_export_only</span>
+              <span class="tag amber">Stage 1 후보: Calendar direct save · Sheets append</span>
+              <span class="tag red">Hard stop: token · webhook · broad account write</span>
+            </div>
+            <div class="grid-3 summary-grid">
+              <article class="card soft"><span class="eyebrow">Ask</span><h3>API가 가능한가?</h3><p>아니다. 직접 account write가 검증된 friction을 줄이는지 묻는다.</p></article>
+              <article class="card soft"><span class="eyebrow">Evidence</span><h3>여섯 게이트</h3><p>반복 사용, import friction, stable schema, permission clarity, reversibility, source/safety transfer.</p></article>
+              <article class="card soft"><span class="eyebrow">Boundary</span><h3>Stage 0에는 통합 없음</h3><p>증거가 없으면 export-only를 유지하고 export shape를 개선한다.</p></article>
+            </div>
+          </section>
+
+          <section class="panel" id="states">
+            <h2>1. Stage States</h2>
+            <div class="grid-4">
+              <article class="card"><h3><span class="badge stage0">stage0_export_only</span></h3><p>모든 destination의 기본값. copy, <code>.ics</code>, CSV/XLSX, Markdown, Todoist CSV, Notion handoff만 허용한다.</p></article>
+              <article class="card"><h3><span class="badge stage1">stage1_light_integration_candidate</span></h3><p>좁은 artifact에서 반복 export friction이 증명된 뒤 scoped direct save/append를 별도 계획으로 검토한다.</p></article>
+              <article class="card"><h3><span class="badge future">future_platform</span></h3><p>유용하지만 workspace, task inbox, automation app 비용이 현재 evidence보다 크다.</p></article>
+              <article class="card"><h3><span class="badge reject">reject_for_now</span></h3><p>misaligned, too risky, clone/platform으로 너무 빨리 가는 요청은 boundary만 기록한다.</p></article>
+            </div>
+          </section>
+
+          <section class="panel" id="gates">
+            <h2>2. 여섯 게이트</h2>
+            <p class="section-lead">하나라도 없으면 destination은 export-only로 남기고 export shape를 개선한다.</p>
+            <div class="grid-6">
+              <article class="gate"><span class="eyebrow">1</span><h3>Repeated destination use</h3><p>같은 artifact type에 같은 외부 도구를 반복 선택한다.</p></article>
+              <article class="gate"><span class="eyebrow">2</span><h3>Import friction</h3><p>copy/file import가 실제 병목이라는 관찰 증거가 있다.</p></article>
+              <article class="gate"><span class="eyebrow">3</span><h3>Stable artifact schema</h3><p>event fields, sheet columns, task fields가 여러 Flow 후보에서 안정적이다.</p></article>
+              <article class="gate"><span class="eyebrow">4</span><h3>Permission clarity</h3><p>요청할 account permission을 한 문장으로 설명할 수 있다.</p></article>
+              <article class="gate"><span class="eyebrow">5</span><h3>Reversibility</h3><p>사용자가 외부 destination에서 생성 항목을 찾고, 수정하고, 삭제할 수 있다.</p></article>
+              <article class="gate"><span class="eyebrow">6</span><h3>Source/safety travels</h3><p>source URL, caution, completion criteria, stop/hold state가 destination item에도 간다.</p></article>
+            </div>
+          </section>
+
+          <section class="panel" id="destinations">
+            <h2>3. 목적지별 준비도</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>목적지</th><th>현재 기본값</th><th>가능한 다음 상태</th><th>열 수 있는 조건</th><th>경계</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Google Calendar</td><td><code>.ics</code>, 필요 시 CSV</td><td><span class="badge stage1">Stage 1 candidate</span></td><td>dated Flow event를 반복 import하고 direct save를 요청할 때</td><td>Stage 0 broad calendar-write 금지</td></tr>
+                  <tr><td>Apple Calendar</td><td><code>.ics</code> handoff</td><td><span class="badge stage0">stage0_export_only</span></td><td>file handoff 유지</td><td>native calendar replacement 금지</td></tr>
+                  <tr><td>Google Sheets</td><td>CSV/XLSX-ready rows</td><td><span class="badge stage1">Stage 1 candidate</span></td><td>row schema가 안정되고 같은 sheet append가 반복될 때</td><td>Stage 0 Drive/Sheets token storage 금지</td></tr>
+                  <tr><td>Notion</td><td>Markdown/CSV handoff</td><td><span class="badge future">future_platform</span></td><td>Notion이 dominant destination이고 schema가 안정될 때</td><td>workspace/database builder 금지</td></tr>
+                  <tr><td>Todoist/task manager</td><td>task-first Flow에 한해 Todoist CSV</td><td><span class="badge future">future_platform</span></td><td>task-manager demand가 증명되고 task inbox가 되지 않을 때</td><td>task creation API/reminder engine 금지</td></tr>
+                  <tr><td>Zapier/Make</td><td>자동화 없음, copy/export only</td><td><span class="badge future">future_platform</span></td><td>stable event payload와 cross-app automation 수요가 있을 때</td><td>trigger/action builder, arbitrary webhook 금지</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="questions">
+            <h2>4. Review Questions</h2>
+            <ol>
+              <li>어떤 exact Flow artifact가 반복 export되고 있는가?</li>
+              <li>어떤 outside destination이 반복 선택되는가?</li>
+              <li>manual import가 어디에서 실패하거나 느려지는가?</li>
+              <li>fields가 third-party account에 쓸 만큼 안정적인가?</li>
+              <li>가장 작은 permission scope는 무엇인가?</li>
+              <li>사용자는 나중에 생성 항목을 어떻게 찾고, 수정하고, 삭제하는가?</li>
+              <li>source URL, caution, completion criterion이 item과 함께 이동하는가?</li>
+              <li>destination API가 실패하거나 rate-limit될 때 support burden은 무엇인가?</li>
+              <li>쓸모없을 때 integration을 닫을 user behavior evidence는 무엇인가?</li>
+            </ol>
+          </section>
+
+          <section class="panel" id="stops">
+            <h2>5. Hard Stops</h2>
+            <div class="callout">
+              <strong>멈출 조건:</strong>
+              platform desirability만 있고 repeated behavior가 없거나, schema가 변하고 있거나, broad write access가 필요하거나,
+              Stage 0에 OAuth/token/API key/webhook URL을 저장해야 하거나, source/safety boundary가 destination에서 사라지면 통합으로 가지 않는다.
+            </div>
+          </section>
+
+          <section class="panel" id="relationship">
+            <h2>6. Export Fit과의 관계</h2>
+            <p class="section-lead">
+              <a href="./export-destination-fit-ko.html">Export Destination Fit</a>은 artifact가 어디로 가야 하는지를 정한다.
+              이 게이트는 그 destination이 direct integration을 받을 만큼 증거가 있는지 판단한다.
+              순서는 항상 export fit 먼저, export behavior evidence 이후 integration readiness다.
+            </p>
+            <div class="link-row">
+              <a class="source-link" href="./integration-readiness-gate.md">원문 Markdown</a>
+              <a class="source-link" href="./export-destination-fit-ko.html">Export Destination Fit HTML</a>
+              <a class="source-link" href="../content-audit/2026-06-08-platform-api-readiness-matrix-ko.html">플랫폼/API 준비도 HTML</a>
+            </div>
+            <p class="footer-note">이 HTML은 제품 게이트 문서를 한국어로 시각화한 것이다. 최신 공식 API 문서 재검증이나 사용자 행동 검증 결과가 아니다.</p>
+          </section>
+        </div>
+        <aside class="nav" aria-label="문서 목차">
+          <h2>문서 목차</h2>
+          <a href="#top">요약</a>
+          <a href="#states">1. Stage States</a>
+          <a href="#gates">2. 여섯 게이트</a>
+          <a href="#destinations">3. 목적지별 준비도</a>
+          <a href="#questions">4. Review Questions</a>
+          <a href="#stops">5. Hard Stops</a>
+          <a href="#relationship">6. Export Fit 관계</a>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe Export Destination Fit Rules</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7f9;
+        --paper: #ffffff;
+        --soft: #f2f6fb;
+        --ink: #101828;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d9e2ec;
+        --blue: #1d4ed8;
+        --blue-soft: #e9f1ff;
+        --green: #047857;
+        --green-soft: #e7f6ef;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --radius: 8px;
+        --shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+        line-height: 1.6;
+        letter-spacing: 0;
+      }
+      a { color: var(--blue); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      h1, h2, h3, p { margin: 0; }
+      h1, h2, h3 { line-height: 1.24; word-break: keep-all; }
+      p, li, td { color: var(--body); }
+      code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.94em; }
+      ul, ol { margin: 9px 0 0; padding-left: 20px; }
+
+      .page { width: min(1240px, calc(100% - 32px)); margin: 0 auto; padding: 22px 0 70px; }
+      .topbar {
+        display: flex; justify-content: space-between; gap: 16px; align-items: center;
+        min-height: 54px; margin-bottom: 14px; padding: 10px 14px;
+        border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper);
+        color: var(--muted); font-size: 13px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      }
+      .brand { color: var(--ink); font-weight: 900; }
+      .layout { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 18px; align-items: start; }
+      .layout > * { min-width: 0; }
+      .hero, .panel, .nav {
+        border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); box-shadow: var(--shadow);
+      }
+      .hero, .panel { padding: 28px; }
+      .panel { margin-top: 18px; }
+      .hero h1 { max-width: 940px; font-size: clamp(30px, 4vw, 48px); overflow-wrap: anywhere; }
+      .lead { max-width: 920px; margin-top: 14px; font-size: 17px; }
+      .panel h2 { margin-bottom: 10px; font-size: 24px; }
+      .section-lead { max-width: 900px; margin-bottom: 17px; color: var(--muted); }
+      .nav { position: sticky; top: 16px; padding: 18px; }
+      .nav h2 { margin-bottom: 10px; font-size: 16px; }
+      .nav a { display: block; padding: 9px 10px; border-radius: 6px; color: var(--body); font-size: 14px; }
+      .nav a:hover { background: var(--soft); color: var(--blue); text-decoration: none; }
+      .tag-row, .link-row { display: flex; flex-wrap: wrap; gap: 8px; }
+      .tag-row { margin-top: 18px; }
+      .tag {
+        display: inline-flex; align-items: center; max-width: 100%; min-height: 30px; padding: 5px 10px;
+        border: 1px solid var(--line); border-radius: 999px; background: var(--soft); color: var(--body);
+        font-size: 13px; font-weight: 800; overflow-wrap: anywhere;
+      }
+      .tag.green { border-color: #b9e6d0; background: var(--green-soft); color: var(--green); }
+      .tag.amber { border-color: #f1d28a; background: var(--amber-soft); color: var(--amber); }
+      .tag.red { border-color: #ffd0c9; background: var(--red-soft); color: var(--red); }
+      .grid-3, .grid-5, .score-grid { display: grid; gap: 12px; }
+      .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .grid-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      .score-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .summary-grid { margin-top: 20px; }
+      .card, .step {
+        border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); padding: 15px;
+      }
+      .card.soft, .step { background: var(--soft); }
+      .card h3, .step h3 { margin-bottom: 7px; font-size: 16px; }
+      .eyebrow { display: block; margin-bottom: 5px; color: var(--muted); font-size: 12px; font-weight: 900; text-transform: uppercase; }
+      .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+      table { width: 100%; min-width: 920px; border-collapse: collapse; }
+      th, td { padding: 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; font-size: 14px; }
+      th { background: var(--soft); color: var(--ink); font-size: 13px; }
+      tr:last-child td { border-bottom: 0; }
+      .callout { margin-top: 16px; padding: 15px; border: 1px solid #f1d28a; border-radius: var(--radius); background: var(--amber-soft); }
+      .callout strong { color: var(--amber); }
+      .source-link {
+        display: inline-flex; align-items: center; max-width: 100%; min-height: 34px; padding: 7px 10px;
+        border: 1px solid var(--line); border-radius: 6px; background: var(--paper);
+        font-size: 13px; font-weight: 800; overflow-wrap: anywhere;
+      }
+      .footer-note { margin-top: 14px; color: var(--muted); font-size: 13px; }
+      @media (max-width: 980px) {
+        .layout { grid-template-columns: 1fr; }
+        .nav { position: static; }
+        .grid-3, .grid-5, .score-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+      @media (max-width: 640px) {
+        .page { width: min(100% - 20px, 1240px); padding-top: 10px; }
+        .topbar { align-items: flex-start; flex-direction: column; }
+        .hero, .panel, .nav { padding: 18px; }
+        .grid-3, .grid-5, .score-grid { grid-template-columns: 1fr; }
+        .hero h1 { font-size: 30px; }
+        .lead { font-size: 16px; }
+        table { min-width: 860px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe Product Rule</span> / 한국어 HTML</div>
+        <div>원문 기준일 2026-06-09 · Stage 0 export rule · 통합 승인 아님</div>
+      </div>
+      <div class="layout">
+        <div>
+          <section class="hero" id="top">
+            <h1>내보내기 목적지는 사용자가 말한 플랫폼명이 아니라 산출물의 주된 일로 고른다</h1>
+            <p class="lead">
+              이 규칙은 Flow가 FlowMe 밖으로 나갈 때 calendar event, sheet row, memo, workspace note,
+              task-manager project 중 무엇으로 내보낼지 정한다. Stage 0 제품 규칙이며 OAuth, sync, automation,
+              platform clone을 승인하지 않는다.
+            </p>
+            <div class="tag-row">
+              <span class="tag green">기본값: portable export</span>
+              <span class="tag amber">판단 순서: date · row · memo · checklist · task project</span>
+              <span class="tag red">금지: account integration · sync · clone</span>
+            </div>
+            <div class="grid-3 summary-grid">
+              <article class="card soft"><span class="eyebrow">Core</span><h3>Artifact job first</h3><p>사용자가 처음 말한 플랫폼보다 산출물의 주된 일을 먼저 본다.</p></article>
+              <article class="card soft"><span class="eyebrow">Stage 0</span><h3>최소 외부 형태</h3><p><code>.ics</code>, CSV/XLSX rows, Markdown/plain text, Todoist CSV, Notion Markdown/CSV 중 고른다.</p></article>
+              <article class="card soft"><span class="eyebrow">Boundary</span><h3>Source context travels</h3><p>source URL, caution, completion criteria, stop/hold condition이 export와 함께 이동해야 한다.</p></article>
+            </div>
+          </section>
+
+          <section class="panel" id="decision">
+            <h2>1. 핵심 결정표</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>주된 일</th><th>기본 목적지</th><th>Stage 0 형태</th><th>사용할 때</th><th>만들지 않을 것</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>날짜 reminder, D-day, appointment, inspection, renewal, practice session</td><td>Calendar</td><td><code>.ics</code>, 필요 시 Google Calendar CSV</td><td>date/time이 primary value일 때</td><td>calendar clone, account sync, scheduling assistant</td></tr>
+                  <tr><td>Inventory, comparison, progress, menu, status, filter cycle, study rows</td><td>Sheet</td><td>CSV/XLSX-ready rows</td><td>rows/columns가 primary value일 때</td><td>spreadsheet editor, formula engine, live connector</td></tr>
+                  <tr><td>Source link, caution, setup note, question list, context</td><td>Memo or Notion handoff</td><td>Markdown/plain text, explicit Notion Markdown/CSV</td><td>context가 completion state보다 중요할 때</td><td>Notion clone, workspace builder, database automation</td></tr>
+                  <tr><td>One-time setup, packing, inspection, admin precheck, safety gate</td><td>Internal checklist</td><td>FlowMe check state + copyable text</td><td>실행 중 completion state가 중요할 때</td><td>모든 check를 task app으로 export하기</td></tr>
+                  <tr><td>Task-manager project with sections and due dates</td><td>Todoist/task CSV</td><td>Todoist-compatible CSV</td><td>사용자가 task manager를 이미 쓰고 Flow가 task-first일 때</td><td>task inbox, recurring-task engine, Todoist integration</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="selector">
+            <h2>2. Selector Flow</h2>
+            <div class="grid-5">
+              <article class="step"><span class="eyebrow">1</span><h3>Main job</h3><p>date, row, memo, checklist, task project 중 무엇인가?</p></article>
+              <article class="step"><span class="eyebrow">2</span><h3>Minimum shape</h3><p><code>.ics</code>, CSV/XLSX, Markdown, Todoist CSV, Notion CSV 중 무엇인가?</p></article>
+              <article class="step"><span class="eyebrow">3</span><h3>Source context</h3><p>source URL, caution, completion criteria, stop/hold condition이 무엇인가?</p></article>
+              <article class="step"><span class="eyebrow">4</span><h3>Inside FlowMe</h3><p>local check state, preview, source review, feedback 중 무엇이 남는가?</p></article>
+              <article class="step"><span class="eyebrow">5</span><h3>Do not build</h3><p>account connection, sync, automation, workspace, formula layer, generic task engine을 막는다.</p></article>
+            </div>
+          </section>
+
+          <section class="panel" id="rules">
+            <h2>3. 목적지별 규칙</h2>
+            <div class="grid-3">
+              <article class="card"><h3>Calendar</h3><p>date/time이 핵심이면 사용한다. D-day와 repeated events는 <code>.ics</code>가 기본이다. event title, date/time, source, completion criterion, caution이 필요하다.</p></article>
+              <article class="card"><h3>Sheet</h3><p>rows/columns가 핵심이면 사용한다. inventory, comparison, progress, menu, document status, filter cycle, study tracker가 좋은 후보다.</p></article>
+              <article class="card"><h3>Memo/Notion</h3><p>context가 이동해야 할 때 사용한다. Notion은 기본 surface가 아니라 명시적 workspace handoff일 때만 Markdown/CSV로 넘긴다.</p></article>
+              <article class="card"><h3>Internal Checklist</h3><p>execution state가 외부 파일보다 중요할 때 사용한다. first action, completion criteria, source boundary, stop/hold condition을 포함한다.</p></article>
+              <article class="card"><h3>Todoist/Task CSV</h3><p>Flow가 task-first이고 사용자가 task manager 목적지를 이미 원할 때만 사용한다. 모든 Flow를 task project로 바꾸지 않는다.</p></article>
+              <article class="card"><h3>Integration Gate</h3><p>export fit은 integration readiness가 아니다. repeated use, import friction, stable schema, permission clarity, reversibility, source/safety transfer가 모두 필요하다.</p></article>
+            </div>
+          </section>
+
+          <section class="panel" id="questions">
+            <h2>4. 회귀 질문</h2>
+            <ul>
+              <li>첫 export option이 artifact의 main job과 맞는가?</li>
+              <li>copy/import 뒤에도 artifact가 쓸 수 있는가?</li>
+              <li>source URL이나 caution이 export와 함께 이동하는가?</li>
+              <li>calendar label과 export wording이 서로 다른 readability needs에 맞게 분리되는가?</li>
+              <li>반복 export friction이 증명되기 전에 account sync나 OAuth를 제안하고 있지 않은가?</li>
+              <li>FlowMe가 calendar, spreadsheet, Notion workspace, Todoist inbox, automation builder가 되고 있지 않은가?</li>
+            </ul>
+          </section>
+
+          <section class="panel" id="source">
+            <h2>5. 현재 소스 기준</h2>
+            <p class="section-lead">
+              원문은 2026-06-09 확인 기준이다. Google Calendar, Apple Calendar, Google Sheets, Notion, Todoist 공식 문서는
+              Stage 0 export/handoff는 지지하지만 account integration을 정당화하지 않는다.
+            </p>
+            <div class="link-row">
+              <a class="source-link" href="./export-destination-fit.md">원문 Markdown</a>
+              <a class="source-link" href="./integration-readiness-gate-ko.html">Integration Readiness Gate HTML</a>
+              <a class="source-link" href="../content-audit/2026-06-08-export-destination-competitor-boundary-ko.html">내보내기/경쟁 경계 HTML</a>
+            </div>
+            <p class="footer-note">이 HTML은 제품 규칙 문서를 한국어로 시각화한 것이다. 최신 공식 문서 재검증이나 사용자 행동 검증 결과가 아니다.</p>
+          </section>
+        </div>
+        <aside class="nav" aria-label="문서 목차">
+          <h2>문서 목차</h2>
+          <a href="#top">요약</a>
+          <a href="#decision">1. 핵심 결정표</a>
+          <a href="#selector">2. Selector Flow</a>
+          <a href="#rules">3. 목적지별 규칙</a>
+          <a href="#questions">4. 회귀 질문</a>
+          <a href="#source">5. 현재 소스 기준</a>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

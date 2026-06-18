@@ -8,10 +8,13 @@ Use this for:
 - Follow-up work that needs more evidence before becoming a roadmap item.
 - Product, UX, technical, or process notes worth revisiting later.
 - Conversation context that future agents should not lose.
+- Exploratory product directions raised in chat, such as "what if this page used X style?", when they are not yet approved implementation work.
+- Deferred alternatives that were considered but held back because they need user evidence, product sequencing, or a clearer owner.
 
 Do not use this for:
 
 - Work already committed to a version plan. Put that in [ROADMAP.md](./ROADMAP.md).
+- Settled product, UX, technical, or process decisions. Put those in [DECISIONS.md](./DECISIONS.md).
 - Current health or active blockers. Put those in [STATUS.md](./STATUS.md).
 - Released changes. Put those in [HISTORY.md](./HISTORY.md).
 - Detailed approved designs or implementation plans. Put durable project specs under `docs/specs/`; keep tool-generated artifacts under `docs/superpowers/`.
@@ -30,7 +33,61 @@ Do not use this for:
 **Source context:** User conversation, implementation task, QA finding, or file reference.
 ```
 
+## Capture Rule
+
+Capture the idea during the same session when it could influence future product direction but is not being implemented now. Do not leave ideas only in chat history. If the idea later becomes planned work, promote it into [specs/](./specs/) and link back to the original idea when useful.
+
 ## Ideas
+
+### 2026-06-06 - Living connected Flow experience map
+
+**Idea:** Over time, individual Flows can connect to each other and form a living experience map. This should not be a static map of related checklists; it should accumulate real user execution, edits, reviews, corrections, creator updates, source notes, and branching follow-up Flows so the map keeps improving as people use it.
+
+**Why not now:** Stage 0 still needs to prove that users open one Flow, enter an anchor, copy/export, check, and give feedback. Connecting Flows into a graph or map would add navigation, data-model, recommendation, and visualization complexity before single-Flow execution behavior is proven.
+
+**Revisit when:** Users have multiple saved Flows, ask to connect one Flow's result to another, leave meaningful corrections/reviews after execution, or creator/source clusters make it useful to show next/related Flows without implying validation or fake social proof.
+
+**Source context:** User idea thread on 2026-06-06: later, Flows can connect with each other into a large experience map, but the map should be alive through user use, edits, and reviews.
+
+### 2026-06-04 - Confluence-style creator page
+
+**Idea:** Explore a Confluence-style creator page for FLOW creators: a structured knowledge/workspace page that can organize a creator's Flows, source notes, update history, and shareable execution assets without feeling like a social profile feed.
+
+**Why not now:** Creator pages are not the current Stage 0 validation path, and a Confluence-like surface could pull FLOW toward a broad workspace before copy/export/check behavior and creator publishing needs are proven.
+
+**Revisit when:** Creator publishing becomes an active batch, users need a clearer home for multiple related Flows, or creator/source maintenance needs page-level organization beyond a simple profile and Flow list.
+
+**Source context:** User idea thread on 2026-06-03/2026-06-04 asking whether the creator page could use a Confluence style.
+
+### 2026-06-02 - Obsidian-like plan and checklist workspace
+
+**Idea:** Let users manage their own plans and checklists inside FLOW with a familiar note/workspace feel, similar to Obsidian, and share selected plans or checklist views with others. The long-term version could support personal execution records, linked plans, lightweight editing, and shareable public/private artifacts without forcing every user into an external calendar or sheet.
+
+**Why not now:** Stage 0 is still focused on proving the smaller export-first loop: open, anchor input, copy/export, check, and feedback. Building a full native workspace too early would make FLOW compete with note, task, and database tools before users have shown that they want to keep execution records inside FLOW.
+
+**Revisit when:** Users repeatedly export/check Flows and ask to continue editing, organizing, or sharing the same execution record inside FLOW, or when My Flow saved-record usage becomes a core validation target after the first export-first evidence.
+
+**Source context:** User idea thread on 2026-06-02: FLOW should eventually let users manage plans or checklists like Obsidian and share them.
+
+### 2026-05-31 - FlowMe 실행 콘텐츠 카테고리 taxonomy
+
+**Idea:** FlowMe 카테고리는 넓은 콘텐츠 주제가 아니라 사용자가 실제로 수행하려는 실행 영역 기준으로 묶는다. 초안 문서: [FlowMe 카테고리 taxonomy](./content-audit/2026-05-31-flowme-category-taxonomy.md).
+
+**Why not now:** 이 문서는 탐색, seed 선정, IA를 위한 기획 taxonomy다. 강한 카테고리가 검증되기 전부터 큰 내비게이션 구조로 바로 확장하면 안 된다.
+
+**Revisit when:** 다음 seed Flow 배치를 고르거나, 둘러보기/카테고리 내비게이션을 다시 설계하거나, 크리에이터 채널의 우선 발행 영역을 정할 때.
+
+**Source context:** 사용자가 FlowMe의 원래 컨셉인 "따라 할 콘텐츠를 잘 메모하고 계획대로 실행하게 돕는 것"을 기준으로 저축, 육아, 여행, 반려동물/식물, 식단, 가전 관리 등 가능한 카테고리를 많이 정리해 문서화하자고 요청했다. 원 콘텐츠와 Flow 변환 결과를 함께 보는 검증 형식: [온라인 콘텐츠 검증 형식](./content-audit/2026-05-31-online-content-validation-format.md).
+
+### 2026-05-28 - My Flow adaptive execution hub
+
+**Idea:** Treat `My Flow` as an execution hub that adapts to saved Flow count and context, rather than one fixed set of repeated detailed cards. `Flow별` should help users scan active Flows and decide the next action; detailed management should appear after selecting a specific Flow. Durable spec: [My Flow Execution Hub](./specs/2026-05-28-my-flow-execution-hub/spec.md).
+
+**Why not now:** The current batch is focused on correcting the immediate `My Flow` layout and demo UX. A full adaptive hub needs product decisions for empty state, single-Flow mode, compact multi-Flow rows, search/filter behavior, category grouping, and state priority without overbuilding before real repeated-use evidence.
+
+**Revisit when:** Saved Flow management becomes the next product batch, or when test/demo scenarios cover 0, 1, 2-5, 6-20, and 20+ saved Flows.
+
+**Source context:** My Flow UX review conversation on 2026-05-28. Important deferred decisions: 0 saved Flows should show start guidance; 1 Flow should behave like a single execution screen; 2-5 Flows can use compact operating cards; 6+ Flows need search, filters, and sorting; 20+ Flows need category/status grouping and collapsible sections. State priority should lead category: today, overdue, in progress, completed, stale, broken routine, and date-less checklist. Category colors should stay restrained, using chips or left borders rather than full-card color fills. Repeated destructive actions like delete should not appear on every all-Flow list card.
 
 ### 2026-05-21 - Separate idea memory from roadmap
 
@@ -111,3 +168,23 @@ Do not use this for:
 **Revisit when:** Users repeatedly export, check, or modify Flows and ask to continue the same execution record inside FLOW instead of moving everything to external tools.
 
 **Source context:** Product direction conversation on 2026-05-23. User clarified that the initial goal is moving content into existing tools, while the later goal is to let FLOW become the place where execution records accumulate.
+
+### 2026-06-17 - Creator experience map above small Flow units
+
+**Idea:** Add an experience-map layer above small Flow units so creators can define a larger journey, such as certification, school entry, moving, or career transition, and attach executable child Flows to each stage. Users should be able to save the whole map, save only a stage, or save an individual child Flow.
+
+**Why not now:** The small Source-to-Flow conversion work has only shown that individual calendar/checklist/routine/bucket artifacts can be shaped. It has not yet proven that FLOW looks like a creator platform or experience-map service. Marketplace, payments, community, and automatic multi-URL generation would still be premature.
+
+**Revisit when:** The next PoC needs to test whether FLOW can feel like a platform for creators, not only a collection of standalone Flow samples. A good first test is a certification-acquisition experience map with stages, date-based child Flows, repeated study routines, checklists, and source URLs.
+
+**Source context:** 2026-06-17 platform-structure study comparing roadmap, course, creator-product, template-marketplace, project-template, docs, and route/list platforms. See `docs/content-audit/2026-06-17-experience-map-platform-structure-study-ko.html`.
+
+### 2026-06-17 - Flow Pack as Flow of Flows
+
+**Idea:** Treat Flow Pack as a flow of flows, not a flat bundle. A creator can publish a parent Flow such as a running routine collection, middle-school math curriculum, baby vaccination checklist, or baby meal-plan sequence. Under that parent Flow, sections and child Flows can represent levels, grades, units, vaccines, months, weeks, or specific routines. Each child Flow still produces executable calendar, sheet, checklist, memo, or routine artifacts.
+
+**Why not now:** This needs a focused PoC that shows both the user-facing parent/child save experience and the creator-facing assembly experience. It should not jump directly into a marketplace, payments, community, or large roadmap UI.
+
+**Revisit when:** The next UX/UI PoC moves beyond individual source-to-Flow samples. Good candidates are a running creator's routine collection, a study YouTuber's middle-school math curriculum with grade/unit child Flows, a baby vaccination checklist with vaccine-specific child Flows, and a baby meal-plan sequence with 6-month/12-month child Flows.
+
+**Source context:** User clarified that Flow Pack means "flow of flows." The earlier flat-pack example was not the intended model. Corrected structure: creator channel -> parent Flow -> section/subgroup -> child Flow -> execution item. See `docs/content-audit/2026-06-17-flow-of-flows-structure-ko.html`.

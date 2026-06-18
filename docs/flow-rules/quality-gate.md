@@ -2,6 +2,25 @@
 
 Use this gate before publishing or deploying content/UX changes.
 
+## 0. Primary Validation Question
+
+For source-based public or representative Flows, the first question is:
+
+```text
+Can a user read the original content, save the Flow, and then use the generated calendar/checklist/sheet/memo artifact to perform the work without guessing what the source meant?
+```
+
+If the answer is no, the Flow fails even when the page looks polished or the summary is accurate.
+
+Check the full path:
+
+- The source-specific sequence, interval, condition, or decision point is visible in the executable artifact.
+- The user can tell what to save or configure with calendar/reminder-level input complexity.
+- Opening a date, row, or checklist item reveals the source-derived checks needed for that action.
+- Memo, links, and optional details preserve useful source context without turning into a heavy form.
+- The public service route and `/content-flows` review preview show the same essential execution cues.
+- The review surface shows a source-to-artifact trace: original sequence, interval, condition, or decision cue on one side, and the generated calendar/checklist/sheet/memo item on the other.
+
 ## 1. Identify The Flow Job
 
 Write:
