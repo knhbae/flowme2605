@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Flow of Flow Top 5 Phase 3-6 적용 리포트</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f7fb;
+        --panel: #ffffff;
+        --ink: #111827;
+        --muted: #5f6b7a;
+        --line: #dde4ee;
+        --soft: #eef4fb;
+        --blue: #2563eb;
+        --green: #147a4b;
+        --amber: #a16207;
+        --red: #b42318;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+        line-height: 1.62;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
+      }
+
+      .wrap {
+        width: min(1180px, calc(100vw - 32px));
+        margin: 0 auto;
+        padding: 32px 0 64px;
+      }
+
+      .hero,
+      .card,
+      .panel {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.055);
+      }
+
+      .hero {
+        border-radius: 18px;
+        padding: 30px;
+      }
+
+      .card {
+        border-radius: 16px;
+        padding: 24px;
+      }
+
+      .panel {
+        border-radius: 14px;
+        padding: 16px;
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 850;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        max-width: 930px;
+        font-size: clamp(30px, 5vw, 54px);
+        line-height: 1.16;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        font-size: clamp(22px, 3vw, 30px);
+        line-height: 1.24;
+      }
+
+      h3 {
+        font-size: 18px;
+        line-height: 1.3;
+      }
+
+      .desc {
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 16px;
+      }
+
+      .stack {
+        display: grid;
+        gap: 18px;
+        margin-top: 18px;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        border-radius: 999px;
+        background: var(--soft);
+        padding: 6px 10px;
+        color: #263241;
+        font-size: 13px;
+        font-weight: 780;
+      }
+
+      .chip.green {
+        background: #dcfce7;
+        color: var(--green);
+      }
+
+      .chip.amber {
+        background: #fef3c7;
+        color: var(--amber);
+      }
+
+      .chip.red {
+        background: #fee2e2;
+        color: var(--red);
+      }
+
+      .phase-title {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .phase-title span {
+        border-radius: 999px;
+        background: #e0ecff;
+        padding: 7px 11px;
+        color: #1d4ed8;
+        font-size: 13px;
+        font-weight: 850;
+      }
+
+      .grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .grid.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .grid.five {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .candidate {
+        display: grid;
+        gap: 12px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fbfcff;
+        padding: 16px;
+      }
+
+      .candidate header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .candidate .rank {
+        flex: 0 0 auto;
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        background: #eff6ff;
+        color: var(--blue);
+        display: grid;
+        place-items: center;
+        font-weight: 900;
+      }
+
+      dl {
+        display: grid;
+        grid-template-columns: 140px minmax(0, 1fr);
+        gap: 8px 12px;
+        margin: 0;
+      }
+
+      dt {
+        color: #475569;
+        font-size: 13px;
+        font-weight: 850;
+      }
+
+      dd {
+        margin: 0;
+        color: #1f2937;
+        font-size: 14px;
+      }
+
+      ul,
+      ol {
+        margin: 10px 0 0;
+        padding-left: 20px;
+      }
+
+      li {
+        margin: 5px 0;
+      }
+
+      .small {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .flowline {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .step {
+        position: relative;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fff;
+        padding: 14px;
+      }
+
+      .step b {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .screen {
+        display: grid;
+        gap: 10px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+        padding: 14px;
+      }
+
+      .screen .label {
+        width: max-content;
+        border-radius: 999px;
+        background: #f1f5f9;
+        padding: 4px 8px;
+        color: #475569;
+        font-size: 12px;
+        font-weight: 850;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .btn {
+        border: 1px solid #c9d5e4;
+        border-radius: 10px;
+        background: #fff;
+        padding: 9px 11px;
+        color: #1f2937;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .btn.primary {
+        border-color: var(--blue);
+        background: var(--blue);
+        color: #fff;
+      }
+
+      .today {
+        border: 1px solid #bfdbfe;
+        border-radius: 12px;
+        background: #eff6ff;
+        padding: 12px;
+      }
+
+      .check {
+        display: grid;
+        grid-template-columns: 22px minmax(0, 1fr);
+        gap: 8px;
+        align-items: start;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #fff;
+        padding: 9px;
+        font-size: 14px;
+      }
+
+      .box {
+        width: 16px;
+        height: 16px;
+        margin-top: 4px;
+        border: 1.8px solid #64748b;
+        border-radius: 4px;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+      }
+
+      table {
+        width: 100%;
+        min-width: 920px;
+        border-collapse: collapse;
+        background: #fff;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid var(--line);
+        padding: 12px 14px;
+        text-align: left;
+        vertical-align: top;
+        font-size: 14px;
+      }
+
+      th {
+        background: #f8fafc;
+        color: #334155;
+        font-size: 13px;
+        white-space: nowrap;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .verdict {
+        font-weight: 900;
+        white-space: nowrap;
+      }
+
+      .go {
+        color: var(--green);
+      }
+
+      .watch {
+        color: var(--amber);
+      }
+
+      .hold {
+        color: var(--red);
+      }
+
+      .note {
+        border-left: 4px solid var(--blue);
+        background: #eff6ff;
+        padding: 12px 14px;
+        color: #1e3a8a;
+        font-size: 14px;
+      }
+
+      .warn {
+        border-left-color: var(--amber);
+        background: #fffbeb;
+        color: #78350f;
+      }
+
+      .footer {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 900px) {
+        .grid.two,
+        .grid.three,
+        .grid.five,
+        .flowline {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .wrap {
+          width: min(100vw - 20px, 1180px);
+          padding-top: 16px;
+        }
+
+        .hero,
+        .card,
+        .panel {
+          border-radius: 12px;
+          padding: 16px;
+        }
+
+        .candidate header {
+          flex-direction: column;
+        }
+
+        dl {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="hero">
+        <p class="eyebrow">Flow of Flow 적용 · Phase 3-6</p>
+        <h1>Top 5 후보를 실제 Flow of Flow 운영 구조까지 내려본다</h1>
+        <p class="desc">
+          앞선 100개 검색은 후보 선정까지만 했다. 이 문서는 선택한 5개를 상위 지도, 반복 하위 Flow, 제작자 운영, 내 Flow 관리, 사용자/제작자 시뮬레이션, 최종 판단까지 이어서 본다.
+        </p>
+        <div class="chips">
+          <span class="chip green">Phase 3 적용</span>
+          <span class="chip green">Phase 4 연결</span>
+          <span class="chip amber">Phase 5 시뮬레이션</span>
+          <span class="chip">Phase 6 판단</span>
+        </div>
+      </section>
+
+      <div class="stack">
+        <section class="card">
+          <div class="phase-title">
+            <h2>Phase 3: Flow of Flow 적용</h2>
+            <span>상위 지도 → 반복 하위 Flow → 실행 artifact</span>
+          </div>
+          <p class="desc">
+            핵심은 큰 카테고리를 예쁘게 보이는 것이 아니라, 같은 하위 실행 패턴이 여러 단위에 반복되는지다.
+            아래 5개는 모두 "전체 저장"과 "일부 저장"이 모두 의미 있어야 한다.
+          </p>
+          <div class="grid two" style="margin-top: 16px">
+            <article class="candidate">
+              <header>
+                <div>
+                  <h3>NHS Couch to 5K</h3>
+                  <p class="small">출처: 9주 러닝 플랜 · 주 3회 반복 세션</p>
+                </div>
+                <div class="rank">1</div>
+              </header>
+              <dl>
+                <dt>상위 지도</dt>
+                <dd>9주 러닝 입문 프로그램</dd>
+                <dt>하위 Flow</dt>
+                <dd>Week 1~9. 각 주차 안에 Run 1~3 세션이 있다.</dd>
+                <dt>공통 패턴</dt>
+                <dd>운동 요일 선택 → 오늘 세션 확인 → 걷기/뛰기 인터벌 → 완료/몸상태 메모</dd>
+                <dt>저장 전 입력</dt>
+                <dd>시작일, 운동 요일 3개</dd>
+                <dt>내 앱 artifact</dt>
+                <dd>캘린더 반복 일정 + 오늘 세션 카드</dd>
+              </dl>
+            </article>
+
+            <article class="candidate">
+              <header>
+                <div>
+                  <h3>JustinGuitar Grade 1</h3>
+                  <p class="small">출처: 모듈/레슨/연습 루틴/통과 기준</p>
+                </div>
+                <div class="rank">2</div>
+              </header>
+              <dl>
+                <dt>상위 지도</dt>
+                <dd>초보 기타 Grade 1 코스</dd>
+                <dt>하위 Flow</dt>
+                <dd>Module 0~7. 모듈별 연습 루틴과 넘어가기 기준.</dd>
+                <dt>공통 패턴</dt>
+                <dd>레슨 열기 → 연습 루틴 실행 → 통과 기준 체크 → 다음 모듈 열기</dd>
+                <dt>저장 전 입력</dt>
+                <dd>연습 시작일, 연습 요일</dd>
+                <dt>내 앱 artifact</dt>
+                <dd>모듈 진행표 + 오늘 연습 카드 + 원문 레슨 링크</dd>
+              </dl>
+            </article>
+
+            <article class="candidate">
+              <header>
+                <div>
+                  <h3>freeCodeCamp RWD</h3>
+                  <p class="small">출처: 모듈, 레슨, 워크숍, 랩, 퀴즈, 프로젝트</p>
+                </div>
+                <div class="rank">3</div>
+              </header>
+              <dl>
+                <dt>상위 지도</dt>
+                <dd>Responsive Web Design Certification</dd>
+                <dt>하위 Flow</dt>
+                <dd>HTML/CSS/Forms/Accessibility/Flexbox/Grid 모듈별 학습 Flow</dd>
+                <dt>공통 패턴</dt>
+                <dd>학습 링크 열기 → 실습 완료 → 프로젝트/퀴즈 상태 업데이트</dd>
+                <dt>저장 전 입력</dt>
+                <dd>목표 완료일 또는 주 학습 슬롯</dd>
+                <dt>내 앱 artifact</dt>
+                <dd>진도표 + 주간 학습 일정 + 프로젝트 체크</dd>
+              </dl>
+            </article>
+
+            <article class="candidate">
+              <header>
+                <div>
+                  <h3>RHS Crop Planner</h3>
+                  <p class="small">출처: 작물별 파종/정식/수확 월 표</p>
+                </div>
+                <div class="rank">4</div>
+              </header>
+              <dl>
+                <dt>상위 지도</dt>
+                <dd>텃밭 작물 1년 운영표</dd>
+                <dt>하위 Flow</dt>
+                <dd>작물별 재배 Flow. 예: 토마토, 상추, 완두, 양파.</dd>
+                <dt>공통 패턴</dt>
+                <dd>작물 선택 → 파종월 → 정식/관리 → 수확월 체크</dd>
+                <dt>저장 전 입력</dt>
+                <dd>키울 작물, 시작월</dd>
+                <dt>내 앱 artifact</dt>
+                <dd>작물별 캘린더 + 재배표</dd>
+              </dl>
+            </article>
+
+            <article class="candidate">
+              <header>
+                <div>
+                  <h3>Solid Starts Feeding Schedules</h3>
+                  <p class="small">출처: 3~24개월 월령별 수유/이유식 스케줄</p>
+                </div>
+                <div class="rank">5</div>
+              </header>
+              <dl>
+                <dt>상위 지도</dt>
+                <dd>월령별 아기 식사 전환 지도</dd>
+                <dt>하위 Flow</dt>
+                <dd>월령대별 식사 Flow. 예: 6~7개월, 7~8개월, 9~12개월.</dd>
+                <dt>공통 패턴</dt>
+                <dd>월령 확인 → 식사 횟수/수유 기준 확인 → 오늘 식사 메모 → 다음 월령 대기</dd>
+                <dt>저장 전 입력</dt>
+                <dd>아기 생년월일, 수유 방식</dd>
+                <dt>내 앱 artifact</dt>
+                <dd>월령 타임라인 + 식사 메모 + 출처/주의</dd>
+              </dl>
+            </article>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="phase-title">
+            <h2>Phase 4: 제작자 운영 화면과 내 Flow 관리 화면 연결</h2>
+            <span>제작자 화면 / 저장 전 / 내 앱 분리</span>
+          </div>
+          <div class="flowline">
+            <div class="step">
+              <b>1. 제작자 원문 가져오기</b>
+              <p class="small">주차, 모듈, 작물, 월령 같은 반복 단위를 원문에서 가져온다.</p>
+            </div>
+            <div class="step">
+              <b>2. 하위 Flow 패턴 정의</b>
+              <p class="small">한 번 정의한 패턴을 여러 하위 단위에 적용한다.</p>
+            </div>
+            <div class="step">
+              <b>3. 저장 전 미리보기</b>
+              <p class="small">사용자가 전체 또는 일부 저장하면 무엇이 생기는지 보여준다.</p>
+            </div>
+            <div class="step">
+              <b>4. 내 앱 실행</b>
+              <p class="small">오늘 할 하위 Flow, 체크, 메모, 원문 링크만 보여준다.</p>
+            </div>
+          </div>
+
+          <div class="grid three" style="margin-top: 16px">
+            <article class="screen">
+              <span class="label">제작자 화면</span>
+              <h3>내 콘텐츠 구조 확인</h3>
+              <div class="check"><span class="box"></span><span>원문에서 반복 단위 가져오기: Week 1~9</span></div>
+              <div class="check"><span class="box"></span><span>하위 Flow 공통 패턴: 세션 확인 → 실행 → 완료 메모</span></div>
+              <div class="check"><span class="box"></span><span>각 하위 Flow에 원문 URL/행 연결</span></div>
+              <div class="button-row">
+                <button class="btn primary">사용자 미리보기 보기</button>
+                <button class="btn">하위 Flow 추가</button>
+              </div>
+            </article>
+
+            <article class="screen">
+              <span class="label">저장 전 사용자 화면</span>
+              <h3>9주 러닝 플랜을 내 일정으로 만들기</h3>
+              <p class="small">월/수/금 20분 러닝으로 시작합니다. 요일은 바꿀 수 있습니다.</p>
+              <div class="button-row">
+                <button class="btn primary">전체 9주 일정 만들기</button>
+                <button class="btn">Week 1만 저장</button>
+              </div>
+              <p class="small">생성: 캘린더 27개, 오늘 실행 카드, 원문 링크</p>
+            </article>
+
+            <article class="screen">
+              <span class="label">내 앱 화면</span>
+              <h3>오늘 실행</h3>
+              <div class="today">
+                <b>Week 1 · Run 1</b>
+                <p class="small">5분 걷기 후 원문에 나온 1분 달리기/1분 30초 걷기 반복을 실행합니다.</p>
+              </div>
+              <div class="check"><span class="box"></span><span>오늘 세션 완료</span></div>
+              <div class="button-row">
+                <button class="btn primary">완료 표시</button>
+                <button class="btn">메모 남기기</button>
+                <button class="btn">원문 열기</button>
+              </div>
+            </article>
+          </div>
+
+          <p class="note" style="margin-top: 16px">
+            연결 원칙: 제작자 화면은 원문 구조와 운영을 보고, 저장 전 사용자는 생성될 실행물을 보고, 내 앱 사용자는 오늘 항목만 본다.
+            이 분리가 안 되면 다시 복잡한 설명 화면으로 돌아간다.
+          </p>
+        </section>
+
+        <section class="card">
+          <div class="phase-title">
+            <h2>Phase 5: 사용자/제작자 시뮬레이션과 반복 개선</h2>
+            <span>1차 문제 → 수정 방향 → 재판정</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>후보</th>
+                  <th>사용자 시뮬레이션</th>
+                  <th>제작자 시뮬레이션</th>
+                  <th>발견 문제</th>
+                  <th>적용한 개선 방향</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>NHS Couch to 5K</td>
+                  <td>러닝 초보가 원문을 보고 전체 9주를 저장한다. 며칠 뒤 내 앱에서 오늘 Run 1만 본다.</td>
+                  <td>운동 제작자가 주차별 러닝 세션을 가져와 같은 세션 패턴으로 발행한다.</td>
+                  <td>27개 세션을 한 번에 보여주면 과하다.</td>
+                  <td>저장 전은 9주 구조만, 내 앱은 오늘 세션만. 전체 지도는 접어둔다.</td>
+                </tr>
+                <tr>
+                  <td>JustinGuitar</td>
+                  <td>기타 초보가 Grade 1 전체를 저장하지 않고 Module 1만 먼저 저장한다.</td>
+                  <td>음악 제작자가 각 모듈의 연습 루틴과 통과 기준을 반복 패턴으로 묶는다.</td>
+                  <td>레슨 내용을 FLOW 안에서 다시 설명하려는 유혹이 크다.</td>
+                  <td>FLOW는 연습 일정/통과 체크만 담당하고, 자세한 레슨은 원문 링크로 보낸다.</td>
+                </tr>
+                <tr>
+                  <td>freeCodeCamp RWD</td>
+                  <td>학습자가 인증 전체를 저장하고, 이번 주에는 HTML/CSS 모듈만 실행한다.</td>
+                  <td>코스 제작자가 모듈/프로젝트/퀴즈를 가져와 진도표로 발행한다.</td>
+                  <td>외부 LMS와 중복되어 FlowMe 가치가 약해질 수 있다.</td>
+                  <td>코드 학습 콘텐츠를 복제하지 않고, 진도/목표일/프로젝트 상태만 관리한다.</td>
+                </tr>
+                <tr>
+                  <td>RHS Crop Planner</td>
+                  <td>초보 가드너가 키울 작물 3개만 골라 작물별 캘린더를 만든다.</td>
+                  <td>가드닝 제작자가 작물 행을 가져와 파종/정식/수확 패턴을 반복 적용한다.</td>
+                  <td>지역/기후가 맞지 않으면 일정이 틀릴 수 있다.</td>
+                  <td>원문 지역을 명시하고, 로컬 변환 전에는 "RHS 기준 일정"으로 표시한다.</td>
+                </tr>
+                <tr>
+                  <td>Solid Starts</td>
+                  <td>보호자가 아기 생년월일을 넣고 현재 월령대 식사 스케줄을 확인한다.</td>
+                  <td>육아 제작자가 월령별 식사 전환 흐름을 공식/경험/주의로 나눠 발행한다.</td>
+                  <td>영양/의료 판단 앱처럼 보이면 위험하다.</td>
+                  <td>권장/처방처럼 쓰지 않고 월령별 참고 일정, 메모, 원문 확인으로 제한한다.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="grid two" style="margin-top: 16px">
+            <div class="panel">
+              <h3>1차 공통 문제</h3>
+              <ul>
+                <li>전체 구조를 너무 많이 보여주면 내 앱 화면이 다시 설명서처럼 보인다.</li>
+                <li>하위 Flow를 너무 잘게 쪼개면 사용자는 왜 저장해야 하는지 잃는다.</li>
+                <li>교육/코스 후보는 외부 LMS를 복제하는 순간 FlowMe 가치가 약해진다.</li>
+                <li>육아/건강 후보는 source/risk 분리가 없으면 공개 후보로 두면 안 된다.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>재설계 후 기준</h3>
+              <ul>
+                <li>상위 지도는 저장 전과 진행 보기에서만 보인다.</li>
+                <li>내 앱 첫 화면은 오늘 실행, 체크, 메모, 원문 링크만 둔다.</li>
+                <li>제작자는 하위 Flow 패턴을 만들고 원문 근거를 붙인다.</li>
+                <li>사용자는 전체 저장과 일부 저장을 선택할 수 있다.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="phase-title">
+            <h2>Phase 6: 검증과 최종 판단</h2>
+            <span>다음 클릭 PoC 우선순위</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>후보</th>
+                  <th>최종 판정</th>
+                  <th>이유</th>
+                  <th>다음 산출물</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>NHS Couch to 5K</td>
+                  <td><span class="verdict go">Go 1</span></td>
+                  <td>수학과 전혀 다른 운동/루틴형이고, 주차/세션 반복 구조가 명확하다.</td>
+                  <td>사용자용 클릭 PoC + 제작자 운영 미니 PoC</td>
+                </tr>
+                <tr>
+                  <td>RHS Crop Planner</td>
+                  <td><span class="verdict go">Go 2</span></td>
+                  <td>표 기반 원문이 여러 작물 하위 Flow로 변환되는 모습을 보여주기 좋다.</td>
+                  <td>작물 3개 선택 → 캘린더/시트 생성 PoC</td>
+                </tr>
+                <tr>
+                  <td>JustinGuitar</td>
+                  <td><span class="verdict go">Go 3</span></td>
+                  <td>제작자 코스가 하위 연습 Flow로 운영되는 감각이 가장 잘 보인다.</td>
+                  <td>모듈 1개 저장/전체 Grade 저장 비교 PoC</td>
+                </tr>
+                <tr>
+                  <td>freeCodeCamp RWD</td>
+                  <td><span class="verdict watch">Watch</span></td>
+                  <td>구조는 강하지만 외부 학습 플랫폼과 겹친다. 진도표/프로젝트 상태만 다루면 가능하다.</td>
+                  <td>학습 진도표 비교군. 바로 대표 화면으로 만들지는 않음.</td>
+                </tr>
+                <tr>
+                  <td>Solid Starts</td>
+                  <td><span class="verdict watch">Conditional</span></td>
+                  <td>육아/식단 방향은 중요하지만 안전/출처/공식 경계가 먼저다.</td>
+                  <td>공식 정보 보조 출처와 안전 문구를 붙인 뒤 제한 PoC</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="note warn" style="margin-top: 16px">
+            최종 판단: 수학 외 Flow of Flow도 가능하다. 하지만 다음 클릭 PoC는 5개 전체가 아니라
+            NHS 러닝, RHS 작물표, JustinGuitar 세 개부터 만드는 것이 맞다. freeCodeCamp와 Solid Starts는 구조 검증용/조건부 후보로 둔다.
+          </p>
+        </section>
+
+        <section class="card">
+          <h2>다음 작업 정의</h2>
+          <div class="grid two" style="margin-top: 14px">
+            <div class="panel">
+              <h3>바로 할 작업</h3>
+              <ol>
+                <li>NHS Couch to 5K 사용자용 클릭 PoC를 만든다.</li>
+                <li>같은 원문을 제작자 화면에서 가져와 하위 Flow 패턴으로 발행하는 화면을 만든다.</li>
+                <li>내 Flow 관리 화면에서 "러닝 9주 플랜"이 어떻게 보이고 오늘 실행으로 내려오는지 만든다.</li>
+                <li>사용자/제작자 시뮬레이션을 한 번 더 돌리고, 과하면 줄인다.</li>
+              </ol>
+            </div>
+            <div class="panel">
+              <h3>성공 기준</h3>
+              <ul>
+                <li>사용자가 첫 화면에서 저장 결과를 예측한다.</li>
+                <li>제작자가 하위 Flow 패턴을 이해한다.</li>
+                <li>내 앱 화면은 전세 Flow처럼 가볍다.</li>
+                <li>Flow of Flow가 단순 묶음이 아니라 반복 하위 실행 구조로 보인다.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>연결 문서</h2>
+          <ul>
+            <li><a href="./2026-06-18-flowof-flow-100-source-scan-top5-ko.html">100개 원컨텐츠 스캔과 Top 5 후보</a></li>
+            <li><a href="./2026-06-17-context-split-expansion-principles-ko.md">Context Split 확산 원칙</a></li>
+          </ul>
+          <p class="footer" style="margin-top: 12px">
+            이 문서는 실제 사용자 행동 데이터가 아니라, 원컨텐츠 구조와 UX 운영 가능성을 판단하기 위한 PoC 전 단계 리포트다.
+          </p>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

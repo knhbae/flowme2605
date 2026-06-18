@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 배포 채널 문서 추가 중단 게이트</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7f9;
+        --paper: #ffffff;
+        --soft: #f1f5f9;
+        --ink: #101828;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d9e2ec;
+        --blue: #1d4ed8;
+        --blue-soft: #e9f1ff;
+        --green: #047857;
+        --green-soft: #e7f6ef;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --radius: 8px;
+        --shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard",
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          "Malgun Gothic",
+          system-ui,
+          sans-serif;
+        line-height: 1.62;
+        letter-spacing: 0;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.24;
+        word-break: keep-all;
+      }
+
+      p,
+      li,
+      td {
+        color: var(--body);
+      }
+
+      code {
+        padding: 1px 5px;
+        border-radius: 5px;
+        background: #eef2f7;
+        color: #172033;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.94em;
+      }
+
+      ul,
+      ol {
+        margin: 9px 0 0;
+        padding-left: 20px;
+      }
+
+      li + li {
+        margin-top: 5px;
+      }
+
+      .page {
+        width: min(1240px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 22px 0 70px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        min-height: 54px;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        color: var(--muted);
+        font-size: 13px;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      }
+
+      .brand {
+        color: var(--ink);
+        font-weight: 900;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 292px;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .layout > * {
+        min-width: 0;
+      }
+
+      .hero,
+      .panel,
+      .nav {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .hero,
+      .panel {
+        padding: 28px;
+      }
+
+      .panel {
+        margin-top: 18px;
+      }
+
+      .hero h1 {
+        max-width: 900px;
+        font-size: clamp(30px, 4vw, 48px);
+      }
+
+      .lead {
+        max-width: 920px;
+        margin-top: 14px;
+        font-size: 17px;
+      }
+
+      .panel h2 {
+        margin-bottom: 10px;
+        font-size: 24px;
+      }
+
+      .section-lead {
+        max-width: 880px;
+        margin-bottom: 16px;
+        color: var(--muted);
+      }
+
+      .nav {
+        position: sticky;
+        top: 16px;
+        padding: 18px;
+      }
+
+      .nav h2 {
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      .nav a {
+        display: block;
+        padding: 9px 10px;
+        border-radius: 6px;
+        color: var(--body);
+        font-size: 14px;
+      }
+
+      .nav a:hover {
+        background: var(--soft);
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      .nav .note {
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .state-grid,
+      .grid-2,
+      .grid-3 {
+        display: grid;
+        gap: 12px;
+      }
+
+      .state-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        margin-top: 22px;
+      }
+
+      .grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .card,
+      .metric {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        padding: 16px;
+      }
+
+      .metric {
+        background: var(--soft);
+      }
+
+      .metric strong {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+
+      .metric span {
+        display: block;
+        margin-top: 5px;
+        color: var(--ink);
+        font-size: 18px;
+        font-weight: 900;
+      }
+
+      .ok {
+        border-left: 4px solid var(--green);
+        background: var(--green-soft);
+      }
+
+      .warn {
+        border-left: 4px solid var(--amber);
+        background: var(--amber-soft);
+      }
+
+      .stop {
+        border-left: 4px solid var(--red);
+        background: var(--red-soft);
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+      }
+
+      table {
+        width: 100%;
+        min-width: 760px;
+        border-collapse: collapse;
+        background: var(--paper);
+      }
+
+      th,
+      td {
+        padding: 12px 13px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: #eef4fb;
+        color: #24324a;
+        font-size: 13px;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 38px;
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: #ffffff;
+        color: var(--blue);
+        font-weight: 800;
+      }
+
+      .button:hover {
+        background: var(--blue-soft);
+        text-decoration: none;
+      }
+
+      @media (max-width: 920px) {
+        .layout,
+        .state-grid,
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+
+        .nav {
+          position: static;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .page {
+          width: min(100% - 20px, 1240px);
+          padding-top: 12px;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero,
+        .panel,
+        .nav {
+          padding: 18px;
+        }
+
+        .hero h1 {
+          font-size: 30px;
+        }
+
+        table {
+          min-width: 720px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe 분석방</span> / 문서 추가 중단 게이트</div>
+        <div>작성일 2026-06-11 · 상태: documentation stop gate · 증거 아님</div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <section class="hero" id="top">
+            <h1>이제 같은 축에서 내부 문서를 더 늘리지 않습니다</h1>
+            <p class="lead">
+              distribution-channel-handoff는 관찰을 시작할 준비 문서가 충분합니다.
+              다음 의미 있는 증거는 새 문서가 아니라 같은 packet version으로 진행한 3명 recipient observation입니다.
+            </p>
+            <div class="state-grid" aria-label="현재 상태">
+              <div class="metric"><strong>axis</strong><span>distribution</span></div>
+              <div class="metric"><strong>candidate</strong><span>school/dorm</span></div>
+              <div class="metric"><strong>decision</strong><span>no signal</span></div>
+              <div class="metric"><strong>sessions</strong><span>0 / 3</span></div>
+              <div class="metric"><strong>next evidence</strong><span>3 observations</span></div>
+            </div>
+          </section>
+
+          <section class="panel" id="triggers">
+            <h2>1. 문서를 더 만들 수 있는 경우</h2>
+            <p class="section-lead">아래 trigger가 없으면 기존 run sequence를 사용하고 새 내부 문서를 만들지 않습니다.</p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Trigger</th><th>허용 이유</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>recipient session completed</td><td>실제 evidence가 생기면 session log, rollup, board update, revision note가 필요할 수 있습니다.</td></tr>
+                  <tr><td>preflight fails</td><td>실패 gate가 packet copy revision이나 stop condition 보강을 요구할 수 있습니다.</td></tr>
+                  <tr><td>packet version changes</td><td>version lock과 session plan을 restart하거나 rollup을 분리해야 합니다.</td></tr>
+                  <tr><td>privacy/safety risk appears</td><td>no-store, stop category, evidence-board rule을 조여야 할 수 있습니다.</td></tr>
+                  <tr><td>different axis selected</td><td>다른 분석 축으로 이동하면 새 current-state handoff가 필요합니다.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="instead">
+            <h2>2. 대신 할 일</h2>
+            <div class="grid-3">
+              <article class="card ok">
+                <h3>1. 실행 순서 열기</h3>
+                <p>현재 상태와 handoff hub run sequence를 열어 세션 전/중/후 순서를 확인합니다.</p>
+              </article>
+              <article class="card ok">
+                <h3>2. preflight 확인</h3>
+                <p>packet version, role slot, no private values, no pre-explanation gate가 pass인지 봅니다.</p>
+              </article>
+              <article class="card ok">
+                <h3>3. 관찰 3건 실행</h3>
+                <p>초대 후 <code>agreed</code> slot만 같은 packet version으로 관찰하고, worksheet, session log, rollup만 채웁니다.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="allowed">
+            <h2>3. 세션 전 허용되는 일</h2>
+            <div class="grid-2">
+              <article class="card ok">
+                <h3>가능</h3>
+                <ul>
+                  <li>기존 Korean HTML 문서 열기</li>
+                  <li>기존 recruiting copy 보내기</li>
+                  <li>비식별 scheduling status 업데이트</li>
+                  <li>packet version lock 채우기</li>
+                  <li>preflight gate 확인</li>
+                  <li>observer workspace 준비</li>
+                </ul>
+              </article>
+              <article class="card stop">
+                <h3>불가</h3>
+                <ul>
+                  <li>같은 축의 추가 candidate comparison</li>
+                  <li>추가 platform/API readiness table</li>
+                  <li>추가 public-route gate 또는 integration plan</li>
+                  <li>rollup 없는 evidence board update</li>
+                  <li>validated, ready, launched, integration-ready 표현</li>
+                </ul>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="exit">
+            <h2>4. stop gate 해제 조건</h2>
+            <p class="section-lead">이 중 하나가 생기기 전까지 다음 행동은 관찰이지 문서 추가가 아닙니다.</p>
+            <div class="grid-2">
+              <article class="card warn"><h3><code>no signal</code> rollup</h3><p>3 completed usable sessions가 기록됐지만 이해나 필요가 부족합니다.</p></article>
+              <article class="card warn"><h3><code>friction</code> rollup</h3><p>문구, 순서, trust, boundary 문제가 특정됩니다.</p></article>
+              <article class="card warn"><h3><code>candidate signal</code> rollup</h3><p>3 completed usable sessions가 coding criteria를 통과합니다.</p></article>
+              <article class="card warn"><h3>다른 axis 선택</h3><p>사용자가 다음 분석 축으로 이동하겠다고 정합니다.</p></article>
+            </div>
+          </section>
+
+          <section class="panel" id="links">
+            <h2>5. 지금 열 문서</h2>
+            <div class="actions">
+              <a class="button" href="./2026-06-11-distribution-channel-handoff-current-state-handoff-ko.html">현재 상태</a>
+              <a class="button" href="./2026-06-11-distribution-channel-handoff-html-hub-ko.html#run-sequence">실행 순서</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-preflight-checklist-ko.html">preflight</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-pilot-worksheet-ko.html">worksheet</a>
+              <a class="button" href="./2026-06-10-school-dorm-share-packet-session-log-starter-ko.html">session log</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-rollup-template-ko.html">rollup</a>
+            </div>
+          </section>
+        </div>
+
+        <aside class="nav" aria-label="문서 목차">
+          <h2>목차</h2>
+          <a href="#top">요약</a>
+          <a href="#triggers">1. 추가 허용 trigger</a>
+          <a href="#instead">2. 대신 할 일</a>
+          <a href="#allowed">3. 허용/불가</a>
+          <a href="#exit">4. 해제 조건</a>
+          <a href="#links">5. 지금 열 문서</a>
+          <p class="note">
+            이 문서는 documentation stop gate입니다. 관찰 evidence, user validation, route approval, integration readiness가 아닙니다.
+          </p>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

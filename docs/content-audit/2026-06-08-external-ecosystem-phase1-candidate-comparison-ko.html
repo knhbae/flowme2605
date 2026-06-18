@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 외부 생태계 Phase 1 후보 비교</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7f9;
+        --paper: #ffffff;
+        --soft: #f2f6fb;
+        --ink: #101828;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d9e2ec;
+        --blue: #1d4ed8;
+        --blue-soft: #e9f1ff;
+        --green: #047857;
+        --green-soft: #e7f6ef;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --radius: 8px;
+        --shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard",
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          "Malgun Gothic",
+          system-ui,
+          sans-serif;
+        line-height: 1.6;
+        letter-spacing: 0;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.24;
+        word-break: keep-all;
+      }
+
+      p,
+      li,
+      td {
+        color: var(--body);
+      }
+
+      ul {
+        margin: 9px 0 0;
+        padding-left: 20px;
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.94em;
+      }
+
+      .page {
+        width: min(1240px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 22px 0 70px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        min-height: 54px;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        color: var(--muted);
+        font-size: 13px;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      }
+
+      .brand {
+        color: var(--ink);
+        font-weight: 900;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 290px;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .layout > * {
+        min-width: 0;
+      }
+
+      .hero,
+      .panel,
+      .nav {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .hero,
+      .panel {
+        padding: 28px;
+      }
+
+      .panel {
+        margin-top: 18px;
+      }
+
+      .hero h1 {
+        max-width: 940px;
+        font-size: clamp(30px, 4vw, 48px);
+        overflow-wrap: anywhere;
+      }
+
+      .lead {
+        max-width: 920px;
+        margin-top: 14px;
+        font-size: 17px;
+      }
+
+      .panel h2 {
+        margin-bottom: 10px;
+        font-size: 24px;
+      }
+
+      .section-lead {
+        max-width: 900px;
+        margin-bottom: 17px;
+        color: var(--muted);
+      }
+
+      .nav {
+        position: sticky;
+        top: 16px;
+        padding: 18px;
+      }
+
+      .nav h2 {
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      .nav a {
+        display: block;
+        padding: 9px 10px;
+        border-radius: 6px;
+        color: var(--body);
+        font-size: 14px;
+      }
+
+      .nav a:hover {
+        background: var(--soft);
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      .tag-row,
+      .link-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag-row {
+        margin-top: 18px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        max-width: 100%;
+        min-height: 30px;
+        padding: 5px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--soft);
+        color: var(--body);
+        font-size: 13px;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+      }
+
+      .tag.green {
+        border-color: #b9e6d0;
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .tag.amber {
+        border-color: #f1d28a;
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .tag.red {
+        border-color: #ffd0c9;
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      .summary-grid,
+      .candidate-grid,
+      .score-grid,
+      .order-grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .summary-grid,
+      .candidate-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .summary-grid {
+        margin-top: 20px;
+      }
+
+      .score-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .order-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .card,
+      .score,
+      .order {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        padding: 15px;
+      }
+
+      .card.soft,
+      .score,
+      .order {
+        background: var(--soft);
+      }
+
+      .card h3,
+      .order h3 {
+        margin-bottom: 7px;
+        font-size: 16px;
+      }
+
+      .eyebrow {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .rank {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        margin-bottom: 10px;
+        border-radius: 999px;
+        background: var(--blue);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+
+      .badge.a {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .badge.am {
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+      }
+
+      table {
+        width: 100%;
+        min-width: 940px;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+        font-size: 14px;
+      }
+
+      th {
+        background: var(--soft);
+        color: var(--ink);
+        font-size: 13px;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .callout {
+        margin-top: 16px;
+        padding: 15px;
+        border: 1px solid #f1d28a;
+        border-radius: var(--radius);
+        background: var(--amber-soft);
+      }
+
+      .callout strong {
+        color: var(--amber);
+      }
+
+      .source-link {
+        display: inline-flex;
+        align-items: center;
+        max-width: 100%;
+        min-height: 34px;
+        padding: 7px 10px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--paper);
+        font-size: 13px;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+      }
+
+      .score b {
+        display: block;
+        color: var(--ink);
+        font-size: 20px;
+      }
+
+      .score span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .footer-note {
+        margin-top: 14px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 980px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .nav {
+          position: static;
+        }
+
+        .summary-grid,
+        .candidate-grid,
+        .score-grid,
+        .order-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 640px) {
+        .page {
+          width: min(100% - 20px, 1240px);
+          padding-top: 10px;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero,
+        .panel,
+        .nav {
+          padding: 18px;
+        }
+
+        .summary-grid,
+        .candidate-grid,
+        .score-grid,
+        .order-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .hero h1 {
+          font-size: 30px;
+        }
+
+        .lead {
+          font-size: 16px;
+        }
+
+        table {
+          min-width: 880px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe Analysis Room</span> / 내부 연결 문서 한국어 HTML</div>
+        <div>원문 기준일 2026-06-08 · source-to-Flow QA 비교 · 사용자 행동 검증 아님</div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <section class="hero" id="top">
+            <h1>Phase 1 후보 비교는 기숙사를 1순위로 두고, 초등·원격은 A-로 보류한다</h1>
+            <p class="lead">
+              첫 세 개 상세 후보인 기숙사 입사 준비, 초등학교 입학 준비, AnyDesk 원격지원 설정을 비교한 문서다.
+              결론은 기숙사를 먼저 `/content-flows` 리뷰 후보로 설계하고, 초등 입학과 원격지원은 같은 배치의 백업 후보로
+              문서화하되 공개 라우트 승격은 보류하는 것이다.
+            </p>
+            <div class="tag-row">
+              <span class="tag green">1순위: Dorm move-in preparation</span>
+              <span class="tag amber">A- 후보: Elementary entry · AnyDesk remote support</span>
+              <span class="tag red">공개 라우트 승격 전: source fidelity · artifact clarity · mobile fit 필요</span>
+            </div>
+            <div class="summary-grid">
+              <article class="card soft">
+                <span class="eyebrow">Rank 1</span>
+                <h3>기숙사 입사 준비</h3>
+                <p>학교별 공지와 PDF가 날짜, 서류, 물품, 금지항목, 입실 절차를 직접 제공해 source-to-artifact 충실도가 가장 높다.</p>
+              </article>
+              <article class="card soft">
+                <span class="eyebrow">Rank 2</span>
+                <h3>초등학교 입학 준비</h3>
+                <p>사용자 수요는 넓지만 공식 안내와 부모 체크리스트를 분리하지 않으면 쇼핑 조언으로 흐를 위험이 있다.</p>
+              </article>
+              <article class="card soft">
+                <span class="eyebrow">Rank 3</span>
+                <h3>AnyDesk 원격지원 설정</h3>
+                <p>디지털 설정 축을 열지만 보안 보장이나 원격접속 권장처럼 오해될 수 있어 경계 부담이 크다.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="comparison">
+            <h2>1. 비교 테이블</h2>
+            <p class="section-lead">
+              세 후보의 결정, 사용자 순간, 자연 산출물, 최소 anchor, 강한 신호, 주요 리스크를 한 번에 비교한다.
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>순위</th>
+                    <th>후보</th>
+                    <th>결정</th>
+                    <th>사용자 순간</th>
+                    <th>자연 산출물</th>
+                    <th>최소 Anchor</th>
+                    <th>강한 신호</th>
+                    <th>주요 리스크</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>기숙사 입사 준비</td>
+                    <td><span class="badge a">A</span></td>
+                    <td>학생/부모가 학교별 기숙사 입사 공지를 실행한다.</td>
+                    <td>Hybrid: D-day reminders + checklist/memo</td>
+                    <td>입사일</td>
+                    <td>공식 PDF/page에 날짜, 서류, 물품, 금지목록, 입실 절차가 있다.</td>
+                    <td>한 학교의 health/document/prohibited rule을 일반화하는 위험</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>초등학교 입학 준비</td>
+                    <td><span class="badge am">A-</span></td>
+                    <td>부모가 공지와 체크리스트로 첫 등교일을 준비한다.</td>
+                    <td>Hybrid: D-60 to D-1 reminders + checklist/memo</td>
+                    <td>입학식 날짜</td>
+                    <td>넓은 부모 수요와 강한 checklist shape</td>
+                    <td>generic shopping advice가 되거나 blog list를 과장하는 위험</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>AnyDesk 원격지원 설정</td>
+                    <td><span class="badge am">A-</span></td>
+                    <td>사용자가 1회 원격 PC 지원을 안전하게 준비한다.</td>
+                    <td>Internal checklist + closeout memo</td>
+                    <td>support type 또는 support time</td>
+                    <td>distinct digital setup axis와 명확한 closeout need</td>
+                    <td>security guarantee나 remote access 권장으로 오해될 위험</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="fit">
+            <h2>2. Stage 0 행동 적합도</h2>
+            <div class="candidate-grid">
+              <article class="card">
+                <span class="rank">1</span>
+                <h3>기숙사</h3>
+                <p>source-specific route preview, move-in date anchor, calendar + checklist copy, documents/items/prohibited/arrival checks가 모두 강하다.</p>
+              </article>
+              <article class="card">
+                <span class="rank">2</span>
+                <h3>초등 입학</h3>
+                <p>entry date와 optional 예비소집 date, reminders + checklist copy, notice/purchase/defer/label checks가 맞다.</p>
+              </article>
+              <article class="card">
+                <span class="rank">3</span>
+                <h3>AnyDesk</h3>
+                <p>open/anchor/export는 중간이지만 permission/closeout check와 feedback은 강하다. Calendar는 중심 산출물이 아니다.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="quality">
+            <h2>3. Source와 Artifact 적합도</h2>
+            <p class="section-lead">
+              기숙사는 source precision과 artifact fit이 가장 고르게 높고, 초등은 수요가 넓지만 공식/부모 출처 분리가 필요하며,
+              AnyDesk는 closeout checklist가 강하지만 security advice로 오해되지 않아야 한다.
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>후보</th>
+                    <th>Source Precision</th>
+                    <th>Source Diversity</th>
+                    <th>Korean-first Fit</th>
+                    <th>Source Boundary</th>
+                    <th>Best First Artifact</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>기숙사 입사</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>D-day checklist with calendar reminders</td>
+                  </tr>
+                  <tr>
+                    <td>초등 입학</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>4</td>
+                    <td>split checklist: school notice / buy first / buy later</td>
+                  </tr>
+                  <tr>
+                    <td>AnyDesk 원격지원</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>one-session checklist with closeout steps</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="boundaries">
+            <h2>4. 만들지 않을 것</h2>
+            <div class="candidate-grid">
+              <article class="card">
+                <h3>기숙사 입사</h3>
+                <p>dorm marketplace, room assignment tracker, health document upload, payment tracking, school login integration, universal prohibited item claims.</p>
+              </article>
+              <article class="card">
+                <h3>초등 입학</h3>
+                <p>school assignment lookup, child profile storage, support-money tracker, shopping affiliate surface, universal must-buy list, full parenting coaching.</p>
+              </article>
+              <article class="card">
+                <h3>AnyDesk 원격지원</h3>
+                <p>AnyDesk integration, device/address-book storage, password vault, session log, support-ticket product, fraud detection claim.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="order">
+            <h2>5. 추천 리뷰 순서</h2>
+            <div class="order-grid">
+              <article class="order">
+                <span class="eyebrow">First</span>
+                <h3>기숙사 입사 준비</h3>
+                <p>source-to-artifact fidelity가 가장 높고, 새 생활전환 축이며, one primary source를 붙이면 generic advice로 흐를 위험이 낮다.</p>
+                <div class="callout">
+                  <strong>첫 UI 조건:</strong> top action은 `최신 기숙사 공지 다시 확인`, artifact는 D-14/D-7/D-5/D-1/D-Day를 보여준다.
+                </div>
+              </article>
+              <article class="order">
+                <span class="eyebrow">Second</span>
+                <h3>초등학교 입학 준비</h3>
+                <p>사용자 순간이 크고 부모 수요가 넓다. 다만 overbuying advice를 막기 위해 공식 process와 parent checklist를 분리해야 한다.</p>
+                <div class="callout">
+                  <strong>첫 UI 조건:</strong> `학교 안내 확인`, `먼저 살 것`, `안내 후 살 것`을 첫 화면에서 분리한다.
+                </div>
+              </article>
+              <article class="order">
+                <span class="eyebrow">Third</span>
+                <h3>AnyDesk 원격지원 설정</h3>
+                <p>digital setup과 permission cleanup 학습에는 좋지만 caution burden이 가장 크다.</p>
+                <div class="callout">
+                  <strong>첫 UI 조건:</strong> `내가 먼저 요청한 지원인가?`에서 시작하고 one-time support는 manual approval을 기본으로 둔다.
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="decision">
+            <h2>6. Phase 1 결정</h2>
+            <p class="section-lead">
+              Phase 1은 research-only 분석에서 review-candidate design으로 넘어갈 만큼 충분한 상세 후보를 만들었다.
+              다만 세 후보 모두 source fidelity, artifact clarity, mobile first-screen fit을 보여주기 전에는 public `/f/[slug]`로
+              승격하지 않는다.
+            </p>
+            <div class="summary-grid">
+              <article class="card">
+                <h3>1. Promote to review UI</h3>
+                <p><code>Dorm move-in preparation</code>을 먼저 `/content-flows` review UI로 올린다.</p>
+              </article>
+              <article class="card">
+                <h3>2. Keep as backups</h3>
+                <p><code>Elementary entry</code>와 <code>AnyDesk remote support</code>는 같은 batch의 documented backup으로 둔다.</p>
+              </article>
+              <article class="card">
+                <h3>3. No public promotion yet</h3>
+                <p>이 문서는 route, UI, user behavior를 검증하지 않는다. 검증은 문서 링크 확인만 요구한다.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="links">
+            <h2>7. 관련 문서</h2>
+            <div class="link-row">
+              <a class="source-link" href="./2026-06-08-external-ecosystem-analysis-roadmap.md">External ecosystem analysis roadmap</a>
+              <a class="source-link" href="./2026-06-08-dorm-move-in-flow-candidate.md">Dorm move-in Flow candidate</a>
+              <a class="source-link" href="./2026-06-08-elementary-entry-flow-candidate.md">Elementary entry Flow candidate</a>
+              <a class="source-link" href="./2026-06-08-anydesk-remote-support-flow-candidate.md">AnyDesk remote support Flow candidate</a>
+              <a class="source-link" href="./2026-06-08-external-ecosystem-phase5-compression-table-ko.html">Phase 5 압축표 HTML</a>
+              <a class="source-link" href="./2026-06-08-external-ecosystem-phase1-candidate-comparison.md">원문 Markdown</a>
+            </div>
+            <p class="footer-note">
+              이 HTML은 2026-06-08 내부 비교 문서를 한국어로 시각화한 것이다. 최신 소스 재검증이나 사용자 행동 검증 결과가 아니다.
+            </p>
+          </section>
+        </div>
+
+        <aside class="nav" aria-label="문서 목차">
+          <h2>문서 목차</h2>
+          <a href="#top">요약</a>
+          <a href="#comparison">1. 비교 테이블</a>
+          <a href="#fit">2. Stage 0 적합도</a>
+          <a href="#quality">3. Source/Artifact</a>
+          <a href="#boundaries">4. 만들지 않을 것</a>
+          <a href="#order">5. 추천 리뷰 순서</a>
+          <a href="#decision">6. Phase 1 결정</a>
+          <a href="#links">7. 관련 문서</a>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

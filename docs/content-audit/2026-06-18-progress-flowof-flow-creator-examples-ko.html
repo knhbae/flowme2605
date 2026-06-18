@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>진도형 Flow of Flow 예시 3개</title>
+    <style>
+      :root {
+        --bg: #eef3f8;
+        --panel: #ffffff;
+        --soft: #f7fafc;
+        --line: #d8e1eb;
+        --line-strong: #b7c6d8;
+        --text: #111827;
+        --muted: #536174;
+        --blue: #2563eb;
+        --blue-soft: #eaf1ff;
+        --green: #0f766e;
+        --green-soft: #e8f6f3;
+        --amber: #b45309;
+        --amber-soft: #fff5df;
+        --red: #b91c1c;
+        --red-soft: #fff1f2;
+        --shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      a {
+        color: var(--blue);
+        font-weight: 850;
+      }
+
+      .page {
+        width: min(1180px, 100%);
+        margin: 0 auto;
+        padding: 18px;
+      }
+
+      .hero,
+      .card,
+      .mini-screen {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+      }
+
+      .hero {
+        padding: 22px;
+        margin-bottom: 14px;
+      }
+
+      .card,
+      .mini-screen {
+        padding: 16px;
+      }
+
+      .eyebrow,
+      .label {
+        margin: 0 0 8px;
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 950;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 10px;
+        font-size: clamp(30px, 5vw, 50px);
+        line-height: 1.08;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      h2 {
+        margin-bottom: 10px;
+        font-size: 24px;
+        line-height: 1.24;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      h3 {
+        margin-bottom: 8px;
+        font-size: 17px;
+        line-height: 1.35;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      .desc,
+      .small {
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .desc {
+        margin-bottom: 0;
+      }
+
+      .small {
+        display: block;
+        font-size: 13px;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 6px 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        background: var(--soft);
+        color: #263346;
+        font-size: 13px;
+        font-weight: 850;
+        line-height: 1.2;
+      }
+
+      .chip.blue { background: var(--blue-soft); border-color: #b8cdfb; color: #1d4ed8; }
+      .chip.green { background: var(--green-soft); border-color: #b9ded8; color: var(--green); }
+      .chip.amber { background: var(--amber-soft); border-color: #f5d393; color: var(--amber); }
+      .chip.red { background: var(--red-soft); border-color: #fecdd3; color: var(--red); }
+
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+        gap: 12px;
+        align-items: start;
+      }
+
+      .stack {
+        display: grid;
+        gap: 12px;
+      }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .summary {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--soft);
+        padding: 12px;
+      }
+
+      .summary b {
+        display: block;
+        margin-bottom: 5px;
+        color: #263346;
+      }
+
+      .map-list,
+      .check-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .map-row,
+      .check-row {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        background: #fff;
+        padding: 11px;
+      }
+
+      .check-row {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+
+      .num,
+      .box {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        background: #e2e8f0;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 950;
+      }
+
+      .box {
+        border: 1px solid var(--line-strong);
+        background: #fff;
+      }
+
+      .box.done {
+        border-color: #86efac;
+        background: #dcfce7;
+        color: var(--green);
+      }
+
+      .item-title {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 950;
+        line-height: 1.35;
+        word-break: keep-all;
+      }
+
+      .progress {
+        height: 8px;
+        border-radius: 999px;
+        background: #e7edf5;
+        overflow: hidden;
+      }
+
+      .progress span {
+        display: block;
+        width: var(--value);
+        height: 100%;
+        border-radius: inherit;
+        background: var(--blue);
+      }
+
+      .note {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fbfdff;
+        padding: 12px;
+      }
+
+      .source {
+        border-left: 4px solid var(--blue);
+        padding: 10px 12px;
+        background: var(--blue-soft);
+        border-radius: 12px;
+        color: #1e3a8a;
+        line-height: 1.55;
+        font-size: 14px;
+      }
+
+      .example {
+        margin-bottom: 14px;
+      }
+
+      .mini-screen {
+        box-shadow: none;
+      }
+
+      @media (max-width: 820px) {
+        .page { padding: 10px; }
+        .hero,
+        .card,
+        .mini-screen {
+          padding: 14px;
+        }
+        .grid,
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+        h1 { font-size: 30px; }
+        .map-row {
+          grid-template-columns: auto minmax(0, 1fr);
+        }
+        .map-row .chip {
+          grid-column: 2;
+          justify-self: start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <p class="eyebrow">진도형 Flow of Flow 후보</p>
+        <h1>제작자 커리큘럼을 내 진도판으로 저장하는 예시 3개</h1>
+        <p class="desc">Khan처럼 자체 학습 플랫폼이 이미 강한 곳보다, 제작자 강의·공개 커리큘럼·자격증 목차를 FlowMe에 저장했을 때 더 분명한 예시를 골랐습니다.</p>
+        <div class="chips">
+          <span class="chip blue">실행 유형: 진도형</span>
+          <span class="chip green">하부 Flow: 기존 체크/메모 UI</span>
+          <span class="chip">원문 1개 기준</span>
+          <span class="chip amber">Flow of Flow 후보</span>
+        </div>
+      </header>
+
+      <section class="card example">
+        <div class="grid">
+          <div class="stack">
+            <div>
+              <p class="eyebrow">예시 1</p>
+              <h2>노마드 코더 · 바닐라 JS로 크롬 앱 만들기</h2>
+              <p class="desc">강의가 섹션과 레슨으로 나뉘어 있어, 상위 지도는 코스 섹션이고 하부 Flow는 각 섹션의 레슨 진도표가 됩니다.</p>
+            </div>
+            <div class="source">
+              원문: <a href="https://nomadcoders.co/javascript-for-beginners/lobby" target="_blank" rel="noreferrer">Nomad Coders Javascript For Beginners</a><br />
+              원문 구조: #1 Introduction, #2 Welcome to Javascript, #3 Javascript on the Browser, #4 Login, #5 Clock, #6 Quotes and Background, #7 To Do List, #8 Weather.
+            </div>
+            <div class="two-col">
+              <div class="summary">
+                <b>Flow 판단</b>
+                <span class="small">Progress Flow of Flow. 코스 전체가 큰 지도이고, 각 섹션이 반복되는 진도형 하부 Flow입니다.</span>
+              </div>
+              <div class="summary">
+                <b>FlowMe 가치</b>
+                <span class="small">강의 사이트 밖에서도 사용자가 내가 어디까지 봤는지, 다음 레슨이 무엇인지, 막힌 코드를 어디에 적었는지 관리할 수 있습니다.</span>
+              </div>
+            </div>
+            <div class="map-list">
+              <div class="map-row"><span class="num">1</span><span><p class="item-title">Introduction</p><span class="small">무료 강의, Welcome, Requirements</span></span><span class="chip green">완료</span></div>
+              <div class="map-row"><span class="num">2</span><span><p class="item-title">Welcome to Javascript</p><span class="small">Data Types, Variables, Functions, Conditionals</span></span><span class="chip blue">12/17</span></div>
+              <div class="map-row"><span class="num">3</span><span><p class="item-title">Javascript on the Browser</p><span class="small">Document Object, Events, CSS in Javascript</span></span><span class="chip">0/9</span></div>
+              <div class="map-row"><span class="num">4</span><span><p class="item-title">Login</p><span class="small">Input Values, Form Submission, Saving Username</span></span><span class="chip">0/8</span></div>
+            </div>
+          </div>
+
+          <div class="mini-screen">
+            <p class="label">하부 Flow 화면 예시</p>
+            <h3>#4 Login</h3>
+            <div class="two-col">
+              <div class="summary"><b>오늘 볼 것</b><span class="small">Input Values</span></div>
+              <div class="summary"><b>완료</b><span class="small">0/8</span></div>
+            </div>
+            <div class="progress" style="margin:12px 0"><span style="--value:8%"></span></div>
+            <div class="check-list">
+              <div class="check-row"><span class="box"></span><span><p class="item-title">#4.0 Input Values</p><span class="small">원문 레슨 완료 여부만 표시</span></span></div>
+              <div class="check-row"><span class="box"></span><span><p class="item-title">#4.1 Form Submission</p><span class="small">폼 제출 흐름을 보고 체크</span></span></div>
+              <div class="check-row"><span class="box"></span><span><p class="item-title">#4.5 Saving Username</p><span class="small">막힌 코드 위치는 메모에 남김</span></span></div>
+            </div>
+            <div class="note" style="margin-top:12px">
+              <b>메모</b>
+              <span class="small">localStorage 부분 다시 보기. 내 코드 링크는 여기에만 저장.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card example">
+        <div class="grid">
+          <div class="stack">
+            <div>
+              <p class="eyebrow">예시 2</p>
+              <h2>생활코딩 · WEB1 HTML & Internet</h2>
+              <p class="desc">공개 커리큘럼의 큰 장과 세부 수업이 명확합니다. 상위 지도는 장 단위, 하부 Flow는 각 장의 수업 완료 체크가 됩니다.</p>
+            </div>
+            <div class="source">
+              원문: <a href="https://edu.goorm.io/learn/lecture/12959/%EC%83%9D%ED%99%9C%EC%BD%94%EB%94%A9-web1-html-and-internet/lesson/566075/%EA%B8%B0%ED%9A%8D" target="_blank" rel="noreferrer">구름EDU 생활코딩 WEB1</a><br />
+              원문 구조: 오리엔테이션, HTML, WEB, 웹 서버, 부록: 코드의 힘, 수업을 마치며.
+            </div>
+            <div class="two-col">
+              <div class="summary">
+                <b>Flow 판단</b>
+                <span class="small">Progress Flow of Flow. 각 장이 같은 진도형 하부 Flow를 반복합니다.</span>
+              </div>
+              <div class="summary">
+                <b>FlowMe 가치</b>
+                <span class="small">사용자가 생활코딩, 드림코딩, 노마드 코더 등 여러 제작자 강의를 한 곳에서 같은 방식으로 저장할 수 있습니다.</span>
+              </div>
+            </div>
+            <div class="map-list">
+              <div class="map-row"><span class="num">1</span><span><p class="item-title">오리엔테이션</p><span class="small">수업소개, 프로젝트의 동기, 기획</span></span><span class="chip green">3/3</span></div>
+              <div class="map-row"><span class="num">2</span><span><p class="item-title">HTML</p><span class="small">코딩과 HTML, 기본문법, 줄바꿈, 속성, 목록</span></span><span class="chip blue">6/12</span></div>
+              <div class="map-row"><span class="num">3</span><span><p class="item-title">WEB</p><span class="small">웹사이트 완성, 원시웹</span></span><span class="chip">0/2</span></div>
+              <div class="map-row"><span class="num">4</span><span><p class="item-title">웹 서버</p><span class="small">서버와 클라이언트, 웹호스팅, 웹서버 운영</span></span><span class="chip">0/9</span></div>
+            </div>
+          </div>
+
+          <div class="mini-screen">
+            <p class="label">하부 Flow 화면 예시</p>
+            <h3>HTML</h3>
+            <div class="two-col">
+              <div class="summary"><b>오늘 볼 것</b><span class="small">줄바꿈: br vs p</span></div>
+              <div class="summary"><b>완료</b><span class="small">6/12</span></div>
+            </div>
+            <div class="progress" style="margin:12px 0"><span style="--value:50%"></span></div>
+            <div class="check-list">
+              <div class="check-row"><span class="box done">✓</span><span><p class="item-title">코딩과 HTML</p><span class="small">완료</span></span></div>
+              <div class="check-row"><span class="box done">✓</span><span><p class="item-title">기본문법 태그(tag)</p><span class="small">완료</span></span></div>
+              <div class="check-row"><span class="box"></span><span><p class="item-title">줄바꿈: br vs p</p><span class="small">다음에 볼 수업</span></span></div>
+              <div class="check-row"><span class="box"></span><span><p class="item-title">HTML 태그의 제왕</p><span class="small">나중에 보기</span></span></div>
+            </div>
+            <div class="note" style="margin-top:12px">
+              <b>메모</b>
+              <span class="small">내 웹페이지 예제 파일 위치만 적기. HTML 설명은 원문으로 이동.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card example">
+        <div class="grid">
+          <div class="stack">
+            <div>
+              <p class="eyebrow">예시 3</p>
+              <h2>이기적 · 컴퓨터활용능력 1급 필기 기본서</h2>
+              <p class="desc">자격증 공부는 과목별 진도, 약점 메모, 기출 회차가 분리되어야 합니다. 이 경우 FlowMe가 단순 목차보다 더 강한 학습 관리판이 될 수 있습니다.</p>
+            </div>
+            <div class="source">
+              원문: <a href="https://www.yes24.com/product/goods/147569004" target="_blank" rel="noreferrer">2026 이기적 컴퓨터활용능력 1급 필기 기본서 목차</a><br />
+              원문 구조: 컴퓨터 일반, 스프레드시트 일반, 데이터베이스 일반, 기출공략집.
+            </div>
+            <div class="two-col">
+              <div class="summary">
+                <b>Flow 판단</b>
+                <span class="small">Progress Flow of Flow + 약한 Log. 과목별 하부 Flow는 진도형이고, 틀린 챕터/기출 회차는 짧은 오답 메모로 남깁니다.</span>
+              </div>
+              <div class="summary">
+                <b>FlowMe 가치</b>
+                <span class="small">시험 준비자는 원문 목차보다 “남은 과목, 다음 챕터, 약한 챕터”를 더 자주 봅니다. 이 지점은 FlowMe가 강하게 보일 수 있습니다.</span>
+              </div>
+            </div>
+            <div class="map-list">
+              <div class="map-row"><span class="num">1</span><span><p class="item-title">컴퓨터 일반</p><span class="small">운영체제, 시스템 설정, 인터넷, 보호</span></span><span class="chip green">5/5</span></div>
+              <div class="map-row"><span class="num">2</span><span><p class="item-title">스프레드시트 일반</p><span class="small">입력, 수식, 데이터 분석, 차트, 매크로</span></span><span class="chip blue">2/7</span></div>
+              <div class="map-row"><span class="num">3</span><span><p class="item-title">데이터베이스 일반</p><span class="small">테이블, 쿼리, 폼, 보고서, 프로그래밍</span></span><span class="chip">0/6</span></div>
+              <div class="map-row"><span class="num">4</span><span><p class="item-title">기출공략집</p><span class="small">대표 기출 60선, 상시 기출문제, 정답&해설</span></span><span class="chip amber">약점</span></div>
+            </div>
+          </div>
+
+          <div class="mini-screen">
+            <p class="label">하부 Flow 화면 예시</p>
+            <h3>스프레드시트 일반</h3>
+            <div class="two-col">
+              <div class="summary"><b>오늘 볼 것</b><span class="small">수식 활용</span></div>
+              <div class="summary"><b>완료</b><span class="small">2/7</span></div>
+            </div>
+            <div class="progress" style="margin:12px 0"><span style="--value:29%"></span></div>
+            <div class="check-list">
+              <div class="check-row"><span class="box done">✓</span><span><p class="item-title">스프레드시트 개요</p><span class="small">완료</span></span></div>
+              <div class="check-row"><span class="box done">✓</span><span><p class="item-title">데이터 입력 및 편집</p><span class="small">완료</span></span></div>
+              <div class="check-row"><span class="box"></span><span><p class="item-title">수식 활용</p><span class="small">오늘 볼 챕터</span></span></div>
+              <div class="check-row"><span class="box"></span><span><p class="item-title">데이터 관리 및 분석</p><span class="small">다음 챕터</span></span></div>
+              <div class="check-row"><span class="box"></span><span><p class="item-title">매크로 및 프로그래밍</p><span class="small">약점 메모 후보</span></span></div>
+            </div>
+            <div class="note" style="margin-top:12px">
+              <b>약점 메모</b>
+              <span class="small">함수/수식 챕터에서 틀린 유형만 적기. 해설 전문은 원문으로 확인.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">정리</p>
+        <h2>다음에 더 봐야 할 것</h2>
+        <div class="two-col">
+          <div class="summary">
+            <b>좋은 후보의 공통점</b>
+            <span class="small">원문에 장/섹션/레슨/과목/챕터 같은 행이 이미 있고, 사용자는 “다음에 볼 것”과 “어디까지 했는지”를 반복해서 확인합니다.</span>
+          </div>
+          <div class="summary">
+            <b>아직 부족한 지점</b>
+            <span class="small">진도형은 예쁜 카드보다 행 기반 진도표가 더 자연스러울 수 있습니다. 다음 PoC는 카드형과 표형을 비교해야 합니다.</span>
+          </div>
+        </div>
+        <div class="chips">
+          <span class="chip green">유지: 원문 행 기반</span>
+          <span class="chip green">유지: 기존 Flow 상세 UI</span>
+          <span class="chip amber">비교 필요: 카드형 vs 표형</span>
+          <span class="chip red">금지: 임의 학습 단계 생성</span>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

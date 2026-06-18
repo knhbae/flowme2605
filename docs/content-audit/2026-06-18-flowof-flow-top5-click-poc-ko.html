@@ -1,0 +1,1035 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 실행형 지도 Top 5</title>
+    <style>
+      :root {
+        --bg: #eef3f8;
+        --panel: #ffffff;
+        --line: #d7e0ea;
+        --line-strong: #b7c6d8;
+        --text: #111827;
+        --muted: #566273;
+        --soft: #f6f9fc;
+        --blue: #2563eb;
+        --blue-soft: #eaf1ff;
+        --green: #0f766e;
+        --green-soft: #e8f6f3;
+        --amber: #b45309;
+        --amber-soft: #fff5df;
+        --shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      a {
+        color: var(--blue);
+        font-weight: 800;
+      }
+
+      .page {
+        width: min(1120px, 100%);
+        margin: 0 auto;
+        padding: 16px;
+      }
+
+      .topbar,
+      .hero,
+      .panel,
+      .surface {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 16px 18px;
+        margin-bottom: 12px;
+      }
+
+      .brand {
+        font-size: 22px;
+        font-weight: 900;
+        letter-spacing: 0;
+      }
+
+      .top-note {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .hero {
+        padding: 18px;
+        margin-bottom: 12px;
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 10px;
+        font-size: clamp(28px, 4vw, 46px);
+        line-height: 1.08;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin-bottom: 10px;
+        font-size: 22px;
+        line-height: 1.2;
+        letter-spacing: 0;
+      }
+
+      h3 {
+        margin-bottom: 6px;
+        font-size: 17px;
+        letter-spacing: 0;
+      }
+
+      .desc {
+        margin-bottom: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .chips,
+      .button-row,
+      .selector,
+      .mode-tabs,
+      .artifact-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 6px 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        background: var(--soft);
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 850;
+        line-height: 1.2;
+      }
+
+      .chip.blue {
+        border-color: #b8cdfb;
+        background: var(--blue-soft);
+        color: #1d4ed8;
+      }
+
+      .chip.green {
+        border-color: #b9ded8;
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .chip.amber {
+        border-color: #f5d393;
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .selector {
+        margin: 14px 0 12px;
+      }
+
+      .selector button,
+      .mode-tabs button,
+      .unit-button,
+      .saved-button,
+      .btn {
+        border: 1px solid var(--line-strong);
+        background: #fff;
+        color: var(--text);
+        cursor: pointer;
+      }
+
+      .selector button {
+        flex: 1 1 160px;
+        min-height: 56px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        font-weight: 900;
+        text-align: left;
+      }
+
+      .selector button.active {
+        border-color: var(--blue);
+        background: var(--blue-soft);
+        color: #1d4ed8;
+      }
+
+      .mode-tabs {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        padding: 6px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #e7edf5;
+        margin-bottom: 12px;
+      }
+
+      .mode-tabs button {
+        min-height: 44px;
+        border: 0;
+        border-radius: 10px;
+        background: transparent;
+        color: #334155;
+        font-weight: 900;
+      }
+
+      .mode-tabs button.active {
+        background: #fff;
+        color: var(--blue);
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+      }
+
+      .view { display: none; }
+      .view.active { display: block; }
+
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1.3fr);
+        gap: 12px;
+        align-items: start;
+      }
+
+      .panel,
+      .surface {
+        padding: 16px;
+      }
+
+      .stack {
+        display: grid;
+        gap: 10px;
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+
+      label,
+      .label {
+        color: #344256;
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--line-strong);
+        border-radius: 10px;
+        background: #fff;
+        color: var(--text);
+        padding: 11px 12px;
+      }
+
+      textarea {
+        min-height: 92px;
+        resize: vertical;
+        line-height: 1.5;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 11px 14px;
+        border-radius: 12px;
+        background: var(--blue);
+        border-color: var(--blue);
+        color: #fff;
+        font-weight: 950;
+      }
+
+      .btn.secondary {
+        background: #fff;
+        color: var(--blue);
+      }
+
+      .btn.ghost {
+        background: var(--soft);
+        color: var(--text);
+        border-color: var(--line);
+      }
+
+      .btn:focus-visible,
+      .selector button:focus-visible,
+      .mode-tabs button:focus-visible,
+      .unit-button:focus-visible,
+      .saved-button:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.28);
+        outline-offset: 2px;
+      }
+
+      .source-box,
+      .note {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--soft);
+        padding: 12px;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.55;
+      }
+
+      .unit-button,
+      .saved-button,
+      .check-row,
+      .artifact-card {
+        width: 100%;
+        border-radius: 12px;
+        padding: 12px;
+      }
+
+      .unit-button,
+      .saved-button,
+      .artifact-card {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+        text-align: left;
+      }
+
+      .unit-button.active,
+      .saved-button.active {
+        border-color: var(--blue);
+        background: var(--blue-soft);
+      }
+
+      .num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        background: #e2e8f0;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 950;
+      }
+
+      .item-title {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.35;
+        font-weight: 950;
+      }
+
+      .small {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .progress {
+        height: 8px;
+        border-radius: 999px;
+        background: #e7edf5;
+        overflow: hidden;
+      }
+
+      .progress span {
+        display: block;
+        width: var(--value, 0%);
+        height: 100%;
+        border-radius: inherit;
+        background: var(--blue);
+      }
+
+      .check-row {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 10px;
+        align-items: start;
+        border: 1px solid var(--line);
+        background: #fff;
+      }
+
+      .check-row input {
+        width: 22px;
+        height: 22px;
+        margin-top: 2px;
+        accent-color: var(--blue);
+      }
+
+      .check-row.done {
+        background: #f0fdf4;
+        border-color: #bbf7d0;
+      }
+
+      .surface {
+        border-style: dashed;
+        background: #fbfdff;
+      }
+
+      .empty {
+        border: 1px dashed var(--line-strong);
+        border-radius: 14px;
+        padding: 18px;
+        background: var(--soft);
+      }
+
+      .toast {
+        border: 1px solid #b9ded8;
+        border-radius: 12px;
+        padding: 12px;
+        background: var(--green-soft);
+        color: var(--green);
+        font-size: 14px;
+        font-weight: 850;
+        line-height: 1.5;
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .split .artifact-card {
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: start;
+      }
+
+      .split .artifact-card .chip {
+        grid-column: 2;
+        justify-self: start;
+      }
+
+      @media (max-width: 760px) {
+        .page {
+          padding: 10px;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero,
+        .panel,
+        .surface {
+          padding: 14px;
+        }
+
+        h1 {
+          font-size: 30px;
+        }
+
+        .grid,
+        .field-grid,
+        .split {
+          grid-template-columns: 1fr;
+        }
+
+        .selector button,
+        .unit-button,
+        .saved-button,
+        .artifact-card {
+          grid-template-columns: auto minmax(0, 1fr);
+        }
+
+        .unit-button .chip,
+        .saved-button .chip,
+        .artifact-card .chip {
+          grid-column: 2;
+          justify-self: start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="topbar">
+        <div class="brand">FlowMe</div>
+        <p class="top-note">원문 콘텐츠를 전체 지도와 오늘 실행 카드로 나눠 저장하는 화면</p>
+      </header>
+
+      <section class="hero">
+        <p class="eyebrow" id="heroEyebrow"></p>
+        <h1 id="heroTitle"></h1>
+        <p class="desc" id="heroDesc"></p>
+        <div class="chips" id="heroChips" style="margin-top:14px"></div>
+      </section>
+
+      <nav class="selector" id="flowSelector" aria-label="콘텐츠 예시"></nav>
+
+      <nav class="mode-tabs" aria-label="화면 선택">
+        <button class="active" type="button" data-view="content">콘텐츠</button>
+        <button type="button" data-view="app">내 앱 실행</button>
+        <button type="button" data-view="creator">제작자</button>
+      </nav>
+
+      <section class="view active" id="content-view">
+        <div class="grid">
+          <section class="panel">
+            <p class="eyebrow">저장 전</p>
+            <h2 id="contentTitle"></h2>
+            <p class="desc" id="contentSummary"></p>
+            <div class="field-grid" id="inputFields" style="margin-top:14px"></div>
+            <div class="button-row" style="margin-top:14px">
+              <button class="btn" type="button" id="saveAll"></button>
+              <button class="btn secondary" type="button" id="saveOne"></button>
+            </div>
+            <div id="contentToast" class="toast" hidden style="margin-top:12px"></div>
+            <div class="source-box" id="contentSource" style="margin-top:12px"></div>
+          </section>
+
+          <section class="panel">
+            <p class="eyebrow">생성될 결과</p>
+            <h2>전체 지도와 오늘 실행이 분리됩니다</h2>
+            <div class="split" id="artifactCards"></div>
+            <div class="surface" style="margin-top:12px">
+              <div class="button-row" style="justify-content:space-between; align-items:center">
+                <h3 style="margin-bottom:0">반복 실행 단위</h3>
+                <span class="chip blue" id="unitCount"></span>
+              </div>
+              <div class="stack" id="contentUnits" style="margin-top:10px"></div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="app-view">
+        <div class="grid">
+          <aside class="panel">
+            <p class="eyebrow">내 앱</p>
+            <h2>저장한 실행 지도</h2>
+            <p class="desc">저장한 콘텐츠만 내 앱에 남고, 오늘 볼 항목은 한 카드로 줄어듭니다.</p>
+            <div class="stack" id="savedList" style="margin-top:12px"></div>
+          </aside>
+
+          <section class="panel" id="appMain"></section>
+        </div>
+      </section>
+
+      <section class="view" id="creator-view">
+        <div class="grid">
+          <section class="panel">
+            <p class="eyebrow">제작자 운영</p>
+            <h2>원문에서 반복 단위를 가져옵니다</h2>
+            <p class="desc">제작자는 큰 카테고리를 먼저 만들기보다, 원문 안에 반복되는 단위를 선택해 사용자 저장 화면을 만듭니다.</p>
+            <div class="field" style="margin-top:14px">
+              <label for="sourceUrl">원문 URL</label>
+              <input id="sourceUrl" type="url" readonly />
+            </div>
+            <div class="button-row" style="margin-top:14px">
+              <button class="btn" type="button" id="importUnits">반복 단위 가져오기</button>
+              <button class="btn secondary" type="button" id="previewContent">사용자 화면 보기</button>
+            </div>
+            <div id="creatorToast" class="toast" hidden style="margin-top:12px"></div>
+            <div class="source-box" id="creatorBoundary" style="margin-top:12px"></div>
+          </section>
+
+          <section class="panel">
+            <p class="eyebrow">운영판 미리보기</p>
+            <h2 id="creatorTitle"></h2>
+            <div class="source-box" id="creatorPattern"></div>
+            <div class="surface" style="margin-top:12px">
+              <h3>반복 단위</h3>
+              <div class="stack" id="creatorUnits" style="margin-top:10px"></div>
+            </div>
+            <div class="surface" style="margin-top:12px">
+              <h3>사용자에게 보일 결과</h3>
+              <div class="stack" id="creatorPreview" style="margin-top:10px"></div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const flows = [
+        {
+          id: "run",
+          short: "러닝 9주",
+          creator: "NHS Better Health",
+          sourceName: "NHS Couch to 5K running plan",
+          sourceUrl: "https://www.nhs.uk/better-health/get-active/get-running-with-couch-to-5k/couch-to-5k-running-plan/",
+          hero: "9주 러닝 플랜을 내 일정으로 만들기",
+          userJob: "주 3회 러닝을 시작하고 싶은 사용자가 시작일과 요일만 정해 9주 일정을 만듭니다.",
+          summary: "원문은 9주 동안 매주 3회 러닝하고 중간에 휴식일을 두는 구조입니다. FlowMe에서는 주차별 세션으로 나뉘고, 내 앱에는 오늘 세션만 보입니다.",
+          chips: ["9주", "주 3회", "27개 세션", "캘린더형"],
+          inputs: [
+            ["start", "시작일", "date", "2026-06-22"],
+            ["days", "운동 요일", "text", "월/수/금"]
+          ],
+          saveAll: "9주 러닝 일정 만들기",
+          artifact: [
+            ["캘린더", "27개 러닝 세션", "시작일과 요일 기준"],
+            ["오늘 카드", "이번 세션만 표시", "체크와 몸상태 메모"],
+            ["전체 지도", "Week 1-9 진행", "다음 주차 확인"]
+          ],
+          pattern: "Week가 반복 단위입니다. 각 Week 안에는 Run 1, Run 2, Run 3이 있고 세션 사이에는 휴식일을 둡니다.",
+          boundary: "건강이 걱정되거나 통증, 어지러움, 이상 신호가 있으면 중단하고 전문가 상담을 우선합니다.",
+          units: [
+            { name: "Week 1", sub: "걷기와 짧은 달리기 반복", detail: "첫 주는 가볍게 시작해 세션 사이에 휴식일을 둡니다.", checks: ["오늘 세션 열기", "워밍업 걷기", "러닝/걷기 반복 완료", "몸상태 메모"] },
+            { name: "Week 2", sub: "달리기 구간을 조금 늘림", detail: "Week 1보다 달리기 구간이 늘어납니다.", checks: ["오늘 세션 열기", "휴식일 확인", "러닝 완료", "무리한 통증 여부 메모"] },
+            { name: "Week 3", sub: "긴 구간에 적응", detail: "짧은 반복에서 조금 더 긴 구간으로 넘어갑니다.", checks: ["오늘 세션 열기", "페이스 낮추기", "러닝 완료", "다음 세션 날짜 확인"] },
+            { name: "Week 4", sub: "중간 단계", detail: "난이도가 오르므로 완료보다 지속 가능한 속도를 우선합니다.", checks: ["오늘 세션 열기", "워밍업", "러닝 완료", "컨디션 메모"] },
+            { name: "Week 5", sub: "연속 달리기 준비", detail: "주차 후반으로 갈수록 연속 달리기 시간이 길어집니다.", checks: ["오늘 세션 열기", "세션 구성 확인", "러닝 완료", "무리 여부 메모"] },
+            { name: "Week 6", sub: "긴 세션 적응", detail: "긴 러닝 구간이 포함됩니다.", checks: ["오늘 세션 열기", "휴식일 확인", "러닝 완료", "다음 세션 준비"] },
+            { name: "Week 7", sub: "지속 달리기", detail: "짧은 반복보다 긴 지속 달리기에 가까워집니다.", checks: ["오늘 세션 열기", "가벼운 페이스 유지", "러닝 완료", "몸상태 메모"] },
+            { name: "Week 8", sub: "마무리 전 적응", detail: "마지막 주로 가기 전 긴 세션을 반복합니다.", checks: ["오늘 세션 열기", "워밍업", "러닝 완료", "다음 주차 확인"] },
+            { name: "Week 9", sub: "30분 러닝 목표", detail: "마지막 주는 30분 달리기에 가까운 세션으로 마무리합니다.", checks: ["오늘 세션 열기", "30분 목표 확인", "러닝 완료", "마무리 메모"] }
+          ]
+        },
+        {
+          id: "crop",
+          short: "작물 재배",
+          creator: "RHS",
+          sourceName: "RHS Crop Planner",
+          sourceUrl: "https://www.rhs.org.uk/advice/pdfs/crop-planner.pdf",
+          hero: "키울 작물의 파종·정식·수확 시기를 저장하기",
+          userJob: "텃밭이나 베란다에서 키울 작물을 고르고, 작물별 주요 월을 캘린더와 작은 표로 남깁니다.",
+          summary: "원문은 작물별 파종, 정식, 수확 시기를 표로 보여줍니다. FlowMe에서는 작물별 항목으로 나뉘고, 사용자는 필요한 작물만 내 앱에 저장합니다.",
+          chips: ["작물별", "표 + 캘린더", "필요 작물만 저장", "시즌형"],
+          inputs: [
+            ["season", "기준 시즌", "text", "2026 봄"],
+            ["place", "키울 장소", "text", "베란다/텃밭"]
+          ],
+          saveAll: "작물 재배표 저장하기",
+          artifact: [
+            ["작물표", "작물별 주요 월", "원문 표 기준"],
+            ["캘린더", "파종·정식·수확", "사용자가 고른 작물만"],
+            ["메모", "장소와 품종 메모", "개인 기록"]
+          ],
+          pattern: "작물명이 반복 단위입니다. 각 작물마다 sow, plant out, harvest 시기가 표로 연결됩니다.",
+          boundary: "지역, 품종, 날씨에 따라 달라질 수 있으므로 원문 표와 사용자의 실제 재배 환경을 함께 확인합니다.",
+          units: [
+            { name: "Carrots", sub: "파종과 수확 월 확인", detail: "당근 행의 파종·수확 구간을 내 재배표에 남깁니다.", checks: ["RHS 표에서 Carrots 행 확인", "파종 가능한 월 메모", "수확 구간 메모", "키울 장소 메모"] },
+            { name: "Lettuce", sub: "반복 수확 작물", detail: "상추 행의 파종·수확 구간을 내 캘린더에 옮깁니다.", checks: ["RHS 표에서 Lettuce 행 확인", "파종 월 메모", "수확 월 메모", "씨앗/모종 준비 메모"] },
+            { name: "Tomatoes", sub: "실내 시작과 정식 구분", detail: "토마토는 파종, 정식, 수확 구간을 나눠 봅니다.", checks: ["RHS 표에서 Tomatoes 행 확인", "실내 시작 시기 메모", "정식 시기 메모", "수확 구간 메모"] },
+            { name: "Courgettes", sub: "정식과 수확 관리", detail: "Courgettes 행의 정식·수확 구간을 저장합니다.", checks: ["RHS 표에서 Courgettes 행 확인", "정식 시기 메모", "수확 구간 메모", "장소 메모"] }
+          ]
+        },
+        {
+          id: "guitar",
+          short: "기타 Grade 1",
+          creator: "JustinGuitar",
+          sourceName: "JustinGuitar Beginner Guitar Course Grade One",
+          sourceUrl: "https://www.justinguitar.com/classes/beginner-guitar-course-grade-one",
+          hero: "초보 기타 코스를 모듈별 연습표로 저장하기",
+          userJob: "무료 기타 강의를 보며 각 모듈의 레슨, 연습, 자기 점검을 내 연습표로 관리합니다.",
+          summary: "원문은 Grade 1 안에 여러 모듈과 레슨을 제공합니다. FlowMe에서는 모듈별 연습으로 나뉘고, 내 앱은 오늘 연습과 통과 체크만 보여줍니다.",
+          chips: ["모듈별", "연습 루틴", "레슨 URL", "체크리스트형"],
+          inputs: [
+            ["start", "연습 시작일", "date", "2026-06-22"],
+            ["time", "연습 시간", "text", "저녁 20분"]
+          ],
+          saveAll: "Grade 1 연습표 만들기",
+          artifact: [
+            ["연습표", "모듈별 레슨", "원문 순서 유지"],
+            ["오늘 카드", "영상 열기 + 연습", "체크만 남김"],
+            ["메모", "막히는 코드", "다음 연습에 사용"]
+          ],
+          pattern: "Module이 반복 단위입니다. 각 모듈 안에서 레슨을 보고, 연습하고, 통과 여부를 체크합니다.",
+          boundary: "레슨 본문을 복제하지 않고 원문 링크와 오늘 연습 체크만 남깁니다.",
+          units: [
+            { name: "Module 0", sub: "시작 준비", detail: "코스 시작 전 필요한 안내와 준비를 확인합니다.", checks: ["원문 모듈 열기", "기타 튜닝 확인", "첫 레슨 보기", "막히는 내용 메모"] },
+            { name: "Module 1", sub: "첫 코드와 리듬", detail: "첫 코드와 기본 리듬을 연습합니다.", checks: ["원문 모듈 열기", "오늘 레슨 보기", "코드 전환 연습", "통과 여부 체크"] },
+            { name: "Module 2", sub: "기본 코드 확장", detail: "새 코드와 전환을 반복합니다.", checks: ["원문 모듈 열기", "오늘 연습 시작", "느린 속도로 반복", "어려운 코드 메모"] },
+            { name: "Module 3", sub: "곡 적용", detail: "배운 코드를 간단한 곡에 적용합니다.", checks: ["원문 모듈 열기", "곡 연습", "끊기는 지점 메모", "다음 연습 날짜 확인"] }
+          ]
+        },
+        {
+          id: "fcc",
+          short: "웹디자인",
+          creator: "freeCodeCamp",
+          sourceName: "Responsive Web Design certification overview",
+          sourceUrl: "https://www.freecodecamp.org/news/freecodecamps-new-responsive-web-design-certification-is-now-live/",
+          hero: "웹디자인 인증 과정을 모듈별 진도표로 저장하기",
+          userJob: "긴 온라인 커리큘럼을 모듈별 진도표로 저장하고, 프로젝트와 퀴즈를 완료 기준으로 체크합니다.",
+          summary: "원문은 모듈, 리뷰, 퀴즈, 프로젝트가 반복되는 인증 구조를 설명합니다. FlowMe에서는 모듈별 진도로 나뉘고, 내 앱은 지금 진행할 모듈만 보여줍니다.",
+          chips: ["커리큘럼", "진도표", "프로젝트 체크", "학습형"],
+          inputs: [
+            ["start", "학습 시작일", "date", "2026-06-22"],
+            ["pace", "학습 리듬", "text", "주 4회"]
+          ],
+          saveAll: "웹디자인 진도표 만들기",
+          artifact: [
+            ["진도표", "모듈별 진행", "원문 구조 유지"],
+            ["오늘 카드", "레슨·리뷰·퀴즈", "체크 중심"],
+            ["프로젝트", "인증 프로젝트", "완료 기준"]
+          ],
+          pattern: "Curriculum module이 반복 단위입니다. 레슨, 리뷰, 퀴즈, 프로젝트가 실행 단서가 됩니다.",
+          boundary: "학습 내용을 대신 설명하지 않고, 원문으로 돌아갈 링크와 완료 체크만 제공합니다.",
+          units: [
+            { name: "Learn HTML", sub: "기본 구조", detail: "HTML 기본 레슨을 열고 진행합니다.", checks: ["원문 열기", "레슨 진행", "리뷰 확인", "퀴즈/실습 완료 체크"] },
+            { name: "Learn CSS", sub: "스타일 기초", detail: "CSS 레슨과 실습을 진행합니다.", checks: ["원문 열기", "레슨 진행", "리뷰 확인", "막히는 개념 메모"] },
+            { name: "Responsive Design", sub: "반응형 적용", detail: "반응형 관련 레슨과 실습을 체크합니다.", checks: ["원문 열기", "실습 진행", "프로젝트 반영", "완료 체크"] },
+            { name: "Certification Projects", sub: "인증 프로젝트", detail: "인증 프로젝트 진행 상태를 따로 봅니다.", checks: ["프로젝트 요구사항 열기", "현재 프로젝트 진행", "제출 전 확인", "완료 체크"] }
+          ]
+        },
+        {
+          id: "baby",
+          short: "이유식",
+          creator: "Solid Starts",
+          sourceName: "Solid Starts Feeding Schedules",
+          sourceUrl: "https://solidstarts.com/feeding-schedules/",
+          hero: "월령별 식사 흐름을 참고 일정과 메모로 저장하기",
+          userJob: "보호자가 월령별 식사 흐름을 다시 볼 수 있게 저장하고, 오늘 적용할 기준과 주의 메모만 남깁니다.",
+          summary: "원문은 월령별 식사 횟수와 흐름을 설명합니다. FlowMe에서는 월령별 참고 항목으로 나뉘고, 내 앱은 오늘 참고할 구간과 메모만 보여줍니다.",
+          chips: ["월령별", "참고 일정", "주의 메모", "육아형"],
+          inputs: [
+            ["month", "현재 월령", "text", "8개월"],
+            ["meal", "오늘 볼 식사", "text", "점심"]
+          ],
+          saveAll: "월령 식사 타임라인 만들기",
+          artifact: [
+            ["월령표", "구간별 식사 흐름", "원문 근거 유지"],
+            ["오늘 카드", "현재 월령만 표시", "짧은 메모"],
+            ["주의", "알레르기·질식 위험", "전문가 상담 우선"]
+          ],
+          pattern: "월령 구간이 반복 단위입니다. 각 구간은 식사 횟수, 질감, 보호자 메모로 나뉩니다.",
+          boundary: "의료·영양 판단을 대신하지 않습니다. 알레르기, 질식 위험, 성장 문제는 소아청소년과나 전문가 상담을 우선합니다.",
+          units: [
+            { name: "6-7개월", sub: "시작 구간", detail: "새로운 식사 흐름을 아주 짧게 참고합니다.", checks: ["원문 구간 열기", "오늘 식사 흐름 확인", "아기 반응 메모", "이상 반응 여부 확인"] },
+            { name: "8-9개월", sub: "횟수와 질감 조정", detail: "현재 월령에 맞는 식사 흐름을 다시 봅니다.", checks: ["원문 구간 열기", "오늘 식사 기준 확인", "먹은 양 메모", "알레르기/질식 위험 확인"] },
+            { name: "10-11개월", sub: "다양성 늘리기", detail: "월령 구간의 식사 흐름을 참고해 메모합니다.", checks: ["원문 구간 열기", "오늘 식사 확인", "새 음식 반응 메모", "다음 식사 메모"] },
+            { name: "12개월 이후", sub: "가족식 전환 참고", detail: "가족식 전환 흐름을 참고하되 개별 상황을 우선합니다.", checks: ["원문 구간 열기", "오늘 식사 확인", "먹은 양 메모", "상담 필요 여부 메모"] }
+          ]
+        }
+      ];
+
+      const state = {
+        flow: "run",
+        view: "content",
+        unit: 0,
+        saved: {},
+        checked: {},
+        notes: {}
+      };
+
+      const $ = (id) => document.getElementById(id);
+      const flow = () => flows.find((item) => item.id === state.flow);
+      const unit = () => flow().units[state.unit] || flow().units[0];
+      const sourceLink = (item) => `<a href="${item.sourceUrl}" target="_blank" rel="noreferrer">${item.sourceName}</a>`;
+      const checkKey = (index) => `${state.flow}:${state.unit}:${index}`;
+      const doneCount = (item = flow(), unitIndex = state.unit) =>
+        item.units[unitIndex].checks.filter((_, index) => state.checked[`${item.id}:${unitIndex}:${index}`]).length;
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function setView(nextView) {
+        state.view = nextView;
+        render();
+      }
+
+      function saveCurrent(partial = false) {
+        state.saved[state.flow] = {
+          partial,
+          unit: state.unit,
+          savedAt: new Date().toISOString()
+        };
+        state.view = "app";
+        render();
+      }
+
+      function renderShell() {
+        const item = flow();
+        $("heroEyebrow").textContent = `${item.creator} 원문 기반`;
+        $("heroTitle").textContent = item.hero;
+        $("heroDesc").textContent = item.userJob;
+        $("heroChips").innerHTML = item.chips.map((chip, index) => `<span class="chip ${index === 0 ? "blue" : index === 1 ? "green" : ""}">${chip}</span>`).join("");
+        $("flowSelector").innerHTML = flows.map((entry) => `
+          <button class="${entry.id === state.flow ? "active" : ""}" type="button" data-flow="${entry.id}">
+            ${entry.short}
+            <span class="small">${entry.saved ? "저장됨" : entry.creator}</span>
+          </button>
+        `).join("");
+        document.querySelectorAll("[data-view]").forEach((button) => {
+          button.classList.toggle("active", button.dataset.view === state.view);
+        });
+      }
+
+      function unitButton(item, entry, index) {
+        const complete = doneCount(item, index);
+        const total = entry.checks.length;
+        const pct = Math.max(complete ? Math.round((complete / total) * 100) : 6, 6);
+        return `
+          <button class="unit-button ${index === state.unit ? "active" : ""}" type="button" data-unit="${index}">
+            <span class="num">${index + 1}</span>
+            <span>
+              <p class="item-title">${entry.name}</p>
+              <span class="small">${entry.sub}</span>
+              <span class="progress" style="display:block; margin-top:8px"><span style="--value:${pct}%"></span></span>
+            </span>
+            <span class="chip ${complete ? "green" : "amber"}">${complete}/${total}</span>
+          </button>
+        `;
+      }
+
+      function renderContent() {
+        const item = flow();
+        const selected = unit();
+        $("contentTitle").textContent = item.hero;
+        $("contentSummary").textContent = item.summary;
+        $("inputFields").innerHTML = item.inputs.map(([id, label, type, value]) => `
+          <div class="field">
+            <label for="${item.id}-${id}">${label}</label>
+            <input id="${item.id}-${id}" type="${type}" value="${escapeHtml(value)}" />
+          </div>
+        `).join("");
+        $("saveAll").textContent = item.saveAll;
+        $("saveOne").textContent = `${selected.name}만 저장`;
+        $("contentToast").hidden = true;
+        $("contentSource").innerHTML = `원문: ${sourceLink(item)}<br>${escapeHtml(item.boundary)}`;
+        $("artifactCards").innerHTML = item.artifact.map(([title, body, meta], index) => `
+          <div class="artifact-card">
+            <span class="num">${index + 1}</span>
+            <span>
+              <p class="item-title">${title}</p>
+              <span class="small">${body}</span>
+            </span>
+            <span class="chip ${index === 0 ? "blue" : "green"}">${meta}</span>
+          </div>
+        `).join("");
+        $("unitCount").textContent = `${item.units.length}개 단위`;
+        $("contentUnits").innerHTML = item.units.map((entry, index) => unitButton(item, entry, index)).join("");
+      }
+
+      function renderSavedList() {
+        const savedIds = Object.keys(state.saved);
+        if (!savedIds.length) {
+          $("savedList").innerHTML = `
+            <div class="empty">
+              <h3>아직 저장한 콘텐츠가 없습니다</h3>
+              <p class="desc">콘텐츠 페이지에서 일정을 만들면 이곳에 오늘 실행 카드가 생깁니다.</p>
+              <button class="btn" type="button" data-view="content" style="margin-top:12px">콘텐츠 페이지로 가기</button>
+            </div>
+          `;
+          return;
+        }
+        $("savedList").innerHTML = savedIds.map((id) => {
+          const entry = flows.find((item) => item.id === id);
+          const saved = state.saved[id];
+          const visibleUnit = saved.partial ? entry.units[saved.unit].name : "전체 저장";
+          return `
+            <button class="saved-button ${entry.id === state.flow ? "active" : ""}" type="button" data-flow="${entry.id}">
+              <span class="num">${flows.indexOf(entry) + 1}</span>
+              <span>
+                <p class="item-title">${entry.short}</p>
+                <span class="small">${visibleUnit}</span>
+              </span>
+              <span class="chip green">내 앱</span>
+            </button>
+          `;
+        }).join("");
+      }
+
+      function renderCheckRows() {
+        return unit().checks.map((label, index) => {
+          const key = checkKey(index);
+          const done = Boolean(state.checked[key]);
+          return `
+            <label class="check-row ${done ? "done" : ""}">
+              <input type="checkbox" data-check="${index}" ${done ? "checked" : ""} />
+              <span>
+                <p class="item-title">${label}</p>
+                <span class="small">${index === 0 ? "원문 또는 영상으로 돌아가기" : index === unit().checks.length - 1 ? "다음 방문 때 다시 볼 기록" : "오늘 실행"}</span>
+              </span>
+            </label>
+          `;
+        }).join("");
+      }
+
+      function renderApp() {
+        renderSavedList();
+        const item = flow();
+        if (!state.saved[item.id]) {
+          $("appMain").innerHTML = `
+            <p class="eyebrow">저장 전</p>
+            <h2>${item.short}은 아직 내 앱에 없습니다</h2>
+            <p class="desc">${item.saveAll}를 누르면 오늘 실행 카드와 전체 진행 지도가 이곳에 생깁니다.</p>
+            <div class="button-row" style="margin-top:14px">
+              <button class="btn" type="button" data-view="content">저장 설정 보기</button>
+            </div>
+          `;
+          return;
+        }
+        const selected = unit();
+        const complete = doneCount(item, state.unit);
+        const pct = Math.round((complete / selected.checks.length) * 100);
+        $("appMain").innerHTML = `
+          <p class="eyebrow">오늘 실행</p>
+          <h2>${item.short} · ${selected.name}</h2>
+          <p class="desc">${selected.detail}</p>
+          <div class="chips" style="margin:12px 0">
+            <span class="chip blue">${complete}/${selected.checks.length} 완료</span>
+            <span class="chip green">${item.artifact[0][0]}</span>
+            <span class="chip">${item.creator}</span>
+          </div>
+          <div class="progress" style="margin-bottom:12px"><span style="--value:${Math.max(pct, 6)}%"></span></div>
+          <div class="stack">${renderCheckRows()}</div>
+          <div class="field" style="margin-top:12px">
+            <label for="note-${item.id}">짧은 메모</label>
+            <textarea id="note-${item.id}" data-note="${item.id}" placeholder="다음에 다시 볼 내용만 짧게 남기기">${escapeHtml(state.notes[item.id] || "")}</textarea>
+          </div>
+          <div class="source-box" style="margin-top:12px">원문: ${sourceLink(item)}<br>${escapeHtml(item.boundary)}</div>
+          <div class="surface" style="margin-top:12px">
+            <div class="button-row" style="justify-content:space-between; align-items:center">
+              <h3 style="margin-bottom:0">전체 지도</h3>
+              <span class="chip blue">${item.units.length}개 단위</span>
+            </div>
+            <div class="stack" style="margin-top:10px">${item.units.map((entry, index) => unitButton(item, entry, index)).join("")}</div>
+          </div>
+        `;
+      }
+
+      function renderCreator() {
+        const item = flow();
+        $("sourceUrl").value = item.sourceUrl;
+        $("creatorTitle").textContent = `${item.short} 운영판`;
+        $("creatorPattern").textContent = item.pattern;
+        $("creatorBoundary").innerHTML = `출처와 주의 경계: ${escapeHtml(item.boundary)}`;
+        $("creatorToast").hidden = true;
+        $("creatorUnits").innerHTML = item.units.map((entry, index) => unitButton(item, entry, index)).join("");
+        $("creatorPreview").innerHTML = [
+          ["사용자 저장 화면", item.saveAll, "버튼"],
+          ["내 앱 실행 화면", `${item.units[0].name} 오늘 카드`, "체크"],
+          ["원문 연결", item.sourceName, "링크"]
+        ].map(([title, body, chip], index) => `
+          <div class="artifact-card">
+            <span class="num">${index + 1}</span>
+            <span>
+              <p class="item-title">${title}</p>
+              <span class="small">${body}</span>
+            </span>
+            <span class="chip ${index === 0 ? "blue" : "green"}">${chip}</span>
+          </div>
+        `).join("");
+      }
+
+      function render() {
+        if (state.unit >= flow().units.length) state.unit = 0;
+        renderShell();
+        renderContent();
+        renderApp();
+        renderCreator();
+        document.querySelectorAll(".view").forEach((view) => view.classList.remove("active"));
+        $(`${state.view}-view`).classList.add("active");
+        document.querySelectorAll("[data-view]").forEach((button) => {
+          button.classList.toggle("active", button.dataset.view === state.view);
+        });
+      }
+
+      document.addEventListener("click", (event) => {
+        const flowButton = event.target.closest("[data-flow]");
+        if (flowButton) {
+          state.flow = flowButton.dataset.flow;
+          state.unit = 0;
+          render();
+          return;
+        }
+
+        const viewButton = event.target.closest("[data-view]");
+        if (viewButton) {
+          setView(viewButton.dataset.view);
+          return;
+        }
+
+        const unitButton = event.target.closest("[data-unit]");
+        if (unitButton) {
+          state.unit = Number(unitButton.dataset.unit);
+          render();
+          return;
+        }
+
+        if (event.target.id === "saveAll") {
+          saveCurrent(false);
+          return;
+        }
+
+        if (event.target.id === "saveOne") {
+          saveCurrent(true);
+          return;
+        }
+
+        if (event.target.id === "importUnits") {
+          $("creatorToast").hidden = false;
+          $("creatorToast").textContent = `${flow().units.length}개 반복 단위를 원문 구조에서 가져왔습니다.`;
+          return;
+        }
+
+        if (event.target.id === "previewContent") {
+          setView("content");
+        }
+      });
+
+      document.addEventListener("change", (event) => {
+        if (event.target.matches("[data-check]")) {
+          state.checked[checkKey(Number(event.target.dataset.check))] = event.target.checked;
+          render();
+        }
+      });
+
+      document.addEventListener("input", (event) => {
+        if (event.target.matches("[data-note]")) {
+          state.notes[event.target.dataset.note] = event.target.value;
+        }
+      });
+
+      render();
+    </script>
+  </body>
+</html>

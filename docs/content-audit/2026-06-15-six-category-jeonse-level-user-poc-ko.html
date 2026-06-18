@@ -1,0 +1,1892 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>6개 카테고리 Flow 사용자 PoC</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fb;
+      --surface: #ffffff;
+      --soft: #f8fafc;
+      --line: #dbe3ef;
+      --line-strong: #c5d0df;
+      --text: #0f172a;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --blue-soft: #eff6ff;
+      --green: #047857;
+      --green-soft: #ecfdf5;
+      --amber: #b45309;
+      --amber-soft: #fffbeb;
+      --red: #b42318;
+      --red-soft: #fff1f2;
+      --shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+      --radius: 8px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #fbfdff 0, var(--bg) 420px);
+      font-size: 16px;
+      line-height: 1.58;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      min-height: 44px;
+      border: 0;
+      border-radius: 6px;
+      font-weight: 800;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    p,
+    h1,
+    h2,
+    h3,
+    h4 {
+      margin-top: 0;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 18px 0 64px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 56px;
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    .brand {
+      color: #1d4ed8;
+      font-size: 24px;
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .ghost {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #334155;
+      padding: 0 12px;
+    }
+
+    .hero {
+      margin-top: 14px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: clamp(26px, 5vw, 38px);
+      line-height: 1.16;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin-bottom: 8px;
+      font-size: clamp(22px, 3vw, 30px);
+      line-height: 1.22;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 6px;
+      font-size: 19px;
+      line-height: 1.3;
+    }
+
+    h4 {
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+
+    .desc {
+      max-width: 760px;
+      color: #334155;
+    }
+
+    .chips,
+    .button-row,
+    .source-links,
+    .segment-row,
+    .weekday-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chips {
+      margin-top: 12px;
+    }
+
+    .chip,
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #334155;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .chip.blue,
+    .pill.blue {
+      border-color: #bfdbfe;
+      background: var(--blue-soft);
+      color: #1e3a8a;
+    }
+
+    .chip.green,
+    .pill.green {
+      border-color: #bbf7d0;
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .chip.warn,
+    .pill.warn {
+      border-color: #fde68a;
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 230px minmax(0, 1fr);
+      gap: 14px;
+      margin-top: 14px;
+      align-items: start;
+    }
+
+    .flow-nav,
+    .workbench {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .flow-nav {
+      position: sticky;
+      top: 12px;
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+    }
+
+    .nav-button {
+      min-height: 66px;
+      padding: 10px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #334155;
+      text-align: left;
+    }
+
+    .nav-button b,
+    .nav-button span {
+      display: block;
+    }
+
+    .nav-button span {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .nav-button[aria-selected="true"] {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+      color: #1d4ed8;
+      box-shadow: inset 0 0 0 1px var(--blue);
+    }
+
+    .workbench {
+      overflow: hidden;
+    }
+
+    .workbench-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #fff 0, #f8fafc 100%);
+    }
+
+    .progress-pill {
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: white;
+      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(340px, 0.85fr) minmax(0, 1.15fr);
+      gap: 0;
+    }
+
+    .phone {
+      border-right: 1px solid var(--line);
+      background: #f1f5f9;
+      padding: 14px;
+    }
+
+    .phone-frame {
+      max-width: 420px;
+      margin: 0 auto;
+      border: 1px solid #cbd5e1;
+      border-radius: 22px;
+      background: #ffffff;
+      overflow: hidden;
+      box-shadow: 0 20px 44px rgba(15, 23, 42, 0.12);
+    }
+
+    .phone-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #ffffff;
+    }
+
+    .phone-title b,
+    .phone-title span {
+      display: block;
+    }
+
+    .phone-title span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .phone-body {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      background: #f8fafc;
+    }
+
+    .screen-card {
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .label {
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .source-links {
+      margin-top: 8px;
+    }
+
+    .source-links a {
+      text-decoration: none;
+    }
+
+    .input-grid {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 5px;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      background: white;
+      color: var(--text);
+    }
+
+    input,
+    select {
+      min-height: 44px;
+      padding: 8px 10px;
+    }
+
+    textarea {
+      min-height: 84px;
+      padding: 10px;
+      resize: vertical;
+    }
+
+    .primary {
+      min-height: 44px;
+      background: var(--blue);
+      color: #fff;
+      padding: 0 14px;
+    }
+
+    .secondary {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      background: white;
+      color: #334155;
+      padding: 0 12px;
+    }
+
+    .segment,
+    .weekday {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #334155;
+      padding: 0 10px;
+    }
+
+    .segment.active,
+    .weekday.active {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+      color: #1d4ed8;
+      box-shadow: inset 0 0 0 1px var(--blue);
+    }
+
+    .toast {
+      display: none;
+      margin-top: 10px;
+      padding: 9px 10px;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      background: var(--blue-soft);
+      color: #1e3a8a;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #e8eef6;
+    }
+
+    .tab {
+      min-height: 42px;
+      background: transparent;
+      color: #475569;
+      font-size: 14px;
+    }
+
+    .tab.active {
+      background: #fff;
+      color: var(--text);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+    }
+
+    .time-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .time-button {
+      min-height: 72px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #334155;
+      text-align: left;
+    }
+
+    .time-button span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .time-button.active {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+      color: #1d4ed8;
+      box-shadow: inset 0 0 0 1px var(--blue);
+    }
+
+    .progress {
+      height: 8px;
+      margin-top: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e2e8f0;
+    }
+
+    .progress span {
+      display: block;
+      width: var(--value, 0%);
+      height: 100%;
+      border-radius: inherit;
+      background: var(--blue);
+      transition: width 180ms ease;
+    }
+
+    .task-list {
+      display: grid;
+      gap: 9px;
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .task {
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+    }
+
+    .task input {
+      width: 18px;
+      height: 18px;
+      min-height: 18px;
+      margin-top: 3px;
+    }
+
+    .task strong,
+    .task span {
+      display: block;
+    }
+
+    .task span {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .task.done strong {
+      color: #94a3b8;
+      text-decoration: line-through;
+    }
+
+    .state-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .state-button {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #334155;
+      padding: 0 10px;
+      font-size: 14px;
+    }
+
+    .state-button.active {
+      border-color: #bbf7d0;
+      background: var(--green-soft);
+      color: var(--green);
+      box-shadow: inset 0 0 0 1px #10b981;
+    }
+
+    .content-panel {
+      padding: 16px;
+      background: var(--surface);
+    }
+
+    .calendar-card,
+    .detail-card,
+    .all-card,
+    .next-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 14px;
+    }
+
+    .detail-card,
+    .all-card,
+    .next-card {
+      margin-top: 12px;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      margin-top: 12px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+
+    .calendar-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .month-nav {
+      display: flex;
+      gap: 6px;
+      flex: 0 0 auto;
+    }
+
+    .month-button {
+      min-height: 36px;
+      padding: 0 9px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #334155;
+      font-size: 13px;
+    }
+
+    .weekday-label,
+    .day {
+      min-height: 56px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 6px;
+      font-size: 12px;
+    }
+
+    .weekday-label {
+      min-height: auto;
+      background: #f1f5f9;
+      text-align: center;
+      font-weight: 900;
+    }
+
+    .day {
+      appearance: none;
+      border-radius: 0;
+      background: #fff;
+      color: var(--text);
+      text-align: left;
+      font-weight: 700;
+    }
+
+    .day:nth-child(7n),
+    .weekday-label:nth-child(7n) {
+      border-right: 0;
+    }
+
+    .day.empty {
+      background: #f8fafc;
+      color: #cbd5e1;
+    }
+
+    .day.has-event:hover,
+    .day.has-event:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: -2px;
+      background: var(--blue-soft);
+    }
+
+    .day.active {
+      background: var(--blue-soft);
+      box-shadow: inset 0 0 0 2px var(--blue);
+    }
+
+    .event-chip {
+      margin-top: 4px;
+      padding: 3px 4px;
+      border: 1px solid #bfdbfe;
+      border-radius: 4px;
+      background: var(--blue-soft);
+      color: #1e3a8a;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .date-agenda,
+    .schedule-strip {
+      margin-top: 12px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--soft);
+    }
+
+    .agenda-list,
+    .schedule-list {
+      display: grid;
+      gap: 7px;
+      margin-top: 8px;
+    }
+
+    .agenda-item,
+    .schedule-item {
+      min-height: 42px;
+      padding: 8px 9px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: #334155;
+      text-align: left;
+    }
+
+    .agenda-item b,
+    .agenda-item span,
+    .schedule-item b,
+    .schedule-item span {
+      display: block;
+    }
+
+    .agenda-item span,
+    .schedule-item span {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .agenda-item.active,
+    .schedule-item.active {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+      color: #1d4ed8;
+      box-shadow: inset 0 0 0 1px var(--blue);
+    }
+
+    .all-stage {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+    }
+
+    .all-stage + .all-stage {
+      margin-top: 10px;
+    }
+
+    .detail-links {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .detail-links a {
+      display: block;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--soft);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .copy-box {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      background: var(--blue-soft);
+      color: #1e3a8a;
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .warning-box {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #fde68a;
+      border-radius: 6px;
+      background: var(--amber-soft);
+      color: #92400e;
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    @media (max-width: 980px) {
+      .app-shell,
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-nav {
+        position: static;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .phone {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .phone-frame {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .page {
+        width: min(100% - 20px, 1180px);
+        padding-top: 10px;
+      }
+
+      .hero,
+      .workbench-head,
+      .content-panel {
+        padding: 14px;
+      }
+
+      .flow-nav {
+        grid-template-columns: 1fr;
+      }
+
+      .workbench-head {
+        flex-direction: column;
+      }
+
+      .phone {
+        padding: 10px;
+      }
+
+      .time-row,
+      .tabs {
+        grid-template-columns: 1fr;
+      }
+
+      .day {
+        min-height: 68px;
+        padding: 5px;
+      }
+
+      .chip,
+      .pill {
+        white-space: normal;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar" aria-label="FLOW">
+      <a class="brand" href="#">FLOW</a>
+      <button class="ghost" type="button" id="reset-flow">현재 Flow 초기화</button>
+    </nav>
+
+    <header class="hero">
+      <p class="eyebrow">카테고리별 사용자 Flow PoC</p>
+      <h1>원컨텐츠를 내 실행 일정으로 바꾸기</h1>
+      <p class="desc">전세 계약 Flow처럼, 원컨텐츠를 저장하고 날짜나 반복 기준을 넣은 뒤 체크, 메모, URL까지 실제로 눌러볼 수 있는 사용자 화면입니다.</p>
+      <div class="chips">
+        <span class="chip blue">입력 1-3개</span>
+        <span class="chip green">체크/메모 저장</span>
+        <span class="chip warn">캘린더/루틴/버킷 변형</span>
+      </div>
+    </header>
+
+    <section class="app-shell" aria-label="6개 Flow 사용자 PoC">
+      <nav class="flow-nav" id="flow-nav" aria-label="Flow 선택"></nav>
+
+      <article class="workbench">
+        <header class="workbench-head">
+          <div>
+            <div class="chips" id="flow-tags" style="margin-top:0"></div>
+            <h2 id="flow-title"></h2>
+            <p class="desc" id="flow-summary"></p>
+          </div>
+          <span class="progress-pill" id="total-progress">0/0 완료</span>
+        </header>
+
+        <div class="workspace">
+          <section class="phone" aria-label="사용자 화면">
+            <div class="phone-frame">
+              <div class="phone-top">
+                <div class="phone-title">
+                  <b id="phone-title"></b>
+                  <span id="phone-subtitle"></span>
+                </div>
+                <span class="pill blue" id="phone-status">저장 전</span>
+              </div>
+              <div class="phone-body">
+                <section class="screen-card" id="source-card"></section>
+                <section class="screen-card" id="setup-card"></section>
+                <section class="screen-card">
+                  <p class="label">보기</p>
+                  <div class="tabs" id="view-tabs"></div>
+                </section>
+                <section class="screen-card" id="time-card"></section>
+                <section class="screen-card" id="run-card"></section>
+              </div>
+            </div>
+          </section>
+
+          <section class="content-panel" aria-label="캘린더와 상세">
+            <section class="calendar-card" id="calendar-card"></section>
+            <section id="secondary-panel"></section>
+          </section>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const flows = [
+      {
+        id: 'moving',
+        nav: '이사',
+        title: '이사 D-30 준비 Flow',
+        subtitle: '이사일 기준 일정',
+        summary: '이사일과 이사 방식을 넣으면 D-30부터 D-Day까지 견적, 예약, 정산 일정이 생깁니다.',
+        tags: ['날짜형', '캘린더', '체크리스트'],
+        sourceText: '오늘의집과 이사 체크리스트를 보다가 내 이사일 기준으로 다시 알림을 받고 싶을 때 저장합니다.',
+        sources: [
+          ['오늘의집 이사 준비 체크리스트', 'https://ohou.se/advices/8442'],
+          ['아정당 이사 준비 체크리스트', 'https://www.ajd.co.kr/contents/basic-tip/detail/%EC%8B%A0%ED%98%BC%EC%A7%91_%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EA%B3%BC%EC%A0%95_%EC%B4%9D%EC%A0%95%EB%A6%AC-48329']
+        ],
+        inputs: [
+          { key: 'moveDate', label: '이사일', type: 'date', value: '2026-07-18' },
+          { key: 'method', label: '이사 방식', type: 'segment', value: '포장이사', options: ['포장이사', '반포장이사', '용달/직접'] }
+        ],
+        anchorKey: 'moveDate',
+        saveLabel: '이사 일정 만들기',
+        primaryTab: '일정 보기',
+        nextLabel: '다음 일정',
+        exportLabel: '캘린더에 넣기',
+        memoLabel: '업체/예약 메모',
+        stages: [
+          {
+            key: 'D-30',
+            offset: -30,
+            title: '이사 방식과 견적 후보 정하기',
+            detail: '이사 방식을 먼저 정하고, 이사·청소 견적과 버릴 물건을 같은 메모에 남깁니다.',
+            tasks: [
+              { title: '이사 방식 1개 선택', note: '출처: 오늘의집 D-30. 자가용, 용달, 일반, 반포장, 포장이사 중 선택.' },
+              { title: '이사·청소 견적 2-3곳 비교', note: '출처: 아정당 D-30. 이사·청소 견적 확인 및 예약, 여러 업체 견적 비교.' },
+              { title: '버릴 물건과 대형폐기물 메모', note: '출처: 오늘의집 D-30. 불필요한 물건 정리와 대형폐기물 배출 확인.' }
+            ],
+            links: [
+              ['숨고 이사 견적', 'https://soomgo.com/hire/%EA%B5%AD%EB%82%B4-%EC%9D%B4%EC%82%AC'],
+              ['짐싸', 'https://www.zimssa.com/main'],
+              ['미소 이사 견적', 'https://miso.kr/moving-rfq']
+            ]
+          },
+          {
+            key: 'D-10',
+            offset: -10,
+            title: '주소 변경과 운반 예약 정리하기',
+            detail: '주소 변경, 정기 배달 중지, 운반 동선 예약을 한 번에 확인합니다.',
+            tasks: [
+              { title: '통장·카드·우편물 주소 변경', note: '출처: 아정당 D-10. 금융기관과 우체국 주소 변경.' },
+              { title: '신문·우유 등 정기 배달 중지', note: '출처: 아정당 D-10. 정기 배달 중지 요청.' },
+              { title: '엘리베이터·사다리차·주차공간 예약', note: '출처: 아정당 D-10. 엘리베이터 사전 예약과 주차공간 예약.' }
+            ]
+          },
+          {
+            key: 'D-3',
+            offset: -3,
+            title: '철거·설치 예약과 당일 물건 분리하기',
+            detail: '철거·설치 예약과 이사 당일 바로 쓸 물건을 분리합니다.',
+            tasks: [
+              { title: '도시가스 철거·설치 예약', note: '출처: 아정당 D-3. 도시가스 철거와 설치 예약.' },
+              { title: '자동이체 해지 신청', note: '출처: 아정당 D-3. 각 영업소 자동이체 해지 신청.' },
+              { title: '세탁기 물 빼기와 당일 물건 따로 포장', note: '출처: 아정당 D-3, 오늘의집 D-1. 잔수 제거와 당일 물건 분리.' }
+            ]
+          },
+          {
+            key: 'D-1',
+            offset: -1,
+            title: '이사 전날 최종 확인하기',
+            detail: '이사업체 일정, 결제 준비, 주차공간, 귀중품과 사진 기록을 확인합니다.',
+            tasks: [
+              { title: '이사 일정 최종 확인', note: '출처: 아정당 D-1. 이사업체 일정 최종 확인.' },
+              { title: '이체 한도와 주차공간 확인', note: '출처: 아정당 D-1. 이체 한도 증액과 주차공간 확보 확인.' },
+              { title: '귀중품 별도 보관과 가전·가구 사진 촬영', note: '출처: 아정당 D-1, 오늘의집 D-1. 귀중품 보관과 사진 촬영.' }
+            ]
+          },
+          {
+            key: 'D-Day',
+            offset: 0,
+            title: '정산·파손 확인·전입신고 처리하기',
+            detail: '출발지 정산과 도착지 인수인계, 전입신고와 확정일자 접수 여부만 확인합니다.',
+            tasks: [
+              { title: '전기·가스·관리비 정산 확인', note: '출처: 오늘의집, 아정당 D-Day. 전기, 가스, 관리비 정산.' },
+              { title: '분실·파손 확인 후 비용 정산', note: '출처: 아정당 D-Day. 이삿짐 분실·파손 확인 후 비용 정산.' },
+              { title: '열쇠 반납·전입신고·확정일자 확인', note: '출처: 오늘의집, 아정당 D-Day. 열쇠 반납, 전입신고, 확정일자.' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'usedCar',
+        nav: '중고차',
+        title: '중고차 방문 당일 체크 Flow',
+        subtitle: '방문일 기준 현장 체크',
+        summary: '방문일을 넣으면 방문 전 이력조회, 현장 체크, 계약 전 보류 사유 메모가 이어집니다.',
+        tags: ['현장 체크', '방문일', '보류 메모'],
+        sourceText: '중고차 체크리스트를 보고 매장 방문 당일 빠뜨릴까 걱정될 때 저장합니다.',
+        sources: [
+          ['겟차 중고차 상태 체크리스트', 'https://web.getcha.kr/blog/used-car-condition-checklist-guide'],
+          ['한국소비자원 중고차 체크리스트', 'https://www.kca.go.kr/smartconsumer/sub.do?menukey=7714&mode=view&no=1002862088'],
+          ['성능·상태점검기록부 설명', 'https://www.kca.go.kr/smartconsumer/sub.do?cate2=00000187&menukey=7800&mode=view&no=1003195495&page=10']
+        ],
+        inputs: [
+          { key: 'visitDate', label: '방문일', type: 'date', value: '2026-06-22' },
+          { key: 'carName', label: '매물명', type: 'text', value: '아반떼 2021' },
+          { key: 'plate', label: '차량번호 선택', type: 'text', value: '' }
+        ],
+        anchorKey: 'visitDate',
+        saveLabel: '방문 체크 만들기',
+        primaryTab: '현장 체크',
+        nextLabel: '보류 항목',
+        exportLabel: '방문일 알림 만들기',
+        memoLabel: '보류 사유',
+        stateActions: ['문제 없음', '추가 확인', '보류 사유 남김'],
+        stages: [
+          {
+            key: '방문 전',
+            offset: -1,
+            title: '차량번호로 이력과 성능기록부 준비하기',
+            detail: '차량번호 또는 판매 페이지 URL을 메모하고 성능·상태점검기록부 파일을 준비합니다.',
+            tasks: ['판매 페이지 URL 또는 차량번호 메모', '성능·상태점검기록부 파일 준비', '사고/교환/주행거리 항목 표시']
+          },
+          {
+            key: '방문 당일',
+            offset: 0,
+            title: '외관, 실내, 시동 상태를 현장에서 체크하기',
+            detail: '사진과 짧은 메모만 남기고 구매 판단은 사용자가 직접 합니다.',
+            tasks: ['패널 간격, 타이어, 유리, 램프 확인', '에어컨, 버튼, 경고등, 계기판 확인', '시동 소리와 변속 느낌 메모']
+          },
+          {
+            key: '계약 전',
+            offset: 0,
+            title: '기록부와 실제 상태 차이를 보고 보류 사유 남기기',
+            detail: '기록부 특이사항과 현장 확인 결과가 다르면 보류 사유와 추가 확인 대상을 적습니다.',
+            tasks: ['기록부 특이사항과 실제 상태 비교', '판매자 설명과 다른 항목 표시', '보류 사유 1줄 작성']
+          },
+          {
+            key: '보류 후',
+            offset: 1,
+            title: '보류 사유 다시 보고 다음 행동 정하기',
+            detail: '판매자 답변, 사진, 메모를 보고 추가 확인하거나 다른 매물로 복제합니다.',
+            tasks: ['판매자 답변 확인', '추가 확인 요청 여부 선택', '다른 매물에 체크 Flow 복제']
+          }
+        ]
+      },
+      {
+        id: 'workout',
+        nav: '홈트',
+        title: '주 3회 홈트 영상 루틴 Flow',
+        subtitle: '반복 일정과 오늘 운동',
+        summary: '시작일과 요일을 넣으면 반복 일정이 생기고, 운동일에는 원문 영상 1회 실행 카드만 보입니다.',
+        tags: ['루틴형', '반복 캘린더', '영상 실행'],
+        sourceText: '홈트 영상을 보고 이번 주부터 3번만 따라 해보고 싶을 때 저장합니다.',
+        sources: [
+          ['핏블리 주 3회 홈트 영상', 'https://www.youtube.com/watch?v=uDrWZ8PHC6A'],
+          ['주 3회 홈트 루틴 글 후보', 'https://noonnooonannaa.tistory.com/8']
+        ],
+        inputs: [
+          { key: 'startDate', label: '시작일', type: 'date', value: '2026-06-15' },
+          { key: 'weekdays', label: '운동 요일', type: 'weekday', value: ['월', '수', '금'], options: ['월', '화', '수', '목', '금', '토', '일'] }
+        ],
+        anchorKey: 'startDate',
+        saveLabel: '반복 일정 만들기',
+        primaryTab: '오늘 운동',
+        nextLabel: '다음 운동',
+        exportLabel: '반복 캘린더에 넣기',
+        memoLabel: '운동 후 메모',
+        stateActions: ['완료', '건너뜀'],
+        stages: [
+          {
+            key: '1회차',
+            offset: 0,
+            title: '오늘 원문 영상 1회 따라 하기',
+            detail: '운동 동작은 원문 영상에서 확인하고, Flow에는 실행 여부와 짧은 메모만 남깁니다.',
+            tasks: ['매트와 물 준비', '원문 영상 열기', '끝나면 완료 또는 건너뜀 표시'],
+            links: [['원문 영상 열기', 'https://www.youtube.com/watch?v=uDrWZ8PHC6A']]
+          },
+          {
+            key: '2회차',
+            offset: 2,
+            title: '두 번째 운동일에 같은 영상 1회 실행하기',
+            detail: '이전 회차가 힘들었으면 강도를 낮추고 통증이 있으면 중단합니다.',
+            tasks: ['이전 메모 확인', '원문 영상 1회 실행', '완료 또는 건너뜀 표시']
+          },
+          {
+            key: '3회차',
+            offset: 4,
+            title: '이번 주 세 번째 운동 실행하기',
+            detail: '주 3회 목표를 채우는 회차입니다. 무리하지 않고 실행 여부만 남깁니다.',
+            tasks: ['오늘 컨디션 확인', '원문 영상 1회 실행', '다음 주 유지 여부 메모']
+          },
+          {
+            key: '주간 확인',
+            offset: 6,
+            title: '이번 주 몇 번 했는지 보기',
+            detail: '운동 처방이 아니라 반복 유지 여부를 가볍게 확인합니다.',
+            tasks: ['이번 주 완료 횟수 확인', '건너뜀 이유 1줄 메모', '다음 주 같은 요일 유지 여부 선택']
+          }
+        ],
+        caution: '통증, 어지러움, 호흡 곤란, 기존 질환 악화가 있으면 중단하고 전문가 상담을 우선하세요.'
+      },
+      {
+        id: 'squishy',
+        nav: '스퀴시',
+        title: '무료 도안 스퀴시 만들기 Flow',
+        subtitle: '놀이 버킷과 선택 날짜',
+        summary: '처음에는 날짜 없이 놀이 버킷에 저장하고, 나중에 날짜를 정하면 실행 체크리스트로 바뀝니다.',
+        tags: ['버킷형', '아이 놀이', '도안/URL'],
+        sourceText: '유튜브나 블로그에서 무료 도안을 보고 나중에 아이와 해보고 싶을 때 저장합니다.',
+        sources: [
+          ['호퍼스 스퀴시 만들기 영상', 'https://www.youtube.com/watch?v=pgZjiXwMOmQ'],
+          ['무료 도안 스퀴시 영상 예시', 'https://www.youtube.com/watch?v=9uEmnVgmwhY'],
+          ['도안 다운로드 블로그 예시', 'https://m.blog.naver.com/ddanycrafts/224140544008']
+        ],
+        inputs: [
+          { key: 'playDate', label: '놀이 날짜 선택', type: 'date', value: '' }
+        ],
+        anchorKey: 'playDate',
+        saveLabel: '놀이 버킷에 넣기',
+        primaryTab: '놀이 준비',
+        nextLabel: '날짜 정하기',
+        exportLabel: '놀이 날짜에 넣기',
+        memoLabel: '준비물 메모',
+        stateActions: ['저장만', '날짜 정함', '완료'],
+        stages: [
+          {
+            key: '저장',
+            title: '도안과 영상을 놀이 버킷에 저장하기',
+            detail: '날짜를 정하지 않아도 도안, 원문 영상, 준비물을 한 카드에 담아둡니다.',
+            tasks: ['도안 다운로드 링크 저장', '원문 영상 링크 저장', '준비물 목록 확인']
+          },
+          {
+            key: '실행일',
+            title: '도안 출력 후 원문 영상 보며 만들기',
+            detail: '만들기 과정은 원문 영상을 열어 따라가고 Flow에는 준비물과 완료 여부만 남깁니다.',
+            tasks: ['도안 출력', '가위/테이프/솜 또는 휴지 준비', '원문 영상 열고 1회 만들기']
+          },
+          {
+            key: '완료 후',
+            title: '다시 할지 놀이 목록에 남기기',
+            detail: '사진이나 긴 일지는 필수가 아닙니다. 다시 하고 싶으면 버킷에 남깁니다.',
+            tasks: ['완료 표시', '다시 하기 여부 선택', '비슷한 놀이와 묶기']
+          }
+        ]
+      },
+      {
+        id: 'plant',
+        nav: '식물',
+        title: '스투키 물주기 확인 Flow',
+        subtitle: '반복 확인 알림',
+        summary: '식물 이름은 원컨텐츠에서 가져오고, 사용자는 시작일과 확인 주기만 넣습니다.',
+        tags: ['반복 확인', '상태 메모', '알림'],
+        sourceText: '스투키 물주기 글을 보고 다음 확인일을 잊지 않고 싶을 때 저장합니다.',
+        sources: [
+          ['에픽 플랜츠 스투키 관리', 'https://epicplants.tistory.com/entry/How-to-grow-a-stuckyi-plant'],
+          ['그루우 스투키 관리 가이드', 'https://myplant.groo.pro/plant-care-guide/dracaena-stuckyi/25594'],
+          ['스투키 관리 영상 후보', 'https://www.youtube.com/watch?v=DdRhoML16sM']
+        ],
+        inputs: [
+          { key: 'startDate', label: '시작일', type: 'date', value: '2026-06-15' },
+          { key: 'interval', label: '확인 주기', type: 'select', value: '14', options: [['10', '10일마다'], ['14', '14일마다'], ['21', '21일마다']] }
+        ],
+        anchorKey: 'startDate',
+        saveLabel: '확인 알림 만들기',
+        primaryTab: '오늘 확인',
+        nextLabel: '다음 물주기',
+        exportLabel: '반복 알림에 넣기',
+        memoLabel: '상태 메모',
+        stateActions: ['물 줌', '오늘은 안 줌', '과습 의심'],
+        stages: [
+          {
+            key: '첫 확인',
+            offset: 0,
+            title: '흙이 충분히 말랐는지 보고 물줄지 결정하기',
+            detail: '정해진 날 무조건 물주는 것이 아니라 흙과 잎 상태를 보고 물줌 또는 보류를 선택합니다.',
+            tasks: ['겉흙과 속흙 마름 정도 확인', '잎 처짐이나 과습 의심 확인', '물줌 또는 오늘은 안 줌 선택']
+          },
+          {
+            key: '다음 확인',
+            intervalMultiplier: 1,
+            title: '마지막 기록 보고 다음 물주기 결정하기',
+            detail: '마지막 물준 날과 상태 메모를 보고 주기를 유지하거나 조정합니다.',
+            tasks: ['마지막 물준 날 확인', '흙 상태 다시 확인', '주기 유지 또는 변경 선택']
+          },
+          {
+            key: '이상 신호',
+            intervalMultiplier: 1,
+            title: '이상 신호가 있으면 사진 이름만 메모하기',
+            detail: '병해충 판단 앱으로 확장하지 않고 상태 사진 이름과 원문 링크만 남깁니다.',
+            tasks: ['사진 파일 이름 선택 메모', '과습/잎 처짐 여부 표시', '다음 확인일 조정']
+          }
+        ]
+      },
+      {
+        id: 'school',
+        nav: '초등',
+        title: '초등 입학 준비 D-30 Flow',
+        subtitle: '입학일 기준 단계',
+        summary: '입학일을 넣으면 예비소집, 준비물, 생활 연습, 첫 주 적응 체크가 단계별로 생깁니다.',
+        tags: ['교육', '날짜+단계', '가족 준비'],
+        sourceText: '입학 준비 글을 보고 지금부터 무엇을 언제 준비해야 할지 정리하고 싶을 때 저장합니다.',
+        sources: [
+          ['홈런 초등 입학 준비물', 'https://www.home-learn.co.kr/newsroom/news/A/1317'],
+          ['홈런 초등 입학 체크리스트', 'https://www.home-learn.co.kr/newsroom/news/A/2035'],
+          ['여성동아 초등 입학 준비 체크리스트', 'https://woman.donga.com/edu/article/all/12/5372050/1']
+        ],
+        inputs: [
+          { key: 'entryDate', label: '입학일', type: 'date', value: '2027-03-02' },
+          { key: 'schoolGuide', label: '학교 안내문 URL 선택', type: 'text', value: '' }
+        ],
+        anchorKey: 'entryDate',
+        saveLabel: '입학 준비 일정 만들기',
+        primaryTab: '현재 단계',
+        nextLabel: '다음 단계',
+        exportLabel: '입학 일정에 넣기',
+        memoLabel: '안내문/준비물 메모',
+        stages: [
+          {
+            key: 'D-30',
+            offset: -30,
+            title: '예비소집 자료와 학교 안내문 저장하기',
+            detail: '학교마다 준비물이 다르므로 공식 안내문 URL이나 사진 이름을 상세 설명에 둡니다.',
+            tasks: ['취학통지서와 예비소집 일정 확인', '학교 안내문 링크 또는 사진 이름 저장', '제출 서류와 예방접종 안내 확인']
+          },
+          {
+            key: 'D-21',
+            offset: -21,
+            title: '안내문 기준으로 살 물품만 표시하기',
+            detail: '블로그 추천템은 참고로만 보고, 학교 안내문에 필요한 물품만 먼저 표시합니다.',
+            tasks: ['가방/실내화/필통 확인', '학교 금지 물품 제외', '이름표 필요한 물품 표시']
+          },
+          {
+            key: 'D-14',
+            offset: -14,
+            title: '생활 연습 3가지만 고르기',
+            detail: '아침 기상, 화장실, 가방 정리처럼 아이가 직접 해볼 행동을 3개만 고릅니다.',
+            tasks: ['아침 준비 연습', '화장실/손씻기 연습', '가방 정리 연습']
+          },
+          {
+            key: 'D-7',
+            offset: -7,
+            title: '가방에 실제 준비물 넣어보기',
+            detail: '아이가 직접 찾을 수 있는지 확인하는 실행 카드입니다.',
+            tasks: ['가방에 준비물 넣기', '아이가 물건 위치 찾기', '빠진 물품 메모']
+          },
+          {
+            key: '첫 주',
+            offset: 0,
+            title: '등교 루틴과 빠진 준비물만 확인하기',
+            detail: '입학 첫 주에는 준비물보다 등교 준비 시간과 아이 컨디션을 짧게 확인합니다.',
+            tasks: ['등교 준비에 걸린 시간 확인', '준비물 빠짐 여부 확인', '아이 컨디션 짧게 메모']
+          }
+        ]
+      }
+    ];
+
+    const state = {};
+    flows.forEach((flow) => {
+      const inputs = {};
+      flow.inputs.forEach((input) => {
+        inputs[input.key] = Array.isArray(input.value) ? [...input.value] : input.value;
+      });
+      state[flow.id] = {
+        inputs,
+        saved: false,
+        view: 'run',
+        stage: flow.stages[0].key,
+        calendarDate: '',
+        calendarMonth: '',
+        checks: {},
+        memos: {},
+        status: {},
+        toast: ''
+      };
+    });
+
+    let activeFlowId = 'moving';
+
+    const flowById = (id) => flows.find((flow) => flow.id === id);
+    const activeFlow = () => flowById(activeFlowId);
+    const activeState = () => state[activeFlowId];
+    const pad = (value) => String(value).padStart(2, '0');
+
+    function addDays(date, offset) {
+      if (!date) return '';
+      const value = new Date(`${date}T00:00:00`);
+      value.setDate(value.getDate() + offset);
+      return `${value.getFullYear()}-${pad(value.getMonth() + 1)}-${pad(value.getDate())}`;
+    }
+
+    function dateLabel(date) {
+      if (!date) return '날짜 없음';
+      const value = new Date(`${date}T00:00:00`);
+      if (Number.isNaN(value.getTime())) return '날짜 없음';
+      const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+      return `${value.getFullYear()}년 ${value.getMonth() + 1}월 ${value.getDate()}일 ${weekdays[value.getDay()]}요일`;
+    }
+
+    function shortDate(date) {
+      if (!date) return '날짜 없음';
+      const value = new Date(`${date}T00:00:00`);
+      if (Number.isNaN(value.getTime())) return '날짜 없음';
+      return `${value.getMonth() + 1}/${value.getDate()}`;
+    }
+
+    function monthKey(date) {
+      if (!date) return '';
+      const value = new Date(`${date}T00:00:00`);
+      if (Number.isNaN(value.getTime())) return '';
+      return `${value.getFullYear()}-${pad(value.getMonth() + 1)}`;
+    }
+
+    function shiftMonth(key, offset) {
+      if (!key) return '';
+      const [year, month] = key.split('-').map(Number);
+      const value = new Date(year, month - 1 + offset, 1);
+      return `${value.getFullYear()}-${pad(value.getMonth() + 1)}`;
+    }
+
+    function getInput(flow, key) {
+      return state[flow.id].inputs[key];
+    }
+
+    function stageDate(flow, stage) {
+      const inputs = state[flow.id].inputs;
+      if (flow.id === 'squishy') {
+        if (stage.key === '저장') return '';
+        if (stage.key === '실행일') return inputs.playDate || '';
+        if (stage.key === '완료 후') return inputs.playDate ? addDays(inputs.playDate, 0) : '';
+      }
+      const anchor = inputs[flow.anchorKey];
+      if (!anchor) return '';
+      if (typeof stage.offset === 'number') return addDays(anchor, stage.offset);
+      if (stage.intervalMultiplier) {
+        const interval = Number(inputs.interval || 14);
+        return addDays(anchor, interval * stage.intervalMultiplier);
+      }
+      return anchor;
+    }
+
+    function activeStage(flow = activeFlow()) {
+      return flow.stages.find((stage) => stage.key === state[flow.id].stage) || flow.stages[0];
+    }
+
+    function setActiveStage(flow, stageKey) {
+      const stateForFlow = state[flow.id];
+      const stage = flow.stages.find((item) => item.key === stageKey) || flow.stages[0];
+      const date = stageDate(flow, stage);
+      stateForFlow.stage = stage.key;
+      stateForFlow.view = 'run';
+      if (date) {
+        stateForFlow.calendarDate = date;
+        stateForFlow.calendarMonth = monthKey(date);
+      }
+    }
+
+    function checkKey(stage, index) {
+      return `${stage.key}-${index}`;
+    }
+
+    function taskTitle(task) {
+      return typeof task === 'string' ? task : task.title;
+    }
+
+    function taskNote(task) {
+      return typeof task === 'string' ? '' : task.note || '';
+    }
+
+    function stageDone(flow, stage) {
+      return stage.tasks.filter((_, index) => state[flow.id].checks[checkKey(stage, index)]).length;
+    }
+
+    function flowDone(flow) {
+      return flow.stages.reduce((sum, stage) => sum + stageDone(flow, stage), 0);
+    }
+
+    function flowTotal(flow) {
+      return flow.stages.reduce((sum, stage) => sum + stage.tasks.length, 0);
+    }
+
+    function nextStage(flow) {
+      const current = activeStage(flow);
+      const index = flow.stages.findIndex((stage) => stage.key === current.key);
+      return flow.stages[Math.min(index + 1, flow.stages.length - 1)];
+    }
+
+    function renderNav() {
+      document.querySelector('#flow-nav').innerHTML = flows.map((flow) => `
+        <button class="nav-button" type="button" data-flow="${flow.id}" aria-selected="${flow.id === activeFlowId}">
+          <b>${flow.nav}</b>
+          <span>${flow.title}</span>
+        </button>
+      `).join('');
+      document.querySelectorAll('[data-flow]').forEach((button) => {
+        button.addEventListener('click', () => {
+          activeFlowId = button.dataset.flow;
+          render();
+        });
+      });
+    }
+
+    function renderHeader(flow) {
+      document.querySelector('#flow-tags').innerHTML = flow.tags.map((tag) => `<span class="chip blue">${tag}</span>`).join('');
+      document.querySelector('#flow-title').textContent = flow.title;
+      document.querySelector('#flow-summary').textContent = flow.summary;
+      document.querySelector('#phone-title').textContent = flow.title;
+      document.querySelector('#phone-subtitle').textContent = flow.subtitle;
+      document.querySelector('#phone-status').textContent = state[flow.id].saved ? `${flowDone(flow)}/${flowTotal(flow)} 완료` : '저장 전';
+      document.querySelector('#total-progress').textContent = `${flowDone(flow)}/${flowTotal(flow)} 완료`;
+    }
+
+    function renderSource(flow) {
+      document.querySelector('#source-card').innerHTML = `
+        <p class="label">원컨텐츠</p>
+        <p>${flow.sourceText}</p>
+        <div class="source-links">
+          ${flow.sources.map(([label, href]) => `<a class="chip blue" href="${href}" target="_blank" rel="noreferrer">${label}</a>`).join('')}
+        </div>
+      `;
+    }
+
+    function inputControl(flow, input) {
+      const value = getInput(flow, input.key);
+      if (input.type === 'segment') {
+        return `
+          <div class="field">
+            <label>${input.label}</label>
+            <div class="segment-row">
+              ${input.options.map((option) => `<button class="segment ${value === option ? 'active' : ''}" type="button" data-input="${input.key}" data-value="${option}">${option}</button>`).join('')}
+            </div>
+          </div>
+        `;
+      }
+      if (input.type === 'weekday') {
+        return `
+          <div class="field">
+            <label>${input.label}</label>
+            <div class="weekday-row">
+              ${input.options.map((option) => `<button class="weekday ${value.includes(option) ? 'active' : ''}" type="button" data-weekday="${input.key}" data-value="${option}">${option}</button>`).join('')}
+            </div>
+          </div>
+        `;
+      }
+      if (input.type === 'select') {
+        return `
+          <div class="field">
+            <label for="${flow.id}-${input.key}">${input.label}</label>
+            <select id="${flow.id}-${input.key}" data-field="${input.key}">
+              ${input.options.map(([optionValue, label]) => `<option value="${optionValue}" ${value === optionValue ? 'selected' : ''}>${label}</option>`).join('')}
+            </select>
+          </div>
+        `;
+      }
+      return `
+        <div class="field">
+          <label for="${flow.id}-${input.key}">${input.label}</label>
+          <input id="${flow.id}-${input.key}" data-field="${input.key}" type="${input.type}" value="${value || ''}" />
+        </div>
+      `;
+    }
+
+    function renderSetup(flow) {
+      const currentState = state[flow.id];
+      document.querySelector('#setup-card').innerHTML = `
+        <p class="label">저장 설정</p>
+        <div class="input-grid">${flow.inputs.map((input) => inputControl(flow, input)).join('')}</div>
+        <div class="button-row" style="margin-top:12px">
+          <button class="primary" type="button" id="save-flow">${flow.saveLabel}</button>
+          <button class="secondary" type="button" id="copy-flow">메모/URL 복사</button>
+        </div>
+        <p class="toast ${currentState.toast ? 'show' : ''}" id="save-toast" role="status">${currentState.toast || '저장되었습니다.'}</p>
+      `;
+      document.querySelectorAll('[data-field]').forEach((input) => {
+        input.addEventListener('input', () => {
+          currentState.inputs[input.dataset.field] = input.value;
+          render();
+        });
+      });
+      document.querySelectorAll('[data-input]').forEach((button) => {
+        button.addEventListener('click', () => {
+          currentState.inputs[button.dataset.input] = button.dataset.value;
+          render();
+        });
+      });
+      document.querySelectorAll('[data-weekday]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const key = button.dataset.weekday;
+          const day = button.dataset.value;
+          const list = currentState.inputs[key];
+          currentState.inputs[key] = list.includes(day) ? list.filter((item) => item !== day) : [...list, day];
+          if (currentState.inputs[key].length === 0) currentState.inputs[key] = [day];
+          render();
+        });
+      });
+      document.querySelector('#save-flow').addEventListener('click', () => {
+        currentState.saved = true;
+        currentState.toast = `${flow.saveLabel.replace(' 만들기', '')}가 저장되었습니다.`;
+        currentState.view = 'run';
+        currentState.stage = flow.stages[0].key;
+        currentState.calendarDate = stageDate(flow, flow.stages[0]);
+        currentState.calendarMonth = monthKey(currentState.calendarDate);
+        render();
+      });
+      document.querySelector('#copy-flow').addEventListener('click', () => {
+        currentState.toast = '제목, 상세 설명, URL을 메모 형식으로 복사했습니다.';
+        render();
+      });
+    }
+
+    function renderTabs(flow) {
+      const tabs = [
+        ['run', flow.primaryTab],
+        ['all', '전체 보기'],
+        ['next', flow.nextLabel]
+      ];
+      document.querySelector('#view-tabs').innerHTML = tabs.map(([key, label]) => `
+        <button class="tab ${state[flow.id].view === key ? 'active' : ''}" type="button" data-view="${key}">${label}</button>
+      `).join('');
+      document.querySelectorAll('[data-view]').forEach((button) => {
+        button.addEventListener('click', () => {
+          state[flow.id].view = button.dataset.view;
+          render();
+        });
+      });
+    }
+
+    function renderTime(flow) {
+      const stateForFlow = state[flow.id];
+      document.querySelector('#time-card').innerHTML = `
+        <p class="label">실행 지점</p>
+        <div class="time-row">
+          ${flow.stages.map((stage) => {
+            const date = stageDate(flow, stage);
+            return `
+              <button class="time-button ${stateForFlow.stage === stage.key ? 'active' : ''}" type="button" data-stage="${stage.key}">
+                ${stage.key}
+                <span>${date ? shortDate(date) : '날짜 없음'}</span>
+              </button>
+            `;
+          }).join('')}
+        </div>
+      `;
+      document.querySelectorAll('[data-stage]').forEach((button) => {
+        button.addEventListener('click', () => {
+          setActiveStage(flow, button.dataset.stage);
+          render();
+        });
+      });
+    }
+
+    function renderRunCard(flow) {
+      const stateForFlow = state[flow.id];
+      const stage = activeStage(flow);
+      const date = stageDate(flow, stage);
+      const done = stageDone(flow, stage);
+      const status = stateForFlow.status[stage.key] || '';
+      document.querySelector('#run-card').innerHTML = `
+        <p class="label">현재 실행</p>
+        <h3>${stage.title}</h3>
+        <p class="desc">${dateLabel(date)} · ${stage.key} · ${done}/${stage.tasks.length} 완료</p>
+        <div class="progress" aria-label="진행률"><span style="--value:${Math.round((done / stage.tasks.length) * 100)}%"></span></div>
+        <ul class="task-list">
+          ${stage.tasks.map((task, index) => {
+            const key = checkKey(stage, index);
+            const checked = !!stateForFlow.checks[key];
+            const title = taskTitle(task);
+            const note = taskNote(task);
+            return `
+              <li class="task ${checked ? 'done' : ''}">
+                <input type="checkbox" data-check="${key}" ${checked ? 'checked' : ''} aria-label="${title}" />
+                <div><strong>${title}</strong>${note ? `<span>${note}</span>` : ''}</div>
+              </li>
+            `;
+          }).join('')}
+        </ul>
+        ${flow.stateActions ? `
+          <div class="state-row">
+            ${flow.stateActions.map((action) => `<button class="state-button ${status === action ? 'active' : ''}" type="button" data-status="${action}">${action}</button>`).join('')}
+          </div>
+        ` : ''}
+        <div class="field" style="margin-top:12px">
+          <label for="stage-memo">${flow.memoLabel}</label>
+          <textarea id="stage-memo" placeholder="필요한 내용만 짧게 남기기">${stateForFlow.memos[stage.key] || ''}</textarea>
+        </div>
+      `;
+      bindRunControls(flow);
+    }
+
+    function renderAllCard(flow) {
+      const stateForFlow = state[flow.id];
+      document.querySelector('#run-card').innerHTML = `
+        <p class="label">전체 보기</p>
+        <h3>${flow.title} 전체 항목</h3>
+        <p class="desc">각 날짜나 회차를 눌러 해당 실행 카드로 이동할 수 있습니다.</p>
+      `;
+      document.querySelector('#secondary-panel').innerHTML = `
+        <section class="all-card">
+          ${flow.stages.map((stage) => {
+            const done = stageDone(flow, stage);
+            return `
+              <article class="all-stage">
+                <div class="chips" style="margin-top:0">
+                  <span class="chip blue">${stage.key}</span>
+                  <span class="chip">${dateLabel(stageDate(flow, stage))}</span>
+                  <span class="chip green">${done}/${stage.tasks.length} 완료</span>
+                </div>
+                <h4>${stage.title}</h4>
+                <ul class="task-list">
+                  ${stage.tasks.map((task, index) => {
+                    const key = checkKey(stage, index);
+                    const checked = !!stateForFlow.checks[key];
+                    const title = taskTitle(task);
+                    const note = taskNote(task);
+                    return `
+                      <li class="task ${checked ? 'done' : ''}">
+                        <input type="checkbox" data-check="${key}" ${checked ? 'checked' : ''} aria-label="${title}" />
+                        <div><strong>${title}</strong>${note ? `<span>${note}</span>` : ''}</div>
+                      </li>
+                    `;
+                  }).join('')}
+                </ul>
+                <div class="button-row" style="margin-top:10px">
+                  <button class="secondary" type="button" data-jump="${stage.key}">이 지점 열기</button>
+                </div>
+              </article>
+            `;
+          }).join('')}
+        </section>
+      `;
+      bindRunControls(flow);
+      document.querySelectorAll('[data-jump]').forEach((button) => {
+        button.addEventListener('click', () => {
+          setActiveStage(flow, button.dataset.jump);
+          render();
+        });
+      });
+    }
+
+    function renderNextCard(flow) {
+      const stateForFlow = state[flow.id];
+      const current = activeStage(flow);
+      const next = nextStage(flow);
+      document.querySelector('#run-card').innerHTML = `
+        <p class="label">${flow.nextLabel}</p>
+        <h3>${next.title}</h3>
+        <p class="desc">${dateLabel(stageDate(flow, next))}</p>
+        <div class="copy-box">이전 지점: ${current.key} · 현재 완료 ${flowDone(flow)}/${flowTotal(flow)}개</div>
+        <div class="button-row" style="margin-top:12px">
+          <button class="primary" type="button" id="go-next">${flow.nextLabel} 열기</button>
+          <button class="secondary" type="button" id="copy-next">다음 항목 메모로 복사</button>
+        </div>
+      `;
+      document.querySelector('#secondary-panel').innerHTML = `
+        <section class="next-card">
+          <h3>다음 실행 메모</h3>
+          <ul class="task-list">
+            <li class="task"><span></span><div><strong>다음 항목</strong><span>${next.title}</span></div></li>
+            <li class="task"><span></span><div><strong>상세 설명</strong><span>${next.detail}</span></div></li>
+            <li class="task"><span></span><div><strong>남겨둔 메모</strong><span>${stateForFlow.memos[current.key] || '아직 메모 없음'}</span></div></li>
+          </ul>
+        </section>
+      `;
+      document.querySelector('#go-next').addEventListener('click', () => {
+        setActiveStage(flow, next.key);
+        render();
+      });
+      document.querySelector('#copy-next').addEventListener('click', () => {
+        stateForFlow.toast = '다음 action과 상세 설명을 메모로 복사했습니다.';
+        render();
+      });
+    }
+
+    function bindRunControls(flow) {
+      const stateForFlow = state[flow.id];
+      document.querySelectorAll('[data-check]').forEach((input) => {
+        input.addEventListener('change', () => {
+          stateForFlow.checks[input.dataset.check] = input.checked;
+          render();
+        });
+      });
+      document.querySelectorAll('[data-status]').forEach((button) => {
+        button.addEventListener('click', () => {
+          stateForFlow.status[activeStage(flow).key] = button.dataset.status;
+          render();
+        });
+      });
+      const memo = document.querySelector('#stage-memo');
+      if (memo) {
+        memo.addEventListener('input', () => {
+          stateForFlow.memos[activeStage(flow).key] = memo.value;
+        });
+      }
+    }
+
+    function datedStages(flow) {
+      return flow.stages
+        .map((stage) => ({ stage, date: stageDate(flow, stage) }))
+        .filter((entry) => entry.date)
+        .sort((a, b) => a.date.localeCompare(b.date) || flow.stages.indexOf(a.stage) - flow.stages.indexOf(b.stage));
+    }
+
+    function renderCalendar(flow) {
+      const stateForFlow = state[flow.id];
+      const entries = datedStages(flow);
+      const selected = activeStage(flow);
+      const selectedDate = stageDate(flow, selected);
+      if (!entries.length) {
+        document.querySelector('#calendar-card').innerHTML = `
+          <p class="label">저장 위치</p>
+          <h3>날짜 없이 저장됨</h3>
+          <p class="desc">먼저 버킷에 저장하고, 나중에 날짜를 정하면 캘린더 미리보기가 생깁니다.</p>
+          <div class="button-row" style="margin-top:10px"><button class="primary" type="button" id="focus-date">날짜 정하기</button></div>
+        `;
+        const focus = document.querySelector('#focus-date');
+        if (focus) {
+          focus.addEventListener('click', () => {
+            const input = document.querySelector(`[data-field="${flow.anchorKey}"]`);
+            if (input) input.focus();
+          });
+        }
+        return;
+      }
+
+      const entryDates = entries.map((entry) => entry.date);
+      let resetCalendarDate = false;
+      if (!stateForFlow.calendarDate || !entryDates.includes(stateForFlow.calendarDate)) {
+        stateForFlow.calendarDate = selectedDate || entries[0].date;
+        resetCalendarDate = true;
+      }
+      if (!stateForFlow.calendarMonth || resetCalendarDate) {
+        stateForFlow.calendarMonth = monthKey(stateForFlow.calendarDate);
+      }
+
+      const base = new Date(`${stateForFlow.calendarMonth}-01T00:00:00`);
+      const year = base.getFullYear();
+      const month = base.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const selectedDateEntries = entries.filter((entry) => entry.date === stateForFlow.calendarDate);
+      const cells = [];
+      for (let i = 0; i < firstDay.getDay(); i += 1) cells.push({ empty: true });
+      for (let day = 1; day <= lastDay.getDate(); day += 1) {
+        const date = `${year}-${pad(month + 1)}-${pad(day)}`;
+        cells.push({
+          date,
+          day,
+          entries: entries.filter((entry) => entry.date === date)
+        });
+      }
+      while (cells.length % 7 !== 0) cells.push({ empty: true });
+
+      document.querySelector('#calendar-card').innerHTML = `
+        <p class="label">캘린더 미리보기</p>
+        <div class="calendar-head">
+          <div>
+            <h3>${year}년 ${month + 1}월</h3>
+            <p class="desc">날짜에 항목이 여러 개 있으면 아래에서 하나를 고릅니다.</p>
+          </div>
+          <div class="month-nav" aria-label="달 이동">
+            <button class="month-button" type="button" data-month-shift="-1">이전</button>
+            <button class="month-button" type="button" data-month-shift="1">다음</button>
+          </div>
+        </div>
+        <div class="calendar-grid">
+          ${['일', '월', '화', '수', '목', '금', '토'].map((day) => `<div class="weekday-label">${day}</div>`).join('')}
+          ${cells.map((cell) => {
+            if (cell.empty) return '<div class="day empty"></div>';
+            const hasEvent = cell.entries.length > 0;
+            const isActive = cell.date === stateForFlow.calendarDate;
+            return `
+              <button class="day ${hasEvent ? 'has-event' : ''} ${isActive ? 'active' : ''}" type="button" ${hasEvent ? `data-calendar-date="${cell.date}"` : ''}>
+                ${cell.day}
+                ${cell.entries.map((entry) => `<div class="event-chip">${entry.stage.key}</div>`).join('')}
+              </button>
+            `;
+          }).join('')}
+        </div>
+        <div class="date-agenda">
+          <p class="label">${dateLabel(stateForFlow.calendarDate)} 항목</p>
+          <div class="agenda-list">
+            ${selectedDateEntries.map((entry) => `
+              <button class="agenda-item ${entry.stage.key === selected.key ? 'active' : ''}" type="button" data-calendar-stage="${entry.stage.key}">
+                <b>${entry.stage.key} · ${entry.stage.title}</b>
+                <span>${stageDone(flow, entry.stage)}/${entry.stage.tasks.length} 완료</span>
+              </button>
+            `).join('') || '<div class="copy-box">이 날짜에는 실행 항목이 없습니다.</div>'}
+          </div>
+        </div>
+        <div class="schedule-strip">
+          <p class="label">전체 일정</p>
+          <div class="schedule-list">
+            ${entries.map((entry) => `
+              <button class="schedule-item ${entry.stage.key === selected.key ? 'active' : ''}" type="button" data-timeline-stage="${entry.stage.key}">
+                <b>${entry.stage.key} · ${shortDate(entry.date)}</b>
+                <span>${entry.stage.title}</span>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+        <div class="button-row" style="margin-top:12px">
+          <button class="primary" type="button" id="export-flow">${flow.exportLabel}</button>
+          <button class="secondary" type="button" id="copy-current">현재 설명 복사</button>
+        </div>
+      `;
+      document.querySelectorAll('[data-month-shift]').forEach((button) => {
+        button.addEventListener('click', () => {
+          stateForFlow.calendarMonth = shiftMonth(stateForFlow.calendarMonth, Number(button.dataset.monthShift));
+          render();
+        });
+      });
+      document.querySelectorAll('[data-calendar-date]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const dateEntries = entries.filter((entry) => entry.date === button.dataset.calendarDate);
+          stateForFlow.calendarDate = button.dataset.calendarDate;
+          if (dateEntries.length === 1) setActiveStage(flow, dateEntries[0].stage.key);
+          render();
+        });
+      });
+      document.querySelectorAll('[data-calendar-stage], [data-timeline-stage]').forEach((button) => {
+        button.addEventListener('click', () => {
+          setActiveStage(flow, button.dataset.calendarStage || button.dataset.timelineStage);
+          render();
+        });
+      });
+      document.querySelector('#export-flow').addEventListener('click', () => {
+        stateForFlow.toast = `${flow.exportLabel} 항목을 준비했습니다.`;
+        render();
+      });
+      document.querySelector('#copy-current').addEventListener('click', () => {
+        stateForFlow.toast = '현재 action의 상세 설명과 URL을 복사했습니다.';
+        render();
+      });
+    }
+
+    function renderSecondary(flow) {
+      const stage = activeStage(flow);
+      const links = [...(stage.links || []), ...flow.sources.slice(0, 2)];
+      document.querySelector('#secondary-panel').innerHTML = `
+        <section class="detail-card">
+          <p class="label">설명 / URL / 선택 상세</p>
+          <h3>${stage.title}</h3>
+          <p class="desc">${stage.detail}</p>
+          ${flow.caution ? `<div class="warning-box">${flow.caution}</div>` : ''}
+          <div class="detail-links">
+            ${links.map(([label, href]) => `<a href="${href}" target="_blank" rel="noreferrer">${label}</a>`).join('')}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderView(flow) {
+      if (state[flow.id].view === 'all') {
+        renderAllCard(flow);
+        return;
+      }
+      if (state[flow.id].view === 'next') {
+        renderNextCard(flow);
+        return;
+      }
+      renderRunCard(flow);
+      renderSecondary(flow);
+    }
+
+    function render() {
+      const flow = activeFlow();
+      renderNav();
+      renderHeader(flow);
+      renderSource(flow);
+      renderSetup(flow);
+      renderTabs(flow);
+      renderTime(flow);
+      renderCalendar(flow);
+      renderView(flow);
+    }
+
+    document.querySelector('#reset-flow').addEventListener('click', () => {
+      const flow = activeFlow();
+      state[flow.id].saved = false;
+      state[flow.id].view = 'run';
+      state[flow.id].stage = flow.stages[0].key;
+      state[flow.id].checks = {};
+      state[flow.id].memos = {};
+      state[flow.id].status = {};
+      state[flow.id].toast = '현재 Flow를 초기화했습니다.';
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

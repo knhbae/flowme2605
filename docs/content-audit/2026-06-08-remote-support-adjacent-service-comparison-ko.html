@@ -1,0 +1,773 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 원격지원 인접서비스 비교</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7f9;
+        --paper: #ffffff;
+        --soft: #f2f6fb;
+        --ink: #101828;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d9e2ec;
+        --blue: #1d4ed8;
+        --blue-soft: #e9f1ff;
+        --green: #047857;
+        --green-soft: #e7f6ef;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --radius: 8px;
+        --shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard",
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          "Malgun Gothic",
+          system-ui,
+          sans-serif;
+        line-height: 1.6;
+        letter-spacing: 0;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.24;
+        word-break: keep-all;
+      }
+
+      p,
+      li,
+      td {
+        color: var(--body);
+      }
+
+      ul,
+      ol {
+        margin: 9px 0 0;
+        padding-left: 20px;
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.94em;
+      }
+
+      .page {
+        width: min(1240px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 22px 0 70px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        min-height: 54px;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        color: var(--muted);
+        font-size: 13px;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      }
+
+      .brand {
+        color: var(--ink);
+        font-weight: 900;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 290px;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .layout > * {
+        min-width: 0;
+      }
+
+      .hero,
+      .panel,
+      .nav {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .hero {
+        padding: 30px;
+      }
+
+      .hero h1 {
+        max-width: 940px;
+        font-size: clamp(30px, 4vw, 48px);
+        overflow-wrap: anywhere;
+      }
+
+      .lead {
+        max-width: 920px;
+        margin-top: 14px;
+        font-size: 17px;
+      }
+
+      .panel {
+        margin-top: 18px;
+        padding: 25px;
+      }
+
+      .panel h2 {
+        margin-bottom: 10px;
+        font-size: 24px;
+      }
+
+      .section-lead {
+        max-width: 900px;
+        margin-bottom: 17px;
+        color: var(--muted);
+      }
+
+      .nav {
+        position: sticky;
+        top: 16px;
+        padding: 18px;
+      }
+
+      .nav h2 {
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      .nav a {
+        display: block;
+        padding: 9px 10px;
+        border-radius: 6px;
+        color: var(--body);
+        font-size: 14px;
+      }
+
+      .nav a:hover {
+        background: var(--soft);
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      .tag-row,
+      .link-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag-row {
+        margin-top: 18px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        max-width: 100%;
+        min-height: 30px;
+        padding: 5px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--soft);
+        color: var(--body);
+        font-size: 13px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+      }
+
+      .tag.green {
+        border-color: #b9e6d0;
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .tag.amber {
+        border-color: #f1d28a;
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .tag.red {
+        border-color: #ffd0c9;
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      .summary-grid,
+      .card-grid,
+      .decision-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .summary-grid {
+        margin-top: 20px;
+      }
+
+      .decision-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        padding: 15px;
+      }
+
+      .card.soft {
+        background: var(--soft);
+      }
+
+      .card h3 {
+        margin-bottom: 7px;
+        font-size: 16px;
+      }
+
+      .eyebrow {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .callout {
+        margin-top: 16px;
+        padding: 15px;
+        border: 1px solid #f1d28a;
+        border-radius: var(--radius);
+        background: var(--amber-soft);
+      }
+
+      .callout strong {
+        color: var(--amber);
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 820px;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+        font-size: 14px;
+      }
+
+      th {
+        background: var(--soft);
+        color: var(--ink);
+        font-size: 13px;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .step-list {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .step {
+        position: relative;
+        min-height: 185px;
+        padding: 42px 15px 15px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+      }
+
+      .step::before {
+        content: attr(data-step);
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        display: inline-grid;
+        place-items: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 999px;
+        background: var(--blue);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .step h3 {
+        margin-bottom: 8px;
+        font-size: 16px;
+      }
+
+      .score-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .score {
+        padding: 13px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--soft);
+      }
+
+      .score b {
+        display: block;
+        color: var(--ink);
+        font-size: 20px;
+      }
+
+      .score span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .source-link {
+        display: inline-flex;
+        align-items: center;
+        max-width: 100%;
+        min-height: 34px;
+        padding: 7px 10px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--paper);
+        font-size: 13px;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+      }
+
+      .footer-note {
+        margin-top: 14px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 980px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .nav {
+          position: static;
+        }
+
+        .summary-grid,
+        .card-grid,
+        .decision-grid,
+        .step-list,
+        .score-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 640px) {
+        .page {
+          width: min(100% - 20px, 1240px);
+          padding-top: 10px;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero,
+        .panel,
+        .nav {
+          padding: 18px;
+        }
+
+        .summary-grid,
+        .card-grid,
+        .decision-grid,
+        .step-list,
+        .score-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .hero h1 {
+          font-size: 30px;
+        }
+
+        .lead {
+          font-size: 16px;
+        }
+
+        table {
+          min-width: 760px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe Analysis Room</span> / 내부 연결 문서 한국어 HTML</div>
+        <div>원문 기준일 2026-06-08 · 소스/플랫폼 비교 · 사용자 행동 검증 아님</div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <section class="hero" id="top">
+            <h1>원격지원 비교는 AnyDesk 설정이 아니라 권한 사다리 근거다</h1>
+            <p class="lead">
+              이 문서는 AnyDesk를 단독 후보로 밀기보다 AnyDesk, TeamViewer, Chrome Remote Desktop, Zoom,
+              Microsoft Quick Assist가 공통으로 드러내는 선택 문제를 정리한다. FlowMe가 다룰 일은 도구 연결이 아니라
+              화면공유만으로 충분한지, 1회 원격제어가 필요한지, 반복 관리가 필요한지 먼저 고르게 하는 것이다.
+            </p>
+            <div class="tag-row">
+              <span class="tag green">출력: 방식 선택 체크리스트 + 종료 메모</span>
+              <span class="tag amber">상태: 소스/플랫폼 비교</span>
+              <span class="tag red">저장 금지: ID·비밀번호·코드·토큰·링크</span>
+            </div>
+            <div class="summary-grid">
+              <article class="card soft">
+                <span class="eyebrow">Decision</span>
+                <h3>AnyDesk는 리뷰 후보 유지</h3>
+                <p>2026-06-08 기준으로는 공개 라우트 승격 전, 범용 원격 도움 사전 체크의 근거로 둔다.</p>
+              </article>
+              <article class="card soft">
+                <span class="eyebrow">Boundary</span>
+                <h3>FlowMe는 접근값을 저장하지 않음</h3>
+                <p>원격 ID, 비밀번호, 액세스 코드, 세션 링크, 토큰, 스크린샷, 지원 채팅, 장치 목록을 저장하지 않는다.</p>
+              </article>
+              <article class="card soft">
+                <span class="eyebrow">No Claim</span>
+                <h3>보안 보증이 아니다</h3>
+                <p>사기 탐지, 보안 점수, 헬퍼 검증, 원격지원 계정 연결, 권한 자동 변경은 만들지 않는다.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="decision">
+            <h2>1. 결정 요약</h2>
+            <p class="section-lead">
+              원문 결론은 “AnyDesk 설정법”보다 “원격 도움을 받기 전 최소 권한 방식을 고르는 체크”가 더 오래가는
+              FlowMe 기회라는 것이다.
+            </p>
+            <div class="decision-grid">
+              <article class="card">
+                <h3>유지할 후보</h3>
+                <p><code>anydesk-remote-setup-check</code>는 `/content-flows` 리뷰 후보로 남긴다.</p>
+              </article>
+              <article class="card">
+                <h3>더 강한 후보</h3>
+                <p><code>remote-help-session-precheck</code>처럼 제품명보다 권한 선택과 종료 확인을 앞세운다.</p>
+              </article>
+              <article class="card">
+                <h3>Stage 0 행동</h3>
+                <p>체크리스트와 짧은 메모만 제공한다. 원격지원 도구와 직접 연동하지 않는다.</p>
+              </article>
+              <article class="card">
+                <h3>오해 방지</h3>
+                <p>FlowMe가 특정 원격접속 도구를 추천하거나 관리한다는 인상을 피한다.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="sources">
+            <h2>2. 공식 소스 스냅샷</h2>
+            <p class="section-lead">
+              2026-06-08에 확인한 공식 문서 기반 비교다. 현재 최신성 재확인이 아니라, 당시 의사결정 근거를
+              읽기 쉽게 재구성한 것이다.
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>서비스</th>
+                    <th>근거 신호</th>
+                    <th>FlowMe 해석</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>AnyDesk</strong></td>
+                    <td>ID 또는 별칭으로 연결하고, 무인 액세스 비밀번호 또는 수동 수락을 거친다. 무인 액세스는 기본 비활성 상태다.</td>
+                    <td>소스 후보로 유용하지만 민감한 접근값은 FlowMe 밖에 둔다.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>TeamViewer</strong></td>
+                    <td>참석 지원, 무인 지원, 브라우저 화면공유가 분리된다. 무인 지원은 호스트 설정이 필요하다.</td>
+                    <td>권한 사다리를 설명하는 가장 강한 비교군이며 Stage 0 통합 대상은 아니다.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Chrome Remote Desktop</strong></td>
+                    <td>지원 공유는 1회성 코드를 만들고, 확인 후 전체 접근을 허용할 수 있다. 사용자는 공유를 중지할 수 있다.</td>
+                    <td>1회 코드 모델을 설명하기 좋다. 코드 공유가 전체 접근으로 이어질 수 있음을 알려야 한다.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Zoom</strong></td>
+                    <td>원격제어는 활성 화면공유 안에서 승인되어야 하며, 원격제어 또는 공유 중지로 끝낼 수 있다.</td>
+                    <td>“화면공유 먼저, 원격제어는 그 다음”이라는 구분을 만들기 좋다.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Microsoft Quick Assist</strong></td>
+                    <td>헬퍼가 6자리 코드를 공유하고, 공유자는 화면공유와 전체 제어를 허용하거나 취소할 수 있다. 연결 상대 확인 경고가 있다.</td>
+                    <td>1회 지원과 신뢰 확인 문구의 강한 비교군이다.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="ladder">
+            <h2>3. 권한 사다리</h2>
+            <p class="section-lead">
+              원격 도움을 하나의 “설정 체크리스트”로 합치면 위험하다. 사용자의 실제 일은 세 단계로 나뉜다.
+            </p>
+            <div class="card-grid">
+              <article class="card">
+                <span class="eyebrow">Level 1</span>
+                <h3>문제만 보여주기</h3>
+                <p>Zoom 화면공유, TeamViewer 브라우저 화면공유처럼 필요한 화면만 보여주고 공유를 종료한다.</p>
+              </article>
+              <article class="card">
+                <span class="eyebrow">Level 2</span>
+                <h3>신뢰한 헬퍼에게 1회 제어 허용</h3>
+                <p>Chrome Remote Desktop 코드, Quick Assist, 수동 수락, Zoom 원격제어처럼 승인과 종료가 핵심이다.</p>
+              </article>
+              <article class="card">
+                <span class="eyebrow">Level 3</span>
+                <h3>반복 또는 무인 관리</h3>
+                <p>반복 접근은 소유자, 목적, 기간, 철회일, 오프보딩을 적는 정책 메모가 더 적합하다.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="conversion">
+            <h2>4. 범용 원격 도움 사전 체크로 변환</h2>
+            <p class="section-lead">
+              후보 이름은 <code>remote-help-session-precheck</code>가 적합하다. 목적지는 <code>internal_check</code>,
+              구조는 체크리스트, 출력은 짧은 공유 메모다.
+            </p>
+            <div class="step-list">
+              <article class="step" data-step="1">
+                <h3>요청자와 목적 확인</h3>
+                <p>사용자가 헬퍼나 공급자를 독립적으로 확인하고, 지원 범위를 먼저 말로 고정한다.</p>
+              </article>
+              <article class="step" data-step="2">
+                <h3>최소 권한 방식 선택</h3>
+                <p>도구를 열기 전에 화면공유, 1회 원격제어, 반복 관리 중 필요한 수준을 고른다.</p>
+              </article>
+              <article class="step" data-step="3">
+                <h3>비밀값 저장 없이 준비</h3>
+                <p>코드, 세션 링크, ID, 승인창은 사용자가 도구 안에서 처리하고 FlowMe에는 남기지 않는다.</p>
+              </article>
+              <article class="step" data-step="4">
+                <h3>종료와 접근 재확인</h3>
+                <p>세션이나 공유를 멈추고, 임시 접근과 반복 접근을 검토하거나 철회한다.</p>
+              </article>
+            </div>
+            <div class="callout">
+              <strong>제품 문구 원칙:</strong>
+              “안전한 원격지원”이라고 보장하지 말고, “어떤 권한을 열었고 언제 닫을지 확인한다”로 좁힌다.
+            </div>
+          </section>
+
+          <section class="panel" id="phase5">
+            <h2>5. Phase 5 압축</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>후보</th>
+                    <th>사용자 순간</th>
+                    <th>자연 산출물</th>
+                    <th>Stage 0 판단</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>AnyDesk 원격지원 설정</td>
+                    <td>PC 도움을 준비하며 접근이 남지 않게 해야 함</td>
+                    <td>내부 체크리스트</td>
+                    <td><code>stage0_export_only</code> 리뷰 후보</td>
+                  </tr>
+                  <tr>
+                    <td>TeamViewer 권한 사다리 비교</td>
+                    <td>화면공유, 참석 지원, 무인 접근 중 선택해야 함</td>
+                    <td>방식 선택 체크리스트</td>
+                    <td><code>stage0_export_only</code> 비교군</td>
+                  </tr>
+                  <tr>
+                    <td>Chrome Remote Desktop 1회 지원</td>
+                    <td>지원 코드를 공유하며 전체 접근 의미를 이해해야 함</td>
+                    <td>종료 체크리스트</td>
+                    <td><code>stage0_export_only</code> 참고 소스</td>
+                  </tr>
+                  <tr>
+                    <td>Zoom 화면공유 원격제어</td>
+                    <td>회의 중 화면공유만으로 충분한지 판단해야 함</td>
+                    <td>회의 제어 메모</td>
+                    <td><code>stage0_export_only</code> 참고 소스</td>
+                  </tr>
+                  <tr>
+                    <td>Microsoft Quick Assist 신뢰 게이트</td>
+                    <td>Windows에서 1회 도움을 받거나 제공함</td>
+                    <td>신뢰 확인 체크리스트</td>
+                    <td><code>stage0_export_only</code> 참고 소스</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="product">
+            <h2>6. 만들지 않을 것</h2>
+            <p class="section-lead">
+              이 문서는 통합 기능 요구서가 아니다. FlowMe가 저장하거나 판정하면 안 되는 영역을 명시하는 경계 문서다.
+            </p>
+            <div class="decision-grid">
+              <article class="card">
+                <h3>연동 금지</h3>
+                <p>AnyDesk, TeamViewer, Chrome Remote Desktop, Zoom, Quick Assist 통합을 만들지 않는다.</p>
+              </article>
+              <article class="card">
+                <h3>저장 금지</h3>
+                <p>장치 주소록, 비밀번호, 액세스 코드, 세션 링크, 토큰, 스크린샷, 지원 채팅을 저장하지 않는다.</p>
+              </article>
+              <article class="card">
+                <h3>운영 기능 금지</h3>
+                <p>원격 세션 로그, 지원 티켓, 권한 자동 변경, 장치 관리 기능을 만들지 않는다.</p>
+              </article>
+              <article class="card">
+                <h3>보안 판정 금지</h3>
+                <p>사기 탐지, 보안 점수, 안전 보장, 헬퍼 검증처럼 사용자가 과신할 수 있는 판정을 하지 않는다.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="later">
+            <h2>7. 이후 공개 라우트와의 관계</h2>
+            <p class="section-lead">
+              2026-06-08 원문은 “아직 공개 라우트로 승격하지 않는다”는 판단을 담고 있다. 이후 2026-06-09에는
+              <code>remote-help-session-precheck</code> 게이트가 별도 리뷰 후보가 되었고, 2026-06-10에는 공개
+              <code>/f/remote-help-session-precheck</code> 라우트가 추가되었다.
+            </p>
+            <div class="callout">
+              <strong>현재 읽는 법:</strong>
+              이 비교 문서는 공개 라우트의 선행 경계 근거로 남긴다. 공개 라우트가 생겼더라도 FlowMe는 여전히 원격지원
+              통합, 헬퍼 검증, 사기 탐지, 접근값 저장을 하지 않는다는 원칙을 바꾸지 않는다.
+            </div>
+            <div class="link-row" style="margin-top: 14px">
+              <a class="source-link" href="./2026-06-09-remote-help-session-precheck-gate-ko.html">원격 도움 게이트 HTML</a>
+              <a class="source-link" href="./2026-06-10-remote-help-session-public-route-note.md">2026-06-10 공개 라우트 노트</a>
+              <a class="source-link" href="./2026-06-08-remote-support-adjacent-service-comparison.md">원문 Markdown</a>
+            </div>
+          </section>
+
+          <section class="panel" id="rubric">
+            <h2>8. 루브릭 요약</h2>
+            <p class="section-lead">
+              후보는 실행할 다음 행동이 명확해서 유용하지만, 보안 조언으로 오해될 수 있어 제품 문구와 저장 경계를
+              계속 분리해야 한다.
+            </p>
+            <div class="score-grid">
+              <div class="score"><b>4</b><span>User Need Fit</span></div>
+              <div class="score"><b>4</b><span>Execution Clarity</span></div>
+              <div class="score"><b>4</b><span>Content Fidelity</span></div>
+              <div class="score"><b>4</b><span>Portability</span></div>
+              <div class="score"><b>4</b><span>Cognitive Load</span></div>
+              <div class="score"><b>5</b><span>Copy Specificity</span></div>
+              <div class="score"><b>5</b><span>Source/Safety</span></div>
+              <div class="score"><b>4</b><span>Accessibility/Operability</span></div>
+            </div>
+          </section>
+
+          <section class="panel" id="links">
+            <h2>9. 링크와 원문 소스</h2>
+            <div class="link-row">
+              <a class="source-link" href="https://support.anydesk.com/docs/connect-to-a-remote-client">AnyDesk 연결</a>
+              <a class="source-link" href="https://support.anydesk.com/docs/unattended-access">AnyDesk 무인 액세스</a>
+              <a class="source-link" href="https://www.teamviewer.com/en/global/support/knowledge-base/teamviewer-remote/remote-control/provide-attended-remote-support/">TeamViewer 참석 지원</a>
+              <a class="source-link" href="https://www.teamviewer.com/en/global/support/knowledge-base/teamviewer-remote/remote-control/provide-unattended-remote-support/">TeamViewer 무인 지원</a>
+              <a class="source-link" href="https://www.teamviewer.com/en/global/support/knowledge-base/teamviewer-remote/remote-control/start-a-screen-sharing-session-via-browser/">TeamViewer 브라우저 화면공유</a>
+              <a class="source-link" href="https://support.google.com/chrome/answer/1649523?co=GENIE.Platform%3DDesktop&amp;hl=en-en">Chrome Remote Desktop</a>
+              <a class="source-link" href="https://support.zoom.com/hc/en/article?id=zm_kb&amp;sysparm_article=KB0065790">Zoom 원격제어</a>
+              <a class="source-link" href="https://support.microsoft.com/en-us/windows/solve-pc-problems-remotely-using-quick-assist-b077e31a-16f4-2529-1a47-21f6a9040bf3">Microsoft Quick Assist</a>
+              <a class="source-link" href="https://learn.microsoft.com/en-us/windows/client-management/client-tools/quick-assist">Quick Assist 관리 문서</a>
+            </div>
+            <p class="footer-note">
+              이 HTML은 2026-06-08 내부 비교 문서를 한국어로 시각화한 것이다. 공식 문서의 최신 상태를 새로 검증한 결과가 아니다.
+            </p>
+          </section>
+        </div>
+
+        <aside class="nav" aria-label="문서 목차">
+          <h2>문서 목차</h2>
+          <a href="#top">요약</a>
+          <a href="#decision">1. 결정 요약</a>
+          <a href="#sources">2. 공식 소스 스냅샷</a>
+          <a href="#ladder">3. 권한 사다리</a>
+          <a href="#conversion">4. 사전 체크 변환</a>
+          <a href="#phase5">5. Phase 5 압축</a>
+          <a href="#product">6. 만들지 않을 것</a>
+          <a href="#later">7. 이후 라우트 관계</a>
+          <a href="#rubric">8. 루브릭</a>
+          <a href="#links">9. 링크와 소스</a>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

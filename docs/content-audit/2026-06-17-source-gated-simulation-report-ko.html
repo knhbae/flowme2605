@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Source-to-Flow 사용자 저니 시뮬레이션 리포트</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f8fb;
+        --surface: #ffffff;
+        --soft: #f8fafc;
+        --line: #d9e2ef;
+        --text: #101827;
+        --muted: #5e6b7d;
+        --blue: #1f5fbf;
+        --green: #0f7a4a;
+        --amber: #9a6100;
+        --red: #b42318;
+        --radius: 8px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.62; }
+      main { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 18px 0 64px; }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 46px); line-height: 1.12; letter-spacing: 0; }
+      h2 { margin-bottom: 10px; font-size: clamp(22px, 3vw, 32px); letter-spacing: 0; }
+      h3 { margin-bottom: 6px; font-size: 19px; letter-spacing: 0; }
+      a { color: var(--blue); text-underline-offset: 3px; }
+      .hero, .card, .mini { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+      .hero { padding: 20px; box-shadow: 0 14px 34px rgba(16, 24, 39, .08); }
+      .card { margin-top: 14px; padding: 16px; }
+      .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 900; text-transform: uppercase; }
+      .desc { color: var(--muted); }
+      .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+      .mini { padding: 12px; background: var(--soft); }
+      .mini strong { display: block; margin-bottom: 4px; font-size: 22px; }
+      .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+      table { width: 100%; min-width: 980px; border-collapse: collapse; background: white; }
+      th, td { padding: 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+      th { background: #f4f7fb; color: #334155; font-size: 13px; }
+      tr:last-child td { border-bottom: 0; }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 3px 9px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: var(--soft);
+        font-size: 13px;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+      .pass { border-color: #b8e2c4; background: #eefaf2; color: var(--green); }
+      .high { border-color: #f1d58b; background: #fff9e8; color: var(--amber); }
+      .medium { border-color: #b7cdf5; background: #eef5ff; color: #174ea6; }
+      .block { border-color: #f4b3ad; background: #fff1ef; color: var(--red); }
+      .shot-grid { display: grid; grid-template-columns: 390px minmax(0, 1fr); gap: 14px; align-items: start; }
+      img { display: block; width: 100%; border: 1px solid var(--line); border-radius: var(--radius); background: white; }
+      ul { margin: 0; padding-left: 20px; }
+      li + li { margin-top: 4px; }
+      @media (max-width: 860px) {
+        main { width: min(100% - 18px, 1180px); }
+        .grid, .shot-grid { grid-template-columns: 1fr; }
+        table { min-width: 760px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <p class="eyebrow">Persona journey simulation</p>
+        <h1>Source-to-Flow 사용자 저니 시뮬레이션 결과</h1>
+        <p class="desc">원컨텐츠를 발견한 사용자가 FlowMe에 저장하고, 첫 실행 화면에서 날짜/체크/메모/원문 링크를 사용한 뒤, 재방문했을 때 오늘 할 일을 찾을 수 있는지 확인했다.</p>
+      </section>
+
+      <section class="card">
+        <h2>산출물</h2>
+        <ul>
+          <li><a href="./2026-06-17-source-gated-candidate-reassessment-ko.html">후보 재심사 리포트</a></li>
+          <li><a href="./2026-06-17-source-gated-flow-user-v2-ko.html">사용자용 Flow UX/UI HTML</a></li>
+          <li>검증 캡처: <a href="../../output/playwright/source-gated-user-v2-mobile-390.png">모바일 390px</a>, <a href="../../output/playwright/source-gated-user-v2-desktop-1366.png">데스크톱 1366px</a></li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>요약 판정</h2>
+        <div class="grid">
+          <div class="mini">
+            <strong>10</strong>
+            <h3>사용자 화면 구현</h3>
+            <p class="desc">원격지원은 Park 처리했다. eSIM은 절차 Flow가 아니라 저장 자료/버킷 항목으로 낮췄다.</p>
+          </div>
+          <div class="mini">
+            <strong>0</strong>
+            <h3>Blocking/High 잔여</h3>
+            <p class="desc">최종 클릭 검증 기준으로 실행 불가, 목적지 오류, 모바일 overflow, JS 오류는 남지 않았다.</p>
+          </div>
+          <div class="mini">
+            <strong>2회+</strong>
+            <h3>수정 루프</h3>
+            <p class="desc">초기 클릭 검증에서 발견한 모바일 overflow와 카피 문제를 수정한 뒤 같은 루프를 재실행했다.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>페르소나별 저니</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Flow</th>
+                <th>페르소나</th>
+                <th>원컨텐츠 소비</th>
+                <th>저장 후 첫 실행</th>
+                <th>날짜가 지난 뒤 재방문</th>
+                <th>결과</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>이사</td>
+                <td>한 달 뒤 이사하는 직장인</td>
+                <td>이사 체크리스트 글에서 D-day 표를 보고 저장한다.</td>
+                <td>이사일을 입력하고 D-30, D-10, D-3, D-1, 당일 일정을 확인한다.</td>
+                <td>D-10에 들어와 주소 변경, 엘리베이터, 폐기물, 인터넷 이전을 체크한다.</td>
+                <td><span class="badge pass">통과</span> 날짜형 Flow로 자연스럽다.</td>
+              </tr>
+              <tr>
+                <td>중고차</td>
+                <td>주말에 매물을 보러 가는 구매자</td>
+                <td>차량 상태 체크 글을 보고 현장에서 열 체크리스트로 저장한다.</td>
+                <td>방문일을 넣고 한 일정 안에서 서류부터 시승까지 쭉 체크한다.</td>
+                <td>계약 전 걸리는 항목과 판매자 답변 메모를 다시 본다.</td>
+                <td><span class="badge pass">통과</span> 3개 카드 분할보다 현장 사용성이 좋다.</td>
+              </tr>
+              <tr>
+                <td>초등 입학</td>
+                <td>첫 입학을 준비하는 학부모</td>
+                <td>입학 준비물 목록을 보고 준비물 체크리스트로 저장한다.</td>
+                <td>가방, 이름스티커, 필기류, 실내화, 청결용품을 체크한다.</td>
+                <td>학교 공지가 나오면 공책 등 추가 항목을 메모에 남긴다.</td>
+                <td><span class="badge pass">통과</span> 날짜 없는 체크리스트가 맞다.</td>
+              </tr>
+              <tr>
+                <td>영유아 검진</td>
+                <td>검진 시기를 한 번에 저장하려는 보호자</td>
+                <td>보건소 안내에서 검진 차수별 기간표를 보고 저장한다.</td>
+                <td>생년월일을 입력해 1차~8차와 구강검진 기간을 표로 본다.</td>
+                <td>가까운 검진 기간에 예약 기관과 문의 내용을 남긴다.</td>
+                <td><span class="badge pass">통과</span> 차수별 개별 등록보다 표 일정이 맞다.</td>
+              </tr>
+              <tr>
+                <td>여권</td>
+                <td>온라인 재발급을 알아보는 여행자</td>
+                <td>외교부 안내에서 대상과 불가 대상을 확인하려고 저장한다.</td>
+                <td>신청 경로, 대상, 사진 파일, 수령 조건을 체크한다.</td>
+                <td>사진 반려나 수령기관 문의 내용을 메모에서 확인한다.</td>
+                <td><span class="badge pass">통과</span> 출국 timeline보다 신청 체크가 맞다.</td>
+              </tr>
+              <tr>
+                <td>홈트</td>
+                <td>초보 운동 영상을 저장해 두려는 사용자</td>
+                <td>초보 전신운동 영상을 보고 반복 운동 일정으로 저장한다.</td>
+                <td>시작일, 요일, 시간, 반복 종료일을 넣고 해당 날짜의 체크 항목에서 영상을 연다.</td>
+                <td>다음 예정 운동일을 달력이나 일정 목록에서 열고 완료 여부만 체크한다.</td>
+                <td><span class="badge pass">통과</span> 영상 1개는 일정 item 1개가 반복되는 형태가 맞다.</td>
+              </tr>
+              <tr>
+                <td>스퀴시</td>
+                <td>아이와 할 도안 놀이를 모아두는 보호자</td>
+                <td>무료 도안 영상을 보고 날짜 없이 버킷에 담는다.</td>
+                <td>준비물과 영상 링크만 저장해 둔다. 놀이 날짜는 비워둘 수 있다.</td>
+                <td>주말에 날짜를 넣고 준비물을 다시 확인한다.</td>
+                <td><span class="badge pass">통과</span> 버킷 + optional date가 자연스럽다.</td>
+              </tr>
+              <tr>
+                <td>스투키</td>
+                <td>식물을 자주 과습시키는 초보 집사</td>
+                <td>스투키 관리 글에서 물주기 간격과 과습 신호를 보고 저장한다.</td>
+                <td>첫 물주기 날짜를 넣고 2~3주 후보와 관리 메모를 본다.</td>
+                <td>다음 후보일에 속 흙, 받침 물, 잎 상태를 확인한다.</td>
+                <td><span class="badge pass">통과</span> 임의 반복 선택 없이 원문 cadence를 보존했다.</td>
+              </tr>
+              <tr>
+                <td>eSIM</td>
+                <td>해외 도착 후 설정 문서를 다시 열어야 하는 여행자</td>
+                <td>유심사 안내를 저장해 공항이나 현지에서 다시 열 준비를 한다.</td>
+                <td>문서 링크를 버킷 항목으로 저장하고, 필요하면 확인할 날짜를 붙인다.</td>
+                <td>현지에서 막히면 원문 문서와 내 메모를 다시 본다.</td>
+                <td><span class="badge pass">통과</span> 세부 절차 Flow보다 저장 자료가 더 자연스럽다.</td>
+              </tr>
+              <tr>
+                <td>기숙사</td>
+                <td>입사 준비를 하는 대학 신입생</td>
+                <td>기숙사 준비물 공지를 보고 입사일 기준으로 저장한다.</td>
+                <td>입사일을 넣고 택배, 입사 절차, 준비물, 금지 품목을 확인한다.</td>
+                <td>입사 전 택배 발송일과 당일 절차를 다시 열어 체크한다.</td>
+                <td><span class="badge pass">통과</span> 학교 공지 URL 입력 없이 source detail을 유지했다.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>발견한 문제와 수정</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Loop</th>
+                <th>Severity</th>
+                <th>문제</th>
+                <th>수정</th>
+                <th>재확인</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Pre-build</td>
+                <td><span class="badge block">Blocking</span></td>
+                <td>기존 v1은 한 후보에 여러 source가 섞이고, 모든 Flow에 3개 체크리스트가 강제되는 구조였다.</td>
+                <td>원컨텐츠 1개, source shape, natural artifact 표를 먼저 채운 뒤 사용자 화면을 새 파일로 만들었다.</td>
+                <td>후보 재심사 리포트에서 Park/Replace를 분리했다.</td>
+              </tr>
+              <tr>
+                <td>Loop 1</td>
+                <td><span class="badge high">High</span></td>
+                <td>모바일 390px에서 원문 목록이 부모 폭을 밀어내며 가로 overflow가 발생했다.</td>
+                <td>layout, panel, content, flow-list에 min-width:0과 width/max-width 제약을 추가했다.</td>
+                <td>같은 모바일 루프를 다시 실행했다.</td>
+              </tr>
+              <tr>
+                <td>Loop 1</td>
+                <td><span class="badge high">High</span></td>
+                <td>영유아 검진 표가 모바일에서 페이지 전체 폭을 밀었다.</td>
+                <td>card, artifact child, table wrapper에 min-width:0과 max-width:100%를 추가했다.</td>
+                <td>모바일/데스크톱 모두 overflow 없이 통과했다.</td>
+              </tr>
+              <tr>
+                <td>Loop 2</td>
+                <td><span class="badge medium">Medium</span></td>
+                <td>중고차 메모에 방어적인 설명이 남아 있어 사용자 action보다 서비스 한계가 먼저 보였다.</td>
+                <td>판매자 답변과 서류 이름을 남기고 계약 전 확인하는 실행 문장으로 바꿨다.</td>
+                <td>최종 클릭 루프 통과.</td>
+              </tr>
+              <tr>
+                <td>Loop 3</td>
+                <td><span class="badge high">High</span></td>
+                <td>홈트가 첫 일정 1개만 만들어져 반복 루틴으로 쓰기 어렵고, 체크리스트가 영상 실행보다 준비 문장에 치우쳤다.</td>
+                <td>요일/시간/반복 종료일 선택으로 여러 운동 일정을 만들고, 체크 항목은 영상 링크가 포함된 1개 실행 항목으로 줄였다.</td>
+                <td>재검증 대상.</td>
+              </tr>
+              <tr>
+                <td>Loop 3</td>
+                <td><span class="badge high">High</span></td>
+                <td>eSIM은 한 번 보고 끝낼 가능성이 큰 문서라 세부 절차 체크리스트로 쪼개면 과하다.</td>
+                <td>버킷 항목 + optional 확인 날짜 + 원문 문서 링크로 낮췄다.</td>
+                <td>재검증 대상.</td>
+              </tr>
+              <tr>
+                <td>Loop 3</td>
+                <td><span class="badge medium">Medium</span></td>
+                <td>영유아 검진은 표의 체크 위치가 오른쪽 끝에 있어 모바일에서 완료 표시가 늦게 보였다. 기간도 달력보다 구간 표시가 더 적합했다.</td>
+                <td>완료 체크를 표 왼쪽 첫 칸으로 옮기고 검진 기간 타임라인을 추가했다.</td>
+                <td>재검증 대상.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>자동 클릭 검증</h2>
+        <ul>
+          <li>각 Flow 버튼 10개 선택</li>
+          <li>각 Flow의 저장 버튼 클릭</li>
+          <li>체크박스 1개 이상 체크</li>
+          <li>날짜가 있는 화면에서 달력 날짜 또는 전체 일정 항목 클릭</li>
+          <li>메모 입력</li>
+          <li>금지어 검사: 사용자 화면에서 내부 문구 미검출</li>
+          <li>JS 오류, console error, 가로 overflow 없음</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>캡처</h2>
+        <div class="shot-grid">
+          <div>
+            <h3>모바일 390px</h3>
+            <img src="../../output/playwright/source-gated-user-v2-mobile-390.png" alt="모바일 검증 캡처" />
+          </div>
+          <div>
+            <h3>데스크톱 1366px</h3>
+            <img src="../../output/playwright/source-gated-user-v2-desktop-1366.png" alt="데스크톱 검증 캡처" />
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>남은 리스크</h2>
+        <ul>
+          <li>YouTube 기반 홈트와 스퀴시는 검색/설명 영역에서 확인한 정보가 핵심이다. 실제 서비스 반영 전에는 영상 설명 전문을 다시 확인해야 한다.</li>
+          <li>홈트 영상은 원문이 주 단위 프로그램을 제공하지 않으므로, 사용자가 정한 요일/시간/종료일 범위에 같은 영상 item을 반복 배치하는 정도가 적정하다.</li>
+          <li>기숙사는 특정 학교 공지 기반이다. 학교별로 물품과 반입 금지 기준이 다르므로 범용 Flow처럼 표현하면 안 된다.</li>
+          <li>영유아 건강검진은 공식 안내 기반이어야 하며, 실제 공개 전 최신 공공 안내와 검진기관 경로를 다시 확인해야 한다.</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

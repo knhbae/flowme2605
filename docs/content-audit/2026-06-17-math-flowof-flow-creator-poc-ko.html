@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FlowMe 콘텐츠 만들기 - 중1 수학</title>
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --paper: #fff;
+        --ink: #111827;
+        --muted: #607086;
+        --line: #d9e2ef;
+        --blue: #1f5fbf;
+        --green: #0f7a4a;
+        --amber: #986400;
+        --red: #b42318;
+        --soft-blue: #edf4ff;
+        --soft-green: #ebf8f0;
+        --soft-amber: #fff8e6;
+        --soft-red: #fff1ef;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--ink); line-height: 1.55; }
+      button, input, textarea, select { font: inherit; }
+      button { cursor: pointer; }
+      a { color: var(--blue); text-underline-offset: 3px; }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 { margin-bottom: 6px; font-size: clamp(28px, 5vw, 42px); line-height: 1.1; letter-spacing: 0; }
+      h2 { margin-bottom: 8px; font-size: 22px; line-height: 1.2; letter-spacing: 0; }
+      h3 { margin-bottom: 6px; font-size: 18px; line-height: 1.24; letter-spacing: 0; }
+      .app { width: min(1260px, calc(100% - 28px)); margin: 0 auto; padding: 16px 0 70px; }
+      .topbar, .hero, .panel, .card, .source-row, .flow-row, .preview-row, .rule-row {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 54px;
+        padding: 10px 12px;
+        box-shadow: 0 14px 34px rgba(15, 23, 42, .07);
+      }
+      .brand { color: var(--ink); text-decoration: none; font-weight: 950; font-size: 18px; }
+      .top-actions, .chips, .actions, .radio-row { display: flex; flex-wrap: wrap; gap: 8px; }
+      .top-actions { justify-content: flex-end; }
+      .hero { margin-top: 12px; padding: 18px; }
+      .desc, .small { color: var(--muted); }
+      .small { font-size: 13px; }
+      .btn {
+        min-height: 38px;
+        padding: 8px 12px;
+        border: 1px solid var(--blue);
+        border-radius: 8px;
+        background: var(--blue);
+        color: #fff;
+        font-weight: 850;
+      }
+      .btn.secondary { background: #fff; color: var(--blue); }
+      .btn.green { border-color: var(--green); background: var(--green); }
+      .btn.ghost { border-color: var(--line); background: #fff; color: var(--ink); }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 4px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 850;
+        white-space: nowrap;
+      }
+      .blue { border-color: #bfdbfe; background: var(--soft-blue); color: var(--blue); }
+      .green { border-color: #bde7cb; background: var(--soft-green); color: var(--green); }
+      .amber { border-color: #f4d58d; background: var(--soft-amber); color: var(--amber); }
+      .red { border-color: #f4b3ad; background: var(--soft-red); color: var(--red); }
+      .setup {
+        display: grid;
+        grid-template-columns: minmax(0, 1.3fr) minmax(260px, .7fr);
+        gap: 10px;
+        margin-top: 12px;
+      }
+      label { display: block; margin-bottom: 4px; color: #334155; font-size: 13px; font-weight: 850; }
+      input, textarea, select {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px;
+        background: #fff;
+      }
+      textarea { min-height: 94px; resize: vertical; }
+      input[type="checkbox"], input[type="radio"] { width: 19px; height: 19px; margin: 2px 7px 0 0; accent-color: var(--blue); }
+      .layout {
+        display: grid;
+        grid-template-columns: 320px minmax(0, 1fr) 350px;
+        gap: 12px;
+        margin-top: 12px;
+        align-items: start;
+      }
+      .panel, .card { padding: 14px; }
+      .source-list, .flow-list, .rule-list, .preview-list { display: grid; gap: 8px; }
+      .source-row, .flow-row, .preview-row, .rule-row {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: start;
+        padding: 10px;
+        text-align: left;
+      }
+      .source-row.active, .flow-row.active { border-color: var(--blue); background: var(--soft-blue); }
+      .num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 999px;
+        background: var(--soft-blue);
+        color: var(--blue);
+        font-weight: 950;
+      }
+      .item-title { margin: 0; font-weight: 950; }
+      .grid-two {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .step-card {
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fbfcff;
+      }
+      .toast {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #bde7cb;
+        border-radius: 8px;
+        background: var(--soft-green);
+        color: var(--green);
+        font-weight: 850;
+      }
+      @media (max-width: 1080px) {
+        .app { width: min(100% - 18px, 1260px); padding-top: 10px; }
+        .topbar { align-items: flex-start; flex-direction: column; }
+        .layout, .setup, .grid-two { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <a class="brand" href="#">FlowMe Creator</a>
+        <div class="top-actions">
+          <a class="btn secondary" href="./2026-06-17-math-flowof-flow-user-poc-ko.html">사용자 미리보기</a>
+          <a class="btn secondary" href="./2026-06-17-flow-service-creator-ops-poc-ko.html">운영판</a>
+        </div>
+      </header>
+
+      <section class="hero">
+        <p class="small" style="font-weight:900;color:var(--blue);margin-bottom:6px">콘텐츠를 실행형 진도표로 만들기</p>
+        <h1>목차형 원문을 단원별 공부 Flow로 바꾸기</h1>
+        <p class="desc">원문 URL에서 단원과 개념 목록을 확인하고, 같은 패턴을 각 단원에 적용합니다. 사용자는 전체 진도표를 저장하거나 필요한 단원만 가져갈 수 있습니다.</p>
+        <div class="setup">
+          <div>
+            <label for="sourceUrl">원문 URL</label>
+            <input id="sourceUrl" type="url" value="https://mathbang.net/13">
+          </div>
+          <div>
+            <label for="mapTitle">지도 이름</label>
+            <input id="mapTitle" type="text" value="중1 수학 전체 진도">
+          </div>
+        </div>
+        <div class="chips" style="margin-top:10px">
+          <span class="chip blue">반복 단위: 단원</span>
+          <span class="chip green">생성 화면: 진도표 + 오답표</span>
+          <span class="chip amber">사용자 입력: 시작일, 요일, 시험범위</span>
+        </div>
+        <div class="actions" style="margin-top:12px">
+          <button class="btn" type="button" id="readSource">원문 구조 확인</button>
+          <button class="btn secondary" type="button" id="applyPattern">단원 패턴 적용</button>
+          <button class="btn green" type="button" id="publishPreview">저장 결과 미리보기</button>
+        </div>
+        <div id="toast" class="toast" hidden></div>
+      </section>
+
+      <section class="layout">
+        <aside class="panel">
+          <h2>원문 구조</h2>
+          <p class="desc">수학방 목차에서 확인되는 8개 단원을 반복 단위로 둡니다.</p>
+          <div class="source-list" id="sourceList"></div>
+          <div class="toast" style="margin-top:10px;background:var(--soft-amber);border-color:#f4d58d;color:var(--amber)">
+            보조 목차는 학기와 시험범위 감각을 확인하는 용도입니다. 하위 Flow 구조는 원문 목차를 기준으로 둡니다.
+          </div>
+        </aside>
+
+        <section class="card">
+          <h2>반복 패턴</h2>
+          <p class="desc">모든 단원에 같은 실행 구조를 적용하되, 행 제목은 원문 개념 목록에서 가져옵니다.</p>
+          <div class="grid-two">
+            <div class="step-card">
+              <h3>1. 반복 단위</h3>
+              <label><input type="radio" name="unitType" checked>단원별</label>
+              <label><input type="radio" name="unitType" disabled>과목별</label>
+              <label><input type="radio" name="unitType" disabled>주차별</label>
+            </div>
+            <div class="step-card">
+              <h3>2. 사용자 입력</h3>
+              <div class="rule-list">
+                <div class="rule-row"><span class="num">1</span><span><p class="item-title">공부 시작일</p><span class="small">개념 행 날짜와 복습 후보를 계산합니다.</span></span><span class="chip green">필수</span></div>
+                <div class="rule-row"><span class="num">2</span><span><p class="item-title">공부 요일</p><span class="small">복습 캘린더에 표시할 요일을 정합니다.</span></span><span class="chip green">필수</span></div>
+                <div class="rule-row"><span class="num">3</span><span><p class="item-title">시험범위</p><span class="small">전체 저장 대신 일부 단원만 저장할 때 씁니다.</span></span><span class="chip amber">선택</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="grid-two" style="margin-top:10px">
+            <div class="step-card">
+              <h3>3. 하위 공부 화면</h3>
+              <div class="rule-list">
+                <div class="rule-row"><span class="num">A</span><span><p class="item-title">개념 진도표</p><span class="small">원문 개념 제목이 행으로 들어갑니다.</span></span><span class="chip blue">표</span></div>
+                <div class="rule-row"><span class="num">B</span><span><p class="item-title">복습 캘린더</p><span class="small">체크한 개념을 다음 공부일에 다시 보게 합니다.</span></span><span class="chip blue">일정</span></div>
+                <div class="rule-row"><span class="num">C</span><span><p class="item-title">오답표</p><span class="small">막힌 개념, 이유, 다시 볼 날짜만 남깁니다.</span></span><span class="chip blue">시트</span></div>
+              </div>
+            </div>
+            <div class="step-card">
+              <h3>4. 공개 전 점검</h3>
+              <label><input id="sourceBoundary" type="checkbox">원문에 없는 개념 행을 만들지 않음</label>
+              <label><input id="inputBoundary" type="checkbox">URL, 교재명, 학원명은 사용자 입력으로 받지 않음</label>
+              <label><input id="artifactBoundary" type="checkbox">사용자 화면에는 내부 판단 문구를 넣지 않음</label>
+              <button class="btn secondary" type="button" id="checkBoundary" style="margin-top:8px">점검 완료 표시</button>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <h2>생성된 단원 Flow</h2>
+          <p class="desc">단원을 누르면 사용자에게 보일 하위 공부 화면의 구성이 바뀝니다.</p>
+          <div class="flow-list" id="flowList"></div>
+        </aside>
+      </section>
+
+      <section class="card" style="margin-top:12px">
+        <h2>사용자 저장 결과</h2>
+        <div class="grid-two">
+          <div>
+            <h3 id="previewTitle"></h3>
+            <p class="desc" id="previewDesc"></p>
+            <div class="preview-list" id="previewRows"></div>
+          </div>
+          <div>
+            <h3>사용자가 보게 될 선택지</h3>
+            <div class="preview-list">
+              <div class="preview-row"><span class="num">1</span><span><p class="item-title">전체 진도표 저장</p><span class="small">8개 단원이 내 Flow에 생깁니다.</span></span><span class="chip green">전체</span></div>
+              <div class="preview-row"><span class="num">2</span><span><p class="item-title">시험범위만 저장</p><span class="small">예: 1~3단원만 저장하고 나머지는 대기합니다.</span></span><span class="chip amber">일부</span></div>
+              <div class="preview-row"><span class="num">3</span><span><p class="item-title">이 단원만 저장</p><span class="small">현재 단원 하나를 진도표, 복습, 오답표로 가져갑니다.</span></span><span class="chip blue">단일</span></div>
+            </div>
+            <p class="small" style="margin-top:12px">원문: <a href="https://mathbang.net/13" target="_blank" rel="noreferrer">수학방 중1 수학 전체 목차</a> · 보조 목차: <a href="https://kisstudy.tistory.com/153" target="_blank" rel="noreferrer">키스터디 중1 수학 목차</a></p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const units = [
+        { name: "소인수분해", count: 8, samples: ["거듭제곱", "소수와 합성수", "소인수분해", "최대공약수"] },
+        { name: "정수와 유리수", count: 13, samples: ["양수와 음수", "절댓값과 수직선", "정수의 덧셈", "유리수의 곱셈과 나눗셈"] },
+        { name: "문자와 식", count: 10, samples: ["문자와 식", "대입과 식의 값", "일차식", "일차방정식"] },
+        { name: "좌표평면과 그래프", count: 4, samples: ["순서쌍과 좌표평면", "그래프", "정비례", "반비례"] },
+        { name: "기본도형", count: 14, samples: ["점, 선, 면", "평행선", "작도", "삼각형의 합동 조건"] },
+        { name: "평면도형의 성질", count: 8, samples: ["다각형", "내각과 외각", "원과 부채꼴", "넓이와 둘레"] },
+        { name: "입체도형의 성질", count: 8, samples: ["다면체", "회전체", "겉넓이", "부피"] },
+        { name: "자료의 정리와 해석", count: 8, samples: ["대푯값", "줄기와 잎 그림", "도수분포표", "상대도수"] }
+      ];
+      const state = { active: 1, patternApplied: false };
+      const $ = (id) => document.getElementById(id);
+
+      function showToast(text) {
+        $("toast").hidden = false;
+        $("toast").textContent = text;
+      }
+
+      function renderSource() {
+        $("sourceList").innerHTML = units.map((unit, index) => `
+          <button class="source-row ${index === state.active ? "active" : ""}" type="button" data-unit="${index}">
+            <span class="num">${index + 1}</span>
+            <span><p class="item-title">${unit.name}</p><span class="small">원문 개념 행 ${unit.count}개</span></span>
+            <span class="chip blue">목차</span>
+          </button>
+        `).join("");
+      }
+
+      function renderFlows() {
+        $("flowList").innerHTML = units.map((unit, index) => `
+          <button class="flow-row ${index === state.active ? "active" : ""}" type="button" data-child="${index}">
+            <span class="num">${index + 1}</span>
+            <span><p class="item-title">${unit.name}</p><span class="small">${state.patternApplied ? "진도표, 복습, 오답표 생성됨" : "패턴 적용 전"}</span></span>
+            <span class="chip ${state.patternApplied ? "green" : "amber"}">${state.patternApplied ? "생성" : "대기"}</span>
+          </button>
+        `).join("");
+      }
+
+      function renderPreview() {
+        const unit = units[state.active];
+        $("previewTitle").textContent = `${unit.name} 단원 공부 화면`;
+        $("previewDesc").textContent = "사용자에게는 원문 목차에서 온 개념 행, 복습 일정, 오답표만 보입니다.";
+        $("previewRows").innerHTML = unit.samples.map((sample, index) => `
+          <div class="preview-row">
+            <span class="num">${index + 1}</span>
+            <span><p class="item-title">${sample}</p><span class="small">상태, 체크, 오답 메모를 남길 수 있습니다.</span></span>
+            <span class="chip ${index < 2 ? "blue" : "amber"}">${index < 2 ? "오늘" : "대기"}</span>
+          </div>
+        `).join("");
+      }
+
+      function render() {
+        renderSource();
+        renderFlows();
+        renderPreview();
+      }
+
+      document.addEventListener("click", (event) => {
+        const sourceButton = event.target.closest("[data-unit]");
+        if (sourceButton) {
+          state.active = Number(sourceButton.dataset.unit);
+          render();
+          return;
+        }
+        const childButton = event.target.closest("[data-child]");
+        if (childButton) {
+          state.active = Number(childButton.dataset.child);
+          render();
+          return;
+        }
+        if (event.target.id === "readSource") {
+          showToast("원문에서 8개 단원과 단원별 개념 행을 확인했습니다.");
+          return;
+        }
+        if (event.target.id === "applyPattern") {
+          state.patternApplied = true;
+          render();
+          showToast("단원별로 진도표, 복습 캘린더, 오답표 패턴을 적용했습니다.");
+          return;
+        }
+        if (event.target.id === "checkBoundary") {
+          ["sourceBoundary", "inputBoundary", "artifactBoundary"].forEach((id) => { $(id).checked = true; });
+          showToast("공개 전 점검 항목을 모두 표시했습니다.");
+          return;
+        }
+        if (event.target.id === "publishPreview") {
+          showToast(`${$("mapTitle").value} 저장 결과를 사용자 미리보기로 열 수 있습니다.`);
+        }
+      });
+
+      render();
+    </script>
+  </body>
+</html>

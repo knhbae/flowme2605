@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 내보내기 목적지와 경쟁서비스 경계</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7f9;
+        --paper: #ffffff;
+        --soft: #f2f6fb;
+        --ink: #101828;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d9e2ec;
+        --blue: #1d4ed8;
+        --blue-soft: #e9f1ff;
+        --green: #047857;
+        --green-soft: #e7f6ef;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --radius: 8px;
+        --shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard",
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          "Malgun Gothic",
+          system-ui,
+          sans-serif;
+        line-height: 1.6;
+        letter-spacing: 0;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.24;
+        word-break: keep-all;
+      }
+
+      p,
+      li,
+      td {
+        color: var(--body);
+      }
+
+      ul {
+        margin: 9px 0 0;
+        padding-left: 20px;
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.94em;
+      }
+
+      .page {
+        width: min(1240px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 22px 0 70px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        min-height: 54px;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        color: var(--muted);
+        font-size: 13px;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      }
+
+      .brand {
+        color: var(--ink);
+        font-weight: 900;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 290px;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .layout > * {
+        min-width: 0;
+      }
+
+      .hero,
+      .panel,
+      .nav {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .hero,
+      .panel {
+        padding: 28px;
+      }
+
+      .panel {
+        margin-top: 18px;
+      }
+
+      .hero h1 {
+        max-width: 940px;
+        font-size: clamp(30px, 4vw, 48px);
+        overflow-wrap: anywhere;
+      }
+
+      .lead {
+        max-width: 920px;
+        margin-top: 14px;
+        font-size: 17px;
+      }
+
+      .panel h2 {
+        margin-bottom: 10px;
+        font-size: 24px;
+      }
+
+      .section-lead {
+        max-width: 900px;
+        margin-bottom: 17px;
+        color: var(--muted);
+      }
+
+      .nav {
+        position: sticky;
+        top: 16px;
+        padding: 18px;
+      }
+
+      .nav h2 {
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      .nav a {
+        display: block;
+        padding: 9px 10px;
+        border-radius: 6px;
+        color: var(--body);
+        font-size: 14px;
+      }
+
+      .nav a:hover {
+        background: var(--soft);
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      .tag-row,
+      .link-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag-row {
+        margin-top: 18px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        max-width: 100%;
+        min-height: 30px;
+        padding: 5px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--soft);
+        color: var(--body);
+        font-size: 13px;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+      }
+
+      .tag.green {
+        border-color: #b9e6d0;
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .tag.amber {
+        border-color: #f1d28a;
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .tag.red {
+        border-color: #ffd0c9;
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      .summary-grid,
+      .destination-grid,
+      .step-grid,
+      .score-grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .summary-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-top: 20px;
+      }
+
+      .destination-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .step-grid,
+      .score-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .card,
+      .step,
+      .score {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        padding: 15px;
+      }
+
+      .card.soft,
+      .step,
+      .score {
+        background: var(--soft);
+      }
+
+      .card h3,
+      .step h3 {
+        margin-bottom: 7px;
+        font-size: 16px;
+      }
+
+      .eyebrow {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .callout {
+        margin-top: 16px;
+        padding: 15px;
+        border: 1px solid #f1d28a;
+        border-radius: var(--radius);
+        background: var(--amber-soft);
+      }
+
+      .callout strong {
+        color: var(--amber);
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+      }
+
+      table {
+        width: 100%;
+        min-width: 860px;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+        font-size: 14px;
+      }
+
+      th {
+        background: var(--soft);
+        color: var(--ink);
+        font-size: 13px;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .source-link {
+        display: inline-flex;
+        align-items: center;
+        max-width: 100%;
+        min-height: 34px;
+        padding: 7px 10px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--paper);
+        font-size: 13px;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+      }
+
+      .score b {
+        display: block;
+        color: var(--ink);
+        font-size: 20px;
+      }
+
+      .score span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .footer-note {
+        margin-top: 14px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 980px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .nav {
+          position: static;
+        }
+
+        .summary-grid,
+        .destination-grid,
+        .step-grid,
+        .score-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 640px) {
+        .page {
+          width: min(100% - 20px, 1240px);
+          padding-top: 10px;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero,
+        .panel,
+        .nav {
+          padding: 18px;
+        }
+
+        .summary-grid,
+        .destination-grid,
+        .step-grid,
+        .score-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .hero h1 {
+          font-size: 30px;
+        }
+
+        .lead {
+          font-size: 16px;
+        }
+
+        table {
+          min-width: 780px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe Analysis Room</span> / 내부 연결 문서 한국어 HTML</div>
+        <div>원문 기준일 2026-06-08 · 플랫폼/목적지 비교 · 사용자 행동 검증 아님</div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <section class="hero" id="top">
+            <h1>FlowMe는 도구를 복제하지 않고, 맞는 내보내기 형태를 고른다</h1>
+            <p class="lead">
+              이 문서는 Google Calendar, Apple Calendar, Google Sheets, Notion, Todoist를 Stage 0 export target으로
+              분류하고, FlowMe가 너무 빨리 calendar, sheet, workspace, task app, automation platform을 만들지 않게
+              경계를 세운다.
+            </p>
+            <div class="tag-row">
+              <span class="tag green">제품 규칙: flow-export-destination-selector</span>
+              <span class="tag amber">기본값: portable artifact 먼저</span>
+              <span class="tag red">금지: 계정 연동·클론·자동화</span>
+            </div>
+            <div class="summary-grid">
+              <article class="card soft">
+                <span class="eyebrow">Calendar</span>
+                <h3><code>.ics</code> 우선</h3>
+                <p>D-day, 예약, 점검, 갱신, 연습 세션처럼 날짜/시간이 핵심이면 calendar artifact로 보낸다.</p>
+              </article>
+              <article class="card soft">
+                <span class="eyebrow">Sheet</span>
+                <h3>CSV/XLSX-ready rows</h3>
+                <p>재고, 비교, 진행률, 메뉴, 상태표처럼 행과 열이 핵심이면 sheet row로 만든다.</p>
+              </article>
+              <article class="card soft">
+                <span class="eyebrow">Memo / Checklist</span>
+                <h3>맥락과 실행 상태 분리</h3>
+                <p>소스 링크와 주의는 memo로, 실행 중 체크 상태는 FlowMe 내부 체크리스트로 유지한다.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="decision">
+            <h2>1. 결정 요약</h2>
+            <p class="section-lead">
+              Stage 0의 질문은 “어느 계정을 연결할까?”가 아니라 “사용자가 이미 쓰는 도구로 옮길 산출물 모양이 맞는가?”다.
+              그래서 FlowMe는 먼저 파일과 복사 가능한 구조를 제공한다.
+            </p>
+            <div class="destination-grid">
+              <article class="card">
+                <h3>Calendar events</h3>
+                <p><code>.ics</code> 또는 필요한 경우 destination-specific CSV.</p>
+              </article>
+              <article class="card">
+                <h3>Sheet rows</h3>
+                <p>CSV/XLSX-ready data로 행과 열을 분명하게 보낸다.</p>
+              </article>
+              <article class="card">
+                <h3>Memo/source notes</h3>
+                <p>Markdown/plain text로 source URL, caution, completion criteria를 함께 보낸다.</p>
+              </article>
+              <article class="card">
+                <h3>Internal checklist</h3>
+                <p>실행 중 완료 상태가 중요한 경우 FlowMe check state와 copyable text로 둔다.</p>
+              </article>
+              <article class="card">
+                <h3>Todoist CSV</h3>
+                <p>사용자가 task manager 목적지를 명시할 때만 프로젝트 CSV를 고려한다.</p>
+              </article>
+              <article class="card">
+                <h3>Notion Markdown/CSV</h3>
+                <p>workspace replacement가 아니라 handoff/archive 용도로만 사용한다.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="sources">
+            <h2>2. 공식 소스 스냅샷</h2>
+            <p class="section-lead">
+              2026-06-08에 확인한 공식 import 문서 기반 비교다. 현재 최신성 재확인이 아니라 당시 판단 근거를 한국어 HTML로
+              재구성한 것이다.
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>플랫폼</th>
+                    <th>Import 신호</th>
+                    <th>FlowMe 해석</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Google Calendar</strong></td>
+                    <td>컴퓨터에서 <code>.ics</code>와 <code>.csv</code>를 import한다. CSV header는 영어가 필요하고 반복 이벤트나 guest/conference 정보가 제한될 수 있다.</td>
+                    <td>날짜가 있는 one-off event, D-day 일정, reminder의 기본 목적지. 반복성이 중요하면 <code>.ics</code> 우선.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Apple Calendar</strong></td>
+                    <td><code>.ics</code> events를 import/export한다. calendar archive import는 현재 calendar data를 대체할 수 있다.</td>
+                    <td>유용한 calendar 목적지지만 archive-level import는 피하고 single-event/calendar-file handoff를 선호한다.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Google Sheets</strong></td>
+                    <td>File &gt; Import로 upload file을 가져오고 replace/append를 선택할 수 있다.</td>
+                    <td>inventory, comparison, progress, menu, status row의 기본 목적지.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Notion</strong></td>
+                    <td>Markdown/text, CSV, HTML, PDF, ZIP, app data를 desktop/web에서 import한다. CSV는 database를 만들 수 있다.</td>
+                    <td>강한 workspace 경쟁자이자 memo/database 목적지. FlowMe는 clean Markdown/CSV만 넘기고 workspace가 되지 않는다.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Todoist</strong></td>
+                    <td>project CSV는 task, section, note, date, timezone, duration, deadline fields를 import한다.</td>
+                    <td>project checklist 목적지로는 유용하지만 FlowMe가 generic task app이 되면 안 된다.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="fit-rules">
+            <h2>3. 목적지 적합 규칙</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Flow output</th>
+                    <th>최적 Stage 0 목적지</th>
+                    <th>Export shape</th>
+                    <th>사용할 때</th>
+                    <th>피할 것</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>D-day, appointment, inspection, renewal, practice session</td>
+                    <td>Calendar</td>
+                    <td><code>.ics</code>, 필요 시 Google Calendar CSV</td>
+                    <td>date/time이 핵심 가치일 때</td>
+                    <td>calendar UI나 account sync 만들기</td>
+                  </tr>
+                  <tr>
+                    <td>Inventory, comparison, progress, menu, status table</td>
+                    <td>Sheet</td>
+                    <td>CSV/XLSX-ready rows</td>
+                    <td>rows/columns가 핵심 가치일 때</td>
+                    <td>table을 checklist 안에 숨기기</td>
+                  </tr>
+                  <tr>
+                    <td>Source link, caution, question list, setup note</td>
+                    <td>Memo/Notion</td>
+                    <td>Markdown/plain text</td>
+                    <td>맥락이 artifact와 함께 이동해야 할 때</td>
+                    <td>모든 memo를 Notion database로 만들기</td>
+                  </tr>
+                  <tr>
+                    <td>One-time setup, packing, inspection, admin precheck</td>
+                    <td>Internal checklist</td>
+                    <td>FlowMe check state + copyable text</td>
+                    <td>실행 중 completion state가 중요할 때</td>
+                    <td>모든 check를 task app으로 export하기</td>
+                  </tr>
+                  <tr>
+                    <td>Project checklist with sections and due dates</td>
+                    <td>Todoist</td>
+                    <td>Todoist-compatible CSV</td>
+                    <td>사용자가 Todoist/task manager를 이미 쓸 때</td>
+                    <td>FlowMe를 generic task manager로 만들기</td>
+                  </tr>
+                  <tr>
+                    <td>Workspace handoff or repeatable template</td>
+                    <td>Notion</td>
+                    <td>Markdown or CSV database rows</td>
+                    <td>workspace archive/reference가 필요할 때</td>
+                    <td>Notion을 모든 Flow의 기본 목적지로 두기</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="selector">
+            <h2>4. 네 단계 선택 흐름</h2>
+            <p class="section-lead">
+              <code>flow-export-destination-selector</code>는 사용자가 플랫폼 이름을 말하기 전에 artifact의 주된 일을 고르게 한다.
+            </p>
+            <div class="step-grid">
+              <article class="step">
+                <span class="eyebrow">Step 1</span>
+                <h3>Artifact main job 선택</h3>
+                <p>date, row/table, memo/source note, checklist state 중 primary output을 고른다.</p>
+              </article>
+              <article class="step">
+                <span class="eyebrow">Step 2</span>
+                <h3>목적지별 format 선택</h3>
+                <p><code>.ics</code>, CSV/XLSX, Markdown/plain text, Todoist CSV, Notion Markdown/CSV 중 고른다.</p>
+              </article>
+              <article class="step">
+                <span class="eyebrow">Step 3</span>
+                <h3>Source context 보존</h3>
+                <p>source URL, warning, completion criteria를 description, memo, row note에 포함한다.</p>
+              </article>
+              <article class="step">
+                <span class="eyebrow">Step 4</span>
+                <h3>Integration out of scope</h3>
+                <p>portable file/copy shape만 제공하고 OAuth, sync, workspace automation은 제외한다.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="competitors">
+            <h2>5. 경쟁서비스 경계</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>플랫폼</th>
+                    <th>배울 점</th>
+                    <th>FlowMe 입장</th>
+                    <th>지금 만들지 않을 것</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Notion</td>
+                    <td>사용자는 재사용 page, template, database를 좋아한다.</td>
+                    <td>필요할 때 Flow artifact를 Notion-ready로 만든다.</td>
+                    <td>workspace builder, page editor, database automation, Notion AI competitor</td>
+                  </tr>
+                  <tr>
+                    <td>Todoist</td>
+                    <td>task, project, due date, recurring task가 강하다.</td>
+                    <td>task-first Flow에만 structured task CSV를 export한다.</td>
+                    <td>generic task manager, task inbox, recurring-task engine</td>
+                  </tr>
+                  <tr>
+                    <td>Google/Apple Calendar</td>
+                    <td>사용자는 이미 calendar reminder를 신뢰한다.</td>
+                    <td>정확한 calendar artifact를 생성한다.</td>
+                    <td>calendar replacement, account sync, scheduling assistant</td>
+                  </tr>
+                  <tr>
+                    <td>Google Sheets</td>
+                    <td>rows, inventory, progress 관리에 익숙하다.</td>
+                    <td>clean sheet rows를 생성한다.</td>
+                    <td>spreadsheet editor, formula engine, live data connector</td>
+                  </tr>
+                  <tr>
+                    <td>Zapier / Make</td>
+                    <td>자동화는 나중에 friction을 줄일 수 있다.</td>
+                    <td>미래 platform layer로 둔다.</td>
+                    <td>export behavior가 증명되기 전 automation builder</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="product">
+            <h2>6. 제품 결정</h2>
+            <p class="section-lead">
+              이 문서는 public route가 아니라 A- product rule이다. 모든 source-to-Flow 후보가 export preview를 만들 때
+              같은 기준을 쓰게 하는 것이 목적이다.
+            </p>
+            <div class="callout">
+              <strong>Do not build:</strong>
+              Notion/Todoist/Google Calendar/Apple Calendar/Google Sheets account integration, OAuth/account connection,
+              recurring-task/full calendar engine, spreadsheet editor/formula layer, Notion-like workspace builder,
+              Zapier/Make-style automation.
+            </div>
+            <div class="link-row" style="margin-top: 14px">
+              <a class="source-link" href="../flow-rules/export-destination-fit.md">Export Destination Fit Rules 원문</a>
+              <a class="source-link" href="./2026-06-08-export-destination-competitor-boundary.md">원문 Markdown</a>
+            </div>
+          </section>
+
+          <section class="panel" id="phase5">
+            <h2>7. Phase 5 압축</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>후보</th>
+                    <th>사용자 순간</th>
+                    <th>자연 산출물</th>
+                    <th>Stage 0 행동</th>
+                    <th>결정</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Calendar export destination</td>
+                    <td>dated Flow items를 calendar에 넣어야 함</td>
+                    <td><code>.ics</code> or calendar CSV</td>
+                    <td>export, import, event check</td>
+                    <td><code>stage0_export_only</code></td>
+                  </tr>
+                  <tr>
+                    <td>Sheet export destination</td>
+                    <td>inventory/progress/comparison/menu rows가 필요함</td>
+                    <td>CSV/XLSX-ready table</td>
+                    <td>export rows, import/append</td>
+                    <td><code>stage0_export_only</code></td>
+                  </tr>
+                  <tr>
+                    <td>Notion workspace handoff</td>
+                    <td>source notes나 rows를 workspace에 보관하고 싶음</td>
+                    <td>Markdown or CSV database</td>
+                    <td>copy/import, source note 유지</td>
+                    <td><code>stage0_export_only</code> destination and competitor</td>
+                  </tr>
+                  <tr>
+                    <td>Todoist task handoff</td>
+                    <td>project checklist를 task manager에 넣고 싶음</td>
+                    <td>Todoist CSV</td>
+                    <td>export/import project CSV</td>
+                    <td><code>stage0_export_only</code> destination and competitor</td>
+                  </tr>
+                  <tr>
+                    <td>Flow export destination selector</td>
+                    <td>Flow를 수동 재구성 없이 저장하고 싶음</td>
+                    <td>hybrid decision table</td>
+                    <td>choose, export, feedback</td>
+                    <td><code>A-</code> product rule candidate</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="rule-pass">
+            <h2>8. 2026-06-09 제품 규칙 반영</h2>
+            <p class="section-lead">
+              이후 <code>flow-export-destination-selector</code>는 재사용 제품 규칙으로 승격되었다. 공개 라우트나
+              `/content-flows` 후보가 아니라, export destination fit을 판단하는 기준이다.
+            </p>
+            <div class="destination-grid">
+              <article class="card">
+                <h3>Product rule</h3>
+                <p>Yes. 후보 리뷰에서 산출물의 주된 일로 목적지를 고른다.</p>
+              </article>
+              <article class="card">
+                <h3>Public route</h3>
+                <p>No. 사용자에게 별도 Flow로 판매할 대상이 아니다.</p>
+              </article>
+              <article class="card">
+                <h3>Integration</h3>
+                <p>No. OAuth/account integration, persistent sync, automation builder는 제외한다.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="rubric">
+            <h2>9. 루브릭 요약</h2>
+            <div class="score-grid">
+              <div class="score"><b>5</b><span>User Need Fit</span></div>
+              <div class="score"><b>4</b><span>Execution Clarity</span></div>
+              <div class="score"><b>4</b><span>Content Fidelity</span></div>
+              <div class="score"><b>5</b><span>Portability</span></div>
+              <div class="score"><b>4</b><span>Cognitive Load</span></div>
+              <div class="score"><b>4</b><span>Copy Specificity</span></div>
+              <div class="score"><b>5</b><span>Source/Safety</span></div>
+              <div class="score"><b>4</b><span>Accessibility/Operability</span></div>
+            </div>
+            <p class="footer-note">
+              낮은 지점은 실행 명확성이다. 각 Flow마다 calendar event, sheet row, memo, checklist 중 무엇을 저장하는지
+              export preview로 보여줘야 한다.
+            </p>
+          </section>
+
+          <section class="panel" id="links">
+            <h2>10. 공식 링크</h2>
+            <div class="link-row">
+              <a class="source-link" href="https://support.google.com/calendar/answer/37118?hl=EN">Google Calendar import events</a>
+              <a class="source-link" href="https://support.apple.com/en-asia/guide/calendar/icl1023/mac">Apple Calendar import/export</a>
+              <a class="source-link" href="https://support.google.com/docs/answer/12236443?hl=en">Google Sheets data ingestion</a>
+              <a class="source-link" href="https://www.notion.com/help/import-data-into-notion?assetsVersion=23.13.20251202.2151">Notion import data</a>
+              <a class="source-link" href="https://get.todoist.help/hc/en-us/articles/208821185-Import-or-export-a-project-as-a-CSV-file-in-Todoist">Todoist CSV import/export</a>
+              <a class="source-link" href="https://get.todoist.help/hc/en-us/articles/12245056124700-Introduction-to-templates-in-Todoist">Todoist templates</a>
+            </div>
+            <p class="footer-note">
+              이 HTML은 2026-06-08 내부 비교 문서를 한국어로 시각화한 것이다. 공식 import 문서의 최신 상태를 새로 검증한 결과가 아니다.
+            </p>
+          </section>
+        </div>
+
+        <aside class="nav" aria-label="문서 목차">
+          <h2>문서 목차</h2>
+          <a href="#top">요약</a>
+          <a href="#decision">1. 결정 요약</a>
+          <a href="#sources">2. 공식 소스 스냅샷</a>
+          <a href="#fit-rules">3. 목적지 적합 규칙</a>
+          <a href="#selector">4. 선택 흐름</a>
+          <a href="#competitors">5. 경쟁서비스 경계</a>
+          <a href="#product">6. 제품 결정</a>
+          <a href="#phase5">7. Phase 5 압축</a>
+          <a href="#rule-pass">8. 제품 규칙 반영</a>
+          <a href="#rubric">9. 루브릭</a>
+          <a href="#links">10. 공식 링크</a>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

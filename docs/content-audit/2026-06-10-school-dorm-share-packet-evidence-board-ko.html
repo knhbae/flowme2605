@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 기숙사 공유 패킷 evidence board</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f7fa;
+        --paper: #ffffff;
+        --soft: #f1f5f9;
+        --ink: #101828;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d8e1ea;
+        --blue: #1d4ed8;
+        --green-soft: #e7f6ef;
+        --amber-soft: #fff4d8;
+        --red-soft: #fff0ed;
+        --violet-soft: #f1eafd;
+        --radius: 8px;
+        --shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+        line-height: 1.6;
+        letter-spacing: 0;
+      }
+      a { color: var(--blue); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      h1, h2, h3, p { margin: 0; }
+      h1, h2, h3 { line-height: 1.24; word-break: keep-all; }
+      p, li, td { color: var(--body); }
+      ul, ol { margin: 9px 0 0; padding-left: 20px; }
+      code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: 0.94em; }
+      .page { width: min(1240px, calc(100% - 32px)); margin: 0 auto; padding: 22px 0 72px; }
+      .topbar {
+        display: flex; justify-content: space-between; gap: 16px; align-items: center;
+        min-height: 54px; margin-bottom: 14px; padding: 10px 14px;
+        border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper);
+        color: var(--muted); font-size: 13px;
+      }
+      .brand { color: var(--ink); font-weight: 900; }
+      .layout { display: grid; grid-template-columns: minmax(0, 1fr) 292px; gap: 18px; align-items: start; }
+      .hero, .panel, .nav {
+        border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); box-shadow: var(--shadow);
+      }
+      .hero, .panel { padding: 26px; }
+      .hero h1 { max-width: 920px; font-size: clamp(28px, 4vw, 44px); }
+      .lead { max-width: 900px; margin-top: 14px; font-size: 17px; }
+      .metric-grid, .grid-2, .grid-3, .flowline { display: grid; gap: 12px; }
+      .metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 20px; }
+      .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .flowline { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      .metric, .card, .step, .decision {
+        border: 1px solid var(--line); border-radius: var(--radius); background: var(--soft); padding: 15px;
+      }
+      .metric { min-height: 126px; }
+      .metric strong, .card strong, .step strong, .decision strong { display: block; color: var(--ink); font-size: 15px; }
+      .metric span, .card p, .step p, .decision p { display: block; margin-top: 6px; color: var(--muted); font-size: 13px; }
+      .panel { margin-top: 18px; }
+      .panel h2 { font-size: 23px; }
+      .section-lead { max-width: 870px; margin-top: 9px; margin-bottom: 17px; }
+      .selected { background: var(--green-soft); border-color: #b7e2cf; }
+      .hold { background: var(--amber-soft); border-color: #efd89c; }
+      .risk { background: var(--red-soft); border-color: #f0b8ad; }
+      .violet { background: var(--violet-soft); border-color: #d7c4f4; }
+      .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+      table { width: 100%; min-width: 760px; border-collapse: collapse; background: var(--paper); }
+      th, td { padding: 13px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; font-size: 14px; }
+      th { background: var(--soft); color: var(--ink); }
+      tr:last-child td { border-bottom: 0; }
+      .nav { position: sticky; top: 16px; padding: 18px; }
+      .nav h2 { margin-bottom: 10px; font-size: 16px; }
+      .nav a { display: block; padding: 8px 0; border-top: 1px solid var(--line); font-size: 13px; font-weight: 800; }
+      .note { margin-top: 14px; padding: 12px; border-radius: var(--radius); background: var(--amber-soft); color: #9a5b12; font-size: 12px; }
+      @media (max-width: 980px) {
+        .layout { display: block; }
+        .nav { position: static; margin-top: 18px; }
+        .metric-grid, .grid-2, .grid-3, .flowline { grid-template-columns: 1fr; }
+      }
+      @media (max-width: 640px) {
+        .page { width: min(100% - 22px, 1240px); padding-top: 12px; }
+        .topbar { display: block; }
+        .topbar div + div { margin-top: 4px; }
+        .hero, .panel { padding: 18px; }
+        .hero h1 { font-size: 28px; }
+        .lead { font-size: 15px; }
+        .metric { min-height: 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe 분석방</span> / school-or-dorm-prep-share-packet evidence board</div>
+        <div>작성일 2026-06-10 · 현재 결정: no signal · sessions 0 / 3 · not evidence</div>
+      </div>
+      <div class="layout">
+        <div>
+          <section class="hero" id="top">
+            <h1>공유 패킷 축의 현재 증거와 다음 판정을 한 화면에 묶은 보드</h1>
+            <p class="lead">
+              preview, 관찰 스크립트, 관찰 기록지는 준비됐지만 실제 수신자 세션은 아직 없다.
+              따라서 현재 결정은 <code>no signal</code>이며, 다음 단계는 recruiting copy 발송, scheduling tracker 업데이트, <code>agreed</code> 슬롯 관찰이다.
+            </p>
+            <div class="metric-grid">
+              <div class="metric selected"><strong>준비됨</strong><span><code>school-dorm-share-packet-v2-2026-06-11-readable-preview</code>, 플랫폼 게이트, 관찰 스크립트, 기록 템플릿.</span></div>
+              <div class="metric hold"><strong>현재 결정</strong><span><code>no signal</code>. 수신자 관찰 데이터 없음.</span></div>
+              <div class="metric"><strong>다음 증거</strong><span>3 completed usable 세션 기록과 filled rollup.</span></div>
+              <div class="metric risk"><strong>금지</strong><span>validated, public route ready, integration ready, channel ready 표현 금지.</span></div>
+            </div>
+            <p class="note"><code>not invited</code>, <code>invited</code>, <code>agreed</code>, <code>scheduled</code>, <code>not run</code>은 board evidence가 아니다. Board update는 3 completed usable sessions와 filled rollup 이후에만 가능하다.</p>
+          </section>
+          <section class="panel" id="chain">
+            <h2>증거 체인</h2>
+            <p class="section-lead">문서가 있다는 것과 사용자 근거가 있다는 것은 다르다. 현재는 네 번째 단계까지 준비됐고, 세션 데이터는 아직 없다.</p>
+            <div class="flowline">
+              <div class="step selected"><strong>1. 플랫폼 경계</strong><p>공식 자료 기반 gate. FlowMe는 manual-copy first.</p></div>
+              <div class="step selected"><strong>2. 공유 패킷</strong><p>기숙사 입사 체크를 외부 채널로 보낼 preview.</p></div>
+              <div class="step selected"><strong>3. 관찰 스크립트</strong><p>수신자가 무엇을 이해해야 하는지 정의.</p></div>
+              <div class="step selected"><strong>4. 기록 템플릿</strong><p>세션별 기록과 3명 롤업 양식.</p></div>
+              <div class="step hold"><strong>5. 롤업 판정</strong><p>아직 세션 없음. 3 completed usable sessions 전까지 <code>no signal</code>.</p></div>
+            </div>
+          </section>
+          <section class="panel" id="checklist">
+            <h2>후보 승격 체크리스트</h2>
+            <p class="section-lead">모든 항목이 채워져야 `/content-flows` 리뷰 후보 준비로만 이동할 수 있다. public route 승인은 아니다.</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>요구사항</th><th>필요 증거</th><th>현재 상태</th></tr></thead>
+                <tbody>
+                  <tr><td>한국어 우선 시나리오</td><td>출처와 마감이 보이는 source-specific packet</td><td>부분 충족: 특정 최신 공지 1개는 아직 고정 필요</td></tr>
+                  <tr><td>모바일 가독성</td><td>첫 화면에서 패킷 목적이 읽힘</td><td>부분 충족: 화면 확인은 있음, 수신자 관찰은 없음</td></tr>
+                  <tr><td>응답 라벨 이해</td><td>첫 run 3명 모두 네 라벨을 올바르게 해석</td><td>없음</td></tr>
+                  <tr><td>최신 공지 우선</td><td>모든 참여자가 공식 최신 공지가 우선이라고 말함</td><td>없음</td></tr>
+                  <tr><td>민감값 제외</td><td>건강/결제/신분/방/채널/폼 편집값 게시 제안 없음</td><td>없음</td></tr>
+                  <tr><td>수동 경계</td><td>자동 전송/게시/응답 수집을 기대하지 않음</td><td>없음</td></tr>
+                  <tr><td>롤업 완료</td><td>기록 템플릿 기반 <code>candidate signal</code></td><td>없음</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+          <section class="panel" id="rules">
+            <h2>판정 라벨</h2>
+            <p class="section-lead">현재 문서 묶음에서 허용되는 라벨은 세 개뿐이다.</p>
+            <div class="grid-3">
+              <div class="decision hold"><strong>no signal</strong><p>사용 가능한 관찰 롤업이 없다. 현재 상태.</p></div>
+              <div class="decision risk"><strong>friction</strong><p>세션은 있지만 라벨, 출처 우선, 금지값, 수동 경계 중 혼동이 남는다.</p></div>
+              <div class="decision selected"><strong>candidate signal</strong><p>첫 run 3명 이해 기준을 통과해 `/content-flows` 리뷰 후보를 준비할 수 있다. 검증은 아니다.</p></div>
+            </div>
+          </section>
+          <section class="panel" id="next">
+            <h2>다음 작업</h2>
+            <p class="section-lead">기능을 만들기 전에 관찰을 먼저 채운다.</p>
+            <div class="grid-2">
+              <div class="card selected">
+                <strong>해야 할 일</strong>
+                <ol>
+                  <li>관찰 스크립트로 3개 세션을 진행한다.</li>
+                  <li>기록 템플릿으로 각 세션을 남긴다.</li>
+                  <li>3명 롤업을 작성한다.</li>
+                  <li><code>friction</code>이면 패킷 문구를 수정한다.</li>
+                  <li><code>candidate signal</code>이면 리뷰 후보 준비로만 이동한다.</li>
+                </ol>
+              </div>
+              <div class="card risk">
+                <strong>하지 않을 일</strong>
+                <ul>
+                  <li>카카오톡/카페/폼/Notion/Slack 통합</li>
+                  <li>자동 게시 또는 응답 수집</li>
+                  <li>연락처, 채널 ID, form edit link 저장</li>
+                  <li>public route 승격</li>
+                  <li>validated 표현</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+          <section class="panel" id="connected">
+            <h2>연결 문서</h2>
+            <p class="section-lead">이 보드는 distribution-channel-handoff 축의 현재 판정 대시보드다.</p>
+            <div class="grid-2">
+              <div class="card"><strong>플랫폼 게이트</strong><p><a href="./2026-06-10-distribution-channel-handoff-platform-gate-ko.html">distribution-channel-handoff 플랫폼 게이트</a></p></div>
+              <div class="card"><strong>공유 패킷</strong><p><a href="./2026-06-10-school-dorm-share-packet-preview-ko.html">기숙사 입사 공유 패킷 preview</a></p></div>
+              <div class="card"><strong>관찰 스크립트</strong><p><a href="./2026-06-10-school-dorm-share-packet-observation-script-ko.html">수신자 관찰 스크립트</a></p></div>
+              <div class="card"><strong>기록 템플릿</strong><p><a href="./2026-06-10-school-dorm-share-packet-observation-log-template-ko.html">관찰 기록 템플릿</a></p></div>
+              <div class="card selected"><strong>파일럿 실행 팩</strong><p><a href="./2026-06-10-school-dorm-share-packet-pilot-run-pack-ko.html">3개 세션 실행 자료</a></p></div>
+              <div class="card selected"><strong>파일럿 워크시트</strong><p><a href="./2026-06-11-school-dorm-share-packet-pilot-worksheet-ko.html">3세션 당일 기록지</a></p></div>
+              <div class="card selected"><strong>롤업 템플릿</strong><p><a href="./2026-06-11-school-dorm-share-packet-rollup-template-ko.html">3세션 판정표</a></p></div>
+              <div class="card selected"><strong>롤업 이후 가이드</strong><p><a href="./2026-06-11-school-dorm-share-packet-post-rollup-decision-guide-ko.html">판정별 다음 행동</a></p></div>
+              <div class="card selected"><strong>보드 업데이트 절차</strong><p><a href="./2026-06-11-school-dorm-share-packet-evidence-board-update-runbook-ko.html">판정 라벨만 옮기기</a></p></div>
+              <div class="card hold"><strong>세션 로그 스타터</strong><p><a href="./2026-06-10-school-dorm-share-packet-session-log-starter-ko.html">not run 상태의 빈 기록지</a></p></div>
+            </div>
+          </section>
+        </div>
+        <aside class="nav" aria-label="문서 목차">
+          <h2>목차</h2>
+          <a href="#top">요약</a>
+          <a href="#chain">증거 체인</a>
+          <a href="#checklist">승격 체크리스트</a>
+          <a href="#rules">판정 라벨</a>
+          <a href="#next">다음 작업</a>
+          <a href="#connected">연결 문서</a>
+          <a href="./2026-06-10-school-dorm-share-packet-pilot-run-pack-ko.html">파일럿 실행 팩</a>
+          <a href="./2026-06-11-school-dorm-share-packet-pilot-worksheet-ko.html">파일럿 워크시트</a>
+          <a href="./2026-06-11-school-dorm-share-packet-rollup-template-ko.html">롤업 템플릿</a>
+          <a href="./2026-06-11-school-dorm-share-packet-post-rollup-decision-guide-ko.html">롤업 이후 가이드</a>
+          <a href="./2026-06-11-school-dorm-share-packet-evidence-board-update-runbook-ko.html">보드 업데이트 절차</a>
+          <a href="./2026-06-10-school-dorm-share-packet-session-log-starter-ko.html">세션 로그 스타터</a>
+          <a href="./2026-06-10-school-dorm-share-packet-evidence-board.md">Markdown 원문</a>
+          <p class="note">현재 상태는 no signal이다. 세션 데이터 전에는 validated, public route ready, integration ready, channel ready라고 부르지 않는다.</p>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

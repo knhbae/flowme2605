@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>전세계약 전 서류 체크 Flow</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f8fafc;
+        --card: #ffffff;
+        --line: #dbe3ef;
+        --muted: #64748b;
+        --text: #0f172a;
+        --blue: #2563eb;
+        --blue-soft: #eff6ff;
+        --amber: #b45309;
+        --amber-soft: #fffbeb;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      main {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 16px;
+      }
+      .shell, .card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--card);
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      }
+      .shell {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 56px;
+        padding: 12px 16px;
+      }
+      .brand { font-size: 24px; font-weight: 900; color: #1d4ed8; text-decoration: none; }
+      .new-flow {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: white;
+        padding: 9px 12px;
+        font-weight: 700;
+      }
+      .card { margin-top: 14px; padding: 16px; }
+      .eyebrow { margin: 0; color: var(--muted); font-size: 14px; }
+      h1 { margin: 6px 0 0; font-size: clamp(26px, 5vw, 34px); line-height: 1.2; }
+      h2 { margin: 0; font-size: 24px; line-height: 1.25; }
+      h3 { margin: 0; font-size: 18px; }
+      p { margin: 0; line-height: 1.65; }
+      .desc { margin-top: 10px; max-width: 720px; color: #334155; }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+      .chip {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #f8fafc;
+        padding: 5px 10px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .source-ok {
+        border-color: #bbf7d0;
+        background: #ecfdf5;
+        color: #047857;
+      }
+      .setup {
+        max-width: 720px;
+      }
+      .setup label {
+        display: block;
+        margin-top: 14px;
+        font-weight: 800;
+      }
+      .date-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      input[type="date"], textarea {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: white;
+        color: var(--text);
+        font: inherit;
+      }
+      input[type="date"] { min-height: 44px; padding: 8px 10px; }
+      textarea { min-height: 88px; padding: 10px; resize: vertical; }
+      button {
+        cursor: pointer;
+        border: 0;
+        border-radius: 6px;
+        font: inherit;
+        font-weight: 800;
+      }
+      .primary {
+        min-height: 44px;
+        background: var(--blue);
+        color: white;
+        padding: 0 16px;
+      }
+      .secondary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .secondary {
+        border: 1px solid var(--line);
+        background: white;
+        color: #334155;
+        min-height: 42px;
+        text-align: left;
+        padding: 0 12px;
+      }
+      .notice {
+        margin-top: 10px;
+        border: 1px solid #fde68a;
+        border-radius: 6px;
+        background: var(--amber-soft);
+        color: #92400e;
+        padding: 10px 12px;
+        font-size: 14px;
+      }
+      .workbench-head {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .progress-pill {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #f8fafc;
+        padding: 6px 10px;
+        font-size: 13px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+      .tabs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 4px;
+        margin-top: 16px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #edf2f7;
+        padding: 4px;
+      }
+      .tab {
+        min-height: 44px;
+        background: transparent;
+        color: #475569;
+      }
+      .tab.active {
+        background: white;
+        color: var(--text);
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+      }
+      .schedule-card {
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+      }
+      .date-cards {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .date-card {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: white;
+        min-height: 92px;
+        padding: 12px;
+        text-align: left;
+      }
+      .date-card.active {
+        border-color: var(--blue);
+        background: var(--blue-soft);
+        box-shadow: 0 0 0 2px var(--blue);
+      }
+      .small { color: var(--muted); font-size: 13px; font-weight: 700; }
+      .date-title { display: block; margin-top: 5px; font-weight: 900; }
+      .date-progress { display: block; margin-top: 6px; font-size: 13px; font-weight: 800; }
+      .status { display: block; margin-top: 4px; color: var(--amber); font-size: 13px; font-weight: 900; }
+      .event-card {
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+      }
+      .event-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: start;
+      }
+      .badges { display: flex; flex-wrap: wrap; justify-content: end; gap: 6px; }
+      .badge {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #f8fafc;
+        padding: 5px 9px;
+        font-size: 12px;
+        font-weight: 900;
+      }
+      .badge.warn { border-color: #fde68a; background: var(--amber-soft); color: var(--amber); }
+      .checks { display: grid; gap: 10px; margin-top: 14px; }
+      .check {
+        display: flex;
+        gap: 8px;
+        align-items: start;
+        font-weight: 800;
+      }
+      .check input { width: 18px; height: 18px; margin-top: 2px; }
+      .checked { color: #94a3b8; text-decoration: line-through; }
+      .caution {
+        margin-top: 16px;
+      }
+      .caution p:last-child {
+        margin-top: 8px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #f8fafc;
+        padding: 10px 12px;
+        color: #334155;
+      }
+      details {
+        margin-top: 14px;
+        border: 1px solid #fde68a;
+        border-radius: 6px;
+        background: var(--amber-soft);
+        padding: 12px;
+      }
+      summary {
+        cursor: pointer;
+        color: #92400e;
+        font-weight: 900;
+      }
+      .source-link {
+        display: inline-block;
+        margin-top: 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 7px 12px;
+        color: #1d4ed8;
+        font-weight: 900;
+        text-decoration: none;
+      }
+      .calendar-preview {
+        margin-top: 14px;
+        border-color: var(--line);
+        background: white;
+      }
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        margin-top: 12px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .weekday, .day {
+        min-height: 58px;
+        border-right: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        padding: 6px;
+        font-size: 12px;
+      }
+      .day {
+        appearance: none;
+        background: white;
+        color: var(--text);
+        font: inherit;
+        text-align: left;
+      }
+      .day.empty {
+        background: #f8fafc;
+      }
+      .day.has-event {
+        cursor: pointer;
+      }
+      .day.has-event:hover,
+      .day.has-event:focus-visible {
+        background: var(--blue-soft);
+        outline: 2px solid var(--blue);
+        outline-offset: -2px;
+      }
+      .day.active {
+        background: var(--blue-soft);
+        box-shadow: inset 0 0 0 2px var(--blue);
+      }
+      .weekday {
+        min-height: auto;
+        background: #f1f5f9;
+        text-align: center;
+        font-weight: 900;
+      }
+      .day:nth-child(7n), .weekday:nth-child(7n) { border-right: 0; }
+      .event-chip {
+        margin-top: 4px;
+        border: 1px solid #bfdbfe;
+        border-radius: 4px;
+        background: var(--blue-soft);
+        color: #1e3a8a;
+        padding: 3px;
+        font-size: 11px;
+        font-weight: 900;
+      }
+      .export-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 14px;
+        border: 1px solid #bfdbfe;
+        border-radius: 8px;
+        background: var(--blue-soft);
+        padding: 14px;
+      }
+      .all-view { display: none; }
+      .all-groups {
+        display: grid;
+        gap: 12px;
+        margin-top: 12px;
+      }
+      .group {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px;
+      }
+      .group-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        align-items: baseline;
+      }
+      .memo {
+        margin: 8px 0 12px 26px;
+        border: 0;
+        background: white;
+        padding: 0;
+      }
+      .memo summary { color: #1d4ed8; }
+      @media (max-width: 720px) {
+        main { padding: 12px; }
+        .card { padding: 14px; }
+        .date-row { align-items: stretch; }
+        .date-cards { grid-template-columns: 1fr; }
+        .event-top, .export-row { flex-direction: column; align-items: stretch; }
+        .badges { justify-content: start; }
+        .calendar-grid { font-size: 11px; }
+        .day { min-height: 72px; padding: 5px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <nav class="shell">
+        <a class="brand" href="#">FLOW</a>
+        <button class="new-flow" type="button">새 Flow</button>
+      </nav>
+
+      <header class="card">
+        <p class="eyebrow">주거/계약전점검 · 계약 일정 체크</p>
+        <h1>전세계약 전 서류 체크 Flow</h1>
+        <p class="desc">계약 예정일을 기준으로 시세, 등기부등본, 보증보험, 계약서 정보 일치, 입주 후 보호 절차를 확인하고 이상 항목은 보류 메모로 남깁니다.</p>
+        <div class="chips">
+          <span class="chip">D-3 / D-Day / D+1</span>
+          <span class="chip">7개 체크</span>
+          <span class="chip source-ok">출처 확인됨</span>
+        </div>
+      </header>
+
+      <section class="card setup">
+        <p style="color:#1d4ed8;font-weight:900">계약일만 넣기</p>
+        <p class="desc">D-3, D-Day, D+1 일정으로 바로 보여줍니다.</p>
+        <label for="contract-date">계약 예정일</label>
+        <div class="date-row">
+          <input id="contract-date" type="date" value="2026-06-08" />
+          <button class="primary" type="button" id="apply-date">적용</button>
+        </div>
+        <div class="secondary-grid">
+          <button class="secondary" type="button" id="unset-date">날짜 미정</button>
+          <button class="secondary" type="button" id="example-date">예시 보기</button>
+        </div>
+        <p class="notice" id="date-notice">계약 예정일 2026-06-08 기준으로 일정이 조정됐습니다.</p>
+      </section>
+
+      <section class="card">
+        <div class="workbench-head">
+          <div>
+            <p style="color:#1d4ed8;font-weight:900">계약 일정</p>
+            <h2>D-3 / D-Day / D+1</h2>
+          </div>
+          <span class="progress-pill" id="total-progress">0/7 완료</span>
+        </div>
+
+        <div class="tabs" role="tablist">
+          <button class="tab active" type="button" data-view="schedule">일정 보기</button>
+          <button class="tab" type="button" data-view="all">전체 보기</button>
+        </div>
+
+        <div id="schedule-view">
+          <section class="schedule-card">
+            <p style="color:#1d4ed8;font-weight:900">생성되는 일정 3개</p>
+            <h3 id="anchor-label">계약 예정일 6월 8일 기준</h3>
+            <div class="date-cards" id="date-cards"></div>
+          </section>
+
+          <section class="event-card" id="selected-event"></section>
+
+          <details class="calendar-preview">
+            <summary>캘린더 미리보기</summary>
+            <p class="desc">저장될 3개 일정이 월간 캘린더에 놓이는 위치를 확인합니다.</p>
+            <div class="chip" style="display:inline-block;margin-top:10px">2026년 6월</div>
+            <div class="calendar-grid" id="calendar-grid"></div>
+          </details>
+
+          <div class="export-row">
+            <p style="font-weight:900;color:#1e3a8a">이 3개 일정을 캘린더에 넣습니다.</p>
+            <button class="primary" type="button">캘린더에 넣기</button>
+          </div>
+        </div>
+
+        <div id="all-view" class="all-view">
+          <section class="schedule-card">
+            <p style="color:#1d4ed8;font-weight:900">전체 보기</p>
+            <h3>전체 체크 항목 7개</h3>
+            <p class="small">법률 판단이나 민감정보는 FLOW에 저장하지 않습니다.</p>
+            <div class="all-groups" id="all-groups"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const today = '2026-06-09';
+      let anchor = '2026-06-08';
+      let selectedTiming = 'D-3';
+      const checks = {};
+      const holdMemos = {};
+
+      const items = [
+        { id: 'market', timing: 'D-3', title: '시세와 등기부등본 확인', memo: '주변 시세와 등기부등본 권리관계를 확인합니다. 걸리는 항목은 계약 전 공인중개사나 전문가에게 확인합니다.' },
+        { id: 'insurance-before', timing: 'D-3', title: '전세보증보험 가능 여부 확인', memo: '보증보험 가능 여부는 보증기관 기준으로 다시 확인합니다. 가능 여부를 FLOW가 판단하지 않습니다.' },
+        { id: 'standard-contract', timing: 'D-Day', title: '중개사와 표준계약서 확인', memo: '계약서 양식과 특약은 원문을 저장하지 말고 확인 결과만 간단히 남깁니다.' },
+        { id: 'contract-info', timing: 'D-Day', title: '계약서 정보 일치 여부 확인', memo: '주소, 임대인, 계좌 등 민감 정보는 저장하지 않습니다. 일치 여부만 체크합니다.' },
+        { id: 'fixed-date', timing: 'D+1', title: '확정일자와 임대차신고 일정 저장', memo: '입주 후 보호 절차를 캘린더에 남깁니다. 실제 제출 여부는 공식 채널에서 확인합니다.' },
+        { id: 'insurance-after', timing: 'D+1', title: '전세보증보험 가입 확인', memo: '가입 가능 여부와 신청 절차는 보증기관 안내를 확인합니다.' },
+        { id: 'hold-reason', timing: 'Hold', title: '보류 사유와 문의 대상 메모', memo: '이상 항목이 있으면 계약 진행 여부를 FLOW에서 판단하지 말고 문의 대상과 보류 사유만 남깁니다.' },
+      ];
+      const timings = [
+        { timing: 'D-3', offset: -3, title: '계약 전 서류 확인', group: '계약 3일 전' },
+        { timing: 'D-Day', offset: 0, title: '계약서 정보 확인', group: '계약 당일' },
+        { timing: 'D+1', offset: 1, title: '입주 후 보호 절차', group: '입주 직후' },
+      ];
+      const holdGroup = { timing: 'Hold', title: '이상 항목 발견 시', group: '이상 항목 발견 시' };
+
+      function addDays(date, offset) {
+        const value = new Date(date + 'T00:00:00');
+        value.setDate(value.getDate() + offset);
+        return value.toISOString().slice(0, 10);
+      }
+      function dateLabel(date) {
+        const value = new Date(date + 'T00:00:00');
+        return `${value.getMonth() + 1}월 ${value.getDate()}일`;
+      }
+      function fullDateLabel(date) {
+        const value = new Date(date + 'T00:00:00');
+        const weekdays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+        return `${value.getFullYear()}년 ${value.getMonth() + 1}월 ${value.getDate()}일 ${weekdays[value.getDay()]}`;
+      }
+      function timingDate(timing) {
+        const row = timings.find((entry) => entry.timing === timing);
+        return row ? addDays(anchor, row.offset) : anchor;
+      }
+      function timingItems(timing) {
+        return items.filter((item) => item.timing === timing);
+      }
+      function progressFor(list) {
+        return list.filter((item) => checks[item.id]).length;
+      }
+      function totalProgress() {
+        return progressFor(items);
+      }
+      function statusFor(timing) {
+        const list = timingItems(timing);
+        const done = progressFor(list);
+        if (list.length && done >= list.length) return '확인 완료';
+        if (timingDate(timing) < today) return '지난 일정 · 확인 필요';
+        return '';
+      }
+      function renderDateCards() {
+        const container = document.querySelector('#date-cards');
+        container.innerHTML = '';
+        timings.forEach((row) => {
+          const list = timingItems(row.timing);
+          const done = progressFor(list);
+          const status = statusFor(row.timing);
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = `date-card ${selectedTiming === row.timing ? 'active' : ''}`;
+          button.innerHTML = `
+            <span class="small">${dateLabel(timingDate(row.timing))} · ${row.timing}</span>
+            <span class="date-title">${row.title}</span>
+            <span class="date-progress">${done}/${list.length} 완료</span>
+            ${status ? `<span class="status">${status}</span>` : ''}
+          `;
+          button.addEventListener('click', () => {
+            selectedTiming = row.timing;
+            render();
+          });
+          container.appendChild(button);
+        });
+      }
+      function renderSelectedEvent() {
+        const row = timings.find((entry) => entry.timing === selectedTiming) || timings[0];
+        const list = timingItems(row.timing);
+        const done = progressFor(list);
+        const status = statusFor(row.timing);
+        const card = document.querySelector('#selected-event');
+        card.innerHTML = `
+          <div class="event-top">
+            <div>
+              <p class="small">${fullDateLabel(timingDate(row.timing))} · ${row.timing}</p>
+              <h3>${row.title}</h3>
+              <p class="small">이 날의 체크 항목 ${list.length}개</p>
+            </div>
+            <div class="badges">
+              <span class="badge">${done}/${list.length} 완료</span>
+              ${status ? `<span class="badge warn">${status}</span>` : ''}
+            </div>
+          </div>
+          <div class="checks">
+            ${list.map((item) => checkHtml(item, 'selected')).join('')}
+          </div>
+          <div class="caution">
+            <p class="small">주의할 점</p>
+            <p>걸리는 항목이 있으면 계약 전 공인중개사나 전문가에게 확인합니다. 법률 판단, 계약서 원문, 주민등록번호, 계좌번호는 저장하지 않습니다.</p>
+          </div>
+          <details>
+            <summary>보류 사유 남기기${holdMemos[row.timing] ? ' · 메모 있음' : ''}</summary>
+            <label style="display:block;margin-top:10px;font-weight:800">
+              확인이 남은 이유
+              <textarea data-hold="${row.timing}" placeholder="예: 보증보험 가능 여부를 보증기관에 다시 확인하기">${holdMemos[row.timing] || ''}</textarea>
+            </label>
+          </details>
+          <p class="small" style="margin-top:14px">참고 링크</p>
+          <a class="source-link" href="https://www.kakaopay.com/" target="_blank" rel="noreferrer">카카오페이 원문</a>
+        `;
+      }
+      function checkHtml(item, surface) {
+        return `
+          <label class="check">
+            <input type="checkbox" data-item="${item.id}" data-surface="${surface}" ${checks[item.id] ? 'checked' : ''} />
+            <span class="${checks[item.id] ? 'checked' : ''}">${item.title}</span>
+          </label>
+        `;
+      }
+      function renderAllGroups() {
+        const container = document.querySelector('#all-groups');
+        const groups = [...timings, holdGroup];
+        container.innerHTML = groups.map((group) => {
+          const list = timingItems(group.timing);
+          const done = progressFor(list);
+          const label = group.timing === 'Hold' ? `D-Day · ${done}/${list.length} 완료` : `${group.timing} · ${done}/${list.length} 완료`;
+          return `
+            <section class="group">
+              <div class="group-head">
+                <h3>${group.group}</h3>
+                <span class="small">${label}</span>
+              </div>
+              <div class="checks">
+                ${list.map((item) => `
+                  ${checkHtml(item, 'all')}
+                  <details class="memo"><summary>상세 메모</summary><p class="desc">${item.memo}</p></details>
+                `).join('')}
+              </div>
+            </section>
+          `;
+        }).join('');
+      }
+      function renderCalendar() {
+        const grid = document.querySelector('#calendar-grid');
+        const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+        const eventByDate = Object.fromEntries(timings.map((row) => [timingDate(row.timing), row]));
+        let html = weekdays.map((day) => `<div class="weekday">${day}</div>`).join('');
+        for (let i = 0; i < 1; i += 1) html += '<div class="day empty"></div>';
+        for (let day = 1; day <= 30; day += 1) {
+          const date = `2026-06-${String(day).padStart(2, '0')}`;
+          const event = eventByDate[date];
+          html += event
+            ? `<button class="day has-event ${selectedTiming === event.timing ? 'active' : ''}" type="button" data-calendar-timing="${event.timing}" aria-label="${date} ${event.title} 보기"><strong>${day}</strong><div class="event-chip">${event.timing}<br />${event.title}</div></button>`
+            : `<div class="day"><strong>${day}</strong></div>`;
+        }
+        grid.innerHTML = html;
+        grid.querySelectorAll('[data-calendar-timing]').forEach((button) => {
+          button.addEventListener('click', () => {
+            selectedTiming = button.dataset.calendarTiming;
+            render();
+            document.querySelector('#selected-event').scrollIntoView({ block: 'start', behavior: 'smooth' });
+          });
+        });
+      }
+      function bindChecks() {
+        document.querySelectorAll('input[type="checkbox"][data-item]').forEach((input) => {
+          input.addEventListener('change', () => {
+            checks[input.dataset.item] = input.checked;
+            render();
+          });
+        });
+        document.querySelectorAll('textarea[data-hold]').forEach((textarea) => {
+          textarea.addEventListener('input', () => {
+            holdMemos[textarea.dataset.hold] = textarea.value;
+          });
+        });
+      }
+      function render() {
+        document.querySelector('#anchor-label').textContent = `계약 예정일 ${dateLabel(anchor)} 기준`;
+        document.querySelector('#total-progress').textContent = `${totalProgress()}/7 완료`;
+        renderDateCards();
+        renderSelectedEvent();
+        renderAllGroups();
+        renderCalendar();
+        bindChecks();
+      }
+      document.querySelectorAll('.tab').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.tab').forEach((item) => item.classList.remove('active'));
+          tab.classList.add('active');
+          const view = tab.dataset.view;
+          document.querySelector('#schedule-view').style.display = view === 'schedule' ? 'block' : 'none';
+          document.querySelector('#all-view').style.display = view === 'all' ? 'block' : 'none';
+        });
+      });
+      document.querySelector('#apply-date').addEventListener('click', () => {
+        anchor = document.querySelector('#contract-date').value || '2026-06-08';
+        document.querySelector('#date-notice').textContent = `계약 예정일 ${anchor} 기준으로 일정이 조정됐습니다.`;
+        render();
+      });
+      document.querySelector('#example-date').addEventListener('click', () => {
+        anchor = '2026-06-08';
+        document.querySelector('#contract-date').value = anchor;
+        document.querySelector('#date-notice').textContent = '예시 날짜 2026-06-08로 미리 봅니다.';
+        render();
+      });
+      document.querySelector('#unset-date').addEventListener('click', () => {
+        document.querySelector('#date-notice').textContent = '날짜를 정하면 모든 일정이 다시 계산됩니다. 지금은 예시 일정으로 보여줍니다.';
+      });
+      render();
+    </script>
+  </body>
+</html>

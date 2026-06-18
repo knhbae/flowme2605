@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FlowMe context split service IA</title>
+    <style>
+      :root {
+        --bg: #f4f7fb;
+        --panel: #fff;
+        --ink: #111827;
+        --muted: #607086;
+        --line: #dce5f2;
+        --blue: #2563c9;
+        --soft-blue: #eaf2ff;
+        --green: #087443;
+        --soft-green: #e8f7ef;
+        --amber: #965f00;
+        --soft-amber: #fff4d4;
+        --shadow: 0 10px 24px rgba(31, 41, 55, .08);
+      }
+      * { box-sizing: border-box; }
+      html, body { max-width: 100%; overflow-x: hidden; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: Arial, "Noto Sans KR", sans-serif;
+        line-height: 1.55;
+      }
+      button, input { font: inherit; }
+      button { cursor: pointer; }
+      .app { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 18px 0 48px; }
+      .topbar, .hero, .panel, .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+      }
+      .topbar { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+      .brand { font-size: 20px; font-weight: 950; }
+      .hero { margin-top: 12px; padding: 18px; }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 { font-size: clamp(30px, 4vw, 46px); line-height: 1.12; margin-bottom: 12px; letter-spacing: 0; }
+      h2 { font-size: 24px; margin-bottom: 10px; }
+      h3 { font-size: 18px; margin-bottom: 8px; }
+      .desc, .small { color: var(--muted); }
+      .small { font-size: 13px; }
+      .section-label { color: var(--blue); font-weight: 950; margin-bottom: 6px; }
+      .chips, .tabs, .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 4px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        color: var(--muted);
+        font-weight: 850;
+        white-space: nowrap;
+      }
+      .blue { background: var(--soft-blue); color: var(--blue); border-color: #b7d1ff; }
+      .green { background: var(--soft-green); color: var(--green); border-color: #b8e4c9; }
+      .amber { background: var(--soft-amber); color: var(--amber); border-color: #f3d285; }
+      .tabs {
+        margin-top: 14px;
+        padding: 4px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #eaf0f8;
+      }
+      .tabs button {
+        border: 0;
+        border-radius: 8px;
+        min-height: 38px;
+        padding: 7px 12px;
+        background: transparent;
+        color: #40516a;
+        font-weight: 900;
+      }
+      .tabs button.active {
+        background: #fff;
+        color: var(--blue);
+        box-shadow: 0 1px 3px rgba(15, 23, 42, .1);
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 320px minmax(0, 1fr);
+        gap: 14px;
+        margin-top: 14px;
+        align-items: start;
+      }
+      .three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .panel, .card { padding: 16px; min-width: 0; }
+      .list { display: grid; gap: 10px; }
+      .asset, .row {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+        padding: 12px;
+        text-align: left;
+      }
+      .asset.active, .row.active { border-color: var(--blue); background: var(--soft-blue); }
+      .asset strong, .row strong { display: block; font-size: 17px; }
+      .row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+      }
+      .primary, .secondary {
+        border: 1px solid var(--blue);
+        border-radius: 10px;
+        min-height: 44px;
+        padding: 9px 14px;
+        font-weight: 950;
+      }
+      .primary { background: var(--blue); color: #fff; }
+      .secondary { background: #fff; color: var(--blue); }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 3px 9px;
+        border-radius: 999px;
+        background: var(--soft-green);
+        color: var(--green);
+        font-weight: 900;
+      }
+      .empty {
+        border: 1px dashed #b8c6d9;
+        border-radius: 10px;
+        padding: 18px;
+        color: var(--muted);
+        background: #fbfdff;
+      }
+      .toast {
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: var(--soft-green);
+        border: 1px solid #b8e4c9;
+        color: var(--green);
+        font-weight: 900;
+      }
+      .mobile-short { display: none; }
+      @media (max-width: 900px) {
+        .layout, .layout.three { grid-template-columns: 1fr; }
+        .tabs { width: 100%; }
+        .tabs button { flex: 1 1 130px; }
+      }
+      @media (max-width: 560px) {
+        .app { width: min(100% - 12px, 1180px); padding-top: 10px; }
+        .topbar, .hero, .panel, .card { padding: 12px; border-radius: 10px; }
+        h1 { font-size: 34px; }
+        h2 { font-size: 23px; }
+        .desktop-long { display: none; }
+        .mobile-short { display: inline; }
+        .tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+        .tabs button { min-height: 40px; padding: 6px 4px; font-size: 14px; }
+        .row { grid-template-columns: 1fr; }
+        .actions .primary, .actions .secondary { width: 100%; }
+        .chip { white-space: normal; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <div class="brand">FlowMe</div>
+        <span class="chip blue">제작 · 저장 · 실행</span>
+      </header>
+
+      <section class="hero">
+        <p class="section-label">서비스 연결 화면</p>
+        <h1><span class="desktop-long">제작자가 만든 실행 자산이 내 Flow로 들어오는 흐름</span><span class="mobile-short">만들고 저장하고 실행하기</span></h1>
+        <p class="desc">작은 Flow와 상위 구조형 Flow가 같은 서비스 안에서 어떻게 발행되고 저장되고 실행되는지 확인합니다.</p>
+        <div class="chips">
+          <span class="chip blue">제작자 홈</span>
+          <span class="chip green">저장 전 화면</span>
+          <span class="chip amber">내 Flow</span>
+        </div>
+        <div class="tabs" id="viewTabs" aria-label="화면 선택">
+          <button class="active" type="button" data-view="creator">제작자</button>
+          <button type="button" data-view="save">저장 경로</button>
+          <button type="button" data-view="my">내 Flow</button>
+        </div>
+      </section>
+
+      <section id="screen"></section>
+    </main>
+
+    <script>
+      const assets = [
+        { id: "jeonse", title: "전세계약 점검", kind: "단일 Flow", state: "발행됨", result: "계약 예정일 기준 일정", next: "D-3 서류 확인" },
+        { id: "move", title: "이사 D-30 준비", kind: "단일 Flow", state: "발행됨", result: "이사일 기준 전체 일정", next: "D-30 견적 요청" },
+        { id: "math", title: "중1 수학 전체 커리큘럼", kind: "상위 구조", state: "미리보기", result: "전체 진도표와 단원별 실행", next: "정수와 유리수" },
+        { id: "cert", title: "컴활 2급 과목별 공부", kind: "상위 구조", state: "초안", result: "과목별 진도판", next: "컴퓨터 일반" }
+      ];
+      const state = { view: "creator", selected: "math", saved: ["jeonse"] };
+      const $ = (selector) => document.querySelector(selector);
+      const selected = () => assets.find((asset) => asset.id === state.selected) || assets[0];
+
+      function renderTabs() {
+        document.querySelectorAll("[data-view]").forEach((button) => {
+          button.classList.toggle("active", button.dataset.view === state.view);
+          button.addEventListener("click", () => {
+            state.view = button.dataset.view;
+            render();
+          }, { once: true });
+        });
+      }
+
+      function assetList() {
+        return assets.map((asset) => `
+          <button type="button" class="asset ${asset.id === state.selected ? "active" : ""}" data-asset="${asset.id}">
+            <strong>${asset.title}</strong>
+            <span class="small">${asset.kind} · ${asset.state}</span>
+          </button>
+        `).join("");
+      }
+
+      function renderCreator() {
+        const asset = selected();
+        return `
+          <div class="layout">
+            <aside class="panel">
+              <p class="section-label">발행 자산</p>
+              <h2>제작자 홈</h2>
+              <p class="desc">제작자는 단일 Flow와 상위 구조를 함께 관리합니다.</p>
+              <div class="list">${assetList()}</div>
+            </aside>
+            <section class="card">
+              <p class="section-label">선택한 자산</p>
+              <h2>${asset.title}</h2>
+              <div class="layout three" style="margin-top:0">
+                <div class="card" style="box-shadow:none"><h3>종류</h3><p class="desc">${asset.kind}</p></div>
+                <div class="card" style="box-shadow:none"><h3>저장 결과</h3><p class="desc">${asset.result}</p></div>
+                <div class="card" style="box-shadow:none"><h3>첫 실행</h3><p class="desc">${asset.next}</p></div>
+              </div>
+              <div class="actions" style="margin-top:12px">
+                <button class="primary" type="button" id="openSave">사용자 저장 화면 보기</button>
+                <button class="secondary" type="button" id="openMy">내 Flow에서 보기</button>
+              </div>
+            </section>
+          </div>
+        `;
+      }
+
+      function renderSave() {
+        const asset = selected();
+        const already = state.saved.includes(asset.id);
+        return `
+          <div class="layout">
+            <aside class="panel">
+              <p class="section-label">저장 전 화면</p>
+              <h2>${asset.title}</h2>
+              <p class="desc">사용자는 이 콘텐츠를 저장하면 내 앱에 어떤 실행물이 생기는지 먼저 봅니다.</p>
+              <div class="chips">
+                <span class="chip blue">${asset.kind}</span>
+                <span class="chip green">${asset.result}</span>
+              </div>
+              <div class="actions" style="margin-top:12px">
+                <button class="primary" type="button" id="saveAsset">${already ? "이미 저장됨" : "내 Flow에 저장"}</button>
+                <button class="secondary" type="button" id="savePartial">일부만 저장</button>
+              </div>
+              <div id="saveToast" class="toast" ${already ? "" : "hidden"}>${asset.title}이 내 Flow에 있습니다.</div>
+            </aside>
+            <section class="card">
+              <p class="section-label">생성될 화면</p>
+              <h2>${asset.next}</h2>
+              <p class="desc">${asset.kind === "상위 구조" ? "전체 구조는 작게 보이고, 선택한 단원이나 과목의 실행 화면이 열립니다." : "저장 후 바로 선택 날짜나 체크 항목을 열 수 있습니다."}</p>
+              <div class="list">
+                <div class="row"><strong>첫 화면</strong><span class="status">${asset.next}</span></div>
+                <div class="row"><strong>남길 수 있는 것</strong><span class="small">체크, 짧은 메모, 원문 링크</span></div>
+                <div class="row"><strong>다음 방문</strong><span class="small">다음 일정 또는 다음 단위</span></div>
+              </div>
+            </section>
+          </div>
+        `;
+      }
+
+      function renderMy() {
+        const savedAssets = assets.filter((asset) => state.saved.includes(asset.id));
+        return `
+          <div class="layout">
+            <aside class="panel">
+              <p class="section-label">내 Flow</p>
+              <h2>오늘 이어서 할 것</h2>
+              <p class="desc">저장한 Flow는 종류보다 다음 실행 항목 기준으로 먼저 보입니다.</p>
+              <div class="list">
+                ${savedAssets.length ? savedAssets.map((asset) => `
+                  <button type="button" class="asset ${asset.id === state.selected ? "active" : ""}" data-asset="${asset.id}">
+                    <strong>${asset.title}</strong>
+                    <span class="small">${asset.next}</span>
+                  </button>
+                `).join("") : `<div class="empty">아직 저장된 Flow가 없습니다.</div>`}
+              </div>
+            </aside>
+            <section class="card">
+              <p class="section-label">실행 화면</p>
+              ${savedAssets.length ? `
+                <h2>${selected().next}</h2>
+                <p class="desc">${selected().title}에서 지금 열 항목입니다. 전체 설명은 접어두고 실행에 필요한 체크와 메모만 둡니다.</p>
+                <div class="list">
+                  <label class="row"><strong>오늘 항목 열기</strong><input type="checkbox" aria-label="오늘 항목 완료"></label>
+                  <label class="row"><strong>짧은 메모 남기기</strong><input type="checkbox" aria-label="메모 확인"></label>
+                  <label class="row"><strong>원문 링크 다시 보기</strong><input type="checkbox" aria-label="원문 링크 확인"></label>
+                </div>
+              ` : `
+                <div class="empty">저장 경로 화면에서 Flow를 먼저 저장합니다.</div>
+              `}
+            </section>
+          </div>
+        `;
+      }
+
+      function wire() {
+        document.querySelectorAll("[data-asset]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.selected = button.dataset.asset;
+            render();
+          });
+        });
+        const openSave = $("#openSave");
+        if (openSave) openSave.addEventListener("click", () => { state.view = "save"; render(); });
+        const openMy = $("#openMy");
+        if (openMy) openMy.addEventListener("click", () => { state.view = "my"; render(); });
+        const saveAsset = $("#saveAsset");
+        if (saveAsset) saveAsset.addEventListener("click", () => {
+          if (!state.saved.includes(state.selected)) state.saved.push(state.selected);
+          $("#saveToast").hidden = false;
+          $("#saveToast").textContent = `${selected().title}이 내 Flow에 저장되었습니다.`;
+        });
+        const savePartial = $("#savePartial");
+        if (savePartial) savePartial.addEventListener("click", () => {
+          if (!state.saved.includes(state.selected)) state.saved.push(state.selected);
+          $("#saveToast").hidden = false;
+          $("#saveToast").textContent = `선택한 실행 단위가 내 Flow에 저장되었습니다.`;
+        });
+      }
+
+      function render() {
+        renderTabs();
+        let html = "";
+        if (state.view === "creator") html = renderCreator();
+        if (state.view === "save") html = renderSave();
+        if (state.view === "my") html = renderMy();
+        $("#screen").innerHTML = html;
+        wire();
+      }
+
+      render();
+    </script>
+  </body>
+</html>
+

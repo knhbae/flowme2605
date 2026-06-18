@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 임원용 근거 요약 | 외부 생태계 분석 로드맵</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4f6f8;
+        --paper: #ffffff;
+        --ink: #111827;
+        --body: #374151;
+        --muted: #6b7280;
+        --line: #d9e2ec;
+        --blue: #1d4ed8;
+        --blue-soft: #eaf2ff;
+        --green: #047857;
+        --green-soft: #e8f7ef;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard",
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          "Malgun Gothic",
+          system-ui,
+          sans-serif;
+        line-height: 1.55;
+        letter-spacing: 0;
+      }
+
+      a {
+        color: var(--blue);
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      p,
+      li,
+      td {
+        color: var(--body);
+      }
+
+      code {
+        border: 1px solid #dbe4ef;
+        border-radius: 5px;
+        background: #f8fafc;
+        padding: 1px 5px;
+        color: #1f2937;
+        font-size: 0.94em;
+      }
+
+      .page {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 24px 0 64px;
+      }
+
+      .topbar,
+      .hero,
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .brand {
+        color: var(--ink);
+        font-weight: 900;
+      }
+
+      .hero {
+        padding: 30px;
+      }
+
+      .kicker {
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      h1 {
+        max-width: 900px;
+        margin-top: 8px;
+        font-size: clamp(30px, 5vw, 46px);
+        line-height: 1.16;
+        word-break: keep-all;
+      }
+
+      .lead {
+        max-width: 820px;
+        margin-top: 14px;
+        color: var(--body);
+        font-size: 18px;
+      }
+
+      .stat-grid,
+      .doc-grid,
+      .question-grid,
+      .screen-grid,
+      .rule-grid {
+        display: grid;
+        gap: 10px;
+      }
+
+      .stat-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        margin-top: 24px;
+      }
+
+      .stat {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        background: #fbfcfe;
+      }
+
+      .stat strong {
+        display: block;
+        color: var(--ink);
+        font-size: 28px;
+        line-height: 1;
+      }
+
+      .stat span {
+        display: block;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .panel {
+        margin-top: 14px;
+        padding: 22px;
+      }
+
+      h2 {
+        font-size: 21px;
+        line-height: 1.25;
+      }
+
+      .section-lead {
+        margin-top: 6px;
+        color: var(--muted);
+      }
+
+      .doc-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-top: 14px;
+      }
+
+      .doc,
+      .qa,
+      .rule,
+      .screen {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fbfcfe;
+      }
+
+      .doc,
+      .qa,
+      .rule {
+        padding: 15px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        border-radius: 999px;
+        padding: 2px 9px;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .tag.blue {
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+
+      .tag.green {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .tag.amber {
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .tag.red {
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      .doc h3,
+      .qa h3,
+      .rule h3 {
+        margin-top: 9px;
+        font-size: 17px;
+      }
+
+      .doc p,
+      .qa p,
+      .rule p {
+        margin-top: 7px;
+        font-size: 14px;
+      }
+
+      .flow {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .step {
+        position: relative;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #ffffff;
+        padding: 15px;
+      }
+
+      .step strong {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--ink);
+      }
+
+      .step p {
+        font-size: 14px;
+      }
+
+      .question-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin-top: 14px;
+      }
+
+      .screen-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-top: 14px;
+      }
+
+      .screen {
+        overflow: hidden;
+      }
+
+      .screen img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        border-bottom: 1px solid var(--line);
+        object-fit: cover;
+        object-position: top left;
+      }
+
+      .screen div {
+        padding: 12px;
+      }
+
+      .screen strong {
+        display: block;
+        color: var(--ink);
+      }
+
+      .screen p {
+        margin-top: 5px;
+        font-size: 13px;
+      }
+
+      .rule-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-top: 14px;
+      }
+
+      .rule {
+        background: #ffffff;
+      }
+
+      .links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .links a {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #ffffff;
+        padding: 8px 11px;
+        font-size: 13px;
+      }
+
+      .footnote {
+        margin-top: 14px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 860px) {
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero {
+          padding: 22px;
+        }
+
+        .stat-grid,
+        .doc-grid,
+        .flow,
+        .question-grid,
+        .screen-grid,
+        .rule-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media print {
+        body {
+          background: #ffffff;
+        }
+
+        .page {
+          width: 100%;
+          padding: 0;
+        }
+
+        .topbar,
+        .hero,
+        .panel {
+          break-inside: avoid;
+          box-shadow: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <span class="brand">FlowMe External Ecosystem</span>
+        <span>임원용 근거 요약 · 2026-06-12 · 한국어 HTML</span>
+      </div>
+
+      <section class="hero">
+        <p class="kicker">외부 생태계 분석 로드맵 근거 지도</p>
+        <h1>근거문서는 “현재 실험”이 아니라 5단계 분석 로드맵을 설명해야 합니다.</h1>
+        <p class="lead">
+          이 문서는 FlowMe가 외부 앱, 서비스, 플랫폼, 경쟁서비스를 어떤 순서와 기준으로 판단하는지 보여주는 근거 지도입니다.
+          긴 연결 문서 허브는 실무용으로 남겨두고, 임원 보고에서는 분석 단계, 비교 기준, 연동 보류 조건만 먼저 봅니다.
+        </p>
+
+        <div class="stat-grid" aria-label="근거문서 상태 요약">
+          <div class="stat">
+            <strong>5</strong>
+            <span>외부 생태계 분석 단계</span>
+          </div>
+          <div class="stat">
+            <strong>6</strong>
+            <span>대표 앱·플랫폼 화면</span>
+          </div>
+          <div class="stat">
+            <strong>3</strong>
+            <span>우선 판단 축</span>
+          </div>
+          <div class="stat">
+            <strong>0</strong>
+            <span>바로 착수할 연동 개발</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>CEO에게 먼저 보여줄 문서</h2>
+        <p class="section-lead">회의에서는 실험 상태가 아니라 분석 기준과 연동 금지선을 먼저 확인합니다.</p>
+        <div class="doc-grid">
+          <article class="doc">
+            <span class="tag blue">1차 보고</span>
+            <h3><a href="./2026-06-12-external-ecosystem-ceo-brief-ko.html">CEO brief</a></h3>
+            <p>5단계 분석 로드맵, 대표 플랫폼 역할, 연동 보류 판단을 한 화면에서 확인합니다.</p>
+          </article>
+          <article class="doc">
+            <span class="tag green">판단 구조</span>
+            <h3><a href="./2026-06-09-external-ecosystem-roadmap-visual-ko.html">로드맵 시각화</a></h3>
+            <p>외부 앱을 콘텐츠 소스, 목적지, 경쟁/인접 서비스, API 준비도, 후보 압축 순서로 봅니다.</p>
+          </article>
+          <article class="doc">
+            <span class="tag amber">근거 지도</span>
+            <h3><a href="./2026-06-11-external-ecosystem-html-coverage-audit-ko.html">HTML 커버리지 감사</a></h3>
+            <p>분석방의 주요 근거문서가 한국어 HTML로 확보되어 있는지 확인합니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>질문별 근거문서</h2>
+        <p class="section-lead">임원 질문을 기준으로 열어볼 문서를 고정했습니다.</p>
+        <div class="question-grid">
+          <article class="qa">
+            <span class="tag red">왜 바로 연동하지 않나?</span>
+            <h3><a href="../flow-rules/integration-readiness-gate-ko.html">연동 착수 조건</a></h3>
+            <p>OAuth, 자동 게시, 응답 가져오기, 토큰 저장은 기본 개발 범위가 아니라 별도 조건을 통과해야 합니다.</p>
+          </article>
+          <article class="qa">
+            <span class="tag blue">무엇을 비교했나?</span>
+            <h3><a href="./2026-06-08-external-ecosystem-phase5-compression-table-ko.html">Phase 5 압축표</a></h3>
+            <p>후보 우선순위와 만들 것, 보류할 것, 금지할 것을 한 표로 확인합니다.</p>
+          </article>
+          <article class="qa">
+            <span class="tag green">어떤 순서로 분석하나?</span>
+            <h3><a href="./2026-06-11-distribution-channel-handoff-current-state-handoff-ko.html">현재 분석 상태 인계 문서</a></h3>
+            <p>분석방의 현재 축, 문서 순서, 보류 조건을 확인합니다. 실험 운영 문서는 여기서 파생됩니다.</p>
+          </article>
+          <article class="qa">
+            <span class="tag amber">근거문서가 충분한가?</span>
+            <h3><a href="./2026-06-11-school-dorm-share-packet-evidence-board-update-runbook-ko.html">근거판 갱신 기준</a></h3>
+            <p>근거문서와 실제 검증 증거를 섞지 않기 위한 운영 기준입니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>근거 사다리</h2>
+        <p class="section-lead">보고서의 숫자와 결론은 아래 순서의 문서에서만 끌어옵니다.</p>
+        <div class="flow">
+          <div class="step">
+            <strong>1. 결정 구조</strong>
+            <p><a href="./2026-06-09-external-ecosystem-analysis-room-index-ko.html">분석방 인덱스</a>, <a href="./2026-06-09-external-ecosystem-roadmap-visual-ko.html">로드맵</a>, <a href="./2026-06-08-platform-api-readiness-matrix-ko.html">API readiness</a>로 제품 경계를 고정합니다.</p>
+          </div>
+          <div class="step">
+            <strong>2. 읽기 가능성</strong>
+            <p><a href="./2026-06-11-external-ecosystem-html-coverage-audit-ko.html">HTML 커버리지 감사</a>와 <a href="./2026-06-09-external-ecosystem-connected-docs-visual-ko.html">연결 문서 허브</a>로 문서 접근성을 확인합니다.</p>
+          </div>
+          <div class="step">
+            <strong>3. 후보 압축</strong>
+            <p><a href="./2026-06-08-external-ecosystem-phase5-compression-table-ko.html">Phase 5 압축표</a>와 <a href="./2026-06-11-distribution-channel-stage0-phase-checkpoint-ko.html">단계 체크포인트</a>로 만들 것과 보류할 것을 구분합니다.</p>
+          </div>
+          <div class="step">
+            <strong>4. 중단 조건</strong>
+            <p><a href="./2026-06-11-distribution-channel-documentation-stop-gate-ko.html">문서화 중단 기준</a>과 <a href="./2026-06-11-school-dorm-share-packet-post-rollup-decision-guide-ko.html">결과 요약 후 판단 기준</a>으로 다음 개발 여부를 제한합니다.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>대표 앱·플랫폼 화면 근거</h2>
+        <p class="section-lead">앱 이름만 나열하지 않고, 비교 기준으로 본 실제 공개 화면을 함께 보관했습니다.</p>
+        <div class="screen-grid">
+          <article class="screen">
+            <img src="./platform-screens/2026-06-12-kakao-share-docs.png" alt="KakaoTalk Share developer docs screenshot" />
+            <div>
+              <strong>KakaoTalk Share</strong>
+              <p>공유 목적지로 검토. 친구·그룹 타기팅 자동화는 현재 분석 범위 밖입니다.</p>
+            </div>
+          </article>
+          <article class="screen">
+            <img src="./platform-screens/2026-06-12-naver-cafe.png" alt="Naver Cafe public page screenshot" />
+            <div>
+              <strong>Naver Cafe</strong>
+              <p>커뮤니티 배포 채널로 검토. 자동 게시와 댓글 수집은 금지선에 둡니다.</p>
+            </div>
+          </article>
+          <article class="screen">
+            <img src="./platform-screens/2026-06-12-google-forms.png" alt="Google Forms product page screenshot" />
+            <div>
+              <strong>Google Forms</strong>
+              <p>응답 수집 UX 비교 대상. 자동 생성·응답 import는 관찰 이후 판단합니다.</p>
+            </div>
+          </article>
+          <article class="screen">
+            <img src="./platform-screens/2026-06-12-google-sheets.png" alt="Google Sheets product page screenshot" />
+            <div>
+              <strong>Google Sheets</strong>
+              <p>시트 목적지 비교 대상. 초기는 복사·CSV export 수준으로 제한합니다.</p>
+            </div>
+          </article>
+          <article class="screen">
+            <img src="./platform-screens/2026-06-12-notion-product.png" alt="Notion product page screenshot" />
+            <div>
+              <strong>Notion</strong>
+              <p>메모·문서 목적지 비교 대상. workspace sync는 Stage 1 이후 후보입니다.</p>
+            </div>
+          </article>
+          <article class="screen">
+            <img src="./platform-screens/2026-06-12-slack-features.png" alt="Slack features page screenshot" />
+            <div>
+              <strong>Slack</strong>
+              <p>팀 공유 채널 비교 대상. webhook·bot 설치는 readiness gate를 통과해야 합니다.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>임원 보고서에서 뒤로 보낼 문서</h2>
+        <p class="section-lead">아래 문서는 로드맵 설명에는 필요하지 않습니다. 실제 운영 단계가 열릴 때만 봅니다.</p>
+        <div class="rule-grid">
+          <article class="rule">
+            <span class="tag amber">세션 전</span>
+            <h3><a href="./2026-06-11-school-dorm-share-packet-version-lock-ko.html">version lock</a></h3>
+            <p>관찰 대상이 같은 preview인지 확인할 때만 사용합니다.</p>
+          </article>
+          <article class="rule">
+            <span class="tag amber">세션 중</span>
+            <h3><a href="./2026-06-11-school-dorm-share-packet-pilot-worksheet-ko.html">pilot worksheet</a></h3>
+            <p><code>agreed</code> 슬롯의 실제 관찰 중에만 채웁니다. 빈 worksheet는 증거가 아닙니다.</p>
+          </article>
+          <article class="rule">
+            <span class="tag amber">세션 후</span>
+            <h3><a href="./2026-06-11-school-dorm-share-packet-rollup-template-ko.html">관찰 결과 요약표</a></h3>
+            <p>실제 관찰 결과가 채워진 뒤에만 결론 정리에 사용합니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>사용 금지선</h2>
+        <div class="rule-grid">
+          <article class="rule">
+            <span class="tag red">검증 표현 금지</span>
+            <h3>연결 문서 허브는 사용자 검증 증거가 아닙니다.</h3>
+            <p>문서 커버리지는 읽기 가능성 증거이고, 사용자 행동 검증 증거가 아닙니다.</p>
+          </article>
+          <article class="rule">
+            <span class="tag red">개발 착수 금지</span>
+            <h3>통합 개발은 이 보고서의 착수 대상이 아닙니다.</h3>
+            <p>이 보고서는 외부 생태계 분석 기준과 보류 조건을 정하는 문서입니다.</p>
+          </article>
+          <article class="rule">
+            <span class="tag red">빈 템플릿 금지</span>
+            <h3>빈 기록지, 확인표, 요약표는 근거판에 반영하지 않습니다.</h3>
+            <p>완료된 관찰과 채워진 결과 요약표만 판단 근거로 올립니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>전체 근거문서로 이동</h2>
+        <div class="links">
+          <a href="./2026-06-09-external-ecosystem-analysis-room-index-ko.html">분석방 인덱스</a>
+          <a href="./2026-06-09-external-ecosystem-connected-docs-visual-ko.html">연결 문서 전체 허브</a>
+          <a href="./2026-06-11-distribution-channel-handoff-html-hub-ko.html">인계 문서 모음</a>
+          <a href="./2026-06-11-external-ecosystem-goal-completion-report-ko.html">상세 완료 보고서</a>
+          <a href="./2026-06-11-school-dorm-share-packet-scheduling-tracker-ko.html">운영 일정표</a>
+        </div>
+        <p class="footnote">
+          이 부록은 의사결정용 문서 지도입니다. 시장조사 최신성 검증, 실제 사용자 검증 완료, 공개 경로 승인,
+          연동 착수 증거를 의미하지 않습니다.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

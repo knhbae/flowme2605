@@ -1,0 +1,1000 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 실행 Flow 10개</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --surface: #fff;
+      --soft: #f8fafc;
+      --line: #d8e2ef;
+      --line-strong: #bac8da;
+      --text: #101827;
+      --muted: #5d697b;
+      --blue: #1f5fbf;
+      --blue-soft: #eaf2ff;
+      --green: #0f7a4a;
+      --green-soft: #e8f7ef;
+      --amber: #9a6100;
+      --amber-soft: #fff6df;
+      --red: #b42318;
+      --red-soft: #fff1ef;
+      --shadow: 0 14px 32px rgba(16, 24, 39, .08);
+      --radius: 8px;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #fbfdff 0, var(--bg) 420px);
+      font-size: 16px;
+      line-height: 1.56;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 46px); line-height: 1.1; letter-spacing: 0; }
+    h2 { margin-bottom: 8px; font-size: clamp(24px, 3.2vw, 36px); line-height: 1.2; letter-spacing: 0; }
+    h3 { margin-bottom: 6px; font-size: 20px; line-height: 1.28; letter-spacing: 0; }
+    button, input, select, textarea { font: inherit; }
+    button { min-height: 44px; border: 0; border-radius: 6px; cursor: pointer; font-weight: 850; }
+    a { color: var(--blue); text-underline-offset: 3px; }
+
+    .page { width: min(1220px, calc(100% - 28px)); margin: 0 auto; padding: 16px 0 64px; }
+    .topbar, .hero, .nav, .surface, .panel, .calendar, .notice, .item-button, .setup-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 58px;
+      padding: 12px 16px;
+      box-shadow: 0 1px 2px rgba(16, 24, 39, .04);
+    }
+    .brand { color: var(--blue); font-size: 24px; font-weight: 950; text-decoration: none; }
+    .hero { margin-top: 12px; padding: 18px; box-shadow: var(--shadow); }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 900; text-transform: uppercase; }
+    .desc { color: var(--muted); }
+    .chips, .button-row, .source-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chips { margin-top: 12px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 4px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #334155;
+      font-size: 13px;
+      font-weight: 850;
+    }
+    .chip.blue { border-color: #bfdbfe; background: var(--blue-soft); color: #174ea6; }
+    .chip.green { border-color: #bde7cb; background: var(--green-soft); color: var(--green); }
+    .chip.warn { border-color: #efd08f; background: var(--amber-soft); color: var(--amber); }
+
+    .app { display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 14px; align-items: start; margin-top: 14px; }
+    .nav {
+      position: sticky;
+      top: 12px;
+      display: grid;
+      gap: 7px;
+      max-height: calc(100vh - 24px);
+      padding: 10px;
+      overflow: auto;
+      box-shadow: var(--shadow);
+    }
+    .nav button {
+      min-height: 58px;
+      padding: 10px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #334155;
+      text-align: left;
+    }
+    .nav b, .nav span { display: block; }
+    .nav span { margin-top: 2px; color: var(--muted); font-size: 12px; font-weight: 750; }
+    .nav button.active { border-color: var(--blue); background: var(--blue-soft); color: #174ea6; box-shadow: inset 0 0 0 1px var(--blue); }
+
+    .surface { overflow: hidden; box-shadow: var(--shadow); }
+    .surface-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #fff 0, #f8fafc 100%);
+    }
+    .progress-pill {
+      align-self: start;
+      min-width: 112px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: #334155;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .workspace { display: grid; grid-template-columns: minmax(320px, .86fr) minmax(0, 1.14fr); gap: 0; }
+    .left { padding: 16px; border-right: 1px solid var(--line); background: #f1f5f9; }
+    .right { display: grid; gap: 12px; padding: 16px; background: #fff; }
+    .panel, .setup-card { padding: 14px; }
+    .panel + .panel, .setup-card + .setup-card { margin-top: 12px; }
+    .label { margin-bottom: 6px; color: var(--muted); font-size: 12px; font-weight: 900; text-transform: uppercase; }
+    .field-grid { display: grid; gap: 10px; margin-top: 10px; }
+    .field label { display: block; margin-bottom: 5px; color: #334155; font-size: 13px; font-weight: 850; }
+    input, select, textarea { width: 100%; border: 1px solid var(--line-strong); border-radius: 6px; background: #fff; color: var(--text); }
+    input, select { min-height: 44px; padding: 8px 10px; }
+    textarea { min-height: 86px; padding: 10px; resize: vertical; }
+    .primary { padding: 0 14px; background: var(--blue); color: #fff; }
+    .secondary { padding: 0 12px; border: 1px solid var(--line); background: #fff; color: #334155; }
+    .toast { display: none; margin-top: 10px; padding: 9px 10px; border: 1px solid #bfdbfe; border-radius: 6px; background: var(--blue-soft); color: #174ea6; font-size: 13px; font-weight: 800; }
+    .toast.show { display: block; }
+    .source-row { margin-top: 8px; }
+    .source-row a { display: inline-flex; align-items: center; min-height: 34px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 13px; font-weight: 850; text-decoration: none; }
+    .notice { padding: 10px; background: var(--amber-soft); color: #795100; font-size: 14px; font-weight: 750; }
+    .notice.danger { border-color: #f4b4ad; background: var(--red-soft); color: var(--red); }
+
+    .action-card { padding: 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--soft); }
+    .status-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+    .status-box { padding: 11px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+    .status-box b, .status-box span { display: block; }
+    .status-box span { margin-top: 3px; color: var(--muted); font-size: 13px; font-weight: 750; }
+    .check-list { display: grid; gap: 8px; margin-top: 10px; }
+    .check { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; padding: 9px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+    .check input { width: 18px; height: 18px; min-height: 18px; margin-top: 3px; }
+    .check strong, .check span { display: block; }
+    .check span span { margin-top: 2px; color: var(--muted); font-size: 13px; }
+    .check.done strong { color: #94a3b8; text-decoration: line-through; }
+
+    .item-list { display: grid; gap: 8px; margin-top: 8px; }
+    .item-button { min-height: 50px; padding: 9px 10px; color: #334155; text-align: left; }
+    .item-button b, .item-button span { display: block; }
+    .item-button span { margin-top: 2px; color: var(--muted); font-size: 12px; font-weight: 750; }
+    .item-button.active { border-color: var(--blue); background: var(--blue-soft); color: #174ea6; box-shadow: inset 0 0 0 1px var(--blue); }
+
+    .calendar { overflow: hidden; }
+    .calendar-top { display: flex; align-items: start; justify-content: space-between; gap: 10px; padding: 12px 12px 0; }
+    .month-nav { display: flex; gap: 6px; flex: 0 0 auto; }
+    .month-nav button { min-height: 36px; padding: 0 9px; border: 1px solid var(--line); background: #fff; color: #334155; font-size: 13px; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); margin: 12px; overflow: hidden; border: 1px solid var(--line); border-radius: 6px; }
+    .weekday, .day { min-height: 58px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 6px; font-size: 12px; }
+    .weekday { min-height: auto; background: #eef3f8; text-align: center; font-weight: 900; }
+    .day { background: #fff; color: var(--text); text-align: left; border-radius: 0; font-weight: 750; }
+    .weekday:nth-child(7n), .day:nth-child(7n) { border-right: 0; }
+    .day.empty { background: #f8fafc; color: #cbd5e1; }
+    .day.has-event { color: #174ea6; }
+    .day.active { background: var(--blue-soft); box-shadow: inset 0 0 0 2px var(--blue); }
+    .event-chip { display: block; width: fit-content; max-width: 100%; margin-top: 4px; padding: 2px 4px; overflow: hidden; border: 1px solid #bfdbfe; border-radius: 4px; background: var(--blue-soft); color: #174ea6; font-size: 11px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+
+    @media (max-width: 980px) {
+      .app, .workspace { grid-template-columns: 1fr; }
+      .nav { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); max-height: none; }
+      .left { border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+
+    @media (max-width: 660px) {
+      .page { width: min(100% - 20px, 1220px); padding-top: 10px; }
+      .hero, .surface-head, .left, .right { padding: 14px; }
+      .surface-head { grid-template-columns: 1fr; }
+      .progress-pill { width: 100%; }
+      .nav { grid-template-columns: 1fr; }
+      .status-grid { grid-template-columns: 1fr; }
+      .day { min-height: 68px; padding: 5px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar" aria-label="FLOW">
+      <a class="brand" href="#">FLOW</a>
+      <button class="secondary" type="button" id="reset">현재 Flow 초기화</button>
+    </nav>
+
+    <header class="hero">
+      <p class="eyebrow">내 Flow</p>
+      <h1>저장한 원문을 바로 실행하기</h1>
+      <p class="desc">읽고 지나가기 쉬운 생활 원문을 날짜, 체크, 메모, 원본 링크가 있는 실행 화면으로 정리했습니다.</p>
+      <div class="chips">
+        <span class="chip blue">입력 1-3개</span>
+        <span class="chip green">체크하면서 실행</span>
+        <span class="chip warn">상세 설명은 원문 링크로 이동</span>
+      </div>
+    </header>
+
+    <section class="app" aria-label="실행 Flow 10개">
+      <nav class="nav" id="flow-nav" aria-label="Flow 선택"></nav>
+      <article class="surface">
+        <header class="surface-head">
+          <div>
+            <div class="chips" id="flow-tags" style="margin-top:0"></div>
+            <h2 id="flow-title"></h2>
+            <p class="desc" id="flow-summary"></p>
+          </div>
+          <span class="progress-pill" id="flow-progress">0/0 완료</span>
+        </header>
+        <div class="workspace">
+          <aside class="left">
+            <section class="setup-card" id="setup-panel"></section>
+            <section class="setup-card" id="source-panel"></section>
+          </aside>
+          <section class="right" id="flow-body"></section>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+
+    const flows = [
+      {
+        id: 'moving',
+        nav: '이사 D-30',
+        navSub: '날짜형 준비',
+        title: '이사 D-30 실행 Flow',
+        summary: '이사일을 넣으면 견적, 이전 설치, 주소 변경, 당일 정산까지 날짜별로 실행합니다.',
+        destination: '캘린더 + 업체 메모',
+        primary: '이사 일정 만들기',
+        setupTitle: '이사일과 방식만 넣기',
+        setupText: '업체명과 포함 범위만 메모하고, 계약서 원문이나 계좌 정보는 저장하지 않습니다.',
+        tags: ['이사일 기준', '캘린더', '업체 메모'],
+        mode: 'timeline',
+        calendar: true,
+        anchor: 'moveDate',
+        inputs: [
+          { key: 'moveDate', label: '이사일', type: 'date', value: '2026-07-18' },
+          { key: 'method', label: '이사 방식', type: 'select', value: '포장이사', options: ['포장이사', '반포장이사', '용달/직접'] }
+        ],
+        sources: [
+          ['원문', '오늘의집 이사 체크리스트', 'https://ohou.se/advices/8442'],
+          ['원문', '아정당 포장이사 체크리스트', 'https://www.ajd.co.kr/contents/basic-tip/detail/%ED%8F%AC%EC%9E%A5%EC%9D%B4%EC%82%AC_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_%EB%B0%8F_%EA%BF%80%ED%8C%81_%EC%95%8C%EB%A0%A4%EB%93%9C%EB%A6%BD%EB%8B%88%EB%8B%A4-50950'],
+          ['실행 링크', '미소 이사 견적 비교', 'https://miso.kr/moving-rfq']
+        ],
+        notice: '견적 금액, 포함 범위, 예약 시간만 메모합니다. 민감 정보와 계약서 원문은 저장하지 않습니다.',
+        items: [
+          { id: 'm30', offset: -30, label: 'D-30', title: '이사 방식 정하고 견적 3곳 요청하기', short: '견적 후보', detail: '포장/반포장/용달 중 하나를 정하고, 업체별 포함 범위와 연락처를 메모합니다.', tasks: [
+            ['이사 방식 1개 선택', '현재 선택: {method}'],
+            ['견적 후보 2-3곳 이름과 연락처 메모', '비용, 포함 범위, 가능한 시간을 같이 적습니다.'],
+            ['입주청소가 필요하면 같은 날 가능한 후보만 표시', '확정 전에는 후보 일정만 남깁니다.']
+          ]},
+          { id: 'm14', offset: -14, label: 'D-14', title: '인터넷, 도시가스, 주소 변경 예약하기', short: '이전 설치', detail: '날짜가 필요한 생활 서비스부터 예약합니다.', tasks: [
+            ['인터넷/가전 이전 설치 날짜 확인', '이사 전후 가능한 시간대를 메모합니다.'],
+            ['도시가스 전출입 또는 관리사무소 연락', '건물별 절차가 다르면 원문 링크를 다시 엽니다.'],
+            ['우편물/정기배송 주소 변경할 곳 표시', '은행, 쇼핑몰, 정기배송처럼 자주 쓰는 곳만 먼저 합니다.']
+          ]},
+          { id: 'm7', offset: -7, label: 'D-7', title: '이사업체 예약 내용 다시 확인하기', short: '예약 재확인', detail: '도착 시간, 작업 범위, 추가비 조건처럼 당일 문제 되는 항목을 다시 봅니다.', tasks: [
+            ['업체 도착 시간과 작업 인원 확인', '전화나 문자로 받은 내용만 짧게 메모합니다.'],
+            ['추가비가 생길 수 있는 조건 확인', '사다리차, 엘리베이터, 주차 조건을 봅니다.'],
+            ['큰 가구 위치를 방별로만 정리', '세부 배치는 당일에 조정합니다.']
+          ]},
+          { id: 'm0', offset: 0, label: 'D-Day', title: '짐 반출입과 정산 금액 확인하기', short: '당일 정산', detail: '파손, 누락, 추가비가 생기면 현장에서 바로 메모합니다.', tasks: [
+            ['큰 가전과 가구 상태 확인', '사진은 선택이고, 기본은 확인 여부만 체크합니다.'],
+            ['새집에서 큰 짐 위치 먼저 확인', '방, 거실, 주방처럼 큰 구역만 정합니다.'],
+            ['정산 금액과 추가비 사유 메모', '계좌번호는 저장하지 않습니다.']
+          ]}
+        ]
+      },
+      {
+        id: 'usedcar',
+        nav: '중고차 방문',
+        navSub: '현장 체크',
+        title: '중고차 방문 당일 체크 Flow',
+        summary: '방문일과 매물 링크를 넣고, 현장에서 기록부, 이력 조회, 외관, 시동/주행을 순서대로 봅니다.',
+        destination: '현장 체크 + 보류 메모',
+        primary: '방문 체크 시작하기',
+        setupTitle: '매물 링크와 방문일 넣기',
+        setupText: '차량번호는 필수가 아닙니다. 확신이 안 드는 항목만 보류 메모에 남깁니다.',
+        tags: ['현장 체크', '매물 URL', '보류 메모'],
+        mode: 'section',
+        calendar: false,
+        inputs: [
+          { key: 'visitDate', label: '방문일', type: 'date', value: '2026-06-20' },
+          { key: 'listing', label: '매물 URL 또는 이름', type: 'text', value: '' }
+        ],
+        sources: [
+          ['원문', '겟차 중고차 상태 체크리스트', 'https://web.getcha.kr/blog/used-car-condition-checklist-guide'],
+          ['소비자 안내', '한국소비자원 중고차 체크리스트', 'https://www.kca.go.kr/smartconsumer/sub.do?menukey=7714&mode=view&no=1002862088'],
+          ['공식 조회', '자동차365 통합이력조회', 'https://www.car365.go.kr/'],
+          ['보험 이력', '카히스토리 사고이력조회', 'https://www.carhistory.or.kr/']
+        ],
+        notice: '확인한 사실, 걸리는 항목, 다시 볼 링크만 남깁니다. 확신이 없으면 계약 전 확인 질문으로 정리합니다.',
+        noticeTone: 'danger',
+        items: [
+          { id: 'u1', label: '1', title: '방문 전 기록부와 이력 조회 열기', short: '방문 전 준비', detail: '성능·상태점검기록부와 매물 정보를 현장에서 바로 비교할 수 있게 준비합니다.', tasks: [
+            ['판매 페이지 URL 또는 매물명 저장', '현재 입력: {listing}'],
+            ['성능·상태점검기록부 파일이나 사진 열어두기', '차량정보, 주행거리, 사고/수리 항목을 볼 수 있게 둡니다.'],
+            ['자동차365 또는 카히스토리 조회 링크 열어두기', '조회 결과는 기록부와 나란히 비교합니다.']
+          ]},
+          { id: 'u2', label: '2', title: '외관, 타이어, 패널 간격 보기', short: '외관', detail: '큰 흠집보다 기록부와 다른 수리 흔적이 있는지 봅니다.', tasks: [
+            ['좌우 패널 간격과 도장 색 차이 보기', '한쪽만 다르면 기록부와 비교합니다.'],
+            ['타이어 마모와 제조연월 확인', '네 바퀴가 지나치게 다르면 보류 메모에 남깁니다.'],
+            ['유리, 램프, 범퍼 교환 흔적 표시', '판매자 설명과 다르면 질문으로 남깁니다.']
+          ]},
+          { id: 'u3', label: '3', title: '시동, 경고등, 실내 기능 확인하기', short: '시동/실내', detail: '시동 직후 경고등과 기본 기능을 먼저 봅니다.', tasks: [
+            ['시동 후 경고등이 남는지 확인', '계기판 경고등이 남으면 촬영하거나 메모합니다.'],
+            ['에어컨, 창문, 잠금, 후방카메라 작동 확인', '기본 기능 불량은 계약 전 확인 항목입니다.'],
+            ['냄새, 침수 의심 흔적, 실내 마모 메모', '확신이 없으면 구매 전 정비소 점검을 예약합니다.']
+          ]},
+          { id: 'u4', label: '4', title: '주행 후 보류 항목만 정리하기', short: '주행 후', detail: '소음, 떨림, 제동 느낌처럼 당일 기억이 사라지기 쉬운 항목을 바로 남깁니다.', tasks: [
+            ['주행 중 소음, 떨림, 제동 느낌 메모', '정상 여부를 단정하지 말고 느낀 사실만 남깁니다.'],
+            ['계약 전 다시 볼 질문 1-3개 작성', '판매자 또는 정비소에 확인할 질문으로 바꿉니다.'],
+            ['확신이 없으면 계약 전 점검 일정 잡기', '현장에서 바로 결정하지 않아도 됩니다.']
+          ]}
+        ]
+      },
+      {
+        id: 'school',
+        nav: '초등 입학',
+        navSub: '학부모 D-30',
+        title: '초등 입학 D-30 준비 Flow',
+        summary: '입학일과 학교 안내문을 넣고, 예비소집, 구매할 것, 생활 연습, 입학식 당일을 단계별로 실행합니다.',
+        destination: '캘린더 + 안내문 URL',
+        primary: '입학 준비 일정 만들기',
+        setupTitle: '입학일과 학교 안내문만 넣기',
+        setupText: '블로그 준비물은 참고만 하고, 실제 구매는 학교 안내문 기준으로 확정합니다.',
+        tags: ['입학일 기준', '현재 단계', '안내문 URL'],
+        mode: 'timeline',
+        calendar: true,
+        anchor: 'entryDate',
+        inputs: [
+          { key: 'entryDate', label: '입학일', type: 'date', value: '2027-03-02' },
+          { key: 'noticeUrl', label: '학교 안내문 URL 또는 파일명', type: 'text', value: '' }
+        ],
+        sources: [
+          ['부모 참고', '홈런 초등 입학 준비물', 'https://www.home-learn.co.kr/newsroom/news/A/1317'],
+          ['부모 참고', '여성동아 초등 입학 준비 체크리스트', 'https://woman.donga.com/edu/article/all/12/5372050/1']
+        ],
+        notice: '구매 항목은 학교 안내문 기준으로만 확정합니다. 추천 목록은 빠진 것 확인용으로만 둡니다.',
+        items: [
+          { id: 's30', offset: -30, label: 'D-30', title: '예비소집 자료와 학교 안내문 저장하기', short: '안내문 저장', detail: '취학통지서, 예비소집 일정, 학교 안내문을 한곳에 모읍니다.', tasks: [
+            ['취학통지서와 예비소집 일정 확인', '일정이 다르면 학교 안내문을 우선합니다.'],
+            ['학교 안내문 URL 또는 파일명 저장', '현재 입력: {noticeUrl}'],
+            ['제출 서류와 예방접종 관련 안내 표시', '의학적 판단은 공식 안내와 의료기관에서 확인합니다.']
+          ]},
+          { id: 's21', offset: -21, label: 'D-21', title: '학교 안내문 기준으로 살 것만 고르기', short: '구매 목록', detail: '가방, 실내화, 필통처럼 공통 준비물은 보되, 학교별 안내가 있으면 그 기준을 따릅니다.', tasks: [
+            ['안내문에 있는 준비물만 구매 목록으로 표시', '원문 추천 목록을 그대로 과구매하지 않습니다.'],
+            ['아이 이름표가 필요한 물건만 따로 적기', '학교에서 금지한 물건은 제외합니다.'],
+            ['가방과 실내화는 아이가 직접 열고 신어보게 하기', '생활 연습으로 이어지는 항목만 체크합니다.']
+          ]},
+          { id: 's14', offset: -14, label: 'D-14', title: '아침 등교 루틴 3가지만 연습하기', short: '생활 연습', detail: '등교 시간에 맞춰 실제 학교생활에 필요한 행동만 연습합니다.', tasks: [
+            ['아침 기상과 옷 입는 순서 연습', '너무 많은 루틴을 한 번에 넣지 않습니다.'],
+            ['화장실, 손씻기, 수저 정리 중 필요한 것 선택', '아이에게 어려운 것만 남깁니다.'],
+            ['가방에서 물건 찾고 다시 넣기 연습', '분실 방지를 위해 이름표와 함께 확인합니다.']
+          ]},
+          { id: 's0', offset: 0, label: '입학일', title: '입학식 당일 준비물과 하교 시간 확인하기', short: '입학식', detail: '아이와 보호자가 당일에 필요한 것만 확인합니다.', tasks: [
+            ['아이 가방에 당일 준비물만 넣기', '학교 안내문 기준으로 확인합니다.'],
+            ['입학식 시간과 교실 위치 확인', '현장 안내가 바뀌면 메모합니다.'],
+            ['하교 시간과 만날 장소 확인', '첫 주 동안 반복해서 볼 정보입니다.']
+          ]}
+        ]
+      },
+      {
+        id: 'babycheck',
+        nav: '영유아 검진',
+        navSub: '문진표 준비',
+        title: '영유아 건강검진 문진 준비 Flow',
+        summary: '검진일과 차수를 넣고, 예약 확인, 문진표/발달선별검사지 작성, 당일 질문 메모까지 준비합니다.',
+        destination: '캘린더 + 질문 메모',
+        primary: '검진 준비 일정 만들기',
+        setupTitle: '검진일과 차수만 넣기',
+        setupText: '결과 해석은 의료진에게 맡기고, Flow에는 예약과 문진 준비만 남깁니다.',
+        tags: ['검진일 기준', '문진표', '질문 메모'],
+        mode: 'timeline',
+        calendar: true,
+        anchor: 'checkDate',
+        inputs: [
+          { key: 'checkDate', label: '검진일', type: 'date', value: '2026-07-05' },
+          { key: 'round', label: '검진 차수', type: 'select', value: '4차 건강검진 18-24개월', options: ['4차 건강검진 18-24개월', '5차 건강검진 30-36개월', '6차 건강검진 42-48개월', '7차 건강검진 54-60개월'] },
+          { key: 'clinic', label: '병원명 또는 예약 메모', type: 'text', value: '' }
+        ],
+        sources: [
+          ['공식 안내', '국립재활원 영유아 건강검진', 'https://www.nrc.go.kr/portal/html/content.do?depth=ph&menu_cd=03_02_00_04'],
+          ['병원 안내', '서울특별시 어린이병원 영유아 건강검진', 'https://childhosp.seoul.go.kr/medical-info/health-medical-examination'],
+          ['보건소 안내', '구로구 영유아 건강검진', 'https://www.guro.go.kr/health/contents.do?key=1357']
+        ],
+        notice: '건강 상태, 발달 평가, 검사 결과를 Flow가 해석하지 않습니다. 예약, 문진표, 질문만 정리합니다.',
+        noticeTone: 'danger',
+        items: [
+          { id: 'b7', offset: -7, label: 'D-7', title: '검진 대상과 예약 정보 확인하기', short: '예약 확인', detail: '검진 차수와 병원 예약 정보를 다시 확인합니다.', tasks: [
+            ['현재 검진 차수 확인', '현재 선택: {round}'],
+            ['예약 병원과 방문 시간 메모', '현재 입력: {clinic}'],
+            ['구강검진이 함께 필요한지 공식 안내에서 확인', '개월 수별 검진 종류가 다르면 공식 안내를 우선합니다.']
+          ]},
+          { id: 'b3', offset: -3, label: 'D-3', title: '문진표와 발달선별검사지 작성하기', short: '문진 작성', detail: '검진일 기준 해당 개월 수 문진표를 미리 작성합니다.', tasks: [
+            ['국민건강보험공단 또는 병원 안내 방식으로 문진표 작성', '온라인 입력 또는 출력 작성 중 병원 안내 방식을 따릅니다.'],
+            ['발달선별검사지가 필요하면 같은 날 작성', '아이를 평가하려는 문장이 아니라 관찰 사실만 적습니다.'],
+            ['의료진에게 물어볼 질문 1-2개만 메모', '수면, 식사, 언어처럼 실제로 궁금한 항목만 남깁니다.']
+          ]},
+          { id: 'b0', offset: 0, label: '검진일', title: '문진표와 질문 메모 들고 방문하기', short: '방문', detail: '병원에서 다시 확인할 질문을 짧게 열어둡니다.', tasks: [
+            ['문진표 제출 또는 온라인 입력 완료 확인', '접수 전에 완료 여부만 체크합니다.'],
+            ['아이 수첩, 신분 확인 서류, 예약 정보를 챙기기', '병원별 안내가 다르면 병원 안내를 따릅니다.'],
+            ['질문 메모 열고 의료진에게 확인', '결과 해석은 의료진 설명을 따릅니다.']
+          ]},
+          { id: 'b1', offset: 1, label: 'D+1', title: '재방문이나 추가 확인 일정만 남기기', short: '후속 일정', detail: '의료진이 안내한 재방문이나 추가 검사가 있을 때만 일정으로 남깁니다.', tasks: [
+            ['의료진 안내가 있으면 다음 예약일 입력', '없으면 완료로 둡니다.'],
+            ['검진 결과 원문은 저장하지 않기', '필요하면 병원 또는 공단 시스템에서 다시 확인합니다.'],
+            ['다음 검진 차수만 캘린더 후보로 표시', '공식 검진 시기표를 기준으로 합니다.']
+          ]}
+        ]
+      },
+      {
+        id: 'passport',
+        nav: '여권/출국',
+        navSub: '재발급 준비',
+        title: '여권 재발급과 출국 전 확인 Flow',
+        summary: '출국일을 넣고 여권 유효기간, 온라인 재발급 신청, 수령 준비, 출국 전 확인을 순서대로 봅니다.',
+        destination: '캘린더 + 신청 링크',
+        primary: '출국 준비 일정 만들기',
+        setupTitle: '출국일과 신청 방식을 넣기',
+        setupText: '여권번호와 신분증 사본은 저장하지 않고, 신청 링크와 수령 준비만 남깁니다.',
+        tags: ['출국일 기준', '공식 링크', '수령 준비'],
+        mode: 'timeline',
+        calendar: true,
+        anchor: 'tripDate',
+        inputs: [
+          { key: 'tripDate', label: '출국일', type: 'date', value: '2026-08-15' },
+          { key: 'applyMethod', label: '신청 방식', type: 'select', value: '정부24 온라인 재발급', options: ['정부24 온라인 재발급', '여권사무 대행기관 방문'] }
+        ],
+        sources: [
+          ['공식 신청', '정부24 온라인 여권 재발급', 'https://www.gov.kr/portal/service/serviceInfo/126200000030'],
+          ['공식 안내', '외교부 온라인 재발급 안내', 'https://www.passport.go.kr/home/kor/contents.do?menuPos=10'],
+          ['공식 안내', '외교부 유효기간 만료 재발급', 'https://www.passport.go.kr/home/kor/contents.do?menuPos=7']
+        ],
+        notice: '신청 접수 후 임의 취소가 어려울 수 있으므로, 사진과 신청 대상 조건을 공식 안내에서 먼저 확인합니다.',
+        items: [
+          { id: 'p30', offset: -30, label: 'D-30', title: '여권 유효기간과 온라인 신청 가능 여부 확인하기', short: '신청 가능 여부', detail: '출국 전에 여권 유효기간과 재발급 신청 대상을 먼저 봅니다.', tasks: [
+            ['현재 신청 방식 확인', '현재 선택: {applyMethod}'],
+            ['온라인 신청 불가 대상에 해당하는지 확인', '생애 최초 발급, 긴급 여권 등은 공식 안내를 확인합니다.'],
+            ['기존 여권을 수령 때 가져가야 하는지 표시', '유효기간이 남은 여권은 수령 시 반납이 필요할 수 있습니다.']
+          ]},
+          { id: 'p21', offset: -21, label: 'D-21', title: '여권 사진 파일과 신청 링크 준비하기', short: '사진/신청', detail: '사진 규격과 신청 링크를 열어둡니다.', tasks: [
+            ['6개월 이내 사진인지 확인', '기존 신분증 사진 재사용은 반려될 수 있습니다.'],
+            ['정부24 또는 여권사무 대행기관 링크 열기', '신청은 공식 사이트에서만 진행합니다.'],
+            ['수령 기관과 연락 가능 시간을 메모', '발급 완료 후 찾으러 갈 장소를 남깁니다.']
+          ]},
+          { id: 'p7', offset: -7, label: 'D-7', title: '수령 준비물과 항공권 이름 확인하기', short: '수령/이름', detail: '수령 전에 기존 여권, 신분증, 영문명 표기를 다시 봅니다.', tasks: [
+            ['수령 기관, 기존 여권 지참 여부 확인', '기존 여권이 있으면 수령 시 반납 조건을 확인합니다.'],
+            ['항공권 영문명과 여권 영문명 비교', '오탈자는 항공사 또는 발급기관에 확인합니다.'],
+            ['여권 수령 완료 여부 체크', '수령 전에는 출국 전 확인으로 넘기지 않습니다.']
+          ]},
+          { id: 'p1', offset: -1, label: 'D-1', title: '여권과 출국 필수품만 다시 확인하기', short: '출국 전', detail: '출국 전날에는 여권, 항공권, 비자/입국요건 링크만 봅니다.', tasks: [
+            ['여권 실물 위치 확인', '사진 저장이 아니라 실물 위치만 확인합니다.'],
+            ['항공권, 숙소, 비자/입국요건 링크 열기', '국가별 요건은 공식 안내를 따릅니다.'],
+            ['여권번호 같은 민감 정보는 Flow에 저장하지 않기', '필요하면 공식 앱이나 문서에서 확인합니다.']
+          ]}
+        ]
+      },
+      {
+        id: 'homeworkout',
+        nav: '홈트 영상',
+        navSub: '반복 루틴',
+        title: '초보 홈트 영상 반복 Flow',
+        summary: '원본 영상을 주 3회 캘린더에 넣고, 매번 영상 열기, 실행 여부, 몸 상태만 간단히 체크합니다.',
+        destination: '반복 캘린더 + 실행 체크',
+        primary: '홈트 반복 일정 만들기',
+        setupTitle: '시작일과 운동 요일 넣기',
+        setupText: '운동 순서는 원본 영상에서 확인하고, Flow에는 실행 여부와 중단 조건만 남깁니다.',
+        tags: ['영상 1개', '주 3회', '몸 상태 메모'],
+        mode: 'timeline',
+        calendar: true,
+        anchor: 'startDate',
+        inputs: [
+          { key: 'startDate', label: '시작일', type: 'date', value: '2026-06-22' },
+          { key: 'days', label: '운동 요일', type: 'select', value: '월/수/금', options: ['월/수/금', '화/목/토', '주말 2회'] }
+        ],
+        sources: [
+          ['원본 영상', '왕초보 탈출 전신운동 초보 홈트', 'https://www.youtube.com/watch?v=W4SpM2gxGdE'],
+          ['영상 목록', '초보 홈트 루틴 플레이리스트', 'https://www.youtube.com/playlist?list=PLkVCuKZG0QB4vNurTlO2bweVqwcerhE1J']
+        ],
+        notice: '통증, 어지러움, 호흡 곤란, 기존 질환 악화가 있으면 중단하고 전문가 상담을 우선합니다.',
+        noticeTone: 'danger',
+        items: [
+          { id: 'h1', offset: 0, label: '1회차', title: '원본 영상 열고 한 번 따라하기', short: '영상 실행', detail: '이번 주 운동 요일은 {days}입니다. 자세와 순서는 원본 영상을 그대로 따릅니다.', tasks: [
+            ['운동 공간, 물, 매트만 준비', '장비가 필요하면 영상 설명을 확인합니다.'],
+            ['원본 영상 열고 오늘 가능한 강도로 1회 따라하기', 'Flow가 운동 순서를 새로 만들지 않습니다.'],
+            ['완료 후 통증이나 어지러움 여부 체크', '불편하면 다음 반복을 건너뛰고 상담을 우선합니다.']
+          ]},
+          { id: 'h2', offset: 2, label: '2회차', title: '같은 영상으로 두 번째 실행하기', short: '반복', detail: '첫 실행보다 강도를 올릴 필요는 없습니다.', tasks: [
+            ['원본 영상 링크 열기', '영상의 자세와 속도를 다시 봅니다.'],
+            ['끝까지 못 해도 멈춘 지점만 메모', '완주보다 안전하게 중단하는 것이 우선입니다.'],
+            ['다음 일정 유지 또는 쉬는 날로 바꾸기', '몸 상태 기준으로 결정합니다.']
+          ]},
+          { id: 'h3', offset: 4, label: '3회차', title: '이번 주 마지막 실행 여부 남기기', short: '주간 마감', detail: '이번 주에 계속할지, 쉬어야 할지 판단할 정도만 기록합니다.', tasks: [
+            ['원본 영상 1회 실행 또는 건너뜀 표시', '건너뛰면 이유만 짧게 남깁니다.'],
+            ['통증/어지러움이 있으면 다음 주 반복 중단', '중단 조건을 메모합니다.'],
+            ['괜찮으면 다음 주 같은 요일로 유지', '새 루틴 추가는 다음 주에 결정합니다.']
+          ]}
+        ]
+      },
+      {
+        id: 'squishy',
+        nav: '무료 도안 놀이',
+        navSub: '버킷 + 날짜',
+        title: '무료 도안 스퀴시 만들기 Flow',
+        summary: '나중에 해볼 도안을 저장해두고, 놀이 날짜가 정해지면 출력, 준비물, 정리까지 한 화면에서 체크합니다.',
+        destination: '버킷 목록 + 놀이 날짜',
+        primary: '놀이 날짜로 저장하기',
+        setupTitle: '도안 링크와 놀이 날짜 넣기',
+        setupText: '복잡한 실행 단계로 쪼개지 않고, 하나의 놀이 체크리스트로 둡니다.',
+        tags: ['도안 URL', '준비물', '아이 놀이'],
+        mode: 'timeline',
+        calendar: true,
+        anchor: 'playDate',
+        inputs: [
+          { key: 'playDate', label: '놀이 날짜', type: 'date', value: '2026-06-28' },
+          { key: 'patternUrl', label: '도안 URL 또는 파일명', type: 'text', value: '' }
+        ],
+        sources: [
+          ['원본 영상', '피크닉 스퀴시 만들기 무료도안', 'https://www.youtube.com/watch?v=LkPMfSyPfxY'],
+          ['아이디어 모음', 'Pinterest 스퀴시 도안', 'https://kr.pinterest.com/ideas/%EC%8A%A4%ED%80%B4%EC%8B%9C-%EB%8F%84%EC%95%88/956517734996/']
+        ],
+        notice: '도안 저작권과 사용 범위는 원본 안내를 따릅니다. 칼, 가위, 테이프 사용은 보호자가 함께 확인합니다.',
+        items: [
+          { id: 'q0', offset: 0, label: '놀이일', title: '도안 출력하고 준비물만 체크하기', short: '놀이 준비', detail: '도안 링크는 {patternUrl}입니다. 원본 설명에 나온 준비물만 챙깁니다.', tasks: [
+            ['도안 URL 또는 파일 열기', '현재 입력: {patternUrl}'],
+            ['원본 설명의 준비물만 체크', '도안, 종이, 테이프, 솜처럼 원본에 나온 항목을 우선합니다.'],
+            ['가위나 칼이 필요하면 보호자와 함께 쓰기', '아이 혼자 쓰지 않는 도구만 표시합니다.'],
+            ['놀이 후 남은 조각과 테이프 정리', '다음에 다시 만들 도안이면 링크만 남깁니다.']
+          ]}
+        ]
+      },
+      {
+        id: 'stuckyi',
+        nav: '스투키 물주기',
+        navSub: '반복 관리',
+        title: '스투키 물주기 반복 Flow',
+        summary: '시작일과 반복 간격을 넣고, 흙 마름, 과습 신호, 물 준 날짜만 가볍게 체크합니다.',
+        destination: '반복 캘린더 + 상태 메모',
+        primary: '물주기 반복 일정 만들기',
+        setupTitle: '시작일과 반복 간격 넣기',
+        setupText: '정확한 물 양을 보장하지 않고, 원문 기준과 실제 흙 상태를 같이 확인합니다.',
+        tags: ['반복 일정', '상태 체크', '과습 주의'],
+        mode: 'timeline',
+        calendar: true,
+        anchor: 'waterDate',
+        inputs: [
+          { key: 'waterDate', label: '첫 확인일', type: 'date', value: '2026-06-23' },
+          { key: 'interval', label: '반복 간격', type: 'select', value: '3주마다', options: ['2주마다', '3주마다', '4주마다'] }
+        ],
+        sources: [
+          ['공식 참고', '농사로 물관리', 'https://www.nongsaro.go.kr/portal/ps/psz/psza/contentMain.ps?menuId=PS04108'],
+          ['경험 참고', '스투키 키우기 물주기', 'https://looloolalong.tistory.com/entry/%EB%AC%B8%EC%83%A4%EC%9D%B8-%EC%8A%A4%ED%88%AC%ED%82%A4-%ED%82%A4%EC%9A%B0%EA%B8%B0-%EB%AC%BC%EC%A3%BC%EA%B8%B0-%EB%88%84%EA%B0%80-%EC%89%BD%EB%8B%A4%EA%B3%A0-%ED%96%88%EB%82%98'],
+          ['영상 참고', '스투키 물주기 방법', 'https://www.youtube.com/watch?v=mdj_xBeieLM']
+        ],
+        notice: '식물 상태와 환경에 따라 달라질 수 있습니다. 잎이 무르거나 흙이 계속 젖어 있으면 물주기를 미룹니다.',
+        items: [
+          { id: 't1', offset: 0, label: '1회차', title: '흙 상태 보고 물 줄지 결정하기', short: '첫 확인', detail: '반복 간격은 {interval}입니다. 날짜보다 흙 상태를 먼저 봅니다.', tasks: [
+            ['흙 표면과 화분 안쪽 마름 확인', '계속 젖어 있으면 오늘은 주지 않습니다.'],
+            ['몸통이 물러지거나 과습 의심이 있으면 보류', '보류 이유만 메모합니다.'],
+            ['물을 줬다면 받침 물을 비우기', '물 준 날짜만 남깁니다.']
+          ]},
+          { id: 't2', offset: 21, label: '2회차', title: '지난번 메모 보고 반복 유지하기', short: '반복 확인', detail: '환경이 바뀌면 간격을 조정합니다.', tasks: [
+            ['지난 물준 날짜와 보류 메모 확인', '흙이 아직 젖어 있으면 미룹니다.'],
+            ['잎 무름, 냄새, 뿌리 과습 의심 표시', '문제가 있으면 원문 링크를 다시 봅니다.'],
+            ['괜찮으면 같은 간격으로 다음 일정 유지', '반복 간격이 맞는지 메모합니다.']
+          ]},
+          { id: 't3', offset: 42, label: '3회차', title: '반복 간격을 유지할지 바꾸기', short: '간격 조정', detail: '세 번째 확인부터는 환경에 맞춰 간격을 바꿀지 결정합니다.', tasks: [
+            ['3회 기록을 보고 너무 잦았는지 확인', '보류가 많으면 간격을 늘립니다.'],
+            ['햇빛, 통풍, 계절 변화 메모', '물 양보다 환경 변화를 남깁니다.'],
+            ['다음 반복 간격 선택', '현재 선택: {interval}']
+          ]}
+        ]
+      },
+      {
+        id: 'anydesk',
+        nav: '원격지원',
+        navSub: '설치 절차',
+        title: 'AnyDesk 원격지원 준비 Flow',
+        summary: '도움받을 날짜와 대상 기기만 넣고, 설치, ID 확인, 세션 시작, 종료 후 권한 확인을 순서대로 진행합니다.',
+        destination: '절차 체크 + ID 메모',
+        primary: '원격지원 절차 시작하기',
+        setupTitle: '도움받을 날짜와 기기 넣기',
+        setupText: '비밀번호는 저장하지 않고, 원격 ID와 세션 전 확인 사항만 남깁니다.',
+        tags: ['설치 절차', '원격 ID', '권한 확인'],
+        mode: 'section',
+        calendar: false,
+        inputs: [
+          { key: 'supportDate', label: '도움받을 날짜', type: 'date', value: '2026-06-25' },
+          { key: 'device', label: '대상 기기', type: 'text', value: '부모님 노트북' }
+        ],
+        sources: [
+          ['공식 가이드', 'AnyDesk 빠른 시작 가이드', 'https://support.anydesk.com/docs/ko/quick-start-guide'],
+          ['공식 홈', 'AnyDesk', 'https://anydesk.com/ko']
+        ],
+        notice: '원격지원 비밀번호와 민감한 화면은 저장하지 않습니다. 세션 종료 후 권한과 앱 상태를 다시 확인합니다.',
+        noticeTone: 'danger',
+        items: [
+          { id: 'a1', label: '1', title: '대상 기기에 AnyDesk 설치하기', short: '설치', detail: '{device}에 설치하고 실행 화면까지 엽니다.', tasks: [
+            ['공식 다운로드 페이지에서 운영체제 선택', '광고성 다운로드 링크를 피하고 공식 링크를 사용합니다.'],
+            ['대상 기기에 설치 또는 실행 완료', '무인 액세스가 필요할 때만 설치 설정을 봅니다.'],
+            ['앱 화면에서 AnyDesk ID 위치 확인', 'ID만 메모하고 비밀번호는 저장하지 않습니다.']
+          ]},
+          { id: 'a2', label: '2', title: '원격 ID와 연결 방식 전달하기', short: 'ID 전달', detail: '도와줄 사람에게 연결에 필요한 최소 정보만 보냅니다.', tasks: [
+            ['원격 ID 또는 별칭을 확인', '잘못 읽기 쉬운 숫자는 통화로 다시 확인합니다.'],
+            ['세션 시작 전에 화면 공유 범위 설명', '보여주면 안 되는 창은 닫습니다.'],
+            ['무인 액세스 비밀번호는 별도 채널로 전달하거나 저장하지 않기', 'Flow 메모에는 남기지 않습니다.']
+          ]},
+          { id: 'a3', label: '3', title: '세션 요청을 수락하고 필요한 작업만 진행하기', short: '세션', detail: '상대가 연결을 요청하면 화면을 확인한 뒤 수락합니다.', tasks: [
+            ['요청자 이름 또는 ID 확인 후 수락', '모르는 요청은 거절합니다.'],
+            ['필요한 작업 화면만 열기', '은행, 메신저, 개인 문서는 닫습니다.'],
+            ['작업이 끝나면 세션 종료 버튼 누르기', '상대방에게 종료 여부를 확인합니다.']
+          ]},
+          { id: 'a4', label: '4', title: '세션 종료 후 권한과 앱 상태 확인하기', short: '마무리', detail: '원격지원이 끝난 뒤 다시 연결될 수 있는 설정이 남아 있는지 봅니다.', tasks: [
+            ['세션이 완전히 종료됐는지 확인', '앱 화면에서 연결 상태를 봅니다.'],
+            ['무인 액세스가 켜져 있으면 유지할지 끄기', '필요 없으면 비활성화합니다.'],
+            ['다음 도움 일정이 있으면 날짜만 남기기', '비밀번호는 다시 저장하지 않습니다.']
+          ]}
+        ]
+      },
+      {
+        id: 'dorm',
+        nav: '기숙사 입사',
+        navSub: '입사일 준비',
+        title: '대학 기숙사 입사 준비 Flow',
+        summary: '입사일과 학교 안내문을 넣고, 금지물품, 준비물, 서류, 지정 시간 도착까지 확인합니다.',
+        destination: '입사일 캘린더 + 짐 체크',
+        primary: '기숙사 입사 일정 만들기',
+        setupTitle: '입사일과 안내문 넣기',
+        setupText: '커뮤니티 준비물은 참고만 하고, 금지물품과 입사 시간은 학교 안내문 기준으로 봅니다.',
+        tags: ['입사일 기준', '짐 체크', '학교 안내문'],
+        mode: 'timeline',
+        calendar: true,
+        anchor: 'moveInDate',
+        inputs: [
+          { key: 'moveInDate', label: '입사일', type: 'date', value: '2026-08-25' },
+          { key: 'dormGuide', label: '학교 안내문 URL 또는 파일명', type: 'text', value: '' }
+        ],
+        sources: [
+          ['학교 안내 예시', '성균관대 봉룡학사 입사 준비물 안내', 'https://dorm.skku.edu/dorm_suwon/notice/notice_all.jsp?article_no=80076&mode=view'],
+          ['커뮤니티 참고', '링커리어 기숙사 준비물 체크리스트', 'https://community.linkareer.com/honeytips/2507405'],
+          ['영상 참고', '재학생이 알려주는 기숙사 준비물', 'https://www.youtube.com/watch?v=Tg3y5BPMlJo']
+        ],
+        notice: '학교마다 금지물품, 입사가능시간, 제출서류가 다릅니다. 공식 기숙사 안내문을 우선합니다.',
+        items: [
+          { id: 'd14', offset: -14, label: 'D-14', title: '입사 가능 시간과 금지물품 확인하기', short: '안내문 확인', detail: '학교 안내문을 기준으로 입사 날짜와 시간을 먼저 고정합니다.', tasks: [
+            ['학교 안내문 URL 또는 파일명 저장', '현재 입력: {dormGuide}'],
+            ['입사 가능 시간과 지정 날짜 확인', '지정일보다 이른 입사가 가능한지 학교 안내를 봅니다.'],
+            ['전기장판, 조리도구 등 금지물품 표시', '커뮤니티 추천보다 학교 규정이 우선입니다.']
+          ]},
+          { id: 'd7', offset: -7, label: 'D-7', title: '침구, 욕실, 세탁 기본템만 챙기기', short: '짐 체크', detail: '방 크기와 금지물품을 넘지 않는 기본템만 먼저 챙깁니다.', tasks: [
+            ['침구와 매트리스 커버 확인', '학교 제공 품목이 있으면 제외합니다.'],
+            ['욕실용품과 세탁용품을 한 가방에 모으기', '처음 1주에 필요한 양만 챙깁니다.'],
+            ['멀티탭, 충전기, 노트북 어댑터 확인', '허용 규격이 있으면 학교 안내를 따릅니다.']
+          ]},
+          { id: 'd1', offset: -1, label: 'D-1', title: '서류와 첫날 쓸 물건만 따로 빼기', short: '전날', detail: '도착 직후 필요한 것만 손에 닿는 가방에 둡니다.', tasks: [
+            ['신분증, 입사 확인 서류, 안내문 따로 넣기', '원문 파일은 학교 시스템에서 다시 열 수 있게 둡니다.'],
+            ['첫날 세면도구와 수건 1-2장 따로 빼기', '짐을 풀기 전 바로 쓸 물건만 분리합니다.'],
+            ['도착 동선과 보호자 출입 가능 여부 확인', '주차와 엘리베이터 혼잡 시간을 메모합니다.']
+          ]},
+          { id: 'd0', offset: 0, label: '입사일', title: '지정 시간에 도착하고 호실 상태 확인하기', short: '입사', detail: '입사 절차를 마친 뒤 방 상태와 기본 시설만 봅니다.', tasks: [
+            ['지정 시간에 도착해 입사 절차 진행', '늦을 경우 연락처를 안내문에서 확인합니다.'],
+            ['호실, 열쇠/출입카드, 기본 시설 확인', '파손이나 오염은 바로 메모합니다.'],
+            ['첫날 필요한 물건만 꺼내기', '전체 정리는 입사 후에 천천히 합니다.']
+          ]}
+        ]
+      }
+    ];
+
+    const state = {};
+    let currentId = 'moving';
+
+    flows.forEach((item) => {
+      const inputs = {};
+      item.inputs.forEach((input) => inputs[input.key] = input.value || '');
+      state[item.id] = {
+        inputs,
+        selected: item.items[0].id,
+        selectedDate: '',
+        month: '',
+        checks: {},
+        memos: {},
+        toast: ''
+      };
+    });
+
+    function pad(value) { return String(value).padStart(2, '0'); }
+    function parseDate(value) { return value ? new Date(`${value}T00:00:00`) : null; }
+    function dateKey(date) { return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`; }
+    function shiftDate(value, offset) {
+      const date = parseDate(value);
+      if (!date) return '';
+      date.setDate(date.getDate() + offset);
+      return dateKey(date);
+    }
+    function monthKey(value) {
+      const date = parseDate(value);
+      return date ? `${date.getFullYear()}-${pad(date.getMonth() + 1)}` : '';
+    }
+    function shiftMonth(value, amount) {
+      const date = parseDate(`${value}-01`);
+      date.setMonth(date.getMonth() + amount);
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}`;
+    }
+    function formatDate(value) {
+      const date = parseDate(value);
+      if (!date) return '날짜 없음';
+      return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 ${dayNames[date.getDay()]}요일`;
+    }
+    function shortDate(value) {
+      const date = parseDate(value);
+      if (!date) return '';
+      return `${date.getMonth() + 1}/${date.getDate()} ${dayNames[date.getDay()]}`;
+    }
+    function interpolate(text, item) {
+      return String(text || '').replace(/\{([a-zA-Z0-9_]+)\}/g, (_, key) => state[item.id].inputs[key] || '미입력');
+    }
+    function currentFlow() { return flows.find((item) => item.id === currentId); }
+    function entries(item) {
+      if (!item.calendar) return item.items;
+      return item.items.map((entry) => ({ ...entry, date: shiftDate(state[item.id].inputs[item.anchor], entry.offset || 0) }));
+    }
+    function activeEntry(item) {
+      return entries(item).find((entry) => entry.id === state[item.id].selected) || entries(item)[0];
+    }
+    function allTasks(item) {
+      return item.items.flatMap((entry) => entry.tasks.map((task, index) => `${entry.id}:${index}`));
+    }
+    function doneCount(item) {
+      return allTasks(item).filter((key) => state[item.id].checks[key]).length;
+    }
+    function taskKey(entry, index) { return `${entry.id}:${index}`; }
+
+    function collectInputs(item) {
+      document.querySelectorAll('[data-input]').forEach((input) => {
+        state[item.id].inputs[input.dataset.input] = input.value;
+      });
+      if (item.calendar) {
+        const active = activeEntry(item);
+        state[item.id].selectedDate = active.date;
+        state[item.id].month = monthKey(active.date);
+      }
+    }
+
+    function inputControl(item, input) {
+      const value = state[item.id].inputs[input.key] || '';
+      if (input.type === 'select') {
+        return `
+          <div class="field">
+            <label for="${item.id}-${input.key}">${input.label}</label>
+            <select id="${item.id}-${input.key}" data-input="${input.key}">
+              ${input.options.map((option) => `<option value="${option}" ${option === value ? 'selected' : ''}>${option}</option>`).join('')}
+            </select>
+          </div>
+        `;
+      }
+      return `
+        <div class="field">
+          <label for="${item.id}-${input.key}">${input.label}</label>
+          <input id="${item.id}-${input.key}" data-input="${input.key}" type="${input.type}" value="${value}" />
+        </div>
+      `;
+    }
+
+    function renderNav() {
+      document.querySelector('#flow-nav').innerHTML = flows.map((item) => `
+        <button type="button" class="${item.id === currentId ? 'active' : ''}" data-flow="${item.id}">
+          <b>${item.nav}</b>
+          <span>${item.navSub}</span>
+        </button>
+      `).join('');
+      document.querySelectorAll('[data-flow]').forEach((button) => {
+        button.addEventListener('click', () => {
+          currentId = button.dataset.flow;
+          render();
+        });
+      });
+    }
+
+    function renderHeader(item) {
+      document.querySelector('#flow-tags').innerHTML = item.tags.map((tag, index) => `<span class="chip ${index === 0 ? 'blue' : index === 1 ? 'green' : 'warn'}">${tag}</span>`).join('');
+      document.querySelector('#flow-title').textContent = item.title;
+      document.querySelector('#flow-summary').textContent = item.summary;
+      document.querySelector('#flow-progress').textContent = `${doneCount(item)}/${allTasks(item).length} 완료`;
+    }
+
+    function renderSetup(item) {
+      const itemState = state[item.id];
+      document.querySelector('#setup-panel').innerHTML = `
+        <p class="label">저장 설정</p>
+        <h3>${item.setupTitle}</h3>
+        <p class="desc">${item.setupText}</p>
+        <div class="field-grid">${item.inputs.map((input) => inputControl(item, input)).join('')}</div>
+        <div class="button-row" style="margin-top:12px">
+          <button class="primary" type="button" id="save-flow">${item.primary}</button>
+        </div>
+        <p class="toast ${itemState.toast ? 'show' : ''}" role="status">${itemState.toast}</p>
+      `;
+      document.querySelectorAll('[data-input]').forEach((input) => {
+        input.addEventListener('change', () => {
+          collectInputs(item);
+          render();
+        });
+      });
+      document.querySelector('#save-flow').addEventListener('click', () => {
+        collectInputs(item);
+        itemState.toast = `${item.nav} Flow가 저장되었습니다.`;
+        render();
+      });
+
+      document.querySelector('#source-panel').innerHTML = `
+        <p class="label">원문 / 실행 링크</p>
+        <div class="source-row">
+          ${item.sources.map(([kind, label, url]) => `<a href="${url}" target="_blank" rel="noreferrer">${kind} · ${label}</a>`).join('')}
+        </div>
+        <div class="notice ${item.noticeTone === 'danger' ? 'danger' : ''}" style="margin-top:12px">${item.notice}</div>
+      `;
+    }
+
+    function renderTasks(item, entry) {
+      return `
+        <div class="check-list">
+          ${entry.tasks.map((task, index) => {
+            const key = taskKey(entry, index);
+            const checked = !!state[item.id].checks[key];
+            return `
+              <label class="check ${checked ? 'done' : ''}">
+                <input type="checkbox" data-check="${key}" ${checked ? 'checked' : ''} />
+                <span>
+                  <strong>${interpolate(task[0], item)}</strong>
+                  <span>${interpolate(task[1], item)}</span>
+                </span>
+              </label>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderCalendar(item, entryList) {
+      const itemState = state[item.id];
+      const active = activeEntry(item);
+      if (!itemState.selectedDate) itemState.selectedDate = active.date;
+      if (!itemState.month) itemState.month = monthKey(active.date);
+      const [year, month] = itemState.month.split('-').map(Number);
+      const first = new Date(year, month - 1, 1);
+      const last = new Date(year, month, 0);
+      const cells = [];
+      for (let i = 0; i < first.getDay(); i += 1) cells.push({ empty: true });
+      for (let day = 1; day <= last.getDate(); day += 1) {
+        const date = `${year}-${pad(month)}-${pad(day)}`;
+        cells.push({ day, date, entries: entryList.filter((entry) => entry.date === date) });
+      }
+      while (cells.length % 7 !== 0) cells.push({ empty: true });
+      return `
+        <section class="calendar">
+          <div class="calendar-top">
+            <div>
+              <p class="label">캘린더 미리보기</p>
+              <h3>${year}년 ${month}월</h3>
+            </div>
+            <div class="month-nav">
+              <button type="button" data-month="-1">이전</button>
+              <button type="button" data-month="1">다음</button>
+            </div>
+          </div>
+          <div class="calendar-grid">
+            ${dayNames.map((day) => `<div class="weekday">${day}</div>`).join('')}
+            ${cells.map((cell) => {
+              if (cell.empty) return '<div class="day empty"></div>';
+              const hasEvent = cell.entries.length > 0;
+              const activeDay = cell.date === itemState.selectedDate;
+              return `
+                <button class="day ${hasEvent ? 'has-event' : ''} ${activeDay ? 'active' : ''}" type="button" ${hasEvent ? `data-date="${cell.date}"` : ''}>
+                  ${cell.day}
+                  ${cell.entries.map((entry) => `<span class="event-chip">${entry.label}</span>`).join('')}
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </section>
+      `;
+    }
+
+    function bindBody(item) {
+      document.querySelectorAll('[data-check]').forEach((input) => {
+        input.addEventListener('change', () => {
+          state[item.id].checks[input.dataset.check] = input.checked;
+          render();
+        });
+      });
+      document.querySelectorAll('[data-memo]').forEach((memo) => {
+        memo.addEventListener('input', () => {
+          state[item.id].memos[memo.dataset.memo] = memo.value;
+        });
+      });
+      document.querySelectorAll('[data-entry]').forEach((button) => {
+        button.addEventListener('click', () => {
+          state[item.id].selected = button.dataset.entry;
+          const selected = activeEntry(item);
+          if (item.calendar) {
+            state[item.id].selectedDate = selected.date;
+            state[item.id].month = monthKey(selected.date);
+          }
+          render();
+        });
+      });
+      document.querySelectorAll('[data-date]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const match = entries(item).find((entry) => entry.date === button.dataset.date);
+          state[item.id].selectedDate = button.dataset.date;
+          if (match) state[item.id].selected = match.id;
+          render();
+        });
+      });
+      document.querySelectorAll('[data-month]').forEach((button) => {
+        button.addEventListener('click', () => {
+          state[item.id].month = shiftMonth(state[item.id].month, Number(button.dataset.month));
+          render();
+        });
+      });
+    }
+
+    function renderBody(item) {
+      const entryList = entries(item);
+      const active = activeEntry(item);
+      const itemState = state[item.id];
+      const dateText = item.calendar ? `${formatDate(active.date)} · ` : '';
+      document.querySelector('#flow-body').innerHTML = `
+        <section class="action-card">
+          <p class="label">현재 실행</p>
+          <h3>${item.calendar ? `${active.label} · ` : ''}${active.title}</h3>
+          <p class="desc">${dateText}${interpolate(active.detail, item)}</p>
+          <div class="status-grid">
+            <div class="status-box"><b>오늘 볼 것</b><span>${active.short}</span></div>
+            <div class="status-box"><b>완료</b><span>${doneCount(item)}/${allTasks(item).length}</span></div>
+            <div class="status-box"><b>저장 위치</b><span>${item.destination}</span></div>
+          </div>
+          ${renderTasks(item, active)}
+          <div class="field" style="margin-top:12px">
+            <label for="${item.id}-memo-${active.id}">메모</label>
+            <textarea id="${item.id}-memo-${active.id}" data-memo="${active.id}" placeholder="다시 볼 링크, 보류 이유, 연락처처럼 실행에 필요한 내용만 짧게 남기기">${itemState.memos[active.id] || ''}</textarea>
+          </div>
+        </section>
+        ${item.calendar ? renderCalendar(item, entryList) : ''}
+        <section class="panel">
+          <p class="label">${item.calendar ? '전체 일정' : '볼 순서'}</p>
+          <div class="item-list">
+            ${entryList.map((entry) => `
+              <button class="item-button ${entry.id === active.id ? 'active' : ''}" type="button" data-entry="${entry.id}">
+                <b>${entry.label}${entry.date ? ` · ${shortDate(entry.date)}` : ''}</b>
+                <span>${entry.title}</span>
+              </button>
+            `).join('')}
+          </div>
+        </section>
+      `;
+      bindBody(item);
+    }
+
+    function render() {
+      const item = currentFlow();
+      renderNav();
+      renderHeader(item);
+      renderSetup(item);
+      renderBody(item);
+    }
+
+    document.querySelector('#reset').addEventListener('click', () => {
+      const item = currentFlow();
+      state[item.id].checks = {};
+      state[item.id].memos = {};
+      state[item.id].toast = '현재 Flow를 초기화했습니다.';
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

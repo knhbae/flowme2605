@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>실제 온라인 콘텐츠 Flow of Flows 후보 조사</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f8fb;
+        --surface: #ffffff;
+        --soft: #f8fafc;
+        --line: #d8e2ef;
+        --text: #101827;
+        --muted: #5d697b;
+        --blue: #1f5fbf;
+        --green: #0f7a4a;
+        --amber: #9a6100;
+        --red: #b42318;
+        --radius: 8px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, #fbfdff 0, var(--bg) 520px);
+        color: var(--text);
+        font-size: 16px;
+        line-height: 1.62;
+      }
+      main { width: min(1240px, calc(100% - 28px)); margin: 0 auto; padding: 18px 0 64px; }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 { max-width: 960px; margin-bottom: 10px; font-size: clamp(30px, 5vw, 48px); line-height: 1.12; letter-spacing: 0; }
+      h2 { margin-bottom: 10px; font-size: clamp(23px, 3vw, 34px); line-height: 1.2; letter-spacing: 0; }
+      h3 { margin-bottom: 6px; font-size: 19px; letter-spacing: 0; }
+      a { color: var(--blue); text-underline-offset: 3px; }
+      ul { margin: 0; padding-left: 20px; }
+      li + li { margin-top: 5px; }
+      .hero, .card, .mini {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+      }
+      .hero { padding: 20px; box-shadow: 0 14px 34px rgba(16, 24, 39, .08); }
+      .card { margin-top: 14px; padding: 16px; }
+      .mini { padding: 14px; background: var(--soft); }
+      .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+      .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 900; text-transform: uppercase; }
+      .desc { color: var(--muted); }
+      .note {
+        margin: 12px 0 0;
+        padding: 12px;
+        border-left: 4px solid var(--blue);
+        border-radius: 6px;
+        background: #eef5ff;
+        color: #17345f;
+        font-weight: 750;
+      }
+      .warn {
+        margin: 12px 0 0;
+        padding: 12px;
+        border-left: 4px solid var(--amber);
+        border-radius: 6px;
+        background: #fff7e8;
+        color: #5f3b00;
+        font-weight: 750;
+      }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 4px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--soft);
+        color: #334155;
+        font-size: 13px;
+        font-weight: 850;
+        white-space: nowrap;
+      }
+      .chip.green { border-color: #b8e5ce; background: #eefaf3; color: #0f6b43; }
+      .chip.blue { border-color: #b9d2ff; background: #eef5ff; color: #174ea6; }
+      .chip.amber { border-color: #f4d291; background: #fff7e8; color: #7a4b00; }
+      .chip.red { border-color: #f4b9b2; background: #fff1ef; color: #9a241a; }
+      .table-wrap { width: 100%; overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+      table { width: 100%; min-width: 1180px; border-collapse: collapse; background: #fff; }
+      th, td { padding: 11px; border-bottom: 1px solid #e6edf5; text-align: left; vertical-align: top; }
+      th { background: #f8fafc; color: #334155; font-size: 13px; text-transform: uppercase; }
+      tr:last-child td { border-bottom: 0; }
+      .source-title { font-weight: 950; }
+      .small { color: var(--muted); font-size: 14px; }
+      @media (max-width: 860px) {
+        main { width: min(100% - 22px, 1240px); padding-top: 12px; }
+        .hero, .card { padding: 14px; }
+        .grid, .grid.three { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <p class="eyebrow">source audit</p>
+        <h1>실제 온라인 콘텐츠 16개로 Flow of Flows 가능성을 판정했다</h1>
+        <p class="desc">
+          이 문서는 실제 온라인 콘텐츠가 상위 실행 흐름, 중간 묶음, 하위 실행 콘텐츠, 실제 일정/표/체크 항목으로 자연스럽게 내려가는지 확인하기 위한 1차 조사다.
+          검색 결과 제목만 보지 않고, 공개 페이지에서 확인되는 재생목록, 강좌 목차, 일정표, 월령표, 식단표, D-day 표 같은 구조를 기준으로 판정했다.
+        </p>
+        <div class="chips">
+          <span class="chip green">Strong 13</span>
+          <span class="chip blue">Child only 1</span>
+          <span class="chip amber">Reference 3</span>
+          <span class="chip red">real-user validation 아님</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>판정 기준</h2>
+        <div class="grid">
+          <div class="mini">
+            <h3>Strong Parent</h3>
+            <p class="desc">원문에 주차, 단원, 월령, 표, D-day 같은 상위 구조가 있고, 하위 실행 콘텐츠가 3개 이상 자연스럽다.</p>
+          </div>
+          <div class="mini">
+            <h3>Child Only</h3>
+            <p class="desc">단일 영상이나 단일 글로는 실행 가치가 있지만, 그 자체가 큰 흐름은 아니다.</p>
+          </div>
+          <div class="mini">
+            <h3>Reference</h3>
+            <p class="desc">공식 일정, 자격 조건, 주의사항처럼 하위 실행 콘텐츠의 출처/메모로 붙이는 것이 적합하다.</p>
+          </div>
+          <div class="mini">
+            <h3>Park</h3>
+            <p class="desc">구조가 약하거나, 실행보다 읽기/홍보에 가깝거나, 원문 기반으로 하위 콘텐츠를 만들기 어렵다.</p>
+          </div>
+        </div>
+        <p class="warn">주의: 이 조사는 구조 적합성 검토다. 실제 사용자가 저장/체크/재방문했다는 검증은 아니다.</p>
+      </section>
+
+      <section class="card">
+        <h2>후보 판정표</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>출처</th>
+                <th>카테고리</th>
+                <th>원문 구조</th>
+                <th>판정</th>
+                <th>상위 실행 흐름</th>
+                <th>하위 실행 콘텐츠</th>
+                <th>주요 목적지</th>
+                <th>리스크/주의</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td><span class="source-title"><a href="https://www.youtube.com/playlist?list=PLPjAVMQb8HvP6Q5leQ854AxBaTsLNW5V2">런관장 러닝 초보 프로그램 재생목록</a></span><br><span class="small">러닝 입문 3주차, 4주차 등이 같은 프로그램으로 묶여 있음.</span></td>
+                <td>운동 제작자</td>
+                <td>주차형 재생목록</td>
+                <td><span class="chip green">Strong Parent</span></td>
+                <td>러닝 입문 4주 루틴</td>
+                <td>1주차, 2주차, 3주차, 4주차 반복 달리기 일정</td>
+                <td>calendar + routine + memo</td>
+                <td>운동 강도와 중단 조건을 각 일정 설명에 넣어야 함.</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td><span class="source-title"><a href="https://www.youtube.com/watch?v=g85bkPFVwqI">5KM 완주 도전 1주차</a></span><br><span class="small">8분 달리기와 2분 걷기 반복 같은 실행 구조가 보임.</span></td>
+                <td>운동 제작자</td>
+                <td>주차별 영상</td>
+                <td><span class="chip blue">Child Only</span></td>
+                <td>5KM 완주 시리즈의 한 주차</td>
+                <td>워밍업, 반복 달리기, 체크, 다음 주 이동</td>
+                <td>calendar + check</td>
+                <td>단독으로는 하위 실행 콘텐츠가 적합.</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td><span class="source-title"><a href="https://www.youtube.com/c/bigsis/playlists">빅씨스 YouTube 재생목록</a></span><br><span class="small">20분, 30분, 40분 루틴과 HIIT/프로그램별 묶음이 있음.</span></td>
+                <td>운동 제작자</td>
+                <td>루틴/프로그램 모음</td>
+                <td><span class="chip green">Strong Parent</span></td>
+                <td>초보 홈트 루틴 모음</td>
+                <td>시간대별 영상 루틴, 7일/주간 챌린지, 덤벨/HIIT 구간</td>
+                <td>calendar + routine</td>
+                <td>각 영상의 운동 동작은 원본 영상 링크로 보존하고 임의 생성 금지.</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td><span class="source-title"><a href="https://www.youtube.com/%40SMIHomeTraining">스미홈트 채널</a></span><br><span class="small">초보 추천 영상, 4주 필라테스 프로젝트 등이 채널 안에 보임.</span></td>
+                <td>운동 제작자</td>
+                <td>프로젝트/추천 영상 묶음</td>
+                <td><span class="chip green">Strong Parent</span></td>
+                <td>4주 필라테스 프로젝트</td>
+                <td>주차별 또는 영상별 따라하기 일정</td>
+                <td>calendar + routine</td>
+                <td>자세/통증 관련 문구는 보수적으로 처리.</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td><span class="source-title"><a href="https://mid.ebs.co.kr/course/view?courseId=100005121">EBS 중학 수학 마스터 유형 β 1-1</a></span><br><span class="small">강의 번호, 단원, 교재 페이지가 구조적으로 제공됨.</span></td>
+                <td>공부/교육</td>
+                <td>전범위 강좌 목차</td>
+                <td><span class="chip green">Strong Parent</span></td>
+                <td>중1 수학 1학기 진도</td>
+                <td>소인수분해, 정수와 유리수, 문자와 식, 일차방정식 등 단원별 학습</td>
+                <td>sheet + calendar + memo</td>
+                <td>교재/저작권 범위는 링크와 메모로만 보존.</td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td><span class="source-title"><a href="https://www.youtube.com/playlist?list=PLs4RoKjcy7OkqHWr-1Feb6xODgCAbkc23">중학교 1학년 수학 문제풀이 재생목록</a></span><br><span class="small">거듭제곱과 소인수분해, 최대공약수와 최소공배수 등 문제풀이가 이어짐.</span></td>
+                <td>공부/교육 제작자</td>
+                <td>문제풀이 재생목록</td>
+                <td><span class="chip green">Strong Parent</span></td>
+                <td>중1 수학 문제풀이 진도</td>
+                <td>영상 보기, 문제 풀기, 틀린 문제 오답표</td>
+                <td>sheet + checklist</td>
+                <td>하위 콘텐츠는 영상 제목과 링크 기준으로만 생성.</td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td><span class="source-title"><a href="https://www.youtube.com/playlist?list=PLxfcCGgNGPLtsMJ1vuZrYnGs-kJaSQN0N">소인수분해 중1수학 1단원 재생목록</a></span><br><span class="small">단원 도입, 개념, 문제풀이가 한 단원 안에서 이어짐.</span></td>
+                <td>공부/교육 제작자</td>
+                <td>단원 재생목록</td>
+                <td><span class="chip green">Strong Parent</span></td>
+                <td>소인수분해 단원 완주</td>
+                <td>강의 시청, 문제풀이, 단원 총정리</td>
+                <td>sheet + memo</td>
+                <td>중1 전체의 하위 구간으로도 사용 가능.</td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td><span class="source-title"><a href="https://nip.kdca.go.kr/irhp/mngm/goVcntMngm.do?menuCd=313&amp;menuLv=3">질병관리청 아이 예방접종 일정보기</a></span><br><span class="small">출생일을 넣으면 표준예방접종일을 확인하는 구조.</span></td>
+                <td>육아/건강 일정</td>
+                <td>출생일 기반 공식 일정</td>
+                <td><span class="chip green">Strong Parent</span></td>
+                <td>우리 아이 예방접종 일정</td>
+                <td>월령별 접종 일정, 병원 예약, 접종 후 메모</td>
+                <td>calendar + memo</td>
+                <td>민감 카테고리. 공식 정보와 부모 메모를 분리해야 함.</td>
+              </tr>
+              <tr>
+                <td>9</td>
+                <td><span class="source-title"><a href="https://www.nrc.go.kr/portal/html/content.do?depth=ph&amp;menu_cd=03_01_00_03">국립재활원 표준 예방접종 일정표</a></span><br><span class="small">백신 종류, 횟수, 출생 시점부터 12세까지의 시기 구조가 표로 제공됨.</span></td>
+                <td>육아/건강 공식 자료</td>
+                <td>월령/연령별 표</td>
+                <td><span class="chip amber">Reference</span></td>
+                <td>예방접종 일정의 근거 자료</td>
+                <td>백신별 일정 detail, 주의 메모</td>
+                <td>memo + source detail</td>
+                <td>공식 일정 근거로 붙이고, 개인 일정은 출생일 계산으로 생성.</td>
+              </tr>
+              <tr>
+                <td>10</td>
+                <td><span class="source-title"><a href="https://www.nrc.go.kr/portal/html/content.do?depth=ph&amp;menu_cd=03_02_00_04">국립재활원 영유아 건강검진</a></span><br><span class="small">14~35일, 4~6개월, 9~12개월 등 검진 시기와 검진 항목이 구조화되어 있음.</span></td>
+                <td>육아/건강 일정</td>
+                <td>회차/월령표</td>
+                <td><span class="chip green">Strong Parent</span></td>
+                <td>영유아 건강검진 일정</td>
+                <td>회차별 검진 예약, 문진표, 발달검사, 구강검진</td>
+                <td>calendar + checklist + memo</td>
+                <td>의료 판단은 금지. 예약/준비/메모 중심.</td>
+              </tr>
+              <tr>
+                <td>11</td>
+                <td><span class="source-title"><a href="https://childhosp.seoul.go.kr/medical-info/health-medical-examination">서울특별시 어린이병원 영유아 건강검진</a></span><br><span class="small">예약, 문진표/검사지 작성, 방문/계측 절차가 보임.</span></td>
+                <td>육아/건강 기관 안내</td>
+                <td>절차 안내</td>
+                <td><span class="chip amber">Reference</span></td>
+                <td>검진 회차별 준비 detail</td>
+                <td>예약, 문진표 작성, 방문 준비</td>
+                <td>checklist + memo</td>
+                <td>지역 병원 절차로 한정. 일반 공식 기준처럼 표현하면 안 됨.</td>
+              </tr>
+              <tr>
+                <td>12</td>
+                <td><span class="source-title"><a href="https://wanbab.io/planner/2">완밥요정 6개월 토핑이유식 식단표</a></span><br><span class="small">식단 구성, 제공 시간, 배죽, 첫 식재료, 다운로드 식단표가 제공됨.</span></td>
+                <td>육아 식단 제작자</td>
+                <td>식단표 + 재료 목록</td>
+                <td><span class="chip green">Strong Parent</span></td>
+                <td>6개월 토핑이유식 식단표</td>
+                <td>주차별 식단, 첫 재료 시도, 알레르기 반응 메모, 장보기</td>
+                <td>sheet + calendar + memo</td>
+                <td>의학 조언처럼 보이면 안 됨. 알레르기 반응은 보호자 관찰 메모로 처리.</td>
+              </tr>
+              <tr>
+                <td>13</td>
+                <td><span class="source-title"><a href="https://wanbab.io/planner/29">완밥요정 6개월 면역강화 이유식 식단표</a></span><br><span class="small">한 가지 식재료 추가, 오전 제공 권장, 식단표 파일이 있음.</span></td>
+                <td>육아 식단 제작자</td>
+                <td>식단표 + 주의 기준</td>
+                <td><span class="chip green">Strong Parent</span></td>
+                <td>6개월 면역강화 이유식 식단표</td>
+                <td>재료별 시도 일정, 반응 기록, 식단표 다운로드</td>
+                <td>sheet + memo</td>
+                <td>효과 보장 표현 금지. 원문 제목은 유지하되 실행 화면은 관찰 중심.</td>
+              </tr>
+              <tr>
+                <td>14</td>
+                <td><span class="source-title"><a href="https://www.youtube.com/playlist?list=PLLr_XHUUJ1yFkDhlG01ZwMtdyjhpOTgnp">이유식 &amp; 유아식 YouTube 재생목록</a></span><br><span class="small">초기 이유식, 중기 이유식, 재료 손질, 보관 팁이 이어지는 재생목록.</span></td>
+                <td>육아 식단 제작자</td>
+                <td>영상 재생목록</td>
+                <td><span class="chip green">Strong Parent</span></td>
+                <td>이유식 준비와 단계별 조리</td>
+                <td>영상 보기, 재료 준비, 보관 메모, 식단 적용</td>
+                <td>memo + checklist</td>
+                <td>실제 식단 row는 원본 영상/자료에서 확인되는 범위만.</td>
+              </tr>
+              <tr>
+                <td>15</td>
+                <td><span class="source-title"><a href="https://www.directwedding.co.kr/blog/moving-checklist">다이렉트결혼준비 신혼집 이사 준비 체크리스트</a></span><br><span class="small">D-30, D-7, D-1, D-Day로 날짜형 체크가 정리됨.</span></td>
+                <td>생활 전환</td>
+                <td>D-day 체크리스트</td>
+                <td><span class="chip green">Strong Parent</span></td>
+                <td>신혼집 이사 준비</td>
+                <td>업체 예약, 주소 변경, 전입신고, 당일 정산</td>
+                <td>calendar + checklist + memo</td>
+                <td>광고/제휴 링크는 출처 detail로 분리.</td>
+              </tr>
+              <tr>
+                <td>16</td>
+                <td><span class="source-title"><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%8B%A0%ED%98%BC%EC%A7%91_%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EA%B3%BC%EC%A0%95_%EC%B4%9D%EC%A0%95%EB%A6%AC-48329">아정당 신혼집 이사 준비 과정</a></span><br><span class="small">D-30, D-10, D-3, D-1, D-Day 표와 관할기관이 함께 있음.</span></td>
+                <td>생활 전환</td>
+                <td>D-day 표</td>
+                <td><span class="chip green">Strong Parent</span></td>
+                <td>신혼집 이사 실행표</td>
+                <td>날짜별 할 일, 기관, 예약, 정산</td>
+                <td>calendar + sheet</td>
+                <td>상업적 서비스 안내와 실제 실행 항목을 분리.</td>
+              </tr>
+              <tr>
+                <td>17</td>
+                <td><span class="source-title"><a href="https://www.q-net.or.kr/crf021.do?id=crf02101&amp;scheType=03">Q-net 기사/산업기사 시험일정</a></span><br><span class="small">원서접수, 필기/실기, 서류 제출 기간을 확인할 수 있음.</span></td>
+                <td>자격증 공식 일정</td>
+                <td>공식 일정표</td>
+                <td><span class="chip amber">Reference</span></td>
+                <td>자격증 준비 흐름의 날짜 근거</td>
+                <td>접수 마감, 필기/실기 시험일, 서류 제출 메모</td>
+                <td>calendar + memo</td>
+                <td>공식 일정은 보조 출처로 강함. 공부 흐름은 별도 제작자 콘텐츠가 필요.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>1차 결론</h2>
+        <div class="grid three">
+          <div class="mini">
+            <h3>가장 강한 원문 형태</h3>
+            <ul>
+              <li>주차형 운동 프로그램</li>
+              <li>학년/단원/강의 목차</li>
+              <li>월령/회차 공식 일정표</li>
+              <li>식단표/다운로드 표</li>
+              <li>D-day 체크리스트</li>
+            </ul>
+          </div>
+          <div class="mini">
+            <h3>상위 실행 흐름으로 약한 형태</h3>
+            <ul>
+              <li>단일 팁 영상</li>
+              <li>후기 중심 글</li>
+              <li>홍보 랜딩 페이지</li>
+              <li>원문 구조 없는 조언 모음</li>
+              <li>링크 모음만 있는 글</li>
+            </ul>
+          </div>
+          <div class="mini">
+            <h3>PoC 우선 후보</h3>
+            <ul>
+              <li>러닝 입문 4주 루틴</li>
+              <li>중1 수학 1학기 진도</li>
+              <li>6개월 토핑이유식 식단표</li>
+            </ul>
+          </div>
+        </div>
+        <p class="note">선정 이유: 세 후보 모두 실제 원문에 하위 구조가 있고, 사용자가 전체 저장/부분 저장을 할 이유가 있으며, 공통 입력값이 1~3개로 제한된다.</p>
+      </section>
+    </main>
+  </body>
+</html>

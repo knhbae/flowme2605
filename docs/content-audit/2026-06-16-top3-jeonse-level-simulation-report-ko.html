@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>상위 3개 Flow 사용자 화면 시뮬레이션 리포트</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --paper: #fff;
+      --ink: #101827;
+      --muted: #5d697b;
+      --line: #d8e2ef;
+      --blue: #1f5fbf;
+      --blue-soft: #eaf2ff;
+      --green: #0f7a4a;
+      --green-soft: #e8f7ef;
+      --amber: #9a6100;
+      --amber-soft: #fff6df;
+      --red: #b42318;
+      --red-soft: #fff1ef;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); font-size: 16px; line-height: 1.62; }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 10px; font-size: clamp(30px, 5vw, 46px); line-height: 1.12; letter-spacing: 0; }
+    h2 { margin-bottom: 10px; font-size: 26px; line-height: 1.2; letter-spacing: 0; }
+    h3 { margin-bottom: 6px; font-size: 19px; line-height: 1.28; letter-spacing: 0; }
+    ul { margin: 8px 0 0; padding-left: 20px; }
+    li + li { margin-top: 5px; }
+    .page { width: min(1120px, calc(100% - 28px)); margin: 0 auto; padding: 24px 0 72px; }
+    .hero, .card, .matrix, .shot { border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+    .hero { padding: 22px; box-shadow: 0 14px 32px rgba(16, 24, 39, .08); }
+    .eyebrow { margin-bottom: 8px; color: var(--blue); font-size: 13px; font-weight: 900; text-transform: uppercase; }
+    .desc { color: var(--muted); }
+    .chips, .links, .grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { display: inline-flex; align-items: center; min-height: 30px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; background: #f8fafc; color: #334155; font-size: 13px; font-weight: 850; }
+    .chip.good { border-color: #bde7cb; background: var(--green-soft); color: var(--green); }
+    .chip.warn { border-color: #efd08f; background: var(--amber-soft); color: var(--amber); }
+    .chip.bad { border-color: #f4b4ad; background: var(--red-soft); color: var(--red); }
+    .section { margin-top: 16px; }
+    .card { padding: 16px; }
+    .grid { align-items: stretch; }
+    .grid .card { flex: 1 1 300px; }
+    .links { margin-top: 12px; }
+    .links a { display: inline-flex; align-items: center; min-height: 36px; padding: 7px 11px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font-weight: 850; text-decoration: none; }
+    .matrix { width: 100%; overflow: hidden; border-collapse: separate; border-spacing: 0; }
+    .matrix th, .matrix td { padding: 12px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); vertical-align: top; text-align: left; }
+    .matrix th { background: #eef4fb; font-size: 13px; }
+    .matrix tr:last-child td { border-bottom: 0; }
+    .matrix th:last-child, .matrix td:last-child { border-right: 0; }
+    .shot { display: grid; gap: 10px; padding: 12px; }
+    .shot img { width: 100%; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+    .note { padding: 12px; border: 1px solid #efd08f; border-radius: 8px; background: var(--amber-soft); color: #795100; font-weight: 750; }
+    @media (max-width: 700px) {
+      .page { width: min(100% - 20px, 1120px); padding-top: 14px; }
+      .hero, .card { padding: 14px; }
+      .matrix { display: block; overflow-x: auto; }
+      .matrix th, .matrix td { min-width: 180px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="eyebrow">UX/UI Simulation Report</p>
+      <h1>상위 3개 Flow를 사용자 화면 기준으로 재검증</h1>
+      <p class="desc">6개 카테고리를 모두 비슷한 UI에 넣는 대신, 전세 계약 Flow의 기준선에 가까운 3개를 골라 사용자 화면을 따로 만들고 실제 클릭으로 확인했습니다.</p>
+      <div class="chips">
+        <span class="chip good">Blocking/High 없음</span>
+        <span class="chip good">사용자 화면과 리뷰 화면 분리</span>
+        <span class="chip warn">실사용자 관찰 전</span>
+      </div>
+      <div class="links">
+        <a href="2026-06-16-top3-jeonse-level-user-poc-ko.html">사용자 PoC HTML 열기</a>
+        <a href="../../output/playwright/top3-jeonse-level-mobile.png">모바일 스크린샷</a>
+        <a href="../../output/playwright/top3-jeonse-level-desktop.png">데스크톱 스크린샷</a>
+      </div>
+    </header>
+
+    <section class="section grid">
+      <article class="card">
+        <h2>이번 결정</h2>
+        <p>현재 6개 전체를 같은 깊이로 밀기보다, 제품 연결성과 source-to-flow 적합성이 강한 3개를 먼저 전세 수준에 가깝게 올렸습니다.</p>
+        <ul>
+          <li>이사 D-30: 날짜형 일정 + 체크 + 업체 메모.</li>
+          <li>중고차 방문: 캘린더보다 현장 체크 순서가 중심.</li>
+          <li>초등 입학: 입학일 기준 일정 + 학교 안내문 URL.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h2>제거한 문제</h2>
+        <p>사용자 화면에 남아 있던 내부 평가 문구와 범용 버튼을 제거했습니다.</p>
+        <ul>
+          <li>`전세급`, `PoC`, 개발자 리뷰 문구 제거.</li>
+          <li>`진행 중/보류/완료` 같은 의미 불명 상태 버튼 미사용.</li>
+          <li>`메모 복사`, `현재 설명 복사` 같은 낮은 가치 버튼 미사용.</li>
+          <li>같은 설명 반복 대신 각 항목의 실제 확인 내용 작성.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="section card">
+      <h2>후보별 판정</h2>
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th>Flow</th>
+            <th>자연스러운 destination</th>
+            <th>전세 기준 대비</th>
+            <th>남은 리스크</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>이사 D-30</strong></td>
+            <td>이사일 기준 캘린더 + 전체 일정 타임라인 + 업체 메모</td>
+            <td>전세와 가장 유사합니다. 날짜 입력 후 D-30/D-14/D-7/D-1/D-Day로 실행하는 구조가 명확합니다.</td>
+            <td>견적 요청 사이트를 제품적으로 추천할지, 단순 원문 링크로 둘지 별도 정책이 필요합니다.</td>
+          </tr>
+          <tr>
+            <td><strong>중고차 방문</strong></td>
+            <td>현장 체크 순서 + 보류 메모 + 자동차365/카히스토리 링크</td>
+            <td>전세와 달리 캘린더보다 현장 체크가 핵심입니다. 그래서 날짜는 저장 정보로만 두고, 실행 화면은 섹션형으로 분리했습니다.</td>
+            <td>실제 사용자 관찰에서 공식 조회 링크를 어느 단계에 배치해야 가장 덜 헷갈리는지 확인해야 합니다.</td>
+          </tr>
+          <tr>
+            <td><strong>초등 입학</strong></td>
+            <td>입학일 기준 캘린더 + 학교 안내문 URL + 준비물/생활 연습 체크</td>
+            <td>전세처럼 날짜형 Flow로 성립합니다. 다만 원문보다 학교 안내문이 더 강한 기준이므로 안내문 URL 입력을 중심으로 바꿨습니다.</td>
+            <td>학교별 안내문이 없을 때 기본 템플릿을 얼마나 제공할지 정책이 필요합니다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section card">
+      <h2>클릭 시뮬레이션 결과</h2>
+      <ul>
+        <li>이사: 저장 버튼 클릭, 첫 체크 완료, D-14 일정 클릭, 캘린더의 2026-07-04 날짜 클릭 성공.</li>
+        <li>중고차: 매물명 입력, 저장 버튼 클릭, 첫 체크 완료, 외관/타이어 섹션 이동 성공.</li>
+        <li>초등 입학: 안내문 파일명 입력, 저장 버튼 클릭, D-21 일정 클릭, 캘린더의 2027-02-09 날짜 클릭 성공.</li>
+        <li>모바일 390px, 데스크톱 1366px 모두 가로 overflow 없음.</li>
+        <li>JS 오류 없음. 내부/리뷰용 금지 문구도 사용자 화면에서 검출되지 않음.</li>
+      </ul>
+    </section>
+
+    <section class="section grid">
+      <article class="shot">
+        <h2>모바일 확인</h2>
+        <img src="../../output/playwright/top3-jeonse-level-mobile.png" alt="상위 3개 Flow 모바일 검증 스크린샷" />
+      </article>
+      <article class="shot">
+        <h2>데스크톱 확인</h2>
+        <img src="../../output/playwright/top3-jeonse-level-desktop.png" alt="상위 3개 Flow 데스크톱 검증 스크린샷" />
+      </article>
+    </section>
+
+    <section class="section card">
+      <h2>다음 개선 방향</h2>
+      <p class="note">이제부터는 새 카테고리를 더 늘리기보다, 약한 후보를 억지로 살리지 않고 전세/이사/중고차/초등 입학처럼 destination이 분명한 후보만 통과시키는 게 맞습니다.</p>
+      <ul>
+        <li>영유아 검진은 공식 검진 시기/문진표/병원 예약 흐름까지 확보한 뒤 다시 설계합니다.</li>
+        <li>홈트는 체크리스트가 아니라 영상 루틴 플레이어/반복 일정이 핵심이므로 별도 패턴으로 다시 봅니다.</li>
+        <li>스퀴시는 단일 버킷/준비물/놀이 날짜 패턴이 자연스럽습니다. 4단계 실행 Flow로 만들면 과합니다.</li>
+        <li>식물 물주기는 원컨텐츠 기반 반복 일정과 간단한 상태 체크만 남겨야 합니다.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

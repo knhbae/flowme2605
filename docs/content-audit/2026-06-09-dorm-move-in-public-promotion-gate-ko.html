@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 기숙사 입사 공개 승격 전 게이트</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7f9;
+        --paper: #ffffff;
+        --soft: #f1f5f9;
+        --ink: #101828;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d9e2ec;
+        --green: #047857;
+        --green-soft: #e7f6ef;
+        --blue: #1d4ed8;
+        --blue-soft: #e9f1ff;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --radius: 8px;
+        --shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard",
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          "Malgun Gothic",
+          system-ui,
+          sans-serif;
+        line-height: 1.6;
+        letter-spacing: 0;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.24;
+        word-break: keep-all;
+      }
+
+      p,
+      li,
+      td {
+        color: var(--body);
+      }
+
+      ul,
+      ol {
+        margin: 9px 0 0;
+        padding-left: 20px;
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.94em;
+      }
+
+      .page {
+        width: min(1240px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 22px 0 70px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        min-height: 54px;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        color: var(--muted);
+        font-size: 13px;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      }
+
+      .brand {
+        color: var(--ink);
+        font-weight: 900;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 290px;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .hero,
+      .panel,
+      .nav {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .hero {
+        padding: 30px;
+      }
+
+      .hero h1 {
+        max-width: 900px;
+        font-size: clamp(30px, 4vw, 48px);
+      }
+
+      .lead {
+        max-width: 900px;
+        margin-top: 14px;
+        font-size: 17px;
+      }
+
+      .panel {
+        margin-top: 18px;
+        padding: 25px;
+      }
+
+      .panel h2 {
+        margin-bottom: 10px;
+        font-size: 24px;
+      }
+
+      .section-lead {
+        max-width: 900px;
+        margin-bottom: 17px;
+        color: var(--muted);
+      }
+
+      .nav {
+        position: sticky;
+        top: 16px;
+        padding: 18px;
+      }
+
+      .nav h2 {
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      .nav a {
+        display: block;
+        padding: 9px 10px;
+        border-radius: 6px;
+        color: var(--body);
+        font-size: 14px;
+      }
+
+      .nav a:hover {
+        background: var(--soft);
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      .nav .note {
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .flowline {
+        display: grid;
+        gap: 12px;
+      }
+
+      .grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .grid-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .flowline {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .card,
+      .metric,
+      .flow-step {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        padding: 16px;
+      }
+
+      .metric,
+      .flow-step {
+        background: var(--soft);
+      }
+
+      .metric {
+        min-height: 118px;
+      }
+
+      .metric strong,
+      .flow-step strong,
+      .card h3 {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .card h3 {
+        font-size: 16px;
+      }
+
+      .flow-step {
+        min-height: 142px;
+      }
+
+      .decision {
+        border-left: 4px solid var(--blue);
+        padding: 14px 16px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+        background: var(--blue-soft);
+      }
+
+      .decision.green {
+        border-left-color: var(--green);
+        background: var(--green-soft);
+      }
+
+      .decision.amber {
+        border-left-color: var(--amber);
+        background: var(--amber-soft);
+      }
+
+      .decision.red {
+        border-left-color: var(--red);
+        background: var(--red-soft);
+      }
+
+      .decision strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--ink);
+      }
+
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 26px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: var(--soft);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .tag.ok {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .tag.hold {
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .tag.no {
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+      }
+
+      table {
+        width: 100%;
+        min-width: 860px;
+        border-collapse: collapse;
+        background: #fff;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+        font-size: 14px;
+      }
+
+      th {
+        background: var(--soft);
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .source-list {
+        display: grid;
+        gap: 9px;
+      }
+
+      .source-list a {
+        display: block;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--soft);
+        color: var(--body);
+        font-size: 14px;
+      }
+
+      .small {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 980px) {
+        .layout {
+          display: block;
+        }
+
+        .nav {
+          position: static;
+          margin-top: 18px;
+        }
+
+        .grid-4,
+        .flowline {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 680px) {
+        .page {
+          width: min(100% - 20px, 1240px);
+          padding-top: 10px;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero,
+        .panel {
+          padding: 18px;
+        }
+
+        .grid-2,
+        .grid-3,
+        .grid-4,
+        .flowline {
+          grid-template-columns: 1fr;
+        }
+
+        table {
+          min-width: 780px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe 분석방</span> / college-dorm-move-in-checklist promotion gate</div>
+        <div>작성일 2026-06-09 · 상태: public route pending evidence</div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <section class="hero" id="summary">
+            <h1>기숙사 입사 후보는 가장 강하지만, 아직 공개 라우트로 올리지 않는다</h1>
+            <p class="lead">
+              이 문서는 <code>college-dorm-move-in-checklist</code>를 공개 라우트로 승격하기 전에 필요한 조건을 정리한다.
+              현재 판단은 <code>A</code> 리뷰 후보이며, source/platform review와 제품 경계 문서다. 사용자 행동 검증도, 공개 <code>/f/[slug]</code> 승인도 아니다.
+            </p>
+            <div class="grid-4" style="margin-top: 24px">
+              <div class="metric"><strong>후보 상태</strong><span>A review candidate, public route pending evidence.</span></div>
+              <div class="metric"><strong>첫 행동</strong><span>최신 학교/기숙사 공지 확인이 먼저다.</span></div>
+              <div class="metric"><strong>자연 산출물</strong><span>D-day 알림 + 체크리스트 + 메모가 섞인 hybrid.</span></div>
+              <div class="metric"><strong>금지</strong><span>건강서류 이미지, 결제, 방 비밀번호, 학생 ID, 주민번호 저장 금지.</span></div>
+            </div>
+          </section>
+
+          <section class="panel" id="decision">
+            <h2>결정</h2>
+            <p class="section-lead">
+              후보는 강하다. 하지만 학교별·학기별 공지가 달라질 수 있으므로, 하나의 현재 primary source를 고정하고 공개 UI 게이트를 통과하기 전에는 공개 라우트를 만들지 않는다.
+            </p>
+            <div class="grid-3">
+              <div class="decision green">
+                <strong>왜 강한가</strong>
+                <p>입사 날짜가 있고, 서류·침구·첫날 물품·반입금지·입사 당일 절차가 실제 실행 순서로 이어진다.</p>
+              </div>
+              <div class="decision amber">
+                <strong>왜 보류인가</strong>
+                <p>여러 기숙사 규칙을 하나의 전국 공통 체크리스트처럼 섞으면 source fidelity가 떨어진다.</p>
+              </div>
+              <div class="decision red">
+                <strong>넘지 않을 선</strong>
+                <p>기숙사 플랫폼, 학교 로그인, 결제 추적, 건강서류 업로드, 룸메이트 매칭, 학생 생활 대시보드를 만들지 않는다.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="sources">
+            <h2>소스 신선도와 역할</h2>
+            <p class="section-lead">
+              아래 표는 기존 근거 문서에 기록된 2026-06-09 재확인 내용을 읽기 쉽게 옮긴 것이다. 이 HTML은 새 소스 재검증 문서가 아니며, 실제 공개 승격 전에는 현재 주 소스를 다시 고정해야 한다.
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>소스</th>
+                    <th>기록된 근거</th>
+                    <th>FlowMe 해석</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>대구가톨릭대학교 기숙사 입사 안내</td>
+                    <td>입사 당일 제출서류, 결핵검사 결과 유효기간, 침구·기본 준비물, 허용/금지 전자제품, 학기별 납부 공지.</td>
+                    <td>현재 후보의 강한 primary source 후보. FlowMe는 문서, 짐, 반입금지, D-Day 입사 행동으로 변환할 수 있지만 최신 공지 우선을 유지해야 한다.</td>
+                  </tr>
+                  <tr>
+                    <td>동의대학교 효민생활관 입사 안내</td>
+                    <td>서약서, 결핵진단서, 학사일정 기반 입사일, 호실 확인, 서류 제출, 입사대장 서명, 모바일 출입증, 침구·개인 물품, 전열기 금지.</td>
+                    <td>문서 준비, 호실/출입, 개인 물품, 반입금지라는 같은 실행 골격을 보여주는 비교 소스.</td>
+                  </tr>
+                  <tr>
+                    <td>경희대학교 제2기숙사 입퇴사 안내</td>
+                    <td>상시 입퇴사 안내 표면과 신청, 확인, 공지, 생활 안내 경로.</td>
+                    <td>학기별 공지와 학교별 페이지가 공개 승격 전 항상 우선되어야 한다는 경계 소스.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="user-behavior">
+            <h2>사용자 행동과 수동 단절점</h2>
+            <div class="grid-2">
+              <div class="card">
+                <h3>사용자 순간</h3>
+                <p>학생이나 보호자가 학교 공지, 기숙사 페이지, 학기별 PDF를 받은 뒤 입사 날짜를 기준으로 준비한다.</p>
+              </div>
+              <div class="card">
+                <h3>현재 수동 행동</h3>
+                <p>기숙사 페이지를 읽고, 캡처하고, 개인 체크리스트를 만들고, 가족에게 물품을 묻고, 반입금지 항목을 다시 확인한다.</p>
+              </div>
+              <div class="card">
+                <h3>실행 단절</h3>
+                <ul>
+                  <li>제출서류와 짐 목록이 섞인다.</li>
+                  <li>건강 관련 서류가 의료 조언이나 이미지 저장으로 오해될 수 있다.</li>
+                  <li>반입금지 항목은 학교별로 다르다.</li>
+                </ul>
+              </div>
+              <div class="card">
+                <h3>FlowMe 밖에 둘 값</h3>
+                <p>결제 정보, 방 비밀번호, 학생 ID, 주민번호, 건강정보, 로그인 값은 FlowMe에 들어오면 안 된다.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="gate">
+            <h2>공개 승격 게이트</h2>
+            <p class="section-lead">아래 조건을 모두 만족할 때만 공개 <code>/f/[slug]</code> 후보로 검토한다.</p>
+            <div class="grid-2">
+              <div class="card">
+                <h3>필수 조건</h3>
+                <ol>
+                  <li>현재 primary source 하나를 고르고, 다른 기숙사 자료는 패턴 지원으로만 둔다.</li>
+                  <li>첫 행동은 최신 학교/기숙사 공지 확인으로 유지한다.</li>
+                  <li>학교별 최신 공지가 FlowMe보다 우선한다는 문구를 UI에 보여준다.</li>
+                  <li>D-14, D-10, D-7, D-5, D-Day 또는 동등한 source-backed sequence가 있다.</li>
+                  <li>캘린더 export와 체크리스트 copy에는 source URL, latest-notice caution, completion criteria가 함께 간다.</li>
+                </ol>
+              </div>
+              <div class="card">
+                <h3>금지 조건</h3>
+                <ul>
+                  <li>건강진단서 이미지, 결제 계좌, 방 비밀번호, 학생 ID, 주민번호, 카드키 번호, 로그인 정보를 묻거나 저장하지 않는다.</li>
+                  <li>모든 기숙사에 같은 서류·반입금지 규칙이 적용된다고 말하지 않는다.</li>
+                  <li>모바일 첫 화면에서 긴 설명이 실행 artifact를 밀어내지 않는다.</li>
+                  <li>상태는 source-review이며, validated가 아니다.</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="route-shape">
+            <h2>가능한 공개 라우트 형태</h2>
+            <p class="section-lead">승격 조건이 충족된 뒤에도 라우트는 좁게 유지한다.</p>
+            <div class="flowline">
+              <div class="flow-step"><strong>Route id</strong><p><code>dorm-move-in-dday-check</code> 또는 한국어 우선 slug.</p></div>
+              <div class="flow-step"><strong>Anchor</strong><p>입사일.</p></div>
+              <div class="flow-step"><strong>Primary source</strong><p>선택된 현재 기숙사 공지나 안내 페이지 하나.</p></div>
+              <div class="flow-step"><strong>Destination</strong><p>calendar reminders + internal checklist/memo.</p></div>
+              <div class="flow-step"><strong>Status</strong><p>source review, not validated.</p></div>
+            </div>
+          </section>
+
+          <section class="panel" id="conversion">
+            <h2>Flow 변환 판단</h2>
+            <div class="grid-2">
+              <div class="decision green">
+                <strong>사용자 필요</strong>
+                <p>학생이나 보호자가 최신 공지를 확인하고, 제출서류를 준비하고, 허용 물품을 챙기고, 반입금지 물품을 빼고, 입사 당일 절차를 완료한다.</p>
+              </div>
+              <div class="decision">
+                <strong>구조와 목적지</strong>
+                <p>official dorm entry guide + term-specific notice를 <code>hybrid</code> 목적지와 <code>timeline</code> 구조로 변환한다.</p>
+              </div>
+              <div class="decision amber">
+                <strong>예외</strong>
+                <p>한 학교의 건강서류, 결제, 식사, 출입증, 반입금지 규칙을 모든 기숙사 규칙으로 일반화하지 않는다.</p>
+              </div>
+              <div class="decision red">
+                <strong>source/risk 처리</strong>
+                <p>공식 소스 사실, 사용자 짐 메모, 주의 문구를 분리한다. 민감 문서와 자격 증명은 FlowMe 밖에 둔다.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="do-not">
+            <h2>만들지 않을 것</h2>
+            <div class="grid-3">
+              <div class="decision red"><strong>기숙사 플랫폼</strong><p>기숙사 마켓, 방 배정 추적, 학생 생활 대시보드, 룸메이트 매칭을 만들지 않는다.</p></div>
+              <div class="decision red"><strong>민감 업무</strong><p>학교 로그인, 결제 추적, 건강문서 업로드, 의료 적합성 판단을 만들지 않는다.</p></div>
+              <div class="decision red"><strong>통합/보장</strong><p>캘린더·시트 계정 연동, 반입금지 보장, 전국 공통 기숙사 packing list를 만들지 않는다.</p></div>
+            </div>
+          </section>
+
+          <section class="panel" id="rubric">
+            <h2>품질 루브릭 스냅샷</h2>
+            <div class="grid-4">
+              <div class="metric"><strong>User Need Fit</strong><span>5</span></div>
+              <div class="metric"><strong>Portability</strong><span>5</span></div>
+              <div class="metric"><strong>Source/Safety</strong><span>5</span></div>
+              <div class="metric"><strong>낮은 위험 지점</strong><span>Content Fidelity 4. 정확한 primary source 선택 전에는 혼합 위험이 있다.</span></div>
+            </div>
+          </section>
+
+          <section class="panel" id="links">
+            <h2>원문과 연결 문서</h2>
+            <div class="source-list">
+              <a href="./2026-06-09-dorm-move-in-public-promotion-gate.md">원문 Markdown</a>
+              <a href="./2026-06-09-external-ecosystem-connected-docs-visual-ko.html#dorm-gate">연결 문서 요약의 기숙사 섹션</a>
+              <a href="./2026-06-09-external-ecosystem-roadmap-visual-ko.html">외부 생태계 분석 로드맵</a>
+              <a href="./2026-06-10-school-dorm-share-packet-preview-ko.html">기숙사 공유 패킷 프리뷰</a>
+              <a href="https://dormitory.cu.ac.kr/page_SgCx18">대구가톨릭대학교 기숙사 입사 안내</a>
+              <a href="https://dorm.deu.ac.kr/hyomin/30/3013.kmc">동의대학교 효민생활관 입사 안내</a>
+              <a href="https://dorm2.khu.ac.kr/30/3010.do">경희대학교 제2기숙사 입퇴사 안내</a>
+            </div>
+            <p class="small" style="margin-top: 12px">
+              외부 링크는 기존 근거 문서에 기록된 소스다. 이 HTML은 기존 내부 게이트를 시각화한 읽기용 문서이며, 새 공개 승격 승인이나 최신 소스 재검증이 아니다.
+            </p>
+          </section>
+        </div>
+
+        <aside class="nav" aria-label="문서 목차">
+          <h2>목차</h2>
+          <a href="#summary">요약</a>
+          <a href="#decision">결정</a>
+          <a href="#sources">소스 신선도</a>
+          <a href="#user-behavior">사용자 행동</a>
+          <a href="#gate">공개 승격 게이트</a>
+          <a href="#route-shape">가능한 라우트 형태</a>
+          <a href="#conversion">Flow 변환 판단</a>
+          <a href="#do-not">만들지 않을 것</a>
+          <a href="#rubric">루브릭</a>
+          <a href="#links">원문과 연결 문서</a>
+          <p class="note">
+            현재 상태는 public route pending evidence다. primary source 고정과 모바일 artifact-first 확인 전에는 공개 라우트 승인으로 부르지 않는다.
+          </p>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

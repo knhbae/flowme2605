@@ -1,0 +1,925 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>원컨텐츠 기반 Flow serving UX 패턴 검토</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --surface: #ffffff;
+      --ink: #121826;
+      --muted: #5d6677;
+      --line: #dfe4ec;
+      --strong: #0f4c81;
+      --soft: #eaf3fb;
+      --ok: #126d45;
+      --warn: #9a5b00;
+      --bad: #9b1c31;
+      --ok-bg: #eaf7ef;
+      --warn-bg: #fff4df;
+      --bad-bg: #fdebed;
+      --code: #18202e;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif;
+      line-height: 1.6;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: #0b5cad;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .page {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+
+    .hero {
+      padding: 36px 0 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--strong);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 900px;
+      font-size: clamp(30px, 5vw, 52px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 860px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .section {
+      margin-top: 28px;
+    }
+
+    .section h2 {
+      margin: 0 0 12px;
+      font-size: 24px;
+      line-height: 1.25;
+    }
+
+    .section p {
+      margin: 8px 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(18, 24, 38, 0.04);
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .card p,
+    .card li {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .decision {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      margin-bottom: 10px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .decision.ok {
+      color: var(--ok);
+      background: var(--ok-bg);
+    }
+
+    .decision.warn {
+      color: var(--warn);
+      background: var(--warn-bg);
+    }
+
+    .decision.bad {
+      color: var(--bad);
+      background: var(--bad-bg);
+    }
+
+    .pattern {
+      border-left: 4px solid var(--strong);
+    }
+
+    .pattern strong {
+      color: var(--ink);
+    }
+
+    .candidate {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 16px;
+      margin-top: 14px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+    }
+
+    .candidate h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    .candidate .source-type {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .facts {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    .fact {
+      padding: 9px 10px;
+      border-radius: 6px;
+      background: #f2f5f8;
+    }
+
+    .fact b {
+      display: block;
+      margin-bottom: 2px;
+      color: var(--ink);
+    }
+
+    pre {
+      overflow-x: auto;
+      margin: 0;
+      padding: 16px;
+      border-radius: 8px;
+      background: var(--code);
+      color: #eef4ff;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      line-height: 1.62;
+      white-space: pre-wrap;
+    }
+
+    .note {
+      padding: 14px 16px;
+      border: 1px solid #cfe0f1;
+      border-radius: 8px;
+      background: var(--soft);
+      color: #17324d;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f0f3f7;
+      color: #253044;
+      font-weight: 800;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer {
+      margin-top: 36px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 860px) {
+      .page {
+        padding: 24px 16px 48px;
+      }
+
+      .grid,
+      .grid.two,
+      .candidate {
+        grid-template-columns: 1fr;
+      }
+
+      .candidate {
+        padding: 16px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <p class="eyebrow">FlowMe UX/UI 검토 메모 · 2026-06-12</p>
+      <h1>전세계약 수준의 가벼운 UX를 다른 콘텐츠에도 적용할 수 있는가</h1>
+      <p class="lead">
+        이번 문서는 제품 UI 구현물이 아니라, 실제 원컨텐츠를 얕게 대입해 보며 어떤 콘텐츠가 Flow 컨텐츠화에 적합한지,
+        그리고 사용자에게 어떤 최소 serving 패턴으로 보여야 하는지를 판단하기 위한 검토용 HTML입니다.
+      </p>
+      <div class="meta">
+        <span class="pill">원문 기반 action draft</span>
+        <span class="pill">입력 0-3개 원칙</span>
+        <span class="pill">기록형은 체크 중심</span>
+        <span class="pill">YouTube/블로그형 보강</span>
+        <span class="pill">검토 화면과 사용자 화면 분리</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>현재 결론</h2>
+      <div class="note">
+        전세계약 Flow의 UX/UI 수준은 기준 품질로 충분합니다. 다만 모든 콘텐츠를 전세계약처럼 D-day 타임라인으로 만들면
+        과해집니다. 필요한 것은 더 많은 기능이 아니라, 콘텐츠 성격에 맞는 최소 serving 패턴입니다.
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>공통 UX 원칙</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>1. 첫 화면은 실행 도구</h3>
+          <p>사용자는 설명을 읽으러 온 것이 아니라 저장하고 실행하러 옵니다. 첫 화면에는 입력값, 첫 action, 저장 결과가 먼저 보여야 합니다.</p>
+        </article>
+        <article class="card">
+          <h3>2. 상세 설명은 detail로 이동</h3>
+          <p>원문 맥락, 주의사항, URL, 긴 설명은 메모/detail/URL에 둡니다. 사용 화면에는 행동 제목과 완료 기준만 남깁니다.</p>
+        </article>
+        <article class="card">
+          <h3>3. 기록형도 글쓰기가 아님</h3>
+          <p>기록형은 긴 일지가 아니라 체크칩 중심입니다. 예: 완료, 이상 없음, 통증 있음, 병원 문의, 다음에 다시 확인.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>최소 serving 패턴</h2>
+      <div class="grid two">
+        <article class="card pattern">
+          <h3>날짜 앵커형</h3>
+          <p><strong>대상:</strong> 전세계약, 이사, 입학, 면허 갱신, 행정 신청</p>
+          <p><strong>UI:</strong> 기준일 1개 입력 -> D-day action -> 미니 캘린더/일정 보기 -> 항목 클릭 detail</p>
+        </article>
+        <article class="card pattern">
+          <h3>체크리스트형</h3>
+          <p><strong>대상:</strong> 중고차 점검, 준비물, 구매 전 확인</p>
+          <p><strong>UI:</strong> 체크 항목 first -> 보류/진행 판단 -> 증거/메모는 optional detail</p>
+        </article>
+        <article class="card pattern">
+          <h3>버킷리스트형</h3>
+          <p><strong>대상:</strong> 아이 놀이, 만들기, 주말 활동, 체험 콘텐츠</p>
+          <p><strong>UI:</strong> 하나의 저장 item -> 일정 없음 기본 -> 원하면 날짜 배치 -> 준비물/URL detail</p>
+        </article>
+        <article class="card pattern">
+          <h3>반복 루틴형</h3>
+          <p><strong>대상:</strong> 운동 영상, 세탁기 청소, 식물 물주기, 공부 루틴</p>
+          <p><strong>UI:</strong> 반복 요일/주기 선택 -> 다음 실행 카드 -> 완료 체크 -> 상태칩 기록</p>
+        </article>
+        <article class="card pattern">
+          <h3>기록형</h3>
+          <p><strong>대상:</strong> 이유식 반응, 차량 상태, 운동 후 상태, 증상 관찰</p>
+          <p><strong>UI:</strong> 발생일/대상 선택 -> 상태칩 체크 -> 위험 신호 안내 -> 짧은 선택 메모</p>
+        </article>
+        <article class="card pattern">
+          <h3>메모/참고형</h3>
+          <p><strong>대상:</strong> 해외안전, 공식 안내, 준비 참고자료</p>
+          <p><strong>UI:</strong> 저장할 핵심 카드 -> 확인 체크 2-4개 -> 원문 링크와 연락처 detail</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>원컨텐츠 후보별 action draft</h2>
+      <p class="small">아래 draft는 제품 UI가 아니라, 원문이 Flow action으로 바뀌는지 확인하기 위한 텍스트 박스입니다.</p>
+
+      <article class="candidate">
+        <aside>
+          <span class="decision ok">적합 높음</span>
+          <h3>이사 후 전입신고/확정일자</h3>
+          <p class="source-type">공식/법령 안내 · 날짜 앵커형</p>
+          <div class="facts">
+            <div class="fact"><b>추천 serving</b>이사일 입력 -> D-Day/D+14 일정</div>
+            <div class="fact"><b>입력</b>이사일, 전월세 여부</div>
+            <div class="fact"><b>출처</b><a href="https://www.easylaw.go.kr/CSP/CnpClsMainBtr.laf?ccfNo=4&amp;cciNo=1&amp;cnpClsNo=1&amp;csmSeq=666" target="_blank" rel="noreferrer">찾기쉬운 생활법령정보</a></div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 이사 당일 전입신고하기
+- 언제: 이사일
+- 사용자가 할 일: 주민센터 또는 온라인에서 새 주소로 전입신고
+- 완료 기준: 전입신고 접수 완료
+- detail: 신고 의무, 신분증/온라인 신청 경로, 자동차 지역번호판 예외
+- URL: 원문 링크
+
+2. 전월세라면 확정일자 받기
+- 언제: 이사 당일 권장
+- 사용자가 할 일: 임대차계약서 확정일자 신청
+- 완료 기준: 확정일자 부여 확인
+- detail: 보증금 보호 관련 설명은 사용자 화면이 아니라 detail로 이동
+- URL: 원문 링크
+
+UX 판단:
+- 전세계약 Flow와 같은 날짜 앵커형 UI로 충분함.
+- 캘린더에 넣고 끝내는 사용자와 FlowMe에서 체크하는 사용자를 모두 커버함.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="decision ok">적합 높음</span>
+          <h3>운전면허 적성검사/갱신</h3>
+          <p class="source-type">공식 민원 안내 · 마감형 체크리스트</p>
+          <div class="facts">
+            <div class="fact"><b>추천 serving</b>갱신 마감일 + 준비물 체크</div>
+            <div class="fact"><b>입력</b>갱신 마감일, 면허 종류</div>
+            <div class="fact"><b>출처</b><a href="https://www.safedriving.or.kr/diGuide/selectDiGuide01.do?menuCd=MN-PO-1211" target="_blank" rel="noreferrer">안전운전 통합민원</a></div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 갱신/적성검사 마감일 확인하기
+- 언제: 면허증에 표시된 기간 확인 후 즉시
+- 사용자가 할 일: 갱신 대상과 마감일을 Flow에 저장
+- 완료 기준: 마감일 일정 생성
+- detail: 1종/2종, 70세 이상 조건은 detail에서 분기 안내
+- URL: 원문 링크
+
+2. 사진과 신체검사 대체 여부 준비하기
+- 언제: 방문 또는 온라인 신청 전
+- 사용자가 할 일: 최근 사진, 건강검진내역 활용 가능 여부 확인
+- 완료 기준: 준비물 체크 완료
+- detail: 수수료와 사진 규격은 detail에 보관
+- URL: 원문 링크
+
+3. 온라인 신청 또는 방문 접수하기
+- 언제: 마감 전
+- 사용자가 할 일: 안전운전 통합민원 또는 경찰서/시험장 접수
+- 완료 기준: 접수 완료, 수령 방법 확인
+- detail: 수령은 본인만 가능한 조건 등
+- URL: 원문 링크
+
+UX 판단:
+- 전세계약보다 더 간단한 마감형 Flow.
+- 미니 캘린더보다는 준비물 체크와 마감 리마인더가 핵심.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="decision warn">수정 후 가능</span>
+          <h3>초등학교 입학 준비</h3>
+          <p class="source-type">교육청 자료/체크리스트 · 날짜+생활 체크</p>
+          <div class="facts">
+            <div class="fact"><b>추천 serving</b>입학일 기준 타임라인 + 생활 체크</div>
+            <div class="fact"><b>입력</b>입학일, 학교/지역 선택은 optional</div>
+            <div class="fact"><b>출처</b><a href="https://www.gwe.go.kr/promotion/bbs/view.do?bbsSn=35688&amp;key=m2411225294640" target="_blank" rel="noreferrer">강원특별자치도교육청 보도자료</a></div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 취학/입학 안내 일정 확인하기
+- 언제: 입학 전 겨울
+- 사용자가 할 일: 지역 교육청/정부 안내에서 취학통지와 입학 안내 확인
+- 완료 기준: 안내 문서 확인 또는 출력 여부 체크
+- detail: 지역별 발급 기간과 제출 방식은 detail로 분리
+- URL: 원문 링크
+
+2. 입학 전 생활 준비도 체크하기
+- 언제: 입학 30일 전
+- 사용자가 할 일: 식사, 화장실, 정리, 등교 리듬 등 아이가 연습할 항목 체크
+- 완료 기준: 부족한 항목 1-3개만 이번 주 연습 대상으로 표시
+- detail: 긴 체크리스트 전체는 detail에 보관
+- URL: 원문 링크
+
+3. 입학 전 마지막 주 준비물 확인하기
+- 언제: 입학 7일 전
+- 사용자가 할 일: 학교 안내문 기준으로 가방, 실내화, 서류 확인
+- 완료 기준: 준비물 체크 완료
+- detail: 학교별 안내문 URL/사진은 사용자가 붙임
+- URL: 원문 링크
+
+UX 판단:
+- 전세계약식 D-day UI를 기본으로 쓰되, 문장을 크게 줄여야 함.
+- "학부모용 긴 설명"이 아니라 "이번 주 아이와 체크할 1-3개 행동"으로 보여야 함.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="decision warn">조건부 적합</span>
+          <h3>아이 도안 스퀴시 만들기</h3>
+          <p class="source-type">크리에이터 영상/도안 · 버킷리스트형</p>
+          <div class="facts">
+            <div class="fact"><b>추천 serving</b>놀이 버킷 item 1개</div>
+            <div class="fact"><b>입력</b>일정 없음 또는 놀이 날짜 1개</div>
+            <div class="fact"><b>출처</b><a href="https://www.youtube.com/watch?v=QR0ksOsBhog" target="_blank" rel="noreferrer">YELLOW 무료도안 스퀴시 영상</a></div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 스퀴시 만들기 놀이 저장하기
+- 언제: 일정 없음 또는 사용자가 고른 놀이 날짜
+- 사용자가 할 일: 도안 URL을 저장하고, 아이 놀이 후보로 등록
+- 완료 기준: 버킷리스트 또는 놀이 일정에 저장 완료
+- detail: 준비물, 도안 다운로드/출력 위치, 영상 URL
+- URL: 원문 링크
+
+UX 판단:
+- 여러 단계 Flow 리스트는 과함.
+- "스퀴시 만들기" 하나의 item이면 충분함.
+- 사용자가 놀이 루틴을 갖고 있다면 빈 놀이 슬롯에 추천/배치되는 방식이 자연스러움.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="decision ok">적합 높음</span>
+          <h3>중고차 구매 전 확인</h3>
+          <p class="source-type">소비자 피해 예방 · 체크리스트/보류 판단</p>
+          <div class="facts">
+            <div class="fact"><b>추천 serving</b>구매 후보별 체크 + 보류 조건</div>
+            <div class="fact"><b>입력</b>차량명 또는 매물 URL</div>
+            <div class="fact"><b>출처</b><a href="https://www.kca.go.kr/home/sub.do?menukey=4005&amp;mode=view&amp;no=1003690083" target="_blank" rel="noreferrer">한국소비자원 피해예방주의보</a></div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 성능/상태 고지와 실제 차량 비교하기
+- 언제: 계약 전
+- 사용자가 할 일: 성능상태점검기록부와 차량 상태가 맞는지 확인
+- 완료 기준: 불일치 없음 또는 보류 사유 기록
+- detail: 사진/매물 URL/판매자 설명은 optional memo
+- URL: 원문 링크
+
+2. 구매 보류 조건 체크하기
+- 언제: 계약금 입금 전
+- 사용자가 할 일: 침수, 사고, 주행거리, 고지 불일치 의심 시 보류 표시
+- 완료 기준: 진행/보류 판단 선택
+- detail: 분쟁 예방 설명은 review가 아니라 detail로 이동
+- URL: 원문 링크
+
+UX 판단:
+- 체크리스트형으로 적합.
+- "완료"보다 "진행/보류"가 더 중요한 CTA가 되어야 함.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="decision warn">보통</span>
+          <h3>해외여행 안전 확인</h3>
+          <p class="source-type">공식 안전 정보 · 메모/참고형</p>
+          <div class="facts">
+            <div class="fact"><b>추천 serving</b>출국 전 안전 메모 카드</div>
+            <div class="fact"><b>입력</b>여행 국가, 출국일</div>
+            <div class="fact"><b>출처</b><a href="https://0404.go.kr/main/mainPage" target="_blank" rel="noreferrer">외교부 해외안전여행</a></div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 여행국가 경보 단계 확인하기
+- 언제: 항공권 결제 전 또는 출국 7일 전
+- 사용자가 할 일: 해외안전여행에서 국가별 경보 단계 확인
+- 완료 기준: 경보 단계와 행동 기준 저장
+- detail: 경보 단계별 설명은 detail에 둠
+- URL: 원문 링크
+
+2. 현지 비상 연락처 저장하기
+- 언제: 출국 전
+- 사용자가 할 일: 공관/영사콜센터/현지 안내 링크를 메모에 저장
+- 완료 기준: 오프라인에서도 볼 수 있는 메모 생성
+- detail: 앱 설치, 로밍 문자, 현지 공관 안내
+- URL: 원문 링크
+
+UX 판단:
+- 체크리스트가 너무 많아지면 무거움.
+- 핵심은 "여행 전 확인 카드 + emergency memo"이지 여행 계획표가 아님.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="decision ok">적합 높음</span>
+          <h3>세탁기 통세척/관리</h3>
+          <p class="source-type">제조사 공식 안내 · 반복 루틴형</p>
+          <div class="facts">
+            <div class="fact"><b>추천 serving</b>월 1회 관리 루틴</div>
+            <div class="fact"><b>입력</b>세탁기 종류, 반복 주기</div>
+            <div class="fact"><b>출처</b><a href="https://www.samsungsvc.co.kr/solution/41708" target="_blank" rel="noreferrer">삼성전자서비스</a>, <a href="https://www.lge.co.kr/support/video-tutorials-1430888637954" target="_blank" rel="noreferrer">LG전자</a></div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 통세척 루틴 실행하기
+- 언제: 월 1회 또는 냄새가 날 때
+- 사용자가 할 일: 세탁물을 비우고 통세척/통살균 코스 실행
+- 완료 기준: 코스 실행 완료
+- detail: 모델별 버튼 순서, 권장 세정제, 금지 조건
+- URL: 원문 링크
+
+2. 배수필터/고무패킹 확인하기
+- 언제: 통세척 후 또는 냄새가 남을 때
+- 사용자가 할 일: 필터와 패킹 오염 여부 체크
+- 완료 기준: 정상/청소 필요 선택
+- detail: 모델별 분해 방법은 제조사 URL로 이동
+- URL: 원문 링크
+
+UX 판단:
+- 반복 루틴형에 적합.
+- 단, 모델별 상세 절차를 화면에 다 펼치면 복잡하므로 detail로 분리.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="decision warn">보통</span>
+          <h3>운동처방 영상 따라하기</h3>
+          <p class="source-type">공공 운동 영상 목록 · 반복 루틴형</p>
+          <div class="facts">
+            <div class="fact"><b>추천 serving</b>영상 1개 반복 일정</div>
+            <div class="fact"><b>입력</b>요일/횟수, 영상 선택</div>
+            <div class="fact"><b>출처</b><a href="https://nfa.kspo.or.kr/classroom/program/selectPrescriptionMovieList.kspo" target="_blank" rel="noreferrer">국민체력100 운동처방 동영상</a></div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 이번 주 따라할 영상 1개 고르기
+- 언제: 루틴 시작 전
+- 사용자가 할 일: 대상/운동부위/도구 기준으로 영상 선택
+- 완료 기준: 영상 URL 저장
+- detail: 영상 목록과 필터 조건
+- URL: 원문 링크
+
+2. 선택한 영상 따라하고 상태 체크하기
+- 언제: 사용자가 정한 반복 요일
+- 사용자가 할 일: 원문 영상을 열고 가능한 강도로 1회 따라함
+- 완료 기준: 완료/중단 선택, 힘듦/통증 여부 체크
+- detail: 운동 순서는 원문 영상에서 확인. 통증/어지럼 등 중단 조건 표시
+- URL: 원문 링크
+
+UX 판단:
+- 영상 하나는 action 하나가 맞음.
+- 기록은 긴 운동일지가 아니라 완료, 강도, 통증 여부 칩이면 충분함.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="decision ok">적합 높음</span>
+          <h3>이유식 식품 반응 기록</h3>
+          <p class="source-type">공식 건강 정보 · 기록형</p>
+          <div class="facts">
+            <div class="fact"><b>추천 serving</b>새 식재료별 반응 체크</div>
+            <div class="fact"><b>입력</b>식재료, 먹인 날짜</div>
+            <div class="fact"><b>출처</b><a href="https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5212" target="_blank" rel="noreferrer">질병관리청 국가건강정보포털</a></div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 새 식재료 먹인 날짜 기록하기
+- 언제: 새 식재료를 먹인 날
+- 사용자가 할 일: 식재료명과 날짜 저장
+- 완료 기준: 식재료 카드 생성
+- detail: 양, 조리 방식은 optional memo
+- URL: 원문 링크
+
+2. 반응 여부 체크하기
+- 언제: 먹인 뒤 관찰 시점
+- 사용자가 할 일: 이상 없음/두드러기/구토/설사/부종/기침/호흡곤란 중 선택
+- 완료 기준: 상태칩 선택 완료
+- detail: 반복 증상, 응급 진료 기준, 의료진 상담 메모
+- URL: 원문 링크
+
+UX 판단:
+- 기록형이지만 긴 글 작성은 금지.
+- 위험 신호는 사용자가 판단할 수 있는 체크칩으로 노출하고, 의학 설명은 detail로 이동.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="decision warn">보통</span>
+          <h3>반려식물 물주기</h3>
+          <p class="source-type">공식 재배 정보 · 반복 체크형</p>
+          <div class="facts">
+            <div class="fact"><b>추천 serving</b>주기 알림보다 상태 체크</div>
+            <div class="fact"><b>입력</b>식물 종류, 확인 주기</div>
+            <div class="fact"><b>출처</b><a href="https://www.nongsaro.go.kr/portal/ps/psz/psza/contentMain.ps?menuId=PS04108" target="_blank" rel="noreferrer">농사로 물관리</a></div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 흙 상태 확인하기
+- 언제: 사용자가 정한 확인 주기
+- 사용자가 할 일: 흙 표면 또는 속흙 상태 확인
+- 완료 기준: 말랐음/촉촉함/과습 의심 선택
+- detail: 식물군별 물관리 기준
+- URL: 원문 링크
+
+2. 필요할 때만 물주기
+- 언제: 흙 상태가 기준에 맞을 때
+- 사용자가 할 일: 충분히 관수하고 받침 물 고임 여부 확인
+- 완료 기준: 물줌/오늘은 보류 선택
+- detail: 계절별 조정, 과습 주의
+- URL: 원문 링크
+
+UX 판단:
+- 단순 월간 알림보다 "확인 후 물줄지 말지"가 핵심.
+- 기록형처럼 보이지만 실제 입력은 상태칩 2개면 충분함.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="decision ok">커뮤니티형 적합</span>
+          <h3>YouTube 이사 브이로그/체크리스트</h3>
+          <p class="source-type">YouTube 후기/브이로그 · 날짜 앵커형</p>
+          <div class="facts">
+            <div class="fact"><b>추천 serving</b>이사일 기준 D-30/D-7/D-Day 체크</div>
+            <div class="fact"><b>입력</b>이사일, 포장/반포장/셀프 여부</div>
+            <div class="fact"><b>출처</b><a href="https://www.youtube.com/watch?v=DlB3XhFzZFc" target="_blank" rel="noreferrer">이사 전 준비 체크리스트 브이로그</a></div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 이사 방식과 견적 비교 일정 잡기
+- 언제: 이사 30일 전
+- 사용자가 할 일: 포장/반포장/셀프 중 선택하고 견적 비교 시작
+- 완료 기준: 후보 업체 2-3개와 견적 메모 저장
+- detail: 영상 속 개인 후기, 비용 예시는 공식 가격이 아니라 참고로 분리
+- URL: 원문 링크
+
+2. 이사 전 버릴 물건과 이전 설치 정리하기
+- 언제: 이사 14일 전
+- 사용자가 할 일: 버릴 물건, 가전 이전 설치, 관리비/주소 변경 항목 체크
+- 완료 기준: 보류 항목 없이 체크 또는 메모 남김
+- detail: 영상에서 언급된 개인 순서는 detail로 보관
+- URL: 원문 링크
+
+UX 판단:
+- 사용자가 많이 보는 브이로그형 콘텐츠는 공감/발견성은 좋음.
+- 다만 개인 후기이므로 Flow에는 "공식 절차"가 아니라 "내 이사 준비 체크"로 serving해야 함.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="decision warn">커뮤니티형 수정 필요</span>
+          <h3>네이버 블로그 예비초등 준비물</h3>
+          <p class="source-type">네이버/생활 블로그 · 생활 체크리스트형</p>
+          <div class="facts">
+            <div class="fact"><b>추천 serving</b>입학 전 생활/준비물 체크</div>
+            <div class="fact"><b>입력</b>입학일, 학교 안내문 URL optional</div>
+            <div class="fact"><b>출처</b><a href="https://m.blog.naver.com/ben810402/223301309810" target="_blank" rel="noreferrer">네이버 블로그 입학준비물 글</a>, <a href="https://v2park.com/entry/%EC%98%88%EB%B9%84-%EC%B4%88%EB%93%B1-%ED%95%99%EB%B6%80%EB%AA%A8-%ED%95%84%EB%8F%85-%EC%B4%88%EB%93%B1%ED%95%99%EA%B5%90-%EC%9E%85%ED%95%99-%EC%A4%80%EB%B9%84-%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8" target="_blank" rel="noreferrer">댓글이 있는 생활 블로그 예시</a></div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 학교 안내문 기준 준비물만 체크하기
+- 언제: 예비소집 또는 학교 안내문 수령 후
+- 사용자가 할 일: 가방, 실내화, 필통, 이름표 등 학교가 요구한 항목만 체크
+- 완료 기준: 학교 안내문 기준 준비물 체크 완료
+- detail: 블로그 추천 물품은 "참고"로 분리하고 필수처럼 보이지 않게 함
+- URL: 원문 링크
+
+2. 입학 전 생활 연습 3개만 고르기
+- 언제: 입학 30일 전
+- 사용자가 할 일: 기상/식사/화장실/정리/등하교 중 이번 주 연습할 항목 1-3개 선택
+- 완료 기준: 이번 주 연습 항목 선택 완료
+- detail: 긴 학습 준비, 추천 도서, 부모 조언은 detail로 이동
+- URL: 원문 링크
+
+UX 판단:
+- 댓글/후기형 블로그는 부모의 실제 고민이 드러나는 장점이 있음.
+- 하지만 글이 길고 추천이 많으므로 사용자 화면은 "이번 주 체크 1-3개"로 줄여야 함.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="decision ok">커뮤니티형 적합</span>
+          <h3>YouTube + 네이버 블로그 무료도안 만들기</h3>
+          <p class="source-type">YouTube 영상 + 네이버 도안 · 버킷리스트형</p>
+          <div class="facts">
+            <div class="fact"><b>추천 serving</b>놀이/만들기 bucket item</div>
+            <div class="fact"><b>입력</b>일정 없음 또는 놀이 날짜</div>
+            <div class="fact"><b>출처</b><a href="https://www.youtube.com/watch?v=pgZjiXwMOmQ" target="_blank" rel="noreferrer">YouTube 무료도안 스퀴시</a>, <a href="https://m.blog.naver.com/seo_0607/224215184284" target="_blank" rel="noreferrer">네이버 블로그 도안 링크</a></div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 무료도안 만들기 놀이 저장하기
+- 언제: 일정 없음 또는 사용자가 고른 놀이 날짜
+- 사용자가 할 일: 영상과 도안 링크를 놀이 후보로 저장
+- 완료 기준: bucket item 저장 또는 놀이 일정에 배치
+- detail: 도안 출력 링크, 준비물, 저작권/상업 이용 금지 안내
+- URL: 원문 영상 + 도안 블로그
+
+UX 판단:
+- 커뮤니티 반응이 많은 만들기 콘텐츠는 FlowMe에 잘 맞지만, 여러 단계 Flow가 아니라 1개 item이 맞음.
+- 핵심 가치는 "나중에 아이와 할 놀이로 저장"이지 제작 과정을 앱 안에서 재현하는 것이 아님.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="decision bad">커뮤니티형 보류</span>
+          <h3>YouTube 냉장고 파먹기 식단/절약 영상</h3>
+          <p class="source-type">YouTube 생활 브이로그 · 상황 의존형</p>
+          <div class="facts">
+            <div class="fact"><b>추천 serving</b>저장한다면 참고 메모 또는 느슨한 아이디어</div>
+            <div class="fact"><b>입력</b>없음. 재고 입력을 요구하면 과해짐</div>
+            <div class="fact"><b>출처</b><a href="https://www.youtube.com/watch?v=kL-PeGgCuAc" target="_blank" rel="noreferrer">냉장고 파먹기 방법 영상</a>, <a href="https://www.youtube.com/watch?v=qeQFMfOB2ro" target="_blank" rel="noreferrer">일주일 식비 세이브 영상</a></div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 냉장고 파먹기 아이디어 저장하기
+- 언제: 장보기 전
+- 사용자가 할 일: 영상에서 따라하고 싶은 메뉴/원칙 1개만 메모
+- 완료 기준: 다음 장보기 전 참고 메모 저장
+- detail: 영상 속 재료와 식단은 제작자의 상황이므로 내 재고표로 자동 변환하지 않음
+- URL: 원문 링크
+
+UX 판단:
+- 조회/댓글이 있어도 사용자의 냉장고 재고와 맞지 않으면 Flow 실행성이 약함.
+- 재고 소진표를 만들면 FlowMe가 식단/재고관리 앱처럼 무거워짐.
+- 대표 Flow 샘플보다는 "커뮤니티형 부적합 사례"로 두는 편이 좋음.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="decision warn">커뮤니티형 조건부</span>
+          <h3>YouTube 홈트 루틴 영상</h3>
+          <p class="source-type">YouTube 운동 영상 · 반복 루틴형</p>
+          <div class="facts">
+            <div class="fact"><b>추천 serving</b>영상 1개를 반복 일정으로 저장</div>
+            <div class="fact"><b>입력</b>요일/횟수, 통증 여부 optional</div>
+            <div class="fact"><b>출처</b><a href="https://www.youtube.com/watch?v=t70t-sklypk" target="_blank" rel="noreferrer">걷기 유산소운동 영상</a>, <a href="https://www.youtube.com/watch?v=W4SpM2gxGdE" target="_blank" rel="noreferrer">왕초보 홈트 영상</a></div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 이번 주 따라할 홈트 영상 저장하기
+- 언제: 루틴 시작일
+- 사용자가 할 일: 영상 1개를 고르고 반복 요일을 정함
+- 완료 기준: 반복 일정 생성
+- detail: 운동 동작 순서는 원문 영상에서 확인
+- URL: 원문 링크
+
+2. 운동 후 상태칩 체크하기
+- 언제: 각 반복 일정 완료 후
+- 사용자가 할 일: 완료/중단, 쉬움/보통/힘듦, 통증/어지럼 여부 선택
+- 완료 기준: 상태칩 선택 완료
+- detail: 통증, 어지럼, 호흡곤란, 기존 질환 악화 시 중단/상담
+- URL: 원문 링크
+
+UX 판단:
+- YouTube 운동은 커뮤니케이션과 저장 욕구가 강함.
+- 다만 FlowMe가 운동 지도 앱처럼 동작을 재작성하면 안 되고, "일정 + 원문 영상 + 상태 체크"로 제한해야 함.</pre>
+      </article>
+    </section>
+
+    <section class="section">
+      <h2>이번 라운드 분류</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>분류</th>
+              <th>후보</th>
+              <th>UX/UI 판단</th>
+              <th>다음 처리</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>바로 Flow화 적합</td>
+              <td>전입신고/확정일자, 면허 갱신, 중고차 확인, 세탁기 통세척, 이유식 반응 기록, YouTube 이사 체크리스트, YouTube+네이버 도안 만들기</td>
+              <td>전세계약 수준의 가벼운 화면에 패턴별 최소 변형만 붙이면 됨</td>
+              <td>대표 샘플 후보로 유지</td>
+            </tr>
+            <tr>
+              <td>수정 후 가능</td>
+              <td>초등 입학 준비, 네이버 블로그 예비초등 준비물, 아이 스퀴시, YouTube 홈트 루틴, 반려식물 물주기, 해외여행 안전</td>
+              <td>문장을 줄이고 하나의 action 또는 체크칩 중심으로 축소해야 함</td>
+              <td>UI 이전에 action draft 재작성</td>
+            </tr>
+            <tr>
+              <td>대표 샘플 보류</td>
+              <td>AI 생성 냉장고 파먹기, YouTube 냉장고 파먹기 식단/절약 영상, 원격지원 사전 권한 체크</td>
+              <td>조회/댓글이 있어도 사용자 상황 매칭이 약하거나 FlowMe가 문제 해결/지원 앱처럼 보일 위험이 큼</td>
+              <td>성공 사례가 아니라 부적합 판단 사례로 보관</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>UX/UI 방향</h2>
+      <div class="grid two">
+        <article class="card">
+          <h3>전세계약 UI에서 더 붙일 필요가 없는 것</h3>
+          <ul>
+            <li>긴 설명 섹션</li>
+            <li>모든 후보에 공통 전체보기/보조보기 강제</li>
+            <li>1-action 콘텐츠에 타임라인/캘린더 전체 UI 노출</li>
+            <li>기록형의 긴 메모 필드 우선 노출</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>카테고리별로 최소 추가할 것</h3>
+          <ul>
+            <li>날짜 앵커형: 날짜 클릭 시 해당 action detail</li>
+            <li>버킷형: 일정 없음 저장과 날짜 배치 선택</li>
+            <li>루틴형: 다음 실행 카드와 상태칩</li>
+            <li>기록형: 체크칩, 위험 신호, optional memo</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>다음 작업 제안</h2>
+      <div class="note">
+        이 세션에서는 UI를 더 만들기보다, 다른 세션에서 나온 원컨텐츠 draft를 위 5개 serving 패턴에 대입해보면 됩니다.
+        특히 YouTube/네이버 블로그처럼 커뮤니케이션이 많은 콘텐츠는 발견성과 저장 욕구를 인정하되, 공식 근거처럼 취급하지 않고
+        원문 링크와 제작자 경험을 detail로 분리해야 합니다. 통과한 후보만 전세계약 수준의 가벼운 실제 화면으로 옮기고,
+        애매한 후보는 UI를 만들기 전에 action item을 줄이는 쪽이 맞습니다.
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>
+        검토일: 2026-06-12. 이 문서는 내부 UX 판단용이며, 실제 사용자 검증 또는 콘텐츠 검증 완료를 의미하지 않습니다.
+        외부 원문은 작성 시점에 웹에서 얕게 확인했습니다.
+      </p>
+    </footer>
+  </main>
+</body>
+</html>

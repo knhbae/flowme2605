@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FlowMe 중1 수학 화면 맥락 분리</title>
+    <style>
+      :root {
+        --bg: #f4f7fb;
+        --paper: #fff;
+        --ink: #111827;
+        --muted: #607086;
+        --line: #d9e2ef;
+        --blue: #1f5fbf;
+        --green: #0f7a4a;
+        --amber: #986400;
+        --red: #b42318;
+        --soft-blue: #edf4ff;
+        --soft-green: #ebf8f0;
+        --soft-amber: #fff8e6;
+        --soft-red: #fff1ef;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      html, body { max-width: 100%; overflow-x: hidden; }
+      body { margin: 0; background: var(--bg); color: var(--ink); line-height: 1.55; }
+      button, input, textarea { font: inherit; }
+      button { cursor: pointer; }
+      a { color: var(--blue); text-underline-offset: 3px; }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 { margin-bottom: 6px; font-size: clamp(28px, 5vw, 42px); line-height: 1.1; letter-spacing: 0; }
+      h2 { margin-bottom: 8px; font-size: 22px; line-height: 1.2; letter-spacing: 0; }
+      h3 { margin-bottom: 6px; font-size: 18px; line-height: 1.24; letter-spacing: 0; }
+      .app { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 16px 0 70px; }
+      .app, .panel, .card, .hero, .topbar, .layout, .view, .unit-row, .flow-row, .preview-row { min-width: 0; }
+      .topbar, .hero, .panel, .card, .unit-row, .concept-row, .flow-row, .preview-row {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 54px;
+        padding: 10px 12px;
+        box-shadow: 0 14px 34px rgba(15, 23, 42, .07);
+      }
+      .brand { color: var(--ink); text-decoration: none; font-weight: 950; font-size: 18px; }
+      .top-actions, .chips, .actions, .mode-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+      .hero { margin-top: 12px; padding: 18px; }
+      .desc, .small { color: var(--muted); }
+      .small { font-size: 13px; }
+      .btn {
+        min-height: 38px;
+        padding: 8px 12px;
+        border: 1px solid var(--blue);
+        border-radius: 8px;
+        background: var(--blue);
+        color: #fff;
+        font-weight: 850;
+      }
+      .btn.secondary { background: #fff; color: var(--blue); }
+      .btn.green { border-color: var(--green); background: var(--green); }
+      .btn.ghost { border-color: var(--line); background: #fff; color: var(--ink); }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 4px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 850;
+        white-space: nowrap;
+      }
+      .blue { border-color: #bfdbfe; background: var(--soft-blue); color: var(--blue); }
+      .green { border-color: #bde7cb; background: var(--soft-green); color: var(--green); }
+      .amber { border-color: #f4d58d; background: var(--soft-amber); color: var(--amber); }
+      .red { border-color: #f4b3ad; background: var(--soft-red); color: var(--red); }
+      .mode-tabs {
+        margin-top: 14px;
+        padding: 4px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #eaf0f8;
+        width: fit-content;
+      }
+      .mode-tabs button {
+        min-height: 34px;
+        padding: 6px 12px;
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        color: #475569;
+        font-weight: 900;
+      }
+      .mode-tabs button.active {
+        background: #fff;
+        color: var(--blue);
+        box-shadow: 0 1px 2px rgba(15, 23, 42, .08);
+      }
+      label { display: block; margin-bottom: 4px; color: #334155; font-size: 13px; font-weight: 850; }
+      input, textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px;
+        background: #fff;
+      }
+      textarea { min-height: 88px; resize: vertical; }
+      input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--blue); }
+      .view { display: none; margin-top: 12px; }
+      .view.active { display: block; }
+      .layout {
+        display: grid;
+        grid-template-columns: 320px minmax(0, 1fr);
+        gap: 12px;
+        align-items: start;
+      }
+      .layout.three {
+        grid-template-columns: 310px minmax(0, 1fr) 320px;
+      }
+      .detail-layout {
+        display: grid;
+        grid-template-columns: 320px minmax(0, 1fr);
+        gap: 12px;
+        margin-top: 12px;
+        align-items: start;
+      }
+      .panel, .card { padding: 14px; }
+      .unit-list, .concept-list, .flow-list, .preview-list { display: grid; gap: 8px; }
+      .unit-row, .flow-row, .preview-row {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 10px;
+        padding: 10px;
+        text-align: left;
+        align-items: start;
+      }
+      .unit-row.active, .flow-row.active { border-color: var(--blue); background: var(--soft-blue); }
+      .num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 999px;
+        background: var(--soft-blue);
+        color: var(--blue);
+        font-weight: 950;
+      }
+      .item-title { margin: 0; font-weight: 950; }
+      .setup {
+        display: grid;
+        grid-template-columns: minmax(160px, 240px) minmax(0, 1fr);
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .progress {
+        overflow: hidden;
+        height: 8px;
+        border-radius: 999px;
+        background: #e8edf5;
+      }
+      .progress span { display: block; width: var(--value, 8%); height: 100%; background: var(--blue); }
+      .concept-row {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 10px;
+        align-items: start;
+        padding: 10px;
+      }
+      .concept-row.done .item-title { text-decoration: line-through; color: var(--muted); }
+      .source {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .toast {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #bde7cb;
+        border-radius: 8px;
+        background: var(--soft-green);
+        color: var(--green);
+        font-weight: 850;
+      }
+      .mini-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      .mini-table th, .mini-table td {
+        border: 1px solid var(--line);
+        padding: 8px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .mobile-short { display: none; }
+      .mini-table th { background: var(--soft-blue); color: var(--blue); }
+      @media (max-width: 960px) {
+        .app { width: min(100% - 18px, 1180px); padding-top: 10px; }
+        .topbar { align-items: flex-start; flex-direction: column; }
+        .layout, .layout.three, .detail-layout, .setup { grid-template-columns: 1fr; }
+        .mode-tabs { width: 100%; border-radius: 8px; }
+        .mode-tabs button { flex: 1 1 120px; border-radius: 8px; }
+      }
+      @media (max-width: 560px) {
+        .app { width: min(100% - 12px, 1180px); padding-bottom: 42px; }
+        .topbar, .hero, .panel, .card { padding: 12px; }
+        .hero { margin-top: 8px; }
+        h1 { font-size: 24px; line-height: 1.18; }
+        h2 { font-size: 20px; }
+        h3 { font-size: 17px; }
+        .desc { font-size: 15px; line-height: 1.5; }
+        .chip { min-height: 26px; padding: 3px 8px; font-size: 12px; }
+        .hero .chips { gap: 6px; }
+        .desktop-long { display: none; }
+        .mobile-short { display: inline; }
+        .mode-tabs {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 4px;
+          width: 100%;
+          border-radius: 8px;
+        }
+        .mode-tabs button {
+          min-height: 40px;
+          padding: 6px 4px;
+          font-size: 14px;
+          white-space: nowrap;
+        }
+        .unit-row, .flow-row, .preview-row {
+          grid-template-columns: 28px minmax(0, 1fr);
+          gap: 8px;
+        }
+        .unit-row > .chip,
+        .flow-row > .chip,
+        .preview-row > .chip {
+          grid-column: 2;
+          width: fit-content;
+        }
+        .item-title, .small, .desc, .source, input, textarea { overflow-wrap: anywhere; }
+        .actions .btn { flex: 1 1 100%; }
+        .mini-table, .mini-table tbody, .mini-table tr, .mini-table th, .mini-table td { display: block; width: 100%; }
+        .mini-table th { border-bottom: 0; }
+        .mini-table td { border-top: 0; margin-bottom: 8px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <a class="brand" href="#">FlowMe</a>
+        <span class="chip blue">같은 콘텐츠, 다른 화면</span>
+      </header>
+
+      <section class="hero">
+        <p class="small" style="font-weight:900;color:var(--blue);margin-bottom:6px">중1 수학 진도표</p>
+        <h1><span class="desktop-long">제작자가 보는 구조와 사용자가 쓰는 실행 화면을 분리</span><span class="mobile-short">화면마다 다르게 보이는 중1 수학 Flow</span></h1>
+        <p class="desc">같은 단원 데이터라도 제작자는 구조를 보고, 저장 전 사용자는 결과물을 확인하고, 내 앱에서는 오늘 체크할 개념만 봅니다.</p>
+        <div class="chips">
+          <span class="chip blue">수학방 중1 목차</span>
+          <span class="chip green">저장물: 진도표</span>
+          <span class="chip amber">내 앱: 오늘 체크</span>
+        </div>
+        <div class="mode-tabs" role="tablist" aria-label="화면 맥락">
+          <button class="active" type="button" data-view="creator">제작자</button>
+          <button type="button" data-view="public">저장 전</button>
+          <button type="button" data-view="app">내 앱</button>
+        </div>
+      </section>
+
+      <section class="view active" id="creator-view">
+        <div class="layout three">
+          <aside class="panel">
+            <h2>원문 구조</h2>
+            <p class="desc">제작자는 URL에서 가져온 단원과 개념 행을 먼저 확인합니다.</p>
+            <label for="sourceUrl">원문 URL</label>
+            <input id="sourceUrl" type="url" value="https://mathbang.net/13">
+            <div class="unit-list" id="creatorUnits" style="margin-top:10px"></div>
+          </aside>
+
+          <section class="card">
+            <h2>변환 규칙</h2>
+            <p class="desc">이 화면은 사용자가 볼 실행 화면이 아니라, 제작자가 콘텐츠를 어떤 저장물로 만들지 정하는 곳입니다.</p>
+            <table class="mini-table">
+              <tr><th>원문에서 가져오는 것</th><td>단원명, 개념 제목, 원문 링크</td></tr>
+              <tr><th>사용자에게 받을 것</th><td>공부 시작일 1개</td></tr>
+              <tr><th>만들 저장물</th><td>단원별 진도표, 선택 단원 체크리스트, 단원 메모</td></tr>
+              <tr><th>기본 노출하지 않을 것</th><td>오답표, 복습 캘린더, 상세 학습관리 설정</td></tr>
+            </table>
+            <div class="actions" style="margin-top:12px">
+              <button class="btn" type="button" id="checkSource">원문 구조 확인</button>
+              <button class="btn secondary" type="button" id="makePreview">저장 전 화면 보기</button>
+            </div>
+            <div id="creatorToast" class="toast" hidden></div>
+          </section>
+
+          <aside class="panel">
+            <h2>사용자 미리보기</h2>
+            <p class="desc">제작자는 발행 전에 사용자가 처음 볼 결과물을 작게 확인합니다.</p>
+            <div class="preview-list" id="creatorPreview"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view" id="public-view">
+        <div class="layout">
+          <aside class="panel">
+            <h2>저장하면 생기는 것</h2>
+            <p class="desc">사용자는 구조 설명보다 “내 앱에 무엇이 생기는지”를 봅니다.</p>
+            <div class="chips">
+              <span class="chip blue">진도표 1개</span>
+              <span class="chip green">8개 단원</span>
+              <span class="chip amber">시작일 1개</span>
+            </div>
+            <div class="setup">
+              <div>
+                <label for="publicStartDate">공부 시작일</label>
+                <input id="publicStartDate" type="date" value="2026-06-22">
+              </div>
+            </div>
+            <div class="actions" style="margin-top:12px">
+              <button class="btn" type="button" id="savePlan">진도표 저장</button>
+              <button class="btn secondary" type="button" id="saveSelected">선택 단원만 저장</button>
+            </div>
+            <div id="publicToast" class="toast" hidden></div>
+            <div class="source">원문: <a href="https://mathbang.net/13" target="_blank" rel="noreferrer">수학방 중1 수학 전체 목차</a></div>
+          </aside>
+
+          <section>
+            <article class="card" id="publicDetail"></article>
+            <div class="detail-layout">
+              <aside class="panel">
+                <h2>단원 목록</h2>
+                <div class="unit-list" id="publicUnits"></div>
+              </aside>
+              <article class="card">
+                <h2>선택 단원 미리보기</h2>
+                <p class="desc">자세한 설명은 원문 링크로 보내고, 화면에는 체크할 개념만 둡니다.</p>
+                <div class="concept-list" id="publicConcepts"></div>
+              </article>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="app-view">
+        <div class="layout">
+          <aside class="panel">
+            <h2>내 Flow</h2>
+            <p class="desc">내 앱에서는 구조보다 이어서 할 항목을 먼저 보여줍니다.</p>
+            <div class="flow-list">
+              <button class="flow-row active" type="button">
+                <span class="num">1</span>
+                <span><p class="item-title">중1 수학 진도표</p><span class="small">정수와 유리수 이어서 보기</span></span>
+                <span class="chip green" id="appProgress">0/6</span>
+              </button>
+            </div>
+          </aside>
+
+          <section>
+            <article class="card">
+              <p class="small" style="font-weight:900;color:var(--blue);margin-bottom:6px">오늘 할 공부</p>
+              <h2 id="appTitle"></h2>
+              <p class="desc">체크하고, 헷갈린 내용만 짧게 남깁니다. 원문 설명은 링크에서 다시 봅니다.</p>
+              <div class="concept-list" id="appConcepts" style="margin-top:10px"></div>
+            </article>
+            <article class="card" style="margin-top:12px">
+              <h3>단원 메모</h3>
+              <textarea id="appMemo" placeholder="예: 절댓값 부호 처리 다시 보기"></textarea>
+              <div class="source">원문: <a href="https://mathbang.net/13" target="_blank" rel="noreferrer">수학방 중1 수학 전체 목차</a></div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const units = [
+        { name: "소인수분해", concepts: ["거듭제곱", "소수와 합성수", "소인수분해", "최대공약수", "최소공배수"] },
+        { name: "정수와 유리수", concepts: ["양수와 음수, 정수", "절댓값과 수직선", "정수의 대소관계", "정수의 덧셈", "정수의 뺄셈", "유리수의 곱셈과 나눗셈"] },
+        { name: "문자와 식", concepts: ["문자와 식", "대입과 식의 값", "동류항", "일차식의 덧셈과 뺄셈", "일차방정식의 풀이", "일차방정식의 활용"] },
+        { name: "좌표평면과 그래프", concepts: ["순서쌍과 좌표평면", "그래프의 뜻과 표현", "정비례와 그래프", "반비례와 그래프"] },
+        { name: "기본도형", concepts: ["점, 선, 면", "두 점 사이의 거리와 중점", "맞꼭지각과 동위각", "평행선의 성질", "삼각형의 합동 조건"] },
+        { name: "평면도형의 성질", concepts: ["다각형", "내각과 외각", "대각선의 개수", "원과 부채꼴", "원과 부채꼴의 넓이와 둘레"] },
+        { name: "입체도형의 성질", concepts: ["다면체", "정다면체", "회전체", "각기둥과 원기둥의 겉넓이와 부피", "구의 겉넓이와 부피"] },
+        { name: "자료의 정리와 해석", concepts: ["대푯값", "줄기와 잎 그림", "도수분포표", "히스토그램", "상대도수"] }
+      ];
+      const state = { active: 1, checked: {}, sourceChecked: false };
+      const $ = (id) => document.getElementById(id);
+
+      function doneCount(unitIndex) {
+        return units[unitIndex].concepts.filter((_, conceptIndex) => state.checked[`${unitIndex}-${conceptIndex}`]).length;
+      }
+
+      function toast(id, text) {
+        const node = $(id);
+        node.hidden = false;
+        node.textContent = text;
+      }
+
+      function unitButton(unit, index, target) {
+        const done = doneCount(index);
+        const percent = Math.round((done / unit.concepts.length) * 100);
+        return `
+          <button class="unit-row ${state.active === index ? "active" : ""}" type="button" data-unit="${index}" data-target="${target}">
+            <span class="num">${index + 1}</span>
+            <span>
+              <p class="item-title">${unit.name}</p>
+              <span class="small">${unit.concepts.length}개 개념</span>
+              <div class="progress" style="margin-top:8px"><span style="--value:${Math.max(percent, 7)}%"></span></div>
+            </span>
+            <span class="chip ${done ? "green" : "amber"}">${done}/${unit.concepts.length}</span>
+          </button>
+        `;
+      }
+
+      function conceptRows(target) {
+        const unit = units[state.active];
+        return unit.concepts.map((concept, index) => {
+          const key = `${state.active}-${index}`;
+          const checked = Boolean(state.checked[key]);
+          const visibleText = target === "app" && index > 2 ? "다음에 보기" : index < 2 ? "오늘 보기" : "다음에 보기";
+          return `
+            <label class="concept-row ${checked ? "done" : ""}">
+              <input type="checkbox" data-check="${key}" ${checked ? "checked" : ""}>
+              <span><p class="item-title">${concept}</p><span class="small">${visibleText}</span></span>
+            </label>
+          `;
+        }).join("");
+      }
+
+      function renderCreator() {
+        $("creatorUnits").innerHTML = units.map((unit, index) => unitButton(unit, index, "creator")).join("");
+        $("creatorPreview").innerHTML = [
+          ["제목", "중1 수학 진도표"],
+          ["첫 입력", "공부 시작일"],
+          ["저장 후", "단원 목록과 선택 단원 체크"],
+          ["원문", "개념 설명은 원문 링크로 이동"]
+        ].map((row, index) => `
+          <div class="preview-row">
+            <span class="num">${index + 1}</span>
+            <span><p class="item-title">${row[0]}</p><span class="small">${row[1]}</span></span>
+            <span class="chip ${index < 2 ? "blue" : "amber"}">${index < 2 ? "표시" : "연결"}</span>
+          </div>
+        `).join("");
+      }
+
+      function renderPublic() {
+        const unit = units[state.active];
+        $("publicUnits").innerHTML = units.map((entry, index) => unitButton(entry, index, "public")).join("");
+        $("publicDetail").innerHTML = `
+          <p class="small" style="font-weight:900;color:var(--blue);margin-bottom:6px">저장 전 화면</p>
+          <h2>단원별로 체크하는 중1 수학 진도표</h2>
+          <p class="desc">저장하면 내 앱에 단원 목록과 선택 단원 체크 화면이 생깁니다. 복잡한 학습관리 설정은 나중에 편집합니다.</p>
+          <div class="chips" style="margin-top:10px">
+            <span class="chip blue">선택 단원: ${state.active + 1}. ${unit.name}</span>
+            <span class="chip green">${unit.concepts.length}개 개념</span>
+          </div>
+        `;
+        $("publicConcepts").innerHTML = conceptRows("public");
+      }
+
+      function renderApp() {
+        const unit = units[state.active];
+        $("appTitle").textContent = `${state.active + 1}. ${unit.name}`;
+        $("appConcepts").innerHTML = conceptRows("app");
+        $("appProgress").textContent = `${doneCount(state.active)}/${unit.concepts.length}`;
+      }
+
+      function render() {
+        renderCreator();
+        renderPublic();
+        renderApp();
+      }
+
+      document.addEventListener("click", (event) => {
+        const viewButton = event.target.closest("[data-view]");
+        if (viewButton) {
+          document.querySelectorAll("[data-view]").forEach((button) => button.classList.toggle("active", button === viewButton));
+          document.querySelectorAll(".view").forEach((view) => view.classList.remove("active"));
+          $(`${viewButton.dataset.view}-view`).classList.add("active");
+          return;
+        }
+        const unitButtonNode = event.target.closest("[data-unit]");
+        if (unitButtonNode) {
+          state.active = Number(unitButtonNode.dataset.unit);
+          render();
+          return;
+        }
+        const check = event.target.closest("[data-check]");
+        if (check) {
+          state.checked[check.dataset.check] = check.checked;
+          render();
+          return;
+        }
+        if (event.target.id === "checkSource") {
+          state.sourceChecked = true;
+          toast("creatorToast", "8개 단원과 단원별 개념 행을 확인했습니다.");
+          return;
+        }
+        if (event.target.id === "makePreview") {
+          document.querySelector('[data-view="public"]').click();
+          return;
+        }
+        if (event.target.id === "savePlan") {
+          toast("publicToast", "중1 수학 진도표를 내 앱에 저장했습니다.");
+          return;
+        }
+        if (event.target.id === "saveSelected") {
+          toast("publicToast", `${units[state.active].name} 단원만 내 앱에 저장했습니다.`);
+        }
+      });
+
+      render();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 생태계 포지셔닝 리포트 v2 (2026-06-12)</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7f9;
+        --paper: #ffffff;
+        --paper-soft: #f1f5f9;
+        --ink: #101828;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d9e2ec;
+        --line-strong: #b8c7d6;
+        --green: #047857;
+        --green-soft: #e7f6ef;
+        --blue: #1d4ed8;
+        --blue-soft: #e9f1ff;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --violet: #6d3bbd;
+        --violet-soft: #f1eafd;
+        --radius: 10px;
+        --shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+        line-height: 1.62;
+      }
+      h1, h2, h3, h4, p { margin: 0; }
+      h1, h2, h3, h4 { line-height: 1.28; word-break: keep-all; }
+      p, li, td, th, dd, dt { color: var(--body); word-break: keep-all; }
+      a { color: var(--blue); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+      .page { width: min(1200px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 80px; }
+
+      .layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 20px; align-items: start; }
+
+      .toc {
+        position: sticky; top: 16px;
+        border: 1px solid var(--line); border-radius: var(--radius);
+        background: var(--paper); padding: 16px; font-size: 13px;
+        display: flex; flex-direction: column; gap: 6px;
+      }
+      .toc b { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+      .toc a { color: var(--body); padding: 2px 0; }
+      .toc a:hover { color: var(--blue); }
+
+      .main { display: flex; flex-direction: column; gap: 22px; }
+
+      .hero {
+        border: 1px solid var(--line); border-radius: 14px; background: var(--paper);
+        box-shadow: var(--shadow); padding: 34px 38px; display: flex; flex-direction: column; gap: 12px;
+      }
+      .kicker { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--blue); }
+      .hero h1 { font-size: clamp(24px, 3.4vw, 36px); font-weight: 900; }
+      .hero .meta { font-size: 13px; color: var(--muted); }
+
+      section.block {
+        border: 1px solid var(--line); border-radius: 14px; background: var(--paper);
+        box-shadow: var(--shadow); padding: 30px 36px; display: flex; flex-direction: column; gap: 16px;
+        scroll-margin-top: 16px;
+      }
+      .secno { font-size: 12px; font-weight: 800; color: var(--blue); letter-spacing: 0.06em; }
+      section.block > h2 { font-size: 23px; font-weight: 900; }
+      .lede { font-size: 15px; color: var(--muted); }
+
+      .cols { display: grid; gap: 12px; }
+      .cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+      .card {
+        border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper);
+        padding: 14px 16px; display: flex; flex-direction: column; gap: 6px;
+      }
+      .card h3, .card h4 { font-size: 15px; font-weight: 800; }
+      .card p, .card li { font-size: 13.5px; }
+      .card ul, .card ol { margin: 0; padding-left: 17px; display: flex; flex-direction: column; gap: 4px; }
+      .card.soft { background: var(--paper-soft); }
+      .card.blue { background: var(--blue-soft); border-color: #c4d7fb; }
+      .card.green { background: var(--green-soft); border-color: #bfe6d4; }
+      .card.amber { background: var(--amber-soft); border-color: #f0dcaa; }
+      .card.red { background: var(--red-soft); border-color: #f5c8c0; }
+      .card.violet { background: var(--violet-soft); border-color: #ddcdf6; }
+
+      .tag {
+        display: inline-block; font-size: 11px; font-weight: 800; padding: 2px 9px;
+        border-radius: 999px; border: 1px solid transparent; width: fit-content;
+      }
+      .tag.blue { color: var(--blue); background: var(--blue-soft); border-color: #c4d7fb; }
+      .tag.green { color: var(--green); background: var(--green-soft); border-color: #bfe6d4; }
+      .tag.amber { color: var(--amber); background: var(--amber-soft); border-color: #f0dcaa; }
+      .tag.red { color: var(--red); background: var(--red-soft); border-color: #f5c8c0; }
+      .tag.violet { color: var(--violet); background: var(--violet-soft); border-color: #ddcdf6; }
+      .tag.gray { color: var(--muted); background: var(--paper-soft); border-color: var(--line); }
+
+      .callout {
+        border-left: 4px solid var(--blue); background: var(--blue-soft);
+        border-radius: 0 var(--radius) var(--radius) 0; padding: 13px 17px;
+        font-size: 14.5px; font-weight: 600; color: var(--ink);
+      }
+      .callout.green { border-left-color: var(--green); background: var(--green-soft); }
+      .callout.amber { border-left-color: var(--amber); background: var(--amber-soft); }
+      .callout.red { border-left-color: var(--red); background: var(--red-soft); }
+
+      table.simple { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+      table.simple th, table.simple td { border: 1px solid var(--line); padding: 8px 11px; text-align: left; vertical-align: top; }
+      table.simple th { background: var(--paper-soft); font-size: 12.5px; color: var(--ink); }
+
+      .stat { text-align: center; gap: 2px; }
+      .stat .num { font-size: 26px; font-weight: 900; color: var(--ink); }
+      .stat .lbl { font-size: 12.5px; color: var(--muted); }
+      .stat .src { font-size: 11px; color: var(--muted); }
+
+      .figure { border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper-soft); padding: 14px; }
+      .figure figcaption { font-size: 12.5px; color: var(--muted); margin-top: 8px; text-align: center; }
+      figure { margin: 0; }
+
+      .verdict { display: flex; align-items: baseline; gap: 10px; }
+      .verdict .label { font-size: 12px; font-weight: 800; color: var(--muted); flex: 0 0 auto; }
+
+      .srcs { font-size: 12px; color: var(--muted); }
+      .srcs li { font-size: 12px; }
+
+      @media (max-width: 980px) {
+        .layout { grid-template-columns: 1fr; }
+        .toc { position: static; }
+        .cols-2, .cols-3, .cols-4 { grid-template-columns: 1fr; }
+        section.block, .hero { padding: 22px 18px; }
+      }
+      @media print {
+        .toc { display: none; }
+        .layout { grid-template-columns: 1fr; }
+        section.block { box-shadow: none; page-break-inside: avoid; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="layout">
+        <nav class="toc">
+          <b>목차</b>
+          <a href="#summary">한 장 요약</a>
+          <a href="#design">1. 분석 설계</a>
+          <a href="#demand">2. 수요 증거</a>
+          <a href="#users">3. 사용자와 순간</a>
+          <a href="#sources">4. 원천 레이어 진단</a>
+          <a href="#destinations">5. 목적지 레이어 진단</a>
+          <a href="#competition">6. 경쟁 환경 (2026)</a>
+          <a href="#map">7. 포지셔닝 맵과 공백</a>
+          <a href="#options">8. 전략 옵션 평가</a>
+          <a href="#roadmap">9. 단계별 발전 전략</a>
+          <a href="#risks">10. 리스크와 킬 기준</a>
+          <a href="#conclusion">11. 결론</a>
+          <a href="#refs">출처</a>
+        </nav>
+
+        <main class="main">
+          <header class="hero">
+            <div class="kicker">FlowMe · Ecosystem Positioning Report v2</div>
+            <h1>외부 컨텐츠를 실행으로 바꾸는 자리:<br />FlowMe 생태계 포지셔닝 전략 리포트</h1>
+            <p class="meta">2026-06-12 · 분석 범위: 수요 검증 → 생태계 3층 진단 → 경쟁 공백 → 전략 옵션 → 단계 전략 · 근거: 내부 분석방 Phase 1–5 + 2026년 6월 외부 시장 조사</p>
+            <p class="meta">v1 덱과의 차이: 내부 문서 종합을 넘어 <b>외부 수요 증거, 2026년 경쟁사 최신 동향, 버티컬 액션 컴파일러 패턴, 전략 옵션 비교, 비즈니스 모델 가설, 킬 기준</b>을 새로 분석에 포함.</p>
+          </header>
+
+          <!-- 한 장 요약 -->
+          <section class="block" id="summary">
+            <div><span class="secno">EXECUTIVE SUMMARY</span><h2>한 장 요약</h2></div>
+            <div class="cols cols-2">
+              <div class="card blue">
+                <h3>결론 ① 공백은 실재하고, 아직 비어 있다</h3>
+                <p>"외부 컨텐츠 → 개인 실행물" 변환은 여행(Wanderlog) · 요리(레시피 앱) 같은 버티컬에서는 이미 증명된 모델이다. 그러나 <b>한국어 생활 전반을 가로지르는 수평 변환 계층</b>은 2026년 6월 현재 비어 있다. ChatGPT Tasks는 캘린더 미연동 베타(작업 10개 제한)이고, Notion AI는 업무 워크스페이스 내부 자동화에 집중하고 있다.</p>
+              </div>
+              <div class="card blue">
+                <h3>결론 ② 정면 수평 전략은 위험, 버티컬 웨지로 진입</h3>
+                <p>"아무 컨텐츠나 변환"은 범용 AI와 정면충돌하고 품질 보증이 불가능하다. 권고 전략은 <b>옵션 B: 생활 이벤트 준비(입학 · 이사 · 계약 · 살림) 버티컬 웨지 → 인접 확장</b>. 현재 5개 공개 라우트가 이미 이 방향에 정렬되어 있다.</p>
+              </div>
+              <div class="card green">
+                <h3>결론 ③ 해자는 변환이 아니라 실행 데이터</h3>
+                <p>변환 자체는 LLM 보편화로 복제 가능하다. 축적 해자는 ① 카테고리별 변환 플레이북 ② 실행률 데이터(어떤 컨텐츠가 실제 완료되는가) ③ 크리에이터 공급 관계. 따라서 발전 경로는 <b>도구 → 기록 → 데이터 네트워크</b> 순이다.</p>
+              </div>
+              <div class="card amber">
+                <h3>결론 ④ 다음 분기점은 기능이 아니라 행동 증거</h3>
+                <p>현재 관찰 세션 0/3 · no signal. 이 리포트의 모든 전략은 <b>관찰 3회의 결과</b>를 첫 게이트로 한다. 2라운드 연속 no signal이면 패킷이 아니라 카테고리 선택 자체를 재검토한다(킬 기준 §10).</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- 1. 분석 설계 -->
+          <section class="block" id="design">
+            <div><span class="secno">SECTION 1</span><h2>분석 설계: 이 리포트가 답하는 7개 질문</h2></div>
+            <p class="lede">기존 분석방(Phase 1–5)은 "무엇을 만들지/만들지 말지"의 게이트 체계였다. 이번 분석은 한 단계 위에서 <b>"이 사업이 설 자리가 실재하는가, 어떤 순서로 커지는가"</b>를 묻는다.</p>
+            <table class="simple">
+              <thead><tr><th style="width:6%">#</th><th style="width:44%">질문</th><th>답하는 방법</th><th style="width:12%">섹션</th></tr></thead>
+              <tbody>
+                <tr><td>Q1</td><td>"저장만 하고 실행 안 하는" 문제는 실재하는가?</td><td>외부 시장 신호 (Pocket 종료, 유튜브 사용시간, 루틴 앱 성장)</td><td>§2</td></tr>
+                <tr><td>Q2</td><td>누구의 어떤 순간을 잡는가?</td><td>세그먼트 × JTBD 정의</td><td>§3</td></tr>
+                <tr><td>Q3</td><td>원천 · 목적지 레이어는 각각 어떤 구조인가?</td><td>레이어별 공급/수용 능력과 리스크 진단</td><td>§4–5</td></tr>
+                <tr><td>Q4</td><td>2026년 현재 경쟁자들은 실제로 어디까지 왔나?</td><td>3개 링(범용 AI / 플랫폼 / 버티컬) 최신 동향 조사</td><td>§6</td></tr>
+                <tr><td>Q5</td><td>경쟁 공백은 정확히 어디인가?</td><td>2×2 포지셔닝 맵</td><td>§7</td></tr>
+                <tr><td>Q6</td><td>어떤 전략 옵션이 있고 무엇을 고르나?</td><td>옵션 A/B/C 비교 평가</td><td>§8</td></tr>
+                <tr><td>Q7</td><td>어떻게 커지고, 무엇이 나오면 접거나 꺾는가?</td><td>단계 로드맵 + BM 가설 + KPI + 킬 기준</td><td>§9–10</td></tr>
+              </tbody>
+            </table>
+            <div class="callout amber">분석 원칙: 모든 판단에 근거 유형을 표기한다 — <b>[외부]</b> 2026-06 웹 조사, <b>[내부]</b> 분석방 문서/QA 결과, <b>[가설]</b> 아직 행동 증거 없는 추론. 가설은 가설이라고 부른다.</div>
+          </section>
+
+          <!-- 2. 수요 증거 -->
+          <section class="block" id="demand">
+            <div><span class="secno">SECTION 2</span><h2>수요 증거: "저장 ≠ 실행" 문제는 실재하는가</h2></div>
+            <p class="lede">Q1에 대한 답: 그렇다. 세 가지 시장 신호가 같은 방향을 가리킨다 — 컨텐츠 소비는 폭증, "나중에 보기" 모델은 사망, 실행 관리 수요는 성장.</p>
+            <div class="cols cols-3">
+              <div class="card stat soft">
+                <span class="num">월 40시간</span>
+                <span class="lbl">한국인 유튜브 월평균 사용시간 (2019년 21시간의 약 2배) · 이용자는 인구의 81%+</span>
+                <span class="src">[외부] 와이즈앱 / 서울경제 · 아세안익스프레스</span>
+              </div>
+              <div class="card stat soft">
+                <span class="num">† 2025.7</span>
+                <span class="lbl">Pocket(이용자 1,000만+) 서비스 종료 — "저장해두고 안 읽는" 모델의 상징적 사망</span>
+                <span class="src">[외부] Mozilla / TechCrunch</span>
+              </div>
+              <div class="card stat soft">
+                <span class="num">500만+</span>
+                <span class="lbl">루티너리 글로벌 이용자 — 한국발 루틴/실행 관리 앱의 성장 (마이루틴 · 챌린저스 등 '갓생' 시장)</span>
+                <span class="src">[외부] Routinery 공식 · App Store</span>
+              </div>
+            </div>
+            <div class="cols cols-2">
+              <div class="card">
+                <h3>신호를 연결하면</h3>
+                <p>① 사람들은 그 어느 때보다 많은 실행형 컨텐츠(준비법 · 절차 · 루틴 · 레시피)를 소비하고 있다. ② 그러나 "저장해두기"는 실행으로 이어지지 않았고, 그 모델의 대표 제품이 문을 닫았다. ③ 동시에 "실행을 관리해주는" 앱들은 성장 중이다 — 단, 이들은 모두 <b>사용자가 직접 입력한 할 일</b>만 다룬다.</p>
+              </div>
+              <div class="card green">
+                <h3>비어 있는 연결고리</h3>
+                <p><b>소비한 컨텐츠</b>와 <b>실행 관리 도구</b> 사이를 잇는 제품이 없다. 컨텐츠는 많고, 실행 도구도 많은데, 컨텐츠가 실행 도구로 건너가는 다리는 사용자의 수작업이다. 이 다리가 FlowMe의 자리다.</p>
+              </div>
+            </div>
+            <div class="callout">단, 주의할 해석: 이 신호들은 "문제의 실재"를 지지할 뿐 "FlowMe 방식의 수요"를 증명하지 않는다. 후자는 오직 관찰 세션과 export 행동 데이터로만 증명된다. <b>[가설→검증 대기]</b></div>
+          </section>
+
+          <!-- 3. 사용자와 순간 -->
+          <section class="block" id="users">
+            <div><span class="secno">SECTION 3</span><h2>사용자와 순간: 누구의 어떤 장면을 잡는가</h2></div>
+            <p class="lede">공통 JTBD: <b>"찾아낸 정보를, 빠뜨리는 것 없이, 내가 이미 쓰는 도구 안에서 실행하고 싶다."</b> 현재 5개 공개 라우트에서 역산한 세그먼트 구조다. [내부]</p>
+            <table class="simple">
+              <thead><tr><th>세그먼트</th><th>대표 순간</th><th>지금의 행동</th><th>자연 산출물</th><th>검증 라우트</th></tr></thead>
+              <tbody>
+                <tr><td><b>생활 이벤트 준비자</b> (학부모 · 이사 · 계약)</td><td>입학 D-30, 전세 계약 전날, 기숙사 입사 전 주</td><td>블로그 글 3~5개를 오가며 수첩/메모에 옮겨 적음. 빠뜨림 불안</td><td>D-day 타임라인 + 체크리스트</td><td>초등 입학, 전세 계약, 기숙사(후보)</td></tr>
+                <tr><td><b>살림 운영자</b></td><td>냉장고 정리 주간, 장보기 전</td><td>유튜브/블로그를 보고 "나도 해야지" 후 휘발</td><td>재고/메뉴 시트</td><td>냉장고 파먹기</td></tr>
+                <tr><td><b>절차 수행자</b> (디지털 셋업)</td><td>부모님 원격지원, 사이트 등록 절차</td><td>공식 문서와 블로그를 띄워놓고 단계를 더듬음</td><td>권한/단계 체크리스트</td><td>원격지원 사전점검, 네이버 서치어드바이저(후보)</td></tr>
+                <tr><td><b>활동 준비자</b> (크리에이터 자료)</td><td>주말 아이 공작놀이, 따라하기 활동</td><td>저장한 영상/자료를 당일 다시 찾느라 소모</td><td>준비물 + 당일 체크</td><td>키즈 프린터블</td></tr>
+              </tbody>
+            </table>
+            <div class="cols cols-2">
+              <div class="card soft">
+                <h3>세그먼트 선택 기준 (왜 '생활'인가)</h3>
+                <ul>
+                  <li><b>업무 영역은 피한다</b>: Motion · ClickUp · Notion이 AI로 무장하고 싸우는 레드오션 [외부]</li>
+                  <li><b>생활 영역은 비어 있다</b>: 생활 컨텐츠는 한국어 · 로컬 맥락 의존도가 높아 글로벌 플레이어의 우선순위에서 밀린다</li>
+                  <li><b>이벤트성 순간은 지불 의사가 높다</b>: 입학 · 이사 · 계약은 실수 비용이 커서 "빠뜨림 방지"의 가치가 명확하다 [가설]</li>
+                </ul>
+              </div>
+              <div class="card amber">
+                <h3>의도적으로 잡지 않는 사용자</h3>
+                <ul>
+                  <li>매일의 할 일을 관리하려는 사람 → 마이루틴 · Todoist의 영역</li>
+                  <li>지식을 아카이빙하려는 사람 → Notion · Readwise의 영역</li>
+                  <li>팀 업무 자동화를 원하는 사람 → Notion AI · Motion의 영역</li>
+                </ul>
+                <p>이 경계가 흐려지는 순간 모든 목적지 도구와 경쟁하게 된다. [내부 do-not-build 원칙과 일치]</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- 4. 원천 레이어 -->
+          <section class="block" id="sources">
+            <div><span class="secno">SECTION 4</span><h2>원천 레이어 진단: 공급은 충분한가, 안전한가</h2></div>
+            <p class="lede">결론: 공급량은 문제가 아니다. 문제는 <b>신뢰 계층화</b>(공식 vs 경험담)와 <b>권리 관계</b>(크리에이터)다. 이 둘을 제품 규칙으로 풀었는지가 원천 전략의 품질을 결정한다.</p>
+            <table class="simple">
+              <thead><tr><th>원천</th><th>공급 특성</th><th>실행성 밀도</th><th>리스크</th><th>FlowMe 규칙 [내부]</th></tr></thead>
+              <tbody>
+                <tr><td><b>공식 기관</b> (학교 · 정부 · 기업 문서)</td><td>정확하지만 읽기 어려움 · 갱신됨</td><td>높음 (날짜 · 서류 · 요건)</td><td>구버전 안내 위험</td><td>최신 공지 우선(latest-notice-first), 공식/비공식 분리 표기</td></tr>
+                <tr><td><b>네이버 블로그 · 티스토리</b> (이용률 21.7% [외부])</td><td>경험담 풍부 · 품질 편차 큼</td><td>중~높음 (체크리스트 · 꿀팁)</td><td>비공식 정보의 과신, 크롤링/저작권 정책</td><td>"실용 가이드" 라벨, 공식 확인 행 강제 삽입, 원문 미복제 + 링크 보존</td></tr>
+                <tr><td><b>유튜브</b> (월 40시간 [외부])</td><td>최대 소비 채널 · 구조 추출 어려움</td><td>중 (따라하기 · 루틴)</td><td>추출 정확도, 맥락 손실</td><td>단계만 추출, 타임스탬프/원본 링크 보존</td></tr>
+                <tr><td><b>크리에이터 자료</b> (PDF · 템플릿)</td><td>고품질 · 권리 민감</td><td>높음</td><td>저작권 분쟁</td><td>에셋 미복제, 트래픽 환원 → <b>공급 제휴로 전환 가능한 유일한 원천</b></td></tr>
+              </tbody>
+            </table>
+            <div class="callout green">전략적 함의: 단기에는 <b>공식 문서 축</b>(가장 안전 + 가장 읽기 어려움 = 변환 가치 최대)을 중심에 두고, 중기에 <b>크리에이터 축</b>을 공급 제휴로 키운다. 크리에이터에게 FlowMe는 트래픽을 뺏는 요약기가 아니라 "내 컨텐츠를 실행하게 만들어 돌려보내는 채널"이어야 한다 — 이것이 원천 레이어에서 범용 AI와 갈라지는 지점이다.</div>
+          </section>
+
+          <!-- 5. 목적지 레이어 -->
+          <section class="block" id="destinations">
+            <div><span class="secno">SECTION 5</span><h2>목적지 레이어 진단: 어디로 보내고, 언제 연결하는가</h2></div>
+            <p class="lede">목적지 전략의 본질은 기술이 아니라 <b>관계 설계</b>다: 모든 목적지와 비적대 관계를 유지하면서, 연동은 행동 증거가 모인 곳에만 판다.</p>
+            <table class="simple">
+              <thead><tr><th>산출물의 일</th><th>목적지</th><th>Stage 0 형태</th><th>연동 우선순위</th><th>근거</th></tr></thead>
+              <tbody>
+                <tr><td>날짜 · D-day · 반복</td><td>Google/Apple 캘린더</td><td>.ics (반복 보존)</td><td><span class="tag green">1순위</span> 직접 저장</td><td>날짜형 Flow가 후보군의 최다 형태 [내부]</td></tr>
+                <tr><td>재고 · 진도 · 비교 행</td><td>Sheets / Excel</td><td>CSV / XLSX</td><td><span class="tag green">2순위</span> 직접 append</td><td>시트형은 반복 사용 가능성이 가장 높음 [가설]</td></tr>
+                <tr><td>출처 · 주의 · 메모</td><td>Notion / 메모</td><td>Markdown</td><td><span class="tag amber">핸드오프만</span></td><td>Notion API는 future_platform [내부]</td></tr>
+                <tr><td>일회성 점검 · 짐싸기</td><td>FlowMe 내부 체크</td><td>체크 상태 + 복사</td><td>— 내부 유지</td><td>실행 기록 레이어(Stage 2)의 씨앗</td></tr>
+                <tr><td>마감 있는 프로젝트</td><td>Todoist류</td><td>호환 CSV</td><td><span class="tag red">연동 안 함</span></td><td>수요 미확인 + 범용 todo화 위험 [내부]</td></tr>
+              </tbody>
+            </table>
+            <div class="cols cols-2">
+              <div class="card soft">
+                <h3>왜 export-first가 전략적으로도 옳은가</h3>
+                <ul>
+                  <li><b>비적대성</b>: 연동 없이 모든 도구에 도달 → 어떤 플랫폼의 견제도 받지 않는다</li>
+                  <li><b>측정 가능성</b>: 어떤 목적지로의 export가 반복되는지가 곧 연동 우선순위 데이터가 된다</li>
+                  <li><b>신뢰 비용 절감</b>: OAuth · 토큰 없이 시작 → 개인정보 우려가 큰 생활 영역에서 진입 장벽 최소화</li>
+                </ul>
+              </div>
+              <div class="card amber">
+                <h3>목적지 레이어의 시한</h3>
+                <p>목적지들이 자체 AI import를 강화할수록(§6) "export 받아주는 그릇"의 수용력은 좋아지지만, 동시에 그들이 변환까지 삼킬 가능성도 커진다. <b>export 친화 환경은 기회이자 카운트다운</b>이다 — Stage 0 검증을 길게 끌 수 없는 이유.</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- 6. 경쟁 환경 -->
+          <section class="block" id="competition">
+            <div><span class="secno">SECTION 6</span><h2>경쟁 환경: 2026년 6월, 그들은 실제로 어디까지 왔나</h2></div>
+            <p class="lede">경쟁을 3개의 링으로 나눠 최신 동향을 조사했다. 결론: <b>모두가 변환 계층 근처까지 왔지만, 아무도 "외부 생활 컨텐츠 → 개인 실행물"에 서 있지 않다.</b></p>
+            <div class="cols cols-3">
+              <div class="card red">
+                <span class="tag red">링 1 · 범용 AI</span>
+                <h3>ChatGPT · Perplexity</h3>
+                <p><b>현재 위치 [외부]</b>: ChatGPT Tasks는 리마인더/예약 실행 베타 — 활성 작업 10개 제한, 캘린더 미연동, 모바일/맥 한정. Google/MS 캘린더 쓰기 액션은 시작됨.</p>
+                <p><b>판정</b>: 방향은 명확히 이쪽이다. 다만 범용 채팅 UX는 "산출물 미리보기 → 수정 → 내보내기" 워크벤치가 아니며, 한국 생활 컨텐츠의 소스 결속 품질은 우선순위가 아니다. <b>시간 창은 있지만 좁다 (12~24개월 추정 [가설])</b>.</p>
+              </div>
+              <div class="card amber">
+                <span class="tag amber">링 2 · 생산성 플랫폼</span>
+                <h3>Notion · Motion · ClickUp</h3>
+                <p><b>현재 위치 [외부]</b>: Notion 3.5(2026-05)는 커스텀 에이전트 · 개발자 플랫폼 · 외부 에이전트 협업으로 진화 — 초점은 <b>업무 워크스페이스 내부 자동화</b>. Motion/ClickUp도 팀 업무의 AI 일정화에 집중.</p>
+                <p><b>판정</b>: 이들의 전장은 B2B 업무다. 생활 컨텐츠 변환은 이들의 로드맵에 없다. 단, Notion 템플릿 생태계가 "빈 구조"를 계속 공급하므로 FlowMe는 <b>"소스에서 미리 채워진 구조"</b>로 차별을 유지해야 한다.</p>
+              </div>
+              <div class="card green">
+                <span class="tag green">링 3 · 버티컬 액션 컴파일러</span>
+                <h3>Wanderlog · 레시피 앱 · Taskade류</h3>
+                <p><b>현재 위치 [외부]</b>: Wanderlog는 예약 메일 → 여행 일정 자동 변환으로 성공. 레시피 앱은 글 → 재료/조리 단계 변환을 보편화. Taskade · MyLens는 유튜브 → 노트/타임라인 변환기를 제공.</p>
+                <p><b>판정</b>: "컨텐츠 → 실행물" 모델 자체는 버티컬에서 <b>이미 반복 증명</b>됐다. FlowMe의 베팅은 이 패턴이 한국 생활 카테고리군에서도 성립한다는 것 — 모델 리스크가 아니라 <b>카테고리 선택 리스크</b>다.</p>
+              </div>
+            </div>
+            <div class="callout red">종합: 위협의 실체는 "경쟁 제품"이 아니라 <b>시간</b>이다. 링 1(범용 AI)이 캘린더 연동과 산출물 품질을 갖추기 전에, 링 3(버티컬 성공 패턴)을 한국 생활 영역에서 선점하고 실행 데이터를 쌓아야 한다.</div>
+          </section>
+
+          <!-- 7. 포지셔닝 맵 -->
+          <section class="block" id="map">
+            <div><span class="secno">SECTION 7</span><h2>포지셔닝 맵: 공백의 정확한 좌표</h2></div>
+            <p class="lede">X축 = 무엇을 다루나 (자기 입력 ↔ 외부 컨텐츠), Y축 = 무엇을 주나 (보관 · 요약 ↔ 실행 산출물). 우상단 — 외부 컨텐츠를 받아 실행 산출물을 주는 자리 — 에는 버티컬 점들만 있다.</p>
+            <figure class="figure">
+              <svg viewBox="0 0 880 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="포지셔닝 맵">
+                <defs>
+                  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#667085"/>
+                  </marker>
+                </defs>
+                <!-- axes -->
+                <line x1="440" y1="30" x2="440" y2="440" stroke="#b8c7d6" stroke-width="1.5"/>
+                <line x1="60" y1="235" x2="820" y2="235" stroke="#b8c7d6" stroke-width="1.5"/>
+                <text x="440" y="20" text-anchor="middle" font-size="13" font-weight="800" fill="#101828">실행 산출물을 준다</text>
+                <text x="440" y="460" text-anchor="middle" font-size="13" font-weight="800" fill="#101828">보관 · 요약을 준다</text>
+                <text x="62" y="228" font-size="13" font-weight="800" fill="#101828">자기 입력을 다룬다</text>
+                <text x="818" y="228" text-anchor="end" font-size="13" font-weight="800" fill="#101828">외부 컨텐츠를 다룬다</text>
+
+                <!-- target zone -->
+                <rect x="560" y="40" width="250" height="150" rx="12" fill="#e7f6ef" stroke="#047857" stroke-width="2" stroke-dasharray="6 4"/>
+                <text x="685" y="66" text-anchor="middle" font-size="13" font-weight="900" fill="#047857">공백: 수평 액션 컴파일러</text>
+                <text x="685" y="84" text-anchor="middle" font-size="11.5" fill="#047857">(한국 생활 카테고리군 · 소스 결속)</text>
+                <circle cx="685" cy="125" r="9" fill="#1d4ed8"/>
+                <text x="685" y="150" text-anchor="middle" font-size="13" font-weight="900" fill="#1d4ed8">FlowMe</text>
+
+                <!-- vertical compilers -->
+                <circle cx="600" cy="205" r="6" fill="#047857"/>
+                <text x="600" y="190" text-anchor="middle" font-size="11.5" fill="#344054">Wanderlog (여행)</text>
+                <circle cx="745" cy="205" r="6" fill="#047857"/>
+                <text x="745" y="190" text-anchor="middle" font-size="11.5" fill="#344054">레시피 앱 (요리)</text>
+
+                <!-- left-top: self-input executors -->
+                <circle cx="180" cy="90" r="6" fill="#9a5b12"/>
+                <text x="180" y="75" text-anchor="middle" font-size="11.5" fill="#344054">캘린더 · Todoist</text>
+                <circle cx="300" cy="120" r="6" fill="#9a5b12"/>
+                <text x="300" y="105" text-anchor="middle" font-size="11.5" fill="#344054">마이루틴 · 루티너리 · Motion</text>
+
+                <!-- left-bottom -->
+                <circle cx="200" cy="340" r="6" fill="#667085"/>
+                <text x="200" y="362" text-anchor="middle" font-size="11.5" fill="#344054">메모 · Notion (워크스페이스)</text>
+
+                <!-- right-bottom -->
+                <circle cx="650" cy="350" r="6" fill="#667085"/>
+                <text x="650" y="372" text-anchor="middle" font-size="11.5" fill="#344054">Pocket(†) · Raindrop · Readwise</text>
+                <circle cx="560" cy="290" r="6" fill="#b42318"/>
+                <text x="560" y="312" text-anchor="middle" font-size="11.5" fill="#b42318">ChatGPT 요약 (현재)</text>
+
+                <!-- threat arrows -->
+                <line x1="575" y1="278" x2="650" y2="180" stroke="#b42318" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arr)"/>
+                <text x="540" y="252" font-size="11" fill="#b42318">ChatGPT Tasks의 이동 방향</text>
+                <line x1="330" y1="112" x2="545" y2="100" stroke="#9a5b12" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arr)"/>
+                <text x="430" y="92" font-size="11" fill="#9a5b12">Notion AI의 확장 방향 (업무 중심)</text>
+              </svg>
+              <figcaption>그림 1 · 2026-06 포지셔닝 맵 — 점선 화살표는 위협의 이동 방향. 우상단 수평 영역이 FlowMe의 타겟 좌표.</figcaption>
+            </figure>
+            <div class="cols cols-2">
+              <div class="card green">
+                <h3>이 좌표가 방어 가능한 이유</h3>
+                <ul>
+                  <li>좌상단 플레이어(실행 관리)는 <b>컨텐츠 이해</b>가 없다 — 입력은 사용자 몫</li>
+                  <li>우하단 플레이어(보관 · 요약)는 <b>실행 구조</b>가 없다 — Pocket의 사망이 증거</li>
+                  <li>버티컬 점들은 자기 카테고리를 벗어날 유인이 약하다</li>
+                  <li>한국 생활 맥락(공식 공지 · 네이버 생태계 · 전세 같은 로컬 절차)은 글로벌 AI의 변방</li>
+                </ul>
+              </div>
+              <div class="card red">
+                <h3>이 좌표가 뚫리는 경우</h3>
+                <ul>
+                  <li>ChatGPT가 캘린더 연동 + 산출물 워크벤치 UX를 완성 (현재 미완 [외부])</li>
+                  <li>네이버/카카오가 자사 컨텐츠에 변환 버튼을 내장 (감시 필요, 현재 신호 없음)</li>
+                  <li>FlowMe 스스로 범용화/클론화로 좌표를 이탈 (자기 리스크 §10)</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- 8. 전략 옵션 -->
+          <section class="block" id="options">
+            <div><span class="secno">SECTION 8</span><h2>전략 옵션 평가: 세 갈래 중 무엇으로 시작하나</h2></div>
+            <table class="simple">
+              <thead><tr><th style="width:20%">옵션</th><th>내용</th><th>강점</th><th>약점</th><th style="width:14%">판정</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><b>A · 수평 변환 엔진</b><br /><span class="srcs">"어떤 컨텐츠든 붙여넣으면 변환"</span></td>
+                  <td>URL/텍스트 입력 → 범용 변환기로 출시</td>
+                  <td>시장 정의가 큼, 데모가 화려함</td>
+                  <td>범용 AI와 정면충돌 · 품질 보증 불가 · 카테고리별 플레이북 부재 → 신뢰 붕괴</td>
+                  <td><span class="tag red">기각</span></td>
+                </tr>
+                <tr>
+                  <td><b>B · 버티컬 웨지 → 인접 확장</b><br /><span class="srcs">"생활 이벤트 준비부터"</span></td>
+                  <td>입학 · 이사 · 계약 · 살림 등 검증된 카테고리에서 변환 품질을 보증하고, 플레이북 단위로 확장</td>
+                  <td>버티컬 패턴은 이미 증명됨(§6 링 3) · 품질 통제 가능 · 현재 5개 라우트와 정렬 · 소스 결속의 가치가 가장 큰 영역</td>
+                  <td>초기 시장이 작아 보임 · 카테고리 선택을 틀리면 헛수고</td>
+                  <td><span class="tag green">권고 ✓</span></td>
+                </tr>
+                <tr>
+                  <td><b>C · 크리에이터 채널 우선</b><br /><span class="srcs">"크리에이터가 자기 컨텐츠를 Flow로 배포"</span></td>
+                  <td>B2C2C: 크리에이터에게 변환 도구를 주고 그들의 독자에게 배포</td>
+                  <td>배포 비용 절감 · 공급 제휴 해자 · 차별화 잠재력 최대</td>
+                  <td>양면 시장을 처음부터 풀어야 함 · 변환 품질이 증명되기 전엔 크리에이터 설득 불가</td>
+                  <td><span class="tag amber">Stage 2 접목</span></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="callout green">권고: <b>B로 시작 → C를 Stage 2에서 접목 → A는 영원히 하지 않는다.</b> 범용 변환은 플랫폼의 것이고, FlowMe의 것은 "이 카테고리에서는 우리가 제일 잘 변환하고, 실제로 실행되게 만든다"는 보증이다. 순서가 곧 전략이다: 품질 증명(B) 없이는 공급 제휴(C)도 없다.</div>
+            <div class="card soft">
+              <h3>웨지 카테고리 선택 기준 (현재 5개 라우트의 일반화)</h3>
+              <p>① 실수 비용이 크다(빠뜨림이 아프다) ② 공식/비공식 정보가 섞여 있어 정리 가치가 높다 ③ 날짜 앵커가 자연스럽다(D-day) ④ 반복보다 이벤트성(범용 todo와 비경쟁) ⑤ 민감정보 저장 없이 성립한다. — 다음 후보 평가 시 이 5개 기준을 채점표로 쓴다.</p>
+            </div>
+          </section>
+
+          <!-- 9. 로드맵 -->
+          <section class="block" id="roadmap">
+            <div><span class="secno">SECTION 9</span><h2>단계별 발전 전략: 도구 → 기록 → 네트워크</h2></div>
+            <table class="simple">
+              <thead><tr><th style="width:13%">단계</th><th style="width:25%">제품 정체성</th><th>하는 일</th><th>진입 게이트 (앞 단계의 행동 증거)</th><th style="width:18%">수익 가설 [가설]</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><span class="tag blue">Stage 0 · 현재</span></td>
+                  <td>변환 워크벤치 (export-first)</td>
+                  <td>웨지 카테고리 라우트 운영 · .ics/CSV/복사 · 손 배포 · 관찰 세션</td>
+                  <td>— (진행 중: 세션 0/3, no signal)</td>
+                  <td>무료 (행동 데이터가 수익)</td>
+                </tr>
+                <tr>
+                  <td><span class="tag green">Stage 1</span></td>
+                  <td>마찰 없는 변환기</td>
+                  <td>캘린더 직접 저장 + 시트 append (이 2개만) · 카테고리 확장은 채점표 통과분만</td>
+                  <td>반복 export 행동 + import 마찰 실측 + 안정 스키마</td>
+                  <td>변환 크레딧 또는 프리미엄 export</td>
+                </tr>
+                <tr>
+                  <td><span class="tag amber">Stage 2</span></td>
+                  <td>실행 기록이 남는 곳</td>
+                  <td>체크 · 진도 · 재방문 기록 · "이어서 하기" · 크리에이터 채널(옵션 C) 접목 시작</td>
+                  <td>export 후 자발적 재방문 · 체크 행동의 반복 관측</td>
+                  <td>구독 (기록 · 갱신 알림) + 크리에이터 제휴</td>
+                </tr>
+                <tr>
+                  <td><span class="tag violet">Stage 3</span></td>
+                  <td>실행 데이터 네트워크</td>
+                  <td>실행률 기반 Flow 품질 루프 · 크리에이터 피드백 대시보드 · 자동화 개방</td>
+                  <td>기록 데이터 임계량 + 크리에이터 수요 신호</td>
+                  <td>크리에이터/컨텐츠 사업자 대상 실행률 인사이트</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="cols cols-2">
+              <div class="card soft">
+                <h3>KPI 트리</h3>
+                <ul>
+                  <li><b>North Star: 실행된 산출물 수</b> — export 후 체크/재방문으로 실행이 확인된 Flow 수</li>
+                  <li>Stage 0: 열람→변환(앵커 입력) 전환율 · 변환→export 전환율 · 관찰 세션 판정</li>
+                  <li>Stage 1: 목적지별 export 반복률 · import 실패/마찰 보고율</li>
+                  <li>Stage 2: export 후 7일 내 재방문율 · 체크 완료율</li>
+                </ul>
+              </div>
+              <div class="card soft">
+                <h3>v1 대비 명확해진 것</h3>
+                <ul>
+                  <li>단계 게이트에 <b>수익 가설</b>과 <b>KPI</b>가 결합됨 — "무엇이 보이면 다음 단계인가"가 측정 가능해짐</li>
+                  <li>옵션 C(크리에이터)가 Stage 2의 명시적 트랙이 됨 — 막연한 "장기 방향"이 아니라 접목 시점이 정의됨</li>
+                  <li>광고 모델은 배제 — 실행 신뢰가 자산인 제품에서 광고는 신뢰를 판다 [가설이지만 강한 원칙]</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- 10. 리스크 -->
+          <section class="block" id="risks">
+            <div><span class="secno">SECTION 10</span><h2>리스크와 킬 기준: 무엇이 보이면 멈추거나 꺾는가</h2></div>
+            <p class="lede">리스크 나열로 끝내지 않는다. 각 리스크에 <b>관측 신호</b>와 <b>대응 트리거</b>를 붙인다 — 이것이 v1과의 가장 큰 차이다.</p>
+            <table class="simple">
+              <thead><tr><th style="width:22%">리스크</th><th>관측 신호 (이게 보이면)</th><th>대응 (이렇게 한다)</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><b>R1 · 범용 AI의 흡수</b> <span class="tag red">높음</span></td>
+                  <td>ChatGPT Tasks가 캘린더 연동 + 산출물 편집 UX 출시 · 작업 수 제한 해제</td>
+                  <td>웨지 카테고리의 소스 결속 깊이로 비대칭화 · Stage 2(기록) 진입을 앞당겨 데이터 차별화 · 한국 공식 문서 축 강화</td>
+                </tr>
+                <tr>
+                  <td><b>R2 · 플랫폼 내장화</b> <span class="tag amber">중간</span></td>
+                  <td>네이버/카카오/Notion이 컨텐츠 옆에 "일정으로 변환" 버튼 노출</td>
+                  <td>멀티 목적지 중립성 유지 · 그 플랫폼이 안 다루는 크로스 소스(공식+블로그+영상 종합) Flow로 이동</td>
+                </tr>
+                <tr>
+                  <td><b>R3 · 원천 정책/권리</b> <span class="tag amber">중간</span></td>
+                  <td>크롤링 차단 강화 · 크리에이터 이의 제기 발생</td>
+                  <td>사용자 주도 입력(가져오기)으로 전환 · 해당 크리에이터에 제휴 제안(옵션 C 조기 가동)</td>
+                </tr>
+                <tr>
+                  <td><b>R4 · 자기 클론화</b> <span class="tag amber">상시</span></td>
+                  <td>로드맵에 워크스페이스/범용 todo/자동화 빌더성 기능이 등장</td>
+                  <td>feature filter + do-not-build 경계로 즉시 차단 [내부 체계 가동 중]</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="cols cols-2">
+              <div class="card red">
+                <h3>킬/피벗 기준 (미리 정해두는 정직함)</h3>
+                <ul>
+                  <li><b>패킷 의심</b>: 관찰 3회 1라운드 no signal → 패킷 수정 후 재실행 (기존 룰)</li>
+                  <li><b>카테고리 의심</b>: 2라운드 연속 no signal → 패킷이 아니라 웨지 카테고리 선택을 재검토</li>
+                  <li><b>가설 폐기</b>: Stage 1 진입 후에도 export 후 재방문이 관측되지 않으면 → Stage 2(기록 레이어) 가설을 폐기하고 "변환 유틸리티"로 포지션 축소를 검토</li>
+                </ul>
+              </div>
+              <div class="card soft">
+                <h3>가장 통제 가능한 리스크부터</h3>
+                <p>R1~R3은 외생 변수지만 R4는 전적으로 내부 선택이다. 그리고 R1의 대응(웨지 깊이, 기록 데이터)은 어차피 권고 전략 B의 실행 그 자체다 — <b>즉, 최선의 리스크 대응은 전략을 빨리 실행하는 것이다.</b></p>
+              </div>
+            </div>
+          </section>
+
+          <!-- 11. 결론 -->
+          <section class="block" id="conclusion">
+            <div><span class="secno">SECTION 11</span><h2>결론</h2></div>
+            <div class="callout" style="font-size: 16px;">
+              FlowMe는 <b>컨텐츠 소비와 실행 도구 사이의 비어 있는 다리</b>에 선다. 시작은 한국 생활 이벤트 준비라는 <b>버티컬 웨지(전략 B)</b> — 거기서 변환 품질과 실행 행동을 증명하고, 캘린더 · 시트 경량 연동으로 마찰을 줄이고(Stage 1), 실행 기록이 쌓이는 곳(Stage 2)으로, 그리고 크리에이터와 실행 데이터의 네트워크(Stage 3)로 커진다.
+            </div>
+            <div class="cols cols-3">
+              <div class="card soft"><h3>지키는 것</h3><p>소스 결속 · 도구 중립 · 행동 증거 게이트 · do-not-build 경계</p></div>
+              <div class="card soft"><h3>서두르는 것</h3><p>관찰 3회 → export 마찰 측정 → Stage 1 진입. 범용 AI의 시간 창 안에 데이터 축적 시작</p></div>
+              <div class="card soft"><h3>하지 않는 것</h3><p>범용 변환 엔진(A) · 목적지 클론 · 광고 모델 · 증거 없는 단계 점프</p></div>
+            </div>
+            <p class="lede">즉시 다음 액션은 변하지 않는다: <b>school-dorm-share-packet 관찰 세션 3회 실행.</b> 이 리포트의 전략 전체가 그 첫 행동 증거 위에 서 있다.</p>
+          </section>
+
+          <!-- 출처 -->
+          <section class="block" id="refs">
+            <div><span class="secno">REFERENCES</span><h2>출처</h2></div>
+            <div class="cols cols-2">
+              <div class="card soft srcs">
+                <h4>외부 (2026-06-12 조사)</h4>
+                <ul>
+                  <li>OpenAI Help Center — ChatGPT Tasks 베타 (10개 제한, 캘린더 미연동): help.openai.com</li>
+                  <li>TechCrunch (2026-05-13) — Notion 3.5 AI 에이전트 허브화: techcrunch.com</li>
+                  <li>Notion Releases — 3.4/3.5 개발자 플랫폼 · Workers: notion.com/releases</li>
+                  <li>Mozilla Support / TechCrunch (2025-05) — Pocket 종료, 이용자 1,000만+: support.mozilla.org</li>
+                  <li>서울경제 / 아세안익스프레스 — 한국인 유튜브 월 33~40시간, 이용자 인구 81%: sedaily.com</li>
+                  <li>한국언론진흥재단 — 네이버 블로그 이용률 21.7% (2024): kpf.or.kr</li>
+                  <li>Routinery 공식 / App Store — 글로벌 이용자 500만+, 마이루틴 · 챌린저스 동향: myroutine.today, apps.apple.com</li>
+                  <li>Wanderlog — 예약 메일 → 일정 자동 변환: wanderlog.com</li>
+                  <li>Taskade / MyLens — 유튜브 → 노트/타임라인 변환기: taskade.com, mylens.ai</li>
+                  <li>Motion / ClickUp — AI 업무 일정화 동향: usemotion.com, clickup.com</li>
+                </ul>
+              </div>
+              <div class="card soft srcs">
+                <h4>내부 (분석방 문서)</h4>
+                <ul>
+                  <li><a href="./2026-06-08-external-ecosystem-analysis-roadmap.md">외부 생태계 분석 로드맵</a></li>
+                  <li><a href="./2026-06-08-external-ecosystem-phase5-compression-table.md">Phase 5 압축 테이블</a></li>
+                  <li><a href="./2026-06-08-export-destination-competitor-boundary.md">목적지 · 경쟁 경계 비교</a></li>
+                  <li><a href="./2026-06-08-platform-api-readiness-matrix.md">플랫폼 API 준비도 매트릭스</a></li>
+                  <li><a href="../flow-rules/integration-readiness-gate.md">연동 준비 게이트</a> · <a href="../flow-rules/export-destination-fit.md">목적지 적합 규칙</a></li>
+                  <li><a href="../STATUS.md">STATUS.md</a> (2026-06-11 기준 · 관찰 세션 0/3 · no signal)</li>
+                  <li><a href="./2026-06-12-ecosystem-positioning-deck-ko.html">v1 포지셔닝 덱 (2026-06-12)</a></li>
+                </ul>
+              </div>
+            </div>
+            <p class="srcs">근거 표기: [외부] = 2026-06-12 웹 조사 · [내부] = 분석방 문서/QA 결과 · [가설] = 행동 증거 없는 추론. 이 리포트는 전략 분석 산출물이며, 어떤 후보의 검증(validated) 주장도 포함하지 않는다.</p>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

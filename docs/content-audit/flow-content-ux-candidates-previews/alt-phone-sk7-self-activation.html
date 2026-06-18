@@ -1,0 +1,1289 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>알뜰폰 SK7 셀프개통 체크 - Flow 프리뷰</title>
+  <style>
+    :root {
+      --bg: #fafaf8;
+      --surface: #fff;
+      --soft: #f5f7fb;
+      --ink: #111827;
+      --muted: #667085;
+      --line: #e5e7eb;
+      --line-strong: #cbd5e1;
+      --blue: #2563eb;
+      --blue-dark: #1e40af;
+      --blue-soft: #eff6ff;
+      --green: #047857;
+      --green-soft: #ecfdf5;
+      --amber: #b45309;
+      --amber-soft: #fffbeb;
+      --red: #b91c1c;
+      --shadow: 0 18px 48px rgba(15, 23, 42, 0.09);
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--bg); }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-decoration: none; font-weight: 800; }
+    button, input, textarea { font: inherit; }
+    .app {
+      min-height: 100vh;
+      padding-bottom: 92px;
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--line);
+      background: rgba(250, 250, 248, 0.94);
+      backdrop-filter: blur(16px);
+    }
+    .topbar-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .back {
+      color: #475467;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .top-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .ghost-btn,
+    .solid-btn {
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: #fff;
+      color: #344054;
+      padding: 9px 12px;
+      font-size: 13px;
+      font-weight: 850;
+      cursor: default;
+    }
+    .solid-btn {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: #fff;
+    }
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 26px 18px 40px;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .hero-main,
+    .hero-score,
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .hero-main {
+      padding: 22px;
+    }
+    .source-line {
+      margin: 0 0 10px;
+      color: #475467;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    h1 {
+      margin: 0;
+      max-width: 780px;
+      font-size: clamp(32px, 5.4vw, 58px);
+      line-height: 1.04;
+      letter-spacing: 0;
+    }
+    .lead {
+      margin: 12px 0 0;
+      max-width: 760px;
+      color: #344054;
+      font-size: 16px;
+    }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+    .meta-row span {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      padding: 6px 10px;
+      color: #344054;
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .meta-row .ok {
+      border-color: #bbf7d0;
+      background: var(--green-soft);
+      color: var(--green);
+    }
+    .hero-score {
+      padding: 18px;
+      display: grid;
+      align-content: space-between;
+      gap: 16px;
+    }
+    .score-number span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .score-number strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 46px;
+      line-height: 1;
+    }
+    .mini-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .mini-stats div {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+      padding: 10px;
+    }
+    .mini-stats span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+    }
+    .mini-stats strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 18px;
+    }
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 18px;
+      margin-top: 18px;
+      align-items: start;
+    }
+    .panel {
+      padding: 18px;
+    }
+    .panel + .panel {
+      margin-top: 14px;
+    }
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+    .panel h2 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.25;
+    }
+    .panel p {
+      margin: 6px 0 0;
+      color: #475467;
+      font-size: 14px;
+    }
+    .source-card {
+      border-left: 4px solid #64748b;
+    }
+    .source-card strong {
+      display: block;
+      font-size: 16px;
+      line-height: 1.35;
+    }
+    .save-panel {
+      border-left: 4px solid var(--blue);
+    }
+    .save-grid {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .save-field {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 128px;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #f8fafc;
+      padding: 9px;
+    }
+    .save-field span {
+      color: #344054;
+      font-size: 13px;
+      font-weight: 850;
+    }
+    .save-field input {
+      min-width: 0;
+      border: 1px solid #eef2f7;
+      border-radius: 7px;
+      background: #fff;
+      color: var(--blue);
+      padding: 7px 8px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .save-panel .solid-btn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 12px;
+    }
+    .progress-panel {
+      border-color: #bfdbfe;
+      background: linear-gradient(180deg, #fff 0%, #f8fbff 100%);
+    }
+    .progress-line {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .bar {
+      height: 9px;
+      flex: 1;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e5e7eb;
+    }
+    .bar span {
+      display: block;
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--blue);
+    }
+    .progress-line strong {
+      color: #344054;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+      margin-top: 14px;
+    }
+    .tabs span,
+    .tabs a {
+      border-radius: 8px;
+      background: #eef2f7;
+      color: #667085;
+      padding: 8px 4px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 850;
+      text-decoration: none;
+    }
+    .tabs .active {
+      background: var(--blue);
+      color: #fff;
+    }
+    .stages {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .stage-card {
+      min-height: 122px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 12px;
+    }
+    .stage-card.current {
+      border-color: #93c5fd;
+      background: var(--blue-soft);
+    }
+    .stage-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .stage-card h3 {
+      margin: 10px 0 0;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    .stage-card p {
+      margin-top: 7px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .task-list {
+      display: grid;
+      gap: 9px;
+      margin-top: 14px;
+    }
+    .task-card {
+      display: grid;
+      grid-template-columns: 20px 92px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 12px;
+    }
+    .task-card.active {
+      border-color: #93c5fd;
+      background: var(--blue-soft);
+    }
+    .task-card .task-date {
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .task-main {
+      min-width: 0;
+    }
+    .task-card strong {
+      display: block;
+      font-size: 15px;
+      line-height: 1.35;
+    }
+    .task-card em {
+      display: block;
+      margin-top: 4px;
+      color: #667085;
+      font-size: 12px;
+      font-style: normal;
+    }
+    .timeline-board,
+    .study-list,
+    .routine-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .timeline-row {
+      position: relative;
+      display: grid;
+      grid-template-columns: 20px 94px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 13px;
+    }
+    .timeline-row::before {
+      content: "";
+      position: absolute;
+      left: 112px;
+      top: 36px;
+      bottom: -12px;
+      width: 2px;
+      background: #dbeafe;
+    }
+    .timeline-row:last-child::before {
+      display: none;
+    }
+    .timeline-row.active {
+      border-color: #93c5fd;
+      background: var(--blue-soft);
+    }
+    .timeline-date {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      justify-content: center;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--blue);
+      padding: 5px 8px;
+      font-size: 12px;
+      font-weight: 950;
+      box-shadow: inset 0 0 0 1px #bfdbfe;
+    }
+    .timeline-row strong,
+    .study-row strong,
+    .routine-row strong {
+      display: block;
+      font-size: 15px;
+      line-height: 1.35;
+    }
+    .timeline-row p,
+    .study-row p,
+    .routine-row p {
+      margin-top: 4px;
+      color: #667085;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .timeline-row em,
+    .study-row em {
+      display: inline-flex;
+      margin-top: 7px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-style: normal;
+      font-weight: 900;
+    }
+    .study-board {
+      margin-top: 14px;
+    }
+    .study-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .study-summary div {
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      background: #fff;
+      padding: 10px;
+    }
+    .study-summary span {
+      display: block;
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .study-summary strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .study-row {
+      display: grid;
+      grid-template-columns: 20px 92px minmax(0, 1fr) 128px;
+      gap: 10px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 12px;
+    }
+    .study-row.active {
+      border-color: #93c5fd;
+      background: var(--blue-soft);
+    }
+    .study-date {
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 950;
+    }
+    .routine-board {
+      margin-top: 14px;
+    }
+    .routine-cadence {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .routine-cadence span {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: #475467;
+      padding: 7px 4px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .routine-cadence span:nth-child(2n) {
+      border-color: #bbf7d0;
+      background: var(--green-soft);
+      color: var(--green);
+    }
+    .routine-row {
+      display: grid;
+      grid-template-columns: 20px 92px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 12px;
+    }
+    .routine-row.active {
+      border-color: #93c5fd;
+      background: var(--blue-soft);
+    }
+    .routine-row span {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 950;
+    }
+    .challenge-board {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .challenge-cell {
+      min-height: 104px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+      align-content: start;
+    }
+    .challenge-cell.active {
+      border-color: #93c5fd;
+      background: var(--blue-soft);
+    }
+    .challenge-cell span {
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 950;
+    }
+    .challenge-cell strong {
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .challenge-cell input {
+      align-self: end;
+    }
+    .sheet-board {
+      margin-top: 14px;
+      overflow: hidden;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      background: #fff;
+    }
+    .sheet-toolbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 1px solid var(--line);
+      background: #f8fbff;
+      padding: 12px;
+    }
+    .sheet-toolbar strong {
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    .sheet-toolbar span {
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .sheet-board table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .sheet-board th,
+    .sheet-board td {
+      border-bottom: 1px solid #eef2f7;
+      padding: 11px 10px;
+      vertical-align: top;
+      text-align: left;
+    }
+    .sheet-board th {
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 900;
+      background: #fff;
+    }
+    .sheet-board tr.active td {
+      background: var(--blue-soft);
+    }
+    .sheet-board td:first-child {
+      width: 34px;
+    }
+    .sheet-board td:nth-child(2) {
+      width: 116px;
+      color: var(--blue);
+      font-weight: 900;
+    }
+    .sheet-board b {
+      display: block;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    .sheet-board p {
+      margin-top: 4px;
+      color: #667085;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .sheet-board td:last-child span {
+      display: inline-flex;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #334155;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .sheet-mobile-list {
+      display: none;
+      gap: 9px;
+      padding: 10px;
+    }
+    .sheet-card-row {
+      display: grid;
+      grid-template-columns: 20px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 12px;
+    }
+    .sheet-card-row.active {
+      border-color: #93c5fd;
+      background: var(--blue-soft);
+    }
+    .sheet-card-row span {
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 950;
+    }
+    .sheet-card-row strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    .sheet-card-row p {
+      margin-top: 4px;
+      color: #667085;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .sheet-card-row em {
+      display: inline-flex;
+      margin-top: 7px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #334155;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-style: normal;
+      font-weight: 900;
+    }
+    .decision-board {
+      margin-top: 14px;
+    }
+    .decision-actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .decision-actions button {
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #fff;
+      color: #344054;
+      padding: 10px;
+      font-weight: 900;
+    }
+    .decision-actions button:nth-child(1) {
+      border-color: #bbf7d0;
+      background: var(--green-soft);
+      color: var(--green);
+    }
+    .decision-actions button:nth-child(2) {
+      border-color: #fde68a;
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+    .decision-actions button:nth-child(3) {
+      border-color: #fecaca;
+      background: #fef2f2;
+      color: var(--red);
+    }
+    .decision-list {
+      display: grid;
+      gap: 9px;
+    }
+    .decision-row {
+      display: grid;
+      grid-template-columns: 20px minmax(0, 1fr) 110px;
+      gap: 10px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 12px;
+    }
+    .decision-row.active {
+      border-color: #93c5fd;
+      background: var(--blue-soft);
+    }
+    .decision-row span {
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 950;
+    }
+    .decision-row strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 15px;
+      line-height: 1.35;
+    }
+    .decision-row p {
+      margin-top: 4px;
+      color: #667085;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .decision-row em {
+      justify-self: end;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-style: normal;
+      font-weight: 900;
+      text-align: center;
+    }
+    .detail-sheet {
+      border-color: #c4b5fd;
+      background: #faf5ff;
+    }
+    .detail-grid {
+      display: grid;
+      gap: 9px;
+      margin-top: 12px;
+    }
+    .detail-row {
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+    }
+    .detail-row span {
+      color: #6b21a8;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .detail-row strong,
+    .detail-row p {
+      margin: 0;
+      color: #344054;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .detail-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .export-list {
+      display: grid;
+      gap: 8px;
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .export-list li {
+      border: 1px solid #fde68a;
+      border-radius: 9px;
+      background: #fff;
+      padding: 10px;
+    }
+    .export-list span {
+      display: block;
+      color: var(--amber);
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .export-list strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 13px;
+    }
+    .export-list p {
+      margin-top: 3px;
+      font-size: 12px;
+    }
+    .trace-list {
+      display: grid;
+      gap: 10px;
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .trace-list li {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 10px;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      background: #fff;
+      padding: 12px;
+    }
+    .trace-list span {
+      display: block;
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .trace-list p {
+      margin: 4px 0 0;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1.55;
+    }
+    .side {
+      position: sticky;
+      top: 74px;
+    }
+    .note-card {
+      border-color: #fcd34d;
+      background: var(--amber-soft);
+    }
+    .note-card h2,
+    .note-card p {
+      color: #78350f;
+    }
+    .boundary-card {
+      background: #f8fafc;
+    }
+    .rubric {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .rubric div {
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #fff;
+      padding: 10px;
+    }
+    .rubric span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+    }
+    .rubric strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 18px;
+    }
+    .mobile-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 20;
+      display: none;
+      border-top: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 -16px 40px rgba(15, 23, 42, 0.16);
+      backdrop-filter: blur(14px);
+      padding: 12px;
+    }
+    .mobile-bar-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+    }
+    .mobile-bar span {
+      display: block;
+      color: #667085;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .mobile-bar strong {
+      display: block;
+      color: var(--ink);
+      font-size: 14px;
+    }
+    @media (max-width: 900px) {
+      .topbar-inner { padding: 10px 12px; }
+      .top-actions .ghost-btn { display: none; }
+      .page { padding: 16px 10px 28px; }
+      .hero,
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+      .hero-main,
+      .hero-score,
+      .panel {
+        border-radius: 10px;
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+      }
+      h1 { font-size: 34px; }
+      .lead { font-size: 15px; }
+      .hero-score { display: none; }
+      .side { position: static; }
+      .stages {
+        grid-template-columns: 1fr;
+      }
+      .save-field,
+      .detail-row {
+        grid-template-columns: 1fr;
+      }
+      .task-card,
+      .timeline-row,
+      .routine-row {
+        grid-template-columns: 20px minmax(72px, 86px) minmax(0, 1fr);
+        gap: 9px;
+      }
+      .study-row {
+        grid-template-columns: 20px minmax(72px, 86px) minmax(0, 1fr);
+      }
+      .study-row em {
+        grid-column: 3;
+      }
+      .timeline-row::before { left: 105px; }
+      .study-summary,
+      .challenge-board {
+        grid-template-columns: 1fr;
+      }
+      .sheet-board {
+        overflow: hidden;
+      }
+      .sheet-board table {
+        display: none;
+      }
+      .sheet-mobile-list {
+        display: grid;
+      }
+      .decision-actions,
+      .decision-row {
+        grid-template-columns: 1fr;
+      }
+      .trace-list li {
+        grid-template-columns: 1fr;
+      }
+      .decision-row em {
+        justify-self: start;
+      }
+      .task-card strong,
+      .timeline-row strong,
+      .study-row strong,
+      .routine-row strong {
+        font-size: 14px;
+      }
+      .mobile-bar { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="back" href="../2026-06-02-flow-content-ux-candidates.html#candidate-preview-index">← 후보 인덱스</a>
+        <div class="top-actions">
+          <a class="ghost-btn" href="https://blog.naver.com/PostView.nhn?blogId=saljjak-&amp;logNo=223661947600" target="_blank" rel="noreferrer">원문 보기</a>
+          <button class="solid-btn" type="button">내 Flow에 저장</button>
+        </div>
+      </div>
+    </header>
+    <main class="page">
+      <section class="hero" id="flow-summary">
+        <div class="hero-main">
+          <p class="source-line">통신/디지털 준비 · 블로그/제작자</p>
+          <h1>알뜰폰 SK7 셀프개통 체크</h1>
+          <p class="lead">유심을 받은 사용자가 셀프개통 중 끊기거나 빠뜨리지 않도록 준비와 개통 절차를 체크한다.</p>
+          <div class="meta-row">
+            <span>체크</span>
+            <span>C. 결정형 체크리스트</span>
+            <span>4개 실행 항목</span>
+            <span>대응 강함</span>
+            <span class="ok">출처 확인 필요</span>
+          </div>
+        </div>
+        <aside class="hero-score">
+          <div class="score-number">
+            <span>사용자 검토 점수</span>
+            <strong>4.6</strong>
+            <p>추가 검증 · 제작자성 강함</p>
+          </div>
+          <div class="mini-stats">
+            <div><span>원문 적합</span><strong>4.6</strong></div>
+            <div><span>구조</span><strong>checklist</strong></div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="workspace">
+        <div>
+          <section class="panel source-card">
+            <div class="panel-head">
+              <div>
+                <h2>원문에서 따라할 행동</h2>
+                <p>원문에 가입유형/요금제 선택, 유심 일련번호 입력, 번호이동 사전동의, 셀프개통 완료 후 유심 교체와 재부팅 순서가 드러난다.</p>
+              </div>
+              <a href="https://blog.naver.com/PostView.nhn?blogId=saljjak-&amp;logNo=223661947600" target="_blank" rel="noreferrer">원문 ↗</a>
+            </div>
+            <strong>알뜰폰 SK7모바일 셀프개통 후기</strong>
+          </section>
+
+          <section class="panel save-panel">
+            <div class="panel-head">
+              <div>
+                <h2>저장 화면</h2>
+                <p>개통 체크리스트로 저장</p>
+              </div>
+            </div>
+            <div class="save-grid">
+        <label class="save-field">
+          <span>개통 예정일</span>
+          <input value="사용자 입력" readonly />
+        </label>
+      
+        <label class="save-field">
+          <span>유심 보유 여부</span>
+          <input value="기본값" readonly />
+        </label>
+      
+        <label class="save-field">
+          <span>번호이동 여부</span>
+          <input value="기본값" readonly />
+        </label>
+      </div>
+            <button class="solid-btn" type="button">개통 체크리스트로 저장</button>
+          </section>
+
+          <section class="panel progress-panel" id="execution-preview">
+            <div class="panel-head">
+              <div>
+                <h2>My Flow 실행판</h2>
+                <p>저장 후 사용자가 실제로 보게 될 실행 화면입니다.</p>
+              </div>
+              <button class="ghost-btn" type="button">체크 보기</button>
+            </div>
+            <div class="progress-line">
+              <div class="bar"><span></span></div>
+              <strong>0/4 · 0%</strong>
+            </div>
+            <nav class="tabs" aria-label="My Flow preview links"><a class="active" href="#execution-preview">오늘</a><a href="#calendar-preview">캘린더</a><a href="#flow-summary">Flow</a><a href="#checklist-preview">체크</a></nav>
+            <div class="task-list" id="calendar-preview">
+        <label class="task-card active">
+          <input type="checkbox"  />
+          <span class="task-date">개통 전</span>
+          <div class="task-main">
+            <strong>셀프개통 가능 시간과 준비물 확인</strong>
+            <em>개통 전 필요한 정보와 연결 환경 확인</em>
+          </div>
+        </label>
+      
+        <label class="task-card ">
+          <input type="checkbox"  />
+          <span class="task-date">개통 전</span>
+          <div class="task-main">
+            <strong>가입유형과 요금제 선택</strong>
+            <em>신청 전 선택 항목 확정</em>
+          </div>
+        </label>
+      
+        <label class="task-card ">
+          <input type="checkbox"  />
+          <span class="task-date">개통 중</span>
+          <div class="task-main">
+            <strong>번호이동 사전동의 처리</strong>
+            <em>번호이동 사전동의 완료</em>
+          </div>
+        </label>
+      
+        <label class="task-card ">
+          <input type="checkbox"  />
+          <span class="task-date">개통 직후</span>
+          <div class="task-main">
+            <strong>유심 교체 후 통화·데이터 확인</strong>
+            <em>통화와 데이터 연결 확인</em>
+          </div>
+        </label>
+      </div>
+          </section>
+
+          <section class="panel detail-sheet" id="checklist-preview">
+            <div class="panel-head">
+              <div>
+                <h2>상세 sheet</h2>
+                <p>셀프개통 가능 시간과 준비물 확인</p>
+              </div>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-row"><span>날짜/반복</span><strong>개통 전</strong></div>
+              <div class="detail-row"><span>메모</span><p>유심, 유심 일련번호, 본인인증 수단, Wi-Fi 환경, 기존 통신사 정보를 준비한다.</p></div>
+              <div class="detail-row"><span>완료 기준</span><p>개통 전 필요한 정보와 연결 환경 확인</p></div>
+              <div class="detail-row"><span>원문 링크</span><p><a href="https://blog.naver.com/PostView.nhn?blogId=saljjak-&amp;logNo=223661947600" target="_blank" rel="noreferrer">알뜰폰 SK7모바일 셀프개통 후기</a></p></div>
+            </div>
+            <div class="detail-actions">
+              <button class="solid-btn" type="button">완료 체크</button>
+              <button class="ghost-btn" type="button">메모 수정</button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Export 미리보기</h2>
+                <p>캘린더, 체크리스트, 시트로 옮겼을 때 남아야 할 핵심 항목입니다.</p>
+              </div>
+            </div>
+            <ol class="export-list">
+        <li>
+          <span>개통 전</span>
+          <strong>셀프개통 가능 시간과 준비물 확인</strong>
+          <p>개통 전 필요한 정보와 연결 환경 확인</p>
+        </li>
+      
+        <li>
+          <span>개통 전</span>
+          <strong>가입유형과 요금제 선택</strong>
+          <p>신청 전 선택 항목 확정</p>
+        </li>
+      
+        <li>
+          <span>개통 중</span>
+          <strong>번호이동 사전동의 처리</strong>
+          <p>번호이동 사전동의 완료</p>
+        </li>
+      
+        <li>
+          <span>개통 직후</span>
+          <strong>유심 교체 후 통화·데이터 확인</strong>
+          <p>통화와 데이터 연결 확인</p>
+        </li>
+      </ol>
+          </section>
+        </div>
+
+        <aside class="side">
+          
+          
+          
+          <section class="panel boundary-card">
+            <h2>최우선 판정 질문</h2>
+            <p>원문을 읽고 저장한 뒤, 생성된 캘린더/체크리스트/시트/메모만 보고도 다음 행동을 할 수 있는가?</p>
+            <ul>
+              <li>원문의 순서, 주기, 조건, 판단 지점이 실행 항목에 남아 있는가</li>
+              <li>최소 입력만으로 체크에 저장 가능한가</li>
+              <li>날짜나 항목을 열었을 때 원문 기반 체크와 완료 기준이 보이는가</li>
+              <li>사용자가 원문 의미를 다시 추측하지 않아도 되는가</li>
+            </ul>
+          </section>
+          <section class="panel boundary-card">
+            <h2>원문 → 실행 산출물 대응</h2>
+            <p>원문 단서가 실제 저장 항목, 상세 메모, 완료 기준으로 옮겨졌는지 확인합니다.</p>
+            <ul class="trace-list">
+        <li>
+          <div>
+            <span>원문 단서</span>
+            <p>원문에 가입유형/요금제 선택, 유심 일련번호 입력, 번호이동 사전동의, 셀프개통 완료 후 유심 교체와 재부팅 순서가 드러난다. 유심, 유심 일련번호, 본인인증 수단, Wi-Fi 환경, 기존 통신사 정보를 준비한다.</p>
+          </div>
+          <div>
+            <span>Flow에서 확인</span>
+            <p>개통 전 · 셀프개통 가능 시간과 준비물 확인 · 완료 기준: 개통 전 필요한 정보와 연결 환경 확인</p>
+          </div>
+        </li>
+      
+        <li>
+          <div>
+            <span>원문 단서</span>
+            <p>신규가입/번호이동 여부와 사용할 요금제를 정하고 신청서 입력을 시작한다.</p>
+          </div>
+          <div>
+            <span>Flow에서 확인</span>
+            <p>개통 전 · 가입유형과 요금제 선택 · 완료 기준: 신청 전 선택 항목 확정</p>
+          </div>
+        </li>
+      
+        <li>
+          <div>
+            <span>원문 단서</span>
+            <p>기존 통신사 문자나 ARS 안내에서 위약금, 잔여 할부금, 소멸 혜택을 확인하고 동의한다.</p>
+          </div>
+          <div>
+            <span>Flow에서 확인</span>
+            <p>개통 중 · 번호이동 사전동의 처리 · 완료 기준: 번호이동 사전동의 완료</p>
+          </div>
+        </li>
+      
+        <li>
+          <div>
+            <span>원문 단서</span>
+            <p>개통 완료 후 유심을 장착하고 재부팅한 뒤 통화, 문자, 데이터 연결을 확인한다.</p>
+          </div>
+          <div>
+            <span>Flow에서 확인</span>
+            <p>개통 직후 · 유심 교체 후 통화·데이터 확인 · 완료 기준: 통화와 데이터 연결 확인</p>
+          </div>
+        </li>
+      </ul>
+          </section>
+          <section class="panel boundary-card">
+            <h2>UX 판단</h2>
+            <p>디지털 절차 Flow는 날짜보다 순서와 완료 기준이 중요하다. 페이지 안 체크리스트가 우선이고, 개통 예정일 알림은 보조로 둔다.</p>
+            <p>개통 예정일과 유심/번호이동 여부만 받고, 개인정보 입력값은 저장하지 않는 체크리스트로 둔다.</p>
+          </section>
+          <section class="panel boundary-card">
+            <h2>출처/주의 분리</h2>
+            <p>개인 후기 기반 순서이므로 최신 요금제, 개통 가능 시간, 본인인증 조건은 통신사 공식 안내를 우선한다.</p>
+            
+            
+          </section>
+          <section class="panel">
+            <h2>평가 점수</h2>
+            <div class="rubric">
+              <div><span>사용자</span><strong>4.6</strong></div>
+              <div><span>원문 적합</span><strong>4.6</strong></div>
+              <div><span>목적지</span><strong>체크</strong></div>
+              <div><span>항목</span><strong>4개</strong></div>
+            </div>
+          </section>
+        </aside>
+      </section>
+    </main>
+    <div class="mobile-bar">
+      <div class="mobile-bar-inner">
+        <div>
+          <span>진행률 0/4</span>
+          <strong>셀프개통 가능 시간과 준비물 확인</strong>
+        </div>
+        <button class="solid-btn" type="button">저장</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

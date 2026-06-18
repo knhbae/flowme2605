@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FLOW daily morning briefing - 2026-06-18</title>
+  </head>
+  <body style="margin:0;background:#f3f4f6;">
+    <article style="font-family:'Segoe UI','Noto Sans KR','Apple SD Gothic Neo',sans-serif;color:#111827;background:#f3f4f6;padding:20px;line-height:1.45;">
+      <div style="max-width:1180px;margin:0 auto;">
+        <section style="background:#ffffff;border:1px solid #d1d5db;border-radius:18px;padding:18px 20px 14px 20px;">
+          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;">
+            <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+              <span style="background:#e0f2fe;color:#075985;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;">2026-06-18 오전 KST</span>
+              <span style="background:#dcfce7;color:#166534;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;">현재 단계: Stage 0 / First Flag</span>
+              <span style="background:#fef3c7;color:#92400e;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;">활성 초점: distribution-channel-handoff</span>
+            </div>
+            <div style="font-size:12px;color:#6b7280;">브랜치: <span style="font-weight:700;color:#111827;">design-ref-full-gap-alignment</span></div>
+          </div>
+          <h1 style="margin:14px 0 8px 0;font-size:28px;line-height:1.2;">FLOW 아침 브리핑</h1>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;">
+            <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:14px;padding:14px;">
+              <div style="font-size:13px;color:#6b7280;margin-bottom:6px;">프로젝트 헬스 한 줄</div>
+              <div style="font-size:18px;font-weight:800;color:#111827;">문서 기준 상태는 여전히 <span style="color:#b45309;">no signal</span>이며, 실사용 관찰은 <span style="color:#b91c1c;">0 / 3 세션</span>이다. 작업트리는 Flow of Flow와 moving restart 쪽으로 크게 움직여 현재 실행 축과 분리되어 있다.</div>
+            </div>
+            <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:14px;">
+              <div style="font-size:13px;color:#9a3412;margin-bottom:6px;">판독 기준</div>
+              <div style="font-size:14px;font-weight:700;color:#7c2d12;">현재 상태는 <code>docs/STATUS.md</code>와 2026-06-11 handoff 문서를 우선 사용</div>
+              <div style="font-size:12px;color:#9a3412;margin-top:6px;">6/17~6/18 산출물은 전략/PoC 문맥으로만 반영</div>
+            </div>
+          </div>
+        </section>
+
+        <section style="margin-top:16px;background:#ffffff;border:1px solid #d1d5db;border-radius:18px;padding:18px;">
+          <div style="font-size:18px;font-weight:800;margin-bottom:12px;">로드맵 스테퍼</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;">
+            <div style="border:2px solid #16a34a;background:#f0fdf4;border-radius:14px;padding:12px;">
+              <div style="font-size:12px;font-weight:800;color:#166534;">현재</div>
+              <div style="font-size:16px;font-weight:800;">Stage 0 / v0.1</div>
+              <div style="font-size:12px;color:#166534;margin-top:6px;">open -> anchor -> copy/export -> check -> feedback 증명</div>
+            </div>
+            <div style="border:1px solid #93c5fd;background:#eff6ff;border-radius:14px;padding:12px;">
+              <div style="font-size:12px;font-weight:800;color:#1d4ed8;">다음</div>
+              <div style="font-size:16px;font-weight:800;">v0.2</div>
+              <div style="font-size:12px;color:#1d4ed8;margin-top:6px;">footprint logging, feedback loop, safety pass</div>
+            </div>
+            <div style="border:1px solid #d1d5db;background:#f9fafb;border-radius:14px;padding:12px;">
+              <div style="font-size:12px;font-weight:800;color:#6b7280;">후속</div>
+              <div style="font-size:16px;font-weight:800;">작은 Flow 운영층</div>
+              <div style="font-size:12px;color:#6b7280;margin-top:6px;">saved Flow 관리, creator ops, surface 분리</div>
+            </div>
+            <div style="border:1px solid #e5e7eb;background:#f3f4f6;border-radius:14px;padding:12px;opacity:0.7;">
+              <div style="font-size:12px;font-weight:800;color:#6b7280;">미래</div>
+              <div style="font-size:16px;font-weight:800;">Integrations / AI</div>
+              <div style="font-size:12px;color:#6b7280;margin-top:6px;">copy/export/check 증명 전 비활성</div>
+            </div>
+            <div style="border:1px solid #e5e7eb;background:#f3f4f6;border-radius:14px;padding:12px;opacity:0.7;">
+              <div style="font-size:12px;font-weight:800;color:#6b7280;">미래</div>
+              <div style="font-size:16px;font-weight:800;">Monetization</div>
+              <div style="font-size:12px;color:#6b7280;margin-top:6px;">검증 후 논의, 현재 범위 밖</div>
+            </div>
+          </div>
+          <div style="margin-top:10px;font-size:12px;color:#6b7280;">근거: <code>docs/ROADMAP.md</code>, <code>docs/PRODUCT_PRINCIPLES.md</code>, <code>agent.md</code></div>
+        </section>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:16px;">
+          <section style="background:#ffffff;border:1px solid #d1d5db;border-radius:18px;padding:16px;">
+            <div style="font-size:18px;font-weight:800;margin-bottom:10px;">Now</div>
+            <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:10px;margin-bottom:8px;">
+              <div style="font-weight:800;">Stage 0 handoff 유지</div>
+              <div style="font-size:13px;color:#166534;">distribution-channel-handoff, school-dorm-share-packet, no signal, 0 / 3</div>
+            </div>
+            <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:10px;margin-bottom:8px;">
+              <div style="font-weight:800;">문서형 실행 준비 완료</div>
+              <div style="font-size:13px;color:#374151;">recruiting copy, scheduling tracker, preflight, worksheet, rollup까지 준비됨</div>
+            </div>
+            <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:10px;">
+              <div style="font-weight:800;">실관찰은 아직 없음</div>
+              <div style="font-size:13px;color:#9a3412;">준비 문서는 많지만 행동 데이터는 없음</div>
+            </div>
+          </section>
+
+          <section style="background:#ffffff;border:1px solid #d1d5db;border-radius:18px;padding:16px;">
+            <div style="font-size:18px;font-weight:800;margin-bottom:10px;">Next</div>
+            <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:10px;margin-bottom:8px;">
+              <div style="font-weight:800;">3명 role-labeled 모집 시작</div>
+              <div style="font-size:13px;color:#1d4ed8;">invite -> tracker invited -> reply 후 agreed -> observation</div>
+            </div>
+            <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:10px;margin-bottom:8px;">
+              <div style="font-weight:800;">같은 packet version 고정</div>
+              <div style="font-size:13px;color:#1d4ed8;">school-dorm-share-packet-v2-2026-06-11-readable-preview 유지</div>
+            </div>
+            <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:10px;">
+              <div style="font-weight:800;">rollup 분기 확보</div>
+              <div style="font-size:13px;color:#1d4ed8;">no signal / friction / candidate signal 중 하나로만 판정</div>
+            </div>
+          </section>
+
+          <section style="background:#ffffff;border:1px solid #d1d5db;border-radius:18px;padding:16px;">
+            <div style="font-size:18px;font-weight:800;margin-bottom:10px;">Hold / Watch</div>
+            <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:10px;margin-bottom:8px;">
+              <div style="font-weight:800;">Flow of Flow 확장</div>
+              <div style="font-size:13px;color:#991b1b;">6/17 PoC는 방향성은 주지만 Stage 0 검증을 대체하지 못함</div>
+            </div>
+            <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:10px;margin-bottom:8px;">
+              <div style="font-weight:800;">6/18 100-source scan</div>
+              <div style="font-size:13px;color:#991b1b;">원컨텐츠 심사 리포트이지 사용자 검증 문서가 아님</div>
+            </div>
+            <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:10px;">
+              <div style="font-weight:800;">Integrations / monetization</div>
+              <div style="font-size:13px;color:#991b1b;">export-first 행동 증명 전 범위 밖</div>
+            </div>
+          </section>
+        </div>
+
+        <section style="margin-top:16px;background:#ffffff;border:1px solid #d1d5db;border-radius:18px;padding:18px;">
+          <div style="font-size:18px;font-weight:800;margin-bottom:12px;">최근 진행 타임라인</div>
+          <div style="display:grid;gap:10px;">
+            <div style="display:grid;grid-template-columns:minmax(90px,120px) 1fr 1fr;gap:10px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:12px;">
+              <div style="font-weight:800;">2026-06-18</div>
+              <div>
+                <div style="font-weight:800;">Flow of Flow 후보 100개 스캔, 상위 5개 선정</div>
+                <div style="font-size:12px;color:#6b7280;">source: <code>docs/content-audit/2026-06-18-flowof-flow-100-source-scan-top5-ko.html</code></div>
+              </div>
+              <div style="font-size:13px;color:#374151;">확장 후보 탐색은 전진. 사용자용 화면이 아닌 원컨텐츠 심사 리포트다.</div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:minmax(90px,120px) 1fr 1fr;gap:10px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:12px;">
+              <div style="font-weight:800;">2026-06-17</div>
+              <div>
+                <div style="font-weight:800;">Context split + Flow of Flow 확산 목표 정리</div>
+                <div style="font-size:12px;color:#6b7280;">source: <code>docs/content-audit/2026-06-17-context-split-flowof-flow-expansion-goal-ko.md</code>, <code>docs/DECISIONS.md</code></div>
+              </div>
+              <div style="font-size:13px;color:#374151;">다음 제품 질문이 creator / save-before / in-app 분리와 small Flow 운영층 쪽으로 이동했다.</div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:minmax(90px,120px) 1fr 1fr;gap:10px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:12px;">
+              <div style="font-weight:800;">2026-06-17</div>
+              <div>
+                <div style="font-weight:800;">source-gated 사용자 PoC 시뮬레이션 재검증</div>
+                <div style="font-size:12px;color:#6b7280;">source: <code>docs/content-audit/2026-06-17-source-gated-simulation-report-ko.html</code></div>
+              </div>
+              <div style="font-size:13px;color:#374151;">UI/시뮬레이션 품질은 개선됐지만 validation 근거로는 부족하다.</div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:minmax(90px,120px) 1fr 1fr;gap:10px;background:#ecfeff;border:1px solid #a5f3fc;border-radius:12px;padding:12px;">
+              <div style="font-weight:800;">2026-06-11</div>
+              <div>
+                <div style="font-weight:800;">distribution-channel handoff 문서 세트 정비</div>
+                <div style="font-size:12px;color:#6b7280;">source: <code>docs/STATUS.md</code>, <code>docs/content-audit/2026-06-11-*.md</code></div>
+              </div>
+              <div style="font-size:13px;color:#155e75;">현재 상태의 가장 강한 증거. 실행 순서, stop gate, preflight, rollup 규칙이 문서로 고정됐다.</div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:minmax(90px,120px) 1fr 1fr;gap:10px;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:12px;">
+              <div style="font-weight:800;">git recent</div>
+              <div>
+                <div style="font-weight:800;">최근 커밋은 moving restart / skill / harness 축</div>
+                <div style="font-size:12px;color:#6b7280;">signal: <code>git log --oneline -8</code>, <code>git status --short</code></div>
+              </div>
+              <div style="font-size:13px;color:#9a3412;">커밋 축과 STATUS 축이 다르다. 워크트리도 매우 더러워 git log는 보조 신호로만 사용.</div>
+            </div>
+          </div>
+        </section>
+
+        <section style="margin-top:16px;background:#ffffff;border:1px solid #d1d5db;border-radius:18px;padding:18px;">
+          <div style="font-size:18px;font-weight:800;margin-bottom:12px;">오늘 액션 보드</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;">
+            <div style="border:1px solid #d1d5db;border-radius:14px;padding:14px;background:#fafafa;">
+              <div style="font-size:15px;font-weight:800;margin-bottom:10px;">Evidence / Observation</div>
+              <div style="margin-bottom:10px;padding:10px;border-radius:10px;background:#ffffff;border:1px solid #e5e7eb;">
+                <div><span style="background:#fee2e2;color:#991b1b;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:800;">P1</span> <span style="background:#fef3c7;color:#92400e;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:800;">신뢰도 높음</span></div>
+                <div style="font-weight:800;margin-top:6px;">3명 모집용 invite 발송 준비</div>
+                <div style="font-size:13px;color:#4b5563;">문서만 더 만드는 대신 실제 invited 상태로 전환</div>
+              </div>
+              <div style="padding:10px;border-radius:10px;background:#ffffff;border:1px solid #e5e7eb;">
+                <div><span style="background:#fee2e2;color:#991b1b;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:800;">P1</span> <span style="background:#dbeafe;color:#1d4ed8;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:800;">신뢰도 중간</span></div>
+                <div style="font-weight:800;margin-top:6px;">agreed 슬롯 없이 관찰 시작 금지</div>
+                <div style="font-size:13px;color:#4b5563;">scheduling evidence와 observation evidence를 분리 유지</div>
+              </div>
+            </div>
+
+            <div style="border:1px solid #d1d5db;border-radius:14px;padding:14px;background:#fafafa;">
+              <div style="font-size:15px;font-weight:800;margin-bottom:10px;">Implementation</div>
+              <div style="margin-bottom:10px;padding:10px;border-radius:10px;background:#ffffff;border:1px solid #e5e7eb;">
+                <div><span style="background:#fef3c7;color:#92400e;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:800;">P2</span> <span style="background:#dbeafe;color:#1d4ed8;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:800;">신뢰도 중간</span></div>
+                <div style="font-weight:800;margin-top:6px;">small Flow 운영층 요구 정리</div>
+                <div style="font-size:13px;color:#4b5563;">saved Flow library / creator ops는 6/17 결정 이후의 다음 설계축</div>
+              </div>
+              <div style="padding:10px;border-radius:10px;background:#ffffff;border:1px solid #e5e7eb;">
+                <div><span style="background:#fef3c7;color:#92400e;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:800;">P2</span> <span style="background:#e5e7eb;color:#374151;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:800;">신뢰도 낮음</span></div>
+                <div style="font-weight:800;margin-top:6px;">moving restart 코드축과 Stage 0 축 관계 재정렬</div>
+                <div style="font-size:13px;color:#4b5563;">현재 브랜치 작업이 무엇을 증명하는지 상태 문서와 연결 필요</div>
+              </div>
+            </div>
+
+            <div style="border:1px solid #d1d5db;border-radius:14px;padding:14px;background:#fafafa;">
+              <div style="font-size:15px;font-weight:800;margin-bottom:10px;">Docs / QA</div>
+              <div style="margin-bottom:10px;padding:10px;border-radius:10px;background:#ffffff;border:1px solid #e5e7eb;">
+                <div><span style="background:#fef3c7;color:#92400e;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:800;">P2</span> <span style="background:#fef3c7;color:#92400e;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:800;">신뢰도 높음</span></div>
+                <div style="font-weight:800;margin-top:6px;">STATUS 갱신 필요 여부 점검</div>
+                <div style="font-size:13px;color:#4b5563;">6/17~6/18 확장 문서가 current status를 바꾼 건 아님</div>
+              </div>
+              <div style="padding:10px;border-radius:10px;background:#ffffff;border:1px solid #e5e7eb;">
+                <div><span style="background:#fef3c7;color:#92400e;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:800;">P3</span> <span style="background:#dbeafe;color:#1d4ed8;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:800;">신뢰도 중간</span></div>
+                <div style="font-weight:800;margin-top:6px;">Flow of Flow 문서군은 전략/PoC 배지 유지</div>
+                <div style="font-size:13px;color:#4b5563;">validation, public-route, integration-ready로 읽히지 않게 라벨 관리</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:16px;">
+          <section style="background:#ffffff;border:1px solid #d1d5db;border-radius:18px;padding:18px;">
+            <div style="font-size:18px;font-weight:800;margin-bottom:12px;">Validation / Evidence Meter</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+              <span style="background:#e5e7eb;color:#374151;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;">Observed-user evidence</span>
+              <span style="background:#e5e7eb;color:#374151;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;">Candidate signal</span>
+              <span style="background:#fee2e2;color:#991b1b;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;">No signal</span>
+              <span style="background:#fef3c7;color:#92400e;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;">Internal QA / simulation</span>
+            </div>
+            <div style="height:18px;background:#f3f4f6;border-radius:999px;overflow:hidden;border:1px solid #e5e7eb;">
+              <div style="width:70%;height:100%;background:#ef4444;display:inline-block;"></div><div style="width:20%;height:100%;background:#f59e0b;display:inline-block;"></div><div style="width:10%;height:100%;background:#d1d5db;display:inline-block;"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:12px;font-size:13px;">
+              <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:10px;"><strong>Observed-user</strong><br />0<br /><span style="color:#6b7280;">실제 recipient session 없음</span></div>
+              <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:10px;"><strong>Candidate signal</strong><br />0<br /><span style="color:#6b7280;">rollup 미생성</span></div>
+              <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:10px;"><strong>No signal</strong><br />현재 상태<br /><span style="color:#991b1b;">STATUS와 6/11 checkpoint 기준</span></div>
+              <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px;"><strong>Internal QA</strong><br />높음<br /><span style="color:#92400e;">6/17 시뮬레이션, 6/18 소스 스캔</span></div>
+            </div>
+          </section>
+
+          <section style="background:#ffffff;border:1px solid #d1d5db;border-radius:18px;padding:18px;">
+            <div style="font-size:18px;font-weight:800;margin-bottom:12px;">Risk / Caution Matrix</div>
+            <div style="display:grid;gap:10px;">
+              <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:12px;">
+                <div style="font-weight:800;">문서 최신성 충돌</div>
+                <div style="font-size:13px;color:#9a3412;">STATUS.md는 2026-06-11, ROADMAP.md는 2026-05-25. 최신 content-audit보다 오래됐지만 current-state truth는 아직 이 문서들에 묶여 있다.</div>
+              </div>
+              <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:12px;">
+                <div style="font-weight:800;">dirty worktree</div>
+                <div style="font-size:13px;color:#991b1b;">수정/미추적 파일이 매우 많아 git log는 오늘 상태의 일부만 보여준다.</div>
+              </div>
+              <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:12px;">
+                <div style="font-weight:800;">검증 과대서술 위험</div>
+                <div style="font-size:13px;color:#991b1b;">6/17 시뮬레이션, 6/18 후보 스캔은 validation이 아니라 내부 QA와 전략 자료다.</div>
+              </div>
+              <div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:12px;padding:12px;">
+                <div style="font-weight:800;">다음 결정 블로커</div>
+                <div style="font-size:13px;color:#3730a3;">실제 3세션 rollup 없이는 public route, integration, monetization, Flow of Flow 플랫폼 판단으로 넘어갈 수 없다.</div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section style="margin-top:16px;background:#ffffff;border:1px solid #d1d5db;border-radius:18px;padding:18px;">
+          <div style="font-size:18px;font-weight:800;margin-bottom:10px;">소스 푸터</div>
+          <div style="font-size:13px;color:#374151;">
+            <strong>주요 문서:</strong> <code>AGENTS.md</code>, <code>agent.md</code>, <code>docs/harness/README.md</code>, <code>docs/STATUS.md</code>, <code>docs/ROADMAP.md</code>, <code>docs/PRODUCT_PRINCIPLES.md</code>, <code>docs/DECISIONS.md</code>, <code>docs/IDEAS.md</code>, <code>docs/specs/README.md</code><br />
+            <strong>현재 상태 근거:</strong> <code>docs/content-audit/2026-06-11-distribution-channel-handoff-current-state-handoff.md</code>, <code>docs/content-audit/2026-06-11-distribution-channel-stage0-phase-checkpoint.md</code><br />
+            <strong>전략 / PoC 문맥:</strong> <code>docs/content-audit/2026-06-17-context-split-flowof-flow-expansion-goal-ko.md</code>, <code>docs/content-audit/2026-06-17-context-split-expansion-principles-ko.md</code>, <code>docs/content-audit/2026-06-17-source-gated-simulation-report-ko.html</code>, <code>docs/content-audit/2026-06-18-flowof-flow-100-source-scan-top5-ko.html</code><br />
+            <strong>git 신호:</strong> <code>git status --short</code>, <code>git log --oneline -8 --decorate</code>
+          </div>
+        </section>
+      </div>
+    </article>
+  </body>
+</html>

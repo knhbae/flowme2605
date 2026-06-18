@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 5개 대표 Flow UX 리포트</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f8fb;
+        --paper: #ffffff;
+        --soft: #f1f5f9;
+        --ink: #111827;
+        --body: #334155;
+        --muted: #64748b;
+        --line: #d8e1ec;
+        --blue: #1d4ed8;
+        --blue-soft: #eff6ff;
+        --green: #047857;
+        --green-soft: #ecfdf5;
+        --amber: #b45309;
+        --amber-soft: #fffbeb;
+        --red: #b42318;
+        --red-soft: #fff1f2;
+        --violet: #6d28d9;
+        --violet-soft: #f5f3ff;
+        --shadow: 0 18px 46px rgba(15, 23, 42, 0.08);
+        --radius: 8px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard",
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          "Malgun Gothic",
+          system-ui,
+          sans-serif;
+        letter-spacing: 0;
+        line-height: 1.62;
+        overflow-x: hidden;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.22;
+        word-break: keep-all;
+      }
+
+      p,
+      li,
+      td {
+        color: var(--body);
+      }
+
+      code {
+        border-radius: 6px;
+        background: #eef2f7;
+        color: #0f172a;
+        padding: 2px 6px;
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 0.92em;
+      }
+
+      .page {
+        width: min(1240px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 18px 0 72px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 56px;
+        margin-bottom: 14px;
+        padding: 11px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      }
+
+      .brand {
+        color: var(--blue);
+        font-size: 23px;
+        font-weight: 900;
+      }
+
+      .topbar-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+        max-width: 100%;
+      }
+
+      .pill-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 34px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: #fff;
+        padding: 0 10px;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 286px;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .hero,
+      .panel,
+      .nav {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .hero {
+        padding: 22px;
+      }
+
+      .eyebrow {
+        color: var(--blue);
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      h1 {
+        margin-top: 8px;
+        max-width: 840px;
+        font-size: clamp(32px, 5vw, 54px);
+        letter-spacing: 0;
+      }
+
+      .hero-copy {
+        max-width: 820px;
+        margin-top: 14px;
+        font-size: 17px;
+      }
+
+      .callout {
+        margin-top: 18px;
+        border: 1px solid #bfdbfe;
+        border-radius: var(--radius);
+        background: var(--blue-soft);
+        padding: 14px 16px;
+      }
+
+      .callout strong {
+        display: block;
+        margin-bottom: 4px;
+        color: #1e3a8a;
+      }
+
+      .kpis {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .kpi {
+        min-height: 104px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fbfdff;
+        padding: 13px;
+      }
+
+      .kpi span {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .kpi strong {
+        display: block;
+        margin-top: 5px;
+        color: var(--ink);
+        font-size: 25px;
+        line-height: 1.1;
+      }
+
+      .kpi p {
+        margin-top: 7px;
+        font-size: 13px;
+      }
+
+      .nav {
+        position: sticky;
+        top: 16px;
+        padding: 14px;
+      }
+
+      .nav h2 {
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .nav a {
+        display: block;
+        border-radius: 7px;
+        padding: 8px 9px;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .nav a:hover {
+        background: var(--soft);
+        text-decoration: none;
+      }
+
+      .content {
+        display: grid;
+        gap: 16px;
+      }
+
+      .panel {
+        padding: 20px;
+      }
+
+      .panel h2 {
+        font-size: 24px;
+      }
+
+      .section-copy {
+        margin-top: 8px;
+        max-width: 860px;
+      }
+
+      .route-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .route-card {
+        display: grid;
+        gap: 10px;
+        align-content: start;
+        min-height: 268px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        padding: 13px;
+      }
+
+      .route-card h3 {
+        font-size: 16px;
+      }
+
+      .route-card p {
+        font-size: 13px;
+      }
+
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        border-radius: 6px;
+        background: var(--soft);
+        padding: 0 7px;
+        color: #475569;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .tag.blue {
+        background: var(--blue-soft);
+        color: #1d4ed8;
+      }
+
+      .tag.green {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .tag.amber {
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .tag.violet {
+        background: var(--violet-soft);
+        color: var(--violet);
+      }
+
+      .route-link {
+        margin-top: auto;
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .matrix {
+        width: 100%;
+        max-width: 100%;
+        margin-top: 14px;
+        border-collapse: collapse;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: white;
+      }
+
+      .matrix th,
+      .matrix td {
+        border-bottom: 1px solid var(--line);
+        padding: 11px 12px;
+        text-align: left;
+        vertical-align: top;
+        font-size: 14px;
+      }
+
+      .matrix th {
+        background: #f8fafc;
+        color: #475569;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .matrix tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .score-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .score {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fbfdff;
+        padding: 12px;
+      }
+
+      .score strong {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        color: var(--ink);
+        font-size: 15px;
+      }
+
+      .score b {
+        color: var(--blue);
+        font-size: 22px;
+      }
+
+      .score p {
+        margin-top: 7px;
+        font-size: 13px;
+      }
+
+      .findings {
+        display: grid;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .finding {
+        display: grid;
+        grid-template-columns: 86px minmax(0, 1fr);
+        gap: 12px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        padding: 12px;
+      }
+
+      .level {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 30px;
+        border-radius: 7px;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .level.strong {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .level.medium {
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .level.low {
+        background: var(--soft);
+        color: #475569;
+      }
+
+      .fix-box {
+        margin-top: 14px;
+        border: 1px solid #fed7aa;
+        border-radius: var(--radius);
+        background: var(--amber-soft);
+        padding: 14px;
+      }
+
+      .fix-box strong {
+        color: #92400e;
+      }
+
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .step {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        padding: 14px;
+      }
+
+      .step span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        background: var(--blue);
+        color: white;
+        font-weight: 900;
+      }
+
+      .step h3 {
+        margin-top: 10px;
+        font-size: 16px;
+      }
+
+      .step p {
+        margin-top: 7px;
+        font-size: 14px;
+      }
+
+      .command-list {
+        display: grid;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .command-list code {
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+        padding: 10px 12px;
+        white-space: nowrap;
+      }
+
+      .footer-note {
+        margin-top: 16px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 1040px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .nav {
+          position: static;
+          order: -1;
+        }
+
+        .route-grid,
+        .score-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 720px) {
+        .page {
+          width: min(100% - 20px, 1240px);
+          padding-top: 10px;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero,
+        .panel {
+          padding: 16px;
+        }
+
+        .hero-copy {
+          font-size: 15px;
+        }
+
+        .kpis,
+        .route-grid,
+        .score-grid,
+        .steps {
+          grid-template-columns: 1fr;
+        }
+
+        .finding {
+          grid-template-columns: 1fr;
+        }
+
+        .matrix {
+          display: block;
+          width: 100%;
+          max-width: 100%;
+          overflow-x: auto;
+          white-space: nowrap;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <div class="brand">FLOW</div>
+        <div class="topbar-actions">
+          <a class="pill-link" href="./2026-06-11-five-route-source-to-flow-ux-report.md">Markdown 원문</a>
+          <a class="pill-link" href="./2026-06-11-category-expansion-completion-audit.md">완료 감사</a>
+          <a class="pill-link" href="http://127.0.0.1:3107/content-flows">라이브 리뷰</a>
+        </div>
+      </header>
+
+      <div class="layout">
+        <main class="content">
+          <section class="hero" id="summary">
+            <p class="eyebrow">Source-to-Flow UX Report · 2026-06-11</p>
+            <h1>온라인 콘텐츠가 개인 실행 Flow로 보이는가</h1>
+            <p class="hero-copy">
+              전세계약, 초등 입학, 아이 놀이, 원격지원, 냉장고 파먹기 5개 공개 route를 비교해
+              FlowMe가 특정 체크리스트 앱이 아니라 외부 콘텐츠를 캘린더·체크리스트·메모·시트로 옮기는 도구처럼 보이는지 판단했습니다.
+            </p>
+            <div class="callout">
+              <strong>결론</strong>
+              현재 5개 샘플은 Stage 0 source-to-Flow QA 기준으로 충분합니다. 더 많은 유사 샘플을 추가하기보다, 비교 화면 또는 3-5명 사용자 관찰로 넘어가는 편이 맞습니다.
+            </div>
+            <div class="kpis">
+              <div class="kpi">
+                <span>대표 route</span>
+                <strong>5개</strong>
+                <p>서로 다른 콘텐츠 도메인과 실행 목적지를 포함합니다.</p>
+              </div>
+              <div class="kpi">
+                <span>Artifact 종류</span>
+                <strong>4종</strong>
+                <p>캘린더, 체크리스트, 내부 체크, 시트가 모두 확인됐습니다.</p>
+              </div>
+              <div class="kpi">
+                <span>평균 rubric</span>
+                <strong>3.75</strong>
+                <p>공개 MVP 기준은 넘지만 실제 검증은 아닙니다.</p>
+              </div>
+              <div class="kpi">
+                <span>이번 리포트에서 수정</span>
+                <strong>1건</strong>
+                <p>아이 도안 Flow의 모바일 실행판 위치를 개선했습니다.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="routes">
+            <h2>5개 대표 Flow</h2>
+            <p class="section-copy">
+              각 route는 콘텐츠 카테고리보다 사용자가 실제로 저장하고 쓸 artifact가 무엇인지 보여주는 용도입니다.
+            </p>
+            <div class="route-grid">
+              <article class="route-card">
+                <div class="tag-row">
+                  <span class="tag blue">계약</span>
+                  <span class="tag green">hybrid</span>
+                </div>
+                <h3>전세계약 전 서류 체크</h3>
+                <p>계약일 입력 후 D-3, D-Day, D+1 항목을 확인합니다. 법률 판단과 계약 원문 저장은 제외합니다.</p>
+                <a class="route-link" href="http://127.0.0.1:3107/f/jeonse-contract-precheck-docs">route 열기</a>
+              </article>
+              <article class="route-card">
+                <div class="tag-row">
+                  <span class="tag blue">교육/육아</span>
+                  <span class="tag green">timeline</span>
+                </div>
+                <h3>초등학교 입학 D-30</h3>
+                <p>입학일 기준 준비 일정을 따라가되, 아이 개인정보와 교육 평가 기록은 저장하지 않습니다.</p>
+                <a class="route-link" href="http://127.0.0.1:3107/f/elementary-school-entry-d30">route 열기</a>
+              </article>
+              <article class="route-card">
+                <div class="tag-row">
+                  <span class="tag blue">아이 놀이</span>
+                  <span class="tag violet">source link</span>
+                </div>
+                <h3>도안 스퀴시 만들기</h3>
+                <p>원문 도안은 링크로 두고, FlowMe에는 보호자 준비·놀이·정리 체크만 남깁니다.</p>
+                <a class="route-link" href="http://127.0.0.1:3107/f/kids-printable-squishy-craft">route 열기</a>
+              </article>
+              <article class="route-card">
+                <div class="tag-row">
+                  <span class="tag blue">디지털 절차</span>
+                  <span class="tag amber">internal check</span>
+                </div>
+                <h3>원격지원 사전 권한 체크</h3>
+                <p>화면 공유, 일회성 제어, 반복 접근을 구분합니다. 코드·비밀번호·세션 링크는 저장하지 않습니다.</p>
+                <a class="route-link" href="http://127.0.0.1:3107/f/remote-help-session-precheck">route 열기</a>
+              </article>
+              <article class="route-card">
+                <div class="tag-row">
+                  <span class="tag blue">식재료</span>
+                  <span class="tag green">sheet</span>
+                </div>
+                <h3>냉장고 파먹기 7일</h3>
+                <p>우선 재료, 메뉴 후보, 장보기 보류를 시트로 기록합니다. 절약·영양·식품 안전 판단은 하지 않습니다.</p>
+                <a class="route-link" href="http://127.0.0.1:3107/f/fridge-cleanout-weekly-plan">route 열기</a>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="matrix">
+            <h2>Source-to-Artifact 매트릭스</h2>
+            <p class="section-copy">
+              핵심은 콘텐츠 분류가 아니라 사용자가 어느 도구로 옮겨 실행할 수 있는지입니다.
+            </p>
+            <table class="matrix">
+              <thead>
+                <tr>
+                  <th>Flow</th>
+                  <th>원문 형태</th>
+                  <th>사용자 행동</th>
+                  <th>주요 artifact</th>
+                  <th>제외한 것</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>jeonse</code></td>
+                  <td>계약 전 점검 가이드</td>
+                  <td>날짜별 체크와 보류 메모</td>
+                  <td>캘린더 + 체크리스트</td>
+                  <td>법률 판단, 계약 원문, 계좌/주민번호</td>
+                </tr>
+                <tr>
+                  <td><code>elementary</code></td>
+                  <td>공식 안내 + 부모 준비</td>
+                  <td>D-30 준비 일정 따라가기</td>
+                  <td>타임라인 + 체크리스트</td>
+                  <td>아이 개인정보, 교육 평가, 구매 강제</td>
+                </tr>
+                <tr>
+                  <td><code>kids craft</code></td>
+                  <td>창작자 도안 글</td>
+                  <td>원문 링크 확인 후 준비·놀이·정리</td>
+                  <td>출처 링크 + 체크리스트</td>
+                  <td>도안 복제, 파일 저장, 아이 사진</td>
+                </tr>
+                <tr>
+                  <td><code>remote help</code></td>
+                  <td>공식 원격지원 문서</td>
+                  <td>최소 권한 방식 선택</td>
+                  <td>내부 체크리스트</td>
+                  <td>접속 코드, 비밀번호, 세션 링크, 사기 판정</td>
+                </tr>
+                <tr>
+                  <td><code>fridge</code></td>
+                  <td>냉장고 파먹기 블로그</td>
+                  <td>7일 재고표 작성</td>
+                  <td>시트</td>
+                  <td>절약 보장, 영양 처방, 식품 안전 판단</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="panel" id="findings">
+            <h2>UX 판단</h2>
+            <div class="findings">
+              <div class="finding">
+                <span class="level strong">Strong</span>
+                <div>
+                  <h3>충분한 artifact 다양성이 확보됨</h3>
+                  <p>5개 route가 캘린더/체크리스트/내부 체크/시트를 모두 보여주기 때문에 FlowMe가 단일 카테고리 앱처럼 보이는 위험은 낮아졌습니다.</p>
+                </div>
+              </div>
+              <div class="finding">
+                <span class="level strong">Strong</span>
+                <div>
+                  <h3>source/risk 분리가 테스트와 화면에 남아 있음</h3>
+                  <p>법률 판단, 아이 기록, 도안 복제, 원격 접속값 저장, 영양·절약 보장을 각각 제외한 것이 public route와 테스트에 반영되어 있습니다.</p>
+                </div>
+              </div>
+              <div class="finding">
+                <span class="level medium">Medium</span>
+                <div>
+                  <h3>공용 설명 섹션은 여전히 무겁게 느껴질 수 있음</h3>
+                  <p>첫 artifact는 충분히 빨리 보이지만, 하단 공용 섹션은 일부 route에서 검토용 설명처럼 보입니다. 다음 polish에서는 반복 설명을 줄이는 편이 좋습니다.</p>
+                </div>
+              </div>
+              <div class="finding">
+                <span class="level medium">Medium</span>
+                <div>
+                  <h3>캘린더는 기본값이 아니라 선택 결과여야 함</h3>
+                  <p>냉장고 route가 가장 좋은 반례입니다. 날짜가 있어도 사용자가 실제로 다루는 대상이 row라면 시트가 먼저 와야 합니다.</p>
+                </div>
+              </div>
+              <div class="finding">
+                <span class="level low">Low</span>
+                <div>
+                  <h3>데스크톱 첫 실행판 위치는 더 줄일 수 있음</h3>
+                  <p>모바일은 우선 보정됐습니다. 데스크톱은 여유가 있지만, 향후 비교 페이지에서는 상단 요약을 더 압축할 수 있습니다.</p>
+                </div>
+              </div>
+            </div>
+            <div class="fix-box">
+              <strong>이번 리포트 중 적용한 수정</strong>
+              <p>
+                `kids-printable-squishy-craft`의 모바일 실행판이 첫 화면 아래로 밀려 있던 문제를 확인하고,
+                모바일 artifact-first ordering과 Playwright 커버리지에 추가했습니다.
+              </p>
+            </div>
+          </section>
+
+          <section class="panel" id="score">
+            <h2>Rubric 요약</h2>
+            <p class="section-copy">평균 점수는 3.75입니다. Stage 0 source-to-Flow QA로는 충분하지만, 사용자 행동 검증은 아닙니다.</p>
+            <div class="score-grid">
+              <div class="score"><strong>User Need Fit <b>4</b></strong><p>각 route가 구체적인 생활 상황에서 시작합니다.</p></div>
+              <div class="score"><strong>Execution Clarity <b>4</b></strong><p>날짜, row, checkbox, 권한 선택이 보입니다.</p></div>
+              <div class="score"><strong>Content Fidelity <b>4</b></strong><p>원문 cue가 item/detail/test에 남아 있습니다.</p></div>
+              <div class="score"><strong>Portability <b>4</b></strong><p>calendar, checklist, memo/link, sheet 이동성이 확인됐습니다.</p></div>
+              <div class="score"><strong>Cognitive Load <b>3</b></strong><p>첫 artifact는 괜찮지만 하단 설명이 아직 무겁습니다.</p></div>
+              <div class="score"><strong>Copy Specificity <b>3</b></strong><p>핵심 행동은 구체적이고, 공용 copy는 더 줄일 수 있습니다.</p></div>
+              <div class="score"><strong>Source/Safety <b>4</b></strong><p>민감 정보와 보장 문구 경계가 명확합니다.</p></div>
+              <div class="score"><strong>Operability <b>4</b></strong><p>입력, 체크, 링크, 모바일 overflow가 검증됐습니다.</p></div>
+            </div>
+          </section>
+
+          <section class="panel" id="next">
+            <h2>다음 권장 작업</h2>
+            <p class="section-copy">
+              지금은 더 많은 route를 추가할 때가 아니라, 5개 예시를 사용자가 이해하는지 확인할 때입니다.
+            </p>
+            <div class="steps">
+              <div class="step">
+                <span>1</span>
+                <h3>비교 화면 만들기</h3>
+                <p>5개 route를 한 화면에서 비교해 어떤 artifact로 저장되는지 바로 보이게 합니다.</p>
+              </div>
+              <div class="step">
+                <span>2</span>
+                <h3>3-5명 관찰</h3>
+                <p>사용자가 무엇이 저장되는지, 원문/주의 정보를 찾을 수 있는지 확인합니다.</p>
+              </div>
+              <div class="step">
+                <span>3</span>
+                <h3>생성 prompt 기준화</h3>
+                <p>관찰 결과를 바탕으로 기본 artifact 선택 규칙과 copy prompt를 정리합니다.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="evidence">
+            <h2>검증 명령</h2>
+            <div class="command-list">
+              <code>npm run build</code>
+              <code>npx playwright test tests/e2e/flow-mvp.spec.ts --grep "promoted public routes bring the executable artifact into the first mobile viewport"</code>
+              <code>npm run docs:check</code>
+            </div>
+            <p class="footer-note">이 리포트는 source-to-Flow QA 문서입니다. 실제 사용자 검증, category validation, product-market validation으로 부르지 않습니다.</p>
+          </section>
+        </main>
+
+        <aside class="nav" aria-label="문서 목차">
+          <h2>목차</h2>
+          <a href="#summary">요약</a>
+          <a href="#routes">5개 대표 Flow</a>
+          <a href="#matrix">매트릭스</a>
+          <a href="#findings">UX 판단</a>
+          <a href="#score">Rubric</a>
+          <a href="#next">다음 작업</a>
+          <a href="#evidence">검증</a>
+        </aside>
+      </div>
+    </div>
+  </body>
+</html>

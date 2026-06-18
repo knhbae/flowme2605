@@ -1,0 +1,1102 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flow category jeonse-level POC</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #fff;
+      --soft: #f8fafc;
+      --text: #111827;
+      --muted: #5f6b7a;
+      --line: #d9e0ea;
+      --line-strong: #bfc8d6;
+      --blue: #1f6feb;
+      --blue-soft: #eaf2ff;
+      --green: #24834f;
+      --green-soft: #eaf7ef;
+      --amber: #a35f00;
+      --amber-soft: #fff4df;
+      --violet: #6741ad;
+      --violet-soft: #f0eafa;
+      --red: #b42318;
+      --red-soft: #fff0ed;
+      --shadow: 0 14px 34px rgba(17, 24, 39, .08);
+      --radius: 8px;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      background: var(--bg);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.58;
+      background: linear-gradient(180deg, #fbfcff 0, var(--bg) 360px);
+    }
+
+    button, input, textarea { font: inherit; }
+    button { min-height: 44px; }
+
+    .page {
+      width: min(1240px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 64px;
+    }
+
+    .hero, .section, .flow-shell, .card, .phone, .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(270px, .55fr);
+      gap: 20px;
+      padding: 28px;
+      margin-bottom: 18px;
+    }
+
+    h1, h2, h3, h4, p { margin-top: 0; }
+    h1 { margin-bottom: 12px; font-size: clamp(28px, 4vw, 46px); line-height: 1.14; letter-spacing: 0; }
+    h2 { margin-bottom: 12px; font-size: clamp(22px, 2.6vw, 32px); line-height: 1.24; letter-spacing: 0; }
+    h3 { margin-bottom: 8px; font-size: 20px; line-height: 1.3; letter-spacing: 0; }
+    h4 { margin-bottom: 7px; font-size: 15px; letter-spacing: 0; }
+    p { margin-bottom: 10px; }
+
+    .eyebrow {
+      margin-bottom: 8px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .lead {
+      max-width: 780px;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .muted, .small {
+      color: var(--muted);
+    }
+
+    .small {
+      font-size: 13px;
+    }
+
+    .pills, .chips, .tabs, .state-row, .time-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill, .chip, .state {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 10px;
+      background: var(--soft);
+      color: #263142;
+      font-size: 13px;
+      font-weight: 760;
+      white-space: nowrap;
+    }
+
+    .blue { border-color: #bad1fb; background: var(--blue-soft); color: #174ea6; }
+    .green { border-color: #b8dfc8; background: var(--green-soft); color: #176236; }
+    .amber { border-color: #efcb8c; background: var(--amber-soft); color: #754500; }
+    .violet { border-color: #d1c0ef; background: var(--violet-soft); color: #55308c; }
+    .red { border-color: #efb8b2; background: var(--red-soft); color: var(--red); }
+
+    .section {
+      padding: 22px;
+      margin: 18px 0;
+    }
+
+    .hero-side {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      background: var(--soft);
+    }
+
+    .metric b { display: block; margin-bottom: 2px; }
+
+    .flow-shell {
+      display: grid;
+      grid-template-columns: 290px minmax(0, 1fr);
+      gap: 0;
+      overflow: hidden;
+      margin-top: 18px;
+    }
+
+    .flow-nav {
+      display: grid;
+      align-content: start;
+      gap: 8px;
+      padding: 14px;
+      border-right: 1px solid var(--line);
+      background: #fbfcfe;
+    }
+
+    .flow-button {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .flow-button[aria-selected="true"] {
+      border-color: #98b9f0;
+      background: var(--blue-soft);
+      box-shadow: inset 4px 0 0 var(--blue);
+    }
+
+    .flow-button b, .flow-button span {
+      display: block;
+    }
+
+    .flow-button span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .flow-workspace {
+      display: grid;
+      gap: 18px;
+      padding: 18px;
+    }
+
+    .flow-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: minmax(320px, 440px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .phone {
+      overflow: hidden;
+      border-radius: 24px;
+      box-shadow: 0 20px 46px rgba(17, 24, 39, .16);
+    }
+
+    .phone-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .phone-title {
+      min-width: 0;
+    }
+
+    .phone-title b, .phone-title span {
+      display: block;
+    }
+
+    .phone-title b {
+      overflow-wrap: anywhere;
+      line-height: 1.25;
+    }
+
+    .phone-title span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .phone-body {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      background: #f2f5f9;
+    }
+
+    .screen-card, .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      background: var(--surface);
+      box-shadow: none;
+    }
+
+    .label {
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .source-card {
+      border: 1px solid #c7d7f2;
+      background: #f6f9ff;
+    }
+
+    .source-card a {
+      color: var(--blue);
+      font-weight: 800;
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    label {
+      color: #344054;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    input, textarea {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      background: #fff;
+      color: var(--text);
+    }
+
+    textarea {
+      min-height: 76px;
+      resize: vertical;
+    }
+
+    .primary, .secondary, .tab, .time-button, .state-button {
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: #fff;
+      color: #263142;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .primary {
+      width: 100%;
+      border-color: #1558c8;
+      background: var(--blue);
+      color: #fff;
+      padding: 11px 14px;
+    }
+
+    .secondary {
+      width: 100%;
+      padding: 10px 14px;
+    }
+
+    .tab {
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+    }
+
+    .tab.active, .time-button.active, .state-button.active {
+      border-color: #93b7f4;
+      background: var(--blue-soft);
+      color: #174ea6;
+    }
+
+    .time-button {
+      flex: 1 1 92px;
+      min-width: 0;
+      padding: 8px 9px;
+      font-size: 13px;
+    }
+
+    .time-button span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .task-list, .summary-list, .journey-list, .artifact-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .task {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 11px;
+      background: var(--soft);
+    }
+
+    .task input {
+      width: 20px;
+      min-height: 20px;
+      height: 20px;
+      margin-top: 2px;
+      padding: 0;
+      accent-color: var(--blue);
+    }
+
+    .task.done strong {
+      text-decoration: line-through;
+      color: #667085;
+    }
+
+    .task strong, .task span {
+      display: block;
+    }
+
+    .task span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .state-row {
+      margin-top: 10px;
+    }
+
+    .state-button {
+      flex: 1 1 108px;
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+
+    .progress {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e7ebf2;
+    }
+
+    .progress span {
+      display: block;
+      width: var(--value, 0%);
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), #0f8b8d);
+    }
+
+    .detail-box {
+      border: 1px dashed var(--line-strong);
+      border-radius: var(--radius);
+      padding: 10px;
+      background: #fbfcff;
+      color: #475467;
+      font-size: 13px;
+    }
+
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .journey-list li, .artifact-list li, .summary-list li {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px;
+      background: var(--soft);
+    }
+
+    .journey-list b, .artifact-list b {
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .toast {
+      display: none;
+      border: 1px solid #b8dfc8;
+      border-radius: var(--radius);
+      padding: 10px;
+      background: var(--green-soft);
+      color: #176236;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    .all-stage {
+      display: grid;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 11px;
+      background: var(--soft);
+    }
+
+    .all-stage + .all-stage {
+      margin-top: 8px;
+    }
+
+    .review-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .review-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      background: var(--soft);
+    }
+
+    @media (max-width: 1020px) {
+      .hero, .flow-shell, .main-grid, .analysis-grid, .review-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-nav {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .phone {
+        width: min(100%, 520px);
+        margin: 0 auto;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100% - 20px, 1240px);
+        padding-top: 16px;
+      }
+
+      .hero, .section, .flow-workspace {
+        padding: 16px;
+      }
+
+      .flow-header {
+        display: grid;
+      }
+
+      .flow-nav, .input-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .lead {
+        font-size: 16px;
+      }
+
+      .pill, .chip, .state {
+        white-space: normal;
+      }
+
+      .phone {
+        border-radius: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">FLOW category POC · jeonse-level interaction</p>
+        <h1>7개 Flow 카테고리를 전세 수준으로 다시 구현한 POC</h1>
+        <p class="lead">
+          기존 카테고리 prototype을 전세 샘플 수준에 맞춰 다시 구성했습니다.
+          각 Flow는 원컨텐츠 소비에서 시작해 저장 입력, 시간 지점 선택, 체크, 상태/보류, detail/URL, 재방문 시나리오까지 실제로 눌러볼 수 있습니다.
+        </p>
+      </div>
+      <aside class="hero-side">
+        <div class="metric"><b>전세 수준 기준</b><span class="small">입력 후 화면 변화, 시간 지점 선택, 체크 상태, detail/URL, 전체/재방문 보기</span></div>
+        <div class="metric"><b>이번 POC 범위</b><span class="small">날짜형, 체크 판단형, 루틴형, 버킷형, 상태 기록형, 단계형, 시트형</span></div>
+        <div class="metric"><b>검증 아님</b><span class="small">실제 사용자 행동 검증이나 법률/의료/구매 판단 보증이 아닙니다.</span></div>
+      </aside>
+    </section>
+
+    <section class="section">
+      <h2>시뮬레이션 후 반영한 개선</h2>
+      <div class="review-grid">
+        <div class="review-card">
+          <h3>원컨텐츠 소비 시작점</h3>
+          <p>각 Flow에 사용자가 유튜브/블로그/공식 안내를 본 직후 어떤 이유로 저장하는지 보이는 source card를 추가했습니다.</p>
+        </div>
+        <div class="review-card">
+          <h3>시간에 따른 실행</h3>
+          <p>모든 Flow에 D-day, 방문 당일, 반복 회차, 나중에 배치, 마지막 확인일, 현재 단계, 장보기 전 같은 시간 지점을 넣었습니다.</p>
+        </div>
+        <div class="review-card">
+          <h3>Flow별 다른 시간축</h3>
+          <p>모든 곳에 캘린더를 붙이지 않았습니다. Flow 형태에 따라 상태칩, 단계, 보류, 시트 상태가 시간축 역할을 하도록 분리했습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="flow-shell" aria-label="전세 수준 Flow 카테고리 POC">
+      <nav class="flow-nav" id="flow-nav" aria-label="Flow 카테고리 선택"></nav>
+      <div class="flow-workspace">
+        <header class="flow-header">
+          <div>
+            <div class="pills" id="flow-tags"></div>
+            <h2 id="flow-title"></h2>
+            <p class="muted" id="flow-summary"></p>
+          </div>
+          <div class="pills" id="flow-destinations"></div>
+        </header>
+
+        <div class="main-grid">
+          <section class="phone" aria-label="사용자 화면">
+            <div class="phone-top">
+              <div class="phone-title">
+                <b id="phone-title"></b>
+                <span id="phone-subtitle"></span>
+              </div>
+              <span class="pill blue" id="phone-progress">0/0 완료</span>
+            </div>
+            <div class="phone-body">
+              <section class="screen-card source-card">
+                <p class="label">원컨텐츠 소비</p>
+                <div id="source-copy"></div>
+              </section>
+
+              <section class="screen-card">
+                <p class="label">저장에 필요한 입력</p>
+                <div class="input-grid" id="input-fields"></div>
+                <button class="primary" type="button" id="save-flow">Flow로 저장</button>
+                <p class="toast" id="save-toast" role="status">저장되었습니다. 첫 실행 지점으로 이동합니다.</p>
+              </section>
+
+              <section class="screen-card">
+                <p class="label">보기</p>
+                <div class="tabs" id="view-tabs"></div>
+              </section>
+
+              <section class="screen-card" id="time-card">
+                <p class="label" id="time-label"></p>
+                <div class="time-row" id="time-buttons"></div>
+              </section>
+
+              <section class="screen-card" id="active-card"></section>
+              <section class="screen-card" id="detail-card"></section>
+            </div>
+          </section>
+
+          <aside class="analysis-grid">
+            <section class="panel">
+              <h3>사용자 저니 시뮬레이션</h3>
+              <ol class="journey-list" id="journey-list"></ol>
+            </section>
+            <section class="panel">
+              <h3>저장 후 쓰이는 곳</h3>
+              <ul class="artifact-list" id="artifact-list"></ul>
+            </section>
+            <section class="panel">
+              <h3>UX 디자이너 피드백</h3>
+              <ul class="summary-list" id="ux-feedback"></ul>
+            </section>
+            <section class="panel">
+              <h3>전세 UX 대비 수준</h3>
+              <ul class="summary-list" id="jeonse-level"></ul>
+            </section>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const flows = [
+      {
+        id: 'moving',
+        nav: '날짜형',
+        category: '날짜 앵커형',
+        title: '이사 D-30 준비 Flow',
+        subtitle: '이사일 기준 일정',
+        summary: '이사일 하나로 D-30부터 D+1까지 action이 바뀝니다. 전세 UX를 가장 많이 재사용합니다.',
+        tags: ['이사', '날짜형', '생활 전환'],
+        destinations: ['calendar', 'checklist', 'memo'],
+        input: [{ label: '이사일', type: 'date', value: '2026-07-18' }],
+        source: {
+          text: '사용자는 오늘의집/AJD 이사 체크리스트를 보고 “이사일 기준으로 다시 알림을 받고 싶다”고 느낍니다.',
+          links: [
+            ['오늘의집 체크리스트', 'https://ohou.se/advices/8442'],
+            ['AJD D-30 체크리스트', 'https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC%21-23363']
+          ]
+        },
+        timeLabel: '이사일 기준 실행 지점',
+        stages: [
+          { key: 'D-30', date: '2026-06-18', title: '이사 방식 정하고 업체 3곳 견적 받기', detail: '포장이사/반포장/직접 이사 중 하나를 고르고 업체별 포함 범위를 메모합니다.', tasks: ['이사 방식 1개 선택', '업체 3곳 견적 요청', '포함 범위와 연락처 메모'] },
+          { key: 'D-14', date: '2026-07-04', title: '입주청소와 엘리베이터 사용 예약하기', detail: '관리사무소, 입주청소, 사다리차/엘리베이터 사용 시간을 한곳에 모읍니다.', tasks: ['관리사무소 사용 가능 시간 확인', '입주청소 예약 내역 저장', '엘리베이터 사용 시간 메모'] },
+          { key: 'D-7', date: '2026-07-11', title: '주소 변경과 정기배송 중지하기', detail: '우편물, 카드, 쇼핑, 정기배송을 이사 전에 끊거나 바꿉니다.', tasks: ['우편물 주소 이전', '카드/은행 주소 변경', '정기배송 중지 또는 주소 변경'] },
+          { key: 'D-1', date: '2026-07-17', title: '냉장고 비우고 박스 라벨 붙이기', detail: '냉장고 파먹기는 별도 Flow가 아니라 이 action의 하위 메모로 둡니다.', tasks: ['냉장/냉동 음식 처리', '세탁기 물빼기 확인', '방/내용물 기준 박스 라벨 작성'] },
+          { key: 'D-Day', date: '2026-07-18', title: '관리비 정산과 인수인계 확인하기', detail: '공과금/관리비 정산, 열쇠, 하자 사진은 민감 정보 없이 완료 여부만 저장합니다.', tasks: ['관리비/공과금 정산 확인', '열쇠/리모컨 인수인계', '하자 사진 위치 메모'] },
+          { key: 'D+1', date: '2026-07-19', title: '전입신고와 확정일자 처리하기', detail: '법적 판단은 하지 않고 공식 채널 링크와 접수 여부만 남깁니다.', tasks: ['전입신고 접수 여부 확인', '확정일자 접수 여부 확인', '공식 채널 링크 저장'] }
+        ],
+        statusOptions: ['진행 중', '보류', '완료'],
+        artifacts: ['캘린더: D-30/D-14/D-7/D-1/D-Day/D+1 일정', '체크리스트: 각 날짜별 2-3개 실행 항목', '메모: 업체 연락처, 관리사무소, 공식 링크'],
+        journey: ['이사 체크리스트 글을 읽고 기준일이 필요하다고 느낌', '이사일만 입력하고 Flow로 저장', '각 D-day에 다른 action을 체크', 'D+1 이후 다음 이사 때 날짜만 바꿔 재사용'],
+        ux: ['전세와 가장 가까운 수준입니다.', '캘린더 미리보기와 전체보기가 실제 사용 판단에 필요합니다.', '업체/관리사무소 메모 슬롯은 전세보다 추가로 필요합니다.'],
+        level: ['전세 UX 재사용도: 높음', '별도 UI: 연락처/예약 메모', '제품 구현 우선순위: 1순위']
+      },
+      {
+        id: 'used-car',
+        nav: '체크 판단형',
+        category: '체크리스트/판단형',
+        title: '중고차 방문 당일 체크 Flow',
+        subtitle: '현장 체크와 보류 판단',
+        summary: '방문일 알림보다 현장에서 체크하고 진행/보류/중단을 판단하는 것이 핵심입니다.',
+        tags: ['중고차', '구매 판단', '현장 체크'],
+        destinations: ['internal_check', 'memo', 'record'],
+        input: [{ label: '매물명', type: 'text', value: '아반떼 2021' }, { label: '방문일', type: 'date', value: '2026-06-22' }],
+        source: {
+          text: '사용자는 중고차 체크리스트와 피해예방 글을 보고 “현장에서 빠뜨리지 않고 비교해야겠다”고 느낍니다.',
+          links: [
+            ['겟차 차량 상태 체크리스트', 'https://web.getcha.kr/blog/used-car-condition-checklist-guide'],
+            ['한국소비자원 피해예방', 'https://www.kca.go.kr/home/sub.do?menukey=4005&mode=view&no=1003690083']
+          ]
+        },
+        timeLabel: '구매 판단 흐름',
+        stages: [
+          { key: '방문 전', date: '2026-06-21', title: '차량번호와 이력 조회하기', detail: '사고, 침수, 주행거리, 소유자 변경 이력은 원문 링크와 함께 확인합니다.', tasks: ['차량번호로 이력 조회', '성능기록부 파일 준비', '현장 질문 3개 메모'] },
+          { key: '방문 당일', date: '2026-06-22', title: '외관/실내/시동/주행 전 체크하기', detail: '현장 체크 결과와 사진만 남깁니다. 구매 적합성은 FLOW가 판단하지 않습니다.', tasks: ['외관 패널 간격과 타이어 확인', '실내 버튼/에어컨/경고등 확인', '시동과 변속 느낌 확인'] },
+          { key: '계약 전', date: '2026-06-22', title: '성능기록부와 실제 상태 비교하기', detail: '기록부 특이사항과 판매자 설명이 맞지 않으면 보류 사유를 남깁니다.', tasks: ['기록부 특이사항과 실제 상태 비교', '추가 비용/이전비 내역 확인', '진행/보류/중단 중 하나 선택'] },
+          { key: '보류 후', date: '2026-06-23', title: '보류 사유 다시 확인하기', detail: '사진, 메모, 판매자 답변을 보고 다른 매물에 복제할지 결정합니다.', tasks: ['보류 사유 1줄 정리', '추가 확인 요청 여부 선택', '다른 매물로 Flow 복제'] }
+        ],
+        statusOptions: ['진행 가능', '보류', '중단'],
+        artifacts: ['FLOW 내부 체크: 현장 점검 항목', '메모: 보류 사유, 사진 이름, 판매자 답변', '기록: 진행 가능/보류/중단 상태'],
+        journey: ['방문 전 체크 콘텐츠를 읽음', '매물명과 방문일만 입력', '현장에서 체크하고 보류 사유를 남김', '다른 매물 방문 때 같은 Flow를 복제'],
+        ux: ['전세처럼 날짜가 있지만 핵심은 캘린더가 아닙니다.', '완료 체크보다 보류/중단 판단이 더 중요합니다.', '사진/증거 메모가 first-class UI가 되어야 합니다.'],
+        level: ['전세 UX 재사용도: 중간', '별도 UI: 진행/보류/중단 판단', '제품 구현 우선순위: 2순위']
+      },
+      {
+        id: 'workout',
+        nav: '루틴형',
+        category: '반복 루틴형',
+        title: '주 3회 홈트 영상 루틴 Flow',
+        subtitle: '오늘 카드와 반복 기록',
+        summary: '운동 지도 앱이 아니라 원문 영상을 반복 일정에 붙이고 완료 후 상태칩만 남깁니다.',
+        tags: ['홈트', '반복', '상태칩'],
+        destinations: ['calendar', 'routine', 'record'],
+        input: [{ label: '반복 요일', type: 'text', value: '월/수/금' }, { label: '시작일', type: 'date', value: '2026-06-15' }],
+        source: {
+          text: '사용자는 홈트 영상을 보고 “이번 주부터 3번만 따라 해보자”고 느낍니다.',
+          links: [
+            ['핏블리 주3회 홈트 영상', 'https://www.youtube.com/watch?v=uDrWZ8PHC6A'],
+            ['주3회 홈트 루틴 글', 'https://noonnooonannaa.tistory.com/8']
+          ]
+        },
+        timeLabel: '반복 실행 회차',
+        stages: [
+          { key: '설정', date: '2026-06-15', title: '이번 주 홈트 요일 3개 정하기', detail: '운동 시간과 요일만 정하고 자세한 동작 설명은 원문 영상으로 보냅니다.', tasks: ['요일 3개 선택', '운동할 시간대 정하기', '원문 영상 링크 저장'] },
+          { key: '1회차', date: '2026-06-15', title: '원문 영상 1회 따라 하기', detail: '영상의 자세/속도는 원문에서 확인합니다. 통증이나 어지러움이 있으면 중단합니다.', tasks: ['매트와 물 준비', '원문 영상 열기', '완료/힘듦/통증 상태 선택'] },
+          { key: '2회차', date: '2026-06-17', title: '가능한 강도로 2회차 실행하기', detail: '전 회차가 힘들었으면 강도를 낮추고, 통증이 있으면 중단 상태로 남깁니다.', tasks: ['이전 상태 확인', '원문 영상 1회 실행', '다음 회차 유지/줄이기 선택'] },
+          { key: '주간 리뷰', date: '2026-06-20', title: '이번 주 3회 중 몇 번 했는지 보기', detail: '반복률과 상태칩을 보고 다음 주 유지/변경/중단을 고릅니다.', tasks: ['이번 주 완료 횟수 확인', '통증/힘듦 기록 확인', '다음 주 반복 유지 여부 선택'] }
+        ],
+        statusOptions: ['완료', '힘듦', '건너뜀', '통증 있음'],
+        artifacts: ['캘린더: 반복 요일 일정', '오늘 카드: 원문 영상 열기', '기록: 완료/힘듦/건너뜀/통증 상태'],
+        journey: ['홈트 영상을 보고 저장', '요일과 시작일만 입력', '반복일마다 오늘 카드에서 영상 실행', '상태 기록으로 다음 주 유지/변경 판단'],
+        ux: ['전세의 D-day 대신 반복 회차가 시간축입니다.', '캘린더 전체보기보다 오늘 카드와 다음 회차가 더 중요합니다.', '건강 영역이라 중단 기준이 detail에 가까이 있어야 합니다.'],
+        level: ['전세 UX 재사용도: 중간', '별도 UI: 반복 요일, 상태칩, 다음 회차', '제품 구현 우선순위: 3순위 후보']
+      },
+      {
+        id: 'squishy',
+        nav: '버킷형',
+        category: '버킷/나중에 하기형',
+        title: '무료도안 스퀴시 만들기 Flow',
+        subtitle: '날짜 없이 저장',
+        summary: '날짜가 없어도 저장 가치가 있는 콘텐츠입니다. 기본은 놀이 후보 저장이고 일정 배치는 선택입니다.',
+        tags: ['아이 놀이', '만들기', '버킷'],
+        destinations: ['bucket', 'optional calendar', 'memo'],
+        input: [{ label: '놀이할 날짜', type: 'text', value: '선택 안 함' }],
+        source: {
+          text: '사용자는 유튜브 영상과 네이버 도안 글을 보고 “나중에 아이와 해보고 싶다”고 느낍니다.',
+          links: [
+            ['무료도안 스퀴시 YouTube', 'https://www.youtube.com/watch?v=pgZjiXwMOmQ'],
+            ['네이버 도안 링크', 'https://m.blog.naver.com/seo_0607/224215184284']
+          ]
+        },
+        timeLabel: '나중에 실행 흐름',
+        stages: [
+          { key: '저장', date: '날짜 없음', title: '도안과 원문 영상을 놀이 후보로 저장하기', detail: '저작권/상업 이용 제한과 도안 위치는 detail에 둡니다.', tasks: ['원문 영상 링크 저장', '도안 링크 저장', '날짜 없이 놀이 후보로 저장'] },
+          { key: '준비', date: '실행 전', title: '도안 출력과 준비물 챙기기', detail: '준비물이 없으면 대체 준비물을 메모하고 실행일을 다시 미룹니다.', tasks: ['도안 출력', '가위/테이프/솜 준비', '실행일 정할지 선택'] },
+          { key: '실행', date: '놀이 시간', title: '원문 영상 열고 만들기', detail: 'FlowMe가 만들기 과정을 재작성하지 않고 원문을 여는 역할을 합니다.', tasks: ['원문 영상 열기', '아이와 1회 만들기', '완성 사진 1장 optional'] },
+          { key: '완료 후', date: '완료 뒤', title: '다시 할지 놀이 목록에 남기기', detail: '완료 사진이나 짧은 메모만 남기고 긴 일지는 만들지 않습니다.', tasks: ['완료 표시', '다시 하기 여부 선택', '비슷한 놀이 묶음으로 이동'] }
+        ],
+        statusOptions: ['저장만', '날짜 배치', '완료', '다시 하기'],
+        artifacts: ['버킷: 날짜 없는 놀이 후보', '메모: 준비물과 도안 링크', '선택 일정: 실행 날짜를 정한 경우만 캘린더에 배치'],
+        journey: ['영상/도안을 보며 저장 욕구 발생', '입력 없이 Flow로 저장', '주말이나 방학에 다시 열어 실행', '완료 후 사진/메모만 남김'],
+        ux: ['전세처럼 캘린더를 기본 노출하면 무거워집니다.', '날짜 없음 저장이 핵심 UI입니다.', '원문으로 돌아가는 버튼이 첫 실행 카드에 있어야 합니다.'],
+        level: ['전세 UX 재사용도: 낮음', '별도 UI: 날짜 없음 저장, 나중에 배치', '제품 구현 우선순위: 학습용 확장 후보']
+      },
+      {
+        id: 'plant',
+        nav: '상태 기록형',
+        category: '상태 체크/기록형',
+        title: '식물 물주기 상태 체크 Flow',
+        subtitle: '상태 보고 결정',
+        summary: '정해진 날 무조건 물주는 앱이 아니라 상태칩을 보고 물줌/보류를 선택합니다.',
+        tags: ['식물', '상태 체크', '반복 확인'],
+        destinations: ['routine', 'record', 'memo'],
+        input: [{ label: '식물 이름', type: 'text', value: '스투키' }, { label: '확인 주기', type: 'text', value: '10일마다' }],
+        source: {
+          text: '사용자는 식물별 물주기 글을 보고 “정해진 날마다 상태를 확인하고 싶다”고 느낍니다.',
+          links: [
+            ['스투키 물주기 블로그', 'https://philoswith.tistory.com/13'],
+            ['스투키 관리 YouTube', 'https://www.youtube.com/watch?v=DdRhoML16sM']
+          ]
+        },
+        timeLabel: '상태 확인 주기',
+        stages: [
+          { key: '등록', date: '오늘', title: '식물과 확인 주기 등록하기', detail: '범용 식물 관리가 아니라 특정 식물 하나에 대한 가벼운 확인 Flow입니다.', tasks: ['식물 이름 입력', '확인 주기 입력', '원문 링크 저장'] },
+          { key: '확인일', date: '10일 뒤', title: '흙과 잎 상태 확인하기', detail: '상태칩이 먼저이고 물주기는 조건부 action입니다.', tasks: ['흙 마름/촉촉함/과습 의심 선택', '잎 처짐 여부 확인', '물줌/오늘은 안 줌 선택'] },
+          { key: '이상 신호', date: '필요 시', title: '이상 신호가 있으면 사진 메모 남기기', detail: '병해충 판단 앱으로 확장하지 않고 사진 1장과 원문 링크만 둡니다.', tasks: ['사진 1장 optional', '상태칩 선택', '다음 확인일 조정'] },
+          { key: '다음 확인', date: '다음 주기', title: '마지막 기록 보고 다음 물주기 결정하기', detail: '마지막 확인일과 상태 기록이 재방문 이유입니다.', tasks: ['마지막 물줌 날짜 확인', '상태 변화 확인', '주기 유지/변경 선택'] }
+        ],
+        statusOptions: ['흙 마름', '촉촉함', '과습 의심', '물 줌'],
+        artifacts: ['루틴: 확인 주기 reminder', '기록: 상태칩과 마지막 확인일', '메모: 사진 1장과 원문 링크'],
+        journey: ['식물 관리 글을 읽음', '식물명과 주기 입력', '확인일마다 상태칩 선택', '마지막 기록으로 다음 물주기 결정'],
+        ux: ['전세의 체크 구조는 재사용됩니다.', '하지만 action 전에 상태 선택이 먼저 필요합니다.', '긴 기록이 아니라 상태칩과 마지막 확인일만 보여야 합니다.'],
+        level: ['전세 UX 재사용도: 중간', '별도 UI: 상태칩 선행, 마지막/다음 확인일', '제품 구현 우선순위: 루틴형 다음 후보']
+      },
+      {
+        id: 'school',
+        nav: '단계형',
+        category: '단계/프로그램형',
+        title: '초등 입학 준비 D-30 Flow',
+        subtitle: '현재 단계와 다음 할 일',
+        summary: '입학일이 있지만 핵심은 현재 단계와 다음 할 일입니다. 전체 설명보다 단계 진행이 먼저 보여야 합니다.',
+        tags: ['교육', '가족 준비', '단계형'],
+        destinations: ['calendar', 'checklist', 'memo', 'phase'],
+        input: [{ label: '입학일', type: 'date', value: '2027-03-02' }, { label: '학교명', type: 'text', value: '선택 안 함' }],
+        source: {
+          text: '사용자는 입학 준비물/생활 체크 글을 보고 “지금부터 무엇을 준비해야 할지 단계별로 보고 싶다”고 느낍니다.',
+          links: [
+            ['네이버 블로그 입학준비물', 'https://m.blog.naver.com/ben810402/223301309810'],
+            ['홈런 초등 입학 준비 체크', 'https://www.home-learn.co.kr/newsroom/news/A/2035']
+          ]
+        },
+        timeLabel: '입학 전 단계',
+        stages: [
+          { key: 'D-30', date: '2027-01-31', title: '학교 안내문과 예비소집 자료 모으기', detail: '학교/지역 차이가 크므로 공식 안내문을 detail/URL에 둡니다.', tasks: ['학교 안내문 링크 저장', '예비소집 자료 확인', '제출 서류 메모'] },
+          { key: 'D-21', date: '2027-02-09', title: '이름표 붙일 물품만 먼저 사기', detail: '블로그 추천템은 참고로 두고 학교 안내문 기준으로 구매합니다.', tasks: ['가방/실내화/필통 확인', '학교 금지 물품 제외', '이름표 필요한 물품 표시'] },
+          { key: 'D-14', date: '2027-02-16', title: '생활 연습 3개 고르기', detail: '아침 기상, 화장실, 가방 정리 중 이번 주 연습할 3개만 고릅니다.', tasks: ['아침 준비 연습', '화장실/손씻기 연습', '가방 정리 연습'] },
+          { key: 'D-7', date: '2027-02-23', title: '가방에 실제 준비물 넣어보기', detail: '아이가 직접 찾을 수 있는지 확인하는 실행 카드입니다.', tasks: ['가방에 준비물 넣기', '아이가 위치 찾기', '빠진 물품 메모'] },
+          { key: '첫 주', date: '2027-03-02', title: '첫 주 적응 체크하기', detail: '입학 후 첫 주에는 준비물보다 루틴과 아이 상태를 짧게 확인합니다.', tasks: ['등교 준비 시간 확인', '준비물 빠짐 여부 확인', '아이 컨디션 짧게 메모'] }
+        ],
+        statusOptions: ['준비 중', '보류', '완료', '학교 확인 필요'],
+        artifacts: ['단계: 현재 단계와 다음 단계', '캘린더: D-30/D-21/D-14/D-7/첫 주', '메모: 학교 안내문과 준비물 링크'],
+        journey: ['입학 준비 글을 읽음', '입학일을 입력', '현재 단계의 다음 할 일만 수행', '첫 주 이후 보관하거나 다른 아이에게 복제'],
+        ux: ['전세보다 복잡도가 높습니다.', '날짜형이지만 단계형 UI가 필요합니다.', '현재 단계와 다음 할 일을 첫 화면에 고정해야 합니다.'],
+        level: ['전세 UX 재사용도: 중간 이상', '별도 UI: 현재 단계, 단계 진행률', '제품 구현 우선순위: 3-4순위']
+      },
+      {
+        id: 'fridge',
+        nav: '시트형',
+        category: '목록/시트형',
+        title: '냉장고 파먹기 Flow',
+        subtitle: '장보기 전 재방문',
+        summary: '일정이 아니라 목록 상태가 핵심입니다. 남은 재료를 보고 장보기 전 다시 여는 Flow입니다.',
+        tags: ['식재료', '목록', '장보기'],
+        destinations: ['sheet', 'memo', 'bucket'],
+        input: [{ label: '남은 재료', type: 'text', value: '두부, 애호박, 계란' }, { label: '장보기 예정', type: 'date', value: '2026-06-20' }],
+        source: {
+          text: '사용자는 냉장고 파먹기 영상을 보고 “아이디어 하나를 장보기 전에 다시 보고 싶다”고 느낍니다.',
+          links: [
+            ['냉장고 파먹기 방법 영상', 'https://www.youtube.com/watch?v=kL-PeGgCuAc']
+          ]
+        },
+        timeLabel: '목록 재방문 시점',
+        stages: [
+          { key: '저장', date: '오늘', title: '장보기 전 참고 아이디어 저장하기', detail: '영상의 전체 식단을 복사하지 않고 따라 할 아이디어 1개만 저장합니다.', tasks: ['원문 영상 링크 저장', '남은 재료 1-3개 입력', '장보기 전 다시 보기 설정'] },
+          { key: '정리', date: '장보기 전날', title: '냉장고에 남은 재료 상태 표시하기', detail: '소진/남음/구매 필요 상태만 관리합니다.', tasks: ['두부: 소진 우선', '애호박: 이번 주 사용', '계란: 구매 제외'] },
+          { key: '장보기 전', date: '2026-06-20', title: '구매할 것과 제외할 것 결정하기', detail: '식단 앱으로 확장하지 않고 장보기 전 판단만 돕습니다.', tasks: ['소진할 재료 1개 선택', '구매 제외 항목 확인', '구매 필요 항목 표시'] },
+          { key: '이월', date: '다음 회차', title: '남은 항목을 다음 회차로 넘기기', detail: '목록이 비면 종료하고 남은 항목은 다음 장보기 전으로 이월합니다.', tasks: ['소진 항목 완료', '남은 항목 이월', '다음 장보기 전 reminder 설정'] }
+        ],
+        statusOptions: ['소진', '남음', '구매 필요', '이월'],
+        artifacts: ['시트: 재료별 상태', '메모: 원문 영상과 아이디어', '버킷: 다음 장보기 전 다시 보기'],
+        journey: ['냉장고 파먹기 영상을 봄', '재료 1-3개만 입력', '장보기 전에 다시 열어 상태 변경', '남은 항목은 다음 회차로 이월'],
+        ux: ['전세의 캘린더 구조와는 다릅니다.', '목록 상태가 시간축입니다.', '범위를 넓히면 식단/재고 앱이 되므로 장보기 전 판단으로 제한합니다.'],
+        level: ['전세 UX 재사용도: 낮음', '별도 UI: 행 상태와 이월', '제품 구현 우선순위: 나중']
+      }
+    ];
+
+    const state = {};
+    flows.forEach((flow) => {
+      state[flow.id] = {
+        view: 'run',
+        stage: flow.stages[0].key,
+        checks: {},
+        status: flow.statusOptions[0],
+        note: ''
+      };
+    });
+
+    let activeFlowId = flows[0].id;
+
+    const flowById = (id) => flows.find((flow) => flow.id === id);
+    const activeFlow = () => flowById(activeFlowId);
+    const activeState = () => state[activeFlowId];
+    const activeStage = () => activeFlow().stages.find((stage) => stage.key === activeState().stage) || activeFlow().stages[0];
+    const stageDone = (flow, stage) => stage.tasks.filter((_, index) => state[flow.id].checks[`${stage.key}-${index}`]).length;
+    const flowTotal = (flow) => flow.stages.reduce((sum, stage) => sum + stage.tasks.length, 0);
+    const flowDone = (flow) => flow.stages.reduce((sum, stage) => sum + stageDone(flow, stage), 0);
+
+    function renderNav() {
+      document.querySelector('#flow-nav').innerHTML = flows.map((flow) => `
+        <button class="flow-button" type="button" data-flow="${flow.id}" aria-selected="${flow.id === activeFlowId}">
+          <b>${flow.nav}</b>
+          <span>${flow.title}</span>
+        </button>
+      `).join('');
+      document.querySelectorAll('[data-flow]').forEach((button) => {
+        button.addEventListener('click', () => {
+          activeFlowId = button.dataset.flow;
+          render();
+        });
+      });
+    }
+
+    function renderHeader(flow) {
+      document.querySelector('#flow-tags').innerHTML = flow.tags.map((tag) => `<span class="pill blue">${tag}</span>`).join('');
+      document.querySelector('#flow-title').textContent = flow.title;
+      document.querySelector('#flow-summary').textContent = flow.summary;
+      document.querySelector('#flow-destinations').innerHTML = flow.destinations.map((dest) => `<span class="pill green">${dest}</span>`).join('');
+      document.querySelector('#phone-title').textContent = flow.title;
+      document.querySelector('#phone-subtitle').textContent = flow.subtitle;
+      document.querySelector('#phone-progress').textContent = `${flowDone(flow)}/${flowTotal(flow)} 완료`;
+    }
+
+    function renderSource(flow) {
+      document.querySelector('#source-copy').innerHTML = `
+        <p>${flow.source.text}</p>
+        <div class="chips">${flow.source.links.map(([label, href]) => `<a class="chip blue" href="${href}" target="_blank" rel="noreferrer">${label}</a>`).join('')}</div>
+      `;
+    }
+
+    function renderInputs(flow) {
+      document.querySelector('#input-fields').innerHTML = flow.input.map((input, index) => `
+        <div class="field">
+          <label for="${flow.id}-input-${index}">${input.label}</label>
+          <input id="${flow.id}-input-${index}" type="${input.type}" value="${input.value}" />
+        </div>
+      `).join('');
+    }
+
+    function renderViewTabs() {
+      const view = activeState().view;
+      const tabs = [
+        ['run', '실행 보기'],
+        ['all', '전체 보기'],
+        ['revisit', '재방문 보기']
+      ];
+      document.querySelector('#view-tabs').innerHTML = tabs.map(([key, label]) => `
+        <button class="tab ${view === key ? 'active' : ''}" type="button" data-view="${key}">${label}</button>
+      `).join('');
+      document.querySelectorAll('[data-view]').forEach((button) => {
+        button.addEventListener('click', () => {
+          activeState().view = button.dataset.view;
+          render();
+        });
+      });
+    }
+
+    function renderTime(flow) {
+      document.querySelector('#time-label').textContent = flow.timeLabel;
+      document.querySelector('#time-buttons').innerHTML = flow.stages.map((stage) => `
+        <button class="time-button ${activeState().stage === stage.key ? 'active' : ''}" type="button" data-stage="${stage.key}">
+          ${stage.key}<span>${stage.date}</span>
+        </button>
+      `).join('');
+      document.querySelectorAll('[data-stage]').forEach((button) => {
+        button.addEventListener('click', () => {
+          activeState().stage = button.dataset.stage;
+          activeState().view = 'run';
+          render();
+        });
+      });
+    }
+
+    function renderRun(flow) {
+      const current = activeStage();
+      const done = stageDone(flow, current);
+      document.querySelector('#active-card').innerHTML = `
+        <p class="label">현재 실행 카드</p>
+        <h3>${current.title}</h3>
+        <p class="small">${current.date} · ${current.key} · ${done}/${current.tasks.length} 완료</p>
+        <div class="progress" aria-label="현재 지점 진행률"><span style="--value:${Math.round(done / current.tasks.length * 100)}%"></span></div>
+        <ul class="task-list" style="margin-top:12px">
+          ${current.tasks.map((task, index) => {
+            const id = `${current.key}-${index}`;
+            const checked = activeState().checks[id];
+            return `
+              <li class="task ${checked ? 'done' : ''}">
+                <input type="checkbox" data-check="${id}" ${checked ? 'checked' : ''} aria-label="${task}" />
+                <div><strong>${task}</strong><span>${current.detail}</span></div>
+              </li>
+            `;
+          }).join('')}
+        </ul>
+        <div class="state-row">
+          ${flow.statusOptions.map((option) => `<button class="state-button ${activeState().status === option ? 'active' : ''}" type="button" data-status="${option}">${option}</button>`).join('')}
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label for="flow-note">짧은 메모</label>
+          <textarea id="flow-note" placeholder="보류 사유, 다음 확인, 사진 이름 등">${activeState().note}</textarea>
+        </div>
+      `;
+      bindRunControls();
+    }
+
+    function renderAll(flow) {
+      document.querySelector('#active-card').innerHTML = `
+        <p class="label">전체 보기</p>
+        <h3>${flow.title} 전체 실행 항목</h3>
+        ${flow.stages.map((stage) => {
+          const done = stageDone(flow, stage);
+          return `
+            <section class="all-stage">
+              <div class="chips"><span class="chip blue">${stage.key}</span><span class="chip">${stage.date}</span><span class="chip green">${done}/${stage.tasks.length} 완료</span></div>
+              <h4>${stage.title}</h4>
+              <ul class="task-list">
+                ${stage.tasks.map((task, index) => {
+                  const id = `${stage.key}-${index}`;
+                  return `<li class="task ${activeState().checks[id] ? 'done' : ''}"><input type="checkbox" data-check="${id}" ${activeState().checks[id] ? 'checked' : ''} aria-label="${task}" /><div><strong>${task}</strong><span>${stage.detail}</span></div></li>`;
+                }).join('')}
+              </ul>
+            </section>
+          `;
+        }).join('')}
+      `;
+      bindRunControls();
+    }
+
+    function renderRevisit(flow) {
+      const current = activeStage();
+      const nextIndex = Math.min(flow.stages.findIndex((stage) => stage.key === current.key) + 1, flow.stages.length - 1);
+      const next = flow.stages[nextIndex];
+      document.querySelector('#active-card').innerHTML = `
+        <p class="label">시간 경과 후 재방문</p>
+        <h3>${next.key}에 다시 열면 보이는 것</h3>
+        <ul class="summary-list">
+          <li><b>다음 action</b><br />${next.title}</li>
+          <li><b>이전 기록</b><br />현재 선택 상태: ${activeState().status}. 완료 ${flowDone(flow)}/${flowTotal(flow)}개.</li>
+          <li><b>사용자 판단</b><br />${next.detail}</li>
+        </ul>
+        <button class="primary" type="button" id="jump-next">다음 시간 지점으로 이동</button>
+      `;
+      document.querySelector('#jump-next').addEventListener('click', () => {
+        activeState().stage = next.key;
+        activeState().view = 'run';
+        render();
+      });
+    }
+
+    function bindRunControls() {
+      document.querySelectorAll('[data-check]').forEach((input) => {
+        input.addEventListener('change', () => {
+          activeState().checks[input.dataset.check] = input.checked;
+          render();
+        });
+      });
+      document.querySelectorAll('[data-status]').forEach((button) => {
+        button.addEventListener('click', () => {
+          activeState().status = button.dataset.status;
+          render();
+        });
+      });
+      const note = document.querySelector('#flow-note');
+      if (note) {
+        note.addEventListener('input', () => {
+          activeState().note = note.value;
+        });
+      }
+    }
+
+    function renderDetail(flow) {
+      const current = activeStage();
+      document.querySelector('#detail-card').innerHTML = `
+        <p class="label">detail/URL</p>
+        <div class="detail-box">
+          <b>${current.title}</b><br />
+          ${current.detail}<br /><br />
+          긴 설명, 원문 맥락, 주의사항, 출처는 이 영역에 남기고 실행 카드에는 체크 가능한 문장만 둡니다.
+        </div>
+      `;
+    }
+
+    function renderSide(flow) {
+      document.querySelector('#journey-list').innerHTML = flow.journey.map((item, index) => `<li><b>${index + 1}. ${item}</b></li>`).join('');
+      document.querySelector('#artifact-list').innerHTML = flow.artifacts.map((item) => `<li><b>${item}</b></li>`).join('');
+      document.querySelector('#ux-feedback').innerHTML = flow.ux.map((item) => `<li>${item}</li>`).join('');
+      document.querySelector('#jeonse-level').innerHTML = flow.level.map((item) => `<li>${item}</li>`).join('');
+    }
+
+    function renderActiveCard(flow) {
+      if (activeState().view === 'all') renderAll(flow);
+      else if (activeState().view === 'revisit') renderRevisit(flow);
+      else renderRun(flow);
+    }
+
+    function render() {
+      const flow = activeFlow();
+      renderNav();
+      renderHeader(flow);
+      renderSource(flow);
+      renderInputs(flow);
+      renderViewTabs();
+      renderTime(flow);
+      renderActiveCard(flow);
+      renderDetail(flow);
+      renderSide(flow);
+      document.querySelector('#save-toast').classList.remove('show');
+    }
+
+    document.querySelector('#save-flow').addEventListener('click', () => {
+      activeState().view = 'run';
+      activeState().stage = activeFlow().stages[0].key;
+      render();
+      document.querySelector('#save-toast').classList.add('show');
+    });
+
+    render();
+  </script>
+</body>
+</html>

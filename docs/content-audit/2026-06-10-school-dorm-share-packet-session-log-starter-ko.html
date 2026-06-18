@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 공유 패킷 Session Log Starter</title>
+  <style>
+    :root{--bg:#f6f7f9;--paper:#fff;--ink:#101828;--body:#344054;--muted:#667085;--line:#d9e2ec;--blue:#1d4ed8;--soft:#f1f5f9;--amber:#9a5b12;--amber-soft:#fff4d8;--green:#047857;--green-soft:#e7f6ef;--red:#b42318;--red-soft:#fff0ed}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;line-height:1.62;letter-spacing:0}a{color:var(--blue);text-decoration:none}.page{width:min(1120px,calc(100% - 28px));margin:0 auto;padding:22px 0 64px}.topbar,.hero,.panel,.nav{border:1px solid var(--line);border-radius:8px;background:var(--paper);box-shadow:0 16px 44px rgba(15,23,42,.07)}.topbar{display:flex;justify-content:space-between;gap:14px;margin-bottom:14px;padding:10px 14px;color:var(--muted);font-size:13px}.brand{color:var(--ink);font-weight:900}.layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:18px;align-items:start}.layout>*{min-width:0}.hero,.panel{padding:26px}.panel{margin-top:18px}h1,h2,h3,p{margin:0}h1,h2,h3{line-height:1.25;word-break:keep-all}h1{font-size:clamp(30px,4vw,46px)}h2{margin-bottom:10px;font-size:23px}p,li,td{color:var(--body)}.lead{margin-top:12px;font-size:17px;max-width:860px}.note{margin-top:12px;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--soft)}code{padding:1px 5px;border-radius:5px;background:#eef2f7;color:#172033;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-wrap:anywhere}.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:20px}.metric{min-height:105px;border:1px solid var(--line);border-radius:8px;padding:15px;background:var(--soft)}.metric strong{display:block;margin-bottom:8px;color:var(--muted);font-size:12px;text-transform:uppercase}.metric span{display:block;font-size:18px;font-weight:900;overflow-wrap:anywhere}.amber{background:var(--amber-soft)}.green{background:var(--green-soft)}.red{background:var(--red-soft)}.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--paper)}table{width:100%;min-width:880px;border-collapse:collapse}th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:14px}th{background:var(--soft);color:var(--ink)}tr:last-child td{border-bottom:0}.links{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}.button{display:inline-flex;align-items:center;min-height:36px;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;font-weight:800}.nav{position:sticky;top:16px;padding:16px}.nav h2{font-size:16px}.nav a{display:block;padding:8px 9px;border-radius:6px;color:var(--body);font-size:14px}@media(max-width:900px){.layout{grid-template-columns:1fr}.nav{position:static}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.page{width:min(100% - 20px,1120px);padding-top:10px}.topbar{flex-direction:column}.hero,.panel,.nav{padding:18px}.metrics{grid-template-columns:1fr}table{min-width:880px}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topbar"><div><span class="brand">FlowMe 분석방</span> / Session Log Starter</div><div>상태: blank · not run · not evidence · 관찰 증거 아님</div></div>
+    <div class="layout">
+      <div>
+        <section class="hero" id="top">
+          <h1>세션 로그에는 완료된 비식별 메모만 남깁니다</h1>
+          <p class="lead">패킷은 <code>school-dorm-share-packet-v2-2026-06-11-readable-preview</code>로 고정합니다. 실제 세션을 기록하기 전까지 이 파일은 빈 작업 로그이며, 현재 판단은 <code>no signal</code>입니다.</p>
+          <div class="metrics">
+            <div class="metric amber"><strong>decision</strong><span>no signal</span></div>
+            <div class="metric"><strong>sessions</strong><span>0 / 3</span></div>
+            <div class="metric amber"><strong>write gate</strong><span>completed session</span></div>
+            <div class="metric green"><strong>version</strong><span>v2 readable preview</span></div>
+            <div class="metric red"><strong>private values</strong><span>no</span></div>
+          </div>
+          <p class="note">matching role-labeled slot이 <code>agreed</code>이고 실제 세션이 끝난 뒤에만 해당 세션 section에 씁니다. <code>not invited</code>, <code>invited</code>, <code>agreed</code>, <code>scheduled</code>, <code>not run</code>은 관찰 증거가 아닙니다.</p>
+        </section>
+
+        <section class="panel" id="gate">
+          <h2>0. 기록 전 게이트</h2>
+          <div class="table-wrap">
+            <table>
+              <tbody>
+                <tr><th>Scheduling state</th><td>matching role-labeled slot이 <code>agreed</code>입니다.</td></tr>
+                <tr><th>Session state</th><td>실제 recipient session이 완료되었고 role-level notes만 남았습니다.</td></tr>
+                <tr><th>Private values</th><td>이름, 연락처, 초대 링크, 정확한 비공개 답장, 채팅 thread를 쓰지 않습니다.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="links">
+            <a class="button" href="./2026-06-11-school-dorm-share-packet-scheduling-tracker-ko.html#snippets">scheduling tracker</a>
+            <a class="button" href="./2026-06-11-school-dorm-share-packet-preflight-checklist-ko.html">preflight checklist</a>
+            <a class="button" href="./2026-06-11-school-dorm-share-packet-pilot-worksheet-ko.html">pilot worksheet</a>
+          </div>
+        </section>
+
+        <section class="panel" id="version">
+          <h2>1. Packet Version</h2>
+          <div class="table-wrap"><table><tbody><tr><th>Packet shown</th><td><code>school-dorm-share-packet-v2-2026-06-11-readable-preview</code></td></tr><tr><th>Source shown before task</th><td>no</td></tr><tr><th>FlowMe explained before task</th><td>no</td></tr></tbody></table></div>
+        </section>
+
+        <section class="panel" id="sessions">
+          <h2>2. Session Slots</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Session</th><th>Target role</th><th>Channel assumption</th><th>Status</th><th>Decision</th></tr></thead>
+              <tbody>
+                <tr><td>01</td><td>student-like recipient</td><td>KakaoTalk / memo</td><td>waiting for completed session / not run</td><td>not run</td></tr>
+                <tr><td>02</td><td>parent/guardian-like recipient</td><td>KakaoTalk / Naver Cafe</td><td>waiting for completed session / not run</td><td>not run</td></tr>
+                <tr><td>03</td><td>coordinator/group-manager-like recipient</td><td>Naver Cafe / form-sheet / memo</td><td>waiting for completed session / not run</td><td>not run</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" id="rollup">
+          <h2>3. Rollup 전 조건</h2>
+          <p>세션 3개가 모두 completed + usable이고 비식별 메모가 남아야 rollup으로 이동합니다. 빈 log나 scheduling 상태만으로는 evidence board를 업데이트하지 않습니다.</p>
+          <div class="links">
+            <a class="button" href="./2026-06-11-school-dorm-share-packet-rollup-template-ko.html">rollup template</a>
+            <a class="button" href="./2026-06-11-school-dorm-share-packet-evidence-board-update-runbook-ko.html">evidence board runbook</a>
+          </div>
+        </section>
+      </div>
+      <aside class="nav">
+        <h2>목차</h2>
+        <a href="#top">요약</a>
+        <a href="#gate">0. 기록 전 게이트</a>
+        <a href="#version">1. Packet Version</a>
+        <a href="#sessions">2. Session Slots</a>
+        <a href="#rollup">3. Rollup 전 조건</a>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>

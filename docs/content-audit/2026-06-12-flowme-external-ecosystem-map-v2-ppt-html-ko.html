@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 외부 생태계 지도 v2 | PPT형 HTML 보고서</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #eef2f6;
+        --slide: #ffffff;
+        --ink: #0f172a;
+        --body: #334155;
+        --muted: #64748b;
+        --line: #d7e0ea;
+        --blue: #1d4ed8;
+        --blue-soft: #eaf2ff;
+        --green: #047857;
+        --green-soft: #e8f7ef;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --purple: #6d28d9;
+        --purple-soft: #f0eaff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        overflow-x: hidden;
+        scroll-behavior: smooth;
+      }
+
+      body {
+        overflow-x: hidden;
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard",
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          "Malgun Gothic",
+          system-ui,
+          sans-serif;
+        line-height: 1.45;
+        letter-spacing: 0;
+      }
+
+      a {
+        color: var(--blue);
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      .deck {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 22px 0 56px;
+      }
+
+      .toolbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.92);
+        padding: 10px 14px;
+        color: var(--muted);
+        font-size: 13px;
+        backdrop-filter: blur(10px);
+      }
+
+      .toolbar strong {
+        color: var(--ink);
+      }
+
+      .nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+      }
+
+      .nav a {
+        border: 1px solid #bfdbfe;
+        border-radius: 999px;
+        background: #ffffff;
+        padding: 5px 8px;
+        font-size: 12px;
+      }
+
+      .slide {
+        position: relative;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        min-height: min(720px, calc((100vw - 32px) * 0.5625));
+        aspect-ratio: 16 / 9;
+        margin: 0 auto 18px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--slide);
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.09);
+      }
+
+      .slide-head,
+      .slide-foot {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        padding: 18px 28px 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .slide-foot {
+        padding: 0 28px 18px;
+      }
+
+      .brand {
+        color: var(--ink);
+        font-weight: 900;
+      }
+
+      .body {
+        padding: 30px 42px 24px;
+      }
+
+      .kicker {
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        max-width: 920px;
+        margin-top: 10px;
+        font-size: clamp(34px, 5.1vw, 58px);
+        line-height: 1.12;
+        word-break: keep-all;
+      }
+
+      h2 {
+        max-width: 860px;
+        margin-top: 8px;
+        font-size: clamp(28px, 3.6vw, 44px);
+        line-height: 1.15;
+        word-break: keep-all;
+      }
+
+      .lead {
+        max-width: 740px;
+        margin-top: 16px;
+        color: var(--body);
+        font-size: 18px;
+      }
+
+      .metric-row,
+      .two-col,
+      .three-col,
+      .four-col,
+      .six-grid,
+      .priority-row,
+      .decision-grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .metric-row {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        margin-top: 34px;
+      }
+
+      .metric,
+      .card,
+      .lane,
+      .cell,
+      .source {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fbfcfe;
+      }
+
+      .metric {
+        padding: 18px;
+      }
+
+      .metric strong {
+        display: block;
+        color: var(--ink);
+        font-size: 34px;
+        line-height: 1;
+      }
+
+      .metric span {
+        display: block;
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .two-col {
+        grid-template-columns: 1fr 1fr;
+        margin-top: 34px;
+      }
+
+      .card {
+        min-height: 210px;
+        padding: 22px;
+      }
+
+      .bad {
+        border-color: #fecaca;
+        background: var(--red-soft);
+      }
+
+      .good {
+        border-color: #a7f3d0;
+        background: var(--green-soft);
+      }
+
+      .card h3 {
+        font-size: 24px;
+      }
+
+      .bullets {
+        display: grid;
+        gap: 12px;
+        margin-top: 20px;
+      }
+
+      .bullet {
+        display: grid;
+        grid-template-columns: 10px minmax(0, 1fr);
+        gap: 10px;
+        align-items: start;
+        color: var(--body);
+        font-size: 16px;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        margin-top: 8px;
+        border-radius: 50%;
+        background: var(--blue);
+      }
+
+      .six-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-top: 24px;
+      }
+
+      .cell {
+        min-height: 150px;
+        padding: 16px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        border-radius: 999px;
+        padding: 3px 9px;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .tag.blue {
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+
+      .tag.green {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .tag.amber {
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .tag.red {
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      .tag.purple {
+        background: var(--purple-soft);
+        color: var(--purple);
+      }
+
+      .cell h3 {
+        margin-top: 10px;
+        font-size: 18px;
+      }
+
+      .cell p {
+        margin-top: 8px;
+        color: var(--body);
+        font-size: 13px;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 12px;
+      }
+
+      .chip {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #ffffff;
+        padding: 4px 7px;
+        color: var(--body);
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      .table {
+        display: grid;
+        margin-top: 22px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      .tr {
+        display: grid;
+        grid-template-columns: 1.05fr 1.45fr 1.45fr 1.25fr 0.55fr;
+      }
+
+      .tr > div {
+        min-height: 42px;
+        border-right: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        padding: 9px 10px;
+        color: var(--body);
+        font-size: 12px;
+      }
+
+      .tr > div:last-child {
+        border-right: 0;
+      }
+
+      .tr:last-child > div {
+        border-bottom: 0;
+      }
+
+      .th > div {
+        background: #f1f5f9;
+        color: var(--ink);
+        font-weight: 900;
+      }
+
+      .priority-row {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        margin-top: 34px;
+      }
+
+      .lane {
+        min-height: 230px;
+        padding: 22px;
+      }
+
+      .lane strong {
+        display: block;
+        font-size: 44px;
+        line-height: 1;
+      }
+
+      .lane h3 {
+        margin-top: 20px;
+        font-size: 21px;
+      }
+
+      .lane p {
+        margin-top: 14px;
+        color: var(--body);
+        font-size: 15px;
+      }
+
+      .matrix {
+        position: relative;
+        height: 360px;
+        margin-top: 24px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background:
+          linear-gradient(90deg, transparent calc(50% - 1px), var(--line) calc(50% - 1px), var(--line) calc(50% + 1px), transparent calc(50% + 1px)),
+          linear-gradient(0deg, transparent calc(50% - 1px), var(--line) calc(50% - 1px), var(--line) calc(50% + 1px), transparent calc(50% + 1px)),
+          #ffffff;
+      }
+
+      .axis-label {
+        position: absolute;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .dot-label {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--ink);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .marker {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: var(--blue);
+      }
+
+      .strategy {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 34px;
+        align-items: stretch;
+      }
+
+      .step {
+        position: relative;
+        min-height: 220px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 20px;
+        background: #fbfcfe;
+      }
+
+      .step:not(:last-child)::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        right: -8px;
+        width: 8px;
+        height: 2px;
+        background: var(--line);
+      }
+
+      .step h3 {
+        margin-top: 18px;
+        font-size: 20px;
+      }
+
+      .step p {
+        margin-top: 12px;
+        color: var(--body);
+        font-size: 14px;
+      }
+
+      .decision-grid {
+        grid-template-columns: 1fr 1fr;
+        margin-top: 30px;
+      }
+
+      .decision-grid .card {
+        min-height: 132px;
+      }
+
+      .source-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px 18px;
+        margin-top: 18px;
+      }
+
+      .source-list a {
+        display: block;
+        border-bottom: 1px solid var(--line);
+        padding: 7px 0;
+        font-size: 13px;
+      }
+
+      @media (max-width: 820px) {
+        .deck {
+          width: min(100% - 18px, 560px);
+          padding-top: 10px;
+        }
+
+        .toolbar {
+          position: static;
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .slide {
+          aspect-ratio: auto;
+          min-height: auto;
+        }
+
+        .slide-head,
+        .slide-foot {
+          padding-right: 18px;
+          padding-left: 18px;
+        }
+
+        .body {
+          padding: 22px 20px 20px;
+        }
+
+        .metric-row,
+        .two-col,
+        .six-grid,
+        .priority-row,
+        .strategy,
+        .decision-grid,
+        .source-list {
+          grid-template-columns: 1fr;
+        }
+
+        .step:not(:last-child)::after {
+          display: none;
+        }
+
+        .table {
+          display: block;
+          border: 0;
+        }
+
+        .tr {
+          display: block;
+          margin-bottom: 8px;
+          border: 1px solid var(--line);
+          border-radius: 8px;
+          background: #ffffff;
+          overflow: hidden;
+        }
+
+        .th {
+          display: none;
+        }
+
+        .tr > div {
+          display: grid;
+          grid-template-columns: 88px minmax(0, 1fr);
+          gap: 8px;
+          border-right: 0;
+          min-height: 0;
+        }
+
+        .tr > div::before {
+          content: attr(data-label);
+          color: var(--muted);
+          font-size: 11px;
+          font-weight: 900;
+        }
+
+        .matrix {
+          height: 430px;
+        }
+      }
+
+      @media print {
+        body {
+          background: #ffffff;
+        }
+
+        .deck {
+          width: 100%;
+          padding: 0;
+        }
+
+        .toolbar {
+          display: none;
+        }
+
+        .slide {
+          width: 100vw;
+          height: 56.25vw;
+          margin: 0;
+          border: 0;
+          border-radius: 0;
+          box-shadow: none;
+          break-after: page;
+          page-break-after: always;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="deck">
+      <div class="toolbar">
+        <div><strong>FlowMe 외부 생태계 지도 v2</strong> · PPT형 HTML</div>
+        <nav class="nav" aria-label="슬라이드 이동">
+          <a href="#s1">1</a><a href="#s2">2</a><a href="#s3">3</a><a href="#s4">4</a>
+          <a href="#s5">5</a><a href="#s6">6</a><a href="#s7">7</a><a href="#s8">8</a>
+          <a href="./2026-06-12-flowme-external-ecosystem-map-v2-ko.pptx">PPTX</a>
+        </nav>
+      </div>
+
+      <section class="slide" id="s1">
+        <div class="slide-head"><span class="brand">FlowMe</span><span>외부 생태계 지도 v2</span></div>
+        <div class="body">
+          <p class="kicker">Strategy Brief</p>
+          <h1>6개 앱 비교가 아니라, 42개 후보군을 6개 역할로 압축해야 합니다.</h1>
+          <p class="lead">FlowMe의 외부 연결 전략은 API 목록이 아니라 사용자의 실행이 완성되는 장소를 찾는 일입니다.</p>
+          <div class="metric-row">
+            <div class="metric"><strong>6</strong><span>분석 축</span></div>
+            <div class="metric"><strong>42</strong><span>초기 후보군</span></div>
+            <div class="metric"><strong>12</strong><span>우선 추적 묶음</span></div>
+            <div class="metric"><strong>3</strong><span>1차 제품 결론</span></div>
+          </div>
+        </div>
+        <div class="slide-foot"><span>검색 근거 기반 후보 압축</span><span>01</span></div>
+      </section>
+
+      <section class="slide" id="s2">
+        <div class="slide-head"><span class="brand">FlowMe</span><span>문제 재정의</span></div>
+        <div class="body">
+          <p class="kicker">Why Replan</p>
+          <h2>6개 대표 앱 화면은 증거가 아니라 샘플입니다.</h2>
+          <p class="lead">CEO 보고서에는 앱 이름보다 분석 단위와 우선순위가 먼저 보여야 합니다.</p>
+          <div class="two-col">
+            <article class="card bad">
+              <h3>기존 방식</h3>
+              <div class="bullets">
+                <div class="bullet"><span class="dot" style="background: var(--red)"></span><span>KakaoTalk, Sheets, Notion처럼 앱 이름 중심</span></div>
+                <div class="bullet"><span class="dot" style="background: var(--red)"></span><span>스크린샷은 있지만 왜 골랐는지 약함</span></div>
+                <div class="bullet"><span class="dot" style="background: var(--red)"></span><span>연동·경쟁·목적지가 한 표 안에서 섞임</span></div>
+              </div>
+            </article>
+            <article class="card good">
+              <h3>새 방식</h3>
+              <div class="bullets">
+                <div class="bullet"><span class="dot" style="background: var(--green)"></span><span>6개 역할 축으로 서비스 후보를 분류</span></div>
+                <div class="bullet"><span class="dot" style="background: var(--green)"></span><span>42개 후보군에서 12개 우선 추적 후보 압축</span></div>
+                <div class="bullet"><span class="dot" style="background: var(--green)"></span><span>P0/P1/P2/Watch로 제품 의사결정 분리</span></div>
+              </div>
+            </article>
+          </div>
+        </div>
+        <div class="slide-foot"><span>질문 변경: 어떤 앱을 붙일까 → Flow가 어디에서 실행 완료되는가</span><span>02</span></div>
+      </section>
+
+      <section class="slide" id="s3">
+        <div class="slide-head"><span class="brand">FlowMe</span><span>6개 분석 축</span></div>
+        <div class="body">
+          <p class="kicker">Ecosystem Map</p>
+          <h2>FlowMe 외부 생태계는 6개 역할로 나뉩니다.</h2>
+          <div class="six-grid">
+            <article class="cell"><span class="tag blue">축 1</span><h3>콘텐츠 소스</h3><p>실행 정보가 어디서 나오는가</p><div class="chips"><span class="chip">Naver Blog</span><span class="chip">YouTube</span><span class="chip">공공 PDF</span><span class="chip">커뮤니티 글</span></div></article>
+            <article class="cell"><span class="tag green">축 2</span><h3>실행 목적지</h3><p>사용자가 어디서 행동을 끝내는가</p><div class="chips"><span class="chip">Calendar</span><span class="chip">Todoist</span><span class="chip">Planner</span><span class="chip">Trello</span></div></article>
+            <article class="cell"><span class="tag amber">축 3</span><h3>기록·문서</h3><p>어디에 기록과 운영표가 남는가</p><div class="chips"><span class="chip">Sheets</span><span class="chip">Excel</span><span class="chip">Notion</span><span class="chip">Airtable</span></div></article>
+            <article class="cell"><span class="tag purple">축 4</span><h3>공유·배포</h3><p>누구에게 어떻게 전달되는가</p><div class="chips"><span class="chip">KakaoTalk</span><span class="chip">Naver Cafe</span><span class="chip">BAND</span><span class="chip">Slack</span></div></article>
+            <article class="cell"><span class="tag blue">축 5</span><h3>응답·수집</h3><p>상태와 반응을 어떻게 받는가</p><div class="chips"><span class="chip">Forms</span><span class="chip">Typeform</span><span class="chip">Tally</span><span class="chip">Sheets</span></div></article>
+            <article class="cell"><span class="tag red">축 6</span><h3>경쟁·자동화</h3><p>FlowMe 없이 해결 가능한가</p><div class="chips"><span class="chip">Zapier</span><span class="chip">Make</span><span class="chip">ChatGPT</span><span class="chip">Copilot</span></div></article>
+          </div>
+        </div>
+        <div class="slide-foot"><span>하나의 서비스가 여러 축에 걸쳐도, 보고서는 주 역할로 판단</span><span>03</span></div>
+      </section>
+
+      <section class="slide" id="s4">
+        <div class="slide-head"><span class="brand">FlowMe</span><span>42개 후보 압축</span></div>
+        <div class="body">
+          <p class="kicker">Candidate Compression</p>
+          <h2>42개 후보는 12개 우선 추적 묶음으로 압축됩니다.</h2>
+          <div class="table">
+            <div class="tr th"><div>묶음</div><div>대표 후보</div><div>FlowMe 역할</div><div>먼저 만들 것</div><div>판단</div></div>
+            <div class="tr"><div data-label="묶음">캘린더</div><div data-label="대표 후보">Google / Outlook / Apple</div><div data-label="역할">날짜·반복·마감</div><div data-label="먼저">ICS·일정 텍스트</div><div data-label="판단">P0</div></div>
+            <div class="tr"><div data-label="묶음">표·문서</div><div data-label="대표 후보">Sheets / Excel / Notion</div><div data-label="역할">체크·기록·운영</div><div data-label="먼저">CSV·Markdown</div><div data-label="판단">P0</div></div>
+            <div class="tr"><div data-label="묶음">공유</div><div data-label="대표 후보">KakaoTalk / Cafe / BAND</div><div data-label="역할">개인·그룹 전달</div><div data-label="먼저">공유 카드·게시문</div><div data-label="판단">P0/P1</div></div>
+            <div class="tr"><div data-label="묶음">응답</div><div data-label="대표 후보">Forms / Typeform / Tally</div><div data-label="역할">신청·상태 수집</div><div data-label="먼저">질문 템플릿</div><div data-label="판단">P1</div></div>
+            <div class="tr"><div data-label="묶음">자동화</div><div data-label="대표 후보">Zapier / Make / IFTTT</div><div data-label="역할">앱 연결 대체재</div><div data-label="먼저">차별점 감시</div><div data-label="판단">Watch</div></div>
+            <div class="tr"><div data-label="묶음">AI 앱</div><div data-label="대표 후보">ChatGPT / Gemini / Copilot</div><div data-label="역할">업무 앱 직접 실행</div><div data-label="먼저">경쟁 흐름 감시</div><div data-label="판단">Watch</div></div>
+          </div>
+        </div>
+        <div class="slide-foot"><span>개별 앱을 모두 연동 후보로 보지 않고, 제품 가치가 같은 후보를 하나의 결정 묶음으로 봄</span><span>04</span></div>
+      </section>
+
+      <section class="slide" id="s5">
+        <div class="slide-head"><span class="brand">FlowMe</span><span>우선순위</span></div>
+        <div class="body">
+          <p class="kicker">Priority Lanes</p>
+          <h2>FlowMe의 1차 연결 전략은 API가 아니라 내보내기 품질입니다.</h2>
+          <div class="priority-row">
+            <article class="lane" style="background: var(--green-soft)"><strong style="color: var(--green)">P0</strong><h3>바로 제품화</h3><p>ICS, CSV, Markdown, 공유 카드, 게시문</p></article>
+            <article class="lane" style="background: var(--blue-soft)"><strong style="color: var(--blue)">P1</strong><h3>템플릿 후보</h3><p>폼 질문 구조, 메시지 블록, 할 일 목록</p></article>
+            <article class="lane" style="background: var(--amber-soft)"><strong style="color: var(--amber)">P2</strong><h3>조건부 연동</h3><p>Calendar API, Sheets API, Notion API, Slack API</p></article>
+            <article class="lane" style="background: var(--red-soft)"><strong style="color: var(--red)">Watch</strong><h3>경쟁 감시</h3><p>ChatGPT, Gemini, Copilot, Zapier, Make</p></article>
+          </div>
+        </div>
+        <div class="slide-foot"><span>P0/P1은 제품 UX, P2는 기술 투자, Watch는 전략 감시</span><span>05</span></div>
+      </section>
+
+      <section class="slide" id="s6">
+        <div class="slide-head"><span class="brand">FlowMe</span><span>경쟁 구도</span></div>
+        <div class="body">
+          <p class="kicker">Competitive Read</p>
+          <h2>경쟁자는 단일 앱이 아니라 사용자가 실행을 끝내는 흐름입니다.</h2>
+          <div class="matrix" role="img" aria-label="자동화 수준과 대체 위협 기준 경쟁 구도">
+            <span class="axis-label" style="left: 20px; bottom: 14px">낮은 자동화</span>
+            <span class="axis-label" style="right: 20px; bottom: 14px">높은 자동화</span>
+            <span class="axis-label" style="left: 16px; top: 18px">대체 위협</span>
+            <span class="axis-label" style="left: 16px; bottom: 42px">실행 보조</span>
+            <span class="dot-label" style="left: 22%; top: 28%"><span class="marker" style="background: var(--amber)"></span>Notion</span>
+            <span class="dot-label" style="left: 32%; top: 66%"><span class="marker" style="background: var(--green)"></span>Sheets</span>
+            <span class="dot-label" style="left: 42%; top: 62%"><span class="marker" style="background: var(--blue)"></span>Forms</span>
+            <span class="dot-label" style="left: 49%; top: 53%"><span class="marker" style="background: var(--green)"></span>Todoist</span>
+            <span class="dot-label" style="left: 62%; top: 64%"><span class="marker" style="background: var(--purple)"></span>Slack/Teams</span>
+            <span class="dot-label" style="left: 72%; top: 28%"><span class="marker" style="background: var(--red)"></span>Zapier</span>
+            <span class="dot-label" style="left: 78%; top: 18%"><span class="marker" style="background: var(--red)"></span>ChatGPT</span>
+            <span class="dot-label" style="left: 84%; top: 25%"><span class="marker" style="background: var(--red)"></span>Copilot</span>
+          </div>
+        </div>
+        <div class="slide-foot"><span>FlowMe 차별점: 출처 기반 콘텐츠를 바로 실행 가능한 산출물로 바꾸는 것</span><span>06</span></div>
+      </section>
+
+      <section class="slide" id="s7">
+        <div class="slide-head"><span class="brand">FlowMe</span><span>연결 전략</span></div>
+        <div class="body">
+          <p class="kicker">Connection Strategy</p>
+          <h2>연동 개발은 마지막 카드입니다.</h2>
+          <p class="lead">먼저 목적지별 산출물 품질을 높이고, 그 다음 공식 API와 권한 투자를 검토합니다.</p>
+          <div class="strategy">
+            <article class="step"><span class="tag green">지금</span><h3>내보내기 품질</h3><p>ICS, CSV, Markdown, 공유 문구</p></article>
+            <article class="step"><span class="tag blue">다음</span><h3>목적지 템플릿</h3><p>Forms 질문, Slack 메시지, 게시 패킷</p></article>
+            <article class="step"><span class="tag amber">조건 충족 뒤</span><h3>공식 API</h3><p>Calendar, Sheets, Notion, Todoist</p></article>
+            <article class="step"><span class="tag red">보류</span><h3>자동화·봇</h3><p>자동 게시, 웹훅, 응답 가져오기</p></article>
+          </div>
+        </div>
+        <div class="slide-foot"><span>API는 목표가 아니라 증폭 장치입니다.</span><span>07</span></div>
+      </section>
+
+      <section class="slide" id="s8">
+        <div class="slide-head"><span class="brand">FlowMe</span><span>의사결정</span></div>
+        <div class="body">
+          <p class="kicker">Executive Decision</p>
+          <h2>이번 보고서의 결론은 세 가지입니다.</h2>
+          <div class="decision-grid">
+            <article class="card"><span class="tag blue">1</span><h3>외부 생태계 지도는 6개 축으로 관리</h3><p>앱 이름 목록이 아니라 역할 지도와 후보 압축표가 기준입니다.</p></article>
+            <article class="card"><span class="tag green">2</span><h3>P0는 내보내기와 공유 산출물</h3><p>캘린더, 시트, 문서, 카카오톡/커뮤니티용 결과물을 먼저 강화합니다.</p></article>
+            <article class="card"><span class="tag red">3</span><h3>API·봇·자동화는 조건부 투자</h3><p>OAuth, 토큰 저장, 자동 게시, 응답 가져오기는 후순위입니다.</p></article>
+            <article class="card">
+              <span class="tag amber">대표 근거</span>
+              <div class="source-list">
+                <a href="https://developers.kakao.com/docs/latest/en/kakaotalk-share/common">Kakao Developers</a>
+                <a href="https://developers.google.com/workspace/calendar">Google Calendar</a>
+                <a href="https://developers.google.com/workspace/forms/api/guides">Google Forms API</a>
+                <a href="https://learn.microsoft.com/en-us/graph/api/resources/calendar-overview?view=graph-rest-1.0">Microsoft Graph</a>
+                <a href="https://developers.notion.com/guides/get-started/overview">Notion API</a>
+                <a href="https://docs.slack.dev/">Slack API</a>
+              </div>
+            </article>
+          </div>
+        </div>
+        <div class="slide-foot"><span><a href="./2026-06-12-flowme-external-ecosystem-map-v2-ko.html">상세 HTML</a> · <a href="./2026-06-12-flowme-external-ecosystem-map-v2-ko.pptx">PPTX</a></span><span>08</span></div>
+      </section>
+    </main>
+  </body>
+</html>

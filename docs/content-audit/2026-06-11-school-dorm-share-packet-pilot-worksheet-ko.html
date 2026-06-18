@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 공유 패킷 파일럿 Worksheet</title>
+  <style>
+    :root{--bg:#f6f7f9;--paper:#fff;--ink:#101828;--body:#344054;--muted:#667085;--line:#d9e2ec;--blue:#1d4ed8;--soft:#f1f5f9;--amber:#9a5b12;--amber-soft:#fff4d8;--green:#047857;--green-soft:#e7f6ef;--red:#b42318;--red-soft:#fff0ed}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;line-height:1.62;letter-spacing:0}a{color:var(--blue);text-decoration:none}.page{width:min(1120px,calc(100% - 28px));margin:0 auto;padding:22px 0 64px}.topbar,.hero,.panel,.nav{border:1px solid var(--line);border-radius:8px;background:var(--paper);box-shadow:0 16px 44px rgba(15,23,42,.07)}.topbar{display:flex;justify-content:space-between;gap:14px;margin-bottom:14px;padding:10px 14px;color:var(--muted);font-size:13px}.brand{color:var(--ink);font-weight:900}.layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:18px;align-items:start}.layout>*{min-width:0}.hero,.panel{padding:26px}.panel{margin-top:18px}h1,h2,h3,p{margin:0}h1,h2,h3{line-height:1.25;word-break:keep-all}h1{font-size:clamp(30px,4vw,46px)}h2{margin-bottom:10px;font-size:23px}p,li,td{color:var(--body)}.lead{margin-top:12px;font-size:17px;max-width:860px}.note{margin-top:12px;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--soft)}code{padding:1px 5px;border-radius:5px;background:#eef2f7;color:#172033;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-wrap:anywhere}.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:20px}.metric{min-height:105px;border:1px solid var(--line);border-radius:8px;padding:15px;background:var(--soft)}.metric strong{display:block;margin-bottom:8px;color:var(--muted);font-size:12px;text-transform:uppercase}.metric span{display:block;font-size:18px;font-weight:900;overflow-wrap:anywhere}.amber{background:var(--amber-soft)}.green{background:var(--green-soft)}.red{background:var(--red-soft)}.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--paper)}table{width:100%;min-width:860px;border-collapse:collapse}th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:14px}th{background:var(--soft);color:var(--ink)}tr:last-child td{border-bottom:0}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.card{border:1px solid var(--line);border-radius:8px;padding:15px;background:var(--paper)}.card p{margin-top:6px}.links{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}.button{display:inline-flex;align-items:center;min-height:36px;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;font-weight:800}.nav{position:sticky;top:16px;padding:16px}.nav h2{font-size:16px}.nav a{display:block;padding:8px 9px;border-radius:6px;color:var(--body);font-size:14px}@media(max-width:900px){.layout{grid-template-columns:1fr}.nav{position:static}.metrics,.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.page{width:min(100% - 20px,1120px);padding-top:10px}.topbar{flex-direction:column}.hero,.panel,.nav{padding:18px}.metrics,.grid{grid-template-columns:1fr}table{min-width:860px}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topbar"><div><span class="brand">FlowMe 분석방</span> / 파일럿 Worksheet</div><div>상태: blank · waiting for agreed slot · not run · not evidence · 관찰 증거 아님</div></div>
+    <div class="layout">
+      <div>
+        <section class="hero" id="top">
+          <h1>세션 중에는 비식별 근거만 적습니다</h1>
+          <p class="lead">이 sheet는 첫 3명에 대한 이해 확인용입니다. 패킷 버전은 <code>school-dorm-share-packet-v2-2026-06-11-readable-preview</code>로 고정되어 있고, FlowMe 설명은 패킷 반응 뒤에만 가능합니다.</p>
+          <div class="metrics">
+            <div class="metric amber"><strong>decision</strong><span>no signal</span></div>
+            <div class="metric"><strong>sessions</strong><span>0 / 3</span></div>
+            <div class="metric amber"><strong>start gate</strong><span>needs agreed slot</span></div>
+            <div class="metric green"><strong>version</strong><span>v2 readable preview</span></div>
+            <div class="metric red"><strong>private values</strong><span>no</span></div>
+          </div>
+          <p class="note">matching role-labeled slot이 스케줄링 트래커에서 <code>agreed</code>가 되기 전에는 아래 세션 블록에 쓰지 않습니다. <code>not invited</code>, <code>invited</code>, <code>scheduled</code>, <code>not run</code>은 관찰 증거가 아닙니다.</p>
+        </section>
+
+        <section class="panel" id="gate">
+          <h2>0. 작성 전 게이트</h2>
+          <div class="table-wrap">
+            <table>
+              <tbody>
+                <tr><th>Scheduling tracker</th><td>해당 role-labeled slot이 <code>agreed</code>인지 확인합니다. 아니면 session status는 <code>not run</code>으로 둡니다.</td></tr>
+                <tr><th>Preflight checklist</th><td>preflight gate가 통과되기 전에는 worksheet를 증거처럼 채우지 않습니다.</td></tr>
+                <tr><th>Evidence boundary</th><td>이 worksheet는 실제 세션 뒤에만 증거가 됩니다. 빈 worksheet 자체는 검증이나 launch readiness가 아닙니다.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="links">
+            <a class="button" href="./2026-06-11-school-dorm-share-packet-scheduling-tracker-ko.html#snippets">scheduling tracker snippets</a>
+            <a class="button" href="./2026-06-11-school-dorm-share-packet-preflight-checklist-ko.html">preflight checklist</a>
+          </div>
+        </section>
+
+        <section class="panel" id="setup">
+          <h2>1. Pilot Setup</h2>
+          <div class="table-wrap">
+            <table>
+              <tbody>
+                <tr><th>Packet version shown</th><td><code>school-dorm-share-packet-v2-2026-06-11-readable-preview</code></td></tr>
+                <tr><th>Observer</th><td></td></tr>
+                <tr><th>Date</th><td></td></tr>
+                <tr><th>FlowMe explained before task</th><td>no</td></tr>
+                <tr><th>Real sensitive values collected</th><td>no</td></tr>
+                <tr><th>Source shown before task</th><td>no</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" id="checks">
+          <h2>2. 공통 체크</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Check</th><th>Pass condition</th></tr></thead>
+              <tbody>
+                <tr><td>First action</td><td>최신 학교/기숙사 공지부터 확인해야 한다고 말합니다.</td></tr>
+                <tr><td>Four labels</td><td>네 가지 답변 옵션을 제품 설명 없이 해석합니다.</td></tr>
+                <tr><td>Latest-notice priority</td><td>최신 공식 공지가 패킷보다 우선이라고 말합니다.</td></tr>
+                <tr><td>No-store values</td><td>건강, 결제, 신원, 방, 채널, 링크, 로그 값을 피합니다.</td></tr>
+                <tr><td>Manual-copy boundary</td><td>FlowMe가 전송/게시/답글 수집/연락처 저장/채널 추적을 하지 않는다고 이해합니다.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" id="sessions">
+          <h2>3. 세션 기록칸</h2>
+          <div class="grid">
+            <article class="card"><h3>Session 01</h3><p>student-like recipient</p><p>status: waiting for agreed slot / not run</p></article>
+            <article class="card"><h3>Session 02</h3><p>parent/guardian-like recipient</p><p>status: waiting for agreed slot / not run</p></article>
+            <article class="card"><h3>Session 03</h3><p>coordinator/group-manager-like recipient</p><p>status: waiting for agreed slot / not run</p></article>
+          </div>
+        </section>
+
+        <section class="panel" id="next">
+          <h2>4. 다음 문서</h2>
+          <div class="links">
+            <a class="button" href="./2026-06-11-school-dorm-share-packet-scheduling-tracker-ko.html#snippets">scheduling tracker</a>
+            <a class="button" href="./2026-06-11-school-dorm-share-packet-response-coding-guide-ko.html">response coding guide</a>
+            <a class="button" href="./2026-06-10-school-dorm-share-packet-session-log-starter-ko.html">session log starter</a>
+            <a class="button" href="./2026-06-11-school-dorm-share-packet-rollup-template-ko.html">rollup template</a>
+          </div>
+        </section>
+      </div>
+      <aside class="nav">
+        <h2>목차</h2>
+        <a href="#top">요약</a>
+        <a href="#gate">0. 작성 전 게이트</a>
+        <a href="#setup">1. Pilot Setup</a>
+        <a href="#checks">2. 공통 체크</a>
+        <a href="#sessions">3. 세션 기록칸</a>
+        <a href="#next">4. 다음 문서</a>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>

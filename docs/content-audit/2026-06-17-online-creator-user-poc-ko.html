@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 실행 콘텐츠 저장 화면</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f8fb;
+        --surface: #fff;
+        --soft: #f8fafc;
+        --line: #d8e2ef;
+        --text: #101827;
+        --muted: #5d697b;
+        --blue: #1f5fbf;
+        --green: #0f7a4a;
+        --amber: #9a6100;
+        --red: #b42318;
+        --radius: 8px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: #f6f8fb;
+        color: var(--text);
+        font-size: 16px;
+        line-height: 1.55;
+      }
+      button, input, textarea, select { font: inherit; }
+      button { cursor: pointer; }
+      .app {
+        width: min(1120px, calc(100% - 24px));
+        margin: 0 auto;
+        padding: 16px 0 48px;
+      }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .brand { font-weight: 950; color: #174ea6; }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 6px 0;
+      }
+      .tab {
+        flex: 0 0 auto;
+        min-height: 38px;
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        color: #334155;
+        font-weight: 900;
+      }
+      .tab.active {
+        border-color: #b9d2ff;
+        background: #eef5ff;
+        color: #174ea6;
+      }
+      .hero, .card, .panel, .item, .calendar, .sheet {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+      }
+      .hero {
+        padding: 16px;
+        box-shadow: 0 10px 28px rgba(16, 24, 39, .07);
+      }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 { margin-bottom: 6px; font-size: clamp(28px, 5vw, 42px); line-height: 1.12; letter-spacing: 0; }
+      h2 { margin-bottom: 8px; font-size: 22px; line-height: 1.2; letter-spacing: 0; }
+      h3 { margin-bottom: 6px; font-size: 17px; letter-spacing: 0; }
+      a { color: var(--blue); text-underline-offset: 3px; }
+      .desc { color: var(--muted); }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 3px 9px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--soft);
+        color: #334155;
+        font-size: 13px;
+        font-weight: 850;
+        white-space: nowrap;
+      }
+      .chip.green { border-color: #b8e5ce; background: #eefaf3; color: #0f6b43; }
+      .chip.blue { border-color: #b9d2ff; background: #eef5ff; color: #174ea6; }
+      .chip.amber { border-color: #f4d291; background: #fff7e8; color: #7a4b00; }
+      .main {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 12px;
+        margin-top: 12px;
+      }
+      .side {
+        display: grid;
+        gap: 12px;
+        align-content: start;
+      }
+      .card, .panel { padding: 14px; }
+      .field { display: grid; gap: 5px; margin-top: 10px; }
+      label { color: #334155; font-size: 13px; font-weight: 900; }
+      input, textarea, select {
+        width: 100%;
+        min-height: 40px;
+        padding: 8px 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 7px;
+        background: #fff;
+        color: var(--text);
+      }
+      textarea { min-height: 96px; resize: vertical; }
+      .weekday-row { display: flex; flex-wrap: wrap; gap: 7px; }
+      .weekday-row label {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        min-height: 34px;
+        padding: 5px 8px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+      }
+      .weekday-row input { width: auto; min-height: auto; }
+      .button-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        padding: 8px 12px;
+        border: 1px solid #b9d2ff;
+        border-radius: 7px;
+        background: #eef5ff;
+        color: #174ea6;
+        font-weight: 950;
+      }
+      .btn.secondary { border-color: var(--line); background: #fff; color: #334155; }
+      .btn.green { border-color: #b8e5ce; background: #eefaf3; color: #0f6b43; }
+      .section-list { display: grid; gap: 8px; }
+      .section-button {
+        width: 100%;
+        padding: 11px;
+        border: 1px solid #e6edf5;
+        border-radius: 7px;
+        background: #fff;
+        text-align: left;
+      }
+      .section-button.active {
+        border-color: #b9d2ff;
+        background: #eef5ff;
+      }
+      .section-button strong { display: block; margin-bottom: 2px; }
+      .workspace {
+        display: grid;
+        gap: 12px;
+      }
+      .item {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: start;
+        padding: 12px;
+        margin-top: 8px;
+      }
+      .item input { width: 20px; height: 20px; min-height: auto; margin-top: 2px; }
+      .item-title { margin: 0 0 3px; font-weight: 950; }
+      .pill {
+        display: inline-flex;
+        padding: 3px 7px;
+        border-radius: 999px;
+        background: #f1f5f9;
+        color: #334155;
+        font-size: 12px;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+      .preview-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .calendar, .sheet { padding: 12px; }
+      .date-list { display: grid; gap: 8px; }
+      .date-button {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #e6edf5;
+        border-radius: 7px;
+        background: #fff;
+        text-align: left;
+      }
+      .date-button.active {
+        border-color: #b8e5ce;
+        background: #eefaf3;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 110px 1fr;
+        gap: 8px;
+        padding: 9px 0;
+        border-top: 1px solid #e6edf5;
+      }
+      .row:first-of-type { border-top: 0; }
+      .toast {
+        margin-top: 12px;
+        padding: 12px;
+        border-left: 4px solid var(--green);
+        border-radius: 6px;
+        background: #eefaf3;
+        color: #0f6b43;
+        font-weight: 850;
+      }
+      .source-box {
+        padding: 12px;
+        border: 1px solid #e6edf5;
+        border-radius: 7px;
+        background: #fbfdff;
+      }
+      .empty { color: var(--muted); }
+      @media (max-width: 860px) {
+        .app { width: min(100% - 22px, 1120px); padding-top: 10px; }
+        .topbar { align-items: flex-start; flex-direction: column; }
+        .main, .preview-grid, .item, .row { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="topbar">
+        <div class="brand">FlowMe</div>
+        <div class="tabs" aria-label="콘텐츠 선택">
+          <button class="tab active" data-tab="running" type="button">러닝 루틴</button>
+          <button class="tab" data-tab="math" type="button">중1 수학</button>
+          <button class="tab" data-tab="babyfood" type="button">이유식 식단표</button>
+        </div>
+      </div>
+
+      <section class="hero">
+        <h1 id="title">러닝 입문 4주 루틴</h1>
+        <p class="desc" id="summary">초보 러너가 영상 시리즈를 보고 이번 달 운동 요일에 맞춰 달리기 일정을 만든다.</p>
+        <div class="chips" id="heroChips"></div>
+      </section>
+
+      <div class="main">
+        <aside class="side">
+          <section class="card">
+            <h2>저장 설정</h2>
+            <div id="inputFields"></div>
+            <div class="button-row">
+              <button class="btn" type="button" id="saveAll">전체 저장</button>
+              <button class="btn secondary" type="button" id="saveSection">선택한 구간만 저장</button>
+            </div>
+            <div id="saveToast" class="toast" hidden></div>
+          </section>
+
+          <section class="card">
+            <h2 id="sectionTitle">구간 선택</h2>
+            <div class="section-list" id="sectionList"></div>
+          </section>
+
+          <section class="card">
+            <h2>원본</h2>
+            <div class="source-box" id="sourceBox"></div>
+          </section>
+        </aside>
+
+        <main class="workspace">
+          <section class="panel">
+            <h2 id="detailTitle">이번 구간에서 할 일</h2>
+            <p class="desc" id="detailDesc"></p>
+            <div id="itemList"></div>
+          </section>
+
+          <section class="preview-grid">
+            <div class="calendar">
+              <h2>일정 미리보기</h2>
+              <div class="date-list" id="dateList"></div>
+            </div>
+            <div class="sheet">
+              <h2 id="sheetTitle">표/메모 미리보기</h2>
+              <div id="sheetRows"></div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>내 메모</h2>
+            <textarea id="memo" placeholder="실행하면서 남길 메모를 적어두기"></textarea>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      const content = {
+        running: {
+          title: "러닝 입문 4주 루틴",
+          summary: "초보 러너가 영상 시리즈를 보고 이번 달 운동 요일에 맞춰 달리기 일정을 만든다.",
+          chips: ["운동 요일 선택", "캘린더 일정", "영상 링크 포함"],
+          sourceHtml: '<a href="https://www.youtube.com/playlist?list=PLPjAVMQb8HvP6Q5leQ854AxBaTsLNW5V2">런관장 러닝 초보 프로그램</a><br><a href="https://www.youtube.com/watch?v=g85bkPFVwqI">5KM 완주 도전 1주차</a>',
+          inputs: [
+            { key: "start", label: "시작일", type: "date", value: "2026-06-22" },
+            { key: "time", label: "알림 시간", type: "time", value: "19:30" },
+            { key: "days", label: "운동 요일", type: "weekdays", value: ["월", "수", "금"] }
+          ],
+          sections: [
+            {
+              name: "1주차 걷고 달리기",
+              desc: "첫 주는 달리기와 걷기를 섞어 시작한다.",
+              items: [
+                { kind: "일정", title: "1주차 첫 러닝 일정 만들기", desc: "원본 영상을 열고 달리기와 걷기 반복을 따라간다.", dateOffset: 0 },
+                { kind: "체크", title: "운동 후 상태 체크", desc: "완료 여부, 힘든 정도, 통증/어지러움 여부만 남긴다.", dateOffset: 0 },
+                { kind: "원본", title: "자세와 속도는 영상으로 확인", desc: "운동 설명은 일정 메모에 원본 링크로 붙인다.", dateOffset: 0 }
+              ]
+            },
+            {
+              name: "3주차 반복 달리기",
+              desc: "3분 달리기와 2분 걷기처럼 반복 시간이 늘어난 구간이다.",
+              items: [
+                { kind: "일정", title: "3주차 러닝 일정 넣기", desc: "선택한 요일에 3주차 영상을 열어 따라간다.", dateOffset: 14 },
+                { kind: "체크", title: "다음 주 진행 여부 정하기", desc: "무리 없이 끝났으면 다음 주차로 넘어간다.", dateOffset: 16 },
+                { kind: "메모", title: "힘든 구간 기록", desc: "몇 분대에서 힘들었는지만 짧게 남긴다.", dateOffset: 16 }
+              ]
+            },
+            {
+              name: "5KM 완주 도전",
+              desc: "완주를 목표로 달리기 시간이 더 길어지는 구간이다.",
+              items: [
+                { kind: "일정", title: "5KM 도전 1주차 일정 만들기", desc: "8분 달리기와 2분 걷기 반복 구조를 캘린더에 넣는다.", dateOffset: 21 },
+                { kind: "체크", title: "완주 감각 체크", desc: "끝까지 따라 했는지와 다음 반복 가능 여부를 체크한다.", dateOffset: 23 },
+                { kind: "주의", title: "통증이 있으면 중단", desc: "통증, 어지러움, 호흡 곤란이 있으면 멈추고 쉬어간다.", dateOffset: 23 }
+              ]
+            }
+          ]
+        },
+        math: {
+          title: "중1 수학 1학기 진도",
+          summary: "단원별 강의와 문제풀이를 일정, 진도표, 오답표로 옮긴다.",
+          chips: ["단원별 저장", "오답표", "공부 요일"],
+          sourceHtml: '<a href="https://mid.ebs.co.kr/course/view?courseId=100005121">EBS 중학 수학 마스터 유형 β 1-1</a><br><a href="https://www.youtube.com/playlist?list=PLs4RoKjcy7OkqHWr-1Feb6xODgCAbkc23">중학교 1학년 수학 문제풀이</a>',
+          inputs: [
+            { key: "start", label: "공부 시작일", type: "date", value: "2026-06-22" },
+            { key: "count", label: "하루 목표 강의 수", type: "number", value: "2" },
+            { key: "days", label: "공부 요일", type: "weekdays", value: ["월", "화", "목"] }
+          ],
+          sections: [
+            {
+              name: "소인수분해",
+              desc: "강의 보기, 문제풀이, 오답표를 한 단원으로 묶는다.",
+              items: [
+                { kind: "영상", title: "소인수분해 강의 보기", desc: "강의 제목과 원본 링크를 진도표에 남긴다.", dateOffset: 0 },
+                { kind: "문제", title: "대표 문제 풀기", desc: "채점까지 끝내야 완료로 체크한다.", dateOffset: 1 },
+                { kind: "표", title: "틀린 문제 오답표에 남기기", desc: "문항 번호, 틀린 이유, 다시 풀 날짜를 적는다.", dateOffset: 1 }
+              ]
+            },
+            {
+              name: "정수와 유리수",
+              desc: "강의 순서와 문제풀이 일정을 이어서 만든다.",
+              items: [
+                { kind: "영상", title: "정수와 유리수 강의 보기", desc: "강의 순서대로 시청 상태를 체크한다.", dateOffset: 4 },
+                { kind: "문제", title: "유리수 사칙연산 문제 풀기", desc: "문제 풀이 후 채점 결과를 남긴다.", dateOffset: 5 },
+                { kind: "복습", title: "틀린 유형 다시 풀기", desc: "오답표의 다시 풀 날짜에 맞춰 복습한다.", dateOffset: 7 }
+              ]
+            },
+            {
+              name: "문자와 식",
+              desc: "개념, 예제, 문제풀이를 진도표에 이어 붙인다.",
+              items: [
+                { kind: "영상", title: "문자의 사용과 식 강의 보기", desc: "강의와 교재 범위를 진도표에 남긴다.", dateOffset: 9 },
+                { kind: "문제", title: "식의 값 문제 풀기", desc: "채점 후 헷갈린 식만 메모한다.", dateOffset: 10 },
+                { kind: "표", title: "단원 완료 표시", desc: "완료일과 남은 오답 개수를 적는다.", dateOffset: 12 }
+              ]
+            }
+          ]
+        },
+        babyfood: {
+          title: "6개월 토핑이유식 식단표",
+          summary: "식단표를 주간 표, 제공 일정, 첫 식재료 관찰 메모로 옮긴다.",
+          chips: ["식단 시작일", "주간 표", "반응 메모"],
+          sourceHtml: '<a href="https://wanbab.io/planner/2">완밥요정 6개월 토핑이유식 식단표</a><br><a href="https://wanbab.io/planner/29">완밥요정 6개월 면역강화 이유식 식단표</a>',
+          inputs: [
+            { key: "start", label: "식단 시작일", type: "date", value: "2026-06-22" },
+            { key: "time", label: "제공 시간", type: "time", value: "09:30" },
+            { key: "name", label: "메모 이름", type: "text", value: "6개월 이유식" }
+          ],
+          sections: [
+            {
+              name: "1주차 식단",
+              desc: "첫 주 제공 시간과 먹은 양, 반응을 표로 남긴다.",
+              items: [
+                { kind: "일정", title: "오전 이유식 일정 만들기", desc: "원문에서 제안한 오전 시간대를 기본값으로 둔다.", dateOffset: 0 },
+                { kind: "표", title: "먹은 양과 반응 기록", desc: "먹은 양, 컨디션, 특이 반응을 짧게 남긴다.", dateOffset: 0 },
+                { kind: "원본", title: "식단표 파일 확인", desc: "상세 메뉴는 원본 식단표 파일에서 확인한다.", dateOffset: 0 }
+              ]
+            },
+            {
+              name: "첫 식재료 관찰",
+              desc: "새 재료는 한 번에 하나씩 시도하고 반응을 메모한다.",
+              items: [
+                { kind: "표", title: "첫 식재료 시도표 만들기", desc: "재료명, 제공일, 반응 메모를 표로 남긴다.", dateOffset: 1 },
+                { kind: "메모", title: "알레르기 반응 관찰 메모", desc: "평소와 다른 반응이 있으면 제공을 멈추고 상담 메모를 남긴다.", dateOffset: 1 },
+                { kind: "일정", title: "다음 재료 시도일 잡기", desc: "새 재료를 너무 촘촘히 넣지 않도록 다음 시도일을 남긴다.", dateOffset: 3 }
+              ]
+            },
+            {
+              name: "장보기와 준비",
+              desc: "원본의 첫 식재료 목록을 장보기 메모로 옮긴다.",
+              items: [
+                { kind: "메모", title: "이번 주 재료 목록 만들기", desc: "곡류, 육류, 채소류를 집에 있는 재료와 나눠 적는다.", dateOffset: 0 },
+                { kind: "체크", title: "배죽 기준 확인", desc: "쌀과 물 비율은 원본 detail에 붙여둔다.", dateOffset: 0 },
+                { kind: "체크", title: "보관 용기 준비", desc: "소분과 보관에 필요한 용기를 체크한다.", dateOffset: 0 }
+              ]
+            }
+          ]
+        }
+      };
+
+      const state = { key: "running", section: 0, checked: {}, selectedDate: 0 };
+      const weekdays = ["월", "화", "수", "목", "금", "토", "일"];
+
+      function el(id) { return document.getElementById(id); }
+      function current() { return content[state.key]; }
+      function section() { return current().sections[state.section]; }
+
+      function render() {
+        const data = current();
+        el("title").textContent = data.title;
+        el("summary").textContent = data.summary;
+        el("heroChips").innerHTML = data.chips.map((chip, i) => `<span class="chip ${i === 0 ? "green" : "blue"}">${chip}</span>`).join("");
+        el("sourceBox").innerHTML = data.sourceHtml;
+        renderInputs();
+        renderSections();
+        renderDetail();
+        renderPreview();
+        document.querySelectorAll(".tab").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === state.key));
+      }
+
+      function renderInputs() {
+        const fields = current().inputs.map(input => {
+          if (input.type === "weekdays") {
+            const boxes = weekdays.map(day => {
+              const checked = input.value.includes(day) ? "checked" : "";
+              return `<label><input type="checkbox" data-weekday="${day}" ${checked}>${day}</label>`;
+            }).join("");
+            return `<div class="field"><label>${input.label}</label><div class="weekday-row">${boxes}</div></div>`;
+          }
+          return `<div class="field"><label for="input-${input.key}">${input.label}</label><input id="input-${input.key}" type="${input.type}" value="${input.value}"></div>`;
+        }).join("");
+        el("inputFields").innerHTML = fields;
+      }
+
+      function renderSections() {
+        el("sectionList").innerHTML = current().sections.map((sec, index) => `
+          <button class="section-button ${index === state.section ? "active" : ""}" type="button" data-section="${index}">
+            <strong>${sec.name}</strong>
+            <span class="small">${sec.desc}</span>
+          </button>
+        `).join("");
+      }
+
+      function renderDetail() {
+        const sec = section();
+        el("detailTitle").textContent = sec.name;
+        el("detailDesc").textContent = sec.desc;
+        el("itemList").innerHTML = sec.items.map((item, index) => {
+          const id = `${state.key}-${state.section}-${index}`;
+          return `
+            <label class="item">
+              <input type="checkbox" data-check="${id}" ${state.checked[id] ? "checked" : ""}>
+              <span>
+                <p class="item-title">${item.title}</p>
+                <span class="desc">${item.desc}</span>
+              </span>
+              <span class="pill">${item.kind}</span>
+            </label>
+          `;
+        }).join("");
+      }
+
+      function getStartDate() {
+        const dateInput = document.querySelector("#input-start");
+        return dateInput && dateInput.value ? new Date(dateInput.value + "T09:00:00") : new Date("2026-06-22T09:00:00");
+      }
+
+      function getInputSummary() {
+        const time = document.querySelector("#input-time")?.value;
+        const count = document.querySelector("#input-count")?.value;
+        const name = document.querySelector("#input-name")?.value;
+        const selectedDays = Array.from(document.querySelectorAll("[data-weekday]:checked")).map(input => input.dataset.weekday);
+        const parts = [];
+        if (selectedDays.length) parts.push(`선택 요일: ${selectedDays.join(", ")}`);
+        if (time) parts.push(`시간: ${time}`);
+        if (count) parts.push(`하루 목표: ${count}개`);
+        if (name) parts.push(`메모 이름: ${name}`);
+        return parts.join(" · ");
+      }
+
+      function formatDate(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+      }
+
+      function renderPreview() {
+        const start = getStartDate();
+        const sec = section();
+        const dates = sec.items.map((item, index) => {
+          const date = new Date(start);
+          date.setDate(start.getDate() + item.dateOffset);
+          return { item, index, date };
+        });
+        el("dateList").innerHTML = dates.map(({ item, index, date }) => `
+          <button class="date-button ${state.selectedDate === index ? "active" : ""}" type="button" data-date-index="${index}">
+            <strong>${formatDate(date)} · ${item.kind}</strong><br>
+            <span class="small">${item.title}</span>
+          </button>
+        `).join("");
+        const active = dates[state.selectedDate] || dates[0];
+        if (!active) {
+          el("sheetRows").innerHTML = '<p class="empty">선택한 항목이 없습니다.</p>';
+          return;
+        }
+        el("sheetTitle").textContent = active.item.kind === "일정" ? "일정 설명" : "표/메모 미리보기";
+        const inputSummary = getInputSummary();
+        el("sheetRows").innerHTML = `
+          <div class="row"><strong>제목</strong><span>${active.item.title}</span></div>
+          <div class="row"><strong>날짜</strong><span>${formatDate(active.date)}</span></div>
+          ${inputSummary ? `<div class="row"><strong>적용 설정</strong><span>${inputSummary}</span></div>` : ""}
+          <div class="row"><strong>할 일</strong><span>${active.item.desc}</span></div>
+          <div class="row"><strong>원본</strong><span>상단 원본 링크를 일정/표 메모에 함께 저장</span></div>
+        `;
+      }
+
+      document.addEventListener("click", event => {
+        const tab = event.target.closest("[data-tab]");
+        if (tab) {
+          state.key = tab.dataset.tab;
+          state.section = 0;
+          state.selectedDate = 0;
+          el("saveToast").hidden = true;
+          render();
+          return;
+        }
+        const sec = event.target.closest("[data-section]");
+        if (sec) {
+          state.section = Number(sec.dataset.section);
+          state.selectedDate = 0;
+          el("saveToast").hidden = true;
+          render();
+          return;
+        }
+        const date = event.target.closest("[data-date-index]");
+        if (date) {
+          state.selectedDate = Number(date.dataset.dateIndex);
+          renderPreview();
+          return;
+        }
+        const check = event.target.closest("[data-check]");
+        if (check) {
+          state.checked[check.dataset.check] = check.checked;
+          return;
+        }
+      });
+
+      el("saveAll").addEventListener("click", () => {
+        const count = current().sections.reduce((sum, sec) => sum + sec.items.length, 0);
+        const summary = getInputSummary();
+        el("saveToast").textContent = `${current().title} 전체에서 ${count}개 일정/표/메모가 만들어졌습니다.${summary ? " " + summary : ""}`;
+        el("saveToast").hidden = false;
+      });
+
+      el("saveSection").addEventListener("click", () => {
+        const summary = getInputSummary();
+        el("saveToast").textContent = `${section().name} 구간에서 ${section().items.length}개 항목이 만들어졌습니다.${summary ? " " + summary : ""}`;
+        el("saveToast").hidden = false;
+      });
+
+      document.addEventListener("input", event => {
+        if (event.target.matches("#input-start, #input-time, #input-count, #input-name")) renderPreview();
+      });
+
+      document.addEventListener("change", event => {
+        if (event.target.matches("[data-weekday]")) renderPreview();
+      });
+
+      render();
+    </script>
+  </body>
+</html>

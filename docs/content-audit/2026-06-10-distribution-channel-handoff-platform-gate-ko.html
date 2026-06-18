@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 배포 채널 핸드오프 플랫폼 게이트</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f7fa;
+        --paper: #ffffff;
+        --soft: #f0f5f8;
+        --ink: #101828;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d8e1ea;
+        --blue: #1d4ed8;
+        --blue-soft: #e9f2ff;
+        --green: #047857;
+        --green-soft: #e7f6ef;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --violet: #6941c6;
+        --violet-soft: #f1eafd;
+        --radius: 8px;
+        --shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard",
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          "Malgun Gothic",
+          system-ui,
+          sans-serif;
+        line-height: 1.6;
+        letter-spacing: 0;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.24;
+        word-break: keep-all;
+      }
+
+      p,
+      li,
+      td {
+        color: var(--body);
+      }
+
+      .page {
+        width: min(1240px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 22px 0 72px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        min-height: 54px;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .brand {
+        color: var(--ink);
+        font-weight: 900;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 292px;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .hero,
+      .panel,
+      .nav {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .hero,
+      .panel {
+        padding: 26px;
+      }
+
+      .hero h1 {
+        max-width: 920px;
+        font-size: clamp(28px, 4vw, 44px);
+      }
+
+      .lead {
+        max-width: 900px;
+        margin-top: 14px;
+        font-size: 17px;
+      }
+
+      .metric-grid,
+      .platform-grid,
+      .packet-grid,
+      .scenario-grid,
+      .decision-grid {
+        display: grid;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .metric-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .platform-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .packet-grid,
+      .scenario-grid,
+      .decision-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .metric,
+      .card,
+      .platform-card,
+      .packet-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--soft);
+        padding: 15px;
+      }
+
+      .metric {
+        min-height: 126px;
+      }
+
+      .metric strong,
+      .card strong,
+      .platform-card strong,
+      .packet-card strong {
+        display: block;
+        color: var(--ink);
+        font-size: 15px;
+      }
+
+      .metric span,
+      .card p,
+      .platform-card p,
+      .packet-card p {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .panel {
+        margin-top: 18px;
+      }
+
+      .panel h2 {
+        font-size: 23px;
+      }
+
+      .section-lead {
+        max-width: 870px;
+        margin-top: 9px;
+      }
+
+      .selected {
+        background: var(--green-soft);
+        border-color: #b7e2cf;
+      }
+
+      .hold {
+        background: var(--amber-soft);
+        border-color: #efd89c;
+      }
+
+      .risk {
+        background: var(--red-soft);
+        border-color: #f0b8ad;
+      }
+
+      .info {
+        background: var(--blue-soft);
+        border-color: #c5d9f7;
+      }
+
+      .badge {
+        display: inline-block;
+        width: fit-content;
+        margin-top: 8px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: var(--violet-soft);
+        color: var(--violet);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .platform-card {
+        background: var(--paper);
+      }
+
+      .platform-card h3 {
+        font-size: 17px;
+      }
+
+      .platform-card ul,
+      .packet-card ul {
+        margin: 9px 0 0;
+        padding-left: 20px;
+      }
+
+      .platform-card li,
+      .packet-card li {
+        font-size: 13px;
+      }
+
+      .nav {
+        position: sticky;
+        top: 16px;
+        padding: 18px;
+      }
+
+      .nav h2 {
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      .nav a {
+        display: block;
+        padding: 8px 0;
+        border-top: 1px solid var(--line);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .note {
+        margin-top: 14px;
+        padding: 12px;
+        border-radius: var(--radius);
+        background: var(--amber-soft);
+        color: var(--amber);
+        font-size: 12px;
+      }
+
+      @media (max-width: 980px) {
+        .layout {
+          display: block;
+        }
+
+        .nav {
+          position: static;
+          margin-top: 18px;
+        }
+
+        .metric-grid,
+        .platform-grid,
+        .packet-grid,
+        .scenario-grid,
+        .decision-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .page {
+          width: min(100% - 22px, 1240px);
+          padding-top: 12px;
+        }
+
+        .topbar {
+          display: block;
+        }
+
+        .topbar div + div {
+          margin-top: 4px;
+        }
+
+        .hero,
+        .panel {
+          padding: 18px;
+        }
+
+        .hero h1 {
+          font-size: 28px;
+        }
+
+        .lead {
+          font-size: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe 분석방</span> / distribution-channel-handoff 플랫폼 게이트</div>
+        <div>작성일 2026-06-10 · 상태: docs-level gate</div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <section class="hero" id="top">
+            <h1>공유 패킷은 가능하지만 채널 통합은 아직 아니다</h1>
+            <p class="lead">
+              공식 자료를 기준으로 KakaoTalk, Naver Cafe, Google Forms/Sheets, Notion, Slack/Teams/Discord 유사 패턴을 확인했다.
+              결론은 단순하다. FlowMe는 출처와 주의가 붙은 공유 패킷을 준비할 수 있지만, 자동 발송·댓글 수집·연락처 저장·채널 분석은 Stage 0 밖이다.
+            </p>
+            <div class="metric-grid">
+              <div class="metric selected">
+                <strong>현재 결정</strong>
+                <span>`distribution-channel-handoff-precheck`는 B+ docs gate로 둔다.</span>
+              </div>
+              <div class="metric">
+                <strong>허용되는 산출물</strong>
+                <span>제목, 대상, 마감, 출처, 주의, 완료 기준, 응답 요청이 담긴 공유 패킷.</span>
+              </div>
+              <div class="metric hold">
+                <strong>보류되는 기능</strong>
+                <span>public route, 계정 연결, API, 자동 게시, 응답 수집.</span>
+              </div>
+              <div class="metric risk">
+                <strong>금지 저장값</strong>
+                <span>전화번호, 사용자명, 채팅 로그, 초대 링크, 채널 ID, webhook URL.</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="platforms">
+            <h2>플랫폼별 공식 자료 판단</h2>
+            <p class="section-lead">각 플랫폼은 FlowMe가 어디까지 머물러야 하는지 보여주는 경계 자료다.</p>
+            <div class="platform-grid">
+              <div class="platform-card">
+                <h3>KakaoTalk Share</h3>
+                <p>카카오톡 공유는 사용자가 카카오톡에서 대상을 선택해 공유하는 흐름이다. 카카오톡 메시지 API처럼 권한과 대상 선택 UI를 직접 다루는 방식과 다르다.</p>
+                <ul>
+                  <li>Stage 0: 사용자가 복사하거나 직접 공유하는 패킷.</li>
+                  <li>보류: 친구 목록 조회, 채팅방 타깃팅, 대량 발송, webhook 성공 추적.</li>
+                </ul>
+                <a class="badge" href="https://developers.kakao.com/docs/latest/ko/kakaotalk-share/common">official source</a>
+              </div>
+              <div class="platform-card">
+                <h3>Naver Cafe</h3>
+                <p>카페 글은 공유 버튼과 댓글/답글 같은 수동 행동이 중심이다. 작성자가 공유를 막을 수 있고, 원본 삭제 시 공유 글에서도 원본 내용을 확인하지 못할 수 있다.</p>
+                <ul>
+                  <li>Stage 0: 카페 글 패킷과 짧은 댓글/답글 요청문.</li>
+                  <li>보류: 자동 글쓰기, 댓글 수집, 멤버십 처리, 검색 노출 관리.</li>
+                </ul>
+                <a class="badge" href="https://help.naver.com/service/5622/contents/15217?lang=ko">official source</a>
+              </div>
+              <div class="platform-card">
+                <h3>Google Forms + Sheets</h3>
+                <p>폼 응답은 CSV로 받을 수 있고, 응답 수집 중단, 마감일, 응답 수 제한, 이메일 수집 같은 설정이 있다. 이메일 수집은 응답자 확인이 걸린다.</p>
+                <ul>
+                  <li>Stage 0: 폼 질문 문구, 마감 안내, 시트 행 라벨.</li>
+                  <li>보류: 폼 생성, 응답 가져오기, 이메일 수집, Sheets API 연결.</li>
+                </ul>
+                <a class="badge" href="https://support.google.com/docs/answer/139706?hl=en-en">official source</a>
+              </div>
+              <div class="platform-card">
+                <h3>Notion / Markdown</h3>
+                <p>Notion은 Markdown, Text, HTML, CSV/XLSX 등을 가져올 수 있다. Markdown/Text/HTML은 페이지로, CSV/XLSX는 데이터베이스로 매핑된다.</p>
+                <ul>
+                  <li>Stage 0: Markdown/plain text 또는 CSV handoff.</li>
+                  <li>보류: Notion API, 페이지/DB 생성, workspace schema builder.</li>
+                </ul>
+                <a class="badge" href="https://www.notion.com/help/import-data-into-notion">official source</a>
+              </div>
+              <div class="platform-card">
+                <h3>Slack / Teams / Discord</h3>
+                <p>세 플랫폼 모두 자동 게시 경로가 webhook, workflow, app, bot, channel endpoint 같은 인프라로 빠르게 넘어간다.</p>
+                <ul>
+                  <li>Stage 0: 경계 비교용 참고만 한다.</li>
+                  <li>보류: webhook URL, bot token, OAuth scope, channel ID, event subscription.</li>
+                </ul>
+                <a class="badge" href="https://docs.slack.dev/messaging/sending-messages-using-incoming-webhooks/">official source</a>
+              </div>
+              <div class="platform-card risk">
+                <h3>공통 결론</h3>
+                <p>이 축은 실사용 니즈가 있어 보이지만, 통합으로 가는 순간 개인정보, 권한, 비공개 채널, 응답 데이터, 자동화 리스크가 같이 열린다.</p>
+                <ul>
+                  <li>결정: B+ docs gate.</li>
+                  <li>다음: 공유 패킷 파일 기반 preview만 설계한다.</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="packet">
+            <h2>공유 패킷 요구사항</h2>
+            <p class="section-lead">FlowMe가 만들 수 있는 것은 채널이 아니라, 채널 밖으로 가져갈 수 있는 작은 실행 패킷이다.</p>
+            <div class="packet-grid">
+              <div class="packet-card selected">
+                <strong>포함해야 할 것</strong>
+                <ul>
+                  <li>원문 출처 URL 또는 출처명</li>
+                  <li>수신자가 다음에 할 일</li>
+                  <li>마감 또는 타이밍</li>
+                  <li>로컬/출처별 차이 주의</li>
+                  <li>완료 기준</li>
+                  <li>짧은 응답 요청</li>
+                </ul>
+              </div>
+              <div class="packet-card risk">
+                <strong>포함하면 안 되는 것</strong>
+                <ul>
+                  <li>전화번호, 사용자명</li>
+                  <li>채팅방 ID, 초대 링크</li>
+                  <li>access token, webhook URL</li>
+                  <li>폼 편집 링크</li>
+                  <li>비공개 대화 내용</li>
+                  <li>학생, 건강, 결제, 주민 식별값</li>
+                </ul>
+              </div>
+              <div class="packet-card info">
+                <strong>응답 모양</strong>
+                <ul>
+                  <li>답장 완료</li>
+                  <li>카페 댓글</li>
+                  <li>폼 제출</li>
+                  <li>시트 한 행 업데이트</li>
+                  <li>체크 확인</li>
+                  <li>보류 사유 메모</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="scenario">
+            <h2>다음 테스트 시나리오</h2>
+            <p class="section-lead">승격 전에는 하나의 한국 우선 시나리오로만 좁힌다.</p>
+            <div class="scenario-grid">
+              <div class="card">
+                <strong>작업명</strong>
+                <p>`school-or-dorm-prep-share-packet`</p>
+              </div>
+              <div class="card">
+                <strong>사용자 순간</strong>
+                <p>보호자, 학생, 소규모 조율자가 출처 기반 Flow 산출물을 마감 전 그룹에 보내야 한다.</p>
+              </div>
+              <div class="card">
+                <strong>자연 산출물</strong>
+                <p>제목 1개, 마감 1개, 행동 3-5개, 출처 URL, 주의, 완료 기준이 붙은 공유 패킷.</p>
+              </div>
+              <div class="card">
+                <strong>앵커</strong>
+                <p>계정 연결이 아니라 audience + deadline.</p>
+              </div>
+              <div class="card">
+                <strong>Stage 0 행동</strong>
+                <p>채널 유형 선택, 패킷 복사, 외부 채널에 직접 붙여넣기, 응답 모양 선택.</p>
+              </div>
+              <div class="card">
+                <strong>아직 필요한 근거</strong>
+                <p>수신자가 추가 설명 없이 패킷을 이해하는지 관찰해야 한다.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="decision">
+            <h2>제품 결정</h2>
+            <p class="section-lead">이 축은 유망하지만, 바로 구현하면 FlowMe의 경계가 무너진다.</p>
+            <div class="decision-grid">
+              <div class="card selected">
+                <strong>결정</strong>
+                <p>`distribution-channel-handoff-precheck`는 B+ docs gate.</p>
+              </div>
+              <div class="card">
+                <strong>이유</strong>
+                <p>공유, 게시, 댓글, 폼 응답, CSV, Markdown, webhook 패턴은 확인됐지만 통합 경로는 권한과 개인정보 리스크가 크다.</p>
+              </div>
+              <div class="card hold">
+                <strong>다음 작업</strong>
+                <p>기존 외부 생태계 후보 중 하나로 파일 기반 공유 패킷 preview를 만든다. public route는 만들지 않는다.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <aside class="nav" aria-label="문서 목차">
+          <h2>목차</h2>
+          <a href="./2026-06-09-external-ecosystem-analysis-room-index-ko.html">분석방 운영 인덱스</a>
+          <a href="./2026-06-09-external-ecosystem-next-axis-selection-ko.html">다음 축 선택</a>
+          <a href="#platforms">플랫폼별 판단</a>
+          <a href="#packet">공유 패킷 요구사항</a>
+          <a href="#scenario">다음 시나리오</a>
+          <a href="#decision">제품 결정</a>
+          <a href="./2026-06-10-school-dorm-share-packet-observation-script-ko.html">공유 패킷 관찰 스크립트</a>
+          <a href="./2026-06-10-school-dorm-share-packet-observation-log-template-ko.html">공유 패킷 관찰 기록지</a>
+          <a href="./2026-06-10-school-dorm-share-packet-evidence-board-ko.html">공유 패킷 evidence board</a>
+          <a href="./2026-06-10-distribution-channel-handoff-platform-gate.md">Markdown 원문</a>
+          <p class="note">
+            이 문서는 공식 자료 기반 경계 설정이다. 사용자 행동 관찰 전에는 channel ready, integration ready, validated라고 부르지 않는다.
+          </p>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

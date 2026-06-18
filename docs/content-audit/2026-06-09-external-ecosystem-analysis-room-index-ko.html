@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 외부 생태계 분석방 운영 인덱스</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f7fa;
+        --paper: #ffffff;
+        --soft: #f0f5f8;
+        --ink: #111827;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d8e1ea;
+        --blue: #1f5fbf;
+        --blue-soft: #e9f2ff;
+        --green: #057a55;
+        --green-soft: #e7f6ef;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --violet: #6941c6;
+        --violet-soft: #f1eafd;
+        --radius: 8px;
+        --shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard",
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          "Malgun Gothic",
+          system-ui,
+          sans-serif;
+        line-height: 1.6;
+        letter-spacing: 0;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.24;
+        word-break: keep-all;
+      }
+
+      p,
+      li,
+      td {
+        color: var(--body);
+      }
+
+      .page {
+        width: min(1240px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 22px 0 72px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        min-height: 54px;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        color: var(--muted);
+        font-size: 13px;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      }
+
+      .brand {
+        color: var(--ink);
+        font-weight: 900;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 290px;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .hero,
+      .panel,
+      .nav {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .hero {
+        padding: 30px;
+      }
+
+      .hero h1 {
+        max-width: 900px;
+        font-size: clamp(28px, 4vw, 44px);
+      }
+
+      .lead {
+        max-width: 880px;
+        margin-top: 14px;
+        font-size: 17px;
+      }
+
+      .status-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .metric,
+      .card,
+      .queue-card,
+      .rule {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--soft);
+      }
+
+      .metric {
+        min-height: 118px;
+        padding: 15px;
+      }
+
+      .metric strong,
+      .card strong,
+      .queue-card strong,
+      .rule strong {
+        display: block;
+        color: var(--ink);
+        font-size: 15px;
+      }
+
+      .metric span,
+      .card p,
+      .queue-card p,
+      .rule p {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .panel {
+        margin-top: 18px;
+        padding: 24px;
+      }
+
+      .panel h2 {
+        font-size: 23px;
+      }
+
+      .section-lead {
+        max-width: 850px;
+        margin-top: 9px;
+      }
+
+      .read-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .read-item {
+        display: grid;
+        grid-template-columns: 42px minmax(0, 1fr);
+        gap: 12px;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+      }
+
+      .num {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        background: var(--blue-soft);
+        color: var(--blue);
+        font-weight: 900;
+      }
+
+      .read-item h3 {
+        font-size: 16px;
+      }
+
+      .read-item p {
+        margin-top: 5px;
+        font-size: 13px;
+      }
+
+      .rule-grid,
+      .dont-grid,
+      .next-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .rule {
+        padding: 14px;
+        background: var(--paper);
+      }
+
+      .rule.green {
+        background: var(--green-soft);
+        border-color: #b7e2cf;
+      }
+
+      .rule.blue {
+        background: var(--blue-soft);
+        border-color: #c5d9f7;
+      }
+
+      .rule.amber {
+        background: var(--amber-soft);
+        border-color: #efd89c;
+      }
+
+      .rule.red {
+        background: var(--red-soft);
+        border-color: #f0b8ad;
+      }
+
+      .queue {
+        display: grid;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .queue-card {
+        display: grid;
+        grid-template-columns: minmax(160px, 0.9fr) minmax(0, 1.1fr) minmax(0, 1.5fr);
+        gap: 12px;
+        padding: 14px;
+        background: var(--paper);
+      }
+
+      .badge {
+        display: inline-block;
+        width: fit-content;
+        margin-top: 6px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: var(--violet-soft);
+        color: var(--violet);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .dont-grid .card,
+      .next-grid .card {
+        padding: 15px;
+        background: var(--paper);
+      }
+
+      .checkline {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .checkline .card {
+        min-height: 126px;
+        padding: 15px;
+      }
+
+      .nav {
+        position: sticky;
+        top: 16px;
+        padding: 18px;
+      }
+
+      .nav h2 {
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      .nav a {
+        display: block;
+        padding: 8px 0;
+        border-top: 1px solid var(--line);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .note {
+        margin-top: 14px;
+        padding: 12px;
+        border-radius: var(--radius);
+        background: var(--amber-soft);
+        color: var(--amber);
+        font-size: 12px;
+      }
+
+      @media (max-width: 960px) {
+        .layout {
+          display: block;
+        }
+
+        .nav {
+          position: static;
+          margin-top: 18px;
+        }
+
+        .status-grid,
+        .checkline {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .queue-card {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .page {
+          width: min(100% - 22px, 1240px);
+          padding-top: 12px;
+        }
+
+        .topbar {
+          display: block;
+        }
+
+        .topbar div + div {
+          margin-top: 4px;
+        }
+
+        .hero,
+        .panel {
+          padding: 18px;
+        }
+
+        .hero h1 {
+          font-size: 28px;
+        }
+
+        .lead {
+          font-size: 15px;
+        }
+
+        .status-grid,
+        .rule-grid,
+        .dont-grid,
+        .next-grid,
+        .checkline {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe 분석방</span> / 외부 생태계 운영 인덱스</div>
+        <div>작성일 2026-06-09 · 상태: 다음 작업 진입점</div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <section class="hero" id="top">
+            <h1>외부 앱, 서비스, 플랫폼 분석을 이어가기 위한 한글 운영 인덱스</h1>
+            <p class="lead">
+              이 문서는 FlowMe와 연결될 수 있는 외부 생태계를 분석할 때 먼저 열어보는 안내판이다.
+              기능 후보를 바로 만들지 않고, 사용자 실행 순간, 자연스러운 산출물, Stage 0 행동,
+              만들지 않을 경계, 검증 대기 상태를 한 화면에서 확인하게 한다.
+            </p>
+            <div class="status-grid">
+              <div class="metric">
+                <strong>주요 진입점</strong>
+                <span>로드맵 HTML, 연결 문서 HTML, Phase 5 압축표를 먼저 읽는다.</span>
+              </div>
+              <div class="metric">
+                <strong>현재 기준</strong>
+                <span>목적지 플랫폼은 통합 대상보다 내보내기 대상으로 먼저 본다.</span>
+              </div>
+              <div class="metric">
+                <strong>현재 후보</strong>
+                <span>기숙사, 초등 입학, 원격 도움, Naver Search Advisor가 핵심 큐다.</span>
+              </div>
+              <div class="metric">
+                <strong>주의 표현</strong>
+                <span>실사용 관찰 전에는 validated, integration ready, 대표 사례로 쓰지 않는다.</span>
+              </div>
+              <div class="metric">
+                <strong>현재 실행 상태</strong>
+                <span><code>distribution-channel-handoff</code>는 <code>no signal</code>, 세션 <code>0 / 3</code>. <a href="./2026-06-11-school-dorm-share-packet-recruiting-copy-ko.html">초대 문구</a> 발송 후 <a href="./2026-06-11-school-dorm-share-packet-scheduling-tracker-ko.html#snippets">tracker</a>를 <code>invited</code>로 갱신하고, 답장 확인 뒤 <code>agreed</code> 슬롯만 관찰한다. 3 completed usable sessions 이후 rollup.</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="read-first">
+            <h2>먼저 읽을 문서</h2>
+            <p class="section-lead">이 순서대로 열면 현재 결정과 남은 리스크를 가장 적은 맥락으로 복원할 수 있다.</p>
+            <div class="read-list">
+              <div class="read-item">
+                <div class="num">1</div>
+                <div>
+                  <h3><a href="./2026-06-12-external-ecosystem-ceo-brief-ko.html">CEO brief</a></h3>
+                  <p>완료된 일, 현재 판단, 남은 외부 증거, 다음 행동을 한 화면에서 확인한다.</p>
+                </div>
+              </div>
+              <div class="read-item">
+                <div class="num">2</div>
+                <div>
+                  <h3><a href="./2026-06-12-external-ecosystem-executive-evidence-appendix-ko.html">임원용 근거 appendix</a></h3>
+                  <p>어떤 질문을 어떤 근거문서와 스크린샷으로 확인할지 먼저 고정한다.</p>
+                </div>
+              </div>
+              <div class="read-item">
+                <div class="num">3</div>
+                <div>
+                  <h3><a href="./2026-06-09-external-ecosystem-roadmap-visual-ko.html">외부 생태계 분석 로드맵 시각화 HTML</a></h3>
+                  <p>분석방의 전체 진행 방식, 5단계 로드맵, 현재 결정 축을 먼저 확인한다.</p>
+                </div>
+              </div>
+              <div class="read-item">
+                <div class="num">4</div>
+                <div>
+                  <h3><a href="./2026-06-09-external-ecosystem-connected-docs-visual-ko.html">연결 내부 문서 한국어 HTML 묶음</a></h3>
+                  <p>로드맵에서 연결된 내부 문서를 한글 요약 카드로 이어서 본다.</p>
+                </div>
+              </div>
+              <div class="read-item">
+                <div class="num">5</div>
+                <div>
+                  <h3><a href="./2026-06-11-external-ecosystem-html-coverage-audit-ko.html">외부 생태계 HTML 커버리지 감사</a></h3>
+                  <p>어떤 내부 문서가 한국어 HTML로 읽히고, 어떤 Markdown 링크가 원문 추적용인지 확인한다.</p>
+                </div>
+              </div>
+              <div class="read-item">
+                <div class="num">6</div>
+                <div>
+                  <h3><a href="./2026-06-08-external-ecosystem-phase5-compression-table-ko.html">Phase 5 최종 압축표</a></h3>
+                  <p>현재 후보의 A, A-, B+, 보류 판단과 다음 행동을 확인한다.</p>
+                </div>
+              </div>
+              <div class="read-item">
+                <div class="num">7</div>
+                <div>
+                  <h3><a href="../flow-rules/export-destination-fit-ko.html">내보내기 목적지 선택 제품 규칙</a></h3>
+                  <p>캘린더, 시트, 메모, 내부 체크, Todoist CSV 같은 목적지를 고르는 기준이다.</p>
+                </div>
+              </div>
+              <div class="read-item">
+                <div class="num">8</div>
+                <div>
+                  <h3><a href="../flow-rules/integration-readiness-gate-ko.html">통합 준비도 제품 규칙</a></h3>
+                  <p>OAuth, API 저장, 직접 append 같은 Stage 1 통합을 언제까지 미룰지 정한다.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="decision-spine">
+            <h2>현재 결정 축</h2>
+            <p class="section-lead">새 후보를 볼 때마다 이 다섯 줄을 먼저 통과시킨다.</p>
+            <div class="rule-grid">
+              <div class="rule blue">
+                <strong>사용자 순간에서 시작</strong>
+                <p>플랫폼 기능 목록이 아니라 사용자가 지금 실행하려는 일을 한 문장으로 쓴다.</p>
+              </div>
+              <div class="rule green">
+                <strong>자연스러운 산출물 우선</strong>
+                <p>calendar, sheet, memo, internal_check, hybrid 중 실제로 옮겨갈 형태를 고른다.</p>
+              </div>
+              <div class="rule amber">
+                <strong>Stage 0 제한</strong>
+                <p>열기, 앵커 입력, 복사/내보내기, 체크, 피드백까지만 기본 행동으로 본다.</p>
+              </div>
+              <div class="rule">
+                <strong>목적지는 통합보다 먼저</strong>
+                <p>외부 플랫폼은 초기에는 계정 연결 대상이 아니라 내보내기 대상이다.</p>
+              </div>
+              <div class="rule red">
+                <strong>검증 표현 보류</strong>
+                <p>사용자 행동 근거가 없으면 validated, integration ready, public promotion을 쓰지 않는다.</p>
+              </div>
+              <div class="rule">
+                <strong>소스와 리스크 동행</strong>
+                <p>출처 URL, 주의 문구, 완료 기준은 복사/내보내기에도 같이 이동해야 한다.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="queue">
+            <h2>현재 후보 큐</h2>
+            <p class="section-lead">지금 바로 구현할 목록이 아니라, 다음 판단을 어디서 해야 하는지 보여주는 큐다.</p>
+            <div class="queue">
+              <div class="queue-card">
+                <div>
+                  <strong>college-dorm-move-in-checklist</strong>
+                  <span class="badge">A 리뷰 후보</span>
+                </div>
+                <p>현재 가장 강한 공개 승격 검토 후보.</p>
+                <p>최신 공식 공지 하나를 주 소스로 고정하고, 민감정보 제외와 최신 공지 우선 행동을 더 확인한다.</p>
+              </div>
+              <div class="queue-card">
+                <div>
+                  <strong>elementary-school-entry-d30</strong>
+                  <span class="badge">A- 공개 라우트</span>
+                </div>
+                <p>공개 라우트가 있으나 source-review 상태로만 말해야 한다.</p>
+                <p>보호자 관찰 세션 전에는 대표 사례, 검증된 사례, 일반화된 UX로 표현하지 않는다.</p>
+              </div>
+              <div class="queue-card">
+                <div>
+                  <strong>remote-help-session-precheck</strong>
+                  <span class="badge">A- 리뷰 후보</span>
+                </div>
+                <p>원격지원 전 신뢰, 범위, 권한 사다리를 확인하는 후보.</p>
+                <p>공개 라우트, 원격지원 통합, 접속값 저장은 만들지 않는다.</p>
+              </div>
+              <div class="queue-card">
+                <div>
+                  <strong>naver-search-advisor-site-readiness</strong>
+                  <span class="badge">A- 리뷰 후보</span>
+                </div>
+                <p>한국 우선 사이트 준비 체크 후보.</p>
+                <p>검증값, DNS 값, OAuth, API 키, 색인 성과는 저장하거나 보장하지 않는다.</p>
+              </div>
+              <div class="queue-card">
+                <div>
+                  <strong>site-search-console-setup-precheck</strong>
+                  <span class="badge">B+ 문서 우산</span>
+                </div>
+                <p>Google, Naver, Bing 계열을 묶는 디지털 설정 문서 축.</p>
+                <p>한국 우선 시나리오가 확정될 때까지 `/content-flows` 후보로 승격하지 않는다.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="do-not-build">
+            <h2>이 방에서 만들지 않을 것</h2>
+            <p class="section-lead">경쟁서비스 분석이 기능 과잉으로 번지지 않게 막는 현재 금지선이다.</p>
+            <div class="dont-grid">
+              <div class="card">
+                <strong>플랫폼 클론</strong>
+                <p>Notion, Todoist, Calendar, Sheet 자체를 대체하는 편집기나 워크스페이스를 만들지 않는다.</p>
+              </div>
+              <div class="card">
+                <strong>계정 통합</strong>
+                <p>OAuth, 계정 동기화, 토큰 저장, webhook 자동화는 Stage 0 범위 밖이다.</p>
+              </div>
+              <div class="card">
+                <strong>성과 보장</strong>
+                <p>DNS 자동 변경, SEO 점수화, 순위 추적, 검색 노출 보장은 하지 않는다.</p>
+              </div>
+              <div class="card">
+                <strong>접속값 저장</strong>
+                <p>원격지원 접속 코드, 비밀번호, 세션 링크, 화면 캡처, 채팅 로그를 저장하지 않는다.</p>
+              </div>
+              <div class="card">
+                <strong>민감정보 저장</strong>
+                <p>학교, 기숙사, 건강, 결제, 학생 식별 정보는 FlowMe 밖에 둔다.</p>
+              </div>
+              <div class="card">
+                <strong>자동 판정</strong>
+                <p>법률, 보안, 건강, 학교별 자격 같은 결론은 체크 보조를 넘어서 판정하지 않는다.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="next">
+            <h2>다음 작업 순서</h2>
+            <p class="section-lead">다음 세션에서 하나만 고르고, 구현보다 먼저 후보 압축 문장부터 만든다.</p>
+            <div class="next-grid">
+              <div class="card">
+                <strong>1. 초등 입학 관찰</strong>
+                <p>`elementary-school-entry-d30`의 보호자 관찰 스크립트 또는 source-review 문구 노출을 확인한다.</p>
+              </div>
+              <div class="card">
+                <strong>2. 기숙사 공개 승격 전 점검</strong>
+                <p>현재 공식 공지 하나를 주 소스로 고정할 수 있을 때만 다음 단계로 보낸다.</p>
+              </div>
+              <div class="card">
+                <strong>3. 새 축 선택</strong>
+                <p>creator material, household table/sheet, distribution/channel 중 반복되지 않는 축을 고른다.</p>
+              </div>
+              <div class="card">
+                <strong>4. Phase 5 전 압축</strong>
+                <p>목적지 산출물, 금지 저장값, public route 필요 여부, 통합 필요 여부를 먼저 적는다.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="selected-axis">
+            <h2>현재 선택된 다음 축</h2>
+            <p class="section-lead">
+              다음 분석 축은 distribution-channel-handoff로 둔다. Flow 산출물이 만들어진 뒤 가족방, 학교/기숙사 그룹,
+              팀 채널, 카페 글, 폼/시트 같은 외부 채널로 어떻게 전달되는지 확인하는 축이다.
+            </p>
+            <div class="next-grid">
+              <div class="card">
+                <strong>한국어 HTML 허브</strong>
+                <p><a href="./2026-06-11-distribution-channel-handoff-html-hub-ko.html">배포 채널 핸드오프 HTML 허브</a>에서 게이트, 공유 패킷, 관찰 스크립트, 로그, evidence board, 파일럿 실행 팩을 한 번에 읽는다.</p>
+              </div>
+              <div class="card">
+                <strong>왜 이 축인가</strong>
+                <p>creator material과 household table/sheet는 이미 선행 문서와 소스선택 규칙에 예시가 많다.</p>
+              </div>
+              <div class="card">
+                <strong>무엇을 볼 것인가</strong>
+                <p>KakaoTalk, Naver Cafe, Google Forms/Sheets, Notion/Markdown handoff, 팀 메신저 유사 패턴을 공식 자료로 확인한다.</p>
+              </div>
+              <div class="card">
+                <strong>무엇을 만들지 않는가</strong>
+                <p>계정 연결, 자동 게시, 댓글 수집, 연락처 저장, 채널 분석, 커뮤니티 도구를 만들지 않는다.</p>
+              </div>
+              <div class="card">
+                <strong>다음 문서</strong>
+                <p><a href="./2026-06-09-external-ecosystem-next-axis-selection-ko.html">다음 분석 축 선택 HTML</a>에서 세부 매트릭스를 본다.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="checks">
+            <h2>검증 기준</h2>
+            <p class="section-lead">완료 표현은 검증 명령과 화면 확인 뒤에만 쓴다.</p>
+            <div class="checkline">
+              <div class="card">
+                <strong>문서만 변경</strong>
+                <p>`npm run docs:check`를 통과해야 한다.</p>
+              </div>
+              <div class="card">
+                <strong>HTML 변경</strong>
+                <p>데스크톱과 모바일 스크린샷으로 겹침과 링크 진입을 확인한다.</p>
+              </div>
+              <div class="card">
+                <strong>UI 변경</strong>
+                <p>관련 단위 테스트, 빌드, 표적 Playwright 검증을 별도로 돌린다.</p>
+              </div>
+              <div class="card">
+                <strong>표현 제한</strong>
+                <p>결과는 source-to-Flow QA 또는 roadmap artifact로만 말한다.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <aside class="nav" aria-label="문서 목차">
+          <h2>목차</h2>
+          <a href="./2026-06-09-external-ecosystem-roadmap-visual-ko.html">메인 로드맵</a>
+          <a href="./2026-06-09-external-ecosystem-connected-docs-visual-ko.html">연결 문서 묶음</a>
+          <a href="#read-first">먼저 읽을 문서</a>
+          <a href="#decision-spine">현재 결정 축</a>
+          <a href="#queue">현재 후보 큐</a>
+          <a href="#do-not-build">만들지 않을 것</a>
+          <a href="#next">다음 작업</a>
+          <a href="#selected-axis">선택된 다음 축</a>
+          <a href="#checks">검증 기준</a>
+          <a href="./2026-06-09-external-ecosystem-analysis-room-index.md">Markdown 원문</a>
+          <p class="note">
+            이 인덱스는 시장조사 보고서가 아니라 다음 분석 세션의 출발점이다. 후보를 고른 뒤에도 사용자 행동 검증 전에는 검증 완료 표현을 쓰지 않는다.
+          </p>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

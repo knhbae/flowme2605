@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 공유 패킷 Rollup Template</title>
+  <style>
+    :root{--bg:#f6f7f9;--paper:#fff;--ink:#101828;--body:#344054;--muted:#667085;--line:#d9e2ec;--blue:#1d4ed8;--soft:#f1f5f9;--amber:#9a5b12;--amber-soft:#fff4d8;--green:#047857;--green-soft:#e7f6ef;--red:#b42318;--red-soft:#fff0ed}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;line-height:1.62;letter-spacing:0}a{color:var(--blue);text-decoration:none}.page{width:min(1120px,calc(100% - 28px));margin:0 auto;padding:22px 0 64px}.topbar,.hero,.panel,.nav{border:1px solid var(--line);border-radius:8px;background:var(--paper);box-shadow:0 16px 44px rgba(15,23,42,.07)}.topbar{display:flex;justify-content:space-between;gap:14px;margin-bottom:14px;padding:10px 14px;color:var(--muted);font-size:13px}.brand{color:var(--ink);font-weight:900}.layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:18px;align-items:start}.layout>*{min-width:0}.hero,.panel{padding:26px}.panel{margin-top:18px}h1,h2,h3,p{margin:0}h1,h2,h3{line-height:1.25;word-break:keep-all}h1{font-size:clamp(30px,4vw,46px)}h2{margin-bottom:10px;font-size:23px}p,li,td{color:var(--body)}.lead{margin-top:12px;font-size:17px;max-width:860px}.note{margin-top:12px;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--soft)}code{padding:1px 5px;border-radius:5px;background:#eef2f7;color:#172033;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-wrap:anywhere}.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:20px}.metric{min-height:105px;border:1px solid var(--line);border-radius:8px;padding:15px;background:var(--soft)}.metric strong{display:block;margin-bottom:8px;color:var(--muted);font-size:12px;text-transform:uppercase}.metric span{display:block;font-size:18px;font-weight:900;overflow-wrap:anywhere}.amber{background:var(--amber-soft)}.green{background:var(--green-soft)}.red{background:var(--red-soft)}.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--paper)}table{width:100%;min-width:920px;border-collapse:collapse}th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:14px}th{background:var(--soft);color:var(--ink)}tr:last-child td{border-bottom:0}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.card{border:1px solid var(--line);border-radius:8px;padding:15px;background:var(--paper)}.links{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}.button{display:inline-flex;align-items:center;min-height:36px;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;font-weight:800}.nav{position:sticky;top:16px;padding:16px}.nav h2{font-size:16px}.nav a{display:block;padding:8px 9px;border-radius:6px;color:var(--body);font-size:14px}@media(max-width:900px){.layout{grid-template-columns:1fr}.nav{position:static}.metrics,.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.page{width:min(100% - 20px,1120px);padding-top:10px}.topbar{flex-direction:column}.hero,.panel,.nav{padding:18px}.metrics,.grid{grid-template-columns:1fr}table{min-width:920px}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topbar"><div><span class="brand">FlowMe 분석방</span> / Rollup Template</div><div>상태: blank · not run · not evidence · 3 completed usable sessions 이후 사용</div></div>
+    <div class="layout">
+      <div>
+        <section class="hero" id="top">
+          <h1>Rollup은 3개 completed usable 세션 이후에만 채웁니다</h1>
+          <p class="lead">첫 run의 패킷 버전은 <code>school-dorm-share-packet-v2-2026-06-11-readable-preview</code>입니다. 이 템플릿은 아직 비어 있으며, 제품 검증이나 public route 준비를 뜻하지 않습니다.</p>
+          <div class="metrics">
+            <div class="metric amber"><strong>decision</strong><span>no signal</span></div>
+            <div class="metric"><strong>sessions</strong><span>0 / 3</span></div>
+            <div class="metric amber"><strong>entry gate</strong><span>3 completed usable</span></div>
+            <div class="metric green"><strong>version</strong><span>v2 readable preview</span></div>
+            <div class="metric red"><strong>forbidden</strong><span>validated</span></div>
+          </div>
+          <p class="note">빈 rollup, incomplete rollup, 또는 scheduling 상태(<code>invited</code>, <code>agreed</code>, <code>scheduled</code>)만으로는 evidence board update를 시작하지 않습니다.</p>
+        </section>
+
+        <section class="panel" id="gate">
+          <h2>0. Rollup 진입 조건</h2>
+          <div class="table-wrap">
+            <table>
+              <tbody>
+                <tr><th>Completed usable sessions</th><td>3개 recipient session이 완료되었고 각 session에 role-level notes가 있습니다.</td></tr>
+                <tr><th>Same packet version</th><td>세 세션 모두 <code>school-dorm-share-packet-v2-2026-06-11-readable-preview</code>를 사용했습니다.</td></tr>
+                <tr><th>Private boundary</th><td>이름, 연락처, 링크, webhook, 방/비밀번호/결제/건강/신원/채팅 로그 값이 없습니다.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" id="inputs">
+          <h2>1. 필수 입력</h2>
+          <div class="table-wrap">
+            <table>
+              <tbody>
+                <tr><th>Packet version</th><td><code>school-dorm-share-packet-v2-2026-06-11-readable-preview</code></td></tr>
+                <tr><th>Usable sessions</th><td>3 completed usable recipient sessions</td></tr>
+                <tr><th>Source notes</th><td>pilot worksheet 또는 session log의 비식별 메모</td></tr>
+                <tr><th>Allowed decisions</th><td><code>no signal</code>, <code>friction</code>, <code>candidate signal</code> 중 하나</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" id="summary">
+          <h2>2. Session Summary</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Session</th><th>Role label</th><th>Usable?</th><th>First action</th><th>Four labels</th><th>Latest notice</th><th>No-store boundary</th><th>Manual-copy boundary</th><th>Main confusion</th></tr></thead>
+              <tbody>
+                <tr><td>01</td><td>student-like</td><td>not run</td><td>not run</td><td>not run</td><td>not run</td><td>not run</td><td>not run</td><td></td></tr>
+                <tr><td>02</td><td>parent/guardian-like</td><td>not run</td><td>not run</td><td>not run</td><td>not run</td><td>not run</td><td>not run</td><td></td></tr>
+                <tr><td>03</td><td>coordinator/group-manager-like</td><td>not run</td><td>not run</td><td>not run</td><td>not run</td><td>not run</td><td>not run</td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" id="rules">
+          <h2>3. Decision Rules</h2>
+          <div class="grid">
+            <article class="card"><h3><code>no signal</code></h3><p>3개 completed usable 세션이 없거나 메모가 너무 약한 경우.</p></article>
+            <article class="card"><h3><code>friction</code></h3><p>세션은 있으나 읽기, 최신공지, no-store, 수동복사 경계 일부가 헷갈린 경우.</p></article>
+            <article class="card"><h3><code>candidate signal</code></h3><p>첫 run 3개 세션이 핵심 체크를 통과한 경우. 그래도 public route나 integration ready는 아님.</p></article>
+          </div>
+        </section>
+
+        <section class="panel" id="next">
+          <h2>4. Evidence Board Update</h2>
+          <p>3 completed usable sessions에서 채운 rollup 뒤에만 evidence board update runbook을 사용합니다. 원본 세션 메모는 worksheet/session log에 남기고, board에는 비식별 요약만 옮깁니다.</p>
+          <div class="links">
+            <a class="button" href="./2026-06-11-school-dorm-share-packet-evidence-board-update-runbook-ko.html">evidence board update runbook</a>
+            <a class="button" href="./2026-06-11-school-dorm-share-packet-post-rollup-decision-guide-ko.html">post-rollup decision guide</a>
+          </div>
+        </section>
+      </div>
+      <aside class="nav">
+        <h2>목차</h2>
+        <a href="#top">요약</a>
+        <a href="#gate">0. Rollup 진입 조건</a>
+        <a href="#inputs">1. 필수 입력</a>
+        <a href="#summary">2. Session Summary</a>
+        <a href="#rules">3. Decision Rules</a>
+        <a href="#next">4. Board Update</a>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>

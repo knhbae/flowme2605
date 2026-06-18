@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 배포 채널 핸드오프 HTML 허브</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f7fb;
+        --panel: #ffffff;
+        --ink: #101828;
+        --muted: #475467;
+        --line: #d6deea;
+        --soft: #eef4fb;
+        --blue: #1d4ed8;
+        --green: #087443;
+        --amber: #b45309;
+        --red: #b42318;
+        --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          Inter, Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", Arial,
+          sans-serif;
+        line-height: 1.65;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .page {
+        max-width: 1220px;
+        margin: 0 auto;
+        padding: 24px 20px 56px;
+      }
+
+      .topbar,
+      .hero,
+      .panel,
+      .nav {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px 16px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .brand {
+        color: var(--ink);
+        font-weight: 800;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 280px;
+        gap: 18px;
+        margin-top: 16px;
+        align-items: start;
+      }
+
+      .hero,
+      .panel,
+      .nav {
+        padding: 26px;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 860px;
+        margin-bottom: 18px;
+        font-size: clamp(34px, 4vw, 56px);
+        line-height: 1.08;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin-bottom: 10px;
+        font-size: 28px;
+        line-height: 1.22;
+        letter-spacing: 0;
+      }
+
+      h3 {
+        margin-bottom: 8px;
+        font-size: 17px;
+        letter-spacing: 0;
+      }
+
+      .lead {
+        max-width: 920px;
+        margin-bottom: 22px;
+        color: #24324a;
+        font-size: 18px;
+      }
+
+      .badge-row,
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 34px;
+        padding: 6px 11px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #f8fafc;
+        color: #344054;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .badge.danger {
+        border-color: #fedf89;
+        background: #fffaeb;
+        color: #93370d;
+      }
+
+      .panel {
+        margin-top: 18px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .two-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .card,
+      .step {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--soft);
+        padding: 16px;
+      }
+
+      .step {
+        background: #ffffff;
+        position: relative;
+      }
+
+      .step strong {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        margin-bottom: 12px;
+        border-radius: 999px;
+        background: #dbeafe;
+        color: #1e3a8a;
+      }
+
+      .kicker {
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .state {
+        border-left: 4px solid var(--amber);
+        background: #fffbeb;
+      }
+
+      .ok {
+        border-left: 4px solid var(--green);
+      }
+
+      .stop {
+        border-left: 4px solid var(--red);
+        background: #fff5f3;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 38px;
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: #ffffff;
+        color: #1f2a44;
+        font-weight: 800;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 15px;
+      }
+
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 11px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: #f8fafc;
+      }
+
+      .nav {
+        position: sticky;
+        top: 18px;
+      }
+
+      .nav h2 {
+        font-size: 18px;
+      }
+
+      .nav a {
+        display: block;
+        padding: 9px 0;
+        color: #344054;
+        font-size: 14px;
+      }
+
+      .note {
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      ul {
+        padding-left: 20px;
+      }
+
+      li + li {
+        margin-top: 6px;
+      }
+
+      @media (max-width: 920px) {
+        .layout {
+          display: block;
+        }
+
+        .nav {
+          position: static;
+          margin-top: 18px;
+        }
+
+        .grid,
+        .two-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .page {
+          padding: 10px 10px 36px;
+        }
+
+        .topbar {
+          display: block;
+        }
+
+        .hero,
+        .panel,
+        .nav {
+          padding: 18px;
+        }
+
+        h1 {
+          font-size: 34px;
+        }
+
+        h2 {
+          font-size: 23px;
+        }
+
+        .lead {
+          font-size: 16px;
+        }
+
+        table {
+          display: block;
+          overflow-x: auto;
+          white-space: nowrap;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe 분석방</span> / 배포 채널 핸드오프 한국어 HTML 허브</div>
+        <div>작성일 2026-06-11 · 상태: 읽기 허브, 증거 아님</div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <section class="hero" id="top">
+            <h1>배포 채널 핸드오프 문서를 한 번에 읽는 실행 허브</h1>
+            <p class="lead">
+              가족방, 학교/기숙사 그룹, 카페 글, 폼/시트 같은 외부 채널로 Flow 산출물이 전달되는 순간을 분석하기 위한 내부 문서 묶음이다.
+              이 문서는 개별 문서를 대체하지 않고, 다음 세션이 게이트에서 관찰 로그까지 같은 순서로 읽도록 돕는다.
+            </p>
+            <div class="badge-row" aria-label="현재 상태">
+              <span class="badge danger">현재 판정: no signal</span>
+              <span class="badge">세션: 0 / 3</span>
+              <span class="badge">다음 행동: 초대 → invited → agreed</span>
+              <span class="badge">다음 증거: 3 completed usable sessions</span>
+              <span class="badge">제품 형태: 수동 복사 우선</span>
+              <span class="badge">금지: 자동 게시·답변 수집·연락처 저장</span>
+            </div>
+          </section>
+
+          <section class="panel" id="decision">
+            <h2>1. 현재 판단</h2>
+            <div class="two-grid">
+              <div class="card state">
+                <h3>왜 아직 no signal인가</h3>
+                <p>
+                  플랫폼 게이트, 공유 패킷, 관찰 스크립트, preflight, 로그 템플릿은 준비됐지만 실제 수신자 세션 기록이 없다.
+                  따라서 사용자가 라벨, 최신 공지 우선, 민감값 제외, 수동 전송 경계를 이해했다는 증거는 아직 없다.
+                </p>
+              </div>
+              <div class="card ok">
+                <h3>바로 해야 할 일</h3>
+                <p>
+                  새 기능을 만들기보다 리크루팅 문구를 보내고, 스케줄 트래커의 해당 role-labeled slot을 <code>invited</code> 행으로 바꾼 뒤
+                  답장 확인 후 matching slot이 <code>agreed</code>가 되면 <code>school-dorm-share-packet-v2-2026-06-11-readable-preview</code>로 관찰을 준비한다.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="run-sequence">
+            <h2>2. 실행 순서</h2>
+            <p class="lead">
+              긴 문서 목록을 모두 읽기 전에, 실제 Stage 0 관찰은 아래 여섯 단계로만 움직입니다.
+              어떤 단계에서도 public route, integration, 자동 게시, 답변 수집, 연락처 저장으로 넘어가지 않습니다.
+            </p>
+            <div class="grid">
+              <article class="card ok">
+                <h3>문서 추가 전</h3>
+                <p>실제 trigger가 없으면 같은 축의 내부 문서를 더 만들지 않고, 기존 run sequence로 관찰을 진행합니다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-distribution-channel-documentation-stop-gate-ko.html">stop gate</a>
+                </div>
+              </article>
+              <article class="card ok">
+                <h3>초대 전</h3>
+                <p>현재 상태, Stage 0 체크포인트, recruiting copy를 확인하고 15분 이해 확인으로만 요청합니다. HTML의 문구 복사 버튼을 사용합니다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-distribution-channel-handoff-current-state-handoff-ko.html">현재 상태</a>
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-recruiting-copy-ko.html">초대 문구</a>
+                </div>
+              </article>
+              <article class="card ok">
+                <h3>초대 후</h3>
+                <p>초대를 보낸 직후 스케줄 트래커에서 해당 slot의 <code>invited</code> 행을 복사해 교체합니다. 이름, 핸들, 링크, 메시지 원문은 남기지 않습니다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-scheduling-tracker-ko.html#snippets">invited 행</a>
+                </div>
+              </article>
+              <article class="card ok">
+                <h3>세션 전</h3>
+                <p>matching slot이 <code>agreed</code>인지, <code>school-dorm-share-packet-v2-2026-06-11-readable-preview</code>, response coding, preflight gate가 맞는지 확인합니다. 하나라도 틀리면 시작하지 않습니다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-scheduling-tracker-ko.html">스케줄</a>
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-preflight-checklist-ko.html">preflight</a>
+                </div>
+              </article>
+              <article class="card ok">
+                <h3>세션 중</h3>
+                <p>FlowMe를 먼저 설명하지 않고 패킷을 보여준 뒤, worksheet에는 pass/fail/unclear와 비식별 근거만 남깁니다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-observation-day-quick-start-ko.html">quick start</a>
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-pilot-worksheet-ko.html">worksheet</a>
+                </div>
+              </article>
+              <article class="card ok">
+                <h3>세션 후</h3>
+                <p>기억으로 결정하지 않고 session log와 rollup에만 옮깁니다. 가능한 라벨은 no signal, friction, candidate signal뿐입니다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-10-school-dorm-share-packet-session-log-starter-ko.html">session log</a>
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-rollup-template-ko.html">rollup</a>
+                </div>
+              </article>
+              <article class="card ok">
+                <h3>rollup 후</h3>
+                <p>post-rollup guide로 다음 행동을 고르고, board는 update runbook을 통해서만 바꿉니다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-post-rollup-decision-guide-ko.html">decision guide</a>
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-evidence-board-update-runbook-ko.html">board update</a>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="chain">
+            <h2>3. 연결 문서 전체 인덱스</h2>
+            <p class="lead">
+              아래 목록은 전체 문서 인덱스입니다. 실제 실행 시작 순서는 위의 실행 순서를 따릅니다:
+              초대 문구 복사, 스케줄 트래커의 <code>invited</code> 행 갱신, 버전/프리플라이트 확인, 관찰, 세션 로그, rollup 순서입니다.
+            </p>
+            <div class="grid">
+              <article class="step">
+                <strong>0 / 3</strong>
+                <div class="kicker">Start</div>
+                <h3>현재 상태와 다음 시작점</h3>
+                <p>지금 결정은 <code>no signal</code>이고 실제 수신자 세션은 <code>0 / 3</code>입니다. 다음 세션은 새 연동이 아니라 초대 문구와 스케줄 트래커에서 시작합니다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-distribution-channel-handoff-current-state-handoff-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-11-distribution-channel-handoff-current-state-handoff.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>0A</strong>
+                <div class="kicker">Phase</div>
+                <h3>Stage 0 phase 체크포인트</h3>
+                <p>현재 작업이 Phase 5 안의 Stage 0 관찰 준비이며 public route나 integration 구현 단계가 아님을 확인한다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-distribution-channel-stage0-phase-checkpoint-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-11-distribution-channel-stage0-phase-checkpoint.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>0B</strong>
+                <div class="kicker">Stop gate</div>
+                <h3>문서 추가 중단 게이트</h3>
+                <p>recipient session, preflight fail, packet version change, privacy risk, 다른 axis 선택이 없으면 새 문서를 만들지 않는다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-distribution-channel-documentation-stop-gate-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-11-distribution-channel-documentation-stop-gate.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>1</strong>
+                <div class="kicker">Boundary</div>
+                <h3>플랫폼 게이트</h3>
+                <p>KakaoTalk, Naver Cafe, Forms/Sheets, Notion, Slack류 채널에서 Stage 0이 어디까지 가능한지 정한다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-10-distribution-channel-handoff-platform-gate-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-10-distribution-channel-handoff-platform-gate.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>2</strong>
+                <div class="kicker">Packet</div>
+                <h3>기숙사 공유 패킷</h3>
+                <p>기숙사 입사 체크리스트를 가족방, 카페, 폼/시트, Markdown으로 수동 전달하는 v2 공유 패킷을 보여준다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-10-school-dorm-share-packet-preview-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-10-school-dorm-share-packet-preview.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>3</strong>
+                <div class="kicker">Script</div>
+                <h3>수신자 관찰 스크립트</h3>
+                <p>수신자가 설명 없이 패킷 목적, 응답 라벨, 최신 공지 우선, 민감값 제외를 이해하는지 확인한다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-10-school-dorm-share-packet-observation-script-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-10-school-dorm-share-packet-observation-script.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>4</strong>
+                <div class="kicker">Template</div>
+                <h3>관찰 기록지</h3>
+                <p>세션별 pass, fail, unclear와 혼동 지점을 기록하되 이름, 건강, 결제, 신원, 방, 채널 값을 쓰지 않는다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-10-school-dorm-share-packet-observation-log-template-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-10-school-dorm-share-packet-observation-log-template.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>5</strong>
+                <div class="kicker">Board</div>
+                <h3>Evidence board</h3>
+                <p>문서 존재와 실제 관찰 증거를 분리하고, `/content-flows` 후보 준비 전에 필요한 조건을 모은다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-10-school-dorm-share-packet-evidence-board-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-10-school-dorm-share-packet-evidence-board.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>6</strong>
+                <div class="kicker">Run</div>
+                <h3>파일럿 실행 팩</h3>
+                <p><code>agreed</code> slot 관찰을 실행하기 위한 준비물, 15분 진행표, 중단 규칙, rollup handoff 형식을 제공한다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-10-school-dorm-share-packet-pilot-run-pack-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-10-school-dorm-share-packet-pilot-run-pack.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>7</strong>
+                <div class="kicker">Worksheet</div>
+                <h3>파일럿 워크시트</h3>
+                <p>파일럿 당일에 같은 패킷 버전, 3명 세션, pass/fail/unclear 판정을 한 장에서 기록한다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-pilot-worksheet-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-pilot-worksheet.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>8</strong>
+                <div class="kicker">Recruit</div>
+                <h3>관찰 초대 문구</h3>
+                <p>3개 role-labeled slot에 초대할 때 쓰는 짧은 초대/일정 문구입니다. 제품 테스트나 연동 준비처럼 말하지 않고, 15분 이해 확인과 민감값 미수집을 고정합니다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-recruiting-copy-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-recruiting-copy.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>9</strong>
+                <div class="kicker">Schedule</div>
+                <h3>비식별 스케줄 트래커</h3>
+                <p>초대 상태를 실명/연락처 없이 3개 역할 슬롯으로 관리합니다. invited, agreed, declined, completed, stopped는 증거로 과장하지 않습니다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-scheduling-tracker-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-scheduling-tracker.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>10</strong>
+                <div class="kicker">Version</div>
+                <h3>패킷 버전 고정표</h3>
+                <p>최종 초대나 세션 전에 같은 패킷 버전, 최신 공지 우선 규칙, 민감값 미수집, 수동 복사 경계를 고정합니다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-version-lock-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-version-lock.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>11</strong>
+                <div class="kicker">Coding</div>
+                <h3>응답 코딩 기준표</h3>
+                <p>세션 답변을 pass, fail, unclear로 나누는 기준을 고정합니다. fail 또는 unclear가 있으면 candidate signal로 넘기지 않습니다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-response-coding-guide-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-response-coding-guide.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>12</strong>
+                <div class="kicker">Preflight</div>
+                <h3>관찰 전 go/no-go 체크리스트</h3>
+                <p>첫 세션을 시작하기 전에 Stage 0 범위, 같은 패킷 버전, 비식별 role slot, 무설명 진행, 금지 데이터가 모두 지켜졌는지 확인한다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-preflight-checklist-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-preflight-checklist.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>13</strong>
+                <div class="kicker">Run day</div>
+                <h3>관찰 당일 quick start</h3>
+                <p>긴 템플릿을 채우기 전에 진행자가 바로 볼 수 있는 한 장짜리 운영표입니다. 같은 패킷, 무설명 진행, 민감값 기록 금지, 멈출 조건을 고정합니다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-observation-day-quick-start-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-observation-day-quick-start.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>14</strong>
+                <div class="kicker">Log</div>
+                <h3>세션 로그 스타터</h3>
+                <p>student-like, parent/guardian-like, coordinator-like 3개 세션 슬롯과 빈 rollup 표를 바로 채울 수 있게 둔다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-10-school-dorm-share-packet-session-log-starter-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-10-school-dorm-share-packet-session-log-starter.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>15</strong>
+                <div class="kicker">Rollup</div>
+                <h3>롤업 템플릿</h3>
+                <p>3개 completed usable session이 생긴 뒤 `no signal`, `friction`, `candidate signal` 중 하나로만 판정한다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-rollup-template-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-rollup-template.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>16</strong>
+                <div class="kicker">Next action</div>
+                <h3>롤업 이후 가이드</h3>
+                <p>선택된 판정이 rerun, revise packet, `/content-flows` review candidate 중 어디로 이어지는지 제한한다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-post-rollup-decision-guide-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-post-rollup-decision-guide.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>17</strong>
+                <div class="kicker">Board update</div>
+                <h3>Evidence board 업데이트 절차</h3>
+                <p>채워진 rollup 이후 보드에 판정 라벨, 비식별 요약, 다음 행동만 옮기고 검증/연동 준비 표현은 막는다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-evidence-board-update-runbook-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-evidence-board-update-runbook.md">Markdown</a>
+                </div>
+              </article>
+
+              <article class="step">
+                <strong>18</strong>
+                <div class="kicker">Candidate prep</div>
+                <h3>후보 준비 템플릿</h3>
+                <p>`candidate signal` 이후 `/content-flows` review candidate를 만들기 전에 source, caution, no-store, manual-copy 필드를 채운다.</p>
+                <div class="actions">
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-content-flows-candidate-prep-ko.html">HTML 열기</a>
+                  <a class="button" href="./2026-06-11-school-dorm-share-packet-content-flows-candidate-prep.md">Markdown</a>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="evidence">
+            <h2>4. 증거 체인</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>단계</th>
+                  <th>현재 상태</th>
+                  <th>다음 판정</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>플랫폼 경계</td>
+                  <td>문서 게이트 완료</td>
+                  <td>Stage 0은 manual-copy first</td>
+                </tr>
+                <tr>
+                  <td>공유 패킷</td>
+                  <td>파일 기반 preview 있음</td>
+                  <td>아직 공개 라우트 아님</td>
+                </tr>
+                <tr>
+                  <td>관찰 스크립트</td>
+                  <td>질문 순서와 통과 기준 있음</td>
+                  <td>관찰 결과가 아님</td>
+                </tr>
+                <tr>
+                  <td>관찰 로그</td>
+                  <td>빈 템플릿 있음</td>
+                  <td>세션 0 / 3, no signal</td>
+                </tr>
+                <tr>
+                  <td>Rollup</td>
+                  <td>아직 작성 전</td>
+                  <td>3명 기록 후 friction 또는 candidate signal</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="panel" id="stop">
+            <h2>5. 만들지 않을 것</h2>
+            <div class="two-grid">
+              <div class="card stop">
+                <h3>플랫폼 자동화</h3>
+                <ul>
+                  <li>KakaoTalk Message API, 친구/방 타깃팅</li>
+                  <li>Naver Cafe 게시, 댓글 수집</li>
+                  <li>Google Forms/Sheets 생성 또는 응답 import</li>
+                  <li>Notion, Slack, Teams, Discord API 자동화</li>
+                </ul>
+              </div>
+              <div class="card stop">
+                <h3>데이터 보관</h3>
+                <ul>
+                  <li>연락처, 멤버, 채널 ID 저장</li>
+                  <li>건강, 결제, 신원, 방 배정, 초대 링크 값 기록</li>
+                  <li>자동 답변 수집, 채널 분석, webhook URL 저장</li>
+                  <li>검증됨, integration ready, public route ready 표현</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="next">
+            <h2>6. 다음 세션 시작점</h2>
+            <p>
+              다음 세션은 이 허브에서 관찰 초대 문구와 스케줄 트래커를 먼저 열고, 초대 발송 후 해당 slot을 <code>invited</code>로 바꾼다.
+              실제 3 completed usable sessions와 filled rollup이 생기기 전까지 evidence board의 판정은 계속 <code>no signal</code>이다.
+            </p>
+            <div class="actions">
+              <a class="button" href="./2026-06-11-distribution-channel-handoff-current-state-handoff-ko.html">현재 상태 시작점 열기</a>
+              <a class="button" href="./2026-06-11-distribution-channel-stage0-phase-checkpoint-ko.html">Stage 0 체크포인트 열기</a>
+              <a class="button" href="./2026-06-11-distribution-channel-documentation-stop-gate-ko.html">문서 추가 중단 게이트 열기</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-recruiting-copy-ko.html">관찰 초대 문구 열기</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-scheduling-tracker-ko.html">스케줄 트래커 열기</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-version-lock-ko.html">패킷 버전 고정표 열기</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-response-coding-guide-ko.html">응답 코딩 기준표 열기</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-observation-day-quick-start-ko.html">관찰 당일 quick start 열기</a>
+              <a class="button" href="./2026-06-10-school-dorm-share-packet-pilot-run-pack-ko.html">파일럿 실행 팩 열기</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-pilot-worksheet-ko.html">파일럿 워크시트 열기</a>
+              <a class="button" href="./2026-06-10-school-dorm-share-packet-session-log-starter-ko.html">세션 로그 스타터 열기</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-rollup-template-ko.html">롤업 템플릿 열기</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-post-rollup-decision-guide-ko.html">롤업 이후 가이드 열기</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-evidence-board-update-runbook-ko.html">Evidence board 업데이트 절차 열기</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-content-flows-candidate-prep-ko.html">후보 준비 템플릿 열기</a>
+              <a class="button" href="./2026-06-10-school-dorm-share-packet-evidence-board-ko.html">Evidence board 열기</a>
+            </div>
+          </section>
+        </div>
+
+        <aside class="nav" aria-label="문서 목차">
+          <h2>목차</h2>
+          <a href="#decision">1. 현재 판단</a>
+          <a href="#run-sequence">2. 실행 순서</a>
+          <a href="#chain">3. 연결 문서 인덱스</a>
+          <a href="#evidence">4. 증거 체인</a>
+          <a href="#stop">5. 만들지 않을 것</a>
+          <a href="#next">6. 다음 세션 시작점</a>
+          <a href="./2026-06-11-distribution-channel-handoff-current-state-handoff-ko.html">현재 상태 시작점</a>
+          <a href="./2026-06-11-distribution-channel-stage0-phase-checkpoint-ko.html">Stage 0 체크포인트</a>
+          <a href="./2026-06-11-distribution-channel-documentation-stop-gate-ko.html">문서 추가 중단 게이트</a>
+          <a href="./2026-06-11-school-dorm-share-packet-recruiting-copy-ko.html">관찰 초대 문구</a>
+          <a href="./2026-06-11-school-dorm-share-packet-scheduling-tracker-ko.html">스케줄 트래커</a>
+          <a href="./2026-06-11-school-dorm-share-packet-version-lock-ko.html">패킷 버전 고정표</a>
+          <a href="./2026-06-11-school-dorm-share-packet-response-coding-guide-ko.html">응답 코딩 기준표</a>
+          <a href="./2026-06-11-school-dorm-share-packet-observation-day-quick-start-ko.html">관찰 당일 quick start</a>
+          <a href="./2026-06-11-school-dorm-share-packet-evidence-board-update-runbook-ko.html">Evidence board 업데이트 절차</a>
+          <a href="./2026-06-09-external-ecosystem-analysis-room-index-ko.html">분석방 운영 인덱스</a>
+          <a href="./2026-06-09-external-ecosystem-connected-docs-visual-ko.html">연결 내부 문서 허브</a>
+          <a href="./2026-06-11-external-ecosystem-html-coverage-audit-ko.html">HTML 커버리지 감사</a>
+          <p class="note">
+            이 허브는 읽기 경로를 정리한 것이다. 세부 근거와 원문 상태는 각 섹션의 Markdown 문서를 기준으로 본다.
+          </p>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

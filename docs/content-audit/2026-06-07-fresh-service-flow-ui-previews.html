@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>신규 대표 Flow 서비스형 UI 프리뷰</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --paper: #fff;
+      --ink: #172033;
+      --muted: #667085;
+      --line: #d8dee8;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --dark: #111827;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif; }
+    a { color: var(--blue); text-decoration: none; }
+    .wrap { max-width: 1220px; margin: 0 auto; padding: 30px 18px 72px; }
+    .hero { background: var(--dark); color: white; border-radius: 8px; padding: 28px; }
+    .hero h1 { margin: 0 0 10px; font-size: clamp(28px, 4vw, 44px); letter-spacing: 0; }
+    .hero p { margin: 0; color: #d1d5db; line-height: 1.65; max-width: 900px; }
+    .nav { position: sticky; top: 0; z-index: 2; display: flex; gap: 10px; overflow-x: auto; padding: 12px 0; background: rgba(246,247,249,.94); backdrop-filter: blur(8px); }
+    .nav a { flex: 0 0 auto; color: var(--ink); background: white; border: 1px solid var(--line); border-radius: 999px; padding: 9px 12px; font-size: 14px; }
+    .flow-card { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 18px; margin: 18px 0; }
+    .source { display: grid; grid-template-columns: 1fr 320px; gap: 18px; border-bottom: 1px solid var(--line); padding-bottom: 16px; }
+    .rank, .category, .score { display: inline-flex; padding: 5px 8px; border-radius: 999px; background: #eef2ff; color: #3730a3; font-size: 12px; margin-right: 4px; }
+    .category { background: #ecfeff; color: #155e75; }
+    .score { background: #dcfce7; color: #166534; }
+    h2 { margin: 8px 0 8px; font-size: 25px; letter-spacing: 0; }
+    h3, h4 { margin: 0 0 8px; letter-spacing: 0; }
+    p { margin: 0; color: var(--muted); line-height: 1.58; }
+    .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .links a { border: 1px solid var(--line); border-radius: 999px; padding: 7px 10px; background: #fbfcfe; }
+    aside { border: 1px solid var(--line); border-radius: 8px; background: #fbfcfe; padding: 14px; }
+    aside strong { display: block; margin-bottom: 8px; }
+    .service { display: grid; grid-template-columns: 440px 1fr; gap: 18px; margin-top: 16px; align-items: start; }
+    .phone { border: 1px solid #cbd5e1; background: #f9fafb; border-radius: 24px; padding: 12px; box-shadow: 0 18px 38px rgba(15,23,42,.12); }
+    .phone-hero { background: var(--dark); color: white; border-radius: 18px; padding: 18px; }
+    .phone-hero span { color: #cbd5e1; font-size: 12px; }
+    .phone-hero h3 { font-size: 23px; margin: 7px 0; }
+    .phone-hero p { color: #d1d5db; }
+    button { margin-top: 14px; width: 100%; border: 0; border-radius: 10px; background: var(--blue); color: white; padding: 12px 14px; font: inherit; font-weight: 700; }
+    .setup, .artifact, .detail, .review { background: white; border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-top: 10px; }
+    .field { display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid #edf1f6; padding: 9px 0; }
+    .field:first-of-type { border-top: 0; }
+    .field span { color: var(--muted); font-size: 13px; }
+    .field strong { font-size: 14px; }
+    .artifact-title { display: flex; justify-content: space-between; gap: 10px; color: var(--muted); font-size: 13px; }
+    .artifact-title strong { color: var(--ink); }
+    ol { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
+    li { border: 1px solid #edf1f6; border-radius: 10px; padding: 10px; }
+    li span { display: block; color: var(--green); font-size: 12px; margin-bottom: 4px; }
+    li strong { font-size: 14px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .chips span { border-radius: 999px; background: #eef2ff; color: #3730a3; padding: 6px 8px; font-size: 12px; }
+    .review { margin-top: 0; }
+    .review ul { margin: 8px 0 0; padding-left: 18px; color: var(--muted); line-height: 1.7; }
+    @media (max-width: 900px) {
+      .source, .service { grid-template-columns: 1fr; }
+      .phone { width: 100%; border-radius: 8px; box-shadow: none; }
+      .review { margin-top: 10px; }
+    }
+    @media (max-width: 620px) {
+      .wrap { padding: 18px 10px 48px; }
+      .hero, .flow-card { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <h1>신규 대표 Flow 서비스형 UI 프리뷰</h1>
+      <p>기존 가전/결혼/중고차 후보 외에, eSIM 설정, 유튜브 기반 레시피, 엄마표 놀이가 FlowMe에 어떻게 담기는지 확인하기 위한 정적 서비스 프리뷰입니다. 입력은 캘린더/리마인더 수준으로 제한하고, 방법/링크/팁은 description 메모에 둡니다.</p>
+    </section>
+    <nav class="nav" aria-label="프리뷰 바로가기">
+      <a href="#japan-esim-setup">1. 해외여행 eSIM 출국 전 설정</a><a href="#banana-peanut-recipe-video">2. 노밀가루 바나나 땅콩버터 빵</a><a href="#kids-dino-footprint-art">3. 공룡 발자국 엄마표 미술놀이</a>
+    </nav>
+    <article class="flow-card" id="japan-esim-setup">
+      <section class="source">
+        <div>
+          <span class="rank">#1</span>
+          <span class="category">여행/통신</span>
+          <span class="score">적합 4.58</span>
+          <h2>해외여행 eSIM 출국 전 설정</h2>
+          <p>앱 다운로드, 상품 선택, QR 스캔/수동 입력, 여행용 레이블 지정, 데이터 로밍 ON, 사용 후 삭제까지 순서가 분명하다. Holafly/WOWPASS 공식성 가이드에서도 APN, 데이터 로밍, iOS/안드로이드 QR 설치 절차가 확인된다.</p>
+          <div class="links"><a href="https://www.korea-iphone.com/blog/cPmwHeayWgQN.html" target="_blank" rel="noreferrer">원문 열기</a><a href="https://esim.holafly.com/ko/guides-esim/esim-roaming/" target="_blank" rel="noreferrer">보조 출처 1</a><a href="https://wowpass.oopy.io/guide/sim/ko/esim" target="_blank" rel="noreferrer">보조 출처 2</a></div>
+        </div>
+        <aside>
+          <strong>체크리스트 + 메모</strong>
+          <p>앱 설정 절차는 체크리스트가 맞고, APN/문제 해결은 description 메모가 맞다.</p>
+        </aside>
+      </section>
+      <section class="service">
+        <div class="phone">
+          <div class="phone-hero">
+            <span>출국 전 체크리스트</span>
+            <h3>일본 eSIM 출국 전 설정</h3>
+            <p>출국일과 기기만 입력하면 QR 등록, 레이블 지정, 도착 후 로밍 ON 체크가 생깁니다.</p>
+            <button>출국 전 설정 저장</button>
+          </div>
+          <div class="setup">
+            <h4>저장 설정</h4>
+            <div class="field"><span>출국일</span><strong>2026-07-18</strong></div><div class="field"><span>사용 기기</span><strong>iPhone</strong></div><div class="field"><span>알림</span><strong>D-3 오전 9시</strong></div>
+          </div>
+          <div class="artifact">
+            <div class="artifact-title">
+              <span>D-3부터 도착 후까지 4개 체크</span>
+              <strong>출국 전 체크리스트</strong>
+            </div>
+            <ol><li>
+        <span>D-3</span>
+        <strong>eSIM 지원 기기 확인</strong>
+      </li><li>
+        <span>D-2</span>
+        <strong>상품 구매 후 QR/코드 보관</strong>
+      </li><li>
+        <span>D-1</span>
+        <strong>eSIM 추가 후 여행용 레이블 지정</strong>
+      </li><li>
+        <span>도착 후</span>
+        <strong>데이터 로밍 ON, LTE 확인</strong>
+      </li></ol>
+          </div>
+          <div class="detail">
+            <h4>D-1 eSIM 추가 후 여행용 레이블 지정</h4>
+            <p>QR을 스캔해 eSIM을 추가하고, 셀룰러 요금제 레이블을 여행용으로 지정합니다. 데이터 로밍 ON, APN, 재부팅, 비행기 모드 재시도는 문제 해결 메모에 둡니다.</p>
+            <div class="chips"><span>원문 후기</span><span>Holafly 가이드</span><span>WOWPASS 공식 가이드</span></div>
+          </div>
+        </div>
+        <div class="review">
+          <h3>검토 포인트</h3>
+          <ul>
+            <li>사용자 입력이 출국일, 사용 기기 수준에서 끝나는가?</li>
+            <li>방법/팁/링크가 별도 폼이 아니라 description에 들어가도 충분한가?</li>
+            <li>원문을 보고 이 실행 산출물이 자연스럽다고 느끼는가?</li>
+            <li>기존 가전/결혼/중고차와 다른 카테고리 대표성이 있는가?</li>
+          </ul>
+        </div>
+      </section>
+    </article>
+<article class="flow-card" id="banana-peanut-recipe-video">
+      <section class="source">
+        <div>
+          <span class="rank">#2</span>
+          <span class="category">요리/레시피</span>
+          <span class="score">적합 4.33</span>
+          <h2>노밀가루 바나나 땅콩버터 빵</h2>
+          <p>레시피오 페이지에서 유튜브 원본 영상, 수리테이블 채널, 조리 시간 20분, 3인분, 조리도구, 재료 가격, 4단계 조리 순서가 확인된다.</p>
+          <div class="links"><a href="https://www.recipio.kr/recipes/WwyL63J3" target="_blank" rel="noreferrer">원문 열기</a><a href="https://www.youtube.com/" target="_blank" rel="noreferrer">보조 출처 1</a></div>
+        </div>
+        <aside>
+          <strong>체크리스트 + 장보기 메모</strong>
+          <p>레시피는 반복 루틴보다 1회 실행 체크리스트가 맞다. 조리 기록이나 칼로리 기록은 기본 UX에서 제외한다.</p>
+        </aside>
+      </section>
+      <section class="service">
+        <div class="phone">
+          <div class="phone-hero">
+            <span>요리 체크리스트</span>
+            <h3>노밀가루 바나나 땅콩버터 빵</h3>
+            <p>재료와 조리 단계만 저장하고, 영상/팁/가격 정보는 메모에 둡니다.</p>
+            <button>요리 일정으로 저장</button>
+          </div>
+          <div class="setup">
+            <h4>저장 설정</h4>
+            <div class="field"><span>요리 날짜</span><strong>이번 토요일</strong></div><div class="field"><span>분량</span><strong>3인분</strong></div><div class="field"><span>알림</span><strong>장보기 전날</strong></div>
+          </div>
+          <div class="artifact">
+            <div class="artifact-title">
+              <span>장보기 1개 + 조리 3단계</span>
+              <strong>요리 체크리스트</strong>
+            </div>
+            <ol><li>
+        <span>장보기</span>
+        <strong>바나나 2개, 계란 3개, 땅콩버터 3큰술</strong>
+      </li><li>
+        <span>준비</span>
+        <strong>내열용기, 포크, 에어프라이어 준비</strong>
+      </li><li>
+        <span>조리</span>
+        <strong>재료 섞고 토핑 올리기</strong>
+      </li><li>
+        <span>완료</span>
+        <strong>180도 약 15분 굽기</strong>
+      </li></ol>
+          </div>
+          <div class="detail">
+            <h4>재료 섞고 토핑 올리기</h4>
+            <p>각 용기에 바나나, 계란, 땅콩버터를 넣고 포크로 섞습니다. 초코칩은 선택입니다. 원본 영상과 Chef tip은 description 링크에 둡니다.</p>
+            <div class="chips"><span>유튜브 원본 영상</span><span>레시피오 원문</span><span>장보기 메모</span></div>
+          </div>
+        </div>
+        <div class="review">
+          <h3>검토 포인트</h3>
+          <ul>
+            <li>사용자 입력이 요리 날짜, 분량 수준에서 끝나는가?</li>
+            <li>방법/팁/링크가 별도 폼이 아니라 description에 들어가도 충분한가?</li>
+            <li>원문을 보고 이 실행 산출물이 자연스럽다고 느끼는가?</li>
+            <li>기존 가전/결혼/중고차와 다른 카테고리 대표성이 있는가?</li>
+          </ul>
+        </div>
+      </section>
+    </article>
+<article class="flow-card" id="kids-dino-footprint-art">
+      <section class="source">
+        <div>
+          <span class="rank">#3</span>
+          <span class="category">육아/놀이</span>
+          <span class="score">적합 4.17</span>
+          <h2>공룡 발자국 엄마표 미술놀이</h2>
+          <p>검색 결과에서 권장연령, 도안 다운로드, 재료, 활동 방법, 공감/태그 유도 등 제작자-사용자 상호작용 단서가 확인된다.</p>
+          <div class="links"><a href="https://blog.naver.com/PostView.naver?blogId=ibbunde&amp;logNo=222504197592" target="_blank" rel="noreferrer">원문 열기</a></div>
+        </div>
+        <aside>
+          <strong>캘린더 + 준비물 체크</strong>
+          <p>육아 놀이는 발달 기록 앱이 아니라, 놀이를 실행하기 위한 가벼운 캘린더/준비물 체크가 맞다.</p>
+        </aside>
+      </section>
+      <section class="service">
+        <div class="phone">
+          <div class="phone-hero">
+            <span>주말 놀이 캘린더</span>
+            <h3>공룡 발자국 찍기 놀이</h3>
+            <p>놀이 날짜와 연령만 정하고, 도안/준비물/작가 링크는 메모에 보관합니다.</p>
+            <button>주말 놀이로 저장</button>
+          </div>
+          <div class="setup">
+            <h4>저장 설정</h4>
+            <div class="field"><span>놀이 날짜</span><strong>이번 일요일</strong></div><div class="field"><span>아이 연령</span><strong>3세 이상</strong></div><div class="field"><span>알림</span><strong>전날 오후 8시</strong></div>
+          </div>
+          <div class="artifact">
+            <div class="artifact-title">
+              <span>전날 준비 + 당일 놀이 + 정리</span>
+              <strong>주말 놀이 캘린더</strong>
+            </div>
+            <ol><li>
+        <span>전날</span>
+        <strong>도안 다운로드/인쇄</strong>
+      </li><li>
+        <span>시작 전</span>
+        <strong>물감, 뽁뽁이 또는 매직페이퍼 준비</strong>
+      </li><li>
+        <span>놀이</span>
+        <strong>발자국 찍기 활동</strong>
+      </li><li>
+        <span>마무리</span>
+        <strong>작품 말리기와 정리</strong>
+      </li></ol>
+          </div>
+          <div class="detail">
+            <h4>도안 다운로드/인쇄</h4>
+            <p>공룡 발자국 도안을 인쇄하고 물감이 튈 수 있는 공간을 준비합니다. 작품 사진, 아이 반응, 인스타 태그는 선택 메모입니다.</p>
+            <div class="chips"><span>도안 원문</span><span>준비물 사진</span><span>작가 인스타그램</span></div>
+          </div>
+        </div>
+        <div class="review">
+          <h3>검토 포인트</h3>
+          <ul>
+            <li>사용자 입력이 놀이 날짜, 아이 연령 수준에서 끝나는가?</li>
+            <li>방법/팁/링크가 별도 폼이 아니라 description에 들어가도 충분한가?</li>
+            <li>원문을 보고 이 실행 산출물이 자연스럽다고 느끼는가?</li>
+            <li>기존 가전/결혼/중고차와 다른 카테고리 대표성이 있는가?</li>
+          </ul>
+        </div>
+      </section>
+    </article>
+  </main>
+</body>
+</html>

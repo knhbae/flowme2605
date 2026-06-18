@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FlowMe repeated child execution structure</title>
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --panel: #fff;
+        --ink: #111827;
+        --muted: #607086;
+        --line: #dce5f2;
+        --blue: #245fc6;
+        --soft-blue: #eaf2ff;
+        --green: #087443;
+        --soft-green: #e8f7ef;
+        --amber: #965f00;
+        --soft-amber: #fff4d4;
+        --red: #b3261e;
+        --shadow: 0 10px 24px rgba(31, 41, 55, .08);
+      }
+      * { box-sizing: border-box; }
+      html, body { max-width: 100%; overflow-x: hidden; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: Arial, "Noto Sans KR", sans-serif;
+        line-height: 1.55;
+      }
+      button, input, textarea { font: inherit; }
+      button { cursor: pointer; }
+      .app { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 18px 0 48px; }
+      .topbar, .hero, .panel, .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+      }
+      .topbar { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+      .brand { font-size: 20px; font-weight: 950; }
+      .hero { margin-top: 12px; padding: 18px; }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 { font-size: clamp(30px, 4vw, 48px); line-height: 1.12; margin-bottom: 12px; letter-spacing: 0; }
+      h2 { font-size: 25px; margin-bottom: 10px; }
+      h3 { font-size: 19px; margin-bottom: 8px; }
+      .desc, .small { color: var(--muted); }
+      .small { font-size: 13px; }
+      .section-label { color: var(--blue); font-weight: 950; margin-bottom: 6px; }
+      .chips, .tabs, .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 4px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        color: var(--muted);
+        font-weight: 850;
+        white-space: nowrap;
+      }
+      .blue { background: var(--soft-blue); color: var(--blue); border-color: #b7d1ff; }
+      .green { background: var(--soft-green); color: var(--green); border-color: #b8e4c9; }
+      .amber { background: var(--soft-amber); color: var(--amber); border-color: #f3d285; }
+      .red { color: var(--red); border-color: #f4b9b6; background: #fff1f1; }
+      .map-tabs, .surface-tabs {
+        margin-top: 14px;
+        padding: 4px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #eaf0f8;
+      }
+      .map-tabs button, .surface-tabs button {
+        border: 0;
+        border-radius: 8px;
+        min-height: 38px;
+        padding: 7px 12px;
+        background: transparent;
+        color: #40516a;
+        font-weight: 900;
+      }
+      .map-tabs button.active, .surface-tabs button.active {
+        background: #fff;
+        color: var(--blue);
+        box-shadow: 0 1px 3px rgba(15, 23, 42, .1);
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 330px minmax(0, 1fr);
+        gap: 14px;
+        margin-top: 14px;
+        align-items: start;
+      }
+      .panel, .card { padding: 16px; min-width: 0; }
+      .list { display: grid; gap: 10px; }
+      .unit, .row, .step {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+        padding: 12px;
+        text-align: left;
+      }
+      .unit.active, .row.active { border-color: var(--blue); background: var(--soft-blue); }
+      .unit strong, .row strong { display: block; font-size: 17px; }
+      .progress {
+        height: 8px;
+        border-radius: 999px;
+        background: #e8edf5;
+        overflow: hidden;
+        margin-top: 8px;
+      }
+      .bar { height: 100%; background: var(--blue); width: var(--value, 30%); }
+      .row {
+        display: grid;
+        grid-template-columns: 52px minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+      }
+      .num {
+        width: 40px;
+        height: 40px;
+        border-radius: 999px;
+        background: var(--soft-blue);
+        color: var(--blue);
+        display: grid;
+        place-items: center;
+        font-weight: 950;
+      }
+      .rule-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .rule {
+        border: 1px solid var(--line);
+        background: #fbfdff;
+        border-radius: 10px;
+        padding: 12px;
+      }
+      .rule b { display: block; margin-bottom: 4px; }
+      .setup { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: end; }
+      label { display: block; margin-bottom: 6px; font-weight: 900; }
+      input, textarea {
+        width: 100%;
+        border: 1px solid #cfd9e8;
+        border-radius: 10px;
+        min-height: 44px;
+        padding: 10px 12px;
+        background: #fff;
+      }
+      textarea { min-height: 100px; resize: vertical; }
+      .primary, .secondary {
+        border: 1px solid var(--blue);
+        border-radius: 10px;
+        min-height: 44px;
+        padding: 9px 14px;
+        font-weight: 950;
+      }
+      .primary { background: var(--blue); color: #fff; }
+      .secondary { background: #fff; color: var(--blue); }
+      .check {
+        display: grid;
+        grid-template-columns: 28px minmax(0, 1fr);
+        gap: 10px;
+        align-items: start;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px;
+        background: #fff;
+      }
+      .check input { width: 22px; height: 22px; min-height: auto; margin-top: 3px; }
+      .check.done { background: #f1fbf5; border-color: #b8e4c9; }
+      .source {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+      }
+      .source a { color: var(--blue); font-weight: 900; }
+      .toast {
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: var(--soft-green);
+        border: 1px solid #b8e4c9;
+        color: var(--green);
+        font-weight: 900;
+      }
+      .mobile-short { display: none; }
+      @media (max-width: 860px) {
+        .layout { grid-template-columns: 1fr; }
+        .map-tabs, .surface-tabs { width: 100%; }
+        .map-tabs button, .surface-tabs button { flex: 1 1 140px; }
+      }
+      @media (max-width: 560px) {
+        .app { width: min(100% - 12px, 1180px); padding-top: 10px; }
+        .topbar, .hero, .panel, .card { padding: 12px; border-radius: 10px; }
+        h1 { font-size: 31px; }
+        h2 { font-size: 23px; }
+        .desktop-long { display: none; }
+        .mobile-short { display: inline; }
+        .map-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+        .surface-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+        .map-tabs button, .surface-tabs button { min-height: 40px; padding: 6px 4px; font-size: 14px; }
+        .rule-grid, .setup { grid-template-columns: 1fr; }
+        .row { grid-template-columns: minmax(0, 1fr); gap: 5px; }
+        .num { width: 34px; height: 34px; }
+        .chip { white-space: normal; }
+        .actions .primary, .actions .secondary { width: 100%; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <div class="brand">FlowMe</div>
+        <span class="chip blue">상위 구조와 실행 단위</span>
+      </header>
+
+      <section class="hero">
+        <p class="section-label">반복 하위 실행 구조 2개</p>
+        <h1><span class="desktop-long">전체 지도는 가볍게, 실행은 단원과 과목 안에서</span><span class="mobile-short">전체 지도와 실행 화면</span></h1>
+        <p class="desc">중1 수학과 자격증 공부는 전체 구조가 필요하지만, 내 앱에서는 과한 대시보드보다 지금 열어야 할 단원이나 과목 실행 화면이 먼저 나와야 합니다.</p>
+        <div class="chips">
+          <span class="chip blue">전체 저장</span>
+          <span class="chip green">일부 저장</span>
+          <span class="chip amber">현재 위치</span>
+        </div>
+        <div class="map-tabs tabs" id="mapTabs" aria-label="상위 구조 선택"></div>
+        <div class="surface-tabs tabs" id="surfaceTabs" aria-label="화면 선택">
+          <button type="button" class="active" data-surface="creator">제작자</button>
+          <button type="button" data-surface="public">저장 전</button>
+          <button type="button" data-surface="app">내 앱</button>
+        </div>
+      </section>
+
+      <section id="screen"></section>
+    </main>
+
+    <script>
+      const maps = [
+        {
+          id: "math",
+          tab: "중1 수학",
+          name: "중1 수학 전체 커리큘럼",
+          source: "수학방 중1 수학 전체 목차",
+          sourceUrl: "https://mathbang.net/13",
+          parentArtifact: "전체 진도표",
+          unitName: "단원",
+          inputLabel: "공부 시작일",
+          inputValue: "2026-06-22",
+          fullSave: "전체 커리큘럼 저장",
+          partSave: "이 단원만 저장",
+          pattern: ["개념 제목 확인", "예제 3개 풀기", "틀린 문제 메모", "다음 단원 열기"],
+          rules: [
+            ["상위 구조", "중1 수학 목차를 전체 진도표로 둔다"],
+            ["반복 단위", "단원마다 같은 공부 순서를 적용한다"],
+            ["전체 저장", "모든 단원을 내 진도표에 넣는다"],
+            ["일부 저장", "지금 필요한 단원만 내 앱에 넣는다"]
+          ],
+          units: [
+            { title: "소인수분해", position: "1단원", progress: 20, items: ["소수와 합성수 확인", "소인수분해 풀이", "최대공약수 문제", "최소공배수 문제"], memo: "개념을 본 뒤 예제와 오답 메모로 마무리합니다." },
+            { title: "정수와 유리수", position: "2단원", progress: 0, items: ["양수와 음수 구분", "정수와 유리수 확인", "수직선에서 비교", "절댓값 문제"], memo: "헷갈린 부호 계산만 짧게 남깁니다." },
+            { title: "문자와 식", position: "3단원", progress: 0, items: ["문자 사용 확인", "식의 값 구하기", "일차식 정리", "계수와 차수 확인"], memo: "긴 설명은 원문에서 다시 열고 체크만 남깁니다." },
+            { title: "일차방정식", position: "4단원", progress: 0, items: ["등식의 성질 확인", "방정식 풀이", "괄호 있는 식 풀기", "활용 문제 표시"], memo: "활용 문제는 다시 볼 항목으로 표시합니다." }
+          ]
+        },
+        {
+          id: "cert",
+          tab: "자격증",
+          name: "컴퓨터활용능력 2급 공부 운영판",
+          source: "과목별 학습 목차와 기출 풀이 안내",
+          sourceUrl: "https://www.gilbut.co.kr",
+          parentArtifact: "과목별 진도판",
+          unitName: "과목",
+          inputLabel: "시험 예정일",
+          inputValue: "2026-08-16",
+          fullSave: "과목별 진도판 저장",
+          partSave: "선택 과목만 저장",
+          pattern: ["오늘 범위 읽기", "기출 1회 풀기", "오답 유형 표시", "다시 풀 날짜 정하기"],
+          rules: [
+            ["상위 구조", "자격증 전체 로드맵이 아니라 과목별 운영판으로 둔다"],
+            ["반복 단위", "과목마다 진도, 기출, 오답을 같은 방식으로 돌린다"],
+            ["전체 저장", "모든 과목과 반복 규칙을 내 진도판에 넣는다"],
+            ["일부 저장", "막힌 과목만 따로 실행 항목으로 저장한다"]
+          ],
+          units: [
+            { title: "컴퓨터 일반", position: "필기 1", progress: 35, items: ["오늘 범위 읽기", "핵심 용어 표시", "기출 20문제 풀기", "오답 유형 메모"], memo: "기억이 안 나는 용어만 메모합니다." },
+            { title: "스프레드시트 일반", position: "필기 2", progress: 10, items: ["함수 유형 보기", "기출 20문제 풀기", "틀린 함수 표시", "다시 풀 날짜 적기"], memo: "오답 유형과 재풀이 날짜가 핵심입니다." },
+            { title: "실기 기본 작업", position: "실기 1", progress: 0, items: ["예제 파일 열기", "기본 작업 따라하기", "제한 시간 적기", "막힌 기능 메모"], memo: "파일명만 남기고 원본 파일은 저장하지 않습니다." },
+            { title: "실기 계산 작업", position: "실기 2", progress: 0, items: ["함수 문제 열기", "풀이 시간 재기", "틀린 함수 표시", "비슷한 문제 다시 풀기"], memo: "점수 예측보다 다시 풀 항목을 남깁니다." }
+          ]
+        }
+      ];
+
+      const state = { map: "math", surface: "creator", selected: 1, checks: {}, memo: "" };
+      const $ = (selector) => document.querySelector(selector);
+      const activeMap = () => maps.find((map) => map.id === state.map) || maps[0];
+
+      function renderTabs() {
+        $("#mapTabs").innerHTML = maps.map((map) => `
+          <button type="button" class="${state.map === map.id ? "active" : ""}" data-map="${map.id}">${map.tab}</button>
+        `).join("");
+        document.querySelectorAll("[data-map]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.map = button.dataset.map;
+            state.selected = 0;
+            render();
+          });
+        });
+        document.querySelectorAll("[data-surface]").forEach((button) => {
+          button.classList.toggle("active", button.dataset.surface === state.surface);
+          button.addEventListener("click", () => {
+            state.surface = button.dataset.surface;
+            render();
+          }, { once: true });
+        });
+      }
+
+      function renderCreator(map) {
+        return `
+          <div class="layout" data-zone="creator">
+            <aside class="panel">
+              <p class="section-label">원문 구조</p>
+              <h2>${map.name}</h2>
+              <p class="desc">${map.source}</p>
+              <div class="list">
+                ${map.units.map((unit, index) => `
+                  <button type="button" class="unit ${index === state.selected ? "active" : ""}" data-select="${index}">
+                    <strong>${unit.position} · ${unit.title}</strong>
+                    <span class="small">${unit.items.length}개 반복 항목</span>
+                    <div class="progress"><div class="bar" style="--value:${unit.progress}%"></div></div>
+                  </button>
+                `).join("")}
+              </div>
+            </aside>
+            <section class="card">
+              <p class="section-label">반복 패턴</p>
+              <h2>${map.unitName}마다 같은 실행 순서</h2>
+              <p class="desc">제작자는 큰 구조를 만들고, 반복 단위에 들어갈 공통 실행 패턴을 정합니다.</p>
+              <div class="rule-grid">
+                ${map.rules.map(([title, value]) => `
+                  <div class="rule"><b>${title}</b><span class="desc">${value}</span></div>
+                `).join("")}
+              </div>
+              <div class="card" style="margin-top:12px;box-shadow:none">
+                <h3>공통 실행 패턴</h3>
+                <div class="list">
+                  ${map.pattern.map((step, index) => `
+                    <div class="row">
+                      <span class="num">${index + 1}</span>
+                      <strong>${step}</strong>
+                      <span class="small">반복</span>
+                    </div>
+                  `).join("")}
+                </div>
+              </div>
+            </section>
+          </div>
+        `;
+      }
+
+      function renderPublic(map) {
+        const unit = map.units[state.selected];
+        return `
+          <div class="layout" data-zone="public">
+            <aside class="panel">
+              <p class="section-label">저장하면 생기는 것</p>
+              <h2>${map.parentArtifact}</h2>
+              <p class="desc">전체를 저장하면 모든 ${map.unitName}이 내 앱에 들어가고, 일부 저장은 선택한 ${map.unitName}만 실행 항목으로 들어갑니다.</p>
+              <div class="setup">
+                <div>
+                  <label for="mapInput">${map.inputLabel}</label>
+                  <input id="mapInput" type="date" value="${map.inputValue}">
+                </div>
+                <button class="primary" id="saveFull" type="button">${map.fullSave}</button>
+              </div>
+              <button class="secondary" id="savePart" type="button" style="width:100%;margin-top:10px">${map.partSave}</button>
+              <div id="saveToast" class="toast" hidden></div>
+              <div class="source">원문: <a href="${map.sourceUrl}" target="_blank" rel="noreferrer">${map.source}</a></div>
+            </aside>
+            <section>
+              <article class="card">
+                <p class="section-label">저장 전 미리보기</p>
+                <h2>${unit.position} · ${unit.title}</h2>
+                <p class="desc">${unit.memo}</p>
+                <div class="list">
+                  ${map.units.map((item, index) => `
+                    <button type="button" class="row ${index === state.selected ? "active" : ""}" data-select="${index}">
+                      <span class="num">${index + 1}</span>
+                      <strong>${item.title}</strong>
+                      <span class="small">${item.items.length}개</span>
+                    </button>
+                  `).join("")}
+                </div>
+              </article>
+            </section>
+          </div>
+        `;
+      }
+
+      function renderApp(map) {
+        const unit = map.units[state.selected];
+        const key = `${map.id}-${state.selected}`;
+        const done = state.checks[key] || [];
+        const next = map.units[Math.min(state.selected + 1, map.units.length - 1)];
+        return `
+          <div class="layout" data-zone="app">
+            <aside class="panel">
+              <p class="section-label">현재 위치</p>
+              <h2>${map.name}</h2>
+              <p class="desc">전체 구조는 작게 보고, 지금 이어서 할 ${map.unitName}을 엽니다.</p>
+              <div class="list">
+                ${map.units.map((item, index) => `
+                  <button type="button" class="unit ${index === state.selected ? "active" : ""}" data-select="${index}">
+                    <strong>${item.position} · ${item.title}</strong>
+                    <span class="small">${(state.checks[`${map.id}-${index}`] || []).length}/${item.items.length} 완료</span>
+                    <div class="progress"><div class="bar" style="--value:${Math.max(item.progress, ((state.checks[`${map.id}-${index}`] || []).length / item.items.length) * 100)}%"></div></div>
+                  </button>
+                `).join("")}
+              </div>
+            </aside>
+            <section>
+              <article class="card">
+                <p class="section-label">오늘 열 항목</p>
+                <h2>${unit.position} · ${unit.title}</h2>
+                <p class="desc">${unit.memo}</p>
+                <div class="list">
+                  ${unit.items.map((text, index) => `
+                    <label class="check ${done.includes(index) ? "done" : ""}">
+                      <input type="checkbox" data-check="${index}" ${done.includes(index) ? "checked" : ""}>
+                      <span><strong>${text}</strong><br><span class="small">끝나면 체크합니다.</span></span>
+                    </label>
+                  `).join("")}
+                </div>
+              </article>
+              <article class="card" style="margin-top:14px">
+                <h3>다음 항목</h3>
+                <p class="desc">${next.position} · ${next.title}</p>
+                <textarea id="memoBox" placeholder="헷갈린 내용만 짧게 남기기">${state.memo}</textarea>
+                <div class="source">원문: <a href="${map.sourceUrl}" target="_blank" rel="noreferrer">${map.source}</a></div>
+              </article>
+            </section>
+          </div>
+        `;
+      }
+
+      function wire(map) {
+        document.querySelectorAll("[data-select]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.selected = Number(button.dataset.select);
+            render();
+          });
+        });
+        const saveFull = $("#saveFull");
+        if (saveFull) saveFull.addEventListener("click", () => {
+          $("#saveToast").hidden = false;
+          $("#saveToast").textContent = `${map.parentArtifact}가 내 앱에 저장되었습니다.`;
+        });
+        const savePart = $("#savePart");
+        if (savePart) savePart.addEventListener("click", () => {
+          $("#saveToast").hidden = false;
+          $("#saveToast").textContent = `선택한 ${map.unitName}만 내 앱에 저장되었습니다.`;
+        });
+        document.querySelectorAll("[data-check]").forEach((input) => {
+          input.addEventListener("change", () => {
+            const key = `${map.id}-${state.selected}`;
+            const current = new Set(state.checks[key] || []);
+            const index = Number(input.dataset.check);
+            if (input.checked) current.add(index); else current.delete(index);
+            state.checks[key] = Array.from(current).sort();
+            render();
+          });
+        });
+        const memoBox = $("#memoBox");
+        if (memoBox) memoBox.addEventListener("input", () => { state.memo = memoBox.value; });
+      }
+
+      function render() {
+        renderTabs();
+        const map = activeMap();
+        let html = "";
+        if (state.surface === "creator") html = renderCreator(map);
+        if (state.surface === "public") html = renderPublic(map);
+        if (state.surface === "app") html = renderApp(map);
+        $("#screen").innerHTML = html;
+        wire(map);
+      }
+
+      render();
+    </script>
+  </body>
+</html>

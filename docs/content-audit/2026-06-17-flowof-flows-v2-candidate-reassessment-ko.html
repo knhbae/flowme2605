@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flow of Flow v2 후보 재심사</title>
+    <style>
+      :root {
+        --bg: #f7f8fb;
+        --panel: #ffffff;
+        --ink: #151922;
+        --muted: #5d6678;
+        --line: #dfe4ec;
+        --blue: #2457d6;
+        --green: #16764f;
+        --amber: #946200;
+        --red: #b42318;
+        --soft-blue: #eef4ff;
+        --soft-green: #ecfdf3;
+        --soft-amber: #fff7e6;
+        --soft-red: #fff0ee;
+        --radius: 14px;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        line-height: 1.55;
+      }
+      a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+      .wrap { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 56px; }
+      .hero, .card, .note { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 10px 30px rgba(20, 30, 55, .06); }
+      .hero { padding: 28px; }
+      .eyebrow { margin: 0 0 8px; color: var(--blue); font-weight: 800; }
+      h1 { margin: 0; font-size: clamp(28px, 4vw, 44px); line-height: 1.14; letter-spacing: 0; }
+      h2 { margin: 0 0 14px; font-size: 22px; }
+      h3 { margin: 0 0 8px; font-size: 17px; }
+      p { margin: 0; }
+      .desc { color: var(--muted); }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+      .chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line); font-size: 13px; font-weight: 800; background: #fff; }
+      .chip.green { color: var(--green); background: var(--soft-green); border-color: #bbf7d0; }
+      .chip.blue { color: var(--blue); background: var(--soft-blue); border-color: #bfdbfe; }
+      .chip.amber { color: var(--amber); background: var(--soft-amber); border-color: #fde68a; }
+      .chip.red { color: var(--red); background: var(--soft-red); border-color: #fecaca; }
+      .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+      .card { padding: 18px; margin-top: 18px; }
+      .table-wrap { width: 100%; overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+      table { width: 100%; min-width: 1080px; border-collapse: collapse; background: #fff; }
+      th, td { padding: 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+      th { background: #f2f5fa; font-size: 13px; color: #2d3748; }
+      tr:last-child td { border-bottom: 0; }
+      .source-title { font-weight: 800; }
+      .small { display: block; margin-top: 3px; color: var(--muted); font-size: 13px; }
+      .note { padding: 16px; margin-top: 16px; border-left: 5px solid var(--blue); }
+      .score { font-weight: 900; }
+      @media (max-width: 760px) {
+        .wrap { width: min(100% - 20px, 1180px); padding-top: 16px; }
+        .hero { padding: 20px; }
+        .grid { grid-template-columns: 1fr; }
+        table { min-width: 980px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="hero">
+        <p class="eyebrow">Flow of Flow v2 · 후보 재심사</p>
+        <h1>반복 가능한 하위 실행 구조가 있는 원문만 강한 후보로 남겼다</h1>
+        <p class="desc" style="margin-top:12px">
+          v1은 재생목록이나 식단표처럼 Flow로는 가능한 콘텐츠를 너무 쉽게 큰 구조로 올렸다. v2에서는
+          단일 Flow, Flow map, 진짜 Flow of Flow를 분리했다. 이 문서는 실제 사용자 행동 증거가 아니라 구조 판단 리포트다.
+        </p>
+        <div class="chips">
+          <span class="chip green">Strong Flow of Flow 4</span>
+          <span class="chip blue">Flow map only 5</span>
+          <span class="chip amber">Single Flow only 3</span>
+          <span class="chip red">Reference/Park 0</span>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="card">
+          <h3>단일 Flow</h3>
+          <p class="desc">하나의 일정, 체크리스트, 표로 충분한 콘텐츠. 큰 지도 UI를 붙이면 복잡도가 늘어난다.</p>
+        </div>
+        <div class="card">
+          <h3>Flow map / collection</h3>
+          <p class="desc">큰 주제 아래 여러 Flow가 모이지만 하위 항목의 성격이 서로 다르다. 로드맵으로는 좋지만 반복 패턴은 약하다.</p>
+        </div>
+        <div class="card">
+          <h3>진짜 Flow of Flow</h3>
+          <p class="desc">상위 구조가 단원, 과목, 월령 같은 반복 단위를 만들고, 각 단위가 같은 실행 패턴을 가진다.</p>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>후보 12개 재판정</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>후보</th>
+                <th>원문 구조</th>
+                <th>판정</th>
+                <th>이유</th>
+                <th>PoC 사용</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="source-title"><a href="https://mathbang.net/13">수학방 · 중학교 1학년 수학 전체 목차</a></span><span class="small">8개 큰 단원과 단원별 개념 링크가 있다.</span></td>
+                <td>학년 전체 → 단원 → 개념 링크</td>
+                <td><span class="chip green">Strong Flow of Flow</span></td>
+                <td>단원마다 같은 공부 운영 패턴을 반복할 수 있고, 전체 저장/단원 저장이 모두 자연스럽다.</td>
+                <td class="score">메인 사용자 PoC</td>
+              </tr>
+              <tr>
+                <td><span class="source-title"><a href="https://kisstudy.tistory.com/153">키스터디 · 중1 수학 교과서 차례</a></span><span class="small">단원, 소단원, 학기별 시험범위가 정리되어 있다.</span></td>
+                <td>학년 → 단원 → 소단원 → 시험범위</td>
+                <td><span class="chip green">Strong Flow of Flow</span></td>
+                <td>하위 단원마다 진도표, 문제풀이, 복습일을 같은 방식으로 붙이기 좋다.</td>
+                <td>수학 모델 보조 근거</td>
+              </tr>
+              <tr>
+                <td><span class="source-title"><a href="https://mid.ebs.co.kr/course/view?courseId=100005139">EBS 중학 뉴런 수학1(상)</a></span><span class="small">개념을 미리 읽고 문제를 미리 풀라는 수강 팁이 있다.</span></td>
+                <td>강좌 → 강의 → 개념/문제 풀이</td>
+                <td><span class="chip blue">Flow map only</span></td>
+                <td>학습 방식 cue는 좋지만 브라우저에서 큰 단원 계층이 충분히 드러나지 않아 단독 대표로는 약하다.</td>
+                <td>수학 실행 패턴 참고</td>
+              </tr>
+              <tr>
+                <td><span class="source-title"><a href="https://www.yes24.com/product/goods/159574278">2026 시나공 정보처리기사 필기 기본서 목차</a></span><span class="small">5과목, 장, 기출문제집 구성이 보인다.</span></td>
+                <td>자격증 필기 → 과목 → 장 → 기출</td>
+                <td><span class="chip green">Strong Flow of Flow</span></td>
+                <td>과목마다 같은 진도/문제/오답 패턴을 반복할 수 있다. 전체 취득 로드맵이 아니라 과목별 공부판으로 좁혀야 한다.</td>
+                <td>서브 사용자 PoC</td>
+              </tr>
+              <tr>
+                <td><span class="source-title"><a href="https://www.gilbut.co.kr/book/view?bookcode=BN004616">길벗 · 2026 시나공 정보처리기사 필기 기본서</a></span><span class="small">이론+문제+요약, 우선순위 학습, 기출 부록을 설명한다.</span></td>
+                <td>교재 → 섹션/장 → 이론+문제+요약</td>
+                <td><span class="chip green">Strong Flow of Flow</span></td>
+                <td>하위 과목별 공부 Flow의 공통 패턴을 설명해 주는 좋은 근거다.</td>
+                <td>자격증 모델 보조 근거</td>
+              </tr>
+              <tr>
+                <td><span class="source-title"><a href="https://www.q-net.or.kr/crf005.do?id=crf00503&amp;jmCd=1320">Q-net · 정보처리기사 종목 상세</a></span><span class="small">공식 자격 정보와 출제기준 자료실 연결이 있다.</span></td>
+                <td>공식 자격 → 시험/출제기준</td>
+                <td><span class="chip blue">Flow map only</span></td>
+                <td>공식 기준으로는 필요하지만 공부 운영 패턴 자체를 만들지는 않는다.</td>
+                <td>공식 정보 영역</td>
+              </tr>
+              <tr>
+                <td><span class="source-title"><a href="https://wikidocs.net/blog/%40rudah96/12622/">정처기 필기 공부 계획 글</a></span><span class="small">5과목 구성과 기간별 공부 계획이 있다.</span></td>
+                <td>시험 구성 → 과목 난이도 → 기간 계획</td>
+                <td><span class="chip blue">Flow map only</span></td>
+                <td>과목별 우선순위 판단에는 좋지만 원문 전체가 반복 하위 Flow 구조는 아니다.</td>
+                <td>비교군</td>
+              </tr>
+              <tr>
+                <td><span class="source-title"><a href="https://community.mmtalk.kr/community/article/180570">마미톡 · 생후 0~12개월 월령별 아기 케어법</a></span><span class="small">월령별 주요 포인트, 건강 포인트, 돌보기 항목이 반복된다.</span></td>
+                <td>0~12개월 → 월령 → 주요/건강/돌보기</td>
+                <td><span class="chip blue">Flow map only</span></td>
+                <td>반복 구조는 좋지만 의료/육아 조언 경계가 무겁다. 공식 정보와 분리된 보수적 후보로 둔다.</td>
+                <td>후보 PoC</td>
+              </tr>
+              <tr>
+                <td><span class="source-title"><a href="https://www.childcare.go.kr/?menuno=439">아이사랑 · 4~6개월 건강과 일상</a></span><span class="small">검진, 접종, 이유식, 외출 등 월령별 공식 항목이 있다.</span></td>
+                <td>월령대 → 건강/수유/놀이/안전</td>
+                <td><span class="chip amber">Single Flow only</span></td>
+                <td>공식 근거는 좋지만 한 페이지는 4~6개월 하위 Flow 하나에 가깝다.</td>
+                <td>육아 공식 상세 링크</td>
+              </tr>
+              <tr>
+                <td><span class="source-title"><a href="https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&amp;menuLv=1">질병관리청 · 표준 예방접종 일정표</a></span><span class="small">표준 접종 일정과 지연 시 상담 안내가 있다.</span></td>
+                <td>공식 일정표 → 백신/연령</td>
+                <td><span class="chip blue">Flow map only</span></td>
+                <td>백신별/월령별 하위 Flow로 볼 여지는 있지만 공식 일정표 자체는 Flow of Flow라기보다 일정 기준표다.</td>
+                <td>육아 공식 일정 레이어</td>
+              </tr>
+              <tr>
+                <td><span class="source-title"><a href="https://miso.kr/blog/%EC%9D%B4%EC%82%AC%EC%A4%80%EB%B9%84-%EC%B2%B4%ED%81%AC-%EB%A6%AC%EC%8A%A4%ED%8A%B8">미소 · 이사 준비 체크리스트</a></span><span class="small">D-25, D-20, D-10 등 타임라인이 있다.</span></td>
+                <td>이사일 → D-day 체크리스트</td>
+                <td><span class="chip amber">Single Flow only</span></td>
+                <td>하나의 timeline Flow로 충분하다. 반복 하위 Flow 대표로 쓰면 과해진다.</td>
+                <td>비교군</td>
+              </tr>
+              <tr>
+                <td><span class="source-title"><a href="https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&amp;cciNo=1&amp;cnpClsNo=1&amp;csmSeq=666&amp;popMenu=ov">찾기쉬운 생활법령정보 · 이사 체크리스트</a></span><span class="small">이사 전/당일/후 공식 체크 항목이 있다.</span></td>
+                <td>시간대별 체크리스트</td>
+                <td><span class="chip amber">Single Flow only</span></td>
+                <td>공식성은 좋지만 Flow of Flow보다는 단일 이사 timeline의 source cue다.</td>
+                <td>비교군</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="note">
+        <h2>v2 결론</h2>
+        <p>
+          대표 PoC는 중등 수학과 자격증 과목별 공부 운영판으로 좁힌다. 육아는 가능성이 있지만 민감 정보 분리가 핵심이므로
+          후보 화면에서만 다루고, 이사는 이번에는 단일 Flow 비교군으로 둔다.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

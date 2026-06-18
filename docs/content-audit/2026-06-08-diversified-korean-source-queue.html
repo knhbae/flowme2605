@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 다양화 한국어 원문 후보 큐</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #111827;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --blue: #2563eb;
+      --green: #047857;
+      --amber: #b45309;
+      --red: #b91c1c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 64px;
+    }
+    header {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: clamp(28px, 5vw, 44px); line-height: 1.12; letter-spacing: 0; }
+    h2 { margin-top: 28px; font-size: 22px; }
+    h3 { font-size: 18px; }
+    .lead { max-width: 760px; color: #334155; font-size: 16px; }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #334155;
+    }
+    .rule-grid,
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .rule,
+    .score,
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--card);
+      padding: 16px;
+    }
+    .rule strong,
+    .score strong { display: block; margin-bottom: 6px; }
+    .score b { color: var(--blue); }
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 24px 0 12px;
+      padding: 12px 0;
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(8px);
+    }
+    .toolbar a {
+      text-decoration: none;
+      color: #1e293b;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      display: grid;
+      gap: 12px;
+      min-height: 100%;
+    }
+    .card-top {
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .rank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      height: 28px;
+      border-radius: 7px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .status-p0 { color: var(--green); }
+    .status-p1 { color: var(--blue); }
+    .status-p2 { color: var(--amber); }
+    .status-backup { color: var(--muted); }
+    .label {
+      font-weight: 800;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    .source {
+      color: var(--muted);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+    .source a { color: #2563eb; }
+    .flow {
+      border-radius: 8px;
+      background: #f8fafc;
+      padding: 12px;
+      font-size: 14px;
+    }
+    .flow ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+    .footer-note {
+      margin-top: 24px;
+      border-left: 4px solid var(--blue);
+      background: #eff6ff;
+      padding: 14px 16px;
+      color: #1e3a8a;
+      border-radius: 8px;
+    }
+    @media (max-width: 520px) {
+      main { width: min(100% - 20px, 1180px); padding-top: 20px; }
+      .cards { grid-template-columns: 1fr; }
+      .card { padding: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="meta">
+        <span class="pill">2026-06-08</span>
+        <span class="pill">한국어 원문 우선</span>
+        <span class="pill">source-to-Flow QA</span>
+      </div>
+      <h1>다음 Flow 후보는 같은 예시를 반복하지 않는다</h1>
+      <p class="lead">이번 큐는 가전/결혼/중고차 중심의 반복을 줄이고, 알뜰폰 개통, 혼자 여행 준비, 영유아 검진, 텃밭, 홈베이킹, 공부 계획 같은 다른 사용자 순간을 FlowMe의 가벼운 캘린더/체크리스트/시트/메모 모델로 담을 수 있는지 보기 위한 후보 목록이다.</p>
+    </header>
+
+    <section>
+      <h2>배치 쿼터</h2>
+      <div class="rule-grid">
+        <div class="rule"><strong>creator/user-interaction 4개 이상</strong><p>Naver Blog, YouTube, cafe, 파일/댓글/후속 글이 있는 원문.</p></div>
+        <div class="rule"><strong>official/admin 4개 이상</strong><p>예약, 신고, 재발급, 갱신, 검진, 검사처럼 마감과 준비물이 있는 원문.</p></div>
+        <div class="rule"><strong>hobby/family 4개 이상</strong><p>아이 놀이, 레시피, 텃밭, 반려동물, 독서, 공예, 사진, 글쓰기.</p></div>
+        <div class="rule"><strong>learning/progress 4개 이상</strong><p>시험, 과목, 회차, 기출, 챌린지, 커리큘럼, 책 목록.</p></div>
+        <div class="rule"><strong>maintenance/care 4개 이하로 제한</strong><p>가전/차량/주거 관리는 좋지만 한 배치에서 과대표집하지 않는다.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>평가 가중치</h2>
+      <div class="score-grid">
+        <div class="score"><strong>원문 실행 단위 <b>25%</b></strong><p>날짜, 반복, 단계, 체크, 표, 제출/예약/결정이 보이는가.</p></div>
+        <div class="score"><strong>source/creator interaction <b>25%</b></strong><p>댓글, 조회, 구독자, 자료, 후속 글, 경험성이 보이는가.</p></div>
+        <div class="score"><strong>사용자 욕구/빈도 <b>20%</b></strong><p>실제로 따라 하고 싶거나 자주 찾는 과제인가.</p></div>
+        <div class="score"><strong>FlowMe 이식성 <b>15%</b></strong><p>calendar/sheet/memo/checklist 중 하나로 자연스럽게 가는가.</p></div>
+        <div class="score"><strong>입력 단순성 <b>10%</b></strong><p>시작일, 대상, 반복 주기 정도로 충분한가.</p></div>
+        <div class="score"><strong>차별 학습 <b>5%</b></strong><p>기존 대표 후보와 다른 UX 질문을 만드는가.</p></div>
+      </div>
+    </section>
+
+    <nav class="toolbar" aria-label="후보 필터 바로가기">
+      <a class="pill" href="#p0">P0</a>
+      <a class="pill" href="#p1">P1</a>
+      <a class="pill" href="#p2">P2</a>
+      <a class="pill" href="./2026-06-08-diversified-korean-source-queue.md">상세 MD</a>
+    </nav>
+
+    <section id="p0">
+      <h2>P0 후보</h2>
+      <div class="cards">
+        <article class="card">
+          <div class="card-top"><h3>알뜰폰 SK7 셀프개통</h3><span class="rank status-p0">4.6</span></div>
+          <p class="source">원문: <a href="https://blog.naver.com/PostView.nhn?blogId=saljjak-&amp;logNo=223661947600">Naver Blog 셀프개통 후기</a></p>
+          <p>10분 안에 유심 준비, 가능 시간, 번호이동 동의, 유심 교체까지 처리하는 통신 개통 Flow.</p>
+          <div class="flow"><span class="label">Flow 초안</span><ul><li>개통 가능 시간 확인</li><li>유심 번호/본인인증 준비</li><li>번호이동 사전동의</li><li>유심 교체 후 재부팅</li></ul></div>
+        </article>
+        <article class="card">
+          <div class="card-top"><h3>치앙마이 혼자 여행 준비물</h3><span class="rank status-p0">4.5</span></div>
+          <p class="source">원문: <a href="https://blog.naver.com/PostView.nhn?blogId=mat_zip_diary&amp;logNo=223137520451">Naver Blog 여행 준비물 체크리스트</a></p>
+          <p>장기/혼자 여행자가 통신, 결제, 보험, 비상 준비물을 출국 전 체크하는 Flow.</p>
+          <div class="flow"><span class="label">Flow 초안</span><ul><li>유심/eSIM 구매와 설치 메모</li><li>GLN/현금/카드 확인</li><li>보험/비상연락 준비</li><li>샤워기 필터/상비약 체크</li></ul></div>
+        </article>
+        <article class="card">
+          <div class="card-top"><h3>컴활 2급 필기 3일 공부</h3><span class="rank status-p0">4.5</span></div>
+          <p class="source">원문: <a href="https://blog.naver.com/PostView.naver?blogId=bunnudy&amp;logNo=222440821485">Naver Blog 3일 공부 계획</a></p>
+          <p>시험일 기준 D-3부터 과목/회차별 기출을 배치하는 공부 캘린더 Flow.</p>
+          <div class="flow"><span class="label">Flow 초안</span><ul><li>D-3 1과목 기출</li><li>D-2 2과목 기출</li><li>D-1 월단위 재풀이</li><li>요약 PDF/강의 링크 메모</li></ul></div>
+        </article>
+        <article class="card">
+          <div class="card-top"><h3>영유아 건강검진 예약/문진표</h3><span class="rank status-p0">4.4</span></div>
+          <p class="source">원문: <a href="https://www.nhis.or.kr/magazin/mobile/201604/c09.html">국민건강보험 건강iN</a></p>
+          <p>검진 예약, 문진표/발달선별, 등록번호, 방문 준비를 캘린더로 챙기는 Flow.</p>
+          <div class="flow"><span class="label">Flow 초안</span><ul><li>검진 예정일 입력</li><li>D-14 기관 예약</li><li>D-7 문진표 작성</li><li>D-1 등록번호/방문 준비</li></ul></div>
+        </article>
+        <article class="card">
+          <div class="card-top"><h3>주택 임대차계약 신고/확정일자</h3><span class="rank status-p0">4.3</span></div>
+          <p class="source">원문: <a href="https://blog.naver.com/PostView.naver?blogId=havelaw&amp;logNo=222863332365">Naver Blog 임대차 신고 안내</a></p>
+          <p>계약일 기준 30일 신고 마감과 확정일자/계약서 준비를 관리하는 행정 Flow.</p>
+          <div class="flow"><span class="label">Flow 초안</span><ul><li>계약일 입력</li><li>D+7 신고 준비</li><li>D+30 신고 마감</li><li>계약서/보증금 조건 메모</li></ul></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="p1">
+      <h2>P1 후보</h2>
+      <div class="cards">
+        <article class="card"><div class="card-top"><h3>주말농장 6월 작물 선택</h3><span class="rank status-p1">4.2</span></div><p class="source"><a href="https://blog.naver.com/PostView.nhn?blogId=aldus_06&amp;logNo=222737304553">Naver Blog 텃밭 작물</a></p><p>작물, 파종/정식, 간격, 수확월을 시트와 캘린더로 옮긴다.</p><div class="flow">작물표 + 주말 심기 일정 + 수확월 메모.</div></article>
+        <article class="card"><div class="card-top"><h3>오레오 케이크 1분 레시피</h3><span class="rank status-p1">4.2</span></div><p class="source"><a href="https://www.recipio.kr/recipes/0J3Z2neM">Recipi'O + YouTube 원본</a></p><p>짧은 영상 레시피를 당일 체크와 원본 링크로 제한한다.</p><div class="flow">오레오 부수기, 요거트 층, 냉장 숙성, 원본 영상 링크.</div></article>
+        <article class="card"><div class="card-top"><h3>초코칩 모카빵 180분</h3><span class="rank status-p1">4.1</span></div><p class="source"><a href="https://www.recipio.kr/recipes/lBgYydJZ">Recipi'O + YouTube 원본</a></p><p>긴 홈베이킹 영상을 재료/대기시간/굽기 타임라인으로 만든다.</p><div class="flow">계량, 반죽, 폴딩, 발효, 굽기 타이머.</div></article>
+        <article class="card"><div class="card-top"><h3>주민등록증 재발급</h3><span class="rank status-p1">4.0</span></div><p class="source"><a href="https://blog.naver.com/PostView.nhn?blogId=eejee_&amp;logNo=223139341353">Naver Blog 재발급 안내</a></p><p>사진, 수수료, 신청 사유, 수령 방식을 행정 메모로 정리한다.</p><div class="flow">신청 사유, 사진 파일, 수수료, 수령기관 체크.</div></article>
+        <article class="card"><div class="card-top"><h3>운전면허 적성검사/갱신</h3><span class="rank status-p1">4.0</span></div><p class="source"><a href="https://www.safedriving.or.kr/guide/larGuide011.do?menuCode=MN-PO">안전운전 통합민원</a></p><p>갱신기간 확인, 사진/신체검사 여부, 온라인/방문 일정을 캘린더화한다.</p><div class="flow">갱신기간 확인, 사진 준비, 신청, 수령.</div></article>
+        <article class="card"><div class="card-top"><h3>바닐라 익스트랙 만들기</h3><span class="rank status-p1">3.9</span></div><p class="source"><a href="https://blog.naver.com/PostView.naver?blogId=nini-&amp;categoryNo=32&amp;logNo=222236330770&amp;parentCategoryNo=0">Naver Blog 바닐라 익스트랙</a></p><p>8주, 6개월, 1년처럼 긴 숙성 리마인더를 테스트하기 좋다.</p><div class="flow">담금일, 8주 확인, 6개월 개봉 후보, 차광 메모.</div></article>
+      </div>
+    </section>
+
+    <section id="p2">
+      <h2>P2 / backup 후보</h2>
+      <div class="cards">
+        <article class="card"><div class="card-top"><h3>레스토랑 예약 티켓팅</h3><span class="rank status-p2">3.7</span></div><p class="source"><a href="https://blog.naver.com/PostView.nhn?blogId=bella__gyuri&amp;logNo=223727616507">Naver Blog 예약 후기</a></p><p>예약 오픈일/빈자리 알림 Flow 가능성은 있으나 범용성 재검토 필요.</p></article>
+        <article class="card"><div class="card-top"><h3>대학 MT 준비물/일정표</h3><span class="rank status-p2">3.6</span></div><p class="source"><a href="https://blog.naver.com/PostView.naver?blogId=potentdia13001&amp;logNo=223516597153">Naver Blog MT 체크리스트</a></p><p>개인/공동 준비물은 맞지만 AI-like 여부와 원문 품질 재확인 필요.</p></article>
+        <article class="card"><div class="card-top"><h3>자동차 매도용 인감증명서</h3><span class="rank status-p2">3.6</span></div><p class="source"><a href="https://blog.naver.com/PostView.nhn?blogId=yymkkc&amp;logNo=223193412935">Naver Blog 서류 안내</a></p><p>행정 체크로 좋지만 공식 보강 전 public 승격 보류.</p></article>
+        <article class="card"><div class="card-top"><h3>일본 eSIM 설정</h3><span class="rank status-backup">backup</span></div><p class="source"><a href="https://blog.naver.com/PostView.naver?blogId=4223611&amp;logNo=223359962508">Naver Blog 삿포로 eSIM</a></p><p>좋지만 이미 public route가 있어 새 배치에서는 backup으로만 사용.</p></article>
+        <article class="card"><div class="card-top"><h3>삼성 홈멀티 에어컨 청소</h3><span class="rank status-backup">backup</span></div><p class="source"><a href="https://www.samsungsvc.co.kr/solution/39637">Samsung Service</a></p><p>가전 관리 후보로 좋지만 기존 가전 클러스터가 많아 우선순위 제한.</p></article>
+      </div>
+    </section>
+
+    <p class="footer-note">다음 구현 후보는 P0 5개 중에서 고른다. public `/f/[slug]` 승격은 원문을 다시 열어 source-to-artifact trace를 만든 뒤, 사용자가 화면에서 판단 가능한 수준이 되었을 때만 진행한다.</p>
+  </main>
+</body>
+</html>

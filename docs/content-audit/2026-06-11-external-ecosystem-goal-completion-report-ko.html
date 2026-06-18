@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 외부 생태계 분석방 목표 충족 보고서</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f7fa;
+        --paper: #ffffff;
+        --ink: #111827;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d8e1ea;
+        --blue: #1d4ed8;
+        --blue-soft: #eaf2ff;
+        --green: #047857;
+        --green-soft: #e8f7ef;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --violet: #6941c6;
+        --violet-soft: #f2ecff;
+        --radius: 8px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard",
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          "Malgun Gothic",
+          system-ui,
+          sans-serif;
+        line-height: 1.62;
+        letter-spacing: 0;
+      }
+
+      a {
+        color: var(--blue);
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.25;
+        word-break: keep-all;
+      }
+
+      p,
+      li,
+      td,
+      th {
+        color: var(--body);
+      }
+
+      code {
+        border: 1px solid #dbe4ef;
+        border-radius: 5px;
+        background: #f8fafc;
+        padding: 1px 5px;
+        color: #1f2937;
+        font-size: 0.94em;
+      }
+
+      .page {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 22px 0 72px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        align-items: center;
+        min-height: 52px;
+        margin-bottom: 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        padding: 10px 14px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .brand {
+        color: var(--ink);
+        font-weight: 900;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 280px;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .hero,
+      .panel,
+      .nav {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+      }
+
+      .hero {
+        padding: 28px;
+        margin-bottom: 16px;
+      }
+
+      .eyebrow {
+        margin-bottom: 9px;
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      h1 {
+        max-width: 860px;
+        font-size: clamp(30px, 5vw, 52px);
+      }
+
+      .lead {
+        max-width: 860px;
+        margin-top: 13px;
+        color: var(--body);
+        font-size: 17px;
+      }
+
+      .summary {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .metric {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 14px;
+        background: var(--blue-soft);
+      }
+
+      .metric:nth-child(2) {
+        background: var(--green-soft);
+      }
+
+      .metric:nth-child(3) {
+        background: var(--amber-soft);
+      }
+
+      .metric:nth-child(4) {
+        background: var(--red-soft);
+      }
+
+      .metric strong {
+        display: block;
+        color: var(--muted);
+        font-size: 11px;
+        text-transform: uppercase;
+      }
+
+      .metric span {
+        display: block;
+        margin-top: 7px;
+        color: var(--ink);
+        font-size: 19px;
+        font-weight: 900;
+      }
+
+      .panel {
+        margin-bottom: 16px;
+        padding: 22px;
+      }
+
+      .section-lead {
+        margin-top: 8px;
+        color: var(--muted);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 15px;
+        background: #fbfcfe;
+      }
+
+      .card strong {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--ink);
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 4px 9px;
+        background: var(--green-soft);
+        color: var(--green);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .status.partial {
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .status.blocked {
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        margin-top: 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+      }
+
+      table {
+        width: 100%;
+        min-width: 780px;
+        border-collapse: collapse;
+        background: #ffffff;
+      }
+
+      th,
+      td {
+        padding: 12px 13px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: #f1f5f9;
+        color: var(--ink);
+        font-size: 13px;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .timeline {
+        display: grid;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .step {
+        display: grid;
+        grid-template-columns: 34px minmax(0, 1fr);
+        gap: 12px;
+        align-items: start;
+      }
+
+      .num {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--violet-soft);
+        color: var(--violet);
+        font-weight: 900;
+      }
+
+      .step-body {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 13px;
+        background: #ffffff;
+      }
+
+      .links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .links a {
+        border: 1px solid #bfdbfe;
+        border-radius: 6px;
+        padding: 8px 10px;
+        background: #ffffff;
+      }
+
+      .nav {
+        position: sticky;
+        top: 18px;
+        padding: 16px;
+      }
+
+      .nav h2 {
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      .nav a {
+        display: block;
+        border-top: 1px solid var(--line);
+        padding: 9px 0;
+        color: var(--body);
+        font-weight: 800;
+      }
+
+      .note {
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 880px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .nav {
+          position: static;
+        }
+
+        .summary,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .page {
+          width: min(100% - 24px, 1180px);
+          padding-top: 14px;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero,
+        .panel {
+          padding: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe 분석방</span> / 목표 충족 보고서</div>
+        <div>작성일 2026-06-11 · 상태: 실행 준비 완료, 외부 발송 대기</div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <section class="hero" id="top">
+            <p class="eyebrow">원래 목표 대비 현재 결과</p>
+            <h1>분석방은 읽을 수 있는 한글 HTML 체계로 정리되었고, 다음 단계는 실제 외부 초대 발송입니다.</h1>
+            <p class="lead">
+              이 보고서는 FlowMe과 연결되는 앱, 서비스, 플랫폼, 경쟁서비스 분석방을 만들고,
+              연결 내부 문서를 한글 HTML로 읽기 좋게 정리한 뒤, 현재 phase에 맞는 실행 준비가 어디까지 끝났는지 확인합니다.
+            </p>
+            <div class="summary">
+              <div class="metric"><strong>goal coverage</strong><span>대부분 충족</span></div>
+              <div class="metric"><strong>docs/html</strong><span>읽기 경로 완료</span></div>
+              <div class="metric"><strong>active phase</strong><span>Stage 0</span></div>
+              <div class="metric"><strong>blocked by</strong><span>외부 초대</span></div>
+            </div>
+          </section>
+
+          <section class="panel" id="original-goal">
+            <h2>1. 원래 목표</h2>
+            <p class="section-lead">
+              이 채팅방의 원래 목표는 FlowMe과 연결될 수 있는 앱, 서비스, 플랫폼, 경쟁서비스를 분석하는 작업방을 만들고,
+              그 로드맵과 연결 내부 문서를 한글 HTML로 읽기 좋게 시각화하는 것이었습니다.
+            </p>
+            <div class="grid">
+              <div class="card">
+                <strong>분석방 구조</strong>
+                <p>로드맵, phase, 후보 큐, product boundary, evidence gate를 한 곳에서 따라갈 수 있게 구성.</p>
+              </div>
+              <div class="card">
+                <strong>한글 HTML 읽기 경로</strong>
+                <p>Markdown 원문과 별개로, 주요 내부 문서를 브라우저에서 읽기 좋은 한국어 HTML로 연결.</p>
+              </div>
+              <div class="card">
+                <strong>현재 phase 정렬</strong>
+                <p><code>distribution-channel-handoff</code> 축과 <code>school-or-dorm-prep-share-packet</code> 후보에 집중.</p>
+              </div>
+              <div class="card">
+                <strong>실행 전환</strong>
+                <p>문서 추가가 아니라 실제 초대, tracker 갱신, agreed session 관찰로 넘어가도록 게이트 설정.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="coverage">
+            <h2>2. 충족도 체크</h2>
+            <p class="section-lead">
+              현재 산출물 기준으로 보면 문서/HTML/실행 준비는 충족되었고, 외부 사용자 행동 증거만 아직 없습니다.
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>요구사항</th>
+                    <th>현재 증거</th>
+                    <th>판정</th>
+                    <th>남은 일</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>분석방 로드맵과 운영 기준 정리</td>
+                    <td>분석방 인덱스, 로드맵 visual, connected docs hub</td>
+                    <td><span class="status">충족</span></td>
+                    <td>없음</td>
+                  </tr>
+                  <tr>
+                    <td>연결 내부 문서의 한글 HTML화</td>
+                    <td>HTML coverage audit에서 주요 문서 covered 처리</td>
+                    <td><span class="status">충족</span></td>
+                    <td>새 축을 추가할 때만 갱신</td>
+                  </tr>
+                  <tr>
+                    <td>현재 phase 수준에 맞는 실행 후보 선택</td>
+                    <td><code>distribution-channel-handoff</code>, <code>school-or-dorm-prep-share-packet</code></td>
+                    <td><span class="status">충족</span></td>
+                    <td>다른 축 확장 보류</td>
+                  </tr>
+                  <tr>
+                    <td>관찰 전 안전 게이트</td>
+                    <td>version lock, preflight checklist, response coding guide, no-store rule</td>
+                    <td><span class="status">충족</span></td>
+                    <td>실제 session 전 다시 확인</td>
+                  </tr>
+                  <tr>
+                    <td>실제 초대 발송 준비</td>
+                    <td>recruiting copy, scheduling tracker, 발송 카드 HTML</td>
+                    <td><span class="status">충족</span></td>
+                    <td>외부 채널에 실제 발송</td>
+                  </tr>
+                  <tr>
+                    <td>관찰 증거와 evidence board 업데이트</td>
+                    <td>현재 <code>0 / 3</code>, <code>no signal</code></td>
+                    <td><span class="status blocked">미충족</span></td>
+                    <td>3 completed usable sessions와 filled rollup 필요</td>
+                  </tr>
+                  <tr>
+                    <td>public route 또는 integration readiness 판단</td>
+                    <td>금지선 문서화, readiness claim 금지</td>
+                    <td><span class="status partial">보류가 정답</span></td>
+                    <td>실사용 증거 전까지 판단 금지</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="current-state">
+            <h2>3. 현재 상태</h2>
+            <div class="grid">
+              <div class="card">
+                <strong>현재 축</strong>
+                <p><code>distribution-channel-handoff</code></p>
+              </div>
+              <div class="card">
+                <strong>현재 후보</strong>
+                <p><code>school-or-dorm-prep-share-packet</code></p>
+              </div>
+              <div class="card">
+                <strong>패킷 버전</strong>
+                <p><code>school-dorm-share-packet-v2-2026-06-11-readable-preview</code></p>
+              </div>
+              <div class="card">
+                <strong>판단 상태</strong>
+                <p><code>no signal</code>, 실제 수신자 세션 <code>0 / 3</code></p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="finish-only">
+            <h2>4. 마무리되어야 할 것만 남기기</h2>
+            <p class="section-lead">
+              지금부터 추가 문서를 계속 만드는 것은 목표 충족에 큰 도움이 되지 않습니다. 필요한 마무리는 실제 외부 행동과 그에 따른 최소 기록입니다.
+            </p>
+            <div class="timeline">
+              <div class="step">
+                <div class="num">1</div>
+                <div class="step-body">
+                  <strong>초대 문구 발송</strong>
+                  <p><a href="../../output/content-audit/school-dorm-share-packet-send-card-ko.html">발송 카드 HTML</a>에서 초대 문구를 복사해 외부 채널에 보냅니다.</p>
+                </div>
+              </div>
+              <div class="step">
+                <div class="num">2</div>
+                <div class="step-body">
+                  <strong>tracker를 <code>invited</code>로 갱신</strong>
+                  <p>실제로 보낸 role-labeled slot 하나만 <a href="./2026-06-11-school-dorm-share-packet-scheduling-tracker-ko.html#snippets">scheduling tracker</a>에서 바꿉니다.</p>
+                </div>
+              </div>
+              <div class="step">
+                <div class="num">3</div>
+                <div class="step-body">
+                  <strong>답장 확인 후 <code>agreed</code></strong>
+                  <p>참여 의사가 확인되기 전에는 <code>agreed</code>로 올리지 않습니다. 답장 원문, 이름, 핸들, 연락처는 저장하지 않습니다.</p>
+                </div>
+              </div>
+              <div class="step">
+                <div class="num">4</div>
+                <div class="step-body">
+                  <strong>3 completed usable sessions 이후 rollup</strong>
+                  <p>3건이 채워진 뒤에만 session log, rollup, evidence board update runbook 순서로 판단합니다.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="artifacts">
+            <h2>5. 주요 산출물</h2>
+            <div class="links">
+              <a href="./2026-06-09-external-ecosystem-analysis-room-index-ko.html">분석방 인덱스</a>
+              <a href="./2026-06-09-external-ecosystem-roadmap-visual-ko.html">로드맵 visual</a>
+              <a href="./2026-06-09-external-ecosystem-connected-docs-visual-ko.html">연결 문서 hub</a>
+              <a href="./2026-06-11-external-ecosystem-html-coverage-audit-ko.html">HTML coverage audit</a>
+              <a href="./2026-06-11-distribution-channel-handoff-html-hub-ko.html">distribution hub</a>
+              <a href="./2026-06-11-school-dorm-share-packet-recruiting-copy-ko.html">초대 문구</a>
+              <a href="./2026-06-11-school-dorm-share-packet-scheduling-tracker-ko.html">scheduling tracker</a>
+              <a href="../../output/content-audit/school-dorm-share-packet-send-card-ko.html">발송 카드</a>
+            </div>
+          </section>
+
+          <section class="panel" id="verification">
+            <h2>6. 검증 기준</h2>
+            <div class="grid">
+              <div class="card">
+                <strong>문서 링크</strong>
+                <p><code>npm run docs:check</code>로 required files와 local links를 확인합니다.</p>
+              </div>
+              <div class="card">
+                <strong>HTML 렌더</strong>
+                <p>Playwright screenshot으로 발송 카드와 주요 HTML을 확인했습니다.</p>
+              </div>
+              <div class="card">
+                <strong>복사 버튼</strong>
+                <p>초대 문구와 tracker row 복사 동작을 브라우저에서 확인했습니다.</p>
+              </div>
+              <div class="card">
+                <strong>증거 한계</strong>
+                <p>사용자 행동 증거는 아직 없으므로 validation, public route, integration readiness 표현은 금지입니다.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <aside class="nav" aria-label="보고서 목차">
+          <h2>목차</h2>
+          <a href="#top">요약</a>
+          <a href="#original-goal">원래 목표</a>
+          <a href="#coverage">충족도 체크</a>
+          <a href="#current-state">현재 상태</a>
+          <a href="#finish-only">남은 마무리</a>
+          <a href="#artifacts">주요 산출물</a>
+          <a href="#verification">검증 기준</a>
+          <a href="./2026-06-09-external-ecosystem-analysis-room-index.md">Markdown 인덱스</a>
+          <p class="note">
+            이 보고서는 작업 결과 요약입니다. 실제 외부 초대, 참여 동의, 관찰 결과, validation evidence가 아닙니다.
+          </p>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

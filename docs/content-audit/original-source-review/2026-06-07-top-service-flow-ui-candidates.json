@@ -1,0 +1,693 @@
+{
+  "generatedAt": "2026-06-07",
+  "purpose": "합격한 한국어 외부 콘텐츠 후보를 실제 서비스형 Flow UI 후보로 검토하기 위한 산출물. 원문에서 어떤 단서가 저장 설정과 실행 산출물로 옮겨지는지 확인한다.",
+  "criteria": {
+    "inputCeiling": "ICS, 삼성/애플 캘린더, 리마인더 수준의 입력 복잡도",
+    "primaryArtifacts": [
+      "캘린더",
+      "체크리스트",
+      "시트",
+      "메모"
+    ],
+    "detailPolicy": "방법, 준비물, 구매 링크, 주의, 원문 링크는 기본적으로 description/메모/첨부/링크로 보낸다."
+  },
+  "candidates": [
+    {
+      "id": "washer-tub-clean-monthly",
+      "title": "세탁기 통세척 월간 관리",
+      "category": "가전 관리",
+      "fitScore": 4.7,
+      "sourceTitle": "세탁기 통세척 방법 총정리",
+      "sourceUrl": "https://raga-t.com/entry/%EC%84%B8%ED%83%81%EA%B8%B0-%ED%86%B5%EC%84%B8%EC%B2%99-%EB%B0%A9%EB%B2%95-%EC%99%84%EB%B2%BD-%EA%B0%80%EC%9D%B4%EB%93%9C",
+      "sourceType": "creator_blog",
+      "demandSignal": "냄새, 곰팡이, 배수필터처럼 반복 검색되는 생활 문제다.",
+      "sourceSignal": "월 1회 통세척, 고무패킹, 세제통, 배수필터처럼 실행 단위가 분리되고 냄새가 반복되면 2주 간격으로 줄일 수 있다.",
+      "userNeed": "세탁 후 냄새가 나기 전에 월 1회 짧은 관리 루틴으로 세탁기를 유지한다.",
+      "destination": "routine",
+      "structure": "single_routine",
+      "cta": "월간 루틴으로 저장",
+      "inputs": [
+        "첫 청소 날짜",
+        "세탁기 종류",
+        "반복 주기"
+      ],
+      "flowItems": [
+        {
+          "title": "세탁조 통세척 코스 돌리기",
+          "schedule": "매월 1회",
+          "memo": "세탁조 클리너 또는 모델에 맞는 세척제를 준비하고 통세척/표준 고온 코스를 실행한다.",
+          "completion": "통세척 코스를 끝내고 문을 열어 내부 건조 상태로 둠"
+        },
+        {
+          "title": "고무패킹 물기와 찌꺼기 닦기",
+          "schedule": "통세척 직후",
+          "memo": "문 주변 고무패킹 안쪽을 마른 수건으로 닦고 이물질을 확인한다.",
+          "completion": "패킹 안쪽 물기와 찌꺼기 제거"
+        },
+        {
+          "title": "세제통과 배수필터 확인",
+          "schedule": "매월 1회",
+          "memo": "세제통은 분리 세척하고 배수필터는 물받이를 준비한 뒤 이물질을 제거한다.",
+          "completion": "세제통/필터를 제자리에 장착"
+        }
+      ],
+      "memo": "세탁기 모델, 세척 방법, 준비물, 원문 영상/사진 링크, 클리너 구매 링크는 입력 폼이 아니라 상세 메모에 둔다. 사진 증빙은 기본값으로 두지 않는다.",
+      "uxNote": "저장할 때 시작일과 반복 주기만 받는다. 상세에는 3개 체크만 보여주고 원문 링크를 메모 아래에 둔다.",
+      "sourceBoundary": "세제 사용량과 분해 청소는 모델 설명서 우선으로 표시한다.",
+      "selection": {
+        "selectionReason": "생활 가전 문제이고 월 1회 반복, 준비물, 실행 후 관리가 원문에서 바로 보인다.",
+        "reactionEvidence": "티스토리 생활 팁 원문 직접 확인. 2025-06-06 게시, 세탁기 통세척/문 열어 건조/세제통/필터/월 1회 FAQ 구조 확인.",
+        "originalCheck": "직접 확인",
+        "originalCue": "통세척 코스, 과탄산소다 100g, 고무패킹, 세제통, 필터, 세탁 후 문 열어두기, 월 1회/냄새 시 2주.",
+        "artifact": "캘린더",
+        "primaryInput": "첫 청소일, 반복 주기",
+        "scores": {
+          "sourceContext": 4.1,
+          "userDesire": 4.8,
+          "executionClarity": 4.7,
+          "portability": 4.8,
+          "inputSimplicity": 4.8,
+          "reuse": 4.9
+        },
+        "reviewerNote": "방법/준비물/구매 링크는 모두 메모로 보내고, 날짜 안 체크는 3~4개만 둔다."
+      },
+      "weightedScore": 4.58,
+      "decision": "합격",
+      "artifactRows": [
+        [
+          "제목",
+          "세탁조 통세척 코스 돌리기"
+        ],
+        [
+          "일정",
+          "매월 1회"
+        ],
+        [
+          "메모",
+          "세탁조 클리너 또는 모델에 맞는 세척제를 준비하고 통세척/표준 고온 코스를 실행한다."
+        ]
+      ],
+      "route": "/f/washer-tub-clean-monthly",
+      "uiDecision": {
+        "screen": "반복 일정 + 날짜 안 체크리스트",
+        "saveCta": "월간 루틴으로 저장",
+        "firstScreen": "첫 청소일과 반복 주기만 받고, 청소 방법은 메모에 둔다.",
+        "serviceGap": "현재 route 있음. 세탁기 모델/준비물은 추가 입력이 아니라 메모 cue로 유지."
+      }
+    },
+    {
+      "id": "lg-aircon-filter-biweekly",
+      "title": "에어컨 필터 2주 청소",
+      "category": "가전 관리",
+      "fitScore": 4.6,
+      "sourceTitle": "LG전자 스탠드형 에어컨 필터 청소 및 교체",
+      "sourceUrl": "https://www.lge.co.kr/support/solutions-20150160251795?cstFlag=Y&mktModelCd=FQ237SAU&svcqr=",
+      "sourceType": "brand_support",
+      "demandSignal": "LG 지원 문서가 조회수 높은 고객 문제를 직접 다룬다.",
+      "sourceSignal": "세척 2주 1회, 교체 6개월 또는 12개월 기준이 명확하다.",
+      "userNeed": "여름철 에어컨 성능과 냄새 문제를 줄이기 위해 필터 청소와 교체를 놓치지 않는다.",
+      "destination": "routine",
+      "structure": "single_routine",
+      "cta": "2주 루틴으로 저장",
+      "inputs": [
+        "첫 청소 날짜",
+        "에어컨 타입",
+        "교체 필터 보유 여부"
+      ],
+      "flowItems": [
+        {
+          "title": "극세 필터 물세척",
+          "schedule": "2주마다",
+          "memo": "전원 차단 후 필터를 분리해 흐르는 물로 세척하고 그늘에서 완전히 말린다.",
+          "completion": "필터가 마른 뒤 다시 장착"
+        },
+        {
+          "title": "교체 필터 상태 확인",
+          "schedule": "6개월마다",
+          "memo": "초미세/탈취 필터처럼 세척 불가 필터는 모델 기준 교체 주기를 확인한다.",
+          "completion": "교체 필요 여부 결정"
+        },
+        {
+          "title": "송풍 운전으로 내부 말리기",
+          "schedule": "청소 후",
+          "memo": "필터 장착 후 짧게 송풍 운전해 습기를 줄인다.",
+          "completion": "송풍 완료"
+        }
+      ],
+      "memo": "모델별 필터 이름과 교체 필터 구매 링크를 메모에 저장하면 좋다.",
+      "uxNote": "가전 QR에서 들어오면 모델명이 자동으로 채워지는 UX가 가장 자연스럽다.",
+      "sourceBoundary": "브랜드 문서 기준이며 타사 제품은 해당 제조사 설명서 확인이 필요하다.",
+      "selection": {
+        "selectionReason": "브랜드 공식 문서에 조회수와 권장 주기가 있어 가전 관리 대표성이 높다.",
+        "reactionEvidence": "LG전자 공식 지원 문서 직접 확인. 2026-06-04 갱신, 조회 293,927, 극세 필터 세척 2주 1회/교체 6개월 또는 12개월 표 확인.",
+        "originalCheck": "직접 확인",
+        "originalCue": "극세 필터 물세척 2주 1회, 기능성 필터 교체 6개월/12개월, 필터 사용 시간 초기화.",
+        "artifact": "캘린더",
+        "primaryInput": "첫 청소일, 에어컨 모델 또는 타입",
+        "scores": {
+          "sourceContext": 4.8,
+          "userDesire": 4.5,
+          "executionClarity": 4.8,
+          "portability": 4.7,
+          "inputSimplicity": 4.5,
+          "reuse": 4.8
+        },
+        "reviewerNote": "2주 청소와 6개월 교체를 같은 루틴에 넣되 주기 그룹을 분리해야 한다."
+      },
+      "weightedScore": 4.7,
+      "decision": "합격",
+      "artifactRows": [
+        [
+          "제목",
+          "극세 필터 물세척"
+        ],
+        [
+          "일정",
+          "2주마다"
+        ],
+        [
+          "메모",
+          "전원 차단 후 필터를 분리해 흐르는 물로 세척하고 그늘에서 완전히 말린다."
+        ]
+      ],
+      "route": null,
+      "uiDecision": {
+        "screen": "2주 청소 루틴 + 6개월 교체 보조 알림",
+        "saveCta": "필터 청소 일정 저장",
+        "firstScreen": "첫 청소일, 에어컨 타입 정도만 받고 2주/6개월 주기를 분리해서 보여준다.",
+        "serviceGap": "신규 public route 필요. LG 공식 문서 조회수와 주기표가 강한 근거."
+      }
+    },
+    {
+      "id": "water-purifier-filter-cycle",
+      "title": "정수기 필터 교체 주기 관리",
+      "category": "가전 관리",
+      "fitScore": 4.4,
+      "sourceTitle": "정수기 필터 교체 방법과 교체 주기",
+      "sourceUrl": "https://pihamadam.tistory.com/267",
+      "sourceType": "creator_blog",
+      "demandSignal": "DIY 교체, 렌탈 관리, 필터 구매가 연결되는 반복 생활 과제다.",
+      "sourceSignal": "침전, 프리카본, 나노/RO, 후카본처럼 필터별 교체 주기가 나뉘고 후카본은 9~12개월 주기로 따로 본다.",
+      "userNeed": "필터별 마지막 교체일을 저장하고 다음 교체일을 놓치지 않는다.",
+      "destination": "sheet",
+      "structure": "table_plan",
+      "cta": "필터표로 저장",
+      "inputs": [
+        "정수기 모델",
+        "필터 구성",
+        "마지막 교체일"
+      ],
+      "flowItems": [
+        {
+          "title": "세디먼트 필터 교체 확인",
+          "schedule": "3~6개월",
+          "memo": "모래, 녹물 등 큰 입자를 거르는 첫 단계 필터로 모델 기준 주기를 확인한다.",
+          "completion": "교체일 또는 유지 결정 기록"
+        },
+        {
+          "title": "프리카본 필터 확인",
+          "schedule": "6~12개월",
+          "memo": "염소, 화학물질, 냄새 제거 필터의 마지막 교체일과 다음 확인일을 적는다.",
+          "completion": "다음 확인일 저장"
+        },
+        {
+          "title": "RO/나노 필터 확인",
+          "schedule": "12~24개월",
+          "memo": "핵심 필터는 제조사 안내와 렌탈사 기준을 우선한다.",
+          "completion": "교체 예약 또는 구매 링크 저장"
+        },
+        {
+          "title": "후카본 필터 확인",
+          "schedule": "9~12개월",
+          "memo": "정수 마지막 단계의 물맛·냄새 개선 필터를 프리카본과 분리해 기록한다.",
+          "completion": "후카본 다음 확인일 저장"
+        }
+      ],
+      "memo": "필터 구매 링크, 렌탈사 연락처, 모델명을 메모에 둔다.",
+      "uxNote": "캘린더보다 표가 먼저이고, 각 필터 행에서 다음 알림을 만든다.",
+      "sourceBoundary": "정수 성능 판단은 제조사/렌탈사 점검 기준을 우선한다.",
+      "selection": {
+        "selectionReason": "필터별 주기라는 표 구조가 명확해서 시트형 Flow 가능성을 보여준다.",
+        "reactionEvidence": "티스토리 원문 직접 확인. 필터별 교체 주기 표와 렌탈/자가관리 문제 제기가 있다.",
+        "originalCheck": "직접 확인",
+        "originalCue": "침전 3~6개월, 프리카본 6~12개월, 나노/RO 12~24개월, 후카본 9~12개월.",
+        "artifact": "시트",
+        "primaryInput": "정수기 모델, 마지막 교체일",
+        "scores": {
+          "sourceContext": 3.9,
+          "userDesire": 4.5,
+          "executionClarity": 4.8,
+          "portability": 4.8,
+          "inputSimplicity": 4.1,
+          "reuse": 4.7
+        },
+        "reviewerNote": "캘린더보다 필터 행이 먼저다. 각 행에서 다음 알림을 파생시키는 UI가 맞다."
+      },
+      "weightedScore": 4.4,
+      "decision": "합격",
+      "artifactRows": [
+        [
+          "열",
+          "항목 / 주기 / 마지막 실행일 / 다음 실행일 / 메모"
+        ],
+        [
+          "세디먼트 필터 교체 확인",
+          "3~6개월 · 교체일 또는 유지 결정 기록"
+        ],
+        [
+          "프리카본 필터 확인",
+          "6~12개월 · 다음 확인일 저장"
+        ],
+        [
+          "RO/나노 필터 확인",
+          "12~24개월 · 교체 예약 또는 구매 링크 저장"
+        ],
+        [
+          "후카본 필터 확인",
+          "9~12개월 · 후카본 다음 확인일 저장"
+        ]
+      ],
+      "route": "/f/water-purifier-filter-cycle",
+      "uiDecision": {
+        "screen": "필터 주기표",
+        "saveCta": "필터 주기표 작성",
+        "firstScreen": "필터명/주기/마지막 교체일/다음 확인일 표가 먼저 보여야 한다.",
+        "serviceGap": "현재 route 있음. 체크리스트처럼 보이지 않게 sheet-first 문구 유지."
+      }
+    },
+    {
+      "id": "monstera-care-routine",
+      "title": "몬스테라 물주기·분갈이 루틴",
+      "category": "식물 관리",
+      "fitScore": 4.6,
+      "sourceTitle": "스투키/몬스테라 식물 관리 가이드 검색 결과 기반",
+      "sourceUrl": "https://jhbd2.tistory.com/178",
+      "sourceType": "creator_blog",
+      "demandSignal": "초보 식집사가 자주 검색하는 대표 반려식물 관리 주제다.",
+      "sourceSignal": "물주기, 햇빛, 과습 신호, 분갈이 조건이 실행 체크로 분리된다.",
+      "userNeed": "식물 이름을 저장하고 물주기와 잎/흙 관찰을 반복한다.",
+      "destination": "routine",
+      "structure": "rotating_routine",
+      "cta": "식물 루틴으로 저장",
+      "inputs": [
+        "식물명",
+        "화분 위치",
+        "마지막 물준 날"
+      ],
+      "flowItems": [
+        {
+          "title": "겉흙 마름 확인 후 물주기",
+          "schedule": "7~10일마다 확인",
+          "memo": "흙 2~3cm 안쪽 상태와 화분 무게를 확인한 뒤 물을 준다.",
+          "completion": "물주기 또는 보류 결정"
+        },
+        {
+          "title": "잎 색과 새잎 상태 보기",
+          "schedule": "2주마다",
+          "memo": "잎끝 마름, 갈색 반점, 새잎 성장을 확인한다.",
+          "completion": "이상 없음/위치 조정 메모"
+        },
+        {
+          "title": "분갈이 필요 확인",
+          "schedule": "6개월마다",
+          "memo": "뿌리 과밀, 배수, 화분 크기를 확인한다.",
+          "completion": "분갈이 필요 여부 결정"
+        }
+      ],
+      "memo": "사진 기록은 선택 사항이다. 기본은 물주기/보류 체크만 둔다.",
+      "uxNote": "식물명 선택에 따라 주기와 체크 항목이 바뀌는 템플릿 UX가 필요하다.",
+      "sourceBoundary": "실내 환경에 따라 주기는 달라지므로 “확인 알림”으로 표현한다.",
+      "selection": {
+        "selectionReason": "초보 식물 관리에서 물주기/보류/관찰이 모두 발생하는 대표 루틴이다.",
+        "reactionEvidence": "티스토리 원문 직접 확인. 흙 2~3cm, 배수구멍, 계절별 물주기, 증상 체크, 1~2년 분갈이 FAQ 확인.",
+        "originalCheck": "직접 확인",
+        "originalCue": "흙 2~3cm 마름 확인, 여름 5~7일/겨울 2주, 밝은 간접광, 증상 체크, 분갈이 1~2년.",
+        "artifact": "캘린더",
+        "primaryInput": "식물명, 마지막 물준 날",
+        "scores": {
+          "sourceContext": 3.8,
+          "userDesire": 4.6,
+          "executionClarity": 4.6,
+          "portability": 4.5,
+          "inputSimplicity": 4.5,
+          "reuse": 4.8
+        },
+        "reviewerNote": "완료보다 “오늘은 보류”가 정상 결과로 보여야 한다."
+      },
+      "weightedScore": 4.34,
+      "decision": "합격",
+      "artifactRows": [
+        [
+          "제목",
+          "겉흙 마름 확인 후 물주기"
+        ],
+        [
+          "일정",
+          "7~10일마다 확인"
+        ],
+        [
+          "메모",
+          "흙 2~3cm 안쪽 상태와 화분 무게를 확인한 뒤 물을 준다."
+        ]
+      ],
+      "route": "/f/monstera-care-routine",
+      "uiDecision": {
+        "screen": "물주기 확인 일정 + 보류/관찰 결과",
+        "saveCta": "식물 루틴으로 저장",
+        "firstScreen": "마지막 물준 날을 받고, 날짜를 열면 흙/배수/잎 상태 체크가 보인다.",
+        "serviceGap": "현재 route 있음. “오늘은 보류”를 실패가 아니라 정상 결과로 계속 노출."
+      }
+    },
+    {
+      "id": "wedding-12-month-timeline",
+      "title": "결혼 준비 D-300 타임라인",
+      "category": "생활 이벤트",
+      "fitScore": 5,
+      "sourceTitle": "결혼 준비 타임라인 완벽 가이드",
+      "sourceUrl": "https://wedding-expo.kr/posts/post-007",
+      "sourceType": "creator_blog",
+      "demandSignal": "결혼 준비는 검색량과 실행 기간이 길고 체크할 항목이 많다.",
+      "sourceSignal": "원문은 D-300~D-180, D-180~D-90, D-90~D-30, D-30~D-Day로 웨딩홀, 계약, 하객, 청첩장, 식권, BGM, 역할 분담 체크를 나눈다.",
+      "userNeed": "예식일을 넣으면 월별 준비 항목이 캘린더와 체크리스트로 들어온다.",
+      "destination": "hybrid",
+      "structure": "timeline",
+      "cta": "예식일 기준으로 저장",
+      "inputs": [
+        "예식일",
+        "준비 시작일",
+        "웨딩홀 계약 여부"
+      ],
+      "flowItems": [
+        {
+          "title": "예산과 웨딩홀 후보 3곳 정리",
+          "schedule": "D-300~D-180",
+          "memo": "예산, 지역, 보증인원, 주차 조건을 같은 표에서 비교한다.",
+          "completion": "후보 3곳의 예산/보증인원/주차 조건 입력"
+        },
+        {
+          "title": "웨딩홀 계약금·위약금 확인",
+          "schedule": "D-10~9개월",
+          "memo": "계약금, 환불 가능 시점, 위약금, 보증인원 변경 가능 기한을 계약 메모에 남긴다.",
+          "completion": "계약금/위약금/보증인원 변경 기한 기록"
+        },
+        {
+          "title": "스드메와 본식 촬영 범위 확정",
+          "schedule": "D-8~6개월",
+          "memo": "드레스, 메이크업, 스냅, 영상, 원판 포함 여부와 추가 비용을 비교한다.",
+          "completion": "업체별 포함 항목과 추가 비용 체크"
+        },
+        {
+          "title": "하객 명단 1차 정리",
+          "schedule": "D-5~4개월",
+          "memo": "양가 하객 명단, 예상 참석 인원, 연락처 누락 여부를 확인한다.",
+          "completion": "양가 하객 명단과 예상 인원 입력"
+        },
+        {
+          "title": "청첩장 발송과 참석 회신 확인",
+          "schedule": "D-3~2개월",
+          "memo": "모바일/종이 청첩장 발송 상태와 참석 회신을 나눠 체크한다.",
+          "completion": "미발송/미회신 하객만 남김"
+        },
+        {
+          "title": "식권·좌석·BGM 준비",
+          "schedule": "D-1개월",
+          "memo": "식권 수량, 좌석 배치, 입장/퇴장 BGM, 축가 파일 전달 상태를 확인한다.",
+          "completion": "식권 수량과 BGM 전달 상태 확인"
+        },
+        {
+          "title": "본식 역할 분담 공유",
+          "schedule": "D-2주",
+          "memo": "사회자, 축가, 축의금, 차량, 혼주 동선, 업체 담당자 연락처를 공유한다.",
+          "completion": "역할별 담당자와 연락처 공유"
+        },
+        {
+          "title": "당일 비상 준비물 챙기기",
+          "schedule": "D-1주",
+          "memo": "충전기, 간단한 약, 수선 키트, 예비 식권, 계약서 사본을 한 가방에 묶는다.",
+          "completion": "당일 가방과 계약서 사본 준비"
+        }
+      ],
+      "memo": "업체 비교표와 계약 메모는 별도 시트로 뽑히면 좋다.",
+      "uxNote": "D-day 타임라인의 대표 seed 후보. My Flow 캘린더 검증에 가장 좋다.",
+      "sourceBoundary": "업체 추천/가격 보장은 하지 않고 사용자가 직접 비교하도록 둔다.",
+      "selection": {
+        "selectionReason": "장기 준비와 D-day 단계가 분명해서 타임라인 Flow 대표성이 가장 강하다.",
+        "reactionEvidence": "기존 원문 검토에서 기간별 준비 항목과 모바일 타임라인 UI 검토가 진행된 대표 케이스.",
+        "originalCheck": "기존 후보 기반",
+        "originalCue": "D-300~D-180 예식장/예산/하객, D-180~D-90 계약/패키지, D-90~D-30 초대장, D-30~D-Day 역할 분담.",
+        "artifact": "혼합",
+        "primaryInput": "예식일",
+        "scores": {
+          "sourceContext": 4.2,
+          "userDesire": 4.9,
+          "executionClarity": 4.8,
+          "portability": 4.6,
+          "inputSimplicity": 4,
+          "reuse": 3.5
+        },
+        "reviewerNote": "전체 여정을 캘린더에 넣되 모바일에서는 해당 날짜 체크만 보여야 한다."
+      },
+      "weightedScore": 4.46,
+      "decision": "합격",
+      "artifactRows": [
+        [
+          "D-300~D-180",
+          "예산과 웨딩홀 후보 3곳 정리"
+        ],
+        [
+          "D-10~9개월",
+          "웨딩홀 계약금·위약금 확인"
+        ],
+        [
+          "D-8~6개월",
+          "스드메와 본식 촬영 범위 확정"
+        ],
+        [
+          "D-5~4개월",
+          "하객 명단 1차 정리"
+        ]
+      ],
+      "route": "/f/wedding-d180-basic",
+      "uiDecision": {
+        "screen": "D-day 타임라인 캘린더",
+        "saveCta": "예식일 기준 일정 저장",
+        "firstScreen": "예식일만 입력하면 D-300부터 D-day까지 월별 준비 일정이 생긴다.",
+        "serviceGap": "현재 route 있음. 모바일에서는 전체 일정과 선택 날짜 상세를 분리."
+      }
+    },
+    {
+      "id": "used-car-buying-check",
+      "title": "중고차 후보 점검 체크",
+      "category": "차량/구매",
+      "fitScore": 4.7,
+      "sourceTitle": "중고차 구매 체크리스트 2026",
+      "sourceUrl": "https://trendmetriclab.com/guides/used-car-buying-checklist/",
+      "sourceType": "creator_blog",
+      "demandSignal": "구매 전 실수 비용이 크고 체크리스트 전환 가치가 높다.",
+      "sourceSignal": "예산/후보 정리, 방문 전 준비, 현장 확인, 계약 전 확인, 구매/보류/거절 결정이 섹션별 체크리스트로 나뉜다.",
+      "userNeed": "후보 차량을 볼 때 바로 확인할 체크리스트와 구매/보류 결정을 남긴다.",
+      "destination": "checklist",
+      "structure": "checklist",
+      "cta": "차량 점검표로 저장",
+      "inputs": [
+        "차량명",
+        "방문일",
+        "매매상사/딜러"
+      ],
+      "flowItems": [
+        {
+          "title": "예산과 후보 차량 기준 정리",
+          "schedule": "방문 전",
+          "memo": "총예산을 차량가, 이전비, 보험료, 정비비로 나누고 연식·주행거리별 시세를 같이 본다.",
+          "completion": "예산 범위와 후보 차량 기준 입력"
+        },
+        {
+          "title": "성능점검기록부와 보험이력 조회",
+          "schedule": "방문 전/현장",
+          "memo": "사고, 교환, 누유, 수리 금액, 침수/도난 이력을 실차 설명과 대조한다.",
+          "completion": "기록부와 보험이력의 불일치 여부 표시"
+        },
+        {
+          "title": "자동차등록원부 압류·저당 확인",
+          "schedule": "방문 전",
+          "memo": "자동차등록원부에서 압류, 저당, 소유자 정보를 확인하고 계약 전 미해소 항목을 남긴다.",
+          "completion": "압류·저당 없음 또는 보류 사유 기록"
+        },
+        {
+          "title": "낮 시간 방문 준비",
+          "schedule": "방문 전날",
+          "memo": "낮 시간 방문을 잡고 매물 사진, 차량 정보, 손전등, 휴대폰 충전, 체크 메모를 준비한다.",
+          "completion": "방문 시간과 준비물 체크"
+        },
+        {
+          "title": "외관·타이어·침수 흔적 확인",
+          "schedule": "현장",
+          "memo": "외판 단차, 도장 흔적, 시트 레일 녹, 안전벨트 진흙, 트렁크 바닥, 타이어 마모와 제조 연월을 본다.",
+          "completion": "침수/외관/타이어 이상 여부 체크"
+        },
+        {
+          "title": "엔진·변속·제동 상태 확인",
+          "schedule": "시승/현장",
+          "memo": "엔진룸 누유, 냉각수, 벨트, 시동, 변속 충격, 제동감, 핸들 떨림을 체크한다.",
+          "completion": "주행 이상 여부와 추가 점검 필요 표시"
+        },
+        {
+          "title": "정비소 검수와 예상 수리비 확인",
+          "schedule": "계약 전",
+          "memo": "전문가 점검 결과와 예상 수리비를 가격 판단에 반영하고, 불확실하면 보류로 둔다.",
+          "completion": "정비소 검수 결과 또는 보류 사유 기록"
+        },
+        {
+          "title": "계약 조건 확인 후 구매/보류/거절 결정",
+          "schedule": "계약 전/방문 후",
+          "memo": "명의이전 비용, 보험 가입 시점, 계약서의 결함·보증·반품 조건을 확인한 뒤 결정한다.",
+          "completion": "구매/보류/거절 중 하나 선택"
+        }
+      ],
+      "memo": "사용자 사진 증빙을 강제하지 않고 원문 체크 항목과 주의만 메모에 둔다.",
+      "uxNote": "완료보다 구매/보류/거절이 핵심 상태다.",
+      "sourceBoundary": "법적/기술적 판단은 전문 점검과 계약서 확인을 우선한다.",
+      "selection": {
+        "selectionReason": "현장 체크와 구매/보류/거절 결정이 분명해서 일반 todo와 차별점이 보인다.",
+        "reactionEvidence": "기존 원문 검토와 public route 점검에서 날짜 입력/증빙 부담을 줄이는 방향으로 재정리된 대표 케이스.",
+        "originalCheck": "기존 후보 기반",
+        "originalCue": "성능점검기록부, 보험이력, 낮 시간 방문, 외관/타이어/누유/침수, 정비사 확인, 계약 조건.",
+        "artifact": "체크리스트",
+        "primaryInput": "차량명 또는 후보명",
+        "scores": {
+          "sourceContext": 4,
+          "userDesire": 4.7,
+          "executionClarity": 4.5,
+          "portability": 4.4,
+          "inputSimplicity": 4.2,
+          "reuse": 3.8
+        },
+        "reviewerNote": "사진은 참고/선택 메모다. 기본은 현장 체크와 최종 판단이다."
+      },
+      "weightedScore": 4.31,
+      "decision": "합격",
+      "artifactRows": [
+        [
+          "1",
+          "예산과 후보 차량 기준 정리"
+        ],
+        [
+          "2",
+          "성능점검기록부와 보험이력 조회"
+        ],
+        [
+          "3",
+          "자동차등록원부 압류·저당 확인"
+        ],
+        [
+          "4",
+          "낮 시간 방문 준비"
+        ],
+        [
+          "5",
+          "외관·타이어·침수 흔적 확인"
+        ]
+      ],
+      "route": "/f/used-car-buying-check",
+      "uiDecision": {
+        "screen": "현장 체크리스트 + 최종 판단",
+        "saveCta": "현장 체크 시작",
+        "firstScreen": "날짜 입력 없이 바로 체크리스트를 열고, 마지막에 구매/보류/거절만 남긴다.",
+        "serviceGap": "현재 route 있음. 사진/증빙을 기본 흐름으로 올리지 않는다."
+      }
+    },
+    {
+      "id": "moving-d30-checklist",
+      "title": "이사 D-30 체크리스트",
+      "category": "생활 이벤트",
+      "fitScore": 4.6,
+      "sourceTitle": "이사 준비 체크리스트",
+      "sourceUrl": "https://greechii.com/tips/home/moving-checklist/",
+      "sourceType": "creator_blog",
+      "demandSignal": "이사 날짜 기준으로 누구나 일정과 제출/예약을 관리해야 한다.",
+      "sourceSignal": "전세 정리, 이삿짐센터, 입주청소, 전입신고가 단계별로 분리된다.",
+      "userNeed": "이사일 하나만 넣고 놓치기 쉬운 예약/신고를 캘린더에 받는다.",
+      "destination": "hybrid",
+      "structure": "timeline",
+      "cta": "이사일 기준으로 저장",
+      "inputs": [
+        "이사일",
+        "자가/전월세",
+        "입주청소 여부"
+      ],
+      "flowItems": [
+        {
+          "title": "이사업체 견적 비교",
+          "schedule": "D-30~D-21",
+          "memo": "업체 3곳 견적, 포함 서비스, 추가비를 비교한다.",
+          "completion": "업체 확정"
+        },
+        {
+          "title": "인터넷·가스·관리비 이전 예약",
+          "schedule": "D-14",
+          "memo": "이전 설치일과 해지일을 확인한다.",
+          "completion": "예약 완료"
+        },
+        {
+          "title": "입주청소와 가전 배송일 확인",
+          "schedule": "D-7",
+          "memo": "청소, 배송, 입주 가능 시간이 겹치지 않게 조정한다.",
+          "completion": "일정 충돌 없음"
+        },
+        {
+          "title": "전입신고/확정일자 확인",
+          "schedule": "D+1~D+14",
+          "memo": "정부24/주민센터 처리와 계약서 준비를 확인한다.",
+          "completion": "신고 완료 또는 일정 저장"
+        }
+      ],
+      "memo": "증빙 사진은 기본이 아니라 하자 확인이 필요한 경우에만 선택 필드로 둔다.",
+      "uxNote": "캘린더 안에는 D-30 대신 짧은 행동 제목만 보여야 한다.",
+      "sourceBoundary": "법적 효력 설명은 공식 링크 확인 메모로 분리한다.",
+      "selection": {
+        "selectionReason": "이사일 하나로 여러 일정이 파생되어 캘린더 전환 가능성이 높다.",
+        "reactionEvidence": "이사 체크리스트류는 검색/저장 수요가 높은 생활 이벤트. 기존 moving UX 검토 맥락과 연결된다.",
+        "originalCheck": "기존 후보 기반",
+        "originalCue": "이사업체 비교, 청소/가전 배송, 인터넷/도시가스 이전, 전입신고, 주소 변경.",
+        "artifact": "혼합",
+        "primaryInput": "이사일",
+        "scores": {
+          "sourceContext": 3.8,
+          "userDesire": 4.8,
+          "executionClarity": 4.5,
+          "portability": 4.6,
+          "inputSimplicity": 4.1,
+          "reuse": 3.4
+        },
+        "reviewerNote": "캘린더 날짜 제목은 짧게, 상세 메모에 준비물과 링크를 둔다."
+      },
+      "weightedScore": 4.27,
+      "decision": "합격",
+      "artifactRows": [
+        [
+          "D-30~D-21",
+          "이사업체 견적 비교"
+        ],
+        [
+          "D-14",
+          "인터넷·가스·관리비 이전 예약"
+        ],
+        [
+          "D-7",
+          "입주청소와 가전 배송일 확인"
+        ],
+        [
+          "D+1~D+14",
+          "전입신고/확정일자 확인"
+        ]
+      ],
+      "route": "/f/moving-d30-basic",
+      "uiDecision": {
+        "screen": "이사일 기준 타임라인 + 체크리스트",
+        "saveCta": "이사일 기준 저장",
+        "firstScreen": "이사일을 입력하면 업체/청소/인터넷/전입신고 일정이 날짜별로 생긴다.",
+        "serviceGap": "기존 moving-d30-basic route와 연결. D-day 텍스트는 캘린더 안에서 과하지 않게."
+      }
+    }
+  ]
+}
