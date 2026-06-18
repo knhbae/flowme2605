@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FLOW — 프로젝트 현황 대시보드 2026-06-18</title>
+<style>
+:root {
+  --bg: #f6f5f2;
+  --surface: #ffffff;
+  --surface2: #f0efe9;
+  --border: #e2ddd6;
+  --ink: #1a1917;
+  --ink2: #3d3a36;
+  --sub: #706d68;
+  --muted: #a09d98;
+  --accent: #c96442;
+  --blue: #1d6fb5;
+  --teal: #0d9488;
+  --green: #15803d;
+  --green-bg: #f0fdf4;
+  --amber: #b45309;
+  --amber-bg: #fffbeb;
+  --red: #b91c1c;
+  --red-bg: #fef2f2;
+  --violet: #6d28d9;
+  --violet-bg: #f5f3ff;
+  --r: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  background: var(--bg); color: var(--ink); line-height: 1.6; font-size: 14px; -webkit-font-smoothing: antialiased; }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.wrap { max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.5rem 6rem; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; }
+@media(max-width:900px) { .grid3 { grid-template-columns: 1fr 1fr; } .grid4 { grid-template-columns: 1fr 1fr; } }
+@media(max-width:620px) { .grid2, .grid3, .grid4 { grid-template-columns: 1fr; } }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 1.1rem 1.25rem; }
+.section { margin-bottom: 2.2rem; }
+.section-title { font-size: .68rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: .9rem; display: flex; align-items: center; gap: .5rem; }
+.section-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+.card-title { font-size: .95rem; font-weight: 700; margin-bottom: .35rem; }
+.card-sub { font-size: .8rem; color: var(--sub); line-height: 1.55; }
+
+/* hero */
+.hero { background: var(--ink); color: #f6f5f2; border-radius: 16px; padding: 2rem 2.2rem; margin-bottom: 2rem; }
+.hero-kicker { font-size: .65rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #a8a29e; margin-bottom: .5rem; }
+.hero-title { font-size: 1.9rem; font-weight: 900; letter-spacing: -.03em; line-height: 1.15; margin-bottom: .6rem; }
+.hero-title span { color: var(--accent); }
+.hero-desc { font-size: .88rem; color: #c4c0ba; line-height: 1.65; max-width: 640px; margin-bottom: 1.3rem; }
+.hero-loop { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+.loop-step { font-size: .72rem; font-weight: 700; background: #292524; color: #f6f5f2; border-radius: 6px; padding: .3rem .6rem; }
+.loop-step.hi { background: var(--accent); }
+.loop-arrow { color: #78716c; font-size: .8rem; }
+.hero-meta { display: flex; gap: 1.6rem; margin-top: 1.5rem; flex-wrap: wrap; }
+.hero-stat { font-size: .73rem; color: #908b85; }
+.hero-stat strong { color: #f6f5f2; font-size: 1.25rem; font-weight: 800; display: block; line-height: 1.2; }
+.hero-stat strong.warn { color: #fca5a5; }
+
+/* verdict banner */
+.verdict { display: flex; gap: 1rem; align-items: flex-start; background: var(--amber-bg); border: 1px solid #fcd34d;
+  border-left: 4px solid var(--amber); border-radius: var(--r); padding: 1.1rem 1.3rem; margin-bottom: 2rem; }
+.verdict-icon { font-size: 1.3rem; line-height: 1; }
+.verdict-title { font-weight: 800; color: var(--amber); margin-bottom: .3rem; font-size: .95rem; }
+.verdict-body { font-size: .84rem; color: var(--ink2); line-height: 1.6; }
+
+/* stage cards */
+.stage-card { border-radius: var(--r); padding: 1.1rem 1.3rem; border: 2px solid; height: 100%; }
+.stage-card.now { border-color: var(--teal); background: #f0fdfa; }
+.stage-card.next { border-color: #bfdbfe; background: #eff6ff; }
+.stage-card.long { border-color: var(--border); background: var(--surface2); }
+.stage-tag { font-size: .6rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+  padding: .15rem .45rem; border-radius: 4px; display: inline-block; margin-bottom: .6rem; }
+.stage-card.now .stage-tag { background: var(--teal); color: #fff; }
+.stage-card.next .stage-tag { background: var(--blue); color: #fff; }
+.stage-card.long .stage-tag { background: var(--ink); color: #fff; }
+.stage-title { font-size: 1rem; font-weight: 800; margin-bottom: .4rem; }
+.stage-body { font-size: .8rem; color: var(--sub); line-height: 1.6; }
+
+/* pills */
+.pill { display: inline-flex; align-items: center; gap: .25rem; font-size: .68rem; font-weight: 700;
+  padding: .15rem .5rem; border-radius: 999px; border: 1px solid transparent; white-space: nowrap; }
+.pill-done { background: var(--green-bg); color: var(--green); border-color: #bbf7d0; }
+.pill-active { background: #eff6ff; color: var(--blue); border-color: #bfdbfe; }
+.pill-wait { background: var(--amber-bg); color: var(--amber); border-color: #fcd34d; }
+.pill-block { background: var(--red-bg); color: var(--red); border-color: #fecaca; }
+
+/* progress list */
+.row { display: flex; align-items: flex-start; gap: .7rem; padding: .7rem 0; border-bottom: 1px solid var(--border); }
+.row:last-child { border-bottom: none; }
+.row-main { flex: 1; }
+.row-title { font-weight: 700; font-size: .87rem; margin-bottom: .15rem; }
+.row-sub { font-size: .77rem; color: var(--sub); line-height: 1.5; }
+
+/* problem cards */
+.prob { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--red); border-radius: var(--r); padding: 1rem 1.2rem; }
+.prob.warn { border-left-color: var(--amber); }
+.prob-num { font-size: .65rem; font-weight: 800; color: var(--muted); letter-spacing: .08em; }
+.prob-title { font-weight: 800; font-size: .9rem; margin: .2rem 0 .4rem; }
+.prob-body { font-size: .8rem; color: var(--sub); line-height: 1.6; }
+
+/* next action */
+.next { background: linear-gradient(135deg, #1a1917, #2d2a26); color: #f6f5f2; border-radius: 16px; padding: 1.8rem 2rem; }
+.next-kicker { font-size: .65rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: .6rem; }
+.next-title { font-size: 1.2rem; font-weight: 800; line-height: 1.4; margin-bottom: .7rem; }
+.next-title em { color: #fcd34d; font-style: normal; }
+.next-body { font-size: .82rem; color: #c4c0ba; line-height: 1.65; }
+
+.metric-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: .75rem; }
+@media(max-width:620px){ .metric-grid { grid-template-columns: 1fr 1fr; } }
+.metric { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 1rem; text-align: center; }
+.metric-num { font-size: 1.7rem; font-weight: 900; letter-spacing: -.02em; line-height: 1; }
+.metric-num.good { color: var(--green); }
+.metric-num.warn { color: var(--red); }
+.metric-label { font-size: .72rem; color: var(--sub); margin-top: .4rem; line-height: 1.4; }
+
+.foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: .73rem; color: var(--muted); line-height: 1.7; }
+.tag { font-size: .68rem; font-weight: 700; background: var(--surface2); border: 1px solid var(--border); color: var(--sub); border-radius: 5px; padding: .1rem .45rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-kicker">FLOW · 프로젝트 현황 한눈에 보기 · 2026-06-18</div>
+    <div class="hero-title">경험을 <span>실행 가능한 플랜</span>으로 바꾸는 실행 레이어</div>
+    <div class="hero-desc">
+      블로그·영상·제작자 노하우를 구조화된 실행 플랜으로 변환해, 사용자가 자기 캘린더·할 일·시트·메모로
+      복붙·내보내기해서 바로 실행하게 돕는다. 지금 최우선은 플랫폼 구축이 아니라
+      <strong style="color:#f6f5f2">깃발 1개로 사용자 실행 행동을 검증하는 Stage 0</strong>이다.
+    </div>
+    <div class="hero-loop">
+      <span class="loop-step">열기 open</span><span class="loop-arrow">→</span>
+      <span class="loop-step">앵커 입력</span><span class="loop-arrow">→</span>
+      <span class="loop-step hi">복사 / 내보내기</span><span class="loop-arrow">→</span>
+      <span class="loop-step hi">체크</span><span class="loop-arrow">→</span>
+      <span class="loop-step">피드백</span>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-stat"><strong>v0.1.0</strong>릴리즈 완료</div>
+      <div class="hero-stat"><strong>43개</strong>공개 실행 라우트</div>
+      <div class="hero-stat"><strong>240 / 240</strong>테스트 통과</div>
+      <div class="hero-stat"><strong class="warn">0건</strong>실제 사용자 검증</div>
+    </div>
+  </div>
+
+  <!-- VERDICT -->
+  <div class="verdict">
+    <div class="verdict-icon">⚠️</div>
+    <div>
+      <div class="verdict-title">한 줄 결론 — 만든 건 많은데, "실제로 써봤다"는 데이터가 0이다</div>
+      <div class="verdict-body">
+        43개 라우트와 289개 분석 문서까지 준비는 차고 넘치게 됐지만, 단 한 번의 실제 사용자 세션도 기록되지 않았다.
+        모든 산출물이 스스로 <span class="tag">source-to-Flow QA, not user-behavior validation</span> 라고 못박고 있다.
+        지금은 "더 만들기"가 아니라 <strong>실제 사용자 앞에 한 번 놓아보는 것</strong>이 가장 가치 있는 변곡점이다.
+      </div>
+    </div>
+  </div>
+
+  <!-- DIRECTION / STAGE -->
+  <div class="section">
+    <div class="section-title">방향 — 지금 어디에 집중하나</div>
+    <div class="grid3">
+      <div class="stage-card now">
+        <span class="stage-tag">지금 ◀ 여기</span>
+        <div class="stage-title">Stage 0 · First Flag 검증</div>
+        <div class="stage-body">깃발 1개로 복사·내보내기·체크 행동이 실제 일어나는지 검증. 추천 첫 깃발은 <strong>영유아 검진/백신 준비</strong>. Stage 0 이전 과구축 금지가 최상위 원칙.</div>
+      </div>
+      <div class="stage-card next">
+        <span class="stage-tag">다음</span>
+        <div class="stage-title">v0.2.0 · 발자국 수집</div>
+        <div class="stage-body">view·anchor·copy·export·check·feedback 이벤트 로깅과 가벼운 피드백 루프. 현재 전부 <strong>Planned(미착수)</strong>.</div>
+      </div>
+      <div class="stage-card long">
+        <span class="stage-tag">장기</span>
+        <div class="stage-title">실행형 경험 위키</div>
+        <div class="stage-body">신뢰 루트·버전·실행 footprint 데이터가 쌓여 제품 가치가 복리로 누적되는 구조. 콘텐츠 양이 아니라 <strong>실행 발자국</strong>이 해자.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- METRICS -->
+  <div class="section">
+    <div class="section-title">숫자로 보는 현황</div>
+    <div class="metric-grid">
+      <div class="metric"><div class="metric-num good">43</div><div class="metric-label">공개 <code>/f/</code> 실행 라우트</div></div>
+      <div class="metric"><div class="metric-num good">240</div><div class="metric-label">단위 테스트 통과 (실패 0)</div></div>
+      <div class="metric"><div class="metric-num">289</div><div class="metric-label">콘텐츠·분석 문서</div></div>
+      <div class="metric"><div class="metric-num warn">0</div><div class="metric-label">실제 사용자 관찰 세션</div></div>
+    </div>
+  </div>
+
+  <!-- DONE -->
+  <div class="section">
+    <div class="section-title">진행된 것 ✅</div>
+    <div class="card">
+      <div class="row">
+        <span class="pill pill-done">완료</span>
+        <div class="row-main"><div class="row-title">v0.1.0 릴리즈</div>
+          <div class="row-sub">2026-06-11 GitHub 릴리즈 공개. 콘텐츠 유효성 트리아지 최종 🟢 43 / 🟡 0.</div></div>
+      </div>
+      <div class="row">
+        <span class="pill pill-done">완료</span>
+        <div class="row-main"><div class="row-title">43개 공개 실행 라우트</div>
+          <div class="row-sub">육아·이사·운동·관공서·여행·생활 등. 영유아검진, 전세계약 점검, 이사 D-30, 임대차 신고 등 공식 출처 기반 포함.</div></div>
+      </div>
+      <div class="row">
+        <span class="pill pill-done">완료</span>
+        <div class="row-main"><div class="row-title">소스→Flow 변환 QA 체계</div>
+          <div class="row-sub">공식출처 배치 24 + 크리에이터 배치 20. 원칙→루브릭→플레이북 3층 품질 시스템 정착(docs/flow-rules).</div></div>
+      </div>
+      <div class="row">
+        <span class="pill pill-done">완료</span>
+        <div class="row-main"><div class="row-title">내보내기(export) 품질 정비</div>
+          <div class="row-sub">캘린더 무한반복 버그, 빈 항목, memo Markdown 체크박스, ICS/CSV/시트 출력 품질 수정.</div></div>
+      </div>
+      <div class="row">
+        <span class="pill pill-done">검증</span>
+        <div class="row-main"><div class="row-title">테스트·빌드 정상</div>
+          <div class="row-sub">직접 실행 확인: 단위 테스트 240/240 통과, Next.js 빌드 정상, Playwright E2E 셋업 존재.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROBLEMS -->
+  <div class="section">
+    <div class="section-title">안 된 것 · 문제 ⚠️</div>
+    <div class="grid2">
+      <div class="prob">
+        <div class="prob-num">문제 01 · 핵심</div>
+        <div class="prob-title">실제 사용자 행동 검증 = 0</div>
+        <div class="prob-body">43개 라우트 중 "검증됨"인 게 하나도 없다. Stage 0의 목표 자체(복사·내보내기·체크 행동 검증)를 아직 달성하지 못했다. 원칙은 잘 지킨 결과지만, 그래서 다음 단계로 못 넘어가는 상태.</div>
+      </div>
+      <div class="prob">
+        <div class="prob-num">문제 02</div>
+        <div class="prob-title">메인 작업축이 문서만 쌓이는 중</div>
+        <div class="prob-body"><code>distribution-channel-handoff</code>의 공유 패킷 관찰 세션이 <strong>0/3</strong>, 판정은 계속 <span class="pill pill-block">no signal</span>. 준비 문서(체크리스트·모집카피·트래커·스크립트·롤업…)는 수십 개 양산됨. 분석 문서가 289개까지 쌓이는 동안 실제 관찰 기록은 0건.</div>
+      </div>
+      <div class="prob warn">
+        <div class="prob-num">문제 03</div>
+        <div class="prob-title">v0.2.0 측정 인프라 미착수</div>
+        <div class="prob-body">footprint 이벤트 로깅·피드백 루프가 전부 <span class="pill pill-wait">Planned</span>. 사용자가 써도 자동 측정이 안 된다. (Stage 0의 의도된 절제이긴 함)</div>
+      </div>
+      <div class="prob warn">
+        <div class="prob-num">문제 04 · 자가 인지</div>
+        <div class="prob-title">과잉 생산을 본인도 경계</div>
+        <div class="prob-body">프로젝트가 스스로 <strong>"documentation stop gate"</strong>를 추가했다 — "실제 세션 한 번 돌기 전엔 같은 축 계획 문서 그만 만들기". 같은 축 계획서가 계속 늘어나는 걸 위험으로 인지하고 있다는 신호.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEXT -->
+  <div class="section">
+    <div class="section-title">다음에 해야 할 단 하나</div>
+    <div class="next">
+      <div class="next-kicker">The single most valuable next action</div>
+      <div class="next-title">실제 부모 1명과 <em>infant-health-checkup-schedule</em>(첫 깃발) 모바일 세션을 직접 관찰하기</div>
+      <div class="next-body">
+        그 다음 1~2개 대표 Flow를 좁게 공개 노출할지 결정한다. 더 많은 라우트나 문서를 만드는 것이 아니라,
+        실제 관찰 세션 1회가 지금 프로젝트를 다음 단계로 넘기는 유일한 열쇠다.
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    출처: <code>docs/STATUS.md</code> · <code>docs/ROADMAP.md</code> · <code>agent.md</code> · <code>docs/DECISIONS.md</code> · <code>lib/flow/seed-flows.ts</code><br>
+    검증: 2026-06-18 <code>npm install</code> 후 <code>npm test</code> 직접 실행 — 240개 테스트 통과 / 실패 0. 라우트·문서 수치는 저장소에서 직접 집계.<br>
+    상태 요약 문서이며 사용자 행동 검증 데이터가 아니다. "검증됨" 표현은 실제 사용 데이터가 생기기 전까지 사용하지 않는다.
+  </div>
+
+</div>
+</body>
+</html>
