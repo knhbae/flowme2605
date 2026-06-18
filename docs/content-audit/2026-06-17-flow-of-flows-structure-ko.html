@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe Flow of Flows 구조 정정</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f8fb;
+        --surface: #fff;
+        --soft: #f8fafc;
+        --line: #d8e2ef;
+        --text: #101827;
+        --muted: #5d697b;
+        --blue: #1f5fbf;
+        --green: #0f7a4a;
+        --amber: #9a6100;
+        --red: #b42318;
+        --radius: 8px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, #fbfdff 0, var(--bg) 520px);
+        color: var(--text);
+        font-size: 16px;
+        line-height: 1.62;
+      }
+      main {
+        width: min(1180px, calc(100% - 28px));
+        margin: 0 auto;
+        padding: 18px 0 64px;
+      }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 {
+        max-width: 980px;
+        margin-bottom: 10px;
+        font-size: clamp(30px, 5vw, 48px);
+        line-height: 1.12;
+        letter-spacing: 0;
+      }
+      h2 {
+        margin-bottom: 10px;
+        font-size: clamp(23px, 3vw, 34px);
+        line-height: 1.2;
+        letter-spacing: 0;
+      }
+      h3 {
+        margin-bottom: 6px;
+        font-size: 19px;
+        letter-spacing: 0;
+      }
+      ul { margin: 0; padding-left: 20px; }
+      li + li { margin-top: 5px; }
+      code {
+        padding: 2px 5px;
+        border: 1px solid #d8dee8;
+        border-radius: 5px;
+        background: #f2f5f9;
+        font-size: .94em;
+      }
+      .hero, .card, .mini, .node, .tree, .screen, .lane {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+      }
+      .hero {
+        padding: 20px;
+        box-shadow: 0 14px 34px rgba(16, 24, 39, .08);
+      }
+      .card { margin-top: 14px; padding: 16px; }
+      .eyebrow {
+        margin-bottom: 6px;
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+      .desc { color: var(--muted); }
+      .note {
+        margin: 12px 0 0;
+        padding: 12px;
+        border-left: 4px solid var(--blue);
+        border-radius: 6px;
+        background: #eef5ff;
+        color: #17345f;
+        font-weight: 750;
+      }
+      .warn {
+        margin: 12px 0 0;
+        padding: 12px;
+        border-left: 4px solid var(--amber);
+        border-radius: 6px;
+        background: #fff7e8;
+        color: #5f3b00;
+        font-weight: 750;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .mini {
+        padding: 14px;
+        background: var(--soft);
+      }
+      .mini strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 18px;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 10px 0 0;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 4px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--soft);
+        color: #334155;
+        font-size: 13px;
+        font-weight: 850;
+        white-space: nowrap;
+      }
+      .chip.blue { border-color: #b9d2ff; background: #eef5ff; color: #174ea6; }
+      .chip.green { border-color: #b8e5ce; background: #eefaf3; color: #0f6b43; }
+      .chip.amber { border-color: #f4d291; background: #fff7e8; color: #7a4b00; }
+      .chip.red { border-color: #f4b9b2; background: #fff1ef; color: #9a241a; }
+      .tree {
+        margin-top: 12px;
+        padding: 14px;
+        background: #fbfdff;
+      }
+      .node {
+        padding: 12px;
+        background: #fff;
+      }
+      .node + .node { margin-top: 8px; }
+      .node.parent {
+        border-color: #b9d2ff;
+        background: #f5f9ff;
+      }
+      .node.mid {
+        border-color: #b8e5ce;
+        background: #f4fbf7;
+      }
+      .node-title {
+        margin: 0 0 4px;
+        font-weight: 950;
+        line-height: 1.28;
+      }
+      .node-meta {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .children {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .screen {
+        overflow: hidden;
+        margin-top: 12px;
+      }
+      .screen-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px;
+        border-bottom: 1px solid var(--line);
+        background: #f8fafc;
+      }
+      .screen-title {
+        margin: 0;
+        font-weight: 950;
+      }
+      .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 34px;
+        padding: 7px 11px;
+        border: 1px solid #b9d2ff;
+        border-radius: 7px;
+        background: #eef5ff;
+        color: #174ea6;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+      .btn.secondary {
+        border-color: var(--line);
+        background: #fff;
+        color: #334155;
+      }
+      .screen-body {
+        display: grid;
+        grid-template-columns: 310px 1fr;
+      }
+      .sidebar {
+        padding: 14px;
+        border-right: 1px solid var(--line);
+        background: #fbfdff;
+      }
+      .content {
+        padding: 14px;
+      }
+      .section-row {
+        padding: 10px;
+        border: 1px solid #e6edf5;
+        border-radius: 7px;
+        background: #fff;
+      }
+      .section-row + .section-row { margin-top: 8px; }
+      .flow-row {
+        display: grid;
+        grid-template-columns: 92px 1fr auto;
+        gap: 10px;
+        align-items: start;
+        padding: 12px 0;
+        border-top: 1px solid #e6edf5;
+      }
+      .flow-row:first-of-type { border-top: 0; }
+      .type {
+        display: inline-flex;
+        justify-content: center;
+        padding: 3px 7px;
+        border-radius: 999px;
+        background: #eef5ff;
+        color: #174ea6;
+        font-size: 12px;
+        font-weight: 900;
+      }
+      .small { color: var(--muted); font-size: 14px; }
+      .table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+      }
+      table {
+        width: 100%;
+        min-width: 920px;
+        border-collapse: collapse;
+        background: #fff;
+      }
+      th, td {
+        padding: 11px;
+        border-bottom: 1px solid #e6edf5;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background: #f8fafc;
+        color: #334155;
+        font-size: 13px;
+        text-transform: uppercase;
+      }
+      tr:last-child td { border-bottom: 0; }
+      @media (max-width: 860px) {
+        main { width: min(100% - 22px, 1180px); padding-top: 12px; }
+        .hero, .card { padding: 14px; }
+        .grid, .grid.two, .grid.four, .children, .screen-body {
+          grid-template-columns: 1fr;
+        }
+        .screen-head {
+          flex-direction: column;
+        }
+        .sidebar {
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+        .flow-row {
+          grid-template-columns: 1fr;
+          gap: 5px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <p class="eyebrow">Corrected model</p>
+        <h1>Flow Pack은 번들이 아니라 Flow of Flows다</h1>
+        <p class="desc">
+          사용자의 정정 기준에 맞춰 구조를 다시 잡았다. Flow Pack은 관련 Flow 몇 개를 옆으로 묶은 상품이 아니라,
+          상위 Flow가 하위 Flow들을 품고 사용자가 전체, 구간, 단일 Flow 단위로 저장하고 실행할 수 있는 계층형 실행 구조다.
+        </p>
+        <div class="chips">
+          <span class="chip green">정정: flow of flows</span>
+          <span class="chip blue">parent Flow</span>
+          <span class="chip blue">child Flow</span>
+          <span class="chip amber">사용자 화면 용어는 자연어 우선</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>이전 예시가 별로였던 이유</h2>
+        <div class="grid">
+          <div class="mini">
+            <strong>너무 납작했다</strong>
+            <p class="desc">Flow Pack을 “관련 Flow 3~7개 묶음”처럼 처리했다. 사용자가 말한 구조는 상위 Flow 안에 하위 Flow가 있는 계층이다.</p>
+          </div>
+          <div class="mini">
+            <strong>제작자성이 약했다</strong>
+            <p class="desc">운동 제작자, 공부 유튜버, 육아 콘텐츠 제작자가 자기 콘텐츠 체계를 쌓는 방식이 아니라 범용 템플릿처럼 보였다.</p>
+          </div>
+          <div class="mini">
+            <strong>단계 깊이가 없었다</strong>
+            <p class="desc">중1 수학 아래 단원별 Flow, 백신 체크리스트 아래 각 백신 Flow처럼 하위 레벨이 더 생길 수 있다는 점을 반영하지 못했다.</p>
+          </div>
+        </div>
+        <p class="note">정정된 방향: `Creator Channel -> Parent Flow -> Section/Sub Flow Group -> Child Flow -> Execution Items`.</p>
+      </section>
+
+      <section class="card">
+        <h2>정정된 계층</h2>
+        <div class="tree">
+          <div class="node parent">
+            <p class="node-title">상위 Flow: 러닝 루틴 모음집</p>
+            <p class="node-meta">제작자가 설계한 큰 실행 흐름. 사용자는 전체 저장, 구간 저장, 단일 루틴 저장을 선택한다.</p>
+            <div class="children">
+              <div class="node mid">
+                <p class="node-title">4주 걷뛰기 입문</p>
+                <p class="node-meta">주 3회 반복 일정 Flow들</p>
+              </div>
+              <div class="node mid">
+                <p class="node-title">5K 완주 준비</p>
+                <p class="node-meta">거리/시간 증가 루틴 Flow들</p>
+              </div>
+              <div class="node mid">
+                <p class="node-title">대회 전 D-7 체크</p>
+                <p class="node-meta">컨디션/준비물 체크 Flow</p>
+              </div>
+            </div>
+          </div>
+          <div class="node">
+            <p class="node-title">하위 Flow: 1주차 월/수/금 걷뛰기</p>
+            <p class="node-meta">캘린더 반복 일정, 영상 URL, 완료 체크, 중단 조건이 있는 실행 단위.</p>
+          </div>
+          <div class="node">
+            <p class="node-title">실행 항목: 월요일 20분 걷뛰기</p>
+            <p class="node-meta">사용자가 실제로 캘린더/체크리스트/메모에서 실행하는 가장 작은 item.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>카테고리별 Flow of Flows 예시</h2>
+        <div class="grid two">
+          <div class="tree">
+            <div class="chips"><span class="chip blue">운동 제작자</span><span class="chip green">routine hierarchy</span></div>
+            <h3>러닝 루틴 모음집</h3>
+            <div class="node parent">
+              <p class="node-title">러닝 시작부터 10K까지</p>
+              <p class="node-meta">제작자가 만든 큰 러닝 흐름</p>
+            </div>
+            <div class="children">
+              <div class="node mid"><p class="node-title">걷뛰기 4주</p><p class="node-meta">주 3회 반복 Flow</p></div>
+              <div class="node mid"><p class="node-title">5K 완주 6주</p><p class="node-meta">거리 증가 Flow</p></div>
+              <div class="node mid"><p class="node-title">10K 준비</p><p class="node-meta">페이스/장거리 Flow</p></div>
+            </div>
+          </div>
+
+          <div class="tree">
+            <div class="chips"><span class="chip blue">공부 유튜브</span><span class="chip green">curriculum hierarchy</span></div>
+            <h3>중학교 수학 진도</h3>
+            <div class="node parent">
+              <p class="node-title">중1, 중2, 중3 수학</p>
+              <p class="node-meta">학년별 상위 Flow가 있고 각 학년 아래 단원 Flow가 붙는다.</p>
+            </div>
+            <div class="children">
+              <div class="node mid"><p class="node-title">중1 수학</p><p class="node-meta">소인수분해, 정수와 유리수, 문자와 식</p></div>
+              <div class="node mid"><p class="node-title">중2 수학</p><p class="node-meta">식의 계산, 연립방정식, 일차함수</p></div>
+              <div class="node mid"><p class="node-title">중3 수학</p><p class="node-meta">제곱근, 이차방정식, 삼각비</p></div>
+            </div>
+          </div>
+
+          <div class="tree">
+            <div class="chips"><span class="chip blue">육아</span><span class="chip amber">official source sensitive</span></div>
+            <h3>육아 백신 체크리스트</h3>
+            <div class="node parent">
+              <p class="node-title">영유아 예방접종 전체 흐름</p>
+              <p class="node-meta">월령별 접종 Flow가 있고, 각 접종 Flow는 공식 출처와 병원 예약 메모를 분리한다.</p>
+            </div>
+            <div class="children">
+              <div class="node mid"><p class="node-title">2개월 접종</p><p class="node-meta">예약 일정 + 접종 후 관찰 메모</p></div>
+              <div class="node mid"><p class="node-title">4개월 접종</p><p class="node-meta">반복 일정 + 공식 안내 URL</p></div>
+              <div class="node mid"><p class="node-title">12개월 접종</p><p class="node-meta">준비물 + 상담 질문 메모</p></div>
+            </div>
+          </div>
+
+          <div class="tree">
+            <div class="chips"><span class="chip blue">육아 식단</span><span class="chip green">phase + table</span></div>
+            <h3>이유식/유아식 식단표</h3>
+            <div class="node parent">
+              <p class="node-title">개월 수별 식단 흐름</p>
+              <p class="node-meta">6개월, 8개월, 12개월 식단표가 각각 하위 Flow가 된다.</p>
+            </div>
+            <div class="children">
+              <div class="node mid"><p class="node-title">6개월 식단표</p><p class="node-meta">재료 시도표 + 메모</p></div>
+              <div class="node mid"><p class="node-title">8개월 식단표</p><p class="node-meta">주간 식단표 + 장보기 메모</p></div>
+              <div class="node mid"><p class="node-title">12개월 식단표</p><p class="node-meta">유아식 반복 메뉴 + 반응 기록</p></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>사용자 화면은 이렇게 보여야 한다</h2>
+        <div class="screen">
+          <div class="screen-head">
+            <div>
+              <p class="screen-title">중1 수학 진도</p>
+              <p class="small">수학쌤 김OO · 단원 Flow 8개 · 영상/문제풀이/오답표 포함</p>
+            </div>
+            <div class="buttons">
+              <span class="btn">중1 전체 저장</span>
+              <span class="btn secondary">단원만 고르기</span>
+            </div>
+          </div>
+          <div class="screen-body">
+            <aside class="sidebar">
+              <h3>단원 흐름</h3>
+              <div class="section-row">
+                <strong>1. 소인수분해</strong>
+                <p class="small">영상 3개, 문제 풀이 2회, 오답표</p>
+              </div>
+              <div class="section-row">
+                <strong>2. 정수와 유리수</strong>
+                <p class="small">영상 4개, 연습문제, 단원 체크</p>
+              </div>
+              <div class="section-row">
+                <strong>3. 문자와 식</strong>
+                <p class="small">영상 5개, 개념노트, 복습 일정</p>
+              </div>
+            </aside>
+            <section class="content">
+              <h3>소인수분해 Flow</h3>
+              <div class="flow-row">
+                <span class="type">영상</span>
+                <div>
+                  <strong>1강 소수와 합성수 보기</strong>
+                  <p class="small">원본 영상 URL, 시청 완료, 핵심 개념 메모.</p>
+                </div>
+                <span class="chip blue">메모</span>
+              </div>
+              <div class="flow-row">
+                <span class="type">일정</span>
+                <div>
+                  <strong>소인수분해 문제 20개 풀기</strong>
+                  <p class="small">선택한 공부 요일에 캘린더 반복. 완료 기준은 채점까지.</p>
+                </div>
+                <span class="chip green">캘린더</span>
+              </div>
+              <div class="flow-row">
+                <span class="type">표</span>
+                <div>
+                  <strong>틀린 문제 오답표에 남기기</strong>
+                  <p class="small">문항 번호, 틀린 이유, 다시 풀 날짜.</p>
+                </div>
+                <span class="chip green">시트</span>
+              </div>
+            </section>
+          </div>
+        </div>
+        <p class="note">중요한 점은 “중1 전체 저장”이 실제로 하위 단원 Flow들의 일정/표/메모를 만든다는 것이다. 단순 폴더 저장이면 Flow of Flows가 아니다.</p>
+      </section>
+
+      <section class="card">
+        <h2>제작자 화면은 이렇게 작동해야 한다</h2>
+        <div class="grid two">
+          <div class="mini">
+            <h3>제작자가 하는 일</h3>
+            <ul>
+              <li>상위 Flow 제목을 만든다: 러닝 루틴 모음집, 중1 수학, 육아 백신 체크리스트.</li>
+              <li>하위 Flow를 추가한다: 단원, 백신, 월령, 루틴 주차.</li>
+              <li>각 하위 Flow의 목적지를 정한다: 캘린더, 표, 체크리스트, 메모.</li>
+              <li>공통 입력값을 지정한다: 시작일, 요일, 아이 생년월일, 시험일.</li>
+              <li>원본 링크와 제작자 경험, 주의사항을 하위 Flow마다 분리한다.</li>
+            </ul>
+          </div>
+          <div class="mini">
+            <h3>사용자에게 생기는 결과</h3>
+            <ul>
+              <li>상위 Flow 전체를 저장하면 하위 Flow들이 함께 개인화된다.</li>
+              <li>중간 구간만 저장할 수 있다: 중1만, 6개월 식단표만, 5K 루틴만.</li>
+              <li>각 실행 item은 캘린더/표/메모에서 독립적으로 실행 가능하다.</li>
+              <li>나중에 상위 Flow로 돌아와 다음 하위 Flow를 추가 저장할 수 있다.</li>
+              <li>완료 상태는 하위 Flow별로 쌓이고, 상위 Flow는 진행 지도를 보여준다.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>용어 정리</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>개념</th>
+                <th>내부 모델</th>
+                <th>사용자 화면 표현</th>
+                <th>예시</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>상위 Flow</td>
+                <td><code>ParentFlow</code></td>
+                <td>제작자가 붙인 자연어 제목</td>
+                <td>러닝 루틴 모음집, 중1 수학, 육아 백신 체크리스트</td>
+              </tr>
+              <tr>
+                <td>중간 묶음</td>
+                <td><code>FlowSection</code></td>
+                <td>단원, 월령, 주차, 난이도, 목표</td>
+                <td>소인수분해, 6개월 식단표, 4주 걷뛰기</td>
+              </tr>
+              <tr>
+                <td>하위 Flow</td>
+                <td><code>ChildFlow</code></td>
+                <td>저장 가능한 실행 단위</td>
+                <td>문제풀이 루틴, 접종 예약 일정, 영상 따라하기</td>
+              </tr>
+              <tr>
+                <td>실행 항목</td>
+                <td><code>ExecutionItem</code></td>
+                <td>캘린더 일정, 체크 항목, 표 row, 메모</td>
+                <td>월요일 20분 달리기, 2개월 접종 예약, 오답 5번 다시 풀기</td>
+              </tr>
+              <tr>
+                <td>사용자 저장본</td>
+                <td><code>UserFlowTreeCopy</code></td>
+                <td>내가 저장한 전체/부분 흐름</td>
+                <td>중1 수학 중 소인수분해만 저장, 5K 루틴만 저장</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="warn">사용자 화면에는 `Flow Pack`, `ParentFlow`, `ChildFlow` 같은 내부 용어를 그대로 노출하지 않는 편이 좋다. “중1 전체 저장”, “이 단원만 저장”, “6개월 식단표 저장”처럼 결과 중심으로 말한다.</p>
+      </section>
+
+      <section class="card">
+        <h2>다음 PoC 목표</h2>
+        <div class="grid">
+          <div class="mini">
+            <strong>운동 제작자형</strong>
+            <p class="desc">러닝 루틴 모음집. 시작일과 주 운동 요일을 넣으면 주차별 러닝 Flow가 캘린더로 생성된다.</p>
+          </div>
+          <div class="mini">
+            <strong>공부 유튜브형</strong>
+            <p class="desc">중1 수학. 단원별 영상, 문제풀이 일정, 오답표가 하위 Flow로 묶인다.</p>
+          </div>
+          <div class="mini">
+            <strong>육아 공식/제작자 혼합형</strong>
+            <p class="desc">육아 백신 체크리스트. 아이 생년월일 기준으로 접종 일정 Flow가 생기고 공식 출처와 메모가 분리된다.</p>
+          </div>
+        </div>
+        <p class="note">이 3개를 보면 Flow of Flows가 운동, 교육, 육아처럼 서로 다른 제작자 카테고리에서도 작동하는지 빠르게 판단할 수 있다.</p>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FlowMe 저장한 Flow</title>
+    <style>
+      :root {
+        --bg: #f4f7fb;
+        --paper: #fff;
+        --ink: #111827;
+        --muted: #607086;
+        --line: #d9e2ef;
+        --blue: #1f5fbf;
+        --green: #0f7a4a;
+        --amber: #986400;
+        --red: #b42318;
+        --soft-blue: #edf4ff;
+        --soft-green: #ebf8f0;
+        --soft-amber: #fff8e6;
+        --soft-red: #fff1ef;
+        --shadow: 0 14px 34px rgba(15, 23, 42, .07);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--ink); line-height: 1.55; }
+      button, input, textarea, select { font: inherit; }
+      button { cursor: pointer; }
+      a { color: var(--blue); text-underline-offset: 3px; }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 { margin-bottom: 4px; font-size: clamp(26px, 4vw, 40px); line-height: 1.12; letter-spacing: 0; }
+      h2 { margin-bottom: 8px; font-size: 22px; line-height: 1.2; letter-spacing: 0; }
+      h3 { margin-bottom: 5px; font-size: 18px; line-height: 1.25; letter-spacing: 0; }
+      .app { width: min(1220px, calc(100% - 28px)); margin: 0 auto; padding: 16px 0 64px; }
+      .topbar, .hero, .panel, .detail, .card, .task, .row, .calendar-day {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 54px;
+        padding: 10px 12px;
+        box-shadow: var(--shadow);
+      }
+      .brand { font-size: 18px; font-weight: 950; text-decoration: none; color: var(--ink); }
+      .top-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+      .btn {
+        min-height: 38px;
+        padding: 8px 12px;
+        border: 1px solid var(--blue);
+        border-radius: 8px;
+        background: var(--blue);
+        color: #fff;
+        font-weight: 850;
+      }
+      .btn.secondary { background: #fff; color: var(--blue); }
+      .btn.green { border-color: var(--green); background: var(--green); }
+      .btn.ghost { border-color: var(--line); background: #fff; color: var(--ink); }
+      .hero { margin-top: 12px; padding: 18px; }
+      .desc, .meta, .small { color: var(--muted); }
+      .small { font-size: 13px; }
+      .chips, .tabs, .actions, .stats { display: flex; flex-wrap: wrap; gap: 8px; }
+      .chips { margin-top: 10px; }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 4px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 850;
+      }
+      .chip.blue { border-color: #bfdbfe; background: var(--soft-blue); color: var(--blue); }
+      .chip.green { border-color: #bde7cb; background: var(--soft-green); color: var(--green); }
+      .chip.amber { border-color: #f4d58d; background: var(--soft-amber); color: var(--amber); }
+      .chip.red { border-color: #f4b3ad; background: var(--soft-red); color: var(--red); }
+      .layout {
+        display: grid;
+        grid-template-columns: 340px minmax(0, 1fr);
+        gap: 12px;
+        margin-top: 12px;
+        align-items: start;
+      }
+      .panel, .detail { padding: 14px; box-shadow: 0 8px 22px rgba(15, 23, 42, .04); }
+      .tabs { margin: 10px 0; }
+      .tabs button {
+        min-height: 34px;
+        padding: 6px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        color: var(--muted);
+        font-weight: 850;
+      }
+      .tabs button.active { border-color: var(--blue); background: var(--soft-blue); color: var(--blue); }
+      .flow-list { display: grid; gap: 8px; }
+      .flow-card {
+        width: 100%;
+        padding: 11px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        text-align: left;
+      }
+      .flow-card.active { border-color: var(--blue); background: var(--soft-blue); }
+      .flow-title { display: block; font-weight: 950; color: var(--ink); }
+      .flow-meta { display: block; margin-top: 3px; color: var(--muted); font-size: 13px; }
+      .flow-foot { display: flex; justify-content: space-between; gap: 8px; margin-top: 8px; align-items: center; }
+      .progress {
+        overflow: hidden;
+        height: 8px;
+        border-radius: 999px;
+        background: #e8edf5;
+      }
+      .progress span { display: block; height: 100%; width: var(--value, 10%); background: var(--blue); }
+      .detail-head {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: start;
+      }
+      .actions { justify-content: flex-end; }
+      .stats { margin-top: 12px; }
+      .stat {
+        flex: 1 1 150px;
+        min-height: 76px;
+        padding: 11px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fbfcff;
+      }
+      .stat strong { display: block; margin-bottom: 4px; font-size: 20px; }
+      .content-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr);
+        gap: 12px;
+        margin-top: 12px;
+        align-items: start;
+      }
+      .card { padding: 14px; }
+      .artifact-list, .task-list, .rows { display: grid; gap: 8px; }
+      .row, .task {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: start;
+        padding: 10px;
+      }
+      .row button {
+        border: 0;
+        background: transparent;
+        color: inherit;
+        text-align: left;
+        padding: 0;
+      }
+      .row.active { border-color: var(--blue); background: var(--soft-blue); }
+      .row.done .item-title, .task.done .item-title { text-decoration: line-through; color: var(--muted); }
+      .item-title { margin: 0; font-weight: 900; }
+      input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--blue); }
+      textarea, input[type="date"], input[type="text"] {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px;
+        background: #fff;
+      }
+      textarea { min-height: 98px; resize: vertical; }
+      .source-box {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .toast {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #bde7cb;
+        border-radius: 8px;
+        background: var(--soft-green);
+        color: var(--green);
+        font-weight: 850;
+      }
+      .calendar {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 6px;
+        margin-top: 8px;
+      }
+      .calendar-day {
+        min-height: 44px;
+        padding: 6px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .calendar-day.marked { border-color: var(--blue); background: var(--soft-blue); color: var(--blue); font-weight: 900; }
+      .calendar-day.today { border-color: var(--green); background: var(--soft-green); color: var(--green); font-weight: 900; }
+      @media (max-width: 900px) {
+        .app { width: min(100% - 18px, 1220px); padding-top: 10px; }
+        .topbar, .detail-head { align-items: stretch; }
+        .layout, .content-grid, .detail-head { grid-template-columns: 1fr; }
+        .panel { order: 2; }
+        .detail { order: 1; }
+        .flow-list { display: grid; overflow: visible; padding-bottom: 0; }
+        .flow-card { min-width: 0; }
+        .actions { justify-content: flex-start; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <a class="brand" href="#">FlowMe</a>
+        <div class="top-actions">
+          <button class="btn secondary" type="button" id="showToday">오늘 할 일</button>
+          <button class="btn secondary" type="button" id="showSaved">보관 자료</button>
+          <button class="btn green" type="button" id="openFeedback">피드백 남기기</button>
+        </div>
+      </header>
+
+      <section class="hero">
+        <p class="small" style="font-weight:900;color:var(--blue);margin-bottom:6px">내 Flow</p>
+        <h1>저장한 원문을 실행할 수 있게 모아둔 곳</h1>
+        <p class="desc">Flow는 글이나 영상을 다시 읽으라는 목록이 아니라, 내 캘린더·체크리스트·표·버킷으로 옮겨진 실행 항목입니다.</p>
+        <div class="chips">
+          <span class="chip blue">오늘 3개</span>
+          <span class="chip green">진행 중 5개</span>
+          <span class="chip amber">보관 자료 2개</span>
+          <span class="chip red">실사용 데이터 없음</span>
+        </div>
+      </section>
+
+      <section class="layout">
+        <aside class="panel">
+          <h2>저장한 Flow</h2>
+          <p class="desc">오늘 할 일, 예정된 일정, 보관 자료, 반복 루틴으로 나눠 봅니다.</p>
+          <nav class="tabs" aria-label="Flow 보기 필터">
+            <button class="active" type="button" data-filter="all">전체</button>
+            <button type="button" data-filter="today">오늘</button>
+            <button type="button" data-filter="upcoming">예정</button>
+            <button type="button" data-filter="saved">보관</button>
+            <button type="button" data-filter="routine">반복</button>
+          </nav>
+          <div class="flow-list" id="flowList"></div>
+        </aside>
+
+        <section class="detail" id="detail" aria-live="polite"></section>
+      </section>
+    </main>
+
+    <script>
+      const flows = [
+        {
+          id: "jeonse",
+          group: "today",
+          title: "전세 계약 전 서류 확인",
+          source: "계약 전 점검 가이드",
+          sourceUrl: "2026-06-09-jeonse-contract-ux-ui.html",
+          artifact: "캘린더 + 날짜별 체크",
+          kind: "timeline",
+          primary: "오늘 계약 서류 체크하기",
+          next: "2026-06-18",
+          progress: 67,
+          input: "계약일 2026-06-18",
+          entries: [
+            { id: "j1", date: "2026-06-15", label: "D-3", title: "등기부등본과 보증보험 가능 여부 확인", rows: [["등기부등본 열람", "소유자, 근저당, 권리관계를 확인합니다."], ["보증보험 가능 여부 확인", "가입 가능 여부가 애매하면 계약 전 문의합니다."], ["메모 남기기", "걸리는 항목만 짧게 남깁니다."]] },
+            { id: "j2", date: "2026-06-18", label: "D-Day", title: "계약 당일 특약과 입금 정보 확인", rows: [["특약 문구 확인", "구두 약속은 계약서 특약으로 남길 수 있는지 봅니다."], ["입금 정보 확인", "계좌번호 원문은 저장하지 않고 확인 여부만 체크합니다."]] },
+            { id: "j3", date: "2026-06-19", label: "D+1", title: "확정일자와 보증보험 신청 확인", rows: [["확정일자 받기", "계약 후 필요한 절차를 확인합니다."], ["보증보험 신청 준비", "서류와 신청 경로를 메모합니다."]] }
+          ]
+        },
+        {
+          id: "moving",
+          group: "upcoming",
+          title: "이사할 때 체크리스트",
+          source: "아정당 이사 체크리스트",
+          sourceUrl: "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC%ED%95%A0_%EB%95%8C_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_%EC%83%81%EC%84%B8_%EC%A0%95%EB%A6%AC-47214",
+          artifact: "이사일 기준 캘린더",
+          kind: "timeline",
+          primary: "D-30 일정 확인하기",
+          next: "2026-06-18",
+          progress: 20,
+          input: "이사일 2026-07-18",
+          entries: [
+            { id: "m30", date: "2026-06-18", label: "D-30", title: "이사 방식 확인과 집 점검", rows: [["이사 방식 확인", "포장/반포장/용달 중 필요한 범위를 정합니다."], ["이사할 집 하자 수리 의뢰", "수리업체, 인테리어 업체, 관리사무소에 문의할 내용을 남깁니다."], ["이사와 청소 견적 확인", "후보 업체와 청소 업체 연락처를 메모합니다."]] },
+            { id: "m10", date: "2026-07-08", label: "D-10", title: "주소 변경과 설치 예약", rows: [["우편물 주소 변경", "금융기관과 우체국 주소 변경을 확인합니다."], ["엘리베이터와 주차공간 예약", "관리사무소와 사다리차 공간을 확인합니다."], ["인터넷 이전 설치 예약", "통신사에 이전 설치 일정을 잡습니다."]] },
+            { id: "m0", date: "2026-07-18", label: "D-Day", title: "출발지 정산과 도착지 개통", rows: [["관리비와 공과금 정산", "출발지 관리비와 공과금을 확인합니다."], ["분실/파손 확인", "걸리는 항목은 업체와 함께 확인합니다."], ["전입신고와 확정일자", "주민센터 또는 온라인 처리 여부를 확인합니다."]] }
+          ]
+        },
+        {
+          id: "usedcar",
+          group: "today",
+          title: "중고차 방문 당일 체크",
+          source: "겟차 차량 상태 체크리스트",
+          sourceUrl: "https://web.getcha.kr/blog/used-car-condition-checklist-guide",
+          artifact: "방문일 + 현장 체크",
+          kind: "field",
+          primary: "현장에서 체크 시작하기",
+          next: "2026-06-17",
+          progress: 45,
+          input: "방문일 2026-06-17",
+          sections: [
+            { id: "u1", title: "방문 전 기록부와 이력 조회 열기", rows: [["성능·상태점검기록부 요청", "사고, 교환, 누유, 주행거리 항목을 볼 수 있어야 합니다."], ["보험 사고 이력 조회", "판매자가 말하지 않은 사고 이력이 있는지 확인합니다."]] },
+            { id: "u2", title: "외관, 타이어, 패널 간격 보기", rows: [["차체 색 차이와 패널 간격 비교", "좌우 문, 보닛, 트렁크 주변을 봅니다."], ["타이어 마모와 제조 시기 확인", "네 바퀴 상태가 크게 다르면 추가 확인 대상으로 둡니다."]] },
+            { id: "u3", title: "시운전 중 소리와 제동 느낌 메모하기", rows: [["출발/정차 때 떨림 확인", "반복되는 소리만 메모합니다."], ["걸리는 항목을 계약 전 질문으로 남기기", "바로 결정하지 말고 확인할 항목만 남깁니다."]] }
+          ]
+        },
+        {
+          id: "school",
+          group: "upcoming",
+          title: "초등학교 입학 준비물",
+          source: "웰로/동작구 입학준비물",
+          sourceUrl: "https://www.welfarehello.com/community/hometownNews/%EC%9A%B0%EB%A6%AC%EC%95%84%EC%9D%B4-%EC%84%A4%EB%A0%88%EB%8A%94-%EC%B2%AB-%EC%B6%9C%EB%B0%9C-%EC%B4%88%EB%93%B1%ED%95%99%EA%B5%90-%EC%9E%85%ED%95%99%EC%A4%80%EB%B9%84%EB%AC%BC-%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8--fdcb3d95-44e4-48eb-9ce8-67bed2640c48",
+          artifact: "준비물 체크리스트",
+          kind: "checklist",
+          primary: "남은 준비물 체크하기",
+          next: "입학 전",
+          progress: 40,
+          input: "입학일 optional",
+          rows: [["가방 준비", "교과서와 필기도구가 들어가는 크기인지 봅니다."], ["이름스티커 붙이기", "소지품 분실에 대비해 미리 붙입니다."], ["필기류 준비", "2B연필과 돌돌이 색연필을 준비합니다."], ["실내화와 실내화 가방 준비", "앞뒤가 막혀 있고 미끄러지지 않는지 확인합니다."], ["청결용품 챙기기", "손수건, 물티슈, 손소독제, 여분 마스크를 챙깁니다."]]
+        },
+        {
+          id: "workout",
+          group: "routine",
+          title: "초보 홈트 영상 실행",
+          source: "YouTube 초보 전신운동 영상",
+          sourceUrl: "https://www.youtube.com/watch?v=W4SpM2gxGdE",
+          artifact: "반복 운동 일정",
+          kind: "routine",
+          primary: "오늘 운동 영상 열기",
+          next: "월/수/금 20:00",
+          progress: 33,
+          input: "월/수/금 20:00, 4주",
+          rows: [["영상 열고 한 번 따라 하기", "자세, 속도, 쉬는 타이밍은 원본 영상에서 확인합니다."], ["운동 후 완료 체크", "완료 여부만 체크하고 오래 쓰지 않습니다."], ["중단 조건 확인", "통증, 어지러움, 호흡 곤란이 있으면 중단합니다."]]
+        },
+        {
+          id: "craft",
+          group: "saved",
+          title: "루돌프 스퀴시 만들기",
+          source: "SEOSWEET CRAFT 무료 도안 영상",
+          sourceUrl: "https://www.youtube.com/watch?v=REurKhkEKz4",
+          artifact: "버킷 항목 + 준비물",
+          kind: "bucket",
+          primary: "놀이 날짜 붙이기",
+          next: "날짜 미정",
+          progress: 0,
+          input: "날짜 없음",
+          rows: [["도안 준비", "원본 영상 설명에서 무료 도안 안내를 확인합니다."], ["투명 테이프 준비", "도안을 코팅하듯 붙일 때 사용합니다."], ["풍선과 솜 준비", "스퀴시 안에 넣을 재료로 준비합니다."], ["가위와 색칠도구 준비", "자르기와 꾸미기에 사용합니다."]]
+        },
+        {
+          id: "stuckyi",
+          group: "routine",
+          title: "스투키 물주기",
+          source: "에픽플랜츠 스투키 관리법",
+          sourceUrl: "https://epicplants.tistory.com/entry/dracaena-stuckyi-care",
+          artifact: "반복 일정 + 관리 메모",
+          kind: "routine",
+          primary: "다음 물주기 후보 확인",
+          next: "2026-06-20",
+          progress: 50,
+          input: "첫 물주기 2026-06-20",
+          rows: [["속 흙까지 말랐는지 확인", "겉흙만 보지 않고 속 흙까지 말랐는지 봅니다."], ["화분 아래로 흘러나올 정도로 물주기", "한 번 줄 때는 충분히 주되 너무 자주 주지 않습니다."], ["받침 물 제거", "과습과 뿌리 썩음을 막기 위해 받침 물을 버립니다."], ["겨울에는 간격 늦추기", "여름은 2~3주, 겨울은 4~6주 간격을 기준으로 봅니다."]]
+        },
+        {
+          id: "babycheck",
+          group: "upcoming",
+          title: "영유아 건강검진 일정",
+          source: "구로구 보건소 검진안내",
+          sourceUrl: "https://www.guro.go.kr/health/contents.do?key=1357",
+          artifact: "생년월일 기준 표",
+          kind: "schedule",
+          primary: "다음 검진 기간 확인",
+          next: "2차 건강검진",
+          progress: 15,
+          input: "생년월일 2025-12-01",
+          schedule: [["1차 건강검진", "생후 14~35일", "완료"], ["2차 건강검진", "생후 4~6개월", "예약 전"], ["3차 건강검진", "생후 9~12개월", "대기"], ["구강검진", "생후 18~29개월", "대기"]]
+        }
+      ];
+
+      const state = {
+        active: "jeonse",
+        filter: "all",
+        selectedEntry: {},
+        checked: {},
+        memo: {},
+        toast: ""
+      };
+
+      const $ = (id) => document.getElementById(id);
+      const flow = () => flows.find((item) => item.id === state.active) || flows[0];
+      const keyFor = (flowId, rowId, index) => `${flowId}-${rowId}-${index}`;
+
+      function groupLabel(group) {
+        return { today: "오늘", upcoming: "예정", saved: "보관", routine: "반복" }[group] || "전체";
+      }
+
+      function filteredFlows() {
+        if (state.filter === "all") return flows;
+        return flows.filter((item) => item.group === state.filter);
+      }
+
+      function rowsFor(item) {
+        if (item.kind === "timeline") {
+          const selected = state.selectedEntry[item.id] || item.entries[0].id;
+          const entry = item.entries.find((row) => row.id === selected) || item.entries[0];
+          return { title: entry.title, rows: entry.rows, id: entry.id, subtitle: `${entry.label} · ${entry.date}` };
+        }
+        if (item.kind === "field") {
+          const selected = state.selectedEntry[item.id] || item.sections[0].id;
+          const section = item.sections.find((row) => row.id === selected) || item.sections[0];
+          return { title: section.title, rows: section.rows, id: section.id, subtitle: "현장 체크" };
+        }
+        return { title: item.primary, rows: item.rows || [], id: "single", subtitle: item.artifact };
+      }
+
+      function doneCount(item) {
+        const rowInfo = rowsFor(item);
+        return rowInfo.rows.filter((_, index) => state.checked[keyFor(item.id, rowInfo.id, index)]).length;
+      }
+
+      function renderList() {
+        document.querySelectorAll("[data-filter]").forEach((button) => {
+          button.classList.toggle("active", button.dataset.filter === state.filter);
+        });
+        $("flowList").innerHTML = filteredFlows().map((item) => `
+          <button class="flow-card ${item.id === state.active ? "active" : ""}" type="button" data-flow="${item.id}">
+            <span class="flow-title">${item.title}</span>
+            <span class="flow-meta">${item.artifact} · ${groupLabel(item.group)}</span>
+            <span class="flow-foot">
+              <span class="small">${item.next}</span>
+              <span class="chip ${item.group === "today" ? "green" : item.group === "saved" ? "amber" : "blue"}">${item.progress}%</span>
+            </span>
+          </button>
+        `).join("");
+      }
+
+      function renderArtifact(item) {
+        if (item.kind === "timeline") {
+          return `
+            <div class="artifact-list">
+              ${item.entries.map((entry) => `
+                <div class="row ${entry.id === (state.selectedEntry[item.id] || item.entries[0].id) ? "active" : ""}">
+                  <span class="chip blue">${entry.label}</span>
+                  <button type="button" data-entry="${entry.id}">
+                    <p class="item-title">${entry.title}</p>
+                    <span class="small">${entry.date}</span>
+                  </button>
+                  <span class="small">${entry.rows.length}개</span>
+                </div>
+              `).join("")}
+            </div>
+          `;
+        }
+        if (item.kind === "field") {
+          return `
+            <div class="artifact-list">
+              ${item.sections.map((section, index) => `
+                <div class="row ${section.id === (state.selectedEntry[item.id] || item.sections[0].id) ? "active" : ""}">
+                  <span class="chip blue">${index + 1}</span>
+                  <button type="button" data-entry="${section.id}">
+                    <p class="item-title">${section.title}</p>
+                    <span class="small">${section.rows.length}개 체크</span>
+                  </button>
+                  <span class="small">현장</span>
+                </div>
+              `).join("")}
+            </div>
+          `;
+        }
+        if (item.kind === "schedule") {
+          return `
+            <div class="rows">
+              ${item.schedule.map((row) => `
+                <div class="row">
+                  <span class="chip ${row[2] === "완료" ? "green" : row[2] === "예약 전" ? "amber" : "blue"}">${row[2]}</span>
+                  <span><p class="item-title">${row[0]}</p><span class="small">${row[1]}</span></span>
+                  <span class="small">표</span>
+                </div>
+              `).join("")}
+            </div>
+          `;
+        }
+        if (item.kind === "bucket") {
+          return `
+            <label class="small" for="bucketDate">할 날짜가 생기면 캘린더에 붙이기</label>
+            <input id="bucketDate" type="date" value="">
+            <div class="rows" style="margin-top:8px">
+              ${item.rows.map((row, index) => `
+                <div class="row">
+                  <span class="chip amber">${index + 1}</span>
+                  <span><p class="item-title">${row[0]}</p><span class="small">${row[1]}</span></span>
+                  <span class="small">준비물</span>
+                </div>
+              `).join("")}
+            </div>
+          `;
+        }
+        if (item.kind === "routine") {
+          return `
+            <div class="calendar" aria-label="반복 일정 미리보기">
+              ${["월","화","수","목","금","토","일"].map((day) => `<div class="calendar-day ${["월","수","금"].includes(day) && item.id === "workout" ? "marked" : day === "토" && item.id === "stuckyi" ? "today" : ""}">${day}<br>${item.id === "workout" && ["월","수","금"].includes(day) ? "20:00" : item.id === "stuckyi" && day === "토" ? "물주기" : ""}</div>`).join("")}
+            </div>
+          `;
+        }
+        return "";
+      }
+
+      function renderTasks(item) {
+        const rowInfo = rowsFor(item);
+        return `
+          <p class="small" style="font-weight:900;color:var(--blue);margin-bottom:6px">${rowInfo.subtitle}</p>
+          <h3>${rowInfo.title}</h3>
+          <div class="task-list">
+            ${rowInfo.rows.map((row, index) => {
+              const id = keyFor(item.id, rowInfo.id, index);
+              return `
+                <label class="task ${state.checked[id] ? "done" : ""}">
+                  <input type="checkbox" data-check="${id}" ${state.checked[id] ? "checked" : ""}>
+                  <span><p class="item-title">${row[0]}</p><span class="small">${row[1]}</span></span>
+                  <span class="chip ${state.checked[id] ? "green" : "blue"}">${state.checked[id] ? "완료" : "체크"}</span>
+                </label>
+              `;
+            }).join("")}
+          </div>
+        `;
+      }
+
+      function renderDetail() {
+        const item = flow();
+        const rowInfo = rowsFor(item);
+        const done = doneCount(item);
+        $("detail").innerHTML = `
+          <div class="detail-head">
+            <div>
+              <p class="small" style="font-weight:900;color:var(--blue);margin-bottom:6px">${item.source}</p>
+              <h2>${item.title}</h2>
+              <p class="desc">${item.primary}</p>
+              <div class="chips">
+                <span class="chip blue">${item.artifact}</span>
+                <span class="chip green">${item.input}</span>
+                <span class="chip amber">다음: ${item.next}</span>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn" type="button" id="mainAction">${item.kind === "bucket" ? "날짜 붙이기" : item.kind === "schedule" ? "표 열기" : "내 도구로 옮기기"}</button>
+              <button class="btn secondary" type="button" id="openSource">원문 열기</button>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat"><strong>${item.progress}%</strong><span class="small">전체 진행</span><div class="progress" style="margin-top:8px"><span style="--value:${item.progress}%"></span></div></div>
+            <div class="stat"><strong>${done}/${rowInfo.rows.length}</strong><span class="small">현재 화면 체크</span></div>
+            <div class="stat"><strong>${groupLabel(item.group)}</strong><span class="small">관리 위치</span></div>
+          </div>
+
+          <div class="content-grid">
+            <article class="card">
+              <h3>${item.kind === "bucket" ? "보관한 자료" : item.kind === "routine" ? "반복 일정" : "실행 항목"}</h3>
+              ${renderArtifact(item)}
+            </article>
+            <article class="card">
+              ${renderTasks(item)}
+              <label class="small" style="display:block;margin-top:12px" for="memo">메모</label>
+              <textarea id="memo" placeholder="다시 볼 내용만 짧게 남기기">${state.memo[item.id] || ""}</textarea>
+              <div class="source-box">원문: <a href="${item.sourceUrl}" target="_blank" rel="noreferrer">${item.source}</a></div>
+              ${state.toast ? `<div class="toast">${state.toast}</div>` : ""}
+            </article>
+          </div>
+        `;
+      }
+
+      function render() {
+        renderList();
+        renderDetail();
+      }
+
+      document.addEventListener("click", (event) => {
+        const filter = event.target.closest("[data-filter]");
+        if (filter) {
+          state.filter = filter.dataset.filter;
+          const first = filteredFlows()[0];
+          if (first && !filteredFlows().some((item) => item.id === state.active)) state.active = first.id;
+          state.toast = "";
+          render();
+          return;
+        }
+        const selectedFlow = event.target.closest("[data-flow]");
+        if (selectedFlow) {
+          state.active = selectedFlow.dataset.flow;
+          state.toast = "";
+          render();
+          return;
+        }
+        const selectedEntry = event.target.closest("[data-entry]");
+        if (selectedEntry) {
+          state.selectedEntry[state.active] = selectedEntry.dataset.entry;
+          state.toast = "";
+          render();
+          return;
+        }
+        const check = event.target.closest("[data-check]");
+        if (check) {
+          state.checked[check.dataset.check] = check.checked;
+          render();
+          return;
+        }
+        if (event.target.id === "mainAction") {
+          const item = flow();
+          state.toast = item.kind === "bucket"
+            ? `${item.title}에 날짜를 붙일 수 있습니다. 준비물은 그대로 보관됩니다.`
+            : `${item.artifact} 형태로 내 도구에 옮길 준비가 됐습니다.`;
+          render();
+          return;
+        }
+        if (event.target.id === "openSource") {
+          const item = flow();
+          state.toast = `${item.source} 원문을 새 탭으로 엽니다.`;
+          window.open(item.sourceUrl, "_blank", "noopener");
+          render();
+          return;
+        }
+        if (event.target.id === "showToday") {
+          state.filter = "today";
+          state.active = filteredFlows()[0]?.id || state.active;
+          state.toast = "";
+          render();
+          return;
+        }
+        if (event.target.id === "showSaved") {
+          state.filter = "saved";
+          state.active = filteredFlows()[0]?.id || state.active;
+          state.toast = "";
+          render();
+          return;
+        }
+        if (event.target.id === "openFeedback") {
+          state.toast = "이 Flow가 실제로 도움이 됐는지, 막힌 지점만 짧게 남깁니다.";
+          render();
+        }
+      });
+
+      document.addEventListener("input", (event) => {
+        if (event.target.id === "memo") {
+          state.memo[state.active] = event.target.value;
+        }
+      });
+
+      render();
+    </script>
+  </body>
+</html>

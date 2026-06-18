@@ -36,6 +36,13 @@ export type FlowUser = {
   is_preview_channel?: boolean;
 };
 
+export type FlowHoldSection = {
+  title: string;
+  reasons: string[];
+  consequence: string;
+  memo_template: string;
+};
+
 export type Flow = {
   id: string;
   slug: string;
@@ -51,6 +58,11 @@ export type Flow = {
   source_status?: SourceStatus;
   source_precision?: SourcePrecision;
   primary_destination?: PrimaryDestination;
+  setup_anchor_label?: string;
+  setup_anchor_hint?: string;
+  stop_conditions?: string[];
+  principles?: string[];
+  hold_section?: FlowHoldSection;
   /**
    * For `routine` flows exported to a recurring calendar event: the total number
    * of days the routine is meant to run before it stops. When set, the ICS RRULE
@@ -95,6 +107,9 @@ export type FlowItem = {
   repeat_rule?: string;
   source_type?: SourceType;
   risk_level?: RiskLevel;
+  hold_eligible?: boolean;
+  photo_filename_pattern?: string;
+  status?: 'ok' | 'check' | 'hold';
   order: number;
 };
 

@@ -9,6 +9,8 @@ build/
 coverage/
 test-results/
 artifacts/
+output/
+outputs/
 
 # Generated QA exports
 prod-smoke-*.xlsx
@@ -36,9 +38,11 @@ Thumbs.db
 .worktrees/
 docs/superpowers/
 demo/
+next_job.md
 
 # Vercel local project link
 .vercel/
+public/content-audit/.vercel/
 
 .vercel
 *.tsbuildinfo

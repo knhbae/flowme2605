@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 경험맵 플랫폼 구조 스터디</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f8fb;
+        --surface: #ffffff;
+        --soft: #f8fafc;
+        --line: #d8e2ef;
+        --text: #101827;
+        --muted: #5d697b;
+        --blue: #1f5fbf;
+        --green: #0f7a4a;
+        --amber: #9a6100;
+        --red: #b42318;
+        --radius: 8px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, #fbfdff 0, var(--bg) 460px);
+        color: var(--text);
+        font-size: 16px;
+        line-height: 1.62;
+      }
+      main { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 18px 0 64px; }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 48px); line-height: 1.1; letter-spacing: 0; }
+      h2 { margin-bottom: 10px; font-size: clamp(23px, 3vw, 34px); line-height: 1.2; letter-spacing: 0; }
+      h3 { margin-bottom: 6px; font-size: 19px; letter-spacing: 0; }
+      a { color: var(--blue); text-underline-offset: 3px; }
+      ul { margin: 0; padding-left: 20px; }
+      li + li { margin-top: 5px; }
+      .hero, .card, .mini, .option, .model, .flow-node {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+      }
+      .hero { padding: 20px; box-shadow: 0 14px 34px rgba(16, 24, 39, .08); }
+      .card { margin-top: 14px; padding: 16px; }
+      .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 900; text-transform: uppercase; }
+      .desc { color: var(--muted); }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 4px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--soft);
+        color: #334155;
+        font-size: 13px;
+        font-weight: 850;
+      }
+      .chip.blue { border-color: #b7cdf5; background: #eef5ff; color: #174ea6; }
+      .chip.green { border-color: #b8e2c4; background: #eefaf2; color: var(--green); }
+      .chip.amber { border-color: #f1d58b; background: #fff9e8; color: var(--amber); }
+      .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+      .mini, .option, .model { padding: 14px; }
+      .mini strong { display: block; margin-bottom: 4px; font-size: 24px; }
+      .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+      table { width: 100%; min-width: 980px; border-collapse: collapse; background: white; }
+      th, td { padding: 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+      th { background: #f4f7fb; color: #334155; font-size: 13px; }
+      tr:last-child td { border-bottom: 0; }
+      .score {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 3px 9px;
+        border-radius: 999px;
+        border: 1px solid #b8e2c4;
+        background: #eefaf2;
+        color: var(--green);
+        font-size: 13px;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+      .warn {
+        margin-top: 12px;
+        padding: 12px;
+        border-left: 4px solid var(--amber);
+        border-radius: 6px;
+        background: #fff9e8;
+        color: #6b4500;
+        font-weight: 760;
+      }
+      .flow-map {
+        display: grid;
+        grid-template-columns: 220px minmax(0, 1fr);
+        gap: 12px;
+        align-items: start;
+      }
+      .flow-stage {
+        display: grid;
+        gap: 10px;
+      }
+      .flow-node {
+        padding: 12px;
+        background: #fbfdff;
+      }
+      .node-title { margin: 0 0 5px; font-weight: 950; }
+      .node-meta { margin: 0; color: var(--muted); font-size: 14px; }
+      .road {
+        display: grid;
+        gap: 10px;
+      }
+      .arrow {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 900;
+      }
+      .option.recommended {
+        border-color: #9bbbf0;
+        background: #f3f8ff;
+        box-shadow: inset 4px 0 0 var(--blue);
+      }
+      .source-list li { word-break: break-word; }
+      code {
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        background: #f8fafc;
+        padding: 1px 5px;
+        color: #334155;
+      }
+      @media (max-width: 860px) {
+        main { width: min(100% - 18px, 1180px); }
+        .grid-2, .grid-3, .flow-map { grid-template-columns: 1fr; }
+        table { min-width: 760px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <p class="eyebrow">Experience Map Platform Study</p>
+        <h1>FlowMe는 작은 Flow 변환기에서 경험맵 플랫폼으로 넘어가야 한다</h1>
+        <p class="desc">지금까지는 원컨텐츠 하나가 작은 실행 Flow가 될 수 있는지 확인했다. 다음 질문은 제작자가 본인의 경험을 큰 지도처럼 구조화하고, 그 안에 작은 Flow들을 연결해 사용자에게 제공할 수 있는지다.</p>
+        <div class="chips">
+          <span class="chip blue">creator map</span>
+          <span class="chip blue">child Flow</span>
+          <span class="chip blue">save full or partial</span>
+          <span class="chip green">calendar/checklist/sheet/memo</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>결론 먼저</h2>
+        <div class="grid-3">
+          <div class="mini">
+            <strong>1</strong>
+            <h3>작은 Flow 단위는 1차 충분</h3>
+            <p class="desc">날짜형, 체크리스트형, 표형, 루틴형, 버킷형은 대강 성립한다. 더 파면 개별 polish다.</p>
+          </div>
+          <div class="mini">
+            <strong>2</strong>
+            <h3>플랫폼 검증은 아직</h3>
+            <p class="desc">제작자가 큰 경험 구조를 만들고 하위 Flow를 연결하는 레이어는 아직 검증하지 않았다.</p>
+          </div>
+          <div class="mini">
+            <strong>3</strong>
+            <h3>다음 PoC는 경험맵</h3>
+            <p class="desc">자격증 취득처럼 단계, 기간, 과목, 루틴, 체크리스트가 섞인 큰 경험맵 1개를 만든다.</p>
+          </div>
+        </div>
+        <p class="warn">핵심 판단: FlowMe가 Notion 템플릿 마켓, Coursera 코스, roadmap.sh 로드맵, Asana 프로젝트 템플릿 중 하나를 그대로 복사하면 안 된다. FlowMe의 단위는 <strong>실행 가능한 child Flow가 붙은 경험맵</strong>이어야 한다.</p>
+      </section>
+
+      <section class="card">
+        <h2>참고 플랫폼 구조 스터디</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>플랫폼 유형</th>
+                <th>대표 서비스</th>
+                <th>구조</th>
+                <th>FlowMe에 유용한 점</th>
+                <th>그대로 따라 하면 안 되는 점</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>로드맵/경로</td>
+                <td><a href="https://roadmap.sh/">roadmap.sh</a></td>
+                <td>역할/스킬 기반 로드맵, 가이드, 프로젝트, 학습 여정</td>
+                <td>큰 목표를 노드와 경로로 보여주는 방식이 경험맵에 가깝다.</td>
+                <td>실행 artifact가 약하면 “읽는 지도”로 끝난다. FlowMe는 각 노드가 캘린더/체크리스트/표로 실행되어야 한다.</td>
+              </tr>
+              <tr>
+                <td>코스/자격 프로그램</td>
+                <td><a href="https://www.coursera.org/about/how-coursera-works">Coursera</a>, <a href="https://www.coursera.org/articles/what-is-coursera">Coursera Specializations</a></td>
+                <td>Guided Project, Course, Specialization, Professional Certificate처럼 단위가 계층화된다.</td>
+                <td>큰 목표 아래 여러 코스/프로젝트를 묶는 구조는 자격증/커리어 경험맵에 참고할 만하다.</td>
+                <td>FlowMe는 강의 플랫폼이 아니다. 영상 수강/퀴즈/성적 관리보다 사용자의 기존 도구로 옮겨 실행하는 것이 우선이다.</td>
+              </tr>
+              <tr>
+                <td>창작자 교육 비즈니스</td>
+                <td><a href="https://www.teachable.com/">Teachable</a>, <a href="https://www.kajabi.com/product">Kajabi</a>, <a href="https://maven.com/">Maven</a></td>
+                <td>코스, 코칭, 디지털 다운로드, 멤버십, 커뮤니티, 코호트 프로그램</td>
+                <td>제작자가 자신의 전문성을 상품화하고, 여러 제품 유형을 묶어 제공하는 구조를 참고할 수 있다.</td>
+                <td>초기 FlowMe가 결제/멤버십/코칭 플랫폼으로 보이면 Stage 0이 무거워진다.</td>
+              </tr>
+              <tr>
+                <td>템플릿 마켓</td>
+                <td><a href="https://www.notion.com/templates">Notion Marketplace</a>, <a href="https://www.notion.com/help/selling-on-marketplace">Notion creator profile</a>, <a href="https://help.figma.com/hc/en-us/articles/360042293394-Publish-plugins-to-the-Figma-Community">Figma Community</a></td>
+                <td>제작자 프로필, 템플릿/파일/플러그인 발행, 갤러리 탐색, 복제/설치</td>
+                <td>제작자 프로필과 발행된 실행 자산 목록은 FlowMe creator page에 유용하다.</td>
+                <td>FlowMe는 템플릿을 복제하는 데서 끝나면 약하다. 복제 후 사용자의 날짜/상황에 맞게 실행되어야 한다.</td>
+              </tr>
+              <tr>
+                <td>프로젝트 템플릿</td>
+                <td><a href="https://asana.com/templates">Asana Templates</a>, <a href="https://help.asana.com/s/article/task-templates">Asana Task Templates</a>, <a href="https://trello.com/templates">Trello Templates</a></td>
+                <td>프로젝트, 섹션, 작업, 마일스톤, 카드, 체크리스트를 복제해 반복 업무를 표준화한다.</td>
+                <td>큰 경험맵 안에 마일스톤과 하위 실행 카드가 들어가는 구조에 참고할 수 있다.</td>
+                <td>FlowMe가 프로젝트 관리 툴처럼 보이면 입력/관리 부담이 커진다. 사용자는 전체 업무 관리보다 실행 artifact를 원한다.</td>
+              </tr>
+              <tr>
+                <td>문서/지식 계층</td>
+                <td><a href="https://gitbook.com/docs/creating-content/content-structure/collection">GitBook Collections</a>, <a href="https://gitbook.com/docs/creating-content/content-structure/space">GitBook Spaces</a></td>
+                <td>Collection, Space, Page로 지식을 계층화하고 권한/공개 범위를 관리한다.</td>
+                <td>제작자 경험맵의 단계/섹션/자료 구조를 정리할 때 유용하다.</td>
+                <td>문서 계층만 있으면 실행성이 약하다. FlowMe는 각 페이지가 실행 Flow로 연결되어야 한다.</td>
+              </tr>
+              <tr>
+                <td>지도/루트 탐색</td>
+                <td><a href="https://www.alltrails.com/">AllTrails</a>, <a href="https://support.alltrails.com/hc/en-us/articles/360018930952-How-to-create-a-new-custom-list">AllTrails Lists</a></td>
+                <td>트레일 가이드, 지도, 리스트, 저장, 내 루트 생성/편집</td>
+                <td>경험맵을 “길 찾기”처럼 이해시키는 데 좋다. 전체 루트와 개별 구간을 동시에 보여준다.</td>
+                <td>GPS/지도 같은 시각적 은유를 과하게 쓰면 실행 항목보다 탐색 UI가 커질 수 있다.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>FlowMe에 맞는 핵심 구조</h2>
+        <div class="flow-map">
+          <div class="model">
+            <p class="eyebrow">Creator side</p>
+            <h3>제작자가 만드는 것</h3>
+            <ul>
+              <li>경험맵 제목과 대상</li>
+              <li>단계와 순서</li>
+              <li>각 단계의 하위 Flow</li>
+              <li>원문 URL/영상/자료</li>
+              <li>사용자에게 줄 저장 방식</li>
+            </ul>
+          </div>
+          <div class="road">
+            <div class="flow-node">
+              <p class="node-title">경험맵: 정보처리기사 합격까지</p>
+              <p class="node-meta">목표, 전체 기간, 단계, 제작자 설명, 전체 저장 버튼</p>
+            </div>
+            <div class="arrow">아래에 단계가 붙음</div>
+            <div class="flow-stage">
+              <div class="flow-node">
+                <p class="node-title">1단계 · 응시 가능 여부 확인</p>
+                <p class="node-meta">체크리스트 Flow · 서류/자격 요건 메모 · 원문 링크</p>
+              </div>
+              <div class="flow-node">
+                <p class="node-title">2단계 · 원서접수와 시험일 저장</p>
+                <p class="node-meta">캘린더 Flow · 접수 시작/마감/시험일 · 알림</p>
+              </div>
+              <div class="flow-node">
+                <p class="node-title">3단계 · 필기 과목별 공부</p>
+                <p class="node-meta">루틴/표 Flow · 과목별 주차 계획 · 기출 회차 체크</p>
+              </div>
+              <div class="flow-node">
+                <p class="node-title">4단계 · 시험 전 7일 준비</p>
+                <p class="node-meta">D-7 체크리스트 Flow · 준비물/수험표/이동 경로</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="warn">이 구조에서 작은 Flow는 여전히 중요하다. 다만 작은 Flow가 흩어져 있는 것이 아니라, 제작자가 만든 큰 경험 구조 안에서 의미를 가져야 플랫폼처럼 보인다.</p>
+      </section>
+
+      <section class="card">
+        <h2>제안안 4개</h2>
+        <div class="grid-2">
+          <article class="option recommended">
+            <div class="chips"><span class="chip green">추천 1순위</span><span class="chip blue">map-first</span></div>
+            <h3>안 A. 경험맵 우선 플랫폼</h3>
+            <p class="desc">제작자가 먼저 큰 경험맵을 만들고, 단계마다 하위 Flow를 붙인다. 사용자는 전체 맵을 저장하거나 특정 단계/Flow만 저장한다.</p>
+            <ul>
+              <li>예: 정보처리기사 합격까지, 초등 입학 준비 전체, 첫 해외여행 준비</li>
+              <li>사용자 화면: 전체 지도, 현재 단계, 이번 주 할 일, 하위 Flow 저장</li>
+              <li>제작자 화면: 단계 추가, 하위 Flow 연결, 원문 자료 연결, 사용자 미리보기</li>
+            </ul>
+            <p><span class="score">FlowMe 적합도 높음</span></p>
+          </article>
+
+          <article class="option">
+            <div class="chips"><span class="chip blue">creator shelf</span></div>
+            <h3>안 B. 제작자 컬렉션/선반</h3>
+            <p class="desc">제작자 프로필 아래에 독립 Flow들을 카테고리별로 모은다. Notion/Figma Community처럼 탐색과 복제가 쉽다.</p>
+            <ul>
+              <li>예: “A 강사의 자격증 Flow 모음”, “B 부모의 초등 준비 Flow 모음”</li>
+              <li>장점: 빠르게 만들 수 있고 현재 작은 Flow 자산을 재사용 가능</li>
+              <li>한계: 플랫폼/경험맵 느낌은 약하다. 단순 템플릿 갤러리로 보일 수 있다.</li>
+            </ul>
+          </article>
+
+          <article class="option">
+            <div class="chips"><span class="chip blue">program-first</span></div>
+            <h3>안 C. 프로그램/코호트형 Flow</h3>
+            <p class="desc">4주, 8주, D-30처럼 기간이 정해진 프로그램을 만든다. Maven/Coursera식 프로그램 구조를 가볍게 가져온다.</p>
+            <ul>
+              <li>예: 4주 홈트, 30일 글쓰기, 시험 D-30 준비</li>
+              <li>장점: 기간/반복/진행률이 명확하다.</li>
+              <li>한계: 강의 플랫폼이나 챌린지 앱처럼 보일 수 있다. 모든 경험에 맞지는 않는다.</li>
+            </ul>
+          </article>
+
+          <article class="option">
+            <div class="chips"><span class="chip amber">나중</span><span class="chip blue">AI compiler</span></div>
+            <h3>안 D. 원문 묶음에서 경험맵 자동 생성</h3>
+            <p class="desc">제작자가 여러 URL, 영상, 문서를 넣으면 FlowMe가 경험맵 초안을 만든다. 강력하지만 지금 바로 하기엔 위험하다.</p>
+            <ul>
+              <li>장점: FlowMe의 자동화 가치가 가장 강하게 보인다.</li>
+              <li>위험: 여러 출처가 섞이면서 source fidelity가 깨지기 쉽다.</li>
+              <li>전제: 안 A의 수동/반자동 경험맵 구조가 먼저 검증되어야 한다.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>추천 방향</h2>
+        <p>바로 다음 PoC는 <strong>안 A: 경험맵 우선 플랫폼</strong>이 맞다. 이유는 작고 독립적인 Flow를 더 만드는 것보다, 제작자 플랫폼으로 보이는지 판단하는 데 더 직접적이기 때문이다.</p>
+        <div class="grid-2">
+          <div class="mini">
+            <h3>제작자 화면에서 확인할 것</h3>
+            <ul>
+              <li>큰 경험 목표를 만들 수 있는가?</li>
+              <li>단계를 추가하고 순서를 조정할 수 있는가?</li>
+              <li>단계 안에 하위 Flow를 붙일 수 있는가?</li>
+              <li>각 Flow가 원문 1개와 자연 artifact를 유지하는가?</li>
+              <li>발행 전 사용자 화면을 예측할 수 있는가?</li>
+            </ul>
+          </div>
+          <div class="mini">
+            <h3>사용자 화면에서 확인할 것</h3>
+            <ul>
+              <li>전체 지도를 5초 안에 이해하는가?</li>
+              <li>전체 저장과 일부 저장의 차이를 아는가?</li>
+              <li>오늘/이번 주 할 일이 보이는가?</li>
+              <li>하위 Flow를 열면 캘린더/체크리스트/표가 실행 가능한가?</li>
+              <li>경험맵이 단순 링크 모음처럼 보이지 않는가?</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>다음 PoC 제안: 자격증 취득 경험맵</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>단계</th>
+                <th>하위 Flow</th>
+                <th>artifact</th>
+                <th>사용자 입력</th>
+                <th>제작자가 채우는 것</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>시작 전</td>
+                <td>응시자격 확인</td>
+                <td>체크리스트</td>
+                <td>없음 또는 내 상태 메모</td>
+                <td>공식 응시자격 링크, 확인 항목, 예외 상담 경계</td>
+              </tr>
+              <tr>
+                <td>접수</td>
+                <td>원서접수 일정 저장</td>
+                <td>캘린더</td>
+                <td>접수 기간/시험일 또는 회차 선택</td>
+                <td>접수 시작, 마감, 수험표, 시험일, 결제/서류 메모</td>
+              </tr>
+              <tr>
+                <td>필기 준비</td>
+                <td>과목별 공부 계획</td>
+                <td>캘린더 + 표</td>
+                <td>시험일, 주당 공부 요일</td>
+                <td>과목, 주차, 기출 회차, 완료 기준</td>
+              </tr>
+              <tr>
+                <td>반복 훈련</td>
+                <td>기출 풀이 루틴</td>
+                <td>반복 일정 + 오답 표</td>
+                <td>시작일, 반복 요일, 종료일</td>
+                <td>회차 목록, 오답 기록 칸, 재풀이 기준</td>
+              </tr>
+              <tr>
+                <td>시험 직전</td>
+                <td>D-7 시험 준비</td>
+                <td>D-day 체크리스트</td>
+                <td>시험일</td>
+                <td>수험표, 신분증, 장소, 이동, 준비물, 금지품목</td>
+              </tr>
+              <tr>
+                <td>합격 후</td>
+                <td>자격증/서류 처리</td>
+                <td>체크리스트 + 메모</td>
+                <td>없음 또는 처리 마감일</td>
+                <td>발급 신청, 제출 서류, 기관 링크, 처리 메모</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>이번 단계의 산출물 제안</h2>
+        <ol>
+          <li><strong>경험맵 사용자 화면 HTML</strong>: 전체 지도, 단계, child Flow, 전체 저장/부분 저장, 오늘/이번 주 실행.</li>
+          <li><strong>제작자 화면 HTML</strong>: 맵 생성, 단계 추가, 하위 Flow 연결, 원문 연결, 사용자 미리보기.</li>
+          <li><strong>기획 리포트</strong>: 작은 Flow와 경험맵의 차이, 필요한 데이터 구조, Stage 0 범위, 하지 말아야 할 것.</li>
+        </ol>
+        <p class="warn">이 PoC에서는 로그인, 결제, 마켓플레이스, 커뮤니티, 자동 URL 수집을 만들지 않는다. 목적은 “큰 경험맵 안에 작은 Flow가 붙을 때 FlowMe가 플랫폼처럼 보이는가”를 보는 것이다.</p>
+      </section>
+
+      <section class="card">
+        <h2>최소 데이터 구조 초안</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>객체</th>
+                <th>역할</th>
+                <th>필수 필드</th>
+                <th>주의</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>ExperienceMap</code></td>
+                <td>큰 경험 지도</td>
+                <td>title, audience, goal, expectedDuration, creatorId, status</td>
+                <td>지도 자체가 강의 페이지처럼 길어지면 안 됨</td>
+              </tr>
+              <tr>
+                <td><code>MapStage</code></td>
+                <td>경험의 단계</td>
+                <td>mapId, title, order, objective, gate, optionalDateLogic</td>
+                <td>단계는 읽기용 섹션이 아니라 실행 묶음이어야 함</td>
+              </tr>
+              <tr>
+                <td><code>ChildFlow</code></td>
+                <td>작은 실행 Flow</td>
+                <td>stageId, title, destination, sourceUrl, inputs, artifactTemplate</td>
+                <td>원컨텐츠 1개와 natural artifact 원칙 유지</td>
+              </tr>
+              <tr>
+                <td><code>UserMapCopy</code></td>
+                <td>사용자가 저장한 전체/부분 지도</td>
+                <td>userId, mapId, savedStages, savedFlows, anchorValues</td>
+                <td>초기에는 로컬/정적 시뮬레이션으로 충분</td>
+              </tr>
+              <tr>
+                <td><code>ExecutionItem</code></td>
+                <td>캘린더/체크리스트/표의 실제 항목</td>
+                <td>flowId, title, date, repeat, checklistRows, memo, sourceUrl</td>
+                <td>작은 Flow에서 이미 검증한 artifact 패턴을 재사용</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>참고 링크</h2>
+        <ul class="source-list">
+          <li>roadmap.sh: <a href="https://roadmap.sh/">Developer Roadmaps</a>, <a href="https://roadmap.sh/roadmaps">Roadmaps</a></li>
+          <li>Coursera: <a href="https://www.coursera.org/about/how-coursera-works">How Coursera works</a>, <a href="https://www.coursera.org/articles/what-is-coursera">Courses, Specializations, Professional Certificates</a></li>
+          <li>Creator course platforms: <a href="https://www.teachable.com/">Teachable</a>, <a href="https://www.kajabi.com/product">Kajabi product</a>, <a href="https://maven.com/">Maven</a></li>
+          <li>Template/community platforms: <a href="https://www.notion.com/templates">Notion Marketplace</a>, <a href="https://www.notion.com/help/selling-on-marketplace">Notion selling on marketplace</a>, <a href="https://help.figma.com/hc/en-us/articles/360042293394-Publish-plugins-to-the-Figma-Community">Figma Community publishing</a></li>
+          <li>Project/work templates: <a href="https://asana.com/templates">Asana templates</a>, <a href="https://help.asana.com/s/article/task-templates">Asana task templates</a>, <a href="https://trello.com/templates">Trello templates</a></li>
+          <li>Knowledge structure: <a href="https://gitbook.com/docs/creating-content/content-structure/collection">GitBook Collections</a>, <a href="https://gitbook.com/docs/creating-content/content-structure/space">GitBook Spaces</a></li>
+          <li>Route/list model: <a href="https://www.alltrails.com/">AllTrails</a>, <a href="https://support.alltrails.com/hc/en-us/articles/360018930952-How-to-create-a-new-custom-list">AllTrails custom lists</a></li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

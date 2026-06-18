@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 외부 생태계 HTML 커버리지 감사</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7f9;
+        --paper: #ffffff;
+        --soft: #f2f6fb;
+        --ink: #101828;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d9e2ec;
+        --blue: #1d4ed8;
+        --blue-soft: #e9f1ff;
+        --green: #047857;
+        --green-soft: #e7f6ef;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --radius: 8px;
+        --shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard",
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          "Malgun Gothic",
+          system-ui,
+          sans-serif;
+        line-height: 1.6;
+        letter-spacing: 0;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.24;
+        word-break: keep-all;
+      }
+
+      p,
+      li,
+      td {
+        color: var(--body);
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.94em;
+      }
+
+      ol,
+      ul {
+        margin: 9px 0 0;
+        padding-left: 20px;
+      }
+
+      .page {
+        width: min(1240px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 22px 0 70px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        min-height: 54px;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        color: var(--muted);
+        font-size: 13px;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      }
+
+      .brand {
+        color: var(--ink);
+        font-weight: 900;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 290px;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .layout > * {
+        min-width: 0;
+      }
+
+      .hero,
+      .panel,
+      .nav {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .hero,
+      .panel {
+        padding: 28px;
+      }
+
+      .panel {
+        margin-top: 18px;
+      }
+
+      .hero h1 {
+        max-width: 940px;
+        font-size: clamp(30px, 4vw, 48px);
+        overflow-wrap: anywhere;
+      }
+
+      .lead {
+        max-width: 920px;
+        margin-top: 14px;
+        font-size: 17px;
+      }
+
+      .panel h2 {
+        margin-bottom: 10px;
+        font-size: 24px;
+      }
+
+      .section-lead {
+        max-width: 900px;
+        margin-bottom: 17px;
+        color: var(--muted);
+      }
+
+      .nav {
+        position: sticky;
+        top: 16px;
+        padding: 18px;
+      }
+
+      .nav h2 {
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      .nav a {
+        display: block;
+        padding: 9px 10px;
+        border-radius: 6px;
+        color: var(--body);
+        font-size: 14px;
+      }
+
+      .nav a:hover {
+        background: var(--soft);
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      .tag-row,
+      .link-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag-row {
+        margin-top: 18px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        max-width: 100%;
+        min-height: 30px;
+        padding: 5px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--soft);
+        color: var(--body);
+        font-size: 13px;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+      }
+
+      .tag.green {
+        border-color: #b9e6d0;
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .tag.amber {
+        border-color: #f1d28a;
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .tag.red {
+        border-color: #ffd0c9;
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      .grid-3,
+      .grid-2 {
+        display: grid;
+        gap: 12px;
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .summary-grid {
+        margin-top: 20px;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        padding: 15px;
+      }
+
+      .card.soft {
+        background: var(--soft);
+      }
+
+      .card h3 {
+        margin-bottom: 7px;
+        font-size: 16px;
+      }
+
+      .eyebrow {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+      }
+
+      table {
+        width: 100%;
+        min-width: 920px;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+        font-size: 14px;
+      }
+
+      th {
+        background: var(--soft);
+        color: var(--ink);
+        font-size: 13px;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .state {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: var(--green-soft);
+        color: var(--green);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .callout {
+        margin-top: 16px;
+        padding: 15px;
+        border: 1px solid #f1d28a;
+        border-radius: var(--radius);
+        background: var(--amber-soft);
+      }
+
+      .callout strong {
+        color: var(--amber);
+      }
+
+      .source-link {
+        display: inline-flex;
+        align-items: center;
+        max-width: 100%;
+        min-height: 34px;
+        padding: 7px 10px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--paper);
+        font-size: 13px;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+      }
+
+      .footer-note {
+        margin-top: 14px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 980px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .nav {
+          position: static;
+        }
+
+        .grid-3,
+        .grid-2 {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 640px) {
+        .page {
+          width: min(100% - 20px, 1240px);
+          padding-top: 10px;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero,
+        .panel,
+        .nav {
+          padding: 18px;
+        }
+
+        .grid-3,
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+
+        .hero h1 {
+          font-size: 30px;
+        }
+
+        .lead {
+          font-size: 16px;
+        }
+
+        table {
+          min-width: 860px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe Analysis Room</span> / HTML 커버리지 감사</div>
+        <div>작성일 2026-06-11 · 문서 커버리지 감사 · 검증/승인 아님</div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <section class="hero" id="top">
+            <h1>연결된 내부 문서의 주요 읽기 경로는 한국어 HTML로 덮였다</h1>
+            <p class="lead">
+              이 감사 문서는 외부 생태계 분석방에서 계속 참고해야 하는 로드맵, 압축표, 제품 규칙, 게이트, 보조 분석 문서가
+              한국어 HTML 진입점을 갖고 있는지 확인한다. 원문 Markdown은 source-of-record로 유지한다.
+            </p>
+            <div class="tag-row">
+              <span class="tag green">주요 연결 문서: HTML entrypoint 있음</span>
+              <span class="tag amber">Markdown 링크: 원문 추적용</span>
+              <span class="tag red">아님: 최신 소스 검증 · 사용자 행동 검증 · 통합 승인</span>
+            </div>
+            <div class="grid-3 summary-grid">
+              <article class="card soft">
+                <span class="eyebrow">Primary Path</span>
+                <h3>운영 인덱스 → 로드맵 → 연결 허브</h3>
+                <p>분석방을 다시 열 때 필요한 첫 세 문서가 모두 HTML로 연결되어 있다.</p>
+              </article>
+              <article class="card soft">
+                <span class="eyebrow">Decision Path</span>
+                <h3>Phase 1 · Phase 5 · 제품 규칙</h3>
+                <p>후보 순서, 압축표, export/integration 규칙이 독립 HTML로 분리되었다.</p>
+              </article>
+              <article class="card soft">
+                <span class="eyebrow">Gate Path</span>
+                <h3>기숙사 · 초등 · 원격 · 검색콘솔</h3>
+                <p>현재 후보와 경계 문서도 긴 Markdown 없이 읽을 수 있다.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="coverage">
+            <h2>1. 커버리지 표</h2>
+            <p class="section-lead">주요 연결 문서의 HTML 뷰와 source-of-record Markdown을 나란히 둔 표다.</p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>영역</th>
+                    <th>한국어 HTML</th>
+                    <th>원문 Markdown</th>
+                    <th>상태</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>분석방 운영 인덱스</td><td><a href="./2026-06-09-external-ecosystem-analysis-room-index-ko.html">HTML 열기</a></td><td><a href="./2026-06-09-external-ecosystem-analysis-room-index.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>외부 생태계 로드맵 원문</td><td><a href="./2026-06-08-external-ecosystem-analysis-roadmap-ko.html">HTML 열기</a></td><td><a href="./2026-06-08-external-ecosystem-analysis-roadmap.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>외부 생태계 로드맵 시각화</td><td><a href="./2026-06-09-external-ecosystem-roadmap-visual-ko.html">HTML 열기</a></td><td><a href="./2026-06-08-external-ecosystem-analysis-roadmap.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>연결 문서 허브</td><td><a href="./2026-06-09-external-ecosystem-connected-docs-visual-ko.html">HTML 열기</a></td><td>허브 전용 HTML</td><td><span class="state">covered</span></td></tr>
+                  <tr><td>배포 채널 핸드오프 허브</td><td><a href="./2026-06-11-distribution-channel-handoff-html-hub-ko.html">HTML 열기</a></td><td><a href="./2026-06-11-distribution-channel-handoff-html-hub.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>배포 채널 현재 상태 시작점</td><td><a href="./2026-06-11-distribution-channel-handoff-current-state-handoff-ko.html">HTML 열기</a></td><td><a href="./2026-06-11-distribution-channel-handoff-current-state-handoff.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>배포 채널 Stage 0 phase 체크포인트</td><td><a href="./2026-06-11-distribution-channel-stage0-phase-checkpoint-ko.html">HTML 열기</a></td><td><a href="./2026-06-11-distribution-channel-stage0-phase-checkpoint.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>배포 채널 문서 추가 중단 게이트</td><td><a href="./2026-06-11-distribution-channel-documentation-stop-gate-ko.html">HTML 열기</a></td><td><a href="./2026-06-11-distribution-channel-documentation-stop-gate.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>공유 패킷 관찰 당일 quick start</td><td><a href="./2026-06-11-school-dorm-share-packet-observation-day-quick-start-ko.html">HTML 열기</a></td><td><a href="./2026-06-11-school-dorm-share-packet-observation-day-quick-start.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>공유 패킷 관찰 초대 문구</td><td><a href="./2026-06-11-school-dorm-share-packet-recruiting-copy-ko.html">HTML 열기</a></td><td><a href="./2026-06-11-school-dorm-share-packet-recruiting-copy.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>공유 패킷 비식별 스케줄 트래커</td><td><a href="./2026-06-11-school-dorm-share-packet-scheduling-tracker-ko.html">HTML 열기</a></td><td><a href="./2026-06-11-school-dorm-share-packet-scheduling-tracker.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>공유 패킷 버전 고정표</td><td><a href="./2026-06-11-school-dorm-share-packet-version-lock-ko.html">HTML 열기</a></td><td><a href="./2026-06-11-school-dorm-share-packet-version-lock.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>공유 패킷 응답 코딩 기준표</td><td><a href="./2026-06-11-school-dorm-share-packet-response-coding-guide-ko.html">HTML 열기</a></td><td><a href="./2026-06-11-school-dorm-share-packet-response-coding-guide.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>공유 패킷 관찰 전 preflight 체크리스트</td><td><a href="./2026-06-11-school-dorm-share-packet-preflight-checklist-ko.html">HTML 열기</a></td><td><a href="./2026-06-11-school-dorm-share-packet-preflight-checklist.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>공유 패킷 파일럿 워크시트</td><td><a href="./2026-06-11-school-dorm-share-packet-pilot-worksheet-ko.html">HTML 열기</a></td><td><a href="./2026-06-11-school-dorm-share-packet-pilot-worksheet.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>공유 패킷 롤업 템플릿</td><td><a href="./2026-06-11-school-dorm-share-packet-rollup-template-ko.html">HTML 열기</a></td><td><a href="./2026-06-11-school-dorm-share-packet-rollup-template.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>공유 패킷 롤업 이후 가이드</td><td><a href="./2026-06-11-school-dorm-share-packet-post-rollup-decision-guide-ko.html">HTML 열기</a></td><td><a href="./2026-06-11-school-dorm-share-packet-post-rollup-decision-guide.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>공유 패킷 evidence board 업데이트 절차</td><td><a href="./2026-06-11-school-dorm-share-packet-evidence-board-update-runbook-ko.html">HTML 열기</a></td><td><a href="./2026-06-11-school-dorm-share-packet-evidence-board-update-runbook.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>공유 패킷 후보 준비 템플릿</td><td><a href="./2026-06-11-school-dorm-share-packet-content-flows-candidate-prep-ko.html">HTML 열기</a></td><td><a href="./2026-06-11-school-dorm-share-packet-content-flows-candidate-prep.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>Phase 1 후보 비교</td><td><a href="./2026-06-08-external-ecosystem-phase1-candidate-comparison-ko.html">HTML 열기</a></td><td><a href="./2026-06-08-external-ecosystem-phase1-candidate-comparison.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>Phase 5 압축표</td><td><a href="./2026-06-08-external-ecosystem-phase5-compression-table-ko.html">HTML 열기</a></td><td><a href="./2026-06-08-external-ecosystem-phase5-compression-table.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>내보내기/경쟁 경계</td><td><a href="./2026-06-08-export-destination-competitor-boundary-ko.html">HTML 열기</a></td><td><a href="./2026-06-08-export-destination-competitor-boundary.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>Export Destination Fit</td><td><a href="../flow-rules/export-destination-fit-ko.html">HTML 열기</a></td><td><a href="../flow-rules/export-destination-fit.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>Platform/API readiness</td><td><a href="./2026-06-08-platform-api-readiness-matrix-ko.html">HTML 열기</a></td><td><a href="./2026-06-08-platform-api-readiness-matrix.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>Integration Readiness Gate</td><td><a href="../flow-rules/integration-readiness-gate-ko.html">HTML 열기</a></td><td><a href="../flow-rules/integration-readiness-gate.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>기숙사 승격 게이트</td><td><a href="./2026-06-09-dorm-move-in-public-promotion-gate-ko.html">HTML 열기</a></td><td><a href="./2026-06-09-dorm-move-in-public-promotion-gate.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>초등 입학 evidence gate</td><td><a href="./2026-06-09-elementary-entry-public-route-evidence-gate-ko.html">HTML 열기</a></td><td><a href="./2026-06-09-elementary-entry-public-route-evidence-gate.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>원격 도움 세션 게이트</td><td><a href="./2026-06-09-remote-help-session-precheck-gate-ko.html">HTML 열기</a></td><td><a href="./2026-06-09-remote-help-session-precheck-gate.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>원격지원 인접서비스 비교</td><td><a href="./2026-06-08-remote-support-adjacent-service-comparison-ko.html">HTML 열기</a></td><td><a href="./2026-06-08-remote-support-adjacent-service-comparison.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>검색콘솔 디지털 설정 비교</td><td><a href="./2026-06-08-search-console-digital-setup-comparison-ko.html">HTML 열기</a></td><td><a href="./2026-06-08-search-console-digital-setup-comparison.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>검색콘솔 설정 게이트</td><td><a href="./2026-06-09-search-console-setup-precheck-gate-ko.html">HTML 열기</a></td><td><a href="./2026-06-09-search-console-setup-precheck-gate.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                  <tr><td>Naver Search Advisor 시나리오</td><td><a href="./2026-06-09-naver-search-advisor-site-readiness-scenario-ko.html">HTML 열기</a></td><td><a href="./2026-06-09-naver-search-advisor-site-readiness-scenario.md">Markdown</a></td><td><span class="state">covered</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="path">
+            <h2>2. 추천 읽기 경로</h2>
+            <ol>
+              <li><a href="./2026-06-09-external-ecosystem-analysis-room-index-ko.html">분석방 운영 인덱스</a>에서 전체 방향을 잡는다.</li>
+              <li><a href="./2026-06-08-external-ecosystem-analysis-roadmap-ko.html">로드맵 원문 HTML</a>로 분석 루프를 확인하고, <a href="./2026-06-09-external-ecosystem-roadmap-visual-ko.html">로드맵 시각화</a>로 빠르게 스캔한다.</li>
+              <li><a href="./2026-06-09-external-ecosystem-connected-docs-visual-ko.html">연결 문서 허브</a>에서 세부 문서로 이동한다.</li>
+              <li>활성 배포 채널 축은 <a href="./2026-06-11-distribution-channel-handoff-current-state-handoff-ko.html">현재 상태 시작점</a>과 <a href="./2026-06-11-distribution-channel-handoff-html-hub-ko.html#run-sequence">허브 실행 순서</a>를 먼저 열어 <code>no signal</code>, 세션 <code>0 / 3</code>, 다음 초대/스케줄링 행동을 확인한다.</li>
+              <li><a href="./2026-06-11-distribution-channel-stage0-phase-checkpoint-ko.html">Stage 0 phase 체크포인트</a>로 지금 작업이 Phase 5 / Stage 0 범위인지 확인한다.</li>
+              <li><a href="./2026-06-11-distribution-channel-documentation-stop-gate-ko.html">문서 추가 중단 게이트</a>로 같은 축의 planning doc을 더 만들 조건이 있는지 확인한다.</li>
+              <li>세션을 잡기 전에는 <a href="./2026-06-11-school-dorm-share-packet-recruiting-copy-ko.html">관찰 초대 문구</a>로 15분 이해 확인과 민감값 미수집 경계를 맞춘다.</li>
+              <li>초대 발송 직후 <a href="./2026-06-11-school-dorm-share-packet-scheduling-tracker-ko.html#snippets">스케줄 트래커 snippets</a>에서 matching role-labeled row만 <code>invited</code>로 바꾼다.</li>
+              <li>답장으로 참여가 확인된 뒤에만 해당 slot을 <code>agreed</code>로 옮긴다. <code>invited</code>, <code>agreed</code>, <code>scheduled</code>, <code>not run</code>은 관찰 증거가 아니다.</li>
+              <li>최종 초대나 세션 전에는 <a href="./2026-06-11-school-dorm-share-packet-version-lock-ko.html">버전 고정표</a>로 같은 패킷 조건을 맞춘다.</li>
+              <li>세션 답변은 <a href="./2026-06-11-school-dorm-share-packet-response-coding-guide-ko.html">응답 코딩 기준표</a>로 pass/fail/unclear를 맞춘다.</li>
+              <li>첫 세션 전에는 <a href="./2026-06-11-school-dorm-share-packet-preflight-checklist-ko.html">preflight 체크리스트</a>로 모든 go/no-go gate를 확인한다.</li>
+              <li>관찰 당일에는 <a href="./2026-06-11-school-dorm-share-packet-observation-day-quick-start-ko.html">quick start</a>를 먼저 열고 긴 템플릿을 채운다.</li>
+              <li>3 completed usable sessions와 채워진 rollup이 생긴 뒤에만 <a href="./2026-06-11-school-dorm-share-packet-evidence-board-update-runbook-ko.html">evidence board 업데이트 절차</a>로 보드를 바꾼다.</li>
+              <li><a href="./2026-06-08-external-ecosystem-phase5-compression-table-ko.html">Phase 5 압축표</a>를 현재 결정 게이트로 사용한다.</li>
+              <li><a href="../flow-rules/export-destination-fit-ko.html">Export Destination Fit</a>을 먼저 적용한다.</li>
+              <li><a href="../flow-rules/integration-readiness-gate-ko.html">Integration Readiness Gate</a>는 export behavior evidence가 생긴 뒤에만 적용한다.</li>
+            </ol>
+          </section>
+
+          <section class="panel" id="markdown">
+            <h2>3. Markdown 링크가 남아 있는 이유</h2>
+            <div class="grid-2">
+              <article class="card">
+                <h3>Source of record</h3>
+                <p>HTML은 읽기용 진입점이고, Markdown은 결정과 수정 이력을 추적하는 원문이다.</p>
+              </article>
+              <article class="card">
+                <h3>보조 노트</h3>
+                <p>일부 later public route note나 source candidate note는 HTML 읽기 경로가 아니라 의사결정 추적용으로 남긴다.</p>
+              </article>
+            </div>
+            <div class="callout">
+              <strong>판단:</strong>
+              현재 연결 문서 허브의 Markdown 링크는 누락이 아니라 원문 추적용이다. 주요 읽기 경로는 HTML로 열 수 있다.
+            </div>
+          </section>
+
+          <section class="panel" id="next">
+            <h2>4. 다음 축 추가 시 규칙</h2>
+            <ol>
+              <li>Markdown handoff를 먼저 만들거나 갱신한다.</li>
+              <li>연결 읽기 경로에 들어오면 Korean HTML view를 만든다.</li>
+              <li><code>docs/STATUS.md</code>에 Markdown과 HTML을 함께 연결한다.</li>
+              <li>로드맵 source list 또는 connected docs hub에 HTML entrypoint를 추가한다.</li>
+              <li><code>npm run docs:check</code>를 실행한다.</li>
+            </ol>
+            <div class="link-row" style="margin-top: 14px">
+              <a class="source-link" href="./2026-06-09-external-ecosystem-connected-docs-visual-ko.html">연결 문서 허브</a>
+              <a class="source-link" href="./2026-06-09-external-ecosystem-roadmap-visual-ko.html">로드맵 HTML</a>
+              <a class="source-link" href="./2026-06-11-external-ecosystem-html-coverage-audit.md">원문 Markdown</a>
+            </div>
+            <p class="footer-note">
+              이 감사는 문서 커버리지 확인이다. 최신 공식 소스 재검증, 사용자 행동 검증, 공개 라우트 승인, 통합 준비도 증거가 아니다.
+            </p>
+          </section>
+        </div>
+
+        <aside class="nav" aria-label="문서 목차">
+          <h2>문서 목차</h2>
+          <a href="#top">요약</a>
+          <a href="#coverage">1. 커버리지 표</a>
+          <a href="#path">2. 읽기 경로</a>
+          <a href="#markdown">3. Markdown 링크</a>
+          <a href="#next">4. 다음 축 규칙</a>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

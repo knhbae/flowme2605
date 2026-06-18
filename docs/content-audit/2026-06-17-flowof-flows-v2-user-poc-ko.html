@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FlowMe 전체 공부 지도</title>
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --panel: #ffffff;
+        --ink: #111827;
+        --muted: #647084;
+        --line: #dde4ee;
+        --blue: #2457d6;
+        --green: #157347;
+        --amber: #9a6200;
+        --red: #b42318;
+        --soft-blue: #eef4ff;
+        --soft-green: #ecfdf3;
+        --soft-amber: #fff7e6;
+        --radius: 16px;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--ink); line-height: 1.5; }
+      button, input, textarea { font: inherit; }
+      button { cursor: pointer; }
+      a { color: var(--blue); text-underline-offset: 3px; }
+      .app { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 18px 0 48px; }
+      .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+      .brand { font-weight: 900; font-size: 20px; }
+      .switcher { display: flex; gap: 6px; padding: 5px; border: 1px solid var(--line); border-radius: 999px; background: #fff; }
+      .switcher button { border: 0; background: transparent; padding: 8px 12px; border-radius: 999px; color: var(--muted); font-weight: 800; }
+      .switcher button.active { background: var(--ink); color: #fff; }
+      .hero, .panel, .card, .workbench { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 12px 30px rgba(15, 23, 42, .06); }
+      .hero { padding: 22px; display: grid; grid-template-columns: 1fr 340px; gap: 18px; align-items: start; }
+      .eyebrow { color: var(--blue); font-weight: 900; margin: 0 0 7px; }
+      h1 { margin: 0; font-size: clamp(26px, 4vw, 42px); line-height: 1.14; letter-spacing: 0; }
+      h2 { margin: 0 0 12px; font-size: 20px; }
+      h3 { margin: 0 0 8px; font-size: 17px; }
+      p { margin: 0; }
+      .desc { color: var(--muted); }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+      .chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line); background: #fff; font-size: 13px; font-weight: 800; }
+      .chip.green { color: var(--green); background: var(--soft-green); border-color: #bbf7d0; }
+      .chip.blue { color: var(--blue); background: var(--soft-blue); border-color: #bfdbfe; }
+      .chip.amber { color: var(--amber); background: var(--soft-amber); border-color: #fde68a; }
+      .hero-side { border: 1px solid var(--line); border-radius: 14px; padding: 14px; background: #fbfcff; }
+      .progress { height: 10px; background: #e8edf4; border-radius: 999px; overflow: hidden; margin-top: 10px; }
+      .progress span { display: block; height: 100%; width: var(--progress); background: linear-gradient(90deg, var(--blue), #38bdf8); border-radius: inherit; }
+      .setup { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+      .field label { display: block; color: var(--muted); font-size: 13px; font-weight: 800; margin-bottom: 6px; }
+      input, textarea { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 10px 11px; background: #fff; color: var(--ink); }
+      textarea { min-height: 92px; resize: vertical; }
+      .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+      .btn { border: 1px solid var(--blue); background: var(--blue); color: #fff; border-radius: 12px; padding: 10px 13px; font-weight: 900; }
+      .btn.secondary { background: #fff; color: var(--blue); }
+      .btn.green { border-color: var(--green); background: var(--green); }
+      .btn.light { border-color: var(--line); background: #fff; color: var(--ink); }
+      .layout { display: grid; grid-template-columns: 360px 1fr; gap: 14px; margin-top: 14px; }
+      .panel, .workbench { padding: 16px; }
+      .map-list { display: grid; gap: 8px; }
+      .map-item { width: 100%; text-align: left; border: 1px solid var(--line); background: #fff; border-radius: 13px; padding: 12px; display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: start; }
+      .map-item.active { border-color: var(--blue); background: var(--soft-blue); }
+      .map-item.done { background: #f0fdf4; }
+      .num { width: 30px; height: 30px; border-radius: 50%; background: #e8edf4; display: grid; place-items: center; font-weight: 900; color: var(--muted); }
+      .map-item.active .num { background: var(--blue); color: #fff; }
+      .map-item.done .num { background: var(--green); color: #fff; }
+      .item-title { margin: 0; font-weight: 900; }
+      .small { display: block; margin-top: 3px; color: var(--muted); font-size: 13px; }
+      .workbench-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 12px; }
+      .artifact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .card { padding: 14px; box-shadow: none; }
+      .task-list { display: grid; gap: 8px; }
+      .task { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: start; border: 1px solid var(--line); border-radius: 12px; padding: 11px; background: #fff; }
+      .task input { width: auto; margin-top: 4px; }
+      .pill { border: 1px solid var(--line); border-radius: 999px; padding: 4px 8px; color: var(--muted); font-size: 12px; font-weight: 900; white-space: nowrap; }
+      .rows { display: grid; gap: 8px; }
+      .row { display: grid; grid-template-columns: 120px 1fr; gap: 10px; border: 1px solid var(--line); border-radius: 10px; padding: 9px; background: #fbfcff; }
+      .row strong { color: var(--muted); }
+      .toast { margin-top: 12px; border: 1px solid #bbf7d0; background: var(--soft-green); color: var(--green); border-radius: 12px; padding: 11px; font-weight: 800; }
+      .source { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+      @media (max-width: 860px) {
+        .app { width: min(100% - 18px, 1180px); padding-top: 12px; }
+        .topbar { align-items: stretch; flex-direction: column; }
+        .switcher { width: 100%; overflow-x: auto; border-radius: 14px; }
+        .switcher button { flex: 1 0 auto; }
+        .hero, .layout, .artifact-grid, .setup { grid-template-columns: 1fr; }
+        .hero { padding: 18px; }
+        .workbench-head { flex-direction: column; }
+        .row { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <div class="topbar">
+        <div class="brand">FlowMe</div>
+        <nav class="switcher" aria-label="저장할 지도 선택">
+          <button class="active" type="button" data-case="math">중1 수학</button>
+          <button type="button" data-case="cert">정보처리기사</button>
+          <button type="button" data-case="baby">월령별 돌보기</button>
+        </nav>
+      </div>
+
+      <section class="hero">
+        <div>
+          <p class="eyebrow" id="category">전체 커리큘럼</p>
+          <h1 id="title">중1 수학 전체 진도표</h1>
+          <p class="desc" id="summary" style="margin-top:10px">단원별로 개념 보기, 문제 풀기, 오답표, 복습일을 같은 방식으로 이어갑니다.</p>
+          <div class="chips" id="chips"></div>
+          <div class="setup" id="setup"></div>
+          <div class="actions">
+            <button class="btn" type="button" id="saveAll">전체 일정 만들기</button>
+            <button class="btn secondary" type="button" id="saveUnit">이 단원만 저장</button>
+            <button class="btn green" type="button" id="makeSheet">오답표 만들기</button>
+          </div>
+          <div class="toast" id="toast" hidden></div>
+        </div>
+        <aside class="hero-side">
+          <h2>지금 위치</h2>
+          <p class="item-title" id="currentTitle">소인수분해</p>
+          <p class="desc" id="currentDesc">첫 단원에서 개념 링크를 열고 오늘 볼 개념 2개를 체크합니다.</p>
+          <div class="progress" aria-label="전체 진행률"><span id="progressBar"></span></div>
+          <p class="small" id="progressText">전체 8단원 중 1단원</p>
+        </aside>
+      </section>
+
+      <section class="layout">
+        <aside class="panel">
+          <h2 id="mapTitle">전체 단원</h2>
+          <div class="map-list" id="mapList"></div>
+        </aside>
+        <section class="workbench">
+          <div class="workbench-head">
+            <div>
+              <h2 id="unitTitle">소인수분해 공부</h2>
+              <p class="desc" id="unitDesc">소인수분해 개념을 보고, 대표 문제를 풀고, 틀린 개념을 다시 볼 날짜에 남깁니다.</p>
+            </div>
+            <button class="btn light" type="button" id="nextVisit">며칠 뒤 다시 보기</button>
+          </div>
+          <div class="artifact-grid">
+            <article class="card">
+              <h3 id="taskTitle">이번 주 할 일</h3>
+              <div class="task-list" id="taskList"></div>
+            </article>
+            <article class="card">
+              <h3 id="previewTitle">캘린더/표 미리보기</h3>
+              <div class="rows" id="previewRows"></div>
+            </article>
+          </div>
+          <article class="card" style="margin-top:12px">
+            <h3>메모</h3>
+            <textarea id="memo" placeholder="헷갈린 개념, 다시 볼 링크, 보호자 확인 메모를 짧게 남기기"></textarea>
+            <p class="source" id="sourceBox"></p>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      const cases = {
+        math: {
+          category: "전체 커리큘럼",
+          title: "중1 수학 전체 진도표",
+          summary: "단원별로 개념 보기, 문제 풀기, 오답표, 복습일을 같은 방식으로 이어갑니다.",
+          mapTitle: "전체 단원",
+          chips: ["8개 단원", "단원별 공부", "오답표"],
+          source: '<a href="https://mathbang.net/13">수학방 중1 수학 전체 목차</a> · <a href="https://kisstudy.tistory.com/153">키스터디 중1 수학 목차</a>',
+          inputs: [
+            ["start", "공부 시작일", "date", "2026-06-22"],
+            ["days", "공부 요일", "text", "월/수/금"],
+            ["count", "하루 목표", "text", "개념 2개"],
+            ["range", "시험범위", "text", "1~3단원"]
+          ],
+          units: [
+            { name: "소인수분해", desc: "거듭제곱, 소수와 합성수, 최대공약수/최소공배수", focus: "오늘 볼 개념 2개", next: "정수와 유리수", done: true,
+              tasks: [["개념", "거듭제곱과 소수 개념 링크 열기", "오늘 볼 개념 2개를 체크"], ["문제", "최대공약수 대표 문제 풀기", "채점 후 틀린 이유를 한 줄로 남김"], ["복습", "틀린 개념 다시 볼 날짜 잡기", "다음 공부 요일에 복습 일정 추가"]] },
+            { name: "정수와 유리수", desc: "수직선, 대소관계, 사칙연산", focus: "덧셈/뺄셈 혼합계산", next: "문자와 식", done: false,
+              tasks: [["개념", "정수와 유리수 분류 읽기", "헷갈리는 부호 규칙 메모"], ["문제", "정수 덧셈·뺄셈 문제 풀기", "오답 문항 번호 기록"], ["복습", "곱셈/나눗셈 전 복습일 넣기", "다음 단원 이동 전 체크"]] },
+            { name: "문자와 식", desc: "문자 사용, 식의 값, 일차방정식", focus: "식의 값과 일차식", next: "좌표평면과 그래프", done: false,
+              tasks: [["개념", "문자를 포함하는 식 읽기", "예시 식을 노트에 1개 작성"], ["문제", "식의 값 문제 풀기", "대입 실수 여부 표시"], ["복습", "일차방정식 풀이 전 복습일 잡기", "오답표 행 추가"]] },
+            { name: "좌표평면과 그래프", desc: "순서쌍, 좌표, 정비례와 반비례", focus: "좌표 읽기", next: "기본도형", done: false,
+              tasks: [["개념", "순서쌍과 좌표 개념 보기", "축/좌표 순서 메모"], ["문제", "그래프 해석 문제 풀기", "틀린 그래프 유형 기록"], ["복습", "정비례 전 복습일 넣기", "좌표 실수 재확인"]] }
+          ]
+        },
+        cert: {
+          category: "과목별 진도",
+          title: "정보처리기사 필기 과목별 진도판",
+          summary: "5과목을 같은 방식으로 이론, 문제, 요약, 기출 회차까지 돌립니다.",
+          mapTitle: "필기 과목",
+          chips: ["5과목", "기출 회차", "오답표"],
+          source: '<a href="https://www.yes24.com/product/goods/159574278">2026 시나공 정보처리기사 필기 기본서 목차</a> · <a href="https://www.gilbut.co.kr/book/view?bookcode=BN004616">길벗 책 소개</a>',
+          inputs: [
+            ["start", "공부 시작일", "date", "2026-06-22"],
+            ["days", "공부 요일", "text", "화/목/토"],
+            ["count", "하루 목표", "text", "장 1개"],
+            ["range", "시험일", "date", "2026-08-16"]
+          ],
+          units: [
+            { name: "소프트웨어 설계", desc: "요구사항 확인, 화면 설계, 애플리케이션 설계, 인터페이스 설계", focus: "요구사항 확인", next: "소프트웨어 개발", done: true,
+              tasks: [["이론", "요구사항 확인 장 읽기", "읽은 장과 이해 안 된 용어 표시"], ["문제", "장 끝 문제 풀기", "틀린 보기 번호와 이유 기록"], ["요약", "핵심요약에 다시 볼 키워드 표시", "재풀이 날짜 추가"]] },
+            { name: "소프트웨어 개발", desc: "데이터 입출력, 통합 구현, 패키징, 테스트", focus: "자료구조와 테스트", next: "데이터베이스 구축", done: false,
+              tasks: [["이론", "자료구조 파트 읽기", "낯선 자료구조 이름 표시"], ["문제", "통합 구현 문제 풀기", "오답 유형을 표에 추가"], ["기출", "최근 기출 1회에서 관련 문제 찾기", "다시 풀 날짜 입력"]] },
+            { name: "데이터베이스 구축", desc: "논리/물리 설계, SQL 응용, SQL 활용", focus: "SQL 활용", next: "프로그래밍 언어 활용", done: false,
+              tasks: [["이론", "SQL 응용 장 읽기", "명령어별 예시 메모"], ["문제", "SQL 문제 풀기", "틀린 명령어를 오답표에 추가"], ["복습", "데이터 전환 전 복습 일정 추가", "과락 위험 여부 표시"]] },
+            { name: "프로그래밍 언어 활용", desc: "서버 프로그램, 언어 활용, SW 기초 기술", focus: "코드 해석", next: "정보시스템 구축 관리", done: false,
+              tasks: [["이론", "언어 활용 장 읽기", "헷갈린 연산자 표시"], ["문제", "코드 해석 문제 풀기", "실행 결과 추론 실수 기록"], ["기출", "코드 문제만 다시 풀기", "재풀이 날짜 추가"]] }
+          ]
+        },
+        baby: {
+          category: "월령별 돌보기",
+          title: "0~12개월 월령별 돌보기 지도",
+          summary: "현재 월령에서 공식 일정 확인과 생활 메모를 분리해서 이어갑니다.",
+          mapTitle: "월령 구간",
+          chips: ["월령 기준", "공식 일정", "생활 메모"],
+          source: '<a href="https://community.mmtalk.kr/community/article/180570">마미톡 월령별 케어법</a> · <a href="https://www.childcare.go.kr/?menuno=439">아이사랑 4~6개월</a> · <a href="https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&menuLv=1">질병관리청 예방접종 일정표</a>',
+          inputs: [
+            ["start", "아기 생년월일", "date", "2026-02-17"],
+            ["days", "확인 요일", "text", "일요일"],
+            ["count", "메모 범위", "text", "수유/수면"],
+            ["range", "현재 월령", "text", "4개월"]
+          ],
+          units: [
+            { name: "0~1개월", desc: "수유/수면 리듬, 초기 접종 확인", focus: "퇴원 후 생활 리듬", next: "2~3개월", done: true,
+              tasks: [["공식", "출생 직후 접종 기록 확인", "아기수첩 또는 병원 기록으로 확인"], ["메모", "수유/수면 패턴 한 줄 남기기", "판단이 아니라 관찰만 적기"], ["상담", "이상 증상은 병원 문의 메모로 남기기", "FlowMe 안에서 판단하지 않음"]] },
+            { name: "4~6개월", desc: "건강검진, 접종, 이유식 시작 확인", focus: "검진과 이유식 시작", next: "6개월 이후", done: false,
+              tasks: [["공식", "4~6개월 건강검진 시기 확인", "아이사랑 또는 병원 안내로 확인"], ["일정", "생후 4개월 접종 확인 일정 넣기", "공식 일정표 링크를 메모에 붙임"], ["메모", "이유식 시작 여부 질문 적기", "의료 판단은 상담으로 넘김"]] },
+            { name: "6개월 이후", desc: "이유식 단계, 새 식재료, 컨디션 관찰", focus: "새 식재료 메모", next: "8개월 이후", done: false,
+              tasks: [["일정", "새 식재료 시도일 잡기", "너무 촘촘하지 않게 날짜만 남김"], ["메모", "먹은 양과 특이 반응 적기", "평가보다 관찰 중심"], ["상담", "평소와 다른 반응은 상담 메모로 분리", "결론을 내리지 않음"]] }
+          ]
+        }
+      };
+
+      const state = { key: "math", unit: 0, checks: {}, revisit: false };
+      const $ = (id) => document.getElementById(id);
+      const current = () => cases[state.key];
+      const unit = () => current().units[state.unit];
+
+      function render() {
+        const data = current();
+        $("category").textContent = data.category;
+        $("title").textContent = data.title;
+        $("summary").textContent = data.summary;
+        $("mapTitle").textContent = data.mapTitle;
+        $("chips").innerHTML = data.chips.map((chip, i) => `<span class="chip ${i === 0 ? "green" : i === 1 ? "blue" : "amber"}">${chip}</span>`).join("");
+        $("setup").innerHTML = data.inputs.map(([key, label, type, value]) => `<div class="field"><label for="input-${key}">${label}</label><input id="input-${key}" type="${type}" value="${value}"></div>`).join("");
+        document.querySelectorAll("[data-case]").forEach((button) => button.classList.toggle("active", button.dataset.case === state.key));
+        renderMap();
+        renderUnit();
+      }
+
+      function renderMap() {
+        const data = current();
+        $("mapList").innerHTML = data.units.map((item, index) => `
+          <button class="map-item ${index === state.unit ? "active" : ""} ${item.done ? "done" : ""}" type="button" data-unit="${index}">
+            <span class="num">${index + 1}</span>
+            <span><p class="item-title">${item.name}</p><span class="small">${item.desc}</span></span>
+            <span class="pill">${item.done ? "완료" : index === state.unit ? "진행" : "대기"}</span>
+          </button>
+        `).join("");
+      }
+
+      function getInputSummary() {
+        const days = document.querySelector("#input-days")?.value || "";
+        const count = document.querySelector("#input-count")?.value || "";
+        const range = document.querySelector("#input-range")?.value || "";
+        return [days, count, range].filter(Boolean).join(" · ");
+      }
+
+      function renderUnit() {
+        const data = current();
+        const item = unit();
+        const doneCount = data.units.filter((x) => x.done).length;
+        const progress = Math.max(8, Math.round((doneCount / data.units.length) * 100));
+        $("progressBar").style.setProperty("--progress", progress + "%");
+        $("progressText").textContent = `전체 ${data.units.length}개 중 ${state.unit + 1}번째 · 완료 ${doneCount}개`;
+        $("currentTitle").textContent = item.name;
+        $("currentDesc").textContent = state.revisit ? `${item.name}에서 이어서 할 일: ${item.focus}` : `${item.name}에서 시작할 일: ${item.focus}`;
+        $("unitTitle").textContent = `${item.name} ${state.key === "baby" ? "확인" : "공부"}`;
+        $("unitDesc").textContent = item.desc;
+        $("taskTitle").textContent = state.revisit ? "다시 들어왔을 때 할 일" : "이번 주 할 일";
+        $("taskList").innerHTML = item.tasks.map(([kind, title, desc], index) => {
+          const id = `${state.key}-${state.unit}-${index}`;
+          return `
+            <label class="task">
+              <input type="checkbox" data-check="${id}" ${state.checks[id] ? "checked" : ""}>
+              <span><p class="item-title">${title}</p><span class="small">${desc}</span></span>
+              <span class="pill">${kind}</span>
+            </label>
+          `;
+        }).join("");
+        const start = document.querySelector("#input-start")?.value || "2026-06-22";
+        $("previewRows").innerHTML = `
+          <div class="row"><strong>제목</strong><span>${item.name} ${state.key === "baby" ? "월령 확인" : "진도"}</span></div>
+          <div class="row"><strong>시작</strong><span>${start}</span></div>
+          <div class="row"><strong>설정</strong><span>${getInputSummary()}</span></div>
+          <div class="row"><strong>다음</strong><span>${item.next}</span></div>
+          <div class="row"><strong>표</strong><span>${state.key === "baby" ? "공식 일정 확인 / 생활 메모" : "진도표 / 오답표 / 복습일"}</span></div>
+        `;
+        $("sourceBox").innerHTML = `원문: ${data.source}`;
+      }
+
+      document.addEventListener("click", (event) => {
+        const tab = event.target.closest("[data-case]");
+        if (tab) {
+          state.key = tab.dataset.case;
+          state.unit = 0;
+          state.revisit = false;
+          $("toast").hidden = true;
+          $("memo").value = "";
+          render();
+          return;
+        }
+        const unitButton = event.target.closest("[data-unit]");
+        if (unitButton) {
+          state.unit = Number(unitButton.dataset.unit);
+          state.revisit = false;
+          $("toast").hidden = true;
+          renderUnit();
+          renderMap();
+          return;
+        }
+        const check = event.target.closest("[data-check]");
+        if (check) {
+          state.checks[check.dataset.check] = check.checked;
+          return;
+        }
+      });
+
+      $("saveAll").addEventListener("click", () => {
+        $("toast").hidden = false;
+        $("toast").textContent = `${current().title} 전체가 만들어졌습니다. ${getInputSummary()}`;
+      });
+      $("saveUnit").addEventListener("click", () => {
+        $("toast").hidden = false;
+        $("toast").textContent = `${unit().name}만 저장했습니다. 다음 단계는 ${unit().next}입니다.`;
+      });
+      $("makeSheet").addEventListener("click", () => {
+        $("toast").hidden = false;
+        $("toast").textContent = state.key === "baby" ? "공식 일정 확인표와 생활 메모표를 만들었습니다." : `${unit().name} 진도표와 오답표를 만들었습니다.`;
+      });
+      $("nextVisit").addEventListener("click", () => {
+        state.revisit = true;
+        $("toast").hidden = false;
+        $("toast").textContent = `다시 들어왔을 때 ${unit().name}의 다음 할 일을 먼저 보여줍니다.`;
+        renderUnit();
+      });
+      document.addEventListener("input", (event) => {
+        if (event.target.matches("input")) renderUnit();
+      });
+
+      render();
+    </script>
+  </body>
+</html>

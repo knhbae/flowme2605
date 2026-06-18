@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FlowMe 중1 수학 진도표</title>
+    <style>
+      :root {
+        --bg: #f4f7fb;
+        --paper: #fff;
+        --ink: #111827;
+        --muted: #607086;
+        --line: #d9e2ef;
+        --blue: #1f5fbf;
+        --green: #0f7a4a;
+        --amber: #986400;
+        --soft-blue: #edf4ff;
+        --soft-green: #ebf8f0;
+        --soft-amber: #fff8e6;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--ink); line-height: 1.55; }
+      button, input, textarea { font: inherit; }
+      button { cursor: pointer; }
+      a { color: var(--blue); text-underline-offset: 3px; }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 { margin-bottom: 6px; font-size: clamp(28px, 5vw, 42px); line-height: 1.1; letter-spacing: 0; }
+      h2 { margin-bottom: 8px; font-size: 22px; line-height: 1.2; letter-spacing: 0; }
+      h3 { margin-bottom: 5px; font-size: 18px; line-height: 1.24; letter-spacing: 0; }
+      .app { width: min(1080px, calc(100% - 28px)); margin: 0 auto; padding: 16px 0 64px; }
+      .topbar, .hero, .panel, .card, .unit-row, .concept-row {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 54px;
+        padding: 10px 12px;
+        box-shadow: 0 14px 34px rgba(15, 23, 42, .07);
+      }
+      .brand { color: var(--ink); text-decoration: none; font-weight: 950; font-size: 18px; }
+      .hero { margin-top: 12px; padding: 18px; }
+      .desc, .small { color: var(--muted); }
+      .small { font-size: 13px; }
+      .btn {
+        min-height: 38px;
+        padding: 8px 12px;
+        border: 1px solid var(--blue);
+        border-radius: 8px;
+        background: var(--blue);
+        color: #fff;
+        font-weight: 850;
+      }
+      .btn.secondary { background: #fff; color: var(--blue); }
+      .chips, .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 4px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 850;
+        white-space: nowrap;
+      }
+      .blue { border-color: #bfdbfe; background: var(--soft-blue); color: var(--blue); }
+      .green { border-color: #bde7cb; background: var(--soft-green); color: var(--green); }
+      .amber { border-color: #f4d58d; background: var(--soft-amber); color: var(--amber); }
+      .setup {
+        display: grid;
+        grid-template-columns: minmax(170px, 260px);
+        gap: 10px;
+        margin-top: 12px;
+      }
+      label { display: block; margin-bottom: 4px; color: #334155; font-size: 13px; font-weight: 850; }
+      input, textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px;
+        background: #fff;
+      }
+      textarea { min-height: 92px; resize: vertical; }
+      .layout {
+        display: grid;
+        grid-template-columns: 330px minmax(0, 1fr);
+        gap: 12px;
+        margin-top: 12px;
+        align-items: start;
+      }
+      .panel, .card { padding: 14px; }
+      .unit-list, .concept-list { display: grid; gap: 8px; }
+      .unit-row {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 10px;
+        padding: 10px;
+        text-align: left;
+        align-items: start;
+      }
+      .unit-row.active { border-color: var(--blue); background: var(--soft-blue); }
+      .num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 999px;
+        background: var(--soft-blue);
+        color: var(--blue);
+        font-weight: 950;
+      }
+      .item-title { margin: 0; font-weight: 950; }
+      .progress {
+        overflow: hidden;
+        height: 8px;
+        border-radius: 999px;
+        background: #e8edf5;
+      }
+      .progress span { display: block; width: var(--value, 8%); height: 100%; background: var(--blue); }
+      .concept-row {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 10px;
+        align-items: start;
+        padding: 10px;
+      }
+      .concept-row.done .item-title { text-decoration: line-through; color: var(--muted); }
+      input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--blue); }
+      .detail-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(260px, .75fr);
+        gap: 12px;
+        margin-top: 12px;
+        align-items: start;
+      }
+      .source {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .toast {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #bde7cb;
+        border-radius: 8px;
+        background: var(--soft-green);
+        color: var(--green);
+        font-weight: 850;
+      }
+      @media (max-width: 860px) {
+        .app { width: min(100% - 18px, 1080px); padding-top: 10px; }
+        .topbar { align-items: flex-start; flex-direction: column; }
+        .layout, .setup, .detail-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <a class="brand" href="#">FlowMe</a>
+        <span class="chip blue">학습 진도표</span>
+      </header>
+
+      <section class="hero">
+        <p class="small" style="font-weight:900;color:var(--blue);margin-bottom:6px">중1 수학 목차 저장</p>
+        <h1>단원별로 체크하는 중1 수학 진도표</h1>
+        <p class="desc">수학방의 중1 수학 목차를 진도표로 담았습니다. 시작일만 정하고, 단원별로 개념을 체크하면서 원문 링크를 다시 엽니다.</p>
+        <div class="setup">
+          <div>
+            <label for="startDate">공부 시작일</label>
+            <input id="startDate" type="date" value="2026-06-22">
+          </div>
+        </div>
+        <div class="actions" style="margin-top:12px">
+          <button class="btn" type="button" id="saveSheet">진도표 저장</button>
+          <button class="btn secondary" type="button" id="saveUnit">선택 단원만 저장</button>
+        </div>
+        <div id="toast" class="toast" hidden></div>
+      </section>
+
+      <section class="layout">
+        <aside class="panel">
+          <h2>진도표</h2>
+          <p class="desc">단원을 누르면 오른쪽에 오늘 체크할 개념만 보입니다.</p>
+          <div class="unit-list" id="unitList"></div>
+        </aside>
+
+        <section>
+          <article class="card" id="unitDetail"></article>
+          <div class="detail-grid">
+            <article class="card" id="conceptCard"></article>
+            <article class="card">
+              <h3>메모와 원문</h3>
+              <p class="desc">헷갈린 문제 번호나 다시 볼 개념만 짧게 남깁니다.</p>
+              <label for="memo">단원 메모</label>
+              <textarea id="memo" placeholder="예: 절댓값 부호 처리 다시 보기"></textarea>
+              <div class="source">
+                원문: <a href="https://mathbang.net/13" target="_blank" rel="noreferrer">수학방 중1 수학 전체 목차</a><br>
+                보조 목차: <a href="https://kisstudy.tistory.com/153" target="_blank" rel="noreferrer">키스터디 중1 수학 목차</a>
+              </div>
+            </article>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      const units = [
+        { name: "소인수분해", concepts: ["거듭제곱", "소수와 합성수", "소인수분해", "최대공약수", "최소공배수"] },
+        { name: "정수와 유리수", concepts: ["양수와 음수, 정수", "절댓값과 수직선", "정수의 대소관계", "정수의 덧셈", "정수의 뺄셈", "유리수의 곱셈과 나눗셈"] },
+        { name: "문자와 식", concepts: ["문자와 식", "대입과 식의 값", "동류항", "일차식의 덧셈과 뺄셈", "일차방정식의 풀이", "일차방정식의 활용"] },
+        { name: "좌표평면과 그래프", concepts: ["순서쌍과 좌표평면", "그래프의 뜻과 표현", "정비례와 그래프", "반비례와 그래프"] },
+        { name: "기본도형", concepts: ["점, 선, 면", "두 점 사이의 거리와 중점", "맞꼭지각과 동위각", "평행선의 성질", "삼각형의 합동 조건"] },
+        { name: "평면도형의 성질", concepts: ["다각형", "내각과 외각", "대각선의 개수", "원과 부채꼴", "원과 부채꼴의 넓이와 둘레"] },
+        { name: "입체도형의 성질", concepts: ["다면체", "정다면체", "회전체", "각기둥과 원기둥의 겉넓이와 부피", "구의 겉넓이와 부피"] },
+        { name: "자료의 정리와 해석", concepts: ["대푯값", "줄기와 잎 그림", "도수분포표", "히스토그램", "상대도수"] }
+      ];
+      const state = { active: 1, checked: {}, memo: "" };
+      const $ = (id) => document.getElementById(id);
+
+      function doneCount(unitIndex) {
+        return units[unitIndex].concepts.filter((_, conceptIndex) => state.checked[`${unitIndex}-${conceptIndex}`]).length;
+      }
+
+      function showToast(text) {
+        $("toast").hidden = false;
+        $("toast").textContent = text;
+      }
+
+      function renderUnits() {
+        $("unitList").innerHTML = units.map((unit, index) => {
+          const done = doneCount(index);
+          const percent = Math.round((done / unit.concepts.length) * 100);
+          return `
+            <button class="unit-row ${state.active === index ? "active" : ""}" type="button" data-unit="${index}">
+              <span class="num">${index + 1}</span>
+              <span>
+                <p class="item-title">${unit.name}</p>
+                <span class="small">${unit.concepts.length}개 개념</span>
+                <div class="progress" style="margin-top:8px"><span style="--value:${Math.max(percent, 7)}%"></span></div>
+              </span>
+              <span class="chip ${done ? "green" : "amber"}">${done}/${unit.concepts.length}</span>
+            </button>
+          `;
+        }).join("");
+      }
+
+      function renderDetail() {
+        const unit = units[state.active];
+        $("unitDetail").innerHTML = `
+          <p class="small" style="font-weight:900;color:var(--blue);margin-bottom:6px">선택 단원</p>
+          <h2>${state.active + 1}. ${unit.name}</h2>
+          <div class="chips">
+            <span class="chip blue">${unit.concepts.length}개 개념</span>
+            <span class="chip green">완료 ${doneCount(state.active)}개</span>
+            <span class="chip amber">${$("startDate").value}부터</span>
+          </div>
+        `;
+      }
+
+      function renderConcepts() {
+        const unit = units[state.active];
+        $("conceptCard").innerHTML = `
+          <h3>오늘 볼 개념</h3>
+          <p class="desc">처음에는 앞쪽 개념만 체크합니다. 더 자세한 설명은 원문 링크에서 봅니다.</p>
+          <div class="concept-list">
+            ${unit.concepts.map((concept, index) => {
+              const key = `${state.active}-${index}`;
+              return `
+                <label class="concept-row ${state.checked[key] ? "done" : ""}">
+                  <input type="checkbox" data-check="${key}" ${state.checked[key] ? "checked" : ""}>
+                  <span><p class="item-title">${concept}</p><span class="small">${index < 2 ? "오늘 보기" : "다음에 보기"}</span></span>
+                </label>
+              `;
+            }).join("")}
+          </div>
+        `;
+      }
+
+      function render() {
+        renderUnits();
+        renderDetail();
+        renderConcepts();
+      }
+
+      document.addEventListener("click", (event) => {
+        const unitButton = event.target.closest("[data-unit]");
+        if (unitButton) {
+          state.active = Number(unitButton.dataset.unit);
+          render();
+          return;
+        }
+        const check = event.target.closest("[data-check]");
+        if (check) {
+          state.checked[check.dataset.check] = check.checked;
+          render();
+          return;
+        }
+        if (event.target.id === "saveSheet") {
+          showToast("중1 수학 진도표를 저장했습니다.");
+          return;
+        }
+        if (event.target.id === "saveUnit") {
+          showToast(`${units[state.active].name} 단원만 저장했습니다.`);
+        }
+      });
+
+      document.addEventListener("input", (event) => {
+        if (event.target.id === "memo") state.memo = event.target.value;
+      });
+
+      render();
+    </script>
+  </body>
+</html>

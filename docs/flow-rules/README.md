@@ -5,7 +5,12 @@ FLOW 품질 기준은 좁고 딱딱한 금지 목록이 아니다. 콘텐츠 유
 ## Current Addendum
 
 - [Study progress table rules](./study-progress-tables.md): use a progress table only when the source has table-of-contents, curriculum, exam-scope, past-exam, weekly-plan, lesson, or assignment rows the creator can bring into FLOW.
+- [Flow execution types](./flow-execution-types.md): classify each Flow as progress, process, timeline, routine, reference/bucket, log, or decision before choosing UI, and apply Flow of Flow only after child execution type is clear.
 - [Execution specificity rules](./execution-specificity.md): treat `source reviewed` as a source boundary only; each category still needs enough source-derived detail, artifact fit, record fields, and stop/hold conditions for real execution.
+- [Source-to-Flow conversion gate](./source-to-flow-conversion-gate.md): require one primary source per Flow, choose the natural artifact before UI components, reject forced checklist counts, and keep top-level inputs earned by the generated artifact.
+- [Flow content source selection rules](./flow-content-source-selection.md): choose Korean-first original content with a real execution skeleton, use representative coverage axes to avoid repetitive batches, keep inputs close to calendar/reminder complexity, and reject sources that require invented filler.
+- [Export destination fit rules](./export-destination-fit.md): choose calendar, sheet, memo/Notion, internal checklist, or Todoist/task CSV by the artifact's main job, and keep account integrations out until export friction is proven.
+- [Integration readiness gate](./integration-readiness-gate.md): move from export-only to direct integration only when repeated destination use, import friction, stable schema, permission clarity, reversibility, and source/safety transfer are proven.
 - [Validation evidence](./validation-evidence.md): reserve `validated` for routes with real user behavior data, not internal QA or screenshots.
 - [First user validation script](./first-user-validation-script.md): observe whether target users complete the open, setup, artifact, export/copy, and outside-use loop.
 
@@ -27,6 +32,6 @@ FLOW 품질 기준은 좁고 딱딱한 금지 목록이 아니다. 콘텐츠 유
 
 ## Related Repo Skills
 
-- `skills/flow-content-conversion/SKILL.md`: 원본 콘텐츠를 Flow로 변환할 때 사용한다.
-- `skills/flow-ux-review/SKILL.md`: 화면과 컨텐츠를 사용자 여정 관점에서 검토할 때 사용한다.
-- `skills/flow-copy-editor/SKILL.md`: FLOW UI copy와 action copy가 뻔하거나 추상적일 때 사용한다.
+- `.agents/skills/flow-content-conversion/SKILL.md`: 원본 콘텐츠를 Flow로 변환할 때 사용한다.
+- `.agents/skills/flow-ux-review/SKILL.md`: 화면과 컨텐츠를 사용자 여정 관점에서 검토할 때 사용한다.
+- `.agents/skills/flow-copy-editor/SKILL.md`: FLOW UI copy와 action copy가 뻔하거나 추상적일 때 사용한다.

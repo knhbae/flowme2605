@@ -1,0 +1,1067 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flow-ready 원컨텐츠 출처 전략과 action draft</title>
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --paper: #ffffff;
+      --ink: #141923;
+      --muted: #5f6a7a;
+      --line: #dde4ee;
+      --blue: #155ea8;
+      --blue-soft: #eaf3fc;
+      --green: #137047;
+      --green-soft: #e9f7ef;
+      --amber: #9a5f00;
+      --amber-soft: #fff4df;
+      --red: #9c1f35;
+      --red-soft: #fdecef;
+      --slate: #263143;
+      --slate-soft: #eef2f6;
+      --code: #18202d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif;
+      line-height: 1.6;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: #075ca8;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .page {
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 64px;
+    }
+
+    .hero {
+      padding: 34px 0 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--blue);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    h1 {
+      max-width: 920px;
+      margin: 0;
+      font-size: clamp(32px, 5vw, 54px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 880px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .section {
+      margin-top: 28px;
+    }
+
+    .section h2 {
+      margin: 0 0 12px;
+      font-size: 25px;
+      line-height: 1.25;
+    }
+
+    .section p {
+      margin: 8px 0;
+    }
+
+    .note {
+      padding: 16px;
+      border: 1px solid #cfe0f1;
+      border-radius: 8px;
+      background: var(--blue-soft);
+      color: #163452;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card,
+    .candidate {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(20, 25, 35, 0.04);
+    }
+
+    .card {
+      padding: 18px;
+    }
+
+    .card h3,
+    .candidate h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .card p,
+    .card li {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .candidate {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 16px;
+      margin-top: 14px;
+      padding: 18px;
+    }
+
+    .candidate h3 {
+      font-size: 20px;
+    }
+
+    .source-type {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      margin-bottom: 10px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .badge.ok {
+      color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .badge.warn {
+      color: var(--amber);
+      background: var(--amber-soft);
+    }
+
+    .badge.bad {
+      color: var(--red);
+      background: var(--red-soft);
+    }
+
+    .badge.spot {
+      color: var(--slate);
+      background: var(--slate-soft);
+    }
+
+    .facts {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .fact {
+      padding: 9px 10px;
+      border-radius: 6px;
+      background: #f1f4f8;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .fact b {
+      display: block;
+      margin-bottom: 2px;
+      color: var(--ink);
+    }
+
+    pre {
+      overflow-x: auto;
+      margin: 0;
+      padding: 16px;
+      border-radius: 8px;
+      background: var(--code);
+      color: #edf4ff;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      line-height: 1.62;
+      white-space: pre-wrap;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+
+    table {
+      width: 100%;
+      min-width: 820px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      background: #eef2f7;
+      color: #253044;
+      font-weight: 800;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer {
+      margin-top: 36px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 860px) {
+      .page {
+        width: min(100% - 24px, 1160px);
+        padding-top: 24px;
+      }
+
+      .grid,
+      .grid.two,
+      .candidate {
+        grid-template-columns: 1fr;
+      }
+
+      .candidate {
+        padding: 16px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <p class="eyebrow">FlowMe content-to-UX review · 2026-06-14</p>
+      <h1>Flow-ready 원컨텐츠를 다시 고르고 action draft까지 내리는 기준</h1>
+      <p class="lead">
+        이전 검토의 문제는 좋은 주제와 좋은 원컨텐츠를 섞어 본 데 있었습니다. 이번 리포트는 커뮤니케이션이 있는
+        YouTube·블로그·후기형 콘텐츠를 우선 보고, 공식 출처는 사실·주의사항 보강용으로 분리해 Flow-ready 여부를 다시 판단합니다.
+      </p>
+      <div class="pills">
+        <span class="pill">YouTube/블로그 우선</span>
+        <span class="pill">공식 출처는 보강용</span>
+        <span class="pill">spot item 강등</span>
+        <span class="pill">3-7개 action</span>
+        <span class="pill">모바일 검토용 HTML</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>이번 작업의 목적</h2>
+      <div class="note">
+        목표는 FlowMe가 다룰 수 있는 좋은 "카테고리"를 찾는 것이 아니라, 사용자가 저장하고 특정 시기·장소에서 바로 실행할 수 있는
+        원컨텐츠를 찾는 것입니다. 원문에서 action이 바로 보이지 않으면 주제가 좋아도 Flow-ready 후보에서 낮춥니다.
+        이 문서는 실제 사용자 검증이 아니라 다음 UX/UI 샘플을 고르기 위한 source-to-action 검토입니다.
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>출처 전략</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>1. 커뮤니케이션 출처를 먼저 본다</h3>
+          <p>YouTube, 네이버 블로그, 후기형 글은 댓글, 질문, 저장 욕구, 실제 사용 맥락이 드러납니다. 다만 공식 사실이 아니라 creator/user experience로 분리합니다.</p>
+        </article>
+        <article class="card">
+          <h3>2. 공식 출처는 보강용이다</h3>
+          <p>법적 사실, 안전, 건강, 제품 사용, 행정 절차는 공식·기관·제조사 출처로 확인합니다. 하지만 방대한 공식 문서를 단독 Flow 원문으로 삼지는 않습니다.</p>
+        </article>
+        <article class="card">
+          <h3>3. AI/범용 요약은 성공 사례에서 제외</h3>
+          <p>실행 구조가 있어 보여도 사용자의 실제 고민, 댓글, 후기, 저장 맥락이 없으면 대표 Flow 후보가 아닙니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Flow-ready 원컨텐츠 선정 기준</h2>
+      <div class="grid two">
+        <article class="card">
+          <h3>통과 신호</h3>
+          <ul>
+            <li>날짜, D-day, 반복 주기, 마감, 특정 시점이 있다.</li>
+            <li>준비물, 순서, 체크리스트, 루틴, 따라하기 구조가 있다.</li>
+            <li>원문을 3-7개 action item으로 나눌 수 있다.</li>
+            <li>각 action에 언제, 어디서, 할 일, 완료 기준을 붙일 수 있다.</li>
+            <li>댓글/후기/조회/저장 같은 커뮤니케이션 신호가 있다.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>탈락 신호</h3>
+          <ul>
+            <li>공식 포털 메인처럼 너무 넓다.</li>
+            <li>전입신고만 하기처럼 단독으로는 spot성이다.</li>
+            <li>실행 시점이 없는 꿀팁 모음이다.</li>
+            <li>사용자 상황 매칭이 강해서 바로 따라 하기 어렵다.</li>
+            <li>긴 설명을 detail로 빼면 action이 남지 않는다.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>기존 후보 재평가</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>기존 후보</th>
+              <th>새 판단</th>
+              <th>커뮤니케이션/출처 신호</th>
+              <th>이유</th>
+              <th>처리</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>전입신고/확정일자</td>
+              <td>spot item</td>
+              <td>공식/법령 정보 중심. 커뮤니케이션 신호 약함.</td>
+              <td>단독 Flow로는 약하고 이사 D-30/D-Day Flow 안의 당일/이후 action이 더 자연스럽다.</td>
+              <td>이사 Flow 내부 item으로 강등</td>
+            </tr>
+            <tr>
+              <td>운전면허 갱신</td>
+              <td>spot item</td>
+              <td>공식 민원 안내 중심. 저장 욕구는 마감 reminder 수준.</td>
+              <td>마감형 민원 처리에 가깝다. 단독 대표 Flow보다 시험 준비/갱신 준비 묶음에 넣는 편이 낫다.</td>
+              <td>대표 후보 제외</td>
+            </tr>
+            <tr>
+              <td>초등학교 입학 준비</td>
+              <td>수정 후 가능</td>
+              <td>네이버 블로그/생활 체크리스트에서 부모 고민과 구매/준비 맥락이 보임.</td>
+              <td>주제는 좋지만 action을 학교 안내문, 물품 구매, 생활 연습, 가방 준비로 더 잘게 나눠야 한다.</td>
+              <td>블로그/체크리스트 원문으로 재작성</td>
+            </tr>
+            <tr>
+              <td>아이 도안 스퀴시 만들기</td>
+              <td>바로 가능</td>
+              <td>YouTube+네이버 도안 링크 조합. 저장/나중에 하기 욕구가 강함.</td>
+              <td>복잡한 Flow가 아니라 놀이 bucket item으로 만들면 자연스럽다.</td>
+              <td>도안 저장, 준비물, 놀이 날짜만 남김</td>
+            </tr>
+            <tr>
+              <td>중고차 구매 전 확인</td>
+              <td>수정 후 가능</td>
+              <td>전문 블로그/영상/소비자원 보강 조합. 현장 질문과 보류 판단이 중요.</td>
+              <td>공식 피해예방 자료만으로는 현장 action이 흐리다. 방문 당일 순서가 있는 원문이 필요하다.</td>
+              <td>방문 체크리스트형 원문으로 교체</td>
+            </tr>
+            <tr>
+              <td>해외여행 안전 확보</td>
+              <td>수정 후 가능</td>
+              <td>여행 앱/블로그는 저장·리뷰 신호가 있고, 외교부는 공식 보강용.</td>
+              <td>공식 포털보다 출국 전 체크리스트 원문이 더 Flow-ready하다.</td>
+              <td>출국일 기준 체크 + 비상 메모로 재작성</td>
+            </tr>
+            <tr>
+              <td>세탁기 통세척</td>
+              <td>유지</td>
+              <td>제조사 공식 안내. 커뮤니케이션은 약하지만 반복 주기와 실행 절차가 명확함.</td>
+              <td>제조사 안내가 반복 루틴과 잘 맞고, 모델별 상세는 detail로 보낼 수 있다.</td>
+              <td>대표 후보 유지</td>
+            </tr>
+            <tr>
+              <td>운동처방 영상 따라하기</td>
+              <td>원문 교체 후 가능</td>
+              <td>YouTube 루틴 영상은 강하지만, 제작자가 주기/사용법을 안내해야 함.</td>
+              <td>영상 하나하나는 좋지만 사용자가 어떻게 Flow를 구성할지 원문에 있어야 한다.</td>
+              <td>주3회/순서대로 안내하는 홈트 원문으로 교체</td>
+            </tr>
+            <tr>
+              <td>이유식 식품 반응 기록</td>
+              <td>수정 후 가능</td>
+              <td>육아 영상/가이드 + 질병관리청 보강. 건강 영역이라 공식 caution 필수.</td>
+              <td>전체 이유식 가이드는 너무 넓다. 새 식재료 1개 반응 체크로 좁혀야 한다.</td>
+              <td>3일 상태칩 기록형으로 축소</td>
+            </tr>
+            <tr>
+              <td>반려식물 물주기</td>
+              <td>수정 후 가능</td>
+              <td>식물별 블로그/영상은 실사용 질문이 많지만 범위가 넓어지기 쉬움.</td>
+              <td>방대한 식물 관리가 아니라 특정 식물·상태 판단으로 좁혀야 한다.</td>
+              <td>스투키/몬스테라 상태 체크형으로 축소</td>
+            </tr>
+            <tr>
+              <td>YouTube 이사 브이로그/체크리스트</td>
+              <td>바로 가능</td>
+              <td>영상/후기형 맥락이 좋음. 다만 개인 경험은 공식 절차와 분리.</td>
+              <td>영상 내용을 D-30/D-14/D-7/D-Day 일정으로 분리하면 Flow-ready하다.</td>
+              <td>이사 D-30 대표 후보에 흡수</td>
+            </tr>
+            <tr>
+              <td>네이버 블로그 예비초등 준비물</td>
+              <td>바로 가능</td>
+              <td>부모가 실제로 저장·비교할 준비물/생활 체크 맥락이 있음.</td>
+              <td>체크리스트를 잘게 나누면 전세계약 다음 생활 카테고리 후보로 좋다.</td>
+              <td>예비초등 대표 후보에 흡수</td>
+            </tr>
+            <tr>
+              <td>YouTube+네이버 무료도안 만들기</td>
+              <td>바로 가능</td>
+              <td>영상+도안 링크 조합이 저장 가치의 핵심.</td>
+              <td>제작 과정을 앱에 재현하지 말고 bucket item으로 저장하면 가볍다.</td>
+              <td>버킷리스트형 후보 유지</td>
+            </tr>
+            <tr>
+              <td>냉장고 파먹기</td>
+              <td>대표 보류</td>
+              <td>영상/댓글이 있어도 개인 재고 매칭이 강함.</td>
+              <td>사용자 재고와 매칭이 약하고, 표/식단을 만들면 FlowMe가 재고관리 앱처럼 무거워진다.</td>
+              <td>부적합 사례로 보관</td>
+            </tr>
+            <tr>
+              <td>YouTube 홈트 루틴 영상</td>
+              <td>바로 가능</td>
+              <td>YouTube 저장/반복 소비 맥락이 강함. 단, 안전/중단 조건 필요.</td>
+              <td>주기와 따라하기 방식이 원문에 있으면 반복 루틴형으로 적합하다.</td>
+              <td>주3회 홈트 후보로 재작성</td>
+            </tr>
+            <tr>
+              <td>원격지원 권한 체크</td>
+              <td>대표 보류</td>
+              <td>공식 도움말 성격. 커뮤니케이션보다 문제 해결/지원 앱 맥락이 강함.</td>
+              <td>FlowMe가 원격지원/보안 설정 앱처럼 보일 위험이 있다.</td>
+              <td>대표 후보 제외</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>새로 고른 원컨텐츠 후보와 action draft</h2>
+      <p class="small">각 후보는 원문에서 바로 실행 구조가 보이는지, 그리고 전세계약 수준의 가벼운 UI로 serving 가능한지를 기준으로 작성했습니다.</p>
+
+      <article class="candidate">
+        <aside>
+          <span class="badge ok">바로 Flow화 적합</span>
+          <h3>이사 준비 D-30 체크리스트</h3>
+          <p class="source-type">오늘의집/업체 블로그/날짜형 체크리스트 · 날짜 앵커형</p>
+          <div class="facts">
+            <div class="fact"><b>주요 출처</b><a href="https://ohou.se/advices/8442" target="_blank" rel="noreferrer">오늘의집 이사 준비 체크리스트</a>, <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC%21-23363" target="_blank" rel="noreferrer">AJD D-30 체크리스트</a></div>
+            <div class="fact"><b>보강 출처</b><a href="https://bunyangfocus.tistory.com/entry/%EC%9D%B4%EC%82%AC-%EC%A0%84%ED%9B%84-%EB%82%A0%EC%A7%9C%EB%B3%84-%EC%B2%B4%ED%81%AC-%EC%82%AC%ED%95%AD-D-30-D-DAY-D1" target="_blank" rel="noreferrer">D-30~D+1 개인 블로그</a></div>
+            <div class="fact"><b>커뮤니케이션 신호</b>오늘의집/블로그형 저장 맥락, 업체 체크리스트의 실제 견적·예약 질문 맥락</div>
+            <div class="fact"><b>Serving</b>이사일 입력 -> D-30/D-14/D-7/D-1/D-Day/D+1</div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 이사 30일 전 이사 방식 정하고 업체 3곳 견적 받기
+- 언제: 이사 30일 전
+- 어디서: 이사업체 앱/전화/업체 사이트
+- 할 일: 포장/반포장/일반 중 하나를 고르고 업체 3곳 견적을 받는다.
+- 완료 기준: 후보 3곳, 견적, 포함 범위를 메모에 저장
+- detail: 손 없는 날, 비용 차이, 업체 홍보 문구는 detail로 분리
+- 근거 출처: 오늘의집 D-30 항목, AJD 이사 방식/업체 예약 항목
+- URL: 오늘의집/AJD 원문 링크
+
+2. 이사 14일 전 입주청소와 엘리베이터 사용 예약하기
+- 언제: 이사 14일 전
+- 어디서: 관리사무소, 입주청소 업체
+- 할 일: 엘리베이터 사용 가능 시간과 입주청소 일정을 확정한다.
+- 완료 기준: 예약 시간과 연락처 저장
+- detail: 아파트/오피스텔별 규정은 사용자 메모
+- 근거 출처: 오늘의집/AJD 업체·청소 예약 항목
+- URL: 원문 링크
+
+3. 이사 7일 전 주소 변경과 정기배송 중지하기
+- 언제: 이사 7일 전
+- 어디서: 우체국, 카드/은행 앱, 정기배송 서비스
+- 할 일: 우편물 주소 이전, 카드/은행 주소 변경, 신문/우유/구독 중지
+- 완료 기준: 변경/중지 항목 체크 완료
+- detail: 서비스별 링크는 optional URL로 저장
+- 근거 출처: D-30~D+1 개인 블로그 주소 변경/배달 중지 항목
+- URL: 원문 링크
+
+4. 이사 전날 냉장고 비우고 박스 라벨 붙이기
+- 언제: 이사 D-1
+- 어디서: 현재 집
+- 할 일: 냉장고 음식 처리, 세탁기 물빼기, 박스에 방/내용물 라벨 붙이기
+- 완료 기준: 냉장고/세탁기/라벨 체크 완료
+- detail: 냉장고 파먹기는 별도 Flow가 아니라 이 action의 하위 메모
+- 근거 출처: 이사 전날 체크리스트 블로그, 오늘의집 이사 D-30 항목
+- URL: 원문 링크
+
+5. 이사 당일 관리비 정산과 전입신고/확정일자 처리하기
+- 언제: 이사 D-Day 또는 D+1
+- 어디서: 출발지 관리사무소, 주민센터/정부24
+- 할 일: 관리비/공과금 정산, 열쇠 반납, 전입신고와 확정일자 처리
+- 완료 기준: 정산 완료, 신고/확정일자 접수 완료
+- detail: 법적 설명은 공식 출처 링크로 보강
+- 근거 출처: D-Day 체크리스트, 전입신고/확정일자 공식 안내
+- URL: 원문 링크
+
+UX 판단:
+- 전세계약 Flow와 같은 날짜 앵커형 UI가 잘 맞음.
+- 전입신고/확정일자는 단독 Flow가 아니라 이사 Flow 안의 D-Day/D+1 item으로 처리.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="badge ok">바로 Flow화 적합</span>
+          <h3>예비초등 입학 준비물/생활 체크</h3>
+          <p class="source-type">네이버 블로그/생활 체크리스트 · 날짜 앵커형+체크리스트형</p>
+          <div class="facts">
+            <div class="fact"><b>주요 출처</b><a href="https://m.blog.naver.com/ben810402/223301309810" target="_blank" rel="noreferrer">네이버 블로그 입학준비물</a>, <a href="https://www.welfarehello.com/community/hometownNews/%EC%9A%B0%EB%A6%AC%EC%95%84%EC%9D%B4-%EC%84%A4%EB%A0%88%EB%8A%94-%EC%B2%AB-%EC%B6%9C%EB%B0%9C-%EC%B4%88%EB%93%B1%ED%95%99%EA%B5%90-%EC%9E%85%ED%95%99%EC%A4%80%EB%B9%84%EB%AC%BC-%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8--fdcb3d95-44e4-48eb-9ce8-67bed2640c48" target="_blank" rel="noreferrer">입학준비물 체크리스트</a></div>
+            <div class="fact"><b>보강 출처</b><a href="https://www.home-learn.co.kr/newsroom/news/A/2035" target="_blank" rel="noreferrer">홈런 초등 입학 준비 체크</a></div>
+            <div class="fact"><b>커뮤니케이션 신호</b>네이버 블로그형 준비물 비교·저장 맥락, 학부모가 실제 구매/생활 연습을 묻는 주제</div>
+            <div class="fact"><b>Serving</b>입학일 입력 -> D-30/D-14/D-7/전날</div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 입학 30일 전 학교 안내문과 예비소집 자료 모으기
+- 언제: 입학 30일 전
+- 어디서: 학교 알림장/교육청/문자/가정통신문
+- 할 일: 예비소집 안내, 준비물 안내, 제출 서류를 한 곳에 저장한다.
+- 완료 기준: 안내문 사진 또는 URL 저장
+- detail: 지역·학교별 차이는 사용자 메모로 둠
+- 근거 출처: 학교/교육청 안내 필요성, 입학 준비 체크리스트
+- URL: 원문 링크
+
+2. 입학 21일 전 이름표 붙일 물품만 먼저 사기
+- 언제: 입학 21일 전
+- 어디서: 문구점/온라인몰
+- 할 일: 가방, 실내화, 필통, 연필, 지우개, 물병 중 학교 안내문에 있는 것만 산다.
+- 완료 기준: 학교 안내문 기준 구매 항목 체크
+- detail: 블로그 추천템은 필수가 아니라 참고로 분리
+- 근거 출처: 네이버 블로그 준비물, 웰로 입학준비물 체크리스트
+- URL: 원문 링크
+
+3. 입학 14일 전 생활 연습 3개 고르기
+- 언제: 입학 14일 전
+- 어디서: 집
+- 할 일: 아침 기상, 화장실, 식사, 가방 정리 중 이번 주 연습할 3개만 고른다.
+- 완료 기준: 연습 항목 3개 선택
+- detail: 부모 조언과 긴 설명은 detail로 이동
+- 근거 출처: 홈런 초등 입학 전 생활 준비 체크
+- URL: 원문 링크
+
+4. 입학 7일 전 가방에 실제 준비물 넣어보기
+- 언제: 입학 7일 전
+- 어디서: 집
+- 할 일: 아이와 함께 가방에 준비물을 넣고 빼보며 위치를 익힌다.
+- 완료 기준: 아이가 물병/필통/실내화를 찾을 수 있음
+- detail: 학교별 금지 물품은 안내문 링크로 확인
+- 근거 출처: 입학준비물 체크리스트와 학부모 블로그 경험
+- URL: 원문 링크
+
+UX 판단:
+- 피드백대로 체크리스트를 더 잘게 쪼갬.
+- 부모에게 긴 설명을 보여주기보다 "이번 주 할 3개"만 첫 화면에 노출.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="badge ok">바로 Flow화 적합</span>
+          <h3>중고차 방문 당일 체크</h3>
+          <p class="source-type">전문/블로그/영상 · 체크리스트형</p>
+          <div class="facts">
+            <div class="fact"><b>주요 출처</b><a href="https://web.getcha.kr/blog/used-car-condition-checklist-guide" target="_blank" rel="noreferrer">겟차 차량 상태 체크리스트</a>, <a href="https://mizle.tistory.com/entry/%EC%A4%91%EA%B3%A0%EC%B0%A8-%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8-%EC%83%81%ED%83%9C-%EC%A2%8B%EC%9D%80-%EC%A4%91%EA%B3%A0%EC%B0%A8-%EA%B3%A0%EB%A5%B4%EB%8A%94-%EB%B2%95" target="_blank" rel="noreferrer">방문 전 준비물 블로그</a></div>
+            <div class="fact"><b>보강 출처</b><a href="https://www.youtube.com/watch?v=Ks4RsqP0hkw" target="_blank" rel="noreferrer">KB차차차 구매 체크 영상</a>, <a href="https://www.kca.go.kr/home/sub.do?menukey=4005&amp;mode=view&amp;no=1003690083" target="_blank" rel="noreferrer">한국소비자원 피해예방</a></div>
+            <div class="fact"><b>커뮤니케이션 신호</b>구매 전 불안/질문이 많은 영상·블로그형 주제, 소비자원은 위험 보강용</div>
+            <div class="fact"><b>Serving</b>방문 전 준비 -> 현장 체크 -> 진행/보류</div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 방문 전 차량번호로 이력 조회하기
+- 언제: 매물 보러 가기 전날
+- 어디서: 자동차 이력 조회 서비스/보험 이력 서비스
+- 할 일: 사고, 침수, 주행거리, 소유자 변경 이력을 확인한다.
+- 완료 기준: 이력 조회 결과 링크 또는 캡처 저장
+- detail: 조회 방법과 비용은 detail로 분리
+- 근거 출처: 겟차 1단계 서류/이력 확인, Kixx 사고 이력 확인
+- URL: 원문 링크
+
+2. 방문 당일 준비물 챙기기
+- 언제: 방문 당일 출발 전
+- 어디서: 집
+- 할 일: 손전등, 장갑, 물티슈, 휴대폰 충전 상태를 체크한다.
+- 완료 기준: 준비물 4개 체크 완료
+- detail: 동행자 메모 optional
+- 근거 출처: 방문 전 준비물 블로그
+- URL: 원문 링크
+
+3. 현장에서 외관/실내/엔진룸 순서로 보기
+- 언제: 차량 앞에서
+- 어디서: 매매단지/판매자 주차장
+- 할 일: 외관 패널 간격, 타이어, 실내 버튼, 엔진룸 누유를 순서대로 체크한다.
+- 완료 기준: 정상/보류 사유 선택
+- detail: 사진 파일명과 판매자 설명은 memo
+- 근거 출처: 겟차 외관/엔진룸/실내 점검 단계
+- URL: 원문 링크
+
+4. 성능기록부와 실제 차량 상태 비교하기
+- 언제: 계약금 입금 전
+- 어디서: 판매자 사무실/차량 옆
+- 할 일: 성능기록부 특이사항과 실제 확인 결과가 맞는지 비교한다.
+- 완료 기준: 불일치 없음 또는 계약 보류 선택
+- detail: 소비자원 분쟁 예방 문구는 공식 보강 출처로 분리
+- 근거 출처: KB차차차 구매 체크 영상, 한국소비자원 피해예방
+- URL: 원문 링크
+
+UX 판단:
+- 사용자가 고민할 것이 많은 문제라 "좋음/나쁨"보다 진행/보류 CTA가 중요함.
+- 체크리스트형이지만 증거 사진과 보류 사유 메모가 first-class여야 함.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="badge ok">바로 Flow화 적합</span>
+          <h3>해외여행 출국 전 최종 체크</h3>
+          <p class="source-type">여행 앱/블로그/공식 안전 정보 · 날짜 앵커형+메모형</p>
+          <div class="facts">
+            <div class="fact"><b>주요 출처</b><a href="https://triple.guide/articles/2b792fed-840c-4ca8-9f60-6e88aa301041" target="_blank" rel="noreferrer">트리플 출국 전 체크사항</a>, <a href="https://brunch.co.kr/%40skyscanner/594" target="_blank" rel="noreferrer">스카이스캐너 준비물 체크리스트</a></div>
+            <div class="fact"><b>보강 출처</b><a href="https://0404.go.kr/main/mainPage" target="_blank" rel="noreferrer">외교부 해외안전여행</a></div>
+            <div class="fact"><b>커뮤니케이션 신호</b>여행 앱 저장/리뷰형 콘텐츠와 블로그 체크리스트. 외교부는 비상 정보 보강용</div>
+            <div class="fact"><b>Serving</b>출국일 입력 -> D-14/D-7/D-1/당일</div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 출국 14일 전 여권 유효기간과 비자/입국 조건 확인하기
+- 언제: 출국 14일 전
+- 어디서: 여권, 항공사/대사관/공식 안내 사이트
+- 할 일: 여권 유효기간, 비자/전자여행허가, 입국 조건을 확인한다.
+- 완료 기준: 여권/비자 상태 체크 완료
+- detail: 국가별 조건은 원문 URL과 공식 링크로 보관
+- 근거 출처: 트리플 출국 전 체크사항, 외교부 국가별 안전정보
+- URL: 원문 링크
+
+2. 출국 7일 전 항공권·숙소·바우처를 오프라인 저장하기
+- 언제: 출국 7일 전
+- 어디서: 이메일, 여행 앱, 클라우드
+- 할 일: E-ticket, 숙소 바우처, 투어 예약증, 여권 사본을 오프라인 저장한다.
+- 완료 기준: 휴대폰에서 비행기 모드로 열리는지 확인
+- detail: 가족/동행자 공유 여부 optional
+- 근거 출처: 트리플/스카이스캐너 서류·바우처 체크 항목
+- URL: 원문 링크
+
+3. 출국 3일 전 환전/카드/여행자보험 체크하기
+- 언제: 출국 3일 전
+- 어디서: 은행 앱, 카드 앱, 보험 앱
+- 할 일: 현금, 해외 결제 카드, 여행자보험 가입 여부를 체크한다.
+- 완료 기준: 결제 수단과 보험증명서 확인
+- detail: 금액 추천은 원문 참고로만 둠
+- 근거 출처: 트리플/스카이스캐너 환전·보험 항목
+- URL: 원문 링크
+
+4. 출국 전날 현지 비상 연락처 저장하기
+- 언제: 출국 D-1
+- 어디서: 외교부 해외안전여행, 메모 앱
+- 할 일: 현지 공관, 영사콜센터, 여행자보험 연락처를 메모에 저장한다.
+- 완료 기준: 비상 연락처 메모 생성
+- detail: 국가별 경보 단계는 공식 출처로 보강
+- 근거 출처: 외교부 해외안전여행, 여행 전 비상 연락처 체크
+- URL: 원문 링크
+
+UX 판단:
+- 해외여행 안전은 공식 포털보다 출국 전 체크리스트 원문이 Flow-ready함.
+- 공식 안전 정보는 emergency memo/detail로 붙이는 편이 맞음.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="badge ok">바로 Flow화 적합</span>
+          <h3>무료도안 스퀴시 만들기</h3>
+          <p class="source-type">YouTube+네이버 도안 · 버킷리스트형</p>
+          <div class="facts">
+            <div class="fact"><b>주요 출처</b><a href="https://www.youtube.com/watch?v=pgZjiXwMOmQ" target="_blank" rel="noreferrer">무료도안 스퀴시 YouTube</a>, <a href="https://m.blog.naver.com/seo_0607/224215184284" target="_blank" rel="noreferrer">네이버 도안 링크</a></div>
+            <div class="fact"><b>보강 출처</b><a href="https://www.youtube.com/watch?v=KknuzLugOAA" target="_blank" rel="noreferrer">DIY Paper Craft 영상</a></div>
+            <div class="fact"><b>커뮤니케이션 신호</b>영상+도안 링크를 저장해 나중에 아이와 실행하는 맥락이 강함</div>
+            <div class="fact"><b>Serving</b>일정 없음 bucket -> 놀이 날짜 배치 optional</div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 도안 링크와 만들기 영상을 놀이 후보로 저장하기
+- 언제: 일정 없음 또는 놀이 날짜를 정할 때
+- 어디서: FlowMe bucket/놀이 리스트
+- 할 일: 원문 영상과 도안 링크를 하나의 놀이 item으로 저장한다.
+- 완료 기준: "스퀴시 만들기" item 저장 완료
+- detail: 도안 다운로드 위치, 저작권/상업 이용 제한
+- 근거 출처: 무료도안 YouTube, 네이버 도안 링크
+- URL: 원문 영상 + 도안 링크
+
+2. 놀이 전날 도안 출력과 준비물 챙기기
+- 언제: 놀이 D-1 또는 당일 오전
+- 어디서: 집/프린터/문구함
+- 할 일: 도안을 출력하고 가위, 테이프, 솜/비닐, 색칠 도구를 챙긴다.
+- 완료 기준: 도안 출력과 준비물 체크 완료
+- detail: 준비물이 없으면 대체 재료 메모
+- 근거 출처: YouTube 만들기 영상과 도안 블로그의 준비물 맥락
+- URL: 원문 링크
+
+3. 놀이 시간에 원문 영상 보며 만들기
+- 언제: 사용자가 정한 놀이 시간
+- 어디서: 집/교실/놀이 공간
+- 할 일: 원문 영상을 열고 아이와 함께 한 번 만든다.
+- 완료 기준: 완성/다음에 다시 하기 선택
+- detail: 사진 기록 optional
+- 근거 출처: 원문 영상의 따라 만들기 구조
+- URL: 원문 링크
+
+UX 판단:
+- 여러 단계 Flow가 아니라 bucket item 중심이 맞음.
+- 다만 구체성을 위해 도안 출력/준비물/놀이 실행 시점은 detail action으로 제공.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="badge ok">바로 Flow화 적합</span>
+          <h3>주 3회 홈트 영상 루틴</h3>
+          <p class="source-type">YouTube/운동 루틴 글 · 반복 루틴형</p>
+          <div class="facts">
+            <div class="fact"><b>주요 출처</b><a href="https://www.youtube.com/watch?v=uDrWZ8PHC6A" target="_blank" rel="noreferrer">핏블리 주3회 홈트 영상</a>, <a href="https://noonnooonannaa.tistory.com/8" target="_blank" rel="noreferrer">주3회 홈트 루틴 글</a></div>
+            <div class="fact"><b>보강 출처</b><a href="https://www.youtube.com/playlist?list=PLd4mUFNXbPhSmD0-lBv8cuzs1jyn-Jw28" target="_blank" rel="noreferrer">초보자 3개월 주3회 영상 목록</a></div>
+            <div class="fact"><b>커뮤니케이션 신호</b>YouTube 반복 소비/저장 맥락이 강함. 안전 기준은 별도 caution으로 분리</div>
+            <div class="fact"><b>Serving</b>요일 3개 선택 -> 반복 일정 -> 상태칩</div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 이번 주 홈트 요일 3개 정하기
+- 언제: 루틴 시작일
+- 어디서: FlowMe 반복 설정
+- 할 일: 월/수/금처럼 운동할 요일 3개를 고른다.
+- 완료 기준: 반복 일정 생성
+- detail: 원문이 제안한 주 3회 흐름과 영상 링크
+- 근거 출처: 핏블리 주3회 홈트 영상, 주3회 루틴 글
+- URL: 원문 링크
+
+2. 첫 운동일에 원문 영상 1회 따라하기
+- 언제: 첫 반복 일정
+- 어디서: 집/매트 앞
+- 할 일: 원문 영상을 열고 가능한 강도로 1회 따라한다.
+- 완료 기준: 완료/중단 선택
+- detail: 동작 순서는 앱에 재작성하지 않고 원문 영상에서 확인
+- 근거 출처: 원문 YouTube 따라하기 영상
+- URL: 원문 링크
+
+3. 운동 직후 상태칩 체크하기
+- 언제: 각 반복 일정 완료 후
+- 어디서: FlowMe 실행 카드
+- 할 일: 쉬움/보통/힘듦, 통증 있음/없음, 다음 회차 유지/줄이기 선택
+- 완료 기준: 상태칩 선택 완료
+- detail: 통증, 어지럼, 호흡곤란, 기존 질환 악화 시 중단/상담
+- 근거 출처: 반복 single-video Flow 규칙과 운동 안전 caution
+- URL: 원문 링크
+
+UX 판단:
+- 제작자가 "주3회/순서대로" 쓰라고 안내하는 원문이어서 Flow-ready함.
+- FlowMe는 운동 지도 앱이 아니라 일정+원문 영상+상태 체크만 제공해야 함.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="badge warn">수정 후 가능</span>
+          <h3>새 식재료 이유식 반응 체크</h3>
+          <p class="source-type">육아/의료 정보 · 기록형</p>
+          <div class="facts">
+            <div class="fact"><b>주요 출처</b><a href="https://www.bebesnap.com/ko/blog/baby-food-stages-guide" target="_blank" rel="noreferrer">이유식 단계별 가이드</a>, <a href="https://www.youtube.com/watch?v=z2VUE5pr8N4" target="_blank" rel="noreferrer">소아과 의사 알레르기 이유식 영상</a></div>
+            <div class="fact"><b>보강 출처</b><a href="https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5212" target="_blank" rel="noreferrer">질병관리청 국가건강정보포털</a></div>
+            <div class="fact"><b>커뮤니케이션 신호</b>육아 영상/가이드는 질문성이 강하지만 건강 영역이라 공식 caution이 필수</div>
+            <div class="fact"><b>Serving</b>식재료 1개 -> 3일 상태칩 -> 상담 조건</div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 새 식재료 1개만 등록하기
+- 언제: 새 재료를 처음 먹이는 날
+- 어디서: 식사 전 FlowMe 기록 카드
+- 할 일: 식재료명과 시작일을 저장한다.
+- 완료 기준: 식재료 카드 1개 생성
+- detail: 한 번에 여러 재료를 섞지 않는 원문 주의사항
+- 근거 출처: 이유식 단계별 가이드, 알레르기 이유식 영상
+- URL: 원문 링크
+
+2. 먹인 당일 반응칩 체크하기
+- 언제: 먹인 뒤 관찰 시점
+- 어디서: FlowMe 기록 카드
+- 할 일: 이상 없음/발진/두드러기/구토/설사/부종/호흡 이상 중 선택한다.
+- 완료 기준: 상태칩 선택 완료
+- detail: 심한 증상은 즉시 의료 상담/진료
+- 근거 출처: 알레르기 반응 관찰 영상, 질병관리청 건강정보
+- URL: 원문 링크
+
+3. 2-3일 동안 같은 재료 반응만 다시 체크하기
+- 언제: D+1, D+2
+- 어디서: 식사 후
+- 할 일: 같은 재료에 대한 반응만 다시 선택한다.
+- 완료 기준: 3일 기록 완료 또는 중단/상담 선택
+- detail: 복잡한 이유식 식단표는 제외
+- 근거 출처: 새 식재료 3-4일 관찰 가이드
+- URL: 원문 링크
+
+UX 판단:
+- 주제는 맞지만 전체 이유식 가이드를 Flow로 만들면 과함.
+- "새 식재료 1개 반응 체크"로 축소하면 기록형 Flow로 가능.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="badge warn">수정 후 가능</span>
+          <h3>스투키/몬스테라 물주기 상태 체크</h3>
+          <p class="source-type">식물별 블로그/앱형 가이드 · 반복 체크형</p>
+          <div class="facts">
+            <div class="fact"><b>주요 출처</b><a href="https://philoswith.tistory.com/13" target="_blank" rel="noreferrer">스투키 물주기 블로그</a>, <a href="https://www.plantalya.app/ko/%EC%8B%9D%EB%AC%BC/monstera-deliciosa/%EB%AC%BC%EC%A3%BC%EA%B8%B0" target="_blank" rel="noreferrer">몬스테라 물주기 가이드</a></div>
+            <div class="fact"><b>보강 출처</b><a href="https://www.youtube.com/watch?v=DdRhoML16sM" target="_blank" rel="noreferrer">스투키 관리 YouTube</a></div>
+            <div class="fact"><b>커뮤니케이션 신호</b>식물별 물주기 질문은 많지만 범용 식물 가이드로 넓어지면 실패</div>
+            <div class="fact"><b>Serving</b>주기 알림이 아니라 상태 체크 후 물주기 결정</div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 이번 주 흙 마름 상태 확인하기
+- 언제: 사용자가 정한 확인 요일
+- 어디서: 화분 앞
+- 할 일: 손가락/나무막대/화분 무게로 흙이 말랐는지 확인한다.
+- 완료 기준: 젖음/마름/과습 의심 선택
+- detail: 식물별 기준은 원문 링크로 분리
+- 근거 출처: 스투키 물주기 블로그, 몬스테라 물주기 가이드
+- URL: 원문 링크
+
+2. 마른 경우에만 물주기
+- 언제: 상태칩이 마름일 때
+- 어디서: 화분 앞
+- 할 일: 흙에 직접 물을 주고 배수 여부를 본다.
+- 완료 기준: 물줌/오늘은 보류 선택
+- detail: 과습 위험과 받침 물 제거 주의
+- 근거 출처: 식물별 물주기 원문, 과습 주의 설명
+- URL: 원문 링크
+
+3. 이상 신호가 있으면 사진 메모 남기기
+- 언제: 잎 처짐, 무름, 과습 의심 시
+- 어디서: 화분 앞
+- 할 일: 사진 1장과 상태칩을 남긴다.
+- 완료 기준: 사진 또는 짧은 메모 저장
+- detail: 분갈이/병해충 설명은 별도 원문으로 이동
+- 근거 출처: 스투키 관리 YouTube, 식물별 상태 확인 설명
+- URL: 원문 링크
+
+UX 판단:
+- 방대한 식물 가이드가 아니라 특정 식물/상황으로 좁혀야 함.
+- 반복 루틴처럼 보이지만 핵심은 "정해진 날 물주기"가 아니라 "확인 후 결정".</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="badge ok">기존 후보 유지</span>
+          <h3>세탁기 통세척 관리</h3>
+          <p class="source-type">제조사 공식 안내 · 반복 루틴형</p>
+          <div class="facts">
+            <div class="fact"><b>주요 출처</b><a href="https://www.samsungsvc.co.kr/solution/41708" target="_blank" rel="noreferrer">삼성전자서비스 통세척 안내</a>, <a href="https://www.lge.co.kr/support/video-tutorials-1430888637954" target="_blank" rel="noreferrer">LG전자 세탁기 관리 영상</a></div>
+            <div class="fact"><b>커뮤니케이션 신호</b>제조사 공식 출처라 댓글/후기 신호는 약하지만 반복 주기와 실행 절차가 명확함</div>
+            <div class="fact"><b>Serving</b>월 1회 또는 냄새/오염 시점 -> 실행 체크 -> 필터/패킹 상태칩</div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 이번 달 통세척 코스 실행하기
+- 언제: 월 1회 또는 냄새가 날 때
+- 어디서: 세탁기 앞
+- 할 일: 세탁물을 비우고 통세척/통살균 코스를 실행한다.
+- 완료 기준: 통세척 코스 완료 체크
+- detail: 모델별 버튼 순서와 세정제 사용 조건은 제조사 링크로 분리
+- 근거 출처: 삼성전자서비스 통세척 안내, LG전자 관리 영상
+- URL: 제조사 원문 링크
+
+2. 통세척 후 고무패킹과 배수필터 상태 확인하기
+- 언제: 통세척 직후 또는 냄새가 남을 때
+- 어디서: 세탁기 앞
+- 할 일: 고무패킹, 세제함, 배수필터 오염 여부를 확인한다.
+- 완료 기준: 정상/청소 필요/서비스 문의 선택
+- detail: 분해 방법은 모델별 공식 안내로 이동
+- 근거 출처: 제조사 세탁기 관리 안내
+- URL: 제조사 원문 링크
+
+UX 판단:
+- 커뮤니케이션형 출처는 아니지만 공식 출처만으로도 반복 루틴과 완료 기준이 충분히 명확함.
+- 제품별 상세 절차를 화면에 펼치지 않고 detail로 보내면 전세계약 수준의 가벼움을 유지할 수 있음.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="badge spot">큰 Flow 안의 spot item</span>
+          <h3>운전면허 갱신/적성검사</h3>
+          <p class="source-type">공식 민원 안내 · spot item</p>
+          <div class="facts">
+            <div class="fact"><b>출처</b><a href="https://www.safedriving.or.kr/diGuide/selectDiGuide01.do?menuCd=MN-PO-1211" target="_blank" rel="noreferrer">안전운전 통합민원</a></div>
+            <div class="fact"><b>커뮤니케이션 신호</b>공식 민원 안내 중심. 사용자 커뮤니케이션보다 마감 처리 욕구가 강함</div>
+            <div class="fact"><b>Serving</b>단독 대표 Flow 아님. 마감일 reminder 또는 면허 준비 Flow item.</div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 면허 갱신 마감 30일 전 사진/신체검사 가능 여부 확인하기
+- 언제: 갱신 마감 30일 전
+- 어디서: 안전운전 통합민원/건강검진 내역
+- 할 일: 사진 준비와 건강검진 내역 활용 가능 여부를 확인한다.
+- 완료 기준: 준비 가능/방문 필요 선택
+- detail: 수수료, 사진 규격, 면허 종류별 조건은 공식 출처로 이동
+- 근거 출처: 안전운전 통합민원 갱신/적성검사 안내
+- URL: 공식 링크
+
+UX 판단:
+- 실행은 가능하지만 대표 Flow라기보다 마감 reminder에 가까움.
+- 운전면허 시험 준비 D-100 Flow 안에 넣는 것이 더 자연스러움.</pre>
+      </article>
+
+      <article class="candidate">
+        <aside>
+          <span class="badge bad">대표 후보 보류</span>
+          <h3>냉장고 파먹기 식단/절약 영상</h3>
+          <p class="source-type">생활 브이로그/AI 의심 글 · 사용자 매칭 약함</p>
+          <div class="facts">
+            <div class="fact"><b>이전 후보</b><a href="https://www.youtube.com/watch?v=kL-PeGgCuAc" target="_blank" rel="noreferrer">냉장고 파먹기 방법 영상</a></div>
+            <div class="fact"><b>커뮤니케이션 신호</b>YouTube 생활 영상 맥락은 있으나 개인 재고 매칭이 Flow 실행성을 막음</div>
+            <div class="fact"><b>판단</b>사용자 재고와 맞지 않으면 바로 실행되지 않음</div>
+          </div>
+        </aside>
+        <pre>[Flow action draft]
+1. 장보기 전 냉장고 파먹기 아이디어 1개만 저장하기
+- 언제: 장보기 전
+- 어디서: 메모/bucket
+- 할 일: 영상에서 따라하고 싶은 메뉴나 원칙 1개만 저장한다.
+- 완료 기준: 참고 메모 저장
+- detail: 제작자의 재료 목록은 내 재고표로 자동 변환하지 않음
+- 근거 출처: 냉장고 파먹기 영상은 참고 아이디어까지만 사용
+- URL: 원문 링크
+
+UX 판단:
+- 조회수와 댓글이 있어도 Flow-ready는 아님.
+- 재고 소진표를 만들면 FlowMe가 식단/재고관리 앱처럼 보이므로 대표 후보 보류.</pre>
+      </article>
+    </section>
+
+    <section class="section">
+      <h2>최종 분류</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>분류</th>
+              <th>후보</th>
+              <th>serving UX</th>
+              <th>다음 처리</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>바로 Flow화 적합</td>
+              <td>이사 준비 D-30, 예비초등 입학 준비, 중고차 방문 당일 체크, 해외여행 출국 전 체크, 무료도안 스퀴시, 주3회 홈트, 세탁기 통세척</td>
+              <td>날짜 앵커형, 체크리스트형, 버킷리스트형, 반복 루틴형</td>
+              <td>전세계약 수준의 가벼운 실제 UX/UI 샘플로 확장 가능</td>
+            </tr>
+            <tr>
+              <td>원문 교체/수정 후 가능</td>
+              <td>이유식 새 식재료 반응, 스투키/몬스테라 물주기</td>
+              <td>기록형, 반복 체크형</td>
+              <td>범위를 더 좁혀 1개 식재료/1개 식물 단위로만 사용</td>
+            </tr>
+            <tr>
+              <td>큰 Flow 안의 spot item</td>
+              <td>전입신고/확정일자, 운전면허 갱신</td>
+              <td>마감 reminder 또는 상위 Flow의 하위 action</td>
+              <td>대표 후보에서 낮추고 상위 Flow에 흡수</td>
+            </tr>
+            <tr>
+              <td>대표 후보 보류/부적합</td>
+              <td>냉장고 파먹기, 원격지원 권한 체크, AI 생성 범용 요약글</td>
+              <td>메모 참고 이상으로 키우면 제품 방향이 흐려짐</td>
+              <td>성공 사례가 아니라 탈락 기준 사례로 보관</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>다음 UX/UI 작업 제안</h2>
+      <div class="grid two">
+        <article class="card">
+          <h3>먼저 만들 후보</h3>
+          <p>전세계약 다음 실제 UX/UI 샘플은 이사 D-30 또는 예비초등 입학 준비가 가장 적합합니다. 둘 다 날짜 앵커형이지만, 전세계약과 다른 생활 카테고리로 확장성을 보여줍니다.</p>
+        </article>
+        <article class="card">
+          <h3>UI 원칙</h3>
+          <p>전세계약 수준의 가벼움을 유지합니다. 첫 화면은 기준일 입력과 action list, 상세 설명은 detail/URL, 기록형은 글쓰기 대신 상태칩으로 제한합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>
+        이 문서는 source-to-Flow UX 검토 자료입니다. 실제 사용자 검증, 콘텐츠 검증 완료, 법률·의료·안전 자문을 의미하지 않습니다.
+        외부 원문은 2026-06-14에 얕게 확인했으며, 실제 구현 전에는 원문 접근성·저작권·최신성을 다시 확인해야 합니다.
+      </p>
+    </footer>
+  </main>
+</body>
+</html>

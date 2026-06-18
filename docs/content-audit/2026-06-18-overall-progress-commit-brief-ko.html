@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FLOW 진행상황 정리 - 2026-06-18</title>
+  <style>
+    :root {
+      --bg: #f6f6f2;
+      --paper: #ffffff;
+      --ink: #171717;
+      --muted: #66645d;
+      --line: #dedbd2;
+      --green: #0f766e;
+      --blue: #2563eb;
+      --amber: #b45309;
+      --red: #be123c;
+      --violet: #6d28d9;
+      --green-soft: #e7f3ef;
+      --blue-soft: #e7eeff;
+      --amber-soft: #fff1d8;
+      --red-soft: #ffe8ee;
+      --violet-soft: #efe8ff;
+      --shadow: 0 20px 55px rgba(18, 18, 18, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(15, 118, 110, 0.06) 0 1px, transparent 1px 100%),
+        linear-gradient(180deg, rgba(37, 99, 235, 0.05) 0 1px, transparent 1px 100%),
+        var(--bg);
+      background-size: 44px 44px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      line-height: 1.55;
+    }
+
+    a { color: inherit; text-decoration: none; border-bottom: 1px solid currentColor; }
+    h1, h2, h3, p { margin: 0; }
+
+    .page {
+      width: min(1220px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 48px;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .card, .hero-main, .panel, .lane, .route-map {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-main {
+      padding: 34px;
+      min-height: 330px;
+      display: grid;
+      align-content: space-between;
+    }
+
+    .eyeline {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 780px;
+      margin-top: 14px;
+      font-size: clamp(36px, 5vw, 74px);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .hero-main > p {
+      max-width: 740px;
+      margin-top: 18px;
+      color: #41413c;
+      font-size: 18px;
+    }
+
+    .hero-flags {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .flag {
+      border: 1px solid var(--line);
+      background: #fbfbf8;
+      padding: 13px;
+    }
+
+    .flag strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .flag span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .snapshot {
+      padding: 24px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .snapshot h2 {
+      font-size: 26px;
+      line-height: 1.1;
+    }
+
+    .status-grid {
+      display: grid;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .status-row {
+      display: grid;
+      grid-template-columns: 112px minmax(0, 1fr);
+      gap: 12px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+      font-size: 14px;
+    }
+
+    .status-row b { color: #31312e; }
+    .status-row span { color: var(--muted); }
+
+    .board {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .panel {
+      padding: 24px;
+    }
+
+    .panel h2, .route-map h2 {
+      margin-top: 6px;
+      font-size: 24px;
+      line-height: 1.12;
+    }
+
+    .panel > p {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .meters {
+      display: grid;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .meter {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr) 72px;
+      gap: 12px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .track {
+      height: 13px;
+      border: 1px solid var(--line);
+      background: #efeee9;
+      overflow: hidden;
+    }
+
+    .bar { height: 100%; background: var(--green); }
+    .bar.blue { background: var(--blue); }
+    .bar.amber { background: var(--amber); }
+    .bar.red { background: var(--red); }
+
+    .quadrants {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .quad {
+      min-height: 146px;
+      border: 1px solid var(--line);
+      padding: 16px;
+      background: #fbfbf9;
+    }
+
+    .quad[data-tone="green"] { background: var(--green-soft); border-color: #b9d9d2; }
+    .quad[data-tone="blue"] { background: var(--blue-soft); border-color: #c3d4ff; }
+    .quad[data-tone="amber"] { background: var(--amber-soft); border-color: #ecd3a6; }
+    .quad[data-tone="red"] { background: var(--red-soft); border-color: #efbdc9; }
+
+    .quad strong {
+      display: block;
+      font-size: 16px;
+    }
+
+    .quad p {
+      margin-top: 8px;
+      color: #4c4c47;
+      font-size: 13px;
+    }
+
+    .route-map {
+      padding: 24px;
+      margin-bottom: 18px;
+    }
+
+    .lanes {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .lane {
+      box-shadow: none;
+      min-height: 286px;
+      padding: 16px;
+      display: grid;
+      align-content: start;
+      gap: 12px;
+    }
+
+    .lane h3 {
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .pill {
+      display: inline-block;
+      width: fit-content;
+      border: 1px solid var(--line);
+      background: #fafaf7;
+      padding: 4px 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .lane ul {
+      margin: 0;
+      padding-left: 18px;
+      color: #4f4f49;
+      font-size: 13px;
+    }
+
+    .lane li + li { margin-top: 7px; }
+
+    .commit-plan {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .commit {
+      position: relative;
+      min-height: 160px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      padding: 15px;
+    }
+
+    .commit::after {
+      content: "";
+      position: absolute;
+      top: 33px;
+      right: -11px;
+      width: 11px;
+      height: 2px;
+      background: var(--line);
+    }
+
+    .commit:last-child::after { display: none; }
+
+    .commit-num {
+      display: inline-grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border: 1px solid var(--line);
+      background: #fbfbf8;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .commit strong {
+      display: block;
+      margin-top: 12px;
+      font-size: 14px;
+      line-height: 1.25;
+    }
+
+    .commit p {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .links {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .link-card {
+      border: 1px solid var(--line);
+      background: #ffffff;
+      padding: 15px;
+    }
+
+    .link-card strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .link-card p {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .footer {
+      margin-top: 22px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 960px) {
+      .hero, .board, .lanes, .commit-plan, .links {
+        grid-template-columns: 1fr;
+      }
+      .hero-flags, .quadrants { grid-template-columns: 1fr; }
+      .commit::after { display: none; }
+    }
+
+    @media (max-width: 640px) {
+      .page { width: min(100% - 20px, 1220px); padding-top: 18px; }
+      .hero-main, .snapshot, .panel, .route-map { padding: 18px; }
+      .meter, .status-row { grid-template-columns: 1fr; gap: 6px; }
+      .top, .footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="top">
+      <span>FLOW progress brief / 2026-06-18</span>
+      <span><a href="./2026-06-18-recent-progress-review-brief-ko.md">recent progress note</a> · <a href="../harness/daily-briefing-example.html">daily briefing board</a></span>
+    </div>
+
+    <section class="hero" aria-label="overall summary">
+      <div class="hero-main">
+        <div>
+          <p class="eyeline">Current character</p>
+          <h1>제품 완성보다 리서치/기획 PoC가 중심이다.</h1>
+          <p>
+            현재 작업은 Flow of Flows, source-gated Flow, creator/user PoC, 플랫폼 운영 모델을 검토하며
+            제품 방향을 좁히는 단계다. 일부 제품 코드와 UI는 최종 제품이 아니라 판단을 돕는 프로토타입으로 본다.
+          </p>
+        </div>
+        <div class="hero-flags">
+          <div class="flag"><strong>Validation claim 금지</strong><span>실사용 관찰 전에는 검증됨이라고 쓰지 않는다.</span></div>
+          <div class="flag"><strong>Research PoC 우선</strong><span>문서/HTML/시뮬레이션은 방향 탐색 산출물이다.</span></div>
+          <div class="flag"><strong>커밋은 분리</strong><span>기획, 규칙, 코드, harness를 섞지 않는다.</span></div>
+        </div>
+      </div>
+
+      <aside class="card snapshot">
+        <div>
+          <p class="eyeline">Snapshot before commit</p>
+          <h2>364 changed paths</h2>
+        </div>
+        <div class="status-grid">
+          <div class="status-row"><b>문서/리서치</b><span>323개 경로, 대부분 content-audit 산출물</span></div>
+          <div class="status-row"><b>제품 코드</b><span>app/components/lib/tests/package 쪽 PoC 변경</span></div>
+          <div class="status-row"><b>브랜치</b><span>design-ref-full-gap-alignment, origin 대비 ahead 상태</span></div>
+          <div class="status-row"><b>제외</b><span>outputs/ 안의 node_modules성 로컬 산출물은 커밋하지 않음</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="board" aria-label="evidence and risks">
+      <article class="panel">
+        <p class="eyeline">Evidence balance</p>
+        <h2>지금 증거는 문서와 시뮬레이션에 치우쳐 있다.</h2>
+        <p>그래서 브리핑과 커밋 메시지는 제품 검증이 아니라 research/planning PoC로 말해야 한다.</p>
+        <div class="meters">
+          <div class="meter"><b>문서화 진행</b><div class="track"><div class="bar" style="width: 92%"></div></div><span>높음</span></div>
+          <div class="meter"><b>제품 PoC 코드</b><div class="track"><div class="bar blue" style="width: 58%"></div></div><span>중간</span></div>
+          <div class="meter"><b>실사용 관찰</b><div class="track"><div class="bar amber" style="width: 15%"></div></div><span>낮음</span></div>
+          <div class="meter"><b>검증 주장 위험</b><div class="track"><div class="bar red" style="width: 64%"></div></div><span>주의</span></div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <p class="eyeline">Decision frame</p>
+        <h2>PoC를 두 층으로 나눠 읽는다.</h2>
+        <p>제품 코드로 보이는 것도 아직은 research/planning PoC를 검토하기 위한 화면일 수 있다.</p>
+        <div class="quadrants">
+          <div class="quad" data-tone="green"><strong>리서치/기획 PoC</strong><p>source scan, persona simulation, flow-of-flow 모델, creator/user candidate 검토.</p></div>
+          <div class="quad" data-tone="blue"><strong>제품 레벨 PoC</strong><p>content-flows UI, artifact workbench, seed flow, export/source-fit 테스트.</p></div>
+          <div class="quad" data-tone="amber"><strong>제품 규칙</strong><p>DECISIONS, IDEAS, flow-rules, specs가 향후 구현 판단의 기준선.</p></div>
+          <div class="quad" data-tone="red"><strong>보류/금지</strong><p>validation, public launch, integration readiness는 사용자 관찰 전까지 보류.</p></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="route-map" aria-label="work lanes">
+      <p class="eyeline">Work lanes</p>
+      <h2>이번 정리는 네 개 흐름으로 나눠 커밋한다.</h2>
+      <div class="lanes">
+        <div class="lane">
+          <span class="pill">Lane 1</span>
+          <h3>Harness / briefing</h3>
+          <ul>
+            <li>일일 브리핑 예시 Markdown/HTML</li>
+            <li>로컬 생성물 ignore 규칙</li>
+            <li>agent 운영 문서 흐름 보강</li>
+          </ul>
+        </div>
+        <div class="lane">
+          <span class="pill">Lane 2</span>
+          <h3>Research planning PoC</h3>
+          <ul>
+            <li>Flow of Flows / Flow Pack 연구</li>
+            <li>source-gated, creator/user simulation</li>
+            <li>최근 진행상황 HTML/Markdown 브리핑</li>
+          </ul>
+        </div>
+        <div class="lane">
+          <span class="pill">Lane 3</span>
+          <h3>Rules / decisions</h3>
+          <ul>
+            <li>DECISIONS, IDEAS, STATUS 업데이트</li>
+            <li>flow-rules와 specs index 보강</li>
+            <li>platform-analysis와 pr-history 정리</li>
+          </ul>
+        </div>
+        <div class="lane">
+          <span class="pill">Lane 4</span>
+          <h3>Product PoC code</h3>
+          <ul>
+            <li>content-flows route/API/UI</li>
+            <li>artifact/source/export/seed-flow 모델</li>
+            <li>unit/e2e 테스트와 package script</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="route-map" aria-label="commit plan">
+      <p class="eyeline">Commit plan</p>
+      <h2>푸시 전 커밋 분할 계획</h2>
+      <div class="commit-plan">
+        <div class="commit"><span class="commit-num">1</span><strong>Harness briefing board</strong><p>브리핑 예시와 진행상황 HTML 보드, ignore 정리.</p></div>
+        <div class="commit"><span class="commit-num">2</span><strong>Product rules and planning index</strong><p>DECISIONS/IDEAS/STATUS/flow-rules/specs/roles.</p></div>
+        <div class="commit"><span class="commit-num">3</span><strong>Research PoC docs</strong><p>content-audit, platform-analysis, pr-history, design reference.</p></div>
+        <div class="commit"><span class="commit-num">4</span><strong>Research tooling and static previews</strong><p>content-audit scripts와 public review artifact.</p></div>
+        <div class="commit"><span class="commit-num">5</span><strong>Product PoC implementation</strong><p>app/components/lib/tests/package 변경.</p></div>
+      </div>
+    </section>
+
+    <section class="route-map" aria-label="related documents">
+      <p class="eyeline">Entry links</p>
+      <h2>이어 볼 문서</h2>
+      <div class="links">
+        <div class="link-card">
+          <strong><a href="./2026-06-18-flowme-daily-morning-briefing-ko.html">Daily morning briefing</a></strong>
+          <p>하루 시작용 상태/다음 행동 브리핑.</p>
+        </div>
+        <div class="link-card">
+          <strong><a href="./2026-06-18-roadmap-progress-visual-ko.html">Roadmap progress visual</a></strong>
+          <p>로드맵과 최근 진행상황 시각 정리.</p>
+        </div>
+        <div class="link-card">
+          <strong><a href="./2026-06-18-flowme-platform-study-map-poc-ko.html">Platform study map PoC</a></strong>
+          <p>플랫폼/경험맵 방향성 연구 지도.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      <span>Generated as a static research/planning status board. It is not user-behavior validation.</span>
+      <span>FLOW / 2026-06-18</span>
+    </div>
+  </main>
+</body>
+</html>

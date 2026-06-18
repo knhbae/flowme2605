@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flow 서비스 IA 시뮬레이션 리포트</title>
+    <style>
+      :root {
+        --bg: #f6f8fb;
+        --paper: #fff;
+        --ink: #111827;
+        --muted: #5f6d80;
+        --line: #dbe3ef;
+        --blue: #1f5fbf;
+        --green: #0f7a4a;
+        --amber: #986400;
+        --red: #b42318;
+        --soft-blue: #edf4ff;
+        --soft-green: #ebf8f0;
+        --soft-amber: #fff8e6;
+        --soft-red: #fff1ef;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--ink); line-height: 1.62; }
+      a { color: var(--blue); text-underline-offset: 3px; }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 46px); line-height: 1.1; letter-spacing: 0; }
+      h2 { margin-bottom: 10px; font-size: 25px; letter-spacing: 0; }
+      h3 { margin-bottom: 6px; font-size: 18px; letter-spacing: 0; }
+      ul { margin: 8px 0 0; padding-left: 20px; }
+      li + li { margin-top: 5px; }
+      .wrap { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 22px 0 70px; }
+      .hero, .card, .finding, .step {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+      }
+      .hero { padding: 24px; box-shadow: 0 16px 36px rgba(15, 23, 42, .08); }
+      .card { margin-top: 14px; padding: 18px; }
+      .eyebrow { margin-bottom: 8px; color: var(--blue); font-size: 13px; font-weight: 900; text-transform: uppercase; }
+      .desc { color: var(--muted); }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 4px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 850;
+      }
+      .green { border-color: #bde7cb; background: var(--soft-green); color: var(--green); }
+      .blue { border-color: #bfdbfe; background: var(--soft-blue); color: var(--blue); }
+      .amber { border-color: #f4d58d; background: var(--soft-amber); color: var(--amber); }
+      .red { border-color: #f4b3ad; background: var(--soft-red); color: var(--red); }
+      .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .steps { display: grid; gap: 8px; margin-top: 10px; }
+      .step { padding: 12px; background: #fbfcff; }
+      .step strong { display: block; margin-bottom: 3px; }
+      .finding { padding: 14px; margin-top: 10px; border-left: 5px solid var(--line); }
+      .finding.blocking { border-left-color: var(--red); }
+      .finding.high { border-left-color: var(--amber); }
+      .finding.fixed { border-left-color: var(--green); }
+      .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+      table { width: 100%; min-width: 900px; border-collapse: collapse; }
+      th, td { padding: 11px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+      th { background: #f2f6fb; color: #334155; font-size: 13px; }
+      tr:last-child td { border-bottom: 0; }
+      @media (max-width: 780px) {
+        .wrap { width: min(100% - 18px, 1180px); padding-top: 14px; }
+        .hero, .card { padding: 15px; }
+        .grid { grid-template-columns: 1fr; }
+        table { min-width: 760px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="hero">
+        <p class="eyebrow">Simulation report</p>
+        <h1>Flow of Flow가 아니라 서비스 운영 구조부터 다시 확인했다</h1>
+        <p class="desc">이 리포트는 내부 시뮬레이션이다. 실제 사용자 행동 데이터가 아니며, 제품 성과나 시장 반응을 확정하지 않는다.</p>
+        <div class="chips">
+          <span class="chip green">작은 Flow 기준선 회복</span>
+          <span class="chip blue">사용자 관리 화면 추가</span>
+          <span class="chip blue">제작자 운영 화면 추가</span>
+          <span class="chip red">실사용 검증 전</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>확인할 산출물</h2>
+        <ul>
+          <li><a href="./2026-06-17-flow-service-ia-recovery-report-ko.html">Flow 서비스 IA 재정렬 리포트</a></li>
+          <li><a href="./2026-06-17-flow-service-user-library-poc-ko.html">사용자용 저장 Flow 관리 화면</a></li>
+          <li><a href="./2026-06-17-flow-service-creator-ops-poc-ko.html">제작자용 Flow 운영판</a></li>
+        </ul>
+      </section>
+
+      <section class="grid">
+        <article class="card">
+          <h2>사용자 저니 A</h2>
+          <p class="desc">여러 원문을 저장해 둔 사용자가 오늘 할 일과 보관 자료를 구분하는 상황.</p>
+          <div class="steps">
+            <div class="step"><strong>원문 소비</strong>전세 계약 가이드, 이사 체크리스트, 중고차 점검 글, 스퀴시 도안 영상을 각각 저장했다.</div>
+            <div class="step"><strong>Flow함 진입</strong>사용자는 전체 목록이 아니라 오늘/예정/보관/반복 필터를 먼저 본다.</div>
+            <div class="step"><strong>오늘 실행</strong>전세 D-Day와 중고차 방문 체크가 오늘 항목으로 보이고, 각각 날짜/현장 체크 detail로 열린다.</div>
+            <div class="step"><strong>자료 보관</strong>스퀴시는 버킷 자료로 남고, 날짜가 생겼을 때만 캘린더에 붙인다.</div>
+            <div class="step"><strong>재방문</strong>이사 D-10과 스투키 다음 물주기 후보가 예정/반복 영역에서 다시 보인다.</div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>제작자 저니 A</h2>
+          <p class="desc">생활 준비 콘텐츠 제작자가 여러 Flow를 공개하고 채널/컬렉션으로 묶는 상황.</p>
+          <div class="steps">
+            <div class="step"><strong>작은 Flow 확인</strong>이사, 입학, 스퀴시, 스투키 각각의 원문과 artifact를 먼저 확인한다.</div>
+            <div class="step"><strong>공개 전 점검</strong>원문 cue, 자연 산출물, 입력 복잡도, 주의 정보, 사용자 미리보기를 체크한다.</div>
+            <div class="step"><strong>채널 운영</strong>서로 다른 Flow는 제작자 채널에 모으되, 사용자에게 같은 구조라고 속이지 않는다.</div>
+            <div class="step"><strong>컬렉션 운영</strong>이사/입학처럼 생활 전환 시점이 비슷한 Flow는 컬렉션으로 묶는다.</div>
+            <div class="step"><strong>Flow of Flow 보류</strong>중1 수학처럼 반복 패턴이 명확한 후보만 별도 Flow of Flow로 남긴다.</div>
+          </div>
+        </article>
+      </section>
+
+      <section class="card">
+        <h2>기존 Flow of Flow v2 실패 학습</h2>
+        <div class="finding blocking">
+          <h3>Blocking · 하위 Flow가 독립 artifact처럼 보이지 않았다</h3>
+          <p class="desc">단원/과목/월령을 나열하고 버튼을 붙였지만, 이전에 통과한 이사·중고차·스퀴시처럼 각 항목이 자기 캘린더/체크리스트/표/버킷으로 살아나는 느낌이 약했다.</p>
+        </div>
+        <div class="finding high">
+          <h3>High · 사용자 관리 화면 없이 상위 지도부터 만들었다</h3>
+          <p class="desc">사용자가 이미 저장한 여러 Flow를 어떻게 찾고 실행하고 재방문하는지 확인하지 않은 상태에서 상위 지도 UX를 만들었다.</p>
+        </div>
+        <div class="finding high">
+          <h3>High · 제작자 운영 화면이 단순 변환 폼에 가까웠다</h3>
+          <p class="desc">제작자가 공개된 Flow를 관리하고, 수정 필요 항목을 보고, 채널/컬렉션/커리큘럼으로 묶는 실제 운영 감각이 부족했다.</p>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>이번 수정으로 바꾼 점</h2>
+        <div class="finding fixed">
+          <h3>수정 1 · 작은 Flow 기준선을 먼저 세움</h3>
+          <p class="desc">전세, 이사, 중고차, 초등 입학, 홈트, 스퀴시, 스투키를 기준선으로 두고 destination, 입력, 관리 화면 표시값을 정리했다.</p>
+        </div>
+        <div class="finding fixed">
+          <h3>수정 2 · 사용자 Flow함을 제품 화면으로 만듦</h3>
+          <p class="desc">오늘/예정/보관/반복 필터와 선택한 Flow의 artifact detail을 만들었다. 화면은 내부 평가 문서가 아니라 실제 저장 관리 화면처럼 작동한다.</p>
+        </div>
+        <div class="finding fixed">
+          <h3>수정 3 · 제작자 운영판을 분리함</h3>
+          <p class="desc">제작자는 Flow 목록, 공개 상태, 원문 URL, artifact, 공개 전 점검, 사용자 미리보기, 묶음 타입을 관리한다.</p>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>묶음 타입 판정 결과</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>묶음</th>
+                <th>이번 판정</th>
+                <th>이유</th>
+                <th>다음에 볼 것</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>사용자 Flow함</td>
+                <td><span class="chip green">먼저 필요</span></td>
+                <td>여러 Flow를 저장한 사용자가 오늘/예정/보관/반복으로 운영하는 기본 화면이다.</td>
+                <td>0개, 1개, 3개, 10개 이상 저장 상태별 UX</td>
+              </tr>
+              <tr>
+                <td>제작자 채널</td>
+                <td><span class="chip green">먼저 필요</span></td>
+                <td>서로 다른 작은 Flow들을 한 제작자의 콘텐츠 자산으로 운영하는 기본 화면이다.</td>
+                <td>공개 상태, 업데이트, 사용자 반응, 대표 Flow 선택</td>
+              </tr>
+              <tr>
+                <td>컬렉션</td>
+                <td><span class="chip blue">유효</span></td>
+                <td>생활 전환, 여행 준비, 입학 준비처럼 하위 Flow 성격이 서로 달라도 사용자는 같이 볼 수 있다.</td>
+                <td>사용자가 전체 저장보다 일부 저장을 선호하는지</td>
+              </tr>
+              <tr>
+                <td>커리큘럼/프로그램</td>
+                <td><span class="chip amber">후속</span></td>
+                <td>큰 목표와 단계가 필요하지만, 하위 Flow가 모두 같은 패턴일 필요는 없다.</td>
+                <td>자격증 취득 지도에서 행정/공부/시험일 Flow 분리</td>
+              </tr>
+              <tr>
+                <td>진짜 Flow of Flow</td>
+                <td><span class="chip amber">보수적으로</span></td>
+                <td>중1 수학 단원별 공부처럼 같은 패턴이 반복될 때만 쓴다.</td>
+                <td>각 하위 Flow가 독립 artifact로 생성되는지</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>남은 리스크</h2>
+        <ul>
+          <li>이번 HTML은 정적 클릭 PoC라 실제 사용자 저장/재방문 데이터가 없다.</li>
+          <li>제작자 화면은 운영 감각을 확인하는 수준이며 실제 버전 관리, 분석, 권한 모델은 구현하지 않았다.</li>
+          <li>Flow of Flow는 아직 제품 대표로 완료된 것이 아니라, 작은 Flow와 운영 구조가 통과한 뒤 다시 다뤄야 한다.</li>
+          <li>영유아/건강 영역은 공식 정보와 경험 정보 분리 규칙을 계속 강화해야 한다.</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

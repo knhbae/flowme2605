@@ -1,0 +1,1960 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flow 콘텐츠 UI 평가판</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --surface: #fff;
+      --ink: #111827;
+      --muted: #667085;
+      --line: #e5e7eb;
+      --blue: #2563eb;
+      --blue-soft: #eff6ff;
+      --green: #047857;
+      --green-soft: #ecfdf5;
+      --amber: #b45309;
+      --amber-soft: #fffbeb;
+      --red: #b91c1c;
+      --red-soft: #fef2f2;
+      --purple: #6d28d9;
+      --purple-soft: #f5f3ff;
+      --shadow: 0 18px 48px rgba(15, 23, 42, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-decoration: none; font-weight: 850; }
+    button, textarea, input { font: inherit; }
+    .page { max-width: 1360px; margin: 0 auto; padding: 28px 16px 72px; }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .hero-main, .summary-panel, .toolbar, .candidate-card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .hero-main { padding: 24px; }
+    .hero-main span { color: var(--blue); font-size: 13px; font-weight: 950; }
+    h1 { margin: 8px 0 12px; font-size: clamp(34px, 5vw, 58px); line-height: 1.05; }
+    .hero-main p { margin: 0; max-width: 860px; color: #344054; font-size: 16px; }
+    .summary-panel { padding: 18px; display: grid; gap: 10px; }
+    .summary-panel div {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #f8fafc;
+      padding: 10px;
+    }
+    .summary-panel span { color: var(--muted); font-size: 12px; font-weight: 850; }
+    .summary-panel strong { font-size: 20px; }
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      margin: 18px 0;
+      padding: 12px;
+    }
+    .filters { display: flex; flex-wrap: wrap; gap: 7px; }
+    .filters button, .export-btn {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: #344054;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .filters button.active, .export-btn { border-color: var(--blue); background: var(--blue); color: #fff; }
+    .cards { display: grid; gap: 14px; }
+    .candidate-card {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.9fr) minmax(360px, 1.2fr) 260px;
+      gap: 14px;
+      padding: 14px;
+      scroll-margin-top: 82px;
+    }
+    .candidate-card.is-hidden { display: none; }
+    .candidate-info, .candidate-preview, .candidate-eval {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 14px;
+    }
+    .candidate-preview { background: #fbfcff; }
+    .card-head { display: flex; justify-content: space-between; gap: 10px; align-items: start; }
+    .category { color: var(--muted); font-size: 12px; font-weight: 900; }
+    h2 { margin: 5px 0 0; font-size: 22px; line-height: 1.22; }
+    .priority {
+      border-radius: 999px;
+      padding: 6px 9px;
+      font-size: 12px;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+    .priority.p0 { background: var(--red-soft); color: var(--red); }
+    .priority.p1 { background: var(--amber-soft); color: var(--amber); }
+    .priority.p2 { background: var(--blue-soft); color: var(--blue); }
+    .priority.ok { background: var(--green-soft); color: var(--green); }
+    .need { margin: 10px 0 0; color: #344054; font-size: 14px; }
+    dl { display: grid; gap: 9px; margin: 14px 0 0; }
+    dl div { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 8px; }
+    dt { color: var(--muted); font-size: 12px; font-weight: 950; }
+    dd { margin: 0; color: #344054; font-size: 13px; }
+    .link-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; font-size: 13px; }
+    .mock {
+      border: 1px solid #dbeafe;
+      border-radius: 12px;
+      background: #fff;
+      padding: 12px;
+    }
+    .mock-top { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+    .mock-top strong { font-size: 15px; }
+    .mock-top span { color: var(--blue); font-size: 12px; font-weight: 900; }
+    .timeline-line {
+      display: grid;
+      grid-template-columns: 82px minmax(0, 1fr);
+      gap: 10px;
+      border-left: 2px solid #bfdbfe;
+      padding: 0 0 12px 13px;
+      margin-left: 8px;
+    }
+    .timeline-line span {
+      border-radius: 999px;
+      background: #fff;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 950;
+    }
+    .timeline-line.active div { border-color: #93c5fd; background: var(--blue-soft); }
+    .timeline-line div, .candidate-row {
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #fff;
+      padding: 9px;
+    }
+    .timeline-line strong, .mock label span, .sheet-row span, .candidate-row strong { font-size: 13px; }
+    .timeline-line p, .routine-next p, .sheet-row span, .study-grid span { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .routine-next { border: 1px solid #bbf7d0; border-radius: 10px; background: var(--green-soft); padding: 10px; }
+    .routine-next span { color: var(--green); font-size: 12px; font-weight: 950; }
+    .routine-next strong { display: block; margin-top: 4px; }
+    .routine-actions, .decision-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin: 10px 0; }
+    .routine-actions button, .decision-buttons button {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 8px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .routine-actions button:first-child, .decision-buttons button:first-child { background: var(--green-soft); color: var(--green); border-color: #bbf7d0; }
+    .decision-buttons button:nth-child(2) { background: var(--amber-soft); color: var(--amber); border-color: #fde68a; }
+    .decision-buttons button:nth-child(3) { background: var(--red-soft); color: var(--red); border-color: #fecaca; }
+    .mock label {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 9px;
+      margin-top: 7px;
+    }
+    .sheet-table { overflow: hidden; border: 1px solid var(--line); border-radius: 10px; }
+    .sheet-row { display: grid; grid-template-columns: repeat(5, minmax(90px, 1fr)); border-bottom: 1px solid #eef2f7; }
+    .sheet-row:last-child { border-bottom: 0; }
+    .sheet-row.head { background: #f8fafc; font-weight: 950; }
+    .sheet-row span { padding: 8px; border-right: 1px solid #eef2f7; }
+    .sheet-row span:last-child { border-right: 0; }
+    .study-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-bottom: 10px; }
+    .study-grid div { border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 9px; }
+    .study-grid strong { display: block; font-size: 13px; }
+    .task-line {
+      display: grid !important;
+      grid-template-columns: 20px 74px minmax(0, 1fr);
+      align-items: center !important;
+    }
+    .task-line span { color: var(--blue); font-weight: 950; }
+    .day-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+    .day-grid div { min-height: 74px; border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 8px; }
+    .day-grid .active { border-color: #93c5fd; background: var(--blue-soft); }
+    .day-grid span { color: var(--blue); font-size: 11px; font-weight: 950; }
+    .day-grid strong { display: block; margin-top: 5px; font-size: 12px; line-height: 1.3; }
+    .candidate-eval h3 { margin: 0 0 10px; font-size: 17px; }
+    .check { display: inline-flex; gap: 7px; align-items: center; font-size: 13px; font-weight: 850; }
+    .score-buttons { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 12px 0; }
+    .score-buttons button {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 8px 0;
+      font-weight: 950;
+      cursor: pointer;
+    }
+    .score-buttons button.active { border-color: var(--blue); background: var(--blue); color: #fff; }
+    textarea {
+      width: 100%;
+      min-height: 112px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 10px;
+      color: #344054;
+      font-size: 13px;
+    }
+    .eval-state { margin-top: 8px; color: var(--muted); font-size: 12px; }
+    @media (max-width: 1080px) {
+      .hero, .candidate-card { grid-template-columns: 1fr; }
+      .toolbar { position: static; }
+    }
+    @media (max-width: 640px) {
+      .page { padding: 14px 8px 50px; }
+      .hero-main, .summary-panel, .toolbar, .candidate-card { border-radius: 10px; }
+      h1 { font-size: 34px; }
+      .candidate-card { padding: 8px; }
+      .candidate-info, .candidate-preview, .candidate-eval { padding: 12px; }
+      dl div { grid-template-columns: 1fr; gap: 3px; }
+      .sheet-table { overflow-x: auto; }
+      .sheet-row { min-width: 640px; }
+      .day-grid { grid-template-columns: repeat(2, 1fr); }
+      .routine-actions, .decision-buttons, .study-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-main">
+        <span>Flow Content UI Evaluation</span>
+        <h1>콘텐츠별 Flow UI 적합성 평가판</h1>
+        <p>각 콘텐츠가 어떤 UI로 보여야 하는지 실제 미니 프리뷰로 비교합니다. 점수, 문제 있음, 메모는 이 브라우저에 자동 저장되며 JSON으로 내보낼 수 있습니다.</p>
+      </div>
+      <aside class="summary-panel">
+        <div><span>전체 후보</span><strong>31</strong></div>
+        <div><span>P0 수정</span><strong>8</strong></div>
+        <div><span>P1 수정</span><strong>17</strong></div>
+        <div><span>OK/낮은 우선순위</span><strong>6</strong></div>
+      </aside>
+    </section>
+
+    <nav class="toolbar" aria-label="필터와 내보내기">
+      <div class="filters">
+        <button class="active" type="button" data-filter="all">전체</button>
+        <button type="button" data-filter="P0">P0</button>
+        <button type="button" data-filter="P1">P1</button>
+        <button type="button" data-filter="sheet">시트</button>
+        <button type="button" data-filter="routine">루틴</button>
+        <button type="button" data-filter="timeline">타임라인</button>
+        <button type="button" data-filter="decision">결정</button>
+      </div>
+      <button class="export-btn" type="button" id="export-json">평가 JSON 내보내기</button>
+    </nav>
+
+    <section class="cards">
+      
+      <article class="candidate-card" data-kind="routine" data-priority="P0" id="monstera-care-routine">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">식물 관리</span>
+              <h2>몬스테라 물주기·분갈이 루틴</h2>
+            </div>
+            <span class="priority p0">P0</span>
+          </div>
+          <p class="need">식물 이름을 저장하고 물주기와 잎/흙 관찰을 반복한다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>물주기는 완료보다 보류 판단이 중요하다.</dd></div>
+            <div><dt>수정 방향</dt><dd>물주기/보류 segmented action과 관찰 메모를 둔다.</dd></div>
+            <div><dt>UI 타입</dt><dd>루틴 · 낮음</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://jhbd2.tistory.com/178" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/monstera-care-routine.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock routine-mock">
+    <div class="mock-top"><strong>반복 관리판</strong><span>다음 실행 중심</span></div>
+    <div class="routine-next">
+      <span>다음 실행</span>
+      <strong>7~10일마다 확인</strong>
+      <p>물주기/보류 segmented action과 관찰 메모를 둔다.</p>
+    </div>
+    <div class="routine-actions">
+      <button>완료</button><button>보류</button><button>교체 필요</button>
+    </div>
+    <label><input type="checkbox" /> <span>겉흙 마름 확인 후 물주기</span></label><label><input type="checkbox" /> <span>잎 색과 새잎 상태 보기</span></label><label><input type="checkbox" /> <span>분갈이 필요 확인</span></label>
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="monstera-care-routine">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="몬스테라 물주기·분갈이 루틴 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="routine" data-priority="P0" id="stuckyi-overwater-prevention">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">식물 관리</span>
+              <h2>스투키 과습 방지 관리</h2>
+            </div>
+            <span class="priority p0">P0</span>
+          </div>
+          <p class="need">물을 자주 주는 실수를 줄이고, 물주기 전 확인을 습관화한다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>과습 방지는 “하지 않기”가 핵심인데 일반 완료 루틴처럼 보인다.</dd></div>
+            <div><dt>수정 방향</dt><dd>오늘 물주지 않음 상태와 보류 사유 UI를 둔다.</dd></div>
+            <div><dt>UI 타입</dt><dd>루틴 · 낮음</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://botanical.house/stuckyi/" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/stuckyi-overwater-prevention.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock routine-mock">
+    <div class="mock-top"><strong>반복 관리판</strong><span>다음 실행 중심</span></div>
+    <div class="routine-next">
+      <span>다음 실행</span>
+      <strong>2~3주마다 확인</strong>
+      <p>오늘 물주지 않음 상태와 보류 사유 UI를 둔다.</p>
+    </div>
+    <div class="routine-actions">
+      <button>완료</button><button>보류</button><button>교체 필요</button>
+    </div>
+    <label><input type="checkbox" /> <span>흙 완전 건조 확인</span></label><label><input type="checkbox" /> <span>밑동 무름 확인</span></label><label><input type="checkbox" /> <span>분갈이 후 적응 관리</span></label>
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="stuckyi-overwater-prevention">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="스투키 과습 방지 관리 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="sheet" data-priority="P0" id="water-purifier-filter-cycle">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">가전 관리</span>
+              <h2>정수기 필터 교체 주기 관리</h2>
+            </div>
+            <span class="priority p0">P0</span>
+          </div>
+          <p class="need">필터별 마지막 교체일을 저장하고 다음 교체일을 놓치지 않는다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>필터명, 마지막 교체일, 다음 교체일 컬럼이 필요하다.</dd></div>
+            <div><dt>수정 방향</dt><dd>필터명, 주기, 마지막 교체일, 다음 교체일, 상태 표로 보여준다.</dd></div>
+            <div><dt>UI 타입</dt><dd>시트 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://pihamadam.tistory.com/267" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/water-purifier-filter-cycle.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+    <div class="mock sheet-mock">
+      <div class="mock-top"><strong>시트 미리보기</strong><span>필터명 / 주기 / 마지막 교체일 / 다음 교체일 / 상태</span></div>
+      <div class="sheet-table">
+        <div class="sheet-row head"><span>필터명</span><span>주기</span><span>마지막 교체일</span><span>다음 교체일</span><span>상태</span></div>
+        
+              <div class="sheet-row">
+                <span>세디먼트 필터 교체 확인</span><span>3~6개월</span><span>사용자 입력</span><span>사용자 입력</span><span>교체일 또는 유지 결정 기록</span>
+              </div>
+            
+              <div class="sheet-row">
+                <span>프리/포스트 카본 필터 확인</span><span>6~12개월</span><span>사용자 입력</span><span>사용자 입력</span><span>다음 교체일 저장</span>
+              </div>
+            
+              <div class="sheet-row">
+                <span>RO/나노 필터 확인</span><span>12~24개월</span><span>사용자 입력</span><span>사용자 입력</span><span>교체 예약 또는 구매 링크 저장</span>
+              </div>
+            
+      </div>
+    </div>
+  
+        </section>
+        <section class="candidate-eval" data-eval="water-purifier-filter-cycle">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="정수기 필터 교체 주기 관리 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="sheet" data-priority="P0" id="car-maintenance-schedule">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">차량/관리</span>
+              <h2>자동차 소모품 교체 스케줄</h2>
+            </div>
+            <span class="priority p0">P0</span>
+          </div>
+          <p class="need">내 차의 주행거리/마지막 교체일 기준으로 다음 점검 알림을 만든다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>주행거리, 마지막 교체 km, 다음 교체 기준이 없다.</dd></div>
+            <div><dt>수정 방향</dt><dd>소모품, 마지막 교체, 현재 km, 다음 기준, 상태 표로 둔다.</dd></div>
+            <div><dt>UI 타입</dt><dd>시트 · 낮음</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://car.mustarddata.com/guide/maintenance-schedule/" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/car-maintenance-schedule.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+    <div class="mock sheet-mock">
+      <div class="mock-top"><strong>시트 미리보기</strong><span>소모품 / 마지막 교체 / 현재 km / 다음 기준 / 상태</span></div>
+      <div class="sheet-table">
+        <div class="sheet-row head"><span>소모품</span><span>마지막 교체</span><span>현재 km</span><span>다음 기준</span><span>상태</span></div>
+        
+              <div class="sheet-row">
+                <span>엔진오일 교체 예정 확인</span><span>거리/개월 기준</span><span>사용자 입력</span><span>사용자 입력</span><span>교체/유지 결정</span>
+              </div>
+            
+              <div class="sheet-row">
+                <span>와이퍼·에어컨 필터 확인</span><span>계절 전</span><span>사용자 입력</span><span>사용자 입력</span><span>교체 필요 여부 기록</span>
+              </div>
+            
+              <div class="sheet-row">
+                <span>타이어와 브레이크 점검</span><span>장거리 전 또는 정비 주기</span><span>사용자 입력</span><span>사용자 입력</span><span>점검 완료</span>
+              </div>
+            
+      </div>
+    </div>
+  
+        </section>
+        <section class="candidate-eval" data-eval="car-maintenance-schedule">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="자동차 소모품 교체 스케줄 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="sheet" data-priority="P0" id="baby-food-four-week-menu">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">육아/식단</span>
+              <h2>초기 토핑 이유식 4주 식단표</h2>
+            </div>
+            <span class="priority p0">P0</span>
+          </div>
+          <p class="need">시작일 기준으로 4주 식단표를 캘린더/시트로 받는다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>식단표인데 일별 메뉴와 반응 기록이 보이지 않는다.</dd></div>
+            <div><dt>수정 방향</dt><dd>4주 식단 calendar/table과 반응 메모 접힘 영역을 둔다.</dd></div>
+            <div><dt>UI 타입</dt><dd>시트 · 낮음</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://family-yes.tistory.com/229" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/baby-food-four-week-menu.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+    <div class="mock sheet-mock">
+      <div class="mock-top"><strong>시트 미리보기</strong><span>주차 / 메뉴/재료 / 새 재료 / 반응 메모 / 상태</span></div>
+      <div class="sheet-table">
+        <div class="sheet-row head"><span>주차</span><span>메뉴/재료</span><span>새 재료</span><span>반응 메모</span><span>상태</span></div>
+        
+              <div class="sheet-row">
+                <span>1주차 쌀죽/기본 재료 시작</span><span>1주차</span><span>사용자 입력</span><span>사용자 입력</span><span>1주차 식단 완료</span>
+              </div>
+            
+              <div class="sheet-row">
+                <span>2주차 채소 토핑 추가</span><span>2주차</span><span>사용자 입력</span><span>사용자 입력</span><span>2주차 식단 완료</span>
+              </div>
+            
+              <div class="sheet-row">
+                <span>3~4주차 소고기/단백질 확인</span><span>3~4주차</span><span>사용자 입력</span><span>사용자 입력</span><span>4주 식단표 종료</span>
+              </div>
+            
+      </div>
+    </div>
+  
+        </section>
+        <section class="candidate-eval" data-eval="baby-food-four-week-menu">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="초기 토핑 이유식 4주 식단표 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="sheet" data-priority="P0" id="homelearn-reading-challenge">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">육아/독서</span>
+              <h2>예비초 독서 챌린지 책 목록</h2>
+            </div>
+            <span class="priority p0">P0</span>
+          </div>
+          <p class="need">책 목록을 독서 체크리스트로 받고 매주 1권씩 읽는다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>책 목록인데 책 제목, 상태, 읽은 날, 다음 책이 표로 보이지 않는다.</dd></div>
+            <div><dt>수정 방향</dt><dd>책 제목, 상태, 읽은 날, 다음 책 표로 구성한다.</dd></div>
+            <div><dt>UI 타입</dt><dd>시트 · 낮음</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://www.home-learn.co.kr/front/doc/%ED%99%88%EB%9F%B0%EB%8F%85%EC%84%9C%EC%B1%8C%EB%A6%B0%EC%A7%80_%EA%B6%8C%EC%9E%A5%EB%8F%84%EC%84%9C_%EB%A6%AC%EC%8A%A4%ED%8A%B8.pdf" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/homelearn-reading-challenge.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+    <div class="mock sheet-mock">
+      <div class="mock-top"><strong>시트 미리보기</strong><span>책 제목 / 상태 / 읽은 날 / 다음 책 / 메모</span></div>
+      <div class="sheet-table">
+        <div class="sheet-row head"><span>책 제목</span><span>상태</span><span>읽은 날</span><span>다음 책</span><span>메모</span></div>
+        
+              <div class="sheet-row">
+                <span>이번 주 책 1권 고르기</span><span>매주 시작일</span><span>사용자 입력</span><span>사용자 입력</span><span>이번 주 책 선택</span>
+              </div>
+            
+              <div class="sheet-row">
+                <span>책 읽기</span><span>매주 1회</span><span>사용자 입력</span><span>사용자 입력</span><span>책 1권 읽음</span>
+              </div>
+            
+              <div class="sheet-row">
+                <span>다음 책으로 넘기기</span><span>읽은 뒤</span><span>사용자 입력</span><span>사용자 입력</span><span>다음 책 선택</span>
+              </div>
+            
+      </div>
+    </div>
+  
+        </section>
+        <section class="candidate-eval" data-eval="homelearn-reading-challenge">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="예비초 독서 챌린지 책 목록 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="sheet" data-priority="P0" id="monthly-budget-close">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">돈 관리</span>
+              <h2>월말 가계부 결산 루틴</h2>
+            </div>
+            <span class="priority p0">P0</span>
+          </div>
+          <p class="need">투자 조언이 아니라 매월 지출 분류와 저축 목표 확인만 한다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>금액, 카테고리, 이번달/다음달 구조가 없다.</dd></div>
+            <div><dt>수정 방향</dt><dd>고정비, 변동비, 저축 row와 금액 입력을 둔다.</dd></div>
+            <div><dt>UI 타입</dt><dd>시트 · 낮음</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://smart-life.kr/monthly-budget-template-checklist-guide/" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/monthly-budget-close.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+    <div class="mock sheet-mock">
+      <div class="mock-top"><strong>시트 미리보기</strong><span>분류 / 이번 달 금액 / 전월 대비 / 다음 달 조정 / 상태</span></div>
+      <div class="sheet-table">
+        <div class="sheet-row head"><span>분류</span><span>이번 달 금액</span><span>전월 대비</span><span>다음 달 조정</span><span>상태</span></div>
+        
+              <div class="sheet-row">
+                <span>이번 달 고정비 확인</span><span>월말</span><span>사용자 입력</span><span>사용자 입력</span><span>고정비 확인</span>
+              </div>
+            
+              <div class="sheet-row">
+                <span>변동비 합계 보기</span><span>월말</span><span>사용자 입력</span><span>사용자 입력</span><span>변동비 합계 기록</span>
+              </div>
+            
+              <div class="sheet-row">
+                <span>다음 달 저축 자동이체 확인</span><span>월급일 전후</span><span>사용자 입력</span><span>사용자 입력</span><span>자동이체 확인</span>
+              </div>
+            
+      </div>
+    </div>
+  
+        </section>
+        <section class="candidate-eval" data-eval="monthly-budget-close">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="월말 가계부 결산 루틴 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="routine" data-priority="P0" id="emergency-fund-account">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">돈 관리</span>
+              <h2>비상금 통장 만들기 체크</h2>
+            </div>
+            <span class="priority p0">P0</span>
+          </div>
+          <p class="need">월급일에 비상금 이체를 확인하고 목표 달성률만 본다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>통장 만들기는 체크이고 월급일 자동이체는 루틴이다.</dd></div>
+            <div><dt>수정 방향</dt><dd>초기 설정 checklist와 월급일 루틴을 분리한다.</dd></div>
+            <div><dt>UI 타입</dt><dd>루틴 · 낮음</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://world-pkrystal82.com/120?category=1175028" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/emergency-fund-account.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock routine-mock">
+    <div class="mock-top"><strong>반복 관리판</strong><span>다음 실행 중심</span></div>
+    <div class="routine-next">
+      <span>다음 실행</span>
+      <strong>월급일</strong>
+      <p>초기 설정 checklist와 월급일 루틴을 분리한다.</p>
+    </div>
+    <div class="routine-actions">
+      <button>완료</button><button>보류</button><button>교체 필요</button>
+    </div>
+    <label><input type="checkbox" /> <span>비상금 자동이체 확인</span></label><label><input type="checkbox" /> <span>이번 달 사용 여부 확인</span></label><label><input type="checkbox" /> <span>목표 달성률 확인</span></label>
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="emergency-fund-account">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="비상금 통장 만들기 체크 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="timeline" data-priority="P1" id="wedding-12-month-timeline">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">생활 이벤트</span>
+              <h2>결혼 준비 12개월 타임라인</h2>
+            </div>
+            <span class="priority p1">P1</span>
+          </div>
+          <p class="need">예식일을 넣으면 월별 준비 항목이 캘린더와 체크리스트로 들어온다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>결혼 준비다운 월별 여정, 업체 비교, 계약 메모가 약하다.</dd></div>
+            <div><dt>수정 방향</dt><dd>D-12부터 D-day까지 월별 rail과 업체 비교 sheet 진입을 둔다.</dd></div>
+            <div><dt>UI 타입</dt><dd>타임라인 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://wedding-expo.kr/posts/post-007" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/wedding-12-month-timeline.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock timeline-mock">
+    <div class="mock-top"><strong>월별 여정</strong><span>현재 구간 강조</span></div>
+    
+          <div class="timeline-line active">
+            <span>D-12개월</span>
+            <div>
+              <strong>예산과 웨딩홀 후보 정리</strong>
+              <p>후보 3곳 정리</p>
+            </div>
+          </div>
+        
+          <div class="timeline-line ">
+            <span>D-8~6개월</span>
+            <div>
+              <strong>스드메/본식 업체 확정</strong>
+              <p>계약 여부 체크</p>
+            </div>
+          </div>
+        
+          <div class="timeline-line ">
+            <span>D-2~1개월</span>
+            <div>
+              <strong>청첩장·혼주·식순 점검</strong>
+              <p>본식 체크리스트 완료</p>
+            </div>
+          </div>
+        
+          <div class="timeline-line ">
+            <span>D-1주</span>
+            <div>
+              <strong>당일 비상 준비물 챙기기</strong>
+              <p>가방에 넣음</p>
+            </div>
+          </div>
+        
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="wedding-12-month-timeline">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="결혼 준비 12개월 타임라인 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="routine" data-priority="P1" id="washer-tub-clean-monthly">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">가전 관리</span>
+              <h2>세탁기 통세척 월간 관리</h2>
+            </div>
+            <span class="priority p1">P1</span>
+          </div>
+          <p class="need">세탁 후 냄새가 나기 전에 월 1회 짧은 관리 루틴으로 세탁기를 유지한다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>월 1회 관리인데 요일 반복처럼 보이면 어색하다.</dd></div>
+            <div><dt>수정 방향</dt><dd>마지막 실행일, 다음 실행일, 내부 체크 3개를 한 카드에 둔다.</dd></div>
+            <div><dt>UI 타입</dt><dd>루틴 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://raga-t.com/entry/%EC%84%B8%ED%83%81%EA%B8%B0-%ED%86%B5%EC%84%B8%EC%B2%99-%EB%B0%A9%EB%B2%95-%EC%99%84%EB%B2%BD-%EA%B0%80%EC%9D%B4%EB%93%9C" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/washer-tub-clean-monthly.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock routine-mock">
+    <div class="mock-top"><strong>반복 관리판</strong><span>다음 실행 중심</span></div>
+    <div class="routine-next">
+      <span>다음 실행</span>
+      <strong>매월 1회</strong>
+      <p>마지막 실행일, 다음 실행일, 내부 체크 3개를 한 카드에 둔다.</p>
+    </div>
+    <div class="routine-actions">
+      <button>완료</button><button>보류</button><button>교체 필요</button>
+    </div>
+    <label><input type="checkbox" /> <span>세탁조 통세척 코스 돌리기</span></label><label><input type="checkbox" /> <span>고무패킹 물기와 찌꺼기 닦기</span></label><label><input type="checkbox" /> <span>세제통과 배수필터 확인</span></label>
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="washer-tub-clean-monthly">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="세탁기 통세척 월간 관리 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="decision" data-priority="P1" id="used-car-buying-check">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">차량/구매</span>
+              <h2>중고차 후보 점검 체크</h2>
+            </div>
+            <span class="priority p1">P1</span>
+          </div>
+          <p class="need">후보 차량을 볼 때 바로 확인할 체크리스트와 구매/보류 결정을 남긴다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>구매/보류/거절 버튼은 있지만 후보 차량 비교표가 없다.</dd></div>
+            <div><dt>수정 방향</dt><dd>차량 후보 row, 점검 체크, 최종 결정을 한 화면에 둔다.</dd></div>
+            <div><dt>UI 타입</dt><dd>결정 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://trendmetriclab.com/guides/used-car-buying-checklist/" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/used-car-buying-check.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock decision-mock">
+    <div class="mock-top"><strong>후보 비교와 결정</strong><span>구매/보류/거절</span></div>
+    <div class="candidate-row">
+      <strong>후보 차량 A</strong><span>방문 전</span><span>보험이력 확인 전</span>
+    </div>
+    <div class="decision-buttons"><button>구매</button><button>보류</button><button>거절</button></div>
+    <label><input type="checkbox" /> <span>성능점검기록부 확인</span></label><label><input type="checkbox" /> <span>보험이력 조회</span></label><label><input type="checkbox" /> <span>외관·타이어·실내 상태 보기</span></label><label><input type="checkbox" /> <span>구매/보류/거절 결정</span></label>
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="used-car-buying-check">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="중고차 후보 점검 체크 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="routine" data-priority="P1" id="lg-aircon-filter-biweekly">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">가전 관리</span>
+              <h2>에어컨 필터 2주 청소</h2>
+            </div>
+            <span class="priority p1">P1</span>
+          </div>
+          <p class="need">여름철 에어컨 성능과 냄새 문제를 줄이기 위해 필터 청소와 교체를 놓치지 않는다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>2주 청소와 6개월 교체가 같은 행으로 보이면 주기 차이가 약하다.</dd></div>
+            <div><dt>수정 방향</dt><dd>2주 청소 루틴과 6개월 교체 루틴을 분리한다.</dd></div>
+            <div><dt>UI 타입</dt><dd>루틴 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://www.lge.co.kr/support/solutions-20150160251795?cstFlag=Y&amp;mktModelCd=FQ237SAU&amp;svcqr=" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/lg-aircon-filter-biweekly.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock routine-mock">
+    <div class="mock-top"><strong>반복 관리판</strong><span>다음 실행 중심</span></div>
+    <div class="routine-next">
+      <span>다음 실행</span>
+      <strong>2주마다</strong>
+      <p>2주 청소 루틴과 6개월 교체 루틴을 분리한다.</p>
+    </div>
+    <div class="routine-actions">
+      <button>완료</button><button>보류</button><button>교체 필요</button>
+    </div>
+    <label><input type="checkbox" /> <span>극세 필터 물세척</span></label><label><input type="checkbox" /> <span>교체 필터 상태 확인</span></label><label><input type="checkbox" /> <span>송풍 운전으로 내부 말리기</span></label>
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="lg-aircon-filter-biweekly">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="에어컨 필터 2주 청소 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="timeline" data-priority="P1" id="moving-d30-checklist">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">생활 이벤트</span>
+              <h2>이사 D-30 체크리스트</h2>
+            </div>
+            <span class="priority p1">P1</span>
+          </div>
+          <p class="need">이사일 하나만 넣고 놓치기 쉬운 예약/신고를 캘린더에 받는다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>이사 당일/이후 일정과 예약 항목이 같은 밀도다.</dd></div>
+            <div><dt>수정 방향</dt><dd>D-30, D-14, D-7, D+1 날짜 그룹과 예약 상태를 둔다.</dd></div>
+            <div><dt>UI 타입</dt><dd>타임라인 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://greechii.com/tips/home/moving-checklist/" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/moving-d30-checklist.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock timeline-mock">
+    <div class="mock-top"><strong>월별 여정</strong><span>현재 구간 강조</span></div>
+    
+          <div class="timeline-line active">
+            <span>D-30~D-21</span>
+            <div>
+              <strong>이사업체 견적 비교</strong>
+              <p>업체 확정</p>
+            </div>
+          </div>
+        
+          <div class="timeline-line ">
+            <span>D-14</span>
+            <div>
+              <strong>인터넷·가스·관리비 이전 예약</strong>
+              <p>예약 완료</p>
+            </div>
+          </div>
+        
+          <div class="timeline-line ">
+            <span>D-7</span>
+            <div>
+              <strong>입주청소와 가전 배송일 확인</strong>
+              <p>일정 충돌 없음</p>
+            </div>
+          </div>
+        
+          <div class="timeline-line ">
+            <span>D+1~D+14</span>
+            <div>
+              <strong>전입신고/확정일자 확인</strong>
+              <p>신고 완료 또는 일정 저장</p>
+            </div>
+          </div>
+        
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="moving-d30-checklist">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="이사 D-30 체크리스트 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="routine" data-priority="P1" id="air-purifier-filter-seasonal">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">가전 관리</span>
+              <h2>공기청정기 필터 계절 관리</h2>
+            </div>
+            <span class="priority p1">P1</span>
+          </div>
+          <p class="need">미세먼지 계절 전후로 프리필터 청소와 본필터 교체 시점을 관리한다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>계절 점검과 교체 결정이 한 리스트에 섞인다.</dd></div>
+            <div><dt>수정 방향</dt><dd>계절 점검판과 교체 필요 상태를 분리한다.</dd></div>
+            <div><dt>UI 타입</dt><dd>루틴 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://tech-goreum.tistory.com/41" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/air-purifier-filter-seasonal.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock routine-mock">
+    <div class="mock-top"><strong>반복 관리판</strong><span>다음 실행 중심</span></div>
+    <div class="routine-next">
+      <span>다음 실행</span>
+      <strong>매월 또는 미세먼지 많은 달</strong>
+      <p>계절 점검판과 교체 필요 상태를 분리한다.</p>
+    </div>
+    <div class="routine-actions">
+      <button>완료</button><button>보류</button><button>교체 필요</button>
+    </div>
+    <label><input type="checkbox" /> <span>프리필터 먼지 제거</span></label><label><input type="checkbox" /> <span>본필터 교체 필요 확인</span></label><label><input type="checkbox" /> <span>필터 구매 링크 업데이트</span></label>
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="air-purifier-filter-seasonal">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="공기청정기 필터 계절 관리 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="timeline" data-priority="P1" id="travel-d7-checklist">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">여행</span>
+              <h2>출국 7일 전 여행 준비</h2>
+            </div>
+            <span class="priority p1">P1</span>
+          </div>
+          <p class="need">출국일 기준으로 D-7, D-3, D-1 준비를 나눠 확인한다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>여행 준비물과 D-day timeline이 섞인다.</dd></div>
+            <div><dt>수정 방향</dt><dd>D-7 timeline과 짐/앱/서류 checklist를 이중 구조로 둔다.</dd></div>
+            <div><dt>UI 타입</dt><dd>타임라인 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://westctravel.com/articles/departure-checklist-d7" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/travel-d7-checklist.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock timeline-mock">
+    <div class="mock-top"><strong>월별 여정</strong><span>현재 구간 강조</span></div>
+    
+          <div class="timeline-line active">
+            <span>D-7</span>
+            <div>
+              <strong>여권/항공권/숙소 재확인</strong>
+              <p>주요 예약 확인 완료</p>
+            </div>
+          </div>
+        
+          <div class="timeline-line ">
+            <span>D-5</span>
+            <div>
+              <strong>로밍/eSIM/결제수단 준비</strong>
+              <p>통신/결제 준비 완료</p>
+            </div>
+          </div>
+        
+          <div class="timeline-line ">
+            <span>D-1</span>
+            <div>
+              <strong>수하물과 공항 공지 확인</strong>
+              <p>짐싸기 완료</p>
+            </div>
+          </div>
+        
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="travel-d7-checklist">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="출국 7일 전 여행 준비 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="routine" data-priority="P1" id="car-cabin-filter-replace">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">차량/관리</span>
+              <h2>자동차 에어컨 필터 셀프 교체</h2>
+            </div>
+            <span class="priority p1">P1</span>
+          </div>
+          <p class="need">차량별 필터 교체일을 저장하고 계절마다 교체한다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>단발 교체 절차와 6개월 반복이 섞인다.</dd></div>
+            <div><dt>수정 방향</dt><dd>오늘 교체 절차와 다음 교체 루틴 저장을 분리한다.</dd></div>
+            <div><dt>UI 타입</dt><dd>루틴 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://www.autodirection.kr/blog/?bmode=view&amp;idx=166941342" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/car-cabin-filter-replace.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock routine-mock">
+    <div class="mock-top"><strong>반복 관리판</strong><span>다음 실행 중심</span></div>
+    <div class="routine-next">
+      <span>다음 실행</span>
+      <strong>교체 전</strong>
+      <p>오늘 교체 절차와 다음 교체 루틴 저장을 분리한다.</p>
+    </div>
+    <div class="routine-actions">
+      <button>완료</button><button>보류</button><button>교체 필요</button>
+    </div>
+    <label><input type="checkbox" /> <span>호환 필터 확인</span></label><label><input type="checkbox" /> <span>에어컨 필터 교체</span></label><label><input type="checkbox" /> <span>강풍 운전으로 먼지 배출</span></label>
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="car-cabin-filter-replace">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="자동차 에어컨 필터 셀프 교체 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="routine" data-priority="P1" id="robot-vacuum-monthly-care">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">가전 관리</span>
+              <h2>로봇청소기 브러시·센서 월간 관리</h2>
+            </div>
+            <span class="priority p1">P1</span>
+          </div>
+          <p class="need">청소기가 알아서 도는 만큼 사용자가 놓치기 쉬운 소모품 관리를 캘린더에 남긴다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>매주, 매월 작업이 같은 레벨로 보인다.</dd></div>
+            <div><dt>수정 방향</dt><dd>주간 관리와 월간 관리를 그룹으로 나눈다.</dd></div>
+            <div><dt>UI 타입</dt><dd>루틴 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://solidtips.tistory.com/entry/robot-vacuum-maintenance-brush-sensor-dustbin-watertank" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/robot-vacuum-monthly-care.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock routine-mock">
+    <div class="mock-top"><strong>반복 관리판</strong><span>다음 실행 중심</span></div>
+    <div class="routine-next">
+      <span>다음 실행</span>
+      <strong>매주</strong>
+      <p>주간 관리와 월간 관리를 그룹으로 나눈다.</p>
+    </div>
+    <div class="routine-actions">
+      <button>완료</button><button>보류</button><button>교체 필요</button>
+    </div>
+    <label><input type="checkbox" /> <span>메인 브러시 머리카락 제거</span></label><label><input type="checkbox" /> <span>센서와 충전 접점 닦기</span></label><label><input type="checkbox" /> <span>먼지통·오수통 세척</span></label>
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="robot-vacuum-monthly-care">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="로봇청소기 브러시·센서 월간 관리 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="timeline" data-priority="P1" id="puppy-vaccination-schedule">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">반려동물</span>
+              <h2>강아지 예방접종 일정표</h2>
+            </div>
+            <span class="priority p1">P1</span>
+          </div>
+          <p class="need">입양일/생일 기준으로 접종 예정일을 캘린더에 저장한다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>접종 기록, 다음 예약, 매년 반복이 한 흐름에 있다.</dd></div>
+            <div><dt>수정 방향</dt><dd>접종 기록 카드, 다음 예약, 연간 반복을 분리한다.</dd></div>
+            <div><dt>UI 타입</dt><dd>타임라인 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://hipaw.co.kr/puppy-vaccination-time-type-cycle/" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/puppy-vaccination-schedule.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock timeline-mock">
+    <div class="mock-top"><strong>월별 여정</strong><span>현재 구간 강조</span></div>
+    
+          <div class="timeline-line active">
+            <span>입양 직후</span>
+            <div>
+              <strong>이전 접종 기록 확인</strong>
+              <p>기록 확인 또는 없음 표시</p>
+            </div>
+          </div>
+        
+          <div class="timeline-line ">
+            <span>병원 안내 기준</span>
+            <div>
+              <strong>다음 접종 예약</strong>
+              <p>예약일 저장</p>
+            </div>
+          </div>
+        
+          <div class="timeline-line ">
+            <span>매년</span>
+            <div>
+              <strong>광견병/연간 접종 확인</strong>
+              <p>연간 접종 여부 확인</p>
+            </div>
+          </div>
+        
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="puppy-vaccination-schedule">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="강아지 예방접종 일정표 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="routine" data-priority="P1" id="child-weekend-play-rotation">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">육아/놀이</span>
+              <h2>아이 주말 놀이 로테이션</h2>
+            </div>
+            <span class="priority p1">P1</span>
+          </div>
+          <p class="need">주말 놀이 루틴에 놀이 방법 카드를 하나씩 매핑한다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>로테이션 후보 고르기 UI가 약하다.</dd></div>
+            <div><dt>수정 방향</dt><dd>이번 주 놀이, 다음 후보, 아이 반응 구조로 둔다.</dd></div>
+            <div><dt>UI 타입</dt><dd>루틴 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://i-nuri.go.kr/board/boardFile/download/27/630/1319.do" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/child-weekend-play-rotation.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock routine-mock">
+    <div class="mock-top"><strong>반복 관리판</strong><span>다음 실행 중심</span></div>
+    <div class="routine-next">
+      <span>다음 실행</span>
+      <strong>이번 주말</strong>
+      <p>이번 주 놀이, 다음 후보, 아이 반응 구조로 둔다.</p>
+    </div>
+    <div class="routine-actions">
+      <button>완료</button><button>보류</button><button>교체 필요</button>
+    </div>
+    <label><input type="checkbox" /> <span>종이컵 쌓기 놀이</span></label><label><input type="checkbox" /> <span>색/개수 분류 놀이</span></label><label><input type="checkbox" /> <span>다음 놀이 카드 고르기</span></label>
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="child-weekend-play-rotation">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="아이 주말 놀이 로테이션 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="routine" data-priority="P1" id="humidifier-daily-weekly-clean">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">가전 관리</span>
+              <h2>가습기 매일 비우고 주간 세척</h2>
+            </div>
+            <span class="priority p1">P1</span>
+          </div>
+          <p class="need">매일 물을 비우고 주 1회 세척을 반복해 가습기 냄새와 물때를 줄인다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>매일, 주간, 월간 작업이 한 리스트에 있다.</dd></div>
+            <div><dt>수정 방향</dt><dd>오늘, 이번 주, 이번 달 그룹으로 나눈다.</dd></div>
+            <div><dt>UI 타입</dt><dd>루틴 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://particleseoul.tistory.com/1548" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/humidifier-daily-weekly-clean.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock routine-mock">
+    <div class="mock-top"><strong>반복 관리판</strong><span>다음 실행 중심</span></div>
+    <div class="routine-next">
+      <span>다음 실행</span>
+      <strong>사용일 매일</strong>
+      <p>오늘, 이번 주, 이번 달 그룹으로 나눈다.</p>
+    </div>
+    <div class="routine-actions">
+      <button>완료</button><button>보류</button><button>교체 필요</button>
+    </div>
+    <label><input type="checkbox" /> <span>물통 비우고 새 물 넣기</span></label><label><input type="checkbox" /> <span>물받이와 노즐 세척</span></label><label><input type="checkbox" /> <span>필터 상태 확인</span></label>
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="humidifier-daily-weekly-clean">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="가습기 매일 비우고 주간 세척 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="routine" data-priority="P1" id="cat-litter-box-clean">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">반려동물</span>
+              <h2>고양이 화장실 청소 루틴</h2>
+            </div>
+            <span class="priority p1">P1</span>
+          </div>
+          <p class="need">화장실 청소를 매일 체크하고 전체 모래 교체를 놓치지 않는다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>매일, 주간, 전체 교체 주기가 구분되지 않는다.</dd></div>
+            <div><dt>수정 방향</dt><dd>daily, weekly, replace 그룹을 나눈다.</dd></div>
+            <div><dt>UI 타입</dt><dd>루틴 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://i.dooboomama.com/%EA%B3%A0%EC%96%91%EC%9D%B4-%ED%99%94%EC%9E%A5%EC%8B%A4-%EC%B2%AD%EC%86%8C-%ED%95%98%EB%A3%A8-%EB%AA%87-%EB%B2%88-%EB%AA%A8%EB%9E%98-%EA%B0%88%EC%95%84%EC%A3%BC%EB%8A%94-%EC%B5%9C%EC%A0%81-%ED%83%80/" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/cat-litter-box-clean.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock routine-mock">
+    <div class="mock-top"><strong>반복 관리판</strong><span>다음 실행 중심</span></div>
+    <div class="routine-next">
+      <span>다음 실행</span>
+      <strong>매일</strong>
+      <p>daily, weekly, replace 그룹을 나눈다.</p>
+    </div>
+    <div class="routine-actions">
+      <button>완료</button><button>보류</button><button>교체 필요</button>
+    </div>
+    <label><input type="checkbox" /> <span>배변 덩어리 제거</span></label><label><input type="checkbox" /> <span>모래량 보충</span></label><label><input type="checkbox" /> <span>화장실 세척과 전체 교체</span></label>
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="cat-litter-box-clean">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="고양이 화장실 청소 루틴 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="routine" data-priority="P1" id="picture-book-reading-routine">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">육아/독서</span>
+              <h2>그림책 읽기 루틴 + 질문 카드</h2>
+            </div>
+            <span class="priority p1">P1</span>
+          </div>
+          <p class="need">독서 루틴에 책별 질문 카드와 활동 체크를 붙인다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>질문 카드가 실행판에서 잘 드러나지 않는다.</dd></div>
+            <div><dt>수정 방향</dt><dd>읽기 전/중/후 질문 카드를 강조한다.</dd></div>
+            <div><dt>UI 타입</dt><dd>루틴 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://image.aladdin.co.kr/img/files/150922_workbook/%EC%9C%A0%EC%95%84/16%20%ED%86%A0%ED%86%A0%EB%B6%81_%EB%8F%85%EC%88%98%EB%A6%AC%EC%99%80%20%EA%B5%B4%EB%9A%9D%EC%83%88.pdf" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/picture-book-reading-routine.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock routine-mock">
+    <div class="mock-top"><strong>반복 관리판</strong><span>다음 실행 중심</span></div>
+    <div class="routine-next">
+      <span>다음 실행</span>
+      <strong>읽기 전</strong>
+      <p>읽기 전/중/후 질문 카드를 강조한다.</p>
+    </div>
+    <div class="routine-actions">
+      <button>완료</button><button>보류</button><button>교체 필요</button>
+    </div>
+    <label><input type="checkbox" /> <span>표지 보고 이야기 나누기</span></label><label><input type="checkbox" /> <span>그림책 함께 읽기</span></label><label><input type="checkbox" /> <span>좋아한 장면 말하기</span></label>
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="picture-book-reading-routine">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="그림책 읽기 루틴 + 질문 카드 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="timeline" data-priority="P1" id="vehicle-inspection-prep">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">차량/행정</span>
+              <h2>자동차 정기검사 준비 체크</h2>
+            </div>
+            <span class="priority p1">P1</span>
+          </div>
+          <p class="need">검사 만료일 전 사전 점검과 예약을 캘린더에 넣는다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>검사 기간 확인은 공식 기간과 예약 CTA가 중요하다.</dd></div>
+            <div><dt>수정 방향</dt><dd>만료일 입력, 검사 가능 기간, 예약 체크를 둔다.</dd></div>
+            <div><dt>UI 타입</dt><dd>타임라인 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://carsize.co.kr/car-regular-inspection-preparation-guide/" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/vehicle-inspection-prep.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock timeline-mock">
+    <div class="mock-top"><strong>월별 여정</strong><span>현재 구간 강조</span></div>
+    
+          <div class="timeline-line active">
+            <span>만료 30일 전</span>
+            <div>
+              <strong>검사 가능 기간 확인</strong>
+              <p>검사 기간 확인</p>
+            </div>
+          </div>
+        
+          <div class="timeline-line ">
+            <span>검사 7일 전</span>
+            <div>
+              <strong>전구·와이퍼·타이어 사전 점검</strong>
+              <p>사전 점검 완료</p>
+            </div>
+          </div>
+        
+          <div class="timeline-line ">
+            <span>검사 주간</span>
+            <div>
+              <strong>검사 예약/방문</strong>
+              <p>검사 완료</p>
+            </div>
+          </div>
+        
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="vehicle-inspection-prep">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="자동차 정기검사 준비 체크 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="timeline" data-priority="P1" id="dog-adoption-first-week">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">반려동물</span>
+              <h2>강아지 입양 첫 주 체크</h2>
+            </div>
+            <span class="priority p1">P1</span>
+          </div>
+          <p class="need">입양일 기준 첫 주 해야 할 일을 정리한다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>첫 주 타임라인과 준비물 체크가 섞인다.</dd></div>
+            <div><dt>수정 방향</dt><dd>입양 전, 입양 직후, 첫 주 그룹으로 나눈다.</dd></div>
+            <div><dt>UI 타입</dt><dd>타임라인 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://www.gomin77.co.kr/blog/dog-puppy-pet-adoption" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/dog-adoption-first-week.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock timeline-mock">
+    <div class="mock-top"><strong>월별 여정</strong><span>현재 구간 강조</span></div>
+    
+          <div class="timeline-line active">
+            <span>입양 후 3일 이내</span>
+            <div>
+              <strong>첫 건강검진 예약</strong>
+              <p>병원 예약/방문 완료</p>
+            </div>
+          </div>
+        
+          <div class="timeline-line ">
+            <span>입양 첫 주</span>
+            <div>
+              <strong>동물등록 확인</strong>
+              <p>등록 완료 또는 일정 저장</p>
+            </div>
+          </div>
+        
+          <div class="timeline-line ">
+            <span>입양 전후</span>
+            <div>
+              <strong>초기 준비물 점검</strong>
+              <p>준비물 체크 완료</p>
+            </div>
+          </div>
+        
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="dog-adoption-first-week">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="강아지 입양 첫 주 체크 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="routine" data-priority="P1" id="regular-aircon-clean-home">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">가전 관리</span>
+              <h2>벽걸이 에어컨 셀프 청소</h2>
+            </div>
+            <span class="priority p1">P1</span>
+          </div>
+          <p class="need">여름 전후로 셀프 가능한 범위의 에어컨 청소를 캘린더에 넣는다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>셀프 청소 절차와 반복 루틴이 섞인다.</dd></div>
+            <div><dt>수정 방향</dt><dd>청소 절차 stepper와 다음 청소 알림을 분리한다.</dd></div>
+            <div><dt>UI 타입</dt><dd>루틴 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://solidtips.tistory.com/entry/aircon-cleaning-filter-smell-mold-self-care-guide" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/regular-aircon-clean-home.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock routine-mock">
+    <div class="mock-top"><strong>반복 관리판</strong><span>다음 실행 중심</span></div>
+    <div class="routine-next">
+      <span>다음 실행</span>
+      <strong>청소일</strong>
+      <p>청소 절차 stepper와 다음 청소 알림을 분리한다.</p>
+    </div>
+    <div class="routine-actions">
+      <button>완료</button><button>보류</button><button>교체 필요</button>
+    </div>
+    <label><input type="checkbox" /> <span>전원 차단 후 필터 분리</span></label><label><input type="checkbox" /> <span>필터 세척과 그늘 건조</span></label><label><input type="checkbox" /> <span>송풍 모드 운전</span></label>
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="regular-aircon-clean-home">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="벽걸이 에어컨 셀프 청소 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="challenge" data-priority="P2" id="plank-30-day-challenge">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">운동/챌린지</span>
+              <h2>30일 플랭크 챌린지</h2>
+            </div>
+            <span class="priority p2">P2</span>
+          </div>
+          <p class="need">시작일을 넣으면 30일 플랭크 목표가 매일 캘린더에 들어온다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>30일 챌린지인데 후보 데이터가 4개뿐이라 그리드가 약하다.</dd></div>
+            <div><dt>수정 방향</dt><dd>Day 1~30 축약 그리드 또는 샘플 일자 확장을 보여준다.</dd></div>
+            <div><dt>UI 타입</dt><dd>챌린지 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://khj2510.tistory.com/entry/%ED%94%8C%EB%9E%AD%ED%81%AC-30%EC%9D%BC-%EC%B1%8C%EB%A6%B0%EC%A7%80-%EA%B3%84%ED%9A%8D%ED%91%9C-%EA%B3%B5%EC%9C%A0" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/plank-30-day-challenge.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+    <div class="mock challenge-mock">
+      <div class="mock-top"><strong>30일 진행판</strong><span>축약 그리드</span></div>
+      <div class="day-grid">
+        <div class="active"><span>Day 1</span><strong>플랭크 20초</strong></div><div class=""><span>Day 2</span><strong>플랭크 60초</strong></div><div class=""><span>Day 3</span><strong>휴식·스트레칭</strong></div><div class=""><span>Day 4</span><strong>챌린지 완주</strong></div><div class=""><span>Day 5</span><strong>플랭크 20초</strong></div><div class=""><span>Day 6</span><strong>플랭크 60초</strong></div><div class=""><span>Day 7</span><strong>휴식·스트레칭</strong></div><div class=""><span>Day 8</span><strong>챌린지 완주</strong></div>
+      </div>
+    </div>
+  
+        </section>
+        <section class="candidate-eval" data-eval="plank-30-day-challenge">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="30일 플랭크 챌린지 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="study" data-priority="P2" id="computer-license-2nd-written">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">공부/자격증</span>
+              <h2>컴활 2급 필기 단기 공부</h2>
+            </div>
+            <span class="priority p2">P2</span>
+          </div>
+          <p class="need">시험일을 넣고 기출 풀이와 오답 확인을 일정으로 받는다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>CBT 링크, 오답, 점수 기록이 약하다.</dd></div>
+            <div><dt>수정 방향</dt><dd>회차, 점수, 오답 유형, 재시도일 필드를 둔다.</dd></div>
+            <div><dt>UI 타입</dt><dd>공부 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://tea-books.tistory.com/5" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/computer-license-2nd-written.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock study-mock">
+    <div class="mock-top"><strong>공부 기록판</strong><span>점수/오답</span></div>
+    <div class="study-grid">
+      <div><span>회차</span><strong>1회</strong></div>
+      <div><span>점수</span><strong>사용자 입력</strong></div>
+      <div><span>오답</span><strong>유형 선택</strong></div>
+    </div>
+    <label><input type="checkbox" /> <span>D-7~D-5 · 핵심 개념 훑기</span></label><label><input type="checkbox" /> <span>D-4~D-2 · 기출 2세트 풀기</span></label><label><input type="checkbox" /> <span>D-1 · 오답만 다시 보기</span></label>
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="computer-license-2nd-written">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="컴활 2급 필기 단기 공부 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="study" data-priority="P2" id="korean-history-3-week">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">공부/자격증</span>
+              <h2>한능검 3주 공부 플랜</h2>
+            </div>
+            <span class="priority p2">P2</span>
+          </div>
+          <p class="need">시험일까지 3주 남았을 때 주차별 공부와 기출 풀이를 캘린더에 넣는다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>주차별 범위와 기출 회차가 약하다.</dd></div>
+            <div><dt>수정 방향</dt><dd>주차별 범위와 기출 회차 기록을 둔다.</dd></div>
+            <div><dt>UI 타입</dt><dd>공부 · 보통</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://hidell.tistory.com/2085" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/korean-history-3-week.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock study-mock">
+    <div class="mock-top"><strong>공부 기록판</strong><span>점수/오답</span></div>
+    <div class="study-grid">
+      <div><span>회차</span><strong>1회</strong></div>
+      <div><span>점수</span><strong>사용자 입력</strong></div>
+      <div><span>오답</span><strong>유형 선택</strong></div>
+    </div>
+    <label><input type="checkbox" /> <span>1주차 · 시대별 핵심 정리</span></label><label><input type="checkbox" /> <span>2주차 · 근현대와 빈출 세트 암기</span></label><label><input type="checkbox" /> <span>3주차 · 기출 회독과 오답 제거</span></label>
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="korean-history-3-week">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="한능검 3주 공부 플랜 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="task" data-priority="OK" id="after-move-address-report">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">생활 이벤트</span>
+              <h2>이사 후 전입신고·확정일자</h2>
+            </div>
+            <span class="priority ok">OK</span>
+          </div>
+          <p class="need">이사 직후 반드시 처리할 행정 항목을 하루 체크리스트로 받는다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>행정 체크로 단순해서 현재 방향이 비교적 맞다.</dd></div>
+            <div><dt>수정 방향</dt><dd>공식 링크와 준비물만 상세에 유지한다.</dd></div>
+            <div><dt>UI 타입</dt><dd>체크 · 좋음</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://toss.im/tossfeed/article/after-move-checklist" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/after-move-address-report.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock task-mock">
+    <div class="mock-top"><strong>체크리스트</strong><span>빠른 완료</span></div>
+    
+          <label class="task-line">
+            <input type="checkbox" />
+            <span>이사 후 14일 이내</span>
+            <strong>전입신고 처리</strong>
+          </label>
+        
+          <label class="task-line">
+            <input type="checkbox" />
+            <span>전입신고 직후</span>
+            <strong>확정일자 확인</strong>
+          </label>
+        
+          <label class="task-line">
+            <input type="checkbox" />
+            <span>이사 주간</span>
+            <strong>주소 변경 신청</strong>
+          </label>
+        
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="after-move-address-report">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="이사 후 전입신고·확정일자 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="task" data-priority="OK" id="japan-trip-packing">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">여행</span>
+              <h2>일본 여행 준비물 체크</h2>
+            </div>
+            <span class="priority ok">OK</span>
+          </div>
+          <p class="need">여행지별 준비물을 체크리스트로 받아 빠뜨리지 않는다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>단순 체크리스트로 맞지만 선택형 항목은 별도 컨트롤이 있으면 좋다.</dd></div>
+            <div><dt>수정 방향</dt><dd>통신/결제 같은 선택 항목만 segmented control로 보여준다.</dd></div>
+            <div><dt>UI 타입</dt><dd>체크 · 좋음</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://www.kkday.com/ko/blog/22262/aisa-japan-entry%3Fsrsltid%3DAfmBOop6efVGJPh9BVjNZrGcUc6VMcjp_EchiOklI6Xyec_foIkmNI49" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/japan-trip-packing.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock task-mock">
+    <div class="mock-top"><strong>체크리스트</strong><span>빠른 완료</span></div>
+    
+          <label class="task-line">
+            <input type="checkbox" />
+            <span>D-7</span>
+            <strong>통신 수단 결정</strong>
+          </label>
+        
+          <label class="task-line">
+            <input type="checkbox" />
+            <span>D-5</span>
+            <strong>교통/결제 수단 준비</strong>
+          </label>
+        
+          <label class="task-line">
+            <input type="checkbox" />
+            <span>D-3</span>
+            <strong>현지 앱과 예약 확인</strong>
+          </label>
+        
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="japan-trip-packing">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="일본 여행 준비물 체크 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+      <article class="candidate-card" data-kind="task" data-priority="OK" id="passport-issue-prep">
+        <section class="candidate-info">
+          <div class="card-head">
+            <div>
+              <span class="category">여행/행정</span>
+              <h2>여권 발급 준비물 체크</h2>
+            </div>
+            <span class="priority ok">OK</span>
+          </div>
+          <p class="need">여권 신청 방문 전 준비물을 체크하고 공식 안내 링크를 확인한다.</p>
+          <dl>
+            <div><dt>현재 문제</dt><dd>체크리스트 성격이 명확하다.</dd></div>
+            <div><dt>수정 방향</dt><dd>성인/미성년자 분기만 접힘 처리한다.</dd></div>
+            <div><dt>UI 타입</dt><dd>체크 · 좋음</dd></div>
+          </dl>
+          <div class="link-row">
+            <a href="https://benefitinfo.policynote.kr/51" target="_blank" rel="noreferrer">원문 열기 ↗</a>
+            <a href="flow-content-ux-candidates-previews/passport-issue-prep.html" target="_blank" rel="noreferrer">현재 프리뷰 ↗</a>
+          </div>
+        </section>
+        <section class="candidate-preview">
+          
+  <div class="mock task-mock">
+    <div class="mock-top"><strong>체크리스트</strong><span>빠른 완료</span></div>
+    
+          <label class="task-line">
+            <input type="checkbox" />
+            <span>방문 전</span>
+            <strong>사진 규정 확인</strong>
+          </label>
+        
+          <label class="task-line">
+            <input type="checkbox" />
+            <span>방문 전</span>
+            <strong>신분증/서류 준비</strong>
+          </label>
+        
+          <label class="task-line">
+            <input type="checkbox" />
+            <span>방문 전날</span>
+            <strong>방문 기관과 수수료 확인</strong>
+          </label>
+        
+  </div>
+
+        </section>
+        <section class="candidate-eval" data-eval="passport-issue-prep">
+          <h3>내 평가</h3>
+          <label class="check"><input type="checkbox" data-field="hasProblem" /> 문제 있음</label>
+          <div class="score-buttons" role="group" aria-label="여권 발급 준비물 체크 점수">
+            <button type="button" data-score="1">1</button><button type="button" data-score="2">2</button><button type="button" data-score="3">3</button><button type="button" data-score="4">4</button><button type="button" data-score="5">5</button>
+          </div>
+          <textarea data-field="memo" placeholder="왜 맞거나 안 맞는지 메모"></textarea>
+          <div class="eval-state"><span data-saved>저장 전</span></div>
+        </section>
+      </article>
+    
+    </section>
+  </main>
+  <script>
+    const storageKey = 'flow-content-ui-evaluation-v1';
+    const state = JSON.parse(localStorage.getItem(storageKey) || '{}');
+    const save = () => localStorage.setItem(storageKey, JSON.stringify(state, null, 2));
+
+    document.querySelectorAll('[data-eval]').forEach((panel) => {
+      const id = panel.getAttribute('data-eval');
+      state[id] = state[id] || {};
+      const saved = panel.querySelector('[data-saved]');
+      const problem = panel.querySelector('[data-field="hasProblem"]');
+      const memo = panel.querySelector('[data-field="memo"]');
+      const scoreButtons = Array.from(panel.querySelectorAll('[data-score]'));
+
+      problem.checked = Boolean(state[id].hasProblem);
+      memo.value = state[id].memo || '';
+      scoreButtons.forEach((button) => {
+        button.classList.toggle('active', Number(button.dataset.score) === Number(state[id].score));
+      });
+      saved.textContent = state[id].updatedAt ? '저장됨 ' + state[id].updatedAt : '저장 전';
+
+      const persist = () => {
+        state[id].hasProblem = problem.checked;
+        state[id].memo = memo.value;
+        state[id].updatedAt = new Date().toLocaleString('ko-KR');
+        saved.textContent = '저장됨 ' + state[id].updatedAt;
+        save();
+      };
+
+      problem.addEventListener('change', persist);
+      memo.addEventListener('input', persist);
+      scoreButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          state[id].score = Number(button.dataset.score);
+          scoreButtons.forEach((item) => item.classList.toggle('active', item === button));
+          persist();
+        });
+      });
+    });
+
+    document.querySelectorAll('[data-filter]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const filter = button.dataset.filter;
+        document.querySelectorAll('[data-filter]').forEach((item) => item.classList.toggle('active', item === button));
+        document.querySelectorAll('.candidate-card').forEach((card) => {
+          const show = filter === 'all' || card.dataset.kind === filter || card.dataset.priority === filter;
+          card.classList.toggle('is-hidden', !show);
+        });
+      });
+    });
+
+    document.querySelector('#export-json').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'flow-content-ui-evaluation.json';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>

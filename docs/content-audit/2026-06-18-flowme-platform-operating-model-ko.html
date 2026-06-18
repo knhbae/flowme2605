@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 플랫폼형 실행 지도 모델</title>
+    <style>
+      :root {
+        --bg: #eef3f8;
+        --panel: #fff;
+        --ink: #111827;
+        --muted: #5b6677;
+        --line: #d5dfec;
+        --blue: #2563eb;
+        --blue-soft: #eaf1ff;
+        --green: #0f766e;
+        --green-soft: #e8f6f3;
+        --amber: #b45309;
+        --amber-soft: #fff4dc;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      main {
+        width: min(1120px, 100%);
+        margin: 0 auto;
+        padding: 20px;
+      }
+      section, header {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 14px;
+      }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 {
+        font-size: clamp(30px, 5vw, 52px);
+        line-height: 1.08;
+        margin-bottom: 12px;
+        letter-spacing: 0;
+      }
+      h2 { font-size: 24px; margin-bottom: 12px; letter-spacing: 0; }
+      h3 { font-size: 17px; margin-bottom: 8px; letter-spacing: 0; }
+      p, li { color: var(--muted); line-height: 1.65; }
+      a { color: var(--blue); font-weight: 800; }
+      .eyebrow {
+        color: var(--blue);
+        font-weight: 900;
+        margin-bottom: 8px;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: #f7fafc;
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 850;
+      }
+      .chip.blue { background: var(--blue-soft); color: var(--blue); border-color: #bdd0ff; }
+      .chip.green { background: var(--green-soft); color: var(--green); border-color: #b9ded8; }
+      .chip.amber { background: var(--amber-soft); color: var(--amber); border-color: #f6d28c; }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .box {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fbfdff;
+        padding: 14px;
+      }
+      .model {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .step {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #f8fbff;
+        padding: 14px;
+      }
+      .num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 10px;
+        background: var(--blue-soft);
+        color: var(--blue);
+        font-weight: 950;
+        margin-bottom: 10px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th, td {
+        border-bottom: 1px solid var(--line);
+        padding: 12px 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        color: #334155;
+        background: #f8fbff;
+        font-size: 13px;
+      }
+      .callout {
+        border-color: #bdd0ff;
+        background: var(--blue-soft);
+      }
+      .callout p { color: #1e3a8a; }
+      @media (max-width: 760px) {
+        main { padding: 10px; }
+        section, header { padding: 16px; }
+        .grid, .two, .model { grid-template-columns: 1fr; }
+        table, thead, tbody, tr, th, td { display: block; }
+        th { display: none; }
+        td { padding: 10px 0; }
+        tr { border-bottom: 1px solid var(--line); }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">플랫폼형 Flow 구조 재정의</p>
+        <h1>Flow of Flow는 Flow 묶음이 아니라 운영 가능한 실행 지도다</h1>
+        <p>
+          기존 Top5 샘플은 여러 단일 Flow를 탭으로 모은 것에 가까웠다. 이번 기준은 프로젝트 관리,
+          운동 관리, 학습 관리 서비스의 공통 구조를 FlowMe에 맞게 번역하는 것이다.
+        </p>
+        <div class="chips">
+          <span class="chip blue">상위 프로그램</span>
+          <span class="chip green">반복 하위 Flow</span>
+          <span class="chip">오늘 실행</span>
+          <span class="chip">진행률</span>
+          <span class="chip amber">제작자 운영판</span>
+        </div>
+      </header>
+
+      <section>
+        <h2>레퍼런스에서 가져올 구조</h2>
+        <div class="grid">
+          <div class="box">
+            <h3>Jira / Linear</h3>
+            <p>
+              큰 목표는 Epic 또는 Project로 두고, 실제 실행은 Issue, Story, View, Progress로
+              나뉜다. 중요한 것은 큰 목표와 오늘 처리할 작은 단위가 계속 연결된다는 점이다.
+            </p>
+            <p>
+              참고: <a href="https://www.atlassian.com/agile/project-management/epics">Atlassian Epics</a>,
+              <a href="https://linear.app/docs/projects">Linear Projects</a>
+            </p>
+          </div>
+          <div class="box">
+            <h3>운동 관리</h3>
+            <p>
+              Trainerize류 서비스는 프로그램, 단계, 운동, 습관, 캘린더, 수행률을 분리한다.
+              여러 프로그램이 한 사용자 캘린더에 합쳐질 수 있다는 점이 FlowMe의 장기 구조와 맞다.
+            </p>
+            <p>
+              참고: <a href="https://www.trainerize.com/features/">Trainerize Features</a>,
+              <a href="https://help.trainerize.com/hc/en-us/articles/11402576926868-Multiple-Programming-in-ABC-Trainerize">Multiple Programming</a>
+            </p>
+          </div>
+          <div class="box">
+            <h3>공부 관리</h3>
+            <p>
+              학습 플랫폼은 Track, Course, Unit, Lesson, Practice, Project, Mastery를 분리한다.
+              사용자는 전체 커리큘럼을 보지만 실제로는 오늘 다음 학습을 실행한다.
+            </p>
+            <p>
+              참고: <a href="https://ko.khanacademy.org/math/kor-7th">Khan Academy 중등 1학년</a>,
+              <a href="https://investor.coursera.com/news/news-details/2025/Coursera-Announces-Skill-Tracks-Tailored-Data-backed-Learning-Solution-to-Accelerate-Critical-Skills-Development-Across-Functional-Teams/default.aspx">Coursera Skills Tracks</a>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>FlowMe 모델 번역</h2>
+        <div class="model">
+          <div class="step">
+            <span class="num">1</span>
+            <h3>Program Map</h3>
+            <p>제작자의 큰 콘텐츠 구조. 예: 중등 1학년 수학, 8주 러닝, 자격증 과목 운영판.</p>
+          </div>
+          <div class="step">
+            <span class="num">2</span>
+            <h3>Child Flow Template</h3>
+            <p>반복되는 실행 패턴. 예: 개념 보기, 연습, 오답, 복습.</p>
+          </div>
+          <div class="step">
+            <span class="num">3</span>
+            <h3>User Artifact</h3>
+            <p>사용자에게 생성되는 캘린더, 진도표, 체크리스트, 메모.</p>
+          </div>
+          <div class="step">
+            <span class="num">4</span>
+            <h3>Execution Record</h3>
+            <p>오늘 실행, 체크, 메모, 다음 단위, 진행률. 플랫폼 가치는 여기에서 쌓인다.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>단일 Flow와 Flow of Flow의 판정 기준</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>단일 Flow</th>
+              <th>진짜 Flow of Flow</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>상위 구조</td>
+              <td>없어도 된다. 하나의 일정, 체크리스트, 표로 충분하다.</td>
+              <td>상위 프로그램, 과정, 목표, 지도 구조가 필요하다.</td>
+            </tr>
+            <tr>
+              <td>하위 단위</td>
+              <td>항목들이 서로 다른 성격이어도 괜찮다.</td>
+              <td>같은 패턴의 하위 Flow가 3개 이상 반복되어야 한다.</td>
+            </tr>
+            <tr>
+              <td>사용자 가치</td>
+              <td>저장 후 바로 실행하면 끝난다.</td>
+              <td>전체 위치, 다음 실행, 진행률, 일부 저장이 의미 있어야 한다.</td>
+            </tr>
+            <tr>
+              <td>제작자 가치</td>
+              <td>한 번 변환하고 공개하면 된다.</td>
+              <td>단원, 주차, 과목, 월령을 계속 추가·수정·운영할 수 있어야 한다.</td>
+            </tr>
+            <tr>
+              <td>실패 신호</td>
+              <td>설명이 길고 실행이 안 보인다.</td>
+              <td>그냥 Flow 카드 목록처럼 보인다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="callout">
+        <h2>이번 대표 PoC 선택</h2>
+        <p>
+          대표 케이스는 <b>중등 1학년 수학 학습 지도</b>로 잡는다. 이유는 Khan Academy 중등 1학년 페이지가
+          단원 구조를 가지고 있고, 각 단원을 같은 학습 패턴으로 반복할 수 있으며, 사용자 화면과 제작자 운영판의
+          차이가 가장 선명하게 드러나기 때문이다.
+        </p>
+        <p>
+          다음 파일에서 사용자/제작자 클릭 화면을 확인한다:
+          <a href="./2026-06-18-flowme-platform-study-map-poc-ko.html">FlowMe 학습 지도 플랫폼 PoC</a>
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

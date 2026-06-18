@@ -32,11 +32,14 @@ The goal is not more paperwork. The goal is to keep Stage 0 focused on measurabl
 
 ## Compatibility Position
 
-Checked against current public agent-instruction docs on 2026-05-21.
+Checked against current public agent-instruction docs on 2026-06-11.
 
-- `AGENTS.md` is the auto-discovered entry point for this repository. Keep it short and point to the document graph.
+- `AGENTS.md` is the canonical entry point for tools that support the AGENTS.md convention. Keep it short and point to the document graph.
+- Claude Code does not read `AGENTS.md` directly, so this repository keeps a one-line `CLAUDE.md` adapter containing `@AGENTS.md`. This is the official compatibility policy for Claude Code until it supports AGENTS.md natively.
 - `agent.md` is the expanded project guide. It is intentionally linked from `AGENTS.md` because some tools only auto-load standard agent files.
-- Do not add `CLAUDE.md`, `GEMINI.md`, `.cursor/rules`, or `.github/copilot-instructions.md` by default. If the team adopts a tool-specific workflow, add a short adapter that points back to `AGENTS.md` and this harness instead of duplicating rules.
+- Repo skills live canonically under `.agents/skills/` for Codex discovery. `.claude/skills/` is a generated copy for Claude Code discovery and must not be edited directly.
+- To change a skill, edit `.agents/skills/<skill-name>/SKILL.md`, then run `npm run skills:sync`. `npm run docs:check` includes `node scripts/sync-skills.mjs --check` so drift between `.agents/skills/` and `.claude/skills/` fails CI/local docs checks.
+- Do not add `GEMINI.md`, `.cursor/rules`, or `.github/copilot-instructions.md` by default. If the team adopts another tool-specific workflow, add a short adapter that points back to `AGENTS.md` and this harness instead of duplicating rules.
 - Add nested `AGENTS.md` files only when a subdirectory has different setup, commands, or safety rules.
 
 References: [OpenAI Codex AGENTS.md](https://developers.openai.com/codex/guides/agents-md), [AGENTS.md open format](https://agents.md/), [GitHub Copilot custom instructions](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions), [Claude Code memory](https://code.claude.com/docs/en/memory), [Gemini CLI context files](https://google-gemini.github.io/gemini-cli/docs/cli/gemini-md.html), [Cursor rules](https://docs.cursor.com/context/rules-for-ai).

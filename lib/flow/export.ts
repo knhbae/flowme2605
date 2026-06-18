@@ -1,6 +1,6 @@
 import { addDays, formatDate, getRangeEnd } from './date';
 import { getArtifactPlan } from './artifact-plan';
-import { getComparisonRows, getLogTables, getMemoCardFields } from './artifact-fields';
+import { getComparisonConfig, getComparisonRows, getHoldMemoFields, getLogTables, getMemoCardFields } from './artifact-fields';
 import { timingLabel } from './parser';
 import { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState, MealSlot, ReactionLog } from './types';
 
@@ -91,6 +91,9 @@ const reactionColumns = [
   '수면 변화',
   '거부/선호 메모',
 ];
+
+const mealCalendarOnlySlugs = new Set(['baby-food-menu-recipe']);
+const staleLogStateIgnoredSlugs = new Set(['computer-skills-d30-study']);
 
 const weekdayColumns = ['월', '화', '수', '목', '금', '토', '일'];
 const weeklyColumns = ['주', ...weekdayColumns];
@@ -358,6 +361,8 @@ function buildComparisonExport(
   comparisonState?: FlowComparisonState,
 ): { columns: string[]; rows: WorkbookCell[][] } | undefined {
   if (!hasComparisonData(comparisonState)) return undefined;
+  const plan = getArtifactPlan(bundle);
+  if (plan.primarySurface !== 'decision_table' && !getComparisonConfig(bundle)) return undefined;
 
   const candidates = comparisonCandidates(comparisonState);
   const comparisonRows = getComparisonRows(bundle);
@@ -442,11 +447,13 @@ function buildWorkbenchRows(bundle: FlowBundle, state?: FlowWorkbenchState): Wor
     ]);
   }
 
-  for (const [date, logRow] of sortedEntries(state.logRows ?? {})) {
-    if (knownLogRows.has(date)) continue;
-    for (const [field, value] of sortedEntries(logRow)) {
-      if (!value.trim()) continue;
-      rows.push(['기록', logRowLabels.get(date) ?? date, logFieldLabels.get(field) ?? field, value.trim()]);
+  if (!staleLogStateIgnoredSlugs.has(bundle.flow.slug)) {
+    for (const [date, logRow] of sortedEntries(state.logRows ?? {})) {
+      if (knownLogRows.has(date)) continue;
+      for (const [field, value] of sortedEntries(logRow)) {
+        if (!value.trim()) continue;
+        rows.push(['기록', logRowLabels.get(date) ?? date, logFieldLabels.get(field) ?? field, value.trim()]);
+      }
     }
   }
 
@@ -464,12 +471,24 @@ function buildWorkbenchRows(bundle: FlowBundle, state?: FlowWorkbenchState): Wor
 }
 
 function getMemoCardFieldsFromState(bundle: FlowBundle, state: FlowWorkbenchState) {
-  const fields = getMemoCardFields(bundle);
+  const fields = [...getMemoCardFields(bundle), ...getHoldMemoFields(bundle)];
+  if (!fields.length) return [];
   const known = new Set(fields.map((field) => field.id));
   const dynamicFields = Object.keys(state.memoCards ?? {})
     .filter((id) => !known.has(id))
     .map((id) => ({ id, label: id, placeholder: '' }));
   return [...fields, ...dynamicFields];
+}
+
+function appendHoldSectionText(lines: string[], bundle: FlowBundle) {
+  const section = bundle.flow.hold_section;
+  if (!section) return;
+
+  lines.push(`보류 기준: ${section.title}`);
+  for (const reason of section.reasons) {
+    lines.push(`- ${reason}`);
+  }
+  lines.push(`보류 메모 양식: ${section.memo_template}`);
 }
 
 function appendWorkbenchText(lines: string[], rows: WorkbookCell[][]) {
@@ -499,6 +518,7 @@ export function buildText(
   const anchorLabel = getExportAnchorLabel(bundle);
   lines.push(`${anchorLabel}: ${anchor || (bundle.flow.anchor_type === 'none' ? '없음' : '')}`);
   if (bundle.flow.warning) lines.push(`주의: ${bundle.flow.warning}`);
+  appendHoldSectionText(lines, bundle);
   const artifactPlan = getArtifactPlan(bundle);
   const comparison = buildComparisonExport(bundle, comparisonState);
   const workbenchRows = buildWorkbenchRows(bundle, workbenchState);
@@ -544,6 +564,7 @@ export function buildText(
       // unchecked with a (스킵) label since those apps have no skip state.
       const checkbox = checks[item.id] ? '[x]' : '[ ]';
       lines.push(`- ${checkbox} ${item.title}${state?.skipped ? ' (스킵)' : ''}`);
+      if (item.description?.trim()) lines.push(`  ??: ${item.description.trim()}`);
       if (state?.note?.trim()) lines.push(`  메모: ${state.note.trim()}`);
       const detail = getItemDetail(bundle, item.id);
       const done = completionCriteria(detail);
@@ -781,6 +802,11 @@ export function buildWorkbookSheets(
 
   if (bundle.flow.description) summaryRows.push(['설명', bundle.flow.description]);
   if (bundle.flow.warning) summaryRows.push(['주의', bundle.flow.warning]);
+  if (bundle.flow.hold_section) {
+    summaryRows.push(['보류 기준', bundle.flow.hold_section.title]);
+    summaryRows.push(['보류 사유', bundle.flow.hold_section.reasons.join('\n')]);
+    summaryRows.push(['보류 메모 양식', bundle.flow.hold_section.memo_template]);
+  }
   if (options.weekdays?.length) summaryRows.push(['선택 요일', options.weekdays.join(' / ')]);
   if (bundle.flow.source_title || bundle.flow.source_url) {
     summaryRows.push(['참고', [bundle.flow.source_title, bundle.flow.source_url].filter(Boolean).join(' - ')]);
@@ -951,29 +977,31 @@ export function buildWorkbookSheets(
       accentColor,
     });
 
-    sheets.push({
-      name: '반응기록',
-      columns: reactionColumns,
-      rows: (bundle.mealSlots ?? []).map((slot) => {
-        const log = options.reactionLogs?.[slot.id] ?? {};
-        const { startDate, endDate } = getMealDates(slot, anchor);
-        return [
-          timingLabel(slot.day_offset, slot.duration_days),
-          startDate && endDate ? `${startDate} ~ ${endDate}` : '',
-          slot.menu_title,
-          slot.new_ingredients.join(', '),
-          log.amount ?? '',
-          log.fedAt ?? '',
-          log.skin ?? '',
-          log.vomitingOrDiarrhea ?? '',
-          log.stool ?? '',
-          log.sleep ?? '',
-          log.preferenceNote ?? '',
-        ];
-      }),
-      accentColor,
-      note: '반응기록은 보호자가 직접 관찰해 입력한 메모용 영역입니다. 이상 반응이 의심되면 전문가 또는 공식 정보를 확인하세요.',
-    });
+    if (!mealCalendarOnlySlugs.has(bundle.flow.slug)) {
+      sheets.push({
+        name: '반응기록',
+        columns: reactionColumns,
+        rows: (bundle.mealSlots ?? []).map((slot) => {
+          const log = options.reactionLogs?.[slot.id] ?? {};
+          const { startDate, endDate } = getMealDates(slot, anchor);
+          return [
+            timingLabel(slot.day_offset, slot.duration_days),
+            startDate && endDate ? `${startDate} ~ ${endDate}` : '',
+            slot.menu_title,
+            slot.new_ingredients.join(', '),
+            log.amount ?? '',
+            log.fedAt ?? '',
+            log.skin ?? '',
+            log.vomitingOrDiarrhea ?? '',
+            log.stool ?? '',
+            log.sleep ?? '',
+            log.preferenceNote ?? '',
+          ];
+        }),
+        accentColor,
+        note: '반응기록은 보호자가 직접 관찰해 입력한 메모용 영역입니다. 이상 반응이 의심되면 전문가 또는 공식 정보를 확인하세요.',
+      });
+    }
   }
 
   return sheets;

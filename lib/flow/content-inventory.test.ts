@@ -73,7 +73,7 @@ test('inventory summary covers all current seed bundles', () => {
     summary.sourceBackedReviewedCount,
     summary.manualSourceFitCount + summary.derivedRealSourceCount + summary.sourceNeedsReviewCount,
   );
-  assert.equal(summary.manualSourceFitCount, 71);
+  assert.equal(summary.manualSourceFitCount, 90);
   assert.equal(summary.derivedRealSourceCount, 0);
   // 2026-06-01 공식출처 배치(24개) + 크리에이터·블로그 배치(20개) = 44개가 needs_review로 추가됨.
   assert.equal(summary.sourceNeedsReviewCount, 44);

@@ -1,0 +1,276 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const jsonPath = path.join(
+  root,
+  'docs/content-audit/original-source-review/2026-06-07-fresh-source-expansion-queue.json',
+);
+const htmlPath = path.join(root, 'docs/content-audit/2026-06-07-fresh-source-expansion-queue.html');
+
+const leads = [
+  {
+    id: 'kids-dino-footprint-art',
+    title: '공룡 발자국 엄마표 미술놀이',
+    category: '육아/놀이',
+    sourceType: '네이버 블로그',
+    sourceUrl: 'https://blog.naver.com/PostView.naver?blogId=ibbunde&logNo=222504197592',
+    sourceSignal: '도안 다운로드, 공감 요청, 인스타그램 태그 유도처럼 제작자-사용자 상호작용 단서가 있다.',
+    whyFresh: '기존 후보에 부족했던 “아이와 오늘 할 놀이” 카테고리다.',
+    flowShape: '주말 놀이 캘린더 + 준비물 체크 + 활동 메모',
+    userInputs: ['놀이 날짜', '아이 연령', '준비물 보유 여부'],
+    sampleFlow: ['공룡 발자국 도안 인쇄', '물감/매직페이퍼 준비', '놀이 후 작품 사진은 선택 메모'],
+    nextCheck: '첨부 도안 접근 가능 여부와 댓글/공감 수 확인.',
+  },
+  {
+    id: 'wedding-day-before-pdf',
+    title: '결혼식 하루 전/당일 준비물 PDF',
+    category: '생활 이벤트',
+    sourceType: '네이버 블로그',
+    sourceUrl: 'https://blog.naver.com/PostView.naver?blogId=yeonju3310&logNo=223286480422',
+    sourceSignal: 'PDF 템플릿 공유와 준비물 항목이 있어 사용자가 저장/수정하려는 의도가 강하다.',
+    whyFresh: '기존 결혼 12개월 타임라인보다 훨씬 짧고 구체적인 D-1/D-day 체크 Flow다.',
+    flowShape: 'D-1 체크리스트 + 당일 준비물 메모',
+    userInputs: ['예식일', '신랑/신부 역할 선택'],
+    sampleFlow: ['웨딩밴드/예복/구두 확인', '헬퍼비/사회자 사례금 봉투 준비', '가족 연락처 PDF 링크 메모'],
+    nextCheck: 'PDF 파일 항목을 직접 확인해 체크리스트로 옮길 수 있는지 검토.',
+  },
+  {
+    id: 'japan-esim-setup',
+    title: '일본 여행 eSIM 등록 방법',
+    category: '여행/통신',
+    sourceType: '네이버 블로그',
+    sourceUrl: 'https://blog.naver.com/PostView.naver?blogId=4223611&logNo=223359962508',
+    sourceSignal: '구매, 발권, QR 등록, 활성화, 레이블 지정까지 순서가 분명하다.',
+    whyFresh: '여행 준비물보다 더 구체적인 “출국 전 설정 Flow”다.',
+    flowShape: '출국 D-3 체크리스트 + 설정 메모',
+    userInputs: ['출국일', '사용 기기'],
+    sampleFlow: ['eSIM 구매 후 발권', '한국에서 QR 미리 등록', '도착 후 회선 전환'],
+    nextCheck: '광고/협찬 여부와 실제 등록 단계의 일반화 가능성 확인.',
+  },
+  {
+    id: 'weekend-farm-june-crops',
+    title: '6월 주말농장 작물 10가지',
+    category: '텃밭/가드닝',
+    sourceType: '네이버 블로그',
+    sourceUrl: 'https://blog.naver.com/PostView.nhn?blogId=aldus_06&logNo=222737304553',
+    sourceSignal: '작물별 심는 시기와 관리 포인트가 있어 계절 캘린더 후보가 된다.',
+    whyFresh: '실내 식물 물주기와 다른 “계절/작물별 농사 일정” 카테고리다.',
+    flowShape: '월별 작물 캘린더 + 작물별 체크 메모',
+    userInputs: ['시작 월', '작물 선택'],
+    sampleFlow: ['6월 심을 작물 선택', '본잎 5~7장 순지르기 알림', '수확 예상 시점 메모'],
+    nextCheck: '각 작물별 날짜/관리 단계가 원문에 충분한지 확인.',
+  },
+  {
+    id: 'puppy-adoption-checklist',
+    title: '강아지 입양 전 체크리스트',
+    category: '반려동물/입양',
+    sourceType: 'PDF/콘텐츠',
+    sourceUrl: 'https://on.com2us.com/wp-content/uploads/2022/03/2021%E1%84%82%E1%85%A7%E1%86%AB11%E1%84%8B%E1%85%AF%E1%86%AF_%E1%84%80%E1%85%A6%E1%85%B5%E1%86%B7%E1%84%87%E1%85%B5%E1%86%AF%E1%84%8F%E1%85%A5%E1%86%B7%E1%84%90%E1%85%AE%E1%84%89%E1%85%B3%E1%84%82%E1%85%B2%E1%84%89%E1%85%B3.pdf',
+    sourceSignal: '입양 전 체크리스트와 교육 필요성이 언급된 자료형 콘텐츠다.',
+    whyFresh: '기존 반려동물은 건강/청소 쪽이었고, 입양 준비 여정은 별도 대표성이 있다.',
+    flowShape: '입양 전 체크리스트 + 첫 주 적응 캘린더',
+    userInputs: ['입양 예정일', '강아지 나이'],
+    sampleFlow: ['가족 동의 확인', '공간/용품 준비', '입양 후 첫 병원 예약 메모'],
+    nextCheck: '원문이 체크리스트로 충분히 구조화되어 있는지 직접 확인.',
+  },
+  {
+    id: 'newborn-car-seat-setup',
+    title: '신생아 카시트 설치/선택 체크',
+    category: '육아/장비',
+    sourceType: '네이버 블로그',
+    sourceUrl: 'https://blog.naver.com/PostView.naver?blogId=nurse_leeda&logNo=223355986848',
+    sourceSignal: '설치 방법, 사용 시기, 성장에 따른 조정 포인트가 있다.',
+    whyFresh: '육아 식단/놀이가 아니라 “육아 장비 설치”라는 실사용 Flow다.',
+    flowShape: '출산 전 체크리스트 + 설치 메모',
+    userInputs: ['출산 예정일', '차량/카시트 모델'],
+    sampleFlow: ['카시트 방향 확인', '이너시트/벨트 높이 확인', '퇴원 전 설치 완료'],
+    nextCheck: '브랜드 홍보/후기와 일반 설치 체크를 분리.',
+  },
+  {
+    id: 'toss-card-otp-setup',
+    title: '토스뱅크 체크카드/OTP 등록',
+    category: '금융/앱 설정',
+    sourceType: '네이버 블로그',
+    sourceUrl: 'https://blog.naver.com/PostView.nhn?blogId=jafoo&logNo=222541980079',
+    sourceSignal: '카드 발급 후 OTP 등록이라는 순서형 앱 설정 흐름이 있다.',
+    whyFresh: '돈 관리 조언이 아니라 구체적인 앱 설정 체크 Flow다.',
+    flowShape: '설정 체크리스트 + 완료 메모',
+    userInputs: ['카드 수령일'],
+    sampleFlow: ['카드 수령 확인', '앱에서 OTP 등록', '고액 이체 인증 방식 확인'],
+    nextCheck: '현재 앱 UI와 절차가 최신인지 공식 도움말로 재확인.',
+  },
+  {
+    id: 'banana-peanut-recipe-video',
+    title: '노밀가루 바나나 땅콩버터 빵',
+    category: '요리/레시피',
+    sourceType: '레시피/유튜브 기반',
+    sourceUrl: 'https://www.recipio.kr/recipes/WwyL63J3',
+    sourceSignal: '유튜브 출처 기반 레시피이며 재료, 도구, 조리 시간이 명확하다.',
+    whyFresh: '레시피는 FlowMe가 “한 번 실행 체크리스트”로 담을 수 있는지 보는 새 카테고리다.',
+    flowShape: '요리 체크리스트 + 장보기 메모',
+    userInputs: ['요리 날짜', '분량'],
+    sampleFlow: ['바나나/계란/땅콩버터 준비', '에어프라이어 예열', '20분 조리 완료'],
+    nextCheck: '원본 유튜브 영상 링크와 조리 단계의 저작권/요약 범위 확인.',
+  },
+  {
+    id: 'advance-voting-prep',
+    title: '사전투표소 찾기/준비물',
+    category: '생활 행정',
+    sourceType: '네이버 블로그',
+    sourceUrl: 'https://blog.naver.com/PostView.naver?blogId=wkf23&logNo=223878764789',
+    sourceSignal: '장소, 준비물, 휴대폰 보관 등 방문 전 체크가 있다.',
+    whyFresh: '기존 여권/차량 행정 외에 선거/공공 이벤트형 Flow 가능성을 본다.',
+    flowShape: '투표일 캘린더 + 준비물 체크',
+    userInputs: ['투표 예정일', '지역'],
+    sampleFlow: ['사전투표소 위치 확인', '신분증 챙기기', '휴대폰 보관 안내 메모'],
+    nextCheck: '지역/날짜 정보는 공식 선관위 링크와 함께 처리해야 함.',
+  },
+  {
+    id: 'car-inspection-local-reservation',
+    title: '자동차 검사소 예약/방문 준비',
+    category: '차량/행정',
+    sourceType: '네이버 블로그',
+    sourceUrl: 'https://blog.naver.com/PostView.naver?blogId=caryak-blog&logNo=223541063791',
+    sourceSignal: '예약, 접수, 검사비/과태료 정보 등 방문 단계가 있다.',
+    whyFresh: '차량 구매가 아니라 보유 차량 정기 행정 Flow다.',
+    flowShape: '검사 만료일 캘린더 + 방문 체크리스트',
+    userInputs: ['검사 만료일', '검사소'],
+    sampleFlow: ['검사 기간 확인', '예약 후 접수처 방문', '과태료 기준 메모'],
+    nextCheck: '공식 자동차검사 예약 링크와 지역 업체 홍보를 분리.',
+  },
+  {
+    id: 'overseas-purchase-checklist',
+    title: '해외구매대행 절차 체크리스트',
+    category: '구매/직구',
+    sourceType: '네이버 블로그',
+    sourceUrl: 'https://blog.naver.com/PostView.nhn?blogId=heresheo&logNo=221634525201',
+    sourceSignal: '구매 절차와 필수 체크리스트를 콘텐츠가 직접 내세운다.',
+    whyFresh: '중고차 외의 구매 의사결정/절차 Flow를 볼 수 있다.',
+    flowShape: '구매 단계 체크리스트 + 비용 메모',
+    userInputs: ['상품 URL', '구매 예정일'],
+    sampleFlow: ['상품 정보 확인', '현지 가격/배송비 확인', '구매대행 견적 비교'],
+    nextCheck: '특정 업체 홍보성 여부와 일반화 가능한 체크만 분리.',
+  },
+  {
+    id: 'one-plant-balcony-garden',
+    title: '베란다 채소 키우기 시작',
+    category: '텃밭/가드닝',
+    sourceType: '도서/기사/PDF',
+    sourceUrl: 'https://prd-ko-int.apgroup.com/int/ko/misc/magazines/__icsFiles/afieldfile/2020/06/30/hyangjang-202007.pdf',
+    sourceSignal: '베란다 채소밭 경험과 초보자가 한 작물부터 시작하는 맥락이 있다.',
+    whyFresh: '실내 관엽식물보다 식재/물주기/수확이 있는 긴 루틴이다.',
+    flowShape: '작물별 루틴 캘린더 + 관찰 메모',
+    userInputs: ['작물', '파종일'],
+    sampleFlow: ['파종/모종 심기', '물주기 확인', '수확 예상일 메모'],
+    nextCheck: '실제 실행 단계가 충분히 추출되는 원문인지 확인.',
+  },
+];
+
+const escapeHtml = (value = '') =>
+  String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+
+const output = {
+  generatedAt: '2026-06-07',
+  purpose:
+    '기존 가전/결혼/중고차 중심 후보가 반복되는 문제를 줄이기 위한 신규 검색 확장 큐. 아직 대표 후보 확정이 아니라 원문 재확인 대기 목록이다.',
+  noveltyRules: [
+    '기존 상위 후보 카테고리는 최대 2개까지만 새 큐에 유지한다.',
+    '육아 놀이, 앱 설정, 요리, 텃밭, 반려동물 입양, 생활 행정처럼 다른 실행 맥락을 우선 추가한다.',
+    '각 후보는 원문 재확인 후 Flow 변환 예시와 가중 점수를 다시 매긴다.',
+  ],
+  leads,
+};
+
+fs.writeFileSync(jsonPath, `${JSON.stringify(output, null, 2)}\n`, 'utf8');
+
+const cards = leads
+  .map(
+    (lead, index) => `<article class="lead">
+      <header>
+        <span>#${index + 1}</span>
+        <b>${escapeHtml(lead.category)}</b>
+        <h2>${escapeHtml(lead.title)}</h2>
+      </header>
+      <section class="grid">
+        <div>
+          <h3>원문 후보</h3>
+          <a href="${escapeHtml(lead.sourceUrl)}" target="_blank" rel="noreferrer">${escapeHtml(lead.sourceType)}</a>
+          <p>${escapeHtml(lead.sourceSignal)}</p>
+        </div>
+        <div>
+          <h3>왜 새 후보인가</h3>
+          <p>${escapeHtml(lead.whyFresh)}</p>
+        </div>
+        <div>
+          <h3>예상 Flow 형태</h3>
+          <p><strong>${escapeHtml(lead.flowShape)}</strong></p>
+          <p>${escapeHtml(lead.userInputs.join(' / '))}</p>
+        </div>
+        <div>
+          <h3>샘플 실행 항목</h3>
+          <ul>${lead.sampleFlow.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+        </div>
+      </section>
+      <footer>${escapeHtml(lead.nextCheck)}</footer>
+    </article>`,
+  )
+  .join('\n');
+
+const html = `<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>신규 외부 콘텐츠 검색 확장 큐</title>
+  <style>
+    body { margin: 0; background: #f6f7f9; color: #172033; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif; }
+    a { color: #2563eb; text-decoration: none; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 16px 64px; }
+    .hero { background: #111827; color: white; border-radius: 8px; padding: 26px; }
+    .hero h1 { margin: 0 0 10px; font-size: clamp(28px, 4vw, 42px); letter-spacing: 0; }
+    .hero p { margin: 0; color: #d1d5db; line-height: 1.65; }
+    .rules { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0; }
+    .rules div, .lead { background: white; border: 1px solid #d8dee8; border-radius: 8px; }
+    .rules div { padding: 14px; color: #475467; line-height: 1.5; }
+    .lead { padding: 16px; margin: 14px 0; }
+    .lead header { border-bottom: 1px solid #e6eaf0; padding-bottom: 12px; }
+    .lead header span, .lead header b { display: inline-flex; padding: 5px 8px; border-radius: 999px; background: #eef2ff; color: #3730a3; font-size: 12px; margin-right: 4px; }
+    .lead header b { background: #ecfeff; color: #155e75; }
+    h2 { margin: 8px 0 0; font-size: 22px; letter-spacing: 0; }
+    h3 { margin: 0 0 8px; font-size: 15px; }
+    p { margin: 0; color: #667085; line-height: 1.55; }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
+    .grid > div { background: #fbfcfe; border: 1px solid #e6eaf0; border-radius: 8px; padding: 12px; }
+    ul { margin: 0; padding-left: 18px; color: #667085; line-height: 1.55; }
+    footer { margin-top: 12px; color: #92400e; background: #fef3c7; border-radius: 8px; padding: 10px; font-size: 14px; }
+    @media (max-width: 880px) {
+      .rules, .grid { grid-template-columns: 1fr; }
+      .wrap { padding: 18px 10px 48px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <h1>신규 외부 콘텐츠 검색 확장 큐</h1>
+      <p>기존 가전/결혼/중고차 중심 후보가 반복되는 문제를 줄이기 위한 새 후보 목록입니다. 아직 대표 후보 확정이 아니라, 원문을 다시 열어 실제 Flow 변환이 가능한지 확인해야 하는 대기열입니다.</p>
+    </section>
+    <section class="rules">
+      ${output.noveltyRules.map((rule) => `<div>${escapeHtml(rule)}</div>`).join('')}
+    </section>
+    ${cards}
+  </main>
+</body>
+</html>
+`;
+
+fs.writeFileSync(htmlPath, html, 'utf8');
+
+console.log(`Wrote ${path.relative(root, jsonPath)}`);
+console.log(`Wrote ${path.relative(root, htmlPath)}`);

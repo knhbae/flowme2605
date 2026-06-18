@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe Naver Search Advisor 사이트 준비 시나리오</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7f9;
+        --paper: #ffffff;
+        --soft: #f1f5f9;
+        --ink: #101828;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d9e2ec;
+        --green: #047857;
+        --green-soft: #e7f6ef;
+        --blue: #1d4ed8;
+        --blue-soft: #e9f1ff;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --radius: 8px;
+        --shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard",
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          "Malgun Gothic",
+          system-ui,
+          sans-serif;
+        line-height: 1.6;
+        letter-spacing: 0;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.24;
+        word-break: keep-all;
+      }
+
+      p,
+      li,
+      td {
+        color: var(--body);
+      }
+
+      ul,
+      ol {
+        margin: 9px 0 0;
+        padding-left: 20px;
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.94em;
+      }
+
+      .page {
+        width: min(1240px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 22px 0 70px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        min-height: 54px;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        color: var(--muted);
+        font-size: 13px;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      }
+
+      .brand {
+        color: var(--ink);
+        font-weight: 900;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 290px;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .hero,
+      .panel,
+      .nav {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .hero {
+        padding: 30px;
+      }
+
+      .hero h1 {
+        max-width: 900px;
+        font-size: clamp(30px, 4vw, 48px);
+      }
+
+      .lead {
+        max-width: 900px;
+        margin-top: 14px;
+        font-size: 17px;
+      }
+
+      .panel {
+        margin-top: 18px;
+        padding: 25px;
+      }
+
+      .panel h2 {
+        margin-bottom: 10px;
+        font-size: 24px;
+      }
+
+      .section-lead {
+        max-width: 900px;
+        margin-bottom: 17px;
+        color: var(--muted);
+      }
+
+      .nav {
+        position: sticky;
+        top: 16px;
+        padding: 18px;
+      }
+
+      .nav h2 {
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      .nav a {
+        display: block;
+        padding: 9px 10px;
+        border-radius: 6px;
+        color: var(--body);
+        font-size: 14px;
+      }
+
+      .nav a:hover {
+        background: var(--soft);
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      .nav .note {
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .flowline {
+        display: grid;
+        gap: 12px;
+      }
+
+      .grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .grid-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .flowline {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .card,
+      .metric,
+      .flow-step {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        padding: 16px;
+      }
+
+      .metric,
+      .flow-step {
+        background: var(--soft);
+      }
+
+      .metric {
+        min-height: 118px;
+      }
+
+      .metric strong,
+      .flow-step strong,
+      .card h3 {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .card h3 {
+        font-size: 16px;
+      }
+
+      .flow-step {
+        min-height: 150px;
+      }
+
+      .decision {
+        border-left: 4px solid var(--blue);
+        padding: 14px 16px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+        background: var(--blue-soft);
+      }
+
+      .decision.green {
+        border-left-color: var(--green);
+        background: var(--green-soft);
+      }
+
+      .decision.amber {
+        border-left-color: var(--amber);
+        background: var(--amber-soft);
+      }
+
+      .decision.red {
+        border-left-color: var(--red);
+        background: var(--red-soft);
+      }
+
+      .decision strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--ink);
+      }
+
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 26px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: var(--soft);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .tag.ok {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .tag.hold {
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .tag.no {
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+      }
+
+      table {
+        width: 100%;
+        min-width: 880px;
+        border-collapse: collapse;
+        background: #fff;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+        font-size: 14px;
+      }
+
+      th {
+        background: var(--soft);
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .source-list {
+        display: grid;
+        gap: 9px;
+      }
+
+      .source-list a {
+        display: block;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--soft);
+        color: var(--body);
+        font-size: 14px;
+      }
+
+      .small {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 980px) {
+        .layout {
+          display: block;
+        }
+
+        .nav {
+          position: static;
+          margin-top: 18px;
+        }
+
+        .grid-4,
+        .flowline {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 680px) {
+        .page {
+          width: min(100% - 20px, 1240px);
+          padding-top: 10px;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero,
+        .panel {
+          padding: 18px;
+        }
+
+        .grid-2,
+        .grid-3,
+        .grid-4,
+        .flowline {
+          grid-template-columns: 1fr;
+        }
+
+        table {
+          min-width: 780px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe 분석방</span> / naver-search-advisor-site-readiness scenario</div>
+        <div>작성일 2026-06-09 · 상태: review candidate, not SEO advice</div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <section class="hero" id="summary">
+            <h1>Naver Search Advisor는 SEO 점수가 아니라 사이트 준비 체크로 다룬다</h1>
+            <p class="lead">
+              이 문서는 <code>naver-search-advisor-site-readiness</code>를 한국어 우선 검색 콘솔/웹마스터 설정 시나리오로 선택한 근거를 정리한다.
+              FlowMe는 소유권 방식, 접근 가능성, 수집 준비, sitemap/RSS 상태, 재확인 날짜를 다루되 검증값과 성과 목표를 저장하지 않는다.
+            </p>
+            <div class="grid-4" style="margin-top: 24px">
+              <div class="metric"><strong>현재 상태</strong><span>A- /content-flows review candidate.</span></div>
+              <div class="metric"><strong>첫 행동</strong><span>사이트 단위와 접근 권한을 먼저 고른다.</span></div>
+              <div class="metric"><strong>저장 금지</strong><span>검증값, DNS 값, HTML tag, OAuth, API key, credential.</span></div>
+              <div class="metric"><strong>보장 금지</strong><span>색인, 노출, 순위, 트래픽 성과를 보장하지 않는다.</span></div>
+            </div>
+          </section>
+
+          <section class="panel" id="decision">
+            <h2>결정</h2>
+            <p class="section-lead">
+              범용 `site-search-console-setup-precheck`보다 먼저, 한국어 우선 시나리오인 Naver Search Advisor 사이트 준비 후보를 평가한다.
+              공개 라우트, 플랫폼 통합, SEO 기능은 만들지 않는다.
+            </p>
+            <div class="grid-3">
+              <div class="decision green">
+                <strong>왜 Naver-first인가</strong>
+                <p>국내 사이트 운영자에게 가장 직접적인 검색 콘솔 축이고, 소유권/수집 준비/재확인 상태를 작은 artifact로 만들 수 있다.</p>
+              </div>
+              <div class="decision amber">
+                <strong>사용자 순간</strong>
+                <p>작은 사이트, 커스텀 도메인 블로그, 크리에이터 페이지, 소상공인 사이트가 출시나 큰 업데이트 뒤 Naver 발견 가능성을 준비한다.</p>
+              </div>
+              <div class="decision red">
+                <strong>위험</strong>
+                <p>FlowMe가 검증값, DNS record, HTML tag, OAuth grant, API key, sitemap file, ranking goal을 저장하면 안 된다.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="sources">
+            <h2>공식 소스 스냅샷</h2>
+            <p class="section-lead">
+              아래 표는 기존 문서에 기록된 2026-06-09 확인 내용을 읽기 쉽게 옮긴 것이다. 이 HTML은 새 소스 재검증 문서가 아니다.
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>소스</th>
+                    <th>FlowMe 해석</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Naver Search Advisor 진단 페이지</td>
+                    <td>title, description, robot blocking, 검색 친화 기본을 precheck row로 바꿀 수 있지만 점수화하지 않는다.</td>
+                  </tr>
+                  <tr>
+                    <td>SEO 기본 가이드</td>
+                    <td>robot access, sitemap/RSS, 사이트 검색 결과, noindex, frame, redirect, 개발자 도움을 분리한다. 노출 약속이 아니라 접근과 상태부터 시작한다.</td>
+                  </tr>
+                  <tr>
+                    <td>소유권 확인 소개</td>
+                    <td>웹마스터 작업은 수집/삭제 요청/리포트에 영향을 줄 수 있다. FlowMe는 방법명과 상태만 저장하고 검증값은 저장하지 않는다.</td>
+                  </tr>
+                  <tr>
+                    <td>소유권 확인 문제 해결</td>
+                    <td>protocol mismatch, 계정별 HTML/tag, index page, robot blocking, redirect는 ask developer/host admin 판단점이 된다.</td>
+                  </tr>
+                  <tr>
+                    <td>HTML 파일 업로드</td>
+                    <td>root-folder access 또는 hosting-provider help가 필요하다. FlowMe는 root upload access 여부를 먼저 묻는다.</td>
+                  </tr>
+                  <tr>
+                    <td>HTML tag 방식</td>
+                    <td>첫 페이지 head 편집 가능 여부만 기록한다. tag content는 저장하지 않는다.</td>
+                  </tr>
+                  <tr>
+                    <td>리포트/진단 가이드</td>
+                    <td>수집 제한, noindex, 진단, 리포트 지연, 재수집 대기는 status note다. 즉시 색인을 약속하지 않는다.</td>
+                  </tr>
+                  <tr>
+                    <td>sitemap 존재와 수집</td>
+                    <td>sitemap/RSS 상태를 기록하되 검색 반영 보장으로 해석하지 않는다.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="scenario">
+            <h2>사용자 시나리오</h2>
+            <div class="decision green">
+              <strong>사용자 필요</strong>
+              <p>
+                한국어 커스텀 사이트 운영자가 Naver Search Advisor 설정을 준비하면서, 어떤 소유권 방법을 쓸 수 있는지,
+                수집 전제 조건이 맞는지, 무엇을 개발자나 호스팅 관리자에게 물어봐야 하는지, 언제 다시 확인해야 하는지를 알고 싶다.
+              </p>
+            </div>
+          </section>
+
+          <section class="panel" id="artifact">
+            <h2>제안 리뷰 artifact</h2>
+            <p class="section-lead">UI는 플랫폼 세부 설명보다 사용자가 가진 접근 권한 선택을 먼저 물어야 한다.</p>
+            <div class="flowline">
+              <div class="flow-step"><strong>1. 사이트 단위와 접근권한</strong><p>custom domain, host/CMS, URL 단위를 고르고 DNS, root upload, head edit 접근 여부를 기록한다.</p></div>
+              <div class="flow-step"><strong>2. 소유권 방법 상태</strong><p>HTML file, HTML tag, ask developer/host admin 중 하나를 상태로 둔다.</p></div>
+              <div class="flow-step"><strong>3. crawl/noindex 준비</strong><p>robots.txt, noindex, redirect/frame, live accessibility를 확인한다.</p></div>
+              <div class="flow-step"><strong>4. sitemap/RSS/request 상태</strong><p>submitted, unavailable, skipped, ask developer 상태만 기록한다.</p></div>
+              <div class="flow-step"><strong>5. 다시 볼 날짜</strong><p>ownership, diagnosis, collection, sitemap/RSS, report status를 다시 볼 날짜를 둔다.</p></div>
+            </div>
+          </section>
+
+          <section class="panel" id="gate">
+            <h2>구현 게이트</h2>
+            <div class="grid-2">
+              <div class="decision green">
+                <strong>충족 조건</strong>
+                <ol>
+                  <li>candidate id는 <code>naver-search-advisor-site-readiness</code>다.</li>
+                  <li>source type은 official이다.</li>
+                  <li>첫 행동은 sitemap 제출이나 ranking improvement가 아니라 access/method selection이다.</li>
+                  <li>ownership verification, crawl/collection, indexing/search reflection, diagnosis/report, ranking을 구분한다.</li>
+                  <li><code>ask developer/host admin</code>을 정상 상태로 지원한다.</li>
+                </ol>
+              </div>
+              <div class="decision red">
+                <strong>금지 조건</strong>
+                <ul>
+                  <li>검증값, DNS 값, HTML tag, OAuth, API key, credential을 title, memo, export, test 어디에도 넣지 않는다.</li>
+                  <li>public route, OAuth import, DNS automation, sitemap generation, IndexNow/API automation을 만들지 않는다.</li>
+                  <li>SEO score, ranking tracker, analytics dashboard를 만들지 않는다.</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="rejected">
+            <h2>첫 구현 시나리오에서 제외한 범위</h2>
+            <div class="grid-3">
+              <div class="decision red"><strong>범용 multi-platform</strong><p>Google, Naver, Bing을 한 UI에 섞으면 첫 UI pass에는 변동성이 크다.</p></div>
+              <div class="decision red"><strong>Google-first 또는 Bing import</strong><p>유용한 비교군이지만 Korean-first가 아니거나 OAuth/account import 경계가 무겁다.</p></div>
+              <div class="decision red"><strong>SEO ranking improvement</strong><p>FlowMe artifact가 아니고 성과 기대를 잘못 만든다.</p></div>
+            </div>
+          </section>
+
+          <section class="panel" id="current">
+            <h2>현재 제품 위치</h2>
+            <div class="grid-3">
+              <div class="decision green"><strong>/content-flows review candidate</strong><p>있음. 후보별 실행 UI preview가 있다.</p></div>
+              <div class="decision amber"><strong>Public route</strong><p>없음. 공개 <code>/f/[slug]</code> 승인이 아니다.</p></div>
+              <div class="decision red"><strong>Platform feature</strong><p>Naver integration, DNS automation, sitemap generation, SEO scoring, ranking tracking, analytics reporting 없음.</p></div>
+            </div>
+          </section>
+
+          <section class="panel" id="rubric">
+            <h2>루브릭 스냅샷</h2>
+            <div class="grid-4">
+              <div class="metric"><strong>Content Fidelity</strong><span>5</span></div>
+              <div class="metric"><strong>Source/Safety</strong><span>5</span></div>
+              <div class="metric"><strong>Accessibility/Operability</strong><span>4</span></div>
+              <div class="metric"><strong>낮은 지점</strong><span>Cognitive Load 3. 접근권한을 고르기 전 플랫폼 세부를 숨겨야 한다.</span></div>
+            </div>
+          </section>
+
+          <section class="panel" id="links">
+            <h2>원문과 연결 문서</h2>
+            <div class="source-list">
+              <a href="./2026-06-09-naver-search-advisor-site-readiness-scenario.md">원문 Markdown</a>
+              <a href="./2026-06-09-search-console-setup-precheck-gate.md">검색 콘솔 일반 게이트</a>
+              <a href="./2026-06-09-external-ecosystem-connected-docs-visual-ko.html#naver-search">연결 문서 요약의 Naver Search Advisor 섹션</a>
+              <a href="./2026-06-09-external-ecosystem-roadmap-visual-ko.html">외부 생태계 분석 로드맵</a>
+              <a href="https://searchadvisor.naver.com/diagnose">Naver Search Advisor 진단</a>
+              <a href="https://searchadvisor.naver.com/guide/seo-basic-intro">Naver Search Advisor SEO 기본 가이드</a>
+              <a href="https://help.naver.com/service/30010/contents/17591">Naver 소유권 확인 소개</a>
+              <a href="https://help.naver.com/service/30010/contents/17598">Naver 소유권 확인 문제 해결</a>
+              <a href="https://help.naver.com/service/30010/contents/17594?lang=ko">HTML 파일 업로드 방식</a>
+              <a href="https://help.naver.com/service/30010/contents/17595?lang=ko&osType=PC">HTML 태그 방식</a>
+              <a href="https://searchadvisor.naver.com/guide/report-diagnosis">리포트/진단 가이드</a>
+              <a href="https://help.naver.com/service/30010/contents/17623?lang=ko">sitemap 존재와 수집</a>
+            </div>
+            <p class="small" style="margin-top: 12px">
+              외부 링크는 기존 근거 문서에 기록된 소스다. 이 HTML은 기존 내부 시나리오를 시각화한 읽기용 문서이며, 새 소스 재검증이나 SEO 조언이 아니다.
+            </p>
+          </section>
+        </div>
+
+        <aside class="nav" aria-label="문서 목차">
+          <h2>목차</h2>
+          <a href="#summary">요약</a>
+          <a href="#decision">결정</a>
+          <a href="#sources">공식 소스 스냅샷</a>
+          <a href="#scenario">사용자 시나리오</a>
+          <a href="#artifact">제안 리뷰 artifact</a>
+          <a href="#gate">구현 게이트</a>
+          <a href="#rejected">제외한 범위</a>
+          <a href="#current">현재 제품 위치</a>
+          <a href="#rubric">루브릭</a>
+          <a href="#links">원문과 연결 문서</a>
+          <p class="note">
+            이 문서는 사이트 준비 체크다. FlowMe는 검증값을 저장하거나 검색 노출, 색인, 순위, 트래픽을 보장하지 않는다.
+          </p>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

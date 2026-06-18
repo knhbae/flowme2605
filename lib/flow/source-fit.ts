@@ -303,26 +303,26 @@ export const sourceFitAudits: SourceFitAudit[] = [
     sourceTitle: '초기이유식 식단표 공유',
     sourceUrl: 'https://kimstar1021.tistory.com/63',
     sourcePrecision: 'exact',
-    sourceUsefulness: '원본은 식단표, 날짜 입력 가능성, 재료 순서, 레시피, 알레르기 관찰을 포함해 FLOW화 가치가 높다.',
-    idealReconstruction: '시작일 기준 식단 달력, 재료별 레시피, 반응 기록, 공식/주의 정보로 재구성한다.',
+    sourceUsefulness: '원본은 날짜를 직접 입력하는 식단표, 3일 단위 재료 순서, 레시피, 알레르기 관찰 단서를 포함해 FLOW화 가치가 높다.',
+    idealReconstruction: '시작일 기준 식단 달력, 재료별 레시피, 가벼운 반응 메모, 공식/주의 정보로 재구성한다.',
     naturalArtifacts: [
       {
         kind: 'monthly_calendar',
         artifactTitle: '초기 이유식 14일 식단 달력',
         simulatedInputs: ['시작일=2026-06-01', '아기월령=6개월', '첫재료=쌀미음', '알레르기주의=계란 보류'],
         expectedOutput: ['6/1 쌀미음', '6/4 애호박 추가', '6/7 감자 추가', '각 재료 2~3일 반응 관찰'],
-        currentFlowMatch: '식단표와 재료 순서는 맞지만 공식 주의와 개인 반응 기록이 더 명확해야 한다.',
-        currentUxSupport: '식단 달력은 유효하나 반응 기록이 핵심 산출물로 더 드러나야 한다.',
-        gap: '건강 민감 영역이라 달력보다 반응 기록/주의 카드가 동등하게 중요하다.',
+        currentFlowMatch: '식단표와 재료 순서는 맞지만 원문에서 온 3일 단위와 2단계 식단 단서가 실행 화면에서 더 보여야 한다.',
+        currentUxSupport: '식단 달력이 핵심 산출물이고 반응 기록은 보조 메모로 유지해야 한다.',
+        gap: '건강 민감 영역이라 주의 문구는 분리하되, 첫 화면은 반응 입력보다 식단 달력과 레시피 확인이 우선이다.',
       },
       {
         kind: 'spreadsheet',
-        artifactTitle: '재료 반응 기록표',
+        artifactTitle: '재료 반응 메모',
         simulatedInputs: ['날짜=2026-06-04', '재료=애호박', '섭취량=2스푼', '반응=특이 없음'],
         expectedOutput: ['날짜, 재료, 섭취량, 피부/변/수면 반응, 보호자 메모, 확인 필요 여부 열'],
-        currentFlowMatch: '메모/export 방향은 맞지만 반응 기록이 별도 표처럼 강하지 않다.',
-        currentUxSupport: '엑셀 export는 가능하나 입력 UX가 체크리스트 항목에 묻힌다.',
-        gap: '반응 기록 전용 입력과 export preview가 필요하다.',
+        currentFlowMatch: '메모/export 방향은 맞지만 기본 화면에서 별도 표처럼 강해지면 사용자가 무겁게 느낄 수 있다.',
+        currentUxSupport: '캘린더와 레시피가 먼저 보이고, 이상 반응은 메모/주의로 남기는 편이 현재 제품 방향에 맞다.',
+        gap: '의료 판단처럼 보이지 않도록 반응 기록을 보조 메모로 낮추고 공식/전문가 확인을 분리해야 한다.',
       },
     ],
     userJourney: [
@@ -331,9 +331,9 @@ export const sourceFitAudits: SourceFitAudit[] = [
       '날짜별 메뉴와 새 재료를 확인한다.',
       '아기 반응을 기록하고 다음 재료를 조정한다.',
     ],
-    currentGap: '식단표와 기록 기능은 맞지만 건강/영양 공식 안내 보강이 필요하다.',
-    contentAction: '개인 경험 레시피와 공식/의료 주의 문구를 더 명확히 분리한다.',
-    uxAction: '반응 기록과 다음 재료 확인을 달력과 함께 보여준다.',
+    currentGap: '식단표 중심 방향은 맞지만 원문에서 온 3일 단위 식단표와 2단계 식단 흐름이 더 선명해야 한다.',
+    contentAction: '개인 경험 레시피와 공식/의료 주의 문구를 분리하고, 원문 식단 순서를 캘린더 슬롯으로 보존한다.',
+    uxAction: '시작일 기준 식단 달력과 레시피를 먼저 보여주고, 반응 기록은 보조 메모로 둔다.',
     scores: {
       actionDensity: 14,
       temporalStructure: 15,
@@ -1090,23 +1090,23 @@ export const sourceFitAudits: SourceFitAudit[] = [
     sourceUrl:
       'https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=82',
     sourcePrecision: 'exact',
-    sourceUsefulness: '급격한 감량보다 점진적 목표, 건강한 식습관, 운동, 생활습관 개선 병행을 강조해 2주 기록 루틴의 안전 경계로 적합하다.',
-    idealReconstruction: '시작일, 식사 패턴, 물/운동/수면 기록 항목을 받아 감량 처방이 아닌 관찰용 2주 sheet와 주간 회고 memo로 만든다.',
+    sourceUsefulness: '급격한 감량보다 점진적 목표와 충분한 수면 같은 생활습관 원칙을 강조해, 한 가지 규칙만 좁혀 체크하는 안전 경계로 적합하다.',
+    idealReconstruction: '체크 시작일을 받아 14일 동안 8시간 이상 자기만 매일 확인하는 수면 체크 캘린더와 짧은 메모로 만든다.',
     naturalArtifacts: [
       {
-        kind: 'spreadsheet',
-        artifactTitle: '2주 다이어트 습관 관찰표',
-        simulatedInputs: ['시작일=2026-06-01', '목표=야식 줄이기', '운동가능=저녁 20분 걷기', '주의=무리한 제한 금지'],
-        expectedOutput: ['날짜, 식사시간, 단백질/채소, 물, 운동, 수면, 컨디션, 내일 한 가지 조정 열이 있는 sheet'],
-        currentFlowMatch: '식사, 물, 운동, 수면 기록 방향은 맞지만 공식 안전 기준과 분리된 주의 문구가 더 필요하다.',
-        currentUxSupport: 'routine check는 가능하나 sheet-first 기록물이 첫 화면에서 충분히 강하지 않다.',
-        gap: '건강 민감 Flow는 체중 목표보다 생활 패턴 기록과 전문가 상담 경계를 먼저 보여야 한다.',
+        kind: 'routine_calendar',
+        artifactTitle: '14일 수면 체크 캘린더',
+        simulatedInputs: ['체크 시작일=2026-06-01', '규칙=8시간 이상 자기', '기간=14일', '주의=수면 문제 반복 시 상담'],
+        expectedOutput: ['14일 날짜, 8시간 이상 수면 여부, 잠든 시각, 다음 날 피로감만 남기는 캘린더/메모'],
+        currentFlowMatch: '8시간 이상 자기 규칙은 맞지만 식사·운동 관찰표처럼 보이면 원문 대표성이 흐려진다.',
+        currentUxSupport: 'routine calendar가 첫 화면에 와야 하며 spreadsheet-first 기록물은 부차적이어야 한다.',
+        gap: '건강 민감 Flow는 여러 체중관리 행동을 대표하지 말고 14일 수면 체크와 전문가 상담 경계를 먼저 보여야 한다.',
       },
     ],
-    userJourney: ['공식 체중관리 주의사항을 확인한다.', 'FLOW에 시작일과 관찰할 생활습관을 입력한다.', '2주 기록표를 sheet로 복사하고 매일 체크한다.', '주말에 다음 주 조정 행동 하나를 고른다.'],
-    currentGap: '현재 Flow는 습관 기록에는 맞지만 체중감량 조언처럼 읽힐 위험을 더 낮춰야 한다.',
-    contentAction: '공식 안내를 기준으로 급격한 감량 금지, 식사/운동/생활습관 병행, 전문가 상담 경계를 item detail에 분리한다.',
-    uxAction: 'diet routine은 sheet preview와 warning card를 checklist보다 앞에 둔다.',
+    userJourney: ['공식 체중관리 주의사항 중 수면 원칙을 확인한다.', 'FLOW에 체크 시작일을 입력한다.', '14일 동안 8시간 이상 잤는지만 매일 체크한다.', '수면 문제나 어지러움이 반복되면 체크보다 상담을 우선한다.'],
+    currentGap: '현재 Flow가 여러 습관 관찰이나 체중감량 조언처럼 읽히지 않도록 범위를 더 좁혀야 한다.',
+    contentAction: '공식 안내 중 충분한 수면 원칙 하나만 남기고, 감량 처방이나 치료가 아니라는 경계를 item detail에 분리한다.',
+    uxAction: 'diet routine은 14일 routine calendar와 warning card를 checklist보다 앞에 둔다.',
     decision: 'reshape_before_featured',
     scores: {
       actionDensity: 12,
@@ -1471,9 +1471,918 @@ export const sourceFitAudits: SourceFitAudit[] = [
       riskBoundaryClarity: 5,
     },
   }),
+  defineAudit({
+    slug: 'new-apartment-precheck',
+    checkedAt: '2026-06-04',
+    sourceTitle: '신축 아파트 입주 사전점검 체크리스트 참고',
+    sourceUrl: 'https://blog.naver.com/PostView.naver?blogId=juniorhome&logNo=223358772350',
+    sourcePrecision: 'exact',
+    sourceUsefulness:
+      '입주 사전점검은 준비물, 공간별 하자 확인, 보수 요청 목록 전달이라는 실행 단위가 분명해서 체크리스트 Flow stress fixture로 적합하다. 다만 사용자가 원문을 수동 확인하기 전까지는 대표 콘텐츠로 확정하지 않는다.',
+    idealReconstruction:
+      '사전점검일을 기준으로 준비물 체크, 공간별 점검, 하자 위치 메모, 보수 요청 전달 상태를 최소 입력 체크리스트로 만든다.',
+    naturalArtifacts: [
+      {
+        kind: 'checklist',
+        artifactTitle: '입주 사전점검 당일 체크리스트',
+        simulatedInputs: ['사전점검일=2026-06-08', '주택=신축 아파트', '동행자=2명', '중점=전기/창호/욕실/수납'],
+        expectedOutput: [
+          '준비물 챙기기',
+          '공간별 하자 위치 메모',
+          '보수 요청 목록 정리',
+          '관리사무소 전달 상태 체크',
+        ],
+        currentFlowMatch: '체크리스트 구조는 맞지만 사진/증빙 입력을 기본으로 강제하면 사용자가 부담을 느낄 수 있다.',
+        currentUxSupport: 'UX12 상세 메모에 위치와 요청 내용을 적을 수 있어 P0 검증에는 충분하다.',
+        gap: '하자 사진은 선택 정보로 두고, 월간 캘린더보다 선택 날짜/상세 sheet에서 처리해야 한다.',
+      },
+    ],
+    userJourney: [
+      '입주 사전점검 글을 보고 점검일을 정한다.',
+      'FLOW에서 준비물과 공간별 점검 항목을 체크한다.',
+      '하자 위치와 보수 요청 내용을 메모로 남긴다.',
+      '전달 완료 여부만 체크하고 사진 첨부는 선택으로 둔다.',
+    ],
+    currentGap:
+      '현재 UX12는 기능적으로 버티지만, 항목이 많아지면 월간 셀보다 선택 날짜 상세 영역에서 핵심 체크를 보여줘야 한다.',
+    contentAction:
+      '사용자가 원문을 확인한 뒤 실제 글에 없는 상세 문구를 제거하고 준비물/공간별 점검/보수 요청만 남긴다.',
+    uxAction:
+      '체크리스트 Flow에서 첨부, 하자 사진, 위치 기록은 더보기 또는 선택 메모로 내려 입력 복잡도를 낮춘다.',
+    decision: 'reshape_before_featured',
+    scores: {
+      actionDensity: 13,
+      temporalStructure: 10,
+      externalManagementNeed: 17,
+      completionClarity: 13,
+      personalizationNeed: 8,
+      returnValue: 8,
+      sourceSpecificityTrust: 7,
+      riskBoundaryClarity: 4,
+    },
+  }),
+  defineAudit({
+    slug: 'japan-esim-setup-before-departure',
+    checkedAt: '2026-06-04',
+    sourceTitle: '일본 eSIM 사용 후기와 설치 순서 참고',
+    sourceUrl: 'https://blog.naver.com/PostView.naver?blogId=travelnote_jp&logNo=223529001204',
+    sourcePrecision: 'exact',
+    sourceUsefulness:
+      'eSIM은 구매, 기기 지원 확인, QR 설치, 공항 도착 후 회선 전환이라는 단계가 날짜와 강하게 연결되어 calendar+memo Flow 검증에 적합하다. 원문 수동 확인 전까지는 보강 대상으로 둔다.',
+    idealReconstruction:
+      '출국일을 기준으로 D-2 구매/기기 확인, D-1 프로필 설치, 공항 도착 후 현지 회선 켜기, 연결 확인 메모를 만든다.',
+    naturalArtifacts: [
+      {
+        kind: 'monthly_calendar',
+        artifactTitle: '일본 eSIM 출국 전 준비 캘린더',
+        simulatedInputs: ['출국일=2026-06-20', '여행지=일본', '휴대폰=eSIM 지원', '구매처=온라인'],
+        expectedOutput: [
+          'D-2 eSIM 상품과 기기 지원 확인',
+          'D-1 eSIM 프로필 미리 설치',
+          'D-Day 공항 도착 후 현지 회선 켜기',
+          '연결 확인 메모',
+        ],
+        currentFlowMatch: '짧은 timeline Flow로 잘 맞고, 캘린더 항목은 제목만 보여도 충분하다.',
+        currentUxSupport: '상세 메모에 QR 링크, 구매처, 설치 방법을 담을 수 있다.',
+        gap: '캘린더 셀에 설명을 넣지 말고 상세 sheet 메모로 넘겨야 모바일 밀도가 낮다.',
+      },
+    ],
+    userJourney: [
+      '여행 준비 글을 보고 출국일을 입력한다.',
+      '구매와 설치 날짜를 캘린더에서 확인한다.',
+      '상세 메모에서 구매 링크와 설치 순서를 다시 본다.',
+      '현지 도착 후 연결 여부만 완료 체크한다.',
+    ],
+    currentGap:
+      '현재 UX12는 짧은 timeline을 잘 처리하지만, 원문에 없는 과도한 troubleshooting은 빼야 한다.',
+    contentAction:
+      '사용자 원문 확인 후 구매/설치/회선 전환에 직접 연결되지 않는 설명을 제거하고 링크 메모 중심으로 정리한다.',
+    uxAction:
+      '여행 준비 Flow에서는 장소/첨부보다 날짜, 링크, 메모를 우선 노출하고 나머지는 더보기로 내린다.',
+    decision: 'reshape_before_featured',
+    scores: {
+      actionDensity: 13,
+      temporalStructure: 14,
+      externalManagementNeed: 17,
+      completionClarity: 13,
+      personalizationNeed: 7,
+      returnValue: 8,
+      sourceSpecificityTrust: 7,
+      riskBoundaryClarity: 4,
+    },
+  }),
+  defineAudit({
+    slug: 'dog-adoption-first-week',
+    checkedAt: '2026-06-04',
+    sourceTitle: '강아지 입양 전 준비 가이드 참고',
+    sourceUrl: 'https://www.gomin77.co.kr/blog/dog-puppy-pet-adoption',
+    sourcePrecision: 'exact',
+    sourceUsefulness:
+      '입양 첫 주는 준비물, 안정 공간, 병원 예약, 등록 확인처럼 사용자가 따라할 행동이 있지만 건강 판단처럼 보이지 않도록 경계가 필요하다.',
+    idealReconstruction:
+      '입양일을 기준으로 D-1 준비물/공간, D+1 적응 확인, D+3 병원 예약, D+7 등록/생활 루틴 확인을 만들고 건강 판단은 병원 상담 메모로 분리한다.',
+    naturalArtifacts: [
+      {
+        kind: 'monthly_calendar',
+        artifactTitle: '강아지 입양 첫 주 체크 캘린더',
+        simulatedInputs: ['입양일=2026-06-05', '반려견=강아지', '첫 병원=미정', '등록상태=미정'],
+        expectedOutput: [
+          'D-1 밥그릇/배변패드/이동장 준비',
+          'D-Day 안정 공간 마련',
+          'D+3 동물병원 예약 메모',
+          'D+7 동물등록 확인',
+        ],
+        currentFlowMatch: '입양일 기준 timeline으로 맞지만 민감한 건강 판단은 Flow가 결론내리면 안 된다.',
+        currentUxSupport: '경고 문구와 상세 메모로 병원 상담 필요 항목을 분리할 수 있다.',
+        gap: '증상 기록이나 판단 로직을 넣으면 앱이 무거워지므로 첫 주 실행 체크에 제한해야 한다.',
+      },
+    ],
+    userJourney: [
+      '입양 준비 글을 보고 입양일을 입력한다.',
+      '첫 주 준비물과 생활 공간 체크만 완료한다.',
+      '병원 상담이 필요한 내용은 메모에 적고 판단은 하지 않는다.',
+      '등록/예약처럼 명확한 완료 기준만 체크한다.',
+    ],
+    currentGap:
+      '현재 UX12는 hybrid Flow를 보여줄 수 있지만, 건강/훈련 조언까지 확장하면 입력 복잡도와 위험이 커진다.',
+    contentAction:
+      '원문 수동 확인 뒤 준비물, 공간, 병원 예약, 등록 확인만 남기고 건강 판단/훈련 조언은 주의 메모로 낮춘다.',
+    uxAction:
+      '반려동물 Flow는 루틴 앱처럼 확장하지 말고 첫 주 일정과 체크 중심으로 유지한다.',
+    decision: 'reshape_before_featured',
+    scores: {
+      actionDensity: 12,
+      temporalStructure: 13,
+      externalManagementNeed: 16,
+      completionClarity: 12,
+      personalizationNeed: 8,
+      returnValue: 8,
+      sourceSpecificityTrust: 7,
+      riskBoundaryClarity: 5,
+    },
+  }),
+  defineAudit({
+    slug: 'washer-tub-clean-monthly',
+    checkedAt: '2026-06-06',
+    sourceTitle: '세탁기 통세척 월간 관리 참고',
+    sourceUrl: 'https://raga.tistory.com/entry/%EC%84%B8%ED%83%81%EA%B8%B0-%ED%86%B5%EC%84%B8%EC%B2%99-%EB%B0%A9%EB%B2%95-%EB%B0%8F-%EA%B4%80%EB%A6%AC%EB%B2%95',
+    sourcePrecision: 'exact',
+    sourceUsefulness:
+      '세탁조 청소, 문 열어 건조, 고무패킹, 세제통, 배수필터처럼 반복 관리로 옮길 수 있는 실행 단서가 분명하다. 다만 제조사/모델별 차이는 원문 참고와 사용자 메모로 분리해야 한다.',
+    idealReconstruction:
+      '시작일과 반복 주기를 입력하면 월 1회 통세척 일정이 생기고, 해당 날짜 상세에서 통세척 실행, 문 열어 건조, 고무패킹/세제통/배수필터 확인 체크리스트를 완료한다.',
+    naturalArtifacts: [
+      {
+        kind: 'routine_calendar',
+        artifactTitle: '세탁기 통세척 월간 캘린더',
+        simulatedInputs: ['시작일=2026-06-10', '반복=매월', '세탁기=드럼 세탁기'],
+        expectedOutput: [
+          '매월 10일 통세척 일정',
+          '상세 체크리스트: 통세척, 문 열어 건조, 고무패킹, 세제통, 배수필터',
+          '다음 관리일 자동 유지',
+        ],
+        currentFlowMatch: 'public route와 content-flow 후보 모두 calendar-first routine 구조로 맞다.',
+        currentUxSupport: '캘린더 날짜에서 내부 체크리스트가 바로 보여야 사용자가 루틴 전체 완료와 세부 항목 완료를 구분할 수 있다.',
+        gap: '대표 노출 전에는 모델별 주의와 원문 링크 위치를 더 가볍게 정리해야 한다.',
+      },
+    ],
+    userJourney: [
+      '사용자가 세탁기 관리 글을 보고 월 1회 반복 관리로 저장한다.',
+      '캘린더에서 이번 달 통세척 일정을 연다.',
+      '통세척 실행 후 문 열어 건조, 고무패킹, 세제통, 배수필터를 체크한다.',
+      '특이사항만 메모하고 다음 달 반복 일정은 유지한다.',
+    ],
+    currentGap:
+      '실제 사용성 검증의 핵심은 루틴 일정 안에 세부 체크리스트가 보이는지이며, 과한 사진/증빙 입력은 P0 범위를 넘는다.',
+    contentAction:
+      '통세척 루틴은 월간 일정과 4개 안팎의 세부 체크리스트만 남기고 제조사별 차이는 원문 링크/메모로 분리한다.',
+    uxAction:
+      '루틴 캘린더 item을 열면 전체 완료 버튼보다 먼저 세부 체크리스트와 다음 반복일을 보여준다.',
+    decision: 'reshape_before_featured',
+    scores: {
+      actionDensity: 12,
+      temporalStructure: 12,
+      externalManagementNeed: 16,
+      completionClarity: 12,
+      personalizationNeed: 8,
+      returnValue: 7,
+      sourceSpecificityTrust: 7,
+      riskBoundaryClarity: 4,
+    },
+  }),
+  defineAudit({
+    slug: 'monstera-care-routine',
+    checkedAt: '2026-06-06',
+    sourceTitle: '몬스테라 물주기·분갈이 루틴 참고',
+    sourceUrl: 'https://jhbd2.tistory.com/178',
+    sourcePrecision: 'exact',
+    sourceUsefulness:
+      '겉흙 2~3cm, 밝은 간접광, 배수구멍, 잎 상태, 분갈이처럼 초보 식물 관리자가 반복 확인할 수 있는 단서가 있다. 식물 상태 판단은 확정 조언이 아니라 관찰 체크로 표현해야 한다.',
+    idealReconstruction:
+      '7~10일마다 물주기 판단 루틴을 만들고, 상세에서 겉흙 확인, 간접광/배수구멍 확인, 잎 상태 메모를 체크한다. 분갈이는 6개월마다 별도 장기 체크로 둔다.',
+    naturalArtifacts: [
+      {
+        kind: 'routine_calendar',
+        artifactTitle: '몬스테라 7~10일 관리 캘린더',
+        simulatedInputs: ['시작일=2026-06-07', '반복=10일마다', '식물=몬스테라'],
+        expectedOutput: [
+          '10일마다 몬스테라 상태 확인 일정',
+          '상세 체크리스트: 겉흙 2~3cm, 밝은 간접광, 배수구멍, 잎 상태',
+          '6개월마다 분갈이 필요 확인',
+        ],
+        currentFlowMatch: 'routine 구조는 맞지만 캘린더 item에서 세부 체크가 보여야 실제 루틴처럼 작동한다.',
+        currentUxSupport: '식물 루틴은 사진 기록보다 관찰 메모와 다음 확인일이 우선이다.',
+        gap: '대표 노출 전에는 물주기 주기 변경과 6개월 장기 체크가 한 화면에서 과하게 섞이지 않도록 정리해야 한다.',
+      },
+    ],
+    userJourney: [
+      '초보 식물 사용자가 시작일과 확인 주기를 고른다.',
+      '캘린더에서 몬스테라 루틴을 열어 겉흙과 빛/배수 상태를 확인한다.',
+      '잎 상태에 특이사항이 있을 때만 짧게 메모한다.',
+      '분갈이 확인은 별도 장기 체크로 남긴다.',
+    ],
+    currentGap:
+      '루틴 앱처럼 과하게 확장하기보다 FlowMe 안에서는 반복 일정, 내부 체크리스트, 메모, 다음 확인일까지만 유지해야 한다.',
+    contentAction:
+      '물주기 판단과 환경 확인을 3~4개 체크로 줄이고, 분갈이는 장기 체크 항목으로 분리한다.',
+    uxAction:
+      '반복 일정 상세에서 세부 체크리스트와 주기 변경 저장/취소를 명확히 보여준다.',
+    decision: 'reshape_before_featured',
+    scores: {
+      actionDensity: 11,
+      temporalStructure: 12,
+      externalManagementNeed: 15,
+      completionClarity: 12,
+      personalizationNeed: 8,
+      returnValue: 7,
+      sourceSpecificityTrust: 7,
+      riskBoundaryClarity: 4,
+    },
+  }),
+  defineAudit({
+    slug: 'water-purifier-filter-cycle',
+    checkedAt: '2026-06-06',
+    sourceTitle: '정수기 필터 교체 주기표 참고',
+    sourceUrl: 'https://pihamadam.tistory.com/267',
+    sourcePrecision: 'exact',
+    sourceUsefulness:
+      '필터 종류별 교체 주기, 코크/출수구, 자가 살균, 물맛·냄새 확인처럼 사용자가 주기표와 메모로 관리할 수 있는 단서가 있다. 모델별 공식 주기는 사용자 입력과 원문/제조사 확인으로 분리해야 한다.',
+    idealReconstruction:
+      '정수기 모델과 필터 구성을 입력하면 필터별 마지막 교체일, 다음 교체 기준일, 코크/출수구 점검, 물맛·냄새 메모를 한 시트에서 관리한다.',
+    naturalArtifacts: [
+      {
+        kind: 'spreadsheet',
+        artifactTitle: '정수기 필터 교체 주기표',
+        simulatedInputs: ['모델=퓨리케어', '필터=침전/프리/RO', '마지막 교체일=2026-06-01'],
+        expectedOutput: [
+          '필터별 마지막 교체일',
+          '다음 교체 기준일',
+          '코크/출수구 자가 살균 여부',
+          '물맛·냄새 메모',
+        ],
+        currentFlowMatch: 'sheet-first 구조가 맞고 public route에서 workbench형 실행 표면으로 확인할 수 있다.',
+        currentUxSupport: '캘린더보다 필터별 표와 다음 교체 기준일이 먼저 보여야 한다.',
+        gap: '대표 노출 전에는 제조사별 주기를 Flow가 확정하지 않고 사용자가 모델 기준을 넣는 구조가 더 명확해야 한다.',
+      },
+    ],
+    userJourney: [
+      '사용자가 정수기 모델과 필터 구성을 입력한다.',
+      '필터별 마지막 교체일과 다음 교체 기준을 표로 본다.',
+      '코크/출수구 상태와 물맛·냄새만 짧게 메모한다.',
+      '교체 완료 후 다음 기준일을 갱신한다.',
+    ],
+    currentGap:
+      '필터 주기를 Flow가 일괄 확정하는 것처럼 보이면 안 되고, 모델별 기준 입력과 원문 링크 확인이 가까이 있어야 한다.',
+    contentAction:
+      '필터별 주기표, 코크/출수구 점검, 물맛·냄새 메모만 남기고 구매/분해/전문 수리는 외부 링크로 분리한다.',
+    uxAction:
+      'sheet-first Flow에서는 캘린더 카드보다 필터별 행, 다음 교체일, 완료 체크를 첫 화면에 둔다.',
+    decision: 'reshape_before_featured',
+    scores: {
+      actionDensity: 12,
+      temporalStructure: 10,
+      externalManagementNeed: 17,
+      completionClarity: 12,
+      personalizationNeed: 8,
+      returnValue: 8,
+      sourceSpecificityTrust: 7,
+      riskBoundaryClarity: 4,
+    },
+  }),
+  defineAudit({
+    slug: 'plank-30-day-challenge',
+    checkedAt: '2026-06-07',
+    sourceTitle: '플랭크 30일 챌린지 계획표 공유',
+    sourceUrl:
+      'https://khj2510.tistory.com/entry/%ED%94%8C%EB%9E%AD%ED%81%AC-30%EC%9D%BC-%EC%B1%8C%EB%A6%B0%EC%A7%80-%EA%B3%84%ED%9A%8D%ED%91%9C-%EA%B3%B5%EC%9C%A0',
+    sourcePrecision: 'exact',
+    sourceUsefulness:
+      '원문에 Day별 초수, 체크 포인트, 휴식일이 표로 정리되어 있어 시작일 기준 캘린더로 옮기기 좋다. 다만 운동 효과 문구와 개인 블로그 성격은 실행 계획과 분리해야 한다.',
+    idealReconstruction:
+      '사용자가 챌린지 시작일을 입력하면 Day 1~30 목표 초수와 Day 7·19·27 휴식일이 캘린더에 들어가고, 상세에는 오늘 체크포인트, 완료/조정 메모, 중단 조건, 원문 링크만 남는다.',
+    naturalArtifacts: [
+      {
+        kind: 'monthly_calendar',
+        artifactTitle: '30일 플랭크 챌린지 캘린더',
+        simulatedInputs: ['시작일=2026-06-01', '목표=원문표 그대로', '완료 방식=완료/조정 메모'],
+        expectedOutput: [
+          '2026-06-01 Day 1 플랭크 20초',
+          '2026-06-07 Day 7 휴식·스트레칭',
+          '2026-06-19 Day 19 휴식·스트레칭',
+          '2026-06-30 Day 30 플랭크 150초',
+        ],
+        currentFlowMatch: 'public route는 원문 표의 30개 행을 캘린더 item으로 보존한다.',
+        currentUxSupport: '캘린더와 실행 리스트는 맞지만 실제 사용자가 원문 대비 초수/휴식일을 바로 이해하는지는 관찰 세션에서 확인해야 한다.',
+        gap: '운동 기록을 무겁게 만들지 않고 완료/조정/중단 메모만 남기는지 모바일에서 확인해야 한다.',
+      },
+    ],
+    userJourney: [
+      '사용자가 원문 계획표를 읽고 챌린지 시작일을 입력한다.',
+      '캘린더에서 오늘 Day 목표 초수와 체크포인트를 확인한다.',
+      '완료했거나 목표를 낮춘 이유를 짧게 메모한다.',
+      '휴식일에는 플랭크 완료가 아니라 회복/스트레칭으로 표시한다.',
+    ],
+    currentGap:
+      '원문 표는 Flow 전환에 적합하지만 운동 민감 영역이라 효과 보장처럼 보이면 안 되고, 실제 사용자 세션에서 원문 대비 실행 이해도를 확인해야 한다.',
+    contentAction:
+      'Day별 초수, 체크포인트, 휴식일만 유지하고 효과/식단/다음 단계 설명은 메모나 원문 링크로 낮춘다.',
+    uxAction:
+      '시작일 입력 후 캘린더 날짜와 상세 item에서 원문 목표 초수, 휴식일, 중단 조건이 바로 보이는지 검증한다.',
+    decision: 'reshape_before_featured',
+    scores: {
+      actionDensity: 12,
+      temporalStructure: 14,
+      externalManagementNeed: 16,
+      completionClarity: 13,
+      personalizationNeed: 8,
+      returnValue: 8,
+      sourceSpecificityTrust: 7,
+      riskBoundaryClarity: 4,
+    },
+  }),
+];
+
+const promotedNeedsReviewManualAudits: SourceFitAudit[] = [
+  defineAudit({
+    slug: 'kids-printable-squishy-craft',
+    checkedAt: '2026-06-18',
+    sourceTitle: 'Makeit DIY printable squishy craft post',
+    sourceUrl: 'https://blog.naver.com/PostView.naver?blogId=makeitdiy&logNo=223260911491',
+    sourcePrecision: 'exact',
+    sourceUsefulness:
+      'The creator post gives a concrete printable-craft premise, but FLOW should only preserve the source link, preparation checklist, and lightweight execution steps without copying downloadable assets.',
+    idealReconstruction:
+      'The user confirms the original post and usage conditions, prepares paper/coating materials, completes one craft session, and leaves only a short next-craft memo.',
+    naturalArtifacts: [
+      {
+        kind: 'checklist',
+        artifactTitle: 'Printable squishy craft prep checklist',
+        simulatedInputs: ['craftDate=2026-06-22', 'materials=paper, coating film, tape', 'assetStorage=source only'],
+        expectedOutput: [
+          'Confirm original post and usage condition',
+          'Prepare printable and coating materials',
+          'Finish one craft session',
+          'Leave next-craft memo without storing child photos or files',
+        ],
+        currentFlowMatch:
+          'The public route already keeps the source as a link and frames the craft as preparation plus execution checks.',
+        currentUxSupport:
+          'Warnings separate source-file access from FLOW state and keep photos or child-development notes out of the default record.',
+        gap:
+          'It still needs review wording so the route cannot be read as redistributing printable assets or evaluating a child activity outcome.',
+      },
+    ],
+    userJourney: [
+      'The caregiver opens the source post to confirm the printable material and usage terms.',
+      'FLOW helps prepare materials and run one craft session.',
+      'The result is recorded only as a lightweight next-craft memo, not copied files or child records.',
+    ],
+    currentGap:
+      'Good as a public craft-prep flow, but the source boundary and no-file-storage rule must remain visible before any featured promotion.',
+    contentAction:
+      'Keep the source link, material prep, cleanup, and next-craft memo. Do not copy images, PDFs, passwords, child photos, or educational assessment records into FLOW.',
+    uxAction:
+      'Keep source confirmation near the first action and make optional memo/photo behavior clearly non-default.',
+    decision: 'reshape_before_featured',
+    scores: {
+      actionDensity: 12,
+      temporalStructure: 8,
+      externalManagementNeed: 15,
+      completionClarity: 12,
+      personalizationNeed: 7,
+      returnValue: 7,
+      sourceSpecificityTrust: 8,
+      riskBoundaryClarity: 5,
+    },
+  }),
+  defineAudit({
+    slug: 'remote-help-session-precheck',
+    checkedAt: '2026-06-18',
+    sourceTitle: 'Remote support official help documents',
+    sourceUrl: 'https://support.anydesk.com/v1/docs/connect-to-a-remote-client',
+    sourcePrecision: 'broad',
+    sourceUsefulness:
+      'The route synthesizes common permission and session-ending checks across official remote-support documents, but it is not tied to one exact product journey.',
+    idealReconstruction:
+      'The user confirms the helper, task scope, screen-sharing/control mode, one-time access preference, and session end state without storing codes, IDs, links, tokens, screenshots, or chat logs.',
+    naturalArtifacts: [
+      {
+        kind: 'checklist',
+        artifactTitle: 'Remote help permission precheck',
+        simulatedInputs: ['helper=known person', 'mode=screen share first', 'accessStorage=none'],
+        expectedOutput: [
+          'Confirm helper and task scope',
+          'Choose screen share or remote control',
+          'Avoid repeated unattended access unless separately verified',
+          'End session and confirm permissions are closed',
+        ],
+        currentFlowMatch:
+          'The public route is already a permission checklist and avoids acting as a remote-support tool itself.',
+        currentUxSupport:
+          'Warnings keep security judgment, identity verification, and access values outside FLOW.',
+        gap:
+          'Because the source is broad and multi-product, the route should stay catalog-preview or internal-check until an exact official journey is selected.',
+      },
+    ],
+    userJourney: [
+      'The user receives a remote-help request and checks who is helping and what task is being done.',
+      'FLOW separates view-only screen sharing from remote control and repeated access.',
+      'The user ends the session and confirms no access value was saved in FLOW.',
+    ],
+    currentGap:
+      'Useful as a safety checklist, but the broad source mix makes it unsuitable for representative promotion.',
+    contentAction:
+      'Keep common permission checks and no-secret-storage warnings, then replace the source with one exact official product journey before promotion.',
+    uxAction:
+      'Keep access-code and session-link fields out of the UI and show end-session cleanup as the final action.',
+    decision: 'catalog_preview_only',
+    scores: {
+      actionDensity: 9,
+      temporalStructure: 6,
+      externalManagementNeed: 12,
+      completionClarity: 10,
+      personalizationNeed: 6,
+      returnValue: 6,
+      sourceSpecificityTrust: 4,
+      riskBoundaryClarity: 5,
+    },
+  }),
+  defineAudit({
+    slug: 'fridge-cleanout-weekly-plan',
+    checkedAt: '2026-06-18',
+    sourceTitle: 'Creator fridge cleanout 7-day meal-plan post',
+    sourceUrl:
+      'https://smilellama.tistory.com/entry/%EC%9B%94-10%EB%A7%8C-%EC%9B%90-%EC%8B%9D%EB%B9%84-%EC%A0%88%EC%95%BD-%EC%A0%9C%EA%B0%80-%EC%84%B1%EA%B3%B5%ED%95%9C-%EB%83%89%EC%9E%A5%EA%B3%A0-%ED%8C%8C%EB%A8%B9%EA%B8%B0-7%EC%9D%BC-%EC%8B%9D%EB%8B%A8-%ED%94%8C%EB%9E%9C-%EC%95%8C%EB%9C%B0-%EC%9E%A5%EB%B3%B4%EA%B8%B0-%ED%8C%81-%ED%8F%AC%ED%95%A8',
+    sourcePrecision: 'exact',
+    sourceUsefulness:
+      'The creator post has a concrete weekly cleanout premise, but FLOW should treat it as inventory triage and menu-option notes rather than nutrition, savings, or food-safety advice.',
+    idealReconstruction:
+      'The user chooses three priority ingredients, maps them to menu options over seven days, records hold/buy decisions, and keeps safety judgment outside FLOW.',
+    naturalArtifacts: [
+      {
+        kind: 'spreadsheet',
+        artifactTitle: '7-day fridge cleanout inventory sheet',
+        simulatedInputs: ['startDate=2026-06-18', 'priorityIngredients=tofu, spinach, eggs', 'safetyCheck=user judgment'],
+        expectedOutput: [
+          'Pick three priority ingredients',
+          'Create menu-option rows for days 1-7',
+          'Separate use, hold, and buy decisions',
+          'Keep spoilage and nutrition judgment outside FLOW',
+        ],
+        currentFlowMatch:
+          'The public route already reduces the source to an inventory sheet and avoids diet-result claims.',
+        currentUxSupport:
+          'The setup hint and warning make it clear that FLOW is not evaluating food safety, nutrition balance, or savings outcomes.',
+        gap:
+          'The route needs continued copy restraint so it does not turn creator budgeting context into a guaranteed savings or diet planner.',
+      },
+    ],
+    userJourney: [
+      'The user opens the creator post and chooses a practical cleanout start date.',
+      'FLOW helps identify priority ingredients and plan rough menu options.',
+      'The user decides what to use, hold, buy, or discard outside FLOW judgment.',
+    ],
+    currentGap:
+      'Strong enough as a practical inventory artifact, but promotion should wait until the first screen keeps safety and nutrition boundaries obvious.',
+    contentAction:
+      'Keep priority ingredients, menu options, hold/buy rows, and discard notes. Remove savings guarantees, nutrition balancing, and food-safety conclusions.',
+    uxAction:
+      'Show the inventory sheet first and keep safety warnings close to ingredient rows.',
+    decision: 'reshape_before_featured',
+    scores: {
+      actionDensity: 12,
+      temporalStructure: 12,
+      externalManagementNeed: 17,
+      completionClarity: 12,
+      personalizationNeed: 8,
+      returnValue: 8,
+      sourceSpecificityTrust: 8,
+      riskBoundaryClarity: 5,
+    },
+  }),
+  defineAudit({
+    slug: 'alt-phone-sk7-self-activation',
+    checkedAt: '2026-06-08',
+    sourceTitle: '알뜰폰 SK7모바일 셀프개통 후기',
+    sourceUrl: 'https://blog.naver.com/PostView.nhn?blogId=saljjak-&logNo=223661947600',
+    sourcePrecision: 'exact',
+    sourceUsefulness:
+      '셀프개통 가능 시간, 유심 일련번호, 번호이동 사전동의, 개통 완료 확인처럼 사용자가 순서대로 따라야 하는 디지털 절차 단서가 명확하다.',
+    idealReconstruction:
+      '개통 예정일과 가입유형을 입력하면 준비물 확인, 유심 정보 입력, 번호이동 사전동의, 개통 후 통화/데이터 확인이 민감정보 저장 없이 체크리스트로 남는다.',
+    naturalArtifacts: [
+      {
+        kind: 'checklist',
+        artifactTitle: 'SK7 셀프개통 순서 체크',
+        simulatedInputs: ['개통일=2026-06-14', '가입유형=번호이동', '유심=보유'],
+        expectedOutput: ['개통 가능 시간 확인', '유심 일련번호는 통신사 화면에만 입력', '번호이동 사전동의 처리', '통화/데이터 연결 확인'],
+        currentFlowMatch: 'public route는 내부 체크리스트로 개통 전-진행-완료 단계를 분리한다.',
+        currentUxSupport: '개통 화면처럼 보이지 않고 민감정보 미저장 안내를 상세에 둔다.',
+        gap: '통신사별 최신 요금제와 인증 조건은 FLOW가 판단하지 않고 공식 안내 확인으로 남겨야 한다.',
+      },
+    ],
+    userJourney: [
+      '사용자가 셀프개통 후기를 보고 개통 예정일과 가입유형을 정한다.',
+      'FLOW에서 유심, 번호이동, 사전동의, 개통 확인만 체크한다.',
+      '민감한 주민등록번호, 인증값, 카드 정보는 통신사 화면에만 입력한다.',
+    ],
+    currentGap:
+      '절차 실행성은 충분하지만 최신 요금제/본인인증 조건은 변동되므로 대표 노출 전 공식 안내 링크와 주의 문구를 계속 분리해야 한다.',
+    contentAction:
+      '후기 기반 순서는 유지하되 유심 일련번호, 인증값, 결제정보를 FLOW 입력값으로 받지 않는다는 문구를 상세와 export에 유지한다.',
+    uxAction:
+      '체크리스트 첫 화면에서 개통 가능 시간과 준비물만 보이고, 민감정보는 통신사 화면에서만 입력한다는 경고를 버튼 근처에 둔다.',
+    decision: 'reshape_before_featured',
+    scores: {
+      actionDensity: 12,
+      temporalStructure: 8,
+      externalManagementNeed: 15,
+      completionClarity: 13,
+      personalizationNeed: 7,
+      returnValue: 8,
+      sourceSpecificityTrust: 7,
+      riskBoundaryClarity: 5,
+    },
+  }),
+  defineAudit({
+    slug: 'infant-health-checkup-prep',
+    checkedAt: '2026-06-08',
+    sourceTitle: '국민건강보험 건강iN 영유아 건강검진 웹 서비스 안내',
+    sourceUrl: 'https://www.nhis.or.kr/magazin/mobile/201604/c09.html',
+    sourcePrecision: 'exact',
+    sourceUsefulness:
+      '검진 가능 기간, 검진기관 예약, 웹 문진표와 발달선별검사지, 등록번호 전달처럼 방문 전 준비 행동이 공식 안내에 분리되어 있다.',
+    idealReconstruction:
+      '검진 예정일과 기관 후보를 입력하면 기간 확인, 예약, 문진표 작성, 등록번호 위치 확인, D-Day 방문 준비가 의료 결과 기록 없이 생성된다.',
+    naturalArtifacts: [
+      {
+        kind: 'monthly_calendar',
+        artifactTitle: '영유아 건강검진 방문 준비 캘린더',
+        simulatedInputs: ['검진일=2026-07-03', '아이월령=24개월', '기관=동네 소아과'],
+        expectedOutput: ['D-14 검진 가능 기간 확인', 'D-10 기관 예약', 'D-3 문진표 작성', 'D-1 등록번호 위치 확인', 'D-Day 기관 방문'],
+        currentFlowMatch: 'public route는 방문 준비 타임라인으로 검진 전 행동을 나눈다.',
+        currentUxSupport: '의료 결과 입력보다 예약/문진표/방문 준비가 먼저 보인다.',
+        gap: '의료 판단이나 발달 결과 해석으로 확장하지 않는 경계가 계속 필요하다.',
+      },
+    ],
+    userJourney: [
+      '보호자가 공식 안내를 보고 검진 기간과 예약 필요성을 확인한다.',
+      'FLOW에서 방문 전 준비 일정을 저장한다.',
+      '검진 결과와 의료 판단은 기관과 전문가에게 맡긴다.',
+    ],
+    currentGap:
+      '방문 준비 Flow로는 적합하지만 의료 민감 영역이므로 결과 기록, 진단, 발달 평가처럼 보이는 UI를 억제해야 한다.',
+    contentAction:
+      '검진 가능 기간, 기관 예약, 문진표, 등록번호, 방문 준비만 유지하고 검진 결과/점수/진단 필드는 추가하지 않는다.',
+    uxAction:
+      '상세와 export에 공식 안내 우선 및 의료 판단 제외 문구를 반복 노출한다.',
+    decision: 'reshape_before_featured',
+    scores: {
+      actionDensity: 12,
+      temporalStructure: 13,
+      externalManagementNeed: 17,
+      completionClarity: 13,
+      personalizationNeed: 8,
+      returnValue: 8,
+      sourceSpecificityTrust: 9,
+      riskBoundaryClarity: 5,
+    },
+  }),
+  defineAudit({
+    slug: 'chiangmai-solo-trip-packing',
+    checkedAt: '2026-06-08',
+    sourceTitle: '치앙마이 혼자 여행 준비물 체크리스트',
+    sourceUrl: 'https://blog.naver.com/PostView.nhn?blogId=mat_zip_diary&logNo=223137520451',
+    sourcePrecision: 'exact',
+    sourceUsefulness:
+      '혼자 장기체류 여행에서 통신, 결제, 보험, 비상약, 현지 연락 메모처럼 출국 전 실제로 빠뜨리기 쉬운 준비물 단서가 있다.',
+    idealReconstruction:
+      '출국일과 체류기간을 입력하면 D-7 통신/결제, D-5 보험/비상약, D-1 문서/연락 메모, D-Day 현지 확인 체크가 생성된다.',
+    naturalArtifacts: [
+      {
+        kind: 'checklist',
+        artifactTitle: '치앙마이 장기체류 출국 전 체크',
+        simulatedInputs: ['출국일=2026-08-02', '체류기간=30일', '여행형태=혼자'],
+        expectedOutput: ['유심/eSIM 준비', 'GLN/카드/현금 분리', '보험 가입 여부 확인', '비상약과 현지 연락처 메모'],
+        currentFlowMatch: 'public route는 장기체류 준비를 체크리스트와 메모로 나눈다.',
+        currentUxSupport: '상품 추천보다 준비 상태와 링크 메모를 앞세운다.',
+        gap: '보험 보장, 결제 가능성, 현지 안전을 보장처럼 말하지 않아야 한다.',
+      },
+    ],
+    userJourney: [
+      '사용자가 블로그 체크리스트를 보고 본인 출국일에 맞춰 준비한다.',
+      'FLOW에서 통신, 결제, 보험, 비상약, 연락 메모만 관리한다.',
+      '상품 조건과 안전 정보는 서비스/공식 안내를 다시 확인한다.',
+    ],
+    currentGap:
+      '장기체류 맥락은 강하지만 여행 안전과 보험 보장을 FLOW가 판단하는 것처럼 보이지 않게 계속 제한해야 한다.',
+    contentAction:
+      '상품 추천을 제거하고 준비물, 링크 위치, 비상 연락 메모 중심으로 export 문구를 유지한다.',
+    uxAction:
+      '여행자보험과 결제 수단은 가입/가능 여부 판단이 아니라 확인 위치 메모로 표시한다.',
+    decision: 'reshape_before_featured',
+    scores: {
+      actionDensity: 12,
+      temporalStructure: 12,
+      externalManagementNeed: 16,
+      completionClarity: 12,
+      personalizationNeed: 8,
+      returnValue: 8,
+      sourceSpecificityTrust: 7,
+      riskBoundaryClarity: 4,
+    },
+  }),
+  defineAudit({
+    slug: 'lease-contract-report-deadline',
+    checkedAt: '2026-06-08',
+    sourceTitle: '부동산거래관리시스템 주택임대차신고 서비스 안내',
+    sourceUrl: 'https://rtms.molit.go.kr/main/serviceInfo.do',
+    sourcePrecision: 'exact',
+    sourceUsefulness:
+      '계약일 기준 30일 신고 마감, 계약서/인증수단 준비, 방문/온라인 신고 방식, 접수 확인처럼 공식 행정 마감형 실행 단서가 명확하다.',
+    idealReconstruction:
+      '계약일과 신고 방식을 입력하면 D+30 마감 캘린더, 준비 서류 체크, 공식 시스템 링크, 접수 완료 상태가 개인정보 저장 없이 남는다.',
+    naturalArtifacts: [
+      {
+        kind: 'monthly_calendar',
+        artifactTitle: '임대차계약 신고 마감 캘린더',
+        simulatedInputs: ['계약일=2026-06-10', '신고방식=온라인', '주택소재지=서울'],
+        expectedOutput: ['2026-07-10 신고 마감', '계약서 준비', '인증수단 준비', 'RTMS 접수 확인 위치 메모'],
+        currentFlowMatch: 'public route는 계약일 기준 마감과 준비 서류를 캘린더/체크로 나눈다.',
+        currentUxSupport: '계약서 원문이나 주민번호를 저장하지 않는 caution이 붙어 있다.',
+        gap: '법적 효력, 과태료, 신고대상 여부는 공식 확인 대상으로 계속 분리해야 한다.',
+      },
+    ],
+    userJourney: [
+      '사용자가 계약일을 기준으로 신고 마감일을 확인한다.',
+      'FLOW에서 준비물과 공식 시스템 링크를 확인한다.',
+      '신고 대상 여부와 법적 판단은 공식기관/전문가 확인으로 남긴다.',
+    ],
+    currentGap:
+      '행정 마감 Flow로 적합하지만 법률/과태료 판단처럼 보이는 문구는 대표 노출 전 더 줄여야 한다.',
+    contentAction:
+      '계약서 개인정보와 금액은 저장하지 않고 마감일, 준비 서류, 공식 링크, 접수 확인 위치만 유지한다.',
+    uxAction:
+      '캘린더 카드와 상세 caution에서 공식 시스템 우선 및 개인정보 미저장 문구를 함께 보여준다.',
+    decision: 'reshape_before_featured',
+    scores: {
+      actionDensity: 12,
+      temporalStructure: 14,
+      externalManagementNeed: 18,
+      completionClarity: 12,
+      personalizationNeed: 8,
+      returnValue: 8,
+      sourceSpecificityTrust: 9,
+      riskBoundaryClarity: 5,
+    },
+  }),
+  defineAudit({
+    slug: 'jeonse-contract-precheck-docs',
+    checkedAt: '2026-06-08',
+    sourceTitle: "카카오페이 페이어텐션 - 전세 계약할 때 '이것' 꼭 확인하세요",
+    sourceUrl: 'https://contents.kakaopay.com/contents/2056',
+    sourcePrecision: 'exact',
+    sourceUsefulness:
+      '시세, 등기부등본, 보증보험, 중개사/계약서, 특약 확인처럼 계약 전 확인해야 할 서류와 보류 판단 단서가 명확하다.',
+    idealReconstruction:
+      '계약 예정일을 입력하면 계약 3일 전부터 당일까지 서류 확인, 공식 링크 확인, 보류 메모가 체크리스트로 생성된다.',
+    naturalArtifacts: [
+      {
+        kind: 'checklist',
+        artifactTitle: '전세계약 전 서류 확인 체크',
+        simulatedInputs: ['계약일=2026-06-21', '보증보험=확인 전', '중개사=확인 전'],
+        expectedOutput: ['시세/등기부등본 확인', '보증보험 가능 여부 확인', '중개사와 표준계약서 확인', '이상 항목 보류 메모'],
+        currentFlowMatch: 'public route는 계약 판단을 대신하지 않고 확인/보류 체크를 제공한다.',
+        currentUxSupport: '보류가 정상 결과로 보이고 공식/전문가 확인 대상이 분리되어 있다.',
+        gap: '법률 판단이나 안전 점수처럼 보이는 표현은 계속 제거해야 한다.',
+      },
+    ],
+    userJourney: [
+      '사용자가 계약 전 확인 콘텐츠를 보고 필요한 서류를 모은다.',
+      'FLOW에서 확인 완료/보류를 체크한다.',
+      '문제가 있으면 공인중개사/전문가/공식기관 확인으로 넘긴다.',
+    ],
+    currentGap:
+      '서류 확인 Flow로는 강하지만 계약 안전을 보장하는 제품처럼 읽히지 않도록 보류와 전문가 확인을 더 강하게 유지해야 한다.',
+    contentAction:
+      '안전 점수, 계약 가능 판정, 법률 결론을 추가하지 않고 서류 확인과 보류 사유만 유지한다.',
+    uxAction:
+      '첫 화면에서 보류 버튼/상태를 정상 결과로 보여주고 법률 판단 제외 문구를 상세에 둔다.',
+    decision: 'reshape_before_featured',
+    scores: {
+      actionDensity: 12,
+      temporalStructure: 9,
+      externalManagementNeed: 17,
+      completionClarity: 13,
+      personalizationNeed: 8,
+      returnValue: 8,
+      sourceSpecificityTrust: 8,
+      riskBoundaryClarity: 5,
+    },
+  }),
+  defineAudit({
+    slug: 'elementary-school-entry-d30',
+    checkedAt: '2026-06-08',
+    sourceTitle: '교육부 2026학년도 초등학교 취학통지 및 예비소집 안내',
+    sourceUrl:
+      'https://www.moe.go.kr/boardCnts/viewRenew.do?boardID=294&boardSeq=104634&lev=0&m=020402&opType=N&page=1&s=moe&searchType=null&statusYN=W',
+    sourcePrecision: 'exact',
+    sourceUsefulness:
+      '취학통지서 발급, 우편·인편 통지, 학교별 예비소집처럼 입학 전 공식 행정 확인 단서가 명확하다. 학부모 체크리스트는 네임스티커, 등교 동선, 입학식 전날 점검 같은 보조 실행 단서를 제공한다.',
+    idealReconstruction:
+      '입학식 날짜를 입력하면 D-30 공식 안내 확인, D-21 먼저 살 물건, D-14 보류 항목, D-7 이름 표시, D-1 등교/입학식 가방 점검이 생성된다.',
+    naturalArtifacts: [
+      {
+        kind: 'monthly_calendar',
+        artifactTitle: '초등 입학 D-30 준비 캘린더',
+        simulatedInputs: ['입학식=2027-03-02', '학교=OO초등학교', '안내문=확인 전'],
+        expectedOutput: ['취학통지·예비소집 확인', '먼저 살 물건 목록', '학교 안내 전 보류 항목', '네임스티커와 이름 표시', '등교 동선과 입학식 가방 점검'],
+        currentFlowMatch: 'public route는 공식 안내 확인과 가정 준비를 5개 날짜 카드로 나누고 민감정보 입력을 요구하지 않는다.',
+        currentUxSupport: '보류 항목이 정상 상태로 보이며 쇼핑 추천보다 학교 안내 우선 copy가 먼저 나온다.',
+        gap: '학교별 최신 준비물과 지원금/건강 정보 판단을 FLOW가 대신하지 않는 경계를 계속 유지해야 한다.',
+      },
+    ],
+    userJourney: [
+      '보호자가 취학통지와 학교 예비소집 안내를 확인한다.',
+      '입학식 날짜를 기준으로 먼저 살 물건과 보류할 물건을 나눈다.',
+      '아이와 이름 표시, 등교 동선, 입학식 전날 가방 점검을 실행한다.',
+    ],
+    currentGap:
+      '생활 전환 Flow로 적합하지만 학교별 안내, 건강/예방접종, 지원금 정보로 확장되면 민감정보 기록이나 행정 판단처럼 보일 수 있다.',
+    contentAction:
+      '공식 취학통지·예비소집 확인을 첫 카드로 유지하고, 구매 추천·지원금 금액·건강 정보·학교 배정 문서 저장을 추가하지 않는다.',
+    uxAction:
+      '공개 route 첫 화면에서 입학식 날짜 기준 캘린더와 보류 항목을 보여주고, 상세 caution에는 학교 안내 우선과 민감정보 미저장을 둔다.',
+    decision: 'reshape_before_featured',
+    scores: {
+      actionDensity: 12,
+      temporalStructure: 14,
+      externalManagementNeed: 17,
+      completionClarity: 13,
+      personalizationNeed: 8,
+      returnValue: 8,
+      sourceSpecificityTrust: 9,
+      riskBoundaryClarity: 5,
+    },
+  }),
+  defineAudit({
+    slug: 'picture-book-reading-routine',
+    checkedAt: '2026-06-08',
+    sourceTitle: '토토북 그림책 독서 지도안',
+    sourceUrl:
+      'https://image.aladdin.co.kr/img/files/150922_workbook/%EC%9C%A0%EC%95%84/16%20%ED%86%A0%ED%86%A0%EB%B6%81_%EB%8F%85%EC%88%98%EB%A6%AC%EC%99%80%20%EA%B5%B4%EB%9A%9D%EC%83%88.pdf',
+    sourcePrecision: 'exact',
+    sourceUsefulness:
+      '그림책 표지 보기, 질문 카드, 함께 읽기, 아이가 고른 장면 짚기처럼 독서 루틴 안에서 바로 쓸 수 있는 상호작용 단서가 있다.',
+    idealReconstruction:
+      '독서 요일과 책 제목을 입력하면 반복 독서 일정, 오늘 질문 카드, 읽기 완료 체크가 평가 기록 없이 생성된다.',
+    naturalArtifacts: [
+      {
+        kind: 'routine_calendar',
+        artifactTitle: '그림책 읽기 질문 카드 루틴',
+        simulatedInputs: ['시작일=2026-06-15', '요일=월/수/금', '책=독수리와 굴뚝새'],
+        expectedOutput: ['오늘 읽을 책 고르기', '표지 질문 1개', '함께 읽기', '아이가 고른 장면 메모'],
+        currentFlowMatch: 'public route는 질문 카드와 반복 읽기 루틴을 분리한다.',
+        currentUxSupport: '학습 평가보다 오늘 읽기 행동과 질문 하나가 먼저 보인다.',
+        gap: '독해 점수, 발달 평가, 권장도서 전체 캘린더로 확장하지 않는 제한이 필요하다.',
+      },
+    ],
+    userJourney: [
+      '보호자가 지도안/후기를 보고 오늘 읽을 책과 질문을 고른다.',
+      'FLOW에서 읽기 요일과 질문 카드 하나를 저장한다.',
+      '아이 반응은 평가가 아니라 다음 읽기 메모로 남긴다.',
+    ],
+    currentGap:
+      '질문 카드 UX는 좋지만 교육 효과나 독해 평가처럼 보이지 않도록 copy를 계속 낮춰야 한다.',
+    contentAction:
+      '질문은 1개씩만 노출하고 점수, 평가, 발달 기록 필드는 추가하지 않는다.',
+    uxAction:
+      '루틴 상세에서 오늘 질문 카드와 읽기 완료가 먼저 보이고 원문 PDF 링크는 참고로 둔다.',
+    decision: 'reshape_before_featured',
+    scores: {
+      actionDensity: 11,
+      temporalStructure: 12,
+      externalManagementNeed: 15,
+      completionClarity: 12,
+      personalizationNeed: 7,
+      returnValue: 7,
+      sourceSpecificityTrust: 8,
+      riskBoundaryClarity: 4,
+    },
+  }),
+  defineAudit({
+    slug: 'kids-dino-footprint-art',
+    checkedAt: '2026-06-08',
+    sourceTitle: '유아 공룡 놀이 자료 참고',
+    sourceUrl:
+      'https://info.childcare.go.kr/info/pnis/search/PnisFileDownload.jsp?STCODE_POP=41480000016&filetype=YUPLOADU&flag=DNGB&schoolyear=2026&wkyear=202604',
+    sourcePrecision: 'exact',
+    sourceUsefulness:
+      '공룡 놀이 준비물, 발자국 찍기, 이야기 만들기, 다음 놀이 고르기처럼 주말 놀이 실행 순서로 줄일 수 있는 단서가 있다.',
+    idealReconstruction:
+      '놀이 날짜와 준비물 상태를 입력하면 준비, 놀이 실행, 아이 말 메모, 정리와 다음 놀이 후보가 한 화면 체크리스트로 생성된다.',
+    naturalArtifacts: [
+      {
+        kind: 'checklist',
+        artifactTitle: '공룡 발자국 주말 놀이 체크',
+        simulatedInputs: ['놀이일=2026-06-20', '도안=있음', '물감=있음'],
+        expectedOutput: ['준비물 꺼내기', '발자국 찍기', '아이 말 한 줄 메모', '작품 말리기와 다음 놀이 선택'],
+        currentFlowMatch: 'public route는 놀이 준비와 당일 실행을 4개 체크로 줄인다.',
+        currentUxSupport: '사진 증빙이나 발달 평가는 기본 요구가 아니다.',
+        gap: '교육 효과 보장이나 발달 평가처럼 읽히는 문구를 더 줄일 필요가 있다.',
+      },
+    ],
+    userJourney: [
+      '보호자가 놀이 자료를 보고 주말에 할 활동을 고른다.',
+      'FLOW에서 준비물과 놀이 순서만 체크한다.',
+      '아이 말은 다음 놀이 선택을 위한 가벼운 메모로만 남긴다.',
+    ],
+    currentGap:
+      '짧은 프로젝트 Flow로 적합하지만 유아 활동은 교육 효과와 기록 강요로 확장되기 쉬워 경계가 필요하다.',
+    contentAction:
+      '준비물, 놀이, 한 줄 메모, 정리만 유지하고 사진 증빙/발달 평가/교육 효과 문구를 제거한다.',
+    uxAction:
+      '체크리스트 표면에서 준비물과 당일 실행을 먼저 보이고 기록은 선택 메모로 둔다.',
+    decision: 'reshape_before_featured',
+    scores: {
+      actionDensity: 11,
+      temporalStructure: 9,
+      externalManagementNeed: 14,
+      completionClarity: 12,
+      personalizationNeed: 7,
+      returnValue: 7,
+      sourceSpecificityTrust: 7,
+      riskBoundaryClarity: 4,
+    },
+  }),
+  defineAudit({
+    slug: 'banana-peanut-recipe-video',
+    checkedAt: '2026-06-08',
+    sourceTitle: '노밀가루 바나나 땅콩버터 빵 20분 완성',
+    sourceUrl: 'https://www.recipio.kr/recipes/WwyL63J3',
+    sourcePrecision: 'exact',
+    sourceUsefulness:
+      '짧은 영상 레시피의 재료 확인, 섞기, 원본 기준 굽기, 맛/변형 메모가 당일 체크리스트로 충분히 변환된다.',
+    idealReconstruction:
+      '조리일과 재료 보유 여부를 입력하면 재료 확인, 섞기, 원본 영상 기준 굽기, 식힘 후 메모가 내부 체크로 생성된다.',
+    naturalArtifacts: [
+      {
+        kind: 'checklist',
+        artifactTitle: '바나나 땅콩버터 빵 당일 조리 체크',
+        simulatedInputs: ['조리일=2026-06-14', '바나나=2개', '용기=내열'],
+        expectedOutput: ['재료 확인', '용기에 섞기', '원본 영상 기준 굽기', '맛과 다음 변형 메모'],
+        currentFlowMatch: 'public route는 조리 당일 내부 체크와 원본 링크 중심으로 구성된다.',
+        currentUxSupport: '영양 기록이나 식단 관리로 확장하지 않는다.',
+        gap: '영상 레시피의 온도/시간을 FLOW가 새로 판단하지 않게 원본 링크 의존을 계속 보여야 한다.',
+      },
+    ],
+    userJourney: [
+      '사용자가 짧은 레시피 영상을 보고 오늘 만들 수 있는지 확인한다.',
+      'FLOW에서 재료, 조리, 식힘, 다음 메모만 체크한다.',
+      '정확한 온도와 시간은 원본 영상/레시피를 다시 확인한다.',
+    ],
+    currentGap:
+      '가벼운 레시피 Flow로 적합하지만 칼로리, 식단, 영양 처방으로 확장되면 목적이 흐려진다.',
+    contentAction:
+      '원본 영상 링크, 재료, 조리 체크, 다음 변형 메모만 유지하고 영양/식단 기록은 추가하지 않는다.',
+    uxAction:
+      '상세에서 원본 영상 확인 버튼과 당일 체크를 먼저 보이고, 기록은 선택 메모로 낮춘다.',
+    decision: 'reshape_before_featured',
+    scores: {
+      actionDensity: 11,
+      temporalStructure: 7,
+      externalManagementNeed: 13,
+      completionClarity: 12,
+      personalizationNeed: 6,
+      returnValue: 7,
+      sourceSpecificityTrust: 8,
+      riskBoundaryClarity: 4,
+    },
+  }),
 ];
 
 sourceFitAudits.push(...realSourceManualSourceFitAudits);
+sourceFitAudits.push(...promotedNeedsReviewManualAudits);
 
 export function getSourceFitAudit(slug: string): SourceFitAudit | undefined {
   return sourceFitAudits.find((audit) => audit.slug === slug);

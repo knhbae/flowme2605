@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>10개 Flow 확장 판단 리포트</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --paper: #fff;
+      --ink: #101827;
+      --muted: #5d697b;
+      --line: #d8e2ef;
+      --blue: #1f5fbf;
+      --blue-soft: #eaf2ff;
+      --green: #0f7a4a;
+      --green-soft: #e8f7ef;
+      --amber: #9a6100;
+      --amber-soft: #fff6df;
+      --red: #b42318;
+      --red-soft: #fff1ef;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); font-size: 16px; line-height: 1.62; }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 10px; font-size: clamp(30px, 5vw, 46px); line-height: 1.12; letter-spacing: 0; }
+    h2 { margin-bottom: 10px; font-size: 26px; line-height: 1.2; letter-spacing: 0; }
+    h3 { margin-bottom: 6px; font-size: 19px; line-height: 1.28; letter-spacing: 0; }
+    ul { margin: 8px 0 0; padding-left: 20px; }
+    li + li { margin-top: 5px; }
+    .page { width: min(1160px, calc(100% - 28px)); margin: 0 auto; padding: 24px 0 72px; }
+    .hero, .card, .shot, .matrix { border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+    .hero { padding: 22px; box-shadow: 0 14px 32px rgba(16, 24, 39, .08); }
+    .eyebrow { margin-bottom: 8px; color: var(--blue); font-size: 13px; font-weight: 900; text-transform: uppercase; }
+    .desc { color: var(--muted); }
+    .chips, .links, .grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { display: inline-flex; align-items: center; min-height: 30px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; background: #f8fafc; color: #334155; font-size: 13px; font-weight: 850; }
+    .chip.good { border-color: #bde7cb; background: var(--green-soft); color: var(--green); }
+    .chip.warn { border-color: #efd08f; background: var(--amber-soft); color: var(--amber); }
+    .chip.bad { border-color: #f4b4ad; background: var(--red-soft); color: var(--red); }
+    .section { margin-top: 16px; }
+    .card { padding: 16px; }
+    .grid { align-items: stretch; }
+    .grid .card { flex: 1 1 280px; }
+    .links { margin-top: 12px; }
+    .links a { display: inline-flex; align-items: center; min-height: 36px; padding: 7px 11px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font-weight: 850; text-decoration: none; }
+    .matrix { width: 100%; overflow: hidden; border-collapse: separate; border-spacing: 0; }
+    .matrix th, .matrix td { padding: 12px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); vertical-align: top; text-align: left; }
+    .matrix th { background: #eef4fb; font-size: 13px; }
+    .matrix tr:last-child td { border-bottom: 0; }
+    .matrix th:last-child, .matrix td:last-child { border-right: 0; }
+    .shot { display: grid; gap: 10px; padding: 12px; }
+    .shot img { width: 100%; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+    .note { padding: 12px; border: 1px solid #efd08f; border-radius: 8px; background: var(--amber-soft); color: #795100; font-weight: 750; }
+    .status { display: inline-flex; min-height: 26px; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 900; }
+    .status.keep { background: var(--green-soft); color: var(--green); border: 1px solid #bde7cb; }
+    .status.revise { background: var(--amber-soft); color: var(--amber); border: 1px solid #efd08f; }
+    @media (max-width: 700px) {
+      .page { width: min(100% - 20px, 1160px); padding-top: 14px; }
+      .hero, .card { padding: 14px; }
+      .matrix { display: block; overflow-x: auto; }
+      .matrix th, .matrix td { min-width: 180px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="eyebrow">Expansion Report</p>
+      <h1>전세 외 10개 Flow로 확장 판단하기</h1>
+      <p class="desc">10개를 한 화면에서 비교할 수 있도록 사용자용 HTML을 새로 만들고, 각 원컨텐츠가 어떤 실행 도구로 바뀌는지 분리해서 보았습니다.</p>
+      <div class="chips">
+        <span class="chip good">10개 사용자 화면 생성</span>
+        <span class="chip good">모바일/데스크톱 클릭 통과</span>
+        <span class="chip warn">실사용자 검증 전</span>
+      </div>
+      <div class="links">
+        <a href="2026-06-16-ten-flow-user-samples-ko.html">10개 사용자 Flow HTML 열기</a>
+        <a href="../../output/playwright/ten-flow-user-samples-mobile.png">모바일 스크린샷</a>
+        <a href="../../output/playwright/ten-flow-user-samples-desktop.png">데스크톱 스크린샷</a>
+      </div>
+    </header>
+
+    <section class="section grid">
+      <article class="card">
+        <h2>이번 확장의 기준</h2>
+        <ul>
+          <li>전세 Flow는 기준선으로 두고, 이번 10개에는 전세를 넣지 않았습니다.</li>
+          <li>같은 UI를 복붙하지 않고 destination에 맞게 캘린더, 현장 체크, 반복 루틴, 버킷형, 절차형을 섞었습니다.</li>
+          <li>사용자 화면에는 내부 평가, 점수, 개발자용 설명을 넣지 않았습니다.</li>
+          <li>의료/건강/안전성 있는 항목은 출처와 주의 문구를 사용자 행동과 분리했습니다.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h2>지금 보이는 결론</h2>
+        <p>10개를 보니 FlowMe가 단순 이사/전세 체크리스트 앱으로 보이지는 않습니다. 다만 모든 원컨텐츠가 같은 깊이의 Flow가 되지는 않습니다.</p>
+        <ul>
+          <li>강한 축: 이사, 중고차, 초등 입학, 여권, 기숙사, AnyDesk.</li>
+          <li>조건부 축: 영유아 검진, 홈트, 식물 물주기, 무료 도안 놀이.</li>
+          <li>약한 축도 억지로 다단계 Flow로 만들지 않으면 판단 샘플로는 가치가 있습니다.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="section card">
+      <h2>10개 후보별 판정</h2>
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th>Flow</th>
+            <th>판정</th>
+            <th>자연스러운 destination</th>
+            <th>사용자 화면에서 중요한 점</th>
+            <th>남은 리스크</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>이사 D-30</strong></td>
+            <td><span class="status keep">Keep</span></td>
+            <td>캘린더 + 업체 메모</td>
+            <td>이사일 입력 후 D-30/D-14/D-7/D-Day가 바로 생깁니다.</td>
+            <td>견적 사이트 추천을 제품 기능으로 넣을지 정책 필요.</td>
+          </tr>
+          <tr>
+            <td><strong>중고차 방문</strong></td>
+            <td><span class="status keep">Keep</span></td>
+            <td>현장 체크 + 보류 메모</td>
+            <td>캘린더보다 현장 순서가 중요하므로 섹션형 UI가 맞습니다.</td>
+            <td>공식 조회 링크를 어느 단계에 노출할지 사용자 관찰 필요.</td>
+          </tr>
+          <tr>
+            <td><strong>초등 입학</strong></td>
+            <td><span class="status keep">Keep</span></td>
+            <td>캘린더 + 학교 안내문 URL</td>
+            <td>블로그보다 학교 안내문을 기준으로 구매/준비를 확정합니다.</td>
+            <td>학교 안내문이 없을 때 기본 템플릿 범위 결정 필요.</td>
+          </tr>
+          <tr>
+            <td><strong>영유아 검진</strong></td>
+            <td><span class="status revise">Revise</span></td>
+            <td>캘린더 + 문진표 + 질문 메모</td>
+            <td>검진 결과 해석이 아니라 예약/문진/질문 준비만 다룹니다.</td>
+            <td>의료 영역이라 공식 출처와 병원 안내 우선순위가 더 필요합니다.</td>
+          </tr>
+          <tr>
+            <td><strong>여권/출국</strong></td>
+            <td><span class="status keep">Keep</span></td>
+            <td>캘린더 + 공식 신청 링크</td>
+            <td>출국일 기준으로 신청 가능 여부, 사진, 수령, 전날 확인을 나눕니다.</td>
+            <td>국가별 입국요건까지 확장하면 범위가 커집니다.</td>
+          </tr>
+          <tr>
+            <td><strong>홈트 영상</strong></td>
+            <td><span class="status revise">Revise</span></td>
+            <td>반복 캘린더 + 실행 체크</td>
+            <td>운동 순서를 만들지 않고 원본 영상 실행과 중단 조건만 둡니다.</td>
+            <td>영상별 운동 강도와 대상자 위험 문구를 더 엄격히 봐야 합니다.</td>
+          </tr>
+          <tr>
+            <td><strong>무료 도안 놀이</strong></td>
+            <td><span class="status revise">Revise</span></td>
+            <td>버킷 목록 + 놀이 날짜</td>
+            <td>4단계 실행 Flow가 아니라 하나의 놀이 체크리스트로 둡니다.</td>
+            <td>도안 저작권/출처 표시와 준비물 추출 정확도 확인 필요.</td>
+          </tr>
+          <tr>
+            <td><strong>스투키 물주기</strong></td>
+            <td><span class="status revise">Revise</span></td>
+            <td>반복 캘린더 + 상태 메모</td>
+            <td>식물명은 원문에서 오고, 사용자는 시작일과 간격만 넣습니다.</td>
+            <td>환경에 따라 달라지는 물주기 기준을 단정하지 않아야 합니다.</td>
+          </tr>
+          <tr>
+            <td><strong>AnyDesk 원격지원</strong></td>
+            <td><span class="status keep">Keep</span></td>
+            <td>절차 체크 + ID 메모</td>
+            <td>비밀번호 저장 없이 설치, ID 전달, 세션, 종료 확인만 다룹니다.</td>
+            <td>보안 UX를 더 명확히 해야 실제 지원 상황에서 안전합니다.</td>
+          </tr>
+          <tr>
+            <td><strong>기숙사 입사</strong></td>
+            <td><span class="status keep">Keep</span></td>
+            <td>입사일 캘린더 + 짐 체크</td>
+            <td>공식 기숙사 안내문을 우선하고 커뮤니티 준비물은 보조로 둡니다.</td>
+            <td>학교별 금지물품/입사시간 차이가 커서 안내문 입력이 중요합니다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section card">
+      <h2>UX 패턴별로 얻은 판단</h2>
+      <ul>
+        <li>날짜형 타임라인: 이사, 초등 입학, 영유아 검진, 여권, 기숙사는 캘린더와 전체 일정이 같이 있어야 이해가 빠릅니다.</li>
+        <li>현장 체크형: 중고차와 AnyDesk는 월간 캘린더가 중심이 되면 오히려 흐려집니다. 순서형 섹션이 더 맞습니다.</li>
+        <li>반복 루틴형: 홈트와 식물은 “반복 일정 + 오늘 체크 + 중단/보류 조건”만 있으면 충분합니다.</li>
+        <li>버킷형: 스퀴시는 저장 후 날짜를 붙이는 정도가 맞습니다. 다단계 Flow로 만들면 과합니다.</li>
+      </ul>
+    </section>
+
+    <section class="section card">
+      <h2>클릭 시뮬레이션 결과</h2>
+      <ul>
+        <li>10개 Flow 모두 저장 버튼, 첫 체크, 다음 단계 이동이 동작했습니다.</li>
+        <li>이사, 초등, 영유아 검진, 여권, 홈트, 스투키, 스퀴시, 기숙사는 캘린더 미리보기가 렌더링됩니다.</li>
+        <li>중고차와 AnyDesk는 캘린더 없이 순서형 섹션으로 동작합니다.</li>
+        <li>모바일 390px, 데스크톱 1366px에서 가로 overflow가 없었습니다.</li>
+        <li>사용자 화면에서 내부 검토용 금지 문구는 검출되지 않았습니다.</li>
+      </ul>
+    </section>
+
+    <section class="section grid">
+      <article class="shot">
+        <h2>모바일 확인</h2>
+        <img src="../../output/playwright/ten-flow-user-samples-mobile.png" alt="10개 Flow 모바일 검증 스크린샷" />
+      </article>
+      <article class="shot">
+        <h2>데스크톱 확인</h2>
+        <img src="../../output/playwright/ten-flow-user-samples-desktop.png" alt="10개 Flow 데스크톱 검증 스크린샷" />
+      </article>
+    </section>
+
+    <section class="section card">
+      <h2>다음 작업</h2>
+      <p class="note">이제 10개를 기준으로 “어떤 카테고리를 제품 대표 샘플로 밀지”를 판단할 수 있습니다. 다음 단계는 Keep 6개를 더 정교하게 만들고, Revise 4개는 사용자 관찰 전용 질문으로 바꾸는 것입니다.</p>
+      <ul>
+        <li>대표 7개 축: 전세, 이사, 중고차, 초등 입학, 여권, 기숙사, AnyDesk 중 우선 조합을 정합니다.</li>
+        <li>Revise 4개: 영유아 검진, 홈트, 스퀴시, 식물은 원컨텐츠 정확도와 위험/권리/반복 조건을 더 좁힙니다.</li>
+        <li>새 카테고리를 더 늘리기 전, 이 10개로 사용자가 실제 저장하고 다시 들어오는지 관찰해야 합니다.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 배포 채널 Stage 0 phase 체크포인트</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7f9;
+        --paper: #ffffff;
+        --ink: #101828;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d9e2ec;
+        --blue: #1d4ed8;
+        --blue-soft: #e9f1ff;
+        --green: #047857;
+        --green-soft: #e7f6ef;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --soft: #f1f5f9;
+        --radius: 8px;
+        --shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+        line-height: 1.62;
+        letter-spacing: 0;
+      }
+      a { color: var(--blue); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      h1, h2, h3, p { margin: 0; }
+      h1, h2, h3 { line-height: 1.24; word-break: keep-all; }
+      p, li, td { color: var(--body); }
+      code {
+        padding: 1px 5px;
+        border-radius: 5px;
+        background: #eef2f7;
+        color: #172033;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.94em;
+      }
+      ul, ol { margin: 9px 0 0; padding-left: 20px; }
+      li + li { margin-top: 5px; }
+      .page { width: min(1240px, calc(100% - 32px)); margin: 0 auto; padding: 22px 0 70px; }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        min-height: 54px;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        color: var(--muted);
+        font-size: 13px;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      }
+      .brand { color: var(--ink); font-weight: 900; }
+      .layout { display: grid; grid-template-columns: minmax(0, 1fr) 292px; gap: 18px; align-items: start; }
+      .layout > * { min-width: 0; }
+      .hero, .panel, .nav {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+      .hero, .panel { padding: 28px; }
+      .panel { margin-top: 18px; }
+      .hero h1 { max-width: 940px; font-size: clamp(30px, 4vw, 48px); }
+      .lead { max-width: 930px; margin-top: 14px; font-size: 17px; }
+      .panel h2 { margin-bottom: 10px; font-size: 24px; }
+      .section-lead { max-width: 900px; margin-bottom: 16px; color: var(--muted); }
+      .nav { position: sticky; top: 16px; padding: 18px; }
+      .nav h2 { margin-bottom: 10px; font-size: 16px; }
+      .nav a { display: block; padding: 9px 10px; border-radius: 6px; color: var(--body); font-size: 14px; }
+      .nav a:hover { background: var(--soft); color: var(--blue); text-decoration: none; }
+      .nav .note { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+      .state-grid, .grid-2, .grid-3 { display: grid; gap: 12px; }
+      .state-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); margin-top: 22px; }
+      .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .card, .metric { border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); padding: 16px; }
+      .metric { min-height: 112px; background: var(--soft); }
+      .metric strong { display: block; margin-bottom: 8px; color: var(--muted); font-size: 12px; text-transform: uppercase; }
+      .metric span { display: block; color: var(--ink); font-size: 20px; font-weight: 900; }
+      .metric.amber { background: var(--amber-soft); }
+      .metric.green { background: var(--green-soft); }
+      .metric.red { background: var(--red-soft); }
+      .card h3 { margin-bottom: 8px; font-size: 17px; }
+      .card.ok { border-left: 4px solid var(--green); background: var(--green-soft); }
+      .card.warn { border-left: 4px solid var(--amber); background: var(--amber-soft); }
+      .card.stop { border-left: 4px solid var(--red); background: var(--red-soft); }
+      .link-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 38px;
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--paper);
+        color: var(--blue);
+        font-weight: 800;
+      }
+      .button:hover { background: var(--blue-soft); text-decoration: none; }
+      .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { padding: 12px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; font-size: 14px; }
+      th { background: var(--soft); color: var(--ink); font-weight: 900; }
+      tr:last-child td { border-bottom: 0; }
+      @media (max-width: 1080px) { .state-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+      @media (max-width: 980px) {
+        .layout { grid-template-columns: 1fr; }
+        .nav { position: static; }
+        .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+      @media (max-width: 640px) {
+        .page { width: min(100% - 20px, 1240px); padding-top: 10px; }
+        .topbar { align-items: flex-start; flex-direction: column; }
+        .hero, .panel, .nav { padding: 18px; }
+        .state-grid, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        .hero h1 { font-size: 30px; }
+        .lead { font-size: 16px; }
+        table { min-width: 900px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe 분석방</span> / Stage 0 phase 체크포인트</div>
+        <div>작성일 2026-06-11 · 상태: phase checkpoint · 증거 아님</div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <section class="hero" id="top">
+            <h1>지금은 Phase 5 안의 Stage 0 관찰 준비 단계입니다</h1>
+            <p class="lead">
+              이 체크포인트는 <code>distribution-channel-handoff</code> 축이 원래 로드맵 범위 안에 있는지 확인하는 문서입니다.
+              현재 결정은 <code>no signal</code>이고, 실제 수신자 세션은 아직 <code>0 / 3</code>입니다. 다음 행동은 초대 발송, tracker <code>invited</code> 갱신, 답장 확인 후 <code>agreed</code> slot 관찰입니다.
+            </p>
+            <div class="state-grid" aria-label="phase state">
+              <div class="metric amber"><strong>roadmap layer</strong><span>Phase 5</span></div>
+              <div class="metric green"><strong>product stage</strong><span>Stage 0</span></div>
+              <div class="metric"><strong>axis</strong><span>handoff</span></div>
+              <div class="metric"><strong>sessions</strong><span>0 / 3</span></div>
+              <div class="metric red"><strong>decision</strong><span>no signal</span></div>
+            </div>
+          </section>
+
+          <section class="panel" id="why">
+            <h2>1. 왜 아직 Stage 0인가</h2>
+            <div class="grid-3">
+              <article class="card ok"><h3>수동 행동 관찰</h3><p>공유 패킷을 열고, 3명에게 보여주고, 이해 여부를 기록하는 단계입니다.</p></article>
+              <article class="card ok"><h3>복사/내보내기 우선</h3><p>채널은 목적지일 뿐입니다. FlowMe가 게시, 전송, 수집하지 않습니다.</p></article>
+              <article class="card warn"><h3>후보 준비만 가능</h3><p><code>candidate signal</code>이 나와도 public route가 아니라 review candidate prep까지만 갑니다.</p></article>
+            </div>
+          </section>
+
+          <section class="panel" id="phase">
+            <h2>2. Phase 정렬</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>로드맵 phase</th><th>뜻</th><th>현재 맞춤</th></tr></thead>
+                <tbody>
+                  <tr><td>Phase 1</td><td>소스/콘텐츠 후보</td><td>학교/기숙사 공유 패킷 후보 경로를 이미 선택했습니다.</td></tr>
+                  <tr><td>Phase 2</td><td>목적지 형태</td><td>manual-copy share packet과 memo/checklist handoff로 유지합니다.</td></tr>
+                  <tr><td>Phase 3</td><td>경쟁/플랫폼 경계</td><td>KakaoTalk, Naver Cafe, Forms/Sheets, Notion 등은 FlowMe 표면이 아닙니다.</td></tr>
+                  <tr><td>Phase 4</td><td>API 준비도</td><td>반복 사용과 export friction 전까지 연동은 보류합니다.</td></tr>
+                  <tr><td>Phase 5</td><td>실험 압축</td><td>현재 작업은 배포 채널 축의 Stage 0 관찰 체인입니다.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="allowed">
+            <h2>3. 지금 허용되는 것</h2>
+            <div class="grid-2">
+              <article class="card ok">
+                <h3>가능</h3>
+                <ul>
+                  <li>한글 HTML 읽기 표면</li>
+                  <li>비식별 초대/스케줄</li>
+                  <li>패킷 버전 고정</li>
+                  <li>응답 코딩 기준</li>
+                  <li>preflight checklist, 워크시트, rollup, evidence board 업데이트 절차</li>
+                </ul>
+              </article>
+              <article class="card stop">
+                <h3>불가</h3>
+                <ul>
+                  <li>public route</li>
+                  <li>KakaoTalk/Naver/Forms/Sheets/Notion 연동</li>
+                  <li>자동 게시, 답변 수집, 연락처 저장</li>
+                  <li>validated, integration ready, launched 표현</li>
+                  <li>민감값 저장</li>
+                </ul>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="gate">
+            <h2>4. 다음 phase gate</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>결과</th><th>뜻</th><th>다음 행동</th></tr></thead>
+                <tbody>
+                  <tr><td><code>no signal</code></td><td>3 completed usable sessions 뒤에도 이해/필요가 약합니다.</td><td>재관찰하거나 다른 축을 선택합니다.</td></tr>
+                  <tr><td><code>friction</code></td><td>구체적인 문구, 순서, 신뢰, 경계 문제가 있습니다.</td><td>패킷을 수정하고 다시 관찰합니다.</td></tr>
+                  <tr><td><code>candidate signal</code></td><td>3 completed usable sessions가 기준을 통과합니다.</td><td><code>/content-flows</code> candidate prep만 작성합니다.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="next">
+            <h2>5. 다음에 열 문서</h2>
+            <div class="link-row">
+              <a class="button" href="./2026-06-11-distribution-channel-handoff-current-state-handoff-ko.html">현재 상태 시작점</a>
+              <a class="button" href="./2026-06-11-distribution-channel-handoff-html-hub-ko.html">핸드오프 허브</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-observation-day-quick-start-ko.html">quick start</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-version-lock-ko.html">version lock</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-response-coding-guide-ko.html">response coding</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-preflight-checklist-ko.html">preflight checklist</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-rollup-template-ko.html">rollup template</a>
+            </div>
+          </section>
+        </div>
+
+        <aside class="nav" aria-label="문서 목차">
+          <h2>목차</h2>
+          <a href="#top">요약</a>
+          <a href="#why">1. Stage 0 이유</a>
+          <a href="#phase">2. Phase 정렬</a>
+          <a href="#allowed">3. 허용/불가</a>
+          <a href="#gate">4. 다음 gate</a>
+          <a href="#next">5. 다음 문서</a>
+          <a href="./2026-06-09-external-ecosystem-roadmap-visual-ko.html">로드맵</a>
+          <a href="./2026-06-08-external-ecosystem-phase5-compression-table-ko.html">Phase 5 압축표</a>
+          <a href="./2026-06-11-distribution-channel-handoff-html-hub-ko.html">distribution hub</a>
+          <p class="note">
+            이 문서는 phase alignment 체크포인트입니다. 관찰 증거, 검증, public route 승인, 연동 준비도는 아닙니다.
+          </p>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

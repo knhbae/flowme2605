@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FlowMe context split single Flow expansion</title>
+    <style>
+      :root {
+        --bg: #f4f7fb;
+        --panel: #ffffff;
+        --ink: #111827;
+        --muted: #5f6f84;
+        --line: #dbe4f0;
+        --blue: #2563c9;
+        --soft-blue: #eaf2ff;
+        --green: #087443;
+        --soft-green: #e8f7ef;
+        --amber: #965f00;
+        --soft-amber: #fff5d8;
+        --red: #b3261e;
+        --shadow: 0 10px 24px rgba(31, 41, 55, .08);
+      }
+      * { box-sizing: border-box; }
+      html, body { max-width: 100%; overflow-x: hidden; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: Arial, "Noto Sans KR", sans-serif;
+        line-height: 1.55;
+      }
+      button, input, textarea { font: inherit; }
+      button { cursor: pointer; }
+      .app {
+        width: min(1180px, calc(100% - 28px));
+        margin: 0 auto;
+        padding: 18px 0 48px;
+      }
+      .topbar, .hero, .panel, .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+      }
+      .topbar {
+        padding: 14px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+      .brand { font-size: 20px; font-weight: 950; }
+      .hero { margin-top: 12px; padding: 18px; }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 { font-size: clamp(30px, 4vw, 48px); line-height: 1.12; margin-bottom: 12px; letter-spacing: 0; }
+      h2 { font-size: 25px; margin-bottom: 10px; }
+      h3 { font-size: 19px; margin-bottom: 8px; }
+      .desc, .small { color: var(--muted); }
+      .small { font-size: 13px; }
+      .section-label { color: var(--blue); font-weight: 950; margin-bottom: 6px; }
+      .chips, .tabs, .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 4px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        color: var(--muted);
+        font-weight: 850;
+        white-space: nowrap;
+      }
+      .blue { background: var(--soft-blue); color: var(--blue); border-color: #b7d1ff; }
+      .green { background: var(--soft-green); color: var(--green); border-color: #b8e4c9; }
+      .amber { background: var(--soft-amber); color: var(--amber); border-color: #f3d285; }
+      .red { color: var(--red); border-color: #f4b9b6; background: #fff1f1; }
+      .flow-tabs, .surface-tabs {
+        margin-top: 14px;
+        padding: 4px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #eaf0f8;
+      }
+      .flow-tabs button, .surface-tabs button {
+        border: 0;
+        border-radius: 8px;
+        min-height: 38px;
+        padding: 7px 12px;
+        background: transparent;
+        color: #40516a;
+        font-weight: 900;
+      }
+      .flow-tabs button.active, .surface-tabs button.active {
+        background: #fff;
+        color: var(--blue);
+        box-shadow: 0 1px 3px rgba(15, 23, 42, .1);
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 320px minmax(0, 1fr);
+        gap: 14px;
+        margin-top: 14px;
+        align-items: start;
+      }
+      .panel, .card { padding: 16px; min-width: 0; }
+      .list { display: grid; gap: 10px; }
+      .flow-card, .row, .item-card {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+        padding: 12px;
+        text-align: left;
+      }
+      .flow-card.active, .row.active, .item-card.active {
+        border-color: var(--blue);
+        background: var(--soft-blue);
+      }
+      .flow-card strong, .row strong { display: block; font-size: 17px; }
+      .row {
+        display: grid;
+        grid-template-columns: 74px minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+      }
+      .row .date { font-weight: 950; color: var(--blue); }
+      .row .count { color: var(--muted); font-weight: 800; }
+      .rule-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .rule {
+        border: 1px solid var(--line);
+        background: #fbfdff;
+        border-radius: 10px;
+        padding: 12px;
+      }
+      .rule b { display: block; margin-bottom: 4px; }
+      .setup {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: end;
+      }
+      label { display: block; margin-bottom: 6px; font-weight: 900; }
+      input, textarea {
+        width: 100%;
+        border: 1px solid #cfd9e8;
+        border-radius: 10px;
+        min-height: 44px;
+        padding: 10px 12px;
+        background: #fff;
+      }
+      textarea { min-height: 104px; resize: vertical; }
+      .primary, .secondary {
+        border: 1px solid var(--blue);
+        border-radius: 10px;
+        min-height: 44px;
+        padding: 9px 14px;
+        font-weight: 950;
+      }
+      .primary { background: var(--blue); color: #fff; }
+      .secondary { background: #fff; color: var(--blue); }
+      .check {
+        display: grid;
+        grid-template-columns: 28px minmax(0, 1fr);
+        gap: 10px;
+        align-items: start;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px;
+        background: #fff;
+      }
+      .check input { width: 22px; height: 22px; min-height: auto; margin-top: 3px; }
+      .check.done { background: #f1fbf5; border-color: #b8e4c9; }
+      .source {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+      }
+      .source a { color: var(--blue); font-weight: 900; }
+      .toast {
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: var(--soft-green);
+        border: 1px solid #b8e4c9;
+        color: var(--green);
+        font-weight: 900;
+      }
+      .mobile-short { display: none; }
+      @media (max-width: 860px) {
+        .layout { grid-template-columns: 1fr; }
+        .flow-tabs, .surface-tabs { width: 100%; }
+        .flow-tabs button, .surface-tabs button { flex: 1 1 140px; }
+      }
+      @media (max-width: 560px) {
+        .app { width: min(100% - 12px, 1180px); padding-top: 10px; }
+        .topbar, .hero, .panel, .card { padding: 12px; border-radius: 10px; }
+        h1 { font-size: 31px; }
+        h2 { font-size: 23px; }
+        h3 { font-size: 18px; }
+        .desktop-long { display: none; }
+        .mobile-short { display: inline; }
+        .flow-tabs, .surface-tabs {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 4px;
+        }
+        .surface-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .flow-tabs button, .surface-tabs button {
+          min-height: 40px;
+          padding: 6px 4px;
+          font-size: 14px;
+        }
+        .rule-grid, .setup { grid-template-columns: 1fr; }
+        .row {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 4px;
+        }
+        .row .count { justify-self: start; }
+        .chip { white-space: normal; }
+        .actions .primary, .actions .secondary { width: 100%; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <div class="brand">FlowMe</div>
+        <span class="chip blue">같은 콘텐츠, 다른 화면</span>
+      </header>
+
+      <section class="hero">
+        <p class="section-label">단일 Flow 5개 확산</p>
+        <h1><span class="desktop-long">제작자, 저장 전, 내 앱 화면을 분리해서 본다</span><span class="mobile-short">작은 Flow 화면 분리</span></h1>
+        <p class="desc">전세, 이사, 중고차, 초등 입학, 홈트는 하나의 실행물로 충분한 작은 Flow입니다. 같은 데이터라도 제작자는 구조를 보고, 저장 전 사용자는 결과물을 보고, 내 앱에서는 오늘 실행할 항목만 봅니다.</p>
+        <div class="chips">
+          <span class="chip blue">입력 0-2개</span>
+          <span class="chip green">캘린더/체크/루틴</span>
+          <span class="chip amber">내 앱은 가볍게</span>
+        </div>
+        <div class="flow-tabs tabs" id="flowTabs" aria-label="Flow 선택"></div>
+        <div class="surface-tabs tabs" id="surfaceTabs" aria-label="화면 선택">
+          <button type="button" class="active" data-surface="creator">제작자</button>
+          <button type="button" data-surface="public">저장 전</button>
+          <button type="button" data-surface="app">내 앱</button>
+        </div>
+      </section>
+
+      <section id="screen"></section>
+    </main>
+
+    <script>
+      const flows = [
+        {
+          id: "jeonse",
+          name: "전세계약 점검",
+          short: "전세",
+          type: "날짜형 체크",
+          source: "전세계약 전 서류 확인 가이드",
+          sourceUrl: "https://www.hug.or.kr",
+          artifact: "계약 예정일 기준 일정",
+          inputLabel: "계약 예정일",
+          inputValue: "2026-06-08",
+          savePrimary: "점검 일정 저장",
+          saveSecondary: "D-Day 항목만 저장",
+          creatorRules: [
+            ["가져오는 것", "D-3, D-Day, D+1 점검 항목과 원문 링크"],
+            ["사용자 입력", "계약 예정일 1개"],
+            ["저장물", "캘린더 일정과 선택 날짜 체크"],
+            ["경계", "계약 판단이나 보증 가능 여부를 대신하지 않음"]
+          ],
+          schedule: [
+            { date: "D-3", title: "계약 전 서류 확인", items: ["시세 확인", "등기부등본 확인", "전세보증보험 가능 여부 확인"], memo: "걸리는 항목이 있으면 계약 전 공인중개사나 전문가에게 확인합니다." },
+            { date: "D-Day", title: "계약 당일 확인", items: ["임대인 정보 확인", "계약서 특약 확인", "입금 계좌 확인"], memo: "계약서 원문, 주민등록번호, 계좌번호는 Flow에 저장하지 않습니다." },
+            { date: "D+1", title: "계약 후 처리", items: ["확정일자 확인", "전입신고 일정 확인", "보증보험 신청 상태 확인"], memo: "처리 결과만 짧게 남기고 민감한 원문은 저장하지 않습니다." }
+          ]
+        },
+        {
+          id: "move",
+          name: "이사 D-30 준비",
+          short: "이사",
+          type: "타임라인",
+          source: "이사 전 준비 체크리스트",
+          sourceUrl: "https://www.kbland.kr",
+          artifact: "이사일 기준 전체 일정",
+          inputLabel: "이사 예정일",
+          inputValue: "2026-07-18",
+          savePrimary: "이사 일정 저장",
+          saveSecondary: "이번 주 항목만 저장",
+          creatorRules: [
+            ["가져오는 것", "견적, 예약, 정리, 전입 관련 일정 단서"],
+            ["사용자 입력", "이사 예정일 1개"],
+            ["저장물", "D-30부터 이사 후까지의 일정"],
+            ["경계", "업체 추천이나 가격 판단은 별도 확인으로 보냄"]
+          ],
+          schedule: [
+            { date: "D-30", title: "이사 방식 정하고 견적 받기", items: ["포장/반포장/용달 중 방식 선택", "견적 후보 2-3곳 열기", "포함 범위와 연락처 메모"], memo: "견적 사이트와 업체 연락처는 URL 또는 메모로 남깁니다." },
+            { date: "D-14", title: "청소와 폐기 예약", items: ["입주청소 가능일 확인", "대형 폐기물 처리일 확인", "관리사무소 문의"], memo: "예약 확정 전이면 보류 메모에 남깁니다." },
+            { date: "D+1", title: "주소와 생활 서비스 정리", items: ["전입신고 확인", "우편물 주소 변경", "도시가스/인터넷 처리 확인"], memo: "완료한 항목만 체크합니다." }
+          ]
+        },
+        {
+          id: "car",
+          name: "중고차 방문 체크",
+          short: "중고차",
+          type: "현장 체크",
+          source: "중고차 구매 전 현장 점검 체크리스트",
+          sourceUrl: "https://www.carhistory.or.kr",
+          artifact: "방문 당일 체크리스트",
+          inputLabel: "방문 예정일",
+          inputValue: "2026-06-21",
+          savePrimary: "방문 체크 저장",
+          saveSecondary: "문서 확인만 저장",
+          creatorRules: [
+            ["가져오는 것", "차량 이력, 성능기록부, 외관/시운전 확인 순서"],
+            ["사용자 입력", "방문 예정일은 선택 입력"],
+            ["저장물", "현장에서 여는 긴 체크리스트와 보류 메모"],
+            ["경계", "구매 적합성 판단을 대신하지 않음"]
+          ],
+          schedule: [
+            { date: "방문 전", title: "차량 이력과 문서 확인", items: ["차량번호로 이력 조회", "성능기록부 파일 열기", "침수/사고 이력 메모"], memo: "조회 URL과 파일 위치만 남깁니다." },
+            { date: "현장", title: "차량 상태 직접 확인", items: ["밝은 곳에서 외관 확인", "타이어와 하부 흔적 확인", "엔진 시동과 변속 확인"], memo: "이상하면 구매가 아니라 보류 사유를 남깁니다." },
+            { date: "계약 전", title: "계약 조건 보류 판단", items: ["수리 필요 항목 확인", "추가 비용 메모", "전문가 확인 필요 여부 체크"], memo: "사진은 선택입니다. Flow는 보류 이유 중심으로 남깁니다." }
+          ]
+        },
+        {
+          id: "school",
+          name: "초등 입학 준비",
+          short: "입학",
+          type: "준비 일정",
+          source: "초등학교 입학 준비물 안내",
+          sourceUrl: "https://www.moe.go.kr",
+          artifact: "입학 전 준비 일정",
+          inputLabel: "입학식 예정일",
+          inputValue: "2026-03-02",
+          savePrimary: "입학 준비 저장",
+          saveSecondary: "준비물만 저장",
+          creatorRules: [
+            ["가져오는 것", "안내문 확인, 준비물, 생활 습관 점검 순서"],
+            ["사용자 입력", "입학식 예정일 1개"],
+            ["저장물", "일정과 준비물 체크"],
+            ["경계", "학교별 안내문이 우선이며 세부 품목은 수정 가능"]
+          ],
+          schedule: [
+            { date: "D-30", title: "학교 안내문 확인", items: ["예비소집 안내 확인", "학교 알림장/앱 확인", "제출 서류 메모"], memo: "학교별 안내가 다르면 학교 안내를 우선합니다." },
+            { date: "D-14", title: "기본 준비물 챙기기", items: ["가방과 실내화 확인", "필통과 이름표 준비", "개인 물품 이름 적기"], memo: "세부 품목은 학교 안내문 기준으로 수정합니다." },
+            { date: "D-3", title: "첫 등교 동선 확인", items: ["등교 시간 확인", "통학 경로 확인", "첫날 가져갈 물건 확인"], memo: "아이와 함께 확인할 항목만 남깁니다." }
+          ]
+        },
+        {
+          id: "workout",
+          name: "초보 홈트 반복",
+          short: "홈트",
+          type: "반복 루틴",
+          source: "초보 홈트 영상 루틴",
+          sourceUrl: "https://www.youtube.com",
+          artifact: "요일 반복 일정과 영상 링크",
+          inputLabel: "시작일",
+          inputValue: "2026-06-22",
+          savePrimary: "홈트 루틴 저장",
+          saveSecondary: "이번 주만 저장",
+          creatorRules: [
+            ["가져오는 것", "영상 링크, 운동 순서, 쉬는 날 단서"],
+            ["사용자 입력", "시작일과 반복 요일"],
+            ["저장물", "반복 일정과 오늘 회차 체크"],
+            ["경계", "운동 강도 판단이나 통증 상담을 대신하지 않음"]
+          ],
+          schedule: [
+            { date: "월", title: "전신 20분 따라하기", items: ["영상 열기", "워밍업부터 따라하기", "무리한 동작은 건너뛰기"], memo: "영상 링크는 체크 항목 안에 둡니다." },
+            { date: "수", title: "하체와 코어 20분", items: ["영상 열기", "스쿼트 동작 천천히 하기", "허리 불편하면 중단"], memo: "완료 여부만 남기고 긴 운동 기록은 만들지 않습니다." },
+            { date: "금", title: "상체와 스트레칭", items: ["영상 열기", "상체 동작 따라하기", "마무리 스트레칭 하기"], memo: "반복 요일은 나중에 내 앱에서 바꿀 수 있어야 합니다." }
+          ]
+        }
+      ];
+
+      const state = { flow: "jeonse", surface: "creator", selected: 0, checks: {}, memo: "" };
+      const $ = (selector) => document.querySelector(selector);
+      const activeFlow = () => flows.find((flow) => flow.id === state.flow) || flows[0];
+
+      function renderTabs() {
+        $("#flowTabs").innerHTML = flows.map((flow) => `
+          <button type="button" class="${state.flow === flow.id ? "active" : ""}" data-flow="${flow.id}">${flow.short}</button>
+        `).join("");
+        document.querySelectorAll("[data-flow]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.flow = button.dataset.flow;
+            state.selected = 0;
+            render();
+          });
+        });
+        document.querySelectorAll("[data-surface]").forEach((button) => {
+          button.classList.toggle("active", button.dataset.surface === state.surface);
+          button.addEventListener("click", () => {
+            state.surface = button.dataset.surface;
+            render();
+          }, { once: true });
+        });
+      }
+
+      function renderCreator(flow) {
+        return `
+          <div class="layout" data-zone="creator">
+            <aside class="panel">
+              <p class="section-label">원문 구조</p>
+              <h2>${flow.name}</h2>
+              <p class="desc">${flow.source}</p>
+              <div class="list">
+                ${flow.schedule.map((item, index) => `
+                  <button type="button" class="flow-card ${index === state.selected ? "active" : ""}" data-select="${index}">
+                    <strong>${item.date} · ${item.title}</strong>
+                    <span class="small">${item.items.length}개 실행 항목</span>
+                  </button>
+                `).join("")}
+              </div>
+            </aside>
+            <section class="card">
+              <p class="section-label">변환 규칙</p>
+              <h2>${flow.artifact}</h2>
+              <p class="desc">제작자는 원문이 어떤 저장물로 바뀌는지 먼저 확인합니다. 사용자가 체크할 세부 화면은 여기서 전면에 두지 않습니다.</p>
+              <div class="rule-grid">
+                ${flow.creatorRules.map(([title, value]) => `
+                  <div class="rule"><b>${title}</b><span class="desc">${value}</span></div>
+                `).join("")}
+              </div>
+            </section>
+          </div>
+        `;
+      }
+
+      function renderPublic(flow) {
+        const selected = flow.schedule[state.selected];
+        return `
+          <div class="layout" data-zone="public">
+            <aside class="panel">
+              <p class="section-label">저장하면 생기는 것</p>
+              <h2>${flow.artifact}</h2>
+              <p class="desc">입력은 ${flow.inputLabel} 하나면 충분합니다. 상세 설명과 원문은 저장 후 항목 안에서 다시 엽니다.</p>
+              <div class="setup">
+                <div>
+                  <label for="anchorInput">${flow.inputLabel}</label>
+                  <input id="anchorInput" type="date" value="${flow.inputValue}">
+                </div>
+                <button class="primary" id="saveMain" type="button">${flow.savePrimary}</button>
+              </div>
+              <button class="secondary" id="savePart" type="button" style="width:100%;margin-top:10px">${flow.saveSecondary}</button>
+              <div id="saveToast" class="toast" hidden></div>
+              <div class="source">원문: <a href="${flow.sourceUrl}" target="_blank" rel="noreferrer">${flow.source}</a></div>
+            </aside>
+            <section>
+              <article class="card">
+                <p class="section-label">저장 전 미리보기</p>
+                <h2>${selected.date} · ${selected.title}</h2>
+                <p class="desc">${selected.memo}</p>
+                <div class="list">
+                  ${flow.schedule.map((item, index) => `
+                    <button type="button" class="row ${index === state.selected ? "active" : ""}" data-select="${index}">
+                      <span class="date">${item.date}</span>
+                      <strong>${item.title}</strong>
+                      <span class="count">${item.items.length}개</span>
+                    </button>
+                  `).join("")}
+                </div>
+              </article>
+            </section>
+          </div>
+        `;
+      }
+
+      function renderApp(flow) {
+        const selected = flow.schedule[state.selected];
+        const key = `${flow.id}-${state.selected}`;
+        const done = state.checks[key] || [];
+        return `
+          <div class="layout" data-zone="app">
+            <aside class="panel">
+              <p class="section-label">내 Flow</p>
+              <h2>${flow.name}</h2>
+              <p class="desc">내 앱에서는 전체 설명보다 이어서 할 항목을 먼저 보여줍니다.</p>
+              <div class="list">
+                ${flow.schedule.map((item, index) => `
+                  <button type="button" class="flow-card ${index === state.selected ? "active" : ""}" data-select="${index}">
+                    <strong>${item.date} · ${item.title}</strong>
+                    <span class="small">${(state.checks[`${flow.id}-${index}`] || []).length}/${item.items.length} 완료</span>
+                  </button>
+                `).join("")}
+              </div>
+            </aside>
+            <section>
+              <article class="card">
+                <p class="section-label">오늘 또는 선택 항목</p>
+                <h2>${selected.date} · ${selected.title}</h2>
+                <p class="desc">${selected.memo}</p>
+                <div class="list">
+                  ${selected.items.map((text, index) => `
+                    <label class="check ${done.includes(index) ? "done" : ""}">
+                      <input type="checkbox" data-check="${index}" ${done.includes(index) ? "checked" : ""}>
+                      <span><strong>${text}</strong><br><span class="small">완료하면 체크합니다.</span></span>
+                    </label>
+                  `).join("")}
+                </div>
+              </article>
+              <article class="card" style="margin-top:14px">
+                <h3>짧은 메모</h3>
+                <textarea id="memoBox" placeholder="필요한 내용만 짧게 남기기">${state.memo}</textarea>
+                <div class="source">원문: <a href="${flow.sourceUrl}" target="_blank" rel="noreferrer">${flow.source}</a></div>
+              </article>
+            </section>
+          </div>
+        `;
+      }
+
+      function wireScreen(flow) {
+        document.querySelectorAll("[data-select]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.selected = Number(button.dataset.select);
+            render();
+          });
+        });
+        const saveMain = $("#saveMain");
+        if (saveMain) saveMain.addEventListener("click", () => {
+          $("#saveToast").hidden = false;
+          $("#saveToast").textContent = `${flow.name}이 내 Flow에 저장되었습니다.`;
+        });
+        const savePart = $("#savePart");
+        if (savePart) savePart.addEventListener("click", () => {
+          $("#saveToast").hidden = false;
+          $("#saveToast").textContent = `선택 항목만 내 Flow에 저장되었습니다.`;
+        });
+        document.querySelectorAll("[data-check]").forEach((input) => {
+          input.addEventListener("change", () => {
+            const key = `${flow.id}-${state.selected}`;
+            const current = new Set(state.checks[key] || []);
+            const index = Number(input.dataset.check);
+            if (input.checked) current.add(index); else current.delete(index);
+            state.checks[key] = Array.from(current).sort();
+            render();
+          });
+        });
+        const memoBox = $("#memoBox");
+        if (memoBox) memoBox.addEventListener("input", () => { state.memo = memoBox.value; });
+      }
+
+      function render() {
+        renderTabs();
+        const flow = activeFlow();
+        let html = "";
+        if (state.surface === "creator") html = renderCreator(flow);
+        if (state.surface === "public") html = renderPublic(flow);
+        if (state.surface === "app") html = renderApp(flow);
+        $("#screen").innerHTML = html;
+        wireScreen(flow);
+      }
+
+      render();
+    </script>
+  </body>
+</html>

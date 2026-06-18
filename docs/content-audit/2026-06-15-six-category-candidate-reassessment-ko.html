@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>6개 후보 재심사 리포트</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --soft: #f8fafc;
+      --line: #d9e2ee;
+      --line-strong: #bec9d8;
+      --text: #111827;
+      --muted: #5b6778;
+      --blue: #1f5fbf;
+      --blue-soft: #eaf2ff;
+      --green: #127c4b;
+      --green-soft: #e9f8ef;
+      --amber: #9a6100;
+      --amber-soft: #fff5df;
+      --red: #b42318;
+      --red-soft: #fff1ef;
+      --violet: #5f43b2;
+      --violet-soft: #f1ecfb;
+      --radius: 8px;
+      color: var(--text);
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #fbfdff 0, var(--bg) 360px);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.62;
+    }
+
+    a {
+      color: var(--blue);
+      text-underline-offset: 3px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 12px;
+      font-size: clamp(30px, 5vw, 48px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin-bottom: 12px;
+      font-size: clamp(23px, 3vw, 32px);
+      line-height: 1.22;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 6px;
+      font-size: 20px;
+      line-height: 1.32;
+      letter-spacing: 0;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 72px;
+    }
+
+    .hero,
+    .section,
+    .candidate,
+    .rule,
+    .source-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: 0 12px 30px rgba(17, 24, 39, 0.07);
+    }
+
+    .hero {
+      padding: 28px;
+    }
+
+    .eyebrow {
+      margin-bottom: 8px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .lead {
+      max-width: 880px;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 4px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #334155;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .tag.keep {
+      border-color: #bde7cb;
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .tag.revise {
+      border-color: #bdd5ff;
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .tag.park {
+      border-color: #efd08f;
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .tag.replace {
+      border-color: #f2beb6;
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .tag.new {
+      border-color: #d8ccfb;
+      background: var(--violet-soft);
+      color: var(--violet);
+    }
+
+    .section {
+      margin-top: 16px;
+      padding: 22px;
+    }
+
+    .rules-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .rule {
+      padding: 16px;
+      box-shadow: none;
+      background: var(--soft);
+    }
+
+    .rule b {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .candidate-grid {
+      display: grid;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .candidate {
+      overflow: hidden;
+    }
+
+    .candidate-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff 0, #f8fafc 100%);
+    }
+
+    .candidate-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.88fr);
+      gap: 0;
+    }
+
+    .candidate-main,
+    .candidate-side {
+      padding: 18px;
+    }
+
+    .candidate-side {
+      border-left: 1px solid var(--line);
+      background: var(--soft);
+    }
+
+    .decision-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .decision {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .decision b {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    ul {
+      margin: 8px 0 0;
+      padding-left: 20px;
+    }
+
+    li + li {
+      margin-top: 5px;
+    }
+
+    .source-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .source-card {
+      display: block;
+      padding: 10px 12px;
+      box-shadow: none;
+      background: #fff;
+      font-size: 14px;
+      font-weight: 750;
+      text-decoration: none;
+    }
+
+    .summary-table {
+      width: 100%;
+      margin-top: 12px;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      font-size: 14px;
+    }
+
+    .summary-table th,
+    .summary-table td {
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .summary-table th {
+      background: var(--soft);
+      color: #334155;
+      font-size: 13px;
+    }
+
+    .summary-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    @media (max-width: 900px) {
+      .rules-grid,
+      .candidate-body,
+      .decision-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .candidate-side {
+        border-left: 0;
+        border-top: 1px solid var(--line);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100% - 20px, 1180px);
+        padding-top: 18px;
+      }
+
+      .hero,
+      .section,
+      .candidate-main,
+      .candidate-side,
+      .candidate-head {
+        padding: 16px;
+      }
+
+      .candidate-head {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="eyebrow">2026-06-15 · candidate reassessment</p>
+      <h1>6개 후보를 다시 심사하고, 억지 UI 후보를 교체한다</h1>
+      <p class="lead">
+        전세 계약 Flow를 기준선으로 두되, 모든 후보에 같은 탭과 상태 버튼을 붙이지 않습니다.
+        후보마다 원컨텐츠가 자연스럽게 도착해야 하는 목적지를 먼저 정하고, 약한 후보는 카테고리 칸 채우기용으로 유지하지 않습니다.
+      </p>
+      <div class="tag-row">
+        <span class="tag keep">Keep 기준: 저장 욕구 + 명확한 실행 구조</span>
+        <span class="tag revise">Revise 기준: 원컨텐츠는 좋지만 UI가 과함</span>
+        <span class="tag replace">Replace 기준: 비즈니스 연결성이 약함</span>
+        <span class="tag park">Park 기준: later 후보</span>
+      </div>
+    </header>
+
+    <section class="section" aria-labelledby="principles-title">
+      <h2 id="principles-title">심사 원칙</h2>
+      <div class="rules-grid">
+        <article class="rule">
+          <b>Destination first</b>
+          <span class="muted">캘린더, 체크리스트, 메모, 시트 중 어디로 가는지 먼저 정합니다. 그 다음 화면을 붙입니다.</span>
+        </article>
+        <article class="rule">
+          <b>사용자 화면과 리뷰 화면 분리</b>
+          <span class="muted">source fit, 전세 대비 평가, 개발자 메모는 사용자 PoC에 넣지 않습니다.</span>
+        </article>
+        <article class="rule">
+          <b>버튼은 결과가 보일 때만</b>
+          <span class="muted">메모 복사, URL 복사, 현재 설명 복사, 상태 버튼처럼 결과를 예측하기 어려운 버튼은 제거합니다.</span>
+        </article>
+        <article class="rule">
+          <b>원문 기반 action</b>
+          <span class="muted">원컨텐츠에서 확인되지 않는 세부 설명은 AI 일반론으로 채우지 않고 링크나 메모로 보냅니다.</span>
+        </article>
+        <article class="rule">
+          <b>입력 1-3개</b>
+          <span class="muted">날짜, 반복주기, 매물/원문 URL처럼 캘린더/리마인더 수준의 입력만 기본값으로 둡니다.</span>
+        </article>
+        <article class="rule">
+          <b>비즈니스 연결성</b>
+          <span class="muted">검색 유입, creator/source link, official/admin guide, 반복 사용, export utility 중 하나와 연결되어야 합니다.</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="summary-title">
+      <h2 id="summary-title">요약 판정</h2>
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>기존 후보</th>
+            <th>판정</th>
+            <th>자연스러운 목적지</th>
+            <th>다음 PoC 반영</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>이사 D-30</td>
+            <td><span class="tag keep">Keep</span></td>
+            <td>D-day 캘린더 + 날짜별 체크리스트</td>
+            <td>유지. 공통 복사/상태 버튼 제거, 견적/예약 메모 중심으로 정리.</td>
+          </tr>
+          <tr>
+            <td>중고차 방문 체크</td>
+            <td><span class="tag revise">Keep + Revise</span></td>
+            <td>방문 당일 현장 체크리스트 + 보류 메모</td>
+            <td>유지. 차량번호 입력과 상태 버튼 제거, 매물 URL optional만 남김.</td>
+          </tr>
+          <tr>
+            <td>홈트 영상 루틴</td>
+            <td><span class="tag revise">Revise</span></td>
+            <td>반복 일정 + 영상 1개 실행 카드</td>
+            <td>축소. 주간확인/상태 기록 제거, 영상 열기와 완료 체크만 남김.</td>
+          </tr>
+          <tr>
+            <td>무료 도안 스퀴시</td>
+            <td><span class="tag park">Park</span></td>
+            <td>버킷/저장 링크 + 준비물 메모</td>
+            <td>이번 대표 PoC에서는 제외. 더 강한 creator template source가 필요.</td>
+          </tr>
+          <tr>
+            <td>식물 물주기</td>
+            <td><span class="tag park">Park</span></td>
+            <td>반복 확인 알림 + 마지막 메모</td>
+            <td>이번 대표 PoC에서는 제외. object profile/반복 사용 가설은 나중에 별도 검증.</td>
+          </tr>
+          <tr>
+            <td>초등 입학 D-30</td>
+            <td><span class="tag keep">Keep + Revise</span></td>
+            <td>D-day 캘린더 + 현재 단계 체크리스트</td>
+            <td>유지. 공식/학교 안내문과 블로그 팁을 화면에서 분리.</td>
+          </tr>
+          <tr>
+            <td>교체 1: 일본 여행/eSIM 준비</td>
+            <td><span class="tag new">Replace in</span></td>
+            <td>출국 전 디지털 절차 체크리스트</td>
+            <td>스퀴시 slot을 대체. 검색/제휴/source link 연결성이 더 강함.</td>
+          </tr>
+          <tr>
+            <td>교체 2: 18~24개월 영유아검진 문진표 준비</td>
+            <td><span class="tag new">Replace in</span></td>
+            <td>방문일 기준 문진표/K-DST 준비 체크리스트</td>
+            <td>식물 slot을 대체. 검진 전 부모 실행 행동이 뚜렷해 Stage 0 first-flag 가설과 연결됨.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" aria-labelledby="detail-title">
+      <h2 id="detail-title">후보별 상세 판정</h2>
+      <div class="candidate-grid">
+        <article class="candidate">
+          <header class="candidate-head">
+            <div>
+              <h3>1. 이사 D-30 준비 Flow</h3>
+              <p class="muted">시기별 체크리스트가 원문에 있고, 사용자가 이사일에 맞춰 다시 열 이유가 분명합니다.</p>
+            </div>
+            <span class="tag keep">Keep</span>
+          </header>
+          <div class="candidate-body">
+            <div class="candidate-main">
+              <div class="decision-grid">
+                <div class="decision"><b>비즈니스/제품 연결성</b><span class="muted">공개 검색 유입, 이사업체 견적/예약, 입주청소/도시가스 등 실행 시점 source link로 연결 가능.</span></div>
+                <div class="decision"><b>원컨텐츠 적합성</b><span class="muted">D-30, D-7, D-1, D-Day 구조와 체크 항목이 원문에 있음.</span></div>
+                <div class="decision"><b>자연스러운 destination</b><span class="muted">이사일 기준 캘린더 + 날짜별 체크리스트 + 업체/계약 메모.</span></div>
+                <div class="decision"><b>다음 UI</b><span class="muted">월간 캘린더, 선택 날짜 항목, 전체 일정 타임라인. 복사 버튼과 공통 상태 버튼은 제거.</span></div>
+              </div>
+            </div>
+            <aside class="candidate-side">
+              <b>확인한 출처</b>
+              <div class="source-list">
+                <a class="source-card" href="https://ohou.se/advices/8442">오늘의집 · 미리 저장 필수 이사 준비 체크리스트</a>
+                <a class="source-card" href="https://www.ajd.co.kr/contents/basic-tip/detail/%ED%8F%AC%EC%9E%A5%EC%9D%B4%EC%82%AC_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_%EB%B0%8F_%EA%BF%80%ED%8C%81_%EC%95%8C%EB%A0%A4%EB%93%9C%EB%A6%BD%EB%8B%88%EB%8B%A4-50950">아정당 · 포장이사 체크리스트</a>
+              </div>
+            </aside>
+          </div>
+        </article>
+
+        <article class="candidate">
+          <header class="candidate-head">
+            <div>
+              <h3>2. 중고차 방문 당일 체크 Flow</h3>
+              <p class="muted">원컨텐츠 자체는 강하지만, 기존 PoC는 차량번호 선택과 상태 버튼이 사용자 행동보다 앞섰습니다.</p>
+            </div>
+            <span class="tag revise">Keep + Revise</span>
+          </header>
+          <div class="candidate-body">
+            <div class="candidate-main">
+              <div class="decision-grid">
+                <div class="decision"><b>비즈니스/제품 연결성</b><span class="muted">구매 전 현장 체크, 매물 URL 저장, 보험/성능기록 조회 링크로 이어지는 field utility.</span></div>
+                <div class="decision"><b>원컨텐츠 적합성</b><span class="muted">성능·상태점검기록부, 보험 사고 이력, 외관/엔진룸/타이어 등 체크 타깃이 명확함.</span></div>
+                <div class="decision"><b>자연스러운 destination</b><span class="muted">방문 당일 체크리스트. 날짜는 보조이며, 핵심은 현장에서 빠뜨리지 않는 것.</span></div>
+                <div class="decision"><b>다음 UI</b><span class="muted">매물 URL optional, 방문일 optional, 항목별 보류 메모. 문제없음/추가확인 버튼 제거.</span></div>
+              </div>
+            </div>
+            <aside class="candidate-side">
+              <b>확인한 출처</b>
+              <div class="source-list">
+                <a class="source-card" href="https://web.getcha.kr/blog/used-car-condition-checklist-guide">겟차 · 중고차 상태 체크리스트</a>
+                <a class="source-card" href="https://www.kca.go.kr/smartconsumer/sub.do?menukey=7714&amp;mode=view&amp;no=1002862088">한국소비자원 · 중고차 체크리스트 카드뉴스</a>
+              </div>
+            </aside>
+          </div>
+        </article>
+
+        <article class="candidate">
+          <header class="candidate-head">
+            <div>
+              <h3>3. 주 3회 홈트 영상 루틴 Flow</h3>
+              <p class="muted">영상 루틴은 저장 가치가 있지만, 기존 PoC처럼 요일 선택, 주간확인, 상태 기록을 모두 넣으면 운동 앱 흉내가 됩니다.</p>
+            </div>
+            <span class="tag revise">Revise</span>
+          </header>
+          <div class="candidate-body">
+            <div class="candidate-main">
+              <div class="decision-grid">
+                <div class="decision"><b>비즈니스/제품 연결성</b><span class="muted">YouTube creator source link와 반복 실행. 다만 강한 seed 후보는 아니고 routine pattern 검증용.</span></div>
+                <div class="decision"><b>원컨텐츠 적합성</b><span class="muted">주 3회 따라 하기라는 반복 단서는 있음. 영상 안 운동 순서를 원문 없이 재작성하지 않음.</span></div>
+                <div class="decision"><b>자연스러운 destination</b><span class="muted">반복 캘린더 + 영상 링크가 들어간 단일 실행 카드.</span></div>
+                <div class="decision"><b>다음 UI</b><span class="muted">시작일, 반복 요일, 영상 URL. 오늘 운동 완료와 짧은 메모만 제공.</span></div>
+              </div>
+            </div>
+            <aside class="candidate-side">
+              <b>확인한 출처</b>
+              <div class="source-list">
+                <a class="source-card" href="https://www.youtube.com/watch?v=uDrWZ8PHC6A">YouTube · 주 3회 홈트 루틴 영상</a>
+              </div>
+            </aside>
+          </div>
+        </article>
+
+        <article class="candidate">
+          <header class="candidate-head">
+            <div>
+              <h3>4. 무료 도안 스퀴시 만들기 Flow</h3>
+              <p class="muted">재미있는 creator 소재지만, 현재 원문 조합은 대표 PoC로 쓰기엔 저장 후 실행 구조가 약합니다.</p>
+            </div>
+            <span class="tag park">Park</span>
+          </header>
+          <div class="candidate-body">
+            <div class="candidate-main">
+              <div class="decision-grid">
+                <div class="decision"><b>비즈니스/제품 연결성</b><span class="muted">creator template loop 가능성은 있으나, 지금 source는 다운로드/저작권/댓글 수요 증거가 부족함.</span></div>
+                <div class="decision"><b>원컨텐츠 적합성</b><span class="muted">도안, 준비물, 영상 링크는 memo로 저장 가능. 날짜형 execution point는 약함.</span></div>
+                <div class="decision"><b>자연스러운 destination</b><span class="muted">버킷/나중에 할 것 + 준비물 메모 + 원문 링크.</span></div>
+                <div class="decision"><b>다음 UI</b><span class="muted">이번 대표 PoC에서 제외. 추후에는 날짜 먼저가 아니라 “놀이 버킷에 저장”이 첫 action.</span></div>
+              </div>
+            </div>
+            <aside class="candidate-side">
+              <b>교체 판단</b>
+              <p class="muted">스퀴시는 creator content 축으로는 중요하지만, 이번에는 더 강한 검색/제휴/출국 전 utility가 있는 일본 여행/eSIM 준비 Flow로 교체합니다.</p>
+            </aside>
+          </div>
+        </article>
+
+        <article class="candidate">
+          <header class="candidate-head">
+            <div>
+              <h3>5. 스투키 물주기 확인 Flow</h3>
+              <p class="muted">반복 reminder로는 성립하지만, 현재 PoC는 식물 관리 앱처럼 보이기 시작했습니다.</p>
+            </div>
+            <span class="tag park">Park</span>
+          </header>
+          <div class="candidate-body">
+            <div class="candidate-main">
+              <div class="decision-grid">
+                <div class="decision"><b>비즈니스/제품 연결성</b><span class="muted">object routine 가설은 있지만, 현재 목표인 source-to-flow 대표성/비즈니스 연결성은 중간 이하.</span></div>
+                <div class="decision"><b>원컨텐츠 적합성</b><span class="muted">식물명과 물주기 판단 기준이 source마다 다르며, 사용자의 실제 환경 입력으로 앱이 커질 위험이 큼.</span></div>
+                <div class="decision"><b>자연스러운 destination</b><span class="muted">반복 확인 알림 + 마지막 메모. 캘린더 전체보기는 과함.</span></div>
+                <div class="decision"><b>다음 UI</b><span class="muted">이번 대표 PoC에서 제외. 향후 object profile 실험으로 분리.</span></div>
+              </div>
+            </div>
+            <aside class="candidate-side">
+              <b>교체 판단</b>
+              <p class="muted">식물 slot은 Stage 0 first-flag와 더 가까운 18~24개월 영유아검진 문진표/발달선별검사지 준비 Flow로 교체합니다.</p>
+            </aside>
+          </div>
+        </article>
+
+        <article class="candidate">
+          <header class="candidate-head">
+            <div>
+              <h3>6. 초등 입학 준비 D-30 Flow</h3>
+              <p class="muted">입학일과 예비소집, 안내문, 준비물, 생활습관 연습이 연결되는 강한 timeline/phase 후보입니다.</p>
+            </div>
+            <span class="tag keep">Keep + Revise</span>
+          </header>
+          <div class="candidate-body">
+            <div class="candidate-main">
+              <div class="decision-grid">
+                <div class="decision"><b>비즈니스/제품 연결성</b><span class="muted">학부모 검색 유입, 학교 안내문 저장, 공식/블로그 source split 검증에 적합.</span></div>
+                <div class="decision"><b>원컨텐츠 적합성</b><span class="muted">취학통지서, 예비소집, 준비물, 생활습관 연습이 날짜/단계로 바뀜.</span></div>
+                <div class="decision"><b>자연스러운 destination</b><span class="muted">입학일 기준 D-day 캘린더 + 현재 단계 체크리스트 + 학교 안내문 URL.</span></div>
+                <div class="decision"><b>다음 UI</b><span class="muted">현재 단계 중심. 공식/학교 안내와 블로그 팁은 섞지 않음.</span></div>
+              </div>
+            </div>
+            <aside class="candidate-side">
+              <b>확인한 출처</b>
+              <div class="source-list">
+                <a class="source-card" href="https://www.home-learn.co.kr/newsroom/news/A/1317">홈런 · 초등 입학 준비물</a>
+                <a class="source-card" href="https://woman.donga.com/edu/article/all/12/5372050/1">여성동아 · 초등 입학 준비 체크리스트</a>
+              </div>
+            </aside>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="replacement-title">
+      <h2 id="replacement-title">교체 후보</h2>
+      <div class="candidate-grid">
+        <article class="candidate">
+          <header class="candidate-head">
+            <div>
+              <h3>교체 1. 일본 여행/eSIM 출국 전 설정 Flow</h3>
+              <p class="muted">출국일 기준으로 여권, Visit Japan, eSIM 설치/도착 후 개통 같은 절차가 있고, source link와 제휴 연결성이 명확합니다.</p>
+            </div>
+            <span class="tag new">Replace in</span>
+          </header>
+          <div class="candidate-body">
+            <div class="candidate-main">
+              <div class="decision-grid">
+                <div class="decision"><b>대체 대상</b><span class="muted">스퀴시 slot. creator bucket보다 이번 대표 PoC에서 제품 연결성이 강함.</span></div>
+                <div class="decision"><b>자연스러운 destination</b><span class="muted">출국일 기준 D-7/D-1/D-Day 체크리스트 + eSIM 설치 메모.</span></div>
+                <div class="decision"><b>입력</b><span class="muted">출국일, 휴대폰 종류, eSIM 구매 링크 optional.</span></div>
+                <div class="decision"><b>UI</b><span class="muted">여행 준비 캘린더와 현재 절차 카드. 통신 설정값은 저장하지 않음.</span></div>
+              </div>
+            </div>
+            <aside class="candidate-side">
+              <b>확인한 출처</b>
+              <div class="source-list">
+                <a class="source-card" href="https://dosirakesim.com/Guide/pre-install/aos/v2">도시락eSIM · 갤럭시 설치 가이드</a>
+                <a class="source-card" href="https://www.tripstore.kr/blog/%EC%9D%BC%EB%B3%B8%EC%97%AC%ED%96%89-%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8-%ED%83%80%EC%9E%84%EB%9D%BC%EC%9D%B8-%EC%A4%80%EB%B9%84%EB%AC%BC">트립스토어 · 일본여행 체크리스트</a>
+              </div>
+            </aside>
+          </div>
+        </article>
+
+        <article class="candidate">
+          <header class="candidate-head">
+            <div>
+              <h3>교체 2. 18~24개월 영유아검진 문진표 준비 Flow</h3>
+              <p class="muted">검진일 전 부모가 실제로 해야 하는 예약, 문진표 저장, 발달선별검사지, 등록번호, 구강검진 확인이 있어 실행 구조가 분명합니다.</p>
+            </div>
+            <span class="tag new">Replace in</span>
+          </header>
+          <div class="candidate-body">
+            <div class="candidate-main">
+              <div class="decision-grid">
+                <div class="decision"><b>대체 대상</b><span class="muted">식물 slot. 반복 reminder보다 부모의 검진 전 실행 행동과 public route 가설이 강함.</span></div>
+                <div class="decision"><b>자연스러운 destination</b><span class="muted">방문일 기준 D-14/D-7/D-3/D-1/D-Day 체크리스트.</span></div>
+                <div class="decision"><b>입력</b><span class="muted">방문일, 검진 병원/예약 메모, 문진표 작성 경로.</span></div>
+                <div class="decision"><b>UI</b><span class="muted">문진표/K-DST 저장 여부, 등록번호, 구강검진 여부, 질문 메모를 분리. 의료 판단은 하지 않음.</span></div>
+              </div>
+            </div>
+            <aside class="candidate-side">
+              <b>확인한 출처</b>
+              <div class="source-list">
+                <a class="source-card" href="https://childhosp.seoul.go.kr/medical-info/health-medical-examination">서울특별시 어린이병원 · 영유아 건강검진</a>
+                <a class="source-card" href="https://mblchildren.com/health-promotion-center/infant-checkup/guide/">엠블병원 · 영유아검진 안내</a>
+                <a class="source-card" href="https://www.yugacrew.com/crewletter/18-month-baby">육아크루 · 18개월 영검 준비</a>
+                <a class="source-card" href="https://blog.hospital.ddocdoc.com/post/update-0311">똑닥 · 공단 연동 문진표 안내</a>
+              </div>
+            </aside>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

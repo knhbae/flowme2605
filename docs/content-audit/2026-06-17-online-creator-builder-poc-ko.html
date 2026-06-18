@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 제작자 조립 화면</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f8fb;
+        --surface: #fff;
+        --soft: #f8fafc;
+        --line: #d8e2ef;
+        --text: #101827;
+        --muted: #5d697b;
+        --blue: #1f5fbf;
+        --green: #0f7a4a;
+        --amber: #9a6100;
+        --red: #b42318;
+        --radius: 8px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: #f6f8fb;
+        color: var(--text);
+        font-size: 16px;
+        line-height: 1.55;
+      }
+      button, input, textarea, select { font: inherit; }
+      button { cursor: pointer; }
+      .app { width: min(1180px, calc(100% - 24px)); margin: 0 auto; padding: 16px 0 48px; }
+      .topbar { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 12px; }
+      .brand { color: #174ea6; font-weight: 950; }
+      .hero, .card, .panel, .row-card, .preview {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+      }
+      .hero { padding: 16px; box-shadow: 0 10px 28px rgba(16, 24, 39, .07); }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 { margin-bottom: 6px; font-size: clamp(28px, 5vw, 42px); line-height: 1.12; letter-spacing: 0; }
+      h2 { margin-bottom: 8px; font-size: 22px; line-height: 1.2; letter-spacing: 0; }
+      h3 { margin-bottom: 6px; font-size: 17px; letter-spacing: 0; }
+      a { color: var(--blue); text-underline-offset: 3px; }
+      .desc { color: var(--muted); }
+      .layout { display: grid; grid-template-columns: 340px 1fr; gap: 12px; margin-top: 12px; }
+      .side, .main { display: grid; gap: 12px; align-content: start; }
+      .card, .panel { padding: 14px; }
+      .field { display: grid; gap: 5px; margin-top: 10px; }
+      label { color: #334155; font-size: 13px; font-weight: 900; }
+      input, textarea, select {
+        width: 100%;
+        min-height: 40px;
+        padding: 8px 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 7px;
+        background: #fff;
+        color: var(--text);
+      }
+      textarea { min-height: 84px; resize: vertical; }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 3px 9px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--soft);
+        color: #334155;
+        font-size: 13px;
+        font-weight: 850;
+        white-space: nowrap;
+      }
+      .chip.green { border-color: #b8e5ce; background: #eefaf3; color: #0f6b43; }
+      .chip.blue { border-color: #b9d2ff; background: #eef5ff; color: #174ea6; }
+      .chip.amber { border-color: #f4d291; background: #fff7e8; color: #7a4b00; }
+      .chip.red { border-color: #f4b9b2; background: #fff1ef; color: #9a241a; }
+      .button-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        padding: 8px 12px;
+        border: 1px solid #b9d2ff;
+        border-radius: 7px;
+        background: #eef5ff;
+        color: #174ea6;
+        font-weight: 950;
+      }
+      .btn.secondary { border-color: var(--line); background: #fff; color: #334155; }
+      .btn.green { border-color: #b8e5ce; background: #eefaf3; color: #0f6b43; }
+      .step {
+        display: flex;
+        gap: 10px;
+        padding: 10px 0;
+        border-top: 1px solid #e6edf5;
+      }
+      .step:first-of-type { border-top: 0; }
+      .num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        width: 28px;
+        height: 28px;
+        border-radius: 999px;
+        background: #eef5ff;
+        color: #174ea6;
+        font-weight: 950;
+      }
+      .row-card {
+        padding: 12px;
+        margin-top: 8px;
+      }
+      .row-grid {
+        display: grid;
+        grid-template-columns: 1.2fr .8fr .8fr auto;
+        gap: 8px;
+        align-items: end;
+      }
+      .preview { overflow: hidden; }
+      .preview-head {
+        padding: 14px;
+        border-bottom: 1px solid var(--line);
+        background: #f8fafc;
+      }
+      .preview-body {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+      }
+      .preview-side {
+        padding: 14px;
+        border-right: 1px solid var(--line);
+        background: #fbfdff;
+      }
+      .preview-main { padding: 14px; }
+      .section-button {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #e6edf5;
+        border-radius: 7px;
+        background: #fff;
+        text-align: left;
+      }
+      .section-button + .section-button { margin-top: 8px; }
+      .artifact-row {
+        display: grid;
+        grid-template-columns: 92px 1fr auto;
+        gap: 10px;
+        align-items: start;
+        padding: 11px 0;
+        border-top: 1px solid #e6edf5;
+      }
+      .artifact-row:first-of-type { border-top: 0; }
+      .pill {
+        display: inline-flex;
+        justify-content: center;
+        padding: 3px 7px;
+        border-radius: 999px;
+        background: #eef5ff;
+        color: #174ea6;
+        font-size: 12px;
+        font-weight: 900;
+      }
+      .toast {
+        margin-top: 12px;
+        padding: 12px;
+        border-left: 4px solid var(--green);
+        border-radius: 6px;
+        background: #eefaf3;
+        color: #0f6b43;
+        font-weight: 850;
+      }
+      .warn {
+        margin: 12px 0 0;
+        padding: 12px;
+        border-left: 4px solid var(--amber);
+        border-radius: 6px;
+        background: #fff7e8;
+        color: #5f3b00;
+        font-weight: 750;
+      }
+      @media (max-width: 900px) {
+        .app { width: min(100% - 22px, 1180px); padding-top: 10px; }
+        .topbar, .layout, .preview-body, .artifact-row, .row-grid { grid-template-columns: 1fr; flex-direction: column; }
+        .layout, .preview-body { display: grid; }
+        .preview-side { border-right: 0; border-bottom: 1px solid var(--line); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="topbar">
+        <div class="brand">FlowMe Creator</div>
+        <select id="templateSelect" aria-label="예시 선택">
+          <option value="running">러닝 입문 4주 루틴</option>
+          <option value="math">중1 수학 1학기 진도</option>
+          <option value="babyfood">6개월 토핑이유식 식단표</option>
+        </select>
+      </div>
+
+      <section class="hero">
+        <h1>제작자가 원컨텐츠를 실행 흐름으로 조립하는 화면</h1>
+        <p class="desc">원문 URL을 붙이고, 큰 제목과 섹션을 만든 뒤, 각 실행 항목이 캘린더/표/체크리스트/메모 중 어디로 갈지 지정한다.</p>
+        <div class="chips">
+          <span class="chip green">원문 구조 우선</span>
+          <span class="chip blue">공통 입력 연결</span>
+          <span class="chip amber">출처/주의 분리</span>
+        </div>
+      </section>
+
+      <div class="layout">
+        <aside class="side">
+          <section class="card">
+            <h2>조립 순서</h2>
+            <div class="step"><span class="num">1</span><span><strong>원문 URL 확인</strong><br><span class="desc">재생목록, 식단표, 강좌 목차처럼 실제 구조가 있는지 본다.</span></span></div>
+            <div class="step"><span class="num">2</span><span><strong>큰 제목 만들기</strong><br><span class="desc">사용자가 저장할 자연어 제목을 쓴다.</span></span></div>
+            <div class="step"><span class="num">3</span><span><strong>섹션 나누기</strong><br><span class="desc">주차, 단원, 식단 주차처럼 원문에 있는 묶음만 쓴다.</span></span></div>
+            <div class="step"><span class="num">4</span><span><strong>실행 항목 지정</strong><br><span class="desc">각 항목의 목적지와 완료 기준을 정한다.</span></span></div>
+          </section>
+
+          <section class="card">
+            <h2>공통 입력</h2>
+            <div id="commonInputs"></div>
+            <p class="warn">사용자가 같은 날짜나 요일을 여러 번 넣지 않도록, 공통 입력은 아래 실행 항목 전체에 연결된다.</p>
+          </section>
+        </aside>
+
+        <main class="main">
+          <section class="panel">
+            <h2>큰 제목과 원문</h2>
+            <div class="field"><label for="creatorTitle">사용자에게 보일 제목</label><input id="creatorTitle"></div>
+            <div class="field"><label for="creatorSource">원문 URL</label><input id="creatorSource"></div>
+            <div class="field"><label for="creatorPromise">짧은 설명</label><textarea id="creatorPromise"></textarea></div>
+            <div class="button-row">
+              <button class="btn" type="button" id="loadTemplate">예시 구조 불러오기</button>
+              <button class="btn green" type="button" id="updatePreview">사용자 미리보기 업데이트</button>
+            </div>
+            <div id="builderToast" class="toast" hidden></div>
+          </section>
+
+          <section class="panel">
+            <h2>섹션과 실행 항목</h2>
+            <div id="builderRows"></div>
+          </section>
+
+          <section class="preview">
+            <div class="preview-head">
+              <h2 id="previewTitle">미리보기</h2>
+              <p class="desc" id="previewDesc"></p>
+              <div class="button-row">
+                <button class="btn" type="button">전체 저장</button>
+                <button class="btn secondary" type="button">필요한 것만 고르기</button>
+              </div>
+            </div>
+            <div class="preview-body">
+              <aside class="preview-side" id="previewSections"></aside>
+              <section class="preview-main" id="previewItems"></section>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      const templates = {
+        running: {
+          title: "러닝 입문 4주 루틴",
+          source: "https://www.youtube.com/playlist?list=PLPjAVMQb8HvP6Q5leQ854AxBaTsLNW5V2",
+          promise: "초보 러너가 영상 시리즈를 보고 이번 달 운동 요일에 맞춰 달리기 일정을 만든다.",
+          inputs: ["시작일", "운동 요일", "알림 시간"],
+          rows: [
+            ["1주차 걷고 달리기", "일정", "1주차 첫 러닝 일정 만들기", "원본 영상 링크, 운동 후 상태 체크"],
+            ["3주차 반복 달리기", "일정", "3주차 러닝 일정 넣기", "힘든 구간 메모, 다음 주 진행 여부"],
+            ["5KM 완주 도전", "체크", "완주 감각 체크", "통증/어지러움 중단 기준"]
+          ]
+        },
+        math: {
+          title: "중1 수학 1학기 진도",
+          source: "https://mid.ebs.co.kr/course/view?courseId=100005121",
+          promise: "단원별 강의와 문제풀이를 일정, 진도표, 오답표로 옮긴다.",
+          inputs: ["공부 시작일", "공부 요일", "하루 목표 강의 수"],
+          rows: [
+            ["소인수분해", "표", "강의 보기와 문제 풀기", "강의 번호, 교재 범위, 오답 이유"],
+            ["정수와 유리수", "일정", "단원 공부 일정 만들기", "복습일, 완료 상태"],
+            ["오답 관리", "표", "틀린 문제 다시 풀기", "문항 번호, 다시 풀 날짜"]
+          ]
+        },
+        babyfood: {
+          title: "6개월 토핑이유식 식단표",
+          source: "https://wanbab.io/planner/2",
+          promise: "식단표를 주간 표, 제공 일정, 첫 식재료 관찰 메모로 옮긴다.",
+          inputs: ["식단 시작일", "제공 시간", "메모 이름"],
+          rows: [
+            ["1주차 식단", "표", "먹은 양과 반응 기록", "원본 식단표 파일, 제공 시간"],
+            ["첫 식재료 관찰", "메모", "알레르기 반응 관찰 메모", "새 재료, 제공일, 반응"],
+            ["장보기와 준비", "체크", "이번 주 재료 목록 만들기", "곡류, 육류, 채소류 메모"]
+          ]
+        }
+      };
+
+      let activeKey = "running";
+      let activeSection = 0;
+
+      function el(id) { return document.getElementById(id); }
+      function active() { return templates[activeKey]; }
+
+      function renderTemplate() {
+        const data = active();
+        el("creatorTitle").value = data.title;
+        el("creatorSource").value = data.source;
+        el("creatorPromise").value = data.promise;
+        renderInputs(data.inputs);
+        renderRows(data.rows);
+        renderPreview();
+      }
+
+      function renderInputs(inputs) {
+        el("commonInputs").innerHTML = inputs.map((input, index) => `
+          <div class="field">
+            <label for="common-${index}">입력 ${index + 1}</label>
+            <input id="common-${index}" value="${input}">
+          </div>
+        `).join("");
+      }
+
+      function renderRows(rows) {
+        el("builderRows").innerHTML = rows.map((row, index) => `
+          <div class="row-card">
+            <div class="row-grid">
+              <div class="field"><label>섹션</label><input data-row="${index}" data-col="0" value="${row[0]}"></div>
+              <div class="field"><label>목적지</label><select data-row="${index}" data-col="1">
+                ${["일정", "표", "체크", "메모"].map(option => `<option ${option === row[1] ? "selected" : ""}>${option}</option>`).join("")}
+              </select></div>
+              <div class="field"><label>실행 항목</label><input data-row="${index}" data-col="2" value="${row[2]}"></div>
+              <div class="field"><label>출처/주의</label><input data-row="${index}" data-col="3" value="${row[3]}"></div>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      function collectRows() {
+        const rows = [];
+        document.querySelectorAll("[data-row]").forEach(input => {
+          const row = Number(input.dataset.row);
+          const col = Number(input.dataset.col);
+          if (!rows[row]) rows[row] = [];
+          rows[row][col] = input.value;
+        });
+        return rows;
+      }
+
+      function renderPreview() {
+        const rows = collectRows();
+        el("previewTitle").textContent = el("creatorTitle").value || active().title;
+        el("previewDesc").textContent = el("creatorPromise").value || active().promise;
+        el("previewSections").innerHTML = rows.map((row, index) => `
+          <button class="section-button" type="button" data-section="${index}">
+            <strong>${row[0]}</strong><br>
+            <span class="desc">${row[1]}로 저장</span>
+          </button>
+        `).join("");
+        const row = rows[activeSection] || rows[0];
+        if (!row) return;
+        el("previewItems").innerHTML = `
+          <h3>${row[0]}</h3>
+          <div class="artifact-row">
+            <span class="pill">${row[1]}</span>
+            <div>
+              <strong>${row[2]}</strong>
+              <p class="desc">${row[3]}</p>
+            </div>
+            <span class="chip green">저장 가능</span>
+          </div>
+          <div class="artifact-row">
+            <span class="pill">원본</span>
+            <div>
+              <strong>원문 링크 붙이기</strong>
+              <p class="desc">${el("creatorSource").value}</p>
+            </div>
+            <span class="chip blue">메모</span>
+          </div>
+        `;
+      }
+
+      el("templateSelect").addEventListener("change", event => {
+        activeKey = event.target.value;
+        activeSection = 0;
+        renderTemplate();
+      });
+
+      el("loadTemplate").addEventListener("click", () => {
+        activeSection = 0;
+        renderTemplate();
+        el("builderToast").textContent = "원문 구조 예시를 다시 불러왔습니다.";
+        el("builderToast").hidden = false;
+      });
+
+      el("updatePreview").addEventListener("click", () => {
+        renderPreview();
+        el("builderToast").textContent = "사용자 미리보기를 업데이트했습니다.";
+        el("builderToast").hidden = false;
+      });
+
+      document.addEventListener("click", event => {
+        const sec = event.target.closest("[data-section]");
+        if (!sec) return;
+        activeSection = Number(sec.dataset.section);
+        renderPreview();
+      });
+
+      document.addEventListener("input", event => {
+        if (event.target.matches("[data-row], #creatorTitle, #creatorSource, #creatorPromise")) {
+          renderPreview();
+        }
+      });
+
+      renderTemplate();
+    </script>
+  </body>
+</html>

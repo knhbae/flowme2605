@@ -1,0 +1,962 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 중등 수학 학습 지도</title>
+    <style>
+      :root {
+        --bg: #eef3f8;
+        --panel: #ffffff;
+        --soft: #f7fafc;
+        --line: #d8e1eb;
+        --line-strong: #b8c6d8;
+        --text: #111827;
+        --muted: #5b6678;
+        --blue: #2563eb;
+        --blue-soft: #eaf1ff;
+        --green: #0f766e;
+        --green-soft: #e8f6f3;
+        --amber: #b45309;
+        --amber-soft: #fff5df;
+        --shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      button,
+      a {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      a {
+        color: var(--blue);
+        font-weight: 850;
+      }
+
+      .page {
+        width: min(1120px, 100%);
+        margin: 0 auto;
+        padding: 16px;
+      }
+
+      .shell,
+      .hero,
+      .card,
+      .action-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+      }
+
+      .shell {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 15px 17px;
+        margin-bottom: 12px;
+      }
+
+      .brand {
+        font-size: 22px;
+        font-weight: 950;
+        word-break: keep-all;
+      }
+
+      .shell-note,
+      .desc,
+      .small {
+        color: var(--muted);
+      }
+
+      .shell-note,
+      .desc {
+        margin: 0;
+        line-height: 1.55;
+      }
+
+      .small {
+        display: block;
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .hero,
+      .card,
+      .action-card {
+        padding: 16px;
+      }
+
+      .hero {
+        margin-bottom: 12px;
+      }
+
+      .eyebrow,
+      .label {
+        margin: 0 0 8px;
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 950;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 10px;
+        font-size: clamp(30px, 5vw, 50px);
+        line-height: 1.08;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      h2 {
+        margin-bottom: 10px;
+        font-size: 23px;
+        line-height: 1.22;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      h3 {
+        margin-bottom: 8px;
+        font-size: 17px;
+        line-height: 1.35;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      .chips,
+      .actions,
+      .meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 6px 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        background: var(--soft);
+        color: #263346;
+        font-size: 13px;
+        font-weight: 850;
+        line-height: 1.2;
+      }
+
+      .chip.blue { background: var(--blue-soft); border-color: #b8cdfb; color: #1d4ed8; }
+      .chip.green { background: var(--green-soft); border-color: #b9ded8; color: var(--green); }
+      .chip.amber { background: var(--amber-soft); border-color: #f5d393; color: var(--amber); }
+
+      .tabs {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        padding: 6px;
+        background: #e7edf5;
+        margin: 12px 0;
+      }
+
+      .tabs button {
+        min-height: 46px;
+        border: 0;
+        border-radius: 11px;
+        background: transparent;
+        color: #334155;
+        cursor: pointer;
+        font-weight: 950;
+      }
+
+      .tabs button.active {
+        background: #fff;
+        color: var(--blue);
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+      }
+
+      .view { display: none; }
+      .view.active { display: block; }
+
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1.35fr);
+        gap: 12px;
+        align-items: start;
+      }
+
+      .stack {
+        display: grid;
+        gap: 10px;
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+
+      label,
+      .field label {
+        color: #334155;
+        font-size: 13px;
+        font-weight: 950;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--line-strong);
+        border-radius: 11px;
+        background: #fff;
+        color: var(--text);
+        padding: 11px 12px;
+      }
+
+      textarea {
+        min-height: 88px;
+        resize: vertical;
+        line-height: 1.5;
+      }
+
+      .btn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 46px;
+        padding: 11px 14px;
+        border: 1px solid var(--blue);
+        border-radius: 12px;
+        background: var(--blue);
+        color: #fff;
+        cursor: pointer;
+        font-weight: 950;
+        text-decoration: none;
+      }
+
+      .btn.secondary {
+        background: #fff;
+        color: var(--blue);
+      }
+
+      .btn.ghost {
+        border-color: var(--line-strong);
+        background: var(--soft);
+        color: #334155;
+      }
+
+      .source-box,
+      .note-box,
+      .map-box {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--soft);
+        padding: 12px;
+        color: var(--muted);
+        line-height: 1.55;
+        font-size: 14px;
+      }
+
+      .unit-button,
+      .flow-button,
+      .summary-row {
+        width: 100%;
+        border: 1px solid var(--line-strong);
+        border-radius: 13px;
+        background: #fff;
+        color: var(--text);
+        cursor: pointer;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+        padding: 12px;
+        text-align: left;
+      }
+
+      .unit-button.active,
+      .flow-button.active {
+        border-color: var(--blue);
+        background: var(--blue-soft);
+      }
+
+      .num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        background: #e2e8f0;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 950;
+      }
+
+      .item-title {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.35;
+        font-weight: 950;
+        word-break: keep-all;
+      }
+
+      .progress {
+        height: 8px;
+        border-radius: 999px;
+        background: #e7edf5;
+        overflow: hidden;
+      }
+
+      .progress span {
+        display: block;
+        height: 100%;
+        width: var(--value, 0%);
+        border-radius: inherit;
+        background: var(--blue);
+      }
+
+      .status-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin: 12px 0;
+      }
+
+      .status-box {
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        background: var(--soft);
+        padding: 10px;
+      }
+
+      .status-box b {
+        display: block;
+        margin-bottom: 4px;
+        color: #263346;
+        font-size: 13px;
+      }
+
+      .check-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .check {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 10px;
+        align-items: start;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        background: #fff;
+        padding: 12px;
+      }
+
+      .check input {
+        width: 22px;
+        height: 22px;
+        margin-top: 1px;
+        accent-color: var(--blue);
+      }
+
+      .check.done {
+        border-color: #bbf7d0;
+        background: #f0fdf4;
+      }
+
+      .check.done .item-title {
+        color: var(--green);
+      }
+
+      .detail-box {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fbfdff;
+        padding: 12px;
+        margin-top: 12px;
+      }
+
+      .detail-box h3 {
+        margin-bottom: 6px;
+      }
+
+      .toast {
+        border: 1px solid #b9ded8;
+        border-radius: 12px;
+        padding: 12px;
+        background: var(--green-soft);
+        color: var(--green);
+        font-weight: 850;
+        line-height: 1.5;
+      }
+
+      .empty {
+        border: 1px dashed var(--line-strong);
+        border-radius: 14px;
+        padding: 16px;
+        background: var(--soft);
+      }
+
+      details {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+        padding: 12px;
+      }
+
+      details + details {
+        margin-top: 10px;
+      }
+
+      summary {
+        cursor: pointer;
+        color: #263346;
+        font-weight: 950;
+      }
+
+      button:focus-visible,
+      a:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.26);
+        outline-offset: 2px;
+      }
+
+      @media (max-width: 760px) {
+        .page { padding: 10px; }
+        .shell {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+        .hero,
+        .card,
+        .action-card {
+          padding: 14px;
+        }
+        h1 { font-size: 30px; }
+        .grid,
+        .field-grid,
+        .status-grid {
+          grid-template-columns: 1fr;
+        }
+        .unit-button,
+        .flow-button,
+        .summary-row {
+          grid-template-columns: auto minmax(0, 1fr);
+        }
+        .unit-button .chip,
+        .flow-button .chip,
+        .summary-row .chip {
+          grid-column: 2;
+          justify-self: start;
+        }
+        #my-view .action-card {
+          order: -1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <nav class="shell">
+        <div class="brand">FlowMe</div>
+        <p class="shell-note">큰 학습 지도 안에서 단원별 Flow를 기존 실행 카드로 관리합니다.</p>
+      </nav>
+
+      <header class="hero">
+        <p class="eyebrow">Khan Academy 중등 1학년 수학 기반</p>
+        <h1>중등 1학년 수학 학습 지도</h1>
+        <p class="desc">원문에 있는 단원과 세부 단원을 가져와, 각 단원은 기존 Flow처럼 체크리스트와 메모로 실행합니다.</p>
+        <div class="chips" style="margin-top:12px">
+          <span class="chip blue">전체 지도</span>
+          <span class="chip green">단원별 Flow</span>
+          <span class="chip">세부 단원 체크</span>
+          <span class="chip amber">원문 링크 보존</span>
+        </div>
+      </header>
+
+      <nav class="tabs" aria-label="화면">
+        <button class="active" type="button" data-view="content">콘텐츠</button>
+        <button type="button" data-view="my">내 Flow</button>
+        <button type="button" data-view="creator">제작자</button>
+      </nav>
+
+      <section class="view active" id="content-view">
+        <div class="grid">
+          <section class="card">
+            <p class="eyebrow">저장 전</p>
+            <h2>원문 구조를 학습 지도로 저장</h2>
+            <p class="desc">사용자는 시작일과 공부 요일만 정합니다. 단원과 세부 단원은 원문 구조를 그대로 사용합니다.</p>
+            <div class="field-grid" style="margin-top:14px">
+              <div class="field">
+                <label for="startDate">시작일</label>
+                <input id="startDate" type="date" value="2026-06-22" />
+              </div>
+              <div class="field">
+                <label for="studyDays">공부 요일</label>
+                <input id="studyDays" type="text" value="월/수/금" />
+              </div>
+            </div>
+            <div class="actions" style="margin-top:14px">
+              <button class="btn" type="button" id="saveMap">전체 학습 지도 저장</button>
+              <button class="btn secondary" type="button" id="saveUnit">선택 단원만 저장</button>
+            </div>
+            <div id="saveToast" class="toast" hidden style="margin-top:12px"></div>
+            <div class="source-box" style="margin-top:12px">
+              원문:
+              <a href="https://ko.khanacademy.org/math/kor-7th" target="_blank" rel="noreferrer">Khan Academy 중등 1학년 수학</a><br />
+              FlowMe는 학습 내용을 다시 설명하지 않고, 세부 단원 진행 상태와 개인 메모만 남깁니다.
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="meta-row" style="justify-content:space-between;align-items:center">
+              <div>
+                <p class="eyebrow">원문에서 가져온 구조</p>
+                <h2>단원과 세부 단원</h2>
+              </div>
+              <span class="chip blue" id="unitCount"></span>
+            </div>
+            <div class="stack" id="contentUnits"></div>
+            <div class="note-box" id="contentPreview" style="margin-top:12px"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="my-view">
+        <div class="grid">
+          <aside class="card">
+            <p class="eyebrow">내 Flow</p>
+            <h2>저장한 학습 지도</h2>
+            <div class="stack" id="savedList"></div>
+          </aside>
+
+          <section class="action-card" id="flowBody"></section>
+        </div>
+      </section>
+
+      <section class="view" id="creator-view">
+        <div class="grid">
+          <section class="card">
+            <p class="eyebrow">제작자</p>
+            <h2>커리큘럼을 Flow 묶음으로 만들기</h2>
+            <p class="desc">제작자는 큰 지도를 만들고, 각 단원에는 같은 Flow 상세 화면을 적용합니다.</p>
+            <div class="field" style="margin-top:14px">
+              <label for="sourceUrl">원문 URL</label>
+              <input id="sourceUrl" type="url" value="https://ko.khanacademy.org/math/kor-7th" readonly />
+            </div>
+            <div class="actions" style="margin-top:14px">
+              <button class="btn" type="button" id="importUnits">단원 구조 가져오기</button>
+              <button class="btn secondary" type="button" id="previewUser">사용자 화면 보기</button>
+            </div>
+            <div id="creatorToast" class="toast" hidden style="margin-top:12px"></div>
+          </section>
+
+          <section class="card">
+            <p class="eyebrow">만들어지는 구조</p>
+            <h2>상위 지도 + 단원별 Flow</h2>
+            <div class="stack" id="creatorPanel"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const units = [
+        {
+          id: "numbers",
+          title: "1. 수와 연산",
+          sourceUrl: "https://ko.khanacademy.org/math/kor-7th/xcd937f1d1ded37c0%3A1-1",
+          detail: "소수, 합성수, 지수, 소인수분해, 음수 해석을 순서대로 봅니다.",
+          lessons: [
+            "소수 찾기",
+            "합성수 찾기",
+            "소수와 합성수",
+            "지수 (기본)",
+            "지수 (중등1학년)",
+            "소인수분해 (중등1학년)",
+            "음수 해석하기"
+          ]
+        },
+        {
+          id: "expressions",
+          title: "2. 문자와 식",
+          sourceUrl: "https://ko.khanacademy.org/math/kor-7th/xcd937f1d1ded37c0%3A1-2",
+          detail: "변수가 있는 식을 만들고, 식의 값을 계산하는 항목으로 이어집니다.",
+          lessons: [
+            "변수가 있는 식 세우기",
+            "식 세우기 문제 해결하기 기초",
+            "변수가 한 개인 식 계산하기",
+            "지수가 포함된 변수로 이루어진 식",
+            "변수가 여러 개인 식"
+          ]
+        },
+        {
+          id: "graph",
+          title: "3. 좌표평면과 그래프",
+          sourceUrl: "https://ko.khanacademy.org/math/kor-7th/xcd937f1d1ded37c0%3A1-3",
+          detail: "좌표평면 위의 점, 사분면, 비례 관계를 봅니다.",
+          lessons: [
+            "좌표평면 위의 점",
+            "좌표평면과 사분면 (중등1학년)",
+            "표를 이용하여 비례식 만들기",
+            "비례식 만들기",
+            "좌표평면과 그래프 퀴즈"
+          ]
+        },
+        {
+          id: "geometry-basic",
+          title: "4. 기본 도형",
+          sourceUrl: "https://ko.khanacademy.org/math/kor-7th/xcd937f1d1ded37c0%3A1-4",
+          detail: "선분, 반직선, 직선, 각, 평행선 관련 항목을 봅니다.",
+          lessons: [
+            "선분, 반직선, 직선 구별하기",
+            "각의 이름",
+            "맞꼭지각",
+            "각의 크기 구하기",
+            "평행선과 각의 관계",
+            "삼각형을 이용하여 각의 크기 구하기"
+          ]
+        },
+        {
+          id: "geometry-plane",
+          title: "5. 평면도형과 입체도형",
+          sourceUrl: "https://ko.khanacademy.org/math/kor-7th/xcd937f1d1ded37c0%3A1-5",
+          detail: "다각형, 원과 부채꼴, 입체도형 관련 항목을 봅니다.",
+          lessons: [
+            "다각형",
+            "다각형의 내각의 합",
+            "다각형의 외각의 합",
+            "원과 부채꼴",
+            "각에 대한 호의 관계",
+            "평면도형과 입체도형 퀴즈"
+          ]
+        },
+        {
+          id: "stats",
+          title: "6. 통계",
+          sourceUrl: "https://ko.khanacademy.org/math/kor-7th/xcd937f1d1ded37c0%3A1-6",
+          detail: "줄기와 잎 그림, 히스토그램, 상대도수분포표를 봅니다.",
+          lessons: [
+            "줄기와 잎 그림 읽기",
+            "히스토그램 만들기",
+            "히스토그램 읽기",
+            "이원 상대도수분포표 만들기",
+            "이원 상대도수분포표 읽기",
+            "통계 단원 테스트"
+          ]
+        }
+      ];
+
+      const state = {
+        view: "content",
+        selected: 0,
+        saved: false,
+        partial: false,
+        checks: {},
+        notes: {},
+        toast: "",
+        imported: false
+      };
+
+      const $ = (id) => document.getElementById(id);
+      const selectedUnit = () => units[state.selected] || units[0];
+      const checkKey = (unit, index) => `${unit.id}:${index}`;
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function doneCount(unit) {
+        return unit.lessons.filter((_, index) => state.checks[checkKey(unit, index)]).length;
+      }
+
+      function pct(unit) {
+        return Math.round((doneCount(unit) / unit.lessons.length) * 100);
+      }
+
+      function nextLesson(unit) {
+        const index = unit.lessons.findIndex((_, lessonIndex) => !state.checks[checkKey(unit, lessonIndex)]);
+        return index >= 0 ? unit.lessons[index] : "이 단원 완료";
+      }
+
+      function unitButton(unit, index) {
+        const done = doneCount(unit);
+        const percent = Math.max(pct(unit), 4);
+        return `
+          <button class="unit-button ${index === state.selected ? "active" : ""}" type="button" data-unit="${index}">
+            <span class="num">${index + 1}</span>
+            <span>
+              <p class="item-title">${escapeHtml(unit.title)}</p>
+              <span class="small">${escapeHtml(unit.detail)}</span>
+              <span class="progress" style="display:block;margin-top:8px"><span style="--value:${percent}%"></span></span>
+            </span>
+            <span class="chip ${done ? "green" : index === state.selected ? "blue" : ""}">${done}/${unit.lessons.length}</span>
+          </button>
+        `;
+      }
+
+      function lessonChecks(unit) {
+        return unit.lessons.map((lesson, index) => {
+          const checked = Boolean(state.checks[checkKey(unit, index)]);
+          return `
+            <label class="check ${checked ? "done" : ""}">
+              <input type="checkbox" data-check="${index}" ${checked ? "checked" : ""} />
+              <span>
+                <p class="item-title">${escapeHtml(lesson)}</p>
+                <span class="small">원문 세부 단원 완료 여부만 표시</span>
+              </span>
+            </label>
+          `;
+        }).join("");
+      }
+
+      function setView(view) {
+        state.view = view;
+        render();
+      }
+
+      function renderShell() {
+        document.querySelectorAll("[data-view]").forEach((button) => {
+          button.classList.toggle("active", button.dataset.view === state.view);
+        });
+        document.querySelectorAll(".view").forEach((view) => view.classList.remove("active"));
+        $(`${state.view}-view`).classList.add("active");
+      }
+
+      function renderContent() {
+        const unit = selectedUnit();
+        $("unitCount").textContent = `${units.length}개 단원`;
+        $("contentUnits").innerHTML = units.map((entry, index) => unitButton(entry, index)).join("");
+        $("saveUnit").textContent = `${unit.title.replace(/^[0-9]. /, "")}만 저장`;
+        $("contentPreview").innerHTML = `
+          <p class="label">선택한 단원에 들어갈 체크 항목</p>
+          <h3>${escapeHtml(unit.title)}</h3>
+          <p class="desc">${escapeHtml(unit.detail)}</p>
+          <div class="chips" style="margin-top:10px">
+            ${unit.lessons.slice(0, 6).map((lesson) => `<span class="chip">${escapeHtml(lesson)}</span>`).join("")}
+          </div>
+        `;
+        $("saveToast").hidden = !state.toast;
+        $("saveToast").textContent = state.toast;
+      }
+
+      function renderSavedList() {
+        if (!state.saved) {
+          $("savedList").innerHTML = `
+            <div class="empty">
+              <h3>아직 저장한 학습 지도가 없습니다</h3>
+              <p class="desc">콘텐츠 화면에서 전체 학습 지도나 단원 하나를 저장하면 이곳에 나타납니다.</p>
+              <button class="btn" type="button" data-view="content" style="margin-top:12px">학습 지도 저장하기</button>
+            </div>
+          `;
+          return;
+        }
+
+        const visibleUnits = state.partial ? [selectedUnit()] : units;
+        $("savedList").innerHTML = `
+          <button class="flow-button active" type="button">
+            <span class="num">1</span>
+            <span>
+              <p class="item-title">중등 1학년 수학</p>
+              <span class="small">${state.partial ? selectedUnit().title + "만 저장" : "전체 학습 지도 저장"}</span>
+            </span>
+            <span class="chip green">진행 중</span>
+          </button>
+          <div class="map-box">
+            <p class="label">단원 Flow</p>
+            <div class="stack">
+              ${visibleUnits.map((unit) => unitButton(unit, units.indexOf(unit))).join("")}
+            </div>
+          </div>
+        `;
+      }
+
+      function renderFlowBody() {
+        if (!state.saved) {
+          $("flowBody").innerHTML = `
+            <p class="eyebrow">저장 전</p>
+            <h2>저장하면 기존 Flow 상세 화면으로 열립니다</h2>
+            <p class="desc">각 단원은 별도 화면을 만들지 않고, 체크리스트와 메모가 있는 동일한 Flow 카드로 실행합니다.</p>
+          `;
+          return;
+        }
+
+        const unit = selectedUnit();
+        const done = doneCount(unit);
+        const note = state.notes[unit.id] || "";
+        $("flowBody").innerHTML = `
+          <p class="eyebrow">현재 실행</p>
+          <h2>${escapeHtml(unit.title)}</h2>
+          <p class="desc">${escapeHtml(unit.detail)}</p>
+          <div class="status-grid">
+            <div class="status-box"><b>오늘 볼 것</b><span class="small">${escapeHtml(nextLesson(unit))}</span></div>
+            <div class="status-box"><b>완료</b><span class="small">${done}/${unit.lessons.length}</span></div>
+            <div class="status-box"><b>저장 위치</b><span class="small">내 Flow</span></div>
+          </div>
+          <div class="progress" style="margin-bottom:12px"><span style="--value:${Math.max(pct(unit), 4)}%"></span></div>
+          <div class="check-list">
+            ${lessonChecks(unit)}
+          </div>
+          <div class="detail-box">
+            <h3>메모</h3>
+            <textarea data-note="${unit.id}" placeholder="틀린 문제, 다시 볼 세부 단원, 원문에서 막힌 위치만 짧게 남기기">${escapeHtml(note)}</textarea>
+          </div>
+          <div class="actions" style="margin-top:12px">
+            <a class="btn" href="${unit.sourceUrl}" target="_blank" rel="noreferrer">원문에서 단원 보기</a>
+            <button class="btn secondary" type="button" data-next-unit>다음 단원</button>
+          </div>
+          <details style="margin-top:12px">
+            <summary>전체 학습 지도</summary>
+            <div class="stack" style="margin-top:10px">
+              ${units.map((entry, index) => unitButton(entry, index)).join("")}
+            </div>
+          </details>
+        `;
+      }
+
+      function renderCreator() {
+        $("creatorToast").hidden = !state.imported;
+        $("creatorToast").textContent = state.imported ? "원문에서 단원과 세부 단원 구조를 가져왔습니다." : "";
+        $("creatorPanel").innerHTML = `
+          <div class="summary-row">
+            <span class="num">1</span>
+            <span>
+              <p class="item-title">큰 지도</p>
+              <span class="small">중등 1학년 수학 전체 단원 순서를 보여줍니다.</span>
+            </span>
+            <span class="chip blue">상위</span>
+          </div>
+          <div class="summary-row">
+            <span class="num">2</span>
+            <span>
+              <p class="item-title">단원별 Flow</p>
+              <span class="small">각 단원은 기존 Flow 상세 화면과 같은 체크리스트/메모 구조를 씁니다.</span>
+            </span>
+            <span class="chip green">반복</span>
+          </div>
+          <div class="summary-row">
+            <span class="num">3</span>
+            <span>
+              <p class="item-title">세부 단원 체크 항목</p>
+              <span class="small">제작자가 지어낸 단계가 아니라 원문 단원 아래의 리스트를 사용합니다.</span>
+            </span>
+            <span class="chip amber">원문</span>
+          </div>
+          <div class="map-box">
+            <p class="label">가져온 단원</p>
+            <div class="stack">${units.map((unit, index) => unitButton(unit, index)).join("")}</div>
+          </div>
+        `;
+      }
+
+      function render() {
+        renderShell();
+        renderContent();
+        renderSavedList();
+        renderFlowBody();
+        renderCreator();
+      }
+
+      document.addEventListener("click", (event) => {
+        const viewButton = event.target.closest("[data-view]");
+        if (viewButton) {
+          setView(viewButton.dataset.view);
+          return;
+        }
+
+        const unitButton = event.target.closest("[data-unit]");
+        if (unitButton) {
+          state.selected = Number(unitButton.dataset.unit);
+          render();
+          return;
+        }
+
+        if (event.target.id === "saveMap") {
+          state.saved = true;
+          state.partial = false;
+          state.view = "my";
+          state.toast = "전체 학습 지도를 내 Flow에 저장했습니다.";
+          render();
+          return;
+        }
+
+        if (event.target.id === "saveUnit") {
+          state.saved = true;
+          state.partial = true;
+          state.view = "my";
+          state.toast = `${selectedUnit().title}을 내 Flow에 저장했습니다.`;
+          render();
+          return;
+        }
+
+        if (event.target.id === "importUnits") {
+          state.imported = true;
+          render();
+          return;
+        }
+
+        if (event.target.id === "previewUser") {
+          setView("content");
+          return;
+        }
+
+        const nextUnit = event.target.closest("[data-next-unit]");
+        if (nextUnit) {
+          state.selected = Math.min(state.selected + 1, units.length - 1);
+          render();
+        }
+      });
+
+      document.addEventListener("change", (event) => {
+        if (event.target.matches("[data-check]")) {
+          const unit = selectedUnit();
+          state.checks[checkKey(unit, Number(event.target.dataset.check))] = event.target.checked;
+          render();
+        }
+      });
+
+      document.addEventListener("input", (event) => {
+        if (event.target.matches("[data-note]")) {
+          state.notes[event.target.dataset.note] = event.target.value;
+        }
+      });
+
+      render();
+    </script>
+  </body>
+</html>

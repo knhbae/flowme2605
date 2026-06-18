@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FlowMe 제작자 지도 만들기</title>
+    <style>
+      :root {
+        --bg: #f6f7fb;
+        --panel: #fff;
+        --ink: #121826;
+        --muted: #647084;
+        --line: #dfe5ef;
+        --blue: #2457d6;
+        --green: #157347;
+        --amber: #946200;
+        --red: #b42318;
+        --soft-blue: #eef4ff;
+        --soft-green: #ecfdf3;
+        --soft-amber: #fff7e6;
+        --radius: 15px;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--ink); line-height: 1.5; }
+      button, input, textarea, select { font: inherit; }
+      button { cursor: pointer; }
+      a { color: var(--blue); text-underline-offset: 3px; }
+      .wrap { width: min(1240px, calc(100% - 28px)); margin: 0 auto; padding: 18px 0 52px; }
+      .topbar, .hero, .panel, .preview, .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 12px 30px rgba(15, 23, 42, .06); }
+      .topbar { padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+      .brand { font-weight: 900; font-size: 19px; }
+      .topbar select { border: 1px solid var(--line); border-radius: 12px; padding: 9px 12px; background: #fff; min-width: 260px; }
+      .hero { padding: 22px; margin-bottom: 14px; }
+      .eyebrow { color: var(--blue); font-weight: 900; margin: 0 0 8px; }
+      h1 { margin: 0; font-size: clamp(26px, 4vw, 42px); line-height: 1.15; letter-spacing: 0; }
+      h2 { margin: 0 0 12px; font-size: 20px; }
+      h3 { margin: 0 0 8px; font-size: 16px; }
+      p { margin: 0; }
+      .desc { color: var(--muted); }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+      .chip { display: inline-flex; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line); font-size: 13px; font-weight: 800; background: #fff; }
+      .chip.green { color: var(--green); background: var(--soft-green); border-color: #bbf7d0; }
+      .chip.blue { color: var(--blue); background: var(--soft-blue); border-color: #bfdbfe; }
+      .chip.amber { color: var(--amber); background: var(--soft-amber); border-color: #fde68a; }
+      .layout { display: grid; grid-template-columns: 340px 1fr 380px; gap: 14px; }
+      .panel, .preview { padding: 16px; }
+      .source-list, .pattern-list, .user-list { display: grid; gap: 8px; }
+      .source-row, .pattern-row, .user-row { border: 1px solid var(--line); border-radius: 12px; padding: 11px; background: #fff; }
+      .source-row.active { border-color: var(--blue); background: var(--soft-blue); }
+      .source-row strong, .pattern-row strong, .user-row strong { display: block; margin-bottom: 3px; }
+      .small { display: block; color: var(--muted); font-size: 13px; }
+      .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .field { margin-bottom: 10px; }
+      .field label { display: block; color: var(--muted); font-size: 13px; font-weight: 900; margin-bottom: 6px; }
+      input, textarea, select { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 10px 11px; background: #fff; color: var(--ink); }
+      textarea { min-height: 84px; resize: vertical; }
+      .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+      .btn { border: 1px solid var(--blue); border-radius: 12px; background: var(--blue); color: #fff; padding: 10px 12px; font-weight: 900; }
+      .btn.secondary { background: #fff; color: var(--blue); }
+      .btn.green { border-color: var(--green); background: var(--green); }
+      .map { display: grid; gap: 10px; margin-top: 12px; }
+      .map-card { border: 1px solid var(--line); border-radius: 13px; padding: 12px; background: #fbfcff; display: grid; grid-template-columns: auto 1fr; gap: 10px; }
+      .num { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--blue); color: #fff; font-weight: 900; }
+      .toast { margin-top: 12px; border: 1px solid #bbf7d0; background: var(--soft-green); color: var(--green); border-radius: 12px; padding: 10px; font-weight: 800; }
+      .check { border-left: 4px solid var(--green); background: #fbfffd; }
+      .warn { border-left: 4px solid var(--amber); background: #fffdf5; }
+      @media (max-width: 980px) {
+        .wrap { width: min(100% - 18px, 1240px); padding-top: 12px; }
+        .topbar { align-items: stretch; flex-direction: column; }
+        .topbar select { min-width: 0; width: 100%; }
+        .layout, .form-grid { grid-template-columns: 1fr; }
+        .hero { padding: 18px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <div class="topbar">
+        <div class="brand">FlowMe Creator</div>
+        <select id="templateSelect" aria-label="예시 콘텐츠 선택">
+          <option value="math">중1 수학 전체 진도표</option>
+          <option value="cert">정보처리기사 과목별 진도판</option>
+          <option value="baby">0~12개월 월령별 돌보기 지도</option>
+        </select>
+      </div>
+
+      <section class="hero">
+        <p class="eyebrow">콘텐츠를 실행형 지도로 만들기</p>
+        <h1>원문 목차를 반복 단위로 잡고, 한 번 만든 실행 패턴을 각 단위에 붙인다</h1>
+        <p class="desc" style="margin-top:10px">
+          제작자는 모든 항목을 새로 쓰는 것이 아니라 원문에 있는 단원, 과목, 월령을 가져오고 같은 실행 패턴을 연결한다.
+          사용자에게는 전체 지도와 선택 구간의 저장 결과가 보인다.
+        </p>
+        <div class="chips">
+          <span class="chip green">원문 구조 확인</span>
+          <span class="chip blue">반복 단위 선택</span>
+          <span class="chip amber">사용자 결과 미리보기</span>
+        </div>
+      </section>
+
+      <section class="layout">
+        <aside class="panel">
+          <h2>1. 원문 구조</h2>
+          <p class="desc" id="sourceIntro">원문에서 반복되는 단위를 먼저 고릅니다.</p>
+          <div class="source-list" id="sourceList"></div>
+        </aside>
+
+        <section class="panel">
+          <h2>2. 큰 지도와 반복 패턴</h2>
+          <div class="form-grid">
+            <div class="field">
+              <label for="mapTitle">사용자에게 보일 지도 이름</label>
+              <input id="mapTitle">
+            </div>
+            <div class="field">
+              <label for="repeatUnit">반복 단위</label>
+              <select id="repeatUnit">
+                <option>단원별</option>
+                <option>과목별</option>
+                <option>월령별</option>
+                <option>주차별</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="commonInput">사용자 공통 입력</label>
+              <input id="commonInput">
+            </div>
+            <div class="field">
+              <label for="mainOutput">주요 결과</label>
+              <input id="mainOutput">
+            </div>
+          </div>
+          <div class="field">
+            <label for="sourceUrl">원문 URL</label>
+            <input id="sourceUrl">
+          </div>
+          <div class="field">
+            <label for="promise">짧은 설명</label>
+            <textarea id="promise"></textarea>
+          </div>
+
+          <h3>하위 단위마다 붙일 실행 패턴</h3>
+          <div class="pattern-list" id="patternList"></div>
+          <div class="btn-row">
+            <button class="btn" type="button" id="applyPattern">패턴을 사용자 화면에 적용</button>
+            <button class="btn secondary" type="button" id="toggleBoundary">원문 밖 내용 점검</button>
+          </div>
+          <div class="toast" id="builderToast" hidden></div>
+
+          <div class="map" id="mapCards"></div>
+        </section>
+
+        <aside class="preview">
+          <h2>3. 사용자 저장 결과</h2>
+          <p class="desc" id="previewDesc">사용자는 전체를 저장하거나 필요한 단위만 저장합니다.</p>
+          <div class="btn-row">
+            <button class="btn green" type="button">전체 일정 만들기</button>
+            <button class="btn secondary" type="button">선택한 단위만 저장</button>
+          </div>
+          <div class="user-list" id="userPreview"></div>
+        </aside>
+      </section>
+    </main>
+
+    <script>
+      const templates = {
+        math: {
+          sourceIntro: "큰 단원과 소단원이 반복됩니다.",
+          title: "중1 수학 전체 진도표",
+          unit: "단원별",
+          input: "공부 시작일, 공부 요일, 하루 목표 개념 수",
+          output: "캘린더 일정 + 진도표 + 오답표",
+          url: "https://mathbang.net/13",
+          promise: "중1 수학 단원을 같은 공부 패턴으로 이어서 진행하게 합니다.",
+          sources: [
+            ["소인수분해", "거듭제곱, 소수와 합성수, 최대공약수/최소공배수"],
+            ["정수와 유리수", "수직선, 대소관계, 사칙연산"],
+            ["문자와 식", "문자 사용, 식의 값, 일차방정식"]
+          ],
+          pattern: [
+            ["개념 보기", "원문 링크 또는 강의 링크를 열고 오늘 볼 개념을 체크"],
+            ["문제 풀기", "대표 문제를 풀고 채점 완료를 표시"],
+            ["오답 남기기", "틀린 개념, 문항 번호, 다시 볼 날짜를 표에 추가"],
+            ["복습 잡기", "다음 공부 요일에 복습 일정을 배치"]
+          ]
+        },
+        cert: {
+          sourceIntro: "과목과 장이 반복됩니다.",
+          title: "정보처리기사 필기 과목별 진도판",
+          unit: "과목별",
+          input: "시험일, 공부 가능 요일, 하루 공부 시간",
+          output: "과목 진도표 + 기출 회차표 + 오답표",
+          url: "https://www.yes24.com/product/goods/159574278",
+          promise: "5과목을 이론, 문제, 요약, 기출 회차까지 같은 방식으로 돌립니다.",
+          sources: [
+            ["소프트웨어 설계", "요구사항 확인, 화면 설계, 애플리케이션 설계"],
+            ["데이터베이스 구축", "논리/물리 설계, SQL 응용, SQL 활용"],
+            ["프로그래밍 언어 활용", "서버 프로그램 구현, 언어 활용, SW 기초 기술"]
+          ],
+          pattern: [
+            ["이론 읽기", "과목의 이번 장을 읽고 이해 안 된 용어를 표시"],
+            ["장 끝 문제", "바로 아래 문제를 풀고 틀린 보기를 적음"],
+            ["핵심요약", "다시 볼 키워드를 요약 행에 남김"],
+            ["기출 회차", "시험 전 주에 기출 회차와 재풀이 날짜를 배치"]
+          ]
+        },
+        baby: {
+          sourceIntro: "월령마다 공식 확인과 생활 메모가 반복됩니다.",
+          title: "0~12개월 월령별 돌보기 지도",
+          unit: "월령별",
+          input: "아기 생년월일, 확인 요일, 현재 월령",
+          output: "월령 알림 + 공식 확인표 + 생활 메모",
+          url: "https://community.mmtalk.kr/community/article/180570",
+          promise: "월령이 바뀔 때 공식 일정과 보호자 메모를 분리해서 챙깁니다.",
+          sources: [
+            ["0~1개월", "수유/수면 리듬, 초기 접종 확인"],
+            ["4~6개월", "건강검진, 접종, 이유식 시작 확인"],
+            ["6개월 이후", "이유식 단계, 새 식재료, 컨디션 관찰"]
+          ],
+          pattern: [
+            ["공식 확인", "접종/검진은 공식 링크나 병원 안내로 확인"],
+            ["생활 메모", "수유, 수면, 이유식처럼 관찰한 내용을 한 줄로 남김"],
+            ["질문 적기", "병원에 물어볼 질문을 메모로 분리"],
+            ["판단 넘기기", "건강 판단은 하지 않고 상담/확인으로 넘김"]
+          ]
+        }
+      };
+
+      let activeKey = "math";
+      let activeSource = 0;
+      let showBoundary = false;
+      const $ = (id) => document.getElementById(id);
+      const active = () => templates[activeKey];
+
+      function render() {
+        const data = active();
+        $("sourceIntro").textContent = data.sourceIntro;
+        $("mapTitle").value = data.title;
+        $("repeatUnit").value = data.unit;
+        $("commonInput").value = data.input;
+        $("mainOutput").value = data.output;
+        $("sourceUrl").value = data.url;
+        $("promise").value = data.promise;
+        $("sourceList").innerHTML = data.sources.map((row, index) => `
+          <button class="source-row ${index === activeSource ? "active" : ""}" type="button" data-source="${index}">
+            <strong>${row[0]}</strong>
+            <span class="small">${row[1]}</span>
+          </button>
+        `).join("");
+        $("patternList").innerHTML = data.pattern.map((row, index) => `
+          <div class="pattern-row">
+            <strong>${index + 1}. ${row[0]}</strong>
+            <span class="small">${row[1]}</span>
+          </div>
+        `).join("");
+        renderPreview();
+      }
+
+      function renderPreview() {
+        const data = active();
+        $("previewDesc").textContent = `${data.unit.replace("별", "")} 단위를 고르면 같은 실행 패턴이 붙은 저장 결과가 보입니다.`;
+        $("mapCards").innerHTML = data.sources.map((row, index) => `
+          <div class="map-card">
+            <span class="num">${index + 1}</span>
+            <span><strong>${row[0]}</strong><span class="small">${data.pattern.map((p) => p[0]).join(" · ")}</span></span>
+          </div>
+        `).join("");
+        const selected = data.sources[activeSource] || data.sources[0];
+        $("userPreview").innerHTML = `
+          <div class="user-row check">
+            <strong>${$("mapTitle").value}</strong>
+            <span class="small">${$("promise").value}</span>
+          </div>
+          <div class="user-row">
+            <strong>지금 위치: ${selected[0]}</strong>
+            <span class="small">${selected[1]}</span>
+          </div>
+          <div class="user-row">
+            <strong>${selected[0]}에서 생성되는 것</strong>
+            <span class="small">${$("mainOutput").value}</span>
+          </div>
+          <div class="user-row">
+            <strong>공통 입력</strong>
+            <span class="small">${$("commonInput").value}</span>
+          </div>
+          ${showBoundary ? `<div class="user-row warn"><strong>원문 밖 내용 점검</strong><span class="small">원문에 없는 단원, 과목, 월령은 공개 전 제외하거나 별도 작성 근거를 붙입니다.</span></div>` : ""}
+        `;
+      }
+
+      $("templateSelect").addEventListener("change", (event) => {
+        activeKey = event.target.value;
+        activeSource = 0;
+        showBoundary = false;
+        $("builderToast").hidden = true;
+        render();
+      });
+      document.addEventListener("click", (event) => {
+        const source = event.target.closest("[data-source]");
+        if (source) {
+          activeSource = Number(source.dataset.source);
+          $("builderToast").hidden = true;
+          render();
+        }
+      });
+      ["mapTitle", "repeatUnit", "commonInput", "mainOutput", "sourceUrl", "promise"].forEach((id) => {
+        $(id).addEventListener("input", renderPreview);
+        $(id).addEventListener("change", renderPreview);
+      });
+      $("applyPattern").addEventListener("click", () => {
+        $("builderToast").hidden = false;
+        $("builderToast").textContent = `${active().sources.length}개 ${active().unit.replace("별", "")} 단위에 같은 실행 패턴을 적용했습니다.`;
+        renderPreview();
+      });
+      $("toggleBoundary").addEventListener("click", () => {
+        showBoundary = !showBoundary;
+        $("builderToast").hidden = false;
+        $("builderToast").textContent = showBoundary ? "원문 밖 내용 점검 항목을 미리보기에 표시했습니다." : "점검 항목을 접었습니다.";
+        renderPreview();
+      });
+
+      render();
+    </script>
+  </body>
+</html>

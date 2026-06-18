@@ -45,8 +45,7 @@ export type ArtifactLogTable = {
 };
 
 const movingSlugs = new Set(['moving-d30-basic', 'real-ohouse-moving-d30-prep']);
-const travelSlugs = new Set(['overseas-travel-d14', 'real-mofa-overseas-travel-prep']);
-const mofaTravelSlugs = new Set(['real-mofa-overseas-travel-prep']);
+const travelSlugs = new Set(['overseas-travel-d14']);
 const studySlugs = new Set(['real-sinagong-computer-d30-study', 'computer-skills-d30-study']);
 const driverLicenseSlugs = new Set(['driver-license-renewal-check', 'real-safe-driving-license-renewal']);
 const familyCertificateSlugs = new Set(['family-certificate-issue']);
@@ -79,8 +78,8 @@ const industrialAccidentSlugs = new Set(['industrial-accident-claim-docs']);
 const healthCheckupSlugs = new Set(['national-health-checkup-d7']);
 const vaccinationCertificateSlugs = new Set(['vaccination-certificate-issue']);
 const jobChangeRiskSlugs = new Set(['job-change-risk-check']);
-const passportRenewalSlugs = new Set(['passport-renewal-docs']);
 const fitvelyDietRecordSlugs = new Set(['real-fitvely-diet-record-routine']);
+const waterPurifierFilterSlugs = new Set(['water-purifier-filter-cycle']);
 
 const driverLicenseComparisonRows: ArtifactComparisonRow[] = [
   { id: 'driver-license-renewal-type', title: '면허/갱신 유형' },
@@ -286,13 +285,6 @@ const childcareSupportComparisonRows: ArtifactComparisonRow[] = [
   { id: 'childcare-support-first-visit-docs', title: '첫 방문 서류와 준비물' },
 ];
 
-const newCarDeliveryComparisonRows: ArtifactComparisonRow[] = [
-  { id: 'new-car-exterior-interior', title: '외관/실내 하자와 사진 파일명' },
-  { id: 'new-car-electronics-options', title: '전자장비·옵션 작동과 영상 파일명' },
-  { id: 'new-car-documents', title: '등록/보험/인수 서류 확인 상태' },
-  { id: 'new-car-defect-dealer-confirmation', title: '딜러 확인과 서명 전 보류 조건' },
-];
-
 const newCarDeliveryMemoFields: ArtifactMemoField[] = [
   {
     id: 'new-car-delivery-place',
@@ -339,13 +331,13 @@ const usedCarDecisionMemoFields: ArtifactMemoField[] = [
     label: '구매 목적과 예산 경계',
     placeholder: '예: 출퇴근용, 총예산 1,500만원, 수리비 100만원 넘으면 보류',
     groupEyebrow: '구매 판단 메모',
-    groupTitle: '후보 비교·증빙·보류 메모',
-    groupDescription: 'FLOW가 구매 여부를 대신 판단하지 않고, 후보별 증빙과 보류 사유를 사용자가 남기도록 돕습니다.',
+    groupTitle: '후보 비교·조회·보류 메모',
+    groupDescription: 'FLOW가 구매 여부를 대신 판단하지 않고, 후보별 공식 조회 결과와 보류 사유를 가볍게 남기도록 돕습니다.',
   },
   {
     id: 'used-car-proof-files',
-    label: '사진/조회 파일명',
-    placeholder: '예: avante-performance-record.pdf, tire-front.jpg',
+    label: '조회 결과/사진 메모(선택)',
+    placeholder: '예: 성능점검표 확인, 사고이력 조회 완료, 필요하면 tire-front.jpg',
   },
   {
     id: 'used-car-expert-check',
@@ -745,7 +737,31 @@ const fitvelyNutritionActionObservationLogTables: ArtifactLogTable[] = [
   },
 ];
 
-// ───────── 2026-06-01 크리에이터·블로그 배치: 카테고리별 전용 표/메모 ─────────
+const waterPurifierFilterLogTables: ArtifactLogTable[] = [
+  {
+    id: 'water-purifier-filter-cycle-log',
+    eyebrow: '?? ???',
+    title: '??? ?? ?? ???',
+    description: '???? ??? ? ?? ?????? ?? ??? ???, ???? ??? ???? ?? ???? ????.',
+    rows: [
+      { id: 'sediment-filter', label: '?? ??', defaultValues: { cycle: '?? 3~6??', sourceMemo: '??????? ? ? ??? 1? ??' } },
+      { id: 'pre-carbon-filter', label: '???? ??', defaultValues: { cycle: '?? 6~12??', sourceMemo: '?????????? ??' } },
+      { id: 'ro-nano-filter', label: 'RO/?? ??', defaultValues: { cycle: '?? 12~24??', sourceMemo: '?? ?????? ? ?? ?? ??' } },
+      { id: 'post-carbon-filter', label: '??? ??', defaultValues: { cycle: '?? 9~12??', sourceMemo: '?? ??? ??? ????? ??' } },
+      { id: 'outlet-self-clean', label: '??/??? ?? ??' },
+      { id: 'taste-smell-check', label: '????? ??' },
+    ],
+    columns: [
+      { id: 'lastChangedAt', label: '??? ???', placeholder: '?: 2026-06-01' },
+      { id: 'cycle', label: '?? ??', placeholder: '?: 6?? / ?? ?? ??' },
+      { id: 'nextCheckAt', label: '?? ???', placeholder: '?: 2026-12-01' },
+      { id: 'conditionMemo', label: '?? ??', placeholder: '?: ????? ?? ??' },
+      { id: 'sourceMemo', label: '??/?? ??', placeholder: '?: ??? ??? ?? ?? ??' },
+    ],
+  },
+];
+
+// ????????? 2026-06-01 ????????? ??: ????? ?? ?/?? ?????????
 const weeklyMealPlanSlugs = new Set(['weekly-meal-plan']);
 const monthlyBudgetSlugs = new Set(['monthly-household-budget']);
 const skinWeeklySlugs = new Set(['skin-weekly-check']);
@@ -755,23 +771,23 @@ const paydayFinanceSlugs = new Set(['payday-finance-routine']);
 const weeklyMealPlanLogTables: ArtifactLogTable[] = [
   {
     id: 'weekly-meal-plan-table',
-    eyebrow: '주간 식단표',
-    title: '요일별 메뉴·주재료 표',
-    description: '요일별 메뉴를 먼저 정하고, 겹치는 주재료를 합쳐 장볼 목록으로 옮깁니다.',
+    eyebrow: '?? ???',
+    title: '??? ?????? ?',
+    description: '??? ??? ?? ???, ??? ???? ?? ?? ???? ????.',
     rows: [
-      { id: 'meal-mon', label: '월' },
-      { id: 'meal-tue', label: '화' },
-      { id: 'meal-wed', label: '수' },
-      { id: 'meal-thu', label: '목' },
-      { id: 'meal-fri', label: '금' },
-      { id: 'meal-sat', label: '토' },
-      { id: 'meal-sun', label: '일' },
+      { id: 'meal-mon', label: '?' },
+      { id: 'meal-tue', label: '?' },
+      { id: 'meal-wed', label: '?' },
+      { id: 'meal-thu', label: '?' },
+      { id: 'meal-fri', label: '?' },
+      { id: 'meal-sat', label: '?' },
+      { id: 'meal-sun', label: '?' },
     ],
     columns: [
-      { id: 'menu', label: '메뉴', placeholder: '예: 된장찌개, 계란말이' },
-      { id: 'ingredients', label: '주재료', placeholder: '예: 두부, 애호박, 계란' },
-      { id: 'toBuy', label: '장볼 것', placeholder: '예: 두부 1모, 애호박 1개' },
-      { id: 'memo', label: '메모', placeholder: '예: 외식 예정 / 도시락' },
+      { id: 'menu', label: '??', placeholder: '?: ????, ????' },
+      { id: 'ingredients', label: '???', placeholder: '?: ??, ???, ??' },
+      { id: 'toBuy', label: '?? ?', placeholder: '?: ?? 1?, ??? 1?' },
+      { id: 'memo', label: '??', placeholder: '?: ?? ?? / ???' },
     ],
   },
 ];
@@ -779,22 +795,22 @@ const weeklyMealPlanLogTables: ArtifactLogTable[] = [
 const monthlyBudgetLogTables: ArtifactLogTable[] = [
   {
     id: 'monthly-budget-table',
-    eyebrow: '월간 가계부',
-    title: '카테고리별 예산·지출표',
-    description: '카테고리별 예산을 먼저 잡고, 한 달 지출과 잔액을 같은 줄에 기록합니다. 투자 판단이 아닌 지출 파악용입니다.',
+    eyebrow: '?? ???',
+    title: '????? ??????',
+    description: '????? ??? ?? ??, ? ? ??? ??? ?? ?? ?????. ?? ??? ?? ?? ??????.',
     rows: [
-      { id: 'budget-fixed', label: '고정지출(월세·보험·구독)' },
-      { id: 'budget-food', label: '식비' },
-      { id: 'budget-transport', label: '교통' },
-      { id: 'budget-shopping', label: '쇼핑·여가' },
-      { id: 'budget-saving', label: '저축·비상금' },
-      { id: 'budget-etc', label: '기타' },
+      { id: 'budget-fixed', label: '????(????????)' },
+      { id: 'budget-food', label: '??' },
+      { id: 'budget-transport', label: '??' },
+      { id: 'budget-shopping', label: '?????' },
+      { id: 'budget-saving', label: '??????' },
+      { id: 'budget-etc', label: '??' },
     ],
     columns: [
-      { id: 'budget', label: '예산', placeholder: '예: 50만원' },
-      { id: 'spent', label: '지출', placeholder: '예: 43만원' },
-      { id: 'balance', label: '잔액', placeholder: '예: +7만원' },
-      { id: 'memo', label: '메모', placeholder: '예: 다음 달 줄일 항목' },
+      { id: 'budget', label: '??', placeholder: '?: 50??' },
+      { id: 'spent', label: '??', placeholder: '?: 43??' },
+      { id: 'balance', label: '??', placeholder: '?: +7??' },
+      { id: 'memo', label: '??', placeholder: '?: ?? ? ?? ??' },
     ],
   },
 ];
@@ -802,20 +818,20 @@ const monthlyBudgetLogTables: ArtifactLogTable[] = [
 const skinWeeklyLogTables: ArtifactLogTable[] = [
   {
     id: 'skin-weekly-table',
-    eyebrow: '주간 피부 관찰표',
-    title: '주차별 피부 상태 기록',
-    description: '주차별 피부 상태와 사용 제품, 반응을 같은 줄에 남겨 맞는 루틴을 좁혀갑니다. 피부 진단이 아닌 관찰 기록입니다.',
+    eyebrow: '?? ?? ???',
+    title: '??? ?? ?? ??',
+    description: '??? ?? ??? ?? ??, ??? ?? ?? ?? ?? ??? ?????. ?? ??? ?? ?? ?????.',
     rows: [
-      { id: 'skin-week-1', label: '1주차' },
-      { id: 'skin-week-2', label: '2주차' },
-      { id: 'skin-week-3', label: '3주차' },
-      { id: 'skin-week-4', label: '4주차' },
+      { id: 'skin-week-1', label: '1??' },
+      { id: 'skin-week-2', label: '2??' },
+      { id: 'skin-week-3', label: '3??' },
+      { id: 'skin-week-4', label: '4??' },
     ],
     columns: [
-      { id: 'condition', label: '피부 상태', placeholder: '예: 유분 많음, 트러블 2개' },
-      { id: 'products', label: '사용 제품', placeholder: '예: A토너, B크림' },
-      { id: 'reaction', label: '반응', placeholder: '예: 새 제품 후 따가움 없음' },
-      { id: 'adjust', label: '다음 조정', placeholder: '예: 토너 양 줄이기' },
+      { id: 'condition', label: '?? ??', placeholder: '?: ?? ??, ??? 2?' },
+      { id: 'products', label: '?? ??', placeholder: '?: A??, B??' },
+      { id: 'reaction', label: '??', placeholder: '?: ? ?? ? ??? ??' },
+      { id: 'adjust', label: '?? ??', placeholder: '?: ?? ? ???' },
     ],
   },
 ];
@@ -823,20 +839,20 @@ const skinWeeklyLogTables: ArtifactLogTable[] = [
 const petHealthLogTables: ArtifactLogTable[] = [
   {
     id: 'pet-health-table',
-    eyebrow: '주간 건강 관찰표',
-    title: '주차별 반려동물 건강 기록',
-    description: '식욕·배변·활동·외관 변화를 주차별로 남겨 이상 징후를 조기에 파악합니다. 진단이 아니므로 이상 시 동물병원에 문의하세요.',
+    eyebrow: '?? ?? ???',
+    title: '??? ???? ?? ??',
+    description: '??????????? ??? ???? ?? ?? ??? ??? ?????. ??? ???? ?? ? ????? ?????.',
     rows: [
-      { id: 'pet-week-1', label: '1주차' },
-      { id: 'pet-week-2', label: '2주차' },
-      { id: 'pet-week-3', label: '3주차' },
-      { id: 'pet-week-4', label: '4주차' },
+      { id: 'pet-week-1', label: '1??' },
+      { id: 'pet-week-2', label: '2??' },
+      { id: 'pet-week-3', label: '3??' },
+      { id: 'pet-week-4', label: '4??' },
     ],
     columns: [
-      { id: 'appetite', label: '식욕', placeholder: '예: 평소와 같음' },
-      { id: 'stool', label: '배변', placeholder: '예: 정상, 1일 2회' },
-      { id: 'activity', label: '활동/기분', placeholder: '예: 활발, 산책 잘함' },
-      { id: 'abnormal', label: '이상 징후', placeholder: '예: 없음 / 병원 문의 필요' },
+      { id: 'appetite', label: '??', placeholder: '?: ??? ??' },
+      { id: 'stool', label: '??', placeholder: '?: ??, 1? 2?' },
+      { id: 'activity', label: '??/??', placeholder: '?: ??, ?? ??' },
+      { id: 'abnormal', label: '?? ??', placeholder: '?: ?? / ?? ?? ??' },
     ],
   },
 ];
@@ -844,16 +860,16 @@ const petHealthLogTables: ArtifactLogTable[] = [
 const paydayFinanceMemoFields: ArtifactMemoField[] = [
   {
     id: 'payday-net-income',
-    label: '이번 달 실수령액',
-    placeholder: '예: 세후 290만원',
-    groupEyebrow: '월급날 재정 메모',
-    groupTitle: '월급날 분리·이체 기록',
-    groupDescription: '투자 판단이 아니라, 실수령액을 기준으로 고정지출·저축·생활비를 먼저 분리한 결과를 한 장에 남깁니다.',
+    label: '?? ? ????',
+    placeholder: '?: ?? 290??',
+    groupEyebrow: '??? ?? ??',
+    groupTitle: '??? ????? ??',
+    groupDescription: '?? ??? ???, ????? ???? ???????????? ?? ??? ??? ? ?? ????.',
   },
-  { id: 'payday-auto-transfer', label: '자동이체 정상 처리', placeholder: '예: 월세·보험·구독 정상, 카드값 출금 확인' },
-  { id: 'payday-savings', label: '저축·비상금 이체', placeholder: '예: 50만원 저축 계좌 이체 완료' },
-  { id: 'payday-living-budget', label: '생활비 분리', placeholder: '예: 생활비 80만원 별도 계좌/봉투' },
-  { id: 'payday-adjustment', label: '이번 달 조정 기준', placeholder: '예: 지난달 초과한 외식 20만원 이하로' },
+  { id: 'payday-auto-transfer', label: '???? ?? ??', placeholder: '?: ???????? ??, ??? ?? ??' },
+  { id: 'payday-savings', label: '?????? ??', placeholder: '?: 50?? ?? ?? ?? ??' },
+  { id: 'payday-living-budget', label: '??? ??', placeholder: '?: ??? 80?? ?? ??/??' },
+  { id: 'payday-adjustment', label: '?? ? ?? ??', placeholder: '?: ??? ??? ?? 20?? ???' },
 ];
 
 export function getComparisonRows(bundle: FlowBundle): ArtifactComparisonRow[] {
@@ -870,32 +886,11 @@ export function getComparisonConfig(bundle: FlowBundle): ArtifactComparisonConfi
       rows: driverLicenseComparisonRows,
     };
   }
-  if (movingSlugs.has(bundle.flow.slug)) {
-    return {
-      title: '이사 업체 후보 비교',
-      eyebrow: '업체 비교표',
-      rows: movingVendorComparisonRows,
-    };
-  }
   if (childcareSupportSlugs.has(bundle.flow.slug)) {
     return {
       title: '시간제보육 이용 조건 비교표',
       eyebrow: '기관/예약 비교',
       rows: childcareSupportComparisonRows,
-    };
-  }
-  if (newCarDeliverySlugs.has(bundle.flow.slug)) {
-    return {
-      title: '인수 전 하자·증빙표',
-      eyebrow: '사진·딜러 확인',
-      rows: newCarDeliveryComparisonRows,
-    };
-  }
-  if (usedCarSlugs.has(bundle.flow.slug)) {
-    return {
-      title: '중고차 후보 비교표',
-      eyebrow: '구매 전 후보 비교',
-      rows: usedCarComparisonRows,
     };
   }
   if (workoutProgrammingSlugs.has(bundle.flow.slug)) {
@@ -920,22 +915,57 @@ export function getMemoCardFields(bundle: FlowBundle): ArtifactMemoField[] {
   if (healthCheckupSlugs.has(bundle.flow.slug)) return healthCheckupMemoFields;
   if (vaccinationCertificateSlugs.has(bundle.flow.slug)) return vaccinationCertificateMemoFields;
   if (jobChangeRiskSlugs.has(bundle.flow.slug)) return jobChangeRiskMemoFields;
-  if (passportRenewalSlugs.has(bundle.flow.slug)) return passportRenewalMemoFields;
-  if (movingSlugs.has(bundle.flow.slug)) return movingProofMemoFields;
-  if (mofaTravelSlugs.has(bundle.flow.slug)) return mofaTravelEmergencyMemoFields;
+  if (bundle.flow.slug === 'passport-renewal-docs') return [];
+  if (movingSlugs.has(bundle.flow.slug)) return [];
+  if (bundle.flow.slug === 'real-mofa-overseas-travel-prep') return [];
   if (travelSlugs.has(bundle.flow.slug)) return travelProofMemoFields;
   if (newCarDeliverySlugs.has(bundle.flow.slug)) return newCarDeliveryMemoFields;
-  if (usedCarSlugs.has(bundle.flow.slug)) return usedCarDecisionMemoFields;
-  if (vehicleInspectionSlugs.has(bundle.flow.slug)) return vehicleInspectionMemoFields;
+  if (usedCarSlugs.has(bundle.flow.slug)) return [];
+  if (vehicleInspectionSlugs.has(bundle.flow.slug)) return [];
   if (paydayFinanceSlugs.has(bundle.flow.slug)) return paydayFinanceMemoFields;
   return [];
 }
 
+export function getHoldMemoFields(bundle: FlowBundle): ArtifactMemoField[] {
+  const section = bundle.flow.hold_section;
+  if (!section) return [];
+  const isUsedCar = bundle.flow.slug === 'used-car-buying-check';
+
+  return [
+    {
+      id: `${bundle.flow.slug}-hold-reason`,
+      label: '보류 사유',
+      placeholder: section.reasons.join(' / '),
+      groupEyebrow: isUsedCar ? '구매 보류 메모' : '보류 증거 메모',
+      groupTitle: section.title,
+      groupDescription: section.consequence,
+    },
+    {
+      id: `${bundle.flow.slug}-hold-evidence-files`,
+      label: isUsedCar ? '공식 조회/사진 메모(선택)' : '사진/증빙 파일명',
+      placeholder: isUsedCar
+        ? '예: 사고이력 조회 완료, 자동차등록원부 압류 없음, 필요하면 하부사진 2장'
+        : '예: door-scratch-4821.jpg, usedcar_20260526_engine_noise.mp4',
+    },
+    {
+      id: `${bundle.flow.slug}-hold-confirmation`,
+      label: isUsedCar ? '판매자/전문가 확인' : '상대방 확인',
+      placeholder: isUsedCar ? '예: 판매자 답변, 정비소 점검 결과, 수리비 견적' : '예: 딜러/판매자에게 재확인 요청한 내용과 답변',
+    },
+    {
+      id: `${bundle.flow.slug}-hold-next-check`,
+      label: '다음 확인 시점',
+      placeholder: '예: 공식 조회 후, 전문가 점검 후, 서면 확인 받은 뒤',
+    },
+  ];
+}
+
 export function getLogTables(bundle: FlowBundle): ArtifactLogTable[] {
   if (qnetExamSlugs.has(bundle.flow.slug)) return qnetLogTables;
-  if (fitvelyDietRecordSlugs.has(bundle.flow.slug)) return fitvelyDietObservationLogTables;
+  if (waterPurifierFilterSlugs.has(bundle.flow.slug)) return waterPurifierFilterLogTables;
+  if (fitvelyDietRecordSlugs.has(bundle.flow.slug)) return [];
   if (fitvelyNutritionExactVideoSlugs.has(bundle.flow.slug)) return fitvelyNutritionActionObservationLogTables;
-  if (bundle.flow.slug === 'computer-skills-d30-study') return computerSkillsStudyLogTables;
+  if (bundle.flow.slug === 'computer-skills-d30-study') return [];
   if (studySlugs.has(bundle.flow.slug)) return studyLogTables;
   if (weeklyMealPlanSlugs.has(bundle.flow.slug)) return weeklyMealPlanLogTables;
   if (monthlyBudgetSlugs.has(bundle.flow.slug)) return monthlyBudgetLogTables;

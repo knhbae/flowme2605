@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FLOW 로드맵 진행 시각화</title>
+    <style>
+      :root {
+        --bg: #f6f7f3;
+        --ink: #141712;
+        --muted: #5e665a;
+        --line: #d8ddd1;
+        --panel: #ffffff;
+        --soft: #edf1e7;
+        --green: #2f7d52;
+        --green-soft: #e2f2e8;
+        --amber: #a66b14;
+        --amber-soft: #f7ead3;
+        --red: #a33b32;
+        --red-soft: #f5dedb;
+        --blue: #285f8f;
+        --blue-soft: #dfeaf5;
+        --shadow: 0 18px 45px rgba(35, 42, 28, 0.09);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "Noto Sans KR", sans-serif;
+        line-height: 1.55;
+      }
+
+      a {
+        color: inherit;
+        text-decoration-color: rgba(20, 23, 18, 0.28);
+        text-underline-offset: 3px;
+      }
+
+      .page {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 34px 20px 56px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.6fr);
+        gap: 20px;
+        align-items: stretch;
+        margin-bottom: 20px;
+      }
+
+      .hero-main,
+      .hero-side,
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+
+      .hero-main {
+        padding: 28px;
+      }
+
+      .hero-side {
+        padding: 22px;
+        display: grid;
+        align-content: space-between;
+        gap: 18px;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        max-width: 780px;
+        font-size: clamp(30px, 5vw, 56px);
+        line-height: 1.04;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        font-size: 22px;
+        line-height: 1.2;
+        letter-spacing: 0;
+      }
+
+      h3 {
+        font-size: 16px;
+        line-height: 1.25;
+      }
+
+      .lead {
+        max-width: 760px;
+        margin-top: 16px;
+        color: var(--muted);
+        font-size: 17px;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+      }
+
+      .chip,
+      .status {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        border-radius: 999px;
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: 750;
+        border: 1px solid rgba(20, 23, 18, 0.08);
+        color: var(--ink);
+        background: var(--soft);
+        white-space: nowrap;
+      }
+
+      .chip.green,
+      .status.done {
+        color: var(--green);
+        background: var(--green-soft);
+      }
+
+      .chip.amber,
+      .status.progress {
+        color: var(--amber);
+        background: var(--amber-soft);
+      }
+
+      .chip.red,
+      .status.blocked {
+        color: var(--red);
+        background: var(--red-soft);
+      }
+
+      .chip.blue,
+      .status.next {
+        color: var(--blue);
+        background: var(--blue-soft);
+      }
+
+      .metric {
+        border-top: 1px solid var(--line);
+        padding-top: 14px;
+      }
+
+      .metric:first-child {
+        border-top: 0;
+        padding-top: 0;
+      }
+
+      .metric strong {
+        display: block;
+        font-size: 31px;
+        line-height: 1;
+      }
+
+      .metric span {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .grid.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .card {
+        padding: 22px;
+        margin-top: 16px;
+      }
+
+      .section-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        align-items: flex-start;
+        margin-bottom: 16px;
+      }
+
+      .section-head p {
+        max-width: 640px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .roadmap {
+        display: grid;
+        gap: 12px;
+      }
+
+      .stage {
+        display: grid;
+        grid-template-columns: 160px minmax(0, 1fr) 170px;
+        gap: 16px;
+        align-items: stretch;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        background: #fbfcf8;
+      }
+
+      .stage.active {
+        border-color: rgba(47, 125, 82, 0.45);
+        background: linear-gradient(90deg, #f7fbf6, #ffffff);
+      }
+
+      .stage.dim {
+        opacity: 0.68;
+      }
+
+      .stage-title {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .stage-title strong {
+        font-size: 18px;
+      }
+
+      .stage-body p {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .stage-body ul,
+      .lane ul,
+      .risk ul,
+      .source-list {
+        margin: 10px 0 0;
+        padding-left: 18px;
+      }
+
+      .stage-body li,
+      .lane li,
+      .risk li,
+      .source-list li {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .stage-score {
+        display: grid;
+        align-content: start;
+        gap: 8px;
+      }
+
+      .bar {
+        width: 100%;
+        height: 10px;
+        border-radius: 999px;
+        background: #e3e7dd;
+        overflow: hidden;
+      }
+
+      .bar span {
+        display: block;
+        height: 100%;
+        width: var(--value);
+        border-radius: inherit;
+        background: var(--green);
+      }
+
+      .bar.amber span {
+        background: var(--amber);
+      }
+
+      .bar.blue span {
+        background: var(--blue);
+      }
+
+      .bar.red span {
+        background: var(--red);
+      }
+
+      .lane {
+        min-height: 210px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fbfcf8;
+        padding: 16px;
+      }
+
+      .lane h3 {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .flowline {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .flowline::before {
+        content: "";
+        position: absolute;
+        top: 18px;
+        left: 7%;
+        right: 7%;
+        height: 2px;
+        background: var(--line);
+      }
+
+      .milestone {
+        position: relative;
+        display: grid;
+        gap: 8px;
+        align-content: start;
+        padding-top: 36px;
+      }
+
+      .dot {
+        position: absolute;
+        top: 9px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--panel);
+        border: 5px solid var(--line);
+        z-index: 1;
+      }
+
+      .milestone.done .dot {
+        border-color: var(--green);
+      }
+
+      .milestone.active .dot {
+        border-color: var(--amber);
+      }
+
+      .milestone.next .dot {
+        border-color: var(--blue);
+      }
+
+      .milestone strong {
+        font-size: 13px;
+      }
+
+      .milestone span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .evidence {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      .meter {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+        background: #fbfcf8;
+      }
+
+      .meter-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 7px;
+        margin-top: 14px;
+      }
+
+      .meter-cell {
+        min-height: 48px;
+        border-radius: 6px;
+        background: var(--soft);
+        border: 1px solid var(--line);
+        display: grid;
+        place-items: center;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 750;
+        text-align: center;
+        padding: 4px;
+      }
+
+      .meter-cell.filled {
+        background: var(--green-soft);
+        color: var(--green);
+        border-color: rgba(47, 125, 82, 0.35);
+      }
+
+      .meter-cell.pending {
+        background: var(--amber-soft);
+        color: var(--amber);
+        border-color: rgba(166, 107, 20, 0.35);
+      }
+
+      .risk {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fbfcf8;
+        padding: 16px;
+      }
+
+      .risk h3 {
+        margin-bottom: 8px;
+      }
+
+      .compact-table {
+        width: 100%;
+        border-collapse: collapse;
+        overflow: hidden;
+        border-radius: 8px;
+      }
+
+      .compact-table th,
+      .compact-table td {
+        border-bottom: 1px solid var(--line);
+        padding: 12px 10px;
+        text-align: left;
+        vertical-align: top;
+        font-size: 13px;
+      }
+
+      .compact-table th {
+        color: var(--muted);
+        font-size: 12px;
+        background: #f1f4ec;
+      }
+
+      .compact-table tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .note {
+        margin-top: 12px;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(166, 107, 20, 0.25);
+        color: #6d4917;
+        background: var(--amber-soft);
+        font-size: 13px;
+      }
+
+      footer {
+        margin-top: 16px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      @media (max-width: 900px) {
+        .hero,
+        .grid.two,
+        .grid.three,
+        .evidence {
+          grid-template-columns: 1fr;
+        }
+
+        .stage {
+          grid-template-columns: 1fr;
+        }
+
+        .flowline {
+          grid-template-columns: 1fr;
+        }
+
+        .flowline::before {
+          display: none;
+        }
+
+        .milestone {
+          padding: 0 0 0 34px;
+        }
+
+        .dot {
+          left: 10px;
+          top: 3px;
+          transform: none;
+        }
+
+        .compact-table,
+        .compact-table thead,
+        .compact-table tbody,
+        .compact-table tr,
+        .compact-table th,
+        .compact-table td {
+          display: block;
+          width: 100%;
+        }
+
+        .compact-table thead {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          overflow: hidden;
+          clip: rect(0 0 0 0);
+        }
+
+        .compact-table tr {
+          border: 1px solid var(--line);
+          border-radius: 8px;
+          margin-top: 10px;
+          overflow: hidden;
+          background: #fbfcf8;
+        }
+
+        .compact-table td {
+          border-bottom: 1px solid var(--line);
+          padding: 10px 12px;
+          overflow-wrap: anywhere;
+        }
+
+        .compact-table td::before {
+          display: block;
+          margin-bottom: 4px;
+          color: var(--muted);
+          font-size: 11px;
+          font-weight: 750;
+        }
+
+        .compact-table td:nth-child(1)::before {
+          content: "로드맵 항목";
+        }
+
+        .compact-table td:nth-child(2)::before {
+          content: "진행된 것";
+        }
+
+        .compact-table td:nth-child(3)::before {
+          content: "아직 필요한 것";
+        }
+
+        .compact-table td:nth-child(4)::before {
+          content: "판정";
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <div class="hero-main">
+          <h1>FLOW 로드맵은 아직 Stage 0에 있고, 산출물은 검증보다 준비와 선별에 쌓였다</h1>
+          <p class="lead">
+            공식 `ROADMAP.md`는 v0.1.0 Stage 0 First Flag MVP를 가리킨다. 최신 산출물은
+            source-to-Flow 변환 기준, 단일 Flow 샘플, context split, Flow of Flow 후보 검토까지 진행됐지만
+            실제 사용자 행동 증거는 아직 0이다.
+          </p>
+          <div class="chips">
+            <span class="chip amber">현재: v0.1.0 in development</span>
+            <span class="chip green">문서/PoC 산출물 다수</span>
+            <span class="chip red">관찰 사용자 0</span>
+            <span class="chip blue">다음: 작은 실제 세션</span>
+          </div>
+        </div>
+        <aside class="hero-side">
+          <div class="metric">
+            <strong>0 / 3</strong>
+            <span>실제 recipient observation. 아직 no signal.</span>
+          </div>
+          <div class="metric">
+            <strong>6개 축</strong>
+            <span>실행 준비, 단일 Flow, source gate, context split, Flow of Flow, 학습 지도 PoC.</span>
+          </div>
+          <div class="metric">
+            <strong>1054</strong>
+            <span>`npm run docs:check` 기준 local links 통과.</span>
+          </div>
+        </aside>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <div>
+            <h2>공식 로드맵 단계와 현재 위치</h2>
+            <p>진행률은 실제 사용자 검증이 아니라 repo 산출물 기준의 준비/구현/검토 성숙도다.</p>
+          </div>
+          <span class="status progress">ROADMAP last updated: 2026-05-25</span>
+        </div>
+
+        <div class="roadmap">
+          <article class="stage active">
+            <div class="stage-title">
+              <span class="status progress">진행 중</span>
+              <strong>v0.1.0 Stage 0</strong>
+              <span>First Flag MVP</span>
+            </div>
+            <div class="stage-body">
+              <p>목표는 open, anchor input, copy/export, check, feedback 행동이 실제로 발생하는지 확인하는 것이다.</p>
+              <ul>
+                <li>진행됨: source-to-Flow 기준, 10개 단일 Flow 샘플, context split, observation prep.</li>
+                <li>진행 중: 첫 3명 관찰로 no signal을 벗어날 수 있는지 확인.</li>
+                <li>아직 아님: validated, launch-ready, public-route-ready, integration-ready.</li>
+              </ul>
+            </div>
+            <div class="stage-score">
+              <span class="status progress">준비 65%</span>
+              <div class="bar amber"><span style="--value: 65%"></span></div>
+              <span class="status blocked">행동 증거 0%</span>
+              <div class="bar red"><span style="--value: 0%"></span></div>
+            </div>
+          </article>
+
+          <article class="stage">
+            <div class="stage-title">
+              <span class="status next">다음</span>
+              <strong>v0.2.0</strong>
+              <span>Evidence Capture</span>
+            </div>
+            <div class="stage-body">
+              <p>첫 실제 사용 이후 event capture와 validation notes를 개선하는 단계다.</p>
+              <ul>
+                <li>사전 산출물: observation worksheet, session log, rollup, evidence board runbook.</li>
+                <li>필요 조건: 최소 3개 usable session과 rollup.</li>
+              </ul>
+            </div>
+            <div class="stage-score">
+              <span class="status next">준비만 있음</span>
+              <div class="bar blue"><span style="--value: 25%"></span></div>
+            </div>
+          </article>
+
+          <article class="stage dim">
+            <div class="stage-title">
+              <span class="status">보류</span>
+              <strong>Stage 2</strong>
+              <span>Creator MVP</span>
+            </div>
+            <div class="stage-body">
+              <p>제작자 발행 의사 검증 단계. 최근 creator ops와 Flow of Flow PoC는 방향 검토이지 구현 확정이 아니다.</p>
+              <ul>
+                <li>진행됨: 제작자 화면/운영판 PoC.</li>
+                <li>필요 조건: 작은 Flow와 저장/실행 루프가 먼저 통과해야 함.</li>
+              </ul>
+            </div>
+            <div class="stage-score">
+              <span class="status">탐색 20%</span>
+              <div class="bar"><span style="--value: 20%"></span></div>
+            </div>
+          </article>
+
+          <article class="stage dim">
+            <div class="stage-title">
+              <span class="status">보류</span>
+              <strong>Stage 3-6</strong>
+              <span>Data, Expansion, AI, Monetization</span>
+            </div>
+            <div class="stage-body">
+              <p>footprint 저장, 카테고리 확장, integration/AI, monetization은 Stage 0 행동 증거 이후로 둔다.</p>
+              <ul>
+                <li>진행됨: 후보/아이디어/위험 경계 정리.</li>
+                <li>아직 금지: 로그인 대형 구현, 자동 발행, 결제, 토큰, 커뮤니티, 무거운 OAuth.</li>
+              </ul>
+            </div>
+            <div class="stage-score">
+              <span class="status blocked">hold</span>
+              <div class="bar red"><span style="--value: 5%"></span></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <div>
+            <h2>최근 진행 타임라인</h2>
+            <p>진행은 기능 출시보다 산출물/판단 기준 축적 중심으로 이루어졌다.</p>
+          </div>
+        </div>
+        <div class="flowline">
+          <div class="milestone done">
+            <span class="dot"></span>
+            <strong>6/10-11 관찰 준비</strong>
+            <span>recruiting copy, scheduling, preflight, worksheet, rollup, evidence board.</span>
+          </div>
+          <div class="milestone done">
+            <span class="dot"></span>
+            <strong>6/14-15 카테고리 PoC</strong>
+            <span>전세 수준 기준선, 6 category, user sample, candidate reassessment.</span>
+          </div>
+          <div class="milestone done">
+            <span class="dot"></span>
+            <strong>6/16 10개 Flow</strong>
+            <span>calendar/checklist/routine/bucket/procedure destination 분리.</span>
+          </div>
+          <div class="milestone done">
+            <span class="dot"></span>
+            <strong>6/17 source gate</strong>
+            <span>primary source, user job, natural artifact 기준 정리.</span>
+          </div>
+          <div class="milestone active">
+            <span class="dot"></span>
+            <strong>6/17-18 Flow of Flow</strong>
+            <span>context split, creator ops, Top 5 후보, 중등 수학 학습 지도.</span>
+          </div>
+          <div class="milestone next">
+            <span class="dot"></span>
+            <strong>다음 실제 세션</strong>
+            <span>관찰 3회, rollup, no signal/friction/candidate signal 판정.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid three">
+        <article class="lane">
+          <h3>Now <span class="status progress">현재 진행</span></h3>
+          <ul>
+            <li>Stage 0 First Flag 검증 준비 상태 유지.</li>
+            <li>source-to-Flow 변환 기준으로 단일 Flow 후보 정리.</li>
+            <li>Flow of Flow는 큰 지도부터가 아니라 작은 Flow 관리와 제작자 운영판을 먼저 확인.</li>
+            <li>중등 수학 학습 지도 PoC로 parent/child Flow 구조를 시각화.</li>
+          </ul>
+        </article>
+
+        <article class="lane">
+          <h3>Next <span class="status next">다음 작업</span></h3>
+          <ul>
+            <li>`school-dorm-share-packet` 또는 선택된 축으로 3개 usable observation 실행.</li>
+            <li>`NHS Couch to 5K` 같은 강한 Flow of Flow 후보를 전용 클릭 PoC로 좁히기.</li>
+            <li>중등 수학 PoC를 source-to-artifact gate로 다시 통과시키기.</li>
+            <li>저장 Flow 0/1/3/10개 상태별 My Flow 관리 IA를 작게 확인.</li>
+          </ul>
+        </article>
+
+        <article class="lane">
+          <h3>Hold <span class="status blocked">막아둘 것</span></h3>
+          <ul>
+            <li>validation, public route ready, integration ready 표현.</li>
+            <li>creator marketplace, 결제, token, full community, AI 자동 발행.</li>
+            <li>Flow Pack을 단순 카드 묶음으로 확장하는 방향.</li>
+            <li>민감 영역에서 공식/전문가 경계 없이 식단·의료 판단을 제시하는 방향.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <div>
+            <h2>v0.1.0 항목별 진행 상태</h2>
+            <p>`ROADMAP.md`의 v0.1.0 항목을 현재 산출물에 매핑했다.</p>
+          </div>
+        </div>
+        <table class="compact-table">
+          <thead>
+            <tr>
+              <th>로드맵 항목</th>
+              <th>진행된 것</th>
+              <th>아직 필요한 것</th>
+              <th>판정</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>First flag flow</td>
+              <td>관찰 준비 패킷, 초대/스케줄/worksheet/rollup/evidence board.</td>
+              <td>실제 3명 관찰과 rollup.</td>
+              <td><span class="status progress">prep ready</span></td>
+            </tr>
+            <tr>
+              <td>Alternate route</td>
+              <td>Moving D-30 관련 코드/테스트/문서 변경과 여러 source-to-Flow 비교군.</td>
+              <td>비교군을 실제 관찰 축으로 쓸지 결정.</td>
+              <td><span class="status progress">in progress</span></td>
+            </tr>
+            <tr>
+              <td>Execution actions</td>
+              <td>copy, CSV/export, share/check, local state 관련 구현 흔적과 PoC 검증.</td>
+              <td>실제 사용자가 외부 도구로 옮기고 체크하는지 확인.</td>
+              <td><span class="status progress">implemented surface</span></td>
+            </tr>
+            <tr>
+              <td>Source-backed conversion readiness</td>
+              <td>Source-to-Flow gate, 10 Flow samples, source-gated v2, Flow of Flow 후보 정리.</td>
+              <td>각 후보의 primary source와 natural artifact를 실제 제품 기준으로 더 엄격히 통과.</td>
+              <td><span class="status done">strong progress</span></td>
+            </tr>
+            <tr>
+              <td>Verification</td>
+              <td>`npm run docs:check` 통과. 일부 과거 build/test/Playwright 기록 존재.</td>
+              <td>현재 dirty worktree 기준 전체 test/build/e2e 재실행과 PR 단위 분리.</td>
+              <td><span class="status progress">partial</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <div>
+            <h2>증거 수준</h2>
+            <p>산출물이 많아도 사용자 행동 증거와는 분리해야 한다.</p>
+          </div>
+        </div>
+        <div class="evidence">
+          <div class="meter">
+            <h3>현재 evidence ladder</h3>
+            <div class="meter-grid">
+              <div class="meter-cell filled">문서<br />정리</div>
+              <div class="meter-cell filled">HTML<br />PoC</div>
+              <div class="meter-cell pending">클릭<br />시뮬레이션</div>
+              <div class="meter-cell">관찰<br />세션</div>
+              <div class="meter-cell">행동<br />신호</div>
+            </div>
+            <p class="note">
+              현재 표현 가능한 결론은 "PoC/시뮬레이션상 다음 검토 후보가 좁혀졌다"까지다.
+              "검증됨"은 아직 금지한다.
+            </p>
+          </div>
+          <div class="risk">
+            <h3>가장 큰 리스크</h3>
+            <ul>
+              <li>최근 산출물이 많아 실제 검증이 된 것처럼 착시가 생길 수 있다.</li>
+              <li>Flow of Flow가 사용자의 다음 실행보다 큰 지도 화면으로 과해질 수 있다.</li>
+              <li>민감 카테고리에서 공식 정보와 경험 팁 경계가 흐려질 수 있다.</li>
+              <li>dirty worktree가 커서 PR/commit 단위 리뷰가 어려울 수 있다.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <div>
+            <h2>검토자가 먼저 열어볼 파일</h2>
+            <p>로드맵 전체 흐름을 빠르게 보려면 아래 순서가 가장 효율적이다.</p>
+          </div>
+        </div>
+        <ol class="source-list">
+          <li><a href="../ROADMAP.md">ROADMAP.md</a> - 공식 단계와 v0.1.0/v0.2.0 항목.</li>
+          <li><a href="../STATUS.md">STATUS.md</a> - 최신 상태와 no signal 경계.</li>
+          <li><a href="./2026-06-18-recent-progress-review-brief-ko.md">최근 진행 및 검토용 산출물 종합</a> - 산출물 묶음 요약.</li>
+          <li><a href="../flow-rules/source-to-flow-conversion-gate.md">Source-to-Flow conversion gate</a> - 단일 Flow 품질 기준.</li>
+          <li><a href="./2026-06-16-ten-flow-expansion-report-ko.html">10 Flow expansion report</a> - 단일 Flow 확장 결과.</li>
+          <li><a href="./2026-06-17-context-split-expansion-simulation-report-ko.html">context split simulation report</a> - 제작자/저장 전/내 앱 화면 분리.</li>
+          <li><a href="./2026-06-18-flowof-flow-100-source-scan-top5-ko.html">Flow of Flow 100 source scan Top 5</a> - 상위 후보 선별.</li>
+          <li><a href="./2026-06-18-flowme-platform-study-map-poc-ko.html">FlowMe platform study map PoC</a> - 중등 수학 학습 지도 대표 PoC.</li>
+        </ol>
+      </section>
+
+      <footer>
+        기준 시각: 2026-06-18. 근거: `AGENTS.md`, `agent.md`, `docs/harness/README.md`, `docs/STATUS.md`,
+        `docs/ROADMAP.md`, `docs/PRODUCT_PRINCIPLES.md`, `docs/DECISIONS.md`, `docs/IDEAS.md`,
+        최신 `docs/content-audit/` 파일 목록, `git status`, `npm run docs:check`.
+      </footer>
+    </main>
+  </body>
+</html>

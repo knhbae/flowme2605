@@ -47,7 +47,14 @@ const decisionToHandling = {
   replace_or_hide_source: 'catalog_review',
 } as const;
 
-const decisionTableOverrideSlugs = new Set(['driver-license-renewal-check', 'new-car-delivery-check']);
+const decisionTableOverrideSlugs = new Set(['driver-license-renewal-check']);
+const checklistOverrideSlugs = new Set(['new-car-delivery-check', 'used-car-buying-check', 'passport-renewal-docs']);
+const compactTimelineSlugs = new Set(['moving-d30-basic', 'vehicle-inspection-prep', 'real-mofa-overseas-travel-prep']);
+const timelinePrimaryOverrideSlugs = new Set(['wedding-d180-basic']);
+const checkOnlyRoutineSlugs = new Set(['diet-habit-2week', 'real-thankyou-bubu-home-workout-starter', 'real-fitvely-diet-record-routine']);
+const mealCalendarOnlySlugs = new Set(['baby-food-menu-recipe']);
+const maintenanceRoutineSlugs = new Set(['washer-tub-clean-monthly', 'monstera-care-routine']);
+const applianceCycleSheetSlugs = new Set(['water-purifier-filter-cycle']);
 const workoutProgrammingDecisionSlugs = new Set([
   'real-fitvely-video-bulk-up-method',
   'real-fitvely-video-workout-order',
@@ -61,10 +68,8 @@ const memoCardOverrideSlugs = new Set([
   'happy-birth-service-check',
   'industrial-accident-claim-docs',
   'vaccination-certificate-issue',
-  'passport-renewal-docs',
-  'real-mofa-overseas-travel-prep',
 ]);
-const spreadsheetOverrideSlugs = new Set(['diet-habit-2week', 'diet-meal-exercise-log', 'diet-reset-2week']);
+const spreadsheetOverrideSlugs = new Set(['diet-meal-exercise-log', 'diet-reset-2week', 'water-purifier-filter-cycle', 'fridge-cleanout-weekly-plan']);
 
 // 2026-06-01 크리에이터·블로그 배치: 카테고리별로 알맞은 아티팩트 표면을 새로 배정한다.
 // 순차 단계(요리 준비→조리→평가, 정리 비우기→분류→정리, 창작 콘셉트→세팅→발행 등)는
@@ -101,7 +106,9 @@ function getSourceHandling(bundle: FlowBundle): SourceHandling {
 function getPrimarySurface(bundle: FlowBundle, model = normalizeExecutionModel(bundle)): PrimaryArtifactSurface {
   const audit = getNaturalArtifactAudit(bundle.flow.slug);
   if (bundle.flow.content_type === 'meal_plan') return 'meal_reaction_log';
-  if (bundle.flow.slug === 'used-car-buying-check') return 'decision_table';
+  if (timelinePrimaryOverrideSlugs.has(bundle.flow.slug)) return 'timeline_calendar';
+  if (checklistOverrideSlugs.has(bundle.flow.slug)) return 'checklist';
+  if (checkOnlyRoutineSlugs.has(bundle.flow.slug)) return 'routine_calendar';
   if (decisionTableOverrideSlugs.has(bundle.flow.slug)) return 'decision_table';
   if (workoutProgrammingDecisionSlugs.has(bundle.flow.slug)) return 'decision_table';
   if (memoCardOverrideSlugs.has(bundle.flow.slug)) return 'memo_card';
@@ -123,7 +130,32 @@ function surface(kind: ArtifactSurfaceKind, title: string, description: string):
   return { kind, title, description };
 }
 
-function getSurfaces(primary: PrimaryArtifactSurface): ArtifactSurface[] {
+function getSurfaces(bundle: FlowBundle, primary: PrimaryArtifactSurface): ArtifactSurface[] {
+  if (maintenanceRoutineSlugs.has(bundle.flow.slug)) {
+    return [
+      surface('routine_month', '관리 캘린더', '시작일 기준 다음 관리일을 만들고 날짜 안 체크리스트로 실행합니다.'),
+      surface('execution_list', '날짜 안 체크리스트', '원문에서 반복 실행에 필요한 확인 항목만 남깁니다.'),
+      surface('memo_card', '관리 메모', '방법, 준비물, 원문 링크처럼 반복 때 다시 볼 내용을 남깁니다.'),
+    ];
+  }
+  if (applianceCycleSheetSlugs.has(bundle.flow.slug)) {
+    return [
+      surface('spreadsheet_preview', '필터 주기표', '필터별 마지막 교체일, 교체 주기, 다음 확인일을 한 표로 관리합니다.'),
+      surface('memo_card', '관리 메모', '모델명, 원문 링크, 제조사별 차이를 메모로 분리합니다.'),
+    ];
+  }
+  if (mealCalendarOnlySlugs.has(bundle.flow.slug)) {
+    return [surface('meal_calendar', '이유식 일정 캘린더', '시작일 기준 메뉴와 레시피만 날짜별로 확인합니다.')];
+  }
+  if (checkOnlyRoutineSlugs.has(bundle.flow.slug)) {
+    return [surface('routine_month', '반복 캘린더', '요일별 체크 회차만 보고 완료 여부를 남깁니다.')];
+  }
+  if (compactTimelineSlugs.has(bundle.flow.slug)) {
+    return [
+      surface('execution_list', '체크리스트', '지금 확인할 항목만 한 줄씩 체크합니다.'),
+      surface('month_calendar', '월간 캘린더', '기준 날짜로 계산된 일정을 한눈에 봅니다.'),
+    ];
+  }
   if (primary === 'meal_reaction_log') {
     return [
       surface('meal_calendar', '이유식 일정표', '시작일 기준 메뉴와 새 재료를 먼저 확인합니다.'),
@@ -155,7 +187,7 @@ function getSurfaces(primary: PrimaryArtifactSurface): ArtifactSurface[] {
     return [
       surface('execution_list', '실행 리스트', '다가오는 할 일을 먼저 훑습니다.'),
       surface('month_calendar', '월간 캘린더', '기준 날짜로 계산된 일정을 한눈에 봅니다.'),
-      surface('memo_card', '증빙 메모', '예약, 상담, 제출 증빙을 남깁니다.'),
+      surface('memo_card', '참고 메모', '원문 링크, 준비물, 다음에 다시 볼 내용을 남깁니다.'),
     ];
   }
   if (primary === 'memo_card') {
@@ -196,7 +228,7 @@ export function getArtifactPlan(bundle: FlowBundle): ArtifactPlan {
       sourceHandling === 'catalog_review'
         ? 'Assign an exact source URL before representative promotion.'
         : audit?.nextContentAction ?? 'Keep content aligned to the selected artifact surface.',
-    surfaces: getSurfaces(primarySurface),
+    surfaces: getSurfaces(bundle, primarySurface),
     exportTargets,
   };
 }

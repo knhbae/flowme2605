@@ -1,0 +1,92 @@
+/* FlowMe — base styles
+   Pretendard for KR text, Inter for tabular numerics.
+   Background is the warm document base from design.md (#F8F7F4). */
+
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: #ECEAE3;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  box-sizing: border-box;
+}
+
+.fm {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  color: #1F2933;
+  letter-spacing: -0.005em;
+}
+
+.fm-mono {
+  font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+.fm-num {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+/* document-like checkbox */
+.fm-check {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid #C7C4BC;
+  border-radius: 3px;
+  background: #fff;
+  cursor: pointer;
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  margin: 0;
+  transition: background 80ms ease, border-color 80ms ease;
+}
+.fm-check:checked {
+  background: #1F2933;
+  border-color: #1F2933;
+}
+.fm-check:checked::after {
+  content: '';
+  width: 9px;
+  height: 5px;
+  border-left: 1.6px solid #fff;
+  border-bottom: 1.6px solid #fff;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+
+/* striped placeholder for image / artifact slots */
+.fm-stripe {
+  background-image:
+    repeating-linear-gradient(135deg,
+      rgba(31,41,51,0.04) 0 6px,
+      rgba(31,41,51,0.07) 6px 12px);
+}
+
+/* faint scrollbars inside cards */
+.fm-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+.fm-scroll::-webkit-scrollbar-thumb { background: #D9D6CE; border-radius: 6px; }
+.fm-scroll::-webkit-scrollbar-track { background: transparent; }
+
+/* subtle hairline shadow for floating elements */
+.fm-shadow-1 { box-shadow: 0 1px 0 rgba(31,41,51,0.04), 0 1px 2px rgba(31,41,51,0.04); }
+.fm-shadow-2 { box-shadow: 0 1px 0 rgba(31,41,51,0.04), 0 4px 12px rgba(31,41,51,0.06); }
+
+/* sticky-action pulse, very subtle */
+@keyframes fm-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.0); }
+  50%      { box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08); }
+}
+.fm-pulse { animation: fm-pulse 2.4s ease-in-out infinite; }

@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flow of Flow v2 시뮬레이션 리포트</title>
+    <style>
+      :root {
+        --bg: #f7f8fb;
+        --panel: #fff;
+        --ink: #151922;
+        --muted: #647084;
+        --line: #dde4ee;
+        --blue: #2457d6;
+        --green: #157347;
+        --amber: #946200;
+        --red: #b42318;
+        --soft-blue: #eef4ff;
+        --soft-green: #ecfdf3;
+        --soft-amber: #fff7e6;
+        --soft-red: #fff0ee;
+        --radius: 14px;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--ink); line-height: 1.55; }
+      a { color: var(--blue); text-underline-offset: 3px; }
+      .wrap { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 56px; }
+      .hero, .card, .finding { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 10px 28px rgba(15, 23, 42, .05); }
+      .hero { padding: 28px; }
+      .eyebrow { margin: 0 0 8px; color: var(--blue); font-weight: 900; }
+      h1 { margin: 0; font-size: clamp(28px, 4vw, 42px); line-height: 1.14; letter-spacing: 0; }
+      h2 { margin: 0 0 12px; font-size: 22px; }
+      h3 { margin: 0 0 8px; font-size: 17px; }
+      p { margin: 0; }
+      .desc { color: var(--muted); }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+      .chip { display: inline-flex; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line); font-size: 13px; font-weight: 800; background: #fff; }
+      .chip.green { color: var(--green); background: var(--soft-green); border-color: #bbf7d0; }
+      .chip.blue { color: var(--blue); background: var(--soft-blue); border-color: #bfdbfe; }
+      .chip.amber { color: var(--amber); background: var(--soft-amber); border-color: #fde68a; }
+      .chip.red { color: var(--red); background: var(--soft-red); border-color: #fecaca; }
+      .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 14px; }
+      .card { padding: 18px; margin-top: 18px; }
+      .finding { padding: 16px; margin-top: 12px; box-shadow: none; }
+      .finding.blocking { border-left: 5px solid var(--red); }
+      .finding.high { border-left: 5px solid var(--amber); }
+      .finding.fixed { border-left: 5px solid var(--green); }
+      .steps { display: grid; gap: 8px; margin-top: 10px; }
+      .step { border: 1px solid var(--line); border-radius: 12px; padding: 12px; background: #fbfcff; }
+      .step strong { display: block; margin-bottom: 3px; }
+      .links { display: grid; gap: 8px; margin-top: 10px; }
+      @media (max-width: 760px) {
+        .wrap { width: min(100% - 20px, 1120px); padding-top: 16px; }
+        .hero { padding: 20px; }
+        .grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="hero">
+        <p class="eyebrow">Flow of Flow v2 · 시뮬레이션</p>
+        <h1>v1의 묶음형 실패를 반복하지 않기 위해 두 번의 점검 루프를 돌렸다</h1>
+        <p class="desc" style="margin-top:12px">
+          이 리포트는 내부 시뮬레이션이다. 실제 사용자 행동 데이터가 아니며, 제품 성과나 시장 반응을 확정하지 않는다.
+        </p>
+        <div class="chips">
+          <span class="chip red">v1 실패 원인 반영</span>
+          <span class="chip green">Blocking 수정 완료</span>
+          <span class="chip amber">육아는 보수적 후보</span>
+          <span class="chip blue">브라우저 검증 예정</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>산출물</h2>
+        <div class="links">
+          <a href="./2026-06-17-flowof-flows-v2-candidate-reassessment-ko.html">후보 재심사 리포트</a>
+          <a href="./2026-06-17-flowof-flows-v2-model-ko.html">Flow of Flow v2 변환 모델</a>
+          <a href="./2026-06-17-flowof-flows-v2-user-poc-ko.html">사용자용 클릭 화면</a>
+          <a href="./2026-06-17-flowof-flows-v2-creator-poc-ko.html">제작자용 클릭 화면</a>
+        </div>
+      </section>
+
+      <section class="grid">
+        <article class="card">
+          <h2>사용자 시뮬레이션 A</h2>
+          <p class="desc">중1 학부모가 수학방의 중1 전체 목차를 보고 FlowMe에서 중1 수학 전체 진도표를 연다.</p>
+          <div class="steps">
+            <div class="step"><strong>원문 소비</strong>8개 큰 단원과 단원별 개념 링크를 확인한다.</div>
+            <div class="step"><strong>전체 저장</strong>공부 시작일, 공부 요일, 하루 목표 개념 수를 넣고 전체 일정을 만든다.</div>
+            <div class="step"><strong>일부 저장</strong>시험범위가 1~3단원이므로 소인수분해, 정수와 유리수, 문자와 식만 먼저 저장한다.</div>
+            <div class="step"><strong>실행</strong>소인수분해에서 개념 링크, 대표 문제, 오답표, 복습일을 같은 화면에서 처리한다.</div>
+            <div class="step"><strong>재방문</strong>며칠 뒤 정수와 유리수의 다음 할 일과 남은 오답을 먼저 본다.</div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>제작자 시뮬레이션 A</h2>
+          <p class="desc">수학 콘텐츠 제작자가 단원 목차를 가져와 전체 진도표를 만든다.</p>
+          <div class="steps">
+            <div class="step"><strong>원문 구조</strong>단원/소단원을 반복 단위로 선택한다.</div>
+            <div class="step"><strong>패턴 정의</strong>개념 보기, 문제 풀기, 오답 남기기, 복습 잡기 패턴을 만든다.</div>
+            <div class="step"><strong>사용자 결과</strong>각 단원이 같은 실행 패턴을 가진 저장 결과로 보이는지 확인한다.</div>
+            <div class="step"><strong>확장</strong>중2 또는 심화 단원을 같은 패턴으로 추가할 수 있음을 확인한다.</div>
+          </div>
+        </article>
+      </section>
+
+      <section class="card">
+        <h2>루프 1에서 발견한 문제</h2>
+        <div class="finding blocking">
+          <h3>Blocking · 후보 판정이 여전히 너무 관대할 위험</h3>
+          <p class="desc">러닝 재생목록, 이유식 식단표처럼 Flow로는 가능한 콘텐츠를 다시 Strong으로 올릴 수 있었다.</p>
+        </div>
+        <div class="finding high">
+          <h3>High · 사용자 화면이 탭형 묶음처럼 보일 위험</h3>
+          <p class="desc">단순 탭 전환 UI로 만들면 큰 지도 안의 현재 위치와 다음 실행 항목이 드러나지 않는다.</p>
+        </div>
+        <div class="finding high">
+          <h3>High · 제작자 화면이 입력 폼처럼 보일 위험</h3>
+          <p class="desc">제목, URL, 섹션만 편집하면 제작자가 자기 콘텐츠를 실행형 지도화한다는 감각이 약하다.</p>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>수정 반영</h2>
+        <div class="finding fixed">
+          <h3>수정 1 · 후보 판정 체계 강화</h3>
+          <p class="desc">Strong Flow of Flow, Flow map only, Single Flow only, Reference/Park로 나눴고 이사를 대표 PoC에서 제외했다.</p>
+        </div>
+        <div class="finding fixed">
+          <h3>수정 2 · 사용자 화면의 첫 화면 재구성</h3>
+          <p class="desc">상단에 전체 지도, 현재 위치, 진행률, 전체/부분 저장 버튼을 두고 하위 단위 상세를 바로 이어 붙였다.</p>
+        </div>
+        <div class="finding fixed">
+          <h3>수정 3 · 제작자 화면의 흐름 재구성</h3>
+          <p class="desc">원문 구조, 반복 단위, 실행 패턴, 사용자 저장 결과를 한 화면의 좌-중-우 흐름으로 배치했다.</p>
+        </div>
+      </section>
+
+      <section class="grid">
+        <article class="card">
+          <h2>루프 2 결과</h2>
+          <div class="steps">
+            <div class="step"><strong>중1 수학</strong>큰 단원들이 하위 실행 단위로 반복되어 가장 설득력 있는 대표 케이스로 남았다.</div>
+            <div class="step"><strong>정보처리기사</strong>자격증 전체 로드맵이 아니라 과목별 진도판으로 좁히니 반복 구조가 보였다.</div>
+            <div class="step"><strong>육아</strong>월령별 반복 가능성은 있으나 공식 정보/생활 메모/상담 경계가 무거워 후보 수준으로 둔다.</div>
+            <div class="step"><strong>이사</strong>D-day timeline 단일 Flow로 충분하므로 이번 대표에서는 제외했다.</div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>남은 리스크</h2>
+          <div class="steps">
+            <div class="step"><strong>원문 자동 추출 없음</strong>이번 HTML은 수동 구조화 샘플이다. URL에서 자동으로 단원/과목/월령을 가져오지는 않는다.</div>
+            <div class="step"><strong>실제 사용자 행동 없음</strong>저장, 체크, 재방문이 실제로 일어났다는 데이터는 없다.</div>
+            <div class="step"><strong>육아 민감도</strong>월령별 생활 지도는 의료 판단을 하지 않도록 더 강한 공식/경험 분리가 필요하다.</div>
+            <div class="step"><strong>학습 패턴 세부화</strong>오답표, 복습일, 기출 회차의 실제 export 형식은 다음 구현 단계에서 더 구체화해야 한다.</div>
+          </div>
+        </article>
+      </section>
+
+      <section class="card">
+        <h2>판정</h2>
+        <p class="desc">
+          v2는 “Flow 여러 개 묶음”에서 한 단계 나아가, 상위 구조가 반복 단위를 만들고 같은 실행 패턴을 붙이는 방향으로 정리됐다.
+          메인 대표는 중1 수학 전체 진도표다. 정보처리기사는 과목별 공부 운영판으로 좁힐 때 설득력이 있다. 육아와 이사는 다음 라운드에서 별도 기준으로 다시 보는 편이 안전하다.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

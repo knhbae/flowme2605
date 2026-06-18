@@ -48,7 +48,10 @@ Every FlowMe spec should answer these gates before implementation starts:
 ## Promotion Rules
 
 - Use [../IDEAS.md](../IDEAS.md) for promising but uncommitted ideas.
+- Use [../DECISIONS.md](../DECISIONS.md) for settled product, UX, technical, or process choices that future specs should inherit.
 - Promote an idea into `docs/specs/` when it becomes planned work.
+- When promoting an idea, carry forward the original "why not now" risk and update it into a concrete stage-fit statement, scope boundary, or non-goal.
+- When a spec settles a reusable policy while planning, add or link the durable rule in [../DECISIONS.md](../DECISIONS.md) so later work can inherit it without rereading the whole spec.
 - Keep [../ROADMAP.md](../ROADMAP.md) short; link to the spec instead of copying details.
 - Record implementation evidence in [../pr-history/README.md](../pr-history/README.md) and the matching PR history entry.
 - Update [../STATUS.md](../STATUS.md) only for current health, focus, or recently completed changes.

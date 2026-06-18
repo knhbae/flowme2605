@@ -1,0 +1,998 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 카테고리 확장 UX/UI 샘플</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f8fb;
+        --card: #ffffff;
+        --line: #dbe3ef;
+        --muted: #64748b;
+        --text: #0f172a;
+        --blue: #2563eb;
+        --blue-dark: #1d4ed8;
+        --blue-soft: #eff6ff;
+        --green: #047857;
+        --green-soft: #ecfdf5;
+        --amber: #b45309;
+        --amber-soft: #fffbeb;
+        --red: #b91c1c;
+        --red-soft: #fef2f2;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        letter-spacing: 0;
+        overflow-x: hidden;
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      a {
+        color: var(--blue-dark);
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      main {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 16px;
+      }
+
+      .topbar,
+      .card,
+      .screen,
+      .side-panel {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--card);
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 56px;
+        padding: 12px 16px;
+      }
+
+      .brand {
+        color: var(--blue-dark);
+        font-size: 24px;
+        font-weight: 900;
+      }
+
+      .small-btn {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #fff;
+        color: #334155;
+        min-height: 38px;
+        padding: 0 12px;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .hero {
+        margin-top: 14px;
+        padding: 18px;
+      }
+
+      .eyebrow {
+        margin: 0;
+        color: var(--blue-dark);
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      h1 {
+        margin: 6px 0 0;
+        font-size: clamp(30px, 5vw, 46px);
+        line-height: 1.12;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 24px;
+        line-height: 1.25;
+      }
+
+      h3 {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      p {
+        margin: 0;
+        line-height: 1.62;
+      }
+
+      .desc {
+        margin-top: 10px;
+        max-width: 780px;
+        color: #334155;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .chip {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #f8fafc;
+        padding: 6px 10px;
+        color: #334155;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .chip.green {
+        border-color: #bbf7d0;
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .sample-tabs {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #eaf0f8;
+        padding: 6px;
+      }
+
+      .sample-tab {
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: #475569;
+        min-height: 54px;
+        padding: 6px 8px;
+        text-align: left;
+        font-weight: 900;
+      }
+
+      .sample-tab small {
+        display: block;
+        margin-top: 2px;
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      .sample-tab.active {
+        background: #fff;
+        color: var(--text);
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 330px;
+        gap: 14px;
+        margin-top: 14px;
+        align-items: start;
+        min-width: 0;
+      }
+
+      .screen,
+      .side-panel {
+        padding: 16px;
+        min-width: 0;
+      }
+
+      .screen-head,
+      .section-head,
+      .detail-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: start;
+      }
+
+      .progress-pill {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #f8fafc;
+        padding: 6px 10px;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+
+      .setup {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+
+      .field label {
+        color: #334155;
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .field input,
+      .field textarea {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: #fff;
+        color: var(--text);
+        min-height: 42px;
+        padding: 8px 10px;
+      }
+
+      .field textarea {
+        min-height: 78px;
+        resize: vertical;
+      }
+
+      .primary {
+        border: 0;
+        border-radius: 6px;
+        background: var(--blue);
+        color: #fff;
+        min-height: 42px;
+        padding: 0 14px;
+        font-weight: 900;
+      }
+
+      .secondary {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #fff;
+        color: #334155;
+        min-height: 42px;
+        padding: 0 12px;
+        font-weight: 900;
+      }
+
+      .section {
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        min-width: 0;
+      }
+
+      .items {
+        display: grid;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .item {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: start;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 12px;
+      }
+
+      .item input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-top: 3px;
+      }
+
+      .item-title {
+        display: block;
+        font-weight: 900;
+      }
+
+      .item-meta,
+      .item-note {
+        display: block;
+        margin-top: 4px;
+        color: #64748b;
+        font-size: 13px;
+      }
+
+      .item-note {
+        color: #334155;
+      }
+
+      .badge {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #f8fafc;
+        padding: 5px 8px;
+        font-size: 12px;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+
+      .badge.warn {
+        border-color: #fde68a;
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .badge.safe {
+        border-color: #bbf7d0;
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .segmented {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 4px;
+        margin-top: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #eaf0f8;
+        padding: 4px;
+      }
+
+      .segmented button {
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        min-height: 38px;
+        color: #475569;
+        font-weight: 900;
+      }
+
+      .segmented button.active {
+        background: #fff;
+        color: var(--text);
+      }
+
+      .detail-card {
+        margin-top: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f8fafc;
+        padding: 14px;
+      }
+
+      details {
+        margin-top: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 12px;
+      }
+
+      summary {
+        cursor: pointer;
+        font-weight: 900;
+      }
+
+      .source-link {
+        display: inline-block;
+        margin-top: 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        padding: 7px 12px;
+      }
+
+      .calendar-strip {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .date-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        min-height: 86px;
+        padding: 10px;
+        text-align: left;
+      }
+
+      .date-card.active {
+        border-color: var(--blue);
+        background: var(--blue-soft);
+        box-shadow: 0 0 0 2px var(--blue);
+      }
+
+      .date-card strong,
+      .date-card span {
+        display: block;
+      }
+
+      .date-card strong {
+        margin-top: 4px;
+      }
+
+      .date-card span {
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .table-wrap {
+        margin-top: 12px;
+        overflow-x: auto;
+        max-width: 100%;
+      }
+
+      table {
+        width: 100%;
+        min-width: 640px;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: #f8fafc;
+        color: #334155;
+        font-size: 13px;
+      }
+
+      .side-panel + .side-panel {
+        margin-top: 14px;
+      }
+
+      .side-panel h3 {
+        font-size: 17px;
+      }
+
+      .side-panel ul {
+        margin: 10px 0 0;
+        padding-left: 18px;
+      }
+
+      .side-panel li {
+        margin: 7px 0;
+        color: #334155;
+        line-height: 1.5;
+      }
+
+      .risk {
+        border-color: #fecaca;
+        background: var(--red-soft);
+      }
+
+      .risk h3 {
+        color: var(--red);
+      }
+
+      .bottom-actions {
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .bottom-actions p {
+        color: #334155;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      @media (max-width: 860px) {
+        main {
+          padding: 10px;
+        }
+
+        .sample-tabs {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .setup {
+          grid-template-columns: 1fr;
+        }
+
+        .calendar-strip {
+          grid-template-columns: 1fr;
+        }
+
+        .screen-head,
+        .section-head,
+        .detail-head,
+        .bottom-actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .item {
+          grid-template-columns: auto minmax(0, 1fr);
+        }
+
+        .item .badge {
+          grid-column: 2;
+          justify-self: start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <nav class="topbar">
+        <div class="brand">FLOW</div>
+        <button class="small-btn" type="button">새 Flow</button>
+      </nav>
+
+      <header class="card hero">
+        <p class="eyebrow">전세 다음 카테고리 확장 UX/UI pack</p>
+        <h1>서로 다른 온라인 콘텐츠가 같은 FlowMe 원칙으로 실행 도구가 되는지 확인합니다</h1>
+        <p class="desc">
+          전세계약은 1차 기준 샘플로 닫고, 다음 4개는 날짜형, 제작자 자료형, 디지털 절차형, 시트/재고형을 비교합니다.
+          각 화면은 입력 1~3개, 실행 산출물, 메모/URL, 민감정보 경계를 기준으로 구성했습니다.
+        </p>
+        <div class="chips">
+          <span class="chip green">사용자 화면 우선</span>
+          <span class="chip">입력 1~3개</span>
+          <span class="chip">상세는 메모/URL</span>
+          <span class="chip">판단/보증 제외</span>
+        </div>
+      </header>
+
+      <div class="sample-tabs" role="tablist" aria-label="카테고리 샘플">
+        <button class="sample-tab active" type="button" data-sample="elementary">
+          초등 입학
+          <small>D-30 타임라인</small>
+        </button>
+        <button class="sample-tab" type="button" data-sample="craft">
+          아이 도안 놀이
+          <small>제작자 자료</small>
+        </button>
+        <button class="sample-tab" type="button" data-sample="remote">
+          원격지원
+          <small>디지털 절차</small>
+        </button>
+        <button class="sample-tab" type="button" data-sample="fridge">
+          냉장고 파먹기
+          <small>시트/재고</small>
+        </button>
+      </div>
+
+      <div class="layout">
+        <section class="screen" aria-live="polite">
+          <div class="screen-head">
+            <div>
+              <p class="eyebrow" id="domain-label"></p>
+              <h2 id="sample-title"></h2>
+              <p class="desc" id="sample-desc"></p>
+            </div>
+            <span class="progress-pill" id="progress-pill">0/0 완료</span>
+          </div>
+
+          <div class="setup" id="setup-fields"></div>
+
+          <div class="segmented" id="view-tabs">
+            <button class="active" type="button" data-view="primary">실행 보기</button>
+            <button type="button" data-view="all">전체 보기</button>
+          </div>
+
+          <section class="section" id="primary-view"></section>
+          <section class="section hidden" id="all-view"></section>
+
+          <div class="bottom-actions">
+            <p id="save-note"></p>
+            <button class="primary" type="button" id="save-button"></button>
+          </div>
+        </section>
+
+        <aside>
+          <section class="side-panel">
+            <h3>이번 샘플에서 보는 질문</h3>
+            <ul id="decision-list"></ul>
+          </section>
+
+          <section class="side-panel">
+            <h3>원문/상세 처리</h3>
+            <p class="desc" id="source-note"></p>
+            <a class="source-link" id="source-link" target="_blank" rel="noreferrer">원문 열기</a>
+          </section>
+
+          <section class="side-panel risk">
+            <h3>FlowMe가 하지 않는 것</h3>
+            <ul id="risk-list"></ul>
+          </section>
+        </aside>
+      </div>
+    </main>
+
+    <script>
+      const samples = {
+        elementary: {
+          domain: '육아/교육 · D-30 타임라인',
+          title: '초등 입학 D-30 준비 Flow',
+          desc: '입학식 날짜 하나를 기준으로 공식 안내 확인, 먼저 살 물건, 학교 안내 전 보류 항목, 이름 표시, 등교 동선을 나눕니다.',
+          cta: '입학 준비 일정 저장',
+          saveNote: '입학식 기준 일정 5개와 선택 날짜 체크가 만들어집니다.',
+          sourceUrl: 'https://www.moe.go.kr/boardCnts/viewRenew.do?boardID=294&boardSeq=104634&lev=0&m=020402&opType=N&page=1&s=moe&searchType=null&statusYN=W',
+          sourceNote: '공식 취학통지/예비소집 안내를 우선 출처로 두고, 이름표나 등교 동선 같은 부모 경험 팁은 상세 메모로만 둡니다.',
+          inputs: [
+            { label: '입학식 날짜', value: '2027-03-02' },
+            { label: '학교명', value: 'OO초등학교' },
+            { label: '학교 안내문', value: '확인 전' },
+          ],
+          decisions: [
+            '공식 안내와 부모 체크 팁이 섞이지 않는가',
+            '구매 리스트가 아니라 입학 준비 실행표로 보이는가',
+            '학교 안내 전 보류할 물건이 정상 상태로 보이는가',
+          ],
+          risks: [
+            '아이 주민번호, 취학통지 이미지, 건강 기록을 저장하지 않음',
+            '학교 배정 조회, 정부24 연동, 쇼핑 추천을 만들지 않음',
+            '학교별 준비물을 보장하지 않음',
+          ],
+          primaryType: 'timeline',
+          items: [
+            { id: 'notice', timing: 'D-30', title: '취학통지와 예비소집 안내 확인', note: '정부24, 지자체, 학교 공지에서 취학통지와 예비소집 일정을 확인합니다.', badge: '공식' },
+            { id: 'buy-first', timing: 'D-21', title: '먼저 살 물건만 정하기', note: '가방, 실내화, 물통처럼 학교 차이가 적은 물건만 먼저 정합니다.', badge: '결정' },
+            { id: 'hold-school', timing: 'D-14', title: '학교 안내 전 보류할 물건 표시', note: '공책, 종합장, 미술도구, 추가 서류처럼 학교마다 다른 항목은 보류합니다.', badge: '보류' },
+            { id: 'name-label', timing: 'D-7', title: '네임스티커와 이름 표시', note: '학교 안내문 기준으로 개인 물품 표시 방식을 확인하고 이름을 붙입니다.', badge: '표시' },
+            { id: 'route-bag', timing: 'D-1', title: '등교 동선과 입학식 가방 점검', note: '집에서 학교까지 가는 길과 입학식 당일 가방 무게를 아이와 확인합니다.', badge: '점검' },
+          ],
+        },
+        craft: {
+          domain: '육아/놀이 · 제작자 자료',
+          title: '아이 도안 놀이 준비 Flow',
+          desc: '도안 원본은 복사하지 않고 원문 링크를 보존합니다. FlowMe에는 출력, 재료, 안전 작업 범위, 놀이 당일 체크만 남깁니다.',
+          cta: '주말 놀이 체크 저장',
+          saveNote: '이번 주말 놀이 체크리스트와 원문 도안 링크가 저장됩니다.',
+          sourceUrl: 'https://blog.naver.com/PostView.naver?blogId=makeitdiy&logNo=223260911491',
+          sourceNote: '제작자 도안과 사용 조건은 원문에서 확인하게 하고, FlowMe는 준비 순서와 안전 범위만 정리합니다.',
+          inputs: [
+            { label: '놀이 날짜', value: '2026-06-13' },
+            { label: '도안 출력', value: '아직 안 함' },
+            { label: '아이 연령', value: '6세' },
+          ],
+          decisions: [
+            '도안 파일을 복제하지 않고 원문 활용을 돕는가',
+            '부모가 바로 준비할 수 있는 체크만 남는가',
+            '발달 평가나 교육 효과 기록 앱처럼 커지지 않는가',
+          ],
+          risks: [
+            '도안 이미지를 FlowMe에 저장하지 않음',
+            '발달 평가, 교육 효과 보장을 하지 않음',
+            '자르기 어려운 부분은 보호자 작업으로 분리',
+          ],
+          primaryType: 'checklist',
+          items: [
+            { id: 'source', timing: '준비', title: '원문 도안 링크와 사용 조건 저장', note: '다운로드, 비밀번호, 사용 조건은 원문에서 확인하고 링크만 메모에 둡니다.', badge: '원문' },
+            { id: 'print', timing: '전날', title: '도안 출력과 코팅/테이프 준비', note: '프린트 종이, 투명테이프나 손코팅지, 가위, 풀을 준비합니다.', badge: '준비' },
+            { id: 'safe-cut', timing: '전날', title: '자르기 어려운 부분 미리 정리', note: '아이 연령에 맞춰 보호자가 자를 부분과 아이가 할 부분을 나눕니다.', badge: '안전' },
+            { id: 'play', timing: '당일', title: '아이와 만들고 정리하기', note: '원문 예시를 보며 만들고 완성 사진은 선택 메모로만 남깁니다.', badge: '놀이' },
+          ],
+        },
+        remote: {
+          domain: '디지털 절차 · 권한 체크',
+          title: '원격지원 사전 체크 Flow',
+          desc: '원격 도구를 열기 전에 요청자, 작업 범위, 권한 방식을 먼저 정합니다. 접속 코드나 비밀번호는 FlowMe에 저장하지 않습니다.',
+          cta: '원격지원 체크 저장',
+          saveNote: '권한 방식, 접속값 미저장, 세션 종료 체크가 한 흐름으로 저장됩니다.',
+          sourceUrl: 'https://support.anydesk.com/docs/connect-to-a-remote-client',
+          sourceNote: 'AnyDesk, TeamViewer, Chrome Remote Desktop, Zoom, Quick Assist의 공식 흐름은 화면 공유, 일회성 원격 제어, 반복 관리 권한을 구분합니다.',
+          inputs: [
+            { label: '지원 시간', value: '오늘 15:00' },
+            { label: '요청자/범위', value: '가족 · 프린터 설정' },
+            { label: '지원 방식', value: '화면 공유 먼저' },
+          ],
+          decisions: [
+            '도구 설치보다 신뢰/범위 확인이 먼저 보이는가',
+            '화면 공유만으로 충분한지 먼저 선택하는가',
+            '접속값 저장 없이도 절차를 따라갈 수 있는가',
+          ],
+          risks: [
+            '주소, 비밀번호, 인증코드, 세션 URL을 저장하지 않음',
+            '보안 보장, 사기 판정, 기기 관리 기능을 만들지 않음',
+            '반복 관리는 별도 동의와 종료 메모가 있을 때만 다룸',
+          ],
+          primaryType: 'checklist',
+          items: [
+            { id: 'trust', timing: '지원 전', title: '요청자와 작업 범위 확인', note: '누가 먼저 요청했는지, 무엇을 어디까지 도와줄지 확인합니다.', badge: '신뢰' },
+            { id: 'method', timing: '도구 열기 전', title: '화면 공유만으로 충분한지 선택', note: '보기만 필요하면 화면 공유, 조작이 필요할 때만 일회성 원격 제어를 선택합니다.', badge: '권한' },
+            { id: 'no-secret', timing: '세션 시작', title: '접속값은 FlowMe에 저장하지 않음', note: '주소, 인증코드, 세션 링크는 도구 안에서만 사용하고 메모나 export에 남기지 않습니다.', badge: '미저장' },
+            { id: 'close', timing: '지원 직후', title: '세션 종료와 접근 정리', note: '공유와 원격 제어를 종료하고 자동 수락, 파일 전송, 반복 접근 권한이 남았는지 확인합니다.', badge: '종료' },
+          ],
+        },
+        fridge: {
+          domain: '식단/장보기 · 시트/재고',
+          title: '냉장고 파먹기 7일 실행표',
+          desc: '냉장고 재고 3개를 기준으로 7일 메뉴 후보와 장보기 보류를 정합니다. 절약액이나 영양 효과를 보장하지 않습니다.',
+          cta: '7일 실행표 저장',
+          saveNote: '재고 3개, 메뉴 후보, 장보기 보류 상태가 시트 형태로 저장됩니다.',
+          sourceUrl: 'https://aruma16.tistory.com/126',
+          sourceNote: '개인 챌린지/생활비 경험은 실행 힌트로만 사용하고, FlowMe는 재고 확인과 이번 주 메뉴 후보를 표로 정리합니다.',
+          inputs: [
+            { label: '시작일', value: '2026-06-15' },
+            { label: '소진할 재료 3개', value: '단호박, 두부, 계란' },
+            { label: '장보기', value: '가능하면 보류' },
+          ],
+          decisions: [
+            '식단 관리 앱처럼 과해지지 않는가',
+            '재고 소진과 장보기 보류가 표에서 바로 보이는가',
+            '절약/영양 보장 없이 실행표로 남는가',
+          ],
+          risks: [
+            '절약 금액, 영양 균형, 건강 효과를 보장하지 않음',
+            '칼로리/체중/건강 기록 앱으로 확장하지 않음',
+            '없는 재료를 사야 하는 경우는 보류 메모로만 남김',
+          ],
+          primaryType: 'sheet',
+          items: [
+            { id: 'stock', timing: 'D-Day', title: '냉장고 재고 10분 정리', note: '이번 주 먼저 쓸 재료 3개를 정합니다.', badge: '오늘' },
+            { id: 'menu', timing: 'D-Day', title: '7일 메뉴 후보 적기', note: '복잡한 식단표가 아니라 재고를 쓰는 아침/저녁 후보만 둡니다.', badge: '계획' },
+            { id: 'hold-buy', timing: 'D+1~D+6', title: '장보기 보류 목록 만들기', note: '대체 재료가 있으면 새 구매를 보류합니다.', badge: '보류' },
+            { id: 'leftover', timing: 'D+7', title: '남은 재료 처리 방향 정하기', note: '냉동, 소분, 다음 주 첫 메뉴 후보 중 하나로 정리합니다.', badge: '정리' },
+          ],
+          rows: [
+            ['D-Day', '단호박', '단호박전 또는 볶음', '보류', '오늘'],
+            ['D+1', '두부', '두부조림 또는 된장국', '보류', '예정'],
+            ['D+2', '계란', '계란말이 또는 볶음밥', '보류', '예정'],
+            ['D+3~D+6', '남은 재료', '사용 후 메모', '필요 시', '계획'],
+            ['D+7', '잔여 재료', '냉동/소분/다음 주 첫 메뉴', '결정', '정리'],
+          ],
+        },
+      };
+
+      let activeSample = 'elementary';
+      let activeView = 'primary';
+      const checked = {};
+
+      function progress(items) {
+        return items.filter((item) => checked[item.id]).length;
+      }
+
+      function renderSetup(sample) {
+        const container = document.querySelector('#setup-fields');
+        container.innerHTML = sample.inputs.map((field) => `
+          <div class="field">
+            <label>${field.label}</label>
+            <input value="${field.value}" />
+          </div>
+        `).join('');
+      }
+
+      function renderTimeline(sample) {
+        const selected = sample.items.find((item) => item.id === (sample.selected || sample.items[0].id)) || sample.items[0];
+        return `
+          <div class="section-head">
+            <div>
+              <h3>생성되는 일정</h3>
+              <p class="desc">날짜를 눌러 해당 날짜 체크 항목을 확인합니다.</p>
+            </div>
+            <span class="badge safe">캘린더 + 체크</span>
+          </div>
+          <div class="calendar-strip">
+            ${sample.items.map((item) => `
+              <button class="date-card ${selected.id === item.id ? 'active' : ''}" type="button" data-select-item="${item.id}">
+                <span>${item.timing}</span>
+                <strong>${item.title}</strong>
+                <span>${checked[item.id] ? '확인 완료' : item.badge}</span>
+              </button>
+            `).join('')}
+          </div>
+          <div class="detail-card">
+            <div class="detail-head">
+              <div>
+                <p class="item-meta">${selected.timing}</p>
+                <h3>${selected.title}</h3>
+                <p class="desc">${selected.note}</p>
+              </div>
+              <span class="badge ${selected.badge === '보류' ? 'warn' : ''}">${selected.badge}</span>
+            </div>
+            ${itemCheckbox(selected)}
+            <details>
+              <summary>상세 메모와 원문 링크</summary>
+              <p class="desc">${sample.sourceNote}</p>
+            </details>
+          </div>
+        `;
+      }
+
+      function itemCheckbox(item) {
+        return `
+          <label class="item" style="margin-top:12px">
+            <input type="checkbox" data-check="${item.id}" ${checked[item.id] ? 'checked' : ''} />
+            <span>
+              <strong class="item-title">${item.title}</strong>
+              <span class="item-note">${item.note}</span>
+            </span>
+            <span class="badge">${checked[item.id] ? '완료' : item.timing}</span>
+          </label>
+        `;
+      }
+
+      function renderChecklist(sample) {
+        return `
+          <div class="section-head">
+            <div>
+              <h3>실행 체크</h3>
+              <p class="desc">${sample.primaryType === 'checklist' ? '순서대로 체크하고 상세는 메모/URL에서 확인합니다.' : '이번 주 실행표로 이어지는 핵심 체크입니다.'}</p>
+            </div>
+            <span class="badge safe">${sample.primaryType === 'sheet' ? '시트 + 체크' : '체크리스트'}</span>
+          </div>
+          <div class="items">
+            ${sample.items.map((item) => `
+              <label class="item">
+                <input type="checkbox" data-check="${item.id}" ${checked[item.id] ? 'checked' : ''} />
+                <span>
+                  <strong class="item-title">${item.title}</strong>
+                  <span class="item-meta">${item.timing}</span>
+                  <span class="item-note">${item.note}</span>
+                </span>
+                <span class="badge ${item.badge === '보류' || item.badge === '미저장' ? 'warn' : ''}">${item.badge}</span>
+              </label>
+            `).join('')}
+          </div>
+          <details>
+            <summary>메모/URL로 남길 상세</summary>
+            <p class="desc">${sample.sourceNote}</p>
+          </details>
+        `;
+      }
+
+      function renderSheet(sample) {
+        return `
+          ${renderChecklist(sample)}
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>날짜</th>
+                  <th>우선 재료</th>
+                  <th>메뉴 후보</th>
+                  <th>장보기</th>
+                  <th>상태</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${sample.rows.map((row) => `
+                  <tr>${row.map((cell) => `<td>${cell}</td>`).join('')}</tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function renderAll(sample) {
+        return `
+          <div class="section-head">
+            <div>
+              <h3>전체 항목</h3>
+              <p class="desc">검토용 설명이 아니라, 사용자가 저장 후 다시 볼 실행 항목만 모았습니다.</p>
+            </div>
+            <span class="badge">${sample.items.length}개</span>
+          </div>
+          <div class="items">
+            ${sample.items.map((item) => `
+              <div class="item">
+                <span aria-hidden="true">•</span>
+                <span>
+                  <strong class="item-title">${item.title}</strong>
+                  <span class="item-meta">${item.timing}</span>
+                  <span class="item-note">${item.note}</span>
+                </span>
+                <span class="badge">${item.badge}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      function bindInteractions() {
+        document.querySelectorAll('[data-check]').forEach((input) => {
+          input.addEventListener('change', (event) => {
+            checked[event.currentTarget.dataset.check] = event.currentTarget.checked;
+            render();
+          });
+        });
+
+        document.querySelectorAll('[data-select-item]').forEach((button) => {
+          button.addEventListener('click', () => {
+            samples[activeSample].selected = button.dataset.selectItem;
+            render();
+          });
+        });
+      }
+
+      function render() {
+        const sample = samples[activeSample];
+        document.querySelector('#domain-label').textContent = sample.domain;
+        document.querySelector('#sample-title').textContent = sample.title;
+        document.querySelector('#sample-desc').textContent = sample.desc;
+        document.querySelector('#progress-pill').textContent = `${progress(sample.items)}/${sample.items.length} 완료`;
+        document.querySelector('#save-note').textContent = sample.saveNote;
+        document.querySelector('#save-button').textContent = sample.cta;
+        document.querySelector('#decision-list').innerHTML = sample.decisions.map((item) => `<li>${item}</li>`).join('');
+        document.querySelector('#risk-list').innerHTML = sample.risks.map((item) => `<li>${item}</li>`).join('');
+        document.querySelector('#source-note').textContent = sample.sourceNote;
+        document.querySelector('#source-link').href = sample.sourceUrl;
+        renderSetup(sample);
+
+        const primary = document.querySelector('#primary-view');
+        if (sample.primaryType === 'timeline') {
+          primary.innerHTML = renderTimeline(sample);
+        } else if (sample.primaryType === 'sheet') {
+          primary.innerHTML = renderSheet(sample);
+        } else {
+          primary.innerHTML = renderChecklist(sample);
+        }
+
+        document.querySelector('#all-view').innerHTML = renderAll(sample);
+        document.querySelector('#primary-view').classList.toggle('hidden', activeView !== 'primary');
+        document.querySelector('#all-view').classList.toggle('hidden', activeView !== 'all');
+        bindInteractions();
+      }
+
+      document.querySelectorAll('.sample-tab').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          activeSample = tab.dataset.sample;
+          activeView = 'primary';
+          document.querySelectorAll('.sample-tab').forEach((item) => item.classList.toggle('active', item === tab));
+          document.querySelectorAll('#view-tabs button').forEach((button) => button.classList.toggle('active', button.dataset.view === 'primary'));
+          render();
+        });
+      });
+
+      document.querySelectorAll('#view-tabs button').forEach((button) => {
+        button.addEventListener('click', () => {
+          activeView = button.dataset.view;
+          document.querySelectorAll('#view-tabs button').forEach((item) => item.classList.toggle('active', item === button));
+          render();
+        });
+      });
+
+      render();
+    </script>
+  </body>
+</html>

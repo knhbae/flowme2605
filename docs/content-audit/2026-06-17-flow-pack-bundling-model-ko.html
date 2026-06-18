@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe Flow Pack 묶음 구조 제안</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f8fb;
+        --surface: #ffffff;
+        --soft: #f8fafc;
+        --line: #d7e0ee;
+        --text: #101827;
+        --muted: #5d697b;
+        --blue: #1f5fbf;
+        --green: #0f7a4a;
+        --amber: #9a6100;
+        --red: #b42318;
+        --radius: 8px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, #fbfdff 0, var(--bg) 520px);
+        color: var(--text);
+        font-size: 16px;
+        line-height: 1.62;
+      }
+      main {
+        width: min(1180px, calc(100% - 28px));
+        margin: 0 auto;
+        padding: 18px 0 64px;
+      }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 {
+        max-width: 880px;
+        margin-bottom: 10px;
+        font-size: clamp(30px, 5vw, 48px);
+        line-height: 1.12;
+        letter-spacing: 0;
+      }
+      h2 {
+        margin-bottom: 10px;
+        font-size: clamp(23px, 3vw, 34px);
+        line-height: 1.2;
+        letter-spacing: 0;
+      }
+      h3 {
+        margin-bottom: 6px;
+        font-size: 19px;
+        letter-spacing: 0;
+      }
+      ul { margin: 0; padding-left: 20px; }
+      li + li { margin-top: 5px; }
+      code {
+        padding: 2px 5px;
+        border: 1px solid #d8dee8;
+        border-radius: 5px;
+        background: #f2f5f9;
+        font-size: .94em;
+      }
+      .hero, .card, .mini, .pack, .flow, .lane, .wire {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+      }
+      .hero {
+        padding: 20px;
+        box-shadow: 0 14px 34px rgba(16, 24, 39, .08);
+      }
+      .card { margin-top: 14px; padding: 16px; }
+      .eyebrow {
+        margin-bottom: 6px;
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+      .desc { color: var(--muted); }
+      .note {
+        margin: 12px 0 0;
+        padding: 12px;
+        border-left: 4px solid var(--blue);
+        border-radius: 6px;
+        background: #eef5ff;
+        color: #17345f;
+        font-weight: 750;
+      }
+      .warn {
+        margin: 12px 0 0;
+        padding: 12px;
+        border-left: 4px solid var(--amber);
+        border-radius: 6px;
+        background: #fff7e8;
+        color: #5f3b00;
+        font-weight: 750;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .mini {
+        padding: 14px;
+        background: var(--soft);
+      }
+      .mini strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 18px;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 10px 0 0;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 4px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--soft);
+        color: #334155;
+        font-size: 13px;
+        font-weight: 850;
+      }
+      .chip.blue { border-color: #b9d2ff; background: #eef5ff; color: #174ea6; }
+      .chip.green { border-color: #b8e5ce; background: #eefaf3; color: #0f6b43; }
+      .chip.amber { border-color: #f4d291; background: #fff7e8; color: #7a4b00; }
+      .chip.red { border-color: #f4b9b2; background: #fff1ef; color: #9a241a; }
+      .map {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1.2fr;
+        gap: 12px;
+        align-items: stretch;
+        margin-top: 14px;
+      }
+      .lane {
+        padding: 14px;
+        background: #fbfdff;
+      }
+      .lane-title {
+        margin: 0 0 10px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+      .stack {
+        display: grid;
+        gap: 8px;
+      }
+      .flow, .pack {
+        padding: 12px;
+        background: var(--surface);
+      }
+      .flow-title, .pack-title {
+        margin: 0 0 4px;
+        font-weight: 900;
+        line-height: 1.28;
+      }
+      .flow-meta {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .pack {
+        border-color: #b9d2ff;
+        background: #f7fbff;
+      }
+      .pack .flow {
+        margin-top: 8px;
+      }
+      .wire {
+        margin-top: 12px;
+        overflow: hidden;
+      }
+      .wire-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 13px;
+        border-bottom: 1px solid var(--line);
+        background: #f8fafc;
+      }
+      .wire-title {
+        margin: 0;
+        font-weight: 950;
+      }
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 34px;
+        padding: 7px 11px;
+        border: 1px solid #b9d2ff;
+        border-radius: 7px;
+        background: #eef5ff;
+        color: #174ea6;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+      .btn.secondary {
+        border-color: var(--line);
+        background: #fff;
+        color: #334155;
+      }
+      .wire-body {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+      }
+      .panel {
+        padding: 14px;
+      }
+      .panel + .panel {
+        border-left: 1px solid var(--line);
+      }
+      .flow-row {
+        display: grid;
+        grid-template-columns: 88px 1fr auto;
+        gap: 10px;
+        align-items: start;
+        padding: 12px 0;
+        border-top: 1px solid #e6edf5;
+      }
+      .flow-row:first-of-type { border-top: 0; }
+      .type {
+        display: inline-flex;
+        justify-content: center;
+        padding: 3px 7px;
+        border-radius: 999px;
+        background: #eef5ff;
+        color: #174ea6;
+        font-size: 12px;
+        font-weight: 900;
+      }
+      .small { color: var(--muted); font-size: 14px; }
+      .table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 860px;
+        background: #fff;
+      }
+      th, td {
+        padding: 11px;
+        border-bottom: 1px solid #e6edf5;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background: #f8fafc;
+        color: #334155;
+        font-size: 13px;
+        text-transform: uppercase;
+      }
+      tr:last-child td { border-bottom: 0; }
+      @media (max-width: 820px) {
+        main { width: min(100% - 22px, 1180px); padding-top: 12px; }
+        .hero, .card { padding: 14px; }
+        .grid, .grid.two, .grid.four, .map, .wire-body {
+          grid-template-columns: 1fr;
+        }
+        .panel + .panel {
+          border-left: 0;
+          border-top: 1px solid var(--line);
+        }
+        .wire-head {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+        .flow-row {
+          grid-template-columns: 1fr;
+          gap: 5px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <p class="eyebrow">FlowMe product structure</p>
+        <h1>큰 경험맵 이전에, 제작자 Flow는 Pack/Series로 묶이는 게 자연스럽다</h1>
+        <p class="desc">
+          블로그가 처음부터 거대한 카테고리 체계를 만들지 않듯이, FlowMe도 처음부터 모든 콘텐츠를 큰 경험맵으로 만들 필요는 없다.
+          개별 Flow가 쌓이고, 제작자가 3~7개를 하나의 실행 묶음으로 편집하면 플랫폼 느낌과 실행 가벼움 사이의 균형이 생긴다.
+        </p>
+        <div class="chips">
+          <span class="chip green">추천: A/B 중간안</span>
+          <span class="chip blue">Flow Pack</span>
+          <span class="chip blue">Creator Series</span>
+          <span class="chip amber">큰 경험맵은 나중</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>한 줄 판단</h2>
+        <div class="grid three">
+          <div class="mini">
+            <strong>개별 Flow</strong>
+            <p class="desc">블로그의 글 하나에 가깝다. 원컨텐츠 1개를 캘린더, 체크리스트, 메모, 표, 버킷으로 옮긴 결과물이다.</p>
+          </div>
+          <div class="mini">
+            <strong>Flow Pack</strong>
+            <p class="desc">블로그의 시리즈나 연재에 가깝다. 같은 사용자 상황에서 함께 쓰면 좋은 Flow 3~7개를 묶는다.</p>
+          </div>
+          <div class="mini">
+            <strong>경험맵</strong>
+            <p class="desc">여러 Pack이 쌓인 뒤 생기는 상위 지도다. 처음부터 강제로 만들면 코스/로드맵 서비스처럼 무거워질 수 있다.</p>
+          </div>
+        </div>
+        <p class="note">따라서 다음 PoC는 “자격증 전체 로드맵”보다 “자격증 필기 D-30 준비팩”처럼 작지만 묶인 구조가 더 적합하다.</p>
+      </section>
+
+      <section class="card">
+        <h2>정보 구조: 글, 시리즈, 카테고리로 보면</h2>
+        <div class="map">
+          <div class="lane">
+            <p class="lane-title">블로그식 구조</p>
+            <div class="stack">
+              <div class="flow">
+                <p class="flow-title">글</p>
+                <p class="flow-meta">하나의 주제, 하나의 읽기/실행 단위</p>
+              </div>
+              <div class="flow">
+                <p class="flow-title">시리즈</p>
+                <p class="flow-meta">관련 글을 순서나 목적별로 묶음</p>
+              </div>
+              <div class="flow">
+                <p class="flow-title">카테고리/태그</p>
+                <p class="flow-meta">탐색용 분류. 실행 순서는 약함</p>
+              </div>
+            </div>
+          </div>
+          <div class="lane">
+            <p class="lane-title">FlowMe 구조</p>
+            <div class="stack">
+              <div class="flow">
+                <p class="flow-title">Flow</p>
+                <p class="flow-meta">원컨텐츠 1개에서 나온 실행 artifact</p>
+              </div>
+              <div class="pack">
+                <p class="pack-title">Flow Pack</p>
+                <p class="flow-meta">제작자가 의도를 갖고 묶은 실행 세트</p>
+              </div>
+              <div class="flow">
+                <p class="flow-title">Creator Channel</p>
+                <p class="flow-meta">제작자의 Pack/Flow 선반</p>
+              </div>
+            </div>
+          </div>
+          <div class="lane">
+            <p class="lane-title">나중에 확장</p>
+            <div class="stack">
+              <div class="flow">
+                <p class="flow-title">Pack Stack</p>
+                <p class="flow-meta">여러 Pack을 연결한 큰 여정</p>
+              </div>
+              <div class="flow">
+                <p class="flow-title">Experience Map</p>
+                <p class="flow-meta">단계, 분기, 기간, 하위 Flow가 있는 지도</p>
+              </div>
+              <div class="flow">
+                <p class="flow-title">Marketplace</p>
+                <p class="flow-meta">검증 후 제작자/수익화/검색 확장</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>추천 묶음 단위: Flow Pack</h2>
+        <div class="grid two">
+          <div class="mini">
+            <h3>Pack의 기준</h3>
+            <ul>
+              <li>같은 사용자 상황에서 함께 쓰인다.</li>
+              <li>3~7개 Flow로 끝난다.</li>
+              <li>전체 저장과 일부 저장이 모두 가능하다.</li>
+              <li>각 Flow는 독립적으로도 실행 가능하다.</li>
+              <li>제작자 설명은 짧고, 실행 정보는 각 Flow detail로 내려간다.</li>
+            </ul>
+          </div>
+          <div class="mini">
+            <h3>Pack이 피해야 할 것</h3>
+            <ul>
+              <li>강의 커리큘럼처럼 모든 것을 배우게 만들기</li>
+              <li>제작자 소개와 철학을 첫 화면에 길게 노출하기</li>
+              <li>하나의 Pack에 서로 다른 사용자 상황을 섞기</li>
+              <li>실행 순서가 없는 묶음을 로드맵처럼 보이게 하기</li>
+              <li>개별 Flow의 출처/URL/메모를 Pack 설명으로 합치기</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>사용자 화면이 어떻게 묶여 보이는가</h2>
+        <div class="wire">
+          <div class="wire-head">
+            <div>
+              <p class="wire-title">정보처리기사 필기 D-30 준비팩</p>
+              <p class="small">제작자: 자격증 실전노트 · Flow 5개 · 예상 기간 30일</p>
+            </div>
+            <div class="button-row">
+              <span class="btn">팩 전체 저장</span>
+              <span class="btn secondary">필요한 Flow만 선택</span>
+            </div>
+          </div>
+          <div class="wire-body">
+            <div class="panel">
+              <h3>이 팩에서 바로 생기는 것</h3>
+              <div class="flow-row">
+                <span class="type">캘린더</span>
+                <div>
+                  <strong>원서접수 마감과 시험일 저장</strong>
+                  <p class="small">접수 시작/마감, 수험표 확인, 시험일을 일정으로 만든다.</p>
+                </div>
+                <span class="chip blue">필수</span>
+              </div>
+              <div class="flow-row">
+                <span class="type">표</span>
+                <div>
+                  <strong>과목별 공부표 만들기</strong>
+                  <p class="small">5과목, 목표 회독, 현재 상태, 다음 복습일을 표로 만든다.</p>
+                </div>
+                <span class="chip blue">필수</span>
+              </div>
+              <div class="flow-row">
+                <span class="type">루틴</span>
+                <div>
+                  <strong>기출 풀이 요일 반복</strong>
+                  <p class="small">월/수/금 또는 선택 요일에 기출 풀이 일정을 반복한다.</p>
+                </div>
+                <span class="chip green">선택</span>
+              </div>
+              <div class="flow-row">
+                <span class="type">체크</span>
+                <div>
+                  <strong>시험 전 7일 준비</strong>
+                  <p class="small">수험표, 신분증, 고사장, 준비물을 D-7부터 확인한다.</p>
+                </div>
+                <span class="chip green">선택</span>
+              </div>
+            </div>
+            <div class="panel">
+              <h3>사용자가 고르는 값</h3>
+              <ul>
+                <li>시험일</li>
+                <li>공부 시작일</li>
+                <li>기출 풀이 요일</li>
+              </ul>
+              <p class="warn">입력은 팩 전체 기준 2~3개로 끝나야 한다. 각 Flow마다 같은 날짜를 반복 입력하게 만들면 Pack의 장점이 사라진다.</p>
+              <h3 style="margin-top:14px;">재방문 화면</h3>
+              <ul>
+                <li>오늘 할 일: 기출 1회 풀기</li>
+                <li>이번 주 일정: 과목별 복습 3개</li>
+                <li>다가오는 마감: 수험표 확인 D-7</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>예시 Pack 5개</h2>
+        <div class="grid two">
+          <div class="pack">
+            <div class="chips"><span class="chip blue">시험/학습</span><span class="chip green">추천 PoC</span></div>
+            <h3>정보처리기사 필기 D-30 준비팩</h3>
+            <p class="desc">시험일을 기준으로 접수, 공부표, 기출 루틴, 시험 전 체크를 묶는다.</p>
+            <div class="flow"><p class="flow-title">원서접수 일정 저장</p><p class="flow-meta">calendar · 공식 접수 일정 URL</p></div>
+            <div class="flow"><p class="flow-title">과목별 공부표</p><p class="flow-meta">sheet · 과목/회독/상태</p></div>
+            <div class="flow"><p class="flow-title">기출 풀이 반복 일정</p><p class="flow-meta">calendar · 선택 요일 반복</p></div>
+            <div class="flow"><p class="flow-title">시험 전 7일 체크</p><p class="flow-meta">checklist · 수험표/신분증/고사장</p></div>
+          </div>
+
+          <div class="pack">
+            <div class="chips"><span class="chip blue">생활 전환</span></div>
+            <h3>이사 D-30 준비팩</h3>
+            <p class="desc">이사일을 기준으로 견적, 입주청소, 주소 변경, 전입신고를 묶는다.</p>
+            <div class="flow"><p class="flow-title">이사 방식 정하고 견적 3곳 요청</p><p class="flow-meta">checklist + memo · 업체 후보와 비용</p></div>
+            <div class="flow"><p class="flow-title">입주청소 예약</p><p class="flow-meta">calendar · 예약일/연락처</p></div>
+            <div class="flow"><p class="flow-title">주소 변경 목록</p><p class="flow-meta">sheet · 은행/통신/배송/보험</p></div>
+            <div class="flow"><p class="flow-title">전입신고와 확정일자</p><p class="flow-meta">checklist · 공식 URL 분리</p></div>
+          </div>
+
+          <div class="pack">
+            <div class="chips"><span class="chip blue">육아/교육</span></div>
+            <h3>초등 입학 2주 준비팩</h3>
+            <p class="desc">입학일 전후로 준비물, 등원 루틴, 돌봄/급식 신청, 첫 주 체크를 묶는다.</p>
+            <div class="flow"><p class="flow-title">준비물 체크리스트</p><p class="flow-meta">checklist · 학교 안내문 기준</p></div>
+            <div class="flow"><p class="flow-title">등교 시간 루틴</p><p class="flow-meta">routine · 평일 아침 반복</p></div>
+            <div class="flow"><p class="flow-title">돌봄/급식 신청 마감 저장</p><p class="flow-meta">calendar · 안내 URL</p></div>
+            <div class="flow"><p class="flow-title">첫 주 적응 메모</p><p class="flow-meta">memo · 아이 상태/준비물 누락</p></div>
+          </div>
+
+          <div class="pack">
+            <div class="chips"><span class="chip blue">운동/루틴</span></div>
+            <h3>초보 홈트 4주 시작팩</h3>
+            <p class="desc">영상 1~3개를 고르고, 사용자가 선택한 요일에 반복 일정으로 옮긴다.</p>
+            <div class="flow"><p class="flow-title">이번 주 운동 요일 정하기</p><p class="flow-meta">calendar · 월/수/금 같은 반복</p></div>
+            <div class="flow"><p class="flow-title">영상 따라하기 일정</p><p class="flow-meta">calendar · 영상 URL 포함</p></div>
+            <div class="flow"><p class="flow-title">운동 후 상태 체크</p><p class="flow-meta">internal_check · 완료/중단 조건</p></div>
+            <div class="flow"><p class="flow-title">4주 종료일 기록</p><p class="flow-meta">calendar · 반복 종료</p></div>
+          </div>
+
+          <div class="pack">
+            <div class="chips"><span class="chip blue">아이 놀이</span><span class="chip amber">가벼운 Pack</span></div>
+            <h3>방학 집콕 놀이 5개 저장팩</h3>
+            <p class="desc">날짜가 정해지지 않은 놀이 아이디어를 버킷처럼 저장하고, 원하면 놀이 날짜를 붙인다.</p>
+            <div class="flow"><p class="flow-title">루돌프 스퀴시 만들기</p><p class="flow-meta">bucket + optional calendar · 도안 URL</p></div>
+            <div class="flow"><p class="flow-title">색종이 접기 하나 저장</p><p class="flow-meta">bucket · 영상 URL</p></div>
+            <div class="flow"><p class="flow-title">준비물 묶음 메모</p><p class="flow-meta">memo · 풀/가위/색연필</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Pack과 큰 경험맵의 차이</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th>Flow Pack</th>
+                <th>큰 경험맵</th>
+                <th>지금 판단</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>크기</td>
+                <td>3~7개 Flow</td>
+                <td>여러 Pack과 단계, 분기, 장기 목표</td>
+                <td>지금은 Pack이 적합</td>
+              </tr>
+              <tr>
+                <td>제작자 부담</td>
+                <td>블로그 시리즈처럼 만들 수 있음</td>
+                <td>코스 설계나 로드맵 설계에 가까움</td>
+                <td>초기 제작자는 Pack부터</td>
+              </tr>
+              <tr>
+                <td>사용자 저장</td>
+                <td>전체 저장 또는 필요한 Flow만 저장</td>
+                <td>전체 여정을 저장한 뒤 단계별 진입</td>
+                <td>부분 저장이 중요</td>
+              </tr>
+              <tr>
+                <td>UI 무게</td>
+                <td>카드 목록 + 선택 저장 + 오늘 실행</td>
+                <td>지도, 단계, 진행률, 하위 흐름</td>
+                <td>초기에는 지도 UI를 크게 만들지 않음</td>
+              </tr>
+              <tr>
+                <td>비즈니스 의미</td>
+                <td>제작자 콘텐츠 상품의 최소 단위</td>
+                <td>브랜드 프로그램이나 프리미엄 상품</td>
+                <td>Pack이 creator platform 증명에 더 빠름</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>추천 데이터 구조</h2>
+        <div class="grid four">
+          <div class="mini">
+            <strong>Flow</strong>
+            <p class="desc">원컨텐츠 1개, destination 1개 또는 lightweight hybrid, 출처 URL, 실행 항목.</p>
+          </div>
+          <div class="mini">
+            <strong>FlowPack</strong>
+            <p class="desc">title, audience, promise, creatorId, includedFlows, defaultInputs, saveMode.</p>
+          </div>
+          <div class="mini">
+            <strong>PackSection</strong>
+            <p class="desc">필수/선택/나중에 같은 작은 묶음. 큰 단계명은 최소화한다.</p>
+          </div>
+          <div class="mini">
+            <strong>UserPackCopy</strong>
+            <p class="desc">사용자가 저장한 Flow 목록, 공통 날짜 값, 숨김/선택 상태, 완료 상태.</p>
+          </div>
+        </div>
+        <p class="note">핵심은 Pack의 입력값이 하위 Flow에 흘러가야 한다는 점이다. 시험일, 이사일, 입학일을 한 번 넣으면 하위 캘린더/체크리스트가 같이 만들어져야 한다.</p>
+      </section>
+
+      <section class="card">
+        <h2>다음 PoC로 볼 화면</h2>
+        <div class="grid two">
+          <div class="mini">
+            <h3>사용자 화면</h3>
+            <ul>
+              <li>Pack 첫 화면: 무엇을 저장하는지 5초 안에 이해</li>
+              <li>공통 입력: 시험일/시작일/요일처럼 2~3개</li>
+              <li>포함 Flow 목록: 필수와 선택 구분</li>
+              <li>전체 저장, 필요한 Flow만 저장</li>
+              <li>저장 후 오늘/이번 주 실행 항목</li>
+            </ul>
+          </div>
+          <div class="mini">
+            <h3>제작자 화면</h3>
+            <ul>
+              <li>개별 Flow를 만든 뒤 Pack에 추가</li>
+              <li>Flow 순서와 필수/선택 여부 지정</li>
+              <li>공통 입력값이 어느 Flow에 쓰이는지 확인</li>
+              <li>출처 URL과 제작자 경험을 Flow마다 분리</li>
+              <li>미리보기에서 사용자 저장 결과 확인</li>
+            </ul>
+          </div>
+        </div>
+        <p class="warn">다음 작업은 “자격증 필기 D-30 준비팩” 하나를 사용자 화면과 제작자 화면으로 만들어 보는 것이 적절하다. 큰 경험맵, 결제, 마켓플레이스, 커뮤니티는 아직 뒤로 둔다.</p>
+      </section>
+    </main>
+  </body>
+</html>

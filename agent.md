@@ -2,7 +2,7 @@
 
 > **AI-agnostic root guide.** 이 문서는 Codex, Claude Code, Gemini CLI, Copilot CLI, Cursor, 또는 다른 AI 개발 도구가 공통으로 따라야 하는 운영 기준이다. 특정 벤더의 명령이나 파일명에 의존하지 않는다.
 >
-> **Project:** [README.md](./README.md) | **Status:** [docs/STATUS.md](./docs/STATUS.md) | **Roadmap:** [docs/ROADMAP.md](./docs/ROADMAP.md) | **Product Principles:** [docs/PRODUCT_PRINCIPLES.md](./docs/PRODUCT_PRINCIPLES.md) | **Ideas:** [docs/IDEAS.md](./docs/IDEAS.md) | **PR History:** [docs/pr-history/README.md](./docs/pr-history/README.md) | **History:** [docs/HISTORY.md](./docs/HISTORY.md) | **Harness:** [docs/harness/README.md](./docs/harness/README.md)
+> **Project:** [README.md](./README.md) | **Status:** [docs/STATUS.md](./docs/STATUS.md) | **Roadmap:** [docs/ROADMAP.md](./docs/ROADMAP.md) | **Product Principles:** [docs/PRODUCT_PRINCIPLES.md](./docs/PRODUCT_PRINCIPLES.md) | **Decisions:** [docs/DECISIONS.md](./docs/DECISIONS.md) | **Ideas:** [docs/IDEAS.md](./docs/IDEAS.md) | **PR History:** [docs/pr-history/README.md](./docs/pr-history/README.md) | **History:** [docs/HISTORY.md](./docs/HISTORY.md) | **Harness:** [docs/harness/README.md](./docs/harness/README.md)
 
 ## 0) Agent Harness Rules
 
@@ -12,14 +12,22 @@
 - 별도 subagent 기능이 있으면 구현자/리뷰어/브라우저 테스터 역할을 분리한다. subagent 기능이 없으면 같은 AI가 단계별로 컨텍스트를 분리해 수행하고, 리뷰 단계에서는 변경자 관점이 아니라 검토자 관점으로 본다.
 - Claude 전용 `/plan`, `/qa` 같은 slash command가 없어도 같은 절차를 [docs/harness/SDLC.md](./docs/harness/SDLC.md)에 따라 수동 실행한다.
 
+### User Input Interpretation Notice
+- 사용자의 말은 현재 상황, 느낀 불편함, 바라는 방향을 드러내는 주장으로 우선 해석한다. 명시적으로 지시하지 않은 한 반드시 그대로 실행해야 하는 명령으로 보지 않는다.
+- 사용자도 에이전트도 자동으로 옳지 않다. 제품 판단, 구현 판단, 우선순위 판단은 근거, 관찰된 사실, 명시한 가정, 객관적 tradeoff를 기준으로 정리한다.
+- 계획 단계에서는 최고 수준의 reasoning을 적용하고, 필요한 경우 웹 검색/공식 문서/소스 코드/검증 로그를 함께 사용한다. 소프트웨어 엔지니어, 플랫폼 엔지니어, UX/제품 기획자 관점을 모두 동원하되, 최종 판단은 증거에 연결한다.
+- 사용자가 직접 말하지 않은 개념, 원칙, 철학, 제약, 부작용도 계획 전에 식별한다. 단, 추정은 추정으로 표시하고, 확정된 요구사항처럼 다루지 않는다.
+- 불편함을 들었을 때는 곧바로 해결책을 고정하지 말고, 문제가 실제로 어디에서 생기는지와 대안별 비용/효과를 먼저 분리한다.
+
 ### Required Reading Order
 1. `agent.md`
 2. `docs/STATUS.md`
 3. `docs/ROADMAP.md`
-4. `docs/IDEAS.md`
-5. UX, 일정, 투두, 루틴, 건강/운동 실행 흐름과 관련된 작업이면 `docs/REFERENCE.md`
-6. 변경 대상과 관련된 `design.md`, `docs/harness/*.md`, `docs/superpowers/*`, `old_reference/*`
-7. 실제 코드와 테스트
+4. `docs/DECISIONS.md`
+5. `docs/IDEAS.md`
+6. UX, 일정, 투두, 루틴, 건강/운동 실행 흐름과 관련된 작업이면 `docs/REFERENCE.md`
+7. 변경 대상과 관련된 `design.md`, `docs/harness/*.md`, `docs/superpowers/*`, `old_reference/*`
+8. 실제 코드와 테스트
 
 ### Development Commands
 ```powershell
@@ -48,6 +56,7 @@ npm run dev
 ### Documentation Memory
 - `docs/STATUS.md`: current state and health.
 - `docs/ROADMAP.md`: planned versions and backlog index.
+- `docs/DECISIONS.md`: durable product, UX, technical, and process decisions that future agents should treat as settled unless reopened.
 - `docs/IDEAS.md`: useful ideas, deferred work, unresolved conversation context, and revisit triggers that are not yet committed roadmap items.
 - `docs/REFERENCE.md`: external UX/UI and productivity-method references for calendar, task, reminder, routine, health, and exercise execution flows.
 - `docs/pr-history/`: PR-level implementation memory. Record the reason, major changes, not-done items, decisions, verification evidence, deploy links, risks, rollback notes, and follow-ups for each PR.
@@ -56,11 +65,28 @@ npm run dev
 - `docs/superpowers/`: detailed specs/plans produced by agent workflows.
 - `docs/flow-rules/`: product-quality principles, rubric, pattern playbooks, UX copy rules, and review gates for FLOW content and UI.
 
+### Policy and Idea Tracking
+- When a conversation settles how a product surface, data model, UX rule, safety boundary, creator policy, or agent process should behave, record it in `docs/DECISIONS.md` before the session ends. Include the reason, affected surfaces, reopen trigger, and related docs.
+- When a conversation raises a promising direction but it is not committed for current implementation, record it in `docs/IDEAS.md` before the session ends. Include why it is not now, the concrete revisit trigger, and the source conversation context.
+- When an idea becomes planned user-facing work, promote it from `docs/IDEAS.md` into a `docs/specs/YYYY-MM-DD-short-topic/` spec instead of leaving it as chat memory.
+- If a decision or idea is mentioned in the middle of implementation, capture it in the right document during the same turn or in the final handoff. Do not rely on the chat transcript as the only memory.
+- If a user asks "what about X style/direction?" and the answer is not immediate implementation, treat it as either a pending idea or an explicit rejected/deferred decision and record it accordingly when the user confirms or the session direction is clear.
+- If multiple documents could apply, use this order: settled rule in `DECISIONS`, uncommitted direction in `IDEAS`, committed multi-step work in `specs`, active health or current blocker in `STATUS`, release fact in `HISTORY`.
+
 ### Idea Capture
 - 작업 중 좋은 아이디어가 나왔지만 이번 범위에 적용하지 않으면 `docs/IDEAS.md`에 기록한다.
 - 기록 형식은 날짜, 아이디어, 왜 지금 안 하는지, 다시 볼 조건, 출처 대화/작업 맥락을 포함한다.
 - 실행하기로 확정된 항목만 `docs/ROADMAP.md`로 승격한다.
-- 중요한 기술/제품 판단은 아이디어가 아니라 관련 spec, plan, 또는 `docs/STATUS.md`의 최근 변경/제약으로 옮긴다.
+- 중요한 기술/제품/UX/프로세스 판단은 아이디어가 아니라 `docs/DECISIONS.md`에 짧게 남기고, 구현 범위가 정해졌으면 관련 spec 또는 plan에도 연결한다.
+
+### Conversation Memory Capture
+- 아직 확정 전인 좋은 생각이나 나중에 다시 볼 맥락은 `docs/IDEAS.md`에 저장한다.
+- 사용자와 함께 확정한 제품/UX/기술/운영 판단은 `docs/DECISIONS.md`에 저장한다.
+- 구현하기로 정한 사용자-facing 흐름, 데이터 모델, 콘텐츠 변환, 운영 변경은 `docs/specs/YYYY-MM-DD-short-topic/`로 승격한다.
+- 외부 콘텐츠 후보, source/risk 분석, Flow 변환 기준, 긴 세션 인수인계는 `docs/content-audit/`에 저장한다.
+- 현재 상태, 최근 완료, 배포 전 주의점, active blocker는 `docs/STATUS.md`에 저장한다.
+- PR 단위의 변경 이유, 검증, deploy link, rollback, follow-up은 `docs/pr-history/`에 저장한다.
+- 대화가 길어지거나 방향이 바뀌면 세션 끝에서 주요 결정, 열린 질문, 다음 작업을 위 규칙에 맞게 저장한다.
 
 ### Safety Rules
 - Never edit `.env`, credentials, API keys, or deployment secrets unless the user explicitly asks.

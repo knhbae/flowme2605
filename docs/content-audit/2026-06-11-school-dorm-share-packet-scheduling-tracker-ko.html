@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 공유 패킷 일정 트래커</title>
+    <style>
+      :root{--bg:#f6f7f9;--paper:#fff;--ink:#101828;--body:#344054;--muted:#667085;--line:#d9e2ec;--blue:#1d4ed8;--soft:#f1f5f9;--amber:#9a5b12;--amber-soft:#fff4d8;--green:#047857;--green-soft:#e7f6ef;--red:#b42318;--red-soft:#fff0ed}
+      *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;line-height:1.62;letter-spacing:0}a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}.page{width:min(1120px,calc(100% - 28px));margin:0 auto;padding:22px 0 64px}.topbar,.hero,.panel,.nav{border:1px solid var(--line);border-radius:8px;background:var(--paper);box-shadow:0 16px 44px rgba(15,23,42,.07)}.topbar{display:flex;justify-content:space-between;gap:14px;margin-bottom:14px;padding:10px 14px;color:var(--muted);font-size:13px}.brand{color:var(--ink);font-weight:900}.layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:18px;align-items:start}.layout>*{min-width:0}.hero,.panel{padding:26px}.panel{margin-top:18px}h1,h2,h3,p{margin:0}h1,h2,h3{line-height:1.25;word-break:keep-all}h1{font-size:clamp(30px,4vw,46px)}h2{margin-bottom:10px;font-size:23px}p,li,td{color:var(--body)}.lead{max-width:860px;margin-top:12px;font-size:17px}code{padding:1px 5px;border-radius:5px;background:#eef2f7;color:#172033;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.94em}pre{margin:0;padding:14px;border:1px solid var(--line);border-radius:8px;background:#f8fafc;color:#172033;white-space:pre-wrap;overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.7}.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:20px}.metric{min-height:105px;border:1px solid var(--line);border-radius:8px;padding:15px;background:var(--soft)}.metric strong{display:block;margin-bottom:8px;color:var(--muted);font-size:12px;text-transform:uppercase}.metric span{display:block;font-size:18px;font-weight:900;overflow-wrap:anywhere}.amber{background:var(--amber-soft)}.green{background:var(--green-soft)}.red{background:var(--red-soft)}.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--paper)}table{width:100%;min-width:900px;border-collapse:collapse}th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:14px}th{background:var(--soft);color:var(--ink)}tr:last-child td{border-bottom:0}.status{display:inline-flex;align-items:center;min-height:26px;padding:3px 8px;border-radius:999px;background:var(--amber-soft);color:var(--amber);font-size:12px;font-weight:900}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card,.copy-box{border:1px solid var(--line);border-radius:8px;padding:15px;background:var(--paper)}.copy-box{background:#f8fbff}.copy-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.copy-head h3{font-size:16px}.copy-button{min-height:34px;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--blue);font:inherit;font-size:13px;font-weight:900;cursor:pointer;white-space:nowrap}.copy-button:focus-visible{outline:3px solid rgba(29,78,216,.28);outline-offset:2px}.subhead{margin:18px 0 10px;font-size:17px}.note{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}ul{margin:8px 0 0;padding-left:20px}.nav{position:sticky;top:16px;padding:16px}.nav h2{font-size:16px}.nav a{display:block;padding:8px 9px;border-radius:6px;color:var(--body);font-size:14px}.nav a:hover{background:var(--soft);color:var(--blue);text-decoration:none}.links{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}.button{display:inline-flex;align-items:center;min-height:36px;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--blue);font-weight:800}
+      @media(max-width:900px){.layout{grid-template-columns:1fr}.nav{position:static}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.page{width:min(100% - 20px,1120px);padding-top:10px}.topbar{flex-direction:column}.hero,.panel,.nav{padding:18px}.metrics,.grid{grid-template-columns:1fr}table{min-width:900px}}
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar"><div><span class="brand">FlowMe 분석반</span> / 공유 패킷 일정 트래커</div><div>상태: not run · 개인정보 저장 없음</div></div>
+      <div class="layout">
+        <div>
+          <section class="hero" id="top">
+            <h1>3명 관찰 일정과 상태만 기록합니다</h1>
+            <p class="lead">이 문서는 초대와 일정 조율용입니다. 이름, 연락처, 메신저 ID, 방 정보, 결제, 건강, 신원, 링크, 채팅 로그는 남기지 않습니다.</p>
+            <div class="metrics">
+              <div class="metric amber"><strong>decision</strong><span>no signal</span></div>
+              <div class="metric"><strong>recorded sessions</strong><span>0 / 3</span></div>
+              <div class="metric green"><strong>target</strong><span>3 slots</span></div>
+              <div class="metric"><strong>record shape</strong><span>role/status</span></div>
+              <div class="metric red"><strong>identifiers</strong><span>금지</span></div>
+            </div>
+          </section>
+          <section class="panel" id="tracker">
+            <h2>1. 3-slot 일정 트래커</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Slot</th><th>Role label</th><th>Status</th><th>Time window</th><th>Packet version</th><th>Stop category</th><th>Next action</th></tr></thead>
+                <tbody>
+                  <tr><td>01</td><td>student-like recipient</td><td><span class="status">not invited</span></td><td></td><td><code>school-dorm-share-packet-v2-2026-06-11-readable-preview</code></td><td>none</td><td>send recruiting copy</td></tr>
+                  <tr><td>02</td><td>parent-or-guardian-like recipient</td><td><span class="status">not invited</span></td><td></td><td><code>school-dorm-share-packet-v2-2026-06-11-readable-preview</code></td><td>none</td><td>send recruiting copy</td></tr>
+                  <tr><td>03</td><td>coordinator-like recipient</td><td><span class="status">not invited</span></td><td></td><td><code>school-dorm-share-packet-v2-2026-06-11-readable-preview</code></td><td>none</td><td>send recruiting copy</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+          <section class="panel" id="snippets">
+            <h2>2. 초대 보낸 뒤 붙일 행</h2>
+            <p class="lead">리크루팅 문구를 보낸 직후에는 해당 slot만 아래 행으로 바꿉니다. 이름, 연락처, 핸들, 초대 링크, 메시지 원문은 붙이지 않습니다.</p>
+            <div class="grid">
+              <article class="copy-box"><div class="copy-head"><h3>Slot 01 invited</h3><button class="copy-button" type="button" data-copy-target="copy-slot-01">행 복사</button></div><pre id="copy-slot-01">| 01 | student-like recipient | invited |  | `school-dorm-share-packet-v2-2026-06-11-readable-preview` | none | wait for agree/decline |</pre></article>
+              <article class="copy-box"><div class="copy-head"><h3>Slot 02 invited</h3><button class="copy-button" type="button" data-copy-target="copy-slot-02">행 복사</button></div><pre id="copy-slot-02">| 02 | parent-or-guardian-like recipient | invited |  | `school-dorm-share-packet-v2-2026-06-11-readable-preview` | none | wait for agree/decline |</pre></article>
+              <article class="copy-box"><div class="copy-head"><h3>Slot 03 invited</h3><button class="copy-button" type="button" data-copy-target="copy-slot-03">행 복사</button></div><pre id="copy-slot-03">| 03 | coordinator-like recipient | invited |  | `school-dorm-share-packet-v2-2026-06-11-readable-preview` | none | wait for agree/decline |</pre></article>
+            </div>
+            <p class="note">이 행은 초대 발송 상태만 기록합니다. 관찰 증거, 동의 기록, 세션 완료, candidate signal이 아닙니다.</p>
+            <h3 class="subhead">답장 뒤 붙일 행</h3>
+            <p class="lead">15분 슬롯에 동의하면 <code>agreed</code>, 거절하거나 응답이 없으면 <code>declined</code>만 기록합니다. 동의/거절 이유에 사적인 내용이 있으면 이 문서에 붙이지 않습니다.</p>
+            <div class="grid">
+              <article class="copy-box"><div class="copy-head"><h3>Slot 01 agreed</h3><button class="copy-button" type="button" data-copy-target="copy-slot-01-agreed">행 복사</button></div><pre id="copy-slot-01-agreed">| 01 | student-like recipient | agreed | YYYY-MM-DD HH:MM window | `school-dorm-share-packet-v2-2026-06-11-readable-preview` | none | run preflight before session |</pre></article>
+              <article class="copy-box"><div class="copy-head"><h3>Slot 02 agreed</h3><button class="copy-button" type="button" data-copy-target="copy-slot-02-agreed">행 복사</button></div><pre id="copy-slot-02-agreed">| 02 | parent-or-guardian-like recipient | agreed | YYYY-MM-DD HH:MM window | `school-dorm-share-packet-v2-2026-06-11-readable-preview` | none | run preflight before session |</pre></article>
+              <article class="copy-box"><div class="copy-head"><h3>Slot 03 agreed</h3><button class="copy-button" type="button" data-copy-target="copy-slot-03-agreed">행 복사</button></div><pre id="copy-slot-03-agreed">| 03 | coordinator-like recipient | agreed | YYYY-MM-DD HH:MM window | `school-dorm-share-packet-v2-2026-06-11-readable-preview` | none | run preflight before session |</pre></article>
+              <article class="copy-box"><div class="copy-head"><h3>Slot 01 declined</h3><button class="copy-button" type="button" data-copy-target="copy-slot-01-declined">행 복사</button></div><pre id="copy-slot-01-declined">| 01 | student-like recipient | declined |  | `school-dorm-share-packet-v2-2026-06-11-readable-preview` | none | recruit another role-labeled slot if needed |</pre></article>
+              <article class="copy-box"><div class="copy-head"><h3>Slot 02 declined</h3><button class="copy-button" type="button" data-copy-target="copy-slot-02-declined">행 복사</button></div><pre id="copy-slot-02-declined">| 02 | parent-or-guardian-like recipient | declined |  | `school-dorm-share-packet-v2-2026-06-11-readable-preview` | none | recruit another role-labeled slot if needed |</pre></article>
+              <article class="copy-box"><div class="copy-head"><h3>Slot 03 declined</h3><button class="copy-button" type="button" data-copy-target="copy-slot-03-declined">행 복사</button></div><pre id="copy-slot-03-declined">| 03 | coordinator-like recipient | declined |  | `school-dorm-share-packet-v2-2026-06-11-readable-preview` | none | recruit another role-labeled slot if needed |</pre></article>
+            </div>
+          </section>
+          <section class="panel" id="rules">
+            <h2>3. 상태값 의미</h2>
+            <div class="grid">
+              <article class="card"><h3>증거가 아닌 상태</h3><ul><li><code>not invited</code></li><li><code>invited</code></li><li><code>agreed</code></li><li><code>declined</code></li></ul></article>
+              <article class="card"><h3>세션 이후에만 쓰는 상태</h3><ul><li><code>completed</code>: worksheet 또는 session log에 비식별 메모가 남은 경우</li><li><code>stopped</code>: 위험 또는 오해 범주로 중단한 경우</li></ul></article>
+            </div>
+            <h3 class="subhead">상태 갱신 순서</h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>시점</th><th>Status</th><th>Time window</th><th>Stop category</th><th>Next action</th></tr></thead>
+                <tbody>
+                  <tr><td>초대 전</td><td><code>not invited</code></td><td>blank</td><td><code>none</code></td><td>send recruiting copy</td></tr>
+                  <tr><td>초대 보냄, 답장 전</td><td><code>invited</code></td><td>합의 전이면 blank</td><td><code>none</code></td><td>wait for agree/decline</td></tr>
+                  <tr><td>15분 슬롯 합의</td><td><code>agreed</code></td><td>넓은 날짜/시간만</td><td><code>none</code></td><td>run preflight before session</td></tr>
+                  <tr><td>거절 또는 무응답</td><td><code>declined</code></td><td>blank</td><td><code>none</code></td><td>필요하면 다른 role-labeled slot 모집</td></tr>
+                  <tr><td>세션 중 중단</td><td><code>stopped</code></td><td>선택 입력</td><td>가장 가까운 비식별 stop category</td><td>같은 stop이 2회 반복되면 패킷 수정</td></tr>
+                  <tr><td>세션 완료와 메모 이동</td><td><code>completed</code></td><td>선택 입력</td><td><code>none</code></td><td>3개 usable completed session까지 계속</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="note">메시지 원문, 이름, 핸들, 전화번호, 초대 링크, 방 값, form edit link, private quote는 이 트래커에 붙이지 않습니다.</p>
+          </section>
+          <section class="panel" id="next">
+            <h2>4. 다음 문서</h2>
+            <div class="links">
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-version-lock-ko.html">version lock</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-recruiting-copy-ko.html">recruiting copy</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-preflight-checklist-ko.html">preflight checklist</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-observation-day-quick-start-ko.html">observation quick start</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-pilot-worksheet-ko.html">pilot worksheet</a>
+              <a class="button" href="./2026-06-10-school-dorm-share-packet-session-log-starter-ko.html">session log starter</a>
+              <a class="button" href="./2026-06-11-school-dorm-share-packet-rollup-template-ko.html">rollup template</a>
+            </div>
+          </section>
+        </div>
+        <aside class="nav" aria-label="문서 목차">
+          <h2>목차</h2>
+          <a href="#top">요약</a>
+          <a href="#tracker">1. 일정 트래커</a>
+          <a href="#snippets">2. 초대 후 행</a>
+          <a href="#rules">3. 상태값 의미</a>
+          <a href="#next">4. 다음 문서</a>
+          <a href="./2026-06-11-distribution-channel-handoff-html-hub-ko.html">distribution hub</a>
+        </aside>
+      </div>
+    </main>
+    <script>
+      document.querySelectorAll('[data-copy-target]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const target = document.getElementById(button.dataset.copyTarget);
+          if (!target) return;
+          const text = target.innerText.trim();
+          const original = button.textContent;
+          try {
+            if (navigator.clipboard && window.isSecureContext) {
+              await navigator.clipboard.writeText(text);
+              button.textContent = '복사됨';
+            } else {
+              throw new Error('clipboard unavailable');
+            }
+          } catch (error) {
+            const range = document.createRange();
+            range.selectNodeContents(target);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            button.textContent = '행 선택됨';
+            target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          }
+          window.setTimeout(() => {
+            button.textContent = original;
+          }, 1400);
+        });
+      });
+    </script>
+  </body>
+</html>

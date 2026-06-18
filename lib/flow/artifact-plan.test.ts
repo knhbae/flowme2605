@@ -21,34 +21,57 @@ test('artifact plan maps moving timeline to list and month calendar first', () =
   assert.ok(plan.exportTargets.includes('sheet'));
 });
 
-test('artifact plan maps used-car checklist to comparison before checklist', () => {
+test('artifact plan maps used-car checklist to checklist before any comparison', () => {
   const plan = getArtifactPlan(bundle('used-car-buying-check'));
 
-  assert.equal(plan.primarySurface, 'decision_table');
-  assert.deepEqual(
-    plan.surfaces.slice(0, 2).map((surface) => surface.kind),
-    ['comparison_table', 'execution_list'],
-  );
+  assert.equal(plan.primarySurface, 'checklist');
+  assert.deepEqual(plan.surfaces.map((surface) => surface.kind), ['execution_list']);
   assert.ok(plan.exportTargets.includes('sheet'));
 });
 
-test('artifact plan maps baby food to meal calendar and reaction log first', () => {
+test('artifact plan maps water purifier filter cycle to a spreadsheet log first', () => {
+  const plan = getArtifactPlan(bundle('water-purifier-filter-cycle'));
+
+  assert.equal(plan.primarySurface, 'spreadsheet_log');
+  assert.deepEqual(plan.surfaces.map((surface) => surface.kind), ['spreadsheet_preview', 'memo_card']);
+  assert.equal(plan.surfaces[0].title, '필터 주기표');
+  assert.equal(plan.surfaces[1].title, '관리 메모');
+  assert.ok(!plan.surfaces.some((surface) => surface.title.includes('반복 리마인더')));
+  assert.ok(plan.exportTargets.includes('sheet'));
+});
+
+test('artifact plan maps maintenance routines to management calendar surfaces', () => {
+  for (const slug of ['washer-tub-clean-monthly', 'monstera-care-routine']) {
+    const plan = getArtifactPlan(bundle(slug));
+
+    assert.equal(plan.primarySurface, 'routine_calendar');
+    assert.deepEqual(
+      plan.surfaces.map((surface) => surface.title),
+      ['관리 캘린더', '날짜 안 체크리스트', '관리 메모'],
+      slug,
+    );
+    assert.ok(!plan.surfaces.some((surface) => surface.title.includes('회차')), slug);
+    assert.ok(!plan.surfaces.some((surface) => surface.description.includes('컨디션')), slug);
+  }
+});
+
+test('artifact plan maps baby food to menu calendar only', () => {
   const plan = getArtifactPlan(bundle('baby-food-menu-recipe'));
 
   assert.equal(plan.primarySurface, 'meal_reaction_log');
-  assert.deepEqual(
-    plan.surfaces.slice(0, 2).map((surface) => surface.kind),
-    ['meal_calendar', 'reaction_log'],
-  );
+  assert.deepEqual(plan.surfaces.map((surface) => surface.kind), ['meal_calendar']);
   assert.ok(plan.exportTargets.includes('calendar'));
   assert.ok(plan.exportTargets.includes('sheet'));
 });
 
-test('artifact plan preserves promoted hybrid wedding comparison first', () => {
+test('artifact plan keeps promoted wedding timeline calendar before comparison', () => {
   const plan = getArtifactPlan(bundle('wedding-d180-basic'));
 
-  assert.equal(plan.primarySurface, 'decision_table');
-  assert.equal(plan.surfaces[0].kind, 'comparison_table');
+  assert.equal(plan.primarySurface, 'timeline_calendar');
+  assert.deepEqual(
+    plan.surfaces.slice(0, 2).map((surface) => surface.kind),
+    ['execution_list', 'month_calendar'],
+  );
   assert.ok(plan.exportTargets.includes('calendar'));
 });
 
@@ -158,29 +181,27 @@ test('artifact plan keeps creator routine and timeline flows on their structure 
   }
 });
 
-test('artifact plan maps official document issue routes to memo cards first', () => {
+test('artifact plan maps official document issue routes to memo cards first except passport', () => {
   const family = getArtifactPlan(bundle('family-certificate-issue'));
   const resident = getArtifactPlan(bundle('resident-register-copy-issue'));
   const passport = getArtifactPlan(bundle('passport-renewal-docs'));
 
   assert.equal(family.primarySurface, 'memo_card');
   assert.equal(resident.primarySurface, 'memo_card');
-  assert.equal(passport.primarySurface, 'memo_card');
+  assert.equal(passport.primarySurface, 'checklist');
   assert.deepEqual(family.surfaces.map((surface) => surface.kind), ['memo_card', 'execution_list']);
   assert.deepEqual(resident.surfaces.map((surface) => surface.kind), ['memo_card', 'execution_list']);
-  assert.deepEqual(passport.surfaces.map((surface) => surface.kind), ['memo_card', 'execution_list']);
+  assert.deepEqual(passport.surfaces.map((surface) => surface.kind), ['execution_list']);
   assert.ok(family.exportTargets.includes('memo'));
   assert.ok(resident.exportTargets.includes('memo'));
-  assert.ok(passport.exportTargets.includes('memo'));
 });
 
-test('artifact plan maps MOFA travel safety to emergency memo first', () => {
+test('artifact plan maps MOFA travel safety to checklist without memo card', () => {
   const plan = getArtifactPlan(bundle('real-mofa-overseas-travel-prep'));
 
-  assert.equal(plan.primarySurface, 'memo_card');
-  assert.deepEqual(plan.surfaces.map((surface) => surface.kind), ['memo_card', 'execution_list']);
+  assert.equal(plan.primarySurface, 'timeline_calendar');
+  assert.deepEqual(plan.surfaces.map((surface) => surface.kind), ['execution_list', 'month_calendar']);
   assert.equal(plan.sourceHandling, 'reshape_before_featured');
-  assert.ok(plan.exportTargets.includes('memo'));
 });
 
 test('artifact plan maps driver renewal reshaping to condition comparison first', () => {
@@ -193,13 +214,31 @@ test('artifact plan maps driver renewal reshaping to condition comparison first'
 
 test('artifact plan maps source replacement and risk review reshaping to artifact-first surfaces', () => {
   assert.equal(getArtifactPlan(bundle('computer-skills-d30-study')).primarySurface, 'timeline_calendar');
-  assert.equal(getArtifactPlan(bundle('diet-habit-2week')).primarySurface, 'spreadsheet_log');
+  assert.equal(getArtifactPlan(bundle('diet-habit-2week')).primarySurface, 'routine_calendar');
   assert.equal(getArtifactPlan(bundle('diet-meal-exercise-log')).primarySurface, 'spreadsheet_log');
   assert.equal(getArtifactPlan(bundle('diet-reset-2week')).primarySurface, 'spreadsheet_log');
-  assert.equal(getArtifactPlan(bundle('new-car-delivery-check')).primarySurface, 'decision_table');
+  assert.equal(getArtifactPlan(bundle('new-car-delivery-check')).primarySurface, 'checklist');
   assert.equal(getArtifactPlan(bundle('year-end-tax-docs')).primarySurface, 'memo_card');
   assert.equal(getArtifactPlan(bundle('business-registration-basic')).primarySurface, 'memo_card');
   assert.equal(getArtifactPlan(bundle('happy-birth-service-check')).primarySurface, 'memo_card');
   assert.equal(getArtifactPlan(bundle('industrial-accident-claim-docs')).primarySurface, 'memo_card');
   assert.equal(getArtifactPlan(bundle('vaccination-certificate-issue')).primarySurface, 'memo_card');
+});
+
+test('priority A redesign removes unsupported leading artifact surfaces', () => {
+  const diet = getArtifactPlan(bundle('diet-habit-2week'));
+  const newCar = getArtifactPlan(bundle('new-car-delivery-check'));
+
+  assert.deepEqual(
+    diet.surfaces.map((surface) => surface.kind),
+    ['routine_month'],
+  );
+  assert.deepEqual(newCar.surfaces.map((surface) => surface.kind), ['execution_list']);
+});
+
+test('experiment checklist routes use compact artifact-first surfaces', () => {
+  assert.deepEqual(getArtifactPlan(bundle('moving-d30-basic')).surfaces.map((surface) => surface.kind), ['execution_list', 'month_calendar']);
+  assert.deepEqual(getArtifactPlan(bundle('vehicle-inspection-prep')).surfaces.map((surface) => surface.kind), ['execution_list', 'month_calendar']);
+  assert.deepEqual(getArtifactPlan(bundle('real-thankyou-bubu-home-workout-starter')).surfaces.map((surface) => surface.kind), ['routine_month']);
+  assert.deepEqual(getArtifactPlan(bundle('real-fitvely-diet-record-routine')).surfaces.map((surface) => surface.kind), ['routine_month']);
 });

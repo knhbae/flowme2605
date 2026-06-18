@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 기숙사 입사 공유 패킷 프리뷰</title>
+    <style>
+      :root { --bg:#f5f7fa; --paper:#fff; --soft:#f0f5f8; --ink:#101828; --body:#344054; --muted:#667085; --line:#d8e1ea; --blue:#1d4ed8; --green:#047857; --green-soft:#e7f6ef; --amber:#9a5b12; --amber-soft:#fff4d8; --red:#b42318; --red-soft:#fff0ed; --radius:8px; --shadow:0 16px 44px rgba(15,23,42,.07); }
+      * { box-sizing:border-box; }
+      body { margin:0; background:var(--bg); color:var(--ink); font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif; line-height:1.62; letter-spacing:0; }
+      a { color:var(--blue); text-decoration:none; } a:hover { text-decoration:underline; }
+      h1,h2,h3,p { margin:0; } h1,h2,h3 { line-height:1.25; word-break:keep-all; }
+      p,li,td { color:var(--body); }
+      code { padding:1px 5px; border-radius:5px; background:#eef2f7; color:#172033; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.94em; }
+      .page { width:min(1180px,calc(100% - 28px)); margin:0 auto; padding:22px 0 68px; }
+      .topbar,.hero,.panel,.nav { border:1px solid var(--line); border-radius:var(--radius); background:var(--paper); box-shadow:var(--shadow); }
+      .topbar { display:flex; justify-content:space-between; gap:14px; margin-bottom:14px; padding:10px 14px; color:var(--muted); font-size:13px; }
+      .brand { color:var(--ink); font-weight:900; }
+      .layout { display:grid; grid-template-columns:minmax(0,1fr) 280px; gap:18px; align-items:start; }
+      .layout > * { min-width:0; }
+      .hero,.panel { padding:26px; } .panel { margin-top:18px; }
+      h1 { max-width:900px; font-size:clamp(30px,4vw,46px); } h2 { margin-bottom:10px; font-size:23px; }
+      .lead { max-width:880px; margin-top:12px; font-size:17px; }
+      .metrics,.grid-2,.grid-4 { display:grid; gap:12px; margin-top:18px; }
+      .metrics { grid-template-columns:repeat(4,minmax(0,1fr)); }
+      .grid-2 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .grid-4 { grid-template-columns:repeat(4,minmax(0,1fr)); }
+      .metric,.card,.packet { border:1px solid var(--line); border-radius:var(--radius); padding:15px; background:var(--soft); }
+      .metric { min-height:112px; } .metric strong,.card strong { display:block; color:var(--ink); font-size:14px; } .metric span,.card p { display:block; margin-top:6px; color:var(--muted); font-size:13px; }
+      .selected { background:var(--green-soft); border-color:#b7e2cf; } .hold { background:var(--amber-soft); border-color:#efd89c; } .risk { background:var(--red-soft); border-color:#f0b8ad; }
+      .packet { margin-top:18px; background:#0f172a; color:#f8fafc; }
+      .packet h3,.packet p,.packet li,.packet strong { color:#f8fafc; } .packet .muted { color:#cbd5e1; }
+      .packet ol,.packet ul,.card ul { margin:9px 0 0; padding-left:20px; } .packet li,.card li { font-size:14px; }
+      .divider { height:1px; margin:14px 0; background:rgba(255,255,255,.18); }
+      .table-wrap { overflow-x:auto; border:1px solid var(--line); border-radius:var(--radius); background:var(--paper); }
+      table { width:100%; min-width:760px; border-collapse:collapse; } th,td { padding:12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:14px; } th { background:var(--soft); color:var(--ink); } tr:last-child td { border-bottom:0; }
+      .nav { position:sticky; top:16px; padding:16px; }
+      .nav h2 { font-size:16px; } .nav a { display:block; padding:8px 9px; border-radius:6px; color:var(--body); font-size:14px; } .nav a:hover { background:var(--soft); color:var(--blue); text-decoration:none; }
+      .note { margin-top:12px; padding-top:12px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; }
+      @media(max-width:980px){ .layout{grid-template-columns:1fr}.nav{position:static}.metrics,.grid-2,.grid-4{grid-template-columns:repeat(2,minmax(0,1fr))} }
+      @media(max-width:640px){ .page{width:min(100% - 20px,1180px);padding-top:10px}.topbar{flex-direction:column}.hero,.panel,.nav{padding:18px}.metrics,.grid-2,.grid-4{grid-template-columns:1fr}table{min-width:760px}.lead{font-size:16px} }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe 분석방</span> / school-or-dorm-prep-share-packet preview</div>
+        <div>작성일 2026-06-10 · 업데이트 2026-06-11 · file-based preview</div>
+      </div>
+      <div class="layout">
+        <div>
+          <section class="hero" id="top">
+            <h1>기숙사 입사 준비를 외부 채널에 보낼 수 있는 공유 패킷</h1>
+            <p class="lead">이 preview는 <code>college-dorm-move-in-checklist</code>를 카카오톡, 네이버 카페, 폼, 시트, 메모로 수동 공유하기 위한 짧은 패킷입니다. public route나 플랫폼 연동이 아니며, 최신 학교/기숙사 공지를 우선한다는 경계를 함께 보냅니다.</p>
+            <div class="metrics">
+              <div class="metric selected"><strong>candidate</strong><span>school-or-dorm-prep-share-packet</span></div>
+              <div class="metric"><strong>packet version</strong><span>school-dorm-share-packet-v2-2026-06-11-readable-preview</span></div>
+              <div class="metric hold"><strong>state</strong><span>file-based preview, no signal</span></div>
+              <div class="metric risk"><strong>not allowed</strong><span>private values, auto posting, reply collection</span></div>
+            </div>
+          </section>
+
+          <section class="panel" id="packet">
+            <h2>1. 복사 가능한 공유 패킷</h2>
+            <p>첫 관찰 run에는 이 문구를 그대로 사용합니다. 자세한 규정 판단은 최신 학교/기숙사 공지로 되돌립니다.</p>
+            <div class="packet">
+              <p><strong>[기숙사 입사 준비 확인 요청]</strong></p>
+              <p class="muted">대상: 학생 / 보호자 / 기숙사 준비 담당자<br />마감: 입사 D-7까지 1차 확인, D-Day에는 현장 절차 확인<br />출처: 최신 학교/기숙사 공지 링크를 먼저 확인하세요.</p>
+              <div class="divider"></div>
+              <p><strong>해야 할 일</strong></p>
+              <ol>
+                <li>D-14 최신 학교/기숙사 공지에서 입사일, 제출서류, 반입금지 품목, 택배 주소, 입사 시간 변경 여부 확인</li>
+                <li>D-10 제출서류 목록, 제출 방법, 제출 기한 확인</li>
+                <li>D-7 침구, 세면도구, 수건, 슬리퍼, 첫날 생활용품 준비</li>
+                <li>D-5 전열기구, 취사도구, 위험물, 주류 등 학교별 반입금지 품목 제외</li>
+                <li>D-Day 호실/동선 확인, 서류 제출, 카드/키 수령, 시설 점검</li>
+              </ol>
+              <div class="divider"></div>
+              <p><strong>주의</strong></p>
+              <ul>
+                <li>학교/기숙사별 최신 공지가 이 패킷보다 우선입니다.</li>
+                <li>건강검진 결과, 결제 정보, 방 비밀번호, 학생번호, 주민번호, 카드키 번호, 채팅방 ID, 초대 링크는 공유 채널에 올리지 마세요.</li>
+                <li>확인이 끝나면 <strong>공지 확인 완료 / 서류 준비 완료 / 반입금지 제외 완료 / 당일 절차 확인 필요</strong> 중 하나로 답해주세요.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="panel" id="channels">
+            <h2>2. 채널별 사용 형태</h2>
+            <div class="grid-2">
+              <article class="card"><strong>KakaoTalk 가족/그룹 채팅</strong><p>짧은 텍스트 패킷과 출처 링크를 보내고 네 가지 완료 라벨 중 하나로 답을 받습니다.</p></article>
+              <article class="card"><strong>Naver Cafe 글/댓글</strong><p>게시글 제목, 출처 링크, 체크리스트, 댓글 요청을 분리합니다. 막힌 원문은 복사하지 않습니다.</p></article>
+              <article class="card"><strong>Google Forms / Sheet</strong><p>상태 선택과 보류 사유만 남깁니다. 이메일 수집이나 민감 문서 업로드는 켜지 않습니다.</p></article>
+              <article class="card"><strong>Notion / Markdown memo</strong><p>체크리스트와 출처/주의 경계를 붙여 넣되 API 연동이나 workspace 권한은 만들지 않습니다.</p></article>
+            </div>
+          </section>
+
+          <section class="panel" id="responses">
+            <h2>3. 응답 선택지</h2>
+            <div class="grid-4">
+              <article class="card selected"><strong>공지 확인 완료</strong><p>최신 공지에서 입사일과 조건을 확인했습니다.</p></article>
+              <article class="card"><strong>서류 준비 완료</strong><p>제출서류 목록, 제출기한, 제출방법을 확인했습니다.</p></article>
+              <article class="card"><strong>반입금지 제외 완료</strong><p>전열기구, 취사도구, 위험물, 주류 등 금지 품목을 제외했습니다.</p></article>
+              <article class="card hold"><strong>당일 절차 확인 필요</strong><p>호실, 동선, 카드/키 수령, 시설 점검은 아직 확인이 필요합니다.</p></article>
+            </div>
+          </section>
+
+          <section class="panel" id="boundary">
+            <h2>4. 외부 채널에 올리지 않을 값</h2>
+            <div class="grid-4">
+              <article class="card risk"><strong>건강/신원</strong><p>건강검진 이미지, 결핵검사 결과, 주민번호, 학생번호, 개인 의료정보.</p></article>
+              <article class="card risk"><strong>결제/방 정보</strong><p>결제 계좌, 영수증, 방 비밀번호, 카드키 번호.</p></article>
+              <article class="card risk"><strong>채널 정보</strong><p>KakaoTalk 방 ID, Naver Cafe 회원명, 초대 링크, webhook URL.</p></article>
+              <article class="card risk"><strong>작업 공간</strong><p>폼 편집 링크, Notion 권한, 비공개 댓글이나 저장 로그.</p></article>
+            </div>
+          </section>
+
+          <section class="panel" id="decision">
+            <h2>5. 제품 결정</h2>
+            <div class="grid-2">
+              <article class="card selected"><strong>유지</strong><p><code>school-or-dorm-prep-share-packet</code>은 file-based preview로 유지합니다.</p></article>
+              <article class="card hold"><strong>보류</strong><p><code>/content-flows</code> 후보 편입, public route, 플랫폼 연동, 자동 게시, 응답 수집은 실제 관찰 전까지 보류합니다.</p></article>
+              <article class="card"><strong>다음 근거</strong><p>수신자가 네 가지 응답 라벨과 최신 공지 우선 원칙을 추가 설명 없이 이해하는지 봅니다.</p></article>
+              <article class="card"><strong>다음 문서</strong><p><a href="./2026-06-10-school-dorm-share-packet-observation-script-ko.html">observation script</a>와 <a href="./2026-06-11-school-dorm-share-packet-preflight-checklist-ko.html">preflight checklist</a>로 이동합니다.</p></article>
+            </div>
+          </section>
+        </div>
+
+        <aside class="nav" aria-label="문서 목차">
+          <h2>목차</h2>
+          <a href="#top">요약</a>
+          <a href="#packet">1. 공유 패킷</a>
+          <a href="#channels">2. 채널별 형태</a>
+          <a href="#responses">3. 응답 선택지</a>
+          <a href="#boundary">4. 금지 값</a>
+          <a href="#decision">5. 제품 결정</a>
+          <a href="./2026-06-10-school-dorm-share-packet-observation-script-ko.html">observation script</a>
+          <a href="./2026-06-11-school-dorm-share-packet-version-lock-ko.html">version lock</a>
+          <a href="./2026-06-10-school-dorm-share-packet-preview.md">Markdown source</a>
+          <p class="note">이 preview는 관찰용 파일입니다. 실제 수신자 관찰 전에는 validated라고 부르지 않습니다.</p>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

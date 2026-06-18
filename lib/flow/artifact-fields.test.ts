@@ -56,35 +56,9 @@ test('real-source official reshape batch exposes route-specific workbench record
 
 test('source replacement and risk review routes expose review-specific artifact records', () => {
   const studyTables = getLogTables(bundle('computer-skills-d30-study'));
-  assert.deepEqual(
-    studyTables.map((table) => table.id),
-    ['study-chapter-progress', 'study-mock-scores'],
-  );
-  assert.deepEqual(studyTables[0]?.rows.map((row) => row.label), [
-    '필기 핵심 개념 정리',
-    '스프레드시트 실기 함수·피벗',
-    '데이터베이스 실기 쿼리·폼',
-    '기출 오답 보완과 실전 점검',
-  ]);
-  assert.deepEqual(studyTables[0]?.rows[0]?.defaultValues, {
-    scope: '컴퓨터 일반·스프레드시트 핵심 개념',
-    status: '원본에서 가져온 진도',
-    note: '시험일까지 먼저 배치하고 약한 단원만 조정',
-  });
+  assert.deepEqual(studyTables, []);
 
-  assert.deepEqual(
-    getComparisonConfig(bundle('new-car-delivery-check'))?.rows.map((row) => row.id),
-    ['new-car-exterior-interior', 'new-car-electronics-options', 'new-car-documents', 'new-car-defect-dealer-confirmation'],
-  );
-  const newCarComparison = getComparisonConfig(bundle('new-car-delivery-check'));
-  assert.equal(newCarComparison?.title, '인수 전 하자·증빙표');
-  assert.equal(newCarComparison?.eyebrow, '사진·딜러 확인');
-  assert.deepEqual(newCarComparison?.rows.map((row) => row.title), [
-    '외관/실내 하자와 사진 파일명',
-    '전자장비·옵션 작동과 영상 파일명',
-    '등록/보험/인수 서류 확인 상태',
-    '딜러 확인과 서명 전 보류 조건',
-  ]);
+  assert.equal(getComparisonConfig(bundle('new-car-delivery-check')), undefined);
 
   assert.deepEqual(
     getMemoCardFields(bundle('new-car-delivery-check')).map((field) => field.id),
@@ -130,37 +104,22 @@ test('source replacement and risk review routes expose review-specific artifact 
   );
 });
 
-test('computer skills progress table keeps source rows separate from user-editable fields', () => {
-  const [progressTable] = getLogTables(bundle('computer-skills-d30-study'));
-
-  assert.equal(progressTable?.id, 'study-chapter-progress');
-  assert.equal(progressTable?.sourceKind, 'source_derived');
-  assert.deepEqual(progressTable?.readOnlyColumnIds, ['scope']);
-  assert.deepEqual(progressTable?.userEditableColumnIds, ['targetDate', 'status', 'note']);
-  assert.deepEqual(
-    progressTable?.rows.map((row) => Object.keys(row.defaultValues ?? {}).sort()),
-    [
-      ['note', 'scope', 'status'],
-      ['note', 'scope', 'status'],
-      ['note', 'scope', 'status'],
-      ['note', 'scope', 'status'],
-    ],
-  );
+test('used-car route keeps the field workbench checklist-only', () => {
+  assert.equal(getComparisonConfig(bundle('used-car-buying-check')), undefined);
+  assert.deepEqual(getMemoCardFields(bundle('used-car-buying-check')), []);
 });
 
-test('used-car route exposes candidate comparison rows and decision memo fields', () => {
+test('water purifier route exposes filter-cycle log rows instead of generic daily columns', () => {
+  const tables = getLogTables(bundle('water-purifier-filter-cycle'));
+
+  assert.deepEqual(tables.map((table) => table.id), ['water-purifier-filter-cycle-log']);
   assert.deepEqual(
-    getComparisonConfig(bundle('used-car-buying-check'))?.rows.map((row) => row.id),
-    [
-      'used-car-price-mileage',
-      'used-car-history-record',
-      'used-car-seller-memo',
-      'used-car-hold-reason',
-    ],
+    tables[0]?.columns.map((column) => column.id),
+    ['lastChangedAt', 'cycle', 'nextCheckAt', 'conditionMemo', 'sourceMemo'],
   );
   assert.deepEqual(
-    getMemoCardFields(bundle('used-car-buying-check')).map((field) => field.id),
-    ['used-car-target-need', 'used-car-proof-files', 'used-car-expert-check', 'used-car-buy-hold-memo'],
+    tables[0]?.rows.map((row) => row.id),
+    ['sediment-filter', 'pre-carbon-filter', 'ro-nano-filter', 'post-carbon-filter', 'outlet-self-clean', 'taste-smell-check'],
   );
 });
 
@@ -188,53 +147,22 @@ test('workout programming routes expose source-rule decision rows', () => {
   }
 });
 
-test('vehicle inspection route exposes reservation and result follow-up memo fields', () => {
+test('vehicle inspection route removes memo fields from the primary workbench', () => {
   const fields = getMemoCardFields(bundle('vehicle-inspection-prep'));
 
-  assert.deepEqual(
-    fields.map((field) => field.id),
-    [
-      'vehicle-inspection-reservation',
-      'vehicle-inspection-documents',
-      'vehicle-inspection-precheck-evidence',
-      'vehicle-inspection-result-sheet',
-      'vehicle-inspection-repair-follow-up',
-    ],
-  );
-  assert.equal(fields[0]?.groupTitle, '검사 예약·결과 후속 메모');
-  assert.match(fields[0]?.groupDescription ?? '', /예약 정보, 준비 서류, 결과표, 후속 정비/);
+  assert.deepEqual(fields, []);
 });
 
-test('MOFA travel prep route exposes country-check and emergency-card memo fields', () => {
+test('MOFA travel prep route removes emergency memo fields from the primary workbench', () => {
   const fields = getMemoCardFields(bundle('real-mofa-overseas-travel-prep'));
 
-  assert.deepEqual(
-    fields.map((field) => field.id),
-    [
-      'mofa-travel-destination-confirmation',
-      'mofa-travel-alert-notice',
-      'mofa-travel-embassy-contact',
-      'mofa-travel-local-emergency',
-      'mofa-travel-family-share',
-    ],
-  );
-  assert.match(fields[0]?.groupTitle ?? '', /비상/);
-  assert.match(fields[0]?.groupDescription ?? '', /여행경보/);
+  assert.deepEqual(fields, []);
 });
 
-test('FITVELY diet record route exposes a source-rule observation log', () => {
+test('FITVELY diet record route removes sheet-style log tables', () => {
   const tables = getLogTables(bundle('real-fitvely-diet-record-routine'));
 
-  assert.deepEqual(tables.map((table) => table.id), ['fitvely-diet-observation-log']);
-  assert.equal(tables[0]?.eyebrow, '관찰표');
-  assert.deepEqual(
-    tables[0]?.columns.map((column) => column.id),
-    ['date', 'mealMemo', 'selectedRule', 'condition', 'nextAdjustment'],
-  );
-  assert.deepEqual(
-    tables[0]?.rows.map((row) => row.label),
-    ['오늘 한 끼 기록', '운동/수면/컨디션', '주간 조정 메모'],
-  );
+  assert.deepEqual(tables, []);
 });
 
 test('FITVELY nutrition exact-video routes expose apply-before-after observation rows', () => {
@@ -284,13 +212,12 @@ test('official document routes expose submitter requirement memo fields', () => 
     '주민등록번호 공개 범위',
     '발급일·파일 위치',
   ]);
-  assert.deepEqual(passportFields.map((field) => field.id), [
-    'passport-applicant-context',
-    'passport-photo-check',
-    'passport-old-passport-status',
-    'passport-application-proof',
-    'passport-pickup-storage',
-  ]);
+  assert.deepEqual(passportFields, []);
+});
+
+test('moving route removes vendor comparison and proof memo from the primary workbench', () => {
+  assert.equal(getComparisonConfig(bundle('moving-d30-basic')), undefined);
+  assert.deepEqual(getMemoCardFields(bundle('moving-d30-basic')), []);
 });
 
 test('qnet route exposes application deadline and exam-day log tables', () => {

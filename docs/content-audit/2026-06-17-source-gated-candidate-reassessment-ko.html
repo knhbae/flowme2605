@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Source-to-Flow 후보 재심사 리포트</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f8fb;
+        --surface: #ffffff;
+        --soft: #f8fafc;
+        --line: #d9e2ef;
+        --text: #101827;
+        --muted: #5e6b7d;
+        --blue: #1f5fbf;
+        --green: #0f7a4a;
+        --amber: #9a6100;
+        --red: #b42318;
+        --radius: 8px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.6; }
+      main { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 18px 0 64px; }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 46px); line-height: 1.12; letter-spacing: 0; }
+      h2 { margin-bottom: 10px; font-size: clamp(22px, 3vw, 32px); letter-spacing: 0; }
+      h3 { margin-bottom: 6px; font-size: 19px; letter-spacing: 0; }
+      a { color: var(--blue); text-underline-offset: 3px; }
+      .hero, .card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+      .hero { padding: 20px; box-shadow: 0 14px 34px rgba(16, 24, 39, .08); }
+      .card { margin-top: 14px; padding: 16px; }
+      .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 900; text-transform: uppercase; }
+      .desc { color: var(--muted); }
+      .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+      .mini { border: 1px solid var(--line); border-radius: var(--radius); background: var(--soft); padding: 12px; }
+      .mini strong { display: block; margin-bottom: 4px; font-size: 22px; }
+      .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+      table { width: 100%; min-width: 980px; border-collapse: collapse; background: white; }
+      th, td { padding: 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+      th { background: #f4f7fb; color: #334155; font-size: 13px; }
+      tr:last-child td { border-bottom: 0; }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 3px 9px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: var(--soft);
+        font-size: 13px;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+      .keep { border-color: #b8e2c4; background: #eefaf2; color: var(--green); }
+      .revise { border-color: #f1d58b; background: #fff9e8; color: var(--amber); }
+      .park { border-color: #f4b3ad; background: #fff1ef; color: var(--red); }
+      .replace { border-color: #b7cdf5; background: #eef5ff; color: #174ea6; }
+      .note { margin-top: 12px; padding: 12px; border-left: 4px solid var(--blue); background: #eef5ff; border-radius: 6px; }
+      ul { margin: 0; padding-left: 20px; }
+      li + li { margin-top: 4px; }
+      @media (max-width: 760px) {
+        main { width: min(100% - 18px, 1180px); }
+        .grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <p class="eyebrow">Source-to-Flow Conversion Gate</p>
+        <h1>10개 후보 재심사 결과</h1>
+        <p class="desc">기존 10개 화면을 고치는 대신, 원컨텐츠 1개를 기준으로 다시 판정했다. 사용자가 저장해서 실행할 자연 산출물이 명확한 후보만 새 사용자 화면으로 옮겼고, 약한 후보는 보류하거나 교체했다.</p>
+      </section>
+
+      <section class="card">
+        <h2>이번 판정 원칙</h2>
+        <div class="grid">
+          <div class="mini">
+            <strong>1</strong>
+            <h3>원컨텐츠 하나</h3>
+            <p class="desc">여러 링크를 섞어 완성형 가이드를 만들지 않았다. 보조 링크는 구조를 바꾸지 않는 경우에만 허용했다.</p>
+          </div>
+          <div class="mini">
+            <strong>2</strong>
+            <h3>destination 우선</h3>
+            <p class="desc">캘린더, 체크리스트, 표, 버킷, 순서 목록 중 어디로 옮겨질지 먼저 정한 뒤 UI를 만들었다.</p>
+          </div>
+          <div class="mini">
+            <strong>3</strong>
+            <h3>입력 최소화</h3>
+            <p class="desc">상위 입력은 artifact 생성에 필요한 날짜만 남겼다. URL, 파일명, 안내문, 업체명은 상세 메모로 내렸다.</p>
+          </div>
+        </div>
+        <p class="note">Figma는 사용하지 않았다. 이번 단계의 문제는 시각 polish가 아니라 원문 구조와 사용자 artifact 변환의 문제였기 때문이다. HTML에서 클릭 가능한 저충실도 화면을 먼저 만든 뒤, 살아남은 패턴만 나중에 Figma로 정리하는 순서가 맞다.</p>
+      </section>
+
+      <section class="card">
+        <h2>후보 판정 요약</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>기존 후보</th>
+                <th>판정</th>
+                <th>Primary source</th>
+                <th>Source shape</th>
+                <th>Natural artifact</th>
+                <th>Top-level inputs</th>
+                <th>사용자 화면 반영</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>이사 D-30</td>
+                <td><span class="badge revise">Revise</span></td>
+                <td><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC%ED%95%A0_%EB%95%8C_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_%EC%83%81%EC%84%B8_%EC%A0%95%EB%A6%AC-47214">아정당 이사 체크리스트</a></td>
+                <td>D-30, D-10, D-3, D-1, D-Day 일정표</td>
+                <td>캘린더 + 날짜별 체크리스트</td>
+                <td>이사일 1개</td>
+                <td>이사 방식 선택을 제거하고 날짜별 원문 행을 보존했다.</td>
+              </tr>
+              <tr>
+                <td>중고차 방문</td>
+                <td><span class="badge revise">Revise</span></td>
+                <td><a href="https://web.getcha.kr/blog/used-car-condition-checklist-guide">겟차 차량 상태 체크리스트</a></td>
+                <td>서류, 외관, 엔진룸, 실내, 하부, 시승 체크</td>
+                <td>방문일 1개 + 긴 현장 체크리스트</td>
+                <td>방문일 1개</td>
+                <td>3개씩 나뉜 볼 순서 카드를 없애고 한 일정 안의 체크리스트로 만들었다.</td>
+              </tr>
+              <tr>
+                <td>초등 입학</td>
+                <td><span class="badge revise">Revise</span></td>
+                <td><a href="https://www.welfarehello.com/community/hometownNews/%EC%9A%B0%EB%A6%AC%EC%95%84%EC%9D%B4-%EC%84%A4%EB%A0%88%EB%8A%94-%EC%B2%AB-%EC%B6%9C%EB%B0%9C-%EC%B4%88%EB%93%B1%ED%95%99%EA%B5%90-%EC%9E%85%ED%95%99%EC%A4%80%EB%B9%84%EB%AC%BC-%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8--fdcb3d95-44e4-48eb-9ce8-67bed2640c48">웰로/동작구 입학준비물</a></td>
+                <td>준비물 목록</td>
+                <td>단일 체크리스트</td>
+                <td>없음</td>
+                <td>학교 안내문 URL 입력을 제거하고 준비물만 체크하게 했다.</td>
+              </tr>
+              <tr>
+                <td>영유아 검진</td>
+                <td><span class="badge revise">Revise deeply</span></td>
+                <td><a href="https://www.guro.go.kr/health/contents.do?key=1357">구로구 보건소 영유아 건강검진안내</a></td>
+                <td>검진 차수별 기간표</td>
+                <td>생년월일 기준 검진 일정표</td>
+                <td>아이 생년월일 1개</td>
+                <td>검진차수를 매번 등록하는 화면이 아니라 전체 기간표로 바꿨다.</td>
+              </tr>
+              <tr>
+                <td>여권/출국</td>
+                <td><span class="badge revise">Revise</span></td>
+                <td><a href="https://www.passport.go.kr/home/kor/contents.do?menuPos=11">외교부 온라인 재발급 기본사항</a></td>
+                <td>신청 대상, 불가 대상, 사진, 수령 주의사항</td>
+                <td>신청 전 체크리스트</td>
+                <td>없음</td>
+                <td>출국 타임라인으로 늘리지 않고 온라인 재발급 체크리스트로 축소했다.</td>
+              </tr>
+              <tr>
+                <td>홈트 영상</td>
+                <td><span class="badge revise">Revise</span></td>
+                <td><a href="https://www.youtube.com/watch?v=W4SpM2gxGdE">YouTube 초보 전신운동 영상</a></td>
+                <td>따라하기 영상 1개</td>
+                <td>반복 운동 일정 + 영상 링크</td>
+                <td>시작일, 운동 요일, 시간, 반복 종료일</td>
+                <td>3개 체크리스트 강제를 제거하고, 영상 링크가 들어간 반복 캘린더 일정으로 만들었다.</td>
+              </tr>
+              <tr>
+                <td>무료 도안 놀이</td>
+                <td><span class="badge revise">Revise</span></td>
+                <td><a href="https://www.youtube.com/watch?v=REurKhkEKz4">YouTube 루돌프 스퀴시 만들기</a></td>
+                <td>무료 도안 영상 + 준비물</td>
+                <td>버킷 항목 + optional 놀이 날짜</td>
+                <td>놀이 날짜 0~1개</td>
+                <td>도안 URL 입력을 없애고 날짜 없이 저장하는 버킷 흐름을 기본으로 했다.</td>
+              </tr>
+              <tr>
+                <td>스투키 물주기</td>
+                <td><span class="badge revise">Revise</span></td>
+                <td><a href="https://epicplants.tistory.com/entry/dracaena-stuckyi-care">에픽플랜츠 스투키 관리법</a></td>
+                <td>계절별 물주기 간격과 관리 조건</td>
+                <td>반복 일정 + 관리 메모</td>
+                <td>첫 물주기 날짜 1개</td>
+                <td>반복 간격 선택지를 없애고 원문 cadence를 기본으로 표시했다.</td>
+              </tr>
+              <tr>
+                <td>원격지원</td>
+                <td><span class="badge park">Park</span></td>
+                <td>기존 후보 유지하지 않음</td>
+                <td>대표 source-to-flow 샘플로 약함</td>
+                <td>보류</td>
+                <td>없음</td>
+                <td>사용자 화면에 억지 구현하지 않았다.</td>
+              </tr>
+              <tr>
+                <td>기숙사</td>
+                <td><span class="badge revise">Revise</span></td>
+                <td><a href="https://dorm.skku.edu/dorm_suwon/notice/notice_all.jsp?article_no=80076&mode=view">성균관대 봉룡학사 입사 준비물</a></td>
+                <td>입사 절차, 택배, 준비물, 금지품목</td>
+                <td>입사일 일정 + 준비물 체크</td>
+                <td>입사일 1개</td>
+                <td>학교 안내문 URL 입력을 제거하고 입사일 중심으로 정리했다.</td>
+              </tr>
+              <tr>
+                <td>교체 후보: eSIM</td>
+                <td><span class="badge replace">Replace</span></td>
+                <td><a href="https://docs.channel.io/usimsa-cx-guide/ko/articles/esim_activating_local_ios-a647373b">유심사 eSIM 로컬망 활성화</a></td>
+                <td>도착 후 다시 열어볼 설정 문서</td>
+                <td>버킷 항목 + 원문 링크</td>
+                <td>확인할 날짜 0~1개</td>
+                <td>원격지원 대신 넣었지만, 절차 Flow보다 저장 자료에 가깝다고 보고 버킷형으로 낮췄다.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Flow 컨텐츠 모델 요약</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Flow</th>
+                <th>User job</th>
+                <th>Generated item title</th>
+                <th>Generated date/repeat/deadline</th>
+                <th>Source-derived rows</th>
+                <th>Memo/detail/URL contents</th>
+                <th>Do-not-build boundary</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>이사</td>
+                <td>이사일을 기준으로 누락되기 쉬운 예약과 신고를 날짜별로 처리</td>
+                <td>D-30/D-10/D-3/D-1/D-Day 일정</td>
+                <td>이사일 + day offset</td>
+                <td>아정당 표의 일정/항목 행</td>
+                <td>업체, 기관, 예약번호, 원문 URL</td>
+                <td>업체 추천/견적 비교 앱으로 확장하지 않음</td>
+              </tr>
+              <tr>
+                <td>중고차</td>
+                <td>현장에서 차량 상태를 순서대로 보고 계약 전 보류할 항목을 남김</td>
+                <td>중고차 방문 점검</td>
+                <td>방문일 1개</td>
+                <td>등록증, 성능기록부, 외관, 엔진룸, 실내, 하부, 시승 체크</td>
+                <td>판매자 답변, 걸리는 항목, 원문 URL</td>
+                <td>구매 적합성 판단이나 보증을 하지 않음</td>
+              </tr>
+              <tr>
+                <td>초등 입학</td>
+                <td>입학 준비물을 빠뜨리지 않고 한 번에 확인</td>
+                <td>초등학교 입학 준비물</td>
+                <td>날짜 없음</td>
+                <td>가방, 이름스티커, 필기류, 실내화, 청결용품</td>
+                <td>학교 공지 후 추가할 항목, 원문 URL</td>
+                <td>D-30 timeline으로 늘리지 않음</td>
+              </tr>
+              <tr>
+                <td>영유아 검진</td>
+                <td>생년월일 기준 검진 기간을 한 번에 저장하고 다음 기간을 찾음</td>
+                <td>검진 차수별 기간표</td>
+                <td>생년월일 + age range</td>
+                <td>1차~8차 건강검진과 구강검진 기간/항목</td>
+                <td>검진기관, 예약일, 문진표 경로, 원문 URL</td>
+                <td>의료 기록 관리나 의학적 판단을 하지 않음</td>
+              </tr>
+              <tr>
+                <td>여권</td>
+                <td>온라인 재발급 가능 여부와 신청 전 조건을 확인</td>
+                <td>온라인 여권 재발급 신청 전 체크</td>
+                <td>날짜 없음</td>
+                <td>신청 경로, 대상, 불가 대상, 사진, 수령 조건</td>
+                <td>사진 파일, 수령 기관, 문의 내용, 원문 URL</td>
+                <td>여행 전체 준비 timeline으로 확장하지 않음</td>
+              </tr>
+              <tr>
+                <td>홈트</td>
+                <td>영상 하나를 반복 운동 일정으로 저장하고 실행한 날만 표시</td>
+                <td>초보 전신운동 영상 따라 하기</td>
+                <td>시작일 + 선택 요일/시간 + 반복 종료일</td>
+                <td>영상 열고 한 번 따라 하기</td>
+                <td>영상 URL, 운동 후 상태, 중단 조건</td>
+                <td>영상에 없는 동작 순서나 세부 준비 체크를 만들지 않음</td>
+              </tr>
+              <tr>
+                <td>스퀴시</td>
+                <td>무료 도안 놀이를 날짜 없이 보관했다가 할 날이 생기면 꺼냄</td>
+                <td>루돌프 스퀴시 만들기</td>
+                <td>optional 놀이 날짜</td>
+                <td>도안, 테이프, 풍선, 솜, 가위, 색칠도구</td>
+                <td>영상 URL, 도안 안내, 아이 반응 메모</td>
+                <td>4단계 프로젝트 흐름으로 억지 분리하지 않음</td>
+              </tr>
+              <tr>
+                <td>스투키</td>
+                <td>물주기 간격과 과습 조건을 캘린더에 남김</td>
+                <td>스투키 물주기</td>
+                <td>첫 물주기일 + 여름 2~3주 후보</td>
+                <td>속 흙, 충분히 물주기, 받침 물 제거, 과습 징후, 간접광/통풍</td>
+                <td>잎 상태, 물 준 날짜, 원문 URL</td>
+                <td>임의 반복 간격 선택지를 기본으로 두지 않음</td>
+              </tr>
+              <tr>
+                <td>eSIM</td>
+                <td>해외 도착 후 다시 열 설정 문서를 저장</td>
+                <td>해외 eSIM 설정 문서 열기</td>
+                <td>optional 확인 날짜</td>
+                <td>원문 문서 열기</td>
+                <td>구매 상품, 확인할 날짜, 원문 URL</td>
+                <td>일회성 설정 절차를 과도한 Flow로 쪼개지 않음</td>
+              </tr>
+              <tr>
+                <td>기숙사</td>
+                <td>입사일 기준으로 짐, 절차, 금지품목을 확인</td>
+                <td>택배 보낼 짐 정리 / 입사 절차와 짐 정리</td>
+                <td>입사일, D-3 택배 후보</td>
+                <td>택배, 호실/시간, 서류, 카드/열쇠, 준비물, 금지품목</td>
+                <td>택배 정보, 문의 내용, 원문 URL</td>
+                <td>학교별 포털이나 기숙사 관리 앱으로 확장하지 않음</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>새 사용자 화면</h2>
+        <p class="desc">사용자 화면은 별도 파일로 분리했다. 내부 판정, 점수, 비교 설명은 포함하지 않는다.</p>
+        <p><a href="./2026-06-17-source-gated-flow-user-v2-ko.html">2026-06-17-source-gated-flow-user-v2-ko.html 열기</a></p>
+      </section>
+    </main>
+  </body>
+</html>

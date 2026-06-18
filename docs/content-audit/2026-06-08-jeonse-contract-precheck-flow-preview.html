@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>전세계약 전 서류 체크 Flow 정적 프리뷰</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --line: #dbe3ef;
+      --line-strong: #bfdbfe;
+      --text: #0f172a;
+      --muted: #64748b;
+      --blue: #1d4ed8;
+      --blue-soft: #eff6ff;
+      --amber: #92400e;
+      --amber-soft: #fffbeb;
+      --red-soft: #fef2f2;
+      --green: #047857;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      letter-spacing: 0;
+    }
+    a { color: inherit; }
+    .page {
+      width: min(1120px, calc(100% - 28px));
+      margin: 18px auto 56px;
+    }
+    .topbar, .hero, .panel, .card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 52px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+    }
+    .brand { font-weight: 900; color: var(--blue); }
+    .topbar .search {
+      width: min(420px, 52vw);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--bg);
+      color: var(--muted);
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: white;
+      color: #334155;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn.primary {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: white;
+    }
+    .btn.ghost {
+      border-color: transparent;
+      background: transparent;
+      color: var(--blue);
+      padding-left: 0;
+      padding-right: 0;
+    }
+    .hero { padding: 22px; }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    h1 {
+      margin: 12px 0 8px;
+      font-size: clamp(26px, 4vw, 40px);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+    .lead {
+      margin: 0;
+      max-width: 760px;
+      color: #475569;
+      font-size: 16px;
+      line-height: 1.65;
+    }
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .badge {
+      border-radius: 7px;
+      background: #ecfdf5;
+      color: var(--green);
+      padding: 6px 9px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .mode-banner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 0 0 14px;
+    }
+    .mode-box {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: white;
+      padding: 12px;
+    }
+    .mode-box strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+    .mode-box span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .mode-box.user {
+      border-color: #bfdbfe;
+      background: #eff6ff;
+    }
+    .mode-box.internal {
+      border-color: #e2e8f0;
+      background: #f8fafc;
+    }
+    .screen-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .internal-label {
+      display: inline-flex;
+      margin-bottom: 8px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      color: #475569;
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 18px;
+      align-items: start;
+      margin-top: 18px;
+    }
+    .panel { padding: 18px; }
+    .panel + .panel { margin-top: 16px; }
+    .eyebrow {
+      margin: 0;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    h2, h3 {
+      margin: 6px 0 0;
+      letter-spacing: 0;
+    }
+    h2 { font-size: 26px; }
+    h3 { font-size: 16px; }
+    .desc {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .setup {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: white;
+      color: var(--text);
+      font: inherit;
+      font-weight: 500;
+      padding: 10px 12px;
+    }
+    textarea { min-height: 82px; resize: vertical; }
+    .workbench-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .progress {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--bg);
+      color: #334155;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .stage-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .stage {
+      border: 1px solid #dbeafe;
+      border-radius: 8px;
+      background: white;
+      padding: 11px;
+    }
+    .stage time {
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .stage p {
+      margin: 5px 0 0;
+      color: #1e3a8a;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .calendar-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #f8fafc;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .calendar-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: white;
+    }
+    .dow, .day {
+      min-height: 42px;
+      border-right: 1px solid #e2e8f0;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 8px;
+      font-size: 12px;
+    }
+    .dow {
+      min-height: auto;
+      background: #f1f5f9;
+      color: #475569;
+      font-weight: 900;
+      text-align: center;
+    }
+    .dow:nth-child(7n), .day:nth-child(7n) { border-right: 0; }
+    .day:nth-last-child(-n + 7) { border-bottom: 0; }
+    .day {
+      min-height: 96px;
+      color: #334155;
+    }
+    .day.muted { color: #cbd5e1; background: #fbfdff; }
+    .day.selected {
+      outline: 2px solid var(--blue);
+      outline-offset: -2px;
+      background: #eff6ff;
+    }
+    .day.active {
+      outline: 3px solid var(--blue);
+      outline-offset: -3px;
+      background: #dbeafe;
+    }
+    .date-no {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      font-weight: 900;
+    }
+    .event {
+      display: block;
+      margin-top: 7px;
+      border-left: 3px solid var(--blue);
+      border-top: 1px solid #bfdbfe;
+      border-right: 1px solid #bfdbfe;
+      border-bottom: 1px solid #bfdbfe;
+      border-radius: 6px;
+      background: #eff6ff;
+      color: #1e3a8a;
+      padding: 5px 6px;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.35;
+      cursor: pointer;
+    }
+    .event.warn {
+      border-left-color: #d97706;
+      background: #fffbeb;
+      color: #92400e;
+    }
+    .event.done {
+      border-left-color: #059669;
+      background: #ecfdf5;
+      color: #047857;
+    }
+    .day-detail {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .day-detail-row {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 10px;
+      font-size: 13px;
+    }
+    .memo-inline {
+      border: 1px solid #fde68a;
+      border-radius: 8px;
+      background: var(--amber-soft);
+      padding: 10px;
+      color: #92400e;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .event-detail {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: white;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .event-detail-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .event-detail time {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .mini-checks {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .mini-checks label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .mini-checks input {
+      width: 16px;
+      padding: 0;
+    }
+    .field-row {
+      display: grid;
+      gap: 6px;
+      margin-top: 14px;
+      font-size: 13px;
+    }
+    .field-label {
+      color: var(--muted);
+      font-weight: 800;
+    }
+    .field-body {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #f8fafc;
+      padding: 10px;
+      color: #334155;
+      line-height: 1.6;
+    }
+    .url-pill {
+      display: inline-flex;
+      width: fit-content;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: white;
+      padding: 7px 10px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .save-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      background: #eff6ff;
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+    .save-bar p {
+      margin: 0;
+      color: #1e3a8a;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .checklist {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #f8fafc;
+      padding: 14px;
+    }
+    .list-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .secondary-details > summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+      list-style: none;
+    }
+    .secondary-details > summary::-webkit-details-marker { display: none; }
+    .secondary-details > summary::after {
+      content: "펼치기";
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .secondary-details[open] > summary::after { content: "접기"; }
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .items {
+      display: grid;
+      gap: 10px;
+    }
+    .grouped-list {
+      display: grid;
+      gap: 12px;
+    }
+    .check-group {
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: white;
+      padding: 12px;
+    }
+    .check-group-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .check-group h4 {
+      margin: 0;
+      font-size: 14px;
+    }
+    .check-group time {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .item {
+      border-top: 1px solid #edf2f7;
+      padding: 9px 0 0;
+      margin-top: 9px;
+      font-size: 14px;
+    }
+    .item:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+      margin-top: 0;
+    }
+    .item label {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .item input { width: 16px; margin-top: 2px; padding: 0; }
+    details {
+      margin-top: 8px;
+      color: #2563eb;
+      font-size: 13px;
+    }
+    summary { cursor: pointer; font-weight: 800; }
+    .detail {
+      margin-top: 8px;
+      color: #475569;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .section-list {
+      display: grid;
+      gap: 12px;
+    }
+    .timeline-section {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: white;
+      padding: 14px;
+    }
+    .timeline-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: start;
+      border-top: 1px solid #edf2f7;
+      padding-top: 12px;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+    .tag {
+      border-radius: 999px;
+      background: #fff7ed;
+      color: #c2410c;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .side {
+      display: grid;
+      gap: 14px;
+    }
+    .side .card { padding: 14px; }
+    .side p, .side li {
+      color: #475569;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+    ul { padding-left: 18px; }
+    .warning {
+      border-color: #fde68a;
+      background: #fffbeb;
+    }
+    .review {
+      margin-top: 18px;
+      border: 1px dashed #94a3b8;
+      border-radius: 10px;
+      background: #f8fafc;
+      padding: 16px;
+    }
+    .review-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .stale-notice {
+      margin-bottom: 14px;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      background: #eff6ff;
+      padding: 14px;
+      color: #1e3a8a;
+      line-height: 1.6;
+    }
+    .stale-notice strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #1d4ed8;
+    }
+    .stale-notice a {
+      font-weight: 900;
+      color: #1d4ed8;
+    }
+    @media (max-width: 860px) {
+      .page { width: min(430px, calc(100% - 18px)); margin-top: 8px; }
+      .topbar .search { display: none; }
+      .mode-banner { grid-template-columns: 1fr; }
+      .hero { padding: 16px; }
+      .grid { grid-template-columns: 1fr; }
+      .stage-grid, .review-grid { grid-template-columns: 1fr; }
+      .calendar-card { padding: 10px; }
+      .dow, .day { padding: 5px; }
+      .day { min-height: 82px; }
+      .event { font-size: 10px; padding: 4px; }
+      .day-detail-row { grid-template-columns: 1fr; }
+      .event-detail-head, .workbench-head, .list-head { display: grid; }
+      .save-bar { display: grid; }
+      .actions { justify-content: stretch; }
+      .actions .btn { flex: 1; }
+      .side { order: 2; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="stale-notice" aria-label="최신 리뷰 안내">
+      <strong>이 파일은 이전 정적 프리뷰입니다.</strong>
+      최신 UX 수정본은
+      <a href="./2026-06-08-jeonse-contract-public-cleanup-review.html">2026-06-08-jeonse-contract-public-cleanup-review.html</a>
+      에서 확인하세요. 최신본에는 `일정 보기 / 전체 보기` 탭 분리, `주의할 점 / 참고 링크` 라벨, 새 스크린샷 3장이 반영되어 있습니다.
+    </section>
+
+    <section class="mode-banner" aria-label="프리뷰 구분">
+      <div class="mode-box user">
+        <strong>사용자에게 보이는 화면</strong>
+        <span>아래 서비스 화면은 실제 사용자가 Flow를 저장하고 실행할 때 보는 형태입니다.</span>
+      </div>
+      <div class="mode-box internal">
+        <strong>작업/검토용 설명</strong>
+        <span>맨 아래 회색 점선 영역만 우리가 판단을 남기는 내부 검토 영역입니다.</span>
+      </div>
+    </section>
+
+    <span class="screen-label">사용자 화면 미리보기</span>
+
+    <nav class="topbar" aria-label="서비스 상단">
+      <div class="brand">FLOW</div>
+      <div class="search">Flow, 캘린더, 시트, 메모 검색</div>
+    </nav>
+
+    <header class="hero">
+      <div class="meta">
+        <span>주거/계약전점검</span><span>·</span><span>실행 체크리스트</span><span>·</span><span>카카오페이 페이어텐션 원문 기반</span>
+      </div>
+      <h1>전세계약 전 서류 체크 Flow</h1>
+      <p class="lead">계약 예정일을 기준으로 시세, 등기부등본, 보증보험, 계약서 정보 일치, 입주 후 보호 절차를 확인하고 이상 항목은 보류 메모로 남깁니다.</p>
+      <div class="badges">
+        <span class="badge">5분 초안</span>
+        <span class="badge">7개 항목</span>
+        <span class="badge">계약 예정일만 입력</span>
+        <span class="badge">민감정보 저장 안 함</span>
+      </div>
+    </header>
+
+    <div class="grid">
+      <div>
+        <section class="panel">
+          <p class="eyebrow">1. 계약 예정일 입력하기</p>
+          <h2>계약일 하나로 실행판을 만듭니다</h2>
+          <p class="desc">계약 예정일을 넣으면 D-3 계약 전 서류 확인, D-Day 계약서 정보 일치 확인, D+1 입주 후 보호 절차 체크가 생성됩니다.</p>
+          <div class="setup">
+            <label>계약 예정일
+              <input type="date" />
+            </label>
+            <button class="btn primary" type="button">이 날짜로 일정 만들기</button>
+            <button class="btn ghost" type="button">예시로 먼저 보기</button>
+          </div>
+        </section>
+
+        <section class="panel" aria-label="Flow artifact workbench">
+          <div class="workbench-head">
+            <div>
+              <p class="eyebrow">내 실행판</p>
+              <h2>내 일정</h2>
+              <p class="desc">캘린더에서 날짜를 고르고, 그날 필요한 체크만 확인합니다.</p>
+            </div>
+            <span class="progress">0/7 완료</span>
+          </div>
+
+          <section class="calendar-card">
+            <div class="calendar-top">
+              <div>
+                <p class="eyebrow">캘린더 미리보기</p>
+                <h3>2026년 6월 · 계약 예정일 6월 7일</h3>
+              </div>
+            </div>
+            <div class="calendar-grid" aria-label="2026년 6월 전세 체크 캘린더">
+              <div class="dow">일</div><div class="dow">월</div><div class="dow">화</div><div class="dow">수</div><div class="dow">목</div><div class="dow">금</div><div class="dow">토</div>
+              <div class="day muted"><div class="date-no">31</div></div>
+              <div class="day"><div class="date-no">1</div></div>
+              <div class="day"><div class="date-no">2</div></div>
+              <div class="day"><div class="date-no">3</div></div>
+              <div class="day active"><div class="date-no">4 <span>D-3</span></div><span class="event">계약 전 서류 확인</span><span class="event">보증보험 가능 여부</span></div>
+              <div class="day"><div class="date-no">5</div></div>
+              <div class="day"><div class="date-no">6</div></div>
+              <div class="day selected"><div class="date-no">7 <span>D-Day</span></div><span class="event warn">계약서 정보 일치 확인</span><span class="event warn">표준계약서 확인</span></div>
+              <div class="day selected"><div class="date-no">8 <span>D+1</span></div><span class="event done">확정일자/신고 일정</span><span class="event done">보증보험 후속 확인</span></div>
+              <div class="day"><div class="date-no">9</div></div>
+              <div class="day"><div class="date-no">10</div></div>
+              <div class="day"><div class="date-no">11</div></div>
+              <div class="day"><div class="date-no">12</div></div>
+              <div class="day"><div class="date-no">13</div></div>
+              <div class="day"><div class="date-no">14</div></div>
+              <div class="day"><div class="date-no">15</div></div>
+              <div class="day"><div class="date-no">16</div></div>
+              <div class="day"><div class="date-no">17</div></div>
+              <div class="day"><div class="date-no">18</div></div>
+              <div class="day"><div class="date-no">19</div></div>
+              <div class="day"><div class="date-no">20</div></div>
+            </div>
+          </section>
+
+          <section class="event-detail" aria-label="선택한 일정 상세">
+            <div class="event-detail-head">
+              <div>
+                <time>2026년 6월 4일 목요일 · D-3</time>
+                <h3>계약 전 서류 확인</h3>
+              </div>
+            </div>
+            <ul class="mini-checks">
+              <li><label><input type="checkbox" />시세 확인</label></li>
+              <li><label><input type="checkbox" />등기부등본 확인</label></li>
+              <li><label><input type="checkbox" />전세보증보험 가능 여부 확인</label></li>
+            </ul>
+            <div class="field-row">
+              <div class="field-label">메모</div>
+              <div class="field-body">걸리는 항목이 있으면 계약 전 공인중개사/전문가에게 확인. 계약서 원문, 주민등록번호, 계좌번호는 저장하지 않음.</div>
+            </div>
+            <div class="field-row">
+              <div class="field-label">URL</div>
+              <a class="url-pill" href="https://contents.kakaopay.com/contents/2056" target="_blank" rel="noreferrer">카카오페이 원문</a>
+            </div>
+          </section>
+
+          <div class="save-bar">
+            <p>3개 날짜, 7개 체크 항목이 캘린더에 저장됩니다.</p>
+            <button class="btn primary" type="button">캘린더에 저장</button>
+          </div>
+
+          <details class="checklist secondary-details">
+            <summary>
+              <span>
+                <p class="eyebrow">보조 보기</p>
+                <h3>전체 항목 보기 7개</h3>
+              </span>
+            </summary>
+            <div class="grouped-list">
+              <section class="check-group">
+                <div class="check-group-head">
+                  <h4>계약 3일 전</h4>
+                  <time>6월 4일 · D-3</time>
+                </div>
+                <div class="items">
+                  <article class="item">
+                    <label><input type="checkbox" />시세와 등기부등본 확인</label>
+                    <details open><summary>메모</summary><div class="detail">소유자, 근저당, 압류처럼 걸리는 항목은 공인중개사 또는 전문가에게 확인할 메모로 남깁니다.</div></details>
+                  </article>
+                  <article class="item">
+                    <label><input type="checkbox" />전세보증보험 가능 여부 확인</label>
+                    <details><summary>메모</summary><div class="detail">보증기관, 공인중개사, 공식 안내에서 확인합니다. 가입 가능 여부나 보장 범위는 Flow가 판단하지 않습니다.</div></details>
+                  </article>
+                </div>
+              </section>
+
+              <section class="check-group">
+                <div class="check-group-head">
+                  <h4>계약 당일</h4>
+                  <time>6월 7일 · D-Day</time>
+                </div>
+                <div class="items">
+                  <article class="item">
+                    <label><input type="checkbox" />중개사와 표준계약서 확인</label>
+                    <details><summary>메모</summary><div class="detail">중개사 등록번호, 대표자, 표준계약서 사용 여부를 확인합니다.</div></details>
+                  </article>
+                  <article class="item">
+                    <label><input type="checkbox" />계약서 정보 일치 여부 확인</label>
+                    <details><summary>메모</summary><div class="detail">주소, 면적, 보증금, 임대인 정보를 대조합니다. 주민등록번호, 계좌번호, 계약서 원문은 저장하지 않습니다.</div></details>
+                  </article>
+                </div>
+              </section>
+
+              <section class="check-group">
+                <div class="check-group-head">
+                  <h4>입주 직후</h4>
+                  <time>6월 8일 · D+1</time>
+                </div>
+                <div class="items">
+                  <article class="item">
+                    <label><input type="checkbox" />확정일자와 임대차신고 일정 저장</label>
+                    <details><summary>메모</summary><div class="detail">입주일 직후 해야 할 보호 절차를 일정으로 남깁니다.</div></details>
+                  </article>
+                  <article class="item">
+                    <label><input type="checkbox" />전세보증보험 가입 확인</label>
+                    <details><summary>메모</summary><div class="detail">보증기관 또는 전문가 안내에 따라 진행 상태를 확인합니다.</div></details>
+                  </article>
+                </div>
+              </section>
+
+              <section class="check-group">
+                <div class="check-group-head">
+                  <h4>이상 항목 발견 시</h4>
+                  <time>언제든</time>
+                </div>
+                <div class="items">
+                  <article class="item">
+                    <label><input type="checkbox" />보류 사유와 문의 대상 메모</label>
+                    <details><summary>메모</summary><div class="detail">보류 사유와 다음 문의 대상을 남깁니다. 보류는 실패가 아니라 정상 결과입니다.</div></details>
+                  </article>
+                </div>
+              </section>
+            </div>
+            <p class="desc" style="margin-top:12px">보조 작업</p>
+            <div class="actions" style="margin-top:8px">
+              <button class="btn" type="button">메모/노션에 복사</button>
+              <button class="btn" type="button">내 버전</button>
+            </div>
+          </details>
+        </section>
+
+        <section class="review">
+          <span class="internal-label">작업/검토용 설명</span>
+          <p class="eyebrow">사용자에게는 보이지 않는 평가 영역</p>
+          <h2>이 화면을 볼 때 체크할 것</h2>
+          <p class="desc">여기부터는 서비스 UI가 아니라 우리가 컨텐츠 승격 여부를 판단하기 위한 메모 영역입니다. 사용자 화면은 캘린더 앱처럼 제목, 날짜, 체크리스트, 메모, URL만 남기는 쪽으로 줄였습니다.</p>
+          <div class="review-grid">
+            <label>좋은 점
+              <textarea placeholder="예: D-3/D-Day/D+1 구조가 바로 이해됨"></textarea>
+            </label>
+            <label>아쉬운 점
+              <textarea placeholder="예: 첫 화면이 아직 길다 / 보류 카드가 무겁다"></textarea>
+            </label>
+          </div>
+        </section>
+      </div>
+
+      <aside class="side">
+        <section class="card">
+          <p class="eyebrow">이 Flow가 만들어주는 것</p>
+          <h3>캘린더 + 체크리스트</h3>
+          <p>계약 예정일 기준 일정과 체크 항목을 함께 봅니다.</p>
+        </section>
+        <section class="card">
+          <p class="eyebrow">저장되는 일정</p>
+          <h3>3개 날짜</h3>
+          <ul>
+            <li>6월 4일: 계약 전 서류 확인</li>
+            <li>6월 7일: 계약서 정보 확인</li>
+            <li>6월 8일: 입주 후 보호 절차</li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,858 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 플랫폼/API 통합 준비도 매트릭스</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7f9;
+        --paper: #ffffff;
+        --soft: #f2f6fb;
+        --ink: #101828;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d9e2ec;
+        --blue: #1d4ed8;
+        --blue-soft: #e9f1ff;
+        --green: #047857;
+        --green-soft: #e7f6ef;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --radius: 8px;
+        --shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard",
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          "Malgun Gothic",
+          system-ui,
+          sans-serif;
+        line-height: 1.6;
+        letter-spacing: 0;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.24;
+        word-break: keep-all;
+      }
+
+      p,
+      li,
+      td {
+        color: var(--body);
+      }
+
+      ul {
+        margin: 9px 0 0;
+        padding-left: 20px;
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.94em;
+      }
+
+      .page {
+        width: min(1240px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 22px 0 70px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        min-height: 54px;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        color: var(--muted);
+        font-size: 13px;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      }
+
+      .brand {
+        color: var(--ink);
+        font-weight: 900;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 290px;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .layout > * {
+        min-width: 0;
+      }
+
+      .hero,
+      .panel,
+      .nav {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .hero,
+      .panel {
+        padding: 28px;
+      }
+
+      .panel {
+        margin-top: 18px;
+      }
+
+      .hero h1 {
+        max-width: 940px;
+        font-size: clamp(30px, 4vw, 48px);
+        overflow-wrap: anywhere;
+      }
+
+      .lead {
+        max-width: 920px;
+        margin-top: 14px;
+        font-size: 17px;
+      }
+
+      .panel h2 {
+        margin-bottom: 10px;
+        font-size: 24px;
+      }
+
+      .section-lead {
+        max-width: 900px;
+        margin-bottom: 17px;
+        color: var(--muted);
+      }
+
+      .nav {
+        position: sticky;
+        top: 16px;
+        padding: 18px;
+      }
+
+      .nav h2 {
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      .nav a {
+        display: block;
+        padding: 9px 10px;
+        border-radius: 6px;
+        color: var(--body);
+        font-size: 14px;
+      }
+
+      .nav a:hover {
+        background: var(--soft);
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      .tag-row,
+      .link-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag-row {
+        margin-top: 18px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        max-width: 100%;
+        min-height: 30px;
+        padding: 5px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--soft);
+        color: var(--body);
+        font-size: 13px;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+      }
+
+      .tag.green {
+        border-color: #b9e6d0;
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .tag.amber {
+        border-color: #f1d28a;
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .tag.red {
+        border-color: #ffd0c9;
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      .summary-grid,
+      .card-grid,
+      .gate-grid,
+      .score-grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .summary-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-top: 20px;
+      }
+
+      .card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .gate-grid,
+      .score-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .card,
+      .gate,
+      .score {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        padding: 15px;
+      }
+
+      .card.soft,
+      .gate,
+      .score {
+        background: var(--soft);
+      }
+
+      .card h3,
+      .gate h3 {
+        margin-bottom: 7px;
+        font-size: 16px;
+      }
+
+      .eyebrow {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .callout {
+        margin-top: 16px;
+        padding: 15px;
+        border: 1px solid #f1d28a;
+        border-radius: var(--radius);
+        background: var(--amber-soft);
+      }
+
+      .callout strong {
+        color: var(--amber);
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+      }
+
+      table {
+        width: 100%;
+        min-width: 860px;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+        font-size: 14px;
+      }
+
+      th {
+        background: var(--soft);
+        color: var(--ink);
+        font-size: 13px;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .state {
+        display: inline-flex;
+        padding: 3px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+
+      .state.stage0 {
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+
+      .state.stage1 {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .state.future {
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .state.reject {
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      .score b {
+        display: block;
+        color: var(--ink);
+        font-size: 20px;
+      }
+
+      .score span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .source-link {
+        display: inline-flex;
+        align-items: center;
+        max-width: 100%;
+        min-height: 34px;
+        padding: 7px 10px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--paper);
+        font-size: 13px;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+      }
+
+      .footer-note {
+        margin-top: 14px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 980px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .nav {
+          position: static;
+        }
+
+        .summary-grid,
+        .gate-grid,
+        .score-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 640px) {
+        .page {
+          width: min(100% - 20px, 1240px);
+          padding-top: 10px;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero,
+        .panel,
+        .nav {
+          padding: 18px;
+        }
+
+        .summary-grid,
+        .card-grid,
+        .gate-grid,
+        .score-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .hero h1 {
+          font-size: 30px;
+        }
+
+        .lead {
+          font-size: 16px;
+        }
+
+        table {
+          min-width: 780px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe Analysis Room</span> / 내부 연결 문서 한국어 HTML</div>
+        <div>원문 기준일 2026-06-08 · API/플랫폼 준비도 비교 · 구현 승인 아님</div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <section class="hero" id="top">
+            <h1>API 준비도는 통합 허가가 아니라 Stage 0을 지키는 게이트다</h1>
+            <p class="lead">
+              이 문서는 Google Calendar, Google Sheets, Notion, Todoist, Zapier, Make가 기술적으로 가능한지를 보는
+              동시에 FlowMe가 지금 계정 연결, 토큰 저장, 자동화 플랫폼으로 넘어가면 안 되는 이유를 정리한다.
+              결론은 단순하다. 반복 사용과 import friction이 증명되기 전까지는 portable export가 기본값이다.
+            </p>
+            <div class="tag-row">
+              <span class="tag green">제품 규칙: integration-readiness-gate</span>
+              <span class="tag amber">Stage 1 후보: Calendar direct save · Sheets append</span>
+              <span class="tag red">Stage 0 금지: OAuth·토큰·웹훅·동기화</span>
+            </div>
+            <div class="summary-grid">
+              <article class="card soft">
+                <span class="eyebrow">Default</span>
+                <h3><code>stage0_export_only</code></h3>
+                <p>모든 목적지는 사용자가 반복적으로 같은 산출물을 내보낸다는 증거가 생기기 전까지 파일/복사 기반으로 둔다.</p>
+              </article>
+              <article class="card soft">
+                <span class="eyebrow">Light Integration</span>
+                <h3>Calendar와 Sheets만 선행 후보</h3>
+                <p>스키마가 좁고 import friction을 관찰하기 쉬운 두 목적지만 Stage 1 후보로 남긴다.</p>
+              </article>
+              <article class="card soft">
+                <span class="eyebrow">Boundary</span>
+                <h3>자동화 플랫폼이 되지 않기</h3>
+                <p>Notion/Todoist/Zapier/Make는 지금 유용해 보여도 workspace, task inbox, trigger/action 비용이 크다.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="decision">
+            <h2>1. 결정 요약</h2>
+            <p class="section-lead">
+              API 문서가 존재한다는 사실은 구현 승인과 다르다. FlowMe는 먼저 사용자가 실제로 어느 목적지로 반복 export하는지
+              확인하고, 파일/복사 import가 병목이라는 증거가 생긴 뒤에만 직접 저장을 검토한다.
+            </p>
+            <div class="card-grid">
+              <article class="card">
+                <h3>지금의 기본값</h3>
+                <p><code>.ics</code>, CSV/XLSX-ready rows, Markdown/CSV, Todoist CSV 같은 portable artifact를 먼저 제공한다.</p>
+              </article>
+              <article class="card">
+                <h3>Stage 1 후보</h3>
+                <p>Google Calendar direct save와 Google Sheets direct append는 반복 import friction이 증명된 뒤에만 연다.</p>
+              </article>
+              <article class="card">
+                <h3>미래 플랫폼</h3>
+                <p>Notion, Todoist, Zapier, Make는 요구가 명확해질 때까지 <code>future_platform</code>으로 둔다.</p>
+              </article>
+              <article class="card">
+                <h3>거절 기준</h3>
+                <p>계정 관리, credential handling, 자동화 빌더, 외부 플랫폼 복제에 가까워지면 지금은 만들지 않는다.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="sources">
+            <h2>2. 공식 소스 스냅샷</h2>
+            <p class="section-lead">
+              2026-06-08에 확인한 공식 API/플랫폼 문서 기반 비교다. 이 HTML은 당시 판단 근거를 한국어로 읽기 쉽게
+              정리한 것이며, 오늘 기준 최신 문서 재검증은 아니다.
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>플랫폼/API</th>
+                    <th>API 신호</th>
+                    <th>FlowMe 해석</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Google Calendar API</strong></td>
+                    <td>이벤트 생성은 calendar ID와 events insert 호출, calendar 관련 authorization scope가 필요하다.</td>
+                    <td><span class="state stage1">Stage 1 후보</span> `.ics` import friction이 반복 증명된 뒤 검토한다.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Google Sheets API</strong></td>
+                    <td>spreadsheet ID, range, value input option, Drive/Sheets OAuth scope로 행을 append한다.</td>
+                    <td><span class="state stage1">Stage 1 후보</span> sheet-first Flow의 row schema가 안정된 뒤 검토한다.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Notion API</strong></td>
+                    <td>page/database/data source 관리, OAuth 2.0, Insert Content capability가 얽힌다.</td>
+                    <td><span class="state future">Future platform</span> Notion-ready Markdown/CSV handoff가 먼저다.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Todoist API</strong></td>
+                    <td>tasks, projects, reminders, OAuth token을 다루며 due date와 deadline 동작이 분리된다.</td>
+                    <td><span class="state future">Future platform</span> task-manager 수요가 검증되기 전에는 CSV import면 충분하다.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Zapier Platform</strong></td>
+                    <td>private-data integration은 인증이 필요하고 app connection이 유지된다.</td>
+                    <td><span class="state future">Future platform</span> FlowMe trigger/action semantics가 안정된 뒤의 자동화 계층이다.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Make Webhooks/API</strong></td>
+                    <td>custom webhook URL, queue, 즉시/예약 처리, reject/rate-limit 같은 운영 책임이 생긴다.</td>
+                    <td><span class="state future">Future platform</span> event payload와 replay/error handling이 가치 있을 때만 검토한다.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="gates">
+            <h2>3. 여섯 개 준비도 게이트</h2>
+            <p class="section-lead">
+              직접 통합은 아래 여섯 항목이 모두 증명될 때만 <code>stage0_export_only</code>에서
+              <code>stage1_light_integration</code>으로 이동할 수 있다.
+            </p>
+            <div class="gate-grid">
+              <article class="gate">
+                <h3>반복 목적지 사용</h3>
+                <p>사용자가 같은 산출물 유형에 같은 외부 도구를 반복 선택한다.</p>
+              </article>
+              <article class="gate">
+                <h3>Import friction</h3>
+                <p>파일/복사 import가 실제 병목이라는 관찰 증거가 있다.</p>
+              </article>
+              <article class="gate">
+                <h3>안정된 스키마</h3>
+                <p>calendar event fields, sheet columns, task fields가 후보마다 흔들리지 않는다.</p>
+              </article>
+              <article class="gate">
+                <h3>권한 명확성</h3>
+                <p>사용자가 FlowMe가 요청하는 계정 접근 범위를 정확히 이해한다.</p>
+              </article>
+              <article class="gate">
+                <h3>되돌릴 수 있음</h3>
+                <p>사용자가 외부 도구에서 생성 항목을 찾고, 수정하고, 삭제할 수 있다.</p>
+              </article>
+              <article class="gate">
+                <h3>출처/안전 경계 이동</h3>
+                <p>source URL, caution, completion criteria가 통합 산출물에도 함께 간다.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="matrix">
+            <h2>4. 준비도 매트릭스</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>목적지</th>
+                    <th>현재 Stage 0 행동</th>
+                    <th>API 가능성</th>
+                    <th>결정 상태</th>
+                    <th>열 수 있는 조건</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Google Calendar</td>
+                    <td><code>.ics</code> 또는 Google Calendar CSV export</td>
+                    <td>Calendar API event 생성</td>
+                    <td><span class="state stage1">stage1_light_integration</span></td>
+                    <td>사용자가 반복적으로 `.ics`를 import하고 direct save를 요청할 때</td>
+                  </tr>
+                  <tr>
+                    <td>Apple Calendar</td>
+                    <td><code>.ics</code> handoff</td>
+                    <td>이 로드맵에서는 broad server-side account integration 없음</td>
+                    <td><span class="state stage0">stage0_export_only</span></td>
+                    <td>계속 `.ics` 유지, native/mobile integration은 지금 추적하지 않음</td>
+                  </tr>
+                  <tr>
+                    <td>Google Sheets</td>
+                    <td>CSV/XLSX-ready row export</td>
+                    <td>Sheets API로 rows append</td>
+                    <td><span class="state stage1">stage1_light_integration</span></td>
+                    <td>row schema가 안정되고 같은 sheet append가 반복될 때</td>
+                  </tr>
+                  <tr>
+                    <td>Notion</td>
+                    <td>Markdown/CSV workspace handoff</td>
+                    <td>Notion API page/database creation</td>
+                    <td><span class="state future">future_platform</span></td>
+                    <td>Notion이 지배적 목적지가 되고 page/database schema가 안정될 때</td>
+                  </tr>
+                  <tr>
+                    <td>Todoist</td>
+                    <td>task-first Flow에 한해 Todoist-compatible CSV</td>
+                    <td>Todoist API task/project/reminder 생성</td>
+                    <td><span class="state future">future_platform</span></td>
+                    <td>task-manager demand가 증명되고 FlowMe가 task inbox가 되지 않을 수 있을 때</td>
+                  </tr>
+                  <tr>
+                    <td>Zapier</td>
+                    <td>자동화 없음, export/copy only</td>
+                    <td>authenticated trigger/action app</td>
+                    <td><span class="state future">future_platform</span></td>
+                    <td>stable event types와 cross-app automation 수요가 있을 때</td>
+                  </tr>
+                  <tr>
+                    <td>Make</td>
+                    <td>자동화 없음, export/copy only</td>
+                    <td>webhook/scenario integration</td>
+                    <td><span class="state future">future_platform</span></td>
+                    <td>stable payload와 webhook replay/error handling을 감당할 가치가 있을 때</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="do-not-build">
+            <h2>5. 지금 만들지 않을 것</h2>
+            <p class="section-lead">
+              이 문서의 실용적 가치는 “가능한 통합 목록”보다 “아직 만들지 않을 통합 경계”에 있다.
+            </p>
+            <div class="card-grid">
+              <article class="card">
+                <h3>계정 연결과 credential 저장</h3>
+                <p>OAuth/account connection, token, refresh token, API key, spreadsheet ID, Notion page ID, Todoist project ID를 Stage 0에 저장하지 않는다.</p>
+              </article>
+              <article class="card">
+                <h3>지속 동기화</h3>
+                <p>calendar, sheet, task, workspace의 persistent sync를 만들지 않는다.</p>
+              </article>
+              <article class="card">
+                <h3>복제 제품</h3>
+                <p>generic task inbox, spreadsheet editor, formula layer, Notion-like workspace/database builder를 만들지 않는다.</p>
+              </article>
+              <article class="card">
+                <h3>자동화 빌더</h3>
+                <p>Zapier/Make action builder, arbitrary Flow event webhook endpoint, automation credential storage를 만들지 않는다.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" id="conversion">
+            <h2>6. 변환 결정</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>항목</th>
+                    <th>결정</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>제품 규칙</td>
+                    <td><a href="../flow-rules/integration-readiness-gate.md"><code>integration-readiness-gate</code></a></td>
+                  </tr>
+                  <tr>
+                    <td>사용자 필요</td>
+                    <td>FlowMe product owner가 언제 직접 통합을 열지 판단해, 검증된 friction만 줄이고 clone/automation platform이 되지 않게 한다.</td>
+                  </tr>
+                  <tr>
+                    <td>콘텐츠 형태</td>
+                    <td>공식 API, 인증, 플랫폼 문서 기반 readiness comparison</td>
+                  </tr>
+                  <tr>
+                    <td>목적지와 구조</td>
+                    <td><code>memo</code> 목적지의 decision matrix</td>
+                  </tr>
+                  <tr>
+                    <td>예외</td>
+                    <td>Google Calendar와 Google Sheets는 스키마가 좁아 Notion/Todoist/Zapier/Make보다 먼저 Stage 1 후보가 될 수 있다.</td>
+                  </tr>
+                  <tr>
+                    <td>위험 처리</td>
+                    <td>API capability, user permission, product boundary decision을 분리한다.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="phase5">
+            <h2>7. Phase 5 압축</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>후보</th>
+                    <th>사용자 순간</th>
+                    <th>자연 산출물</th>
+                    <th>Stage 0 행동</th>
+                    <th>결정</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Calendar direct save</td>
+                    <td>날짜가 있는 Flow event를 반복 import함</td>
+                    <td>calendar event</td>
+                    <td><code>.ics</code> export, friction 측정</td>
+                    <td><span class="state stage1">Stage 1 후보</span></td>
+                  </tr>
+                  <tr>
+                    <td>Sheet direct append</td>
+                    <td>Flow row를 같은 sheet에 반복 append함</td>
+                    <td>sheet row table</td>
+                    <td>CSV/XLSX export, friction 측정</td>
+                    <td><span class="state stage1">Stage 1 후보</span></td>
+                  </tr>
+                  <tr>
+                    <td>Notion page/database creation</td>
+                    <td>Flow note/row를 workspace에 넣고 싶어 함</td>
+                    <td>Markdown/CSV handoff</td>
+                    <td>Markdown/CSV export</td>
+                    <td><span class="state future">Future platform</span></td>
+                  </tr>
+                  <tr>
+                    <td>Todoist task creation</td>
+                    <td>Flow tasks를 task manager로 보내고 싶어 함</td>
+                    <td>Todoist CSV</td>
+                    <td>CSV export</td>
+                    <td><span class="state future">Future platform</span></td>
+                  </tr>
+                  <tr>
+                    <td>Zapier/Make automation</td>
+                    <td>Flow event가 앱 action을 trigger하길 원함</td>
+                    <td>webhook/action payload</td>
+                    <td>자동화 없음</td>
+                    <td><span class="state future">Future platform</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="rule-pass">
+            <h2>8. 2026-06-09 제품 규칙 반영</h2>
+            <p class="section-lead">
+              이 매트릭스는 이후 <code>integration-readiness-gate</code>라는 재사용 제품 규칙으로 승격되었다.
+              공개 라우트, `/content-flows` 후보, 실제 통합이 아니라, 앞으로 통합 요청을 심사할 기준이다.
+            </p>
+            <div class="callout">
+              <strong>현재 제품 입장:</strong>
+              product rule은 yes. public route, review candidate, OAuth/account connection, token storage, webhook endpoint,
+              automation builder, workspace builder, task inbox, calendar clone, spreadsheet editor는 no.
+            </div>
+            <div class="link-row" style="margin-top: 14px">
+              <a class="source-link" href="../flow-rules/integration-readiness-gate.md">Integration Readiness Gate 원문</a>
+              <a class="source-link" href="./2026-06-08-platform-api-readiness-matrix.md">원문 Markdown</a>
+            </div>
+          </section>
+
+          <section class="panel" id="rubric">
+            <h2>9. 루브릭 요약</h2>
+            <div class="score-grid">
+              <div class="score"><b>5</b><span>User Need Fit</span></div>
+              <div class="score"><b>4</b><span>Execution Clarity</span></div>
+              <div class="score"><b>4</b><span>Content Fidelity</span></div>
+              <div class="score"><b>5</b><span>Portability</span></div>
+              <div class="score"><b>4</b><span>Cognitive Load</span></div>
+              <div class="score"><b>4</b><span>Copy Specificity</span></div>
+              <div class="score"><b>5</b><span>Source/Safety</span></div>
+              <div class="score"><b>4</b><span>Accessibility/Operability</span></div>
+            </div>
+            <p class="footer-note">
+              낮은 지점은 실행 명확성이다. 앞으로 통합 요청이 나올 때 이 여섯 게이트를 후보 노트에 직접 붙여야 한다.
+            </p>
+          </section>
+
+          <section class="panel" id="links">
+            <h2>10. 공식 링크</h2>
+            <div class="link-row">
+              <a class="source-link" href="https://developers.google.com/workspace/calendar/api/v3/reference/events/insert">Google Calendar Events insert</a>
+              <a class="source-link" href="https://developers.google.com/workspace/calendar/api/guides/create-events">Google Calendar create events</a>
+              <a class="source-link" href="https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/append">Google Sheets values append</a>
+              <a class="source-link" href="https://developers.notion.com/guides/get-started/overview">Notion API overview</a>
+              <a class="source-link" href="https://developers.notion.com/reference/post-page">Notion create page</a>
+              <a class="source-link" href="https://developer.todoist.com/api/v1/">Todoist API</a>
+              <a class="source-link" href="https://docs.zapier.com/integrations/build/auth">Zapier Authentication</a>
+              <a class="source-link" href="https://docs.zapier.com/platform/build/oauth">Zapier OAuth v2</a>
+              <a class="source-link" href="https://help.make.com/webhooks">Make Webhooks</a>
+              <a class="source-link" href="https://developers.make.com/api-documentation/api-reference/hooks">Make Hooks API</a>
+            </div>
+            <p class="footer-note">
+              이 HTML은 2026-06-08 내부 비교 문서를 한국어로 시각화한 것이다. 공식 API 문서의 최신 상태를 새로 검증한 결과가 아니다.
+            </p>
+          </section>
+        </div>
+
+        <aside class="nav" aria-label="문서 목차">
+          <h2>문서 목차</h2>
+          <a href="#top">요약</a>
+          <a href="#decision">1. 결정 요약</a>
+          <a href="#sources">2. 공식 소스 스냅샷</a>
+          <a href="#gates">3. 준비도 게이트</a>
+          <a href="#matrix">4. 준비도 매트릭스</a>
+          <a href="#do-not-build">5. 만들지 않을 것</a>
+          <a href="#conversion">6. 변환 결정</a>
+          <a href="#phase5">7. Phase 5 압축</a>
+          <a href="#rule-pass">8. 제품 규칙 반영</a>
+          <a href="#rubric">9. 루브릭</a>
+          <a href="#links">10. 공식 링크</a>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

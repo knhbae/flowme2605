@@ -1,0 +1,1571 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 내 Flow 실행 화면</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --surface: #ffffff;
+      --soft: #f8fafc;
+      --line: #d9e2ef;
+      --line-strong: #bfccd9;
+      --text: #101827;
+      --muted: #5e6b7d;
+      --blue: #1f5fbf;
+      --blue-soft: #eaf2ff;
+      --green: #0f7a4a;
+      --green-soft: #e8f7ef;
+      --amber: #9a6100;
+      --amber-soft: #fff6df;
+      --red: #b42318;
+      --red-soft: #fff1ef;
+      --shadow: 0 12px 30px rgba(16, 24, 39, 0.08);
+      --radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #fbfdff 0, var(--bg) 420px);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.58;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 6px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    a {
+      color: var(--blue);
+      text-underline-offset: 3px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: clamp(28px, 5vw, 44px);
+      line-height: 1.14;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin-bottom: 6px;
+      font-size: clamp(23px, 3.2vw, 32px);
+      line-height: 1.22;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 6px;
+      font-size: 20px;
+      line-height: 1.3;
+      letter-spacing: 0;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 18px 0 64px;
+    }
+
+    .topbar,
+    .hero,
+    .flow-nav,
+    .surface,
+    .panel,
+    .item,
+    .calendar,
+    .agenda,
+    .source-strip {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 58px;
+      padding: 12px 16px;
+      box-shadow: 0 1px 2px rgba(16, 24, 39, 0.04);
+    }
+
+    .brand {
+      color: var(--blue);
+      font-size: 24px;
+      font-weight: 950;
+      text-decoration: none;
+    }
+
+    .hero {
+      margin-top: 14px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      margin-bottom: 6px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .desc {
+      max-width: 780px;
+      color: var(--muted);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 4px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #334155;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .chip.blue {
+      border-color: #bfdbfe;
+      background: var(--blue-soft);
+      color: #174ea6;
+    }
+
+    .chip.green {
+      border-color: #bde7cb;
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .chip.warn {
+      border-color: #efd08f;
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 238px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      margin-top: 14px;
+    }
+
+    .flow-nav {
+      position: sticky;
+      top: 12px;
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .nav-btn {
+      min-height: 66px;
+      padding: 10px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #334155;
+      text-align: left;
+    }
+
+    .nav-btn b,
+    .nav-btn span {
+      display: block;
+    }
+
+    .nav-btn span {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .nav-btn.active {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+      color: #174ea6;
+      box-shadow: inset 0 0 0 1px var(--blue);
+    }
+
+    .surface {
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .surface-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #fff 0, #f8fafc 100%);
+    }
+
+    .progress-pill {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(320px, 0.82fr) minmax(0, 1.18fr);
+      gap: 0;
+    }
+
+    .setup {
+      padding: 16px;
+      border-right: 1px solid var(--line);
+      background: #f1f5f9;
+    }
+
+    .work {
+      padding: 16px;
+      background: var(--surface);
+    }
+
+    .panel {
+      padding: 14px;
+    }
+
+    .panel + .panel {
+      margin-top: 12px;
+    }
+
+    .label {
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .field-grid {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 5px;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--text);
+    }
+
+    input,
+    select {
+      min-height: 44px;
+      padding: 8px 10px;
+    }
+
+    textarea {
+      min-height: 86px;
+      padding: 10px;
+      resize: vertical;
+    }
+
+    .button-row,
+    .weekday-row,
+    .source-list,
+    .agenda-list,
+    .timeline-list,
+    .session-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .primary {
+      background: var(--blue);
+      color: #fff;
+      padding: 0 14px;
+    }
+
+    .secondary {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #334155;
+      padding: 0 12px;
+    }
+
+    .weekday {
+      min-height: 40px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #334155;
+    }
+
+    .weekday.active {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+      color: #174ea6;
+      box-shadow: inset 0 0 0 1px var(--blue);
+    }
+
+    .toast {
+      display: none;
+      margin-top: 10px;
+      padding: 9px 10px;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      background: var(--blue-soft);
+      color: #174ea6;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    .source-strip {
+      margin-top: 12px;
+      padding: 12px;
+      background: var(--soft);
+    }
+
+    .source-list {
+      margin-top: 8px;
+    }
+
+    .source-list a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .item {
+      padding: 12px;
+      box-shadow: none;
+      background: #fff;
+    }
+
+    .item + .item {
+      margin-top: 9px;
+    }
+
+    .item-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .item-title {
+      font-weight: 900;
+    }
+
+    .item-meta {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .check-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .check {
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+    }
+
+    .check input {
+      width: 18px;
+      height: 18px;
+      min-height: 18px;
+      margin-top: 3px;
+    }
+
+    .check strong,
+    .check span {
+      display: block;
+    }
+
+    .check span {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .check.done strong {
+      color: #94a3b8;
+      text-decoration: line-through;
+    }
+
+    .calendar-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 13px 13px 0;
+    }
+
+    .month-nav {
+      display: flex;
+      gap: 6px;
+      flex: 0 0 auto;
+    }
+
+    .month-nav button {
+      min-height: 36px;
+      padding: 0 9px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #334155;
+      font-size: 13px;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      margin: 12px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+
+    .weekday-label,
+    .day {
+      min-height: 56px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 6px;
+      font-size: 12px;
+    }
+
+    .weekday-label {
+      min-height: auto;
+      background: #eef3f8;
+      text-align: center;
+      font-weight: 900;
+    }
+
+    .day {
+      background: #fff;
+      color: var(--text);
+      text-align: left;
+      font-weight: 750;
+      border-radius: 0;
+    }
+
+    .day:nth-child(7n),
+    .weekday-label:nth-child(7n) {
+      border-right: 0;
+    }
+
+    .day.empty {
+      background: #f8fafc;
+      color: #cbd5e1;
+    }
+
+    .day.has-event {
+      color: #174ea6;
+    }
+
+    .day.active {
+      background: var(--blue-soft);
+      box-shadow: inset 0 0 0 2px var(--blue);
+    }
+
+    .event-dot {
+      display: block;
+      width: fit-content;
+      max-width: 100%;
+      margin-top: 4px;
+      padding: 2px 4px;
+      overflow: hidden;
+      border: 1px solid #bfdbfe;
+      border-radius: 4px;
+      background: var(--blue-soft);
+      color: #174ea6;
+      font-size: 11px;
+      font-weight: 900;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .agenda {
+      margin-top: 12px;
+      padding: 12px;
+      background: var(--soft);
+    }
+
+    .agenda-list,
+    .timeline-list,
+    .session-list {
+      margin-top: 8px;
+    }
+
+    .agenda-btn,
+    .timeline-btn,
+    .session-btn {
+      min-height: 44px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #334155;
+      text-align: left;
+    }
+
+    .agenda-btn.active,
+    .timeline-btn.active,
+    .session-btn.active {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+      color: #174ea6;
+      box-shadow: inset 0 0 0 1px var(--blue);
+    }
+
+    .timeline-list,
+    .session-list {
+      display: grid;
+    }
+
+    .timeline-btn b,
+    .timeline-btn span,
+    .session-btn b,
+    .session-btn span {
+      display: block;
+    }
+
+    .timeline-btn span,
+    .session-btn span {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .notice {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #efd08f;
+      border-radius: 6px;
+      background: var(--amber-soft);
+      color: #795100;
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.9fr);
+      gap: 12px;
+      align-items: start;
+    }
+
+    @media (max-width: 980px) {
+      .layout,
+      .workspace,
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-nav {
+        position: static;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .setup {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100% - 20px, 1180px);
+        padding-top: 10px;
+      }
+
+      .hero,
+      .surface-head,
+      .setup,
+      .work {
+        padding: 14px;
+      }
+
+      .flow-nav {
+        grid-template-columns: 1fr;
+      }
+
+      .surface-head {
+        flex-direction: column;
+      }
+
+      .progress-pill {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .day {
+        min-height: 68px;
+        padding: 5px;
+      }
+
+      .chip {
+        white-space: normal;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar" aria-label="FLOW">
+      <a class="brand" href="#">FLOW</a>
+      <button class="secondary" type="button" id="reset">현재 Flow 초기화</button>
+    </nav>
+
+    <header class="hero">
+      <p class="eyebrow">내 Flow</p>
+      <h1>원문을 저장하고, 내 일정과 체크로 실행하기</h1>
+      <p class="desc">아래 화면은 원문을 저장한 뒤 실제로 눌러보는 실행 화면만 담았습니다.</p>
+      <div class="chips">
+        <span class="chip blue">간단한 입력</span>
+        <span class="chip green">체크와 메모 저장</span>
+        <span class="chip warn">원문 링크 보관</span>
+      </div>
+    </header>
+
+    <section class="layout" aria-label="Flow 선택과 실행 화면">
+      <nav class="flow-nav" id="flowNav" aria-label="Flow 선택"></nav>
+      <article class="surface">
+        <header class="surface-head">
+          <div>
+            <div class="chips" id="tags" style="margin-top:0"></div>
+            <h2 id="title"></h2>
+            <p class="desc" id="summary"></p>
+          </div>
+          <span class="progress-pill" id="progress">0/0 완료</span>
+        </header>
+        <div class="workspace">
+          <aside class="setup" id="setup" aria-label="저장 설정"></aside>
+          <section class="work" id="work" aria-label="실행 화면"></section>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const flows = [
+      {
+        id: 'move',
+        nav: '이사',
+        title: '이사 D-30 준비',
+        summary: '이사일을 넣으면 견적, 예약, 전입 준비, 이사 당일 확인 항목이 날짜별로 나옵니다.',
+        type: 'timeline',
+        tags: ['D-day', '캘린더', '업체/계약 메모'],
+        saveLabel: '이사 일정 만들기',
+        inputs: [
+          { key: 'moveDate', label: '이사일', type: 'date', value: '2026-07-18' },
+          { key: 'method', label: '이사 방식', type: 'select', value: '포장이사', options: ['포장이사', '반포장이사', '용달/직접'] }
+        ],
+        anchor: 'moveDate',
+        sources: [
+          ['오늘의집 이사 체크리스트', 'https://ohou.se/advices/8442'],
+          ['아정당 포장이사 체크리스트', 'https://www.ajd.co.kr/contents/basic-tip/detail/%ED%8F%AC%EC%9E%A5%EC%9D%B4%EC%82%AC_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_%EB%B0%8F_%EA%BF%80%ED%8C%81_%EC%95%8C%EB%A0%A4%EB%93%9C%EB%A6%BD%EB%8B%88%EB%8B%A4-50950']
+        ],
+        note: '업체명, 견적 금액, 예약 시간처럼 나중에 확인해야 하는 것만 짧게 남깁니다.',
+        events: [
+          {
+            id: 'm30',
+            offset: -30,
+            label: 'D-30',
+            title: '이사 방식 정하고 견적 후보 열기',
+            detail: '포장/반포장/용달 중 하나로 좁힌 뒤, 비교할 업체와 연락처를 메모합니다.',
+            tasks: [
+              ['이사 방식 1개 선택', '현재 선택: {method}'],
+              ['견적 받을 업체 2-3곳 이름과 연락처 메모', '비용, 포함 범위, 가능한 시간을 함께 적어둡니다.'],
+              ['입주청소가 필요하면 후보 일정만 같이 적기', '계약 전 확정하지 않아도 됩니다.']
+            ]
+          },
+          {
+            id: 'm14',
+            offset: -14,
+            label: 'D-14',
+            title: '주소 변경과 이전 설치 예약하기',
+            detail: '인터넷, 정수기, 도시가스, 관리사무소처럼 날짜가 필요한 항목을 예약합니다.',
+            tasks: [
+              ['인터넷/가전 이전 설치 날짜 확인', '이사 전후 가능한 시간대를 메모합니다.'],
+              ['도시가스 전출입 또는 관리사무소 연락', '건물마다 절차가 다르면 원문 링크를 다시 엽니다.'],
+              ['우편물/배송지 변경할 곳 표시', '은행, 쇼핑몰, 정기배송처럼 자주 쓰는 곳만 먼저 합니다.']
+            ]
+          },
+          {
+            id: 'm1',
+            offset: -1,
+            label: 'D-1',
+            title: '귀중품과 당일 필요한 물건 따로 빼기',
+            detail: '계약서, 신분증, 충전기, 세면도구처럼 당일 바로 쓸 것을 상자 밖에 둡니다.',
+            tasks: [
+              ['당일 가방에 신분증, 계약 관련 서류, 충전기 넣기', '원본 서류나 개인정보는 Flow에 저장하지 않습니다.'],
+              ['냉장/냉동 음식과 쓰레기 처리 확인', '이사 당일 바로 처리할 것만 남깁니다.'],
+              ['이삿짐 업체 도착 시간 재확인', '통화 내용은 필요한 만큼만 메모합니다.']
+            ]
+          },
+          {
+            id: 'm0',
+            offset: 0,
+            label: 'D-Day',
+            title: '짐 반출입과 정산 확인하기',
+            detail: '파손, 누락, 추가비용이 생기면 현장에서 바로 메모합니다.',
+            tasks: [
+              ['반출 전 큰 가구와 가전 상태 확인', '사진 저장은 선택입니다. Flow 기본 입력은 메모만 둡니다.'],
+              ['새집에서 큰 짐 위치 먼저 확인', '방, 거실, 주방처럼 큰 구역만 정합니다.'],
+              ['정산 금액과 추가 비용 사유 메모', '영수증이나 계좌번호 원문은 저장하지 않습니다.']
+            ]
+          }
+        ]
+      },
+      {
+        id: 'usedcar',
+        nav: '중고차',
+        title: '중고차 방문 당일 체크',
+        summary: '매물을 보러 가기 전 준비할 서류와 현장에서 확인할 항목을 한 화면에서 체크합니다.',
+        type: 'checklist',
+        tags: ['현장 체크', '방문일 optional', '보류 메모'],
+        saveLabel: '방문 체크리스트 저장',
+        inputs: [
+          { key: 'visitDate', label: '방문일', type: 'date', value: '2026-06-20' },
+          { key: 'listingUrl', label: '매물 URL 또는 이름', type: 'text', value: '' }
+        ],
+        sources: [
+          ['겟차 중고차 상태 체크리스트', 'https://web.getcha.kr/blog/used-car-condition-checklist-guide'],
+          ['한국소비자원 중고차 체크리스트', 'https://www.kca.go.kr/smartconsumer/sub.do?menukey=7714&mode=view&no=1002862088']
+        ],
+        note: '확신이 안 드는 항목은 체크하지 말고 보류 메모에 이유만 남깁니다.',
+        sections: [
+          {
+            id: 'before',
+            title: '방문 전 준비',
+            detail: '현장에서 바로 비교할 수 있게 매물 정보와 기록부를 준비합니다.',
+            tasks: [
+              ['판매 페이지 URL 또는 매물명 저장', '차량번호는 필요할 때만 메모에 적습니다.'],
+              ['성능·상태점검기록부 요청 또는 파일 준비', '사고, 교환, 누유, 주행거리 항목을 볼 수 있어야 합니다.'],
+              ['보험 사고 이력 조회 페이지 열어두기', '조회 결과를 Flow가 판단하지 않습니다. 사용자가 원문에서 확인합니다.']
+            ]
+          },
+          {
+            id: 'outside',
+            title: '외관과 타이어 보기',
+            detail: '도장 색 차이, 패널 간격, 타이어 상태처럼 눈으로 확인 가능한 항목부터 봅니다.',
+            tasks: [
+              ['차체 색 차이와 패널 간격 확인', '좌우 문, 보닛, 트렁크 주변을 비교합니다.'],
+              ['볼트 풀림 흔적이나 교환 흔적 확인', '성능기록부 내용과 다르면 보류 메모에 적습니다.'],
+              ['타이어 마모와 제조 시기 확인', '네 바퀴가 크게 다르면 추가 확인 대상으로 둡니다.']
+            ]
+          },
+          {
+            id: 'drive',
+            title: '시동과 주행 확인',
+            detail: '경고등, 소음, 진동, 변속 느낌처럼 방문 당일에만 느낄 수 있는 항목을 봅니다.',
+            tasks: [
+              ['시동 후 경고등이 남는지 확인', '계기판 경고등은 원문 링크를 다시 보고 판단합니다.'],
+              ['엔진룸 누유와 오일 상태 확인', '정확한 진단이 필요하면 정비소 확인으로 넘깁니다.'],
+              ['시운전 중 소음, 떨림, 제동 느낌 메모', '구매 판단 대신 확인한 사실만 남깁니다.']
+            ]
+          }
+        ]
+      },
+      {
+        id: 'school',
+        nav: '초등 입학',
+        title: '초등 입학 D-30 준비',
+        summary: '입학일과 학교 안내문을 기준으로 예비소집, 준비물, 생활 루틴을 단계별로 확인합니다.',
+        type: 'timeline',
+        tags: ['D-day', '학부모', '안내문 URL'],
+        saveLabel: '입학 준비 일정 만들기',
+        inputs: [
+          { key: 'entryDate', label: '입학일', type: 'date', value: '2027-03-02' },
+          { key: 'schoolNotice', label: '학교 안내문 URL 또는 파일명', type: 'text', value: '' }
+        ],
+        anchor: 'entryDate',
+        sources: [
+          ['홈런 초등 입학 준비물', 'https://www.home-learn.co.kr/newsroom/news/A/1317'],
+          ['여성동아 초등 입학 준비 체크리스트', 'https://woman.donga.com/edu/article/all/12/5372050/1']
+        ],
+        note: '학교마다 준비물이 다를 수 있으므로 구매 항목은 학교 안내문 기준으로만 확정합니다.',
+        events: [
+          {
+            id: 's30',
+            offset: -30,
+            label: 'D-30',
+            title: '예비소집과 학교 안내문 저장하기',
+            detail: '취학통지서, 예비소집 일정, 학교 안내문 링크를 한곳에 모읍니다.',
+            tasks: [
+              ['취학통지서와 예비소집 일정 확인', '일정이 다르면 학교 안내문을 우선합니다.'],
+              ['학교 안내문 URL 또는 파일명 입력', '현재 입력: {schoolNotice}'],
+              ['제출 서류와 예방접종 관련 안내 표시', '의학적 판단은 공식 안내와 의료기관에서 확인합니다.']
+            ]
+          },
+          {
+            id: 's21',
+            offset: -21,
+            label: 'D-21',
+            title: '학교 안내문 기준으로 살 것만 고르기',
+            detail: '가방, 실내화, 필통처럼 공통 준비물은 보되, 학교별 안내가 있으면 그 기준을 따릅니다.',
+            tasks: [
+              ['안내문에 있는 준비물만 구매 목록으로 표시', '원문 추천 목록을 그대로 과구매하지 않습니다.'],
+              ['아이 이름표가 필요한 물건만 따로 적기', '학교에서 금지한 물건은 제외합니다.'],
+              ['가방과 실내화는 아이가 직접 열고 신어보게 하기', '생활 연습으로 이어지는 항목만 체크합니다.']
+            ]
+          },
+          {
+            id: 's14',
+            offset: -14,
+            label: 'D-14',
+            title: '생활 연습 3가지만 시작하기',
+            detail: '등교 시간에 맞춰 아침 준비, 화장실, 가방 정리처럼 실제 학교생활에 필요한 행동을 연습합니다.',
+            tasks: [
+              ['아침 기상과 옷 입는 순서 연습', '너무 많은 루틴을 한 번에 넣지 않습니다.'],
+              ['화장실, 손씻기, 수저 정리 중 필요한 것 선택', '아이에게 어려운 것만 남깁니다.'],
+              ['가방에서 물건 찾고 다시 넣기 연습', '분실 방지를 위해 이름표와 함께 확인합니다.']
+            ]
+          },
+          {
+            id: 's0',
+            offset: 0,
+            label: '입학일',
+            title: '입학식 당일 필요한 것만 챙기기',
+            detail: '입학식 시간, 준비물, 보호자 동선처럼 당일에 필요한 것만 봅니다.',
+            tasks: [
+              ['입학식 시간과 장소 확인', '학교 안내문 또는 담임 안내를 우선합니다.'],
+              ['아이 가방에 당일 준비물만 넣기', '여분 물건은 첫날 이후로 미룹니다.'],
+              ['하교 시간과 보호자 동선 메모', '첫 주 동안 다시 볼 정보만 남깁니다.']
+            ]
+          }
+        ]
+      },
+      {
+        id: 'workout',
+        nav: '홈트',
+        title: '주 3회 홈트 영상 루틴',
+        summary: '운동 영상을 반복 일정으로 저장하고, 매번 같은 실행 카드에서 영상 열기와 완료만 체크합니다.',
+        type: 'routine',
+        tags: ['반복 일정', '영상 링크', '단일 실행 카드'],
+        saveLabel: '홈트 반복 일정 만들기',
+        inputs: [
+          { key: 'startDate', label: '시작일', type: 'date', value: '2026-06-15' },
+          { key: 'days', label: '운동 요일', type: 'weekdays', value: ['월', '수', '금'], options: ['월', '화', '수', '목', '금', '토', '일'] },
+          { key: 'videoUrl', label: '영상 URL', type: 'text', value: 'https://www.youtube.com/watch?v=uDrWZ8PHC6A' }
+        ],
+        sources: [
+          ['홈트 루틴 영상', 'https://www.youtube.com/watch?v=uDrWZ8PHC6A']
+        ],
+        note: '영상에 없는 운동 순서나 기록 양식을 만들지 않습니다. 오늘은 영상 1개를 열고 끝까지 따라 했는지만 남깁니다.',
+        routineTasks: [
+          ['운동할 공간과 물 준비', '장비가 필요하면 영상 설명이나 원문을 확인합니다.'],
+          ['저장한 영상 열고 따라 하기', '영상 URL: {videoUrl}'],
+          ['완료 체크하고 짧게 메모', '오늘 느낌은 필요할 때만 메모에 짧게 남깁니다.']
+        ]
+      },
+      {
+        id: 'travel',
+        nav: '일본/eSIM',
+        title: '일본 여행 eSIM 출국 전 준비',
+        summary: '출국일 기준으로 여행 전 준비와 eSIM 설치/도착 후 활성화 항목을 확인합니다.',
+        type: 'timeline',
+        tags: ['여행 준비', '디지털 절차', '출국일'],
+        saveLabel: '출국 준비 일정 만들기',
+        inputs: [
+          { key: 'departDate', label: '출국일', type: 'date', value: '2026-08-03' },
+          { key: 'phone', label: '휴대폰', type: 'select', value: '갤럭시', options: ['갤럭시', '아이폰'] },
+          { key: 'esimUrl', label: 'eSIM 구매 링크', type: 'text', value: '' }
+        ],
+        anchor: 'departDate',
+        sources: [
+          ['도시락eSIM 설치 가이드', 'https://dosirakesim.com/Guide/pre-install/aos/v2'],
+          ['트립스토어 일본여행 체크리스트', 'https://www.tripstore.kr/blog/%EC%9D%BC%EB%B3%B8%EC%97%AC%ED%96%89-%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8-%ED%83%80%EC%9E%84%EB%9D%BC%EC%9D%B8-%EC%A4%80%EB%B9%84%EB%AC%BC']
+        ],
+        note: '통신 설정값, 여권번호, 로그인 정보는 저장하지 않습니다. eSIM 구매 링크와 설치 가이드 URL만 남깁니다.',
+        events: [
+          {
+            id: 't7',
+            offset: -7,
+            label: 'D-7',
+            title: '여권, Visit Japan, eSIM 지원 확인',
+            detail: '출국 전에 필요한 디지털 준비를 한 번에 확인합니다.',
+            tasks: [
+              ['여권 유효기간과 항공권 정보 확인', '개인번호는 Flow에 저장하지 않습니다.'],
+              ['Visit Japan Web 또는 입국 관련 준비 확인', '공식 안내가 바뀔 수 있으므로 원문을 다시 엽니다.'],
+              ['휴대폰이 eSIM을 지원하는지 확인', '현재 선택: {phone}']
+            ]
+          },
+          {
+            id: 't1',
+            offset: -1,
+            label: 'D-1',
+            title: 'eSIM 설치하고 출국 전 설정 확인',
+            detail: '출국 전 설치 가능한 eSIM은 미리 설치하고, 실제 사용은 도착 후 안내에 맞춰 켭니다.',
+            tasks: [
+              ['eSIM 구매 링크 또는 QR 안내 열기', '현재 입력: {esimUrl}'],
+              ['설치 가이드 보며 eSIM 추가', '휴대폰 종류별 화면은 원문 가이드를 따릅니다.'],
+              ['기존 회선 로밍/데이터 설정 확인', '요금 관련 판단은 통신사 안내를 확인합니다.']
+            ]
+          },
+          {
+            id: 't0',
+            offset: 0,
+            label: '도착일',
+            title: '도착 후 eSIM 데이터 켜기',
+            detail: '도착 후 안내에 맞춰 데이터 회선을 바꾸고 인터넷 연결을 확인합니다.',
+            tasks: [
+              ['도착 후 eSIM 회선을 데이터로 선택', '비행기 모드를 끈 뒤 연결 상태를 확인합니다.'],
+              ['지도와 메신저가 열리는지 확인', '연결이 안 되면 원문 설치 가이드로 돌아갑니다.'],
+              ['문제가 있으면 구매처 고객센터 링크 메모', '계정/인증번호는 저장하지 않습니다.']
+            ]
+          }
+        ]
+      },
+      {
+        id: 'baby',
+        nav: '영유아 검진',
+        title: '18~24개월 영유아검진 문진표 준비',
+        summary: '방문일 기준으로 예약, 문진표, 발달선별검사지, 등록번호, 구강검진 여부를 체크합니다.',
+        type: 'timeline',
+        tags: ['문진표', '발달선별검사지', '방문일'],
+        saveLabel: '영유아검진 준비 일정 만들기',
+        inputs: [
+          { key: 'visitDate', label: '방문일', type: 'date', value: '2026-07-10' },
+          { key: 'clinic', label: '검진 병원/예약 메모', type: 'text', value: '' },
+          { key: 'formRoute', label: '문진표 작성 경로', type: 'select', value: '건강보험 앱/웹', options: ['건강보험 앱/웹', '병원/똑닥', '서식 출력'] }
+        ],
+        anchor: 'visitDate',
+        sources: [
+          ['서울특별시 어린이병원 영유아 건강검진', 'https://childhosp.seoul.go.kr/medical-info/health-medical-examination'],
+          ['엠블병원 영유아검진 안내', 'https://mblchildren.com/health-promotion-center/infant-checkup/guide/'],
+          ['육아크루 18개월 영검 준비', 'https://www.yugacrew.com/crewletter/18-month-baby'],
+          ['똑닥 공단 연동 문진표 안내', 'https://blog.hospital.ddocdoc.com/post/update-0311']
+        ],
+        note: 'Flow는 검진 전 준비만 돕습니다. 발달 평가, 접종 가능 여부, 검진 결과 해석은 의료기관과 공식 안내를 기준으로 확인합니다.',
+        events: [
+          {
+            id: 'b14',
+            offset: -14,
+            label: 'D-14',
+            title: '18~24개월 검진 예약과 구강검진 여부 확인하기',
+            detail: '18~24개월 건강검진은 발달선별검사지가 중요하고, 18~29개월 구강검진도 함께 챙길 수 있습니다.',
+            tasks: [
+              ['검진 병원 예약 시간 메모', '현재 메모: {clinic}'],
+              ['18~24개월 건강검진 대상 기간인지 확인', '공단/병원 안내에서 검진 기간을 다시 확인합니다.'],
+              ['구강검진 가능 여부 함께 확인', '18~29개월 구강검진을 같은 병원에서 하는지 확인합니다.']
+            ]
+          },
+          {
+            id: 'b7',
+            offset: -7,
+            label: 'D-7',
+            title: '문진표 작성 경로 정하고 로그인 준비하기',
+            detail: '건강보험 앱/웹, 병원/똑닥, 서식 출력 중 실제로 쓸 경로 하나를 정합니다.',
+            tasks: [
+              ['문진표 작성 경로 선택', '현재 선택: {formRoute}'],
+              ['보호자 인증 또는 병원 앱 로그인 가능 여부 확인', '피보험자가 아닌 보호자는 관계 확인이 필요할 수 있습니다.'],
+              ['등록번호 4자리 메모할 위치 정하기', '병원에서 조회할 수 있도록 번호를 잊지 않게 남깁니다.']
+            ]
+          },
+          {
+            id: 'b3',
+            offset: -3,
+            label: 'D-3',
+            title: '발달선별검사지 항목을 집에서 해보고 저장하기',
+            detail: '18~24개월 검진은 문진표와 함께 K-DST 발달선별검사지가 중요합니다.',
+            tasks: [
+              ['발달선별검사지 열고 아직 안 해본 항목 표시', '모르는 항목은 빈칸으로 넘기기보다 집에서 해본 뒤 적습니다.'],
+              ['아이와 놀이하듯 실제로 해본 뒤 답 저장', '평가나 진단이 아니라 문진표 답을 위한 관찰입니다.'],
+              ['문진표와 발달선별검사지 저장 완료 확인', '저장 후 등록번호를 다시 확인합니다.']
+            ]
+          },
+          {
+            id: 'b1',
+            offset: -1,
+            label: 'D-1',
+            title: '등록번호, 문진표 저장, 질문 메모 확인하기',
+            detail: '문진표를 작성하지 못했으면 예약 시간보다 일찍 가야 할 수 있습니다.',
+            tasks: [
+              ['문진표 저장 여부 확인', '작성하지 못했으면 병원 안내에 따라 일찍 방문합니다.'],
+              ['발달선별검사지 저장 여부 확인', '9개월 이후 검진은 발달선별검사지가 필요할 수 있습니다.'],
+              ['물어볼 질문 1-2개만 메모', '검진 결과 해석이나 의학적 판단은 의료진에게 확인합니다.']
+            ]
+          },
+          {
+            id: 'b0',
+            offset: 0,
+            label: '방문일',
+            title: '예약 시간, 등록번호, 질문 메모 들고 방문하기',
+            detail: '당일에는 검진을 받기 위한 준비만 확인합니다.',
+            tasks: [
+              ['예약 시간과 병원 위치 확인', '늦으면 문진표 작성 시간이 부족할 수 있습니다.'],
+              ['등록번호 또는 문진표 저장 방식 확인', '병원에서 조회할 수 있도록 메모를 열어둡니다.'],
+              ['질문 메모 열고 의료진에게 확인', '발달 평가와 결과 해석은 의료진 설명을 따릅니다.']
+            ]
+          }
+        ]
+      }
+    ];
+
+    const weekdayIndex = { 일: 0, 월: 1, 화: 2, 수: 3, 목: 4, 금: 5, 토: 6 };
+    const weekdayNames = ['일', '월', '화', '수', '목', '금', '토'];
+    const state = {};
+    let activeId = flows[0].id;
+
+    flows.forEach((flow) => {
+      const inputs = {};
+      flow.inputs.forEach((input) => {
+        inputs[input.key] = Array.isArray(input.value) ? [...input.value] : input.value;
+      });
+      state[flow.id] = {
+        saved: false,
+        inputs,
+        checks: {},
+        memos: {},
+        selected: flow.type === 'timeline' ? flow.events[0].id : flow.type === 'checklist' ? flow.sections[0].id : 'session-0',
+        selectedDate: null,
+        month: null,
+        toast: ''
+      };
+    });
+
+    function pad(value) {
+      return String(value).padStart(2, '0');
+    }
+
+    function parseDate(value) {
+      return value ? new Date(`${value}T00:00:00`) : null;
+    }
+
+    function dateKey(date) {
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+    }
+
+    function shiftDate(value, offset) {
+      const date = parseDate(value);
+      if (!date) return '';
+      date.setDate(date.getDate() + offset);
+      return dateKey(date);
+    }
+
+    function monthKey(value) {
+      const date = parseDate(value);
+      return date ? `${date.getFullYear()}-${pad(date.getMonth() + 1)}` : '';
+    }
+
+    function shiftMonth(value, amount) {
+      const date = parseDate(`${value}-01`);
+      date.setMonth(date.getMonth() + amount);
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}`;
+    }
+
+    function formatDate(value) {
+      const date = parseDate(value);
+      if (!date) return '날짜 없음';
+      return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 ${weekdayNames[date.getDay()]}요일`;
+    }
+
+    function shortDate(value) {
+      const date = parseDate(value);
+      if (!date) return '날짜 없음';
+      return `${date.getMonth() + 1}/${date.getDate()} ${weekdayNames[date.getDay()]}`;
+    }
+
+    function interpolate(text, flow) {
+      return String(text || '').replace(/\{([a-zA-Z0-9_]+)\}/g, (_, key) => {
+        const value = state[flow.id].inputs[key];
+        if (Array.isArray(value)) return value.join(', ');
+        return value || '미입력';
+      });
+    }
+
+    function activeFlow() {
+      return flows.find((flow) => flow.id === activeId);
+    }
+
+    function timelineEntries(flow) {
+      return flow.events.map((event) => ({
+        ...event,
+        date: shiftDate(state[flow.id].inputs[flow.anchor], event.offset)
+      })).sort((a, b) => a.date.localeCompare(b.date));
+    }
+
+    function getTimelineEvent(flow) {
+      return timelineEntries(flow).find((event) => event.id === state[flow.id].selected) || timelineEntries(flow)[0];
+    }
+
+    function checkKey(flow, groupId, index) {
+      return `${flow.id}:${groupId}:${index}`;
+    }
+
+    function doneCount(flow) {
+      const keys = Object.keys(state[flow.id].checks);
+      return keys.filter((key) => state[flow.id].checks[key]).length;
+    }
+
+    function totalCount(flow) {
+      if (flow.type === 'timeline') return flow.events.reduce((sum, event) => sum + event.tasks.length, 0);
+      if (flow.type === 'checklist') return flow.sections.reduce((sum, section) => sum + section.tasks.length, 0);
+      return flow.routineTasks.length;
+    }
+
+    function bindChecks(flow) {
+      document.querySelectorAll('[data-check]').forEach((checkbox) => {
+        checkbox.addEventListener('change', () => {
+          state[flow.id].checks[checkbox.dataset.check] = checkbox.checked;
+          render();
+        });
+      });
+      document.querySelectorAll('[data-memo]').forEach((memo) => {
+        memo.addEventListener('input', () => {
+          state[flow.id].memos[memo.dataset.memo] = memo.value;
+        });
+      });
+    }
+
+    function renderNav() {
+      document.querySelector('#flowNav').innerHTML = flows.map((flow) => `
+        <button class="nav-btn ${flow.id === activeId ? 'active' : ''}" type="button" data-flow="${flow.id}">
+          <b>${flow.nav}</b>
+          <span>${flow.tags[0]} · ${flow.tags[1]}</span>
+        </button>
+      `).join('');
+      document.querySelectorAll('[data-flow]').forEach((button) => {
+        button.addEventListener('click', () => {
+          activeId = button.dataset.flow;
+          render();
+        });
+      });
+    }
+
+    function renderHeader(flow) {
+      document.querySelector('#tags').innerHTML = flow.tags.map((tag, index) => `<span class="chip ${index === 0 ? 'blue' : index === 1 ? 'green' : 'warn'}">${tag}</span>`).join('');
+      document.querySelector('#title').textContent = flow.title;
+      document.querySelector('#summary').textContent = flow.summary;
+      document.querySelector('#progress').textContent = `${doneCount(flow)}/${totalCount(flow)} 완료`;
+    }
+
+    function renderInput(flow, input) {
+      const value = state[flow.id].inputs[input.key];
+      if (input.type === 'select') {
+        return `
+          <div class="field">
+            <label for="${flow.id}-${input.key}">${input.label}</label>
+            <select id="${flow.id}-${input.key}" data-field="${input.key}">
+              ${input.options.map((option) => `<option value="${option}" ${option === value ? 'selected' : ''}>${option}</option>`).join('')}
+            </select>
+          </div>
+        `;
+      }
+      if (input.type === 'weekdays') {
+        return `
+          <div class="field">
+            <label>${input.label}</label>
+            <div class="weekday-row">
+              ${input.options.map((day) => `<button class="weekday ${value.includes(day) ? 'active' : ''}" type="button" data-weekday="${input.key}" data-value="${day}">${day}</button>`).join('')}
+            </div>
+          </div>
+        `;
+      }
+      return `
+        <div class="field">
+          <label for="${flow.id}-${input.key}">${input.label}</label>
+          <input id="${flow.id}-${input.key}" data-field="${input.key}" type="${input.type}" value="${value || ''}" />
+        </div>
+      `;
+    }
+
+    function renderSetup(flow) {
+      const flowState = state[flow.id];
+      document.querySelector('#setup').innerHTML = `
+        <section class="panel">
+          <p class="label">저장 설정</p>
+          <h3>${flow.saveLabel.replace(' 만들기', '')}</h3>
+          <p class="desc">${flow.note}</p>
+          <div class="field-grid">${flow.inputs.map((input) => renderInput(flow, input)).join('')}</div>
+          <div class="button-row" style="margin-top:12px">
+            <button class="primary" type="button" id="saveFlow">${flow.saveLabel}</button>
+          </div>
+          <p class="toast ${flowState.toast ? 'show' : ''}" role="status">${flowState.toast}</p>
+        </section>
+        <section class="source-strip">
+          <p class="label">원문 / 공식 링크</p>
+          <div class="source-list">
+            ${flow.sources.map(([label, url]) => `<a href="${url}" target="_blank" rel="noreferrer">${label}</a>`).join('')}
+          </div>
+        </section>
+      `;
+      document.querySelectorAll('[data-field]').forEach((field) => {
+        field.addEventListener('input', () => {
+          flowState.inputs[field.dataset.field] = field.value;
+          if (flow.type === 'timeline') {
+            const selected = getTimelineEvent(flow);
+            flowState.selectedDate = selected.date;
+            flowState.month = monthKey(selected.date);
+          }
+          render();
+        });
+      });
+      document.querySelectorAll('[data-weekday]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const list = flowState.inputs[button.dataset.weekday];
+          const value = button.dataset.value;
+          const next = list.includes(value) ? list.filter((item) => item !== value) : [...list, value];
+          flowState.inputs[button.dataset.weekday] = next.length ? next : [value];
+          render();
+        });
+      });
+      document.querySelector('#saveFlow').addEventListener('click', () => {
+        flowState.saved = true;
+        flowState.toast = `${flow.saveLabel.replace(' 만들기', '')}가 저장되었습니다.`;
+        if (flow.type === 'timeline') {
+          const selected = getTimelineEvent(flow);
+          flowState.selectedDate = selected.date;
+          flowState.month = monthKey(selected.date);
+        }
+        render();
+      });
+    }
+
+    function renderTaskList(flow, groupId, tasks) {
+      return `
+        <div class="check-list">
+          ${tasks.map((task, index) => {
+            const key = checkKey(flow, groupId, index);
+            const checked = !!state[flow.id].checks[key];
+            return `
+              <label class="check ${checked ? 'done' : ''}">
+                <input type="checkbox" data-check="${key}" ${checked ? 'checked' : ''} />
+                <span>
+                  <strong>${interpolate(task[0], flow)}</strong>
+                  <span>${interpolate(task[1], flow)}</span>
+                </span>
+              </label>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderCalendar(flow, entries) {
+      const flowState = state[flow.id];
+      const selected = getTimelineEvent(flow);
+      if (!flowState.selectedDate) flowState.selectedDate = selected.date;
+      if (!flowState.month) flowState.month = monthKey(selected.date);
+      const [year, month] = flowState.month.split('-').map(Number);
+      const firstDay = new Date(year, month - 1, 1);
+      const lastDay = new Date(year, month, 0);
+      const cells = [];
+      for (let i = 0; i < firstDay.getDay(); i += 1) cells.push({ empty: true });
+      for (let day = 1; day <= lastDay.getDate(); day += 1) {
+        const date = `${year}-${pad(month)}-${pad(day)}`;
+        cells.push({ day, date, entries: entries.filter((entry) => entry.date === date) });
+      }
+      while (cells.length % 7 !== 0) cells.push({ empty: true });
+      const agendaEntries = entries.filter((entry) => entry.date === flowState.selectedDate);
+
+      return `
+        <section class="calendar" aria-label="캘린더 미리보기">
+          <div class="calendar-head">
+            <div>
+              <p class="label">캘린더 미리보기</p>
+              <h3>${year}년 ${month}월</h3>
+            </div>
+            <div class="month-nav">
+              <button type="button" data-month="-1">이전</button>
+              <button type="button" data-month="1">다음</button>
+            </div>
+          </div>
+          <div class="calendar-grid">
+            ${weekdayNames.map((day) => `<div class="weekday-label">${day}</div>`).join('')}
+            ${cells.map((cell) => {
+              if (cell.empty) return '<div class="day empty"></div>';
+              const active = cell.date === flowState.selectedDate;
+              const hasEvent = cell.entries.length > 0;
+              return `
+                <button class="day ${hasEvent ? 'has-event' : ''} ${active ? 'active' : ''}" type="button" ${hasEvent ? `data-date="${cell.date}"` : ''}>
+                  ${cell.day}
+                  ${cell.entries.map((entry) => `<span class="event-dot">${entry.label}</span>`).join('')}
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </section>
+        <section class="agenda" aria-label="선택 날짜 항목">
+          <p class="label">${formatDate(flowState.selectedDate)} 항목</p>
+          <div class="agenda-list">
+            ${agendaEntries.length ? agendaEntries.map((entry) => `
+              <button class="agenda-btn ${entry.id === selected.id ? 'active' : ''}" type="button" data-select="${entry.id}">
+                ${entry.label} · ${entry.title}
+              </button>
+            `).join('') : '<span class="desc">이 날짜에는 실행 항목이 없습니다.</span>'}
+          </div>
+        </section>
+      `;
+    }
+
+    function bindTimeline(flow, entries) {
+      const flowState = state[flow.id];
+      document.querySelectorAll('[data-month]').forEach((button) => {
+        button.addEventListener('click', () => {
+          flowState.month = shiftMonth(flowState.month, Number(button.dataset.month));
+          render();
+        });
+      });
+      document.querySelectorAll('[data-date]').forEach((button) => {
+        button.addEventListener('click', () => {
+          flowState.selectedDate = button.dataset.date;
+          const dayEntries = entries.filter((entry) => entry.date === button.dataset.date);
+          if (dayEntries.length === 1) flowState.selected = dayEntries[0].id;
+          render();
+        });
+      });
+      document.querySelectorAll('[data-select], [data-timeline]').forEach((button) => {
+        button.addEventListener('click', () => {
+          flowState.selected = button.dataset.select || button.dataset.timeline;
+          const selected = entries.find((entry) => entry.id === flowState.selected);
+          flowState.selectedDate = selected.date;
+          flowState.month = monthKey(selected.date);
+          render();
+        });
+      });
+    }
+
+    function renderTimeline(flow) {
+      const entries = timelineEntries(flow);
+      const selected = getTimelineEvent(flow);
+      document.querySelector('#work').innerHTML = `
+        <div class="two-col">
+          <section class="panel">
+            <p class="label">현재 실행</p>
+            <h3>${selected.label} · ${selected.title}</h3>
+            <p class="desc">${formatDate(selected.date)}</p>
+            <p class="desc">${interpolate(selected.detail, flow)}</p>
+            ${renderTaskList(flow, selected.id, selected.tasks)}
+            <div class="field" style="margin-top:12px">
+              <label for="${flow.id}-memo-${selected.id}">메모</label>
+              <textarea id="${flow.id}-memo-${selected.id}" data-memo="${selected.id}" placeholder="필요한 내용만 짧게 남기기">${state[flow.id].memos[selected.id] || ''}</textarea>
+            </div>
+            ${flow.id === 'baby' ? '<div class="notice">이 Flow는 문진표와 방문 준비용입니다. 검진 결과, 발달 평가, 접종 가능 여부는 의료기관 안내를 기준으로 확인합니다.</div>' : ''}
+          </section>
+          <div>
+            ${renderCalendar(flow, entries)}
+            <section class="panel">
+              <p class="label">전체 일정</p>
+              <div class="timeline-list">
+                ${entries.map((entry) => `
+                  <button class="timeline-btn ${entry.id === selected.id ? 'active' : ''}" type="button" data-timeline="${entry.id}">
+                    <b>${entry.label} · ${shortDate(entry.date)}</b>
+                    <span>${entry.title}</span>
+                  </button>
+                `).join('')}
+              </div>
+            </section>
+          </div>
+        </div>
+      `;
+      bindChecks(flow);
+      bindTimeline(flow, entries);
+    }
+
+    function renderChecklist(flow) {
+      const selected = flow.sections.find((section) => section.id === state[flow.id].selected) || flow.sections[0];
+      document.querySelector('#work').innerHTML = `
+        <div class="two-col">
+          <section class="panel">
+            <p class="label">오늘 볼 순서</p>
+            <h3>${selected.title}</h3>
+            <p class="desc">${formatDate(state[flow.id].inputs.visitDate)} 방문</p>
+            <p class="desc">${selected.detail}</p>
+            ${renderTaskList(flow, selected.id, selected.tasks)}
+            <div class="field" style="margin-top:12px">
+              <label for="${flow.id}-memo-${selected.id}">보류 메모</label>
+              <textarea id="${flow.id}-memo-${selected.id}" data-memo="${selected.id}" placeholder="확신이 안 드는 항목과 이유만 적기">${state[flow.id].memos[selected.id] || ''}</textarea>
+            </div>
+          </section>
+          <section class="panel">
+            <p class="label">체크 섹션</p>
+            <div class="timeline-list">
+              ${flow.sections.map((section) => `
+                <button class="timeline-btn ${section.id === selected.id ? 'active' : ''}" type="button" data-section="${section.id}">
+                  <b>${section.title}</b>
+                  <span>${section.detail}</span>
+                </button>
+              `).join('')}
+            </div>
+            <div class="notice">매물 URL: ${state[flow.id].inputs.listingUrl || '아직 없음'} · 확신이 안 드는 항목은 보류 메모에 이유만 남깁니다.</div>
+          </section>
+        </div>
+      `;
+      bindChecks(flow);
+      document.querySelectorAll('[data-section]').forEach((button) => {
+        button.addEventListener('click', () => {
+          state[flow.id].selected = button.dataset.section;
+          render();
+        });
+      });
+    }
+
+    function nextSessions(flow) {
+      const start = parseDate(state[flow.id].inputs.startDate);
+      const selectedDays = state[flow.id].inputs.days.map((day) => weekdayIndex[day]);
+      const sessions = [];
+      let cursor = new Date(start);
+      let guard = 0;
+      while (sessions.length < 6 && guard < 60) {
+        if (selectedDays.includes(cursor.getDay())) {
+          sessions.push({ id: `session-${sessions.length}`, date: dateKey(cursor), label: `${sessions.length + 1}회차` });
+        }
+        cursor.setDate(cursor.getDate() + 1);
+        guard += 1;
+      }
+      return sessions;
+    }
+
+    function renderRoutine(flow) {
+      const sessions = nextSessions(flow);
+      const selected = sessions.find((session) => session.id === state[flow.id].selected) || sessions[0];
+      if (!state[flow.id].selected || !sessions.find((session) => session.id === state[flow.id].selected)) {
+        state[flow.id].selected = selected.id;
+      }
+      document.querySelector('#work').innerHTML = `
+        <div class="two-col">
+          <section class="panel">
+            <p class="label">오늘 운동</p>
+            <h3>${selected.label} · 홈트 영상 따라하기</h3>
+            <p class="desc">${formatDate(selected.date)}</p>
+            ${renderTaskList(flow, selected.id, flow.routineTasks)}
+            <div class="field" style="margin-top:12px">
+              <label for="${flow.id}-memo-${selected.id}">운동 메모</label>
+              <textarea id="${flow.id}-memo-${selected.id}" data-memo="${selected.id}" placeholder="오늘 특이사항만 짧게 남기기">${state[flow.id].memos[selected.id] || ''}</textarea>
+            </div>
+            <div class="button-row" style="margin-top:12px">
+              <a class="secondary" style="display:inline-flex;align-items:center;text-decoration:none;min-height:44px;padding:0 12px;border-radius:6px" href="${state[flow.id].inputs.videoUrl}" target="_blank" rel="noreferrer">영상 열기</a>
+            </div>
+          </section>
+          <section class="panel">
+            <p class="label">다음 운동일</p>
+            <div class="session-list">
+              ${sessions.map((session) => `
+                <button class="session-btn ${session.id === selected.id ? 'active' : ''}" type="button" data-session="${session.id}">
+                  <b>${session.label} · ${shortDate(session.date)}</b>
+                  <span>저장한 영상 1개 실행</span>
+                </button>
+              `).join('')}
+            </div>
+          </section>
+        </div>
+      `;
+      bindChecks(flow);
+      document.querySelectorAll('[data-session]').forEach((button) => {
+        button.addEventListener('click', () => {
+          state[flow.id].selected = button.dataset.session;
+          render();
+        });
+      });
+    }
+
+    function renderWork(flow) {
+      if (flow.type === 'timeline') renderTimeline(flow);
+      if (flow.type === 'checklist') renderChecklist(flow);
+      if (flow.type === 'routine') renderRoutine(flow);
+    }
+
+    function render() {
+      const flow = activeFlow();
+      renderNav();
+      renderHeader(flow);
+      renderSetup(flow);
+      renderWork(flow);
+    }
+
+    document.querySelector('#reset').addEventListener('click', () => {
+      const flow = activeFlow();
+      state[flow.id].saved = false;
+      state[flow.id].checks = {};
+      state[flow.id].memos = {};
+      state[flow.id].toast = '현재 Flow를 초기화했습니다.';
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

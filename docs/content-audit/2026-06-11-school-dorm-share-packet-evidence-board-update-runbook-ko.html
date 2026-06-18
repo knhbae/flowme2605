@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 공유 패킷 Evidence Board Update Runbook</title>
+  <style>
+    :root{--bg:#f6f7f9;--paper:#fff;--ink:#101828;--body:#344054;--muted:#667085;--line:#d9e2ec;--blue:#1d4ed8;--soft:#f1f5f9;--amber:#9a5b12;--amber-soft:#fff4d8;--green:#047857;--green-soft:#e7f6ef;--red:#b42318;--red-soft:#fff0ed}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;line-height:1.62;letter-spacing:0}a{color:var(--blue);text-decoration:none}.page{width:min(1120px,calc(100% - 28px));margin:0 auto;padding:22px 0 64px}.topbar,.hero,.panel,.nav{border:1px solid var(--line);border-radius:8px;background:var(--paper);box-shadow:0 16px 44px rgba(15,23,42,.07)}.topbar{display:flex;justify-content:space-between;gap:14px;margin-bottom:14px;padding:10px 14px;color:var(--muted);font-size:13px}.brand{color:var(--ink);font-weight:900}.layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:18px;align-items:start}.layout>*{min-width:0}.hero,.panel{padding:26px}.panel{margin-top:18px}h1,h2,h3,p{margin:0}h1,h2,h3{line-height:1.25;word-break:keep-all}h1{font-size:clamp(30px,4vw,46px)}h2{margin-bottom:10px;font-size:23px}p,li,td{color:var(--body)}.lead{margin-top:12px;font-size:17px;max-width:860px}.note{margin-top:12px;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--soft)}code{padding:1px 5px;border-radius:5px;background:#eef2f7;color:#172033;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-wrap:anywhere}.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:20px}.metric{min-height:105px;border:1px solid var(--line);border-radius:8px;padding:15px;background:var(--soft)}.metric strong{display:block;margin-bottom:8px;color:var(--muted);font-size:12px;text-transform:uppercase}.metric span{display:block;font-size:18px;font-weight:900;overflow-wrap:anywhere}.amber{background:var(--amber-soft)}.green{background:var(--green-soft)}.red{background:var(--red-soft)}.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--paper)}table{width:100%;min-width:860px;border-collapse:collapse}th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:14px}th{background:var(--soft);color:var(--ink)}tr:last-child td{border-bottom:0}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.card{border:1px solid var(--line);border-radius:8px;padding:15px;background:var(--paper)}.card.stop{background:var(--red-soft)}.links{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}.button{display:inline-flex;align-items:center;min-height:36px;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;font-weight:800}.nav{position:sticky;top:16px;padding:16px}.nav h2{font-size:16px}.nav a{display:block;padding:8px 9px;border-radius:6px;color:var(--body);font-size:14px}@media(max-width:900px){.layout{grid-template-columns:1fr}.nav{position:static}.metrics,.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.page{width:min(100% - 20px,1120px);padding-top:10px}.topbar{flex-direction:column}.hero,.panel,.nav{padding:18px}.metrics,.grid{grid-template-columns:1fr}table{min-width:860px}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topbar"><div><span class="brand">FlowMe 분석방</span> / Evidence Board Update Runbook</div><div>작성일 2026-06-11 · 상태: not run · not evidence · 증거 아님</div></div>
+    <div class="layout">
+      <div>
+        <section class="hero" id="top">
+          <h1>Evidence board에는 완성된 rollup의 비식별 요약만 옮깁니다</h1>
+          <p class="lead">지금은 실제 세션과 rollup이 없으므로 보드는 계속 <code>no signal</code>입니다. 이 runbook은 3 completed usable sessions에서 작성된 rollup이 있을 때만 사용합니다.</p>
+          <div class="metrics">
+            <div class="metric amber"><strong>board decision</strong><span>no signal</span></div>
+            <div class="metric"><strong>rollup</strong><span>none</span></div>
+            <div class="metric"><strong>sessions</strong><span>0 / 3</span></div>
+            <div class="metric red"><strong>update now</strong><span>no</span></div>
+            <div class="metric green"><strong>allowed labels</strong><span>3</span></div>
+          </div>
+          <p class="note">빈 rollup, incomplete rollup, 또는 scheduling 상태(<code>invited</code>, <code>agreed</code>, <code>scheduled</code>)만으로는 board를 업데이트하지 않습니다.</p>
+        </section>
+
+        <section class="panel" id="entry">
+          <h2>1. 업데이트 진입 조건</h2>
+          <p>하나라도 빠지면 evidence board는 그대로 <code>no signal</code>입니다.</p>
+          <div class="grid">
+            <article class="card"><h3>세션 조건</h3><p>3개 completed usable sessions, 같은 packet version, role label만 기록.</p></article>
+            <article class="card"><h3>판정 조건</h3><p>response coding guide 적용, rollup template에 decision 하나 선택.</p></article>
+            <article class="card"><h3>행동 조건</h3><p>post-rollup guide에서 rerun, revise, candidate prep 중 하나만 선택.</p></article>
+          </div>
+        </section>
+
+        <section class="panel" id="fields">
+          <h2>2. Board에 옮길 수 있는 필드</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Board field</th><th>Allowed value</th></tr></thead>
+              <tbody>
+                <tr><td>Current decision</td><td><code>no signal</code>, <code>friction</code>, <code>candidate signal</code></td></tr>
+                <tr><td>Evidence source</td><td>filled rollup 링크. raw private notes는 링크하지 않습니다.</td></tr>
+                <tr><td>Sessions summary</td><td>usable session 수와 역할 라벨만.</td></tr>
+                <tr><td>Main evidence</td><td>비식별 패턴 한 줄.</td></tr>
+                <tr><td>Main confusion</td><td>있다면 비식별 혼동 패턴 한 줄.</td></tr>
+                <tr><td>Next action</td><td>rerun sessions, revise packet, prepare review candidate 중 하나.</td></tr>
+                <tr><td>Blocked moves</td><td>public route, integration, automation, contact storage, channel analytics.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" id="dont">
+          <h2>3. Board에 쓰지 않을 것</h2>
+          <div class="grid">
+            <article class="card stop"><h3>민감값</h3><p>이름, 연락처, 메신저 ID, 방/비밀번호/키, 결제, 건강, 신원, 초대 링크, form edit, webhook, 채팅 로그.</p></article>
+            <article class="card stop"><h3>원문 메모</h3><p>raw worksheet notes, 민감값이 포함된 정확한 채팅 인용, 개인 답장 전문.</p></article>
+            <article class="card stop"><h3>금지 결론</h3><p><code>validated</code>, <code>launched</code>, <code>ready</code>, <code>integration ready</code>, <code>channel ready</code>.</p></article>
+          </div>
+        </section>
+
+        <section class="panel" id="decision">
+          <h2>4. Decision별 업데이트</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Rollup decision</th><th>Board update</th><th>Next action</th></tr></thead>
+              <tbody>
+                <tr><td><code>no signal</code></td><td>보드 판정은 <code>no signal</code>로 유지합니다.</td><td>stable packet version으로 재관찰합니다.</td></tr>
+                <tr><td><code>friction</code></td><td>보드 판정을 <code>friction</code>으로 바꾸고 혼동 범주만 요약합니다.</td><td>패킷 문구를 수정하고 재관찰합니다.</td></tr>
+                <tr><td><code>candidate signal</code></td><td>보드 판정을 <code>candidate signal</code>로 바꾸고 rollup만 링크합니다.</td><td><code>/content-flows</code> review candidate prep만 작성합니다.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" id="next">
+          <h2>5. 다음에 열 문서</h2>
+          <div class="links">
+            <a class="button" href="./2026-06-11-school-dorm-share-packet-rollup-template-ko.html">rollup template</a>
+            <a class="button" href="./2026-06-11-school-dorm-share-packet-response-coding-guide-ko.html">response coding</a>
+            <a class="button" href="./2026-06-11-school-dorm-share-packet-post-rollup-decision-guide-ko.html">post-rollup guide</a>
+            <a class="button" href="./2026-06-10-school-dorm-share-packet-evidence-board-ko.html">evidence board</a>
+            <a class="button" href="./2026-06-11-school-dorm-share-packet-content-flows-candidate-prep-ko.html">candidate prep</a>
+          </div>
+        </section>
+      </div>
+      <aside class="nav">
+        <h2>목차</h2>
+        <a href="#top">요약</a>
+        <a href="#entry">1. 진입 조건</a>
+        <a href="#fields">2. 허용 필드</a>
+        <a href="#dont">3. 금지 항목</a>
+        <a href="#decision">4. Decision별 업데이트</a>
+        <a href="#next">5. 다음 문서</a>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 생태계 포지셔닝 전략 덱 (2026-06-12)</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7f9;
+        --paper: #ffffff;
+        --paper-soft: #f1f5f9;
+        --ink: #101828;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d9e2ec;
+        --line-strong: #b8c7d6;
+        --green: #047857;
+        --green-soft: #e7f6ef;
+        --blue: #1d4ed8;
+        --blue-soft: #e9f1ff;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --violet: #6d3bbd;
+        --violet-soft: #f1eafd;
+        --radius: 10px;
+        --shadow: 0 16px 44px rgba(15, 23, 42, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+        line-height: 1.55;
+      }
+
+      h1, h2, h3, p { margin: 0; }
+      h1, h2, h3 { line-height: 1.25; word-break: keep-all; }
+      p, li, td, th { color: var(--body); word-break: keep-all; }
+
+      .deck {
+        scroll-snap-type: y proximity;
+      }
+
+      .slide {
+        min-height: 100vh;
+        scroll-snap-align: start;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 28px 16px;
+      }
+
+      .frame {
+        width: min(1160px, 100%);
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        padding: 40px 48px 34px;
+        position: relative;
+        min-height: min(640px, 86vh);
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .kicker {
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--blue);
+      }
+
+      .slide-title { font-size: clamp(22px, 3vw, 32px); font-weight: 900; }
+      .slide-sub { font-size: 15px; color: var(--muted); }
+
+      .pageno {
+        position: absolute;
+        right: 20px;
+        bottom: 14px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .grow { flex: 1; display: flex; flex-direction: column; gap: 16px; justify-content: center; }
+
+      .cols { display: grid; gap: 14px; }
+      .cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .card h3 { font-size: 15px; font-weight: 800; }
+      .card p, .card li { font-size: 13px; }
+      .card ul { margin: 0; padding-left: 16px; display: flex; flex-direction: column; gap: 3px; }
+
+      .card.soft { background: var(--paper-soft); }
+      .card.blue { background: var(--blue-soft); border-color: #c4d7fb; }
+      .card.green { background: var(--green-soft); border-color: #bfe6d4; }
+      .card.amber { background: var(--amber-soft); border-color: #f0dcaa; }
+      .card.red { background: var(--red-soft); border-color: #f5c8c0; }
+      .card.violet { background: var(--violet-soft); border-color: #ddcdf6; }
+
+      .tag {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        width: fit-content;
+      }
+      .tag.blue { color: var(--blue); background: var(--blue-soft); border-color: #c4d7fb; }
+      .tag.green { color: var(--green); background: var(--green-soft); border-color: #bfe6d4; }
+      .tag.amber { color: var(--amber); background: var(--amber-soft); border-color: #f0dcaa; }
+      .tag.red { color: var(--red); background: var(--red-soft); border-color: #f5c8c0; }
+      .tag.violet { color: var(--violet); background: var(--violet-soft); border-color: #ddcdf6; }
+      .tag.gray { color: var(--muted); background: var(--paper-soft); border-color: var(--line); }
+
+      .callout {
+        border-left: 4px solid var(--blue);
+        background: var(--blue-soft);
+        border-radius: 0 var(--radius) var(--radius) 0;
+        padding: 12px 16px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .callout.green { border-left-color: var(--green); background: var(--green-soft); }
+      .callout.amber { border-left-color: var(--amber); background: var(--amber-soft); }
+      .callout.red { border-left-color: var(--red); background: var(--red-soft); }
+
+      .arrow-row {
+        display: flex;
+        align-items: stretch;
+        gap: 0;
+      }
+      .arrow-row .card { flex: 1; }
+      .arrow-sep {
+        display: flex;
+        align-items: center;
+        padding: 0 8px;
+        color: var(--muted);
+        font-size: 22px;
+        font-weight: 900;
+        flex: 0 0 auto;
+      }
+
+      table.simple {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      table.simple th, table.simple td {
+        border: 1px solid var(--line);
+        padding: 7px 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.simple th { background: var(--paper-soft); font-size: 12px; color: var(--ink); }
+
+      .big-statement {
+        font-size: clamp(20px, 2.6vw, 28px);
+        font-weight: 900;
+        line-height: 1.4;
+        word-break: keep-all;
+      }
+      .big-statement em { color: var(--blue); font-style: normal; }
+
+      .cover { text-align: center; align-items: center; justify-content: center; }
+      .cover .slide-title { font-size: clamp(30px, 4.4vw, 46px); }
+      .cover-meta { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+
+      .stage-track { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+      .stage {
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .stage .gate {
+        margin-top: auto;
+        font-size: 12px;
+        border-top: 1px dashed var(--line-strong);
+        padding-top: 8px;
+        color: var(--muted);
+      }
+      .stage .gate b { color: var(--ink); }
+
+      .navdots {
+        position: fixed;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        z-index: 50;
+      }
+      .navdots a {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--line-strong);
+        display: block;
+      }
+      .navdots a.active { background: var(--blue); }
+
+      .keyhint {
+        position: fixed;
+        left: 14px;
+        bottom: 12px;
+        font-size: 11px;
+        color: var(--muted);
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 4px 12px;
+        z-index: 50;
+      }
+
+      @media (max-width: 900px) {
+        .cols-2, .cols-3, .cols-4, .cols-5, .stage-track { grid-template-columns: 1fr; }
+        .arrow-row { flex-direction: column; }
+        .arrow-sep { transform: rotate(90deg); justify-content: center; padding: 4px 0; }
+        .frame { padding: 26px 20px; }
+        .navdots, .keyhint { display: none; }
+      }
+
+      @media print {
+        .slide { min-height: auto; page-break-after: always; padding: 0; }
+        .frame { box-shadow: none; min-height: auto; }
+        .navdots, .keyhint { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navdots" id="navdots" aria-label="슬라이드 이동"></nav>
+    <div class="keyhint">↑↓ 방향키 또는 우측 점으로 슬라이드 이동</div>
+
+    <main class="deck" id="deck">
+
+      <!-- 1. 표지 -->
+      <section class="slide" id="s1">
+        <div class="frame cover">
+          <div class="grow" style="align-items:center; text-align:center;">
+            <div class="kicker">FlowMe · External Ecosystem Strategy</div>
+            <h1 class="slide-title">컨텐츠와 실행 사이,<br />FlowMe는 어디에 서서 어떻게 커가는가</h1>
+            <p class="slide-sub">원천 플랫폼 · 목적지 서비스 · 경쟁 구도 종합 분석과 단계별 포지셔닝 전략</p>
+            <div class="cover-meta">
+              <span>2026-06-12</span>
+              <span>근거: 외부 생태계 분석방 Phase 1–5 (2026-06-08 ~ 06-11) + 공개 라우트 5종 QA 결과</span>
+            </div>
+          </div>
+          <div class="pageno">1 / 11</div>
+        </div>
+      </section>
+
+      <!-- 2. 전체 구도 -->
+      <section class="slide" id="s2">
+        <div class="frame">
+          <div>
+            <div class="kicker">The Map</div>
+            <h2 class="slide-title">전체 구도: 3층 가치사슬 + 경쟁 밴드</h2>
+            <p class="slide-sub">FlowMe는 컨텐츠(원천)와 실행 도구(목적지) 사이의 변환 계층에 선다</p>
+          </div>
+          <div class="grow">
+            <div class="arrow-row">
+              <div class="card amber">
+                <span class="tag amber">① 원천 — 컨텐츠가 나오는 곳</span>
+                <ul>
+                  <li>네이버 블로그 · 티스토리</li>
+                  <li>유튜브 (따라하기 · 루틴 · 레시피)</li>
+                  <li>공식 기관 페이지 · PDF (학교 · 정부 · 기업)</li>
+                  <li>크리에이터 템플릿 · 프린터블</li>
+                </ul>
+              </div>
+              <div class="arrow-sep">→</div>
+              <div class="card blue">
+                <span class="tag blue">② FlowMe — Action Compiler</span>
+                <ul>
+                  <li><b>변환</b>: 소스 결속 (출처 · 주의 · 완료기준 동행)</li>
+                  <li><b>산출물</b>: 캘린더 · 시트 · 메모 · 체크리스트</li>
+                  <li><b>내보내기</b>: .ics · CSV/XLSX · Markdown · 복사</li>
+                </ul>
+              </div>
+              <div class="arrow-sep">→</div>
+              <div class="card green">
+                <span class="tag green">③ 목적지 — 사용자가 이미 쓰는 도구</span>
+                <ul>
+                  <li>Google · Apple 캘린더</li>
+                  <li>Google Sheets · Excel</li>
+                  <li>Notion · 메모</li>
+                  <li>Todoist 등 할일 앱</li>
+                </ul>
+              </div>
+            </div>
+            <div class="card red">
+              <span class="tag red">⚔ 경쟁 밴드 — 세 층 모두에 걸쳐 있다</span>
+              <p>
+                <b>생성 경쟁</b>: ChatGPT · Perplexity (①→② 변환을 범용 AI가 흡수할 위험) ·
+                <b>목적지 겸 경쟁</b>: Notion · Todoist · 캘린더 (③이면서 동시에 ② 영역으로 확장 가능) ·
+                <b>인접 자동화</b>: Zapier · Make (②→③ 연결 계층)
+              </p>
+            </div>
+            <div class="callout">
+              핵심 통찰: <b>목적지의 다수가 동시에 잠재 경쟁자다.</b> 그래서 FlowMe는 그들을 복제하지 않고, 그들이 받아먹기 좋은 산출물을 만드는 <b>앞단(전처리) 포지션</b>을 잡는다. 도구를 바꾸라고 요구하는 순간 모든 목적지가 적이 된다.
+            </div>
+          </div>
+          <div class="pageno">2 / 11</div>
+        </div>
+      </section>
+
+      <!-- 3. 원천 분석 -->
+      <section class="slide" id="s3">
+        <div class="frame">
+          <div>
+            <div class="kicker">Layer ① Sources</div>
+            <h2 class="slide-title">원천 분석: 한국어-퍼스트 + 소스 결속이 수급 전략이다</h2>
+            <p class="slide-sub">Phase 1 컨텐츠 소스 맵 + 검증된 공개 라우트 5종 기준</p>
+          </div>
+          <div class="grow">
+            <div class="cols cols-4">
+              <div class="card">
+                <span class="tag amber">블로그 (네이버 · 티스토리)</span>
+                <p><b>받는 것</b>: 체크리스트, 타임라인, 살림 · 절약 노하우</p>
+                <p><b>리스크</b>: 비공식 정보 → "실용 가이드"로 분리 표기, 공식 공지 확인 행을 항상 추가</p>
+              </div>
+              <div class="card">
+                <span class="tag amber">유튜브</span>
+                <p><b>받는 것</b>: 따라하기, 준비 루틴, 연습 구조</p>
+                <p><b>리스크</b>: 구조 추출 난이도 → 원본 링크 보존, 단계만 가져온다</p>
+              </div>
+              <div class="card">
+                <span class="tag amber">공식 기관 (학교 · 정부 · 기업)</span>
+                <p><b>받는 것</b>: 날짜, 필수 서류, 자격 요건, 절차</p>
+                <p><b>강점</b>: 신뢰도 최고 → <b>최신 공지 우선(latest-notice-first)</b> 원칙으로 가장 안전한 축</p>
+              </div>
+              <div class="card">
+                <span class="tag amber">크리에이터 자료 (PDF · 템플릿)</span>
+                <p><b>받는 것</b>: 실행 단계만. 원본 에셋은 복제하지 않고 링크 보존</p>
+                <p><b>기회</b>: 트래픽을 돌려주는 구조 → 크리에이터가 적이 아니라 공급자가 된다</p>
+              </div>
+            </div>
+            <div class="card soft">
+              <span class="tag gray">검증 완료: 공개 라우트 5종 (카테고리 대표성 확보)</span>
+              <p>전세 계약 사전점검 (공식 문서) · 초등 입학 D-30 (공지+블로그 하이브리드) · 키즈 프린터블 공작 (크리에이터) · 원격지원 사전점검 (공식 매뉴얼 → 내부 체크) · 냉장고 파먹기 (블로그 → 시트)</p>
+            </div>
+            <div class="callout green">
+              차별점의 뿌리가 여기다: ChatGPT는 "그럴듯한 요약"을 주지만, FlowMe는 <b>실제 출처에 묶인(source-bound) 실행물</b>을 준다. 출처 · 주의 · 완료기준이 산출물과 함께 이동하는 것이 원천 전략의 핵심.
+            </div>
+          </div>
+          <div class="pageno">3 / 11</div>
+        </div>
+      </section>
+
+      <!-- 4. 목적지 분석 -->
+      <section class="slide" id="s4">
+        <div class="frame">
+          <div>
+            <div class="kicker">Layer ③ Destinations</div>
+            <h2 class="slide-title">목적지 분석: 산출물의 일(job)이 목적지를 정한다</h2>
+            <p class="slide-sub">export-destination-fit 규칙 + integration-readiness-gate 기준</p>
+          </div>
+          <div class="grow">
+            <table class="simple">
+              <thead>
+                <tr><th>산출물의 일</th><th>목적지</th><th>Stage 0 내보내기 형태</th><th>연동(Stage 1+) 판단</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>날짜 · D-day · 예약 · 반복</td><td>Google / Apple 캘린더</td><td><b>.ics</b> (반복 보존), 필요시 CSV</td><td>🟢 <b>직접 저장</b> — Stage 1 후보 1순위</td></tr>
+                <tr><td>재고 · 진도 · 비교 · 상태 행</td><td>Google Sheets / Excel</td><td><b>CSV / XLSX</b> 행</td><td>🟢 <b>직접 append</b> — Stage 1 후보 2순위</td></tr>
+                <tr><td>출처 링크 · 주의 · 질문 메모</td><td>Notion / 메모</td><td><b>Markdown / 텍스트</b></td><td>🟡 핸드오프만 — Notion API는 future</td></tr>
+                <tr><td>일회성 셋업 · 점검 · 짐싸기</td><td>FlowMe 내부 체크리스트</td><td>체크 상태 + 복사 텍스트</td><td>— (내부 유지가 정답인 유일한 축)</td></tr>
+                <tr><td>섹션 · 마감 있는 프로젝트</td><td>Todoist 등 할일 앱</td><td>Todoist 호환 <b>CSV</b></td><td>🔴 API 연동은 future_platform</td></tr>
+              </tbody>
+            </table>
+            <div class="cols cols-2">
+              <div class="card green">
+                <h3>Stage 0 원칙: 계정 없는 휴대성</h3>
+                <p>OAuth · 토큰 · 동기화 없이, 파일과 복사만으로 모든 목적지에 도달한다. 연동 전에 <b>export 마찰을 측정</b>하는 것이 Stage 0의 일.</p>
+              </div>
+              <div class="card amber">
+                <h3>연동 게이트 (integration-readiness-gate)</h3>
+                <p>반복 사용 증거 + import 마찰 + 안정 스키마 + 권한 명확성 + 되돌리기 가능성 + 출처/안전 경계 이전 — 6가지 전부 증명돼야 Stage 1 진입. 현재 통과 후보는 <b>캘린더 직접 저장, 시트 append 단 2개</b>.</p>
+              </div>
+            </div>
+          </div>
+          <div class="pageno">4 / 11</div>
+        </div>
+      </section>
+
+      <!-- 5. 경쟁 구도 -->
+      <section class="slide" id="s5">
+        <div class="frame">
+          <div>
+            <div class="kicker">Competition</div>
+            <h2 class="slide-title">경쟁 구도: 누가 진짜 위협이고, 무엇을 배울 것인가</h2>
+            <p class="slide-sub">위협 강도 순 정렬 — 경쟁 분석의 목적은 "FlowMe가 되지 말아야 할 것"의 확정</p>
+          </div>
+          <div class="grow">
+            <table class="simple">
+              <thead>
+                <tr><th style="width:18%">서비스</th><th style="width:12%">관계</th><th>위협 시나리오</th><th>FlowMe의 방어 / 교훈</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><b>ChatGPT · Perplexity</b></td>
+                  <td><span class="tag red">최대 위협</span></td>
+                  <td>"이 글 캘린더로 만들어줘"가 범용 AI 한 마디로 가능해지는 순간, 변환 계층이 통째로 흡수된다</td>
+                  <td>소스 결속 + 카테고리별 검증된 변환 플레이북 + 실행 기록 — <b>요약이 아니라 책임지는 실행물</b>로 차별화</td>
+                </tr>
+                <tr>
+                  <td><b>Notion</b></td>
+                  <td><span class="tag amber">목적지 겸 경쟁</span></td>
+                  <td>템플릿 갤러리 + Notion AI가 "컨텐츠 → 워크스페이스" 변환을 자체 제공</td>
+                  <td>워크스페이스 앞단에서 승부. 템플릿은 빈 구조를 주지만 FlowMe는 <b>소스에서 채워진 구조</b>를 준다</td>
+                </tr>
+                <tr>
+                  <td><b>Todoist · TickTick</b></td>
+                  <td><span class="tag amber">목적지 겸 경쟁</span></td>
+                  <td>범용 할일 인박스로서 모든 실행을 흡수</td>
+                  <td>범용 todo 앱이 되지 않는다. 태스크가 아닌 <b>맥락 있는 산출물</b>(출처+주의+완료기준)을 공급</td>
+                </tr>
+                <tr>
+                  <td><b>캘린더 · Sheets</b></td>
+                  <td><span class="tag green">순수 목적지</span></td>
+                  <td>직접 경쟁 가능성 낮음 — 이미 신뢰받는 그릇</td>
+                  <td>복제 금지. 정확한 import 형식(.ics 반복, CSV 헤더)을 지키는 것이 곧 제품 품질</td>
+                </tr>
+                <tr>
+                  <td><b>Zapier · Make</b></td>
+                  <td><span class="tag violet">인접 레이어</span></td>
+                  <td>자동화 수요를 선점 — 단 Stage 0 사용자층과 다름</td>
+                  <td>지금은 무시. Stage 3에서 FlowMe 이벤트의 트리거화로 활용 가능</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="callout red">
+              구조적 결론: FlowMe의 경쟁자는 "같은 제품"이 아니라 <b>"같은 일을 흡수할 수 있는 더 큰 플랫폼들"</b>이다. 따라서 기능 경쟁이 아니라 ① 한국어 컨텐츠 특화 ② 소스 결속 신뢰 ③ 실행 기록 축적 — 큰 플랫폼이 굳이 안 하는 좁고 깊은 영역으로 파고든다.
+            </div>
+          </div>
+          <div class="pageno">5 / 11</div>
+        </div>
+      </section>
+
+      <!-- 6. 포지셔닝 -->
+      <section class="slide" id="s6">
+        <div class="frame">
+          <div>
+            <div class="kicker">Positioning</div>
+            <h2 class="slide-title">포지셔닝: 왜 이 빈틈이 존재하고, 왜 우리가 차지하는가</h2>
+          </div>
+          <div class="grow">
+            <div class="cols cols-3">
+              <div class="card soft">
+                <h3>사용자의 현재 행동</h3>
+                <p>좋은 글/영상을 본다 → 북마크 · 저장한다 → <b>실행하지 않는다.</b> 실행하는 소수는 캘린더 · 시트 · 메모에 손으로 옮겨 적는다.</p>
+              </div>
+              <div class="card soft">
+                <h3>빈틈의 정체</h3>
+                <p>컨텐츠 플랫폼은 <b>소비</b>까지만, 생산성 도구는 <b>입력 이후</b>부터만 책임진다. 그 사이의 변환 노동은 누구의 제품도 아니다.</p>
+              </div>
+              <div class="card soft">
+                <h3>왜 지금인가</h3>
+                <p>LLM으로 변환 비용이 급락한 지금, 이 틈을 먼저 메우고 <b>실행 행동 데이터</b>를 쌓는 쪽이 유리해진다.</p>
+              </div>
+            </div>
+            <div class="card blue" style="text-align:center; padding: 24px;">
+              <p class="big-statement">FlowMe = <em>Action Compiler</em><br />"읽고 본 것을, 쓰던 도구에서 바로 실행되는 산출물로"</p>
+            </div>
+            <div class="cols cols-3">
+              <div class="card green">
+                <h3>① 소스 결속</h3>
+                <p>출처 URL · 주의 · 완료기준이 산출물과 함께 이동. 요약 AI와의 결정적 차이.</p>
+              </div>
+              <div class="card green">
+                <h3>② 산출물 우선</h3>
+                <p>첫 화면이 곧 실행물(캘린더 행 · 시트 행 · 체크 행). 설명이 아니라 미리보기로 말한다.</p>
+              </div>
+              <div class="card green">
+                <h3>③ 도구 중립 휴대성</h3>
+                <p>사용자에게 이주를 요구하지 않는다. 모든 목적지에 export로 도달 → 목적지들과 비적대 관계 유지.</p>
+              </div>
+            </div>
+          </div>
+          <div class="pageno">6 / 11</div>
+        </div>
+      </section>
+
+      <!-- 7. 발전 로드맵 -->
+      <section class="slide" id="s7">
+        <div class="frame">
+          <div>
+            <div class="kicker">Evolution</div>
+            <h2 class="slide-title">발전 로드맵: Export → 연동 → 기록 → 네트워크</h2>
+            <p class="slide-sub">각 단계는 기능 욕심이 아니라 <b>앞 단계의 행동 증거(gate)</b>로만 열린다</p>
+          </div>
+          <div class="grow">
+            <div class="stage-track">
+              <div class="stage" style="background: var(--blue-soft); border-color:#c4d7fb;">
+                <span class="tag blue">Stage 0 · 현재</span>
+                <h3>Export-First 검증</h3>
+                <ul style="margin:0; padding-left:16px; font-size:13px;">
+                  <li>공개 라우트 5종 운영</li>
+                  <li>.ics / CSV / 복사로만 전달</li>
+                  <li>계정 · 연동 · 자동화 없음</li>
+                  <li>손으로 배포 (share packet)</li>
+                </ul>
+                <div class="gate"><b>다음 단계 게이트</b>: 반복 export 행동 + import 마찰의 실측 증거</div>
+              </div>
+              <div class="stage">
+                <span class="tag green">Stage 1</span>
+                <h3>경량 연동</h3>
+                <ul style="margin:0; padding-left:16px; font-size:13px;">
+                  <li>캘린더 직접 저장 (단건)</li>
+                  <li>시트 직접 append</li>
+                  <li><b>이 2개 외 연동 금지</b></li>
+                  <li>최소 권한 · 되돌리기 보장</li>
+                </ul>
+                <div class="gate"><b>게이트</b>: 같은 목적지로의 반복 사용 + 안정된 산출물 스키마</div>
+              </div>
+              <div class="stage">
+                <span class="tag amber">Stage 2</span>
+                <h3>실행 기록 레이어</h3>
+                <ul style="margin:0; padding-left:16px; font-size:13px;">
+                  <li>체크 · 진도 · 재방문이 FlowMe에 남기 시작</li>
+                  <li>기존 도구 이탈 강요 없음</li>
+                  <li>"이어서 하기" 경험 제공</li>
+                </ul>
+                <div class="gate"><b>게이트</b>: export 후 자발적 재방문 · 체크 행동의 반복 관측</div>
+              </div>
+              <div class="stage">
+                <span class="tag violet">Stage 3</span>
+                <h3>피드백 네트워크</h3>
+                <ul style="margin:0; padding-left:16px; font-size:13px;">
+                  <li>실행률 데이터 → Flow 품질 개선 루프</li>
+                  <li>크리에이터 피드백 · 공급 관계</li>
+                  <li>자동화 (Zapier/Make류) 개방</li>
+                </ul>
+                <div class="gate"><b>게이트</b>: 기록 데이터 임계량 + 크리에이터 측 수요 신호</div>
+              </div>
+            </div>
+            <div class="callout">
+              구조 요약: <b>도구(0–1) → 기록 보관소(2) → 데이터 네트워크(3)</b>. 단계를 건너뛰는 기능(OAuth 전면 도입, 워크스페이스, 자동화 빌더)은 전부 분석방에서 future_platform / reject로 이미 기각되어 있다.
+            </div>
+          </div>
+          <div class="pageno">7 / 11</div>
+        </div>
+      </section>
+
+      <!-- 8. 해자 -->
+      <section class="slide" id="s8">
+        <div class="frame">
+          <div>
+            <div class="kicker">Moat</div>
+            <h2 class="slide-title">해자: 처음엔 없다 — 그래서 무엇을 쌓는가가 전부다</h2>
+          </div>
+          <div class="grow">
+            <div class="callout amber">
+              정직한 진단: <b>변환 그 자체는 해자가 아니다.</b> LLM이 있는 누구나 컨텐츠를 체크리스트로 바꿀 수 있다. FlowMe의 해자는 변환이 아니라 <b>변환 이후에 쌓이는 것</b>에서 나온다.
+            </div>
+            <div class="cols cols-3">
+              <div class="card">
+                <span class="tag green">축적물 ①</span>
+                <h3>변환 플레이북</h3>
+                <p>카테고리별 "무엇이 실행되는 구조인가"의 노하우. 입학 준비는 D-30 타임라인, 냉장고는 재고 시트, 원격지원은 권한 사다리 — 이미 5개 카테고리에서 검증된 형태가 레포에 룰로 박혀 있다.</p>
+              </div>
+              <div class="card">
+                <span class="tag green">축적물 ②</span>
+                <h3>실행 기록 데이터</h3>
+                <p>어떤 Flow가 실제로 완료되는가. 이것은 범용 AI가 갖지 못하는 데이터다. 실행률은 곧 <b>컨텐츠 신뢰 지표</b>가 되고, 다음 Flow 생성 품질로 되먹임된다.</p>
+              </div>
+              <div class="card">
+                <span class="tag green">축적물 ③</span>
+                <h3>크리에이터 관계</h3>
+                <p>원본 링크 보존 + 트래픽 환원 구조는 크리에이터를 공급자로 만든다. 컨텐츠 플랫폼이 긁어가기를 경계할 때, FlowMe는 <b>허락받고 들어가는 변환 채널</b>이 될 수 있다.</p>
+              </div>
+            </div>
+            <div class="card soft">
+              <h3>시간축으로 보면</h3>
+              <p>0–6개월: 해자 없음, 속도와 카테고리 선점이 전부 → 6–18개월: 플레이북 + 실행 데이터 초기 축적 → 18개월+: "실행되는 컨텐츠"의 데이터를 가진 유일한 플레이어 포지션 도전. <b>그래서 Stage 0에서 행동 증거 수집이 기능 개발보다 우선이다.</b></p>
+            </div>
+          </div>
+          <div class="pageno">8 / 11</div>
+        </div>
+      </section>
+
+      <!-- 9. 리스크 -->
+      <section class="slide" id="s9">
+        <div class="frame">
+          <div>
+            <div class="kicker">Risks</div>
+            <h2 class="slide-title">리스크와 대응: 무엇이 이 전략을 무너뜨릴 수 있나</h2>
+          </div>
+          <div class="grow">
+            <div class="cols cols-2">
+              <div class="card red">
+                <h3>R1 · 범용 AI의 흡수 <span class="tag red">높음</span></h3>
+                <p>ChatGPT가 "이 링크 캘린더 파일로" 를 기본 기능화하는 시나리오.</p>
+                <p><b>대응</b>: 한국어 생활 카테고리 특화 + 소스 결속 품질 + 실행 기록으로 좁고 깊게. 범용성이 아니라 <b>책임성</b>으로 경쟁한다. 속도가 생명 — Stage 0 검증을 늘어뜨리지 않는다.</p>
+              </div>
+              <div class="card red">
+                <h3>R2 · 목적지 플랫폼의 자체 개선 <span class="tag amber">중간</span></h3>
+                <p>Notion AI import, Google 캘린더의 Gemini 통합 등이 변환을 내장.</p>
+                <p><b>대응</b>: 단일 목적지 종속 금지(멀티 목적지 중립성). 플랫폼 내장 기능은 자기 생태계 안에서만 작동 — FlowMe는 <b>크로스 목적지 + 한국 컨텐츠</b>에서 우위 유지.</p>
+              </div>
+              <div class="card amber">
+                <h3>R3 · 원천 플랫폼 정책 <span class="tag amber">중간</span></h3>
+                <p>네이버 크롤링 제한, 크리에이터 저작권 분쟁.</p>
+                <p><b>대응</b>: 원본 미복제 + 링크 보존 원칙은 이미 제품 룰. 사용자가 가져온 컨텐츠의 변환(이용자 주도)과 크리에이터 제휴 모델로 전환 여지 확보.</p>
+              </div>
+              <div class="card amber">
+                <h3>R4 · 자기 파괴: 클론化 <span class="tag amber">상시</span></h3>
+                <p>기능 욕심으로 todo 앱 · 워크스페이스 · 캘린더 클론이 되어 모든 목적지를 적으로 만드는 시나리오.</p>
+                <p><b>대응</b>: do-not-build 경계(분석방에 명문화)와 feature filter를 모든 리뷰의 마지막 게이트로 유지. <b>이 리스크만은 전적으로 우리 손에 달려 있다.</b></p>
+              </div>
+            </div>
+          </div>
+          <div class="pageno">9 / 11</div>
+        </div>
+      </section>
+
+      <!-- 10. 지금 할 일 -->
+      <section class="slide" id="s10">
+        <div class="frame">
+          <div>
+            <div class="kicker">Now</div>
+            <h2 class="slide-title">지금 할 일: 다음 분기점은 기능이 아니라 관찰 3회다</h2>
+            <p class="slide-sub">현재 상태: distribution-channel-handoff 축 · 실제 수신자 세션 0/3 · 판정 no signal</p>
+          </div>
+          <div class="grow">
+            <div class="arrow-row">
+              <div class="card blue">
+                <span class="tag blue">1 · 관찰 세션 3회</span>
+                <p>school-dorm-share-packet으로 실제 수신자 3명 관찰. 초대 → 일정 → 세션 → 롤업. 준비물은 전부 만들어져 있고 <b>실행만 남았다.</b></p>
+              </div>
+              <div class="arrow-sep">→</div>
+              <div class="card">
+                <span class="tag green">2 · 신호 판정</span>
+                <p>no signal → 재실행 / friction → 패킷 수정 / candidate signal → /content-flows 후보 승격. 판정 라벨 외 해석 금지.</p>
+              </div>
+              <div class="arrow-sep">→</div>
+              <div class="card">
+                <span class="tag amber">3 · Export 마찰 측정 시작</span>
+                <p>신호가 나오면 캘린더 .ics / 시트 CSV의 실제 import 마찰을 기록 → Stage 1 연동 게이트의 증거 데이터가 된다.</p>
+              </div>
+            </div>
+            <div class="cols cols-2">
+              <div class="card green">
+                <h3>이 기간에 해도 되는 것</h3>
+                <ul>
+                  <li>관찰 실행과 기록 (최우선)</li>
+                  <li>기존 5개 라우트의 export 품질 다듬기</li>
+                  <li>변환 플레이북 룰 보강 (행동 증거 기반으로만)</li>
+                </ul>
+              </div>
+              <div class="card red">
+                <h3>하지 말아야 할 것 (이미 기각됨)</h3>
+                <ul>
+                  <li>공개 라우트 무증거 확장 · 검증/론칭 클레임</li>
+                  <li>OAuth · 계정 연동 · 자동 포스팅 · 회신 수집</li>
+                  <li>같은 축의 기획 문서 추가 (documentation stop gate 발동 중)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="pageno">10 / 11</div>
+        </div>
+      </section>
+
+      <!-- 11. 결론 -->
+      <section class="slide" id="s11">
+        <div class="frame">
+          <div class="grow" style="text-align:center; align-items:center;">
+            <div class="kicker">Conclusion</div>
+            <p class="big-statement" style="max-width: 860px; margin: 0 auto;">
+              컨텐츠 플랫폼과 생산성 도구 사이의 <em>변환 계층</em>에서 시작해,<br />
+              export로 신뢰를 얻고 → 연동으로 마찰을 줄이고 →<br />
+              <em>실행 기록</em>이 쌓이는 곳으로 진화한다.
+            </p>
+            <div class="cols cols-3" style="width:100%; max-width: 980px;">
+              <div class="card soft"><h3>원칙 1</h3><p>목적지를 복제하지 않는다 — 모든 도구의 앞단에 선다</p></div>
+              <div class="card soft"><h3>원칙 2</h3><p>소스 없이 생성하지 않는다 — 출처가 신뢰의 단위다</p></div>
+              <div class="card soft"><h3>원칙 3</h3><p>행동 증거 없이 승격하지 않는다 — 게이트가 로드맵이다</p></div>
+            </div>
+            <p class="slide-sub">근거 문서: external-ecosystem-analysis-roadmap · phase5-compression-table · export-destination-competitor-boundary · platform-api-readiness-matrix · integration-readiness-gate · STATUS.md (2026-06-11)</p>
+          </div>
+          <div class="pageno">11 / 11</div>
+        </div>
+      </section>
+
+    </main>
+
+    <script>
+      (function () {
+        var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+        var dotsWrap = document.getElementById("navdots");
+        slides.forEach(function (s, i) {
+          var a = document.createElement("a");
+          a.href = "#" + s.id;
+          a.title = (i + 1) + "번 슬라이드";
+          dotsWrap.appendChild(a);
+        });
+        var dots = Array.prototype.slice.call(dotsWrap.children);
+
+        function setActive() {
+          var mid = window.scrollY + window.innerHeight / 2;
+          var idx = 0;
+          slides.forEach(function (s, i) {
+            if (s.offsetTop <= mid) idx = i;
+          });
+          dots.forEach(function (d, i) {
+            d.className = i === idx ? "active" : "";
+          });
+          return idx;
+        }
+        window.addEventListener("scroll", setActive, { passive: true });
+        setActive();
+
+        document.addEventListener("keydown", function (e) {
+          if (e.key !== "ArrowDown" && e.key !== "ArrowUp" && e.key !== "PageDown" && e.key !== "PageUp") return;
+          e.preventDefault();
+          var idx = setActive();
+          var next = (e.key === "ArrowDown" || e.key === "PageDown") ? Math.min(idx + 1, slides.length - 1) : Math.max(idx - 1, 0);
+          slides[next].scrollIntoView({ behavior: "smooth" });
+        });
+      })();
+    </script>
+  </body>
+</html>

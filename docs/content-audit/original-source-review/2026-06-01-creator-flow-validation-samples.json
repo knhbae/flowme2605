@@ -1,0 +1,1300 @@
+{
+  "generatedAt": "2026-06-01",
+  "dimensions": [
+    "userUsefulness",
+    "executionClarity",
+    "revisitValue",
+    "destinationFit",
+    "inputSimplicity",
+    "creatorIncentive",
+    "sourceBoundary",
+    "myFlowUxFit"
+  ],
+  "dimensionLabels": {
+    "userUsefulness": "사용자 유용성",
+    "executionClarity": "실행 명확성",
+    "revisitValue": "반복/재방문 가치",
+    "destinationFit": "캘린더/체크/메모 분리 적합성",
+    "inputSimplicity": "입력 복잡도",
+    "creatorIncentive": "제작자 공유/판매 인센티브",
+    "sourceBoundary": "저작권/출처 분리",
+    "myFlowUxFit": "My Flow UX 적합성"
+  },
+  "structureLabels": {
+    "single_url": "단일 URL",
+    "source_bundle": "제작자 여러 URL 묶음",
+    "youtube_playlist": "유튜브 플레이리스트",
+    "blog_series": "블로그 시리즈",
+    "template": "Notion/Gumroad 템플릿",
+    "official_plus_creator": "공식 정보 + 제작자 경험"
+  },
+  "autoFlowCritique": [
+    "기존 50개 자동 exampleFlow는 원문 실행 신호를 재해석하지 않고 action 배열을 캘린더/오늘/진행 카드로 감싸는 수준이었다.",
+    "structure_type만 보고 Day 1, D-14, 초안 같은 시간을 붙여 실제 원문과 맞지 않는 일정이 생겼다.",
+    "완료 기준이 '완료 상태로 표시'처럼 반복되어 사용자가 무엇을 끝내야 하는지 판단하기 어렵다.",
+    "출처 본문, 제작자 경험, 위험 경계를 분리하지 못해 민감 영역이나 템플릿 저작권 경계가 흐려졌다.",
+    "따라서 기존 exampleFlow는 참고 로그로만 두고, 대표 샘플은 사람이 원문 구조를 읽고 다시 작성해야 한다."
+  ],
+  "samples": [
+    {
+      "id": "rep-washing-machine-care",
+      "requiredType": "공식 정보 + 제작자 경험 혼합형",
+      "depth": "standard",
+      "title": "세탁기 청소/관리 Flow",
+      "sourceStructure": "official_plus_creator",
+      "sourceUrls": [
+        [
+          "공식",
+          "Samsung Service - 세탁기 청소 방법",
+          "https://www.samsungsvc.co.kr/solution/41708"
+        ],
+        [
+          "경험담",
+          "블로그 세탁기 관리 후기",
+          "https://spygogo.tistory.com/691"
+        ]
+      ],
+      "sourceSignals": [
+        "공식 정보는 모델/부품/안전 기준에 가깝고, 블로그는 실제 청소 경험과 준비물 맥락을 준다.",
+        "주기적 관리 루틴과 이상 징후 시 서비스 문의 트리거가 있다.",
+        "공식 정보와 개인 경험을 섞으면 위험하므로 분리 표시가 필요하다."
+      ],
+      "userGoal": "세탁기 청소 주기를 놓치지 않고, 이상 징후가 보이면 공식 안내나 서비스 문의로 연결한다.",
+      "creatorIncentive": "가전 관리 블로거가 공식 링크와 자신의 관리 루틴을 묶어 실사용 Flow로 공유하기 좋다.",
+      "userInputs": [
+        "제품명 또는 모델",
+        "마지막 청소일",
+        "청소 주기"
+      ],
+      "destination": "calendar + memo",
+      "structure": "maintenance_routine",
+      "today": [
+        "세탁통 청소 일정 확인",
+        "이상 소음/냄새 여부 메모"
+      ],
+      "calendar": [
+        [
+          "세탁통 청소",
+          "사용자 주기 반복",
+          "routine_session"
+        ],
+        [
+          "필터/외관 점검",
+          "월 1회",
+          "routine_session"
+        ]
+      ],
+      "items": [
+        [
+          "제품 모델 메모",
+          "check_task",
+          "제품명 또는 공식 안내 링크가 저장됨"
+        ],
+        [
+          "세탁통 청소 실행",
+          "routine_session",
+          "오늘 청소 완료일이 갱신됨"
+        ],
+        [
+          "이상 징후 기록",
+          "log_entry",
+          "냄새, 누수, 소음 중 해당 사항이 기록됨"
+        ],
+        [
+          "서비스 문의 판단",
+          "decision_hold",
+          "공식 확인 필요 여부가 표시됨"
+        ]
+      ],
+      "memo": "공식 안내 링크와 개인 후기 링크를 분리하고, Flow에는 모델, 주기, 오늘 점검 결과만 남긴다.",
+      "completion": "마지막 청소일과 다음 점검일이 갱신되고 이상 징후 메모가 정리됨",
+      "hold": [
+        "제품 분해나 수리 조언처럼 보이면 탈락",
+        "공식 정보와 블로그 경험을 같은 권위로 보여주면 탈락"
+      ],
+      "boundary": {
+        "copyright": "공식/블로그 문장을 복제하지 않고 링크와 관리 필드만 둔다.",
+        "source": "공식 안내와 제작자 경험을 분리 라벨링한다.",
+        "risk": "수리, 전기, 누수 위험은 서비스 문의 트리거로만 다룬다."
+      },
+      "uxProblems": [
+        "관리 루틴은 캘린더에 텍스트보다 아이콘/개수로 표시하는 편이 낫다.",
+        "상세에서 공식/경험 출처가 분리되어 보여야 한다."
+      ],
+      "scores": {
+        "userUsefulness": 5,
+        "executionClarity": 4,
+        "revisitValue": 5,
+        "destinationFit": 5,
+        "inputSimplicity": 5,
+        "creatorIncentive": 4,
+        "sourceBoundary": 5,
+        "myFlowUxFit": 4
+      },
+      "scoreValues": [
+        5,
+        4,
+        5,
+        5,
+        5,
+        4,
+        5,
+        4
+      ],
+      "average": 4.6,
+      "rank": 1,
+      "verdict": "seed 우선 후보",
+      "seedCandidate": true
+    },
+    {
+      "id": "rep-content-engine-pipeline",
+      "requiredType": "제작/운영 파이프라인형",
+      "depth": "standard",
+      "title": "크리에이터 콘텐츠 엔진 Flow",
+      "sourceStructure": "template",
+      "sourceUrls": [
+        [
+          "템플릿",
+          "Ktoolz - Content Engine",
+          "https://ktoolz.gumroad.com/l/content-engine"
+        ]
+      ],
+      "sourceSignals": [
+        "아이디어, 제작, 예약, 발행, 재활용 같은 상태 전이가 핵심이다.",
+        "템플릿 전체를 복제하기보다 제작자가 반복적으로 쓰는 상태와 마감만 Flow화해야 한다.",
+        "콘텐츠 제작자는 자신의 운영 시스템을 판매할 인센티브가 강하다."
+      ],
+      "userGoal": "이번 주 만들 콘텐츠가 아이디어에 머무르지 않고 초안, 편집, 예약, 발행 상태로 이동하게 한다.",
+      "creatorIncentive": "콘텐츠 시스템 제작자가 Notion/Gumroad 템플릿의 실행 버전을 Flow로 판매하기 좋다.",
+      "userInputs": [
+        "콘텐츠 채널",
+        "주간 발행 수",
+        "다음 발행일"
+      ],
+      "destination": "sheet + calendar",
+      "structure": "production_pipeline",
+      "today": [
+        "다음 발행 콘텐츠 상태 갱신",
+        "막힌 콘텐츠 보류 사유 남기기"
+      ],
+      "calendar": [
+        [
+          "다음 발행일",
+          "사용자 지정",
+          "scheduled_task"
+        ],
+        [
+          "주간 아이디어 정리",
+          "매주 반복",
+          "routine_session"
+        ]
+      ],
+      "items": [
+        [
+          "아이디어 3개 입력",
+          "check_task",
+          "제목 후보와 채널이 입력됨"
+        ],
+        [
+          "다음 발행물 상태 이동",
+          "pipeline_state",
+          "아이디어/초안/편집/예약/발행 중 하나로 표시됨"
+        ],
+        [
+          "발행일 예약",
+          "scheduled_task",
+          "캘린더에 발행 마감이 보임"
+        ],
+        [
+          "막힌 이유 기록",
+          "decision_hold",
+          "자료 부족, 촬영 대기, 승인 대기 중 하나가 표시됨"
+        ]
+      ],
+      "memo": "템플릿 DB 구조를 복제하지 않고 Flow에는 최소 상태, 다음 마감, 보류 이유만 둔다.",
+      "completion": "이번 주 발행할 콘텐츠의 상태와 다음 행동이 명확함",
+      "hold": [
+        "입력 필드가 템플릿 수준으로 많아지면 실패",
+        "Flow 안에서 전체 CMS를 만들려 하면 탈락"
+      ],
+      "boundary": {
+        "copyright": "유료 템플릿 구조를 복제하지 않는다.",
+        "source": "제작자의 템플릿 설명과 사용자의 콘텐츠 상태를 분리한다.",
+        "risk": "플랫폼 성장 보장 문구를 넣지 않는다."
+      },
+      "uxProblems": [
+        "Flow 탭에 상태판과 전체 목록을 동시에 두면 모바일에서 무겁다.",
+        "상태판 클릭 시 해당 상태 목록만 하단/시트로 펼치는 구조가 낫다."
+      ],
+      "scores": {
+        "userUsefulness": 5,
+        "executionClarity": 5,
+        "revisitValue": 5,
+        "destinationFit": 5,
+        "inputSimplicity": 4,
+        "creatorIncentive": 5,
+        "sourceBoundary": 4,
+        "myFlowUxFit": 4
+      },
+      "scoreValues": [
+        5,
+        5,
+        5,
+        5,
+        4,
+        5,
+        4,
+        4
+      ],
+      "average": 4.6,
+      "rank": 2,
+      "verdict": "seed 우선 후보",
+      "seedCandidate": true
+    },
+    {
+      "id": "rep-used-car-inspection",
+      "requiredType": "비교/결정형",
+      "depth": "standard",
+      "title": "중고차 후보 점검 Flow",
+      "sourceStructure": "source_bundle",
+      "sourceUrls": [
+        [
+          "가이드",
+          "NerdWallet - Used Car Inspection Checklist",
+          "https://www.nerdwallet.com/article/cars/car-shopping/used-car-inspection-checklist"
+        ],
+        [
+          "공식 확인",
+          "자동차365",
+          "https://www.car365.go.kr/"
+        ]
+      ],
+      "sourceSignals": [
+        "중고차 구매는 후보별 비교, 증빙 사진, 성능기록부 확인, 구매/보류/거절 결정이 필요하다.",
+        "완료는 단순 체크가 아니라 의사결정 상태다.",
+        "공식 조회와 개인 점검 메모를 분리해야 한다."
+      ],
+      "userGoal": "후보 차량을 보고 난 뒤 구매/보류/거절 결정을 근거와 함께 남긴다.",
+      "creatorIncentive": "자동차 리뷰어가 자신의 점검 관점을 후보 비교 Flow로 제공하기 좋다.",
+      "userInputs": [
+        "차량명",
+        "방문일",
+        "예산"
+      ],
+      "destination": "sheet + memo",
+      "structure": "comparison_decision",
+      "today": [
+        "방문 차량 기본 정보 입력",
+        "사진/성능기록부 확인 메모 남기기"
+      ],
+      "calendar": [
+        [
+          "차량 방문 점검",
+          "방문일",
+          "scheduled_task"
+        ]
+      ],
+      "items": [
+        [
+          "후보 차량 정보 입력",
+          "check_task",
+          "연식, 주행거리, 가격이 입력됨"
+        ],
+        [
+          "성능기록부 확인",
+          "memo_evidence",
+          "확인 링크나 파일명이 남음"
+        ],
+        [
+          "외관/타이어/누유 메모",
+          "log_entry",
+          "사진 또는 관찰 메모가 남음"
+        ],
+        [
+          "구매/보류/거절 결정",
+          "decision_hold",
+          "결정과 이유가 표시됨"
+        ]
+      ],
+      "memo": "점검 팁 전문보다 후보별 비교 필드, 증빙 메모, 결정 사유를 남긴다.",
+      "completion": "각 후보가 구매/보류/거절 중 하나로 정리되고 근거 메모가 있음",
+      "hold": [
+        "정비 진단처럼 확정하면 탈락",
+        "증빙이 없는데 구매 추천처럼 보이면 탈락"
+      ],
+      "boundary": {
+        "copyright": "가이드 체크 문장을 복제하지 않고 비교/결정 필드로 재구성한다.",
+        "source": "공식 조회와 제작자 점검 경험을 분리한다.",
+        "risk": "법적/정비 판단은 공식 조회와 전문가 확인 메모로 제한한다."
+      },
+      "uxProblems": [
+        "증빙은 기본 액션이 아니라 결정 근거가 필요할 때 쓰는 선택 필드여야 한다.",
+        "완료 체크보다 구매/보류/거절 상태가 더 중요하다."
+      ],
+      "scores": {
+        "userUsefulness": 5,
+        "executionClarity": 5,
+        "revisitValue": 4,
+        "destinationFit": 5,
+        "inputSimplicity": 4,
+        "creatorIncentive": 5,
+        "sourceBoundary": 4,
+        "myFlowUxFit": 5
+      },
+      "scoreValues": [
+        5,
+        5,
+        4,
+        5,
+        4,
+        5,
+        4,
+        5
+      ],
+      "average": 4.6,
+      "rank": 3,
+      "verdict": "seed 우선 후보",
+      "seedCandidate": true
+    },
+    {
+      "id": "rep-course-launch-checklist",
+      "requiredType": "단일 URL 체크리스트형",
+      "depth": "deep",
+      "title": "온라인 코스 출시 준비 Flow",
+      "sourceStructure": "single_url",
+      "sourceUrls": [
+        [
+          "원문",
+          "Teachable - Course Launch Checklist",
+          "https://teachable.com/blog/course-launch-checklist"
+        ]
+      ],
+      "sourceSignals": [
+        "코스 출시 전 준비 업무가 체크리스트 형태로 나뉘어 있다.",
+        "판매 페이지, 가격, 결제 테스트, 출시 공지처럼 완료 여부가 명확한 항목이 있다.",
+        "출시일을 기준으로 앞당겨 처리해야 하는 마감형 작업이 있다."
+      ],
+      "userGoal": "첫 온라인 코스를 출시하기 전 이번 주에 끝낼 준비 항목과 출시 직전 확인 항목을 놓치지 않는다.",
+      "creatorIncentive": "강의 제작자나 코치가 자신의 출시 운영 노하우를 리드마그넷 또는 유료 출시 준비 Flow로 제공하기 좋다.",
+      "userInputs": [
+        "코스명",
+        "출시일",
+        "판매 채널"
+      ],
+      "destination": "hybrid",
+      "structure": "deadline_checklist",
+      "today": [
+        "판매 페이지 초안 작성",
+        "결제 테스트 계정으로 구매 흐름 확인"
+      ],
+      "calendar": [
+        [
+          "판매 페이지 초안 마감",
+          "출시 14일 전",
+          "scheduled_task"
+        ],
+        [
+          "결제/접근 권한 테스트",
+          "출시 3일 전",
+          "scheduled_task"
+        ],
+        [
+          "출시 공지 발송",
+          "출시일 오전",
+          "scheduled_task"
+        ]
+      ],
+      "items": [
+        [
+          "코스 구성 범위 확정",
+          "check_task",
+          "첫 공개 범위와 제외 범위가 한 문장으로 정리됨"
+        ],
+        [
+          "판매 페이지 초안 작성",
+          "check_task",
+          "대상, 결과, 가격, 구매 링크가 들어간 초안이 있음"
+        ],
+        [
+          "테스트 구매 실행",
+          "scheduled_task",
+          "구매 후 강의 접근까지 직접 확인함"
+        ],
+        [
+          "출시 공지 발송 상태 기록",
+          "pipeline_state",
+          "이메일/게시글/커뮤니티 중 실제 발송 채널이 표시됨"
+        ]
+      ],
+      "memo": "원문은 코스 출시 체크리스트이므로 세부 조언을 복제하지 않고, Flow에는 출시일 기준 마감과 사용자가 직접 확인해야 하는 결과물만 남긴다.",
+      "completion": "출시일 전에 판매 페이지, 결제 테스트, 접근 권한, 공지 발송 상태가 모두 확인됨",
+      "hold": [
+        "출시일이 없으면 일반 메모로 낮춘다.",
+        "강의 내용 자체가 아직 없으면 출시 Flow가 아니라 제작 Flow로 전환한다."
+      ],
+      "boundary": {
+        "copyright": "원문 체크리스트 문장을 복제하지 않고 실행 항목과 출처 링크만 남긴다.",
+        "source": "Teachable의 일반 가이드는 출처 메모로 두고 제작자 개인 노하우는 별도 메모로 분리한다.",
+        "risk": "매출 보장이나 마케팅 성과 보장 문구를 넣지 않는다."
+      },
+      "uxProblems": [
+        "체크 항목이 많아지면 모바일 상세에서 접히는 섹션이 필요하다.",
+        "출시일 기준 D-day는 캘린더 상세에는 필요하지만 월간 칸에는 과하다."
+      ],
+      "scores": {
+        "userUsefulness": 5,
+        "executionClarity": 5,
+        "revisitValue": 4,
+        "destinationFit": 5,
+        "inputSimplicity": 4,
+        "creatorIncentive": 5,
+        "sourceBoundary": 4,
+        "myFlowUxFit": 4
+      },
+      "scoreValues": [
+        5,
+        5,
+        4,
+        5,
+        4,
+        5,
+        4,
+        4
+      ],
+      "average": 4.5,
+      "rank": 4,
+      "verdict": "seed 우선 후보",
+      "seedCandidate": true
+    },
+    {
+      "id": "rep-plant-care-bundle",
+      "requiredType": "제작자 여러 URL 묶음형",
+      "depth": "deep",
+      "title": "초보 식물 관리 Flow",
+      "sourceStructure": "source_bundle",
+      "sourceUrls": [
+        [
+          "입문",
+          "The Sill - Getting Started",
+          "https://www.thesill.com/pages/topics/getting-started"
+        ],
+        [
+          "물주기",
+          "The Sill - Water",
+          "https://www.thesill.com/pages/topics/water"
+        ],
+        [
+          "관리",
+          "The Sill - Care",
+          "https://www.thesill.com/pages/topics/care"
+        ],
+        [
+          "계절",
+          "The Sill - Spring Plant Care",
+          "https://www.thesill.com/pages/courses/spring-plant-care"
+        ]
+      ],
+      "sourceSignals": [
+        "식물 관리는 단일 글보다 입문, 물주기, 일반 관리, 계절 관리가 묶일 때 실행성이 높다.",
+        "물주기는 고정 처방보다 흙 상태와 관찰 기록을 기반으로 판단해야 한다.",
+        "계절별 관리와 분갈이, 비료 같은 이벤트는 루틴과 메모가 섞인다."
+      ],
+      "userGoal": "식물마다 마지막 확인일, 다음 물주기 확인일, 상태 메모를 남겨 과습과 방치를 줄인다.",
+      "creatorIncentive": "식물 콘텐츠 제작자가 여러 관리 글을 식물별 관리 Flow로 묶어 구독형 콘텐츠로 제공할 수 있다.",
+      "userInputs": [
+        "식물명",
+        "마지막 물 확인일",
+        "확인 주기"
+      ],
+      "destination": "calendar + memo",
+      "structure": "care_routine",
+      "today": [
+        "흙 마름 상태 확인",
+        "잎 처짐/마름/변색 메모"
+      ],
+      "calendar": [
+        [
+          "물주기 확인",
+          "사용자 주기 반복",
+          "routine_session"
+        ],
+        [
+          "계절 관리 점검",
+          "월 1회",
+          "routine_session"
+        ]
+      ],
+      "items": [
+        [
+          "식물별 기본 정보 등록",
+          "check_task",
+          "식물명, 위치, 확인 주기가 입력됨"
+        ],
+        [
+          "흙 상태 확인",
+          "routine_session",
+          "오늘 물주기/보류 판단이 남음"
+        ],
+        [
+          "관찰 메모 남기기",
+          "log_entry",
+          "잎/흙/빛 상태 중 하나 이상 기록됨"
+        ],
+        [
+          "분갈이/비료 판단 보류",
+          "decision_hold",
+          "지금 실행, 보류, 전문가 확인 중 하나가 표시됨"
+        ]
+      ],
+      "memo": "원문 설명을 길게 넣지 않고 오늘 판단에 필요한 관찰 기준, 출처 링크, 이전 메모만 남긴다.",
+      "completion": "식물별 마지막 확인일과 다음 확인일, 오늘의 관찰 메모가 갱신됨",
+      "hold": [
+        "식물 질병 진단처럼 보이면 탈락",
+        "모든 식물에 같은 물주기 주기를 강제하면 탈락"
+      ],
+      "boundary": {
+        "copyright": "원문 관리 설명을 복제하지 않고 실행 필드와 링크만 남긴다.",
+        "source": "출처 관리 팁과 사용자의 식물 상태 기록을 분리한다.",
+        "risk": "병충해/고사 위험은 관찰 메모와 전문가/매장 문의로 제한한다."
+      },
+      "uxProblems": [
+        "루틴이 많으면 캘린더 칸이 지저분해진다.",
+        "루틴은 작은 아이콘과 개수로 보이고 상세에서 기록해야 한다."
+      ],
+      "scores": {
+        "userUsefulness": 5,
+        "executionClarity": 4,
+        "revisitValue": 5,
+        "destinationFit": 5,
+        "inputSimplicity": 5,
+        "creatorIncentive": 4,
+        "sourceBoundary": 4,
+        "myFlowUxFit": 4
+      },
+      "scoreValues": [
+        5,
+        4,
+        5,
+        5,
+        5,
+        4,
+        4,
+        4
+      ],
+      "average": 4.5,
+      "rank": 5,
+      "verdict": "seed 우선 후보",
+      "seedCandidate": true
+    },
+    {
+      "id": "rep-baby-food-record",
+      "requiredType": "생활 루틴/관리형",
+      "depth": "standard",
+      "title": "초기 이유식 반응 기록 Flow",
+      "sourceStructure": "official_plus_creator",
+      "sourceUrls": [
+        [
+          "공식",
+          "질병관리청 국가건강정보포털 - 이유기보충식",
+          "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5470"
+        ],
+        [
+          "공식 식단/주의",
+          "임신육아종합포털 아이사랑",
+          "https://www.childcare.go.kr/"
+        ]
+      ],
+      "sourceSignals": [
+        "이유식은 날짜, 새 재료, 반응 기록이 핵심이다.",
+        "의료 판단이 아니라 무엇을 먹였고 어떤 반응이 있었는지 기록해야 한다.",
+        "이상 반응은 조언이 아니라 상담/문의 메모로 분리해야 한다."
+      ],
+      "userGoal": "새 재료를 먹인 날과 아이 반응을 기록해서 다음 식단 판단 때 참고한다.",
+      "creatorIncentive": "육아 제작자가 월령별 식단표를 기록 중심 Flow로 제공할 수 있다.",
+      "userInputs": [
+        "아이 월령",
+        "오늘 재료",
+        "기록 기간"
+      ],
+      "destination": "calendar + sheet + memo",
+      "structure": "sensitive_care_log",
+      "today": [
+        "오늘 새 재료 여부 체크",
+        "피부/구토/설사 등 관찰 메모"
+      ],
+      "calendar": [
+        [
+          "오늘 이유식 기록",
+          "사용자 지정 기간 반복",
+          "routine_session"
+        ]
+      ],
+      "items": [
+        [
+          "오늘 재료 기록",
+          "log_entry",
+          "재료명과 섭취 여부가 남음"
+        ],
+        [
+          "반응 관찰 메모",
+          "log_entry",
+          "관찰 항목과 시간대가 기록됨"
+        ],
+        [
+          "이상 반응 상담 메모",
+          "decision_hold",
+          "상담 필요 여부와 문의처가 남음"
+        ]
+      ],
+      "memo": "공식/가이드 내용은 출처 링크로 두고 Flow에는 재료, 시간, 반응 기록만 둔다.",
+      "completion": "기록 기간 동안 재료와 반응 로그가 남음",
+      "hold": [
+        "알레르기 진단이나 처방처럼 보이면 탈락",
+        "공식 출처 없이 건강 조언을 넣으면 탈락"
+      ],
+      "boundary": {
+        "copyright": "식단표 전문을 복제하지 않고 사용자 기록 필드만 둔다.",
+        "source": "공식 정보와 부모 경험담, 우리 아이 기록을 분리한다.",
+        "risk": "이상 반응은 즉시 전문가/기관 상담 메모로 제한한다."
+      },
+      "uxProblems": [
+        "민감 영역은 완료 체크보다 기록 필드가 먼저 보여야 한다.",
+        "주의 문구가 과하면 사용성이 떨어지므로 상세/출처 섹션으로 접는다."
+      ],
+      "scores": {
+        "userUsefulness": 5,
+        "executionClarity": 4,
+        "revisitValue": 5,
+        "destinationFit": 5,
+        "inputSimplicity": 4,
+        "creatorIncentive": 4,
+        "sourceBoundary": 5,
+        "myFlowUxFit": 4
+      },
+      "scoreValues": [
+        5,
+        4,
+        5,
+        5,
+        4,
+        4,
+        5,
+        4
+      ],
+      "average": 4.5,
+      "rank": 6,
+      "verdict": "seed 우선 후보",
+      "seedCandidate": true
+    },
+    {
+      "id": "rep-writing-challenge",
+      "requiredType": "단일 URL 챌린지형",
+      "depth": "deep",
+      "title": "30일 글쓰기 챌린지 Flow",
+      "sourceStructure": "single_url",
+      "sourceUrls": [
+        [
+          "원문",
+          "Diarly - 30 Day Writing Challenge",
+          "https://diarly.app/blog/30-day-writing-challenge.html"
+        ]
+      ],
+      "sourceSignals": [
+        "30일 동안 매일 하나의 글쓰기 프롬프트를 수행하는 구조다.",
+        "사용자에게 필요한 것은 원문 복제가 아니라 오늘의 번호, 작성 여부, 작성 링크다.",
+        "완료 결과는 30개의 글 조각 또는 저널 기록이다."
+      ],
+      "userGoal": "매일 글 주제를 새로 고르는 부담 없이 30일 동안 짧은 글쓰기 기록을 이어간다.",
+      "creatorIncentive": "작가, 코치, 뉴스레터 제작자가 자신만의 프롬프트 세트를 Flow로 공유하거나 판매하기 쉽다.",
+      "userInputs": [
+        "시작일",
+        "작성 도구",
+        "하루 목표 시간"
+      ],
+      "destination": "calendar + memo + internal_check",
+      "structure": "daily_challenge",
+      "today": [
+        "오늘 프롬프트 번호 열기",
+        "작성 링크 또는 한 줄 회고 남기기"
+      ],
+      "calendar": [
+        [
+          "오늘 글쓰기",
+          "시작일부터 30일 반복",
+          "routine_session"
+        ]
+      ],
+      "items": [
+        [
+          "Day 1 작성 시작",
+          "routine_session",
+          "작성 도구에 첫 글 링크나 메모가 남음"
+        ],
+        [
+          "오늘 프롬프트 작성",
+          "routine_session",
+          "작성 완료, 보류, 건너뜀 중 하나가 표시됨"
+        ],
+        [
+          "밀린 날 정리",
+          "decision_hold",
+          "밀린 이유와 재개일이 정리됨"
+        ],
+        [
+          "30일 후 다시 볼 글 고르기",
+          "check_task",
+          "공개하거나 확장할 글 1개가 선택됨"
+        ]
+      ],
+      "memo": "프롬프트 전문은 원문 링크로 연결하고 Flow에는 날짜, 번호, 작성 상태, 작성 링크만 담는다.",
+      "completion": "30일의 작성/보류 상태와 최종으로 다시 볼 글 1개가 남음",
+      "hold": [
+        "프롬프트 전문을 그대로 복제하면 탈락",
+        "작성 결과물이 없고 동기부여 문구만 있으면 Flow로 약함"
+      ],
+      "boundary": {
+        "copyright": "프롬프트 전문은 복제하지 않고 번호와 출처 링크만 둔다.",
+        "source": "원문 프롬프트와 사용자 작성 기록을 분리한다.",
+        "risk": "개인적 글쓰기 결과의 공개 여부는 기본 비공개로 둔다."
+      },
+      "uxProblems": [
+        "월간 캘린더에 30개 텍스트가 깔리면 과밀하다.",
+        "루틴 아이콘과 오늘 탭 중심으로 보여주는 편이 낫다."
+      ],
+      "scores": {
+        "userUsefulness": 4,
+        "executionClarity": 5,
+        "revisitValue": 5,
+        "destinationFit": 4,
+        "inputSimplicity": 5,
+        "creatorIncentive": 5,
+        "sourceBoundary": 4,
+        "myFlowUxFit": 4
+      },
+      "scoreValues": [
+        4,
+        5,
+        5,
+        4,
+        5,
+        5,
+        4,
+        4
+      ],
+      "average": 4.5,
+      "rank": 7,
+      "verdict": "seed 우선 후보",
+      "seedCandidate": true
+    },
+    {
+      "id": "rep-wedding-timeline",
+      "requiredType": "기준일 타임라인형",
+      "depth": "standard",
+      "title": "결혼식 12개월 준비 Flow",
+      "sourceStructure": "single_url",
+      "sourceUrls": [
+        [
+          "원문",
+          "Easy Event Checklist - Wedding Planning Checklist 12 Month Timeline",
+          "https://www.easyeventchecklist.com/blog/wedding-planning-checklist-12-month-timeline"
+        ]
+      ],
+      "sourceSignals": [
+        "결혼식 날짜를 기준으로 12개월 전부터 마감형 업무가 배열된다.",
+        "예약, 비교, 계약, 초대, 최종 확인처럼 단계와 완료 기준이 명확하다.",
+        "모든 항목을 캘린더에 넣기보다 주요 마감만 캘린더로 보내야 한다."
+      ],
+      "userGoal": "결혼식 날짜 기준으로 지금 해야 할 예약/결정/확인 항목만 본다.",
+      "creatorIncentive": "웨딩 플래너가 자신의 체크리스트를 날짜 기반 Flow로 상품화하기 좋다.",
+      "userInputs": [
+        "결혼식 날짜",
+        "예산 범위",
+        "우선 예약 항목"
+      ],
+      "destination": "hybrid",
+      "structure": "anchor_timeline",
+      "today": [
+        "이번 달 예약/결정 항목 확인",
+        "보류 중인 업체 비교 메모 남기기"
+      ],
+      "calendar": [
+        [
+          "장소 후보 비교 마감",
+          "D-12개월",
+          "scheduled_task"
+        ],
+        [
+          "초대장 발송",
+          "D-2개월",
+          "scheduled_task"
+        ],
+        [
+          "최종 인원 확인",
+          "D-2주",
+          "scheduled_task"
+        ]
+      ],
+      "items": [
+        [
+          "장소 후보 정리",
+          "check_task",
+          "후보, 견적, 방문일이 남음"
+        ],
+        [
+          "업체 결정 보류 사유 남기기",
+          "decision_hold",
+          "보류 이유와 재확인일이 있음"
+        ],
+        [
+          "주요 마감 캘린더 등록",
+          "scheduled_task",
+          "사용자 일정표에 핵심 마감만 표시됨"
+        ]
+      ],
+      "memo": "원문 타임라인의 긴 목록은 월별 묶음으로 축약하고, 실제 캘린더에는 핵심 결정일만 넣는다.",
+      "completion": "결혼식 날짜 기준 주요 예약/결정/확인 일정이 잡힘",
+      "hold": [
+        "모든 항목을 한 번에 보여주면 모바일에서 실패",
+        "지역/문화별 차이를 확정 규칙처럼 보이면 탈락"
+      ],
+      "boundary": {
+        "copyright": "원문 전체 타임라인을 복제하지 않고 대표 마감 구조만 남긴다.",
+        "source": "원문 일반 가이드와 사용자 개인 일정/업체 정보를 분리한다.",
+        "risk": "계약/환불 조건은 법률 조언이 아니라 확인 메모로 제한한다."
+      },
+      "uxProblems": [
+        "D-180 같은 표시가 루틴이나 반복 일정에 붙으면 어색하다.",
+        "기준일 타임라인은 상세에서 D-day, 월간 칸은 행동 제목 중심이어야 한다."
+      ],
+      "scores": {
+        "userUsefulness": 5,
+        "executionClarity": 5,
+        "revisitValue": 4,
+        "destinationFit": 5,
+        "inputSimplicity": 4,
+        "creatorIncentive": 4,
+        "sourceBoundary": 4,
+        "myFlowUxFit": 4
+      },
+      "scoreValues": [
+        5,
+        5,
+        4,
+        5,
+        4,
+        4,
+        4,
+        4
+      ],
+      "average": 4.4,
+      "rank": 8,
+      "verdict": "seed 우선 후보",
+      "seedCandidate": true
+    },
+    {
+      "id": "rep-youtube-workout-playlist",
+      "requiredType": "유튜브 플레이리스트형",
+      "depth": "standard",
+      "title": "30일 초보 운동 플레이리스트 Flow",
+      "sourceStructure": "youtube_playlist",
+      "sourceUrls": [
+        [
+          "프로그램",
+          "Nourish Move Love - 30-Day Beginner Workout Plan",
+          "https://www.nourishmovelove.com/fitness-beginner-workout-plan/"
+        ],
+        [
+          "보조 사례",
+          "yes2next - 30 Day Beginner Workout Plan",
+          "https://yes2next.com/30-day-beginner-workout-plan"
+        ]
+      ],
+      "sourceSignals": [
+        "30일 계획과 영상 링크를 따라가는 구조다.",
+        "동작 설명은 영상이 담당하고 Flow는 일정, 링크, 완료/컨디션 기록을 담당해야 한다.",
+        "민감 영역이므로 통증, 어지러움, 기존 질환 악화 시 중단 조건이 필요하다."
+      ],
+      "userGoal": "오늘 어떤 영상을 볼지 고르느라 멈추지 않고, 완료 여부와 컨디션만 가볍게 기록한다.",
+      "creatorIncentive": "운동 유튜버가 기존 영상 묶음을 실행 캘린더로 재포장하기 좋다.",
+      "userInputs": [
+        "시작일",
+        "운동 가능 요일",
+        "중단 조건 확인"
+      ],
+      "destination": "calendar + memo",
+      "structure": "video_routine",
+      "today": [
+        "오늘 영상 열기",
+        "완료/강도/통증 여부 기록"
+      ],
+      "calendar": [
+        [
+          "오늘 운동 영상",
+          "계획 요일 반복",
+          "routine_session"
+        ]
+      ],
+      "items": [
+        [
+          "오늘 영상 링크 열기",
+          "routine_session",
+          "원문 영상 링크를 열고 따라 했는지 기록함"
+        ],
+        [
+          "운동 후 컨디션 기록",
+          "log_entry",
+          "강도, 통증, 어지러움 중 필요한 항목이 남음"
+        ],
+        [
+          "중단/조정 판단",
+          "decision_hold",
+          "중단 이유와 다음 확인일이 남음"
+        ]
+      ],
+      "memo": "영상의 운동 순서를 복제하지 않고 원문 링크, 준비물, 기록 필드, 중단 조건만 둔다.",
+      "completion": "선택한 기간 동안 영상 완료 여부와 컨디션 기록이 남음",
+      "hold": [
+        "운동 처방처럼 보이면 탈락",
+        "영상 하나를 임의 세부 동작 체크리스트로 쪼개면 탈락"
+      ],
+      "boundary": {
+        "copyright": "영상 동작 설명은 복제하지 않고 링크로 연결한다.",
+        "source": "제작자 운동 가이드와 사용자 컨디션 기록을 분리한다.",
+        "risk": "통증, 어지러움, 호흡곤란, 기존 질환 악화 시 중단/전문가 상담 문구를 둔다."
+      },
+      "uxProblems": [
+        "캘린더 안에서 영상 제목이 길면 모바일이 깨진다.",
+        "오늘 탭은 영상 열기와 완료 기록만 남겨야 한다."
+      ],
+      "scores": {
+        "userUsefulness": 4,
+        "executionClarity": 4,
+        "revisitValue": 5,
+        "destinationFit": 4,
+        "inputSimplicity": 5,
+        "creatorIncentive": 5,
+        "sourceBoundary": 4,
+        "myFlowUxFit": 4
+      },
+      "scoreValues": [
+        4,
+        4,
+        5,
+        4,
+        5,
+        5,
+        4,
+        4
+      ],
+      "average": 4.4,
+      "rank": 9,
+      "verdict": "seed 우선 후보",
+      "seedCandidate": true
+    },
+    {
+      "id": "rep-blog-start-series",
+      "requiredType": "블로그 시리즈형",
+      "depth": "standard",
+      "title": "블로그 시작 운영 Flow",
+      "sourceStructure": "blog_series",
+      "sourceUrls": [
+        [
+          "가이드 PDF",
+          "HubSpot - How to Start a Successful Blog",
+          "https://www.hubspot.com/hubfs/How-to-Start-a-Successful-Blog-HS-GA.pdf"
+        ],
+        [
+          "캘린더",
+          "HubSpot - Editorial Calendar Templates",
+          "https://blog.hubspot.com/marketing/business-blog-editorial-calendar-templates"
+        ],
+        [
+          "백로그",
+          "HubSpot - Process Blog Content Backlog",
+          "https://blog.hubspot.com/marketing/process-blog-content-backlog"
+        ]
+      ],
+      "sourceSignals": [
+        "블로그 시작은 아이디어, 캘린더, 백로그, 발행 상태가 묶여야 실행된다.",
+        "단일 글보다 여러 글/자료를 묶어야 사용자의 실제 운영 루프가 생긴다.",
+        "결과물은 글감 백로그와 발행 캘린더다."
+      ],
+      "userGoal": "블로그를 시작할 때 글감, 초안, 발행 예정일을 한 곳에서 관리한다.",
+      "creatorIncentive": "마케팅 제작자가 자신의 블로그 운영법을 템플릿 Flow로 판매하기 좋다.",
+      "userInputs": [
+        "블로그 주제",
+        "발행 요일",
+        "첫 글 마감일"
+      ],
+      "destination": "sheet + calendar",
+      "structure": "content_pipeline",
+      "today": [
+        "글감 3개 백로그에 넣기",
+        "첫 글 발행일 지정"
+      ],
+      "calendar": [
+        [
+          "첫 글 초안 마감",
+          "사용자 지정일",
+          "scheduled_task"
+        ],
+        [
+          "발행일",
+          "매주 반복",
+          "routine_session"
+        ]
+      ],
+      "items": [
+        [
+          "글감 백로그 만들기",
+          "check_task",
+          "제목 후보 3개와 상태가 입력됨"
+        ],
+        [
+          "첫 글 초안 시작",
+          "pipeline_state",
+          "아이디어가 초안 상태로 이동함"
+        ],
+        [
+          "발행일 예약",
+          "scheduled_task",
+          "캘린더에 발행 예정일이 표시됨"
+        ]
+      ],
+      "memo": "원문 자료의 세부 전략은 링크로 두고 Flow는 글감-초안-예약-발행 상태를 관리한다.",
+      "completion": "첫 글의 글감, 초안 상태, 발행일이 정리됨",
+      "hold": [
+        "글감이 없으면 발행 루틴을 만들지 않는다.",
+        "SEO 조언 전체를 복제하면 탈락"
+      ],
+      "boundary": {
+        "copyright": "템플릿/PDF 내용을 복제하지 않고 실행 필드만 만든다.",
+        "source": "HubSpot 자료와 사용자의 블로그 백로그를 분리한다.",
+        "risk": "트래픽/수익 보장 문구를 넣지 않는다."
+      },
+      "uxProblems": [
+        "상태판과 전체 목록이 한 화면에 같이 있으면 모바일에서 우선순위가 흐려진다.",
+        "발행 캘린더와 백로그 표를 분리해야 한다."
+      ],
+      "scores": {
+        "userUsefulness": 4,
+        "executionClarity": 4,
+        "revisitValue": 5,
+        "destinationFit": 5,
+        "inputSimplicity": 4,
+        "creatorIncentive": 5,
+        "sourceBoundary": 4,
+        "myFlowUxFit": 4
+      },
+      "scoreValues": [
+        4,
+        4,
+        5,
+        5,
+        4,
+        5,
+        4,
+        4
+      ],
+      "average": 4.4,
+      "rank": 10,
+      "verdict": "seed 우선 후보",
+      "seedCandidate": true
+    },
+    {
+      "id": "rep-code-study-challenge",
+      "requiredType": "학습/스터디형",
+      "depth": "standard",
+      "title": "100일 코딩 챌린지 Flow",
+      "sourceStructure": "single_url",
+      "sourceUrls": [
+        [
+          "원문",
+          "100 Days Of Code - Rules",
+          "https://www.100daysofcode.com/rules/"
+        ]
+      ],
+      "sourceSignals": [
+        "매일 일정 시간 코딩하고 공개 로그를 남기는 반복 챌린지다.",
+        "중요한 것은 학습 내용 복제가 아니라 오늘의 실행, 로그 링크, 연속일 관리다.",
+        "보류/재개 규칙이 없으면 실패감만 남을 수 있다."
+      ],
+      "userGoal": "매일 코딩 실행과 로그 남기기를 놓치지 않고, 끊긴 날도 재개할 수 있게 관리한다.",
+      "creatorIncentive": "개발 교육 제작자가 자신의 커리큘럼과 챌린지 운영법을 Flow로 묶기 좋다.",
+      "userInputs": [
+        "시작일",
+        "학습 주제",
+        "로그 채널"
+      ],
+      "destination": "calendar + sheet",
+      "structure": "study_routine",
+      "today": [
+        "오늘 코딩 시간 확보",
+        "로그 링크 남기기"
+      ],
+      "calendar": [
+        [
+          "오늘 코딩",
+          "100일 반복",
+          "routine_session"
+        ]
+      ],
+      "items": [
+        [
+          "오늘 학습 주제 선택",
+          "check_task",
+          "오늘 다룰 주제가 한 줄로 정리됨"
+        ],
+        [
+          "코딩 실행",
+          "routine_session",
+          "실행 시간과 결과 링크가 남음"
+        ],
+        [
+          "공개 로그 남기기",
+          "log_entry",
+          "로그 채널에 작성한 링크가 저장됨"
+        ],
+        [
+          "끊긴 날 재개 처리",
+          "decision_hold",
+          "재개일과 사유가 남음"
+        ]
+      ],
+      "memo": "원문 규칙 전문을 복제하지 않고 챌린지 원칙 링크와 오늘 로그 필드만 남긴다.",
+      "completion": "100일 동안 실행/로그/보류 상태가 추적됨",
+      "hold": [
+        "학습 커리큘럼이 없는데 매일 '공부하기'만 있으면 약함",
+        "공개 압박을 강제하면 부적절"
+      ],
+      "boundary": {
+        "copyright": "원문 규칙을 복제하지 않고 출처 링크로 둔다.",
+        "source": "챌린지 규칙과 사용자의 학습 로그를 분리한다.",
+        "risk": "취업/실력 향상 보장 문구를 넣지 않는다."
+      },
+      "uxProblems": [
+        "100개 반복 일정이 월간 캘린더를 압도한다.",
+        "오늘 탭과 진행률 중심으로 보여주는 편이 낫다."
+      ],
+      "scores": {
+        "userUsefulness": 4,
+        "executionClarity": 4,
+        "revisitValue": 5,
+        "destinationFit": 4,
+        "inputSimplicity": 5,
+        "creatorIncentive": 4,
+        "sourceBoundary": 4,
+        "myFlowUxFit": 4
+      },
+      "scoreValues": [
+        4,
+        4,
+        5,
+        4,
+        5,
+        4,
+        4,
+        4
+      ],
+      "average": 4.3,
+      "rank": 11,
+      "verdict": "조건부 seed 후보",
+      "seedCandidate": true
+    },
+    {
+      "id": "rep-photography-challenge",
+      "requiredType": "문서/PDF 실행형",
+      "depth": "standard",
+      "title": "30일 사진 연습 Flow",
+      "sourceStructure": "single_url",
+      "sourceUrls": [
+        [
+          "PDF",
+          "iPhotography - 30 Day Photography Challenge",
+          "https://d1mlukbqb3dh9w.cloudfront.net/Downloadables/30%20Day%20Photography%20Challenge%20by%20iPhotography.pdf"
+        ]
+      ],
+      "sourceSignals": [
+        "PDF는 하루 하나의 촬영 과제를 제공한다.",
+        "Flow에는 과제 전문보다 오늘 번호, 촬영 여부, 사진 링크/메모가 필요하다.",
+        "결과물은 30장의 사진 또는 연습 기록이다."
+      ],
+      "userGoal": "오늘 찍을 과제를 확인하고 촬영 결과를 사진 링크나 메모로 남긴다.",
+      "creatorIncentive": "사진 강사나 제작자가 PDF/강의 과제를 실행 캘린더로 확장하기 좋다.",
+      "userInputs": [
+        "시작일",
+        "사진 저장 위치",
+        "촬영 가능 요일"
+      ],
+      "destination": "calendar + memo",
+      "structure": "creative_challenge",
+      "today": [
+        "오늘 촬영 과제 번호 확인",
+        "사진 링크 또는 회고 남기기"
+      ],
+      "calendar": [
+        [
+          "오늘 사진 과제",
+          "30회 반복",
+          "routine_session"
+        ]
+      ],
+      "items": [
+        [
+          "오늘 과제 확인",
+          "routine_session",
+          "PDF 원문 링크를 열고 오늘 번호를 확인함"
+        ],
+        [
+          "촬영 결과 저장",
+          "memo_evidence",
+          "사진 링크 또는 파일 위치가 남음"
+        ],
+        [
+          "건너뛴 날 재배치",
+          "decision_hold",
+          "다시 촬영할 날짜가 지정됨"
+        ]
+      ],
+      "memo": "PDF 내용은 복제하지 않고 오늘 번호, 결과 링크, 짧은 회고만 둔다.",
+      "completion": "30개의 촬영 결과 또는 보류 기록이 남음",
+      "hold": [
+        "PDF 과제 전문을 Flow에 붙여넣으면 탈락",
+        "사진 저장 위치 입력이 없으면 재방문 가치가 낮다."
+      ],
+      "boundary": {
+        "copyright": "PDF 과제 문장을 복제하지 않고 링크와 번호만 표시한다.",
+        "source": "과제 출처와 사용자의 사진 결과를 분리한다.",
+        "risk": "타인 촬영/장소 촬영의 개인정보와 허가 이슈를 메모로 둔다."
+      },
+      "uxProblems": [
+        "첨부/사진 링크 입력이 상세에서 너무 깊으면 사용성이 떨어진다.",
+        "메모 항목은 기본 노출하는 편이 낫다."
+      ],
+      "scores": {
+        "userUsefulness": 4,
+        "executionClarity": 4,
+        "revisitValue": 4,
+        "destinationFit": 4,
+        "inputSimplicity": 4,
+        "creatorIncentive": 4,
+        "sourceBoundary": 4,
+        "myFlowUxFit": 4
+      },
+      "scoreValues": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "average": 4,
+      "rank": 12,
+      "verdict": "조건부 seed 후보",
+      "seedCandidate": true
+    }
+  ]
+}

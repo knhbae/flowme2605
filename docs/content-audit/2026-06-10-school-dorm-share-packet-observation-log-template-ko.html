@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 기숙사 공유 패킷 관찰 기록 템플릿</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f7fa;
+        --paper: #ffffff;
+        --soft: #f1f5f9;
+        --ink: #101828;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d8e1ea;
+        --blue: #1d4ed8;
+        --blue-soft: #e9f2ff;
+        --green: #047857;
+        --green-soft: #e7f6ef;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --violet: #6941c6;
+        --violet-soft: #f1eafd;
+        --radius: 8px;
+        --shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard",
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          "Malgun Gothic",
+          system-ui,
+          sans-serif;
+        line-height: 1.6;
+        letter-spacing: 0;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.24;
+        word-break: keep-all;
+      }
+
+      p,
+      li,
+      td {
+        color: var(--body);
+      }
+
+      ul,
+      ol {
+        margin: 9px 0 0;
+        padding-left: 20px;
+      }
+
+      code {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 0.94em;
+      }
+
+      .page {
+        width: min(1240px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 22px 0 72px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        min-height: 54px;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .brand {
+        color: var(--ink);
+        font-weight: 900;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 292px;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .hero,
+      .panel,
+      .nav {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .hero,
+      .panel {
+        padding: 26px;
+      }
+
+      .hero h1 {
+        max-width: 920px;
+        font-size: clamp(28px, 4vw, 44px);
+      }
+
+      .lead {
+        max-width: 900px;
+        margin-top: 14px;
+        font-size: 17px;
+      }
+
+      .metric-grid,
+      .grid-2,
+      .grid-3,
+      .grid-4 {
+        display: grid;
+        gap: 12px;
+      }
+
+      .metric-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        margin-top: 20px;
+      }
+
+      .grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .grid-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .metric,
+      .card,
+      .decision {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--soft);
+        padding: 15px;
+      }
+
+      .metric {
+        min-height: 126px;
+      }
+
+      .metric strong,
+      .card strong,
+      .decision strong {
+        display: block;
+        color: var(--ink);
+        font-size: 15px;
+      }
+
+      .metric span,
+      .card p,
+      .decision p {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .panel {
+        margin-top: 18px;
+      }
+
+      .panel h2 {
+        font-size: 23px;
+      }
+
+      .section-lead {
+        max-width: 870px;
+        margin-top: 9px;
+        margin-bottom: 17px;
+      }
+
+      .selected {
+        background: var(--green-soft);
+        border-color: #b7e2cf;
+      }
+
+      .hold {
+        background: var(--amber-soft);
+        border-color: #efd89c;
+      }
+
+      .risk {
+        background: var(--red-soft);
+        border-color: #f0b8ad;
+      }
+
+      .info {
+        background: var(--blue-soft);
+        border-color: #c5d9f7;
+      }
+
+      .violet {
+        background: var(--violet-soft);
+        border-color: #d7c4f4;
+      }
+
+      .form-block {
+        display: grid;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .field {
+        display: grid;
+        grid-template-columns: 210px minmax(0, 1fr);
+        gap: 10px;
+        align-items: stretch;
+      }
+
+      .field span,
+      .field div {
+        min-height: 42px;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--soft);
+        color: var(--body);
+        font-size: 13px;
+      }
+
+      .field span {
+        background: #fff;
+        color: var(--ink);
+        font-weight: 800;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+      }
+
+      table {
+        width: 100%;
+        min-width: 720px;
+        border-collapse: collapse;
+        background: var(--paper);
+      }
+
+      th,
+      td {
+        padding: 13px 14px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+        font-size: 14px;
+      }
+
+      th {
+        background: var(--soft);
+        color: var(--ink);
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .nav {
+        position: sticky;
+        top: 16px;
+        padding: 18px;
+      }
+
+      .nav h2 {
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      .nav a {
+        display: block;
+        padding: 8px 0;
+        border-top: 1px solid var(--line);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .note {
+        margin-top: 14px;
+        padding: 12px;
+        border-radius: var(--radius);
+        background: var(--amber-soft);
+        color: var(--amber);
+        font-size: 12px;
+      }
+
+      @media (max-width: 980px) {
+        .layout {
+          display: block;
+        }
+
+        .nav {
+          position: static;
+          margin-top: 18px;
+        }
+
+        .metric-grid,
+        .grid-2,
+        .grid-3,
+        .grid-4 {
+          grid-template-columns: 1fr;
+        }
+
+        .field {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .page {
+          width: min(100% - 22px, 1240px);
+          padding-top: 12px;
+        }
+
+        .topbar {
+          display: block;
+        }
+
+        .topbar div + div {
+          margin-top: 4px;
+        }
+
+        .hero,
+        .panel {
+          padding: 18px;
+        }
+
+        .hero h1 {
+          font-size: 28px;
+        }
+
+        .lead {
+          font-size: 15px;
+        }
+
+        .metric {
+          min-height: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe 분석방</span> / school-or-dorm-prep-share-packet log template</div>
+        <div>작성일 2026-06-10 · 상태: observation log template · sessions 0 / 3 · not evidence</div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <section class="hero" id="top">
+            <h1>수신자 관찰 결과를 같은 기준으로 남기는 기록 템플릿</h1>
+            <p class="lead">
+              관찰 스크립트가 “무엇을 물을지”라면, 이 템플릿은 <code>school-dorm-share-packet-v2-2026-06-11-readable-preview</code>에서 “무엇을 증거로 남길지”를 정한다.
+              matching role-labeled slot이 <code>agreed</code>이고 세션이 completed usable일 때만 기록한다.
+            </p>
+            <div class="metric-grid">
+              <div class="metric selected">
+                <strong>목적</strong>
+                <span>수신자 이해도 기록을 같은 형식으로 남긴다.</span>
+              </div>
+              <div class="metric">
+                <strong>기록 단위</strong>
+                <span>completed usable 참여자 1명당 세션 1개, 현재 0 / 3.</span>
+              </div>
+              <div class="metric hold">
+                <strong>상태</strong>
+                <span>기록 템플릿. 검증/통합/공개 라우트 아님.</span>
+              </div>
+              <div class="metric risk">
+                <strong>금지</strong>
+                <span>실명, 학생번호, 건강값, 결제값, 방 정보, 채널 ID 저장 금지.</span>
+              </div>
+            </div>
+            <p class="note"><code>not invited</code>, <code>invited</code>, <code>agreed</code>, <code>scheduled</code>, <code>not run</code>은 관찰 증거가 아니다. 빈 log도 evidence board update 근거가 아니다.</p>
+          </section>
+
+          <section class="panel" id="use">
+            <h2>사용 방식</h2>
+            <p class="section-lead">실제 이름 대신 역할 라벨만 쓴다. 민감값은 “식별했다/올리지 않겠다고 말했다”처럼 결과만 기록한다. 기록 전에는 <a href="./2026-06-11-school-dorm-share-packet-scheduling-tracker-ko.html#snippets">scheduling tracker</a>와 <a href="./2026-06-11-school-dorm-share-packet-preflight-checklist-ko.html">preflight checklist</a>를 확인한다.</p>
+            <div class="grid-4">
+              <div class="card selected">
+                <strong>student-like recipient</strong>
+                <p>학생 본인처럼 읽는 수신자.</p>
+              </div>
+              <div class="card">
+                <strong>parent/guardian-like</strong>
+                <p>보호자나 가족방 수신자.</p>
+              </div>
+              <div class="card">
+                <strong>coordinator</strong>
+                <p>단체방, 카페, 제출 확인을 관리하는 사람.</p>
+              </div>
+              <div class="card hold">
+                <strong>other proxy</strong>
+                <p>역할이 애매하면 proxy로 표시하고 해석 한계를 남긴다.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="session">
+            <h2>세션 기록 양식</h2>
+            <p class="section-lead">복사해서 Session 01, Session 02처럼 반복해서 쓴다.</p>
+            <div class="form-block">
+              <div class="field"><span>Date</span><div></div></div>
+              <div class="field"><span>Observer</span><div></div></div>
+              <div class="field"><span>Participant role</span><div>student-like / parent-guardian-like / coordinator / other proxy</div></div>
+              <div class="field"><span>Packet shown</span><div>text / HTML section / printed copy</div></div>
+              <div class="field"><span>Channel assumption</span><div>KakaoTalk / Naver Cafe / Form-Sheet / Memo / Other</div></div>
+              <div class="field"><span>FlowMe explained before task</span><div>no</div></div>
+            </div>
+          </section>
+
+          <section class="panel" id="checks">
+            <h2>태스크 결과 체크</h2>
+            <p class="section-lead">각 항목은 pass, fail, unclear 중 하나로만 기록한다. 판단 근거는 짧게 남긴다.</p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>체크</th>
+                    <th>결과</th>
+                    <th>근거 메모</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>첫 행동: 최신 학교/기숙사 공지 먼저 확인</td>
+                    <td>pass / fail / unclear</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>라벨: <code>공지 확인 완료</code></td>
+                    <td>pass / fail / unclear</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>라벨: <code>서류 준비 완료</code></td>
+                    <td>pass / fail / unclear</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>라벨: <code>반입금지 제외 완료</code></td>
+                    <td>pass / fail / unclear</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>라벨: <code>당일 절차 확인 필요</code></td>
+                    <td>pass / fail / unclear</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>민감값을 올리지 않는다고 이해</td>
+                    <td>pass / fail / unclear</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>FlowMe가 자동 전송/수집하지 않는다고 이해</td>
+                    <td>pass / fail / unclear</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="confusion">
+            <h2>혼동 메모</h2>
+            <p class="section-lead">실패 원인을 제품 문구 수정으로 연결하기 위한 짧은 기록이다.</p>
+            <div class="grid-3">
+              <div class="card risk">
+                <strong>라벨 혼동</strong>
+                <p>`공지 확인 완료`를 전체 완료로 이해했는지, `당일 절차 확인 필요`를 FlowMe 요청으로 봤는지 적는다.</p>
+              </div>
+              <div class="card risk">
+                <strong>민감값 혼동</strong>
+                <p>건강서류, 결제, 학생 식별값, 채널 링크를 올리려 했는지 결과만 기록한다.</p>
+              </div>
+              <div class="card hold">
+                <strong>자동화 기대</strong>
+                <p>FlowMe가 카톡/카페/폼에 자동 게시하거나 답변을 모은다고 기대했는지 적는다.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="rollup">
+            <h2>3명 롤업</h2>
+            <p class="section-lead">3개 이상 세션이 쌓인 뒤에만 작성한다. 한 명의 반응으로 제품 결정을 내리지 않는다.</p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>지표</th>
+                    <th>필요 신호</th>
+                    <th>관찰 결과</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>라벨 이해</td>
+                    <td>첫 run 3명 모두 네 라벨을 올바르게 해석</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>최신 공지 우선</td>
+                    <td>모든 참여자가 공식 최신 공지가 우선이라고 말함</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>민감값 제외</td>
+                    <td>주의 문구 후 민감값 게시 제안 없음</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>수동 경계</td>
+                    <td>자동 전송/게시/응답 수집을 기대하지 않음</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>모바일 첫 화면</td>
+                    <td>긴 출처 설명 없이 패킷 목적을 읽음</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="decision">
+            <h2>결정 라벨</h2>
+            <p class="section-lead">검증처럼 보이는 표현은 쓰지 않는다. 세 가지 비검증 라벨만 허용한다.</p>
+            <div class="grid-3">
+              <div class="decision hold">
+                <strong>no signal</strong>
+                <p>세션 수가 부족하거나 관찰 조건이 달라 비교할 수 없다.</p>
+              </div>
+              <div class="decision risk">
+                <strong>friction</strong>
+                <p>진행은 가능하지만 라벨, 금지값, 자동화 경계, 모바일 문구가 헷갈린다.</p>
+              </div>
+              <div class="decision selected">
+                <strong>candidate signal</strong>
+                <p>이해 기준을 통과해 `/content-flows` 리뷰 후보 준비가 가능하다. 검증은 아니다.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="connected">
+            <h2>연결 문서</h2>
+            <p class="section-lead">이 템플릿은 관찰 스크립트 다음에 쓰는 내부 기록지다.</p>
+            <div class="grid-2">
+              <div class="card">
+                <strong>관찰 스크립트</strong>
+                <p><a href="./2026-06-10-school-dorm-share-packet-observation-script-ko.html">수신자 관찰 스크립트</a></p>
+              </div>
+              <div class="card">
+                <strong>공유 패킷 preview</strong>
+                <p><a href="./2026-06-10-school-dorm-share-packet-preview-ko.html">기숙사 입사 공유 패킷 preview</a></p>
+              </div>
+              <div class="card">
+                <strong>상위 게이트</strong>
+                <p><a href="./2026-06-10-distribution-channel-handoff-platform-gate-ko.html">distribution-channel-handoff 플랫폼 게이트</a></p>
+              </div>
+              <div class="card">
+                <strong>원문 Markdown</strong>
+                <p><a href="./2026-06-10-school-dorm-share-packet-observation-log-template.md">관찰 기록 템플릿 Markdown</a></p>
+              </div>
+              <div class="card selected">
+                <strong>판정 보드</strong>
+                <p><a href="./2026-06-10-school-dorm-share-packet-evidence-board-ko.html">evidence board</a>에서 현재 상태와 후보 승격 조건을 본다.</p>
+              </div>
+              <div class="card">
+                <strong>파일럿 실행 팩</strong>
+                <p><a href="./2026-06-10-school-dorm-share-packet-pilot-run-pack-ko.html">3개 세션 런시트</a>로 관찰을 시작한다.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <aside class="nav" aria-label="문서 목차">
+          <h2>목차</h2>
+          <a href="#top">요약</a>
+          <a href="#use">사용 방식</a>
+          <a href="#session">세션 기록</a>
+          <a href="#checks">태스크 체크</a>
+          <a href="#confusion">혼동 메모</a>
+          <a href="#rollup">3명 롤업</a>
+          <a href="#decision">결정 라벨</a>
+          <a href="#connected">연결 문서</a>
+          <a href="./2026-06-10-school-dorm-share-packet-evidence-board-ko.html">Evidence board</a>
+          <a href="./2026-06-10-school-dorm-share-packet-pilot-run-pack-ko.html">파일럿 실행 팩</a>
+          <a href="./2026-06-10-school-dorm-share-packet-observation-log-template.md">Markdown 원문</a>
+          <p class="note">
+            이 기록지는 검증 결과가 아니다. 실제 반복 사용 전에는 validated, public route ready, integration ready라고 부르지 않는다.
+          </p>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 검색 콘솔 디지털 설정 비교</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7f9;
+        --paper: #ffffff;
+        --soft: #f1f5f9;
+        --ink: #101828;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d9e2ec;
+        --green: #047857;
+        --green-soft: #e7f6ef;
+        --blue: #1d4ed8;
+        --blue-soft: #e9f1ff;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --radius: 8px;
+        --shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard",
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          "Malgun Gothic",
+          system-ui,
+          sans-serif;
+        line-height: 1.6;
+        letter-spacing: 0;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.24;
+        word-break: keep-all;
+      }
+
+      p,
+      li,
+      td {
+        color: var(--body);
+      }
+
+      ul,
+      ol {
+        margin: 9px 0 0;
+        padding-left: 20px;
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.94em;
+      }
+
+      .page {
+        width: min(1240px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 22px 0 70px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        min-height: 54px;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        color: var(--muted);
+        font-size: 13px;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      }
+
+      .brand {
+        color: var(--ink);
+        font-weight: 900;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 290px;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .hero,
+      .panel,
+      .nav {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .hero {
+        padding: 30px;
+      }
+
+      .hero h1 {
+        max-width: 900px;
+        font-size: clamp(30px, 4vw, 48px);
+      }
+
+      .lead {
+        max-width: 900px;
+        margin-top: 14px;
+        font-size: 17px;
+      }
+
+      .panel {
+        margin-top: 18px;
+        padding: 25px;
+      }
+
+      .panel h2 {
+        margin-bottom: 10px;
+        font-size: 24px;
+      }
+
+      .section-lead {
+        max-width: 900px;
+        margin-bottom: 17px;
+        color: var(--muted);
+      }
+
+      .nav {
+        position: sticky;
+        top: 16px;
+        padding: 18px;
+      }
+
+      .nav h2 {
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      .nav a {
+        display: block;
+        padding: 9px 10px;
+        border-radius: 6px;
+        color: var(--body);
+        font-size: 14px;
+      }
+
+      .nav a:hover {
+        background: var(--soft);
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      .nav .note {
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .flowline {
+        display: grid;
+        gap: 12px;
+      }
+
+      .grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .grid-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .flowline {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .card,
+      .metric,
+      .flow-step {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        padding: 16px;
+      }
+
+      .metric,
+      .flow-step {
+        background: var(--soft);
+      }
+
+      .metric {
+        min-height: 118px;
+      }
+
+      .metric strong,
+      .flow-step strong,
+      .card h3 {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .card h3 {
+        font-size: 16px;
+      }
+
+      .flow-step {
+        min-height: 150px;
+      }
+
+      .decision {
+        border-left: 4px solid var(--blue);
+        padding: 14px 16px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+        background: var(--blue-soft);
+      }
+
+      .decision.green {
+        border-left-color: var(--green);
+        background: var(--green-soft);
+      }
+
+      .decision.amber {
+        border-left-color: var(--amber);
+        background: var(--amber-soft);
+      }
+
+      .decision.red {
+        border-left-color: var(--red);
+        background: var(--red-soft);
+      }
+
+      .decision strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--ink);
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+      }
+
+      table {
+        width: 100%;
+        min-width: 880px;
+        border-collapse: collapse;
+        background: #fff;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+        font-size: 14px;
+      }
+
+      th {
+        background: var(--soft);
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .source-list {
+        display: grid;
+        gap: 9px;
+      }
+
+      .source-list a {
+        display: block;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--soft);
+        color: var(--body);
+        font-size: 14px;
+      }
+
+      .small {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 980px) {
+        .layout {
+          display: block;
+        }
+
+        .nav {
+          position: static;
+          margin-top: 18px;
+        }
+
+        .grid-4,
+        .flowline {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 680px) {
+        .page {
+          width: min(100% - 20px, 1240px);
+          padding-top: 10px;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero,
+        .panel {
+          padding: 18px;
+        }
+
+        .grid-2,
+        .grid-3,
+        .grid-4,
+        .flowline {
+          grid-template-columns: 1fr;
+        }
+
+        table {
+          min-width: 780px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe 분석방</span> / search-console digital setup comparison</div>
+        <div>작성일 2026-06-08 · 상태: source/platform comparison</div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <section class="hero" id="summary">
+            <h1>검색 콘솔 축은 통합이 아니라 설정 체크와 재확인 메모로 시작한다</h1>
+            <p class="lead">
+              이 문서는 remote support 밖의 두 번째 digital setup 축으로 Google Search Console, Naver Search Advisor,
+              Bing Webmaster Tools를 비교한 근거다. FlowMe는 플랫폼을 연결하거나 SEO 도구가 되지 않고,
+              공식 소스를 읽은 뒤 사용자가 가진 접근 권한과 상태만 정리한다.
+            </p>
+            <div class="grid-4" style="margin-top: 24px">
+              <div class="metric"><strong>현재 상태</strong><span>source/platform comparison, not validation.</span></div>
+              <div class="metric"><strong>산출물</strong><span>설정 체크리스트 + 상태 메모 + 재확인 알림.</span></div>
+              <div class="metric"><strong>저장 금지</strong><span>verification token, DNS value, OAuth grant, API key, credential.</span></div>
+              <div class="metric"><strong>성과 금지</strong><span>indexing, ranking, traffic promise 없음.</span></div>
+            </div>
+          </section>
+
+          <section class="panel" id="decision">
+            <h2>결정 요약</h2>
+            <p class="section-lead">
+              <code>site-search-console-setup-precheck</code>를 문서 수준 Stage 0 후보로 올리되, 아직 <code>/content-flows</code>에는 추가하지 않는다.
+            </p>
+            <div class="grid-3">
+              <div class="decision green"><strong>사용자 순간</strong><p>작은 사이트, 블로그, 크리에이터 페이지 운영자가 검색엔진이 사이트를 발견할 수 있도록 공식 웹마스터 문서를 따라간다.</p></div>
+              <div class="decision amber"><strong>자연 artifact</strong><p>어떤 플랫폼을 준비했는지, 어떤 소유권 방법을 썼는지, robots/sitemap/indexing 전제를 확인했는지 남기는 짧은 checklist + memo.</p></div>
+              <div class="decision red"><strong>FlowMe 경계</strong><p>검증 토큰, DNS record, OAuth grant, account credential, API key, sitemap file, indexing/traffic promise는 저장하지 않는다.</p></div>
+            </div>
+          </section>
+
+          <section class="panel" id="snapshot">
+            <h2>공식 소스 스냅샷</h2>
+            <p class="section-lead">아래 표는 2026-06-08 문서에 기록된 공식 소스 비교를 읽기 쉽게 재구성한 것이다.</p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>서비스</th>
+                    <th>근거 단서</th>
+                    <th>FlowMe 해석</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Google Search Console</td>
+                    <td>HTML file, meta tag, DNS record 등 소유권 확인 방법마다 root upload, homepage HTML edit, DNS access가 다르다. Sitemap report는 fetch/read 오류를 보여줄 수 있다.</td>
+                    <td>강한 setup checklist 소스다. token과 record는 FlowMe 밖에 둔다.</td>
+                  </tr>
+                  <tr>
+                    <td>Naver Search Advisor</td>
+                    <td>host-unit 등록, meta tag/HTML file upload, robots.txt, title/description, noindex, sitemap/RSS, crawl request limit, IndexNow 안내가 있다.</td>
+                    <td>Korean-first comparator로 가장 강하다. site-readiness precheck에는 좋지만 ranking promise가 아니다.</td>
+                  </tr>
+                  <tr>
+                    <td>Bing Webmaster Tools</td>
+                    <td>Google Search Console import 또는 manual add를 지원하고, DNS/XML file/meta tag/CNAME verification과 URL submission, IndexNow를 다룬다.</td>
+                    <td>platform-readiness comparator다. OAuth import는 Stage 0 행동이 아니라 경계다.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="behavior">
+            <h2>사용자 행동과 단절점</h2>
+            <div class="grid-2">
+              <div class="card"><h3>현재 행동</h3><p>플랫폼 설정 글을 읽고 verification value를 복사하고, DNS나 HTML을 수정하고, sitemap 또는 URL을 제출한 뒤 기다린다.</p></div>
+              <div class="card"><h3>혼동 지점</h3><p>소유권 확인, crawl discovery, sitemap reading, indexing, ranking을 한 흐름으로 오해하기 쉽다.</p></div>
+              <div class="card"><h3>접근권한 문제</h3><p>DNS, root file upload, homepage head edit 권한이 있는지 모를 수 있다.</p></div>
+              <div class="card"><h3>민감값 위험</h3><p>verification token, DNS record, API key가 메모에 붙기 쉽지만 FlowMe는 저장하지 않아야 한다.</p></div>
+            </div>
+          </section>
+
+          <section class="panel" id="fit">
+            <h2>FlowMe Fit</h2>
+            <div class="grid-2">
+              <div class="decision green"><strong>입력 가능</strong><p>site URL, platform choice, site owner/manager, setup date, chosen ownership method, revisit date.</p></div>
+              <div class="decision green"><strong>출력 가능</strong><p>setup precheck checklist, status memo, revisit reminder.</p></div>
+              <div class="decision amber"><strong>자연 구조</strong><p><code>hybrid</code>: internal_check 중심 + optional calendar revisit.</p></div>
+              <div class="decision red"><strong>입력 금지</strong><p>token, DNS record value, OAuth grant, account credential, API key, sitemap file, traffic/ranking target.</p></div>
+            </div>
+          </section>
+
+          <section class="panel" id="actions">
+            <h2>제안 액션 5개</h2>
+            <div class="flowline">
+              <div class="flow-step"><strong>1. 사이트 단위와 접근권한</strong><p>host/domain/URL-prefix와 DNS, root upload, homepage HTML edit 가능 여부를 확인한다.</p></div>
+              <div class="flow-step"><strong>2. 소유권 방법 선택</strong><p>HTML file, meta tag, DNS/TXT/CNAME, platform import 등을 FlowMe 밖에서 고른다.</p></div>
+              <div class="flow-step"><strong>3. crawl 전제 확인</strong><p>robots.txt, noindex, title/description, redirect/frame, live accessibility를 공식 소스와 대조한다.</p></div>
+              <div class="flow-step"><strong>4. sitemap/RSS/URL 상태</strong><p>제출했는지, 없어서 생략했는지, 요청 상태가 무엇인지 기록한다. 색인 보장은 없다.</p></div>
+              <div class="flow-step"><strong>5. 재확인 메모</strong><p>verification, sitemap fetch/read, crawl status, platform report를 다시 볼 날짜를 둔다.</p></div>
+            </div>
+          </section>
+
+          <section class="panel" id="boundary">
+            <h2>플랫폼 경계</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>경계</th>
+                    <th>FlowMe 안</th>
+                    <th>FlowMe 밖</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Ownership proof</td>
+                    <td>method name and status</td>
+                    <td>verification token, DNS record value, HTML verification file content</td>
+                  </tr>
+                  <tr>
+                    <td>Account access</td>
+                    <td>platform name and source link</td>
+                    <td>login credentials, OAuth grant, account IDs, API keys</td>
+                  </tr>
+                  <tr>
+                    <td>Sitemap/crawl</td>
+                    <td>sitemap URL label or status if user chooses to type it</td>
+                    <td>sitemap file contents, generated files, automated submissions</td>
+                  </tr>
+                  <tr>
+                    <td>Performance</td>
+                    <td>revisit reminder and report link</td>
+                    <td>traffic/ranking promise, SEO score, indexing guarantee</td>
+                  </tr>
+                  <tr>
+                    <td>Collaboration</td>
+                    <td>memo: ask developer/host admin</td>
+                    <td>full ticketing, DNS automation, credential handoff</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="compression">
+            <h2>Phase 5 압축</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>후보</th>
+                    <th>사용자 순간</th>
+                    <th>자연 산출물</th>
+                    <th>결정</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Google Search Console ownership setup</td>
+                    <td>사이트 소유권 확인과 sitemap 확인.</td>
+                    <td>checklist + revisit memo</td>
+                    <td>stage0_export_only reference</td>
+                  </tr>
+                  <tr>
+                    <td>Naver Search Advisor site readiness</td>
+                    <td>한국 사이트 운영자가 소유권, robots, sitemap/RSS, crawl limits를 확인.</td>
+                    <td>checklist + diagnostic memo</td>
+                    <td>stage0_export_only strongest source candidate</td>
+                  </tr>
+                  <tr>
+                    <td>Bing Webmaster Tools setup</td>
+                    <td>사이트 추가 또는 Google Search Console import.</td>
+                    <td>checklist + account-boundary memo</td>
+                    <td>stage0_export_only reference</td>
+                  </tr>
+                  <tr>
+                    <td>Generic site-search-console setup precheck</td>
+                    <td>creator/small operator가 SEO 결과를 과장하지 않고 discoverability를 준비.</td>
+                    <td>hybrid checklist</td>
+                    <td>B+ documentation candidate</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" id="decision-state">
+            <h2>제품 결정</h2>
+            <div class="grid-3">
+              <div class="decision amber"><strong>A/B/C</strong><p><code>B+</code>. 사용자 일은 구체적이고 소스 기반이지만 host/CMS 변동이 크다.</p></div>
+              <div class="decision green"><strong>다음 행동</strong><p>Korean-first setup source나 user scenario가 선택될 때까지 docs-level candidate로 유지한다.</p></div>
+              <div class="decision red"><strong>만들지 않음</strong><p>Search Console/Naver/Bing/IndexNow integration, DNS/HTML automation, OAuth import, sitemap generation, ranking/traffic/SEO score.</p></div>
+            </div>
+          </section>
+
+          <section class="panel" id="remote">
+            <h2>Remote Support와의 관계</h2>
+            <div class="grid-2">
+              <div class="decision amber"><strong>원격지원 위험</strong><p>실시간 장치 제어와 credential exposure.</p></div>
+              <div class="decision amber"><strong>검색 콘솔 위험</strong><p>token/DNS/OAuth exposure와 false indexing/ranking promise.</p></div>
+              <div class="decision green"><strong>공통 Stage 0 원칙</strong><p>FlowMe는 setup checklist, status memo, revisit reminder를 제공할 수 있다.</p></div>
+              <div class="decision red"><strong>공통 금지</strong><p>FlowMe가 플랫폼, 통합, 보안/SEO 권위자가 되면 안 된다.</p></div>
+            </div>
+          </section>
+
+          <section class="panel" id="rubric">
+            <h2>루브릭 요약</h2>
+            <div class="grid-4">
+              <div class="metric"><strong>Source/Safety</strong><span>5</span></div>
+              <div class="metric"><strong>User Need Fit</strong><span>4</span></div>
+              <div class="metric"><strong>Execution Clarity</strong><span>4</span></div>
+              <div class="metric"><strong>낮은 지점</strong><span>Cognitive Load 3. 플랫폼 방법을 보여주기 전 접근권한부터 물어야 한다.</span></div>
+            </div>
+          </section>
+
+          <section class="panel" id="links">
+            <h2>원문과 연결 문서</h2>
+            <div class="source-list">
+              <a href="./2026-06-08-search-console-digital-setup-comparison.md">원문 Markdown</a>
+              <a href="./2026-06-09-search-console-setup-precheck-gate-ko.html">검색 콘솔 일반 설정 게이트 HTML</a>
+              <a href="./2026-06-09-naver-search-advisor-site-readiness-scenario-ko.html">Naver Search Advisor 사이트 준비 시나리오 HTML</a>
+              <a href="./2026-06-09-external-ecosystem-connected-docs-visual-ko.html#supporting-analysis">연결 문서의 보조 분석 섹션</a>
+              <a href="./2026-06-09-external-ecosystem-roadmap-visual-ko.html">외부 생태계 분석 로드맵</a>
+              <a href="https://support.google.com/webmasters/answer/9008080?hl=en-GB">Google ownership verification</a>
+              <a href="https://support.google.com/webmasters/answer/7451001?hl=en">Google Sitemaps report</a>
+              <a href="https://searchadvisor.naver.com/guide/seo-basic-intro">Naver SEO 기본 안내</a>
+              <a href="https://searchadvisor.naver.com/guide/diagnose-site">Naver 사이트 간단 체크</a>
+              <a href="https://searchadvisor.naver.com/guide/request-crawl">Naver 수집 요청</a>
+              <a href="https://searchadvisor.naver.com/guide/indexnow-about">Naver IndexNow 소개</a>
+              <a href="https://www.bing.com/webmasters/help/add-and-verify-site-12184f8b">Bing add and verify site</a>
+              <a href="https://www.bing.com/webmasters/help/url-submission-62f2860b">Bing URL submission</a>
+            </div>
+            <p class="small" style="margin-top: 12px">
+              외부 링크는 기존 근거 문서에 기록된 소스다. 이 HTML은 기존 내부 비교 문서를 시각화한 읽기용 문서이며, 새 소스 재검증이나 SEO 조언이 아니다.
+            </p>
+          </section>
+        </div>
+
+        <aside class="nav" aria-label="문서 목차">
+          <h2>목차</h2>
+          <a href="#summary">요약</a>
+          <a href="#decision">결정 요약</a>
+          <a href="#snapshot">공식 소스 스냅샷</a>
+          <a href="#behavior">사용자 행동</a>
+          <a href="#fit">FlowMe Fit</a>
+          <a href="#actions">제안 액션</a>
+          <a href="#boundary">플랫폼 경계</a>
+          <a href="#compression">Phase 5 압축</a>
+          <a href="#decision-state">제품 결정</a>
+          <a href="#remote">Remote Support와의 관계</a>
+          <a href="#rubric">루브릭</a>
+          <a href="#links">원문과 연결 문서</a>
+          <p class="note">
+            이 문서는 비교 근거다. FlowMe는 검색 콘솔 통합, SEO 점수, DNS 자동화, 계정 관리, 색인 보장을 만들지 않는다.
+          </p>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

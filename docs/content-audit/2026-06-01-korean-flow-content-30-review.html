@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>한글 원문 기반 Flow 후보 30개 리뷰</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --ink: #111827;
+      --muted: #5b6472;
+      --line: #dfe4eb;
+      --soft: #f1f5f9;
+      --blue: #1d4ed8;
+      --blue-soft: #eff6ff;
+      --green: #047857;
+      --green-soft: #ecfdf5;
+      --amber: #b45309;
+      --amber-soft: #fffbeb;
+      --red: #b91c1c;
+      --red-soft: #fef2f2;
+      --shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 10px 28px rgba(15, 23, 42, 0.06);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    button, input, textarea, select { font: inherit; }
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px 18px 80px;
+    }
+    .hero {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: minmax(0, 1fr);
+      margin-bottom: 18px;
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(26px, 4vw, 44px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+    .hero p {
+      margin: 0;
+      max-width: 780px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 18px 0;
+    }
+    .metric {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      min-height: 82px;
+    }
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .metric strong {
+      display: block;
+      margin-top: 5px;
+      font-size: 24px;
+      line-height: 1.1;
+    }
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: 1.4fr repeat(3, minmax(130px, 0.55fr));
+      gap: 8px;
+      align-items: center;
+      background: rgba(246, 247, 249, 0.92);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 0;
+      backdrop-filter: blur(12px);
+    }
+    .toolbar input,
+    .toolbar select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      padding: 10px 11px;
+      min-height: 42px;
+    }
+    .toolbar button,
+    .review-actions button,
+    .source-open,
+    .utility-button {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      padding: 9px 11px;
+      min-height: 38px;
+      cursor: pointer;
+    }
+    .toolbar button.primary,
+    .review-actions button.primary {
+      border-color: #1d4ed8;
+      background: #2563eb;
+      color: #fff;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+      margin-top: 16px;
+    }
+    .side {
+      position: sticky;
+      top: 78px;
+      display: grid;
+      gap: 10px;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px;
+      box-shadow: var(--shadow);
+    }
+    .panel h2 {
+      margin: 0 0 8px;
+      font-size: 15px;
+    }
+    .score-guide {
+      display: grid;
+      gap: 6px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .score-guide li {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 7px;
+      align-items: baseline;
+    }
+    .toc {
+      display: grid;
+      gap: 4px;
+      max-height: 48vh;
+      overflow: auto;
+      padding-right: 4px;
+    }
+    .toc a {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr) 32px;
+      gap: 6px;
+      align-items: center;
+      border-radius: 6px;
+      color: #334155;
+      padding: 6px;
+      font-size: 12px;
+    }
+    .toc a:hover { background: var(--soft); text-decoration: none; }
+    .toc .toc-title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .cards {
+      display: grid;
+      gap: 14px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #fff, #fafbfc);
+    }
+    .eyebrow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #334155;
+      padding: 3px 8px;
+      font-size: 12px;
+      line-height: 1.35;
+      white-space: nowrap;
+    }
+    .pill.score-5 { border-color: #bbf7d0; background: var(--green-soft); color: var(--green); }
+    .pill.score-4 { border-color: #bfdbfe; background: var(--blue-soft); color: var(--blue); }
+    .pill.score-3 { border-color: #fde68a; background: var(--amber-soft); color: var(--amber); }
+    .card h2 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+    .flow-title {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .source-open {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+    .card-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 14px;
+      padding: 15px 16px 16px;
+    }
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .block {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 11px;
+      min-width: 0;
+    }
+    .block.wide { grid-column: 1 / -1; }
+    .block h3 {
+      margin: 0 0 6px;
+      color: #0f172a;
+      font-size: 13px;
+    }
+    .block p,
+    .block li {
+      color: #334155;
+      font-size: 13px;
+    }
+    .block p { margin: 0; }
+    .block ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .review-box {
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      background: #f8fbff;
+      padding: 12px;
+      align-self: start;
+    }
+    .review-box h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+    }
+    .rating {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5px;
+      margin-bottom: 8px;
+    }
+    .rating button {
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #fff;
+      color: #334155;
+      padding: 8px 0;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .rating button.active {
+      border-color: #1d4ed8;
+      background: #2563eb;
+      color: #fff;
+    }
+    .flags {
+      display: grid;
+      gap: 6px;
+      margin: 8px 0;
+      color: #334155;
+      font-size: 13px;
+    }
+    .flags label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 96px;
+      resize: vertical;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      padding: 9px;
+    }
+    .review-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      margin-top: 8px;
+    }
+    .save-state {
+      min-height: 18px;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .hidden { display: none !important; }
+    .empty {
+      display: none;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+      background: #fff;
+    }
+    .empty.show { display: block; }
+    code {
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      border-radius: 5px;
+      padding: 1px 5px;
+      font-size: 0.92em;
+    }
+    @media (max-width: 920px) {
+      .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .toolbar { grid-template-columns: 1fr 1fr; }
+      .layout { grid-template-columns: 1fr; }
+      .side { position: static; }
+      .toc { max-height: none; }
+      .card-body { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      .page { padding: 18px 10px 72px; }
+      .summary { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .toolbar {
+        position: static;
+        grid-template-columns: 1fr;
+        background: transparent;
+        border: 0;
+      }
+      .side { order: 2; }
+      .results { order: 1; }
+      .card-head { grid-template-columns: 1fr; padding: 14px 12px 10px; }
+      .card-body { padding: 12px; }
+      .section-grid { grid-template-columns: 1fr; }
+      .block.wide { grid-column: auto; }
+      .review-actions { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <h1>한글 원문 기반 Flow 후보 30개 리뷰</h1>
+      <p>원문에서 실제 실행 가능한 일정, 루틴, 체크리스트만 얇게 뽑아 Flow 콘텐츠로 만들었을 때 감이 오는지 확인하는 페이지입니다. 점수와 메모는 서버로 열면 저장소의 JSON/MD로 저장되고, 파일로 열면 브라우저에 임시 저장됩니다.</p>
+    </section>
+
+    <section class="summary" aria-label="요약">
+      <div class="metric"><span>전체 후보</span><strong id="metric-total">30</strong></div>
+      <div class="metric"><span>5점 예상 후보</span><strong id="metric-score5">0</strong></div>
+      <div class="metric"><span>내 평가 완료</span><strong id="metric-reviewed">0</strong></div>
+      <div class="metric"><span>문제 있음 체크</span><strong id="metric-issues">0</strong></div>
+    </section>
+
+    <section class="toolbar" aria-label="필터">
+      <input id="search" type="search" placeholder="제목, 카테고리, 원문, 실행 항목 검색" />
+      <select id="category-filter" aria-label="카테고리 필터"></select>
+      <select id="score-filter" aria-label="예상 점수 필터">
+        <option value="all">예상 점수 전체</option>
+        <option value="5">예상 5점</option>
+        <option value="4">예상 4점</option>
+        <option value="3">예상 3점</option>
+      </select>
+      <button id="export-json" type="button">평가 JSON 복사</button>
+    </section>
+
+    <section class="layout">
+      <aside class="side" aria-label="리뷰 기준">
+        <div class="panel">
+          <h2>점수 기준</h2>
+          <ul class="score-guide">
+            <li><strong>5</strong><span>바로 seed/demo Flow 가능</span></li>
+            <li><strong>4</strong><span>좋지만 단순화 필요</span></li>
+            <li><strong>3</strong><span>주제는 좋지만 구조 보강 필요</span></li>
+            <li><strong>2</strong><span>원문 묶음 재구성 필요</span></li>
+            <li><strong>1</strong><span>FlowMe에 맞지 않음</span></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h2>후보 바로가기</h2>
+          <nav class="toc" id="toc"></nav>
+        </div>
+      </aside>
+
+      <section class="results">
+        <div class="empty" id="empty">조건에 맞는 후보가 없습니다.</div>
+        <div class="cards" id="cards"></div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const FLOW_CANDIDATES = [{"id":"flow-01-5세-연간-한글-수-놀이-계획","no":1,"title":"5세 연간 한글·수 놀이 계획","category":"유아/학습","destination":"캘린더/루틴","expectedScore":5,"creator":"어린이집정보공개포털 보육계획안","originalTitle":"2026년 연간 놀이 예상안 5세 온누리반","originalUrl":"https://info.childcare.go.kr/info/pnis/search/PnisFileDownload.jsp?STCODE_POP=44130000017&filetype=YUPLOADU&flag=DNGB&schoolyear=2026&wkyear=202604","sourceSignal":"계절별 놀이 주제, 산책/나들이/행사, 환경교육 날짜, MOMO 한글·수 항목이 월/계절 단위로 정리되어 있다.","flowTitle":"5세 한글·수 놀이 캘린더","cta":"놀이 캘린더로 받기","inputs":"시작월, 아이 연령, 주 1회/2회 선택","actionLabel":"캘린더/루틴","actions":"- 3월: 기본 자음자와 모음자 놀이\n  - 4월: 20까지 숫자 알아보기\n  - 9월: 흉내 내는 말 놀이\n  - 10월: 50까지 숫자 알아보기\n  - 11월: 복합 규칙 찾기","memo":"놀이 주제, 준비물, 원문 링크, 부모가 같이 해볼 질문 1개","completion":"오늘 놀이를 하고 아이가 반응한 단어/숫자를 한 줄 메모","reviewMemo":""},{"id":"flow-02-5세-월간-보육계획안-캘린더","no":2,"title":"5세 월간 보육계획안 캘린더","category":"유아/학습","destination":"캘린더/루틴","expectedScore":5,"creator":"어린이집정보공개포털 월간보육계획안","originalTitle":"2025년 7월 5세 보육계획안","originalUrl":"https://info.childcare.go.kr/info_html5/pnis/search/PnisFileDownload.jsp?STCODE_POP=11620000013&filetype=MUPLOADU&flag=DNGB&schoolyear=2025&wkyear=202507","sourceSignal":"7월 1주~5주 소주제, 실내 놀이, 바깥놀이, 기본생활습관, 안전교육, 행사, 한글/수 활동이 주차별로 있다.","flowTitle":"5세 7월 놀이 일정","cta":"월간 놀이 캘린더로 받기","inputs":"시작일, 주차 선택, 놀이 빈도","actionLabel":"캘린더/루틴","actions":"- 1주: 여름 날씨와 우리 생활 이야기\n  - 2주: 세탁소 구성놀이\n  - 3주: 물놀이 안전 포스터\n  - 4주: 같은 물고기 찾기\n  - 5주: 이를 깨끗하게 닦아요","memo":"놀이 준비물, 안전교육 원문, 부모 질문","completion":"놀이 실행 여부와 아이가 고른 활동 1개 체크","reviewMemo":""},{"id":"flow-03-누리과정-하루-놀이-계획","no":3,"title":"누리과정 하루 놀이 계획","category":"유아/학습","destination":"캘린더/루틴","expectedScore":4,"creator":"인천광역시교육청 자료","originalTitle":"2025학년도 유아·놀이 중심 누리과정 놀이 계획안","originalUrl":"https://www.ice.go.kr/upload/ice/na/bbs_1676/2026/02/70e4cf83efd01a2694c1c64e79bb88cc.pdf","sourceSignal":"등원, 조용한 놀이, 손 씻기, 오전 간식, 놀이 활동처럼 하루 흐름이 시간대별로 정리되어 있다.","flowTitle":"유아 하루 놀이 루틴","cta":"하루 루틴으로 저장하기","inputs":"시작일, 요일, 놀이 시간","actionLabel":"캘린더/루틴","actions":"- 등원 후 조용한 놀이\n  - 손 씻기와 간식\n  - 오늘의 주제 놀이\n  - 놀이 후 정리\n  - 짧은 회고 질문","memo":"원문 놀이 주제, 준비물, 아이가 고른 놀이","completion":"오늘 놀이 1개와 생활습관 1개 체크","reviewMemo":""},{"id":"flow-04-종이컵-수-조작-놀이","no":4,"title":"종이컵 수·조작 놀이","category":"유아/학습","destination":"체크리스트","expectedScore":4,"creator":"i-누리 2019 개정 누리과정 놀이 사례","originalTitle":"종이컵 놀이, 해 봐야 알아요","originalUrl":"https://i-nuri.go.kr/board/boardFile/download/27/630/1319.do","sourceSignal":"종이컵을 수·조작 공간에 제공하고 유아가 어떻게 놀이를 확장하는지 관찰하는 사례다.","flowTitle":"종이컵 수 놀이","cta":"놀이 체크리스트로 저장하기","inputs":"놀이 날짜, 준비물, 아이 연령","actionLabel":"체크리스트","actions":"- 종이컵 준비\n  - 쌓기/분류/개수 세기 중 하나 고르기\n  - 아이가 만든 모양 사진은 선택사항\n  - 사용한 숫자/말 한 줄 메모","memo":"종이컵 놀이 아이디어, 질문 예시, 원문 링크","completion":"놀이 후 아이가 한 행동 1개 메모","reviewMemo":""},{"id":"flow-05-그림책-독서-지도안","no":5,"title":"그림책 독서 지도안","category":"유아/학습","destination":"체크리스트","expectedScore":4,"creator":"토토북/알라딘 제공 독서 교수·학습 지도안","originalTitle":"독수리와 굴뚝새 독서 지도안 PDF","originalUrl":"https://image.aladdin.co.kr/img/files/150922_workbook/%EC%9C%A0%EC%95%84/16%20%ED%86%A0%ED%86%A0%EB%B6%81_%EB%8F%85%EC%88%98%EB%A6%AC%EC%99%80%20%EA%B5%B4%EB%9A%9D%EC%83%88.pdf","sourceSignal":"읽기 전, 읽기 중, 읽기 후 활동으로 나뉘는 지도안 구조가 있다.","flowTitle":"그림책 한 권 읽기","cta":"독서 활동으로 저장하기","inputs":"읽을 날짜, 책 제목, 반복 여부","actionLabel":"체크리스트","actions":"- 읽기 전 표지 보고 이야기하기\n  - 그림책 읽기\n  - 기억나는 장면 말하기\n  - 아이가 고른 단어/그림 메모","memo":"책 링크, 지도안 질문, 준비물","completion":"책 읽기와 아이 반응 한 줄 기록","reviewMemo":""},{"id":"flow-06-예비초-독서-챌린지-권장도서","no":6,"title":"예비초 독서 챌린지 권장도서","category":"유아/학습","destination":"캘린더/루틴","expectedScore":4,"creator":"아이스크림 홈런","originalTitle":"예비초~초등 2학년 홈런 독서챌린지 권장도서 리스트","originalUrl":"https://www.home-learn.co.kr/front/doc/%ED%99%88%EB%9F%B0%EB%8F%85%EC%84%9C%EC%B1%8C%EB%A6%B0%EC%A7%80_%EA%B6%8C%EC%9E%A5%EB%8F%84%EC%84%9C_%EB%A6%AC%EC%8A%A4%ED%8A%B8.pdf","sourceSignal":"예비초~초등 저학년 권장도서 목록이 있어 독서표/시트로 전환하기 좋다.","flowTitle":"예비초 독서 챌린지","cta":"독서표로 받기","inputs":"시작일, 주당 권수, 학년\n- 시트/루틴:\n  - 이번 주 책 고르기\n  - 읽은 날짜 체크\n  - 재미있던 장면 한 줄\n  - 다음 책 고르기","actionLabel":"실행 항목","actions":"","memo":"권장도서 원문 링크, 도서관/구매 링크","completion":"책 1권 읽고 한 줄 감상 남김","reviewMemo":""},{"id":"flow-07-초등-입학-전-한글-수학-생활습관-준비","no":7,"title":"초등 입학 전 한글·수학·생활습관 준비","category":"유아/학습","destination":"체크리스트","expectedScore":5,"creator":"Edu for Mom 블로그","originalTitle":"초등학교 입학 전 필수 준비 공부법","originalUrl":"https://eduformom.tistory.com/2","sourceSignal":"한글, 수학, 생활습관으로 입학 전 준비 영역이 나뉜다.","flowTitle":"초등 입학 준비 체크","cta":"입학 준비 체크리스트로 저장하기","inputs":"입학 예정일, 아이 현재 수준, 주 2회/3회","actionLabel":"체크리스트","actions":"- 짧은 문장 읽기\n  - 숫자 세기/간단한 수 개념 확인\n  - 개인 물건 정리 연습\n  - 화장실/식사/시간 약속 연습","memo":"원문 링크, 오늘 확인할 예시 문장/숫자","completion":"오늘 준비 항목 1~2개 체크","reviewMemo":""},{"id":"flow-08-유아-숫자-놀이","no":8,"title":"유아 숫자 놀이","category":"유아/학습","destination":"캘린더/루틴","expectedScore":4,"creator":"Insight58 블로그","originalTitle":"우리 아이 놀이로 끝내는 숫자 공부","originalUrl":"https://insight58-2.tistory.com/entry/%EC%9A%B0%EB%A6%AC%EC%95%84%EC%9D%B4-%EB%86%80%EC%9D%B4%EB%A1%9C-%EB%81%9D%EB%82%B4%EB%8A%94-%EC%88%AB%EC%9E%90-%EA%B3%B5%EB%B6%80","sourceSignal":"숫자 세기, 묶음 개념, 놀이 중심 수학 학습 단서가 있다.","flowTitle":"숫자 놀이 10분","cta":"반복 놀이로 저장하기","inputs":"시작일, 반복 요일, 숫자 범위\n- 루틴:\n  - 오늘 숫자 1개 고르기\n  - 집 안 물건으로 세기\n  - 10개 묶음 만들기\n  - 아이가 말한 숫자 메모","actionLabel":"실행 항목","actions":"","memo":"숫자 놀이 방법, 무료 자료 링크, 원문 링크","completion":"10분 놀이 완료","reviewMemo":""},{"id":"flow-09-만-5세-한글-워크북-놀이","no":9,"title":"만 5세 한글 워크북 놀이","category":"유아/학습","destination":"캘린더/루틴","expectedScore":3,"creator":"차이의 놀이","originalTitle":"만 5세 한글 톡톡 워크북 세트","originalUrl":"https://www.chaisplay.com/packages/1159-%EC%B0%A8%EC%9D%B4%EC%95%BC-%EB%86%80%EC%9E%90-%EB%A7%8C-5%EC%84%B8-%ED%95%9C%EA%B8%80-%ED%86%A1%ED%86%A1-%EC%9B%8C%ED%81%AC%EB%B6%81?no_navbar=true","sourceSignal":"의성어, 의태어, 직업, 날씨, 색깔, 수, 인사말, 동사/형용사 등 주제 단어가 정리되어 있다.","flowTitle":"5세 한글 주제놀이","cta":"한글 놀이 루틴으로 저장하기","inputs":"시작일, 주제, 반복 요일\n- 루틴:\n  - 오늘 주제 단어 보기\n  - 말놀이/짝맞추기\n  - 선긋기 또는 스티커 활동\n  - 아이가 기억한 단어 1개 메모","actionLabel":"실행 항목","actions":"","memo":"워크북 링크, 오늘 주제, 부모 질문","completion":"단어 1개를 말하거나 찾음","reviewMemo":""},{"id":"flow-10-영아기-이유식-단계-식단","no":10,"title":"영아기 이유식 단계 식단","category":"유아/학습","destination":"캘린더/루틴","expectedScore":4,"creator":"어린이·사회복지급식관리지원센터 식단마당","originalTitle":"영아기식단","originalUrl":"https://dietary4u.mfds.go.kr/menu.es?mid=a10702060000","sourceSignal":"영아기는 이유기 초기, 중기, 후기로 세분되고 섭식 훈련/단계 기준이 있다.","flowTitle":"이유식 단계 식단표","cta":"식단표로 받기","inputs":"아이 개월 수, 시작일, 하루 횟수\n- 시트/캘린더:\n  - 초기: 미음/반고형식 시작\n  - 중기: 하루 2회 루틴\n  - 후기: 입자감과 식사 형태 확대\n  - 주간 식단 칸 생성","actionLabel":"실행 항목","actions":"","memo":"공식 단계 기준, 원문 링크, 주의 문구","completion":"오늘 식단 체크. 반응 기록은 선택 메모로만 둠","reviewMemo":""},{"id":"flow-11-초기-토핑-이유식-4주-식단","no":11,"title":"초기 토핑 이유식 4주 식단","category":"유아/학습","destination":"시트","expectedScore":4,"creator":"Family Yes 블로그","originalTitle":"2025 토핑이유식 식단표, 초기 1~2단계 정리","originalUrl":"https://family-yes.tistory.com/229","sourceSignal":"초기 1~2단계 4주 식단표와 큐브 용량 단서가 있다.","flowTitle":"초기 이유식 4주 식단","cta":"4주 식단 캘린더로 받기","inputs":"시작일, 초기 단계, 하루 이유식 시간\n- 캘린더/시트:\n  - 1주차 베이스죽 준비\n  - 2주차 새 재료 추가\n  - 3주차 반복 재료 확인\n  - 4주차 다음 단계 준비","actionLabel":"실행 항목","actions":"","memo":"큐브 용량, 준비물, 원문 링크","completion":"오늘 식단 완료 여부 체크","reviewMemo":""},{"id":"flow-12-질병관리청-이유기-보충식-기준","no":12,"title":"질병관리청 이유기 보충식 기준","category":"기타","destination":"캘린더/메모","expectedScore":3,"creator":"질병관리청 국가건강정보포털","originalTitle":"이유기보충식","originalUrl":"https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5470","sourceSignal":"보충식 시기, 양, 음식 형태, 발달에 따른 진행 기준이 있다.","flowTitle":"이유식 공식 기준 메모","cta":"공식 기준 메모로 저장하기","inputs":"아이 개월 수, 시작일\n- 메모 중심:\n  - 현재 개월의 음식 형태 확인\n  - 한 끼 분량 기준 확인\n  - 단단한 정도 변화 시점 확인\n  - 이상 시 전문가 상담 문구 보관","actionLabel":"캘린더","actions":"단계 전환 확인일만 생성","memo":"","completion":"오늘 식단을 결정하기 전 공식 기준 확인","reviewMemo":""},{"id":"flow-13-창문형-에어컨-필터-청소","no":13,"title":"창문형 에어컨 필터 청소","category":"가전 관리","destination":"캘린더/루틴","expectedScore":5,"creator":"삼성전자서비스","originalTitle":"창문형, 먼지거름필터 청소 방법","originalUrl":"https://www.samsungsvc.co.kr/solution/4547361","sourceSignal":"필터 분리, 진공청소기/물세척, 중성세제 담금, 그늘 건조 순서가 있다.","flowTitle":"에어컨 필터 청소","cta":"반복 일정으로 저장하기","inputs":"시작일, 반복 주기, 제품 종류\n- 루틴:\n  - 전원 끄기\n  - 필터 분리\n  - 먼지 제거 또는 물세척\n  - 그늘에서 완전 건조\n  - 재장착","actionLabel":"실행 항목","actions":"","memo":"모델별 분리 위치, 중성세제 사용 조건, 원문 링크","completion":"필터 건조 후 재장착 완료","reviewMemo":""},{"id":"flow-14-공기청정기-필터-청소-교체","no":14,"title":"공기청정기 필터 청소/교체","category":"가전 관리","destination":"캘린더/루틴","expectedScore":5,"creator":"LG전자 고객지원","originalTitle":"LG 공기청정기 청소 방법 및 필터 교체 주기","originalUrl":"https://www.lge.co.kr/support/solutions-20153100606475","sourceSignal":"공기흡입구 분리, 필터 꺼내기, 진공청소기/부드러운 솔, 프리필터 물세척, 교체 주기 확인이 있다.","flowTitle":"공기청정기 필터 관리","cta":"필터 관리 루틴으로 저장하기","inputs":"시작일, 반복 주기, 필터 종류\n- 루틴:\n  - 흡입구 분리\n  - 프리필터 먼지 제거\n  - 오염 심하면 물세척\n  - 그늘 건조\n  - 교체 알림 확인","actionLabel":"실행 항목","actions":"","memo":"물세척 가능 필터/불가 필터 구분, 원문 링크","completion":"청소 또는 교체 상태 체크","reviewMemo":""},{"id":"flow-15-로봇청소기-브러시-필터-관리","no":15,"title":"로봇청소기 브러시·필터 관리","category":"가전 관리","destination":"캘린더/루틴","expectedScore":4,"creator":"가전케어 스타리어스 블로그","originalTitle":"로봇청소기 관리 총정리","originalUrl":"https://solidtips.tistory.com/entry/robot-vacuum-maintenance-brush-sensor-dustbin-watertank","sourceSignal":"메인 브러시, 사이드 브러시, 필터, 걸레, 먼지봉투의 관리/교체 주기가 정리되어 있다.","flowTitle":"로봇청소기 관리","cta":"관리 루틴으로 저장하기","inputs":"시작일, 모델명, 반복 주기\n- 루틴:\n  - 브러시 머리카락 제거\n  - 필터 먼지 털기\n  - 센서 닦기\n  - 물걸레/오수통 세척\n  - 소모품 교체일 확인","actionLabel":"실행 항목","actions":"","memo":"부품별 교체 주기, 도구 링크, 원문 링크","completion":"오늘 관리 부위 체크","reviewMemo":""},{"id":"flow-16-가습기-매일-주간-청소-루틴","no":16,"title":"가습기 매일/주간 청소 루틴","category":"가전 관리","destination":"캘린더/루틴","expectedScore":4,"creator":"코웨이 사용설명서","originalTitle":"코웨이 가습기 사용설명서","originalUrl":"https://www.coway.com/core/product/fmanual/download/195","sourceSignal":"수조부 청소는 매일, 가습필터 세탁기/건조기 사용 금지 등 관리 단서가 있다.","flowTitle":"가습기 청소 루틴","cta":"청소 루틴으로 저장하기","inputs":"시작일, 매일/주간 알림, 제품명\n- 루틴:\n  - 물 비우기\n  - 수조부 헹구기\n  - 필터 상태 확인\n  - 주간 세척일 체크\n  - 완전 건조","actionLabel":"실행 항목","actions":"","memo":"제품 설명서 링크, 금지사항, 세척 준비물","completion":"물 비움/수조 청소 체크","reviewMemo":""},{"id":"flow-17-정수기-필터-교체-주기","no":17,"title":"정수기 필터 교체 주기","category":"가전 관리","destination":"캘린더/루틴","expectedScore":4,"creator":"쿠쿠 인스퓨어 사용설명서","originalTitle":"CUCKOO 인스퓨어 정수기 설명서","originalUrl":"https://cdn.cuckoo.co.kr/upload_cuckoo/_bo_rep/manual/file_a83bac30-b2ee-4e9b-a68f-fa11c20bd1aa.pdf","sourceSignal":"필터 교체 방법, 예상 교체 주기, 교체 후 10분 출수 권고가 있다.","flowTitle":"정수기 필터 교체","cta":"교체 일정으로 저장하기","inputs":"설치일, 필터명, 교체 주기\n- 캘린더/체크:\n  - 교체 예정일 생성\n  - 필터 주문/준비\n  - 필터 교체\n  - 10분 출수\n  - 다음 교체일 저장","actionLabel":"실행 항목","actions":"","memo":"필터명, 교체 방법, 설명서 링크","completion":"필터 교체와 다음 교체일 저장","reviewMemo":""},{"id":"flow-18-드럼세탁기-통세척-세제함-관리","no":18,"title":"드럼세탁기 통세척/세제함 관리","category":"가전 관리","destination":"캘린더/루틴","expectedScore":5,"creator":"노써치 생활가전 콘텐츠","originalTitle":"드럼세탁기 청소, 쉽고 간단하게 관리하는 법","originalUrl":"https://nosearch.com/contents/encyclopedia/living/washing_machine/931","sourceSignal":"통세척 코스, 세제함, 배수필터, 전용 클리너/무세제 통세척 구분이 있다.","flowTitle":"세탁기 청소","cta":"반복 일정으로 저장하기","inputs":"시작일, 반복 주기, 세탁기 종류\n- 루틴:\n  - 통세척 코스 실행\n  - 세제함 분리/세척\n  - 배수필터 확인\n  - 문 열어 건조\n  - 다음 청소일 저장","actionLabel":"실행 항목","actions":"","memo":"무세제/클리너 구분, 원문 링크, 제품 설명서 링크","completion":"통세척과 세제함 관리 완료","reviewMemo":""},{"id":"flow-19-몬스테라-물주기-분갈이","no":19,"title":"몬스테라 물주기·분갈이","category":"식물 관리","destination":"캘린더/루틴","expectedScore":4,"creator":"Greenpedia 블로그","originalTitle":"몬스테라 키우기","originalUrl":"https://greenpedia.tistory.com/3","sourceSignal":"물주기, 햇빛, 분갈이, 번식 관리 항목이 있다.","flowTitle":"몬스테라 관리","cta":"식물 루틴으로 저장하기","inputs":"시작일, 물주기 기준, 화분 위치\n- 루틴:\n  - 흙 마름 확인\n  - 물주기\n  - 잎 상태 보기\n  - 햇빛 위치 확인\n  - 분갈이 예정월 메모","actionLabel":"실행 항목","actions":"","memo":"원문 링크, 잎 상태 예시, 분갈이 방법","completion":"오늘 흙/잎 확인 후 물주기 여부 체크","reviewMemo":""},{"id":"flow-20-초보-식물-물주기-기본-루틴","no":20,"title":"초보 식물 물주기 기본 루틴","category":"식물 관리","destination":"캘린더/루틴","expectedScore":5,"creator":"Jadu-on 블로그","originalTitle":"식물 물주기 기본 원칙","originalUrl":"https://jadu-on.com/9","sourceSignal":"한 번 줄 때 충분히 주기, 다음 물주기 전 흙 마름 확인, 계절별 물주기 방법이 있다.","flowTitle":"식물 물주기","cta":"물주기 루틴으로 저장하기","inputs":"식물명, 시작일, 흙 마름 기준\n- 루틴:\n  - 흙 2cm 확인\n  - 잎 처짐 확인\n  - 물 줄지 결정\n  - 물 준 날짜 저장\n  - 다음 확인일 생성","actionLabel":"실행 항목","actions":"","memo":"식물별 예시, 계절별 조정, 원문 링크","completion":"물주기 또는 보류 결정","reviewMemo":""},{"id":"flow-21-스투키-물주기-과습-예방","no":21,"title":"스투키 물주기·과습 예방","category":"식물 관리","destination":"캘린더/루틴","expectedScore":4,"creator":"Botanical House","originalTitle":"스투키 물주기 걱정 뚝","originalUrl":"https://botanical.house/stuckyi/","sourceSignal":"스투키는 과습 주의가 핵심이고, 분갈이 직후 물을 많이 주지 않는 등 관리 포인트가 있다.","flowTitle":"스투키 과습 방지","cta":"관리 루틴으로 저장하기","inputs":"시작일, 화분 위치, 마지막 물준 날\n- 루틴:\n  - 흙 완전 마름 확인\n  - 밑동 무름/노랗게 변함 확인\n  - 물주기 또는 보류\n  - 분갈이 후 대기일 체크","actionLabel":"실행 항목","actions":"","memo":"과습 신호, 분갈이 주의, 원문 링크","completion":"오늘 물주기/보류 상태 저장","reviewMemo":""},{"id":"flow-22-결혼-준비-12개월-타임라인","no":22,"title":"결혼 준비 12개월 타임라인","category":"생활 이벤트","destination":"캘린더/루틴","expectedScore":5,"creator":"Wedding Expo","originalTitle":"결혼 준비 타임라인 완벽 가이드","originalUrl":"https://wedding-expo.kr/posts/post-007","sourceSignal":"D-12개월부터 D-1주까지 단계별 체크리스트가 있다.","flowTitle":"결혼 준비 12개월","cta":"결혼 준비 캘린더로 받기","inputs":"결혼식 날짜, 준비 시작일, 성수기 여부\n- 캘린더/체크:\n  - D-365 웨딩홀/예산\n  - D-180 촬영/예물/신혼여행\n  - D-120 하객/사회자/축가\n  - D-60 드레스/예약\n  - D-7 당일 준비물","actionLabel":"실행 항목","actions":"","memo":"비상 준비물, 원문 링크, 업체 링크","completion":"해당 시점 체크리스트 완료","reviewMemo":""},{"id":"flow-23-결혼식-당일-체크리스트","no":23,"title":"결혼식 당일 체크리스트","category":"생활 이벤트","destination":"체크리스트","expectedScore":4,"creator":"다이렉트결혼준비","originalTitle":"결혼준비체크리스트","originalUrl":"https://www.directwedding.co.kr/blog/wedding-checklist","sourceSignal":"시기별 결혼 준비와 결혼식 당일 체크리스트가 있다.","flowTitle":"결혼식 당일 준비","cta":"당일 체크리스트로 저장하기","inputs":"결혼식 날짜, 예식 시간, 담당자","actionLabel":"체크리스트","actions":"- 준비물 확인\n  - 사회자/축가/부케 담당 확인\n  - 신혼여행 서류 확인\n  - 예식장 도착 시간 확인","memo":"담당자 연락처, 원문 링크, 비상 준비물","completion":"당일 역할과 준비물 확인 완료","reviewMemo":""},{"id":"flow-24-이사-4주-전-입주-후-체크리스트","no":24,"title":"이사 4주 전~입주 후 체크리스트","category":"생활 이벤트","destination":"캘린더/루틴","expectedScore":5,"creator":"DXForms","originalTitle":"이사 체크리스트 템플릿","originalUrl":"https://dxforms.com/templates/moving-checklist/","sourceSignal":"이사 4주 전부터 입주 후 1주일까지 주소 변경, 전입신고, 인터넷 이전, 짐 분류, 업체 비교가 시간순으로 있다.","flowTitle":"이사 준비 4주","cta":"이사 캘린더로 받기","inputs":"이사일, 현재 집/새 집 유형, 반려동물 여부\n- 캘린더/체크:\n  - D-28 이사업체 비교\n  - D-14 주소 변경/인터넷 이전\n  - D-3 도시가스 예약\n  - D-Day 계량기/짐 확인\n  - D+1 전입신고/정리","actionLabel":"실행 항목","actions":"","memo":"업체 링크, 공과금 연락처, 원문 링크","completion":"오늘 이사 항목 체크","reviewMemo":""},{"id":"flow-25-이사-후-전입신고-확정일자-공과금","no":25,"title":"이사 후 전입신고·확정일자·공과금","category":"생활 이벤트","destination":"체크리스트","expectedScore":5,"creator":"김포시청","originalTitle":"이사 후 바로 할 일","originalUrl":"https://gp1.gimpo.go.kr/portal/contents.do?key=3719","sourceSignal":"전입신고는 전입일로부터 14일 이내, 확정일자, 전기/가스/수도 계량기 확인과 정산이 있다.","flowTitle":"이사 후 행정 체크","cta":"D+14 체크리스트로 저장하기","inputs":"이사일, 임대차 여부, 전입 지역","actionLabel":"체크리스트","actions":"- D-Day 계량기 확인\n  - D+1 전입신고\n  - 확정일자 확인\n  - 전기/가스/수도 정산\n  - 주소 변경 확인","memo":"정부24/인터넷등기소 링크, 관할 주민센터","completion":"전입신고와 확정일자 상태 확인","reviewMemo":""},{"id":"flow-26-운전면허-갱신-적성검사","no":26,"title":"운전면허 갱신/적성검사","category":"생활 이벤트","destination":"캘린더/루틴","expectedScore":5,"creator":"한국도로교통공단 안전운전 통합민원","originalTitle":"적성검사/면허갱신 안내","originalUrl":"https://www.safedriving.or.kr/guide/larGuide011.do?menuCode=MN-PO-121","sourceSignal":"적성검사/면허갱신 대상, 신청 장소, 준비물이 구분되어 있다.","flowTitle":"운전면허 갱신","cta":"갱신 마감 캘린더로 저장하기","inputs":"갱신 마감일, 면허 종류, 연령대\n- 캘린더/체크:\n  - D-60 대상 확인\n  - D-45 사진/건강검진 확인\n  - D-30 온라인/방문 신청 선택\n  - D-14 수령 방법 확인","actionLabel":"실행 항목","actions":"","memo":"공식 링크, 준비물, 온라인 제한 조건","completion":"신청 완료 또는 방문 예약 완료","reviewMemo":""},{"id":"flow-27-해외여행-안전-체크리스트","no":27,"title":"해외여행 안전 체크리스트","category":"생활 이벤트","destination":"체크리스트","expectedScore":4,"creator":"소비자위해감시시스템/외교부 해외안전여행 참고 PDF","originalTitle":"해외여행 안전사고 예방&대처법","originalUrl":"https://www.isafe.go.kr/DATA/bbs/83/20180723105102274.pdf","sourceSignal":"안전한 해외여행 체크리스트와 외교부 해외안전여행 홈페이지 확인이 있다.","flowTitle":"해외여행 안전 카드","cta":"여행 전 체크리스트로 저장하기","inputs":"출국일, 여행 국가, 동행 여부","actionLabel":"체크리스트","actions":"- 국가 안전정보 확인\n  - 비상 연락처 저장\n  - 보험/여권 사본 확인\n  - 오프라인 메모 저장\n  - 현지 사고 대처 링크 저장","memo":"외교부 링크, 현지 연락처, 보험 정보","completion":"출국 전 안전 카드 작성","reviewMemo":""},{"id":"flow-28-중고차-구매-체크리스트","no":28,"title":"중고차 구매 체크리스트","category":"차량","destination":"체크리스트","expectedScore":5,"creator":"TrendMetricLab","originalTitle":"중고차 구매 체크리스트 2026","originalUrl":"https://trendmetriclab.com/guides/used-car-buying-checklist/","sourceSignal":"성능점검기록부, 보험이력조회, 실차 확인을 핵심으로 둔다.","flowTitle":"중고차 후보 점검","cta":"체크리스트로 저장하기","inputs":"차량명, 방문일, 판매처","actionLabel":"체크리스트","actions":"- 성능점검기록부 확인\n  - 보험이력 조회\n  - 주행거리/차대번호 대조\n  - 외관/타이어/누유 확인\n  - 구매/보류/거절 결정","memo":"항목별 유의사항, 원문 링크, 참고 사진/영상 링크","completion":"후보 차량별 결정 상태 저장","reviewMemo":""},{"id":"flow-29-장거리-운전-전-차량-점검","no":29,"title":"장거리 운전 전 차량 점검","category":"차량","destination":"캘린더/루틴","expectedScore":4,"creator":"Hidell 블로그","originalTitle":"장거리 운전 루트·휴게 전략","originalUrl":"https://hidell.tistory.com/1792","sourceSignal":"출발 전 필수 체크리스트, 휴게 전략, 장거리 후 정리 루틴이 있다.","flowTitle":"장거리 운전 전 점검","cta":"출발 전 체크리스트로 저장하기","inputs":"출발일, 이동거리, 동승자/반려동물 여부","actionLabel":"체크리스트","actions":"- 타이어/유체/연료 확인\n  - 휴게소 계획\n  - 졸음 신호 대응 메모\n  - 출발 전 물품 확인\n  - 도착 후 차량 상태 확인","memo":"휴게 전략, 원문 링크, 반려동물 준비물","completion":"출발 전 점검 완료","reviewMemo":""},{"id":"flow-30-컴활-2급-2주-공부-계획","no":30,"title":"컴활 2급 2주 공부 계획","category":"공부/자격증","destination":"캘린더/루틴","expectedScore":4,"creator":"백취준 블로그","originalTitle":"컴활 2급 독학 가능할까? 공부법 정리","originalUrl":"https://baekchwijun.tistory.com/1186","sourceSignal":"1~3일차 필기 요약/기출, 11~14일차 실전 기출/오답/시간 체크 등 기간별 공부 단서가 있다.","flowTitle":"컴활 2급 2주 공부","cta":"공부 캘린더로 저장하기","inputs":"시험일, 시작일, 하루 공부시간\n- 캘린더/체크:\n  - 1~3일차 필기 요약+기출\n  - 4~7일차 실기 함수/작업 순서\n  - 8~10일차 기출 반복\n  - 11~14일차 실전 세트+오답\n  - 시험 전 준비물 확인","actionLabel":"실행 항목","actions":"","memo":"기출 링크, 오답 유형, 자동 채점 프로그램 링크","completion":"회차별 풀이와 오답 체크 완료","reviewMemo":"## 이번 배치에서 제외한 유형\n\n- 유료 강의 상세가 확인되지 않는 온라인 코스\n- 일반 창업/크리에이터 운영론처럼 일반 사용자의 캘린더/체크리스트로 바로 옮기기 어려운 콘텐츠\n- 원문에 반복 주기만 있고 실제 과제/체크리스트가 없는 챌린지\n- 건강/육아 판단을 요구하는 복잡한 기록형 콘텐츠\n\n## 다음 평가 질문\n\n각 후보를 볼 때 아래만 판단하면 된다.\n\n1. 이 원문을 보고 실제 사용자가 바로 뭔가 할 수 있는가?\n2. 캘린더/루틴/체크/시트/메모 중 어디로 옮기면 자연스러운가?\n3. 입력이 시작일/반복주기/대상 정도로 끝나는가?\n4. 메모에 들어가야 할 내용을 괜히 별도 필드로 빼지 않았는가?\n5. 사진/증빙/상세기록을 빼도 Flow가 유용한가?"}];
+    const REVIEW_STORAGE_KEY = "flowme:korean-flow-review-30:v1";
+    let reviews = {};
+    let canUseApi = location.protocol.startsWith("http");
+
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+    const esc = (value = "") => String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+    const inline = (value = "") => esc(value)
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>')
+      .replace(/\`([^\`]+)\`/g, "<code>$1</code>");
+    const block = (value = "") => {
+      const lines = String(value).split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+      if (!lines.length) return "<p>원문에서 확인한 실행 단서가 부족합니다.</p>";
+      const listItems = lines.filter((line) => line.startsWith("- "));
+      if (listItems.length === lines.length) {
+        return "<ul>" + listItems.map((line) => "<li>" + inline(line.slice(2)) + "</li>").join("") + "</ul>";
+      }
+      return lines.map((line) => "<p>" + inline(line.replace(/^- /, "")) + "</p>").join("");
+    };
+
+    const loadLocalReviews = () => {
+      try {
+        return JSON.parse(localStorage.getItem(REVIEW_STORAGE_KEY) || "{}");
+      } catch {
+        return {};
+      }
+    };
+
+    const persistLocalReviews = () => {
+      localStorage.setItem(REVIEW_STORAGE_KEY, JSON.stringify(reviews));
+    };
+
+    const fetchServerReviews = async () => {
+      if (!canUseApi) return;
+      try {
+        const response = await fetch("/api/reviews", { cache: "no-store" });
+        if (!response.ok) throw new Error("server review load failed");
+        const data = await response.json();
+        reviews = data.reviews || {};
+      } catch {
+        canUseApi = false;
+        reviews = loadLocalReviews();
+      }
+    };
+
+    const reviewPayloadFromCard = (card) => {
+      const flowId = card.dataset.id;
+      const candidate = FLOW_CANDIDATES.find((item) => item.id === flowId);
+      return {
+        flowId,
+        title: candidate?.title || flowId,
+        rating: Number(card.dataset.rating || 0) || null,
+        hasIssue: $(".issue-checkbox", card).checked,
+        keepCandidate: $(".keep-checkbox", card).checked,
+        memo: $(".memo-input", card).value.trim(),
+      };
+    };
+
+    const saveReview = async (card) => {
+      const payload = reviewPayloadFromCard(card);
+      const state = $(".save-state", card);
+      reviews[payload.flowId] = { ...payload, updatedAt: new Date().toISOString() };
+      persistLocalReviews();
+      updateMetrics();
+      state.textContent = canUseApi ? "저장 중..." : "브라우저에 임시 저장됨";
+
+      if (!canUseApi) return;
+      try {
+        const response = await fetch("/api/reviews", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!response.ok) throw new Error(await response.text());
+        state.textContent = "저장소에 저장됨";
+      } catch {
+        canUseApi = false;
+        state.textContent = "서버 저장 실패. 브라우저에 임시 저장됨";
+      }
+    };
+
+    const renderCard = (candidate) => {
+      const review = reviews[candidate.id] || {};
+      const card = document.createElement("article");
+      card.className = "card";
+      card.id = candidate.id;
+      card.dataset.id = candidate.id;
+      card.dataset.title = candidate.title;
+      card.dataset.category = candidate.category;
+      card.dataset.score = candidate.expectedScore || "";
+      card.dataset.rating = review.rating || "";
+      card.innerHTML = `
+        <header class="card-head">
+          <div>
+            <div class="eyebrow">
+              <span class="pill">#${candidate.no}</span>
+              <span class="pill">${esc(candidate.category)}</span>
+              <span class="pill">${esc(candidate.destination)}</span>
+              <span class="pill score-${candidate.expectedScore}">예상 ${candidate.expectedScore}점</span>
+            </div>
+            <h2>${esc(candidate.title)}</h2>
+            <p class="flow-title">Flow: ${esc(candidate.flowTitle || candidate.title)} · CTA: ${esc(candidate.cta || "저장하기")}</p>
+          </div>
+          ${candidate.originalUrl ? `<a class="source-open" href="${candidate.originalUrl}" target="_blank" rel="noreferrer">원문 열기</a>` : ""}
+        </header>
+        <div class="card-body">
+          <div class="section-grid">
+            <section class="block">
+              <h3>원문/제작자</h3>
+              <p>${inline(candidate.creator || "")}</p>
+              <p>${candidate.originalUrl ? `<a href="${candidate.originalUrl}" target="_blank" rel="noreferrer">${esc(candidate.originalTitle || "원문")}</a>` : esc(candidate.originalTitle || "")}</p>
+            </section>
+            <section class="block">
+              <h3>원문 실행 신호</h3>
+              ${block(candidate.sourceSignal)}
+            </section>
+            <section class="block wide">
+              <h3>${esc(candidate.actionLabel || "실행 항목")}</h3>
+              ${block(candidate.actions)}
+            </section>
+            <section class="block">
+              <h3>입력</h3>
+              ${block(candidate.inputs)}
+            </section>
+            <section class="block">
+              <h3>메모에 둘 내용</h3>
+              ${block(candidate.memo)}
+            </section>
+            <section class="block">
+              <h3>완료 기준</h3>
+              ${block(candidate.completion)}
+            </section>
+            <section class="block">
+              <h3>1차 평가 메모</h3>
+              ${block(candidate.reviewMemo || "직접 평가 필요")}
+            </section>
+          </div>
+          <aside class="review-box">
+            <h3>내 평가</h3>
+            <div class="rating" role="group" aria-label="${esc(candidate.title)} 점수">
+              ${[1, 2, 3, 4, 5].map((score) => `<button type="button" data-score="${score}" class="${Number(review.rating) === score ? "active" : ""}">${score}</button>`).join("")}
+            </div>
+            <div class="flags">
+              <label><input class="keep-checkbox" type="checkbox" ${review.keepCandidate ? "checked" : ""} /> 계속 후보로 본다</label>
+              <label><input class="issue-checkbox" type="checkbox" ${review.hasIssue ? "checked" : ""} /> 문제 있음</label>
+            </div>
+            <textarea class="memo-input" placeholder="왜 좋거나 별로인지, 어떤 Flow 형태가 맞는지 적어두기">${esc(review.memo || "")}</textarea>
+            <div class="review-actions">
+              <button type="button" class="primary save-button">저장</button>
+              <button type="button" class="clear-button">초기화</button>
+            </div>
+            <div class="save-state">${review.updatedAt ? "이전 평가 불러옴" : ""}</div>
+          </aside>
+        </div>
+      `;
+
+      $$(".rating button", card).forEach((button) => {
+        button.addEventListener("click", () => {
+          card.dataset.rating = button.dataset.score;
+          $$(".rating button", card).forEach((item) => item.classList.toggle("active", item === button));
+          saveReview(card);
+        });
+      });
+      $(".save-button", card).addEventListener("click", () => saveReview(card));
+      $(".clear-button", card).addEventListener("click", () => {
+        delete reviews[candidate.id];
+        persistLocalReviews();
+        card.dataset.rating = "";
+        $$(".rating button", card).forEach((item) => item.classList.remove("active"));
+        $(".issue-checkbox", card).checked = false;
+        $(".keep-checkbox", card).checked = false;
+        $(".memo-input", card).value = "";
+        $(".save-state", card).textContent = "초기화됨";
+        updateMetrics();
+      });
+      return card;
+    };
+
+    const render = () => {
+      const cards = $("#cards");
+      const toc = $("#toc");
+      cards.textContent = "";
+      toc.textContent = "";
+
+      const categories = ["all", ...Array.from(new Set(FLOW_CANDIDATES.map((item) => item.category))).sort()];
+      $("#category-filter").innerHTML = categories.map((category) => `<option value="${category}">${category === "all" ? "카테고리 전체" : esc(category)}</option>`).join("");
+
+      FLOW_CANDIDATES.forEach((candidate) => {
+        cards.appendChild(renderCard(candidate));
+        const link = document.createElement("a");
+        link.href = "#" + candidate.id;
+        link.innerHTML = `<span>${candidate.no}</span><span class="toc-title">${esc(candidate.title)}</span><span>${candidate.expectedScore}</span>`;
+        toc.appendChild(link);
+      });
+      updateMetrics();
+      applyFilters();
+    };
+
+    const updateMetrics = () => {
+      const reviewValues = Object.values(reviews);
+      $("#metric-total").textContent = FLOW_CANDIDATES.length;
+      $("#metric-score5").textContent = FLOW_CANDIDATES.filter((item) => item.expectedScore === 5).length;
+      $("#metric-reviewed").textContent = reviewValues.filter((item) => item.rating || item.memo).length;
+      $("#metric-issues").textContent = reviewValues.filter((item) => item.hasIssue).length;
+    };
+
+    const applyFilters = () => {
+      const query = $("#search").value.trim().toLowerCase();
+      const category = $("#category-filter").value;
+      const score = $("#score-filter").value;
+      let visible = 0;
+      $$(".card").forEach((card) => {
+        const candidate = FLOW_CANDIDATES.find((item) => item.id === card.dataset.id);
+        const haystack = JSON.stringify(candidate).toLowerCase();
+        const matchesQuery = !query || haystack.includes(query);
+        const matchesCategory = category === "all" || card.dataset.category === category;
+        const matchesScore = score === "all" || card.dataset.score === score;
+        const show = matchesQuery && matchesCategory && matchesScore;
+        card.classList.toggle("hidden", !show);
+        visible += show ? 1 : 0;
+      });
+      $("#empty").classList.toggle("show", visible === 0);
+    };
+
+    const exportReviews = async () => {
+      const payload = {
+        generatedAt: new Date().toISOString(),
+        reviews,
+      };
+      const text = JSON.stringify(payload, null, 2);
+      try {
+        await navigator.clipboard.writeText(text);
+        $("#export-json").textContent = "복사됨";
+        setTimeout(() => ($("#export-json").textContent = "평가 JSON 복사"), 1200);
+      } catch {
+        const blob = new Blob([text], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "flowme-korean-flow-review-notes.json";
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+    };
+
+    $("#search").addEventListener("input", applyFilters);
+    $("#category-filter").addEventListener("change", applyFilters);
+    $("#score-filter").addEventListener("change", applyFilters);
+    $("#export-json").addEventListener("click", exportReviews);
+
+    fetchServerReviews().then(render);
+  </script>
+  <!-- Source: docs\content-audit\2026-06-01-korean-flow-content-30-review.md; generated: 2026-06-08T15:51:07.501Z; notes: docs\content-audit\original-source-review\2026-06-01-korean-flow-content-30-notes.json -->
+</body>
+</html>

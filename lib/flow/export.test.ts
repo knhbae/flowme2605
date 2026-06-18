@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { getLogTables } from './artifact-fields';
 import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from './export';
 import { seedBundles } from './seed-flows';
 
@@ -16,6 +15,36 @@ test('timeline text export includes calculated dates when anchor exists', () => 
   assert.match(text, /이사 방식 정하기/);
 });
 
+test('plank challenge exports preserve the original 30-day source table cues', () => {
+  const plank = seedBundles.find((bundle) => bundle.flow.slug === 'plank-30-day-challenge');
+  assert.ok(plank);
+
+  const text = buildText(plank, {}, '2026-06-01');
+  assert.match(text, /챌린지 시작일: 2026-06-01|운동 시작일: 2026-06-01/);
+  assert.match(text, /Day 1 플랭크 20초/);
+  assert.match(text, /Day 7 휴식·스트레칭/);
+  assert.match(text, /Day 9 플랭크 55초/);
+  assert.match(text, /체크 포인트: 호흡 3:3 패턴/);
+  assert.match(text, /Day 30 플랭크 150초/);
+
+  const ics = buildIcsCalendar(plank, {}, '2026-06-01');
+  assert.equal((ics.match(/BEGIN:VEVENT/g) ?? []).length, 30);
+  assert.match(ics, /SUMMARY:30일 플랭크 챌린지 Flow - Day 1 플랭크 20초/);
+  assert.match(ics, /SUMMARY:30일 플랭크 챌린지 Flow - Day 7 휴식·스트레칭/);
+  assert.match(ics, /SUMMARY:30일 플랭크 챌린지 Flow - Day 30 플랭크 150초/);
+  assert.match(ics, /호흡 3:3 패턴/);
+
+  const sheets = buildWorkbookSheets(plank, {}, '2026-06-01');
+  const execution = sheets.find((sheet) => sheet.name === '실행표');
+  assert.ok(execution);
+  assert.equal(execution.rows.length, 30);
+  assert.ok(execution.rows.some((row) => row.includes('D+8') && row.includes('2026-06-09') && row.includes('Day 9 플랭크 55초')));
+  assert.ok(execution.rows.some((row) => row.includes('D+29') && row.includes('2026-06-30') && row.includes('Day 30 플랭크 150초')));
+  const details = sheets.find((sheet) => sheet.name === '상세');
+  assert.ok(details);
+  assert.ok(details.rows.some((row) => row.includes('Day 9 플랭크 55초') && row.some((cell) => String(cell).includes('호흡 3:3 패턴'))));
+
+});
 test('memo text export renders a checkbox checklist with done criteria and official links', () => {
   const welfare = seedBundles.find((bundle) => bundle.flow.slug === 'welfare-benefit-finder');
   assert.ok(welfare);
@@ -65,7 +94,7 @@ test('text and workbook exports include item notes and skipped state', () => {
   assert.equal(execution.rows[1][7], '스몰웨딩이라 후보 비교 범위를 줄임');
 });
 
-test('decision exports include comparison candidate notes', () => {
+test('checklist exports ignore stale used-car comparison candidate notes', () => {
   const usedCar = seedBundles.find((bundle) => bundle.flow.slug === 'used-car-buying-check');
   assert.ok(usedCar);
   const comparisonState = {
@@ -82,6 +111,13 @@ test('decision exports include comparison candidate notes', () => {
   };
 
   const text = buildText(usedCar, {}, undefined, {}, comparisonState);
+  assert.doesNotMatch(text, /K3 2020|1,250/);
+  {
+    const sheets = buildWorkbookSheets(usedCar, {}, undefined, { comparisonState });
+    const comparison = sheets.find((sheet) => sheet.name === '후보 비교' || sheet.name === '?꾨낫 鍮꾧탳');
+    assert.equal(comparison, undefined);
+  }
+  return;
 
   assert.match(text, /\[후보 비교표\]/);
   assert.match(text, /비교 항목 \| 아반떼 2021 \| K3 2020/);
@@ -98,7 +134,7 @@ test('decision exports include comparison candidate notes', () => {
   ]);
 });
 
-test('moving export includes vendor comparison and proof memo records', () => {
+test('moving export ignores stale vendor comparison and proof memo records', () => {
   const moving = seedBundles.find((bundle) => bundle.flow.slug === 'moving-d30-basic');
   assert.ok(moving);
 
@@ -124,6 +160,16 @@ test('moving export includes vendor comparison and proof memo records', () => {
   };
 
   const text = buildText(moving, {}, '2026-07-15', {}, comparisonState, workbenchState);
+  assert.equal(text.includes('85'), false);
+  assert.equal(text.includes('62'), false);
+  {
+    const sheets = buildWorkbookSheets(moving, {}, '2026-07-15', { comparisonState, workbenchState });
+    const comparison = sheets.find((sheet) => sheet.name === '후보 비교' || sheet.name === '?꾨낫 鍮꾧탳');
+    const workbench = sheets.find((sheet) => sheet.name === '실행판 기록' || sheet.name === '?ㅽ뻾??湲곕줉');
+    assert.equal(comparison, undefined);
+    assert.equal(workbench, undefined);
+  }
+  return;
 
   assert.match(text, /\[후보 비교표\]/);
   assert.match(text, /비교 항목 \| 한빛이사 \| 빠른이사/);
@@ -205,28 +251,7 @@ test('study export includes chapter progress and mock score records', () => {
   assert.ok(workbench.rows.some((row) => row.includes('기출 1회차') && row.includes('점수') && row.includes('78점')));
 });
 
-test('study export includes source-derived chapter defaults before user edits', () => {
-  const study = seedBundles.find((bundle) => bundle.flow.slug === 'computer-skills-d30-study');
-  assert.ok(study);
-
-  const workbenchState = {
-    occurrences: {},
-    logRows: {},
-    memoCards: {},
-  };
-
-  const text = buildText(study, {}, '2026-06-22', {}, undefined, workbenchState);
-
-  assert.match(text, /필기 핵심 개념 정리 범위: 컴퓨터 일반·스프레드시트 핵심 개념/);
-  assert.match(text, /필기 핵심 개념 정리 상태: 원본에서 가져온 진도/);
-
-  const sheets = buildWorkbookSheets(study, {}, '2026-06-22', { workbenchState });
-  const workbench = sheets.find((sheet) => sheet.name === '실행판 기록');
-  assert.ok(workbench);
-  assert.ok(workbench.rows.some((row) => row.includes('필기 핵심 개념 정리') && row.includes('범위') && row.includes('컴퓨터 일반·스프레드시트 핵심 개념')));
-});
-
-test('study export ignores user overrides for source-derived scope rows', () => {
+test('computer skills export omits stale progress-table state from the experiment checklist route', () => {
   const study = seedBundles.find((bundle) => bundle.flow.slug === 'computer-skills-d30-study');
   assert.ok(study);
 
@@ -243,18 +268,13 @@ test('study export ignores user overrides for source-derived scope rows', () => 
   };
 
   const text = buildText(study, {}, '2026-06-22', {}, undefined, workbenchState);
-
-  const progressTable = getLogTables(study)[0];
-  const defaultScope = progressTable?.rows[0]?.defaultValues?.scope;
-  assert.ok(defaultScope);
-
   const sheets = buildWorkbookSheets(study, {}, '2026-06-22', { workbenchState });
   const allCells = sheets.flatMap((sheet) => sheet.rows.flat()).map(String);
+
   assert.equal(text.includes('user-authored blank tracker category'), false);
   assert.equal(allCells.includes('user-authored blank tracker category'), false);
-  assert.equal(allCells.includes(defaultScope), true);
-  assert.equal(allCells.includes('2026-06-01'), true);
-  assert.equal(allCells.includes('reviewed'), true);
+  assert.equal(allCells.includes('컴퓨터 일반·스프레드시트 핵심 개념'), false);
+  assert.equal(allCells.includes('reviewed'), false);
 });
 
 test('study calendar export keeps each dated item executable', () => {
@@ -266,8 +286,9 @@ test('study calendar export keeps each dated item executable', () => {
   assert.match(ics, /SUMMARY:컴퓨터활용능력 D-30 학습 Flow - 필기와 실기 시험 범위 나누기/);
   assert.match(ics, /실행:/);
   assert.match(ics, /기록:/);
-  assert.match(ics, /D-30 학습표|챕터 진도표/);
-  assert.match(ics, /기출 점수·오답 기록|모의점수 로그/);
+  assert.match(ics, /D-30 캘린더|실행 항목 메모/);
+  assert.match(ics, /재풀이 날짜|실기 환경|시험장 준비/);
+  assert.doesNotMatch(ics, /챕터 진도표|모의점수 로그|기출 점수·오답 기록/);
   assert.match(ics, /FLOW가 시험일 기준으로 변환/);
 });
 
@@ -318,7 +339,7 @@ test('workbench records are included in text and workbook exports', () => {
   assert.ok(workbench.rows.some((row) => row.includes('저녁 탄수화물을 절반으로 줄여보기')));
 });
 
-test('decision text export includes comparison section before checklist items', () => {
+test('checklist text export omits stale used-car comparison state', () => {
   const usedCar = seedBundles.find((entry) => entry.flow.slug === 'used-car-buying-check');
   assert.ok(usedCar);
 
@@ -330,8 +351,9 @@ test('decision text export includes comparison section before checklist items', 
     notes: {},
   });
 
-  assert.ok(text.indexOf('[후보 비교표]') > -1);
-  assert.ok(text.indexOf('[후보 비교표]') < text.indexOf('총예산을 차량가, 이전비, 보험료, 정비비로 나누기'));
+  assert.equal(text.includes('[후보 비교표]'), false);
+  assert.equal(text.includes('후보 A'), false);
+  assert.match(text, /총예산을 차량가, 이전비, 보험료, 정비비로 나누기/);
 });
 
 test('used-car text export carries the vehicle-condition guarantee boundary near the top', () => {
@@ -343,8 +365,41 @@ test('used-car text export carries the vehicle-condition guarantee boundary near
     notes: {},
   });
 
-  assert.match(text.split('\n').slice(0, 4).join('\n'), /차량 상태를 보증하지 않습니다/);
-  assert.ok(text.indexOf('차량 상태를 보증하지 않습니다') < text.indexOf('[후보 비교표]'));
+  assert.match(text.split('\n').slice(0, 6).join('\n'), /차량 상태를 보증하지 않습니다/);
+  assert.equal(text.includes('[후보 비교표]'), false);
+});
+
+test('vehicle hold sections and hold memo fields export with user-facing labels', () => {
+  const usedCar = seedBundles.find((entry) => entry.flow.slug === 'used-car-buying-check');
+  assert.ok(usedCar);
+
+  const workbenchState = {
+    occurrences: {},
+    logRows: {},
+    memoCards: {
+      'used-car-buying-check-hold-reason': 'insurance history conflicts with seller explanation',
+      'used-car-buying-check-hold-evidence-files': 'accident history checked; optional underbody photo 2 files',
+      'used-car-buying-check-hold-confirmation': 'seller will reissue inspection record',
+      'used-car-buying-check-hold-next-check': 'recheck with mechanic before deposit',
+    },
+  };
+
+  const text = buildText(usedCar, {}, undefined, {}, undefined, workbenchState);
+
+  assert.match(text, /구매 보류 메모/);
+  assert.match(text, /성능점검기록부|보험이력/);
+  assert.match(text, /보류 사유: insurance history conflicts with seller explanation/);
+  assert.match(text, /공식 조회\/사진 메모\(선택\): accident history checked; optional underbody photo 2 files/);
+  assert.doesNotMatch(text, /used-car-buying-check-hold-reason:/);
+
+  const sheets = buildWorkbookSheets(usedCar, {}, undefined, { workbenchState });
+  const summary = sheets.find((sheet) => sheet.name === '실행 요약');
+  const workbench = sheets.find((sheet) => sheet.name === '실행판 기록');
+  assert.ok(summary);
+  assert.ok(workbench);
+  assert.ok(summary.rows.some((row) => row.includes('보류 기준') && row.includes('구매 보류 메모')));
+  assert.ok(workbench.rows.some((row) => row.includes('보류 사유') && row.includes('insurance history conflicts with seller explanation')));
+  assert.ok(workbench.rows.some((row) => row.includes('공식 조회/사진 메모(선택)') && row.includes('accident history checked; optional underbody photo 2 files')));
 });
 
 test('risk-boundary exports preserve delivery evidence and diet observation values', () => {
@@ -464,7 +519,7 @@ test('workbook export uses user-facing Korean columns instead of raw db fields',
   assert.match(String(detailRow[3]), /정부24/);
 });
 
-test('meal plan workbook includes execution, recipe, and reaction log sheets', () => {
+test('baby-food workbook keeps the experiment checklist route calendar and recipe only', () => {
   const baby = seedBundles.find((bundle) => bundle.flow.slug === 'baby-food-menu-recipe');
   assert.ok(baby);
 
@@ -483,7 +538,7 @@ test('meal plan workbook includes execution, recipe, and reaction log sheets', (
     },
   );
 
-  assert.deepEqual(sheets.map((sheet) => sheet.name), ['실행 요약', '실행표', '주간 보기', '월간 보기', '상세', '레시피', '반응기록']);
+  assert.deepEqual(sheets.map((sheet) => sheet.name), ['실행 요약', '실행표', '주간 보기', '월간 보기', '상세', '레시피']);
 
   const execution = sheets.find((sheet) => sheet.name === '실행표');
   assert.ok(execution);
@@ -500,20 +555,15 @@ test('meal plan workbook includes execution, recipe, and reaction log sheets', (
 
   const recipes = sheets.find((sheet) => sheet.name === '레시피');
   assert.ok(recipes);
+  assert.equal(recipes.rows.length, 11);
   assert.match(String(recipes.rows[0][1]), /쌀 또는 쌀가루/);
   assert.match(String(recipes.rows[0][2]), /1\. 쌀 또는 쌀가루를 준비한다/);
+  assert.ok(recipes.rows.some((row) => row.includes('콜리플라워미음') && String(row[3]).includes('줄기 부분은 빼고')));
+  assert.ok(recipes.rows.some((row) => row.includes('쌀·오트밀 소고기 브로콜리미음')));
 
   const reaction = sheets.find((sheet) => sheet.name === '반응기록');
-  assert.ok(reaction);
-  assert.deepEqual(reaction.rows[0].slice(0, 7), [
-    'D+0~D+2',
-    '2026-06-01 ~ 2026-06-03',
-    '쌀미음',
-    '쌀',
-    '30ml',
-    '08:30',
-    '없음',
-  ]);
+  assert.equal(reaction, undefined);
+  assert.equal(sheets.flatMap((sheet) => sheet.rows.flat()).map(String).includes('30ml'), false);
 
   const weekly = sheets.find((sheet) => sheet.name === '주간 보기');
   assert.ok(weekly);
@@ -529,6 +579,7 @@ test('meal plan workbook includes execution, recipe, and reaction log sheets', (
   assert.ok(monthly.rows.some((row) => String(row[1]).includes('쌀미음 1일차')));
   assert.ok(monthly.rows.some((row) => String(row[2]).includes('쌀미음 2일차')));
   assert.ok(monthly.rows.some((row) => String(row[3]).includes('쌀미음 3일차')));
+  assert.ok(monthly.rows.some((row) => row.some((cell) => String(cell).includes('소고기미음'))));
 });
 
 test('document issue exports include structured submitter memo records', () => {

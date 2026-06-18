@@ -126,11 +126,11 @@ test('converted pilot lab exposes 10 real-source flows for B validation', () => 
 test('content lab exposes source-fit audit summary for representative cleanup', () => {
   const summary = getContentLabSummary(seedBundles);
 
-  assert.equal(summary.sourceFitAuditedCount, 71);
+  assert.equal(summary.sourceFitAuditedCount, 90);
   assert.ok(summary.sourceFitAverageScore >= 70);
   assert.equal(summary.sourceFitDecisionCounts.keep_representative, 15);
-  assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 52);
-  assert.equal(summary.sourceFitDecisionCounts.catalog_preview_only, 4);
+  assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 70);
+  assert.equal(summary.sourceFitDecisionCounts.catalog_preview_only, 5);
 });
 
 test('content lab exposes full content inventory coverage', () => {
@@ -138,7 +138,7 @@ test('content lab exposes full content inventory coverage', () => {
 
   assert.equal(summary.inventoryTotalCount, seedBundles.length);
   assert.equal(summary.realSourceInventoryReviewedCount, summary.realSourceFlowCount);
-  assert.equal(summary.manualSourceFitAuditedCount, 71);
+  assert.equal(summary.manualSourceFitAuditedCount, 90);
   assert.equal(summary.derivedRealSourceReviewedCount, 0);
   assert.equal(
     summary.sourceBackedInventoryReviewedCount,
@@ -177,8 +177,8 @@ test('content lab exposes lifecycle buckets for keep, fix, preview, and removal 
   assert.equal(summary.lifecycleBucketCounts.hide, 1);
   assert.equal(summary.lifecycleBucketCounts.preview_only, summary.previewGeneratedFlowCount);
   assert.equal(summary.lifecycleBucketCounts.remove_candidate, 0);
-  // 55 audited/needs-review fixes + 24 official-source + 20 creator-batch flows = 99.
-  assert.equal(summary.lifecycleBucketCounts.fix, 99);
+  // Merged branch adds the 260601 official/creator batches on top of the current source-fit queue.
+  assert.equal(summary.lifecycleBucketCounts.fix, 118);
   assert.deepEqual(summary.lifecycleHideSlugs, ['real-fitvely-weekly-body-check']);
   assert.ok(summary.lifecycleFixSlugs.includes('real-sinagong-computer-d30-study'));
   assert.ok(summary.lifecycleFixSlugs.includes('driver-license-renewal-check'));

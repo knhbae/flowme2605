@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 외부 생태계 다음 분석 축 선택</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f7fa;
+        --paper: #ffffff;
+        --soft: #f0f5f8;
+        --ink: #101828;
+        --body: #344054;
+        --muted: #667085;
+        --line: #d8e1ea;
+        --blue: #1d4ed8;
+        --blue-soft: #e9f2ff;
+        --green: #047857;
+        --green-soft: #e7f6ef;
+        --amber: #9a5b12;
+        --amber-soft: #fff4d8;
+        --red: #b42318;
+        --red-soft: #fff0ed;
+        --violet: #6941c6;
+        --violet-soft: #f1eafd;
+        --radius: 8px;
+        --shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard",
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          "Malgun Gothic",
+          system-ui,
+          sans-serif;
+        line-height: 1.6;
+        letter-spacing: 0;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.24;
+        word-break: keep-all;
+      }
+
+      p,
+      li,
+      td {
+        color: var(--body);
+      }
+
+      .page {
+        width: min(1240px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 22px 0 72px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        min-height: 54px;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .brand {
+        color: var(--ink);
+        font-weight: 900;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 290px;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .hero,
+      .panel,
+      .nav {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .hero,
+      .panel {
+        padding: 26px;
+      }
+
+      .hero h1 {
+        max-width: 920px;
+        font-size: clamp(28px, 4vw, 44px);
+      }
+
+      .lead {
+        max-width: 900px;
+        margin-top: 14px;
+        font-size: 17px;
+      }
+
+      .hero-grid,
+      .axis-grid,
+      .rule-grid,
+      .platform-grid,
+      .next-grid {
+        display: grid;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .hero-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .axis-grid,
+      .rule-grid,
+      .next-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .platform-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .metric,
+      .card,
+      .axis-card,
+      .platform-card,
+      .step {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--soft);
+        padding: 15px;
+      }
+
+      .metric {
+        min-height: 122px;
+      }
+
+      .metric strong,
+      .card strong,
+      .axis-card strong,
+      .platform-card strong,
+      .step strong {
+        display: block;
+        color: var(--ink);
+        font-size: 15px;
+      }
+
+      .metric span,
+      .card p,
+      .axis-card p,
+      .platform-card p,
+      .step p {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .panel {
+        margin-top: 18px;
+      }
+
+      .panel h2 {
+        font-size: 23px;
+      }
+
+      .section-lead {
+        max-width: 860px;
+        margin-top: 9px;
+      }
+
+      .selected {
+        background: var(--green-soft);
+        border-color: #b7e2cf;
+      }
+
+      .hold {
+        background: var(--amber-soft);
+        border-color: #efd89c;
+      }
+
+      .risk {
+        background: var(--red-soft);
+        border-color: #f0b8ad;
+      }
+
+      .badge {
+        display: inline-block;
+        width: fit-content;
+        margin-top: 8px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: var(--violet-soft);
+        color: var(--violet);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .flowline {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .step {
+        min-height: 132px;
+        background: var(--paper);
+      }
+
+      .nav {
+        position: sticky;
+        top: 16px;
+        padding: 18px;
+      }
+
+      .nav h2 {
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      .nav a {
+        display: block;
+        padding: 8px 0;
+        border-top: 1px solid var(--line);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .note {
+        margin-top: 14px;
+        padding: 12px;
+        border-radius: var(--radius);
+        background: var(--amber-soft);
+        color: var(--amber);
+        font-size: 12px;
+      }
+
+      @media (max-width: 980px) {
+        .layout {
+          display: block;
+        }
+
+        .nav {
+          position: static;
+          margin-top: 18px;
+        }
+
+        .hero-grid,
+        .flowline {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .axis-grid,
+        .rule-grid,
+        .next-grid,
+        .platform-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .page {
+          width: min(100% - 22px, 1240px);
+          padding-top: 12px;
+        }
+
+        .topbar {
+          display: block;
+        }
+
+        .topbar div + div {
+          margin-top: 4px;
+        }
+
+        .hero,
+        .panel {
+          padding: 18px;
+        }
+
+        .hero h1 {
+          font-size: 28px;
+        }
+
+        .lead {
+          font-size: 15px;
+        }
+
+        .hero-grid,
+        .flowline {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <div><span class="brand">FlowMe 분석방</span> / 다음 외부 생태계 축 선택</div>
+        <div>작성일 2026-06-09 · 상태: 로드맵 선택 자료</div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <section class="hero" id="top">
+            <h1>다음 분석 축은 distribution/channel handoff로 둔다</h1>
+            <p class="lead">
+              지금까지는 원문을 Flow 산출물로 바꾸고, 캘린더·시트·메모로 내보내는 기준을 정리했다.
+              다음 빈칸은 그 산출물이 가족, 학교, 기숙사, 팀, 카페, 폼 같은 외부 채널로 어떻게 전달되는지다.
+              이 문서는 기능 승인서가 아니라 다음 조사 축을 정하는 문서다.
+            </p>
+            <div class="hero-grid">
+              <div class="metric">
+                <strong>선택 축</strong>
+                <span>distribution-channel-handoff</span>
+              </div>
+              <div class="metric">
+                <strong>핵심 질문</strong>
+                <span>Flow 산출물이 외부 채널로 전달될 때도 실행 가능하게 남는가?</span>
+              </div>
+              <div class="metric">
+                <strong>첫 산출물</strong>
+                <span>공유 패킷, 응답 계획, 출처/주의/완료 기준</span>
+              </div>
+              <div class="metric">
+                <strong>금지선</strong>
+                <span>메시징, 커뮤니티, CRM, 자동화 플랫폼으로 만들지 않는다.</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="axis">
+            <h2>축 비교</h2>
+            <p class="section-lead">이미 배운 축을 반복하지 않고, 다음에 가장 많은 제품 학습을 주는 축을 고른다.</p>
+            <div class="axis-grid">
+              <div class="axis-card hold">
+                <strong>Creator material</strong>
+                <p>PDF, 영상, 템플릿, 제작자 자료 보존 규칙은 이미 선행 문서와 소스 선택 규칙에 예시가 많다.</p>
+                <span class="badge">covered backup</span>
+              </div>
+              <div class="axis-card hold">
+                <strong>Household table/sheet</strong>
+                <p>냉장고, 베란다, 메뉴, 관리 루틴, Google Sheets 목적지 규칙으로 row artifact 학습이 이미 진행됐다.</p>
+                <span class="badge">covered backup</span>
+              </div>
+              <div class="axis-card selected">
+                <strong>Distribution/channel handoff</strong>
+                <p>Flow가 만들어진 뒤 가족방, 학교방, 팀 채널, 카페 글, 폼/시트로 어떻게 이동하는지는 아직 약하다.</p>
+                <span class="badge">select next</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="candidate">
+            <h2>후보 모양</h2>
+            <p class="section-lead">작업명은 `distribution-channel-handoff-precheck`로 둔다. 아직 `/content-flows` 후보나 public route가 아니다.</p>
+            <div class="flowline">
+              <div class="step">
+                <strong>1. 채널 선택</strong>
+                <p>가족방, 학교/기숙사 그룹, 팀 채널, 카페 글, 폼/시트 중 어떤 채널로 보낼지 고른다.</p>
+              </div>
+              <div class="step">
+                <strong>2. 공유 패킷 생성</strong>
+                <p>짧은 텍스트나 Markdown으로 목적, 해야 할 일, 마감, 출처를 묶는다.</p>
+              </div>
+              <div class="step">
+                <strong>3. 응답 모양 선택</strong>
+                <p>댓글, 답장, 폼 제출, 시트 행 업데이트, 체크 확인 중 하나만 고른다.</p>
+              </div>
+              <div class="step">
+                <strong>4. 위험 동행</strong>
+                <p>출처 URL, 주의 문구, 완료 기준을 공유 문구 안에 남긴다.</p>
+              </div>
+              <div class="step">
+                <strong>5. 이해 가능성 기록</strong>
+                <p>외부 채널에서 산출물이 실행 가능한지 확인한다. 답장을 수집하지는 않는다.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="platforms">
+            <h2>다음에 확인할 플랫폼</h2>
+            <p class="section-lead">다음 패스는 현재 공식/1차 자료로 확인해야 한다. 이 문서는 플랫폼 기능을 확정하지 않는다.</p>
+            <div class="platform-grid">
+              <div class="platform-card">
+                <strong>KakaoTalk 공유/그룹 대화</strong>
+                <p>한국의 가족, 학교, 기숙사, 소규모 팀 조율에서 자주 쓰이는 채널이다. Stage 0은 copy/share로 남겨야 하는지 확인한다.</p>
+              </div>
+              <div class="platform-card">
+                <strong>Naver Cafe 또는 커뮤니티 글</strong>
+                <p>공지, 준비물, 후기, 질문이 모이는 공간이다. FlowMe가 카페 도구가 되지 않고 글 패킷만 제공할 수 있는지 본다.</p>
+              </div>
+              <div class="platform-card">
+                <strong>Google Forms + Sheets</strong>
+                <p>참석, 확인, 행 업데이트 수집에 많이 쓰이는 경량 조합이다. 폼 안내 문구와 시트 행 중 어디까지가 Stage 0인지 본다.</p>
+              </div>
+              <div class="platform-card">
+                <strong>Notion 또는 공개 메모</strong>
+                <p>체크리스트와 출처 메모를 공유하는 목적지다. Markdown handoff만으로 충분한지 확인한다.</p>
+              </div>
+              <div class="platform-card">
+                <strong>팀 메신저/커뮤니티 유사 플랫폼</strong>
+                <p>Slack, Discord, Teams 같은 비한국어권 유사 패턴은 경계 비교용으로만 본다.</p>
+              </div>
+              <div class="platform-card risk">
+                <strong>현재 금지</strong>
+                <p>계정 연결, 멤버 목록, 연락처 가져오기, 자동 게시, 댓글 수집, 읽음 확인, 분석 대시보드는 만들지 않는다.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="rules">
+            <h2>만들지 않을 것</h2>
+            <p class="section-lead">채널 분석은 쉽게 메시징 제품이나 커뮤니티 제품으로 번질 수 있으므로 금지선을 먼저 둔다.</p>
+            <div class="rule-grid">
+              <div class="card">
+                <strong>채널 통합 금지</strong>
+                <p>KakaoTalk, Naver Cafe, Slack, Discord, Teams, Notion 통합은 Stage 0 범위 밖이다.</p>
+              </div>
+              <div class="card">
+                <strong>연락처/멤버 관리 금지</strong>
+                <p>주소록, 멤버 목록, 권한, 역할, 그룹 관리 기능을 만들지 않는다.</p>
+              </div>
+              <div class="card">
+                <strong>자동 게시 금지</strong>
+                <p>대량 발송, 예약 게시, 자동 포스팅, 댓글 스크래핑, 응답 수집을 하지 않는다.</p>
+              </div>
+              <div class="card">
+                <strong>분석/CRM 금지</strong>
+                <p>읽음 확인, 참여 분석, 커뮤니티 운영, 후속 영업 관리로 확장하지 않는다.</p>
+              </div>
+              <div class="card">
+                <strong>비공개 값 저장 금지</strong>
+                <p>전화번호, 사용자명, 채팅 로그, 초대 링크, 비공개 채널 ID를 저장하지 않는다.</p>
+              </div>
+              <div class="card">
+                <strong>검증 표현 보류</strong>
+                <p>실제 사용자 행동 전에는 channel ready, integration ready, validated라고 부르지 않는다.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="next">
+            <h2>다음 패스</h2>
+            <p class="section-lead">다음 작업은 플랫폼 공식 자료 확인과 한글 HTML 게이트 작성이다. 코드나 라우트는 만들지 않는다.</p>
+            <div class="next-grid">
+              <div class="card">
+                <strong>1. 공식 자료 확인</strong>
+                <p>KakaoTalk, Naver Cafe, Google Forms/Sheets, Notion/Markdown handoff, 팀 메신저 유사 패턴을 현재 자료로 확인한다.</p>
+              </div>
+              <div class="card">
+                <strong>2. 한 가지 한국 시나리오 고정</strong>
+                <p>가족, 학부모, 기숙사, 동아리, 팀 중 하나의 구체적 audience/deadline을 고른다.</p>
+              </div>
+              <div class="card">
+                <strong>3. 공유 패킷 샘플 작성</strong>
+                <p>출처 URL, 주의 문구, 완료 기준이 같이 이동하는지 본다.</p>
+              </div>
+              <div class="card">
+                <strong>4. 응답 모양 선택</strong>
+                <p>답장, 폼, 시트, 체크 확인 중 하나를 고르고 통합 없이 충분한지 판단한다.</p>
+              </div>
+              <div class="card">
+                <strong>5. docs-level gate 작성</strong>
+                <p>다음 결과는 또 하나의 한국어 HTML 요약과 gate 문서로 남긴다.</p>
+              </div>
+              <div class="card">
+                <strong>6. Phase 5 반영 보류</strong>
+                <p>근거가 모이기 전에는 압축표에 구현 후보로 올리지 않는다.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <aside class="nav" aria-label="문서 목차">
+          <h2>목차</h2>
+          <a href="./2026-06-09-external-ecosystem-analysis-room-index-ko.html">분석방 운영 인덱스</a>
+          <a href="./2026-06-09-external-ecosystem-roadmap-visual-ko.html">메인 로드맵</a>
+          <a href="#axis">축 비교</a>
+          <a href="#candidate">후보 모양</a>
+          <a href="#platforms">확인할 플랫폼</a>
+          <a href="#rules">만들지 않을 것</a>
+          <a href="#next">다음 패스</a>
+          <a href="./2026-06-09-external-ecosystem-next-axis-selection.md">Markdown 원문</a>
+          <p class="note">
+            이 문서는 다음 조사 축을 고르는 자료다. 공식 자료 검증 전에는 플랫폼 기능이나 통합 가능성을 확정하지 않는다.
+          </p>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

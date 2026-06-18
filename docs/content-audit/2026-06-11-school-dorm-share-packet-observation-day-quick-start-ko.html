@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 관찰 당일 Quick Start</title>
+  <style>
+    :root{--bg:#f6f7f9;--paper:#fff;--ink:#101828;--body:#344054;--muted:#667085;--line:#d9e2ec;--blue:#1d4ed8;--soft:#f1f5f9;--amber:#9a5b12;--amber-soft:#fff4d8;--green:#047857;--green-soft:#e7f6ef;--red:#b42318;--red-soft:#fff0ed}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;line-height:1.62;letter-spacing:0}.page{width:min(1120px,calc(100% - 28px));margin:0 auto;padding:22px 0 64px}a{color:var(--blue);text-decoration:none}.topbar,.hero,.panel,.nav{border:1px solid var(--line);border-radius:8px;background:var(--paper);box-shadow:0 16px 44px rgba(15,23,42,.07)}.topbar{display:flex;justify-content:space-between;gap:14px;margin-bottom:14px;padding:10px 14px;color:var(--muted);font-size:13px}.brand{color:var(--ink);font-weight:900}.layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:18px;align-items:start}.layout>*{min-width:0}.hero,.panel{padding:26px}.panel{margin-top:18px}h1,h2,h3,p{margin:0}h1,h2,h3{line-height:1.25;word-break:keep-all}h1{font-size:clamp(30px,4vw,46px)}h2{margin-bottom:10px;font-size:23px}p,li,td{color:var(--body)}.lead{margin-top:12px;font-size:17px;max-width:860px}.note{margin-top:12px;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--soft)}code{padding:1px 5px;border-radius:5px;background:#eef2f7;color:#172033;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-wrap:anywhere}.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:20px}.metric{min-height:105px;border:1px solid var(--line);border-radius:8px;padding:15px;background:var(--soft)}.metric strong{display:block;margin-bottom:8px;color:var(--muted);font-size:12px;text-transform:uppercase}.metric span{display:block;font-size:18px;font-weight:900;overflow-wrap:anywhere}.amber{background:var(--amber-soft)}.green{background:var(--green-soft)}.red{background:var(--red-soft)}ol,ul{margin:8px 0 0;padding-left:20px}li+li{margin-top:5px}.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}table{width:100%;min-width:800px;border-collapse:collapse}th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:14px}th{background:var(--soft);color:var(--ink)}.links{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}.button{display:inline-flex;align-items:center;min-height:36px;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;font-weight:800}.nav{position:sticky;top:16px;padding:16px}.nav h2{font-size:16px}.nav a{display:block;padding:8px 9px;border-radius:6px;color:var(--body);font-size:14px}@media(max-width:900px){.layout{grid-template-columns:1fr}.nav{position:static}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.page{width:min(100% - 20px,1120px);padding-top:10px}.topbar{flex-direction:column}.hero,.panel,.nav{padding:18px}.metrics{grid-template-columns:1fr}table{min-width:800px}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topbar"><div><span class="brand">FlowMe 분석방</span> / 관찰 당일 Quick Start</div><div>상태: waiting for agreed slot · not run · not evidence · 관찰 증거 아님</div></div>
+    <div class="layout">
+      <div>
+        <section class="hero" id="top">
+          <h1>당일에는 설명보다 패킷 반응을 먼저 봅니다</h1>
+          <p class="lead">고정 버전은 <code>school-dorm-share-packet-v2-2026-06-11-readable-preview</code>입니다. 세션 전 FlowMe를 설명하지 않고 같은 패킷을 보여준 뒤, 해야 할 일과 경계 인식만 메모합니다.</p>
+          <div class="metrics">
+            <div class="metric amber"><strong>decision</strong><span>no signal</span></div>
+            <div class="metric"><strong>sessions</strong><span>0 / 3</span></div>
+            <div class="metric amber"><strong>start gate</strong><span>needs agreed slot</span></div>
+            <div class="metric green"><strong>version</strong><span>v2 readable preview</span></div>
+            <div class="metric red"><strong>sensitive values</strong><span>no</span></div>
+          </div>
+          <p class="note">스케줄링 트래커에서 해당 role-labeled slot이 <code>agreed</code>가 되기 전에는 이 run flow를 시작하지 않습니다. <code>not invited</code>, <code>invited</code>, <code>scheduled</code>, <code>not run</code>은 관찰 증거가 아니며 시작 조건도 아닙니다.</p>
+        </section>
+
+        <section class="panel" id="gate">
+          <h2>0. 시작 게이트</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>확인 항목</th><th>시작 가능 조건</th><th>아니면 할 일</th></tr></thead>
+              <tbody>
+                <tr><td>Scheduling state</td><td>해당 role-labeled slot이 <code>agreed</code>입니다.</td><td><a href="./2026-06-11-school-dorm-share-packet-scheduling-tracker-ko.html#snippets">scheduling tracker snippets</a>에서 상태를 먼저 맞춥니다.</td></tr>
+                <tr><td>Preflight</td><td>preflight checklist의 모든 gate가 통과되어 있습니다.</td><td><a href="./2026-06-11-school-dorm-share-packet-preflight-checklist-ko.html">preflight checklist</a>로 돌아갑니다.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" id="open">
+          <h2>1. 첫 세션 전에 열 파일</h2>
+          <ol>
+            <li><a href="./2026-06-11-distribution-channel-handoff-current-state-handoff-ko.html">current-state handoff</a></li>
+            <li><a href="./2026-06-11-school-dorm-share-packet-version-lock-ko.html">version lock</a></li>
+            <li><a href="./2026-06-11-school-dorm-share-packet-scheduling-tracker-ko.html#snippets">scheduling tracker snippets</a></li>
+            <li><a href="./2026-06-11-school-dorm-share-packet-response-coding-guide-ko.html">response coding guide</a></li>
+            <li><a href="./2026-06-11-school-dorm-share-packet-preflight-checklist-ko.html">preflight checklist</a></li>
+            <li><a href="./2026-06-11-school-dorm-share-packet-pilot-worksheet-ko.html">pilot worksheet</a></li>
+            <li><a href="./2026-06-10-school-dorm-share-packet-session-log-starter-ko.html">session log starter</a></li>
+            <li><a href="./2026-06-11-school-dorm-share-packet-rollup-template-ko.html">rollup template</a></li>
+          </ol>
+        </section>
+
+        <section class="panel" id="flow">
+          <h2>2. Three-Session Flow</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Step</th><th>Observer action</th><th>Record where</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>FlowMe 설명 없이 같은 공유 패킷을 보여줍니다.</td><td>worksheet setup</td></tr>
+                <tr><td>2</td><td>가장 먼저 무엇을 확인할지 질문합니다.</td><td>first-action row</td></tr>
+                <tr><td>3</td><td>네 가지 답변 옵션을 읽는 상황을 질문합니다.</td><td>four-label row</td></tr>
+                <tr><td>4</td><td>최신 공지와 패킷이 충돌하면 무엇을 우선하는지 묻습니다.</td><td>latest-notice row</td></tr>
+                <tr><td>5</td><td>무엇을 기록하면 안 되는지 묻습니다.</td><td>no-store row</td></tr>
+                <tr><td>6</td><td>FlowMe가 전송/게시/수집/저장을 하는지 묻습니다.</td><td>manual-copy row</td></tr>
+                <tr><td>7</td><td>role-level notes만 session log로 옮깁니다.</td><td>session log starter</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" id="stop">
+          <h2>3. 중단 조건</h2>
+          <ul>
+            <li>해당 role-labeled slot이 <code>agreed</code>가 아닙니다.</li>
+            <li>방 번호, 비밀번호, 개인 공지 세부값을 FlowMe가 찾아준다고 기대합니다.</li>
+            <li>건강, 결제, 신원, 링크, webhook, 채팅 로그 값을 쓰려고 합니다.</li>
+            <li>FlowMe가 자동 전송, 게시, 답글 수집, 연락처 저장, 채널 추적을 한다고 기대합니다.</li>
+            <li>최신 학교/기숙사 공지가 패킷보다 우선이라는 점을 구분하지 못합니다.</li>
+          </ul>
+        </section>
+      </div>
+      <aside class="nav">
+        <h2>목차</h2>
+        <a href="#top">요약</a>
+        <a href="#gate">0. 시작 게이트</a>
+        <a href="#open">1. 열 파일</a>
+        <a href="#flow">2. 진행 순서</a>
+        <a href="#stop">3. 중단 조건</a>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>

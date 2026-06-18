@@ -1,0 +1,2147 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>한국어 외부 콘텐츠 Flow 선별/변환 리뷰</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --paper: #ffffff;
+      --ink: #172033;
+      --muted: #667085;
+      --line: #d9dee8;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      --red: #b42318;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif; }
+    a { color: var(--blue); text-decoration: none; }
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 28px 18px 64px; }
+    .hero { background: #111827; color: #fff; padding: 28px; border-radius: 8px; }
+    .hero h1 { margin: 0 0 10px; font-size: clamp(26px, 4vw, 42px); letter-spacing: 0; }
+    .hero p { margin: 0; color: #d1d5db; line-height: 1.65; max-width: 860px; }
+    .metric-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 18px 0; }
+    .metric { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 14px; }
+    .metric span { display: block; color: var(--muted); font-size: 13px; }
+    .metric strong { display: block; margin-top: 6px; font-size: 24px; }
+    .rule { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 18px; margin: 18px 0; }
+    .rule h2 { margin: 0 0 12px; font-size: 18px; }
+    .weights { display: flex; flex-wrap: wrap; gap: 8px; }
+    .weights span, .score-chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: #f8fafc; border-radius: 999px; padding: 8px 10px; font-size: 13px; }
+    .score-chip small { color: var(--muted); }
+    .toolbar { position: sticky; top: 0; z-index: 2; background: rgba(246,247,249,.94); backdrop-filter: blur(8px); padding: 12px 0; display: flex; gap: 10px; overflow-x: auto; }
+    .toolbar a, .toolbar button { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 9px 12px; white-space: nowrap; font: inherit; cursor: pointer; color: var(--ink); }
+    .candidate { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 18px; margin: 16px 0; }
+    .candidate header { display: flex; justify-content: space-between; gap: 18px; border-bottom: 1px solid var(--line); padding-bottom: 14px; }
+    .candidate h2 { margin: 8px 0 6px; font-size: 22px; letter-spacing: 0; }
+    .candidate h3 { margin: 0 0 8px; font-size: 15px; }
+    .candidate p { margin: 0; color: var(--muted); line-height: 1.55; }
+    .rank, .category, .decision, .check-state { display: inline-flex; padding: 5px 8px; border-radius: 999px; font-size: 12px; margin-right: 4px; background: #eef2ff; color: #3730a3; }
+    .category { background: #ecfeff; color: #155e75; }
+    .decision.합격 { background: #dcfce7; color: #166534; }
+    .decision.보류 { background: #fef3c7; color: #92400e; }
+    .decision.제외 { background: #fee2e2; color: #991b1b; }
+    .total { min-width: 104px; text-align: right; }
+    .total span { display: block; color: var(--muted); font-size: 12px; }
+    .total strong { font-size: 34px; }
+    .source-box, .split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+    .source-box > div, .split > div { border: 1px solid var(--line); background: #fbfcfe; border-radius: 8px; padding: 14px; }
+    .artifact { border: 1px solid #cbd5e1; background: #fff; border-radius: 8px; padding: 12px; }
+    .artifact-head { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+    .artifact-head strong { color: var(--ink); }
+    .artifact-row { display: grid; grid-template-columns: 96px 1fr; gap: 10px; border-top: 1px solid #edf1f6; padding: 9px 0; }
+    .artifact-row span { color: var(--muted); font-size: 13px; }
+    .artifact-row strong { font-size: 14px; }
+    .score-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .review-note { margin-top: 12px !important; color: var(--ink) !important; }
+    .review-inputs { display: grid; grid-template-columns: 180px 1fr auto; gap: 10px; align-items: end; border-top: 1px solid var(--line); margin-top: 14px; padding-top: 14px; }
+    label { display: grid; gap: 6px; color: var(--muted); font-size: 13px; }
+    select, textarea { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 10px; font: inherit; background: #fff; color: var(--ink); }
+    textarea { min-height: 74px; resize: vertical; }
+    button[data-action="save"], #downloadReviews { background: var(--blue); color: #fff; border-color: var(--blue); }
+    @media (max-width: 760px) {
+      .wrap { padding: 18px 10px 44px; }
+      .hero { padding: 20px; }
+      .metric-grid, .source-box, .split, .review-inputs { grid-template-columns: 1fr; }
+      .candidate { padding: 14px; }
+      .candidate header { display: block; }
+      .total { text-align: left; margin-top: 12px; }
+      .artifact-row { grid-template-columns: 74px 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <h1>한국어 외부 콘텐츠 Flow 선별/변환 리뷰</h1>
+      <p>목표는 외부 콘텐츠를 많이 모으는 것이 아니라, 실제 제작자/출처 맥락과 사용자 반응이 있는 한국어 콘텐츠가 FlowMe에서 캘린더, 체크리스트, 시트, 메모 수준으로 가볍게 담길 수 있는지 판단하는 것입니다.</p>
+    </section>
+    <section class="metric-grid" aria-label="요약">
+      <div class="metric"><span>대표 후보</span><strong>30</strong></div>
+      <div class="metric"><span>합격</span><strong>7</strong></div>
+      <div class="metric"><span>보류</span><strong>22</strong></div>
+      <div class="metric"><span>제외</span><strong>1</strong></div>
+    </section>
+    <section class="rule">
+      <h2>이번 선별 기준</h2>
+      <div class="weights">
+        <span>원문 신뢰/제작자 맥락/사용자 반응 30%</span>
+        <span>따라하고 싶은 욕구 20%</span>
+        <span>실행 구조 명확성 20%</span>
+        <span>캘린더/체크/시트/메모 변환성 15%</span>
+        <span>입력 복잡도 낮음 10%</span>
+        <span>반복/재사용 가능성 5%</span>
+      </div>
+    </section>
+    <nav class="toolbar" aria-label="후보 바로가기">
+      <button id="downloadReviews" type="button">내 평가 JSON 다운로드</button>
+      <a href="#washer-tub-clean-monthly">1. 세탁기 통세척 월간 관리</a><a href="#lg-aircon-filter-biweekly">2. 에어컨 필터 2주 청소</a><a href="#water-purifier-filter-cycle">3. 정수기 필터 교체 주기 관리</a><a href="#monstera-care-routine">4. 몬스테라 물주기·분갈이 루틴</a><a href="#wedding-12-month-timeline">5. 결혼 준비 D-300 타임라인</a><a href="#used-car-buying-check">6. 중고차 후보 점검 체크</a><a href="#moving-d30-checklist">7. 이사 D-30 체크리스트</a><a href="#computer-license-2nd-written">8. 컴활 2급 필기 단기 공부</a><a href="#thankyou-bubu-no-jump-home-workout">9. ThankyouBUBU 점프 없는 홈트 영상</a><a href="#travel-d7-checklist">10. 출국 7일 전 여행 준비</a><a href="#japan-trip-packing">11. 일본 여행 준비물 체크</a><a href="#car-maintenance-schedule">12. 자동차 소모품 교체 스케줄</a>
+    </nav>
+    <article class="candidate" id="washer-tub-clean-monthly">
+      <header>
+        <div>
+          <span class="rank">#1</span>
+          <span class="category">가전 관리</span>
+          <span class="decision 합격">합격</span>
+          <h2>세탁기 통세척 월간 관리</h2>
+          <p>생활 가전 문제이고 월 1회 반복, 준비물, 실행 후 관리가 원문에서 바로 보인다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>4.58</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://raga-t.com/entry/%EC%84%B8%ED%83%81%EA%B8%B0-%ED%86%B5%EC%84%B8%EC%B2%99-%EB%B0%A9%EB%B2%95-%EC%99%84%EB%B2%BD-%EA%B0%80%EC%9D%B4%EB%93%9C" target="_blank" rel="noreferrer">세탁기 통세척 방법 총정리</a>
+          <p>티스토리 생활 팁 원문 직접 확인. 2025-06-06 게시, 세탁기 통세척/문 열어 건조/세제통/필터/월 1회 FAQ 구조 확인.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>통세척 코스, 과탄산소다 100g, 고무패킹, 세제통, 필터, 세탁 후 문 열어두기, 월 1회/냄새 시 2주.</p>
+          <span class="check-state">직접 확인</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 캘린더">
+    <div class="artifact-head">
+      <span>캘린더</span>
+      <strong>첫 청소일, 반복 주기</strong>
+    </div>
+    <div class="artifact-row"><span>제목</span><strong>세탁조 통세척 코스 돌리기</strong></div><div class="artifact-row"><span>일정</span><strong>매월 1회</strong></div><div class="artifact-row"><span>메모</span><strong>세탁조 클리너 또는 모델에 맞는 세척제를 준비하고 통세척/표준 고온 코스를 실행한다.</strong></div>
+    <p>세탁기 모델, 세척 방법, 준비물, 원문 영상/사진 링크, 클리너 구매 링크는 입력 폼이 아니라 상세 메모에 둔다. 사진 증빙은 기본값으로 두지 않는다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 4.1 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.8 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.7 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.8 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.8 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 4.9 <small>5%</small></span>
+          </div>
+          <p class="review-note">방법/준비물/구매 링크는 모두 메모로 보내고, 날짜 안 체크는 3~4개만 둔다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="washer-tub-clean-monthly">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="lg-aircon-filter-biweekly">
+      <header>
+        <div>
+          <span class="rank">#2</span>
+          <span class="category">가전 관리</span>
+          <span class="decision 합격">합격</span>
+          <h2>에어컨 필터 2주 청소</h2>
+          <p>브랜드 공식 문서에 조회수와 권장 주기가 있어 가전 관리 대표성이 높다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>4.70</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://www.lge.co.kr/support/solutions-20150160251795?cstFlag=Y&amp;mktModelCd=FQ237SAU&amp;svcqr=" target="_blank" rel="noreferrer">LG전자 스탠드형 에어컨 필터 청소 및 교체</a>
+          <p>LG전자 공식 지원 문서 직접 확인. 2026-06-04 갱신, 조회 293,927, 극세 필터 세척 2주 1회/교체 6개월 또는 12개월 표 확인.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>극세 필터 물세척 2주 1회, 기능성 필터 교체 6개월/12개월, 필터 사용 시간 초기화.</p>
+          <span class="check-state">직접 확인</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 캘린더">
+    <div class="artifact-head">
+      <span>캘린더</span>
+      <strong>첫 청소일, 에어컨 모델 또는 타입</strong>
+    </div>
+    <div class="artifact-row"><span>제목</span><strong>극세 필터 물세척</strong></div><div class="artifact-row"><span>일정</span><strong>2주마다</strong></div><div class="artifact-row"><span>메모</span><strong>전원 차단 후 필터를 분리해 흐르는 물로 세척하고 그늘에서 완전히 말린다.</strong></div>
+    <p>모델별 필터 이름과 교체 필터 구매 링크를 메모에 저장하면 좋다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 4.8 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.5 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.8 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.7 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.5 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 4.8 <small>5%</small></span>
+          </div>
+          <p class="review-note">2주 청소와 6개월 교체를 같은 루틴에 넣되 주기 그룹을 분리해야 한다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="lg-aircon-filter-biweekly">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="water-purifier-filter-cycle">
+      <header>
+        <div>
+          <span class="rank">#3</span>
+          <span class="category">가전 관리</span>
+          <span class="decision 합격">합격</span>
+          <h2>정수기 필터 교체 주기 관리</h2>
+          <p>필터별 주기라는 표 구조가 명확해서 시트형 Flow 가능성을 보여준다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>4.40</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://pihamadam.tistory.com/267" target="_blank" rel="noreferrer">정수기 필터 교체 방법과 교체 주기</a>
+          <p>티스토리 원문 직접 확인. 필터별 교체 주기 표와 렌탈/자가관리 문제 제기가 있다.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>침전 3~6개월, 프리카본 6~12개월, 나노/RO 12~24개월, 후카본 9~12개월.</p>
+          <span class="check-state">직접 확인</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 시트">
+    <div class="artifact-head">
+      <span>시트</span>
+      <strong>정수기 모델, 마지막 교체일</strong>
+    </div>
+    <div class="artifact-row"><span>열</span><strong>항목 / 주기 / 마지막 실행일 / 다음 실행일 / 메모</strong></div><div class="artifact-row"><span>세디먼트 필터 교체 확인</span><strong>3~6개월 · 교체일 또는 유지 결정 기록</strong></div><div class="artifact-row"><span>프리카본 필터 확인</span><strong>6~12개월 · 다음 확인일 저장</strong></div><div class="artifact-row"><span>RO/나노 필터 확인</span><strong>12~24개월 · 교체 예약 또는 구매 링크 저장</strong></div><div class="artifact-row"><span>후카본 필터 확인</span><strong>9~12개월 · 후카본 다음 확인일 저장</strong></div>
+    <p>필터 구매 링크, 렌탈사 연락처, 모델명을 메모에 둔다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.9 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.5 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.8 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.8 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.1 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 4.7 <small>5%</small></span>
+          </div>
+          <p class="review-note">캘린더보다 필터 행이 먼저다. 각 행에서 다음 알림을 파생시키는 UI가 맞다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="water-purifier-filter-cycle">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="monstera-care-routine">
+      <header>
+        <div>
+          <span class="rank">#4</span>
+          <span class="category">식물 관리</span>
+          <span class="decision 합격">합격</span>
+          <h2>몬스테라 물주기·분갈이 루틴</h2>
+          <p>초보 식물 관리에서 물주기/보류/관찰이 모두 발생하는 대표 루틴이다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>4.34</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://jhbd2.tistory.com/178" target="_blank" rel="noreferrer">스투키/몬스테라 식물 관리 가이드 검색 결과 기반</a>
+          <p>티스토리 원문 직접 확인. 흙 2~3cm, 배수구멍, 계절별 물주기, 증상 체크, 1~2년 분갈이 FAQ 확인.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>흙 2~3cm 마름 확인, 여름 5~7일/겨울 2주, 밝은 간접광, 증상 체크, 분갈이 1~2년.</p>
+          <span class="check-state">직접 확인</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 캘린더">
+    <div class="artifact-head">
+      <span>캘린더</span>
+      <strong>식물명, 마지막 물준 날</strong>
+    </div>
+    <div class="artifact-row"><span>제목</span><strong>겉흙 마름 확인 후 물주기</strong></div><div class="artifact-row"><span>일정</span><strong>7~10일마다 확인</strong></div><div class="artifact-row"><span>메모</span><strong>흙 2~3cm 안쪽 상태와 화분 무게를 확인한 뒤 물을 준다.</strong></div>
+    <p>사진 기록은 선택 사항이다. 기본은 물주기/보류 체크만 둔다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.8 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.6 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.6 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.5 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.5 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 4.8 <small>5%</small></span>
+          </div>
+          <p class="review-note">완료보다 “오늘은 보류”가 정상 결과로 보여야 한다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="monstera-care-routine">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="wedding-12-month-timeline">
+      <header>
+        <div>
+          <span class="rank">#5</span>
+          <span class="category">생활 이벤트</span>
+          <span class="decision 합격">합격</span>
+          <h2>결혼 준비 D-300 타임라인</h2>
+          <p>장기 준비와 D-day 단계가 분명해서 타임라인 Flow 대표성이 가장 강하다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>4.46</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://wedding-expo.kr/posts/post-007" target="_blank" rel="noreferrer">결혼 준비 타임라인 완벽 가이드</a>
+          <p>기존 원문 검토에서 기간별 준비 항목과 모바일 타임라인 UI 검토가 진행된 대표 케이스.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>D-300~D-180 예식장/예산/하객, D-180~D-90 계약/패키지, D-90~D-30 초대장, D-30~D-Day 역할 분담.</p>
+          <span class="check-state">기존 후보 기반</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 혼합">
+    <div class="artifact-head">
+      <span>혼합</span>
+      <strong>예식일</strong>
+    </div>
+    <div class="artifact-row"><span>D-300~D-180</span><strong>예산과 웨딩홀 후보 3곳 정리</strong></div><div class="artifact-row"><span>D-10~9개월</span><strong>웨딩홀 계약금·위약금 확인</strong></div><div class="artifact-row"><span>D-8~6개월</span><strong>스드메와 본식 촬영 범위 확정</strong></div><div class="artifact-row"><span>D-5~4개월</span><strong>하객 명단 1차 정리</strong></div>
+    <p>업체 비교표와 계약 메모는 별도 시트로 뽑히면 좋다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 4.2 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.9 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.8 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.6 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.0 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 3.5 <small>5%</small></span>
+          </div>
+          <p class="review-note">전체 여정을 캘린더에 넣되 모바일에서는 해당 날짜 체크만 보여야 한다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="wedding-12-month-timeline">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="used-car-buying-check">
+      <header>
+        <div>
+          <span class="rank">#6</span>
+          <span class="category">차량/구매</span>
+          <span class="decision 합격">합격</span>
+          <h2>중고차 후보 점검 체크</h2>
+          <p>현장 체크와 구매/보류/거절 결정이 분명해서 일반 todo와 차별점이 보인다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>4.31</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://trendmetriclab.com/guides/used-car-buying-checklist/" target="_blank" rel="noreferrer">중고차 구매 체크리스트 2026</a>
+          <p>기존 원문 검토와 public route 점검에서 날짜 입력/증빙 부담을 줄이는 방향으로 재정리된 대표 케이스.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>성능점검기록부, 보험이력, 낮 시간 방문, 외관/타이어/누유/침수, 정비사 확인, 계약 조건.</p>
+          <span class="check-state">기존 후보 기반</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 체크리스트">
+    <div class="artifact-head">
+      <span>체크리스트</span>
+      <strong>차량명 또는 후보명</strong>
+    </div>
+    <div class="artifact-row"><span>1</span><strong>예산과 후보 차량 기준 정리</strong></div><div class="artifact-row"><span>2</span><strong>성능점검기록부와 보험이력 조회</strong></div><div class="artifact-row"><span>3</span><strong>자동차등록원부 압류·저당 확인</strong></div><div class="artifact-row"><span>4</span><strong>낮 시간 방문 준비</strong></div><div class="artifact-row"><span>5</span><strong>외관·타이어·침수 흔적 확인</strong></div>
+    <p>사용자 사진 증빙을 강제하지 않고 원문 체크 항목과 주의만 메모에 둔다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 4.0 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.7 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.5 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.4 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.2 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 3.8 <small>5%</small></span>
+          </div>
+          <p class="review-note">사진은 참고/선택 메모다. 기본은 현장 체크와 최종 판단이다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="used-car-buying-check">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="moving-d30-checklist">
+      <header>
+        <div>
+          <span class="rank">#7</span>
+          <span class="category">생활 이벤트</span>
+          <span class="decision 합격">합격</span>
+          <h2>이사 D-30 체크리스트</h2>
+          <p>이사일 하나로 여러 일정이 파생되어 캘린더 전환 가능성이 높다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>4.27</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://greechii.com/tips/home/moving-checklist/" target="_blank" rel="noreferrer">이사 준비 체크리스트</a>
+          <p>이사 체크리스트류는 검색/저장 수요가 높은 생활 이벤트. 기존 moving UX 검토 맥락과 연결된다.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>이사업체 비교, 청소/가전 배송, 인터넷/도시가스 이전, 전입신고, 주소 변경.</p>
+          <span class="check-state">기존 후보 기반</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 혼합">
+    <div class="artifact-head">
+      <span>혼합</span>
+      <strong>이사일</strong>
+    </div>
+    <div class="artifact-row"><span>D-30~D-21</span><strong>이사업체 견적 비교</strong></div><div class="artifact-row"><span>D-14</span><strong>인터넷·가스·관리비 이전 예약</strong></div><div class="artifact-row"><span>D-7</span><strong>입주청소와 가전 배송일 확인</strong></div><div class="artifact-row"><span>D+1~D+14</span><strong>전입신고/확정일자 확인</strong></div>
+    <p>증빙 사진은 기본이 아니라 하자 확인이 필요한 경우에만 선택 필드로 둔다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.8 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.8 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.5 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.6 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.1 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 3.4 <small>5%</small></span>
+          </div>
+          <p class="review-note">캘린더 날짜 제목은 짧게, 상세 메모에 준비물과 링크를 둔다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="moving-d30-checklist">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="computer-license-2nd-written">
+      <header>
+        <div>
+          <span class="rank">#8</span>
+          <span class="category">공부/자격증</span>
+          <span class="decision 보류">보류</span>
+          <h2>컴활 2급 필기 단기 공부</h2>
+          <p>시험일, 기출 회차, 오답 체크가 있어 공부 Flow 대표 후보로 적합하다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>3.95</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://tea-books.tistory.com/5" target="_blank" rel="noreferrer">컴활 2급 필기 합격후기</a>
+          <p>시나공/기출 자료 기반 후보. 단, 실제 커리큘럼 원문과 회차 구성이 더 명확해야 한다.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>시험일 기준 기출 풀이, 오답 영역 표시, 약한 과목 재풀이.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 혼합">
+    <div class="artifact-head">
+      <span>혼합</span>
+      <strong>시험일, 선택한 기출 회차</strong>
+    </div>
+    <div class="artifact-row"><span>D-7~D-5</span><strong>핵심 개념 훑기</strong></div><div class="artifact-row"><span>D-4~D-2</span><strong>기출 2세트 풀기</strong></div><div class="artifact-row"><span>D-1</span><strong>오답만 다시 보기</strong></div>
+    <p>기출 링크와 오답 메모만 남기고 공부 일지는 만들지 않는다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.5 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.4 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 3.9 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.3 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 3.9 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 4.1 <small>5%</small></span>
+          </div>
+          <p class="review-note">공부 분야는 원문에 실제 챕터/회차가 있어야 한다. 없으면 generic 루틴이 된다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="computer-license-2nd-written">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="thankyou-bubu-no-jump-home-workout">
+      <header>
+        <div>
+          <span class="rank">#9</span>
+          <span class="category">운동/홈트</span>
+          <span class="decision 보류">보류</span>
+          <h2>ThankyouBUBU 점프 없는 홈트 영상</h2>
+          <p>단일 영상 반복 실행이라는 creator video Flow의 좋은 예다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>4.19</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://www.youtube.com/watch?v=pcyrlkHXAdE" target="_blank" rel="noreferrer">전신 다이어트 최고의 운동 [점프 없음, 눕는동작 없음, 반복 없음, 토크 없음]</a>
+          <p>기존 exact-video 후보. 영상 조회/댓글 등 상호작용 수치 재확인이 필요하지만, 영상 링크를 메모에 두는 구조는 명확하다.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>점프 없음, 눕는 동작 없음, 반복 없음, 원본 영상 실행.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 캘린더">
+    <div class="artifact-head">
+      <span>캘린더</span>
+      <strong>운동 시작일, 반복 요일</strong>
+    </div>
+    <div class="artifact-row"><span>제목</span><strong>원본 영상 반복 일정 만들기</strong></div><div class="artifact-row"><span>일정</span><strong>저장할 때</strong></div><div class="artifact-row"><span>메모</span><strong>운동 시작일, 요일, 시간대만 정하고 각 일정에 원본 영상 링크를 붙인다.</strong></div>
+    <p>영상 동작 설명은 원본 링크로 보내고, Flow에는 반복 일정과 실행 후 기록만 둔다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.7 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.5 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.2 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.4 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.5 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 4.5 <small>5%</small></span>
+          </div>
+          <p class="review-note">영상에서 원문에 없는 30일 계획을 만들지 말고, 반복 알림과 영상 링크만 둔다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="thankyou-bubu-no-jump-home-workout">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="travel-d7-checklist">
+      <header>
+        <div>
+          <span class="rank">#10</span>
+          <span class="category">여행</span>
+          <span class="decision 보류">보류</span>
+          <h2>출국 7일 전 여행 준비</h2>
+          <p>출국/여행일 기준 준비물과 예약 확인이 체크리스트로 잘 옮겨진다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>4.12</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://westctravel.com/articles/departure-checklist-d7" target="_blank" rel="noreferrer">출국 7일 전 체크리스트</a>
+          <p>여행 준비물은 블로그/유튜브/커뮤니티 반응이 많은 반복 검색 주제. 후보 원문 상호작용 재확인 필요.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>여권, 항공/숙소, 환전, 유심/eSIM, 상비약, 충전기, 보험/긴급 연락처.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 혼합">
+    <div class="artifact-head">
+      <span>혼합</span>
+      <strong>출발일, 여행지</strong>
+    </div>
+    <div class="artifact-row"><span>D-7</span><strong>여권/항공권/숙소 재확인</strong></div><div class="artifact-row"><span>D-5</span><strong>로밍/eSIM/결제수단 준비</strong></div><div class="artifact-row"><span>D-1</span><strong>수하물과 공항 공지 확인</strong></div>
+    <p>국가별 입국/안전 정보 공식 링크를 메모에 붙인다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.4 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.7 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.3 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.5 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.3 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 3.8 <small>5%</small></span>
+          </div>
+          <p class="review-note">공식/개인 팁이 섞이면 출처 구분이 필요하다. 하지만 저장 형태는 단순 체크리스트다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="travel-d7-checklist">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="japan-trip-packing">
+      <header>
+        <div>
+          <span class="rank">#11</span>
+          <span class="category">여행</span>
+          <span class="decision 보류">보류</span>
+          <h2>일본 여행 준비물 체크</h2>
+          <p>여행지별 준비물이라는 개인 저장 욕구가 강한 콘텐츠다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>4.08</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://www.kkday.com/ko/blog/22262/aisa-japan-entry%3Fsrsltid%3DAfmBOop6efVGJPh9BVjNZrGcUc6VMcjp_EchiOklI6Xyec_foIkmNI49" target="_blank" rel="noreferrer">KKday 일본 여행 준비물 체크리스트</a>
+          <p>일본 여행 준비물은 네이버/유튜브 반응이 많은 주제. 현재 후보 원문은 재확인 필요.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>여권, 교통패스, 전압/어댑터, eSIM, 동전지갑, 예약 확인.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 체크리스트">
+    <div class="artifact-head">
+      <span>체크리스트</span>
+      <strong>출발일, 여행 기간</strong>
+    </div>
+    <div class="artifact-row"><span>1</span><strong>통신 수단 결정</strong></div><div class="artifact-row"><span>2</span><strong>교통/결제 수단 준비</strong></div><div class="artifact-row"><span>3</span><strong>현지 앱과 예약 확인</strong></div>
+    <p>도시별 추천은 메모 링크로 두고 Flow는 준비 체크에 집중한다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.3 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.7 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.2 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.5 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.4 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 3.9 <small>5%</small></span>
+          </div>
+          <p class="review-note">여행 준비물은 카테고리별 체크 그룹과 메모 링크만 있으면 충분하다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="japan-trip-packing">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="car-maintenance-schedule">
+      <header>
+        <div>
+          <span class="rank">#12</span>
+          <span class="category">차량/관리</span>
+          <span class="decision 보류">보류</span>
+          <h2>자동차 소모품 교체 스케줄</h2>
+          <p>소유 차량 관리 주기라 반복성과 재사용성이 높다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>4.01</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://car.mustarddata.com/guide/maintenance-schedule/" target="_blank" rel="noreferrer">자동차 소모품 교체 주기 종합표</a>
+          <p>차량 소모품 주기 콘텐츠는 검색 수요가 높지만, 브랜드/차종별 원문 근거 재확인이 필요하다.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>엔진오일, 타이어 공기압/위치교환, 와이퍼, 브레이크, 배터리.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 시트">
+    <div class="artifact-head">
+      <span>시트</span>
+      <strong>차량명, 마지막 점검일</strong>
+    </div>
+    <div class="artifact-row"><span>열</span><strong>항목 / 주기 / 마지막 실행일 / 다음 실행일 / 메모</strong></div><div class="artifact-row"><span>엔진오일 교체 예정 확인</span><strong>거리/개월 기준 · 교체/유지 결정</strong></div><div class="artifact-row"><span>와이퍼·에어컨 필터 확인</span><strong>계절 전 · 교체 필요 여부 기록</strong></div><div class="artifact-row"><span>타이어와 브레이크 점검</span><strong>장거리 전 또는 정비 주기 · 점검 완료</strong></div>
+    <p>정비소 예약 링크, 소모품 구매 링크, 정비 이력을 메모에 둔다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.4 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.5 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.0 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.4 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 3.9 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 4.8 <small>5%</small></span>
+          </div>
+          <p class="review-note">차량 프로필이 있으면 좋지만 필수 입력으로 만들면 무거워진다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="car-maintenance-schedule">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="car-cabin-filter-replace">
+      <header>
+        <div>
+          <span class="rank">#13</span>
+          <span class="category">차량/관리</span>
+          <span class="decision 보류">보류</span>
+          <h2>자동차 에어컨 필터 셀프 교체</h2>
+          <p>자가 교체 영상/글과 반복 주기가 결합되는 가벼운 관리 Flow다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>4.04</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://www.autodirection.kr/blog/?bmode=view&amp;idx=166941342" target="_blank" rel="noreferrer">자동차 에어컨 필터 교체 주기와 방법</a>
+          <p>차량용 필터 교체 콘텐츠는 유튜브 DIY 반응이 많은 편. 정확한 영상/댓글 지표 재확인 필요.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>차종 확인, 글로브박스 분리, 필터 방향 확인, 교체 후 다음 교체일 기록.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 캘린더">
+    <div class="artifact-head">
+      <span>캘린더</span>
+      <strong>차종, 마지막 교체일</strong>
+    </div>
+    <div class="artifact-row"><span>제목</span><strong>호환 필터 확인</strong></div><div class="artifact-row"><span>일정</span><strong>교체 전</strong></div><div class="artifact-row"><span>메모</span><strong>차량 연식과 필터 모델을 확인한다.</strong></div>
+    <p>차량별 영상 링크와 필터 구매 링크가 중요하다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.5 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.3 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.2 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.4 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.1 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 4.3 <small>5%</small></span>
+          </div>
+          <p class="review-note">방법 영상은 메모 링크. 앱 안에서 사진 증빙은 필요 없다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="car-cabin-filter-replace">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="regular-aircon-clean-home">
+      <header>
+        <div>
+          <span class="rank">#14</span>
+          <span class="category">가전 관리</span>
+          <span class="decision 보류">보류</span>
+          <h2>벽걸이 에어컨 셀프 청소</h2>
+          <p>계절성 강한 가전 청소로 저장 욕구와 반복성이 있다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>4.14</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://solidtips.tistory.com/entry/aircon-cleaning-filter-smell-mold-self-care-guide" target="_blank" rel="noreferrer">에어컨 청소 총정리</a>
+          <p>에어컨 청소는 여름 전후 검색 수요가 높다. 현재 후보 원문과 상호작용 지표 재확인 필요.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>필터 분리, 물세척, 건조, 송풍, 냄새 점검.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 캘린더">
+    <div class="artifact-head">
+      <span>캘린더</span>
+      <strong>첫 청소일, 반복 주기</strong>
+    </div>
+    <div class="artifact-row"><span>제목</span><strong>전원 차단 후 필터 분리</strong></div><div class="artifact-row"><span>일정</span><strong>청소일</strong></div><div class="artifact-row"><span>메모</span><strong>플러그를 뽑고 필터를 분리한다.</strong></div>
+    <p>냉각핀/분해 청소는 셀프 가능 범위를 넘어가면 업체 상담으로 둔다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.5 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.6 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.2 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.4 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.4 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 4.6 <small>5%</small></span>
+          </div>
+          <p class="review-note">LG 공식 필터 루틴과 중복될 수 있어 대표 케이스 통합 검토가 필요하다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="regular-aircon-clean-home">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="air-purifier-filter-seasonal">
+      <header>
+        <div>
+          <span class="rank">#15</span>
+          <span class="category">가전 관리</span>
+          <span class="decision 보류">보류</span>
+          <h2>공기청정기 필터 계절 관리</h2>
+          <p>계절 관리와 필터 교체가 반복되는 생활 Flow다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>3.91</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://tech-goreum.tistory.com/41" target="_blank" rel="noreferrer">공기청정기 필터 교체 주기</a>
+          <p>티스토리 후보. 원문 직접 재확인과 제조사별 공식 근거 보강 필요.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>프리필터 청소, 본필터 교체, 표시등/냄새 확인, 구매 링크 메모.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 혼합">
+    <div class="artifact-head">
+      <span>혼합</span>
+      <strong>제품명, 마지막 교체일</strong>
+    </div>
+    <div class="artifact-row"><span>매월 또는 미세먼지 많은 달</span><strong>프리필터 먼지 제거</strong></div><div class="artifact-row"><span>6~12개월마다</span><strong>본필터 교체 필요 확인</strong></div><div class="artifact-row"><span>교체 결정 시</span><strong>필터 구매 링크 업데이트</strong></div>
+    <p>필터명, 마지막 교체일, 구매 링크가 핵심 메모다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.2 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.3 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.0 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.3 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.1 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 4.6 <small>5%</small></span>
+          </div>
+          <p class="review-note">제품 모델별 주기 차이는 메모/출처 링크로 처리한다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="air-purifier-filter-seasonal">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="humidifier-daily-weekly-clean">
+      <header>
+        <div>
+          <span class="rank">#16</span>
+          <span class="category">가전 관리</span>
+          <span class="decision 보류">보류</span>
+          <h2>가습기 매일 비우고 주간 세척</h2>
+          <p>매일/주간 관리가 분리되어 루틴 UI 스트레스 테스트에 좋다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>3.85</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://particleseoul.tistory.com/1548" target="_blank" rel="noreferrer">가습기 청소 주기 및 부위별 세척 방법</a>
+          <p>겨울철 반복 검색 주제. 후보 원문 직접 재확인 필요.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>매일 물 비우기, 주 1회 세척, 필터 확인, 완전 건조.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 캘린더">
+    <div class="artifact-head">
+      <span>캘린더</span>
+      <strong>사용 시작일, 사용 계절</strong>
+    </div>
+    <div class="artifact-row"><span>제목</span><strong>물통 비우고 새 물 넣기</strong></div><div class="artifact-row"><span>일정</span><strong>사용일 매일</strong></div><div class="artifact-row"><span>메모</span><strong>남은 물은 버리고 물통을 헹군 뒤 새 물을 채운다.</strong></div>
+    <p>식초/구연산 사용 여부는 제품 설명서 우선으로 메모에 둔다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.1 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.2 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.1 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.1 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.1 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 4.7 <small>5%</small></span>
+          </div>
+          <p class="review-note">매일 체크가 부담이면 주간 리마인더 중심으로 낮춰야 한다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="humidifier-daily-weekly-clean">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="robot-vacuum-monthly-care">
+      <header>
+        <div>
+          <span class="rank">#17</span>
+          <span class="category">가전 관리</span>
+          <span class="decision 보류">보류</span>
+          <h2>로봇청소기 브러시·센서 월간 관리</h2>
+          <p>보유 제품 관리와 소모품/센서 체크가 연결된다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>3.79</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://solidtips.tistory.com/entry/robot-vacuum-maintenance-brush-sensor-dustbin-watertank" target="_blank" rel="noreferrer">로봇청소기 관리 총정리</a>
+          <p>생활가전 관리 글 기반 후보. 실제 댓글/조회 지표 재확인 필요.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>브러시 머리카락 제거, 센서/접점 닦기, 먼지통/오수통 세척.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 캘린더">
+    <div class="artifact-head">
+      <span>캘린더</span>
+      <strong>제품명, 첫 관리일</strong>
+    </div>
+    <div class="artifact-row"><span>제목</span><strong>메인 브러시 머리카락 제거</strong></div><div class="artifact-row"><span>일정</span><strong>매주</strong></div><div class="artifact-row"><span>메모</span><strong>브러시를 분리해 머리카락과 먼지를 제거한다.</strong></div>
+    <p>소모품 구매 링크와 모델별 분해 영상 링크가 유용하다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.0 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.1 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.0 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.2 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.2 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 4.4 <small>5%</small></span>
+          </div>
+          <p class="review-note">제품 보유자에게는 강하지만 대중성은 세탁기/에어컨보다 낮다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="robot-vacuum-monthly-care">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="stuckyi-overwater-prevention">
+      <header>
+        <div>
+          <span class="rank">#18</span>
+          <span class="category">식물 관리</span>
+          <span class="decision 보류">보류</span>
+          <h2>스투키 과습 방지 관리</h2>
+          <p>물주기보다 물주기 보류가 중요한 식물 케이스를 보여준다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>3.89</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://botanical.house/stuckyi/" target="_blank" rel="noreferrer">스투키 물주기 걱정 뚝</a>
+          <p>식물 블로그 후보. 원문 접근과 댓글/공감 지표 재확인 필요.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>흙 완전 건조, 밑동 무름, 과습 신호, 분갈이 후 적응.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 캘린더">
+    <div class="artifact-head">
+      <span>캘린더</span>
+      <strong>마지막 물준 날</strong>
+    </div>
+    <div class="artifact-row"><span>제목</span><strong>흙 완전 건조 확인</strong></div><div class="artifact-row"><span>일정</span><strong>2~3주마다 확인</strong></div><div class="artifact-row"><span>메모</span><strong>마르지 않았으면 오늘 물주기를 보류한다.</strong></div>
+    <p>스투키는 “물주기 알림”보다 “물주기 확인 알림”이 더 맞다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.1 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.1 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.2 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.2 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.4 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 4.7 <small>5%</small></span>
+          </div>
+          <p class="review-note">몬스테라와 같은 식물 관리 패턴으로 묶되 식물별 메모가 달라야 한다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="stuckyi-overwater-prevention">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="cat-litter-box-clean">
+      <header>
+        <div>
+          <span class="rank">#19</span>
+          <span class="category">반려동물</span>
+          <span class="decision 보류">보류</span>
+          <h2>고양이 화장실 청소 루틴</h2>
+          <p>반려동물 일상 관리 중 반복 주기가 명확한 후보.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>3.83</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://i.dooboomama.com/%EA%B3%A0%EC%96%91%EC%9D%B4-%ED%99%94%EC%9E%A5%EC%8B%A4-%EC%B2%AD%EC%86%8C-%ED%95%98%EB%A3%A8-%EB%AA%87-%EB%B2%88-%EB%AA%A8%EB%9E%98-%EA%B0%88%EC%95%84%EC%A3%BC%EB%8A%94-%EC%B5%9C%EC%A0%81-%ED%83%80/" target="_blank" rel="noreferrer">고양이 화장실 청소, 하루 몇 번?</a>
+          <p>반려묘 관리 콘텐츠는 커뮤니티/블로그 반응이 많지만 현재 원문 재확인 필요.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>매일 배변 치우기, 주기적 전체 모래 교체, 화장실 세척, 냄새/상태 메모.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 캘린더">
+    <div class="artifact-head">
+      <span>캘린더</span>
+      <strong>반려묘 수, 청소 시작일</strong>
+    </div>
+    <div class="artifact-row"><span>제목</span><strong>배변 덩어리 제거</strong></div><div class="artifact-row"><span>일정</span><strong>매일</strong></div><div class="artifact-row"><span>메모</span><strong>모래삽으로 배변 덩어리와 오염된 모래를 제거한다.</strong></div>
+    <p>모래 브랜드, 교체 주기, 구매 링크를 메모에 둔다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.0 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.2 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.2 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.1 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.0 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 4.8 <small>5%</small></span>
+          </div>
+          <p class="review-note">반려동물 건강 판단은 빼고 청소 루틴만 남기는 것이 맞다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="cat-litter-box-clean">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="puppy-vaccination-schedule">
+      <header>
+        <div>
+          <span class="rank">#20</span>
+          <span class="category">반려동물</span>
+          <span class="decision 보류">보류</span>
+          <h2>강아지 예방접종 일정표</h2>
+          <p>날짜/회차가 분명하지만 공식/수의사 정보 분리가 필요하다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>3.85</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://hipaw.co.kr/puppy-vaccination-time-type-cycle/" target="_blank" rel="noreferrer">2026 강아지 예방접종 총정리</a>
+          <p>반려견 예방접종은 검색 수요가 강하나 원문/공식 근거 재확인 필요.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>접종 회차, 병원 예약일, 다음 접종일, 준비물 메모.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 캘린더">
+    <div class="artifact-head">
+      <span>캘린더</span>
+      <strong>생년월일 또는 첫 접종일</strong>
+    </div>
+    <div class="artifact-row"><span>제목</span><strong>이전 접종 기록 확인</strong></div><div class="artifact-row"><span>일정</span><strong>입양 직후</strong></div><div class="artifact-row"><span>메모</span><strong>분양/입양 서류와 접종 수첩을 확인해 병원에 보여준다.</strong></div>
+    <p>건강 판단은 수의사에게 맡기고 Flow는 일정/준비물만 관리한다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.2 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.4 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.0 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.2 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 3.8 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 4.1 <small>5%</small></span>
+          </div>
+          <p class="review-note">제작자 리스크를 제외해도 공식/병원 확인 링크는 가까이 둬야 한다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="puppy-vaccination-schedule">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="dog-adoption-first-week">
+      <header>
+        <div>
+          <span class="rank">#21</span>
+          <span class="category">반려동물</span>
+          <span class="decision 보류">보류</span>
+          <h2>강아지 입양 첫 주 체크</h2>
+          <p>입양 첫 주 준비/적응 체크가 단계형으로 정리될 수 있다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>3.77</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://www.gomin77.co.kr/blog/dog-puppy-pet-adoption" target="_blank" rel="noreferrer">강아지 입양 전 완전 가이드</a>
+          <p>반려견 입양 콘텐츠는 후기/댓글형 원문 발굴 가치가 높다. 현재 후보는 재확인 필요.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>공간 준비, 사료/식기, 산책 적응, 병원 확인, 가족 규칙.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 체크리스트">
+    <div class="artifact-head">
+      <span>체크리스트</span>
+      <strong>입양일</strong>
+    </div>
+    <div class="artifact-row"><span>1</span><strong>첫 건강검진 예약</strong></div><div class="artifact-row"><span>2</span><strong>동물등록 확인</strong></div><div class="artifact-row"><span>3</span><strong>초기 준비물 점검</strong></div>
+    <p>건강 판단보다 일정/준비물/공식 등록 링크 중심으로 둔다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.1 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.3 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 3.9 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.1 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.0 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 3.6 <small>5%</small></span>
+          </div>
+          <p class="review-note">초기 적응은 일정+체크가 맞지만 건강 판단 필드는 만들지 않는다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="dog-adoption-first-week">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="child-weekend-play-rotation">
+      <header>
+        <div>
+          <span class="rank">#22</span>
+          <span class="category">육아/놀이</span>
+          <span class="decision 보류">보류</span>
+          <h2>아이 주말 놀이 로테이션</h2>
+          <p>부모가 저장하고 반복하기 쉬운 육아 놀이 루틴 후보.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>3.61</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://i-nuri.go.kr/board/boardFile/download/27/630/1319.do" target="_blank" rel="noreferrer">i-누리 종이컵 놀이 자료</a>
+          <p>네이버 블로그/유튜브식 놀이 콘텐츠와 잘 맞지만 실제 제작자 원문 발굴 필요.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>주말 놀이 주제, 준비물, 안전한 공간, 놀이 후 정리.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 캘린더">
+    <div class="artifact-head">
+      <span>캘린더</span>
+      <strong>첫 주말 날짜, 아이 연령</strong>
+    </div>
+    <div class="artifact-row"><span>제목</span><strong>종이컵 쌓기 놀이</strong></div><div class="artifact-row"><span>일정</span><strong>이번 주말</strong></div><div class="artifact-row"><span>메모</span><strong>종이컵을 준비하고 아이가 쌓거나 무너뜨리며 탐색하게 둔다.</strong></div>
+    <p>완료 기준은 기록 강제가 아니라 “놀이함”으로 충분하다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 2.8 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.2 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 3.5 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.0 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.0 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 4.5 <small>5%</small></span>
+          </div>
+          <p class="review-note">대표 후보로 쓰려면 실제 제작자 놀이 시리즈 원문이 필요하다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="child-weekend-play-rotation">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="picture-book-reading-routine">
+      <header>
+        <div>
+          <span class="rank">#23</span>
+          <span class="category">육아/독서</span>
+          <span class="decision 보류">보류</span>
+          <h2>그림책 읽기 루틴 + 질문 카드</h2>
+          <p>반복 독서 루틴과 책/질문 메모가 잘 맞는다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>3.61</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://image.aladdin.co.kr/img/files/150922_workbook/%EC%9C%A0%EC%95%84/16%20%ED%86%A0%ED%86%A0%EB%B6%81_%EB%8F%85%EC%88%98%EB%A6%AC%EC%99%80%20%EA%B5%B4%EB%9A%9D%EC%83%88.pdf" target="_blank" rel="noreferrer">토토북 그림책 독서 지도안</a>
+          <p>육아 독서 콘텐츠는 제작자/출판사/도서관 원문 조합으로 발굴할 가치가 있다. 현재 원문 재확인 필요.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>읽을 책, 읽는 시간, 오늘 질문, 독후 대화 메모.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 캘린더">
+    <div class="artifact-head">
+      <span>캘린더</span>
+      <strong>요일, 책 목록</strong>
+    </div>
+    <div class="artifact-row"><span>제목</span><strong>표지 보고 이야기 나누기</strong></div><div class="artifact-row"><span>일정</span><strong>읽기 전</strong></div><div class="artifact-row"><span>메모</span><strong>표지와 제목을 보고 어떤 이야기일지 물어본다.</strong></div>
+    <p>책 링크, 지도안 PDF, 다음에 읽을 책을 메모에 둔다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 2.9 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.1 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 3.5 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.0 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 3.9 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 4.6 <small>5%</small></span>
+          </div>
+          <p class="review-note">책 목록과 질문 프롬프트가 원문에 있어야 강해진다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="picture-book-reading-routine">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="homelearn-reading-challenge">
+      <header>
+        <div>
+          <span class="rank">#24</span>
+          <span class="category">육아/독서</span>
+          <span class="decision 보류">보류</span>
+          <h2>예비초 독서 챌린지 책 목록</h2>
+          <p>아이 공부/독서 챌린지의 카테고리 대표 후보.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>3.51</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://www.home-learn.co.kr/front/doc/%ED%99%88%EB%9F%B0%EB%8F%85%EC%84%9C%EC%B1%8C%EB%A6%B0%EC%A7%80_%EA%B6%8C%EC%9E%A5%EB%8F%84%EC%84%9C_%EB%A6%AC%EC%8A%A4%ED%8A%B8.pdf" target="_blank" rel="noreferrer">홈런 독서챌린지 권장도서 리스트</a>
+          <p>홈러닝/학습지 제작자 콘텐츠 후보. 원문과 상호작용 재확인 필요.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>매일 읽기, 학습지 분량, 부모 확인, 주간 보상.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 캘린더">
+    <div class="artifact-head">
+      <span>캘린더</span>
+      <strong>시작일, 반복 요일</strong>
+    </div>
+    <div class="artifact-row"><span>제목</span><strong>이번 주 책 1권 고르기</strong></div><div class="artifact-row"><span>일정</span><strong>매주 시작일</strong></div><div class="artifact-row"><span>메모</span><strong>권장도서 목록에서 대여/구매 가능한 책을 고른다.</strong></div>
+    <p>도서 구매/도서관 링크는 메모에 붙인다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 2.8 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.0 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 3.4 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 3.9 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 3.8 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 4.4 <small>5%</small></span>
+          </div>
+          <p class="review-note">원문 없이 학습 루틴만 있으면 약하다. 실제 자료/챕터가 필요하다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="homelearn-reading-challenge">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="plank-30-day-challenge">
+      <header>
+        <div>
+          <span class="rank">#25</span>
+          <span class="category">운동/챌린지</span>
+          <span class="decision 보류">보류</span>
+          <h2>30일 플랭크 챌린지</h2>
+          <p>Day별 과제가 있으면 챌린지 캘린더로 잘 변환된다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>3.80</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://khj2510.tistory.com/entry/%ED%94%8C%EB%9E%AD%ED%81%AC-30%EC%9D%BC-%EC%B1%8C%EB%A6%B0%EC%A7%80-%EA%B3%84%ED%9A%8D%ED%91%9C-%EA%B3%B5%EC%9C%A0" target="_blank" rel="noreferrer">플랭크 30일 챌린지 계획표</a>
+          <p>운동 챌린지 콘텐츠는 유튜브/블로그 반응이 많지만 후보 원문 재확인 필요.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>Day 1~30 시간/세트 증가, 휴식일, 자세 영상 링크.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 캘린더">
+    <div class="artifact-head">
+      <span>캘린더</span>
+      <strong>시작일</strong>
+    </div>
+    <div class="artifact-row"><span>제목</span><strong>플랭크 20초</strong></div><div class="artifact-row"><span>일정</span><strong>Day 1</strong></div><div class="artifact-row"><span>메모</span><strong>정확한 자세는 원문을 확인하고 무리하지 않는다.</strong></div>
+    <p>운동 기록은 필수로 만들지 말고 완료/보류만 둔다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.0 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.1 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.0 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.2 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.6 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 3.8 <small>5%</small></span>
+          </div>
+          <p class="review-note">컨디션 기록은 빼고 오늘 과제와 영상 링크만 둔다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="plank-30-day-challenge">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="korean-history-3-week">
+      <header>
+        <div>
+          <span class="rank">#26</span>
+          <span class="category">공부/자격증</span>
+          <span class="decision 보류">보류</span>
+          <h2>한능검 3주 공부 플랜</h2>
+          <p>시험 대비 일정형 후보이나 원문 커리큘럼 충실도가 관건이다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>3.58</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://hidell.tistory.com/2085" target="_blank" rel="noreferrer">한국사능력검정 준비기간 3주 플랜</a>
+          <p>한능검 공부 콘텐츠는 검색 수요가 높다. 실제 챕터/기출표 원문 재확인 필요.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>3주 범위, 기출 풀이, 암기 주제, 오답 재풀이.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 혼합">
+    <div class="artifact-head">
+      <span>혼합</span>
+      <strong>시험일</strong>
+    </div>
+    <div class="artifact-row"><span>1주차</span><strong>시대별 핵심 정리</strong></div><div class="artifact-row"><span>2주차</span><strong>근현대와 빈출 세트 암기</strong></div><div class="artifact-row"><span>3주차</span><strong>기출 회독과 오답 제거</strong></div>
+    <p>강의/교재 링크는 메모에 두고 Flow는 일정과 진도만 다룬다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 2.9 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.1 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 3.6 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.0 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 3.8 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 3.9 <small>5%</small></span>
+          </div>
+          <p class="review-note">공부 분야는 자료 출처와 실제 범위표가 없으면 보류다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="korean-history-3-week">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="passport-issue-prep">
+      <header>
+        <div>
+          <span class="rank">#27</span>
+          <span class="category">여행/행정</span>
+          <span class="decision 보류">보류</span>
+          <h2>여권 발급 준비물 체크</h2>
+          <p>공식 행정 준비물과 방문/온라인 신청이 체크리스트로 분명하다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>3.95</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://benefitinfo.policynote.kr/51" target="_blank" rel="noreferrer">여권 발급 준비물 총정리</a>
+          <p>행정 공식/블로그 혼합 후보. 공식 원문 링크 최신성 재확인 필요.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>신청서, 사진, 신분증, 수수료, 방문/온라인 신청, 수령.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 체크리스트">
+    <div class="artifact-head">
+      <span>체크리스트</span>
+      <strong>신청 예정일</strong>
+    </div>
+    <div class="artifact-row"><span>1</span><strong>사진 규정 확인</strong></div><div class="artifact-row"><span>2</span><strong>신분증/서류 준비</strong></div><div class="artifact-row"><span>3</span><strong>방문 기관과 수수료 확인</strong></div>
+    <p>공식 외교부 여권 안내 링크를 메모 상단에 둔다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.5 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.2 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.3 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.2 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.3 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 2.8 <small>5%</small></span>
+          </div>
+          <p class="review-note">한 번성은 낮지만 여행/행정 대표 케이스로 필요하다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="passport-issue-prep">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="vehicle-inspection-prep">
+      <header>
+        <div>
+          <span class="rank">#28</span>
+          <span class="category">차량/행정</span>
+          <span class="decision 보류">보류</span>
+          <h2>자동차 정기검사 준비 체크</h2>
+          <p>검사 예약/서류/점검이 날짜와 체크로 나뉜다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>3.90</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://carsize.co.kr/car-regular-inspection-preparation-guide/" target="_blank" rel="noreferrer">차량 정기검사 준비 방법 총정리</a>
+          <p>자동차 검사 공식/후기 콘텐츠 후보. 원문 최신성 재확인 필요.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>검사 기간 확인, 예약, 자동차등록증/보험, 전조등/타이어/와이퍼 점검.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 혼합">
+    <div class="artifact-head">
+      <span>혼합</span>
+      <strong>검사 만료일</strong>
+    </div>
+    <div class="artifact-row"><span>만료 30일 전</span><strong>검사 가능 기간 확인</strong></div><div class="artifact-row"><span>검사 7일 전</span><strong>전구·와이퍼·타이어 사전 점검</strong></div><div class="artifact-row"><span>검사 주간</span><strong>검사 예약/방문</strong></div>
+    <p>공식 검사 기간 확인 링크를 메모에 둔다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.4 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.1 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 4.2 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.2 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 4.1 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 3.6 <small>5%</small></span>
+          </div>
+          <p class="review-note">증빙보다 예약/방문 준비 체크가 먼저다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="vehicle-inspection-prep">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="baby-food-four-week-menu">
+      <header>
+        <div>
+          <span class="rank">#29</span>
+          <span class="category">육아/식단</span>
+          <span class="decision 보류">보류</span>
+          <h2>초기 토핑 이유식 4주 식단표</h2>
+          <p>반응 기록이 아니라 식단표/일정 export로 보면 가능성이 있다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>3.62</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://family-yes.tistory.com/229" target="_blank" rel="noreferrer">2025 토핑이유식 식단표, 초기 1~2단계</a>
+          <p>육아 식단표 수요는 높지만 원문 복잡도와 건강 정보 분리 때문에 재검토 필요.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>연령별 식단, 새 재료, 일별 메뉴, 주간 반복.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 혼합">
+    <div class="artifact-head">
+      <span>혼합</span>
+      <strong>아이 월령, 시작일</strong>
+    </div>
+    <div class="artifact-row"><span>1주차</span><strong>1주차 쌀죽/기본 재료 시작</strong></div><div class="artifact-row"><span>2주차</span><strong>2주차 채소 토핑 추가</strong></div><div class="artifact-row"><span>3~4주차</span><strong>3~4주차 소고기/단백질 확인</strong></div>
+    <p>반응 기록은 무겁게 만들지 않고, 오늘 먹은 메뉴와 특이사항 한 줄만 둔다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 3.2 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.3 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 3.5 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 4.0 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 3.1 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 3.8 <small>5%</small></span>
+          </div>
+          <p class="review-note">기록 앱처럼 만들면 실패. 캘린더/시트 export 중심이어야 한다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="baby-food-four-week-menu">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+<article class="candidate" id="monthly-budget-close">
+      <header>
+        <div>
+          <span class="rank">#30</span>
+          <span class="category">돈 관리</span>
+          <span class="decision 제외">제외</span>
+          <h2>월말 가계부 결산 루틴</h2>
+          <p>수요는 크지만 원문이 조언형이면 FlowMe에 잘 안 맞는 반례다.</p>
+        </div>
+        <div class="total">
+          <span>가중 점수</span>
+          <strong>3.28</strong>
+        </div>
+      </header>
+      <section class="source-box">
+        <div>
+          <h3>원문/출처</h3>
+          <a href="https://smart-life.kr/monthly-budget-template-checklist-guide/" target="_blank" rel="noreferrer">월간 가계부 템플릿 가이드</a>
+          <p>돈 관리 콘텐츠는 반응이 많지만 현재 후보는 사용자가 따라 할 원문 체크 구조가 약하다는 이전 평가가 있었다.</p>
+        </div>
+        <div>
+          <h3>원문에서 옮긴 단서</h3>
+          <p>수입/지출 확인, 고정비, 예산 조정, 다음 달 목표.</p>
+          <span class="check-state">재확인 필요</span>
+        </div>
+      </section>
+      <section class="split">
+        <div>
+          <h3>Flow 변환</h3>
+          <div class="artifact 시트">
+    <div class="artifact-head">
+      <span>시트</span>
+      <strong>월, 계좌/카드 범위</strong>
+    </div>
+    <div class="artifact-row"><span>열</span><strong>항목 / 주기 / 마지막 실행일 / 다음 실행일 / 메모</strong></div><div class="artifact-row"><span>이번 달 고정비 확인</span><strong>월말 · 고정비 확인</strong></div><div class="artifact-row"><span>변동비 합계 보기</span><strong>월말 · 변동비 합계 기록</strong></div><div class="artifact-row"><span>다음 달 저축 자동이체 확인</span><strong>월급일 전후 · 자동이체 확인</strong></div>
+    <p>금융 조언이 아니라 개인 정리표로 제한한다.</p>
+  </div>
+        </div>
+        <div>
+          <h3>점수 근거</h3>
+          <div class="score-grid">
+            <span class="score-chip"><b>출처/반응</b> 2.7 <small>30%</small></span>
+            <span class="score-chip"><b>따라하고 싶음</b> 4.4 <small>20%</small></span>
+            <span class="score-chip"><b>실행 구조</b> 2.8 <small>20%</small></span>
+            <span class="score-chip"><b>저장 변환성</b> 3.6 <small>15%</small></span>
+            <span class="score-chip"><b>입력 가벼움</b> 2.8 <small>10%</small></span>
+            <span class="score-chip"><b>반복성</b> 4.2 <small>5%</small></span>
+          </div>
+          <p class="review-note">수요는 높지만 입력이 무거워지고 재무 조언처럼 보이면 제외해야 한다.</p>
+        </div>
+      </section>
+      <section class="review-inputs" data-review-id="monthly-budget-close">
+        <div class="rating">
+          <label>내 평가</label>
+          <select data-field="rating">
+            <option value="">선택</option>
+            <option value="5">5점: 바로 대표 후보</option>
+            <option value="4">4점: 조금 다듬으면 가능</option>
+            <option value="3">3점: 보류</option>
+            <option value="2">2점: 약함</option>
+            <option value="1">1점: 제외</option>
+          </select>
+        </div>
+        <label class="memo">검토 메모<textarea data-field="memo" placeholder="원문과 Flow 변환이 맞는지, 저장해서 쓸 것 같은지 적기"></textarea></label>
+        <button type="button" data-action="save">브라우저에 저장</button>
+      </section>
+    </article>
+  </main>
+  <script>
+    const key = 'flowme-weighted-source-flow-review-2026-06-07';
+    const load = () => {
+      try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch (_) { return {}; }
+    };
+    const saveAll = (data) => localStorage.setItem(key, JSON.stringify(data));
+    const state = load();
+    document.querySelectorAll('[data-review-id]').forEach((section) => {
+      const id = section.getAttribute('data-review-id');
+      const saved = state[id] || {};
+      section.querySelectorAll('[data-field]').forEach((field) => {
+        field.value = saved[field.getAttribute('data-field')] || '';
+      });
+      section.querySelector('[data-action="save"]').addEventListener('click', () => {
+        state[id] = {};
+        section.querySelectorAll('[data-field]').forEach((field) => {
+          state[id][field.getAttribute('data-field')] = field.value;
+        });
+        saveAll(state);
+      });
+    });
+    document.getElementById('downloadReviews').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(load(), null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'flowme-weighted-source-flow-user-review.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>

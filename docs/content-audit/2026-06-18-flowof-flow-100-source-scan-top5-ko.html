@@ -1,0 +1,865 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Flow of Flow 100개 원컨텐츠 스캔과 상위 5개 후보</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7f9;
+        --panel: #ffffff;
+        --ink: #111827;
+        --muted: #5b6472;
+        --line: #dfe4ea;
+        --soft: #eef3f8;
+        --blue: #2563eb;
+        --green: #147a4b;
+        --amber: #a16207;
+        --red: #b42318;
+        --purple: #6d28d9;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+        line-height: 1.6;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
+      }
+
+      .wrap {
+        width: min(1180px, calc(100vw - 32px));
+        margin: 0 auto;
+        padding: 32px 0 56px;
+      }
+
+      .hero,
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--panel);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+      }
+
+      .hero {
+        padding: 28px;
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        line-height: 1.25;
+      }
+
+      h1 {
+        max-width: 900px;
+        font-size: clamp(30px, 5vw, 54px);
+        letter-spacing: 0;
+      }
+
+      h2 {
+        font-size: clamp(22px, 3vw, 30px);
+      }
+
+      h3 {
+        font-size: 18px;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      .desc {
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 16px;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 20px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 30px;
+        border-radius: 999px;
+        background: var(--soft);
+        padding: 6px 10px;
+        color: #263241;
+        font-size: 13px;
+        font-weight: 750;
+      }
+
+      .chip.green {
+        background: #dcfce7;
+        color: var(--green);
+      }
+
+      .chip.blue {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+
+      .chip.amber {
+        background: #fef3c7;
+        color: var(--amber);
+      }
+
+      .chip.red {
+        background: #fee2e2;
+        color: var(--red);
+      }
+
+      .chip.purple {
+        background: #ede9fe;
+        color: var(--purple);
+      }
+
+      .stack {
+        display: grid;
+        gap: 18px;
+        margin-top: 18px;
+      }
+
+      .card {
+        padding: 24px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .grid.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .mini {
+        min-width: 0;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fbfcfe;
+        padding: 16px;
+      }
+
+      .mini strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .mini p,
+      .mini li {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      ul {
+        margin: 10px 0 0;
+        padding-left: 20px;
+      }
+
+      .table-wrap {
+        margin-top: 14px;
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+      }
+
+      table {
+        width: 100%;
+        min-width: 920px;
+        border-collapse: collapse;
+        background: #fff;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid var(--line);
+        padding: 12px 14px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: #f8fafc;
+        color: #334155;
+        font-size: 13px;
+        white-space: nowrap;
+      }
+
+      td {
+        color: #1f2937;
+        font-size: 14px;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .rank {
+        width: 42px;
+        color: var(--blue);
+        font-weight: 850;
+      }
+
+      .verdict {
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      .verdict.strong {
+        color: var(--green);
+      }
+
+      .verdict.conditional {
+        color: var(--amber);
+      }
+
+      .verdict.backup {
+        color: #475569;
+      }
+
+      .selected {
+        display: grid;
+        gap: 16px;
+      }
+
+      .candidate {
+        display: grid;
+        grid-template-columns: 104px minmax(0, 1fr);
+        gap: 16px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px;
+        background: #fff;
+      }
+
+      .candidate .num {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 74px;
+        height: 74px;
+        border-radius: 20px;
+        background: #eff6ff;
+        color: var(--blue);
+        font-size: 28px;
+        font-weight: 900;
+      }
+
+      .candidate dl {
+        display: grid;
+        grid-template-columns: 150px minmax(0, 1fr);
+        gap: 8px 14px;
+        margin: 14px 0 0;
+      }
+
+      .candidate dt {
+        color: #475569;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .candidate dd {
+        margin: 0;
+        color: #1f2937;
+        font-size: 14px;
+      }
+
+      details {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+        padding: 16px;
+      }
+
+      summary {
+        cursor: pointer;
+        font-weight: 850;
+      }
+
+      .scan-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .scan-item {
+        display: grid;
+        grid-template-columns: 40px minmax(0, 1fr);
+        gap: 8px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #fbfcfe;
+        padding: 9px;
+        font-size: 13px;
+      }
+
+      .scan-item b {
+        color: #334155;
+      }
+
+      .scan-item span {
+        color: var(--muted);
+      }
+
+      .note {
+        margin-top: 12px;
+        border-left: 4px solid var(--blue);
+        background: #eff6ff;
+        padding: 12px 14px;
+        color: #1e3a8a;
+        font-size: 14px;
+      }
+
+      .danger {
+        border-left-color: var(--red);
+        background: #fff1f2;
+        color: #9f1239;
+      }
+
+      .footer {
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 760px) {
+        .wrap {
+          width: min(100vw - 20px, 1180px);
+          padding-top: 16px;
+        }
+
+        .hero,
+        .card {
+          border-radius: 12px;
+          padding: 18px;
+        }
+
+        .grid.two,
+        .grid.three,
+        .scan-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .candidate {
+          grid-template-columns: 1fr;
+        }
+
+        .candidate .num {
+          width: 56px;
+          height: 56px;
+          border-radius: 16px;
+          font-size: 22px;
+        }
+
+        .candidate dl {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="hero">
+        <p class="eyebrow">Flow of Flow source scan · 2026-06-18</p>
+        <h1>수학 외 Flow of Flow 후보를 100개 검색하고, 다음 PoC에 적당한 5개를 골랐다</h1>
+        <p class="desc">
+          목적은 "그럴듯한 묶음"을 늘리는 것이 아니라, 상위 구조가 반복 가능한 하위 Flow들을 실제로 생성하고 관리할 수 있는 원컨텐츠를 찾는 것이다.
+          이번 문서는 사용자용 화면이 아니라 원컨텐츠 심사 리포트다.
+        </p>
+        <div class="chips">
+          <span class="chip green">검색 결과 100개 스캔</span>
+          <span class="chip blue">상위 후보 18개 원문/스니펫 확인</span>
+          <span class="chip purple">수학 제외</span>
+          <span class="chip amber">선정 5개 + 예비 5개</span>
+        </div>
+      </section>
+
+      <div class="stack">
+        <section class="card">
+          <h2>이번 선별 기준</h2>
+          <div class="grid three" style="margin-top: 14px">
+            <div class="mini">
+              <strong>반복 하위 구조</strong>
+              <p>상위 콘텐츠 아래에 최소 3개 이상의 하위 단위가 있고, 각 하위 단위가 같은 실행 패턴을 반복해야 한다.</p>
+            </div>
+            <div class="mini">
+              <strong>저장 후 실행물</strong>
+              <p>사용자가 저장하면 캘린더, 루틴, 진행표, 체크리스트, 메모 중 무엇이 생기는지 바로 설명 가능해야 한다.</p>
+            </div>
+            <div class="mini">
+              <strong>제작자 확장성</strong>
+              <p>제작자가 나중에 주차, 모듈, 작물, 월령, 프로젝트 같은 하위 Flow를 계속 추가할 수 있어야 한다.</p>
+            </div>
+          </div>
+          <p class="note danger">
+            단순 재생목록, 팁 모음, 일회성 체크리스트, 넓은 로드맵은 제외했다. 좋은 단일 Flow일 수는 있지만 Flow of Flow 대표로는 약하다.
+          </p>
+        </section>
+
+        <section class="card">
+          <h2>100개 검색 범위 요약</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>영역</th>
+                  <th>검색 수</th>
+                  <th>강하게 본 구조</th>
+                  <th>많이 탈락한 이유</th>
+                  <th>상위 후보</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>운동/러닝 프로그램</td>
+                  <td>15</td>
+                  <td>9주/12주/14주 계획, 주차별 반복 세션</td>
+                  <td>일회성 운동 영상, 단순 동기부여 글</td>
+                  <td>NHS Couch to 5K, Nike 10K, Hal Higdon</td>
+                </tr>
+                <tr>
+                  <td>코딩/디지털 교육</td>
+                  <td>15</td>
+                  <td>모듈, 레슨, 워크숍, 프로젝트, 퀴즈</td>
+                  <td>외부 LMS 자체를 복제해야 하는 후보</td>
+                  <td>freeCodeCamp, The Odin Project, MDN Curriculum</td>
+                </tr>
+                <tr>
+                  <td>육아/식단/검진</td>
+                  <td>15</td>
+                  <td>월령별 일정표, 식단표, 접종/검진 시기</td>
+                  <td>의학 판단/기록관리 앱이 되어버리는 후보</td>
+                  <td>Solid Starts, KDCA/NRC 예방접종, 아이사랑</td>
+                </tr>
+                <tr>
+                  <td>가드닝/작물 관리</td>
+                  <td>15</td>
+                  <td>작물별 파종, 심기, 수확 캘린더</td>
+                  <td>지역/기후를 무시하면 바로 틀리는 후보</td>
+                  <td>RHS Crop Planner, Old Farmer's Almanac</td>
+                </tr>
+                <tr>
+                  <td>언어/시험 준비</td>
+                  <td>15</td>
+                  <td>일자별 학습표, 파트별 반복 연습</td>
+                  <td>대부분 단일 30일 플랜 또는 시험 설명서</td>
+                  <td>JLPT N5 30-day, IELTS 7-day, TOEIC 파트별</td>
+                </tr>
+                <tr>
+                  <td>악기/그림/공예</td>
+                  <td>15</td>
+                  <td>모듈별 연습 루틴, 프로젝트별 제작 Flow</td>
+                  <td>단순 작품 링크 모음은 현재 위치/다음 항목이 약함</td>
+                  <td>JustinGuitar, Origami.me, 30-day drawing</td>
+                </tr>
+                <tr>
+                  <td>반려동물 훈련/돌봄</td>
+                  <td>10</td>
+                  <td>월령/주차별 훈련 목표, 접종 일정</td>
+                  <td>건강 판단과 훈련 결과 보장을 분리해야 함</td>
+                  <td>AKC puppy training, puppy vaccine schedules</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>선정한 5개</h2>
+          <p class="desc">
+            수학을 제외하고, 하위 Flow 반복성이 실제로 보이는 후보만 골랐다. 순서는 PoC 우선순위다.
+          </p>
+          <div class="selected" style="margin-top: 16px">
+            <article class="candidate">
+              <div class="num">1</div>
+              <div>
+                <h3>NHS Couch to 5K 9주 러닝 플랜</h3>
+                <p class="desc">
+                  <a href="https://www.nhs.uk/better-health/get-active/get-running-with-couch-to-5k/couch-to-5k-running-plan/" target="_blank" rel="noreferrer">원문 보기</a>
+                  · 9주 동안 주 3회, 각 세션이 준비운동, 달리기/걷기 인터벌, 마무리로 반복된다.
+                </p>
+                <dl>
+                  <dt>상위 구조</dt>
+                  <dd>9주 러닝 입문 프로그램</dd>
+                  <dt>하위 Flow</dt>
+                  <dd>Week 1~9 주차별 러닝 Flow 또는 Run 1~27 세션 Flow</dd>
+                  <dt>공통 패턴</dt>
+                  <dd>스트레칭 확인 → 5분 걷기 → 주차별 인터벌 → 5분 쿨다운 → 완료/메모</dd>
+                  <dt>사용자 입력</dt>
+                  <dd>시작일, 주 3회 요일 정도</dd>
+                  <dt>생성 artifact</dt>
+                  <dd>반복 캘린더 + 세션별 체크/메모</dd>
+                  <dt>판정</dt>
+                  <dd><span class="verdict strong">Strong Flow of Flow</span> · 수학 외 첫 PoC로 가장 적합</dd>
+                </dl>
+              </div>
+            </article>
+
+            <article class="candidate">
+              <div class="num">2</div>
+              <div>
+                <h3>JustinGuitar Beginner Guitar Grade 1</h3>
+                <p class="desc">
+                  <a href="https://www.justinguitar.com/classes/beginner-guitar-course-grade-one" target="_blank" rel="noreferrer">원문 보기</a>
+                  · Grade, Module, Lesson, Practice Routine, Pass 기준이 이어지는 제작자형 교육 콘텐츠다.
+                </p>
+                <dl>
+                  <dt>상위 구조</dt>
+                  <dd>초보 기타 Grade 1 코스</dd>
+                  <dt>하위 Flow</dt>
+                  <dd>Module 0~7, 각 모듈의 연습 루틴과 통과 기준</dd>
+                  <dt>공통 패턴</dt>
+                  <dd>레슨 보기 → 오늘 연습 루틴 실행 → 코드/리듬 체크 → 통과 기준 확인 → 다음 모듈</dd>
+                  <dt>사용자 입력</dt>
+                  <dd>연습 시작일, 주 연습 요일</dd>
+                  <dt>생성 artifact</dt>
+                  <dd>연습 캘린더 + 모듈 진행표 + 오늘 연습 체크</dd>
+                  <dt>판정</dt>
+                  <dd><span class="verdict strong">Strong Flow of Flow</span> · 제작자 콘텐츠 플랫폼성을 보기 좋음</dd>
+                </dl>
+              </div>
+            </article>
+
+            <article class="candidate">
+              <div class="num">3</div>
+              <div>
+                <h3>freeCodeCamp Responsive Web Design Certification</h3>
+                <p class="desc">
+                  <a href="https://www.freecodecamp.org/learn/responsive-web-design-v9" target="_blank" rel="noreferrer">원문 보기</a>
+                  · 보조 확인: <a href="https://www.freecodecamp.org/news/freecodecamps-new-responsive-web-design-certification-is-now-live/" target="_blank" rel="noreferrer">공식 설명</a>
+                  에서 모듈, 레슨, 워크숍, 랩, 리뷰, 퀴즈, 프로젝트 구조가 확인된다.
+                </p>
+                <dl>
+                  <dt>상위 구조</dt>
+                  <dd>반응형 웹 디자인 인증 과정</dd>
+                  <dt>하위 Flow</dt>
+                  <dd>HTML, CSS, Forms, Accessibility, Flexbox, Grid 등 모듈별 학습 Flow</dd>
+                  <dt>공통 패턴</dt>
+                  <dd>개념 학습 → 실습 워크숍 → 랩/프로젝트 → 리뷰 → 퀴즈/시험 준비</dd>
+                  <dt>사용자 입력</dt>
+                  <dd>주 학습 슬롯 또는 목표 완료일</dd>
+                  <dt>생성 artifact</dt>
+                  <dd>진도표 + 프로젝트 체크리스트 + 학습 캘린더</dd>
+                  <dt>판정</dt>
+                  <dd><span class="verdict strong">Strong Flow of Flow</span> · 커리큘럼/코스 제작자 모델 검증에 적합</dd>
+                </dl>
+              </div>
+            </article>
+
+            <article class="candidate">
+              <div class="num">4</div>
+              <div>
+                <h3>RHS Vegetable Crop Planner</h3>
+                <p class="desc">
+                  <a href="https://www.rhs.org.uk/advice/pdfs/crop-planner.pdf" target="_blank" rel="noreferrer">원문 보기</a>
+                  · 작물별로 파종, 실외 파종, 모종 심기, 수확 월이 표로 정리된다.
+                </p>
+                <dl>
+                  <dt>상위 구조</dt>
+                  <dd>텃밭 작물 1년 운영표</dd>
+                  <dt>하위 Flow</dt>
+                  <dd>토마토, 상추, 완두, 양파, 당근 등 작물별 재배 Flow</dd>
+                  <dt>공통 패턴</dt>
+                  <dd>실내 파종 → 실외 파종/정식 → 관리 메모 → 수확 시기 체크</dd>
+                  <dt>사용자 입력</dt>
+                  <dd>키울 작물 선택, 시작월 또는 지역 달력</dd>
+                  <dt>생성 artifact</dt>
+                  <dd>작물별 캘린더 + 작은 재배표</dd>
+                  <dt>판정</dt>
+                  <dd><span class="verdict strong">Strong Flow of Flow</span> · 표 기반 Flow of Flow 대표로 좋음</dd>
+                </dl>
+              </div>
+            </article>
+
+            <article class="candidate">
+              <div class="num">5</div>
+              <div>
+                <h3>Solid Starts Baby Feeding Schedules</h3>
+                <p class="desc">
+                  <a href="https://solidstarts.com/feeding-schedules/" target="_blank" rel="noreferrer">원문 보기</a>
+                  · 3~24개월 월령별 수유/이유식 스케줄이 한 페이지 안에 반복 구조로 정리된다.
+                </p>
+                <dl>
+                  <dt>상위 구조</dt>
+                  <dd>월령별 아기 식사 전환 지도</dd>
+                  <dt>하위 Flow</dt>
+                  <dd>3~5개월, 6~7개월, 7~8개월, 9~12개월 등 월령대별 식사 Flow</dd>
+                  <dt>공통 패턴</dt>
+                  <dd>월령 확인 → 식사 횟수/수유량 확인 → 오늘 식사 메모 → 다음 월령 전환</dd>
+                  <dt>사용자 입력</dt>
+                  <dd>아기 생년월일, 수유 방식 정도</dd>
+                  <dt>생성 artifact</dt>
+                  <dd>월령별 타임라인 + 식사 메모 + 원문 링크</dd>
+                  <dt>판정</dt>
+                  <dd><span class="verdict conditional">Conditional Strong</span> · 육아/식단 가능성은 크지만 의료/영양 경계가 필요</dd>
+                </dl>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>예비 후보 5개</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>후보</th>
+                  <th>왜 아까운가</th>
+                  <th>왜 바로 대표로 안 골랐나</th>
+                  <th>다음 확인</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><a href="https://www.akc.org/expert-advice/training/puppy-training-timeline-teaching-good-behavior-before-its-too-late/" target="_blank" rel="noreferrer">AKC Puppy Training Timeline</a></td>
+                  <td>월령/나이대별 훈련 목표가 있어 반려동물 카테고리 확장에 좋다.</td>
+                  <td>훈련 성과 보장처럼 보이면 위험하고, 월령별 하위 Flow의 반복 패턴을 더 좁혀야 한다.</td>
+                  <td>8~16주, 6개월, 1년 하위 Flow로 나눠 클릭 PoC 가능성 확인</td>
+                </tr>
+                <tr>
+                  <td><a href="https://origami.me/easy-origami/" target="_blank" rel="noreferrer">Origami.me Easy Origami</a></td>
+                  <td>120개 이상 프로젝트가 있고 각 프로젝트가 재료/난이도/단계로 반복된다.</td>
+                  <td>전체 저장과 현재 위치 관리가 약하면 단순 북마크 모음이 된다.</td>
+                  <td>아이 놀이/방과후 제작자의 "이번 달 종이접기 8개" 식으로 좁히면 강해질 수 있음</td>
+                </tr>
+                <tr>
+                  <td><a href="https://skillshop.exceedlms.com/student/collection/1830706-fundamentals-of-digital-marketing" target="_blank" rel="noreferrer">Google Fundamentals of Digital Marketing</a></td>
+                  <td>17개 모듈과 실전 예제가 있어 코스형 구조가 명확하다.</td>
+                  <td>외부 LMS 학습을 다시 감싸는 느낌이 강해 FlowMe 고유 가치가 약할 수 있다.</td>
+                  <td>제작자가 자기 강의를 Flow화하는 패턴의 비교군으로 사용</td>
+                </tr>
+                <tr>
+                  <td><a href="https://www.japanesepod101.com/blog/2025/10/06/30-day-jlpt-n5-study-plan/" target="_blank" rel="noreferrer">JapanesePod101 JLPT N5 30-Day Plan</a></td>
+                  <td>일자별 문법/듣기/어휘 학습 구조가 있다.</td>
+                  <td>Flow of Flow보다는 단일 30일 학습 Flow에 가깝다.</td>
+                  <td>N5/N4/N3 레벨별 반복 구조까지 한 제작자 source에서 잡히면 재검토</td>
+                </tr>
+                <tr>
+                  <td><a href="https://www.theodinproject.com/paths/foundations/courses/foundations" target="_blank" rel="noreferrer">The Odin Project Foundations</a></td>
+                  <td>레슨과 프로젝트가 섞인 오픈 커리큘럼으로 구조가 강하다.</td>
+                  <td>freeCodeCamp와 같은 축이라 이번 Top 5에서는 중복을 줄였다.</td>
+                  <td>제작자용 코스 빌더 PoC를 만들 때 freeCodeCamp와 비교</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>상위 5개를 FlowMe에서 어떻게 다뤄야 하나</h2>
+          <div class="grid two" style="margin-top: 14px">
+            <div class="mini">
+              <h3>저장 전 사용자 화면</h3>
+              <ul>
+                <li>상위 구조 전체를 설명하기보다 저장하면 생기는 실행물을 먼저 보여준다.</li>
+                <li>전체 저장과 일부 저장의 차이를 명확히 둔다.</li>
+                <li>입력은 시작일, 요일, 대상 선택 정도로 제한한다.</li>
+                <li>원문 링크와 세부 설명은 하위 Flow detail에 남긴다.</li>
+              </ul>
+            </div>
+            <div class="mini">
+              <h3>내 앱 실행 화면</h3>
+              <ul>
+                <li>오늘 실행할 하위 Flow 또는 세션을 먼저 보여준다.</li>
+                <li>큰 지도는 접어두고, 현재 위치와 다음 항목만 가볍게 노출한다.</li>
+                <li>체크, 짧은 메모, 원문 링크 접근이 핵심이다.</li>
+                <li>하위 Flow 추가/건너뛰기/반복 변경은 2차 액션으로 둔다.</li>
+              </ul>
+            </div>
+            <div class="mini">
+              <h3>제작자 화면</h3>
+              <ul>
+                <li>원문 목차/표/주차/모듈을 하위 Flow 후보로 가져온다.</li>
+                <li>하위 Flow 공통 패턴을 한 번 정의하고 여러 단위에 반복 적용한다.</li>
+                <li>각 하위 Flow에는 원문 근거 URL 또는 원문 행을 붙인다.</li>
+                <li>전체 공개 전, 사용자에게 생기는 실행물 미리보기를 확인한다.</li>
+              </ul>
+            </div>
+            <div class="mini">
+              <h3>금지선</h3>
+              <ul>
+                <li>외부 앱이나 코스를 FlowMe 안에 복제하지 않는다.</li>
+                <li>원문에 없는 세부 체크리스트를 AI가 채우지 않는다.</li>
+                <li>건강/육아/반려동물은 공식/전문가 판단 경계를 분리한다.</li>
+                <li>Flow of Flow라는 내부 용어를 사용자 화면에 노출하지 않는다.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>다음 PoC 추천 순서</h2>
+          <ol>
+            <li><strong>NHS Couch to 5K</strong>: 수학과 완전히 다른 운동/루틴형 Flow of Flow라 첫 확산 샘플로 적합하다.</li>
+            <li><strong>RHS Crop Planner</strong>: 표 기반 source가 어떻게 다중 하위 Flow로 바뀌는지 보여준다.</li>
+            <li><strong>JustinGuitar</strong>: 제작자 교육 콘텐츠가 FlowMe에서 어떻게 운영 자산이 되는지 보여준다.</li>
+            <li><strong>freeCodeCamp</strong>: 커리큘럼/프로젝트/퀴즈가 있는 대형 학습 구조의 비교군으로 둔다.</li>
+            <li><strong>Solid Starts</strong>: 육아/식단은 민감 경계를 먼저 설계한 뒤 제한적으로 PoC를 만든다.</li>
+          </ol>
+          <p class="note">
+            결론: 수학 말고도 Flow of Flow는 된다. 다만 강한 후보는 대부분 "프로그램/커리큘럼/표/모듈/월령"처럼 원문에 반복 단위가 이미 있는 콘텐츠다.
+            단순 카테고리 모음이나 좋은 팁 모음은 FlowMe 서비스처럼 보이게 만드는 데 오히려 방해된다.
+          </p>
+        </section>
+
+        <section class="card">
+          <h2>100개 검색 로그</h2>
+          <p class="desc">
+            아래는 이번에 검색 결과로 스캔한 후보 100개다. 모든 원문을 정밀 리뷰한 것은 아니고, 검색 결과/스니펫 기준으로 1차 필터링한 뒤 상위 후보를 열람했다.
+          </p>
+          <details style="margin-top: 14px">
+            <summary>검색 후보 100개 펼치기</summary>
+            <div class="scan-grid">
+              <div class="scan-item"><b>001</b><span>NHS Couch to 5K running plan · selected</span></div>
+              <div class="scan-item"><b>002</b><span>C25K 9-week running program · backup</span></div>
+              <div class="scan-item"><b>003</b><span>Nike 10K training plan · backup</span></div>
+              <div class="scan-item"><b>004</b><span>Nike Half Marathon training plan · backup</span></div>
+              <div class="scan-item"><b>005</b><span>Hal Higdon Novice 1 Half Marathon · backup</span></div>
+              <div class="scan-item"><b>006</b><span>Hal Higdon Novice Marathon · backup</span></div>
+              <div class="scan-item"><b>007</b><span>Garmin 5K beginner PDF · backup</span></div>
+              <div class="scan-item"><b>008</b><span>Runner's World Couch to 5K · weak/paywall risk</span></div>
+              <div class="scan-item"><b>009</b><span>SELF #SELFto5K challenge · single challenge</span></div>
+              <div class="scan-item"><b>010</b><span>Anytime Fitness 6-week 5K · backup</span></div>
+              <div class="scan-item"><b>011</b><span>Still I Run 17 free 5K plans · meta collection</span></div>
+              <div class="scan-item"><b>012</b><span>Nike Marathon 18-week plan · backup</span></div>
+              <div class="scan-item"><b>013</b><span>Women's Health 5K plan · article plan</span></div>
+              <div class="scan-item"><b>014</b><span>Superfeet Couch-to-5K · article plan</span></div>
+              <div class="scan-item"><b>015</b><span>RedBaDa running training method · weak source structure</span></div>
+
+              <div class="scan-item"><b>016</b><span>freeCodeCamp Responsive Web Design · selected</span></div>
+              <div class="scan-item"><b>017</b><span>freeCodeCamp RWD launch article · support source</span></div>
+              <div class="scan-item"><b>018</b><span>The Odin Project Foundations · backup</span></div>
+              <div class="scan-item"><b>019</b><span>The Odin Project curriculum GitHub · backup/source evidence</span></div>
+              <div class="scan-item"><b>020</b><span>MDN Curriculum · backup</span></div>
+              <div class="scan-item"><b>021</b><span>MDN Learn Web Development · backup</span></div>
+              <div class="scan-item"><b>022</b><span>Google Digital Garage catalog · collection</span></div>
+              <div class="scan-item"><b>023</b><span>Google Fundamentals of Digital Marketing · backup</span></div>
+              <div class="scan-item"><b>024</b><span>Google Digital Marketing Certificate · course platform</span></div>
+              <div class="scan-item"><b>025</b><span>Coursera Google Digital Marketing · course platform</span></div>
+              <div class="scan-item"><b>026</b><span>ClassCentral freeCodeCamp RWD · secondary review</span></div>
+              <div class="scan-item"><b>027</b><span>freeCodeCamp forum RWD completion · reaction signal</span></div>
+              <div class="scan-item"><b>028</b><span>MDN curriculum GitHub · source evidence</span></div>
+              <div class="scan-item"><b>029</b><span>Google Skillshop learning path · backup</span></div>
+              <div class="scan-item"><b>030</b><span>Nomad/creator coding course search cluster · not opened</span></div>
+
+              <div class="scan-item"><b>031</b><span>Solid Starts feeding schedules · selected conditional</span></div>
+              <div class="scan-item"><b>032</b><span>Solid Starts First Foods database · backup</span></div>
+              <div class="scan-item"><b>033</b><span>KDCA standard immunization schedule · reference</span></div>
+              <div class="scan-item"><b>034</b><span>NRC immunization schedule table · reference</span></div>
+              <div class="scan-item"><b>035</b><span>NHS 6 months feeding guide · official reference</span></div>
+              <div class="scan-item"><b>036</b><span>NHS baby's first solid foods · official reference</span></div>
+              <div class="scan-item"><b>037</b><span>UNICEF feeding your baby 6-12 months · official reference</span></div>
+              <div class="scan-item"><b>038</b><span>Huckleberry BLW chart · backup</span></div>
+              <div class="scan-item"><b>039</b><span>Happy Family 6-9 months meal plan · backup</span></div>
+              <div class="scan-item"><b>040</b><span>아이사랑 7~9개월 수유/영양 · official detail</span></div>
+              <div class="scan-item"><b>041</b><span>Bebesnap 이유식 양 월령별 가이드 · weak/secondary</span></div>
+              <div class="scan-item"><b>042</b><span>Abbey's Kitchen BLW meal plan · expert blog</span></div>
+              <div class="scan-item"><b>043</b><span>광명시 예방접종시기 계산 · utility</span></div>
+              <div class="scan-item"><b>044</b><span>서울 어린이병원 영유아 검진 · procedure reference</span></div>
+              <div class="scan-item"><b>045</b><span>완밥요정 이유식 식단표 cluster · revisit with access</span></div>
+
+              <div class="scan-item"><b>046</b><span>RHS Crop Planner PDF · selected</span></div>
+              <div class="scan-item"><b>047</b><span>RHS vegetable crop planner page · selected support</span></div>
+              <div class="scan-item"><b>048</b><span>RHS month-by-month food growing · backup</span></div>
+              <div class="scan-item"><b>049</b><span>Old Farmer's Almanac planting calendar · backup</span></div>
+              <div class="scan-item"><b>050</b><span>Farmers' Almanac planting calendar · backup</span></div>
+              <div class="scan-item"><b>051</b><span>Almanac vegetable growing guide · backup</span></div>
+              <div class="scan-item"><b>052</b><span>Roots vegetable planting calendar · backup</span></div>
+              <div class="scan-item"><b>053</b><span>LoveTheGarden sowing/harvesting guide · backup</span></div>
+              <div class="scan-item"><b>054</b><span>Virginia home vegetable planting guide · official-ish regional</span></div>
+              <div class="scan-item"><b>055</b><span>Charles Dowding sowing timeline · creator expert</span></div>
+              <div class="scan-item"><b>056</b><span>UGA vegetable garden calendar · regional reference</span></div>
+              <div class="scan-item"><b>057</b><span>식물 관리 캘린더 Tistory · weak/generic</span></div>
+              <div class="scan-item"><b>058</b><span>실내 식물 월간 루틴 blog · weak/generic</span></div>
+              <div class="scan-item"><b>059</b><span>RHS planning a vegetable garden · reference</span></div>
+              <div class="scan-item"><b>060</b><span>KSRE vegetable planting guide PDF · regional reference</span></div>
+
+              <div class="scan-item"><b>061</b><span>JapanesePod101 JLPT N5 30-day · backup/single flow</span></div>
+              <div class="scan-item"><b>062</b><span>KanaDojo JLPT N5 guide · backup</span></div>
+              <div class="scan-item"><b>063</b><span>Migaku JLPT schedule guide · backup</span></div>
+              <div class="scan-item"><b>064</b><span>Nihongo Ichiban JLPT N5 material · reference</span></div>
+              <div class="scan-item"><b>065</b><span>TOPIK Guide overview · reference</span></div>
+              <div class="scan-item"><b>066</b><span>Medium 3-month TOPIK plan · personal plan</span></div>
+              <div class="scan-item"><b>067</b><span>Key to Korean TOPIK 30-day · personal plan</span></div>
+              <div class="scan-item"><b>068</b><span>Lindie Botes TOPIK vocab plan · personal plan</span></div>
+              <div class="scan-item"><b>069</b><span>ETS TOEIC structure · official reference</span></div>
+              <div class="scan-item"><b>070</b><span>IELTS 7-day study plan · backup/single flow</span></div>
+              <div class="scan-item"><b>071</b><span>IDP IELTS one-week plan · backup/single flow</span></div>
+              <div class="scan-item"><b>072</b><span>Magoosh IELTS one-month plan · backup/single flow</span></div>
+              <div class="scan-item"><b>073</b><span>IELTS Academic test page · official reference</span></div>
+              <div class="scan-item"><b>074</b><span>TOEIC 750 weekly plan Scribd · weak access</span></div>
+              <div class="scan-item"><b>075</b><span>JLPT N5 study order Reddit · reaction signal only</span></div>
+
+              <div class="scan-item"><b>076</b><span>JustinGuitar Beginner Grade 1 · selected</span></div>
+              <div class="scan-item"><b>077</b><span>JustinGuitar Beginner Course home · selected support</span></div>
+              <div class="scan-item"><b>078</b><span>JustinGuitar Module 1 practice routine · source child pattern</span></div>
+              <div class="scan-item"><b>079</b><span>JustinGuitar Module 3 practice routine · source child pattern</span></div>
+              <div class="scan-item"><b>080</b><span>JustinGuitar How to pass Grade 1 · completion criteria</span></div>
+              <div class="scan-item"><b>081</b><span>JustinGuitar community practice routine thread · reaction signal</span></div>
+              <div class="scan-item"><b>082</b><span>PianoTV Design Your Own Piano Path · backup</span></div>
+              <div class="scan-item"><b>083</b><span>Liberty Park Music beginner piano · backup</span></div>
+              <div class="scan-item"><b>084</b><span>FlexLessons piano essentials · backup</span></div>
+              <div class="scan-item"><b>085</b><span>Bardot Brush Making Art Everyday · challenge/single flow</span></div>
+              <div class="scan-item"><b>086</b><span>DrawTogether 30 days drawing · challenge/single flow</span></div>
+              <div class="scan-item"><b>087</b><span>Origami.me easy origami · backup</span></div>
+              <div class="scan-item"><b>088</b><span>Origami Guide instructions for kids · backup</span></div>
+              <div class="scan-item"><b>089</b><span>Art for Kids Hub origami category · backup</span></div>
+              <div class="scan-item"><b>090</b><span>Red Ted Art origami preschool · weak collection</span></div>
+
+              <div class="scan-item"><b>091</b><span>AKC puppy training timeline · backup</span></div>
+              <div class="scan-item"><b>092</b><span>AKC puppy routine/schedule · backup</span></div>
+              <div class="scan-item"><b>093</b><span>Banfield puppy shot schedule · reference</span></div>
+              <div class="scan-item"><b>094</b><span>AKC puppy shots guide · reference</span></div>
+              <div class="scan-item"><b>095</b><span>Chewy puppy vaccination schedule · reference</span></div>
+              <div class="scan-item"><b>096</b><span>Chewy new puppy printables · backup</span></div>
+              <div class="scan-item"><b>097</b><span>Ultimate Puppy training plan · backup</span></div>
+              <div class="scan-item"><b>098</b><span>Zigzag week-by-week puppy schedule · backup</span></div>
+              <div class="scan-item"><b>099</b><span>Royal Canin puppy socialization · reference</span></div>
+              <div class="scan-item"><b>100</b><span>AAHA vaccine/lifestyle calculator · official reference</span></div>
+            </div>
+          </details>
+        </section>
+
+        <p class="footer">
+          기준 문서: source-to-flow conversion gate, quality gate, flow content source selection rules, context split expansion principles.
+          이 리포트는 실제 사용자 행동 데이터가 아니라 원컨텐츠 구조 검토와 PoC 후보 선별이다.
+        </p>
+      </div>
+    </main>
+  </body>
+</html>
