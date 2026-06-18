@@ -79,6 +79,7 @@ const healthCheckupSlugs = new Set(['national-health-checkup-d7']);
 const vaccinationCertificateSlugs = new Set(['vaccination-certificate-issue']);
 const jobChangeRiskSlugs = new Set(['job-change-risk-check']);
 const fitvelyDietRecordSlugs = new Set(['real-fitvely-diet-record-routine']);
+const waterPurifierFilterSlugs = new Set(['water-purifier-filter-cycle']);
 
 const driverLicenseComparisonRows: ArtifactComparisonRow[] = [
   { id: 'driver-license-renewal-type', title: '면허/갱신 유형' },
@@ -330,13 +331,13 @@ const usedCarDecisionMemoFields: ArtifactMemoField[] = [
     label: '구매 목적과 예산 경계',
     placeholder: '예: 출퇴근용, 총예산 1,500만원, 수리비 100만원 넘으면 보류',
     groupEyebrow: '구매 판단 메모',
-    groupTitle: '후보 비교·증빙·보류 메모',
-    groupDescription: 'FLOW가 구매 여부를 대신 판단하지 않고, 후보별 증빙과 보류 사유를 사용자가 남기도록 돕습니다.',
+    groupTitle: '후보 비교·조회·보류 메모',
+    groupDescription: 'FLOW가 구매 여부를 대신 판단하지 않고, 후보별 공식 조회 결과와 보류 사유를 가볍게 남기도록 돕습니다.',
   },
   {
     id: 'used-car-proof-files',
-    label: '사진/조회 파일명',
-    placeholder: '예: avante-performance-record.pdf, tire-front.jpg',
+    label: '조회 결과/사진 메모(선택)',
+    placeholder: '예: 성능점검표 확인, 사고이력 조회 완료, 필요하면 tire-front.jpg',
   },
   {
     id: 'used-car-expert-check',
@@ -736,6 +737,46 @@ const fitvelyNutritionActionObservationLogTables: ArtifactLogTable[] = [
   },
 ];
 
+const waterPurifierFilterLogTables: ArtifactLogTable[] = [
+  {
+    id: 'water-purifier-filter-cycle-log',
+    eyebrow: '필터 주기표',
+    title: '정수기 필터 교체 주기표',
+    description: '원문에서 따라할 수 있는 필터·출수구 관리 항목만 남기고, 사용자는 마지막 교체일과 다음 확인일만 채웁니다.',
+    rows: [
+      {
+        id: 'sediment-filter',
+        label: '침전 필터',
+        defaultValues: { cycle: '원문 3~6개월', sourceMemo: '모래·흙·녹물 등 큰 부유물 1차 필터' },
+      },
+      {
+        id: 'pre-carbon-filter',
+        label: '프리카본 필터',
+        defaultValues: { cycle: '원문 6~12개월', sourceMemo: '염소·화학물질·냄새 제거' },
+      },
+      {
+        id: 'ro-nano-filter',
+        label: 'RO/나노 필터',
+        defaultValues: { cycle: '원문 12~24개월', sourceMemo: '미세 입자·중금속 등 핵심 정수 필터' },
+      },
+      {
+        id: 'post-carbon-filter',
+        label: '후카본 필터',
+        defaultValues: { cycle: '원문 9~12개월', sourceMemo: '정수 마지막 단계의 물맛·냄새 개선' },
+      },
+      { id: 'outlet-self-clean', label: '코크/출수구 자가 살균' },
+      { id: 'taste-smell-check', label: '물맛·냄새 확인' },
+    ],
+    columns: [
+      { id: 'lastChangedAt', label: '마지막 교체일', placeholder: '예: 2026-06-01' },
+      { id: 'cycle', label: '교체 주기', placeholder: '예: 6개월 / 모델 안내 기준' },
+      { id: 'nextCheckAt', label: '다음 확인일', placeholder: '예: 2026-12-01' },
+      { id: 'conditionMemo', label: '상태 메모', placeholder: '예: 물맛·냄새 변화 없음' },
+      { id: 'sourceMemo', label: '원문/모델 확인', placeholder: '예: 제조사 안내와 원문 링크 확인' },
+    ],
+  },
+];
+
 export function getComparisonRows(bundle: FlowBundle): ArtifactComparisonRow[] {
   const config = getComparisonConfig(bundle);
   if (config) return config.rows;
@@ -792,25 +833,28 @@ export function getMemoCardFields(bundle: FlowBundle): ArtifactMemoField[] {
 export function getHoldMemoFields(bundle: FlowBundle): ArtifactMemoField[] {
   const section = bundle.flow.hold_section;
   if (!section) return [];
+  const isUsedCar = bundle.flow.slug === 'used-car-buying-check';
 
   return [
     {
       id: `${bundle.flow.slug}-hold-reason`,
       label: '보류 사유',
       placeholder: section.reasons.join(' / '),
-      groupEyebrow: '보류 증거 메모',
+      groupEyebrow: isUsedCar ? '구매 보류 메모' : '보류 증거 메모',
       groupTitle: section.title,
       groupDescription: section.consequence,
     },
     {
       id: `${bundle.flow.slug}-hold-evidence-files`,
-      label: '사진/증빙 파일명',
-      placeholder: '예: door-scratch-4821.jpg, usedcar_20260526_engine_noise.mp4',
+      label: isUsedCar ? '공식 조회/사진 메모(선택)' : '사진/증빙 파일명',
+      placeholder: isUsedCar
+        ? '예: 사고이력 조회 완료, 자동차등록원부 압류 없음, 필요하면 하부사진 2장'
+        : '예: door-scratch-4821.jpg, usedcar_20260526_engine_noise.mp4',
     },
     {
       id: `${bundle.flow.slug}-hold-confirmation`,
-      label: '상대방 확인',
-      placeholder: '예: 딜러/판매자에게 재확인 요청한 내용과 답변',
+      label: isUsedCar ? '판매자/전문가 확인' : '상대방 확인',
+      placeholder: isUsedCar ? '예: 판매자 답변, 정비소 점검 결과, 수리비 견적' : '예: 딜러/판매자에게 재확인 요청한 내용과 답변',
     },
     {
       id: `${bundle.flow.slug}-hold-next-check`,
@@ -822,6 +866,7 @@ export function getHoldMemoFields(bundle: FlowBundle): ArtifactMemoField[] {
 
 export function getLogTables(bundle: FlowBundle): ArtifactLogTable[] {
   if (qnetExamSlugs.has(bundle.flow.slug)) return qnetLogTables;
+  if (waterPurifierFilterSlugs.has(bundle.flow.slug)) return waterPurifierFilterLogTables;
   if (fitvelyDietRecordSlugs.has(bundle.flow.slug)) return [];
   if (fitvelyNutritionExactVideoSlugs.has(bundle.flow.slug)) return fitvelyNutritionActionObservationLogTables;
   if (bundle.flow.slug === 'computer-skills-d30-study') return [];

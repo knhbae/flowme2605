@@ -28,7 +28,7 @@ export const virtualUsers: FlowUser[] = [
     slug: 'baby-food-record-mom',
     name: '초기 이유식 기록맘',
     role: '육아 경험 크리에이터',
-    bio: '초기 이유식 시작일 기준 메뉴와 반응 기록을 정리했습니다.',
+    bio: '초기 이유식 시작일 기준 메뉴와 관찰 메모를 정리했습니다.',
     avatar_initial: '이',
     specialty_tags: ['이유식', '식단표', '반응기록'],
   },

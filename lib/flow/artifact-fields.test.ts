@@ -109,6 +109,20 @@ test('used-car route keeps the field workbench checklist-only', () => {
   assert.deepEqual(getMemoCardFields(bundle('used-car-buying-check')), []);
 });
 
+test('water purifier route exposes filter-cycle log rows instead of generic daily columns', () => {
+  const tables = getLogTables(bundle('water-purifier-filter-cycle'));
+
+  assert.deepEqual(tables.map((table) => table.id), ['water-purifier-filter-cycle-log']);
+  assert.deepEqual(
+    tables[0]?.columns.map((column) => column.id),
+    ['lastChangedAt', 'cycle', 'nextCheckAt', 'conditionMemo', 'sourceMemo'],
+  );
+  assert.deepEqual(
+    tables[0]?.rows.map((row) => row.id),
+    ['sediment-filter', 'pre-carbon-filter', 'ro-nano-filter', 'post-carbon-filter', 'outlet-self-clean', 'taste-smell-check'],
+  );
+});
+
 test('workout programming routes expose source-rule decision rows', () => {
   const slugs = [
     'real-fitvely-video-bulk-up-method',

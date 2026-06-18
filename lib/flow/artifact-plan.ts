@@ -49,8 +49,11 @@ const decisionToHandling = {
 const decisionTableOverrideSlugs = new Set(['driver-license-renewal-check']);
 const checklistOverrideSlugs = new Set(['new-car-delivery-check', 'used-car-buying-check', 'passport-renewal-docs']);
 const compactTimelineSlugs = new Set(['moving-d30-basic', 'vehicle-inspection-prep', 'real-mofa-overseas-travel-prep']);
+const timelinePrimaryOverrideSlugs = new Set(['wedding-d180-basic']);
 const checkOnlyRoutineSlugs = new Set(['diet-habit-2week', 'real-thankyou-bubu-home-workout-starter', 'real-fitvely-diet-record-routine']);
 const mealCalendarOnlySlugs = new Set(['baby-food-menu-recipe']);
+const maintenanceRoutineSlugs = new Set(['washer-tub-clean-monthly', 'monstera-care-routine']);
+const applianceCycleSheetSlugs = new Set(['water-purifier-filter-cycle']);
 const workoutProgrammingDecisionSlugs = new Set([
   'real-fitvely-video-bulk-up-method',
   'real-fitvely-video-workout-order',
@@ -65,7 +68,7 @@ const memoCardOverrideSlugs = new Set([
   'industrial-accident-claim-docs',
   'vaccination-certificate-issue',
 ]);
-const spreadsheetOverrideSlugs = new Set(['diet-meal-exercise-log', 'diet-reset-2week']);
+const spreadsheetOverrideSlugs = new Set(['diet-meal-exercise-log', 'diet-reset-2week', 'water-purifier-filter-cycle', 'fridge-cleanout-weekly-plan']);
 
 function hasArtifact(bundle: FlowBundle, kind: string) {
   const audit = getNaturalArtifactAudit(bundle.flow.slug);
@@ -81,6 +84,7 @@ function getSourceHandling(bundle: FlowBundle): SourceHandling {
 function getPrimarySurface(bundle: FlowBundle, model = normalizeExecutionModel(bundle)): PrimaryArtifactSurface {
   const audit = getNaturalArtifactAudit(bundle.flow.slug);
   if (bundle.flow.content_type === 'meal_plan') return 'meal_reaction_log';
+  if (timelinePrimaryOverrideSlugs.has(bundle.flow.slug)) return 'timeline_calendar';
   if (checklistOverrideSlugs.has(bundle.flow.slug)) return 'checklist';
   if (checkOnlyRoutineSlugs.has(bundle.flow.slug)) return 'routine_calendar';
   if (decisionTableOverrideSlugs.has(bundle.flow.slug)) return 'decision_table';
@@ -102,6 +106,19 @@ function surface(kind: ArtifactSurfaceKind, title: string, description: string):
 }
 
 function getSurfaces(bundle: FlowBundle, primary: PrimaryArtifactSurface): ArtifactSurface[] {
+  if (maintenanceRoutineSlugs.has(bundle.flow.slug)) {
+    return [
+      surface('routine_month', '관리 캘린더', '시작일 기준 다음 관리일을 만들고 날짜 안 체크리스트로 실행합니다.'),
+      surface('execution_list', '날짜 안 체크리스트', '원문에서 반복 실행에 필요한 확인 항목만 남깁니다.'),
+      surface('memo_card', '관리 메모', '방법, 준비물, 원문 링크처럼 반복 때 다시 볼 내용을 남깁니다.'),
+    ];
+  }
+  if (applianceCycleSheetSlugs.has(bundle.flow.slug)) {
+    return [
+      surface('spreadsheet_preview', '필터 주기표', '필터별 마지막 교체일, 교체 주기, 다음 확인일을 한 표로 관리합니다.'),
+      surface('memo_card', '관리 메모', '모델명, 원문 링크, 제조사별 차이를 메모로 분리합니다.'),
+    ];
+  }
   if (mealCalendarOnlySlugs.has(bundle.flow.slug)) {
     return [surface('meal_calendar', '이유식 일정 캘린더', '시작일 기준 메뉴와 레시피만 날짜별로 확인합니다.')];
   }
@@ -145,7 +162,7 @@ function getSurfaces(bundle: FlowBundle, primary: PrimaryArtifactSurface): Artif
     return [
       surface('execution_list', '실행 리스트', '다가오는 할 일을 먼저 훑습니다.'),
       surface('month_calendar', '월간 캘린더', '기준 날짜로 계산된 일정을 한눈에 봅니다.'),
-      surface('memo_card', '증빙 메모', '예약, 상담, 제출 증빙을 남깁니다.'),
+      surface('memo_card', '참고 메모', '원문 링크, 준비물, 다음에 다시 볼 내용을 남깁니다.'),
     ];
   }
   if (primary === 'memo_card') {

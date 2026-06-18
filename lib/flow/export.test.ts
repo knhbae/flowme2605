@@ -15,6 +15,36 @@ test('timeline text export includes calculated dates when anchor exists', () => 
   assert.match(text, /이사 방식 정하기/);
 });
 
+test('plank challenge exports preserve the original 30-day source table cues', () => {
+  const plank = seedBundles.find((bundle) => bundle.flow.slug === 'plank-30-day-challenge');
+  assert.ok(plank);
+
+  const text = buildText(plank, {}, '2026-06-01');
+  assert.match(text, /챌린지 시작일: 2026-06-01|운동 시작일: 2026-06-01/);
+  assert.match(text, /Day 1 플랭크 20초/);
+  assert.match(text, /Day 7 휴식·스트레칭/);
+  assert.match(text, /Day 9 플랭크 55초/);
+  assert.match(text, /체크 포인트: 호흡 3:3 패턴/);
+  assert.match(text, /Day 30 플랭크 150초/);
+
+  const ics = buildIcsCalendar(plank, {}, '2026-06-01');
+  assert.equal((ics.match(/BEGIN:VEVENT/g) ?? []).length, 30);
+  assert.match(ics, /SUMMARY:30일 플랭크 챌린지 Flow - Day 1 플랭크 20초/);
+  assert.match(ics, /SUMMARY:30일 플랭크 챌린지 Flow - Day 7 휴식·스트레칭/);
+  assert.match(ics, /SUMMARY:30일 플랭크 챌린지 Flow - Day 30 플랭크 150초/);
+  assert.match(ics, /호흡 3:3 패턴/);
+
+  const sheets = buildWorkbookSheets(plank, {}, '2026-06-01');
+  const execution = sheets.find((sheet) => sheet.name === '실행표');
+  assert.ok(execution);
+  assert.equal(execution.rows.length, 30);
+  assert.ok(execution.rows.some((row) => row.includes('D+8') && row.includes('2026-06-09') && row.includes('Day 9 플랭크 55초')));
+  assert.ok(execution.rows.some((row) => row.includes('D+29') && row.includes('2026-06-30') && row.includes('Day 30 플랭크 150초')));
+  const details = sheets.find((sheet) => sheet.name === '상세');
+  assert.ok(details);
+  assert.ok(details.rows.some((row) => row.includes('Day 9 플랭크 55초') && row.some((cell) => String(cell).includes('호흡 3:3 패턴'))));
+});
+
 test('text and workbook exports include item notes and skipped state', () => {
   const wedding = seedBundles.find((bundle) => bundle.flow.slug === 'wedding-d180-basic');
   assert.ok(wedding);
@@ -329,7 +359,7 @@ test('vehicle hold sections and hold memo fields export with user-facing labels'
     logRows: {},
     memoCards: {
       'used-car-buying-check-hold-reason': 'insurance history conflicts with seller explanation',
-      'used-car-buying-check-hold-evidence-files': 'usedcar_20260526_engine_noise.mp4',
+      'used-car-buying-check-hold-evidence-files': 'accident history checked; optional underbody photo 2 files',
       'used-car-buying-check-hold-confirmation': 'seller will reissue inspection record',
       'used-car-buying-check-hold-next-check': 'recheck with mechanic before deposit',
     },
@@ -337,10 +367,10 @@ test('vehicle hold sections and hold memo fields export with user-facing labels'
 
   const text = buildText(usedCar, {}, undefined, {}, undefined, workbenchState);
 
-  assert.match(text, /구매 보류 기준/);
+  assert.match(text, /구매 보류 메모/);
   assert.match(text, /성능점검기록부|보험이력/);
   assert.match(text, /보류 사유: insurance history conflicts with seller explanation/);
-  assert.match(text, /사진\/증빙 파일명: usedcar_20260526_engine_noise\.mp4/);
+  assert.match(text, /공식 조회\/사진 메모\(선택\): accident history checked; optional underbody photo 2 files/);
   assert.doesNotMatch(text, /used-car-buying-check-hold-reason:/);
 
   const sheets = buildWorkbookSheets(usedCar, {}, undefined, { workbenchState });
@@ -348,9 +378,9 @@ test('vehicle hold sections and hold memo fields export with user-facing labels'
   const workbench = sheets.find((sheet) => sheet.name === '실행판 기록');
   assert.ok(summary);
   assert.ok(workbench);
-  assert.ok(summary.rows.some((row) => row.includes('보류 기준') && row.includes('구매 보류 기준')));
+  assert.ok(summary.rows.some((row) => row.includes('보류 기준') && row.includes('구매 보류 메모')));
   assert.ok(workbench.rows.some((row) => row.includes('보류 사유') && row.includes('insurance history conflicts with seller explanation')));
-  assert.ok(workbench.rows.some((row) => row.includes('사진/증빙 파일명') && row.includes('usedcar_20260526_engine_noise.mp4')));
+  assert.ok(workbench.rows.some((row) => row.includes('공식 조회/사진 메모(선택)') && row.includes('accident history checked; optional underbody photo 2 files')));
 });
 
 test('risk-boundary exports preserve delivery evidence and diet observation values', () => {
@@ -506,8 +536,11 @@ test('baby-food workbook keeps the experiment checklist route calendar and recip
 
   const recipes = sheets.find((sheet) => sheet.name === '레시피');
   assert.ok(recipes);
+  assert.equal(recipes.rows.length, 11);
   assert.match(String(recipes.rows[0][1]), /쌀 또는 쌀가루/);
   assert.match(String(recipes.rows[0][2]), /1\. 쌀 또는 쌀가루를 준비한다/);
+  assert.ok(recipes.rows.some((row) => row.includes('콜리플라워미음') && String(row[3]).includes('줄기 부분은 빼고')));
+  assert.ok(recipes.rows.some((row) => row.includes('쌀·오트밀 소고기 브로콜리미음')));
 
   const reaction = sheets.find((sheet) => sheet.name === '반응기록');
   assert.equal(reaction, undefined);
@@ -527,6 +560,7 @@ test('baby-food workbook keeps the experiment checklist route calendar and recip
   assert.ok(monthly.rows.some((row) => String(row[1]).includes('쌀미음 1일차')));
   assert.ok(monthly.rows.some((row) => String(row[2]).includes('쌀미음 2일차')));
   assert.ok(monthly.rows.some((row) => String(row[3]).includes('쌀미음 3일차')));
+  assert.ok(monthly.rows.some((row) => row.some((cell) => String(cell).includes('소고기미음'))));
 });
 
 test('document issue exports include structured submitter memo records', () => {

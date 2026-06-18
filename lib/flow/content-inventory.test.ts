@@ -73,7 +73,7 @@ test('inventory summary covers all current seed bundles', () => {
     summary.sourceBackedReviewedCount,
     summary.manualSourceFitCount + summary.derivedRealSourceCount + summary.sourceNeedsReviewCount,
   );
-  assert.equal(summary.manualSourceFitCount, 71);
+  assert.equal(summary.manualSourceFitCount, 90);
   assert.equal(summary.derivedRealSourceCount, 0);
   assert.equal(summary.sourceNeedsReviewCount, 0);
   assert.equal(summary.legacyAccessibleCount, 0);

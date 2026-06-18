@@ -167,23 +167,23 @@ export const uxCleanupBacklogGroups: UxCleanupBacklogGroup[] = [
     statusAfterCleanup: 'cleanup backlog item, not validated until real user behavior exists.',
   },
   {
-    id: 'baby_food_reaction_first',
-    label: 'Baby food routes need reaction log before recipe density',
+    id: 'baby_food_menu_calendar_first',
+    label: 'Baby food routes need menu calendars before reaction-log density',
     priority: 'P2',
     cleanupDecision: 'improve_ux_before_featured',
-    primaryDestination: 'hybrid',
+    primaryDestination: 'calendar',
     routeSlugs: ['baby-food-menu-recipe'],
     unresolvedGap:
-      'The meal-plan content is rich, but the parent first needs today’s meal slot, new ingredient, reaction log, and allergy-watch caution.',
+      'The meal-plan content is rich, but the parent first needs a start-date menu calendar, new ingredient markers, recipe notes, and allergy-watch caution without turning the route into a medical record app.',
     requiredMinimum: [
-      'today meal slot',
+      'start-date menu calendar',
       'new ingredient marker',
-      'reaction log',
+      'recipe memo',
       'allergy-watch caution',
-      'recipe details below first artifact',
+      'reaction notes kept secondary',
     ],
     nextBatch:
-      'Use this as the family/health-adjacent density reference before adding more recipe-like content.',
+      'Use this as the family/health-adjacent menu-calendar reference before adding more recipe-like content.',
     statusAfterCleanup: 'cleanup backlog item, not validated until real user behavior exists.',
   },
   {

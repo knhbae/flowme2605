@@ -89,11 +89,11 @@ test('moving audit simulates calendar and spreadsheet artifacts before comparing
 test('source-fit summary captures keep, reshape, and preview decisions', () => {
   const summary = getSourceFitSummary();
 
-  assert.equal(summary.auditedCount, 71);
+  assert.equal(summary.auditedCount, 90);
   assert.ok(summary.averageScore >= 70);
   assert.equal(summary.decisionCounts.keep_representative, 15);
-  assert.equal(summary.decisionCounts.reshape_before_featured, 52);
-  assert.equal(summary.decisionCounts.catalog_preview_only, 4);
+  assert.equal(summary.decisionCounts.reshape_before_featured, 70);
+  assert.equal(summary.decisionCounts.catalog_preview_only, 5);
 });
 
 test('computer skills final QA promotes the route to representative source fit', () => {
@@ -163,6 +163,31 @@ test('source-fit audit covers remaining source replacement and risk review route
   ];
 
   for (const slug of remainingNeedsReviewSlugs) {
+    const audit = getSourceFitAudit(slug);
+    assert.ok(audit, slug);
+    assert.equal(audit.sourcePrecision, 'exact', slug);
+    assert.ok(audit.sourceUrl.startsWith('https://'), slug);
+    assert.ok(audit.naturalArtifacts.length > 0, slug);
+    assert.ok(audit.userJourney.length >= 3, slug);
+    assert.ok(audit.currentGap.length > 0, slug);
+    assert.ok(audit.contentAction.length > 0, slug);
+    assert.ok(audit.uxAction.length > 0, slug);
+  }
+});
+
+test('source-fit audit covers promoted category representative routes', () => {
+  const promotedNeedsReviewSlugs = [
+    'alt-phone-sk7-self-activation',
+    'infant-health-checkup-prep',
+    'chiangmai-solo-trip-packing',
+    'lease-contract-report-deadline',
+    'jeonse-contract-precheck-docs',
+    'picture-book-reading-routine',
+    'kids-dino-footprint-art',
+    'banana-peanut-recipe-video',
+  ];
+
+  for (const slug of promotedNeedsReviewSlugs) {
     const audit = getSourceFitAudit(slug);
     assert.ok(audit, slug);
     assert.equal(audit.sourcePrecision, 'exact', slug);

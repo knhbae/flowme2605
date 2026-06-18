@@ -29,6 +29,32 @@ test('artifact plan maps used-car checklist to checklist before any comparison',
   assert.ok(plan.exportTargets.includes('sheet'));
 });
 
+test('artifact plan maps water purifier filter cycle to a spreadsheet log first', () => {
+  const plan = getArtifactPlan(bundle('water-purifier-filter-cycle'));
+
+  assert.equal(plan.primarySurface, 'spreadsheet_log');
+  assert.deepEqual(plan.surfaces.map((surface) => surface.kind), ['spreadsheet_preview', 'memo_card']);
+  assert.equal(plan.surfaces[0].title, '필터 주기표');
+  assert.equal(plan.surfaces[1].title, '관리 메모');
+  assert.ok(!plan.surfaces.some((surface) => surface.title.includes('반복 리마인더')));
+  assert.ok(plan.exportTargets.includes('sheet'));
+});
+
+test('artifact plan maps maintenance routines to management calendar surfaces', () => {
+  for (const slug of ['washer-tub-clean-monthly', 'monstera-care-routine']) {
+    const plan = getArtifactPlan(bundle(slug));
+
+    assert.equal(plan.primarySurface, 'routine_calendar');
+    assert.deepEqual(
+      plan.surfaces.map((surface) => surface.title),
+      ['관리 캘린더', '날짜 안 체크리스트', '관리 메모'],
+      slug,
+    );
+    assert.ok(!plan.surfaces.some((surface) => surface.title.includes('회차')), slug);
+    assert.ok(!plan.surfaces.some((surface) => surface.description.includes('컨디션')), slug);
+  }
+});
+
 test('artifact plan maps baby food to menu calendar only', () => {
   const plan = getArtifactPlan(bundle('baby-food-menu-recipe'));
 
@@ -38,11 +64,14 @@ test('artifact plan maps baby food to menu calendar only', () => {
   assert.ok(plan.exportTargets.includes('sheet'));
 });
 
-test('artifact plan preserves promoted hybrid wedding comparison first', () => {
+test('artifact plan keeps promoted wedding timeline calendar before comparison', () => {
   const plan = getArtifactPlan(bundle('wedding-d180-basic'));
 
-  assert.equal(plan.primarySurface, 'decision_table');
-  assert.equal(plan.surfaces[0].kind, 'comparison_table');
+  assert.equal(plan.primarySurface, 'timeline_calendar');
+  assert.deepEqual(
+    plan.surfaces.slice(0, 2).map((surface) => surface.kind),
+    ['execution_list', 'month_calendar'],
+  );
   assert.ok(plan.exportTargets.includes('calendar'));
 });
 

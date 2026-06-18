@@ -63,6 +63,8 @@ test('moving restart exports use edited item state', () => {
   assert.match(ics, /BEGIN:VCALENDAR/);
   assert.match(ics, /DTSTART;VALUE=DATE:20260618/);
   assert.match(ics, /SUMMARY:주소 변경과 정기 서비스 정리/);
+  assert.doesNotMatch(ics, /SUMMARY:D-10/);
+  assert.match(ics, /DESCRIPTION:시점 D-10/);
 
   const sheets = buildMovingRestartSheets(items);
   assert.deepEqual(sheets[0].columns, ['상태', '시점', '날짜', '실행 내용', '메모', '출처']);

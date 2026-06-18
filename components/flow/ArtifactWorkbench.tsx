@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { getArtifactPlan } from '@/lib/flow/artifact-plan';
 import {
   getComparisonConfig,
@@ -81,10 +82,12 @@ const mealReactionColumns = [
 
 const defaultSpreadsheetColumns = ['식단', '운동', '측정', '컨디션', '리뷰'];
 const dietObservationColumns = ['식사 관찰', '활동', '수면/측정', '컨디션', '중단/상담 조건'];
+const fridgeCleanoutColumns = ['우선 재료', '메뉴 후보', '장보기 보류', '상태', '메모'];
 
-const mobileArtifactCtaSlugs = new Set(['moving-d30-basic', 'computer-skills-d30-study', 'diet-habit-2week', 'new-car-delivery-check']);
+const mobileArtifactCtaSlugs = new Set(['moving-d30-basic', 'computer-skills-d30-study', 'diet-habit-2week', 'new-car-delivery-check', 'fridge-cleanout-weekly-plan']);
 const mealCalendarOnlySlugs = new Set(['baby-food-menu-recipe']);
 const checkOnlyRoutineSlugs = new Set(['diet-habit-2week', 'real-thankyou-bubu-home-workout-starter', 'real-fitvely-diet-record-routine']);
+const maintenanceRoutineSlugs = new Set(['washer-tub-clean-monthly', 'monstera-care-routine']);
 
 export function ArtifactWorkbench({
   bundle,
@@ -102,20 +105,21 @@ export function ArtifactWorkbench({
   const plan = getArtifactPlan(bundle);
   const total = getExecutableItems(bundle).filter((item) => !itemStates[item.id]?.skipped).length;
   const done = getExecutableItems(bundle).filter((item) => checks[item.id]).length;
+  const isJeonsePrecheck = bundle.flow.slug === 'jeonse-contract-precheck-docs';
 
   return (
-    <section aria-label="Flow artifact workbench" className="my-6 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-5">
+    <section aria-label="Flow artifact workbench" className={isJeonsePrecheck ? 'my-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-5' : 'my-6 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-5'}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-blue-700">내 실행판</p>
-          <h2 className="mt-1 text-2xl font-bold tracking-normal text-slate-950">{surfaceTitle(plan.primarySurface, bundle)}</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">{surfaceDescription(plan.primarySurface, bundle)}</p>
+          <p className="text-sm font-semibold text-blue-700">{isJeonsePrecheck ? '계약 일정' : '내 실행판'}</p>
+          <h2 className={isJeonsePrecheck ? 'mt-1 text-xl font-bold tracking-normal text-slate-950 md:text-2xl' : 'mt-1 text-2xl font-bold tracking-normal text-slate-950'}>{surfaceTitle(plan.primarySurface, bundle)}</h2>
+          {isJeonsePrecheck ? null : <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">{surfaceDescription(plan.primarySurface, bundle)}</p>}
         </div>
         <span className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
           {done}/{total} 완료
         </span>
       </div>
-      <div className="mt-5">
+      <div className={isJeonsePrecheck ? 'mt-4' : 'mt-5'}>
         {plan.primarySurface === 'decision_table' ? (
           <DecisionWorkbench
             bundle={bundle}
@@ -128,7 +132,16 @@ export function ArtifactWorkbench({
             exportActions={exportActions}
           />
         ) : plan.primarySurface === 'routine_calendar' ? (
-          <RoutineWorkbench bundle={bundle} anchor={anchor} weekdays={weekdays} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
+          <RoutineWorkbench
+            bundle={bundle}
+            anchor={anchor}
+            weekdays={weekdays}
+            checks={checks}
+            workbenchState={workbenchState}
+            onWorkbenchChange={onWorkbenchChange}
+            onToggleItem={onToggleItem}
+            exportActions={exportActions}
+          />
         ) : plan.primarySurface === 'spreadsheet_log' ? (
           <SpreadsheetWorkbench bundle={bundle} anchor={anchor} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
         ) : plan.primarySurface === 'meal_reaction_log' ? (
@@ -158,6 +171,7 @@ export function ArtifactWorkbench({
         ) : (
           <ChecklistWorkbench
             bundle={bundle}
+            anchor={anchor}
             checks={checks}
             workbenchState={workbenchState}
             onWorkbenchChange={onWorkbenchChange}
@@ -253,7 +267,11 @@ function getMobileArtifactLabel(bundle: FlowBundle, kind: MobileArtifactKind): s
   if (kind === 'execution_list') return '실행 리스트';
   if (kind === 'month_calendar') return '월간 캘린더';
   if (kind === 'comparison_table') return bundle.flow.slug === 'new-car-delivery-check' ? '인수 증거표' : '비교표';
-  if (kind === 'spreadsheet_log') return bundle.flow.slug === 'diet-habit-2week' ? '관찰 기록표' : '기록표';
+  if (kind === 'spreadsheet_log') {
+    if (bundle.flow.slug === 'diet-habit-2week') return '관찰 기록표';
+    if (bundle.flow.slug === 'fridge-cleanout-weekly-plan') return '재고 소진표';
+    return '기록표';
+  }
   if (kind === 'log_table') return bundle.flow.slug === 'computer-skills-d30-study' ? '공부 기록표' : '기록표';
   return undefined;
 }
@@ -269,24 +287,38 @@ function ArtifactExportStatus({ actions }: { actions?: ArtifactExportActions }) 
 }
 
 function surfaceTitle(surface: string, bundle: FlowBundle): string {
+  if (bundle.flow.slug === 'jeonse-contract-precheck-docs') return 'D-3 / D-Day / D+1';
   if (surface === 'meal_reaction_log') return mealCalendarOnlySlugs.has(bundle.flow.slug) ? '식단표 + 레시피' : '식단표 + 반응 기록';
   if (surface === 'decision_table') return '후보 비교표';
-  if (surface === 'routine_calendar') return '반복 캘린더';
-  if (surface === 'spreadsheet_log') return '기록표';
+  if (surface === 'routine_calendar') return maintenanceRoutineSlugs.has(bundle.flow.slug) ? '관리 캘린더' : '반복 캘린더';
+  if (surface === 'spreadsheet_log') {
+    if (bundle.flow.slug === 'water-purifier-filter-cycle') return '필터 주기표';
+    if (bundle.flow.slug === 'fridge-cleanout-weekly-plan') return '7일 재고 소진표';
+    return '기록표';
+  }
   if (surface === 'timeline_calendar') return '월간 캘린더 + 실행 리스트';
   if (surface === 'memo_card') return '메모 카드';
   return '실행 리스트';
 }
 
 function surfaceDescription(surface: string, bundle: FlowBundle): string {
+  if (bundle.flow.slug === 'jeonse-contract-precheck-docs') return '캘린더에서 날짜를 고르고, 그날 필요한 체크만 확인합니다.';
   if (surface === 'meal_reaction_log') {
     return mealCalendarOnlySlugs.has(bundle.flow.slug)
       ? '시작일 기준 메뉴와 새 재료, 레시피 확인 순서를 먼저 봅니다.'
       : '시작일 기준 메뉴와 새 재료를 먼저 보고, 먹은 뒤 반응을 기록합니다.';
   }
   if (surface === 'decision_table') return '먼저 후보를 비교하고, 아래 체크리스트로 현장에서 확인할 일을 이어갑니다.';
-  if (surface === 'routine_calendar') return '시작일과 반복 요일을 기준으로 회차가 달력에 박히는 모습을 먼저 보여줍니다.';
-  if (surface === 'spreadsheet_log') return '매일 남길 기록 열과 주간 리뷰 메모를 먼저 잡아둡니다.';
+  if (surface === 'routine_calendar') {
+    return maintenanceRoutineSlugs.has(bundle.flow.slug)
+      ? '시작일을 기준으로 다음 관리일을 만들고, 날짜 안에서 체크리스트를 확인합니다.'
+      : '시작일과 반복 요일을 기준으로 회차가 달력에 박히는 모습을 먼저 보여줍니다.';
+  }
+  if (surface === 'spreadsheet_log') {
+    if (bundle.flow.slug === 'water-purifier-filter-cycle') return '필터별 마지막 교체일, 다음 확인일, 상태 메모를 한 표로 관리합니다.';
+    if (bundle.flow.slug === 'fridge-cleanout-weekly-plan') return '우선 재료, 메뉴 후보, 장보기 보류 상태를 7일 표로 관리합니다.';
+    return '매일 남길 기록 열과 주간 리뷰 메모를 먼저 잡아둡니다.';
+  }
   if (surface === 'timeline_calendar') return '해야 할 일을 리스트로 훑고, 같은 항목이 월간 달력에서 어느 날짜에 걸리는지 봅니다.';
   if (surface === 'memo_card') return '나중에 다시 참고할 기준과 결정 메모를 한 장으로 정리합니다.';
   return '필요한 항목을 체크하고, 자세히에서 원문 기준과 완료 조건만 확인합니다.';
@@ -382,10 +414,12 @@ function TimelineWorkbench({
   const comparisonConfig = getComparisonConfig(bundle);
   const logTables = getLogTables(bundle);
   const memoFields = getMemoCardFields(bundle);
+  const shouldShowFullSourceTable = bundle.flow.slug === 'plank-30-day-challenge';
+  const listLimit = shouldShowFullSourceTable ? Number.POSITIVE_INFINITY : 8;
   const listRows = rows.length
-    ? rows.slice(0, 8)
+    ? rows.slice(0, listLimit)
     : getExecutableItems(bundle)
-        .slice(0, 8)
+        .slice(0, listLimit)
         .map((item, index) => ({
           id: item.id,
           title: item.title,
@@ -397,13 +431,16 @@ function TimelineWorkbench({
 
   return (
     <div className="space-y-4">
+      {bundle.flow.slug === 'wedding-d180-basic' ? <WeddingSourceBridge sourceUrl={bundle.flow.source_url} /> : null}
+      {bundle.flow.slug === 'plank-30-day-challenge' ? <PlankChallengeSourceBridge sourceUrl={bundle.flow.source_url} /> : null}
       <div className="grid gap-4 lg:grid-cols-[1.05fr_1fr]">
         <MiniMonthCalendar title="월간 캘린더" eyebrow="캘린더" month={month} rows={rows} exportActions={exportActions} mobileArtifactLabel={getMobileArtifactLabel(bundle, 'month_calendar')} />
         <div data-testid="artifact-list-card" className="rounded-lg border border-slate-200 bg-slate-50 p-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-blue-700">체크리스트</p>
-              <h3 className="text-base font-semibold text-slate-950">실행 리스트</h3>
+              <p className="text-sm font-semibold text-blue-700">{shouldShowFullSourceTable ? '원문 표' : '체크리스트'}</p>
+              <h3 className="text-base font-semibold text-slate-950">{shouldShowFullSourceTable ? '30일 실행표' : '실행 리스트'}</h3>
+              {shouldShowFullSourceTable ? <p className="mt-1 text-xs font-medium text-slate-500">Day 1부터 Day 30까지 원문 순서를 모두 보여줍니다.</p> : null}
             </div>
             <ArtifactExportButtons
               actions={exportActions}
@@ -469,6 +506,48 @@ function TimelineWorkbench({
   );
 }
 
+function PlankChallengeSourceBridge({ sourceUrl }: { sourceUrl?: string }) {
+  return (
+    <div data-testid="plank-source-bridge" className="rounded-md border border-emerald-100 bg-emerald-50 p-3 text-sm leading-6 text-emerald-950">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <p className="text-xs font-semibold text-emerald-700">원문에서 옮긴 실행표</p>
+          <p className="mt-1 text-emerald-900">
+            Day별 목표 초수를 시작일 기준 캘린더에 배치했습니다. 예: Day 1 20초, Day 7·19·27 휴식, Day 9 호흡 3:3 패턴, Day 30 150초.
+          </p>
+        </div>
+        {sourceUrl ? (
+          <a className="shrink-0 rounded-md border border-emerald-200 bg-white px-2 py-1 text-xs font-semibold text-emerald-800" href={sourceUrl} target="_blank" rel="noreferrer">
+            원문 보기
+          </a>
+        ) : null}
+      </div>
+      <p className="mt-2 text-xs leading-5 text-emerald-800">
+        효과 설명은 보장으로 쓰지 않고, Flow에서는 오늘 목표·완료/조정 메모·중단 조건만 남깁니다. 통증이나 호흡 곤란이 있으면 완료보다 중단을 우선합니다.
+      </p>
+    </div>
+  );
+}
+
+function WeddingSourceBridge({ sourceUrl }: { sourceUrl?: string }) {
+  return (
+    <div data-testid="wedding-source-bridge" className="rounded-md border border-rose-100 bg-rose-50 p-3 text-sm leading-6 text-rose-950">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <p className="text-xs font-semibold text-rose-700">원문에서 옮긴 준비 흐름</p>
+          <p className="mt-1 text-rose-900">D-300~D-180 웨딩홀·예산·하객 규모 → D-180~D-90 스드메·신혼여행 → D-90~D-30 하객 명단·청첩장 초청 → D-30~D-Day 식권·BGM·역할 분담 순서로 실행합니다.</p>
+        </div>
+        {sourceUrl ? (
+          <a className="shrink-0 rounded-md border border-rose-200 bg-white px-2 py-1 text-xs font-semibold text-rose-800" href={sourceUrl} target="_blank" rel="noreferrer">
+            원문 보기
+          </a>
+        ) : null}
+      </div>
+      <p className="mt-2 text-xs leading-5 text-rose-800">계약금/위약금, 보증인원 변경 가능 기한, 식권·주차권 수량은 원문 흐름을 참고하되 실제 업체 계약서와 상담 기록으로 다시 확인합니다.</p>
+    </div>
+  );
+}
+
 function MealReactionWorkbench({
   bundle,
   anchor,
@@ -487,10 +566,10 @@ function MealReactionWorkbench({
   exportActions?: ArtifactExportActions;
 }) {
   const slots = (bundle.mealSlots ?? []).slice().sort((a, b) => a.order - b.order);
-  const calendarSlots = slots.slice(0, 6);
   const reactionSlots = slots.slice(0, 3);
   const todayReactionSlot = reactionSlots[0];
   const calendarOnly = mealCalendarOnlySlugs.has(bundle.flow.slug);
+  const calendarSlots = calendarOnly ? slots.slice(0, 10) : slots.slice(0, 6);
 
   return (
     <div data-testid="meal-reaction-workbench" className="space-y-4">
@@ -526,24 +605,24 @@ function MealReactionWorkbench({
             </button>
           </div>
           <div data-testid="meal-reaction-summary-card" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3">
-            <p className="text-xs font-semibold uppercase text-blue-700">reaction summary</p>
+            <p className="text-xs font-semibold text-blue-700">오늘 반응 요약</p>
             <div className="mt-2 grid gap-2 text-sm">
               <div data-testid="meal-summary-slot" className="rounded-md bg-white px-3 py-2">
-                <p className="text-xs font-semibold text-gray-500">Today slot</p>
+                <p className="text-xs font-semibold text-gray-500">오늘 식단</p>
                 <p className="mt-1 font-medium text-gray-900">{todayReactionSlot.menu_title}</p>
                 <p className="mt-1 text-gray-700">{mealSlotTiming(todayReactionSlot.day_offset, todayReactionSlot.duration_days, anchor)}</p>
               </div>
               <div data-testid="meal-summary-new-ingredients" className="rounded-md bg-white px-3 py-2">
-                <p className="text-xs font-semibold text-gray-500">New ingredient</p>
+                <p className="text-xs font-semibold text-gray-500">새 재료</p>
                 <p className="mt-1 text-gray-800">{todayReactionSlot.new_ingredients.length ? todayReactionSlot.new_ingredients.join(', ') : '-'}</p>
               </div>
               <div data-testid="meal-summary-reaction-fields" className="rounded-md bg-white px-3 py-2">
-                <p className="text-xs font-semibold text-gray-500">Reaction fields</p>
+                <p className="text-xs font-semibold text-gray-500">먹은 뒤 기록할 것</p>
                 <p className="mt-1 text-gray-800">{mealReactionColumns.slice(0, 4).map((column) => column.label).join(' / ')}</p>
               </div>
             </div>
             <p data-testid="meal-summary-allergy-cue" className="mt-2 text-xs font-medium text-blue-800">
-              Watch the first serving and keep any unusual reaction for professional review.
+              처음 먹인 뒤 특이 반응이 있으면 메모하고 전문가 확인을 우선합니다.
             </p>
           </div>
           <div className="mt-3 grid gap-2">
@@ -566,11 +645,12 @@ function MealReactionWorkbench({
         <div data-testid="artifact-calendar-card" className="rounded-lg border border-slate-200 bg-slate-50 p-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-blue-700">식단 일정 preview</p>
-              <h3 className="mt-1 text-base font-semibold text-gray-950">처음 6개 식단</h3>
+              <p className="text-sm font-semibold text-blue-700">식단 일정 미리보기</p>
+              <h3 className="mt-1 text-base font-semibold text-gray-950">{calendarOnly ? '시작일 기준 식단표' : '처음 6개 식단'}</h3>
             </div>
             <ArtifactExportButtons actions={exportActions} kinds={['calendar']} />
           </div>
+          {calendarOnly ? <BabyFoodSourceBridge sourceUrl={bundle.flow.source_url} /> : null}
           <ArtifactExportStatus actions={exportActions} />
           <div className="mt-3 space-y-2">
             {calendarSlots.map((slot) => {
@@ -578,16 +658,16 @@ function MealReactionWorkbench({
               const isChecked = isMealSlotChecked(slot, anchor, checks);
               return (
                 <div key={slot.id} className="rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
-                  <label className="grid grid-cols-[22px_112px_1fr] gap-3">
+                  <label className="grid grid-cols-[22px_1fr] gap-x-3 gap-y-1 md:grid-cols-[22px_112px_1fr] md:gap-y-0">
                     <input
                       aria-label={`이유식 완료: ${slot.menu_title}`}
-                      className="mt-0.5 h-4 w-4 rounded border-gray-300"
+                      className="row-span-2 mt-0.5 h-4 w-4 rounded border-gray-300 md:row-span-1"
                       checked={isChecked}
                       onChange={() => onToggleItem(slot.id)}
                       type="checkbox"
                     />
-                    <span className="font-mono text-xs font-semibold text-blue-700">{mealSlotTiming(slot.day_offset, slot.duration_days, anchor)}</span>
-                    <span className={isChecked ? 'text-gray-400 line-through' : 'text-gray-800'}>
+                    <span className="min-w-0 font-mono text-xs font-semibold text-blue-700">{mealSlotTiming(slot.day_offset, slot.duration_days, anchor)}</span>
+                    <span className={`col-start-2 min-w-0 md:col-start-auto ${isChecked ? 'text-gray-400 line-through' : 'text-gray-800'}`}>
                       <span className="block font-medium">{slot.menu_title}</span>
                       {slot.new_ingredients.length ? (
                         <span className="mt-1 block text-xs text-gray-500">새 재료: {slot.new_ingredients.join(', ')}</span>
@@ -647,6 +727,30 @@ function MealReactionWorkbench({
         </div>
         ) : null}
       </div>
+    </div>
+  );
+}
+
+function BabyFoodSourceBridge({ sourceUrl }: { sourceUrl?: string }) {
+  return (
+    <div data-testid="meal-source-bridge" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3 text-sm leading-6 text-blue-950">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <p className="text-xs font-semibold text-blue-700">원문에서 옮긴 실행 기준</p>
+          <p className="mt-1 font-semibold">시작일 입력 → 3일 단위 새 재료 → 레시피 확인 → 이상 반응은 메모 후 전문가 확인</p>
+        </div>
+        {sourceUrl ? (
+          <a className="shrink-0 rounded-md border border-blue-200 bg-white px-2 py-1 text-xs font-semibold text-blue-800" href={sourceUrl} target="_blank" rel="noreferrer">
+            원문 보기
+          </a>
+        ) : null}
+      </div>
+      <p className="mt-2 text-xs leading-5 text-blue-800">
+        원문은 날짜를 직접 입력하는 식단표와 3일 단위 알레르기 관찰 흐름을 제공합니다. Flow에서는 건강 판단보다 캘린더 식단표와 레시피 메모를 먼저 보여줍니다.
+      </p>
+      <p className="mt-1 text-xs leading-5 text-blue-800">
+        쌀가루 20배죽, 불린 쌀 10배죽, 채소 손질, 6개월 전후 소고기 같은 단서는 레시피와 메모에서 확인하고 최신 공식/전문가 안내를 우선합니다.
+      </p>
     </div>
   );
 }
@@ -780,7 +884,7 @@ function RoutineOccurrenceCalendar({
   const isSleepCheck = bundle.flow.slug === 'diet-habit-2week';
   const isHomeWorkout = bundle.flow.slug === 'real-thankyou-bubu-home-workout-starter';
   const isMealCheck = bundle.flow.slug === 'real-fitvely-diet-record-routine';
-  const eyebrow = isSleepCheck ? '수면 체크 캘린더' : isHomeWorkout ? '홈트 캘린더' : isMealCheck ? '식단 체크 캘린더' : '회차 그리드 · primary';
+  const eyebrow = isSleepCheck ? '수면 체크 캘린더' : isHomeWorkout ? '홈트 캘린더' : isMealCheck ? '식단 체크 캘린더' : '회차 그리드';
   const title = isSleepCheck ? '14일 수면 체크' : isHomeWorkout ? '4주 홈트 체크' : isMealCheck ? '아침·점심·저녁 식단 체크' : `${occurrenceSummary} 루틴`;
   const description = isSleepCheck
     ? '매일 8시간 이상 잤는지만 완료로 표시합니다.'
@@ -835,7 +939,7 @@ function RoutineOccurrenceCalendar({
           {weekRows.map((week, weekIndex) => (
             <div key={`routine-week-${weekIndex}`} className="contents">
               <div className="rounded-md border border-slate-200 bg-slate-50 p-2">
-                <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">WEEK {weekIndex + 1}</p>
+                <p className="text-[10px] font-bold text-slate-500">{weekIndex + 1}주차</p>
                 <p className="mt-1 text-sm font-semibold text-slate-900">{weekIndex + 1}주차</p>
               </div>
               {week.map((row, dayIndex) => {
@@ -897,7 +1001,7 @@ function RoutineSessionLogCard({
     <section data-testid="routine-session-log-card" className="min-w-0 rounded-lg border border-slate-200 bg-slate-50 p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-blue-700">회차 기록표 · secondary</p>
+          <p className="text-sm font-semibold text-blue-700">회차 기록표</p>
           <h3 className="mt-1 text-base font-semibold text-gray-950">지난 회차 기록</h3>
           <p className="mt-1 text-sm text-gray-600">
             {isSleepCheck ? '각 날짜가 끝나면 8시간 이상 수면 여부와 한 줄 메모를 남깁니다.' : '각 회차가 끝나면 세트/강도와 한 줄 메모를 시트로 남깁니다.'}
@@ -1048,7 +1152,7 @@ function MobileComparisonSummaryCard({ rows, comparison }: { rows: ArtifactCompa
 
   return (
     <div data-testid="mobile-comparison-summary-card" className="m-3 rounded-md border border-slate-200 bg-slate-50 p-3 md:hidden">
-      <p className="text-xs font-semibold uppercase text-blue-700">mobile summary</p>
+      <p className="text-xs font-semibold text-blue-700">먼저 채울 후보</p>
       <h4 className="mt-1 text-sm font-semibold text-gray-950">{primaryCandidate} 먼저 채우기</h4>
       <dl className="mt-2 grid gap-2 text-sm">
         {previewRows.map((row, index) => (
@@ -1117,6 +1221,8 @@ function LogTableCard({
   mobileArtifactLabel?: string;
   mobileKinds?: ArtifactExportActionKind[];
 }) {
+  const isWaterPurifier = table.id === 'water-purifier-filter-cycle-log';
+
   return (
     <div
       data-testid={`artifact-log-table-${table.id}`}
@@ -1135,6 +1241,7 @@ function LogTableCard({
         </div>
         <ArtifactExportStatus actions={exportActions} />
         <p className="mt-2 text-sm leading-6 text-slate-600">{table.description}</p>
+        {isWaterPurifier ? <WaterPurifierSourceBridge /> : null}
         {table.sourceKind === 'source_derived' ? <MobileStudyLogSummaryCard table={table} /> : <MobileLogSummaryCard table={table} />}
       </div>
       <table className="min-w-[760px] text-left text-sm">
@@ -1183,6 +1290,21 @@ function LogTableCard({
   );
 }
 
+function WaterPurifierSourceBridge() {
+  return (
+    <div data-testid="water-purifier-source-bridge" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3 text-sm leading-6 text-blue-950">
+      <p className="text-xs font-semibold text-blue-700">원문에서 옮긴 필터 주기</p>
+      <div className="mt-2 grid gap-1 sm:grid-cols-2">
+        <p><b>침전</b> 원문 3~6개월</p>
+        <p><b>프리카본</b> 원문 6~12개월</p>
+        <p><b>RO/나노</b> 원문 12~24개월</p>
+        <p><b>후카본</b> 원문 9~12개월</p>
+      </div>
+      <p className="mt-2 text-xs leading-5 text-blue-800">코크/출수구 청소, 자가 살균, 물맛·냄새 확인은 필터 교체일과 별도 상태 메모로 남깁니다.</p>
+    </div>
+  );
+}
+
 function MobileStudyLogSummaryCard({ table }: { table: ArtifactLogTable }) {
   const firstRow = table.rows[0];
   const editableColumns = table.columns.filter((column) => table.userEditableColumnIds?.includes(column.id));
@@ -1196,20 +1318,20 @@ function MobileStudyLogSummaryCard({ table }: { table: ArtifactLogTable }) {
       data-editable-column-count={String(editableColumns.length)}
       className="mt-3 rounded-md border border-slate-200 bg-slate-50 p-3 md:hidden"
     >
-      <p className="text-xs font-semibold uppercase text-blue-700">study summary</p>
-      <h4 className="mt-1 text-sm font-semibold text-gray-950">{table.rows.length} source rows before editing</h4>
+      <p className="text-xs font-semibold text-blue-700">원문 기준표 요약</p>
+      <h4 className="mt-1 text-sm font-semibold text-gray-950">{table.rows.length}개 원문 행을 먼저 옮겼습니다</h4>
       <div className="mt-2 grid gap-2 text-sm">
         <div data-testid="study-summary-first-source-row" className="rounded-md bg-white px-3 py-2">
-          <p className="text-xs font-semibold text-gray-500">First source row</p>
+          <p className="text-xs font-semibold text-gray-500">원문 기준 첫 행</p>
           <p className="mt-1 font-medium text-gray-900">{firstRow.label}</p>
           <p className="mt-1 text-gray-700">{firstRow.defaultValues?.scope ?? '-'}</p>
         </div>
         <div data-testid="study-summary-editable-fields" className="rounded-md bg-white px-3 py-2">
-          <p className="text-xs font-semibold text-gray-500">Editable after export</p>
+          <p className="text-xs font-semibold text-gray-500">내가 채울 칸</p>
           <p className="mt-1 text-gray-800">{editableColumns.map((column) => column.label).join(' / ')}</p>
         </div>
       </div>
-      <p className="mt-2 text-xs font-medium text-blue-800">Source scope stays fixed; target date, status, and note are the user's sheet fields.</p>
+      <p className="mt-2 text-xs font-medium text-blue-800">원문 범위는 고정하고, 목표일·상태·메모만 내가 채웁니다.</p>
     </div>
   );
 }
@@ -1217,12 +1339,13 @@ function MobileStudyLogSummaryCard({ table }: { table: ArtifactLogTable }) {
 function MobileLogSummaryCard({ table }: { table: ArtifactLogTable }) {
   const firstRow = table.rows[0];
   const previewColumns = table.columns.slice(0, 3);
+  const isWaterPurifier = table.id === 'water-purifier-filter-cycle-log';
 
   if (!firstRow) return null;
 
   return (
     <div data-testid="mobile-artifact-summary-card" className="mt-3 rounded-md border border-slate-200 bg-slate-50 p-3 md:hidden">
-      <p className="text-xs font-semibold uppercase text-blue-700">mobile summary</p>
+      <p className="text-xs font-semibold text-blue-700">{isWaterPurifier ? '가장 먼저 확인할 필터' : '먼저 채울 행'}</p>
       <h4 className="mt-1 text-sm font-semibold text-gray-950">{firstRow.label}</h4>
       <dl className="mt-2 grid gap-2 text-sm">
         {previewColumns.map((column) => (
@@ -1232,7 +1355,9 @@ function MobileLogSummaryCard({ table }: { table: ArtifactLogTable }) {
           </div>
         ))}
       </dl>
-      <p className="mt-2 text-xs font-medium text-blue-800">전체 행은 아래 표에서 확인하고, 기록은 시트로 받을 수 있습니다.</p>
+      <p className="mt-2 text-xs font-medium text-blue-800">
+        {isWaterPurifier ? '필터별 날짜와 상태는 아래 표에서 이어서 관리합니다.' : '전체 행은 아래 표에서 확인하고, 기록은 시트로 받을 수 있습니다.'}
+      </p>
     </div>
   );
 }
@@ -1304,11 +1429,12 @@ function DecisionWorkbench({
   const comparisonRows = getComparisonRows(bundle);
   const checklistItems = bundle.items;
   const memoFields = getMemoCardFields(bundle);
+  const comparisonEyebrow = comparisonConfig?.eyebrow ?? '후보 비교표';
   return (
     <div className="grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
       <ComparisonTable
         title={comparisonConfig?.title ?? '후보 비교표'}
-        eyebrow={comparisonConfig?.eyebrow ?? '후보 비교 preview'}
+        eyebrow={comparisonEyebrow.replace('preview', '미리보기')}
         rows={comparisonRows}
         comparisonState={comparisonState}
         onComparisonChange={onComparisonChange}
@@ -1538,17 +1664,35 @@ function RoutineWorkbench({
   bundle,
   anchor,
   weekdays,
+  checks,
   workbenchState,
   onWorkbenchChange,
+  onToggleItem,
   exportActions,
 }: {
   bundle: FlowBundle;
   anchor: string;
   weekdays: string[];
+  checks: Record<string, boolean>;
   workbenchState: FlowWorkbenchState;
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
+  onToggleItem: (id: string) => void;
   exportActions?: ArtifactExportActions;
 }) {
+  if (maintenanceRoutineSlugs.has(bundle.flow.slug)) {
+    return (
+      <MaintenanceRoutineWorkbench
+        bundle={bundle}
+        anchor={anchor}
+        checks={checks}
+        workbenchState={workbenchState}
+        onWorkbenchChange={onWorkbenchChange}
+        onToggleItem={onToggleItem}
+        exportActions={exportActions}
+      />
+    );
+  }
+
   const startDate = anchor || formatDate(nextMonday(new Date()));
   const selectedWeekdays = weekdays.length ? weekdays : inferWeekdays(bundle.repeatRules?.[0] ?? '');
   const weekCount = getRoutineWeekCount(bundle);
@@ -1587,6 +1731,17 @@ function RoutineWorkbench({
           onWorkbenchChange={onWorkbenchChange}
           exportActions={exportActions}
         />
+        {isHomeWorkout ? (
+          <>
+            <ExactVideoTodayResultCard
+              occurrenceKeyValue={nextKey}
+              occurrenceLabel={nextLabel || '오늘 홈트'}
+              workbenchState={workbenchState}
+              onWorkbenchChange={onWorkbenchChange}
+            />
+            <ExactVideoSourceBridge bundle={bundle} />
+          </>
+        ) : null}
       </div>
     );
   }
@@ -1655,6 +1810,104 @@ function RoutineWorkbench({
   );
 }
 
+function ExactVideoSourceBridge({ bundle }: { bundle: FlowBundle }) {
+  const detail = bundle.itemDetails?.[0];
+  const sourceUrl = bundle.flow.source_url;
+  const sourceTitle = bundle.flow.source_title ?? '원본 영상';
+  const cues =
+    bundle.flow.slug === 'real-thankyou-bubu-home-workout-starter'
+      ? ['점프 없음', '눕는 동작 없음', '반복 없음', '토크 없음']
+      : ['원본 영상 1개', '반복 일정', '운동 후 기록'];
+
+  return (
+    <section data-testid="exact-video-source-bridge" className="rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm leading-6 text-blue-950">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold text-blue-700">원문에서 옮긴 실행 기준</p>
+          <h3 className="mt-1 text-base font-semibold text-blue-950">원본 영상을 열고, 정한 요일에 1회 실행합니다</h3>
+        </div>
+        {sourceUrl ? (
+          <a className="shrink-0 rounded-md border border-blue-200 bg-white px-3 py-1.5 text-xs font-semibold text-blue-800" href={sourceUrl} target="_blank" rel="noreferrer">
+            원본 영상 열기
+          </a>
+        ) : null}
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {cues.map((cue) => (
+          <span key={cue} className="rounded-md border border-blue-200 bg-white px-2 py-1 text-xs font-semibold text-blue-800">
+            {cue}
+          </span>
+        ))}
+      </div>
+      <p className="mt-3 text-sm text-blue-900">
+        Flow는 영상의 동작 순서를 새로 만들지 않습니다. 캘린더에는 운동일만 넣고, 실행할 때는 원본 영상의 자세와 박자를 그대로 확인합니다.
+      </p>
+      <p className="mt-2 text-xs text-blue-800">
+        저장 후 남길 기록: {detail?.completion_criteria ?? '완료 여부, 체감 난이도, 통증이나 어지러움, 다음 회차 강도 조정 메모'}
+      </p>
+      <p className="mt-1 text-xs text-blue-700">출처: {sourceTitle}</p>
+    </section>
+  );
+}
+
+function ExactVideoTodayResultCard({
+  occurrenceKeyValue,
+  occurrenceLabel,
+  workbenchState,
+  onWorkbenchChange,
+}: {
+  occurrenceKeyValue: string;
+  occurrenceLabel: string;
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
+}) {
+  const selectedResult = workbenchState.memoCards.exactVideoResult ?? '';
+  const note = occurrenceKeyValue ? workbenchState.occurrences[occurrenceKeyValue]?.note ?? '' : '';
+  const resultOptions = ['완료', '강도 낮춤', '휴식으로 변경'];
+
+  return (
+    <section data-testid="exact-video-result-card" className="rounded-lg border border-emerald-100 bg-emerald-50 p-4 text-sm leading-6 text-emerald-950">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold text-emerald-700">오늘 결과</p>
+          <h3 className="mt-1 text-base font-semibold text-emerald-950">{occurrenceLabel} 실행 후 남길 것</h3>
+          <p className="mt-1 text-sm text-emerald-900">원본 영상을 열어 1회 따라 한 뒤 완료 여부와 몸 상태만 가볍게 남깁니다.</p>
+        </div>
+        <span className="rounded-md border border-emerald-200 bg-white px-2 py-1 text-xs font-semibold text-emerald-800">운동 후 기록</span>
+      </div>
+      <div className="mt-3 grid gap-2 sm:grid-cols-3">
+        {resultOptions.map((result) => (
+          <button
+            key={result}
+            type="button"
+            aria-pressed={selectedResult === result}
+            className={`min-h-10 rounded-md border px-3 text-sm font-semibold ${
+              selectedResult === result ? 'border-emerald-700 bg-emerald-700 text-white' : 'border-emerald-200 bg-white text-emerald-900'
+            }`}
+            onClick={() => {
+              const next = updateMemoCard(workbenchState, 'exactVideoResult', result);
+              onWorkbenchChange(occurrenceKeyValue && result === '완료' ? updateOccurrenceDone(next, occurrenceKeyValue, true) : next);
+            }}
+          >
+            {result}
+          </button>
+        ))}
+      </div>
+      <label className="mt-3 block text-sm font-semibold text-emerald-950">
+        몸 상태 메모
+        <textarea
+          aria-label="운동 후 몸 상태 메모"
+          className="mt-2 min-h-24 w-full resize-y rounded-md border border-emerald-200 bg-white px-3 py-2 text-sm font-normal text-slate-800"
+          placeholder="예: 완료 / RPE 6 / 무릎 통증 없음 / 다음 회차도 같은 강도"
+          value={note}
+          onChange={(event) => occurrenceKeyValue ? onWorkbenchChange(updateOccurrenceNote(workbenchState, occurrenceKeyValue, event.currentTarget.value)) : undefined}
+        />
+      </label>
+      <p className="mt-2 text-xs text-emerald-800">통증, 어지러움, 호흡 곤란이 있으면 완료보다 중단 기록을 우선합니다.</p>
+    </section>
+  );
+}
+
 function inferWeekdays(repeatLabel: string): string[] {
   if (repeatLabel.includes('매일 체크')) return routineGridWeekdayOrder;
   if (repeatLabel.includes('매일')) return ['월', '화', '수', '목', '금'];
@@ -1673,6 +1926,12 @@ function nextMonday(date: Date): Date {
   const day = next.getDay();
   const diff = day === 0 ? 1 : 8 - day;
   next.setDate(next.getDate() + diff);
+  return next;
+}
+
+function addMonths(date: Date, months: number): Date {
+  const next = new Date(date);
+  next.setMonth(next.getMonth() + months);
   return next;
 }
 
@@ -1712,11 +1971,30 @@ function SpreadsheetWorkbench({
   const rows = Array.from({ length: 7 }, (_, index) => formatDate(addDays(new Date(start), index)));
   const showRiskBoundary = bundle.flow.risk_level === 'medical_sensitive' && Boolean(bundle.flow.warning);
   const spreadsheetColumns = getSpreadsheetColumns(bundle);
-  const title = bundle.flow.slug === 'diet-habit-2week' ? '관찰 기록표' : '날짜별 기록표';
+  const title =
+    bundle.flow.slug === 'diet-habit-2week'
+      ? '관찰 기록표'
+      : bundle.flow.slug === 'fridge-cleanout-weekly-plan'
+        ? '7일 재고 소진표'
+        : '날짜별 기록표';
   const description =
     bundle.flow.slug === 'diet-habit-2week'
       ? '감량 결과를 판단하지 않고 식사, 수면, 활동, 컨디션, 중단/상담 조건을 같은 줄에 남깁니다.'
-      : '날짜별로 남길 기록 값을 먼저 정리합니다.';
+      : bundle.flow.slug === 'fridge-cleanout-weekly-plan'
+        ? '냉장고 지도에서 고른 재료, 메뉴 후보, 장보기 보류 상태만 기록합니다. 절약액이나 영양 균형은 계산하지 않습니다.'
+        : '날짜별로 남길 기록 값을 먼저 정리합니다.';
+  const routeSpecificMemoTitle =
+    bundle.flow.slug === 'water-purifier-filter-cycle'
+      ? '관리 메모'
+      : bundle.flow.slug === 'fridge-cleanout-weekly-plan'
+        ? '장보기 전 메모'
+        : '주간 조정 메모';
+  const routeSpecificMemoPlaceholder =
+    bundle.flow.slug === 'water-purifier-filter-cycle'
+      ? '이번에 확인한 필터 상태, 모델별 교체 기준, 원문/제조사 링크를 적어두세요.'
+      : bundle.flow.slug === 'fridge-cleanout-weekly-plan'
+        ? '남은 재료, 폐기/확인할 재료, 다음 장보기에서 보류할 항목만 적어두세요.'
+        : '이번 주에 유지할 기준, 줄일 기준, 중단/상담 신호를 적어두세요.';
   if (routeSpecificLogTables.length) {
     return (
       <div className="grid gap-4 lg:grid-cols-[1.25fr_0.75fr]">
@@ -1740,11 +2018,11 @@ function SpreadsheetWorkbench({
               <p className="mt-1 text-sm leading-6 text-amber-950">{bundle.flow.warning}</p>
             </div>
           ) : null}
-          <h3 className="text-base font-semibold text-gray-950">주간 조정 메모</h3>
+          <h3 className="text-base font-semibold text-gray-950">{routeSpecificMemoTitle}</h3>
           <textarea
-            aria-label="주간 조정 메모"
+            aria-label={routeSpecificMemoTitle}
             className="mt-3 min-h-32 w-full resize-y rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800"
-            placeholder="이번 주에 유지할 기준, 줄일 기준, 중단/상담 신호를 적어두세요."
+            placeholder={routeSpecificMemoPlaceholder}
             value={workbenchState.weeklyReview ?? ''}
             onChange={(event) => onWorkbenchChange(updateWeeklyReview(workbenchState, event.currentTarget.value))}
           />
@@ -1759,7 +2037,7 @@ function SpreadsheetWorkbench({
         <div className="border-b border-gray-100 px-3 py-3">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-blue-700">기록표 preview</p>
+              <p className="text-sm font-semibold text-blue-700">기록표</p>
               <h3 className="mt-1 text-base font-semibold text-gray-950">{title}</h3>
             </div>
             <ArtifactExportButtons
@@ -1812,15 +2090,27 @@ function SpreadsheetWorkbench({
           </div>
         ) : null}
         <h3 className="text-base font-semibold text-gray-950">
-          {bundle.flow.slug === 'diet-habit-2week' ? '주간 관찰 메모' : '주간 리뷰 메모'}
+          {bundle.flow.slug === 'diet-habit-2week'
+            ? '주간 관찰 메모'
+            : bundle.flow.slug === 'fridge-cleanout-weekly-plan'
+              ? '장보기 전 메모'
+              : '주간 리뷰 메모'}
         </h3>
         <textarea
-          aria-label={bundle.flow.slug === 'diet-habit-2week' ? '주간 관찰 메모' : '주간 리뷰 메모'}
+          aria-label={
+            bundle.flow.slug === 'diet-habit-2week'
+              ? '주간 관찰 메모'
+              : bundle.flow.slug === 'fridge-cleanout-weekly-plan'
+                ? '장보기 전 메모'
+                : '주간 리뷰 메모'
+          }
           className="mt-3 min-h-32 w-full resize-y rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800"
           placeholder={
             bundle.flow.slug === 'diet-habit-2week'
               ? '반복된 식사 시간, 수면, 활동, 컨디션, 중단/상담 신호만 적어보세요.'
-              : '기록 누락, 식사 패턴, 운동 지속 여부를 보고 다음 주 기준을 적어두세요.'
+              : bundle.flow.slug === 'fridge-cleanout-weekly-plan'
+                ? '남은 재료, 폐기/확인할 재료, 다음 장보기에서 보류할 항목만 적어두세요.'
+                : '기록 누락, 식사 패턴, 운동 지속 여부를 보고 다음 주 기준을 적어두세요.'
           }
           value={workbenchState.weeklyReview ?? ''}
           onChange={(event) => onWorkbenchChange(updateWeeklyReview(workbenchState, event.currentTarget.value))}
@@ -1830,13 +2120,182 @@ function SpreadsheetWorkbench({
   );
 }
 
+function MaintenanceRoutineWorkbench({
+  bundle,
+  anchor,
+  checks,
+  workbenchState,
+  onWorkbenchChange,
+  onToggleItem,
+  exportActions,
+}: {
+  bundle: FlowBundle;
+  anchor: string;
+  checks: Record<string, boolean>;
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
+  onToggleItem: (id: string) => void;
+  exportActions?: ArtifactExportActions;
+}) {
+  const startDate = anchor || formatDate(new Date());
+  const isWasher = bundle.flow.slug === 'washer-tub-clean-monthly';
+  const title = isWasher ? '다음 통세척일' : '다음 상태 확인일';
+  const repeatLabel = bundle.repeatRules?.[0] ?? (isWasher ? '월 1회' : '7~10일마다');
+  const memoPlaceholder = isWasher
+    ? '예: 드럼 세탁기 / 액상 전용 클리너 구매 링크 / 세제통 물기 제거 / 배수필터는 다음 주말에 확인'
+    : '예: 겉흙은 말랐고 잎 처짐 없음, 다음 확인일에 화분 방향만 돌리기';
+  const occurrenceDates = isWasher
+    ? [0, 1, 2, 3].map((months) => formatDate(addMonths(new Date(startDate), months)))
+    : [0, 10, 20, 30].map((days) => formatDate(addDays(new Date(startDate), days)));
+  const items = getExecutableItems(bundle);
+  const maintenanceResult = workbenchState.memoCards.maintenanceResult ?? '';
+  const maintenanceResultOptions = ['물주기 완료', '오늘은 보류', '관찰 메모'];
+  const sourceBridge = isWasher
+    ? {
+        cues: '통세척/통살균 코스, 문 열어 건조, 세제통·고무패킹·배수필터 확인',
+        conversion: 'Flow에서는 월 1회 관리일과 날짜 안 체크리스트로 옮겼습니다.',
+        prep: '드럼: 과탄산소다 100g 또는 액상 전용 클리너 / 통돌이: 뜰채와 세탁조 클리너·과탄산소다',
+        cadence: '기본은 월 1회, 사용량이 많거나 냄새가 반복되면 2주 1회로 임시 조정합니다.',
+      }
+    : {
+        cues: '겉흙 2~3cm, 잎 처짐, 밝은 간접광, 배수구멍과 분갈이 조건',
+        conversion: 'Flow에서는 고정 지시가 아니라 상태 확인일과 날짜 안 체크리스트로 옮겼습니다.',
+      };
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-[0.92fr_1.08fr]">
+      <section data-testid="maintenance-routine-next-card" className="order-2 rounded-lg border border-slate-200 bg-slate-50 p-4 lg:order-1">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-blue-700">반복 관리</p>
+            <h3 className="mt-1 text-base font-semibold text-slate-950">{title}</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              시작일을 기준으로 캘린더에 넣을 관리일을 먼저 보여줍니다. 날짜마다 아래 체크리스트를 열어 확인하는 흐름입니다.
+            </p>
+          </div>
+          <span className="rounded-md border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">{repeatLabel}</span>
+        </div>
+        <div className="mt-4 grid gap-2">
+          {occurrenceDates.map((date, index) => {
+            const key = `maintenance:${bundle.flow.slug}:${date}`;
+            const state = workbenchState.occurrences[key] ?? {};
+            return (
+              <label key={key} className={`rounded-md border px-3 py-2 text-sm ${state.done ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-white text-slate-800'}`}>
+                <span className="flex items-center gap-2">
+                  <input
+                    aria-label={`관리일 완료: ${date}`}
+                    className="h-4 w-4 rounded border-slate-300 text-blue-700"
+                    checked={Boolean(state.done)}
+                    onChange={(event) => onWorkbenchChange(updateOccurrenceDone(workbenchState, key, event.currentTarget.checked))}
+                    type="checkbox"
+                  />
+                  <span className="font-mono text-xs font-semibold text-blue-700">{date}</span>
+                  <span className="font-semibold">{index === 0 ? '이번 관리일' : `${index + 1}번째 관리일`}</span>
+                </span>
+              </label>
+            );
+          })}
+        </div>
+        <ArtifactExportButtons
+          actions={exportActions}
+          kinds={['calendar', 'copy', 'draft']}
+          labels={{ calendar: '캘린더로 받기', copy: '관리 메모 복사', draft: '내 버전' }}
+        />
+        <ArtifactExportStatus actions={exportActions} />
+      </section>
+
+      <section data-testid="maintenance-routine-checklist-card" className="order-1 rounded-lg border border-slate-200 bg-white p-4 lg:order-2">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-blue-700">날짜 안 체크리스트</p>
+            <h3 className="mt-1 text-base font-semibold text-slate-950">{isWasher ? '통세척할 때 확인할 것' : '물 주기 전에 확인할 것'}</h3>
+          </div>
+          <span className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">{items.length}개</span>
+        </div>
+        <div className="mt-3 grid gap-2">
+          {items.map((item) => {
+            const detail = getWorkbenchItemDetail(bundle, item.id);
+            const isLongCycle = !isWasher && item.title.includes('분갈이');
+            return (
+              <div key={item.id} className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
+                <label className="flex items-start gap-2">
+                  <input
+                    aria-label={`관리 체크: ${item.title}`}
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-700"
+                    checked={Boolean(checks[item.id])}
+                    onChange={() => onToggleItem(item.id)}
+                    type="checkbox"
+                  />
+                  <span className={`min-w-0 flex-1 ${checks[item.id] ? 'text-slate-400 line-through' : 'text-slate-800'}`}>
+                    <span className="font-medium">{item.title}</span>
+                    {isLongCycle ? <span className="ml-2 rounded bg-white px-2 py-0.5 text-xs font-semibold text-amber-800">1~2년마다</span> : null}
+                  </span>
+                </label>
+                <WorkbenchDetailDisclosure detail={detail} />
+              </div>
+            );
+          })}
+        </div>
+        <div data-testid="maintenance-source-bridge" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3 text-sm leading-6 text-blue-950">
+          <p className="text-xs font-semibold text-blue-700">원문에서 옮긴 실행 단서</p>
+          <p className="mt-1 font-semibold">{sourceBridge.cues}</p>
+          <p className="mt-1 text-xs leading-5 text-blue-800">{sourceBridge.conversion}</p>
+          {'prep' in sourceBridge ? <p className="mt-2 text-xs leading-5 text-blue-900">{sourceBridge.prep}</p> : null}
+          {'cadence' in sourceBridge ? <p className="mt-1 text-xs leading-5 text-blue-900">{sourceBridge.cadence}</p> : null}
+          {bundle.flow.source_url ? (
+            <a className="mt-2 inline-flex text-xs font-semibold text-blue-700 underline-offset-2 hover:underline" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
+              원문 보기
+            </a>
+          ) : null}
+        </div>
+        {!isWasher ? (
+          <div data-testid="maintenance-result-selector" className="mt-3 rounded-md border border-emerald-100 bg-emerald-50 p-3">
+            <p className="text-xs font-semibold text-emerald-700">오늘 결과</p>
+            <p className="mt-1 text-sm leading-6 text-emerald-950">체크리스트를 보고 이번 관리일의 결과만 고릅니다. 보류도 정상 결과입니다.</p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-3">
+              {maintenanceResultOptions.map((result) => (
+                <button
+                  key={result}
+                  type="button"
+                  aria-pressed={maintenanceResult === result}
+                  className={`min-h-10 rounded-md border px-3 text-sm font-semibold ${
+                    maintenanceResult === result ? 'border-emerald-700 bg-emerald-700 text-white' : 'border-emerald-200 bg-white text-emerald-900'
+                  }`}
+                  onClick={() => onWorkbenchChange(updateMemoCard(workbenchState, 'maintenanceResult', result))}
+                >
+                  {result}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
+        <label className="mt-4 block text-sm font-semibold text-slate-800">
+          관리 메모
+          <textarea
+            aria-label="관리 메모"
+            className="mt-2 min-h-28 w-full resize-y rounded-md border border-slate-200 px-3 py-2 text-sm font-normal text-slate-800"
+            placeholder={memoPlaceholder}
+            value={workbenchState.weeklyReview ?? ''}
+            onChange={(event) => onWorkbenchChange(updateWeeklyReview(workbenchState, event.currentTarget.value))}
+          />
+        </label>
+      </section>
+    </div>
+  );
+}
+
 function MobileSpreadsheetSummaryCard({ date, columns, bundle }: { date: string; columns: string[]; bundle: FlowBundle }) {
   const previewColumns = columns.slice(0, 3);
-  const title = bundle.flow.slug === 'diet-habit-2week' ? '오늘 관찰 행' : '오늘 기록 행';
+  const title =
+    bundle.flow.slug === 'diet-habit-2week'
+      ? '오늘 관찰 행'
+      : bundle.flow.slug === 'fridge-cleanout-weekly-plan'
+        ? '오늘 재고 행'
+        : '오늘 기록 행';
 
   return (
     <div data-testid="mobile-artifact-summary-card" className="mt-3 rounded-md border border-slate-200 bg-slate-50 p-3 md:hidden">
-      <p className="text-xs font-semibold uppercase text-blue-700">mobile summary</p>
+      <p className="text-xs font-semibold text-blue-700">먼저 채울 행</p>
       <h4 className="mt-1 text-sm font-semibold text-gray-950">{title} · {date}</h4>
       <dl className="mt-2 grid gap-2 text-sm">
         {previewColumns.map((column) => (
@@ -1853,10 +2312,16 @@ function MobileSpreadsheetSummaryCard({ date, columns, bundle }: { date: string;
 
 function getSpreadsheetColumns(bundle: FlowBundle): string[] {
   if (bundle.flow.slug === 'diet-habit-2week') return dietObservationColumns;
+  if (bundle.flow.slug === 'fridge-cleanout-weekly-plan') return fridgeCleanoutColumns;
   return defaultSpreadsheetColumns;
 }
 
 function spreadsheetPlaceholder(column: string): string {
+  if (column === '우선 재료') return '예: 양파, 두부, 시금치';
+  if (column === '메뉴 후보') return '예: 볶음밥 / 된장국';
+  if (column === '장보기 보류') return '예: 당근 보류, 우유 필요';
+  if (column === '상태') return '예: 처리 / 보류 / 폐기확인';
+  if (column === '메모') return '예: 냄새 확인 후 폐기';
   if (column === '식단' || column === '식사 관찰') return '아침/점심/저녁';
   if (column === '활동') return '예: 30분 걷기';
   if (column === '수면/측정') return '예: 수면 6시간 / 허리 82cm';
@@ -1866,6 +2331,7 @@ function spreadsheetPlaceholder(column: string): string {
 
 function ChecklistWorkbench({
   bundle,
+  anchor = '',
   checks,
   workbenchState,
   onWorkbenchChange,
@@ -1873,25 +2339,48 @@ function ChecklistWorkbench({
   exportActions,
 }: {
   bundle: FlowBundle;
+  anchor?: string;
   checks: Record<string, boolean>;
   workbenchState?: FlowWorkbenchState;
   onWorkbenchChange?: (state: FlowWorkbenchState) => void;
   onToggleItem: (id: string) => void;
   exportActions?: ArtifactExportActions;
 }) {
+  const isJeonsePrecheck = bundle.flow.slug === 'jeonse-contract-precheck-docs';
+  if (isJeonsePrecheck) {
+    return (
+      <JeonseContractWorkbench
+        bundle={bundle}
+        anchor={anchor}
+        checks={checks}
+        workbenchState={workbenchState}
+        onWorkbenchChange={onWorkbenchChange}
+        onToggleItem={onToggleItem}
+        exportActions={exportActions}
+      />
+    );
+  }
+
   const listTitle = bundle.flow.slug === 'new-car-delivery-check' || bundle.flow.slug === 'used-car-buying-check' ? '현장 체크리스트' : '실행 리스트';
+  const holdSection = workbenchState && onWorkbenchChange ? <HoldSectionCard bundle={bundle} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} /> : null;
+  const putChecklistFirst = bundle.flow.slug === 'used-car-buying-check';
+  const visibleItems = getExecutableItems(bundle).slice(0, bundle.flow.slug === 'used-car-buying-check' ? bundle.items.length : 10);
 
   return (
     <div className="space-y-4">
-      {workbenchState && onWorkbenchChange ? <HoldSectionCard bundle={bundle} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} /> : null}
+      {!putChecklistFirst ? holdSection : null}
       <div data-testid="artifact-list-card" className="rounded-lg border border-slate-200 bg-slate-50 p-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <h3 className="text-base font-semibold text-slate-950">{listTitle}</h3>
           <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} />
         </div>
         <ArtifactExportStatus actions={exportActions} />
+        {bundle.flow.slug === 'used-car-buying-check' ? <UsedCarSourceBridge sourceUrl={bundle.flow.source_url} /> : null}
+        {bundle.flow.slug === 'used-car-buying-check' && workbenchState && onWorkbenchChange ? (
+          <UsedCarDecisionResultCard workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
+        ) : null}
         <div className="mt-3 grid gap-2 md:grid-cols-2">
-          {getExecutableItems(bundle).slice(0, 10).map((item) => {
+          {visibleItems.map((item) => {
             const detail = getWorkbenchItemDetail(bundle, item.id);
             return (
               <div key={item.id} className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-[0_1px_0_rgba(15,23,42,0.03)]">
@@ -1911,6 +2400,470 @@ function ChecklistWorkbench({
           })}
         </div>
       </div>
+      {putChecklistFirst ? holdSection : null}
+    </div>
+  );
+}
+
+function JeonseContractWorkbench({
+  bundle,
+  anchor,
+  checks,
+  workbenchState,
+  onWorkbenchChange,
+  onToggleItem,
+  exportActions,
+}: {
+  bundle: FlowBundle;
+  anchor: string;
+  checks: Record<string, boolean>;
+  workbenchState?: FlowWorkbenchState;
+  onWorkbenchChange?: (state: FlowWorkbenchState) => void;
+  onToggleItem: (id: string) => void;
+  exportActions?: ArtifactExportActions;
+}) {
+  const displayAnchor = anchor || '2026-06-07';
+  const rows = scheduleRows(bundle, displayAnchor);
+  const defaultSelectedDate = rows.find((row) => row.timing === 'D-3')?.startDate ?? rows[0]?.startDate ?? displayAnchor;
+  const [selectedDate, setSelectedDate] = useState(defaultSelectedDate);
+  useEffect(() => {
+    setSelectedDate(defaultSelectedDate);
+  }, [defaultSelectedDate]);
+  const selectedRows = rows.filter((row) => row.startDate === selectedDate);
+  const firstRow = selectedRows[0] ?? rows.find((row) => row.timing === 'D-3') ?? rows[0];
+  const groups = getJeonseChecklistGroups(bundle);
+  const [activeView, setActiveView] = useState<'schedule' | 'all'>('schedule');
+  const calendarSummary = rows.reduce<Record<string, ScheduleRow[]>>((acc, row) => {
+    acc[row.startDate] = [...(acc[row.startDate] ?? []), row];
+    return acc;
+  }, {});
+  const mobileCalendarRows = Object.values(calendarSummary)
+    .map((dateRows) => dateRows[0])
+    .sort((left, right) => left.startDate.localeCompare(right.startDate));
+  const calendarDays = getJeonseCalendarDays(displayAnchor);
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-1 rounded-lg border border-slate-200 bg-slate-100 p-1" role="tablist" aria-label="전세 계약 체크 보기">
+        <JeonseViewTab active={activeView === 'schedule'} label="일정 보기" onClick={() => setActiveView('schedule')} />
+        <JeonseViewTab active={activeView === 'all'} label="전체 보기" onClick={() => setActiveView('all')} />
+      </div>
+
+      {activeView === 'schedule' ? (
+        <>
+          <section data-testid="jeonse-source-bridge" className="rounded-lg border border-slate-200 bg-white p-3 md:p-4">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-blue-700">생성되는 일정 3개</p>
+                <h3 className="mt-1 text-base font-semibold text-slate-950">계약 예정일 {formatShortKoreanDate(displayAnchor)} 기준</h3>
+              </div>
+            </div>
+            <div className="mt-3 grid gap-2 md:grid-cols-3">
+              {mobileCalendarRows.map((row) => {
+                const isActive = selectedDate === row.startDate;
+                const progress = getJeonseProgress(getJeonseItemsForRow(bundle, row), checks);
+                const status = getJeonseDateStatus(row, progress);
+                return (
+                  <button
+                    key={row.startDate}
+                    type="button"
+                    aria-pressed={isActive}
+                    onClick={() => setSelectedDate(row.startDate)}
+                    className={`rounded-md border px-3 py-3 text-left text-sm ${
+                      isActive ? 'border-blue-700 bg-blue-50 text-blue-950 ring-2 ring-blue-700' : 'border-slate-200 bg-white text-slate-700 hover:border-blue-300'
+                    }`}
+                  >
+                    <span className="block text-xs font-semibold text-slate-500">{formatShortKoreanDate(row.startDate)} · {row.timing}</span>
+                    <span className="mt-1 block font-semibold">{jeonseEventTitle(row.timing)}</span>
+                    <span className="mt-1 block text-xs font-semibold text-slate-600">{progress.done}/{progress.total} 완료</span>
+                    {status ? <span className="mt-1 block text-xs font-semibold text-amber-700">{status}</span> : null}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          {firstRow ? (
+            <JeonseSelectedEventCard
+              bundle={bundle}
+              row={firstRow}
+              checks={checks}
+              workbenchState={workbenchState}
+              onWorkbenchChange={onWorkbenchChange}
+              onToggleItem={onToggleItem}
+            />
+          ) : null}
+
+          <JeonseCalendarPreview days={calendarDays} rows={mobileCalendarRows} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
+
+          <section className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-blue-200 bg-blue-50 p-3">
+            <p className="text-sm font-semibold text-blue-900">이 3개 일정을 캘린더에 넣습니다.</p>
+            <button
+              type="button"
+              className="rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 disabled:bg-slate-300"
+              disabled={!exportActions?.canExportCalendar}
+              onClick={exportActions?.onDownloadCalendar}
+            >
+              캘린더에 넣기
+            </button>
+          </section>
+        </>
+      ) : (
+        <section data-testid="jeonse-all-items" className="rounded-lg border border-slate-200 bg-white p-3 md:p-4">
+          <div>
+            <p className="text-sm font-semibold text-blue-700">전체 보기</p>
+            <h3 className="mt-1 text-base font-semibold text-slate-950">전체 체크 항목 7개</h3>
+            <p className="mt-1 text-xs font-medium text-slate-500">법률 판단이나 민감정보는 FLOW에 저장하지 않습니다.</p>
+          </div>
+          <div className="mt-3 grid gap-3">
+            {groups.map((group) => (
+              <section key={group.title} className="rounded-md border border-slate-200 bg-white p-3">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <h4 className="text-sm font-semibold text-slate-950">{group.title}</h4>
+                  <span className="text-xs font-semibold text-slate-500">
+                    {group.timing} · {getJeonseProgress(group.items, checks).done}/{group.items.length} 완료
+                  </span>
+                </div>
+                <div className="mt-2 grid gap-2">
+                  {group.items.map((item) => {
+                    const detail = getWorkbenchItemDetail(bundle, item.id);
+                    return (
+                      <div key={item.id} className="border-t border-slate-100 pt-2 first:border-t-0 first:pt-0">
+                        <label className="flex gap-2 text-sm font-semibold text-slate-800">
+                          <input
+                            aria-label={`전체 보기 체크: ${item.title}`}
+                            className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-700"
+                            checked={Boolean(checks[item.id])}
+                            onChange={() => onToggleItem(item.id)}
+                            type="checkbox"
+                          />
+                          <span className={checks[item.id] ? 'text-slate-400 line-through' : ''}>{shortJeonseItemTitle(item.title)}</span>
+                        </label>
+                        <JeonseMemoDisclosure detail={detail} />
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  );
+}
+
+function JeonseCalendarPreview({
+  days,
+  rows,
+  selectedDate,
+  onSelectDate,
+}: {
+  days: Array<{ date: string; day: number } | null>;
+  rows: ScheduleRow[];
+  selectedDate: string;
+  onSelectDate: (date: string) => void;
+}) {
+  const rowsByDate = rows.reduce<Record<string, ScheduleRow>>((acc, row) => {
+    acc[row.startDate] = row;
+    return acc;
+  }, {});
+  const monthLabel = rows[0] ? formatKoreanMonth(rows[0].startDate) : '';
+
+  return (
+    <details data-testid="jeonse-calendar-preview" className="rounded-lg border border-slate-200 bg-white p-3 md:p-4">
+      <summary className="cursor-pointer list-none">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 className="text-base font-semibold text-slate-950">캘린더 미리보기</h3>
+            <p className="mt-1 text-sm font-medium text-slate-500">저장될 3개 일정이 월간 캘린더에 놓이는 위치를 확인합니다.</p>
+          </div>
+          {monthLabel ? <span className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-600">{monthLabel}</span> : null}
+        </div>
+      </summary>
+      <div className="mt-3 grid grid-cols-7 overflow-hidden rounded-md border border-slate-200 bg-white text-xs">
+        {['일', '월', '화', '수', '목', '금', '토'].map((weekday) => (
+          <div key={weekday} className="border-b border-r border-slate-200 bg-slate-100 px-1 py-2 text-center font-semibold text-slate-600 last:border-r-0">
+            {weekday}
+          </div>
+        ))}
+        {days.map((day, index) => {
+          const row = day ? rowsByDate[day.date] : undefined;
+          const isActive = selectedDate === day?.date;
+          return (
+            <button
+              key={day?.date ?? `empty-${index}`}
+              type="button"
+              aria-pressed={isActive}
+              disabled={!row}
+              onClick={() => {
+                if (day) onSelectDate(day.date);
+              }}
+              className={`min-h-20 border-r border-slate-200 p-1 text-left last:border-r-0 md:min-h-24 ${day ? 'bg-white' : 'bg-slate-50'} ${isActive ? 'bg-blue-50 ring-2 ring-inset ring-blue-700' : ''} ${
+                row ? 'cursor-pointer hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-700' : 'cursor-default'
+              }`}
+            >
+              {day ? <p className="font-semibold text-slate-700">{day.day}</p> : null}
+              {row ? (
+                <div className="mt-1 rounded border border-blue-100 bg-blue-50 px-1.5 py-1 text-[11px] font-semibold leading-4 text-blue-900">
+                  <span className="block">{row.timing}</span>
+                  <span className="block truncate">{jeonseEventTitle(row.timing)}</span>
+                </div>
+              ) : null}
+            </button>
+          );
+        })}
+      </div>
+    </details>
+  );
+}
+
+function JeonseViewTab({ active, label, onClick }: { active: boolean; label: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={active}
+      className={`min-h-10 rounded-md px-3 text-sm font-semibold ${active ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-600 hover:bg-white/70 hover:text-slate-950'}`}
+      onClick={onClick}
+    >
+      {label}
+    </button>
+  );
+}
+
+function JeonseSelectedEventCard({
+  bundle,
+  row,
+  checks,
+  workbenchState,
+  onWorkbenchChange,
+  onToggleItem,
+}: {
+  bundle: FlowBundle;
+  row: ScheduleRow;
+  checks: Record<string, boolean>;
+  workbenchState?: FlowWorkbenchState;
+  onWorkbenchChange?: (state: FlowWorkbenchState) => void;
+  onToggleItem: (id: string) => void;
+}) {
+  const relatedItems = getJeonseItemsForRow(bundle, row);
+  const progress = getJeonseProgress(relatedItems, checks);
+  const status = getJeonseDateStatus(row, progress);
+  const holdMemoField = `jeonseHold:${row.startDate}`;
+  const holdMemo = workbenchState?.memoCards?.[holdMemoField] ?? '';
+  return (
+    <section data-testid="jeonse-selected-event-card" className="rounded-lg border border-slate-200 bg-white p-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-semibold text-slate-500">{formatKoreanFullDate(row.startDate)} · {row.timing}</p>
+          <h3 className="mt-1 text-base font-semibold text-slate-950">{jeonseEventTitle(row.timing)}</h3>
+          <p className="mt-1 text-sm font-medium text-slate-500">이 날의 체크 항목 {relatedItems.length}개</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-700">{progress.done}/{progress.total} 완료</span>
+          {status ? <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-800">{status}</span> : null}
+        </div>
+      </div>
+      <div className="mt-3 grid gap-2">
+        {relatedItems.map((item) => (
+          <label key={item.id} className="flex gap-2 text-sm font-semibold text-slate-800">
+            <input
+              aria-label={`선택 일정 체크: ${item.title}`}
+              className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-700"
+              checked={Boolean(checks[item.id])}
+              onChange={() => onToggleItem(item.id)}
+              type="checkbox"
+            />
+            <span className={checks[item.id] ? 'text-slate-400 line-through' : ''}>{shortJeonseItemTitle(item.title)}</span>
+          </label>
+        ))}
+      </div>
+      <div className="mt-4 grid gap-2 text-sm">
+        <p className="font-semibold text-slate-500">주의할 점</p>
+        <p className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 leading-6 text-slate-700">걸리는 항목이 있으면 계약 전 공인중개사나 전문가에게 확인합니다. 법률 판단, 계약서 원문, 주민등록번호, 계좌번호는 저장하지 않습니다.</p>
+      </div>
+      {workbenchState && onWorkbenchChange ? (
+        <details data-testid="jeonse-hold-memo" className="mt-3 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm">
+          <summary className="cursor-pointer font-semibold text-amber-900">
+            보류 사유 남기기{holdMemo.trim() ? ' · 메모 있음' : ''}
+          </summary>
+          <label className="mt-2 grid gap-1 font-semibold text-amber-950">
+            확인이 남은 이유
+            <textarea
+              aria-label="보류 사유 메모"
+              className="min-h-20 rounded-md border border-amber-200 bg-white px-3 py-2 text-sm font-normal text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
+              placeholder="예: 보증보험 가능 여부를 보증기관에 다시 확인하기"
+              value={holdMemo}
+              onChange={(event) => onWorkbenchChange(updateMemoCard(workbenchState, holdMemoField, event.currentTarget.value))}
+            />
+          </label>
+        </details>
+      ) : null}
+      {bundle.flow.source_url ? (
+        <div className="mt-3 grid gap-2 text-sm">
+          <p className="font-semibold text-slate-500">참고 링크</p>
+          <a className="w-fit rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-blue-700 hover:border-blue-300" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
+            카카오페이 원문
+          </a>
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function JeonseMemoDisclosure({ detail }: { detail?: WorkbenchItemDetail }) {
+  const memo = detail?.how ?? detail?.caution ?? detail?.completion_criteria;
+  if (!memo) return null;
+
+  return (
+    <details className="mt-2 text-sm">
+      <summary className="cursor-pointer font-semibold text-blue-700">상세 메모</summary>
+      <p className="mt-1 leading-6 text-slate-600">{memo}</p>
+    </details>
+  );
+}
+
+function getJeonseItemsForRow(bundle: FlowBundle, row: ScheduleRow): FlowItem[] {
+  const sourceItem = getExecutableItems(bundle).find((candidate) => candidate.id === row.id);
+  return getExecutableItems(bundle).filter((item) => item.day_offset === sourceItem?.day_offset);
+}
+
+function getJeonseProgress(items: FlowItem[], checks: Record<string, boolean>): { done: number; total: number } {
+  return {
+    done: items.filter((item) => Boolean(checks[item.id])).length,
+    total: items.length,
+  };
+}
+
+function getJeonseDateStatus(row: ScheduleRow, progress: { done: number; total: number }): string {
+  if (progress.total > 0 && progress.done >= progress.total) return '확인 완료';
+  if (row.startDate < formatDate(new Date())) return '지난 일정 · 확인 필요';
+  return '';
+}
+
+function getJeonseChecklistGroups(bundle: FlowBundle) {
+  const grouped = getExecutableItems(bundle).reduce<Array<{ title: string; timing: string; items: FlowItem[] }>>((acc, item) => {
+    const title = getSectionTitle(bundle, item.section_id) || '기타';
+    const timing = timingLabel(item.day_offset, item.duration_days);
+    const existing = acc.find((group) => group.title === title);
+    if (existing) {
+      existing.items.push(item);
+      return acc;
+    }
+    return [...acc, { title, timing, items: [item] }];
+  }, []);
+
+  return grouped;
+}
+
+function getJeonseCalendarDays(anchor: string): Array<{ date: string; day: number } | null> {
+  const base = new Date(`${anchor}T00:00:00`);
+  const monthStart = new Date(base.getFullYear(), base.getMonth(), 1);
+  const lastDay = new Date(base.getFullYear(), base.getMonth() + 1, 0).getDate();
+  const days: Array<{ date: string; day: number } | null> = Array.from({ length: monthStart.getDay() }, () => null);
+  for (let day = 1; day <= lastDay; day += 1) {
+    days.push({ date: `${base.getFullYear()}-${String(base.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`, day });
+  }
+  return days;
+}
+
+function formatKoreanMonth(date: string): string {
+  const value = new Date(`${date}T00:00:00`);
+  return `${value.getFullYear()}년 ${value.getMonth() + 1}월`;
+}
+
+function formatShortKoreanDate(date: string): string {
+  const value = new Date(`${date}T00:00:00`);
+  return `${value.getMonth() + 1}월 ${value.getDate()}일`;
+}
+
+function formatKoreanFullDate(date: string): string {
+  const value = new Date(`${date}T00:00:00`);
+  const weekdays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+  return `${value.getFullYear()}년 ${value.getMonth() + 1}월 ${value.getDate()}일 ${weekdays[value.getDay()]}`;
+}
+
+function jeonseEventTitle(timing: string): string {
+  if (timing === 'D-3') return '계약 전 서류 확인';
+  if (timing === 'D-Day') return '계약서 정보 확인';
+  if (timing === 'D+1') return '입주 후 보호 절차';
+  return '보류 사유와 문의 대상 메모';
+}
+
+function shortJeonseCalendarTitle(title: string): string {
+  return title
+    .replace('시세와 등기부등본 권리관계 확인하기', '계약 전 서류 확인')
+    .replace('전세보증보험 가능 여부 확인하기', '보증보험 가능 여부')
+    .replace('중개사와 표준계약서 확인하기', '표준계약서 확인')
+    .replace('계약서 정보 일치 여부 확인하기', '계약서 정보 확인')
+    .replace('확정일자와 임대차신고 일정 저장하기', '확정일자/신고 일정')
+    .replace('전세보증보험 가입 확인하기', '보증보험 후속 확인')
+    .replace('보류 사유와 문의 대상 메모하기', '보류 사유 메모');
+}
+
+function shortJeonseItemTitle(title: string): string {
+  return title
+    .replace('시세와 등기부등본 권리관계 확인하기', '시세와 등기부등본 확인')
+    .replace('전세보증보험 가능 여부 확인하기', '전세보증보험 가능 여부 확인')
+    .replace('중개사와 표준계약서 확인하기', '중개사와 표준계약서 확인')
+    .replace('계약서 정보 일치 여부 확인하기', '계약서 정보 일치 여부 확인')
+    .replace('확정일자와 임대차신고 일정 저장하기', '확정일자와 임대차신고 일정 저장')
+    .replace('전세보증보험 가입 확인하기', '전세보증보험 가입 확인')
+    .replace('보류 사유와 문의 대상 메모하기', '보류 사유와 문의 대상 메모');
+}
+
+function UsedCarDecisionResultCard({
+  workbenchState,
+  onWorkbenchChange,
+}: {
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
+}) {
+  const selectedDecision = workbenchState.memoCards.usedCarDecision ?? '';
+  const decisions = ['구매 진행', '보류', '거절'];
+
+  return (
+    <section data-testid="used-car-decision-result-card" className="mt-3 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-950">
+      <p className="text-xs font-semibold text-amber-800">점검 후 판단</p>
+      <h4 className="mt-1 text-sm font-semibold text-amber-950">현장 체크가 끝나면 구매/보류/거절 중 하나만 남깁니다</h4>
+      <p className="mt-1 text-xs leading-5 text-amber-900">
+        사진 저장은 필수가 아닙니다. 공식 조회, 정비소 점검, 판매자 설명이 맞지 않으면 아래 보류 메모에 이유만 남깁니다.
+      </p>
+      <div className="mt-3 grid gap-2 sm:grid-cols-3">
+        {decisions.map((decision) => (
+          <button
+            key={decision}
+            type="button"
+            aria-pressed={selectedDecision === decision}
+            className={`min-h-10 rounded-md border px-3 text-sm font-semibold ${
+              selectedDecision === decision ? 'border-amber-700 bg-amber-700 text-white' : 'border-amber-200 bg-white text-amber-900'
+            }`}
+            onClick={() => onWorkbenchChange(updateMemoCard(workbenchState, 'usedCarDecision', decision))}
+          >
+            {decision}
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function UsedCarSourceBridge({ sourceUrl }: { sourceUrl?: string }) {
+  return (
+    <div data-testid="used-car-source-bridge" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3 text-sm leading-6 text-blue-950">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <p className="text-xs font-semibold text-blue-700">원문에서 옮긴 점검 순서</p>
+          <p className="mt-1 text-blue-900">조회 → 낮 시간 방문 → 외관/타이어/침수 → 엔진/시동/변속/제동 → 서류/정비소 → 계약 조건 순서로 확인합니다.</p>
+        </div>
+        {sourceUrl ? (
+          <a className="shrink-0 rounded-md border border-blue-200 bg-white px-2 py-1 text-xs font-semibold text-blue-800" href={sourceUrl} target="_blank" rel="noreferrer">
+            원문 보기
+          </a>
+        ) : null}
+      </div>
+      <p className="mt-2 text-xs leading-5 text-blue-800">사진은 필수 입력이 아니라 필요할 때만 메모합니다. 구매 판단은 공식 조회와 전문가 점검 결과를 우선합니다.</p>
     </div>
   );
 }

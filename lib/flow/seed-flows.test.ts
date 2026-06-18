@@ -42,8 +42,11 @@ test('seed pack contains public Korean Flow bundles across practical categories'
     'used-car-buying-check',
     'vaccination-certificate-issue',
     'vehicle-inspection-prep',
+    'washer-tub-clean-monthly',
+    'water-purifier-filter-cycle',
     'wedding-d180-basic',
     'year-end-tax-docs',
+    'monstera-care-routine',
   ];
   assert.ok(originalSlugs.every((slug) => slugs.has(slug)));
   assert.ok(seedBundles.every((bundle) => bundle.flow.status === 'published'));
@@ -65,8 +68,10 @@ test('baby food seed keeps meal slots, recipes, caution, and reaction-log afford
     `${baby.flow.description ?? ''} ${baby.flow.creator_note ?? ''} ${(baby.flow as typeof baby.flow & { setup_anchor_hint?: string }).setup_anchor_hint ?? ''}`,
     /반응 기록/,
   );
-  assert.equal(baby.mealSlots?.length, 6);
-  assert.equal(baby.recipes?.length, 6);
+  assert.equal(baby.flow.primary_destination, 'calendar');
+  assert.match(baby.flow.conversion_note ?? '', /3일 단위/);
+  assert.equal(baby.mealSlots?.length, 11);
+  assert.equal(baby.recipes?.length, 11);
   assert.deepEqual(baby.mealSlots?.[0], {
     id: 'meal-rice-0',
     flow_id: 'flow-baby-food',
@@ -79,6 +84,9 @@ test('baby food seed keeps meal slots, recipes, caution, and reaction-log afford
     allergy_watch_days: 3,
     order: 0,
   });
+  assert.ok(baby.mealSlots?.some((slot) => slot.menu_title === '콜리플라워미음' && slot.day_offset === 12));
+  assert.ok(baby.mealSlots?.some((slot) => slot.menu_title === '소고기미음' && slot.day_offset === 30));
+  assert.ok(baby.recipes?.some((recipe) => recipe.title === '쌀·오트밀 소고기 브로콜리미음'));
 });
 
 test('seed checklist items include execution details and official links where useful', () => {
@@ -139,11 +147,15 @@ test('creator-inspired seed flows cover followable blog and video-like routines'
   const creatorSlugs = [
     'study-exam-d30-plan',
     'english-study-30day-routine',
+    'washer-tub-clean-monthly',
+    'monstera-care-routine',
+    'water-purifier-filter-cycle',
     'used-car-buying-check',
     'new-car-delivery-check',
     'car-care-monthly-routine',
     'wedding-d180-basic',
     'running-5k-4week',
+    'plank-30-day-challenge',
     'diet-habit-2week',
   ];
 
@@ -159,6 +171,513 @@ test('creator-inspired seed flows cover followable blog and video-like routines'
       slug,
     );
   }
+});
+
+test('promoted content-flow candidates ship as public executable seed routes', () => {
+  const promoted = [
+    {
+      slug: 'washer-tub-clean-monthly',
+      destination: 'calendar',
+      terms: ['문 열어 건조', '고무패킹', '세제통', '배수필터', '과탄산소다', '2주'],
+    },
+    {
+      slug: 'monstera-care-routine',
+      destination: 'calendar',
+      terms: ['겉흙 2~3cm', '밝은 간접광', '배수구멍', '분갈이'],
+    },
+    {
+      slug: 'water-purifier-filter-cycle',
+      destination: 'sheet',
+      terms: ['코크/출수구', '자가 살균', '물맛·냄새', 'RO/나노'],
+    },
+    {
+      slug: 'wedding-d180-basic',
+      destination: 'calendar',
+      terms: ['D-300', '보증인원', '계약금', '청첩장', '식권', 'BGM', '역할 분담'],
+    },
+    {
+      slug: 'plank-30-day-challenge',
+      destination: 'calendar',
+      terms: ['Day 1', '20초', 'Day 7', '휴식', 'Day 30', '150초', '호흡 3:3 패턴'],
+    },
+    {
+      slug: 'alt-phone-sk7-self-activation',
+      destination: 'internal_check',
+      terms: ['유심', '유심 일련번호', '번호이동 사전동의', '재부팅', '통화', '데이터', '주민등록번호', '인증값'],
+    },
+    {
+      slug: 'infant-health-checkup-prep',
+      destination: 'hybrid',
+      terms: ['검진 가능 기간', '검진기관', '문진표', '발달선별검사지', '등록번호 4자리', 'D-Day'],
+    },
+    {
+      slug: 'chiangmai-solo-trip-packing',
+      destination: 'hybrid',
+      terms: ['혼자', '장기체류', '유심/eSIM', 'GLN', '여행자보험', '비상약', '압축팩', '필터 샤워기', '상품 추천'],
+    },
+    {
+      slug: 'lease-contract-report-deadline',
+      destination: 'hybrid',
+      terms: ['계약 체결일 30일 이내', '보증금·월세', '방문/온라인 신고', '계약서 첨부', '전자서명', '신고필증', '확정일자'],
+    },
+    {
+      slug: 'jeonse-contract-precheck-docs',
+      destination: 'hybrid',
+      terms: ['시세', '등기부등본', '전세보증보험', '표준계약서', '확정일자', '보류 사유', '법률 판단'],
+    },
+    {
+      slug: 'elementary-school-entry-d30',
+      destination: 'hybrid',
+      terms: ['취학통지', '예비소집', '먼저 살 물건', '보류', '네임스티커', '등교 동선', '입학식'],
+    },
+    {
+      slug: 'kids-printable-squishy-craft',
+      destination: 'hybrid',
+      terms: ['원문 도안 링크', '사용 조건', '도안 출력', '코팅 재료', '보호자가 미리 자를 부분', '완성 사진은 선택 메모', '다음 놀이 후보'],
+    },
+    {
+      slug: 'remote-help-session-precheck',
+      destination: 'internal_check',
+      terms: ['요청자와 작업 범위', '화면 공유만으로 충분', '일회성 원격 제어', '접속값은 FlowMe에 저장하지 않기', '반복 접근', '세션 종료', '남은 권한'],
+    },
+    {
+      slug: 'fridge-cleanout-weekly-plan',
+      destination: 'sheet',
+      terms: ['냉장고 지도', '우선 소진 재료', '메인 재료', '메뉴 후보', '신선 재료', '남은 요리', '냉동실', '장보기 보류'],
+    },
+    {
+      slug: 'picture-book-reading-routine',
+      destination: 'hybrid',
+      terms: ['그림책', '질문 카드', '표지', '함께 읽기', '아이가 고른 장면', '아이 말', '다음 책'],
+    },
+    {
+      slug: 'kids-dino-footprint-art',
+      destination: 'hybrid',
+      terms: ['공룡', '준비물', '발자국', '아이 말', '다음 놀이'],
+    },
+    {
+      slug: 'banana-peanut-recipe-video',
+      destination: 'internal_check',
+      terms: ['바나나', '땅콩버터', '내열 용기', '원본 영상', '칼로리'],
+    },
+  ];
+
+  for (const { slug, destination, terms } of promoted) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+    assert.ok(bundle, slug);
+    assert.equal(bundle.flow.status, 'published', slug);
+    assert.equal(bundle.flow.primary_destination, destination, slug);
+    assert.equal(bundle.itemDetails?.length, bundle.items.length, slug);
+    assert.ok(bundle.flow.source_url?.startsWith('https://'), slug);
+
+    const searchable = [
+      bundle.flow.title,
+      bundle.flow.description,
+      bundle.flow.conversion_note,
+      bundle.items.map((item) => `${item.title} ${item.description ?? ''}`).join(' '),
+      bundle.itemDetails?.map((detail) => `${detail.why ?? ''} ${detail.how ?? ''} ${detail.completion_criteria ?? ''}`).join(' '),
+    ].join(' ');
+
+    for (const term of terms) {
+      assert.match(searchable, new RegExp(term), `${slug} missing ${term}`);
+    }
+  }
+});
+
+test('alt-phone self activation route stays a lightweight checklist without storing sensitive inputs', () => {
+  const bundle = seedBundles.find((entry) => entry.flow.slug === 'alt-phone-sk7-self-activation');
+
+  assert.ok(bundle);
+  assert.equal(bundle.flow.primary_destination, 'internal_check');
+  assert.equal(bundle.flow.structure_type, 'checklist');
+  assert.equal(bundle.flow.anchor_type, 'none');
+  assert.match(bundle.flow.setup_anchor_hint ?? '', /개인정보와 인증값은 FLOW에 저장하지 않습니다/);
+  assert.equal(bundle.items.length, 6);
+  assert.equal(bundle.itemDetails?.length, bundle.items.length);
+
+  const text = [
+    bundle.flow.description,
+    bundle.flow.conversion_note,
+    bundle.flow.warning,
+    bundle.items.map((item) => item.title).join(' '),
+    bundle.itemDetails?.map((detail) => `${detail.why ?? ''} ${detail.how ?? ''} ${detail.completion_criteria ?? ''} ${detail.caution ?? ''}`).join(' '),
+  ].join(' ');
+
+  for (const cue of ['셀프개통', '유심 일련번호', '번호이동 사전동의', '위약금', '재부팅', '통화', '문자', '데이터']) {
+    assert.match(text, new RegExp(cue));
+  }
+  assert.doesNotMatch(text, /주민등록번호.*입력 필드|인증번호.*입력 필드|카드 정보.*입력 필드|요금제.*추천합니다/);
+});
+
+test('infant health checkup route stays a visit-prep timeline without medical result tracking', () => {
+  const bundle = seedBundles.find((entry) => entry.flow.slug === 'infant-health-checkup-prep');
+
+  assert.ok(bundle);
+  assert.equal(bundle.flow.primary_destination, 'hybrid');
+  assert.equal(bundle.flow.structure_type, 'timeline');
+  assert.equal(bundle.flow.anchor_type, 'end_date');
+  assert.equal(bundle.flow.risk_level, 'medical_sensitive');
+  assert.match(bundle.flow.setup_anchor_hint ?? '', /D-14 기간 확인/);
+  assert.equal(bundle.items.length, 6);
+  assert.equal(bundle.itemDetails?.length, bundle.items.length);
+  assert.ok(bundle.itemDetails?.every((detail) => detail.links?.some((link) => link.type === 'official')));
+
+  const text = [
+    bundle.flow.description,
+    bundle.flow.conversion_note,
+    bundle.flow.warning,
+    bundle.items.map((item) => `${item.title} ${item.description ?? ''}`).join(' '),
+    bundle.itemDetails?.map((detail) => `${detail.why ?? ''} ${detail.how ?? ''} ${detail.completion_criteria ?? ''} ${detail.caution ?? ''}`).join(' '),
+  ].join(' ');
+
+  for (const cue of ['검진 가능 기간', '문진표', '발달선별검사지', '등록번호 4자리', '검진기관 예약', '검진기관 방문']) {
+    assert.match(text, new RegExp(cue));
+  }
+  assert.doesNotMatch(text, /성장 평가 입력|검진 결과 점수|진단 결과 기록|치료 계획 작성/);
+});
+
+test('chiangmai solo trip route stays a long-stay travel prep checklist without product or safety guarantees', () => {
+  const bundle = seedBundles.find((entry) => entry.flow.slug === 'chiangmai-solo-trip-packing');
+
+  assert.ok(bundle);
+  assert.equal(bundle.flow.primary_destination, 'hybrid');
+  assert.equal(bundle.flow.structure_type, 'timeline');
+  assert.equal(bundle.flow.anchor_type, 'end_date');
+  assert.equal(bundle.flow.risk_level, 'medium');
+  assert.match(bundle.flow.setup_anchor_hint ?? '', /D-7 통신\/결제/);
+  assert.equal(bundle.items.length, 6);
+  assert.equal(bundle.itemDetails?.length, bundle.items.length);
+  assert.ok(bundle.itemDetails?.every((detail) => detail.links?.some((link) => link.type === 'creator')));
+
+  const text = [
+    bundle.flow.title,
+    bundle.flow.description,
+    bundle.flow.conversion_note,
+    bundle.flow.warning,
+    bundle.items.map((item) => `${item.title} ${item.description ?? ''}`).join(' '),
+    bundle.itemDetails?.map((detail) => `${detail.why ?? ''} ${detail.how ?? ''} ${detail.completion_criteria ?? ''} ${detail.caution ?? ''}`).join(' '),
+  ].join(' ');
+
+  for (const cue of ['혼자', '장기체류', '유심/eSIM', 'GLN', '여행자보험', '비상약', '압축팩', '필터 샤워기']) {
+    assert.match(text, new RegExp(cue));
+  }
+  assert.doesNotMatch(text, /상품 구매.*필수입니다|보험.*보장합니다|안전.*보장합니다|결제 가능.*보장합니다/);
+});
+
+test('lease contract report route stays an official-deadline calendar without storing private contract data', () => {
+  const bundle = seedBundles.find((entry) => entry.flow.slug === 'lease-contract-report-deadline');
+
+  assert.ok(bundle);
+  assert.equal(bundle.flow.primary_destination, 'hybrid');
+  assert.equal(bundle.flow.structure_type, 'timeline');
+  assert.equal(bundle.flow.anchor_type, 'start_date');
+  assert.equal(bundle.flow.risk_level, 'financial_sensitive');
+  assert.match(bundle.flow.setup_anchor_hint ?? '', /D\+30 접수·필증 확인/);
+  assert.equal(bundle.items.length, 6);
+  assert.equal(bundle.itemDetails?.length, bundle.items.length);
+  assert.ok(bundle.itemDetails?.every((detail) => detail.links?.some((link) => link.type === 'official')));
+
+  const text = [
+    bundle.flow.title,
+    bundle.flow.description,
+    bundle.flow.conversion_note,
+    bundle.flow.warning,
+    bundle.items.map((item) => `${item.title} ${item.description ?? ''}`).join(' '),
+    bundle.itemDetails?.map((detail) => `${detail.why ?? ''} ${detail.how ?? ''} ${detail.completion_criteria ?? ''} ${detail.caution ?? ''}`).join(' '),
+  ].join(' ');
+
+  for (const cue of ['계약 체결일 30일 이내', '보증금·월세', '관할 주민센터', 'RTMS', '정부24', '전자서명', '신고필증', '확정일자']) {
+    assert.match(text, new RegExp(cue));
+  }
+  assert.doesNotMatch(text, /주민등록번호.*입력 필드로 요구|인증번호.*입력 필드로 요구|계약 상세 금액.*입력 필드로 요구|주민등록번호.*저장합니다|인증번호.*저장합니다|계약 상세 금액.*저장합니다|법적 효력.*보장합니다|과태료.*확정 판단합니다/);
+});
+
+test('jeonse contract precheck route keeps contract decisions outside FLOW and makes hold a normal outcome', () => {
+  const bundle = seedBundles.find((entry) => entry.flow.slug === 'jeonse-contract-precheck-docs');
+
+  assert.ok(bundle);
+  assert.equal(bundle.flow.primary_destination, 'hybrid');
+  assert.equal(bundle.flow.structure_type, 'checklist');
+  assert.equal(bundle.flow.anchor_type, 'start_date');
+  assert.equal(bundle.flow.risk_level, 'financial_sensitive');
+  assert.match(bundle.flow.setup_anchor_hint ?? '', /D-Day 계약서 정보 일치 확인/);
+  assert.equal(bundle.items.length, 7);
+  assert.equal(bundle.itemDetails?.length, bundle.items.length);
+  assert.ok(bundle.itemDetails?.some((detail) => detail.links?.some((link) => link.url.includes('contents.kakaopay.com'))));
+  assert.ok(bundle.itemDetails?.some((detail) => detail.links?.some((link) => link.type === 'official')));
+
+  const text = [
+    bundle.flow.title,
+    bundle.flow.description,
+    bundle.flow.conversion_note,
+    bundle.flow.warning,
+    bundle.items.map((item) => `${item.title} ${item.description ?? ''}`).join(' '),
+    bundle.itemDetails?.map((detail) => `${detail.why ?? ''} ${detail.how ?? ''} ${detail.completion_criteria ?? ''} ${detail.caution ?? ''}`).join(' '),
+  ].join(' ');
+
+  for (const cue of ['시세', '등기부등본', '근저당', '압류', '전세보증보험', '중개사', '표준계약서', '확정일자', '임대차신고', '보류 사유']) {
+    assert.match(text, new RegExp(cue));
+  }
+  assert.match(text, /법률 판단/);
+  assert.match(text, /보류는 실패가 아니라 정상 결과/);
+  assert.doesNotMatch(
+    text,
+    /계약해도 됩니다|계약 안전 점수|법률 판단을 제공합니다|주민등록번호 입력 필드|계좌번호 입력 필드|계약서 원문을 저장합니다|보증보험 가입 가능을 보장합니다/,
+  );
+});
+
+test('elementary school entry route stays official-first without storing child data', () => {
+  const bundle = seedBundles.find((entry) => entry.flow.slug === 'elementary-school-entry-d30');
+
+  assert.ok(bundle);
+  assert.equal(bundle.flow.primary_destination, 'hybrid');
+  assert.equal(bundle.flow.structure_type, 'timeline');
+  assert.equal(bundle.flow.anchor_type, 'end_date');
+  assert.equal(bundle.flow.risk_level, 'medium');
+  assert.match(bundle.flow.setup_anchor_hint ?? '', /D-30 취학통지·예비소집/);
+  assert.equal(bundle.items.length, 5);
+  assert.equal(bundle.itemDetails?.length, bundle.items.length);
+  assert.ok(bundle.itemDetails?.some((detail) => detail.links?.some((link) => link.type === 'official')));
+  assert.ok(bundle.itemDetails?.some((detail) => detail.links?.some((link) => link.type === 'creator')));
+
+  const text = [
+    bundle.flow.title,
+    bundle.flow.description,
+    bundle.flow.conversion_note,
+    bundle.flow.warning,
+    bundle.items.map((item) => `${item.title} ${item.description ?? ''}`).join(' '),
+    bundle.itemDetails?.map((detail) => `${detail.why ?? ''} ${detail.how ?? ''} ${detail.completion_criteria ?? ''} ${detail.caution ?? ''}`).join(' '),
+  ].join(' ');
+
+  for (const cue of ['취학통지', '예비소집', '먼저 살 물건', '학교 안내 전 보류', '네임스티커', '등교 동선', '입학식 가방']) {
+    assert.match(text, new RegExp(cue));
+  }
+  assert.match(text, /보류는 누락이 아니라 정상 상태/);
+  assert.doesNotMatch(
+    text,
+    /주민등록번호.*입력 필드|취학통지서 이미지.*업로드하라고|취학통지서 이미지.*업로드 필드|건강 정보.*입력 필드|지원금 세부 금액.*입력 필드|교실.*담임.*저장합니다|준비물 구매를 추천합니다|예방접종.*입력|예방접종.*저장합니다|예방접종.*저장하게/,
+  );
+});
+
+test('elementary school entry route keeps the first item official-only and D-14 hold normal', () => {
+  const bundle = seedBundles.find((entry) => entry.flow.slug === 'elementary-school-entry-d30');
+
+  assert.ok(bundle);
+
+  const firstItem = bundle.items[0];
+  const holdItem = bundle.items.find((item) => item.title === '학교 안내 전 보류할 물건 표시하기');
+
+  assert.equal(firstItem.title, '취학통지와 예비소집 안내 확인하기');
+  assert.equal(firstItem.day_offset, -30);
+  assert.equal(firstItem.source_type, 'official');
+
+  const firstDetail = bundle.itemDetails?.find((detail) => detail.item_id === firstItem.id);
+  assert.ok(firstDetail);
+  assert.ok(firstDetail.links?.every((link) => link.type === 'official'));
+  assert.match(`${firstDetail.why} ${firstDetail.how}`, /첫 행동은 준비물 구매가 아니라 공식 취학통지와 학교 예비소집 안내/);
+  assert.doesNotMatch(`${firstDetail.why} ${firstDetail.how}`, /상품|지원금 금액|예방접종|건강 기록/);
+
+  assert.ok(holdItem);
+  assert.equal(holdItem.day_offset, -14);
+  assert.notEqual(holdItem.source_type, 'official');
+
+  const holdDetail = bundle.itemDetails?.find((detail) => detail.item_id === holdItem.id);
+  assert.ok(holdDetail);
+  assert.match(`${holdDetail.description} ${holdDetail.how}`, /학교 안내 전|보류/);
+  assert.match(holdDetail.caution ?? '', /보류는 누락이 아니라 정상 상태/);
+});
+
+test('kids printable squishy route keeps creator material as source link without copying files', () => {
+  const bundle = seedBundles.find((entry) => entry.flow.slug === 'kids-printable-squishy-craft');
+
+  assert.ok(bundle);
+  assert.equal(bundle.flow.primary_destination, 'hybrid');
+  assert.equal(bundle.flow.structure_type, 'timeline');
+  assert.equal(bundle.flow.anchor_type, 'start_date');
+  assert.equal(bundle.flow.risk_level, 'low');
+  assert.match(bundle.flow.setup_anchor_hint ?? '', /놀이 날짜/);
+  assert.equal(bundle.items.length, 7);
+  assert.equal(bundle.itemDetails?.length, bundle.items.length);
+  assert.ok(bundle.itemDetails?.some((detail) => detail.links?.some((link) => link.url.includes('blog.naver.com'))));
+
+  const text = [
+    bundle.flow.title,
+    bundle.flow.description,
+    bundle.flow.conversion_note,
+    bundle.flow.warning,
+    bundle.items.map((item) => `${item.title} ${item.description ?? ''}`).join(' '),
+    bundle.itemDetails?.map((detail) => `${detail.why ?? ''} ${detail.how ?? ''} ${detail.completion_criteria ?? ''} ${detail.caution ?? ''}`).join(' '),
+  ].join(' ');
+
+  for (const cue of ['원문 도안 링크', '사용 조건', '도안 출력', '코팅 재료', '보호자가 미리 자를 부분', '스퀴시 만들기', '완성 사진은 선택 메모', '다음 놀이 후보']) {
+    assert.match(text, new RegExp(cue));
+  }
+
+  assert.match(text, /도안 이미지.*파일.*원문/);
+  assert.doesNotMatch(
+    text,
+    /도안 이미지 업로드|PDF 업로드|비밀번호 입력 필드|다운로드 파일 저장 필드|아이 사진.*필수|교육 평가 기록을 저장합니다|발달 개선을 보장합니다/,
+  );
+});
+
+test('remote help session route stays a permission checklist without storing access values', () => {
+  const bundle = seedBundles.find((entry) => entry.flow.slug === 'remote-help-session-precheck');
+
+  assert.ok(bundle);
+  assert.equal(bundle.flow.primary_destination, 'internal_check');
+  assert.equal(bundle.flow.structure_type, 'checklist');
+  assert.equal(bundle.flow.anchor_type, 'none');
+  assert.equal(bundle.flow.risk_level, 'medium');
+  assert.match(bundle.flow.setup_anchor_hint ?? '', /요청자, 작업 범위, 권한 방식, 종료 확인/);
+  assert.equal(bundle.items.length, 6);
+  assert.equal(bundle.itemDetails?.length, bundle.items.length);
+
+  const officialHosts = new Set(
+    bundle.itemDetails
+      ?.flatMap((detail) => detail.links ?? [])
+      .map((link) => new URL(link.url).hostname.replace(/^www\./, '')),
+  );
+
+  for (const host of [
+    'support.anydesk.com',
+    'support.google.com',
+    'support.zoom.com',
+    'learn.microsoft.com',
+    'teamviewer.com',
+  ]) {
+    assert.ok(officialHosts.has(host), `missing official host ${host}`);
+  }
+
+  const text = [
+    bundle.flow.title,
+    bundle.flow.description,
+    bundle.flow.conversion_note,
+    bundle.flow.warning,
+    bundle.items.map((item) => `${item.title} ${item.description ?? ''}`).join(' '),
+    bundle.itemDetails?.map((detail) => `${detail.why ?? ''} ${detail.how ?? ''} ${detail.completion_criteria ?? ''} ${detail.caution ?? ''}`).join(' '),
+  ].join(' ');
+
+  for (const cue of [
+    '요청자와 작업 범위',
+    '화면 공유만으로 충분',
+    '일회성 원격 제어',
+    '접속값은 FlowMe에 저장하지 않기',
+    '반복 접근',
+    '담당자와 해지일',
+    '세션 종료',
+    '남은 권한',
+    '공유 중지',
+  ]) {
+    assert.match(text, new RegExp(cue));
+  }
+
+  assert.doesNotMatch(
+    text,
+    /AnyDesk ID.*입력 필드|TeamViewer.*세션값.*입력 필드|확인 코드.*저장합니다|세션 URL.*저장합니다|비밀번호.*저장합니다|토큰.*저장합니다|스크린샷.*저장합니다|채팅.*저장합니다|기기 목록.*저장합니다|보안.*보장합니다|사기.*판정합니다|원격지원.*연동합니다|무인 접속 설정을 대신합니다/,
+  );
+});
+
+test('fridge cleanout weekly route stays a lightweight inventory sheet without diet or savings guarantees', () => {
+  const bundle = seedBundles.find((entry) => entry.flow.slug === 'fridge-cleanout-weekly-plan');
+
+  assert.ok(bundle);
+  assert.equal(bundle.flow.primary_destination, 'sheet');
+  assert.equal(bundle.flow.structure_type, 'checklist');
+  assert.equal(bundle.flow.anchor_type, 'start_date');
+  assert.equal(bundle.flow.risk_level, 'medium');
+  assert.match(bundle.flow.setup_anchor_hint ?? '', /7일 재고 소진표/);
+  assert.equal(bundle.items.length, 6);
+  assert.equal(bundle.itemDetails?.length, bundle.items.length);
+  assert.match(bundle.flow.source_url ?? '', /smilellama\.tistory\.com/);
+  assert.ok(bundle.itemDetails?.some((detail) => detail.links?.some((link) => link.url.includes('aruma16.tistory.com'))));
+
+  const text = [
+    bundle.flow.title,
+    bundle.flow.description,
+    bundle.flow.conversion_note,
+    bundle.flow.warning,
+    bundle.items.map((item) => `${item.title} ${item.description ?? ''}`).join(' '),
+    bundle.itemDetails?.map((detail) => `${detail.description ?? ''} ${detail.why ?? ''} ${detail.how ?? ''} ${detail.completion_criteria ?? ''} ${detail.caution ?? ''}`).join(' '),
+  ].join(' ');
+
+  for (const cue of [
+    '냉장고 지도',
+    '우선 소진 재료 3개',
+    '메인 재료',
+    '메뉴 후보',
+    '신선 재료',
+    '남은 요리',
+    '냉동실',
+    '장보기 보류',
+    '폐기/확인',
+  ]) {
+    assert.match(text, new RegExp(cue));
+  }
+
+  assert.doesNotMatch(
+    text,
+    /월 10만 원.*보장합니다|식비.*절약.*보장합니다|영양.*처방|영양.*보장합니다|다이어트.*성공|칼로리.*목표|체중.*감량|섭취 가능.*판단합니다|상한 음식.*먹/,
+  );
+});
+
+test('picture book reading route stays a question-card routine without learning assessment bloat', () => {
+  const bundle = seedBundles.find((entry) => entry.flow.slug === 'picture-book-reading-routine');
+
+  assert.ok(bundle);
+  assert.equal(bundle.flow.primary_destination, 'hybrid');
+  assert.equal(bundle.flow.structure_type, 'routine');
+  assert.equal(bundle.flow.anchor_type, 'start_date');
+  assert.equal(bundle.flow.risk_level, 'low');
+  assert.match(bundle.flow.setup_anchor_hint ?? '', /질문 카드/);
+  assert.equal(bundle.items.length, 6);
+  assert.equal(bundle.itemDetails?.length, bundle.items.length);
+  assert.ok(bundle.itemDetails?.some((detail) => detail.links?.some((link) => link.type === 'creator')));
+  assert.ok(bundle.itemDetails?.some((detail) => detail.links?.some((link) => link.type === 'official')));
+
+  const text = [
+    bundle.flow.title,
+    bundle.flow.description,
+    bundle.flow.conversion_note,
+    bundle.flow.warning,
+    bundle.items.map((item) => `${item.title} ${item.description ?? ''}`).join(' '),
+    bundle.itemDetails?.map((detail) => `${detail.why ?? ''} ${detail.how ?? ''} ${detail.completion_criteria ?? ''} ${detail.caution ?? ''}`).join(' '),
+  ].join(' ');
+
+  for (const cue of ['그림책', '질문 카드', '표지', '함께 읽기', '아이가 고른 장면', '아이 말', '다음 책']) {
+    assert.match(text, new RegExp(cue));
+  }
+  assert.doesNotMatch(text, /독해 점수.*입력하게|발달 평가.*입력하게|독서 수준.*판정합니다|학습 성과.*보장합니다|권장도서 목록 전체.*캘린더에 배치/);
+});
+
+test('plank challenge route preserves the original day-by-day table as calendar items', () => {
+  const bundle = seedBundles.find((entry) => entry.flow.slug === 'plank-30-day-challenge');
+  assert.ok(bundle);
+  assert.equal(bundle.flow.primary_destination, 'calendar');
+  assert.equal(bundle.flow.anchor_type, 'start_date');
+  assert.equal(bundle.items.length, 30);
+
+  const day1 = bundle.items.find((item) => item.id === 'plank-day-1');
+  const restDay = bundle.items.find((item) => item.id === 'plank-day-7');
+  const finalDay = bundle.items.find((item) => item.id === 'plank-day-30');
+  assert.ok(day1);
+  assert.ok(restDay);
+  assert.ok(finalDay);
+  assert.equal(day1.day_offset, 0);
+  assert.equal(restDay.day_offset, 6);
+  assert.equal(finalDay.day_offset, 29);
+  assert.match(day1.title, /20초/);
+  assert.match(restDay.title, /휴식/);
+  assert.match(finalDay.title, /150초/);
+
+  const searchable = [
+    bundle.flow.conversion_note,
+    bundle.flow.warning,
+    bundle.items.map((item) => `${item.title} ${item.description ?? ''}`).join(' '),
+    bundle.itemDetails?.map((detail) => `${detail.why ?? ''} ${detail.how ?? ''} ${detail.completion_criteria ?? ''} ${detail.caution ?? ''}`).join(' '),
+  ].join(' ');
+  assert.match(searchable, /Day 7·19·27 휴식일/);
+  assert.match(searchable, /호흡 3:3 패턴/);
+  assert.match(searchable, /어지러움|호흡 곤란|전문가/);
 });
 
 test('P1 migrated representative candidates include tailored executable item details', () => {
@@ -336,7 +855,8 @@ test('validation fix routes expose route-specific setup anchors and safety metad
     ['new-car-delivery-check', '인수일 기록'],
     ['moving-d30-basic', '이사일'],
     ['baby-food-menu-recipe', '이유식 시작일'],
-    ['used-car-buying-check', '방문/시승일 기록'],
+    ['used-car-buying-check', '현장 체크 시작'],
+    ['water-purifier-filter-cycle', '필터 주기표 작성'],
     ['passport-renewal-docs', '접수일 기록'],
     ['real-thankyou-bubu-home-workout-starter', '운동 시작일'],
     ['real-fitvely-diet-record-routine', '기록 시작일'],
@@ -393,10 +913,10 @@ test('validation fix routes expose route-specific setup anchors and safety metad
       memo_template: string;
     };
   };
-  assert.equal(usedCarFlow.hold_section?.title, '구매 보류 기준');
+  assert.equal(usedCarFlow.hold_section?.title, '구매 보류 메모');
   assert.ok(usedCarFlow.hold_section?.reasons.some((reason) => reason.includes('성능점검기록부') || reason.includes('보험이력')));
   assert.match(usedCarFlow.hold_section?.memo_template ?? '', /공식 조회|전문가 점검|보류 사유/);
-  assert.ok(usedCar.items.some((item) => item.hold_eligible && item.photo_filename_pattern && item.status === 'check'));
+  assert.ok(usedCar.items.some((item) => item.hold_eligible && item.status === 'check' && item.title.includes('계약서')));
 
   const d1Item = study.items.find((item) => item.day_offset === -1);
   const d1Section = study.sections.find((section) => section.id === d1Item?.section_id);

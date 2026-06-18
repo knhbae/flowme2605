@@ -175,7 +175,7 @@ export function buildMovingRestartIcs(items: MovingRestartItem[]): string {
       `UID:${item.id}@flowme-moving-d30`,
       `DTSTART;VALUE=DATE:${dateToIcs(item.date)}`,
       `SUMMARY:${item.title}`,
-      `DESCRIPTION:${item.memo} / 출처: ${item.sourceLabel}`,
+      `DESCRIPTION:시점 ${item.offsetLabel}${item.memo ? ` / 메모: ${item.memo}` : ''} / 출처: ${item.sourceLabel}`,
       'END:VEVENT',
     ].join('\n'),
   );

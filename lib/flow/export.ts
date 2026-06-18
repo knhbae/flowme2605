@@ -558,6 +558,7 @@ export function buildText(
       if (timing || date) lines.push(`[${timing}${date ? ` / ${date}` : ''}]`);
       const state = itemStates[item.id];
       lines.push(`- ${item.title}${state?.skipped ? ' (스킵)' : checks[item.id] ? ' (완료)' : ''}`);
+      if (item.description?.trim()) lines.push(`  설명: ${item.description.trim()}`);
       if (state?.note?.trim()) lines.push(`  메모: ${state.note.trim()}`);
     }
   }
