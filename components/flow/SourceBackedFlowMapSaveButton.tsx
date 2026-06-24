@@ -1,7 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { buildSourceBackedFlowMapSavedSnapshot } from '@/lib/flow/source-backed-my-flow';
+import {
+  buildSourceBackedFlowMapPersistenceRecord,
+  buildSourceBackedFlowMapSavedSnapshot,
+  getSourceBackedFlowMapPersistenceStorageKey,
+  getSourceBackedFlowMapSnapshotStorageKey,
+} from '@/lib/flow/source-backed-my-flow';
 import { saveFlowRecord, type SavedFlowArtifactMode } from '@/lib/flow/storage';
 
 type SourceBackedFlowMapSaveButtonProps = {
@@ -38,7 +43,13 @@ export function SourceBackedFlowMapSaveButton({ mapId, savedFlows, setupInput }:
       ...(needsAnchor ? { anchor } : {}),
     });
     if (savedMapSnapshot) {
-      window.localStorage.setItem(`flow:map:saved:${mapId}`, JSON.stringify(savedMapSnapshot));
+      window.localStorage.setItem(getSourceBackedFlowMapSnapshotStorageKey(mapId), JSON.stringify(savedMapSnapshot));
+    }
+    const persistenceRecord = buildSourceBackedFlowMapPersistenceRecord(mapId, {
+      ...(needsAnchor ? { anchor } : {}),
+    });
+    if (persistenceRecord) {
+      window.localStorage.setItem(getSourceBackedFlowMapPersistenceStorageKey(mapId), JSON.stringify(persistenceRecord));
     }
     window.location.href = `/my?savedMap=${encodeURIComponent(mapId)}`;
   };
@@ -51,6 +62,7 @@ export function SourceBackedFlowMapSaveButton({ mapId, savedFlows, setupInput }:
           <input
             aria-label={setupInput.label}
             className="min-h-11 rounded-md border border-slate-300 bg-white px-3 py-2 text-base font-semibold text-slate-950 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+            data-testid="flow-map-anchor-input"
             type="date"
             value={anchor}
             onChange={(event) => {
@@ -62,7 +74,7 @@ export function SourceBackedFlowMapSaveButton({ mapId, savedFlows, setupInput }:
           {showRequired ? <span className="text-xs font-semibold text-red-700">저장하려면 날짜를 입력해 주세요.</span> : null}
         </label>
       ) : null}
-      <button className="inline-flex min-h-11 items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white" type="button" onClick={saveMap}>
+      <button className="inline-flex min-h-11 items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white" data-testid="flow-map-save-all" type="button" onClick={saveMap}>
         전체 지도 저장
       </button>
     </div>

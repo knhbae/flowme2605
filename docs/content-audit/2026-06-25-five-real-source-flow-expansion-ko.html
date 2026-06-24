@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>실제 원컨텐츠 기반 Flow 5개 확장 리포트</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #111827;
+      --muted: #64748b;
+      --line: #dbe3ef;
+      --soft: #f6f8fb;
+      --blue: #1d4ed8;
+      --green: #047857;
+      --amber: #b45309;
+      --red: #b91c1c;
+    }
+    body {
+      margin: 0;
+      background: #eef3f8;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+    }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 18px 72px;
+    }
+    section, header {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      padding: 22px;
+      box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
+    }
+    header {
+      margin-top: 0;
+      background: linear-gradient(135deg, #ffffff 0%, #edf5ff 100%);
+    }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: clamp(28px, 4vw, 44px); letter-spacing: -0.02em; line-height: 1.16; }
+    h2 { font-size: 23px; letter-spacing: -0.01em; }
+    h3 { font-size: 18px; }
+    .lead { max-width: 820px; margin-top: 12px; color: #334155; font-size: 17px; }
+    .eyebrow {
+      display: inline-flex;
+      margin-bottom: 10px;
+      border-radius: 999px;
+      background: #dbeafe;
+      padding: 5px 10px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .grid { display: grid; gap: 14px; }
+    .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--soft);
+      padding: 16px;
+    }
+    .card p { margin-top: 6px; color: #475569; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      margin: 3px 4px 0 0;
+      border-radius: 999px;
+      padding: 2px 9px;
+      background: #e2e8f0;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .tag.green { background: #dcfce7; color: var(--green); }
+    .tag.blue { background: #dbeafe; color: var(--blue); }
+    .tag.amber { background: #fef3c7; color: var(--amber); }
+    .tag.red { background: #fee2e2; color: var(--red); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f1f5f9; color: #334155; font-size: 12px; text-transform: uppercase; }
+    tr:last-child td { border-bottom: 0; }
+    a { color: var(--blue); font-weight: 800; text-decoration: none; }
+    ul, ol { margin: 10px 0 0; padding-left: 20px; }
+    li { margin: 4px 0; }
+    code { border-radius: 6px; background: #f1f5f9; padding: 2px 6px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .note {
+      margin-top: 12px;
+      border-left: 4px solid var(--blue);
+      border-radius: 8px;
+      background: #eff6ff;
+      padding: 12px 14px;
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+    @media (max-width: 860px) {
+      .cols-2, .cols-3 { grid-template-columns: 1fr; }
+      section, header { padding: 18px; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <span class="eyebrow">2026-06-25 · source-backed expansion</span>
+      <h1>실제 원컨텐츠 기반 Flow 5개 확장 리포트</h1>
+      <p class="lead">
+        목적은 기존 중1 수학, 영유아 일정, 이사 D-30 외에도 한글 원컨텐츠가 FlowMe의 저장·실행 구조로 옮겨질 수 있는지 확인하는 것이다.
+        이번 산출물은 사용자용 화면이 아니라, 원문 선정 근거, 변환 판단, 내부 시뮬레이션, 테스트 결과를 분리해 기록한 검토 문서다.
+      </p>
+      <p class="note">결론: 5개 모두 source-backed Flow Map 경로에 추가했고, 공개 화면에서 저장 후 My Flow record가 생성되는 E2E까지 통과했다. 실제 사용자 검증 완료를 의미하지는 않는다.</p>
+    </header>
+
+    <section>
+      <span class="eyebrow">Selection Gate</span>
+      <h2>선정 원칙</h2>
+      <div class="grid cols-3" style="margin-top: 14px;">
+        <div class="card"><h3>원문 하나</h3><p>여러 링크를 섞어 종합 가이드로 만들지 않고, 각 Flow는 primary source 1개를 기준으로 만들었다.</p></div>
+        <div class="card"><h3>입력 0~1개</h3><p>사용자가 저장할 때 필요한 값은 없음 또는 날짜 1개로 제한했다. 세부 정보는 Step detail, memo, URL로 내려보냈다.</p></div>
+        <div class="card"><h3>일반인 실행성</h3><p>전문 판단이 아니라 조회, 제출, 신고, 청소, 보관 확인처럼 사용자가 직접 할 수 있는 행동만 남겼다.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <span class="eyebrow">Added Content</span>
+      <h2>추가한 5개 Flow</h2>
+      <table style="margin-top: 14px;">
+        <thead>
+          <tr>
+            <th>Flow</th>
+            <th>원문</th>
+            <th>Destination</th>
+            <th>입력</th>
+            <th>Step / Item</th>
+            <th>판정</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>주거이전 우편물 전송</strong><br><code>postal-address-transfer</code></td>
+            <td><a href="https://service.epost.go.kr/front.RetrieveAddressMoveInfo.postal">인터넷우체국</a></td>
+            <td>calendar + checklist</td>
+            <td>전입신고일 1개</td>
+            <td>3 Step, 각 3 Item 이상</td>
+            <td><span class="tag green">Keep</span> 이사 후 행정 누락 방지에 적합</td>
+          </tr>
+          <tr>
+            <td><strong>스미싱·큐싱 의심 문자 대응</strong><br><code>smishing-response</code></td>
+            <td><a href="https://www.kisa.or.kr/1020601">KISA</a></td>
+            <td>internal checklist</td>
+            <td>없음</td>
+            <td>3 Step, 상담/신고 메모</td>
+            <td><span class="tag green">Keep</span> 판단 앱이 아니라 공식 경로 확인 Flow로 한정</td>
+          </tr>
+          <tr>
+            <td><strong>연말정산 간소화자료 온라인 제출</strong><br><code>year-end-tax-submit</code></td>
+            <td><a href="https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=6489&nttSn=1330438">국세청</a></td>
+            <td>calendar + checklist</td>
+            <td>회사 제출 마감일 1개</td>
+            <td>3 Step, 제출 상태 메모</td>
+            <td><span class="tag amber">Sensitive</span> 세액 판단 금지, 제출 상태만 기록</td>
+          </tr>
+          <tr>
+            <td><strong>천장형 에어컨 필터 청소</strong><br><code>aircon-filter-cleaning</code></td>
+            <td><a href="https://www.samsungsvc.co.kr/solution/28524">삼성전자서비스</a></td>
+            <td>calendar routine</td>
+            <td>다음 청소일 1개</td>
+            <td>1 Step, 6 Item</td>
+            <td><span class="tag green">Keep</span> 반복 일정 하나로 충분</td>
+          </tr>
+          <tr>
+            <td><strong>나들이 도시락 식중독 예방</strong><br><code>picnic-food-safety</code></td>
+            <td><a href="https://www.mfds.go.kr/brd/m_827/view.do?company_cd=&company_nm=&itm_seq_1=0&multi_itm_seq=0&page=2&seq=3608&srchFr=&srchTo=&srchTp=&srchWord=">식품의약품안전처</a></td>
+            <td>calendar + checklist</td>
+            <td>나들이일 1개</td>
+            <td>3 Step, 각 3 Item 이상</td>
+            <td><span class="tag green">Keep</span> 전날/당일 실행 단서가 분명함</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <span class="eyebrow">Simulation</span>
+      <h2>비전문 일반인 관점 시뮬레이션</h2>
+      <div class="grid cols-3" style="margin-top: 14px;">
+        <div class="card">
+          <h3>페르소나 1 · 이사 직후 직장인</h3>
+          <p>전입신고는 했지만 우편물 전송을 신청했는지 기억이 흐릿하다. 원문에서 신청/결제/무료 조회 조건을 보고, FlowMe에는 전입신고일과 접수번호 여부만 남긴다.</p>
+        </div>
+        <div class="card">
+          <h3>페르소나 2 · 의심 문자를 받은 사용자</h3>
+          <p>택배 사칭 문자를 보고 당황했지만 보안 지식은 많지 않다. FlowMe에서는 악성 여부 판정이 아니라 118, 보호나라, 통합신고센터 중 어디까지 확인했는지만 체크한다.</p>
+        </div>
+        <div class="card">
+          <h3>페르소나 3 · 회사 마감이 있는 직장인</h3>
+          <p>연말정산 간소화자료 제출 마감 전, 홈택스에서 월 선택과 근무처 제출을 빠뜨리지 않으려 한다. 세액 판단은 하지 않고 제출 상태와 회사 보완 요청만 기록한다.</p>
+        </div>
+        <div class="card">
+          <h3>페르소나 4 · 집 관리 담당자</h3>
+          <p>에어컨 필터 청소 방법을 한 번 읽고 매번 원문을 다시 찾기 싫다. 다음 청소일만 넣고 2주 반복 일정, 필터 리셋 여부, 모델별 원문 링크만 남긴다.</p>
+        </div>
+        <div class="card">
+          <h3>페르소나 5 · 아이와 나들이 가는 보호자</h3>
+          <p>도시락을 준비하면서 장보기, 조리, 운반, 섭취 전 확인을 놓치고 싶지 않다. 나들이일 기준으로 전날/당일 할 일만 체크하고, 증상 판단은 FlowMe에서 하지 않는다.</p>
+        </div>
+        <div class="card">
+          <h3>페르소나 공통 기준</h3>
+          <p>원문을 완전히 대체하지 않고, 캘린더/투두 앱 수준의 입력으로 다시 볼 일과 완료 여부만 관리한다. 민감 정보와 판단은 공식 서비스 또는 전문가 영역으로 남긴다.</p>
+        </div>
+      </div>
+      <div class="grid cols-2" style="margin-top: 14px;">
+        <div class="card">
+          <h3>시나리오 A · 원문에서 저장</h3>
+          <ol>
+            <li>사용자가 원문을 보다가 “나중에 다시 확인해야겠다”는 지점을 만난다.</li>
+            <li>FlowMe 공개 화면에서 원문 제목, 저장 결과, 필요한 입력 0~1개를 본다.</li>
+            <li>날짜가 필요한 경우 날짜 1개만 입력하고 전체 저장한다.</li>
+            <li>저장 직후 My Flow에 child Flow record와 map snapshot이 생긴다.</li>
+          </ol>
+          <p><span class="tag green">결과</span> E2E에서 5개 모두 저장 record 생성 확인.</p>
+        </div>
+        <div class="card">
+          <h3>시나리오 B · 첫 실행</h3>
+          <ol>
+            <li>사용자는 My Flow에서 오늘 또는 Flow 목록으로 들어온다.</li>
+            <li>Step을 열면 Item fallback, 원문 URL, 완료 기준을 본다.</li>
+            <li>민감한 정보는 직접 저장하지 않고 상태나 접수번호 수준만 남긴다.</li>
+            <li>다음 날짜가 필요한 Flow는 calendar row로 이어진다.</li>
+          </ol>
+          <p><span class="tag blue">결과</span> 모델 테스트에서 모든 Step이 source URL과 3개 이상 Item fallback을 보존.</p>
+        </div>
+        <div class="card">
+          <h3>시나리오 C · 재방문</h3>
+          <ol>
+            <li>우편물, 세금, 도시락 Flow는 기준일 이후 다시 확인할 수 있다.</li>
+            <li>에어컨 Flow는 2주 반복 일정으로 다시 나타난다.</li>
+            <li>스미싱 Flow는 반복 사용보다 긴급 체크리스트로 유지된다.</li>
+          </ol>
+          <p><span class="tag amber">주의</span> 재방문 UX 자체는 기존 My Flow surface를 사용한다. 새 5개 전용 UI를 별도로 만들지는 않았다.</p>
+        </div>
+        <div class="card">
+          <h3>UX 리뷰 결과</h3>
+          <ul>
+            <li>Blocking: 없음.</li>
+            <li>High: 없음. 다만 국세청/스미싱은 민감 정보를 저장하지 않는 경계가 필요하다.</li>
+            <li>Medium: 공개 화면에서 Step detail을 저장 전 더 자세히 보는 UI는 아직 약하다.</li>
+            <li>Low: source-backed public page의 한글 표시 인코딩 문제는 기존 파일 전반에 남아 있다.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <span class="eyebrow">Implementation</span>
+      <h2>반영 파일</h2>
+      <ul>
+        <li><code>lib/flow/source-backed-expansion-260625.ts</code>: 새 5개 source-backed map과 FlowBundle 추가.</li>
+        <li><code>lib/flow/source-backed-my-flow.ts</code>: 기존 3개 map/bundle에 새 5개를 연결.</li>
+        <li><code>lib/flow/source-backed-my-flow.test.ts</code>: 새 5개 map 포함, source row readiness, 입력 shape, destination 검증.</li>
+        <li><code>tests/e2e/flow-mvp.spec.ts</code>: 공개 화면 저장 → My Flow snapshot/persistence/child record 생성 검증.</li>
+      </ul>
+    </section>
+
+    <section>
+      <span class="eyebrow">Verification</span>
+      <h2>현재 검증 결과</h2>
+      <ul>
+        <li><code>npx tsx --test lib/flow/source-backed-my-flow.test.ts</code>: 16개 통과.</li>
+        <li><code>npm run build</code>: 통과.</li>
+        <li><code>npx playwright test tests/e2e/flow-mvp.spec.ts --grep "source-backed expansion"</code>: 1개 통과.</li>
+      </ul>
+      <p class="note">아직 전체 E2E와 실제 사용자 관찰은 별도다. 이번 완료 기준은 “5개 실제 원문 기반 Flow가 현재 제품 경로에 들어가고 저장 흐름이 깨지지 않는가”까지다.</p>
+    </section>
+
+    <section>
+      <span class="eyebrow">Next</span>
+      <h2>다음 개선 후보</h2>
+      <ol>
+        <li>공개 Flow Map 화면에서 저장 전 Step detail을 더 자연스럽게 열어보는 UI 보강.</li>
+        <li>source-backed page의 기존 mojibake 한글 표시 정리. 현재 기능은 동작하지만 사용자가 보기에는 큰 품질 문제다.</li>
+        <li>Creator 화면에서 새 5개 source row를 실제 제작자가 수정/발행하는 흐름까지 확장 테스트.</li>
+      </ol>
+    </section>
+  </main>
+</body>
+</html>

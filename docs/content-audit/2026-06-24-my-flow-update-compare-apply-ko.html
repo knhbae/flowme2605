@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>2026-06-24 My Flow 업데이트 비교/적용 구현 리포트</title>
+    <style>
+      :root {
+        --bg: #f7f8fb;
+        --panel: #ffffff;
+        --line: #dfe5ee;
+        --text: #111827;
+        --muted: #64748b;
+        --blue: #2563eb;
+        --green: #047857;
+        --amber: #a16207;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        line-height: 1.62;
+      }
+
+      main {
+        width: min(1080px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 32px 0 56px;
+      }
+
+      header,
+      section {
+        margin-top: 18px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--panel);
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+      }
+
+      header {
+        margin-top: 0;
+        padding: 30px;
+      }
+
+      section {
+        padding: 24px;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 10px;
+        font-size: clamp(28px, 4vw, 42px);
+      }
+
+      h2 {
+        margin-bottom: 14px;
+        font-size: 22px;
+      }
+
+      h3 {
+        margin-bottom: 8px;
+        font-size: 17px;
+      }
+
+      p {
+        color: var(--muted);
+      }
+
+      code {
+        padding: 2px 6px;
+        border-radius: 6px;
+        background: #eef2f7;
+        color: #334155;
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: #eef2f7;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .pill.blue {
+        background: #eaf2ff;
+        color: var(--blue);
+      }
+
+      .pill.green {
+        background: #e9f8f0;
+        color: var(--green);
+      }
+
+      .pill.amber {
+        background: #fff7df;
+        color: var(--amber);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fbfdff;
+        padding: 16px;
+      }
+
+      .card.green {
+        border-color: #bbf7d0;
+        background: #f0fdf4;
+      }
+
+      .card.amber {
+        border-color: #fde68a;
+        background: #fffbeb;
+      }
+
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .step {
+        min-height: 92px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #f8fafc;
+        padding: 14px;
+      }
+
+      .step strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: #f8fafc;
+        color: #334155;
+        font-size: 13px;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      li + li {
+        margin-top: 6px;
+      }
+
+      @media (max-width: 760px) {
+        main {
+          width: min(100% - 20px, 1080px);
+          padding-top: 16px;
+        }
+
+        header,
+        section {
+          padding: 18px;
+          border-radius: 14px;
+        }
+
+        .grid,
+        .steps {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <span class="pill blue">2026-06-24 P1 구현 기록</span>
+        <h1>My Flow 업데이트 비교/적용 구현 리포트</h1>
+        <p>
+          저장한 Flow Map의 원문/발행본이 바뀌었을 때, 사용자가 무엇이 달라졌는지 확인하고 새 기준으로 표시할 수 있는
+          localStorage 기반 update bridge를 구현했습니다. 체크와 메모는 조용히 덮지 않습니다.
+        </p>
+        <div class="pill-row">
+          <span class="pill green">비교 보기</span>
+          <span class="pill green">새 기준으로 표시</span>
+          <span class="pill green">숨기기 유지</span>
+          <span class="pill amber">child Flow merge 아님</span>
+          <span class="pill amber">계정 저장 아님</span>
+        </div>
+      </header>
+
+      <section>
+        <h2>사용자 흐름</h2>
+        <div class="steps">
+          <div class="step"><strong>1. 저장된 지도</strong>사용자는 이전 버전의 Flow Map을 내 Flow에 저장해 둔 상태입니다.</div>
+          <div class="step"><strong>2. 새 발행본 감지</strong>저장 snapshot과 현재 발행 snapshot의 버전, Step 수, 출처 확인일을 비교합니다.</div>
+          <div class="step"><strong>3. 변경 보기</strong>사용자는 영향을 받는 Flow와 Step 수 변화를 카드 안에서 확인합니다.</div>
+          <div class="step"><strong>4. 새 기준으로 표시</strong>저장한 지도 snapshot만 갱신합니다. 체크/메모/child Flow 저장 기록은 유지됩니다.</div>
+        </div>
+      </section>
+
+      <section>
+        <h2>이번 구현 범위</h2>
+        <div class="grid">
+          <article class="card green">
+            <h3>비교 패널</h3>
+            <p>저장 버전, 현재 버전, affected Flow, Step 수 변화, 출처 확인일 변화를 보여줍니다.</p>
+          </article>
+          <article class="card green">
+            <h3>안전한 적용</h3>
+            <p><code>flow:map:saved:{mapId}</code>와 persistence record만 새 기준으로 갱신합니다.</p>
+          </article>
+          <article class="card green">
+            <h3>숨기기 유지</h3>
+            <p>당장 검토하지 않을 사용자는 기존처럼 현재 saved/current 버전 notice를 숨길 수 있습니다.</p>
+          </article>
+          <article class="card amber">
+            <h3>명시적 경계</h3>
+            <p>새 child Flow 추가, 제거, row-level conflict merge는 아직 구현하지 않았습니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2>변경 파일</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>파일</th>
+              <th>변경 내용</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>components/flow/AppClient.tsx</code></td>
+              <td>update notice를 비교/적용 가능한 사용자 패널로 확장</td>
+            </tr>
+            <tr>
+              <td><code>tests/e2e/flow-mvp.spec.ts</code></td>
+              <td>변경 보기, snapshot 적용, child Flow 기록 유지 e2e 추가</td>
+            </tr>
+            <tr>
+              <td><code>docs/specs/2026-06-24-flowme-platform-feature-planning/tasks.md</code></td>
+              <td>P1 implementation baseline 기록</td>
+            </tr>
+            <tr>
+              <td><code>docs/specs/2026-06-24-flowme-platform-feature-planning/qa.md</code></td>
+              <td>P1 QA 실행 로그와 남은 경계 기록</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>검증</h2>
+        <div class="grid">
+          <article class="card green">
+            <h3>자동 검증</h3>
+            <ul>
+              <li><code>npm run build</code> 통과</li>
+              <li><code>npx playwright test tests/e2e/flow-mvp.spec.ts --grep "update review"</code> 2개 통과</li>
+            </ul>
+          </article>
+          <article class="card amber">
+            <h3>남은 리스크</h3>
+            <ul>
+              <li>실제 발행 version 생성과 연결되지는 않았습니다.</li>
+              <li>계정 기반 저장/권한/히스토리는 아직 없습니다.</li>
+              <li>새 child Flow가 생기는 복잡한 merge는 다음 정책 결정이 필요합니다.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

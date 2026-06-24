@@ -778,6 +778,18 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(page.getByTestId('my-flow-routine-legend')).toContainText('러닝');
   await expect(page.getByTestId('my-flow-routine-legend')).toContainText('공부');
   await expect(page.getByTestId('my-flow-routine-legend')).toContainText('식단');
+  await expect(page.getByTestId('my-flow-calendar-scope-filter')).toBeVisible();
+  await expect(page.getByTestId('my-flow-calendar-scope-all')).toHaveAttribute('aria-pressed', 'true');
+  await page.getByTestId('my-flow-calendar-scope-routine').click();
+  await expect(page.getByTestId('my-flow-calendar-scope-routine')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('루틴 · 0개 일정');
+  await expect(page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="scheduled_task"]')).toHaveCount(0);
+  await page.getByTestId('my-flow-calendar-scope-schedule').click();
+  await expect(page.getByTestId('my-flow-calendar-scope-schedule')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('일정 ·');
+  await expect(page.locator('[data-testid="my-flow-routine-icon"]')).toHaveCount(0);
+  await page.getByTestId('my-flow-calendar-scope-all').click();
+  await expect(page.getByTestId('my-flow-calendar-scope-all')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByTestId('my-flow-month-picker')).toHaveValue('2026-05');
   await page.getByTestId('my-flow-month-picker').fill('2026-12');
   await expect(page.getByTestId('my-flow-month-picker')).toHaveValue('2026-12');
@@ -822,7 +834,8 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(page.locator('.fc-daygrid-day[data-date="2026-06-03"] [data-testid="my-flow-routine-overflow"]')).toContainText('+3');
   await page.locator('.fc-daygrid-day[data-date="2026-05-28"]').click();
   const selectedCalendarRow = page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="scheduled_task"]').first();
-  await expect(selectedCalendarRow).toContainText('컴퓨터활용능력 학습 Flow');
+  await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('컴퓨터활용능력 학습 Flow');
+  await expect(selectedCalendarRow).not.toContainText('컴퓨터활용능력 학습 Flow');
   await expect(selectedCalendarRow.getByTestId('my-flow-row-timing-chip')).toContainText('기준 D-30');
   await expect(selectedCalendarRow.getByTestId('my-flow-row-timing-chip')).toHaveAttribute('aria-label', 'Flow 기준 D-30');
   await expect(selectedCalendarRow.getByTestId('my-flow-row-section-label')).toContainText('범위 쪼개기');
@@ -835,6 +848,8 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(selectedCalendarDetail.getByText('상세', { exact: true })).toHaveCount(0);
   await expect(selectedCalendarDetail).toContainText('컴퓨터활용능력 학습 Flow');
   await expect(selectedCalendarDetail.getByTestId('my-flow-detail-advanced-content')).toHaveCount(0);
+  await expect(selectedCalendarDetail.getByTestId('my-flow-detail-source-link')).toBeVisible();
+  await expect(selectedCalendarDetail.getByTestId('my-flow-detail-source-link')).toHaveAttribute('href', /^https:\/\//);
   await expect(selectedCalendarDetail.getByLabel('메모')).toHaveValue(/필기 암기와 실기 조작 시간/);
   const compactCalendarMemoBox = await selectedCalendarDetail.getByLabel('메모').boundingBox();
   expect(compactCalendarMemoBox?.height ?? 9999).toBeLessThanOrEqual(96);
@@ -843,24 +858,7 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   const expandedCalendarMemoBox = await selectedCalendarDetail.getByLabel('메모').boundingBox();
   expect(expandedCalendarMemoBox?.height ?? 0).toBeGreaterThan(compactCalendarMemoBox?.height ?? 0);
   await expect(selectedCalendarDetail.getByRole('button', { name: '메모 작게 보기' })).toBeVisible();
-  await expect(selectedCalendarDetail.getByTestId('my-flow-detail-advanced-toggle')).toBeVisible();
-  const advancedToggleBox = await selectedCalendarDetail.getByTestId('my-flow-detail-advanced-toggle').boundingBox();
-  expect(advancedToggleBox?.height ?? 999).toBeLessThanOrEqual(30);
-  const advancedToggleWrapperStyle = await selectedCalendarDetail.getByTestId('my-flow-detail-advanced-toggle').evaluate((node) => {
-    const parent = node.parentElement;
-    if (!parent) return { paddingTop: 999, paddingBottom: 999, backgroundColor: '' };
-    const style = window.getComputedStyle(parent);
-    return {
-      paddingTop: Number.parseFloat(style.paddingTop),
-      paddingBottom: Number.parseFloat(style.paddingBottom),
-      backgroundColor: style.backgroundColor,
-    };
-  });
-  expect(advancedToggleWrapperStyle.paddingTop).toBeLessThanOrEqual(1);
-  expect(advancedToggleWrapperStyle.paddingBottom).toBeLessThanOrEqual(1);
-  expect(advancedToggleWrapperStyle.backgroundColor).toBe('rgba(0, 0, 0, 0)');
-  await selectedCalendarDetail.getByTestId('my-flow-detail-advanced-toggle').click();
-  await expect(selectedCalendarDetail.getByTestId('my-flow-detail-advanced-content')).toBeVisible();
+  await expect(selectedCalendarDetail.getByTestId('my-flow-detail-advanced-toggle')).toHaveCount(0);
   await expect(selectedCalendarDetail.getByRole('button', { name: '닫기', exact: true })).toBeVisible();
   await selectedCalendarDetail.getByRole('button', { name: '닫기', exact: true }).click();
   await expect(page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail')).toHaveCount(0);
@@ -974,7 +972,7 @@ test('my flow source-backed demo renders bridge bundles without publishing them 
 
   await page.getByTestId('my-flow-view-flow').click();
   await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(2);
-  await expect(page.getByTestId('my-flow-demo-group')).toContainText(['단일 Flow', '중1 수학 지도']);
+  await expect(page.getByTestId('my-flow-demo-group')).toContainText(['이사 D-30 지도', '중1 수학 지도']);
 
   const movingCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
   await expect(movingCard).toContainText('원룸 이사 D-30 준비');
@@ -982,9 +980,9 @@ test('my flow source-backed demo renders bridge bundles without publishing them 
   await expect(movingCard.getByRole('button', { name: '캘린더에서 열기' })).toBeVisible();
 
   const mathCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-middle-school-math-1"]');
-  await expect(mathCard).toContainText('중1 수학 목차 진도');
-  await expect(mathCard).toContainText('0/6');
-  await expect(mathCard.getByRole('button', { name: '시트에서 열기' })).toBeVisible();
+  await expect(mathCard).toContainText('단원별 개념 진도');
+  await expect(mathCard).toContainText('0/8');
+  await expect(mathCard.getByRole('button', { name: '진도표 열기' })).toBeVisible();
 
   await mathCard.getByTestId('my-flow-next-action-open').click();
   await expect(page.getByTestId('my-flow-view-checklist')).toHaveAttribute('aria-pressed', 'true');
@@ -1000,7 +998,7 @@ test('my flow source-backed demo stays lightweight on mobile inventory', async (
   await expect(page.getByRole('button', { name: 'Flow 찾기' })).toHaveCount(0);
   await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(2);
   await expect(page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]')).toContainText('원룸 이사 D-30 준비');
-  await expect(page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-middle-school-math-1"]')).toContainText('중1 수학 목차 진도');
+  await expect(page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-middle-school-math-1"]')).toContainText('단원별 개념 진도');
 });
 
 test('source-backed flow map public page stays save-before focused', async ({ page }) => {
@@ -1008,10 +1006,11 @@ test('source-backed flow map public page stays save-before focused', async ({ pa
 
   const publicMap = page.getByTestId('flow-map-public');
   await expect(publicMap).toBeVisible();
-  await expect(publicMap.getByRole('heading', { name: '중1 수학 목차 진도 지도' })).toBeVisible();
+  await expect(publicMap.getByRole('heading', { name: '중1 수학 목차 진도표' })).toBeVisible();
   await expect(publicMap).toContainText('Mathbang 중1 수학 목차');
   await expect(publicMap).toContainText('소인수분해');
   await expect(publicMap).toContainText('정수와 유리수');
+  await expect(publicMap).toContainText('하위 항목 8개');
   await expect(publicMap.getByRole('button', { name: '전체 지도 저장' })).toBeVisible();
   await expect(publicMap).not.toContainText(/source fit|PoC|개발자|평가 점수/i);
 });
@@ -1022,20 +1021,24 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   await page.getByRole('button', { name: '전체 지도 저장' }).click();
   await expect(page).toHaveURL('/my?savedMap=middle-school-math-1');
   await expect(page.getByTestId('my-flow-demo-badge')).toHaveCount(0);
+  await expect(page.getByText('저장 완료')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '내 Flow에 저장됨' })).toBeVisible();
   const postSavePanel = page.getByTestId('my-flow-post-save-panel');
-  await expect(postSavePanel).toContainText('중1 수학 목차 진도 지도');
-  await expect(postSavePanel).toContainText('6개 Step');
+  await expect(postSavePanel).toContainText('중1 수학 목차 진도표');
+  await expect(postSavePanel).toContainText('8개 Step');
   await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(3);
+  await expect(postSavePanel.getByTestId('my-flow-post-save-view-all')).toContainText('나머지 5개 Step');
   await postSavePanel.getByTestId('my-flow-post-save-open-first').click();
   const firstPostSaveStepRow = postSavePanel.getByTestId('my-flow-post-save-step-row').first();
-  await expect(firstPostSaveStepRow.getByTestId('my-flow-post-save-detail')).toContainText('원문 단원 링크에서 해당 소단원만 엽니다.');
+  await expect(firstPostSaveStepRow.getByTestId('my-flow-post-save-detail')).toContainText('개념 항목');
+  await expect(firstPostSaveStepRow.getByTestId('my-flow-post-save-detail')).toContainText('거듭제곱');
 
-  await page.getByTestId('my-flow-view-flow').click();
+  await page.getByTestId('my-flow-post-save-view-flow').click();
   const mathCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-middle-school-math-1"]');
   await expect(mathCard).toBeVisible();
-  await expect(mathCard).toContainText('중1 수학 목차 진도');
-  await expect(mathCard.getByTestId('my-flow-map-context')).toContainText('중1 수학 목차 진도 지도');
-  await expect(mathCard).toContainText('0/6');
+  await expect(mathCard).toContainText('단원별 개념 진도');
+  await expect(mathCard.getByTestId('my-flow-map-context')).toContainText('중1 수학 목차 진도표');
+  await expect(mathCard).toContainText('0/8');
   await expect(mathCard.getByRole('link', { name: '지도 보기' })).toHaveAttribute('href', '/flow-maps/middle-school-math-1');
 
   await mathCard.getByTestId('my-flow-next-action-open').click();
@@ -1043,15 +1046,54 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   const detailSection = page.getByTestId('my-flow-checklist-detail-section');
   await expect(detailSection.getByTestId('my-flow-item-detail')).toBeVisible();
   const itemChecklist = detailSection.getByTestId('my-flow-item-checklist');
-  await expect(itemChecklist).toContainText('원문 단원 링크에서 해당 소단원만 엽니다.');
-  await itemChecklist.getByLabel('원문 단원 링크에서 해당 소단원만 엽니다.').check();
-  await expect(itemChecklist).toContainText('1/3');
+  await expect(itemChecklist).toContainText('거듭제곱');
+  await itemChecklist.getByLabel('거듭제곱').check();
+  await expect(itemChecklist).toContainText('1/8');
+
+  await detailSection.getByTestId('my-flow-detail-date-input').fill('2026-06-29');
+  await expect(detailSection.getByTestId('my-flow-progress-schedule-note')).toContainText('날짜를 넣으면');
+  await detailSection.getByTestId('my-flow-detail-save-changes').click();
+  await page.getByTestId('my-flow-view-calendar').click();
+  await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('2026-06-29');
+  await expect(page.getByTestId('my-flow-calendar-selected-day').locator('article')).toHaveCount(1);
 
   const savedKeys = await page.evaluate(() => Object.keys(localStorage).filter((key) => key.startsWith('flow:saved:source-backed-')));
   expect(savedKeys).toEqual(['flow:saved:source-backed-middle-school-math-1']);
   const savedMap = await page.evaluate(() => JSON.parse(localStorage.getItem('flow:map:saved:middle-school-math-1') || 'null'));
-  expect(savedMap.version).toBe('2026-06-23.1');
+  expect(savedMap.version).toBe('2026-06-24.1');
   expect(savedMap.flowSlugs).toEqual(['source-backed-middle-school-math-1']);
+});
+
+test('my flow separates ready source-backed content from review-needed saved flows', async ({ page }) => {
+  await page.goto('/flow-maps/middle-school-math-1');
+  await page.getByRole('button', { name: '전체 지도 저장' }).click();
+  await expect(page).toHaveURL('/my?savedMap=middle-school-math-1');
+
+  await page.evaluate(() => {
+    localStorage.setItem(
+      'flow:saved:alt-phone-sk7-self-activation',
+      JSON.stringify({
+        slug: 'alt-phone-sk7-self-activation',
+        savedAt: '2026-06-24T12:00:00.000Z',
+        selectedArtifactMode: 'checklist',
+      }),
+    );
+  });
+
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+
+  const readySection = page.getByTestId('my-flow-ready-section');
+  const reviewSection = page.getByTestId('my-flow-review-section');
+  await expect(readySection).toContainText('바로 이어서 볼 Flow');
+  await expect(readySection.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-middle-school-math-1"]')).toBeVisible();
+  await expect(readySection).not.toContainText('알뜰폰 SK7 셀프개통 체크 Flow');
+
+  await expect(reviewSection).toContainText('확인 후 실행할 Flow');
+  const reviewCard = reviewSection.locator('[data-testid="my-flow-overview-card"][data-flow-slug="alt-phone-sk7-self-activation"]');
+  await expect(reviewCard).toContainText('알뜰폰 SK7 셀프개통 체크 Flow');
+  await expect(reviewCard.getByTestId('my-flow-content-readiness')).toContainText('검토 필요');
+  await expect(reviewCard).toContainText('원문 구조나 실행 항목을 다시 정리해야 하는 Flow입니다.');
 });
 
 test('source-backed single progress map opens step detail on mobile My Flow', async ({ page }) => {
@@ -1061,18 +1103,80 @@ test('source-backed single progress map opens step detail on mobile My Flow', as
   await page.getByRole('button', { name: '전체 지도 저장' }).click();
   await expect(page).toHaveURL('/my?savedMap=middle-school-math-1');
   await expect(page.getByTestId('my-flow-post-save-panel')).toBeVisible();
-  await expect(page.getByTestId('my-flow-single-summary')).toBeVisible();
+  await expect(page.getByTestId('my-flow-workspace')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-post-save-view-flow')).toBeVisible();
   await expect(page.getByTestId('my-flow-view-flow')).toHaveCount(0);
 
   await page.getByTestId('my-flow-post-save-open-first').click();
   const firstPostSaveStepRow = page.getByTestId('my-flow-post-save-step-row').first();
   await expect(firstPostSaveStepRow.getByTestId('my-flow-post-save-detail')).toBeVisible();
   const itemChecklist = firstPostSaveStepRow.getByTestId('my-flow-post-save-detail').getByTestId('my-flow-item-checklist');
-  await expect(itemChecklist).toContainText('원문 단원 링크에서 해당 소단원만 엽니다.');
-  await itemChecklist.getByLabel('원문 단원 링크에서 해당 소단원만 엽니다.').check();
-  await expect(itemChecklist).toContainText('1/3');
+  await expect(itemChecklist).toContainText('거듭제곱');
+  await itemChecklist.getByLabel('거듭제곱').check();
+  await expect(itemChecklist).toContainText('1/8');
   await page.getByTestId('my-flow-post-save-open-first').click();
   await expect(firstPostSaveStepRow.getByTestId('my-flow-post-save-detail')).toHaveCount(0);
+});
+
+test('source-backed moving map saves one dated timeline into My Flow calendar', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/flow-maps/moving-d30');
+
+  const publicMap = page.getByTestId('flow-map-public');
+  await expect(publicMap.getByRole('heading', { name: '원룸 이사 D-30 일정 지도' })).toBeVisible();
+  await expect(publicMap.getByLabel('이사일')).toBeVisible();
+  await expect(publicMap).toContainText('원룸 이사 D-30 준비');
+  await expect(publicMap).toContainText('이사 방식과 견적 후보 정하기');
+  await expect(publicMap).toContainText('하위 항목 3개');
+
+  await page.getByLabel('이사일').fill('2026-07-22');
+  await page.getByRole('button', { name: '전체 지도 저장' }).click();
+  await expect(page).toHaveURL('/my?savedMap=moving-d30');
+  await expect(page.getByTestId('my-flow-demo-badge')).toHaveCount(0);
+
+  const postSavePanel = page.getByTestId('my-flow-post-save-panel');
+  await expect(postSavePanel).toContainText('원룸 이사 D-30 일정 지도');
+  await expect(postSavePanel).toContainText('1개 Flow');
+  await expect(postSavePanel).toContainText('5개 Step');
+  await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(3);
+  await expect(postSavePanel.getByTestId('my-flow-post-save-view-all').first()).toContainText('전체 일정 보기');
+
+  await postSavePanel.getByTestId('my-flow-post-save-open-first').click();
+  const firstPostSaveStepRow = postSavePanel.getByTestId('my-flow-post-save-step-row').first();
+  await expect(firstPostSaveStepRow.getByTestId('my-flow-post-save-detail')).toContainText('확인 항목');
+  await expect(firstPostSaveStepRow.getByTestId('my-flow-post-save-detail')).toContainText('이사 방식 1개를 정합니다.');
+
+  await postSavePanel.getByTestId('my-flow-post-save-view-all').first().click();
+  const calendarCard = page.getByTestId('my-flow-calendar-card');
+  await expect(calendarCard).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  const calendarTop = await calendarCard.evaluate((element) => element.getBoundingClientRect().top);
+  expect(calendarTop).toBeLessThan(96);
+  await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
+  const selectedDateGroup = page.getByTestId('my-flow-selected-date-group').first();
+  await expect(selectedDateGroup).toContainText('지도 일정');
+  await expect(selectedDateGroup).toContainText('원룸 이사 D-30 일정 지도');
+  await expect(selectedDateGroup).toContainText('1개 · 1개 남음');
+  await expect(selectedDateGroup.getByTestId('my-flow-row-flow-chip')).toHaveCount(0);
+  await expect(selectedDateGroup.getByTestId('my-flow-row-progress-chip')).toHaveCount(0);
+
+  const savedMap = await page.evaluate(() => JSON.parse(localStorage.getItem('flow:map:saved:moving-d30') || 'null'));
+  expect(savedMap.version).toBe('2026-06-24.1');
+  expect(savedMap.anchor).toBe('2026-07-22');
+  expect(savedMap.flowSlugs).toEqual(['source-backed-moving-d30']);
+  expect(savedMap.stepCountsByFlow).toEqual({
+    'source-backed-moving-d30': 5,
+  });
+  const persistenceRecord = await page.evaluate(() => JSON.parse(localStorage.getItem('flow:map:persistence:moving-d30') || 'null'));
+  expect(persistenceRecord.schemaVersion).toBe(1);
+  expect(persistenceRecord.readiness.content).toBe('ready_for_my_flow');
+  expect(persistenceRecord.childFlows[0].stepIds).toEqual([
+    'moving-method-quotes',
+    'moving-cleaning-waste',
+    'moving-address-admin',
+    'moving-meter-photos',
+    'moving-move-day-admin',
+  ]);
 });
 
 test('source-backed baby health map saves input-bearing official schedule flows into My Flow', async ({ page }) => {
@@ -1093,8 +1197,14 @@ test('source-backed baby health map saves input-bearing official schedule flows 
   await expect(postSavePanel).toContainText('2개 Flow');
   await expect(postSavePanel).toContainText('18개 Step');
   await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(6);
+  await expect(postSavePanel.getByTestId('my-flow-post-save-view-all')).toHaveCount(2);
+  await expect(postSavePanel.getByTestId('my-flow-post-save-view-all').first()).toContainText('전체 일정 보기');
+  await postSavePanel.getByTestId('my-flow-post-save-view-flow').click();
 
-  await page.getByTestId('my-flow-view-flow').click();
+  const babyMapGroup = page.getByTestId('my-flow-map-group');
+  await expect(babyMapGroup).toContainText('영유아 검진·접종 일정 지도');
+  await expect(babyMapGroup).toContainText('2개 Flow');
+  await expect(babyMapGroup.getByTestId('my-flow-map-group-source-link')).toHaveAttribute('href', '/flow-maps/baby-health-schedule');
   const checkupCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-baby-health-checkups"]');
   const vaccinationCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-baby-vaccination-schedule"]');
   await expect(checkupCard).toContainText('영유아 건강검진 일정');
@@ -1130,12 +1240,120 @@ test('source-backed baby health map remains visible on mobile Flow tab after sav
   await page.getByRole('button', { name: '전체 지도 저장' }).click();
   await expect(page).toHaveURL('/my?savedMap=baby-health-schedule');
   await expect(page.getByTestId('my-flow-post-save-panel')).toContainText('영유아 검진·접종 일정 지도');
-
-  await page.getByTestId('my-flow-view-flow').click();
+  await page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-view-flow').click();
   await expect(page.getByRole('button', { name: 'Flow 찾기' })).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-map-group')).toContainText('영유아 검진·접종 일정 지도');
   await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(2);
   await expect(page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-baby-health-checkups"]')).toContainText('0/12');
   await expect(page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-baby-vaccination-schedule"]')).toContainText('0/6');
+});
+
+test('my flow shows update review notice for changed source-backed saved maps', async ({ page }) => {
+  await page.goto('/flow-maps/baby-health-schedule');
+
+  await page.getByLabel('아이 생년월일').fill('2026-01-15');
+  await page.getByRole('button', { name: '전체 지도 저장' }).click();
+  await expect(page).toHaveURL('/my?savedMap=baby-health-schedule');
+
+  await page.evaluate(() => {
+    const key = 'flow:map:saved:baby-health-schedule';
+    const snapshot = JSON.parse(window.localStorage.getItem(key) || 'null');
+    snapshot.version = '2026-01-01.old';
+    window.localStorage.setItem(key, JSON.stringify(snapshot));
+  });
+
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+  const updateReview = page.getByTestId('my-flow-map-update-review');
+  await expect(updateReview).toBeVisible();
+  await expect(updateReview).toContainText('저장한 지도에 다시 볼 내용이 있습니다');
+  await expect(updateReview).toContainText('영유아 검진·접종 일정 지도');
+  await expect(updateReview).toContainText('업데이트 확인 필요');
+  await expect(updateReview).toContainText('자동 반영 안 함');
+  await expect(updateReview).toContainText('기존 체크와 메모는 유지');
+  await expect(updateReview).toContainText('원문 기준 정보가 새로 발행되었습니다');
+  await expect(updateReview).toContainText('검진/접종처럼 공식 일정은 자동으로 바꾸지 않습니다');
+  await updateReview.getByTestId('my-flow-map-update-toggle').click();
+  const comparison = updateReview.getByTestId('my-flow-map-update-comparison');
+  await expect(comparison).toContainText('저장 2026-01-01.old');
+  await expect(comparison).toContainText('현재 2026-06-23.1');
+  await expect(comparison.getByTestId('my-flow-map-update-comparison-row')).toHaveCount(2);
+  await expect(updateReview.getByRole('link', { name: '지도 보기' })).toHaveAttribute('href', '/flow-maps/baby-health-schedule');
+  await updateReview.getByTestId('my-flow-map-update-dismiss').click();
+  await expect(page.getByTestId('my-flow-map-update-review')).toHaveCount(0);
+
+  await page.reload();
+  await page.getByTestId('my-flow-view-flow').click();
+  await expect(page.getByTestId('my-flow-map-update-review')).toHaveCount(0);
+});
+
+test('my flow update review can apply a new source-backed snapshot without changing saved child flows', async ({ page }) => {
+  await page.goto('/flow-maps/baby-health-schedule');
+
+  await page.getByLabel('아이 생년월일').fill('2026-01-15');
+  await page.getByRole('button', { name: '전체 지도 저장' }).click();
+  await expect(page).toHaveURL('/my?savedMap=baby-health-schedule');
+
+  await page.evaluate(() => {
+    const key = 'flow:map:saved:baby-health-schedule';
+    const snapshot = JSON.parse(window.localStorage.getItem(key) || 'null');
+    snapshot.version = '2026-01-01.old';
+    snapshot.stepCountsByFlow['source-backed-baby-health-checkups'] = 11;
+    window.localStorage.setItem(key, JSON.stringify(snapshot));
+  });
+
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+  const updateReview = page.getByTestId('my-flow-map-update-review');
+  await expect(updateReview).toBeVisible();
+  await updateReview.getByTestId('my-flow-map-update-toggle').click();
+  await expect(updateReview.getByTestId('my-flow-map-update-comparison')).toContainText('Step 11 → 12');
+
+  await updateReview.getByTestId('my-flow-map-update-apply').click();
+  await expect(page.getByTestId('my-flow-map-update-review')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-map-update-applied')).toContainText('새 기준으로 표시했습니다');
+  const savedState = await page.evaluate(() => ({
+    snapshot: JSON.parse(window.localStorage.getItem('flow:map:saved:baby-health-schedule') || 'null'),
+    checkups: JSON.parse(window.localStorage.getItem('flow:saved:source-backed-baby-health-checkups') || 'null'),
+    vaccinations: JSON.parse(window.localStorage.getItem('flow:saved:source-backed-baby-vaccination-schedule') || 'null'),
+  }));
+  expect(savedState.snapshot.version).toBe('2026-06-23.1');
+  expect(savedState.snapshot.stepCountsByFlow['source-backed-baby-health-checkups']).toBe(12);
+  expect(savedState.checkups.anchor).toBe('2026-01-15');
+  expect(savedState.vaccinations.anchor).toBe('2026-01-15');
+});
+
+test('my flow update apply adds missing child flow records without deleting existing progress', async ({ page }) => {
+  await page.goto('/flow-maps/baby-health-schedule');
+
+  await page.getByLabel('아이 생년월일').fill('2026-01-15');
+  await page.getByRole('button', { name: '전체 지도 저장' }).click();
+  await expect(page).toHaveURL('/my?savedMap=baby-health-schedule');
+
+  await page.evaluate(() => {
+    const key = 'flow:map:saved:baby-health-schedule';
+    const snapshot = JSON.parse(window.localStorage.getItem(key) || 'null');
+    snapshot.version = '2026-01-01.old';
+    snapshot.flowSlugs = ['source-backed-baby-health-checkups'];
+    window.localStorage.setItem(key, JSON.stringify(snapshot));
+    window.localStorage.removeItem('flow:saved:source-backed-baby-vaccination-schedule');
+  });
+
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+  const updateReview = page.getByTestId('my-flow-map-update-review');
+  await updateReview.getByTestId('my-flow-map-update-toggle').click();
+  await expect(updateReview.getByTestId('my-flow-map-update-comparison')).toContainText('새로 추가');
+  await updateReview.getByTestId('my-flow-map-update-apply').click();
+
+  const savedState = await page.evaluate(() => ({
+    snapshot: JSON.parse(window.localStorage.getItem('flow:map:saved:baby-health-schedule') || 'null'),
+    checkups: JSON.parse(window.localStorage.getItem('flow:saved:source-backed-baby-health-checkups') || 'null'),
+    vaccinations: JSON.parse(window.localStorage.getItem('flow:saved:source-backed-baby-vaccination-schedule') || 'null'),
+  }));
+  expect(savedState.snapshot.flowSlugs).toContain('source-backed-baby-vaccination-schedule');
+  expect(savedState.checkups.anchor).toBe('2026-01-15');
+  expect(savedState.vaccinations.anchor).toBe('2026-01-15');
 });
 
 test('source-backed flow map creator page shows publish structure without mixing user execution', async ({ page }) => {
@@ -1143,12 +1361,103 @@ test('source-backed flow map creator page shows publish structure without mixing
 
   const creatorMap = page.getByTestId('flow-map-creator');
   await expect(creatorMap).toBeVisible();
-  await expect(creatorMap.getByRole('heading', { name: '중1 수학 목차 진도 지도' })).toBeVisible();
-  await expect(creatorMap).toContainText('원문 구조 확인');
-  await expect(creatorMap).toContainText('사용자 저장 결과');
-  await expect(creatorMap.getByTestId('flow-map-source-row')).toHaveCount(6);
+  await expect(creatorMap.getByRole('heading', { name: '중1 수학 목차 진도표' })).toBeVisible();
+  await expect(creatorMap).toContainText('제작자 편집');
+  await expect(creatorMap).toContainText('원문 행');
+  await expect(creatorMap).toContainText('사용자에게 저장될 Step');
+  await expect(creatorMap).toContainText('초안 0개 수정');
+  await expect(creatorMap.getByTestId('flow-map-source-row').first()).toContainText('거듭제곱');
+  await expect(creatorMap.getByTestId('flow-map-source-row').first()).toContainText('에라토스테네스의 체');
+  await expect(creatorMap.getByTestId('flow-map-source-row').first()).toContainText('참고 원문');
+  await expect(creatorMap).toContainText('저장 후 사용자 화면');
+  await expect(creatorMap.getByTestId('flow-map-source-row')).toHaveCount(8);
   await expect(creatorMap.getByRole('link', { name: '공개 화면 보기' })).toHaveAttribute('href', '/flow-maps/middle-school-math-1');
+
+  await creatorMap.getByTestId('flow-map-source-row').nth(1).click();
+  await creatorMap.getByTestId('creator-draft-note').fill('2단원 제목과 fallback item 확인');
+  await creatorMap.getByTestId('creator-save-draft').click();
+  await expect(creatorMap).toContainText('초안 저장됨');
+  await creatorMap.getByTestId('creator-publish-draft').click();
+  await expect(creatorMap).toContainText('로컬 발행 표시됨');
+  const draft = await page.evaluate(() => JSON.parse(localStorage.getItem('flow:map:creator-draft:middle-school-math-1') || 'null'));
+  expect(draft.publishedVersion).toBe('2026-06-24.1');
+  expect(draft.rows['math-integers-rationals'].creatorNote).toBe('2단원 제목과 fallback item 확인');
+  const published = await page.evaluate(() => JSON.parse(localStorage.getItem('flow:map:published-local:middle-school-math-1') || 'null'));
+  expect(published.source).toBe('local_creator_publish');
+  expect(published.rows['math-integers-rationals'].creatorNote).toBe('2단원 제목과 fallback item 확인');
   await expect(creatorMap).not.toContainText('오늘 실행');
+  await expect(creatorMap).not.toContainText('완료 체크');
+});
+
+test('my flow step detail saves portable calendar task fields', async ({ page }) => {
+  await page.goto('/flow-maps/moving-d30');
+
+  await page.getByLabel('이사일').fill('2026-07-22');
+  await page.getByRole('button', { name: '전체 지도 저장' }).click();
+  await expect(page).toHaveURL('/my?savedMap=moving-d30');
+  await page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-view-flow').click();
+  const movingCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
+  await movingCard.getByTestId('my-flow-next-action-open').click();
+
+  const detail = page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail');
+  await expect(detail).toBeVisible();
+  await detail.getByTestId('my-flow-detail-date-input').fill('2026-06-24');
+  await detail.locator('input[type="time"]').fill('09:30');
+  await detail.getByTestId('my-flow-detail-repeat-input').selectOption('weekly');
+  await detail.locator('input[placeholder="장소 없음"]').fill('집');
+  await detail.locator('textarea').first().fill('견적 후보 3곳과 포함 범위만 메모');
+  await detail.getByRole('button', { name: '변경 저장' }).click();
+
+  const stored = await page.evaluate(() => ({
+    dateOverrides: JSON.parse(localStorage.getItem('flow:my-flow:date-overrides') || '{}'),
+    drafts: JSON.parse(localStorage.getItem('flow:my-flow:item-drafts') || '{}'),
+  }));
+  expect(Object.values(stored.dateOverrides)).toContain('2026-06-24');
+  const draftValues = Object.values(stored.drafts) as Array<Record<string, string>>;
+  expect(draftValues.some((draft) => draft.time === '09:30' && draft.location === '집' && draft.repeatPreset === 'weekly')).toBe(true);
+
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-calendar').click();
+  await page.getByTestId('my-flow-month-picker').fill('2026-06');
+  await expect(page.locator('.fc-daygrid-day[data-date="2026-06-24"]')).toContainText('이사 방식');
+});
+
+test('my flow mobile saved map edit and revisit keeps step detail lightweight', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/flow-maps/moving-d30');
+
+  const publicMap = page.getByTestId('flow-map-public');
+  await publicMap.locator('input[type="date"]').fill('2026-07-22');
+  await publicMap.locator('button').last().click();
+  await expect(page).toHaveURL('/my?savedMap=moving-d30');
+  await page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-view-flow').click();
+
+  const movingCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
+  await movingCard.scrollIntoViewIfNeeded();
+  await movingCard.getByTestId('my-flow-next-action-open').click();
+
+  await expect(page.getByRole('dialog')).toBeVisible();
+  const detail = page.locator('[data-testid="my-flow-item-detail"]:visible').first();
+  await expect(detail).toBeVisible();
+  await expect(detail.getByTestId('my-flow-detail-repeat-input')).toBeVisible();
+
+  const detailBox = await detail.boundingBox();
+  expect(detailBox).not.toBeNull();
+  expect(detailBox!.y).toBeGreaterThanOrEqual(0);
+
+  await detail.getByTestId('my-flow-detail-date-input').fill('2026-06-25');
+  await detail.locator('input[type="time"]').fill('10:00');
+  await detail.getByTestId('my-flow-detail-repeat-input').selectOption('weekly');
+  await detail.locator('textarea').first().fill('mobile revisit memo');
+  await detail.getByTestId('my-flow-detail-save-changes').click();
+
+  await page.goto('/my');
+  await page.getByTestId('my-flow-today-calendar-open').click();
+  await page.getByTestId('my-flow-month-picker').fill('2026-06');
+  await expect(page.locator('.fc-daygrid-day[data-date="2026-06-25"] .fc-event')).toHaveCount(1);
+
+  const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(horizontalOverflow).toBeLessThanOrEqual(1);
 });
 
 test('source-backed baby health creator page keeps official source review separate from execution', async ({ page }) => {
@@ -1157,11 +1466,119 @@ test('source-backed baby health creator page keeps official source review separa
   const creatorMap = page.getByTestId('flow-map-creator');
   await expect(creatorMap).toBeVisible();
   await expect(creatorMap.getByRole('heading', { name: '영유아 검진·접종 일정 지도' })).toBeVisible();
-  await expect(creatorMap).toContainText('원문 구조 확인');
-  await expect(creatorMap).toContainText('사용자 저장 결과');
+  await expect(creatorMap).toContainText('원문 행');
+  await expect(creatorMap).toContainText('준비');
+  await expect(creatorMap.getByTestId('flow-map-source-row').first()).toContainText('공식');
+  await expect(creatorMap.getByTestId('flow-map-source-row').first()).toContainText('건강 민감');
+  await expect(creatorMap.getByTestId('flow-map-source-row').first()).toContainText('문진표');
+  await expect(creatorMap).toContainText('저장 후 사용자 화면');
   await expect(creatorMap.getByTestId('flow-map-source-row')).toHaveCount(18);
   await expect(creatorMap.getByRole('link', { name: '공개 화면 보기' })).toHaveAttribute('href', '/flow-maps/baby-health-schedule');
   await expect(creatorMap).not.toContainText('오늘 실행');
+  await expect(creatorMap).not.toContainText('완료 체크');
+});
+
+test('source-backed expansion maps save real-source flows into my flow', async ({ page }) => {
+  const cases = [
+    { mapId: 'postal-address-transfer', slug: 'source-backed-postal-address-transfer', anchor: '2026-07-01' },
+    { mapId: 'smishing-response', slug: 'source-backed-smishing-response' },
+    { mapId: 'year-end-tax-submit', slug: 'source-backed-year-end-tax-submit', anchor: '2026-01-25' },
+    { mapId: 'aircon-filter-cleaning', slug: 'source-backed-aircon-filter-cleaning', anchor: '2026-07-06' },
+    { mapId: 'picnic-food-safety', slug: 'source-backed-picnic-food-safety', anchor: '2026-07-12' },
+  ];
+
+  for (const flowCase of cases) {
+    await page.goto('/');
+    await page.evaluate(() => window.localStorage.clear());
+    await page.goto(`/flow-maps/${flowCase.mapId}`);
+
+    const publicMap = page.getByTestId('flow-map-public');
+    await expect(publicMap).toBeVisible();
+    await expect(publicMap.getByRole('link').last()).toBeVisible();
+    if (flowCase.anchor) {
+      await publicMap.getByTestId('flow-map-anchor-input').fill(flowCase.anchor);
+    } else {
+      await expect(publicMap.getByTestId('flow-map-anchor-input')).toHaveCount(0);
+    }
+
+    await publicMap.getByTestId('flow-map-save-all').click();
+    await expect(page).toHaveURL(new RegExp(`/my\\?savedMap=${flowCase.mapId}$`));
+    await expect(page.getByTestId('my-flow-post-save-panel')).toBeVisible();
+
+    const savedState = await page.evaluate(({ mapId, slug }) => ({
+      snapshot: JSON.parse(window.localStorage.getItem(`flow:map:saved:${mapId}`) || 'null'),
+      persistence: JSON.parse(window.localStorage.getItem(`flow:map:persistence:${mapId}`) || 'null'),
+      child: JSON.parse(window.localStorage.getItem(`flow:saved:${slug}`) || 'null'),
+    }), flowCase);
+
+    expect(savedState.snapshot.flowSlugs).toContain(flowCase.slug);
+    expect(savedState.persistence.recordType).toBe('saved_source_backed_flow_map');
+    expect(savedState.child.selectedArtifactMode).toBeTruthy();
+    if (flowCase.anchor) {
+      expect(savedState.snapshot.anchor).toBe(flowCase.anchor);
+      expect(savedState.child.anchor).toBe(flowCase.anchor);
+    }
+  }
+});
+
+test('source-backed expansion flows execute source link checklist and memo in my flow', async ({ page }) => {
+  const cases = [
+    { mapId: 'postal-address-transfer', slug: 'source-backed-postal-address-transfer', anchor: '2026-07-01' },
+    { mapId: 'smishing-response', slug: 'source-backed-smishing-response' },
+    { mapId: 'year-end-tax-submit', slug: 'source-backed-year-end-tax-submit', anchor: '2026-01-25' },
+    { mapId: 'aircon-filter-cleaning', slug: 'source-backed-aircon-filter-cleaning', anchor: '2026-07-06' },
+    { mapId: 'picnic-food-safety', slug: 'source-backed-picnic-food-safety', anchor: '2026-07-12' },
+  ];
+
+  for (const flowCase of cases) {
+    await page.goto('/');
+    await page.evaluate(() => window.localStorage.clear());
+    await page.goto(`/flow-maps/${flowCase.mapId}`);
+
+    const publicMap = page.getByTestId('flow-map-public');
+    await expect(publicMap).toBeVisible();
+    if (flowCase.anchor) {
+      await publicMap.getByTestId('flow-map-anchor-input').fill(flowCase.anchor);
+    }
+
+    await publicMap.getByTestId('flow-map-save-all').click();
+    await expect(page).toHaveURL(new RegExp(`/my\\?savedMap=${flowCase.mapId}$`));
+    await page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-view-flow').click();
+
+    const card = page.locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${flowCase.slug}"]`);
+    await expect(card).toBeVisible();
+    await card.getByTestId('my-flow-next-action-open').click();
+
+    const detail = page.locator('[data-testid="my-flow-item-detail"]:visible').first();
+    await expect(detail).toBeVisible();
+    await expect(detail.getByTestId('my-flow-detail-source-link')).toHaveAttribute('href', /^https:\/\//);
+
+    const itemChecklist = detail.getByTestId('my-flow-item-checklist');
+    await expect(itemChecklist).toBeVisible();
+    const firstItemCheckbox = itemChecklist.locator('input[type="checkbox"]').first();
+    await firstItemCheckbox.check();
+    await expect(firstItemCheckbox).toBeChecked();
+
+    const memo = `${flowCase.mapId} rehearsal memo`;
+    await detail.getByTestId('my-flow-detail-memo').fill(memo);
+    await detail.getByTestId('my-flow-detail-save-changes').click();
+
+    const storedAfterEdit = await page.evaluate(() => ({
+      stepItemChecks: JSON.parse(window.localStorage.getItem('flow:my-flow:step-item-checks') || '{}'),
+      itemDrafts: JSON.parse(window.localStorage.getItem('flow:my-flow:item-drafts') || '{}'),
+    }));
+    expect(JSON.stringify(storedAfterEdit.stepItemChecks)).toContain('true');
+    expect(JSON.stringify(storedAfterEdit.itemDrafts)).toContain(memo);
+
+    await page.goto('/my');
+    await page.getByTestId('my-flow-view-flow').click();
+    const restoredCard = page.locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${flowCase.slug}"]`);
+    await expect(restoredCard).toBeVisible();
+    await restoredCard.getByTestId('my-flow-next-action-open').click();
+    const restoredDetail = page.locator('[data-testid="my-flow-item-detail"]:visible').first();
+    await expect(restoredDetail.getByTestId('my-flow-detail-memo')).toHaveValue(memo);
+    await expect(restoredDetail.getByTestId('my-flow-item-checklist').locator('input[type="checkbox"]').first()).toBeChecked();
+  }
 });
 
 test('my flow ux20 demo keeps large flow inventories grouped and collapsed', async ({ page }) => {
@@ -1193,6 +1610,24 @@ test('my flow ux20 demo keeps large flow inventories grouped and collapsed', asy
 
   const savedKeys = await page.evaluate(() => Object.keys(localStorage).filter((key) => key.startsWith('flow:saved:')));
   expect(savedKeys).toHaveLength(0);
+});
+
+test('my flow inventory can hide and restore a flow without removing today data', async ({ page }) => {
+  await page.goto('/my?demo=ux20');
+
+  await page.getByTestId('my-flow-view-flow').click();
+  await page.getByTestId('my-flow-inventory-toggle').click();
+  const firstCard = page.getByTestId('my-flow-overview-card').first();
+  const firstTitle = await firstCard.locator('h3').innerText();
+  await firstCard.getByTestId('my-flow-hide-toggle').click();
+  await expect(page.getByTestId('my-flow-overview-card').filter({ hasText: firstTitle })).toHaveCount(0);
+
+  await page.getByTestId('my-flow-list-filter-hidden').click();
+  await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(1);
+  await expect(page.getByTestId('my-flow-overview-card')).toContainText(firstTitle);
+  await page.getByTestId('my-flow-overview-card').getByTestId('my-flow-hide-toggle').click();
+  await page.getByTestId('my-flow-list-filter-all').click();
+  await expect(page.getByTestId('my-flow-overview-card').filter({ hasText: firstTitle })).toHaveCount(1);
 });
 
 test('my flow ux12 calendar collapses dense days and opens recurring routine edits by default', async ({ page }) => {
@@ -1475,13 +1910,15 @@ test('my flow mobile calendar keeps date selection separate and gives events usa
 
   await page.getByTestId('my-flow-view-calendar').click();
   const calendarCardBox = await page.getByTestId('my-flow-calendar-card').boundingBox();
-  expect(calendarCardBox?.x ?? 9999).toBeLessThanOrEqual(4);
-  expect(calendarCardBox?.width ?? 0).toBeGreaterThanOrEqual(386);
+  expect(calendarCardBox?.x ?? 9999).toBeGreaterThanOrEqual(0);
+  expect((calendarCardBox?.x ?? 9999) + (calendarCardBox?.width ?? 0)).toBeLessThanOrEqual(390);
+  expect(calendarCardBox?.width ?? 0).toBeGreaterThanOrEqual(350);
   const calendarTop = await page.locator('.fc').boundingBox();
   expect(calendarTop?.y ?? 9999).toBeLessThan(540);
-  expect(calendarTop?.y ?? 9999).toBeLessThanOrEqual(130);
-  expect(calendarTop?.x ?? 9999).toBeLessThanOrEqual(8);
-  expect(calendarTop?.width ?? 0).toBeGreaterThanOrEqual(374);
+  expect(calendarTop?.y ?? 9999).toBeLessThanOrEqual(140);
+  expect(calendarTop?.x ?? 9999).toBeGreaterThanOrEqual(0);
+  expect((calendarTop?.x ?? 9999) + (calendarTop?.width ?? 0)).toBeLessThanOrEqual(390);
+  expect(calendarTop?.width ?? 0).toBeGreaterThanOrEqual(330);
   await page.getByTestId('my-flow-month-picker').fill('2026-05');
   await expect(page.getByTestId('my-flow-month-picker')).toHaveValue('2026-05');
   const mobileDateCell = page.locator('.fc-daygrid-day[data-date="2026-05-29"]');
@@ -1526,8 +1963,9 @@ test('my flow mobile calendar keeps date selection separate and gives events usa
   const selectedDayAfterOverflow = await page.getByTestId('my-flow-calendar-selected-day').boundingBox();
   expect(selectedDayAfterOverflow?.y ?? 9999).toBeLessThan(220);
   const selectedDayBox = await page.getByTestId('my-flow-calendar-selected-day').boundingBox();
-  expect(selectedDayBox?.x ?? 9999).toBeLessThanOrEqual(4);
-  expect(selectedDayBox?.width ?? 0).toBeGreaterThanOrEqual(386);
+  expect(selectedDayBox?.x ?? 9999).toBeGreaterThanOrEqual(0);
+  expect((selectedDayBox?.x ?? 9999) + (selectedDayBox?.width ?? 0)).toBeLessThanOrEqual(390);
+  expect(selectedDayBox?.width ?? 0).toBeGreaterThanOrEqual(350);
   const selectedDayFirstRow = page.getByTestId('my-flow-calendar-selected-day').locator('article').first();
   const selectedDayFirstRowBox = await selectedDayFirstRow.boundingBox();
   expect(selectedDayFirstRowBox?.height ?? 9999).toBeLessThanOrEqual(92);

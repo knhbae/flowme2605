@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>2026-06-24 제작자 Source Row Editor 구현 리포트</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --line: #dfe7f0;
+        --text: #111827;
+        --muted: #5f6b7a;
+        --blue: #2563eb;
+        --blue-soft: #eaf2ff;
+        --green: #047857;
+        --green-soft: #e9f8f0;
+        --amber: #a16207;
+        --amber-soft: #fff7df;
+        --red: #be123c;
+        --red-soft: #fff1f2;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        line-height: 1.62;
+      }
+
+      main {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 32px 0 56px;
+      }
+
+      header,
+      section {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+      }
+
+      header {
+        padding: 28px;
+      }
+
+      section {
+        margin-top: 18px;
+        padding: 24px;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 10px;
+        font-size: clamp(28px, 4vw, 42px);
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin-bottom: 14px;
+        font-size: 22px;
+      }
+
+      h3 {
+        margin-bottom: 8px;
+        font-size: 17px;
+      }
+
+      p {
+        color: var(--muted);
+      }
+
+      a {
+        color: var(--blue);
+        font-weight: 700;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
+      }
+
+      code {
+        padding: 2px 6px;
+        border-radius: 6px;
+        background: #eef2f7;
+        color: #334155;
+        font-size: 0.94em;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: #eef2f7;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .pill.blue {
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+
+      .pill.green {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .pill.amber {
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 16px;
+        background: #fbfdff;
+      }
+
+      .ok {
+        border-color: #bbf7d0;
+        background: var(--green-soft);
+      }
+
+      .warn {
+        border-color: #fde68a;
+        background: var(--amber-soft);
+      }
+
+      .stop {
+        border-color: #fecdd3;
+        background: var(--red-soft);
+      }
+
+      .flowline {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .node {
+        min-height: 86px;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #f8fbff;
+      }
+
+      .node strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fff;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: #f8fafc;
+        color: #334155;
+        font-size: 13px;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      li + li {
+        margin-top: 6px;
+      }
+
+      @media (max-width: 760px) {
+        main {
+          width: min(100% - 20px, 1120px);
+          padding-top: 16px;
+        }
+
+        header,
+        section {
+          border-radius: 14px;
+          padding: 18px;
+        }
+
+        .grid,
+        .flowline {
+          grid-template-columns: 1fr;
+        }
+
+        table,
+        thead,
+        tbody,
+        tr,
+        th,
+        td {
+          display: block;
+        }
+
+        th {
+          display: none;
+        }
+
+        td {
+          border-bottom: 0;
+          padding: 10px 12px;
+        }
+
+        tr {
+          border-bottom: 1px solid var(--line);
+        }
+
+        tr:last-child {
+          border-bottom: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="pill blue">2026-06-24 P0 구현 기록</p>
+        <h1>제작자 Source Row Editor 구현 리포트</h1>
+        <p>
+          목적은 FlowMe가 단순 실행 화면뿐 아니라, 제작자가 원문 구조를 Step과 Item으로 바꾼 결과를 검토하고
+          초안으로 저장할 수 있는 플랫폼 축을 갖추는지 확인하는 것입니다. 이번 구현은 실제 발행 시스템이 아니라
+          <strong>localStorage 기반 P0 baseline</strong>입니다.
+        </p>
+        <div class="meta">
+          <span class="pill green">빌드 통과</span>
+          <span class="pill green">unit/e2e 통과</span>
+          <span class="pill green">모바일 overflow 없음</span>
+          <span class="pill amber">계정 저장 아님</span>
+          <span class="pill amber">발행 적용은 다음 slice</span>
+        </div>
+      </header>
+
+      <section>
+        <h2>이번에 만든 것</h2>
+        <div class="grid">
+          <article class="card ok">
+            <h3>제작자 화면 분리</h3>
+            <p>
+              <code>/flow-maps/[map]/creator</code>가 사용자 실행 화면이 아니라 제작자 편집 화면으로 동작합니다.
+              공개 화면과 저장 후 사용자 화면은 링크로만 연결됩니다.
+            </p>
+          </article>
+          <article class="card ok">
+            <h3>원문 행과 생성 결과 비교</h3>
+            <p>
+              원문에서 가져온 행, 생성된 Step 제목, 저장 위치, 원문 링크, Item fallback을 한 화면에서 비교하고 수정합니다.
+            </p>
+          </article>
+          <article class="card ok">
+            <h3>초안 저장</h3>
+            <p>
+              수정 내용은 <code>flow:map:creator-draft:{mapId}</code>에 저장됩니다. 공개 버전은 변경하지 않습니다.
+            </p>
+          </article>
+          <article class="card ok">
+            <h3>모바일 보완</h3>
+            <p>
+              모바일에서 원문 행을 누르면 편집 패널로 이동합니다. 이전 PoC에서 반복 지적된 “눌렀는데 아래에서 열리는” 문제를 줄였습니다.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2>제품 흐름에서의 위치</h2>
+        <div class="flowline">
+          <div class="node"><strong>원문</strong>제작자의 글, 표, 목차, 일정</div>
+          <div class="node"><strong>제작자 편집</strong>Source row를 Step/Item으로 교정</div>
+          <div class="node"><strong>공개 Flow Map</strong>사용자가 저장 전 확인</div>
+          <div class="node"><strong>내 Flow</strong>저장된 Step 실행</div>
+          <div class="node"><strong>업데이트</strong>새 버전 비교/적용은 다음 slice</div>
+        </div>
+      </section>
+
+      <section>
+        <h2>구현 파일</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>영역</th>
+              <th>파일</th>
+              <th>내용</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>UI</td>
+              <td><code>components/flow/SourceBackedFlowMapCreatorEditor.tsx</code></td>
+              <td>제작자 source-row draft editor 신규 추가</td>
+            </tr>
+            <tr>
+              <td>Route</td>
+              <td><code>app/flow-maps/[map]/creator/page.tsx</code></td>
+              <td>source-backed package를 만들어 creator editor로 전달</td>
+            </tr>
+            <tr>
+              <td>Model</td>
+              <td><code>lib/flow/source-backed-my-flow.ts</code></td>
+              <td>draft metadata, editable fields, source row comparison fields 추가</td>
+            </tr>
+            <tr>
+              <td>Test</td>
+              <td><code>lib/flow/source-backed-my-flow.test.ts</code>, <code>tests/e2e/flow-mvp.spec.ts</code></td>
+              <td>초안 계약, 행 비교, 제작자/사용자 화면 분리 검증</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>검증 결과</h2>
+        <div class="grid">
+          <article class="card ok">
+            <h3>자동 테스트</h3>
+            <ul>
+              <li><code>source-backed-my-flow.test.ts</code>: 14개 통과</li>
+              <li><code>npm test</code>: 257개 통과</li>
+              <li>source-backed creator e2e: 2개 통과</li>
+              <li><code>npm run docs:check</code>, <code>npm run build</code> 통과</li>
+            </ul>
+          </article>
+          <article class="card ok">
+            <h3>브라우저 확인</h3>
+            <ul>
+              <li>390px 모바일: 가로 overflow 없음</li>
+              <li>1366px 데스크톱: 가로 overflow 없음</li>
+              <li>콘솔/page error 없음</li>
+              <li>행 선택, 메모 입력, 초안 저장 확인</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2>아직 남은 것</h2>
+        <div class="grid">
+          <article class="card warn">
+            <h3>발행 version workflow</h3>
+            <p>초안을 저장했지만 “새 공개 버전으로 발행”하거나 기존 공개 버전을 교체하는 동작은 아직 없습니다.</p>
+          </article>
+          <article class="card warn">
+            <h3>계정 기반 persistence</h3>
+            <p>현재 저장은 브라우저 localStorage입니다. 제작자 계정, 서버 저장, 권한, 히스토리는 다음 단계입니다.</p>
+          </article>
+          <article class="card warn">
+            <h3>사용자 update compare/apply</h3>
+            <p>공개 버전이 바뀌었을 때 저장한 사용자가 무엇을 적용할지 고르는 화면은 다음 slice입니다.</p>
+          </article>
+          <article class="card stop">
+            <h3>검증 표현 경계</h3>
+            <p>이번 결과는 내부 구현과 자동화 검증입니다. 실제 제작자/사용자 행동으로 검증됐다고 표현하면 안 됩니다.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

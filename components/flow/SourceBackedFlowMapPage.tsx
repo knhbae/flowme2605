@@ -17,6 +17,26 @@ const destinationLabel: Record<string, string> = {
   todo: '할 일',
 };
 
+const sourceTypeLabel: Record<string, string> = {
+  creator_experience: '제작자 경험',
+  official: '공식 정보',
+  reference: '참고 원문',
+};
+
+const riskLevelLabel: Record<string, string> = {
+  financial_sensitive: '재무 민감',
+  legal_sensitive: '법률 민감',
+  low: '낮은 위험',
+  medical_sensitive: '건강 민감',
+  medium: '주의 필요',
+};
+
+const reviewStatusClass: Record<string, string> = {
+  needs_items: 'bg-amber-50 text-amber-900 ring-amber-200',
+  needs_source: 'bg-rose-50 text-rose-900 ring-rose-200',
+  ready: 'bg-emerald-50 text-emerald-800 ring-emerald-200',
+};
+
 function NotFoundMap() {
   return (
     <main className="mx-auto max-w-3xl px-5 py-8">
@@ -87,7 +107,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
                 {flow.steps.map((step) => (
                   <div key={step.id} className="rounded-md border border-slate-100 bg-slate-50 px-3 py-2">
                     <p className="text-sm font-semibold text-slate-950">{step.title}</p>
-                    <p className="mt-1 text-xs font-semibold text-slate-500">메모 항목 {step.detailItemCount}개</p>
+                    <p className="mt-1 text-xs font-semibold text-slate-500">하위 항목 {step.detailItemCount}개</p>
                   </div>
                 ))}
               </div>
@@ -105,6 +125,9 @@ export function SourceBackedFlowMapCreatorPage({ mapId }: SourceBackedFlowMapPro
 
   const { creator, map, myFlow } = publishPackage;
   const readyToPublish = creator.publishBlockers.length === 0;
+  const readyRowCount = creator.sourceRows.filter((row) => row.reviewStatus === 'ready').length;
+  const sourceCheckCount = creator.sourceRows.filter((row) => row.reviewStatus === 'needs_source').length;
+  const itemCheckCount = creator.sourceRows.filter((row) => row.reviewStatus === 'needs_items').length;
 
   return (
     <main data-testid="flow-map-creator" className="mx-auto max-w-6xl px-4 py-5 pb-16 sm:px-5 sm:py-8">
@@ -112,7 +135,7 @@ export function SourceBackedFlowMapCreatorPage({ mapId }: SourceBackedFlowMapPro
         <p className="text-sm font-semibold text-blue-700">제작자 발행 준비</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{map.title}</h1>
         <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
-          원문 목차가 사용자에게 저장될 진도표와 메모 항목으로 옮겨졌는지 확인합니다.
+          원문 구조가 사용자에게 저장될 Step과 하위 항목으로 옮겨졌는지 확인합니다.
         </p>
         <div className="mt-5 flex flex-wrap gap-2">
           <Link className="inline-flex min-h-10 items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white" href={creator.publicPreviewHref}>
@@ -126,21 +149,67 @@ export function SourceBackedFlowMapCreatorPage({ mapId }: SourceBackedFlowMapPro
 
       <section className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-          <p className="text-sm font-semibold text-slate-500">원문 구조 확인</p>
-          <h2 className="mt-1 text-xl font-semibold text-slate-950">{map.sourceTitle}</h2>
-          <div className="mt-4 grid gap-2">
+          <p className="text-sm font-semibold text-slate-500">원문 row 검토</p>
+          <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-semibold text-slate-950">Step과 Item으로 옮겨진 내용</h2>
+              <p className="mt-1 text-sm leading-6 text-slate-600">{map.sourceTitle}</p>
+            </div>
+            <div className="flex flex-wrap gap-2 text-xs font-semibold">
+              <span className="rounded-md bg-emerald-50 px-2 py-1 text-emerald-800 ring-1 ring-emerald-200">준비됨 {readyRowCount}</span>
+              <span className="rounded-md bg-rose-50 px-2 py-1 text-rose-900 ring-1 ring-rose-200">원문 확인 {sourceCheckCount}</span>
+              <span className="rounded-md bg-amber-50 px-2 py-1 text-amber-900 ring-1 ring-amber-200">Item 확인 {itemCheckCount}</span>
+            </div>
+          </div>
+          <div className="mt-4 grid gap-3">
             {creator.sourceRows.map((row) => (
-              <article key={row.stepId} data-testid="flow-map-source-row" className="rounded-md border border-slate-200 bg-slate-50 px-3 py-3">
+              <article key={row.stepId} data-testid="flow-map-source-row" className="rounded-lg border border-slate-200 bg-slate-50 p-4">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
                     <p className="text-sm font-semibold text-slate-950">{row.stepTitle}</p>
                     <p className="mt-1 text-xs font-semibold text-slate-500">{[row.flowTitle, row.sectionTitle].filter(Boolean).join(' · ')}</p>
                   </div>
-                  <span className="rounded-md bg-white px-2 py-1 text-xs font-semibold text-blue-700 ring-1 ring-slate-200">
-                    {destinationLabel[row.destination] ?? row.destination}
-                  </span>
+                  <div className="flex flex-wrap justify-end gap-2">
+                    <span className={`rounded-md px-2 py-1 text-xs font-semibold ring-1 ${reviewStatusClass[row.reviewStatus]}`}>
+                      {row.reviewLabel}
+                    </span>
+                    <span className="rounded-md bg-white px-2 py-1 text-xs font-semibold text-blue-700 ring-1 ring-slate-200">
+                      {destinationLabel[row.destination] ?? row.destination}
+                    </span>
+                  </div>
                 </div>
-                <p className="mt-2 text-xs font-semibold text-slate-500">메모 항목 {row.itemCount}개</p>
+                <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
+                  {row.sourceType ? <span className="rounded-md bg-white px-2 py-1 ring-1 ring-slate-200">{sourceTypeLabel[row.sourceType] ?? row.sourceType}</span> : null}
+                  {row.riskLevel ? <span className="rounded-md bg-white px-2 py-1 ring-1 ring-slate-200">{riskLevelLabel[row.riskLevel] ?? row.riskLevel}</span> : null}
+                  <span className="rounded-md bg-white px-2 py-1 ring-1 ring-slate-200">Item {row.itemCount}개</span>
+                </div>
+                {row.detailItems.length > 0 ? (
+                  <ul data-testid="flow-map-source-row-items" className="mt-3 grid gap-1.5 text-sm leading-6 text-slate-700">
+                    {row.detailItems.slice(0, 4).map((item) => (
+                      <li key={item} className="flex gap-2">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" aria-hidden="true" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                    {row.detailItems.length > 4 ? (
+                      <li className="text-xs font-semibold text-slate-500">외 {row.detailItems.length - 4}개 Item</li>
+                    ) : null}
+                  </ul>
+                ) : (
+                  <p className="mt-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-amber-900 ring-1 ring-amber-200">
+                    외부 앱에 붙을 Item 문장을 확인하세요.
+                  </p>
+                )}
+                <div className="mt-3 grid gap-2 border-t border-slate-200 pt-3 text-xs leading-5 text-slate-600">
+                  {row.doneWhen ? <p><span className="font-semibold text-slate-800">완료 기준</span> {row.doneWhen}</p> : null}
+                  {row.memoHint ? <p><span className="font-semibold text-slate-800">메모 힌트</span> {row.memoHint}</p> : null}
+                  <p><span className="font-semibold text-slate-800">검토 메모</span> {row.reviewNote}</p>
+                  {row.sourceUrl ? (
+                    <a className="font-semibold text-blue-700 underline underline-offset-2" href={row.sourceUrl} target="_blank" rel="noreferrer">
+                      원문 근거 열기
+                    </a>
+                  ) : null}
+                </div>
               </article>
             ))}
           </div>

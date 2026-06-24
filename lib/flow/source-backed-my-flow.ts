@@ -6,9 +6,20 @@ import type {
   PrimaryDestination,
   RiskLevel,
   SourceType,
+  StructureType,
 } from './types';
+import {
+  additionalSourceBackedMyFlowBundles,
+  additionalSourceBackedMyFlowMaps,
+} from './source-backed-expansion-260625';
 
 export type SourceBackedStepDestination = 'calendar' | 'todo' | 'checklist' | 'sheet' | 'memo' | 'progress';
+export type SourceBackedFlowMapCreatorEditableField =
+  | 'step_title'
+  | 'step_destination'
+  | 'source_url'
+  | 'item_fallback'
+  | 'creator_note';
 
 export type SourceBackedMyFlowRow = {
   stepId: string;
@@ -81,6 +92,51 @@ export type SourceBackedFlowMapSavedSnapshot = {
   sourceCheckedAtByFlow: Record<string, string | undefined>;
 };
 
+export type SourceBackedFlowMapChildBinding = {
+  slug: string;
+  flowId: string;
+  title: string;
+  category: string;
+  structureType: StructureType;
+  anchorType: AnchorType;
+  primaryDestination: PrimaryDestination;
+  riskLevel?: RiskLevel;
+  sourceTitle?: string;
+  sourceUrl?: string;
+  sourceCheckedAt?: string;
+  stepCount: number;
+  itemFallbackCount: number;
+  stepIds: string[];
+};
+
+export type SourceBackedFlowMapPersistenceRecord = {
+  schemaVersion: 1;
+  recordType: 'saved_source_backed_flow_map';
+  bridgeStorageKey: string;
+  map: {
+    id: string;
+    title: string;
+    userLabel: string;
+    version: string;
+    updatedAt: string;
+    updatePolicy: SourceBackedFlowMapUpdatePolicy;
+    sourceTitle: string;
+    sourceUrl: string;
+  };
+  saved: {
+    savedAt: string;
+    sourceSurface: 'public_save';
+    anchor?: string;
+  };
+  readiness: {
+    content: 'ready_for_my_flow' | 'needs_creator_review';
+    update: SourceBackedFlowMapUpdateAssessment['status'];
+    reasons: string[];
+  };
+  childFlows: SourceBackedFlowMapChildBinding[];
+  updateAssessment: SourceBackedFlowMapUpdateAssessment;
+};
+
 export type SourceBackedFlowMapUpdateAssessment = {
   status: 'up_to_date' | 'map_missing' | 'minor_update_available' | 'review_before_apply';
   userAction: 'none' | 'reconnect_source' | 'review_changes';
@@ -100,14 +156,33 @@ export type SourceBackedFlowMapPublishPackage = {
       flowTitle: string;
       sectionTitle?: string;
       stepId: string;
+      sourceRowTitle: string;
+      sourceRowDescription: string;
       stepTitle: string;
+      generatedStepTitle: string;
       destination: SourceBackedStepDestination;
+      scheduleSummary: string;
+      sourceType?: SourceType;
+      riskLevel?: RiskLevel;
       sourceUrl?: string;
       itemCount: number;
+      detailItems: string[];
+      itemFallbackText: string;
+      doneWhen?: string;
+      memoHint?: string;
+      reviewStatus: 'ready' | 'needs_source' | 'needs_items';
+      reviewLabel: string;
+      reviewNote: string;
     }[];
     publishChecks: string[];
     publishBlockers: string[];
     publicPreviewHref: string;
+    draft: {
+      storageKey: string;
+      publishedVersion: string;
+      draftVersion: string;
+      editableFields: SourceBackedFlowMapCreatorEditableField[];
+    };
   };
   public: {
     surface: 'public_save';
@@ -135,6 +210,14 @@ export type SourceBackedFlowMapPublishPackage = {
     visibleTabs: string[];
   };
 };
+
+export function getSourceBackedFlowMapSnapshotStorageKey(mapId: string): string {
+  return `flow:map:saved:${mapId}`;
+}
+
+export function getSourceBackedFlowMapPersistenceStorageKey(mapId: string): string {
+  return `flow:map:persistence:${mapId}`;
+}
 
 const now = '2026-06-23T00:00:00.000Z';
 const movingSourceUrl =
@@ -187,26 +270,150 @@ const movingDetails: Record<string, FlowItemDetail> = {
   },
 };
 
-const mathDetailHow = ['원문 단원 링크에서 해당 소단원만 엽니다.', '오늘 본 범위나 문제 번호를 표시합니다.', '막힌 부분이나 오답 번호만 메모합니다.']
-  .map((item) => `- ${item}`)
-  .join('\n');
+const mathUnits = [
+  {
+    id: 'math-prime-factorization',
+    orderLabel: '1.',
+    title: '소인수분해',
+    summary: '자연수의 성질과 약수, 배수 관계를 확인합니다.',
+    concepts: [
+      '거듭제곱',
+      '소수와 합성수',
+      '에라토스테네스의 체',
+      '소인수분해',
+      '소인수분해를 이용하여 약수 개수구하기',
+      '최대공약수의 뜻과 최대공약수 구하는 방법',
+      '최소공배수의 뜻과 최소공배수 구하는 방법',
+      '최대공약수와 최소공배수의 관계',
+    ],
+  },
+  {
+    id: 'math-integers-rationals',
+    orderLabel: '2.',
+    title: '정수와 유리수',
+    summary: '양수와 음수, 정수와 유리수의 사칙연산 흐름을 확인합니다.',
+    concepts: [
+      '양수와 음수, 정수',
+      '절댓값과 수직선',
+      '정수의 대소관계',
+      '부등호의 사용',
+      '정수의 덧셈, 교환·결합법칙',
+      '정수의 뺄셈',
+      '정수 덧셈·뺄셈 혼합계산',
+      '정수의 곱셈, 교환·결합법칙',
+      '정수 나눗셈과 혼합계산',
+      '분배법칙',
+      '유리수와 유리수의 분류',
+      '유리수와 수직선, 대소관계',
+      '유리수의 덧셈과 뺄셈',
+      '유리수의 곱셈과 나눗셈',
+    ],
+  },
+  {
+    id: 'math-letter-expression',
+    orderLabel: '3.',
+    title: '문자와 식',
+    summary: '문자를 포함한 식과 일차방정식 풀이 흐름을 확인합니다.',
+    concepts: [
+      '문자와 식, 문자를 포함하는 식',
+      '곱셈기호와 나눗셈 기호의 생략',
+      '대입, 식의 값',
+      '항, 계수, 차수, 단항식과 다항식',
+      '일차식의 곱셈과 나눗셈',
+      '동류항, 일차식의 덧셈과 뺄셈',
+      '방정식과 항등식',
+      '등식의 성질과 방정식의 풀이',
+      '일차방정식의 풀이',
+      '복잡한 일차방정식의 풀이',
+      '활용 1 - 숫자, 나이',
+      '활용 2 - 거리, 속력, 시간, 농도',
+    ],
+  },
+  {
+    id: 'math-coordinate-graph',
+    orderLabel: '4.',
+    title: '좌표평면과 그래프',
+    summary: '좌표평면, 그래프, 정비례와 반비례를 확인합니다.',
+    concepts: ['순서쌍과 좌표평면', '그래프의 뜻과 표현', '정비례와 그래프', '반비례와 그래프'],
+  },
+  {
+    id: 'math-basic-geometry',
+    orderLabel: '5.',
+    title: '기본도형',
+    summary: '점, 선, 면의 위치 관계와 평행선, 작도, 합동을 확인합니다.',
+    concepts: [
+      '점, 선, 면, 직선, 반직선, 선분',
+      '두 점 사이의 거리와 중점',
+      '평각, 직각, 예각, 둔각',
+      '맞꼭지각, 동위각, 엇각',
+      '직교와 수직, 점과 직선 사이의 거리',
+      '점, 직선, 평면의 위치 관계',
+      '평면에서의 위치 관계',
+      '공간에서의 위치 관계',
+      '공간에서 두 평면의 위치 관계',
+      '위치 관계 총정리',
+      '평행선의 성질',
+      '작도와 크기가 같은 각의 작도',
+      '삼각형의 정의, 대변, 대각',
+      '삼각형의 작도',
+      '도형의 합동, 삼각형의 합동 조건',
+    ],
+  },
+  {
+    id: 'math-plane-figures',
+    orderLabel: '6.',
+    title: '평면도형의 성질',
+    summary: '다각형과 원, 부채꼴의 성질과 넓이 흐름을 확인합니다.',
+    concepts: [
+      '다각형, 내각, 외각, 정다각형',
+      '대각선의 개수 구하기 공식',
+      '삼각형 내각과 외각의 성질',
+      '다각형 내각과 외각의 합',
+      '원과 부채꼴, 호, 현, 중심각',
+      '원과 부채꼴의 넓이와 둘레',
+    ],
+  },
+  {
+    id: 'math-solid-figures',
+    orderLabel: '7.',
+    title: '입체도형의 성질',
+    summary: '다면체와 회전체, 겉넓이와 부피 개념을 확인합니다.',
+    concepts: [
+      '다면체, 각뿔, 각기둥, 각뿔대',
+      '정다면체의 뜻과 종류',
+      '회전체와 원뿔대, 회전체의 성질',
+      '각기둥과 원기둥의 겉넓이와 부피',
+      '각뿔과 원뿔의 겉넓이와 부피',
+      '구의 겉넓이와 부피',
+    ],
+  },
+  {
+    id: 'math-data-analysis',
+    orderLabel: '8.',
+    title: '자료의 정리와 해석',
+    summary: '자료 정리, 대푯값, 도수분포와 그래프를 확인합니다.',
+    concepts: [
+      '대푯값, 평균, 중앙값, 최빈값',
+      '줄기와 잎 그림',
+      '도수분포표, 변량, 계급, 도수',
+      '도수분포표 만드는 방법',
+      '히스토그램',
+      '도수분포다각형',
+      '상대도수와 그 분포표',
+      '상대도수의 그래프',
+    ],
+  },
+] as const;
 
 const mathDetails: Record<string, FlowItemDetail> = Object.fromEntries(
-  [
-    'math-prime-factorization',
-    'math-integers-rationals',
-    'math-equations',
-    'math-functions',
-    'math-coordinate-plane',
-    'math-graph-proportion',
-  ].map((id) => [
-    id,
+  mathUnits.map((unit) => [
+    unit.id,
     {
-      item_id: id,
-      why: '중1 수학 목차의 단원 진행 위치를 잃지 않기 위한 진도 항목입니다.',
-      how: mathDetailHow,
-      completion_criteria: '해당 단원에서 오늘 본 범위와 다시 볼 부분을 남겼습니다.',
-      links: [{ label: 'Mathbang 중1 수학 목차', url: mathSourceUrl, type: 'reference' }],
+      item_id: unit.id,
+      why: `원문 목차의 ${unit.orderLabel} ${unit.title} 단원입니다. 하위 개념 ${unit.concepts.length}개를 읽은 만큼 체크합니다.`,
+      how: unit.concepts.map((concept) => `- ${concept}`).join('\n'),
+      completion_criteria: '이 단원의 하위 개념을 확인했고, 다시 볼 개념이 있으면 메모했습니다.',
+      links: [{ label: 'Mathbang 중1 수학 목차에서 보기', url: mathSourceUrl, type: 'reference' }],
     } satisfies FlowItemDetail,
   ]),
 );
@@ -279,16 +486,34 @@ const vaccinationDetails: Record<string, FlowItemDetail> = Object.fromEntries(
 
 export const sourceBackedMyFlowMaps: SourceBackedMyFlowMap[] = [
   {
-    id: 'middle-school-math-1',
-    userLabel: '중1 수학 지도',
-    title: '중1 수학 목차 진도 지도',
-    version: '2026-06-23.1',
+    id: 'moving-d30',
+    userLabel: '이사 D-30 지도',
+    title: '원룸 이사 D-30 일정 지도',
+    version: '2026-06-24.1',
     updatedAt: now,
     updatePolicy: 'auto_patch_when_safe',
-    summary: '원문 목차의 단원들을 진도표로 저장하고, 각 단원에서 막힌 부분만 짧게 남깁니다.',
+    summary: '이사일 1개를 기준으로 원문 체크리스트의 실행 단서를 D-30, D-14, D-7, D-1, D-Day 일정으로 저장합니다. FlowMe에는 연락처, 예약번호, 다시 볼 링크만 짧게 남깁니다.',
+    sourceTitle: 'AJD 이사 준비 체크리스트',
+    sourceUrl: movingSourceUrl,
+    artifacts: ['D-30 일정', '이사 전 체크', '연락처·예약번호 메모'],
+    setupInput: {
+      label: '이사일',
+      hint: '이사일 1개를 넣으면 원문 체크리스트의 주요 실행 항목을 날짜별 Step으로 배치합니다.',
+      defaultValue: '2026-07-22',
+    },
+    flowSlugs: ['source-backed-moving-d30'],
+  },
+  {
+    id: 'middle-school-math-1',
+    userLabel: '중1 수학 지도',
+    title: '중1 수학 목차 진도표',
+    version: '2026-06-24.1',
+    updatedAt: now,
+    updatePolicy: 'auto_patch_when_safe',
+    summary: '원문 목차의 8개 단원과 하위 개념을 진도표로 저장합니다. 공부 코치가 아니라 읽은 개념과 다시 볼 개념만 남깁니다.',
     sourceTitle: 'Mathbang 중1 수학 목차',
     sourceUrl: mathSourceUrl,
-    artifacts: ['단원별 진도표', '막힌 부분 메모', '원문 링크'],
+    artifacts: ['8개 단원 진도표', '하위 개념 체크', '원문 링크'],
     flowSlugs: ['source-backed-middle-school-math-1'],
   },
   {
@@ -312,6 +537,7 @@ export const sourceBackedMyFlowMaps: SourceBackedMyFlowMap[] = [
       'source-backed-baby-vaccination-schedule',
     ],
   },
+  ...additionalSourceBackedMyFlowMaps,
 ];
 
 export const sourceBackedMyFlowBundles: FlowBundle[] = [
@@ -335,7 +561,7 @@ export const sourceBackedMyFlowBundles: FlowBundle[] = [
       risk_level: 'low',
       created_at: now,
       updated_at: now,
-      tags: ['source-backed', 'timeline', 'calendar'],
+      tags: ['source-backed', 'flow-map:moving-d30', 'timeline', 'calendar'],
     },
     sections: [
       { id: 'moving-before', flow_id: 'flow-source-backed-moving-d30', title: '이사 전 준비', order: 0 },
@@ -409,8 +635,8 @@ export const sourceBackedMyFlowBundles: FlowBundle[] = [
     flow: {
       id: 'flow-source-backed-middle-school-math-1',
       slug: 'source-backed-middle-school-math-1',
-      title: '중1 수학 목차 진도',
-      description: '원문 목차의 단원을 진도 row로 저장하고, 막힌 부분만 짧게 남깁니다.',
+      title: '단원별 개념 진도',
+      description: '원문 목차의 8개 단원을 진도 row로 저장하고, 각 단원의 하위 개념을 체크 항목으로 봅니다.',
       category: '교육/수학',
       structure_type: 'phase',
       content_type: 'default',
@@ -428,72 +654,18 @@ export const sourceBackedMyFlowBundles: FlowBundle[] = [
       tags: ['source-backed', 'flow-map:middle-school-math-1', 'progress-flow'],
     },
     sections: [
-      { id: 'math-number', flow_id: 'flow-source-backed-middle-school-math-1', title: '수와 연산', order: 0 },
-      { id: 'math-letter', flow_id: 'flow-source-backed-middle-school-math-1', title: '문자와 식', order: 1 },
-      { id: 'math-graph', flow_id: 'flow-source-backed-middle-school-math-1', title: '좌표평면과 그래프', order: 2 },
+      { id: 'math-table-of-contents', flow_id: 'flow-source-backed-middle-school-math-1', title: 'Mathbang 중1 목차', order: 0 },
     ],
-    items: [
-      {
-        id: 'math-prime-factorization',
-        flow_id: 'flow-source-backed-middle-school-math-1',
-        section_id: 'math-number',
-        title: '소인수분해',
-        description: '목차에서 소인수분해 단원 진행 여부를 표시합니다.',
-        type: 'todo',
-        source_type: 'reference',
-        order: 0,
-      },
-      {
-        id: 'math-integers-rationals',
-        flow_id: 'flow-source-backed-middle-school-math-1',
-        section_id: 'math-number',
-        title: '정수와 유리수',
-        description: '정수와 유리수 단원에서 오늘 본 범위만 표시합니다.',
-        type: 'todo',
-        source_type: 'reference',
-        order: 1,
-      },
-      {
-        id: 'math-equations',
-        flow_id: 'flow-source-backed-middle-school-math-1',
-        section_id: 'math-letter',
-        title: '일차방정식',
-        description: '방정식 단원 진행과 다시 볼 문제를 남깁니다.',
-        type: 'todo',
-        source_type: 'reference',
-        order: 2,
-      },
-      {
-        id: 'math-functions',
-        flow_id: 'flow-source-backed-middle-school-math-1',
-        section_id: 'math-letter',
-        title: '함수',
-        description: '함수 단원 진행 여부를 표시합니다.',
-        type: 'todo',
-        source_type: 'reference',
-        order: 3,
-      },
-      {
-        id: 'math-coordinate-plane',
-        flow_id: 'flow-source-backed-middle-school-math-1',
-        section_id: 'math-graph',
-        title: '좌표평면',
-        description: '좌표평면 단원 진행 여부를 표시합니다.',
-        type: 'todo',
-        source_type: 'reference',
-        order: 4,
-      },
-      {
-        id: 'math-graph-proportion',
-        flow_id: 'flow-source-backed-middle-school-math-1',
-        section_id: 'math-graph',
-        title: '그래프와 비례',
-        description: '그래프와 비례 관계 단원 진행 여부를 표시합니다.',
-        type: 'todo',
-        source_type: 'reference',
-        order: 5,
-      },
-    ],
+    items: mathUnits.map((unit, order) => ({
+      id: unit.id,
+      flow_id: 'flow-source-backed-middle-school-math-1',
+      section_id: 'math-table-of-contents',
+      title: `${unit.orderLabel} ${unit.title}`,
+      description: `${unit.summary} 하위 개념 ${unit.concepts.length}개를 진도 체크로 봅니다.`,
+      type: 'todo' as const,
+      source_type: 'reference' as const,
+      order,
+    })),
     itemDetails: Object.values(mathDetails),
   },
   {
@@ -586,6 +758,7 @@ export const sourceBackedMyFlowBundles: FlowBundle[] = [
     })),
     itemDetails: Object.values(vaccinationDetails),
   },
+  ...additionalSourceBackedMyFlowBundles,
 ];
 
 export function mergeSourceBackedMyFlowBundles(bundles: FlowBundle[]): FlowBundle[] {
@@ -631,6 +804,75 @@ export function buildSourceBackedFlowMapSavedSnapshot(
   };
 }
 
+export function buildSourceBackedFlowMapPersistenceRecord(
+  mapId: string,
+  options: { savedAt?: string; anchor?: string } = {},
+): SourceBackedFlowMapPersistenceRecord | undefined {
+  const map = sourceBackedMyFlowMaps.find((entry) => entry.id === mapId);
+  if (!map) return undefined;
+
+  const snapshot = buildSourceBackedFlowMapSavedSnapshot(mapId, options);
+  if (!snapshot) return undefined;
+
+  const publishPackage = buildSourceBackedFlowMapPublishPackage(mapId);
+  const publishBlockers = publishPackage?.creator.publishBlockers ?? [];
+  const updateAssessment = assessSourceBackedFlowMapUpdate(snapshot);
+  const childFlows = getMapChildBundles(map).map((bundle) => {
+    const rows = buildSourceBackedMyFlowRows(bundle);
+    return {
+      slug: bundle.flow.slug,
+      flowId: bundle.flow.id,
+      title: bundle.flow.title,
+      category: bundle.flow.category,
+      structureType: bundle.flow.structure_type,
+      anchorType: bundle.flow.anchor_type,
+      primaryDestination: bundle.flow.primary_destination ?? 'internal_check',
+      riskLevel: bundle.flow.risk_level,
+      sourceTitle: bundle.flow.source_title,
+      sourceUrl: bundle.flow.source_url,
+      sourceCheckedAt: bundle.flow.source_checked_at,
+      stepCount: bundle.items.length,
+      itemFallbackCount: rows.reduce((total, row) => total + (row.textFallback.items?.length ?? 0), 0),
+      stepIds: bundle.items
+        .slice()
+        .sort((a, b) => a.order - b.order)
+        .map((item) => item.id),
+    } satisfies SourceBackedFlowMapChildBinding;
+  });
+
+  const readinessReasons = publishBlockers.length
+    ? publishBlockers
+    : ['공개 저장 후 My Flow에서 실행 가능한 source-backed Step 기록으로 사용할 수 있습니다.'];
+
+  return {
+    schemaVersion: 1,
+    recordType: 'saved_source_backed_flow_map',
+    bridgeStorageKey: getSourceBackedFlowMapSnapshotStorageKey(map.id),
+    map: {
+      id: map.id,
+      title: map.title,
+      userLabel: map.userLabel,
+      version: map.version,
+      updatedAt: map.updatedAt,
+      updatePolicy: map.updatePolicy,
+      sourceTitle: map.sourceTitle,
+      sourceUrl: map.sourceUrl,
+    },
+    saved: {
+      savedAt: snapshot.savedAt,
+      sourceSurface: 'public_save',
+      ...(snapshot.anchor ? { anchor: snapshot.anchor } : {}),
+    },
+    readiness: {
+      content: publishBlockers.length ? 'needs_creator_review' : 'ready_for_my_flow',
+      update: updateAssessment.status,
+      reasons: readinessReasons,
+    },
+    childFlows,
+    updateAssessment,
+  };
+}
+
 export function assessSourceBackedFlowMapUpdate(saved: SourceBackedFlowMapSavedSnapshot): SourceBackedFlowMapUpdateAssessment {
   const current = buildSourceBackedFlowMapSavedSnapshot(saved.mapId, {
     savedAt: saved.savedAt,
@@ -660,7 +902,7 @@ export function assessSourceBackedFlowMapUpdate(saved: SourceBackedFlowMapSavedS
   if (saved.version !== current.version) reasons.push(`버전 변경: ${saved.version} → ${current.version}`);
   if (!sameStringList(saved.flowSlugs, current.flowSlugs)) reasons.push('Flow 구성이 바뀌었습니다.');
   if (!sameRecordValues(saved.stepCountsByFlow, current.stepCountsByFlow)) reasons.push('Step 수가 바뀌었습니다.');
-  if (hasSensitiveSource(current)) reasons.push('공식/민감 일정은 자동 반영하지 않고 사용자가 변경 내용을 확인해야 합니다.');
+  if (!sameRecordValues(saved.sourceCheckedAtByFlow, current.sourceCheckedAtByFlow)) reasons.push('출처 확인일이 바뀌었습니다.');
 
   const contentChanged = reasons.length > 0;
   if (!contentChanged) {
@@ -675,9 +917,12 @@ export function assessSourceBackedFlowMapUpdate(saved: SourceBackedFlowMapSavedS
     };
   }
 
+  if (hasSensitiveSource(current)) reasons.push('공식/민감 일정은 자동 반영하지 않고 사용자가 변경 내용을 확인해야 합니다.');
+
   const needsReview =
     !sameStringList(saved.flowSlugs, current.flowSlugs) ||
     !sameRecordValues(saved.stepCountsByFlow, current.stepCountsByFlow) ||
+    !sameRecordValues(saved.sourceCheckedAtByFlow, current.sourceCheckedAtByFlow) ||
     hasSensitiveSource(current);
 
   return {
@@ -703,15 +948,40 @@ export function buildSourceBackedFlowMapPublishPackage(mapId: string): SourceBac
     const rows = rowsBySlug.get(bundle.flow.slug) ?? [];
     return rows.map((row) => {
       const item = bundle.items.find((entry) => entry.id === row.stepId);
+      const detailItems = row.textFallback.items ?? [];
+      const reviewStatus: 'ready' | 'needs_source' | 'needs_items' = !row.sourceUrl
+        ? 'needs_source'
+        : detailItems.length === 0
+          ? 'needs_items'
+          : 'ready';
       return {
         flowSlug: bundle.flow.slug,
         flowTitle: bundle.flow.title,
         sectionTitle: item?.section_id ? sectionById.get(item.section_id) : undefined,
         stepId: row.stepId,
+        sourceRowTitle: item?.title ?? row.title,
+        sourceRowDescription: item?.description ?? row.textFallback.description,
         stepTitle: row.title,
+        generatedStepTitle: row.title,
         destination: row.destination,
+        scheduleSummary: describeCreatorRowSchedule(row),
+        sourceType: row.sourceType,
+        riskLevel: row.riskLevel,
         sourceUrl: row.sourceUrl,
-        itemCount: row.textFallback.items?.length ?? 0,
+        itemCount: detailItems.length,
+        detailItems,
+        itemFallbackText: detailItems.join('\n'),
+        doneWhen: row.textFallback.doneWhen,
+        memoHint: row.textFallback.memoHint,
+        reviewStatus,
+        reviewLabel:
+          reviewStatus === 'ready' ? '준비됨' : reviewStatus === 'needs_source' ? '원문 링크 필요' : '하위 Item 확인',
+        reviewNote:
+          reviewStatus === 'ready'
+            ? '원문 row가 Step과 Item으로 연결됨'
+            : reviewStatus === 'needs_source'
+              ? '이 Step은 발행 전 원문 근거 URL을 확인해야 함'
+              : '외부 앱에 내려갈 Item 또는 fallback 문장을 확인해야 함',
       };
     });
   });
@@ -735,6 +1005,12 @@ export function buildSourceBackedFlowMapPublishPackage(mapId: string): SourceBac
       ],
       publishBlockers,
       publicPreviewHref: `/flow-maps/${map.id}`,
+      draft: {
+        storageKey: `flow:map:creator-draft:${map.id}`,
+        publishedVersion: map.version,
+        draftVersion: `${map.version}-draft`,
+        editableFields: ['step_title', 'step_destination', 'source_url', 'item_fallback', 'creator_note'],
+      },
     },
     public: {
       surface: 'public_save',
@@ -769,6 +1045,18 @@ export function buildSourceBackedFlowMapPublishPackage(mapId: string): SourceBac
       visibleTabs: ['오늘', '캘린더', 'Flow', '체크', '루틴'],
     },
   };
+}
+
+function describeCreatorRowSchedule(row: SourceBackedMyFlowRow): string {
+  const calendar = row.calendar;
+  if (calendar.mode === 'anchor_offset') {
+    const offset = calendar.dayOffset ?? 0;
+    const offsetLabel = offset === 0 ? 'D-Day' : offset > 0 ? `D+${offset}` : `D${offset}`;
+    return calendar.window ? `${offsetLabel} / ${calendar.window.label}` : offsetLabel;
+  }
+  if (calendar.mode === 'routine') return calendar.repeatRule ? `repeat / ${calendar.repeatRule}` : 'repeat';
+  if (calendar.window) return calendar.window.label;
+  return 'no date';
 }
 
 function getMapChildBundles(map: SourceBackedMyFlowMap): FlowBundle[] {
@@ -908,7 +1196,7 @@ function extractDetailItems(detail?: FlowItemDetail): string[] | undefined {
 }
 
 function getMemoHint(bundle: FlowBundle, item: FlowItem): string {
-  if (bundle.flow.tags?.includes('progress-flow')) return '막힌 부분, 오답 번호, 다시 볼 범위만 짧게 남기기';
+  if (bundle.flow.tags?.includes('progress-flow')) return '다시 볼 개념만 짧게 남기기';
   if (item.day_offset !== undefined) return '연락처, 예약번호, 다시 볼 링크만 짧게 남기기';
   return '필요한 메모만 짧게 남기기';
 }

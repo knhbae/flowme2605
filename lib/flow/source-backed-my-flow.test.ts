@@ -4,9 +4,12 @@ import { buildIcsCalendar, buildWorkbookSheets } from './export';
 import {
   assessProgressStepNeed,
   assessSourceBackedFlowMapUpdate,
+  buildSourceBackedFlowMapPersistenceRecord,
   buildSourceBackedFlowMapSavedSnapshot,
   buildSourceBackedFlowMapPublishPackage,
   buildSourceBackedMyFlowRows,
+  getSourceBackedFlowMapPersistenceStorageKey,
+  getSourceBackedFlowMapSnapshotStorageKey,
   getSourceBackedMyFlowMapForBundle,
   listSourceBackedFlowMapPublishPackages,
   mergeSourceBackedMyFlowBundles,
@@ -20,6 +23,22 @@ function bundleBySlug(slug: string) {
   return bundle;
 }
 
+const addedMapIds = [
+  'postal-address-transfer',
+  'smishing-response',
+  'year-end-tax-submit',
+  'aircon-filter-cleaning',
+  'picnic-food-safety',
+];
+
+const addedFlowSlugs = [
+  'source-backed-postal-address-transfer',
+  'source-backed-smishing-response',
+  'source-backed-year-end-tax-submit',
+  'source-backed-aircon-filter-cleaning',
+  'source-backed-picnic-food-safety',
+];
+
 test('source-backed moving D-30 keeps one Step as one dated FlowItem with item text fallback', () => {
   const moving = bundleBySlug('source-backed-moving-d30');
   const rows = buildSourceBackedMyFlowRows(moving);
@@ -31,6 +50,7 @@ test('source-backed moving D-30 keeps one Step as one dated FlowItem with item t
   assert.equal(rows.length, moving.items.length);
 
   const first = rows[0];
+  assert.equal(first.mapId, 'moving-d30');
   assert.equal(first.destination, 'calendar');
   assert.equal(first.calendar?.mode, 'anchor_offset');
   assert.equal(first.calendar?.anchorType, 'end_date');
@@ -56,15 +76,16 @@ test('source-backed middle-school math stays a progress destination without inve
   assert.ok(math.flow.source_url?.includes('mathbang.net/13'));
   assert.ok(math.flow.tags?.includes('flow-map:middle-school-math-1'));
   assert.equal(rows.length, math.items.length);
-  assert.ok(rows.length >= 6);
+  assert.equal(rows.length, 8);
 
   const first = rows[0];
   assert.equal(first.mapId, 'middle-school-math-1');
   assert.equal(first.destination, 'progress');
   assert.equal(first.calendar?.mode, 'none');
   assert.match(first.textFallback.title, /소인수분해/);
-  assert.match(first.textFallback.items?.join('\n') ?? '', /원문 단원/);
-  assert.match(first.textFallback.items?.join('\n') ?? '', /막힌 부분/);
+  assert.match(first.textFallback.items?.join('\n') ?? '', /거듭제곱/);
+  assert.match(first.textFallback.items?.join('\n') ?? '', /최대공약수/);
+  assert.doesNotMatch(first.textFallback.items?.join('\n') ?? '', /오늘 본 범위|오답 번호/);
 
   const progressDecision = assessProgressStepNeed(math);
   assert.equal(progressDecision.decision, 'not_needed_yet');
@@ -96,13 +117,18 @@ test('source-backed Flow Map metadata keeps parent map separate from the executa
   const moving = bundleBySlug('source-backed-moving-d30');
 
   const mathMap = getSourceBackedMyFlowMapForBundle(math);
+  const movingMap = getSourceBackedMyFlowMapForBundle(moving);
 
-  assert.equal(sourceBackedMyFlowMaps.length, 2);
+  assert.ok(sourceBackedMyFlowMaps.length >= 8);
+  assert.ok(movingMap);
+  assert.equal(movingMap.id, 'moving-d30');
+  assert.equal(movingMap.userLabel, '이사 D-30 지도');
+  assert.deepEqual(movingMap.flowSlugs, ['source-backed-moving-d30']);
   assert.ok(mathMap);
   assert.equal(mathMap.id, 'middle-school-math-1');
   assert.equal(mathMap.userLabel, '중1 수학 지도');
   assert.deepEqual(mathMap.flowSlugs, ['source-backed-middle-school-math-1']);
-  assert.equal(getSourceBackedMyFlowMapForBundle(moving), undefined);
+  assert.equal(buildSourceBackedMyFlowRows(moving)[0].mapId, movingMap.id);
   assert.equal(buildSourceBackedMyFlowRows(math)[0].mapId, mathMap.id);
 });
 
@@ -184,7 +210,28 @@ test('source-backed Flow Map publish package separates creator, public, and my f
   assert.equal(publishPackage.public.setupInputs.length, 0);
   assert.equal(publishPackage.public.setupInput, undefined);
   assert.equal(publishPackage.public.primaryCta.href, '/my');
-  assert.ok(publishPackage.creator.sourceRows.length >= 6);
+  assert.equal(publishPackage.creator.sourceRows.length, 8);
+  assert.equal(publishPackage.creator.draft.storageKey, 'flow:map:creator-draft:middle-school-math-1');
+  assert.equal(publishPackage.creator.draft.publishedVersion, publishPackage.map.version);
+  assert.deepEqual(publishPackage.creator.draft.editableFields, [
+    'step_title',
+    'step_destination',
+    'source_url',
+    'item_fallback',
+    'creator_note',
+  ]);
+  assert.ok(publishPackage.creator.sourceRows.every((row) => row.reviewStatus === 'ready'));
+  assert.ok(publishPackage.creator.sourceRows.every((row) => row.reviewLabel === '준비됨'));
+  assert.equal(publishPackage.creator.sourceRows[0].sourceRowTitle, publishPackage.creator.sourceRows[0].stepTitle);
+  assert.equal(publishPackage.creator.sourceRows[0].generatedStepTitle, publishPackage.creator.sourceRows[0].stepTitle);
+  assert.equal(
+    publishPackage.creator.sourceRows[0].itemFallbackText,
+    publishPackage.creator.sourceRows[0].detailItems.join('\n'),
+  );
+  assert.equal(publishPackage.creator.sourceRows[0].scheduleSummary, 'no date');
+  assert.match(publishPackage.creator.sourceRows[0].detailItems.join('\n'), /거듭제곱/);
+  assert.match(publishPackage.creator.sourceRows[0].detailItems.join('\n'), /최대공약수/);
+  assert.equal(publishPackage.creator.sourceRows[0].sourceType, 'reference');
   assert.ok(publishPackage.creator.publishBlockers.length === 0);
   assert.ok(publishPackage.public.childFlows.every((flow) => flow.steps.length > 0));
   assert.doesNotMatch(
@@ -199,8 +246,100 @@ test('source-backed Flow Map publish package separates creator, public, and my f
 
   assert.deepEqual(
     listSourceBackedFlowMapPublishPackages().map((item) => item.map.id),
-    ['middle-school-math-1', 'baby-health-schedule'],
+    [
+      'moving-d30',
+      'middle-school-math-1',
+      'baby-health-schedule',
+      ...addedMapIds,
+    ],
   );
+});
+
+test('source-backed expansion adds five real Korean-source flow maps without review blockers', () => {
+  const packages = listSourceBackedFlowMapPublishPackages();
+  const packageIds = packages.map((item) => item.map.id);
+
+  for (const mapId of addedMapIds) {
+    assert.ok(packageIds.includes(mapId), mapId);
+    const publishPackage = buildSourceBackedFlowMapPublishPackage(mapId);
+    assert.ok(publishPackage, mapId);
+    assert.equal(publishPackage.creator.publishBlockers.length, 0);
+    assert.equal(publishPackage.public.childFlows.length, 1);
+    assert.ok(publishPackage.public.sourceUrl.startsWith('https://'));
+    assert.ok(publishPackage.creator.sourceRows.length >= 1);
+    assert.ok(publishPackage.creator.sourceRows.every((row) => row.reviewStatus === 'ready'));
+    assert.ok(publishPackage.creator.sourceRows.every((row) => row.itemCount >= 3));
+    assert.doesNotMatch(
+      [
+        publishPackage.public.title,
+        publishPackage.public.summary,
+        publishPackage.public.primaryCta.label,
+        ...publishPackage.public.artifacts,
+      ].join(' '),
+      /source fit|PoC|개발자|평가 점수/i,
+    );
+  }
+});
+
+test('source-backed expansion preserves destination and input shape per source', () => {
+  const expectations = [
+    ['postal-address-transfer', 'source-backed-postal-address-transfer', '전입신고일', 'hybrid', 3],
+    ['smishing-response', 'source-backed-smishing-response', undefined, 'internal_check', 3],
+    ['year-end-tax-submit', 'source-backed-year-end-tax-submit', '회사 제출 마감일', 'hybrid', 3],
+    ['aircon-filter-cleaning', 'source-backed-aircon-filter-cleaning', '다음 청소일', 'calendar', 1],
+    ['picnic-food-safety', 'source-backed-picnic-food-safety', '나들이일', 'hybrid', 3],
+  ] as const;
+
+  for (const [mapId, slug, inputLabel, destination, stepCount] of expectations) {
+    const publishPackage = buildSourceBackedFlowMapPublishPackage(mapId);
+    const bundle = bundleBySlug(slug);
+    const rows = buildSourceBackedMyFlowRows(bundle);
+
+    assert.ok(publishPackage, mapId);
+    assert.equal(publishPackage.public.setupInput?.label, inputLabel);
+    assert.equal(bundle.flow.primary_destination, destination);
+    assert.equal(rows.length, stepCount);
+    assert.equal(rows.length, publishPackage.creator.sourceRows.length);
+    assert.ok(rows.every((row) => row.sourceUrl?.startsWith('https://')));
+    assert.ok(rows.every((row) => (row.textFallback.items?.length ?? 0) >= 3));
+  }
+
+  const aircon = bundleBySlug('source-backed-aircon-filter-cleaning');
+  const [airconRow] = buildSourceBackedMyFlowRows(aircon);
+  assert.equal(airconRow.calendar.mode, 'routine');
+  assert.equal(airconRow.calendar.repeatRule, 'FREQ=WEEKLY;INTERVAL=2');
+
+  const smishing = bundleBySlug('source-backed-smishing-response');
+  assert.ok(buildSourceBackedMyFlowRows(smishing).every((row) => row.calendar.mode === 'none'));
+});
+
+test('source-backed moving map saves one dated timeline flow from a move date', () => {
+  const publishPackage = buildSourceBackedFlowMapPublishPackage('moving-d30');
+
+  assert.ok(publishPackage);
+  assert.equal(publishPackage.map.id, 'moving-d30');
+  assert.deepEqual(publishPackage.myFlow.savedSlugs, ['source-backed-moving-d30']);
+  assert.deepEqual(publishPackage.public.setupInputs, ['이사일']);
+  assert.equal(publishPackage.public.setupInput?.label, '이사일');
+  assert.equal(publishPackage.public.childFlows.length, 1);
+  assert.equal(publishPackage.public.childFlows[0].steps.length, 5);
+  assert.equal(publishPackage.public.childFlows[0].destination, 'hybrid');
+  assert.equal(publishPackage.creator.publishBlockers.length, 0);
+  assert.equal(publishPackage.creator.sourceRows.length, 5);
+  assert.equal(publishPackage.creator.sourceRows[0].scheduleSummary, 'D-30');
+
+  const snapshot = buildSourceBackedFlowMapSavedSnapshot('moving-d30', {
+    anchor: '2026-07-22',
+    savedAt: '2026-06-24T09:00:00.000Z',
+  });
+
+  assert.ok(snapshot);
+  assert.equal(snapshot.version, '2026-06-24.1');
+  assert.equal(snapshot.anchor, '2026-07-22');
+  assert.deepEqual(snapshot.flowSlugs, ['source-backed-moving-d30']);
+  assert.deepEqual(snapshot.stepCountsByFlow, {
+    'source-backed-moving-d30': 5,
+  });
 });
 
 test('source-backed baby health publish package separates input-bearing public save from creator review', () => {
@@ -239,6 +378,71 @@ test('source-backed Flow Map saved snapshot records package version and saved ch
     'source-backed-baby-health-checkups': 12,
     'source-backed-baby-vaccination-schedule': 6,
   });
+});
+
+test('source-backed Flow Map persistence record separates bridge snapshot from product-ready child bindings', () => {
+  const record = buildSourceBackedFlowMapPersistenceRecord('moving-d30', {
+    anchor: '2026-07-22',
+    savedAt: '2026-06-24T11:00:00.000Z',
+  });
+
+  assert.ok(record);
+  assert.equal(record.schemaVersion, 1);
+  assert.equal(record.recordType, 'saved_source_backed_flow_map');
+  assert.equal(record.bridgeStorageKey, getSourceBackedFlowMapSnapshotStorageKey('moving-d30'));
+  assert.equal(getSourceBackedFlowMapPersistenceStorageKey('moving-d30'), 'flow:map:persistence:moving-d30');
+  assert.equal(record.map.id, 'moving-d30');
+  assert.equal(record.map.version, '2026-06-24.1');
+  assert.equal(record.saved.anchor, '2026-07-22');
+  assert.equal(record.saved.sourceSurface, 'public_save');
+  assert.equal(record.readiness.content, 'ready_for_my_flow');
+  assert.equal(record.readiness.update, 'up_to_date');
+  assert.equal(record.childFlows.length, 1);
+  assert.deepEqual(record.childFlows[0], {
+    slug: 'source-backed-moving-d30',
+    flowId: 'flow-source-backed-moving-d30',
+    title: '원룸 이사 D-30 준비',
+    category: '이사',
+    structureType: 'timeline',
+    anchorType: 'end_date',
+    primaryDestination: 'hybrid',
+    riskLevel: 'low',
+    sourceTitle: 'AJD 이사 준비 체크리스트',
+    sourceUrl:
+      'https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363',
+    sourceCheckedAt: '2026-06-23',
+    stepCount: 5,
+    itemFallbackCount: 15,
+    stepIds: [
+      'moving-method-quotes',
+      'moving-cleaning-waste',
+      'moving-address-admin',
+      'moving-meter-photos',
+      'moving-move-day-admin',
+    ],
+  });
+});
+
+test('source-backed official schedule persistence record keeps review-before-apply policy separate from current readiness', () => {
+  const record = buildSourceBackedFlowMapPersistenceRecord('baby-health-schedule', {
+    anchor: '2026-01-15',
+    savedAt: '2026-06-24T11:00:00.000Z',
+  });
+
+  assert.ok(record);
+  assert.equal(record.map.updatePolicy, 'review_before_apply');
+  assert.equal(record.readiness.content, 'ready_for_my_flow');
+  assert.equal(record.readiness.update, 'up_to_date');
+  assert.equal(record.updateAssessment.canApplyAutomatically, false);
+  assert.deepEqual(
+    record.childFlows.map((flow) => [flow.slug, flow.stepCount, flow.riskLevel]),
+    [
+      ['source-backed-baby-health-checkups', 12, 'medical_sensitive'],
+      ['source-backed-baby-vaccination-schedule', 6, 'medical_sensitive'],
+    ],
+  );
+  assert.ok(record.childFlows.every((flow) => flow.anchorType === 'baby_birth_date'));
+  assert.ok(record.childFlows.every((flow) => flow.sourceUrl?.startsWith('https://')));
 });
 
 test('source-backed Flow Map update assessment keeps same version quiet', () => {

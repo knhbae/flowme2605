@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Source-backed Flow Map 제품화 기준</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --panel: #ffffff;
+      --ink: #111827;
+      --muted: #5f6b7a;
+      --line: #dce3ee;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      --red: #b91c1c;
+      --soft-blue: #eaf1ff;
+      --soft-green: #e8f7f2;
+      --soft-amber: #fff7e6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      line-height: 1.55;
+    }
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 28px 18px 56px;
+    }
+    a { color: var(--blue); text-decoration: none; font-weight: 700; }
+    a:hover { text-decoration: underline; }
+    .hero {
+      background: linear-gradient(135deg, #f8fbff 0%, #ffffff 62%, #eef7f2 100%);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 18px 42px rgba(15, 23, 42, 0.06);
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      margin-bottom: 12px;
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+    h2 { margin-bottom: 14px; font-size: 24px; }
+    h3 { margin-bottom: 8px; font-size: 18px; }
+    .desc { max-width: 780px; color: var(--muted); font-size: 17px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 6px 10px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .chip.blue { background: var(--soft-blue); color: #1d4ed8; border-color: #bfd0ff; }
+    .chip.green { background: var(--soft-green); color: var(--green); border-color: #b8e4d8; }
+    .chip.amber { background: var(--soft-amber); color: var(--amber); border-color: #f5d597; }
+    .grid { display: grid; gap: 16px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card {
+      margin-top: 18px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+    }
+    .case {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+      background: #fff;
+    }
+    .case strong { display: block; margin-bottom: 6px; font-size: 18px; }
+    .small { color: var(--muted); font-size: 14px; }
+    .split {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 8px 14px;
+      margin-top: 14px;
+    }
+    .split b { color: #334155; }
+    .row {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px 16px;
+      background: #fbfdff;
+    }
+    .row b { display: block; margin-bottom: 4px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    th, td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+      font-size: 14px;
+    }
+    th { background: #eef3fb; color: #334155; font-weight: 900; }
+    tr:last-child td { border-bottom: 0; }
+    .callout {
+      border-left: 5px solid var(--blue);
+      background: var(--soft-blue);
+      border-radius: 14px;
+      padding: 16px 18px;
+      color: #1e3a8a;
+    }
+    .warn { border-left-color: var(--amber); background: var(--soft-amber); color: #78350f; }
+    .ok { border-left-color: var(--green); background: var(--soft-green); color: #064e3b; }
+    ul { padding-left: 20px; margin: 10px 0 0; }
+    li + li { margin-top: 6px; }
+    code {
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #edf2f7;
+      color: #0f172a;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: .92em;
+    }
+    .footer {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    @media (max-width: 760px) {
+      main { padding: 18px 12px 42px; }
+      .hero, .card { padding: 18px; border-radius: 14px; }
+      .grid.two, .grid.three { grid-template-columns: 1fr; }
+      .split { grid-template-columns: 1fr; }
+      th, td { display: block; width: 100%; }
+      th { border-bottom: 0; }
+      td { padding-top: 10px; }
+      tr { display: block; border-bottom: 1px solid var(--line); }
+      tr:last-child { border-bottom: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <p class="eyebrow">2026-06-24 · 제품화 기준선</p>
+      <h1>Source-backed Flow Map을 제품 코드에 반영하기 전 기준</h1>
+      <p class="desc">중1 수학, 영유아 검진·접종, 이사 D-30 세 케이스를 기준으로 “원문 기반 Flow Map이 실제 My Flow 실행 화면까지 이어지는가”를 판단합니다. 이 문서는 검증 완료 선언이 아니라, 다음 구현을 어디까지 해야 하는지 정리하는 제품화 체크포인트입니다.</p>
+      <div class="chips">
+        <span class="chip blue">Flow Map &gt; Flow &gt; Step &gt; Item</span>
+        <span class="chip green">사용자/제작자/리뷰 화면 분리</span>
+        <span class="chip green">혼합 캘린더 scope filter</span>
+        <span class="chip green">업데이트 notice</span>
+        <span class="chip amber">실제 사용자 검증 아님</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">핵심 판단</p>
+      <h2>새 화면을 더 만들기보다, 세 케이스를 제품화 기준선으로 묶는다</h2>
+      <div class="grid three">
+        <div class="case">
+          <strong>중1 수학 목차 진도표</strong>
+          <p class="small">원문 목차의 단원을 Step으로, 하위 개념을 Item으로 보존합니다. 공부 루틴을 억지로 만들지 않고 진도표/시트에 가깝게 둡니다.</p>
+          <div class="split">
+            <b>Map</b><span><code>middle-school-math-1</code></span>
+            <b>Artifact</b><span>progress / sheet</span>
+            <b>Input</b><span>없음</span>
+          </div>
+        </div>
+        <div class="case">
+          <strong>영유아 검진·접종 일정</strong>
+          <p class="small">아이 생년월일 하나로 공식 검진 기간과 접종 조회 시점을 저장합니다. 공식 기간은 하나의 Step으로 유지합니다.</p>
+          <div class="split">
+            <b>Map</b><span><code>baby-health-schedule</code></span>
+            <b>Artifact</b><span>calendar + memo</span>
+            <b>Input</b><span>아이 생년월일</span>
+          </div>
+        </div>
+        <div class="case">
+          <strong>원룸 이사 D-30</strong>
+          <p class="small">이사일 하나를 기준으로 원문 체크리스트의 실행 단서를 날짜별 Step으로 배치합니다. 업체/예약 정보는 메모로 남깁니다.</p>
+          <div class="split">
+            <b>Map</b><span><code>moving-d30</code></span>
+            <b>Artifact</b><span>calendar + checklist</span>
+            <b>Input</b><span>이사일</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">기준 모델</p>
+      <h2>Step은 저장되는 최소 단위, Item은 상세 또는 텍스트 fallback</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>계층</th>
+            <th>제품에서의 의미</th>
+            <th>사용자 화면에서의 원칙</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Flow Map</strong></td>
+            <td>여러 Flow를 묶는 상위 구조</td>
+            <td>전체 위치를 볼 이유가 있을 때만 보여줍니다. My Flow 첫 화면을 지도 대시보드로 만들지 않습니다.</td>
+          </tr>
+          <tr>
+            <td><strong>Flow</strong></td>
+            <td>하나의 실행 artifact</td>
+            <td>캘린더, 진도표, 체크리스트, 메모 중 자연스러운 형태로 보입니다.</td>
+          </tr>
+          <tr>
+            <td><strong>Step</strong></td>
+            <td>캘린더/투두/시트에 저장되는 최소 row</td>
+            <td>클릭하면 바로 같은 맥락에서 상세가 열리고, 완료/메모/출처를 확인할 수 있어야 합니다.</td>
+          </tr>
+          <tr>
+            <td><strong>Item</strong></td>
+            <td>Step 안의 체크/메모/설명/링크</td>
+            <td>FlowMe에서는 체크리스트로 보일 수 있고, 외부 앱에서는 텍스트 설명으로 내려갑니다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">현재 충분한 부분</p>
+      <h2>다음 구현 기준으로 쓸 수 있는 것</h2>
+      <div class="grid two">
+        <div class="row"><b>공개 저장 경로</b><span>Flow Map 공개 페이지에서 저장하면 실제 <code>/my</code>로 이동하는 경로가 있습니다.</span></div>
+        <div class="row"><b>부모 map snapshot</b><span>저장 시 child Flow뿐 아니라 map version, child slug, risk, source checked date를 기록합니다.</span></div>
+        <div class="row"><b>Step detail</b><span>원문 링크, Item 체크, memo hint, text fallback이 Step 아래로 내려갑니다.</span></div>
+        <div class="row"><b>공식 기간 처리</b><span>영유아 검진 기간처럼 날짜 범위가 있는 source row도 하나의 Step으로 유지합니다.</span></div>
+        <div class="row"><b>모바일 post-save</b><span>저장 뒤 calendar 또는 Flow view로 이동했을 때 사용자가 확인할 위치로 스크롤됩니다.</span></div>
+        <div class="row"><b>선택 날짜 detail</b><span>일정에서 날짜를 누르면 Step이 저장된 Flow Map 또는 Flow 단위로 묶이고, 단일 Flow 지도에서는 중복 chip을 숨깁니다.</span></div>
+        <div class="row"><b>혼합 캘린더 필터</b><span>일정과 루틴이 섞인 달에만 `전체/일정/루틴` 같은 작은 표시 필터를 보여주고, 단순 캘린더에는 숨깁니다.</span></div>
+        <div class="row"><b>지도 업데이트 notice</b><span>저장한 source-backed 지도 snapshot이 현재 지도와 다르면 Flow 탭에 확인 안내를 띄우고, 기존 Step은 자동 변경하지 않습니다.</span></div>
+        <div class="row"><b>화면 분리</b><span>사용자 화면, 제작자 준비 화면, 내부 리뷰 문서를 같은 화면에 섞지 않는 방향이 정리됐습니다.</span></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">Phase 2 업데이트</p>
+      <h2>저장 record를 두 층으로 분리했다</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>저장 키</th>
+            <th>역할</th>
+            <th>현재 판단</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>flow:map:saved:{mapId}</code></td>
+            <td>현재 My Flow가 부모 지도 문맥을 붙일 때 쓰는 호환 snapshot</td>
+            <td>유지. 기존 화면을 깨지 않기 위한 bridge입니다.</td>
+          </tr>
+          <tr>
+            <td><code>flow:map:persistence:{mapId}</code></td>
+            <td>schema version, 저장 출처, readiness, update assessment, child Flow binding을 담는 제품화 record</td>
+            <td>추가. 최종 DB schema는 아니지만 다음 persistence/update/creator 작업의 기준입니다.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout ok" style="margin-top: 14px;">
+        <p><strong>의미:</strong> 사용자 화면은 그대로 단순하게 두고, 내부 저장 계약만 다음 제품화 단계에 맞게 선명해졌습니다. readiness 분리와 제작자 source-row review는 bridge 수준으로 들어갔고, 다음 축은 계정 저장, update review, 고밀도 캘린더 규칙입니다.</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">Phase 3 업데이트</p>
+      <h2>My Flow에서 ready와 review/legacy를 분리했다</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>구분</th>
+            <th>어디에 보이나</th>
+            <th>원칙</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>실행 가능</strong></td>
+            <td>Flow 탭의 바로 이어서 볼 Flow</td>
+            <td>source-backed 저장 지도, 실제 원문 Flow는 일반 실행 카드로 둡니다.</td>
+          </tr>
+          <tr>
+            <td><strong>검토 필요</strong></td>
+            <td>Flow 탭의 확인 후 실행할 Flow</td>
+            <td>needs_review, preview, legacy 컨텐츠는 낮은 톤의 별도 영역으로 둡니다.</td>
+          </tr>
+          <tr>
+            <td><strong>Today / Calendar</strong></td>
+            <td>그대로 실행 중심</td>
+            <td>날짜/오늘 화면은 review dashboard로 만들지 않고, 사용자가 저장한 실행 row를 계속 보여줍니다.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout ok" style="margin-top: 14px;">
+        <p><strong>의미:</strong> 사용자는 accepted source-backed Flow와 예전 기준 컨텐츠를 한눈에 구분할 수 있습니다. 동시에 예전 컨텐츠도 삭제하지 않고 필요하면 열어볼 수 있습니다.</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">Phase 4 업데이트</p>
+      <h2>제작자 화면에 원문 row 검토를 추가했다</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>검토 항목</th>
+            <th>제작자가 보는 것</th>
+            <th>제품 경계</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Step 전환</strong></td>
+            <td>원문 row가 어떤 Step 제목, Flow, 섹션, destination으로 옮겨졌는지 확인합니다.</td>
+            <td>사용자 화면의 실행 카드와 섞지 않습니다.</td>
+          </tr>
+          <tr>
+            <td><strong>Item fallback</strong></td>
+            <td>FlowMe 내부 체크리스트 또는 외부 앱 텍스트로 내려갈 실제 Item 문장을 봅니다.</td>
+            <td>원문에 없는 일반론으로 채우지 않습니다.</td>
+          </tr>
+          <tr>
+            <td><strong>출처/위험</strong></td>
+            <td>공식 정보, 참고 원문, 제작자 경험, 건강 민감 여부를 row 근처에서 확인합니다.</td>
+            <td>공식/경험/주의를 사용자 실행 화면에서 뒤섞지 않습니다.</td>
+          </tr>
+          <tr>
+            <td><strong>발행 준비 상태</strong></td>
+            <td>준비됨, 원문 링크 필요, 하위 Item 확인 상태를 봅니다.</td>
+            <td>아직 편집기나 버전 리뷰 UI는 아닙니다.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout ok" style="margin-top: 14px;">
+        <p><strong>의미:</strong> 제작자는 공개 전에 원문 근거와 Step/Item 변환 결과를 볼 수 있고, 사용자는 여전히 가벼운 My Flow 실행 화면만 보게 됩니다.</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">Phase 5 업데이트</p>
+      <h2>일정 선택 날짜를 Flow Map/Flow 단위로 묶었다</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>문제</th>
+            <th>수정</th>
+            <th>사용자 효과</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>캘린더 날짜를 눌렀을 때 여러 Step이 평평하게 보이면 어느 지도나 Flow에서 온 일정인지 알기 어렵습니다.</td>
+            <td><code>my-flow-selected-date-group</code> 단위로 선택 날짜 Step을 묶었습니다.</td>
+            <td>사용자는 “원룸 이사 D-30 일정 지도” 안의 “기준 D-30” Step처럼 소속과 실행 항목을 함께 봅니다.</td>
+          </tr>
+          <tr>
+            <td>단일 Flow 지도에서는 Step row 아래의 Flow 이름과 진행률 chip이 group title과 중복됩니다.</td>
+            <td>같은 group 안에 child Flow가 하나뿐이면 Flow/progress chip을 숨깁니다.</td>
+            <td>선택 날짜 detail이 캘린더 앱의 일정 목록처럼 간단해지고, 필요한 hierarchy만 남습니다.</td>
+          </tr>
+          <tr>
+            <td>여러 Flow가 같은 날짜에 섞이는 경우에는 child Flow 구분이 필요합니다.</td>
+            <td>group 안에 여러 child Flow가 있을 때만 compact chip을 유지할 수 있게 했습니다.</td>
+            <td>고밀도 일정에서도 context를 잃지 않고, 단순한 날에는 화면이 과해지지 않습니다.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout ok" style="margin-top: 14px;">
+        <p><strong>의미:</strong> My Flow 일정 화면은 “오늘/날짜별 Step 실행”을 중심에 두되, Flow Map의 부모 맥락은 필요한 순간에만 드러납니다.</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">Phase 6 업데이트</p>
+      <h2>혼합 캘린더에만 표시 범위 필터를 추가했다</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>규칙</th>
+            <th>동작</th>
+            <th>남은 범위</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>일정과 루틴이 섞이면 필터를 보여줍니다.</td>
+            <td><code>my-flow-calendar-scope-filter</code>에서 전체, 일정, 루틴을 전환합니다.</td>
+            <td>고급 검색이나 카테고리별 대시보드는 아직 만들지 않습니다.</td>
+          </tr>
+          <tr>
+            <td>필터는 월 캘린더와 선택 날짜 detail을 함께 좁힙니다.</td>
+            <td>루틴 선택 시 일정 row가 사라지고, 일정 선택 시 루틴 아이콘이 사라집니다.</td>
+            <td>대량 저장 상태의 검색, 정렬, 숨김 규칙은 별도 후속입니다.</td>
+          </tr>
+          <tr>
+            <td>단순한 캘린더에는 필터를 숨깁니다.</td>
+            <td>이사 D-30처럼 일정만 있는 Flow는 캘린더 앱 수준의 단순 화면을 유지합니다.</td>
+            <td>실제 사용자 행동 데이터가 생기기 전에는 더 많은 제어를 기본 노출하지 않습니다.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout ok" style="margin-top: 14px;">
+        <p><strong>의미:</strong> 저장 Flow가 늘어날 때 필요한 최소한의 숨쉬는 공간을 만들되, My Flow를 Jira나 프로젝트 보드처럼 키우지 않는 쪽으로 정리했습니다.</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">Phase 7 업데이트</p>
+      <h2>저장한 지도 업데이트를 조용히 적용하지 않게 했다</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>상황</th>
+            <th>사용자 화면</th>
+            <th>제품 경계</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>저장한 source-backed 지도 version이나 source row shape가 현재 발행본과 다릅니다.</td>
+            <td>Flow 탭에 <code>my-flow-map-update-review</code> 안내가 나타납니다.</td>
+            <td>Today와 Calendar는 계속 실행 화면으로 둡니다.</td>
+          </tr>
+          <tr>
+            <td>공식/민감 일정은 자동 반영하면 기존 체크 상태와 충돌할 수 있습니다.</td>
+            <td>“자동 반영 안 함”을 표시하고 공개 지도 링크와 “지금은 숨기기”를 제공합니다.</td>
+            <td>이번 V1은 적용 UI가 아니라 notice + dismiss입니다.</td>
+          </tr>
+          <tr>
+            <td>저장 snapshot이 최신 상태입니다.</td>
+            <td>추가 안내를 보여주지 않습니다.</td>
+            <td>필요한 경우에만 나타나는 낮은 톤의 safety surface로 유지합니다.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout ok" style="margin-top: 14px;">
+        <p><strong>의미:</strong> 사용자 실행 화면을 무겁게 만들지 않으면서, 공식/민감 Flow Map이 바뀌었을 때 기존 개인 기록을 몰래 바꾸지 않는 경계를 세웠습니다.</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">아직 bridge인 부분</p>
+      <h2>제품 완료로 오해하면 안 되는 것</h2>
+      <div class="callout warn">
+        <p><strong>현재 상태는 내부 PoC, route integration, 자동화 테스트 근거입니다.</strong> 실제 사용자 행동 데이터가 없으므로 검증 완료나 상품화 완료로 표현하면 안 됩니다.</p>
+      </div>
+      <ul>
+        <li><code>lib/flow/source-backed-my-flow.ts</code>는 최종 DB schema가 아니라 source-backed adapter/fixture registry입니다.</li>
+        <li>localStorage 저장은 bridge입니다. 계정 기반 저장, 동기화, update review는 아직 남았습니다.</li>
+        <li>제작자 화면은 publish prep에 가깝고, 실제 authoring/editor workflow는 아닙니다.</li>
+        <li>기존 preview, review, legacy content는 ready/review 영역으로 나뉘었지만, 운영 정책과 마이그레이션 규칙은 아직 남았습니다.</li>
+        <li>선택 날짜 group, scope filter, update notice/dismiss는 1차 정리입니다. 일정이 더 많을 때의 검색, 정렬, 숨김과 update apply/row compare는 아직 별도 판단이 필요합니다.</li>
+        <li>더 많은 카테고리를 만들기 전에 이 세 기준선이 실제 제품 표면에서 깔끔하게 유지되는지 봐야 합니다.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">다음 코드 우선순위</p>
+      <h2>지금 바로 더 볼 일</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>순서</th>
+            <th>작업</th>
+            <th>이유</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="chip blue">1</span></td>
+            <td><strong>계정 기반 저장과 update apply/compare</strong></td>
+            <td>현재 localStorage bridge와 notice로는 여러 기기 동기화, 업데이트 적용, 이전/새 Step 비교, 확인 후 닫기까지 처리하지 못합니다.</td>
+          </tr>
+          <tr>
+            <td><span class="chip blue">2</span></td>
+            <td><strong>대량 저장 캘린더 검색/숨김 규칙</strong></td>
+            <td>선택 날짜 group과 scope filter는 1차로 충분하지만, 저장 Flow가 더 많아지면 검색, 숨김, 정렬, 월 이동 기준이 필요합니다.</td>
+          </tr>
+          <tr>
+            <td><span class="chip blue">3</span></td>
+            <td><strong>제작자 source-row editing / version review</strong></td>
+            <td>review v1은 추가됐습니다. 다음은 제작자가 Step 제목, Item fallback, source link를 수정하고 버전 변경을 관리하는 편집/검토 흐름입니다.</td>
+          </tr>
+          <tr>
+            <td><span class="chip amber">4</span></td>
+            <td><strong>공개 save-before polish</strong></td>
+            <td>사용자가 무엇을 저장하는지는 더 선명해져야 하지만, My Flow 실행 결과가 먼저 안정되어야 합니다.</td>
+          </tr>
+          <tr>
+            <td><span class="chip amber">5</span></td>
+            <td><strong>footprint/event logging</strong></td>
+            <td>실제 검증은 open, 입력, 저장, Step open, check, memo, return 행동 데이터가 있어야 가능합니다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">산출물</p>
+      <h2>이번 단계에서 추가한 기준 문서</h2>
+      <div class="chips">
+        <a class="chip blue" href="../specs/2026-06-24-source-backed-flow-map-productization/spec.md">spec.md</a>
+        <a class="chip blue" href="../specs/2026-06-24-source-backed-flow-map-productization/plan.md">plan.md</a>
+        <a class="chip blue" href="../specs/2026-06-24-source-backed-flow-map-productization/tasks.md">tasks.md</a>
+        <a class="chip blue" href="../specs/2026-06-24-source-backed-flow-map-productization/qa.md">qa.md</a>
+        <a class="chip green" href="./2026-06-19-flowme-service-ux-backlog-ko.html">서비스 UX 백로그</a>
+      </div>
+      <p class="footer">이 리포트는 내부 판단 문서입니다. 사용자용 PoC나 제작자용 UI가 아니며, 실제 사용자 검증 결과를 의미하지 않습니다.</p>
+    </section>
+  </main>
+</body>
+</html>
