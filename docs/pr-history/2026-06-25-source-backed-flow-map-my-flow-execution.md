@@ -3,7 +3,7 @@
 - Date: 2026-06-25
 - Branch: `design-ref-full-gap-alignment`
 - PR URL: https://github.com/knhbae/flowme2605/pull/114
-- Status: Open, Deployed
+- Status: Merged, Deployed
 - Deploy URL: https://flowme2605-cgtsi5nl0-flowme.vercel.app
 
 ## Why
