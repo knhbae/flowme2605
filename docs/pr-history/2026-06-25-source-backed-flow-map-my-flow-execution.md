@@ -2,8 +2,8 @@
 
 - Date: 2026-06-25
 - Branch: `design-ref-full-gap-alignment`
-- PR URL: Pending
-- Status: Draft, Deployed
+- PR URL: https://github.com/knhbae/flowme2605/pull/114
+- Status: Open, Deployed
 - Deploy URL: https://flowme2605-cgtsi5nl0-flowme.vercel.app
 
 ## Why
@@ -79,4 +79,4 @@ The current product question is whether real Korean source-backed Flow Maps can 
 ## Links
 
 - Preview: https://flowme2605-cgtsi5nl0-flowme.vercel.app
-- PR: Pending
+- PR: https://github.com/knhbae/flowme2605/pull/114
