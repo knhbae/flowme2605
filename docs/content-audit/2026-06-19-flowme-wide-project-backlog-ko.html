@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 전체 프로젝트 백로그</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --surface: #fff;
+      --soft: #f8fafc;
+      --line: #d8e2ef;
+      --text: #101827;
+      --muted: #5f6b7c;
+      --blue: #1f5fbf;
+      --green: #0f7a4a;
+      --amber: #9a6100;
+      --red: #b42318;
+      --purple: #6d28d9;
+      --slate: #475467;
+      --shadow: 0 14px 32px rgba(16, 24, 39, .08);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #fbfdff 0, var(--bg) 440px);
+      font-size: 16px;
+      line-height: 1.62;
+    }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 44px); line-height: 1.12; letter-spacing: 0; word-break: keep-all; }
+    h2 { margin-bottom: 8px; font-size: clamp(22px, 3vw, 31px); line-height: 1.22; letter-spacing: 0; word-break: keep-all; }
+    h3 { margin-bottom: 6px; font-size: 20px; line-height: 1.28; letter-spacing: 0; word-break: keep-all; }
+    .page { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 14px 0 64px; }
+    .topbar, .hero, .card, .table-card, .lane-card, .priority-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 58px;
+      padding: 12px 16px;
+      box-shadow: 0 1px 2px rgba(16, 24, 39, .04);
+    }
+    .brand { color: var(--blue); font-size: 24px; font-weight: 950; text-decoration: none; }
+    .hero, .card, .table-card { margin-top: 12px; padding: 18px; box-shadow: var(--shadow); }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .desc { max-width: 860px; color: var(--muted); }
+    .tabs {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin-top: 12px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .94);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 24px rgba(16, 24, 39, .08);
+    }
+    .tab {
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: #344054;
+      font-size: 13px;
+      font-weight: 900;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .tab.primary { border-color: #bfdbfe; background: #eaf2ff; color: #174ea6; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #344054;
+      font-size: 13px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+    .chip.blue { border-color: #bfdbfe; background: #eaf2ff; color: #174ea6; }
+    .chip.green { border-color: #bde7cb; background: #e8f7ef; color: var(--green); }
+    .chip.amber { border-color: #efd08f; background: #fff6df; color: var(--amber); }
+    .chip.red { border-color: #f4b4ad; background: #fff1ef; color: var(--red); }
+    .chip.gray { border-color: #d0d5dd; background: #f2f4f7; color: #475467; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .lane-card {
+      --lane: var(--blue);
+      --lane-bg: #eaf2ff;
+      min-height: 160px;
+      padding: 14px;
+      border-color: color-mix(in srgb, var(--lane) 36%, white);
+      border-left: 6px solid var(--lane);
+      background: linear-gradient(180deg, var(--lane-bg), #fff);
+    }
+    .lane-card b, .lane-card span { display: block; }
+    .lane-card b { margin-top: 10px; font-size: 18px; line-height: 1.25; }
+    .lane-card span { margin-top: 8px; color: #364153; font-weight: 750; }
+    .lane-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--lane);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 950;
+    }
+    .stage { --lane: #b42318; --lane-bg: #fff1ef; }
+    .source { --lane: #0f7a4a; --lane-bg: #e8f7ef; }
+    .myflow { --lane: #1f5fbf; --lane-bg: #eaf2ff; }
+    .creator { --lane: #b45309; --lane-bg: #fff7ed; }
+    .future { --lane: #6d28d9; --lane-bg: #f5f0ff; }
+    .priority-card {
+      padding: 14px;
+      background: #fff;
+    }
+    .priority-card strong, .priority-card span { display: block; }
+    .priority-card strong { font-size: 18px; line-height: 1.25; }
+    .priority-card span { margin-top: 5px; color: var(--muted); font-weight: 750; }
+    .meter {
+      height: 8px;
+      margin: 9px 0 6px;
+      border-radius: 999px;
+      background: #e6edf5;
+      overflow: hidden;
+    }
+    .meter span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #1f5fbf, #0f7a4a);
+    }
+    .small { color: var(--muted); font-size: 13px; font-weight: 750; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px;
+      vertical-align: top;
+      text-align: left;
+    }
+    th { background: #eef3f8; color: #344054; font-size: 13px; font-weight: 950; }
+    td { background: #fff; }
+    td strong { display: block; margin-bottom: 3px; }
+    .status { white-space: nowrap; }
+    .next-row td { background: #fbfdff; }
+    .list { margin: 10px 0 0; padding-left: 20px; }
+    .list li + li { margin-top: 7px; }
+    section[id] { scroll-margin-top: 86px; }
+    @media (max-width: 920px) {
+      .page { width: min(100% - 20px, 1180px); padding-top: 10px; }
+      .hero, .card, .table-card { padding: 14px; }
+      .grid, .grid.two, .grid.five { grid-template-columns: 1fr; }
+      .tabs { top: 0; padding: 8px; }
+      table, tbody, tr, th, td { display: block; width: 100%; }
+      th { border-bottom: 0; }
+      td { border-top: 0; }
+      tr + tr { margin-top: 10px; display: block; border-top: 2px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar" aria-label="FLOW">
+      <a class="brand" href="#">FLOW</a>
+      <span class="chip blue">Last updated: 2026-06-19</span>
+    </nav>
+
+    <header class="hero">
+      <p class="eyebrow">전체 프로젝트 백로그</p>
+      <h1>FlowMe의 큰 일감을 한 화면에서 보기</h1>
+      <p class="desc">이 문서는 서비스 UX 백로그보다 한 단계 위의 진행판입니다. 지금은 모든 아이디어를 실행하지 않고, Stage 0 검증을 중심에 두면서 Source-to-Flow, My Flow, Creator Map, 장기 플랫폼 아이디어를 분리해 봅니다.</p>
+      <div class="grid">
+        <div class="priority-card"><strong>지금의 기준</strong><span>content → anchor → artifact preview → copy/export → check → feedback</span></div>
+        <div class="priority-card"><strong>무겁지 않게 보는 법</strong><span>상세 기획은 각 탭 안에 넣고, 첫 화면은 우선순위와 경계만 봅니다.</span></div>
+        <div class="priority-card"><strong>별도 상세 문서</strong><span><a href="./2026-06-19-flowme-service-ux-backlog-ko.html">서비스 UX 백로그</a>는 제작자/공개/내 Flow 연결을 다룹니다.</span></div>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="백로그 탭">
+      <a class="tab primary" href="#overview">전체</a>
+      <a class="tab" href="#coverage">커버리지</a>
+      <a class="tab" href="#now">지금 볼 일</a>
+      <a class="tab" href="#stage0">Stage 0</a>
+      <a class="tab" href="#source">Source-to-Flow</a>
+      <a class="tab" href="#myflow">My Flow</a>
+      <a class="tab" href="#creator">Creator Map</a>
+      <a class="tab" href="#future">장기 플랫폼</a>
+      <a class="tab" href="#rules">운영 규칙</a>
+    </nav>
+
+    <section class="card" id="overview">
+      <p class="eyebrow">전체 구조</p>
+      <h2>넓게 보면 5개 축</h2>
+      <div class="grid five">
+        <div class="lane-card stage"><i class="lane-number">1</i><b>Stage 0 검증</b><span>사용자가 Flow를 열고, 최소 입력 후, 외부 도구로 가져가고, 체크/피드백하는지 확인합니다.</span></div>
+        <div class="lane-card source"><i class="lane-number">2</i><b>Source-to-Flow</b><span>원컨텐츠 하나가 자연스러운 캘린더, 체크리스트, 시트, 메모로 바뀌는지 봅니다.</span></div>
+        <div class="lane-card myflow"><i class="lane-number">3</i><b>My Flow 관리</b><span>저장한 Flow가 1개에서 여러 개로 늘어날 때 오늘 할 일과 이어보기를 어떻게 관리할지 봅니다.</span></div>
+        <div class="lane-card creator"><i class="lane-number">4</i><b>Creator Map</b><span>제작자가 큰 경험 지도를 만들고 작은 Flow를 채우는 플랫폼 가능성을 봅니다.</span></div>
+        <div class="lane-card future"><i class="lane-number">5</i><b>장기 플랫폼</b><span>URL ingestion, creator page, activity signal, QR, marketplace는 Stage 0 이후로 둡니다.</span></div>
+      </div>
+    </section>
+
+    <section class="table-card" id="coverage">
+      <p class="eyebrow">문서 커버리지</p>
+      <h2>이 백로그가 이전 기획을 얼마나 담고 있는가</h2>
+      <p class="desc">이 문서는 이전 문서를 모두 복사한 원문 모음이 아니라, 지금 의사결정에 필요한 수준으로 압축한 상위 백로그입니다. 아래 표는 주요 문서/논의가 반영됐는지, 압축됐는지, 아직 빠졌는지를 표시합니다.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>출처/논의</th>
+            <th>반영 상태</th>
+            <th>현재 백로그에 들어간 내용</th>
+            <th>남은 보강</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>PRODUCT_PRINCIPLES / ROADMAP</strong><span class="small">Stage 0, export-first, first public loop</span></td>
+            <td><span class="chip green">반영</span></td>
+            <td>Stage 0 검증, export-first 경계, validated 표현 금지, copy/export/check/feedback 루프.</td>
+            <td>footprint logging, event capture, v0.2 validation-note 개선은 Stage 0 세부 항목으로 더 내려야 함.</td>
+          </tr>
+          <tr>
+            <td><strong>DECISIONS</strong><span class="small">surface 분리, Source-to-Flow, Flow Map/Flow of Flow</span></td>
+            <td><span class="chip green">반영</span></td>
+            <td>Creator / public save-before / My Flow 실행 화면 분리, Flow Map &gt; Flow &gt; Step &gt; Item, source row 우선.</td>
+            <td>각 결정의 관련 문서 링크를 더 촘촘히 붙이면 추적성이 좋아짐.</td>
+          </tr>
+          <tr>
+            <td><strong>IDEAS</strong><span class="small">Creator page, URL ingestion, QR, marketplace, activity signal</span></td>
+            <td><span class="chip amber">압축 반영</span></td>
+            <td>장기 플랫폼 탭에 보류 아이디어로 묶음.</td>
+            <td>URL cache, similar-flow activity, Obsidian-like workspace는 장기 플랫폼 표에 보강 필요.</td>
+          </tr>
+          <tr>
+            <td><strong>My Flow 실행 허브 spec/논의</strong><span class="small">0개, 1개, 2-5개, 6개 이상, 20개 이상</span></td>
+            <td><span class="chip green">반영</span></td>
+            <td>My Flow adaptive hub와 단일 Flow/Flow Map 혼합 관리 항목.</td>
+            <td>상태 우선순위(today, overdue, stale 등)는 상세 PoC에서 풀어야 함.</td>
+          </tr>
+          <tr>
+            <td><strong>STATUS / validation sessions</strong><span class="small">observed session, Flow Lab, no signal/candidate signal</span></td>
+            <td><span class="chip amber">부분 반영</span></td>
+            <td>Stage 0 관찰 세션과 validated 금지 원칙.</td>
+            <td>Flow Lab evidence log, note intake, run sheet, candidate signal 체계를 별도 행으로 보강 필요.</td>
+          </tr>
+          <tr>
+            <td><strong>External ecosystem / distribution-channel handoff</strong><span class="small">share packet, Kakao/Naver/Form/Sheet handoff, integration readiness</span></td>
+            <td><span class="chip red">누락</span></td>
+            <td>Stage 0/export-first 경계에만 간접 반영.</td>
+            <td>유통/공유/외부도구 handoff 축을 별도 행으로 추가해야 함.</td>
+          </tr>
+          <tr>
+            <td><strong>Category taxonomy / content expansion</strong><span class="small">실행 영역 기준 카테고리, 후보 선정</span></td>
+            <td><span class="chip amber">부분 반영</span></td>
+            <td>Source-to-Flow 후보 운영 gate로 압축.</td>
+            <td>카테고리 taxonomy와 원컨텐츠 검증 형식은 Source-to-Flow 탭에 별도 행으로 보강 필요.</td>
+          </tr>
+          <tr>
+            <td><strong>Harness roles / review lenses</strong><span class="small">product, source, UX, validation, memory lens</span></td>
+            <td><span class="chip red">누락</span></td>
+            <td>문서 운영 규칙에 간접 반영.</td>
+            <td>큰 작업을 볼 때 어떤 검토 렌즈로 볼지 운영 규칙에 추가 필요.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="table-card" id="now">
+      <p class="eyebrow">지금 볼 일</p>
+      <h2>추천 우선순위</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>순서</th>
+            <th>할 일</th>
+            <th>왜 지금인가</th>
+            <th>완성도</th>
+            <th>다음 산출물</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="next-row">
+            <td class="status"><span class="chip green">최근 완료</span></td>
+            <td><strong>Creator Studio + Public Detail + My Flow 연결안</strong><span class="small">제작, 공개, 저장, 실행, 재방문 연결</span></td>
+            <td>중1 수학 기준으로 세 화면이 한 흐름으로 이어지는 최소 PoC를 만들었고, 이제 반복 사용과 운영 gate가 남았습니다.</td>
+            <td><span class="chip green">60% · 내부 PoC</span><div class="meter"><span style="width: 60%;"></span></div></td>
+            <td><a href="./2026-06-19-creator-public-myflow-minimal-poc-ko.html">최소 제품 흐름 PoC</a></td>
+          </tr>
+          <tr>
+            <td class="status"><span class="chip red">다음 1순위</span></td>
+            <td><strong>Stage 0 관찰 세션 준비/실행</strong><span class="small">export-first 실제 행동 확인</span></td>
+            <td>현재 원칙상 validated라고 말하려면 내부 PoC가 아니라 실제 사용자 행동 증거가 필요합니다.</td>
+            <td><span class="chip amber">준비됨 · 실행 전</span><div class="meter"><span style="width: 35%;"></span></div></td>
+            <td>관찰 세션 1건, no signal/friction/candidate signal 판정</td>
+          </tr>
+          <tr>
+            <td class="status"><span class="chip green">최근 완료</span></td>
+            <td><strong>My Flow 저장 후 관리 IA</strong><span class="small">0개, 1개, 2-5개, 6개 이상 상태</span></td>
+            <td>0개/1개/4개/8개 상태에서 시작해, v9에서 실제 원문 기반 Flow와 Flow Map을 같은 My Flow 화면에 넣었고, v10에서 이를 기존 FlowItem 계약으로 옮긴 뒤 2026-06-23에 이사 D-30/중1 수학/영유아 공식 일정 adapter contract test, `/my?demo=source-backed`, `/flow-maps/middle-school-math-1`, `/flow-maps/baby-health-schedule`, creator publish prep route, public save → real `/my` saved record, parent map snapshot, 공식 date-window export까지 추가했습니다.</td>
+            <td><span class="chip green">95% · 내부 PoC/코드 기준</span><div class="meter"><span style="width: 95%;"></span></div></td>
+            <td><a href="./2026-06-22-my-flow-v10-source-backed-user-poc-ko.html">v10 원문 기반 사용자 PoC</a><br><a href="./2026-06-22-my-flow-v10-product-data-bridge-ko.html">v10 제품 데이터 연결</a><br><a href="../specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md">Step contract</a><br><a href="../../lib/flow/source-backed-my-flow.test.ts">adapter contract test</a><br><a href="../../components/flow/SourceBackedFlowMapPage.tsx">Flow Map route UI</a><br><a href="../../tests/e2e/flow-mvp.spec.ts">source-backed E2E</a><br><a href="./2026-06-22-source-backed-my-flow-v9-ko.html">v9 원문 기반 My Flow</a><br><a href="./2026-06-19-my-flow-saved-management-ia-poc-ko.html">My Flow IA PoC</a></td>
+          </tr>
+          <tr>
+            <td class="status"><span class="chip red">다음 2순위</span></td>
+            <td><strong>Source-to-Flow 후보 운영 gate</strong><span class="small">후보 선정, 교체, 보류 기준</span></td>
+            <td>카테고리를 늘리기보다, 어떤 원컨텐츠가 Flow화에 맞는지 안정적으로 판정해야 합니다.</td>
+            <td><span class="chip green">기준 있음 · 제품화 전</span><div class="meter"><span style="width: 55%;"></span></div></td>
+            <td>Creator publish checklist / review queue</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="table-card" id="stage0">
+      <p class="eyebrow">Stage 0</p>
+      <h2>검증 중심 백로그</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>현재 상태</th>
+            <th>남은 질문</th>
+            <th>하지 말 것</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>첫 public FLOW loop 검증</strong><span class="small">open, anchor, export, check, feedback</span></td>
+            <td><span class="chip amber">준비됨</span> 관찰 도구와 run sheet는 준비되어 있으나 실제 validation은 아님.</td>
+            <td>사용자가 외부 도구로 가져가고 다시 체크할 의지가 있는가?</td>
+            <td>검증 전 validated, representative, activity signal처럼 보이게 하지 않기.</td>
+          </tr>
+          <tr>
+            <td><strong>export-first 경계 유지</strong><span class="small">기존 도구로 가져가기 우선</span></td>
+            <td><span class="chip green">원칙 확정</span> Stage 0은 풀 productivity suite가 아님.</td>
+            <td>어디까지 My Flow 내부 실행을 보여줘도 export-first를 해치지 않는가?</td>
+            <td>로그인, 계정 연동, 무거운 workspace, 자동 posting을 먼저 만들지 않기.</td>
+          </tr>
+          <tr>
+            <td><strong>Observed session / Flow Lab evidence</strong><span class="small">no signal, friction, candidate signal</span></td>
+            <td><span class="chip amber">도구 준비됨</span> evidence log, note intake, run sheet는 준비되어 있으나 실제 신호는 아직 제한적.</td>
+            <td>어떤 행동을 candidate signal로 볼지, 어떤 경우를 no signal로 남길지.</td>
+            <td>내부 리허설이나 예쁜 PoC를 validation으로 표현하지 않기.</td>
+          </tr>
+          <tr>
+            <td><strong>Distribution/share packet 관찰</strong><span class="small">Kakao, Naver Cafe, Forms/Sheets, Markdown handoff</span></td>
+            <td><span class="chip amber">Stage 0-adjacent</span> 자동 posting이나 채널 연동이 아니라 수동 전달 패킷으로 검증.</td>
+            <td>Flow를 받은 사람이 설명 없이 실행 artifact를 이해하고 반응하는가?</td>
+            <td>연락처 저장, reply ingestion, channel analytics, webhook 자동화를 Stage 0에서 만들지 않기.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="table-card" id="source">
+      <p class="eyebrow">Source-to-Flow</p>
+      <h2>원컨텐츠를 실행 artifact로 바꾸는 일</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>현재 상태</th>
+            <th>다음 판단</th>
+            <th>관련 산출물</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>전세/10개 Flow 기준선</strong><span class="small">작은 Flow 단위 검증</span></td>
+            <td><span class="chip green">내부 기준선</span> 캘린더/체크/메모/URL 복잡도는 어느 정도 수용됨.</td>
+            <td>새 후보는 이 복잡도 이상으로 무거워지면 감점.</td>
+            <td><a href="./2026-06-16-ten-flow-user-samples-ko.html">10개 Flow 샘플</a></td>
+          </tr>
+          <tr>
+            <td><strong>후보 선정/교체 기준</strong><span class="small">원컨텐츠 1개, 자연 artifact 1개</span></td>
+            <td><span class="chip amber">기준 있음</span> 제품 운영 화면으로는 아직 미흡.</td>
+            <td>Creator publish gate로 어떻게 보여줄지 정리.</td>
+            <td><a href="../flow-rules/source-to-flow-conversion-gate.md">Conversion gate</a></td>
+          </tr>
+          <tr>
+            <td><strong>Source-backed fixture</strong><span class="small">My Flow UI에 실제 원문 기반 데이터 주입</span></td>
+            <td><span class="chip green">내부 PoC 완료</span> 전세, 이사, 여권, 중1 수학, 영유아 검진/접종만 유지하고 원문 없는 filler는 제외. 영유아 공식 일정은 생년월일 1개 입력 후 두 child Flow가 실제 `/my`에 저장되고, 공식 기간은 `date_window` metadata로 보존됨.</td>
+            <td>다음은 실제 제작자 편집/버전 리뷰에서 source row와 date-window 변경을 어떻게 보여줄지 정리.</td>
+            <td><a href="./2026-06-22-source-backed-my-flow-v9-ko.html">v9 사용자 화면</a><br><a href="./2026-06-22-source-backed-my-flow-v9-rehearsal-ko.html">v9 리허설</a></td>
+          </tr>
+          <tr>
+            <td><strong>Source-backed Step contract</strong><span class="small">Step/Item을 기존 제품 모델에 연결</span></td>
+            <td><span class="chip green">기준+route 구현</span> Step은 `FlowItem`, Item은 `FlowItemDetail`/description/link/memo/export body로 먼저 표현. Flow Map package는 creator/public/My Flow 표면을 분리하고, 공개 저장은 local saved record와 parent map snapshot으로 `/my`에 연결. 기간형 공식 일정은 `date_window`로 저장해 캘린더 이벤트 1개와 공식 기간 설명으로 내보냄.</td>
+            <td>durable creator/public map schema로 승격할지, fixture adapter로 유지하며 실제 제작자/사용자 관찰을 먼저 할지 결정. 다음 제품 gap은 creator-side source-row editing/version review.</td>
+            <td><a href="./2026-06-22-my-flow-v10-source-backed-user-poc-ko.html">v10 사용자 PoC</a><br><a href="./2026-06-22-my-flow-v10-product-data-bridge-ko.html">v10 제품 데이터 연결</a><br><a href="../specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md">Step contract</a><br><a href="../../components/flow/SourceBackedFlowMapPage.tsx">Flow Map routes</a></td>
+          </tr>
+          <tr>
+            <td><strong>실행 카테고리 taxonomy</strong><span class="small">주제가 아니라 사용자의 수행 영역 기준</span></td>
+            <td><span class="chip amber">초안 있음</span> 탐색/seed/IA에는 유용하지만 큰 내비게이션으로 바로 쓰면 위험.</td>
+            <td>카테고리 확장보다 artifact와 사용자 실행 상황을 먼저 기준으로 삼기.</td>
+            <td><a href="./2026-05-31-flowme-category-taxonomy.md">카테고리 taxonomy</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="table-card" id="myflow">
+      <p class="eyebrow">My Flow</p>
+      <h2>저장 후 관리 백로그</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>현재 상태</th>
+            <th>필요한 UX</th>
+            <th>주의</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Adaptive execution hub</strong><span class="small">0개, 1개, 2-5개, 6개 이상, 20개 이상</span></td>
+            <td><span class="chip amber">아이디어/스펙 있음</span> 지금 화면과 통합 설계는 필요.</td>
+            <td>저장 개수와 상태에 따라 오늘, 이어보기, 검색/필터, 그룹핑을 다르게 노출.</td>
+            <td>처음부터 Notion/Obsidian식 workspace로 확장하지 않기.</td>
+          </tr>
+          <tr>
+            <td><strong>단일 Flow와 Flow Map 혼합</strong><span class="small">내 목록에서 같이 보일 때</span></td>
+            <td><span class="chip green">사용자형 PoC</span> My Flow IA v2로 1개/4개/8개 상태를 줄여 검증하고, v3에서 실제 Today view 후보로 정리.</td>
+            <td>사용자에게는 큰 구조보다 오늘 항목과 이어볼 Flow를 먼저 보여주기. 전체 저장 목록은 필요할 때 찾는다.</td>
+            <td><a href="./2026-06-20-my-flow-user-screen-v3-ko.html">My Flow IA v3</a>와 <a href="./2026-06-21-my-flow-v3-implementation-scope-ko.html">v3 적용 범위</a> 기준으로 실제 `/my` 반영 범위 판단. 상태별 근거는 <a href="./2026-06-20-my-flow-clean-management-poc-ko.html">v2 PoC</a> 참고.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="table-card" id="creator">
+      <p class="eyebrow">Creator Map</p>
+      <h2>제작자 플랫폼 백로그</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>현재 상태</th>
+            <th>다음 질문</th>
+            <th>경계</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Flow Map / Flow of Flow</strong><span class="small">큰 지도 안에 반복 가능한 child Flow</span></td>
+            <td><span class="chip amber">개념 정리됨</span> 중1 수학은 가능성이 보였고, 다른 케이스는 더 엄격히 봐야 함.</td>
+            <td>진짜 반복 child Flow인지, 단순 collection인지 어떻게 구분할까?</td>
+            <td>큰 roadmap을 예쁘게 그리는 것만으로 platform이라고 부르지 않기.</td>
+          </tr>
+          <tr>
+            <td><strong>Creator Studio</strong><span class="small">원컨텐츠를 실행형 map으로 만드는 화면</span></td>
+            <td><span class="chip red">다음 작업</span> 현재 가장 중요한 서비스 UX 연결점.</td>
+            <td>URL/원문 구조 확인, Flow/Step/Item 매핑, 공개 전 점검을 어떻게 가볍게 만들까?</td>
+            <td>제작자 화면과 사용자 실행 화면을 섞지 않기.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="table-card" id="future">
+      <p class="eyebrow">장기 플랫폼</p>
+      <h2>지금은 보류하지만 잊으면 안 되는 것</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>아이디어</th>
+            <th>언제 다시 볼까</th>
+            <th>지금 보류하는 이유</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>URL 붙여넣기 자동 Flow화</strong></td>
+            <td>curated Flow에서 export/check 행동이 나온 뒤</td>
+            <td>추출 품질, 저작권, source attribution, 비용 문제가 큼.</td>
+          </tr>
+          <tr>
+            <td><strong>Creator page / Confluence식 workspace</strong></td>
+            <td>creator publishing이 활성화될 때</td>
+            <td>지금 만들면 broad workspace가 되어 Stage 0 초점이 흐려짐.</td>
+          </tr>
+          <tr>
+            <td><strong>Obsidian-like personal workspace</strong></td>
+            <td>사용자가 반복적으로 FLOW 안에서 계속 편집/관리하려는 신호가 나온 뒤</td>
+            <td>지금 만들면 기존 캘린더/노트/할일 앱과 경쟁하는 무거운 제품이 됨.</td>
+          </tr>
+          <tr>
+            <td><strong>중복 URL extraction cache</strong></td>
+            <td>URL ingestion이 실제 프로토타입으로 올라갈 때</td>
+            <td>정규화, refresh, attribution, 개인 편집과 공유 캐시 범위 결정을 먼저 해야 함.</td>
+          </tr>
+          <tr>
+            <td><strong>active execution count</strong></td>
+            <td>실제 저장/체크/재방문 데이터가 생긴 뒤</td>
+            <td>가짜 social proof처럼 보이면 제품 신뢰를 해침.</td>
+          </tr>
+          <tr>
+            <td><strong>similar-flow activity</strong></td>
+            <td>카테고리/태그별로 충분한 Flow와 활동 데이터가 생긴 뒤</td>
+            <td>현재 Flow 자체가 검증된 것처럼 오해시키면 안 됨.</td>
+          </tr>
+          <tr>
+            <td><strong>QR / offline guide 연결</strong></td>
+            <td>stable public Flow URL과 creator/publisher use case가 생긴 뒤</td>
+            <td>distribution 전략 없이 먼저 만들면 데모 기능이 됨.</td>
+          </tr>
+          <tr>
+            <td><strong>marketplace / asset exchange</strong></td>
+            <td>creator가 Flow를 유지/판매하고 싶어하는 신호가 나온 뒤</td>
+            <td>권리, 품질, 수익배분, 환불, 규제 문제가 큼.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card" id="rules">
+      <p class="eyebrow">운영 규칙</p>
+      <h2>넓게 보되 무겁게 만들지 않는 기준</h2>
+      <ol class="list">
+        <li>이 문서는 전체 지도입니다. 상세 UX는 <a href="./2026-06-19-flowme-service-ux-backlog-ko.html">서비스 UX 백로그</a>나 별도 PoC에서 다룹니다.</li>
+        <li>Stage 0 검증을 통과하기 전에는 장기 플랫폼 아이디어를 실행 작업으로 올리지 않습니다.</li>
+        <li>새 작업은 항상 어느 축인지 표시합니다: Stage 0, Source-to-Flow, My Flow, Creator Map, 장기 플랫폼.</li>
+        <li>큰 작업은 product, source, UX, content, validation, memory 렌즈 중 무엇으로 보는지 남깁니다.</li>
+        <li>완성도는 내부 진행 상태이며, 실제 사용자 검증과 혼동하지 않습니다.</li>
+        <li>모든 작은 수정마다 갱신하지 않습니다. 새 PoC, UX 리포트, spec, 관찰 결과, 중요한 판단 변경처럼 주요 Task나 milestone이 끝났을 때 산출물 링크와 다음 판단을 이 문서와 서비스 UX 백로그 중 알맞은 곳에 갱신합니다.</li>
+      </ol>
+    </section>
+  </main>
+</body>
+</html>

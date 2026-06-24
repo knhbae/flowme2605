@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow 유형 혼합 관찰 키트</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fb;
+      --card: #fff;
+      --soft: #f1f5f9;
+      --line: #d9e2ef;
+      --text: #0f172a;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      --red: #b42318;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); letter-spacing: 0; }
+    main { width: min(100% - 28px, 1120px); margin: 0 auto; padding: 24px 0 56px; }
+    header, section { border: 1px solid var(--line); border-radius: 14px; background: var(--card); box-shadow: 0 14px 34px rgba(15, 23, 42, .06); }
+    header { padding: 24px; }
+    section { margin-top: 14px; padding: 20px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: 34px; line-height: 1.12; word-break: keep-all; }
+    h2 { margin-bottom: 10px; font-size: 22px; line-height: 1.25; }
+    h3 { margin-bottom: 6px; font-size: 17px; line-height: 1.3; }
+    p, li, td, th { font-size: 14px; line-height: 1.62; }
+    p, li { color: var(--muted); font-weight: 660; }
+    a { color: #1d4ed8; font-weight: 850; text-underline-offset: 3px; }
+    code { border-radius: 6px; background: #eef2f7; padding: 2px 5px; color: #334155; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 12px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 12px; text-align: left; vertical-align: top; }
+    th { background: var(--soft); color: #334155; font-size: 12px; font-weight: 900; }
+    td:first-child { width: 170px; color: var(--text); font-weight: 850; }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .chip { display: inline-flex; align-items: center; min-height: 30px; border: 1px solid var(--line); border-radius: 999px; background: var(--soft); padding: 5px 10px; color: #334155; font-size: 12px; font-weight: 850; text-decoration: none; }
+    .chip.green { border-color: #99f6e4; background: #ecfdf5; color: var(--green); }
+    .chip.amber { border-color: #fed7aa; background: #fff7ed; color: var(--amber); }
+    .chip.red { border-color: #fecaca; background: #fef2f2; color: var(--red); }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card { border: 1px solid var(--line); border-radius: 12px; background: #fbfdff; padding: 14px; }
+    .card b, .card span { display: block; }
+    .card b { font-size: 15px; }
+    .card span { margin-top: 6px; color: var(--muted); font-size: 13px; font-weight: 660; line-height: 1.5; }
+    .script { border-left: 4px solid var(--blue); background: #eff6ff; }
+    .script p, .script li { color: #334155; }
+    .steps { counter-reset: step; display: grid; gap: 10px; padding-left: 0; list-style: none; }
+    .steps li { position: relative; border: 1px solid var(--line); border-radius: 12px; background: #fbfdff; padding: 12px 12px 12px 48px; }
+    .steps li::before { counter-increment: step; content: counter(step); position: absolute; left: 12px; top: 12px; display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 999px; background: var(--soft); color: #334155; font-size: 12px; font-weight: 950; }
+    @media (max-width: 860px) {
+      main { width: min(100% - 20px, 760px); padding-top: 14px; }
+      header, section { padding: 16px; border-radius: 12px; }
+      h1 { font-size: 26px; }
+      .grid, .grid.two { grid-template-columns: 1fr; }
+      table, tbody, tr, td, th { display: block; }
+      th { display: none; }
+      tr + tr { border-top: 2px solid var(--line); }
+      td:first-child { width: auto; padding-bottom: 4px; }
+      td + td { padding-top: 4px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="chip amber">진행자용 · 사용자 화면 아님</p>
+      <h1>My Flow 유형 혼합 관찰 키트</h1>
+      <p>목표는 저장한 Flow가 일정, 루틴, 학습, 체크, 보관으로 섞였을 때도 사용자가 오늘 해야 할 Step을 열고 체크, 메모, 원문 확인까지 막힘 없이 처리하는지 보는 것이다. 이 문서는 관찰용이며, 사용자에게는 <code>내 Flow</code> 화면만 보여준다.</p>
+      <div class="chips">
+        <a class="chip" href="./2026-06-21-my-flow-type-mix-user-poc-ko.html">사용자용 유형 혼합 화면</a>
+        <a class="chip" href="./2026-06-21-my-flow-type-mix-simulation-ko.html">시뮬레이션 리포트</a>
+        <a class="chip" href="./2026-06-21-my-flow-v5-clean-user-poc-ko.html">v5 정리 화면</a>
+        <a class="chip" href="./2026-06-21-my-flow-v5-clean-simulation-ko.html">v5 시뮬레이션</a>
+        <a class="chip" href="./2026-06-21-my-flow-observed-session-rollup-ko.html">관찰 롤업</a>
+        <a class="chip" href="./2026-06-19-flowme-service-ux-backlog-ko.html">서비스 UX 백로그</a>
+      </div>
+    </header>
+
+    <section class="script">
+      <p class="eyebrow">진행 원칙</p>
+      <h2>설명하지 말고, 사용자가 어디서 막히는지 본다</h2>
+      <p>“저장한 Flow들이 모인 화면입니다. 오늘 해야 할 일 하나를 처리하고, 예전에 저장한 Flow도 하나 찾아보세요.” 정도만 말한다. 유형 chip, 날짜 rail, Flow 찾기, 자동 저장은 먼저 설명하지 않는다.</p>
+    </section>
+
+    <section>
+      <p class="eyebrow">관찰 질문</p>
+      <h2>줄여도 되는지, 더 필요한지 판단할 것</h2>
+      <div class="grid">
+        <div class="card"><b>Today 우선성</b><span>사용자가 오늘 항목부터 시작하는가, 아니면 유형/검색/전체 목록으로 빠지는가.</span></div>
+        <div class="card"><b>혼합 타입 이해</b><span>일정, 루틴, 학습, 체크, 보관이 모두 같은 Step 상세로 열린다는 점을 자연스럽게 받아들이는가.</span></div>
+        <div class="card"><b>Flow Map 무게</b><span>중1 수학 같은 지도형 Flow가 과하게 보이지 않고 한 Step 실행으로 이해되는가.</span></div>
+        <div class="card"><b>메모 저장 신뢰</b><span>큰 저장 버튼 없이 <code>메모 저장됨</code> 상태만으로 충분한가.</span></div>
+        <div class="card"><b>검색/필터 사용</b><span>Flow 찾기에서 검색을 먼저 쓰는가, 유형 필터 때문에 헷갈리는가.</span></div>
+        <div class="card"><b>외부 앱 fallback</b><span>체크리스트 지원이 없는 앱에서는 text fallback이 충분한 정보로 느껴지는가.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">과제</p>
+      <h2>실제 클릭 순서</h2>
+      <ol class="steps">
+        <li><b>오늘 할 일 하나 처리</b><br />첫 화면에서 오늘 항목 하나를 열고, 체크 1~2개를 누른 뒤 메모를 짧게 남긴다.</li>
+        <li><b>학습 지도 항목 열기</b><br /><code>Flow 찾기</code>를 열고 <code>math</code> 또는 <code>수학</code>으로 검색해서 <code>정수와 유리수 10강</code>을 연다.</li>
+        <li><b>여권 Flow 다시 찾기</b><br />이번 주 또는 검색을 통해 <code>온라인 여권 재발급</code>의 사진 규격 Step을 찾는다.</li>
+        <li><b>날짜 없는 보관 항목 찾기</b><br /><code>보관</code>에서 스퀴시 도안 Flow를 열고, 날짜가 없는 Flow도 저장 목록에 남을 수 있는지 확인한다.</li>
+        <li><b>재방문 가정</b><br />다음 날 다시 들어왔다고 가정하고, 오늘 항목과 이전에 열었던 항목을 구분할 수 있는지 묻는다.</li>
+      </ol>
+    </section>
+
+    <section>
+      <p class="eyebrow">기록표</p>
+      <h2>발화와 행동만 적는다</h2>
+      <table>
+        <thead>
+          <tr><th>과제</th><th>첫 행동</th><th>막힌 지점</th><th>사용자 발화</th><th>판정</th><th>수정 방향</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>오늘 할 일</td>
+            <td>오늘 row / Flow 찾기 / 날짜 rail / 기타</td>
+            <td>Step 열기, 체크, 메모, 저장 표시 중 어디인지</td>
+            <td>그대로 기록</td>
+            <td>Pass / Medium / High / Blocking</td>
+            <td>유지 / 줄임 / 이름 변경 / 구조 변경</td>
+          </tr>
+          <tr>
+            <td>수학 찾기</td>
+            <td>검색 / 유형 필터 / 목록 스크롤 / 실패</td>
+            <td>Flow Map 위치, Step 상세, 원문 링크 중 어디인지</td>
+            <td>그대로 기록</td>
+            <td>Pass / Medium / High / Blocking</td>
+            <td>유지 / 줄임 / 이름 변경 / 구조 변경</td>
+          </tr>
+          <tr>
+            <td>여권 찾기</td>
+            <td>이번 주 / 검색 / 체크 필터 / 실패</td>
+            <td>사진 규격 Step을 찾는 과정</td>
+            <td>그대로 기록</td>
+            <td>Pass / Medium / High / Blocking</td>
+            <td>유지 / 줄임 / 이름 변경 / 구조 변경</td>
+          </tr>
+          <tr>
+            <td>보관 찾기</td>
+            <td>보관 rail / 검색 / 전체 / 실패</td>
+            <td>날짜 없는 Flow의 위치 이해</td>
+            <td>그대로 기록</td>
+            <td>Pass / Medium / High / Blocking</td>
+            <td>유지 / 줄임 / 이름 변경 / 구조 변경</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">판정 기준</p>
+      <h2>수정 우선순위</h2>
+      <table>
+        <thead>
+          <tr><th>등급</th><th>신호</th><th>즉시 수정</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="chip red">Blocking</span></td>
+            <td>오늘 할 일을 찾지 못함, Step을 열지 못함, 유형 chip을 필수 조작으로 오해함, 검색 결과를 열면 맥락을 잃음</td>
+            <td>동선이나 구조를 바로 수정하고 같은 과제를 다시 관찰한다.</td>
+          </tr>
+          <tr>
+            <td><span class="chip red">High</span></td>
+            <td>검색/필터를 이해하지 못함, 메모 저장 여부를 불안해함, 학습 지도 전체를 매번 찾아야 한다고 느낌</td>
+            <td>버튼명, 위치, 자동 저장 표시, Flow 찾기 구조를 줄이거나 바꾼다.</td>
+          </tr>
+          <tr>
+            <td><span class="chip amber">Medium</span></td>
+            <td>유형 label, 날짜 rail label, 보관 label이 애매하지만 과제는 끝냄</td>
+            <td>다음 polish 묶음으로 모으되 2회 반복되면 High로 올린다.</td>
+          </tr>
+          <tr>
+            <td><span class="chip green">Pass</span></td>
+            <td>오늘 항목 처리, 다른 Flow 찾기, 메모 입력, fallback 이해가 모두 자연스럽다</td>
+            <td>유지한다. 단, 실제 사용자 검증 완료라고 표현하지 않는다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">다음 수정 후보</p>
+      <h2>관찰 전에는 더 붙이지 않는다</h2>
+      <div class="grid two">
+        <div class="card"><b>줄일 후보</b><span>유형 chip, 날짜 rail 항목 수, Flow 찾기 필터, 상세 하단 fallback 박스 길이</span></div>
+        <div class="card"><b>붙일 후보</b><span>관찰에서 반복 요청이 있을 때만 접힌 전체 단원 보기, 최근 열었던 Flow, 날짜 없는 보관 위치 보강</span></div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

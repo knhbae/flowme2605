@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flow Map creator publish PoC</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --paper: #ffffff;
+      --ink: #111827;
+      --muted: #667085;
+      --line: #d9e0ea;
+      --soft: #eef3f8;
+      --blue: #2365d8;
+      --blue-soft: #eaf2ff;
+      --green: #13836f;
+      --green-soft: #e8f7f2;
+      --amber: #986400;
+      --amber-soft: #fff6dd;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    button, input {
+      font: inherit;
+    }
+    button {
+      cursor: pointer;
+    }
+    .app {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 20px 16px 64px;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 0;
+      background: var(--bg);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      font-weight: 800;
+    }
+    .mark {
+      display: grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 14px;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 330px minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+    .panel-body {
+      padding: 16px;
+    }
+    .side {
+      position: sticky;
+      top: 68px;
+    }
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    h1, h2, h3, p {
+      margin-top: 0;
+    }
+    h1 {
+      margin-bottom: 8px;
+      font-size: 30px;
+      line-height: 1.16;
+      letter-spacing: 0;
+    }
+    h2 {
+      margin-bottom: 10px;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin-bottom: 6px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+    .muted {
+      color: var(--muted);
+    }
+    .small {
+      font-size: 13px;
+    }
+    .source-list,
+    .stack {
+      display: grid;
+      gap: 10px;
+    }
+    .source-card,
+    .row-card,
+    .flow-card,
+    .preview-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 13px;
+    }
+    .source-card {
+      width: 100%;
+      text-align: left;
+    }
+    .source-card.active,
+    .row-card.active {
+      border-color: #85aef5;
+      background: var(--blue-soft);
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      border-radius: 7px;
+      background: var(--soft);
+      padding: 4px 8px;
+      color: #344054;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .chip.blue {
+      background: var(--blue-soft);
+      color: #1d56bf;
+    }
+    .chip.green {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+    .chip.amber {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+    .primary,
+    .secondary,
+    .ghost {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      padding: 10px 13px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .primary {
+      border: 1px solid var(--blue);
+      background: var(--blue);
+      color: #fff;
+    }
+    .secondary {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--blue);
+    }
+    .ghost {
+      border: 1px solid transparent;
+      background: var(--soft);
+      color: #344054;
+    }
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 0.9fr);
+      gap: 14px;
+      align-items: start;
+    }
+    .field {
+      display: grid;
+      gap: 6px;
+      margin-top: 12px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    input {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid #c8d1dc;
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+      padding: 8px 11px;
+      font-weight: 800;
+    }
+    .row-card {
+      width: 100%;
+      text-align: left;
+    }
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .step-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .step-row {
+      border: 1px solid #e4e9f0;
+      border-radius: 8px;
+      background: #f8fafc;
+      padding: 10px;
+    }
+    .step-row strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+    .check-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #eef1f5;
+    }
+    .check-row:last-child {
+      border-bottom: 0;
+    }
+    .check-row input {
+      width: 20px;
+      min-height: 20px;
+      height: 20px;
+      margin-top: 2px;
+    }
+    .status-box {
+      border: 1px solid #b7e2d6;
+      border-radius: 8px;
+      background: var(--green-soft);
+      padding: 12px;
+      color: #0b6b5b;
+      font-weight: 800;
+    }
+    .footnote {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    @media (max-width: 900px) {
+      .layout,
+      .grid,
+      .flow-grid {
+        grid-template-columns: 1fr;
+      }
+      .side {
+        position: static;
+      }
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .panel-body {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><span class="mark">F</span><span>FlowMe 제작자</span></div>
+      <a class="secondary" href="./2026-06-23-flow-map-user-journey-poc-ko.html">사용자 화면 보기</a>
+    </header>
+
+    <div class="layout">
+      <aside class="panel side">
+        <div class="panel-body">
+          <p class="eyebrow">원문 선택</p>
+          <h2>Flow Map으로 만들 콘텐츠</h2>
+          <div class="source-list">
+            <button class="source-card active" type="button" data-source="math">
+              <strong>중1 수학 목차</strong>
+              <p class="muted small">단원 row가 반복되는 진도형 콘텐츠</p>
+              <span class="chips"><span class="chip blue">진도형</span><span class="chip">입력 없음</span></span>
+            </button>
+            <button class="source-card" type="button" data-source="baby">
+              <strong>영유아 검진·접종 안내</strong>
+              <p class="muted small">공식 기간과 조회 일정이 반복되는 일정형 콘텐츠</p>
+              <span class="chips"><span class="chip blue">일정형</span><span class="chip">생년월일</span></span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <section class="panel">
+        <div class="panel-body">
+          <p class="eyebrow">제작자 발행 준비</p>
+          <h1 id="page-title">중1 수학 목차를 실행형 진도 지도로 만들기</h1>
+          <p class="muted" id="page-copy">원문 목차 row를 그대로 가져와 Flow Map, Flow, Step으로 나눕니다. 사용자가 실행할 때 필요한 메모 항목만 Step 안에 남깁니다.</p>
+
+          <div class="grid">
+            <section class="preview-card">
+              <h2>1. 원문 구조 가져오기</h2>
+              <label class="field">원문 URL
+                <input id="source-url" type="url">
+              </label>
+              <div class="action-row">
+                <button class="primary" type="button" data-import>원문 구조 가져오기</button>
+                <a class="secondary" id="source-link" target="_blank" rel="noreferrer">원문 열기</a>
+              </div>
+              <p class="footnote">이 화면에서는 자동 생성 결과를 그대로 발행하지 않고, 원문 row와 생성될 Step을 먼저 대조합니다.</p>
+            </section>
+
+            <section class="preview-card">
+              <h2>2. 반복 단위</h2>
+              <div class="chips" id="unit-chips"></div>
+              <p class="muted small" id="unit-copy"></p>
+              <div class="action-row">
+                <button class="ghost" type="button" data-unit="map">상위 지도</button>
+                <button class="ghost" type="button" data-unit="flow">하위 Flow</button>
+                <button class="ghost" type="button" data-unit="step">Step row</button>
+              </div>
+            </section>
+          </div>
+
+          <div class="grid" style="margin-top:14px;">
+            <section class="preview-card">
+              <h2>가져온 원문 row</h2>
+              <div class="stack" id="source-rows"></div>
+            </section>
+
+            <section class="preview-card">
+              <h2>사용자에게 보일 저장 결과</h2>
+              <div id="user-preview"></div>
+            </section>
+          </div>
+
+          <section class="preview-card" style="margin-top:14px;">
+            <h2>생성되는 Flow Map</h2>
+            <div class="flow-grid" id="map-preview"></div>
+          </section>
+
+          <section class="preview-card" style="margin-top:14px;">
+            <h2>발행 전 확인</h2>
+            <div id="publish-checks"></div>
+            <div class="action-row">
+              <button class="primary" type="button" data-publish>공개 화면 미리보기 준비</button>
+              <span class="chip green" id="publish-state">원문 구조 확인 전</span>
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const sources = {
+      math: {
+        title: '중1 수학 목차를 실행형 진도 지도로 만들기',
+        copy: '원문 목차 row를 그대로 가져와 Flow Map, Flow, Step으로 나눕니다. 사용자가 실행할 때 필요한 메모 항목만 Step 안에 남깁니다.',
+        url: 'https://mathbang.net/13',
+        units: ['Flow Map: 중1 수학', 'Flow: 큰 단원', 'Step: 세부 단원'],
+        unitCopy: '진도형은 날짜 입력보다 현재 단원과 다음 단원이 중요합니다.',
+        rows: [
+          ['수와 연산', '소인수분해', '원문 단원 row'],
+          ['수와 연산', '정수와 유리수', '원문 단원 row'],
+          ['문자와 식', '문자의 사용과 식', '원문 단원 row'],
+          ['문자와 식', '일차방정식', '원문 단원 row'],
+          ['좌표평면과 그래프', '좌표평면', '원문 단원 row'],
+          ['좌표평면과 그래프', '그래프와 비례', '원문 단원 row']
+        ],
+        flows: [
+          ['수와 연산', ['소인수분해', '정수와 유리수']],
+          ['문자와 식', ['문자의 사용과 식', '일차방정식']],
+          ['좌표평면과 그래프', ['좌표평면', '그래프와 비례']]
+        ],
+        userPreview: ['전체 진도표 저장', '이 단원만 저장 가능', '각 Step에는 원문 링크, 완료 체크, 막힌 부분 메모만 표시'],
+        checks: ['원문 row가 Step 제목으로 그대로 남아 있음', '사용자 입력을 요구하지 않음', '진도표 외 학습법을 임의로 만들지 않음']
+      },
+      baby: {
+        title: '영유아 검진·접종 안내를 일정 지도로 만들기',
+        copy: '공식 안내의 기간 row를 하나의 Step으로 유지하고, 사용자는 생년월일 1개만 입력합니다.',
+        url: 'https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=1&cciNo=2&cnpClsNo=2&csmSeq=1138&popMenu=ov',
+        units: ['Flow Map: 아이 건강 일정', 'Flow: 검진/접종 그룹', 'Step: 공식 기간 또는 조회 시점'],
+        unitCopy: '공식 기간은 여러 날로 쪼개지 않고 한 Step의 기간 정보로 남깁니다.',
+        rows: [
+          ['건강검진', '1차 건강검진 · 생후 14~35일', '공식 기간 row'],
+          ['건강검진', '2차 건강검진 · 생후 4~6개월', '공식 기간 row'],
+          ['구강검진', '1차 구강검진 · 생후 18~29개월', '공식 기간 row'],
+          ['예방접종', '출생 직후 일정 확인', '공식 조회 row'],
+          ['예방접종', '생후 2개월 일정 확인', '공식 조회 row'],
+          ['예방접종', '생후 4개월 일정 확인', '공식 조회 row']
+        ],
+        flows: [
+          ['영유아 건강검진 일정', ['1차 건강검진 · 생후 14~35일', '2차 건강검진 · 생후 4~6개월', '1차 구강검진 · 생후 18~29개월']],
+          ['아이 예방접종 일정 확인', ['출생 직후 일정 확인', '생후 2개월 일정 확인', '생후 4개월 일정 확인']]
+        ],
+        userPreview: ['생년월일 1개 입력', '캘린더에 공식 확인 Step 생성', 'Step 안에는 예약, 문진표, 결과 위치 메모만 표시'],
+        checks: ['공식 기간을 여러 개 할 일로 부풀리지 않음', '의료 판단을 FlowMe가 대신하지 않음', '공식 링크와 사용자 메모를 분리함']
+      }
+    };
+
+    const state = {
+      source: 'math',
+      imported: false,
+      rowIndex: 0,
+      ready: false
+    };
+
+    function current() {
+      return sources[state.source];
+    }
+
+    function render() {
+      const source = current();
+      document.querySelectorAll('[data-source]').forEach((button) => {
+        button.classList.toggle('active', button.dataset.source === state.source);
+      });
+      document.getElementById('page-title').textContent = source.title;
+      document.getElementById('page-copy').textContent = source.copy;
+      document.getElementById('source-url').value = source.url;
+      document.getElementById('source-link').href = source.url;
+      document.getElementById('source-link').textContent = '원문 열기';
+      document.getElementById('unit-chips').innerHTML = source.units.map((unit) => `<span class="chip blue">${unit}</span>`).join('');
+      document.getElementById('unit-copy').textContent = source.unitCopy;
+      document.getElementById('source-rows').innerHTML = state.imported
+        ? source.rows.map((row, index) => `
+          <button class="row-card ${state.rowIndex === index ? 'active' : ''}" type="button" data-row="${index}">
+            <strong>${row[1]}</strong>
+            <span class="muted small">${row[0]} · ${row[2]}</span>
+          </button>
+        `).join('')
+        : '<div class="row-card"><strong>아직 가져온 row가 없습니다</strong><span class="muted small">원문 구조 가져오기를 누르면 source row가 나타납니다.</span></div>';
+      document.getElementById('user-preview').innerHTML = `
+        <div class="step-list">
+          ${source.userPreview.map((item) => `<div class="step-row"><strong>${item}</strong></div>`).join('')}
+        </div>
+      `;
+      document.getElementById('map-preview').innerHTML = source.flows.map((flow) => `
+        <article class="flow-card">
+          <div class="chips"><span class="chip blue">Flow</span><span class="chip">${flow[1].length}개 Step</span></div>
+          <h3>${flow[0]}</h3>
+          <div class="step-list">
+            ${flow[1].map((step) => `<div class="step-row"><strong>${step}</strong><span class="muted small">원문 row에서 생성된 Step</span></div>`).join('')}
+          </div>
+        </article>
+      `).join('');
+      document.getElementById('publish-checks').innerHTML = source.checks.map((check, index) => `
+        <label class="check-row">
+          <input type="checkbox" data-check="${index}" ${state.imported ? 'checked' : ''}>
+          <span>${check}</span>
+        </label>
+      `).join('');
+      document.getElementById('publish-state').textContent = state.ready
+        ? '공개 화면 미리보기 준비됨'
+        : state.imported
+          ? '발행 전 확인 중'
+          : '원문 구조 확인 전';
+    }
+
+    document.addEventListener('click', (event) => {
+      const button = event.target.closest('button');
+      if (!button) return;
+      if (button.matches('[data-source]')) {
+        state.source = button.dataset.source;
+        state.imported = false;
+        state.rowIndex = 0;
+        state.ready = false;
+        render();
+      }
+      if (button.matches('[data-import]')) {
+        state.imported = true;
+        state.ready = false;
+        render();
+      }
+      if (button.matches('[data-row]')) {
+        state.rowIndex = Number(button.dataset.row);
+        render();
+      }
+      if (button.matches('[data-publish]')) {
+        state.imported = true;
+        state.ready = true;
+        render();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>

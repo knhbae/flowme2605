@@ -1,0 +1,1146 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>내 Flow 관리 v2</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --surface: #ffffff;
+      --soft: #f1f5f9;
+      --line: #dbe2ea;
+      --line-strong: #cbd5e1;
+      --text: #111827;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --blue-soft: #eff6ff;
+      --green: #0f766e;
+      --green-soft: #ecfdf5;
+      --amber: #b45309;
+      --amber-soft: #fff7ed;
+      --radius: 14px;
+      --shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+      color-scheme: light;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    button, input, textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .app {
+      width: min(100% - 28px, 1100px);
+      margin: 0 auto;
+      padding: 22px 0 56px;
+    }
+
+    .shell {
+      display: grid;
+      gap: 14px;
+    }
+
+    .top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: end;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    h1, h2, h3, p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: 34px;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin-bottom: 8px;
+      font-size: 22px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 6px;
+      font-size: 19px;
+      line-height: 1.3;
+      letter-spacing: 0;
+    }
+
+    .desc {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.55;
+      font-weight: 700;
+    }
+
+    .summary {
+      display: grid;
+      gap: 8px;
+      min-width: 230px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfdff;
+    }
+
+    .summary b {
+      font-size: 20px;
+    }
+
+    .summary span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.4;
+    }
+
+    .mode-bar {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface);
+    }
+
+    .mode {
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: transparent;
+      padding: 10px;
+      text-align: left;
+      color: var(--text);
+    }
+
+    .mode b, .mode span {
+      display: block;
+    }
+
+    .mode b {
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+    .mode span {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .mode.active {
+      border-color: #bfdbfe;
+      background: var(--blue-soft);
+      color: #1d4ed8;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--surface);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      padding-bottom: 14px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.92fr) minmax(330px, 1.08fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .section-title b {
+      font-size: 14px;
+    }
+
+    .section-title span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .row {
+      width: 100%;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 12px;
+      color: inherit;
+      text-align: left;
+    }
+
+    .row:hover, .row.active {
+      border-color: #bfdbfe;
+      background: #f8fbff;
+    }
+
+    .row-main {
+      min-width: 0;
+    }
+
+    .row b, .row span {
+      display: block;
+    }
+
+    .row b {
+      overflow-wrap: anywhere;
+      line-height: 1.35;
+    }
+
+    .row span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1.35;
+    }
+
+    .date-pill, .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border-radius: 999px;
+      padding: 4px 9px;
+      white-space: nowrap;
+      font-size: 12px;
+      font-weight: 900;
+      border: 1px solid var(--line-strong);
+      color: #334155;
+      background: var(--soft);
+    }
+
+    .chip.blue {
+      border-color: #bfdbfe;
+      color: #1d4ed8;
+      background: var(--blue-soft);
+    }
+
+    .chip.green {
+      border-color: #a7f3d0;
+      color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .chip.amber {
+      border-color: #fed7aa;
+      color: var(--amber);
+      background: var(--amber-soft);
+    }
+
+    .progress {
+      width: 52px;
+      height: 8px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+
+    .progress i {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: var(--blue);
+    }
+
+    .detail {
+      position: sticky;
+      top: 12px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fbfdff;
+      padding: 16px;
+    }
+
+    .detail-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .mini {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .checks {
+      display: grid;
+      gap: 8px;
+    }
+
+    .check {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .check input {
+      width: 22px;
+      height: 22px;
+      margin: 1px 0 0;
+      accent-color: var(--blue);
+    }
+
+    .check b, .check span {
+      display: block;
+      line-height: 1.35;
+    }
+
+    .check span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .check.done {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+
+    .memo {
+      margin-top: 12px;
+      display: grid;
+      gap: 7px;
+    }
+
+    .memo label {
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .memo textarea {
+      width: 100%;
+      min-height: 88px;
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      padding: 11px;
+      resize: vertical;
+      color: var(--text);
+      background: #fff;
+    }
+
+    .source-line {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--soft);
+      color: #334155;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    details {
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px 11px;
+    }
+
+    summary {
+      cursor: pointer;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 10px 0 0;
+      color: #334155;
+      font-family: inherit;
+      font-size: 13px;
+      line-height: 1.5;
+      font-weight: 750;
+    }
+
+    .library {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .library-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .flow-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 12px;
+      color: inherit;
+      text-align: left;
+    }
+
+    .flow-card.active {
+      border-color: #bfdbfe;
+      background: #f8fbff;
+    }
+
+    .flow-card b, .flow-card span {
+      display: block;
+    }
+
+    .flow-card b {
+      line-height: 1.35;
+    }
+
+    .flow-card span {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1.35;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .secondary {
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      background: #fff;
+      color: #334155;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .search {
+      display: none;
+      margin-bottom: 12px;
+    }
+
+    .search.show {
+      display: block;
+    }
+
+    .search input {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      padding: 0 12px;
+      background: #fff;
+    }
+
+    .empty {
+      display: grid;
+      gap: 12px;
+      padding: 22px;
+      border: 1px dashed var(--line-strong);
+      border-radius: 18px;
+      background: #fff;
+      text-align: left;
+    }
+
+    .empty .actions {
+      margin-top: 4px;
+    }
+
+    .toast {
+      display: none;
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%);
+      max-width: min(92vw, 420px);
+      border: 1px solid #bfdbfe;
+      border-radius: 999px;
+      background: #f8fbff;
+      color: #1d4ed8;
+      padding: 10px 14px;
+      box-shadow: var(--shadow);
+      font-size: 13px;
+      font-weight: 900;
+      z-index: 10;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 820px) {
+      .app {
+        width: min(100% - 20px, 720px);
+        padding-top: 12px;
+      }
+
+      .top, .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .top, .panel {
+        padding: 17px;
+      }
+
+      .summary {
+        min-width: 0;
+      }
+
+      .mode-bar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .panel-head, .detail-top {
+        display: grid;
+      }
+
+      .detail {
+        position: static;
+      }
+    }
+
+    @media (max-width: 520px) {
+      h1 {
+        font-size: 30px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      .mode-bar {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .mode {
+        padding: 10px 8px;
+      }
+
+      .library-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .row {
+        grid-template-columns: 1fr;
+      }
+
+      .progress {
+        width: 100%;
+      }
+
+      .secondary {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="shell">
+      <header class="top">
+        <div>
+          <p class="eyebrow">내 실행 공간</p>
+          <h1>내 Flow</h1>
+          <p class="desc">처음에는 저장 확인만, 여러 개가 쌓이면 오늘 할 일부터 보여줍니다.</p>
+        </div>
+        <aside class="summary" aria-live="polite">
+          <b id="summaryTitle">오늘 0개</b>
+          <span id="summaryMeta">저장한 Flow 없음</span>
+          <span id="summaryHint">저장하면 여기에서 다시 볼 수 있습니다.</span>
+        </aside>
+      </header>
+
+      <nav class="mode-bar" aria-label="저장 상태 예시">
+        <button class="mode" type="button" data-mode="empty"><b>0개</b><span>저장 전</span></button>
+        <button class="mode" type="button" data-mode="single"><b>1개</b><span>저장 확인</span></button>
+        <button class="mode active" type="button" data-mode="few"><b>4개</b><span>오늘 중심</span></button>
+        <button class="mode" type="button" data-mode="many"><b>8개</b><span>검색 보조</span></button>
+      </nav>
+
+      <section id="emptyState" class="empty hidden" aria-labelledby="emptyTitle">
+        <div>
+          <p class="eyebrow">저장 전</p>
+          <h2 id="emptyTitle">아직 저장한 Flow가 없습니다</h2>
+          <p class="desc">공개 상세에서 저장하면 내 Flow에는 다음에 볼 항목과 원문 링크가 남습니다.</p>
+        </div>
+        <div class="actions">
+          <button class="secondary" type="button" data-mode="single">1개 저장 상태 보기</button>
+          <button class="secondary" type="button" data-mode="few">4개 저장 상태 보기</button>
+        </div>
+      </section>
+
+      <section id="workbench" class="panel" aria-labelledby="screenTitle">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow" id="screenEyebrow">오늘</p>
+            <h2 id="screenTitle">오늘 할 일</h2>
+            <p class="desc" id="screenDesc">오늘 열어야 할 항목만 먼저 봅니다.</p>
+          </div>
+          <div class="actions">
+            <button class="secondary" type="button" id="toggleLibrary">저장한 Flow 보기</button>
+          </div>
+        </div>
+
+        <div class="layout" id="mainLayout">
+          <div class="stack" id="leftPane">
+            <div id="singleSaved" class="empty hidden"></div>
+
+            <div id="todayArea">
+              <div class="section-title">
+                <b id="todayTitle">오늘 할 항목</b>
+                <span id="todayCount">0개</span>
+              </div>
+              <div class="stack" id="todayList"></div>
+            </div>
+
+            <div id="laterArea">
+              <div class="section-title">
+                <b>다음에 볼 항목</b>
+                <span id="laterCount">0개</span>
+              </div>
+              <div class="stack" id="laterList"></div>
+            </div>
+
+            <div id="libraryArea" class="library">
+              <div class="section-title">
+                <b>저장한 Flow</b>
+                <span id="libraryCount">0개</span>
+              </div>
+              <div id="searchBox" class="search">
+                <input id="searchInput" type="search" placeholder="Flow나 항목 검색" aria-label="저장한 Flow 검색" />
+              </div>
+              <div class="library-grid" id="libraryList"></div>
+            </div>
+          </div>
+
+          <article class="detail" aria-labelledby="detailTitle">
+            <div class="detail-top">
+              <div>
+                <p class="eyebrow" id="detailKicker">선택한 항목</p>
+                <h3 id="detailTitle">계약 전 서류 확인</h3>
+                <p class="mini" id="detailMeta">전세계약 전 서류 체크 · 2026.06.04</p>
+              </div>
+              <span class="chip blue" id="detailStatus">오늘</span>
+            </div>
+
+            <div class="checks" id="checkList"></div>
+
+            <div class="memo">
+              <label for="memoInput">메모</label>
+              <textarea id="memoInput" placeholder="확인한 내용, 다시 볼 링크, 미룬 이유만 짧게"></textarea>
+            </div>
+
+            <div class="source-line" id="sourceLine">원문 링크는 Flow 상세 메모에 보관</div>
+
+            <details>
+              <summary>외부 앱에 붙일 텍스트</summary>
+              <pre id="fallbackText"></pre>
+            </details>
+          </article>
+        </div>
+
+        <div class="toast" id="toast" role="status"></div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const flows = [
+      { id: 'jeonse', name: '전세계약 전 서류 체크', category: '전세', kind: 'single', nextStepId: 'jeonse-docs' },
+      { id: 'move', name: '이사 D-30 준비', category: '이사', kind: 'single', nextStepId: 'move-quote' },
+      { id: 'math', name: '중1 수학 학습 지도', category: '수학', kind: 'map', childFlow: '정수와 유리수', nextStepId: 'math-lesson' },
+      { id: 'workout', name: '초보 홈트 영상 루틴', category: '루틴', kind: 'single', nextStepId: 'workout-session' },
+      { id: 'passport', name: '온라인 여권 재발급', category: '행정', kind: 'single', nextStepId: 'passport-photo' },
+      { id: 'baby', name: '영유아 건강검진 준비', category: '검진', kind: 'single', nextStepId: 'baby-checkup' },
+      { id: 'squishy', name: '무료 도안 스퀴시 만들기', category: '놀이', kind: 'single', nextStepId: 'squishy-play' },
+      { id: 'plant', name: '스투키 물주기', category: '식물', kind: 'single', nextStepId: 'plant-water' }
+    ];
+
+    const steps = [
+      {
+        id: 'jeonse-docs',
+        flowId: 'jeonse',
+        map: null,
+        flow: '전세계약 전 서류 체크',
+        title: '계약 전 서류 확인',
+        date: '2026.06.04',
+        status: 'today',
+        meta: 'D-3 · 등기부등본, 시세, 보증보험 가능 여부',
+        items: ['시세 확인', '등기부등본 확인', '전세보증보험 가능 여부 확인'],
+        notes: ['주변 실거래가와 호가를 같이 보기', '주소와 소유자 변동 확인', '가입 가능 여부만 메모'],
+        memo: '걸리는 항목이 있으면 계약 전 공인중개사나 전문가에게 확인.',
+        source: '원문 링크는 Flow 상세 메모에 보관'
+      },
+      {
+        id: 'move-quote',
+        flowId: 'move',
+        map: null,
+        flow: '이사 D-30 준비',
+        title: '견적 3곳 요청하기',
+        date: '2026.06.18',
+        status: 'later',
+        meta: 'D-30 · 이사 방식과 업체 후보',
+        items: ['이사 방식 1개 선택', '견적 후보 2-3곳 이름과 연락처 메모', '예상 비용과 포함 범위 메모'],
+        notes: ['포장/반포장/용달 중 하나', '업체명과 연락처만 남기기', '포함/불포함 범위만 짧게'],
+        memo: '아직 업체 1곳만 확인함.',
+        source: '원문 체크리스트 URL'
+      },
+      {
+        id: 'math-lesson',
+        flowId: 'math',
+        map: '중1 수학 학습 지도',
+        flow: '정수와 유리수',
+        title: '10강 01 정수와 유리수 (1)',
+        date: '오늘',
+        status: 'today',
+        meta: 'EBS 중학 뉴런 수학1(상) · 28분 · 34~36쪽',
+        items: ['EBS에서 10강 열기', '교재 34~36쪽 문제 풀기', '헷갈린 개념 메모'],
+        notes: ['원문 강의에서 이번 강의 시작', '원문에 있는 오늘 범위', '다음 복습 때 볼 내용만 짧게'],
+        memo: '',
+        source: 'EBS 중학 뉴런 수학1(상)'
+      },
+      {
+        id: 'workout-session',
+        flowId: 'workout',
+        map: null,
+        flow: '초보 홈트 영상 루틴',
+        title: '원본 영상 한 번 따라하기',
+        date: '오늘 20:00',
+        status: 'today',
+        meta: '주 3회 · 통증 있으면 중단',
+        items: ['원본 영상 열기', '오늘 실행 여부 체크', '불편한 부위가 있으면 메모'],
+        notes: ['자세와 속도는 영상 기준', '한 번 따라 했으면 체크', '통증/어지러움이 있으면 기록'],
+        memo: '',
+        source: '영상 URL'
+      },
+      {
+        id: 'passport-photo',
+        flowId: 'passport',
+        map: null,
+        flow: '온라인 여권 재발급',
+        title: '여권 사진 파일 준비하기',
+        date: '2026.06.21',
+        status: 'upcoming',
+        meta: 'D-21 · 신청 링크와 사진 규격 확인',
+        items: ['사진 파일 위치 메모', '신청 링크 열기', '수령 기관 메모'],
+        notes: ['파일명이나 저장 위치만', '정부24/외교부 링크', '방문 가능한 기관만'],
+        memo: '',
+        source: '정부24/외교부 안내 링크'
+      },
+      {
+        id: 'baby-checkup',
+        flowId: 'baby',
+        map: null,
+        flow: '영유아 건강검진 준비',
+        title: '문진표와 질문 메모 준비하기',
+        date: '2026.06.22',
+        status: 'upcoming',
+        meta: 'D-3 · 병원 방문 전 질문 1-2개',
+        items: ['문진표 작성 여부 확인', '발달선별검사지 확인', '의료진에게 물어볼 질문 메모'],
+        notes: ['작성 여부만 체크', '대상 차수만 확인', '판단이 아니라 질문만'],
+        memo: '',
+        source: '국민건강보험 검진 안내'
+      },
+      {
+        id: 'squishy-play',
+        flowId: 'squishy',
+        map: null,
+        flow: '무료 도안 스퀴시 만들기',
+        title: '도안 출력하고 준비물 챙기기',
+        date: '2026.06.23',
+        status: 'upcoming',
+        meta: '놀이일 · 도안 URL과 준비물',
+        items: ['도안 URL 열기', '원본 설명의 준비물 체크', '놀이 후 정리할 봉투 준비'],
+        notes: ['도안 원문 열기', '원문 준비물 기준', '작은 조각 정리용'],
+        memo: '',
+        source: '도안 원문 URL'
+      },
+      {
+        id: 'plant-water',
+        flowId: 'plant',
+        map: null,
+        flow: '스투키 물주기',
+        title: '흙 상태 보고 물 줄지 결정하기',
+        date: '최근 체크',
+        status: 'done',
+        meta: '반복 · 과습이면 미루기',
+        items: ['흙 마름 확인', '몸통 물러짐 확인', '다음 물줄 날짜 메모'],
+        notes: ['흙이 젖어 있으면 미루기', '무름이 있으면 물 주지 않기', '다음 알림 날짜만'],
+        memo: '지난번 흙이 젖어 있어 미룸.',
+        source: '식물 관리 원문'
+      }
+    ];
+
+    const scenarios = {
+      empty: [],
+      single: ['jeonse'],
+      few: ['jeonse', 'move', 'math', 'workout'],
+      many: flows.map((flow) => flow.id)
+    };
+
+    const state = {
+      mode: 'few',
+      selectedStepId: 'jeonse-docs',
+      showLibrary: true,
+      query: '',
+      checks: {},
+      memos: {}
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const all = (selector) => Array.from(document.querySelectorAll(selector));
+
+    function activeFlows() {
+      const ids = scenarios[state.mode];
+      return flows.filter((flow) => ids.includes(flow.id));
+    }
+
+    function activeSteps() {
+      const ids = new Set(activeFlows().map((flow) => flow.id));
+      return steps.filter((step) => ids.has(step.flowId));
+    }
+
+    function stepById(id) {
+      return steps.find((step) => step.id === id) || activeSteps()[0] || steps[0];
+    }
+
+    function flowById(id) {
+      return flows.find((flow) => flow.id === id);
+    }
+
+    function checkedCount(step) {
+      const done = step.items.filter((_, index) => state.checks[`${step.id}:${index}`]).length;
+      return { done, total: step.items.length, pct: Math.round((done / step.items.length) * 100) };
+    }
+
+    function statusLabel(status) {
+      return {
+        today: '오늘',
+        later: '다음',
+        upcoming: '예정',
+        done: '체크됨'
+      }[status] || '예정';
+    }
+
+    function statusChip(status) {
+      if (status === 'done') return 'green';
+      if (status === 'later') return 'amber';
+      if (status === 'today') return 'blue';
+      return '';
+    }
+
+    function scopeLabel(step) {
+      return step.map ? `${step.map} · ${step.flow}` : step.flow;
+    }
+
+    function stepFallback(step) {
+      const memo = state.memos[step.id] || step.memo || '짧게 메모';
+      const prefix = checkedCount(step).done === step.items.length ? '[x]' : '[ ]';
+      const scope = step.map ? `- 지도: ${step.map}\n- Flow: ${step.flow}` : `- Flow: ${step.flow}`;
+      return `${prefix} ${step.title}
+${scope}
+- ${step.date} · ${step.meta}
+${step.items.map((item) => `- ${item}`).join('\n')}
+- 메모: ${memo}
+- 원문: ${step.source}`;
+    }
+
+    function setMode(mode) {
+      state.mode = mode;
+      state.query = '';
+      state.showLibrary = mode !== 'many';
+      const first = activeSteps().find((step) => step.status === 'today') || activeSteps()[0] || steps[0];
+      state.selectedStepId = first.id;
+      render();
+    }
+
+    function showToast(message) {
+      const toast = $('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      window.clearTimeout(toast._timer);
+      toast._timer = window.setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function renderModes() {
+      all('[data-mode]').forEach((button) => {
+        button.classList.toggle('active', button.dataset.mode === state.mode);
+      });
+    }
+
+    function renderSummary(flowItems, stepItems) {
+      const today = stepItems.filter((step) => step.status === 'today').length;
+      const next = stepItems.filter((step) => ['later', 'upcoming'].includes(step.status)).length;
+      $('summaryTitle').textContent = state.mode === 'empty' ? '오늘 0개' : `오늘 ${today}개`;
+      $('summaryMeta').textContent = state.mode === 'empty'
+        ? '저장한 Flow 없음'
+        : `저장한 Flow ${flowItems.length}개 · 다음 ${next}개`;
+      $('summaryHint').textContent = state.mode === 'single'
+        ? '1개일 때는 저장 확인과 다음 항목만 보여줍니다.'
+        : state.mode === 'many'
+          ? '많아지면 검색은 보조로 두고 오늘 할 일부터 봅니다.'
+          : '오늘 항목을 먼저 고르고 필요할 때 전체 Flow를 봅니다.';
+    }
+
+    function renderEmpty() {
+      const empty = state.mode === 'empty';
+      $('emptyState').classList.toggle('hidden', !empty);
+      $('workbench').classList.toggle('hidden', empty);
+    }
+
+    function renderScreenCopy(flowItems) {
+      if (state.mode === 'single') {
+        $('screenEyebrow').textContent = '저장됨';
+        $('screenTitle').textContent = `${flowItems[0].name}`;
+        $('screenDesc').textContent = '관리 버튼 없이 다음에 볼 항목과 원문만 남깁니다.';
+        return;
+      }
+      if (state.mode === 'many') {
+        $('screenEyebrow').textContent = '여러 개 저장';
+        $('screenTitle').textContent = '오늘 할 일부터 보기';
+        $('screenDesc').textContent = '전체 목록은 필요할 때 열고, 검색은 보조로 사용합니다.';
+        return;
+      }
+      $('screenEyebrow').textContent = '오늘';
+      $('screenTitle').textContent = '오늘 할 일';
+      $('screenDesc').textContent = '저장한 Flow 중 지금 처리할 항목만 먼저 봅니다.';
+    }
+
+    function renderSingle(flowItems, stepItems) {
+      const isSingle = state.mode === 'single';
+      $('singleSaved').classList.toggle('hidden', !isSingle);
+      $('todayArea').classList.toggle('hidden', isSingle);
+      $('laterArea').classList.toggle('hidden', isSingle);
+      $('libraryArea').classList.toggle('hidden', isSingle);
+      $('toggleLibrary').classList.toggle('hidden', isSingle);
+      if (!isSingle) return;
+
+      const flow = flowItems[0];
+      const step = stepItems[0];
+      $('singleSaved').innerHTML = `
+        <div>
+          <p class="eyebrow">저장 확인</p>
+          <h2>${flow.name}</h2>
+          <p class="desc">다음 항목은 ${step.date} · ${step.title}입니다.</p>
+        </div>
+        <div class="source-line">${step.source}</div>
+      `;
+    }
+
+    function stepRow(step) {
+      const progress = checkedCount(step);
+      const active = step.id === state.selectedStepId ? 'active' : '';
+      return `
+        <button class="row ${active}" type="button" data-step="${step.id}">
+          <span class="date-pill">${step.date}</span>
+          <span class="row-main"><b>${step.title}</b><span>${scopeLabel(step)}</span></span>
+          <span class="progress" aria-label="${progress.done}/${progress.total} 체크"><i style="width:${progress.pct}%"></i></span>
+        </button>
+      `;
+    }
+
+    function renderStepLists(stepItems) {
+      const today = stepItems.filter((step) => step.status === 'today');
+      const later = stepItems.filter((step) => ['later', 'upcoming'].includes(step.status));
+      $('todayCount').textContent = `${today.length}개`;
+      $('laterCount').textContent = `${later.length}개`;
+      $('todayList').innerHTML = today.map(stepRow).join('') || '<div class="source-line">오늘 열 항목이 없습니다.</div>';
+      $('laterList').innerHTML = later.slice(0, state.mode === 'many' ? 3 : 2).map(stepRow).join('') || '<div class="source-line">다음 항목이 없습니다.</div>';
+      $('laterArea').classList.toggle('hidden', later.length === 0);
+    }
+
+    function renderLibrary(flowItems, stepItems) {
+      if (state.mode === 'single') {
+        $('libraryArea').classList.add('hidden');
+        $('searchBox').classList.remove('show');
+        return;
+      }
+      const isMany = state.mode === 'many';
+      $('libraryArea').classList.toggle('hidden', !state.showLibrary);
+      $('toggleLibrary').textContent = state.showLibrary ? '저장한 Flow 접기' : '저장한 Flow 보기';
+      $('searchBox').classList.toggle('show', isMany && state.showLibrary);
+      $('searchInput').value = state.query;
+      $('libraryCount').textContent = `${flowItems.length}개`;
+      if (!state.showLibrary) return;
+
+      const query = state.query.trim().toLowerCase();
+      const visible = flowItems.filter((flow) => {
+        const next = stepItems.find((step) => step.flowId === flow.id);
+        const text = `${flow.name} ${flow.category} ${flow.childFlow || ''} ${next?.title || ''}`.toLowerCase();
+        return !query || text.includes(query);
+      });
+
+      $('libraryList').innerHTML = visible.map((flow) => {
+        const next = stepItems.find((step) => step.flowId === flow.id) || stepById(flow.nextStepId);
+        const active = next.id === state.selectedStepId ? 'active' : '';
+        return `
+          <button class="flow-card ${active}" type="button" data-step="${next.id}">
+            <span class="chip ${flow.kind === 'map' ? 'blue' : ''}">${flow.category}</span>
+            <b>${flow.name}</b>
+            <span>${flow.kind === 'map' ? `${flow.childFlow} · ` : ''}${next.title}</span>
+          </button>
+        `;
+      }).join('') || '<div class="source-line">검색 결과가 없습니다.</div>';
+    }
+
+    function renderDetail(step) {
+      const progress = checkedCount(step);
+      const done = progress.done === progress.total;
+      $('detailKicker').textContent = step.map ? `${step.map}에서 이어보기` : '선택한 항목';
+      $('detailTitle').textContent = step.title;
+      $('detailMeta').textContent = `${scopeLabel(step)} · ${step.date}`;
+      $('detailStatus').textContent = done ? '체크됨' : statusLabel(step.status);
+      $('detailStatus').className = `chip ${done ? 'green' : statusChip(step.status)}`;
+      $('checkList').innerHTML = step.items.map((item, index) => {
+        const key = `${step.id}:${index}`;
+        const checked = Boolean(state.checks[key]);
+        return `
+          <label class="check ${checked ? 'done' : ''}">
+            <input type="checkbox" data-check="${key}" ${checked ? 'checked' : ''} />
+            <span><b>${item}</b><span>${step.notes[index] || '필요하면 메모에 남기기'}</span></span>
+          </label>
+        `;
+      }).join('');
+      $('memoInput').value = state.memos[step.id] ?? step.memo ?? '';
+      $('sourceLine').textContent = step.source;
+      $('fallbackText').textContent = stepFallback(step);
+    }
+
+    function bindDynamicEvents() {
+      all('[data-step]').forEach((button) => {
+        button.addEventListener('click', () => {
+          state.selectedStepId = button.dataset.step;
+          render();
+        });
+      });
+
+      all('[data-check]').forEach((checkbox) => {
+        checkbox.addEventListener('change', () => {
+          state.checks[checkbox.dataset.check] = checkbox.checked;
+          showToast(checkbox.checked ? '체크했습니다.' : '체크를 해제했습니다.');
+          render();
+        });
+      });
+    }
+
+    function render() {
+      renderModes();
+      const flowItems = activeFlows();
+      const stepItems = activeSteps();
+      renderSummary(flowItems, stepItems);
+      renderEmpty();
+      if (state.mode === 'empty') return;
+      if (!stepItems.find((step) => step.id === state.selectedStepId)) {
+        state.selectedStepId = stepItems.find((step) => step.status === 'today')?.id || stepItems[0].id;
+      }
+      renderScreenCopy(flowItems);
+      renderSingle(flowItems, stepItems);
+      renderStepLists(stepItems);
+      renderLibrary(flowItems, stepItems);
+      renderDetail(stepById(state.selectedStepId));
+      bindDynamicEvents();
+    }
+
+    all('[data-mode]').forEach((button) => {
+      button.addEventListener('click', () => setMode(button.dataset.mode));
+    });
+
+    $('toggleLibrary').addEventListener('click', () => {
+      state.showLibrary = !state.showLibrary;
+      render();
+    });
+
+    $('searchInput').addEventListener('input', (event) => {
+      state.query = event.target.value;
+      render();
+    });
+
+    $('memoInput').addEventListener('input', (event) => {
+      const step = stepById(state.selectedStepId);
+      state.memos[step.id] = event.target.value;
+      $('fallbackText').textContent = stepFallback(step);
+    });
+
+    render();
+  </script>
+</body>
+</html>

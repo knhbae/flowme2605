@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow v7 관리 구조 리허설</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #536274;
+      --line: #dbe4ef;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      --red: #b91c1c;
+      --soft-blue: #eff6ff;
+      --soft-green: #ecfdf5;
+      --soft-amber: #fffbeb;
+      --soft-red: #fef2f2;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+    }
+    main { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 40px 0 56px; }
+    header, section {
+      margin-bottom: 18px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--card);
+      padding: 24px;
+    }
+    h1, h2, h3, p { margin-top: 0; letter-spacing: 0; }
+    h1 { margin-bottom: 10px; font-size: clamp(28px, 4vw, 44px); line-height: 1.12; }
+    h2 { margin-bottom: 10px; font-size: 22px; }
+    h3 { margin-bottom: 6px; font-size: 16px; }
+    p, li { color: var(--muted); }
+    a { color: var(--blue); font-weight: 850; }
+    .eyebrow { color: var(--blue); font-size: 13px; font-weight: 900; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #f8fafc;
+      padding: 5px 10px;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 850;
+      text-decoration: none;
+    }
+    .chip.green { border-color: #99f6e4; background: var(--soft-green); color: var(--green); }
+    .chip.amber { border-color: #fed7aa; background: var(--soft-amber); color: var(--amber); }
+    .chip.red { border-color: #fecaca; background: var(--soft-red); color: var(--red); }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fbfdff;
+      padding: 16px;
+    }
+    .card b, .card span { display: block; }
+    .card span { margin-top: 4px; color: var(--muted); font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 14px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 12px; text-align: left; vertical-align: top; }
+    th { background: #f8fafc; color: #334155; font-size: 13px; }
+    td { color: var(--muted); font-size: 14px; }
+    td strong { display: block; color: var(--text); }
+    .verdict { border-left: 4px solid var(--green); background: var(--soft-green); }
+    .warning { border-left: 4px solid var(--amber); background: var(--soft-amber); }
+    code { border-radius: 6px; background: #eef2f7; padding: 2px 5px; }
+    ul { margin: 8px 0 0; padding-left: 20px; }
+    @media (max-width: 760px) {
+      main { width: min(100% - 20px, 430px); padding: 20px 0 40px; }
+      header, section { padding: 18px; border-radius: 16px; }
+      .grid { grid-template-columns: 1fr; }
+      table, thead, tbody, tr, th, td { display: block; }
+      th { display: none; }
+      td { border-bottom: 0; padding: 8px 0; }
+      tr { display: block; border-bottom: 1px solid var(--line); padding: 10px 0; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">2026-06-21 · 내부 검토 리포트</p>
+      <h1>My Flow v7 관리 구조 리허설</h1>
+      <p>v6가 오늘 실행 표면만 볼 수 있었던 한계를 보완했다. v7은 여러 Flow가 저장되어 있고, Flow마다 항목 수가 다르며, 큰 지도 안에 하위 Flow가 있는 상황을 판단하기 위한 사용자 화면이다.</p>
+      <div class="chips">
+        <a class="chip green" href="./2026-06-21-my-flow-v7-flow-map-management-ko.html">v7 사용자 PoC</a>
+        <a class="chip" href="./2026-06-21-my-flow-v6-conditional-surfaces-ko.html">v6 Today 표면</a>
+        <span class="chip amber">실제 사용자 검증 아님</span>
+      </div>
+    </header>
+
+    <section class="warning">
+      <h2>이번에 넓힌 판단 범위</h2>
+      <p>사용자 피드백의 핵심은 “8개 Step만 있는 Today 화면으로 전체 저장 구조를 판단하면 안 된다”였다. v7은 그 지적을 반영해 다음을 추가했다.</p>
+      <ul>
+        <li>Flow 1개가 1개, 4개, 5개, 10개 등 서로 다른 항목 수를 가질 수 있게 했다.</li>
+        <li>저장한 Flow 목록에서 각 Flow의 전체 항목 수와 완료 상태를 볼 수 있게 했다.</li>
+        <li>큰 지도 안에 여러 하위 Flow가 있고, 각 하위 Flow가 다시 여러 항목을 갖는 구조를 넣었다.</li>
+        <li>홈 화면은 계속 오늘 항목 중심으로 유지하고, 전체 구조는 뒤에서 열게 했다.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>사용자 화면에서 볼 것</h2>
+      <div class="grid">
+        <div class="card"><b>오늘</b><span>여러 Flow의 오늘 항목만 섞여 나와도 사용자가 바로 체크/메모할 수 있는지 본다.</span></div>
+        <div class="card"><b>저장한 Flow</b><span>Flow마다 항목 수가 다른데도 전체 구조와 이어볼 항목을 이해할 수 있는지 본다.</span></div>
+        <div class="card"><b>큰 지도</b><span>중1 수학/영유아 지도처럼 하위 Flow가 있는 구조가 단순한 폴더처럼 보이지 않는지 본다.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>대표 데이터 구성</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>구성</th>
+            <th>의도</th>
+            <th>주의점</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>전세계약</strong>5개 항목</td>
+            <td>기준선 Flow. 날짜형과 체크형이 섞인 단일 Flow를 본다.</td>
+            <td>상세는 전세 v6보다 과해지면 안 된다.</td>
+          </tr>
+          <tr>
+            <td><strong>이사 D-30</strong>10개 항목</td>
+            <td>긴 timeline Flow가 Flow 목록 안에서 어떻게 보이는지 본다.</td>
+            <td>오늘 화면에 10개가 다 나오면 실패다.</td>
+          </tr>
+          <tr>
+            <td><strong>홈트/도안/식물</strong>1개 항목</td>
+            <td>한 항목짜리 Flow가 빈약하거나 억지로 보이지 않는지 본다.</td>
+            <td>1개짜리에 전체 구조 UI가 과하게 붙으면 실패다.</td>
+          </tr>
+          <tr>
+            <td><strong>중1 수학 큰 지도</strong>3개 하위 Flow · 15개 항목</td>
+            <td>Flow Map 아래 하위 Flow와 진도형 항목을 본다.</td>
+            <td>학습 앱처럼 과도한 세션/페이스 입력을 만들지 않는다.</td>
+          </tr>
+          <tr>
+            <td><strong>영유아 큰 지도</strong>2개 하위 Flow · 6개 항목</td>
+            <td>민감 카테고리에서 공식 정보와 보호자 메모를 분리하는지 본다.</td>
+            <td>FlowMe가 의료 판단을 하는 화면처럼 보이면 실패다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="verdict">
+      <h2>초기 판정</h2>
+      <p>v7은 v6보다 목표에 더 가깝다. 단일 Today 화면이 아니라 저장한 Flow 전체와 큰 지도 구조를 함께 볼 수 있기 때문이다. 다만 아직 제품 확정은 아니다. 실제 관찰에서는 사용자가 `저장한 Flow`와 `큰 지도`를 구분해서 이해하는지, 큰 지도가 단순 폴더처럼 보이지 않는지 확인해야 한다.</p>
+    </section>
+
+    <section>
+      <h2>다음 확인 질문</h2>
+      <ul>
+        <li>사용자가 첫 화면에서 오늘 할 일을 처리한 뒤, 전체 Flow를 어디서 찾는지 바로 아는가?</li>
+        <li>한 항목짜리 Flow와 10항목짜리 Flow가 같은 목록에 있어도 어색하지 않은가?</li>
+        <li>큰 지도 안의 하위 Flow가 “폴더”가 아니라 “이어갈 실행 단위”로 보이는가?</li>
+        <li>Flow Map 안에서도 결국 사용자는 현재 항목 하나를 열어 체크/메모하면 충분한가?</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

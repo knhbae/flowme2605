@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Source-backed Flow Map UX·컨텐츠 시뮬레이션 리뷰</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --panel: #ffffff;
+      --ink: #111827;
+      --muted: #667085;
+      --line: #d8e0eb;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      --red: #b91c1c;
+      --soft-blue: #eaf1ff;
+      --soft-green: #e8f7f2;
+      --soft-amber: #fff7e6;
+      --soft-red: #fee2e2;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      line-height: 1.56;
+    }
+    main { max-width: 1160px; margin: 0 auto; padding: 28px 18px 56px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 12px; font-size: clamp(30px, 4vw, 48px); line-height: 1.12; letter-spacing: 0; }
+    h2 { margin-bottom: 14px; font-size: 24px; }
+    h3 { margin-bottom: 8px; font-size: 18px; }
+    a { color: var(--blue); font-weight: 800; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code {
+      border-radius: 6px;
+      background: #edf2f7;
+      padding: 2px 6px;
+      color: #0f172a;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: .92em;
+    }
+    .hero {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(135deg, #f8fbff 0%, #ffffff 62%, #eef7f2 100%);
+      padding: 28px;
+      box-shadow: 0 18px 42px rgba(15, 23, 42, .06);
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+    }
+    .desc { max-width: 820px; color: var(--muted); font-size: 17px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      padding: 6px 10px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 850;
+    }
+    .chip.blue { background: var(--soft-blue); color: #1d4ed8; border-color: #bfd0ff; }
+    .chip.green { background: var(--soft-green); color: var(--green); border-color: #b8e4d8; }
+    .chip.amber { background: var(--soft-amber); color: var(--amber); border-color: #f5d597; }
+    .chip.red { background: var(--soft-red); color: var(--red); border-color: #fecaca; }
+    .card {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--panel);
+      padding: 22px;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, .05);
+    }
+    .grid { display: grid; gap: 16px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .mini {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fbfdff;
+      padding: 16px;
+    }
+    .mini strong { display: block; margin-bottom: 5px; }
+    .small { color: var(--muted); font-size: 14px; }
+    .callout {
+      border-left: 5px solid var(--blue);
+      border-radius: 14px;
+      background: var(--soft-blue);
+      padding: 16px 18px;
+      color: #1e3a8a;
+    }
+    .callout.ok { border-left-color: var(--green); background: var(--soft-green); color: #064e3b; }
+    .callout.warn { border-left-color: var(--amber); background: var(--soft-amber); color: #78350f; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 14px;
+      vertical-align: top;
+      text-align: left;
+      font-size: 14px;
+    }
+    th { background: #eef3fb; color: #334155; font-weight: 900; }
+    tr:last-child td { border-bottom: 0; }
+    .severity { display: inline-flex; min-width: 76px; justify-content: center; border-radius: 999px; padding: 4px 8px; font-size: 12px; font-weight: 900; }
+    .sev-high { background: var(--soft-amber); color: var(--amber); }
+    .sev-medium { background: var(--soft-blue); color: #1d4ed8; }
+    .sev-low { background: #f1f5f9; color: #475569; }
+    .score { font-weight: 900; color: #0f172a; }
+    ul { margin: 10px 0 0; padding-left: 20px; }
+    li + li { margin-top: 6px; }
+    @media (max-width: 760px) {
+      main { padding: 18px 12px 42px; }
+      .hero, .card { padding: 18px; border-radius: 14px; }
+      .grid.two, .grid.three { grid-template-columns: 1fr; }
+      th, td { display: block; width: 100%; }
+      th { border-bottom: 0; }
+      td { padding-top: 10px; }
+      tr { display: block; border-bottom: 1px solid var(--line); }
+      tr:last-child { border-bottom: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <p class="eyebrow">2026-06-24 · UX/content simulation review</p>
+      <h1>Source-backed Flow Map은 방향이 맞다. 이제 제품화 갭은 creator 편집·업데이트 리뷰 쪽이다</h1>
+      <p class="desc">중1 수학, 영유아 검진·접종, 이사 D-30을 기준으로 제작자 화면, 공개 저장 화면, My Flow 실행 화면을 실제 브라우저에서 눌러봤습니다. 현재 수준은 “제품화 기준선으로 쓸 수 있음”에 가깝지만, 실제 서비스로 보이려면 creator가 row를 수정하고, 저장한 사용자가 update를 검토하는 흐름이 다음 핵심입니다.</p>
+      <div class="chips">
+        <span class="chip green">Blocking 없음</span>
+        <span class="chip blue">사용자 화면은 calendar/todo 수준 유지</span>
+        <span class="chip amber">실제 사용자 검증 아님</span>
+        <span class="chip blue">Flow Map &gt; Flow &gt; Step &gt; Item 유지</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">검토 범위</p>
+      <h2>이번에 본 질문</h2>
+      <div class="grid two">
+        <div class="mini">
+          <strong>제품 질문</strong>
+          <span class="small">원문 콘텐츠가 Flow Map으로 발행되고, 사용자가 저장한 뒤 My Flow에서 Step 단위로 실행 가능한가?</span>
+        </div>
+        <div class="mini">
+          <strong>UX 질문</strong>
+          <span class="small">사용자 화면이 검토/개발/제작자 화면처럼 보이지 않고, 캘린더·투두·가벼운 시트 수준을 넘지 않는가?</span>
+        </div>
+        <div class="mini">
+          <strong>컨텐츠 질문</strong>
+          <span class="small">Step과 Item이 원문에서 온 구조인지, AI가 빈 곳을 그럴듯한 일반론으로 채운 느낌이 없는가?</span>
+        </div>
+        <div class="mini">
+          <strong>서비스 질문</strong>
+          <span class="small">제작자가 자기 콘텐츠를 Flow화하고, 사용자가 저장·재방문할 수 있는 플랫폼 방향으로 이어지는가?</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">시뮬레이션 결과</p>
+      <h2>브라우저 리허설 요약</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>경로</th>
+            <th>실행한 행동</th>
+            <th>관찰 결과</th>
+            <th>판단</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>제작자 · 중1 수학</strong></td>
+            <td><code>/flow-maps/middle-school-math-1/creator</code>에서 source row 8개 확인</td>
+            <td>row마다 준비됨, 진도 destination, 참고 원문, Item 8개 같은 실제 변환 결과가 보임. `오늘 실행`, `완료 체크`, `PoC`, `source fit` 노출 없음.</td>
+            <td><span class="chip green">적합</span></td>
+          </tr>
+          <tr>
+            <td><strong>사용자 · 중1 수학</strong></td>
+            <td>공개 화면에서 전체 저장 → My Flow → 첫 Step 열기</td>
+            <td>저장 후 `1개 Flow · 8개 Step`, 첫 Step 아래 개념 항목 8개가 바로 보임. localStorage에는 saved map과 persistence record가 기록됨.</td>
+            <td><span class="chip green">적합</span></td>
+          </tr>
+          <tr>
+            <td><strong>사용자 · 영유아 검진</strong></td>
+            <td>아이 생년월일 입력 → 전체 저장 → 첫 Step 열기</td>
+            <td>`2개 Flow · 18개 Step`으로 저장되고, 건강검진/접종 Flow가 분리됨. persistence는 `review_before_apply` update policy를 유지함.</td>
+            <td><span class="chip green">적합</span></td>
+          </tr>
+          <tr>
+            <td><strong>사용자 · 이사 D-30 모바일</strong></td>
+            <td>390px 모바일에서 이사일 입력 → 저장 → 첫 Step 열기</td>
+            <td>`1개 Flow · 5개 Step`, D-30 Step detail, 확인 항목 3개가 보임. 가로 overflow 0.</td>
+            <td><span class="chip green">적합</span></td>
+          </tr>
+          <tr>
+            <td><strong>제작자 · 영유아 검진</strong></td>
+            <td>creator 화면에서 18개 official source row 확인</td>
+            <td>공식 정보, 건강 민감, Item 3개, 의료 판단 제외 문구가 row 안에 있음. 사용자 실행 copy 누출 없음.</td>
+            <td><span class="chip green">적합</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">컨텐츠 판단</p>
+      <h2>세 케이스별 source-to-flow 적합도</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>케이스</th>
+            <th>원문 성격</th>
+            <th>Flow 변환 판단</th>
+            <th>주의할 점</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>중1 수학</strong></td>
+            <td>목차/참고 원문</td>
+            <td>Flow Map → Flow → Step → Item 구조가 가장 잘 보입니다. 단원은 Step, 하위 개념은 Item으로 자연스럽습니다.</td>
+            <td>이것은 “공부 코칭”이 아니라 “목차 진도표”입니다. 일정/오답/루틴을 기본으로 붙이면 다시 과해집니다.</td>
+          </tr>
+          <tr>
+            <td><strong>영유아 검진·접종</strong></td>
+            <td>공식 일정/조회 안내</td>
+            <td>생년월일 1개 입력 → 공식 기간 reminder → 문진표/예약/방문 메모로 이어져 저장 이유가 큽니다.</td>
+            <td>건강 민감 영역이므로 update 자동 반영, 결과 해석, 의료 판단 UI를 만들면 안 됩니다.</td>
+          </tr>
+          <tr>
+            <td><strong>이사 D-30</strong></td>
+            <td>제작자/생활 체크리스트</td>
+            <td>이사일 1개 입력 → D-day Step → 연락처/예약번호 메모로 이어져 전세 Flow와 비슷한 강점이 있습니다.</td>
+            <td>전체를 Flow Map으로 볼 수도 있고 단일 timeline Flow로도 충분합니다. 이 케이스는 Flow Map 대표라기보다 비교군에 가깝습니다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">UX findings</p>
+      <h2>문제와 영향도</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Severity</th>
+            <th>영역</th>
+            <th>문제</th>
+            <th>권장 대응</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="severity sev-high">High</span></td>
+            <td>Creator workflow</td>
+            <td>creator 화면은 이제 source-row review는 되지만, 실제 제작자가 row를 고치거나 버전 변경을 관리하는 행동은 아직 없습니다.</td>
+            <td>다음 slice는 `source-row editing / version review`가 맞습니다. 화면을 더 예쁘게 하기보다 제작자의 실제 발행 행동을 추가해야 합니다.</td>
+          </tr>
+          <tr>
+            <td><span class="severity sev-high">High</span></td>
+            <td>Saved map update</td>
+            <td>persistence record와 update policy는 생겼지만, 저장한 사용자가 새 버전/공식 일정 변경을 검토하는 UI는 없습니다.</td>
+            <td>특히 영유아/공식 일정은 자동 변경이 아니라 “변경 내용 확인 후 적용” 화면이 필요합니다.</td>
+          </tr>
+          <tr>
+            <td><span class="severity sev-medium">Medium</span></td>
+            <td>Creator density</td>
+            <td>영유아 creator 화면처럼 row가 18개 이상이면 검토가 길어집니다. 지금은 통과 가능하지만, creator가 문제 row만 보기는 어렵습니다.</td>
+            <td>다음에는 `문제 있는 row만 보기`, `Flow별 접기`, `source/risk filter` 정도만 가볍게 추가합니다.</td>
+          </tr>
+          <tr>
+            <td><span class="severity sev-medium">Medium</span></td>
+            <td>Public save-before</td>
+            <td>공개 페이지는 저장 판단에는 충분하지만, 저장 뒤 My Flow에서 무엇을 계속 하게 되는지 더 강하게 예측시키지는 않습니다.</td>
+            <td>CTA 주변에 “저장 후 첫 Step에서 보이는 것” preview를 1개만 더 선명하게 보여주면 좋습니다.</td>
+          </tr>
+          <tr>
+            <td><span class="severity sev-low">Low</span></td>
+            <td>Creator copy</td>
+            <td>`Step`, `Item`은 현재 정의된 제품 용어지만, 일반 제작자에게는 약간 내부 용어처럼 보일 수 있습니다.</td>
+            <td>creator onboarding 단계에서는 `Step(저장되는 항목)`, `Item(상세 체크)`처럼 병기하는 것이 낫습니다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">Persona rehearsal</p>
+      <h2>사용자/제작자 시나리오</h2>
+      <div class="grid two">
+        <div class="mini">
+          <strong>중학생 학부모 · 수학 목차 저장</strong>
+          <span class="small">Mathbang 목차를 보고 “전체 흐름만 관리하고 싶다”고 느낍니다. FlowMe에서 저장하면 8개 단원이 Flow의 Step으로 보이고, 하위 개념을 체크합니다. 일정이 없어서 부담은 낮지만, 실제 공부 루틴까지 기대하면 부족합니다.</span>
+        </div>
+        <div class="mini">
+          <strong>초보 부모 · 검진/접종 일정 저장</strong>
+          <span class="small">공식 정보는 어렵고 날짜를 놓칠까 불안합니다. 생년월일만 입력해 저장하면 건강검진과 예방접종 확인 Flow가 분리되어 보입니다. 검진 결과 해석은 Flow 밖에 둬서 민감 경계가 유지됩니다.</span>
+        </div>
+        <div class="mini">
+          <strong>원룸 이사 예정자 · D-30 준비</strong>
+          <span class="small">이사 체크리스트를 읽고 복사하고 싶습니다. 이사일을 넣으면 D-30, D-14, D-7, D-1, 당일 Step이 생기고 업체 연락처/예약번호만 메모합니다. 전세 Flow와 유사한 강한 저장 이유가 있습니다.</span>
+        </div>
+        <div class="mini">
+          <strong>콘텐츠 제작자 · 발행 전 검토</strong>
+          <span class="small">자기 목차/가이드를 Flow화하려고 합니다. creator 화면에서 row가 Step/Item으로 변환된 것은 이해합니다. 하지만 실제로 고치거나 버전 업데이트를 발행하는 행동은 아직 없어서 다음 제품 slice가 필요합니다.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">Rubric</p>
+      <h2>품질 점수</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>중1 수학</th>
+            <th>영유아 검진·접종</th>
+            <th>이사 D-30</th>
+            <th>메모</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>User Need Fit</td><td class="score">4</td><td class="score">5</td><td class="score">5</td><td>검진과 이사는 저장 이유가 강함. 수학은 진도표로는 명확하지만 공부 매력은 원문에 좌우됨.</td></tr>
+          <tr><td>Execution Clarity</td><td class="score">4</td><td class="score">4</td><td class="score">4</td><td>첫 Step과 Item은 보임. update review와 creator edit은 아직 별도 갭.</td></tr>
+          <tr><td>Content Fidelity</td><td class="score">5</td><td class="score">4</td><td class="score">4</td><td>수학은 원문 row 보존이 좋음. 검진/이사는 일부 요약·보조 링크가 있어 지속 source review 필요.</td></tr>
+          <tr><td>Portability</td><td class="score">4</td><td class="score">4</td><td class="score">4</td><td>캘린더/시트/텍스트 fallback 구조는 있음. 실제 외부 export UX는 다음 관찰 필요.</td></tr>
+          <tr><td>Cognitive Load</td><td class="score">4</td><td class="score">4</td><td class="score">4</td><td>사용자 화면은 가볍다. creator 화면은 row 수가 늘면 접기/필터가 필요.</td></tr>
+          <tr><td>Copy Specificity</td><td class="score">4</td><td class="score">4</td><td class="score">4</td><td>대부분 구체적. creator 쪽 Step/Item 용어는 병기 여지 있음.</td></tr>
+          <tr><td>Source/Safety</td><td class="score">4</td><td class="score">5</td><td class="score">4</td><td>건강 민감 경계는 좋음. 이사는 공식/경험 구분 지속 확인 필요.</td></tr>
+          <tr><td>Operability</td><td class="score">4</td><td class="score">4</td><td class="score">4</td><td>브라우저 저장/Step 열기/모바일 overflow 확인. 실제 사용자 관찰은 아님.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">판단</p>
+      <h2>다음 단계로 넘어가도 되는가?</h2>
+      <div class="callout ok">
+        <p><strong>사용자용 Flow Map 저장→My Flow 실행 기준선은 다음 단계로 넘어가도 됩니다.</strong> 현재 문제는 사용자 화면 완성도보다 서비스화에 필요한 creator/edit/update/observed behavior 축입니다.</p>
+      </div>
+      <ul>
+        <li>사용자 화면을 더 많은 카드와 설명으로 키우는 것은 지금 우선순위가 아닙니다.</li>
+        <li>컨텐츠를 더 늘리기보다, 제작자가 자신의 원문 row를 수정하고 발행할 수 있는 최소 workflow를 봐야 합니다.</li>
+        <li>공식/민감 Flow Map은 저장 후 update review UI가 없으면 서비스 신뢰도가 약합니다.</li>
+        <li>이 기준선은 내부 PoC/자동화/브라우저 리허설 근거입니다. 실제 사용자 검증은 별도로 필요합니다.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">검증 로그</p>
+      <h2>이번 리뷰에서 실행한 확인</h2>
+      <div class="grid two">
+        <div class="mini"><strong>브라우저 리허설</strong><span class="small">creator math, public math save, baby health save, moving mobile save, creator baby를 실제 route로 실행.</span></div>
+        <div class="mini"><strong>모바일 overflow</strong><span class="small">moving D-30 저장 후 My Flow 모바일 화면에서 가로 overflow 0 확인.</span></div>
+        <div class="mini"><strong>저장 record</strong><span class="small">saved map snapshot과 persistence record가 저장되는 것을 확인.</span></div>
+        <div class="mini"><strong>스크린샷</strong><span class="small"><code>output/playwright/source-backed-review-*.png</code>에 저장.</span></div>
+      </div>
+      <p class="small" style="margin-top:14px;">이 문서는 리뷰/시뮬레이션 리포트입니다. 사용자용 PoC나 실제 사용자 검증 결과가 아닙니다.</p>
+    </section>
+  </main>
+</body>
+</html>

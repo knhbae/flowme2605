@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow 관찰 롤업과 제품 결정판</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --soft: #f1f5f9;
+      --line: #d9e2ef;
+      --text: #0f172a;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      --red: #b42318;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); letter-spacing: 0; }
+    main { width: min(100% - 28px, 1160px); margin: 0 auto; padding: 24px 0 56px; }
+    header, section { border: 1px solid var(--line); border-radius: 14px; background: var(--card); box-shadow: 0 14px 34px rgba(15, 23, 42, .06); }
+    header { padding: 24px; }
+    section { margin-top: 14px; padding: 20px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: 34px; line-height: 1.12; }
+    h2 { margin-bottom: 10px; font-size: 22px; line-height: 1.25; }
+    h3 { margin-bottom: 6px; font-size: 17px; line-height: 1.3; }
+    p, li, td, th { font-size: 14px; line-height: 1.62; }
+    p, li { color: var(--muted); font-weight: 660; }
+    a { color: #1d4ed8; font-weight: 850; text-underline-offset: 3px; }
+    code { border-radius: 6px; background: #eef2f7; padding: 2px 5px; color: #334155; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 12px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 12px; text-align: left; vertical-align: top; }
+    th { background: var(--soft); color: #334155; font-size: 12px; font-weight: 900; }
+    td:first-child { color: var(--text); font-weight: 850; }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .chip { display: inline-flex; align-items: center; min-height: 30px; border: 1px solid var(--line); border-radius: 999px; background: var(--soft); padding: 5px 10px; color: #334155; font-size: 12px; font-weight: 850; text-decoration: none; }
+    .chip.green { border-color: #99f6e4; background: #ecfdf5; color: var(--green); }
+    .chip.amber { border-color: #fed7aa; background: #fff7ed; color: var(--amber); }
+    .chip.red { border-color: #fecaca; background: #fef2f2; color: var(--red); }
+    .chip.blue { border-color: #bfdbfe; background: #eff6ff; color: var(--blue); }
+    .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card { border: 1px solid var(--line); border-radius: 12px; background: #fbfdff; padding: 14px; }
+    .card b, .card span { display: block; }
+    .card b { font-size: 15px; }
+    .card span { margin-top: 6px; color: var(--muted); font-size: 13px; font-weight: 660; line-height: 1.5; }
+    .decision { border-left: 4px solid var(--blue); background: #eff6ff; }
+    .decision p, .decision li { color: #334155; }
+    .blank { color: #94a3b8; }
+    .metric { font-size: 28px; font-weight: 950; line-height: 1; }
+    .metric-label { margin-top: 6px; color: var(--muted); font-size: 13px; font-weight: 760; }
+    @media (max-width: 860px) {
+      main { width: min(100% - 20px, 760px); padding-top: 14px; }
+      header, section { padding: 16px; border-radius: 12px; }
+      h1 { font-size: 28px; }
+      .grid, .grid.two { grid-template-columns: 1fr; }
+      table, tbody, tr, td, th { display: block; }
+      th { display: none; }
+      tr + tr { border-top: 2px solid var(--line); }
+      td:first-child { width: auto; padding-bottom: 4px; }
+      td + td { padding-top: 4px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="chip amber">관찰 롤업 · 아직 실제 검증 아님</p>
+      <h1>My Flow 관찰 결과를 제품 결정으로 바꾸는 판</h1>
+      <p>이 문서는 관찰 기록지 여러 장을 모아 My Flow의 저장 개수별 UX를 유지, 축소, 이름 변경, 재설계 중 무엇으로 처리할지 결정하는 진행자용 롤업이다. 사용자에게 보여주는 화면도 아니고, 검증 완료 보고서도 아니다.</p>
+      <div class="chips">
+        <a class="chip" href="./2026-06-21-my-flow-observed-session-kit-ko.html">관찰 키트</a>
+        <a class="chip" href="./2026-06-21-my-flow-observed-session-note-template-ko.html">세션 기록지</a>
+        <a class="chip" href="./2026-06-21-my-flow-saved-count-ux-verdict-ko.html">저장 개수별 UX 판정</a>
+        <a class="chip" href="./2026-06-21-my-flow-click-smoke-report-ko.html">클릭 smoke check</a>
+        <a class="chip" href="./2026-06-21-my-flow-observation-dry-run-ko.html">관찰 전 드라이런</a>
+        <a class="chip" href="./2026-06-21-my-flow-saved-execution-v4-ko.html">사용자용 v4 PoC</a>
+        <a class="chip" href="./2026-06-21-my-flow-v4-actual-my-alignment-ko.html">실제 /my 정렬</a>
+        <a class="chip" href="./2026-06-21-my-flow-type-mix-user-poc-ko.html">유형 혼합 화면</a>
+        <a class="chip" href="./2026-06-21-my-flow-type-mix-simulation-ko.html">유형 혼합 시뮬레이션</a>
+        <a class="chip" href="./2026-06-21-my-flow-type-mix-observation-kit-ko.html">유형 혼합 관찰 키트</a>
+        <a class="chip" href="./2026-06-21-my-flow-v5-clean-user-poc-ko.html">v5 정리 화면</a>
+        <a class="chip" href="./2026-06-21-my-flow-v5-clean-simulation-ko.html">v5 시뮬레이션</a>
+        <a class="chip" href="./2026-06-21-my-flow-v5-click-simulation-report-ko.html">v5 클릭 시뮬레이션</a>
+        <a class="chip" href="./2026-06-21-my-flow-v6-conditional-surfaces-ko.html">v6 조건부 보조 보기</a>
+        <a class="chip" href="./2026-06-21-my-flow-v6-conditional-surfaces-simulation-ko.html">v6 시뮬레이션</a>
+      </div>
+    </header>
+
+    <section class="decision">
+      <p class="eyebrow">롤업 원칙</p>
+      <h2>한 명의 반응은 단서, 반복되는 막힘은 제품 결정</h2>
+      <ul>
+        <li>Blocking은 1회만 나와도 즉시 수정하고 같은 과제로 재관찰한다.</li>
+        <li>High는 같은 저장 개수 상태에서 2회 이상 반복되면 UI를 줄이거나 이름을 바꾼다.</li>
+        <li>Medium은 다음 polish 묶음으로 모으되, 체크/메모 완료율을 떨어뜨리면 High로 올린다.</li>
+        <li>Pass가 나와도 실제 사용자 검증이라고 표현하지 않는다. 현재 범위는 관찰 기반 UX 조정이다.</li>
+      </ul>
+    </section>
+
+    <section>
+      <p class="eyebrow">현재 상태</p>
+      <h2>세션 전 빈 롤업</h2>
+      <div class="grid">
+        <div class="card"><b>실제 세션</b><span class="metric">0</span><span class="metric-label">아직 사용자 행동 데이터 없음</span></div>
+        <div class="card"><b>내부 smoke</b><span class="metric">통과</span><span class="metric-label">모바일 overflow와 주요 버튼 수 확인</span></div>
+        <div class="card"><b>내부 드라이런</b><span class="metric">관찰 가능</span><span class="metric-label">Blocking은 보이지 않음</span></div>
+        <div class="card"><b>다음 행동</b><span class="metric">4회</span><span class="metric-label">1개, 4개, 8개, 20개 이상 상태별 1회씩 우선</span></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">세션 요약 입력</p>
+      <h2>기록지에서 옮겨 적을 최소 정보</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>세션</th>
+            <th>저장 개수</th>
+            <th>5초 해석</th>
+            <th>첫 클릭</th>
+            <th>체크/메모</th>
+            <th>Flow 찾기</th>
+            <th>헷갈린 문장</th>
+            <th>판정</th>
+            <th>후속</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>P1</td>
+            <td class="blank">1개</td>
+            <td class="blank">예/아니오 + 발화</td>
+            <td class="blank">오늘 항목 / 기타</td>
+            <td class="blank">체크 O/X, 메모 O/X</td>
+            <td class="blank">해당 없음 / 찾음</td>
+            <td class="blank">실제 발화만</td>
+            <td class="blank">Blocking / High / Medium / Pass</td>
+            <td class="blank">유지 / 수정 / 재관찰</td>
+          </tr>
+          <tr>
+            <td>P2</td>
+            <td class="blank">4개</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+          </tr>
+          <tr>
+            <td>P3</td>
+            <td class="blank">8개</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+          </tr>
+          <tr>
+            <td>P4</td>
+            <td class="blank">20개 이상</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">제품 결정 후보</p>
+      <h2>관찰 후 바로 판단할 5개</h2>
+      <table>
+        <thead>
+          <tr><th>결정 항목</th><th>현재 기본안</th><th>바꿀 신호</th><th>바뀌는 방향</th><th>현재 판정</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1개 저장 화면</td>
+            <td>전역 탭 없이 오늘 실행, 체크, 메모, 원문/외부앱 fallback만 보인다.</td>
+            <td>사용자가 목록이나 탭을 찾아 헤매지 않고 바로 처리한다.</td>
+            <td>유지. 반대로 시작 위치를 못 찾으면 첫 카드 제목과 현재 Step 우선순위를 더 강화한다.</td>
+            <td><span class="chip amber">관찰 대기</span></td>
+          </tr>
+          <tr>
+            <td>상세 완료 토글</td>
+            <td>큰 CTA가 아니라 작은 <code>완료 체크</code> 토글로 유지한다.</td>
+            <td>2명 이상이 “무엇을 완료하나요?”라고 묻거나 메모보다 토글을 먼저 눌러 헷갈린다.</td>
+            <td>상세 토글을 숨기고 Step 내부 Item 체크와 메모만 남긴다.</td>
+            <td><span class="chip amber">가장 먼저 볼 리스크</span></td>
+          </tr>
+          <tr>
+            <td><code>Flow 찾기</code> 이름</td>
+            <td>4개 이상 저장 상태에서 다른 Flow를 찾는 진입점으로 둔다.</td>
+            <td>2명 이상이 Flow 찾기를 발견하지 못하거나 오늘 할 일 처리와 혼동한다.</td>
+            <td><code>저장한 Flow 찾기</code>로 바꾸거나 Today 하단 위치를 더 명확히 한다.</td>
+            <td><span class="chip amber">관찰 대기</span></td>
+          </tr>
+          <tr>
+            <td>20개 이상 초기 목록</td>
+            <td>처음 일부만 보이고 검색, <code>전체 Flow 보기</code>, 필요할 때 여는 일정 보기로 확장한다.</td>
+            <td>사용자가 검색이나 일정 보기를 못 보고 전체 펼침만 반복한다.</td>
+            <td>검색을 sheet 첫 줄에서 더 강조하고, 일정 보기는 날짜형이 많을 때만 노출한다.</td>
+            <td><span class="chip amber">관찰 대기</span></td>
+          </tr>
+          <tr>
+            <td>row-level 완료 텍스트</td>
+            <td>반복되는 <code>완료</code> 텍스트 버튼은 숨기고 체크 컨트롤만 둔다.</td>
+            <td>사용자가 체크 컨트롤을 버튼으로 인식하지 못해 상세를 열지 못한다.</td>
+            <td>row 상태 표시를 조금 선명하게 하되, 모든 row에 텍스트 CTA를 되살리지는 않는다.</td>
+            <td><span class="chip green">유지 우선</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">저장 개수별 결론칸</p>
+      <h2>세션 후 이 표만 채우면 다음 수정 범위가 나온다</h2>
+      <table>
+        <thead>
+          <tr><th>상태</th><th>주요 발견</th><th>결론</th><th>수정 여부</th><th>다음 재관찰</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1개 저장</td>
+            <td class="blank">예: 시작은 빨랐지만 상세 완료 토글을 질문함.</td>
+            <td class="blank">유지 / 줄임 / 이름 변경</td>
+            <td class="blank">없음 / HTML 수정 / 실제 /my 수정</td>
+            <td class="blank">같은 과제 재시도 여부</td>
+          </tr>
+          <tr>
+            <td>4개 저장</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+          </tr>
+          <tr>
+            <td>8개 저장</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+          </tr>
+          <tr>
+            <td>20개 이상</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+            <td class="blank">-</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">관찰 후 수정 루프</p>
+      <h2>완료가 아니라 반복으로 닫는다</h2>
+      <div class="grid two">
+        <div class="card"><b>Blocking/High가 있으면</b><span>사용자용 HTML 또는 실제 <code>/my</code>에서 해당 UI를 줄이고, 같은 저장 개수 과제를 다시 돌린다. 리포트만 업데이트하고 끝내지 않는다.</span></div>
+        <div class="card"><b>Pass/Medium만 있으면</b><span>현재 구조를 유지하고, 다음 축은 저장 개수보다 Flow 유형 혼합으로 옮긴다. 예: 날짜형 + 루틴형 + Flow Map이 같이 저장된 상태.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">다음 축</p>
+      <h2>저장 개수 다음에는 저장 유형 혼합을 본다</h2>
+      <p>이번 롤업이 통과하면 다음 관찰은 개수보다 유형 혼합이다. 전세 같은 날짜형, 홈트 같은 반복형, 중1 수학 같은 학습 지도형, 여권 같은 단일 체크리스트가 같이 저장될 때도 Today 중심이 유지되는지 확인해야 한다. 최신 기본안은 <a href="./2026-06-21-my-flow-v5-clean-user-poc-ko.html">v5 정리 화면</a>이고, 날짜/진도 보조 후보는 <a href="./2026-06-21-my-flow-v6-conditional-surfaces-ko.html">v6 조건부 보조 보기</a>에 둔다. 진행자용 과제는 <a href="./2026-06-21-my-flow-type-mix-observation-kit-ko.html">유형 혼합 관찰 키트</a>와 <a href="./2026-06-21-my-flow-observed-session-kit-ko.html">My Flow 관찰 키트</a>를 사용한다.</p>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow v8 점진 노출 리허설</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --surface: #fff;
+      --soft: #f8fafc;
+      --line: #d8e2ef;
+      --text: #101827;
+      --muted: #5f6b7c;
+      --blue: #1f5fbf;
+      --blue-soft: #eaf2ff;
+      --green: #0f7a4a;
+      --green-soft: #e8f7ef;
+      --amber: #9a6100;
+      --amber-soft: #fff6df;
+      --red: #b42318;
+      --red-soft: #fff1ef;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); font-size: 16px; line-height: 1.62; }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 44px); line-height: 1.12; letter-spacing: 0; }
+    h2 { margin-bottom: 8px; font-size: clamp(22px, 3vw, 30px); line-height: 1.24; letter-spacing: 0; }
+    h3 { margin-bottom: 6px; font-size: 20px; line-height: 1.28; letter-spacing: 0; }
+    .page { width: min(1120px, calc(100% - 28px)); margin: 0 auto; padding: 18px 0 64px; }
+    .hero, .card, .row, table { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+    .hero, .card { margin-top: 12px; padding: 18px; box-shadow: 0 10px 28px rgba(16, 24, 39, .07); }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .desc { max-width: 820px; color: var(--muted); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip { display: inline-flex; align-items: center; min-height: 30px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--soft); color: #344054; font-size: 13px; font-weight: 850; }
+    .chip.blue { border-color: #bfdbfe; background: var(--blue-soft); color: #174ea6; }
+    .chip.green { border-color: #bde7cb; background: var(--green-soft); color: var(--green); }
+    .chip.amber { border-color: #efd08f; background: var(--amber-soft); color: var(--amber); }
+    .chip.red { border-color: #f4b4ad; background: var(--red-soft); color: var(--red); }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .row { padding: 14px; background: var(--soft); }
+    .row b, .row span { display: block; }
+    .row span { margin-top: 4px; color: var(--muted); font-weight: 700; }
+    .callout { margin-top: 12px; border: 1px solid #bfdbfe; border-radius: 8px; background: var(--blue-soft); padding: 14px; }
+    .callout b, .callout span { display: block; }
+    .callout span { margin-top: 4px; color: var(--muted); font-weight: 750; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; overflow: hidden; }
+    th, td { border: 1px solid var(--line); padding: 10px; vertical-align: top; text-align: left; }
+    th { background: #eef3f8; color: #344054; font-size: 13px; font-weight: 950; }
+    td { background: #fff; }
+    ul { margin: 10px 0 0; padding-left: 20px; }
+    li + li { margin-top: 7px; }
+    .pass { color: var(--green); font-weight: 950; }
+    .risk { color: var(--amber); font-weight: 950; }
+    @media (max-width: 780px) {
+      .page { width: min(100% - 20px, 1120px); padding-top: 10px; }
+      .hero, .card { padding: 14px; }
+      .grid, .grid.two { grid-template-columns: 1fr; }
+      table, tbody, tr, th, td { display: block; width: 100%; }
+      th { border-bottom: 0; }
+      td { border-top: 0; }
+      tr + tr { margin-top: 10px; display: block; border-top: 2px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="eyebrow">내부 리허설 · 사용자 화면과 분리</p>
+      <h1>My Flow v8 점진 노출 리허설</h1>
+      <p class="desc">v7은 구조는 맞았지만 처음부터 너무 많은 항목과 설명이 보였다. v8은 오늘 할 일, 일정, 개별 Flow, Flow 지도를 분리하고, 선택한 Step의 세부는 목록 맨 아래가 아니라 해당 Step 바로 아래에서 열린다. 최근 모바일 피드백을 반영해 Step 재클릭 닫기, 날짜 배지 축소, 상세 문구 제거, 지도 상위 영역 접힘, Step row의 내부 라벨 제거, 혼잡 날짜 Flow별 묶음, 캘린더/투두 수준의 Step 상세 정보를 추가했다. 이 문서는 사용자용 화면이 아니라 검토 기록이다.</p>
+      <div class="chips">
+        <a class="chip blue" href="./2026-06-21-my-flow-v8-progressive-management-ko.html">사용자용 v8 PoC 열기</a>
+        <a class="chip amber" href="./2026-06-21-my-flow-v7-flow-map-management-ko.html">이전 v7 화면</a>
+        <span class="chip green">Blocking/High 없음</span>
+        <span class="chip amber">실제 사용자 검증 전</span>
+      </div>
+    </header>
+
+    <section class="card">
+      <p class="eyebrow">핵심 판단</p>
+      <h2>v8은 선택 위치에서 바로 실행하는 후보</h2>
+      <div class="grid three">
+        <div class="row"><b>오늘 화면</b><span>Step을 누르면 바로 아래에 일정, 저장 형태, 진행 상태, 세부 항목, 체크, 메모가 열린다. 같은 Step을 다시 누르면 닫힌다.</span></div>
+        <div class="row"><b>일정 화면</b><span>캘린더는 기본 홈이 아니라 별도 탭이다. 날짜를 누르면 해당 날짜 Step만 보이고, 항목이 많은 날짜는 버튼 필터 없이 Flow별로 묶는다.</span></div>
+        <div class="row"><b>Flow 화면</b><span>Flow 카드 안의 Step은 부모와 중복되는 Flow명/완료 수를 숨기고, Step 제목과 날짜만 남긴다.</span></div>
+        <div class="row"><b>지도 화면</b><span>지도 목록, 하위 Flow 목록, Step 목록을 한 depth씩 이동한다. 열린 하위 Flow 헤더를 누르면 Step 목록이 접힌다.</span></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">수정 내용</p>
+      <h2>사용자 화면에서 덜어낸 것</h2>
+      <ul>
+        <li>Flow 탭에서 지도 안의 하위 Flow를 제거했다. 중1 수학, 영유아 접종/검진 하위 Flow는 지도 탭에서만 열린다.</li>
+        <li>캘린더는 전역 홈으로 두지 않고 `일정` 탭으로 추가했다. 날짜가 있는 Step만 표시하고, 날짜를 눌렀을 때만 항목 목록을 연다.</li>
+        <li>상세 설명을 기본 노출하지 않고, 선택한 Step 바로 아래에서 세부 항목, 완료 체크, 메모만 보여준다. `실행 기준` 블록과 외부앱 텍스트는 사용자 화면에서 제거했다.</li>
+        <li>오늘/일정의 일반 목록에서는 `전세계약 전 서류 체크`, `중1 수학 1학기 › 정수와 유리수` 같은 소속 경로만 낮게 보여준다. Flow/지도 내부 Step에서는 부모와 중복되는 소속 경로와 완료 수를 숨긴다.</li>
+        <li>항목이 많은 캘린더 날짜에는 카테고리 탭을 띄우지 않고 Flow별 묶음 헤더를 보여준다. 날짜 항목이 적으면 단순 목록을 유지한다.</li>
+        <li>`정수와 유리수 10강`의 `강의 열기`는 별도 Flow처럼 보이지 않도록 `10강 보기`와 `교재 34-36쪽` Item으로 낮췄다.</li>
+        <li>`문진표 작성 여부 확인`은 별도 Flow가 아니라 `영유아 건강검진 준비` 안의 Step으로 보고, 중복 체크리스트 없이 `검진 전 문진표 작성`으로 정리했다.</li>
+        <li>Step 상세에는 캘린더/투두 상세에 가까운 최소 메타인 `일정`, `저장`, `진행`을 추가했다. 상세 설명 문단은 되살리지 않았다.</li>
+        <li>Flow, Map, Step, Item의 depth를 카드 성격과 왼쪽 accent로 구분했다. Map은 amber, Flow는 blue, Step은 light blue, 열린 detail은 green rail을 쓴다.</li>
+        <li>Flow Map은 중첩 카드 확장이 아니라 breadcrumb 기반 drilldown으로 바꿨고, 열린 상위 Flow 헤더를 다시 누르면 하위 Step이 접히게 했다.</li>
+        <li>`이 항목 완료` 같은 큰 액션 문구를 줄이고 `완료로 표시`처럼 상태 변경에 가까운 표현으로 낮췄다.</li>
+        <li>세부 체크박스 터치 크기를 36px 이상으로 맞췄다.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">클릭 시뮬레이션</p>
+      <h2>모바일 390px 기준 결과</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>상태</th>
+            <th>보이는 구조</th>
+            <th>스크롤</th>
+            <th>판정</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>오늘 첫 화면</td>
+            <td>Row 6, Detail 0</td>
+            <td>926px</td>
+            <td><span class="pass">통과</span> · Step에 소속 경로와 완료 수만 표시, 오늘 날짜 배지 반복 없음</td>
+          </tr>
+          <tr>
+            <td>오늘 Step 열기</td>
+            <td>패널 1, Row 6, Detail 1</td>
+            <td>1447px</td>
+            <td><span class="pass">통과</span> · 세부가 선택 Step 바로 아래에 열리고 진도형 Step은 `오늘 범위`로 보임</td>
+          </tr>
+          <tr>
+            <td>오늘 Step 다시 누르기</td>
+            <td>Row 6, Detail 0</td>
+            <td>926px</td>
+            <td><span class="pass">통과</span> · 같은 Step 재클릭으로 상세 닫힘</td>
+          </tr>
+          <tr>
+            <td>일정 첫 화면</td>
+            <td>월간 캘린더, Row 0, Detail 0</td>
+            <td>844px</td>
+            <td><span class="pass">통과</span> · 날짜 항목을 기본 펼침하지 않음</td>
+          </tr>
+          <tr>
+            <td>6.24 날짜 선택</td>
+            <td>월간 캘린더 + 해당 날짜 Row 3</td>
+            <td>1109px</td>
+            <td><span class="pass">통과</span> · 날짜 클릭 후 항목만 노출</td>
+          </tr>
+          <tr>
+            <td>6.22 혼잡 날짜 선택</td>
+            <td>월간 캘린더 + Flow별 묶음 6개 + Row 9</td>
+            <td>1877px</td>
+            <td><span class="pass">통과</span> · 조건부 카테고리 탭 0개, 읽기 전용 묶음으로 정리</td>
+          </tr>
+          <tr>
+            <td>6.24 Step 열기</td>
+            <td>Row 3, Detail 1</td>
+            <td>1519px</td>
+            <td><span class="pass">통과</span> · 캘린더에서 바로 실행 상세로 이동, 선택 날짜 배지 반복 없음</td>
+          </tr>
+          <tr>
+            <td>Flow 첫 화면</td>
+            <td>개별 Flow 6개, Detail 0</td>
+            <td>1228px</td>
+            <td><span class="pass">통과</span> · 지도 하위 Flow 중복 제거</td>
+          </tr>
+          <tr>
+            <td>이사 Flow 열기</td>
+            <td>Flow 6개 + 이사 Step 10개, Step row 메타 숨김</td>
+            <td>2117px</td>
+            <td><span class="risk">관찰 필요</span> · 중복 메타는 제거했지만 긴 Flow는 여전히 길다</td>
+          </tr>
+          <tr>
+            <td>지도 첫 화면</td>
+            <td>지도 2개, Detail 0</td>
+            <td>844px</td>
+            <td><span class="pass">통과</span> · Flow Map이 처음부터 과하게 펼쳐지지 않음</td>
+          </tr>
+          <tr>
+            <td>지도 > 하위 Flow > Step</td>
+            <td>breadcrumb 1, Flow 1, Step 3, Detail 1</td>
+            <td>1157px</td>
+            <td><span class="pass">통과</span> · 내부 라벨 없이 소속 경로와 날짜만 남김</td>
+          </tr>
+          <tr>
+            <td>지도 상위 Flow 다시 누르기</td>
+            <td>하위 Flow Row 2, Step 0, Detail 0</td>
+            <td>844px</td>
+            <td><span class="pass">통과</span> · 열린 하위 Step 목록 접힘</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">페르소나 리허설</p>
+      <h2>원컨텐츠 저장 이후 사용자의 눈으로 본 흐름</h2>
+      <div class="grid two">
+        <div class="row"><b>전세 계약 준비자</b><span>블로그/가이드에서 전세 점검 Flow를 저장한 뒤 오늘 화면에서 `계약 전 서류 확인`을 먼저 본다. Flow 이름이 낮게 보이므로 이 항목이 어디서 온 일인지 이해 가능하다. Step을 열면 체크와 메모가 바로 아래에 떠서 스크롤 부담은 낮다. 이 케이스는 충분하다.</span></div>
+        <div class="row"><b>여러 Flow를 저장한 직장인</b><span>전세, 이사, 여권, 홈트가 섞여 있어도 오늘 화면에서는 현재 해야 할 Step만 보인다. 다만 오늘 6개 이상이면 피로가 생길 수 있다. 이 문제는 새 UI 추가보다 실제 관찰에서 첫 클릭이 지연되는지 봐야 한다.</span></div>
+        <div class="row"><b>중1 수학 학부모</b><span>공개 커리큘럼에서 중1 수학 지도를 저장하고 오늘은 `정수와 유리수 10강`만 실행한다. Flow Map 전체를 매번 보지 않아도 되고, 필요할 때 지도 탭에서 단원 위치를 확인한다. 지금 구조는 학습 진도형에 무리가 없다.</span></div>
+        <div class="row"><b>영유아 검진 보호자</b><span>건강검진/예방접종 관련 Step은 오늘 화면과 일정 화면에서 날짜 중심으로 찾는다. `검진 전 문진표 작성`은 별도 Flow가 아니라 준비 Step으로 보이므로 과하지 않다. 단, 건강 영역은 공식 출처와 부모 경험 분리가 public/detail 화면에서 계속 필요하다.</span></div>
+      </div>
+      <div class="callout">
+        <b>판정</b>
+        <span>아무것도 모르는 사용자가 저장 후 다시 들어와 오늘 할 일, 날짜별 항목, 개별 Flow, 지도 위치를 찾는 데 Blocking/High 문제는 보이지 않는다. 다만 실제 서비스 판단에는 저장 전 public 화면, 알림/재방문, 장기 보관 상태까지 이어서 봐야 한다.</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">남은 리스크</p>
+      <h2>아직 실제 사용자에게 물어봐야 하는 부분</h2>
+      <div class="grid two">
+        <div class="row"><b>오늘 6개가 많은가</b><span>오늘 해야 할 일이 6개면 목록은 이해되지만 실제 사용자는 부담을 느낄 수 있다. 관찰에서는 첫 클릭이 바로 나오는지 봐야 한다.</span></div>
+        <div class="row"><b>캘린더가 필요한 순간</b><span>일정 탭은 보조 보기로는 자연스럽지만, 사용자가 처음부터 캘린더를 기대하는지는 관찰이 필요하다.</span></div>
+        <div class="row"><b>10개 Step Flow의 처리</b><span>이사처럼 긴 Flow는 inline detail이어도 전체 Step이 길다. 기간 접기나 현재 구간만 보기 옵션은 실제 조작을 보고 결정한다.</span></div>
+        <div class="row"><b>많은 날짜의 묶음 방식</b><span>지금은 날짜 안에서 Flow별 묶음만 쓴다. 전역 카테고리 탭이나 검색은 실제 저장량이 많아질 때 다시 판단한다.</span></div>
+        <div class="row"><b>지도라는 말</b><span>Flow Map을 사용자에게 `지도`라고 부르는 것이 자연스러운지 아직 확정은 아니다. 다만 내부 용어보다 덜 무겁다.</span></div>
+        <div class="row"><b>실제 관찰 전 한계</b><span>이번 결과는 내부 클릭 리허설이다. 사용자의 실제 이해도나 선호를 검증했다고 표현하지 않는다.</span></div>
+        <div class="row"><b>컨텐츠 fixture 한계</b><span>v8 화면의 샘플 Flow들은 UI 구조 판단용으로 섞어 둔 데이터다. 다음 판단 전에는 실제 원컨텐츠와 Source-to-Flow gate를 통과한 Flow/Step/Item으로 다시 채워야 한다.</span></div>
+        <div class="row"><b>캘린더 데이터 모델</b><span>Step은 화면에서는 한 줄 일정/할 일이지만, 나중에 ICS export를 위해 시작/종료/타임존/반복/알림/URL/description 같은 캘린더 메타데이터를 가질 수 있어야 한다.</span></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">검증</p>
+      <h2>수행한 확인</h2>
+      <ul>
+        <li>모바일 390px에서 오늘, 일정, Flow, 지도 탭 클릭.</li>
+        <li>일정 탭에서 월간 캘린더 확인, 6.22 혼잡 날짜 Flow별 묶음, 6.24 날짜 선택, 해당 날짜 Step 열기.</li>
+        <li>오늘 Step 열기, inline detail 위치, 같은 Step 재클릭 닫기, 체크, 메모 입력.</li>
+        <li>Today row에서 `Flow ·`, `지도 ·` 내부 라벨 노출 0건인지 확인.</li>
+        <li>Step row progress bar 0건, Flow/지도 내부 Step row 중복 메타 0건인지 확인.</li>
+        <li>Step 상세의 `일정`, `저장`, `진행` 정보가 캘린더/투두 상세 수준으로 보이는지 확인.</li>
+        <li>개별 Flow에서 이사 Flow 펼치기와 선택 Step 바로 아래 detail 열기.</li>
+        <li>지도에서 지도 목록, 하위 Flow 목록, Step 목록, 접종 가능 기간 detail 열기, 열린 하위 Flow 헤더 재클릭 접기.</li>
+        <li>데스크톱에서도 같은 지도 경로 클릭.</li>
+        <li>가로 overflow 0, JavaScript 오류 0, 보이는 36px 미만 터치 타깃 0.</li>
+        <li>사용자 화면에서 `실행 기준`, `다른 앱에 붙일 텍스트` 노출 0.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

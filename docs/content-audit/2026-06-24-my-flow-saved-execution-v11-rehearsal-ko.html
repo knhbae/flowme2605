@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Flow execution rehearsal</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --paper: #fff;
+      --ink: #111827;
+      --muted: #64748b;
+      --line: #dbe3ee;
+      --soft: #eef3f8;
+      --blue: #1f64d8;
+      --green: #0e806c;
+      --amber: #946200;
+      --red: #ad2f45;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px 64px;
+    }
+    .hero,
+    section,
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+    .hero {
+      padding: 22px;
+      margin-bottom: 14px;
+    }
+    section {
+      padding: 18px;
+      margin-top: 14px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .two {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .card { padding: 14px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2, h3, p, li, td, th {
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+    h1 {
+      margin-bottom: 8px;
+      font-size: 32px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+    h2 {
+      margin-bottom: 10px;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin-bottom: 7px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+    ul, ol {
+      margin: 8px 0 0;
+      padding-left: 21px;
+    }
+    li { margin: 5px 0; }
+    a {
+      color: var(--blue);
+      font-weight: 900;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: var(--soft); }
+    .muted { color: var(--muted); }
+    .eyebrow {
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .chip {
+      border-radius: 7px;
+      background: var(--soft);
+      padding: 4px 8px;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .chip.blue { background: #eaf2ff; color: #174da8; }
+    .chip.green { background: #e8f7f2; color: var(--green); }
+    .chip.amber { background: #fff5d6; color: var(--amber); }
+    .chip.red { background: #fff0f3; color: var(--red); }
+    .button {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: var(--blue);
+      color: #fff;
+      padding: 10px 14px;
+      text-decoration: none;
+    }
+    @media (max-width: 820px) {
+      main { padding: 16px 16px 54px; }
+      .grid,
+      .two { grid-template-columns: 1fr; }
+      .button { width: 100%; }
+      h1 { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <article class="hero">
+      <p class="eyebrow">리허설 결과</p>
+      <h1>저장한 Flow 실행 화면 v11</h1>
+      <p class="muted">목표를 다시 고정해 제작자/공개 화면이 아니라 저장한 Flow가 내 앱에서 어떻게 관리되고 실행되는지만 확인했습니다.</p>
+      <div class="chips">
+        <a class="button" href="./2026-06-24-my-flow-saved-execution-v11-ko.html">My Flow 화면 열기</a>
+        <a class="button" href="./2026-06-24-my-flow-goal-completion-check-ko.html">목표 완료 체크 열기</a>
+      </div>
+    </article>
+
+    <section>
+      <h2>이번에 고친 방향</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="chips"><span class="chip blue">모바일 우선</span></div>
+          <h3>오늘 Step을 먼저 보이게 함</h3>
+          <p class="muted">요약 카드가 첫 화면을 차지하지 않도록 모바일에서는 실행 화면을 먼저 배치했습니다.</p>
+        </div>
+        <div class="card">
+          <div class="chips"><span class="chip green">즉시 실행</span></div>
+          <h3>Step 바로 아래 Item</h3>
+          <p class="muted">Step을 누르면 같은 자리에서 Item, 완료 체크, 메모, 원문 링크가 열립니다.</p>
+        </div>
+        <div class="card">
+          <div class="chips"><span class="chip amber">여러 Flow</span></div>
+          <h3>오늘/일정/Flow/지도 분리</h3>
+          <p class="muted">저장한 Flow가 여러 개일 때 오늘 할 일, 날짜별 보기, Flow별 보기, 지도 보기를 나눴습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>이번 추가 수정</h2>
+      <div class="two">
+        <div class="card">
+          <h3>정적 카드와 버튼을 분리</h3>
+          <p class="muted">좌측 저장 요약과 지도 요약은 설명 카드로 낮추고, 실제 조작되는 Step, Flow, 지도 선택 카드에만 <strong>열기</strong>, <strong>접기</strong>, <strong>보기</strong> 라벨을 붙였습니다.</p>
+        </div>
+        <div class="card">
+          <h3>누른 결과를 카드 안에서 예측</h3>
+          <p class="muted">Step과 Flow는 열린 상태에서 다시 누르면 접힙니다. 버튼처럼 보이는 요소는 실제로 상태가 바뀌고, 설명처럼 보이는 요소는 클릭 대상이 아니게 정리했습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>페르소나 시뮬레이션</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>상황</th>
+            <th>경로</th>
+            <th>결과</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>이사 준비 중인 사용자</td>
+            <td>오늘 탭 → D-14 Step의 열기 선택 → Item 체크 → 업체 메모 → 같은 Step을 다시 눌러 접기</td>
+            <td>처음 화면에서 바로 할 일이 보이고, 열린 Step 아래에 Item이 붙습니다. 접기 라벨이 있어 닫는 동작도 예측됩니다.</td>
+          </tr>
+          <tr>
+            <td>날짜별로 확인하는 사용자</td>
+            <td>일정 탭 → 2026-07-23 선택 → D-7 Step 확인 → Item 체크</td>
+            <td>캘린더에서 날짜를 누르면 해당 날짜 Step이 바로 아래에 뜹니다. 날짜 버튼과 Step 열기 버튼의 역할이 분리되어 있습니다.</td>
+          </tr>
+          <tr>
+            <td>학습 진도를 이어 보는 사용자</td>
+            <td>Flow 탭 → 중1 수학 필터 → 소인수분해 Flow 열기 → 소수와 합성수 완료</td>
+            <td>Flow 카드 안에 열기/접기 라벨이 있어 Flow 목록과 내부 Step 목록의 경계가 더 분명해졌습니다.</td>
+          </tr>
+          <tr>
+            <td>저장한 묶음을 훑어보는 사용자</td>
+            <td>지도 탭 → 생활 일정, 아이 건강 일정, 중1 수학 진도 전환</td>
+            <td>지도 탭의 지도 선택 카드는 보기/선택됨 라벨을 가집니다. 좌측 요약 카드는 더 이상 버튼처럼 보이지 않습니다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>상세 리허설 로그</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="chips"><span class="chip amber">이사 D-14</span></div>
+          <h3>오늘 해야 할 일을 바로 처리하는 사용자</h3>
+          <ol>
+            <li>화면에 들어오자마자 상단 탭보다 먼저 오늘 날짜와 D-14 Step을 봅니다.</li>
+            <li>Step이 이미 열려 있어 입주청소, 대형폐기물, 예약처 메모를 같은 자리에서 확인합니다.</li>
+            <li>체크박스 1개를 누르고 업체 비교 메모를 남깁니다.</li>
+            <li>Step 카드의 <strong>접기</strong>를 눌러 세부 내용을 닫습니다.</li>
+          </ol>
+          <p class="muted">판정: 사용자는 별도 설명 없이 오늘 할 일을 실행할 수 있습니다. 정적 저장 요약은 하단 보조 영역으로 밀려 있어 첫 행동을 방해하지 않습니다.</p>
+        </div>
+        <div class="card">
+          <div class="chips"><span class="chip green">일정 찾기</span></div>
+          <h3>다음 날짜를 확인하는 사용자</h3>
+          <ol>
+            <li>일정 탭을 눌러 2026년 7월 캘린더를 봅니다.</li>
+            <li>7월 23일의 `1개` 표시를 보고 날짜를 누릅니다.</li>
+            <li>해당 날짜 아래 D-7 Step이 열리고, 관리사무소 공유와 주소 변경 Item을 확인합니다.</li>
+            <li>필요하면 원문 열기로 세부 자료를 확인합니다.</li>
+          </ol>
+          <p class="muted">판정: 날짜 버튼, Step 열기 버튼, 원문 링크의 역할이 서로 다릅니다. 캘린더 앱 수준에서 이해 가능한 흐름입니다.</p>
+        </div>
+        <div class="card">
+          <div class="chips"><span class="chip blue">진도 Flow</span></div>
+          <h3>중1 수학 진도를 이어 보는 사용자</h3>
+          <ol>
+            <li>Flow 탭에서 중1 수학 진도 필터를 고릅니다.</li>
+            <li>소인수분해 Flow의 <strong>열기</strong>를 누릅니다.</li>
+            <li>하위 Step 목록에서 소수와 합성수를 열고 완료 여부와 짧은 메모만 남깁니다.</li>
+            <li>같은 Flow 카드를 다시 눌러 목록을 접습니다.</li>
+          </ol>
+          <p class="muted">판정: 수학처럼 Item이 꼭 필요하지 않은 Progress Flow는 억지 체크리스트를 만들지 않아도 됩니다. Step은 진도표의 최소 행으로 동작합니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>UX 판정</h2>
+      <div class="two">
+        <div class="card">
+          <h3>좋아진 점</h3>
+          <ul>
+            <li>모바일 첫 화면이 실제 실행 항목으로 시작함</li>
+            <li>Step 상세가 같은 자리에서 열려 하단으로 긴 이동이 줄어듦</li>
+            <li>여러 Flow가 있어도 필터와 탭으로 스캔 가능</li>
+            <li>Flow Map은 상위 구조 확인으로 역할이 좁아짐</li>
+            <li>수학 Step은 원문에 없는 Item을 만들지 않음</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>남은 리스크</h3>
+          <ul>
+            <li>Flow가 수십 개일 때 필터/검색이 더 필요할 수 있음</li>
+            <li>일정 탭은 현재 1개월 고정 샘플이라 월 이동은 아직 단순함</li>
+            <li>메모와 완료 상태는 화면 내 상태만 있고 실제 저장소는 없음</li>
+            <li>외부 캘린더/투두/시트 내보내기 데이터 계약은 별도 작업 필요</li>
+            <li>실제 사용자 관찰 데이터는 아직 없음</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Rubric 간단 점수</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>점수</th>
+            <th>판단</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>User Need Fit</td><td>4</td><td>저장 후 다시 들어와 무엇을 할지 찾는 목적에 맞음.</td></tr>
+          <tr><td>Execution Clarity</td><td>4</td><td>오늘 Step, 날짜 Step, Flow Step의 실행 위치가 명확해짐.</td></tr>
+          <tr><td>Content Fidelity</td><td>4</td><td>이사/영유아 Item은 원문 기반이고, 수학은 억지 Item을 만들지 않음.</td></tr>
+          <tr><td>Portability</td><td>3</td><td>원문 링크와 메모는 있으나 외부 도구 데이터 계약은 아직 약함.</td></tr>
+          <tr><td>Cognitive Load</td><td>4</td><td>오늘/일정/Flow/지도 역할이 나뉘고 첫 화면 실행성이 개선됨.</td></tr>
+          <tr><td>Copy Specificity</td><td>4</td><td>추상 설명보다 Step 제목, 날짜, Item 중심.</td></tr>
+          <tr><td>Source/Safety</td><td>3.5</td><td>원문 링크는 유지되나 민감 카테고리 주의 구조는 더 분리 가능.</td></tr>
+          <tr><td>Accessibility/Operability</td><td>4</td><td>모바일/데스크톱 클릭, 토글, 체크, 메모 입력 확인.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>검증 기록</h2>
+      <ul>
+        <li>모바일 390px, 데스크톱 1280px 브라우저 클릭 확인</li>
+        <li>오늘 탭 Step 열기/닫기, Item 체크, 메모 입력 확인</li>
+        <li>일정 탭 날짜 선택과 해당 Step 실행 확인</li>
+        <li>Flow 탭 필터, Flow 열기, 진도 Step 완료 확인</li>
+        <li>지도 탭 지도 전환 확인</li>
+        <li>좌측 지도 요약에 button 없음 확인</li>
+        <li>Step/Flow/지도 조작 카드에 열기/접기/보기/선택됨 라벨 확인</li>
+        <li>사용자용 화면에 리허설/평가/제작자/개발자 문구 없음 확인</li>
+        <li>가로 overflow 없음</li>
+        <li>JS 오류 없음</li>
+        <li><code>npm run docs:check</code> 통과</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow v5 정리 시뮬레이션</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fb;
+      --card: #fff;
+      --soft: #f1f5f9;
+      --line: #d9e2ef;
+      --text: #0f172a;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      --red: #b42318;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); letter-spacing: 0; }
+    main { width: min(100% - 28px, 1120px); margin: 0 auto; padding: 24px 0 56px; }
+    header, section { border: 1px solid var(--line); border-radius: 14px; background: var(--card); box-shadow: 0 14px 34px rgba(15, 23, 42, .06); }
+    header { padding: 24px; }
+    section { margin-top: 14px; padding: 20px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: 34px; line-height: 1.12; }
+    h2 { margin-bottom: 10px; font-size: 22px; line-height: 1.25; }
+    h3 { margin-bottom: 6px; font-size: 17px; line-height: 1.3; }
+    p, li, td, th { font-size: 14px; line-height: 1.62; }
+    p, li { color: var(--muted); font-weight: 660; }
+    a { color: #1d4ed8; font-weight: 850; text-underline-offset: 3px; }
+    code { border-radius: 6px; background: #eef2f7; padding: 2px 5px; color: #334155; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 12px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 12px; text-align: left; vertical-align: top; }
+    th { background: var(--soft); color: #334155; font-size: 12px; font-weight: 900; }
+    td:first-child { width: 180px; color: var(--text); font-weight: 850; }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .chip { display: inline-flex; align-items: center; min-height: 30px; border: 1px solid var(--line); border-radius: 999px; background: var(--soft); padding: 5px 10px; color: #334155; font-size: 12px; font-weight: 850; text-decoration: none; }
+    .chip.green { border-color: #99f6e4; background: #ecfdf5; color: var(--green); }
+    .chip.amber { border-color: #fed7aa; background: #fff7ed; color: var(--amber); }
+    .chip.red { border-color: #fecaca; background: #fef2f2; color: var(--red); }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; background: #fbfdff; padding: 14px; }
+    .card b, .card span { display: block; }
+    .card b { font-size: 15px; }
+    .card span { margin-top: 6px; color: var(--muted); font-size: 13px; font-weight: 660; line-height: 1.5; }
+    .decision { border-left: 4px solid var(--blue); background: #eff6ff; }
+    .decision p, .decision li { color: #334155; }
+    @media (max-width: 840px) {
+      main { width: min(100% - 20px, 760px); padding-top: 14px; }
+      header, section { padding: 16px; border-radius: 12px; }
+      h1 { font-size: 28px; }
+      .grid { grid-template-columns: 1fr; }
+      table, tbody, tr, td, th { display: block; }
+      th { display: none; }
+      tr + tr { border-top: 2px solid var(--line); }
+      td:first-child { width: auto; padding-bottom: 4px; }
+      td + td { padding-top: 4px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="chip amber">진행자용 · 사용자 화면 아님</p>
+      <h1>My Flow v5 정리 시뮬레이션</h1>
+      <p>v4의 저장 개수별 실험과 유형 혼합 화면을 하나로 합치되, 사용자 화면에서 테스트용 탭과 내부 설명을 제거했다. 사용자는 같은 <code>내 Flow</code> 화면을 보고, 진행자는 URL 모드로 1개/4개/8개/20개 이상 저장 상태를 확인한다.</p>
+      <div class="chips">
+        <a class="chip" href="./2026-06-21-my-flow-v5-clean-user-poc-ko.html">기본: 8개 혼합</a>
+        <a class="chip" href="./2026-06-21-my-flow-v5-clean-user-poc-ko.html?mode=single">1개 저장</a>
+        <a class="chip" href="./2026-06-21-my-flow-v5-clean-user-poc-ko.html?mode=few">4개 저장</a>
+        <a class="chip" href="./2026-06-21-my-flow-v5-clean-user-poc-ko.html?mode=large">20개 이상 저장</a>
+        <a class="chip" href="./2026-06-21-my-flow-type-mix-observation-kit-ko.html">관찰 키트</a>
+        <a class="chip" href="./2026-06-19-flowme-service-ux-backlog-ko.html">서비스 UX 백로그</a>
+      </div>
+    </header>
+
+    <section class="decision">
+      <p class="eyebrow">판정</p>
+      <h2>v5는 현재까지 가장 제품 화면에 가깝다</h2>
+      <p>사용자 화면에서 저장 개수 테스트 탭을 제거했고, 유형 필터도 제거했다. 남은 구조는 오늘 항목, 필요할 때 여는 Flow 찾기, Step 상세, 체크, 메모, 외부 앱 텍스트뿐이다. 캘린더/투두 앱보다 크게 무겁지 않은 수준으로 내려왔다.</p>
+    </section>
+
+    <section>
+      <p class="eyebrow">줄인 것</p>
+      <h2>기능보다 실행 순서를 우선했다</h2>
+      <table>
+        <thead><tr><th>이전 상태</th><th>v5 처리</th><th>이유</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>저장 개수별 상태 탭</td>
+            <td>사용자 화면에서 제거. URL 모드로만 테스트.</td>
+            <td>실제 사용자는 저장 개수를 선택하지 않는다. 테스트 장치가 제품처럼 보이면 혼란을 만든다.</td>
+          </tr>
+          <tr>
+            <td>유형 필터</td>
+            <td>검색과 짧은 목록으로 대체.</td>
+            <td>일정/루틴/학습/체크/보관 필터는 제작자/내부 분류에 가깝고, 사용자는 제목으로 찾을 가능성이 높다.</td>
+          </tr>
+          <tr>
+            <td>1개 저장에서도 날짜 rail/Flow 찾기</td>
+            <td>1개 모드에서는 바로 Step 상세만 노출.</td>
+            <td>한 개만 저장했을 때는 관리 화면이 아니라 실행 화면이면 충분하다.</td>
+          </tr>
+          <tr>
+            <td>20개 이상 전체 노출</td>
+            <td>Flow 찾기는 처음 8개만 보이고, 오늘 목록도 4개까지만 먼저 보인다.</td>
+            <td>첫 화면은 찾기 시작점이어야지 전체 보관함이 아니어야 한다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">드라이런</p>
+      <h2>상태별 예상 저니</h2>
+      <div class="grid">
+        <div class="card"><b>1개 저장</b><span>사용자는 상세를 바로 보고 체크 1개와 메모만 남긴다. Finder, rail, 전체 목록이 없어서 과한 관리 느낌이 줄었다.</span></div>
+        <div class="card"><b>4개 저장</b><span>오늘 목록에서 시작하고, 필요할 때 Flow 찾기를 연다. 검색 없이도 4개 전체가 한 번에 보인다.</span></div>
+        <div class="card"><b>8개 혼합</b><span>날짜형, 루틴형, 학습형이 같은 Step row로 보인다. 사용자는 유형을 배우지 않고 제목으로 열 수 있다.</span></div>
+        <div class="card"><b>20개 이상</b><span>검색이 우선이고 전체 펼침은 보조다. 오늘 항목도 처음 4개까지만 보여 긴 목록이 상세 실행을 밀지 않는다.</span></div>
+        <div class="card"><b>재방문</b><span>오늘/이번 주/보관 rail로 현재 실행 시점만 바꾸고, 선택한 Step 상세는 같은 구조를 유지한다.</span></div>
+        <div class="card"><b>외부 앱</b><span>Item은 체크리스트로 보이지만, 다른 앱에서는 접힌 텍스트로 붙일 수 있다.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">품질 루브릭</p>
+      <h2>내부 점수</h2>
+      <table>
+        <thead><tr><th>항목</th><th>점수</th><th>근거</th><th>다음 관찰</th></tr></thead>
+        <tbody>
+          <tr><td>User Need Fit</td><td>4</td><td>저장한 Flow를 다시 열어 오늘 실행하는 상황이 분명하다.</td><td>사용자가 첫 화면에서 오늘 항목을 먼저 누르는지 확인.</td></tr>
+          <tr><td>Execution Clarity</td><td>4</td><td>Step 상세에 체크, 메모, fallback이 바로 있다.</td><td>1개 저장에서 상세만 보여도 충분한지 확인.</td></tr>
+          <tr><td>Content Fidelity</td><td>3</td><td>예시 항목은 기존 통과 Flow 기준을 따르지만, 원문 재검토 범위는 아니다.</td><td>실제 public 후보에서는 source gate가 필요.</td></tr>
+          <tr><td>Portability</td><td>4</td><td>Step과 Item이 외부 앱 텍스트로 접힌다.</td><td>실제 캘린더/투두 export 문구는 별도 확인.</td></tr>
+          <tr><td>Cognitive Load</td><td>4</td><td>테스트 탭과 유형 필터를 제거했다.</td><td>20개 이상에서 전체 보기 버튼이 너무 약하지 않은지 확인.</td></tr>
+          <tr><td>Copy Specificity</td><td>4</td><td>버튼은 Flow 찾기, 전체 Flow 보기, 메모 저장됨처럼 결과가 보인다.</td><td>Flow 찾기라는 이름이 충분히 자연스러운지 확인.</td></tr>
+          <tr><td>Source/Safety</td><td>3</td><td>민감 항목은 판단하지 않는 구조지만 source 분리 화면은 축약되어 있다.</td><td>건강/법률성 Flow는 공개 전 source panel 필요.</td></tr>
+          <tr><td>Accessibility/Operability</td><td>4</td><td>주요 row, check, search가 실제 button/input이다.</td><td>모바일 touch와 keyboard 순서를 확인.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">수정 조건</p>
+      <h2>관찰에서 이렇게 나오면 다시 줄인다</h2>
+      <table>
+        <thead><tr><th>신호</th><th>등급</th><th>수정</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>사용자가 Flow 찾기를 먼저 눌러 오늘 항목을 보지 않는다.</td>
+            <td><span class="chip red">High</span></td>
+            <td>Flow 찾기를 오늘 목록 아래로 내리거나 아이콘형 보조 버튼으로 더 낮춘다.</td>
+          </tr>
+          <tr>
+            <td>20개 이상에서 전체 Flow 보기를 누른 뒤 길어진 목록에서 길을 잃는다.</td>
+            <td><span class="chip red">High</span></td>
+            <td>전체 펼침 대신 검색 입력에 더 집중하고, 최근 8개만 계속 유지한다.</td>
+          </tr>
+          <tr>
+            <td>20개 이상에서 오늘 항목 4개만 보여 나머지를 놓친다.</td>
+            <td><span class="chip amber">Medium</span></td>
+            <td>오늘 목록 하단의 더 보기 버튼 문구를 <code>오늘 항목 더 보기</code>처럼 더 구체화한다.</td>
+          </tr>
+          <tr>
+            <td>학습 지도형 사용자가 전체 단원 위치를 계속 찾는다.</td>
+            <td><span class="chip amber">Medium</span></td>
+            <td>상세 하단에 접힌 전체 단원 보기만 추가한다. 첫 화면에는 넣지 않는다.</td>
+          </tr>
+          <tr>
+            <td>메모 자동 저장 상태를 보지 못한다.</td>
+            <td><span class="chip amber">Medium</span></td>
+            <td>저장 상태를 입력창 하단 오른쪽에서 라벨 가까이로 옮긴다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

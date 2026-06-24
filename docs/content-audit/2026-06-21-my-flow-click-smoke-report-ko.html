@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow 클릭 Smoke Check</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --soft: #f1f5f9;
+      --line: #d9e2ef;
+      --text: #0f172a;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      --red: #b42318;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); letter-spacing: 0; }
+    main { width: min(100% - 28px, 1120px); margin: 0 auto; padding: 24px 0 56px; }
+    header, section { border: 1px solid var(--line); border-radius: 14px; background: var(--card); box-shadow: 0 14px 34px rgba(15, 23, 42, .06); }
+    header { padding: 24px; }
+    section { margin-top: 14px; padding: 20px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: 34px; line-height: 1.12; }
+    h2 { margin-bottom: 10px; font-size: 22px; line-height: 1.25; }
+    h3 { margin-bottom: 6px; font-size: 17px; line-height: 1.3; }
+    p, li, td, th { font-size: 14px; line-height: 1.62; }
+    p, li { color: var(--muted); font-weight: 660; }
+    a { color: #1d4ed8; font-weight: 850; text-underline-offset: 3px; }
+    code { border-radius: 6px; background: #eef2f7; padding: 2px 5px; color: #334155; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 12px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 12px; text-align: left; vertical-align: top; }
+    th { background: var(--soft); color: #334155; font-size: 12px; font-weight: 900; }
+    td:first-child { width: 170px; color: var(--text); font-weight: 850; }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .chip { display: inline-flex; align-items: center; min-height: 30px; border: 1px solid var(--line); border-radius: 999px; background: var(--soft); padding: 5px 10px; color: #334155; font-size: 12px; font-weight: 850; text-decoration: none; }
+    .chip.green { border-color: #99f6e4; background: #ecfdf5; color: var(--green); }
+    .chip.amber { border-color: #fed7aa; background: #fff7ed; color: var(--amber); }
+    .chip.red { border-color: #fecaca; background: #fef2f2; color: var(--red); }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; background: #fbfdff; padding: 14px; }
+    .card b, .card span { display: block; }
+    .card b { font-size: 15px; }
+    .card span { margin-top: 6px; color: var(--muted); font-size: 13px; font-weight: 660; line-height: 1.5; }
+    .decision { border-left: 4px solid var(--blue); background: #eff6ff; }
+    .decision p, .decision li { color: #334155; }
+    @media (max-width: 820px) {
+      main { width: min(100% - 20px, 760px); padding-top: 14px; }
+      header, section { padding: 16px; border-radius: 12px; }
+      h1 { font-size: 28px; }
+      .grid { grid-template-columns: 1fr; }
+      table, tbody, tr, td, th { display: block; }
+      th { display: none; }
+      tr + tr { border-top: 2px solid var(--line); }
+      td:first-child { width: auto; padding-bottom: 4px; }
+      td + td { padding-top: 4px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="chip amber">내부 클릭 점검 · 실제 사용자 검증 아님</p>
+      <h1>My Flow 관찰 전 클릭 Smoke Check</h1>
+      <p>실제 <code>/my</code> 모바일 화면이 저장 개수별 UX 판정과 어긋나는지 확인했다. 이 점검은 Playwright 자동 클릭으로 UI 상태와 가로 overflow, 주요 버튼 수를 확인한 것이며, 사용자 행동 검증은 아니다.</p>
+      <div class="chips">
+        <a class="chip" href="./2026-06-21-my-flow-saved-count-ux-verdict-ko.html">저장 개수별 UX 판정</a>
+        <a class="chip" href="./2026-06-21-my-flow-observed-session-kit-ko.html">관찰 키트</a>
+        <a class="chip" href="./2026-06-21-my-flow-observed-session-note-template-ko.html">관찰 기록지</a>
+        <a class="chip" href="./2026-06-21-my-flow-observed-session-rollup-ko.html">관찰 롤업</a>
+        <a class="chip" href="./2026-06-21-my-flow-observation-dry-run-ko.html">관찰 전 드라이런</a>
+        <a class="chip" href="./2026-06-21-my-flow-v4-actual-my-alignment-ko.html">실제 /my 정렬</a>
+      </div>
+    </header>
+
+    <section class="decision">
+      <p class="eyebrow">결론</p>
+      <h2>관찰 전에 바로 고칠 Blocking은 보이지 않음</h2>
+      <ul>
+        <li>단일 저장 모바일은 전역 탭이 0개로 줄어 있다.</li>
+        <li>여러 개 저장 모바일 Flow 허브는 <code>Flow 찾기</code>만 노출하고, <code>밀린 Flow</code>/<code>다음 실행</code> 상태 버튼은 없다.</li>
+        <li>20개 이상 저장 시 Flow 목록은 처음 8개만 보이고, 명시적 <code>전체 Flow 보기 30개</code>가 있다.</li>
+        <li>남은 관찰 리스크는 상세 안의 작은 <code>완료</code> 토글이다. 실제 사용자가 이 토글을 이해하면 유지하고, “뭘 완료하는지” 묻는다면 Step 내부 체크와 메모만 남기는 쪽으로 줄인다.</li>
+      </ul>
+    </section>
+
+    <section>
+      <p class="eyebrow">Smoke 결과</p>
+      <h2>모바일 390px 기준</h2>
+      <table>
+        <thead>
+          <tr><th>상태</th><th>확인 항목</th><th>결과</th><th>판정</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1개 저장</td>
+            <td>전역 탭, 밀린 항목, 상세 메모</td>
+            <td>탭 0개, 밀린 행 4개, row-level 완료 텍스트 0개, 상세 메모 textarea 1개, 상세 완료 토글 1개</td>
+            <td><span class="chip green">관찰 가능</span></td>
+          </tr>
+          <tr>
+            <td>ux12</td>
+            <td>Today, Flow 허브, Flow 찾기 sheet</td>
+            <td>탭 5개, 모바일 숫자 카드 0개, 상태 버튼 0개, Flow 찾기 1개, sheet 행 18개</td>
+            <td><span class="chip green">관찰 가능</span></td>
+          </tr>
+          <tr>
+            <td>ux20</td>
+            <td>20개 이상 저장 목록</td>
+            <td>초기 8개, <code>전체 Flow 보기 30개</code>, 펼친 뒤 30개</td>
+            <td><span class="chip green">관찰 가능</span></td>
+          </tr>
+          <tr>
+            <td>공통</td>
+            <td>가로 overflow</td>
+            <td>각 모바일 페이지 <code>bodyWidth 390 / viewportWidth 390</code></td>
+            <td><span class="chip green">통과</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">스크린샷</p>
+      <h2>확인한 화면</h2>
+      <table>
+        <tbody>
+          <tr><td>1개 저장 모바일</td><td><a href="../../output/playwright/my-flow-smoke-single-mobile.png">my-flow-smoke-single-mobile.png</a></td></tr>
+          <tr><td>ux12 Today</td><td><a href="../../output/playwright/my-flow-smoke-ux12-today-mobile.png">my-flow-smoke-ux12-today-mobile.png</a></td></tr>
+          <tr><td>ux12 Flow 허브</td><td><a href="../../output/playwright/my-flow-smoke-ux12-flow-hub-mobile.png">my-flow-smoke-ux12-flow-hub-mobile.png</a></td></tr>
+          <tr><td>ux12 Flow 찾기 sheet</td><td><a href="../../output/playwright/my-flow-smoke-ux12-flow-sheet-mobile.png">my-flow-smoke-ux12-flow-sheet-mobile.png</a></td></tr>
+          <tr><td>ux20 Flow 찾기 sheet</td><td><a href="../../output/playwright/my-flow-smoke-ux20-flow-sheet-mobile.png">my-flow-smoke-ux20-flow-sheet-mobile.png</a></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">관찰에서 확인할 질문</p>
+      <h2>다음 수정은 여기서 결정</h2>
+      <div class="grid">
+        <div class="card"><b>1개 저장</b><span>상세 안의 작은 완료 토글이 도움이 되는가, 아니면 체크/메모만으로 충분한가.</span></div>
+        <div class="card"><b>4~8개 저장</b><span>사용자가 Today와 Flow 찾기의 차이를 설명 없이 이해하는가.</span></div>
+        <div class="card"><b>20개 이상</b><span>처음 8개만 보고도 검색/필터/전체 보기 중 하나를 자연스럽게 쓰는가.</span></div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

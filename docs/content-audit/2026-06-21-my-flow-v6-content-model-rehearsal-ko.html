@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow v6 컨텐츠 모델 재점검</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #536274;
+      --line: #dbe4ef;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      --red: #b91c1c;
+      --soft-blue: #eff6ff;
+      --soft-green: #ecfdf5;
+      --soft-amber: #fffbeb;
+      --soft-red: #fef2f2;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+    }
+    main { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 40px 0 56px; }
+    header, section {
+      margin-bottom: 18px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--card);
+      padding: 24px;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 10px; font-size: clamp(28px, 4vw, 44px); letter-spacing: 0; line-height: 1.12; }
+    h2 { margin-bottom: 10px; font-size: 22px; letter-spacing: 0; }
+    h3 { margin-bottom: 6px; font-size: 16px; letter-spacing: 0; }
+    p { color: var(--muted); }
+    a { color: var(--blue); font-weight: 800; }
+    .eyebrow { color: var(--blue); font-size: 13px; font-weight: 900; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #f8fafc;
+      padding: 5px 10px;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 850;
+      text-decoration: none;
+    }
+    .chip.green { border-color: #99f6e4; background: var(--soft-green); color: var(--green); }
+    .chip.amber { border-color: #fed7aa; background: var(--soft-amber); color: var(--amber); }
+    .chip.red { border-color: #fecaca; background: var(--soft-red); color: var(--red); }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fbfdff;
+      padding: 16px;
+    }
+    .card b, .card span { display: block; }
+    .card span { margin-top: 4px; color: var(--muted); font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 14px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 12px; text-align: left; vertical-align: top; }
+    th { background: #f8fafc; color: #334155; font-size: 13px; }
+    td { color: var(--muted); font-size: 14px; }
+    td strong { display: block; color: var(--text); }
+    .verdict {
+      border-left: 4px solid var(--green);
+      background: var(--soft-green);
+    }
+    .warning {
+      border-left: 4px solid var(--amber);
+      background: var(--soft-amber);
+    }
+    code { border-radius: 6px; background: #eef2f7; padding: 2px 5px; }
+    ul { margin: 8px 0 0; padding-left: 20px; color: var(--muted); }
+    @media (max-width: 760px) {
+      main { width: min(100% - 20px, 430px); padding: 20px 0 40px; }
+      header, section { padding: 18px; border-radius: 16px; }
+      .grid { grid-template-columns: 1fr; }
+      table, thead, tbody, tr, th, td { display: block; }
+      th { display: none; }
+      td { border-bottom: 0; padding: 8px 0; }
+      tr { display: block; border-bottom: 1px solid var(--line); padding: 10px 0; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">2026-06-21 · 내부 검토 리포트</p>
+      <h1>My Flow v6 컨텐츠 모델 재점검</h1>
+      <p>사용자 피드백에 따라 v6 PoC의 고정 3개 체크리스트 패턴을 제거하고, Flow Map &gt; Flow &gt; Step &gt; Item 원칙에 맞게 다시 줄였다. 이 문서는 검토용이며 사용자 PoC에는 노출하지 않는다.</p>
+      <div class="chips">
+        <a class="chip green" href="./2026-06-21-my-flow-v6-conditional-surfaces-ko.html">수정된 사용자 PoC</a>
+        <a class="chip" href="./2026-06-21-my-flow-v6-styleseed-task-rehearsal-ko.html">이전 과업 리허설</a>
+        <span class="chip amber">실제 사용자 검증 아님</span>
+      </div>
+    </header>
+
+    <section class="warning">
+      <h2>문제 판정</h2>
+      <p>이전 v6는 화면은 깔끔했지만 컨텐츠 모델이 다시 UI 틀에 끌려갔다. 여러 Flow에서 원문 구조와 관계없이 세부 체크를 3개씩 만들었고, 메모나 설명으로 내려가야 할 내용까지 체크리스트가 되었다.</p>
+      <ul>
+        <li>고정 3개 checklist는 source-to-Flow gate 위반이다.</li>
+        <li>Step은 캘린더/투두/시트로 저장되는 최소 실행 단위다.</li>
+        <li>Item은 선택적 상세값이며, 없을 수도 있다.</li>
+        <li>Item이 외부 앱에 못 들어가면 event description, todo note, memo text로 접혀야 한다.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>수정 원칙</h2>
+      <div class="grid">
+        <div class="card"><b>Step 먼저</b><span>각 카드의 본체는 하나의 실행 항목이다. 세부 체크는 기본값이 아니다.</span></div>
+        <div class="card"><b>Item은 필요할 때만</b><span>원문에서 실제로 분해할 항목이 있을 때만 1개 이상 둔다.</span></div>
+        <div class="card"><b>메모로 내리기</b><span>확인 URL, 보류 이유, 다시 볼 내용은 체크가 아니라 memo/detail로 둔다.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>대표 항목 변경</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Flow</th>
+            <th>이전 문제</th>
+            <th>수정 후</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>전세계약</strong>계약 전 서류 확인</td>
+            <td>3개 체크였지만 이 경우는 원문 실행 단서와 맞아 유지 가능.</td>
+            <td>시세, 등기부등본, 보증보험 가능 여부 3개만 유지. 개인정보 저장 금지는 메모로 유지.</td>
+          </tr>
+          <tr>
+            <td><strong>중1 수학</strong>정수와 유리수 10강</td>
+            <td>막힌 개념 메모가 체크리스트가 되어 실행과 기록이 섞임.</td>
+            <td>강의 열기, 교재 범위 풀기 2개 Item. 틀린 문제와 복습 내용은 메모로 이동.</td>
+          </tr>
+          <tr>
+            <td><strong>홈트 영상</strong>원본 영상 한 번 따라하기</td>
+            <td>단일 영상을 준비/실행/메모 3개 체크로 쪼개 원문보다 복잡해짐.</td>
+            <td>영상 열기 1개 Item. 통증/어지러움/다음 조절은 메모와 중단 기준으로 이동.</td>
+          </tr>
+          <tr>
+            <td><strong>영유아 검진</strong>문진표 질문 메모 준비</td>
+            <td>문진표, 발달선별검사, 질문 메모가 모두 체크가 되어 의료 판단처럼 보임.</td>
+            <td>문진표 작성 여부 1개 Item. 질문 1-2개는 메모. 판단은 의료진/공식 안내 경계로 분리.</td>
+          </tr>
+          <tr>
+            <td><strong>대형 목록 filler</strong>20개 이상 저장 상태</td>
+            <td>모든 임시 항목이 원문 열기/오늘 확인/짧게 메모 3개를 반복.</td>
+            <td>진도/일정/루틴/보관은 Item 0개인 Step-only로 처리. 체크형만 1개 Item.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="verdict">
+      <h2>브라우저 검증 결과</h2>
+      <p>Playwright로 `single`, `few`, `mixed`, `large` 네 상태와 대표 항목 6개를 클릭했다.</p>
+      <ul>
+        <li>문서 체크: `npm run docs:check` 통과.</li>
+        <li>모바일/데스크톱 overflow: 0.</li>
+        <li>JS console/page error: 0.</li>
+        <li>작은 터치 타겟: 0.</li>
+        <li>item count: 전세 3, 수학 2, 홈트 1, 영유아 1, 진도 filler 0, 체크 filler 1.</li>
+        <li>사용자 화면 visible text와 fallback text에서 내부 `Step` 문구 없음.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>남은 판단</h2>
+      <p>이번 수정은 고정 3개 checklist 문제를 제거한 것이다. 실제 서비스 기준으로는 다음 관찰에서 사용자가 Item이 없는 항목의 완료 표시를 자연스럽게 이해하는지, 1개 Item 화면이 과하지 않은지 확인해야 한다.</p>
+    </section>
+  </main>
+</body>
+</html>

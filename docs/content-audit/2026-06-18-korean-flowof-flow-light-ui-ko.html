@@ -1,0 +1,1048 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>한글 원문 기반 실행 지도</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4f7fb;
+        --surface: #ffffff;
+        --soft: #f8fafc;
+        --soft-blue: #eaf2ff;
+        --soft-green: #e9f8f1;
+        --soft-amber: #fff6df;
+        --line: #d7e0ec;
+        --line-strong: #b7c4d5;
+        --text: #101828;
+        --muted: #5b687a;
+        --blue: #245fce;
+        --green: #0f7a4a;
+        --amber: #995d00;
+        --shadow: 0 14px 34px rgba(16, 24, 40, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+
+      html { scroll-behavior: smooth; }
+
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, #fbfdff 0, var(--bg) 360px);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+        font-size: 16px;
+        line-height: 1.56;
+      }
+
+      button, input, textarea { font: inherit; }
+
+      button {
+        min-height: 44px;
+        border: 0;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 850;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
+      }
+
+      h1, h2, h3, p { margin-top: 0; }
+
+      h1 {
+        margin-bottom: 8px;
+        font-size: clamp(29px, 5vw, 44px);
+        line-height: 1.1;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      h2 {
+        margin-bottom: 6px;
+        font-size: clamp(24px, 3.4vw, 34px);
+        line-height: 1.2;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      h3 {
+        margin-bottom: 4px;
+        font-size: 20px;
+        line-height: 1.28;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      .page {
+        width: min(1180px, calc(100% - 28px));
+        margin: 0 auto;
+        padding: 14px 0 64px;
+      }
+
+      .topbar,
+      .hero,
+      .flow-nav,
+      .workspace,
+      .panel,
+      .row-button,
+      .group-button,
+      .note,
+      .date-input {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 58px;
+        padding: 12px 16px;
+        box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+      }
+
+      .brand {
+        color: var(--blue);
+        font-size: 24px;
+        font-weight: 950;
+        text-decoration: none;
+      }
+
+      .small-button {
+        padding: 0 12px;
+        border: 1px solid var(--line);
+        background: white;
+        color: #344054;
+      }
+
+      .hero {
+        margin-top: 12px;
+        padding: 18px;
+        box-shadow: var(--shadow);
+      }
+
+      .eyebrow {
+        margin-bottom: 6px;
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 950;
+      }
+
+      .desc {
+        max-width: 760px;
+        margin-bottom: 0;
+        color: var(--muted);
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 5px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--soft);
+        color: #344054;
+        font-size: 13px;
+        font-weight: 850;
+      }
+
+      .chip.blue { border-color: #b9cdf6; background: var(--soft-blue); color: #1d4ed8; }
+      .chip.green { border-color: #b8e6ca; background: var(--soft-green); color: var(--green); }
+      .chip.amber { border-color: #ebcd8a; background: var(--soft-amber); color: var(--amber); }
+
+      .flow-nav {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 6px;
+        margin-top: 12px;
+        padding: 8px;
+        background: #edf3f9;
+      }
+
+      .flow-tab {
+        min-height: 58px;
+        padding: 8px;
+        border: 1px solid transparent;
+        background: transparent;
+        color: #344054;
+        text-align: left;
+      }
+
+      .flow-tab span,
+      .flow-tab b { display: block; }
+
+      .flow-tab span {
+        margin-top: 2px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 750;
+      }
+
+      .flow-tab.active {
+        border-color: var(--blue);
+        background: white;
+        color: #1d4ed8;
+        box-shadow: inset 0 0 0 1px var(--blue);
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-columns: 360px minmax(0, 1fr);
+        gap: 0;
+        margin-top: 12px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+      }
+
+      .sidebar {
+        padding: 16px;
+        border-right: 1px solid var(--line);
+        background: #f2f6fb;
+      }
+
+      .content {
+        min-width: 0;
+        padding: 16px;
+        background: white;
+      }
+
+      .panel {
+        padding: 14px;
+      }
+
+      .panel + .panel { margin-top: 12px; }
+
+      .source-line {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .source-line a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 34px;
+        padding: 6px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: white;
+        font-size: 13px;
+        font-weight: 850;
+        text-decoration: none;
+      }
+
+      .primary {
+        width: 100%;
+        margin-top: 12px;
+        padding: 0 14px;
+        background: var(--blue);
+        color: white;
+      }
+
+      .primary.saved {
+        background: var(--green);
+      }
+
+      .toast {
+        display: none;
+        margin-top: 10px;
+        padding: 9px 10px;
+        border: 1px solid #b9cdf6;
+        border-radius: 8px;
+        background: var(--soft-blue);
+        color: #1d4ed8;
+        font-size: 13px;
+        font-weight: 850;
+      }
+
+      .toast.show { display: block; }
+
+      .label {
+        margin-bottom: 7px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 950;
+      }
+
+      .date-input {
+        width: 100%;
+        min-height: 46px;
+        padding: 9px 10px;
+        border-color: var(--line-strong);
+      }
+
+      .groups,
+      .rows {
+        display: grid;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .group-button,
+      .row-button {
+        width: 100%;
+        padding: 10px;
+        color: #344054;
+        text-align: left;
+      }
+
+      .group-button {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        align-items: center;
+        background: white;
+      }
+
+      .group-button.active {
+        border-color: var(--blue);
+        background: var(--soft-blue);
+        color: #1d4ed8;
+        box-shadow: inset 0 0 0 1px var(--blue);
+      }
+
+      .group-button b,
+      .group-button span,
+      .row-main,
+      .row-sub { display: block; }
+
+      .group-button span,
+      .row-sub {
+        margin-top: 2px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 750;
+      }
+
+      .row-button {
+        display: grid;
+        grid-template-columns: 26px minmax(0, 1fr);
+        gap: 9px;
+        align-items: start;
+        background: var(--soft);
+      }
+
+      .row-button.active {
+        border-color: var(--blue);
+        background: var(--soft-blue);
+        box-shadow: inset 0 0 0 1px var(--blue);
+      }
+
+      .row-check {
+        width: 20px;
+        height: 20px;
+        min-height: 20px;
+        margin-top: 2px;
+        accent-color: var(--blue);
+      }
+
+      .row-main {
+        color: var(--text);
+        font-weight: 900;
+        overflow-wrap: anywhere;
+      }
+
+      .progress-bar {
+        height: 8px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #e6edf5;
+      }
+
+      .progress-fill {
+        height: 100%;
+        width: 0;
+        border-radius: 999px;
+        background: var(--blue);
+        transition: width 160ms ease;
+      }
+
+      .progress-text {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 8px;
+        color: #344054;
+        font-size: 14px;
+        font-weight: 850;
+      }
+
+      .detail-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: start;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 96px;
+        margin-top: 8px;
+        padding: 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 8px;
+        background: white;
+        color: var(--text);
+        resize: vertical;
+      }
+
+      .note {
+        margin-top: 12px;
+        padding: 11px;
+        background: var(--soft);
+        color: #344054;
+        font-size: 14px;
+      }
+
+      .note.warn {
+        border-color: #ebcd8a;
+        background: var(--soft-amber);
+        color: #7a4a00;
+      }
+
+      .empty {
+        padding: 14px;
+        border: 1px dashed var(--line-strong);
+        border-radius: 8px;
+        background: var(--soft);
+        color: var(--muted);
+        font-weight: 750;
+      }
+
+      @media (max-width: 1020px) {
+        .flow-nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .workspace { grid-template-columns: 1fr; }
+        .sidebar { border-right: 0; border-bottom: 1px solid var(--line); }
+      }
+
+      @media (max-width: 640px) {
+        .page {
+          width: min(100% - 20px, 1180px);
+          padding-top: 10px;
+        }
+
+        .topbar,
+        .hero,
+        .sidebar,
+        .content { padding: 14px; }
+
+        .flow-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+        .flow-tab {
+          min-height: 64px;
+          padding: 8px 7px;
+        }
+
+        .detail-head { display: block; }
+
+        .row-button {
+          grid-template-columns: 25px minmax(0, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <nav class="topbar" aria-label="FlowMe">
+        <a class="brand" href="#">FlowMe</a>
+        <button class="small-button" type="button" id="resetButton">체크 초기화</button>
+      </nav>
+
+      <header class="hero">
+        <p class="eyebrow">한글 원문을 내 실행 목록으로</p>
+        <h1>원문 목차를 그대로 가져와 체크하고 메모합니다</h1>
+        <p class="desc">
+          강의, 교재 목차, 공식 일정표처럼 이미 순서가 있는 원문을 내 진도표나 일정표로 저장합니다.
+          사용자는 항목을 완료 표시하고, 막힌 부분이나 확인할 URL만 짧게 남깁니다.
+        </p>
+        <div class="chips" aria-label="화면 기준">
+          <span class="chip blue">원문 항목 중심</span>
+          <span class="chip green">체크와 메모만 추가</span>
+          <span class="chip">필수 입력 최소화</span>
+          <span class="chip amber">건강 정보는 공식 확인</span>
+        </div>
+      </header>
+
+      <nav class="flow-nav" id="flowTabs" aria-label="원문 선택"></nav>
+
+      <section class="workspace" aria-label="내 실행 지도">
+        <aside class="sidebar">
+          <section class="panel" id="sourcePanel"></section>
+          <section class="panel" id="groupPanel"></section>
+        </aside>
+
+        <section class="content">
+          <section class="panel" id="progressPanel"></section>
+          <section class="panel" id="rowPanel"></section>
+          <section class="panel" id="detailPanel"></section>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      const flows = [
+        {
+          id: "web1",
+          tab: "WEB1",
+          kind: "강의 진도",
+          title: "생활코딩 WEB1 HTML & Internet",
+          summary: "WEB1 강의 목차를 내 진도표로 저장합니다. 각 항목은 강의 완료 여부와 막힌 부분 메모만 남깁니다.",
+          sourceName: "생활코딩 WEB1",
+          sourceUrl: "https://opentutorials.org/course/3084",
+          extraSources: [
+            { label: "YouTube 목록", url: "https://www.youtube.com/playlist?list=PLuHgQVnccGMDZP7FJ_ZsUrdCGH68ppvPb" }
+          ],
+          input: null,
+          memoLabel: "막힌 부분 메모",
+          memoPlaceholder: "예: img 속성 다시 보기, GitHub Pages 배포에서 막힘",
+          groups: [
+            {
+              title: "시작",
+              rows: [
+                { title: "수업소개", detail: "WEB1에서 다루는 전체 방향을 확인합니다." },
+                { title: "How this project started", detail: "수업이 어떤 문제에서 출발했는지 봅니다." },
+                { title: "Product Design", detail: "만들 웹페이지의 형태를 먼저 잡습니다." },
+                { title: "Coding and HTML", detail: "코딩과 HTML의 관계를 확인합니다." }
+              ]
+            },
+            {
+              title: "HTML 기본",
+              rows: [
+                { title: "HTML 코딩과 실습환경 준비", detail: "실습할 편집기와 파일 구조를 준비합니다." },
+                { title: "기본문법 태그", detail: "태그의 기본 형태를 봅니다." },
+                { title: "줄바꿈", detail: "줄바꿈 관련 태그를 확인합니다." },
+                { title: "HTML이 중요한 이유", detail: "HTML을 의미 있게 써야 하는 이유를 봅니다." },
+                { title: "최후의 문법 속성과 img", detail: "속성과 이미지 태그를 실습합니다." },
+                { title: "부모 자식과 목록", detail: "목록 구조와 중첩 관계를 확인합니다." }
+              ]
+            },
+            {
+              title: "웹사이트와 서버",
+              rows: [
+                { title: "문서의 구조", detail: "HTML 문서의 기본 구조를 정리합니다." },
+                { title: "HTML 태그의 제왕", detail: "링크 태그와 웹의 연결 방식을 봅니다." },
+                { title: "웹사이트 완성", detail: "여러 페이지를 연결해 웹사이트 형태로 만듭니다." },
+                { title: "원시웹", detail: "웹의 기본 아이디어를 이해합니다." },
+                { title: "서버와 클라이언트", detail: "인터넷에서 웹페이지가 보이는 방식을 봅니다." },
+                { title: "웹호스팅 GitHub Pages", detail: "완성한 페이지를 공개합니다." }
+              ]
+            }
+          ]
+        },
+        {
+          id: "nomad",
+          tab: "바닐라 JS",
+          kind: "프로젝트 강의",
+          title: "노마드코더 바닐라 JS로 크롬 앱 만들기",
+          summary: "강의 섹션과 구현 기능을 따라가며 완료 여부, 배포 URL, 막힌 개념만 관리합니다.",
+          sourceName: "노마드코더 강의 로비",
+          sourceUrl: "https://nomadcoders.co/javascript-for-beginners/lobby",
+          extraSources: [],
+          input: null,
+          memoLabel: "실습 URL 또는 막힌 개념",
+          memoPlaceholder: "예: localStorage 저장은 됨, weather API 키 확인 필요",
+          groups: [
+            {
+              title: "Introduction",
+              rows: [
+                { title: "#1.0 Welcome", detail: "강의 시작과 진행 방식을 확인합니다." },
+                { title: "#1.1 What Are We Building", detail: "만들 결과물을 확인합니다." },
+                { title: "#1.2 Requirements", detail: "수강 전 필요한 조건을 확인합니다." },
+                { title: "#1.3 Software Requirements", detail: "실습에 필요한 도구를 준비합니다." },
+                { title: "#1.4 Why JS", detail: "자바스크립트를 쓰는 이유를 봅니다." }
+              ]
+            },
+            {
+              title: "Javascript Basics",
+              rows: [
+                { title: "#2 Welcome to Javascript", detail: "자바스크립트 기본 흐름을 시작합니다." },
+                { title: "Variables", detail: "변수 선언과 값을 다룹니다." },
+                { title: "Data Types", detail: "문자, 숫자, 배열, 객체 같은 데이터 형태를 봅니다." },
+                { title: "Functions", detail: "함수로 코드를 묶는 방식을 봅니다." },
+                { title: "if / else / for", detail: "조건과 반복을 확인합니다." }
+              ]
+            },
+            {
+              title: "Chrome App",
+              rows: [
+                { title: "Login", detail: "브라우저에서 사용자 이름을 다루는 흐름을 만듭니다." },
+                { title: "Clock", detail: "현재 시간을 화면에 표시합니다." },
+                { title: "Quotes and Background", detail: "문구와 배경을 바꿉니다." },
+                { title: "To Do List", detail: "할 일을 추가하고 저장합니다." },
+                { title: "Weather", detail: "위치와 날씨 정보를 붙입니다." },
+                { title: "Deploy to Github Pages", detail: "완성본을 공개합니다." }
+              ]
+            }
+          ]
+        },
+        {
+          id: "ebsMath",
+          tab: "중1 수학",
+          kind: "교과 진도",
+          title: "EBS 중학 뉴런 수학1(상)",
+          summary: "EBS 강의 목록을 진도표로 저장합니다. 문제 풀이와 복습 메모는 선택한 강의 안에 짧게 남깁니다.",
+          sourceName: "EBS 중학 뉴런 수학1(상)",
+          sourceUrl: "https://mid.ebs.co.kr/course/view?courseId=100005139",
+          extraSources: [],
+          input: null,
+          memoLabel: "오답 또는 복습 메모",
+          memoPlaceholder: "예: 좌표평면 문제에서 x/y축 표시 실수, 13강 다시 보기",
+          groups: [
+            {
+              title: "Ⅰ-1 중단원 마무리",
+              rows: [
+                { title: "08강 Ⅰ-1 중단원 마무리 (1)", detail: "EBS 강의 목록에 있는 중단원 마무리 강의입니다." },
+                { title: "09강 Ⅰ-1 중단원 마무리 (2), 서술형으로 중단원 마무리", detail: "서술형까지 이어지는 마무리 강의입니다." }
+              ]
+            },
+            {
+              title: "정수와 유리수",
+              rows: [
+                { title: "10강 01 정수와 유리수 (1)", detail: "정수와 유리수 첫 강의입니다." },
+                { title: "11강 01 정수와 유리수 (2)", detail: "정수와 유리수 두 번째 강의입니다." }
+              ]
+            },
+            {
+              title: "수의 대소 관계",
+              rows: [
+                { title: "12강 02 수의 대소 관계 (1)", detail: "수의 대소 관계 첫 강의입니다." },
+                { title: "13강 02 수의 대소 관계 (2)", detail: "수의 대소 관계 두 번째 강의입니다." },
+                { title: "14강 Ⅱ-1 중단원 마무리 (1)", detail: "다음 단원의 중단원 마무리 강의입니다." },
+                { title: "15강 Ⅱ-1 중단원 마무리 (2)", detail: "중단원 마무리 두 번째 강의입니다." }
+              ]
+            }
+          ]
+        },
+        {
+          id: "computer",
+          tab: "컴활 1급",
+          kind: "자격증 목차",
+          title: "이기적 컴퓨터활용능력 1급 필기",
+          summary: "교재 목차의 Part와 Chapter를 내 진도표로 저장합니다. 시험 일정은 강제로 묻지 않고, 필요할 때 메모에 남깁니다.",
+          sourceName: "YES24 도서 목차",
+          sourceUrl: "https://www.yes24.com/product/goods/147569004",
+          extraSources: [
+            { label: "필기 강의 목록", url: "https://www.youtube.com/playlist?list=PL6i7rGeEmTvosRzYV_2LCCA63298gNArr" }
+          ],
+          input: null,
+          memoLabel: "암기/오답 메모",
+          memoPlaceholder: "예: 스프레드시트 함수 파트 약함, 데이터베이스 용어 다시 보기",
+          groups: [
+            {
+              title: "Part 1 컴퓨터 일반",
+              rows: [
+                { title: "운영체제 사용", detail: "교재 목차 Part 1의 Chapter입니다." },
+                { title: "컴퓨터 시스템 설정 변경", detail: "시스템 설정 관련 Chapter입니다." },
+                { title: "컴퓨터 시스템 관리", detail: "시스템 관리 관련 Chapter입니다." },
+                { title: "인터넷 자료 활용", detail: "인터넷 자료 활용 Chapter입니다." },
+                { title: "컴퓨터 시스템 보호", detail: "보호와 보안 관련 Chapter입니다." }
+              ]
+            },
+            {
+              title: "Part 2 스프레드시트 일반",
+              rows: [
+                { title: "스프레드시트 개요", detail: "스프레드시트 기본 개념 Chapter입니다." },
+                { title: "데이터 입력 및 편집", detail: "입력과 편집 Chapter입니다." },
+                { title: "수식 활용", detail: "수식 활용 Chapter입니다." },
+                { title: "데이터 관리 및 분석", detail: "데이터 관리와 분석 Chapter입니다." },
+                { title: "출력", detail: "출력 관련 Chapter입니다." },
+                { title: "차트 생성 및 수정", detail: "차트 관련 Chapter입니다." },
+                { title: "매크로 및 프로그래밍", detail: "매크로와 프로그래밍 Chapter입니다." }
+              ]
+            },
+            {
+              title: "Part 3 데이터베이스 일반",
+              rows: [
+                { title: "데이터베이스 개요", detail: "데이터베이스 기본 개념 Chapter입니다." },
+                { title: "테이블과 관계", detail: "데이터베이스 구성 요소를 정리합니다." },
+                { title: "쿼리와 폼", detail: "조회와 입력 화면 관련 항목입니다." },
+                { title: "보고서와 출력", detail: "보고서 작성과 출력 항목입니다." }
+              ]
+            }
+          ]
+        },
+        {
+          id: "checkup",
+          tab: "영유아 검진",
+          kind: "공식 일정",
+          title: "영유아 건강검진 일정",
+          summary: "아이 생년월일로 검진 차수의 예상 기간을 확인하고, 예약/문진표/방문 메모를 남깁니다.",
+          sourceName: "국립재활원 영유아 건강검진",
+          sourceUrl: "https://www.nrc.go.kr/portal/html/content.do?depth=ph&menu_cd=03_02_00_04",
+          extraSources: [
+            { label: "질병관리청 건강정보", url: "https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=131" },
+            { label: "서울 어린이병원 안내", url: "https://childhosp.seoul.go.kr/medical-info/health-medical-examination" }
+          ],
+          input: { label: "아이 생년월일", type: "date", defaultValue: "2025-12-18" },
+          memoLabel: "예약/문진표 메모",
+          memoPlaceholder: "예: 4차 검진 예약 완료, 문진표 작성 전, 치과 동시예약 확인",
+          caution: "검진 대상 여부와 세부 항목은 국민건강보험/의료기관에서 다시 확인합니다.",
+          groups: [
+            {
+              title: "건강검진",
+              rows: [
+                { title: "1차 건강검진", detail: "생후 14~35일", range: { daysFrom: 14, daysTo: 35 } },
+                { title: "2차 건강검진", detail: "생후 4~6개월", range: { monthsFrom: 4, monthsTo: 6 } },
+                { title: "3차 건강검진", detail: "생후 9~12개월", range: { monthsFrom: 9, monthsTo: 12 } },
+                { title: "4차 건강검진", detail: "생후 18~24개월", range: { monthsFrom: 18, monthsTo: 24 } },
+                { title: "5차 건강검진", detail: "생후 30~36개월", range: { monthsFrom: 30, monthsTo: 36 } },
+                { title: "6차 건강검진", detail: "생후 42~48개월", range: { monthsFrom: 42, monthsTo: 48 } },
+                { title: "7차 건강검진", detail: "생후 54~60개월", range: { monthsFrom: 54, monthsTo: 60 } },
+                { title: "8차 건강검진", detail: "생후 66~71개월", range: { monthsFrom: 66, monthsTo: 71 } }
+              ]
+            },
+            {
+              title: "구강검진",
+              rows: [
+                { title: "1차 구강검진", detail: "생후 18~29개월", range: { monthsFrom: 18, monthsTo: 29 } },
+                { title: "2차 구강검진", detail: "생후 30~41개월", range: { monthsFrom: 30, monthsTo: 41 } },
+                { title: "3차 구강검진", detail: "생후 42~53개월", range: { monthsFrom: 42, monthsTo: 53 } },
+                { title: "4차 구강검진", detail: "생후 54~65개월", range: { monthsFrom: 54, monthsTo: 65 } }
+              ]
+            }
+          ]
+        },
+        {
+          id: "vaccine",
+          tab: "예방접종",
+          kind: "공식 일정",
+          title: "어린이 표준 예방접종 일정",
+          summary: "표준 예방접종 일정표를 월령별 확인 목록으로 저장합니다. 접종 판단은 하지 않고 공식 일정 확인과 병원 문의 메모만 남깁니다.",
+          sourceName: "질병관리청 표준 예방접종 일정표",
+          sourceUrl: "https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&menuLv=1",
+          extraSources: [
+            { label: "아이 예방접종 일정보기", url: "https://nip.kdca.go.kr/irhp/mngm/goVcntMngm.do?menuCd=313&menuLv=3" }
+          ],
+          input: { label: "아이 생년월일", type: "date", defaultValue: "2025-12-18" },
+          memoLabel: "기관 확인/접종 메모",
+          memoPlaceholder: "예: NIP 일정보기에서 확인, 위탁의료기관 전화 예정, 접종수첩 확인",
+          caution: "접종 가능 여부와 지연접종 일정은 의료기관에서 확인합니다.",
+          groups: [
+            {
+              title: "영아기",
+              rows: [
+                { title: "출생 시 접종 항목 확인", detail: "출생 시 표준 일정 확인", range: { daysFrom: 0, daysTo: 0 } },
+                { title: "생후 4주 이내 항목 확인", detail: "BCG 등 4주 이내 표준 일정 확인", range: { daysFrom: 0, daysTo: 28 } },
+                { title: "생후 1개월 항목 확인", detail: "1개월 표준 일정 확인", range: { monthsFrom: 1, monthsTo: 1 } },
+                { title: "생후 2개월 항목 확인", detail: "2개월 표준 일정 확인", range: { monthsFrom: 2, monthsTo: 2 } },
+                { title: "생후 4개월 항목 확인", detail: "4개월 표준 일정 확인", range: { monthsFrom: 4, monthsTo: 4 } },
+                { title: "생후 6개월 항목 확인", detail: "6개월 표준 일정 확인", range: { monthsFrom: 6, monthsTo: 6 } }
+              ]
+            },
+            {
+              title: "돌 이후",
+              rows: [
+                { title: "생후 12개월 항목 확인", detail: "12개월 표준 일정 확인", range: { monthsFrom: 12, monthsTo: 12 } },
+                { title: "생후 15~18개월 항목 확인", detail: "15~18개월 표준 일정 확인", range: { monthsFrom: 15, monthsTo: 18 } },
+                { title: "생후 19~23개월 항목 확인", detail: "19~23개월 표준 일정 확인", range: { monthsFrom: 19, monthsTo: 23 } },
+                { title: "생후 24~35개월 항목 확인", detail: "24~35개월 표준 일정 확인", range: { monthsFrom: 24, monthsTo: 35 } }
+              ]
+            },
+            {
+              title: "학령 전후",
+              rows: [
+                { title: "만 4~6세 항목 확인", detail: "4~6세 표준 일정 확인", range: { monthsFrom: 48, monthsTo: 72 } },
+                { title: "만 11~12세 항목 확인", detail: "11~12세 표준 일정 확인", range: { monthsFrom: 132, monthsTo: 156 } }
+              ]
+            }
+          ]
+        }
+      ];
+
+      const state = {
+        flowId: flows[0].id,
+        groupIndex: 0,
+        rowIndex: 0,
+        saved: {},
+        checked: {},
+        memo: {},
+        inputValues: {}
+      };
+
+      const $ = (id) => document.getElementById(id);
+
+      function currentFlow() {
+        return flows.find((flow) => flow.id === state.flowId);
+      }
+
+      function currentGroup() {
+        return currentFlow().groups[state.groupIndex];
+      }
+
+      function currentRow() {
+        return currentGroup().rows[state.rowIndex];
+      }
+
+      function rowKey(flow = currentFlow(), groupIndex = state.groupIndex, rowIndex = state.rowIndex) {
+        return `${flow.id}:${groupIndex}:${rowIndex}`;
+      }
+
+      function allRows(flow) {
+        return flow.groups.flatMap((group, groupIndex) =>
+          group.rows.map((row, rowIndex) => ({ row, group, groupIndex, rowIndex }))
+        );
+      }
+
+      function completedCount(flow) {
+        return allRows(flow).filter((entry) => state.checked[rowKey(flow, entry.groupIndex, entry.rowIndex)]).length;
+      }
+
+      function formatDate(date) {
+        if (!date || Number.isNaN(date.getTime())) return "";
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, "0");
+        const dd = String(date.getDate()).padStart(2, "0");
+        return `${yyyy}. ${mm}. ${dd}.`;
+      }
+
+      function addDays(date, days) {
+        const next = new Date(date);
+        next.setDate(next.getDate() + days);
+        return next;
+      }
+
+      function addMonths(date, months) {
+        const next = new Date(date);
+        next.setMonth(next.getMonth() + months);
+        return next;
+      }
+
+      function dateRangeText(flow, row) {
+        if (!row.range || !flow.input) return "";
+        const value = state.inputValues[flow.id] || flow.input.defaultValue;
+        if (!value) return row.detail;
+        const birth = new Date(`${value}T00:00:00`);
+        if (Number.isNaN(birth.getTime())) return row.detail;
+        const from = row.range.daysFrom !== undefined ? addDays(birth, row.range.daysFrom) : addMonths(birth, row.range.monthsFrom);
+        const to = row.range.daysTo !== undefined ? addDays(birth, row.range.daysTo) : addMonths(birth, row.range.monthsTo);
+        return `${formatDate(from)} ~ ${formatDate(to)}`;
+      }
+
+      function renderTabs() {
+        $("flowTabs").innerHTML = flows.map((flow) => {
+          const active = flow.id === state.flowId ? " active" : "";
+          return `
+            <button class="flow-tab${active}" type="button" data-flow="${flow.id}">
+              <b>${flow.tab}</b>
+              <span>${flow.kind}</span>
+            </button>
+          `;
+        }).join("");
+
+        document.querySelectorAll(".flow-tab").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.flowId = button.dataset.flow;
+            state.groupIndex = 0;
+            state.rowIndex = 0;
+            render();
+          });
+        });
+      }
+
+      function renderSource() {
+        const flow = currentFlow();
+        if (flow.input && !state.inputValues[flow.id]) state.inputValues[flow.id] = flow.input.defaultValue;
+        $("sourcePanel").innerHTML = `
+          <p class="label">${flow.kind}</p>
+          <h2>${flow.title}</h2>
+          <p class="desc">${flow.summary}</p>
+          ${flow.input ? `
+            <div style="margin-top:12px">
+              <label class="label" for="flowInput">${flow.input.label}</label>
+              <input class="date-input" id="flowInput" type="${flow.input.type}" value="${state.inputValues[flow.id] || ""}" />
+            </div>
+          ` : ""}
+          <button class="primary${state.saved[flow.id] ? " saved" : ""}" type="button" id="saveButton">
+            ${state.saved[flow.id] ? "내 Flow에 저장됨" : "내 Flow에 저장"}
+          </button>
+          <div class="toast${state.saved[flow.id] ? " show" : ""}" id="saveToast">전체 목록이 내 Flow에 들어갔습니다. 각 항목은 체크와 메모만 남깁니다.</div>
+          <div class="source-line">
+            <a href="${flow.sourceUrl}" target="_blank" rel="noreferrer">원문 보기</a>
+            ${flow.extraSources.map((source) => `<a href="${source.url}" target="_blank" rel="noreferrer">${source.label}</a>`).join("")}
+          </div>
+          ${flow.caution ? `<div class="note warn">${flow.caution}</div>` : ""}
+        `;
+
+        const input = $("flowInput");
+        if (input) {
+          input.addEventListener("input", (event) => {
+            state.inputValues[flow.id] = event.target.value;
+            renderRows();
+            renderDetail();
+          });
+        }
+
+        $("saveButton").addEventListener("click", () => {
+          state.saved[flow.id] = !state.saved[flow.id];
+          renderSource();
+        });
+      }
+
+      function renderGroups() {
+        const flow = currentFlow();
+        $("groupPanel").innerHTML = `
+          <p class="label">전체 지도</p>
+          <div class="groups">
+            ${flow.groups.map((group, index) => {
+              const done = group.rows.filter((_, rowIndex) => state.checked[rowKey(flow, index, rowIndex)]).length;
+              const active = index === state.groupIndex ? " active" : "";
+              return `
+                <button class="group-button${active}" type="button" data-group="${index}">
+                  <span>
+                    <b>${group.title}</b>
+                    <span>${group.rows.length}개 항목</span>
+                  </span>
+                  <span class="chip">${done}/${group.rows.length}</span>
+                </button>
+              `;
+            }).join("")}
+          </div>
+        `;
+
+        document.querySelectorAll(".group-button").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.groupIndex = Number(button.dataset.group);
+            state.rowIndex = 0;
+            render();
+          });
+        });
+      }
+
+      function renderProgress() {
+        const flow = currentFlow();
+        const total = allRows(flow).length;
+        const done = completedCount(flow);
+        const percent = total ? Math.round((done / total) * 100) : 0;
+        $("progressPanel").innerHTML = `
+          <div class="progress-text">
+            <span>전체 진행</span>
+            <span>${done}/${total} 완료</span>
+          </div>
+          <div class="progress-bar" aria-label="전체 진행률">
+            <div class="progress-fill" style="width:${percent}%"></div>
+          </div>
+        `;
+      }
+
+      function renderRows() {
+        const flow = currentFlow();
+        const group = currentGroup();
+        $("rowPanel").innerHTML = `
+          <p class="label">${group.title}</p>
+          <div class="rows">
+            ${group.rows.map((row, index) => {
+              const key = rowKey(flow, state.groupIndex, index);
+              const active = index === state.rowIndex ? " active" : "";
+              const checked = state.checked[key] ? " checked" : "";
+              const sub = dateRangeText(flow, row) || row.detail;
+              return `
+                <button class="row-button${active}" type="button" data-row="${index}">
+                  <input class="row-check" type="checkbox" data-check="${index}"${checked} aria-label="${row.title} 완료" />
+                  <span>
+                    <span class="row-main">${row.title}</span>
+                    <span class="row-sub">${sub}</span>
+                  </span>
+                </button>
+              `;
+            }).join("")}
+          </div>
+        `;
+
+        document.querySelectorAll(".row-button").forEach((button) => {
+          button.addEventListener("click", (event) => {
+            if (event.target.matches("input")) return;
+            state.rowIndex = Number(button.dataset.row);
+            renderRows();
+            renderDetail();
+          });
+        });
+
+        document.querySelectorAll(".row-check").forEach((input) => {
+          input.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const index = Number(input.dataset.check);
+            const key = rowKey(flow, state.groupIndex, index);
+            state.checked[key] = input.checked;
+            state.rowIndex = index;
+            render();
+          });
+        });
+      }
+
+      function renderDetail() {
+        const flow = currentFlow();
+        const group = currentGroup();
+        const row = currentRow();
+        const key = rowKey();
+        const checked = state.checked[key] ? " checked" : "";
+        const sub = dateRangeText(flow, row) || row.detail;
+        $("detailPanel").innerHTML = `
+          <div class="detail-head">
+            <div>
+              <p class="label">선택 항목</p>
+              <h3>${row.title}</h3>
+              <p class="desc">${sub}</p>
+            </div>
+            <span class="chip blue">${group.title}</span>
+          </div>
+          <label class="row-button" style="margin-top:12px" for="detailDone">
+            <input class="row-check" id="detailDone" type="checkbox"${checked} />
+            <span>
+              <span class="row-main">이 항목 완료</span>
+              <span class="row-sub">나중에 다시 볼 내용은 아래 메모에 남깁니다.</span>
+            </span>
+          </label>
+          <label class="label" for="rowMemo" style="display:block;margin-top:14px">${flow.memoLabel}</label>
+          <textarea id="rowMemo" placeholder="${flow.memoPlaceholder}">${state.memo[key] || ""}</textarea>
+          <div class="note">
+            원문 항목은 바꾸지 않고, 완료 체크와 메모만 남깁니다.
+            자세한 설명은 <a href="${flow.sourceUrl}" target="_blank" rel="noreferrer">${flow.sourceName}</a>에서 확인합니다.
+          </div>
+        `;
+
+        $("detailDone").addEventListener("change", (event) => {
+          state.checked[key] = event.target.checked;
+          render();
+        });
+
+        $("rowMemo").addEventListener("input", (event) => {
+          state.memo[key] = event.target.value;
+        });
+      }
+
+      function render() {
+        renderTabs();
+        renderSource();
+        renderGroups();
+        renderProgress();
+        renderRows();
+        renderDetail();
+      }
+
+      $("resetButton").addEventListener("click", () => {
+        state.checked = {};
+        state.memo = {};
+        render();
+      });
+
+      render();
+    </script>
+  </body>
+</html>

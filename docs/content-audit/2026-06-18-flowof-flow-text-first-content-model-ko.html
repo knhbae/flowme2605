@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Flow of Flow 텍스트 우선 컨텐츠 모델</title>
+    <style>
+      :root {
+        --bg: #eef3f8;
+        --panel: #ffffff;
+        --soft: #f7fafc;
+        --line: #d8e1eb;
+        --text: #111827;
+        --muted: #536174;
+        --blue: #2563eb;
+        --blue-soft: #eaf1ff;
+        --green: #0f766e;
+        --green-soft: #e8f6f3;
+        --amber: #b45309;
+        --amber-soft: #fff5df;
+        --red: #b91c1c;
+        --red-soft: #fff1f2;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      a { color: var(--blue); font-weight: 850; }
+
+      .page {
+        width: min(1120px, 100%);
+        margin: 0 auto;
+        padding: 16px;
+      }
+
+      .hero,
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px;
+        margin-bottom: 12px;
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 950;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 10px;
+        font-size: clamp(30px, 5vw, 46px);
+        line-height: 1.08;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      h2 {
+        margin-bottom: 10px;
+        font-size: 23px;
+        line-height: 1.24;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      h3 {
+        margin-bottom: 8px;
+        font-size: 17px;
+        line-height: 1.35;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      .desc,
+      .small,
+      li {
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 6px 10px;
+        border: 1px solid #b8c7d9;
+        border-radius: 999px;
+        background: var(--soft);
+        color: #263346;
+        font-size: 13px;
+        font-weight: 850;
+      }
+
+      .chip.blue { background: var(--blue-soft); border-color: #b8cdfb; color: #1d4ed8; }
+      .chip.green { background: var(--green-soft); border-color: #b9ded8; color: var(--green); }
+      .chip.amber { background: var(--amber-soft); border-color: #f5d393; color: var(--amber); }
+      .chip.red { background: var(--red-soft); border-color: #fecdd3; color: var(--red); }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .box,
+      pre,
+      table {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--soft);
+      }
+
+      .box {
+        padding: 13px;
+      }
+
+      pre {
+        margin: 0;
+        padding: 13px;
+        overflow: auto;
+        white-space: pre-wrap;
+        color: #263346;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        overflow: hidden;
+      }
+
+      th,
+      td {
+        padding: 10px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      th {
+        background: #f0f5fb;
+        color: #263346;
+      }
+
+      tr:last-child td { border-bottom: 0; }
+
+      .callout {
+        border-left: 4px solid var(--blue);
+        background: var(--blue-soft);
+      }
+
+      .danger {
+        border-left: 4px solid var(--red);
+        background: var(--red-soft);
+      }
+
+      @media (max-width: 760px) {
+        .page { padding: 10px; }
+        .hero,
+        .card { padding: 14px; }
+        h1 { font-size: 30px; }
+        .grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <p class="eyebrow">Text First</p>
+        <h1>UI 전에 확정해야 할 Flow of Flow 컨텐츠와 사용 행태</h1>
+        <p class="desc">최근 확장 PoC에서 입력 필드와 체크리스트가 원문보다 복잡해졌습니다. 이 문서는 화면을 만들기 전에, 원문에서 가져올 수 있는 행과 사용자가 실제로 남길 상태만 텍스트로 고정합니다.</p>
+        <div class="chips">
+          <span class="chip blue">UI 이전 단계</span>
+          <span class="chip green">원문 행 우선</span>
+          <span class="chip">상태와 메모만 추가</span>
+          <span class="chip amber">불필요 입력 제거</span>
+        </div>
+      </header>
+
+      <section class="card">
+        <p class="eyebrow">정정</p>
+        <h2>이번 PoC에서 잘못 들어간 것</h2>
+        <div class="grid">
+          <div class="box danger">
+            <h3>1. 진행 페이스 입력</h3>
+            <p class="desc">freeCodeCamp, Odin, Nomad 같은 진도형 콘텐츠에서 `진행 페이스`는 원문에서 온 값이 아닙니다. 사용자가 원하면 나중에 목표 날짜나 캘린더 계획을 추가할 수 있지만, Flow 생성 필수 입력이 되면 안 됩니다.</p>
+          </div>
+          <div class="box danger">
+            <h3>2. 가짜 실행 체크리스트</h3>
+            <p class="desc">`원문 열기`, `오늘 완료한 step 체크`, `막힌 메시지 메모`를 모두 체크리스트로 만들면 원문 레슨보다 Flow가 복잡해집니다. 진도형의 기본 행은 원문 레슨/프로젝트 자체여야 합니다.</p>
+          </div>
+          <div class="box danger">
+            <h3>3. Flow 리스트 안의 억지 프로세스</h3>
+            <p class="desc">Flow 리스트는 사용자가 무엇을 진행 중인지 보여주는 곳입니다. 모든 콘텐츠를 `준비-실행-메모` 프로세스로 바꾸면 Flow of Flow가 아니라 UI 패턴 복붙이 됩니다.</p>
+          </div>
+          <div class="box callout">
+            <h3>새 기준</h3>
+            <p class="desc">원문이 레슨 목록이면 레슨 행 + 상태 + 메모. 원문이 일차 프로그램이면 날짜/회차 + 완료 + 컨디션. 원문이 공식 케어 정보면 주차/연령 + 원문 확인 + 질문 메모입니다.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">공통 사용 행태</p>
+        <h2>사용자는 이렇게 쓴다고 봐야 함</h2>
+        <pre>1. 사용자가 원문 콘텐츠를 본다.
+   예: freeCodeCamp 인증 과정, Odin Foundations, Nomad JS 강의, NHS 임신 주차 가이드.
+
+2. 사용자는 전체 묶음 또는 일부 묶음을 저장한다.
+   전체 저장: 큰 지도와 모든 하위 행을 저장.
+   일부 저장: 지금 필요한 단원/섹션/주차만 저장.
+
+3. 내 Flow에는 큰 지도와 현재 위치가 보인다.
+   사용자가 보고 싶은 것은 "지금 어디까지 했고 다음이 무엇인가"이다.
+
+4. 하위 Flow 상세에는 원문 행이 보인다.
+   진도형: 레슨/프로젝트 행.
+   루틴형: Day/Run/회차 행.
+   케어맵형: 주차/연령/공식 확인 행.
+
+5. 사용자가 남기는 것은 최소 상태뿐이다.
+   상태: 시작 전 / 진행 중 / 완료 / 보류.
+   메모: 막힌 지점, 다시 볼 원문 위치, 결과 URL, 병원에 물어볼 질문.
+
+6. 재방문하면 마지막 위치와 다음 행이 보인다.
+   FlowMe가 새 과제를 만들지 않고, 원문의 다음 행으로 돌아오게 한다.</pre>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">유형 정의</p>
+        <h2>Flow of Flow 컨텐츠 타입</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>타입</th>
+              <th>상위 Flow</th>
+              <th>하위 Flow</th>
+              <th>사용자가 직접 남기는 것</th>
+              <th>UI에서 만들면 안 되는 것</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>진도형</td>
+              <td>인증 과정, 강좌, 커리큘럼</td>
+              <td>단원, 섹션, 레슨 목록</td>
+              <td>상태, 짧은 메모, 결과 URL</td>
+              <td>원문에 없는 공부 루틴, 진행 페이스 필수 입력</td>
+            </tr>
+            <tr>
+              <td>프로젝트 진도형</td>
+              <td>프로젝트 기반 과정</td>
+              <td>lesson/project 묶음</td>
+              <td>완료 상태, 저장소 URL, 막힌 오류</td>
+              <td>프로젝트를 다시 쪼갠 임의 프로세스</td>
+            </tr>
+            <tr>
+              <td>루틴/챌린지형</td>
+              <td>30일 프로그램, 9주 계획</td>
+              <td>Day, Week, Run</td>
+              <td>날짜, 완료, 컨디션 메모</td>
+              <td>영상에 없는 동작 체크리스트</td>
+            </tr>
+            <tr>
+              <td>케어맵형</td>
+              <td>공식 주차/연령 지도</td>
+              <td>주차, 연령 구간, 방문 전 확인</td>
+              <td>원문 확인, 질문 메모, 예약 메모</td>
+              <td>의료 판단, 권장/금기 결론, AI 설명 보강</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">Flow Content Draft 1</p>
+        <h2>freeCodeCamp Responsive Web Design</h2>
+        <p class="desc">원문: <a href="https://www.freecodecamp.org/learn/responsive-web-design">freeCodeCamp Responsive Web Design</a></p>
+        <pre>Source shape:
+- Certification course.
+- Lesson/project rows are the source of truth.
+- FlowMe should not invent "open/complete/memo" as separate checklist rows.
+
+User job:
+- "내가 인증 과정에서 어디까지 했고, 막힌 레슨/프로젝트가 무엇인지 보고 싶다."
+
+Natural artifact:
+- Progress table.
+- Optional project result URL.
+
+Required input:
+- 없음.
+- 선택 입력: 목표 완료일, 프로젝트 URL. 선택이지 필수 아님.
+
+Parent Flow:
+Title: Responsive Web Design Certification
+Rows:
+1. Learn HTML by Building a Cat Photo App
+2. Learn Basic CSS by Building a Cafe Menu
+3. Learn CSS Colors by Building a Set of Colored Markers
+4. Learn HTML Forms by Building a Registration Form
+5. Responsive Web Design Projects
+
+Child Flow row shape:
+[원문 레슨/프로젝트명] [상태] [메모] [결과 URL optional] [원문 링크]
+
+Example rows:
+- Learn HTML by Building a Cat Photo App | 진행 중 | step 56 label/checkbox 다시 보기 | 원문 링크
+- Learn Basic CSS by Building a Cafe Menu | 시작 전 | - | 원문 링크
+- Build a Survey Form | 완료 | CodePen URL | 원문 링크
+
+Do not build:
+- "Cat Photo App 열기" 체크박스.
+- "오늘 완료한 step 체크" 체크박스.
+- "막힌 메시지 메모" 체크박스.
+이 셋은 행의 상태/메모/URL 필드일 뿐 별도 action item이 아님.</pre>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">Flow Content Draft 2</p>
+        <h2>The Odin Project Foundations</h2>
+        <p class="desc">원문: <a href="https://www.theodinproject.com/paths/foundations/courses/foundations">The Odin Project Foundations</a></p>
+        <pre>Source shape:
+- Course → section → lesson/project.
+- 원문에 Introduction, Prerequisites, Git Basics, HTML Foundations, CSS Foundations, Flexbox, JavaScript Basics, Conclusion이 있음.
+
+User job:
+- "lesson과 project가 섞인 긴 과정을 놓치지 않고 진행하고 싶다."
+
+Natural artifact:
+- Progress table + project URL/memo.
+
+Required input:
+- 없음.
+- 선택 입력: 내 GitHub 저장소 URL.
+
+Parent Flow:
+Title: Foundations
+Rows:
+1. Introduction
+2. Prerequisites
+3. Git Basics
+4. HTML Foundations
+5. CSS Foundations
+6. Flexbox
+7. JavaScript Basics
+8. Conclusion
+
+Child Flow example: HTML Foundations
+Rows:
+- Introduction to HTML and CSS | 상태 | 메모 | 원문 링크
+- Elements and Tags | 상태 | 메모 | 원문 링크
+- HTML Boilerplate | 상태 | 메모 | 원문 링크
+- Working with Text | 상태 | 메모 | 원문 링크
+- Lists | 상태 | 메모 | 원문 링크
+- Links and Images | 상태 | 메모 | 원문 링크
+- Project: Recipes | 상태 | GitHub URL | 원문 링크
+
+Do not build:
+- 설치/코딩/복습 같은 임의 3단계.
+- 모든 lesson에 같은 설명 문구 반복.</pre>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">Flow Content Draft 3</p>
+        <h2>노마드코더 바닐라 JS</h2>
+        <p class="desc">원문: <a href="https://nomadcoders.co/javascript-for-beginners/lobby">Nomad Coders Vanilla JS</a></p>
+        <pre>Source shape:
+- Course → numbered section → numbered lecture.
+- 원문에 #1 Introduction, #2 Welcome to Javascript, #3 Javascript on the Browser, #4 Login, #5 Clock, #6 Quotes and Background, #7 To Do List, #8 Weather가 있음.
+
+User job:
+- "강의를 어디까지 봤고 실습 코드가 어디 있는지 남기고 싶다."
+
+Natural artifact:
+- Course progress map.
+- Optional GitHub/Code URL memo.
+
+Required input:
+- 없음.
+- 선택 입력: 내 실습 저장소 URL.
+
+Parent Flow:
+Title: 바닐라 JS로 크롬 앱 만들기
+Rows:
+1. #1 Introduction
+2. #2 Welcome to Javascript
+3. #3 Javascript on the Browser
+4. #4 Login
+5. #5 Clock
+6. #6 Quotes and Background
+7. #7 To Do List
+8. #8 Weather
+
+Child Flow example: #4 Login
+Rows:
+- #4.0 Input Values | 상태 | 메모 | 원문 링크
+- #4.1 Form Submission | 상태 | 메모 | 원문 링크
+- #4.2 Events | 상태 | 메모 | 원문 링크
+- #4.4 Getting Username | 상태 | 메모 | 원문 링크
+- #4.5 Saving Username | 상태 | localStorage 막힘 | 원문 링크
+- #4.6 Loading Username | 상태 | 메모 | 원문 링크
+- #4.7 Super Recap | 상태 | 메모 | 원문 링크
+
+Do not build:
+- "오늘 강의 열기", "실습 코드 실행", "헷갈린 문법 메모"를 각각 체크박스로 만들지 않음.
+- 강의 행 자체에 상태/메모를 붙이면 충분함.</pre>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">Flow Content Draft 4</p>
+        <h2>EBS 중학 뉴런 수학1(상)</h2>
+        <p class="desc">원문: <a href="https://mid.ebs.co.kr/course/view?courseId=100005139">EBS 중학 뉴런 수학1(상)</a></p>
+        <pre>Source shape:
+- EBS 강좌.
+- 확인된 원문 정보: 수학, 중학 뉴런 수학1(상) - 개념책, 1학년, 강의수 56/55, 총 365일.
+
+현재 상태:
+- Flow of Flow 후보는 맞음.
+- 하지만 이 파일만으로 세부 강의/단원 행을 충분히 추출하지 못했음.
+- 따라서 UI 제작 전 강의 목록 행을 더 정확히 가져와야 함.
+
+User job:
+- "강좌의 세부 강의 목록을 보며 어느 강의를 봤고 어떤 문제를 틀렸는지 관리하고 싶다."
+
+Natural artifact:
+- Progress table + 오답 메모.
+
+Required input:
+- 없음.
+- 선택 입력: 시험 범위, 목표 완료일.
+
+Parent Flow:
+Title: EBS 중학 뉴런 수학1(상)
+Rows:
+- 원문 강의 목록을 그대로 가져와야 함.
+- 강의 목록이 추출되기 전에는 '소인수분해, 정수와 유리수...' 같은 단원을 확정 UI로 만들면 안 됨.
+
+Child Flow row shape:
+[원문 강의명] [상태] [오답 번호/교재 페이지] [복습 필요 여부] [원문 링크]
+
+Do not build:
+- 원문 강의 목록을 확인하지 않고 교과 단원을 임의 생성.
+- '하루 2강' 같은 진행 페이스 필수 입력.
+- 수학 개념 설명을 AI가 요약해서 제공.</pre>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">Flow Content Draft 5</p>
+        <h2>Yoga With Adriene 30 Days</h2>
+        <p class="desc">원문: <a href="https://do.yogawithadriene.com/30-days-of-yoga-daily-emails">Yoga With Adriene 30 Days FAQ</a></p>
+        <pre>Source shape:
+- 30 Days of Yoga series.
+- 원문은 daily practice video와 daily email을 제공한다고 설명함.
+- 각 시리즈 영상은 YouTube playlist에서 찾도록 안내함.
+
+현재 상태:
+- 프로그램형 Flow of Flow 가능성은 높음.
+- 하지만 특정 시리즈와 Day별 영상 URL/제목을 확정하지 않으면 하위 Flow를 완성할 수 없음.
+
+User job:
+- "30일 동안 오늘 볼 영상과 완료 여부, 몸 상태만 남기고 싶다."
+
+Natural artifact:
+- Calendar routine + daily completion log.
+
+Required input:
+- 시작일.
+- 선택 입력: 알림 시간.
+
+Parent Flow:
+Title: [선택한 시리즈명] 30 Days of Yoga
+Rows:
+- Day 1 video title | 날짜 | 상태 | 컨디션 메모 | YouTube URL
+- Day 2 video title | 날짜 | 상태 | 컨디션 메모 | YouTube URL
+- ...
+- Day 30 video title | 날짜 | 상태 | 컨디션 메모 | YouTube URL
+
+Do not build:
+- 영상에 없는 동작 체크리스트.
+- Week 1/2/3/4 내부 세부 내용 임의 생성.
+- 통증 판단이나 운동 강도 조언.
+
+UI 전 필요 작업:
+- 특정 30 Days 시리즈 하나 선택.
+- YouTube playlist에서 Day별 제목/URL 추출.
+- 그 뒤에야 사용자 화면을 만들 수 있음.</pre>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">Flow Content Draft 6</p>
+        <h2>NHS Pregnancy Week by Week</h2>
+        <p class="desc">원문: <a href="https://www.nhs.uk/best-start-in-life/pregnancy/week-by-week-guide-to-pregnancy/">NHS Week-by-week guide to pregnancy</a></p>
+        <pre>Source shape:
+- Official guide.
+- 원문 상위 구조: Weeks 4 to 12, Weeks 13 to 27, Weeks 28 to 41.
+- NHS는 주차별 정보와 이메일 신청을 제공함.
+
+User job:
+- "현재 주차의 공식 원문을 보고 병원에 물어볼 질문만 정리하고 싶다."
+
+Natural artifact:
+- Care map + source-check memo.
+
+Required input:
+- 현재 주차 또는 예정일 중 하나.
+- 선택 입력: 병원/상담처 메모.
+
+Parent Flow:
+Title: 임신 주차별 공식 확인 지도
+Rows:
+1. Weeks 4 to 12
+2. Weeks 13 to 27
+3. Weeks 28 to 41
+
+Child Flow row shape:
+[주차] [원문 확인 여부] [병원 질문 메모] [예약/상담 메모] [NHS 원문 링크]
+
+Example:
+- Week 12 | 확인 전 | 다음 검진 때 물어볼 질문 | 산부인과 예약 메모 | 원문 링크
+
+Do not build:
+- 증상 판단.
+- 준비물 확정 체크리스트.
+- 의료 조언 요약.
+- FlowMe가 "해야 한다/하지 말아야 한다"를 결정하는 문구.</pre>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">다음 UI 기준</p>
+        <h2>이 텍스트가 통과해야 화면을 만든다</h2>
+        <pre>1. 하위 Flow 행이 원문에서 온 것인가?
+   아니면 UI가 만든 가짜 프로세스인가?
+
+2. 필수 입력이 정말 Flow 생성에 필요한가?
+   진도형은 대체로 필수 입력이 없다.
+   루틴형은 시작일만 필요할 수 있다.
+   케어맵형은 현재 주차/생일/예정일 중 하나가 필요할 수 있다.
+
+3. 사용자가 체크하는 대상이 자연스러운가?
+   자연스러운 대상: 레슨, 프로젝트, Day 영상, Run, 주차, 공식 확인 항목.
+   부자연스러운 대상: 원문 열기, 메모하기, 확인하기 같은 UI 동작.
+
+4. 메모는 action item이 아니라 필드인가?
+   대부분 메모는 별도 체크리스트가 아니라 각 행의 optional field다.
+
+5. 화면 첫 진입에서 "지금 위치와 다음 행"만 보여도 충분한가?
+   충분하면 추가 카드, 상태 버튼, 진행 페이스 입력을 만들지 않는다.</pre>
+      </section>
+    </main>
+  </body>
+</html>

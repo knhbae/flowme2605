@@ -35,6 +35,306 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-06-24 - My Flow shows map update notices without auto-applying source changes
+
+**Decision:** Saved source-backed Flow Maps should be reassessed against the current map definition when My Flow loads. If the saved map is no longer up to date, My Flow shows a compact update notice in the Flow tab with the affected map, user-facing reason copy, a link back to the public map, and a temporary dismiss action for the same saved/current version pair. It does not automatically mutate saved Steps or checked state.
+
+**Reason:** Official or sensitive maps can change after a user has saved them. Silent mutation would undermine trust and could mix old user progress with new source rows. A notice keeps the execution surface simple while making update review visible.
+
+**Applies to:** `/my` Flow tab, source-backed saved Flow Maps, official/sensitive schedule maps, saved snapshot comparison, update review notice.
+
+**Reopen when:** users need to apply map updates from My Flow, compare old/new Step rows, or manage dismissed notices across devices/accounts.
+
+**Related docs:** [Source-backed Flow Map productization baseline](./specs/2026-06-24-source-backed-flow-map-productization/spec.md)
+
+### 2026-06-24 - My Flow Calendar shows scope filters only when they reduce crowding
+
+**Decision:** My Flow Calendar may expose a compact `전체 / 지도 / 일정 / 루틴` scope filter, but only when the current saved set actually mixes those row types. The filter changes calendar events and selected-date detail together. If a saved set is effectively one type, the filter stays hidden so a single timeline or schedule does not gain extra controls.
+
+**Reason:** Users need a way to reduce crowding when many saved Flows create schedule and routine rows in the same month. Always-visible category tabs make simple Flows feel heavier than calendar/reminder apps. Conditional filters keep dense calendars usable without turning Stage 0 My Flow into a project-management board.
+
+**Applies to:** `/my` Calendar tab, mixed saved inventories, schedule/routine display, source-backed maps mixed with regular saved Flows, mobile and desktop calendar surfaces.
+
+**Reopen when:** observed users still cannot find dated Steps in a mixed calendar, or high-volume usage needs search, category groups, or saved-map-only views beyond this compact filter.
+
+**Related docs:** [Source-backed Flow Map productization baseline](./specs/2026-06-24-source-backed-flow-map-productization/spec.md), [Flow execution types](./flow-rules/flow-execution-types.md)
+
+### 2026-06-24 - My Flow Calendar groups selected-date Steps by map or Flow
+
+**Decision:** In My Flow Calendar, the selected-date detail should group Step rows by saved Flow Map or Flow before listing individual Steps. A single-Flow map shows the map title once and hides duplicate Flow/progress chips inside the Step row. A multi-Flow map may keep compact child Flow/progress chips inside rows so the user can distinguish which child Flow owns each Step.
+
+**Reason:** A flat selected-date list becomes hard to read when several saved Flows or Flow Maps place Steps on the same date. Grouping keeps the hierarchy visible without adding global category tabs or turning the calendar into a project board. Hiding duplicate chips in single-Flow maps keeps the mobile card close to calendar/todo complexity.
+
+**Applies to:** `/my` Calendar tab, selected-date detail, source-backed saved Flow Maps, single-child and multi-child map display, mobile and desktop calendar detail.
+
+**Reopen when:** observed users cannot find a Step because it is nested under the group, or a high-volume calendar use case needs stronger filtering, search, or category views beyond selected-date grouping.
+
+**Related docs:** [Source-backed Flow Map productization baseline](./specs/2026-06-24-source-backed-flow-map-productization/spec.md), [Flow execution types](./flow-rules/flow-execution-types.md)
+
+### 2026-06-24 - My Flow groups multi-Flow maps before child Flow cards
+
+**Decision:** In My Flow `Flow별 보기`, a saved Flow Map with more than one child Flow should render as a lightweight map group before the child Flow cards. The group shows the map title, child Flow count, aggregate completion, and a map source link. Child Flow cards still own the next Step action and progress controls. Single-child maps may stay as a single Flow card with a map context chip instead of adding another wrapper.
+
+**Reason:** A flat list of child Flow cards made Flow Map content feel like unrelated Flows, especially on mobile after saving official schedule maps such as child health checkups plus vaccinations. The map group keeps hierarchy visible without turning My Flow into a heavy project-management board. Single-child maps do not need another visual level because the card already carries enough context.
+
+**Applies to:** `/my` Flow tab, source-backed saved Flow Maps, mobile and desktop Flow inventory, map context chips, and future multi-child creator packages.
+
+**Reopen when:** users cannot find child Flows inside a grouped map, or saved maps commonly contain heterogeneous child Flows that need separate grouping by execution type instead of parent map.
+
+**Related docs:** [Source-backed Flow Map productization baseline](./specs/2026-06-24-source-backed-flow-map-productization/spec.md), [Flow execution types](./flow-rules/flow-execution-types.md)
+
+### 2026-06-24 - Post-save My Flow screens stay confirmation-first
+
+**Decision:** After saving a public Flow Map into My Flow, the post-save surface should show a confirmation panel, the first actionable Step, and at most three Step previews per Flow. The full My Flow workspace, full Step list, calendar, and Flow inventory should open only after the user chooses a navigation action such as `Flow별 보기` or the flow-specific full-view button. Step detail should expand directly under the tapped Step and close when the same Step is tapped again.
+
+**Reason:** Showing the saved confirmation panel and the full My Flow workspace at the same time made mobile screens feel duplicated and hard to scan. A confirmation-first surface keeps the first action clear while still letting users move into full management when they are ready. Limiting previews prevents Flow Maps, especially progress maps with many source rows, from turning the save handoff into another long review page.
+
+**Applies to:** `/my?savedMap=...`, source-backed Flow Map save handoffs, My Flow post-save panels, mobile Step detail expansion, and future Flow Map save UX.
+
+**Reopen when:** observed users cannot find the full saved content from the confirmation panel, or analytics/session evidence shows users expect immediate full-list management directly after saving.
+
+**Related docs:** [Source-backed Flow Map productization baseline](./specs/2026-06-24-source-backed-flow-map-productization/spec.md), [My Flow before/after UX alignment](./specs/2026-05-28-my-flow-execution-hub/my-flow-before-after-ux-alignment.md)
+
+### 2026-06-24 - Progress Flow scheduling is optional and Step-level
+
+**Decision:** Progress-style Flow Maps, such as a curriculum or table-of-contents study map, should default to source-derived progress rows instead of requiring a calendar setup before save. A user may attach a date to an individual `Step` after saving, and only those dated Steps should appear in My Flow Calendar. Repeat settings should stay default-visible for routine Flows, not for reference/progress maps unless the source itself provides a cadence or the user explicitly opens a later bulk-scheduling tool.
+
+**Reason:** The middle-school math map is useful as a progress table, but forcing start date, weekday, pace, or repeating study sessions made earlier PoCs more complex than the source and felt like invented study coaching. Step-level optional dates preserve the calendar/reminder-level complexity the user wants while still answering how a no-date progress Flow can enter the calendar.
+
+**Applies to:** My Flow saved execution surfaces, source-backed progress/sheet Flow Maps, middle-school math Flow Map, future curriculum/course/source index conversions, calendar export/edit affordances, and Flow Map public save pages.
+
+**Reopen when:** observed users repeatedly need bulk scheduling for progress maps before they can start, or a creator source provides explicit weekly pacing/repetition that should be preserved as source-derived cadence.
+
+**Related docs:** [Flow execution types](./flow-rules/flow-execution-types.md), [Source-backed Flow Map productization baseline](./specs/2026-06-24-source-backed-flow-map-productization/spec.md)
+
+### 2026-06-24 - Creator source-row review stays separate from user execution
+
+**Decision:** Source-backed Flow Map creator pages should show how each source row becomes a generated Step and Item fallback before publishing. This review may show source/risk labels, readiness state, completion cues, memo hints, and source links, but it should not reuse My Flow execution controls or insert creator review notes into public/user screens.
+
+**Reason:** The product repeatedly became confusing when creator review, public save, My Flow execution, and internal critique were mixed. A creator needs source-to-Step traceability before editing or publishing, while users need a lightweight saved execution surface. Keeping creator source-row review separate preserves source fidelity without making My Flow feel like an admin/review dashboard.
+
+**Applies to:** `/flow-maps/[map]/creator`, source-backed publish package rows, creator publish checks, public Flow Map pages, My Flow saved execution surfaces, and future creator editor/version review work.
+
+**Reopen when:** real creator sessions show review is impossible without inline editing controls in the same surface, or observed users need source-row review details inside My Flow to execute saved maps correctly.
+
+**Related docs:** [Source-backed Flow Map productization baseline](./specs/2026-06-24-source-backed-flow-map-productization/spec.md), [Source-backed Step contract](./specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md)
+
+### 2026-06-24 - My Flow separates ready execution content from review and legacy content
+
+**Decision:** My Flow should render source-backed saved maps and real-source Flows as normal execution content, while `needs_review`, preview, and legacy/unclassified saved Flows are visually separated into a lower-confidence review section. The separation belongs primarily in the Flow inventory surface. Today and Calendar should stay execution-first and should not become review dashboards.
+
+**Reason:** Users need to know which saved content is ready to execute without reading internal review notes. A small badge inside the same card was not enough because review-needed and legacy content still looked equal to accepted source-backed content. A separate section keeps the main path simple while preserving access to older saved content.
+
+**Applies to:** `/my` Flow tab, saved Flow inventory sheet, source-backed public saves, readiness badges, preview/needs-review/legacy saved content, and future My Flow content lifecycle cleanup.
+
+**Reopen when:** observed users ignore the separated review section, or a formal content lifecycle/admin system provides a stronger readiness model that can replace the current lightweight grouping.
+
+**Related docs:** [Source-backed Flow Map productization baseline](./specs/2026-06-24-source-backed-flow-map-productization/spec.md), [My Flow before/after UX alignment](./specs/2026-05-28-my-flow-execution-hub/my-flow-before-after-ux-alignment.md)
+
+### 2026-06-24 - Flow Map save keeps compatibility snapshot and persistence record separate
+
+**Decision:** A public source-backed Flow Map save should keep writing the existing compatibility snapshot at `flow:map:saved:{mapId}` and also write a V1 productization record at `flow:map:persistence:{mapId}`. The snapshot remains the lightweight bridge consumed by current My Flow grouping. The persistence record carries schema version, source surface, readiness, update assessment, and child Flow bindings for later DB, update review, and creator workflow work.
+
+**Reason:** Replacing the current saved map snapshot would risk breaking the accepted My Flow surface. But the snapshot alone is not explicit enough for production persistence or future creator/source update handling. Keeping the two records separate lets the user surface stay simple while preserving enough structure for the next product slice.
+
+**Applies to:** `/flow-maps/[map]` public save, `SourceBackedFlowMapSaveButton`, source-backed adapter records, My Flow saved map grouping, future account/database persistence, and source update review.
+
+**Reopen when:** production persistence lands and the compatibility snapshot can be derived from, migrated into, or removed in favor of a durable database record.
+
+**Related docs:** [Source-backed Flow Map productization baseline](./specs/2026-06-24-source-backed-flow-map-productization/spec.md), [Source-backed Step contract](./specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md)
+
+### 2026-06-24 - Three source-backed Flow Maps define the productization baseline
+
+**Decision:** Before adding more Flow Map UI or more categories, use three representative source-backed Flow Maps as the productization baseline: `middle-school-math-1`, `baby-health-schedule`, and `moving-d30`. These cases cover progress/sheet, official schedule/calendar, and creator timeline/hybrid shapes. They should guide the next product code slice, but they are still internal PoC and automated-behavior evidence, not user validation.
+
+**Reason:** The recent work showed that user-facing My Flow can stay simple when source-backed maps preserve the source shape and save into Step-centered execution. It also showed that the product can drift quickly if every category gets a new custom UI or if review/creator commentary leaks into user screens. A three-case baseline keeps the next implementation grounded while avoiding another broad PoC loop.
+
+**Applies to:** `/flow-maps/[map]`, `/flow-maps/[map]/creator`, `/my`, source-backed map persistence, saved map snapshots, creator/public/review surface separation, and future source-backed category expansion.
+
+**Reopen when:** observed user sessions show one of the three cases is not a useful baseline, or the production persistence/editor model requires a different representative set before implementation.
+
+**Related docs:** [Source-backed Flow Map productization baseline](./specs/2026-06-24-source-backed-flow-map-productization/spec.md), [Source-backed Step contract](./specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md)
+
+### 2026-06-24 - Reference study maps preserve source topics as Step Items
+
+**Decision:** For reference or table-of-contents study sources, such as a math curriculum index, FlowMe should not invent coaching tasks like range planning, wrong-answer logging, or session routines unless the source provides them. Keep one source unit as a `Step`, and put the source's subtopic links or concept rows inside that Step as `Item` checks or text fallback. The user may add a short memo for concepts to revisit, but the default Flow should read like a progress table, not a study-management app.
+
+**Reason:** The first middle-school math Flow Map rendered correctly but felt artificial because every Step reused generic actions such as opening the source, marking today's range, and memoing wrong answers. The actual source is a curriculum/table-of-contents page with eight units and many subtopic links. Preserving those source rows gives the user enough necessary information without making the UI heavier than a calendar/todo-style progress list.
+
+**Applies to:** Source-backed study Flow Maps, Mathbang middle-school math fixtures, progress/sheet destinations, My Flow Step detail, creator source-row checks, and future education/reference conversions.
+
+**Reopen when:** a study source provides an explicit schedule, assignments, wrong-answer workflow, or creator-led routine that legitimately makes session planning or log fields part of the source-derived artifact.
+
+**Related docs:** [Source-to-Flow conversion gate](./flow-rules/source-to-flow-conversion-gate.md), [Source-backed Step contract](./specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md)
+
+### 2026-06-24 - My Flow separates ready content from review or legacy content
+
+**Decision:** My Flow should keep product-ready saved content visually separate from review, preview, or legacy content. Source-backed saved Flow Maps, real-source Flows, and map-backed child Flows can appear as normal execution cards. Preview, `needs_review`, and older unclassified Flows should be grouped or badged as sample, review-needed, or legacy content instead of appearing at the same confidence level. In save-to-My-Flow handoffs, Step details should open directly under the selected Step row; only calendar/date contexts may use a separate selected-date panel or mobile sheet.
+
+**Reason:** The post-save My Flow path became usable once it showed concrete Step and Item content, but it still risked mixing accepted source-backed execution paths with older PoC or unreviewed content. Users also lose context when a card opens detail far below the tapped row. Separating content readiness and keeping detail expansion local preserves calendar/todo-level complexity while making the saved artifact feel actionable.
+
+**Applies to:** `/my`, source-backed Flow Map save paths, saved Flow grouping, Flow card status badges, post-save Step expansion, future My Flow inventory cleanup, and content migration from PoC fixtures into product surfaces.
+
+**Reopen when:** observed users prefer one undifferentiated saved library, or a formal content lifecycle/admin review system replaces the current lightweight readiness grouping.
+
+**Related docs:** [Source-backed Step contract](./specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md), [Flow execution types](./flow-rules/flow-execution-types.md)
+
+### 2026-06-24 - Single mobile My Flow defaults depend on Step shape
+
+**Decision:** On mobile My Flow, a single saved dated Flow should still open in the lightweight Today surface, but a single saved non-dated progress/sheet Flow should default to the Flow card surface even when global tabs are hidden. The single-saved screen stays simple, but the primary action must still reveal the Step detail and source-derived Item checks without requiring a hidden tab.
+
+**Reason:** Manual mobile rehearsal of the public middle-school math Flow Map save path showed that hiding tabs and forcing `today` made the `sheet` action look tappable while leaving no visible Step detail target. The accepted single-saved simplification is still valid for dated calendar/todo Flows, but non-dated progress/sheet Flows need the Flow card surface as their minimal execution view.
+
+**Applies to:** `/my` mobile single-saved state, source-backed progress/sheet Flow Maps, Flow card primary actions, Step detail rendering, and future saved Flow Map execution paths.
+
+**Reopen when:** observed users expect all single-saved Flows to start from Today regardless of date shape, or a first-class mobile Map/Step launcher replaces the current single-saved card behavior.
+
+**Related docs:** [My Flow before/after UX alignment](./specs/2026-05-28-my-flow-execution-hub/my-flow-before-after-ux-alignment.md), [Source-backed Step contract](./specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md)
+
+### 2026-06-24 - My Flow action cards must be visually distinct from summary cards
+
+**Decision:** In My Flow execution surfaces, static summary or inventory cards should not reuse the same visual language as tappable Step, Flow, or Flow Map controls. Clickable cards should expose a clear outcome label such as `열기`, `접기`, `보기`, or `선택됨`; static cards should remain informational and should not carry selected/active styling. User-facing PoC files must stay free of review commentary, with rehearsal or evaluation notes kept in a separate report artifact.
+
+**Reason:** The saved-execution v11 PoC showed that users could not reliably tell whether some cards were buttons or explanations when summary, map, and action cards shared the same border, active state, and card treatment. Separating information cards from action cards keeps My Flow close to calendar/todo complexity and prevents review UI from leaking into the product surface.
+
+**Applies to:** My Flow Today, Calendar, Flow, and Map tabs, saved Flow Map inventory summaries, clickable Step and Flow cards, content-audit user PoCs, and paired rehearsal reports.
+
+**Reopen when:** observed users prefer lower-label card controls, or the production design system introduces a stronger universal affordance that makes outcome labels unnecessary.
+
+**Related docs:** [My Flow saved execution v11](./content-audit/2026-06-24-my-flow-saved-execution-v11-ko.html), [v11 rehearsal](./content-audit/2026-06-24-my-flow-saved-execution-v11-rehearsal-ko.html)
+
+### 2026-06-23 - Public Flow Map saves keep a versioned map snapshot
+
+**Decision:** Saving a public Flow Map should write both child Flow saved records and one parent map snapshot, keyed as `flow:map:saved:{mapId}`. The snapshot stores map version, saved child Flow slugs, Step counts, risk levels, source checked dates, saved time, and the shared anchor when present. Update assessment should stay a product contract first: same version is quiet, missing maps require reconnect, safe low-risk patch updates may be auto-applied later, and official or sensitive schedule changes require user review before applying.
+
+**Reason:** Flow Map is more than a bundle of child Flows. Without a parent snapshot, FlowMe cannot later answer whether a creator/source update changed the saved map, whether the user's saved child Flows still match the published structure, or whether a sensitive official schedule should be reviewed before updating. The snapshot lets My Flow remain simple while preserving enough metadata for future version/update UX.
+
+**Applies to:** `/flow-maps/[map]` public save, source-backed map packages, My Flow saved-library state, future creator update publishing, official schedule updates, and Flow Map version policy.
+
+**Reopen when:** production persistence replaces localStorage or observed users show they expect child Flow updates without parent-level map history.
+
+**Related docs:** [Source-backed Step contract](./specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md), [source-backed adapter](../lib/flow/source-backed-my-flow.ts)
+
+### 2026-06-23 - Mobile My Flow shows small saved inventories directly
+
+**Decision:** On mobile My Flow, when the visible saved Flow inventory is small, currently 1-4 Flows, show the Flow cards directly in the Flow tab instead of hiding them behind a `Flow 찾기` hub. Keep the search/inventory hub for larger inventories where a long list would make the tab heavy.
+
+**Reason:** The source-backed baby health save path proved that the records were stored and Today showed due/overdue Steps, but the mobile Flow tab looked empty because it only showed a `Flow 찾기` card. That made the product feel broken even though the data path worked. Small inventories should stay as direct calendar/todo-level cards.
+
+**Applies to:** `/my` mobile Flow tab, source-backed public save paths, Flow Map child Flow display, and future saved-library IA.
+
+**Reopen when:** observed users prefer a universal search-first mobile inventory even for 1-4 saved Flows, or when a first-class Map tab changes where child Flows should appear.
+
+**Related docs:** [Source-backed Step contract](./specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md), [service UX backlog](./content-audit/2026-06-19-flowme-service-ux-backlog-ko.html)
+
+### 2026-06-23 - Range-based official schedules remain one Step, not multi-day progress
+
+**Decision:** When a source row is a date range, such as a baby health checkup window, FlowMe should keep it as one executable `Step` and put the official period in the title, detail text, or calendar description. Do not use `duration_days` to represent every eligible day unless the user genuinely needs a day-by-day routine. For official health/legal-ish windows, the Step should remind the user to check, reserve, complete, or memo the result; it should not inflate progress counts or create hundreds of checkable rows.
+
+**Reason:** The input-bearing baby health Flow Map initially used long `duration_days` values for checkup windows, which made My Flow show progress like `0/2373` for 12 real schedule rows. That violated the working model that a Step is the smallest calendar/todo/sheet unit and made the user surface much heavier than the accepted Jeonse and 10-Flow baselines.
+
+**Applies to:** Source-backed timeline fixtures, official schedule conversion, ICS/export mapping, My Flow progress counts, baby health schedules, and future range-based public Flow Map saves.
+
+**Reopen when:** product requirements add first-class date-window semantics that can represent eligibility periods without turning each day into a separate executable row.
+
+**Related docs:** [Source-backed Step contract](./specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md), [source-backed adapter](../lib/flow/source-backed-my-flow.ts)
+
+### 2026-06-23 - Flow Map publish package keeps creator, public, and My Flow surfaces separate
+
+**Decision:** Source-backed Flow Map work should use one package contract but separate the three product surfaces. Creator publish preparation shows source rows, generated Step rows, and publish checks. Public save-before detail shows source, generated artifact, and save actions. My Flow shows only saved execution rows through the accepted My Flow surface. The first implementation covers `/flow-maps/middle-school-math-1`, `/flow-maps/middle-school-math-1/creator`, `/flow-maps/baby-health-schedule`, `/flow-maps/baby-health-schedule/creator`, `/my?demo=source-backed`, and the real saved-record path from the public Flow Map into `/my`.
+
+**Reason:** The user repeatedly flagged that user-facing Flow UX, creator editing, and developer/review screens were getting mixed. Keeping the map package split lets the product verify the full source-to-save-to-execute path without bloating the My Flow screen or implying the fixture is a public catalog seed. The public page should create local saved Flow records before routing to `/my`; demo mode remains available for review, but it should not be the only proof of the user path.
+
+**Applies to:** Source-backed Flow Map packages, creator publish prep, public save-before detail pages, My Flow source-backed demo, and future creator/public map persistence.
+
+**Reopen when:** real creator sessions show the publish-prep view needs direct editing fields before source rows are understood, or real users cannot decide whether to save a map without more public preview detail.
+
+**Related docs:** [Source-backed Step contract](./specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md), [service UX backlog](./content-audit/2026-06-19-flowme-service-ux-backlog-ko.html)
+
+### 2026-06-23 - Source-backed progress rows stay on FlowItem before adding progress_step
+
+**Decision:** The first source-backed My Flow implementation slice keeps progress-oriented rows, such as middle-school math units, as existing `FlowItem` rows and derives a `progress` bridge row for My Flow/export behavior. Do not add a first-class `progress_step` type yet. `source-backed-moving-d30` proves dated Steps can remain calendar `FlowItem`s with ICS descriptions, while `source-backed-middle-school-math-1` proves progress Steps can preserve source rows, source links, memo hints, and text fallback without a new visible user type.
+
+**Reason:** The accepted My Flow UX should stay near calendar/todo complexity. The code slice in `lib/flow/source-backed-my-flow.ts` and `lib/flow/source-backed-my-flow.test.ts` shows that the current `FlowBundle` / `FlowItem` / `FlowItemDetail` contract can express the representative timeline and progress examples without inventing extra user-facing layers.
+
+**Applies to:** Source-backed My Flow fixtures, Flow Map child Flow handling, progress Flow rows, ICS/text fallback mapping, and future `/my` adapter work.
+
+**Reopen when:** progress rows need state or export behavior that the bridge cannot represent cleanly, such as durable row-level progress status, wrong-answer table fields, progress-specific sheet columns, or creator-controlled row grouping that cannot live in `FlowItemDetail` and map metadata.
+
+**Related docs:** [Source-backed Step contract](./specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md), [My Flow v10 product data bridge](./content-audit/2026-06-22-my-flow-v10-product-data-bridge-ko.html)
+
+### 2026-06-23 - Source-backed bridge enters My Flow through demo path before public seed
+
+**Decision:** Source-backed bridge bundles should be available to the actual My Flow renderer through `/my?demo=source-backed`, but they should not be promoted into the public seed/catalog by default. The demo path merges `source-backed-moving-d30` and `source-backed-middle-school-math-1` into My Flow only, separates `단일 Flow` from `중1 수학 지도`, and keeps Flow Map parent metadata in `sourceBackedMyFlowMaps` rather than exposing a heavier My Flow model.
+
+**Reason:** This verifies the product path without implying that the source-backed fixtures are public content or final creator/publish data. It also keeps the accepted My Flow execution surface close to calendar/todo complexity while preserving the parent map relationship for later creator/public work.
+
+**Applies to:** `/my?demo=source-backed`, source-backed My Flow adapter fixtures, Flow Map parent metadata, My Flow demo fixtures, and future creator/public Flow Map persistence.
+
+**Reopen when:** these source-backed fixtures are ready for public catalog exposure, or when creator/public Flow Map publishing requires a durable parent-map schema instead of the bridge registry.
+
+**Related docs:** [Source-backed Step contract](./specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md), [service UX backlog](./content-audit/2026-06-19-flowme-service-ux-backlog-ko.html)
+
+### 2026-06-22 - Source-backed My Flow maps to the existing Flow item contract first
+
+**Decision:** The v9 source-backed My Flow examples should be bridged into the existing `FlowBundle`, `FlowItem`, and `FlowItemDetail` contract before introducing any new visible product hierarchy. `Flow` maps to `FlowBundle.flow`, `Step` maps to one `FlowItem`, and `Item` maps to detail text, links, completion criteria, memo hints, event description lines, sheet note fields, or nested internal checks. A user-facing `Item` should not become a separate scheduled task unless the original source makes it an independent execution row. `Flow Map` persistence remains a parent/grouping concern and should not leak into the Step detail. Progress-style source rows, such as middle-school math units, were a known gap on 2026-06-22; the first 2026-06-23 implementation slice keeps them on `FlowItem` with a derived `progress` bridge unless stronger product evidence requires `progress_step`.
+
+**Reason:** The source-backed v9 PoC works because the visible surface stays close to calendar/todo complexity while retaining source-specific Steps and Items. The current product code already has `FlowItem.day_offset`, `duration_days`, `repeat_rule`, `source_type`, `risk_level`, `FlowItemDetail`, and ICS export descriptions. Creating a new visible data model now would add complexity before proving the current contract cannot express the accepted examples.
+
+**Applies to:** My Flow v9 fixtures, `/my` implementation, Flow Map saved-library behavior, source-to-Flow adapters, calendar/ICS export, and future progress Flow handling.
+
+**Reopen when:** the existing `FlowItem` / `FlowItemDetail` contract cannot preserve source rows, nested Items, calendar descriptions, source links, or progress state without awkward UI or lossy export.
+
+**Related docs:** [Source-backed Step contract](./specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md), [v9 source-backed My Flow](./content-audit/2026-06-22-source-backed-my-flow-v9-ko.html), [v9 rehearsal](./content-audit/2026-06-22-source-backed-my-flow-v9-rehearsal-ko.html), [Flow execution types](./flow-rules/flow-execution-types.md)
+
+### 2026-06-22 - My Flow UI PoCs need source-backed fixtures before product judgment
+
+**Decision:** Treat the current My Flow v8 progressive-management PoC as a UI/IA validation artifact, not as proof that the included Flow contents are source-faithful. Before using this UI to judge product readiness, replace the rough or partially-derived sample data with source-backed fixtures that pass the Source-to-Flow gate: one primary source, one user job, a natural artifact, source-derived Steps/Items, and no invented checklist filler. The accepted UI shell can be reused, but the content model must be rebuilt from real source rows and previously accepted Flow conversion principles.
+
+**Reason:** User review on 2026-06-22 found the v8 UI generally clean, but noted that several Flow contents still look partial or roughly mocked rather than fully derived from original content. A polished My Flow surface can hide weak content conversion, so source fidelity must be tested separately before the UI is treated as service-level evidence.
+
+**Applies to:** My Flow v8 fixtures, future source-backed My Flow PoCs, representative Flow sample batches, Flow Map user PoCs, and any claim that My Flow can manage creator/source-based Flow content.
+
+**Reopen when:** a source-backed fixture pass shows that real Flow contents make the My Flow surface significantly heavier, require different Step detail fields, or need a different saved-content IA.
+
+**Related docs:** [My Flow v8 progressive management](./content-audit/2026-06-21-my-flow-v8-progressive-management-ko.html), [v8 rehearsal](./content-audit/2026-06-21-my-flow-v8-progressive-management-rehearsal-ko.html), [Source-to-Flow conversion gate](./flow-rules/source-to-flow-conversion-gate.md)
+
+### 2026-06-22 - Step can carry calendar-event metadata for future ICS export
+
+**Decision:** A Step is still the minimum user-facing execution row, but it may carry calendar-event-compatible metadata for future iCal/ICS export and schedule adjustment. This can include fields such as start date/time, end date/time or duration, all-day flag, timezone, recurrence, reminder, location, URL, description/body text, and status. These fields should remain internal/export metadata unless the user is explicitly editing a calendar export or schedule setting; My Flow execution screens should not expose raw ICS fields by default.
+
+**Reason:** The user noted that a Step can represent a calendar schedule item and therefore may need ICS-format data later. Capturing this now prevents the team from treating Step as only a plain checklist row, while still protecting the current UI from calendar-form complexity.
+
+**Applies to:** Step data modeling, calendar export, iCal/ICS generation, schedule adjustment UI, My Flow Step detail, and future export/storage schemas.
+
+**Reopen when:** real calendar export tests show that Step-level metadata is insufficient, or when recurrence/timezone/reminder editing becomes a primary user workflow rather than export metadata.
+
+**Related docs:** [Flow execution types](./flow-rules/flow-execution-types.md), [My Flow v8 progressive management](./content-audit/2026-06-21-my-flow-v8-progressive-management-ko.html)
+
+### 2026-06-21 - My Flow separates individual Flows from Flow Maps
+
+**Decision:** My Flow should separate `Today`, `Calendar`, individual saved Flows, and Flow Maps instead of showing every saved unit in one duplicated list. `Today` can aggregate due Steps from individual Flows and child Flows inside maps. `Calendar` is a secondary date-finding view: it shows dated Steps on a month grid but should not expand every date's items by default. If a selected date contains many Steps, the date detail should first group them by owning Flow or Flow Map path instead of introducing conditional category tabs; global category tabs should not be added by default. The `Flow` tab should show standalone saved Flows only. The `Map` tab should start from the parent Flow Map, then reveal child Flows and their Steps through one-depth-at-a-time drilldown instead of nested expansion. Step details, checks, and memo should stay hidden until the user selects a Step, and on mobile they should open directly under the selected Step row rather than at the bottom of the whole list. Selecting the same Step again closes the detail. User-facing Step detail should not show separate `execution basis` blocks or outside-app fallback text by default; those belong to export/handoff surfaces when the user explicitly needs them. Today and Calendar should not repeat date badges on every Step because the date context is already set, while Flow and Map views can keep date badges to explain when a Step happens. Step rows should carry the owning path as quiet metadata only where it adds context, such as Today or an ungrouped Calendar list. Inside an already-open Flow or Map, hide repeated owning path and completion count because the parent card already provides that context. Do not repeat row-level progress bars when the parent Flow card already shows progress. A selected Step detail should feel closer to a calendar/todo detail than to a review card, so it should show the minimum execution metadata such as `일정`, `저장`, and `진행` before item checks and memo. Flow, Map, Step, and Item depth should be visually distinguishable without turning the page into a dense dashboard. In Map drilldown, tapping the open upper Flow area should collapse the lower Step list.
+
+**Reason:** The v7 My Flow management PoC handled variable Step counts and Flow Maps, but it still felt like a dense dashboard because map child Flows appeared both as saved Flow rows and again inside the map. User mobile feedback on v8 showed that opening Step details at the bottom forced extra scrolling, Step rows lacked enough Flow context in aggregate views but repeated too much context inside Flow cards, Flow/Step/Item depth looked too similar, row-level progress bars repeated parent progress, and repeated date/status/external-text blocks made the user screen feel like a review surface. The revised v8 progressive-management rehearsal reduces initial visible structure: Flow first screen shows standalone Flows, Map first screen shows parent maps, Calendar first screen shows only the month grid, crowded dates are grouped by Flow path, and detailed Step content appears inline after a user selection with only item checks and memo. This better matches the accepted Jeonse and 10-Flow complexity level while keeping calendar affordance available for date-oriented users.
+
+**Applies to:** My Flow IA, mobile Today, saved Flow list, Flow Map list, Step detail drawers, future `/my` implementation, and Flow Map user PoCs.
+
+**Reopen when:** Observed users expect map child Flows to appear in the individual Flow list by default, or search/filter behavior makes it clear that hiding child Flows from the Flow tab prevents users from finding current work.
+
+**Related docs:** [My Flow v8 progressive management](./content-audit/2026-06-21-my-flow-v8-progressive-management-ko.html), [v8 rehearsal](./content-audit/2026-06-21-my-flow-v8-progressive-management-rehearsal-ko.html), [service UX backlog](./content-audit/2026-06-19-flowme-service-ux-backlog-ko.html)
+
+### 2026-06-21 - My Flow mobile adapts by saved Flow count
+
+**Decision:** On mobile, My Flow should adapt visible controls to the number and type of saved Flows. A single saved Flow should not show every global management tab by default; after the v4 alignment pass, the mobile single-saved state hides the global tabs entirely and opens into the execution-first Today surface. Single-saved screens should also avoid standalone hold/later and item-complete action bars by default; saved state, checks, memo, source/detail, and fallback text are enough until the user has multiple Flows to manage. Multi-Flow states can keep Today, Calendar, Flow, Check, and Routine, but dense lists should open through search/filter sheets or compact pickers. On mobile, the Flow hub should expose `Flow 찾기` as the primary action and avoid separate status shortcut buttons such as `밀린 Flow` or `다음 실행` unless observed users need them. When the saved inventory exceeds 20 Flows, the mobile `Flow 찾기` sheet should not show every Flow by default; it should show a short initial set and require an explicit `전체 Flow 보기` action, while search and filters can reveal their full matching results. Compact execution rows should not repeat text buttons such as `완료` on every row; they may keep an accessible check control while the detailed completion action remains inside the item drawer. In the item drawer, completion should look like a small check toggle, not a large primary CTA, because memo/detail review is the main job once the row is open.
+
+**Reason:** The integrated My Flow v3 simulation showed that one saved D-day Flow looked heavier than a calendar/todo app when it still exposed five tabs and repeated completion text across many overdue rows. The user also questioned whether actions like "this item complete" are necessary before a Flow is opened. Keeping the check affordance but reducing visible text preserves execution while lowering cognitive load.
+
+**Applies to:** `/my`, My Flow mobile Today, Flow, Calendar, Check, and Routine tabs, saved-Flow count scenarios, compact execution rows, and future My Flow IA PoCs.
+
+**Reopen when:** Observed mobile users prefer global tabs even for a single saved Flow, or direct text completion buttons prove materially faster without causing accidental completion or visual clutter.
+
+**Related docs:** [My Flow v3 integrated simulation](./content-audit/2026-06-21-my-flow-v3-integrated-simulation-ko.html), [My Flow v3 implementation scope](./content-audit/2026-06-21-my-flow-v3-implementation-scope-ko.html), [My Flow v4 actual `/my` alignment](./content-audit/2026-06-21-my-flow-v4-actual-my-alignment-ko.html), [My Flow 20+ saved inventory check](./content-audit/2026-06-21-my-flow-ux20-large-inventory-ko.html)
+
 ### 2026-06-17 - Flow content renders differently by product surface
 
 **Decision:** A Flow content record should not use the same screen shape everywhere. Creator screens show source structure, conversion rules, publication state, and user preview. Save-before user screens show what artifact will be created and the minimum setup input. In-app user screens show today's or the selected execution item, checks, memo, and source link. Internal conversion structure should not leak into the in-app execution surface.
@@ -790,3 +1090,103 @@ Do not use this for:
 **Applies to:** Korean source discovery, `docs/flow-rules/flow-content-source-selection.md`, `docs/content-audit/2026-06-07-weighted-korean-source-flow-review.html`, candidate JSON audits, and future `/content-flows` representative promotion decisions.
 
 **Reopen when:** observed users prefer low-interaction but highly structured sources over creator/official sources with stronger visible demand, or when FlowMe gains a reliable internal source-quality signal beyond public reaction/context evidence.
+
+### 2026-06-18 - Flow of Flow conversion starts from source rows before UI
+
+**Decision:** For Flow of Flow or parent-child Flow candidates, define the text content model before designing UI. The model must preserve source rows such as lesson titles, curriculum units, book chapters, official schedule periods, or source-defined steps. The user-facing UI should add only execution state, short memo, optional URL/date, and source link unless the original content itself requires more. Do not add required pace, weekday, progress-process, or fixed checklist fields just because a generic UI component supports them.
+
+**Reason:** Recent Flow of Flow PoCs became more complex than the original Korean content by adding artificial inputs such as progress pace or generic sub-checklists. The user's acceptable complexity is close to a calendar or todo app: save the source structure, check rows, write a memo, and return later. Starting from source rows prevents AI-generated filler and keeps child Flow screens aligned with previously accepted jeonse and 10-category Flow examples.
+
+**Applies to:** Flow of Flow PoCs, creator source-to-Flow conversion, study/curriculum/official-schedule candidates, user-facing parent-child Flow screens, and future source-row import models.
+
+**Reopen when:** observed users cannot manage parent-child Flow content without structured scheduling fields beyond source rows, state, memo, optional URL/date, and source links.
+
+### 2026-06-18 - Parent-child Flow hierarchy uses Flow Map, Flow, Step, Item
+
+**Decision:** Use `Flow Map > Flow > Step > Item` as the working hierarchy for Flow of Flow and parent-child Flow modeling. A Flow Map is the upper map, a Flow is one executable content unit inside it, a Step is the minimum execution row that can become a calendar event, todo task, checklist row, sheet row, or progress row, and an Item is a detail field attached to a Step such as a memo prompt, URL, material, criterion, selected option, confirmation number, or calendar-event description variable. In FlowMe, Items may render as a nested checklist inside the Step detail when useful. In outside apps that do not support nested checklist items, Items should collapse into plain text in the calendar event description, todo note/body, sheet note column, or memo body. `Item` is optional and should not become a separate scheduled task unless the source truly requires it.
+
+**Reason:** The previous wording mixed internal terms such as Parent Flow, Child Flow, Execution Item, Flow Pack, and Flow List. The user clarified that the accepted single-Flow pattern already works, and Flow of Flow should extend it without inventing checklist rows. This naming keeps large structures understandable, treats Step as the exportable/schedulable execution unit, and allows Items to remain lightweight memo or event-description variables that degrade gracefully in external tools.
+
+**Applies to:** Flow of Flow data modeling, creator authoring UX, user-facing Flow Map screens, source-row import, `docs/flow-rules/flow-execution-types.md`, and future Korean source conversion PoCs.
+
+**Reopen when:** implementation naming conflicts with existing production schemas, or user tests show that Flow Map/Step/Item wording is less understandable than another user-facing vocabulary.
+
+### 2026-06-19 - Flow Map platform PoCs use context-specific surfaces
+
+**Decision:** A Flow Map should keep one source-derived data model while rendering different surfaces for different jobs: creator generation screens focus on source rows and hierarchy, public detail screens focus on save decisions and source trust, and My Flow screens focus on the current Step, local checks, memo, and fallback export text. The same Flow Map data should not be shown as one universal dashboard across all contexts.
+
+**Reason:** The middle-school math Flow Map work showed that FlowMe feels more like a platform when a creator can turn a source course into a public executable map and the user can save it into a lightweight personal execution view. Showing every structural detail to the end user makes the product heavier than the accepted jeonse and ten-Flow baselines.
+
+**Applies to:** Creator authoring UX, public Flow Map detail pages, My Flow execution screens, source-row import, and future end-to-end Flow Map PoCs.
+
+**Reopen when:** observed users need the same full hierarchy or creator mapping information inside My Flow to execute saved maps correctly.
+
+### 2026-06-19 - Service UX backlog is updated after product exploration tasks
+
+**Decision:** Maintain a browseable service UX backlog at `docs/content-audit/2026-06-19-flowme-service-ux-backlog-ko.html`. Update it after a major product/UX task or meaningful milestone, not after every small edit. Use judgment: update when a new PoC/report/spec changes the current judgment, status, completion level, next artifact, or recommended next action. Include the backlog link with the new artifact link in the final handoff when relevant. The backlog's progress section must track completed work, in-progress work, pending/open work, next recommended work, work type or service-flow lane, completion level, dates, artifact links, remaining work, and next action. It should show how product planning, content conversion, creator UX, user UX, and operations/development connect instead of listing tasks as isolated todos. The service-flow lanes should be visually obvious through cards or badges, not buried as plain table text. Completion level should also be visually scannable through a short level label and progress indicator, with a note that it is internal progress rather than user validation.
+
+**Reason:** The FlowMe service questions now span creator onboarding, public detail, My Flow IA, update policy, quality gates, export handoff, discovery, business value, sensitive content, and analytics. Keeping these only in chat makes the direction easy to lose; updating one lightweight backlog lets future PoCs connect back to the overall serviceization work without turning every idea into a committed spec.
+
+**Applies to:** FlowMe service UX exploration, content-audit HTML artifacts, Flow Map PoCs, creator/public/My Flow IA work, and future UX handoffs.
+
+**Reopen when:** this backlog becomes too broad to manage in one file or a formal issue/spec tracker replaces content-audit HTML artifacts.
+
+### 2026-06-19 - Wide project backlog stays separate from service UX backlog
+
+**Decision:** Maintain a broader project backlog at `docs/content-audit/2026-06-19-flowme-wide-project-backlog-ko.html` for cross-cutting work that is larger than the current service UX connection backlog. The broad backlog should separate Stage 0 validation, Source-to-Flow conversion, My Flow management, Creator Map/Flow of Flow work, and long-term platform ideas. Keep it lightweight with tab-like anchor sections rather than a heavy app surface. Update it after major project-level tasks or meaningful planning milestones, not after every small edit. It should include a coverage section that marks whether prior planning/docs/discussion topics are reflected, compressed, or still missing, because this backlog is a decision map rather than a complete archive of previous documents.
+
+**Reason:** The service UX backlog is useful for the immediate creator/public/My Flow connection work, but earlier project context includes wider concerns: export-first validation, source-to-Flow candidate quality, saved-Flow management, creator experience maps, URL ingestion, creator pages, activity signals, QR entry, and marketplace ideas. Mixing all of those into the service UX backlog would make the immediate UX work harder to scan.
+
+**Applies to:** FlowMe project planning, content-audit HTML backlogs, future UX handoffs, Stage 0 planning, Source-to-Flow expansion, My Flow IA, Creator Map PoCs, and deferred platform ideas.
+
+**Reopen when:** a formal issue tracker, roadmap board, or product management tool replaces these HTML backlog artifacts.
+
+### 2026-06-23 - Official date windows stay metadata, not repeated tasks
+
+**Decision:** Source-defined official eligibility windows, such as 영유아 건강검진 기간, should be stored as Step metadata (`date_window`) rather than modeled as multi-day `duration_days` task ranges. The Step remains one calendar/todo row. Calendar export creates one reminder event, while the official period and calculated date range are carried in event descriptions, workbook rows, and text fallback.
+
+**Reason:** The approved Flow Map direction keeps user complexity at calendar/todo level. A 검진 가능 기간 such as `생후 14~35일` is not 22 separate tasks. Expanding it into many daily rows would inflate progress, clutter calendars, and make official logistics look like FlowMe is managing medical decisions. Keeping the window as metadata preserves source fidelity without adding visible controls.
+
+**Applies to:** source-backed Flow Map packages, `FlowItem`, ICS export, workbook export, My Flow calendar/progress rows, and future official schedule content with eligibility windows.
+
+**Reopen when:** real export or user behavior shows that a single reminder plus period text is insufficient and users need explicit start/end/reminder rules for official date windows.
+
+### 2026-06-25 - My Flow Step detail carries portable calendar/task fields
+
+**Decision:** A saved Step may carry user-edited calendar/task metadata: date, time, simple repeat preset, location, memo, and source/detail links. These fields belong inside the Step detail, not on the first saved-map or Flow inventory surface. Date changes should affect the My Flow calendar row; time, repeat preset, location, and memo should persist as Step-level local drafts.
+
+**Reason:** The user clarified that one Step is the smallest unit that can be saved to calendar/todo/sheet, while Items are fallback text or checklist variables. Reference task tools such as Todoist and Trello support scheduling sub-items or checklist items, but FlowMe should keep this progressive so My Flow stays closer to calendar/reminder complexity than Jira-style project management.
+
+**Applies to:** `/my` Step detail, source-backed Flow Map saves, progress Flow optional scheduling, future calendar/todo export regeneration, and Step-level local persistence.
+
+**Reopen when:** users need bulk scheduling, custom recurrence rules, or exported ICS/todo regeneration directly from My Flow edits.
+
+### 2026-06-25 - Creator draft publishing stays separated from user execution
+
+**Decision:** Creator pages may save a local draft and mark that draft as a local published version marker, but this does not mutate public/user execution screens until a real account-backed publish workflow exists. The user surface continues to show only saved Steps and Items, while creator screens show source rows, generated Step output, draft state, blockers, and local publish state.
+
+**Reason:** Course-builder references such as Thinkific separate curriculum editing from learner progress, and newly created chapters/lessons can start as draft. FlowMe needs the same split: creator iteration should not leak review labels or draft controls into My Flow, and localStorage PoC publish behavior must not be confused with server-side public content publication.
+
+**Applies to:** `/flow-maps/[map]/creator`, source-backed publish packages, local creator draft storage, future account-backed map versions, and creator/public/My Flow separation.
+
+**Reopen when:** account-backed creator storage exists and public map rendering can read published versions from the server.
+
+### 2026-06-25 - Map updates add missing child Flows but do not delete user progress
+
+**Decision:** When a user applies a source-backed Flow Map update, My Flow updates the saved map snapshot and adds newly included child Flow records if they are missing. Existing saved child Flows, checks, memos, and hidden/list preferences are not overwritten, and child Flows that disappeared from the current published map are not deleted automatically.
+
+**Reason:** Sensitive and official maps require review-before-apply. Silent deletion or mutation would be worse than an outdated map because it could destroy a user's execution record. A conservative add-only merge is enough for the Stage 0 localStorage bridge and keeps update behavior understandable until row-level version IDs and account-backed conflict resolution exist.
+
+**Applies to:** `/my` update notice, source-backed saved Flow Maps, local snapshot apply, missing child Flow records, future map update history, and official/sensitive schedule maps.
+
+**Reopen when:** server-backed version history supports row-level conflicts, user confirmations for deletion, and cross-device update state.
+
+### 2026-06-25 - High-volume My Flow management hides inventory without hiding execution
+
+**Decision:** My Flow may let users hide saved Flow cards from the Flow inventory and restore them through a hidden filter. This is an inventory preference only. Hidden Flows should not disappear from Today, Calendar, checks, or saved progress.
+
+**Reason:** Large saved inventories need cleanup controls, but hiding a card must not cause users to miss dated Steps. This matches the earlier principle that Today and Calendar are execution-first while Flow inventory can have stronger management tools.
+
+**Applies to:** `/my` Flow tab, large inventories, source-backed maps mixed with individual Flows, local hidden-flow state, and future archive/account preference work.
+
+**Reopen when:** observed users expect archive to remove items from all execution surfaces or account-backed archive semantics become necessary.

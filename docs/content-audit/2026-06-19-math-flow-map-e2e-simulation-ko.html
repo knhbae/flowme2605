@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>중1 수학 Flow Map 제품 흐름 시뮬레이션</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --surface: #fff;
+      --soft: #f8fafc;
+      --line: #d8e2ef;
+      --text: #101827;
+      --muted: #5f6b7c;
+      --blue: #1f5fbf;
+      --blue-soft: #eaf2ff;
+      --green: #0f7a4a;
+      --green-soft: #e8f7ef;
+      --amber: #9a6100;
+      --amber-soft: #fff6df;
+      --shadow: 0 14px 32px rgba(16, 24, 39, .08);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #fbfdff 0, var(--bg) 380px);
+      font-size: 16px;
+      line-height: 1.62;
+    }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 44px); line-height: 1.12; letter-spacing: 0; word-break: keep-all; }
+    h2 { margin-bottom: 8px; font-size: clamp(23px, 3vw, 32px); line-height: 1.22; letter-spacing: 0; word-break: keep-all; }
+    h3 { margin-bottom: 6px; font-size: 20px; line-height: 1.28; letter-spacing: 0; word-break: keep-all; }
+    .page { width: min(1040px, calc(100% - 28px)); margin: 0 auto; padding: 14px 0 64px; }
+    .topbar, .hero, .card, .row {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 58px;
+      padding: 12px 16px;
+      box-shadow: 0 1px 2px rgba(16, 24, 39, .04);
+    }
+    .brand { color: var(--blue); font-size: 24px; font-weight: 950; text-decoration: none; }
+    .hero, .card { margin-top: 12px; padding: 18px; box-shadow: var(--shadow); }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .desc { max-width: 780px; color: var(--muted); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #344054;
+      font-size: 13px;
+      font-weight: 850;
+    }
+    .chip.blue { border-color: #bfdbfe; background: var(--blue-soft); color: #174ea6; }
+    .chip.green { border-color: #bde7cb; background: var(--green-soft); color: var(--green); }
+    .chip.amber { border-color: #efd08f; background: var(--amber-soft); color: var(--amber); }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .row { padding: 12px; background: var(--soft); }
+    .row b, .row span { display: block; }
+    .row span { margin-top: 3px; color: var(--muted); font-weight: 700; }
+    .list { margin: 10px 0 0; padding-left: 20px; }
+    .list li + li { margin-top: 7px; }
+    @media (max-width: 720px) {
+      .page { width: min(100% - 20px, 1040px); padding-top: 10px; }
+      .hero, .card { padding: 14px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar" aria-label="FLOW">
+      <a class="brand" href="#">FLOW</a>
+      <span class="chip blue">2026-06-19</span>
+    </nav>
+
+    <header class="hero">
+      <p class="eyebrow">제품 흐름 시뮬레이션</p>
+      <h1>중1 수학 Flow Map을 제작자부터 내 Flow까지 연결</h1>
+      <p class="desc">이번 산출물은 실사용 검증이 아니라 현재 화면과 클릭 동작 기준의 제품 흐름 검토입니다. 사용자 화면에는 내부 평가를 넣지 않고, 검토 내용은 이 문서에만 남깁니다.</p>
+      <div class="chips">
+        <span class="chip blue">제작자 생성</span>
+        <span class="chip green">공개 상세</span>
+        <span class="chip amber">내 Flow 실행</span>
+      </div>
+    </header>
+
+    <section class="card">
+      <p class="eyebrow">원문 기준</p>
+      <h2>한 원문 강좌에서 Flow Map을 만든다</h2>
+      <div class="grid">
+        <div class="row"><b>Primary source</b><span><a href="https://mid.ebs.co.kr/course/view?courseId=100005139" target="_blank" rel="noreferrer">EBS 중학 뉴런 수학1(상)</a></span></div>
+        <div class="row"><b>Source shape</b><span>강좌 소개, 강의 목록, 강의별 시간과 교재 쪽수</span></div>
+        <div class="row"><b>Natural artifact</b><span>단원별 진도표와 현재 Step 체크 화면</span></div>
+        <div class="row"><b>Do not build</b><span>학습 진단, 자동 페이스, 성적 예측, 상세 학습 관리 대시보드</span></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">피드백/코멘트</p>
+      <h2>더 매끈하게 만들 때의 기준</h2>
+      <div class="grid">
+        <div class="row"><b>제품 화면은 설명하지 않는다</b><span>사용자 화면에는 “왜 이렇게 만들었는지”를 쓰지 않고, 저장·체크·메모 같은 행동만 남긴다.</span></div>
+        <div class="row"><b>제작자와 사용자의 말을 분리한다</b><span>제작자 화면은 원문 행과 매핑을 다뤄도 되지만, 공개 상세와 내 Flow는 학습자가 이해하는 말만 쓴다.</span></div>
+        <div class="row"><b>내 Flow는 가장 작아야 한다</b><span>저장 후에는 전체 구조보다 오늘 이어서 볼 Step, 완료 체크, 오답 메모가 먼저 보여야 한다.</span></div>
+        <div class="row"><b>평가 문구는 리포트로 보낸다</b><span>제품 화면에는 검토, 기준, 내보내기 규칙 같은 내부 표현을 두지 않고 리포트에만 남긴다.</span></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">시뮬레이션</p>
+      <h2>제작자와 사용자의 흐름</h2>
+      <ol class="list">
+        <li>제작자가 EBS 강좌 URL과 강의 목록을 가져옵니다.</li>
+        <li>원문 행을 단원 Flow와 강의 Step으로 묶고, 강의 열기·교재 쪽수·오답 메모를 Item으로 둡니다.</li>
+        <li>제작자는 공개 상세를 발행합니다. 공개 화면에는 저장 판단에 필요한 요약, 원문 링크, Flow 목록만 보입니다.</li>
+        <li>사용자는 전체 지도 또는 선택 Flow를 내 Flow로 저장합니다.</li>
+        <li>내 Flow에서는 현재 Step, Item 체크, 오답 메모, 시트/투두 미리보기만 남습니다.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">수정 판단</p>
+      <h2>과해서 줄인 것과 남긴 것</h2>
+      <div class="grid">
+        <div class="row"><b>줄임</b><span>진행 페이스 입력, 날짜 강제 입력, 학습 진단, 상태 버튼을 넣지 않았습니다.</span></div>
+        <div class="row"><b>남김</b><span>제작자 구조 확인, 공개 저장 판단, 내 Flow 실행 체크는 제품 흐름 확인에 필요해 남겼습니다.</span></div>
+        <div class="row"><b>시트/투두 미리보기</b><span>Step은 시트/투두 행이 되고, Item은 Step 메모 텍스트로 접힙니다.</span></div>
+        <div class="row"><b>남은 리스크</b><span>실제 제작자가 원문 행을 얼마나 잘 고치는지와 사용자가 전체/일부 저장을 어떻게 고르는지는 행동 데이터가 필요합니다.</span></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">검증 결과</p>
+      <h2>로컬 브라우저 검증</h2>
+      <ul class="list">
+        <li>모바일 390px, 데스크톱 1280px에서 가로 overflow 없음.</li>
+        <li>제작자 발행, 공개 상세 저장, 내 Flow Step 선택, Item 체크, 메모 입력, Step 완료, 다음 Step 이동 동작 확인.</li>
+        <li>메모는 시트/투두 미리보기에 반영되고, 다른 Step으로 이동했다가 돌아와도 유지됨.</li>
+        <li>사용자 화면에 내부 평가 문구를 노출하지 않음.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

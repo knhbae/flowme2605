@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow 저장 후 관리 IA 시뮬레이션</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --line: #d9e2ef;
+      --text: #111827;
+      --muted: #536174;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      --red: #b91c1c;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); letter-spacing: 0; }
+    main { width: min(1040px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 48px; }
+    section, header {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--surface);
+      padding: 22px;
+      margin-bottom: 14px;
+    }
+    .eyebrow { margin: 0 0 8px; color: var(--blue); font-size: 13px; font-weight: 900; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 10px; font-size: clamp(30px, 5vw, 44px); line-height: 1.12; }
+    h2 { margin-bottom: 10px; font-size: 23px; line-height: 1.25; }
+    h3 { margin-bottom: 6px; font-size: 17px; }
+    p, li, td, th { line-height: 1.62; }
+    .desc { color: var(--muted); font-weight: 650; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: #f8fafc;
+    }
+    .card b, .card span { display: block; }
+    .card span { color: var(--muted); font-size: 13px; font-weight: 750; margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 14px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 12px; text-align: left; vertical-align: top; }
+    th { background: #f8fafc; font-size: 13px; }
+    .chip { display: inline-flex; border-radius: 999px; padding: 4px 9px; font-size: 12px; font-weight: 900; background: #eef4ff; color: var(--blue); border: 1px solid #bdd2ff; }
+    .chip.green { background: #e8f7f2; color: var(--green); border-color: #bde5da; }
+    .chip.amber { background: #fff4df; color: var(--amber); border-color: #f1d39c; }
+    .chip.red { background: #fff1f2; color: var(--red); border-color: #fecdd3; }
+    a { color: #1d4ed8; font-weight: 850; }
+    @media (max-width: 760px) {
+      main { width: min(100% - 20px, 720px); padding-top: 10px; }
+      .grid { grid-template-columns: 1fr; }
+      section, header { padding: 18px; }
+      table, tbody, tr, th, td { display: block; width: 100%; }
+      th { display: none; }
+      td { border-bottom: 0; padding: 9px 0; }
+      tr { border-bottom: 1px solid var(--line); padding: 10px 0; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">시뮬레이션 리포트</p>
+      <h1>My Flow 저장 후 관리 IA</h1>
+      <p class="desc">사용자용 PoC와 분리한 검토 기록입니다. 목표는 저장한 Flow가 늘어도 사용자가 오늘 할 일, 이어보기, 보류/완료 상태를 잃지 않는지 확인하는 것입니다.</p>
+      <p><a href="./2026-06-19-my-flow-saved-management-ia-poc-ko.html">사용자용 My Flow PoC 열기</a></p>
+    </header>
+
+    <section>
+      <p class="eyebrow">판정</p>
+      <h2>현재 결론</h2>
+      <div class="grid">
+        <div class="card"><b>0개</b><span>시작 안내만 두고 관리 UI는 숨기는 방향이 맞음.</span></div>
+        <div class="card"><b>1개</b><span>Flow 목록보다 실행 detail이 먼저 나와야 함. 중복 목록은 제거함.</span></div>
+        <div class="card"><b>2~5개</b><span>오늘 할 일과 Flow별 이어보기를 함께 보여주는 수준이 적절함.</span></div>
+        <div class="card"><b>6개 이상</b><span>검색/필터는 필요하지만 전체 목록은 기본 접힘이 낫다.</span></div>
+        <div class="card"><b>단일 Flow + Flow Map</b><span>지도는 목록에서만 가볍게 드러내고, 상세는 현재 Step과 Item만 보여주는 방향이 맞음.</span></div>
+        <div class="card"><b>복잡도</b><span>전세/10개 Flow 수준을 크게 넘지 않는 범위로 유지됨.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">사용자 저니</p>
+      <h2>시뮬레이션</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>상황</th>
+            <th>사용자 행동</th>
+            <th>화면 반응</th>
+            <th>판정</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="chip">0개 저장</span></td>
+            <td>처음 내 Flow에 들어온다.</td>
+            <td>관리 탭 대신 저장 안내와 예시 보기 버튼만 보인다.</td>
+            <td>시작 전 상태로 충분함.</td>
+          </tr>
+          <tr>
+            <td><span class="chip green">1개 저장</span></td>
+            <td>전세계약 Flow를 저장하고 다음 날 다시 들어온다.</td>
+            <td>목록 없이 계약 전 서류 확인 detail이 바로 열린다.</td>
+            <td>목록보다 실행 우선 원칙에 맞음.</td>
+          </tr>
+          <tr>
+            <td><span class="chip amber">보류</span></td>
+            <td>확신 없는 항목을 나중에 보기로 둔다.</td>
+            <td>상태가 보류로 바뀌고 메모가 fallback 텍스트에 남는다.</td>
+            <td>보류 버튼의 결과가 예측 가능함.</td>
+          </tr>
+          <tr>
+            <td><span class="chip green">완료</span></td>
+            <td>항목을 완료 처리한다.</td>
+            <td>체크 항목이 완료되고 외부 앱 텍스트도 [x]로 바뀐다.</td>
+            <td>완료 신호가 명확함.</td>
+          </tr>
+          <tr>
+            <td><span class="chip">4개 저장</span></td>
+            <td>중1 수학 학습 지도를 선택한다.</td>
+            <td>목록에는 지도 이름이 보이고, 상세에는 정수와 유리수 Flow의 현재 Step인 10강이 열린다.</td>
+            <td>Flow Map 구조를 숨기되 뭉개지는 정도는 줄였음. 사용자는 현재 Step과 Item만 처리하면 됨.</td>
+          </tr>
+          <tr>
+            <td><span class="chip">8개 저장</span></td>
+            <td>여권을 검색한다.</td>
+            <td>전체 목록을 열고 여권 Flow만 좁혀 선택한다.</td>
+            <td>다수 저장 상태에서 검색/접힘이 필요함.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">개선 루프</p>
+      <h2>발견한 문제와 수정</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>등급</th>
+            <th>문제</th>
+            <th>수정</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="chip amber">High</span></td>
+            <td>1개 저장 상태에서 목록과 실행 detail이 중복되어 보일 수 있었음.</td>
+            <td>1개 상태에서는 왼쪽 목록과 전체 Flow 버튼을 숨기고 detail만 보이게 수정.</td>
+          </tr>
+          <tr>
+            <td><span class="chip">Medium</span></td>
+            <td>8개 이상 상태에서 전체 목록을 기본으로 펼치면 관리 화면처럼 무거워질 수 있음.</td>
+            <td>8개 상태는 오늘/보류 우선, 전체 목록은 접힌 상태로 시작.</td>
+          </tr>
+          <tr>
+            <td><span class="chip">Low</span></td>
+            <td>자동 검증 중 한글 입력이 깨져 보일 수 있었음.</td>
+            <td>검증 스크립트에서 유니코드 입력으로 재확인. 화면 자체 문제는 아님.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">검증</p>
+      <h2>확인한 항목</h2>
+      <ul>
+        <li><code>npm run docs:check</code> 통과.</li>
+        <li>Playwright 모바일 390px, 데스크톱 1365px에서 JS 오류 없음.</li>
+        <li>0개/1개/4개/8개 상태 전환 확인.</li>
+        <li>Flow 선택, 체크, 메모 입력, 보류, 완료, 검색, 접힘 동작 확인.</li>
+        <li>가로 overflow 없음.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

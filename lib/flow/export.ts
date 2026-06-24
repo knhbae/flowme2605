@@ -111,6 +111,13 @@ function getItemDates(
 ): { startDate: string; endDate: string } {
   const startDate = getItemDate(item, anchor);
   if (!startDate) return { startDate: '', endDate: '' };
+  if (item.date_window) {
+    const anchorDate = new Date(anchor ?? startDate);
+    return {
+      startDate: formatDate(addDays(anchorDate, item.date_window.start_day_offset)),
+      endDate: formatDate(addDays(anchorDate, item.date_window.end_day_offset)),
+    };
+  }
   return {
     startDate,
     endDate:
@@ -118,6 +125,10 @@ function getItemDates(
         ? formatDate(getRangeEnd(new Date(startDate), item.duration_days))
         : '',
   };
+}
+
+function getItemTimingLabel(item: FlowItem): string {
+  return item.date_window?.label ?? timingLabel(item.day_offset, item.duration_days);
 }
 
 function getMealDates(
@@ -239,7 +250,7 @@ function buildCalendarRows(
         rows.push({
           id: item.id,
           date: formatDate(addDays(new Date(startDate), index)),
-          timing: timingLabel(item.day_offset, item.duration_days),
+          timing: getItemTimingLabel(item),
           section: section.title,
           title: duration > 1 ? `${item.title} ${index + 1}일차` : item.title,
           status: itemStatusLabel(Boolean(checks[item.id]), itemStates[item.id]),
@@ -555,8 +566,9 @@ export function buildText(
   for (const section of bundle.sections) {
     lines.push('', `[${section.title}]`);
     for (const item of bundle.items.filter((entry) => entry.section_id === section.id)) {
-      const timing = timingLabel(item.day_offset, item.duration_days);
-      const date = getItemDate(item, anchor);
+      const timing = getItemTimingLabel(item);
+      const { startDate, endDate } = getItemDates(item, anchor);
+      const date = endDate ? `${startDate} ~ ${endDate}` : startDate;
       if (timing || date) lines.push(`[${timing}${date ? ` / ${date}` : ''}]`);
       const state = itemStates[item.id];
       // Markdown checkbox so the pasted memo renders as a real checklist in
@@ -632,6 +644,7 @@ function buildIcsDescription(
   actionGuide?: string,
   completionCriteria?: string,
   links?: string,
+  dateWindow?: IcsEntry['dateWindow'],
 ): string {
   const exactVideoDetail = sectionTitle ? undefined : bundle.itemDetails?.[0];
   return [
@@ -642,6 +655,8 @@ function buildIcsDescription(
     exactVideoDetail?.completion_criteria,
     sectionTitle ? `Section: ${sectionTitle}` : '',
     timing ? `Timing: ${timing}` : '',
+    dateWindow ? `공식 기간: ${dateWindow.label}` : '',
+    dateWindow ? `예상 기간: ${dateWindow.startDate} ~ ${dateWindow.endDate}` : '',
     completionCriteria ? `Done when: ${completionCriteria}` : '',
     bundle.flow.warning ? `Caution: ${bundle.flow.warning}` : '',
     links ? `Links:\n${links}` : '',
@@ -661,6 +676,11 @@ type IcsEntry = {
   actionGuide?: string;
   completionCriteria?: string;
   links?: string;
+  dateWindow?: {
+    label: string;
+    startDate: string;
+    endDate: string;
+  };
 };
 
 function buildIcsEntries(bundle: FlowBundle, anchor?: string): IcsEntry[] {
@@ -669,16 +689,24 @@ function buildIcsEntries(bundle: FlowBundle, anchor?: string): IcsEntry[] {
   const entries: IcsEntry[] = [];
   for (const item of bundle.items.filter((entry) => entry.day_offset !== undefined)) {
     const detail = getItemDetail(bundle, item.id);
+    const { startDate, endDate } = getItemDates(item, anchor);
     entries.push({
       id: item.id,
       title: item.title,
       sectionTitle: getSectionTitle(bundle, item.section_id),
       start: addDays(new Date(anchor), item.day_offset ?? 0),
       durationDays: Math.max(item.duration_days ?? 1, 1),
-      timing: timingLabel(item.day_offset, item.duration_days),
+      timing: getItemTimingLabel(item),
       actionGuide: detail?.how,
       completionCriteria: detail?.completion_criteria,
       links: linkList(detail),
+      dateWindow: item.date_window && startDate && endDate
+        ? {
+            label: item.date_window.label,
+            startDate,
+            endDate,
+          }
+        : undefined,
     });
   }
 
@@ -726,6 +754,7 @@ export function buildIcsCalendar(
       entry.actionGuide,
       entry.completionCriteria,
       entry.links,
+      entry.dateWindow,
     );
     lines.push(
       'BEGIN:VEVENT',
@@ -826,7 +855,7 @@ export function buildWorkbookSheets(
       const state = itemStates[item.id];
       executionRows.push([
         itemStatusLabel(Boolean(checks[item.id]), state),
-        timingLabel(item.day_offset, item.duration_days),
+        getItemTimingLabel(item),
         endDate ? `${startDate} ~ ${endDate}` : startDate,
         section.title,
         item.title,

@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow v3 P0 체크/루틴 탭 검증</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fb;
+      --surface: #fff;
+      --line: #d8e2ef;
+      --soft: #f1f5f9;
+      --text: #111827;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); line-height: 1.62; }
+    main { width: min(100% - 28px, 980px); margin: 0 auto; padding: 24px 0 56px; }
+    header, section {
+      margin-bottom: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      padding: 20px;
+      box-shadow: 0 14px 34px rgba(15, 23, 42, .06);
+    }
+    h1, h2, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: 32px; line-height: 1.15; letter-spacing: 0; }
+    h2 { margin-bottom: 10px; font-size: 22px; line-height: 1.25; letter-spacing: 0; }
+    p, li, td { color: var(--muted); font-weight: 700; }
+    a { color: var(--blue); font-weight: 900; text-underline-offset: 3px; }
+    code { border-radius: 6px; background: var(--soft); padding: 2px 5px; color: #334155; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid var(--line); padding: 11px; vertical-align: top; text-align: left; }
+    th { background: var(--soft); color: #334155; font-size: 13px; font-weight: 900; }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .card { border: 1px solid var(--line); border-radius: 10px; background: #fbfdff; padding: 13px; }
+    .card b, .card span { display: block; }
+    .card span { margin-top: 5px; color: var(--muted); font-size: 13px; font-weight: 750; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #334155;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .green { border-color: #99f6e4; background: #ecfdf5; color: var(--green); }
+    .amber { border-color: #fed7aa; background: #fff7ed; color: var(--amber); }
+    @media (max-width: 760px) {
+      main { width: min(100% - 20px, 980px); padding-top: 12px; }
+      header, section { padding: 16px; }
+      h1 { font-size: 28px; }
+      .grid { grid-template-columns: 1fr; }
+      table, tbody, tr, th, td { display: block; width: 100%; }
+      tr + tr { margin-top: 10px; border-top: 2px solid var(--line); }
+      th { border-bottom: 0; }
+      td { border-top: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">검증 리포트</p>
+      <h1>체크/루틴 탭 P0 정리</h1>
+      <p>Today, Flow 탭에 이어 체크/루틴 탭도 같은 기준으로 봤다. 모바일에서는 저장한 Flow 전체를 제어하는 select가 중복이었고, 체크 탭은 18개 Flow 카드를 한 번에 펼쳐 캘린더/투두 앱 수준을 넘고 있었다.</p>
+      <p>
+        <a href="./2026-06-21-my-flow-v3-p0-actual-my-verification-ko.html">Today P0 리포트</a>
+        · <a href="./2026-06-21-my-flow-v3-p0-flow-tab-verification-ko.html">Flow 탭 P0 리포트</a>
+      </p>
+    </header>
+
+    <section>
+      <p class="eyebrow">판단</p>
+      <h2>탭별 역할</h2>
+      <div class="grid">
+        <div class="card"><b>체크 탭</b><span>체크할 Flow를 고르는 곳. 전체 체크리스트를 처음부터 펼치지 않는다.</span></div>
+        <div class="card"><b>루틴 탭</b><span>다음 루틴을 바로 실행하는 곳. 주간 보드는 접은 상태로 둔다.</span></div>
+        <div class="card"><b>모바일 공통</b><span>상단 보기 범위 select는 숨긴다. 각 탭 안에서 필요한 선택만 보여준다.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">변경</p>
+      <h2>모바일 복잡도 축소</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>영역</th>
+            <th>변경 전</th>
+            <th>변경 후</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>상단 범위 선택</td>
+            <td>체크/루틴 탭에도 전체 Flow select 노출</td>
+            <td>모바일에서는 모든 탭에서 숨김</td>
+          </tr>
+          <tr>
+            <td>체크 탭 목록</td>
+            <td>18개 Flow 카드 전체 노출</td>
+            <td>처음 4개만 노출, 나머지는 <code>체크 Flow 더 보기</code>로 펼침</td>
+          </tr>
+          <tr>
+            <td>체크 액션 문구</td>
+            <td><code>이 Flow 체크하기</code></td>
+            <td><code>체크 항목 열기</code></td>
+          </tr>
+          <tr>
+            <td>루틴 탭</td>
+            <td>범위 select + 다음 루틴 + 주간 보드 버튼</td>
+            <td>범위 select 제거. 다음 루틴 중심 유지</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">측정</p>
+      <h2>Playwright 모바일 390px</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>변경 전</th>
+            <th>변경 후</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>체크 탭 가로 overflow</td>
+            <td>6px</td>
+            <td>0px</td>
+          </tr>
+          <tr>
+            <td>체크 탭 초기 카드 수</td>
+            <td>18개</td>
+            <td>4개</td>
+          </tr>
+          <tr>
+            <td>체크 탭 높이</td>
+            <td>약 2436px</td>
+            <td>약 778px</td>
+          </tr>
+          <tr>
+            <td>루틴 탭 첫 실행 영역</td>
+            <td>y=427</td>
+            <td>y=367</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">검증</p>
+      <h2>현재 통과한 체크</h2>
+      <ul>
+        <li>Focused E2E 4개 통과: 기본 관리 탭, UX12, 모바일 체크/루틴, 모바일 Flow 목록 sheet</li>
+        <li>브라우저 측정: console error 없음, 체크/루틴 overflow 0</li>
+        <li>스크린샷: <code>output/playwright/my-flow-checklist-mobile-after.png</code></li>
+        <li>스크린샷: <code>output/playwright/my-flow-routine-mobile-after.png</code></li>
+      </ul>
+    </section>
+
+    <section>
+      <p class="eyebrow">남은 판단</p>
+      <h2>아직 완료가 아닌 이유</h2>
+      <p>저장 Flow 관리의 주요 탭은 P0 수준으로 정리됐지만, 아직 전체 목표를 완료라고 말하려면 실제 1개/4개/8개 이상 저장 시나리오를 한 번 더 통합 시뮬레이션해야 한다. 특히 데스크톱과 모바일에서 같은 역할 분리가 유지되는지, 불필요한 버튼이 남아 있지 않은지 마지막 통합 리뷰가 필요하다.</p>
+    </section>
+  </main>
+</body>
+</html>

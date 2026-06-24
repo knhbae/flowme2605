@@ -1,6 +1,15 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { clearFlowLocalProgress, mergeSeedBundles, normalizeSavedFlowRecord } from './storage';
+import {
+  clearFlowLocalProgress,
+  getActiveFlowProgress,
+  getMyFlowStepItemChecks,
+  getSavedFlowMapIndexByFlowSlug,
+  mergeSeedBundles,
+  normalizeSavedFlowMapSnapshot,
+  normalizeSavedFlowRecord,
+  saveMyFlowStepItemChecks,
+} from './storage';
 import { FlowBundle } from './types';
 
 function bundle(id: string, slug: string, title: string): FlowBundle {
@@ -73,9 +82,151 @@ test('saved flow record normalization keeps explicit save metadata', () => {
   );
 });
 
+test('active flow progress can use an injected bundle list for source-backed records', () => {
+  const store = new Map<string, string>();
+  const localStorage = {
+    get length() {
+      return store.size;
+    },
+    key: (index: number) => Array.from(store.keys())[index] ?? null,
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => store.set(key, value),
+    removeItem: (key: string) => store.delete(key),
+  };
+  const previousWindow = globalThis.window;
+  const previousLocalStorage = globalThis.localStorage;
+  Object.defineProperty(globalThis, 'window', {
+    configurable: true,
+    value: { localStorage },
+  });
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    value: localStorage,
+  });
+
+  try {
+    const sourceBacked = {
+      ...bundle('flow-source-backed-middle-school-math-1', 'source-backed-middle-school-math-1', '중1 수학 목차 진도'),
+      items: [
+        {
+          id: 'math-prime-factorization',
+          flow_id: 'flow-source-backed-middle-school-math-1',
+          title: '소인수분해',
+          type: 'todo' as const,
+          order: 0,
+        },
+      ],
+    };
+    localStorage.setItem(
+      'flow:saved:source-backed-middle-school-math-1',
+      JSON.stringify({
+        slug: 'source-backed-middle-school-math-1',
+        savedAt: '2026-06-23T00:00:00.000Z',
+        selectedArtifactMode: 'sheet',
+      }),
+    );
+
+    const progress = getActiveFlowProgress([sourceBacked]);
+
+    assert.deepEqual(progress.map((entry) => entry.slug), ['source-backed-middle-school-math-1']);
+    assert.equal(progress[0].title, '중1 수학 목차 진도');
+    assert.equal(progress[0].total, 1);
+  } finally {
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: previousWindow,
+    });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: previousLocalStorage,
+    });
+  }
+});
+
+test('saved flow map snapshots index child flows back to their parent map', () => {
+  assert.deepEqual(normalizeSavedFlowMapSnapshot(null), undefined);
+  assert.deepEqual(
+    normalizeSavedFlowMapSnapshot({
+      mapId: 'baby-health-schedule',
+      title: '영유아 검진·접종 일정 지도',
+      version: '2026-06-23.1',
+      savedAt: '2026-06-23T00:00:00.000Z',
+      anchor: '2026-01-15',
+      flowSlugs: ['source-backed-baby-health-checkups', 'source-backed-baby-vaccination-schedule'],
+      stepCountsByFlow: {
+        'source-backed-baby-health-checkups': 12,
+        'source-backed-baby-vaccination-schedule': 6,
+      },
+    }),
+    {
+      mapId: 'baby-health-schedule',
+      title: '영유아 검진·접종 일정 지도',
+      version: '2026-06-23.1',
+      savedAt: '2026-06-23T00:00:00.000Z',
+      anchor: '2026-01-15',
+      flowSlugs: ['source-backed-baby-health-checkups', 'source-backed-baby-vaccination-schedule'],
+      stepCountsByFlow: {
+        'source-backed-baby-health-checkups': 12,
+        'source-backed-baby-vaccination-schedule': 6,
+      },
+    },
+  );
+
+  const store = new Map<string, string>();
+  const localStorage = {
+    get length() {
+      return store.size;
+    },
+    key: (index: number) => Array.from(store.keys())[index] ?? null,
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => store.set(key, value),
+    removeItem: (key: string) => store.delete(key),
+  };
+  const previousWindow = globalThis.window;
+  const previousLocalStorage = globalThis.localStorage;
+  Object.defineProperty(globalThis, 'window', {
+    configurable: true,
+    value: { localStorage },
+  });
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    value: localStorage,
+  });
+
+  try {
+    localStorage.setItem(
+      'flow:map:saved:baby-health-schedule',
+      JSON.stringify({
+        mapId: 'baby-health-schedule',
+        title: '영유아 검진·접종 일정 지도',
+        version: '2026-06-23.1',
+        savedAt: '2026-06-23T00:00:00.000Z',
+        flowSlugs: ['source-backed-baby-health-checkups', 'source-backed-baby-vaccination-schedule'],
+      }),
+    );
+
+    const index = getSavedFlowMapIndexByFlowSlug();
+    assert.equal(index['source-backed-baby-health-checkups'].title, '영유아 검진·접종 일정 지도');
+    assert.equal(index['source-backed-baby-vaccination-schedule'].mapId, 'baby-health-schedule');
+  } finally {
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: previousWindow,
+    });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: previousLocalStorage,
+    });
+  }
+});
+
 test('clear flow local progress removes saved and per-flow state keys', () => {
   const store = new Map<string, string>();
   const localStorage = {
+    get length() {
+      return store.size;
+    },
+    key: (index: number) => Array.from(store.keys())[index] ?? null,
     getItem: (key: string) => store.get(key) ?? null,
     setItem: (key: string, value: string) => store.set(key, value),
     removeItem: (key: string) => store.delete(key),
@@ -102,10 +253,59 @@ test('clear flow local progress removes saved and per-flow state keys', () => {
       'flow_builder_mvp_reactions_moving-d30-basic',
     ];
     keys.forEach((key) => localStorage.setItem(key, 'value'));
+    localStorage.setItem('flow:my-flow:step-item-checks', JSON.stringify({
+      'moving-d30-basic::moving-method-quotes::2026-05-28': { '0': true },
+      'other-flow::first::none': { '0': true },
+    }));
 
     clearFlowLocalProgress('moving-d30-basic');
 
     keys.forEach((key) => assert.equal(localStorage.getItem(key), null));
+    assert.deepEqual(JSON.parse(localStorage.getItem('flow:my-flow:step-item-checks') || '{}'), {
+      'other-flow::first::none': { '0': true },
+    });
+  } finally {
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: previousWindow,
+    });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: previousLocalStorage,
+    });
+  }
+});
+
+test('my flow step item checks are persisted separately from step completion', () => {
+  const store = new Map<string, string>();
+  const localStorage = {
+    get length() {
+      return store.size;
+    },
+    key: (index: number) => Array.from(store.keys())[index] ?? null,
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => store.set(key, value),
+    removeItem: (key: string) => store.delete(key),
+  };
+  const previousWindow = globalThis.window;
+  const previousLocalStorage = globalThis.localStorage;
+  Object.defineProperty(globalThis, 'window', {
+    configurable: true,
+    value: { localStorage },
+  });
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    value: localStorage,
+  });
+
+  try {
+    saveMyFlowStepItemChecks({
+      'source-backed-middle-school-math-1::math-prime-factorization::none': { '0': true, '2': true },
+    });
+
+    assert.deepEqual(getMyFlowStepItemChecks(), {
+      'source-backed-middle-school-math-1::math-prime-factorization::none': { '0': true, '2': true },
+    });
   } finally {
     Object.defineProperty(globalThis, 'window', {
       configurable: true,

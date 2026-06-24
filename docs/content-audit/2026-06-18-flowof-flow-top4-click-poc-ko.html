@@ -1,0 +1,1152 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 실행 지도 4종 클릭 화면</title>
+    <style>
+      :root {
+        --bg: #eef3f8;
+        --panel: #ffffff;
+        --soft: #f7fafc;
+        --line: #d8e1eb;
+        --line-strong: #b9c7d8;
+        --text: #111827;
+        --muted: #536174;
+        --blue: #2563eb;
+        --blue-soft: #eaf1ff;
+        --green: #0f766e;
+        --green-soft: #e8f6f3;
+        --amber: #b45309;
+        --amber-soft: #fff5df;
+        --red: #b91c1c;
+        --red-soft: #fff1f2;
+        --shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      button,
+      a {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      a {
+        color: var(--blue);
+        font-weight: 850;
+      }
+
+      .page {
+        width: min(1160px, 100%);
+        margin: 0 auto;
+        padding: 16px;
+      }
+
+      .topbar,
+      .hero,
+      .card,
+      .action-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+      }
+
+      .brand {
+        font-size: 22px;
+        font-weight: 950;
+      }
+
+      .hero,
+      .card,
+      .action-card {
+        padding: 16px;
+      }
+
+      .hero {
+        margin-bottom: 12px;
+      }
+
+      .eyebrow,
+      .label {
+        margin: 0 0 8px;
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 950;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 10px;
+        font-size: clamp(30px, 5vw, 46px);
+        line-height: 1.08;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      h2 {
+        margin-bottom: 10px;
+        font-size: 23px;
+        line-height: 1.24;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      h3 {
+        margin-bottom: 8px;
+        font-size: 17px;
+        line-height: 1.35;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      .desc,
+      .small,
+      .top-note {
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .desc,
+      .top-note {
+        margin-bottom: 0;
+      }
+
+      .small {
+        display: block;
+        font-size: 13px;
+      }
+
+      .chips,
+      .actions,
+      .status-row,
+      .timeline-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 6px 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        background: var(--soft);
+        color: #263346;
+        font-size: 13px;
+        font-weight: 850;
+        line-height: 1.2;
+      }
+
+      .chip.blue { background: var(--blue-soft); border-color: #b8cdfb; color: #1d4ed8; }
+      .chip.green { background: var(--green-soft); border-color: #b9ded8; color: var(--green); }
+      .chip.amber { background: var(--amber-soft); border-color: #f5d393; color: var(--amber); }
+      .chip.red { background: var(--red-soft); border-color: #fecdd3; color: var(--red); }
+
+      .tabs {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        padding: 6px;
+        background: #e7edf5;
+        margin: 12px 0;
+      }
+
+      .tabs button {
+        min-height: 46px;
+        border: 0;
+        border-radius: 11px;
+        background: transparent;
+        color: #334155;
+        cursor: pointer;
+        font-weight: 950;
+      }
+
+      .tabs button.active {
+        background: #fff;
+        color: var(--blue);
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1.35fr);
+        gap: 12px;
+        align-items: start;
+      }
+
+      .stack {
+        display: grid;
+        gap: 10px;
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+
+      label,
+      .field label {
+        color: #334155;
+        font-size: 13px;
+        font-weight: 950;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--line-strong);
+        border-radius: 11px;
+        background: #fff;
+        color: var(--text);
+        padding: 11px 12px;
+      }
+
+      textarea {
+        min-height: 92px;
+        resize: vertical;
+        line-height: 1.5;
+      }
+
+      .btn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 44px;
+        padding: 10px 13px;
+        border: 1px solid var(--blue);
+        border-radius: 12px;
+        background: var(--blue);
+        color: #fff;
+        cursor: pointer;
+        font-weight: 950;
+        text-decoration: none;
+      }
+
+      .btn.secondary {
+        background: #fff;
+        color: var(--blue);
+      }
+
+      .btn.ghost {
+        border-color: var(--line-strong);
+        background: var(--soft);
+        color: #334155;
+      }
+
+      .source-box,
+      .note-box,
+      .calendar-box,
+      .toast {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--soft);
+        padding: 12px;
+        color: var(--muted);
+        line-height: 1.55;
+        font-size: 14px;
+      }
+
+      .source-box {
+        border-left: 4px solid var(--blue);
+        background: var(--blue-soft);
+        color: #1e3a8a;
+      }
+
+      .toast {
+        border-color: #b9ded8;
+        background: var(--green-soft);
+        color: var(--green);
+        font-weight: 850;
+      }
+
+      .map-button,
+      .check {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        background: #fff;
+        color: var(--text);
+        display: grid;
+        gap: 10px;
+        align-items: start;
+        padding: 12px;
+        text-align: left;
+      }
+
+      .map-button {
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        cursor: pointer;
+      }
+
+      .map-button.active {
+        border-color: var(--blue);
+        background: var(--blue-soft);
+      }
+
+      .check {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+
+      .check input {
+        width: 22px;
+        height: 22px;
+        margin-top: 1px;
+        accent-color: var(--blue);
+      }
+
+      .check.done {
+        border-color: #bbf7d0;
+        background: #f0fdf4;
+      }
+
+      .check.done .item-title {
+        color: var(--green);
+      }
+
+      .num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        background: #e2e8f0;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 950;
+      }
+
+      .item-title {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.35;
+        font-weight: 950;
+        word-break: keep-all;
+      }
+
+      .progress {
+        height: 8px;
+        border-radius: 999px;
+        background: #e7edf5;
+        overflow: hidden;
+      }
+
+      .progress span {
+        display: block;
+        height: 100%;
+        width: var(--value, 0%);
+        border-radius: inherit;
+        background: var(--blue);
+      }
+
+      .status-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin: 12px 0;
+      }
+
+      .status-box {
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        background: var(--soft);
+        padding: 10px;
+      }
+
+      .status-box b {
+        display: block;
+        margin-bottom: 4px;
+        color: #263346;
+        font-size: 13px;
+      }
+
+      .calendar-box {
+        background: #fbfdff;
+      }
+
+      .date-pill {
+        display: inline-flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 76px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fff;
+        padding: 8px 10px;
+      }
+
+      .date-pill b {
+        color: #263346;
+        font-size: 13px;
+      }
+
+      .date-pill span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      details {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+        padding: 12px;
+      }
+
+      summary {
+        cursor: pointer;
+        color: #263346;
+        font-weight: 950;
+      }
+
+      button:focus-visible,
+      a:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.26);
+        outline-offset: 2px;
+      }
+
+      @media (max-width: 820px) {
+        .page { padding: 10px; }
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+        .hero,
+        .card,
+        .action-card {
+          padding: 14px;
+        }
+        h1 { font-size: 30px; }
+        .tabs {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .layout,
+        .field-grid,
+        .status-grid {
+          grid-template-columns: 1fr;
+        }
+        .map-button {
+          grid-template-columns: auto minmax(0, 1fr);
+        }
+        .map-button .chip {
+          grid-column: 2;
+          justify-self: start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <nav class="topbar">
+        <div class="brand">FlowMe</div>
+        <p class="top-note">원문 묶음을 내 실행 지도와 하위 Flow로 저장해서, 지금 위치와 다음 실행 항목을 확인합니다.</p>
+      </nav>
+
+      <header class="hero">
+        <p class="eyebrow">대표 실행 지도 4종</p>
+        <h1>큰 콘텐츠 묶음에서 하위 Flow를 꺼내 쓰는 화면</h1>
+        <p class="desc">컴활, 운동 프로그램, WEB1, 백신 일정처럼 원문 안에 반복 단위가 있는 콘텐츠를 골랐습니다. 하위 Flow 상세는 기존 Flow처럼 체크, 메모, 원문 링크만 남겨 복잡도를 낮췄습니다.</p>
+        <div class="chips" style="margin-top:12px">
+          <span class="chip blue">전체 저장</span>
+          <span class="chip green">하위 Flow 실행</span>
+          <span class="chip">체크와 메모</span>
+          <span class="chip amber">원문 링크 보존</span>
+        </div>
+      </header>
+
+      <nav class="tabs" aria-label="대표 콘텐츠">
+        <button class="active" type="button" data-flow="computer">컴활</button>
+        <button type="button" data-flow="running">5K</button>
+        <button type="button" data-flow="web1">WEB1</button>
+        <button type="button" data-flow="cdc">백신</button>
+      </nav>
+
+      <section class="layout">
+        <aside class="card">
+          <p class="eyebrow" id="sourceKind"></p>
+          <h2 id="sourceTitle"></h2>
+          <p class="desc" id="sourceDesc"></p>
+          <div class="chips" id="flowChips" style="margin-top:12px"></div>
+
+          <div class="field-grid" id="inputFields" style="margin-top:14px"></div>
+
+          <div class="actions" style="margin-top:14px">
+            <button class="btn" type="button" id="saveAll">전체 저장</button>
+            <button class="btn secondary" type="button" id="saveSelected">현재 항목만 저장</button>
+          </div>
+          <div class="toast" id="toast" hidden style="margin-top:12px"></div>
+
+          <div class="source-box" id="sourceBox" style="margin-top:12px"></div>
+
+          <div style="margin-top:14px">
+            <p class="label" id="mapLabel"></p>
+            <div class="stack" id="childMap"></div>
+          </div>
+        </aside>
+
+        <section class="action-card">
+          <p class="eyebrow">내 Flow 실행</p>
+          <h2 id="childTitle"></h2>
+          <p class="desc" id="childDesc"></p>
+
+          <div class="status-grid">
+            <div class="status-box">
+              <b>다음 항목</b>
+              <span class="small" id="nextItem"></span>
+            </div>
+            <div class="status-box">
+              <b>진행</b>
+              <span class="small" id="progressText"></span>
+            </div>
+            <div class="status-box">
+              <b>저장 위치</b>
+              <span class="small" id="artifactText"></span>
+            </div>
+          </div>
+
+          <div class="progress" aria-label="진행률">
+            <span id="progressBar"></span>
+          </div>
+
+          <div class="calendar-box" id="timeBox" style="margin-top:12px"></div>
+
+          <div class="stack" id="checkList" style="margin-top:12px"></div>
+
+          <div class="note-box" style="margin-top:12px">
+            <label for="memoBox" id="memoLabel">메모</label>
+            <textarea id="memoBox" placeholder="막힌 지점, 다시 볼 항목, 확인한 URL만 짧게 남기기"></textarea>
+          </div>
+
+          <div class="actions" style="margin-top:12px">
+            <a class="btn" id="childSource" href="#" target="_blank" rel="noreferrer">원문에서 보기</a>
+            <button class="btn secondary" type="button" id="nextChild">다음 하위 Flow</button>
+          </div>
+
+          <details style="margin-top:12px">
+            <summary>전체 지도 보기</summary>
+            <div class="stack" id="fullMap" style="margin-top:10px"></div>
+          </details>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      const sourceData = {
+        computer: {
+          kind: "자격증 진도 지도",
+          title: "이기적 컴퓨터활용능력 1급 필기",
+          desc: "4권 구성의 수험서 목차를 과목별 하위 Flow로 저장합니다. 사용자는 시험일까지 과목 진도와 약점 메모만 관리합니다.",
+          chips: ["과목별 진도", "기출 메모", "시험일 선택"],
+          artifact: "진도판 + 약점 메모",
+          sourceLabel: "YES24 목차",
+          sourceUrl: "https://www.yes24.com/product/goods/147569004",
+          sourceNote: "원문은 1권 컴퓨터 일반, 2권 스프레드시트 일반, 3권 데이터베이스 일반, 4권 기출공략집으로 구성됩니다.",
+          mapLabel: "과목 Flow",
+          inputs: [
+            { id: "examDate", label: "시험 예정일", type: "date", value: "2026-07-25" },
+            { id: "studyDays", label: "공부 요일", type: "text", value: "월/수/금" }
+          ],
+          children: [
+            {
+              title: "컴퓨터 일반",
+              desc: "운영체제, 시스템 설정, 관리, 인터넷, 보호 파트를 순서대로 봅니다.",
+              due: "D-26",
+              sourceUrl: "https://www.yes24.com/product/goods/147569004",
+              memoLabel: "약점 메모",
+              items: [
+                ["운영체제 사용", "출제 빈도 높은 개념과 헷갈린 용어만 남기기"],
+                ["컴퓨터 시스템 설정 변경", "설정 위치와 기능 차이 메모"],
+                ["컴퓨터 시스템 관리", "관리 도구와 오류 유형 메모"],
+                ["인터넷 자료 활용", "프로토콜, 브라우저, 검색 관련 오답 메모"],
+                ["컴퓨터 시스템 보호", "보안, 백업, 악성코드 관련 오답 메모"]
+              ]
+            },
+            {
+              title: "스프레드시트 일반",
+              desc: "입력, 수식, 분석, 출력, 차트, 매크로 순서로 진도를 확인합니다.",
+              due: "D-18",
+              sourceUrl: "https://www.yes24.com/product/goods/147569004",
+              memoLabel: "함수/오답 메모",
+              items: [
+                ["스프레드시트 개요", "기본 용어와 화면 구성 확인"],
+                ["데이터 입력 및 편집", "입력 방식과 편집 규칙 확인"],
+                ["수식 활용", "틀린 함수와 인수 형식만 메모"],
+                ["데이터 관리 및 분석", "정렬, 필터, 부분합, 피벗 관련 오답 메모"],
+                ["출력", "인쇄 설정과 페이지 옵션 확인"],
+                ["차트 생성 및 수정", "차트 요소와 수정 위치 확인"],
+                ["매크로 및 프로그래밍", "VBA 문법은 틀린 문제 중심으로 메모"]
+              ]
+            },
+            {
+              title: "데이터베이스 일반",
+              desc: "테이블, 쿼리, 폼, 보고서, 프로그래밍 단원으로 진행합니다.",
+              due: "D-10",
+              sourceUrl: "https://www.yes24.com/product/goods/147569004",
+              memoLabel: "쿼리/개체 메모",
+              items: [
+                ["데이터베이스 개요", "기본 용어와 관계 개념 확인"],
+                ["테이블 작성", "필드 속성, 키, 관계 관련 오답 메모"],
+                ["쿼리 작성", "조건식과 쿼리 종류 메모"],
+                ["폼 작성", "컨트롤과 속성 위치 확인"],
+                ["보고서 작성", "그룹, 정렬, 출력 관련 오답 메모"],
+                ["데이터베이스 프로그래밍", "매크로와 코드 관련 문제만 메모"]
+              ]
+            },
+            {
+              title: "기출공략집",
+              desc: "대표 기출 60선과 2024-2025 상시 기출을 회차별로 확인합니다.",
+              due: "D-4",
+              sourceUrl: "https://www.yes24.com/product/goods/147569004",
+              memoLabel: "기출 오답 메모",
+              items: [
+                ["대표 기출 60선", "틀린 문항 번호와 약점 과목만 남기기"],
+                ["2025년 상시 기출문제 01회", "점수와 오답 과목 메모"],
+                ["2025년 상시 기출문제 02회", "반복 오답만 표시"],
+                ["2025년 상시 기출문제 03회", "헷갈린 키워드 메모"],
+                ["2024년 상시 기출문제 01회", "최종 재확인 항목 표시"],
+                ["2024년 상시 기출문제 02회", "시험 전 다시 볼 항목만 남기기"]
+              ]
+            }
+          ]
+        },
+        running: {
+          kind: "운동 프로그램 지도",
+          title: "NHS Couch to 5K",
+          desc: "9주 러닝 프로그램을 주차별 하위 Flow로 저장합니다. 운동 세부 설명은 원문을 열고, FlowMe에는 일정과 완료, 컨디션 메모만 남깁니다.",
+          chips: ["주차별 반복", "주 3회", "컨디션 메모"],
+          artifact: "반복 일정 + 완료 체크",
+          sourceLabel: "NHS Couch to 5K",
+          sourceUrl: "https://www.nhs.uk/better-health/get-active/get-running-with-couch-to-5k/couch-to-5k-running-plan/",
+          altSourceUrl: "https://darebee.com/programs/30-days-of-hiit.html",
+          sourceNote: "2번 후보는 운동 프로그램형 대표입니다. 이 화면은 텍스트 실행 단서가 더 많은 NHS를 사용하고, Darebee 30 Days는 같은 패턴의 대체 원문으로 둡니다.",
+          mapLabel: "주차 Flow",
+          inputs: [
+            { id: "startDate", label: "시작일", type: "date", value: "2026-06-22" },
+            { id: "runDays", label: "러닝 요일", type: "text", value: "월/수/토" }
+          ],
+          children: [
+            {
+              title: "1주차",
+              desc: "짧은 달리기와 걷기를 번갈아 하며 시작합니다.",
+              due: "1주차",
+              sourceUrl: "https://www.nhs.uk/better-health/get-active/get-running-with-couch-to-5k/couch-to-5k-running-plan/#week-1",
+              memoLabel: "컨디션 메모",
+              items: [
+                ["Run 1", "5분 걷기 후 1분 달리기/1분 30초 걷기 7회, 마지막 1분 달리기, 5분 걷기"],
+                ["Run 2", "Run 1과 같은 구조로 실행하고 호흡, 통증, 중단 여부만 메모"],
+                ["Run 3", "1주차 마지막 회차. 같은 구조로 실행하고 다음 주 진행 가능 여부 메모"]
+              ]
+            },
+            {
+              title: "2주차",
+              desc: "달리기 시간이 1분 30초로 늘어납니다.",
+              due: "2주차",
+              sourceUrl: "https://www.nhs.uk/better-health/get-active/get-running-with-couch-to-5k/couch-to-5k-running-plan/#week-2",
+              memoLabel: "컨디션 메모",
+              items: [
+                ["Run 1", "5분 걷기 후 1분 30초 달리기/2분 걷기 5회, 마지막 1분 30초 달리기, 5분 걷기"],
+                ["Run 2", "같은 구조로 실행하고 무리한 페이스 여부 메모"],
+                ["Run 3", "2주차 마지막 회차. 다음 주로 넘어갈지 메모"]
+              ]
+            },
+            {
+              title: "3주차",
+              desc: "시간을 보며 더 긴 달리기 구간을 시작합니다.",
+              due: "3주차",
+              sourceUrl: "https://www.nhs.uk/better-health/get-active/get-running-with-couch-to-5k/couch-to-5k-running-plan/#week-3",
+              memoLabel: "컨디션 메모",
+              items: [
+                ["Run 1", "원문 시간을 열고 실행. 타이머, 호흡, 중단 여부 메모"],
+                ["Run 2", "원문 시간을 열고 실행. 회복 상태만 짧게 남기기"],
+                ["Run 3", "3주차 마지막 회차. 반복 필요 여부 메모"]
+              ]
+            },
+            {
+              title: "4-9주차",
+              desc: "남은 주차는 같은 패턴으로 추가됩니다.",
+              due: "4-9주차",
+              sourceUrl: "https://www.nhs.uk/better-health/get-active/get-running-with-couch-to-5k/couch-to-5k-running-plan/",
+              memoLabel: "컨디션 메모",
+              items: [
+                ["4주차 추가", "원문에서 4주차 Run 1-3을 확인하고 일정에 넣기"],
+                ["5-6주차 추가", "무리가 있으면 이전 주차를 반복한다고 메모"],
+                ["7-9주차 추가", "원문 앱 또는 타이머를 사용하고 완료만 체크"]
+              ]
+            }
+          ]
+        },
+        web1: {
+          kind: "제작자 강의 지도",
+          title: "생활코딩 WEB1",
+          desc: "공개 강의 목차를 장별 하위 Flow로 저장합니다. 사용자는 오늘 볼 수업과 직접 만든 파일 위치만 관리합니다.",
+          chips: ["장별 진도", "수업 체크", "실습 메모"],
+          artifact: "강의 진도판 + 실습 메모",
+          sourceLabel: "구름EDU WEB1",
+          sourceUrl: "https://edu.goorm.io/learn/lecture/12959/%EC%83%9D%ED%99%9C%EC%BD%94%EB%94%A9-web1-html-and-internet/lesson/566075/%EA%B8%B0%ED%9A%8D",
+          sourceNote: "원문은 오리엔테이션, HTML, WEB, 웹 서버, 부록, 수업 마치며로 나뉩니다.",
+          mapLabel: "장 Flow",
+          inputs: [
+            { id: "courseStart", label: "시작일", type: "date", value: "2026-06-22" },
+            { id: "coursePace", label: "학습 페이스", type: "text", value: "하루 2개 수업" }
+          ],
+          children: [
+            {
+              title: "오리엔테이션",
+              desc: "수업소개, 프로젝트 동기, 기획을 보고 시작합니다.",
+              due: "Day 1",
+              sourceUrl: "https://edu.goorm.io/learn/lecture/12959/%EC%83%9D%ED%99%9C%EC%BD%94%EB%94%A9-web1-html-and-internet/lesson/566075/%EA%B8%B0%ED%9A%8D",
+              memoLabel: "프로젝트 메모",
+              items: [
+                ["수업소개", "이 코스로 만들 결과물을 확인"],
+                ["프로젝트의 동기", "왜 웹페이지를 만드는지 이해"],
+                ["기획", "내가 만들 페이지 주제만 짧게 메모"]
+              ]
+            },
+            {
+              title: "HTML",
+              desc: "HTML 기본 수업을 순서대로 보고 실습 파일 위치만 남깁니다.",
+              due: "Day 2-6",
+              sourceUrl: "https://edu.goorm.io/learn/lecture/12959/%EC%83%9D%ED%99%9C%EC%BD%94%EB%94%A9-web1-html-and-internet/lesson/566075/%EA%B8%B0%ED%9A%8D",
+              memoLabel: "실습 파일 메모",
+              items: [
+                ["코딩과 HTML", "수업 완료만 체크"],
+                ["HTML 코딩과 실습환경 준비", "실습 폴더 위치 메모"],
+                ["기본문법 태그(tag)", "자주 쓰는 태그만 메모"],
+                ["줄바꿈: br vs p", "차이를 직접 써보고 체크"],
+                ["최후의 문법 속성 & img", "이미지 파일 위치 메모"],
+                ["부모 자식과 목록", "ul/ol/li 차이만 메모"],
+                ["문서의 구조와 슈퍼스타들", "html/head/body 구조 확인"],
+                ["HTML 태그의 제왕", "링크 태그 사용 확인"]
+              ]
+            },
+            {
+              title: "WEB",
+              desc: "웹사이트 완성과 원시웹 수업으로 넘어갑니다.",
+              due: "Day 7",
+              sourceUrl: "https://edu.goorm.io/learn/lecture/12959/%EC%83%9D%ED%99%9C%EC%BD%94%EB%94%A9-web1-html-and-internet/lesson/566075/%EA%B8%B0%ED%9A%8D",
+              memoLabel: "배포 전 메모",
+              items: [
+                ["웹사이트 완성", "내 파일에서 링크가 열리는지 확인"],
+                ["원시웹", "웹의 시작 개념만 짧게 메모"]
+              ]
+            },
+            {
+              title: "웹 서버",
+              desc: "서버와 클라이언트, GitHub Pages, 운영체제별 웹서버 실습을 봅니다.",
+              due: "Day 8-11",
+              sourceUrl: "https://edu.goorm.io/learn/lecture/12959/%EC%83%9D%ED%99%9C%EC%BD%94%EB%94%A9-web1-html-and-internet/lesson/566075/%EA%B8%B0%ED%9A%8D",
+              memoLabel: "호스팅 메모",
+              items: [
+                ["서버와 클라이언트", "역할 차이 확인"],
+                ["웹호스팅 GitHub Pages", "주소와 저장소 이름 메모"],
+                ["웹서버 운영하기", "내 환경에서 가능한 방식 체크"],
+                ["운영체제별 웹서버 수업", "내 OS에 맞는 수업만 보고 메모"]
+              ]
+            },
+            {
+              title: "부록과 마무리",
+              desc: "코드의 힘과 마무리 수업은 필요할 때 추가로 진행합니다.",
+              due: "선택",
+              sourceUrl: "https://edu.goorm.io/learn/lecture/12959/%EC%83%9D%ED%99%9C%EC%BD%94%EB%94%A9-web1-html-and-internet/lesson/566075/%EA%B8%B0%ED%9A%8D",
+              memoLabel: "추가 기능 메모",
+              items: [
+                ["코드의 힘", "필요한 부록만 체크"],
+                ["동영상 삽입", "삽입할 영상 URL 메모"],
+                ["댓글 기능 추가", "필요 여부만 체크"],
+                ["채팅 기능 추가", "필요 여부만 체크"],
+                ["웹사이트 방문자 분석기", "분석 도구 사용 여부 메모"],
+                ["수업을 마치며", "다음에 배울 주제 메모"]
+              ]
+            }
+          ]
+        },
+        cdc: {
+          kind: "아이 예방접종 확인 지도",
+          title: "CDC Vaccines by Age",
+          desc: "연령별 권장 백신 정보를 방문 준비용 지도와 하위 확인 Flow로 저장합니다. 접종 여부 판단은 하지 않고, 공식 원문과 의료기관 확인 메모만 남깁니다.",
+          chips: ["연령별 지도", "공식 원문", "방문 메모"],
+          artifact: "연령별 체크 + 방문 메모",
+          sourceLabel: "CDC Vaccines by Age",
+          sourceUrl: "https://www.cdc.gov/vaccines/by-age/index.html",
+          sourceNote: "민감한 건강 정보이므로 FlowMe는 일정과 확인 메모만 제공합니다. 접종 여부, 금기, 예외 일정은 의료기관과 공식 원문에서 확인합니다.",
+          mapLabel: "연령 Flow",
+          inputs: [
+            { id: "birthDate", label: "아이 생일", type: "date", value: "2026-06-01" },
+            { id: "clinicMemo", label: "확인할 곳", type: "text", value: "소아청소년과" }
+          ],
+          children: [
+            {
+              title: "출생",
+              desc: "출생 시 확인할 항목입니다.",
+              due: "출생 시",
+              sourceUrl: "https://www.cdc.gov/vaccines/by-age/index.html#birth",
+              memoLabel: "병원 확인 메모",
+              caution: "백신 접종 여부와 예외는 의료기관에서 확인합니다.",
+              items: [
+                ["Hepatitis B vaccine", "CDC 원문에서 1st dose of 3 확인 후 병원 기록과 대조"],
+                ["RSV immunization", "RSV 시즌과 대상 여부를 의료기관에 확인"]
+              ]
+            },
+            {
+              title: "1-2개월",
+              desc: "1-2개월 시기에 원문에서 확인할 백신 묶음입니다.",
+              due: "생후 1-2개월",
+              sourceUrl: "https://www.cdc.gov/vaccines/by-age/index.html#1-through-2-months",
+              memoLabel: "방문 확인 메모",
+              caution: "브랜드별 접종 횟수와 개인 조건은 의료기관 확인이 필요합니다.",
+              items: [
+                ["DTaP vaccine", "원문과 의료기관 일정 확인"],
+                ["Hib vaccine", "3회 또는 4회 일정 여부를 의료기관에 확인"],
+                ["Hepatitis B vaccine", "2nd dose of 3 여부 확인"],
+                ["IPV", "1st dose of 4 여부 확인"],
+                ["PCV", "1st dose of 4 여부 확인"],
+                ["Rotavirus vaccine", "2회 또는 3회 일정 여부 확인"]
+              ]
+            },
+            {
+              title: "4개월",
+              desc: "4개월 방문 전 원문과 병원 일정만 확인합니다.",
+              due: "생후 4개월",
+              sourceUrl: "https://www.cdc.gov/vaccines/by-age/index.html#4-months",
+              memoLabel: "방문 확인 메모",
+              caution: "아이가 아프거나 이전 접종 이슈가 있으면 의료기관에 먼저 확인합니다.",
+              items: [
+                ["DTaP vaccine", "2nd dose of 5 여부 확인"],
+                ["Hib vaccine", "2nd dose of 3 or 4 여부 확인"],
+                ["IPV", "2nd dose of 4 여부 확인"],
+                ["PCV", "2nd dose of 4 여부 확인"],
+                ["Rotavirus vaccine", "2nd dose 일정 확인"]
+              ]
+            },
+            {
+              title: "6개월",
+              desc: "6개월에는 여러 항목이 겹치므로 방문 전 체크만 남깁니다.",
+              due: "생후 6개월",
+              sourceUrl: "https://www.cdc.gov/vaccines/by-age/index.html#6-months",
+              memoLabel: "방문 확인 메모",
+              caution: "COVID-19, 독감 등은 시기와 개인 조건에 따라 의료기관 확인이 필요합니다.",
+              items: [
+                ["COVID-19 vaccine", "의료기관과 상담할 항목으로 표시"],
+                ["DTaP vaccine", "3rd dose of 5 여부 확인"],
+                ["Hib vaccine", "3rd dose of 4 여부 확인"],
+                ["Hepatitis B vaccine", "3rd dose of 3 여부 확인"],
+                ["IPV", "3rd dose of 4 여부 확인"],
+                ["PCV", "3rd dose of 4 여부 확인"],
+                ["Rotavirus vaccine", "3rd dose 여부 확인"]
+              ]
+            },
+            {
+              title: "12-23개월",
+              desc: "돌 이후 방문 전 확인할 백신 묶음입니다.",
+              due: "생후 12-23개월",
+              sourceUrl: "https://www.cdc.gov/vaccines/by-age/index.html#12-through-23-months",
+              memoLabel: "방문 확인 메모",
+              caution: "누락 접종, 국가별 일정 차이, 개인 건강 상태는 의료기관에서 확인합니다.",
+              items: [
+                ["Chickenpox vaccine", "1st dose of 2 여부 확인"],
+                ["DTaP vaccine", "4th dose of 5 여부 확인"],
+                ["Flu vaccine", "매 시즌 일정 확인"],
+                ["Hepatitis A vaccine", "1st dose of 2 여부 확인"],
+                ["Hepatitis B vaccine", "6-18개월 사이 일정 확인"],
+                ["MMR vaccine", "1st dose of 2 여부 확인"],
+                ["PCV", "4th dose of 4 여부 확인"]
+              ]
+            }
+          ]
+        }
+      };
+
+      const state = {
+        activeFlow: "computer",
+        childIndex: { computer: 0, running: 0, web1: 1, cdc: 1 },
+        checks: {},
+        notes: {},
+        saved: {},
+        inputValues: {}
+      };
+
+      const $ = (id) => document.getElementById(id);
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function activeData() {
+        return sourceData[state.activeFlow];
+      }
+
+      function selectedChild() {
+        const data = activeData();
+        return data.children[state.childIndex[state.activeFlow]] || data.children[0];
+      }
+
+      function checkKey(child, itemIndex) {
+        return `${state.activeFlow}:${child.title}:${itemIndex}`;
+      }
+
+      function doneCount(child) {
+        return child.items.filter((_, index) => state.checks[checkKey(child, index)]).length;
+      }
+
+      function progressPct(child) {
+        return Math.round((doneCount(child) / child.items.length) * 100);
+      }
+
+      function nextItem(child) {
+        const index = child.items.findIndex((_, itemIndex) => !state.checks[checkKey(child, itemIndex)]);
+        return index >= 0 ? child.items[index][0] : "이 하위 Flow 완료";
+      }
+
+      function currentInputValue(input) {
+        return state.inputValues[`${state.activeFlow}:${input.id}`] || input.value;
+      }
+
+      function addDays(dateValue, days) {
+        const date = new Date(`${dateValue}T00:00:00`);
+        if (Number.isNaN(date.getTime())) return "";
+        date.setDate(date.getDate() + days);
+        return date.toISOString().slice(0, 10);
+      }
+
+      function renderTimeBox(data, child) {
+        if (state.activeFlow === "running") {
+          const start = currentInputValue(data.inputs[0]);
+          const weekIndex = Math.max(0, data.children.indexOf(child));
+          const base = weekIndex * 7;
+          const dates = [base, base + 2, base + 5].map((offset, index) => `
+            <span class="date-pill">
+              <b>Run ${index + 1}</b>
+              <span>${escapeHtml(addDays(start, offset))}</span>
+            </span>
+          `).join("");
+          return `
+            <p class="label">이번 하위 Flow 일정</p>
+            <div class="timeline-row">${dates}</div>
+          `;
+        }
+
+        if (state.activeFlow === "cdc") {
+          return `
+            <p class="label">방문 전 확인</p>
+            <div class="timeline-row">
+              <span class="chip red">의료 판단 아님</span>
+              <span class="chip">원문 확인</span>
+              <span class="chip">의료기관 일정 확인</span>
+            </div>
+          `;
+        }
+
+        if (state.activeFlow === "computer") {
+          return `
+            <p class="label">학습 기준</p>
+            <div class="timeline-row">
+              <span class="chip">시험 예정일 ${escapeHtml(currentInputValue(data.inputs[0]))}</span>
+              <span class="chip">현재 과목 ${escapeHtml(child.title)}</span>
+              <span class="chip amber">${escapeHtml(child.due)}</span>
+            </div>
+          `;
+        }
+
+        return `
+          <p class="label">학습 기준</p>
+          <div class="timeline-row">
+            <span class="chip">시작일 ${escapeHtml(currentInputValue(data.inputs[0]))}</span>
+            <span class="chip">페이스 ${escapeHtml(currentInputValue(data.inputs[1]))}</span>
+            <span class="chip amber">${escapeHtml(child.due)}</span>
+          </div>
+        `;
+      }
+
+      function childButton(child, index) {
+        const active = index === state.childIndex[state.activeFlow];
+        const done = doneCount(child);
+        const pct = Math.max(progressPct(child), done ? 12 : 4);
+        return `
+          <button class="map-button ${active ? "active" : ""}" type="button" data-child="${index}">
+            <span class="num">${index + 1}</span>
+            <span>
+              <p class="item-title">${escapeHtml(child.title)}</p>
+              <span class="small">${escapeHtml(child.desc)}</span>
+              <span class="progress" style="display:block;margin-top:8px"><span style="--value:${pct}%"></span></span>
+            </span>
+            <span class="chip ${done ? "green" : active ? "blue" : ""}">${done}/${child.items.length}</span>
+          </button>
+        `;
+      }
+
+      function renderChecks(child) {
+        return child.items.map((item, index) => {
+          const checked = Boolean(state.checks[checkKey(child, index)]);
+          return `
+            <label class="check ${checked ? "done" : ""}">
+              <input type="checkbox" data-check="${index}" ${checked ? "checked" : ""} />
+              <span>
+                <p class="item-title">${escapeHtml(item[0])}</p>
+                <span class="small">${escapeHtml(item[1])}</span>
+              </span>
+            </label>
+          `;
+        }).join("");
+      }
+
+      function renderInputs(data) {
+        return data.inputs.map((input) => `
+          <div class="field">
+            <label for="${input.id}">${escapeHtml(input.label)}</label>
+            <input id="${input.id}" data-input="${input.id}" type="${input.type}" value="${escapeHtml(currentInputValue(input))}" />
+          </div>
+        `).join("");
+      }
+
+      function render() {
+        const data = activeData();
+        const child = selectedChild();
+        const done = doneCount(child);
+        const percent = Math.max(progressPct(child), done ? 12 : 4);
+        const noteKey = `${state.activeFlow}:${child.title}`;
+
+        document.querySelectorAll("[data-flow]").forEach((button) => {
+          button.classList.toggle("active", button.dataset.flow === state.activeFlow);
+        });
+
+        $("sourceKind").textContent = data.kind;
+        $("sourceTitle").textContent = data.title;
+        $("sourceDesc").textContent = data.desc;
+        $("flowChips").innerHTML = data.chips.map((chip, index) => `<span class="chip ${index === 0 ? "blue" : index === 1 ? "green" : ""}">${escapeHtml(chip)}</span>`).join("");
+        $("inputFields").innerHTML = renderInputs(data);
+        $("saveAll").textContent = `${data.title} 전체 저장`;
+        $("saveSelected").textContent = `${child.title}만 저장`;
+        $("sourceBox").innerHTML = `
+          원문: <a href="${data.sourceUrl}" target="_blank" rel="noreferrer">${escapeHtml(data.sourceLabel)}</a>
+          ${data.altSourceUrl ? `<br />대체 원문: <a href="${data.altSourceUrl}" target="_blank" rel="noreferrer">Darebee 30 Days of HIIT</a>` : ""}
+          <br />${escapeHtml(data.sourceNote)}
+        `;
+        $("mapLabel").textContent = data.mapLabel;
+        $("childMap").innerHTML = data.children.map(childButton).join("");
+        $("fullMap").innerHTML = data.children.map(childButton).join("");
+
+        $("childTitle").textContent = child.title;
+        $("childDesc").textContent = child.desc;
+        $("nextItem").textContent = nextItem(child);
+        $("progressText").textContent = `${done}/${child.items.length} 완료`;
+        $("artifactText").textContent = data.artifact;
+        $("progressBar").style.setProperty("--value", `${percent}%`);
+        $("timeBox").innerHTML = renderTimeBox(data, child);
+        $("checkList").innerHTML = `
+          ${child.caution ? `<div class="note-box"><strong>주의</strong><br />${escapeHtml(child.caution)}</div>` : ""}
+          ${renderChecks(child)}
+        `;
+        $("memoLabel").textContent = child.memoLabel || "메모";
+        $("memoBox").value = state.notes[noteKey] || "";
+        $("memoBox").dataset.note = noteKey;
+        $("childSource").href = child.sourceUrl || data.sourceUrl;
+      }
+
+      document.addEventListener("click", (event) => {
+        const flowButton = event.target.closest("[data-flow]");
+        if (flowButton) {
+          state.activeFlow = flowButton.dataset.flow;
+          render();
+          return;
+        }
+
+        const childButton = event.target.closest("[data-child]");
+        if (childButton) {
+          state.childIndex[state.activeFlow] = Number(childButton.dataset.child);
+          render();
+          return;
+        }
+
+        if (event.target.id === "saveAll") {
+          const data = activeData();
+          state.saved[state.activeFlow] = "all";
+          $("toast").hidden = false;
+          $("toast").textContent = `${data.title} 전체 지도를 내 Flow에 저장했습니다.`;
+          return;
+        }
+
+        if (event.target.id === "saveSelected") {
+          const child = selectedChild();
+          state.saved[state.activeFlow] = child.title;
+          $("toast").hidden = false;
+          $("toast").textContent = `${child.title} 하위 Flow만 내 Flow에 저장했습니다.`;
+          return;
+        }
+
+        if (event.target.id === "nextChild") {
+          const data = activeData();
+          const current = state.childIndex[state.activeFlow];
+          state.childIndex[state.activeFlow] = Math.min(current + 1, data.children.length - 1);
+          render();
+        }
+      });
+
+      document.addEventListener("change", (event) => {
+        if (event.target.matches("[data-check]")) {
+          const child = selectedChild();
+          state.checks[checkKey(child, Number(event.target.dataset.check))] = event.target.checked;
+          render();
+          return;
+        }
+
+        if (event.target.matches("[data-input]")) {
+          state.inputValues[`${state.activeFlow}:${event.target.dataset.input}`] = event.target.value;
+          render();
+        }
+      });
+
+      document.addEventListener("input", (event) => {
+        if (event.target.id === "memoBox") {
+          state.notes[event.target.dataset.note] = event.target.value;
+        }
+      });
+
+      render();
+    </script>
+  </body>
+</html>

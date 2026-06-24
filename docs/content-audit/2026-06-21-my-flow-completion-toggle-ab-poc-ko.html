@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow 상세 완료 토글 비교</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --soft: #f1f5f9;
+      --line: #d9e2ef;
+      --text: #0f172a;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); letter-spacing: 0; }
+    button, textarea { font: inherit; letter-spacing: 0; }
+    button { cursor: pointer; }
+    .app { width: min(100% - 22px, 430px); margin: 0 auto; padding: 14px 0 42px; }
+    .top, .card, .detail, .row, .switcher {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, .06);
+    }
+    .top { padding: 16px; }
+    .eyebrow { margin: 0 0 6px; color: var(--blue); font-size: 13px; font-weight: 900; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 6px; font-size: 24px; line-height: 1.18; letter-spacing: 0; }
+    h2 { margin-bottom: 4px; font-size: 18px; line-height: 1.25; letter-spacing: 0; }
+    h3 { margin-bottom: 2px; font-size: 17px; line-height: 1.3; letter-spacing: 0; }
+    p { color: var(--muted); font-size: 14px; font-weight: 690; line-height: 1.55; }
+    .switcher { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 12px; padding: 4px; box-shadow: none; background: var(--soft); }
+    .switcher button {
+      min-height: 40px;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .switcher button.active { background: var(--blue); color: #ffffff; }
+    .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+    .summary div { border-radius: 10px; background: var(--soft); padding: 9px; text-align: center; }
+    .summary b, .summary span { display: block; }
+    .summary b { font-size: 20px; line-height: 1.1; }
+    .summary span { margin-top: 2px; color: var(--muted); font-size: 12px; font-weight: 850; }
+    .section-title { display: flex; align-items: end; justify-content: space-between; gap: 10px; margin: 14px 0 8px; }
+    .section-title .meta { margin: 0; font-size: 12px; font-weight: 850; }
+    .list { display: grid; gap: 8px; }
+    .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+      padding: 11px;
+      text-align: left;
+      box-shadow: none;
+    }
+    .row-main {
+      min-width: 0;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      text-align: left;
+    }
+    .row-main b, .row-main span { display: block; }
+    .row-main b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; }
+    .row-main span { margin-top: 3px; color: var(--muted); font-size: 12px; font-weight: 800; }
+    .quick-check, .detail-check {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #ffffff;
+      color: transparent;
+      font-size: 13px;
+      font-weight: 950;
+    }
+    .quick-check { width: 30px; height: 30px; }
+    .detail-check { min-height: 36px; gap: 7px; padding: 8px 10px; color: #334155; }
+    .detail-check::before {
+      content: "";
+      width: 16px;
+      height: 16px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      background: #ffffff;
+    }
+    .quick-check.done { border-color: var(--green); background: var(--green); color: #ffffff; }
+    .detail-check.done { border-color: #99f6e4; background: #ecfdf5; color: var(--green); }
+    .detail-check.done::before {
+      content: "✓";
+      display: inline-grid;
+      place-items: center;
+      border-color: var(--green);
+      background: var(--green);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 950;
+    }
+    .detail { margin-top: 10px; padding: 14px; box-shadow: none; }
+    .detail-head { display: flex; justify-content: space-between; gap: 10px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border-radius: 999px;
+      background: #eaf2ff;
+      padding: 3px 9px;
+      color: #1d4ed8;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .chips span { border-radius: 999px; background: var(--soft); padding: 4px 8px; color: #475569; font-size: 12px; font-weight: 850; }
+    label { display: grid; gap: 6px; margin-top: 12px; color: #334155; font-size: 13px; font-weight: 900; }
+    textarea {
+      width: 100%;
+      min-height: 108px;
+      resize: vertical;
+      border: 1px solid #cbd5e1;
+      border-radius: 11px;
+      background: #ffffff;
+      padding: 11px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .detail-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+    .close {
+      min-height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #ffffff;
+      padding: 8px 11px;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .note {
+      margin-top: 10px;
+      border: 1px solid #fed7aa;
+      border-radius: 10px;
+      background: #fff7ed;
+      padding: 10px;
+      color: #92400e;
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 1.45;
+    }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="top">
+      <p class="eyebrow">내 Flow</p>
+      <h1>오늘 실행</h1>
+      <p id="modeCopy">상세에서도 완료를 작게 표시합니다. 메모를 본 뒤 바로 마무리할 수 있습니다.</p>
+      <div class="switcher" aria-label="상세 완료 방식">
+        <button class="active" type="button" id="withToggle">상세 완료 있음</button>
+        <button type="button" id="withoutToggle">상세 완료 없음</button>
+      </div>
+      <div class="summary">
+        <div><b id="openCount">3</b><span>남음</span></div>
+        <div><b id="doneCount">0</b><span>완료</span></div>
+        <div><b>4</b><span>저장</span></div>
+      </div>
+    </section>
+
+    <div class="section-title">
+      <h2>오늘 할 일</h2>
+      <p class="meta">2026.06.21</p>
+    </div>
+
+    <section class="list" id="taskList"></section>
+
+    <section class="detail" id="detailPanel" aria-live="polite">
+      <div class="detail-head">
+        <div>
+          <p class="eyebrow">실행 항목</p>
+          <h3 id="detailTitle">계약 전 서류 확인</h3>
+          <p id="detailMeta">전세계약 전 서류 체크 · D-3</p>
+        </div>
+        <span class="chip" id="detailStatus">남음</span>
+      </div>
+      <div class="chips" id="detailItems"></div>
+      <label>
+        메모
+        <textarea id="memoBox">걸리는 항목이 있으면 계약 전 공인중개사나 전문가에게 확인.</textarea>
+      </label>
+      <div class="detail-actions">
+        <button class="detail-check" type="button" id="detailComplete" aria-label="완료 체크">완료</button>
+        <button class="close" type="button" id="closeDetail">닫기</button>
+      </div>
+      <p class="note hidden" id="hiddenCompletionNote">상세에서는 메모만 남깁니다. 완료는 목록의 체크로 처리합니다.</p>
+    </section>
+  </main>
+
+  <script>
+    const tasks = [
+      {
+        id: 'jeonse-docs',
+        title: '계약 전 서류 확인',
+        meta: '전세계약 전 서류 체크 · D-3',
+        memo: '걸리는 항목이 있으면 계약 전 공인중개사나 전문가에게 확인.',
+        items: ['시세 확인', '등기부등본 확인', '전세보증보험 가능 여부']
+      },
+      {
+        id: 'move-quote',
+        title: '견적 3곳 요청하기',
+        meta: '이사 D-30 준비 · 2026.06.18',
+        memo: '아직 업체 1곳만 확인함. 견적 기준을 짧게 남기기.',
+        items: ['이사 방식 선택', '견적 후보 2-3곳', '포함 범위 메모']
+      },
+      {
+        id: 'math-lesson',
+        title: '정수와 유리수 10강',
+        meta: '중1 수학 학습 지도 · 오늘',
+        memo: '헷갈린 개념만 다음 복습 메모로 남기기.',
+        items: ['원문 강의 열기', '교재 범위 풀기', '막힌 개념 메모']
+      }
+    ];
+
+    const state = {
+      mode: 'with',
+      selectedId: 'jeonse-docs',
+      done: new Set(),
+      memos: Object.fromEntries(tasks.map((task) => [task.id, task.memo]))
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function selectedTask() {
+      return tasks.find((task) => task.id === state.selectedId) || tasks[0];
+    }
+
+    function renderList() {
+      $('taskList').innerHTML = tasks.map((task) => {
+        const done = state.done.has(task.id);
+        return `
+          <article class="row">
+            <button class="row-main" type="button" data-open="${task.id}">
+              <b>${task.title}</b>
+              <span>${task.meta}</span>
+            </button>
+            <button class="quick-check ${done ? 'done' : ''}" type="button" data-check="${task.id}" aria-label="${done ? '완료 취소' : '완료 체크'}">${done ? '✓' : ''}</button>
+          </article>
+        `;
+      }).join('');
+
+      document.querySelectorAll('[data-open]').forEach((button) => {
+        button.addEventListener('click', () => {
+          state.selectedId = button.dataset.open;
+          $('detailPanel').classList.remove('hidden');
+          renderDetail();
+        });
+      });
+      document.querySelectorAll('[data-check]').forEach((button) => {
+        button.addEventListener('click', () => {
+          toggleDone(button.dataset.check);
+        });
+      });
+    }
+
+    function renderDetail() {
+      const task = selectedTask();
+      const done = state.done.has(task.id);
+      $('detailTitle').textContent = task.title;
+      $('detailMeta').textContent = task.meta;
+      $('detailStatus').textContent = done ? '완료' : '남음';
+      $('detailItems').innerHTML = task.items.map((item) => `<span>${item}</span>`).join('');
+      $('memoBox').value = state.memos[task.id] || '';
+      $('detailComplete').classList.toggle('done', done);
+      $('detailComplete').textContent = done ? '완료됨' : '완료';
+      $('detailComplete').setAttribute('aria-label', done ? '완료 취소' : '완료 체크');
+      $('detailComplete').classList.toggle('hidden', state.mode === 'without');
+      $('hiddenCompletionNote').classList.toggle('hidden', state.mode !== 'without');
+    }
+
+    function renderSummary() {
+      $('openCount').textContent = String(tasks.length - state.done.size);
+      $('doneCount').textContent = String(state.done.size);
+    }
+
+    function renderMode() {
+      $('withToggle').classList.toggle('active', state.mode === 'with');
+      $('withoutToggle').classList.toggle('active', state.mode === 'without');
+      $('modeCopy').textContent = state.mode === 'with'
+        ? '상세에서도 완료를 작게 표시합니다. 메모를 본 뒤 바로 마무리할 수 있습니다.'
+        : '상세에서는 메모만 남깁니다. 완료는 목록의 체크로 처리합니다.';
+      renderDetail();
+    }
+
+    function toggleDone(id) {
+      if (state.done.has(id)) {
+        state.done.delete(id);
+      } else {
+        state.done.add(id);
+      }
+      renderList();
+      renderDetail();
+      renderSummary();
+    }
+
+    $('memoBox').addEventListener('input', (event) => {
+      state.memos[state.selectedId] = event.target.value;
+    });
+    $('detailComplete').addEventListener('click', () => toggleDone(state.selectedId));
+    $('closeDetail').addEventListener('click', () => $('detailPanel').classList.add('hidden'));
+    $('withToggle').addEventListener('click', () => {
+      state.mode = 'with';
+      $('detailPanel').classList.remove('hidden');
+      renderMode();
+    });
+    $('withoutToggle').addEventListener('click', () => {
+      state.mode = 'without';
+      $('detailPanel').classList.remove('hidden');
+      renderMode();
+    });
+
+    renderList();
+    renderDetail();
+    renderSummary();
+  </script>
+</body>
+</html>

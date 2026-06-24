@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Flow 제품 코드 반영 리포트</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172033;
+      --muted: #667085;
+      --line: #d8dee8;
+      --soft: #f5f7fb;
+      --blue: #2457d6;
+      --green: #0f766e;
+      --amber: #9a5b00;
+      --red: #b42318;
+    }
+    body {
+      margin: 0;
+      background: #eef2f7;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.62;
+    }
+    article {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 36px 20px 56px;
+    }
+    header, section {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: white;
+      padding: 24px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+    section { margin-top: 18px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: 30px; letter-spacing: 0; }
+    h2 { margin-bottom: 14px; font-size: 21px; }
+    h3 { margin-bottom: 8px; font-size: 16px; }
+    p { margin-bottom: 10px; }
+    .lead { max-width: 780px; color: var(--muted); font-size: 16px; }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      border-radius: 999px;
+      background: var(--soft);
+      padding: 0 12px;
+      color: #344054;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .pill.ok { background: #e6f6f2; color: var(--green); }
+    .pill.warn { background: #fff4d8; color: var(--amber); }
+    .grid {
+      display: grid;
+      gap: 12px;
+    }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+      padding: 16px;
+    }
+    .label {
+      margin-bottom: 6px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f1f5fb; }
+    code {
+      border-radius: 5px;
+      background: #edf2f8;
+      padding: 2px 5px;
+      color: #1d2939;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 0.93em;
+    }
+    ul { margin: 0; padding-left: 20px; }
+    li + li { margin-top: 6px; }
+    .status-ok { color: var(--green); font-weight: 800; }
+    .status-note { color: var(--amber); font-weight: 800; }
+    @media (max-width: 720px) {
+      article { padding: 18px 12px 36px; }
+      header, section { padding: 18px; border-radius: 8px; }
+      .grid.two, .grid.three { grid-template-columns: 1fr; }
+      h1 { font-size: 24px; }
+      table { font-size: 13px; }
+      th, td { padding: 9px; }
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <header>
+      <p class="label">2026-06-24 · product code alignment</p>
+      <h1>My Flow v11 UX 제품 코드 반영 및 반복 검증 리포트</h1>
+      <p class="lead">
+        이번 작업은 HTML PoC를 더 만드는 것이 아니라, 기존 제품 코드의 `/my` 저장 실행 화면에
+        지금까지 정리한 <strong>Flow Map &gt; Flow &gt; Step &gt; Item</strong> 모델을 얇게 반영할 수 있는지 검증한 것이다.
+        사용자 화면은 캘린더/투두 앱 수준의 단순함을 유지하고, 검토용 문구는 제품 화면에 넣지 않았다.
+      </p>
+      <div class="meta">
+        <span class="pill ok">Blocking/High resolved</span>
+        <span class="pill ok">npm test pass</span>
+        <span class="pill ok">docs:check pass</span>
+        <span class="pill ok">build pass</span>
+        <span class="pill ok">mobile rehearsal pass</span>
+      </div>
+    </header>
+
+    <section>
+      <h2>반영 범위</h2>
+      <div class="grid three">
+        <div class="card">
+          <p class="label">Storage</p>
+          <h3>저장된 Flow Map 맥락</h3>
+          <p><code>flow:map:saved:{mapId}</code> 스냅샷을 읽어 `/my`의 child Flow 카드에 부모 지도 맥락을 붙였다.</p>
+        </div>
+        <div class="card">
+          <p class="label">Step Detail</p>
+          <h3>Item 체크리스트</h3>
+          <p>Step은 최소 실행 단위로 유지하고, 원문에서 온 하위 Item은 상세 안의 체크 항목으로만 노출했다.</p>
+        </div>
+        <div class="card">
+          <p class="label">Mobile</p>
+          <h3>단일 저장 기본 화면</h3>
+          <p>날짜형 단일 Flow는 Today, 비날짜형 진도/시트 Flow는 Flow 카드 화면으로 바로 열리게 했다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>기존 제품에서 유지한 것</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>영역</th>
+            <th>유지한 이유</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>기존 <code>FlowBundle / FlowItem / FlowItemDetail</code></td>
+            <td>새로운 사용자 노출 타입을 늘리지 않고도 Step과 Item을 표현할 수 있었다.</td>
+          </tr>
+          <tr>
+            <td>기존 `/my` Today / Calendar / Flow / Checklist / Routine 축</td>
+            <td>이미 저장 Flow 개수와 날짜형 여부에 따라 화면을 줄이는 UX가 있었으므로 대체하지 않았다.</td>
+          </tr>
+          <tr>
+            <td>기존 완료 체크와 메모 저장 구조</td>
+            <td>Step 완료와 Item 체크를 분리해야 해서 기존 완료 상태를 건드리지 않고 별도 키로 저장했다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>시뮬레이션 결과</h2>
+      <div class="grid two">
+        <div class="card">
+          <p class="label">Persona A · 단일 Flow</p>
+          <h3>중1 수학 목차 진도 저장 사용자</h3>
+          <ul>
+            <li>원문 기반 Flow Map을 저장하면 `/my`에 단일 Flow 카드가 보인다.</li>
+            <li>글로벌 탭은 숨겨져 화면은 가볍게 유지된다.</li>
+            <li>비날짜형 진도 Flow는 Flow 카드 화면이 기본이라 Step 상세와 Item 체크가 바로 열린다.</li>
+            <li>모바일 390px에서 가로 overflow 없음.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <p class="label">Persona B · Flow Map</p>
+          <h3>영유아 검진/접종 지도 저장 사용자</h3>
+          <ul>
+            <li>생년월일 1개 입력 후 건강검진 Flow와 예방접종 Flow가 함께 저장된다.</li>
+            <li>각 카드에 부모 지도명이 조용한 맥락으로 표시된다.</li>
+            <li>다음 할 일은 캘린더 기준으로 열리고, 지도 원문으로 돌아가는 링크는 <code>지도 보기</code>로 표시된다.</li>
+            <li>모바일 390px에서 가로 overflow 없음.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>반복 개선에서 잡은 문제</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>등급</th>
+            <th>문제</th>
+            <th>수정</th>
+            <th>결과</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="status-ok">High</span></td>
+            <td>모바일 단일 저장에서 비날짜형 Flow가 Today로 고정되어 Step 상세가 열릴 위치가 없었다.</td>
+            <td>단일 저장 기본 화면을 Step shape에 따라 분기했다. 날짜형은 Today, 비날짜형은 Flow 카드 화면.</td>
+            <td>중1 수학 저장 후 Step 상세와 Item 체크가 바로 열림.</td>
+          </tr>
+          <tr>
+            <td><span class="status-ok">Medium</span></td>
+            <td>Item 체크가 memo에도 반복되면 설명이 중복되어 검토용 화면처럼 보일 수 있었다.</td>
+            <td><code>detail.how</code>의 bullet은 상세 체크리스트로 빼고 memo에는 반복하지 않게 했다.</td>
+            <td>Step 상세가 체크 + 메모 중심으로 정리됨.</td>
+          </tr>
+          <tr>
+            <td><span class="status-note">Low</span></td>
+            <td>전체 e2e는 시간 제한으로 한 번에 116개를 끝내지 못했다.</td>
+            <td>96개 통과 지점 이후 남은 뒤쪽 묶음을 분리 실행했다.</td>
+            <td>관련 묶음과 남은 e2e 묶음 모두 통과.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>검증 기록</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>검증</th>
+            <th>결과</th>
+            <th>메모</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>npm test</code></td>
+            <td class="status-ok">254 passed</td>
+            <td>storage, source-backed My Flow, 기존 flow 로직 포함.</td>
+          </tr>
+          <tr>
+            <td><code>npm run docs:check</code></td>
+            <td class="status-ok">pass</td>
+            <td>14 required files, 1100 local links.</td>
+          </tr>
+          <tr>
+            <td><code>npm run build</code></td>
+            <td class="status-ok">pass</td>
+            <td>Next.js production build 통과.</td>
+          </tr>
+          <tr>
+            <td>관련 e2e</td>
+            <td class="status-ok">5 passed</td>
+            <td>Flow Map save, single mobile detail, baby health map, 기존 single saved regression.</td>
+          </tr>
+          <tr>
+            <td>모바일 리허설</td>
+            <td class="status-ok">pass</td>
+            <td><code>output/playwright/my-flow-v11-*.png</code> 3개 캡처, 390px overflow false.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>남은 리스크</h2>
+      <ul>
+        <li>이번 변경은 localStorage 기반의 얇은 제품 반영이다. 서버 저장, 계정 동기화, 제작자 발행 버전 관리는 다음 축이다.</li>
+        <li>Item 체크는 현재 FlowMe 내부 체크로만 저장된다. 외부 캘린더/투두 export의 description fallback은 별도 export QA에서 더 봐야 한다.</li>
+        <li>Flow Map 전용 탭이나 지도 drilldown을 새로 만들지 않았다. 지금 단계에서는 child Flow 카드에 부모 맥락을 붙이는 수준이 적절하다.</li>
+      </ul>
+    </section>
+  </article>
+</body>
+</html>

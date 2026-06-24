@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow v10 제품 데이터 연결 기준</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --surface: #ffffff;
+      --soft: #f8fafc;
+      --line: #d8e2ef;
+      --text: #101827;
+      --muted: #5f6b7c;
+      --blue: #1f5fbf;
+      --blue-soft: #eaf2ff;
+      --green: #0f7a4a;
+      --green-soft: #e8f7ef;
+      --amber: #9a6100;
+      --amber-soft: #fff6df;
+      --purple: #6d28d9;
+      --purple-soft: #f5f0ff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: linear-gradient(180deg, #fbfdff 0, var(--bg) 460px); font-size: 16px; line-height: 1.62; }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    h1, h2, h3, p { margin-top: 0; letter-spacing: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 44px); line-height: 1.12; word-break: keep-all; }
+    h2 { margin-bottom: 8px; font-size: clamp(22px, 3vw, 31px); line-height: 1.24; word-break: keep-all; }
+    h3 { margin-bottom: 6px; font-size: 19px; line-height: 1.3; word-break: keep-all; }
+    .page { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 16px 0 64px; }
+    .hero, .card, .row, table, .codebox { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+    .hero, .card { margin-top: 12px; padding: 18px; box-shadow: 0 14px 32px rgba(16, 24, 39, .08); }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .desc { max-width: 880px; color: var(--muted); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip { display: inline-flex; align-items: center; min-height: 30px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--soft); color: #344054; font-size: 13px; font-weight: 850; text-decoration: none; }
+    .chip.blue { border-color: #bfdbfe; background: var(--blue-soft); color: #174ea6; }
+    .chip.green { border-color: #bde7cb; background: var(--green-soft); color: var(--green); }
+    .chip.amber { border-color: #efd08f; background: var(--amber-soft); color: var(--amber); }
+    .chip.purple { border-color: #ddd6fe; background: var(--purple-soft); color: var(--purple); }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .row { padding: 14px; background: var(--soft); }
+    .row b, .row span { display: block; }
+    .row span { margin-top: 5px; color: var(--muted); font-weight: 700; }
+    .row.good { border-left: 6px solid var(--green); background: var(--green-soft); }
+    .row.warn { border-left: 6px solid var(--amber); background: var(--amber-soft); }
+    .row.info { border-left: 6px solid var(--blue); background: var(--blue-soft); }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; overflow: hidden; }
+    th, td { border: 1px solid var(--line); padding: 10px; vertical-align: top; text-align: left; }
+    th { background: #eef3f8; color: #344054; font-size: 13px; font-weight: 950; }
+    td { background: #fff; }
+    .codebox { margin-top: 12px; padding: 14px; background: #0f172a; color: #e2e8f0; overflow-x: auto; }
+    code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    pre { margin: 0; white-space: pre-wrap; }
+    ul { margin: 10px 0 0; padding-left: 20px; }
+    li + li { margin-top: 7px; }
+    .status { font-weight: 950; }
+    .ok { color: var(--green); }
+    .pending { color: var(--amber); }
+    @media (max-width: 780px) {
+      .page { width: min(100% - 20px, 1180px); padding-top: 10px; }
+      .hero, .card { padding: 14px; }
+      .grid, .grid.two { grid-template-columns: 1fr; }
+      table, tbody, tr, th, td { display: block; width: 100%; }
+      th { border-bottom: 0; }
+      td { border-top: 0; }
+      tr + tr { margin-top: 10px; display: block; border-top: 2px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="eyebrow">제품 데이터 연결 · 내부 기준</p>
+      <h1>My Flow v10 제품 데이터 연결 기준</h1>
+      <p class="desc">v9에서 확인한 원문 기반 My Flow 화면을 실제 제품 모델로 옮길 때의 기준이다. 새 사용자 UI를 만들지 않고, 기존 `FlowBundle / FlowItem / FlowItemDetail` 계약으로 먼저 표현 가능한지 확인한다.</p>
+      <div class="chips">
+        <a class="chip blue" href="./2026-06-22-my-flow-v10-source-backed-user-poc-ko.html">v10 사용자 PoC</a>
+        <a class="chip blue" href="./2026-06-22-source-backed-my-flow-v9-ko.html">v9 사용자 화면</a>
+        <a class="chip amber" href="./2026-06-22-source-backed-my-flow-v9-rehearsal-ko.html">v9 리허설</a>
+        <a class="chip green" href="../specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md">Step 계약 문서</a>
+        <a class="chip purple" href="../flow-rules/flow-execution-types.md">실행 타입 기준</a>
+      </div>
+    </header>
+
+    <section class="card">
+      <p class="eyebrow">핵심 판단</p>
+      <h2>v9를 위해 새 사용자 모델을 만들지 않는다</h2>
+      <div class="grid">
+        <div class="row good">
+          <b>사용자에게 보이는 것</b>
+          <span>오늘, 일정, Flow, 지도. Step을 누르면 원문 링크, Item 체크, 메모만 보인다.</span>
+        </div>
+        <div class="row info">
+          <b>제품에 저장되는 것</b>
+          <span>FlowBundle, FlowItem, FlowItemDetail. Step은 FlowItem, Item은 detail/description/link/memo로 내려간다.</span>
+        </div>
+        <div class="row warn">
+          <b>아직 결정하지 않는 것</b>
+          <span>진도형 Step을 별도 `progress_step` 타입으로 만들지 여부. 지금은 gap으로 기록한다.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">계층 매핑</p>
+      <h2>Flow Map &gt; Flow &gt; Step &gt; Item을 기존 모델에 붙이는 법</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>v9 개념</th>
+            <th>제품 객체</th>
+            <th>화면 노출</th>
+            <th>외부 도구 fallback</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Flow Map</td>
+            <td>부모/그룹 관계</td>
+            <td>지도 탭에서만 parent로 보임</td>
+            <td>내보내기 제목 또는 폴더/시트 그룹명</td>
+          </tr>
+          <tr>
+            <td>Flow</td>
+            <td>`FlowBundle.flow`</td>
+            <td>개별 Flow 카드 또는 지도 안 child Flow</td>
+            <td>캘린더 이름, 시트 파일명, 메모 제목</td>
+          </tr>
+          <tr>
+            <td>Step</td>
+            <td>`FlowItem`</td>
+            <td>오늘/일정/Flow/지도에서 누르는 최소 실행 row</td>
+            <td>캘린더 이벤트, todo row, 체크리스트 row, 시트 row</td>
+          </tr>
+          <tr>
+            <td>Item</td>
+            <td>`FlowItemDetail` 또는 description/link</td>
+            <td>Step 상세 안의 내부 체크 또는 보조 텍스트</td>
+            <td>캘린더 설명, todo body, 시트 note, 메모 bullet</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">v9 fixture 해석</p>
+      <h2>각 컨텐츠는 현재 모델로 어디까지 표현되는가</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Flow</th>
+            <th>실행 타입</th>
+            <th>자연 artifact</th>
+            <th>현재 모델 적합도</th>
+            <th>남은 gap</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>전세계약 전 확인 3가지</td>
+            <td>process/check</td>
+            <td>todo + memo + dated reminder</td>
+            <td class="status ok">좋음</td>
+            <td>법률/부동산성 주의는 check row가 아니라 source/detail에 유지.</td>
+          </tr>
+          <tr>
+            <td>원룸 이사 D-30 준비</td>
+            <td>timeline</td>
+            <td>calendar + checklist</td>
+            <td class="status ok">강함</td>
+            <td>업체명/견적/연락처는 memo로 충분. 별도 vendor form 금지.</td>
+          </tr>
+          <tr>
+            <td>온라인 여권 재발급</td>
+            <td>process</td>
+            <td>checklist + dated reminder</td>
+            <td class="status ok">좋음</td>
+            <td>사진 오류/취소 제한은 caution row가 아니라 Step detail/export body에 둔다.</td>
+          </tr>
+          <tr>
+            <td>중1 수학 목차</td>
+            <td>progress</td>
+            <td>progress list + optional dates</td>
+            <td class="status pending">부분 적합</td>
+            <td>My Flow item type에 `progress_step`이 없다. 체크/일정으로 버틸지 별도 타입이 필요한지 판단 필요.</td>
+          </tr>
+          <tr>
+            <td>영유아 검진·접종 일정</td>
+            <td>timeline/process</td>
+            <td>calendar + memo</td>
+            <td class="status ok">좋음</td>
+            <td>의료 판단처럼 보이지 않게 공식 일정 확인과 보호자 메모를 분리.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">Step export</p>
+      <h2>사용자 화면은 단순하게, export body는 충분하게</h2>
+      <div class="grid two">
+        <div class="row">
+          <b>사용자 Step 상세</b>
+          <span>일정, 저장 위치, 진행 상태, 원문 링크, Item 체크, 메모.</span>
+        </div>
+        <div class="row">
+          <b>캘린더/투두/시트로 나갈 때</b>
+          <span>Step title, source URL, completion 기준, Item bullet, memo hint가 description/body/note로 들어간다.</span>
+        </div>
+      </div>
+      <div class="codebox" aria-label="Step export 예시">
+<pre>SUMMARY: 원룸 이사 D-30 준비 - 이삿짐센터·입주청소 예약
+DESCRIPTION:
+이사 한 달 전 예약해야 하는 항목만 먼저 처리합니다.
+Items:
+- 이삿짐센터 견적 3곳 비교: 포장 범위와 비용을 같이 봅니다.
+- 입주청소 예약: 청소 날짜와 포함 범위를 확인합니다.
+- 줄일 짐 메모: 버릴 물건과 줄일 짐을 짧게 적습니다.
+Memo:
+업체명, 견적, 포함 범위, 연락처만 남기세요
+Source:
+KB Think 원룸 이사 체크리스트</pre>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">다음 구현 slice</p>
+      <h2>코드로 바로 들어가기 전 필요한 최소 작업</h2>
+      <ol>
+        <li>v9 fixture를 `FlowBundle` 형태로 표현하는 작은 adapter 또는 seed fixture를 만든다.</li>
+        <li>Step이 `FlowItem`, Item이 `FlowItemDetail`/description/link로 보존되는지 테스트한다.</li>
+        <li>dated Step이 기존 ICS export에서 충분한 description을 갖는지 확인한다.</li>
+        <li>중1 수학 같은 progress row가 현재 item type으로 충분한지, 아니면 `progress_step`이 필요한지 한 번 더 본다.</li>
+      </ol>
+    </section>
+  </main>
+</body>
+</html>

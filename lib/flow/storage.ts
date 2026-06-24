@@ -20,6 +20,8 @@ const ANCHOR_KEY_PREFIX = 'flow:';
 const ITEM_STATE_KEY_PREFIX = 'flow_builder_mvp_item_state_';
 const NOTICE_KEY = 'flow_builder_mvp_storage_notice_dismissed';
 const SAVED_FLOW_KEY_PREFIX = 'flow:saved:';
+const SAVED_FLOW_MAP_KEY_PREFIX = 'flow:map:saved:';
+const MY_FLOW_STEP_ITEM_CHECKS_KEY = 'flow:my-flow:step-item-checks';
 
 export type StoredAnchor = {
   mode: string;
@@ -34,6 +36,20 @@ export type SavedFlowRecord = {
   selectedArtifactMode: SavedFlowArtifactMode;
   anchor?: string;
 };
+
+export type SavedFlowMapSnapshot = {
+  mapId: string;
+  title: string;
+  version: string;
+  savedAt: string;
+  anchor?: string;
+  flowSlugs: string[];
+  stepCountsByFlow?: Record<string, number>;
+  riskLevelsByFlow?: Record<string, string | undefined>;
+  sourceCheckedAtByFlow?: Record<string, string | undefined>;
+};
+
+export type MyFlowStepItemChecks = Record<string, Record<string, boolean>>;
 
 export type ActiveFlowProgress = {
   slug: string;
@@ -191,6 +207,72 @@ export function saveFlowRecord(slug: string, value: Omit<SavedFlowRecord, 'slug'
   return record;
 }
 
+export function normalizeSavedFlowMapSnapshot(value: unknown): SavedFlowMapSnapshot | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const snapshot = value as Partial<SavedFlowMapSnapshot>;
+  if (typeof snapshot.mapId !== 'string' || !snapshot.mapId.trim()) return undefined;
+  if (typeof snapshot.title !== 'string' || !snapshot.title.trim()) return undefined;
+  if (typeof snapshot.version !== 'string' || !snapshot.version.trim()) return undefined;
+  if (typeof snapshot.savedAt !== 'string' || !snapshot.savedAt.trim()) return undefined;
+  if (!Array.isArray(snapshot.flowSlugs) || snapshot.flowSlugs.some((slug) => typeof slug !== 'string' || !slug.trim())) return undefined;
+  const anchor = typeof snapshot.anchor === 'string' && snapshot.anchor.trim() ? snapshot.anchor : undefined;
+
+  return {
+    mapId: snapshot.mapId,
+    title: snapshot.title,
+    version: snapshot.version,
+    savedAt: snapshot.savedAt,
+    ...(anchor ? { anchor } : {}),
+    flowSlugs: snapshot.flowSlugs,
+    ...(snapshot.stepCountsByFlow && typeof snapshot.stepCountsByFlow === 'object' ? { stepCountsByFlow: snapshot.stepCountsByFlow } : {}),
+    ...(snapshot.riskLevelsByFlow && typeof snapshot.riskLevelsByFlow === 'object' ? { riskLevelsByFlow: snapshot.riskLevelsByFlow } : {}),
+    ...(snapshot.sourceCheckedAtByFlow && typeof snapshot.sourceCheckedAtByFlow === 'object' ? { sourceCheckedAtByFlow: snapshot.sourceCheckedAtByFlow } : {}),
+  };
+}
+
+export function getSavedFlowMapSnapshots(): SavedFlowMapSnapshot[] {
+  if (!canUseStorage()) return [];
+  const keys = typeof localStorage.key === 'function'
+    ? Array.from({ length: localStorage.length }, (_, index) => localStorage.key(index)).filter((key): key is string => Boolean(key))
+    : Object.keys(localStorage);
+  return keys
+    .filter((key) => key.startsWith(SAVED_FLOW_MAP_KEY_PREFIX))
+    .flatMap((key) => {
+      try {
+        const snapshot = normalizeSavedFlowMapSnapshot(JSON.parse(localStorage.getItem(key) || 'null'));
+        return snapshot ? [snapshot] : [];
+      } catch {
+        return [];
+      }
+    })
+    .sort((a, b) => b.savedAt.localeCompare(a.savedAt));
+}
+
+export function getSavedFlowMapIndexByFlowSlug(): Record<string, SavedFlowMapSnapshot> {
+  return getSavedFlowMapSnapshots().reduce<Record<string, SavedFlowMapSnapshot>>((index, snapshot) => {
+    snapshot.flowSlugs.forEach((slug) => {
+      if (!index[slug]) index[slug] = snapshot;
+    });
+    return index;
+  }, {});
+}
+
+export function getMyFlowStepItemChecks(): MyFlowStepItemChecks {
+  if (!canUseStorage()) return {};
+  try {
+    const parsed = JSON.parse(localStorage.getItem(MY_FLOW_STEP_ITEM_CHECKS_KEY) || '{}');
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+export function saveMyFlowStepItemChecks(value: MyFlowStepItemChecks): void {
+  if (!canUseStorage()) return;
+  localStorage.setItem(MY_FLOW_STEP_ITEM_CHECKS_KEY, JSON.stringify(value));
+  localStorage.setItem('flow:meta:last-visit', new Date().toISOString());
+}
+
 export function clearFlowLocalProgress(slug: string): void {
   if (!canUseStorage()) return;
   [
@@ -202,6 +284,11 @@ export function clearFlowLocalProgress(slug: string): void {
     `${WORKBENCH_KEY_PREFIX}${slug}`,
     `${REACTIONS_KEY_PREFIX}${slug}`,
   ].forEach((key) => localStorage.removeItem(key));
+  const stepItemChecks = getMyFlowStepItemChecks();
+  const nextStepItemChecks = Object.fromEntries(
+    Object.entries(stepItemChecks).filter(([key]) => !key.startsWith(`${slug}::`)),
+  );
+  localStorage.setItem(MY_FLOW_STEP_ITEM_CHECKS_KEY, JSON.stringify(nextStepItemChecks));
   localStorage.setItem('flow:meta:last-visit', new Date().toISOString());
 }
 
@@ -274,13 +361,13 @@ function hasWorkbenchProgress(state: FlowWorkbenchState): boolean {
   );
 }
 
-export function getActiveFlowProgress(): ActiveFlowProgress[] {
+export function getActiveFlowProgress(bundles: FlowBundle[] = getBundles()): ActiveFlowProgress[] {
   if (!canUseStorage()) return [];
 
   const lastVisited = localStorage.getItem('flow:meta:last-visit') ?? undefined;
   const progress: ActiveFlowProgress[] = [];
 
-  for (const bundle of getBundles()) {
+  for (const bundle of bundles) {
     const checks = getChecks(bundle.flow.slug);
     const itemStates = getItemStates(bundle.flow.slug);
     const comparisonState = getComparisonState(bundle.flow.slug);

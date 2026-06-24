@@ -11,18 +11,24 @@ Detailed product queue: [execution-type-roadmap.md](./execution-type-roadmap.md)
 - [x] Define the period-goal checklist model using certification study as the reference case.
 - [x] Build a feature/UX gap map across planning, UX/UI, data, execution, and export so “done / partial / missing / deferred” is visible outside chat.
 - [x] Audit the Flow tab as an execution status board, not a long management/catalog surface.
+- [x] Document what the existing product already does and what the new My Flow / Flow Map UX should selectively align before further code changes. See [Korean HTML review](./my-flow-before-after-ux-alignment-ko.html) and [source note](./my-flow-before-after-ux-alignment.md).
+- [x] Land the first product-code alignment slice for saved Flow Map context in My Flow: parent map snapshot lookup, Step-level source item checks, mobile single non-dated Flow detail access, and source-backed public-save E2E coverage. See [implementation report](./my-flow-product-code-alignment-report-ko.html).
 
 ### P1: Flow Type Coverage
 
 - [ ] Review whether current UX is sufficient by Flow type: schedule, routine, checklist, memo/record, decision/hold, and bucket/long-term goal.
 - [ ] Decide whether bucket/long-term goal needs its own user-facing type or can be represented as checklist plus milestones.
 - [ ] Confirm which item-type fields stay primary versus hidden in memo/more-details for each Flow type.
+- [x] Decide whether source-row learning/progress content needs a first-class `progress_step` item type, or whether it should remain `check_task` / `scheduled_task` with progress context.
+  - 2026-06-23 slice: keep it as `FlowItem` plus a derived `progress` bridge for now. Reopen only if row state, wrong-answer memo, or progress export cannot be expressed cleanly.
 
 ### P1: Creation And Creator Surfaces
 
 - [ ] Define Flow creation MVP: source input, structure selection, item editing, preview, and save/publish boundary.
+- [x] Define the source-backed Flow Map package boundary across creator publish prep, public save-before detail, and saved My Flow execution. See [source-backed-step-contract.md](./source-backed-step-contract.md).
+- [x] Define official date-window export behavior so source-defined eligibility windows stay one Step with period metadata instead of repeated daily tasks.
 - [ ] Review creator profile/channel screen for real source content, draft Flow ownership, and public/private separation.
-- [ ] Decide the relationship between Flow output, category, connected artifacts, and My Flow execution records.
+- [x] Decide the relationship between Flow output, category, connected artifacts, and My Flow execution records. See [source-backed-step-contract.md](./source-backed-step-contract.md).
 
 ### Deferred Until P0/P1 Evidence
 

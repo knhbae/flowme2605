@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3개 Flow 테스트 안내</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --paper: #ffffff;
+      --ink: #111827;
+      --muted: #64748b;
+      --line: #dbe3ee;
+      --soft: #eef3f8;
+      --blue: #1f64d8;
+      --green: #0e806c;
+      --amber: #946200;
+      --red: #ad2f45;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+    main {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 24px 16px 64px;
+    }
+    section,
+    .hero,
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+    .hero {
+      padding: 22px;
+      margin-bottom: 14px;
+    }
+    section {
+      padding: 18px;
+      margin-top: 14px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .two {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .card { padding: 14px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2, h3, p, li, td, th {
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+    h1 {
+      margin-bottom: 8px;
+      font-size: 32px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+    h2 {
+      margin-bottom: 10px;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin-bottom: 7px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+    ul, ol {
+      margin: 8px 0 0;
+      padding-left: 21px;
+    }
+    li { margin: 5px 0; }
+    a {
+      color: var(--blue);
+      font-weight: 900;
+    }
+    .muted { color: var(--muted); }
+    .eyebrow {
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .chip {
+      border-radius: 7px;
+      background: var(--soft);
+      padding: 4px 8px;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .chip.blue { background: #eaf2ff; color: #174da8; }
+    .chip.green { background: #e8f7f2; color: var(--green); }
+    .chip.amber { background: #fff5d6; color: var(--amber); }
+    .chip.red { background: #fff0f3; color: var(--red); }
+    .button {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: var(--blue);
+      color: #fff;
+      padding: 10px 14px;
+      text-decoration: none;
+    }
+    .note {
+      border-left: 4px solid #b9cdf4;
+      border-radius: 8px;
+      background: #f3f7ff;
+      padding: 12px 14px;
+      color: #334155;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #eef3f8; }
+    @media (max-width: 820px) {
+      main { padding: 16px 16px 54px; }
+      .grid,
+      .two { grid-template-columns: 1fr; }
+      h1 { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <article class="hero">
+      <p class="eyebrow">관찰 안내</p>
+      <h1>3개 Flow 사용자 화면 확인</h1>
+      <p class="muted">아래 안내는 테스트 진행자용입니다. 실제 사용자 화면은 별도 파일로 분리했습니다.</p>
+      <a class="button" href="./2026-06-23-three-flow-user-poc-ko.html">사용자 화면 열기</a>
+    </article>
+
+    <section>
+      <h2>이번에 보려는 것</h2>
+      <div class="two">
+        <div class="card">
+          <h3>판단 대상</h3>
+          <ul>
+            <li>공개 Flow에서 저장할 이유가 보이는가</li>
+            <li>저장 뒤 내 Flow에서 바로 다음 행동을 찾을 수 있는가</li>
+            <li>Step과 Item이 캘린더/투두 앱 수준의 복잡도에 머무는가</li>
+            <li>원문 링크와 메모가 필요할 때만 보이는가</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>이번에 보지 않는 것</h3>
+          <ul>
+            <li>의학·법률·입시 정보의 최신성 확정</li>
+            <li>실제 사용자 행동 데이터 검증</li>
+            <li>제작자 편집 화면</li>
+            <li>외부 캘린더 내보내기 구현</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>클릭 순서</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="chips"><span class="chip green">일정형</span></div>
+          <h3>아이 검진·접종 일정</h3>
+          <ol>
+            <li>공개 Flow에서 아이 검진·접종 일정을 선택한다.</li>
+            <li>포함된 Flow와 Step을 열어 어떤 항목이 저장되는지 본다.</li>
+            <li>생년월일을 2026-01-15로 둔다.</li>
+            <li>내 캘린더로 저장한다.</li>
+            <li>내 Flow에서 다음 일정을 확인한다.</li>
+            <li>캘린더 탭에서 일정이 있는 날짜를 누른다.</li>
+            <li>Item 하나를 체크하고 메모에 예약 상태를 짧게 적는다.</li>
+          </ol>
+        </div>
+        <div class="card">
+          <div class="chips"><span class="chip blue">진도형</span></div>
+          <h3>중1 수학 목차 진도</h3>
+          <ol>
+            <li>공개 Flow에서 중1 수학 목차 진도를 선택한다.</li>
+            <li>단원 Flow와 하위 Step을 열어 진도표 구조를 본다.</li>
+            <li>내 진도표로 저장한다.</li>
+            <li>이어보기에서 첫 Step을 연다.</li>
+            <li>완료 체크와 메모를 남긴다.</li>
+            <li>진도표 탭에서 단원별 진행률을 확인한다.</li>
+            <li>전체 지도에서 다른 단원을 연다.</li>
+          </ol>
+        </div>
+        <div class="card">
+          <div class="chips"><span class="chip amber">타임라인형</span></div>
+          <h3>원룸 이사 D-30 준비</h3>
+          <ol>
+            <li>공개 Flow에서 원룸 이사 D-30 준비를 선택한다.</li>
+            <li>이사 준비 일정 Flow에서 D-30 Step과 Item을 확인한다.</li>
+            <li>이사일을 2026-07-31로 둔다.</li>
+            <li>이사 일정으로 저장한다.</li>
+            <li>오늘 할 일에서 첫 Step을 확인한다.</li>
+            <li>캘린더 탭에서 2026. 07. 날짜를 누른다.</li>
+            <li>업체 연락처나 예약번호만 짧게 메모한다.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>관찰 기준</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>구분</th>
+            <th>통과</th>
+            <th>재작업</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>저장 전</td>
+            <td>무엇이 내 Flow에 생기는지 예측할 수 있다.</td>
+            <td>저장 버튼 결과를 설명해야 이해한다.</td>
+          </tr>
+          <tr>
+            <td>첫 방문</td>
+            <td>첫 Step을 열고 체크/메모까지 자연스럽게 간다.</td>
+            <td>세부 항목을 찾기 위해 긴 스크롤이나 추측이 필요하다.</td>
+          </tr>
+          <tr>
+            <td>재방문</td>
+            <td>남은 Step, 날짜, 진행률 중 필요한 신호가 보인다.</td>
+            <td>어디서 다시 시작해야 하는지 모른다.</td>
+          </tr>
+          <tr>
+            <td>콘텐츠</td>
+            <td>원문에서 온 구조와 실행 항목이 남아 있다.</td>
+            <td>일반론이나 반복 문장으로 채운 느낌이 난다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>기록할 피드백</h2>
+      <div class="note">
+        <p>사용자에게 FlowMe 개념을 먼저 설명하지 말고 화면만 보게 둡니다. 막히는 지점은 “어떤 버튼에서”, “왜 헷갈렸는지”, “원문과 저장 결과 중 무엇이 어긋났는지”만 남기면 됩니다.</p>
+        <p class="muted" style="margin-bottom:0;">실제 개인정보, 의료정보, 계약정보는 입력하지 않습니다.</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

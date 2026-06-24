@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow 완료 토글 관찰 기준</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fb;
+      --surface: #ffffff;
+      --soft: #f1f5f9;
+      --line: #d9e2ef;
+      --text: #0f172a;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      --red: #b42318;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); line-height: 1.62; letter-spacing: 0; }
+    main { width: min(100% - 28px, 980px); margin: 0 auto; padding: 22px 0 56px; }
+    header, section {
+      margin-bottom: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      padding: 20px;
+      box-shadow: 0 14px 34px rgba(15, 23, 42, .06);
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: 34px; line-height: 1.15; letter-spacing: 0; }
+    h2 { margin-bottom: 10px; font-size: 23px; line-height: 1.25; letter-spacing: 0; }
+    h3 { margin-bottom: 6px; font-size: 17px; line-height: 1.3; letter-spacing: 0; }
+    p, li, td { color: var(--muted); font-weight: 720; }
+    a { color: var(--blue); font-weight: 900; text-underline-offset: 3px; }
+    code { border-radius: 6px; background: var(--soft); padding: 2px 5px; color: #334155; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid var(--line); padding: 11px; vertical-align: top; text-align: left; }
+    th { background: var(--soft); color: #334155; font-size: 13px; font-weight: 950; }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .card { border: 1px solid var(--line); border-radius: 10px; background: #fbfdff; padding: 13px; }
+    .card b, .card span { display: block; }
+    .card span { margin-top: 5px; color: var(--muted); font-size: 13px; font-weight: 760; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #334155;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .green { border-color: #99f6e4; background: #ecfdf5; color: var(--green); }
+    .amber { border-color: #fed7aa; background: #fff7ed; color: var(--amber); }
+    .red { border-color: #fecaca; background: #fef2f2; color: var(--red); }
+    .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    @media (max-width: 760px) {
+      main { width: min(100% - 20px, 980px); padding-top: 12px; }
+      header, section { padding: 16px; }
+      h1 { font-size: 28px; }
+      .grid { grid-template-columns: 1fr; }
+      table, tbody, tr, th, td { display: block; width: 100%; }
+      tr + tr { margin-top: 10px; border-top: 2px solid var(--line); }
+      th { border-bottom: 0; }
+      td { border-top: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">완료 액션 판단</p>
+      <h1>상세 화면의 완료는 버튼이 아니라 작은 토글이어야 한다</h1>
+      <p>현재 목표는 My Flow를 프로젝트 관리 도구처럼 만들지 않고, 캘린더/투두 앱 수준의 단순한 실행 화면으로 정리하는 것이다. Step 완료 신호는 필요하지만, 상세 drawer의 큰 CTA는 과하다.</p>
+      <div class="links">
+        <a class="chip" href="./2026-06-21-my-flow-completion-toggle-ab-poc-ko.html">완료 토글 비교 PoC</a>
+        <a class="chip" href="./2026-06-21-my-flow-completion-toggle-ab-simulation-ko.html">A/B 시뮬레이션 리포트</a>
+        <a class="chip" href="./2026-06-21-my-flow-saved-count-observation-ko.html">저장 개수별 관찰</a>
+        <a class="chip" href="./2026-06-19-my-flow-saved-management-ia-poc-ko.html">상태별 PoC</a>
+        <a class="chip" href="./2026-06-21-my-flow-v3-integrated-simulation-ko.html">통합 시뮬레이션</a>
+      </div>
+    </header>
+
+    <section>
+      <p class="eyebrow">판정</p>
+      <h2>제거가 아니라 축소</h2>
+      <div class="grid">
+        <div class="card"><b>완전히 제거</b><span>상세에서 실행을 마친 사용자가 어디서 완료 표시를 해야 하는지 다시 목록으로 돌아가야 한다.</span></div>
+        <div class="card"><b>큰 완료 CTA</b><span>상세가 메모/원문 확인보다 상태 처리 화면처럼 보인다. 현재 목표와 맞지 않는다.</span></div>
+        <div class="card"><b>작은 완료 토글</b><span>완료 신호는 유지하되, 메모와 상세 확인을 방해하지 않는다. 현재 선택안이다.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">현재 구현</p>
+      <h2>실제 앱과 PoC가 같은 방향</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>대상</th>
+            <th>확인한 상태</th>
+            <th>증거</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>실제 <code>/my?demo=ux12</code></td>
+            <td>상세 drawer에서 보이는 텍스트는 작은 <code>완료</code> 토글이고, 접근성 이름은 <code>완료 체크</code>로 유지된다.</td>
+            <td><code>output/playwright/my-flow-actual-detail-completion-toggle-mobile.png</code></td>
+          </tr>
+          <tr>
+            <td>정적 상태별 PoC</td>
+            <td>4개 저장 상세도 큰 CTA가 아니라 작은 <code>완료</code> 토글로 표시된다.</td>
+            <td><code>output/playwright/my-flow-static-detail-completion-toggle-mobile.png</code></td>
+          </tr>
+          <tr>
+            <td>비교 PoC</td>
+            <td><code>상세 완료 있음</code>과 <code>상세 완료 없음</code>을 같은 화면에서 바꿔 볼 수 있다.</td>
+            <td><code>docs/content-audit/2026-06-21-my-flow-completion-toggle-ab-poc-ko.html</code></td>
+          </tr>
+          <tr>
+            <td>결정 문서</td>
+            <td>item drawer의 완료는 large primary CTA가 아니라 small check toggle이어야 한다고 기록했다.</td>
+            <td><code>docs/DECISIONS.md</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">관찰할 것</p>
+      <h2>다음 실제 관찰 질문</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>질문</th>
+            <th>유지 신호</th>
+            <th>제거 신호</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>사용자가 상세에서 메모를 남긴 뒤 완료까지 표시하는가?</td>
+            <td>메모 후 작은 완료 토글을 자연스럽게 누른다.</td>
+            <td>항상 목록으로 돌아가거나 완료 표시 자체를 하지 않는다.</td>
+          </tr>
+          <tr>
+            <td>작은 완료 토글이 메모 입력을 방해하는가?</td>
+            <td>사용자가 먼저 메모를 확인하고 필요할 때만 토글한다.</td>
+            <td>사용자가 토글을 primary action으로 오해하거나 메모를 놓친다.</td>
+          </tr>
+          <tr>
+            <td>목록의 체크 컨트롤과 상세 토글이 중복으로 느껴지는가?</td>
+            <td>목록에서는 빠른 완료, 상세에서는 확인 후 완료로 역할이 갈린다.</td>
+            <td>둘 다 같은 동작으로 보여 혼란이 생긴다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">현재 결론</p>
+      <h2>현 단계에서는 유지</h2>
+      <ul>
+        <li><span class="chip green">유지</span> Step 완료 신호는 캘린더/투두 이식성과 재방문 상태에 필요하다.</li>
+        <li><span class="chip green">축소</span> 다만 상세에서는 큰 CTA가 아니라 작은 체크 토글로만 둔다.</li>
+        <li><span class="chip amber">관찰 필요</span> 실제 사용자가 메모만 쓰고 완료 토글을 거의 쓰지 않으면 상세에서는 숨기는 쪽으로 다시 줄인다.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

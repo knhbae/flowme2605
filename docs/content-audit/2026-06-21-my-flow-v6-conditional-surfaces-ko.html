@@ -1,0 +1,1052 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>내 Flow</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --brand: #2563eb;
+      --brand-weak: #eff6ff;
+      --brand-line: #bfdbfe;
+      --page: #f5f7fb;
+      --card: #fff;
+      --subtle: #f8fafc;
+      --muted-surface: #eef2f7;
+      --border: #d8e0eb;
+      --border-strong: #c2ccd9;
+      --text-primary: #202936;
+      --text-secondary: #536173;
+      --text-tertiary: #738197;
+      --success: #0f7a4a;
+      --success-weak: #e8f7ef;
+      --warning: #9a6100;
+      --warning-weak: #fff6df;
+      --radius-card: 16px;
+      --radius-inner: 10px;
+      --shadow-card: 0 1px 3px rgba(32, 41, 54, .04);
+      --shadow-raised: 0 4px 12px rgba(32, 41, 54, .08);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text-primary);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--page); letter-spacing: 0; }
+    button, input, textarea { font: inherit; letter-spacing: 0; }
+    button {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+    button:active { transform: translateY(1px); }
+    button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible {
+      outline: 2px solid var(--brand);
+      outline-offset: 2px;
+    }
+    .app {
+      width: min(100% - 48px, 1080px);
+      margin: 0 auto;
+      padding: max(24px, env(safe-area-inset-top)) 0 max(48px, env(safe-area-inset-bottom));
+    }
+    .shell { display: grid; gap: 24px; }
+    .top, .panel, .row, .detail, .check, .finder, .flow-card, .note-box, .rail, .calendar, .progress {
+      border-radius: var(--radius-card);
+      background: var(--card);
+    }
+    .top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: start;
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 6px; font-size: 24px; line-height: 1.35; letter-spacing: -.01em; }
+    h2 { margin-bottom: 6px; font-size: 20px; line-height: 1.35; letter-spacing: -.01em; }
+    h3 { margin-bottom: 4px; font-size: 18px; line-height: 1.35; letter-spacing: -.01em; }
+    p { color: var(--text-secondary); font-size: 15px; font-weight: 500; line-height: 1.5; }
+    .eyebrow {
+      margin-bottom: 6px;
+      color: var(--brand);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+    .summary {
+      min-width: 208px;
+      border-radius: var(--radius-inner);
+      background: var(--subtle);
+      padding: 16px;
+    }
+    .summary b, .summary span { display: block; }
+    .summary b { color: var(--text-primary); font-size: 18px; font-weight: 700; line-height: 1.35; }
+    .summary span { margin-top: 4px; color: var(--text-secondary); font-size: 13px; font-weight: 500; line-height: 1.5; }
+    .panel {
+      padding: 24px;
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .head-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+    .secondary {
+      min-height: 44px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-inner);
+      background: var(--card);
+      color: var(--text-primary);
+      padding: 0 16px;
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .secondary:hover, .show-more:hover, .date-pill:hover, .flow-card:hover, .row:hover { border-color: var(--brand-line); background: var(--brand-weak); }
+    .layout { display: grid; grid-template-columns: minmax(0, .92fr) minmax(330px, 1.08fr); gap: 24px; padding-top: 24px; align-items: start; }
+    .layout.single { grid-template-columns: minmax(0, 1fr); }
+    .stack { display: grid; gap: 12px; }
+    .section-title { display: flex; justify-content: space-between; gap: 8px; margin: 0 0 8px; color: var(--text-primary); font-size: 13px; font-weight: 700; line-height: 1.5; }
+    .section-title span { color: var(--text-tertiary); font-size: 12px; font-weight: 600; }
+    .rail {
+      display: flex;
+      gap: 8px;
+      padding: 8px;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      background: var(--subtle);
+      box-shadow: none;
+    }
+    .date-pill {
+      min-width: 84px;
+      min-height: 44px;
+      border: 1px solid transparent;
+      border-radius: var(--radius-inner);
+      background: var(--card);
+      padding: 8px 10px;
+      text-align: left;
+      color: var(--text-primary);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .date-pill b, .date-pill span { display: block; }
+    .date-pill span { margin-top: 3px; color: var(--text-tertiary); font-weight: 600; }
+    .date-pill.active { border-color: var(--brand-line); background: var(--brand-weak); color: var(--brand); box-shadow: inset 0 0 0 1px var(--brand-line); }
+    .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      min-height: 76px;
+      padding: 14px;
+      text-align: left;
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+    .row.active { border-color: var(--brand-line); background: var(--brand-weak); box-shadow: inset 0 0 0 1px var(--brand-line); }
+    .row-main { min-width: 0; min-height: 44px; border: 0; background: transparent; padding: 0; text-align: left; color: inherit; }
+    .row-main b, .row-main span { display: block; }
+    .row-main b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary); font-size: 14px; font-weight: 700; line-height: 1.35; }
+    .row-main span { margin-top: 4px; color: var(--text-secondary); font-size: 13px; font-weight: 500; line-height: 1.5; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      width: fit-content;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--subtle);
+      padding: 4px 10px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .chip.blue { border-color: var(--brand-line); background: var(--brand-weak); color: var(--brand); }
+    .chip.green { border-color: #bde7cb; background: var(--success-weak); color: var(--success); }
+    .chip.amber { border-color: #efd08f; background: var(--warning-weak); color: var(--warning); }
+    .quick-check {
+      display: inline-grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-inner);
+      background: var(--card);
+      color: transparent;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .quick-check.done { border-color: var(--success); background: var(--success); color: var(--card); }
+    .detail {
+      position: sticky;
+      top: 16px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+    .layout.single .detail { position: static; }
+    .detail-top { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+    .checks { display: grid; gap: 10px; margin-top: 14px; }
+    .section-label { margin-top: 14px; color: var(--text-secondary); font-size: 12px; font-weight: 800; }
+    .check {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 12px;
+      min-height: 72px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+    .check.done { border-color: #bde7cb; background: var(--success-weak); }
+    .check input { width: 24px; height: 24px; margin-top: 1px; accent-color: var(--brand); }
+    .check b, .check span { display: block; }
+    .check b { color: var(--text-primary); font-size: 14px; font-weight: 700; line-height: 1.35; }
+    .check span span { margin-top: 4px; color: var(--text-secondary); font-size: 13px; font-weight: 500; line-height: 1.5; }
+    .step-detail {
+      display: grid;
+      gap: 6px;
+      margin-top: 10px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-inner);
+      background: var(--subtle);
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.55;
+    }
+    .step-detail b { color: var(--text-primary); font-size: 14px; }
+    .memo { display: grid; gap: 8px; margin-top: 14px; }
+    .memo label { color: var(--text-primary); font-size: 13px; font-weight: 700; }
+    textarea, input[type="search"] {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-inner);
+      background: var(--card);
+      padding: 10px 12px;
+      color: var(--text-primary);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    textarea { min-height: 104px; resize: vertical; }
+    textarea::placeholder, input::placeholder { color: var(--text-tertiary); }
+    .save-state {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      margin-top: 10px;
+      border-radius: 999px;
+      background: var(--subtle);
+      padding: 5px 10px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .note-box, .progress {
+      margin-top: 12px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      background: var(--subtle);
+      box-shadow: none;
+    }
+    .note-box summary, .progress summary { min-height: 44px; display: flex; align-items: center; color: var(--text-primary); font-size: 14px; font-weight: 700; cursor: pointer; }
+    .note-box pre { margin: 8px 0 0; white-space: pre-wrap; word-break: break-word; color: var(--text-secondary); font: inherit; font-size: 13px; line-height: 1.5; }
+    .progress-list { display: grid; gap: 8px; margin-top: 10px; }
+    .progress-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-inner);
+      background: var(--card);
+      padding: 10px;
+    }
+    .progress-row b, .progress-row span { display: block; }
+    .progress-row b { color: var(--text-primary); font-size: 14px; font-weight: 700; }
+    .progress-row span { color: var(--text-secondary); font-size: 13px; font-weight: 500; }
+    .step-num { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 999px; background: var(--muted-surface); color: var(--text-secondary); font-size: 12px; font-weight: 700; }
+    .finder, .calendar {
+      display: none;
+      margin-top: 16px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      background: var(--subtle);
+      box-shadow: none;
+    }
+    .finder.open, .calendar.open { display: grid; gap: 12px; }
+    .flow-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .flow-card {
+      display: grid;
+      gap: 6px;
+      min-height: 86px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      text-align: left;
+      box-shadow: none;
+    }
+    .flow-card.active { border-color: var(--brand-line); background: var(--brand-weak); }
+    .flow-card b, .flow-card span { display: block; }
+    .flow-card b { color: var(--text-primary); font-size: 14px; font-weight: 700; line-height: 1.35; }
+    .flow-card span { color: var(--text-secondary); font-size: 13px; font-weight: 500; line-height: 1.5; }
+    .show-more {
+      min-height: 44px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-inner);
+      background: var(--subtle);
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .month-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+    .day {
+      min-height: 48px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-inner);
+      background: var(--card);
+      padding: 7px;
+      text-align: left;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .day.has { border-color: var(--brand-line); background: var(--brand-weak); color: var(--brand); }
+    .day.active { box-shadow: inset 0 0 0 2px var(--brand); }
+    .empty { border: 1px dashed var(--border-strong); border-radius: var(--radius-inner); padding: 16px; color: var(--text-secondary); font-size: 13px; font-weight: 600; }
+    .hidden { display: none !important; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; }
+    }
+    @media (max-width: 820px) {
+      .app { width: min(100% - 24px, 720px); padding-top: max(12px, env(safe-area-inset-top)); }
+      .top, .layout, .layout.single { grid-template-columns: 1fr; }
+      .summary { min-width: 0; }
+      .panel-head, .detail-top { display: grid; }
+      .head-actions { justify-content: flex-start; }
+      .detail { position: static; }
+      .flow-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) {
+      .app { width: min(100% - 20px, 430px); }
+      .shell { gap: 16px; }
+      h1 { font-size: 24px; }
+      h2 { font-size: 18px; }
+      .top, .panel { padding: 16px; }
+      .top { gap: 16px; }
+      .layout { gap: 16px; padding-top: 16px; }
+      .panel-head { gap: 12px; padding-bottom: 14px; }
+      .head-actions { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .secondary { width: 100%; }
+      .row-main b { white-space: normal; }
+      .calendar { padding: 12px; }
+      .month-grid { grid-template-columns: repeat(5, minmax(44px, 1fr)); gap: 6px; }
+      .day { min-width: 44px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="shell">
+      <header class="top">
+        <div>
+          <p class="eyebrow">내 실행 공간</p>
+          <h1>내 Flow</h1>
+          <p id="heroCopy">오늘 할 일만 먼저 보고, 필요할 때 일정과 진도를 엽니다.</p>
+        </div>
+        <aside class="summary" aria-live="polite">
+          <b id="summaryTitle">오늘 3개</b>
+          <span id="summaryMeta">저장한 Flow 8개</span>
+          <span id="summaryHint">체크하거나 짧게 메모하세요.</span>
+        </aside>
+      </header>
+
+      <section class="panel" aria-labelledby="screenTitle">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow" id="screenKicker">오늘</p>
+            <h2 id="screenTitle">먼저 할 일</h2>
+            <p id="screenCopy">지금 처리할 항목만 모았습니다.</p>
+          </div>
+          <div class="head-actions">
+            <button class="secondary hidden" type="button" id="toggleCalendar">일정 보기</button>
+            <button class="secondary" type="button" id="toggleFinder">Flow 찾기</button>
+          </div>
+        </div>
+
+        <div class="layout" id="layout">
+          <div class="stack" id="listPane">
+            <div class="rail" id="dateRail" aria-label="날짜 선택"></div>
+
+            <div class="calendar" id="calendarPanel" aria-label="일정 보기">
+              <div class="section-title">
+                <b>6월 일정</b>
+                <span id="calendarCount">0개</span>
+              </div>
+              <div class="month-grid" id="monthGrid"></div>
+            </div>
+
+            <div>
+              <div class="section-title">
+                <b id="listTitle">오늘 할 일</b>
+                <span id="listCount">3개</span>
+              </div>
+              <div class="stack" id="entryList"></div>
+              <button class="show-more hidden" type="button" id="showListButton">남은 항목 보기</button>
+            </div>
+
+            <div class="finder" id="finderPanel">
+              <div class="section-title">
+                <b>저장한 Flow</b>
+                <span id="finderCount">8개</span>
+              </div>
+              <input id="searchInput" type="search" placeholder="예: 수학, 여권, 홈트" aria-label="저장한 Flow 검색" />
+              <div class="flow-grid" id="flowList"></div>
+              <button class="show-more hidden" type="button" id="showMoreButton">전체 Flow 보기</button>
+            </div>
+          </div>
+
+          <article class="detail" aria-labelledby="detailTitle">
+            <div class="detail-top">
+              <div>
+                <p class="eyebrow" id="detailKicker">선택한 항목</p>
+                <h3 id="detailTitle">계약 전 서류 확인</h3>
+                <p id="detailMeta">전세계약 전 서류 체크 · 오늘</p>
+              </div>
+              <span class="chip blue" id="detailStatus">오늘</span>
+            </div>
+
+            <div class="checks" id="checkList"></div>
+
+            <div class="memo">
+              <label for="memoInput">메모</label>
+              <textarea id="memoInput" placeholder="확인한 내용이나 다시 볼 링크를 남기세요"></textarea>
+            </div>
+            <span class="save-state" id="saveState">입력하면 자동 저장됩니다.</span>
+
+            <details class="progress hidden" id="progressBox">
+              <summary>전체 진도 보기</summary>
+              <div class="progress-list" id="progressList"></div>
+            </details>
+
+            <details class="note-box">
+              <summary>다른 앱에 붙일 텍스트</summary>
+              <pre id="fallbackText"></pre>
+            </details>
+          </article>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const mode = ['single', 'few', 'mixed', 'large'].includes(params.get('mode')) ? params.get('mode') : 'mixed';
+
+    const flows = [
+      { id: 'jeonse', name: '전세계약 전 서류 체크', type: '일정', nextId: 'jeonse-docs', aliases: 'jeonse rent contract' },
+      { id: 'move', name: '이사 D-30 준비', type: '일정', nextId: 'move-quote', aliases: 'move moving' },
+      { id: 'math', name: '중1 수학 학습 지도', type: '진도', nextId: 'math-lesson', sub: '정수와 유리수', aliases: 'math study middle school', progress: [
+        ['1', '소인수분해', '완료'],
+        ['2', '정수와 유리수', '오늘'],
+        ['3', '문자의 사용과 식', '다음'],
+        ['4', '좌표평면과 그래프', '보관']
+      ] },
+      { id: 'workout', name: '초보 홈트 영상 루틴', type: '루틴', nextId: 'workout-session', aliases: 'workout home training routine' },
+      { id: 'passport', name: '온라인 여권 재발급', type: '체크', nextId: 'passport-photo', aliases: 'passport' },
+      { id: 'baby', name: '영유아 건강검진 준비', type: '일정', nextId: 'baby-checkup', aliases: 'baby health checkup' },
+      { id: 'squishy', name: '무료 도안 스퀴시 만들기', type: '보관', nextId: 'squishy-play', aliases: 'squishy craft' },
+      { id: 'plant', name: '스투키 물주기', type: '루틴', nextId: 'plant-water', aliases: 'plant water' }
+    ];
+
+    const entries = [
+      {
+        id: 'jeonse-docs',
+        flowId: 'jeonse',
+        dateKey: 'today',
+        day: 21,
+        dateText: '오늘',
+        title: '계약 전 서류 확인',
+        meta: '시세, 등기부등본, 보증보험 가능 여부',
+        source: '전세계약 전 서류 체크 Flow',
+        detail: '계약 전에 실제로 확인해야 하는 서류 단서만 남긴 항목입니다.',
+        completion: '시세, 등기부등본, 보증보험 가능 여부를 확인하고 걸리는 내용을 메모했습니다.',
+        items: [
+          { title: '시세 확인', detail: '주변 실거래가와 보증금 차이를 봅니다.' },
+          { title: '등기부등본 확인', detail: '소유자, 근저당, 압류 여부를 봅니다.' },
+          { title: '전세보증보험 가능 여부 확인', detail: '가입 가능 여부와 필요 서류를 봅니다.' }
+        ],
+        memo: '계약서 원문, 주민등록번호, 계좌번호는 저장하지 않음.',
+        memoHint: '걸리는 서류 항목, 확인한 URL, 중개사에게 물어볼 내용만 남기세요'
+      },
+      {
+        id: 'math-lesson',
+        flowId: 'math',
+        dateKey: 'today',
+        day: 21,
+        dateText: '오늘',
+        title: '정수와 유리수 10강',
+        meta: 'EBS 강의 10강 · 교재 34-36쪽',
+        source: 'EBS 중학 뉴런 수학1(상)',
+        detail: '원문에 있는 오늘 범위만 진행하고, 막힌 개념은 메모로 남깁니다.',
+        completion: '강의를 열고 교재 34-36쪽 진행 상태를 표시했습니다.',
+        items: [
+          { title: '강의 열기', detail: '원문 강의에서 이번 강의를 시작합니다.' },
+          { title: '교재 34-36쪽 풀기', detail: '오늘 범위만 진행하고 남은 문제는 메모합니다.' }
+        ],
+        memo: '',
+        memoHint: '틀린 문제 번호, 다시 볼 개념, 다음 복습 날짜만 짧게 남기세요'
+      },
+      {
+        id: 'workout-session',
+        flowId: 'workout',
+        dateKey: 'today',
+        day: 21,
+        dateText: '오늘 20:00',
+        title: '원본 영상 한 번 따라하기',
+        meta: '주 3회 · 통증이 있으면 중단',
+        source: '초보 홈트 영상 링크',
+        detail: '단일 홈트 영상은 한 번의 실행 항목으로 둡니다. 자세, 순서, 속도는 원문 영상에서 확인합니다.',
+        completion: '영상을 열고 오늘 실행 여부를 표시했습니다. 통증이나 어지러움이 있으면 중단으로 메모합니다.',
+        items: [
+          { title: '영상 열기', detail: '원문 영상 링크를 열고 가능한 강도로 한 번 따라합니다.' }
+        ],
+        memo: '',
+        memoHint: '실행 여부, 불편한 부위, 다음에 조절할 점만 남기세요'
+      },
+      {
+        id: 'move-quote',
+        flowId: 'move',
+        dateKey: 'week',
+        day: 24,
+        dateText: '6.24',
+        title: '견적 3곳 요청하기',
+        meta: '포장/반포장/일반 중 하나 선택',
+        source: '이사 D-30 준비 Flow',
+        detail: '견적 비교에 필요한 값만 남기는 항목입니다.',
+        completion: '견적 후보를 열고 업체명, 예상 비용, 포함 범위를 메모했습니다.',
+        items: [
+          { title: '이사 방식 1개 선택', detail: '포장/반포장/일반 중 현재 필요한 방식을 고릅니다.' },
+          { title: '견적 후보 2-3곳 열기', detail: '업체명과 연락처, 포함 범위만 메모합니다.' }
+        ],
+        memo: '',
+        memoHint: '업체명, 예상 비용, 포함 범위, 추가비 가능성만 남기세요'
+      },
+      {
+        id: 'passport-photo',
+        flowId: 'passport',
+        dateKey: 'week',
+        day: 25,
+        dateText: '6.25',
+        title: '여권 사진 파일 준비하기',
+        meta: '신청 링크와 사진 규격 확인',
+        source: '정부24 여권 재발급 안내',
+        detail: '온라인 신청 전에 사진 파일과 신청 페이지를 확인하는 항목입니다.',
+        completion: '사진 파일 위치와 신청 페이지를 확인했습니다.',
+        items: [
+          { title: '사진 파일 위치 확인', detail: '파일명이나 저장 위치만 짧게 메모합니다.' },
+          { title: '신청 링크 열기', detail: '정부24 신청 페이지와 사진 규격을 확인합니다.' }
+        ],
+        memo: '',
+        memoHint: '사진 파일 위치, 수령 기관, 다시 볼 신청 URL만 남기세요'
+      },
+      {
+        id: 'baby-checkup',
+        flowId: 'baby',
+        dateKey: 'week',
+        day: 26,
+        dateText: '6.26',
+        title: '문진표 질문 메모 준비하기',
+        meta: '방문 전 물어볼 질문 1-2개',
+        source: '국민건강보험 영유아 검진 안내',
+        detail: '검진 판단은 의료진과 공식 안내를 기준으로 하고, FlowMe에는 방문 전 질문만 남깁니다.',
+        completion: '문진표 작성 여부를 확인하고 의료진에게 물어볼 질문을 메모했습니다.',
+        items: [
+          { title: '문진표 작성 여부 확인', detail: '검진 전 작성해야 하는 문진표가 있는지 확인합니다.' }
+        ],
+        memo: '',
+        memoHint: '아이 상태 중 물어볼 질문 1-2개만 남기세요'
+      },
+      {
+        id: 'squishy-play',
+        flowId: 'squishy',
+        dateKey: 'later',
+        day: null,
+        dateText: '날짜 없음',
+        title: '도안 출력하고 준비물 챙기기',
+        meta: '도안 URL과 준비물',
+        source: '무료 도안 원문 링크',
+        detail: '보관형 Flow입니다. 날짜는 나중에 정해도 되고, 원문 도안과 준비물만 남기면 충분합니다.',
+        completion: '도안 URL을 열어보고 필요한 준비물을 메모했습니다.',
+        items: [
+          { title: '도안 URL 열기', detail: '원문 도안 링크와 준비물 설명을 확인합니다.' }
+        ],
+        memo: '',
+        memoHint: '준비물, 출력 여부, 놀이할 날짜가 정해지면 짧게 남기세요'
+      },
+      {
+        id: 'plant-water',
+        flowId: 'plant',
+        dateKey: 'later',
+        day: null,
+        dateText: '최근 체크',
+        title: '흙 상태 보고 물 줄지 결정하기',
+        meta: '과습이면 미루기',
+        source: '스투키 관리 원문 링크',
+        detail: '식물 관리 루틴은 물주기 자체보다 오늘 줄지 미룰지 판단하는 항목입니다.',
+        completion: '흙과 몸통 상태를 보고 물주기 여부를 표시했습니다.',
+        items: [
+          { title: '흙 마름 확인', detail: '겉흙보다 안쪽이 마른 상태인지 확인합니다.' },
+          { title: '몸통 물러짐 확인', detail: '무름이 있으면 물주기를 보류하고 메모합니다.' }
+        ],
+        memo: '',
+        memoHint: '오늘 물줌/보류, 흙 상태, 다음 확인 날짜만 남기세요'
+      }
+    ];
+
+    const extraTitles = [
+      ['tax', '연말정산 서류 모으기', '체크', '공제 서류 폴더 확인'],
+      ['exam', '컴활 필기 D-30', '진도', '오늘 기출 20문제 풀기'],
+      ['dorm', '기숙사 입사 준비', '일정', '제출 서류 확인'],
+      ['car', '중고차 방문 체크', '체크', '성능기록부 확인'],
+      ['fridge', '냉장고 재료 소진', '루틴', '남은 재료 3개 고르기'],
+      ['reading', '독서 루틴', '루틴', '오늘 20분 읽기'],
+      ['school', '초등 입학 준비', '일정', '예비소집 안내 확인'],
+      ['esim', '해외 이심 보관', '보관', '설치 링크 다시 보기'],
+      ['license', '자격증 과목 진도', '진도', '1과목 오답 표시'],
+      ['garden', '몬스테라 관리', '루틴', '잎 상태 확인'],
+      ['laundry', '세탁조 청소', '루틴', '세탁조 코스 돌리기'],
+      ['trip', '출국 전 준비', '일정', '여권과 항공권 확인'],
+      ['camp', '캠핑 준비물', '체크', '장비 박스 확인'],
+      ['meal', '이유식 식단표', '일정', '다음 식단 메모'],
+      ['budget', '월 예산 점검', '루틴', '이번 주 지출 표시'],
+      ['course', '온라인 강의 진도', '진도', '3강 이어보기']
+    ];
+
+    const extraFlows = extraTitles.map(([id, name, type, title]) => ({
+      id,
+      name,
+      type,
+      nextId: `${id}-step`,
+      aliases: `${id} ${name}`
+    }));
+
+    function extraEntryModel(type, title) {
+      if (type === '진도') {
+        return {
+          detail: '원문에 있는 진도 행을 하나의 항목으로 저장합니다.',
+          completion: `${title} 상태를 표시했습니다.`,
+          items: [],
+          memoHint: '틀린 항목, 다시 볼 범위, 다음 진도만 남기세요'
+        };
+      }
+      if (type === '일정') {
+        return {
+          detail: '날짜가 있는 준비 항목을 캘린더/투두에 넣습니다.',
+          completion: `${title} 일정을 확인했습니다.`,
+          items: [],
+          memoHint: '확인한 날짜, 장소, 필요한 링크만 남기세요'
+        };
+      }
+      if (type === '루틴') {
+        return {
+          detail: '반복되는 한 번의 실행만 표시합니다.',
+          completion: `${title} 실행 여부를 표시했습니다.`,
+          items: [],
+          memoHint: '오늘 실행 여부와 다음에 볼 내용만 남기세요'
+        };
+      }
+      if (type === '보관') {
+        return {
+          detail: '나중에 다시 볼 원문을 저장하는 항목입니다.',
+          completion: `${title} 원문을 저장했습니다.`,
+          items: [],
+          memoHint: '다시 볼 URL이나 실행할 날짜가 생기면 남기세요'
+        };
+      }
+      return {
+        detail: '원문에서 확인해야 하는 최소 항목만 체크합니다.',
+        completion: `${title} 확인 상태를 표시했습니다.`,
+        items: [
+          { title: '원문 기준 확인', detail: '원문에 있는 필수 조건만 확인합니다.' }
+        ],
+        memoHint: '확인 결과, 보류 이유, 다시 볼 링크만 남기세요'
+      };
+    }
+
+    const extraEntries = extraTitles.map(([id, name, type, title], index) => ({
+      id: `${id}-step`,
+      flowId: id,
+      dateKey: index % 3 === 0 ? 'today' : index % 3 === 1 ? 'week' : 'later',
+      day: index % 3 === 0 ? 21 : index % 3 === 1 ? 22 + index : null,
+      dateText: index % 3 === 0 ? '오늘' : index % 3 === 1 ? '이번 주' : '날짜 없음',
+      title,
+      meta: `${name} · ${type}`,
+      source: `${name} 원문`,
+      ...extraEntryModel(type, title),
+      memo: ''
+    }));
+
+    const modeConfig = {
+      single: { flowIds: ['jeonse'], firstId: 'jeonse-docs', showRail: false, showFinder: false, finderLimit: 0 },
+      few: { flowIds: ['jeonse', 'move', 'math', 'workout'], firstId: 'jeonse-docs', showRail: true, showFinder: true, finderLimit: 4 },
+      mixed: { flowIds: ['jeonse', 'move', 'math', 'workout', 'passport', 'baby', 'squishy', 'plant'], firstId: 'jeonse-docs', showRail: true, showFinder: true, finderLimit: 8 },
+      large: { flowIds: ['jeonse', 'move', 'math', 'workout', 'passport', 'baby', 'squishy', 'plant', ...extraFlows.map((flow) => flow.id)], firstId: 'jeonse-docs', showRail: true, showFinder: true, finderLimit: 8 }
+    };
+    const config = modeConfig[mode];
+    const allFlows = mode === 'large' ? [...flows, ...extraFlows] : flows;
+    const allEntries = mode === 'large' ? [...entries, ...extraEntries] : entries;
+    const activeFlows = allFlows.filter((flow) => config.flowIds.includes(flow.id));
+    const activeEntries = allEntries.filter((entry) => config.flowIds.includes(entry.flowId));
+
+    const dateFilters = [
+      { key: 'today', label: '오늘' },
+      { key: 'week', label: '이번 주' },
+      { key: 'later', label: '날짜 없음' },
+      { key: 'all', label: '전체' }
+    ];
+
+    const state = {
+      date: 'today',
+      selectedId: config.firstId,
+      finderOpen: false,
+      calendarOpen: false,
+      query: '',
+      showAll: false,
+      listExpanded: false,
+      checks: {},
+      stepDone: {},
+      memos: {}
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const all = (selector) => Array.from(document.querySelectorAll(selector));
+
+    function entryById(id) {
+      return activeEntries.find((entry) => entry.id === id) || activeEntries[0];
+    }
+
+    function flowById(id) {
+      return activeFlows.find((flow) => flow.id === id) || activeFlows[0];
+    }
+
+    function checkKey(entry, index) {
+      return `${entry.id}:${index}`;
+    }
+
+    function entryItems(entry) {
+      return entry.items || [];
+    }
+
+    function progress(entry) {
+      const items = entryItems(entry);
+      if (!items.length) {
+        const complete = Boolean(state.stepDone[entry.id]);
+        return { done: complete ? 1 : 0, total: 1, complete };
+      }
+      const done = items.filter((_, index) => state.checks[checkKey(entry, index)]).length;
+      return { done, total: items.length, complete: done === items.length };
+    }
+
+    function isDone(entry) {
+      return progress(entry).complete;
+    }
+
+    function scopedName(entry) {
+      const flow = flowById(entry.flowId);
+      return flow.sub ? `${flow.name} · ${flow.sub}` : flow.name;
+    }
+
+    function listEntries() {
+      return activeEntries.filter((entry) => state.date === 'all' || entry.dateKey === state.date);
+    }
+
+    function datedEntries() {
+      return activeEntries.filter((entry) => Number.isInteger(entry.day));
+    }
+
+    function fallbackText(entry) {
+      const flow = flowById(entry.flowId);
+      const mark = isDone(entry) ? '[x]' : '[ ]';
+      const memo = state.memos[entry.id] || entry.memo || '짧게 메모';
+      const items = entryItems(entry);
+      const itemLine = items.length ? `\n- 세부 항목: ${items.map((item) => item.title).join(' / ')}` : '';
+      const detailLine = entry.detail ? `\n- 설명: ${entry.detail}` : '';
+      const completionLine = entry.completion ? `\n- 완료 기준: ${entry.completion}` : '';
+      return `${mark} ${entry.title}
+- Flow: ${flow.name}
+- 유형: ${flow.type}
+- 시점: ${entry.dateText}
+- 저장 단위: 항목${itemLine}${detailLine}${completionLine}
+- 메모: ${memo}
+- 원문: ${entry.source}`;
+    }
+
+    function dateHint(key) {
+      if (key === 'all') return `${activeEntries.length}개`;
+      return `${activeEntries.filter((entry) => entry.dateKey === key).length}개`;
+    }
+
+    function renderChrome() {
+      const todayCount = activeEntries.filter((entry) => entry.dateKey === 'today').length;
+      const doneCount = activeEntries.filter(isDone).length;
+      $('summaryTitle').textContent = todayCount ? `오늘 ${todayCount}개` : '오늘 없음';
+      $('summaryMeta').textContent = `저장한 Flow ${activeFlows.length}개 · 완료 ${doneCount}개`;
+      $('heroCopy').textContent = activeFlows.length === 1 ? '저장한 항목을 열어 체크하고 메모합니다.' : '오늘 할 일만 먼저 보고, 필요할 때 일정과 진도를 엽니다.';
+      $('screenCopy').textContent = activeFlows.length === 1 ? '저장한 Flow 하나를 이어서 실행합니다.' : '지금 처리할 항목만 모았습니다.';
+      $('layout').classList.toggle('single', activeFlows.length === 1);
+      $('listPane').classList.toggle('hidden', activeFlows.length === 1);
+      $('toggleFinder').classList.toggle('hidden', !config.showFinder);
+      $('toggleCalendar').classList.toggle('hidden', activeFlows.length === 1 || datedEntries().length < 3);
+    }
+
+    function renderRail() {
+      $('dateRail').classList.toggle('hidden', !config.showRail);
+      $('dateRail').innerHTML = dateFilters.map((filter) => `
+        <button class="date-pill ${filter.key === state.date ? 'active' : ''}" type="button" data-date="${filter.key}">
+          <b>${filter.label}</b>
+          <span>${dateHint(filter.key)}</span>
+        </button>
+      `).join('');
+    }
+
+    function renderCalendar() {
+      const items = datedEntries();
+      $('calendarPanel').classList.toggle('open', state.calendarOpen);
+      $('toggleCalendar').textContent = state.calendarOpen ? '일정 닫기' : '일정 보기';
+      $('calendarCount').textContent = `${items.length}개`;
+      $('monthGrid').innerHTML = Array.from({ length: 30 }, (_, index) => {
+        const day = index + 1;
+        const dayItems = items.filter((entry) => entry.day === day);
+        const active = dayItems.some((entry) => entry.id === state.selectedId);
+        return `<button class="day ${dayItems.length ? 'has' : ''} ${active ? 'active' : ''}" type="button" data-day="${day}">
+          ${day}<br><span>${dayItems.length ? `${dayItems.length}개` : ''}</span>
+        </button>`;
+      }).join('');
+    }
+
+    function renderList() {
+      const fullList = listEntries();
+      const listLimit = activeFlows.length > 8 ? (state.date === 'all' ? 8 : 4) : fullList.length;
+      const list = state.listExpanded ? fullList : fullList.slice(0, listLimit);
+      $('listTitle').textContent = state.date === 'today' ? '오늘 할 일' : state.date === 'week' ? '이번 주 항목' : state.date === 'later' ? '날짜 없이 보관' : '전체 항목';
+      $('listCount').textContent = fullList.length === list.length ? `${fullList.length}개` : `${list.length}/${fullList.length}개`;
+      $('entryList').innerHTML = list.map((entry) => {
+        const flow = flowById(entry.flowId);
+        const done = isDone(entry);
+        return `
+          <article class="row ${entry.id === state.selectedId ? 'active' : ''}">
+            <button class="row-main" type="button" data-open="${entry.id}">
+              <span class="chip">${flow.type}</span>
+              <b>${entry.title}</b>
+              <span>${scopedName(entry)} · ${entry.dateText}</span>
+            </button>
+            <button class="quick-check ${done ? 'done' : ''}" type="button" data-toggle="${entry.id}" aria-label="${done ? '완료 취소' : '완료 체크'}">${done ? '✓' : ''}</button>
+          </article>
+        `;
+      }).join('') || '<div class="empty">보이는 항목이 없습니다.</div>';
+      const hasMore = fullList.length > list.length;
+      $('showListButton').classList.toggle('hidden', !hasMore);
+      $('showListButton').textContent = state.date === 'all' ? `전체 항목 ${fullList.length}개 보기` : `남은 항목 ${fullList.length - list.length}개 보기`;
+    }
+
+    function visibleFinderFlows() {
+      const query = state.query.trim().toLowerCase();
+      const filtered = activeFlows.filter((flow) => {
+        const entry = entryById(flow.nextId);
+        const haystack = `${flow.name} ${flow.type} ${flow.sub || ''} ${flow.aliases || ''} ${entry.title} ${entry.meta}`.toLowerCase();
+        return !query || haystack.includes(query);
+      });
+      return state.showAll || query ? filtered : filtered.slice(0, config.finderLimit);
+    }
+
+    function renderFinder() {
+      $('finderPanel').classList.toggle('open', state.finderOpen && config.showFinder);
+      $('toggleFinder').textContent = state.finderOpen ? 'Flow 찾기 닫기' : 'Flow 찾기';
+      $('finderCount').textContent = `${activeFlows.length}개`;
+      if ($('searchInput').value !== state.query) $('searchInput').value = state.query;
+      const visible = visibleFinderFlows();
+      $('flowList').innerHTML = visible.map((flow) => {
+        const entry = entryById(flow.nextId);
+        return `
+          <button class="flow-card ${entry.id === state.selectedId ? 'active' : ''}" type="button" data-open="${entry.id}">
+            <span class="chip">${flow.type}</span>
+            <b>${flow.name}</b>
+            <span>${flow.sub ? `${flow.sub} · ` : ''}${entry.title}</span>
+          </button>
+        `;
+      }).join('') || '<div class="empty">검색 결과가 없습니다.</div>';
+      const hasMore = activeFlows.length > config.finderLimit && !state.showAll && !state.query;
+      $('showMoreButton').classList.toggle('hidden', !hasMore);
+      $('showMoreButton').textContent = `전체 Flow ${activeFlows.length}개 보기`;
+    }
+
+    function renderDetail() {
+      const entry = entryById(state.selectedId);
+      const flow = flowById(entry.flowId);
+      const done = isDone(entry);
+      const items = entryItems(entry);
+      $('detailKicker').textContent = flow.sub ? `${flow.name}에서 이어보기` : '선택한 항목';
+      $('detailTitle').textContent = entry.title;
+      $('detailMeta').textContent = `${scopedName(entry)} · ${entry.dateText}`;
+      $('detailStatus').textContent = done ? '완료' : entry.dateText;
+      $('detailStatus').className = `chip ${done ? 'green' : entry.dateKey === 'today' ? 'blue' : entry.dateKey === 'week' ? 'amber' : ''}`;
+      $('saveState').textContent = state.memos[entry.id] ? '메모 저장됨' : '입력하면 자동 저장됩니다.';
+      const itemMarkup = items.length ? items.map((item, index) => {
+        const key = checkKey(entry, index);
+        const checked = Boolean(state.checks[key]);
+        return `
+          <label class="check ${checked ? 'done' : ''}">
+            <input type="checkbox" data-check="${key}" ${checked ? 'checked' : ''} />
+            <span><b>${item.title}</b><span>${item.detail || '필요한 내용만 메모에 남깁니다.'}</span></span>
+          </label>
+        `;
+      }).join('') : `
+          <label class="check ${done ? 'done' : ''}">
+            <input type="checkbox" data-step="${entry.id}" ${done ? 'checked' : ''} />
+            <span><b>이 항목 완료</b><span>${entry.completion || '이 항목을 실행했으면 완료로 표시합니다.'}</span></span>
+          </label>
+        `;
+      const itemSectionLabel = items.length > 1 ? '세부 항목' : items.length === 1 ? '할 일' : '완료 표시';
+      $('checkList').innerHTML = `
+        <div class="section-label">${itemSectionLabel}</div>
+        <div class="step-detail"><b>실행 기준</b><span>${entry.detail || entry.meta}</span></div>
+        ${itemMarkup}
+      `;
+      $('memoInput').value = state.memos[entry.id] ?? entry.memo ?? '';
+      $('memoInput').placeholder = entry.memoHint || '확인한 내용이나 다시 볼 링크를 남기세요';
+      $('fallbackText').textContent = fallbackText(entry);
+      const progressRows = flow.progress || [];
+      $('progressBox').classList.toggle('hidden', progressRows.length === 0);
+      $('progressList').innerHTML = progressRows.map(([num, title, status]) => `
+        <div class="progress-row">
+          <span class="step-num">${num}</span>
+          <span><b>${title}</b><span>${status}</span></span>
+          <span class="chip ${status === '오늘' ? 'blue' : status === '완료' ? 'green' : ''}">${status}</span>
+        </div>
+      `).join('');
+    }
+
+    function render() {
+      renderChrome();
+      renderRail();
+      renderCalendar();
+      renderList();
+      renderFinder();
+      renderDetail();
+      bindDynamicEvents();
+    }
+
+    function toggleAll(entryId) {
+      const entry = entryById(entryId);
+      const next = !isDone(entry);
+      const items = entryItems(entry);
+      if (!items.length) {
+        state.stepDone[entry.id] = next;
+      } else {
+        items.forEach((_, index) => {
+          state.checks[checkKey(entry, index)] = next;
+        });
+      }
+      render();
+    }
+
+    function selectEntry(entryId, options = {}) {
+      state.selectedId = entryId;
+      const entry = entryById(entryId);
+      state.date = entry.dateKey;
+      state.listExpanded = false;
+      if (options.closeFinder) {
+        state.finderOpen = false;
+        state.query = '';
+        state.showAll = false;
+      }
+      render();
+    }
+
+    function bindDynamicEvents() {
+      all('[data-date]').forEach((button) => {
+        button.addEventListener('click', () => {
+          state.date = button.dataset.date;
+          state.listExpanded = false;
+          const first = listEntries()[0];
+          if (first) state.selectedId = first.id;
+          render();
+        });
+      });
+      all('[data-day]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const day = Number(button.dataset.day);
+          const first = datedEntries().find((entry) => entry.day === day);
+          if (first) selectEntry(first.id);
+        });
+      });
+      all('[data-open]').forEach((button) => {
+        button.addEventListener('click', () => {
+          selectEntry(button.dataset.open, { closeFinder: Boolean(button.closest('#finderPanel')) });
+        });
+      });
+      all('[data-toggle]').forEach((button) => {
+        button.addEventListener('click', () => toggleAll(button.dataset.toggle));
+      });
+      all('[data-check]').forEach((input) => {
+        input.addEventListener('change', () => {
+          state.checks[input.dataset.check] = input.checked;
+          render();
+        });
+      });
+      all('[data-step]').forEach((input) => {
+        input.addEventListener('change', () => {
+          state.stepDone[input.dataset.step] = input.checked;
+          render();
+        });
+      });
+    }
+
+    $('toggleFinder').addEventListener('click', () => {
+      state.finderOpen = !state.finderOpen;
+      if (state.finderOpen) state.calendarOpen = false;
+      render();
+      if (state.finderOpen) $('searchInput').focus();
+    });
+
+    $('toggleCalendar').addEventListener('click', () => {
+      state.calendarOpen = !state.calendarOpen;
+      if (state.calendarOpen) state.finderOpen = false;
+      render();
+    });
+
+    $('searchInput').addEventListener('input', (event) => {
+      state.query = event.target.value;
+      renderFinder();
+      bindDynamicEvents();
+    });
+
+    $('showMoreButton').addEventListener('click', () => {
+      state.showAll = true;
+      renderFinder();
+      bindDynamicEvents();
+    });
+
+    $('showListButton').addEventListener('click', () => {
+      state.listExpanded = true;
+      render();
+    });
+
+    $('memoInput').addEventListener('input', (event) => {
+      state.memos[state.selectedId] = event.target.value;
+      $('fallbackText').textContent = fallbackText(entryById(state.selectedId));
+      $('saveState').textContent = event.target.value.trim() ? '메모 저장됨' : '입력하면 자동 저장됩니다.';
+      $('summaryHint').textContent = '메모가 저장되었습니다.';
+    });
+
+    render();
+  </script>
+</body>
+</html>

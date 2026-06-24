@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow v3 P0 Flow 탭 검증</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fb;
+      --surface: #fff;
+      --line: #d8e2ef;
+      --soft: #f1f5f9;
+      --text: #111827;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); line-height: 1.62; }
+    main { width: min(100% - 28px, 980px); margin: 0 auto; padding: 24px 0 56px; }
+    header, section {
+      margin-bottom: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      padding: 20px;
+      box-shadow: 0 14px 34px rgba(15, 23, 42, .06);
+    }
+    h1, h2, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: 32px; line-height: 1.15; letter-spacing: 0; }
+    h2 { margin-bottom: 10px; font-size: 22px; line-height: 1.25; letter-spacing: 0; }
+    p, li, td { color: var(--muted); font-weight: 700; }
+    a { color: var(--blue); font-weight: 900; text-underline-offset: 3px; }
+    code { border-radius: 6px; background: var(--soft); padding: 2px 5px; color: #334155; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid var(--line); padding: 11px; vertical-align: top; text-align: left; }
+    th { background: var(--soft); color: #334155; font-size: 13px; font-weight: 900; }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .card { border: 1px solid var(--line); border-radius: 10px; background: #fbfdff; padding: 13px; }
+    .card b, .card span { display: block; }
+    .card span { margin-top: 5px; color: var(--muted); font-size: 13px; font-weight: 750; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #334155;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .green { border-color: #99f6e4; background: #ecfdf5; color: var(--green); }
+    .amber { border-color: #fed7aa; background: #fff7ed; color: var(--amber); }
+    @media (max-width: 760px) {
+      main { width: min(100% - 20px, 980px); padding-top: 12px; }
+      header, section { padding: 16px; }
+      h1 { font-size: 28px; }
+      .grid { grid-template-columns: 1fr; }
+      table, tbody, tr, th, td { display: block; width: 100%; }
+      tr + tr { margin-top: 10px; border-top: 2px solid var(--line); }
+      th { border-bottom: 0; }
+      td { border-top: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">검증 리포트</p>
+      <h1>모바일 Flow 탭을 “찾아서 열기”로 축소</h1>
+      <p>이 검증은 저장한 Flow가 4~8개 이상으로 늘어났을 때, <code>Flow</code> 탭이 실행 화면처럼 보이는지 아니면 저장 목록을 찾는 화면처럼 보이는지를 확인한 결과다. Today 탭이 오늘/밀림 실행을 맡으므로, 모바일 Flow 탭은 전체 목록 검색과 상태별 접근만 남겼다.</p>
+      <p><a href="./2026-06-21-my-flow-v3-p0-actual-my-verification-ko.html">이전 Today P0 검증 리포트</a></p>
+    </header>
+
+    <section>
+      <p class="eyebrow">문제</p>
+      <h2>Flow 탭이 실행 탭처럼 보였음</h2>
+      <div class="grid">
+        <div class="card"><b>큰 상태판</b><span>모바일 첫 화면에서 진행 중, 평균 진행, 다음 실행, 밀림이 큰 카드로 노출됐다.</span></div>
+        <div class="card"><b>우선순위 카드 반복</b><span>Today와 비슷한 실행 카드가 다시 나와서 Flow 탭의 목적이 흐려졌다.</span></div>
+        <div class="card"><b>직접 완료 버튼</b><span>목록과 우선순위 카드에서 항목을 열지 않고 바로 완료 처리할 수 있어 오조작 가능성이 있었다.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">변경</p>
+      <h2>모바일 Flow 탭의 역할 재정의</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>영역</th>
+            <th>변경 전</th>
+            <th>변경 후</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>모바일 첫 카드</td>
+            <td>Flow 상태판 + 실행 우선순위</td>
+            <td><code>저장한 Flow / 찾아서 열기</code> 카드 1개</td>
+          </tr>
+          <tr>
+            <td>전체 목록 접근</td>
+            <td>y=1389, 우선순위 카드 아래</td>
+            <td>y=496, 첫 화면 안</td>
+          </tr>
+          <tr>
+            <td>직접 완료</td>
+            <td>우선순위 카드와 목록 row에 <code>완료 체크</code> 노출</td>
+            <td>목록에서는 제거. 항목을 열어 상세에서 체크</td>
+          </tr>
+          <tr>
+            <td>Flow 보기</td>
+            <td><code>관리</code>라는 모호한 링크</td>
+            <td><code>Flow 보기</code>로 변경</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">측정</p>
+      <h2>Playwright 모바일 390px 결과</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>결과</th>
+            <th>판단</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Flow 탭 첫 카드</td>
+            <td><code>my-flow-mobile-flow-hub</code> y=367, h=234</td>
+            <td>첫 화면에서 전체 목록 접근이 바로 보임.</td>
+          </tr>
+          <tr>
+            <td>전체 Flow 버튼</td>
+            <td>y=496</td>
+            <td>이전 y=1389보다 크게 개선.</td>
+          </tr>
+          <tr>
+            <td>전체 목록 sheet</td>
+            <td>18개 row, 직접 <code>완료 체크</code> 0개</td>
+            <td>목록은 찾기/열기 역할로 정리됨.</td>
+          </tr>
+          <tr>
+            <td>가로 overflow</td>
+            <td>0px</td>
+            <td>390px 모바일에서 깨짐 없음.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">검증</p>
+      <h2>현재 통과한 체크</h2>
+      <ul>
+        <li>Focused E2E 4개 통과: 기본 관리 탭, UX12, UX20, 모바일 Flow 목록 sheet</li>
+        <li>브라우저 측정: console error 없음, overflow 0</li>
+        <li>스크린샷: <code>output/playwright/my-flow-flowtab-mobile-after.png</code></li>
+        <li>스크린샷: <code>output/playwright/my-flow-flowtab-mobile-inventory-after.png</code></li>
+      </ul>
+    </section>
+
+    <section>
+      <p class="eyebrow">남은 판단</p>
+      <h2>아직 목표 완료는 아님</h2>
+      <p>Today와 Flow 탭의 역할은 더 분리됐다. 다음에는 <code>체크</code> 탭과 <code>루틴</code> 탭이 같은 단순성 원칙을 따르는지 봐야 한다. 특히 체크 탭이 모든 Flow를 한꺼번에 보여주면 다시 복잡해질 수 있으므로, “최근/진행 중 Flow 선택 후 상세 체크” 흐름으로 충분한지 확인해야 한다.</p>
+    </section>
+  </main>
+</body>
+</html>

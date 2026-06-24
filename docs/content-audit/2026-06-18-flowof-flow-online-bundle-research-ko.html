@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Flow of Flow 온라인 묶음 콘텐츠 리서치</title>
+    <style>
+      :root {
+        --bg: #eef3f8;
+        --panel: #ffffff;
+        --soft: #f7fafc;
+        --line: #d8e1eb;
+        --line-strong: #b7c6d8;
+        --text: #111827;
+        --muted: #556274;
+        --blue: #2563eb;
+        --blue-soft: #eaf1ff;
+        --green: #0f766e;
+        --green-soft: #e8f6f3;
+        --amber: #b45309;
+        --amber-soft: #fff5df;
+        --red: #b91c1c;
+        --red-soft: #fff1f2;
+        --shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      a {
+        color: var(--blue);
+        font-weight: 850;
+      }
+
+      .page {
+        width: min(1220px, 100%);
+        margin: 0 auto;
+        padding: 18px;
+      }
+
+      .hero,
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+      }
+
+      .hero {
+        padding: 22px;
+        margin-bottom: 14px;
+      }
+
+      .card {
+        padding: 16px;
+        margin-bottom: 14px;
+      }
+
+      .eyebrow,
+      .label {
+        margin: 0 0 8px;
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 950;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 10px;
+        font-size: clamp(30px, 5vw, 50px);
+        line-height: 1.08;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      h2 {
+        margin-bottom: 10px;
+        font-size: 24px;
+        line-height: 1.24;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      h3 {
+        margin-bottom: 8px;
+        font-size: 17px;
+        line-height: 1.35;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      .desc,
+      .small {
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .desc {
+        margin-bottom: 0;
+      }
+
+      .small {
+        display: block;
+        font-size: 13px;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 6px 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        background: var(--soft);
+        color: #263346;
+        font-size: 13px;
+        font-weight: 850;
+        line-height: 1.2;
+      }
+
+      .chip.blue { background: var(--blue-soft); border-color: #b8cdfb; color: #1d4ed8; }
+      .chip.green { background: var(--green-soft); border-color: #b9ded8; color: var(--green); }
+      .chip.amber { background: var(--amber-soft); border-color: #f5d393; color: var(--amber); }
+      .chip.red { background: var(--red-soft); border-color: #fecdd3; color: var(--red); }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        align-items: start;
+      }
+
+      .type-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .box {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--soft);
+        padding: 12px;
+      }
+
+      .box strong {
+        display: block;
+        margin-bottom: 6px;
+        color: #263346;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+      }
+
+      table {
+        width: 100%;
+        min-width: 940px;
+        border-collapse: collapse;
+        background: #fff;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid var(--line);
+        padding: 10px;
+        text-align: left;
+        vertical-align: top;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      th {
+        color: #263346;
+        background: #f1f5f9;
+        font-size: 13px;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .rank {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 72px;
+        min-height: 28px;
+        border-radius: 999px;
+        padding: 5px 8px;
+        font-size: 12px;
+        font-weight: 950;
+      }
+
+      .rank.strong { background: var(--green-soft); color: var(--green); border: 1px solid #b9ded8; }
+      .rank.medium { background: var(--amber-soft); color: var(--amber); border: 1px solid #f5d393; }
+      .rank.weak { background: var(--red-soft); color: var(--red); border: 1px solid #fecdd3; }
+      .rank.ref { background: var(--blue-soft); color: #1d4ed8; border: 1px solid #b8cdfb; }
+
+      .source-note {
+        border-left: 4px solid var(--blue);
+        border-radius: 12px;
+        background: var(--blue-soft);
+        color: #1e3a8a;
+        padding: 12px;
+        line-height: 1.55;
+      }
+
+      ul {
+        margin: 8px 0 0 19px;
+        padding: 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      @media (max-width: 900px) {
+        .page { padding: 10px; }
+        .hero,
+        .card {
+          padding: 14px;
+        }
+        .grid,
+        .type-grid {
+          grid-template-columns: 1fr;
+        }
+        h1 { font-size: 30px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <p class="eyebrow">2026-06-18 리서치</p>
+        <h1>Flow of Flow가 될 수 있는 온라인 묶음 콘텐츠 유형</h1>
+        <p class="desc">개별 글/영상 하나가 아니라, 제작자가 여러 Flow를 묶어 운영할 수 있는 원문 묶음을 기준으로 훑었습니다. 이 문서는 실제 사용자 검증이 아니라 제품/콘텐츠 구조 리서치입니다.</p>
+        <div class="chips">
+          <span class="chip blue">온라인 묶음 콘텐츠</span>
+          <span class="chip green">상위 지도 + 하위 Flow</span>
+          <span class="chip">진도형 / 루틴형 / 타임라인형 / 케어맵형</span>
+          <span class="chip amber">PoC 후보 선별</span>
+        </div>
+      </header>
+
+      <section class="card">
+        <p class="eyebrow">판단 기준</p>
+        <h2>단순 묶음과 진짜 Flow of Flow를 가르는 기준</h2>
+        <div class="grid">
+          <div class="box">
+            <strong>진짜 Flow of Flow</strong>
+            <span class="small">상위 구조가 있고, 하위 Flow가 3개 이상 자연스럽고, 하위 Flow들이 같은 실행 패턴을 반복합니다. 사용자는 전체 위치와 다음 실행 항목을 볼 이유가 있습니다.</span>
+          </div>
+          <div class="box">
+            <strong>단순 Collection</strong>
+            <span class="small">링크나 자료가 많이 모여 있지만, 하위 항목마다 실행 방식이 다르거나 사용자가 전체 진행 위치를 관리할 필요가 약합니다.</span>
+          </div>
+          <div class="box">
+            <strong>FlowMe에 좋은 후보</strong>
+            <span class="small">원문은 좋은데 자체 진행 관리가 약하거나, 여러 제작자 콘텐츠를 한 개인 실행판에 섞어 저장할 이유가 있는 경우입니다.</span>
+          </div>
+          <div class="box">
+            <strong>FlowMe에 약한 후보</strong>
+            <span class="small">원문 플랫폼 자체가 이미 강력한 앱/코스 관리 기능을 제공하거나, 저장 링크 하나면 충분한 자료집입니다.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">형태 분류</p>
+        <h2>현재 보이는 Flow of Flow 유형 7개</h2>
+        <div class="type-grid">
+          <div class="box">
+            <strong>1. 커리큘럼형</strong>
+            <span class="small">과목/장/단원/레슨이 상위-하위로 이어집니다. 하위 Flow는 대부분 진도형입니다.</span>
+            <div class="chips"><span class="chip green">강함</span><span class="chip">진도형</span></div>
+          </div>
+          <div class="box">
+            <strong>2. 자격증/시험형</strong>
+            <span class="small">과목, 챕터, 기출, 오답이 묶입니다. 하위 Flow는 진도형이고 일부는 기록형입니다.</span>
+            <div class="chips"><span class="chip green">강함</span><span class="chip">진도+로그</span></div>
+          </div>
+          <div class="box">
+            <strong>3. 프로그램/챌린지형</strong>
+            <span class="small">4주/8주/30일처럼 회차가 정해진 운동·습관 프로그램입니다. 하위 Flow는 루틴형 또는 타임라인형입니다.</span>
+            <div class="chips"><span class="chip green">강함</span><span class="chip">루틴/타임라인</span></div>
+          </div>
+          <div class="box">
+            <strong>4. 케어맵형</strong>
+            <span class="small">월령, 주차, 연령, 상태별 관리가 묶입니다. 의료/육아/건강은 공식 정보와 사용자 기록을 강하게 분리해야 합니다.</span>
+            <div class="chips"><span class="chip amber">강하지만 민감</span><span class="chip">phase/timeline</span></div>
+          </div>
+          <div class="box">
+            <strong>5. 프로젝트 타임라인형</strong>
+            <span class="small">이사, 결혼, 입시, 리모델링처럼 긴 프로젝트가 단계별 Flow로 나뉩니다. 단일 Timeline Flow로 충분한지 구분해야 합니다.</span>
+            <div class="chips"><span class="chip amber">선별 필요</span><span class="chip">timeline/process</span></div>
+          </div>
+          <div class="box">
+            <strong>6. 제작자 운영형</strong>
+            <span class="small">콘텐츠 캘린더, 유튜브 운영, 마케팅 캠페인처럼 제작자가 반복 운영하는 작업 묶음입니다. FlowMe의 B2B/creator 가능성과 연결됩니다.</span>
+            <div class="chips"><span class="chip amber">제품성 높음</span><span class="chip">calendar/process/log</span></div>
+          </div>
+          <div class="box">
+            <strong>7. 리소스 라이브러리형</strong>
+            <span class="small">템플릿, 자료, 레시피, 도안 모음입니다. 대부분 Flow of Flow보다는 Collection 또는 Bucket에 가깝습니다.</span>
+            <div class="chips"><span class="chip red">약함</span><span class="chip">bucket/reference</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">스캔 결과</p>
+        <h2>실제 온라인 묶음 콘텐츠 후보</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>후보</th>
+                <th>출처</th>
+                <th>묶음 형태</th>
+                <th>하위 Flow 타입</th>
+                <th>판정</th>
+                <th>이유</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>생활코딩 WEB1</td>
+                <td><a href="https://edu.goorm.io/learn/lecture/12959/%EC%83%9D%ED%99%9C%EC%BD%94%EB%94%A9-web1-html-and-internet/lesson/566075/%EA%B8%B0%ED%9A%8D">Goorm EDU</a> / <a href="https://www.youtube.com/playlist?list=PLuHgQVnccGMDZP7FJ_ZsUrdCGH68ppvPb">YouTube playlist</a></td>
+                <td>장 → 수업</td>
+                <td>진도형</td>
+                <td><span class="rank strong">Strong</span></td>
+                <td>장과 수업 수가 명확하고, 여러 제작자 강의를 같은 내 진도판에 저장하는 FlowMe 가치가 보입니다.</td>
+              </tr>
+              <tr>
+                <td>Nomad Coders JS for Beginners</td>
+                <td><a href="https://nomadcoders.co/javascript-for-beginners/lobby">Nomad Coders</a></td>
+                <td>섹션 → 레슨</td>
+                <td>진도형</td>
+                <td><span class="rank strong">Strong</span></td>
+                <td>제작자 코스형 콘텐츠입니다. 자체 플랫폼이 있지만 FlowMe의 “여러 코스 통합 진도판” 검증에 좋습니다.</td>
+              </tr>
+              <tr>
+                <td>freeCodeCamp Responsive Web Design</td>
+                <td><a href="https://www.freecodecamp.org/learn/responsive-web-design-v9">freeCodeCamp</a></td>
+                <td>인증 과정 → 프로젝트/레슨</td>
+                <td>진도형</td>
+                <td><span class="rank medium">Medium</span></td>
+                <td>구조는 매우 좋지만 자체 학습 플랫폼이 강합니다. FlowMe는 외부 통합 진도판일 때만 의미가 강합니다.</td>
+              </tr>
+              <tr>
+                <td>MDN Learn Web Development</td>
+                <td><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development">MDN Learn</a> / <a href="https://developer.mozilla.org/en-US/curriculum/">MDN Curriculum</a></td>
+                <td>모듈 → 튜토리얼/리소스</td>
+                <td>진도형</td>
+                <td><span class="rank strong">Strong</span></td>
+                <td>학습 경로는 크지만 실사용 진도 관리는 약합니다. 사용자가 커리큘럼을 내 Flow로 저장할 이유가 있습니다.</td>
+              </tr>
+              <tr>
+                <td>EBS 중학 수학 강좌</td>
+                <td><a href="https://mid.ebs.co.kr/course/view?courseId=100005139">EBS 중학 뉴런 수학1</a> / <a href="https://mid.ebs.co.kr/book/main/bookRoadMap">EBS 교재 로드맵</a></td>
+                <td>학년/교재 → 강좌/강의</td>
+                <td>진도형</td>
+                <td><span class="rank medium">Medium</span></td>
+                <td>교육 구조는 강하지만 EBS 자체 플랫폼성이 있습니다. 학부모가 여러 강좌를 묶는 용도로는 가능성이 있습니다.</td>
+              </tr>
+              <tr>
+                <td>이기적 컴활 1급 필기</td>
+                <td><a href="https://www.yes24.com/product/goods/147569004">YES24 목차</a> / <a href="https://www.youtube.com/channel/UCIimf8pEC9AP0N_9FGW_P_w">이기적 YouTube</a></td>
+                <td>과목 → 챕터 → 기출</td>
+                <td>진도형 + 기록형</td>
+                <td><span class="rank strong">Strong</span></td>
+                <td>자격증은 과목별 진도, 기출, 오답 메모가 분명합니다. FlowMe 대표 PoC로 적합합니다.</td>
+              </tr>
+              <tr>
+                <td>공무원 한국사 핵심이론</td>
+                <td><a href="https://www.youtube.com/playlist?list=PLVFdZAzYshHIFF2gwanvb_eEyIeXxKk57">YouTube playlist</a></td>
+                <td>강의 시리즈 → 회차</td>
+                <td>진도형</td>
+                <td><span class="rank medium">Medium</span></td>
+                <td>플레이리스트는 진도형으로 좋지만, 세부 챕터 구조가 영상 제목에만 의존하면 약해질 수 있습니다.</td>
+              </tr>
+              <tr>
+                <td>NHS Couch to 5K</td>
+                <td><a href="https://www.nhs.uk/better-health/get-active/get-running-with-couch-to-5k/couch-to-5k-running-plan/">NHS plan</a></td>
+                <td>9주 → 주 3회 달리기</td>
+                <td>루틴형 + 타임라인형</td>
+                <td><span class="rank strong">Strong</span></td>
+                <td>주차와 반복 횟수가 명확합니다. 하위 Flow는 각 주차의 반복 실행 카드가 됩니다.</td>
+              </tr>
+              <tr>
+                <td>Hal Higdon 5K Novice</td>
+                <td><a href="https://www.halhigdon.com/training-programs/5k-training/novice-5k/">Hal Higdon</a></td>
+                <td>8주 → 요일별 운동</td>
+                <td>타임라인형 + 루틴형</td>
+                <td><span class="rank strong">Strong</span></td>
+                <td>요일별 계획과 주차가 명확합니다. 캘린더와 완료 체크로 자연스럽게 옮겨집니다.</td>
+              </tr>
+              <tr>
+                <td>Darebee 30 Days of HIIT</td>
+                <td><a href="https://darebee.com/programs/30-days-of-hiit.html">Darebee</a></td>
+                <td>30일 → 일별 운동</td>
+                <td>루틴형/진도형</td>
+                <td><span class="rank strong">Strong</span></td>
+                <td>일별 프로그램 구조가 명확합니다. 운동 자세는 원문에 두고 FlowMe는 날짜/완료/메모만 맡으면 됩니다.</td>
+              </tr>
+              <tr>
+                <td>Yoga With Adriene 30 Days</td>
+                <td><a href="https://www.youtube.com/user/yogawithadriene/playlists">YouTube playlists</a> / <a href="https://do.yogawithadriene.com/30-days-of-yoga-daily-emails">30 Days FAQ</a></td>
+                <td>시리즈 → 일별 영상</td>
+                <td>루틴형/진도형</td>
+                <td><span class="rank strong">Strong</span></td>
+                <td>제작자 시리즈와 커뮤니티성이 강합니다. FlowMe가 “내 달력에 저장한 챌린지”로 보일 수 있습니다.</td>
+              </tr>
+              <tr>
+                <td>CDC Child Immunization Schedule</td>
+                <td><a href="https://www.cdc.gov/vaccines/hcp/imz-schedules/child-adolescent-age.html">CDC schedule</a> / <a href="https://www.cdc.gov/vaccines/by-age/index.html">CDC by age</a></td>
+                <td>연령 → 접종 항목</td>
+                <td>케어맵/타임라인형</td>
+                <td><span class="rank medium">Medium</span></td>
+                <td>구조는 강하지만 민감합니다. FlowMe는 공식 일정 확인과 방문 준비 메모만 해야 합니다.</td>
+              </tr>
+              <tr>
+                <td>NHS Pregnancy Week by Week</td>
+                <td><a href="https://www.nhs.uk/best-start-in-life/pregnancy/week-by-week-guide-to-pregnancy/">NHS pregnancy guide</a></td>
+                <td>임신 주차 → 정보/준비</td>
+                <td>케어맵/레퍼런스형</td>
+                <td><span class="rank medium">Medium</span></td>
+                <td>주차 지도는 좋지만 실행 Flow보다 정보 탐색 비중이 큽니다. 특정 주차 준비물/병원 일정만 Flow화해야 합니다.</td>
+              </tr>
+              <tr>
+                <td>Solid Starts Feeding Schedules</td>
+                <td><a href="https://solidstarts.com/feeding-schedules/">Solid Starts</a></td>
+                <td>월령 → 식사 스케줄</td>
+                <td>케어맵/루틴형</td>
+                <td><span class="rank medium">Medium</span></td>
+                <td>월령별 구조는 좋지만 의료/영양 판단 위험이 있습니다. 기록형으로 최소화해야 합니다.</td>
+              </tr>
+              <tr>
+                <td>The Knot Wedding Planning Checklist</td>
+                <td><a href="https://www.theknot.com/content/12-month-wedding-planning-countdown">The Knot</a></td>
+                <td>12개월 → 월별 준비</td>
+                <td>프로젝트 타임라인형</td>
+                <td><span class="rank medium">Medium</span></td>
+                <td>상위 프로젝트로 좋지만 단일 Timeline Flow로도 충분할 수 있습니다. 벤더별 하위 Flow까지 있을 때 FoF가 강해집니다.</td>
+              </tr>
+              <tr>
+                <td>NACAC Senior Year Checklist</td>
+                <td><a href="https://www.nacacnet.org/preparing-for-college-senior-year-checklist/">NACAC</a></td>
+                <td>입시 단계 → 마감/자료</td>
+                <td>타임라인형/프로세스형</td>
+                <td><span class="rank medium">Medium</span></td>
+                <td>입시 프로젝트 지도 가능성이 있습니다. 학교별 지원 Flow로 확장되면 FoF가 강해집니다.</td>
+              </tr>
+              <tr>
+                <td>Moving 8-week checklist</td>
+                <td><a href="https://updater.com/moving-tips/the-most-epic-moving-checklist-in-the-history-of-moving-checklists/">Updater</a> / <a href="https://sterlingmoving.com/moving-timeline-checklist/">Sterling Moving</a></td>
+                <td>8주 → 주차별 준비</td>
+                <td>타임라인형</td>
+                <td><span class="rank medium">Medium</span></td>
+                <td>좋은 Timeline Flow입니다. 다만 대부분은 단일 Flow로 충분하고 FoF 대표성은 낮습니다.</td>
+              </tr>
+              <tr>
+                <td>HubSpot Content Marketing Certification</td>
+                <td><a href="https://academy.hubspot.com/courses/content-marketing">HubSpot Academy</a> / <a href="https://www.classcentral.com/course/content-marketing-66297">Syllabus mirror</a></td>
+                <td>인증 과정 → 레슨</td>
+                <td>진도형</td>
+                <td><span class="rank medium">Medium</span></td>
+                <td>코스 구조는 좋지만 자체 Academy 진행 관리가 있습니다. 외부 학습 통합판이면 가능성이 있습니다.</td>
+              </tr>
+              <tr>
+                <td>Google Digital Garage</td>
+                <td><a href="https://skillshop.exceedlms.com/student/collection/1830706-fundamentals-of-digital-marketing">Skillshop</a> / <a href="https://www.youtube.com/playlist?list=PLLSovFY-eK2_1isRMtrNS_me4zDrs2CuS">YouTube playlist</a></td>
+                <td>모듈 → 실습</td>
+                <td>진도형</td>
+                <td><span class="rank medium">Medium</span></td>
+                <td>구조는 좋지만 자체 플랫폼성이 강합니다. 크리에이터/마케터가 여러 학습 경로를 섞을 때 유효합니다.</td>
+              </tr>
+              <tr>
+                <td>Notion Content Calendar Templates</td>
+                <td><a href="https://www.notion.com/templates/category/content-calendar">Notion Marketplace</a> / <a href="https://www.notion.com/help/guides/this-content-calendar-drives-high-performance-marketing-teamwork">Notion guide</a></td>
+                <td>템플릿/운영판</td>
+                <td>제작자 운영형</td>
+                <td><span class="rank ref">Reference</span></td>
+                <td>Flow of Flow 원문이라기보다 FlowMe 제작자 운영 화면의 레퍼런스에 가깝습니다.</td>
+              </tr>
+              <tr>
+                <td>YouTube Creator Academy</td>
+                <td><a href="https://newsinitiative.withgoogle.com/resources/trainings/youtube-creator-academy-improve-your-youtube-skills/">Google News Initiative</a> / <a href="https://www.youtube.com/creators">YouTube Creators</a></td>
+                <td>교육 리소스 묶음</td>
+                <td>진도형/레퍼런스형</td>
+                <td><span class="rank medium">Medium</span></td>
+                <td>제작자 플랫폼 맥락에는 좋지만, 하위 실행 Flow가 명확한 특정 코스 URL을 골라야 합니다.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">제품 판단</p>
+        <h2>FlowMe 관점에서 중요한 발견</h2>
+        <div class="grid">
+          <div class="box">
+            <strong>1. Parent는 폴더가 아니다</strong>
+            <span class="small">상위 화면은 링크 묶음이 아니라 현재 위치, 다음 실행, 전체 진행률, 멈춘 하위 Flow를 보여줘야 합니다.</span>
+          </div>
+          <div class="box">
+            <strong>2. Child Flow UI는 실행 유형을 따른다</strong>
+            <span class="small">진도형은 행/체크/메모, 루틴형은 반복 일정, 타임라인형은 날짜 카드, 케어맵은 공식 일정과 메모 분리가 기본입니다.</span>
+          </div>
+          <div class="box">
+            <strong>3. 자체 플랫폼이 강한 원문은 약하다</strong>
+            <span class="small">freeCodeCamp, Google Skillshop, HubSpot Academy처럼 자체 진행 관리가 있으면 FlowMe는 “여러 원문 통합판”일 때만 강해집니다.</span>
+          </div>
+          <div class="box">
+            <strong>4. Creator content가 더 FlowMe답다</strong>
+            <span class="small">생활코딩, 노마드 코더, Yoga With Adriene, Darebee처럼 제작자 콘텐츠 묶음은 사용자가 내 실행판에 저장할 이유가 더 선명합니다.</span>
+          </div>
+          <div class="box">
+            <strong>5. 프로젝트형은 단일 Flow와 구분해야 한다</strong>
+            <span class="small">이사/결혼/입시는 전체가 하나의 Timeline Flow로 충분한 경우가 많습니다. 업체, 지원 학교, 과목처럼 하위 반복 단위가 생겨야 FoF가 강합니다.</span>
+          </div>
+          <div class="box">
+            <strong>6. 민감 영역은 공식 정보와 사용자 기록을 분리한다</strong>
+            <span class="small">백신, 이유식, 임신, 수면은 FlowMe가 판단하면 안 됩니다. 공식 일정/원문 링크/방문 준비/짧은 기록만 다룹니다.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">PoC 우선순위</p>
+        <h2>다음 클릭 PoC로 볼 만한 대표 4개</h2>
+        <div class="grid">
+          <div class="box">
+            <strong>1순위: 이기적 컴활 1급 필기</strong>
+            <span class="small">자격증/시험형 FoF. 과목별 진도 + 챕터 체크 + 기출/약점 메모가 FlowMe 가치와 잘 맞습니다.</span>
+          </div>
+          <div class="box">
+            <strong>2순위: Darebee 30 Days 또는 NHS Couch to 5K</strong>
+            <span class="small">프로그램/챌린지형 FoF. 날짜·반복·완료 체크가 명확하고, 건강 판단은 원문/주의로 분리할 수 있습니다.</span>
+          </div>
+          <div class="box">
+            <strong>3순위: 생활코딩 WEB1</strong>
+            <span class="small">제작자 커리큘럼형 FoF. 여러 제작자 코스를 내 진도판으로 저장하는 서비스 그림이 잘 보입니다.</span>
+          </div>
+          <div class="box">
+            <strong>4순위: CDC 백신 일정</strong>
+            <span class="small">케어맵형 FoF. 제품 가능성은 크지만 민감도가 높아 공식 정보/메모 분리 설계가 먼저 필요합니다.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">결론</p>
+        <h2>Flow of Flow는 3개 축으로 먼저 정리하면 된다</h2>
+        <div class="source-note">
+          <strong>제품적으로 가장 중요한 축:</strong>
+          <ul>
+            <li><b>진도형 지도:</b> 커리큘럼, 자격증, 강의 시리즈. 현재 가장 안정적입니다.</li>
+            <li><b>프로그램형 지도:</b> 8주/30일 운동, 루틴 챌린지. 캘린더 가치가 강합니다.</li>
+            <li><b>케어/프로젝트 지도:</b> 백신, 임신, 입시, 결혼. 가능성은 크지만 단일 Flow와 민감도 구분이 필요합니다.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
