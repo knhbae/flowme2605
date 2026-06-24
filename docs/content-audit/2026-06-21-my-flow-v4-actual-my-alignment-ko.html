@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow v4 실제 /my 정렬 확인</title>
+  <style>
+    :root { color-scheme: light; --bg:#f6f8fb; --card:#fff; --line:#dbe3ef; --text:#0f172a; --muted:#64748b; --blue:#2563eb; --green:#0f766e; --amber:#b45309; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif; color:var(--text); }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); letter-spacing:0; }
+    main { width:min(100% - 28px, 1040px); margin:0 auto; padding:24px 0 48px; }
+    header, section { border:1px solid var(--line); border-radius:16px; background:var(--card); box-shadow:0 14px 36px rgba(15,23,42,.06); }
+    header { padding:24px; }
+    section { margin-top:14px; padding:20px; }
+    h1, h2, h3, p { margin-top:0; }
+    h1 { margin-bottom:8px; font-size:32px; line-height:1.12; }
+    h2 { margin-bottom:10px; font-size:21px; }
+    h3 { margin-bottom:6px; font-size:17px; }
+    p, li, td, th { font-size:14px; line-height:1.6; }
+    p, li { color:var(--muted); font-weight:650; }
+    a { color:#1d4ed8; font-weight:800; }
+    .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+    .chip { display:inline-flex; align-items:center; min-height:30px; border-radius:999px; border:1px solid var(--line); background:#f8fafc; padding:5px 10px; color:#334155; font-size:12px; font-weight:850; text-decoration:none; }
+    .chip.good { border-color:#99f6e4; background:#ecfdf5; color:var(--green); }
+    .chip.warn { border-color:#fed7aa; background:#fff7ed; color:var(--amber); }
+    .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+    .card { border:1px solid var(--line); border-radius:12px; background:#f8fafc; padding:14px; }
+    .card b, .card span { display:block; }
+    .card b { font-size:15px; }
+    .card span { margin-top:6px; color:var(--muted); font-size:13px; font-weight:650; line-height:1.5; }
+    table { width:100%; border-collapse:collapse; overflow:hidden; border-radius:12px; }
+    th, td { border-bottom:1px solid var(--line); padding:12px; text-align:left; vertical-align:top; }
+    th { background:#f8fafc; color:#334155; font-size:12px; font-weight:900; }
+    td:first-child { width:180px; font-weight:850; color:#0f172a; }
+    code { border-radius:6px; background:#eef2f7; padding:2px 5px; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:12px; }
+    .decision { border-left:4px solid var(--blue); background:#eff6ff; }
+    @media (max-width:760px) {
+      main { width:min(100% - 20px, 720px); padding-top:14px; }
+      header, section { padding:16px; border-radius:14px; }
+      h1 { font-size:28px; }
+      .grid { grid-template-columns:1fr; }
+      table, tbody, tr, td, th { display:block; }
+      th { display:none; }
+      td:first-child { width:auto; padding-bottom:4px; }
+      td + td { padding-top:4px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="chip good">사용자용 PoC와 별도 검증 리포트</p>
+      <h1>My Flow v4 기준을 실제 /my에 맞춘 결과</h1>
+      <p>저장한 Flow가 1개일 때와 여러 개일 때의 모바일 복잡도를 다시 확인했다. 결론은 실제 /my도 v4 PoC처럼 “오늘 실행 먼저, 관리 기능은 필요할 때” 쪽으로 더 줄이는 것이 맞다.</p>
+      <div class="chips">
+        <a class="chip" href="./2026-06-21-my-flow-saved-execution-v4-ko.html">v4 사용자 화면</a>
+        <a class="chip" href="./2026-06-21-my-flow-completion-toggle-ab-simulation-ko.html">완료 토글 A/B 판단</a>
+        <a class="chip" href="./2026-06-19-flowme-service-ux-backlog-ko.html">서비스 UX 백로그</a>
+      </div>
+    </header>
+
+    <section>
+      <h2>이번에 테스트한 질문</h2>
+      <div class="grid">
+        <div class="card"><b>1개 저장</b><span>탭, 상태판, 목록 관리 없이 바로 실행 화면처럼 보여도 되는가.</span></div>
+        <div class="card"><b>4개 이상 저장</b><span>오늘 항목과 Flow 찾기만 먼저 보여도 사용자가 길을 잃지 않는가.</span></div>
+        <div class="card"><b>보조 상태 버튼</b><span>밀린 Flow, 다음 실행 같은 단축 버튼이 실제 가치보다 관리 부담을 키우는가.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>확인 결과</h2>
+      <table>
+        <thead>
+          <tr><th>영역</th><th>이전 상태</th><th>수정 후</th><th>판단</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1개 저장 모바일</td>
+            <td>상단에 오늘, 캘린더, Flow 탭이 남아 있어 단일 Flow도 관리 화면처럼 보였다.</td>
+            <td>모바일 단일 저장에서는 탭을 숨기고 Today 실행 화면만 보여준다.</td>
+            <td>전세/10개 Flow 기준에 더 가까움. 한 개만 저장한 사용자는 관리보다 실행이 먼저다.</td>
+          </tr>
+          <tr>
+            <td>Today 요약</td>
+            <td>모바일에서도 남음, 루틴, 밀림 숫자 카드가 보여 상태판 느낌이 강했다.</td>
+            <td>모바일에서는 숫자 카드가 숨겨지고 문장 요약과 실행 목록만 남는다.</td>
+            <td>Apple/Galaxy/Toss식으로 보면 첫 화면의 해석 비용이 줄었다.</td>
+          </tr>
+          <tr>
+            <td>Flow 탭 모바일</td>
+            <td><code>Flow 찾기</code> 아래에 <code>밀린 Flow</code>, <code>다음 실행</code> 버튼이 다시 나왔다.</td>
+            <td><code>Flow 찾기</code>만 남기고 상태 버튼을 제거했다.</td>
+            <td>여러 개 저장에서도 첫 단계는 검색/열기 하나면 충분하다. 상태별 분류는 나중에 다시 열 수 있다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="decision">
+      <h2>UX 판단</h2>
+      <p>지금 단계의 My Flow는 프로젝트 관리 앱이 아니라, 저장한 실행 항목을 다시 열어 체크하고 메모하는 공간이다. 따라서 사용자가 처음 보는 모바일 화면은 상태 분류보다 현재 실행 항목을 우선해야 한다.</p>
+      <ul>
+        <li>1개 저장: 바로 실행. 전역 탭은 숨김.</li>
+        <li>4~8개 저장: 오늘 항목 우선. Flow 찾기는 접거나 한 번의 버튼으로 열기.</li>
+        <li>8개 이상: 검색과 필터가 필요하지만, 첫 화면에 상태 버튼을 늘어놓지 않음.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>브라우저 검증</h2>
+      <table>
+        <tbody>
+          <tr>
+            <td>모바일 ux12 Today</td>
+            <td><a href="../../output/playwright/actual-my-ux12-mobile-today-after.png">actual-my-ux12-mobile-today-after.png</a></td>
+          </tr>
+          <tr>
+            <td>모바일 ux12 Flow 탭</td>
+            <td><a href="../../output/playwright/actual-my-ux12-mobile-flow-after.png">actual-my-ux12-mobile-flow-after.png</a></td>
+          </tr>
+          <tr>
+            <td>모바일 단일 저장</td>
+            <td><a href="../../output/playwright/actual-my-single-mobile-after.png">actual-my-single-mobile-after.png</a></td>
+          </tr>
+          <tr>
+            <td>검증 결과</td>
+            <td>가로 overflow 없음. Flow 탭 보조 상태 버튼 0개. 단일 저장 모바일 탭 0개. 대상 e2e 2개 통과.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>남은 판단</h2>
+      <p>이번 작업은 내부 UX 시뮬레이션과 브라우저 검증이다. 실제 사용자 검증은 아직 아니다. 다음에는 실제 사용자에게 1개, 4개, 8개 저장 상태를 보여주고 첫 클릭이 어디로 향하는지 봐야 한다.</p>
+    </section>
+  </main>
+</body>
+</html>

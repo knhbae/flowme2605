@@ -274,13 +274,13 @@ function hasWorkbenchProgress(state: FlowWorkbenchState): boolean {
   );
 }
 
-export function getActiveFlowProgress(): ActiveFlowProgress[] {
+export function getActiveFlowProgress(bundles: FlowBundle[] = getBundles()): ActiveFlowProgress[] {
   if (!canUseStorage()) return [];
 
   const lastVisited = localStorage.getItem('flow:meta:last-visit') ?? undefined;
   const progress: ActiveFlowProgress[] = [];
 
-  for (const bundle of getBundles()) {
+  for (const bundle of bundles) {
     const checks = getChecks(bundle.flow.slug);
     const itemStates = getItemStates(bundle.flow.slug);
     const comparisonState = getComparisonState(bundle.flow.slug);

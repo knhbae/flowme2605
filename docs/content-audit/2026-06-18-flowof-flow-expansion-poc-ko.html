@@ -1,0 +1,1129 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe Flow of Flow 확장 PoC</title>
+    <style>
+      :root {
+        --bg: #eef3f8;
+        --panel: #fff;
+        --soft: #f7fafc;
+        --line: #d8e1eb;
+        --line-strong: #b8c7d9;
+        --text: #111827;
+        --muted: #536174;
+        --blue: #2563eb;
+        --blue-soft: #eaf1ff;
+        --green: #0f766e;
+        --green-soft: #e8f6f3;
+        --amber: #b45309;
+        --amber-soft: #fff5df;
+        --red: #b91c1c;
+        --red-soft: #fff1f2;
+        --shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+
+      [hidden] { display: none !important; }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      a {
+        color: var(--blue);
+        font-weight: 850;
+      }
+
+      .page {
+        width: min(1180px, 100%);
+        margin: 0 auto;
+        padding: 16px;
+      }
+
+      .topbar,
+      .hero,
+      .card,
+      .flow-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+      }
+
+      .brand {
+        font-size: 22px;
+        font-weight: 950;
+      }
+
+      .hero,
+      .card,
+      .flow-card {
+        padding: 16px;
+      }
+
+      .hero {
+        margin-bottom: 12px;
+      }
+
+      .section {
+        margin-top: 12px;
+      }
+
+      .eyebrow,
+      .label {
+        margin: 0 0 8px;
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 950;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 10px;
+        font-size: clamp(30px, 5vw, 46px);
+        line-height: 1.08;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      h2 {
+        margin-bottom: 10px;
+        font-size: 23px;
+        line-height: 1.24;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      h3 {
+        margin-bottom: 8px;
+        font-size: 17px;
+        line-height: 1.35;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      .desc,
+      .small,
+      .top-note {
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .desc,
+      .top-note {
+        margin-bottom: 0;
+      }
+
+      .small {
+        display: block;
+        font-size: 13px;
+      }
+
+      .chips,
+      .actions,
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 6px 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        background: var(--soft);
+        color: #263346;
+        font-size: 13px;
+        font-weight: 850;
+        line-height: 1.2;
+      }
+
+      .chip.blue { background: var(--blue-soft); border-color: #b8cdfb; color: #1d4ed8; }
+      .chip.green { background: var(--green-soft); border-color: #b9ded8; color: var(--green); }
+      .chip.amber { background: var(--amber-soft); border-color: #f5d393; color: var(--amber); }
+      .chip.red { background: var(--red-soft); border-color: #fecdd3; color: var(--red); }
+
+      .candidate-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .candidate {
+        min-height: 150px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--soft);
+        padding: 12px;
+      }
+
+      .candidate strong {
+        display: block;
+        margin-bottom: 6px;
+        line-height: 1.35;
+      }
+
+      .tabs {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 6px;
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        padding: 6px;
+        background: #e7edf5;
+        margin: 12px 0;
+      }
+
+      .tabs button,
+      .mode-tabs button {
+        min-height: 46px;
+        border: 0;
+        border-radius: 11px;
+        background: transparent;
+        color: #334155;
+        cursor: pointer;
+        font-weight: 950;
+      }
+
+      .tabs button.active,
+      .mode-tabs button.active {
+        background: #fff;
+        color: var(--blue);
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+      }
+
+      .mode-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 6px;
+        background: #e7edf5;
+        margin-bottom: 12px;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1.35fr);
+        gap: 12px;
+        align-items: start;
+      }
+
+      .stack {
+        display: grid;
+        gap: 10px;
+      }
+
+      .field-grid,
+      .status-grid,
+      .creator-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .field-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin-top: 14px;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+
+      label {
+        color: #334155;
+        font-size: 13px;
+        font-weight: 950;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--line-strong);
+        border-radius: 11px;
+        background: #fff;
+        color: var(--text);
+        padding: 11px 12px;
+      }
+
+      textarea {
+        min-height: 92px;
+        resize: vertical;
+        line-height: 1.5;
+      }
+
+      .btn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 44px;
+        padding: 10px 13px;
+        border: 1px solid var(--blue);
+        border-radius: 12px;
+        background: var(--blue);
+        color: #fff;
+        cursor: pointer;
+        font-weight: 950;
+        text-decoration: none;
+      }
+
+      .btn.secondary {
+        background: #fff;
+        color: var(--blue);
+      }
+
+      .source-box,
+      .note-box,
+      .time-box,
+      .toast,
+      .creator-box {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--soft);
+        padding: 12px;
+        color: var(--muted);
+        line-height: 1.55;
+        font-size: 14px;
+      }
+
+      .source-box {
+        border-left: 4px solid var(--blue);
+        background: var(--blue-soft);
+        color: #1e3a8a;
+      }
+
+      .toast {
+        border-color: #b9ded8;
+        background: var(--green-soft);
+        color: var(--green);
+        font-weight: 850;
+      }
+
+      .map-button,
+      .check {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        background: #fff;
+        color: var(--text);
+        display: grid;
+        gap: 10px;
+        align-items: start;
+        padding: 12px;
+        text-align: left;
+      }
+
+      .map-button {
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        cursor: pointer;
+      }
+
+      .map-button.active {
+        border-color: var(--blue);
+        background: var(--blue-soft);
+      }
+
+      .check {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+
+      .check input {
+        width: 22px;
+        height: 22px;
+        margin-top: 1px;
+        accent-color: var(--blue);
+      }
+
+      .check.done {
+        border-color: #bbf7d0;
+        background: #f0fdf4;
+      }
+
+      .check.done .item-title {
+        color: var(--green);
+      }
+
+      .num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        background: #e2e8f0;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 950;
+      }
+
+      .item-title {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.35;
+        font-weight: 950;
+        word-break: keep-all;
+      }
+
+      .progress {
+        height: 8px;
+        border-radius: 999px;
+        background: #e7edf5;
+        overflow: hidden;
+      }
+
+      .progress span {
+        display: block;
+        height: 100%;
+        width: var(--value, 0%);
+        border-radius: inherit;
+        background: var(--blue);
+      }
+
+      .status-box {
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        background: var(--soft);
+        padding: 10px;
+      }
+
+      .status-box b,
+      .creator-box b {
+        display: block;
+        margin-bottom: 4px;
+        color: #263346;
+        font-size: 13px;
+      }
+
+      details {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+        padding: 12px;
+      }
+
+      summary {
+        cursor: pointer;
+        color: #263346;
+        font-weight: 950;
+      }
+
+      button:focus-visible,
+      a:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.26);
+        outline-offset: 2px;
+      }
+
+      @media (max-width: 900px) {
+        .page { padding: 10px; }
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+        .hero,
+        .card,
+        .flow-card {
+          padding: 14px;
+        }
+        h1 { font-size: 30px; }
+        .candidate-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          max-height: 360px;
+          overflow: auto;
+          padding-right: 2px;
+        }
+        .candidate {
+          min-height: 0;
+        }
+        .tabs {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .layout,
+        .field-grid,
+        .status-grid,
+        .creator-grid {
+          grid-template-columns: 1fr;
+        }
+        .map-button {
+          grid-template-columns: auto minmax(0, 1fr);
+        }
+        .map-button .chip {
+          grid-column: 2;
+          justify-self: start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <nav class="topbar">
+        <div class="brand">FlowMe</div>
+        <p class="top-note">큰 원문 묶음을 지도처럼 저장하고, 반복되는 하위 Flow는 기존 체크/메모 화면으로 실행합니다.</p>
+      </nav>
+
+      <header class="hero">
+        <p class="eyebrow">Flow of Flow 확장</p>
+        <h1>강한 묶음 후보를 더 넓혀 본 클릭 화면</h1>
+        <p class="desc">이전 4종을 기준선으로 두고, 온라인 강의·자격증·운동 프로그램·공식 케어맵 후보를 추가로 살폈습니다. 화면은 사용자 실행과 제작자 구성 과정을 분리해서 보여줍니다.</p>
+        <div class="chips" style="margin-top:12px">
+          <span class="chip blue">후보 10개 판정</span>
+          <span class="chip green">Strong 6개 화면화</span>
+          <span class="chip">하위 Flow는 기존 UI</span>
+          <span class="chip amber">원문 기반 행만 사용</span>
+        </div>
+      </header>
+
+      <section class="card section">
+        <p class="eyebrow">후보 판정</p>
+        <h2>더 볼 만한 온라인 원문 10개</h2>
+        <div class="candidate-grid" id="candidateGrid"></div>
+      </section>
+
+      <section class="section">
+        <nav class="tabs" aria-label="확장 후보">
+          <button class="active" type="button" data-flow="fcc">freeCodeCamp</button>
+          <button type="button" data-flow="odin">Odin</button>
+          <button type="button" data-flow="nomad">노마드</button>
+          <button type="button" data-flow="ebs">EBS</button>
+          <button type="button" data-flow="yoga">Yoga</button>
+          <button type="button" data-flow="pregnancy">임신 주차</button>
+        </nav>
+
+        <nav class="mode-tabs" aria-label="화면 모드">
+          <button class="active" type="button" data-mode="user">사용자 실행 화면</button>
+          <button type="button" data-mode="creator">제작자 구성 화면</button>
+        </nav>
+
+        <div class="layout" id="userMode">
+          <aside class="card">
+            <p class="eyebrow" id="sourceKind"></p>
+            <h2 id="sourceTitle"></h2>
+            <p class="desc" id="sourceDesc"></p>
+            <div class="chips" id="flowChips" style="margin-top:12px"></div>
+            <div class="field-grid" id="inputFields"></div>
+            <div class="actions" style="margin-top:14px">
+              <button class="btn" type="button" id="saveAll">전체 저장</button>
+              <button class="btn secondary" type="button" id="saveSelected">현재 항목만 저장</button>
+            </div>
+            <div class="toast" id="toast" hidden style="margin-top:12px"></div>
+            <div class="source-box" id="sourceBox" style="margin-top:12px"></div>
+            <div style="margin-top:14px">
+              <p class="label" id="mapLabel"></p>
+              <div class="stack" id="childMap"></div>
+            </div>
+          </aside>
+
+          <section class="flow-card">
+            <p class="eyebrow">내 Flow 실행</p>
+            <h2 id="childTitle"></h2>
+            <p class="desc" id="childDesc"></p>
+            <div class="status-grid">
+              <div class="status-box">
+                <b>다음 항목</b>
+                <span class="small" id="nextItem"></span>
+              </div>
+              <div class="status-box">
+                <b>진행</b>
+                <span class="small" id="progressText"></span>
+              </div>
+              <div class="status-box">
+                <b>저장 위치</b>
+                <span class="small" id="artifactText"></span>
+              </div>
+            </div>
+            <div class="progress" aria-label="진행률">
+              <span id="progressBar"></span>
+            </div>
+            <div class="time-box" id="timeBox" style="margin-top:12px"></div>
+            <div class="stack" id="checkList" style="margin-top:12px"></div>
+            <div class="note-box" style="margin-top:12px">
+              <label for="memoBox" id="memoLabel">메모</label>
+              <textarea id="memoBox" placeholder="막힌 지점, 다시 볼 항목, 확인한 URL만 짧게 남기기"></textarea>
+            </div>
+            <div class="actions" style="margin-top:12px">
+              <a class="btn" id="childSource" href="#" target="_blank" rel="noreferrer">원문에서 보기</a>
+              <button class="btn secondary" type="button" id="nextChild">다음 하위 Flow</button>
+            </div>
+            <details style="margin-top:12px">
+              <summary>전체 지도 보기</summary>
+              <div class="stack" id="fullMap" style="margin-top:10px"></div>
+            </details>
+          </section>
+        </div>
+
+        <section class="flow-card" id="creatorMode" hidden>
+          <p class="eyebrow">제작자 구성 화면</p>
+          <h2 id="creatorTitle"></h2>
+          <p class="desc" id="creatorDesc"></p>
+          <div class="creator-grid" style="margin-top:12px">
+            <div class="creator-box">
+              <b>원문 구조</b>
+              <span class="small" id="creatorSourceShape"></span>
+            </div>
+            <div class="creator-box">
+              <b>반복 단위</b>
+              <span class="small" id="creatorRepeatUnit"></span>
+            </div>
+            <div class="creator-box">
+              <b>사용자 산출물</b>
+              <span class="small" id="creatorArtifact"></span>
+            </div>
+          </div>
+          <div class="layout" style="margin-top:12px">
+            <div class="card" style="box-shadow:none">
+              <p class="label">가져온 원문 행</p>
+              <div class="stack" id="creatorRows"></div>
+            </div>
+            <div class="card" style="box-shadow:none">
+              <p class="label">하위 Flow 템플릿</p>
+              <div class="stack" id="creatorTemplate"></div>
+              <div class="actions" style="margin-top:12px">
+                <button class="btn" type="button" id="publishPreview">사용자 화면으로 확인</button>
+                <a class="btn secondary" id="creatorSource" href="#" target="_blank" rel="noreferrer">원문 열기</a>
+              </div>
+              <div class="toast" id="creatorToast" hidden style="margin-top:12px"></div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      const candidates = [
+        ["freeCodeCamp Responsive Web Design", "Strong", "진도형", "Certification 안의 lesson/project 행이 뚜렷함"],
+        ["The Odin Project Foundations", "Strong", "프로젝트 진도형", "lesson과 project가 섞인 커리큘럼형"],
+        ["Nomad Vanilla JS", "Strong", "제작자 강의형", "섹션과 강의 번호가 명확함"],
+        ["EBS 중학 뉴런 수학1(상)", "Strong", "교과 진도형", "단원 기반 학습 관리에 적합"],
+        ["Yoga With Adriene 30 Days", "Strong", "루틴/챌린지형", "30일 영상 묶음을 날짜 실행으로 변환 가능"],
+        ["NHS Pregnancy Week by Week", "Medium", "케어맵형", "주차 구조는 강하지만 의료 판단 분리 필요"],
+        ["MDN Learn Web Development", "Medium", "커리큘럼형", "구조는 강하지만 문서형이라 범위 절단 필요"],
+        ["Google Project Management Certificate", "Medium", "자격/코스맵형", "코스 묶음은 좋지만 플랫폼 의존성 있음"],
+        ["NHS Weaning 6 Months", "Revise", "케어 레퍼런스형", "월령별 지도는 가능하나 단일 페이지는 reference에 가까움"],
+        ["USDA MyPlate", "Park", "레퍼런스형", "원문은 좋지만 Flow of Flow보다는 단일 참고 메모에 가까움"]
+      ];
+
+      const flows = {
+        fcc: {
+          kind: "온라인 코딩 인증 진도",
+          title: "freeCodeCamp Responsive Web Design",
+          desc: "인증 안의 레슨과 프로젝트를 내 진도판으로 저장합니다. 각 하위 Flow는 원문 과제 완료 여부와 막힌 부분 메모만 남깁니다.",
+          sourceUrl: "https://www.freecodecamp.org/learn/responsive-web-design",
+          sourceLabel: "freeCodeCamp Responsive Web Design",
+          sourceNote: "원문은 HTML/CSS 학습과 인증 프로젝트로 구성됩니다. FlowMe는 코드 풀이를 대신하지 않고 진도, 완료, 막힌 항목만 기록합니다.",
+          mapLabel: "학습 묶음",
+          artifact: "진도판 + 프로젝트 메모",
+          creatorShape: "인증 과정 → 학습 블록 → 프로젝트",
+          repeatUnit: "학습 블록 또는 프로젝트",
+          chips: ["진도형", "프로젝트 체크", "막힌 부분 메모"],
+          inputs: [
+            { id: "start", label: "시작일", type: "date", value: "2026-06-22" },
+            { id: "pace", label: "진행 페이스", type: "text", value: "하루 1-2개 레슨" }
+          ],
+          children: [
+            ["HTML 기초", "Cat Photo App로 HTML 구조를 시작합니다.", "Day 1", [
+              ["Cat Photo App 열기", "원문에서 현재 레슨을 열고 단계별 요구사항을 진행"],
+              ["오늘 완료한 step 체크", "freeCodeCamp 안에서 통과한 위치만 표시"],
+              ["막힌 메시지 메모", "테스트 실패 문구나 다시 볼 태그만 짧게 남기기"]
+            ]],
+            ["CSS 기초", "Cafe Menu와 Color Markers로 CSS 선택자와 색상을 봅니다.", "Day 2-3", [
+              ["Cafe Menu 진행", "원문 과제 완료 여부만 체크"],
+              ["Color Markers 진행", "색상/gradient에서 막힌 항목만 메모"],
+              ["다음 프로젝트 확인", "내일 이어서 할 원문 위치 확인"]
+            ]],
+            ["Form과 접근성", "Registration Form 등 입력 요소 과제를 진행합니다.", "Day 4-5", [
+              ["Form 레슨 열기", "input, label, required 관련 위치 확인"],
+              ["테스트 통과 여부 체크", "원문 테스트 통과 후 완료 표시"],
+              ["헷갈린 속성 메모", "name, value, id 등 다시 볼 속성만 남기기"]
+            ]],
+            ["인증 프로젝트", "Survey Form, Tribute Page, Portfolio 등 프로젝트를 완료합니다.", "Project", [
+              ["프로젝트 1개 선택", "원문 프로젝트 요구사항을 열고 진행"],
+              ["제출 전 요구사항 대조", "통과하지 못한 요구사항만 메모"],
+              ["완료 URL 메모", "배포하거나 저장한 결과 URL을 남기기"]
+            ]]
+          ]
+        },
+        odin: {
+          kind: "프로젝트 기반 커리큘럼",
+          title: "The Odin Project Foundations",
+          desc: "Foundations 커리큘럼을 단원별 하위 Flow로 저장합니다. 프로젝트와 레슨이 섞인 구조라 FlowMe의 진도/메모 가치가 잘 보입니다.",
+          sourceUrl: "https://www.theodinproject.com/paths/foundations/courses/foundations",
+          sourceLabel: "The Odin Project Foundations",
+          sourceNote: "원문은 course 안에 lesson과 project가 섞여 있습니다. FlowMe는 학습 자료를 다시 쓰지 않고 지금 볼 lesson/project만 관리합니다.",
+          mapLabel: "단원 Flow",
+          artifact: "진도판 + 프로젝트 URL",
+          creatorShape: "course → lesson/project → completion",
+          repeatUnit: "lesson 또는 project",
+          chips: ["프로젝트형", "진도 + 산출물", "링크 메모"],
+          inputs: [
+            { id: "start", label: "시작일", type: "date", value: "2026-06-22" },
+            { id: "output", label: "산출물 위치", type: "text", value: "GitHub 저장소" }
+          ],
+          children: [
+            ["Introduction", "How This Course Will Work, Introduction to Web Development 등 시작 레슨을 봅니다.", "Start", [
+              ["How This Course Will Work", "원문 레슨을 읽고 완료 표시"],
+              ["Introduction to Web Development", "다시 볼 용어만 메모"],
+              ["Join the Odin Community", "필요하면 커뮤니티 링크만 저장"]
+            ]],
+            ["Prerequisites", "개발 환경과 기본 도구를 준비합니다.", "Setup", [
+              ["설치 항목 확인", "내 컴퓨터에서 끝난 항목만 체크"],
+              ["Git/GitHub 준비", "계정과 저장소 URL만 메모"],
+              ["막힌 환경 메모", "오류 메시지와 참고 URL만 남기기"]
+            ]],
+            ["HTML Foundations", "HTML 레슨과 연습을 진행합니다.", "HTML", [
+              ["현재 레슨 열기", "Odin 원문에서 오늘 레슨 확인"],
+              ["실습 파일 업데이트", "내 로컬 또는 GitHub 위치 메모"],
+              ["다음 lesson 확인", "다음에 볼 제목만 남기기"]
+            ]],
+            ["JavaScript Basics", "기초 JS 레슨과 프로젝트 전 준비를 진행합니다.", "JS", [
+              ["오늘 lesson 완료", "원문 레슨 완료 여부 체크"],
+              ["연습 문제 결과 메모", "틀린 개념만 짧게 메모"],
+              ["프로젝트 준비", "필요한 파일/저장소 링크 확인"]
+            ]]
+          ]
+        },
+        nomad: {
+          kind: "제작자 강의 지도",
+          title: "노마드코더 바닐라 JS",
+          desc: "섹션 번호가 있는 강의를 하위 Flow로 저장합니다. 사용자는 오늘 볼 강의, 실습 파일, 배포 URL만 관리합니다.",
+          sourceUrl: "https://nomadcoders.co/javascript-for-beginners/lobby",
+          sourceLabel: "Nomad Coders Vanilla JS",
+          sourceNote: "원문은 #1 Introduction부터 #8 Weather까지 섹션으로 구성됩니다. FlowMe는 강의 내용이 아니라 수강 진도와 실습 메모만 저장합니다.",
+          mapLabel: "섹션 Flow",
+          artifact: "강의 진도 + 실습 메모",
+          creatorShape: "course → section → lecture",
+          repeatUnit: "section",
+          chips: ["제작자 강의", "섹션별 진도", "실습 URL"],
+          inputs: [
+            { id: "start", label: "시작일", type: "date", value: "2026-06-22" },
+            { id: "pace", label: "수강 페이스", type: "text", value: "하루 2강" }
+          ],
+          children: [
+            ["#1 Introduction", "Welcome, What Are We Building, Requirements를 확인합니다.", "Day 1", [
+              ["Welcome 보기", "원문 강의 완료 여부 체크"],
+              ["Requirements 확인", "설치/계정 준비가 끝났는지 체크"],
+              ["실습 폴더 메모", "내 작업 폴더나 저장소 위치만 남기기"]
+            ]],
+            ["#2 Welcome to Javascript", "JS 기본 문법과 데이터 구조를 봅니다.", "Day 2-4", [
+              ["오늘 강의 열기", "원문 섹션에서 이어 볼 강의 확인"],
+              ["실습 코드 실행", "동작 확인 후 완료 체크"],
+              ["헷갈린 문법 메모", "다시 볼 개념만 한 줄로 남기기"]
+            ]],
+            ["#4 Login", "로그인 입력과 저장 흐름을 실습합니다.", "Project", [
+              ["Input Values 강의 보기", "오늘 볼 강의 완료 표시"],
+              ["Form Submission 실습", "내 코드가 동작하는지 확인"],
+              ["Saving Username 메모", "localStorage에서 막힌 부분만 남기기"]
+            ]],
+            ["#7 To Do List", "할 일 목록 기능을 구현합니다.", "Project", [
+              ["To Do 입력 흐름 구현", "원문 강의에 맞춰 진행"],
+              ["저장/삭제 동작 확인", "막힌 함수 이름만 메모"],
+              ["배포 전 체크", "GitHub Pages 또는 결과 URL 메모"]
+            ]]
+          ]
+        },
+        ebs: {
+          kind: "교과 강의 진도",
+          title: "EBS 중학 뉴런 수학1(상)",
+          desc: "중1 수학 상 강좌를 단원별 하위 Flow로 저장합니다. 세부 문제풀이는 원문/교재로 두고, FlowMe에는 단원 진도와 오답 메모만 남깁니다.",
+          sourceUrl: "https://mid.ebs.co.kr/course/view?courseId=100005139",
+          sourceLabel: "EBS 중학 뉴런 수학1(상)",
+          sourceNote: "원문은 개념 이해와 문제 해설 강좌입니다. FlowMe는 강의 내용을 다시 설명하지 않고 단원 진행과 오답 위치만 관리합니다.",
+          mapLabel: "단원 Flow",
+          artifact: "단원 진도 + 오답 메모",
+          creatorShape: "강좌 → 단원 → 강의/문제",
+          repeatUnit: "단원",
+          chips: ["교과 진도", "오답 메모", "선택 날짜"],
+          inputs: [
+            { id: "start", label: "시작일", type: "date", value: "2026-06-22" },
+            { id: "goal", label: "목표", type: "text", value: "여름방학 전 1회독" }
+          ],
+          children: [
+            ["소인수분해", "중1 상 첫 단원을 개념과 문제로 나눠 확인합니다.", "1단원", [
+              ["개념 강의 보기", "원문 강의 완료 여부만 체크"],
+              ["교재 문제 풀기", "풀지 못한 번호만 메모"],
+              ["오답 다시 보기", "다시 볼 개념만 표시"]
+            ]],
+            ["정수와 유리수", "정수, 유리수, 계산 단원을 진행합니다.", "2단원", [
+              ["개념 강의 보기", "원문 강의 위치 확인"],
+              ["계산 실수 메모", "부호, 괄호, 분수 계산 실수만 기록"],
+              ["다음 강의 확인", "다음에 볼 강의 제목만 남기기"]
+            ]],
+            ["문자의 사용과 식", "문자식과 일차식 관련 단원을 진행합니다.", "3단원", [
+              ["오늘 강의 완료", "EBS 강의 완료 여부 체크"],
+              ["틀린 문제 번호 메모", "교재 페이지와 번호만 남기기"],
+              ["복습 날짜 정하기", "다시 볼 날짜만 선택"]
+            ]],
+            ["좌표평면과 그래프", "좌표와 그래프 단원을 확인합니다.", "4단원", [
+              ["개념 강의 보기", "좌표/그래프 개념 완료 표시"],
+              ["그래프 문제 풀기", "해석에서 막힌 문제 번호만 메모"],
+              ["단원 마무리", "다음 단원으로 넘어갈지 체크"]
+            ]]
+          ]
+        },
+        yoga: {
+          kind: "30일 운동 프로그램",
+          title: "Yoga With Adriene 30 Days",
+          desc: "30일 영상 묶음을 주차별 하위 Flow로 저장합니다. 각 회차의 동작 설명은 원문 영상에 두고, FlowMe에는 날짜, 완료, 컨디션 메모만 남깁니다.",
+          sourceUrl: "https://do.yogawithadriene.com/30-days-of-yoga-daily-emails",
+          sourceLabel: "Yoga With Adriene 30 Days FAQ",
+          sourceNote: "원문은 여러 30 Days of Yoga 시리즈와 YouTube playlist를 제공합니다. FlowMe는 운동 동작을 만들지 않고 영상 링크와 실행 기록만 유지합니다.",
+          mapLabel: "주차 Flow",
+          artifact: "반복 일정 + 컨디션 메모",
+          creatorShape: "series → day/video → completion",
+          repeatUnit: "week 또는 day",
+          chips: ["30일 챌린지", "영상 링크", "컨디션 기록"],
+          inputs: [
+            { id: "start", label: "시작일", type: "date", value: "2026-06-22" },
+            { id: "time", label: "연습 시간", type: "text", value: "아침 20분" }
+          ],
+          children: [
+            ["Week 1", "Day 1-7을 가볍게 시작합니다.", "Day 1-7", [
+              ["Day 1 영상 열기", "원문 playlist 또는 메일에서 영상 열기"],
+              ["오늘 회차 완료", "영상 1개를 가능한 강도로 따라 한 뒤 체크"],
+              ["몸 상태 메모", "통증, 어지러움, 중단 여부만 짧게 기록"]
+            ]],
+            ["Week 2", "Day 8-14를 이어갑니다.", "Day 8-14", [
+              ["오늘 영상 열기", "원문 영상에서 자세와 호흡 확인"],
+              ["완료 여부 체크", "끝까지 못 했으면 중단 위치만 메모"],
+              ["다음 회차 확인", "내일 볼 Day 번호 확인"]
+            ]],
+            ["Week 3", "Day 15-21을 진행합니다.", "Day 15-21", [
+              ["오늘 회차 열기", "원문 영상 링크로 이동"],
+              ["수행 후 체크", "완료 또는 중단만 표시"],
+              ["컨디션 변화 메모", "무리한 동작이나 쉬어야 할 이유 기록"]
+            ]],
+            ["Week 4 + Finish", "Day 22-30으로 마무리합니다.", "Day 22-30", [
+              ["남은 Day 확인", "원문 playlist에서 다음 Day 확인"],
+              ["오늘 영상 완료", "수행 가능 범위 안에서 완료 체크"],
+              ["마무리 메모", "다시 하고 싶은 회차와 쉬어야 할 동작만 남기기"]
+            ]]
+          ]
+        },
+        pregnancy: {
+          kind: "공식 케어맵",
+          title: "NHS Pregnancy Week by Week",
+          desc: "임신 주차별 공식 정보를 큰 지도로 저장합니다. FlowMe는 의료 판단을 하지 않고, 주차별 원문 확인과 병원 질문 메모만 돕습니다.",
+          sourceUrl: "https://www.nhs.uk/best-start-in-life/pregnancy/week-by-week-guide-to-pregnancy/",
+          sourceLabel: "NHS Week-by-week guide to pregnancy",
+          sourceNote: "민감한 건강 정보입니다. FlowMe는 주차별 확인과 질문 메모만 제공하고, 증상 판단이나 의료 조언은 의료기관과 공식 원문을 우선합니다.",
+          mapLabel: "주차 묶음",
+          artifact: "주차별 확인 + 병원 질문 메모",
+          creatorShape: "guide → trimester/week group → source check",
+          repeatUnit: "week group",
+          chips: ["공식 원문", "주차별 확인", "질문 메모"],
+          inputs: [
+            { id: "week", label: "현재 주차", type: "text", value: "12주" },
+            { id: "clinic", label: "상담할 곳", type: "text", value: "산부인과" }
+          ],
+          children: [
+            ["1-12주", "초기 주차별 정보를 원문에서 확인합니다.", "1-12주", [
+              ["이번 주차 원문 열기", "NHS 주차별 페이지에서 해당 주차 확인"],
+              ["병원에 물어볼 질문 메모", "증상 판단이 아니라 질문 목록만 남기기"],
+              ["다음 주차 확인", "다음에 볼 주차만 표시"]
+            ]],
+            ["13-27주", "중기 주차별 정보를 확인합니다.", "13-27주", [
+              ["이번 주차 원문 확인", "공식 원문에서 주차별 안내 보기"],
+              ["검진/상담 메모", "예약, 질문, 확인한 URL만 남기기"],
+              ["준비 항목 표시", "원문에서 확인한 준비 항목만 체크"]
+            ]],
+            ["28-40주", "후기 주차별 정보를 확인합니다.", "28-40주", [
+              ["이번 주차 원문 열기", "NHS 안내에서 현재 주차 확인"],
+              ["출산 준비 질문 메모", "의료 판단 없이 상담할 질문만 기록"],
+              ["다음 방문 전 확인", "병원에 확인할 항목만 체크"]
+            ]],
+            ["출산 준비", "원문의 labour and birth 준비 정보를 따로 저장합니다.", "준비", [
+              ["공식 준비 글 열기", "NHS 관련 페이지에서 준비 항목 확인"],
+              ["가방/계획 메모", "개인 준비물과 병원 확인 항목만 남기기"],
+              ["상담 필요 항목 표시", "의료기관에 물어볼 항목만 체크"]
+            ]]
+          ]
+        }
+      };
+
+      const state = {
+        activeFlow: "fcc",
+        mode: "user",
+        childIndex: { fcc: 0, odin: 0, nomad: 1, ebs: 0, yoga: 0, pregnancy: 0 },
+        checks: {},
+        notes: {},
+        inputs: {}
+      };
+
+      const $ = (id) => document.getElementById(id);
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function flow() {
+        return flows[state.activeFlow];
+      }
+
+      function child() {
+        const f = flow();
+        return f.children[state.childIndex[state.activeFlow]] || f.children[0];
+      }
+
+      function checkKey(index) {
+        return `${state.activeFlow}:${child()[0]}:${index}`;
+      }
+
+      function inputValue(input) {
+        return state.inputs[`${state.activeFlow}:${input.id}`] || input.value;
+      }
+
+      function doneCount() {
+        return child()[3].filter((_, index) => state.checks[checkKey(index)]).length;
+      }
+
+      function percent() {
+        return Math.round((doneCount() / child()[3].length) * 100);
+      }
+
+      function nextItem() {
+        const item = child()[3].find((_, index) => !state.checks[checkKey(index)]);
+        return item ? item[0] : "이 하위 Flow 완료";
+      }
+
+      function renderCandidateGrid() {
+        $("candidateGrid").innerHTML = candidates.map(([title, verdict, type, note]) => {
+          const cls = verdict === "Strong" ? "green" : verdict === "Medium" ? "amber" : verdict === "Park" ? "red" : "";
+          return `
+            <div class="candidate">
+              <span class="chip ${cls}">${escapeHtml(verdict)}</span>
+              <strong>${escapeHtml(title)}</strong>
+              <span class="small">${escapeHtml(type)}</span>
+              <span class="small" style="margin-top:6px">${escapeHtml(note)}</span>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function renderTabs() {
+        document.querySelectorAll("[data-flow]").forEach((button) => {
+          button.classList.toggle("active", button.dataset.flow === state.activeFlow);
+        });
+        document.querySelectorAll("[data-mode]").forEach((button) => {
+          button.classList.toggle("active", button.dataset.mode === state.mode);
+        });
+        $("userMode").hidden = state.mode !== "user";
+        $("creatorMode").hidden = state.mode !== "creator";
+      }
+
+      function renderInputs() {
+        return flow().inputs.map((input) => `
+          <div class="field">
+            <label for="${state.activeFlow}-${input.id}">${escapeHtml(input.label)}</label>
+            <input id="${state.activeFlow}-${input.id}" data-input="${input.id}" type="${input.type}" value="${escapeHtml(inputValue(input))}" />
+          </div>
+        `).join("");
+      }
+
+      function childButton(entry, index) {
+        const active = index === state.childIndex[state.activeFlow];
+        const done = entry[3].filter((_, itemIndex) => state.checks[`${state.activeFlow}:${entry[0]}:${itemIndex}`]).length;
+        const pct = Math.max(Math.round((done / entry[3].length) * 100), done ? 12 : 4);
+        return `
+          <button class="map-button ${active ? "active" : ""}" type="button" data-child="${index}">
+            <span class="num">${index + 1}</span>
+            <span>
+              <p class="item-title">${escapeHtml(entry[0])}</p>
+              <span class="small">${escapeHtml(entry[1])}</span>
+              <span class="progress" style="display:block;margin-top:8px"><span style="--value:${pct}%"></span></span>
+            </span>
+            <span class="chip ${done ? "green" : active ? "blue" : ""}">${done}/${entry[3].length}</span>
+          </button>
+        `;
+      }
+
+      function renderCheckList() {
+        return child()[3].map((item, index) => {
+          const checked = Boolean(state.checks[checkKey(index)]);
+          return `
+            <label class="check ${checked ? "done" : ""}">
+              <input type="checkbox" data-check="${index}" ${checked ? "checked" : ""} />
+              <span>
+                <p class="item-title">${escapeHtml(item[0])}</p>
+                <span class="small">${escapeHtml(item[1])}</span>
+              </span>
+            </label>
+          `;
+        }).join("");
+      }
+
+      function renderUser() {
+        const f = flow();
+        const c = child();
+        const done = doneCount();
+        const pct = Math.max(percent(), done ? 12 : 4);
+        const noteKey = `${state.activeFlow}:${c[0]}`;
+        $("sourceKind").textContent = f.kind;
+        $("sourceTitle").textContent = f.title;
+        $("sourceDesc").textContent = f.desc;
+        $("flowChips").innerHTML = f.chips.map((chip, index) => `<span class="chip ${index === 0 ? "blue" : index === 1 ? "green" : ""}">${escapeHtml(chip)}</span>`).join("");
+        $("inputFields").innerHTML = renderInputs();
+        $("saveAll").textContent = `${f.title} 전체 저장`;
+        $("saveSelected").textContent = `${c[0]}만 저장`;
+        $("sourceBox").innerHTML = `원문: <a href="${f.sourceUrl}" target="_blank" rel="noreferrer">${escapeHtml(f.sourceLabel)}</a><br />${escapeHtml(f.sourceNote)}`;
+        $("mapLabel").textContent = f.mapLabel;
+        $("childMap").innerHTML = f.children.map(childButton).join("");
+        $("fullMap").innerHTML = f.children.map(childButton).join("");
+        $("childTitle").textContent = c[0];
+        $("childDesc").textContent = c[1];
+        $("nextItem").textContent = nextItem();
+        $("progressText").textContent = `${done}/${c[3].length} 완료`;
+        $("artifactText").textContent = f.artifact;
+        $("progressBar").style.setProperty("--value", `${pct}%`);
+        $("timeBox").innerHTML = `
+          <p class="label">실행 기준</p>
+          <div class="row">
+            <span class="chip">${escapeHtml(c[2])}</span>
+            <span class="chip">${escapeHtml(f.inputs[0].label)} ${escapeHtml(inputValue(f.inputs[0]))}</span>
+            <span class="chip amber">${escapeHtml(f.inputs[1].label)} ${escapeHtml(inputValue(f.inputs[1]))}</span>
+          </div>
+        `;
+        $("checkList").innerHTML = `${state.activeFlow === "pregnancy" ? '<div class="note-box"><strong>주의</strong><br />의료 판단이 아니라 공식 원문 확인과 병원 질문 메모용입니다.</div>' : ""}${renderCheckList()}`;
+        $("memoLabel").textContent = state.activeFlow === "pregnancy" ? "병원 질문 메모" : state.activeFlow === "yoga" ? "컨디션 메모" : "메모";
+        $("memoBox").value = state.notes[noteKey] || "";
+        $("memoBox").dataset.note = noteKey;
+        $("childSource").href = f.sourceUrl;
+      }
+
+      function renderCreator() {
+        const f = flow();
+        $("creatorTitle").textContent = `${f.title} 제작자 구성`;
+        $("creatorDesc").textContent = "제작자는 원문 묶음에서 반복 단위를 고르고, 하위 Flow 템플릿을 정한 뒤 사용자 저장 화면을 확인합니다.";
+        $("creatorSourceShape").textContent = f.creatorShape;
+        $("creatorRepeatUnit").textContent = f.repeatUnit;
+        $("creatorArtifact").textContent = f.artifact;
+        $("creatorRows").innerHTML = f.children.map((entry, index) => `
+          <div class="map-button" style="cursor:default">
+            <span class="num">${index + 1}</span>
+            <span>
+              <p class="item-title">${escapeHtml(entry[0])}</p>
+              <span class="small">${escapeHtml(entry[1])}</span>
+            </span>
+            <span class="chip">${entry[3].length}개 행</span>
+          </div>
+        `).join("");
+        $("creatorTemplate").innerHTML = `
+          <div class="creator-box"><b>하위 Flow 제목</b><span class="small">원문의 ${escapeHtml(f.repeatUnit)} 이름을 그대로 사용</span></div>
+          <div class="creator-box"><b>사용자 입력</b><span class="small">${escapeHtml(f.inputs.map((input) => input.label).join(", "))}</span></div>
+          <div class="creator-box"><b>상세 화면</b><span class="small">체크, 짧은 메모, 원문 링크. 긴 설명은 만들지 않음.</span></div>
+          <div class="creator-box"><b>금지 경계</b><span class="small">원문에 없는 세부 행동, 판단, 보증을 추가하지 않음.</span></div>
+        `;
+        $("creatorSource").href = f.sourceUrl;
+      }
+
+      function render() {
+        renderTabs();
+        renderUser();
+        renderCreator();
+      }
+
+      document.addEventListener("click", (event) => {
+        const flowButton = event.target.closest("[data-flow]");
+        if (flowButton) {
+          state.activeFlow = flowButton.dataset.flow;
+          $("toast").hidden = true;
+          $("creatorToast").hidden = true;
+          render();
+          return;
+        }
+        const modeButton = event.target.closest("[data-mode]");
+        if (modeButton) {
+          state.mode = modeButton.dataset.mode;
+          render();
+          return;
+        }
+        const childButtonEl = event.target.closest("[data-child]");
+        if (childButtonEl) {
+          state.childIndex[state.activeFlow] = Number(childButtonEl.dataset.child);
+          render();
+          return;
+        }
+        if (event.target.id === "saveAll") {
+          $("toast").hidden = false;
+          $("toast").textContent = `${flow().title} 전체 지도를 내 Flow에 저장했습니다.`;
+          return;
+        }
+        if (event.target.id === "saveSelected") {
+          $("toast").hidden = false;
+          $("toast").textContent = `${child()[0]} 하위 Flow만 내 Flow에 저장했습니다.`;
+          return;
+        }
+        if (event.target.id === "nextChild") {
+          const next = Math.min(state.childIndex[state.activeFlow] + 1, flow().children.length - 1);
+          state.childIndex[state.activeFlow] = next;
+          render();
+          return;
+        }
+        if (event.target.id === "publishPreview") {
+          $("creatorToast").hidden = false;
+          $("creatorToast").textContent = "현재 구성으로 사용자 저장 화면을 확인합니다.";
+          state.mode = "user";
+          render();
+        }
+      });
+
+      document.addEventListener("change", (event) => {
+        if (event.target.matches("[data-check]")) {
+          state.checks[checkKey(Number(event.target.dataset.check))] = event.target.checked;
+          render();
+          return;
+        }
+        if (event.target.matches("[data-input]")) {
+          state.inputs[`${state.activeFlow}:${event.target.dataset.input}`] = event.target.value;
+          render();
+        }
+      });
+
+      document.addEventListener("input", (event) => {
+        if (event.target.id === "memoBox") {
+          state.notes[event.target.dataset.note] = event.target.value;
+        }
+      });
+
+      renderCandidateGrid();
+      render();
+    </script>
+  </body>
+</html>

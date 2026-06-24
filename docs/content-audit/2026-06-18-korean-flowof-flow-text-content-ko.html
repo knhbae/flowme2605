@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>한글 원문 Flow of Flow 텍스트 컨텐츠</title>
+    <style>
+      :root {
+        --bg: #eef3f8;
+        --panel: #fff;
+        --soft: #f7fafc;
+        --line: #d8e1eb;
+        --text: #111827;
+        --muted: #536174;
+        --blue: #2563eb;
+        --blue-soft: #eaf1ff;
+        --green: #0f766e;
+        --green-soft: #e8f6f3;
+        --amber: #b45309;
+        --amber-soft: #fff5df;
+        --red: #b91c1c;
+        --red-soft: #fff1f2;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      a { color: var(--blue); font-weight: 850; }
+      .page { width: min(1120px, 100%); margin: 0 auto; padding: 16px; }
+      .hero, .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px;
+        margin-bottom: 12px;
+      }
+      .eyebrow { margin: 0 0 8px; color: var(--blue); font-size: 13px; font-weight: 950; }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 { margin-bottom: 10px; font-size: clamp(30px, 5vw, 46px); line-height: 1.08; letter-spacing: 0; word-break: keep-all; }
+      h2 { margin-bottom: 10px; font-size: 23px; line-height: 1.24; letter-spacing: 0; word-break: keep-all; }
+      h3 { margin-bottom: 8px; font-size: 17px; line-height: 1.35; letter-spacing: 0; word-break: keep-all; }
+      .desc, li, td { color: var(--muted); line-height: 1.6; }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 6px 10px;
+        border: 1px solid #b8c7d9;
+        border-radius: 999px;
+        background: var(--soft);
+        color: #263346;
+        font-size: 13px;
+        font-weight: 850;
+      }
+      .chip.blue { background: var(--blue-soft); border-color: #b8cdfb; color: #1d4ed8; }
+      .chip.green { background: var(--green-soft); border-color: #b9ded8; color: var(--green); }
+      .chip.amber { background: var(--amber-soft); border-color: #f5d393; color: var(--amber); }
+      .chip.red { background: var(--red-soft); border-color: #fecdd3; color: var(--red); }
+      pre, table {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--soft);
+        overflow: auto;
+      }
+      pre {
+        margin: 0;
+        padding: 13px;
+        white-space: pre-wrap;
+        color: #263346;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      table { border-collapse: separate; border-spacing: 0; }
+      th, td { padding: 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; font-size: 14px; }
+      th { background: #f0f5fb; color: #263346; }
+      tr:last-child td { border-bottom: 0; }
+      @media (max-width: 760px) {
+        .page { padding: 10px; }
+        .hero, .card { padding: 14px; }
+        h1 { font-size: 30px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <p class="eyebrow">한글 원문 우선</p>
+        <h1>UI 전에 확정한 Flow of Flow 텍스트 컨텐츠</h1>
+        <p class="desc">한글 원문을 중심으로 다시 골랐습니다. 각 후보는 원문 행이 실제로 있는지, 사용자가 체크할 대상이 자연스러운지, 필수 입력이 캘린더/투두 앱 수준을 넘지 않는지 기준으로 봤습니다.</p>
+        <div class="chips">
+          <span class="chip blue">원문 행 우선</span>
+          <span class="chip green">상태/메모만 추가</span>
+          <span class="chip">필수 입력 최소화</span>
+          <span class="chip amber">건강 정보 판단 금지</span>
+        </div>
+      </header>
+
+      <section class="card">
+        <p class="eyebrow">후보 선정</p>
+        <h2>한글 원문 후보 판정</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>원문</th>
+              <th>판정</th>
+              <th>Flow 컨텐츠화 이유</th>
+              <th>UI 전 조건</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>생활코딩 WEB1</td>
+              <td><span class="chip green">Strong</span></td>
+              <td>강의 목차와 YouTube playlist 행이 명확함. 진도형 Flow of Flow로 적합.</td>
+              <td>필수 입력 없음. 레슨 행 + 상태 + 메모.</td>
+            </tr>
+            <tr>
+              <td>노마드코더 바닐라 JS</td>
+              <td><span class="chip green">Strong</span></td>
+              <td>섹션/강의 번호가 명확하고, 완강/실습 링크 관리 수요가 있음.</td>
+              <td>필수 입력 없음. 실습 저장소 URL은 선택.</td>
+            </tr>
+            <tr>
+              <td>EBS 중학 뉴런 수학1(상)</td>
+              <td><span class="chip green">Strong</span></td>
+              <td>검색 결과에서 강의 목록 행이 직접 잡힘. 교과 진도형 Flow에 적합.</td>
+              <td>강의 행 그대로 사용. 공부 페이스 입력 금지.</td>
+            </tr>
+            <tr>
+              <td>이기적 컴활 1급 필기</td>
+              <td><span class="chip green">Strong</span></td>
+              <td>YES24 목차에 권/Part/Chapter가 명확함. 자격증 진도형에 적합.</td>
+              <td>시험일은 선택. 필수 입력으로 만들지 않음.</td>
+            </tr>
+            <tr>
+              <td>영유아 건강검진</td>
+              <td><span class="chip amber">Care Strong</span></td>
+              <td>검진 차수와 월령 범위가 명확함. 생일 기준 캘린더와 확인 메모에 적합.</td>
+              <td>아이 생일 1개만 필요. 의료 판단 금지.</td>
+            </tr>
+            <tr>
+              <td>표준 예방접종 일정표</td>
+              <td><span class="chip amber">Care Strong</span></td>
+              <td>질병관리청 표준 일정표가 있음. 연령별 방문 확인 Flow로 가능.</td>
+              <td>아이 생일 1개만 필요. 접종 판단/권고는 원문과 의료기관으로 분리.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">Content Model 1</p>
+        <h2>생활코딩 WEB1</h2>
+        <p class="desc">원문: <a href="https://edu.goorm.io/lecture/12959/%EC%83%9D%ED%99%9C%EC%BD%94%EB%94%A9-web1-html-and-internet">구름EDU WEB1</a>, <a href="https://www.youtube.com/playlist?list=PLuHgQVnccGMDZP7FJ_ZsUrdCGH68ppvPb">YouTube playlist</a></p>
+        <pre>Source shape:
+- 강좌/playlist → 수업 행.
+- 예: WEB1 - 1. 수업소개, 2. How this project started, 3. Product Design, 4. Coding and HTML...
+
+User job:
+- WEB1을 어디까지 봤는지, 실습 파일이 어디 있는지 기억하고 싶다.
+
+Natural artifact:
+- 진도표 + 실습 메모.
+
+Required input:
+- 없음.
+
+Parent Flow:
+Title: WEB1 HTML & Internet
+Rows:
+- 수업소개
+- How this project started
+- Product Design
+- Coding and HTML
+- HTML 코딩과 실습환경 준비
+- 기본문법 태그
+- 줄바꿈
+- HTML이 중요한 이유
+- 최후의 문법 속성과 img
+- 부모 자식과 목록
+- 문서의 구조
+- HTML 태그의 제왕
+- 웹사이트 완성
+
+Row fields:
+[수업명] [상태] [실습 파일/막힌 지점 메모] [원문 URL]
+
+Do not build:
+- 하루 2강 같은 진행 페이스 입력.
+- "원문 열기"를 체크리스트로 만들기.
+- HTML 설명을 FlowMe가 다시 작성.</pre>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">Content Model 2</p>
+        <h2>노마드코더 바닐라 JS로 크롬 앱 만들기</h2>
+        <p class="desc">원문: <a href="https://nomadcoders.co/javascript-for-beginners/lobby">노마드코더 강의 로비</a></p>
+        <pre>Source shape:
+- 강좌 → 섹션 → 강의 행.
+- 검색 결과에서 #1.0 Welcome, #1.1 What Are We Building, #1.2 Requirements 등 강의 행 확인.
+
+User job:
+- 강의 진도와 실습 코드 위치를 남기고 싶다.
+
+Natural artifact:
+- 섹션별 진도표 + 실습 URL 메모.
+
+Required input:
+- 없음.
+- 선택: GitHub/배포 URL.
+
+Parent Flow:
+Title: 바닐라 JS로 크롬 앱 만들기
+Rows:
+- #1 Introduction
+- #2 Welcome to Javascript
+- #3 Javascript on the Browser
+- #4 Login
+- #5 Clock
+- #6 Quotes and Background
+- #7 To Do List
+- #8 Weather
+
+Row fields:
+[섹션/강의명] [상태] [실습 코드 URL] [막힌 개념 메모] [원문 URL]
+
+Do not build:
+- "실습 코드 실행" 같은 UI 행동 체크리스트.
+- 강의에 없는 복습 프로세스.
+- 퀴즈/과제를 임의 생성.</pre>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">Content Model 3</p>
+        <h2>EBS 중학 뉴런 수학1(상)</h2>
+        <p class="desc">원문: <a href="https://mid.ebs.co.kr/course/view?courseId=100005139">EBS 중학 뉴런 수학1(상)</a></p>
+        <pre>Source shape:
+- EBS 강좌 → 강의 목록.
+- 검색 결과에서 08강 Ⅰ-1 중단원 마무리, 09강 Ⅰ-1 중단원 마무리, 10강 01 정수와 유리수, 11강 01 정수와 유리수, 12강 02 수의 대소 관계 등 실제 강의 행 확인.
+
+User job:
+- 강의를 어디까지 봤고, 어떤 문제/페이지를 다시 봐야 하는지 남기고 싶다.
+
+Natural artifact:
+- 강의 진도표 + 오답/복습 메모.
+
+Required input:
+- 없음.
+- 선택: 목표 시험일 또는 복습 날짜.
+
+Parent Flow:
+Title: EBS 중학 뉴런 수학1(상)
+Rows:
+- 08강 Ⅰ-1 중단원 마무리 (1)
+- 09강 Ⅰ-1 중단원 마무리 (2), 서술형으로 중단원 마무리
+- 10강 01 정수와 유리수 (1)
+- 11강 01 정수와 유리수 (2)
+- 12강 02 수의 대소 관계 (1)
+- 13강 02 수의 대소 관계 (2)
+- 14강 Ⅱ-1 중단원 마무리 (1)
+- 15강 Ⅱ-1 중단원 마무리 (2)
+
+Row fields:
+[강의명] [상태] [교재 페이지] [틀린 문제 번호] [복습 필요 여부] [원문 URL]
+
+Do not build:
+- 원문 강의 목록 없이 단원을 상상해서 만들기.
+- 공부 요일/진행 페이스 필수 입력.
+- 수학 개념을 AI가 설명.</pre>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">Content Model 4</p>
+        <h2>이기적 컴퓨터활용능력 1급 필기</h2>
+        <p class="desc">원문: <a href="https://www.yes24.com/product/goods/147569004">YES24 2026 이기적 컴활 1급 필기 기본서</a></p>
+        <pre>Source shape:
+- 수험서 → 권/Part → Chapter.
+- YES24 목차에서 Part 1 컴퓨터 일반, Part 2 스프레드시트 일반, Part 3 데이터베이스 일반과 각 Chapter 확인.
+
+User job:
+- 과목별 진도와 기출/오답 메모를 관리하고 싶다.
+
+Natural artifact:
+- 과목별 진도표 + 오답 메모.
+
+Required input:
+- 없음.
+- 선택: 시험일.
+
+Parent Flow:
+Title: 컴퓨터활용능력 1급 필기
+Child Flow:
+1. 컴퓨터 일반
+   - 운영체제 사용
+   - 컴퓨터 시스템 설정 변경
+   - 컴퓨터 시스템 관리
+   - 인터넷 자료 활용
+   - 컴퓨터 시스템 보호
+2. 스프레드시트 일반
+   - 스프레드시트 개요
+   - 데이터 입력 및 편집
+   - 수식 활용
+   - 데이터 관리 및 분석
+   - 출력
+   - 차트 생성 및 수정
+   - 매크로 및 프로그래밍
+3. 데이터베이스 일반
+   - 데이터베이스 개요
+   - 테이블 작성
+   - 쿼리 작성
+   - 폼 작성
+   - 보고서 작성
+
+Row fields:
+[Chapter] [상태] [오답 번호] [헷갈린 키워드] [원문 URL]
+
+Do not build:
+- 매일 공부 루틴 임의 생성.
+- 시험 합격 판단.
+- 강의/교재 내용을 FlowMe가 요약.</pre>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">Content Model 5</p>
+        <h2>영유아 건강검진</h2>
+        <p class="desc">원문: <a href="https://www.nrc.go.kr/portal/html/content.do?depth=ph&menu_cd=03_02_00_04">국립재활원 영유아 건강검진</a>, <a href="https://childhosp.seoul.go.kr/medical-info/health-medical-examination">서울특별시 어린이병원 영유아 건강검진</a></p>
+        <pre>Source shape:
+- 공식/병원 안내 → 차수별 월령 범위.
+- 생후 14일부터 71개월까지 1차~8차 검진과 구강검진 일정이 있음.
+
+User job:
+- 아이 생일 기준으로 다음 검진 시기를 놓치지 않고, 문진표/예약 메모만 남기고 싶다.
+
+Natural artifact:
+- 생일 기준 캘린더 + 차수별 확인 메모.
+
+Required input:
+- 아이 생일 1개.
+
+Parent Flow:
+Title: 영유아 건강검진 일정
+Rows:
+- 1차 건강검진: 생후 14~35일
+- 2차 건강검진: 생후 4~6개월
+- 3차 건강검진: 생후 9~12개월
+- 4차 건강검진: 생후 18~24개월
+- 구강검진: 생후 18~29개월
+- 5차 건강검진: 생후 30~36개월
+- 구강검진: 생후 30~41개월
+- 6차 건강검진: 생후 42~48개월
+- 구강검진: 생후 42~53개월
+- 7차 건강검진: 생후 54~60개월
+- 구강검진: 생후 54~65개월
+- 8차 건강검진: 생후 66~71개월
+
+Row fields:
+[검진 차수] [월령 범위] [예상 기간] [예약 메모] [문진표 메모] [원문 URL]
+
+Do not build:
+- 발달 판단.
+- 검진 결과 기록 앱처럼 무겁게 만들기.
+- 긴 부모 교육 설명을 사용자 화면에 노출.</pre>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">Content Model 6</p>
+        <h2>질병관리청 표준 예방접종 일정표</h2>
+        <p class="desc">원문: <a href="https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&menuLv=1">질병관리청 예방접종도우미 표준 예방접종 일정표</a>, <a href="https://nip.kdca.go.kr/irhp/mngm/goVcntMngm.do?menuCd=313&menuLv=3">아이 예방접종 일정보기</a></p>
+        <pre>Source shape:
+- 공식 일정표 → 월령/연령별 접종 항목.
+- 아이 생일을 넣으면 표준예방접종일을 확인하는 도구도 있음.
+
+User job:
+- 아이 생일 기준으로 다음 공식 일정과 병원 확인 메모를 보고 싶다.
+
+Natural artifact:
+- 생일 기준 캘린더 + 방문 전 확인 메모.
+
+Required input:
+- 아이 생일 1개.
+
+Parent Flow:
+Title: 표준 예방접종 일정
+Rows:
+- 출생시/4주 이내: B형간염, BCG 등 원문 일정 확인
+- 2개월: DTaP, IPV, Hib, PCV 등 원문 일정 확인
+- 4개월: DTaP, IPV, Hib, PCV 등 원문 일정 확인
+- 6개월: DTaP, IPV, Hib, PCV, B형간염 등 원문 일정 확인
+- 12개월 이후: MMR, 수두, 일본뇌염 등 원문 일정 확인
+- 4세~6세: 추가 접종 항목 원문 확인
+- 11세~12세: Tdap/Td, HPV 등 원문 확인
+
+Row fields:
+[월령/연령] [원문 접종 항목] [병원 확인 메모] [예약 메모] [원문 URL]
+
+Do not build:
+- 접종 여부 판단.
+- 누락 접종 catch-up 계산.
+- 의료 권고 문구.
+- 병원 기록관리 앱처럼 무겁게 만들기.</pre>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">UI 제작 기준</p>
+        <h2>이 텍스트를 UI로 옮길 때 지킬 것</h2>
+        <pre>1. 진도형 UI
+- 입력 없음.
+- 상위에는 전체 진도와 다음 행.
+- 하위에는 원문 행 목록.
+- 각 행에는 체크, 상태, 짧은 메모, 원문 링크만.
+
+2. 건강/육아 일정형 UI
+- 입력은 아이 생일 1개.
+- 상위에는 다음 기간과 전체 일정.
+- 하위에는 공식 원문 확인, 예약 메모, 문진표 메모.
+- 의료 판단은 하지 않음.
+
+3. 공통
+- 진행 페이스, 공부 요일, 반복 요일은 기본 입력으로 넣지 않음.
+- 캘린더/투두앱 수준의 조작만 허용.
+- 상세 설명은 URL/메모/detail로 내림.
+- 사용자 화면에는 source fit, 평가, 리뷰 문구를 넣지 않음.</pre>
+      </section>
+    </main>
+  </body>
+</html>

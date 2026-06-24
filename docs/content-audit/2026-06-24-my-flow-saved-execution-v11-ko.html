@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Flow execution</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --paper: #fff;
+      --ink: #101828;
+      --muted: #667085;
+      --line: #d9e2ef;
+      --soft: #eef3f8;
+      --blue: #1f64d8;
+      --blue-soft: #eaf2ff;
+      --green: #0e806c;
+      --green-soft: #e8f7f2;
+      --amber: #986400;
+      --amber-soft: #fff5d6;
+      --purple: #6b42b8;
+      --purple-soft: #f0eaff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+    .app {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 16px 16px 64px;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 900;
+    }
+    .mark {
+      display: grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 14px;
+    }
+    .panel,
+    .summary-card,
+    .summary-map,
+    .action-card,
+    .flow-card,
+    .step-card,
+    .detail {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+    .panel { padding: 16px; }
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, .72fr) minmax(0, 1.28fr);
+      gap: 14px;
+      align-items: start;
+    }
+    .two {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+    .summary-card,
+    .summary-map,
+    .action-card,
+    .flow-card {
+      padding: 14px;
+    }
+    .summary-card,
+    .summary-map {
+      background: #fbfcfe;
+    }
+    .summary-map {
+      border-color: #e4e9f0;
+    }
+    .summary-map h3 {
+      margin-bottom: 3px;
+      font-size: 16px;
+    }
+    .action-card {
+      width: 100%;
+      text-align: left;
+    }
+    .action-card,
+    .step-card {
+      cursor: pointer;
+    }
+    .action-card.active {
+      border-color: #8eb5f6;
+      background: var(--blue-soft);
+    }
+    .flow-card.active {
+      border-color: #9cc9bc;
+      background: #fbfffd;
+    }
+    .step-card {
+      width: 100%;
+      padding: 12px;
+      text-align: left;
+    }
+    .step-card.active {
+      border-color: #8eb5f6;
+      background: #f4f8ff;
+    }
+    .card-head {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+    .card-head .chips {
+      margin-top: 0;
+    }
+    .action-label {
+      display: inline-flex;
+      min-height: 26px;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      border: 1px solid #c8d1dc;
+      border-radius: 7px;
+      background: #fff;
+      padding: 4px 8px;
+      color: #174da8;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .active .action-label {
+      border-color: #174da8;
+      background: #174da8;
+      color: #fff;
+    }
+    .detail {
+      margin-top: -3px;
+      padding: 14px;
+      background: #fbfcfe;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2, h3, p, li, span, button, label {
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+    h1 {
+      margin-bottom: 8px;
+      font-size: 30px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+    h2 {
+      margin-bottom: 10px;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin-bottom: 4px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .muted { color: var(--muted); }
+    .small { font-size: 13px; }
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 5px;
+      margin: 14px 0;
+      padding: 5px;
+      border-radius: 10px;
+      background: #e9eef5;
+    }
+    .tabs button,
+    .filter button {
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: #475569;
+      font-weight: 850;
+    }
+    .tabs button {
+      min-height: 38px;
+      padding: 0 8px;
+    }
+    .tabs button.active,
+    .filter button.active {
+      background: var(--ink);
+      color: #fff;
+    }
+    .filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 0 0 12px;
+    }
+    .filter button {
+      min-height: 32px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      border-radius: 7px;
+      background: var(--soft);
+      padding: 4px 8px;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .chip.blue { background: var(--blue-soft); color: #174da8; }
+    .chip.green { background: var(--green-soft); color: var(--green); }
+    .chip.amber { background: var(--amber-soft); color: var(--amber); }
+    .chip.purple { background: var(--purple-soft); color: var(--purple); }
+    .progress-line {
+      display: grid;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      color: #475569;
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .bar {
+      overflow: hidden;
+      height: 8px;
+      border-radius: 99px;
+      background: #e2e8f0;
+    }
+    .bar span {
+      display: block;
+      height: 100%;
+      background: var(--blue);
+    }
+    .calendar-month {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .day-head,
+    .day {
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .day-head {
+      color: var(--muted);
+      text-align: center;
+    }
+    .day {
+      min-height: 48px;
+      border: 1px solid #e4e9f0;
+      border-radius: 8px;
+      background: #fff;
+      padding: 5px;
+      color: #334155;
+      text-align: left;
+    }
+    .day.has {
+      border-color: #9ec0f8;
+      background: var(--blue-soft);
+      color: #164ba8;
+    }
+    .day.selected {
+      border-color: var(--ink);
+      box-shadow: inset 0 0 0 1px var(--ink);
+    }
+    .check-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 1px solid #edf1f5;
+      font-weight: 750;
+    }
+    .check-row:last-child { border-bottom: 0; }
+    .check-row input {
+      width: 20px;
+      height: 20px;
+      min-height: 20px;
+      margin-top: 2px;
+      flex: 0 0 auto;
+    }
+    input, textarea {
+      width: 100%;
+      border: 1px solid #c8d1dc;
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+    }
+    textarea {
+      min-height: 84px;
+      padding: 10px 11px;
+      resize: vertical;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .primary,
+    .secondary {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      padding: 10px 13px;
+      font-weight: 900;
+      text-decoration: none;
+    }
+    .primary {
+      border: 1px solid var(--blue);
+      background: var(--blue);
+      color: #fff;
+    }
+    .secondary {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--blue);
+    }
+    [hidden] { display: none !important; }
+    @media (max-width: 820px) {
+      .app { padding: 14px 16px 56px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .grid,
+      .two {
+        grid-template-columns: 1fr;
+      }
+      .grid > aside.panel { order: 2; }
+      .grid > section.panel { order: 1; }
+      .tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      h1 { font-size: 27px; }
+      .panel { padding: 14px; }
+      .primary,
+      .secondary {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><span class="mark">F</span><span>내 Flow</span></div>
+      <p class="muted small">2026. 07. 16. 기준 화면</p>
+    </header>
+
+    <section class="grid">
+      <aside class="panel">
+        <p class="eyebrow">저장됨</p>
+        <h1>오늘 이어서 할 것</h1>
+        <p class="muted">저장한 Flow에서 지금 필요한 Step만 먼저 보여줍니다.</p>
+        <div class="two">
+          <article class="summary-card">
+            <p class="muted small">오늘</p>
+            <h2>1개</h2>
+          </article>
+          <article class="summary-card">
+            <p class="muted small">저장한 Flow</p>
+            <h2>4개</h2>
+          </article>
+        </div>
+        <div class="list" id="map-summary" style="margin-top:12px;"></div>
+      </aside>
+
+      <section class="panel">
+        <nav class="tabs" aria-label="내 Flow 보기">
+          <button class="active" type="button" data-tab="today">오늘</button>
+          <button type="button" data-tab="calendar">일정</button>
+          <button type="button" data-tab="flows">Flow</button>
+          <button type="button" data-tab="maps">지도</button>
+        </nav>
+        <div id="tab-body"></div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const flows = [
+      {
+        id: 'moving',
+        mapId: 'life',
+        mapTitle: '생활 일정',
+        title: '원룸 이사 D-30 준비',
+        type: '타임라인',
+        color: 'amber',
+        source: 'https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363',
+        steps: [
+          { id: 'moving-30', date: '2026-06-30', label: 'D-30', title: '이사 방식과 견적 후보 정하기', items: ['이사 방식 1개를 정합니다.', '견적 후보 2-3곳을 열고 연락처를 메모합니다.', '포함 범위와 예상 비용을 짧게 남깁니다.'], done: true },
+          { id: 'moving-14', date: '2026-07-16', label: 'D-14', title: '입주청소와 대형폐기물 일정 확인', items: ['입주청소가 필요하면 예약 가능일을 확인합니다.', '대형폐기물 신고 가능 품목과 수거일을 확인합니다.', '예약처와 신고 번호를 메모합니다.'] },
+          { id: 'moving-7', date: '2026-07-23', label: 'D-7', title: '관리사무소 공유와 주소 변경 대상 확인', items: ['관리사무소에 이사 시간과 차량 동선을 공유합니다.', '자주 쓰는 배송 계정 주소 변경 대상을 확인합니다.', '우편물 주소 변경이 필요한 곳을 메모합니다.'] },
+          { id: 'moving-1', date: '2026-07-30', label: 'D-1', title: '계량기와 집 상태 사진 남기기', items: ['전기, 가스, 수도 계량기를 촬영합니다.', '현관, 욕실, 창문, 콘센트 주변 상태를 촬영합니다.', '사진 위치나 공유 여부만 짧게 메모합니다.'] },
+          { id: 'moving-day', date: '2026-07-31', label: 'D-Day', title: '정산과 전입신고 확인', items: ['잔금/정산 확인 내용을 메모합니다.', '전입신고와 확정일자 확인 필요 여부를 체크합니다.', '처리 결과나 다시 볼 링크만 남깁니다.'] }
+        ]
+      },
+      {
+        id: 'baby',
+        mapId: 'family',
+        mapTitle: '아이 건강 일정',
+        title: '검진·접종 일정',
+        type: '일정',
+        color: 'green',
+        source: 'https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=1&cciNo=2&cnpClsNo=2&csmSeq=1138&popMenu=ov',
+        steps: [
+          { id: 'baby-v2', date: '2026-03-15', label: '생후 2개월', title: '생후 2개월 접종 확인', items: ['예방접종도우미 일정 확인', '접종기관 또는 예약 상태 메모', '지연 접종은 의료기관 안내 확인'], done: true },
+          { id: 'baby-v4', date: '2026-05-15', label: '생후 4개월', title: '생후 4개월 접종 확인', items: ['예방접종도우미 일정 확인', '접종기관 또는 예약 상태 메모', '지연 접종은 의료기관 안내 확인'], done: true },
+          { id: 'baby-check2', date: '2026-05-15', label: '생후 4~6개월', title: '2차 건강검진', items: ['검진 기간 확인', '예약 또는 문진표 상태 메모', '결과지 위치 메모'] },
+          { id: 'baby-check3', date: '2026-10-11', label: '생후 9~12개월', title: '3차 건강검진', items: ['검진 기간 확인', '예약 또는 문진표 상태 메모', '결과지 위치 메모'] }
+        ]
+      },
+      {
+        id: 'math-1',
+        mapId: 'math',
+        mapTitle: '중1 수학 진도',
+        title: '1. 소인수분해',
+        type: '진도',
+        color: 'blue',
+        source: 'https://mathbang.net/13',
+        steps: [
+          { id: 'math-power', title: '거듭제곱', items: [], done: true },
+          { id: 'math-prime', title: '소수와 합성수', items: [] },
+          { id: 'math-sieve', title: '에라토스테네스의 체', items: [] },
+          { id: 'math-factor', title: '소인수분해', items: [] }
+        ]
+      },
+      {
+        id: 'math-2',
+        mapId: 'math',
+        mapTitle: '중1 수학 진도',
+        title: '2. 정수와 유리수',
+        type: '진도',
+        color: 'blue',
+        source: 'https://mathbang.net/13',
+        steps: [
+          { id: 'math-positive', title: '양수와 음수, 정수', items: [] },
+          { id: 'math-abs', title: '절댓값과 수직선', items: [] },
+          { id: 'math-compare', title: '정수의 대소관계', items: [] }
+        ]
+      }
+    ];
+
+    const state = {
+      tab: 'today',
+      filter: 'all',
+      selectedDate: '2026-07-16',
+      activeStep: 'moving-14',
+      activeFlow: 'moving',
+      activeMap: 'life',
+      memo: {},
+      itemDone: {},
+      done: {}
+    };
+
+    const $id = (id) => document.getElementById(id);
+    const today = '2026-07-16';
+    const maps = () => Array.from(new Map(flows.map((flow) => [flow.mapId, { id: flow.mapId, title: flow.mapTitle }])).values());
+    const stepsOf = (flow) => flow.steps.map((step) => ({ ...step, flow }));
+    const allSteps = () => flows.flatMap(stepsOf);
+    const isDone = (step) => state.done[step.id] ?? Boolean(step.done);
+    const progress = (flow) => {
+      const done = flow.steps.filter(isDone).length;
+      const total = flow.steps.length;
+      return { done, total, value: Math.round((done / total) * 100) };
+    };
+    const flowById = (id) => flows.find((flow) => flow.id === id);
+    const stepById = (id) => allSteps().find((entry) => entry.id === id);
+    const visibleByFilter = (step) => state.filter === 'all' || step.flow.mapId === state.filter;
+
+    function renderMapSummary() {
+      $id('map-summary').innerHTML = maps().map((map) => {
+        const mapFlows = flows.filter((flow) => flow.mapId === map.id);
+        const total = mapFlows.reduce((sum, flow) => sum + flow.steps.length, 0);
+        const done = mapFlows.reduce((sum, flow) => sum + flow.steps.filter(isDone).length, 0);
+        return `
+          <article class="summary-map">
+            <h3>${map.title}</h3>
+            <p class="muted small">${mapFlows.length}개 Flow · ${done}/${total} 완료</p>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function renderFilters() {
+      return `
+        <div class="filter">
+          <button class="${state.filter === 'all' ? 'active' : ''}" type="button" data-filter="all">전체</button>
+          ${maps().map((map) => `<button class="${state.filter === map.id ? 'active' : ''}" type="button" data-filter="${map.id}">${map.title}</button>`).join('')}
+        </div>
+      `;
+    }
+
+    function renderStepCard(entry, options = {}) {
+      const active = state.activeStep === entry.id;
+      const dated = entry.date ? `${entry.date} · ${entry.label}` : '진도 Step';
+      return `
+        <button class="step-card ${active ? 'active' : ''}" type="button" data-step="${entry.id}" aria-expanded="${active}">
+          <div class="card-head">
+            <div class="chips"><span class="chip ${entry.flow.color}">${entry.flow.mapTitle}</span><span class="chip">${entry.flow.title}</span></div>
+            <span class="action-label">${active ? '접기' : '열기'}</span>
+          </div>
+          <h3>${entry.title}</h3>
+          <p class="muted small">${dated}${isDone(entry) ? ' · 완료' : ''}</p>
+        </button>
+        ${active ? renderStepDetail(entry, options) : ''}
+      `;
+    }
+
+    function renderStepDetail(entry) {
+      const itemList = entry.items.length ? entry.items.map((item, index) => {
+        const key = `${entry.id}:${index}`;
+        return `
+          <label class="check-row">
+            <input type="checkbox" data-item="${key}" ${state.itemDone[key] ? 'checked' : ''}>
+            <span>${item}</span>
+          </label>
+        `;
+      }).join('') : '<p class="muted small">이 Step은 원문 링크, 완료 여부, 메모만 남깁니다.</p>';
+      return `
+        <section class="detail">
+          <p class="eyebrow">${entry.flow.title}</p>
+          <h2>${entry.title}</h2>
+          <p class="muted">${entry.date ? `${entry.date} · ${entry.label}` : '진도표에 저장된 Step'}</p>
+          ${itemList}
+          <label class="check-row">
+            <input type="checkbox" data-done="${entry.id}" ${isDone(entry) ? 'checked' : ''}>
+            <span>이 Step 완료</span>
+          </label>
+          <label class="field">메모
+            <textarea data-memo="${entry.id}" placeholder="예약번호, 연락처, 다시 볼 범위만 짧게 남기기">${state.memo[entry.id] || ''}</textarea>
+          </label>
+          <div class="actions">
+            <a class="secondary" href="${entry.flow.source}" target="_blank" rel="noreferrer">원문 열기</a>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderToday() {
+      const todaySteps = allSteps().filter((entry) => entry.date === today && visibleByFilter(entry));
+      const continueSteps = flows.filter((flow) => !flow.steps.every(isDone) && flow.mapId === 'math').map((flow) => {
+        const next = flow.steps.find((step) => !isDone(step));
+        return next ? { ...next, flow } : null;
+      }).filter(Boolean);
+      $id('tab-body').innerHTML = `
+        <p class="eyebrow">오늘 실행</p>
+        <h1>2026. 07. 16.</h1>
+        ${renderFilters()}
+        <div class="list">
+          ${todaySteps.length ? todaySteps.map((entry) => renderStepCard(entry)).join('') : '<article class="summary-card"><p class="muted">오늘 날짜에 걸린 Step이 없습니다.</p></article>'}
+        </div>
+        <div style="margin-top:18px;">
+          <h2>이어서 볼 진도</h2>
+          <div class="list">${continueSteps.map((entry) => renderStepCard(entry)).join('')}</div>
+        </div>
+      `;
+    }
+
+    function renderCalendar() {
+      const month = '2026-07';
+      const monthSteps = allSteps().filter((entry) => entry.date && entry.date.startsWith(month) && visibleByFilter(entry));
+      const selectedSteps = monthSteps.filter((entry) => entry.date === state.selectedDate);
+      $id('tab-body').innerHTML = `
+        <p class="eyebrow">일정</p>
+        <h1>2026. 07.</h1>
+        ${renderFilters()}
+        <div class="calendar-month">
+          ${['월','화','수','목','금','토','일'].map((day) => `<div class="day-head">${day}</div>`).join('')}
+          ${renderCalendarCells(month, monthSteps)}
+        </div>
+        <div style="margin-top:14px;">
+          <h2>${state.selectedDate.replaceAll('-', '. ')}.</h2>
+          <div class="list">${selectedSteps.length ? selectedSteps.map((entry) => renderStepCard(entry)).join('') : '<article class="summary-card"><p class="muted">이 날짜에 저장된 Step이 없습니다.</p></article>'}</div>
+        </div>
+      `;
+    }
+
+    function renderCalendarCells(month, monthSteps) {
+      const [year, monthNumber] = month.split('-').map(Number);
+      const firstDay = new Date(year, monthNumber - 1, 1);
+      const blankCount = (firstDay.getDay() + 6) % 7;
+      const lastDate = new Date(year, monthNumber, 0).getDate();
+      const cells = [];
+      for (let i = 0; i < blankCount; i += 1) cells.push('<div class="day" aria-hidden="true"></div>');
+      for (let day = 1; day <= lastDate; day += 1) {
+        const date = `${month}-${String(day).padStart(2, '0')}`;
+        const count = monthSteps.filter((entry) => entry.date === date).length;
+        cells.push(`<button class="day ${count ? 'has' : ''} ${state.selectedDate === date ? 'selected' : ''}" type="button" data-date="${date}">${day}${count ? `<br>${count}개` : ''}</button>`);
+      }
+      while (cells.length % 7 !== 0) cells.push('<div class="day" aria-hidden="true"></div>');
+      return cells.join('');
+    }
+
+    function renderFlows() {
+      const visibleFlows = flows.filter((flow) => state.filter === 'all' || flow.mapId === state.filter);
+      $id('tab-body').innerHTML = `
+        <p class="eyebrow">저장한 Flow</p>
+        <h1>Flow별로 보기</h1>
+        ${renderFilters()}
+        <div class="list">
+          ${visibleFlows.map((flow) => {
+            const p = progress(flow);
+            const active = state.activeFlow === flow.id;
+            return `
+              <article class="flow-card ${active ? 'active' : ''}">
+                <button class="action-card ${active ? 'active' : ''}" type="button" data-flow="${flow.id}" aria-expanded="${active}">
+                  <div class="card-head">
+                    <div class="chips"><span class="chip ${flow.color}">${flow.mapTitle}</span><span class="chip">${flow.type}</span></div>
+                    <span class="action-label">${active ? '접기' : '열기'}</span>
+                  </div>
+                  <h3>${flow.title}</h3>
+                  <div class="progress-line">
+                    <div class="progress-top"><span>${p.done}/${p.total} 완료</span><span>${p.value}%</span></div>
+                    <div class="bar"><span style="width:${p.value}%"></span></div>
+                  </div>
+                </button>
+                ${active ? `<div class="list" style="margin-top:10px;">${stepsOf(flow).map((entry) => renderStepCard(entry)).join('')}</div>` : ''}
+              </article>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderMaps() {
+      const selectedMap = maps().find((map) => map.id === state.activeMap) || maps()[0];
+      const mapFlows = flows.filter((flow) => flow.mapId === selectedMap.id);
+      $id('tab-body').innerHTML = `
+        <p class="eyebrow">지도</p>
+        <h1>${selectedMap.title}</h1>
+        <div class="list">
+          ${maps().map((map) => {
+            const active = state.activeMap === map.id;
+            return `<button class="action-card ${active ? 'active' : ''}" type="button" data-map="${map.id}" aria-pressed="${active}"><div class="card-head"><h3>${map.title}</h3><span class="action-label">${active ? '선택됨' : '보기'}</span></div><p class="muted small">${flows.filter((flow) => flow.mapId === map.id).length}개 Flow</p></button>`;
+          }).join('')}
+        </div>
+        <div style="margin-top:14px;">
+          <h2>포함된 Flow</h2>
+          <div class="list">
+            ${mapFlows.map((flow) => {
+              const p = progress(flow);
+              return `
+                <article class="flow-card">
+                  <div class="chips"><span class="chip ${flow.color}">${flow.type}</span><span class="chip">${flow.steps.length}개 Step</span></div>
+                  <h3>${flow.title}</h3>
+                  <p class="muted small">${flow.steps.slice(0, 4).map((step) => step.title).join(' · ')}</p>
+                  <div class="progress-line">
+                    <div class="progress-top"><span>${p.done}/${p.total} 완료</span><span>${p.value}%</span></div>
+                    <div class="bar"><span style="width:${p.value}%"></span></div>
+                  </div>
+                </article>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTab() {
+      document.querySelectorAll('[data-tab]').forEach((button) => button.classList.toggle('active', button.dataset.tab === state.tab));
+      if (state.tab === 'today') renderToday();
+      if (state.tab === 'calendar') renderCalendar();
+      if (state.tab === 'flows') renderFlows();
+      if (state.tab === 'maps') renderMaps();
+    }
+
+    function render() {
+      renderMapSummary();
+      renderTab();
+    }
+
+    document.addEventListener('click', (event) => {
+      const button = event.target.closest('button');
+      if (!button) return;
+      if (button.matches('[data-tab]')) {
+        state.tab = button.dataset.tab;
+        render();
+      }
+      if (button.matches('[data-filter]')) {
+        state.filter = button.dataset.filter;
+        render();
+      }
+      if (button.matches('[data-step]')) {
+        const id = button.dataset.step;
+        state.activeStep = state.activeStep === id ? '' : id;
+        const entry = stepById(id);
+        if (entry) {
+          state.activeFlow = entry.flow.id;
+          state.activeMap = entry.flow.mapId;
+        }
+        render();
+      }
+      if (button.matches('[data-date]')) {
+        state.selectedDate = button.dataset.date;
+        const first = allSteps().find((entry) => entry.date === state.selectedDate && visibleByFilter(entry));
+        if (first) state.activeStep = first.id;
+        render();
+      }
+      if (button.matches('[data-flow]')) {
+        const id = button.dataset.flow;
+        if (state.activeFlow === id) {
+          state.activeFlow = '';
+          state.activeStep = '';
+          render();
+          return;
+        }
+        state.activeFlow = id;
+        const flow = flowById(state.activeFlow);
+        if (flow) {
+          state.activeMap = flow.mapId;
+          const firstOpen = flow.steps.find((step) => !isDone(step)) || flow.steps[0];
+          state.activeStep = firstOpen.id;
+        }
+        render();
+      }
+      if (button.matches('[data-map]')) {
+        state.activeMap = button.dataset.map;
+        state.filter = state.activeMap;
+        render();
+      }
+    });
+
+    document.addEventListener('change', (event) => {
+      if (event.target.matches('[data-item]')) {
+        state.itemDone[event.target.dataset.item] = event.target.checked;
+      }
+      if (event.target.matches('[data-done]')) {
+        state.done[event.target.dataset.done] = event.target.checked;
+        render();
+      }
+    });
+
+    document.addEventListener('input', (event) => {
+      if (event.target.matches('[data-memo]')) {
+        state.memo[event.target.dataset.memo] = event.target.value;
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>

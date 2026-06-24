@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>내 Flow 관리 v2 시뮬레이션</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --surface: #ffffff;
+      --soft: #f1f5f9;
+      --line: #dbe2ea;
+      --text: #111827;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      --red: #b91c1c;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color-scheme: light;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    main {
+      width: min(100% - 28px, 1080px);
+      margin: 0 auto;
+      padding: 24px 0 56px;
+    }
+
+    header, section {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--surface);
+      padding: 22px;
+      margin-bottom: 14px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: 34px;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      font-size: 22px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    p, li {
+      color: var(--muted);
+      line-height: 1.65;
+      font-weight: 700;
+    }
+
+    a { color: var(--blue); font-weight: 900; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fbfdff;
+      padding: 14px;
+    }
+
+    .card b, .card span {
+      display: block;
+    }
+
+    .card span {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1.5;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px;
+      text-align: left;
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    th {
+      background: var(--soft);
+      font-size: 13px;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 9px;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      font-size: 12px;
+      font-weight: 900;
+      color: #334155;
+      white-space: nowrap;
+    }
+
+    .chip.blue { background: #eff6ff; border-color: #bfdbfe; color: var(--blue); }
+    .chip.green { background: #ecfdf5; border-color: #a7f3d0; color: var(--green); }
+    .chip.amber { background: #fff7ed; border-color: #fed7aa; color: var(--amber); }
+    .chip.red { background: #fef2f2; border-color: #fecaca; color: var(--red); }
+
+    .small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    ul {
+      margin-bottom: 0;
+      padding-left: 20px;
+    }
+
+    @media (max-width: 760px) {
+      main { width: min(100% - 20px, 720px); padding-top: 12px; }
+      header, section { padding: 17px; }
+      h1 { font-size: 29px; }
+      .grid, .two { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; }
+      th, td { min-width: 160px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">시뮬레이션 리포트</p>
+      <h1>내 Flow 관리 v2</h1>
+      <p>사용자용 PoC와 분리한 검토 기록입니다. 목표는 저장한 Flow가 1개에서 여러 개로 늘어날 때, 사용자가 관리 앱처럼 부담을 느끼지 않고 오늘 할 항목을 찾을 수 있는지 확인하는 것입니다.</p>
+      <p><a href="./2026-06-20-my-flow-user-screen-v3-ko.html">실제 사용자형 v3 화면 열기</a> · <a href="./2026-06-21-my-flow-v3-implementation-scope-ko.html">실제 적용 범위 보기</a> · <a href="./2026-06-20-my-flow-clean-management-poc-ko.html">상태별 검증용 v2 PoC 열기</a></p>
+    </header>
+
+    <section>
+      <p class="eyebrow">핵심 판단</p>
+      <h2>v1에서 v2로 줄인 이유</h2>
+      <div class="grid">
+        <div class="card"><b>1개 저장</b><span>완료/보류 버튼은 너무 이른 관리 신호다. 저장 확인, 다음 항목, 원문 링크만 남긴다.</span></div>
+        <div class="card"><b>4개 저장</b><span>오늘 할 항목과 저장한 Flow 목록을 같은 층위로 두면 헷갈린다. 오늘 항목을 먼저 둔다.</span></div>
+        <div class="card"><b>8개 저장</b><span>검색과 전체 목록은 필요하지만 첫 화면을 차지하면 안 된다. 기본은 접고 필요할 때 연다.</span></div>
+        <div class="card"><b>Flow Map</b><span>중1 수학은 지도 구조를 유지하되, 내 Flow에서는 현재 항목과 체크/메모만 노출한다.</span></div>
+        <div class="card"><b>상태 관리</b><span>큰 완료/보류 버튼보다 체크박스와 메모가 캘린더/투두 앱 복잡도에 가깝다.</span></div>
+        <div class="card"><b>외부 도구</b><span>항목 아래 세부 Item은 체크리스트로 보이고, 외부 앱에서는 텍스트로 접힌다.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">UX 리뷰</p>
+      <h2>전문 UX 관점 테스트 결과</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>관점</th>
+            <th>v1 테스트 결과</th>
+            <th>v2 수정</th>
+            <th>판단</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="chip red">High</span> 첫 행동</td>
+            <td>1개 저장 상태에서 나중에 보기/이 항목 완료가 먼저 보여 사용자가 상태 관리부터 떠올릴 수 있음.</td>
+            <td>1개 상태에서는 저장 확인과 다음 항목만 보여주고, 완료/보류 버튼을 제거.</td>
+            <td>저장 직후 화면으로 더 자연스러움.</td>
+          </tr>
+          <tr>
+            <td><span class="chip amber">Medium</span> 정보 구조</td>
+            <td>오늘 할 일과 전체 Flow 목록이 같은 영역에 있어 4개 이상부터 복잡하게 느껴짐.</td>
+            <td>오늘 항목, 다음 항목, 저장한 Flow를 분리. 8개 상태에서는 저장한 Flow를 기본 접힘.</td>
+            <td>목록 앱보다 리마인더/오늘 화면에 가까워짐.</td>
+          </tr>
+          <tr>
+            <td><span class="chip amber">Medium</span> 용어</td>
+            <td>Flow Map/Step/Item 구조를 정확히 잡았지만 사용자 화면에 모델명이 보이면 무겁다.</td>
+            <td>사용자 화면에서는 항목, 오늘, 다음, 저장한 Flow로 표현.</td>
+            <td>내부 모델은 유지하고 화면 복잡도는 낮춤.</td>
+          </tr>
+          <tr>
+            <td><span class="chip green">Low</span> 조작</td>
+            <td>체크, 메모, 검색, 선택은 동작하지만 버튼 결과가 많은 편.</td>
+            <td>주요 조작을 체크/메모/목록 열기/검색으로 축소.</td>
+            <td>Stage 0 PoC 수준에서는 충분히 가벼움.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">시뮬레이션</p>
+      <h2>사용자 저니 테스트</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>상태</th>
+            <th>사용자 행동</th>
+            <th>기대 결과</th>
+            <th>v2 결과</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="chip">0개</span></td>
+            <td>처음 내 Flow를 연다.</td>
+            <td>관리 UI보다 저장하면 무엇이 생기는지 알 수 있어야 함.</td>
+            <td>저장 전 안내와 1개/4개 예시 진입만 보임.</td>
+          </tr>
+          <tr>
+            <td><span class="chip blue">1개</span></td>
+            <td>전세계약 Flow를 저장한 뒤 내 Flow를 본다.</td>
+            <td>완료/보류 관리보다 저장 확인과 다음 항목이 보여야 함.</td>
+            <td>저장 확인, 다음 항목, 원문 링크, 체크/메모 detail만 보임.</td>
+          </tr>
+          <tr>
+            <td><span class="chip green">4개</span></td>
+            <td>오늘 할 항목 중 중1 수학을 연다.</td>
+            <td>지도 전체보다 오늘 강의 항목과 체크만 보여야 함.</td>
+            <td>중1 수학 지도에서 이어보기, 정수와 유리수, 10강 항목으로 열림.</td>
+          </tr>
+          <tr>
+            <td><span class="chip amber">8개</span></td>
+            <td>저장한 Flow가 많아져 정수를 검색한다.</td>
+            <td>첫 화면은 오늘 항목이고, 검색은 목록을 열었을 때 보조로 나와야 함.</td>
+            <td>기본은 저장한 Flow 접힘. 열면 검색으로 중1 수학만 좁혀짐.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">루브릭</p>
+      <h2>v2 자체 평가</h2>
+      <div class="grid two">
+        <div class="card"><b>User Need Fit: 4</b><span>저장 후 재방문 상황은 명확함. 실제 사용자 관찰은 아직 없음.</span></div>
+        <div class="card"><b>Execution Clarity: 4</b><span>오늘 항목, 체크, 메모가 명확함. 장기 반복/알림 편집은 아직 없음.</span></div>
+        <div class="card"><b>Portability: 4</b><span>외부 앱 텍스트 fallback이 항목 단위로 보존됨.</span></div>
+        <div class="card"><b>Cognitive Load: 4</b><span>상태 버튼을 제거하고 목록을 접어 첫 화면 부담을 줄임.</span></div>
+        <div class="card"><b>Copy Specificity: 3.5</b><span>대부분 행동 중심이지만, 실제 앱 구현 시 더 짧게 다듬을 여지가 있음.</span></div>
+        <div class="card"><b>Accessibility/Operability: 4</b><span>버튼/체크/검색 동작과 모바일 가로 overflow를 확인함.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">검증 기록</p>
+      <h2>확인한 것과 남은 것</h2>
+      <ul>
+        <li>Playwright 모바일 390px에서 1개/8개 전환, 라이브러리 접힘, 중1 수학 선택, 체크, 메모 입력 확인.</li>
+        <li>Playwright 데스크톱 1365px에서 중1 수학 선택, 체크, 메모 입력, 가로 overflow 없음 확인.</li>
+        <li>모바일 390px에서 상태 전환 컨트롤을 4칸 세그먼트로 줄여 확인용 UI가 본 화면을 과하게 밀어내지 않도록 조정.</li>
+        <li>v3 사용자형 화면에서는 상태 전환 컨트롤을 제거하고, 기본 진입을 `오늘 할 항목`과 접힌 `저장한 Flow 찾기`로 단순화.</li>
+        <li>v3에서 체크 후 토스트를 제거해 항목 상세와 외부 앱 텍스트 영역을 가리지 않도록 조정.</li>
+        <li>사용자 화면의 보이는 텍스트 기준으로 `Flow Map`, `Step`, `Item`, `PoC`, `리뷰`, `개발자`, `source fit`, `평가 점수` 노출 없음 확인.</li>
+        <li>`이 항목 완료`, `나중에 보기` 버튼은 v2 사용자 화면에서 제거됨.</li>
+        <li>남은 리스크: 실제 `/my` 구현 반영, 20개 이상 저장 상태, 알림/반복 편집, 실제 사용자 관찰.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

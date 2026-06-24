@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow v3 통합 시뮬레이션</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --surface: #fff;
+      --soft: #f1f5f9;
+      --line: #d8e2ef;
+      --text: #0f172a;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      --red: #b42318;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); line-height: 1.62; }
+    main { width: min(100% - 28px, 1040px); margin: 0 auto; padding: 24px 0 56px; }
+    header, section {
+      margin-bottom: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      padding: 20px;
+      box-shadow: 0 14px 32px rgba(15, 23, 42, .06);
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: 34px; line-height: 1.15; letter-spacing: 0; }
+    h2 { margin-bottom: 10px; font-size: 23px; line-height: 1.25; letter-spacing: 0; }
+    h3 { margin-bottom: 6px; font-size: 18px; line-height: 1.3; letter-spacing: 0; }
+    p, li, td { color: var(--muted); font-weight: 720; }
+    a { color: var(--blue); font-weight: 900; text-underline-offset: 3px; }
+    code { border-radius: 6px; background: var(--soft); padding: 2px 5px; color: #334155; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid var(--line); padding: 11px; vertical-align: top; text-align: left; }
+    th { background: var(--soft); color: #334155; font-size: 13px; font-weight: 950; }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .card { border: 1px solid var(--line); border-radius: 10px; background: #fbfdff; padding: 13px; }
+    .card b, .card span { display: block; }
+    .card span { margin-top: 5px; color: var(--muted); font-size: 13px; font-weight: 760; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #334155;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .green { border-color: #99f6e4; background: #ecfdf5; color: var(--green); }
+    .amber { border-color: #fed7aa; background: #fff7ed; color: var(--amber); }
+    .red { border-color: #fecaca; background: #fef2f2; color: var(--red); }
+    .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    @media (max-width: 760px) {
+      main { width: min(100% - 20px, 1040px); padding-top: 12px; }
+      header, section { padding: 16px; }
+      h1 { font-size: 28px; }
+      .grid { grid-template-columns: 1fr; }
+      table, tbody, tr, th, td { display: block; width: 100%; }
+      tr + tr { margin-top: 10px; border-top: 2px solid var(--line); }
+      th { border-bottom: 0; }
+      td { border-top: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">통합 시뮬레이션</p>
+      <h1>My Flow v3 저장 개수별 모바일 검증</h1>
+      <p>이번 패스는 저장한 Flow가 1개, 4개, 18개일 때 내 앱에서 사용자가 어디를 눌러야 하는지 확인한 내부 UX 시뮬레이션이다. 실제 사용자 행동 검증은 아니며, 현재 구현이 캘린더/투두 앱 수준의 복잡도를 유지하는지 보는 용도다.</p>
+      <div class="links">
+        <a class="chip" href="./2026-06-21-my-flow-v3-p0-actual-my-verification-ko.html">Today P0</a>
+        <a class="chip" href="./2026-06-21-my-flow-v3-p0-flow-tab-verification-ko.html">Flow 탭 P0</a>
+        <a class="chip" href="./2026-06-21-my-flow-v3-p0-check-routine-verification-ko.html">체크/루틴 P0</a>
+        <a class="chip" href="./2026-06-21-my-flow-saved-count-observation-ko.html">저장 개수별 관찰</a>
+      </div>
+    </header>
+
+    <section>
+      <p class="eyebrow">판단 원칙</p>
+      <h2>저장 개수별 UX 기준</h2>
+      <div class="grid">
+        <div class="card"><b>1개 저장</b><span>전체 관리 UI보다 현재 Flow를 바로 이어 보는 것이 우선이다. 모바일에서는 불필요한 체크/루틴 탭을 숨긴다.</span></div>
+        <div class="card"><b>4개 저장</b><span>Today와 Flow 찾기 사이의 균형이 필요하다. 전체 목록은 sheet로 열고, 체크는 Flow를 먼저 선택한다.</span></div>
+        <div class="card"><b>8개 이상</b><span>상태 카드보다 검색, 필터, 접힘이 우선이다. 첫 화면은 Today와 찾기 버튼만 남긴다.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">발견한 문제와 수정</p>
+      <h2>사용자 화면에서 과했던 부분</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>문제</th>
+            <th>사용자 영향</th>
+            <th>수정</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1개 저장에서도 5개 탭 노출</td>
+            <td>사용자는 저장한 Flow 하나를 보러 왔는데 체크/루틴 같은 빈 탭까지 해석해야 한다.</td>
+            <td>모바일 단일 Flow에서는 실제 쓸 수 있는 탭만 남김. 이사 D-30은 <code>오늘 / 캘린더 / Flow</code>만 표시.</td>
+          </tr>
+          <tr>
+            <td>모바일 목록 행마다 <code>완료</code> 텍스트 버튼 반복</td>
+            <td>리스트가 검토용 체크 테이블처럼 보이고, 행 열기와 완료가 경쟁한다.</td>
+            <td>compact row의 완료 액션은 접근 가능한 체크 컨트롤로 낮추고, 텍스트 반복은 제거.</td>
+          </tr>
+          <tr>
+            <td>늦게 저장한 D-day Flow가 과거 항목을 한 번에 많이 보여줌</td>
+            <td>첫 화면이 밀린 일 더미처럼 보일 수 있다.</td>
+            <td>모바일 Today의 밀린 항목은 4개부터 보여주고 나머지는 <code>밀린 항목 더 보기</code>로 접음.</td>
+          </tr>
+          <tr>
+            <td>이전 상태별 PoC의 1개 저장 화면에도 <code>나중에 보기</code>, <code>이 항목 완료</code>가 남아 있음</td>
+            <td>1개만 저장한 사용자가 관리/상태 변경 화면으로 오해할 수 있다.</td>
+            <td>1개 저장 모드에서는 해당 버튼을 숨기고 <code>저장됨</code>, 체크, 메모, 외부앱 fallback만 남김.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">측정 결과</p>
+      <h2>Playwright 모바일 390px</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>시나리오</th>
+            <th>수정 전</th>
+            <th>수정 후</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1개 저장 Today</td>
+            <td>5개 탭, visible 완료 버튼 12개, 화면 높이 1945px</td>
+            <td>3개 탭, visible 완료 텍스트 0개, 화면 높이 1783px</td>
+          </tr>
+          <tr>
+            <td>4개 저장 Flow 탭</td>
+            <td>첫 화면은 compact hub. 완료 텍스트는 숨겨진 sidebar 텍스트로만 검출</td>
+            <td>첫 화면은 그대로 유지. visible 완료 텍스트 0개</td>
+          </tr>
+          <tr>
+            <td>18개 저장 체크 탭</td>
+            <td>4개 카드만 노출, 더 보기로 확장</td>
+            <td>동일 유지. checklist picker overflow 0</td>
+          </tr>
+          <tr>
+            <td>18개 저장 루틴 탭</td>
+            <td>다음 루틴 3개 + 주간 보드 접힘</td>
+            <td>visible <code>항목 완료</code> 텍스트 0개. 체크 컨트롤은 접근성 label로 유지</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">시뮬레이션 결론</p>
+      <h2>Apple/Galaxy/Toss 관점의 판정</h2>
+      <ul>
+        <li><span class="chip green">통과</span> 단일 저장 상태는 이제 빈 탭을 덜 보여주며, 사용자는 현재 Flow와 캘린더로 바로 갈 수 있다.</li>
+        <li><span class="chip green">통과</span> 4개 이상에서는 전체 목록을 첫 화면에 펼치지 않고 sheet로 연다.</li>
+        <li><span class="chip amber">주의</span> Today에서 밀린 항목이 있는 상황은 여전히 무겁다. 다만 접힘과 체크 텍스트 제거로 검토용 화면 느낌은 줄었다.</li>
+        <li><span class="chip amber">주의</span> 실제 사용자 관찰 전에는 “이 구조가 검증됐다”고 말하면 안 된다.</li>
+      </ul>
+    </section>
+
+    <section>
+      <p class="eyebrow">검증 아티팩트</p>
+      <h2>스크린샷과 테스트</h2>
+      <ul>
+        <li>스크린샷: <code>output/playwright/my-flow-integrated-single-today-mobile-after.png</code></li>
+        <li>스크린샷: <code>output/playwright/my-flow-integrated-four-flow-mobile-after.png</code></li>
+        <li>스크린샷: <code>output/playwright/my-flow-integrated-ux12-checklist-mobile-after.png</code></li>
+        <li>스크린샷: <code>output/playwright/my-flow-saved-management-single-light-after.png</code></li>
+        <li>Focused E2E 4개 통과: 단일 저장 모바일, 모바일 상세 drawer, 체크/루틴 compact, Flow sheet</li>
+        <li>정적 PoC 확인: 1개 저장은 보류/완료 버튼 숨김, 4개 저장은 상태관리 실험 유지</li>
+      </ul>
+    </section>
+
+    <section>
+      <p class="eyebrow">남은 일</p>
+      <h2>아직 목표 완료는 아님</h2>
+      <p>현재는 My Flow의 모바일 P0 사용성을 정리한 상태다. 전체 목표를 완료하려면 실제 저장/실행 관찰에서 사용자가 Today, Flow, 체크, 루틴 중 어디로 가는지 헷갈리지 않는지 확인해야 한다. 다음으로는 데스크톱 최소 점검과 전체 gate 실행 후, Stage 0 관찰 태스크로 넘기는 것이 적절하다.</p>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow v3 P0 실제 /my 반영 검증</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fb;
+      --surface: #fff;
+      --line: #d8e2ef;
+      --soft: #f1f5f9;
+      --text: #111827;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); line-height: 1.62; }
+    main { width: min(100% - 28px, 980px); margin: 0 auto; padding: 24px 0 56px; }
+    header, section {
+      margin-bottom: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      padding: 20px;
+      box-shadow: 0 14px 34px rgba(15, 23, 42, .06);
+    }
+    h1, h2, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: 32px; line-height: 1.15; letter-spacing: 0; }
+    h2 { margin-bottom: 10px; font-size: 22px; line-height: 1.25; letter-spacing: 0; }
+    p, li, td { color: var(--muted); font-weight: 700; }
+    a { color: var(--blue); font-weight: 900; text-underline-offset: 3px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid var(--line); padding: 11px; vertical-align: top; text-align: left; }
+    th { background: var(--soft); color: #334155; font-size: 13px; font-weight: 900; }
+    code { border-radius: 6px; background: var(--soft); padding: 2px 5px; color: #334155; }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .card { border: 1px solid var(--line); border-radius: 10px; background: #fbfdff; padding: 13px; }
+    .card b, .card span { display: block; }
+    .card span { margin-top: 5px; color: var(--muted); font-size: 13px; font-weight: 750; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #334155;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .green { border-color: #99f6e4; background: #ecfdf5; color: var(--green); }
+    .amber { border-color: #fed7aa; background: #fff7ed; color: var(--amber); }
+    @media (max-width: 760px) {
+      main { width: min(100% - 20px, 980px); padding-top: 12px; }
+      header, section { padding: 16px; }
+      h1 { font-size: 28px; }
+      .grid { grid-template-columns: 1fr; }
+      table, tbody, tr, th, td { display: block; width: 100%; }
+      tr + tr { margin-top: 10px; border-top: 2px solid var(--line); }
+      th { border-bottom: 0; }
+      td { border-top: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">검증 리포트</p>
+      <h1>저장한 Flow 관리 화면 P0 반영</h1>
+      <p>목표는 기능을 더 붙이는 것이 아니라, 저장한 Flow가 많아졌을 때도 사용자가 오늘 처리할 일부터 바로 볼 수 있게 만드는 것이다. 이번 검증은 실제 <code>/my</code> 화면을 기준으로 Today, 밀린 항목, 완료 항목, 캘린더 기준월, 모바일 상세 시트를 확인했다.</p>
+      <p>
+        <a href="./2026-06-20-my-flow-user-screen-v3-ko.html">사용자용 v3 화면</a>
+        · <a href="./2026-06-21-my-flow-v3-implementation-scope-ko.html">적용 범위 문서</a>
+        · <a href="./2026-06-20-my-flow-clean-management-poc-ko.html">상태별 v2 PoC</a>
+      </p>
+    </header>
+
+    <section>
+      <p class="eyebrow">이번 판단</p>
+      <h2>빈 카드보다 실행 가능한 항목을 먼저</h2>
+      <div class="grid">
+        <div class="card"><b>Today 탭 상단 압축</b><span>모바일에서 헤더 간격과 보조 설명을 줄여 실제 실행 영역을 더 빨리 노출했다.</span></div>
+        <div class="card"><b>빈 오늘 카드 제거</b><span>오늘 남은 일이 0개이고 밀린 항목이 있으면 빈 Today 카드를 숨기고 밀린 항목을 바로 보여준다.</span></div>
+        <div class="card"><b>데모 기준월 고정</b><span>데모 Today가 2026-05-28이면 캘린더도 2026-05로 열리게 맞췄다.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">모바일 관찰</p>
+      <h2>390px 실제 위치 측정</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>변경 전</th>
+            <th>변경 후</th>
+            <th>판단</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>밀린 항목 시작 위치</td>
+            <td>y=895</td>
+            <td>y=597</td>
+            <td>첫 화면 안에서 실행 가능한 항목이 보인다.</td>
+          </tr>
+          <tr>
+            <td>오늘 완료 위치</td>
+            <td>오늘 리스트 안쪽에 붙어 있었음</td>
+            <td>밀린 항목 뒤, 이번 주 예정 앞</td>
+            <td>사용자 우선순위가 오늘 남은 일/밀린 일/완료 기록 순서로 정리된다.</td>
+          </tr>
+          <tr>
+            <td>상세 시트 필드 수</td>
+            <td>제목/날짜/시간/장소 등 편집 필드가 같이 보임</td>
+            <td>input/select 0개, textarea 1개</td>
+            <td>모바일 실행 시점에는 체크와 메모만 남기는 수준으로 충분하다.</td>
+          </tr>
+          <tr>
+            <td>가로 overflow</td>
+            <td>별도 보장 약함</td>
+            <td>0px</td>
+            <td>390px 모바일에서 가로 깨짐 없음.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">검증 결과</p>
+      <h2>명령과 브라우저 확인</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>검증</th>
+            <th>결과</th>
+            <th>근거</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="chip green">통과</span> Build</td>
+            <td><code>npm run build</code></td>
+            <td>Next.js production build 통과.</td>
+          </tr>
+          <tr>
+            <td><span class="chip green">통과</span> Focused E2E</td>
+            <td>5개 테스트 통과</td>
+            <td>UX12/UX20 grouped inventory, 모바일 상세, 모바일 캘린더, 모바일 상태판 검증.</td>
+          </tr>
+          <tr>
+            <td><span class="chip green">통과</span> Browser</td>
+            <td>390px 수동 측정</td>
+            <td>섹션 위치, 상세 시트 필드 수, console error, overflow를 Playwright로 확인.</td>
+          </tr>
+          <tr>
+            <td><span class="chip green">통과</span> Docs check</td>
+            <td><code>npm run docs:check</code></td>
+            <td>Skill sync와 문서 링크 검사 통과.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">스크린샷</p>
+      <h2>확인 파일</h2>
+      <ul>
+        <li><code>output/playwright/my-flow-today-overdue-order-mobile-v2.png</code> - 빈 오늘 카드 제거 후 모바일 Today 순서</li>
+        <li><code>output/playwright/my-flow-overdue-detail-mobile-v2.png</code> - 밀린 항목 상세 시트</li>
+        <li><code>output/playwright/my-flow-today-overdue-order-mobile.png</code> - 개선 전 비교용</li>
+      </ul>
+    </section>
+
+    <section>
+      <p class="eyebrow">다음 UX 질문</p>
+      <h2>아직 완료로 보지 않는 이유</h2>
+      <p>이번 P0는 Today 화면의 우선순위를 정리한 것이다. 전체 목표는 저장한 Flow가 1개, 4개, 8개 이상일 때 관리/실행이 모두 직관적인지 확인하는 것이므로 아직 완료가 아니다. 다음으로는 <code>Flow</code> 탭의 전체 목록 찾기, 상태판 버튼 이름, 완료 버튼의 노출 범위를 더 줄일 수 있는지 봐야 한다.</p>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,1106 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>내 Flow</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --soft: #f8fafc;
+      --line: #d9e2ef;
+      --line-strong: #b8c7dc;
+      --text: #111827;
+      --muted: #536174;
+      --blue: #2563eb;
+      --blue-dark: #1d4ed8;
+      --blue-soft: #eef4ff;
+      --green: #0f766e;
+      --green-soft: #e8f7f2;
+      --amber: #b45309;
+      --amber-soft: #fff4df;
+      --red: #b91c1c;
+      --red-soft: #fff1f2;
+      --shadow: 0 18px 44px rgba(15, 23, 42, 0.08);
+      color-scheme: light;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      letter-spacing: 0;
+    }
+
+    button, input, textarea {
+      font: inherit;
+      letter-spacing: 0;
+    }
+
+    button { cursor: pointer; }
+
+    .app {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 46px;
+    }
+
+    .shell { display: grid; gap: 14px; }
+
+    .hero, .mode-bar, .section, .row, .task, .detail, .empty, .toast, .search-box {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 270px;
+      gap: 18px;
+      padding: 22px;
+      align-items: start;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--blue-dark);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: clamp(30px, 5vw, 48px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      font-size: 23px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 6px;
+      font-size: 18px;
+      line-height: 1.32;
+      letter-spacing: 0;
+    }
+
+    .desc {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.65;
+      font-weight: 650;
+    }
+
+    .mini {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      font-weight: 750;
+    }
+
+    .chips, .actions, .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chips { margin-top: 14px; }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #263244;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .chip.blue { border-color: #bdd2ff; background: var(--blue-soft); color: var(--blue-dark); }
+    .chip.green { border-color: #bde5da; background: var(--green-soft); color: var(--green); }
+    .chip.amber { border-color: #f1d39c; background: var(--amber-soft); color: var(--amber); }
+    .chip.red { border-color: #fecdd3; background: var(--red-soft); color: var(--red); }
+
+    .summary {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--soft);
+    }
+
+    .summary b, .summary span { display: block; }
+    .summary b { font-size: 14px; }
+    .summary span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1.45;
+    }
+
+    .progress {
+      height: 8px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: var(--blue);
+      transition: width 160ms ease;
+    }
+
+    .mode-bar {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      padding: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .mode {
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--muted);
+      min-height: 58px;
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 900;
+    }
+
+    .mode b, .mode span { display: block; }
+    .mode b { color: inherit; font-size: 15px; }
+    .mode span { margin-top: 3px; font-size: 12px; }
+    .mode.active {
+      border-color: #bdd2ff;
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+    }
+
+    .section {
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 14px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .layout.single {
+      grid-template-columns: 1fr;
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .row {
+      width: 100%;
+      box-shadow: none;
+      border-radius: 14px;
+      padding: 12px;
+      text-align: left;
+    }
+
+    button.row {
+      border-color: var(--line);
+      background: var(--surface);
+    }
+
+    .row.active {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+      box-shadow: inset 0 0 0 1px var(--blue);
+    }
+
+    .row b, .row span { display: block; }
+    .row b {
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
+    .row span {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 750;
+    }
+
+    .row .progress {
+      margin-top: 8px;
+    }
+
+    .task {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      padding: 12px;
+      box-shadow: none;
+      border-radius: 14px;
+    }
+
+    .task input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      margin-top: 2px;
+      accent-color: var(--blue);
+    }
+
+    .task b, .task span { display: block; }
+    .task b {
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
+    .task span {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 750;
+    }
+
+    .task.done {
+      border-color: #bde5da;
+      background: #f2fbf7;
+    }
+
+    .task.done b {
+      color: #64748b;
+      text-decoration: line-through;
+    }
+
+    .saved-note {
+      display: grid;
+      gap: 3px;
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--soft);
+      padding: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1.45;
+    }
+
+    .saved-note b {
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .detail {
+      box-shadow: none;
+      padding: 16px;
+    }
+
+    .detail-top {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .memo {
+      display: grid;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .memo label {
+      color: #334155;
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    textarea, .search-box input {
+      width: 100%;
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 12px;
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+    }
+
+    .actions {
+      margin-top: 12px;
+      justify-content: flex-end;
+    }
+
+    .primary, .secondary, .ghost {
+      min-height: 44px;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 900;
+      border: 1px solid transparent;
+    }
+
+    .primary {
+      background: var(--blue);
+      color: #ffffff;
+      border-color: var(--blue);
+    }
+
+    .secondary {
+      background: #ffffff;
+      color: var(--blue-dark);
+      border-color: #9dbafd;
+    }
+
+    .ghost {
+      background: var(--soft);
+      color: #334155;
+      border-color: var(--line);
+    }
+
+    .check-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      color: #334155;
+      border-color: var(--line);
+    }
+
+    .check-action::before {
+      content: "";
+      width: 16px;
+      height: 16px;
+      border: 1px solid var(--line-strong);
+      border-radius: 4px;
+      background: #ffffff;
+    }
+
+    .check-action.done {
+      border-color: #99f6e4;
+      background: #ecfdf5;
+      color: var(--green);
+    }
+
+    .check-action.done::before {
+      content: "✓";
+      display: inline-grid;
+      place-items: center;
+      border-color: var(--green);
+      background: var(--green);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 950;
+    }
+
+    .empty {
+      padding: 22px;
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 12px;
+    }
+
+    .empty .actions {
+      justify-content: flex-start;
+      margin-top: 0;
+    }
+
+    .search-box {
+      display: none;
+      box-shadow: none;
+      padding: 12px;
+      margin-bottom: 12px;
+      background: var(--soft);
+    }
+
+    .search-box.show { display: block; }
+
+    .filters { margin-top: 10px; }
+
+    .filter {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #ffffff;
+      color: #334155;
+      padding: 7px 11px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .filter.active {
+      border-color: #bdd2ff;
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+    }
+
+    .fallback {
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--soft);
+      padding: 12px;
+    }
+
+    .fallback pre {
+      margin: 8px 0 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #334155;
+      font-size: 13px;
+      line-height: 1.55;
+      font-weight: 750;
+      font-family: inherit;
+    }
+
+    .hidden { display: none !important; }
+
+    .toast {
+      display: none;
+      box-shadow: none;
+      padding: 12px;
+      background: #f8fbff;
+      border-color: #bdd2ff;
+      color: var(--blue-dark);
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.5;
+    }
+
+    .toast.show { display: block; }
+
+    @media (max-width: 860px) {
+      .app {
+        width: min(100% - 20px, 720px);
+        padding-top: 10px;
+      }
+
+      .hero, .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .hero, .section {
+        padding: 18px;
+      }
+
+      .mode-bar {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .section-head, .detail-top {
+        display: grid;
+      }
+
+      .actions {
+        justify-content: stretch;
+      }
+
+      .primary, .secondary, .ghost {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 520px) {
+      h1 { font-size: 32px; }
+      h2 { font-size: 21px; }
+      .desc { font-size: 15px; }
+      .mode-bar { grid-template-columns: 1fr; }
+      .chips .chip { white-space: normal; }
+      .detail { padding: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">내 실행 공간</p>
+          <h1>내 Flow</h1>
+          <p class="desc">저장한 Flow가 늘어나도 먼저 볼 것은 오늘 할 일입니다. 필요할 때만 Flow 목록과 지난 항목을 열어 이어갑니다.</p>
+          <div class="chips">
+            <span class="chip blue">오늘 할 일</span>
+            <span class="chip green">이어보기</span>
+            <span class="chip amber">보류 메모</span>
+          </div>
+        </div>
+        <aside class="summary" aria-live="polite">
+          <b id="summaryTitle">저장한 Flow 4개</b>
+          <span id="summaryText">오늘 3개 · 보류 1개 · 완료 0개</span>
+          <div class="progress" aria-hidden="true"><span id="summaryProgress"></span></div>
+          <span id="summaryHint">첫 화면은 오늘 실행부터 보여줍니다.</span>
+        </aside>
+      </header>
+
+      <nav class="mode-bar" aria-label="저장 상태 전환">
+        <button class="mode" type="button" data-mode="empty"><b>0개</b><span>저장 전</span></button>
+        <button class="mode" type="button" data-mode="single"><b>1개</b><span>바로 실행</span></button>
+        <button class="mode active" type="button" data-mode="few"><b>4개</b><span>오늘 + 이어보기</span></button>
+        <button class="mode" type="button" data-mode="many"><b>8개</b><span>검색 + 접힘</span></button>
+      </nav>
+
+      <section id="emptyState" class="empty hidden" aria-labelledby="emptyTitle">
+        <p class="eyebrow">저장 전</p>
+        <h2 id="emptyTitle">아직 저장한 Flow가 없습니다</h2>
+        <p class="desc">공개 상세에서 Flow를 저장하면 오늘 할 일, 이어보기, 메모가 여기에 생깁니다. 처음에는 한 가지 Flow만 저장해도 충분합니다.</p>
+        <div class="actions">
+          <button class="primary" type="button" data-mode="single">전세계약 Flow 저장 예시 보기</button>
+          <button class="secondary" type="button" data-mode="few">여러 Flow가 있을 때 보기</button>
+        </div>
+      </section>
+
+      <section id="workbench" class="section" aria-labelledby="screenTitle">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow" id="screenEyebrow">오늘 실행</p>
+            <h2 id="screenTitle">오늘 먼저 할 일</h2>
+            <p class="desc" id="screenDesc">저장한 Flow 중 오늘 열어야 할 항목만 먼저 모읍니다.</p>
+          </div>
+          <div class="actions">
+            <button class="secondary" type="button" id="toggleInventory">전체 Flow 보기</button>
+          </div>
+        </div>
+
+        <div id="manyTools" class="search-box">
+          <input id="searchInput" type="search" placeholder="Flow 이름이나 할 일 검색" aria-label="Flow 검색" />
+          <div class="filters" aria-label="상태 필터">
+            <button class="filter active" type="button" data-filter="all">전체</button>
+            <button class="filter" type="button" data-filter="open">진행 중</button>
+            <button class="filter" type="button" data-filter="routine">루틴</button>
+            <button class="filter" type="button" data-filter="done">완료</button>
+          </div>
+        </div>
+
+        <div class="layout" id="mainLayout">
+          <div id="leftPane">
+            <div class="list" id="priorityList"></div>
+            <div id="inventoryArea" style="margin-top: 14px;">
+              <p class="eyebrow">저장한 Flow</p>
+              <div class="list" id="flowList"></div>
+            </div>
+          </div>
+
+          <article class="detail" aria-labelledby="detailTitle">
+            <div class="detail-top">
+              <div>
+                <p class="eyebrow" id="detailKicker">선택한 항목</p>
+                <h3 id="detailTitle">계약 전 서류 확인</h3>
+                <p class="mini" id="detailMeta">전세계약 전 서류 체크 · 2026.06.04</p>
+              </div>
+              <span class="chip blue" id="detailStatus">오늘</span>
+            </div>
+
+            <div class="list" id="itemList"></div>
+
+            <div class="memo">
+              <label for="memoInput">메모</label>
+              <textarea id="memoInput" placeholder="다시 볼 링크, 보류 이유, 확인한 내용을 짧게 남기기"></textarea>
+            </div>
+
+            <div class="saved-note hidden" id="singleSavedNote">
+              <b>저장됨</b>
+              <span>1개만 저장한 상태에서는 별도 상태 버튼 없이 체크와 메모만 남깁니다.</span>
+            </div>
+
+            <div class="actions" id="detailActions">
+              <button class="check-action" type="button" id="completeButton" aria-label="완료 체크">완료</button>
+            </div>
+
+            <div class="fallback">
+              <b>외부 앱에 붙이면 이렇게 보입니다</b>
+              <pre id="fallbackText"></pre>
+            </div>
+          </article>
+        </div>
+
+        <div class="toast" id="toast" role="status"></div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const sourceItems = [
+      {
+        id: 'jeonse-docs',
+        map: null,
+        flow: '전세계약 전 서류 체크',
+        kind: 'single',
+        label: '전세',
+        date: '2026.06.04',
+        status: 'today',
+        title: '계약 전 서류 확인',
+        meta: 'D-3 · 등기부등본, 시세, 보증보험 가능 여부',
+        items: ['시세 확인', '등기부등본 확인', '전세보증보험 가능 여부 확인'],
+        memo: '걸리는 항목이 있으면 계약 전 공인중개사나 전문가에게 확인.',
+        source: '원문 링크는 Flow 상세 메모에 보관'
+      },
+      {
+        id: 'move-quote',
+        map: null,
+        flow: '이사 D-30 준비',
+        kind: 'single',
+        label: '이사',
+        date: '2026.06.18',
+        status: 'today',
+        title: '견적 3곳 요청하기',
+        meta: 'D-30 · 포장/반포장/용달 중 하나 선택',
+        items: ['이사 방식 1개 선택', '견적 후보 2-3곳 이름과 연락처 메모', '예상 비용과 포함 범위 메모'],
+        memo: '아직 업체 1곳만 확인함.',
+        source: '원문 체크리스트 URL'
+      },
+      {
+        id: 'math-lesson',
+        map: '중1 수학 학습 지도',
+        flow: '정수와 유리수',
+        kind: 'map',
+        label: '수학',
+        date: '오늘',
+        status: 'today',
+        title: '10강 01 정수와 유리수 (1)',
+        meta: 'EBS 중학 뉴런 수학1(상) · 28분 · 34~36쪽',
+        items: ['EBS에서 10강 열기', '교재 34~36쪽 문제 풀기', '헷갈린 개념 메모'],
+        itemNotes: ['원문 강의에서 이번 Step 시작', '원문에 있는 오늘 범위', '다음 복습 때 볼 내용만 짧게'],
+        memo: '',
+        source: 'EBS 중학 뉴런 수학1(상)'
+      },
+      {
+        id: 'workout-session',
+        map: null,
+        flow: '초보 홈트 영상 루틴',
+        kind: 'single',
+        label: '루틴',
+        date: '오늘 20:00',
+        status: 'today',
+        title: '원본 영상 한 번 따라하기',
+        meta: '주 3회 · 통증 있으면 중단',
+        items: ['원본 영상 열기', '오늘 실행 여부 체크', '불편한 부위가 있으면 메모'],
+        memo: '',
+        source: '영상 URL'
+      },
+      {
+        id: 'passport-photo',
+        map: null,
+        flow: '온라인 여권 재발급',
+        kind: 'single',
+        label: '행정',
+        date: '2026.06.21',
+        status: 'upcoming',
+        title: '여권 사진 파일 준비하기',
+        meta: 'D-21 · 신청 링크와 사진 규격 확인',
+        items: ['사진 파일 위치 메모', '신청 링크 열기', '수령 기관 메모'],
+        memo: '',
+        source: '정부24/외교부 안내 링크'
+      },
+      {
+        id: 'baby-checkup',
+        map: null,
+        flow: '영유아 건강검진 준비',
+        kind: 'single',
+        label: '검진',
+        date: '2026.06.22',
+        status: 'upcoming',
+        title: '문진표와 질문 메모 준비하기',
+        meta: 'D-3 · 병원 방문 전 질문 1-2개',
+        items: ['문진표 작성 여부 확인', '발달선별검사지 확인', '의료진에게 물어볼 질문 메모'],
+        memo: '',
+        source: '국민건강보험 검진 안내'
+      },
+      {
+        id: 'squishy-play',
+        map: null,
+        flow: '무료 도안 스퀴시 만들기',
+        kind: 'single',
+        label: '놀이',
+        date: '2026.06.23',
+        status: 'upcoming',
+        title: '도안 출력하고 준비물 챙기기',
+        meta: '놀이일 · 도안 URL과 준비물',
+        items: ['도안 URL 열기', '원본 설명의 준비물 체크', '놀이 후 정리할 봉투 준비'],
+        memo: '',
+        source: '도안 원문 URL'
+      },
+      {
+        id: 'plant-water',
+        map: null,
+        flow: '스투키 물주기',
+        kind: 'single',
+        label: '식물',
+        date: '완료',
+        status: 'done',
+        title: '흙 상태 보고 물 줄지 결정하기',
+        meta: '반복 · 과습이면 미루기',
+        items: ['흙 마름 확인', '몸통 물러짐 확인', '다음 물준 날짜 메모'],
+        memo: '지난번 흙이 젖어 있어 미룸.',
+        source: '식물 관리 원문'
+      }
+    ];
+
+    const scenarios = {
+      empty: [],
+      single: ['jeonse-docs'],
+      few: ['jeonse-docs', 'move-quote', 'math-lesson', 'workout-session'],
+      many: sourceItems.map((item) => item.id)
+    };
+
+    const state = {
+      mode: 'few',
+      selectedId: 'jeonse-docs',
+      filter: 'all',
+      inventoryOpen: true,
+      query: '',
+      checked: {},
+      itemStatus: {},
+      memos: {}
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const all = (selector) => Array.from(document.querySelectorAll(selector));
+
+    function scenarioItems() {
+      return scenarios[state.mode].map((id) => sourceItems.find((item) => item.id === id));
+    }
+
+    function itemStatus(item) {
+      return state.itemStatus[item.id] || item.status;
+    }
+
+    function selectedItem() {
+      return sourceItems.find((item) => item.id === state.selectedId) || scenarioItems()[0] || sourceItems[0];
+    }
+
+    function statusLabel(status) {
+      return {
+        today: '오늘',
+        upcoming: '예정',
+        done: '완료'
+      }[status] || '오늘';
+    }
+
+    function statusChip(status) {
+      if (status === 'done') return 'green';
+      if (status === 'upcoming') return '';
+      return 'blue';
+    }
+
+    function scopeLabel(item) {
+      return item.map ? `${item.map} · ${item.flow}` : item.flow;
+    }
+
+    function savedTitle(item) {
+      return item.map || item.flow;
+    }
+
+    function savedMeta(item, status) {
+      if (item.map) return `${item.flow} · ${statusLabel(status)} · ${item.title}`;
+      return `${item.label} · ${statusLabel(status)} · ${item.title}`;
+    }
+
+    function itemNote(item, index) {
+      if (item.itemNotes?.[index]) return item.itemNotes[index];
+      return index === 0 ? '먼저 확인할 것' : index === 1 ? '같이 볼 항목' : '필요하면 메모에 남길 것';
+    }
+
+    function setMode(mode) {
+      state.mode = mode;
+      const items = scenarioItems();
+      state.selectedId = items[0]?.id || 'jeonse-docs';
+      state.inventoryOpen = mode !== 'many';
+      state.query = '';
+      state.filter = 'all';
+      render();
+    }
+
+    function showToast(message) {
+      const toast = $('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      window.clearTimeout(toast._timer);
+      toast._timer = window.setTimeout(() => toast.classList.remove('show'), 2600);
+    }
+
+    function progressFor(item) {
+      const total = item.items.length;
+      const done = item.items.filter((_, index) => state.checked[`${item.id}:${index}`]).length;
+      return { done, total, pct: Math.round((done / total) * 100) };
+    }
+
+    function priorityItems(items) {
+      const todayOrHold = items.filter((item) => itemStatus(item) === 'today');
+      if (state.mode === 'single') return items;
+      return todayOrHold.length ? todayOrHold : items.slice(0, 2);
+    }
+
+    function filteredItems(items) {
+      return items.filter((item) => {
+        const status = itemStatus(item);
+        const matchFilter =
+          state.filter === 'all' ||
+          (state.filter === 'open' && status !== 'done') ||
+          (state.filter === 'routine' && (item.label === '루틴' || item.flow.includes('루틴'))) ||
+          state.filter === status;
+        const text = `${item.map || ''} ${item.flow} ${item.title} ${item.label}`.toLowerCase();
+        const matchQuery = !state.query || text.includes(state.query.toLowerCase());
+        return matchFilter && matchQuery;
+      });
+    }
+
+    function fallbackText(item) {
+      const prefix = itemStatus(item) === 'done' ? '[x]' : '[ ]';
+      const memo = state.memos[item.id] || item.memo || '짧게 메모';
+      const scope = item.map
+        ? `- 지도: ${item.map}\n- Flow: ${item.flow}`
+        : `- Flow: ${item.flow}`;
+      return `${prefix} ${item.title}
+${scope}
+- ${item.date} · ${item.meta}
+${item.items.map((line) => `- ${line}`).join('\n')}
+- 메모: ${memo}
+- 원문: ${item.source}`;
+    }
+
+    function renderSummary(items) {
+      const today = items.filter((item) => itemStatus(item) === 'today').length;
+      const done = items.filter((item) => itemStatus(item) === 'done').length;
+      const open = items.filter((item) => itemStatus(item) !== 'done').length;
+      const completion = items.length ? Math.round((done / items.length) * 100) : 0;
+      $('summaryTitle').textContent = `저장한 Flow ${items.length}개`;
+      $('summaryText').textContent = items.length
+        ? state.mode === 'single'
+          ? '저장됨 · 오늘 열 항목 1개'
+          : `오늘 ${today}개 · 진행 중 ${open}개 · 완료 ${done}개`
+        : '저장 전 · 오늘 할 일 없음';
+      $('summaryProgress').style.width = `${completion}%`;
+      $('summaryHint').textContent = state.mode === 'empty'
+        ? '저장하면 오늘 실행 화면이 생깁니다.'
+        : state.mode === 'single'
+          ? '1개일 때는 목록보다 실행 화면을 먼저 보여줍니다.'
+          : state.mode === 'many'
+            ? '많아지면 검색과 접힌 전체 목록을 씁니다.'
+            : '오늘 실행과 Flow별 이어보기를 함께 보여줍니다.';
+    }
+
+    function renderModes() {
+      all('[data-mode]').forEach((button) => {
+        button.classList.toggle('active', button.dataset.mode === state.mode);
+      });
+    }
+
+    function renderPriority(items) {
+      const priorities = priorityItems(items);
+      $('priorityList').innerHTML = priorities.map((item) => {
+        const progress = progressFor(item);
+        const status = itemStatus(item);
+        return `
+          <button class="row ${item.id === state.selectedId ? 'active' : ''}" type="button" data-select="${item.id}">
+            <span class="chip ${statusChip(status)}">${statusLabel(status)}</span>
+            <b>${item.title}</b>
+            <span>${scopeLabel(item)} · ${item.date}</span>
+            <div class="progress" aria-hidden="true"><span style="width: ${progress.pct}%;"></span></div>
+            <span>${progress.done}/${progress.total} 체크</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderInventory(items) {
+      $('mainLayout').classList.toggle('single', state.mode === 'single');
+      $('leftPane').classList.toggle('hidden', state.mode === 'single');
+      $('toggleInventory').classList.toggle('hidden', state.mode === 'single');
+      if (state.mode === 'single') {
+        $('manyTools').classList.remove('show');
+        return;
+      }
+
+      const showTools = state.mode === 'many' && state.inventoryOpen;
+      $('manyTools').classList.toggle('show', showTools);
+      $('searchInput').value = state.query;
+      all('[data-filter]').forEach((button) => {
+        button.classList.toggle('active', button.dataset.filter === state.filter);
+      });
+
+      $('inventoryArea').classList.toggle('hidden', !state.inventoryOpen);
+      $('toggleInventory').textContent = state.inventoryOpen
+        ? state.mode === 'many' ? 'Flow 찾기 닫기' : '전체 Flow 접기'
+        : state.mode === 'many' ? 'Flow 찾기' : '전체 Flow 보기';
+      if (!state.inventoryOpen) return;
+
+      const visible = filteredItems(items);
+      $('flowList').innerHTML = visible.map((item) => {
+        const progress = progressFor(item);
+        const status = itemStatus(item);
+        return `
+          <button class="row ${item.id === state.selectedId ? 'active' : ''}" type="button" data-select="${item.id}">
+            <b>${savedTitle(item)}</b>
+            <span>${savedMeta(item, status)}</span>
+            <div class="progress" aria-hidden="true"><span style="width: ${progress.pct}%;"></span></div>
+          </button>
+        `;
+      }).join('') || '<div class="row"><b>검색 결과가 없습니다</b><span>다른 단어로 찾아보세요.</span></div>';
+    }
+
+    function renderDetail(item) {
+      const status = itemStatus(item);
+      $('detailKicker').textContent = item.map ? `${item.map}에서 이어보기` : '선택한 항목';
+      $('detailTitle').textContent = item.title;
+      $('detailMeta').textContent = `${scopeLabel(item)} · ${item.date}`;
+      $('detailStatus').textContent = statusLabel(status);
+      $('detailStatus').className = `chip ${statusChip(status)}`;
+      $('memoInput').value = state.memos[item.id] ?? item.memo ?? '';
+      $('detailActions').classList.toggle('hidden', state.mode === 'single');
+      $('singleSavedNote').classList.toggle('hidden', state.mode !== 'single');
+      $('completeButton').classList.toggle('done', status === 'done');
+      $('completeButton').textContent = status === 'done' ? '완료됨' : '완료';
+      $('completeButton').setAttribute('aria-label', status === 'done' ? '완료 취소' : '완료 체크');
+      $('itemList').innerHTML = item.items.map((line, index) => {
+        const key = `${item.id}:${index}`;
+        const checked = Boolean(state.checked[key]);
+        return `
+          <label class="task ${checked ? 'done' : ''}">
+            <input type="checkbox" data-check="${key}" ${checked ? 'checked' : ''} />
+            <span><b>${line}</b><span>${itemNote(item, index)}</span></span>
+          </label>
+        `;
+      }).join('');
+      $('fallbackText').textContent = fallbackText(item);
+    }
+
+    function renderCopy(items) {
+      if (state.mode === 'empty') {
+        $('emptyState').classList.remove('hidden');
+        $('workbench').classList.add('hidden');
+        return;
+      }
+      $('emptyState').classList.add('hidden');
+      $('workbench').classList.remove('hidden');
+
+      if (state.mode === 'single') {
+        $('screenEyebrow').textContent = '1개 저장';
+        $('screenTitle').textContent = '저장한 Flow 열기';
+        $('screenDesc').textContent = '저장한 Flow가 하나뿐이면 관리 버튼보다 체크, 메모, 원문 링크만 먼저 둡니다.';
+      } else if (state.mode === 'many') {
+        $('screenEyebrow').textContent = '여러 개 저장';
+        $('screenTitle').textContent = '오늘 할 일 먼저 보기';
+        $('screenDesc').textContent = '저장한 Flow가 많아지면 첫 화면은 오늘 항목만 보고, 필요할 때 Flow 찾기를 엽니다.';
+      } else {
+        $('screenEyebrow').textContent = '오늘 실행';
+        $('screenTitle').textContent = '오늘 먼저 할 일';
+        $('screenDesc').textContent = '저장한 Flow 중 오늘 열어야 할 항목만 먼저 모읍니다.';
+      }
+    }
+
+    function bindDynamicEvents() {
+      all('[data-select]').forEach((button) => {
+        button.addEventListener('click', () => {
+          state.selectedId = button.dataset.select;
+          render();
+        });
+      });
+
+      all('[data-check]').forEach((checkbox) => {
+        checkbox.addEventListener('change', () => {
+          state.checked[checkbox.dataset.check] = checkbox.checked;
+          render();
+        });
+      });
+    }
+
+    function render() {
+      const items = scenarioItems();
+      renderModes();
+      renderSummary(items);
+      renderCopy(items);
+      if (state.mode === 'empty') return;
+
+      if (!items.find((item) => item.id === state.selectedId)) {
+        state.selectedId = items[0].id;
+      }
+      const selected = selectedItem();
+      renderPriority(items);
+      renderInventory(items);
+      renderDetail(selected);
+      bindDynamicEvents();
+    }
+
+    all('[data-mode]').forEach((button) => {
+      button.addEventListener('click', () => setMode(button.dataset.mode));
+    });
+
+    all('[data-filter]').forEach((button) => {
+      button.addEventListener('click', () => {
+        state.filter = button.dataset.filter;
+        state.inventoryOpen = true;
+        render();
+      });
+    });
+
+    $('toggleInventory').addEventListener('click', () => {
+      state.inventoryOpen = !state.inventoryOpen;
+      render();
+    });
+
+    $('searchInput').addEventListener('input', (event) => {
+      state.query = event.target.value;
+      state.inventoryOpen = true;
+      render();
+    });
+
+    $('memoInput').addEventListener('input', (event) => {
+      state.memos[state.selectedId] = event.target.value;
+      $('fallbackText').textContent = fallbackText(selectedItem());
+    });
+
+    $('completeButton').addEventListener('click', () => {
+      const item = selectedItem();
+      const done = itemStatus(item) === 'done';
+      item.items.forEach((_, index) => {
+        state.checked[`${item.id}:${index}`] = !done;
+      });
+      state.itemStatus[item.id] = done ? item.status : 'done';
+      showToast(done ? '완료 표시를 취소했습니다.' : '완료로 표시했습니다.');
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow 페르소나 Walkthrough 테스트</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --surface: #fff;
+      --soft: #f8fafc;
+      --line: #d9e2ef;
+      --text: #101827;
+      --muted: #5f6b7c;
+      --blue: #1f5fbf;
+      --blue-soft: #eaf2ff;
+      --green: #0f7a4a;
+      --green-soft: #e8f7ef;
+      --amber: #9a6100;
+      --amber-soft: #fff6df;
+      --red: #b42318;
+      --red-soft: #fff1ef;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); font-size: 16px; line-height: 1.62; }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 44px); line-height: 1.12; letter-spacing: 0; word-break: keep-all; }
+    h2 { margin-bottom: 8px; font-size: clamp(23px, 3vw, 32px); line-height: 1.22; letter-spacing: 0; word-break: keep-all; }
+    h3 { margin-bottom: 6px; font-size: 20px; line-height: 1.28; letter-spacing: 0; word-break: keep-all; }
+    .page { width: min(1120px, calc(100% - 28px)); margin: 0 auto; padding: 14px 0 64px; }
+    .topbar, .hero, .card, .table-card, .row {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 58px;
+      padding: 12px 16px;
+    }
+    .brand { color: var(--blue); font-size: 24px; font-weight: 950; text-decoration: none; }
+    .hero, .card, .table-card { margin-top: 12px; padding: 18px; box-shadow: 0 12px 28px rgba(16, 24, 39, .07); }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .desc { max-width: 860px; color: var(--muted); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #344054;
+      font-size: 13px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+    .chip.blue { border-color: #bfdbfe; background: var(--blue-soft); color: #174ea6; }
+    .chip.green { border-color: #bde7cb; background: var(--green-soft); color: var(--green); }
+    .chip.amber { border-color: #efd08f; background: var(--amber-soft); color: var(--amber); }
+    .chip.red { border-color: #f4b4ad; background: var(--red-soft); color: var(--red); }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card.soft { background: linear-gradient(180deg, #fff, var(--soft)); }
+    .row { padding: 12px; background: var(--soft); }
+    .row b, .row span { display: block; }
+    .row span { margin-top: 3px; color: var(--muted); font-weight: 700; }
+    .list { margin: 10px 0 0; padding-left: 20px; }
+    .list li + li { margin-top: 7px; }
+    .quote {
+      margin: 12px 0 0;
+      padding: 12px;
+      border-left: 4px solid var(--blue);
+      border-radius: 8px;
+      background: var(--blue-soft);
+      color: #1d2939;
+      font-weight: 750;
+    }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px;
+      vertical-align: top;
+      text-align: left;
+    }
+    th { background: #eef3f8; color: #344054; font-size: 13px; font-weight: 950; }
+    td { background: #fff; }
+    td strong { display: block; margin-bottom: 3px; }
+    .score { min-width: 82px; font-weight: 950; white-space: nowrap; }
+    .pass { color: var(--green); }
+    .watch { color: var(--amber); }
+    .fail { color: var(--red); }
+    .small { color: var(--muted); font-size: 13px; font-weight: 700; }
+    .source-list a { display: inline-block; margin-right: 10px; margin-bottom: 6px; }
+    @media (max-width: 860px) {
+      .page { width: min(100% - 20px, 1120px); padding-top: 10px; }
+      .hero, .card, .table-card { padding: 14px; }
+      .grid, .grid.two { grid-template-columns: 1fr; }
+      table, tbody, tr, th, td { display: block; width: 100%; }
+      th { border-bottom: 0; }
+      td { border-top: 0; }
+      tr + tr { margin-top: 10px; display: block; border-top: 2px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar" aria-label="FLOW">
+      <a class="brand" href="#">FLOW</a>
+      <span class="chip blue">2026-06-21</span>
+    </nav>
+
+    <header class="hero">
+      <p class="eyebrow">내부 UX 검증</p>
+      <h1>My Flow 페르소나 Walkthrough 테스트</h1>
+      <p class="desc">목적은 AI가 만든 그럴듯한 평가가 아니라, 실제 관찰 전에 화면이 어디서 막힐지 더 엄격하게 걸러내는 것입니다. 이 문서는 사용자용 화면이 아니며, 현재 My Flow v5/v6 후보를 페르소나 기반 과업으로 다시 본 내부 검증 리포트입니다.</p>
+      <div class="chips">
+        <span class="chip amber">실제 사용자 검증 아님</span>
+        <span class="chip blue">Proto-persona</span>
+        <span class="chip blue">Task scenario</span>
+        <span class="chip blue">Cognitive walkthrough</span>
+        <span class="chip green">Blocking 0</span>
+        <span class="chip amber">관찰 필요</span>
+      </div>
+    </header>
+
+    <section class="card">
+      <p class="eyebrow">결론</p>
+      <h2>가능하다. 다만 AI 페르소나는 “검증”이 아니라 관찰 전 필터로 써야 한다</h2>
+      <p class="desc">NN/g 기준으로 cognitive walkthrough는 신규 사용자의 학습 가능성을 전문가가 과업 단위로 훑는 방법이고, usability testing은 실제 사용자가 현실적인 과업을 수행하는 모습을 보는 방법입니다. 따라서 FlowMe에서는 아래처럼 나눠야 합니다.</p>
+      <div class="grid">
+        <article class="card soft">
+          <h3>1. 내부 선별</h3>
+          <p class="desc">AI/전문가 페르소나로 화면을 열고 10초 안에 목적, 다음 행동, 체크/메모 위치가 보이는지 본다.</p>
+        </article>
+        <article class="card soft">
+          <h3>2. 클릭 리허설</h3>
+          <p class="desc">Playwright로 저장 1개, 4개, 8개, 20개 이상 상태를 눌러보고 버튼 결과와 화면 밀도를 확인한다.</p>
+        </article>
+        <article class="card soft">
+          <h3>3. 실제 관찰</h3>
+          <p class="desc">대표 사용자 3~5명에게 과업만 주고 말로 생각을 풀게 하며, 설명 없이 막히는 지점을 기록한다.</p>
+        </article>
+      </div>
+      <p class="quote">즉, “페르소나 테스트로 완성 판정”이 아니라 “페르소나 테스트로 화면을 줄이고, 실제 사용자 관찰로 후보 신호를 본다”가 맞습니다.</p>
+    </section>
+
+    <section class="table-card">
+      <p class="eyebrow">검증법</p>
+      <h2>이번 테스트에 적용한 기준</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>방법</th>
+            <th>FlowMe에 적용한 질문</th>
+            <th>이번 판단에서의 역할</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Proto-persona</strong><span class="small">가설 페르소나</span></td>
+            <td>저장한 Flow 개수, 디지털 자신감, 날짜/진도 필요성이 다른 사용자가 같은 화면을 어떻게 볼까?</td>
+            <td>실제 리서치 전 가정 기반. 검증이라고 부르지 않는다.</td>
+          </tr>
+          <tr>
+            <td><strong>Task scenario</strong><span class="small">현실 과업</span></td>
+            <td>“오늘 해야 할 항목을 찾고 체크한다”, “다른 Flow를 찾는다”, “날짜별 항목을 확인한다”처럼 결과가 있는 과업을 준다.</td>
+            <td>화면 설명을 읽히지 않고 실제 행동으로 평가한다.</td>
+          </tr>
+          <tr>
+            <td><strong>Cognitive walkthrough</strong><span class="small">인지 단계 점검</span></td>
+            <td>올바른 목표를 세우는가, 올바른 컨트롤을 보는가, 버튼명과 결과를 연결하는가, 실행 후 피드백을 이해하는가?</td>
+            <td>새 기능이 필요한지, 또는 숨겨야 하는지 판단한다.</td>
+          </tr>
+          <tr>
+            <td><strong>Think-aloud 관찰</strong><span class="small">실제 사용자 다음 단계</span></td>
+            <td>사용자가 보이는 화면만 보고 무엇을 생각하는지 말하게 하고, 진행자는 설명하지 않는다.</td>
+            <td>후보 신호를 얻는 실제 관찰 단계. 내부 시뮬레이션과 분리한다.</td>
+          </tr>
+          <tr>
+            <td><strong>FLOW UX gate</strong><span class="small">제품 기준</span></td>
+            <td>오늘 Step, 체크, 메모, 원문/상세, 외부 앱 fallback이 캘린더/투두 앱 수준의 복잡도 안에 있는가?</td>
+            <td>FlowMe 특화 기준. 내부 용어와 리뷰 문구가 사용자 화면에 나오면 실패로 본다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="table-card">
+      <p class="eyebrow">테스트 범위</p>
+      <h2>v5와 v6를 같은 과업으로 비교</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>화면</th>
+            <th>장점</th>
+            <th>위험</th>
+            <th>판정</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong><a href="./2026-06-21-my-flow-v5-clean-user-poc-ko.html">v5 정리 화면</a></strong></td>
+            <td>저장 1개/4개/8개에서 오늘 항목과 Flow 찾기가 단순하다. 캘린더/진도를 기본 노출하지 않아 Todo 앱에 가깝다.</td>
+            <td>날짜형 Flow가 많거나 학습 진도형 Flow를 쓰는 사용자는 “전체 일정/전체 진도”를 찾기 어렵다.</td>
+            <td class="score pass">기본값</td>
+          </tr>
+          <tr>
+            <td><strong><a href="./2026-06-21-my-flow-v6-conditional-surfaces-ko.html">v6 조건부 보조 보기</a></strong></td>
+            <td>v5를 유지하면서 날짜형에는 일정 보기, 진도형에는 전체 진도 보기를 조건부로 붙인다.</td>
+            <td>저장 4개부터 보조 버튼이 2개 보이면 다시 관리 앱처럼 느껴질 수 있다.</td>
+            <td class="score watch">후보</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="table-card">
+      <p class="eyebrow">페르소나 테스트</p>
+      <h2>5개 페르소나별 walkthrough 결과</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>페르소나</th>
+            <th>시나리오</th>
+            <th>인지 Walkthrough</th>
+            <th>결과</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>P1. 저장 1개 사용자</strong><span class="small">전세계약/이사 Flow 하나만 저장</span></td>
+            <td>오늘 해야 할 항목을 열고 체크, 짧은 메모를 남긴다.</td>
+            <td>v5/v6 모두 상세 화면이 바로 열려 목표와 컨트롤 연결이 쉽다. `나중에 보기`나 큰 완료 CTA가 없는 점이 맞다.</td>
+            <td class="score pass">통과</td>
+          </tr>
+          <tr>
+            <td><strong>P2. 4개 저장 사용자</strong><span class="small">생활 Flow 몇 개를 저장한 직장인</span></td>
+            <td>오늘 할 일을 먼저 보고, 다른 Flow를 찾는다.</td>
+            <td>`오늘 할 일`과 `Flow 찾기`는 이해된다. v6의 `일정 보기`는 날짜형이 많을 때만 보여야 한다.</td>
+            <td class="score watch">조건부 통과</td>
+          </tr>
+          <tr>
+            <td><strong>P3. 진도형 사용자</strong><span class="small">중1 수학/자격증 학습 지도 저장</span></td>
+            <td>현재 단원을 체크하고, 전체 진도에서 다음 단원을 확인한다.</td>
+            <td>세부 Flow 화면은 기존 Flow UI처럼 오늘 Step 중심이어야 한다. 전체 진도는 접힌 보기면 충분하다.</td>
+            <td class="score pass">v6 적합</td>
+          </tr>
+          <tr>
+            <td><strong>P4. 날짜 밀도 높은 사용자</strong><span class="small">검진/입학/이사 일정이 섞인 보호자</span></td>
+            <td>오늘 말고 이번 주와 특정 날짜의 항목을 확인한다.</td>
+            <td>v5만 있으면 날짜 탐색이 약하다. v6의 `일정 보기`가 필요하지만 기본 첫 화면을 밀어내면 안 된다.</td>
+            <td class="score pass">v6 필요</td>
+          </tr>
+          <tr>
+            <td><strong>P5. 20개 이상 저장 사용자</strong><span class="small">여러 제작자 Flow를 많이 저장</span></td>
+            <td>특정 Flow를 검색해서 열고 오늘 항목으로 돌아온다.</td>
+            <td>초기 목록을 8개만 보여주고 검색으로 찾게 하는 방향이 맞다. 전체 목록을 기본 노출하면 실패한다.</td>
+            <td class="score pass">통과</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="table-card">
+      <p class="eyebrow">판정</p>
+      <h2>이번 내부 테스트에서 남긴 제품 규칙</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>규칙</th>
+            <th>이유</th>
+            <th>상태</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>v5를 기본 My Flow 홈으로 둔다</strong></td>
+            <td>저장 수가 적은 사용자는 관리가 아니라 실행을 원한다. 오늘 Step, 체크, 메모, 원문 링크가 먼저다.</td>
+            <td class="score pass">유지</td>
+          </tr>
+          <tr>
+            <td><strong>v6는 조건부 실험 후보로 둔다</strong></td>
+            <td>날짜형/진도형 사용자는 일정과 전체 진도 보기가 필요하지만, 모든 사용자에게 기본 노출하면 과하다.</td>
+            <td class="score watch">관찰 필요</td>
+          </tr>
+          <tr>
+            <td><strong>페르소나 테스트 결과를 검증이라고 부르지 않는다</strong></td>
+            <td>proto-persona는 팀의 가정이다. 실제 사용자 행동 데이터가 없으면 후보 신호까지만 말한다.</td>
+            <td class="score pass">고정</td>
+          </tr>
+          <tr>
+            <td><strong>관찰은 과업 중심으로 한다</strong></td>
+            <td>“이 버튼이 좋아 보이나요?”가 아니라 “오늘 할 일을 찾아 체크해보세요”처럼 사용자가 실제 행동하게 해야 한다.</td>
+            <td class="score pass">적용</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">다음 실제 관찰 스크립트</p>
+      <h2>사용자에게 줄 말은 짧게 유지</h2>
+      <div class="grid two">
+        <article class="row">
+          <b>공통 안내</b>
+          <span>“저장해 둔 Flow 화면입니다. 설명 없이 화면만 보고 오늘 해야 할 일을 찾아서 처리해보세요. 생각나는 말을 그대로 해주세요.”</span>
+        </article>
+        <article class="row">
+          <b>기록할 것</b>
+          <span>첫 클릭, 멈춘 지점, 버튼명 오해, 체크/메모 위치, 날짜/진도 보기를 찾는지, 화면이 무겁다고 느끼는 순간.</span>
+        </article>
+        <article class="row">
+          <b>중단 조건</b>
+          <span>30초 이상 다음 행동을 못 찾거나, 화면의 목적을 다르게 이해하거나, 원문/상세/메모 위치를 찾지 못하면 P1로 기록.</span>
+        </article>
+        <article class="row">
+          <b>통과 조건</b>
+          <span>10초 안에 오늘 할 일을 찾고, 체크와 메모를 남긴 뒤, 필요할 때만 Flow 찾기/일정/진도를 열면 통과.</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">참고 기준</p>
+      <h2>외부 UX 방법론과 내부 FLOW 기준</h2>
+      <p class="source-list">
+        <a href="https://www.nngroup.com/articles/cognitive-walkthroughs/">NN/g Cognitive Walkthroughs</a>
+        <a href="https://www.nngroup.com/articles/usability-testing-101/">NN/g Usability Testing 101</a>
+        <a href="https://www.nngroup.com/articles/task-scenarios-usability-testing/">NN/g Task Scenarios</a>
+        <a href="https://www.nngroup.com/videos/think-aloud/">NN/g Think Aloud</a>
+        <a href="https://digital.gov/guides/plain-language/test/usability-testing">Digital.gov Usability Testing</a>
+      </p>
+      <p class="desc">내부 기준은 `docs/harness/UX_CONTENT_EVALUATION.md`, `docs/flow-rules/quality-gate.md`, `docs/flow-rules/quality-rubric.md`, `docs/flow-rules/ux-copy.md`, `flow-ux-review` 스킬, `ui-ux-pro-max` 스킬을 함께 적용했습니다.</p>
+    </section>
+  </main>
+</body>
+</html>

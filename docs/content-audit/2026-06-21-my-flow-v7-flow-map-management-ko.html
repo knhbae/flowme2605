@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>내 Flow</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --soft: #f8fafc;
+      --line: #d8e2ef;
+      --line-strong: #b8c7da;
+      --text: #101827;
+      --muted: #536274;
+      --faint: #7b8798;
+      --blue: #2563eb;
+      --blue-soft: #eff6ff;
+      --green: #0f766e;
+      --green-soft: #ecfdf5;
+      --amber: #b45309;
+      --amber-soft: #fffbeb;
+      --radius: 18px;
+      --radius-sm: 12px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    button, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .app { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 28px 0 56px; }
+    .top, .surface {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+    }
+    .top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: end;
+      padding: 24px;
+    }
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 850;
+    }
+    h1, h2, h3, p { margin-top: 0; letter-spacing: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(28px, 4vw, 44px); line-height: 1.08; }
+    h2 { margin-bottom: 8px; font-size: 21px; line-height: 1.25; }
+    h3 { margin-bottom: 6px; font-size: 18px; }
+    p { color: var(--muted); }
+    .summary {
+      min-width: 220px;
+      border-radius: 16px;
+      background: var(--soft);
+      padding: 18px;
+    }
+    .summary b, .summary span { display: block; }
+    .summary b { font-size: 22px; }
+    .summary span { color: var(--muted); font-size: 14px; }
+    .nav {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin: 14px 0;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--card);
+      padding: 6px;
+    }
+    .nav button {
+      min-height: 48px;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 850;
+    }
+    .nav button.active { background: var(--blue-soft); color: var(--blue); box-shadow: inset 0 0 0 1px #bfdbfe; }
+    .view { display: none; }
+    .view.active { display: block; }
+    .surface { padding: 22px; }
+    .head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-start;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .head p { margin-bottom: 0; }
+    .count {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      border-radius: 999px;
+      background: var(--soft);
+      padding: 5px 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 390px) minmax(0, 1fr);
+      gap: 18px;
+      padding-top: 18px;
+    }
+    .stack { display: grid; gap: 10px; align-content: start; }
+    .row, .flow-row, .map-row, .child-row, .step-row {
+      width: 100%;
+      min-height: 72px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--card);
+      padding: 14px;
+      text-align: left;
+    }
+    .row.active, .flow-row.active, .map-row.active, .child-row.active, .step-row.active {
+      border-color: #93c5fd;
+      background: var(--blue-soft);
+    }
+    .row b, .flow-row b, .map-row b, .child-row b, .step-row b { display: block; color: var(--text); font-size: 15px; }
+    .row span, .flow-row span, .map-row span, .child-row span, .step-row span { display: block; margin-top: 3px; color: var(--muted); font-size: 13px; font-weight: 600; }
+    .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 48px;
+      gap: 10px;
+      align-items: center;
+    }
+    .quick {
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      background: var(--card);
+      color: transparent;
+      font-weight: 900;
+    }
+    .quick.done { border-color: #99f6e4; background: var(--green); color: #fff; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      width: fit-content;
+      max-width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      padding: 4px 9px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .chip.blue { border-color: #bfdbfe; background: var(--blue-soft); color: var(--blue); }
+    .chip.green { border-color: #99f6e4; background: var(--green-soft); color: var(--green); }
+    .chip.amber { border-color: #fed7aa; background: var(--amber-soft); color: var(--amber); }
+    .detail {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fbfdff;
+      padding: 18px;
+    }
+    .detail-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .items { display: grid; gap: 10px; margin-top: 14px; }
+    .section-label { color: var(--muted); font-size: 12px; font-weight: 900; }
+    .item, .basis {
+      display: grid;
+      gap: 5px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--card);
+      padding: 13px;
+    }
+    .item {
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 12px;
+    }
+    .item.done { border-color: #99f6e4; background: var(--green-soft); }
+    .item input { width: 24px; height: 24px; margin-top: 1px; accent-color: var(--blue); }
+    .item b, .basis b { color: var(--text); font-size: 14px; }
+    .item span span, .basis span { color: var(--muted); font-size: 13px; font-weight: 550; }
+    .memo { display: grid; gap: 8px; margin-top: 14px; }
+    .memo label { color: var(--text); font-size: 13px; font-weight: 850; }
+    textarea {
+      width: 100%;
+      min-height: 96px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius-sm);
+      background: #fff;
+      padding: 11px 12px;
+      color: var(--text);
+      resize: vertical;
+    }
+    textarea::placeholder { color: var(--faint); }
+    .save-state {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      margin-top: 10px;
+      border-radius: 999px;
+      background: var(--soft);
+      padding: 4px 9px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    details {
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--card);
+      padding: 12px;
+    }
+    summary { cursor: pointer; font-weight: 850; }
+    pre { white-space: pre-wrap; word-break: keep-all; color: var(--muted); font-size: 13px; }
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      padding-top: 18px;
+    }
+    .flow-row { min-height: 120px; }
+    .meter {
+      height: 8px;
+      margin: 12px 0 0;
+      border-radius: 999px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+    .meter span { display: block; height: 100%; border-radius: 999px; background: var(--blue); }
+    .flow-layout, .map-layout {
+      display: grid;
+      grid-template-columns: minmax(260px, 360px) minmax(0, 1fr);
+      gap: 18px;
+      padding-top: 18px;
+    }
+    .step-list { display: grid; gap: 8px; margin-top: 12px; }
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+      gap: 14px;
+    }
+    .map-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--soft);
+      padding: 12px;
+    }
+    .metric b, .metric span { display: block; }
+    .metric b { font-size: 18px; }
+    .metric span { color: var(--muted); font-size: 12px; font-weight: 750; }
+    .hidden { display: none !important; }
+    @media (max-width: 860px) {
+      .top, .layout, .flow-layout, .map-layout, .split { grid-template-columns: 1fr; }
+      .summary { min-width: 0; }
+      .flow-grid { grid-template-columns: 1fr; }
+      .detail { padding: 16px; }
+    }
+    @media (max-width: 520px) {
+      .app { width: min(100% - 20px, 430px); padding-top: 18px; }
+      .top, .surface { padding: 16px; border-radius: 16px; }
+      .head { display: grid; }
+      .map-summary { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <div>
+        <p class="eyebrow">내 실행 공간</p>
+        <h1>내 Flow</h1>
+        <p>오늘 할 일을 먼저 보고, 필요할 때 저장한 Flow와 큰 지도를 엽니다.</p>
+      </div>
+      <aside class="summary" aria-live="polite">
+        <b id="summaryTitle">오늘 6개</b>
+        <span id="summaryMeta">저장한 Flow 11개 · 큰 지도 2개</span>
+      </aside>
+    </header>
+
+    <nav class="nav" aria-label="내 Flow 보기">
+      <button type="button" class="active" data-view="today">오늘</button>
+      <button type="button" data-view="flows">저장한 Flow</button>
+      <button type="button" data-view="maps">큰 지도</button>
+    </nav>
+
+    <section class="view active surface" id="todayView" aria-labelledby="todayTitle">
+      <div class="head">
+        <div>
+          <p class="eyebrow">오늘</p>
+          <h2 id="todayTitle">먼저 할 일</h2>
+          <p>여러 Flow에서 오늘 처리할 항목만 모았습니다.</p>
+        </div>
+        <span class="count" id="todayCount">6개</span>
+      </div>
+      <div class="layout">
+        <div class="stack" id="todayList"></div>
+        <article class="detail" id="todayDetail"></article>
+      </div>
+    </section>
+
+    <section class="view surface" id="flowsView" aria-labelledby="flowsTitle">
+      <div class="head">
+        <div>
+          <p class="eyebrow">저장한 Flow</p>
+          <h2 id="flowsTitle">Flow별로 보기</h2>
+          <p>Flow마다 Step 수가 달라도 같은 방식으로 이어봅니다.</p>
+        </div>
+        <span class="count" id="flowsCount">11개</span>
+      </div>
+      <div class="flow-layout">
+        <div class="stack" id="flowCards"></div>
+        <div class="split">
+          <article class="detail" id="flowDetail"></article>
+          <article class="detail" id="flowStepDetail"></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="view surface" id="mapsView" aria-labelledby="mapsTitle">
+      <div class="head">
+        <div>
+          <p class="eyebrow">큰 지도</p>
+          <h2 id="mapsTitle">큰 지도 보기</h2>
+          <p>큰 지도 안의 하위 Flow와 현재 이어볼 항목을 함께 봅니다.</p>
+        </div>
+        <span class="count" id="mapsCount">2개</span>
+      </div>
+      <div class="map-layout">
+        <div class="stack" id="mapCards"></div>
+        <div class="split">
+          <article class="detail" id="mapDetail"></article>
+          <article class="detail" id="mapStepDetail"></article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const maps = [
+      { id: 'math-map', name: '중1 수학 1학기', kind: '학습 지도', sub: '단원별 진도', source: '중1 수학 목차' },
+      { id: 'baby-map', name: '영유아 예방접종/검진', kind: '육아 지도', sub: '방문 준비와 기록', source: '공식 일정 + 보호자 메모' }
+    ];
+
+    const flows = [
+      {
+        id: 'jeonse',
+        name: '전세계약 전 서류 체크',
+        type: '일정',
+        source: '전세계약 전 서류 체크 Flow',
+        steps: [
+          { id: 'jeonse-docs', date: '오늘', title: '계약 전 서류 확인', detail: '계약 전에 실제로 확인해야 하는 서류 단서만 봅니다.', completion: '시세, 등기부등본, 보증보험 가능 여부를 확인했습니다.', memoHint: '걸리는 서류 항목과 확인 URL만 남기세요', items: [
+            { title: '시세 확인', detail: '주변 실거래가와 보증금 차이를 봅니다.' },
+            { title: '등기부등본 확인', detail: '소유자, 근저당, 압류 여부를 봅니다.' },
+            { title: '전세보증보험 가능 여부 확인', detail: '가입 가능 여부와 필요 서류를 봅니다.' }
+          ] },
+          { id: 'jeonse-contract', date: '6.24', title: '계약일 체크', detail: '계약서 특약, 잔금일, 입주일을 메모합니다.', completion: '계약일에 확인할 값을 메모했습니다.', memoHint: '특약, 잔금일, 입주일만 남기세요', items: [] },
+          { id: 'jeonse-transfer', date: '6.25', title: '전입신고와 확정일자 확인', detail: '계약 후 다음 날 해야 할 행정 항목입니다.', completion: '신고 여부를 표시했습니다.', memoHint: '신고 완료 여부와 확인 번호만 남기세요', items: [
+            { title: '전입신고 여부 확인', detail: '신고 완료 여부를 확인합니다.' },
+            { title: '확정일자 여부 확인', detail: '확정일자 처리 여부를 확인합니다.' }
+          ] },
+          { id: 'jeonse-insurance', date: '6.26', title: '보증보험 서류 보완', detail: '누락된 보증보험 서류만 다시 봅니다.', completion: '보완할 서류를 메모했습니다.', memoHint: '누락 서류와 제출 URL만 남기세요', items: [] },
+          { id: 'jeonse-store', date: '날짜 없음', title: '계약 관련 링크 보관', detail: '계약 원문이나 개인정보가 아니라 다시 볼 링크만 보관합니다.', completion: '다시 볼 링크를 남겼습니다.', memoHint: '개인정보 없는 링크만 남기세요', items: [] }
+        ]
+      },
+      {
+        id: 'move',
+        name: '이사 D-30 준비',
+        type: '일정',
+        source: '이사 D-30 준비 Flow',
+        steps: [
+          { id: 'move-quote', date: '오늘', title: '견적 2-3곳 요청하기', detail: '업체명, 예상 비용, 포함 범위만 남깁니다.', completion: '견적 후보를 열고 비교할 값을 메모했습니다.', memoHint: '업체명, 비용, 포함 범위만 남기세요', items: [
+            { title: '이사 방식 선택', detail: '포장/반포장/일반 중 하나를 고릅니다.' },
+            { title: '견적 후보 열기', detail: '후보 2-3곳의 연락처와 포함 범위를 봅니다.' }
+          ] },
+          { id: 'move-clean', date: '6.22', title: '입주청소 후보 고르기', detail: '청소 일정과 포함 범위를 비교합니다.', completion: '청소 후보를 메모했습니다.', memoHint: '업체명, 비용, 포함 범위만 남기세요', items: [] },
+          { id: 'move-box', date: '6.23', title: '박스와 완충재 준비', detail: '부족한 포장재만 확인합니다.', completion: '필요한 포장재를 표시했습니다.', memoHint: '부족한 품목만 남기세요', items: [] },
+          { id: 'move-address', date: '6.24', title: '주소 이전 신청', detail: '우편물과 주요 계정의 주소 변경을 확인합니다.', completion: '주소 변경이 필요한 곳을 메모했습니다.', memoHint: '아직 바꾸지 않은 곳만 남기세요', items: [
+            { title: '우편물 주소 변경', detail: '우편물 수령 주소를 확인합니다.' },
+            { title: '자주 쓰는 계정 주소 변경', detail: '배송 계정 위주로 확인합니다.' }
+          ] },
+          { id: 'move-meter', date: '6.25', title: '관리비와 계량기 확인', detail: '인수인계할 숫자만 남깁니다.', completion: '계량기와 관리비 확인값을 남겼습니다.', memoHint: '계량기 숫자와 확인 시간만 남기세요', items: [] },
+          { id: 'move-door', date: '6.26', title: '출입키와 주차 등록 확인', detail: '입주 당일 바로 필요한 항목입니다.', completion: '출입과 주차 등록 상태를 확인했습니다.', memoHint: '키 개수, 주차 등록 상태만 남기세요', items: [] },
+          { id: 'move-food', date: '날짜 없음', title: '냉장고 비우기', detail: '버릴 것과 가져갈 것만 나눕니다.', completion: '냉장고 처리 방향을 메모했습니다.', memoHint: '버릴 것, 가져갈 것만 남기세요', items: [] },
+          { id: 'move-bag', date: '6.27', title: '당일 가방 챙기기', detail: '이사 당일 바로 꺼낼 물건만 따로 챙깁니다.', completion: '당일 가방을 준비했습니다.', memoHint: '충전기, 세면도구, 서류처럼 바로 쓸 것만 남기세요', items: [] },
+          { id: 'move-photo', date: '6.28', title: '퇴거 전 사진 남기기', detail: '분쟁 방지를 위해 상태만 남깁니다.', completion: '퇴거 전 상태 사진을 남겼습니다.', memoHint: '사진 위치와 특이사항만 남기세요', items: [] },
+          { id: 'move-final', date: '6.29', title: '이사 당일 확인', detail: '짐 누락, 청소, 키 반납을 확인합니다.', completion: '이사 당일 확인을 마쳤습니다.', memoHint: '누락 물건과 연락할 곳만 남기세요', items: [
+            { title: '짐 누락 확인', detail: '방, 베란다, 수납장을 봅니다.' },
+            { title: '키 반납 확인', detail: '반납할 키와 카드 수를 봅니다.' }
+          ] }
+        ]
+      },
+      {
+        id: 'workout',
+        name: '초보 홈트 영상 루틴',
+        type: '루틴',
+        source: '초보 홈트 영상 링크',
+        steps: [
+          { id: 'workout-session', date: '오늘 20:00', title: '원본 영상 한 번 따라하기', detail: '단일 홈트 영상은 한 번의 실행 항목으로 둡니다.', completion: '영상을 열고 오늘 실행 여부를 표시했습니다.', memoHint: '실행 여부, 불편한 부위, 다음에 조절할 점만 남기세요', items: [
+            { title: '영상 열기', detail: '원문 영상 링크를 열고 가능한 강도로 한 번 따라합니다.' }
+          ] }
+        ]
+      },
+      {
+        id: 'passport',
+        name: '온라인 여권 재발급',
+        type: '체크',
+        source: '정부24 여권 재발급 안내',
+        steps: [
+          { id: 'passport-photo', date: '오늘', title: '여권 사진 파일 준비', detail: '신청 전에 사진 파일과 규격을 확인합니다.', completion: '사진 파일 위치와 신청 페이지를 확인했습니다.', memoHint: '사진 파일 위치와 수령 기관만 남기세요', items: [
+            { title: '사진 파일 위치 확인', detail: '파일명이나 저장 위치를 확인합니다.' },
+            { title: '신청 링크 열기', detail: '정부24 신청 페이지와 사진 규격을 확인합니다.' }
+          ] },
+          { id: 'passport-apply', date: '6.23', title: '온라인 신청 진행', detail: '신청 페이지에서 필요한 정보만 입력합니다.', completion: '신청 완료 여부를 표시했습니다.', memoHint: '신청 번호나 다시 볼 URL만 남기세요', items: [] },
+          { id: 'passport-pay', date: '6.23', title: '수수료 결제 확인', detail: '결제 완료 상태만 확인합니다.', completion: '결제 상태를 확인했습니다.', memoHint: '결제 완료 여부와 확인 번호만 남기세요', items: [] },
+          { id: 'passport-pickup', date: '날짜 없음', title: '수령 기관 메모', detail: '방문할 기관과 수령 가능 시점을 보관합니다.', completion: '수령 기관을 남겼습니다.', memoHint: '수령 기관, 운영 시간, 필요한 신분증만 남기세요', items: [] }
+        ]
+      },
+      {
+        id: 'squishy',
+        name: '무료 도안 스퀴시 만들기',
+        type: '보관',
+        source: '무료 도안 원문 링크',
+        steps: [
+          { id: 'squishy-play', date: '날짜 없음', title: '도안 출력하고 준비물 챙기기', detail: '보관형 Flow입니다. 날짜는 나중에 정해도 됩니다.', completion: '도안 URL을 열어보고 준비물을 메모했습니다.', memoHint: '준비물, 출력 여부, 놀이할 날짜만 남기세요', items: [
+            { title: '도안 URL 열기', detail: '원문 도안 링크와 준비물 설명을 확인합니다.' }
+          ] }
+        ]
+      },
+      {
+        id: 'plant',
+        name: '스투키 물주기',
+        type: '루틴',
+        source: '스투키 관리 원문 링크',
+        steps: [
+          { id: 'plant-water', date: '날짜 없음', title: '흙 상태 보고 물 줄지 결정', detail: '오늘 줄지 미룰지 판단하는 항목입니다.', completion: '흙과 몸통 상태를 보고 물주기 여부를 표시했습니다.', memoHint: '오늘 물줌/보류, 흙 상태, 다음 확인 날짜만 남기세요', items: [
+            { title: '흙 마름 확인', detail: '겉흙보다 안쪽이 마른 상태인지 확인합니다.' },
+            { title: '몸통 물러짐 확인', detail: '무름이 있으면 물주기를 보류합니다.' }
+          ] }
+        ]
+      },
+      {
+        id: 'math-integers',
+        mapId: 'math-map',
+        name: '정수와 유리수',
+        type: '진도',
+        source: '중1 수학 목차',
+        steps: [
+          { id: 'math-1', date: '완료', title: '소인수분해 복습', detail: '끝낸 단원은 완료 상태로 남깁니다.', completion: '복습 완료로 표시했습니다.', memoHint: '다시 볼 문제만 남기세요', items: [] },
+          { id: 'math-2', date: '오늘', title: '정수와 유리수 10강', detail: '오늘 범위만 진행하고 막힌 개념은 메모합니다.', completion: '강의와 교재 범위를 진행했습니다.', memoHint: '틀린 문제 번호와 다시 볼 개념만 남기세요', items: [
+            { title: '강의 열기', detail: '원문 강의에서 이번 강의를 시작합니다.' },
+            { title: '교재 34-36쪽 풀기', detail: '오늘 범위만 진행합니다.' }
+          ] },
+          { id: 'math-3', date: '6.22', title: '수의 대소 관계', detail: '목차의 다음 행을 이어봅니다.', completion: '진도 상태를 표시했습니다.', memoHint: '헷갈린 문제만 남기세요', items: [] },
+          { id: 'math-4', date: '6.23', title: '유리수의 덧셈과 뺄셈', detail: '문제 풀이 상태를 남깁니다.', completion: '풀이 상태를 표시했습니다.', memoHint: '틀린 유형만 남기세요', items: [] },
+          { id: 'math-5', date: '6.25', title: '유리수의 곱셈과 나눗셈', detail: '다음 단원으로 넘어가기 전 확인합니다.', completion: '풀이 상태를 표시했습니다.', memoHint: '다시 볼 계산 실수만 남기세요', items: [] },
+          { id: 'math-6', date: '날짜 없음', title: '단원 마무리 문제', detail: '마무리 문제를 풀고 다음 단원으로 넘어갑니다.', completion: '마무리 문제 상태를 표시했습니다.', memoHint: '오답 번호만 남기세요', items: [] }
+        ]
+      },
+      {
+        id: 'math-expression',
+        mapId: 'math-map',
+        name: '문자의 사용과 식',
+        type: '진도',
+        source: '중1 수학 목차',
+        steps: [
+          { id: 'expr-1', date: '6.26', title: '문자의 사용', detail: '새 단원의 첫 행입니다.', completion: '진도 상태를 표시했습니다.', memoHint: '헷갈린 기호만 남기세요', items: [] },
+          { id: 'expr-2', date: '6.27', title: '식의 값', detail: '문제 풀이 상태를 남깁니다.', completion: '풀이 상태를 표시했습니다.', memoHint: '틀린 유형만 남기세요', items: [] },
+          { id: 'expr-3', date: '날짜 없음', title: '일차식의 계산', detail: '다음에 이어볼 행입니다.', completion: '진도 상태를 표시했습니다.', memoHint: '계산 실수만 남기세요', items: [] },
+          { id: 'expr-4', date: '날짜 없음', title: '방정식의 뜻', detail: '단원 안의 다음 행입니다.', completion: '진도 상태를 표시했습니다.', memoHint: '다시 볼 개념만 남기세요', items: [] },
+          { id: 'expr-5', date: '날짜 없음', title: '일차방정식 풀이', detail: '단원 마무리 전 행입니다.', completion: '풀이 상태를 표시했습니다.', memoHint: '오답 번호만 남기세요', items: [] }
+        ]
+      },
+      {
+        id: 'math-graph',
+        mapId: 'math-map',
+        name: '좌표평면과 그래프',
+        type: '진도',
+        source: '중1 수학 목차',
+        steps: [
+          { id: 'graph-1', date: '날짜 없음', title: '순서쌍과 좌표', detail: '단원 첫 행입니다.', completion: '진도 상태를 표시했습니다.', memoHint: '헷갈린 좌표 예시만 남기세요', items: [] },
+          { id: 'graph-2', date: '날짜 없음', title: '그래프 읽기', detail: '그래프 해석 문제를 풉니다.', completion: '풀이 상태를 표시했습니다.', memoHint: '틀린 그래프 유형만 남기세요', items: [] },
+          { id: 'graph-3', date: '날짜 없음', title: '비례 관계', detail: '비례 관계 단원입니다.', completion: '진도 상태를 표시했습니다.', memoHint: '다시 볼 문제만 남기세요', items: [] },
+          { id: 'graph-4', date: '날짜 없음', title: '반비례 관계', detail: '단원 마지막 행입니다.', completion: '진도 상태를 표시했습니다.', memoHint: '오답 번호만 남기세요', items: [] }
+        ]
+      },
+      {
+        id: 'baby-checkup-flow',
+        mapId: 'baby-map',
+        name: '영유아 건강검진 준비',
+        type: '일정',
+        source: '국민건강보험 영유아 검진 안내',
+        steps: [
+          { id: 'baby-paper', date: '오늘', title: '문진표 작성 여부 확인', detail: '공식 안내 기준으로 작성 여부만 봅니다.', completion: '문진표 작성 여부를 확인했습니다.', memoHint: '의료진에게 물어볼 질문 1-2개만 남기세요', items: [
+            { title: '문진표 작성 여부 확인', detail: '검진 전 작성해야 하는 문진표가 있는지 확인합니다.' }
+          ] },
+          { id: 'baby-question', date: '6.22', title: '진료실 질문 메모', detail: '판단은 병원에서 하고, Flow에는 질문만 남깁니다.', completion: '질문을 메모했습니다.', memoHint: '키/몸무게/발달 관련 질문만 짧게 남기세요', items: [] },
+          { id: 'baby-visit', date: '6.24', title: '검진 방문', detail: '방문 시간과 준비물을 확인합니다.', completion: '방문 상태를 표시했습니다.', memoHint: '방문 시간, 병원명, 준비물만 남기세요', items: [] }
+        ]
+      },
+      {
+        id: 'baby-vaccine-flow',
+        mapId: 'baby-map',
+        name: '예방접종 방문 준비',
+        type: '일정',
+        source: '예방접종도우미 공식 안내',
+        steps: [
+          { id: 'vaccine-date', date: '6.27', title: '접종 가능 기간 확인', detail: '공식 일정에서 대상 기간을 확인합니다.', completion: '기간을 확인했습니다.', memoHint: '접종명, 가능 기간, 예약일만 남기세요', items: [] },
+          { id: 'vaccine-visit', date: '6.29', title: '접종 방문', detail: '방문 전 준비물과 병원 시간을 봅니다.', completion: '방문 상태를 표시했습니다.', memoHint: '방문 시간과 병원명만 남기세요', items: [] },
+          { id: 'vaccine-note', date: '날짜 없음', title: '접종 후 상태 메모', detail: '경험 메모이며 의료 판단을 대신하지 않습니다.', completion: '상태 메모를 남겼습니다.', memoHint: '열, 컨디션, 병원 문의 여부만 남기세요', items: [] }
+        ]
+      }
+    ];
+
+    const state = {
+      view: new URLSearchParams(location.search).get('view') || 'today',
+      selectedStepId: 'jeonse-docs',
+      selectedFlowId: 'jeonse',
+      selectedMapId: 'math-map',
+      selectedMapFlowId: 'math-integers',
+      selectedMapStepId: 'math-2',
+      checks: {},
+      done: {},
+      memos: {}
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const all = (selector) => Array.from(document.querySelectorAll(selector));
+    const flowById = (id) => flows.find((flow) => flow.id === id);
+    const mapById = (id) => maps.find((map) => map.id === id);
+    const allSteps = () => flows.flatMap((flow) => flow.steps.map((step) => ({ ...step, flowId: flow.id, mapId: flow.mapId || null })));
+    const stepById = (id) => allSteps().find((step) => step.id === id) || allSteps()[0];
+    const stepsForFlow = (flowId) => flowById(flowId).steps.map((step) => ({ ...step, flowId, mapId: flowById(flowId).mapId || null }));
+    const flowsForMap = (mapId) => flows.filter((flow) => flow.mapId === mapId);
+    const isToday = (step) => step.date === '오늘' || step.date.includes('오늘');
+    const isDated = (step) => step.date !== '날짜 없음' && step.date !== '완료';
+    const checkKey = (step, index) => `${step.id}:${index}`;
+    const stepItems = (step) => step.items || [];
+
+    function isStepDone(step) {
+      const items = stepItems(step);
+      if (step.date === '완료') return true;
+      if (!items.length) return Boolean(state.done[step.id]);
+      return items.every((_, index) => state.checks[checkKey(step, index)]);
+    }
+
+    function progressForFlow(flow) {
+      const steps = stepsForFlow(flow.id);
+      const done = steps.filter(isStepDone).length;
+      return { done, total: steps.length, pct: Math.round((done / steps.length) * 100) };
+    }
+
+    function progressForMap(mapId) {
+      const mapFlows = flowsForMap(mapId);
+      const steps = mapFlows.flatMap((flow) => stepsForFlow(flow.id));
+      const done = steps.filter(isStepDone).length;
+      return { flows: mapFlows.length, done, total: steps.length, pct: Math.round((done / steps.length) * 100) };
+    }
+
+    function todaySteps() {
+      return allSteps().filter((step) => isToday(step)).slice(0, 8);
+    }
+
+    function fallbackText(step) {
+      const flow = flowById(step.flowId);
+      const map = step.mapId ? mapById(step.mapId) : null;
+      const mark = isStepDone(step) ? '[x]' : '[ ]';
+      const items = stepItems(step);
+      const itemLine = items.length ? `\n- 세부 항목: ${items.map((item) => item.title).join(' / ')}` : '';
+      const memo = state.memos[step.id] || '짧게 메모';
+      return `${mark} ${step.title}
+- Flow: ${flow.name}
+${map ? `- 큰 지도: ${map.name}\n` : ''}- 시점: ${step.date}
+- 완료 기준: ${step.completion}
+${itemLine}
+- 메모: ${memo}
+- 원문: ${flow.source}`;
+    }
+
+    function renderStepDetail(container, stepId) {
+      const step = stepById(stepId);
+      const flow = flowById(step.flowId);
+      const map = step.mapId ? mapById(step.mapId) : null;
+      const items = stepItems(step);
+      const done = isStepDone(step);
+      const itemLabel = items.length > 1 ? '세부 항목' : items.length === 1 ? '할 일' : '완료 표시';
+      const itemMarkup = items.length ? items.map((item, index) => {
+        const key = checkKey(step, index);
+        const checked = Boolean(state.checks[key]) || step.date === '완료';
+        return `
+          <label class="item ${checked ? 'done' : ''}">
+            <input type="checkbox" data-check="${key}" ${checked ? 'checked' : ''} ${step.date === '완료' ? 'disabled' : ''} />
+            <span><b>${item.title}</b><span>${item.detail}</span></span>
+          </label>
+        `;
+      }).join('') : `
+          <label class="item ${done ? 'done' : ''}">
+            <input type="checkbox" data-step="${step.id}" ${done ? 'checked' : ''} ${step.date === '완료' ? 'disabled' : ''} />
+            <span><b>이 항목 완료</b><span>${step.completion}</span></span>
+          </label>
+        `;
+      container.innerHTML = `
+        <div class="detail-top">
+          <div>
+            <p class="eyebrow">${map ? `${map.name} · ${flow.name}` : flow.name}</p>
+            <h3>${step.title}</h3>
+            <p>${step.date}</p>
+          </div>
+          <span class="chip ${done ? 'green' : isToday(step) ? 'blue' : 'amber'}">${done ? '완료' : step.date}</span>
+        </div>
+        <div class="items">
+          <div class="section-label">실행 기준</div>
+          <div class="basis"><b>${step.detail}</b><span>${step.completion}</span></div>
+          <div class="section-label">${itemLabel}</div>
+          ${itemMarkup}
+        </div>
+        <div class="memo">
+          <label for="memo-${step.id}">메모</label>
+          <textarea id="memo-${step.id}" data-memo="${step.id}" placeholder="${step.memoHint || '확인한 내용만 짧게 남기세요'}">${state.memos[step.id] || ''}</textarea>
+        </div>
+        <span class="save-state">${state.memos[step.id] ? '메모 저장됨' : '입력하면 자동 저장됩니다.'}</span>
+        <details>
+          <summary>다른 앱에 붙일 텍스트</summary>
+          <pre>${fallbackText(step)}</pre>
+        </details>
+      `;
+    }
+
+    function renderSummary() {
+      const todayCount = todaySteps().length;
+      const doneCount = allSteps().filter(isStepDone).length;
+      $('summaryTitle').textContent = `오늘 ${todayCount}개`;
+      $('summaryMeta').textContent = `저장한 Flow ${flows.length}개 · 큰 지도 ${maps.length}개 · 완료 ${doneCount}개`;
+      $('todayCount').textContent = `${todayCount}개`;
+      $('flowsCount').textContent = `${flows.length}개`;
+      $('mapsCount').textContent = `${maps.length}개`;
+    }
+
+    function renderNav() {
+      all('[data-view]').forEach((button) => button.classList.toggle('active', button.dataset.view === state.view));
+      all('.view').forEach((view) => view.classList.toggle('active', view.id === `${state.view}View`));
+    }
+
+    function renderToday() {
+      $('todayList').innerHTML = todaySteps().map((step) => {
+        const flow = flowById(step.flowId);
+        const map = step.mapId ? mapById(step.mapId) : null;
+        const done = isStepDone(step);
+        return `
+          <article class="row ${step.id === state.selectedStepId ? 'active' : ''}">
+            <button class="row-main" type="button" data-open-step="${step.id}">
+              <span class="chip ${map ? 'amber' : 'blue'}">${flow.type}</span>
+              <b>${step.title}</b>
+              <span>${map ? `${map.name} · ` : ''}${flow.name} · ${step.date}</span>
+            </button>
+            <button class="quick ${done ? 'done' : ''}" type="button" data-toggle-step="${step.id}" aria-label="${done ? '완료 취소' : '완료 표시'}">${done ? '✓' : ''}</button>
+          </article>
+        `;
+      }).join('');
+      renderStepDetail($('todayDetail'), state.selectedStepId);
+    }
+
+    function renderFlows() {
+      $('flowCards').innerHTML = flows.map((flow) => {
+        const progress = progressForFlow(flow);
+        const map = flow.mapId ? mapById(flow.mapId) : null;
+        return `
+          <button class="flow-row ${flow.id === state.selectedFlowId ? 'active' : ''}" type="button" data-open-flow="${flow.id}">
+            <span class="chip ${map ? 'amber' : 'blue'}">${map ? '지도 안 Flow' : flow.type}</span>
+            <b>${flow.name}</b>
+            <span>${map ? `${map.name} · ` : ''}${progress.done}/${progress.total}개 완료</span>
+            <div class="meter"><span style="width:${progress.pct}%"></span></div>
+          </button>
+        `;
+      }).join('');
+      renderFlowDetail();
+    }
+
+    function renderFlowDetail() {
+      const flow = flowById(state.selectedFlowId);
+      const progress = progressForFlow(flow);
+      const map = flow.mapId ? mapById(flow.mapId) : null;
+      const steps = stepsForFlow(flow.id);
+      if (!steps.some((step) => step.id === state.selectedStepId)) state.selectedStepId = steps.find((step) => !isStepDone(step))?.id || steps[0].id;
+      $('flowDetail').innerHTML = `
+        <p class="eyebrow">${map ? map.name : '저장한 Flow'}</p>
+        <h3>${flow.name}</h3>
+        <p>${flow.source}</p>
+        <div class="map-summary">
+          <div class="metric"><b>${steps.length}</b><span>전체 항목</span></div>
+          <div class="metric"><b>${progress.done}</b><span>완료</span></div>
+          <div class="metric"><b>${progress.pct}%</b><span>진행</span></div>
+        </div>
+        <div class="step-list">
+          ${steps.map((step) => `
+            <button class="step-row ${step.id === state.selectedStepId ? 'active' : ''}" type="button" data-open-step-in-flow="${step.id}">
+              <span class="chip ${isStepDone(step) ? 'green' : isToday(step) ? 'blue' : 'amber'}">${isStepDone(step) ? '완료' : step.date}</span>
+              <b>${step.title}</b>
+              <span>${stepItems(step).length ? `${stepItems(step).length}개 세부 항목` : '완료 표시 + 메모'}</span>
+            </button>
+          `).join('')}
+        </div>
+      `;
+      renderStepDetail($('flowStepDetail'), state.selectedStepId);
+    }
+
+    function renderMaps() {
+      $('mapCards').innerHTML = maps.map((map) => {
+        const progress = progressForMap(map.id);
+        return `
+          <button class="map-row ${map.id === state.selectedMapId ? 'active' : ''}" type="button" data-open-map="${map.id}">
+            <span class="chip amber">${map.kind}</span>
+            <b>${map.name}</b>
+            <span>${progress.flows}개 Flow · ${progress.done}/${progress.total}개 항목 완료</span>
+            <div class="meter"><span style="width:${progress.pct}%"></span></div>
+          </button>
+        `;
+      }).join('');
+      renderMapDetail();
+    }
+
+    function renderMapDetail() {
+      const map = mapById(state.selectedMapId);
+      const mapFlows = flowsForMap(map.id);
+      const progress = progressForMap(map.id);
+      if (!mapFlows.some((flow) => flow.id === state.selectedMapFlowId)) state.selectedMapFlowId = mapFlows[0].id;
+      const selectedFlow = flowById(state.selectedMapFlowId);
+      if (!selectedFlow.steps.some((step) => step.id === state.selectedMapStepId)) {
+        state.selectedMapStepId = selectedFlow.steps.find((step) => !isStepDone({ ...step, flowId: selectedFlow.id, mapId: map.id }))?.id || selectedFlow.steps[0].id;
+      }
+      $('mapDetail').innerHTML = `
+        <p class="eyebrow">큰 지도</p>
+        <h3>${map.name}</h3>
+        <p>${map.sub} · ${map.source}</p>
+        <div class="map-summary">
+          <div class="metric"><b>${progress.flows}</b><span>Flow</span></div>
+          <div class="metric"><b>${progress.total}</b><span>전체 항목</span></div>
+          <div class="metric"><b>${progress.pct}%</b><span>진행</span></div>
+        </div>
+        <div class="step-list">
+          ${mapFlows.map((flow) => {
+            const flowProgress = progressForFlow(flow);
+            const next = stepsForFlow(flow.id).find((step) => !isStepDone(step)) || stepsForFlow(flow.id)[0];
+            return `
+              <button class="child-row ${flow.id === state.selectedMapFlowId ? 'active' : ''}" type="button" data-open-map-flow="${flow.id}">
+                <span class="chip blue">${flow.type}</span>
+                <b>${flow.name}</b>
+                <span>${flowProgress.done}/${flowProgress.total}개 완료 · 다음: ${next.title}</span>
+              </button>
+            `;
+          }).join('')}
+        </div>
+      `;
+      const selectedStep = stepById(state.selectedMapStepId);
+      renderStepDetail($('mapStepDetail'), selectedStep.id);
+    }
+
+    function toggleStep(stepId) {
+      const step = stepById(stepId);
+      const items = stepItems(step);
+      const next = !isStepDone(step);
+      if (!items.length) {
+        state.done[step.id] = next;
+      } else {
+        items.forEach((_, index) => {
+          state.checks[checkKey(step, index)] = next;
+        });
+      }
+      render();
+    }
+
+    function bind() {
+      const bindOnce = (selector, eventName, handler) => {
+        all(selector).forEach((element) => {
+          if (element.dataset.bound) return;
+          element.dataset.bound = 'true';
+          element.addEventListener(eventName, handler);
+        });
+      };
+      bindOnce('[data-view]', 'click', (event) => {
+        state.view = event.currentTarget.dataset.view;
+        render();
+      });
+      bindOnce('[data-open-step]', 'click', (event) => {
+        state.selectedStepId = event.currentTarget.dataset.openStep;
+        render();
+      });
+      bindOnce('[data-toggle-step]', 'click', (event) => toggleStep(event.currentTarget.dataset.toggleStep));
+      bindOnce('[data-open-flow]', 'click', (event) => {
+        state.selectedFlowId = event.currentTarget.dataset.openFlow;
+        state.selectedStepId = stepsForFlow(state.selectedFlowId).find((step) => !isStepDone(step))?.id || stepsForFlow(state.selectedFlowId)[0].id;
+        render();
+      });
+      bindOnce('[data-open-step-in-flow]', 'click', (event) => {
+        state.selectedStepId = event.currentTarget.dataset.openStepInFlow;
+        render();
+      });
+      bindOnce('[data-open-map]', 'click', (event) => {
+        state.selectedMapId = event.currentTarget.dataset.openMap;
+        const firstFlow = flowsForMap(state.selectedMapId)[0];
+        state.selectedMapFlowId = firstFlow.id;
+        state.selectedMapStepId = firstFlow.steps.find((step) => !isStepDone({ ...step, flowId: firstFlow.id, mapId: state.selectedMapId }))?.id || firstFlow.steps[0].id;
+        render();
+      });
+      bindOnce('[data-open-map-flow]', 'click', (event) => {
+        state.selectedMapFlowId = event.currentTarget.dataset.openMapFlow;
+        const flow = flowById(state.selectedMapFlowId);
+        state.selectedMapStepId = flow.steps.find((step) => !isStepDone({ ...step, flowId: flow.id, mapId: state.selectedMapId }))?.id || flow.steps[0].id;
+        render();
+      });
+      bindOnce('[data-check]', 'change', (event) => {
+        state.checks[event.currentTarget.dataset.check] = event.currentTarget.checked;
+        render();
+      });
+      bindOnce('[data-step]', 'change', (event) => {
+        state.done[event.currentTarget.dataset.step] = event.currentTarget.checked;
+        render();
+      });
+      bindOnce('[data-memo]', 'input', (event) => {
+        state.memos[event.currentTarget.dataset.memo] = event.currentTarget.value;
+        renderSummary();
+      });
+    }
+
+    function render() {
+      renderSummary();
+      renderNav();
+      renderToday();
+      renderFlows();
+      renderMaps();
+      bind();
+    }
+
+    render();
+  </script>
+</body>
+</html>

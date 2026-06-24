@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>내 Flow</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fb;
+      --surface: #fff;
+      --soft: #f1f5f9;
+      --line: #d9e2ef;
+      --line-strong: #cbd5e1;
+      --text: #0f172a;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --blue-soft: #eff6ff;
+      --green: #0f766e;
+      --green-soft: #ecfdf5;
+      --amber: #b45309;
+      --amber-soft: #fff7ed;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); letter-spacing: 0; }
+    button, input, textarea { font: inherit; letter-spacing: 0; }
+    button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .app { width: min(100% - 24px, 1060px); margin: 0 auto; padding: 14px 0 48px; }
+    .shell { display: grid; gap: 12px; }
+    .top, .panel, .row, .detail, .check, .finder, .flow-card, .note-box, .rail {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, .06);
+    }
+    .top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; padding: 18px; align-items: start; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 5px; font-size: 32px; line-height: 1.12; letter-spacing: 0; }
+    h2 { margin-bottom: 6px; font-size: 21px; line-height: 1.24; letter-spacing: 0; }
+    h3 { margin-bottom: 4px; font-size: 18px; line-height: 1.3; letter-spacing: 0; }
+    p { color: var(--muted); font-size: 14px; font-weight: 720; line-height: 1.55; }
+    .eyebrow { margin-bottom: 5px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .summary { min-width: 190px; border-radius: 11px; background: var(--soft); padding: 12px; }
+    .summary b, .summary span { display: block; }
+    .summary b { font-size: 18px; }
+    .summary span { margin-top: 3px; color: var(--muted); font-size: 12px; font-weight: 850; line-height: 1.4; }
+    .panel { padding: 16px; }
+    .panel-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+    .secondary {
+      min-height: 38px;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      background: #fff;
+      color: #334155;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+    .layout { display: grid; grid-template-columns: minmax(0, .92fr) minmax(330px, 1.08fr); gap: 12px; padding-top: 12px; align-items: start; }
+    .layout.single { grid-template-columns: minmax(0, 1fr); }
+    .stack { display: grid; gap: 9px; }
+    .section-title { display: flex; justify-content: space-between; gap: 8px; margin: 0 0 7px; font-size: 13px; font-weight: 950; }
+    .section-title span { color: var(--muted); font-size: 12px; }
+    .rail { display: flex; gap: 8px; padding: 8px; overflow-x: auto; box-shadow: none; background: var(--soft); }
+    .date-pill {
+      min-width: 78px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 8px;
+      text-align: left;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .date-pill b, .date-pill span { display: block; }
+    .date-pill span { margin-top: 3px; color: var(--muted); font-weight: 800; }
+    .date-pill.active { border-color: #bfdbfe; background: var(--blue-soft); color: var(--blue); box-shadow: inset 0 0 0 1px #bfdbfe; }
+    .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      padding: 11px;
+      text-align: left;
+      box-shadow: none;
+    }
+    .row.active { border-color: #bfdbfe; background: var(--blue-soft); box-shadow: inset 0 0 0 1px #bfdbfe; }
+    .row-main { min-width: 0; border: 0; background: transparent; padding: 0; text-align: left; color: inherit; }
+    .row-main b, .row-main span { display: block; }
+    .row-main b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; line-height: 1.35; }
+    .row-main span { margin-top: 3px; color: var(--muted); font-size: 12px; font-weight: 820; line-height: 1.35; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 27px;
+      width: fit-content;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      padding: 4px 9px;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .chip.blue { border-color: #bfdbfe; background: var(--blue-soft); color: #1d4ed8; }
+    .chip.green { border-color: #99f6e4; background: var(--green-soft); color: var(--green); }
+    .chip.amber { border-color: #fed7aa; background: var(--amber-soft); color: var(--amber); }
+    .quick-check {
+      display: inline-grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #fff;
+      color: transparent;
+      font-weight: 950;
+    }
+    .quick-check.done { border-color: var(--green); background: var(--green); color: #fff; }
+    .detail { position: sticky; top: 12px; padding: 14px; box-shadow: none; }
+    .layout.single .detail { position: static; }
+    .detail-top { display: flex; justify-content: space-between; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+    .checks { display: grid; gap: 8px; margin-top: 10px; }
+    .check { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; padding: 11px; box-shadow: none; }
+    .check.done { border-color: #bbf7d0; background: var(--green-soft); }
+    .check input { width: 22px; height: 22px; margin-top: 2px; accent-color: var(--blue); }
+    .check b, .check span { display: block; }
+    .check b { font-size: 14px; line-height: 1.35; }
+    .check span span { margin-top: 3px; color: var(--muted); font-size: 12px; font-weight: 780; line-height: 1.42; }
+    .memo { display: grid; gap: 6px; margin-top: 10px; }
+    .memo label { color: #334155; font-size: 13px; font-weight: 950; }
+    textarea, input[type="search"] {
+      width: 100%;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      background: #fff;
+      padding: 10px;
+      color: var(--text);
+      line-height: 1.55;
+    }
+    textarea { min-height: 96px; resize: vertical; }
+    .detail-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+    .save-state {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      border-radius: 999px;
+      background: var(--soft);
+      padding: 5px 10px;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .note-box { margin-top: 10px; padding: 11px; background: var(--soft); box-shadow: none; }
+    .note-box summary { color: #334155; font-size: 13px; font-weight: 950; cursor: pointer; }
+    .note-box pre { margin: 8px 0 0; white-space: pre-wrap; word-break: break-word; color: #475569; font: inherit; font-size: 12px; line-height: 1.5; }
+    .finder { display: none; margin-top: 12px; padding: 12px; box-shadow: none; background: #fbfdff; }
+    .finder.open { display: grid; gap: 10px; }
+    .flow-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .flow-card { display: grid; gap: 5px; padding: 11px; text-align: left; box-shadow: none; }
+    .flow-card b, .flow-card span { display: block; }
+    .flow-card b { font-size: 14px; line-height: 1.32; }
+    .flow-card span { color: var(--muted); font-size: 12px; font-weight: 800; line-height: 1.35; }
+    .show-more {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--soft);
+      color: #334155;
+      font-size: 13px;
+      font-weight: 950;
+    }
+    .empty { border: 1px dashed #cbd5e1; border-radius: 11px; padding: 14px; color: var(--muted); font-size: 13px; font-weight: 820; }
+    .hidden { display: none !important; }
+    @media (max-width: 820px) {
+      .app { width: min(100% - 20px, 720px); padding-top: 10px; }
+      .top, .layout, .layout.single { grid-template-columns: 1fr; }
+      .summary { min-width: 0; }
+      .panel-head, .detail-top { display: grid; }
+      .detail { position: static; }
+      .flow-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) {
+      h1 { font-size: 29px; }
+      h2 { font-size: 20px; }
+      .top, .panel { padding: 14px; }
+      .secondary { width: fit-content; justify-self: start; }
+      .panel-head { gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="shell">
+      <header class="top">
+        <div>
+          <p class="eyebrow">내 실행 공간</p>
+          <h1>내 Flow</h1>
+          <p id="heroCopy">오늘 할 일부터 열고, 필요한 Flow만 찾아봅니다.</p>
+        </div>
+        <aside class="summary" aria-live="polite">
+          <b id="summaryTitle">오늘 3개</b>
+          <span id="summaryMeta">저장한 Flow 8개</span>
+          <span id="summaryHint">체크와 메모만 남기면 됩니다.</span>
+        </aside>
+      </header>
+
+      <section class="panel" aria-labelledby="screenTitle">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow" id="screenKicker">오늘</p>
+            <h2 id="screenTitle">먼저 할 일</h2>
+            <p id="screenCopy">저장한 Flow 중 지금 볼 항목만 보여줍니다.</p>
+          </div>
+          <button class="secondary" type="button" id="toggleFinder">Flow 찾기</button>
+        </div>
+
+        <div class="layout" id="layout">
+          <div class="stack" id="listPane">
+            <div class="rail" id="dateRail" aria-label="날짜 선택"></div>
+
+            <div>
+              <div class="section-title">
+                <b id="listTitle">오늘 할 일</b>
+                <span id="listCount">3개</span>
+              </div>
+              <div class="stack" id="entryList"></div>
+              <button class="show-more hidden" type="button" id="showListButton">항목 더 보기</button>
+            </div>
+
+            <div class="finder" id="finderPanel">
+              <div class="section-title">
+                <b>저장한 Flow</b>
+                <span id="finderCount">8개</span>
+              </div>
+              <input id="searchInput" type="search" placeholder="예: 수학, 여권, 홈트" aria-label="저장한 Flow 검색" />
+              <div class="flow-grid" id="flowList"></div>
+              <button class="show-more hidden" type="button" id="showMoreButton">전체 Flow 보기</button>
+            </div>
+          </div>
+
+          <article class="detail" aria-labelledby="detailTitle">
+            <div class="detail-top">
+              <div>
+                <p class="eyebrow" id="detailKicker">선택한 항목</p>
+                <h3 id="detailTitle">계약 전 서류 확인</h3>
+                <p id="detailMeta">전세계약 전 서류 체크 · 오늘</p>
+              </div>
+              <span class="chip blue" id="detailStatus">오늘</span>
+            </div>
+
+            <div class="checks" id="checkList"></div>
+
+            <div class="memo">
+              <label for="memoInput">메모</label>
+              <textarea id="memoInput" placeholder="확인한 내용, 다시 볼 링크, 미룬 이유만 짧게 남기기"></textarea>
+            </div>
+
+            <div class="detail-actions">
+              <span class="save-state" id="saveState">메모는 입력하면 저장됩니다.</span>
+            </div>
+
+            <details class="note-box">
+              <summary>다른 앱에 붙일 텍스트</summary>
+              <pre id="fallbackText"></pre>
+            </details>
+          </article>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const mode = ['single', 'few', 'mixed', 'large'].includes(params.get('mode')) ? params.get('mode') : 'mixed';
+
+    const flows = [
+      { id: 'jeonse', name: '전세계약 전 서류 체크', type: '일정', nextId: 'jeonse-docs', aliases: 'jeonse rent contract' },
+      { id: 'move', name: '이사 D-30 준비', type: '일정', nextId: 'move-quote', aliases: 'move moving' },
+      { id: 'math', name: '중1 수학 학습 지도', type: '학습', nextId: 'math-lesson', sub: '정수와 유리수', aliases: 'math study middle school' },
+      { id: 'workout', name: '초보 홈트 영상 루틴', type: '루틴', nextId: 'workout-session', aliases: 'workout home training routine' },
+      { id: 'passport', name: '온라인 여권 재발급', type: '체크', nextId: 'passport-photo', aliases: 'passport' },
+      { id: 'baby', name: '영유아 건강검진 준비', type: '일정', nextId: 'baby-checkup', aliases: 'baby health checkup' },
+      { id: 'squishy', name: '무료 도안 스퀴시 만들기', type: '보관', nextId: 'squishy-play', aliases: 'squishy craft' },
+      { id: 'plant', name: '스투키 물주기', type: '루틴', nextId: 'plant-water', aliases: 'plant water' }
+    ];
+
+    const entries = [
+      {
+        id: 'jeonse-docs',
+        flowId: 'jeonse',
+        dateKey: 'today',
+        dateText: '오늘',
+        title: '계약 전 서류 확인',
+        meta: '시세, 등기부등본, 보증보험 가능 여부',
+        source: '전세계약 전 서류 체크 Flow',
+        checks: ['시세 확인', '등기부등본 확인', '전세보증보험 가능 여부 확인'],
+        notes: ['주변 실거래가와 보증금 차이 확인', '소유자, 근저당, 압류 여부 확인', '가입 가능 여부와 필요 서류 확인'],
+        memo: '계약서 원문, 주민등록번호, 계좌번호는 저장하지 않음.'
+      },
+      {
+        id: 'math-lesson',
+        flowId: 'math',
+        dateKey: 'today',
+        dateText: '오늘',
+        title: '정수와 유리수 10강',
+        meta: 'EBS 강의 10강 · 교재 34-36쪽',
+        source: 'EBS 중학 뉴런 수학1(상)',
+        checks: ['강의 열기', '교재 34-36쪽 풀기', '막힌 개념 메모'],
+        notes: ['원문 강의에서 이번 강의 시작', '원문에 있는 오늘 범위만 진행', '다음 복습 때 볼 내용만 짧게'],
+        memo: ''
+      },
+      {
+        id: 'workout-session',
+        flowId: 'workout',
+        dateKey: 'today',
+        dateText: '오늘 20:00',
+        title: '원본 영상 한 번 따라하기',
+        meta: '주 3회 · 통증이 있으면 중단',
+        source: '초보 홈트 영상 링크',
+        checks: ['영상 열기', '오늘 가능한 만큼 따라하기', '불편한 부위 메모'],
+        notes: ['원문 영상 링크 확인', '무리하지 않고 영상 흐름만 따라감', '통증이면 중단하고 메모'],
+        memo: ''
+      },
+      {
+        id: 'move-quote',
+        flowId: 'move',
+        dateKey: 'week',
+        dateText: '6.24',
+        title: '견적 3곳 요청하기',
+        meta: '포장/반포장/일반 중 하나 선택',
+        source: '이사 D-30 준비 Flow',
+        checks: ['이사 방식 1개 선택', '견적 후보 2-3곳 열기', '예상 비용과 포함 범위 메모'],
+        notes: ['포장/반포장/일반 중 선택', '업체명과 연락처만 메모', '추가비 가능성이 있는 항목만 남김'],
+        memo: ''
+      },
+      {
+        id: 'passport-photo',
+        flowId: 'passport',
+        dateKey: 'week',
+        dateText: '6.25',
+        title: '여권 사진 파일 준비하기',
+        meta: '신청 링크와 사진 규격 확인',
+        source: '정부24 여권 재발급 안내',
+        checks: ['사진 파일 위치 메모', '신청 링크 열기', '수령 기관 메모'],
+        notes: ['파일명이나 저장 위치만 짧게', '정부24 신청 페이지 확인', '방문할 기관만 기록'],
+        memo: ''
+      },
+      {
+        id: 'baby-checkup',
+        flowId: 'baby',
+        dateKey: 'week',
+        dateText: '6.26',
+        title: '문진표 질문 메모 준비하기',
+        meta: '방문 전 물어볼 질문 1-2개',
+        source: '국민건강보험 영유아 검진 안내',
+        checks: ['문진표 작성 여부 확인', '발달선별검사 여부 확인', '의료진에게 물어볼 질문 메모'],
+        notes: ['공식 문진표 기준', '대상 월령에 해당할 때만', '판단은 병원에서 확인'],
+        memo: ''
+      },
+      {
+        id: 'squishy-play',
+        flowId: 'squishy',
+        dateKey: 'later',
+        dateText: '날짜 없음',
+        title: '도안 출력하고 준비물 챙기기',
+        meta: '도안 URL과 준비물',
+        source: '무료 도안 원문 링크',
+        checks: ['도안 URL 열기', '원본 설명의 준비물 체크', '놀이 후 정리할 봉투 준비'],
+        notes: ['원문 도안 링크 보기', '종이, 테이프, 솜 등', '완성 후 보관/정리'],
+        memo: ''
+      },
+      {
+        id: 'plant-water',
+        flowId: 'plant',
+        dateKey: 'later',
+        dateText: '최근 체크',
+        title: '흙 상태 보고 물 줄지 결정하기',
+        meta: '과습이면 미루기',
+        source: '스투키 관리 원문 링크',
+        checks: ['흙 마름 확인', '몸통 물러짐 확인', '다음 물줄 날짜 메모'],
+        notes: ['겉흙보다 안쪽 마름 확인', '무름이 있으면 물주기 보류', '계절별 간격은 메모로 조정'],
+        memo: ''
+      }
+    ];
+
+    const extraTitles = [
+      ['tax', '연말정산 서류 모으기', '체크', '공제 서류 폴더 확인'],
+      ['exam', '컴활 필기 D-30', '학습', '오늘 기출 20문제 풀기'],
+      ['dorm', '기숙사 입사 준비', '일정', '제출 서류 확인'],
+      ['car', '중고차 방문 체크', '체크', '성능기록부 확인'],
+      ['fridge', '냉장고 재료 소진', '루틴', '남은 재료 3개 고르기'],
+      ['reading', '독서 루틴', '루틴', '오늘 20분 읽기'],
+      ['school', '초등 입학 준비', '일정', '예비소집 안내 확인'],
+      ['esim', '해외 이심 보관', '보관', '설치 링크 다시 보기'],
+      ['license', '자격증 과목 진도', '학습', '1과목 오답 표시'],
+      ['garden', '몬스테라 관리', '루틴', '잎 상태 확인'],
+      ['laundry', '세탁조 청소', '루틴', '세탁조 코스 돌리기'],
+      ['trip', '출국 전 준비', '일정', '여권과 항공권 확인'],
+      ['camp', '캠핑 준비물', '체크', '장비 박스 확인'],
+      ['meal', '이유식 식단표', '일정', '다음 식단 메모'],
+      ['budget', '월 예산 점검', '루틴', '이번 주 지출 표시'],
+      ['course', '온라인 강의 진도', '학습', '3강 이어보기']
+    ];
+
+    const extraFlows = extraTitles.map(([id, name, type, title]) => ({
+      id,
+      name,
+      type,
+      nextId: `${id}-step`,
+      aliases: `${id} ${name}`
+    }));
+
+    const extraEntries = extraTitles.map(([id, name, type, title], index) => ({
+      id: `${id}-step`,
+      flowId: id,
+      dateKey: index % 3 === 0 ? 'today' : index % 3 === 1 ? 'week' : 'later',
+      dateText: index % 3 === 0 ? '오늘' : index % 3 === 1 ? '이번 주' : '보관',
+      title,
+      meta: `${name} · ${type}`,
+      source: `${name} 원문`,
+      checks: ['원문 열기', '오늘 항목 확인', '짧게 메모'],
+      notes: ['저장한 원문 링크 확인', '오늘 필요한 부분만 진행', '다시 볼 내용만 남김'],
+      memo: ''
+    }));
+
+    const modeConfig = {
+      single: { flowIds: ['jeonse'], firstId: 'jeonse-docs', showRail: false, showFinder: false, finderLimit: 0 },
+      few: { flowIds: ['jeonse', 'move', 'math', 'workout'], firstId: 'jeonse-docs', showRail: true, showFinder: true, finderLimit: 4 },
+      mixed: { flowIds: ['jeonse', 'move', 'math', 'workout', 'passport', 'baby', 'squishy', 'plant'], firstId: 'jeonse-docs', showRail: true, showFinder: true, finderLimit: 8 },
+      large: { flowIds: ['jeonse', 'move', 'math', 'workout', 'passport', 'baby', 'squishy', 'plant', ...extraFlows.map((flow) => flow.id)], firstId: 'jeonse-docs', showRail: true, showFinder: true, finderLimit: 8 }
+    };
+    const config = modeConfig[mode];
+    const allFlows = mode === 'large' ? [...flows, ...extraFlows] : flows;
+    const allEntries = mode === 'large' ? [...entries, ...extraEntries] : entries;
+    const activeFlows = allFlows.filter((flow) => config.flowIds.includes(flow.id));
+    const activeEntries = allEntries.filter((entry) => config.flowIds.includes(entry.flowId));
+
+    const dateFilters = [
+      { key: 'today', label: '오늘' },
+      { key: 'week', label: '이번 주' },
+      { key: 'later', label: '보관' },
+      { key: 'all', label: '전체' }
+    ];
+
+    const state = {
+      date: 'today',
+      selectedId: config.firstId,
+      finderOpen: false,
+      query: '',
+      showAll: false,
+      listExpanded: false,
+      checks: {},
+      memos: {}
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const all = (selector) => Array.from(document.querySelectorAll(selector));
+
+    function entryById(id) {
+      return activeEntries.find((entry) => entry.id === id) || activeEntries[0];
+    }
+
+    function flowById(id) {
+      return activeFlows.find((flow) => flow.id === id) || activeFlows[0];
+    }
+
+    function checkKey(entry, index) {
+      return `${entry.id}:${index}`;
+    }
+
+    function progress(entry) {
+      const done = entry.checks.filter((_, index) => state.checks[checkKey(entry, index)]).length;
+      return { done, total: entry.checks.length, complete: done === entry.checks.length };
+    }
+
+    function isDone(entry) {
+      return progress(entry).complete;
+    }
+
+    function scopedName(entry) {
+      const flow = flowById(entry.flowId);
+      return flow.sub ? `${flow.name} · ${flow.sub}` : flow.name;
+    }
+
+    function listEntries() {
+      return activeEntries.filter((entry) => state.date === 'all' || entry.dateKey === state.date);
+    }
+
+    function fallbackText(entry) {
+      const flow = flowById(entry.flowId);
+      const mark = isDone(entry) ? '[x]' : '[ ]';
+      const memo = state.memos[entry.id] || entry.memo || '짧게 메모';
+      return `${mark} ${entry.title}
+- Flow: ${flow.name}
+- 유형: ${flow.type}
+- 시점: ${entry.dateText}
+- 항목: ${entry.checks.join(' / ')}
+- 메모: ${memo}
+- 원문: ${entry.source}`;
+    }
+
+    function dateHint(key) {
+      if (key === 'all') return `${activeEntries.length}개`;
+      return `${activeEntries.filter((entry) => entry.dateKey === key).length}개`;
+    }
+
+    function renderChrome() {
+      const todayCount = activeEntries.filter((entry) => entry.dateKey === 'today').length;
+      const doneCount = activeEntries.filter(isDone).length;
+      $('summaryTitle').textContent = todayCount ? `오늘 ${todayCount}개` : '오늘 없음';
+      $('summaryMeta').textContent = `저장한 Flow ${activeFlows.length}개 · 완료 ${doneCount}개`;
+      $('heroCopy').textContent = activeFlows.length === 1 ? '저장한 항목을 열어 체크와 메모만 남깁니다.' : '오늘 할 일부터 열고, 필요한 Flow만 찾아봅니다.';
+      $('screenCopy').textContent = activeFlows.length === 1 ? '저장한 Flow 하나를 바로 이어서 실행합니다.' : '저장한 Flow 중 지금 볼 항목만 보여줍니다.';
+      $('layout').classList.toggle('single', activeFlows.length === 1);
+      $('listPane').classList.toggle('hidden', activeFlows.length === 1);
+      $('toggleFinder').classList.toggle('hidden', !config.showFinder);
+    }
+
+    function renderRail() {
+      $('dateRail').classList.toggle('hidden', !config.showRail);
+      $('dateRail').innerHTML = dateFilters.map((filter) => `
+        <button class="date-pill ${filter.key === state.date ? 'active' : ''}" type="button" data-date="${filter.key}">
+          <b>${filter.label}</b>
+          <span>${dateHint(filter.key)}</span>
+        </button>
+      `).join('');
+    }
+
+    function renderList() {
+      const fullList = listEntries();
+      const listLimit = activeFlows.length > 8 ? (state.date === 'all' ? 8 : 4) : fullList.length;
+      const list = state.listExpanded ? fullList : fullList.slice(0, listLimit);
+      $('listTitle').textContent = state.date === 'today' ? '오늘 할 일' : state.date === 'week' ? '이번 주 항목' : state.date === 'later' ? '날짜 없이 보관' : '전체 항목';
+      $('listCount').textContent = fullList.length === list.length ? `${fullList.length}개` : `${list.length}/${fullList.length}개`;
+      $('entryList').innerHTML = list.map((entry) => {
+        const flow = flowById(entry.flowId);
+        const done = isDone(entry);
+        return `
+          <article class="row ${entry.id === state.selectedId ? 'active' : ''}">
+            <button class="row-main" type="button" data-open="${entry.id}">
+              <span class="chip">${flow.type}</span>
+              <b>${entry.title}</b>
+              <span>${scopedName(entry)} · ${entry.dateText}</span>
+            </button>
+            <button class="quick-check ${done ? 'done' : ''}" type="button" data-toggle="${entry.id}" aria-label="${done ? '완료 취소' : '완료 체크'}">${done ? '✓' : ''}</button>
+          </article>
+        `;
+      }).join('') || '<div class="empty">보이는 항목이 없습니다.</div>';
+      const hasMore = fullList.length > list.length;
+      $('showListButton').classList.toggle('hidden', !hasMore);
+      $('showListButton').textContent = state.date === 'all' ? `전체 항목 ${fullList.length}개 보기` : `${fullList.length - list.length}개 더 보기`;
+    }
+
+    function visibleFinderFlows() {
+      const query = state.query.trim().toLowerCase();
+      const filtered = activeFlows.filter((flow) => {
+        const entry = entryById(flow.nextId);
+        const haystack = `${flow.name} ${flow.type} ${flow.sub || ''} ${flow.aliases || ''} ${entry.title} ${entry.meta}`.toLowerCase();
+        return !query || haystack.includes(query);
+      });
+      return state.showAll || query ? filtered : filtered.slice(0, config.finderLimit);
+    }
+
+    function renderFinder() {
+      $('finderPanel').classList.toggle('open', state.finderOpen && config.showFinder);
+      $('toggleFinder').textContent = state.finderOpen ? 'Flow 찾기 닫기' : 'Flow 찾기';
+      $('finderCount').textContent = `${activeFlows.length}개`;
+      if ($('searchInput').value !== state.query) $('searchInput').value = state.query;
+      const visible = visibleFinderFlows();
+      $('flowList').innerHTML = visible.map((flow) => {
+        const entry = entryById(flow.nextId);
+        return `
+          <button class="flow-card ${entry.id === state.selectedId ? 'active' : ''}" type="button" data-open="${entry.id}">
+            <span class="chip">${flow.type}</span>
+            <b>${flow.name}</b>
+            <span>${flow.sub ? `${flow.sub} · ` : ''}${entry.title}</span>
+          </button>
+        `;
+      }).join('') || '<div class="empty">검색 결과가 없습니다.</div>';
+      const hasMore = activeFlows.length > config.finderLimit && !state.showAll && !state.query;
+      $('showMoreButton').classList.toggle('hidden', !hasMore);
+      $('showMoreButton').textContent = `전체 Flow ${activeFlows.length}개 보기`;
+    }
+
+    function renderDetail() {
+      const entry = entryById(state.selectedId);
+      const flow = flowById(entry.flowId);
+      const done = isDone(entry);
+      $('detailKicker').textContent = flow.sub ? `${flow.name}에서 이어보기` : '선택한 항목';
+      $('detailTitle').textContent = entry.title;
+      $('detailMeta').textContent = `${scopedName(entry)} · ${entry.dateText}`;
+      $('detailStatus').textContent = done ? '완료' : entry.dateText;
+      $('detailStatus').className = `chip ${done ? 'green' : entry.dateKey === 'today' ? 'blue' : entry.dateKey === 'week' ? 'amber' : ''}`;
+      $('saveState').textContent = state.memos[entry.id] ? '메모 저장됨' : '메모는 입력하면 저장됩니다.';
+      $('checkList').innerHTML = entry.checks.map((check, index) => {
+        const key = checkKey(entry, index);
+        const checked = Boolean(state.checks[key]);
+        return `
+          <label class="check ${checked ? 'done' : ''}">
+            <input type="checkbox" data-check="${key}" ${checked ? 'checked' : ''} />
+            <span><b>${check}</b><span>${entry.notes[index] || '필요하면 메모에 남깁니다.'}</span></span>
+          </label>
+        `;
+      }).join('');
+      $('memoInput').value = state.memos[entry.id] ?? entry.memo ?? '';
+      $('fallbackText').textContent = fallbackText(entry);
+    }
+
+    function render() {
+      renderChrome();
+      renderRail();
+      renderList();
+      renderFinder();
+      renderDetail();
+      bindDynamicEvents();
+    }
+
+    function toggleAll(entryId) {
+      const entry = entryById(entryId);
+      const next = !isDone(entry);
+      entry.checks.forEach((_, index) => {
+        state.checks[checkKey(entry, index)] = next;
+      });
+      render();
+    }
+
+    function bindDynamicEvents() {
+      all('[data-date]').forEach((button) => {
+        button.addEventListener('click', () => {
+          state.date = button.dataset.date;
+          state.listExpanded = false;
+          const first = listEntries()[0];
+          if (first) state.selectedId = first.id;
+          render();
+        });
+      });
+      all('[data-open]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const openedFromFinder = Boolean(button.closest('#finderPanel'));
+          state.selectedId = button.dataset.open;
+          state.date = entryById(state.selectedId).dateKey;
+          if (openedFromFinder) {
+            state.finderOpen = false;
+            state.query = '';
+            state.showAll = false;
+          }
+          render();
+        });
+      });
+      all('[data-toggle]').forEach((button) => {
+        button.addEventListener('click', () => toggleAll(button.dataset.toggle));
+      });
+      all('[data-check]').forEach((input) => {
+        input.addEventListener('change', () => {
+          state.checks[input.dataset.check] = input.checked;
+          render();
+        });
+      });
+    }
+
+    $('toggleFinder').addEventListener('click', () => {
+      state.finderOpen = !state.finderOpen;
+      render();
+      if (state.finderOpen) $('searchInput').focus();
+    });
+
+    $('searchInput').addEventListener('input', (event) => {
+      state.query = event.target.value;
+      renderFinder();
+      bindDynamicEvents();
+    });
+
+    $('showMoreButton').addEventListener('click', () => {
+      state.showAll = true;
+      renderFinder();
+      bindDynamicEvents();
+    });
+
+    $('showListButton').addEventListener('click', () => {
+      state.listExpanded = true;
+      render();
+    });
+
+    $('memoInput').addEventListener('input', (event) => {
+      state.memos[state.selectedId] = event.target.value;
+      $('fallbackText').textContent = fallbackText(entryById(state.selectedId));
+      $('saveState').textContent = event.target.value.trim() ? '메모 저장됨' : '메모는 입력하면 저장됩니다.';
+      $('summaryHint').textContent = '메모가 저장되었습니다.';
+    });
+
+    render();
+  </script>
+</body>
+</html>

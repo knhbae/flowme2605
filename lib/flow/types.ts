@@ -104,6 +104,11 @@ export type FlowItem = {
   type: 'todo' | 'calendar';
   day_offset?: number;
   duration_days?: number;
+  date_window?: {
+    label: string;
+    start_day_offset: number;
+    end_day_offset: number;
+  };
   repeat_rule?: string;
   source_type?: SourceType;
   risk_level?: RiskLevel;

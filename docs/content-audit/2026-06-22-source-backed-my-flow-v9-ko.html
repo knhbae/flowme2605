@@ -1,0 +1,1452 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>내 Flow v9 원문 기반</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --soft: #f8fafc;
+      --line: #dbe4ef;
+      --line-strong: #b8c7da;
+      --text: #101827;
+      --muted: #596779;
+      --faint: #8290a2;
+      --blue: #2563eb;
+      --blue-soft: #eff6ff;
+      --green: #0f766e;
+      --green-soft: #ecfdf5;
+      --amber: #b45309;
+      --amber-soft: #fffbeb;
+      --radius: 18px;
+      --radius-sm: 12px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+    button, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .app { width: min(760px, calc(100% - 28px)); margin: 0 auto; padding: 24px 0 54px; }
+    .top, .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+    }
+    .top { padding: 20px; }
+    .top-row { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; }
+    h1, h2, h3, p { margin-top: 0; letter-spacing: 0; }
+    h1 { margin-bottom: 4px; font-size: clamp(28px, 5vw, 38px); line-height: 1.08; }
+    h2 { margin-bottom: 2px; font-size: 20px; }
+    h3 { margin-bottom: 4px; font-size: 17px; }
+    p { margin-bottom: 0; color: var(--muted); }
+    .eyebrow { margin: 0 0 4px; color: var(--blue); font-size: 12px; font-weight: 900; }
+    .stat {
+      min-width: 108px;
+      border-radius: 14px;
+      background: var(--soft);
+      padding: 12px;
+      text-align: right;
+    }
+    .stat b, .stat span { display: block; }
+    .stat b { font-size: 20px; }
+    .stat span { color: var(--muted); font-size: 12px; font-weight: 750; }
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+      margin: 12px 0;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--card);
+      padding: 6px;
+    }
+    .tabs button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 850;
+    }
+    .tabs button.active { background: var(--blue-soft); color: var(--blue); box-shadow: inset 0 0 0 1px #bfdbfe; }
+    .panel { padding: 16px; }
+    .view { display: none; }
+    .view.active { display: block; }
+    .head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .count {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      border-radius: 999px;
+      background: var(--soft);
+      padding: 4px 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+    .list { display: grid; gap: 10px; padding-top: 12px; }
+    .step-block { display: grid; gap: 8px; }
+    .row, .subrow {
+      width: 100%;
+      min-height: 68px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--card);
+      text-align: left;
+      padding: 13px;
+    }
+    .row.action-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+    }
+    .row.flow-card { border-left: 4px solid var(--blue); background: #fff; }
+    .row.map-card { border-left: 4px solid var(--amber); background: #fff; }
+    .row.step-row { border-left: 4px solid #bfdbfe; background: #fff; }
+    .row.step-row.nested { margin-left: 10px; width: calc(100% - 10px); background: #fbfdff; }
+    .row.active, .subrow.active { border-color: #93c5fd; background: var(--blue-soft); }
+    .row-main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      width: 100%;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      text-align: left;
+    }
+    .row-main b, .subrow b { display: block; color: var(--text); font-size: 15px; line-height: 1.35; }
+    .row-main span, .subrow span { display: block; margin-top: 3px; color: var(--muted); font-size: 13px; font-weight: 650; }
+    .row-main .row-content { display: block; margin-top: 0; color: inherit; }
+    .row-main .row-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .row-main .row-meta span,
+    .row-main .row-meta strong {
+      display: inline;
+      margin: 0;
+      color: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      line-height: 1.25;
+    }
+    .row-main .row-meta strong {
+      color: var(--text);
+      font-weight: 900;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      max-width: 100%;
+      min-height: 26px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      padding: 3px 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+    .chip.blue { border-color: #bfdbfe; background: var(--blue-soft); color: var(--blue); }
+    .chip.green { border-color: #99f6e4; background: var(--green-soft); color: var(--green); }
+    .chip.amber { border-color: #fed7aa; background: var(--amber-soft); color: var(--amber); }
+    .quick {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      background: var(--card);
+      color: transparent;
+      font-weight: 900;
+    }
+    .quick.done { border-color: #99f6e4; background: var(--green); color: #fff; }
+    .mini-progress {
+      display: block;
+      height: 5px;
+      width: min(148px, 100%);
+      margin-top: 7px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+    .mini-progress i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--blue);
+    }
+    .progress {
+      height: 7px;
+      margin-top: 10px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+    .progress span { display: block; height: 100%; border-radius: 999px; background: var(--blue); }
+    .expand {
+      display: none;
+      gap: 8px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+    }
+    .row.expanded .expand { display: grid; }
+    .subrow {
+      min-height: 58px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+      background: #fbfdff;
+    }
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 6px;
+      margin-top: 12px;
+    }
+    .weekday {
+      min-height: 28px;
+      color: var(--faint);
+      font-size: 12px;
+      font-weight: 900;
+      text-align: center;
+    }
+    .day {
+      min-height: 58px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--muted);
+      padding: 7px 6px;
+      text-align: left;
+      font-weight: 850;
+    }
+    .day.blank {
+      border-color: transparent;
+      background: transparent;
+      pointer-events: none;
+    }
+    .day.has { color: var(--text); }
+    .day.selected { border-color: #93c5fd; background: var(--blue-soft); color: var(--blue); }
+    .day.today { box-shadow: inset 0 0 0 1px #bfdbfe; }
+    .day span { display: block; color: var(--faint); font-size: 11px; font-weight: 850; }
+    .day.has span { color: var(--blue); }
+    .calendar-note {
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--soft);
+      padding: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .date-group {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .date-group + .date-group { margin-top: 12px; }
+    .date-group-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      min-height: 38px;
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      background: var(--soft);
+      padding: 8px 10px;
+      color: var(--muted);
+      font-weight: 850;
+    }
+    .date-group-head b { color: var(--text); font-size: 13px; }
+    .date-group-head span { color: var(--muted); font-size: 12px; font-weight: 900; }
+    .detail {
+      display: none;
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fbfdff;
+      padding: 16px;
+    }
+    .detail.open { display: block; }
+    .detail.inline {
+      margin-top: 0;
+      margin-left: 10px;
+      border-left: 4px solid var(--green);
+      background: #fff;
+    }
+    .detail-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .event-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .event-strip span {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--card);
+      padding: 9px 10px;
+    }
+    .event-strip b,
+    .event-strip em {
+      display: block;
+      font-style: normal;
+      line-height: 1.25;
+    }
+    .event-strip b { color: var(--muted); font-size: 11px; font-weight: 900; }
+    .event-strip em { margin-top: 4px; color: var(--text); font-size: 12px; font-weight: 900; }
+    .source-link {
+      display: inline-flex;
+      width: fit-content;
+      max-width: 100%;
+      margin-top: 10px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 850;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .items { display: grid; gap: 10px; margin-top: 12px; }
+    .label { color: var(--muted); font-size: 12px; font-weight: 900; }
+    .basis, .item {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--card);
+      padding: 12px;
+    }
+    .basis b, .item b { display: block; color: var(--text); font-size: 14px; }
+    .basis span, .item span span { display: block; margin-top: 4px; color: var(--muted); font-size: 13px; font-weight: 550; }
+    .item {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+    }
+    .item.done { border-color: #99f6e4; background: var(--green-soft); }
+    .item input { width: 36px; height: 36px; accent-color: var(--blue); }
+    .memo { display: grid; gap: 7px; margin-top: 12px; }
+    .memo label { color: var(--text); font-size: 13px; font-weight: 850; }
+    textarea {
+      width: 100%;
+      min-height: 88px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius-sm);
+      background: #fff;
+      padding: 10px 12px;
+      resize: vertical;
+    }
+    textarea::placeholder { color: var(--faint); }
+    details {
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--card);
+      padding: 11px;
+    }
+    summary { min-height: 36px; display: flex; align-items: center; cursor: pointer; font-weight: 850; }
+    pre { white-space: pre-wrap; word-break: keep-all; color: var(--muted); font-size: 13px; }
+    .crumb {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 12px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--soft);
+    }
+    .crumb button {
+      min-height: 38px;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      background: #fff;
+      padding: 5px 10px;
+      color: var(--muted);
+      font-weight: 850;
+    }
+    .crumb b { color: var(--text); }
+    @media (max-width: 520px) {
+      .app { width: min(100% - 20px, 430px); padding-top: 18px; }
+      .top, .panel { border-radius: 16px; }
+      .top { padding: 16px; }
+      .top-row { display: grid; }
+      .stat { width: 100%; text-align: left; }
+      .head { align-items: flex-start; }
+      .tabs { gap: 4px; padding: 5px; }
+      .tabs button { min-height: 42px; border-radius: 10px; font-size: 14px; }
+      .calendar { gap: 5px; }
+      .day { min-height: 54px; padding: 6px 5px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <div class="top-row">
+        <div>
+          <p class="eyebrow">실행 공간</p>
+          <h1>내 Flow</h1>
+        </div>
+        <aside class="stat" aria-live="polite">
+          <b id="todayStat">오늘 6개</b>
+          <span id="savedStat">개별 Flow 6개 · 지도 2개</span>
+        </aside>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="내 Flow 보기">
+      <button type="button" class="active" data-view="today">오늘</button>
+      <button type="button" data-view="calendar">일정</button>
+      <button type="button" data-view="flows">Flow</button>
+      <button type="button" data-view="maps">지도</button>
+    </nav>
+
+    <section class="view active panel" id="todayView" aria-labelledby="todayTitle">
+      <div class="head">
+        <div>
+          <p class="eyebrow">오늘</p>
+          <h2 id="todayTitle">먼저 할 일</h2>
+        </div>
+        <span class="count" id="todayCount">6개</span>
+      </div>
+      <div class="list" id="todayList"></div>
+      <article class="detail" id="todayDetail"></article>
+    </section>
+
+    <section class="view panel" id="calendarView" aria-labelledby="calendarTitle">
+      <div class="head">
+        <div>
+          <p class="eyebrow">일정</p>
+          <h2 id="calendarTitle">2026년 6월</h2>
+        </div>
+        <span class="count" id="calendarCount">0개</span>
+      </div>
+      <div class="calendar" id="calendarGrid" aria-label="6월 일정"></div>
+      <div class="calendar-note" id="calendarNote"></div>
+      <div class="list" id="calendarList"></div>
+      <article class="detail" id="calendarDetail"></article>
+    </section>
+
+    <section class="view panel" id="flowsView" aria-labelledby="flowsTitle">
+      <div class="head">
+        <div>
+          <p class="eyebrow">개별 Flow</p>
+          <h2 id="flowsTitle">저장한 Flow</h2>
+        </div>
+        <span class="count" id="flowsCount">6개</span>
+      </div>
+      <div class="list" id="flowList"></div>
+      <article class="detail" id="flowDetail"></article>
+    </section>
+
+    <section class="view panel" id="mapsView" aria-labelledby="mapsTitle">
+      <div class="head">
+        <div>
+          <p class="eyebrow">Flow 지도</p>
+          <h2 id="mapsTitle">지도별 Flow</h2>
+        </div>
+        <span class="count" id="mapsCount">2개</span>
+      </div>
+      <div class="list" id="mapList"></div>
+      <article class="detail" id="mapDetail"></article>
+    </section>
+  </main>
+
+  <script>
+    const maps = [
+      {
+        id: 'math-map',
+        name: '중1 수학 목차',
+        kind: '학습 지도',
+        source: 'Mathbang 중1 수학 목차'
+      },
+      {
+        id: 'baby-map',
+        name: '영유아 검진·접종 일정',
+        kind: '육아 일정',
+        source: '국립재활원 건강검진·표준예방접종 일정'
+      }
+    ];
+
+    const flows = [
+      {
+        id: 'jeonse',
+        name: '전세계약 전 확인 3가지',
+        type: '체크',
+        source: '정책브리핑 · 국토교통부',
+        sourceUrl: 'https://www.korea.kr/news/policyNewsView.do?newsId=148940979',
+        steps: [
+          {
+            id: 'jeonse-register-head',
+            date: '오늘',
+            title: '등기부등본 표제부 확인',
+            detail: '계약하려는 집과 등기부등본의 기본 정보가 맞는지 봅니다.',
+            completion: '표제부에서 건물 용도와 주소 일치 여부를 확인했습니다.',
+            memoHint: '주소, 동·호수, 건물 용도에서 걸리는 점만 남기세요',
+            items: [
+              { title: '건물 용도 확인', detail: '등기부등본 표제부에서 건물 용도를 봅니다.' },
+              { title: '주소와 동·호수 대조', detail: '계약하려는 매물 정보와 등기부등본 표시가 같은지 봅니다.' },
+              { title: '건축물대장 확인 메모', detail: '표제부만으로 부족하면 건축물대장 확인 필요 여부를 남깁니다.' }
+            ]
+          },
+          {
+            id: 'jeonse-register-rights',
+            date: '오늘',
+            title: '갑구·을구 권리관계 확인',
+            detail: '소유자, 체납, 근저당처럼 계약 전에 물어봐야 할 권리관계를 정리합니다.',
+            completion: '갑구와 을구에서 확인한 권리관계를 메모했습니다.',
+            memoHint: '소유자, 세금 체납, 근저당, 전세권, 임차권 중 걸리는 것만 남기세요',
+            items: [
+              { title: '갑구 소유자 확인', detail: '소유자와 세금 체납 관련 확인 필요 여부를 남깁니다.' },
+              { title: '을구 근저당 확인', detail: '근저당권, 전세권, 임차권 등 권리 설정을 확인합니다.' }
+            ]
+          },
+          {
+            id: 'jeonse-special-guarantee',
+            date: '6.24',
+            title: '특약사항과 보증보험 메모',
+            detail: '계약서에 남겨야 할 특약과 전세보증보험 가능 여부를 한 곳에 둡니다.',
+            completion: '특약과 보증보험 확인 내용을 남겼습니다.',
+            memoHint: '특약 문구, 보증보험 가능 여부, 확인 링크만 남기세요',
+            items: [
+              { title: '특약사항 메모', detail: '수리, 반환, 선순위 권리처럼 계약서에 넣을 내용을 짧게 남깁니다.' },
+              { title: '전세보증보험 가능 여부', detail: '보증보험 가입 가능 여부와 확인할 기관 링크를 남깁니다.' }
+            ]
+          },
+          {
+            id: 'jeonse-safe-app',
+            date: '날짜 없음',
+            title: '안심전세 앱 링크 보관',
+            detail: '다시 볼 확인 도구 링크만 보관합니다.',
+            completion: '다시 확인할 링크를 남겼습니다.',
+            memoHint: '개인정보 없이 앱/확인 페이지 링크만 남기세요',
+            items: []
+          }
+        ]
+      },
+      {
+        id: 'move',
+        name: '원룸 이사 D-30 준비',
+        type: '일정',
+        source: 'KB Think 원룸 이사 체크리스트',
+        sourceUrl: 'https://kbthink.com/main/living-finance/consumption-life/single-consumption/one-room-move.html',
+        steps: [
+          {
+            id: 'move-d30',
+            date: '오늘',
+            title: '이삿짐센터·입주청소 예약',
+            detail: '이사 한 달 전 예약해야 하는 항목만 먼저 처리합니다.',
+            completion: '이삿짐센터와 입주청소 후보를 비교했습니다.',
+            memoHint: '업체명, 견적, 포함 범위, 연락처만 남기세요',
+            items: [
+              { title: '이삿짐센터 견적 3곳 비교', detail: '포장 범위와 비용을 같이 봅니다.' },
+              { title: '입주청소 예약', detail: '청소 날짜와 포함 범위를 확인합니다.' },
+              { title: '줄일 짐 메모', detail: '버릴 물건과 줄일 짐을 짧게 적습니다.' }
+            ]
+          },
+          {
+            id: 'move-d14',
+            date: '6.22',
+            title: '가구 배치와 배송 일정 정하기',
+            detail: '새 집에 들어갈 물건의 위치와 배송일을 정합니다.',
+            completion: '가구 배치와 배송 일정을 남겼습니다.',
+            memoHint: '가구 위치, 배송일, 선입주 가능 여부만 남기세요',
+            items: [
+              { title: '가구 배치 정하기', detail: '큰 가구 위치부터 정합니다.' },
+              { title: '새 가전·가구 배송일 확인', detail: '이사일과 겹치지 않게 날짜를 맞춥니다.' },
+              { title: '빈집 선입주 가능 여부 확인', detail: '배송 전 들어갈 수 있는지 확인합니다.' }
+            ]
+          },
+          {
+            id: 'move-d7',
+            date: '6.23',
+            title: '짐 정리와 이전 신청',
+            detail: '일주일 전 처리할 정리와 이전 신청을 한 번에 봅니다.',
+            completion: '짐 정리와 이전 신청을 확인했습니다.',
+            memoHint: '버릴 물건, 신청한 이전 서비스, 이체 한도만 남기세요',
+            items: [
+              { title: '버릴 물건·중요 물건 나누기', detail: '버릴 것과 직접 챙길 것을 나눕니다.' },
+              { title: '인터넷·정수기·가전 이전 신청', detail: '이전 설치가 필요한 서비스만 확인합니다.' },
+              { title: '은행 이체 한도 확인', detail: '잔금이나 당일 결제에 필요한 한도를 봅니다.' }
+            ]
+          },
+          {
+            id: 'move-d1',
+            date: '6.28',
+            title: '귀중품과 당일 물품 따로 빼기',
+            detail: '이사 전날 직접 들고 갈 물건을 분리합니다.',
+            completion: '귀중품과 당일 물품을 따로 챙겼습니다.',
+            memoHint: '직접 들고 갈 물건, 청소도구, 봉투 위치만 남기세요',
+            items: [
+              { title: '귀중품·파손 물품 분리', detail: '서류, 현금, 깨지기 쉬운 물건은 직접 챙깁니다.' },
+              { title: '쓰레기봉투·청소도구 준비', detail: '당일 바로 쓸 봉투, 테이프, 칼, 청소도구를 빼둡니다.' }
+            ]
+          },
+          {
+            id: 'move-dday',
+            date: '6.29',
+            title: '공과금 정산과 전입신고',
+            detail: '이사 당일 정산과 행정 처리를 마무리합니다.',
+            completion: '정산과 전입신고 상태를 확인했습니다.',
+            memoHint: '관리비, 공과금, 사진 위치, 전입신고 상태만 남기세요',
+            items: [
+              { title: '관리비·공과금 정산', detail: '수도, 전기, 가스, 관리비 정산 여부를 봅니다.' },
+              { title: '잔금과 집 상태 사진', detail: '잔금 처리와 집 상태 사진을 같이 남깁니다.' },
+              { title: '전입신고', detail: '이사 당일 신고 여부를 확인합니다.' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'passport',
+        name: '온라인 여권 재발급',
+        type: '체크',
+        source: '정부24 여권 재발급 안내',
+        sourceUrl: 'https://www.gov.kr/portal/service/serviceInfo/126200000030',
+        steps: [
+          {
+            id: 'passport-photo',
+            date: '오늘',
+            title: '여권 사진 파일 준비',
+            detail: '신청 전에 사용할 사진 파일이 기준에 맞는지 확인합니다.',
+            completion: '여권 사진 파일 기준을 확인했습니다.',
+            memoHint: '사진 파일 위치, 촬영일, 다시 찍어야 할 점만 남기세요',
+            items: [
+              { title: 'JPG/JPEG 파일 확인', detail: '온라인 신청에 올릴 사진 파일 형식을 확인합니다.' },
+              { title: '권장 픽셀 범위 확인', detail: '정부24 안내의 사진 규격 범위에 맞는지 봅니다.' },
+              { title: '6개월 이내 사진 여부', detail: '최근 6개월 이내 촬영한 사진인지 확인합니다.' }
+            ]
+          },
+          {
+            id: 'passport-existing',
+            date: '오늘',
+            title: '기존 여권 상태 확인',
+            detail: '기존 여권 보유·분실 상태를 신청 전에 정리합니다.',
+            completion: '기존 여권 상태를 확인했습니다.',
+            memoHint: '기존 여권 보유 여부, 분실신고 필요 여부만 남기세요',
+            items: [
+              { title: '기존 여권 보유 여부', detail: '새 여권 수령 시 기존 여권을 반납해야 하는지 확인합니다.' },
+              { title: '분실이면 분실신고', detail: '분실 상태라면 신청 전에 처리할 항목으로 남깁니다.' }
+            ]
+          },
+          {
+            id: 'passport-apply',
+            date: '6.23',
+            title: '정부24 재발급 신청',
+            detail: '사진과 기존 여권 상태를 확인한 뒤 신청합니다.',
+            completion: '정부24 신청 상태를 표시했습니다.',
+            memoHint: '신청 번호, 수령 기관, 다시 볼 URL만 남기세요',
+            items: [
+              { title: '신청 후 취소 제한 확인', detail: '접수 뒤 임의 취소가 어려운 점을 확인합니다.' },
+              { title: '사진 오류 제한 확인', detail: '사진 오류가 반복되면 신청 제한이 생길 수 있음을 확인합니다.' }
+            ]
+          },
+          {
+            id: 'passport-pickup',
+            date: '날짜 없음',
+            title: '수령·반려 메모',
+            detail: '수령 기관, 반려 사유, 다시 신청할 내용을 보관합니다.',
+            completion: '수령 또는 반려 관련 메모를 남겼습니다.',
+            memoHint: '수령 기관, 반려 사유, 환불 또는 재신청 링크만 남기세요',
+            items: []
+          }
+        ]
+      },
+      {
+        id: 'math-integers',
+        mapId: 'math-map',
+        name: '정수와 유리수',
+        type: '진도',
+        source: 'Mathbang 중1 수학 목차',
+        sourceUrl: 'https://mathbang.net/13',
+        steps: [
+          {
+            id: 'math-positive-negative',
+            date: '오늘',
+            title: '양수와 음수',
+            detail: '정수와 유리수 단원의 첫 세부 단원입니다.',
+            completion: '양수와 음수 학습 상태를 표시했습니다.',
+            memoHint: '헷갈린 부호 예시나 다시 볼 문제만 남기세요',
+            items: []
+          },
+          {
+            id: 'math-absolute-numberline',
+            date: '6.22',
+            title: '절댓값과 수직선',
+            detail: '절댓값과 수직선 개념을 이어서 확인합니다.',
+            completion: '절댓값과 수직선 학습 상태를 표시했습니다.',
+            memoHint: '절댓값, 수직선에서 틀린 문제 번호만 남기세요',
+            items: []
+          },
+          {
+            id: 'math-compare-integers',
+            date: '6.23',
+            title: '정수의 대소관계',
+            detail: '수의 크기 비교를 확인합니다.',
+            completion: '정수의 대소관계 학습 상태를 표시했습니다.',
+            memoHint: '비교가 헷갈린 문제만 남기세요',
+            items: []
+          },
+          {
+            id: 'math-add-sub',
+            date: '6.25',
+            title: '정수의 덧셈과 뺄셈',
+            detail: '부호가 있는 수의 계산을 진행합니다.',
+            completion: '정수의 덧셈과 뺄셈 상태를 표시했습니다.',
+            memoHint: '계산 실수 유형만 남기세요',
+            items: []
+          },
+          {
+            id: 'math-mul-div',
+            date: '6.26',
+            title: '정수의 곱셈과 나눗셈',
+            detail: '곱셈과 나눗셈 계산을 진행합니다.',
+            completion: '정수의 곱셈과 나눗셈 상태를 표시했습니다.',
+            memoHint: '부호 실수, 다시 볼 문제만 남기세요',
+            items: []
+          },
+          {
+            id: 'math-rational',
+            date: '날짜 없음',
+            title: '유리수와 유리수의 계산',
+            detail: '유리수 계산까지 정리합니다.',
+            completion: '유리수 계산 상태를 표시했습니다.',
+            memoHint: '오답 번호와 다시 볼 계산만 남기세요',
+            items: []
+          }
+        ]
+      },
+      {
+        id: 'math-expression',
+        mapId: 'math-map',
+        name: '문자와 식',
+        type: '진도',
+        source: 'Mathbang 중1 수학 목차',
+        sourceUrl: 'https://mathbang.net/13',
+        steps: [
+          {
+            id: 'expr-symbol',
+            date: '6.27',
+            title: '문자의 사용',
+            detail: '문자를 써서 식을 나타내는 단원입니다.',
+            completion: '문자의 사용 학습 상태를 표시했습니다.',
+            memoHint: '헷갈린 기호나 예시만 남기세요',
+            items: []
+          },
+          {
+            id: 'expr-mul-div-omit',
+            date: '날짜 없음',
+            title: '곱셈·나눗셈 기호 생략',
+            detail: '문자식에서 기호를 생략하는 규칙을 봅니다.',
+            completion: '기호 생략 규칙 상태를 표시했습니다.',
+            memoHint: '실수한 생략 규칙만 남기세요',
+            items: []
+          },
+          {
+            id: 'expr-substitution',
+            date: '날짜 없음',
+            title: '대입과 식의 값',
+            detail: '문자에 값을 넣어 식의 값을 구합니다.',
+            completion: '대입과 식의 값 학습 상태를 표시했습니다.',
+            memoHint: '대입 실수 문제 번호만 남기세요',
+            items: []
+          },
+          {
+            id: 'expr-term',
+            date: '날짜 없음',
+            title: '항·계수·차수',
+            detail: '일차식의 기본 용어를 확인합니다.',
+            completion: '항·계수·차수 상태를 표시했습니다.',
+            memoHint: '구분이 헷갈린 예시만 남기세요',
+            items: []
+          },
+          {
+            id: 'expr-linear',
+            date: '날짜 없음',
+            title: '일차식의 덧셈과 뺄셈',
+            detail: '일차식 계산을 이어서 진행합니다.',
+            completion: '일차식 계산 상태를 표시했습니다.',
+            memoHint: '계산 실수 유형만 남기세요',
+            items: []
+          }
+        ]
+      },
+      {
+        id: 'math-graph',
+        mapId: 'math-map',
+        name: '좌표평면과 그래프',
+        type: '진도',
+        source: 'Mathbang 중1 수학 목차',
+        sourceUrl: 'https://mathbang.net/13',
+        steps: [
+          {
+            id: 'graph-coordinate',
+            date: '날짜 없음',
+            title: '순서쌍과 좌표평면',
+            detail: '좌표를 읽고 표시하는 단원입니다.',
+            completion: '순서쌍과 좌표평면 상태를 표시했습니다.',
+            memoHint: '헷갈린 좌표 예시만 남기세요',
+            items: []
+          },
+          {
+            id: 'graph-expression',
+            date: '날짜 없음',
+            title: '그래프의 뜻과 표현',
+            detail: '그래프가 나타내는 관계를 읽습니다.',
+            completion: '그래프 표현 상태를 표시했습니다.',
+            memoHint: '틀린 그래프 유형만 남기세요',
+            items: []
+          },
+          {
+            id: 'graph-direct',
+            date: '날짜 없음',
+            title: '정비례와 그래프',
+            detail: '정비례 그래프를 확인합니다.',
+            completion: '정비례 그래프 상태를 표시했습니다.',
+            memoHint: '다시 볼 그래프 문제만 남기세요',
+            items: []
+          },
+          {
+            id: 'graph-inverse',
+            date: '날짜 없음',
+            title: '반비례와 그래프',
+            detail: '반비례 그래프를 확인합니다.',
+            completion: '반비례 그래프 상태를 표시했습니다.',
+            memoHint: '오답 번호만 남기세요',
+            items: []
+          }
+        ]
+      },
+      {
+        id: 'baby-checkup-flow',
+        mapId: 'baby-map',
+        name: '영유아 건강검진 일정',
+        type: '일정',
+        source: '국립재활원 영유아 건강검진 안내',
+        sourceUrl: 'https://www.nrc.go.kr/portal/html/content.do?depth=ph&menu_cd=03_02_00_04',
+        steps: [
+          {
+            id: 'baby-checkup-notice',
+            date: '오늘',
+            title: '검진표·전자문서 확인',
+            detail: '검진 안내를 어디서 받았는지 먼저 확인합니다.',
+            completion: '검진 안내 확인 위치를 남겼습니다.',
+            memoHint: '네이버 앱 전자문서, 우편물, 검진기관 링크만 남기세요',
+            items: [
+              { title: '전자문서 또는 우편 확인', detail: '검진 안내가 도착한 위치를 확인합니다.' },
+              { title: '검진기관 확인', detail: '방문할 검진기관을 찾고 링크를 남깁니다.' }
+            ]
+          },
+          {
+            id: 'baby-checkup-4th',
+            date: '6.24',
+            title: '4차 건강검진 기간 확인',
+            detail: '18~24개월 건강검진 기간과 검진 항목을 확인합니다.',
+            completion: '4차 건강검진 기간과 항목을 확인했습니다.',
+            memoHint: '검진 예정일, 병원명, 물어볼 질문만 남기세요',
+            items: [
+              { title: '18~24개월 기간 확인', detail: '4차 건강검진 대상 기간을 확인합니다.' },
+              { title: '문진·진찰·신체계측', detail: '기본 검진 항목을 확인합니다.' },
+              { title: '발달선별·상담·건강교육', detail: '방문 전 질문할 내용을 짧게 남깁니다.' }
+            ]
+          },
+          {
+            id: 'baby-dental',
+            date: '날짜 없음',
+            title: '구강검진 기간 메모',
+            detail: '18~29개월 구강검진 기간을 따로 보관합니다.',
+            completion: '구강검진 기간을 메모했습니다.',
+            memoHint: '구강검진 예정일, 치과명, 확인 URL만 남기세요',
+            items: [
+              { title: '18~29개월 기간 확인', detail: '구강검진 대상 기간을 확인합니다.' },
+              { title: '구강문진·진찰·구강보건교육', detail: '구강검진에서 확인할 항목을 봅니다.' }
+            ]
+          },
+          {
+            id: 'baby-next-checkup',
+            date: '날짜 없음',
+            title: '다음 건강검진 기간 보관',
+            detail: '다음 차수 기간을 캘린더에 넣을 준비만 합니다.',
+            completion: '다음 검진 기간을 보관했습니다.',
+            memoHint: '5차 30~36개월, 6차 42~48개월처럼 다음 기간만 남기세요',
+            items: []
+          }
+        ]
+      },
+      {
+        id: 'baby-vaccine-flow',
+        mapId: 'baby-map',
+        name: '영유아 표준 예방접종 일정',
+        type: '일정',
+        source: '국립재활원 표준 예방접종 일정표',
+        sourceUrl: 'https://www.nrc.go.kr/portal/html/content.do?depth=ph&menu_cd=03_01_00_03',
+        steps: [
+          {
+            id: 'vaccine-hepb-bcg',
+            date: '오늘',
+            title: 'B형간염·BCG 접종 시기 확인',
+            detail: '출생 직후와 1개월 안팎의 접종 시기를 봅니다.',
+            completion: 'B형간염과 BCG 접종 시기를 확인했습니다.',
+            memoHint: '접종명, 차수, 병원 문의 여부만 남기세요',
+            items: [
+              { title: 'B형간염 1·2·3차', detail: '출생 시, 1개월, 6개월 차수를 확인합니다.' },
+              { title: 'BCG 생후 4주 이내', detail: '접종 여부를 병원 기록과 맞춰봅니다.' }
+            ]
+          },
+          {
+            id: 'vaccine-basic-series',
+            date: '6.27',
+            title: '기초접종 묶음 일정 확인',
+            detail: 'DTaP, IPV, Hib, PCV 같은 기초접종 차수를 확인합니다.',
+            completion: '기초접종 묶음의 차수를 확인했습니다.',
+            memoHint: '접종명, 차수, 다음 예약일만 남기세요',
+            items: [
+              { title: 'DTaP·IPV 차수 확인', detail: '2·4·6개월과 추가접종 흐름을 봅니다.' },
+              { title: 'Hib·PCV 차수 확인', detail: '동일 월령대 접종 차수를 함께 봅니다.' }
+            ]
+          },
+          {
+            id: 'vaccine-after-12m',
+            date: '날짜 없음',
+            title: '12개월 이후 접종 메모',
+            detail: '12개월 이후 확인할 접종을 나중에 볼 항목으로 보관합니다.',
+            completion: '12개월 이후 접종 항목을 보관했습니다.',
+            memoHint: 'MMR, 수두, A형간염처럼 나중에 확인할 접종명만 남기세요',
+            items: [
+              { title: 'MMR 1차', detail: '12~15개월 접종 항목으로 보관합니다.' },
+              { title: '수두 1회', detail: '12~15개월 접종 항목으로 보관합니다.' },
+              { title: 'A형간염 1~2차', detail: '12개월 이후 접종 항목으로 보관합니다.' }
+            ]
+          },
+          {
+            id: 'vaccine-missed',
+            date: '날짜 없음',
+            title: '지연 접종 상담 메모',
+            detail: '표준 일정에서 벗어난 경우 의료진에게 확인할 질문만 남깁니다.',
+            completion: '상담할 질문을 메모했습니다.',
+            memoHint: '늦어진 접종명, 마지막 접종일, 병원에 물어볼 질문만 남기세요',
+            items: []
+          }
+        ]
+      }
+    ];
+
+    const state = {
+      view: new URLSearchParams(location.search).get('view') || 'today',
+      expandedFlow: null,
+      expandedMap: null,
+      expandedMapFlow: null,
+      selectedDate: null,
+      selectedStep: null,
+      checks: {},
+      done: {},
+      memos: {}
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const all = (selector) => Array.from(document.querySelectorAll(selector));
+    const flowById = (id) => flows.find((flow) => flow.id === id);
+    const mapById = (id) => maps.find((map) => map.id === id);
+    const stepsForFlow = (flow) => flow.steps.map((step) => ({ ...step, flowId: flow.id, mapId: flow.mapId || null }));
+    const allSteps = () => flows.flatMap(stepsForFlow);
+    const standaloneFlows = () => flows.filter((flow) => !flow.mapId);
+    const stepById = (id) => allSteps().find((step) => step.id === id);
+    const isToday = (step) => step.date === '오늘' || step.date.includes('오늘');
+    const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+    const checkKey = (step, index) => `${step.id}:${index}`;
+    const stepItems = (step) => step.items || [];
+    const flowsForMap = (mapId) => flows.filter((flow) => flow.mapId === mapId);
+    function dateKey(step) {
+      if (isToday(step)) return '2026-06-22';
+      const match = /^6\.(\d{1,2})$/.exec(step.date);
+      if (!match) return null;
+      return `2026-06-${match[1].padStart(2, '0')}`;
+    }
+    function dateLabel(key) {
+      const day = Number(key.slice(-2));
+      return `6.${day}`;
+    }
+    function scheduledSteps() {
+      return allSteps().filter((step) => dateKey(step));
+    }
+    function scheduledDateKeys() {
+      return Array.from(new Set(scheduledSteps().map(dateKey))).sort();
+    }
+    function stepsOnDate(key) {
+      return scheduledSteps().filter((step) => dateKey(step) === key);
+    }
+    function isDone(step) {
+      if (step.date === '완료') return true;
+      const items = stepItems(step);
+      if (!items.length) return Boolean(state.done[step.id]);
+      return items.every((_, index) => state.checks[checkKey(step, index)]);
+    }
+    function destinationLabel(flow) {
+      if (flow.type === '일정') return '캘린더';
+      if (flow.type === '루틴') return '반복';
+      if (flow.type === '체크') return '투두';
+      if (flow.type === '보관') return '보관';
+      if (flow.type === '진도') return '진도';
+      return 'Step';
+    }
+    function progressText(step) {
+      if (step.date === '완료') return '완료';
+      const items = stepItems(step);
+      if (!items.length) return isDone(step) ? '완료' : '대기';
+      const done = items.filter((_, index) => state.checks[checkKey(step, index)]).length;
+      return `${done}/${items.length}`;
+    }
+    function rowContext(step, flow, map) {
+      return map ? `${map.name} › ${flow.name}` : flow.name;
+    }
+    function groupedByContext(steps) {
+      return steps.reduce((groups, step) => {
+        const flow = flowById(step.flowId);
+        const map = step.mapId ? mapById(step.mapId) : null;
+        const label = rowContext(step, flow, map);
+        let group = groups.find((item) => item.label === label);
+        if (!group) {
+          group = { label, steps: [] };
+          groups.push(group);
+        }
+        group.steps.push(step);
+        return groups;
+      }, []);
+    }
+    function progress(flow) {
+      const steps = stepsForFlow(flow);
+      const done = steps.filter(isDone).length;
+      return { done, total: steps.length, pct: Math.round((done / steps.length) * 100) };
+    }
+    function mapProgress(mapId) {
+      const mapFlows = flowsForMap(mapId);
+      const steps = mapFlows.flatMap(stepsForFlow);
+      const done = steps.filter(isDone).length;
+      return { flows: mapFlows.length, done, total: steps.length, pct: Math.round((done / steps.length) * 100) };
+    }
+    function todaySteps() {
+      return allSteps().filter(isToday);
+    }
+    function itemLabelFor(flow, items) {
+      if (!items.length) return '완료 표시';
+      if (flow.type === '진도') return '오늘 범위';
+      return items.length > 1 ? '세부 항목' : '할 일';
+    }
+    function stepDetailMarkup(step) {
+      const flow = flowById(step.flowId);
+      const map = step.mapId ? mapById(step.mapId) : null;
+      const done = isDone(step);
+      const items = stepItems(step);
+      const itemLabel = itemLabelFor(flow, items);
+      const sourceLink = flow.sourceUrl
+        ? `<a class="source-link" href="${flow.sourceUrl}" target="_blank" rel="noreferrer">원문 열기 · ${flow.source}</a>`
+        : '';
+      const itemMarkup = items.length ? items.map((item, index) => {
+        const key = checkKey(step, index);
+        const checked = Boolean(state.checks[key]) || step.date === '완료';
+        return `
+          <label class="item ${checked ? 'done' : ''}">
+            <input type="checkbox" data-check="${key}" ${checked ? 'checked' : ''} ${step.date === '완료' ? 'disabled' : ''} />
+            <span><b>${item.title}</b><span>${item.detail}</span></span>
+          </label>
+        `;
+      }).join('') : `
+        <label class="item ${done ? 'done' : ''}">
+          <input type="checkbox" data-step="${step.id}" ${done ? 'checked' : ''} ${step.date === '완료' ? 'disabled' : ''} />
+          <span><b>완료로 표시</b><span>${step.completion}</span></span>
+        </label>
+      `;
+      return `
+        <div class="detail-top">
+          <div>
+            <p class="eyebrow">${map ? `${map.name} · ${flow.name}` : flow.name}</p>
+            <h3>${step.title}</h3>
+          </div>
+        </div>
+        <div class="event-strip" aria-label="Step 정보">
+          <span><b>일정</b><em>${step.date}</em></span>
+          <span><b>저장</b><em>${destinationLabel(flow)}</em></span>
+          <span><b>진행</b><em>${progressText(step)}</em></span>
+        </div>
+        ${sourceLink}
+        <div class="items">
+          <div class="label">${itemLabel}</div>
+          ${itemMarkup}
+        </div>
+        <div class="memo">
+          <label for="memo-${step.id}">메모</label>
+          <textarea id="memo-${step.id}" data-memo="${step.id}" placeholder="${step.memoHint || '확인한 내용만 짧게 남기세요'}">${state.memos[step.id] || ''}</textarea>
+        </div>
+      `;
+    }
+    function toggleStep(stepId) {
+      const step = stepById(stepId);
+      const next = !isDone(step);
+      const items = stepItems(step);
+      if (!items.length) state.done[step.id] = next;
+      else items.forEach((_, index) => { state.checks[checkKey(step, index)] = next; });
+      render();
+    }
+    function rowStep(step, options = {}) {
+      const done = isDone(step);
+      const flow = flowById(step.flowId);
+      const map = step.mapId ? mapById(step.mapId) : null;
+      const p = progress(flow);
+      const selected = state.selectedStep === step.id;
+      const context = rowContext(step, flow, map);
+      const showDateBadge = options.showDateBadge !== false;
+      const showMeta = options.showMeta !== false;
+      const chipText = done ? '완료' : showDateBadge ? step.date : '';
+      const chip = chipText ? `<span class="chip ${done ? 'green' : isToday(step) ? 'blue' : 'amber'}">${chipText}</span>` : '';
+      const meta = showMeta ? `<span class="row-meta"><span>${context}</span><strong>${p.done}/${p.total} 완료</strong></span>` : '';
+      const inline = selected && options.inline !== false
+        ? `<article class="detail inline open">${stepDetailMarkup(step)}</article>`
+        : '';
+      const ariaText = showMeta ? `${step.title}, ${context}, ${p.done}/${p.total} 완료` : `${step.title}, ${step.date}`;
+      return `
+        <div class="step-block">
+          <article class="row action-row step-row ${options.nested ? 'nested' : ''} ${selected ? 'active' : ''}">
+            <button class="row-main" type="button" data-open-step="${step.id}" aria-label="${ariaText}">
+              <span class="row-content">
+                ${chip}
+                <b>${step.title}</b>
+                ${meta}
+              </span>
+            </button>
+            <button class="quick ${done ? 'done' : ''}" type="button" data-quick="${step.id}" aria-label="${done ? '완료 취소' : '완료 표시'}">${done ? '✓' : ''}</button>
+          </article>
+          ${inline}
+        </div>
+      `;
+    }
+    function renderDetail(container) {
+      const step = state.selectedStep ? stepById(state.selectedStep) : null;
+      if (!step) {
+        container.className = 'detail';
+        container.innerHTML = '';
+        return;
+      }
+      const flow = flowById(step.flowId);
+      const map = step.mapId ? mapById(step.mapId) : null;
+      const done = isDone(step);
+      const items = stepItems(step);
+      const itemLabel = itemLabelFor(flow, items);
+      const sourceLink = flow.sourceUrl
+        ? `<a class="source-link" href="${flow.sourceUrl}" target="_blank" rel="noreferrer">원문 열기 · ${flow.source}</a>`
+        : '';
+      const itemMarkup = items.length ? items.map((item, index) => {
+        const key = checkKey(step, index);
+        const checked = Boolean(state.checks[key]) || step.date === '완료';
+        return `
+          <label class="item ${checked ? 'done' : ''}">
+            <input type="checkbox" data-check="${key}" ${checked ? 'checked' : ''} ${step.date === '완료' ? 'disabled' : ''} />
+            <span><b>${item.title}</b><span>${item.detail}</span></span>
+          </label>
+        `;
+      }).join('') : `
+        <label class="item ${done ? 'done' : ''}">
+          <input type="checkbox" data-step="${step.id}" ${done ? 'checked' : ''} ${step.date === '완료' ? 'disabled' : ''} />
+          <span><b>완료로 표시</b><span>${step.completion}</span></span>
+        </label>
+      `;
+      container.className = 'detail open';
+      container.innerHTML = `
+        <div class="detail-top">
+          <div>
+            <p class="eyebrow">${map ? `${map.name} · ${flow.name}` : flow.name}</p>
+            <h3>${step.title}</h3>
+          </div>
+        </div>
+        <div class="event-strip" aria-label="Step 정보">
+          <span><b>일정</b><em>${step.date}</em></span>
+          <span><b>저장</b><em>${destinationLabel(flow)}</em></span>
+          <span><b>진행</b><em>${progressText(step)}</em></span>
+        </div>
+        ${sourceLink}
+        <div class="items">
+          <div class="label">${itemLabel}</div>
+          ${itemMarkup}
+        </div>
+        <div class="memo">
+          <label for="memo-${step.id}">메모</label>
+          <textarea id="memo-${step.id}" data-memo="${step.id}" placeholder="${step.memoHint || '확인한 내용만 짧게 남기세요'}">${state.memos[step.id] || ''}</textarea>
+        </div>
+      `;
+    }
+    function renderSummary() {
+      const todayCount = todaySteps().length;
+      $('todayStat').textContent = `오늘 ${todayCount}개`;
+      $('savedStat').textContent = `개별 Flow ${standaloneFlows().length}개 · 지도 ${maps.length}개`;
+      $('todayCount').textContent = `${todayCount}개`;
+      $('calendarCount').textContent = `${scheduledDateKeys().length}일`;
+      $('flowsCount').textContent = `${standaloneFlows().length}개`;
+      $('mapsCount').textContent = `${maps.length}개`;
+    }
+    function renderNav() {
+      all('[data-view]').forEach((button) => button.classList.toggle('active', button.dataset.view === state.view));
+      all('.view').forEach((view) => view.classList.toggle('active', view.id === `${state.view}View`));
+    }
+    function renderToday() {
+      $('todayList').innerHTML = todaySteps().map((step) => rowStep(step, { compact: false, inline: state.view === 'today', showDateBadge: false })).join('');
+      $('todayDetail').className = 'detail';
+      $('todayDetail').innerHTML = '';
+    }
+    function renderCalendar() {
+      const counts = scheduledSteps().reduce((acc, step) => {
+        const key = dateKey(step);
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+      }, {});
+      const days = [];
+      weekdays.forEach((day) => days.push(`<div class="weekday">${day}</div>`));
+      for (let i = 0; i < 1; i += 1) days.push('<button class="day blank" type="button" tabindex="-1" aria-hidden="true"></button>');
+      for (let day = 1; day <= 30; day += 1) {
+        const key = `2026-06-${String(day).padStart(2, '0')}`;
+        const count = counts[key] || 0;
+        const selected = state.selectedDate === key;
+        const today = key === '2026-06-22';
+        days.push(`
+          <button class="day ${count ? 'has' : ''} ${selected ? 'selected' : ''} ${today ? 'today' : ''}" type="button" data-date="${key}">
+            ${day}
+            <span>${count ? `${count}개` : ''}</span>
+          </button>
+        `);
+      }
+      $('calendarGrid').innerHTML = days.join('');
+      const selected = state.selectedDate ? stepsOnDate(state.selectedDate) : [];
+      const selectedMarkup = selected.length > 4
+        ? groupedByContext(selected).map((group) => `
+          <section class="date-group" aria-label="${group.label}">
+            <div class="date-group-head"><b>${group.label}</b><span>${group.steps.length}개</span></div>
+            ${group.steps.map((step) => rowStep(step, { compact: false, inline: state.view === 'calendar', showDateBadge: false, showMeta: false })).join('')}
+          </section>
+        `).join('')
+        : selected.map((step) => rowStep(step, { compact: false, inline: state.view === 'calendar', showDateBadge: false })).join('');
+      $('calendarNote').textContent = state.selectedDate
+        ? `${dateLabel(state.selectedDate)} 일정 ${selected.length}개`
+        : '날짜를 누르면 해당 날짜 항목만 보입니다.';
+      $('calendarList').innerHTML = state.selectedDate
+        ? (selected.length ? selectedMarkup : '<div class="calendar-note">이 날짜에는 저장된 일정 Step이 없습니다.</div>')
+        : '';
+      $('calendarDetail').className = 'detail';
+      $('calendarDetail').innerHTML = '';
+    }
+    function renderFlows() {
+      $('flowList').innerHTML = standaloneFlows().map((flow) => {
+        const p = progress(flow);
+        const expanded = state.expandedFlow === flow.id;
+        const steps = stepsForFlow(flow);
+        const next = steps.find((step) => !isDone(step)) || steps[0];
+        return `
+          <article class="row flow-card ${expanded ? 'expanded active' : ''}">
+            <button class="row-main" type="button" data-expand-flow="${flow.id}">
+              <span>
+                <span class="chip blue">${flow.type}</span>
+                <b>${flow.name}</b>
+                <span>${p.done}/${p.total}개 완료 · 다음: ${next.title}</span>
+              </span>
+              <span class="count">${p.total}개</span>
+            </button>
+            <div class="progress"><span style="width:${p.pct}%"></span></div>
+            <div class="expand">
+              ${steps.map((step) => rowStep(step, { compact: true, nested: true, inline: state.view === 'flows', showMeta: false })).join('')}
+            </div>
+          </article>
+        `;
+      }).join('');
+      $('flowDetail').className = 'detail';
+      $('flowDetail').innerHTML = '';
+    }
+    function renderMaps() {
+      if (!state.expandedMap) {
+        $('mapList').innerHTML = maps.map((map) => {
+          const p = mapProgress(map.id);
+          return `
+            <article class="row map-card">
+              <button class="row-main" type="button" data-expand-map="${map.id}">
+                <span>
+                  <span class="chip amber">${map.kind}</span>
+                  <b>${map.name}</b>
+                  <span>${p.flows}개 Flow · ${p.done}/${p.total}개 완료</span>
+                  <span class="mini-progress" aria-hidden="true"><i style="width:${p.pct}%"></i></span>
+                </span>
+                <span class="count">${p.flows}개</span>
+              </button>
+            </article>
+          `;
+        }).join('');
+      } else if (!state.expandedMapFlow) {
+        const map = mapById(state.expandedMap);
+        const childFlows = flowsForMap(map.id);
+        $('mapList').innerHTML = `
+          <div class="crumb">
+            <button type="button" data-map-back>지도</button>
+            <b>${map.name}</b>
+          </div>
+          ${childFlows.map((flow) => {
+            const p = progress(flow);
+            const next = flow.steps.find((step) => !isDone({ ...step, flowId: flow.id, mapId: flow.mapId })) || flow.steps[0];
+            return `
+              <article class="row flow-card">
+                <button class="row-main" type="button" data-expand-map-flow="${flow.id}">
+                  <span>
+                    <span class="chip blue">${flow.type}</span>
+                    <b>${flow.name}</b>
+                    <span>${p.done}/${p.total}개 완료 · 다음: ${next.title}</span>
+                    <span class="mini-progress" aria-hidden="true"><i style="width:${p.pct}%"></i></span>
+                  </span>
+                  <span class="count">${p.total}개</span>
+                </button>
+              </article>
+            `;
+          }).join('')}
+        `;
+      } else {
+        const map = mapById(state.expandedMap);
+        const flow = flowById(state.expandedMapFlow);
+        const p = progress(flow);
+        $('mapList').innerHTML = `
+          <div class="crumb">
+            <button type="button" data-map-back>지도</button>
+            <button type="button" data-map-flow-back>${map.name}</button>
+            <b>${flow.name}</b>
+          </div>
+          <article class="row flow-card active">
+            <button class="row-main" type="button" data-map-flow-back>
+              <span>
+                <span class="chip blue">${flow.type}</span>
+                <b>${flow.name}</b>
+                <span>${p.done}/${p.total}개 완료</span>
+                <span class="mini-progress" aria-hidden="true"><i style="width:${p.pct}%"></i></span>
+              </span>
+              <span class="count">${p.total}개</span>
+            </button>
+          </article>
+          ${stepsForFlow(flow).map((step) => rowStep(step, { compact: true, nested: true, inline: state.view === 'maps', showMeta: false })).join('')}
+        `;
+      }
+      $('mapDetail').className = 'detail';
+      $('mapDetail').innerHTML = '';
+    }
+    function bind() {
+      const bindOnce = (selector, eventName, handler) => {
+        all(selector).forEach((element) => {
+          if (element.dataset.bound) return;
+          element.dataset.bound = 'true';
+          element.addEventListener(eventName, handler);
+        });
+      };
+      bindOnce('[data-view]', 'click', (event) => {
+        state.view = event.currentTarget.dataset.view;
+        state.selectedStep = null;
+        render();
+      });
+      bindOnce('[data-date]', 'click', (event) => {
+        state.selectedDate = event.currentTarget.dataset.date;
+        state.selectedStep = null;
+        render();
+      });
+      bindOnce('[data-open-step]', 'click', (event) => {
+        const id = event.currentTarget.dataset.openStep;
+        state.selectedStep = state.selectedStep === id ? null : id;
+        render();
+      });
+      bindOnce('[data-quick]', 'click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        toggleStep(event.currentTarget.dataset.quick);
+      });
+      bindOnce('[data-expand-flow]', 'click', (event) => {
+        const id = event.currentTarget.dataset.expandFlow;
+        state.expandedFlow = state.expandedFlow === id ? null : id;
+        state.selectedStep = null;
+        render();
+      });
+      bindOnce('[data-expand-map]', 'click', (event) => {
+        const id = event.currentTarget.dataset.expandMap;
+        state.expandedMap = id;
+        state.expandedMapFlow = null;
+        state.selectedStep = null;
+        render();
+      });
+      bindOnce('[data-expand-map-flow]', 'click', (event) => {
+        const id = event.currentTarget.dataset.expandMapFlow;
+        state.expandedMapFlow = state.expandedMapFlow === id ? null : id;
+        state.selectedStep = null;
+        render();
+      });
+      bindOnce('[data-map-back]', 'click', () => {
+        state.expandedMap = null;
+        state.expandedMapFlow = null;
+        state.selectedStep = null;
+        render();
+      });
+      bindOnce('[data-map-flow-back]', 'click', () => {
+        state.expandedMapFlow = null;
+        state.selectedStep = null;
+        render();
+      });
+      bindOnce('[data-check]', 'change', (event) => {
+        state.checks[event.currentTarget.dataset.check] = event.currentTarget.checked;
+        render();
+      });
+      bindOnce('[data-step]', 'change', (event) => {
+        state.done[event.currentTarget.dataset.step] = event.currentTarget.checked;
+        render();
+      });
+      bindOnce('[data-memo]', 'input', (event) => {
+        state.memos[event.currentTarget.dataset.memo] = event.currentTarget.value;
+      });
+    }
+    function render() {
+      renderSummary();
+      renderNav();
+      renderToday();
+      renderCalendar();
+      renderFlows();
+      renderMaps();
+      bind();
+    }
+    render();
+  </script>
+</body>
+</html>

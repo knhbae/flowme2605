@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow 관찰 기록지</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --soft: #f1f5f9;
+      --line: #d9e2ef;
+      --text: #0f172a;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --green: #0f766e;
+      --amber: #b45309;
+      --red: #b42318;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); letter-spacing: 0; }
+    main { width: min(100% - 28px, 1120px); margin: 0 auto; padding: 24px 0 56px; }
+    header, section { border: 1px solid var(--line); border-radius: 14px; background: var(--card); box-shadow: 0 14px 34px rgba(15, 23, 42, .06); }
+    header { padding: 24px; }
+    section { margin-top: 14px; padding: 20px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: 34px; line-height: 1.12; }
+    h2 { margin-bottom: 10px; font-size: 22px; line-height: 1.25; }
+    h3 { margin-bottom: 6px; font-size: 17px; line-height: 1.3; }
+    p, li, td, th { font-size: 14px; line-height: 1.62; }
+    p, li { color: var(--muted); font-weight: 660; }
+    a { color: #1d4ed8; font-weight: 850; text-underline-offset: 3px; }
+    code { border-radius: 6px; background: #eef2f7; padding: 2px 5px; color: #334155; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 12px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 12px; text-align: left; vertical-align: top; }
+    th { background: var(--soft); color: #334155; font-size: 12px; font-weight: 900; }
+    td:first-child { width: 170px; color: var(--text); font-weight: 850; }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .chip { display: inline-flex; align-items: center; min-height: 30px; border: 1px solid var(--line); border-radius: 999px; background: var(--soft); padding: 5px 10px; color: #334155; font-size: 12px; font-weight: 850; text-decoration: none; }
+    .chip.green { border-color: #99f6e4; background: #ecfdf5; color: var(--green); }
+    .chip.amber { border-color: #fed7aa; background: #fff7ed; color: var(--amber); }
+    .chip.red { border-color: #fecaca; background: #fef2f2; color: var(--red); }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; background: #fbfdff; padding: 14px; }
+    .card b, .card span { display: block; }
+    .card b { font-size: 15px; }
+    .card span { margin-top: 6px; color: var(--muted); font-size: 13px; font-weight: 660; line-height: 1.5; }
+    .note { border-left: 4px solid var(--blue); background: #eff6ff; }
+    .note p, .note li { color: #334155; }
+    .blank { color: #94a3b8; }
+    .score td:first-child { width: 130px; }
+    @media (max-width: 820px) {
+      main { width: min(100% - 20px, 760px); padding-top: 14px; }
+      header, section { padding: 16px; border-radius: 12px; }
+      h1 { font-size: 28px; }
+      .grid { grid-template-columns: 1fr; }
+      table, tbody, tr, td, th { display: block; }
+      th { display: none; }
+      tr + tr { border-top: 2px solid var(--line); }
+      td:first-child { width: auto; padding-bottom: 4px; }
+      td + td { padding-top: 4px; }
+    }
+    @media print {
+      body { background: #fff; }
+      main { width: 100%; padding: 0; }
+      header, section { break-inside: avoid; box-shadow: none; }
+      a::after { content: ""; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="chip green">관찰 기록지 · 실제 검증 전용</p>
+      <h1>My Flow 저장 후 실행 세션 기록지</h1>
+      <p>이 문서는 진행자가 한 세션을 짧게 기록하기 위한 양식이다. 사용자에게 보여주는 화면이 아니며, 제품 설명이나 설득 문구를 적지 않는다. 핵심은 첫 클릭, 막힘, 체크/메모 완료 여부, 다음 수정 등급이다.</p>
+      <div class="chips">
+        <a class="chip" href="./2026-06-21-my-flow-v5-clean-user-poc-ko.html">v5 기본 화면</a>
+        <a class="chip" href="./2026-06-21-my-flow-v6-conditional-surfaces-ko.html">v6 조건부 보조 보기</a>
+        <a class="chip" href="./2026-06-21-my-flow-observed-session-kit-ko.html">관찰 키트</a>
+        <a class="chip" href="./2026-06-21-my-flow-saved-count-ux-verdict-ko.html">저장 개수별 UX 판정</a>
+        <a class="chip" href="./2026-06-21-my-flow-observed-session-rollup-ko.html">관찰 롤업</a>
+        <a class="chip" href="./2026-06-21-my-flow-saved-execution-v4-ko.html">사용자용 v4 PoC</a>
+        <a class="chip" href="./2026-06-21-my-flow-v4-actual-my-alignment-ko.html">실제 /my 정렬</a>
+      </div>
+    </header>
+
+    <section class="note">
+      <p class="eyebrow">진행 원칙</p>
+      <h2>말로 설명하지 말고 행동을 본다</h2>
+      <ul>
+        <li>사용자에게 FlowMe의 구조, 탭 의미, Flow Map 용어를 먼저 설명하지 않는다.</li>
+        <li>개인정보, 실제 계약/건강/금전 값, 연락처, 계정 정보를 기록하지 않는다.</li>
+        <li>세션 하나는 5~8분 안에 끝낸다. 오래 설명해야 하면 그 자체가 UX 문제다.</li>
+        <li>한 번의 세션 결과로 검증됐다고 말하지 않는다. Blocking/High가 나오면 UI를 줄이고 다시 본다.</li>
+      </ul>
+    </section>
+
+    <section>
+      <p class="eyebrow">세션 정보</p>
+      <h2>식별 정보 없이 기록</h2>
+      <table>
+        <tbody>
+          <tr><td>날짜</td><td class="blank">예: 2026-06-21</td></tr>
+          <tr><td>참여자 라벨</td><td class="blank">예: P1, 지인A, 학부모 역할 등. 이름/연락처 금지.</td></tr>
+          <tr><td>기기</td><td class="blank">모바일 390px / 실제 휴대폰 / 데스크톱</td></tr>
+          <tr><td>저장 개수 상태</td><td>1개 / 4개 / 8개 / 20개 이상</td></tr>
+          <tr><td>보여준 화면</td><td class="blank">사용자용 v4 PoC / 실제 /my / demo ux12 / demo ux20</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">과제</p>
+      <h2>참여자에게 읽어줄 문장</h2>
+      <div class="grid">
+        <div class="card"><b>1개 저장</b><span>“전세 또는 이사 Flow 하나를 저장했습니다. 오늘 해야 할 일을 하나 확인하고 체크나 메모를 남겨 주세요.”</span></div>
+        <div class="card"><b>4개 저장</b><span>“여러 Flow가 저장되어 있습니다. 오늘 할 일을 하나 처리해 주세요.”</span></div>
+        <div class="card"><b>8개 저장</b><span>“예전에 저장한 여권 Flow를 다시 찾아서 어떤 내용이 있는지 확인해 주세요.”</span></div>
+        <div class="card"><b>20개 이상</b><span>“저장한 Flow가 많습니다. 자동차 관련 Flow를 찾아 열어 주세요.”</span></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">관찰 로그</p>
+      <h2>사실만 짧게 적는다</h2>
+      <table>
+        <tbody>
+          <tr><td>5초 해석</td><td class="blank">사용자가 첫 화면에서 오늘 할 일을 말했는가? 예/아니오 + 실제 발화</td></tr>
+          <tr><td>첫 클릭</td><td class="blank">오늘 항목 / Flow 찾기 / 캘린더 / 뒤로가기 / 기타</td></tr>
+          <tr><td>막힌 위치</td><td class="blank">8초 이상 멈춘 지점, 되돌아간 버튼, 헷갈린 문장</td></tr>
+          <tr><td>체크</td><td class="blank">체크를 눌렀는가? 체크가 무엇을 의미하는지 이해했는가?</td></tr>
+          <tr><td>메모</td><td class="blank">메모를 직접 남겼는가? 메모 위치를 찾았는가?</td></tr>
+          <tr><td>Flow 찾기</td><td class="blank">필요할 때만 열었는가? 검색/필터/전체 보기를 발견했는가?</td></tr>
+          <tr><td>원문/링크</td><td class="blank">상세 확인이 필요할 때 링크나 설명을 찾았는가?</td></tr>
+          <tr><td>완료 시간</td><td class="blank">60초 안 / 60~120초 / 120초 초과 / 중단</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">판정</p>
+      <h2>수정 여부를 결정</h2>
+      <table class="score">
+        <thead>
+          <tr><th>등급</th><th>체크 기준</th><th>다음 액션</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="chip red">Blocking</span></td>
+            <td>오늘 실행 항목을 찾지 못했거나, 버튼 결과를 반대로 이해했다.</td>
+            <td>같은 날 UI를 수정하고 같은 과제로 재관찰한다.</td>
+          </tr>
+          <tr>
+            <td><span class="chip red">High</span></td>
+            <td>과제는 끝냈지만 탭, 상태, 목록 때문에 경로가 돌아갔다.</td>
+            <td>첫 화면 노출을 줄이거나 버튼 이름을 바꾼다.</td>
+          </tr>
+          <tr>
+            <td><span class="chip amber">Medium</span></td>
+            <td>끝내긴 했지만 카피나 위치가 약하게 헷갈렸다.</td>
+            <td>다음 polish 묶음으로 보류한다.</td>
+          </tr>
+          <tr>
+            <td><span class="chip green">Pass</span></td>
+            <td>첫 클릭이 예상 경로이고, 체크/메모까지 60초 안에 끝냈다.</td>
+            <td>현재 구조를 유지하고 다음 저장 개수나 다른 Flow 유형을 본다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <p class="eyebrow">수정 메모</p>
+      <h2>다음 반복에 넘길 내용</h2>
+      <table>
+        <tbody>
+          <tr><td>없앨 UI</td><td class="blank">예: 단일 저장의 진행률 카드, 상세 완료 토글, 상태 버튼 등</td></tr>
+          <tr><td>바꿀 카피</td><td class="blank">예: “찾아서 열기”를 “저장한 Flow 찾기”로 바꾸기</td></tr>
+          <tr><td>유지할 UI</td><td class="blank">예: Today 우선, Flow 찾기 sheet, 짧은 초기 목록</td></tr>
+          <tr><td>재관찰 조건</td><td class="blank">같은 참여자 재시도 / 다른 참여자 1명 추가 / 20개 이상만 재확인</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

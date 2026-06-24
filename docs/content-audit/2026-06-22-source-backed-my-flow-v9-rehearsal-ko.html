@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow v9 원문 기반 리허설</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --surface: #fff;
+      --soft: #f8fafc;
+      --line: #d8e2ef;
+      --text: #101827;
+      --muted: #5f6b7c;
+      --blue: #1f5fbf;
+      --blue-soft: #eaf2ff;
+      --green: #0f7a4a;
+      --green-soft: #e8f7ef;
+      --amber: #9a6100;
+      --amber-soft: #fff6df;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); font-size: 16px; line-height: 1.62; }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    h1, h2, h3, p { margin-top: 0; letter-spacing: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 44px); line-height: 1.12; }
+    h2 { margin-bottom: 8px; font-size: clamp(22px, 3vw, 30px); line-height: 1.24; }
+    h3 { margin-bottom: 6px; font-size: 19px; line-height: 1.28; }
+    .page { width: min(1120px, calc(100% - 28px)); margin: 0 auto; padding: 18px 0 64px; }
+    .hero, .card, .row, table { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+    .hero, .card { margin-top: 12px; padding: 18px; box-shadow: 0 10px 28px rgba(16, 24, 39, .07); }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .desc { max-width: 840px; color: var(--muted); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip { display: inline-flex; align-items: center; min-height: 30px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--soft); color: #344054; font-size: 13px; font-weight: 850; }
+    .chip.blue { border-color: #bfdbfe; background: var(--blue-soft); color: #174ea6; }
+    .chip.green { border-color: #bde7cb; background: var(--green-soft); color: var(--green); }
+    .chip.amber { border-color: #efd08f; background: var(--amber-soft); color: var(--amber); }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .row { padding: 14px; background: var(--soft); }
+    .row b, .row span { display: block; }
+    .row span { margin-top: 4px; color: var(--muted); font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; overflow: hidden; }
+    th, td { border: 1px solid var(--line); padding: 10px; vertical-align: top; text-align: left; }
+    th { background: #eef3f8; color: #344054; font-size: 13px; font-weight: 950; }
+    td { background: #fff; }
+    ul { margin: 10px 0 0; padding-left: 20px; }
+    li + li { margin-top: 7px; }
+    .pass { color: var(--green); font-weight: 950; }
+    .risk { color: var(--amber); font-weight: 950; }
+    @media (max-width: 780px) {
+      .page { width: min(100% - 20px, 1120px); padding-top: 10px; }
+      .hero, .card { padding: 14px; }
+      .grid, .grid.two { grid-template-columns: 1fr; }
+      table, tbody, tr, th, td { display: block; width: 100%; }
+      th { border-bottom: 0; }
+      td { border-top: 0; }
+      tr + tr { margin-top: 10px; display: block; border-top: 2px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="eyebrow">내부 리허설 · 사용자 화면과 분리</p>
+      <h1>My Flow v9 원문 기반 리허설</h1>
+      <p class="desc">v8의 간단한 My Flow UI 틀은 유지하고, 화면 안의 Flow 데이터를 실제 원문 구조가 확인되는 항목으로 교체했다. 사용자용 PoC에는 내부 평가 문구를 넣지 않고, Step 상세에는 실행에 필요한 원문 링크만 남겼다.</p>
+      <div class="chips">
+        <a class="chip blue" href="./2026-06-22-source-backed-my-flow-v9-ko.html">사용자용 v9 PoC 열기</a>
+        <a class="chip amber" href="./2026-06-21-my-flow-v8-progressive-management-ko.html">이전 v8 화면</a>
+        <span class="chip green">모바일 클릭 리허설 통과</span>
+      </div>
+    </header>
+
+    <section class="card">
+      <p class="eyebrow">이번에 검증한 것</p>
+      <h2>깨끗한 UI shell이 실제 원문 기반 Flow 데이터도 견디는가</h2>
+      <div class="grid">
+        <div class="row">
+          <b>사용자 화면</b>
+          <span>오늘, 일정, Flow, 지도 탭만 유지. 내부 평가·설명 문구는 제거.</span>
+        </div>
+        <div class="row">
+          <b>Flow 데이터</b>
+          <span>원문 구조가 확인되는 전세, 이사, 여권, 중1 수학, 영유아 검진·접종만 사용.</span>
+        </div>
+        <div class="row">
+          <b>계층 기준</b>
+          <span>Flow Map > Flow > Step > Item. Step은 캘린더/투두 최소 단위, Item은 체크리스트 또는 text fallback.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">원문 기반 구성</p>
+      <h2>사용한 원컨텐츠와 변환 방식</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>영역</th>
+            <th>원문</th>
+            <th>Flow 변환</th>
+            <th>판정</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>전세계약</td>
+            <td><a href="https://www.korea.kr/news/policyNewsView.do?newsId=148940979">정책브리핑 · 국토교통부</a></td>
+            <td>등기부등본 표제부, 갑구·을구, 특약, 보증보험을 Step으로 변환.</td>
+            <td class="pass">유지</td>
+          </tr>
+          <tr>
+            <td>이사</td>
+            <td><a href="https://kbthink.com/main/living-finance/consumption-life/single-consumption/one-room-move.html">KB Think 원룸 이사 체크리스트</a></td>
+            <td>D-30, D-14, D-7, D-1, D-Day 일정 Step으로 변환.</td>
+            <td class="pass">유지</td>
+          </tr>
+          <tr>
+            <td>여권</td>
+            <td><a href="https://www.gov.kr/portal/service/serviceInfo/126200000030">정부24 여권 재발급 안내</a></td>
+            <td>사진 파일, 기존 여권, 신청, 수령·반려 메모로 변환.</td>
+            <td class="pass">유지</td>
+          </tr>
+          <tr>
+            <td>중1 수학</td>
+            <td><a href="https://mathbang.net/13">Mathbang 중1 수학 목차</a></td>
+            <td>목차를 Flow Map으로 두고, 단원별 Flow 아래 세부 단원을 Step으로 변환.</td>
+            <td class="pass">유지</td>
+          </tr>
+          <tr>
+            <td>영유아</td>
+            <td><a href="https://www.nrc.go.kr/portal/html/content.do?depth=ph&amp;menu_cd=03_02_00_04">건강검진 안내</a>, <a href="https://www.nrc.go.kr/portal/html/content.do?depth=ph&amp;menu_cd=03_01_00_03">표준 예방접종 일정표</a></td>
+            <td>검진 기간, 구강검진, 접종 차수를 의료 판단 없이 일정 확인 Step으로 변환.</td>
+            <td class="pass">유지</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">의도적으로 뺀 것</p>
+      <h2>수 채우기보다 원문 충실도를 우선했다</h2>
+      <ul>
+        <li>홈트, 스퀴시, 식물 등은 이번 v9 사용자 화면에서 제외했다. 현재 파일 기준으로는 원문 링크와 실제 세부 구조가 부족해 다시 넣으면 이전처럼 억지 Flow가 될 가능성이 높았다.</li>
+        <li>진행 페이스, 의미 불명 상태 버튼, 별도 복사 버튼, 내부 평가 문구는 넣지 않았다.</li>
+        <li>각 Step의 ICS/캘린더 이벤트 속성은 이번 화면에 노출하지 않았다. 다만 Step이 일정 최소 단위라는 전제를 유지했으므로 이후 데이터 모델에서 `start`, `end`, `allDay`, `url`, `description` 같은 필드로 확장할 수 있다.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">클릭 리허설</p>
+      <h2>사용자 동작 검증 결과</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>시나리오</th>
+            <th>결과</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>오늘 탭에서 전세 Step 열기, 원문 링크 확인, 다시 눌러 닫기</td>
+            <td class="pass">통과</td>
+          </tr>
+          <tr>
+            <td>일정 탭에서 2026-06-24 날짜 선택 후 해당 Step 확인</td>
+            <td class="pass">통과</td>
+          </tr>
+          <tr>
+            <td>Flow 탭에서 이사 Flow 확장 후 D-30 Step 상세 확인</td>
+            <td class="pass">통과</td>
+          </tr>
+          <tr>
+            <td>지도 탭에서 중1 수학 목차 > 정수와 유리수 > 양수와 음수 Step 이동</td>
+            <td class="pass">통과</td>
+          </tr>
+          <tr>
+            <td>390px 모바일, 1280px 데스크톱 가로 overflow 및 JS 오류 확인</td>
+            <td class="pass">통과</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">남은 판단</p>
+      <h2>다음에 볼 것</h2>
+      <ul>
+        <li>현재는 UI shell과 원문 기반 fixture의 적합성 검증이다. 실제 상품화 전에는 저장된 Flow가 30개 이상일 때 필터·검색·카테고리 밀도를 다시 봐야 한다.</li>
+        <li>Step의 일정 데이터는 지금 화면에 보이는 날짜보다 더 정교해야 한다. 이후 ICS 수준으로 시작일, 종료일, 반복, 알림, URL, description을 모델링해야 한다.</li>
+        <li>홈트, 스퀴시, 식물처럼 제외한 카테고리는 원문 1개를 다시 잡고 Flow 변환표를 먼저 만든 뒤 사용자 화면에 넣어야 한다.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow v5 클릭 시뮬레이션 리포트</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --surface: #fff;
+      --soft: #f8fafc;
+      --line: #d8e1ee;
+      --text: #101827;
+      --muted: #5f6b7c;
+      --blue: #1f5fbf;
+      --blue-soft: #eaf2ff;
+      --green: #0f7a4a;
+      --green-soft: #e9f8ef;
+      --amber: #9a6100;
+      --amber-soft: #fff6df;
+      --red: #b42318;
+      --red-soft: #fff1ef;
+      --shadow: 0 14px 32px rgba(16, 24, 39, .07);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #fbfdff 0, var(--bg) 420px);
+      font-size: 16px;
+      line-height: 1.62;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-underline-offset: 3px; font-weight: 850; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 44px); line-height: 1.12; letter-spacing: 0; word-break: keep-all; }
+    h2 { margin-bottom: 8px; font-size: clamp(22px, 3vw, 30px); line-height: 1.24; letter-spacing: 0; word-break: keep-all; }
+    h3 { margin-bottom: 6px; font-size: 19px; line-height: 1.32; letter-spacing: 0; word-break: keep-all; }
+    p, li, td, th { color: var(--muted); font-weight: 700; }
+    strong, b, h1, h2, h3 { color: var(--text); }
+    code { border-radius: 6px; background: #eef2f7; padding: 2px 5px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; }
+    .page { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 14px 0 64px; }
+    .topbar, .hero, .card, .table-card, .finding {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface);
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 58px;
+      padding: 12px 16px;
+      box-shadow: 0 1px 2px rgba(16, 24, 39, .04);
+    }
+    .brand { color: var(--blue); font-size: 24px; font-weight: 950; text-decoration: none; }
+    .hero, .card, .table-card { margin-top: 12px; padding: 18px; box-shadow: var(--shadow); }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .desc { max-width: 860px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #344054;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .chip.blue { border-color: #bfdbfe; background: var(--blue-soft); color: #174ea6; }
+    .chip.green { border-color: #bde7cb; background: var(--green-soft); color: var(--green); }
+    .chip.amber { border-color: #efd08f; background: var(--amber-soft); color: var(--amber); }
+    .chip.red { border-color: #f4b4ad; background: var(--red-soft); color: var(--red); }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .finding {
+      padding: 14px;
+      background: var(--soft);
+    }
+    .finding b, .finding span { display: block; }
+    .finding span { margin-top: 6px; color: var(--muted); font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 11px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #eef3f8; color: #344054; font-size: 13px; font-weight: 950; }
+    td { background: #fff; }
+    td:first-child { min-width: 140px; }
+    .level {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+    .level.pass { background: var(--green-soft); color: var(--green); }
+    .level.medium { background: var(--amber-soft); color: var(--amber); }
+    .level.low { background: #f2f4f7; color: #475467; }
+    .level.fail { background: var(--red-soft); color: var(--red); }
+    .list { margin: 10px 0 0; padding-left: 20px; }
+    .list li + li { margin-top: 7px; }
+    .links a { display: inline-flex; margin: 0 8px 8px 0; }
+    @media (max-width: 860px) {
+      .page { width: min(100% - 20px, 1180px); padding-top: 10px; }
+      .hero, .card, .table-card { padding: 14px; }
+      .grid { grid-template-columns: 1fr; }
+      table, tbody, tr, th, td { display: block; width: 100%; }
+      th { display: none; }
+      td { border-top: 0; }
+      td:first-child { border-top: 1px solid var(--line); }
+      tr + tr { margin-top: 10px; display: block; border-top: 2px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar" aria-label="FLOW">
+      <a class="brand" href="#">FLOW</a>
+      <span class="chip blue">2026-06-21</span>
+    </nav>
+
+    <header class="hero">
+      <p class="eyebrow">내부 클릭 시뮬레이션</p>
+      <h1>My Flow v5는 기본 실행 홈으로 통과, 기능 확장은 조건부로 남긴다</h1>
+      <p class="desc">저장 1개, 4개, 8개, 24개 상태를 모바일 390px에서 열고 체크, 메모, Flow 찾기, 검색, 날짜 전환, 더 보기 동작을 확인했다. 이 리포트는 내부 UX 검토이며 실제 사용자 검증이 아니다.</p>
+      <div class="chips">
+        <span class="chip green">Blocking 0</span>
+        <span class="chip green">High 0</span>
+        <span class="chip amber">Medium 3</span>
+        <span class="chip blue">모바일 overflow 0</span>
+      </div>
+    </header>
+
+    <section class="card">
+      <p class="eyebrow">요약 판단</p>
+      <h2>v5를 유지하고, v6는 새 기능 추가가 아니라 조건부 표면 검증으로 좁힌다</h2>
+      <div class="grid">
+        <div class="finding"><b>1개 저장</b><span>탭 없이 현재 Step 상세만 보이는 구조가 맞다. 체크와 메모만으로 충분하며, 나중에 보기나 큰 완료 버튼은 필요하지 않다.</span></div>
+        <div class="finding"><b>4-8개 저장</b><span>오늘 항목과 Flow 찾기만으로 기본 탐색이 가능하다. 검색 결과 선택 후 검색 패널이 닫히고 검색어가 초기화되는 동작도 맞다.</span></div>
+        <div class="finding"><b>20개 이상 저장</b><span>처음부터 전체를 펼치지 않고 4개/8개 단위로 보여주는 방향은 맞다. 다만 일정형이 많아지면 캘린더 보조 화면이 필요해질 수 있다.</span></div>
+      </div>
+    </section>
+
+    <section class="table-card">
+      <p class="eyebrow">시나리오별 결과</p>
+      <h2>저장 개수별 클릭 결과</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>모드</th>
+            <th>첫 화면</th>
+            <th>클릭한 동작</th>
+            <th>판정</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>저장 1개</strong></td>
+            <td>오늘 1개, 전세계약 Step 상세, Flow 찾기 숨김</td>
+            <td>상세 체크 1개, 메모 입력</td>
+            <td><span class="level pass">통과</span> 첫 화면에 불필요한 관리 기능이 없다.</td>
+          </tr>
+          <tr>
+            <td><strong>저장 4개</strong></td>
+            <td>오늘 3개, 이번 주 1개, Flow 찾기 노출</td>
+            <td>체크, 메모, Flow 찾기, 검색, 수학 Flow 선택, 이번 주 전환</td>
+            <td><span class="level pass">통과</span> Flow 찾기 하나로 탐색이 충분하다.</td>
+          </tr>
+          <tr>
+            <td><strong>저장 8개</strong></td>
+            <td>오늘 3개, 이번 주 3개, 보관 2개</td>
+            <td>체크, 메모, 검색, 수학 Flow 선택, 이번 주 전환</td>
+            <td><span class="level pass">통과</span> 아직 별도 대시보드 없이 사용 가능하다.</td>
+          </tr>
+          <tr>
+            <td><strong>저장 24개</strong></td>
+            <td>오늘 9개, 이번 주 8개, 보관 7개, 초기 row 4개</td>
+            <td>체크, 메모, 검색, 수학 Flow 선택, 이번 주 전환, 더 보기</td>
+            <td><span class="level medium">조건부</span> 기본 구조는 버티지만 캘린더/검색/그룹이 보조 기능으로 필요해지는 구간이다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="table-card">
+      <p class="eyebrow">발견 사항</p>
+      <h2>문제 등급</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>등급</th>
+            <th>영역</th>
+            <th>내용</th>
+            <th>처리</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="level pass">Blocking</span></td>
+            <td>실행 가능성</td>
+            <td>없음. 체크, 메모, 검색, 날짜 전환이 동작했다.</td>
+            <td>수정 없음</td>
+          </tr>
+          <tr>
+            <td><span class="level pass">High</span></td>
+            <td>첫 행동/탐색</td>
+            <td>없음. 저장 1개와 4-8개 상태에서 첫 행동이 분명했다.</td>
+            <td>수정 없음</td>
+          </tr>
+          <tr>
+            <td><span class="level medium">Medium</span></td>
+            <td>일정형 보조 보기</td>
+            <td>저장 Flow가 많아지고 날짜형 Step이 섞이면 날짜 레일만으로 월 단위 위치를 파악하기 어렵다.</td>
+            <td>v6 후보: 일정형이 3개 이상이면 보조 캘린더 보기 검증</td>
+          </tr>
+          <tr>
+            <td><span class="level medium">Medium</span></td>
+            <td>진도형 보조 보기</td>
+            <td>중1 수학 같은 진도형은 현재 Step만으로 시작은 가능하지만 전체 단원 위치가 필요한 순간이 남는다.</td>
+            <td>v6 후보: 진도형 선택 시 접힌 전체 진도 보기 검증</td>
+          </tr>
+          <tr>
+            <td><span class="level medium">Medium</span></td>
+            <td>20개 이상 저장</td>
+            <td>초기 4개/8개 노출은 맞지만, 장기적으로는 검색과 그룹 접기가 더 필요하다.</td>
+            <td>관찰 전에는 첫 화면에 올리지 않고 Flow 찾기 안에 유지</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="table-card">
+      <p class="eyebrow">Rubric</p>
+      <h2>내부 UX 점수</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>점수</th>
+            <th>근거</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>User Need Fit</strong></td><td>4</td><td>저장한 Flow를 다시 열어 오늘 실행하는 목적이 명확하다.</td></tr>
+          <tr><td><strong>Execution Clarity</strong></td><td>4</td><td>현재 Step, 체크, 메모가 바로 보인다. 완료 기준은 체크 항목으로 충분하다.</td></tr>
+          <tr><td><strong>Content Fidelity</strong></td><td>3</td><td>현재 PoC의 일부 콘텐츠는 대표 예시이므로 실제 원문 검증용 화면은 아니다.</td></tr>
+          <tr><td><strong>Portability</strong></td><td>4</td><td>Step은 체크/메모/fallback 텍스트로 외부 앱에 옮길 수 있다.</td></tr>
+          <tr><td><strong>Cognitive Load</strong></td><td>4</td><td>저장 1개와 4-8개 상태에서 탭/상태 버튼을 줄인 효과가 크다.</td></tr>
+          <tr><td><strong>Copy Specificity</strong></td><td>4</td><td>버튼과 섹션명이 대체로 다음 행동을 말한다. 추가 설명은 많지 않다.</td></tr>
+          <tr><td><strong>Source/Safety</strong></td><td>3</td><td>실제 source/risk 검증 화면이 아니라 My Flow 관리 PoC이므로 낮게 둔다.</td></tr>
+          <tr><td><strong>Accessibility/Operability</strong></td><td>4</td><td>모바일 390px에서 가로 overflow 0, 주요 클릭 동작 정상.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">검증 기록</p>
+      <h2>실행한 확인</h2>
+      <ul class="list">
+        <li><code>npm run docs:check</code> 통과.</li>
+        <li>모바일 390px, 데스크톱 렌더에서 새 판단 리포트 overflow 0 확인.</li>
+        <li>v5 사용자 화면 4개 모드에서 모바일 390px 클릭 시뮬레이션 진행.</li>
+        <li>저장 4/8/24개 모드에서 Flow 찾기 검색, 수학 Flow 선택, 검색 패널 닫힘, 검색어 초기화 확인.</li>
+        <li>이 리포트는 내부 클릭 검토이며 실제 사용자 행동 검증이 아니다.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">다음 반복</p>
+      <h2>v6에서 볼 것은 “기능 추가”가 아니라 조건부 보조 보기다</h2>
+      <ol class="list">
+        <li>v5 첫 화면은 유지한다.</li>
+        <li>날짜형 Flow가 많을 때만 열리는 일정 보기 후보를 만든다.</li>
+        <li>진도형 Flow가 선택됐을 때만 접힌 전체 진도 보기 후보를 만든다.</li>
+        <li>20개 이상 저장 상태에서는 Flow 찾기 안에서 검색과 전체 보기 균형을 다시 본다.</li>
+        <li>새 기능이 첫 화면의 가벼움을 해치면 v5로 되돌린다.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">확인 링크</p>
+      <h2>관련 산출물</h2>
+      <div class="links">
+        <a href="./2026-06-21-my-flow-v5-clean-user-poc-ko.html">v5 사용자 화면</a>
+        <a href="./2026-06-21-my-flow-v5-feature-threshold-review-ko.html">v5 기능 노출 기준</a>
+        <a href="./2026-06-21-my-flow-v5-clean-simulation-ko.html">기존 v5 시뮬레이션</a>
+        <a href="./2026-06-21-my-flow-v4-actual-my-alignment-ko.html">v4 실제 /my 정렬 확인</a>
+        <a href="./2026-06-19-flowme-service-ux-backlog-ko.html">서비스 UX 백로그</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,1065 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Creator Public My Flow 최소 제품 흐름</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --line: #d9e1ec;
+      --line-strong: #b7c4d7;
+      --text: #111827;
+      --muted: #536174;
+      --soft: #eef4ff;
+      --blue: #2563eb;
+      --blue-dark: #1d4ed8;
+      --green: #0f766e;
+      --green-soft: #e8f7f2;
+      --amber: #b45309;
+      --amber-soft: #fff4df;
+      --danger: #b91c1c;
+      --shadow: 0 18px 44px rgba(15, 23, 42, 0.08);
+      color-scheme: light;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      letter-spacing: 0;
+    }
+
+    button, input, textarea {
+      font: inherit;
+      letter-spacing: 0;
+    }
+
+    button { cursor: pointer; }
+
+    a {
+      color: var(--blue-dark);
+      font-weight: 800;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    .app {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 46px;
+    }
+
+    .shell {
+      display: grid;
+      gap: 14px;
+    }
+
+    .topbar, .screen, .screen-nav, .panel, .row-button, .flow-card, .step-card, .export-box, .toast {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 18px;
+      padding: 22px;
+      align-items: start;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--blue-dark);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      font-size: 22px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 8px;
+      font-size: 17px;
+      line-height: 1.3;
+      letter-spacing: 0;
+    }
+
+    .desc {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.65;
+      font-weight: 650;
+    }
+
+    .mini {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      font-weight: 700;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      background: var(--surface-2);
+      color: #263244;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .chip.blue { border-color: #bdd2ff; background: var(--soft); color: var(--blue-dark); }
+    .chip.green { border-color: #bde5da; background: var(--green-soft); color: var(--green); }
+    .chip.amber { border-color: #f2d29a; background: var(--amber-soft); color: var(--amber); }
+
+    .state-card {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface-2);
+    }
+
+    .state-card b, .state-card span { display: block; }
+    .state-card b { font-size: 14px; }
+    .state-card span { color: var(--muted); font-size: 13px; font-weight: 750; line-height: 1.45; }
+
+    .screen-nav {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      padding: 8px;
+    }
+
+    .tab {
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--muted);
+      padding: 12px;
+      text-align: left;
+    }
+
+    .tab b, .tab span { display: block; }
+    .tab b { font-size: 15px; color: inherit; }
+    .tab span { margin-top: 3px; font-size: 12px; font-weight: 800; }
+    .tab.active {
+      border-color: #bdd2ff;
+      background: var(--soft);
+      color: var(--blue-dark);
+    }
+
+    .screen {
+      display: none;
+      padding: 18px;
+    }
+
+    .screen.active { display: block; }
+
+    .screen-head {
+      display: flex;
+      gap: 14px;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 16px;
+    }
+
+    .screen-head .title-wrap { min-width: 0; }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .primary, .secondary, .ghost {
+      min-height: 44px;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 900;
+      border: 1px solid transparent;
+    }
+
+    .primary {
+      background: var(--blue);
+      color: #ffffff;
+      border-color: var(--blue);
+    }
+
+    .primary:hover { background: var(--blue-dark); }
+
+    .secondary {
+      background: #ffffff;
+      color: var(--blue-dark);
+      border-color: #9dbafd;
+    }
+
+    .ghost {
+      background: var(--surface-2);
+      color: #334155;
+      border-color: var(--line);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .panel {
+      padding: 16px;
+      box-shadow: none;
+    }
+
+    .section-label {
+      margin: 0 0 10px;
+      font-size: 13px;
+      color: #334155;
+      font-weight: 950;
+    }
+
+    .stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .row-button {
+      width: 100%;
+      border-radius: 14px;
+      padding: 12px;
+      box-shadow: none;
+      text-align: left;
+    }
+
+    .row-button b, .row-button span { display: block; }
+    .row-button b { font-size: 15px; line-height: 1.35; }
+    .row-button span {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1.45;
+    }
+
+    .row-button.active {
+      border-color: var(--blue);
+      background: var(--soft);
+      box-shadow: inset 0 0 0 1px var(--blue);
+    }
+
+    .source-box {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface-2);
+      padding: 12px;
+    }
+
+    .source-box input {
+      width: 100%;
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      background: #ffffff;
+      min-height: 42px;
+      padding: 10px;
+      color: #334155;
+      font-weight: 700;
+    }
+
+    .flow-card {
+      padding: 14px;
+      box-shadow: none;
+    }
+
+    .flow-card + .flow-card { margin-top: 10px; }
+
+    .flow-card header {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .flow-card p { margin: 0; }
+
+    .flow-meta {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .step-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .step-card {
+      box-shadow: none;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      padding: 12px;
+      align-items: start;
+    }
+
+    .step-card input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      margin-top: 2px;
+      accent-color: var(--blue);
+    }
+
+    .fake-check {
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--line-strong);
+      border-radius: 6px;
+      background: #ffffff;
+      margin-top: 2px;
+    }
+
+    .step-card.active .fake-check {
+      border-color: var(--blue);
+      background: var(--blue);
+      box-shadow: inset 0 0 0 4px #ffffff;
+    }
+
+    .step-card b, .step-card span { display: block; }
+    .step-card b { font-size: 15px; line-height: 1.35; }
+    .step-card span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1.45;
+      margin-top: 3px;
+    }
+
+    .step-card.done {
+      background: #f2fbf7;
+      border-color: #bde5da;
+    }
+
+    .step-card.done b { text-decoration: line-through; color: #64748b; }
+
+    .item-list {
+      margin: 10px 0 0;
+      padding-left: 18px;
+      color: #334155;
+      font-size: 14px;
+      line-height: 1.65;
+      font-weight: 750;
+    }
+
+    .item-lines {
+      display: grid;
+      gap: 3px;
+      margin-top: 8px;
+      color: #334155;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 750;
+    }
+
+    .item-lines i {
+      font-style: normal;
+    }
+
+    .today-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      padding: 16px;
+    }
+
+    .today-top {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .memo {
+      display: grid;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .memo label {
+      font-size: 13px;
+      font-weight: 950;
+      color: #334155;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 96px;
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      padding: 12px;
+      resize: vertical;
+      line-height: 1.55;
+      color: var(--text);
+      background: #ffffff;
+    }
+
+    .export-box {
+      box-shadow: none;
+      margin-top: 12px;
+      padding: 12px;
+      background: var(--surface-2);
+    }
+
+    .export-text {
+      margin: 8px 0 0;
+      white-space: pre-wrap;
+      color: #334155;
+      font-size: 13px;
+      line-height: 1.55;
+      font-weight: 750;
+    }
+
+    .progress-line {
+      height: 8px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress-line span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: var(--blue);
+      transition: width 180ms ease;
+    }
+
+    .toast {
+      display: none;
+      box-shadow: none;
+      padding: 12px;
+      background: #f8fbff;
+      border-color: #bdd2ff;
+      color: var(--blue-dark);
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.5;
+    }
+
+    .toast.show { display: block; }
+
+    .empty {
+      border: 1px dashed var(--line-strong);
+      border-radius: 16px;
+      padding: 18px;
+      background: var(--surface-2);
+      color: var(--muted);
+      font-weight: 800;
+      line-height: 1.6;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 0.75fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    @media (max-width: 880px) {
+      .app {
+        width: min(100% - 20px, 720px);
+        padding-top: 10px;
+      }
+
+      .topbar, .layout, .split {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        padding: 18px;
+      }
+
+      .screen {
+        padding: 14px;
+      }
+
+      .screen-head {
+        display: grid;
+      }
+
+      .button-row {
+        justify-content: stretch;
+      }
+
+      .primary, .secondary, .ghost {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .screen-nav {
+        grid-template-columns: 1fr;
+        position: static;
+      }
+
+      .tab {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .tab span {
+        margin-top: 0;
+        text-align: right;
+      }
+
+      h1 { font-size: 30px; }
+      h2 { font-size: 20px; }
+      .desc { font-size: 15px; }
+
+      .flow-card header, .today-top {
+        display: grid;
+      }
+
+      .chip { white-space: normal; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">FlowMe 제품 흐름</p>
+          <h1>중1 수학 콘텐츠가 내 Flow가 되는 과정</h1>
+          <p class="desc">제작자는 강의 목록을 실행 구조로 정리하고, 사용자는 공개 상세에서 저장한 뒤, 내 Flow에서 오늘 볼 강의와 오답 메모만 관리합니다.</p>
+          <div class="chips" aria-label="핵심 구조">
+            <span class="chip blue">제작자 생성</span>
+            <span class="chip green">공개 저장</span>
+            <span class="chip amber">내 Flow 실행</span>
+          </div>
+        </div>
+        <aside class="state-card" aria-live="polite">
+          <b>현재 선택</b>
+          <span id="currentSummary">수와 연산 · 08강 Ⅰ-1 중단원 마무리 (1)</span>
+          <div class="progress-line" aria-hidden="true"><span id="summaryProgress"></span></div>
+          <span id="saveSummary">아직 저장 전입니다.</span>
+        </aside>
+      </header>
+
+      <nav class="screen-nav" aria-label="제품 화면 전환">
+        <button class="tab active" type="button" data-view="creator">
+          <b>제작자 화면</b>
+          <span>원문 구조 확인</span>
+        </button>
+        <button class="tab" type="button" data-view="public">
+          <b>공개 상세</b>
+          <span>저장 판단</span>
+        </button>
+        <button class="tab" type="button" data-view="myflow">
+          <b>내 Flow</b>
+          <span>오늘 실행</span>
+        </button>
+      </nav>
+
+      <section class="screen active" id="creatorScreen" aria-labelledby="creatorTitle">
+        <div class="screen-head">
+          <div class="title-wrap">
+            <p class="eyebrow">Creator Studio</p>
+            <h2 id="creatorTitle">EBS 강좌 목록을 학습 지도 Flow로 만들기</h2>
+            <p class="desc">제작자는 원문 행을 확인하고, 단원 Flow와 강의 Step으로 묶은 뒤 공개 상세를 만듭니다.</p>
+          </div>
+          <div class="button-row">
+            <button class="primary" type="button" id="publishButton">공개 상세 만들기</button>
+            <button class="secondary" type="button" data-jump="public">공개 화면 보기</button>
+          </div>
+        </div>
+
+        <div class="layout">
+          <aside class="panel">
+            <p class="section-label">원문</p>
+            <div class="source-box">
+              <h3>중학 뉴런 수학1(상)</h3>
+              <p class="mini">강좌 목록의 강의명, 시간, 교재 쪽수를 그대로 가져옵니다.</p>
+              <input id="sourceUrl" value="https://mid.ebs.co.kr/course/view?courseId=100005139" aria-label="원문 URL" readonly />
+              <p class="mini" style="margin: 10px 0 0;"><a href="https://mid.ebs.co.kr/course/view?courseId=100005139" target="_blank" rel="noreferrer">EBS 강좌 열기</a></p>
+            </div>
+
+            <p class="section-label" style="margin-top: 16px;">단원 Flow</p>
+            <div class="stack" id="creatorFlowList"></div>
+          </aside>
+
+          <div class="panel">
+            <p class="section-label">생성 결과</p>
+            <div class="flow-card">
+              <header>
+                <div>
+                  <h3 id="creatorFlowTitle">수와 연산</h3>
+                  <p class="flow-meta" id="creatorFlowMeta">2개 Step</p>
+                </div>
+                <span class="chip green">Flow</span>
+              </header>
+              <div class="step-list" id="creatorStepList"></div>
+            </div>
+            <div class="toast" id="creatorToast" role="status"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="publicScreen" aria-labelledby="publicTitle">
+        <div class="screen-head">
+          <div class="title-wrap">
+            <p class="eyebrow">공개 상세</p>
+            <h2 id="publicTitle">중학 뉴런 수학1(상) 학습 지도</h2>
+            <p class="desc">사용자는 전체 학습 지도를 저장하거나, 지금 필요한 단원만 내 Flow에 가져갑니다.</p>
+            <div class="chips">
+              <span class="chip blue">단원별 진도 체크</span>
+              <span class="chip green">오답 메모</span>
+              <span class="chip amber">원문 강좌 링크</span>
+            </div>
+          </div>
+          <div class="button-row">
+            <button class="primary" type="button" id="saveAllButton">전체 지도 저장</button>
+            <button class="secondary" type="button" id="saveOneButton">이 단원만 저장</button>
+          </div>
+        </div>
+
+        <div class="layout">
+          <aside class="panel">
+            <p class="section-label">저장할 단원</p>
+            <div class="stack" id="publicFlowList"></div>
+            <div class="export-box">
+              <b>저장 후 생기는 것</b>
+              <p class="mini" style="margin: 6px 0 0;">내 Flow에는 단원 목록, 현재 강의, 체크 상태, 오답 메모가 생깁니다. 외부 투두 앱에서는 강의 제목과 항목이 텍스트로 들어갑니다.</p>
+            </div>
+          </aside>
+
+          <div class="panel">
+            <div class="flow-card">
+              <header>
+                <div>
+                  <h3 id="publicFlowTitle">수와 연산</h3>
+                  <p class="flow-meta" id="publicFlowDesc">강의 2개를 체크 가능한 학습 항목으로 저장합니다.</p>
+                </div>
+                <a href="https://mid.ebs.co.kr/course/view?courseId=100005139" target="_blank" rel="noreferrer">원문 열기</a>
+              </header>
+              <div class="step-list" id="publicStepList"></div>
+            </div>
+            <div class="button-row" style="margin-top: 12px;">
+              <button class="primary" type="button" data-jump="myflow">내 Flow에서 보기</button>
+            </div>
+            <div class="toast" id="publicToast" role="status"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="myflowScreen" aria-labelledby="myflowTitle">
+        <div class="screen-head">
+          <div class="title-wrap">
+            <p class="eyebrow">내 Flow</p>
+            <h2 id="myflowTitle">오늘 이어서 볼 강의</h2>
+            <p class="desc">내 앱에서는 제작자 구조를 길게 보여주지 않고, 현재 강의 체크와 오답 메모만 앞에 둡니다.</p>
+          </div>
+          <div class="button-row">
+            <button class="secondary" type="button" id="copyTodoButton">투두 문구 복사</button>
+            <button class="ghost" type="button" data-jump="public">공개 상세로 돌아가기</button>
+          </div>
+        </div>
+
+        <div id="emptyState" class="empty">아직 저장된 학습 지도가 없습니다. 공개 상세에서 전체 지도 또는 단원을 저장하면 여기에 오늘 학습 항목이 생깁니다.</div>
+
+        <div id="myflowContent" class="split" hidden>
+          <aside class="panel">
+            <p class="section-label">내 학습 지도</p>
+            <div class="stack" id="myFlowList"></div>
+          </aside>
+
+          <div class="panel">
+            <div class="today-card">
+              <div class="today-top">
+                <div>
+                  <p class="eyebrow">오늘 학습</p>
+                  <h3 id="todayTitle">08강 Ⅰ-1 중단원 마무리 (1)</h3>
+                  <p class="flow-meta" id="todayMeta">28분 · 26~28쪽</p>
+                </div>
+                <span class="chip blue" id="todayFlowChip">수와 연산</span>
+              </div>
+              <div class="step-list" id="todayItems"></div>
+
+              <div class="memo">
+                <label for="studyMemo">오답/막힌 부분 메모</label>
+                <textarea id="studyMemo" placeholder="틀린 문제 번호, 다시 볼 개념, 질문할 내용을 짧게 남기기"></textarea>
+              </div>
+
+              <div class="button-row" style="margin-top: 12px;">
+                <button class="primary" type="button" id="completeStepButton">오늘 강의 완료</button>
+                <button class="secondary" type="button" id="nextStepButton">다음 강의로</button>
+              </div>
+
+              <div class="export-box">
+                <b>외부 앱에 붙이면 이렇게 보입니다</b>
+                <p class="export-text" id="todoPreview"></p>
+              </div>
+            </div>
+            <div class="toast" id="myflowToast" role="status"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const sourceUrl = 'https://mid.ebs.co.kr/course/view?courseId=100005139';
+    const flows = [
+      {
+        title: '수와 연산',
+        desc: '중단원 마무리와 정수/유리수 강의를 순서대로 봅니다.',
+        steps: [
+          { title: '08강 Ⅰ-1 중단원 마무리 (1)', meta: '28분 · 26~28쪽', items: ['EBS에서 08강 열기', '교재 26~28쪽 문제 풀기', '틀린 문제 번호 메모'] },
+          { title: '09강 Ⅰ-1 중단원 마무리 (2), 서술형으로 중단원 마무리', meta: '29분 · 29~31쪽', items: ['EBS에서 09강 열기', '교재 29~31쪽 문제 풀기', '서술형 풀이에서 막힌 부분 메모'] }
+        ]
+      },
+      {
+        title: '정수와 유리수',
+        desc: '정수와 유리수 개념, 대소 관계를 강의 단위로 체크합니다.',
+        steps: [
+          { title: '10강 01 정수와 유리수 (1)', meta: '28분 · 34~36쪽', items: ['EBS에서 10강 열기', '교재 34~36쪽 문제 풀기', '헷갈린 개념 메모'] },
+          { title: '11강 01 정수와 유리수 (2)', meta: '29분 · 37~38쪽', items: ['EBS에서 11강 열기', '교재 37~38쪽 문제 풀기', '오답 번호 메모'] },
+          { title: '12강 02 수의 대소 관계 (1)', meta: '29분 · 39~41쪽', items: ['EBS에서 12강 열기', '교재 39~41쪽 문제 풀기', '수직선/부등호 실수 메모'] }
+        ]
+      },
+      {
+        title: '좌표평면과 그래프',
+        desc: '좌표평면, 그래프, 비례 관계 강의를 진행 행으로 둡니다.',
+        steps: [
+          { title: '18강 01 좌표평면 (1)', meta: '29분 · 58~60쪽', items: ['EBS에서 18강 열기', '교재 58~60쪽 문제 풀기', '좌표 표시 실수 메모'] },
+          { title: '19강 01 좌표평면 (2)', meta: '28분 · 61~63쪽', items: ['EBS에서 19강 열기', '교재 61~63쪽 문제 풀기', '다시 볼 그래프 문제 메모'] },
+          { title: '20강 02 그래프와 그 해석', meta: '30분 · 64~67쪽', items: ['EBS에서 20강 열기', '교재 64~67쪽 문제 풀기', '그래프 해석에서 막힌 지점 메모'] }
+        ]
+      },
+      {
+        title: '기본 도형',
+        desc: '기본 도형 개념을 강의 단위로 이어서 봅니다.',
+        steps: [
+          { title: '24강 01 기본 도형 (1)', meta: '30분 · 82~85쪽', items: ['EBS에서 24강 열기', '교재 82~85쪽 문제 풀기', '용어가 헷갈린 부분 메모'] },
+          { title: '25강 01 기본 도형 (2)', meta: '29분 · 86~88쪽', items: ['EBS에서 25강 열기', '교재 86~88쪽 문제 풀기', '다시 풀 문제 번호 메모'] }
+        ]
+      }
+    ];
+
+    const state = {
+      view: 'creator',
+      activeFlow: 0,
+      activeStep: 0,
+      savedMode: null,
+      savedFlowIndex: null,
+      itemDone: {},
+      stepDone: {},
+      memo: ''
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const all = (selector) => Array.from(document.querySelectorAll(selector));
+
+    function currentFlow() {
+      return flows[state.activeFlow];
+    }
+
+    function currentStep() {
+      return currentFlow().steps[state.activeStep];
+    }
+
+    function stepKey(flowIndex = state.activeFlow, stepIndex = state.activeStep) {
+      return `${flowIndex}:${stepIndex}`;
+    }
+
+    function itemKey(itemIndex) {
+      return `${stepKey()}:${itemIndex}`;
+    }
+
+    function doneCount(flowIndex) {
+      return flows[flowIndex].steps.filter((_, index) => state.stepDone[`${flowIndex}:${index}`]).length;
+    }
+
+    function totalDoneCount() {
+      return flows.reduce((sum, flow, flowIndex) => sum + doneCount(flowIndex), 0);
+    }
+
+    function totalStepCount() {
+      return flows.reduce((sum, flow) => sum + flow.steps.length, 0);
+    }
+
+    function showToast(id, message) {
+      const toast = $(id);
+      toast.textContent = message;
+      toast.classList.add('show');
+      window.clearTimeout(toast._timer);
+      toast._timer = window.setTimeout(() => toast.classList.remove('show'), 2600);
+    }
+
+    function switchView(view) {
+      if (view === 'myflow' && state.savedMode === 'one' && typeof state.savedFlowIndex === 'number') {
+        state.activeFlow = state.savedFlowIndex;
+        state.activeStep = Math.min(state.activeStep, currentFlow().steps.length - 1);
+      }
+      state.view = view;
+      all('.tab').forEach((button) => {
+        button.classList.toggle('active', button.dataset.view === view);
+      });
+      all('.screen').forEach((screen) => {
+        screen.classList.toggle('active', screen.id === `${view}Screen`);
+      });
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function save(mode) {
+      state.savedMode = mode;
+      state.savedFlowIndex = mode === 'one' ? state.activeFlow : null;
+      const savedText = mode === 'all' ? '전체 학습 지도가 내 Flow에 저장되었습니다.' : `${currentFlow().title} 단원이 내 Flow에 저장되었습니다.`;
+      showToast('publicToast', savedText);
+      render();
+    }
+
+    function selectFlow(index) {
+      state.activeFlow = index;
+      state.activeStep = 0;
+      render();
+    }
+
+    function selectStep(index) {
+      state.activeStep = index;
+      render();
+    }
+
+    function getVisibleFlowIndexes() {
+      if (state.savedMode === 'one') return [state.savedFlowIndex ?? state.activeFlow];
+      return flows.map((_, index) => index);
+    }
+
+    function renderCreator() {
+      $('creatorFlowList').innerHTML = flows.map((flow, index) => `
+        <button class="row-button ${index === state.activeFlow ? 'active' : ''}" type="button" data-flow="${index}">
+          <b>${flow.title}</b>
+          <span>${flow.steps.length}개 강의 Step</span>
+        </button>
+      `).join('');
+
+      $('creatorFlowTitle').textContent = currentFlow().title;
+      $('creatorFlowMeta').textContent = `${currentFlow().steps.length}개 Step · 원문 강의명 기준`;
+      $('creatorStepList').innerHTML = currentFlow().steps.map((step, index) => `
+        <button class="step-card ${index === state.activeStep ? 'active' : ''}" type="button" data-step="${index}">
+          <span class="fake-check" aria-hidden="true"></span>
+          <span>
+            <b>${step.title}</b>
+            <span>${step.meta}</span>
+            <span class="item-lines">${step.items.map((item) => `<i>${item}</i>`).join('')}</span>
+          </span>
+        </button>
+      `).join('');
+
+      all('[data-flow]').forEach((button) => button.addEventListener('click', () => selectFlow(Number(button.dataset.flow))));
+      all('[data-step]').forEach((button) => button.addEventListener('click', () => selectStep(Number(button.dataset.step))));
+    }
+
+    function renderPublic() {
+      $('publicFlowList').innerHTML = flows.map((flow, index) => `
+        <button class="row-button ${index === state.activeFlow ? 'active' : ''}" type="button" data-public-flow="${index}">
+          <b>${flow.title}</b>
+          <span>${flow.steps.length}개 학습 항목 · ${doneCount(index)}개 완료</span>
+        </button>
+      `).join('');
+
+      $('publicFlowTitle').textContent = currentFlow().title;
+      $('publicFlowDesc').textContent = currentFlow().desc;
+      $('publicStepList').innerHTML = currentFlow().steps.map((step, index) => `
+        <button class="step-card" type="button" data-public-step="${index}">
+          <span class="fake-check" aria-hidden="true"></span>
+          <span><b>${step.title}</b><span>${step.meta}</span></span>
+        </button>
+      `).join('');
+
+      all('[data-public-flow]').forEach((button) => button.addEventListener('click', () => selectFlow(Number(button.dataset.publicFlow))));
+      all('[data-public-step]').forEach((button) => button.addEventListener('click', () => selectStep(Number(button.dataset.publicStep))));
+    }
+
+    function renderMyFlow() {
+      const hasSaved = Boolean(state.savedMode);
+      $('emptyState').hidden = hasSaved;
+      $('myflowContent').hidden = !hasSaved;
+      if (!hasSaved) return;
+
+      const visible = getVisibleFlowIndexes();
+      $('myFlowList').innerHTML = visible.map((flowIndex) => {
+        const flow = flows[flowIndex];
+        const done = doneCount(flowIndex);
+        const total = flow.steps.length;
+        const pct = Math.round((done / total) * 100);
+        return `
+          <button class="row-button ${flowIndex === state.activeFlow ? 'active' : ''}" type="button" data-my-flow="${flowIndex}">
+            <b>${flow.title}</b>
+            <span>${done}/${total} 완료</span>
+            <span class="progress-line" aria-hidden="true"><span style="width: ${pct}%;"></span></span>
+          </button>
+        `;
+      }).join('');
+
+      $('todayTitle').textContent = currentStep().title;
+      $('todayMeta').textContent = currentStep().meta;
+      $('todayFlowChip').textContent = currentFlow().title;
+      $('studyMemo').value = state.memo;
+
+      $('todayItems').innerHTML = currentStep().items.map((item, index) => {
+        const checked = Boolean(state.itemDone[itemKey(index)]);
+        return `
+          <label class="step-card ${checked ? 'done' : ''}">
+            <input type="checkbox" data-item="${index}" ${checked ? 'checked' : ''} />
+            <span><b>${item}</b><span>${index === 0 ? '원문 강좌에서 확인' : index === 1 ? '오늘 학습 범위' : '내 메모로 남김'}</span></span>
+          </label>
+        `;
+      }).join('');
+
+      $('todoPreview').textContent = buildTodoText();
+
+      all('[data-my-flow]').forEach((button) => button.addEventListener('click', () => selectFlow(Number(button.dataset.myFlow))));
+      all('[data-item]').forEach((checkbox) => {
+        checkbox.addEventListener('change', () => {
+          state.itemDone[itemKey(Number(checkbox.dataset.item))] = checkbox.checked;
+          render();
+        });
+      });
+    }
+
+    function buildTodoText() {
+      const step = currentStep();
+      const prefix = state.stepDone[stepKey()] ? '[x]' : '[ ]';
+      return `${prefix} ${step.title}
+- ${step.meta}
+${step.items.map((item) => `- ${item}`).join('\n')}
+- 오답/막힌 부분: ${state.memo || '짧게 메모'}
+원문: EBS 중학 뉴런 수학1(상) ${sourceUrl}`;
+    }
+
+    function renderSummary() {
+      const pct = Math.round((totalDoneCount() / totalStepCount()) * 100);
+      $('currentSummary').textContent = `${currentFlow().title} · ${currentStep().title}`;
+      $('summaryProgress').style.width = `${pct}%`;
+      const savedFlow = flows[state.savedFlowIndex ?? state.activeFlow];
+      const savedFlowIndex = state.savedFlowIndex ?? state.activeFlow;
+      $('saveSummary').textContent = state.savedMode === 'all'
+        ? `전체 지도 저장됨 · ${totalDoneCount()}/${totalStepCount()} 완료`
+        : state.savedMode === 'one'
+          ? `${savedFlow.title} 저장됨 · ${doneCount(savedFlowIndex)}/${savedFlow.steps.length} 완료`
+          : '아직 저장 전입니다.';
+    }
+
+    function render() {
+      renderSummary();
+      renderCreator();
+      renderPublic();
+      renderMyFlow();
+    }
+
+    all('[data-view]').forEach((button) => button.addEventListener('click', () => switchView(button.dataset.view)));
+    all('[data-jump]').forEach((button) => button.addEventListener('click', () => switchView(button.dataset.jump)));
+
+    $('publishButton').addEventListener('click', () => {
+      showToast('creatorToast', '공개 상세가 준비되었습니다. 사용자는 전체 지도 또는 단원을 저장할 수 있습니다.');
+      window.setTimeout(() => switchView('public'), 500);
+    });
+
+    $('saveAllButton').addEventListener('click', () => save('all'));
+    $('saveOneButton').addEventListener('click', () => save('one'));
+
+    $('studyMemo').addEventListener('input', (event) => {
+      state.memo = event.target.value;
+      $('todoPreview').textContent = buildTodoText();
+    });
+
+    $('completeStepButton').addEventListener('click', () => {
+      state.stepDone[stepKey()] = true;
+      currentStep().items.forEach((_, index) => {
+        state.itemDone[itemKey(index)] = true;
+      });
+      showToast('myflowToast', '오늘 강의를 완료로 표시했습니다.');
+      render();
+    });
+
+    $('nextStepButton').addEventListener('click', () => {
+      const flow = currentFlow();
+      if (state.activeStep < flow.steps.length - 1) {
+        state.activeStep += 1;
+      } else {
+        const visible = getVisibleFlowIndexes();
+        const currentVisibleIndex = visible.indexOf(state.activeFlow);
+        const nextFlow = visible[currentVisibleIndex + 1];
+        if (typeof nextFlow === 'number') {
+          state.activeFlow = nextFlow;
+          state.activeStep = 0;
+        }
+      }
+      showToast('myflowToast', '다음 강의를 열었습니다.');
+      render();
+    });
+
+    $('copyTodoButton').addEventListener('click', async () => {
+      const text = buildTodoText();
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('myflowToast', '투두 앱에 붙일 문구를 복사했습니다.');
+      } catch (error) {
+        const area = document.createElement('textarea');
+        area.value = text;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand('copy');
+        document.body.removeChild(area);
+        showToast('myflowToast', '투두 앱에 붙일 문구를 복사했습니다.');
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>

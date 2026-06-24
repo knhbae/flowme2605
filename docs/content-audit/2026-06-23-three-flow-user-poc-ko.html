@@ -1,0 +1,1016 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --paper: #ffffff;
+      --ink: #111827;
+      --muted: #64748b;
+      --line: #dbe3ee;
+      --soft: #eef3f8;
+      --blue: #1f64d8;
+      --blue-soft: #eaf2ff;
+      --green: #0e806c;
+      --green-soft: #e8f7f2;
+      --amber: #946200;
+      --amber-soft: #fff5d6;
+      --rose: #a63b4f;
+      --rose-soft: #fff0f3;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+    .app {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 16px 16px 64px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+    .mark {
+      display: grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 14px;
+    }
+    .mode {
+      display: flex;
+      gap: 5px;
+      padding: 5px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--paper);
+    }
+    .mode button,
+    .tabs button,
+    .pill-button {
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: #475569;
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+    .mode button {
+      min-height: 36px;
+      padding: 0 12px;
+      white-space: nowrap;
+    }
+    .mode button.active,
+    .tabs button.active,
+    .pill-button.active {
+      background: var(--ink);
+      color: #fff;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.12fr);
+      gap: 14px;
+      align-items: start;
+    }
+    .two {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .panel,
+    .route-card,
+    .flow-card,
+    .step-card,
+    .detail,
+    .empty {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+    .panel { padding: 16px; }
+    .route-card,
+    .step-card {
+      width: 100%;
+      padding: 13px;
+      text-align: left;
+    }
+    .route-card.active,
+    .step-card.active {
+      border-color: #8eb5f6;
+      background: var(--blue-soft);
+    }
+    .route-card strong,
+    .step-card strong {
+      display: block;
+      font-size: 16px;
+      line-height: 1.35;
+    }
+    .flow-card { padding: 14px; }
+    .detail {
+      margin-top: -3px;
+      padding: 14px;
+      background: #fbfcfe;
+    }
+    .public-flow-head,
+    .public-step-row {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      text-align: left;
+    }
+    .public-flow-head {
+      padding: 0;
+    }
+    .public-step-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .public-step-row {
+      border: 1px solid #dbe3ee;
+      border-radius: 8px;
+      background: #fff;
+      padding: 10px 11px;
+    }
+    .public-step-row.active {
+      border-color: #8eb5f6;
+      background: #f3f8ff;
+    }
+    .readonly-items {
+      display: grid;
+      gap: 7px;
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .readonly-items li {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #fff;
+      padding: 9px 10px;
+      color: #334155;
+      font-size: 14px;
+      font-weight: 750;
+    }
+    .empty {
+      padding: 22px;
+      text-align: center;
+    }
+    .cards,
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 900;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      margin-bottom: 8px;
+      font-size: 30px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+    h2 {
+      margin-bottom: 10px;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin-bottom: 5px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+    .muted { color: var(--muted); }
+    .small { font-size: 13px; }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 9px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      border-radius: 7px;
+      background: var(--soft);
+      padding: 4px 8px;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+    .chip.blue { background: var(--blue-soft); color: #174da8; }
+    .chip.green { background: var(--green-soft); color: var(--green); }
+    .chip.amber { background: var(--amber-soft); color: var(--amber); }
+    .chip.rose { background: var(--rose-soft); color: var(--rose); }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .month-strip {
+      margin-top: 0;
+    }
+    .month-strip .primary,
+    .month-strip .secondary {
+      min-width: 92px;
+      flex: 1 1 0;
+    }
+    .primary,
+    .secondary {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      padding: 10px 13px;
+      font-weight: 900;
+      text-decoration: none;
+      letter-spacing: 0;
+    }
+    .primary {
+      border: 1px solid var(--blue);
+      background: var(--blue);
+      color: #fff;
+    }
+    .secondary {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--blue);
+    }
+    .field {
+      display: grid;
+      gap: 6px;
+      margin-top: 12px;
+      font-size: 14px;
+      font-weight: 850;
+    }
+    input, textarea {
+      width: 100%;
+      border: 1px solid #c8d1dc;
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+    }
+    input {
+      min-height: 44px;
+      padding: 8px 11px;
+      font-weight: 850;
+    }
+    textarea {
+      min-height: 84px;
+      padding: 10px 11px;
+      resize: vertical;
+    }
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 5px;
+      margin: 14px 0;
+      padding: 5px;
+      border-radius: 10px;
+      background: #e9eef5;
+    }
+    .tabs button {
+      min-height: 38px;
+      padding: 0 8px;
+    }
+    .progress-line {
+      display: grid;
+      gap: 6px;
+      margin: 10px 0 12px;
+    }
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      color: #475569;
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .bar {
+      overflow: hidden;
+      height: 8px;
+      border-radius: 99px;
+      background: #e2e8f0;
+    }
+    .bar span {
+      display: block;
+      height: 100%;
+      background: var(--blue);
+    }
+    .check-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 1px solid #edf1f5;
+      font-weight: 750;
+    }
+    .check-row:last-child { border-bottom: 0; }
+    .check-row input {
+      width: 20px;
+      height: 20px;
+      min-height: 20px;
+      margin-top: 2px;
+      flex: 0 0 auto;
+    }
+    .notice {
+      display: none;
+      margin-top: 12px;
+      border: 1px solid #b7e2d6;
+      border-radius: 8px;
+      background: var(--green-soft);
+      padding: 12px;
+      color: #0b6b5b;
+      font-weight: 850;
+    }
+    .notice.show { display: block; }
+    .calendar-month {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .day-head,
+    .day {
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .day-head {
+      color: #64748b;
+      text-align: center;
+    }
+    .day {
+      min-height: 50px;
+      border: 1px solid #e4e9f0;
+      border-radius: 8px;
+      background: #fff;
+      padding: 5px;
+      color: #334155;
+      text-align: left;
+    }
+    .day.has {
+      border-color: #9ec0f8;
+      background: var(--blue-soft);
+      color: #164ba8;
+    }
+    [hidden] { display: none !important; }
+    @media (max-width: 780px) {
+      .app { padding: 14px 16px 56px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .mode { width: 100%; }
+      .mode button { flex: 1; }
+      .grid,
+      .two {
+        grid-template-columns: 1fr;
+      }
+      h1 { font-size: 27px; }
+      .panel { padding: 14px; }
+      .day { min-height: 48px; }
+      .primary,
+      .secondary {
+        width: 100%;
+      }
+      .month-strip .primary,
+      .month-strip .secondary {
+        width: auto;
+        flex: 1 1 calc(50% - 8px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><span class="mark">F</span><span>FlowMe</span></div>
+      <nav class="mode" aria-label="화면 이동">
+        <button class="active" type="button" data-screen="public">공개 Flow</button>
+        <button type="button" data-screen="my">내 Flow</button>
+      </nav>
+    </header>
+
+    <section id="public-screen" class="grid">
+      <aside class="panel">
+        <p class="eyebrow">저장할 콘텐츠</p>
+        <h1>원문을 내 실행 항목으로</h1>
+        <p class="muted">목차, 날짜, 순서가 있는 콘텐츠만 가볍게 저장합니다. 필요한 입력은 없거나 날짜 하나입니다.</p>
+        <div class="cards" id="route-list"></div>
+      </aside>
+
+      <section class="panel">
+        <p class="eyebrow" id="public-type"></p>
+        <h1 id="public-title"></h1>
+        <p class="muted" id="public-summary"></p>
+        <div class="chips" id="public-chips"></div>
+        <div id="setup-field"></div>
+        <div class="actions">
+          <button class="primary" type="button" data-save></button>
+          <a class="secondary" id="source-link" href="#" target="_blank" rel="noreferrer">원문 열기</a>
+        </div>
+        <div class="notice" id="save-notice">저장했습니다. 내 Flow에서 이어서 볼 수 있습니다.</div>
+
+        <div style="margin-top:18px;">
+          <h2>포함된 Flow와 Step</h2>
+          <div class="list" id="save-preview"></div>
+        </div>
+      </section>
+    </section>
+
+    <section id="my-screen" class="panel" hidden>
+      <p class="eyebrow">내 Flow</p>
+      <h1 id="my-title">저장한 Flow</h1>
+      <div id="my-empty" class="empty">
+        <h2>아직 저장한 항목이 없습니다</h2>
+        <p class="muted">공개 Flow에서 저장하면 여기에 나타납니다.</p>
+        <button class="primary" type="button" data-screen="public">저장할 콘텐츠 보기</button>
+      </div>
+      <div id="my-content" hidden>
+        <div class="tabs" id="my-tabs"></div>
+        <div id="my-tab-body"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const sources = {
+      math: 'https://mathbang.net/13',
+      babyHealth: 'https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=1&cciNo=2&cnpClsNo=2&csmSeq=1138&popMenu=ov',
+      babyVaccination: 'https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&menuLv=1',
+      moving: 'https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363'
+    };
+
+    const routes = {
+      math: {
+        id: 'math',
+        kind: '진도형',
+        color: 'blue',
+        title: '중1 수학 목차 진도',
+        summary: '큰 단원을 Flow로, 하위 개념을 Step으로 저장합니다. 날짜를 억지로 만들지 않고 어디까지 봤는지만 남깁니다.',
+        sourceTitle: '수학방 중1 수학 목차',
+        sourceUrl: sources.math,
+        cta: '내 진도표로 저장',
+        chips: ['8개 Flow', '하위 개념 Step', '메모'],
+        tabs: [
+          ['continue', '이어보기'],
+          ['progress', '진도표'],
+          ['map', '전체 지도']
+        ],
+        flows: [
+          { title: '1. 소인수분해', steps: ['거듭제곱', '소수와 합성수', '에라토스테네스의 체', '소인수분해', '약수 개수 구하기', '최대공약수', '최소공배수'] },
+          { title: '2. 정수와 유리수', steps: ['양수와 음수, 정수', '절댓값과 수직선', '정수의 대소관계', '정수의 덧셈', '정수의 뺄셈', '정수의 곱셈', '정수의 나눗셈'] },
+          { title: '3. 문자와 식', steps: ['문자와 식', '식의 값', '항과 계수', '일차식의 계산', '방정식과 항등식', '일차방정식의 풀이'] },
+          { title: '4. 좌표평면과 그래프', steps: ['순서쌍과 좌표평면', '그래프의 뜻과 표현', '정비례와 그래프', '반비례와 그래프'] },
+          { title: '5. 기본도형', steps: ['점, 선, 면', '각의 종류', '맞꼭지각과 동위각', '평행선의 성질', '삼각형의 작도', '도형의 합동'] },
+          { title: '6. 평면도형의 성질', steps: ['다각형', '대각선의 개수', '삼각형 내각과 외각', '다각형 내각과 외각', '원과 부채꼴'] },
+          { title: '7. 입체도형의 성질', steps: ['다면체', '정다면체', '회전체', '기둥의 겉넓이와 부피', '뿔의 겉넓이와 부피'] },
+          { title: '8. 자료의 정리와 해석', steps: ['대푯값', '줄기와 잎 그림', '도수분포표', '히스토그램', '상대도수'] }
+        ]
+      },
+      baby: {
+        id: 'baby',
+        kind: '일정형',
+        color: 'green',
+        title: '아이 검진·접종 일정',
+        summary: '생년월일 하나로 검진 기간과 접종 확인 시점을 캘린더에 둡니다. 예약 상태와 결과 위치만 짧게 남깁니다.',
+        sourceTitle: '공식 영유아 건강검진·예방접종 안내',
+        sourceUrl: sources.babyHealth,
+        cta: '내 캘린더로 저장',
+        chips: ['생년월일 1개', '기간 일정', '캘린더'],
+        setup: {
+          label: '아이 생년월일',
+          value: '2026-01-15',
+          hint: '실제 예약 가능 여부는 공식 조회와 의료기관 안내를 우선합니다.'
+        },
+        tabs: [
+          ['next', '다음 일정'],
+          ['calendar', '캘린더'],
+          ['timeline', '전체 일정']
+        ],
+        flows: [
+          {
+            title: '영유아 건강검진',
+            steps: [
+              { title: '1차 건강검진', period: '생후 14~35일', offset: 14, source: sources.babyHealth, items: ['검진 기간 확인', '예약 또는 문진표 상태 메모', '결과지 위치 메모'] },
+              { title: '2차 건강검진', period: '생후 4~6개월', offset: 120, source: sources.babyHealth, items: ['검진 기간 확인', '예약 또는 문진표 상태 메모', '결과지 위치 메모'] },
+              { title: '3차 건강검진', period: '생후 9~12개월', offset: 270, source: sources.babyHealth, items: ['검진 기간 확인', '예약 또는 문진표 상태 메모', '결과지 위치 메모'] },
+              { title: '4차 건강검진', period: '생후 18~24개월', offset: 540, source: sources.babyHealth, items: ['검진 기간 확인', '예약 또는 문진표 상태 메모', '결과지 위치 메모'] }
+            ]
+          },
+          {
+            title: '영유아 구강검진',
+            steps: [
+              { title: '1차 구강검진', period: '생후 18~29개월', offset: 540, source: sources.babyHealth, items: ['구강검진 기간 확인', '치과 또는 검진기관 메모', '결과지 위치 메모'] },
+              { title: '2차 구강검진', period: '생후 30~41개월', offset: 900, source: sources.babyHealth, items: ['구강검진 기간 확인', '치과 또는 검진기관 메모', '결과지 위치 메모'] },
+              { title: '3차 구강검진', period: '생후 42~53개월', offset: 1260, source: sources.babyHealth, items: ['구강검진 기간 확인', '치과 또는 검진기관 메모', '결과지 위치 메모'] }
+            ]
+          },
+          {
+            title: '예방접종 일정 확인',
+            steps: [
+              { title: '출생 직후 접종 확인', period: '출생 직후~생후 4주', offset: 0, source: sources.babyVaccination, items: ['예방접종도우미 일정 확인', '접종기관 또는 예약 상태 메모', '지연 접종은 의료기관 안내 확인'] },
+              { title: '생후 2개월 접종 확인', period: '생후 2개월', offset: 60, source: sources.babyVaccination, items: ['예방접종도우미 일정 확인', '접종기관 또는 예약 상태 메모', '지연 접종은 의료기관 안내 확인'] },
+              { title: '생후 4개월 접종 확인', period: '생후 4개월', offset: 120, source: sources.babyVaccination, items: ['예방접종도우미 일정 확인', '접종기관 또는 예약 상태 메모', '지연 접종은 의료기관 안내 확인'] },
+              { title: '생후 6개월 접종 확인', period: '생후 6개월', offset: 180, source: sources.babyVaccination, items: ['예방접종도우미 일정 확인', '접종기관 또는 예약 상태 메모', '지연 접종은 의료기관 안내 확인'] }
+            ]
+          }
+        ]
+      },
+      moving: {
+        id: 'moving',
+        kind: '타임라인형',
+        color: 'amber',
+        title: '원룸 이사 D-30 준비',
+        summary: '이사일 기준으로 원문 체크리스트를 날짜별 Step으로 저장합니다. 업체 연락처, 예약 번호, 다시 볼 링크만 남깁니다.',
+        sourceTitle: 'AJD 이사 준비 체크리스트',
+        sourceUrl: sources.moving,
+        cta: '이사 일정으로 저장',
+        chips: ['이사일 1개', 'D-30~D-Day', '캘린더'],
+        setup: {
+          label: '이사일',
+          value: '2026-07-31',
+          hint: '이사일을 바꾸면 D-30, D-14, D-7 일정이 함께 움직입니다.'
+        },
+        tabs: [
+          ['next', '오늘 할 일'],
+          ['calendar', '캘린더'],
+          ['timeline', '전체 일정']
+        ],
+        flows: [
+          {
+            title: '이사 준비 일정',
+            steps: [
+              { title: '이사 방식과 견적 후보 정하기', period: 'D-30', offset: -30, source: sources.moving, items: ['이사 방식 1개를 정합니다.', '견적 후보 2-3곳을 열고 연락처를 메모합니다.', '포함 범위와 예상 비용을 짧게 남깁니다.'] },
+              { title: '입주청소와 대형폐기물 일정 확인', period: 'D-14', offset: -14, source: sources.moving, items: ['입주청소가 필요하면 예약 가능일을 확인합니다.', '대형폐기물 신고 가능 품목과 수거일을 확인합니다.', '예약처와 신고 번호를 메모합니다.'] },
+              { title: '관리사무소 공유와 주소 변경 대상 확인', period: 'D-7', offset: -7, source: sources.moving, items: ['관리사무소에 이사 시간과 차량 동선을 공유합니다.', '자주 쓰는 배송 계정 주소 변경 대상을 확인합니다.', '우편물 주소 변경이 필요한 곳을 메모합니다.'] },
+              { title: '계량기와 집 상태 사진 남기기', period: 'D-1', offset: -1, source: sources.moving, items: ['전기, 가스, 수도 계량기를 촬영합니다.', '현관, 욕실, 창문, 콘센트 주변 상태를 촬영합니다.', '사진 위치나 공유 여부만 짧게 메모합니다.'] },
+              { title: '정산과 전입신고 확인', period: 'D-Day', offset: 0, source: sources.moving, items: ['잔금/정산 확인 내용을 메모합니다.', '전입신고와 확정일자 확인 필요 여부를 체크합니다.', '처리 결과나 다시 볼 링크만 남깁니다.'] }
+            ]
+          }
+        ]
+      }
+    };
+
+    const state = {
+      screen: 'public',
+      selected: 'baby',
+      saved: {},
+      myTab: 'next',
+      activeFlow: 0,
+      activeStep: 0,
+      publicFlow: 0,
+      publicStep: 0,
+      activeMonth: '2026-03',
+      setupValues: {
+        baby: '2026-01-15',
+        moving: '2026-07-31'
+      },
+      done: {},
+      itemDone: {},
+      memo: {}
+    };
+
+    const $id = (id) => document.getElementById(id);
+    const currentRoute = () => routes[state.selected];
+    const latestSaved = () => {
+      const keys = Object.keys(state.saved);
+      return keys.length ? state.saved[keys[keys.length - 1]] : null;
+    };
+    const addDays = (dateText, days) => {
+      const date = new Date(`${dateText}T00:00:00`);
+      date.setDate(date.getDate() + days);
+      return date.toISOString().slice(0, 10);
+    };
+    const stepKey = (routeId, flowIndex, stepIndex) => `${routeId}:${flowIndex}:${stepIndex}`;
+    const itemKey = (routeId, flowIndex, stepIndex, itemIndex) => `${routeId}:${flowIndex}:${stepIndex}:${itemIndex}`;
+    const flowProgress = (route, flowIndex) => {
+      const flow = route.flows[flowIndex];
+      const done = flow.steps.filter((_, stepIndex) => state.done[stepKey(route.id, flowIndex, stepIndex)]).length;
+      const total = flow.steps.length;
+      return { done, total, value: Math.round((done / total) * 100) };
+    };
+    const allTimedSteps = (route, anchor) => route.flows.flatMap((flow, flowIndex) => flow.steps.map((step, stepIndex) => ({
+      flow,
+      flowIndex,
+      step,
+      stepIndex,
+      date: addDays(anchor, step.offset)
+    }))).sort((a, b) => a.date.localeCompare(b.date));
+    const stepTitle = (step) => typeof step === 'string' ? step : step.title;
+    const stepItems = (step) => typeof step === 'string' ? [] : (step.items || []);
+    const stepSource = (route, step) => typeof step === 'string' ? route.sourceUrl : (step.source || route.sourceUrl);
+    const stepMeta = (route, step) => {
+      if (typeof step === 'string') return '진도표 Step';
+      const anchor = state.setupValues[route.id] || route.setup?.value || '';
+      if (typeof step.offset === 'number' && anchor) return `${addDays(anchor, step.offset)} · ${step.period}`;
+      return step.period || 'Step';
+    };
+
+    function renderRouteList() {
+      $id('route-list').innerHTML = Object.values(routes).map((route) => `
+        <button class="route-card ${state.selected === route.id ? 'active' : ''}" type="button" data-select="${route.id}">
+          <strong>${route.title}</strong>
+          <p class="muted small">${route.kind} · ${route.chips.join(' · ')}</p>
+          <span class="chips"><span class="chip ${route.color}">${route.kind}</span><span class="chip">${route.flows.length}개 묶음</span></span>
+        </button>
+      `).join('');
+    }
+
+    function renderPublic() {
+      const route = currentRoute();
+      renderRouteList();
+      $id('public-type').textContent = route.kind;
+      $id('public-title').textContent = route.title;
+      $id('public-summary').textContent = route.summary;
+      $id('public-chips').innerHTML = route.chips.map((chip) => `<span class="chip ${route.color}">${chip}</span>`).join('');
+      $id('source-link').href = route.sourceUrl;
+      $id('source-link').textContent = route.sourceTitle;
+      document.querySelector('[data-save]').textContent = route.cta;
+      $id('setup-field').innerHTML = route.setup ? `
+        <label class="field">${route.setup.label}
+          <input id="setup-input" type="date" value="${state.setupValues[route.id] || route.setup.value}">
+          <span class="muted small">${route.setup.hint}</span>
+        </label>
+      ` : '';
+      if (state.publicFlow >= route.flows.length) state.publicFlow = 0;
+      const activeFlow = route.flows[state.publicFlow];
+      if (state.publicStep >= activeFlow.steps.length || state.publicStep < 0) state.publicStep = 0;
+      $id('save-preview').innerHTML = route.flows.map((flow, flowIndex) => `
+        <article class="flow-card">
+          <button class="public-flow-head" type="button" data-public-flow="${flowIndex}">
+            <div class="chips"><span class="chip ${route.color}">Flow</span><span class="chip">${flow.steps.length}개 Step</span></div>
+            <h3>${flow.title}</h3>
+            <p class="muted small">${flow.steps.slice(0, 3).map((step) => stepTitle(step)).join(' · ')}${flow.steps.length > 3 ? ' ...' : ''}</p>
+          </button>
+          ${flowIndex === state.publicFlow ? renderPublicSteps(route, flow, flowIndex) : ''}
+        </article>
+      `).join('');
+    }
+
+    function renderPublicSteps(route, flow, flowIndex) {
+      return `
+        <div class="public-step-list">
+          ${flow.steps.map((step, stepIndex) => {
+            const active = state.publicStep === stepIndex;
+            return `
+              <button class="public-step-row ${active ? 'active' : ''}" type="button" data-public-step="${stepIndex}">
+                <strong>${stepTitle(step)}</strong>
+                <span class="muted small">${stepMeta(route, step)}</span>
+              </button>
+              ${active ? renderPublicStepDetail(route, flow, step, stepIndex) : ''}
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderPublicStepDetail(route, flow, step) {
+      const items = stepItems(step);
+      const noItems = items.length === 0;
+      return `
+        <section class="detail">
+          <p class="eyebrow">${flow.title}</p>
+          <h3>${stepTitle(step)}</h3>
+          <p class="muted small">${stepMeta(route, step)}</p>
+          ${noItems ? `
+            <p class="muted small">저장 내용: 원문 링크, 완료 여부, 메모.</p>
+          ` : `
+            <ul class="readonly-items">
+              ${items.map((item) => `<li>${item}</li>`).join('')}
+            </ul>
+          `}
+          <div class="actions">
+            <a class="secondary" href="${stepSource(route, step)}" target="_blank" rel="noreferrer">원문 열기</a>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderMode() {
+      document.querySelectorAll('[data-screen]').forEach((button) => button.classList.toggle('active', button.dataset.screen === state.screen));
+      $id('public-screen').hidden = state.screen !== 'public';
+      $id('my-screen').hidden = state.screen !== 'my';
+    }
+
+    function renderMy() {
+      const saved = latestSaved();
+      $id('my-empty').hidden = Boolean(saved);
+      $id('my-content').hidden = !saved;
+      if (!saved) return;
+      const { route, anchor } = saved;
+      $id('my-title').textContent = route.title;
+      $id('my-tabs').innerHTML = route.tabs.map(([id, label]) => `<button class="${state.myTab === id ? 'active' : ''}" type="button" data-tab="${id}">${label}</button>`).join('');
+      if (route.id === 'math') renderMath(route);
+      if (route.id === 'baby' || route.id === 'moving') renderTimed(route, anchor);
+    }
+
+    function renderMath(route) {
+      if (state.myTab === 'continue') {
+        const flow = route.flows[state.activeFlow];
+        const progress = flowProgress(route, state.activeFlow);
+        $id('my-tab-body').innerHTML = `
+          <article class="flow-card">
+            <p class="eyebrow">이어보기</p>
+            <h2>${flow.title}</h2>
+            <div class="progress-line">
+              <div class="progress-top"><span>${progress.done}/${progress.total} 완료</span><span>${progress.value}%</span></div>
+              <div class="bar"><span style="width:${progress.value}%"></span></div>
+            </div>
+            <div class="list">
+              ${flow.steps.map((step, stepIndex) => renderMathStep(route, state.activeFlow, stepIndex, step)).join('')}
+            </div>
+          </article>
+        `;
+      } else if (state.myTab === 'progress') {
+        $id('my-tab-body').innerHTML = `<div class="two">${route.flows.map((flow, flowIndex) => {
+          const progress = flowProgress(route, flowIndex);
+          return `
+            <article class="flow-card">
+              <h3>${flow.title}</h3>
+              <div class="progress-line">
+                <div class="progress-top"><span>${progress.done}/${progress.total}</span><span>${progress.value}%</span></div>
+                <div class="bar"><span style="width:${progress.value}%"></span></div>
+              </div>
+              <button class="secondary" type="button" data-open-flow="${flowIndex}">열기</button>
+            </article>
+          `;
+        }).join('')}</div>`;
+      } else {
+        $id('my-tab-body').innerHTML = `
+          <div class="list">
+            ${route.flows.map((flow, flowIndex) => `
+              <article class="flow-card">
+                <div class="chips"><span class="chip ${route.color}">Flow</span><span class="chip">${flow.steps.length}개 Step</span></div>
+                <h3>${flow.title}</h3>
+                <p class="muted small">${flow.steps.join(' · ')}</p>
+                <button class="secondary" type="button" data-open-flow="${flowIndex}">열기</button>
+              </article>
+            `).join('')}
+          </div>
+        `;
+      }
+    }
+
+    function renderMathStep(route, flowIndex, stepIndex, label) {
+      const key = stepKey(route.id, flowIndex, stepIndex);
+      const active = state.activeFlow === flowIndex && state.activeStep === stepIndex;
+      return `
+        <button class="step-card ${active ? 'active' : ''}" type="button" data-open-step="${flowIndex}:${stepIndex}">
+          <strong>${label}</strong>
+          <span class="muted small">${state.done[key] ? '완료' : route.flows[flowIndex].title}</span>
+        </button>
+        ${active ? `
+          <section class="detail">
+            <h2>${label}</h2>
+            <label class="check-row">
+              <input type="checkbox" data-done="${key}" ${state.done[key] ? 'checked' : ''}>
+              <span>이 Step 완료</span>
+            </label>
+            <label class="field">메모
+              <textarea data-memo="${key}" placeholder="막힌 개념, 오답 번호, 다시 볼 범위만 짧게 남기기">${state.memo[key] || ''}</textarea>
+            </label>
+            <div class="actions">
+              <a class="secondary" href="${route.sourceUrl}" target="_blank" rel="noreferrer">원문 목차 열기</a>
+            </div>
+          </section>
+        ` : ''}
+      `;
+    }
+
+    function renderTimed(route, anchor) {
+      const steps = allTimedSteps(route, anchor);
+      const selected = state.activeStep >= 0
+        ? steps.find((entry) => entry.flowIndex === state.activeFlow && entry.stepIndex === state.activeStep)
+        : null;
+      if (!selected && state.activeStep >= 0) {
+        state.activeFlow = steps[0].flowIndex;
+        state.activeStep = steps[0].stepIndex;
+      }
+      const activeEntry = selected || (state.activeStep >= 0 ? steps[0] : null);
+      if (state.myTab === 'next') {
+        const next = steps.find((entry) => !state.done[stepKey(route.id, entry.flowIndex, entry.stepIndex)]) || steps[0];
+        $id('my-tab-body').innerHTML = `
+          <article class="flow-card">
+            <p class="eyebrow">${route.id === 'moving' ? '오늘 할 일' : '다음 일정'}</p>
+            <h2>${next.step.title}</h2>
+            <p class="muted">${next.date} · ${next.step.period}</p>
+            ${renderTimedDetail(route, next)}
+          </article>
+        `;
+      } else if (state.myTab === 'calendar') {
+        const months = Array.from(new Set(steps.map((entry) => entry.date.slice(0, 7))));
+        if (!months.includes(state.activeMonth)) state.activeMonth = months[0];
+        const monthSteps = steps.filter((entry) => entry.date.startsWith(state.activeMonth));
+        $id('my-tab-body').innerHTML = `
+          <article class="flow-card">
+            <div class="actions month-strip">
+              ${months.slice(0, 5).map((month) => `<button class="${state.activeMonth === month ? 'primary' : 'secondary'}" type="button" data-month="${month}">${month.replace('-', '. ')}</button>`).join('')}
+            </div>
+            <h2 style="margin-top:14px;">${state.activeMonth.replace('-', '. ')}.</h2>
+            <div class="calendar-month">
+              ${['월','화','수','목','금','토','일'].map((day) => `<div class="day-head">${day}</div>`).join('')}
+              ${renderCalendarCells(state.activeMonth, monthSteps)}
+            </div>
+          </article>
+          ${activeEntry ? renderTimedDetail(route, activeEntry) : ''}
+        `;
+      } else {
+        $id('my-tab-body').innerHTML = `
+          <div class="list">
+            ${route.flows.map((flow, flowIndex) => `
+              <article class="flow-card">
+                <div class="chips"><span class="chip ${route.color}">Flow</span><span class="chip">${flow.steps.length}개 Step</span></div>
+                <h3>${flow.title}</h3>
+                <div class="list">
+                  ${flow.steps.map((step, stepIndex) => {
+                    const entry = { flow, flowIndex, step, stepIndex, date: addDays(anchor, step.offset) };
+                    const active = state.activeFlow === flowIndex && state.activeStep === stepIndex;
+                    return `
+                      <button class="step-card ${active ? 'active' : ''}" type="button" data-open-timed="${flowIndex}:${stepIndex}">
+                        <strong>${step.title}</strong>
+                        <span class="muted small">${entry.date} · ${step.period}</span>
+                      </button>
+                      ${active ? renderTimedDetail(route, entry) : ''}
+                    `;
+                  }).join('')}
+                </div>
+              </article>
+            `).join('')}
+          </div>
+        `;
+      }
+    }
+
+    function renderCalendarCells(month, steps) {
+      const [year, monthNumber] = month.split('-').map(Number);
+      const firstDay = new Date(year, monthNumber - 1, 1);
+      const blankCount = (firstDay.getDay() + 6) % 7;
+      const lastDate = new Date(year, monthNumber, 0).getDate();
+      const cells = [];
+      for (let index = 0; index < blankCount; index += 1) cells.push('<div class="day" aria-hidden="true"></div>');
+      for (let day = 1; day <= lastDate; day += 1) {
+        const date = `${month}-${String(day).padStart(2, '0')}`;
+        const entries = steps.filter((entry) => entry.date === date);
+        const first = entries[0];
+        cells.push(`<button class="day ${first ? 'has' : ''}" type="button" ${first ? `data-open-timed="${first.flowIndex}:${first.stepIndex}"` : ''}>${day}${first ? `<br>${entries.length}개` : ''}</button>`);
+      }
+      while (cells.length % 7 !== 0) cells.push('<div class="day" aria-hidden="true"></div>');
+      return cells.join('');
+    }
+
+    function renderTimedDetail(route, entry) {
+      const key = stepKey(route.id, entry.flowIndex, entry.stepIndex);
+      return `
+        <section class="detail">
+          <p class="eyebrow">${entry.flow.title}</p>
+          <h2>${entry.step.title}</h2>
+          <p class="muted">${entry.date} · ${entry.step.period}</p>
+          ${entry.step.items.map((item, itemIndex) => `
+            <label class="check-row">
+              <input type="checkbox" data-item="${itemKey(route.id, entry.flowIndex, entry.stepIndex, itemIndex)}" ${state.itemDone[itemKey(route.id, entry.flowIndex, entry.stepIndex, itemIndex)] ? 'checked' : ''}>
+              <span>${item}</span>
+            </label>
+          `).join('')}
+          <label class="field">메모
+            <textarea data-memo="${key}" placeholder="예약일, 연락처, 결과 위치, 다시 볼 링크만 짧게 남기기">${state.memo[key] || ''}</textarea>
+          </label>
+          <div class="actions">
+            <label class="check-row" style="border:0; padding:0; margin-right:auto;">
+              <input type="checkbox" data-done="${key}" ${state.done[key] ? 'checked' : ''}>
+              <span>이 Step 완료</span>
+            </label>
+            <a class="secondary" href="${entry.step.source}" target="_blank" rel="noreferrer">원문 열기</a>
+          </div>
+        </section>
+      `;
+    }
+
+    function render() {
+      renderMode();
+      renderPublic();
+      renderMy();
+    }
+
+    document.addEventListener('click', (event) => {
+      const button = event.target.closest('button');
+      if (!button) return;
+      if (button.matches('[data-screen]')) {
+        state.screen = button.dataset.screen;
+        render();
+      }
+      if (button.matches('[data-select]')) {
+        state.selected = button.dataset.select;
+        state.publicFlow = 0;
+        state.publicStep = 0;
+        $id('save-notice').classList.remove('show');
+        render();
+      }
+      if (button.matches('[data-save]')) {
+        const route = currentRoute();
+        const input = $id('setup-input');
+        if (input) state.setupValues[route.id] = input.value;
+        state.saved[route.id] = { route, anchor: input ? input.value : '' };
+        state.myTab = route.tabs[0][0];
+        state.activeFlow = 0;
+        state.activeStep = 0;
+        state.activeMonth = input ? input.value.slice(0, 7) : '2026-01';
+        $id('save-notice').classList.add('show');
+        window.setTimeout(() => {
+          state.screen = 'my';
+          render();
+        }, 250);
+      }
+      if (button.matches('[data-tab]')) {
+        state.myTab = button.dataset.tab;
+        render();
+      }
+      if (button.matches('[data-open-flow]')) {
+        state.activeFlow = Number(button.dataset.openFlow);
+        state.activeStep = 0;
+        state.myTab = 'continue';
+        render();
+      }
+      if (button.matches('[data-open-step]')) {
+        const [flowIndex, stepIndex] = button.dataset.openStep.split(':').map(Number);
+        const isOpen = state.activeFlow === flowIndex && state.activeStep === stepIndex;
+        state.activeFlow = flowIndex;
+        state.activeStep = isOpen ? -1 : stepIndex;
+        render();
+      }
+      if (button.matches('[data-open-timed]')) {
+        const [flowIndex, stepIndex] = button.dataset.openTimed.split(':').map(Number);
+        const isOpen = state.activeFlow === flowIndex && state.activeStep === stepIndex;
+        state.activeFlow = flowIndex;
+        state.activeStep = isOpen ? -1 : stepIndex;
+        render();
+      }
+      if (button.matches('[data-month]')) {
+        state.activeMonth = button.dataset.month;
+        render();
+      }
+      if (button.matches('[data-public-flow]')) {
+        state.publicFlow = Number(button.dataset.publicFlow);
+        state.publicStep = 0;
+        render();
+      }
+      if (button.matches('[data-public-step]')) {
+        state.publicStep = Number(button.dataset.publicStep);
+        render();
+      }
+    });
+
+    document.addEventListener('change', (event) => {
+      if (event.target.matches('[data-done]')) {
+        state.done[event.target.dataset.done] = event.target.checked;
+        render();
+      }
+      if (event.target.matches('[data-item]')) {
+        state.itemDone[event.target.dataset.item] = event.target.checked;
+      }
+      if (event.target.id === 'setup-input') {
+        state.setupValues[state.selected] = event.target.value;
+        renderPublic();
+      }
+    });
+
+    document.addEventListener('input', (event) => {
+      if (event.target.matches('[data-memo]')) {
+        state.memo[event.target.dataset.memo] = event.target.value;
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>

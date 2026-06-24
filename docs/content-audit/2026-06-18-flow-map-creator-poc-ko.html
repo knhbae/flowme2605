@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flow Map 제작자 화면</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --surface: #fff;
+      --soft: #f8fafc;
+      --line: #d8e2ef;
+      --line-strong: #b6c5d8;
+      --text: #101827;
+      --muted: #5f6b7c;
+      --blue: #1f5fbf;
+      --blue-soft: #eaf2ff;
+      --green: #0f7a4a;
+      --green-soft: #e8f7ef;
+      --amber: #9a6100;
+      --amber-soft: #fff6df;
+      --shadow: 0 14px 32px rgba(16, 24, 39, .08);
+      --radius: 8px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #fbfdff 0, var(--bg) 380px);
+      font-size: 16px;
+      line-height: 1.56;
+    }
+    button, input, textarea { font: inherit; }
+    button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 850;
+    }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 44px); line-height: 1.12; letter-spacing: 0; word-break: keep-all; }
+    h2 { margin-bottom: 8px; font-size: clamp(23px, 3vw, 32px); line-height: 1.22; letter-spacing: 0; word-break: keep-all; }
+    h3 { margin-bottom: 6px; font-size: 20px; line-height: 1.28; letter-spacing: 0; word-break: keep-all; }
+
+    .page { width: min(1160px, calc(100% - 28px)); margin: 0 auto; padding: 14px 0 64px; }
+    .topbar, .hero, .case-nav, .panel, .row-button, .preview, .mapping-row, .notice {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 58px;
+      padding: 12px 16px;
+      box-shadow: 0 1px 2px rgba(16, 24, 39, .04);
+    }
+    .brand { color: var(--blue); font-size: 24px; font-weight: 950; text-decoration: none; }
+    .ghost { padding: 0 12px; border: 1px solid var(--line); background: white; color: #344054; }
+
+    .hero { margin-top: 12px; padding: 18px; box-shadow: var(--shadow); }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .desc { max-width: 760px; margin-bottom: 0; color: var(--muted); }
+    .chips, .button-row, .source-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chips { margin-top: 12px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #344054;
+      font-size: 13px;
+      font-weight: 850;
+    }
+    .chip.blue { border-color: #bfdbfe; background: var(--blue-soft); color: #174ea6; }
+    .chip.green { border-color: #bde7cb; background: var(--green-soft); color: var(--green); }
+    .chip.amber { border-color: #efd08f; background: var(--amber-soft); color: var(--amber); }
+
+    .case-nav {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin-top: 12px;
+      padding: 8px;
+      background: #edf3f9;
+    }
+    .case-tab {
+      min-height: 58px;
+      padding: 8px 10px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #344054;
+      text-align: left;
+    }
+    .case-tab b, .case-tab span { display: block; }
+    .case-tab span { margin-top: 2px; color: var(--muted); font-size: 12px; font-weight: 750; }
+    .case-tab.active { border-color: var(--blue); background: white; color: #174ea6; box-shadow: inset 0 0 0 1px var(--blue); }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(280px, .82fr) minmax(0, 1.18fr);
+      gap: 14px;
+      margin-top: 12px;
+      align-items: start;
+    }
+    .workspace > * { min-width: 0; }
+    .panel { padding: 14px; box-shadow: var(--shadow); }
+    .panel + .panel { margin-top: 12px; }
+    .label { margin-bottom: 6px; color: var(--muted); font-size: 12px; font-weight: 950; letter-spacing: .01em; }
+    .source-row { margin-top: 8px; }
+    .source-row a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: white;
+      font-size: 13px;
+      font-weight: 850;
+      text-decoration: none;
+      overflow-wrap: anywhere;
+    }
+    .row-list, .mapping-list, .flow-list { display: grid; gap: 8px; }
+    .row-button {
+      min-height: 58px;
+      padding: 10px;
+      color: #344054;
+      text-align: left;
+    }
+    .row-button b, .row-button span { display: block; }
+    .row-button span { margin-top: 2px; color: var(--muted); font-size: 12px; font-weight: 750; }
+    .row-button.active { border-color: var(--blue); background: var(--blue-soft); color: #174ea6; box-shadow: inset 0 0 0 1px var(--blue); }
+
+    .mapping-row {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      gap: 10px;
+      padding: 10px;
+      background: var(--soft);
+    }
+    .mapping-row b { color: #344054; }
+    .mapping-row span { color: var(--muted); font-weight: 750; }
+    .mapping-row span, .preview-step span { min-width: 0; overflow-wrap: anywhere; }
+    .primary { padding: 0 14px; background: var(--blue); color: white; }
+    .secondary { padding: 0 12px; border: 1px solid var(--line); background: white; color: #344054; }
+    .preview {
+      padding: 14px;
+      background: white;
+    }
+    .preview-card {
+      margin-top: 10px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+    .preview-step {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+    .preview-step input {
+      width: 18px;
+      height: 18px;
+      min-height: 18px;
+      margin-top: 4px;
+    }
+    .preview-step b, .preview-step span { display: block; }
+    .preview-step span { margin-top: 2px; color: var(--muted); font-size: 13px; font-weight: 750; }
+    .fallback {
+      margin: 10px 0 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      white-space: pre-wrap;
+      color: #344054;
+      font-size: 14px;
+      font-weight: 650;
+      overflow-wrap: anywhere;
+    }
+    .notice {
+      margin-top: 10px;
+      padding: 10px;
+      background: var(--amber-soft);
+      color: #7a5200;
+      font-size: 14px;
+      font-weight: 750;
+    }
+    .toast { display: none; margin-top: 10px; padding: 9px 10px; border: 1px solid #bfdbfe; border-radius: 6px; background: var(--blue-soft); color: #174ea6; font-size: 13px; font-weight: 800; }
+    .toast.show { display: block; }
+
+    @media (max-width: 900px) {
+      .workspace { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      .page { width: min(100% - 20px, 1160px); padding-top: 10px; }
+      .hero, .panel { padding: 14px; }
+      .case-nav { grid-template-columns: 1fr; }
+      .mapping-row { grid-template-columns: 1fr; }
+      .button-row button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar" aria-label="FLOW">
+      <a class="brand" href="#">FLOW</a>
+      <button class="ghost" id="reset" type="button">처음 상태로</button>
+    </nav>
+
+    <header class="hero">
+      <p class="eyebrow">제작자 Flow Map 만들기</p>
+      <h1>원문 행을 실행 가능한 지도와 항목으로 정리합니다</h1>
+      <p class="desc">제작자는 원문 구조를 먼저 확인하고, 반복 단위를 Flow로 묶습니다. 사용자가 저장하는 최소 단위는 Step이며, Item은 Step 안의 체크 또는 설명으로 접힙니다.</p>
+      <div class="chips">
+        <span class="chip blue">원문 행 유지</span>
+        <span class="chip green">Step이 저장 단위</span>
+        <span class="chip amber">Item은 fallback 텍스트</span>
+      </div>
+    </header>
+
+    <nav class="case-nav" id="caseNav" aria-label="제작 케이스 선택"></nav>
+
+    <section class="workspace" aria-label="제작자 작업 화면">
+      <aside>
+        <section class="panel">
+          <p class="label">원문</p>
+          <h2 id="sourceTitle"></h2>
+          <p class="desc" id="sourceDesc"></p>
+          <div class="source-row" id="sourceLinks"></div>
+        </section>
+
+        <section class="panel">
+          <p class="label">원문 행</p>
+          <div class="row-list" id="sourceRows"></div>
+        </section>
+      </aside>
+
+      <section>
+        <section class="panel">
+          <p class="label">Flow Map 구조</p>
+          <h2 id="mapName"></h2>
+          <div class="chips" id="mapChips"></div>
+          <div class="mapping-list" style="margin-top: 12px;" id="mappingList"></div>
+          <div class="button-row" style="margin-top: 12px;">
+            <button class="primary" id="refreshPreview" type="button">사용자 미리보기 갱신</button>
+            <button class="secondary" id="publishDraft" type="button">초안 저장</button>
+          </div>
+          <div class="toast" id="toast" role="status"></div>
+        </section>
+
+        <section class="panel">
+          <p class="label">선택 행 매핑</p>
+          <h2 id="rowTitle"></h2>
+          <div class="mapping-list" id="rowMapping" style="margin-top: 12px;"></div>
+          <pre class="fallback" id="fallbackText"></pre>
+          <div class="notice" id="boundary"></div>
+        </section>
+
+        <section class="preview">
+          <p class="label">사용자에게 보일 모습</p>
+          <h2 id="previewTitle"></h2>
+          <p class="desc" id="previewDesc"></p>
+          <div class="preview-card">
+            <p class="label">Flow</p>
+            <h3 id="previewFlow"></h3>
+            <div class="preview-step">
+              <input type="checkbox" />
+              <span>
+                <b id="previewStep"></b>
+                <span id="previewMeta"></span>
+              </span>
+            </div>
+          </div>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const sourceUrls = {
+      ebs: 'https://mid.ebs.co.kr/course/view?courseId=100005139',
+      kdcaSchedule: 'https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&menuLv=1',
+      kdcaChild: 'https://nip.kdca.go.kr/irhp/mngm/goVcntMngm.do?menuCd=313&menuLv=3',
+      nrc: 'https://www.nrc.go.kr/portal/html/content.do?depth=ph&menu_cd=03_02_00_04'
+    };
+
+    const cases = {
+      math: {
+        nav: '중1 수학',
+        navSub: '강의 목록을 진도표로',
+        sourceTitle: 'EBS 중학 뉴런 수학1(상)',
+        sourceDesc: '강좌 목록의 강의명, 시간, 교재 쪽수를 그대로 Step 후보로 사용합니다.',
+        mapName: '중1 수학1(상) 학습 지도',
+        chips: ['반복 단위: 단원', '저장 단위: 강의 Step', '외부 형태: 시트/투두'],
+        links: [{ label: 'EBS 강좌', url: sourceUrls.ebs }],
+        boundary: '제작자는 학습 진단을 만들지 않습니다. 원문 강의 목록과 사용자의 체크/메모만 전달합니다.',
+        rows: [
+          { title: '10강 01 정수와 유리수 (1)', flow: '정수와 유리수', meta: '29분 · 34~36쪽', items: ['EBS에서 10강 열기', '교재 34~36쪽 진행', '헷갈린 개념 메모'] },
+          { title: '11강 01 정수와 유리수 (2)', flow: '정수와 유리수', meta: '29분 · 37~38쪽', items: ['EBS에서 11강 열기', '교재 37~38쪽 진행', '오답 번호 메모'] },
+          { title: '12강 02 수의 대소 관계 (1)', flow: '수의 대소 관계', meta: '29분 · 39~41쪽', items: ['EBS에서 12강 열기', '교재 39~41쪽 진행', '수직선/부등호 실수 메모'] },
+          { title: '13강 02 수의 대소 관계 (2)', flow: '수의 대소 관계', meta: '29분 · 42~43쪽', items: ['EBS에서 13강 열기', '교재 42~43쪽 진행', '다시 풀 문제 메모'] }
+        ]
+      },
+      baby: {
+        nav: '영유아',
+        navSub: '공식 일정표를 내 일정으로',
+        sourceTitle: '영유아 예방접종·건강검진 공식 일정',
+        sourceDesc: '공식 표의 검진 기간과 접종 연령 구간을 Step 후보로 사용합니다.',
+        mapName: '영유아 접종·검진 지도',
+        chips: ['반복 단위: 일정 구간', '입력값: 아이 생년월일', '외부 형태: 캘린더/시트'],
+        links: [
+          { label: '질병관리청 일정표', url: sourceUrls.kdcaSchedule },
+          { label: '아이 접종 일정보기', url: sourceUrls.kdcaChild },
+          { label: '건강검진표', url: sourceUrls.nrc }
+        ],
+        boundary: '제작자는 공식 기간과 출처를 연결합니다. 접종 가능 여부, 지연접종 판단, 건강상태 해석은 의료기관 확인 영역으로 둡니다.',
+        rows: [
+          { title: '1차 건강검진', flow: '건강검진', meta: '생후 14~35일', items: ['문진 및 진찰', '신체계측', '건강교육'] },
+          { title: '3차 건강검진', flow: '건강검진', meta: '생후 9~12개월', items: ['문진 및 진찰', '신체계측', '발달선별검사 및 상담', '건강교육'] },
+          { title: '1차 구강검진', flow: '구강검진', meta: '생후 18~29개월', items: ['구강문진 및 진찰', '구강보건교육', '검진기관 문의 메모'] },
+          { title: '2개월 접종 확인', flow: '예방접종', meta: '생후 2개월 전후', items: ['DTaP 1차', 'IPV 1차', 'Hib 1차', 'PCV 1차', '로타바이러스 1차'] }
+        ]
+      }
+    };
+
+    const state = { caseId: 'math', rowIndex: 0 };
+    const $ = (id) => document.getElementById(id);
+
+    function render() {
+      const current = cases[state.caseId];
+      const row = current.rows[state.rowIndex];
+
+      $('caseNav').innerHTML = Object.entries(cases).map(([id, item]) => `
+        <button class="case-tab ${id === state.caseId ? 'active' : ''}" type="button" data-case="${id}">
+          <b>${item.nav}</b><span>${item.navSub}</span>
+        </button>
+      `).join('');
+      document.querySelectorAll('[data-case]').forEach((button) => {
+        button.addEventListener('click', () => {
+          state.caseId = button.dataset.case;
+          state.rowIndex = 0;
+          render();
+        });
+      });
+
+      $('sourceTitle').textContent = current.sourceTitle;
+      $('sourceDesc').textContent = current.sourceDesc;
+      $('sourceLinks').innerHTML = current.links.map((link) => `<a href="${link.url}" target="_blank" rel="noreferrer">${link.label}</a>`).join('');
+      $('mapName').textContent = current.mapName;
+      $('mapChips').innerHTML = current.chips.map((chip) => `<span class="chip">${chip}</span>`).join('');
+      $('sourceRows').innerHTML = current.rows.map((item, index) => `
+        <button class="row-button ${index === state.rowIndex ? 'active' : ''}" type="button" data-row="${index}">
+          <b>${item.title}</b><span>${item.flow} · ${item.meta}</span>
+        </button>
+      `).join('');
+      document.querySelectorAll('[data-row]').forEach((button) => {
+        button.addEventListener('click', () => {
+          state.rowIndex = Number(button.dataset.row);
+          render();
+        });
+      });
+
+      const groups = [...new Set(current.rows.map((item) => item.flow))];
+      $('mappingList').innerHTML = `
+        <div class="mapping-row"><b>Flow Map</b><span>${current.mapName}</span></div>
+        <div class="mapping-row"><b>Flow</b><span>${groups.join(' / ')}</span></div>
+        <div class="mapping-row"><b>Step</b><span>원문 행 1개가 저장 가능한 항목 1개</span></div>
+        <div class="mapping-row"><b>Item</b><span>Step 안의 체크/메모 또는 외부 앱 설명 텍스트</span></div>
+      `;
+
+      $('rowTitle').textContent = row.title;
+      $('rowMapping').innerHTML = `
+        <div class="mapping-row"><b>Flow</b><span>${row.flow}</span></div>
+        <div class="mapping-row"><b>Step</b><span>${row.title}</span></div>
+        <div class="mapping-row"><b>Item</b><span>${row.items.join(' / ')}</span></div>
+      `;
+      $('fallbackText').textContent = fallbackText(current, row);
+      $('boundary').textContent = current.boundary;
+
+      $('previewTitle').textContent = current.mapName;
+      $('previewDesc').textContent = state.caseId === 'math'
+        ? '사용자는 단원을 고르고, 강의 Step을 체크하고, 오답 메모만 남깁니다.'
+        : '사용자는 아이 생년월일을 넣고, 기간별 Step을 캘린더나 표로 확인합니다.';
+      $('previewFlow').textContent = row.flow;
+      $('previewStep').textContent = row.title;
+      $('previewMeta').textContent = `${row.meta} · Item ${row.items.length}개`;
+    }
+
+    function fallbackText(current, row) {
+      const items = row.items.map((item) => `- ${item}`).join('\n');
+      if (state.caseId === 'math') {
+        return `시트/투두로 나갈 때\n제목: ${row.title}\nFlow: ${row.flow}\n메모 칸:\n${items}\n원문: ${current.links[0].label}`;
+      }
+      return `캘린더/시트로 나갈 때\n제목: ${row.title}\n기간: ${row.meta}\nFlow: ${row.flow}\n설명:\n${items}\n공식 출처: ${current.links.map((link) => link.label).join(' / ')}`;
+    }
+
+    function showToast(message) {
+      $('toast').textContent = message;
+      $('toast').classList.add('show');
+      window.setTimeout(() => $('toast').classList.remove('show'), 2200);
+    }
+
+    $('reset').addEventListener('click', () => {
+      state.caseId = 'math';
+      state.rowIndex = 0;
+      render();
+      showToast('처음 상태로 돌아감');
+    });
+    $('refreshPreview').addEventListener('click', () => showToast('사용자 미리보기를 현재 행 기준으로 갱신함'));
+    $('publishDraft').addEventListener('click', () => showToast('Flow Map 초안으로 저장됨'));
+
+    render();
+  </script>
+</body>
+</html>

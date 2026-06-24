@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { clearFlowLocalProgress, mergeSeedBundles, normalizeSavedFlowRecord } from './storage';
+import { clearFlowLocalProgress, getActiveFlowProgress, mergeSeedBundles, normalizeSavedFlowRecord } from './storage';
 import { FlowBundle } from './types';
 
 function bundle(id: string, slug: string, title: string): FlowBundle {
@@ -71,6 +71,63 @@ test('saved flow record normalization keeps explicit save metadata', () => {
       selectedArtifactMode: 'calendar',
     },
   );
+});
+
+test('active flow progress can use an injected bundle list for source-backed records', () => {
+  const store = new Map<string, string>();
+  const localStorage = {
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => store.set(key, value),
+    removeItem: (key: string) => store.delete(key),
+  };
+  const previousWindow = globalThis.window;
+  const previousLocalStorage = globalThis.localStorage;
+  Object.defineProperty(globalThis, 'window', {
+    configurable: true,
+    value: { localStorage },
+  });
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    value: localStorage,
+  });
+
+  try {
+    const sourceBacked = {
+      ...bundle('flow-source-backed-middle-school-math-1', 'source-backed-middle-school-math-1', '중1 수학 목차 진도'),
+      items: [
+        {
+          id: 'math-prime-factorization',
+          flow_id: 'flow-source-backed-middle-school-math-1',
+          title: '소인수분해',
+          type: 'todo' as const,
+          order: 0,
+        },
+      ],
+    };
+    localStorage.setItem(
+      'flow:saved:source-backed-middle-school-math-1',
+      JSON.stringify({
+        slug: 'source-backed-middle-school-math-1',
+        savedAt: '2026-06-23T00:00:00.000Z',
+        selectedArtifactMode: 'sheet',
+      }),
+    );
+
+    const progress = getActiveFlowProgress([sourceBacked]);
+
+    assert.deepEqual(progress.map((entry) => entry.slug), ['source-backed-middle-school-math-1']);
+    assert.equal(progress[0].title, '중1 수학 목차 진도');
+    assert.equal(progress[0].total, 1);
+  } finally {
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: previousWindow,
+    });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: previousLocalStorage,
+    });
+  }
 });
 
 test('clear flow local progress removes saved and per-flow state keys', () => {

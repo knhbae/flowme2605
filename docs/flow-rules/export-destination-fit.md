@@ -28,6 +28,15 @@ Before showing an export button or future integration option, answer these in or
 4. What should remain inside FlowMe: local check state, preview, source review, or feedback?
 5. What must not be built yet: account connection, sync, automation, workspace, formula layer, or generic task engine?
 
+## Step And Item Portability
+
+For Flow Map or parent-child content, treat `Step` as the minimum row that can leave FlowMe.
+
+- A Step may become one calendar event, todo task, checklist row, sheet row, or progress row.
+- Items belong inside the Step. They can appear in FlowMe as a nested checklist when the Flow service supports it.
+- If the destination app does not support nested checklist items, serialize Items as plain text in the event description, todo note/body, sheet note column, or memo body.
+- Do not export each Item as a separate calendar event or task unless the source itself treats those Items as separate execution moments.
+
 ## Destination Rules
 
 ### Calendar

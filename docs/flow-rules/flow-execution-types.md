@@ -272,6 +272,19 @@ Examples:
 
 Flow of Flow applies only after the child Flow execution type is clear.
 
+Use this hierarchy when naming and modeling parent-child execution content:
+
+```text
+Flow Map > Flow > Step > Item
+```
+
+- **Flow Map:** the upper map that groups related executable Flows. Example: middle-school math year, baby vaccination map, certification study map.
+- **Flow:** one executable content unit inside the map. Example: a math unit, one vaccine/visit group, one subject or part.
+- **Step:** the minimum execution row that can become a calendar event, todo task, checklist row, sheet row, or progress row. Example: lesson title, chapter, visit period, source-defined task.
+- **Item:** a detail field attached to a Step, such as memo prompt, URL, material, criterion, selected option, confirmation number, or calendar-event description variable. It is usually not saved as an independent calendar/todo entry.
+
+Not every Flow needs all four levels. If the source is a lecture list, book chapter list, or official schedule table, `Flow Map > Flow > Step` can be enough. Add `Item` only when the Step needs structured details in memo, description, URL, or event/task variables. In FlowMe, Items may render as an internal checklist inside the Step detail when that helps execution. In outside apps that do not support nested checklist items, Items should collapse into plain text in the calendar event description, todo note/body, sheet note column, or memo. Items should not become separate scheduled tasks unless the source truly requires it.
+
 Good Flow of Flow:
 
 - Parent: curriculum, roadmap, creator program, care map, or project map
@@ -319,4 +332,3 @@ If the execution type cannot be chosen, do not build the UI yet.
 ## Practical Rule
 
 When a Flow feels too complex, check whether the wrong execution type was chosen before changing visual design.
-

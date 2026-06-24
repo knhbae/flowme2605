@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe creator publish</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --paper: #fff;
+      --ink: #111827;
+      --muted: #64748b;
+      --line: #dbe3ee;
+      --soft: #eef3f8;
+      --blue: #1f64d8;
+      --blue-soft: #eaf2ff;
+      --green: #0e806c;
+      --green-soft: #e8f7f2;
+      --amber: #946200;
+      --amber-soft: #fff5d6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .app {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 16px 16px 64px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 900;
+    }
+    .mark {
+      display: grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 14px;
+    }
+    .top-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .panel,
+    .source-card,
+    .flow-card,
+    .step-card,
+    .result-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+    .panel { padding: 16px; }
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, .86fr) minmax(0, 1.18fr);
+      gap: 14px;
+      align-items: start;
+    }
+    .two {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .cards,
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+    .source-card,
+    .flow-card,
+    .result-card {
+      padding: 14px;
+    }
+    .source-card {
+      width: 100%;
+      text-align: left;
+    }
+    .source-card.active {
+      border-color: #8eb5f6;
+      background: var(--blue-soft);
+    }
+    .step-card {
+      padding: 11px;
+      background: #fbfcfe;
+    }
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 900;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2, h3, p, li {
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+    h1 {
+      margin-bottom: 8px;
+      font-size: 30px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+    h2 {
+      margin-bottom: 10px;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin-bottom: 5px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+    .muted { color: var(--muted); }
+    .small { font-size: 13px; }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 9px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      border-radius: 7px;
+      background: var(--soft);
+      padding: 4px 8px;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .chip.blue { background: var(--blue-soft); color: #174da8; }
+    .chip.green { background: var(--green-soft); color: var(--green); }
+    .chip.amber { background: var(--amber-soft); color: var(--amber); }
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 5px;
+      margin: 14px 0;
+      padding: 5px;
+      border-radius: 10px;
+      background: #e9eef5;
+    }
+    .tabs button {
+      min-height: 38px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: #475569;
+      font-weight: 850;
+    }
+    .tabs button.active {
+      background: var(--ink);
+      color: #fff;
+    }
+    .primary,
+    .secondary {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      padding: 10px 13px;
+      font-weight: 900;
+      text-decoration: none;
+    }
+    .primary {
+      border: 1px solid var(--blue);
+      background: var(--blue);
+      color: #fff;
+    }
+    .secondary {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--blue);
+    }
+    .field {
+      display: grid;
+      gap: 6px;
+      margin-top: 12px;
+      font-size: 14px;
+      font-weight: 850;
+    }
+    input, textarea {
+      width: 100%;
+      border: 1px solid #c8d1dc;
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+    }
+    input {
+      min-height: 44px;
+      padding: 8px 11px;
+      font-weight: 850;
+    }
+    textarea {
+      min-height: 82px;
+      padding: 10px 11px;
+      resize: vertical;
+    }
+    .check-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 1px solid #edf1f5;
+      font-weight: 750;
+    }
+    .check-row:last-child { border-bottom: 0; }
+    .check-row input {
+      width: 20px;
+      height: 20px;
+      min-height: 20px;
+      flex: 0 0 auto;
+      margin-top: 2px;
+    }
+    .table {
+      display: grid;
+      gap: 8px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 110px minmax(0, 1fr);
+      gap: 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #fbfcfe;
+      padding: 10px;
+    }
+    .row strong {
+      color: #334155;
+    }
+    [hidden] { display: none !important; }
+    @media (max-width: 820px) {
+      .app { padding: 14px 16px 56px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .grid,
+      .two {
+        grid-template-columns: 1fr;
+      }
+      .tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .top-actions,
+      .primary,
+      .secondary {
+        width: 100%;
+      }
+      .row { grid-template-columns: 1fr; }
+      h1 { font-size: 27px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><span class="mark">F</span><span>FlowMe Creator</span></div>
+      <div class="top-actions">
+        <a class="secondary" href="./2026-06-23-three-flow-user-poc-ko.html">사용자 화면 보기</a>
+      </div>
+    </header>
+
+    <section class="grid">
+      <aside class="panel">
+        <p class="eyebrow">콘텐츠 선택</p>
+        <h1>원문을 실행형 Flow로 공개</h1>
+        <p class="muted">제작자는 원문 구조를 확인하고, 사용자가 저장할 Flow/Step/Item만 공개합니다.</p>
+        <div class="cards" id="source-list"></div>
+      </aside>
+
+      <section class="panel">
+        <p class="eyebrow" id="kind"></p>
+        <h1 id="title"></h1>
+        <p class="muted" id="summary"></p>
+        <div class="chips" id="chips"></div>
+        <label class="field">원문 URL
+          <input id="source-url" readonly>
+        </label>
+
+        <nav class="tabs" aria-label="제작 단계">
+          <button class="active" type="button" data-tab="source">원문 구조</button>
+          <button type="button" data-tab="tree">Flow 편집</button>
+          <button type="button" data-tab="result">저장 결과</button>
+          <button type="button" data-tab="publish">공개 전 점검</button>
+        </nav>
+
+        <div id="tab-body"></div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const cases = {
+      baby: {
+        id: 'baby',
+        kind: '일정형',
+        color: 'green',
+        title: '아이 검진·접종 일정',
+        summary: '공식 검진 기간과 접종 확인 시점을 생년월일 기준 캘린더로 바꿉니다.',
+        sourceShape: '공식 안내 + 기간 표',
+        destination: '캘린더 + 체크 메모',
+        input: '아이 생년월일 1개',
+        sourceUrl: 'https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=1&cciNo=2&cnpClsNo=2&csmSeq=1138&popMenu=ov',
+        boundary: '의료 판단, 접종 가능 여부, 결과 해석은 만들지 않습니다.',
+        chips: ['생년월일', '기간 일정', '공식 링크'],
+        flows: [
+          { title: '영유아 건강검진', steps: [
+            { title: '1차 건강검진', meta: '생후 14~35일', items: ['검진 기간 확인', '예약 또는 문진표 상태 메모', '결과지 위치 메모'] },
+            { title: '2차 건강검진', meta: '생후 4~6개월', items: ['검진 기간 확인', '예약 또는 문진표 상태 메모', '결과지 위치 메모'] },
+            { title: '3차 건강검진', meta: '생후 9~12개월', items: ['검진 기간 확인', '예약 또는 문진표 상태 메모', '결과지 위치 메모'] }
+          ]},
+          { title: '예방접종 일정 확인', steps: [
+            { title: '생후 2개월 접종 확인', meta: '생후 2개월', items: ['예방접종도우미 일정 확인', '접종기관 또는 예약 상태 메모', '지연 접종은 의료기관 안내 확인'] },
+            { title: '생후 4개월 접종 확인', meta: '생후 4개월', items: ['예방접종도우미 일정 확인', '접종기관 또는 예약 상태 메모', '지연 접종은 의료기관 안내 확인'] }
+          ]}
+        ],
+        exportRows: [
+          ['캘린더 제목', '생후 2개월 접종 확인'],
+          ['날짜', '생년월일 + 60일'],
+          ['설명', '예방접종도우미 일정 확인 / 예약 상태 메모 / 원문 링크'],
+          ['FLOW 내부', 'Item 체크와 메모']
+        ]
+      },
+      math: {
+        id: 'math',
+        kind: '진도형',
+        color: 'blue',
+        title: '중1 수학 목차 진도',
+        summary: '목차의 큰 단원을 Flow로, 하위 개념을 Step으로 바꿉니다. 없는 체크리스트는 만들지 않습니다.',
+        sourceShape: '목차형 학습 글',
+        destination: '진도표 + 링크 메모',
+        input: '입력 없음',
+        sourceUrl: 'https://mathbang.net/13',
+        boundary: '문제 풀이 순서, 과제량, 오답 기준은 원문에 없으므로 자동 생성하지 않습니다.',
+        chips: ['단원 Flow', '개념 Step', '진도표'],
+        flows: [
+          { title: '1. 소인수분해', steps: [
+            { title: '거듭제곱', meta: '진도표 Step', items: [] },
+            { title: '소수와 합성수', meta: '진도표 Step', items: [] },
+            { title: '에라토스테네스의 체', meta: '진도표 Step', items: [] }
+          ]},
+          { title: '2. 정수와 유리수', steps: [
+            { title: '양수와 음수, 정수', meta: '진도표 Step', items: [] },
+            { title: '절댓값과 수직선', meta: '진도표 Step', items: [] }
+          ]}
+        ],
+        exportRows: [
+          ['시트 행', '단원 / Step / 상태 / 메모 / 원문 링크'],
+          ['상태', '안 봄, 완료'],
+          ['메모', '막힌 개념, 다시 볼 범위'],
+          ['FLOW 내부', '단원별 진행률']
+        ]
+      },
+      moving: {
+        id: 'moving',
+        kind: '타임라인형',
+        color: 'amber',
+        title: '원룸 이사 D-30 준비',
+        summary: '이사일 기준 D-30부터 D-Day까지의 체크 항목을 캘린더와 체크 메모로 바꿉니다.',
+        sourceShape: '이사 준비 체크리스트',
+        destination: '캘린더 + 체크리스트',
+        input: '이사일 1개',
+        sourceUrl: 'https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363',
+        boundary: '업체 추천, 가격 판단, 계약 보증은 만들지 않습니다.',
+        chips: ['이사일', 'D-30~D-Day', '캘린더'],
+        flows: [
+          { title: '이사 준비 일정', steps: [
+            { title: '이사 방식과 견적 후보 정하기', meta: 'D-30', items: ['이사 방식 1개를 정합니다.', '견적 후보 2-3곳을 열고 연락처를 메모합니다.', '포함 범위와 예상 비용을 짧게 남깁니다.'] },
+            { title: '입주청소와 대형폐기물 일정 확인', meta: 'D-14', items: ['입주청소가 필요하면 예약 가능일을 확인합니다.', '대형폐기물 신고 가능 품목과 수거일을 확인합니다.', '예약처와 신고 번호를 메모합니다.'] },
+            { title: '관리사무소 공유와 주소 변경 대상 확인', meta: 'D-7', items: ['관리사무소에 이사 시간과 차량 동선을 공유합니다.', '자주 쓰는 배송 계정 주소 변경 대상을 확인합니다.', '우편물 주소 변경이 필요한 곳을 메모합니다.'] }
+          ]}
+        ],
+        exportRows: [
+          ['캘린더 제목', '입주청소와 대형폐기물 일정 확인'],
+          ['날짜', '이사일 - 14일'],
+          ['설명', '입주청소 예약 가능일 / 대형폐기물 품목과 수거일 / 신고 번호'],
+          ['FLOW 내부', 'Item 체크와 업체 메모']
+        ]
+      }
+    };
+
+    const state = {
+      selected: 'moving',
+      tab: 'source',
+      openFlow: 0
+    };
+
+    const $id = (id) => document.getElementById(id);
+    const current = () => cases[state.selected];
+
+    function renderSources() {
+      $id('source-list').innerHTML = Object.values(cases).map((item) => `
+        <button class="source-card ${state.selected === item.id ? 'active' : ''}" type="button" data-select="${item.id}">
+          <strong>${item.title}</strong>
+          <p class="muted small">${item.kind} · ${item.destination}</p>
+          <span class="chips"><span class="chip ${item.color}">${item.input}</span><span class="chip">${item.flows.length}개 Flow</span></span>
+        </button>
+      `).join('');
+    }
+
+    function renderHeader() {
+      const item = current();
+      $id('kind').textContent = item.kind;
+      $id('title').textContent = item.title;
+      $id('summary').textContent = item.summary;
+      $id('source-url').value = item.sourceUrl;
+      $id('chips').innerHTML = item.chips.map((chip) => `<span class="chip ${item.color}">${chip}</span>`).join('');
+      document.querySelectorAll('[data-tab]').forEach((button) => button.classList.toggle('active', button.dataset.tab === state.tab));
+    }
+
+    function renderBody() {
+      const item = current();
+      if (state.tab === 'source') {
+        $id('tab-body').innerHTML = `
+          <div class="two">
+            <article class="result-card">
+              <p class="eyebrow">원문에서 읽은 구조</p>
+              <div class="table">
+                <div class="row"><strong>원문 형태</strong><span>${item.sourceShape}</span></div>
+                <div class="row"><strong>사용자 도구</strong><span>${item.destination}</span></div>
+                <div class="row"><strong>필요 입력</strong><span>${item.input}</span></div>
+                <div class="row"><strong>경계</strong><span>${item.boundary}</span></div>
+              </div>
+            </article>
+            <article class="result-card">
+              <p class="eyebrow">공개 문구</p>
+              <h2>${item.title}</h2>
+              <p class="muted">${item.summary}</p>
+              <div class="chips">${item.chips.map((chip) => `<span class="chip ${item.color}">${chip}</span>`).join('')}</div>
+            </article>
+          </div>
+        `;
+      }
+      if (state.tab === 'tree') {
+        if (state.openFlow >= item.flows.length) state.openFlow = 0;
+        $id('tab-body').innerHTML = `
+          <div class="list">
+            ${item.flows.map((flow, flowIndex) => `
+              <article class="flow-card">
+                <button class="source-card ${state.openFlow === flowIndex ? 'active' : ''}" type="button" data-open-flow="${flowIndex}">
+                  <div class="chips"><span class="chip ${item.color}">Flow</span><span class="chip">${flow.steps.length}개 Step</span></div>
+                  <h3>${flow.title}</h3>
+                </button>
+                ${state.openFlow === flowIndex ? `
+                  <div class="list" style="margin-top:10px;">
+                    ${flow.steps.map((step) => `
+                      <section class="step-card">
+                        <strong>${step.title}</strong>
+                        <p class="muted small">${step.meta}</p>
+                        ${step.items.length ? step.items.map((text) => `<label class="check-row"><input type="checkbox" checked><span>${text}</span></label>`).join('') : '<p class="muted small">Item 없음. 링크, 완료 여부, 메모만 저장.</p>'}
+                      </section>
+                    `).join('')}
+                  </div>
+                ` : ''}
+              </article>
+            `).join('')}
+          </div>
+        `;
+      }
+      if (state.tab === 'result') {
+        $id('tab-body').innerHTML = `
+          <div class="two">
+            <article class="result-card">
+              <p class="eyebrow">사용자가 저장 전 보는 것</p>
+              <h2>${item.title}</h2>
+              <p class="muted">${item.flows.length}개 Flow와 각 Step을 열어본 뒤 저장합니다.</p>
+              <div class="chips"><span class="chip ${item.color}">${item.input}</span><span class="chip">${item.destination}</span></div>
+              <a class="secondary" href="./2026-06-23-three-flow-user-poc-ko.html">사용자 화면에서 보기</a>
+            </article>
+            <article class="result-card">
+              <p class="eyebrow">내 도구로 옮길 때</p>
+              <div class="table">
+                ${item.exportRows.map(([label, value]) => `<div class="row"><strong>${label}</strong><span>${value}</span></div>`).join('')}
+              </div>
+            </article>
+          </div>
+        `;
+      }
+      if (state.tab === 'publish') {
+        $id('tab-body').innerHTML = `
+          <article class="result-card">
+            <p class="eyebrow">공개 전 점검</p>
+            <h2>${item.title}</h2>
+            <label class="check-row"><input type="checkbox" checked><span>원문 구조에서 Flow와 Step을 가져왔다.</span></label>
+            <label class="check-row"><input type="checkbox" checked><span>원문에 없는 Item은 만들지 않았다.</span></label>
+            <label class="check-row"><input type="checkbox" checked><span>사용자 입력은 ${item.input} 수준으로 끝난다.</span></label>
+            <label class="check-row"><input type="checkbox" checked><span>출처 링크가 Step 또는 공개 화면에 남아 있다.</span></label>
+            <label class="check-row"><input type="checkbox" checked><span>사용자 화면에 제작자용 점검 문구가 보이지 않는다.</span></label>
+            <label class="field">제작자 메모
+              <textarea placeholder="공개 전 고칠 원문 링크, Step 제목, Item 문구만 짧게 남기기"></textarea>
+            </label>
+            <div class="top-actions" style="margin-top:14px;">
+              <button class="primary" type="button" data-publish>공개 Flow 미리보기</button>
+              <a class="secondary" href="./2026-06-23-three-flow-user-poc-ko.html">사용자 화면 열기</a>
+            </div>
+          </article>
+        `;
+      }
+    }
+
+    function render() {
+      renderSources();
+      renderHeader();
+      renderBody();
+    }
+
+    document.addEventListener('click', (event) => {
+      const button = event.target.closest('button');
+      if (!button) return;
+      if (button.matches('[data-select]')) {
+        state.selected = button.dataset.select;
+        state.tab = 'source';
+        state.openFlow = 0;
+        render();
+      }
+      if (button.matches('[data-tab]')) {
+        state.tab = button.dataset.tab;
+        render();
+      }
+      if (button.matches('[data-open-flow]')) {
+        state.openFlow = Number(button.dataset.openFlow);
+        render();
+      }
+      if (button.matches('[data-publish]')) {
+        state.tab = 'result';
+        render();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>

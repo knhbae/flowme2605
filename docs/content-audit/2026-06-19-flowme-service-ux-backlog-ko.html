@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 서비스화 UX 백로그</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --surface: #fff;
+      --soft: #f8fafc;
+      --line: #d8e2ef;
+      --text: #101827;
+      --muted: #5f6b7c;
+      --blue: #1f5fbf;
+      --blue-soft: #eaf2ff;
+      --green: #0f7a4a;
+      --green-soft: #e8f7ef;
+      --amber: #9a6100;
+      --amber-soft: #fff6df;
+      --red: #b42318;
+      --red-soft: #fff1ef;
+      --shadow: 0 14px 32px rgba(16, 24, 39, .08);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #fbfdff 0, var(--bg) 420px);
+      font-size: 16px;
+      line-height: 1.62;
+    }
+    a { color: var(--blue); text-underline-offset: 3px; overflow-wrap: anywhere; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 44px); line-height: 1.12; letter-spacing: 0; word-break: keep-all; }
+    h2 { margin-bottom: 8px; font-size: clamp(23px, 3vw, 32px); line-height: 1.22; letter-spacing: 0; word-break: keep-all; }
+    h3 { margin-bottom: 6px; font-size: 20px; line-height: 1.28; letter-spacing: 0; word-break: keep-all; }
+    .page { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 14px 0 64px; }
+    .topbar, .hero, .card, .row, .table-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 58px;
+      padding: 12px 16px;
+      box-shadow: 0 1px 2px rgba(16, 24, 39, .04);
+    }
+    .brand { color: var(--blue); font-size: 24px; font-weight: 950; text-decoration: none; }
+    .hero, .card, .table-card { margin-top: 12px; padding: 18px; box-shadow: var(--shadow); }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .desc { max-width: 820px; color: var(--muted); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #344054;
+      font-size: 13px;
+      font-weight: 850;
+    }
+    .chip.blue { border-color: #bfdbfe; background: var(--blue-soft); color: #174ea6; }
+    .chip.green { border-color: #bde7cb; background: var(--green-soft); color: var(--green); }
+    .chip.amber { border-color: #efd08f; background: var(--amber-soft); color: var(--amber); }
+    .chip.red { border-color: #f4b4ad; background: var(--red-soft); color: var(--red); }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .lane-card {
+      --lane: #1f5fbf;
+      --lane-bg: #eef5ff;
+      position: relative;
+      min-height: 156px;
+      padding: 14px;
+      border: 1px solid color-mix(in srgb, var(--lane) 38%, white);
+      border-left: 6px solid var(--lane);
+      border-radius: 8px;
+      background: linear-gradient(180deg, var(--lane-bg), #fff);
+    }
+    .lane-card b, .lane-card span { display: block; }
+    .lane-card b { margin-top: 10px; font-size: 18px; line-height: 1.25; }
+    .lane-card span { margin-top: 8px; color: #364153; font-weight: 750; }
+    .lane-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--lane);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 950;
+    }
+    .lane-product { --lane: #6d28d9; --lane-bg: #f5f0ff; }
+    .lane-content { --lane: #0f7a4a; --lane-bg: #e8f7ef; }
+    .lane-creator { --lane: #b45309; --lane-bg: #fff7ed; }
+    .lane-user { --lane: #1f5fbf; --lane-bg: #eaf2ff; }
+    .lane-ops { --lane: #475467; --lane-bg: #f2f4f7; }
+    .lane-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .lane-tag {
+      --lane: #1f5fbf;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 32px;
+      padding: 5px 10px;
+      border: 1px solid color-mix(in srgb, var(--lane) 35%, white);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--lane) 11%, white);
+      color: #1d2939;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .lane-tag::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--lane);
+    }
+    .lane-tag.product { --lane: #6d28d9; }
+    .lane-tag.content { --lane: #0f7a4a; }
+    .lane-tag.creator { --lane: #b45309; }
+    .lane-tag.user { --lane: #1f5fbf; }
+    .lane-tag.ops { --lane: #475467; }
+    .lane-cell { min-width: 0; }
+    .lane-cell .lane-tag { margin: 0 4px 6px 0; }
+    .lane-cell .small { display: block; margin-top: 2px; }
+    .completion { min-width: 0; }
+    .level {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+    .level.baseline { background: #dcfce7; color: #166534; }
+    .level.poc { background: #e0f2fe; color: #075985; }
+    .level.model { background: #f3e8ff; color: #6b21a8; }
+    .level.done { background: #e7f8ef; color: #0f7a4a; }
+    .level.not-started { background: #f2f4f7; color: #475467; }
+    .level.next-up { background: #fff1ef; color: #b42318; }
+    .meter {
+      height: 8px;
+      margin: 9px 0 6px;
+      border-radius: 999px;
+      background: #e6edf5;
+      overflow: hidden;
+    }
+    .meter span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #1f5fbf, #0f7a4a);
+    }
+    .row { padding: 12px; background: var(--soft); }
+    .row b, .row span { display: block; }
+    .row span { margin-top: 3px; color: var(--muted); font-weight: 700; }
+    .list { margin: 10px 0 0; padding-left: 20px; }
+    .list li + li { margin-top: 7px; }
+    table { width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 12px; }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px;
+      vertical-align: top;
+      text-align: left;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    th {
+      background: #eef3f8;
+      color: #344054;
+      font-size: 13px;
+      font-weight: 950;
+    }
+    td { background: #fff; }
+    td strong { display: block; margin-bottom: 3px; }
+    .small { color: var(--muted); font-size: 13px; font-weight: 700; }
+    .status { white-space: normal; }
+    .next { border-left: 4px solid var(--blue); }
+    .active { border-left: 4px solid var(--green); }
+    .later { border-left: 4px solid var(--amber); }
+    .park { border-left: 4px solid #98a2b3; }
+    @media (max-width: 860px) {
+      .page { width: min(100% - 20px, 1180px); padding-top: 10px; }
+      .hero, .card, .table-card { padding: 14px; }
+      .grid, .grid.two, .grid.five { grid-template-columns: 1fr; }
+      table, tbody, tr, th, td { display: block; width: 100%; }
+      th { border-bottom: 0; }
+      td { border-top: 0; }
+      tr + tr { margin-top: 10px; display: block; border-top: 2px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar" aria-label="FLOW">
+      <a class="brand" href="#">FLOW</a>
+      <span class="chip blue">Last updated: 2026-06-24</span>
+    </nav>
+
+    <header class="hero">
+      <p class="eyebrow">서비스화 UX 백로그</p>
+      <h1>FlowMe를 실제 플랫폼으로 만들 때 계속 봐야 할 질문들</h1>
+      <p class="desc">이 문서는 화면 하나를 평가하는 용도가 아니라, 제작자 콘텐츠가 Flow Map으로 발행되고 사용자의 내 Flow로 이어지는 서비스 전체를 관리하기 위한 백로그입니다. 주요 Task나 의미 있는 milestone이 끝났을 때 상태와 다음 산출물을 갱신합니다.</p>
+      <div class="chips">
+        <span class="chip blue">질문</span>
+        <span class="chip green">현재 판단</span>
+        <span class="chip amber">다음 산출물</span>
+      </div>
+    </header>
+
+    <section class="card">
+      <p class="eyebrow">현재 판단</p>
+      <h2>기본 구조는 충분하고, 이제 운영 가능한 서비스 흐름을 봐야 함</h2>
+      <div class="grid">
+        <div class="row active"><b>작은 Flow</b><span>전세/10개 Flow 수준에서 실행 카드, 체크, 메모, URL 배치의 기준선은 잡혔습니다.</span></div>
+        <div class="row active"><b>Flow Map</b><span>중1 수학과 영유아 공식 일정으로 공개 상세, 입력, 저장, 내 Flow 실행 연결 가능성을 확인했습니다.</span></div>
+        <div class="row next"><b>다음 초점</b><span>화면 polish보다 제작자 온보딩, 저장 후 관리, 업데이트, 품질 운영을 우선 봐야 합니다.</span></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">전체 흐름</p>
+      <h2>지금 보는 일은 서비스화 흐름 안에서 어디에 있는가</h2>
+      <p class="desc">FlowMe는 단순 체크리스트 앱이 아니라, 제작자의 원컨텐츠가 실행 가능한 Flow Map/Flow로 바뀌고 사용자의 내 Flow에서 계속 실행되는 플랫폼을 검증하고 있습니다. 그래서 각 작업은 기획, UX, 개발 준비, 운영 정책 중 어디에 속하는지 함께 봐야 합니다.</p>
+      <div class="grid five">
+        <div class="lane-card lane-product"><i class="lane-number">1</i><b>제품 기획</b><span>FlowMe가 단일 Flow 도구인지, 제작자 기반 실행형 콘텐츠 플랫폼인지 정의합니다.</span></div>
+        <div class="lane-card lane-content"><i class="lane-number">2</i><b>컨텐츠 변환</b><span>원컨텐츠를 Flow Map, Flow, Step, Item으로 바꿀 수 있는지 확인합니다.</span></div>
+        <div class="lane-card lane-creator"><i class="lane-number">3</i><b>제작자 UX</b><span>제작자가 URL/원문 구조를 가져와 Flow를 만들고 공개하는 과정을 설계합니다.</span></div>
+        <div class="lane-card lane-user"><i class="lane-number">4</i><b>사용자 UX</b><span>사용자가 발견, 저장, 실행, 체크, 메모, 재방문하는 흐름을 검증합니다.</span></div>
+        <div class="lane-card lane-ops"><i class="lane-number">5</i><b>운영/개발</b><span>품질 gate, 업데이트 정책, export, analytics를 제품 규칙과 개발 작업으로 내립니다.</span></div>
+      </div>
+    </section>
+
+    <section class="table-card">
+      <p class="eyebrow">진행 현황</p>
+      <h2>완료 / 진행 중 / 팬딩 / 다음 작업</h2>
+      <p class="desc">이 표는 화면 평가용 코멘트가 아니라 프로젝트 진행판입니다. 모든 작은 수정마다 바꾸지 않고, 새 PoC/리포트/spec처럼 판단이 바뀌는 주요 Task 후에 날짜, 상태, 완성도, 산출물 링크, 남은 일을 갱신합니다. 완성도는 사용자 검증 점수가 아니라 내부 진행 상태를 빠르게 보기 위한 표시입니다.</p>
+      <div class="lane-tags" aria-label="작업 분류">
+        <span class="lane-tag product">제품 기획</span>
+        <span class="lane-tag content">컨텐츠 변환</span>
+        <span class="lane-tag creator">제작자 UX</span>
+        <span class="lane-tag user">사용자 UX</span>
+        <span class="lane-tag ops">운영/개발</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>날짜</th>
+            <th>상태</th>
+            <th>항목</th>
+            <th>분류/흐름</th>
+            <th>완성도</th>
+            <th>산출물</th>
+            <th>남은 일</th>
+            <th>다음 액션</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="status">2026-06-08</td>
+            <td><span class="chip green">완료</span></td>
+            <td><strong>전세계약 점검 Flow 기준 샘플</strong><span class="small">단일 Flow의 기준선</span></td>
+            <td class="lane-cell"><span class="lane-tag user">사용자 UX</span><span class="small">원컨텐츠 소비 후 저장, 날짜 실행, 체크, 메모, URL 확인</span></td>
+            <td class="completion"><span class="level baseline">기준 샘플</span><div class="meter"><span style="width: 90%;"></span></div><span class="small">90% · 내부 UX 기준선으로 수용. 실제 사용자 검증은 별도.</span></td>
+            <td><a href="./2026-06-08-jeonse-contract-flow-completion-note.md">완료 메모</a></td>
+            <td>세부 polish와 실제 사용자 데이터는 후속.</td>
+            <td>새 Flow는 이 복잡도 이하를 기본값으로 비교.</td>
+          </tr>
+          <tr>
+            <td class="status">2026-06-16</td>
+            <td><span class="chip green">완료</span></td>
+            <td><strong>10개 Flow 확장 PoC</strong><span class="small">단일 Flow 카테고리 확장</span></td>
+            <td class="lane-cell"><span class="lane-tag content">컨텐츠 변환</span><span class="lane-tag user">사용자 UX</span><span class="small">여러 원컨텐츠가 캘린더/체크리스트/메모/시트로 바뀌는지 확인</span></td>
+            <td class="completion"><span class="level poc">내부 PoC</span><div class="meter"><span style="width: 70%;"></span></div><span class="small">70% · 확장 가능성 확인. 후보 심사와 품질 gate 필요.</span></td>
+            <td><a href="./2026-06-16-ten-flow-user-samples-ko.html">사용자 샘플</a></td>
+            <td>대표 후보와 약한 후보를 분리하는 운영 gate 필요.</td>
+            <td>Creator publish gate와 후보 심사 규칙으로 흡수.</td>
+          </tr>
+          <tr>
+            <td class="status">2026-06-18</td>
+            <td><span class="chip green">완료</span></td>
+            <td><strong>Flow Map &gt; Flow &gt; Step &gt; Item 정의</strong><span class="small">큰 구조와 최소 저장 단위 정리</span></td>
+            <td class="lane-cell"><span class="lane-tag product">제품 기획</span><span class="small">큰 콘텐츠 묶음과 최소 실행 항목의 모델 정의</span></td>
+            <td class="completion"><span class="level model">모델 정의</span><div class="meter"><span style="width: 80%;"></span></div><span class="small">80% · 명명과 역할 수용. 제품 화면에 계속 반영 필요.</span></td>
+            <td><a href="./2026-06-18-roadmap-progress-visual-ko.html">진행 시각화</a></td>
+            <td>이 정의를 제품 화면과 제작자 화면에 계속 일관되게 반영해야 함.</td>
+            <td>새 PoC에는 내부 용어 대신 사용자 언어로 반영.</td>
+          </tr>
+          <tr>
+            <td class="status">2026-06-19</td>
+            <td><span class="chip green">완료</span></td>
+            <td><strong>Flow Map E2E 1차</strong><span class="small">중1 수학, 영유아 공식 일정 저장 연결</span></td>
+            <td class="lane-cell"><span class="lane-tag creator">제작자 UX</span><span class="lane-tag user">사용자 UX</span><span class="small">만들기, 공개 상세, 저장 후 실행이 한 제품 흐름으로 이어지는지 확인</span></td>
+            <td class="completion"><span class="level poc">구조 PoC</span><div class="meter"><span style="width: 70%;"></span></div><span class="small">70% · E2E 가능성 확인. 서비스 화면으로 더 단순화 필요.</span></td>
+            <td><a href="./2026-06-19-math-flow-map-e2e-poc-ko.html">제품 PoC</a></td>
+            <td>중1 수학은 무입력 진도형, 영유아 공식 일정은 생년월일 1개 입력형으로 확인됨. 실제 사용자/제작자 관찰은 남음.</td>
+            <td>다음은 더 많은 화면이 아니라 durable creator/public schema와 업데이트 정책 판단.</td>
+          </tr>
+          <tr>
+            <td class="status">2026-06-19</td>
+            <td><span class="chip green">완료</span></td>
+            <td><strong>서비스화 UX 진행판 구조 보강</strong><span class="small">오늘 작업 이후부터 갱신되는 진행판</span></td>
+            <td class="lane-cell"><span class="lane-tag ops">운영/개발</span><span class="lane-tag product">제품 기획</span><span class="small">진행상황을 제품 흐름, 분류, 완성도, 산출물 기준으로 관리</span></td>
+            <td class="completion"><span class="level done">운영 초안</span><div class="meter"><span style="width: 85%;"></span></div><span class="small">85% · 진행판 구조 완료. 주요 Task 후 갱신.</span></td>
+            <td><a href="./2026-06-19-flowme-service-ux-backlog-ko.html">현재 문서</a></td>
+            <td>모든 작은 수정이 아니라 주요 Task가 끝났을 때 갱신하는 운영 습관이 필요.</td>
+            <td>Creator Studio + Public Detail + My Flow 연결안 진행.</td>
+          </tr>
+          <tr>
+            <td class="status">2026-06-19</td>
+            <td><span class="chip amber">부분 진행</span></td>
+            <td><strong>Creator Studio v1</strong><span class="small">제작자가 원컨텐츠를 Flow Map으로 만드는 화면</span></td>
+            <td class="lane-cell"><span class="lane-tag creator">제작자 UX</span><span class="lane-tag ops">개발 준비</span><span class="small">URL 입력, 원문 구조 확인, Flow/Step/Item 매핑, 공개 전 점검</span></td>
+            <td class="completion"><span class="level next-up">부분 구현</span><div class="meter"><span style="width: 55%;"></span></div><span class="small">55% · 중1 수학과 영유아 공식 일정 Flow Map에서 원문 row, 발행 전 점검, 공개 화면 이동을 실제 route로 확인.</span></td>
+            <td><a href="./2026-06-19-creator-public-myflow-minimal-poc-ko.html">연결 PoC</a><br><a href="../../components/flow/SourceBackedFlowMapPage.tsx">source-backed map page</a><br><a href="../specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md">Step contract</a></td>
+            <td>독립 Creator Studio v1에서는 URL 입력, 자동 추출, 수정, 공개 전 점검 범위를 더 좁혀야 함.</td>
+            <td>현재 route는 발행 준비 확인용. 다음은 creator 편집/소유권/버전 정책.</td>
+          </tr>
+          <tr>
+            <td class="status">2026-06-19</td>
+            <td><span class="chip amber">부분 진행</span></td>
+            <td><strong>Public Flow Map detail v1</strong><span class="small">사용자가 저장 전 보는 공개 상세</span></td>
+            <td class="lane-cell"><span class="lane-tag user">사용자 UX</span><span class="lane-tag product">서비스 UX</span><span class="small">발견, 신뢰, 전체 저장, 일부 저장, 원문 근거 확인</span></td>
+            <td class="completion"><span class="level next-up">부분 구현</span><div class="meter"><span style="width: 76%;"></span></div><span class="small">76% · `/flow-maps/middle-school-math-1`과 `/flow-maps/baby-health-schedule`에서 원문, 생성 artifact, 전체 지도 저장, 입력 1개 저장, source row 미리보기를 브라우저 테스트로 확인. 저장 버튼은 demo link가 아니라 real `/my` saved record를 생성.</span></td>
+            <td><a href="./2026-06-19-creator-public-myflow-minimal-poc-ko.html">연결 PoC</a><br><a href="../../app/flow-maps/[map]/page.tsx">public route</a><br><a href="../../tests/e2e/flow-mvp.spec.ts">E2E</a></td>
+            <td>실제 공개 페이지에서는 발견 경로, 제작자 신뢰, 저장 후 결과 미리보기, 일부 저장 UX를 더 다듬어야 함. 전체 저장과 입력 1개 저장의 기본 product path는 열림.</td>
+            <td>다음은 공개 상세 polish보다 저장 후 업데이트/버전/소유권 정책 검토.</td>
+          </tr>
+          <tr>
+            <td class="status">2026-06-20</td>
+            <td><span class="chip green">완료</span></td>
+            <td><strong>My Flow IA v8</strong><span class="small">저장 후 내 앱에서 보는 구조</span></td>
+            <td class="lane-cell"><span class="lane-tag user">사용자 UX</span><span class="lane-tag product">제품 IA</span><span class="small">오늘 할 일, 저장한 Flow, 큰 지도, 이어보기 우선순위</span></td>
+            <td class="completion"><span class="level poc">관찰 전 PoC</span><div class="meter"><span style="width: 89%;"></span></div><span class="small">89% · v8은 오늘/일정/개별 Flow/지도 구조를 줄였고, Step row 중복 메타 제거와 혼잡 날짜 Flow별 묶음까지 반영함.</span></td>
+            <td><a href="./2026-06-21-my-flow-v8-progressive-management-ko.html">v8 점진 노출 관리</a><br><a href="./2026-06-21-my-flow-v8-progressive-management-rehearsal-ko.html">v8 점진 노출 리허설</a><br><a href="./2026-06-21-my-flow-v7-flow-map-management-ko.html">v7 Flow/큰 지도 관리</a><br><a href="./2026-06-21-my-flow-v7-flow-map-management-rehearsal-ko.html">v7 관리 구조 리허설</a><br><a href="./2026-06-21-my-flow-v6-content-model-rehearsal-ko.html">v6 컨텐츠 모델 재점검</a><br><a href="./2026-06-21-my-flow-v6-styleseed-task-rehearsal-ko.html">v6 StyleSeed 과업 리허설</a><br><a href="./2026-06-21-my-flow-persona-walkthrough-test-ko.html">페르소나 walkthrough 테스트</a><br><a href="./2026-06-21-my-flow-v5-clean-user-poc-ko.html">v5 정리 화면</a><br><a href="./2026-06-21-my-flow-v5-clean-simulation-ko.html">v5 시뮬레이션</a><br><a href="./2026-06-21-my-flow-saved-execution-v4-ko.html">v4 사용자 화면</a><br><a href="./2026-06-21-my-flow-type-mix-user-poc-ko.html">유형 혼합 사용자 화면</a><br><a href="./2026-06-21-my-flow-type-mix-simulation-ko.html">유형 혼합 시뮬레이션</a><br><a href="./2026-06-21-my-flow-type-mix-observation-kit-ko.html">유형 혼합 관찰 키트</a><br><a href="./2026-06-21-my-flow-saved-count-ux-verdict-ko.html">저장 개수별 UX 판정</a><br><a href="./2026-06-21-my-flow-observed-session-kit-ko.html">관찰 키트</a><br><a href="./2026-06-21-my-flow-observed-session-note-template-ko.html">관찰 기록지</a><br><a href="./2026-06-21-my-flow-observed-session-rollup-ko.html">관찰 롤업</a><br><a href="./2026-06-21-my-flow-click-smoke-report-ko.html">클릭 smoke check</a><br><a href="./2026-06-21-my-flow-observation-dry-run-ko.html">관찰 전 드라이런</a><br><a href="./2026-06-21-my-flow-v4-actual-my-alignment-ko.html">v4 실제 `/my` 정렬 확인</a><br><a href="./2026-06-21-my-flow-ux20-large-inventory-ko.html">20개 이상 저장 상태</a><br><a href="./2026-06-20-my-flow-user-screen-v3-ko.html">v3 사용자 화면</a><br><a href="./2026-06-21-my-flow-v3-implementation-scope-ko.html">실제 적용 범위</a><br><a href="./2026-06-20-my-flow-clean-management-poc-ko.html">v2 상태별 PoC</a><br><a href="./2026-06-20-my-flow-clean-management-simulation-ko.html">시뮬레이션</a><br><a href="./2026-06-19-my-flow-saved-management-ia-poc-ko.html">v1 PoC</a></td>
+            <td>실제 사용자 관찰은 남아 있음. v8에서 Flow 탭은 개별 Flow만, 지도 탭은 Flow Map만 보게 줄였고, 일정 탭은 날짜 클릭 후 항목을 여는 보조 보기로 되살림. Step 상세는 선택한 row 바로 아래에 열리고 같은 Step 재클릭으로 닫힘. Today/일정의 반복 날짜 배지와 사용자 화면의 실행 기준/외부앱 텍스트를 제거했고, 지도에서는 열린 상위 Flow 헤더를 다시 눌러 하위 Step을 접게 함. 추가로 Step row의 `Flow ·/지도 ·` 내부 라벨과 row progress bar를 제거하고, Flow/지도 내부 Step row에서는 부모와 중복되는 소속/완료 메타를 숨김. 일정에서 항목이 많은 날짜는 카테고리 탭 대신 Flow별 묶음으로 정리함. 모바일 Flow 탭은 저장 Flow가 1-4개일 때 카드가 바로 보이게 하고, 많은 경우에만 찾기 허브로 접음. 오늘 6개와 긴 10-Step Flow의 체감 부담은 관찰 필요.</td>
+            <td><a href="./2026-06-21-my-flow-v8-progressive-management-ko.html">v8</a>에서 오늘/일정/개별 Flow/지도를 오가며 첫 클릭, row 경로 이해, inline detail, 재클릭 닫기, 혼잡 날짜 묶음, depth 이해도를 확인.</td>
+          </tr>
+          <tr>
+            <td class="status">2026-06-22</td>
+            <td><span class="chip green">완료</span></td>
+            <td><strong>Source-backed My Flow fixture pass</strong><span class="small">실제 원컨텐츠 기반 Flow를 v8 UI에 주입</span></td>
+            <td class="lane-cell"><span class="lane-tag content">컨텐츠 변환</span><span class="lane-tag user">사용자 UX</span><span class="small">Source-to-Flow gate를 통과한 Flow/Step/Item으로 UI 판단 재검증</span></td>
+            <td class="completion"><span class="level done">관찰 전 PoC</span><div class="meter"><span style="width: 92%;"></span></div><span class="small">92% · 전세, 이사, 여권, 중1 수학, 영유아 검진/접종을 실제 원문 기반 fixture로 교체하고 모바일/데스크톱 클릭 리허설 통과.</span></td>
+            <td><a href="./2026-06-22-source-backed-my-flow-v9-ko.html">v9 원문 기반 사용자 화면</a><br><a href="./2026-06-22-source-backed-my-flow-v9-rehearsal-ko.html">v9 원문 기반 리허설</a><br><a href="./2026-06-21-my-flow-v8-progressive-management-ko.html">v8 UI shell</a><br><a href="../flow-rules/source-to-flow-conversion-gate.md">Source-to-Flow gate</a></td>
+            <td>원문 없는 rough/mock 샘플을 사용자 화면에서 제외함. Step은 캘린더/투두 최소 단위, Item은 내부 체크리스트 또는 외부 앱 text fallback으로 유지. 사용자 화면에는 내부 평가 문구 없이 Step 상세의 원문 링크만 노출.</td>
+            <td>다음은 실제 `/my` 데이터 모델과 맞추는 작업. Step이 ICS 수준의 일정 속성(start/end/allDay/url/description/repeat)을 가질 수 있도록 모델/spec에서 확장 지점을 정리.</td>
+          </tr>
+          <tr>
+            <td class="status">2026-06-22</td>
+            <td><span class="chip green">완료</span></td>
+            <td><strong>My Flow v10 product data bridge</strong><span class="small">v9 Step을 실제 FlowItem 계약에 연결</span></td>
+            <td class="lane-cell"><span class="lane-tag product">제품 기획</span><span class="lane-tag ops">개발 준비</span><span class="small">FlowBundle / FlowItem / FlowItemDetail / ICS export 연결 기준</span></td>
+            <td class="completion"><span class="level done">구현 기준</span><div class="meter"><span style="width: 86%;"></span></div><span class="small">86% · 새 사용자 모델을 만들지 않고 기존 타입 계약으로 먼저 표현한다는 기준을 정리했고, 2026-06-23에 첫 adapter/test slice까지 내려감.</span></td>
+            <td><a href="./2026-06-22-my-flow-v10-source-backed-user-poc-ko.html">v10 원문 기반 사용자 PoC</a><br><a href="./2026-06-22-my-flow-v10-product-data-bridge-ko.html">v10 제품 데이터 연결 기준</a><br><a href="./2026-06-22-my-flow-v10-product-data-bridge-rehearsal-ko.html">v10 데이터 연결 리허설</a><br><a href="../specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md">Source-backed Step contract</a></td>
+            <td>Step은 `FlowItem`, Item은 `FlowItemDetail`/description/link/memo로 매핑. Flow Map은 별도 parent/grouping concern으로 두고 Step detail에 과노출하지 않음. 중1 수학 같은 progress row는 `progress_step`을 만들지 않고 `FlowItem` plus derived `progress` bridge로 먼저 처리.</td>
+            <td>다음 코드는 이 bridge를 실제 `/my` fixture path에 연결할지, 계속 contract fixture로 둘지 결정하는 일. 사용자 UI를 더 늘리는 작업은 아님.</td>
+          </tr>
+          <tr>
+            <td class="status">2026-06-23</td>
+            <td><span class="chip green">완료</span></td>
+            <td><strong>Source-backed Step adapter test</strong><span class="small">이사, 중1 수학, 영유아 공식 일정을 코드 계약으로 검증</span></td>
+            <td class="lane-cell"><span class="lane-tag product">제품 모델</span><span class="lane-tag ops">개발 검증</span><span class="small">Step → FlowItem, Item → detail/fallback, dated Step → ICS, progress Step → progress bridge</span></td>
+            <td class="completion"><span class="level done">코드 slice</span><div class="meter"><span style="width: 99%;"></span></div><span class="small">99% · 대표 4개는 기존 모델로 표현 가능하고 `/my?demo=source-backed`, public map, creator map route, public save → real `/my` saved record, 입력 1개 저장, parent map snapshot, 공식 date window export까지 연결. Durable schema와 실제 사용자/제작자 검증은 남음.</span></td>
+            <td><a href="../../lib/flow/source-backed-my-flow.ts">adapter</a><br><a href="../../lib/flow/source-backed-my-flow.test.ts">contract test</a><br><a href="../../components/flow/SourceBackedFlowMapPage.tsx">Flow Map route UI</a><br><a href="../../tests/e2e/flow-mvp.spec.ts">E2E</a><br><a href="../specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md">Step contract</a></td>
+            <td>이사는 날짜형 `FlowItem`이 ICS 설명 안에 Item bullet과 원문 링크를 보존함. 중1 수학은 Mathbang 단원 row를 `FlowItem`으로 두고 My Flow bridge에서 `progress`로 파생함. 영유아 검진/접종은 공식 일정 source row를 `baby_birth_date` anchor 기반 Step으로 저장하되 기간형 source를 `date_window` metadata로 분리해 캘린더 이벤트 1개와 공식 기간 설명으로 내보냄.</td>
+            <td>아직 실제 사용자 검증은 아님. 다음 제품 판단은 이 bridge package를 durable creator/public schema로 승격할지, fixture adapter로 더 유지하며 creator-side source-row editing/version review를 먼저 볼지다. My Flow 실행 화면은 더 키우지 않는 것이 현재 기준.</td>
+          </tr>
+          <tr>
+            <td class="status">2026-06-24</td>
+            <td><span class="chip green">완료</span></td>
+            <td><strong>My Flow saved execution v11</strong><span class="small">저장한 Flow 관리/실행 UX 목표 완료판정</span></td>
+            <td class="lane-cell"><span class="lane-tag user">사용자 UX</span><span class="lane-tag product">제품 IA</span><span class="small">오늘, 일정, Flow, 지도, Step detail, Item check, memo, source link</span></td>
+            <td class="completion"><span class="level done">내부 UX PoC 완료</span><div class="meter"><span style="width: 94%;"></span></div><span class="small">94% · 사용자용 화면과 리뷰를 분리했고, 버튼/설명 카드 affordance를 정리했으며, 모바일/데스크톱 클릭 리허설 통과. 실제 사용자 검증은 아님.</span></td>
+            <td><a href="./2026-06-24-my-flow-saved-execution-v11-ko.html">v11 사용자용 PoC</a><br><a href="./2026-06-24-my-flow-saved-execution-v11-rehearsal-ko.html">v11 리허설 리포트</a><br><a href="./2026-06-24-my-flow-goal-completion-check-ko.html">목표 완료 체크</a></td>
+            <td>사용자 화면에는 내부 평가/리허설 문구를 두지 않음. 정적 요약 카드는 설명형으로 낮추고, Step/Flow/지도 조작 카드에만 열기/접기/보기/선택됨 라벨을 붙임. Flow Map은 실행 대시보드가 아니라 상위 구조 확인으로 좁힘.</td>
+            <td>현재 목표는 완료. 다음은 실제 `/my` 반영 범위, persistence/update/export 계약, 20개 이상 저장 상태, 실제 사용자 관찰 중 하나로 새 목표를 잡아야 함.</td>
+          </tr>
+          <tr>
+            <td class="status">2026-06-21</td>
+            <td><span class="chip green">완료</span></td>
+            <td><strong>실제 `/my` 모바일 P0 반영</strong><span class="small">1개/4개/18개 저장 시나리오 통합 시뮬레이션</span></td>
+            <td class="lane-cell"><span class="lane-tag user">사용자 UX</span><span class="lane-tag ops">검증</span><span class="small">단일 저장 탭 축소, compact row 완료 텍스트 제거, 밀린 항목 접힘</span></td>
+            <td class="completion"><span class="level done">구현 반영</span><div class="meter"><span style="width: 91%;"></span></div><span class="small">91% · 모바일 P0, v4 정렬, 20개 이상 목록 접기 반영/테스트 완료. 실제 사용자 검증은 아직 아님.</span></td>
+            <td><a href="./2026-06-21-my-flow-v4-actual-my-alignment-ko.html">v4 실제 `/my` 정렬 확인</a><br><a href="./2026-06-21-my-flow-ux20-large-inventory-ko.html">20개 이상 저장 상태</a><br><a href="./2026-06-21-my-flow-v3-integrated-simulation-ko.html">통합 시뮬레이션</a><br><a href="./2026-06-21-my-flow-completion-toggle-ab-simulation-ko.html">완료 토글 A/B 판단</a><br><a href="./2026-06-21-my-flow-v3-p0-actual-my-verification-ko.html">Today P0</a><br><a href="./2026-06-21-my-flow-v3-p0-flow-tab-verification-ko.html">Flow 탭 P0</a><br><a href="./2026-06-21-my-flow-v3-p0-check-routine-verification-ko.html">체크/루틴 P0</a></td>
+            <td>데스크톱은 기존 구조 유지. 모바일은 단일 저장 탭 숨김, Today 숫자 카드 숨김, Flow 탭 상태 버튼 제거, 20개 이상 Flow 찾기 초기 8개 노출까지 반영.</td>
+            <td><a href="./2026-06-21-my-flow-observed-session-kit-ko.html">관찰 키트</a>와 <a href="./2026-06-21-my-flow-saved-count-observation-ko.html">저장 개수별 관찰 기준</a>으로 1개/4개/8개/20개 이상 상태의 첫 클릭을 확인.</td>
+          </tr>
+          <tr>
+            <td class="status">2026-06-19</td>
+            <td><span class="chip green">완료</span></td>
+            <td><strong>Creator Studio + Public Detail + My Flow 연결안</strong><span class="small">서비스처럼 보이게 만드는 1차 연결</span></td>
+            <td class="lane-cell"><span class="lane-tag product">제품 기획</span><span class="lane-tag creator">제작자 UX</span><span class="lane-tag user">사용자 UX</span><span class="small">제작, 공개, 저장, 실행, 재방문이 한 흐름으로 이어지는지 검증</span></td>
+            <td class="completion"><span class="level poc">최소 PoC</span><div class="meter"><span style="width: 60%;"></span></div><span class="small">60% · 중1 수학 기준으로 제작, 공개 저장, 내 Flow 실행까지 클릭 검증.</span></td>
+            <td><a href="./2026-06-19-creator-public-myflow-minimal-poc-ko.html">최소 제품 흐름 PoC</a></td>
+            <td>다른 first-flag 후보와 실제 사용자 관찰 전이므로 서비스 검증으로 보지는 않음.</td>
+            <td>My Flow IA 사용자 PoC 완료. 다음은 Creator publish gate 또는 Stage 0 관찰 준비.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="table-card">
+      <p class="eyebrow">우선순위 백로그</p>
+      <h2>다음에 다룰 큰 항목</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>영역</th>
+            <th>핵심 질문</th>
+            <th>현재 판단</th>
+            <th>우선순위</th>
+            <th>다음 산출물</th>
+            <th>상태</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Creator Studio</strong><span class="small">제작자 생성</span></td>
+            <td>URL을 넣으면 어디까지 자동 추출하고, 제작자가 무엇을 수정해야 하는가?</td>
+            <td>원문 행 확인과 Flow/Step 매핑은 필요합니다. 다만 제작자 화면도 폼처럼 무거워지면 안 됩니다.</td>
+            <td class="status"><span class="chip red">P0</span></td>
+            <td>Creator Studio v1 UX PoC 또는 spec</td>
+            <td><span class="chip blue">Next</span></td>
+          </tr>
+          <tr>
+            <td><strong>Public Detail</strong><span class="small">공개 상세</span></td>
+            <td>사용자가 5초 안에 저장 가치와 전체/일부 저장 차이를 이해하는가?</td>
+            <td>원문, 제작자, Flow 목록, 전체 저장, 일부 저장만 먼저 보여주는 방향이 맞습니다.</td>
+            <td class="status"><span class="chip red">P0</span></td>
+            <td>Public Flow Map detail v1</td>
+            <td><span class="chip blue">Next</span></td>
+          </tr>
+          <tr>
+            <td><strong>My Flow IA</strong><span class="small">저장 후 관리</span></td>
+            <td>단일 Flow와 Flow Map이 섞일 때 내 Flow 목록은 어떻게 보이는가?</td>
+            <td>저장 후에는 전체 구조보다 현재 Step과 이어보기 항목이 먼저 보여야 합니다.</td>
+            <td class="status"><span class="chip red">P0</span></td>
+            <td>My Flow IA / Today view PoC</td>
+            <td><span class="chip blue">Next</span></td>
+          </tr>
+          <tr>
+            <td><strong>Update Policy</strong><span class="small">원본/저장본 업데이트</span></td>
+            <td>제작자가 Flow Map을 수정하면 저장한 사용자에게 어떻게 반영되는가?</td>
+            <td>아직 미정입니다. 사용자 수정본과 원본 업데이트의 충돌 정책이 필요합니다.</td>
+            <td class="status"><span class="chip amber">P1</span></td>
+            <td>저장본 버전/업데이트 정책 리포트</td>
+            <td><span class="chip amber">Open</span></td>
+          </tr>
+          <tr>
+            <td><strong>Quality Gate</strong><span class="small">콘텐츠 품질 운영</span></td>
+            <td>저품질 AI 체크리스트나 원문과 다른 Flow를 어떻게 막을 것인가?</td>
+            <td>Source-to-Flow Gate를 제품/운영 화면으로 가져와야 합니다.</td>
+            <td class="status"><span class="chip red">P0</span></td>
+            <td>Creator publish checklist / review queue</td>
+            <td><span class="chip blue">Next</span></td>
+          </tr>
+          <tr>
+            <td><strong>Export/Handoff</strong><span class="small">캘린더·시트·투두</span></td>
+            <td>Step과 Item이 외부 앱으로 나갈 때 어떤 형태가 가장 덜 깨지는가?</td>
+            <td>Step은 행/일정/할 일, Item은 메모 텍스트로 접는 기준은 유지합니다.</td>
+            <td class="status"><span class="chip amber">P1</span></td>
+            <td>Export shape matrix</td>
+            <td><span class="chip amber">Open</span></td>
+          </tr>
+          <tr>
+            <td><strong>Discovery</strong><span class="small">탐색/검색</span></td>
+            <td>사용자는 Flow Map을 어디서 발견하고, 제작자는 어디서 노출 가치를 얻는가?</td>
+            <td>아직 상세 검증 전입니다. 공개 상세 전후의 탐색 화면이 필요합니다.</td>
+            <td class="status"><span class="chip amber">P1</span></td>
+            <td>Explore / creator profile / category IA</td>
+            <td><span class="chip amber">Open</span></td>
+          </tr>
+          <tr>
+            <td><strong>Business</strong><span class="small">제작자 가치</span></td>
+            <td>제작자는 왜 일반 글/영상 대신 Flow Map을 발행하고 싶어하는가?</td>
+            <td>실행형 저장, 재방문, 사용자 진행 footprint가 제작자 가치가 될 가능성이 있습니다.</td>
+            <td class="status"><span class="chip amber">P1</span></td>
+            <td>Creator value proposition memo</td>
+            <td><span class="chip amber">Open</span></td>
+          </tr>
+          <tr>
+            <td><strong>Sensitive Content</strong><span class="small">육아·건강·법률 등</span></td>
+            <td>공식 정보, 제작자 경험, 사용자 메모를 어떻게 분리할 것인가?</td>
+            <td>공식 사실과 사용자 실행 메모를 섞지 않는 원칙은 유지합니다.</td>
+            <td class="status"><span class="chip amber">P1</span></td>
+            <td>Sensitive Flow Map policy</td>
+            <td><span class="chip amber">Open</span></td>
+          </tr>
+          <tr>
+            <td><strong>Analytics</strong><span class="small">footprint</span></td>
+            <td>저장, 체크, 재방문, 내보내기 중 무엇이 Stage 0 신호인가?</td>
+            <td>조회수보다 저장/체크/내보내기/재방문을 더 중요하게 봅니다.</td>
+            <td class="status"><span class="chip green">P2</span></td>
+            <td>Stage 0 metrics definition</td>
+            <td><span class="chip green">Later</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">업데이트 규칙</p>
+      <h2>주요 Task가 끝날 때 이 문서를 갱신</h2>
+      <ol class="list">
+        <li>진행 현황 표에는 완료/진행 중/팬딩/다음 작업, 분류/흐름, 완성도, 날짜, 산출물 링크, 남은 일, 다음 액션을 반드시 남깁니다.</li>
+        <li>새 PoC, UX 리포트, spec, 중요한 판단 변경이 나오면 관련 영역의 상태를 갱신합니다.</li>
+        <li>질문이 해소되면 `현재 판단`을 바꾸고, 확정 원칙은 `docs/DECISIONS.md`로 올립니다.</li>
+        <li>다음 구현 후보가 명확해지면 `다음 산출물`을 spec 또는 PoC 단위로 줄입니다.</li>
+        <li>최종 답변에는 이 백로그 링크와 새 산출물 링크를 함께 제공합니다.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">최근 업데이트</p>
+      <h2>2026-06-24</h2>
+      <div class="grid two">
+          <div class="row"><b>My Flow saved execution v11</b><span>저장한 Flow가 내 앱에서 어떻게 관리/실행되는지 보는 현재 목표를 내부 UX PoC 기준으로 완료판정했습니다. 사용자용 PoC는 오늘/일정/Flow/지도 표면과 Step detail, Item 체크, 메모, 원문 링크만 담고, 리뷰/시뮬레이션/목표 체크는 별도 HTML로 분리했습니다. 정적 요약 카드와 실제 조작 카드를 분리해 버튼인지 설명인지 모호한 문제를 줄였습니다.</span></div>
+          <div class="row"><b>목표 완료 체크</b><span>완료판정 파일을 추가해 목표 기준별 충족 여부, 사용자 시뮬레이션 결과, 검증 기록, 다음 단계로 넘길 항목을 한 화면에서 볼 수 있게 했습니다. 결론은 내부 UX PoC 완료이며, 실제 사용자 검증이나 production 구현 완료로 표현하지 않습니다.</span></div>
+          <div class="row"><b>My Flow v10 원문 기반 사용자 PoC</b><span>v10 데이터 연결 기준을 사용자가 직접 눌러보는 화면으로 보강했습니다. 오늘/일정/Flow/지도 표면은 유지하되, Step을 누르면 같은 자리에서 Item 체크, 원문 링크, 메모, 외부 앱 텍스트 fallback을 확인할 수 있습니다.</span></div>
+          <div class="row"><b>My Flow v10 제품 데이터 연결 기준</b><span>v9 사용자 화면을 실제 제품 모델로 옮길 때 새 사용자 계층을 만들지 않고 기존 `FlowBundle / FlowItem / FlowItemDetail` 계약으로 먼저 표현하기로 정리했습니다. Step은 `FlowItem`, Item은 detail/description/link/memo/export body로 내려가며, Flow Map persistence는 별도 parent/grouping concern으로 둡니다. 중1 수학 같은 진도형은 `progress_step`이 필요한지 판단해야 하는 gap으로 남겼습니다.</span></div>
+          <div class="row"><b>My Flow v9 원문 기반</b><span>v8의 오늘/일정/Flow/지도 UI shell은 유지하고, rough/mock 컨텐츠를 실제 원문 구조가 확인되는 전세, 이사, 여권, 중1 수학, 영유아 검진·접종으로 교체했습니다. 사용자 화면에는 내부 평가 문구를 넣지 않고 Step 상세에 원문 링크만 남겼습니다. 홈트/스퀴시/식물처럼 이번 파일 기준 원문 구조가 부족한 항목은 수 채우기보다 제외했습니다. 390px 모바일과 1280px 데스크톱 클릭 리허설에서 JS 오류와 가로 overflow 없이 통과했습니다.</span></div>
+          <div class="row"><b>My Flow v8 점진 노출 관리</b><span>v7의 큰 지도/저장 Flow 구분은 유지하되, Flow 탭에서 지도 하위 Flow를 중복 노출하지 않고 지도 탭에서만 하위 Flow를 단계적으로 열도록 줄였습니다. 캘린더는 `일정` 탭으로 되살리되 날짜를 누른 뒤 해당 Step만 열리게 했고, 항목이 많은 날짜는 카테고리 탭 없이 Flow별로 묶습니다. 사용자가 지적한 모바일 불편을 반영해 Step 상세는 선택 row 바로 아래에 열리고 같은 row 재클릭으로 닫히며, Today/일정의 반복 날짜 배지와 사용자 화면의 실행 기준/외부앱 텍스트를 제거했습니다. Today와 일정의 일반 목록에는 소속 경로를 낮게 보여주고, Flow/지도 내부 Step에는 부모와 중복되는 경로/완료 수를 숨겼습니다. 상세에는 `일정/저장/진행`을 넣어 캘린더/투두 상세에 가까운 정보량으로 조정했습니다. 모바일 390px 클릭 리허설에서 가로 overflow 0, JS 오류 0, 36px 미만 터치 타깃 0으로 확인했습니다.</span></div>
+          <div class="row"><b>My Flow v7 Flow/큰 지도 관리</b><span>v6가 Today 표면만 판단하던 한계를 보완해, Flow마다 1개/4개/5개/10개 항목을 갖고 큰 지도 아래 하위 Flow가 있는 사용자용 화면을 추가했습니다.</span></div>
+          <div class="row"><b>My Flow v6 컨텐츠 모델 재점검</b><span>사용자 피드백에 따라 v6의 고정 3개 체크리스트 패턴을 제거했습니다. Step은 최소 저장/실행 항목으로 두고, Item은 원문에서 실제로 필요한 경우에만 0/1/2/3개로 달라지게 했습니다.</span></div>
+          <div class="row"><b>My Flow 페르소나 walkthrough 테스트</b><span>NN/g cognitive walkthrough, task scenario, think-aloud 관찰 기준과 내부 FLOW UX gate를 묶어 v5/v6 후보를 페르소나별로 다시 봤습니다. 결론은 v5는 기본값, v6는 날짜형/진도형 조건부 후보이며, 이 결과는 실제 사용자 검증이 아니라 관찰 전 필터입니다.</span></div>
+          <div class="row"><b>My Flow v6 StyleSeed 과업 리허설</b><span>StyleSeed 적용 후 저장 1개/4개/8개/20개 이상 상태에서 체크, 메모, Flow 찾기, 일정 선택, 진도 열기 과업을 다시 클릭했습니다. Blocking/High는 없고, 다음은 실제 사용자 관찰로 넘기는 판단입니다.</span></div>
+          <div class="row"><b>My Flow v6 StyleSeed 적용</b><span>사용자용 v6 PoC에 StyleSeed의 one-accent, neutral surface, 44px touch target, 낮은 elevation, action-named copy 기준을 적용했습니다. 기능 구조는 유지하고 화면 밀도와 버튼/카드 리듬을 정리했습니다.</span></div>
+          <div class="row"><b>My Flow v6 조건부 보조 보기</b><span>v5의 기본 실행 홈을 유지한 채 날짜형 Flow가 많을 때만 `일정 보기`, 진도형 Flow를 열었을 때만 `전체 진도 보기`가 보이도록 만든 사용자용 후보 화면과 시뮬레이션 리포트를 추가했습니다. 내부 클릭 검증상 Blocking/High는 없지만, 저장 4개부터 보조 버튼 2개가 과한지는 실제 관찰 전까지 후보로 둡니다.</span></div>
+        <div class="row"><b>My Flow v5 클릭 시뮬레이션</b><span>저장 1개, 4개, 8개, 24개 상태에서 체크, 메모, Flow 찾기, 검색, 날짜 전환, 더 보기를 실제 클릭했습니다. v5는 기본 실행 홈으로 통과했고, 기능 확장은 캘린더/진도/20개 이상 관리처럼 조건부 후보로 분리했습니다.</span></div>
+        <div class="row"><b>My Flow v5 기능 노출 기준</b><span>v5를 기본 실행 홈 후보로 두고, 캘린더/검색/Flow Map/완료/나중에 보기/상태 대시보드가 언제 기본, 조건부, 보류가 되는지 저장 개수와 Flow 타입별로 정리했습니다. 다음 판단은 기능 추가가 아니라 저장 1개, 4개, 8개, 20개 이상 상태에서 어디서 v5가 깨지는지 보는 것입니다.</span></div>
+        <div class="row"><b>My Flow 저장 개수별 UX 판정</b><span>Apple/Galaxy/Toss식 렌즈로 1개 저장은 관리 화면이 아니라 실행 화면이어야 하고, 4~8개는 Today와 Flow 찾기만 먼저 보여야 한다는 기준을 정리했습니다.</span></div>
+        <div class="row"><b>My Flow 관찰 키트와 기록지</b><span>1개/4개/8개/20개 이상 저장 상태에서 사용자의 첫 클릭, 체크, 메모, Flow 찾기를 5분 세션으로 볼 수 있게 진행자용 문서와 세션 기록지를 만들었습니다.</span></div>
+        <div class="row"><b>My Flow 관찰 롤업</b><span>세션 기록 여러 장을 모아 상세 완료 토글, Flow 찾기 이름, 20개 이상 목록 노출, row-level 완료 텍스트를 유지/수정/삭제 중 무엇으로 처리할지 결정하는 판을 추가했습니다.</span></div>
+        <div class="row"><b>My Flow v5 정리 화면</b><span>저장 개수별 탭을 사용자 화면에서 제거하고 URL 모드로만 테스트하도록 정리했습니다. 1개 저장은 상세만, 4개/8개는 Today와 Flow 찾기, 20개 이상은 검색과 8개 초기 목록으로 봅니다.</span></div>
+        <div class="row"><b>My Flow 유형 혼합 PoC</b><span>날짜형, 루틴형, 단일 체크리스트, 학습 지도형이 같이 저장되어도 오늘 Step, 체크, 메모, 외부 앱 텍스트로 같은 방식으로 실행되는지 확인하는 사용자 화면, 내부 시뮬레이션, 진행자용 관찰 키트를 추가했습니다. 2차 드라이런에서 모바일 Flow 찾기 버튼을 보조 행동으로 줄이고, 검색 결과 선택 후 검색어가 남지 않게 정리했습니다.</span></div>
+        <div class="row"><b>My Flow 클릭 smoke check</b><span>실제 `/my` 모바일에서 단일 저장 탭 0개, ux12 상태 버튼 0개, ux20 초기 8개 목록, 가로 overflow 없음까지 확인했습니다. 실제 사용자 검증은 아직 아닙니다.</span></div>
+        <div class="row"><b>My Flow 관찰 전 드라이런</b><span>전문 UX 디자이너 관점으로 저장 개수별 첫 행동과 남은 리스크를 다시 분리했고, 지금은 새 UI 추가보다 관찰을 시작할 수준으로 판단했습니다.</span></div>
+        <div class="row"><b>20개 이상 저장 상태 정리</b><span>`/my?demo=ux20` 모바일에서 Flow 찾기 시트가 처음부터 30개 카드를 보여주지 않도록 8개만 먼저 보이고 전체 펼침을 추가했습니다.</span></div>
+        <div class="row"><b>My Flow v4 실제 `/my` 정렬</b><span>단일 저장 모바일은 전역 탭을 숨기고, Today 숫자 카드와 Flow 탭의 `밀린 Flow/다음 실행` 보조 버튼을 줄였습니다.</span></div>
+        <div class="row"><b>실제 `/my` 모바일 P0 반영</b><span>단일 저장은 필요한 탭만 남기고, compact row의 완료 텍스트를 체크 컨트롤로 낮췄으며, 밀린 항목은 4개 이후 접히도록 조정했습니다.</span></div>
+        <div class="row"><b>상태별 My Flow PoC 단일 저장 정리</b><span>1개 저장 화면에서는 `나중에 보기`, `이 항목 완료` 버튼을 숨기고 저장됨, 체크, 메모, 외부앱 fallback만 남겼습니다. 8개 이상에서는 검색/필터를 `Flow 찾기` 뒤로 접었습니다.</span></div>
+        <div class="row"><b>저장 개수별 관찰 기준</b><span>1개/4개/8개 이상 저장 상태에서 사용자의 첫 클릭, 체크/메모 사용, Flow 찾기 사용을 볼 기준을 만들었습니다.</span></div>
+        <div class="row"><b>완료 토글 비교 PoC와 판단 리포트</b><span>상세 drawer에 작은 완료 토글을 유지하는 안과 상세에서는 완료를 숨기는 안을 분리해 비교했고, 현재 기본안은 작은 상세 완료 토글 유지로 정리했습니다.</span></div>
+        <div class="row"><b>My Flow 저장 후 실행 v4</b><span>1개 저장은 실행 화면을 바로 열고, 4개/8개 저장은 오늘 항목과 접힌 Flow 찾기만 먼저 보이도록 사용자용 PoC를 새로 정리했습니다.</span></div>
+        <div class="row"><b>Creator/Public/My Flow 최소 연결 PoC</b><span>중1 수학 기준으로 제작자 생성, 공개 저장, 내 Flow 실행을 한 화면 흐름에서 클릭 검증했습니다.</span></div>
+        <div class="row"><b>중1 수학 Flow Map E2E</b><span>제작자 생성, 공개 상세, 내 Flow 실행의 기본 연결 가능성을 확인했습니다.</span></div>
+        <div class="row"><b>제품/리포트 분리</b><span>제품 HTML에는 사용자 행동만 남기고, 피드백과 코멘트는 별도 리포트로 분리했습니다.</span></div>
+        <div class="row"><b>다음 후보</b><span>실제 `/my` 적용 범위 또는 Stage 0 관찰 준비를 좁혀보는 것이 좋습니다.</span></div>
+        <div class="row"><b>주의</b><span>현재 산출물은 내부 UX 검토이며, 실제 사용자 행동으로 검증됐다고 표현하지 않습니다.</span></div>
+      </div>
+      <div class="chips" style="margin-top: 14px;">
+        <a class="chip green" href="./2026-06-19-flowme-wide-project-backlog-ko.html">전체 프로젝트 백로그</a>
+        <a class="chip blue" href="./2026-06-24-my-flow-saved-execution-v11-ko.html">v11 사용자용 PoC</a>
+        <a class="chip amber" href="./2026-06-24-my-flow-saved-execution-v11-rehearsal-ko.html">v11 리허설</a>
+        <a class="chip green" href="./2026-06-24-my-flow-goal-completion-check-ko.html">v11 목표 완료 체크</a>
+        <a class="chip blue" href="./2026-06-22-my-flow-v10-source-backed-user-poc-ko.html">v10 사용자 PoC</a>
+        <a class="chip blue" href="./2026-06-22-my-flow-v10-product-data-bridge-ko.html">v10 제품 데이터 연결</a>
+        <a class="chip amber" href="./2026-06-22-my-flow-v10-product-data-bridge-rehearsal-ko.html">v10 데이터 연결 리허설</a>
+        <a class="chip blue" href="./2026-06-22-source-backed-my-flow-v9-ko.html">v9 원문 기반 My Flow</a>
+        <a class="chip amber" href="./2026-06-22-source-backed-my-flow-v9-rehearsal-ko.html">v9 원문 기반 리허설</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-v8-progressive-management-ko.html">v8 점진 노출 관리</a>
+        <a class="chip amber" href="./2026-06-21-my-flow-v8-progressive-management-rehearsal-ko.html">v8 리허설</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-v7-flow-map-management-ko.html">v7 Flow/큰 지도 관리</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-v7-flow-map-management-rehearsal-ko.html">v7 관리 구조 리허설</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-v6-content-model-rehearsal-ko.html">v6 컨텐츠 모델 재점검</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-v6-styleseed-task-rehearsal-ko.html">v6 StyleSeed 과업 리허설</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-persona-walkthrough-test-ko.html">페르소나 walkthrough 테스트</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-v6-conditional-surfaces-ko.html">v6 조건부 보조 보기</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-v6-conditional-surfaces-simulation-ko.html">v6 시뮬레이션</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-v5-click-simulation-report-ko.html">v5 클릭 시뮬레이션</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-v5-feature-threshold-review-ko.html">v5 기능 노출 기준</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-saved-count-ux-verdict-ko.html">저장 개수별 UX 판정</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-v5-clean-user-poc-ko.html">v5 정리 화면</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-v5-clean-simulation-ko.html">v5 시뮬레이션</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-type-mix-user-poc-ko.html">유형 혼합 사용자 화면</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-type-mix-simulation-ko.html">유형 혼합 시뮬레이션</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-type-mix-observation-kit-ko.html">유형 혼합 관찰 키트</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-observed-session-kit-ko.html">My Flow 관찰 키트</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-observed-session-note-template-ko.html">My Flow 관찰 기록지</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-observed-session-rollup-ko.html">My Flow 관찰 롤업</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-click-smoke-report-ko.html">My Flow 클릭 smoke check</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-observation-dry-run-ko.html">My Flow 관찰 전 드라이런</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-ux20-large-inventory-ko.html">20개 이상 저장 상태</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-v4-actual-my-alignment-ko.html">v4 실제 /my 정렬 확인</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-v3-integrated-simulation-ko.html">My Flow 통합 시뮬레이션</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-saved-execution-v4-ko.html">My Flow v4 사용자 화면</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-completion-toggle-ab-simulation-ko.html">완료 토글 A/B 판단</a>
+        <a class="chip blue" href="./2026-06-20-my-flow-user-screen-v3-ko.html">My Flow IA v3</a>
+        <a class="chip blue" href="./2026-06-21-my-flow-v3-implementation-scope-ko.html">v3 적용 범위</a>
+        <a class="chip blue" href="./2026-06-20-my-flow-clean-management-poc-ko.html">v2 상태별 PoC</a>
+        <a class="chip amber" href="./2026-06-20-my-flow-clean-management-simulation-ko.html">v2/v3 시뮬레이션</a>
+        <a class="chip blue" href="./2026-06-19-my-flow-saved-management-ia-poc-ko.html">My Flow IA PoC</a>
+        <a class="chip amber" href="./2026-06-19-my-flow-saved-management-simulation-ko.html">My Flow 시뮬레이션</a>
+        <a class="chip blue" href="./2026-06-19-creator-public-myflow-minimal-poc-ko.html">최소 연결 PoC</a>
+        <a class="chip blue" href="./2026-06-19-math-flow-map-e2e-poc-ko.html">중1 수학 제품 흐름</a>
+        <a class="chip amber" href="./2026-06-19-math-flow-map-e2e-simulation-ko.html">시뮬레이션 리포트</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

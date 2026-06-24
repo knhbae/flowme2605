@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow v6 StyleSeed 과업 리허설</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --brand: #2563eb;
+      --brand-weak: #eff6ff;
+      --brand-line: #bfdbfe;
+      --page: #f5f7fb;
+      --card: #fff;
+      --subtle: #f8fafc;
+      --border: #d8e0eb;
+      --text-primary: #202936;
+      --text-secondary: #536173;
+      --text-tertiary: #738197;
+      --success: #0f7a4a;
+      --success-weak: #e8f7ef;
+      --warning: #9a6100;
+      --warning-weak: #fff6df;
+      --danger: #b42318;
+      --danger-weak: #fff1ef;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text-primary);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--page); font-size: 16px; line-height: 1.62; letter-spacing: 0; }
+    a { color: var(--brand); text-underline-offset: 3px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 44px); line-height: 1.12; letter-spacing: 0; word-break: keep-all; }
+    h2 { margin-bottom: 8px; font-size: clamp(22px, 3vw, 30px); line-height: 1.22; letter-spacing: 0; word-break: keep-all; }
+    h3 { margin-bottom: 6px; font-size: 18px; line-height: 1.35; letter-spacing: 0; word-break: keep-all; }
+    .page { width: min(1120px, calc(100% - 28px)); margin: 0 auto; padding: 14px 0 64px; }
+    .topbar, .hero, .card, .table-card, .row {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--card);
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 58px;
+      padding: 12px 16px;
+    }
+    .brand { color: var(--brand); font-size: 24px; font-weight: 900; text-decoration: none; }
+    .hero, .card, .table-card { margin-top: 16px; padding: 20px; box-shadow: 0 1px 3px rgba(32, 41, 54, .04); }
+    .eyebrow { margin-bottom: 6px; color: var(--brand); font-size: 12px; font-weight: 800; }
+    .desc { max-width: 860px; color: var(--text-secondary); font-size: 15px; font-weight: 500; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--subtle);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .chip.blue { border-color: var(--brand-line); background: var(--brand-weak); color: var(--brand); }
+    .chip.green { border-color: #bde7cb; background: var(--success-weak); color: var(--success); }
+    .chip.amber { border-color: #efd08f; background: var(--warning-weak); color: var(--warning); }
+    .chip.red { border-color: #f4b4ad; background: var(--danger-weak); color: var(--danger); }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .row { padding: 14px; background: var(--subtle); }
+    .row b, .row span { display: block; }
+    .row span { margin-top: 4px; color: var(--text-secondary); font-size: 14px; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px;
+      vertical-align: top;
+      text-align: left;
+    }
+    th { background: #eef3f8; color: var(--text-secondary); font-size: 13px; font-weight: 900; }
+    td { background: var(--card); }
+    td strong { display: block; margin-bottom: 3px; }
+    .score { min-width: 88px; font-weight: 900; white-space: nowrap; }
+    .pass { color: var(--success); }
+    .watch { color: var(--warning); }
+    .small { color: var(--text-tertiary); font-size: 13px; font-weight: 600; }
+    .links a { display: inline-block; margin-right: 10px; margin-bottom: 6px; }
+    .shot {
+      width: min(100%, 360px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--card);
+    }
+    @media (max-width: 860px) {
+      .page { width: min(100% - 20px, 1120px); padding-top: 10px; }
+      .hero, .card, .table-card { padding: 16px; }
+      .grid, .grid.two { grid-template-columns: 1fr; }
+      table, tbody, tr, th, td { display: block; width: 100%; }
+      th { border-bottom: 0; }
+      td { border-top: 0; }
+      tr + tr { margin-top: 10px; display: block; border-top: 2px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar" aria-label="FLOW">
+      <a class="brand" href="#">FLOW</a>
+      <span class="chip blue">2026-06-21</span>
+    </nav>
+
+    <header class="hero">
+      <p class="eyebrow">기존 goal 계속 진행</p>
+      <h1>My Flow v6 StyleSeed 과업 리허설</h1>
+      <p class="desc">StyleSeed가 적용된 사용자용 PoC가 실제 과업에서 버티는지 다시 눌러본 내부 리허설입니다. 이 문서는 사용자용 화면이 아니라 검토 리포트이며, 실제 사용자 행동 검증은 아직 아닙니다.</p>
+      <div class="chips">
+        <span class="chip green">4/4 과업 통과</span>
+        <span class="chip green">Blocking 0</span>
+        <span class="chip green">High 0</span>
+        <span class="chip blue">모바일 390px 통과</span>
+        <span class="chip amber">실제 관찰 필요</span>
+      </div>
+    </header>
+
+    <section class="card">
+      <p class="eyebrow">판정</p>
+      <h2>PoC는 관찰로 넘길 수 있다. 다만 검증됐다고 부르면 안 된다</h2>
+      <p class="desc">저장 1개, 4개, 8개, 20개 이상 상태에서 오늘 항목 처리, Flow 검색, 일정 선택, 진도 열기, 메모 입력을 실제 클릭했습니다. 현재 상태에서는 Blocking/High 문제는 보이지 않았습니다. 다음은 같은 화면으로 실제 사용자 3~5명 관찰을 시작하는 쪽이 맞습니다.</p>
+      <div class="grid">
+        <article class="row">
+          <b>유지</b>
+          <span>v6는 StyleSeed 적용 후에도 오늘 Step 중심 구조를 유지합니다.</span>
+        </article>
+        <article class="row">
+          <b>관찰</b>
+          <span>4개 이상 저장 상태에서 `일정 보기`와 `Flow 찾기`가 같이 보이는 부담을 실제로 확인합니다.</span>
+        </article>
+        <article class="row">
+          <b>주의</b>
+          <span>모바일 달력은 터치 타깃 때문에 5열입니다. 실제 캘린더처럼 이해되는지 관찰해야 합니다.</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="table-card">
+      <p class="eyebrow">과업 결과</p>
+      <h2>single / few / mixed / large 리허설</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>상태</th>
+            <th>과업</th>
+            <th>확인 결과</th>
+            <th>판정</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>저장 1개</strong><span class="small">single</span></td>
+            <td>오늘 항목을 열고 첫 체크와 메모를 남긴다.</td>
+            <td>상세 실행 화면이 바로 열리고, 체크 1개와 메모 입력이 정상 반영됨. 전역 컨트롤은 보이지 않음.</td>
+            <td class="score pass">통과</td>
+          </tr>
+          <tr>
+            <td><strong>저장 4개</strong><span class="small">few</span></td>
+            <td>Flow 찾기에서 수학 Flow를 검색하고 전체 진도를 연다.</td>
+            <td>검색 결과 선택 후 finder가 닫히고 수학 상세가 열림. 진도형 Flow에서만 전체 진도 보기가 노출됨.</td>
+            <td class="score pass">통과</td>
+          </tr>
+          <tr>
+            <td><strong>저장 8개</strong><span class="small">mixed</span></td>
+            <td>일정 보기에서 날짜를 눌러 해당 날짜 항목으로 이동한다.</td>
+            <td>날짜별 항목 수가 보이고, 6월 24일 선택 후 이사 견적 항목 상세로 이동함.</td>
+            <td class="score pass">통과</td>
+          </tr>
+          <tr>
+            <td><strong>저장 20개 이상</strong><span class="small">large</span></td>
+            <td>긴 목록을 보지 않고 여권 Flow를 검색해서 연다.</td>
+            <td>초기 finder 목록은 8개로 제한됨. 검색 후 여권 항목으로 이동하고 finder는 닫힘.</td>
+            <td class="score pass">통과</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="table-card">
+      <p class="eyebrow">품질 점검</p>
+      <h2>UX / 조작 / 기술 확인</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>결과</th>
+            <th>남은 판단</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>인지부하</strong></td>
+            <td>첫 화면은 오늘 항목 중심. 일정/검색/진도는 조건부 보조 기능으로 유지됨.</td>
+            <td>4개 이상 저장 시 보조 버튼 2개가 부담인지 실제 관찰 필요.</td>
+          </tr>
+          <tr>
+            <td><strong>Copy</strong></td>
+            <td>`보관` 필터를 `날짜 없음`으로 수정해 아카이브 오해를 줄임.</td>
+            <td>실제 사용자가 `날짜 없음`을 no-date 저장으로 이해하는지 확인.</td>
+          </tr>
+          <tr>
+            <td><strong>터치 타깃</strong></td>
+            <td>모바일 390px에서 44px 미만 버튼 0개.</td>
+            <td>달력 5열이 익숙한지 관찰 포인트.</td>
+          </tr>
+          <tr>
+            <td><strong>렌더링</strong></td>
+            <td>single/few/mixed/large 모바일 overflow 0. desktop large overflow 0. JS 오류 없음.</td>
+            <td>현재 PoC 기준 기술 문제 없음.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">스크린샷</p>
+      <h2>대표 확인 화면</h2>
+      <div class="grid two">
+        <article>
+          <h3>Mixed calendar task</h3>
+          <img class="shot" src="../../output/playwright/my-flow-v6-rehearsal-mixed-calendar.png" alt="My Flow v6 mixed calendar rehearsal mobile screenshot" />
+        </article>
+        <article>
+          <h3>Large search task</h3>
+          <img class="shot" src="../../output/playwright/my-flow-v6-rehearsal-large.png" alt="My Flow v6 large search rehearsal mobile screenshot" />
+        </article>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">다음 단계</p>
+      <h2>이제 내부 시뮬레이션보다 실제 관찰이 우선</h2>
+      <p class="desc">현재 수준에서는 같은 화면을 더 다듬는 것보다, 설명 없이 사용자가 첫 클릭을 어디에 하는지 봐야 합니다. 관찰에서 막히면 그때 PoC를 다시 줄이는 방식이 맞습니다.</p>
+      <div class="links">
+        <a href="./2026-06-21-my-flow-v6-conditional-surfaces-ko.html">사용자용 v6 PoC 열기</a>
+        <a href="./2026-06-21-my-flow-persona-walkthrough-test-ko.html">페르소나 walkthrough 리포트</a>
+        <a href="./2026-06-21-my-flow-observed-session-kit-ko.html">관찰 키트</a>
+        <a href="./2026-06-21-my-flow-observed-session-note-template-ko.html">관찰 기록지</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
