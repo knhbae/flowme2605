@@ -1450,6 +1450,21 @@ function getMyFlowSourceLinkLabel(flow: MySavedFlow): string {
   return flow.savedMap ? '지도 보기' : 'Flow 보기';
 }
 
+type MyFlowContentReadiness = {
+  kind: 'ready' | 'review' | 'preview' | 'legacy';
+  label: string;
+  groupLabel?: string;
+};
+
+function getMyFlowContentReadiness(flow: MySavedFlow): MyFlowContentReadiness {
+  const sourceStatus = flow.bundle.flow.source_status;
+  const sourceBacked = flow.progress.slug.startsWith('source-backed-') || Boolean(flow.bundle.flow.tags?.includes('source-backed'));
+  if (flow.savedMap || sourceBacked || sourceStatus === 'real') return { kind: 'ready', label: '실행 가능' };
+  if (sourceStatus === 'preview') return { kind: 'preview', label: '샘플 후보', groupLabel: '샘플/실험 Flow' };
+  if (sourceStatus === 'needs_review') return { kind: 'review', label: '검토 필요', groupLabel: '정리 필요 Flow' };
+  return { kind: 'legacy', label: '이전 기준', groupLabel: '이전 기준 Flow' };
+}
+
 function getMyFlowRoutineDays(bundle: FlowBundle): string[] {
   const labels = getRoutineWeekdayLabels(bundle.repeatRules?.[0] ?? '', []);
   return labels.length ? labels : ['월', '수', '금'];
@@ -2006,6 +2021,9 @@ export function MyFlows() {
     ? savedFlows.filter((flow) => postSaveMap.flowSlugs.includes(flow.progress.slug))
     : [];
   const postSaveRows = postSaveFlows.flatMap((flow) => flow.rows.map((row, index) => ({ flow, row, index })));
+  const postSavePreviewLimit = 3;
+  const getPostSaveStepKey = (flow: MySavedFlow, row: MyFlowRow) =>
+    row.date ? getMyFlowCalendarRowKey(flow.progress.slug, row.id, row.date) : `${flow.progress.slug}::${row.id}::none`;
   const postSaveFirstAction = [...postSaveRows].sort((left, right) => {
     const leftDate = left.row.date ?? '9999-12-31';
     const rightDate = right.row.date ?? '9999-12-31';
@@ -2474,7 +2492,8 @@ export function MyFlows() {
     flowListVisibleFlows.length <= 4;
   const flowListGroups = Array.from(
     flowListVisibleFlows.reduce((groups, flow) => {
-      const category = flow.savedMap?.title ?? flow.demoGroup ?? flow.bundle.flow.category ?? '기타';
+      const readiness = isMyFlowScenarioDemo ? null : getMyFlowContentReadiness(flow);
+      const category = readiness?.groupLabel ?? flow.savedMap?.title ?? flow.demoGroup ?? flow.bundle.flow.category ?? '기타';
       const next = groups.get(category) ?? [];
       next.push(flow);
       groups.set(category, next);
@@ -2658,6 +2677,11 @@ export function MyFlows() {
 
   const openMyFlowRowFromPostSave = (flow: MySavedFlow, row: MyFlowRow) => {
     const originalDate = row.date;
+    const postSaveStepKey = getPostSaveStepKey(flow, row);
+    if (myFlowDetailOpen && myFlowActiveRowKey === postSaveStepKey) {
+      closeMyFlowRowDetail();
+      return;
+    }
     setSelectedSavedFlowSlug('all');
     setSavedView('flow');
     openMyFlowRowDetail({
@@ -3599,9 +3623,7 @@ export function MyFlows() {
           <div className="min-w-0">
             <p className="text-sm font-semibold text-blue-700">저장됨</p>
             <h3 className="mt-1 text-xl font-semibold tracking-tight text-slate-950">{postSaveMap.title}</h3>
-            <p className="mt-1 text-sm leading-6 text-slate-700">
-              내 Flow에 {postSaveFlows.length}개 Flow, {postSaveStepCount}개 Step으로 들어왔습니다. 아래 Step을 눌러 바로 체크와 메모를 이어갈 수 있습니다.
-            </p>
+            <p className="mt-1 text-sm font-semibold text-slate-600">{postSaveFlows.length}개 Flow · {postSaveStepCount}개 Step</p>
           </div>
           <div className="grid shrink-0 gap-2 sm:w-44">
             {postSaveFirstAction ? (
@@ -3628,7 +3650,7 @@ export function MyFlows() {
         </div>
         <div data-testid="my-flow-post-save-flow-list" className="mt-4 grid gap-3 md:grid-cols-2">
           {postSaveFlows.map((flow) => {
-            const previewRows = flow.rows.slice(0, 4);
+            const previewRows = flow.rows.slice(0, postSavePreviewLimit);
             const hiddenCount = Math.max(0, flow.rows.length - previewRows.length);
             return (
               <article key={flow.progress.slug} className="rounded-md border border-blue-100 bg-white p-3">
@@ -3640,23 +3662,43 @@ export function MyFlows() {
                   <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{flow.rows.length} Step</span>
                 </div>
                 <div className="mt-3 grid gap-1.5">
-                  {previewRows.map((row) => (
-                    <button
-                      key={`${flow.progress.slug}-${row.id}-${row.date ?? 'none'}`}
-                      type="button"
-                      data-testid="my-flow-post-save-step"
-                      className="rounded-md border border-slate-100 bg-slate-50 px-3 py-2 text-left hover:border-blue-200 hover:bg-blue-50"
-                      onClick={() => openMyFlowRowFromPostSave(flow, row)}
-                    >
-                      <span className="block text-xs font-semibold text-slate-500">
-                        {[row.timing ? formatMyFlowTimingChip(row.timing) : '', row.date, row.section].filter(Boolean).join(' · ')}
-                      </span>
-                      <span className="mt-0.5 block text-sm font-semibold text-slate-950">{getMyFlowRowDisplayTitle({ ...row, flow })}</span>
-                    </button>
-                  ))}
+                  {previewRows.map((row) => {
+                    const postSaveStepKey = getPostSaveStepKey(flow, row);
+                    const activePostSaveStep = Boolean(
+                      myFlowActiveRowBelongsToPostSaveMap &&
+                      myFlowActiveRow &&
+                      myFlowDetailOpen &&
+                      myFlowActiveRowKey === postSaveStepKey,
+                    );
+                    return (
+                      <div key={postSaveStepKey} data-testid="my-flow-post-save-step-row" className="grid gap-1.5">
+                        <button
+                          type="button"
+                          data-testid="my-flow-post-save-step"
+                          aria-expanded={activePostSaveStep}
+                          className={`rounded-md border px-3 py-2 text-left ${
+                            activePostSaveStep
+                              ? 'border-blue-300 bg-blue-50'
+                              : 'border-slate-100 bg-slate-50 hover:border-blue-200 hover:bg-blue-50'
+                          }`}
+                          onClick={() => openMyFlowRowFromPostSave(flow, row)}
+                        >
+                          <span className="block text-xs font-semibold text-slate-500">
+                            {[row.timing ? formatMyFlowTimingChip(row.timing) : '', row.date, row.section].filter(Boolean).join(' · ')}
+                          </span>
+                          <span className="mt-0.5 block text-sm font-semibold text-slate-950">{getMyFlowRowDisplayTitle({ ...row, flow })}</span>
+                        </button>
+                        {activePostSaveStep && myFlowActiveRow ? (
+                          <div data-testid="my-flow-post-save-detail">
+                            {renderMyFlowItemDetailEditor(myFlowActiveRow, 'panel')}
+                          </div>
+                        ) : null}
+                      </div>
+                    );
+                  })}
                   {hiddenCount > 0 ? (
                     <p className="rounded-md bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-500">
-                      나머지 {hiddenCount}개 Step은 아래 Flow 카드에서 계속 볼 수 있습니다.
+                      나머지 {hiddenCount}개 Step은 아래 Flow 카드에서 봅니다.
                     </p>
                   ) : null}
                 </div>
@@ -3664,11 +3706,6 @@ export function MyFlows() {
             );
           })}
         </div>
-        {myFlowActiveRowBelongsToPostSaveMap && myFlowActiveRow && myFlowDetailOpen ? (
-          <div data-testid="my-flow-post-save-detail" className="mt-4">
-            {renderMyFlowItemDetailEditor(myFlowActiveRow, 'panel')}
-          </div>
-        ) : null}
       </section>
     );
   };
@@ -3732,6 +3769,8 @@ export function MyFlows() {
     const typeCounts = getMyFlowTypeCounts(flow.rows);
     const sourceHref = getMyFlowSourceHref(flow);
     const sourceLabel = getMyFlowSourceLinkLabel(flow);
+    const contentReadiness = getMyFlowContentReadiness(flow);
+    const showContentReadinessBadge = !isMyFlowScenarioDemo && contentReadiness.kind !== 'ready';
 
     return (
       <section
@@ -3745,6 +3784,11 @@ export function MyFlows() {
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="min-w-0 text-xl font-semibold tracking-tight text-slate-950">{flow.progress.title}</h3>
               <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{flow.done}/{flow.total} 완료</span>
+              {showContentReadinessBadge ? (
+                <span data-testid="my-flow-content-readiness" className="rounded-md bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-700">
+                  {contentReadiness.label}
+                </span>
+              ) : null}
             </div>
             {flow.savedMap ? (
               <p data-testid="my-flow-map-context" className="mt-2 w-fit rounded-md bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">

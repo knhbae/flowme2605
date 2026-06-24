@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-06-24 - My Flow separates ready content from review or legacy content
+
+**Decision:** My Flow should keep product-ready saved content visually separate from review, preview, or legacy content. Source-backed saved Flow Maps, real-source Flows, and map-backed child Flows can appear as normal execution cards. Preview, `needs_review`, and older unclassified Flows should be grouped or badged as sample, review-needed, or legacy content instead of appearing at the same confidence level. In save-to-My-Flow handoffs, Step details should open directly under the selected Step row; only calendar/date contexts may use a separate selected-date panel or mobile sheet.
+
+**Reason:** The post-save My Flow path became usable once it showed concrete Step and Item content, but it still risked mixing accepted source-backed execution paths with older PoC or unreviewed content. Users also lose context when a card opens detail far below the tapped row. Separating content readiness and keeping detail expansion local preserves calendar/todo-level complexity while making the saved artifact feel actionable.
+
+**Applies to:** `/my`, source-backed Flow Map save paths, saved Flow grouping, Flow card status badges, post-save Step expansion, future My Flow inventory cleanup, and content migration from PoC fixtures into product surfaces.
+
+**Reopen when:** observed users prefer one undifferentiated saved library, or a formal content lifecycle/admin review system replaces the current lightweight readiness grouping.
+
+**Related docs:** [Source-backed Step contract](./specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md), [Flow execution types](./flow-rules/flow-execution-types.md)
+
 ### 2026-06-24 - Single mobile My Flow defaults depend on Step shape
 
 **Decision:** On mobile My Flow, a single saved dated Flow should still open in the lightweight Today surface, but a single saved non-dated progress/sheet Flow should default to the Flow card surface even when global tabs are hidden. The single-saved screen stays simple, but the primary action must still reveal the Step detail and source-derived Item checks without requiring a hidden tab.
