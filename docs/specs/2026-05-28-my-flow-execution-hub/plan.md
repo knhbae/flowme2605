@@ -8,6 +8,9 @@
 | `tests/e2e/flow-mvp.spec.ts` | Protects saved Flow count scenarios, scope behavior, tab behavior, and mobile overflow. |
 | `lib/flow/storage.ts` | Existing local saved-flow state source; avoid storage expansion in this spec unless a later batch requires it. |
 | `docs/specs/2026-05-28-my-flow-execution-hub/item-type-matrix.md` | Defines the My Flow item execution types and surface rules for the new UX. |
+| `docs/specs/2026-05-28-my-flow-execution-hub/my-flow-before-after-ux-alignment.md` | Source note comparing the existing product with the new My Flow / Flow Map UX direction before further product-code alignment. |
+| `docs/specs/2026-05-28-my-flow-execution-hub/my-flow-before-after-ux-alignment-ko.html` | Korean readable HTML version of the before/after UX alignment note for stakeholder review before product-code changes. |
+| `docs/specs/2026-05-28-my-flow-execution-hub/my-flow-product-code-alignment-report-ko.html` | Korean implementation and rehearsal report for the first product-code alignment slice. |
 | `docs/IDEAS.md` | Keeps the deferred conversation context and links to this spec-level decision. |
 | `docs/STATUS.md` | Should mention the spec only when work starts or lands. |
 

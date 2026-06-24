@@ -203,7 +203,7 @@ const mathDetails: Record<string, FlowItemDetail> = Object.fromEntries(
     id,
     {
       item_id: id,
-      why: '중1 수학 목차의 단원 진행 위치를 잃지 않기 위한 진도 row입니다.',
+      why: '중1 수학 목차의 단원 진행 위치를 잃지 않기 위한 진도 항목입니다.',
       how: mathDetailHow,
       completion_criteria: '해당 단원에서 오늘 본 범위와 다시 볼 부분을 남겼습니다.',
       links: [{ label: 'Mathbang 중1 수학 목차', url: mathSourceUrl, type: 'reference' }],
@@ -240,7 +240,7 @@ const healthCheckupDetails: Record<string, FlowItemDetail> = Object.fromEntries(
     window.id,
     {
       item_id: window.id,
-      why: `${window.period}에 해당하는 ${window.title} 기간을 놓치지 않기 위한 공식 일정 row입니다.`,
+      why: `${window.period}에 해당하는 ${window.title} 기간을 놓치지 않기 위한 공식 일정 항목입니다.`,
       how: [
         `${window.title} 대상 기간이 ${window.period}인지 공식 안내에서 확인합니다.`,
         `${window.memoFocus}만 짧게 남깁니다.`,
@@ -261,7 +261,7 @@ const vaccinationDetails: Record<string, FlowItemDetail> = Object.fromEntries(
     window.id,
     {
       item_id: window.id,
-      why: `${window.period}에 아이 표준예방접종일을 공식 조회하기 위한 일정 row입니다.`,
+      why: `${window.period}에 아이 표준예방접종일을 공식 조회하기 위한 일정 항목입니다.`,
       how: [
         '예방접종도우미에서 아이 생년월일 기준 표준예방접종일을 확인합니다.',
         '접종기관, 예약 여부, 예진표 작성 여부만 메모합니다.',

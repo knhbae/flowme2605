@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-06-24 - Single mobile My Flow defaults depend on Step shape
+
+**Decision:** On mobile My Flow, a single saved dated Flow should still open in the lightweight Today surface, but a single saved non-dated progress/sheet Flow should default to the Flow card surface even when global tabs are hidden. The single-saved screen stays simple, but the primary action must still reveal the Step detail and source-derived Item checks without requiring a hidden tab.
+
+**Reason:** Manual mobile rehearsal of the public middle-school math Flow Map save path showed that hiding tabs and forcing `today` made the `sheet` action look tappable while leaving no visible Step detail target. The accepted single-saved simplification is still valid for dated calendar/todo Flows, but non-dated progress/sheet Flows need the Flow card surface as their minimal execution view.
+
+**Applies to:** `/my` mobile single-saved state, source-backed progress/sheet Flow Maps, Flow card primary actions, Step detail rendering, and future saved Flow Map execution paths.
+
+**Reopen when:** observed users expect all single-saved Flows to start from Today regardless of date shape, or a first-class mobile Map/Step launcher replaces the current single-saved card behavior.
+
+**Related docs:** [My Flow before/after UX alignment](./specs/2026-05-28-my-flow-execution-hub/my-flow-before-after-ux-alignment.md), [Source-backed Step contract](./specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md)
+
 ### 2026-06-24 - My Flow action cards must be visually distinct from summary cards
 
 **Decision:** In My Flow execution surfaces, static summary or inventory cards should not reuse the same visual language as tappable Step, Flow, or Flow Map controls. Clickable cards should expose a clear outcome label such as `열기`, `접기`, `보기`, or `선택됨`; static cards should remain informational and should not carry selected/active styling. User-facing PoC files must stay free of review commentary, with rehearsal or evaluation notes kept in a separate report artifact.

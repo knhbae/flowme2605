@@ -11,6 +11,8 @@ Detailed product queue: [execution-type-roadmap.md](./execution-type-roadmap.md)
 - [x] Define the period-goal checklist model using certification study as the reference case.
 - [x] Build a feature/UX gap map across planning, UX/UI, data, execution, and export so “done / partial / missing / deferred” is visible outside chat.
 - [x] Audit the Flow tab as an execution status board, not a long management/catalog surface.
+- [x] Document what the existing product already does and what the new My Flow / Flow Map UX should selectively align before further code changes. See [Korean HTML review](./my-flow-before-after-ux-alignment-ko.html) and [source note](./my-flow-before-after-ux-alignment.md).
+- [x] Land the first product-code alignment slice for saved Flow Map context in My Flow: parent map snapshot lookup, Step-level source item checks, mobile single non-dated Flow detail access, and source-backed public-save E2E coverage. See [implementation report](./my-flow-product-code-alignment-report-ko.html).
 
 ### P1: Flow Type Coverage
 

@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow UX 제품 반영 전 정리</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --card: #ffffff;
+      --ink: #111827;
+      --muted: #5f6b7a;
+      --soft: #eef2f7;
+      --line: #dbe2ea;
+      --blue: #2563eb;
+      --blue-soft: #e8f0ff;
+      --green: #0f766e;
+      --green-soft: #e6f4f1;
+      --amber: #a16207;
+      --amber-soft: #fff7df;
+      --red-soft: #fff1f0;
+      --shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      line-height: 1.62;
+      letter-spacing: 0;
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 64px;
+    }
+
+    a {
+      color: var(--blue);
+      font-weight: 750;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .hero {
+      padding: 34px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--blue);
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    h1 {
+      max-width: 890px;
+      margin: 0;
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.16;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 900px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 6px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #f9fafb;
+      color: #374151;
+      font-size: 14px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .toc {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 18px 0 22px;
+    }
+
+    .toc a {
+      display: block;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--card);
+      color: #243244;
+      font-size: 14px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.035);
+    }
+
+    section {
+      margin-top: 22px;
+      padding: 26px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--card);
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.045);
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 24px;
+      line-height: 1.28;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    ul {
+      margin: 10px 0 0;
+      padding-left: 20px;
+    }
+
+    li {
+      margin: 7px 0;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .callout {
+      padding: 18px;
+      border: 1px solid #bfd0ff;
+      border-radius: 14px;
+      background: var(--blue-soft);
+    }
+
+    .callout strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+      min-height: 100%;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fbfcfe;
+    }
+
+    .card.good {
+      border-color: #b8ded6;
+      background: var(--green-soft);
+    }
+
+    .card.warn {
+      border-color: #ead28c;
+      background: var(--amber-soft);
+    }
+
+    .card.stop {
+      border-color: #ffd0cc;
+      background: var(--red-soft);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: #374151;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .tag.blue {
+      background: var(--blue-soft);
+      color: #1d4ed8;
+    }
+
+    .tag.green {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .tag.amber {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .path {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .path-step {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fbfcfe;
+    }
+
+    .path-step strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .path-step span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 780px;
+      border-collapse: collapse;
+      background: #ffffff;
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f3f6fa;
+      color: #243244;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .checklist {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .check {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fbfcfe;
+      font-size: 14px;
+    }
+
+    .check strong {
+      color: var(--green);
+    }
+
+    footer {
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    @media (max-width: 860px) {
+      main {
+        width: min(100% - 24px, 1120px);
+        padding-top: 18px;
+      }
+
+      .hero,
+      section {
+        padding: 20px;
+        border-radius: 16px;
+      }
+
+      .toc,
+      .grid,
+      .grid.two,
+      .path,
+      .checklist {
+        grid-template-columns: 1fr;
+      }
+
+      .lead {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <p class="eyebrow">제품 코드 반영 전 정리</p>
+      <h1>기존 제품은 무엇이었고, 지금 새 UX는 무엇을 반영하려는가</h1>
+      <p class="lead">
+        My Flow에 새 UX를 바로 덮어쓰기 전에, 기존 제품의 역할과 새 PoC에서 얻은 판단을 분리해 정리한 문서입니다.
+        결론은 단순합니다. 기존 제품은 public Flow, 저장, 실행, export, 리뷰 경로가 이미 꽤 갖춰져 있고,
+        새 UX는 그것을 대체하는 화면이 아니라 <strong>저장한 Flow를 더 쉽게 관리하고 실행하게 만드는 정렬 레이어</strong>입니다.
+      </p>
+      <div class="meta">
+        <span class="pill">대상: My Flow / public Flow / creator surface</span>
+        <span class="pill">기준: Flow Map &gt; Flow &gt; Step &gt; Item</span>
+        <span class="pill">상태: 제품 반영 전 정리</span>
+        <span class="pill">근거: PR #114, v11 PoC</span>
+      </div>
+    </header>
+
+    <nav class="toc" aria-label="문서 목차">
+      <a href="#one-line">핵심 결론</a>
+      <a href="#previous">기존 제품</a>
+      <a href="#new-ux">새 UX 방향</a>
+      <a href="#next">다음 반영 순서</a>
+    </nav>
+
+    <section id="one-line">
+      <h2>핵심 결론</h2>
+      <div class="callout">
+        <strong>지금 반영하려는 것은 새 앱을 만드는 일이 아닙니다.</strong>
+        기존 FlowMe의 public route, 저장된 Flow, export, content review 체계를 유지하면서
+        사용자가 저장한 Flow를 오늘 할 일, 일정, Flow, 지도 단위로 더 명확하게 실행하게 만드는 UX 정리 작업입니다.
+      </div>
+    </section>
+
+    <section id="previous">
+      <h2>기존 제품은 무엇이었나</h2>
+      <div class="grid">
+        <article class="card">
+          <span class="tag blue">Public Flow</span>
+          <h3>원컨텐츠를 실행 가능한 Flow로 보여주는 화면</h3>
+          <p class="muted">
+            예: 전세계약 점검, 이사 D-30, 생활 체크리스트. 사용자는 원문을 보고 저장할 수 있고,
+            화면에는 일정, 체크, 메모, URL 같은 실행 단서가 남아야 합니다.
+          </p>
+        </article>
+        <article class="card">
+          <span class="tag blue">My Flow</span>
+          <h3>저장한 Flow를 다시 찾아 실행하는 공간</h3>
+          <p class="muted">
+            기존 제품에도 내 Flow, 저장, 진행, 항목 확인 흐름이 존재합니다. 다만 여러 Flow가 쌓였을 때
+            무엇을 오늘 해야 하는지, 어느 Flow의 어느 Step인지가 덜 선명했습니다.
+          </p>
+        </article>
+        <article class="card">
+          <span class="tag blue">Export / Data</span>
+          <h3>캘린더, 투두, 메모로 나갈 수 있는 데이터</h3>
+          <p class="muted">
+            Step은 외부 앱에 저장될 수 있는 최소 단위이고, Item은 FlowMe 내부에서는 체크리스트로,
+            외부 앱에서는 일정 description이나 메모 텍스트로 내려갈 수 있습니다.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section id="problem">
+      <h2>왜 새 UX 정리가 필요했나</h2>
+      <div class="grid two">
+        <article class="card warn">
+          <span class="tag amber">문제 1</span>
+          <h3>검토용 화면과 사용자 화면이 섞였습니다</h3>
+          <p>
+            이전 PoC 일부는 source fit, 평가, 개발자용 설명 같은 내부 판단이 사용자 화면에 남아 있었습니다.
+            사용자는 이런 설명이 아니라 저장 후 바로 실행할 항목을 봐야 합니다.
+          </p>
+        </article>
+        <article class="card warn">
+          <span class="tag amber">문제 2</span>
+          <h3>Flow 구조와 화면 구조가 흔들렸습니다</h3>
+          <p>
+            어떤 화면은 단일 Flow처럼 보이고, 어떤 화면은 Flow Map처럼 보였습니다.
+            이 때문에 Step, Item, 메모, 일정이 어느 깊이에 속하는지 판단하기 어려웠습니다.
+          </p>
+        </article>
+        <article class="card warn">
+          <span class="tag amber">문제 3</span>
+          <h3>원문보다 복잡해지는 경우가 있었습니다</h3>
+          <p>
+            진행 페이스, 불필요한 상태 버튼, 반복되는 안내 문구가 들어가면서
+            원컨텐츠를 Flow화한 결과가 오히려 더 무겁게 느껴지는 문제가 있었습니다.
+          </p>
+        </article>
+        <article class="card warn">
+          <span class="tag amber">문제 4</span>
+          <h3>여러 Flow를 저장한 상태가 부족했습니다</h3>
+          <p>
+            실제 사용자는 Flow 하나만 저장하지 않습니다. Step이 하나인 Flow도 있고,
+            10개 이상인 Flow도 있습니다. My Flow는 이 차이를 담아야 합니다.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section id="new-ux">
+      <h2>지금 반영하려는 UX 방향</h2>
+      <div class="path">
+        <div class="path-step">
+          <strong>Flow Map</strong>
+          <span>여러 Flow를 담는 상위 지도. 예: 중1 수학 전체, 영유아 검진/접종 관리.</span>
+        </div>
+        <div class="path-step">
+          <strong>Flow</strong>
+          <span>사용자가 저장하는 실행 묶음. 예: 정수와 유리수, 4-6개월 검진.</span>
+        </div>
+        <div class="path-step">
+          <strong>Step</strong>
+          <span>캘린더/투두/시트에 저장되는 최소 실행 단위.</span>
+        </div>
+        <div class="path-step">
+          <strong>Item</strong>
+          <span>Step 안의 체크 항목 또는 description에 들어갈 세부 메모.</span>
+        </div>
+      </div>
+
+      <div class="grid two" style="margin-top: 16px;">
+        <article class="card good">
+          <span class="tag green">사용자 화면</span>
+          <h3>오늘 먼저 할 일, 일정, Flow, 지도</h3>
+          <p>
+            사용자는 저장한 Flow를 오늘 실행할 Step 중심으로 봅니다.
+            Flow 이름과 Map 이름은 맥락으로만 보여주고, Step을 누르면 같은 자리에서 Item이 열려야 합니다.
+          </p>
+        </article>
+        <article class="card good">
+          <span class="tag green">제작자 화면</span>
+          <h3>내 콘텐츠가 어떤 Flow 구조로 저장되는지 확인</h3>
+          <p>
+            제작자는 URL과 원문 구조를 바탕으로 Flow Map, Flow, Step, Item을 확인합니다.
+            사용자 화면처럼 단순해야 하지만, 원문 근거와 저장 결과 미리보기는 필요합니다.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section id="pr114">
+      <h2>PR #114는 어떤 의미인가</h2>
+      <div class="callout">
+        <strong>PR #114는 최종 제품 UX가 아니라 제품 반영을 위한 브리지입니다.</strong>
+        source-backed Step contract, export 경계, My Flow v11 PoC, 리허설 리포트를 묶어
+        “원문 기반 Flow를 My Flow에서 어떻게 실행할 수 있는지”를 증명하는 근거입니다.
+      </div>
+      <ul>
+        <li><a href="source-backed-step-contract.md">source-backed-step-contract.md</a>: Step/Item 저장 경계와 export 의미를 정리한 계약 문서.</li>
+        <li><a href="../../content-audit/2026-06-24-my-flow-saved-execution-v11-ko.html">v11 사용자 PoC</a>: 저장한 Flow를 오늘/일정/Flow/지도 표면에서 보는 실험.</li>
+        <li><a href="../../content-audit/2026-06-24-my-flow-saved-execution-v11-rehearsal-ko.html">v11 리허설 리포트</a>: 사용자 관점 클릭 시뮬레이션 결과.</li>
+        <li><a href="https://github.com/knhbae/flowme2605/pull/114">GitHub PR #114</a>: 현재 브랜치에 올라간 구현/문서 묶음.</li>
+      </ul>
+    </section>
+
+    <section id="comparison">
+      <h2>기존 제품과 새 UX의 차이</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>영역</th>
+              <th>기존 제품</th>
+              <th>새 UX에서 반영하려는 것</th>
+              <th>제품 반영 기준</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Public Flow</td>
+              <td>원컨텐츠를 Flow 화면으로 보여주고 저장할 수 있음.</td>
+              <td>사용자 화면에서 검토용 문구를 제거하고, 저장 결과를 더 예측 가능하게 만듦.</td>
+              <td>전세 Flow 수준의 단순함을 유지합니다.</td>
+            </tr>
+            <tr>
+              <td>My Flow</td>
+              <td>저장한 Flow를 볼 수 있으나 여러 Flow가 쌓였을 때 우선순위가 흐려짐.</td>
+              <td>오늘, 일정, Flow, 지도 표면으로 나누어 Step 중심 실행을 강화.</td>
+              <td>첫 화면에서 오늘 할 일을 바로 찾을 수 있어야 합니다.</td>
+            </tr>
+            <tr>
+              <td>Flow Map</td>
+              <td>명시적 상위 지도 개념은 약했음.</td>
+              <td>중1 수학, 영유아 검진/접종처럼 여러 Flow가 반복 구조를 가질 때만 사용.</td>
+              <td>단일 Flow로 충분한 것은 억지로 Map으로 만들지 않습니다.</td>
+            </tr>
+            <tr>
+              <td>Step / Item</td>
+              <td>체크리스트와 일정 설명이 섞일 수 있었음.</td>
+              <td>Step은 저장 최소 단위, Item은 내부 체크리스트 또는 외부 텍스트 fallback으로 정의.</td>
+              <td>원문에 없는 Item을 AI가 만들어내지 않습니다.</td>
+            </tr>
+            <tr>
+              <td>Export</td>
+              <td>캘린더/메모/체크리스트 export 가능성을 다룸.</td>
+              <td>ICS 수준의 날짜, 시간, 반복, description 필드는 제품 반영 시 별도 챙김.</td>
+              <td>지금은 UX 구조 검증, 다음은 실제 데이터 매핑 검증입니다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="keep-change-hold">
+      <h2>유지할 것, 바꿀 것, 보류할 것</h2>
+      <div class="grid">
+        <article class="card good">
+          <span class="tag green">유지</span>
+          <h3>기존 제품에서 유지</h3>
+          <ul>
+            <li>public Flow route와 저장 흐름</li>
+            <li>기존 Flow 컨텐츠 변환 원칙</li>
+            <li>캘린더/투두/메모로 나갈 수 있는 export 방향</li>
+            <li>전세 Flow 수준의 낮은 입력 복잡도</li>
+          </ul>
+        </article>
+        <article class="card warn">
+          <span class="tag amber">변경</span>
+          <h3>새 UX로 정리</h3>
+          <ul>
+            <li>My Flow 첫 화면을 Step 중심으로 재정렬</li>
+            <li>Flow Map, Flow, Step, Item 깊이 구분</li>
+            <li>Step 클릭 시 같은 자리에서 Item 열기</li>
+            <li>검토용 문구와 사용자용 문구 분리</li>
+          </ul>
+        </article>
+        <article class="card stop">
+          <span class="tag">보류</span>
+          <h3>지금 바로 넣지 않음</h3>
+          <ul>
+            <li>복잡한 편집기</li>
+            <li>제작자용 전체 운영 CMS</li>
+            <li>모든 Flow의 고정 카드 패턴</li>
+            <li>원문보다 많은 입력 필드</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="checklist">
+      <h2>제품 코드에 반영하기 전 체크리스트</h2>
+      <div class="checklist">
+        <div class="check"><strong>01.</strong> 기존 route와 데이터 모델을 먼저 읽고, 이미 있는 기능을 중복 구현하지 않습니다.</div>
+        <div class="check"><strong>02.</strong> 사용자 화면, 제작자 화면, 리뷰 화면을 파일/route 수준에서 분리합니다.</div>
+        <div class="check"><strong>03.</strong> Step은 캘린더/투두에 저장 가능한 최소 단위로 유지합니다.</div>
+        <div class="check"><strong>04.</strong> Item은 체크리스트 또는 description text fallback으로 내려갈 수 있어야 합니다.</div>
+        <div class="check"><strong>05.</strong> Flow Map은 반복되는 하위 Flow가 있을 때만 사용합니다.</div>
+        <div class="check"><strong>06.</strong> 원문에 없는 실행 항목을 AI 일반론으로 채우지 않습니다.</div>
+        <div class="check"><strong>07.</strong> 모바일에서 Step을 눌렀을 때 세부 Item이 멀리 떨어진 위치에 열리지 않게 합니다.</div>
+        <div class="check"><strong>08.</strong> 월 변경, 날짜 클릭, Step 열기/닫기 같은 기본 상호작용을 실제로 검증합니다.</div>
+      </div>
+    </section>
+
+    <section id="next">
+      <h2>추천 다음 작업</h2>
+      <div class="grid two">
+        <article class="card">
+          <span class="tag blue">1단계</span>
+          <h3>제품 코드의 현재 My Flow 구조를 재확인</h3>
+          <p class="muted">
+            route, component, storage, export 경계를 읽고 새 UX를 어디에 붙일지 정합니다.
+            새 UI를 바로 덮어쓰기보다 기존 기능 위에 선택적으로 반영하는 방식이 맞습니다.
+          </p>
+        </article>
+        <article class="card">
+          <span class="tag blue">2단계</span>
+          <h3>한 경로만 제품 코드에 얇게 반영</h3>
+          <p class="muted">
+            중1 수학 또는 영유아 검진/접종 중 하나를 골라 saved Flow detail에서
+            Step 중심 실행 화면을 먼저 구현합니다. 성공하면 My Flow 목록과 캘린더로 넓힙니다.
+          </p>
+        </article>
+        <article class="card">
+          <span class="tag blue">3단계</span>
+          <h3>실제 source-backed 데이터로 교체</h3>
+          <p class="muted">
+            PoC용 텍스트를 줄이고, 원문 URL, Step title, Item, description, date/repeat 필드를
+            실제 모델에 맞춰 연결합니다.
+          </p>
+        </article>
+        <article class="card">
+          <span class="tag blue">4단계</span>
+          <h3>사용자 리허설을 제품 route에서 다시 수행</h3>
+          <p class="muted">
+            HTML PoC가 아니라 실제 route에서 저장, 열기, 체크, 메모, 날짜 이동을 검증합니다.
+            이때 사용자 검증과 내부 리뷰 문서를 다시 분리합니다.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      이 문서는 제품 반영 전 판단을 돕는 한국어 읽기용 문서입니다. 원본 메모는
+      <a href="my-flow-before-after-ux-alignment.md">my-flow-before-after-ux-alignment.md</a>에 보관합니다.
+    </footer>
+  </main>
+</body>
+</html>

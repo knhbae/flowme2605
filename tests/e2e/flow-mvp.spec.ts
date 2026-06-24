@@ -1027,13 +1027,43 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   const mathCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-middle-school-math-1"]');
   await expect(mathCard).toBeVisible();
   await expect(mathCard).toContainText('중1 수학 목차 진도');
+  await expect(mathCard.getByTestId('my-flow-map-context')).toContainText('중1 수학 목차 진도 지도');
   await expect(mathCard).toContainText('0/6');
+  await expect(mathCard.getByRole('link', { name: '지도 보기' })).toHaveAttribute('href', '/flow-maps/middle-school-math-1');
+
+  await mathCard.getByTestId('my-flow-next-action-open').click();
+  await expect(page.getByTestId('my-flow-view-checklist')).toHaveAttribute('aria-pressed', 'true');
+  const detailSection = page.getByTestId('my-flow-checklist-detail-section');
+  await expect(detailSection.getByTestId('my-flow-item-detail')).toBeVisible();
+  const itemChecklist = detailSection.getByTestId('my-flow-item-checklist');
+  await expect(itemChecklist).toContainText('원문 단원 링크에서 해당 소단원만 엽니다.');
+  await itemChecklist.getByLabel('원문 단원 링크에서 해당 소단원만 엽니다.').check();
+  await expect(itemChecklist).toContainText('1/3');
 
   const savedKeys = await page.evaluate(() => Object.keys(localStorage).filter((key) => key.startsWith('flow:saved:source-backed-')));
   expect(savedKeys).toEqual(['flow:saved:source-backed-middle-school-math-1']);
   const savedMap = await page.evaluate(() => JSON.parse(localStorage.getItem('flow:map:saved:middle-school-math-1') || 'null'));
   expect(savedMap.version).toBe('2026-06-23.1');
   expect(savedMap.flowSlugs).toEqual(['source-backed-middle-school-math-1']);
+});
+
+test('source-backed single progress map opens step detail on mobile My Flow', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/flow-maps/middle-school-math-1');
+
+  await page.getByRole('button', { name: '전체 지도 저장' }).click();
+  await expect(page).toHaveURL('/my');
+  await expect(page.getByTestId('my-flow-single-summary')).toBeVisible();
+  await expect(page.getByTestId('my-flow-view-flow')).toHaveCount(0);
+
+  const mathCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-middle-school-math-1"]');
+  await expect(mathCard).toBeVisible();
+  await mathCard.getByTestId('my-flow-next-action-open').click();
+  await expect(page.getByTestId('my-flow-item-detail').first()).toBeVisible();
+  const itemChecklist = page.getByTestId('my-flow-item-checklist').first();
+  await expect(itemChecklist).toContainText('원문 단원 링크에서 해당 소단원만 엽니다.');
+  await itemChecklist.getByLabel('원문 단원 링크에서 해당 소단원만 엽니다.').check();
+  await expect(itemChecklist).toContainText('1/3');
 });
 
 test('source-backed baby health map saves input-bearing official schedule flows into My Flow', async ({ page }) => {
@@ -1054,7 +1084,9 @@ test('source-backed baby health map saves input-bearing official schedule flows 
   const checkupCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-baby-health-checkups"]');
   const vaccinationCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-baby-vaccination-schedule"]');
   await expect(checkupCard).toContainText('영유아 건강검진 일정');
+  await expect(checkupCard.getByTestId('my-flow-map-context')).toContainText('영유아 검진·접종 일정 지도');
   await expect(checkupCard).toContainText('0/12');
+  await expect(checkupCard.getByRole('link', { name: '지도 보기' })).toHaveAttribute('href', '/flow-maps/baby-health-schedule');
   await expect(vaccinationCard).toContainText('아이 예방접종 일정 확인');
   await expect(vaccinationCard).toContainText('0/6');
 
