@@ -1783,6 +1783,7 @@ export function MyFlows() {
   const { bundles } = useBundles();
   const myFlowBundles = useMemo(() => mergeSourceBackedMyFlowBundles(bundles), [bundles]);
   const currentUser = getCurrentUser();
+  const [savedMapIdParam, setSavedMapIdParam] = useState('');
   const [activeProgress, setActiveProgress] = useState<ReturnType<typeof getActiveFlowProgress>>([]);
   const [savedView, setSavedView] = useState<'today' | 'calendar' | 'flow' | 'checklist' | 'routine'>('today');
   const [myFlowVisibleMonth, setMyFlowVisibleMonth] = useState(getMyFlowMonthStart(formatDate(new Date())));
@@ -1815,6 +1816,7 @@ export function MyFlows() {
   const [myFlowStatusSheet, setMyFlowStatusSheet] = useState<MyFlowStatusSheet | null>(null);
   const [myFlowInventorySheetOpen, setMyFlowInventorySheetOpen] = useState(false);
   const [myFlowLargeInventoryOpen, setMyFlowLargeInventoryOpen] = useState(false);
+  const [myFlowHandledSavedMapId, setMyFlowHandledSavedMapId] = useState('');
   const [isMyFlowMobileViewport, setIsMyFlowMobileViewport] = useState(false);
   const [myFlowDemoMode, setMyFlowDemoMode] = useState<MyFlowDemoMode | null>(null);
   const [myFlowRoutineIconLimit, setMyFlowRoutineIconLimit] = useState(MY_FLOW_ROUTINE_ICON_LIMIT);
@@ -1882,6 +1884,8 @@ export function MyFlows() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    setSavedMapIdParam(params.get('savedMap') ?? '');
     const mediaQuery = window.matchMedia('(max-width: 640px)');
     const mobileFlowQuery = window.matchMedia('(max-width: 767px)');
     const syncRoutineIconLimit = () => {
@@ -1994,6 +1998,22 @@ export function MyFlows() {
   const visibleSavedFlows = selectedSavedFlowSlug === 'all'
     ? savedFlows
     : savedFlows.filter((flow) => flow.progress.slug === selectedSavedFlowSlug);
+  const savedFlowMapSnapshots = Array.from(
+    Object.values(savedFlowMapBySlug).reduce((snapshots, snapshot) => snapshots.set(snapshot.mapId, snapshot), new Map<string, SavedFlowMapSnapshot>()).values(),
+  );
+  const postSaveMap = savedMapIdParam ? savedFlowMapSnapshots.find((snapshot) => snapshot.mapId === savedMapIdParam) : undefined;
+  const postSaveFlows = postSaveMap
+    ? savedFlows.filter((flow) => postSaveMap.flowSlugs.includes(flow.progress.slug))
+    : [];
+  const postSaveRows = postSaveFlows.flatMap((flow) => flow.rows.map((row, index) => ({ flow, row, index })));
+  const postSaveFirstAction = [...postSaveRows].sort((left, right) => {
+    const leftDate = left.row.date ?? '9999-12-31';
+    const rightDate = right.row.date ?? '9999-12-31';
+    const dateOrder = leftDate.localeCompare(rightDate);
+    return dateOrder === 0 ? left.index - right.index : dateOrder;
+  })[0];
+  const postSaveStepCount = postSaveFlows.reduce((count, flow) => count + flow.rows.length, 0);
+  const showPostSavePanel = Boolean(postSaveMap && postSaveFlows.length > 0 && !isMyFlowScenarioDemo);
   const shouldCollapseFlowInventory =
     savedFlows.length >= 6 &&
     selectedSavedFlowSlug === 'all' &&
@@ -2160,6 +2180,11 @@ export function MyFlows() {
     calendarRows.find((row) => getMyFlowRowInstanceKey(row) === myFlowActiveRowKey) ??
     myFlowAllRows.find((row) => getMyFlowRowInstanceKey(row) === myFlowActiveRowKey) ??
     myFlowSelectedDateAllRows[0];
+  const myFlowActiveRowBelongsToPostSaveMap = Boolean(
+    showPostSavePanel &&
+    myFlowActiveRow &&
+    postSaveFlows.some((flow) => flow.progress.slug === myFlowActiveRow.flow.progress.slug),
+  );
   const myFlowSelectedDateOpenCount = myFlowSelectedDateAllRows.filter((row) => !isMyFlowRowChecked(row.flow, row)).length;
   const myFlowCalendarOpenCount = calendarRows.filter((row) => !isMyFlowRowChecked(row.flow, row)).length;
   const myFlowScheduleCountByDate = calendarScheduleRows.reduce<Record<string, number>>((counts, row) => {
@@ -2486,6 +2511,14 @@ export function MyFlows() {
   }, [savedView, singleMobileHasDatedRows, singleMobileSavedFlow, visibleSavedViewTabs]);
 
   useEffect(() => {
+    if (!showPostSavePanel || !savedMapIdParam || myFlowHandledSavedMapId === savedMapIdParam) return;
+    setSelectedSavedFlowSlug('all');
+    setSavedView('flow');
+    setMyFlowInventoryOpen(true);
+    setMyFlowHandledSavedMapId(savedMapIdParam);
+  }, [myFlowHandledSavedMapId, savedMapIdParam, showPostSavePanel]);
+
+  useEffect(() => {
     setMyFlowVisibleMonth(getMyFlowMonthStart(calendarAnchor));
     setMyFlowSelectedDate(findFirstMyFlowDateInMonth(calendarRows, getMyFlowMonthStart(calendarAnchor)));
   }, [calendarAnchor, selectedSavedFlowSlug]);
@@ -2620,6 +2653,23 @@ export function MyFlows() {
       originalDate,
       calendarKey,
       date: myFlowDateOverrides[calendarKey] ?? row.date,
+    });
+  };
+
+  const openMyFlowRowFromPostSave = (flow: MySavedFlow, row: MyFlowRow) => {
+    const originalDate = row.date;
+    setSelectedSavedFlowSlug('all');
+    setSavedView('flow');
+    openMyFlowRowDetail({
+      ...row,
+      flow,
+      ...(originalDate
+        ? {
+            originalDate,
+            calendarKey: getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate),
+            date: myFlowDateOverrides[getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate)] ?? row.date,
+          }
+        : {}),
     });
   };
 
@@ -3072,13 +3122,13 @@ export function MyFlows() {
     setMyFlowDetailOpen(false);
   };
 
-  const renderMyFlowItemDetailEditor = (row: MyFlowCalendarRow, mode: 'inline' | 'drawer') => {
+  const renderMyFlowItemDetailEditor = (row: MyFlowCalendarRow, mode: 'inline' | 'drawer' | 'panel') => {
     const checked = isMyFlowRowChecked(row.flow, row);
     const detail = getMyFlowRowDisplayDetail(row);
     const item = row.flow.bundle.items.find((entry) => entry.id === row.id);
     const editorDraft = getMyFlowRowEditorDraft(row);
     const hasEditorChanges = hasMyFlowEditingDraft(row);
-    const isDrawerMode = mode === 'drawer';
+    const isDrawerMode = mode === 'drawer' || mode === 'panel';
     const isRoutineRow = row.flow.bundle.flow.structure_type === 'routine';
     const timing = row.timing ?? item?.repeat_rule ?? '';
     const detailSection = getMyFlowRowDisplaySectionLabel(row);
@@ -3262,7 +3312,13 @@ export function MyFlows() {
       <section
         data-testid="my-flow-item-detail"
         data-item-type={row.itemType?.primary ?? 'check_task'}
-        className={`${mode === 'inline' ? 'mt-3 hidden rounded-lg border border-blue-100 bg-blue-50 p-3 lg:block' : 'space-y-3'}`}
+        className={
+          mode === 'inline'
+            ? 'mt-3 hidden rounded-lg border border-blue-100 bg-blue-50 p-3 lg:block'
+            : mode === 'panel'
+              ? 'rounded-md border border-blue-100 bg-white p-3'
+              : 'space-y-3'
+        }
       >
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
@@ -3535,6 +3591,88 @@ export function MyFlows() {
     );
   };
 
+  const renderPostSavePanel = () => {
+    if (!postSaveMap || postSaveFlows.length === 0) return null;
+    return (
+      <section data-testid="my-flow-post-save-panel" className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-4 shadow-sm">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-blue-700">저장됨</p>
+            <h3 className="mt-1 text-xl font-semibold tracking-tight text-slate-950">{postSaveMap.title}</h3>
+            <p className="mt-1 text-sm leading-6 text-slate-700">
+              내 Flow에 {postSaveFlows.length}개 Flow, {postSaveStepCount}개 Step으로 들어왔습니다. 아래 Step을 눌러 바로 체크와 메모를 이어갈 수 있습니다.
+            </p>
+          </div>
+          <div className="grid shrink-0 gap-2 sm:w-44">
+            {postSaveFirstAction ? (
+              <button
+                type="button"
+                data-testid="my-flow-post-save-open-first"
+                className="min-h-10 rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white"
+                onClick={() => openMyFlowRowFromPostSave(postSaveFirstAction.flow, postSaveFirstAction.row)}
+              >
+                첫 Step 열기
+              </button>
+            ) : null}
+            <button
+              type="button"
+              className="min-h-10 rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-800"
+              onClick={() => {
+                setSavedView('flow');
+                setSelectedSavedFlowSlug('all');
+              }}
+            >
+              Flow별 보기
+            </button>
+          </div>
+        </div>
+        <div data-testid="my-flow-post-save-flow-list" className="mt-4 grid gap-3 md:grid-cols-2">
+          {postSaveFlows.map((flow) => {
+            const previewRows = flow.rows.slice(0, 4);
+            const hiddenCount = Math.max(0, flow.rows.length - previewRows.length);
+            return (
+              <article key={flow.progress.slug} className="rounded-md border border-blue-100 bg-white p-3">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <h4 className="text-base font-semibold text-slate-950">{flow.progress.title}</h4>
+                    <p className="mt-1 text-xs font-semibold text-slate-500">{flow.done}/{flow.total} 완료</p>
+                  </div>
+                  <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{flow.rows.length} Step</span>
+                </div>
+                <div className="mt-3 grid gap-1.5">
+                  {previewRows.map((row) => (
+                    <button
+                      key={`${flow.progress.slug}-${row.id}-${row.date ?? 'none'}`}
+                      type="button"
+                      data-testid="my-flow-post-save-step"
+                      className="rounded-md border border-slate-100 bg-slate-50 px-3 py-2 text-left hover:border-blue-200 hover:bg-blue-50"
+                      onClick={() => openMyFlowRowFromPostSave(flow, row)}
+                    >
+                      <span className="block text-xs font-semibold text-slate-500">
+                        {[row.timing ? formatMyFlowTimingChip(row.timing) : '', row.date, row.section].filter(Boolean).join(' · ')}
+                      </span>
+                      <span className="mt-0.5 block text-sm font-semibold text-slate-950">{getMyFlowRowDisplayTitle({ ...row, flow })}</span>
+                    </button>
+                  ))}
+                  {hiddenCount > 0 ? (
+                    <p className="rounded-md bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-500">
+                      나머지 {hiddenCount}개 Step은 아래 Flow 카드에서 계속 볼 수 있습니다.
+                    </p>
+                  ) : null}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+        {myFlowActiveRowBelongsToPostSaveMap && myFlowActiveRow && myFlowDetailOpen ? (
+          <div data-testid="my-flow-post-save-detail" className="mt-4">
+            {renderMyFlowItemDetailEditor(myFlowActiveRow, 'panel')}
+          </div>
+        ) : null}
+      </section>
+    );
+  };
+
   const renderFlowListRow = (flow: MySavedFlow) => {
     const nextRow = getSavedFlowNextRow(flow);
     const color = categoryColors[flow.bundle.flow.category] ?? '#2563EB';
@@ -3724,6 +3862,7 @@ export function MyFlows() {
             </div>
             <p className="hidden text-sm text-gray-500 sm:block">체크와 메모를 먼저 남기고, 전체 목록은 필요할 때 펼칩니다.</p>
           </div>
+          {showPostSavePanel ? renderPostSavePanel() : null}
           <div
             data-testid="my-flow-workspace"
             className={`mb-4 grid gap-4 ${showMyFlowSidebar ? 'lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)]' : ''}`}
@@ -4640,7 +4779,7 @@ export function MyFlows() {
         </div>
       ) : null}
 
-      {myFlowDetailOpen && myFlowActiveRow ? (
+      {myFlowDetailOpen && myFlowActiveRow && !myFlowActiveRowBelongsToPostSaveMap ? (
         <div className="fixed inset-0 z-50 bg-slate-950/40 lg:hidden" role="dialog" aria-modal="true" aria-label="Flow 항목 상세">
           <button
             className="absolute inset-0 h-full w-full cursor-default"

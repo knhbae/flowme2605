@@ -40,7 +40,7 @@ export function SourceBackedFlowMapSaveButton({ mapId, savedFlows, setupInput }:
     if (savedMapSnapshot) {
       window.localStorage.setItem(`flow:map:saved:${mapId}`, JSON.stringify(savedMapSnapshot));
     }
-    window.location.href = '/my';
+    window.location.href = `/my?savedMap=${encodeURIComponent(mapId)}`;
   };
 
   return (
