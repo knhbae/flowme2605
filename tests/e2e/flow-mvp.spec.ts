@@ -5,7 +5,7 @@ test('home presents FLOW as an executable content platform', async ({ page }) =>
 
   await expect(page.getByRole('link', { name: '둘러보기', exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: '채널' })).toHaveAttribute('href', '/creators');
-  await expect(page.getByRole('link', { name: '내 Flow' })).toBeVisible();
+  await expect(page.getByRole('link', { name: '내 Flow', exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Flow Lab' })).toHaveCount(0);
   await expect(page.getByRole('link', { name: '제작자' })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '따라하기 쉬운 실행 가이드, Flow' })).toBeVisible();
@@ -20,6 +20,18 @@ test('home presents FLOW as an executable content platform', async ({ page }) =>
   await expect(page.getByText('직장인 영어공부 30일 루틴 Flow').first()).toBeVisible();
   await expect(page.getByText('미리보기').first()).toBeVisible();
   await expect(page.getByText('출력:').first()).toBeVisible();
+  const sourceFlowSection = page.getByTestId('home-recent-source-flow-section');
+  await expect(sourceFlowSection).toBeVisible();
+  await expect(sourceFlowSection.getByTestId('home-recent-source-flow-card')).toHaveCount(2);
+  await expect(sourceFlowSection.locator('a[href="/flow-maps/moving-d30"]')).toBeVisible();
+  await expect(sourceFlowSection.locator('a[href="/flow-maps/middle-school-math-1"]')).toBeVisible();
+  await expect(sourceFlowSection.locator('a[href="/flow-maps/baby-health-schedule"]')).toHaveCount(0);
+  await expect(sourceFlowSection.locator('a[href="/flow-maps/postal-address-transfer"]')).toHaveCount(0);
+  await expect(sourceFlowSection.locator('a[href="/flow-maps/smishing-response"]')).toHaveCount(0);
+  await expect(sourceFlowSection.locator('a[href="/flow-maps/year-end-tax-submit"]')).toHaveCount(0);
+  await expect(sourceFlowSection.locator('a[href="/flow-maps/aircon-filter-cleaning"]')).toHaveCount(0);
+  await expect(sourceFlowSection.locator('a[href="/flow-maps/picnic-food-safety"]')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: '내 Flow 열기', exact: true })).toHaveAttribute('href', '/my');
 });
 
 test('flow list exposes the seed and online-sourced flows', async ({ page }) => {
@@ -1478,7 +1490,7 @@ test('source-backed baby health creator page keeps official source review separa
   await expect(creatorMap).not.toContainText('완료 체크');
 });
 
-test('source-backed expansion maps save real-source flows into my flow', async ({ page }) => {
+test('source-backed direct-route experiments can still save into my flow', async ({ page }) => {
   const cases = [
     { mapId: 'postal-address-transfer', slug: 'source-backed-postal-address-transfer', anchor: '2026-07-01' },
     { mapId: 'smishing-response', slug: 'source-backed-smishing-response' },
@@ -1521,7 +1533,7 @@ test('source-backed expansion maps save real-source flows into my flow', async (
   }
 });
 
-test('source-backed expansion flows execute source link checklist and memo in my flow', async ({ page }) => {
+test('source-backed direct-route experiments keep source link checklist and memo in my flow', async ({ page }) => {
   const cases = [
     { mapId: 'postal-address-transfer', slug: 'source-backed-postal-address-transfer', anchor: '2026-07-01' },
     { mapId: 'smishing-response', slug: 'source-backed-smishing-response' },

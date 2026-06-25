@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-06-25 - Homepage shows only quality-gated Flow Map candidates
+
+**Decision:** Source-backed Flow Maps should not appear on homepage or representative product surfaces just because their routes work. Homepage exposure is limited to candidates that pass the source-selection and source-to-Flow conversion gate, or to explicitly scoped review surfaces. Weak or exploratory candidates stay in PRD, content-audit, or direct-route testing until their source, conversion model, and user journey are repaired. The code-level candidate status model is `representative / candidate / revise / park / reject`, and homepage cards must use `homepageEligible` rather than a separate hardcoded candidate list.
+
+**Reason:** The eight-card homepage preview made low-fit candidates look comparable to stronger examples. User review showed that several candidates had weak source evidence, low save intent, generic Step content, or a mismatch between source and artifact. Treating those as representative would hide the real product problem behind UI polish.
+
+**Applies to:** homepage Flow Map entry points, source-backed Flow Map promotion, candidate batches, public demo surfaces, PRD/review separation.
+
+**Reopen when:** there is a dedicated internal evaluation page, observed user behavior supports exposing lower-confidence candidates, or the source-backed quality gate changes.
+
+**Related docs:** [Source-backed Flow Map Quality PRD](./specs/2026-06-24-source-backed-flow-map-productization/quality-prd.md), [Source-backed Flow Map candidate reassessment](./content-audit/2026-06-25-source-backed-flow-map-candidate-reassessment-ko.html), [Source-backed Flow Map productization baseline](./specs/2026-06-24-source-backed-flow-map-productization/spec.md)
+
 ### 2026-06-24 - My Flow shows map update notices without auto-applying source changes
 
 **Decision:** Saved source-backed Flow Maps should be reassessed against the current map definition when My Flow loads. If the saved map is no longer up to date, My Flow shows a compact update notice in the Flow tab with the affected map, user-facing reason copy, a link back to the public map, and a temporary dismiss action for the same saved/current version pair. It does not automatically mutate saved Steps or checked state.

@@ -21,6 +21,7 @@ import {
   assessSourceBackedFlowMapUpdate,
   buildSourceBackedFlowMapPersistenceRecord,
   buildSourceBackedFlowMapSavedSnapshot,
+  getSourceBackedHomepageFlowMaps,
   getSourceBackedMyFlowMapForBundle,
   getSourceBackedFlowMapPersistenceStorageKey,
   getSourceBackedFlowMapSnapshotStorageKey,
@@ -1035,6 +1036,35 @@ export function CreatorDirectory() {
   );
 }
 
+const homeFlowMapDisplay: Record<string, { title: string; summary: string; note: string }> = {
+  'moving-d30': {
+    title: '원룸 이사 D-30',
+    summary: '이사일 하나로 원문 체크리스트를 날짜별 할 일로 저장합니다.',
+    note: '생활 일정',
+  },
+  'middle-school-math-1': {
+    title: '중1 수학 목차 진도',
+    summary: '원문 목차의 단원과 하위 개념을 진도표로 저장합니다.',
+    note: '교육 진도',
+  },
+};
+
+const homeFlowMapBaselineLinks = getSourceBackedHomepageFlowMaps().map((map) => {
+  const display = homeFlowMapDisplay[map.id] ?? {
+    title: map.userLabel,
+    summary: map.summary,
+    note: 'Flow Map',
+  };
+  return {
+    id: map.id,
+    title: display.title,
+    summary: display.summary,
+    input: map.setupInput?.label ?? '입력 없음',
+    artifact: map.artifacts[0] ?? '저장 항목',
+    note: display.note,
+  };
+});
+
 export function HomeLanding() {
   const { bundles, persist } = useBundles();
   const representativeSlugs = getRepresentativeFlowSlugs();
@@ -1083,6 +1113,44 @@ export function HomeLanding() {
               </Link>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section data-testid="home-recent-source-flow-section" className="mt-2 rounded-xl border border-blue-100 bg-blue-50/70 p-4 shadow-sm md:p-5">
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-blue-700">먼저 볼 Flow Map</p>
+            <h2 className="mt-1 text-2xl font-semibold text-gray-950">원문 구조가 분명한 후보부터 다시 보기</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600">
+              이사와 수학처럼 저장 이유와 산출물이 보이는 후보부터 확인합니다.
+            </p>
+          </div>
+          <Link className="inline-flex min-h-10 items-center justify-center rounded-md border border-blue-200 bg-white px-4 text-sm font-semibold text-blue-700 hover:border-blue-400" href="/my">
+            내 Flow 열기
+          </Link>
+        </div>
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+          {homeFlowMapBaselineLinks.map((item) => (
+            <Link
+              key={item.id}
+              data-testid="home-recent-source-flow-card"
+              className="flex min-h-[184px] flex-col justify-between rounded-lg border border-blue-100 bg-white p-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md"
+              href={`/flow-maps/${item.id}`}
+            >
+              <div>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-700">{item.note}</span>
+                </div>
+                <h3 className="mt-2 text-base font-semibold leading-6 text-gray-950">{item.title}</h3>
+                <p className="mt-2 text-sm leading-5 text-gray-600">{item.summary}</p>
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-3 text-xs">
+                <span className="rounded-full bg-gray-100 px-2 py-1 font-semibold text-gray-700">{item.artifact}</span>
+                <span className="font-semibold text-gray-500">{item.input}</span>
+                <span className="font-semibold text-blue-700">지도 열기</span>
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 

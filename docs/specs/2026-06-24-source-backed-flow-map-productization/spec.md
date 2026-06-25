@@ -1,9 +1,9 @@
 # Source-backed Flow Map Productization Baseline
 
 **Date:** 2026-06-24  
-**Status:** Productization planning baseline  
+**Status:** Productization planning baseline, with 2026-06-25 quality reset
 **Scope:** `/flow-maps/[map]`, `/flow-maps/[map]/creator`, `/my`, source-backed map adapter, saved map snapshot, Step/Item export contract  
-**Related:** [Source-backed Step contract](../2026-05-28-my-flow-execution-hub/source-backed-step-contract.md), [My Flow before/after UX alignment](../2026-05-28-my-flow-execution-hub/my-flow-before-after-ux-alignment.md), [FLOW quality gate](../../flow-rules/quality-gate.md)
+**Related:** [Source-backed Step contract](../2026-05-28-my-flow-execution-hub/source-backed-step-contract.md), [My Flow before/after UX alignment](../2026-05-28-my-flow-execution-hub/my-flow-before-after-ux-alignment.md), [FLOW quality gate](../../flow-rules/quality-gate.md), [Quality PRD](./quality-prd.md), [2026-06-25 candidate reassessment](../../content-audit/2026-06-25-source-backed-flow-map-candidate-reassessment-ko.html)
 
 ## Goal
 
@@ -28,12 +28,12 @@ Flow Map > Flow > Step > Item
 
 ## Representative Baseline Cases
 
-These three cases are the current productization baseline. They are not exhaustive category coverage.
+These cases were the initial productization baseline. After the 2026-06-25 quality review, `moving-d30` remains the strongest representative baseline, `middle-school-math-1` remains a candidate for Flow Map structure, and `baby-health-schedule` is no longer treated as representative until its source-derived Step content is rebuilt. Code-level exposure now follows `sourceBackedFlowMapQualityDecisions` and `getSourceBackedHomepageFlowMaps()` rather than route existence.
 
 | Case | Source shape | User job | Natural artifact | Input | Product decision |
 | --- | --- | --- | --- | --- | --- |
 | `middle-school-math-1` | Reference curriculum / table of contents | Save the curriculum as a progress table and mark source units already covered | Sheet-like progress list with source unit Steps and subtopic Items | None by default | Keep. Do not invent study coaching routines unless the source provides them. |
-| `baby-health-schedule` | Official health schedule and lookup guide | Save official checkup and vaccination timing against one child birthdate | Calendar reminders plus memo/source detail | Child birthdate | Keep with sensitive-source boundaries. Official windows stay one Step, not many daily rows. |
+| `baby-health-schedule` | Official health schedule and lookup guide | Save official checkup and vaccination timing against one child birthdate | Calendar reminders plus memo/source detail | Child birthdate | Revise before representative use. Current Step actions are not information-rich enough for a user-facing baseline. |
 | `moving-d30` | Creator moving checklist timeline | Turn one moving date into dated preparation reminders | Calendar timeline plus checklist/memo detail | Moving date | Keep as a strong timeline/hybrid comparison case. |
 
 ## Product-Ready Enough For The Next Slice
@@ -44,7 +44,7 @@ The current implementation is strong enough to guide the next product work in th
 - Saving a public map can create child saved Flow records and a parent map snapshot.
 - My Flow can render saved source-backed Steps without forcing creator/review structure into the user surface.
 - Step detail can hold Item checks, source links, memo hints, and text fallback.
-- Official date windows can remain one executable Step while preserving the official period in detail/export text.
+- Official date windows can remain one executable Step while preserving the official period in detail/export text, but only when the Step detail gives users practical source-derived preparation, lookup, or booking context.
 - Mobile post-save paths can bring the user to the relevant My Flow surface instead of leaving them at a dead end.
 - My Flow Flow inventory can separate ready execution content from review, preview, and legacy content without changing Today or Calendar into review surfaces.
 - My Flow Calendar selected-date detail can group Step rows by saved Flow Map or Flow, so many dated Steps do not appear as one flat, contextless list.
