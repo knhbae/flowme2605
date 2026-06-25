@@ -480,6 +480,16 @@
           </tr>
           <tr>
             <td class="status">2026-06-25</td>
+            <td><span class="chip amber">재정렬</span></td>
+            <td><strong>Source-backed Flow Map 품질 리셋</strong><span class="small">홈 대표 후보 축소와 약한 후보 분리</span></td>
+            <td class="lane-cell"><span class="lane-tag product">제품 기준</span><span class="lane-tag content">콘텐츠 품질</span><span class="lane-tag ops">검증</span><span class="small">quality gate / homepage exposure / direct-route experiments</span></td>
+            <td class="completion"><span class="level next-up">품질 gate</span><div class="meter"><span style="width: 82%;"></span></div><span class="small">82% · moving-d30은 대표, middle-school-math-1은 구조 후보로 홈에 남기고, baby-health-schedule은 Revise로 내렸습니다. 추가 5개는 대표 후보가 아니라 direct-route 실험/backup/reject 상태로 분리했습니다.</span></td>
+            <td><a href="./2026-06-25-source-backed-flow-map-candidate-reassessment-ko.html">재심사 리포트</a><br><a href="../specs/2026-06-24-source-backed-flow-map-productization/quality-prd.md">Quality PRD</a><br><a href="../specs/2026-06-24-source-backed-flow-map-productization/spec.md">updated spec</a><br><a href="../../lib/flow/source-backed-my-flow.ts">quality decision model</a><br><a href="../../components/flow/AppClient.tsx">homepage gate</a><br><a href="../../tests/e2e/flow-mvp.spec.ts">E2E</a></td>
+            <td>서비스 홈은 평가용 후보 저장소가 아니므로, 라우트가 동작해도 원컨텐츠/Flow 변환/사용자 저니가 약하면 대표 카드로 노출하지 않습니다. 홈 노출은 <code>homepageEligible</code> 기준을 따릅니다.</td>
+            <td>다음은 영유아 재소싱 또는 교체, legacy/실험 후보 inventory 분리, 서비스용 설명글 감량, Creator publish gate 정리입니다.</td>
+          </tr>
+          <tr>
+            <td class="status">2026-06-25</td>
             <td><span class="chip green">완료</span></td>
             <td><strong>Platform UX slice 1~4</strong><span class="small">Step 필드, creator local publish, update merge, 대량 목록 숨김</span></td>
             <td class="lane-cell"><span class="lane-tag user">사용자 UX</span><span class="lane-tag creator">제작자 UX</span><span class="lane-tag product">제품 모델</span><span class="lane-tag ops">검증</span><span class="small">Step-level task fields / local publish marker / add-only map update / inventory hide</span></td>
@@ -627,6 +637,8 @@
       <p class="eyebrow">최근 업데이트</p>
       <h2>2026-06-25</h2>
       <div class="grid two">
+          <div class="row"><b>Source-backed 후보 품질 리셋</b><span>홈과 대표 제품 화면에는 <strong>이사 D-30</strong>과 <strong>중1 수학</strong>만 먼저 남기고, 영유아 검진·접종은 Revise, 추가 5개 후보는 direct-route 실험/backup/reject로 분리했습니다. 기존 “실제 원문 5개 확장”은 라우트 동작 확인 이력이지 대표 콘텐츠 통과가 아닙니다. 기준 문서: <a href="../specs/2026-06-24-source-backed-flow-map-productization/quality-prd.md">Source-backed Flow Map Quality PRD</a>, 상세 판단: <a href="./2026-06-25-source-backed-flow-map-candidate-reassessment-ko.html">후보 재심사 리포트</a>.</span></div>
+          <div class="row"><b>다음 품질 작업</b><span>우선순위는 더 많은 카드를 추가하는 것이 아니라, 원컨텐츠 선정 기준과 Flow 변환 기준을 다시 통과한 후보만 서비스 홈/사용자 화면에 남기는 것입니다. 즉시 볼 작업은 1) 영유아 재소싱 또는 Park, 2) legacy/실험 후보 분리, 3) 서비스용 설명글 감량, 4) Creator publish gate에서 source row와 사용자 Step 변환을 검토하는 화면입니다.</span></div>
           <div class="row"><b>실제 원문 기반 Flow 5개 확장</b><span>인터넷우체국 주거이전 우편물, KISA 스미싱 대응, 국세청 연말정산 간편제출, 삼성전자서비스 에어컨 필터 청소, 식약처 나들이 식중독 예방을 source-backed Flow Map으로 추가했습니다. 각 Flow는 primary source 1개, 입력 0~1개, Step/Item fallback, source URL, 저장 후 My Flow snapshot/persistence record를 갖습니다. 리포트: <a href="./2026-06-25-five-real-source-flow-expansion-ko.html">2026-06-25 실제 원문 5개 확장</a>.</span></div>
           <div class="row"><b>Platform UX slice 1~4</b><span>Step detail에 날짜/시간/반복/장소/메모를 저장하고, creator draft는 로컬 발행 표시까지 진행하며, source-backed map update apply는 새 child Flow를 추가하되 기존 체크/메모를 지우지 않도록 바꿨습니다. Flow inventory는 숨김/복귀를 지원하지만 Today/Calendar 실행 데이터는 유지합니다. 모바일 390px 저장→수정→재방문 테스트에서 Step 필드 누락과 4px overflow를 발견해 수정했습니다. 리포트: <a href="./2026-06-25-platform-ux-slice-1to4-simulation-ko.html">2026-06-25 1~4번 리포트</a>.</span></div>
           <div class="row"><b>Saved map update notice</b><span>저장한 source-backed Flow Map snapshot을 현재 map 정의와 다시 비교해 version/source row 변경 가능성이 있으면 Flow 탭에 낮은 톤의 업데이트 확인 notice를 보여줍니다. 기존 Step과 체크 상태는 자동 변경하지 않고, 공개 지도 링크와 같은 버전쌍에 대한 숨김 동작만 제공합니다. source-backed update-review E2E로 확인했습니다.</span></div>

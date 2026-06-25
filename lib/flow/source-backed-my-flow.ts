@@ -60,6 +60,17 @@ export type ProgressStepNeedAssessment = {
 };
 
 export type SourceBackedFlowMapUpdatePolicy = 'auto_patch_when_safe' | 'review_before_apply';
+export type SourceBackedFlowMapCandidateStatus = 'representative' | 'candidate' | 'revise' | 'park' | 'reject';
+
+export type SourceBackedFlowMapQualityDecision = {
+  mapId: string;
+  status: SourceBackedFlowMapCandidateStatus;
+  homepageEligible: boolean;
+  directRouteEnabled: boolean;
+  productScore: number;
+  reason: string;
+  nextAction: string;
+};
 
 export type SourceBackedMyFlowMap = {
   id: string;
@@ -209,6 +220,81 @@ export type SourceBackedFlowMapPublishPackage = {
     savedSlugs: string[];
     visibleTabs: string[];
   };
+};
+
+export const sourceBackedFlowMapQualityDecisions: Record<string, SourceBackedFlowMapQualityDecision> = {
+  'moving-d30': {
+    mapId: 'moving-d30',
+    status: 'representative',
+    homepageEligible: true,
+    directRouteEnabled: true,
+    productScore: 8.5,
+    reason: 'Clear D-day life event with a strong save reason and a natural calendar/checklist artifact.',
+    nextAction: 'Keep as the strongest practical baseline; only simplify copy or Step detail when needed.',
+  },
+  'middle-school-math-1': {
+    mapId: 'middle-school-math-1',
+    status: 'candidate',
+    homepageEligible: true,
+    directRouteEnabled: true,
+    productScore: 7,
+    reason: 'Flow Map hierarchy works, but the source is dry and scheduling behavior still needs product judgment.',
+    nextAction: 'Keep as a structure candidate; improve source summary, source links, and optional scheduling later.',
+  },
+  'baby-health-schedule': {
+    mapId: 'baby-health-schedule',
+    status: 'revise',
+    homepageEligible: false,
+    directRouteEnabled: true,
+    productScore: 5,
+    reason: 'Official schedule can be useful, but current Step actions are shallow and not representative yet.',
+    nextAction: 'Rebuild from official schedule/table logic plus practical prep/source detail before homepage exposure.',
+  },
+  'postal-address-transfer': {
+    mapId: 'postal-address-transfer',
+    status: 'park',
+    homepageEligible: false,
+    directRouteEnabled: true,
+    productScore: 4,
+    reason: 'Useful utility, but too narrow to prove Flow Map value as a representative example.',
+    nextAction: 'Keep as direct-route utility research only.',
+  },
+  'smishing-response': {
+    mapId: 'smishing-response',
+    status: 'reject',
+    homepageEligible: false,
+    directRouteEnabled: true,
+    productScore: 2,
+    reason: 'One-off emergency response is better as a source link or memo than a Flow Map proof point.',
+    nextAction: 'Do not promote unless a reusable official response checklist source changes the job.',
+  },
+  'year-end-tax-submit': {
+    mapId: 'year-end-tax-submit',
+    status: 'park',
+    homepageEligible: false,
+    directRouteEnabled: true,
+    productScore: 4,
+    reason: 'Potential deadline checklist, but source and user job need stronger specificity and tax-sensitive boundaries.',
+    nextAction: 'Re-source and rewrite before any representative use.',
+  },
+  'aircon-filter-cleaning': {
+    mapId: 'aircon-filter-cleaning',
+    status: 'park',
+    homepageEligible: false,
+    directRouteEnabled: true,
+    productScore: 3,
+    reason: 'Some routine value, but weak as a platform proof and overlaps maintenance patterns already tested.',
+    nextAction: 'Keep only as a low-priority routine backup unless a stronger source-backed user job is selected.',
+  },
+  'picnic-food-safety': {
+    mapId: 'picnic-food-safety',
+    status: 'reject',
+    homepageEligible: false,
+    directRouteEnabled: true,
+    productScore: 1,
+    reason: 'Generic safety tips do not create a strong save or revisit reason.',
+    nextAction: 'Do not promote unless tied to a concrete event-prep source with clear checklist ownership.',
+  },
 };
 
 export function getSourceBackedFlowMapSnapshotStorageKey(mapId: string): string {
@@ -777,6 +863,26 @@ export function listSourceBackedFlowMapPublishPackages(): SourceBackedFlowMapPub
   return sourceBackedMyFlowMaps
     .map((map) => buildSourceBackedFlowMapPublishPackage(map.id))
     .filter((item): item is SourceBackedFlowMapPublishPackage => Boolean(item));
+}
+
+export function getSourceBackedFlowMapQualityDecision(mapId: string): SourceBackedFlowMapQualityDecision {
+  return sourceBackedFlowMapQualityDecisions[mapId] ?? {
+    mapId,
+    status: 'park',
+    homepageEligible: false,
+    directRouteEnabled: false,
+    productScore: 0,
+    reason: 'No quality decision has been recorded for this map.',
+    nextAction: 'Review the source, user job, natural artifact, and source-to-Flow model before exposing it.',
+  };
+}
+
+export function listSourceBackedFlowMapQualityDecisions(): SourceBackedFlowMapQualityDecision[] {
+  return sourceBackedMyFlowMaps.map((map) => getSourceBackedFlowMapQualityDecision(map.id));
+}
+
+export function getSourceBackedHomepageFlowMaps(): SourceBackedMyFlowMap[] {
+  return sourceBackedMyFlowMaps.filter((map) => getSourceBackedFlowMapQualityDecision(map.id).homepageEligible);
 }
 
 export function buildSourceBackedFlowMapSavedSnapshot(

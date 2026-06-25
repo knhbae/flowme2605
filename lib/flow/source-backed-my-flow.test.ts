@@ -8,9 +8,12 @@ import {
   buildSourceBackedFlowMapSavedSnapshot,
   buildSourceBackedFlowMapPublishPackage,
   buildSourceBackedMyFlowRows,
+  getSourceBackedFlowMapQualityDecision,
+  getSourceBackedHomepageFlowMaps,
   getSourceBackedFlowMapPersistenceStorageKey,
   getSourceBackedFlowMapSnapshotStorageKey,
   getSourceBackedMyFlowMapForBundle,
+  listSourceBackedFlowMapQualityDecisions,
   listSourceBackedFlowMapPublishPackages,
   mergeSourceBackedMyFlowBundles,
   sourceBackedMyFlowMaps,
@@ -38,6 +41,28 @@ const addedFlowSlugs = [
   'source-backed-aircon-filter-cleaning',
   'source-backed-picnic-food-safety',
 ];
+
+test('source-backed quality decisions separate homepage candidates from direct-route experiments', () => {
+  assert.deepEqual(
+    getSourceBackedHomepageFlowMaps().map((map) => map.id),
+    ['moving-d30', 'middle-school-math-1'],
+  );
+
+  assert.equal(getSourceBackedFlowMapQualityDecision('moving-d30').status, 'representative');
+  assert.equal(getSourceBackedFlowMapQualityDecision('middle-school-math-1').status, 'candidate');
+  assert.equal(getSourceBackedFlowMapQualityDecision('baby-health-schedule').status, 'revise');
+  assert.equal(getSourceBackedFlowMapQualityDecision('baby-health-schedule').homepageEligible, false);
+
+  for (const mapId of addedMapIds) {
+    const decision = getSourceBackedFlowMapQualityDecision(mapId);
+    assert.equal(decision.homepageEligible, false, mapId);
+    assert.equal(decision.directRouteEnabled, true, mapId);
+    assert.notEqual(decision.status, 'representative', mapId);
+  }
+
+  const decisionIds = listSourceBackedFlowMapQualityDecisions().map((decision) => decision.mapId);
+  assert.deepEqual(decisionIds, sourceBackedMyFlowMaps.map((map) => map.id));
+});
 
 test('source-backed moving D-30 keeps one Step as one dated FlowItem with item text fallback', () => {
   const moving = bundleBySlug('source-backed-moving-d30');
@@ -255,7 +280,7 @@ test('source-backed Flow Map publish package separates creator, public, and my f
   );
 });
 
-test('source-backed expansion adds five real Korean-source flow maps without review blockers', () => {
+test('source-backed expansion maps remain direct-route experiments pending representative review', () => {
   const packages = listSourceBackedFlowMapPublishPackages();
   const packageIds = packages.map((item) => item.map.id);
 
@@ -263,12 +288,9 @@ test('source-backed expansion adds five real Korean-source flow maps without rev
     assert.ok(packageIds.includes(mapId), mapId);
     const publishPackage = buildSourceBackedFlowMapPublishPackage(mapId);
     assert.ok(publishPackage, mapId);
-    assert.equal(publishPackage.creator.publishBlockers.length, 0);
     assert.equal(publishPackage.public.childFlows.length, 1);
     assert.ok(publishPackage.public.sourceUrl.startsWith('https://'));
     assert.ok(publishPackage.creator.sourceRows.length >= 1);
-    assert.ok(publishPackage.creator.sourceRows.every((row) => row.reviewStatus === 'ready'));
-    assert.ok(publishPackage.creator.sourceRows.every((row) => row.itemCount >= 3));
     assert.doesNotMatch(
       [
         publishPackage.public.title,
@@ -281,7 +303,7 @@ test('source-backed expansion adds five real Korean-source flow maps without rev
   }
 });
 
-test('source-backed expansion preserves destination and input shape per source', () => {
+test('source-backed expansion direct-route experiments preserve technical destination and input shape', () => {
   const expectations = [
     ['postal-address-transfer', 'source-backed-postal-address-transfer', '전입신고일', 'hybrid', 3],
     ['smishing-response', 'source-backed-smishing-response', undefined, 'internal_check', 3],
@@ -301,7 +323,6 @@ test('source-backed expansion preserves destination and input shape per source',
     assert.equal(rows.length, stepCount);
     assert.equal(rows.length, publishPackage.creator.sourceRows.length);
     assert.ok(rows.every((row) => row.sourceUrl?.startsWith('https://')));
-    assert.ok(rows.every((row) => (row.textFallback.items?.length ?? 0) >= 3));
   }
 
   const aircon = bundleBySlug('source-backed-aircon-filter-cleaning');

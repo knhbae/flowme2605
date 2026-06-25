@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Source-backed Flow Map 후보 재심사 리포트</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --surface: #fff;
+      --soft: #f8fafc;
+      --line: #d9e2ef;
+      --text: #101827;
+      --muted: #667085;
+      --blue: #1f5fbf;
+      --green: #0f7a4a;
+      --amber: #9a6100;
+      --red: #b42318;
+      --slate: #475467;
+      --shadow: 0 14px 34px rgba(16, 24, 39, .08);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #fbfdff 0, var(--bg) 420px);
+      font-size: 16px;
+      line-height: 1.62;
+    }
+    a { color: var(--blue); text-underline-offset: 3px; overflow-wrap: anywhere; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 44px); line-height: 1.12; letter-spacing: 0; word-break: keep-all; }
+    h2 { margin-bottom: 8px; font-size: clamp(23px, 3vw, 32px); line-height: 1.22; letter-spacing: 0; word-break: keep-all; }
+    h3 { margin-bottom: 6px; font-size: 20px; line-height: 1.28; letter-spacing: 0; word-break: keep-all; }
+    code { padding: 2px 5px; border-radius: 6px; background: #eef2f7; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .92em; }
+    .page { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 14px 0 64px; }
+    .topbar, .hero, .card, .table-card, .callout {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 58px;
+      padding: 12px 16px;
+      box-shadow: 0 1px 2px rgba(16, 24, 39, .04);
+    }
+    .brand { color: var(--blue); font-size: 24px; font-weight: 950; text-decoration: none; }
+    .hero, .card, .table-card, .callout { margin-top: 12px; padding: 18px; box-shadow: var(--shadow); }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .desc { max-width: 880px; color: var(--muted); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #344054;
+      font-size: 13px;
+      font-weight: 850;
+    }
+    .chip.green { border-color: #bde7cb; background: #e8f7ef; color: var(--green); }
+    .chip.amber { border-color: #efd08f; background: #fff6df; color: var(--amber); }
+    .chip.red { border-color: #f4b4ad; background: #fff1ef; color: var(--red); }
+    .chip.blue { border-color: #bfdbfe; background: #eaf2ff; color: var(--blue); }
+    .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+      padding: 14px;
+    }
+    .metric strong { display: block; font-size: 30px; line-height: 1.1; }
+    .metric span { display: block; margin-top: 6px; color: var(--muted); font-size: 13px; font-weight: 750; }
+    .section-title { margin-top: 28px; }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 12px;
+      padding: 12px 0;
+      border-top: 1px solid #edf2f7;
+    }
+    .row:first-child { border-top: 0; }
+    .label { color: #475467; font-size: 13px; font-weight: 900; }
+    .value { margin: 0; color: #1d2939; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      overflow-wrap: anywhere;
+    }
+    th, td {
+      padding: 11px 10px;
+      border-top: 1px solid #e6edf5;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f8fafc;
+      color: #475467;
+      font-size: 13px;
+      font-weight: 950;
+    }
+    td { color: #263445; font-size: 14px; }
+    .status {
+      display: inline-flex;
+      min-width: 88px;
+      justify-content: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 950;
+    }
+    .representative { background: #e8f7ef; color: var(--green); }
+    .candidate { background: #eaf2ff; color: var(--blue); }
+    .revise, .park { background: #fff6df; color: var(--amber); }
+    .reject { background: #fff1ef; color: var(--red); }
+    .codebox {
+      margin-top: 12px;
+      padding: 14px;
+      border: 1px solid #d9e2ef;
+      border-radius: 8px;
+      background: #0f172a;
+      color: #e5edf8;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .split {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .mini {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+      padding: 14px;
+    }
+    .mini strong { display: block; margin-bottom: 6px; }
+    .mini p { margin-bottom: 0; color: var(--muted); font-size: 14px; }
+    .footnote { margin-top: 12px; color: var(--muted); font-size: 13px; }
+    @media (max-width: 860px) {
+      .grid, .grid.two, .summary-grid, .split { grid-template-columns: 1fr; }
+      .row { grid-template-columns: 1fr; gap: 4px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      table, thead, tbody, tr, th, td { display: block; }
+      thead { display: none; }
+      tr { margin-top: 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; overflow: hidden; }
+      td { border-top: 1px solid #edf2f7; }
+      td:first-child { border-top: 0; }
+      td::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 4px;
+        color: #667085;
+        font-size: 12px;
+        font-weight: 950;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar">
+      <a class="brand" href="../../">FlowMe</a>
+      <div class="chips">
+        <span class="chip blue">내부 리포트</span>
+        <span class="chip">2026-06-25</span>
+        <span class="chip">사용자 화면과 분리</span>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <p class="eyebrow">Source-backed Flow Map 후보 재심사</p>
+      <h1>홈에는 강한 후보만 남기고, 실험 후보는 직접 라우트와 리포트로 분리한다</h1>
+      <p class="desc">
+        이번 재심사의 목적은 라우트가 있다는 이유로 약한 컨텐츠가 서비스 대표처럼 보이는 문제를 끊는 것이다.
+        사용자 화면은 저장할 산출물과 첫 실행만 보여주고, 후보 점수·검토 사유·제작자 게이트는 이 리포트와 PRD에서만 다룬다.
+      </p>
+      <div class="grid">
+        <div class="metric"><strong>2</strong><span>홈 노출 Flow Map</span></div>
+        <div class="metric"><strong>8</strong><span>Source-backed 후보 재심사</span></div>
+        <div class="metric"><strong>90</strong><span>기존 단일 Flow source-fit 감사</span></div>
+        <div class="metric"><strong>0</strong><span>관찰 기반 검증 주장</span></div>
+      </div>
+    </section>
+
+    <section class="summary-grid">
+      <article class="card">
+        <h2>이번 결론</h2>
+        <div class="row">
+          <div class="label">홈 대표</div>
+          <p class="value"><code>moving-d30</code>만 명확한 대표 기준선이다. <code>middle-school-math-1</code>은 Flow Map 구조 후보로 홈에 남기되, 후보 성격을 제품 내부에서만 관리한다.</p>
+        </div>
+        <div class="row">
+          <div class="label">홈 제외</div>
+          <p class="value"><code>baby-health-schedule</code>은 사용자가 저장할 이유는 있지만 현재 Step 정보가 얕다. 나머지 5개 확장 후보는 Park/Reject로 내리고 대표로 보이지 않게 한다.</p>
+        </div>
+        <div class="row">
+          <div class="label">기존 Flow</div>
+          <p class="value">기존 단일 Flow는 <code>source-fit</code> 감사 90개 중 15개만 대표 가능으로 남긴다. 홈/대표 화면에는 별도 기준선 Flow만 보여주고, preview·review 후보는 섞지 않는다.</p>
+        </div>
+        <div class="row">
+          <div class="label">사용자 화면</div>
+          <p class="value">설명글을 줄이고 <strong>원문 → 저장 산출물 → 첫 실행</strong>만 보여준다. 평가 점수, PRD, 후보 판정, 개발자 문구는 사용자 화면에 넣지 않는다.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>서비스 노출 정책</h2>
+        <div class="split">
+          <div class="mini">
+            <strong>사용자 홈</strong>
+            <p>저장 이유와 산출물이 분명한 2개만 노출한다. 현재는 이사 D-30, 중1 수학 목차 진도.</p>
+          </div>
+          <div class="mini">
+            <strong>직접 라우트</strong>
+            <p>Revise/Park 후보는 링크로 테스트 가능하지만 대표 사례처럼 묶지 않는다.</p>
+          </div>
+          <div class="mini">
+            <strong>내부 리포트</strong>
+            <p>후보 판정, 점수, 리스크, Creator gate 설계는 이 레이어에서만 관리한다.</p>
+          </div>
+        </div>
+        <div class="codebox">대표 노출 조건
+one primary source
+-> one clear user job
+-> one natural artifact
+-> minimal execution UI
+-> save/revisit reason</div>
+      </article>
+    </section>
+
+    <section class="table-card section-title">
+      <h2>Source-backed Flow Map 8개 재심사</h2>
+      <p class="desc">상태는 코드의 <code>sourceBackedFlowMapQualityDecisions</code>와 맞춘다. <code>directRouteEnabled</code>는 테스트 가능하다는 뜻이지 대표 노출을 의미하지 않는다.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>후보</th>
+            <th>판정</th>
+            <th>홈</th>
+            <th>점수</th>
+            <th>판단</th>
+            <th>다음 작업</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="후보"><code>moving-d30</code></td>
+            <td data-label="판정"><span class="status representative">Representative</span></td>
+            <td data-label="홈">노출</td>
+            <td data-label="점수">8.5</td>
+            <td data-label="판단">D-day 생활 이벤트, 저장 이유, 캘린더+체크 산출물이 모두 명확하다.</td>
+            <td data-label="다음 작업">대표 기준선으로 유지. 설명글과 Step detail만 더 가볍게 다듬는다.</td>
+          </tr>
+          <tr>
+            <td data-label="후보"><code>middle-school-math-1</code></td>
+            <td data-label="판정"><span class="status candidate">Candidate</span></td>
+            <td data-label="홈">노출</td>
+            <td data-label="점수">7.0</td>
+            <td data-label="판단">Flow Map 계층은 잘 보인다. 다만 원문이 건조하고 일정화 방식은 아직 제품 판단이 필요하다.</td>
+            <td data-label="다음 작업">구조 후보로 유지. 원문 링크, 단원 상세, optional 일정 배치를 후속 개선한다.</td>
+          </tr>
+          <tr>
+            <td data-label="후보"><code>baby-health-schedule</code></td>
+            <td data-label="판정"><span class="status revise">Revise</span></td>
+            <td data-label="홈">제외</td>
+            <td data-label="점수">5.0</td>
+            <td data-label="판단">공식 일정 자체는 유용하지만 현재 사용자 Step action이 얕아서 정보 가치가 낮다.</td>
+            <td data-label="다음 작업">공식 표/조회 로직 기준으로 Step과 Item을 다시 만들고 의료 판단 경계를 유지한다.</td>
+          </tr>
+          <tr>
+            <td data-label="후보"><code>postal-address-transfer</code></td>
+            <td data-label="판정"><span class="status park">Park</span></td>
+            <td data-label="홈">제외</td>
+            <td data-label="점수">4.0</td>
+            <td data-label="판단">유틸리티로는 가능하지만 Flow Map 대표 사례로는 너무 좁다.</td>
+            <td data-label="다음 작업">직접 라우트 연구로만 보관한다.</td>
+          </tr>
+          <tr>
+            <td data-label="후보"><code>smishing-response</code></td>
+            <td data-label="판정"><span class="status reject">Reject</span></td>
+            <td data-label="홈">제외</td>
+            <td data-label="점수">2.0</td>
+            <td data-label="판단">일회성 긴급 대응은 Flow Map보다 원문 링크/메모에 가깝다.</td>
+            <td data-label="다음 작업">반복 가능한 공식 대응 체크리스트가 생기기 전까지 대표 후보에서 제외한다.</td>
+          </tr>
+          <tr>
+            <td data-label="후보"><code>year-end-tax-submit</code></td>
+            <td data-label="판정"><span class="status park">Park</span></td>
+            <td data-label="홈">제외</td>
+            <td data-label="점수">4.0</td>
+            <td data-label="판단">마감형 체크 가능성은 있지만 세무 민감 경계와 출처 구체성이 부족하다.</td>
+            <td data-label="다음 작업">원문 재선정 후 제출 준비 체크로 다시 설계한다.</td>
+          </tr>
+          <tr>
+            <td data-label="후보"><code>aircon-filter-cleaning</code></td>
+            <td data-label="판정"><span class="status park">Park</span></td>
+            <td data-label="홈">제외</td>
+            <td data-label="점수">3.0</td>
+            <td data-label="판단">루틴 가치는 있으나 플랫폼 대표 증명력은 약하고 관리류 반복감이 크다.</td>
+            <td data-label="다음 작업">제조사/강한 원문이 붙을 때만 routine backup으로 둔다.</td>
+          </tr>
+          <tr>
+            <td data-label="후보"><code>picnic-food-safety</code></td>
+            <td data-label="판정"><span class="status reject">Reject</span></td>
+            <td data-label="홈">제외</td>
+            <td data-label="점수">1.0</td>
+            <td data-label="판단">일반 안전 팁은 저장·재방문 이유가 약하고 이벤트 준비 산출물이 불분명하다.</td>
+            <td data-label="다음 작업">구체적인 나들이 준비 원문이 아니면 더 진행하지 않는다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="table-card section-title">
+      <h2>기존 단일 Flow 후보 재심사 요약</h2>
+      <p class="desc">
+        기존 단일 Flow는 별도 <code>source-fit</code> 감사 체계를 따른다. 이 체계는 Flow Map 후보와 다르지만, 홈/대표 노출에 섞기 전에 같은 질문을 통과해야 한다:
+        사용자가 원문을 보고 저장하고 싶고, 산출물이 분명하며, 실행 화면이 캘린더/투두/메모 수준으로 유지되는가?
+      </p>
+      <div class="grid">
+        <div class="metric"><strong>90</strong><span>감사된 단일 Flow</span></div>
+        <div class="metric"><strong>79</strong><span>평균 source-fit 점수</span></div>
+        <div class="metric"><strong>15</strong><span>대표 가능</span></div>
+        <div class="metric"><strong>70</strong><span>대표 전 재구성 필요</span></div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>대표 단일 Flow 기준선</th>
+            <th>점수</th>
+            <th>역할</th>
+            <th>이번 작업에서의 처리</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="대표 단일 Flow 기준선"><code>moving-d30-basic</code> · 이사 D-30 준비 Flow</td>
+            <td data-label="점수">100</td>
+            <td data-label="역할">생활 전환 D-day timeline 기준선</td>
+            <td data-label="이번 작업에서의 처리">Flow Map <code>moving-d30</code>과 함께 대표 비교 기준으로 유지한다.</td>
+          </tr>
+          <tr>
+            <td data-label="대표 단일 Flow 기준선"><code>used-car-buying-check</code> · 중고차 구매 현장 점검 Flow</td>
+            <td data-label="점수">88</td>
+            <td data-label="역할">현장 체크/비교형 기준선</td>
+            <td data-label="이번 작업에서의 처리">홈 확장 후보가 아니라 기존 대표 단일 Flow pool에 둔다.</td>
+          </tr>
+          <tr>
+            <td data-label="대표 단일 Flow 기준선"><code>baby-food-menu-recipe</code> · 초기 이유식 메뉴·레시피 Flow</td>
+            <td data-label="점수">93</td>
+            <td data-label="역할">캘린더+가벼운 기록 기준선</td>
+            <td data-label="이번 작업에서의 처리">의료 판단이 아닌 식단 실행/메모 기준선으로 보관한다.</td>
+          </tr>
+          <tr>
+            <td data-label="대표 단일 Flow 기준선"><code>wedding-d180-basic</code> · 결혼 준비 D-300 타임라인 Flow</td>
+            <td data-label="점수">96</td>
+            <td data-label="역할">장기 일정+의사결정 기준선</td>
+            <td data-label="이번 작업에서의 처리">단일 Flow 혹은 future Flow Map 비교군으로 유지한다.</td>
+          </tr>
+          <tr>
+            <td data-label="대표 단일 Flow 기준선"><code>english-study-30day-routine</code> · 직장인 영어공부 30일 루틴 Flow</td>
+            <td data-label="점수">91</td>
+            <td data-label="역할">반복 루틴 기준선</td>
+            <td data-label="이번 작업에서의 처리">루틴 UX 비교 기준으로 유지한다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card section-title">
+      <h2>사용자 화면 정리 원칙</h2>
+      <div class="split">
+        <div class="mini">
+          <strong>남길 것</strong>
+          <p>원문 제목, 저장되는 산출물, 필요한 입력, 첫 실행 Step, Step 안 Item, 원문 링크, 짧은 메모.</p>
+        </div>
+        <div class="mini">
+          <strong>뺄 것</strong>
+          <p>후보 판정, 점수, PRD, source-fit, 개발자/리뷰 문구, "왜 이 PoC가 좋은지" 설명.</p>
+        </div>
+        <div class="mini">
+          <strong>미룰 것</strong>
+          <p>세부 편집, 반복 규칙 고급 설정, Creator 승인 워크플로, 대량 candidate browsing.</p>
+        </div>
+      </div>
+      <p class="footnote">
+        홈 카드도 이 원칙에 맞춰 <code>homepageEligible</code>인 후보만 렌더링하고, 사용자 문구에서는 "대표 후보" 같은 검토 표현을 제거했다.
+      </p>
+    </section>
+
+    <section class="card section-title">
+      <h2>Creator publish gate 다음 설계안</h2>
+      <p class="desc">
+        Creator 화면의 핵심은 "내 원문 row가 어떤 Step/Item으로 바뀌었는지"를 확인하는 것이다. 제작자에게는 검토 게이트가 보여야 하지만, 공개 사용자 화면에는 실행 산출물만 보여야 한다.
+      </p>
+      <div class="codebox">Creator publish gate v1
+1. Source URL 입력
+2. 원문 row 추출: 제목 / 설명 / 원문 위치 / 위험도
+3. Step preview: Step 제목 / destination / 날짜·반복·진도 여부
+4. Item preview: FlowMe 체크리스트 + 외부 앱 text fallback
+5. 차단 조건: source 없음 / Item 없음 / 민감 판단 포함 / 입력 과다
+6. 공개 preview: 사용자에게 보이는 저장 화면만 확인
+7. My Flow preview: 저장 후 실행 화면만 확인
+8. 발행: 대표 노출이 아니라 direct route 또는 review 상태부터 시작</div>
+      <div class="split">
+        <div class="mini">
+          <strong>제작자에게 보일 것</strong>
+          <p>원문 근거, 변환 row, publish blocker, 수정 가능한 Step 제목·destination·fallback text.</p>
+        </div>
+        <div class="mini">
+          <strong>사용자에게 보일 것</strong>
+          <p>무엇이 저장되는지, 오늘 또는 다음에 무엇을 하면 되는지, 원문을 어디서 다시 보는지.</p>
+        </div>
+        <div class="mini">
+          <strong>운영자가 볼 것</strong>
+          <p>후보 상태, 홈 노출 여부, route 유지 여부, 대표 후보 승격 조건.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="table-card section-title">
+      <h2>코드/라우트 정리 결과</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>영역</th>
+            <th>결정</th>
+            <th>현재 처리</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="영역">Source-backed 후보 상태</td>
+            <td data-label="결정"><code>representative / candidate / revise / park / reject</code> 상태를 명시한다.</td>
+            <td data-label="현재 처리"><code>lib/flow/source-backed-my-flow.ts</code>에 품질 결정 모델과 조회 함수를 추가했다.</td>
+          </tr>
+          <tr>
+            <td data-label="영역">홈 노출</td>
+            <td data-label="결정"><code>homepageEligible</code>인 후보만 홈에 보인다.</td>
+            <td data-label="현재 처리"><code>components/flow/AppClient.tsx</code> 홈 카드가 <code>getSourceBackedHomepageFlowMaps()</code>를 따른다.</td>
+          </tr>
+          <tr>
+            <td data-label="영역">직접 라우트</td>
+            <td data-label="결정">약한 후보도 direct route 테스트는 가능하지만 대표처럼 보이지 않는다.</td>
+            <td data-label="현재 처리">Revise/Park/Reject 후보는 홈 제외, 직접 라우트와 E2E 보존.</td>
+          </tr>
+          <tr>
+            <td data-label="영역">문서 분리</td>
+            <td data-label="결정">사용자 화면과 검토/기획/평가 화면을 분리한다.</td>
+            <td data-label="현재 처리">본 리포트와 Quality PRD가 내부 판단을 담당한다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card section-title">
+      <h2>다음 작업</h2>
+      <div class="row">
+        <div class="label">1순위</div>
+        <p class="value"><code>baby-health-schedule</code> 재작성 여부 결정. 공식 표를 기반으로 실제 정보성 있는 Step/Item을 다시 만들 수 없으면 대표 후보에서 계속 제외한다.</p>
+      </div>
+      <div class="row">
+        <div class="label">2순위</div>
+        <p class="value">홈/공개 화면의 설명글을 더 줄이고, 저장 후 My Flow에서 Step detail이 바로 이해되는지 모바일 리허설을 반복한다.</p>
+      </div>
+      <div class="row">
+        <div class="label">3순위</div>
+        <p class="value">Creator publish gate를 실제 화면으로 만들기 전에, source row → Step/Item 변환 표를 먼저 고정한다.</p>
+      </div>
+      <div class="row">
+        <div class="label">금지</div>
+        <p class="value">새 카테고리 수를 늘리기 위해 약한 원문을 UI로 포장하지 않는다. 텍스트 모델이 통과하기 전 UI를 만들지 않는다.</p>
+      </div>
+    </section>
+
+    <section class="callout">
+      <h2>연결 문서</h2>
+      <p class="desc">
+        <a href="../specs/2026-06-24-source-backed-flow-map-productization/quality-prd.md">Source-backed Flow Map Quality PRD</a>,
+        <a href="../specs/2026-06-24-source-backed-flow-map-productization/spec.md">제품화 기준 spec</a>,
+        <a href="../flow-rules/quality-gate.md">FLOW Quality Gate</a>,
+        <a href="../flow-rules/source-to-flow-conversion-gate.md">Source-to-Flow Conversion Gate</a>,
+        <a href="./2026-06-19-flowme-service-ux-backlog-ko.html">서비스 UX 백로그</a>
+      </p>
+    </section>
+  </main>
+</body>
+</html>
