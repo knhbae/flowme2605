@@ -39,6 +39,16 @@ Capture the idea during the same session when it could influence future product 
 
 ## Ideas
 
+### 2026-07-01 - Lightweight daily memo intake
+
+**Idea:** Let users start from the lightweight daily memo behavior they already keep in a notes app: write and revise today's tasks in plain language, then let FLOW convert that memo into suggested times, missing checks, related Flows, reminders, and later experience records. The product should preserve the speed and low pressure of a scratchpad while adding tracking and guidance that a normal memo app cannot provide.
+
+**Why not now:** Stage 0 still needs to avoid becoming a full daily planner or todo app before the content-to-action loop is proven. Daily memo intake also needs careful UX so FLOW does not make a light habit feel heavy with too many required fields, categories, or productivity judgments.
+
+**Revisit when:** My Flow saved records become a stronger validation target, users repeatedly describe using external notes for daily planning, or a PoC needs a low-friction input path that does not depend on finding a source URL or creator-published Flow first.
+
+**Source context:** User note on 2026-07-01: they currently organize daily tasks in a memo app because it is lightweight and easy to revise, but it does not track what was missed or suggest what to do, when to do it, or how it connects to FLOW's longer-term vision.
+
 ### 2026-06-29 - Experience value data and personal gain briefing
 
 **Idea:** As FLOW collects experience data from plan content and real execution, it can also record what value each experience produced: knowledge gained, practical skill, emotional state, confidence, risk avoided, relationship progress, money/time saved, or other user-defined value. Over a day, week, project, or custom period, FLOW could summarize what the user gained, where they are strong or weak, what patterns keep repeating, and what next actions would produce the most useful growth.
