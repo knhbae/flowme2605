@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow P0/P1 개선 결과</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f3f6fb;
+      --surface: #fff;
+      --soft: #f8fafc;
+      --line: #d9e2ef;
+      --ink: #0f172a;
+      --muted: #526070;
+      --blue: #2563eb;
+      --green: #047857;
+      --amber: #b45309;
+      --red: #b91c1c;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); line-height: 1.58; }
+    article { width: min(1120px, calc(100% - 28px)); margin: 0 auto; padding: 28px 0 56px; }
+    header, section { margin-top: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: 0 10px 28px rgba(15, 23, 42, .06); }
+    header { padding: 28px; }
+    section { padding: 22px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 10px; font-size: clamp(30px, 5vw, 44px); line-height: 1.14; letter-spacing: 0; }
+    h2 { margin-bottom: 12px; font-size: 23px; letter-spacing: 0; }
+    h3 { margin: 0 0 6px; font-size: 17px; }
+    p { color: var(--muted); }
+    a { color: var(--blue); text-underline-offset: 3px; overflow-wrap: anywhere; }
+    .eyebrow { color: var(--blue); font-size: 14px; font-weight: 900; }
+    .lead { max-width: 860px; font-size: 17px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .chip { display: inline-flex; align-items: center; min-height: 30px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--soft); color: #334155; font-size: 13px; font-weight: 800; }
+    .chip.green { border-color: #bbf7d0; background: #ecfdf5; color: var(--green); }
+    .chip.amber { border-color: #fde68a; background: #fffbeb; color: var(--amber); }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card { border: 1px solid var(--line); border-radius: 10px; background: var(--soft); padding: 15px; }
+    .card strong { display: block; margin-bottom: 4px; color: var(--ink); }
+    .status { display: inline-flex; align-items: center; min-height: 26px; padding: 3px 8px; border-radius: 999px; font-size: 12px; font-weight: 900; }
+    .done { background: #ecfdf5; color: var(--green); }
+    .todo { background: #fffbeb; color: var(--amber); }
+    table { width: 100%; border-collapse: collapse; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; font-size: 14px; }
+    th, td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #eef4ff; color: #1e3a8a; font-size: 13px; }
+    tr:last-child td { border-bottom: 0; }
+    code { border-radius: 6px; background: #eef2f7; padding: 2px 5px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .92em; }
+    .note { border-left: 4px solid var(--blue); background: #eff6ff; padding: 12px 14px; border-radius: 8px; color: #1e3a8a; }
+    @media (max-width: 820px) {
+      .grid, .grid.two { grid-template-columns: 1fr; }
+      header, section { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <header>
+      <p class="eyebrow">My Flow 저장 후 실행 UX</p>
+      <h1>P0/P1 개선 결과</h1>
+      <p class="lead">저장한 Flow를 실제 사용자처럼 3개 추가한 뒤, 오늘 실행, Step 상세, Flow별 보기, 캘린더를 모바일 기준으로 다시 시뮬레이션했다. 이번 단계의 목표는 상품화 완성이 아니라 “내 Flow에서 다음 행동을 바로 알 수 있는 기준선”을 만드는 것이다.</p>
+      <div class="chips">
+        <span class="chip green">빌드 통과</span>
+        <span class="chip green">단위 테스트 통과</span>
+        <span class="chip green">대상 E2E 8개 통과</span>
+        <span class="chip green">모바일 시뮬레이션 PASS</span>
+      </div>
+    </header>
+
+    <section>
+      <h2>무엇을 고쳤나</h2>
+      <div class="grid">
+        <div class="card">
+          <strong>Today 구조</strong>
+          <p>오늘 할 일이 없으면 빈 상태를 먼저 보여주고, 지난 일정은 “정리” 카드로 접었다. 사용자는 밀린 과거 목록보다 지금 이어할 항목과 다음 할 일을 먼저 본다.</p>
+        </div>
+        <div class="card">
+          <strong>Step 상세</strong>
+          <p>Step을 누르면 해당 카드 바로 아래에 상세가 열린다. 모바일에서는 원문과 내보내기 기능을 접어서, 체크와 메모가 먼저 보이도록 했다.</p>
+        </div>
+        <div class="card">
+          <strong>Flow 탭</strong>
+          <p>Today에서 열어둔 상세가 Flow 탭으로 따라오지 않게 분리했다. Flow 탭은 저장한 묶음과 각 Flow의 다음 항목을 보는 화면으로 정리했다.</p>
+        </div>
+        <div class="card">
+          <strong>캘린더 역할</strong>
+          <p>내 Flow 내부의 로컬 캘린더 탭은 제거하고, 글로벌 캘린더 탭에서 날짜별 실행 항목을 본다. 저장 후 미래 실행월로 자연스럽게 잡히도록 조정했다.</p>
+        </div>
+        <div class="card">
+          <strong>문구 정리</strong>
+          <p>사용자 화면에서 내부 구조를 덜 드러내도록 “Flow” 대신 “묶음”, “목록”, “원문 보기” 중심으로 일부 카피를 정리했다.</p>
+        </div>
+        <div class="card">
+          <strong>빌드 차단 수정</strong>
+          <p><code>source-backed-curated-260630.ts</code>의 튜플 타입 추론 오류를 좁게 보강해 Next 빌드가 통과하도록 했다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>시뮬레이션 결과</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>검증 시나리오</th>
+            <th>결과</th>
+            <th>근거</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>원룸 이사, 중1 수학, 영유아 검진·접종 Flow Map을 저장</td>
+            <td><span class="status done">PASS</span></td>
+            <td>각 Flow Map 저장 후 <code>/my</code>로 이동하고 저장 상태가 유지됨.</td>
+          </tr>
+          <tr>
+            <td>내 Flow Today에서 지금 이어할 Step 확인</td>
+            <td><span class="status done">PASS</span></td>
+            <td><code>my-flow-now-section</code>, 지난 일정 정리, 다음 할 일 섹션이 모두 보임.</td>
+          </tr>
+          <tr>
+            <td>Step 클릭 후 상세 확인</td>
+            <td><span class="status done">PASS</span></td>
+            <td>상세가 클릭한 row 바로 아래에 inline으로 열리고, 별도 dialog가 뜨지 않음.</td>
+          </tr>
+          <tr>
+            <td>Flow 탭 이동</td>
+            <td><span class="status done">PASS</span></td>
+            <td>저장한 묶음과 Flow 카드가 보이며, Today에서 열었던 상세가 따라오지 않음.</td>
+          </tr>
+          <tr>
+            <td>캘린더 탭 이동</td>
+            <td><span class="status done">PASS</span></td>
+            <td>글로벌 캘린더가 보이고, 저장된 일정의 실행월이 현재/미래 기준으로 잡힘.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="note">스크린샷과 로그는 <code>output/playwright/2026-06-30-my-flow-p0p1-mobile-*.png</code>, <code>output/playwright/2026-06-30-my-flow-p0p1-mobile-simulation.log</code>에 남겼다.</p>
+    </section>
+
+    <section>
+      <h2>검증 명령</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>명령</th>
+            <th>결과</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>npm run docs:check</code></td><td><span class="status done">PASS</span></td></tr>
+          <tr><td><code>npm test</code></td><td><span class="status done">PASS</span></td></tr>
+          <tr><td><code>npm run build</code></td><td><span class="status done">PASS</span></td></tr>
+          <tr><td><code>npm run test:e2e -- --grep "my flow ..."</code></td><td><span class="status done">8 passed</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>남은 백로그</h2>
+      <div class="grid two">
+        <div class="card">
+          <strong>상품화 전 추가 설계</strong>
+          <p>카드 밀도, 리뷰/사용수/신뢰 신호, 홈과 Flow 찾기의 성격 차이는 아직 제품 방향과 콘텐츠 수가 늘어난 뒤 다시 봐야 한다.</p>
+        </div>
+        <div class="card">
+          <strong>컨텐츠 확장 검증</strong>
+          <p>대표 컨텐츠 2~3개 외에 사용자가 엄선한 실제 원문 후보들을 같은 기준으로 Flow Map/Flow화해야 한다.</p>
+        </div>
+        <div class="card">
+          <strong>Step 데이터 모델</strong>
+          <p>Step은 나중에 캘린더 일정 수준의 ICS 필드, 반복, 알림, 장소, URL을 더 자연스럽게 품을 수 있어야 한다.</p>
+        </div>
+        <div class="card">
+          <strong>관찰 사용자 검증</strong>
+          <p>이번 결과는 자동 시뮬레이션과 내부 UX 리뷰다. 실제 사용자 행동 데이터가 아니므로 “사용자 검증 완료”로 표현하지 않는다.</p>
+        </div>
+      </div>
+    </section>
+  </article>
+</body>
+</html>

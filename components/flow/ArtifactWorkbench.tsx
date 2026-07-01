@@ -2618,6 +2618,21 @@ function JeonseCalendarPreview({
           );
         })}
       </div>
+      <div className="mt-3 grid gap-2">
+        {rows.map((row) => (
+          <button
+            key={row.id}
+            type="button"
+            className={`flex items-center justify-between gap-3 rounded-md border px-3 py-2 text-left text-xs font-semibold ${
+              selectedDate === row.startDate ? 'border-blue-200 bg-blue-50 text-blue-900' : 'border-slate-200 bg-slate-50 text-slate-700'
+            }`}
+            onClick={() => onSelectDate(row.startDate)}
+          >
+            <span>{row.timing}</span>
+            <span className="min-w-0 truncate">{row.startDate} · {jeonseEventTitle(row.timing)}</span>
+          </button>
+        ))}
+      </div>
     </details>
   );
 }

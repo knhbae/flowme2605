@@ -42,6 +42,36 @@ const addedFlowSlugs = [
   'source-backed-picnic-food-safety',
 ];
 
+const curatedMapIds = [
+  'curated-funmom-learning-park',
+  'curated-opic-mock-course',
+  'curated-baby-food-meal-log',
+  'curated-reading-routine-log',
+  'curated-new-car-purchase-guide',
+  'curated-child-vaccination-schedule',
+  'curated-ajd-moving-d30',
+  'curated-wedding-checklist-family',
+  'curated-allblanc-workout-park',
+];
+
+const curatedFlowSlugs = [
+  'curated-funmom-weekly-print-picker',
+  'curated-opic-single-mock-review',
+  'curated-opic-course-row-import',
+  'curated-baby-food-daily-meal-row',
+  'curated-baby-food-cube-stock',
+  'curated-reading-monthly-log',
+  'curated-new-car-basic',
+  'curated-child-vaccination-first-year',
+  'curated-child-vaccination-booster-school-age',
+  'curated-ajd-moving-d30',
+  'curated-wedding-naver-timeline',
+  'curated-wedding-gongysd-atoz',
+  'curated-allblanc-morning-workout',
+  'curated-allblanc-no-jump-cardio',
+  'curated-allblanc-lower-body',
+];
+
 test('source-backed quality decisions separate homepage candidates from direct-route experiments', () => {
   assert.deepEqual(
     getSourceBackedHomepageFlowMaps().map((map) => map.id),
@@ -54,6 +84,13 @@ test('source-backed quality decisions separate homepage candidates from direct-r
   assert.equal(getSourceBackedFlowMapQualityDecision('baby-health-schedule').homepageEligible, false);
 
   for (const mapId of addedMapIds) {
+    const decision = getSourceBackedFlowMapQualityDecision(mapId);
+    assert.equal(decision.homepageEligible, false, mapId);
+    assert.equal(decision.directRouteEnabled, true, mapId);
+    assert.notEqual(decision.status, 'representative', mapId);
+  }
+
+  for (const mapId of curatedMapIds) {
     const decision = getSourceBackedFlowMapQualityDecision(mapId);
     assert.equal(decision.homepageEligible, false, mapId);
     assert.equal(decision.directRouteEnabled, true, mapId);
@@ -232,6 +269,7 @@ test('source-backed Flow Map publish package separates creator, public, and my f
   assert.equal(publishPackage.public.surface, 'public_save');
   assert.equal(publishPackage.myFlow.surface, 'my_flow_saved');
   assert.deepEqual(publishPackage.myFlow.savedSlugs, ['source-backed-middle-school-math-1']);
+  assert.equal(publishPackage.myFlow.demoHref, '/my?demo=source-backed&savedMap=middle-school-math-1');
   assert.equal(publishPackage.public.setupInputs.length, 0);
   assert.equal(publishPackage.public.setupInput, undefined);
   assert.equal(publishPackage.public.primaryCta.href, '/my');
@@ -259,6 +297,8 @@ test('source-backed Flow Map publish package separates creator, public, and my f
   assert.equal(publishPackage.creator.sourceRows[0].sourceType, 'reference');
   assert.ok(publishPackage.creator.publishBlockers.length === 0);
   assert.ok(publishPackage.public.childFlows.every((flow) => flow.steps.length > 0));
+  assert.ok(publishPackage.public.childFlows.every((flow) => flow.steps.every((step) => step.detailItems.length === step.detailItemCount)));
+  assert.match(publishPackage.public.childFlows[0].steps[0].detailItems.join('\n'), /거듭제곱/);
   assert.doesNotMatch(
     [
       publishPackage.public.title,
@@ -276,6 +316,7 @@ test('source-backed Flow Map publish package separates creator, public, and my f
       'middle-school-math-1',
       'baby-health-schedule',
       ...addedMapIds,
+      ...curatedMapIds,
     ],
   );
 });
@@ -332,6 +373,96 @@ test('source-backed expansion direct-route experiments preserve technical destin
 
   const smishing = bundleBySlug('source-backed-smishing-response');
   assert.ok(buildSourceBackedMyFlowRows(smishing).every((row) => row.calendar.mode === 'none'));
+});
+
+test('curated source expansion maps produce app-ready direct-route packages without homepage promotion', () => {
+  const packages = listSourceBackedFlowMapPublishPackages();
+  const packageIds = packages.map((item) => item.map.id);
+
+  for (const mapId of curatedMapIds) {
+    const decision = getSourceBackedFlowMapQualityDecision(mapId);
+    const publishPackage = buildSourceBackedFlowMapPublishPackage(mapId);
+
+    assert.ok(packageIds.includes(mapId), mapId);
+    assert.ok(publishPackage, mapId);
+    assert.equal(decision.homepageEligible, false, mapId);
+    assert.equal(decision.directRouteEnabled, true, mapId);
+    assert.equal(publishPackage.creator.publishBlockers.length, 0, mapId);
+    assert.ok(publishPackage.creator.sourceRows.length >= 1, mapId);
+    assert.ok(publishPackage.public.sourceUrl.startsWith('https://'), mapId);
+    assert.doesNotMatch(
+      [
+        publishPackage.public.title,
+        publishPackage.public.summary,
+        publishPackage.public.primaryCta.label,
+        ...publishPackage.public.artifacts,
+      ].join(' '),
+      /source fit|PoC|개발자|평가 점수/i,
+      mapId,
+    );
+  }
+
+  for (const slug of curatedFlowSlugs) {
+    const rows = buildSourceBackedMyFlowRows(bundleBySlug(slug));
+    assert.ok(rows.length >= 1, slug);
+    assert.ok(rows.every((row) => row.sourceUrl?.startsWith('https://')), slug);
+  }
+});
+
+test('curated source expansion preserves source-specific row counts and sensitive boundaries', () => {
+  const expectations = [
+    ['curated-funmom-learning-park', 'curated-funmom-weekly-print-picker', 6],
+    ['curated-opic-mock-course', 'curated-opic-single-mock-review', 14],
+    ['curated-opic-mock-course', 'curated-opic-course-row-import', 5],
+    ['curated-baby-food-meal-log', 'curated-baby-food-daily-meal-row', 1],
+    ['curated-baby-food-meal-log', 'curated-baby-food-cube-stock', 1],
+    ['curated-reading-routine-log', 'curated-reading-monthly-log', 8],
+    ['curated-new-car-purchase-guide', 'curated-new-car-basic', 7],
+    ['curated-child-vaccination-schedule', 'curated-child-vaccination-first-year', 6],
+    ['curated-child-vaccination-schedule', 'curated-child-vaccination-booster-school-age', 4],
+    ['curated-ajd-moving-d30', 'curated-ajd-moving-d30', 5],
+    ['curated-wedding-checklist-family', 'curated-wedding-naver-timeline', 6],
+    ['curated-wedding-checklist-family', 'curated-wedding-gongysd-atoz', 4],
+    ['curated-allblanc-workout-park', 'curated-allblanc-morning-workout', 1],
+    ['curated-allblanc-workout-park', 'curated-allblanc-no-jump-cardio', 1],
+    ['curated-allblanc-workout-park', 'curated-allblanc-lower-body', 1],
+  ] as const;
+
+  for (const [mapId, slug, rowCount] of expectations) {
+    const bundle = bundleBySlug(slug);
+    const rows = buildSourceBackedMyFlowRows(bundle);
+
+    assert.equal(rows.length, rowCount, `${mapId}/${slug}`);
+    assert.ok(rows.every((row) => row.mapId === mapId), `${mapId}/${slug}`);
+  }
+
+  const newCarRows = buildSourceBackedMyFlowRows(bundleBySlug('curated-new-car-basic'));
+  assert.equal(newCarRows.length, 7);
+  assert.ok(newCarRows.every((row) => row.riskLevel === 'financial_sensitive'));
+  assert.match(newCarRows.map((row) => row.title).join('\n'), /보험 가입 확인/);
+
+  const vaccinationRows = [
+    ...buildSourceBackedMyFlowRows(bundleBySlug('curated-child-vaccination-first-year')),
+    ...buildSourceBackedMyFlowRows(bundleBySlug('curated-child-vaccination-booster-school-age')),
+  ];
+  assert.ok(vaccinationRows.every((row) => row.riskLevel === 'medical_sensitive'));
+  assert.ok(vaccinationRows.every((row) => row.calendar.anchorType === 'baby_birth_date'));
+  assert.match(vaccinationRows.map((row) => row.textFallback.items?.join(' ') ?? '').join('\n'), /B형간염/);
+  assert.match(vaccinationRows.map((row) => row.textFallback.items?.join(' ') ?? '').join('\n'), /Tdap/);
+
+  const workoutRows = [
+    ...buildSourceBackedMyFlowRows(bundleBySlug('curated-allblanc-morning-workout')),
+    ...buildSourceBackedMyFlowRows(bundleBySlug('curated-allblanc-no-jump-cardio')),
+    ...buildSourceBackedMyFlowRows(bundleBySlug('curated-allblanc-lower-body')),
+  ];
+  assert.equal(workoutRows.length, 3);
+  assert.ok(workoutRows.every((row) => row.sourceUrl?.includes('youtube.com/watch')));
+  assert.ok(workoutRows.every((row) => row.calendar.mode === 'routine'));
+  assert.ok(workoutRows.every((row) => row.textFallback.items?.length === 3));
+  assert.ok(workoutRows.every((row) => row.textFallback.items?.some((item) => item.startsWith('영상: '))));
+  assert.ok(workoutRows.every((row) => row.textFallback.items?.some((item) => item.startsWith('URL: https://www.youtube.com/watch'))));
+  assert.ok(workoutRows.every((row) => row.textFallback.items?.some((item) => item.startsWith('요약: '))));
+  assert.doesNotMatch(workoutRows.map((row) => row.textFallback.items?.join('\n') ?? '').join('\n'), /칼로리|감량|효과 보장/);
 });
 
 test('source-backed moving map saves one dated timeline flow from a move date', () => {
@@ -419,7 +550,8 @@ test('source-backed Flow Map persistence record separates bridge snapshot from p
   assert.equal(record.readiness.content, 'ready_for_my_flow');
   assert.equal(record.readiness.update, 'up_to_date');
   assert.equal(record.childFlows.length, 1);
-  assert.deepEqual(record.childFlows[0], {
+  const { steps, ...movingChildMeta } = record.childFlows[0];
+  assert.deepEqual(movingChildMeta, {
     slug: 'source-backed-moving-d30',
     flowId: 'flow-source-backed-moving-d30',
     title: '원룸 이사 D-30 준비',
@@ -442,6 +574,25 @@ test('source-backed Flow Map persistence record separates bridge snapshot from p
       'moving-move-day-admin',
     ],
   });
+  assert.equal(steps.length, 5);
+  assert.deepEqual(
+    steps.map((step) => step.stepId),
+    [
+      'moving-method-quotes',
+      'moving-cleaning-waste',
+      'moving-address-admin',
+      'moving-meter-photos',
+      'moving-move-day-admin',
+    ],
+  );
+  assert.equal(steps[0].destination, 'calendar');
+  assert.equal(steps[0].calendar.mode, 'anchor_offset');
+  assert.equal(steps[0].calendar.anchorType, 'end_date');
+  assert.equal(steps[0].calendar.dayOffset, -30);
+  assert.match(steps[0].textFallback.title, /이사 방식/);
+  assert.match(steps[0].textFallback.items?.join('\n') ?? '', /견적 후보/);
+  assert.match(steps[0].textFallback.doneWhen ?? '', /후보/);
+  assert.equal(steps[0].sourceUrl, record.childFlows[0].sourceUrl);
 });
 
 test('source-backed official schedule persistence record keeps review-before-apply policy separate from current readiness', () => {
@@ -464,6 +615,10 @@ test('source-backed official schedule persistence record keeps review-before-app
   );
   assert.ok(record.childFlows.every((flow) => flow.anchorType === 'baby_birth_date'));
   assert.ok(record.childFlows.every((flow) => flow.sourceUrl?.startsWith('https://')));
+  assert.ok(record.childFlows.every((flow) => flow.steps.length === flow.stepCount));
+  assert.ok(record.childFlows.every((flow) => flow.steps.every((step) => step.calendar.anchorType === 'baby_birth_date')));
+  assert.ok(record.childFlows.every((flow) => flow.steps.every((step) => step.sourceUrl?.startsWith('https://'))));
+  assert.match(record.childFlows[0].steps[0].textFallback.items?.join('\n') ?? '', /문진표/);
 });
 
 test('source-backed Flow Map update assessment keeps same version quiet', () => {

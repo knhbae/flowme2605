@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2026-06-29 FlowMe 사용자 검토 질문지</title>
+  <style>
+    body { margin: 0; background: #f6f7fb; color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.65; }
+    main { max-width: 980px; margin: 0 auto; padding: 40px 20px 64px; }
+    h1 { margin: 0; font-size: 30px; line-height: 1.25; letter-spacing: -0.02em; }
+    h2 { margin: 32px 0 12px; font-size: 20px; }
+    p { margin: 8px 0; color: #475569; }
+    .card { margin-top: 18px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; padding: 22px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06); }
+    .scale { display: inline-block; margin-top: 8px; border-radius: 999px; background: #eef2ff; padding: 4px 10px; color: #1d4ed8; font-size: 13px; font-weight: 700; }
+    ol { margin: 10px 0 0; padding-left: 22px; }
+    li { margin: 12px 0; }
+    strong { color: #0f172a; }
+    .note { border-left: 4px solid #2563eb; background: #eff6ff; padding: 12px 14px; border-radius: 8px; color: #1e3a8a; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>FlowMe 서비스 UX 사용자 검토 질문지</h1>
+    <p>점수는 5점 만점입니다. 1점은 이해/사용이 어렵고, 5점은 바로 서비스 기준선으로 삼아도 된다는 뜻입니다.</p>
+    <p class="note">검토 대상은 사용자 화면입니다. 기획/리포트/개발자 화면 문구는 사용자 화면 평가에서 제외합니다.</p>
+
+    <section class="card">
+      <h2>1. 홈</h2>
+      <span class="scale">점수: __ / 5</span>
+      <ol>
+        <li>첫 5초 안에 FlowMe가 “읽은 콘텐츠를 내 실행 항목으로 저장하는 서비스”라는 점이 보이나요?</li>
+        <li>홈이 전체 카탈로그처럼 과하게 보이지 않고, Flow 찾기로 자연스럽게 이어지나요?</li>
+        <li>대표 카드 수, 설명량, CTA 우선순위가 모바일에서 부담스럽지 않나요?</li>
+        <li>“검토/후보/테스트” 같은 내부 평가 문구가 사용자 서비스 화면처럼 보이는 감각을 해치지 않나요?</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>2. Flow 찾기</h2>
+      <span class="scale">점수: __ / 5</span>
+      <ol>
+        <li>이사, 중1 수학, 전세가 “저장해볼 만한 대표 Flow”로 보이나요?</li>
+        <li>Flow Map과 단일 Flow의 구분이 없어도 사용자가 고르는 데 문제가 없나요?</li>
+        <li>각 카드에서 저장 후 무엇이 생기는지 예상할 수 있나요?</li>
+        <li>현재는 실제 사용수/리뷰 신호가 없는데, 원문 연결/입력/저장 항목만으로 고를 수 있나요?</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>3. 공개 Flow / Flow Map</h2>
+      <span class="scale">점수: __ / 5</span>
+      <ol>
+        <li>상세 화면에서 원문, 입력값, 저장 결과가 분리되어 보이나요?</li>
+        <li>저장 버튼을 누르기 전에 “내 Flow에 무엇이 들어갈지” 충분히 예측되나요?</li>
+        <li>세부 메모 항목은 너무 많지 않고, 실행에 필요한 정보만 담고 있나요?</li>
+        <li>원문 열기와 저장하기의 역할이 명확한가요?</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>4. 저장 후 내 Flow</h2>
+      <span class="scale">점수: __ / 5</span>
+      <ol>
+        <li>저장 직후 첫 Step, 캘린더 보기, 전체 Flow 보기의 차이를 이해할 수 있나요?</li>
+        <li>Step을 누르면 클릭한 자리에서 세부 항목이 열리고 닫히는 흐름이 자연스럽나요?</li>
+        <li>저장한 Flow가 1개일 때와 여러 개일 때 화면의 복잡도가 적절한가요?</li>
+        <li>캘린더와 Flow 탭의 역할이 겹치지 않고, 각각 언제 쓰는지 알 수 있나요?</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>5. 콘텐츠 품질</h2>
+      <span class="scale">점수: __ / 5</span>
+      <ol>
+        <li>이사 D-30은 원문을 실행 항목으로 옮겼다는 느낌이 충분한가요?</li>
+        <li>중1 수학은 진도표로 저장할 이유가 보이나요?</li>
+        <li>전세는 기존 기준선처럼 일정/체크/메모 균형이 유지되나요?</li>
+        <li>약한 후보가 대표 화면에 섞이지 않고 분리되어 있다고 느껴지나요?</li>
+      </ol>
+    </section>
+  </main>
+</body>
+</html>

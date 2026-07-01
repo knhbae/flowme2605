@@ -34,6 +34,13 @@ docs/specs/YYYY-MM-DD-short-topic/
 
 Keep the short topic stable. If the work is rescoped, update the files inside the folder rather than creating a second near-duplicate folder.
 
+## Active Specs
+
+- [2026-06-29 Post-save Execution UX](./2026-06-29-post-save-execution-ux/spec.md) - planning-first redesign for Today/Next, Calendar selected-date detail, public save CTA, and Flow finding labels before implementation.
+- [2026-06-26 Creator Publish Gate and Step Contract](./2026-06-26-creator-publish-step-contract/spec.md) - separates creator/public/My Flow route responsibilities and records the saved Flow Map Step contract needed for future export regeneration.
+- [2026-06-24 Source-backed Flow Map Productization](./2026-06-24-source-backed-flow-map-productization/spec.md) - current source-backed Flow Map productization baseline and quality gate.
+- [2026-06-24 FlowMe Platform Feature Planning](./2026-06-24-flowme-platform-feature-planning/spec.md) - platform-level planning and deferred feature boundaries.
+
 ## Required Gates
 
 Every FlowMe spec should answer these gates before implementation starts:
@@ -43,6 +50,7 @@ Every FlowMe spec should answer these gates before implementation starts:
 - **Artifact destination:** What becomes calendar, sheet, memo, exported text, or internal check state.
 - **Source/risk boundary:** How official facts, creator experience, user edits, and cautions stay separate.
 - **Natural artifact:** What a user would naturally create outside FLOW with realistic input values.
+- **Service structure impact:** Which route, screen tree branch, component boundary, data/export contract, or persistence path changes, and whether [../SERVICE_STRUCTURE.md](../SERVICE_STRUCTURE.md) must be updated.
 - **Verification:** Which docs, unit, build, E2E, browser, content, or security checks prove the change.
 
 ## Promotion Rules
@@ -52,6 +60,7 @@ Every FlowMe spec should answer these gates before implementation starts:
 - Promote an idea into `docs/specs/` when it becomes planned work.
 - When promoting an idea, carry forward the original "why not now" risk and update it into a concrete stage-fit statement, scope boundary, or non-goal.
 - When a spec settles a reusable policy while planning, add or link the durable rule in [../DECISIONS.md](../DECISIONS.md) so later work can inherit it without rereading the whole spec.
+- When implementation changes a route, shared component boundary, data/export contract, persistence path, or recurring review surface, update [../SERVICE_STRUCTURE.md](../SERVICE_STRUCTURE.md) in the same PR or record why no update was needed.
 - Keep [../ROADMAP.md](../ROADMAP.md) short; link to the spec instead of copying details.
 - Record implementation evidence in [../pr-history/README.md](../pr-history/README.md) and the matching PR history entry.
 - Update [../STATUS.md](../STATUS.md) only for current health, focus, or recently completed changes.

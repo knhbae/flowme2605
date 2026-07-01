@@ -12,10 +12,11 @@ Any coding agent should start with:
 2. [docs/STATUS.md](./docs/STATUS.md)
 3. [docs/ROADMAP.md](./docs/ROADMAP.md)
 4. [docs/PRODUCT_PRINCIPLES.md](./docs/PRODUCT_PRINCIPLES.md)
-5. [docs/DECISIONS.md](./docs/DECISIONS.md)
-6. [docs/IDEAS.md](./docs/IDEAS.md)
-7. [docs/specs/README.md](./docs/specs/README.md)
-8. [docs/harness/README.md](./docs/harness/README.md)
+5. [docs/SERVICE_STRUCTURE.md](./docs/SERVICE_STRUCTURE.md)
+6. [docs/DECISIONS.md](./docs/DECISIONS.md)
+7. [docs/IDEAS.md](./docs/IDEAS.md)
+8. [docs/specs/README.md](./docs/specs/README.md)
+9. [docs/harness/README.md](./docs/harness/README.md)
 
 Do not assume Claude-specific tools are available. If a tool supports subagents, use the roles in [docs/harness/ROLES.md](./docs/harness/ROLES.md). If not, run the same phases manually and keep implementation, review, and QA as separate passes.
 

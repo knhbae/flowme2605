@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>엄선 원컨텐츠 9개 Flow 변환 검토판</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      color-scheme: light;
+      --ink:#111827;
+      --muted:#4b5563;
+      --line:#dbe3ef;
+      --soft:#f8fafc;
+      --blue:#1d4ed8;
+      --green:#047857;
+      --amber:#b45309;
+      --red:#b91c1c;
+    }
+    html { margin:0; background:#eef2f7; color:var(--ink); font-family: Arial, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; font-size:16px; line-height:1.55; }
+    body { margin:0; }
+    article { width:100%; max-width:760px; margin:0 auto; padding:18px 12px 48px; }
+    .eyebrow { margin:0 0 6px; color:var(--blue); font-size:12px; font-weight:800; }
+    h1 { margin:0; font-size:26px; line-height:1.18; letter-spacing:0; }
+    .lead { margin:10px 0 0; color:var(--muted); font-size:15px; }
+    .metrics { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; margin:14px 0; }
+    .metric { min-height:72px; padding:10px; border:1px solid var(--line); border-radius:10px; background:#fff; }
+    .metric span { display:block; color:var(--muted); font-size:12px; font-weight:800; }
+    .metric b { display:block; margin-top:2px; font-size:24px; line-height:1.1; }
+    .notice { margin:14px 0; padding:12px; border:1px solid #fde68a; border-radius:10px; background:#fffbeb; color:#78350f; font-size:14px; }
+    .notice strong { display:block; margin-bottom:4px; font-size:15px; }
+    .jump { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:7px; margin:14px 0 16px; }
+    .jump a { display:flex; min-height:38px; align-items:center; justify-content:center; padding:7px 6px; border:1px solid #cbd5e1; border-radius:999px; background:#fff; color:#0f172a; font-size:13px; font-weight:800; text-decoration:none; }
+    .card { margin:12px 0; border:1px solid var(--line); border-radius:12px; background:#fff; overflow:hidden; box-shadow:0 1px 2px rgba(15,23,42,.05); }
+    .card summary { list-style:none; cursor:pointer; padding:14px 12px; }
+    .card summary::-webkit-details-marker { display:none; }
+    .topline { display:flex; gap:8px; align-items:center; justify-content:space-between; color:var(--muted); font-size:12px; font-weight:800; }
+    .badge { flex:0 0 auto; border-radius:999px; background:#eef2ff; color:#3730a3; padding:3px 8px; }
+    h2 { margin:7px 0 0; font-size:21px; line-height:1.25; letter-spacing:0; }
+    .body { padding:0 12px 14px; }
+    .summary { margin:0 0 10px; color:var(--muted); font-size:15px; }
+    .path { margin:0 0 10px; padding:9px 10px; border:1px solid #bfdbfe; border-radius:10px; background:#eff6ff; color:#1e3a8a; font-size:13px; font-weight:800; }
+    .path code { display:block; margin-top:2px; overflow-wrap:anywhere; color:#0f172a; background:transparent; padding:0; }
+    .decision { margin:8px 0 10px; display:grid; gap:6px; }
+    .decision p { margin:0; padding:8px 9px; border-left:4px solid #93c5fd; border-radius:8px; background:#f8fafc; color:#374151; font-size:14px; }
+    .flow { margin:10px 0; padding:10px; border:1px solid #e2e8f0; border-radius:10px; background:#f8fafc; }
+    .flow h3 { margin:0 0 8px; font-size:17px; line-height:1.3; }
+    .dest { display:inline-block; margin-left:4px; color:var(--blue); font-size:12px; font-weight:800; }
+    .steps { list-style:none; margin:0; padding:0; display:grid; gap:7px; }
+    .step { padding:9px; border:1px solid #e5e7eb; border-radius:9px; background:#fff; }
+    .step-title { display:flex; gap:7px; align-items:flex-start; font-weight:800; font-size:15px; line-height:1.35; }
+    .num { flex:0 0 auto; min-width:24px; height:24px; border-radius:999px; background:#e0f2fe; color:#075985; display:inline-flex; align-items:center; justify-content:center; font-size:12px; }
+    .items { margin:6px 0 0; padding-left:18px; color:#4b5563; font-size:14px; }
+    .items li { margin:1px 0; }
+    .ok { color:var(--green); }
+    .warn { color:var(--amber); }
+    .hold { color:var(--red); }
+    .files { margin-top:16px; padding:12px; border:1px solid #cbd5e1; border-radius:10px; background:#fff; color:#475569; font-size:14px; }
+    code { padding:2px 5px; border-radius:5px; background:#f1f5f9; color:#111827; }
+    @media (min-width: 700px) {
+      article { padding:28px 18px 58px; }
+      h1 { font-size:36px; }
+      .metrics { grid-template-columns:repeat(4, minmax(0, 1fr)); }
+      .jump { grid-template-columns:repeat(5, minmax(0, 1fr)); }
+      .decision { grid-template-columns:repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 380px) {
+      article { padding-left:10px; padding-right:10px; }
+      h1 { font-size:23px; }
+      .jump { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+      .metric b { font-size:22px; }
+      .items { font-size:13px; }
+    }
+  </style>
+</head>
+<body>
+<article>
+  <header>
+    <p class="eyebrow">2026-06-30 / source-backed content expansion</p>
+    <h1>엄선 원컨텐츠 9개 Flow 변환 검토판</h1>
+    <p class="lead">피드백 반영판입니다. 원론적 설명을 줄이고, 앱 데이터로 들어갈 Flow / Step / Item이 모바일에서 바로 보이도록 다시 정리했습니다.</p>
+  </header>
+
+  <section class="metrics" aria-label="반영 수량">
+    <div class="metric"><span>Flow Map</span><b>9개</b></div>
+    <div class="metric"><span>Child Flow</span><b>15개</b></div>
+    <div class="metric"><span>Step</span><b>70개</b></div>
+    <div class="metric"><span>대표 노출</span><b>0개</b></div>
+  </section>
+
+  <section class="notice">
+    <strong>검토 기준</strong>
+    사용자가 캘린더/시트/메모로 옮겼을 때 다시 계획을 짜지 않아도 되는가를 우선으로 봅니다. 원문에 없는 세부 동작은 만들지 않고, 원문 구조가 부족한 경우에는 Park 또는 revise로 남깁니다.
+  </section>
+
+  <nav class="jump" aria-label="콘텐츠 바로가기">
+    <a href="#funmom">펀맘</a>
+    <a href="#opic">오픽</a>
+    <a href="#baby-food">이유식</a>
+    <a href="#reading">독서</a>
+    <a href="#new-car">신차</a>
+    <a href="#vaccination">예방접종</a>
+    <a href="#moving">이사</a>
+    <a href="#wedding">결혼</a>
+    <a href="#workout">홈트</a>
+  </nav>
+
+  <details id="funmom" class="card" open>
+    <summary>
+      <div class="topline"><span>park / 1 Flow / 6 Step</span><span class="badge">1/9</span></div>
+      <h2>펀맘 월~토 한 장씩</h2>
+    </summary>
+    <div class="body">
+      <p class="summary">사이트 전체는 Park입니다. 다만 교육 서비스들이 일일 과제/스킬 플랜/짧은 반복으로 사용자 결정을 줄이는 방식처럼, 펀맘은 요일별 자료 큐로 바꾸는 게 현재 가장 덜 부담스럽습니다.</p>
+      <p class="path">앱 경로(서버 실행 시)<code>/flow-maps/curated-funmom-learning-park</code></p>
+      <div class="decision">
+        <p><strong>Flow Map:</strong> 펀맘 사이트 전체</p>
+        <p><strong>Flow:</strong> 월~토 출력 루틴 1개</p>
+        <p><strong>입력:</strong> 시작일 1개, 선택 자료 URL/나이/출력 여부</p>
+      </div>
+      <section class="flow">
+        <h3>펀맘 월~토 출력 루틴 <span class="dest">calendar + memo</span></h3>
+        <ol class="steps">
+          <li class="step"><div class="step-title"><span class="num">1</span>월: 색칠공부 한 장 출력</div><ul class="items"><li>색칠공부 카테고리에서 나이/수준 맞는 자료 1개 선택</li><li>자료 URL과 출력 여부만 저장</li><li>쉽게 끝냈는지/어려웠는지 한 줄 메모</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">2</span>화: 한글 글자/낱말 한 장 출력</div><ul class="items"><li>한글공부 카테고리에서 현재 익히는 글자나 낱말 1개 선택</li><li>헷갈린 글자 1개만 메모</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">3</span>수: 수학 수/연산 한 장 출력</div><ul class="items"><li>수학공부 카테고리에서 숫자/연산 자료 1개 선택</li><li>오답이 많으면 다음 주 같은 수준으로 표시</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">4</span>목: 영어 알파벳/단어 한 장 출력</div><ul class="items"><li>영어공부 카테고리에서 알파벳 또는 단어 자료 1개 선택</li><li>읽은 단어 1개와 어려운 단어 1개 메모</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">5</span>금: 미로찾기나 선긋기 한 장 출력</div><ul class="items"><li>미로찾기/선긋기 자료 1개 선택</li><li>혼자 끝냈는지 도움을 받았는지 표시</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">6</span>토: 이번 주 잘 맞은 자료 저장</div><ul class="items"><li>이번 주 출력물 중 반응 좋은 자료 URL 1~2개 저장</li><li>다음 주 시작 수준을 유지/상향/하향 중 하나로 표시</li></ul></li>
+        </ol>
+      </section>
+    </div>
+  </details>
+
+  <details id="opic" class="card" open>
+    <summary>
+      <div class="topline"><span>candidate / 2 Flow / 19 Step</span><span class="badge">2/9</span></div>
+      <h2>오픽 모의고사 2주/1달 계획표</h2>
+    </summary>
+    <div class="body">
+      <p class="summary">원문 XLSX에 있는 2주 코스와 1달 코스를 그대로 일정화했습니다. 각 회차 Step에는 오픽만수르 모의고사 재생목록 링크를 붙여 영상 매핑을 시작합니다.</p>
+      <p class="path">앱 경로(서버 실행 시)<code>/flow-maps/curated-opic-mock-course</code></p>
+      <section class="flow">
+        <h3>2주 모의고사 계획표 <span class="dest">calendar</span></h3>
+        <ol class="steps">
+          <li class="step"><div class="step-title"><span class="num">1</span>1일차: 1회차 연습</div><ul class="items"><li>1회차 영상 열기</li><li>한 회차를 멈추지 않고 말하기</li><li>오픽현타 &amp; 보완 칸에 막힌 표현 1개 기록</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">2</span>2일차: 2회차 연습</div><ul class="items"><li>2회차 영상 열기</li><li>2회차 복습 칸에 다시 말할 표현 1개 기록</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">3</span>3일차: 3회차 연습</div><ul class="items"><li>3회차 영상 열기</li><li>막힌 질문과 보완 표현 1개 기록</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">4</span>4일차: 4회차 연습</div><ul class="items"><li>4회차 영상 열기</li><li>4회차 복습 표현 1개 기록</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">5</span>5일차: 5회차 연습</div><ul class="items"><li>5회차 영상 열기</li><li>오픽현타 &amp; 보완 칸에 막힌 표현 1개 기록</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">6</span>6일차: 1~5회차 정리</div><ul class="items"><li>1~5회차 막힌 표현만 모아 보기</li><li>반복해서 막힌 주제 2개 표시</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">7</span>7일차: 휴식</div><ul class="items"><li>새 회차 추가 연습 없음</li><li>보완 표현만 5분 읽기</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">8</span>8일차: 6회차 연습</div><ul class="items"><li>6회차 영상 열기</li><li>6회차 복습 표현 1개 기록</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">9</span>9일차: 7회차 연습</div><ul class="items"><li>7회차 영상 열기</li><li>막힌 표현 1개 기록</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">10</span>10일차: 8회차 연습</div><ul class="items"><li>8회차 영상 열기</li><li>8회차 복습 표현 1개 기록</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">11</span>11일차: 9회차 연습</div><ul class="items"><li>9회차 영상 열기</li><li>막힌 표현 1개 기록</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">12</span>12일차: 10회차 연습</div><ul class="items"><li>10회차 영상 열기</li><li>10회차 복습 표현 1개 기록</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">13</span>13일차: 6~10회차 정리</div><ul class="items"><li>6~10회차 막힌 표현만 모아 보기</li><li>최종 보완 표현 3개 다시 말하기</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">14</span>14일차: 휴식</div><ul class="items"><li>2주간 보완 표현만 읽기</li><li>시험 전 다시 볼 회차 1개 표시</li></ul></li>
+        </ol>
+      </section>
+      <section class="flow">
+        <h3>1달 반복 계획 <span class="dest">hybrid</span></h3>
+        <ol class="steps">
+          <li class="step"><div class="step-title"><span class="num">1</span>1주차: 1~2회차를 3번씩 반복</div><ul class="items"><li>1회차 연습/복습/복습</li><li>2회차 연습/복습/복습</li><li>일요일 휴식</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">2</span>2주차: 3~4회차를 3번씩 반복</div><ul class="items"><li>3회차와 4회차를 같은 방식으로 반복</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">3</span>3주차: 5~6회차를 3번씩 반복</div><ul class="items"><li>5회차와 6회차 반복, 부족한 점 보완</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">4</span>4주차: 7~8회차를 3번씩 반복</div><ul class="items"><li>7회차와 8회차 반복, 일요일 휴식</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">5</span>마무리: 9~10회차를 3번씩 반복</div><ul class="items"><li>9회차와 10회차 반복</li><li>시험 전 다시 볼 회차 표시</li></ul></li>
+        </ol>
+      </section>
+    </div>
+  </details>
+
+  <details id="baby-food" class="card" open>
+    <summary>
+      <div class="topline"><span>revise / 2 Flow / 2 Step</span><span class="badge">3/9</span></div>
+      <h2>이유식 식단표 기록</h2>
+    </summary>
+    <div class="body">
+      <p class="summary">식단 추천을 새로 만들지 않습니다. 아직 전체 식단표 row를 다 옮기지 않았으므로, 현재 앱 데이터는 오늘 식단 기록과 큐브 재고 기록만 유지합니다.</p>
+      <p class="path">앱 경로(서버 실행 시)<code>/flow-maps/curated-baby-food-meal-log</code></p>
+      <section class="flow"><h3>오늘 이유식 식단 기록 <span class="dest">sheet</span></h3><ol class="steps"><li class="step"><div class="step-title"><span class="num">1</span>오늘 식단표 기록</div><ul class="items"><li>원문 식단표의 오늘 D+n 항목 확인</li><li>먹은 양 기록</li><li>알레르기 O/X와 문의 필요 여부만 기록</li></ul></li></ol></section>
+      <section class="flow"><h3>이유식 큐브 재고 기록 <span class="dest">sheet</span></h3><ol class="steps"><li class="step"><div class="step-title"><span class="num">1</span>큐브 재고 기록</div><ul class="items"><li>재료명</li><li>남은 수량 또는 칸 수</li><li>만든 날짜와 보류 메모</li></ul></li></ol></section>
+    </div>
+  </details>
+
+  <details id="reading" class="card" open>
+    <summary>
+      <div class="topline"><span>candidate / 1 Flow / 8 Step</span><span class="badge">4/9</span></div>
+      <h2>월 4권 독서 기록 루틴</h2>
+    </summary>
+    <div class="body">
+      <p class="summary">독서 기록장은 단순 로그로 두면 사용자가 다시 계획을 짜야 합니다. 그래서 한 달에 4권을 미리 놓고 매주 한 권씩 완료하는 실행 루틴으로 바꿨습니다.</p>
+      <p class="path">앱 경로(서버 실행 시)<code>/flow-maps/curated-reading-routine-log</code></p>
+      <section class="flow">
+        <h3>월 4권 독서 기록 루틴 <span class="dest">calendar + sheet</span></h3>
+        <ol class="steps">
+          <li class="step"><div class="step-title"><span class="num">1</span>1일차: 이번 달 책 4권 고르기</div><ul class="items"><li>읽을 책 4권 제목 기록</li><li>종이책/전자책/도서관 위치 표시</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">2</span>1주차 시작: 1권 읽기 시작</div><ul class="items"><li>첫 책 30분 읽기</li><li>읽은 페이지 또는 챕터 표시</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">3</span>1주차 중간: 기억할 문장 남기기</div><ul class="items"><li>기억할 문장 1개</li><li>왜 남겼는지 한 줄</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">4</span>1주차 마감: 1권 기록 완료</div><ul class="items"><li>책 제목과 완료일</li><li>한 줄 감상</li><li>다음 책으로 넘어가기</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">5</span>2주차: 2권 기록 완료</div><ul class="items"><li>두 번째 책 완료일</li><li>한 줄 감상</li><li>못 끝내면 다음 주로 보류 표시</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">6</span>3주차: 3권 기록 완료</div><ul class="items"><li>세 번째 책 완료일</li><li>한 줄 감상</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">7</span>4주차: 4권 기록 완료</div><ul class="items"><li>네 번째 책 완료일</li><li>이번 달 가장 좋았던 책 1권 표시</li></ul></li>
+          <li class="step"><div class="step-title"><span class="num">8</span>월말: 완료 권수 합계</div><ul class="items"><li>완료한 책 권수</li><li>다음 달 후보 1권</li></ul></li>
+        </ol>
+      </section>
+    </div>
+  </details>
+
+  <details id="new-car" class="card" open>
+    <summary>
+      <div class="topline"><span>candidate / 1 Flow / 7 Step</span><span class="badge">5/9</span></div>
+      <h2>신차 구매 7단계 체크리스트</h2>
+    </summary>
+    <div class="body">
+      <p class="summary">원문 절차가 명확해서 그대로 checklist/hybrid 후보로 유지합니다. 금융상품 추천이나 가격 판단은 만들지 않습니다.</p>
+      <p class="path">앱 경로(서버 실행 시)<code>/flow-maps/curated-new-car-purchase-guide</code></p>
+      <section class="flow"><h3>신차 구매 기본형 <span class="dest">internal check</span></h3><ol class="steps">
+        <li class="step"><div class="step-title"><span class="num">1</span>예산과 차량 선택</div><ul class="items"><li>예산 범위</li><li>후보 차량</li><li>필수 조건</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">2</span>구매 방식 결정</div><ul class="items"><li>구매 방식 후보</li><li>확인할 조건</li><li>문의한 내용</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">3</span>견적과 협상 메모</div><ul class="items"><li>딜러/채널</li><li>견적 링크 또는 메모</li><li>포함 조건</li><li>추가 문의</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">4</span>계약 확인</div><ul class="items"><li>계약서 확인</li><li>계약금 여부</li><li>남은 문의</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">5</span>출고와 검수</div><ul class="items"><li>출고 예정일</li><li>검수 확인</li><li>인수 보류 여부</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">6</span>등록 확인</div><ul class="items"><li>등록 진행 여부</li><li>번호판/서류 확인</li><li>보류 사항</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">7</span>보험 가입 확인</div><ul class="items"><li>보험 가입 여부</li><li>보험 시작일</li><li>확인 메모</li></ul></li>
+      </ol></section>
+    </div>
+  </details>
+
+  <details id="vaccination" class="card" open>
+    <summary>
+      <div class="topline"><span>revise / 2 Flow / 10 Step</span><span class="badge">6/9</span></div>
+      <h2>아이 예방접종 일정표</h2>
+    </summary>
+    <div class="body">
+      <p class="summary">더 잘하려면 하나의 긴 표가 아니라 생년월일 기준 공식 일정 Flow 두 개로 나누고, 각 알림에 접종 항목과 병원 확인 메모를 같이 넣는 방식이 맞습니다.</p>
+      <p class="path">앱 경로(서버 실행 시)<code>/flow-maps/curated-child-vaccination-schedule</code></p>
+      <section class="flow"><h3>출생~12개월 예방접종 확인 <span class="dest">calendar</span></h3><ol class="steps">
+        <li class="step"><div class="step-title"><span class="num">1</span>출생~4주 접종 확인</div><ul class="items"><li>B형간염 1차</li><li>BCG 1회</li><li>병원/보건소 확인</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">2</span>1개월 접종 확인</div><ul class="items"><li>B형간염 2차</li><li>병원/보건소 확인</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">3</span>2개월 접종 확인</div><ul class="items"><li>DTaP 1차</li><li>IPV 1차</li><li>Hib 1차</li><li>PCV 1차</li><li>RV 1차</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">4</span>4개월 접종 확인</div><ul class="items"><li>DTaP 2차</li><li>IPV 2차</li><li>Hib 2차</li><li>PCV 2차</li><li>RV 2차</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">5</span>6개월 접종 확인</div><ul class="items"><li>B형간염 3차</li><li>DTaP 3차</li><li>IPV 3차</li><li>Hib 3차</li><li>PCV 3차</li><li>RV 3차</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">6</span>12~15개월 접종 확인</div><ul class="items"><li>MMR 1차</li><li>수두 1차</li><li>HepA 1차</li><li>Hib/PCV 추가</li><li>일본뇌염 일정 확인</li></ul></li>
+      </ol></section>
+      <section class="flow"><h3>추가접종과 학령기 일정 <span class="dest">calendar</span></h3><ol class="steps">
+        <li class="step"><div class="step-title"><span class="num">1</span>15~18개월 추가접종 확인</div><ul class="items"><li>DTaP 4차</li><li>Hib 추가</li><li>PCV 추가</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">2</span>24~35개월 추가접종 확인</div><ul class="items"><li>일본뇌염 추가 일정 확인</li><li>병원/보건소 확인</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">3</span>4~6세 추가접종 확인</div><ul class="items"><li>DTaP 5차</li><li>IPV 4차</li><li>MMR 2차</li><li>일본뇌염 추가</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">4</span>11~12세 접종 확인</div><ul class="items"><li>Tdap/Td</li><li>HPV 대상 여부 확인</li><li>일본뇌염 추가</li></ul></li>
+      </ol></section>
+    </div>
+  </details>
+
+  <details id="moving" class="card" open>
+    <summary>
+      <div class="topline"><span>candidate / 1 Flow / 5 Step</span><span class="badge">7/9</span></div>
+      <h2>이사 D-30 체크리스트</h2>
+    </summary>
+    <div class="body">
+      <p class="summary">원문 구조가 D-day와 잘 맞아서 그대로 유지합니다.</p>
+      <p class="path">앱 경로(서버 실행 시)<code>/flow-maps/curated-ajd-moving-d30</code></p>
+      <section class="flow"><h3>이사 D-30 준비 <span class="dest">hybrid</span></h3><ol class="steps">
+        <li class="step"><div class="step-title"><span class="num">1</span>D-30: 이사 방식과 견적 예약</div><ul class="items"><li>이사 방식 확인</li><li>견적 후보 메모</li><li>업체 연락처 메모</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">2</span>D-10: 주소 변경과 예약 상태 확인</div><ul class="items"><li>주소 변경 대상 확인</li><li>자동이체 확인</li><li>이사 예약 상태 확인</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">3</span>D-3: 장비와 서류 확인</div><ul class="items"><li>장비/준비물 확인</li><li>필요 서류 확인</li><li>문의 필요 항목 표시</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">4</span>D-1: 최종 점검</div><ul class="items"><li>짐/귀중품 확인</li><li>요금/전기문 확인</li><li>이사 당일 연락처 확인</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">5</span>D-Day: 정산과 전입 관련 확인</div><ul class="items"><li>정산 확인</li><li>전입 관련 확인</li><li>현장 보류 사항 메모</li></ul></li>
+      </ol></section>
+    </div>
+  </details>
+
+  <details id="wedding" class="card" open>
+    <summary>
+      <div class="topline"><span>candidate / 2 Flow / 10 Step</span><span class="badge">8/9</span></div>
+      <h2>결혼 준비 체크리스트 2버전</h2>
+    </summary>
+    <div class="body">
+      <p class="summary">두 원문을 섞지 않고 Naver 타임라인과 Gongysd A-to-Z를 별도 child Flow로 둡니다. 반복 문구는 실제 준비 항목으로 바꿨습니다.</p>
+      <p class="path">앱 경로(서버 실행 시)<code>/flow-maps/curated-wedding-checklist-family</code></p>
+      <section class="flow"><h3>결혼 준비 1년 타임라인 <span class="dest">hybrid</span></h3><ol class="steps">
+        <li class="step"><div class="step-title"><span class="num">1</span>D-12개월: 예산과 웨딩홀 후보 정하기</div><ul class="items"><li>예산 범위</li><li>웨딩홀 후보 2~3곳</li><li>상견례/택일 보류 여부</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">2</span>D-10개월: 스드메와 촬영 후보 잡기</div><ul class="items"><li>스튜디오/드레스/메이크업 후보</li><li>상담 또는 예약 메모</li><li>비교가 필요한 항목</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">3</span>D-7개월: 신혼여행과 예물 후보 정리</div><ul class="items"><li>신혼여행 후보지</li><li>예물/예복 확인 메모</li><li>결정 전 남은 문의</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">4</span>D-6개월: 촬영과 본식 준비 확정</div><ul class="items"><li>촬영 일정 확인</li><li>본식 스냅/영상 후보</li><li>확정/보류 상태</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">5</span>D-3개월: 청첩장과 식순 준비</div><ul class="items"><li>청첩장 발송 대상</li><li>식순/사회자/축가 메모</li><li>남은 문의</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">6</span>D-1개월: 최종 인원과 당일 동선 확인</div><ul class="items"><li>최종 인원</li><li>당일 동선/연락처</li><li>당일 문의</li></ul></li>
+      </ol></section>
+      <section class="flow"><h3>결혼 준비 A-to-Z <span class="dest">sheet</span></h3><ol class="steps">
+        <li class="step"><div class="step-title"><span class="num">1</span>웨딩홀 확인</div><ul class="items"><li>후보</li><li>견적/예약 메모</li><li>완료/보류 상태</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">2</span>상견례 확인</div><ul class="items"><li>일정</li><li>장소</li><li>완료/보류 상태</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">3</span>플래너 확인</div><ul class="items"><li>후보</li><li>상담 메모</li><li>완료/보류 상태</li></ul></li>
+        <li class="step"><div class="step-title"><span class="num">4</span>스드메 확인</div><ul class="items"><li>스튜디오</li><li>드레스</li><li>메이크업</li><li>완료/보류 상태</li></ul></li>
+      </ol></section>
+    </div>
+  </details>
+
+  <details id="workout" class="card" open>
+    <summary>
+      <div class="topline"><span>candidate / 3 Flow / 3 Step</span><span class="badge">9/9</span></div>
+      <h2>Allblanc 영상별 홈트 루틴</h2>
+    </summary>
+    <div class="body">
+      <p class="summary">채널 전체는 Park가 맞지만, 영상 하나는 루틴 하나가 될 수 있습니다. 불필요한 운동 처방을 만들지 않고 제목, URL, 운동 요약, 반복 요일만 둡니다.</p>
+      <p class="path">앱 경로(서버 실행 시)<code>/flow-maps/curated-allblanc-workout-park</code></p>
+      <section class="flow"><h3>Allblanc 아침 5분 홈트 <span class="dest">calendar</span></h3><ol class="steps"><li class="step"><div class="step-title"><span class="num">1</span>월/수/금 아침 5분 영상 실행</div><ul class="items"><li>영상: 5 MIN HOME WORKOUT YOU CAN DO EVERY MORNING</li><li>URL: https://www.youtube.com/watch?v=fLLScgWQcHc</li><li>요약: 아침 5분 전신 홈트</li></ul></li></ol></section>
+      <section class="flow"><h3>Allblanc 노점프 유산소 <span class="dest">calendar</span></h3><ol class="steps"><li class="step"><div class="step-title"><span class="num">1</span>화/목 노점프 유산소 실행</div><ul class="items"><li>영상: NO JUMPING CARDIO WORKOUT</li><li>URL: https://www.youtube.com/watch?v=2dail5Imi04</li><li>요약: 층간소음 부담이 낮은 유산소</li></ul></li></ol></section>
+      <section class="flow"><h3>Allblanc 하체 홈트 <span class="dest">calendar</span></h3><ol class="steps"><li class="step"><div class="step-title"><span class="num">1</span>토요일 하체 홈트 실행</div><ul class="items"><li>영상: Allblanc lower body workout</li><li>URL: https://www.youtube.com/watch?v=UEPkHmW_2FU</li><li>요약: 하체 중심 홈트</li></ul></li></ol></section>
+    </div>
+  </details>
+
+  <section class="files">
+    <p><strong>반영 파일</strong></p>
+    <p>앱 데이터: <code>lib/flow/source-backed-curated-260630.ts</code></p>
+    <p>데이터 테스트: <code>lib/flow/source-backed-my-flow.test.ts</code></p>
+    <p>이 HTML: <code>docs/content-audit/2026-06-30-curated-source-flow-app-expansion-ko.html</code></p>
+  </section>
+</article>
+</body>
+</html>

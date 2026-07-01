@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe 제품 라우트 IA v2 설계와 저장 후 실행 시뮬레이션</title>
+  </head>
+  <body style="margin:0;background:#f5f7fb;color:#111827;font-family:Arial,'Noto Sans KR',sans-serif;line-height:1.65;">
+    <article style="max-width:1040px;margin:0 auto;padding:32px 20px 56px;">
+      <header style="padding:28px 24px;border:1px solid #dbe3ef;border-radius:18px;background:#ffffff;">
+        <p style="margin:0 0 10px;color:#2563eb;font-size:14px;font-weight:700;">2026-06-29 · 제품 라우트 IA v2 · 폐기된 중간 결론</p>
+        <h1 style="margin:0;font-size:34px;line-height:1.25;letter-spacing:0;">3탭 기준선은 IA v3 4탭으로 수정됨</h1>
+        <p style="margin:14px 0 0;color:#4b5563;font-size:16px;">
+          실험 PoC가 아니라 실제 제품 라우트 <strong>/</strong>, <strong>/flows</strong>, <strong>/my</strong>에 적용 가능한 구조를 기준으로
+          저장 전 탐색과 저장 후 실행 여정을 다시 정리했다. 사용자 화면에는 내부 평가 문구를 줄이고, 이 문서는 검토용 리포트로 분리한다.
+        </p>
+        <p style="margin:12px 0 0;padding:12px;border-radius:12px;background:#fff7ed;color:#9a3412;font-size:14px;font-weight:700;">
+          정정: 이후 사용자 피드백에 따라 캘린더는 글로벌 탭으로 승격했다. 현재 기준은 홈 / Flow 찾기 / 캘린더 / 내 Flow이며, 최신 기준은 SERVICE_STRUCTURE.md와 2026-06-29-service-remaining-work-closure-ko.html을 따른다.
+        </p>
+      </header>
+
+      <section style="margin-top:20px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;">
+        <div style="padding:18px;border:1px solid #dbe3ef;border-radius:14px;background:#ffffff;">
+          <p style="margin:0;color:#6b7280;font-size:13px;font-weight:700;">결정</p>
+          <h2 style="margin:6px 0 0;font-size:20px;">4탭으로 정정</h2>
+          <p style="margin:8px 0 0;color:#4b5563;font-size:14px;">홈 / Flow 찾기 / 캘린더 / 내 Flow를 기본 프레임으로 둔다.</p>
+        </div>
+        <div style="padding:18px;border:1px solid #dbe3ef;border-radius:14px;background:#ffffff;">
+          <p style="margin:0;color:#6b7280;font-size:13px;font-weight:700;">캘린더</p>
+          <h2 style="margin:6px 0 0;font-size:20px;">글로벌 탭</h2>
+          <p style="margin:8px 0 0;color:#4b5563;font-size:14px;">저장된 날짜 항목을 바로 보는 실행 표면으로 승격한다.</p>
+        </div>
+        <div style="padding:18px;border:1px solid #dbe3ef;border-radius:14px;background:#ffffff;">
+          <p style="margin:0;color:#6b7280;font-size:13px;font-weight:700;">언어</p>
+          <h2 style="margin:6px 0 0;font-size:20px;">내부 용어 축소</h2>
+          <p style="margin:8px 0 0;color:#4b5563;font-size:14px;">일반 화면에서는 Flow Map, Step 대신 큰 흐름, 항목, 일정, 체크를 쓴다.</p>
+        </div>
+      </section>
+
+      <section style="margin-top:20px;padding:24px;border:1px solid #dbe3ef;border-radius:18px;background:#ffffff;">
+        <h2 style="margin:0 0 12px;font-size:24px;">IA v2 역할 분리</h2>
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+          <thead>
+            <tr>
+              <th style="padding:12px;border-bottom:1px solid #e5e7eb;text-align:left;color:#374151;">영역</th>
+              <th style="padding:12px;border-bottom:1px solid #e5e7eb;text-align:left;color:#374151;">역할</th>
+              <th style="padding:12px;border-bottom:1px solid #e5e7eb;text-align:left;color:#374151;">이번 기준</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:12px;border-bottom:1px solid #eef2f7;font-weight:700;">홈</td>
+              <td style="padding:12px;border-bottom:1px solid #eef2f7;">서비스 약속과 대표 시작점</td>
+              <td style="padding:12px;border-bottom:1px solid #eef2f7;">전체 카탈로그처럼 만들지 않고, 원룸 이사와 보조 시작점만 노출한다.</td>
+            </tr>
+            <tr>
+              <td style="padding:12px;border-bottom:1px solid #eef2f7;font-weight:700;">Flow 찾기</td>
+              <td style="padding:12px;border-bottom:1px solid #eef2f7;">저장할 콘텐츠 탐색</td>
+              <td style="padding:12px;border-bottom:1px solid #eef2f7;">여러 항목 저장 후보와 바로 실행 후보를 분리하되, 사용자가 내부 구조 용어를 외우게 하지 않는다.</td>
+            </tr>
+            <tr>
+              <td style="padding:12px;border-bottom:1px solid #eef2f7;font-weight:700;">내 Flow</td>
+              <td style="padding:12px;border-bottom:1px solid #eef2f7;">저장 후 실행 공간</td>
+              <td style="padding:12px;border-bottom:1px solid #eef2f7;">오늘을 기본으로 두고, 캘린더는 두 번째 로컬 탭, Flow는 저장 구조 관리로 둔다.</td>
+            </tr>
+            <tr>
+              <td style="padding:12px;font-weight:700;">상세 화면</td>
+              <td style="padding:12px;">저장 전 미리보기와 입력</td>
+              <td style="padding:12px;">저장 직후에는 첫 실행 항목을 열고, dated content는 전체 일정 보기로 연결한다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section style="margin-top:20px;padding:24px;border:1px solid #dbe3ef;border-radius:18px;background:#ffffff;">
+        <h2 style="margin:0 0 12px;font-size:24px;">대표 3개 저장 후 실행 시뮬레이션</h2>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;">
+          <div style="padding:16px;border:1px solid #e5e7eb;border-radius:14px;background:#f8fafc;">
+            <p style="margin:0;color:#2563eb;font-size:13px;font-weight:700;">원룸 이사 D-30</p>
+            <h3 style="margin:8px 0 0;font-size:18px;">날짜형 큰 흐름</h3>
+            <p style="margin:8px 0 0;color:#4b5563;font-size:14px;">
+              사용자가 이사일을 입력하고 전체 저장한다. 저장 후 5개 항목이 내 Flow에 들어가고, 첫 항목을 바로 열 수 있으며 전체 일정은 캘린더 카드로 확인한다.
+            </p>
+          </div>
+          <div style="padding:16px;border:1px solid #e5e7eb;border-radius:14px;background:#f8fafc;">
+            <p style="margin:0;color:#2563eb;font-size:13px;font-weight:700;">중1 수학 목차 진도</p>
+            <h3 style="margin:8px 0 0;font-size:18px;">진도형 큰 흐름</h3>
+            <p style="margin:8px 0 0;color:#4b5563;font-size:14px;">
+              사용자가 전체 목차를 저장한다. 저장 후 8개 항목이 생기고, 첫 항목 상세를 같은 자리에서 열어 하위 체크 내용을 확인한다.
+            </p>
+          </div>
+          <div style="padding:16px;border:1px solid #e5e7eb;border-radius:14px;background:#f8fafc;">
+            <p style="margin:0;color:#2563eb;font-size:13px;font-weight:700;">전세계약 전 서류 체크</p>
+            <h3 style="margin:8px 0 0;font-size:18px;">바로 실행 Flow</h3>
+            <p style="margin:8px 0 0;color:#4b5563;font-size:14px;">
+              공개 Flow를 저장한 뒤 내 Flow에서 동일한 실행 공간으로 진입한다. 단일 Flow도 별도 검토 문구 없이 실행 항목으로 보여야 한다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section style="margin-top:20px;padding:24px;border:1px solid #dbe3ef;border-radius:18px;background:#ffffff;">
+        <h2 style="margin:0 0 12px;font-size:24px;">이번 수정 내용</h2>
+        <ul style="margin:0;padding-left:20px;color:#374151;">
+          <li>홈 문구를 “콘텐츠를 일정과 할 일로 저장”으로 바꿔 서비스 약속을 더 직접적으로 표현했다.</li>
+          <li>Flow 찾기에서 “Flow Map”, “단일 Flow” 같은 내부 구분을 줄이고 “여러 항목을 한 번에 저장”, “바로 실행”으로 바꿨다.</li>
+          <li>내 Flow 저장 직후 화면에서 “Step”을 “항목”으로 바꾸고, 첫 항목 열기와 전체 일정 보기의 역할을 분리했다.</li>
+          <li>정정 후 서비스 구조 문서에는 IA v3 4탭 기준선을 남겼다.</li>
+        </ul>
+      </section>
+
+      <section style="margin-top:20px;padding:24px;border:1px solid #dbe3ef;border-radius:18px;background:#ffffff;">
+        <h2 style="margin:0 0 12px;font-size:24px;">검증 결과</h2>
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+          <tbody>
+            <tr>
+              <td style="width:220px;padding:12px;border-bottom:1px solid #eef2f7;font-weight:700;">docs:check</td>
+              <td style="padding:12px;border-bottom:1px solid #eef2f7;">통과 · required files 14개, local links 1174개 확인</td>
+            </tr>
+            <tr>
+              <td style="padding:12px;border-bottom:1px solid #eef2f7;font-weight:700;">build</td>
+              <td style="padding:12px;border-bottom:1px solid #eef2f7;">통과 · Next.js production build 성공</td>
+            </tr>
+            <tr>
+              <td style="padding:12px;font-weight:700;">Playwright 대표 여정</td>
+              <td style="padding:12px;">통과 · 홈, Flow 찾기, 원룸 이사 저장, 중1 수학 저장, 전세 저장 포함 6개 테스트 통과</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section style="margin-top:20px;padding:24px;border:1px solid #dbe3ef;border-radius:18px;background:#ffffff;">
+        <h2 style="margin:0 0 12px;font-size:24px;">남은 판단</h2>
+        <ol style="margin:0;padding-left:20px;color:#374151;">
+          <li>홈은 아직 실제 사용량, 리뷰, 제작자 신뢰 신호가 부족하다. 대표 콘텐츠 품질이 늘면 다시 다듬어야 한다.</li>
+          <li>캘린더 글로벌 탭은 승격했다. 다만 실제 저장 콘텐츠가 적을 때 빈 탭처럼 느껴지는지는 계속 봐야 한다.</li>
+          <li>중1 수학은 진도형 예시로 유지 가능하지만, 원문 기반 하위 항목 품질은 다음 콘텐츠 심사에서 계속 검증해야 한다.</li>
+          <li>사용자 화면과 제작자/검토 화면 분리는 유지해야 한다. 제작자 publish gate는 별도 목표로 다루는 것이 맞다.</li>
+        </ol>
+      </section>
+    </article>
+  </body>
+</html>

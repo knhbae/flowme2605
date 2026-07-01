@@ -1,0 +1,2280 @@
+{
+  "schemaVersion": 1,
+  "artifactType": "source_to_flow_development_handoff",
+  "generatedAt": "2026-06-30T00:00:00.000Z",
+  "language": "ko",
+  "status": "planning_data_only_not_app_implementation",
+  "targetContracts": [
+    "SourceBackedMyFlowMap",
+    "SourceBackedFlowMapPublishPackage",
+    "SourceBackedFlowMapStepBinding",
+    "FlowBundle"
+  ],
+  "globalRules": {
+    "hierarchy": "Flow Map > Flow > Step > Item",
+    "stepContract": [
+      "stepId",
+      "title",
+      "destination",
+      "calendar",
+      "textFallback",
+      "sourceUrl",
+      "sourceType",
+      "riskLevel"
+    ],
+    "itemRule": "Item은 Step 안의 체크/메모/fallback 줄이다. 원문이 별도 일정 단위로 제공하지 않는 한 독립 Step으로 승격하지 않는다.",
+    "userInputBoundary": "사용자 입력은 날짜, 선택값, 완료 상태, 짧은 메모 수준으로 제한한다.",
+    "sourceBoundary": "원문에 없는 단계, 일정, 효과, 판단을 만들지 않는다.",
+    "publicReadinessRule": "implementationStatus가 ready_to_seed가 아닌 record는 public representative로 노출하지 않는다."
+  },
+  "records": [
+    {
+      "map": {
+        "id": "curated-funmom-learning-park",
+        "title": "?? ? ?? ??? ??? ???",
+        "userLabel": "?? ??? ???",
+        "version": "2026-06-30.1",
+        "updatedAt": "2026-06-30T00:00:00.000Z",
+        "candidateStatus": "park",
+        "homepageEligible": false,
+        "directRouteEnabled": false,
+        "implementationStatus": "park_skeleton_category_rows_observed",
+        "updatePolicy": "review_before_apply",
+        "source": {
+          "title": "펀맘 육아 공부 컨텐츠방",
+          "url": "https://funmom.tistory.com/",
+          "sourceType": "creator_experience",
+          "sourcePrecision": "broad",
+          "sourceCheckedAt": "2026-06-29",
+          "observedCategories": [
+            "????",
+            "??????",
+            "????",
+            "????",
+            "????",
+            "??? ???",
+            "??? ??"
+          ]
+        },
+        "setupInput": {
+          "label": "아이 나이",
+          "type": "text",
+          "anchorType": "none",
+          "hint": "원문 글에 대상 나이가 표시된 경우에만 필터에 사용한다."
+        },
+        "artifacts": [
+          "category_picker",
+          "source_link_sheet",
+          "weekly_print_memo"
+        ],
+        "doNotBuild": [
+          "사이트 전체를 단일 Flow로 만들지 않는다.",
+          "원문에 없는 연령 순서나 발달 단계를 만들지 않는다.",
+          "학습 효과를 보장하지 않는다."
+        ]
+      },
+      "flows": [
+        {
+          "flowId": "flow-curated-funmom-weekly-print-picker",
+          "slug": "curated-funmom-weekly-print-picker",
+          "title": "?? ?????? ?? ? ?? 1? ???",
+          "category": "??/??",
+          "structureType": "checklist",
+          "anchorType": "none",
+          "primaryDestination": "memo",
+          "riskLevel": "low",
+          "sourceTitle": "?? ?? ?? ????",
+          "sourceUrl": "https://funmom.tistory.com/",
+          "sourceCheckedAt": "2026-06-29",
+          "sections": [
+            {
+              "id": "funmom-observed-categories",
+              "title": "??? ????",
+              "order": 0
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "funmom-coloring",
+              "title": "???? ?? ???",
+              "destination": "memo",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "low",
+              "sourceUrl": "https://funmom.tistory.com/",
+              "textFallback": {
+                "title": "???? ?? ???",
+                "description": "???? ?????? ?? ?? ? ? ??? ???.",
+                "items": [
+                  "?? ??",
+                  "?? URL",
+                  "??? ??"
+                ],
+                "memoHint": "??/??/??/??/?? ? ?? ??? ??? ??? ??",
+                "doneWhen": "???? ?? 1?? ????."
+              }
+            },
+            {
+              "stepId": "funmom-maze",
+              "title": "???? ?? ???",
+              "destination": "memo",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "low",
+              "sourceUrl": "https://funmom.tistory.com/",
+              "textFallback": {
+                "title": "???? ?? ???",
+                "description": "?????? ?????? ???/???/??/??? ?? ? ??? ???.",
+                "items": [
+                  "?? ??",
+                  "?? URL",
+                  "??? ??"
+                ],
+                "memoHint": "?? ???? ?? ??? ??",
+                "doneWhen": "???? ?? 1?? ????."
+              }
+            },
+            {
+              "stepId": "funmom-hangul",
+              "title": "???? ?? ???",
+              "destination": "memo",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "low",
+              "sourceUrl": "https://funmom.tistory.com/",
+              "textFallback": {
+                "title": "???? ?? ???",
+                "description": "????, ???? ???? ? ?? ? ???? ??? ???.",
+                "items": [
+                  "?? ??",
+                  "?? URL",
+                  "?? ??"
+                ],
+                "memoHint": "?? ??? ??? ??? ??",
+                "doneWhen": "???? ?? 1?? ????."
+              }
+            },
+            {
+              "stepId": "funmom-math",
+              "title": "???? ?? ???",
+              "destination": "memo",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "low",
+              "sourceUrl": "https://funmom.tistory.com/",
+              "textFallback": {
+                "title": "???? ?? ???",
+                "description": "????, ??? ???, ?? ??? ? ?? ?? ? ??? ???.",
+                "items": [
+                  "?? ??",
+                  "?? URL",
+                  "?? ?? ?? ??"
+                ],
+                "memoHint": "??? ?? ?? ??/??? ??",
+                "doneWhen": "???? ?? 1?? ????."
+              }
+            },
+            {
+              "stepId": "funmom-english",
+              "title": "???? ?? ???",
+              "destination": "memo",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "low",
+              "sourceUrl": "https://funmom.tistory.com/",
+              "textFallback": {
+                "title": "???? ?? ???",
+                "description": "??? ???, ?? ???? ? ?? ?? ? ??? ???.",
+                "items": [
+                  "?? ??",
+                  "?? URL",
+                  "?? ??"
+                ],
+                "memoHint": "???? ??? ??? ??",
+                "doneWhen": "???? ?? 1?? ????."
+              }
+            },
+            {
+              "stepId": "funmom-template",
+              "title": "??? ???/?? ?? ???",
+              "destination": "memo",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "low",
+              "sourceUrl": "https://funmom.tistory.com/",
+              "textFallback": {
+                "title": "??? ???/?? ?? ???",
+                "description": "??????, ???, ????? ?? ??? ?? Step? ??? ?? ???? ??.",
+                "items": [
+                  "?? ??",
+                  "?? URL",
+                  "???"
+                ],
+                "memoHint": "???, ???",
+                "doneWhen": "?? ? ? ?? 1?? ????."
+              }
+            }
+          ]
+        }
+      ],
+      "developerNotes": [
+        "??? ??? Park?.",
+        "? seed? ???? ??? ?? ? ??? ?? ?? row? ??? ? ???.",
+        "???? ??? ????? ?????? ??? ? ??? ??? ?????? ?? ???? ??."
+      ]
+    },
+    {
+      "map": {
+        "id": "curated-opic-mock-course",
+        "title": "?? ???? ?? ???",
+        "userLabel": "?? ???? ??",
+        "version": "2026-06-30.1",
+        "updatedAt": "2026-06-30T00:00:00.000Z",
+        "candidateStatus": "candidate",
+        "homepageEligible": false,
+        "directRouteEnabled": true,
+        "implementationStatus": "ready_to_seed_with_xlsx_row_import",
+        "updatePolicy": "review_before_apply",
+        "source": {
+          "title": "오픽 모의고사 공부 방법",
+          "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+          "sourceType": "creator_experience",
+          "sourcePrecision": "exact",
+          "sourceCheckedAt": "2026-06-29",
+          "attachments": [
+            {
+              "type": "xlsx",
+              "sheets": [
+                {
+                  "name": "1달 코스",
+                  "range": "A1:Q30",
+                  "sourceShape": "10회차를 3회 반복하는 학습표"
+                },
+                {
+                  "name": "2주 코스",
+                  "range": "A1:Q15",
+                  "sourceShape": "하루 2회차 학습표"
+                }
+              ]
+            }
+          ],
+          "articleSignals": [
+            "??? ???",
+            "???? ?? ??/?? ? ??",
+            "?? ?? ?? ?? ??",
+            "???? ??? ??",
+            "????? ??",
+            "?? ?? ???",
+            "?? ?? ?? ??"
+          ]
+        },
+        "setupInput": {
+          "label": "시작일",
+          "type": "date",
+          "anchorType": "start_date",
+          "hint": "선택한 코스의 1일차를 이 날짜에 배치한다."
+        },
+        "secondaryInput": {
+          "label": "코스",
+          "type": "select",
+          "options": [
+            "2주 코스",
+            "1달 코스"
+          ]
+        },
+        "artifacts": [
+          "calendar",
+          "mock_test_review_sheet",
+          "text_fallback"
+        ],
+        "doNotBuild": [
+          "시험 접수 일정은 원문에 없으므로 넣지 않는다.",
+          "예상 등급이나 점수 보장을 넣지 않는다.",
+          "원문 XLSX에 없는 주제 스크립트를 만들지 않는다."
+        ]
+      },
+      "flows": [
+        {
+          "flowId": "flow-curated-opic-single-mock-review",
+          "slug": "curated-opic-single-mock-review",
+          "title": "???? ?? 1? ?? Flow",
+          "category": "??/???",
+          "structureType": "checklist",
+          "anchorType": "start_date",
+          "primaryDestination": "hybrid",
+          "riskLevel": "low",
+          "sourceTitle": "?? ???? ?? ??",
+          "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+          "sourceCheckedAt": "2026-06-29",
+          "sections": [
+            {
+              "id": "opic-single-mock",
+              "title": "???? 1? ??",
+              "order": 0
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "opic-plan-source-video",
+              "title": "???? ??? ?? ??",
+              "destination": "sheet",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "low",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "textFallback": {
+                "title": "???? ??? ?? ??",
+                "description": "??? ?? ??? ?? ?? ?? ????? ????.",
+                "items": [
+                  "?? ??/URL",
+                  "?? ??",
+                  "?? ??"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "?? ?? ??? ??? ????."
+              }
+            },
+            {
+              "stepId": "opic-check-test-screen-diff",
+              "title": "?? ?? ?? ?? ????",
+              "destination": "memo",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "low",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "textFallback": {
+                "title": "?? ?? ?? ?? ????",
+                "description": "???? ???? ??? ?? ?? ?? ??? ?? ?? ????? ????.",
+                "items": [
+                  "??? ??",
+                  "Replay/Next",
+                  "?? ??"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "?? ?? ?? ??? ???."
+              }
+            },
+            {
+              "stepId": "opic-run-and-record",
+              "title": "???? ???? ????",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "start_date",
+                "dayOffset": 0,
+                "allDay": false
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "low",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "textFallback": {
+                "title": "???? ???? ????",
+                "description": "?? ??? ???? ?? ? ??? ????.",
+                "items": [
+                  "?? ?? URL",
+                  "?? ??",
+                  "?? ??"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "???? 1?? ??? ???."
+              }
+            },
+            {
+              "stepId": "opic-write-bad-moment",
+              "title": "?? ??? ??? ? ??",
+              "destination": "sheet",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "low",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "textFallback": {
+                "title": "?? ??? ??? ? ??",
+                "description": "?? ??? ????/??? ? ??? ?? row? ???.",
+                "items": [
+                  "?? ??",
+                  "??? ??",
+                  "??? ??"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "??? ??? 1? ?? ???."
+              }
+            },
+            {
+              "stepId": "opic-self-feedback",
+              "title": "?? ?? ?? ?????",
+              "destination": "sheet",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "low",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "textFallback": {
+                "title": "?? ?? ?? ?????",
+                "description": "?? ??? ?? ?? ???? ?? ??? ???.",
+                "items": [
+                  "??/??",
+                  "??",
+                  "??/??/??"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "?? ?? ?? ???? ???."
+              }
+            },
+            {
+              "stepId": "opic-predict-next-question",
+              "title": "?? ?? ?? ????",
+              "destination": "memo",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "low",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "textFallback": {
+                "title": "?? ?? ?? ????",
+                "description": "???? ?? ?? ?? ??? ?? ??? ??.",
+                "items": [
+                  "?? ??",
+                  "?? ??",
+                  "??? ??"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "?? ??? ?? ??? ???."
+              }
+            },
+            {
+              "stepId": "opic-repeat-round",
+              "title": "?? ??? ????",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "start_date",
+                "dayOffset": 1,
+                "allDay": false
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "low",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "textFallback": {
+                "title": "?? ??? ????",
+                "description": "2?/1? ??? row? ?? ?? ??? ????.",
+                "items": [
+                  "??? ??",
+                  "?? ??",
+                  "??/??"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "?? ?? ?? ??? ??."
+              }
+            }
+          ]
+        },
+        {
+          "flowId": "flow-curated-opic-course-row-import",
+          "slug": "curated-opic-course-row-import",
+          "title": "2?/1? ??? row import",
+          "category": "??/???",
+          "structureType": "timeline",
+          "anchorType": "start_date",
+          "primaryDestination": "calendar",
+          "riskLevel": "low",
+          "sourceTitle": "?? ???? ?? ?? XLSX",
+          "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+          "sourceCheckedAt": "2026-06-29",
+          "sourceRowsPreview": {
+            "twoWeek": [
+              "?? 2??",
+              "???? & ??",
+              "??",
+              "??/??"
+            ],
+            "oneMonth": [
+              "??",
+              "??",
+              "????",
+              "??? ? ??",
+              "??"
+            ]
+          },
+          "sections": [
+            {
+              "id": "opic-course-import",
+              "title": "?? XLSX row ??",
+              "order": 0
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "opic-import-two-week-rows",
+              "title": "2? ?? row ??",
+              "destination": "sheet",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "low",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "textFallback": {
+                "title": "2? ?? row ??",
+                "description": "?? XLSX 2? ?? sheet? ??? row? ????.",
+                "items": [
+                  "?? 2??",
+                  "???? & ??",
+                  "??",
+                  "??/??"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "2? ?? row? dayOffset?? ????."
+              }
+            },
+            {
+              "stepId": "opic-import-one-month-rows",
+              "title": "1? ?? row ??",
+              "destination": "sheet",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "low",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "textFallback": {
+                "title": "1? ?? row ??",
+                "description": "?? XLSX 1? ?? sheet? ??? row? ????.",
+                "items": [
+                  "??",
+                  "??",
+                  "????",
+                  "??? ? ??",
+                  "??"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "1? ?? row? dayOffset?? ????."
+              }
+            }
+          ]
+        }
+      ],
+      "developerNotes": [
+        "???? ?? URL, ?? ??, ?? ??, ?? ???? ?? ??? ??? ?? ??.",
+        "XLSX? full seed ? row ???? ????."
+      ]
+    },
+    {
+      "map": {
+        "id": "curated-baby-food-meal-log",
+        "title": "?? ??? ??? ??",
+        "userLabel": "??? ?? ??",
+        "version": "2026-06-30.1",
+        "updatedAt": "2026-06-30T00:00:00.000Z",
+        "candidateStatus": "revise",
+        "homepageEligible": false,
+        "directRouteEnabled": false,
+        "implementationStatus": "needs_pdf_hwp_row_import_before_seed",
+        "updatePolicy": "review_before_apply",
+        "source": {
+          "title": "Naver 이유식 식단표",
+          "url": "https://blog.naver.com/01695258757/222768860919",
+          "sourceType": "creator_experience",
+          "sourcePrecision": "exact",
+          "sourceCheckedAt": "2026-06-29",
+          "attachmentPassword": "211111",
+          "confirmedFileShapes": [
+            "150일 시작",
+            "160일 시작",
+            "170일 시작",
+            "180일 시작",
+            "174일 따라하기",
+            "큐브 재고"
+          ],
+          "confirmedColumns": [
+            "날짜 D+n",
+            "베이스죽",
+            "토핑반찬",
+            "간식",
+            "NEW",
+            "알레르기 O/X",
+            "먹은 양"
+          ],
+          "extractedColumns": [
+            "D+n",
+            "????",
+            "????",
+            "??",
+            "NEW",
+            "???? O/X",
+            "?? ?"
+          ]
+        },
+        "setupInput": {
+          "label": "시작일",
+          "type": "date",
+          "anchorType": "start_date",
+          "hint": "선택한 식단표의 D+1을 이 날짜에 배치한다."
+        },
+        "secondaryInput": {
+          "label": "식단표 버전",
+          "type": "select",
+          "options": [
+            "150일 시작",
+            "160일 시작",
+            "170일 시작",
+            "180일 시작",
+            "174일 따라하기",
+            "큐브 재고"
+          ]
+        },
+        "artifacts": [
+          "meal_log_sheet",
+          "new_ingredient_calendar",
+          "source_warning_text"
+        ],
+        "doNotBuild": [
+          "분량 추천을 만들지 않는다.",
+          "알레르기 판단을 하지 않는다.",
+          "월령별 처방처럼 보이게 하지 않는다.",
+          "공식 이유식 안내를 creator 식단표와 섞지 않는다."
+        ]
+      },
+      "flows": [
+        {
+          "flowId": "flow-curated-baby-food-daily-meal-row",
+          "slug": "curated-baby-food-daily-meal-row",
+          "title": "?? ??? ??? ??",
+          "category": "??/???",
+          "structureType": "phase",
+          "anchorType": "start_date",
+          "primaryDestination": "sheet",
+          "riskLevel": "medical_sensitive",
+          "sourceTitle": "Naver 이유식 식단표",
+          "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+          "sourceCheckedAt": "2026-06-29",
+          "sourceColumns": [
+            "D+n",
+            "????",
+            "????",
+            "??",
+            "NEW",
+            "???? O/X",
+            "?? ?"
+          ],
+          "sections": [
+            {
+              "id": "baby-food-meal-row",
+              "title": "??? row",
+              "order": 0
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "baby-food-today-row",
+              "title": "?? ?? row ??",
+              "destination": "sheet",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "start_date",
+                "dayOffset": 0,
+                "allDay": true
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "medical_sensitive",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "textFallback": {
+                "title": "?? ?? row ??",
+                "description": "?? ??? ??? ?? row? ??? ?? ?? ?? ?? ??? ????.",
+                "items": [
+                  "?? ?? row",
+                  "?? ?",
+                  "???? O/X"
+                ],
+                "memoHint": "?? ?, ???? O/X, ?? ??",
+                "doneWhen": "?? ?? row? ?? ?/??? ????.",
+                "caution": "??, ?? ?? ??, ???? ??? ?? ??? ??? ??? ????."
+              }
+            }
+          ]
+        },
+        {
+          "flowId": "flow-curated-baby-food-cube-stock",
+          "slug": "curated-baby-food-cube-stock",
+          "title": "??? ?? ?? ??",
+          "category": "??/???",
+          "structureType": "checklist",
+          "anchorType": "none",
+          "primaryDestination": "sheet",
+          "riskLevel": "medical_sensitive",
+          "sourceTitle": "Naver 이유식 식단표",
+          "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+          "sourceCheckedAt": "2026-06-29",
+          "sections": [
+            {
+              "id": "cube-stock",
+              "title": "?? ??",
+              "order": 0
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "baby-food-cube-stock-row",
+              "title": "?? ?? row ??",
+              "destination": "sheet",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "medical_sensitive",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "textFallback": {
+                "title": "?? ?? row ??",
+                "description": "?? ??? ?? ???? ?? ????? ???.",
+                "items": [
+                  "???",
+                  "?? ??",
+                  "?? ??"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "?? ?? row? ????."
+              }
+            }
+          ]
+        }
+      ],
+      "developerNotes": [
+        "Item? ?? ??? ???. ??? ??? ?? ?? row, ?? ?, ???? O/X? ?? ???.",
+        "????/????/??/NEW? ?? ?? row ?? ??? ????."
+      ]
+    },
+    {
+      "map": {
+        "id": "curated-reading-routine-log",
+        "title": "?? ???",
+        "userLabel": "?? ??",
+        "version": "2026-06-30.1",
+        "updatedAt": "2026-06-30T00:00:00.000Z",
+        "candidateStatus": "needs_reshape",
+        "homepageEligible": false,
+        "directRouteEnabled": false,
+        "implementationStatus": "reshape_before_seed",
+        "updatePolicy": "auto_patch_when_safe",
+        "source": {
+          "title": "독서 기록 Naver blog",
+          "url": "https://blog.naver.com/naristyle87/222978131890",
+          "sourceType": "creator_experience",
+          "sourcePrecision": "exact",
+          "sourceCheckedAt": "2026-06-29",
+          "confirmedRows": [
+            "오전 1시간 읽고 쓰기",
+            "잠들기 직전 전자책",
+            "월초 5권",
+            "1권 반당 1권 사기",
+            "책 70권"
+          ]
+        },
+        "setupInput": {
+          "label": "시작일",
+          "type": "date",
+          "anchorType": "start_date",
+          "hint": "독서 루틴을 시작할 날짜"
+        },
+        "artifacts": [
+          "monthly_reading_sheet",
+          "book_log_memo"
+        ],
+        "doNotBuild": [
+          "책 추천을 만들지 않는다.",
+          "독서 효율을 보장하지 않는다.",
+          "원문에 없는 회고 질문을 만들지 않는다."
+        ]
+      },
+      "flows": [
+        {
+          "flowId": "flow-curated-reading-monthly-log",
+          "slug": "curated-reading-monthly-log",
+          "title": "?? ?? ???",
+          "category": "??/??",
+          "structureType": "checklist",
+          "anchorType": "none",
+          "primaryDestination": "sheet",
+          "riskLevel": "low",
+          "sourceTitle": "독서 기록 Naver blog",
+          "sourceUrl": "https://blog.naver.com/naristyle87/222978131890",
+          "sourceCheckedAt": "2026-06-29",
+          "sourceFacts": [
+            "?? 1?? ?? ??",
+            "??? ?? ???",
+            "?? 5?",
+            "1? ?? 1? ??",
+            "?? 70?"
+          ],
+          "sections": [
+            {
+              "id": "reading-log",
+              "title": "?? ?? row",
+              "order": 0
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "reading-monthly-candidates",
+              "title": "?? ?? ? ?? ??",
+              "destination": "sheet",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "low",
+              "sourceUrl": "https://blog.naver.com/naristyle87/222978131890",
+              "textFallback": {
+                "title": "?? ?? ? ?? ??",
+                "description": "??? ?? 5? ???? ?? ??? ? row?? ??.",
+                "items": [
+                  "?? ? 5?",
+                  "??/?? ??",
+                  "?? ? ????"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "?? ? ?? ?? ????."
+              }
+            },
+            {
+              "stepId": "reading-book-log-row",
+              "title": "? ? ? ????",
+              "destination": "sheet",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "low",
+              "sourceUrl": "https://blog.naver.com/naristyle87/222978131890",
+              "textFallback": {
+                "title": "? ? ? ????",
+                "description": "?? ??? ???? ?? ? ? ? ?? ???? ??.",
+                "items": [
+                  "? ??",
+                  "?? ??",
+                  "?? ? ?"
+                ],
+                "memoHint": "??/???, ? ? ??",
+                "doneWhen": "? ? ?? ??? ??? ???."
+              }
+            },
+            {
+              "stepId": "reading-monthly-count",
+              "title": "?? ??? ??",
+              "destination": "sheet",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "low",
+              "sourceUrl": "https://blog.naver.com/naristyle87/222978131890",
+              "textFallback": {
+                "title": "?? ??? ??",
+                "description": "??? ?? 70? ??? ?? ????? ??.",
+                "items": [
+                  "?? ? ?? ? ?",
+                  "?? ??",
+                  "?? ? ??"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "??/?? ??? ?? ??? ????."
+              }
+            }
+          ]
+        }
+      ],
+      "developerNotes": [
+        "?? 5-Step ??? ???? ??? ?? ?? ???.",
+        "?? ???? ?? ???? ???? ?? artifact?.",
+        "seed ? ??? ??? ????."
+      ]
+    },
+    {
+      "map": {
+        "id": "curated-new-car-purchase-guide",
+        "title": "신차 구매 7단계 체크리스트",
+        "userLabel": "신차 구매",
+        "version": "2026-06-30.1",
+        "updatedAt": "2026-06-30T00:00:00.000Z",
+        "candidateStatus": "candidate",
+        "homepageEligible": false,
+        "directRouteEnabled": true,
+        "implementationStatus": "ready_to_seed",
+        "updatePolicy": "review_before_apply",
+        "source": {
+          "title": "Getcha 신차 구매 절차 가이드",
+          "url": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+          "sourceType": "reference",
+          "sourcePrecision": "exact",
+          "sourceCheckedAt": "2026-06-29",
+          "sourceUpdatedAt": "2026-01-01",
+          "confirmedRows": [
+            "예산/차량 선택",
+            "구매 방식",
+            "견적/협상",
+            "계약",
+            "출고/검수",
+            "등록",
+            "보험"
+          ]
+        },
+        "setupInput": {
+          "label": "목표 구매일",
+          "type": "date",
+          "anchorType": "none",
+          "hint": "단계별 마감일 계산은 기본 제공하지 않는다. 사용자가 필요한 날짜만 메모한다."
+        },
+        "secondaryInput": {
+          "label": "구매 방식",
+          "type": "select",
+          "options": [
+            "현금",
+            "할부",
+            "리스",
+            "장기렌트",
+            "미정"
+          ]
+        },
+        "artifacts": [
+          "process_checklist",
+          "quote_comparison_sheet",
+          "memo_text"
+        ],
+        "doNotBuild": [
+          "최저가 추천을 하지 않는다.",
+          "금융상품이나 보험상품을 추천하지 않는다.",
+          "법적/재무 판단을 자동화하지 않는다."
+        ]
+      },
+      "flows": [
+        {
+          "flowId": "flow-curated-new-car-basic",
+          "slug": "curated-new-car-basic",
+          "title": "신차 구매 기본형",
+          "category": "차량/구매",
+          "structureType": "checklist",
+          "anchorType": "none",
+          "primaryDestination": "internal_check",
+          "riskLevel": "financial_sensitive",
+          "sourceTitle": "Getcha 신차 구매 절차 가이드",
+          "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+          "sourceCheckedAt": "2026-06-29",
+          "sections": [
+            {
+              "id": "new-car-steps",
+              "title": "구매 절차",
+              "order": 0
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "new-car-budget-model",
+              "title": "예산과 차량 선택",
+              "destination": "checklist",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "reference",
+              "riskLevel": "financial_sensitive",
+              "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+              "textFallback": {
+                "title": "예산과 차량 선택",
+                "description": "예산 범위와 후보 차량을 적는다.",
+                "items": [
+                  "예산 범위",
+                  "후보 차량",
+                  "필수 조건"
+                ],
+                "memoHint": "금액 판단은 사용자 메모로만 남기기",
+                "doneWhen": "예산과 후보 차량이 기록됐다."
+              }
+            },
+            {
+              "stepId": "new-car-purchase-method",
+              "title": "구매 방식 결정",
+              "destination": "checklist",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "reference",
+              "riskLevel": "financial_sensitive",
+              "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+              "textFallback": {
+                "title": "구매 방식 결정",
+                "description": "현금, 할부, 리스, 장기렌트 중 현재 후보를 표시한다.",
+                "items": [
+                  "구매 방식 선택",
+                  "확인할 조건",
+                  "문의할 내용"
+                ],
+                "memoHint": "상품 추천 없이 선택 후보만 기록",
+                "doneWhen": "구매 방식 후보가 정해졌다."
+              }
+            },
+            {
+              "stepId": "new-car-quotes-negotiation",
+              "title": "견적과 협상 메모",
+              "destination": "sheet",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "reference",
+              "riskLevel": "financial_sensitive",
+              "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+              "textFallback": {
+                "title": "견적과 협상 메모",
+                "description": "받은 견적을 비교표로 기록한다.",
+                "items": [
+                  "딜러/채널",
+                  "견적 링크 또는 메모",
+                  "포함 조건",
+                  "추가 문의"
+                ],
+                "memoHint": "견적 링크와 조건만 기록",
+                "doneWhen": "비교할 견적이 기록됐다."
+              }
+            },
+            {
+              "stepId": "new-car-contract",
+              "title": "계약 확인",
+              "destination": "checklist",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "reference",
+              "riskLevel": "financial_sensitive",
+              "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+              "textFallback": {
+                "title": "계약 확인",
+                "description": "계약 전 확인할 자료와 남은 문의를 기록한다.",
+                "items": [
+                  "계약서 확인",
+                  "계약금 여부",
+                  "남은 문의"
+                ],
+                "memoHint": "민감 정보는 저장하지 않기",
+                "doneWhen": "계약 관련 확인 상태가 기록됐다."
+              }
+            },
+            {
+              "stepId": "new-car-delivery-inspection",
+              "title": "출고와 검수",
+              "destination": "checklist",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "reference",
+              "riskLevel": "financial_sensitive",
+              "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+              "textFallback": {
+                "title": "출고와 검수",
+                "description": "출고 일정과 검수 확인 상태를 남긴다.",
+                "items": [
+                  "출고 예정일",
+                  "검수 확인",
+                  "인수 보류 여부"
+                ],
+                "memoHint": "사진 위치나 체크 결과만 남기기",
+                "doneWhen": "출고/검수 상태가 기록됐다."
+              }
+            },
+            {
+              "stepId": "new-car-registration",
+              "title": "등록 확인",
+              "destination": "checklist",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "reference",
+              "riskLevel": "financial_sensitive",
+              "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+              "textFallback": {
+                "title": "등록 확인",
+                "description": "차량 등록 관련 진행 상태를 기록한다.",
+                "items": [
+                  "등록 진행 여부",
+                  "번호판/서류 확인",
+                  "보류 사항"
+                ],
+                "memoHint": "서류 민감 정보는 저장하지 않기",
+                "doneWhen": "등록 진행 상태가 기록됐다."
+              }
+            },
+            {
+              "stepId": "new-car-insurance",
+              "title": "보험 가입 확인",
+              "destination": "checklist",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "reference",
+              "riskLevel": "financial_sensitive",
+              "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+              "textFallback": {
+                "title": "보험 가입 확인",
+                "description": "보험 가입 여부와 확인 메모만 남긴다.",
+                "items": [
+                  "보험 가입 여부",
+                  "보험 시작일",
+                  "확인 메모"
+                ],
+                "memoHint": "보험상품 추천 없이 가입 상태만 기록",
+                "doneWhen": "보험 가입 상태가 기록됐다."
+              }
+            }
+          ]
+        }
+      ],
+      "developerNotes": [
+        "구매 방식별 버전 분기는 2차 구현에서 추가한다.",
+        "현 단계는 7단계 기본 Flow가 개발 가능한 단위다."
+      ]
+    },
+    {
+      "map": {
+        "id": "curated-child-vaccination-schedule",
+        "title": "?? ???? ???",
+        "userLabel": "???? ???",
+        "version": "2026-06-30.1",
+        "updatedAt": "2026-06-30T00:00:00.000Z",
+        "candidateStatus": "revise",
+        "homepageEligible": false,
+        "directRouteEnabled": false,
+        "implementationStatus": "needs_official_schedule_row_import",
+        "updatePolicy": "review_before_apply",
+        "source": {
+          "title": "KHMS 영유아 예방접종",
+          "url": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+          "sourceType": "official",
+          "sourcePrecision": "exact",
+          "sourceCheckedAt": "2026-06-29",
+          "confirmedTables": [
+            "표준예방접종 일정표",
+            "각 백신별 최소 접종간격",
+            "미접종 소아 예방접종 일정표",
+            "지연 시 예방접종"
+          ],
+          "officialRowGroups": [
+            "??~4?",
+            "1??",
+            "2??",
+            "4??",
+            "6??",
+            "12~15??",
+            "15~18??",
+            "24~35??",
+            "4~6?",
+            "11~12?",
+            "?? ?????"
+          ]
+        },
+        "setupInput": {
+          "label": "아이 생년월일",
+          "type": "date",
+          "anchorType": "baby_birth_date",
+          "hint": "공식 표의 권장 월령을 생년월일 기준 일정 범위로 바꾼다."
+        },
+        "artifacts": [
+          "calendar",
+          "official_schedule_table",
+          "hospital_check_memo"
+        ],
+        "doNotBuild": [
+          "접종 가능 여부를 판단하지 않는다.",
+          "지연 접종 처방을 만들지 않는다.",
+          "금기 또는 부작용 판단을 하지 않는다."
+        ]
+      },
+      "flows": [
+        {
+          "flowId": "flow-curated-child-vaccination-first-year",
+          "slug": "curated-child-vaccination-first-year",
+          "title": "??~12?? ?? ??",
+          "category": "??/??",
+          "structureType": "timeline",
+          "anchorType": "baby_birth_date",
+          "primaryDestination": "calendar",
+          "riskLevel": "medical_sensitive",
+          "sourceTitle": "KHMS 영유아 예방접종",
+          "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+          "sourceCheckedAt": "2026-06-29",
+          "sections": [
+            {
+              "id": "vaccination-first-year",
+              "title": "?? ?? row",
+              "order": 0
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "vaccination-birth-4w",
+              "title": "??~4? ?? row",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "baby_birth_date",
+                "dayOffset": 0,
+                "allDay": true
+              },
+              "sourceType": "official",
+              "riskLevel": "medical_sensitive",
+              "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+              "textFallback": {
+                "title": "??~4? ?? row",
+                "description": "?? ?? ?? ??/4? ?? row? ???? ???? ???.",
+                "items": [
+                  "B??? 1?",
+                  "BCG 1?",
+                  "?? ??"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "??~4? ?? ?? ??? ???.",
+                "caution": "?? ?? ??? ?????? ????."
+              }
+            },
+            {
+              "stepId": "vaccination-1m",
+              "title": "1?? ?? row",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "baby_birth_date",
+                "dayOffset": 30,
+                "allDay": true
+              },
+              "sourceType": "official",
+              "riskLevel": "medical_sensitive",
+              "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+              "textFallback": {
+                "title": "1?? ?? row",
+                "description": "?? ?? 1?? row? ???? ???.",
+                "items": [
+                  "B??? 2?",
+                  "?? ??"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "1?? ?? ?? ??? ???."
+              }
+            },
+            {
+              "stepId": "vaccination-2m",
+              "title": "2?? ?? row",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "baby_birth_date",
+                "dayOffset": 61,
+                "allDay": true
+              },
+              "sourceType": "official",
+              "riskLevel": "medical_sensitive",
+              "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+              "textFallback": {
+                "title": "2?? ?? row",
+                "description": "?? ?? 2?? row? ???? ???.",
+                "items": [
+                  "DTaP 1?",
+                  "IPV 1?",
+                  "Hib 1?",
+                  "PCV 1?",
+                  "RV 1?"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "2?? ?? ?? ??? ???."
+              }
+            },
+            {
+              "stepId": "vaccination-4m",
+              "title": "4?? ?? row",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "baby_birth_date",
+                "dayOffset": 122,
+                "allDay": true
+              },
+              "sourceType": "official",
+              "riskLevel": "medical_sensitive",
+              "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+              "textFallback": {
+                "title": "4?? ?? row",
+                "description": "?? ?? 4?? row? ???? ???.",
+                "items": [
+                  "DTaP 2?",
+                  "IPV 2?",
+                  "Hib 2?",
+                  "PCV 2?",
+                  "RV 2?"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "4?? ?? ?? ??? ???."
+              }
+            },
+            {
+              "stepId": "vaccination-6m",
+              "title": "6?? ?? row",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "baby_birth_date",
+                "dayOffset": 183,
+                "allDay": true
+              },
+              "sourceType": "official",
+              "riskLevel": "medical_sensitive",
+              "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+              "textFallback": {
+                "title": "6?? ?? row",
+                "description": "?? ?? 6?? row? ???? ???.",
+                "items": [
+                  "B??? 3?",
+                  "DTaP 3?",
+                  "IPV 3?",
+                  "Hib 3?",
+                  "PCV 3?",
+                  "RV 3?"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "6?? ?? ?? ??? ???."
+              }
+            },
+            {
+              "stepId": "vaccination-12m",
+              "title": "12~15?? ?? row",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "baby_birth_date",
+                "dayOffset": 365,
+                "allDay": true,
+                "window": {
+                  "label": "12~15??",
+                  "startDayOffset": 365,
+                  "endDayOffset": 456
+                }
+              },
+              "sourceType": "official",
+              "riskLevel": "medical_sensitive",
+              "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+              "textFallback": {
+                "title": "12~15?? ?? row",
+                "description": "?? ?? 12~15?? ?? row? ?? ??? ???.",
+                "items": [
+                  "MMR 1?",
+                  "?? 1?",
+                  "HepA 1?",
+                  "???? ??",
+                  "Hib/PCV ??"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "12~15?? ?? ?? ??? ???."
+              }
+            }
+          ]
+        },
+        {
+          "flowId": "flow-curated-child-vaccination-booster-school-age",
+          "slug": "curated-child-vaccination-booster-school-age",
+          "title": "????? ??? ??",
+          "category": "??/??",
+          "structureType": "timeline",
+          "anchorType": "baby_birth_date",
+          "primaryDestination": "calendar",
+          "riskLevel": "medical_sensitive",
+          "sourceTitle": "KHMS 영유아 예방접종",
+          "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+          "sourceCheckedAt": "2026-06-29",
+          "sections": [
+            {
+              "id": "vaccination-booster",
+              "title": "???? row",
+              "order": 0
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "vaccination-15-18m",
+              "title": "15~18?? ???? row",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "baby_birth_date",
+                "dayOffset": 456,
+                "allDay": true,
+                "window": {
+                  "label": "15~18??",
+                  "startDayOffset": 456,
+                  "endDayOffset": 548
+                }
+              },
+              "sourceType": "official",
+              "riskLevel": "medical_sensitive",
+              "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+              "textFallback": {
+                "title": "15~18?? ???? row",
+                "description": "?? ?? 15~18?? ???? row? ?? ??? ???.",
+                "items": [
+                  "DTaP 4?",
+                  "Hib ??",
+                  "PCV ??"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "15~18?? ?? ?? ??? ???."
+              }
+            },
+            {
+              "stepId": "vaccination-24-35m",
+              "title": "24~35?? ???? row",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "baby_birth_date",
+                "dayOffset": 730,
+                "allDay": true,
+                "window": {
+                  "label": "24~35??",
+                  "startDayOffset": 730,
+                  "endDayOffset": 1065
+                }
+              },
+              "sourceType": "official",
+              "riskLevel": "medical_sensitive",
+              "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+              "textFallback": {
+                "title": "24~35?? ???? row",
+                "description": "?? ?? ???? ?? row? ?? ??? ???.",
+                "items": [
+                  "???? ?? ??",
+                  "?? ??"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "???? ?? ?? ?? ??? ???."
+              }
+            },
+            {
+              "stepId": "vaccination-4-6y",
+              "title": "4~6? ???? row",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "baby_birth_date",
+                "dayOffset": 1460,
+                "allDay": true,
+                "window": {
+                  "label": "4~6?",
+                  "startDayOffset": 1460,
+                  "endDayOffset": 2190
+                }
+              },
+              "sourceType": "official",
+              "riskLevel": "medical_sensitive",
+              "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+              "textFallback": {
+                "title": "4~6? ???? row",
+                "description": "?? ?? 4~6? ???? row? ?? ??? ???.",
+                "items": [
+                  "DTaP 5?",
+                  "IPV 4?",
+                  "MMR 2?",
+                  "???? ??"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "4~6? ?? ?? ??? ???."
+              }
+            },
+            {
+              "stepId": "vaccination-11-12y",
+              "title": "11~12? ?? row",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "baby_birth_date",
+                "dayOffset": 4015,
+                "allDay": true,
+                "window": {
+                  "label": "11~12?",
+                  "startDayOffset": 4015,
+                  "endDayOffset": 4745
+                }
+              },
+              "sourceType": "official",
+              "riskLevel": "medical_sensitive",
+              "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+              "textFallback": {
+                "title": "11~12? ?? row",
+                "description": "?? ?? 11~12? row? ?? ??? ???.",
+                "items": [
+                  "Tdap/Td",
+                  "HPV ?? ??",
+                  "???? ??"
+                ],
+                "memoHint": "?? ??? ???",
+                "doneWhen": "11~12? ?? ?? ??? ???."
+              }
+            }
+          ]
+        }
+      ],
+      "developerNotes": [
+        "?? ?? template Step??? ??? ???. ?? ?? row ??? ?? ??? row ??? ????.",
+        "??? ??? ?? ??? ?? ??? ?? row import ? ????.",
+        "?? ??? ?? ???."
+      ]
+    },
+    {
+      "map": {
+        "id": "curated-ajd-moving-d30",
+        "title": "이사 D-30 체크리스트",
+        "userLabel": "이사 D-30",
+        "version": "2026-06-30.1",
+        "updatedAt": "2026-06-30T00:00:00.000Z",
+        "candidateStatus": "representative_candidate",
+        "homepageEligible": false,
+        "directRouteEnabled": true,
+        "implementationStatus": "ready_to_seed",
+        "updatePolicy": "review_before_apply",
+        "source": {
+          "title": "AJD 이사 준비 체크리스트",
+          "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+          "sourceType": "reference",
+          "sourcePrecision": "exact",
+          "sourceCheckedAt": "2026-06-29",
+          "confirmedRows": [
+            "D-30",
+            "D-10",
+            "D-3",
+            "D-1",
+            "D-Day"
+          ],
+          "attachmentNote": "첨부 XLSX는 셀 row가 아니라 PNG 이미지 기반 파일로 확인됨. 본문 표를 기준으로 한다."
+        },
+        "setupInput": {
+          "label": "이사일",
+          "type": "date",
+          "anchorType": "end_date",
+          "hint": "이사일을 기준으로 D-30, D-10, D-3, D-1, D-Day를 계산한다."
+        },
+        "artifacts": [
+          "calendar",
+          "checklist",
+          "sheet",
+          "text_fallback"
+        ],
+        "doNotBuild": [
+          "지역별 법정 신고 판단을 자동화하지 않는다.",
+          "세금/계약 판단을 하지 않는다.",
+          "원문 표 밖의 체크리스트를 늘리지 않는다."
+        ]
+      },
+      "flows": [
+        {
+          "flowId": "flow-curated-ajd-moving-d30",
+          "slug": "curated-ajd-moving-d30",
+          "title": "이사 D-30 준비",
+          "category": "이사",
+          "structureType": "timeline",
+          "anchorType": "end_date",
+          "primaryDestination": "hybrid",
+          "riskLevel": "medium",
+          "sourceTitle": "AJD 이사 준비 체크리스트",
+          "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+          "sourceCheckedAt": "2026-06-29",
+          "sections": [
+            {
+              "id": "moving-d30-section",
+              "title": "D-30",
+              "order": 0
+            },
+            {
+              "id": "moving-d10-section",
+              "title": "D-10",
+              "order": 1
+            },
+            {
+              "id": "moving-d3-section",
+              "title": "D-3",
+              "order": 2
+            },
+            {
+              "id": "moving-d1-section",
+              "title": "D-1",
+              "order": 3
+            },
+            {
+              "id": "moving-dday-section",
+              "title": "D-Day",
+              "order": 4
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "moving-d30-method-quotes",
+              "title": "D-30: 이사 방식과 견적 예약",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "end_date",
+                "dayOffset": -30,
+                "allDay": true
+              },
+              "sourceType": "reference",
+              "riskLevel": "medium",
+              "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+              "textFallback": {
+                "title": "D-30: 이사 방식과 견적 예약",
+                "description": "이사 방식과 견적 후보를 정한다.",
+                "items": [
+                  "이사 방식 확인",
+                  "견적 후보 메모",
+                  "업체 연락처 메모"
+                ],
+                "memoHint": "업체명, 연락처, 견적 메모",
+                "doneWhen": "견적 후보와 연락처가 남았다."
+              }
+            },
+            {
+              "stepId": "moving-d10-address-admin",
+              "title": "D-10: 주소 변경과 예약 상태 확인",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "end_date",
+                "dayOffset": -10,
+                "allDay": true
+              },
+              "sourceType": "reference",
+              "riskLevel": "medium",
+              "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+              "textFallback": {
+                "title": "D-10: 주소 변경과 예약 상태 확인",
+                "description": "주소 변경, 자동이체, 예약 상태를 확인한다.",
+                "items": [
+                  "주소 변경 대상 확인",
+                  "자동이체 확인",
+                  "이사 예약 상태 확인"
+                ],
+                "memoHint": "변경한 서비스와 남은 서비스",
+                "doneWhen": "주소/예약 확인 상태가 기록됐다."
+              }
+            },
+            {
+              "stepId": "moving-d3-equipment-docs",
+              "title": "D-3: 장비와 서류 확인",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "end_date",
+                "dayOffset": -3,
+                "allDay": true
+              },
+              "sourceType": "reference",
+              "riskLevel": "medium",
+              "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+              "textFallback": {
+                "title": "D-3: 장비와 서류 확인",
+                "description": "이사 전 필요한 장비와 서류 상태를 정리한다.",
+                "items": [
+                  "장비/준비물 확인",
+                  "필요 서류 확인",
+                  "문의 필요한 항목 표시"
+                ],
+                "memoHint": "보류 항목만 적기",
+                "doneWhen": "D-3 확인 항목이 완료/보류로 표시됐다."
+              }
+            },
+            {
+              "stepId": "moving-d1-final-check",
+              "title": "D-1: 최종 점검",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "end_date",
+                "dayOffset": -1,
+                "allDay": true
+              },
+              "sourceType": "reference",
+              "riskLevel": "medium",
+              "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+              "textFallback": {
+                "title": "D-1: 최종 점검",
+                "description": "이사 전날 확인할 항목을 정리한다.",
+                "items": [
+                  "짐/귀중품 확인",
+                  "요금/폐기물 확인",
+                  "이사 당일 연락처 확인"
+                ],
+                "memoHint": "당일 연락처와 보류 항목",
+                "doneWhen": "D-1 확인 항목이 끝났다."
+              }
+            },
+            {
+              "stepId": "moving-dday-settlement",
+              "title": "D-Day: 정산과 전입 관련 확인",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "end_date",
+                "dayOffset": 0,
+                "allDay": true
+              },
+              "sourceType": "reference",
+              "riskLevel": "medium",
+              "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+              "textFallback": {
+                "title": "D-Day: 정산과 전입 관련 확인",
+                "description": "이사 당일 정산과 전입 관련 확인 상태를 남긴다.",
+                "items": [
+                  "정산 확인",
+                  "전입 관련 확인",
+                  "현장 보류 사항 메모"
+                ],
+                "memoHint": "정산 여부와 남은 문의",
+                "doneWhen": "이사 당일 확인 상태가 기록됐다."
+              }
+            }
+          ]
+        }
+      ],
+      "developerNotes": [
+        "기존 moving-d30과 비교해 중복/명칭만 정리하면 즉시 public route fixture로 쓸 수 있다."
+      ]
+    },
+    {
+      "map": {
+        "id": "curated-wedding-checklist-family",
+        "title": "결혼 준비 체크리스트 버전 선택",
+        "userLabel": "결혼 준비",
+        "version": "2026-06-30.1",
+        "updatedAt": "2026-06-30T00:00:00.000Z",
+        "candidateStatus": "candidate",
+        "homepageEligible": false,
+        "directRouteEnabled": true,
+        "implementationStatus": "ready_to_seed_versioned_family",
+        "updatePolicy": "review_before_apply",
+        "source": {
+          "title": "결혼 체크리스트 원문 2종",
+          "url": "https://blog.naver.com/wilklove/223518896995",
+          "sourceType": "creator_experience",
+          "sourcePrecision": "exact",
+          "sourceCheckedAt": "2026-06-29",
+          "additionalSources": [
+            {
+              "title": "공여사들 결혼 준비 체크리스트",
+              "url": "https://gongysd.com/wedding-notion/?bmode=view&idx=167989966",
+              "sourceType": "creator_experience",
+              "confirmedShape": "A-to-Z category checklist"
+            }
+          ]
+        },
+        "setupInput": {
+          "label": "결혼식 날짜",
+          "type": "date",
+          "anchorType": "end_date",
+          "hint": "타임라인 버전은 결혼식 날짜 기준으로 D-month를 계산한다."
+        },
+        "secondaryInput": {
+          "label": "원문 버전",
+          "type": "select",
+          "options": [
+            "Naver 1년 타임라인",
+            "Gongysd A-to-Z"
+          ]
+        },
+        "artifacts": [
+          "timeline_calendar",
+          "vendor_sheet",
+          "version_picker"
+        ],
+        "doNotBuild": [
+          "두 원문을 하나의 만능 체크리스트로 병합하지 않는다.",
+          "업체 추천을 하지 않는다.",
+          "예산 최적화를 만들지 않는다."
+        ]
+      },
+      "flows": [
+        {
+          "flowId": "flow-curated-wedding-naver-timeline",
+          "slug": "curated-wedding-naver-timeline",
+          "title": "Naver 결혼 준비 1년 타임라인",
+          "category": "결혼",
+          "structureType": "timeline",
+          "anchorType": "end_date",
+          "primaryDestination": "hybrid",
+          "riskLevel": "medium",
+          "sourceTitle": "Naver 결혼 준비 타임라인",
+          "sourceUrl": "https://blog.naver.com/wilklove/223518896995",
+          "sourceCheckedAt": "2026-06-29",
+          "sections": [
+            {
+              "id": "wedding-naver-periods",
+              "title": "기간별 준비",
+              "order": 0
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "wedding-naver-d12",
+              "title": "D-12개월 준비 항목 확인",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "end_date",
+                "dayOffset": -365,
+                "allDay": true
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "medium",
+              "sourceUrl": "https://blog.naver.com/wilklove/223518896995",
+              "textFallback": {
+                "title": "D-12개월 준비 항목 확인",
+                "description": "원문 D-12개월 구간의 준비 항목을 확인한다.",
+                "items": [
+                  "원문 D-12개월 항목 확인",
+                  "업체/예약 메모",
+                  "보류 항목 표시"
+                ],
+                "memoHint": "업체명과 보류 항목",
+                "doneWhen": "D-12개월 항목 상태가 기록됐다."
+              }
+            },
+            {
+              "stepId": "wedding-naver-d10",
+              "title": "D-10개월 준비 항목 확인",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "end_date",
+                "dayOffset": -304,
+                "allDay": true
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "medium",
+              "sourceUrl": "https://blog.naver.com/wilklove/223518896995",
+              "textFallback": {
+                "title": "D-10개월 준비 항목 확인",
+                "description": "원문 D-10개월 구간의 준비 항목을 확인한다.",
+                "items": [
+                  "원문 D-10개월 항목 확인",
+                  "예약/비교 메모",
+                  "보류 항목 표시"
+                ],
+                "memoHint": "비교할 후보와 남은 문의",
+                "doneWhen": "D-10개월 항목 상태가 기록됐다."
+              }
+            },
+            {
+              "stepId": "wedding-naver-d7",
+              "title": "D-7개월 준비 항목 확인",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "end_date",
+                "dayOffset": -213,
+                "allDay": true
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "medium",
+              "sourceUrl": "https://blog.naver.com/wilklove/223518896995",
+              "textFallback": {
+                "title": "D-7개월 준비 항목 확인",
+                "description": "원문 D-7개월 구간의 준비 항목을 확인한다.",
+                "items": [
+                  "원문 D-7개월 항목 확인",
+                  "업체/결정 메모",
+                  "보류 항목 표시"
+                ],
+                "memoHint": "결정한 항목과 보류 항목",
+                "doneWhen": "D-7개월 항목 상태가 기록됐다."
+              }
+            },
+            {
+              "stepId": "wedding-naver-d6",
+              "title": "D-6개월 준비 항목 확인",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "end_date",
+                "dayOffset": -182,
+                "allDay": true
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "medium",
+              "sourceUrl": "https://blog.naver.com/wilklove/223518896995",
+              "textFallback": {
+                "title": "D-6개월 준비 항목 확인",
+                "description": "원문 D-6개월 구간의 준비 항목을 확인한다.",
+                "items": [
+                  "원문 D-6개월 항목 확인",
+                  "예약/결정 메모",
+                  "보류 항목 표시"
+                ],
+                "memoHint": "업체명과 남은 문의",
+                "doneWhen": "D-6개월 항목 상태가 기록됐다."
+              }
+            },
+            {
+              "stepId": "wedding-naver-d3",
+              "title": "D-3개월 준비 항목 확인",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "end_date",
+                "dayOffset": -91,
+                "allDay": true
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "medium",
+              "sourceUrl": "https://blog.naver.com/wilklove/223518896995",
+              "textFallback": {
+                "title": "D-3개월 준비 항목 확인",
+                "description": "원문 D-3개월 구간의 준비 항목을 확인한다.",
+                "items": [
+                  "원문 D-3개월 항목 확인",
+                  "확정/보류 메모",
+                  "남은 문의 표시"
+                ],
+                "memoHint": "확정된 항목과 보류 항목",
+                "doneWhen": "D-3개월 항목 상태가 기록됐다."
+              }
+            },
+            {
+              "stepId": "wedding-naver-d1",
+              "title": "D-1개월 준비 항목 확인",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "anchor_offset",
+                "anchorType": "end_date",
+                "dayOffset": -30,
+                "allDay": true
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "medium",
+              "sourceUrl": "https://blog.naver.com/wilklove/223518896995",
+              "textFallback": {
+                "title": "D-1개월 준비 항목 확인",
+                "description": "원문 D-1개월 구간의 준비 항목을 확인한다.",
+                "items": [
+                  "원문 D-1개월 항목 확인",
+                  "최종 확인 메모",
+                  "당일 문의 표시"
+                ],
+                "memoHint": "최종 확인과 당일 문의",
+                "doneWhen": "D-1개월 항목 상태가 기록됐다."
+              }
+            }
+          ]
+        },
+        {
+          "flowId": "flow-curated-wedding-gongysd-atoz",
+          "slug": "curated-wedding-gongysd-atoz",
+          "title": "Gongysd 결혼 준비 A-to-Z",
+          "category": "결혼",
+          "structureType": "checklist",
+          "anchorType": "none",
+          "primaryDestination": "sheet",
+          "riskLevel": "medium",
+          "sourceTitle": "공여사들 결혼 준비 체크리스트",
+          "sourceUrl": "https://gongysd.com/wedding-notion/?bmode=view&idx=167989966",
+          "sourceCheckedAt": "2026-06-29",
+          "sections": [
+            {
+              "id": "wedding-gongysd-categories",
+              "title": "A-to-Z 카테고리",
+              "order": 0
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "wedding-gongysd-venue",
+              "title": "웨딩홀 확인",
+              "destination": "sheet",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "medium",
+              "sourceUrl": "https://gongysd.com/wedding-notion/?bmode=view&idx=167989966",
+              "textFallback": {
+                "title": "웨딩홀 확인",
+                "description": "A-to-Z 체크리스트의 웨딩홀 항목을 기록한다.",
+                "items": [
+                  "후보",
+                  "견적/예약 메모",
+                  "완료/보류 상태"
+                ],
+                "memoHint": "후보와 문의 내용",
+                "doneWhen": "웨딩홀 항목 상태가 기록됐다."
+              }
+            },
+            {
+              "stepId": "wedding-gongysd-family-meeting",
+              "title": "상견례 확인",
+              "destination": "sheet",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "medium",
+              "sourceUrl": "https://gongysd.com/wedding-notion/?bmode=view&idx=167989966",
+              "textFallback": {
+                "title": "상견례 확인",
+                "description": "A-to-Z 체크리스트의 상견례 항목을 기록한다.",
+                "items": [
+                  "일정 메모",
+                  "장소 메모",
+                  "완료/보류 상태"
+                ],
+                "memoHint": "일정과 장소",
+                "doneWhen": "상견례 항목 상태가 기록됐다."
+              }
+            },
+            {
+              "stepId": "wedding-gongysd-planner",
+              "title": "플래너 확인",
+              "destination": "sheet",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "medium",
+              "sourceUrl": "https://gongysd.com/wedding-notion/?bmode=view&idx=167989966",
+              "textFallback": {
+                "title": "플래너 확인",
+                "description": "A-to-Z 체크리스트의 플래너 항목을 기록한다.",
+                "items": [
+                  "후보",
+                  "상담 메모",
+                  "완료/보류 상태"
+                ],
+                "memoHint": "상담 메모와 문의",
+                "doneWhen": "플래너 항목 상태가 기록됐다."
+              }
+            },
+            {
+              "stepId": "wedding-gongysd-studio-dress-makeup",
+              "title": "스드메 확인",
+              "destination": "sheet",
+              "calendar": {
+                "mode": "none"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "medium",
+              "sourceUrl": "https://gongysd.com/wedding-notion/?bmode=view&idx=167989966",
+              "textFallback": {
+                "title": "스드메 확인",
+                "description": "A-to-Z 체크리스트의 스드메 항목을 기록한다.",
+                "items": [
+                  "스튜디오",
+                  "드레스",
+                  "메이크업",
+                  "완료/보류 상태"
+                ],
+                "memoHint": "업체명과 남은 문의",
+                "doneWhen": "스드메 항목 상태가 기록됐다."
+              }
+            }
+          ],
+          "rowExpansion": {
+            "policy": "Gongysd 원문 카테고리를 추가 파싱해 위 category Step 뒤에 나머지 source-defined categories를 확장한다."
+          }
+        }
+      ],
+      "developerNotes": [
+        "버전 선택 Flow Map으로 구현한다.",
+        "두 원문의 Step을 한 Flow에 합치지 않는다."
+      ]
+    },
+    {
+      "map": {
+        "id": "curated-allblanc-workout-park",
+        "title": "Allblanc ?? 1? ?? ??",
+        "userLabel": "?? ?? ??",
+        "version": "2026-06-30.1",
+        "updatedAt": "2026-06-30T00:00:00.000Z",
+        "candidateStatus": "park",
+        "homepageEligible": false,
+        "directRouteEnabled": false,
+        "implementationStatus": "park_skeleton_video_ready",
+        "updatePolicy": "review_before_apply",
+        "source": {
+          "title": "Allblanc TV YouTube channel",
+          "url": "https://youtube.com/@allblanctv",
+          "sourceType": "creator_experience",
+          "sourcePrecision": "broad",
+          "sourceCheckedAt": "2026-06-29",
+          "confirmedPlaylists": [
+            "7 Days Abs Challenge",
+            "Allblanc Yoga",
+            "Allblanc Beginner Workout",
+            "Allblanc HIIT",
+            "HOME WALKING for Beginner",
+            "Allblanc Stretching"
+          ]
+        },
+        "setupInput": {
+          "label": "시작일",
+          "type": "date",
+          "anchorType": "start_date",
+          "hint": "선택한 영상 또는 플레이리스트 첫 실행일"
+        },
+        "secondaryInput": {
+          "label": "반복 요일",
+          "type": "weekday_multi_select",
+          "hint": "캘린더 반복 일정으로만 사용한다."
+        },
+        "artifacts": [
+          "video_calendar",
+          "workout_log_sheet",
+          "source_video_link"
+        ],
+        "doNotBuild": [
+          "영상에 없는 동작 순서를 만들지 않는다.",
+          "칼로리, 효과, 체중 감량을 추정하지 않는다.",
+          "의학적 운동 처방처럼 보이지 않게 한다."
+        ]
+      },
+      "flows": [
+        {
+          "flowId": "flow-curated-allblanc-single-video-template",
+          "slug": "curated-allblanc-single-video-template",
+          "title": "??? ?? 1? ?? Flow",
+          "category": "운동/홈트",
+          "structureType": "routine",
+          "anchorType": "start_date",
+          "primaryDestination": "calendar",
+          "riskLevel": "medical_sensitive",
+          "sourceTitle": "Allblanc TV YouTube channel",
+          "sourceUrl": "https://youtube.com/@allblanctv",
+          "sourceCheckedAt": "2026-06-29",
+          "sections": [
+            {
+              "id": "allblanc-video-run",
+              "title": "영상 실행",
+              "order": 0
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "allblanc-open-follow-video",
+              "title": "?? ?? ?? ?? ????",
+              "destination": "calendar",
+              "calendar": {
+                "mode": "routine",
+                "anchorType": "start_date",
+                "allDay": false,
+                "repeatRule": "USER_SELECTED_WEEKDAYS"
+              },
+              "sourceType": "creator_experience",
+              "riskLevel": "medical_sensitive",
+              "sourceUrl": "https://youtube.com/@allblanctv",
+              "textFallback": {
+                "title": "?? ?? ?? ?? ????",
+                "description": "??? Allblanc ?? URL? ???? ?? ?? ??? ????.",
+                "items": [
+                  "?? ?? URL",
+                  "?? ??/??",
+                  "?? ??"
+                ],
+                "memoHint": "???? ? ? ??? ???",
+                "doneWhen": "?? ?? ?? ??? ????.",
+                "caution": "??, ????, ?? ??, ?? ?? ??? ??? ???? ??? ??? ????."
+              }
+            }
+          ],
+          "rowExpansion": {
+            "playlistCandidates": [
+              "7 Days Abs Challenge",
+              "Allblanc Yoga",
+              "Allblanc Beginner Workout",
+              "Allblanc HIIT",
+              "HOME WALKING for Beginner",
+              "Allblanc Stretching"
+            ],
+            "policy": "구현 시 영상 1개 URL을 먼저 선택해 단일 Routine Flow로 만들고, 이후 플레이리스트를 영상 row별 Flow Map으로 확장한다."
+          },
+          "warnings": [
+            "통증, 어지러움, 호흡 곤란, 기존 질환 악화가 있으면 중단하고 전문가 상담을 우선한다."
+          ]
+        }
+      ],
+      "developerNotes": [
+        "?? ??, ?? ??, ?? ??? ?? Item?? ?? ??/??? ????.",
+        "? ?? fixture? ?? ?? URL 1?? ?? ??? ? ???."
+      ]
+    }
+  ],
+  "implementationQueue": [
+    {
+      "rank": 1,
+      "mapId": "curated-ajd-moving-d30",
+      "reason": "D-day anchor? ?? ? Step? ????.",
+      "nextDeveloperAction": "?? moving-d30 seed? ?? ?? ? source-backed map fixture? ??"
+    },
+    {
+      "rank": 2,
+      "mapId": "curated-new-car-purchase-guide",
+      "reason": "?? 7??? ???? checklist/sheet artifact? ?? ???.",
+      "nextDeveloperAction": "??/?? ????? public detail ??? ??"
+    },
+    {
+      "rank": 3,
+      "mapId": "curated-wedding-checklist-family",
+      "reason": "??? ???? ??? ????? ?? ?? Map?? ???? ??.",
+      "nextDeveloperAction": "Naver timeline ?? ???? public route? ??"
+    },
+    {
+      "rank": 4,
+      "mapId": "curated-opic-mock-course",
+      "reason": "?? ???? ?? Flow? ????, XLSX ???? row import? ????.",
+      "nextDeveloperAction": "XLSX? ???? 2?/1? row? ?? dayOffset?? ??"
+    },
+    {
+      "rank": 5,
+      "mapId": "curated-baby-food-meal-log",
+      "reason": "?? ?? column? ???? ?? ?? ??? PDF/HWP row import? ????.",
+      "nextDeveloperAction": "?? row import? ?? ?? caution ??"
+    },
+    {
+      "rank": 6,
+      "mapId": "curated-child-vaccination-schedule",
+      "reason": "?? ?? row ??? ??? ??? ??? row import? ???? ??.",
+      "nextDeveloperAction": "?? schedule row? ????? review-before-apply ??"
+    },
+    {
+      "rank": 7,
+      "mapId": "curated-reading-routine-log",
+      "reason": "?? ??? ??? ?? ?? Flow? ???. ???? ????? ??.",
+      "nextDeveloperAction": "?? ?? ??? ??? ??? ?? ? seed ?? ??"
+    },
+    {
+      "rank": 8,
+      "mapId": "curated-allblanc-workout-park",
+      "reason": "?? 1?? Flow? ??? ?? ??? Park?.",
+      "nextDeveloperAction": "?? ?? 1? URL? ?? ?? Routine Flow fixture ??"
+    },
+    {
+      "rank": 9,
+      "mapId": "curated-funmom-learning-park",
+      "reason": "???? Park?? ????? ?? ? row ?? ? public Flow? ???.",
+      "nextDeveloperAction": "???? ?? ???? ???? ??? ? ??? ?? ??"
+    }
+  ]
+}

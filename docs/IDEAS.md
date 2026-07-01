@@ -39,6 +39,16 @@ Capture the idea during the same session when it could influence future product 
 
 ## Ideas
 
+### 2026-06-29 - Experience value data and personal gain briefing
+
+**Idea:** As FLOW collects experience data from plan content and real execution, it can also record what value each experience produced: knowledge gained, practical skill, emotional state, confidence, risk avoided, relationship progress, money/time saved, or other user-defined value. Over a day, week, project, or custom period, FLOW could summarize what the user gained, where they are strong or weak, what patterns keep repeating, and what next actions would produce the most useful growth.
+
+**Why not now:** Current Stage 0 still needs to prove that users execute individual Flows, export/check artifacts, and leave reliable feedback. Value analysis also needs careful data design, privacy boundaries, self-assessment language, and evidence quality rules so the product does not overclaim psychological, educational, or performance insight from thin usage data.
+
+**Revisit when:** FLOW has repeated saved Flow records, check/export events, user notes, reviews, or observed sessions across multiple days or experience categories, and users start asking what they learned, improved, avoided, or should do next.
+
+**Source context:** User vision note on 2026-06-29: future FLOW should collect experience data from plan content and also capture what value the experience had, such as knowledge, experience, emotion, strengths, weaknesses, daily/periodic gains, and recommended next actions.
+
 ### 2026-06-06 - Living connected Flow experience map
 
 **Idea:** Over time, individual Flows can connect to each other and form a living experience map. This should not be a static map of related checklists; it should accumulate real user execution, edits, reviews, corrections, creator updates, source notes, and branching follow-up Flows so the map keeps improving as people use it.
@@ -188,3 +198,13 @@ Capture the idea during the same session when it could influence future product 
 **Revisit when:** The next UX/UI PoC moves beyond individual source-to-Flow samples. Good candidates are a running creator's routine collection, a study YouTuber's middle-school math curriculum with grade/unit child Flows, a baby vaccination checklist with vaccine-specific child Flows, and a baby meal-plan sequence with 6-month/12-month child Flows.
 
 **Source context:** User clarified that Flow Pack means "flow of flows." The earlier flat-pack example was not the intended model. Corrected structure: creator channel -> parent Flow -> section/subgroup -> child Flow -> execution item. See `docs/content-audit/2026-06-17-flow-of-flows-structure-ko.html`.
+
+### 2026-06-28 - Honest review and usage signals for Flow selection
+
+**Idea:** Add real review, saved-count, active-use, or creator-maintenance signals to Flow and Flow Map cards so users can decide why a Flow is worth saving. Candidate signals include saved users, recent check/export activity, creator update date, short user review snippets, and source freshness.
+
+**Why not now:** Current Stage 0 surfaces do not have reliable user behavior or review data. Adding fake counts or generic testimonials would make the service look more polished but would violate the evidence boundary. Until data exists, cards should use only source-backed signals such as generated artifact, input count, Step preview, source link, and update date.
+
+**Revisit when:** event logging, saved Flow records, feedback forms, or observed sessions produce enough real signals to show on public cards without implying validation.
+
+**Source context:** 2026-06-28 mobile feedback said representative cards show contents but lack detailed Items, reviews, and signs of real use, making selection harder.

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2026-06-29 FlowMe IA A/B 비교</title>
+  <style>
+    body { margin: 0; background: #f8fafc; color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.65; }
+    main { max-width: 1080px; margin: 0 auto; padding: 40px 20px 72px; }
+    h1 { margin: 0; font-size: 30px; line-height: 1.25; letter-spacing: -0.02em; }
+    h2 { margin: 32px 0 12px; font-size: 21px; }
+    p { margin: 8px 0; color: #475569; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; background: #fff; border-radius: 12px; overflow: hidden; }
+    th, td { border-bottom: 1px solid #e2e8f0; padding: 12px; text-align: left; vertical-align: top; font-size: 14px; }
+    th { background: #f1f5f9; color: #334155; font-size: 13px; }
+    .card { margin-top: 18px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; padding: 22px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05); }
+    .badge { display: inline-block; border-radius: 999px; padding: 3px 9px; font-size: 12px; font-weight: 800; background: #dbeafe; color: #1d4ed8; }
+    ul { margin: 8px 0 0; padding-left: 20px; }
+    li { margin: 7px 0; }
+    code { border-radius: 6px; background: #eef2ff; padding: 2px 5px; color: #1d4ed8; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>FlowMe IA A/B 비교 리포트</h1>
+    <p>이번 비교의 목적은 캘린더를 글로벌 탭으로 승격했을 때 저장 후 실행 흐름과 저장한 Flow 관리가 더 명확해지는지 확인하는 것입니다.</p>
+    <p><span class="badge">사용자 PoC</span> <code>/ia-compare/b</code>는 사용자 화면처럼 구성하고, 이 문서는 검토/평가용으로 분리합니다.</p>
+
+    <section class="card">
+      <h2>비교안</h2>
+      <table>
+        <thead>
+          <tr><th>안</th><th>탭 구조</th><th>강점</th><th>리스크</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>A안</td>
+            <td>홈 / Flow 찾기 / 내 Flow</td>
+            <td>현재 구현과 가깝고 전역 탭 수가 적습니다.</td>
+            <td>내 Flow 안에서 오늘, 캘린더, Flow 목록이 섞여 실행과 보관의 경계가 흐립니다.</td>
+          </tr>
+          <tr>
+            <td>B안</td>
+            <td>홈 / Flow 찾기 / 캘린더 / 내 Flow</td>
+            <td>저장 후 실행은 캘린더, 저장한 구조 관리는 내 Flow로 분리됩니다.</td>
+            <td>모바일 4탭이 과해 보일 수 있고, 캘린더가 비어 있을 때 의미를 설명해야 합니다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>B안 PoC 설계</h2>
+      <ul>
+        <li><strong>홈:</strong> 서비스 약속과 대표 시작점만 보여줍니다. 전체 카탈로그가 되지 않게 합니다.</li>
+        <li><strong>Flow 찾기:</strong> 저장 전 탐색과 상세 확인을 담당합니다. Flow Map/단일 Flow 용어는 뱃지 수준으로만 남깁니다.</li>
+        <li><strong>캘린더:</strong> 저장 후 날짜가 있는 Step의 실행 장소입니다. Step detail은 클릭한 자리에서 열립니다.</li>
+        <li><strong>내 Flow:</strong> 저장한 Flow와 Flow Map의 보관/관리 장소입니다. 실행은 캘린더로 보냅니다.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>시뮬레이션 질문</h2>
+      <table>
+        <thead>
+          <tr><th>저니</th><th>확인할 것</th><th>통과 기준</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>저장 직후</td>
+            <td>사용자가 캘린더로 이동했을 때 첫 Step을 바로 이해하는가?</td>
+            <td>별도 설명 없이 Step을 열고 메모할 수 있어야 합니다.</td>
+          </tr>
+          <tr>
+            <td>여러 Flow 저장</td>
+            <td>캘린더와 내 Flow의 역할이 분리되는가?</td>
+            <td>캘린더는 실행, 내 Flow는 보관/관리로 읽혀야 합니다.</td>
+          </tr>
+          <tr>
+            <td>Flow Map 구조</td>
+            <td>Flow Map/Flow/Step/Item 계층이 과하게 노출되지 않는가?</td>
+            <td>사용자는 용어보다 저장 결과와 다음 행동을 먼저 봐야 합니다.</td>
+          </tr>
+          <tr>
+            <td>홈과 탐색</td>
+            <td>홈이 Flow 찾기의 축소판처럼 보이지 않는가?</td>
+            <td>홈은 서비스 약속과 진입, Flow 찾기는 목록 탐색으로 역할이 갈려야 합니다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>현재 판단</h2>
+      <p>B안은 사용자가 “저장한 뒤 어디서 실행하지?”라고 느끼는 문제를 더 직접적으로 풀 가능성이 큽니다. 다만 4탭이 실제 모바일에서 과하게 보이는지는 PoC 클릭 후 다시 평가해야 합니다.</p>
+    </section>
+  </main>
+</body>
+</html>

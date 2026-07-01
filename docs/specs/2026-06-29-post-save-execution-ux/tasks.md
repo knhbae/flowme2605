@@ -1,0 +1,30 @@
+# Post-save Execution UX Tasks
+
+- [x] Read current service IA, product principles, quality gates, and route/component ownership.
+- [x] Create the Korean planning HTML before product-code changes.
+- [x] Create the clickable Korean wireframe HTML before product-code changes.
+- [x] Create the durable spec/plan/task/QA skeleton for this workstream.
+- [x] Prepare the planning HTML and wireframe as reviewable artifacts.
+- [x] Proceed from planning to P0/P1 implementation after the `/goal` instruction to continue without another review stop.
+- [x] Implement `내 Flow` as a Today / Calendar / Flow execution structure under the global 4-tab IA.
+- [x] Compact Step base cards and keep Item/source/memo/detail behind opened inline detail or explicit edit mode.
+- [x] Keep calendar selected-date detail close to the calendar on mobile and verify no horizontal overflow.
+- [x] Add a mobile sticky save CTA to public Flow Map detail pages and reduce pre-save Step detail density.
+- [x] Rename `바로 실행 Flow` style labels to user-facing alternatives such as `하나만 저장`.
+- [x] Update E2E expectations to the current IA: global Calendar tab, inline Flow detail, and edit-explicit Step fields.
+- [x] Run targeted E2E, full E2E, mobile screenshots, `npm run docs:check`, `npm test`, and `npm run build`.
+- [x] Deploy preview and record the result.
+- [x] Follow up on the 2026-06-30 mobile review: change `내 Flow` from a today-only empty-state surface into a continuation dashboard.
+- [x] Add the Korean planning note for `지금 이어하기 / 이번 주·다음 할 일 / 저장한 Flow` separation.
+- [x] Hide the single-mobile today summary card, add `전체 Step 보기`, and keep full checklist/Item detail behind Flow/Step opening.
+- [x] Re-run docs, tests, build, targeted My Flow mobile E2E, and mobile screenshot simulation after the continuation-dashboard update.
+- [x] Follow up on the 2026-06-30 local-tab review: remove the duplicated local `캘린더` tab from `/my` and keep dated execution under the global `캘린더` tab.
+- [x] Reframe `/my` Flow view as saved-structure continuation: show up to three compact Flow rows with progress and the next Step, then open the full Flow list only on demand.
+- [x] Add the Korean planning note for the `내 Flow = 오늘 / Flow`, `캘린더 = global schedule` decision.
+- [x] Re-run docs, tests, build, targeted My Flow/source-backed E2E, and full E2E after the local-tab split.
+- [x] Add the 2026-06-30 My Flow execution redesign planning HTML before changing the next iteration of product code.
+- [x] Unify single saved Flow and many saved Flows under the same `/my` page-local `오늘 / Flow` shell.
+- [x] Keep the post-save success state as a light banner while rendering the normal My Flow workspace underneath.
+- [x] Reduce single-Flow management density by removing the mobile-only `이어하기 / 전체 Step 보기` fork and hiding list-management actions when only one Flow is saved.
+- [x] Make compact Flow rows open Step detail inline under the tapped row.
+- [x] Re-run docs, tests, build, targeted E2E, mobile simulation, and preview deploy after the unified-shell update.

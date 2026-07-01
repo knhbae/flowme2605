@@ -20,13 +20,14 @@ This harness adapts the ideas from `junu0723/claude-harness` for this project wi
 
 ## FLOW Harness Shape
 
-FlowMe uses four durable memory layers:
+FlowMe uses six durable memory layers:
 
 1. `AGENTS.md` and `agent.md` define how agents enter the repo and which product constraints are non-negotiable.
 2. `docs/STATUS.md`, `docs/ROADMAP.md`, and `docs/IDEAS.md` keep current health, committed direction, and deferred context separate.
 3. `docs/PRODUCT_PRINCIPLES.md` keeps durable product vision, UX direction, and feature filters that should survive across chats.
-4. `docs/specs/` holds committed multi-step specs before implementation, with stage fit, natural artifact, source/risk, and verification gates.
-5. `docs/pr-history/` records what actually changed, how it was verified, and what remains after PR-sized work.
+4. `docs/SERVICE_STRUCTURE.md` keeps the current app screen feature tree, route/component ownership, and architecture map versioned with implementation.
+5. `docs/specs/` holds committed multi-step specs before implementation, with stage fit, natural artifact, source/risk, and verification gates.
+6. `docs/pr-history/` records what actually changed, how it was verified, and what remains after PR-sized work.
 
 The goal is not more paperwork. The goal is to keep Stage 0 focused on measurable execution behavior: open, anchor input, copy/export, check, and feedback.
 
@@ -52,6 +53,7 @@ References: [OpenAI Codex AGENTS.md](https://developers.openai.com/codex/guides/
 | [../STATUS.md](../STATUS.md) | Current version, health, and active constraints |
 | [../ROADMAP.md](../ROADMAP.md) | Upcoming versions and backlog index |
 | [../PRODUCT_PRINCIPLES.md](../PRODUCT_PRINCIPLES.md) | Durable product vision, UX direction, and feature filters |
+| [../SERVICE_STRUCTURE.md](../SERVICE_STRUCTURE.md) | Current app screen feature tree, route/component ownership, and architecture map |
 | [../IDEAS.md](../IDEAS.md) | Deferred ideas and conversation context worth preserving |
 | [../specs/README.md](../specs/README.md) | Durable feature, content, security, and harness specs |
 | [../REFERENCE.md](../REFERENCE.md) | External UX/UI and productivity-method references |

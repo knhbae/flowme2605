@@ -187,7 +187,7 @@
   <main class="page">
     <nav class="topbar" aria-label="FLOW">
       <a class="brand" href="#">FLOW</a>
-      <span class="chip blue">Last updated: 2026-06-19</span>
+      <span class="chip blue">Last updated: 2026-06-26</span>
     </nav>
 
     <header class="hero">
@@ -382,8 +382,8 @@
       <div class="priority-card">
         <span class="chip amber">2026-06-25 품질 리셋</span>
         <h3>Source-to-Flow 대표 후보와 실험 후보를 분리했습니다</h3>
-        <p class="desc">홈과 대표 제품 화면에는 <strong>이사 D-30</strong>과 <strong>중1 수학</strong>만 먼저 남겼습니다. <strong>영유아 검진·접종</strong>은 Revise, 추가 5개 후보는 direct-route experiment/backup/reject 상태로 내려서 “라우트가 동작한다”와 “서비스 대표 후보로 보여줄 수 있다”를 분리했습니다.</p>
-        <p class="desc">다음 전체 프로젝트 작업은 더 많은 후보 추가가 아니라, 1) 후보 재소싱/교체, 2) legacy·실험 후보 inventory 분리, 3) 서비스용 설명글 감량, 4) Creator publish gate에서 source row가 사용자 Step으로 바뀌는 과정을 검토하는 것입니다. 기준 문서: <a href="../specs/2026-06-24-source-backed-flow-map-productization/quality-prd.md">Source-backed Flow Map Quality PRD</a>, 상세 판단: <a href="./2026-06-25-source-backed-flow-map-candidate-reassessment-ko.html">후보 재심사 리포트</a>.</p>
+        <p class="desc">홈과 `/flows` 대표 제품 화면에는 <strong>이사 D-30</strong>, <strong>전세계약 전 서류 체크</strong>, <strong>초등 입학 D-30</strong>처럼 저장 후 실행 경로가 보이는 후보만 먼저 남겼습니다. 중고차·이유식·실제 원문 5개 확장 후보는 삭제가 아니라 direct-route experiment/backup/reject 또는 재검토 상태로 내려서 “라우트가 동작한다”와 “서비스 대표 후보로 보여줄 수 있다”를 분리했습니다.</p>
+        <p class="desc">다음 전체 프로젝트 작업은 더 많은 후보 추가가 아니라, 1) Flow Map과 단일 Flow 카드 패턴 정렬, 2) `/flows`의 선택 신호 설계, 3) 메뉴·액션 트리 감사, 4) legacy·실험 후보 inventory 분리, 5) Creator publish gate에서 source row가 사용자 Step으로 바뀌는 과정을 검토하는 것입니다. 기준 문서: <a href="../specs/2026-06-24-source-backed-flow-map-productization/quality-prd.md">Source-backed Flow Map Quality PRD</a>, 상세 판단: <a href="./2026-06-25-source-backed-flow-map-candidate-reassessment-ko.html">후보 재심사 리포트</a>, 실행 백로그: <a href="./2026-06-25-home-ux-cleanup-backlog-ko.html">홈 UX 정리 백로그</a>.</p>
       </div>
       <p class="eyebrow">Source-to-Flow</p>
       <h2>원컨텐츠를 실행 artifact로 바꾸는 일</h2>
@@ -416,10 +416,10 @@
             <td><a href="./2026-06-22-source-backed-my-flow-v9-ko.html">v9 사용자 화면</a><br><a href="./2026-06-22-source-backed-my-flow-v9-rehearsal-ko.html">v9 리허설</a></td>
           </tr>
           <tr>
-            <td><strong>Source-backed Step contract</strong><span class="small">Step/Item을 기존 제품 모델에 연결</span></td>
-            <td><span class="chip green">기준+route 구현</span> Step은 `FlowItem`, Item은 `FlowItemDetail`/description/link/memo/export body로 먼저 표현. Flow Map package는 creator/public/My Flow 표면을 분리하고, 공개 저장은 local saved record와 parent map snapshot으로 `/my`에 연결. 기간형 공식 일정은 `date_window`로 저장해 캘린더 이벤트 1개와 공식 기간 설명으로 내보냄.</td>
-            <td>durable creator/public map schema로 승격할지, fixture adapter로 유지하며 실제 제작자/사용자 관찰을 먼저 할지 결정. 다음 제품 gap은 creator-side source-row editing/version review.</td>
-            <td><a href="./2026-06-22-my-flow-v10-source-backed-user-poc-ko.html">v10 사용자 PoC</a><br><a href="./2026-06-22-my-flow-v10-product-data-bridge-ko.html">v10 제품 데이터 연결</a><br><a href="../specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md">Step contract</a><br><a href="../../components/flow/SourceBackedFlowMapPage.tsx">Flow Map routes</a></td>
+            <td><strong>Source-backed Step contract</strong><span class="small">Step/Item을 기존 제품 모델과 export에 연결</span></td>
+            <td><span class="chip green">기준+route 구현</span> Step은 `FlowItem`, Item은 `FlowItemDetail`/description/link/memo/export body로 먼저 표현. Flow Map package는 creator/public/My Flow 표면을 분리하고, 공개 저장은 local saved record와 parent map snapshot으로 `/my`에 연결. My Flow Step 상세의 수정값은 텍스트 복사와 ICS 캘린더 파일에 반영됨. 현재 자동화 기준은 `npm test`, `docs:check`, `build`, `test:e2e` 128개 통과.</td>
+            <td>durable creator/public map schema로 승격할지, fixture adapter로 유지하며 실제 제작자/사용자 관찰을 먼저 할지 결정. 다음 제품 gap은 todo/sheet regeneration, creator-side source-row editing/version review.</td>
+            <td><a href="./2026-06-26-creator-publish-step-contract-ko.html">2026-06-26 점검 리포트</a><br><a href="../specs/2026-06-26-creator-publish-step-contract/spec.md">Creator publish/Step export spec</a><br><a href="./2026-06-22-my-flow-v10-source-backed-user-poc-ko.html">v10 사용자 PoC</a><br><a href="./2026-06-22-my-flow-v10-product-data-bridge-ko.html">v10 제품 데이터 연결</a><br><a href="../../lib/flow/my-flow-step-export.ts">Step export</a></td>
           </tr>
           <tr>
             <td><strong>실행 카테고리 taxonomy</strong><span class="small">주제가 아니라 사용자의 수행 영역 기준</span></td>
@@ -484,6 +484,12 @@
             <td><span class="chip red">다음 작업</span> 현재 가장 중요한 서비스 UX 연결점.</td>
             <td>URL/원문 구조 확인, Flow/Step/Item 매핑, 공개 전 점검을 어떻게 가볍게 만들까?</td>
             <td>제작자 화면과 사용자 실행 화면을 섞지 않기.</td>
+          </tr>
+          <tr>
+            <td><strong>Creator publish gate v1</strong><span class="small">source row → Step contract → public save → My Flow → export</span></td>
+            <td><span class="chip green">코드 계약 진행</span> 공개 저장/제작자 편집/My Flow 실행 경계를 테스트로 고정하고, saved map record에 Step 계약을 추가. My Flow Step 수정값은 텍스트/ICS export에 반영됨.</td>
+            <td>이제 로컬 초안이 아니라 계정 기반 publish/version review로 올릴 때 어떤 최소 UI와 권한이 필요한가? todo/sheet regeneration은 언제 붙일까?</td>
+            <td><a href="./2026-06-26-creator-publish-step-contract-ko.html">점검 리포트</a>와 <a href="../specs/2026-06-26-creator-publish-step-contract/spec.md">spec</a> 기준. 실사용 검증 전에는 대표 플랫폼 검증 완료로 표현하지 않기.</td>
           </tr>
         </tbody>
       </table>

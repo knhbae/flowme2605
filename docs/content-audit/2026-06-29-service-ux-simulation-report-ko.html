@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2026-06-29 FlowMe 서비스 UX 시뮬레이션 리포트</title>
+  <style>
+    body { margin: 0; background: #f8fafc; color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.65; }
+    main { max-width: 1080px; margin: 0 auto; padding: 40px 20px 72px; }
+    h1 { margin: 0; font-size: 30px; line-height: 1.25; letter-spacing: -0.02em; }
+    h2 { margin: 34px 0 12px; font-size: 21px; }
+    h3 { margin: 18px 0 8px; font-size: 17px; }
+    p { margin: 8px 0; color: #475569; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; background: #fff; border-radius: 12px; overflow: hidden; }
+    th, td { border-bottom: 1px solid #e2e8f0; padding: 12px; text-align: left; vertical-align: top; font-size: 14px; }
+    th { background: #f1f5f9; color: #334155; font-size: 13px; }
+    .card { margin-top: 18px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; padding: 22px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05); }
+    .badge { display: inline-block; border-radius: 999px; padding: 3px 9px; font-size: 12px; font-weight: 800; }
+    .fixed { background: #dcfce7; color: #166534; }
+    .watch { background: #fef3c7; color: #92400e; }
+    .pass { background: #dbeafe; color: #1d4ed8; }
+    code { border-radius: 6px; background: #eef2ff; padding: 2px 5px; color: #1d4ed8; }
+    ul { margin: 8px 0 0; padding-left: 20px; }
+    li { margin: 7px 0; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>FlowMe 서비스 대표 UX 시뮬레이션 리포트</h1>
+    <p>목표는 홈, Flow 찾기, 공개 Flow Map, 저장 후 내 Flow 실행 화면이 실제 사용자 검토 기준에서 P0/P1 문제 없이 이어지는지 확인하는 것입니다.</p>
+    <p>이 문서는 검토용 리포트이며 사용자용 PoC 화면과 분리합니다. 실제 사용자 행동 데이터는 아직 없으므로 검증 완료가 아니라 브라우저 기반 리허설 결과로만 봅니다.</p>
+
+    <section class="card">
+      <h2>요약</h2>
+      <table>
+        <thead>
+          <tr><th>영역</th><th>판정</th><th>핵심 결과</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>홈</td>
+            <td><span class="badge fixed">High 수정</span></td>
+            <td>검토용 문구와 저장 오해 문구를 제거했습니다. 홈은 서비스 약속과 대표 시작점만 남기는 방향으로 유지합니다.</td>
+          </tr>
+          <tr>
+            <td>Flow 찾기</td>
+            <td><span class="badge fixed">High 수정</span></td>
+            <td>`후보만 둡니다`, `대표 노출` 같은 내부 표현을 사용자용 설명으로 바꿨습니다.</td>
+          </tr>
+          <tr>
+            <td>공개 Flow Map</td>
+            <td><span class="badge fixed">High 수정</span></td>
+            <td>`Step에 들어갈 Item`을 `세부 메모 항목`으로 바꿔 공개 화면의 내부 모델 노출을 줄였습니다.</td>
+          </tr>
+          <tr>
+            <td>저장 후 내 Flow</td>
+            <td><span class="badge pass">통과</span></td>
+            <td>이사 Flow Map 저장 후 첫 Step, 캘린더 보기, inline detail 토글이 동작했습니다.</td>
+          </tr>
+          <tr>
+            <td>콘텐츠 품질</td>
+            <td><span class="badge watch">Medium 남김</span></td>
+            <td>대표 후보는 이사, 중1 수학, 전세로 유지합니다. 영유아 검진/접종은 공식 표 기반 Step 품질 보강 전까지 대표로 올리지 않습니다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>수정한 P1 문제</h2>
+      <table>
+        <thead>
+          <tr><th>문제</th><th>분류</th><th>수정</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>홈 보조 카드에 `내 Flow로 저장`이 보였지만 실제 클릭은 상세 열기였습니다.</td>
+            <td>High</td>
+            <td>`미리 보고 저장`으로 바꿔 상세 확인 후 저장하는 흐름을 예측하게 했습니다.</td>
+          </tr>
+          <tr>
+            <td>홈과 Flow 찾기에 `검토할 만한`, `후보`, `대표 노출` 같은 내부 검토 문구가 남아 있었습니다.</td>
+            <td>High</td>
+            <td>`시작하기 좋은 Flow`, `저장하면 일정, 체크리스트, 진도표로 이어지는 Flow`, `1개 바로 실행`으로 바꿨습니다.</td>
+          </tr>
+          <tr>
+            <td>공개 Flow Map에 `Step에 들어갈 Item`이 노출되어 사용자 화면과 개발자 모델이 섞였습니다.</td>
+            <td>High</td>
+            <td>`세부 메모 항목`으로 바꿨습니다.</td>
+          </tr>
+          <tr>
+            <td>전세가 대표 후보로 홈/탐색에 나오지만 My Flow에서는 `검토 필요`로 분리되었습니다.</td>
+            <td>High</td>
+            <td>대표 카탈로그에 허용한 단일 Flow는 My Flow에서도 `실행 가능`으로 취급하도록 정리했습니다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>시뮬레이션 결과</h2>
+      <h3>1개 저장: 이사 Flow Map</h3>
+      <ul>
+        <li>공개 Flow Map에서 이사일 `2026-07-22`를 입력하고 전체 지도를 저장했습니다.</li>
+        <li>`/my?savedMap=moving-d30`로 이동했고, 저장 완료 패널이 첫 Step과 `캘린더 보기`를 보여줬습니다.</li>
+        <li>첫 Step detail은 클릭한 자리에서 열렸고, 같은 Step을 다시 누르면 닫혔습니다.</li>
+      </ul>
+
+      <h3>3개 저장: 이사 + 중1 수학 + 전세</h3>
+      <ul>
+        <li>`오늘 / 캘린더 / Flow` 탭은 유지됐고, 캘린더에는 날짜가 있는 Step만 표시됐습니다.</li>
+        <li>전세가 `정리 필요`로 떨어지는 문제를 수정한 뒤, 세 대표 후보가 모두 실행 가능으로 보였습니다.</li>
+        <li>중1 수학은 기준일 없이도 진도형 Flow로 남아 있고, 필요 시 `진도 보기`로 열 수 있습니다.</li>
+      </ul>
+
+      <h3>8개 이상 저장: UX20 대량 상태</h3>
+      <ul>
+        <li>Today 탭은 오늘 할 일과 밀린 항목을 먼저 보여줘 대량 상태에서도 첫 행동은 유지됐습니다.</li>
+        <li>Flow 탭은 모바일에서 전체 목록을 즉시 펼치지 않고 `저장한 Flow 보기` 시트로 엽니다.</li>
+        <li>시트에는 필터와 각 Flow의 다음 실행 항목이 보였습니다. 다만 이 데모 목록에는 레거시/실험 컨텐츠가 많아 대표 서비스 품질 판단용으로 쓰지 않습니다.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>남은 백로그</h2>
+      <table>
+        <thead>
+          <tr><th>우선순위</th><th>항목</th><th>이유</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Medium</td>
+            <td>대표 카드 신뢰 신호</td>
+            <td>실제 사용수/리뷰가 없으므로 아직 가짜 신호를 넣지 않습니다. 대신 원문, 입력, 저장 항목, 업데이트일 같은 source-backed 신호를 계속 정리합니다.</td>
+          </tr>
+          <tr>
+            <td>Medium</td>
+            <td>영유아 검진/접종 대표 후보 보류</td>
+            <td>공식 표 기반 Step 정보가 충분히 보강되기 전까지 홈/Flow 찾기 대표 후보에 올리지 않습니다.</td>
+          </tr>
+          <tr>
+            <td>Medium</td>
+            <td>전세 source-backed 승격</td>
+            <td>현 UX는 기준선으로 통과했지만 seed 상태는 아직 `needs_review`입니다. 다음에는 실제 source-backed 패키지로 승격하거나 상태 필드를 정리해야 합니다.</td>
+          </tr>
+          <tr>
+            <td>Low</td>
+            <td>대량 Flow 목록 polish</td>
+            <td>현재는 모바일 시트로 부담을 줄였지만, 실서비스에서는 카테고리/최근 실행/보관 처리까지 더 다듬을 수 있습니다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>
