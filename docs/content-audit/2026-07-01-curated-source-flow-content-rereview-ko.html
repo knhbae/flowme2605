@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>엄선 원컨텐츠 9개 Flow 콘텐츠 재검토</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --paper: #ffffff;
+      --ink: #151922;
+      --muted: #667085;
+      --line: #d9dee8;
+      --blue: #2454d6;
+      --red: #b42318;
+      --amber: #9a5b00;
+      --green: #087443;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Arial, sans-serif;
+      line-height: 1.55;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+    article {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 24px 18px 56px;
+    }
+    section {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 18px;
+      margin-top: 14px;
+      box-shadow: 0 8px 24px rgba(17, 24, 39, 0.04);
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 10px; font-size: clamp(28px, 5vw, 42px); line-height: 1.12; letter-spacing: 0; }
+    h2 { margin-bottom: 10px; font-size: clamp(22px, 4vw, 30px); line-height: 1.2; letter-spacing: 0; }
+    h3 { margin-bottom: 6px; font-size: 20px; line-height: 1.25; letter-spacing: 0; }
+    .kicker {
+      margin-bottom: 8px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .lead { max-width: 860px; color: #394150; }
+    .badges, .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .badge, .nav a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 10px;
+      background: #fafbfc;
+      color: #344054;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .fail { border-color: #f4b2ad; background: #fff1f0; color: var(--red); }
+    .revise { border-color: #f0c36d; background: #fff7e6; color: var(--amber); }
+    .keep { border-color: #a7d7c0; background: #ecfdf3; color: var(--green); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcff;
+      min-width: 0;
+    }
+    .box b {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .cards {
+      display: grid;
+      gap: 12px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .card-head {
+      padding: 14px;
+      background: #f3f6fb;
+      border-bottom: 1px solid var(--line);
+    }
+    .card-body {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      padding: 14px;
+    }
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    li + li { margin-top: 5px; }
+    .note {
+      border-left: 4px solid var(--blue);
+      background: #eef4ff;
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: #22324d;
+    }
+    a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+    code {
+      background: #eef2f7;
+      border-radius: 6px;
+      padding: 1px 5px;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 0.92em;
+    }
+    @media (max-width: 760px) {
+      article { padding: 14px 10px 42px; }
+      section { padding: 14px; border-radius: 8px; }
+      .grid, .card-body { grid-template-columns: 1fr; }
+      .nav { display: grid; grid-template-columns: 1fr; }
+      .nav a { justify-content: center; border-radius: 8px; }
+      h1 { font-size: 28px; }
+      h2 { font-size: 23px; }
+      h3 { font-size: 19px; }
+      body { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <section>
+      <p class="kicker">2026-07-01 / curated source flow content rereview</p>
+      <h1>엄선 원컨텐츠 9개 Flow 콘텐츠 재검토</h1>
+      <p class="lead">사용자 피드백을 기준으로 기존 전개본을 다시 봤다. 결론부터 말하면 현재 9개 전개본은 “실제 앱 적용 데이터”가 아니라 “원문 구조를 Flow로 옮겨보려 한 초안”에 가깝다. 특히 Item과 메모 힌트는 원문 기반성이 약하고, 일부는 템플릿 fallback이 그대로 노출되어 있다.</p>
+      <div class="badges">
+        <span class="badge fail">그대로 적용 불가</span>
+        <span class="badge revise">Step 일부만 재사용</span>
+        <span class="badge keep">신차/이사/결혼은 수정 후 후보</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>핵심 판정</h2>
+      <div class="grid">
+        <div class="box">
+          <b>가장 큰 문제</b>
+          <p>Item을 “항목 수를 채우기 위한 3개 bullet”처럼 만든 흔적이 있다. 원문 row가 가진 세부 정보가 아니라 일반 행동으로 보이는 항목이 많다.</p>
+        </div>
+        <div class="box">
+          <b>메모 힌트 문제</b>
+          <p><code>연락처, 예약번호, 다시 볼 링크만 짧게 남기기</code>가 여러 Flow에 반복된다. 오픽, 홈트, 펀맘, 예방접종에는 맞지 않는 fallback이다.</p>
+        </div>
+        <div class="box">
+          <b>적용 기준</b>
+          <p>앱에 넣을 Item은 원문 표, 원문 소제목, 공식 일정, 파일 row, 영상 제목/URL처럼 추적 가능한 정보에서만 만들어야 한다.</p>
+        </div>
+      </div>
+      <p class="note">수정 원칙: Step은 “사용자가 저장할 일정/체크 단위”, Item은 “그 Step을 열었을 때 원문을 다시 해석하지 않아도 되는 정보”여야 한다. 정보가 없으면 Item을 늘리지 말고 source import 대기로 표시한다.</p>
+    </section>
+
+    <section>
+      <h2>바로가기</h2>
+      <nav class="nav" aria-label="재검토 항목">
+        <a href="#funmom">1. 펀맘</a>
+        <a href="#opic">2. 오픽</a>
+        <a href="#baby-food">3. 이유식</a>
+        <a href="#reading">4. 독서</a>
+        <a href="#new-car">5. 신차</a>
+        <a href="#vaccination">6. 예방접종</a>
+        <a href="#moving">7. 이사</a>
+        <a href="#wedding">8. 결혼</a>
+        <a href="#homefit">9. 홈트</a>
+      </nav>
+    </section>
+
+    <section class="cards">
+      <div class="card" id="funmom">
+        <div class="card-head">
+          <h3>1. 펀맘</h3>
+          <span class="badge fail">현재 전개본 실패</span>
+        </div>
+        <div class="card-body">
+          <div class="box">
+            <b>내 재검토</b>
+            <ul>
+              <li>현재 데이터는 펀맘 사이트의 큰 카테고리를 요일표로 배치한 수준이다.</li>
+              <li>“색칠공부 한 장 출력”은 Flow 콘텐츠라기보다 사이트 사용 기획이다.</li>
+              <li>원문 article row, 나이/난이도, 실제 자료 URL이 Step/Item에 들어오지 않았다.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <b>재작성 방향</b>
+            <ul>
+              <li>먼저 Park로 두고, FlowMe 역할은 “아이 나이/목표별 자료 큐”를 만들어주는 것이다.</li>
+              <li>예: “6세 한글 문장쓰기 2주팩”, “5세 쉬운 미로 1주팩”처럼 article-level Flow를 만든다.</li>
+              <li>Item은 자료 제목, 카테고리, 권장 나이/난이도 문구, 출력 URL, 완료 후 반응 체크만 둔다.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="opic">
+        <div class="card-head">
+          <h3>2. 오픽</h3>
+          <span class="badge revise">Step 유지, Item 재작성</span>
+        </div>
+        <div class="card-body">
+          <div class="box">
+            <b>내 재검토</b>
+            <ul>
+              <li>2주/1달 계획표로 나누는 구조는 맞다.</li>
+              <li>하지만 각 일차 Item 3개는 원문 파일 row를 그대로 가져온 것이 아니라 재구성한 내용이다.</li>
+              <li>원문에는 계획표, 오픽 현타, 녹음, 반복, 문제 예측 같은 공부법이 있으므로 현재 Item은 오히려 빠진 정보가 있다.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <b>재작성 방향</b>
+            <ul>
+              <li>계획표 XLSX/PDF row를 먼저 파싱해서 날짜, 회차, 연습/복습/휴식 구조를 그대로 넣는다.</li>
+              <li>각 모의고사 날 Item은 “영상 열기, 녹음 켜기, 회차 실행, 현타/보완 기록, 다시 말할 표현” 정도로 정리한다.</li>
+              <li>메모 힌트는 “막힌 질문, 다시 말할 표현, 녹음 파일 위치”로 바꾼다.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="baby-food">
+        <div class="card-head">
+          <h3>3. 이유식</h3>
+          <span class="badge fail">현재 전개본 실패</span>
+        </div>
+        <div class="card-body">
+          <div class="box">
+            <b>내 재검토</b>
+            <ul>
+              <li>사용자 피드백이 맞다. 지금은 식단표 Flow가 아니라 식단표를 기록하자는 껍데기다.</li>
+              <li>실제 가치가 있으려면 특정 D+n에 무엇을 먹이고, 어떤 재료를 준비하고, 무엇을 냉동/소분하는지가 보여야 한다.</li>
+              <li>원문 파일 row를 가져오지 못하면 앱 적용 후보가 아니다.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <b>재작성 방향</b>
+            <ul>
+              <li>파일을 열어 초기/중기/후기, 150일/160일/170일/180일 시작 버전을 분리한다.</li>
+              <li>Flow는 “오늘 식단”, “주간 장보기/큐브 만들기”, “알레르기 관찰 기록”으로 나눌 수 있다.</li>
+              <li>Item은 재료명, 조리/소분, 냉동 보관, 오늘 제공량, 알레르기 반응 기록처럼 실제 식단 row에서 나온 정보만 둔다.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="reading">
+        <div class="card-head">
+          <h3>4. 독서</h3>
+          <span class="badge fail">현재 전개본 실패</span>
+        </div>
+        <div class="card-body">
+          <div class="box">
+            <b>내 재검토</b>
+            <ul>
+              <li>월 4권 루틴은 원문 독서 기록 템플릿에서 나온 구조라고 보기 어렵다.</li>
+              <li>사용자가 따라 할 실행 Flow라기보다 임의의 독서 습관 프로그램처럼 보인다.</li>
+              <li>독서 기록은 “책 한 권을 어떻게 기록할지” 또는 “독서노트 양식을 언제 채울지”가 핵심이다.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <b>재작성 방향</b>
+            <ul>
+              <li>원문 템플릿의 실제 필드가 확인되기 전까지는 적용 보류한다.</li>
+              <li>가능한 Flow는 “책 1권 독서 기록”이다. Step은 시작 기록, 중간 메모, 완독 기록 정도로 줄인다.</li>
+              <li>Item은 책 제목, 읽은 범위, 기억할 문장, 생각/질문, 다음 읽을 날짜처럼 템플릿 필드에 맞춰야 한다.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="new-car">
+        <div class="card-head">
+          <h3>5. 신차 구매</h3>
+          <span class="badge revise">Step 유지, Item 보강</span>
+        </div>
+        <div class="card-body">
+          <div class="box">
+            <b>내 재검토</b>
+            <ul>
+              <li>예산, 구매 방식, 견적, 계약, 출고, 등록, 보험이라는 Step 방향은 좋다.</li>
+              <li>다만 현재 Item은 “예산 범위, 후보 차량”처럼 너무 얕다.</li>
+              <li>원문에 있는 비용 항목, 서류, 출고 점검, 등록 기한, 보험 유형이 들어와야 한다.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <b>재작성 방향</b>
+            <ul>
+              <li>예산 Step: 차량가, 옵션, 등록비, 보험료, 유지비를 Item으로 둔다.</li>
+              <li>계약 Step: 신분증, 인감증명서, 주민등록등본, 소득증빙, 계약금/잔금 확인을 둔다.</li>
+              <li>출고/등록/보험 Step은 원문 체크리스트를 그대로 세부 Item으로 옮긴다.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="vaccination">
+        <div class="card-head">
+          <h3>6. 예방접종</h3>
+          <span class="badge revise">Step 유지, 공식 row 재검증</span>
+        </div>
+        <div class="card-body">
+          <div class="box">
+            <b>내 재검토</b>
+            <ul>
+              <li>월령별 Step은 방향이 맞다.</li>
+              <li>하지만 KHMS 페이지는 일정표를 이미지로 제공하고 있어 현재 Item이 공식 row와 1:1로 검증됐다고 말하기 어렵다.</li>
+              <li>의료 민감 콘텐츠라 메모 힌트와 주의 문구가 더 엄격해야 한다.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <b>재작성 방향</b>
+            <ul>
+              <li>질병관리청 등 구조화된 최신 공식 표를 기준으로 백신명, 차수, 접종 월령을 다시 맞춘다.</li>
+              <li>Item은 백신명/차수, 예약 병원, 접종 완료 여부, 이상 반응 관찰 메모로 제한한다.</li>
+              <li>메모 힌트는 “접종일, 기관명, 로트/증명서 확인, 이상 반응”으로 바꾼다.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="moving">
+        <div class="card-head">
+          <h3>7. 이사</h3>
+          <span class="badge revise">좋은 후보, Item 보강</span>
+        </div>
+        <div class="card-body">
+          <div class="box">
+            <b>내 재검토</b>
+            <ul>
+              <li>D-30, D-3, D-1, D-Day 구조는 원문과 잘 맞는다.</li>
+              <li>현재 Item은 “장비/준비물 확인”처럼 압축돼 있어 원문 정보성이 사라졌다.</li>
+              <li>메모 힌트는 연락처만으로는 부족하고, 예약번호/정산금/서류/사진 위치가 필요하다.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <b>재작성 방향</b>
+            <ul>
+              <li>D-3에는 도시가스 철거/설치, 전세권 서류, 당일 물품, 장기수선충당금을 분리한다.</li>
+              <li>D-1에는 업체 일정, 귀중품, 이체 한도, 가전/가구 사진을 분리한다.</li>
+              <li>D-Day에는 미납금 정산, 열쇠 반납, 파손 확인, 전입신고/확정일자를 넣는다.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="wedding">
+        <div class="card-head">
+          <h3>8. 결혼</h3>
+          <span class="badge revise">전체 방향 유지</span>
+        </div>
+        <div class="card-body">
+          <div class="box">
+            <b>내 재검토</b>
+            <ul>
+              <li>타임라인 버전과 A-to-Z 버전을 분리한 판단은 맞다.</li>
+              <li>다만 “후보, 메모, 완료/보류”만 반복되면 실제 원문 정보가 약해진다.</li>
+              <li>원문별 버전 차이를 더 드러내야 한다.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <b>재작성 방향</b>
+            <ul>
+              <li>타임라인 Flow는 D-12/D-10/D-7 같은 시점별 체크를 유지한다.</li>
+              <li>A-to-Z Flow는 웨딩홀, 상견례, 플래너, 스드메, 드레스투어 등 카테고리 row를 유지한다.</li>
+              <li>메모는 업체명, 견적, 예약일, 계약금, 보류 사유처럼 결혼 준비에 맞게 바꾼다.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="homefit">
+        <div class="card-head">
+          <h3>9. 홈트</h3>
+          <span class="badge revise">Flow 구조 유지, Item 정리</span>
+        </div>
+        <div class="card-body">
+          <div class="box">
+            <b>내 재검토</b>
+            <ul>
+              <li>영상 1개를 루틴 1개로 매핑하는 구조는 좋다.</li>
+              <li>현재 Item은 영상 제목, URL, 요약이라 방향은 맞지만, 메모 힌트가 완전히 틀렸다.</li>
+              <li>운동 동작 순서는 영상에서 추출하지 않았다면 만들면 안 된다.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <b>재작성 방향</b>
+            <ul>
+              <li>Item은 영상 제목, 영상 URL, 반복 요일, 완료/중단 기록 정도로 둔다.</li>
+              <li>메모 힌트는 “완료 여부, 체감 강도, 통증/어지러움, 다음 회차 조절”로 바꾼다.</li>
+              <li>통증, 어지러움, 호흡곤란, 기존 질환 악화 시 중단 문구를 별도 주의로 둔다.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>다음 작업 순서</h2>
+      <div class="grid">
+        <div class="box">
+          <b>1차 수정</b>
+          <p>모든 generic <code>memoHint</code> 제거. Flow별 실제 메모 필드로 교체하거나, 정보가 없으면 메모 힌트를 숨긴다.</p>
+        </div>
+        <div class="box">
+          <b>2차 수정</b>
+          <p>펀맘, 이유식, 독서는 현재 초안을 폐기하고 원문 row를 먼저 수집한다. 수집 전에는 Park 또는 보류로 둔다.</p>
+        </div>
+        <div class="box">
+          <b>3차 수정</b>
+          <p>신차, 예방접종, 이사, 결혼, 홈트는 Step을 유지하되 Item을 원문 세부 정보로 다시 작성한다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>확인한 근거</h2>
+      <ul>
+        <li>현재 데이터: <code>lib/flow/source-backed-curated-260630.ts</code>, <code>lib/flow/source-backed-my-flow.ts</code></li>
+        <li>문제 근거: <code>getMemoHint</code>가 날짜형 row에 동일 fallback memo를 부여함.</li>
+        <li>외부 확인: 오픽 본문은 계획표, 현타, 녹음, 반복 구조를 포함함. 신차 본문은 예산/구매방식/견적/계약/출고/등록/보험/사후관리 세부항목을 포함함. 이사 본문은 D-3, D-1, D-Day 세부 체크가 현재 Item보다 훨씬 구체적임.</li>
+        <li>네이버 이유식/독서/결혼 글은 기본 URL에서 본문이 제한적으로만 확인되어, 파일/본문 row 수집 전에는 최종 콘텐츠로 확정하지 않는다.</li>
+      </ul>
+    </section>
+  </article>
+</body>
+</html>

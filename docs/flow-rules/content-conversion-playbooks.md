@@ -12,6 +12,90 @@ Before writing items, decide:
 4. How much structure is necessary?
 5. What source/risk separation is required?
 
+## Category Productization Defaults
+
+Use these defaults when turning a source category into a FLOW content product. They do not replace the source gate; they define the usual Flow unit after the gate passes.
+
+### Preparation Project
+
+Examples: moving, wedding, new car purchase, travel preparation, school entry.
+
+- Flow unit: one project timeline or a Flow Map when there are multiple versions.
+- Step unit: source period, D-day offset, stage, or source-defined purchase step.
+- Item unit: bundled checkable action, not every low-level source fact.
+- Memo/detail: vendor names, links, costs, call notes, source checklist detail.
+- User inputs: anchor date, repeat/deadline when needed, completion, memo.
+
+### Purchase / Contract / Comparison
+
+Examples: new car, wedding hall, SDM, insurance, appliance purchase.
+
+- Flow unit: one comparison/decision Flow or one stage inside a preparation Flow Map.
+- Step unit: budget, candidate collection, quote comparison, contract, final confirmation.
+- Item unit: one decision or confirmation action.
+- Memo/detail: candidate names, quotes, deposit, final choice, hold reason.
+- User inputs: target date when needed, selected candidate, completion, memo.
+
+### Official Schedule / Age Phase
+
+Examples: vaccination, health checkup, public administrative schedule.
+
+- Flow unit: official schedule Flow Map.
+- Step unit: official date, month age, phase, or deadline row.
+- Item unit: one checkable source row group.
+- Memo/detail: official row detail, source URL, clinic/agency notes, user notes.
+- User inputs: anchor date or birth date when required, completion, memo.
+
+Do not turn medical, legal, or administrative schedules into record-management apps unless the source itself is a record template. Occasional details such as reactions, subjective state, or institution notes stay in memo.
+
+### Table / File Schedule
+
+Examples: baby food PDF, study XLSX, meal plan, timetable.
+
+- Flow unit: file version or table version.
+- Step unit: source row, row group, date range, day, round, or week.
+- Item unit: one bundled action for the row group.
+- Memo/detail: menu, ingredients, study row detail, source cell values, source file name.
+- User inputs: start date, completion, memo.
+
+Do not add shopping, cooking, scoring, or review actions unless the file has those rows.
+
+### Resource Queue / Library
+
+Examples: printable worksheet site, recipe archive, YouTube channel, blog archive.
+
+- Flow unit: 2-week or 1-month routine assembled from imported source rows.
+- Step unit: day or scheduled slot.
+- Item unit: one resource for the day.
+- Memo/detail: resource title, URL, category, target age/audience, difficulty, source feature.
+- User inputs: start date, target weekdays, completion, memo.
+
+If article/video rows are not imported yet, keep the content as Park or source import required.
+
+### Single Follow-Along Video
+
+Examples: workout, stretching, meditation, speaking practice.
+
+- Flow unit: one video routine or a time-boxed routine that repeats one or more imported video rows.
+- Step unit: day or video slot.
+- Item unit: `오늘 영상 따라하기`.
+- Memo/detail: video title, URL, length, source notes.
+- User inputs: start date, target weekdays, completion, memo.
+
+Do not invent movement sequence, sets, reps, pain checks, or stop logs unless the source explicitly defines them.
+
+### Reading / Habit / Template
+
+Examples: reading routine, journaling, reflection template, tracker template.
+
+- Flow unit: one user-target routine or one source-provided template.
+- Step unit: day/week or template section.
+- Item unit: one checkable routine action.
+- Memo/detail: book title, URL, chosen reading range, template fields.
+- User inputs: routine title, target book/resource, target finish date, target weekdays, completion, memo.
+
+If the source is mainly philosophy or personal experience and has no repeat condition or template fields, keep it as hold or require user-supplied routine targets.
+
 ## Single Fitness Video
 
 Default:
@@ -39,8 +123,8 @@ Execution specificity requirement:
 
 - Keep one follow-along video as one action, but the detail panel must separate summary, detailed execution guide, original video link, post-workout record, and stop condition.
 - The detail guide may describe how to prepare, open the source, follow the source, and record condition. It must not invent a movement sequence unless the sequence was extracted from the source.
-- Add post-session fields or copy cues for completion, intensity, pain/dizziness, and next-session adjustment.
-- Add a stop/consult condition for pain, dizziness, breathing difficulty, or known condition worsening.
+- Keep the default user record to completion plus memo. Occasional condition notes belong in memo unless the source is explicitly a health/rehab record template.
+- Add strong safety or consult copy only when the source, category, or legal risk requires it; do not make pain/dizziness fields the default routine model.
 - For repeated calendar use, each exported event description must stand alone. Do not put the preparation, execution, source link, record cue, or stop condition only in page-level copy.
 
 Override:

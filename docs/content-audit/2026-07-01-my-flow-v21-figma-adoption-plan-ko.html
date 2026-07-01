@@ -1,0 +1,72 @@
+<article style="font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; color:#0f172a; max-width:960px; margin:0 auto; padding:32px 20px; line-height:1.6;">
+  <header style="border-bottom:1px solid #e2e8f0; padding-bottom:20px; margin-bottom:24px;">
+    <p style="margin:0 0 8px; color:#2563eb; font-weight:700;">My Flow v2.1 Figma 반영 기획</p>
+    <h1 style="margin:0; font-size:32px; line-height:1.25;">저장한 Flow 화면을 목록이 아니라 실행 구조로 보이게 줄이기</h1>
+    <p style="margin:12px 0 0; color:#475569;">대상: 모바일 <code>/my</code>의 오늘 탭과 Flow 탭. 기준 Figma: <code>VFEFBJVBcFN4w2PgJ4Xlf3</code>.</p>
+  </header>
+
+  <section style="display:grid; gap:16px; margin-bottom:28px;">
+    <h2 style="font-size:22px; margin:0;">문제 정의</h2>
+    <div style="border:1px solid #e2e8f0; border-radius:12px; padding:16px; background:#fff;">
+      <p style="margin:0;">기존 모바일 화면은 오늘 실행, 밀린 일정, 완료 항목, 다음 항목이 모두 카드로 쌓여 사용자가 저장한 Flow의 구조보다 단순 Step 목록을 먼저 보게 된다. 기능은 있지만 실행 공간이 아니라 상태 카드 모음처럼 보인다.</p>
+    </div>
+  </section>
+
+  <section style="display:grid; gap:12px; margin-bottom:28px;">
+    <h2 style="font-size:22px; margin:0;">Figma에서 차용할 구조</h2>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px;">
+      <div style="border:1px solid #bfdbfe; border-radius:12px; padding:14px; background:#eff6ff;">
+        <strong>1. 요약 먼저</strong>
+        <p style="margin:8px 0 0; color:#334155;">저장한 Flow 수, 남은 항목, 오늘 항목만 짧게 보여준다.</p>
+      </div>
+      <div style="border:1px solid #bfdbfe; border-radius:12px; padding:14px; background:#eff6ff;">
+        <strong>2. Flow row 중심</strong>
+        <p style="margin:8px 0 0; color:#334155;">Flow 제목, 상위 구조, 진행률, progress bar, 다음 항목을 한 row 안에 묶는다.</p>
+      </div>
+      <div style="border:1px solid #bfdbfe; border-radius:12px; padding:14px; background:#eff6ff;">
+        <strong>3. 상세는 열 때만</strong>
+        <p style="margin:8px 0 0; color:#334155;">Item/checklist/detail은 클릭한 Flow row 바로 아래에서 열린다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:grid; gap:12px; margin-bottom:28px;">
+    <h2 style="font-size:22px; margin:0;">반영 설계</h2>
+    <table style="width:100%; border-collapse:collapse; font-size:14px;">
+      <thead>
+        <tr style="background:#f8fafc;">
+          <th style="text-align:left; border:1px solid #e2e8f0; padding:10px;">영역</th>
+          <th style="text-align:left; border:1px solid #e2e8f0; padding:10px;">변경 전</th>
+          <th style="text-align:left; border:1px solid #e2e8f0; padding:10px;">변경 후</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="border:1px solid #e2e8f0; padding:10px;">오늘 탭</td>
+          <td style="border:1px solid #e2e8f0; padding:10px;">Step row가 그대로 나열됨</td>
+          <td style="border:1px solid #e2e8f0; padding:10px;">Flow 맥락 카드 안에 다음 Step을 넣음</td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #e2e8f0; padding:10px;">Flow 탭</td>
+          <td style="border:1px solid #e2e8f0; padding:10px;">큰 wrapper 카드 안에 설명과 목록이 함께 들어감</td>
+          <td style="border:1px solid #e2e8f0; padding:10px;">요약 카드와 Flow row list를 분리함</td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #e2e8f0; padding:10px;">상세</td>
+          <td style="border:1px solid #e2e8f0; padding:10px;">Step 목록 하단에 열려 리스트 맥락이 약함</td>
+          <td style="border:1px solid #e2e8f0; padding:10px;">클릭한 row 바로 아래 inline detail로 표시</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section style="border:1px solid #e2e8f0; border-radius:12px; padding:16px; background:#f8fafc;">
+    <h2 style="font-size:22px; margin:0 0 8px;">평가 기준</h2>
+    <ul style="margin:0; padding-left:20px;">
+      <li>첫 화면에서 오늘 할 일과 저장 구조가 동시에 경쟁하지 않을 것.</li>
+      <li>Flow context 없이 Step만 나열하지 않을 것.</li>
+      <li>상세 정보는 클릭한 card 바로 아래에서 열릴 것.</li>
+      <li>모바일에서 캘린더/투두 앱 수준의 정보량을 넘지 않을 것.</li>
+    </ul>
+  </section>
+</article>

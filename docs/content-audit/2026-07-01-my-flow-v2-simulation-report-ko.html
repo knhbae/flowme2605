@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>내 Flow v2 사용자 저니 시뮬레이션</title>
+</head>
+<body style="margin:0;background:#f6f7f9;color:#0f172a;font-family:Arial,'Noto Sans KR',sans-serif;line-height:1.55">
+  <article style="max-width:1080px;margin:0 auto;padding:40px 20px 80px">
+    <header style="padding:28px;border:1px solid #e2e8f0;border-radius:14px;background:#fff">
+      <p style="margin:0 0 10px;color:#2563eb;font-weight:700">시뮬레이션 리포트 · 실제 사용자 검증 아님</p>
+      <h1 style="margin:0;font-size:34px;line-height:1.2">내 Flow v2 사용자 저니 시뮬레이션</h1>
+      <p style="margin:14px 0 0;color:#475569;font-size:17px">목표는 사용자가 저장 후 다음 행동을 판단해야 하는 시간을 줄이는 것이다. 이 문서는 사용자 화면이 아니라 설계 검토 기록이다.</p>
+    </header>
+
+    <section style="margin-top:28px;padding:24px;border:1px solid #e2e8f0;border-radius:14px;background:#fff">
+      <h2 style="margin:0 0 14px;font-size:24px">페르소나</h2>
+      <div style="display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
+        <div style="padding:16px;border-radius:12px;background:#f8fafc">
+          <h3 style="margin:0 0 8px;font-size:17px">A. 이사 준비 사용자</h3>
+          <p style="margin:0;color:#475569">블로그 체크리스트를 보고 날짜별로 해야 할 일을 저장하려는 사용자. 긴 설명보다 오늘/다음 할 일이 중요하다.</p>
+        </div>
+        <div style="padding:16px;border-radius:12px;background:#f8fafc">
+          <h3 style="margin:0 0 8px;font-size:17px">B. 공부 진도 사용자</h3>
+          <p style="margin:0;color:#475569">커리큘럼 전체를 저장하지만 매번 볼 것은 다음 단원 하나다. 전체 지도는 필요할 때만 본다.</p>
+        </div>
+        <div style="padding:16px;border-radius:12px;background:#f8fafc">
+          <h3 style="margin:0 0 8px;font-size:17px">C. 저장 Flow가 많은 사용자</h3>
+          <p style="margin:0;color:#475569">여러 Flow를 저장해도 첫 화면에서는 가장 급한 할 일과 가까운 다음 일정만 보고 싶다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:28px;padding:24px;border:1px solid #e2e8f0;border-radius:14px;background:#fff">
+      <h2 style="margin:0 0 14px;font-size:24px">저니별 판단</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:15px">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding:10px;border-bottom:1px solid #e2e8f0">저니</th>
+            <th style="text-align:left;padding:10px;border-bottom:1px solid #e2e8f0">v1 위험</th>
+            <th style="text-align:left;padding:10px;border-bottom:1px solid #e2e8f0">v2 대응</th>
+            <th style="text-align:left;padding:10px;border-bottom:1px solid #e2e8f0">등급</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #eef2f7;font-weight:700">저장 직후</td>
+            <td style="padding:10px;border-bottom:1px solid #eef2f7">저장 확인과 전체 미리보기, Step 상세가 경쟁한다.</td>
+            <td style="padding:10px;border-bottom:1px solid #eef2f7">저장됨, 지금 할 일 열기, 전체 Flow 보기만 제공한다.</td>
+            <td style="padding:10px;border-bottom:1px solid #eef2f7;color:#b45309;font-weight:700">High 수정</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #eef2f7;font-weight:700">오늘 실행</td>
+            <td style="padding:10px;border-bottom:1px solid #eef2f7">오늘이 비어 있으면 사용자가 종료된 Flow처럼 느낄 수 있다.</td>
+            <td style="padding:10px;border-bottom:1px solid #eef2f7">오늘, 밀림, 가까운 다음 일정 중 하나를 `지금 이어하기`로 승격한다.</td>
+            <td style="padding:10px;border-bottom:1px solid #eef2f7;color:#b45309;font-weight:700">High 유지 확인</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #eef2f7;font-weight:700">Step 열기</td>
+            <td style="padding:10px;border-bottom:1px solid #eef2f7">상세가 카드에서 멀리 열리거나 edit/export가 먼저 보이면 헷갈린다.</td>
+            <td style="padding:10px;border-bottom:1px solid #eef2f7">클릭한 Step 근처에서 열고, Item/메모 중심으로 보여준다.</td>
+            <td style="padding:10px;border-bottom:1px solid #eef2f7;color:#2563eb;font-weight:700">P1</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;font-weight:700">전체 구조 보기</td>
+            <td style="padding:10px">Today 안에서 전체 구조가 보이면 실행 화면이 무거워진다.</td>
+            <td style="padding:10px">Flow 탭에서 진행률, 다음 Step, 전체 구조를 본다.</td>
+            <td style="padding:10px;color:#2563eb;font-weight:700">P1</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section style="margin-top:28px;padding:24px;border:1px solid #e2e8f0;border-radius:14px;background:#fff">
+      <h2 style="margin:0 0 14px;font-size:24px">통과 기준</h2>
+      <ol style="margin:0;padding-left:22px;color:#334155">
+        <li>저장 후 첫 화면에서 사용자가 누를 버튼이 하나로 보인다.</li>
+        <li>평소 내 Flow에서 오늘 할 일과 다음 할 일이 구분된다.</li>
+        <li>Flow 전체 구조는 Today 기본 화면을 방해하지 않는다.</li>
+        <li>캘린더는 글로벌 탭으로 충분하며 내 Flow 안에 중복 탭을 만들지 않는다.</li>
+        <li>Step 상세는 클릭한 자리 근처에서 열리고 다시 닫힌다.</li>
+      </ol>
+    </section>
+  </article>
+</body>
+</html>

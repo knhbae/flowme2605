@@ -1,0 +1,4169 @@
+{
+  "schemaVersion": "curated-source-app-seed-v1",
+  "generatedAt": "2026-07-01T00:00:00+09:00",
+  "sourceNormalizedFile": "docs/content-audit/2026-07-01-curated-source-normalized-flow-draft-data-ko.json",
+  "implementationScope": "handoff-only-no-app-code-change",
+  "statusLegend": {
+    "ready_draft": {
+      "userFacingStatus": "바로 시작 가능",
+      "implementationStatus": "ready_draft",
+      "appExposure": "can_show_as_draft"
+    },
+    "partial_draft": {
+      "userFacingStatus": "일부 보강 후 시작",
+      "implementationStatus": "partial_draft",
+      "appExposure": "show_with_source_notice"
+    },
+    "source_import_required": {
+      "userFacingStatus": "자료 보강 후 시작",
+      "implementationStatus": "source_import_required",
+      "appExposure": "park_or_import_queue"
+    }
+  },
+  "contentBundles": [
+    {
+      "bundleId": "funmom-study-routine-map",
+      "sourceNo": 1,
+      "title": "펀맘 공부 루틴",
+      "category": "education",
+      "categoryLabel": "교육 자료 루틴",
+      "categoryPattern": "resource queue / library",
+      "appPattern": "resource_routine_map",
+      "status": "source_import_required",
+      "userFacingStatus": "자료 보강 후 시작",
+      "appExposure": "park_or_import_queue",
+      "sourceUrls": [
+        "https://funmom.tistory.com/"
+      ],
+      "recommendedFlowId": "funmom-hangul-2w",
+      "setupFields": [
+        {
+          "key": "startDate",
+          "label": "시작일",
+          "type": "date",
+          "required": true,
+          "scope": "setup"
+        },
+        {
+          "key": "targetWeekdays",
+          "label": "반복 요일",
+          "type": "weekday_multi",
+          "required": false,
+          "scope": "setup"
+        }
+      ],
+      "executionFields": [
+        {
+          "key": "completion",
+          "label": "완료 여부",
+          "type": "check_state",
+          "required": false,
+          "scope": "execution"
+        },
+        {
+          "key": "memo",
+          "label": "메모",
+          "type": "memo",
+          "required": false,
+          "scope": "execution"
+        }
+      ],
+      "sourceRows": [
+        {
+          "sourceRowId": "funmom-h-01",
+          "title": "ㅡ+ㅍ 기본받침 글자쓰기",
+          "detail": "한글 기본받침 글자쓰기 자료",
+          "sourceTrace": "funmom 한글공부 category parsed row",
+          "sourceUrl": "https://funmom.tistory.com/1155"
+        },
+        {
+          "sourceRowId": "funmom-h-02",
+          "title": "한글 문장쓰기 연습장",
+          "detail": "문장쓰기 연습 자료",
+          "sourceTrace": "funmom 한글공부 category parsed row",
+          "sourceUrl": "https://funmom.tistory.com/1154"
+        },
+        {
+          "sourceRowId": "funmom-h-03",
+          "title": "ㅡ+ㅌ 기본받침 글자쓰기",
+          "detail": "한글 기본받침 글자쓰기 자료",
+          "sourceTrace": "funmom 한글공부 category parsed row",
+          "sourceUrl": "https://funmom.tistory.com/1150"
+        },
+        {
+          "sourceRowId": "funmom-h-04",
+          "title": "엄마표 한글 글씨쓰기 연습장",
+          "detail": "글씨쓰기 연습 자료",
+          "sourceTrace": "funmom 한글공부 category parsed row",
+          "sourceUrl": "https://funmom.tistory.com/1148"
+        },
+        {
+          "sourceRowId": "funmom-h-05",
+          "title": "글씨쓰기연습 가정학습지",
+          "detail": "가정학습지형 쓰기 자료",
+          "sourceTrace": "funmom 한글공부 category parsed row",
+          "sourceUrl": "https://funmom.tistory.com/1144"
+        },
+        {
+          "sourceRowId": "funmom-m-01",
+          "title": "유아용 미로찾기 활동지 프린트",
+          "detail": "유아용 미로찾기 자료",
+          "sourceTrace": "funmom 미로찾기 category parsed row",
+          "sourceUrl": "https://funmom.tistory.com/1156"
+        },
+        {
+          "sourceRowId": "funmom-m-02",
+          "title": "재미있는 미로찾기 활동지",
+          "detail": "미로찾기 활동지",
+          "sourceTrace": "funmom 미로찾기 category parsed row",
+          "sourceUrl": "https://funmom.tistory.com/1151"
+        },
+        {
+          "sourceRowId": "funmom-m-03",
+          "title": "유아용 미로찾기 프린트 도안",
+          "detail": "유아용 프린트 도안",
+          "sourceTrace": "funmom 미로찾기 category parsed row",
+          "sourceUrl": "https://funmom.tistory.com/1147"
+        },
+        {
+          "sourceRowId": "funmom-m-04",
+          "title": "쉬운 미로찾기 프린트",
+          "detail": "쉬운 미로 프린트",
+          "sourceTrace": "funmom 미로찾기 category parsed row",
+          "sourceUrl": "https://funmom.tistory.com/1143"
+        },
+        {
+          "sourceRowId": "funmom-m-05",
+          "title": "유아 미로찾기 프린트 자료",
+          "detail": "본문 설명상 4~5세 유아용",
+          "sourceTrace": "funmom 미로찾기 category parsed row",
+          "sourceUrl": "https://funmom.tistory.com/1116"
+        },
+        {
+          "sourceRowId": "funmom-s-01",
+          "title": "수 가르기 학습자료",
+          "detail": "수 가르기 자료",
+          "sourceTrace": "funmom 수학공부 category parsed row",
+          "sourceUrl": "https://funmom.tistory.com/1149"
+        },
+        {
+          "sourceRowId": "funmom-s-02",
+          "title": "수 가르기 연습문제 학습지",
+          "detail": "수 가르기 연습",
+          "sourceTrace": "funmom 수학공부 category parsed row",
+          "sourceUrl": "https://funmom.tistory.com/1145"
+        },
+        {
+          "sourceRowId": "funmom-s-03",
+          "title": "10 수 가르기 모으기 무료 학습지",
+          "detail": "10 수 가르기/모으기",
+          "sourceTrace": "funmom 수학공부 category parsed row",
+          "sourceUrl": "https://funmom.tistory.com/1141"
+        },
+        {
+          "sourceRowId": "funmom-s-04",
+          "title": "10 수 가르기 연습 문제",
+          "detail": "10 수 가르기 연습",
+          "sourceTrace": "funmom 수학공부 category parsed row",
+          "sourceUrl": "https://funmom.tistory.com/1132"
+        },
+        {
+          "sourceRowId": "funmom-s-05",
+          "title": "무료 덧셈 연산 학습지 프린트",
+          "detail": "덧셈 연산 프린트",
+          "sourceTrace": "funmom 수학공부 category parsed row",
+          "sourceUrl": "https://funmom.tistory.com/1099"
+        },
+        {
+          "sourceRowId": "funmom-s-06",
+          "title": "하루 연산 문제 학습지 프린트하기",
+          "detail": "하루 연산 문제",
+          "sourceTrace": "funmom 수학공부 category parsed row",
+          "sourceUrl": "https://funmom.tistory.com/1096"
+        },
+        {
+          "sourceRowId": "funmom-s-07",
+          "title": "저학년 수학 연산문제 덧셈 연습장",
+          "detail": "저학년 덧셈 연습",
+          "sourceTrace": "funmom 수학공부 category parsed row",
+          "sourceUrl": "https://funmom.tistory.com/1088"
+        }
+      ],
+      "flows": [
+        {
+          "flowId": "funmom-hangul-2w",
+          "slug": "funmom-hangul-2w",
+          "title": "펀맘 한글 2주 공부",
+          "pattern": "resource routine",
+          "order": 1,
+          "recommended": true,
+          "defaultDestination": "calendar_checklist",
+          "sourceTrace": "funmom 한글 article rows",
+          "setupFields": [
+            {
+              "key": "startDate",
+              "label": "시작일",
+              "type": "date",
+              "required": true,
+              "scope": "setup"
+            },
+            {
+              "key": "targetWeekdays",
+              "label": "반복 요일",
+              "type": "weekday_multi",
+              "required": false,
+              "scope": "setup"
+            }
+          ],
+          "executionFields": [
+            {
+              "key": "completion",
+              "label": "완료 여부",
+              "type": "check_state",
+              "required": false,
+              "scope": "execution"
+            },
+            {
+              "key": "memo",
+              "label": "메모",
+              "type": "memo",
+              "required": false,
+              "scope": "execution"
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "funmom-hangul-day-1",
+              "stepTitle": "Day 1",
+              "order": 1,
+              "itemTitle": "오늘 자료 1개 공부하기",
+              "items": [
+                {
+                  "itemId": "funmom-hangul-day-1-item-1",
+                  "itemTitle": "오늘 자료 1개 공부하기",
+                  "detail": "자료 제목과 링크는 메모에서 확인",
+                  "sourceRowIds": [
+                    "funmom-h-01"
+                  ],
+                  "sourceTrace": "funmom 한글공부 category parsed row"
+                }
+              ],
+              "memo": "ㅡ+ㅍ 기본받침 글자쓰기\n한글 기본받침 글자쓰기 자료\nhttps://funmom.tistory.com/1155",
+              "detail": "자료 제목과 링크는 메모에서 확인",
+              "sourceUrl": "https://funmom.tistory.com/1155",
+              "sourceTrace": "funmom 한글공부 category parsed row / funmom 한글 article rows / resource queue / library",
+              "sourceRows": [
+                {
+                  "sourceRowId": "funmom-h-01",
+                  "title": "ㅡ+ㅍ 기본받침 글자쓰기",
+                  "detail": "한글 기본받침 글자쓰기 자료",
+                  "sourceTrace": "funmom 한글공부 category parsed row",
+                  "sourceUrl": "https://funmom.tistory.com/1155"
+                }
+              ],
+              "exportHints": {
+                "calendarTitle": "오늘 자료 1개 공부하기",
+                "checklistTitle": "오늘 자료 1개 공부하기",
+                "sheetRowLabel": "Day 1",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "funmom-hangul-day-2",
+              "stepTitle": "Day 2",
+              "order": 2,
+              "itemTitle": "오늘 자료 1개 공부하기",
+              "items": [
+                {
+                  "itemId": "funmom-hangul-day-2-item-1",
+                  "itemTitle": "오늘 자료 1개 공부하기",
+                  "detail": "자료 제목과 링크는 메모에서 확인",
+                  "sourceRowIds": [
+                    "funmom-h-02"
+                  ],
+                  "sourceTrace": "funmom 한글공부 category parsed row"
+                }
+              ],
+              "memo": "한글 문장쓰기 연습장\n문장쓰기 연습 자료\nhttps://funmom.tistory.com/1154",
+              "detail": "자료 제목과 링크는 메모에서 확인",
+              "sourceUrl": "https://funmom.tistory.com/1154",
+              "sourceTrace": "funmom 한글공부 category parsed row / funmom 한글 article rows / resource queue / library",
+              "sourceRows": [
+                {
+                  "sourceRowId": "funmom-h-02",
+                  "title": "한글 문장쓰기 연습장",
+                  "detail": "문장쓰기 연습 자료",
+                  "sourceTrace": "funmom 한글공부 category parsed row",
+                  "sourceUrl": "https://funmom.tistory.com/1154"
+                }
+              ],
+              "exportHints": {
+                "calendarTitle": "오늘 자료 1개 공부하기",
+                "checklistTitle": "오늘 자료 1개 공부하기",
+                "sheetRowLabel": "Day 2",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "funmom-hangul-day-3",
+              "stepTitle": "Day 3",
+              "order": 3,
+              "itemTitle": "오늘 자료 1개 공부하기",
+              "items": [
+                {
+                  "itemId": "funmom-hangul-day-3-item-1",
+                  "itemTitle": "오늘 자료 1개 공부하기",
+                  "detail": "자료 제목과 링크는 메모에서 확인",
+                  "sourceRowIds": [
+                    "funmom-h-03"
+                  ],
+                  "sourceTrace": "funmom 한글공부 category parsed row"
+                }
+              ],
+              "memo": "ㅡ+ㅌ 기본받침 글자쓰기\n한글 기본받침 글자쓰기 자료\nhttps://funmom.tistory.com/1150",
+              "detail": "자료 제목과 링크는 메모에서 확인",
+              "sourceUrl": "https://funmom.tistory.com/1150",
+              "sourceTrace": "funmom 한글공부 category parsed row / funmom 한글 article rows / resource queue / library",
+              "sourceRows": [
+                {
+                  "sourceRowId": "funmom-h-03",
+                  "title": "ㅡ+ㅌ 기본받침 글자쓰기",
+                  "detail": "한글 기본받침 글자쓰기 자료",
+                  "sourceTrace": "funmom 한글공부 category parsed row",
+                  "sourceUrl": "https://funmom.tistory.com/1150"
+                }
+              ],
+              "exportHints": {
+                "calendarTitle": "오늘 자료 1개 공부하기",
+                "checklistTitle": "오늘 자료 1개 공부하기",
+                "sheetRowLabel": "Day 3",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "funmom-hangul-day-4",
+              "stepTitle": "Day 4",
+              "order": 4,
+              "itemTitle": "오늘 자료 1개 공부하기",
+              "items": [
+                {
+                  "itemId": "funmom-hangul-day-4-item-1",
+                  "itemTitle": "오늘 자료 1개 공부하기",
+                  "detail": "자료 제목과 링크는 메모에서 확인",
+                  "sourceRowIds": [
+                    "funmom-h-04"
+                  ],
+                  "sourceTrace": "funmom 한글공부 category parsed row"
+                }
+              ],
+              "memo": "엄마표 한글 글씨쓰기 연습장\n글씨쓰기 연습 자료\nhttps://funmom.tistory.com/1148",
+              "detail": "자료 제목과 링크는 메모에서 확인",
+              "sourceUrl": "https://funmom.tistory.com/1148",
+              "sourceTrace": "funmom 한글공부 category parsed row / funmom 한글 article rows / resource queue / library",
+              "sourceRows": [
+                {
+                  "sourceRowId": "funmom-h-04",
+                  "title": "엄마표 한글 글씨쓰기 연습장",
+                  "detail": "글씨쓰기 연습 자료",
+                  "sourceTrace": "funmom 한글공부 category parsed row",
+                  "sourceUrl": "https://funmom.tistory.com/1148"
+                }
+              ],
+              "exportHints": {
+                "calendarTitle": "오늘 자료 1개 공부하기",
+                "checklistTitle": "오늘 자료 1개 공부하기",
+                "sheetRowLabel": "Day 4",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "funmom-hangul-day-5",
+              "stepTitle": "Day 5",
+              "order": 5,
+              "itemTitle": "오늘 자료 1개 공부하기",
+              "items": [
+                {
+                  "itemId": "funmom-hangul-day-5-item-1",
+                  "itemTitle": "오늘 자료 1개 공부하기",
+                  "detail": "자료 제목과 링크는 메모에서 확인",
+                  "sourceRowIds": [
+                    "funmom-h-05"
+                  ],
+                  "sourceTrace": "funmom 한글공부 category parsed row"
+                }
+              ],
+              "memo": "글씨쓰기연습 가정학습지\n가정학습지형 쓰기 자료\nhttps://funmom.tistory.com/1144",
+              "detail": "자료 제목과 링크는 메모에서 확인",
+              "sourceUrl": "https://funmom.tistory.com/1144",
+              "sourceTrace": "funmom 한글공부 category parsed row / funmom 한글 article rows / resource queue / library",
+              "sourceRows": [
+                {
+                  "sourceRowId": "funmom-h-05",
+                  "title": "글씨쓰기연습 가정학습지",
+                  "detail": "가정학습지형 쓰기 자료",
+                  "sourceTrace": "funmom 한글공부 category parsed row",
+                  "sourceUrl": "https://funmom.tistory.com/1144"
+                }
+              ],
+              "exportHints": {
+                "calendarTitle": "오늘 자료 1개 공부하기",
+                "checklistTitle": "오늘 자료 1개 공부하기",
+                "sheetRowLabel": "Day 5",
+                "memoShouldIncludeSource": true
+              }
+            }
+          ],
+          "counts": {
+            "steps": 5,
+            "items": 5
+          }
+        },
+        {
+          "flowId": "funmom-maze-2w",
+          "slug": "funmom-maze-2w",
+          "title": "펀맘 미로찾기 2주 공부",
+          "pattern": "resource routine",
+          "order": 2,
+          "recommended": false,
+          "defaultDestination": "calendar_checklist",
+          "sourceTrace": "funmom 미로 article rows",
+          "setupFields": [
+            {
+              "key": "startDate",
+              "label": "시작일",
+              "type": "date",
+              "required": true,
+              "scope": "setup"
+            },
+            {
+              "key": "targetWeekdays",
+              "label": "반복 요일",
+              "type": "weekday_multi",
+              "required": false,
+              "scope": "setup"
+            }
+          ],
+          "executionFields": [
+            {
+              "key": "completion",
+              "label": "완료 여부",
+              "type": "check_state",
+              "required": false,
+              "scope": "execution"
+            },
+            {
+              "key": "memo",
+              "label": "메모",
+              "type": "memo",
+              "required": false,
+              "scope": "execution"
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "funmom-maze-day-1",
+              "stepTitle": "Day 1",
+              "order": 1,
+              "itemTitle": "오늘 자료 1개 공부하기",
+              "items": [
+                {
+                  "itemId": "funmom-maze-day-1-item-1",
+                  "itemTitle": "오늘 자료 1개 공부하기",
+                  "detail": "자료 제목과 링크는 메모에서 확인",
+                  "sourceRowIds": [
+                    "funmom-m-01"
+                  ],
+                  "sourceTrace": "funmom 미로찾기 category parsed row"
+                }
+              ],
+              "memo": "유아용 미로찾기 활동지 프린트\n유아용 미로찾기 자료\nhttps://funmom.tistory.com/1156",
+              "detail": "자료 제목과 링크는 메모에서 확인",
+              "sourceUrl": "https://funmom.tistory.com/1156",
+              "sourceTrace": "funmom 미로찾기 category parsed row / funmom 미로 article rows / resource queue / library",
+              "sourceRows": [
+                {
+                  "sourceRowId": "funmom-m-01",
+                  "title": "유아용 미로찾기 활동지 프린트",
+                  "detail": "유아용 미로찾기 자료",
+                  "sourceTrace": "funmom 미로찾기 category parsed row",
+                  "sourceUrl": "https://funmom.tistory.com/1156"
+                }
+              ],
+              "exportHints": {
+                "calendarTitle": "오늘 자료 1개 공부하기",
+                "checklistTitle": "오늘 자료 1개 공부하기",
+                "sheetRowLabel": "Day 1",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "funmom-maze-day-2",
+              "stepTitle": "Day 2",
+              "order": 2,
+              "itemTitle": "오늘 자료 1개 공부하기",
+              "items": [
+                {
+                  "itemId": "funmom-maze-day-2-item-1",
+                  "itemTitle": "오늘 자료 1개 공부하기",
+                  "detail": "자료 제목과 링크는 메모에서 확인",
+                  "sourceRowIds": [
+                    "funmom-m-02"
+                  ],
+                  "sourceTrace": "funmom 미로찾기 category parsed row"
+                }
+              ],
+              "memo": "재미있는 미로찾기 활동지\n미로찾기 활동지\nhttps://funmom.tistory.com/1151",
+              "detail": "자료 제목과 링크는 메모에서 확인",
+              "sourceUrl": "https://funmom.tistory.com/1151",
+              "sourceTrace": "funmom 미로찾기 category parsed row / funmom 미로 article rows / resource queue / library",
+              "sourceRows": [
+                {
+                  "sourceRowId": "funmom-m-02",
+                  "title": "재미있는 미로찾기 활동지",
+                  "detail": "미로찾기 활동지",
+                  "sourceTrace": "funmom 미로찾기 category parsed row",
+                  "sourceUrl": "https://funmom.tistory.com/1151"
+                }
+              ],
+              "exportHints": {
+                "calendarTitle": "오늘 자료 1개 공부하기",
+                "checklistTitle": "오늘 자료 1개 공부하기",
+                "sheetRowLabel": "Day 2",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "funmom-maze-day-3",
+              "stepTitle": "Day 3",
+              "order": 3,
+              "itemTitle": "오늘 자료 1개 공부하기",
+              "items": [
+                {
+                  "itemId": "funmom-maze-day-3-item-1",
+                  "itemTitle": "오늘 자료 1개 공부하기",
+                  "detail": "자료 제목과 링크는 메모에서 확인",
+                  "sourceRowIds": [
+                    "funmom-m-03"
+                  ],
+                  "sourceTrace": "funmom 미로찾기 category parsed row"
+                }
+              ],
+              "memo": "유아용 미로찾기 프린트 도안\n유아용 프린트 도안\nhttps://funmom.tistory.com/1147",
+              "detail": "자료 제목과 링크는 메모에서 확인",
+              "sourceUrl": "https://funmom.tistory.com/1147",
+              "sourceTrace": "funmom 미로찾기 category parsed row / funmom 미로 article rows / resource queue / library",
+              "sourceRows": [
+                {
+                  "sourceRowId": "funmom-m-03",
+                  "title": "유아용 미로찾기 프린트 도안",
+                  "detail": "유아용 프린트 도안",
+                  "sourceTrace": "funmom 미로찾기 category parsed row",
+                  "sourceUrl": "https://funmom.tistory.com/1147"
+                }
+              ],
+              "exportHints": {
+                "calendarTitle": "오늘 자료 1개 공부하기",
+                "checklistTitle": "오늘 자료 1개 공부하기",
+                "sheetRowLabel": "Day 3",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "funmom-maze-day-4",
+              "stepTitle": "Day 4",
+              "order": 4,
+              "itemTitle": "오늘 자료 1개 공부하기",
+              "items": [
+                {
+                  "itemId": "funmom-maze-day-4-item-1",
+                  "itemTitle": "오늘 자료 1개 공부하기",
+                  "detail": "자료 제목과 링크는 메모에서 확인",
+                  "sourceRowIds": [
+                    "funmom-m-04"
+                  ],
+                  "sourceTrace": "funmom 미로찾기 category parsed row"
+                }
+              ],
+              "memo": "쉬운 미로찾기 프린트\n쉬운 미로 프린트\nhttps://funmom.tistory.com/1143",
+              "detail": "자료 제목과 링크는 메모에서 확인",
+              "sourceUrl": "https://funmom.tistory.com/1143",
+              "sourceTrace": "funmom 미로찾기 category parsed row / funmom 미로 article rows / resource queue / library",
+              "sourceRows": [
+                {
+                  "sourceRowId": "funmom-m-04",
+                  "title": "쉬운 미로찾기 프린트",
+                  "detail": "쉬운 미로 프린트",
+                  "sourceTrace": "funmom 미로찾기 category parsed row",
+                  "sourceUrl": "https://funmom.tistory.com/1143"
+                }
+              ],
+              "exportHints": {
+                "calendarTitle": "오늘 자료 1개 공부하기",
+                "checklistTitle": "오늘 자료 1개 공부하기",
+                "sheetRowLabel": "Day 4",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "funmom-maze-day-5",
+              "stepTitle": "Day 5",
+              "order": 5,
+              "itemTitle": "오늘 자료 1개 공부하기",
+              "items": [
+                {
+                  "itemId": "funmom-maze-day-5-item-1",
+                  "itemTitle": "오늘 자료 1개 공부하기",
+                  "detail": "자료 제목과 링크는 메모에서 확인",
+                  "sourceRowIds": [
+                    "funmom-m-05"
+                  ],
+                  "sourceTrace": "funmom 미로찾기 category parsed row"
+                }
+              ],
+              "memo": "유아 미로찾기 프린트 자료\n본문 설명상 4~5세 유아용\nhttps://funmom.tistory.com/1116",
+              "detail": "자료 제목과 링크는 메모에서 확인",
+              "sourceUrl": "https://funmom.tistory.com/1116",
+              "sourceTrace": "funmom 미로찾기 category parsed row / funmom 미로 article rows / resource queue / library",
+              "sourceRows": [
+                {
+                  "sourceRowId": "funmom-m-05",
+                  "title": "유아 미로찾기 프린트 자료",
+                  "detail": "본문 설명상 4~5세 유아용",
+                  "sourceTrace": "funmom 미로찾기 category parsed row",
+                  "sourceUrl": "https://funmom.tistory.com/1116"
+                }
+              ],
+              "exportHints": {
+                "calendarTitle": "오늘 자료 1개 공부하기",
+                "checklistTitle": "오늘 자료 1개 공부하기",
+                "sheetRowLabel": "Day 5",
+                "memoShouldIncludeSource": true
+              }
+            }
+          ],
+          "counts": {
+            "steps": 5,
+            "items": 5
+          }
+        },
+        {
+          "flowId": "funmom-math-1m",
+          "slug": "funmom-math-1m",
+          "title": "펀맘 수학 1달 공부",
+          "pattern": "resource routine",
+          "order": 3,
+          "recommended": false,
+          "defaultDestination": "calendar_checklist",
+          "sourceTrace": "funmom 수학 article rows",
+          "setupFields": [
+            {
+              "key": "startDate",
+              "label": "시작일",
+              "type": "date",
+              "required": true,
+              "scope": "setup"
+            },
+            {
+              "key": "targetWeekdays",
+              "label": "반복 요일",
+              "type": "weekday_multi",
+              "required": false,
+              "scope": "setup"
+            }
+          ],
+          "executionFields": [
+            {
+              "key": "completion",
+              "label": "완료 여부",
+              "type": "check_state",
+              "required": false,
+              "scope": "execution"
+            },
+            {
+              "key": "memo",
+              "label": "메모",
+              "type": "memo",
+              "required": false,
+              "scope": "execution"
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "funmom-math-day-1",
+              "stepTitle": "Day 1",
+              "order": 1,
+              "itemTitle": "오늘 자료 1개 공부하기",
+              "items": [
+                {
+                  "itemId": "funmom-math-day-1-item-1",
+                  "itemTitle": "오늘 자료 1개 공부하기",
+                  "detail": "자료 제목과 링크는 메모에서 확인",
+                  "sourceRowIds": [
+                    "funmom-s-01"
+                  ],
+                  "sourceTrace": "funmom 수학공부 category parsed row"
+                }
+              ],
+              "memo": "수 가르기 학습자료\n수 가르기 자료\nhttps://funmom.tistory.com/1149",
+              "detail": "자료 제목과 링크는 메모에서 확인",
+              "sourceUrl": "https://funmom.tistory.com/1149",
+              "sourceTrace": "funmom 수학공부 category parsed row / funmom 수학 article rows / resource queue / library",
+              "sourceRows": [
+                {
+                  "sourceRowId": "funmom-s-01",
+                  "title": "수 가르기 학습자료",
+                  "detail": "수 가르기 자료",
+                  "sourceTrace": "funmom 수학공부 category parsed row",
+                  "sourceUrl": "https://funmom.tistory.com/1149"
+                }
+              ],
+              "exportHints": {
+                "calendarTitle": "오늘 자료 1개 공부하기",
+                "checklistTitle": "오늘 자료 1개 공부하기",
+                "sheetRowLabel": "Day 1",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "funmom-math-day-2",
+              "stepTitle": "Day 2",
+              "order": 2,
+              "itemTitle": "오늘 자료 1개 공부하기",
+              "items": [
+                {
+                  "itemId": "funmom-math-day-2-item-1",
+                  "itemTitle": "오늘 자료 1개 공부하기",
+                  "detail": "자료 제목과 링크는 메모에서 확인",
+                  "sourceRowIds": [
+                    "funmom-s-02"
+                  ],
+                  "sourceTrace": "funmom 수학공부 category parsed row"
+                }
+              ],
+              "memo": "수 가르기 연습문제 학습지\n수 가르기 연습\nhttps://funmom.tistory.com/1145",
+              "detail": "자료 제목과 링크는 메모에서 확인",
+              "sourceUrl": "https://funmom.tistory.com/1145",
+              "sourceTrace": "funmom 수학공부 category parsed row / funmom 수학 article rows / resource queue / library",
+              "sourceRows": [
+                {
+                  "sourceRowId": "funmom-s-02",
+                  "title": "수 가르기 연습문제 학습지",
+                  "detail": "수 가르기 연습",
+                  "sourceTrace": "funmom 수학공부 category parsed row",
+                  "sourceUrl": "https://funmom.tistory.com/1145"
+                }
+              ],
+              "exportHints": {
+                "calendarTitle": "오늘 자료 1개 공부하기",
+                "checklistTitle": "오늘 자료 1개 공부하기",
+                "sheetRowLabel": "Day 2",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "funmom-math-day-3",
+              "stepTitle": "Day 3",
+              "order": 3,
+              "itemTitle": "오늘 자료 1개 공부하기",
+              "items": [
+                {
+                  "itemId": "funmom-math-day-3-item-1",
+                  "itemTitle": "오늘 자료 1개 공부하기",
+                  "detail": "자료 제목과 링크는 메모에서 확인",
+                  "sourceRowIds": [
+                    "funmom-s-03"
+                  ],
+                  "sourceTrace": "funmom 수학공부 category parsed row"
+                }
+              ],
+              "memo": "10 수 가르기 모으기 무료 학습지\n10 수 가르기/모으기\nhttps://funmom.tistory.com/1141",
+              "detail": "자료 제목과 링크는 메모에서 확인",
+              "sourceUrl": "https://funmom.tistory.com/1141",
+              "sourceTrace": "funmom 수학공부 category parsed row / funmom 수학 article rows / resource queue / library",
+              "sourceRows": [
+                {
+                  "sourceRowId": "funmom-s-03",
+                  "title": "10 수 가르기 모으기 무료 학습지",
+                  "detail": "10 수 가르기/모으기",
+                  "sourceTrace": "funmom 수학공부 category parsed row",
+                  "sourceUrl": "https://funmom.tistory.com/1141"
+                }
+              ],
+              "exportHints": {
+                "calendarTitle": "오늘 자료 1개 공부하기",
+                "checklistTitle": "오늘 자료 1개 공부하기",
+                "sheetRowLabel": "Day 3",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "funmom-math-day-4",
+              "stepTitle": "Day 4",
+              "order": 4,
+              "itemTitle": "오늘 자료 1개 공부하기",
+              "items": [
+                {
+                  "itemId": "funmom-math-day-4-item-1",
+                  "itemTitle": "오늘 자료 1개 공부하기",
+                  "detail": "자료 제목과 링크는 메모에서 확인",
+                  "sourceRowIds": [
+                    "funmom-s-04"
+                  ],
+                  "sourceTrace": "funmom 수학공부 category parsed row"
+                }
+              ],
+              "memo": "10 수 가르기 연습 문제\n10 수 가르기 연습\nhttps://funmom.tistory.com/1132",
+              "detail": "자료 제목과 링크는 메모에서 확인",
+              "sourceUrl": "https://funmom.tistory.com/1132",
+              "sourceTrace": "funmom 수학공부 category parsed row / funmom 수학 article rows / resource queue / library",
+              "sourceRows": [
+                {
+                  "sourceRowId": "funmom-s-04",
+                  "title": "10 수 가르기 연습 문제",
+                  "detail": "10 수 가르기 연습",
+                  "sourceTrace": "funmom 수학공부 category parsed row",
+                  "sourceUrl": "https://funmom.tistory.com/1132"
+                }
+              ],
+              "exportHints": {
+                "calendarTitle": "오늘 자료 1개 공부하기",
+                "checklistTitle": "오늘 자료 1개 공부하기",
+                "sheetRowLabel": "Day 4",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "funmom-math-day-5",
+              "stepTitle": "Day 5",
+              "order": 5,
+              "itemTitle": "오늘 자료 1개 공부하기",
+              "items": [
+                {
+                  "itemId": "funmom-math-day-5-item-1",
+                  "itemTitle": "오늘 자료 1개 공부하기",
+                  "detail": "자료 제목과 링크는 메모에서 확인",
+                  "sourceRowIds": [
+                    "funmom-s-05"
+                  ],
+                  "sourceTrace": "funmom 수학공부 category parsed row"
+                }
+              ],
+              "memo": "무료 덧셈 연산 학습지 프린트\n덧셈 연산 프린트\nhttps://funmom.tistory.com/1099",
+              "detail": "자료 제목과 링크는 메모에서 확인",
+              "sourceUrl": "https://funmom.tistory.com/1099",
+              "sourceTrace": "funmom 수학공부 category parsed row / funmom 수학 article rows / resource queue / library",
+              "sourceRows": [
+                {
+                  "sourceRowId": "funmom-s-05",
+                  "title": "무료 덧셈 연산 학습지 프린트",
+                  "detail": "덧셈 연산 프린트",
+                  "sourceTrace": "funmom 수학공부 category parsed row",
+                  "sourceUrl": "https://funmom.tistory.com/1099"
+                }
+              ],
+              "exportHints": {
+                "calendarTitle": "오늘 자료 1개 공부하기",
+                "checklistTitle": "오늘 자료 1개 공부하기",
+                "sheetRowLabel": "Day 5",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "funmom-math-day-6",
+              "stepTitle": "Day 6",
+              "order": 6,
+              "itemTitle": "오늘 자료 1개 공부하기",
+              "items": [
+                {
+                  "itemId": "funmom-math-day-6-item-1",
+                  "itemTitle": "오늘 자료 1개 공부하기",
+                  "detail": "자료 제목과 링크는 메모에서 확인",
+                  "sourceRowIds": [
+                    "funmom-s-06"
+                  ],
+                  "sourceTrace": "funmom 수학공부 category parsed row"
+                }
+              ],
+              "memo": "하루 연산 문제 학습지 프린트하기\n하루 연산 문제\nhttps://funmom.tistory.com/1096",
+              "detail": "자료 제목과 링크는 메모에서 확인",
+              "sourceUrl": "https://funmom.tistory.com/1096",
+              "sourceTrace": "funmom 수학공부 category parsed row / funmom 수학 article rows / resource queue / library",
+              "sourceRows": [
+                {
+                  "sourceRowId": "funmom-s-06",
+                  "title": "하루 연산 문제 학습지 프린트하기",
+                  "detail": "하루 연산 문제",
+                  "sourceTrace": "funmom 수학공부 category parsed row",
+                  "sourceUrl": "https://funmom.tistory.com/1096"
+                }
+              ],
+              "exportHints": {
+                "calendarTitle": "오늘 자료 1개 공부하기",
+                "checklistTitle": "오늘 자료 1개 공부하기",
+                "sheetRowLabel": "Day 6",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "funmom-math-day-7",
+              "stepTitle": "Day 7",
+              "order": 7,
+              "itemTitle": "오늘 자료 1개 공부하기",
+              "items": [
+                {
+                  "itemId": "funmom-math-day-7-item-1",
+                  "itemTitle": "오늘 자료 1개 공부하기",
+                  "detail": "자료 제목과 링크는 메모에서 확인",
+                  "sourceRowIds": [
+                    "funmom-s-07"
+                  ],
+                  "sourceTrace": "funmom 수학공부 category parsed row"
+                }
+              ],
+              "memo": "저학년 수학 연산문제 덧셈 연습장\n저학년 덧셈 연습\nhttps://funmom.tistory.com/1088",
+              "detail": "자료 제목과 링크는 메모에서 확인",
+              "sourceUrl": "https://funmom.tistory.com/1088",
+              "sourceTrace": "funmom 수학공부 category parsed row / funmom 수학 article rows / resource queue / library",
+              "sourceRows": [
+                {
+                  "sourceRowId": "funmom-s-07",
+                  "title": "저학년 수학 연산문제 덧셈 연습장",
+                  "detail": "저학년 덧셈 연습",
+                  "sourceTrace": "funmom 수학공부 category parsed row",
+                  "sourceUrl": "https://funmom.tistory.com/1088"
+                }
+              ],
+              "exportHints": {
+                "calendarTitle": "오늘 자료 1개 공부하기",
+                "checklistTitle": "오늘 자료 1개 공부하기",
+                "sheetRowLabel": "Day 7",
+                "memoShouldIncludeSource": true
+              }
+            }
+          ],
+          "counts": {
+            "steps": 7,
+            "items": 7
+          }
+        }
+      ],
+      "counts": {
+        "flows": 3,
+        "steps": 17,
+        "items": 17,
+        "sourceRows": 17
+      }
+    },
+    {
+      "bundleId": "opic-plan-map",
+      "sourceNo": 2,
+      "title": "오픽 모의고사 계획",
+      "category": "study_exam",
+      "categoryLabel": "시험 공부 계획",
+      "categoryPattern": "study / table-file schedule",
+      "appPattern": "study_plan_schedule",
+      "status": "ready_draft",
+      "userFacingStatus": "바로 시작 가능",
+      "appExposure": "can_show_as_draft",
+      "sourceUrls": [
+        "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95"
+      ],
+      "recommendedFlowId": "opic-2w",
+      "setupFields": [
+        {
+          "key": "startDate",
+          "label": "시작일",
+          "type": "date",
+          "required": true,
+          "scope": "setup"
+        },
+        {
+          "key": "targetWeekdays",
+          "label": "반복 요일",
+          "type": "weekday_multi",
+          "required": false,
+          "scope": "setup"
+        }
+      ],
+      "executionFields": [
+        {
+          "key": "completion",
+          "label": "완료 여부",
+          "type": "check_state",
+          "required": false,
+          "scope": "execution"
+        },
+        {
+          "key": "memo",
+          "label": "메모",
+          "type": "memo",
+          "required": false,
+          "scope": "execution"
+        }
+      ],
+      "sourceRows": [
+        {
+          "sourceRowId": "opic-xlsx",
+          "title": "오픽모의고사 공부 플랜 XLSX",
+          "detail": "1달 코스, 2주 코스 시트",
+          "sourceTrace": "downloaded opic-plan.xlsx",
+          "sourceUrl": ""
+        }
+      ],
+      "flows": [
+        {
+          "flowId": "opic-2w",
+          "slug": "opic-2w",
+          "title": "오픽 2주 모의고사",
+          "pattern": "study calendar",
+          "order": 1,
+          "recommended": true,
+          "defaultDestination": "calendar_checklist",
+          "sourceTrace": "XLSX 2주 코스",
+          "setupFields": [
+            {
+              "key": "startDate",
+              "label": "시작일",
+              "type": "date",
+              "required": true,
+              "scope": "setup"
+            },
+            {
+              "key": "targetWeekdays",
+              "label": "반복 요일",
+              "type": "weekday_multi",
+              "required": false,
+              "scope": "setup"
+            }
+          ],
+          "executionFields": [
+            {
+              "key": "completion",
+              "label": "완료 여부",
+              "type": "check_state",
+              "required": false,
+              "scope": "execution"
+            },
+            {
+              "key": "memo",
+              "label": "메모",
+              "type": "memo",
+              "required": false,
+              "scope": "execution"
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "opic-2w-1",
+              "stepTitle": "D+1",
+              "order": 1,
+              "itemTitle": "1회차 연습 + 복습하기",
+              "items": [
+                {
+                  "itemId": "opic-2w-1-item-1",
+                  "itemTitle": "1회차 연습 + 복습하기",
+                  "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "XLSX 2주 코스"
+                }
+              ],
+              "memo": "1회차 연습 / 오픽현타 & 보완 / 1회차 복습",
+              "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "sourceTrace": "XLSX 2주 코스 / study / table-file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "1회차 연습 + 복습하기",
+                "checklistTitle": "1회차 연습 + 복습하기",
+                "sheetRowLabel": "D+1",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "opic-2w-2",
+              "stepTitle": "D+2",
+              "order": 2,
+              "itemTitle": "2회차 연습 + 복습하기",
+              "items": [
+                {
+                  "itemId": "opic-2w-2-item-1",
+                  "itemTitle": "2회차 연습 + 복습하기",
+                  "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "XLSX 2주 코스"
+                }
+              ],
+              "memo": "2회차 연습 / 오픽현타 & 보완 / 2회차 복습",
+              "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "sourceTrace": "XLSX 2주 코스 / study / table-file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "2회차 연습 + 복습하기",
+                "checklistTitle": "2회차 연습 + 복습하기",
+                "sheetRowLabel": "D+2",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "opic-2w-3",
+              "stepTitle": "D+3",
+              "order": 3,
+              "itemTitle": "3회차 연습 + 복습하기",
+              "items": [
+                {
+                  "itemId": "opic-2w-3-item-1",
+                  "itemTitle": "3회차 연습 + 복습하기",
+                  "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "XLSX 2주 코스"
+                }
+              ],
+              "memo": "3회차 연습 / 오픽현타 & 보완 / 3회차 복습",
+              "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "sourceTrace": "XLSX 2주 코스 / study / table-file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "3회차 연습 + 복습하기",
+                "checklistTitle": "3회차 연습 + 복습하기",
+                "sheetRowLabel": "D+3",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "opic-2w-4",
+              "stepTitle": "D+4",
+              "order": 4,
+              "itemTitle": "4회차 연습 + 복습하기",
+              "items": [
+                {
+                  "itemId": "opic-2w-4-item-1",
+                  "itemTitle": "4회차 연습 + 복습하기",
+                  "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "XLSX 2주 코스"
+                }
+              ],
+              "memo": "4회차 연습 / 오픽현타 & 보완 / 4회차 복습",
+              "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "sourceTrace": "XLSX 2주 코스 / study / table-file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "4회차 연습 + 복습하기",
+                "checklistTitle": "4회차 연습 + 복습하기",
+                "sheetRowLabel": "D+4",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "opic-2w-5",
+              "stepTitle": "D+5",
+              "order": 5,
+              "itemTitle": "5회차 연습 + 복습하기",
+              "items": [
+                {
+                  "itemId": "opic-2w-5-item-1",
+                  "itemTitle": "5회차 연습 + 복습하기",
+                  "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "XLSX 2주 코스"
+                }
+              ],
+              "memo": "5회차 연습 / 오픽현타 & 보완 / 5회차 복습",
+              "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "sourceTrace": "XLSX 2주 코스 / study / table-file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "5회차 연습 + 복습하기",
+                "checklistTitle": "5회차 연습 + 복습하기",
+                "sheetRowLabel": "D+5",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "opic-2w-6",
+              "stepTitle": "D+6",
+              "order": 6,
+              "itemTitle": "1~5회차 정리하기",
+              "items": [
+                {
+                  "itemId": "opic-2w-6-item-1",
+                  "itemTitle": "1~5회차 정리하기",
+                  "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "XLSX 2주 코스"
+                }
+              ],
+              "memo": "1~5회차 정리 / 부족한 점 보완",
+              "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "sourceTrace": "XLSX 2주 코스 / study / table-file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "1~5회차 정리하기",
+                "checklistTitle": "1~5회차 정리하기",
+                "sheetRowLabel": "D+6",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "opic-2w-7",
+              "stepTitle": "D+7",
+              "order": 7,
+              "itemTitle": "쉬기",
+              "items": [
+                {
+                  "itemId": "opic-2w-7-item-1",
+                  "itemTitle": "쉬기",
+                  "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "XLSX 2주 코스"
+                }
+              ],
+              "memo": "휴식",
+              "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "sourceTrace": "XLSX 2주 코스 / study / table-file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "쉬기",
+                "checklistTitle": "쉬기",
+                "sheetRowLabel": "D+7",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "opic-2w-8",
+              "stepTitle": "D+8",
+              "order": 8,
+              "itemTitle": "6회차 연습 + 복습하기",
+              "items": [
+                {
+                  "itemId": "opic-2w-8-item-1",
+                  "itemTitle": "6회차 연습 + 복습하기",
+                  "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "XLSX 2주 코스"
+                }
+              ],
+              "memo": "6회차 연습 / 오픽현타 & 보완 / 6회차 복습",
+              "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "sourceTrace": "XLSX 2주 코스 / study / table-file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "6회차 연습 + 복습하기",
+                "checklistTitle": "6회차 연습 + 복습하기",
+                "sheetRowLabel": "D+8",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "opic-2w-9",
+              "stepTitle": "D+9",
+              "order": 9,
+              "itemTitle": "7회차 연습 + 복습하기",
+              "items": [
+                {
+                  "itemId": "opic-2w-9-item-1",
+                  "itemTitle": "7회차 연습 + 복습하기",
+                  "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "XLSX 2주 코스"
+                }
+              ],
+              "memo": "7회차 연습 / 오픽현타 & 보완 / 7회차 복습",
+              "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "sourceTrace": "XLSX 2주 코스 / study / table-file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "7회차 연습 + 복습하기",
+                "checklistTitle": "7회차 연습 + 복습하기",
+                "sheetRowLabel": "D+9",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "opic-2w-10",
+              "stepTitle": "D+10",
+              "order": 10,
+              "itemTitle": "8회차 연습 + 복습하기",
+              "items": [
+                {
+                  "itemId": "opic-2w-10-item-1",
+                  "itemTitle": "8회차 연습 + 복습하기",
+                  "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "XLSX 2주 코스"
+                }
+              ],
+              "memo": "8회차 연습 / 오픽현타 & 보완 / 8회차 복습",
+              "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "sourceTrace": "XLSX 2주 코스 / study / table-file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "8회차 연습 + 복습하기",
+                "checklistTitle": "8회차 연습 + 복습하기",
+                "sheetRowLabel": "D+10",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "opic-2w-11",
+              "stepTitle": "D+11",
+              "order": 11,
+              "itemTitle": "9회차 연습 + 복습하기",
+              "items": [
+                {
+                  "itemId": "opic-2w-11-item-1",
+                  "itemTitle": "9회차 연습 + 복습하기",
+                  "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "XLSX 2주 코스"
+                }
+              ],
+              "memo": "9회차 연습 / 오픽현타 & 보완 / 9회차 복습",
+              "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "sourceTrace": "XLSX 2주 코스 / study / table-file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "9회차 연습 + 복습하기",
+                "checklistTitle": "9회차 연습 + 복습하기",
+                "sheetRowLabel": "D+11",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "opic-2w-12",
+              "stepTitle": "D+12",
+              "order": 12,
+              "itemTitle": "10회차 연습 + 복습하기",
+              "items": [
+                {
+                  "itemId": "opic-2w-12-item-1",
+                  "itemTitle": "10회차 연습 + 복습하기",
+                  "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "XLSX 2주 코스"
+                }
+              ],
+              "memo": "10회차 연습 / 오픽현타 & 보완 / 10회차 복습",
+              "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "sourceTrace": "XLSX 2주 코스 / study / table-file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "10회차 연습 + 복습하기",
+                "checklistTitle": "10회차 연습 + 복습하기",
+                "sheetRowLabel": "D+12",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "opic-2w-13",
+              "stepTitle": "D+13",
+              "order": 13,
+              "itemTitle": "6~10회차 정리하기",
+              "items": [
+                {
+                  "itemId": "opic-2w-13-item-1",
+                  "itemTitle": "6~10회차 정리하기",
+                  "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "XLSX 2주 코스"
+                }
+              ],
+              "memo": "6~10회차 정리 / 부족한 점 보완",
+              "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "sourceTrace": "XLSX 2주 코스 / study / table-file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "6~10회차 정리하기",
+                "checklistTitle": "6~10회차 정리하기",
+                "sheetRowLabel": "D+13",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "opic-2w-14",
+              "stepTitle": "D+14",
+              "order": 14,
+              "itemTitle": "쉬기",
+              "items": [
+                {
+                  "itemId": "opic-2w-14-item-1",
+                  "itemTitle": "쉬기",
+                  "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "XLSX 2주 코스"
+                }
+              ],
+              "memo": "휴식",
+              "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "sourceTrace": "XLSX 2주 코스 / study / table-file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "쉬기",
+                "checklistTitle": "쉬기",
+                "sheetRowLabel": "D+14",
+                "memoShouldIncludeSource": true
+              }
+            }
+          ],
+          "counts": {
+            "steps": 14,
+            "items": 14
+          }
+        },
+        {
+          "flowId": "opic-1m",
+          "slug": "opic-1m",
+          "title": "오픽 1달 모의고사",
+          "pattern": "study calendar",
+          "order": 2,
+          "recommended": false,
+          "defaultDestination": "calendar_checklist",
+          "sourceTrace": "XLSX 1달 코스",
+          "setupFields": [
+            {
+              "key": "startDate",
+              "label": "시작일",
+              "type": "date",
+              "required": true,
+              "scope": "setup"
+            },
+            {
+              "key": "targetWeekdays",
+              "label": "반복 요일",
+              "type": "weekday_multi",
+              "required": false,
+              "scope": "setup"
+            }
+          ],
+          "executionFields": [
+            {
+              "key": "completion",
+              "label": "완료 여부",
+              "type": "check_state",
+              "required": false,
+              "scope": "execution"
+            },
+            {
+              "key": "memo",
+              "label": "메모",
+              "type": "memo",
+              "required": false,
+              "scope": "execution"
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "opic-1m-1",
+              "stepTitle": "1주차",
+              "order": 1,
+              "itemTitle": "1~2회차 반복하기",
+              "items": [
+                {
+                  "itemId": "opic-1m-1-item-1",
+                  "itemTitle": "1~2회차 반복하기",
+                  "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "XLSX 1달 코스"
+                }
+              ],
+              "memo": "1회차 연습/복습/복습, 2회차 연습/복습/복습, 휴식",
+              "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "sourceTrace": "XLSX 1달 코스 / study / table-file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "1~2회차 반복하기",
+                "checklistTitle": "1~2회차 반복하기",
+                "sheetRowLabel": "1주차",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "opic-1m-2",
+              "stepTitle": "2주차",
+              "order": 2,
+              "itemTitle": "3~4회차 반복하기",
+              "items": [
+                {
+                  "itemId": "opic-1m-2-item-1",
+                  "itemTitle": "3~4회차 반복하기",
+                  "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "XLSX 1달 코스"
+                }
+              ],
+              "memo": "3회차 연습/복습/복습, 4회차 연습/복습/복습, 휴식",
+              "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "sourceTrace": "XLSX 1달 코스 / study / table-file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "3~4회차 반복하기",
+                "checklistTitle": "3~4회차 반복하기",
+                "sheetRowLabel": "2주차",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "opic-1m-3",
+              "stepTitle": "3주차",
+              "order": 3,
+              "itemTitle": "5~6회차 반복하기",
+              "items": [
+                {
+                  "itemId": "opic-1m-3-item-1",
+                  "itemTitle": "5~6회차 반복하기",
+                  "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "XLSX 1달 코스"
+                }
+              ],
+              "memo": "5회차 연습/복습/복습, 6회차 연습/복습/복습, 휴식",
+              "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "sourceTrace": "XLSX 1달 코스 / study / table-file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "5~6회차 반복하기",
+                "checklistTitle": "5~6회차 반복하기",
+                "sheetRowLabel": "3주차",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "opic-1m-4",
+              "stepTitle": "4주차",
+              "order": 4,
+              "itemTitle": "7~8회차 반복하기",
+              "items": [
+                {
+                  "itemId": "opic-1m-4-item-1",
+                  "itemTitle": "7~8회차 반복하기",
+                  "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "XLSX 1달 코스"
+                }
+              ],
+              "memo": "7회차 연습/복습/복습, 8회차 연습/복습/복습, 휴식",
+              "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "sourceTrace": "XLSX 1달 코스 / study / table-file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "7~8회차 반복하기",
+                "checklistTitle": "7~8회차 반복하기",
+                "sheetRowLabel": "4주차",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "opic-1m-5",
+              "stepTitle": "5주차",
+              "order": 5,
+              "itemTitle": "9~10회차 반복하기",
+              "items": [
+                {
+                  "itemId": "opic-1m-5-item-1",
+                  "itemTitle": "9~10회차 반복하기",
+                  "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "XLSX 1달 코스"
+                }
+              ],
+              "memo": "9회차 연습/복습/복습, 10회차 연습/복습/복습, 휴식",
+              "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+              "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+              "sourceTrace": "XLSX 1달 코스 / study / table-file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "9~10회차 반복하기",
+                "checklistTitle": "9~10회차 반복하기",
+                "sheetRowLabel": "5주차",
+                "memoShouldIncludeSource": true
+              }
+            }
+          ],
+          "counts": {
+            "steps": 5,
+            "items": 5
+          }
+        }
+      ],
+      "counts": {
+        "flows": 2,
+        "steps": 19,
+        "items": 19,
+        "sourceRows": 1
+      }
+    },
+    {
+      "bundleId": "baby-food-map",
+      "sourceNo": 3,
+      "title": "초기 이유식 식단표",
+      "category": "baby_food",
+      "categoryLabel": "이유식 식단",
+      "categoryPattern": "table/file schedule",
+      "appPattern": "table_schedule",
+      "status": "ready_draft",
+      "userFacingStatus": "바로 시작 가능",
+      "appExposure": "can_show_as_draft",
+      "sourceUrls": [
+        "https://blog.naver.com/01695258757/222768860919"
+      ],
+      "recommendedFlowId": "baby-150-start",
+      "setupFields": [
+        {
+          "key": "startDate",
+          "label": "시작일",
+          "type": "date",
+          "required": true,
+          "scope": "setup"
+        },
+        {
+          "key": "targetWeekdays",
+          "label": "반복 요일",
+          "type": "weekday_multi",
+          "required": false,
+          "scope": "setup"
+        }
+      ],
+      "executionFields": [
+        {
+          "key": "completion",
+          "label": "완료 여부",
+          "type": "check_state",
+          "required": false,
+          "scope": "execution"
+        },
+        {
+          "key": "memo",
+          "label": "메모",
+          "type": "memo",
+          "required": false,
+          "scope": "execution"
+        }
+      ],
+      "sourceRows": [
+        {
+          "sourceRowId": "baby-files",
+          "title": "초기 이유식 PDF/큐브표",
+          "detail": "150/160/170/180일 시작 PDF, 큐브 재고표",
+          "sourceTrace": "Naver attachment password 211111",
+          "sourceUrl": ""
+        }
+      ],
+      "flows": [
+        {
+          "flowId": "baby-150-start",
+          "slug": "baby-150-start",
+          "title": "150일 시작 초기 이유식",
+          "pattern": "table/file schedule",
+          "order": 1,
+          "recommended": true,
+          "defaultDestination": "calendar_memo",
+          "sourceTrace": "baby-150.pdf",
+          "setupFields": [
+            {
+              "key": "startDate",
+              "label": "시작일",
+              "type": "date",
+              "required": true,
+              "scope": "setup"
+            },
+            {
+              "key": "targetWeekdays",
+              "label": "반복 요일",
+              "type": "weekday_multi",
+              "required": false,
+              "scope": "setup"
+            }
+          ],
+          "executionFields": [
+            {
+              "key": "completion",
+              "label": "완료 여부",
+              "type": "check_state",
+              "required": false,
+              "scope": "execution"
+            },
+            {
+              "key": "memo",
+              "label": "메모",
+              "type": "memo",
+              "required": false,
+              "scope": "execution"
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "baby150-01",
+              "stepTitle": "D+150~155",
+              "order": 1,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby150-01-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-150.pdf D+150~155"
+                }
+              ],
+              "memo": "메뉴: 쌀 -> 쌀오트밀\nNEW: 쌀, 오트밀\n간식: X",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-150.pdf D+150~155 / baby-150.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+150~155",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "baby150-02",
+              "stepTitle": "D+156~161",
+              "order": 2,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby150-02-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-150.pdf D+156~161"
+                }
+              ],
+              "memo": "메뉴: 쌀오트밀 + 애호박 / 애호박청경채\nNEW: 애호박, 청경채",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-150.pdf D+156~161 / baby-150.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+156~161",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "baby150-03",
+              "stepTitle": "D+162~167",
+              "order": 3,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby150-03-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-150.pdf D+162~167"
+                }
+              ],
+              "memo": "메뉴: 애호박비타민 / 청경채양배추\nNEW: 비타민, 양배추",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-150.pdf D+162~167 / baby-150.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+162~167",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "baby150-04",
+              "stepTitle": "D+168~173",
+              "order": 4,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby150-04-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-150.pdf D+168~173"
+                }
+              ],
+              "memo": "메뉴: 양배추브로콜리 / 비타민감자\nNEW: 브로콜리, 감자",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-150.pdf D+168~173 / baby-150.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+168~173",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "baby150-05",
+              "stepTitle": "D+174~179",
+              "order": 5,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby150-05-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-150.pdf D+174~179"
+                }
+              ],
+              "memo": "메뉴: 브로콜리고구마 / 브로콜리단호박\nNEW: 고구마, 단호박",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-150.pdf D+174~179 / baby-150.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+174~179",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "baby150-06",
+              "stepTitle": "D+180~185",
+              "order": 6,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby150-06-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-150.pdf D+180~185"
+                }
+              ],
+              "memo": "메뉴: 소고기청경채단호박 / 소고기브로콜리오이\nNEW: 소고기, 오이",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-150.pdf D+180~185 / baby-150.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+180~185",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "baby150-07",
+              "stepTitle": "D+186~191",
+              "order": 7,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby150-07-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-150.pdf D+186~191"
+                }
+              ],
+              "memo": "메뉴: 소고기오이배 / 소고기청경채사과\nNEW: 배, 사과",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-150.pdf D+186~191 / baby-150.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+186~191",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "baby150-08",
+              "stepTitle": "D+192~197",
+              "order": 8,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby150-08-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-150.pdf D+192~197"
+                }
+              ],
+              "memo": "메뉴: 소고기양배추단호박완두콩 / 소고기브로콜리청경채당근\nNEW: 완두콩, 당근",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-150.pdf D+192~197 / baby-150.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+192~197",
+                "memoShouldIncludeSource": true
+              }
+            }
+          ],
+          "counts": {
+            "steps": 8,
+            "items": 8
+          }
+        },
+        {
+          "flowId": "baby-160-start",
+          "slug": "baby-160-start",
+          "title": "160일 시작 초기 이유식",
+          "pattern": "table/file schedule",
+          "order": 2,
+          "recommended": false,
+          "defaultDestination": "calendar_memo",
+          "sourceTrace": "baby-160.pdf",
+          "setupFields": [
+            {
+              "key": "startDate",
+              "label": "시작일",
+              "type": "date",
+              "required": true,
+              "scope": "setup"
+            },
+            {
+              "key": "targetWeekdays",
+              "label": "반복 요일",
+              "type": "weekday_multi",
+              "required": false,
+              "scope": "setup"
+            }
+          ],
+          "executionFields": [
+            {
+              "key": "completion",
+              "label": "완료 여부",
+              "type": "check_state",
+              "required": false,
+              "scope": "execution"
+            },
+            {
+              "key": "memo",
+              "label": "메모",
+              "type": "memo",
+              "required": false,
+              "scope": "execution"
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "baby160-01",
+              "stepTitle": "D+160~165",
+              "order": 1,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby160-01-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-160.pdf D+160~165"
+                }
+              ],
+              "memo": "메뉴: 쌀 -> 쌀오트밀\nNEW: 쌀, 오트밀",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-160.pdf D+160~165 / baby-160.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+160~165",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "baby160-02",
+              "stepTitle": "D+166~171",
+              "order": 2,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby160-02-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-160.pdf D+166~171"
+                }
+              ],
+              "memo": "메뉴: 애호박 / 애호박청경채\nNEW: 애호박, 청경채",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-160.pdf D+166~171 / baby-160.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+166~171",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "baby160-03",
+              "stepTitle": "D+172~177",
+              "order": 3,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby160-03-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-160.pdf D+172~177"
+                }
+              ],
+              "memo": "메뉴: 애호박비타민 / 청경채양배추\nNEW: 비타민, 양배추",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-160.pdf D+172~177 / baby-160.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+172~177",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "baby160-04",
+              "stepTitle": "D+178~183",
+              "order": 4,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby160-04-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-160.pdf D+178~183"
+                }
+              ],
+              "memo": "메뉴: 청경채고구마 / 소고기애호박\nNEW: 고구마, 소고기",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-160.pdf D+178~183 / baby-160.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+178~183",
+                "memoShouldIncludeSource": true
+              }
+            }
+          ],
+          "counts": {
+            "steps": 4,
+            "items": 4
+          }
+        },
+        {
+          "flowId": "baby-170-start",
+          "slug": "baby-170-start",
+          "title": "170일 시작 초기 이유식",
+          "pattern": "table/file schedule",
+          "order": 3,
+          "recommended": false,
+          "defaultDestination": "calendar_memo",
+          "sourceTrace": "baby-170.pdf",
+          "setupFields": [
+            {
+              "key": "startDate",
+              "label": "시작일",
+              "type": "date",
+              "required": true,
+              "scope": "setup"
+            },
+            {
+              "key": "targetWeekdays",
+              "label": "반복 요일",
+              "type": "weekday_multi",
+              "required": false,
+              "scope": "setup"
+            }
+          ],
+          "executionFields": [
+            {
+              "key": "completion",
+              "label": "완료 여부",
+              "type": "check_state",
+              "required": false,
+              "scope": "execution"
+            },
+            {
+              "key": "memo",
+              "label": "메모",
+              "type": "memo",
+              "required": false,
+              "scope": "execution"
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "baby170-01",
+              "stepTitle": "D+170~175",
+              "order": 1,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby170-01-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-170.pdf D+170~175"
+                }
+              ],
+              "memo": "메뉴: 쌀 -> 쌀오트밀\nNEW: 쌀, 오트밀",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-170.pdf D+170~175 / baby-170.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+170~175",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "baby170-02",
+              "stepTitle": "D+176~181",
+              "order": 2,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby170-02-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-170.pdf D+176~181"
+                }
+              ],
+              "memo": "메뉴: 애호박 / 소고기애호박\nNEW: 애호박, 소고기",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-170.pdf D+176~181 / baby-170.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+176~181",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "baby170-03",
+              "stepTitle": "D+182~187",
+              "order": 3,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby170-03-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-170.pdf D+182~187"
+                }
+              ],
+              "memo": "메뉴: 소고기애호박청경채 / 소고기청경채오이\nNEW: 청경채, 오이",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-170.pdf D+182~187 / baby-170.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+182~187",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "baby170-04",
+              "stepTitle": "D+188~193",
+              "order": 4,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby170-04-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-170.pdf D+188~193"
+                }
+              ],
+              "memo": "메뉴: 소고기애호박브로콜리 / 소고기브로콜리양배추\nNEW: 브로콜리, 양배추",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-170.pdf D+188~193 / baby-170.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+188~193",
+                "memoShouldIncludeSource": true
+              }
+            }
+          ],
+          "counts": {
+            "steps": 4,
+            "items": 4
+          }
+        },
+        {
+          "flowId": "baby-180-start",
+          "slug": "baby-180-start",
+          "title": "180일 시작 초기 이유식",
+          "pattern": "table/file schedule",
+          "order": 4,
+          "recommended": false,
+          "defaultDestination": "calendar_memo",
+          "sourceTrace": "baby-180.pdf",
+          "setupFields": [
+            {
+              "key": "startDate",
+              "label": "시작일",
+              "type": "date",
+              "required": true,
+              "scope": "setup"
+            },
+            {
+              "key": "targetWeekdays",
+              "label": "반복 요일",
+              "type": "weekday_multi",
+              "required": false,
+              "scope": "setup"
+            }
+          ],
+          "executionFields": [
+            {
+              "key": "completion",
+              "label": "완료 여부",
+              "type": "check_state",
+              "required": false,
+              "scope": "execution"
+            },
+            {
+              "key": "memo",
+              "label": "메모",
+              "type": "memo",
+              "required": false,
+              "scope": "execution"
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "baby180-01",
+              "stepTitle": "D+180~185",
+              "order": 1,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby180-01-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-180.pdf D+180~185"
+                }
+              ],
+              "memo": "메뉴: 쌀 + D+183부터 소고기\nNEW: 쌀, 소고기",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-180.pdf D+180~185 / baby-180.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+180~185",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "baby180-02",
+              "stepTitle": "D+186~191",
+              "order": 2,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby180-02-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-180.pdf D+186~191"
+                }
+              ],
+              "memo": "메뉴: 쌀오트밀 + 소고기 / 소고기애호박\nNEW: 오트밀, 애호박",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-180.pdf D+186~191 / baby-180.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+186~191",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "baby180-03",
+              "stepTitle": "D+192~197",
+              "order": 3,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby180-03-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-180.pdf D+192~197"
+                }
+              ],
+              "memo": "메뉴: 소고기애호박청경채 / 소고기청경채브로콜리\nNEW: 청경채, 브로콜리",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-180.pdf D+192~197 / baby-180.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+192~197",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "baby180-04",
+              "stepTitle": "D+198~203",
+              "order": 4,
+              "itemTitle": "이 구간 식단 제공하기",
+              "items": [
+                {
+                  "itemId": "baby180-04-item-1",
+                  "itemTitle": "이 구간 식단 제공하기",
+                  "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-180.pdf D+198~203"
+                }
+              ],
+              "memo": "메뉴: 소고기브로콜리양배추 / 소고기청경채당근\nNEW: 양배추, 단호박, 당근, 사과\n간식: 단호박퓌레, 사과",
+              "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-180.pdf D+198~203 / baby-180.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이 구간 식단 제공하기",
+                "checklistTitle": "이 구간 식단 제공하기",
+                "sheetRowLabel": "D+198~203",
+                "memoShouldIncludeSource": true
+              }
+            }
+          ],
+          "counts": {
+            "steps": 4,
+            "items": 4
+          }
+        },
+        {
+          "flowId": "baby-cube",
+          "slug": "baby-cube",
+          "title": "이유식 큐브 재고 메모",
+          "pattern": "memo/sheet",
+          "order": 5,
+          "recommended": false,
+          "defaultDestination": "calendar_memo",
+          "sourceTrace": "baby-cube.pdf",
+          "setupFields": [],
+          "executionFields": [
+            {
+              "key": "memo",
+              "label": "메모",
+              "type": "memo",
+              "required": false,
+              "scope": "execution"
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "baby-cube-memo",
+              "stepTitle": "큐브 재고 적어두기",
+              "order": 1,
+              "itemTitle": "큐브 재고 메모하기",
+              "items": [
+                {
+                  "itemId": "baby-cube-memo-item-1",
+                  "itemTitle": "큐브 재고 메모하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "baby-cube.pdf"
+                }
+              ],
+              "memo": "필드 원문: 큐브 재료, 만든 날짜, 1개 용량, 큐브 개수\n재료: 쌀, 오트밀, 소고기, 애호박, 청경채, 오이, 브로콜리, 양배추, 당근, 단호박, 완두콩, 달걀노른자",
+              "detail": "",
+              "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+              "sourceTrace": "baby-cube.pdf / table/file schedule",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "큐브 재고 메모하기",
+                "checklistTitle": "큐브 재고 메모하기",
+                "sheetRowLabel": "큐브 재고 적어두기",
+                "memoShouldIncludeSource": true
+              }
+            }
+          ],
+          "counts": {
+            "steps": 1,
+            "items": 1
+          }
+        }
+      ],
+      "counts": {
+        "flows": 5,
+        "steps": 21,
+        "items": 21,
+        "sourceRows": 1
+      }
+    },
+    {
+      "bundleId": "reading-routine-map",
+      "sourceNo": 4,
+      "title": "독서 루틴",
+      "category": "reading",
+      "categoryLabel": "독서 루틴",
+      "categoryPattern": "reading / habit routine",
+      "appPattern": "user_target_routine",
+      "status": "partial_draft",
+      "userFacingStatus": "일부 보강 후 시작",
+      "appExposure": "show_with_source_notice",
+      "sourceUrls": [
+        "https://blog.naver.com/naristyle87/222978131890"
+      ],
+      "recommendedFlowId": "reading-book-finish",
+      "setupFields": [
+        {
+          "key": "customTitle",
+          "label": "루틴 제목",
+          "type": "text",
+          "required": false,
+          "scope": "setup"
+        },
+        {
+          "key": "bookTitleOrUrl",
+          "label": "책 이름 또는 URL",
+          "type": "text",
+          "required": true,
+          "scope": "setup"
+        },
+        {
+          "key": "targetFinishDate",
+          "label": "목표 완료일",
+          "type": "date",
+          "required": true,
+          "scope": "setup"
+        },
+        {
+          "key": "targetWeekdays",
+          "label": "반복 요일",
+          "type": "weekday_multi",
+          "required": false,
+          "scope": "setup"
+        },
+        {
+          "key": "startDate",
+          "label": "시작일",
+          "type": "date",
+          "required": true,
+          "scope": "setup"
+        }
+      ],
+      "executionFields": [
+        {
+          "key": "memo",
+          "label": "메모",
+          "type": "memo",
+          "required": false,
+          "scope": "execution"
+        },
+        {
+          "key": "completion",
+          "label": "완료 여부",
+          "type": "check_state",
+          "required": false,
+          "scope": "execution"
+        }
+      ],
+      "sourceRows": [
+        {
+          "sourceRowId": "reading-morning",
+          "title": "오전 1시간: 읽고 쓰는 시간",
+          "detail": "책상에 앉기, 폰 멀리 두기, 읽고 쓰는 일만 하기",
+          "sourceTrace": "Naver PostView body",
+          "sourceUrl": ""
+        },
+        {
+          "sourceRowId": "reading-night",
+          "title": "잠들기 전 전자책 읽기",
+          "detail": "스마트폰 대신 전자책",
+          "sourceTrace": "Naver PostView body",
+          "sourceUrl": ""
+        },
+        {
+          "sourceRowId": "reading-plan",
+          "title": "매달 초 5권 리스트업",
+          "detail": "장르별로 5권 선택",
+          "sourceTrace": "Naver PostView body",
+          "sourceUrl": ""
+        }
+      ],
+      "flows": [
+        {
+          "flowId": "reading-book-finish",
+          "slug": "reading-book-finish",
+          "title": "책 1권 완독 루틴",
+          "pattern": "user-target routine",
+          "order": 1,
+          "recommended": true,
+          "defaultDestination": "routine_checklist",
+          "sourceTrace": "reading system source + user target",
+          "setupFields": [
+            {
+              "key": "customTitle",
+              "label": "루틴 제목",
+              "type": "text",
+              "required": false,
+              "scope": "setup"
+            },
+            {
+              "key": "bookTitleOrUrl",
+              "label": "책 이름 또는 URL",
+              "type": "text",
+              "required": true,
+              "scope": "setup"
+            },
+            {
+              "key": "targetFinishDate",
+              "label": "목표 완료일",
+              "type": "date",
+              "required": true,
+              "scope": "setup"
+            },
+            {
+              "key": "targetWeekdays",
+              "label": "반복 요일",
+              "type": "weekday_multi",
+              "required": false,
+              "scope": "setup"
+            }
+          ],
+          "executionFields": [
+            {
+              "key": "memo",
+              "label": "메모",
+              "type": "memo",
+              "required": false,
+              "scope": "execution"
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "reading-week-1",
+              "stepTitle": "1주차",
+              "order": 1,
+              "itemTitle": "정한 책 읽기",
+              "items": [
+                {
+                  "itemId": "reading-week-1-item-1",
+                  "itemTitle": "정한 책 읽기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "user target week"
+                }
+              ],
+              "memo": "메모에 책 이름, URL, 이번 주 읽을 범위 적기",
+              "detail": "",
+              "sourceUrl": "https://blog.naver.com/naristyle87/222978131890",
+              "sourceTrace": "user target week / reading system source + user target / reading / habit routine",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "정한 책 읽기",
+                "checklistTitle": "정한 책 읽기",
+                "sheetRowLabel": "1주차",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "reading-week-2",
+              "stepTitle": "2주차",
+              "order": 2,
+              "itemTitle": "정한 책 읽기",
+              "items": [
+                {
+                  "itemId": "reading-week-2-item-1",
+                  "itemTitle": "정한 책 읽기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "user target week"
+                }
+              ],
+              "memo": "메모에 책 이름, URL, 이번 주 읽을 범위 적기",
+              "detail": "",
+              "sourceUrl": "https://blog.naver.com/naristyle87/222978131890",
+              "sourceTrace": "user target week / reading system source + user target / reading / habit routine",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "정한 책 읽기",
+                "checklistTitle": "정한 책 읽기",
+                "sheetRowLabel": "2주차",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "reading-week-3",
+              "stepTitle": "3주차",
+              "order": 3,
+              "itemTitle": "정한 책 읽기",
+              "items": [
+                {
+                  "itemId": "reading-week-3-item-1",
+                  "itemTitle": "정한 책 읽기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "user target week"
+                }
+              ],
+              "memo": "메모에 책 이름, URL, 이번 주 읽을 범위 적기",
+              "detail": "",
+              "sourceUrl": "https://blog.naver.com/naristyle87/222978131890",
+              "sourceTrace": "user target week / reading system source + user target / reading / habit routine",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "정한 책 읽기",
+                "checklistTitle": "정한 책 읽기",
+                "sheetRowLabel": "3주차",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "reading-week-4",
+              "stepTitle": "4주차",
+              "order": 4,
+              "itemTitle": "정한 책 읽기",
+              "items": [
+                {
+                  "itemId": "reading-week-4-item-1",
+                  "itemTitle": "정한 책 읽기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "user target week"
+                }
+              ],
+              "memo": "메모에 책 이름, URL, 완독 메모 적기",
+              "detail": "",
+              "sourceUrl": "https://blog.naver.com/naristyle87/222978131890",
+              "sourceTrace": "user target week / reading system source + user target / reading / habit routine",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "정한 책 읽기",
+                "checklistTitle": "정한 책 읽기",
+                "sheetRowLabel": "4주차",
+                "memoShouldIncludeSource": true
+              }
+            }
+          ],
+          "counts": {
+            "steps": 4,
+            "items": 4
+          }
+        },
+        {
+          "flowId": "reading-morning-routine",
+          "slug": "reading-morning-routine",
+          "title": "아침 읽고 쓰기 루틴",
+          "pattern": "habit routine",
+          "order": 2,
+          "recommended": false,
+          "defaultDestination": "routine_checklist",
+          "sourceTrace": "Naver 오전 1시간 section",
+          "setupFields": [
+            {
+              "key": "startDate",
+              "label": "시작일",
+              "type": "date",
+              "required": true,
+              "scope": "setup"
+            },
+            {
+              "key": "targetWeekdays",
+              "label": "반복 요일",
+              "type": "weekday_multi",
+              "required": false,
+              "scope": "setup"
+            }
+          ],
+          "executionFields": [
+            {
+              "key": "completion",
+              "label": "완료 여부",
+              "type": "check_state",
+              "required": false,
+              "scope": "execution"
+            },
+            {
+              "key": "memo",
+              "label": "메모",
+              "type": "memo",
+              "required": false,
+              "scope": "execution"
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "reading-morning",
+              "stepTitle": "반복일",
+              "order": 1,
+              "itemTitle": "아침에 읽고 쓰기",
+              "items": [
+                {
+                  "itemId": "reading-morning-item-1",
+                  "itemTitle": "아침에 읽고 쓰기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "Naver 오전 1시간 section"
+                }
+              ],
+              "memo": "세부: 책상에 앉기, 폰 멀리 두기, 읽고 쓰는 일만 하기",
+              "detail": "",
+              "sourceUrl": "https://blog.naver.com/naristyle87/222978131890",
+              "sourceTrace": "Naver 오전 1시간 section / reading / habit routine",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "아침에 읽고 쓰기",
+                "checklistTitle": "아침에 읽고 쓰기",
+                "sheetRowLabel": "반복일",
+                "memoShouldIncludeSource": true
+              }
+            }
+          ],
+          "counts": {
+            "steps": 1,
+            "items": 1
+          }
+        }
+      ],
+      "counts": {
+        "flows": 2,
+        "steps": 5,
+        "items": 5,
+        "sourceRows": 3
+      }
+    },
+    {
+      "bundleId": "new-car-map",
+      "sourceNo": 5,
+      "title": "신차 구매",
+      "category": "purchase",
+      "categoryLabel": "구매 준비",
+      "categoryPattern": "preparation / purchase comparison",
+      "appPattern": "purchase_checklist",
+      "status": "ready_draft",
+      "userFacingStatus": "바로 시작 가능",
+      "appExposure": "can_show_as_draft",
+      "sourceUrls": [
+        "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners"
+      ],
+      "recommendedFlowId": "new-car-7-step",
+      "setupFields": [
+        {
+          "key": "targetPurchaseDate",
+          "label": "구매 목표일",
+          "type": "date",
+          "required": false,
+          "scope": "setup"
+        }
+      ],
+      "executionFields": [
+        {
+          "key": "completion",
+          "label": "완료 여부",
+          "type": "check_state",
+          "required": false,
+          "scope": "execution"
+        },
+        {
+          "key": "memo",
+          "label": "메모",
+          "type": "memo",
+          "required": false,
+          "scope": "execution"
+        }
+      ],
+      "sourceRows": [
+        {
+          "sourceRowId": "new-car-steps",
+          "title": "신차 구매 7단계",
+          "detail": "예산, 구매방법, 견적, 계약, 출고, 등록, 보험",
+          "sourceTrace": "Getcha article",
+          "sourceUrl": ""
+        }
+      ],
+      "flows": [
+        {
+          "flowId": "new-car-7-step",
+          "slug": "new-car-7-step",
+          "title": "신차 구매 7단계",
+          "pattern": "purchase checklist",
+          "order": 1,
+          "recommended": true,
+          "defaultDestination": "checklist_memo",
+          "sourceTrace": "Getcha 7-step article",
+          "setupFields": [
+            {
+              "key": "targetPurchaseDate",
+              "label": "구매 목표일",
+              "type": "date",
+              "required": false,
+              "scope": "setup"
+            }
+          ],
+          "executionFields": [
+            {
+              "key": "completion",
+              "label": "완료 여부",
+              "type": "check_state",
+              "required": false,
+              "scope": "execution"
+            },
+            {
+              "key": "memo",
+              "label": "메모",
+              "type": "memo",
+              "required": false,
+              "scope": "execution"
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "car-budget",
+              "stepTitle": "1. 예산과 차종",
+              "order": 1,
+              "itemTitle": "총 구매 예산 정하기",
+              "items": [
+                {
+                  "itemId": "car-budget-item-1",
+                  "itemTitle": "총 구매 예산 정하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "Getcha budget section"
+                }
+              ],
+              "memo": "세부: 차량 가격, 옵션 200~500만원, 등록비 7~8%, 보험료 연 100~200만원, 유지비, 용도",
+              "detail": "",
+              "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+              "sourceTrace": "Getcha budget section / Getcha 7-step article / preparation / purchase comparison",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "총 구매 예산 정하기",
+                "checklistTitle": "총 구매 예산 정하기",
+                "sheetRowLabel": "1. 예산과 차종",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "car-method",
+              "stepTitle": "2. 구매 방법",
+              "order": 2,
+              "itemTitle": "구매 방식 정하기",
+              "items": [
+                {
+                  "itemId": "car-method-item-1",
+                  "itemTitle": "구매 방식 정하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "Getcha purchase method section"
+                }
+              ],
+              "memo": "세부: 현금, 할부, 장기렌트, 리스",
+              "detail": "",
+              "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+              "sourceTrace": "Getcha purchase method section / Getcha 7-step article / preparation / purchase comparison",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "구매 방식 정하기",
+                "checklistTitle": "구매 방식 정하기",
+                "sheetRowLabel": "2. 구매 방법",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "car-quotes",
+              "stepTitle": "3. 견적 비교",
+              "order": 3,
+              "itemTitle": "딜러 견적 비교하기",
+              "items": [
+                {
+                  "itemId": "car-quotes-item-1",
+                  "itemTitle": "딜러 견적 비교하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "Getcha quote section"
+                }
+              ],
+              "memo": "세부: 여러 딜러 견적, 할인, 서비스, 출고 기간",
+              "detail": "",
+              "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+              "sourceTrace": "Getcha quote section / Getcha 7-step article / preparation / purchase comparison",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "딜러 견적 비교하기",
+                "checklistTitle": "딜러 견적 비교하기",
+                "sheetRowLabel": "3. 견적 비교",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "car-contract",
+              "stepTitle": "4. 계약",
+              "order": 4,
+              "itemTitle": "계약 조건 확인하기",
+              "items": [
+                {
+                  "itemId": "car-contract-item-1",
+                  "itemTitle": "계약 조건 확인하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "Getcha contract section"
+                }
+              ],
+              "memo": "세부: 모델, 색상, 옵션, 할인, 최종 금액, 계약금/잔금, 출고 예정일, 취소/환불",
+              "detail": "",
+              "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+              "sourceTrace": "Getcha contract section / Getcha 7-step article / preparation / purchase comparison",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "계약 조건 확인하기",
+                "checklistTitle": "계약 조건 확인하기",
+                "sheetRowLabel": "4. 계약",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "car-delivery",
+              "stepTitle": "5. 출고/인수",
+              "order": 5,
+              "itemTitle": "차량 인수 전 확인하기",
+              "items": [
+                {
+                  "itemId": "car-delivery-item-1",
+                  "itemTitle": "차량 인수 전 확인하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "Getcha delivery section"
+                }
+              ],
+              "memo": "세부: 외관, 실내, 기능, 보증서/매뉴얼/등록증",
+              "detail": "",
+              "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+              "sourceTrace": "Getcha delivery section / Getcha 7-step article / preparation / purchase comparison",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "차량 인수 전 확인하기",
+                "checklistTitle": "차량 인수 전 확인하기",
+                "sheetRowLabel": "5. 출고/인수",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "car-registration",
+              "stepTitle": "6. 등록",
+              "order": 6,
+              "itemTitle": "등록과 비용 확인하기",
+              "items": [
+                {
+                  "itemId": "car-registration-item-1",
+                  "itemTitle": "등록과 비용 확인하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "Getcha registration section"
+                }
+              ],
+              "memo": "세부: 취득세, 등록비, 차량 등록증",
+              "detail": "",
+              "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+              "sourceTrace": "Getcha registration section / Getcha 7-step article / preparation / purchase comparison",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "등록과 비용 확인하기",
+                "checklistTitle": "등록과 비용 확인하기",
+                "sheetRowLabel": "6. 등록",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "car-insurance",
+              "stepTitle": "7. 보험",
+              "order": 7,
+              "itemTitle": "보험 시작 확인하기",
+              "items": [
+                {
+                  "itemId": "car-insurance-item-1",
+                  "itemTitle": "보험 시작 확인하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "Getcha insurance section"
+                }
+              ],
+              "memo": "세부: 보험 시작일, 견적, 운전 범위",
+              "detail": "",
+              "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+              "sourceTrace": "Getcha insurance section / Getcha 7-step article / preparation / purchase comparison",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "보험 시작 확인하기",
+                "checklistTitle": "보험 시작 확인하기",
+                "sheetRowLabel": "7. 보험",
+                "memoShouldIncludeSource": true
+              }
+            }
+          ],
+          "counts": {
+            "steps": 7,
+            "items": 7
+          }
+        }
+      ],
+      "counts": {
+        "flows": 1,
+        "steps": 7,
+        "items": 7,
+        "sourceRows": 1
+      }
+    },
+    {
+      "bundleId": "vaccination-map",
+      "sourceNo": 6,
+      "title": "영유아 예방접종",
+      "category": "official_health_schedule",
+      "categoryLabel": "공식 건강 일정",
+      "categoryPattern": "official schedule / age phase",
+      "appPattern": "official_age_schedule",
+      "status": "partial_draft",
+      "userFacingStatus": "일부 보강 후 시작",
+      "appExposure": "show_with_source_notice",
+      "sourceUrls": [
+        "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+        "https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&menuLv=1"
+      ],
+      "recommendedFlowId": "vaccination-official",
+      "setupFields": [
+        {
+          "key": "childBirthDate",
+          "label": "생년월일",
+          "type": "date",
+          "required": true,
+          "scope": "setup"
+        }
+      ],
+      "executionFields": [
+        {
+          "key": "completion",
+          "label": "완료 여부",
+          "type": "check_state",
+          "required": false,
+          "scope": "execution"
+        },
+        {
+          "key": "memo",
+          "label": "메모",
+          "type": "memo",
+          "required": false,
+          "scope": "execution"
+        }
+      ],
+      "sourceRows": [
+        {
+          "sourceRowId": "vaccination-ddm-kdca",
+          "title": "공식 예방접종 일정 row",
+          "detail": "월령별 백신명/차수",
+          "sourceTrace": "KDCA/DDM official rows",
+          "sourceUrl": ""
+        }
+      ],
+      "flows": [
+        {
+          "flowId": "vaccination-official",
+          "slug": "vaccination-official",
+          "title": "월령별 예방접종 확인",
+          "pattern": "official schedule",
+          "order": 1,
+          "recommended": true,
+          "defaultDestination": "calendar_memo",
+          "sourceTrace": "KDCA/DDM official rows",
+          "setupFields": [
+            {
+              "key": "childBirthDate",
+              "label": "생년월일",
+              "type": "date",
+              "required": true,
+              "scope": "setup"
+            }
+          ],
+          "executionFields": [
+            {
+              "key": "completion",
+              "label": "완료 여부",
+              "type": "check_state",
+              "required": false,
+              "scope": "execution"
+            },
+            {
+              "key": "memo",
+              "label": "메모",
+              "type": "memo",
+              "required": false,
+              "scope": "execution"
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "vaccination-1",
+              "stepTitle": "출생시",
+              "order": 1,
+              "itemTitle": "출생시 접종 항목 확인하기",
+              "items": [
+                {
+                  "itemId": "vaccination-1-item-1",
+                  "itemTitle": "출생시 접종 항목 확인하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "official schedule row"
+                }
+              ],
+              "memo": "B형간염(HepB) 1차",
+              "detail": "",
+              "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+              "sourceTrace": "official schedule row / KDCA/DDM official rows / official schedule / age phase",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "출생시 접종 항목 확인하기",
+                "checklistTitle": "출생시 접종 항목 확인하기",
+                "sheetRowLabel": "출생시",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "vaccination-2",
+              "stepTitle": "1개월 / 4주 이내",
+              "order": 2,
+              "itemTitle": "1개월 접종 항목 확인하기",
+              "items": [
+                {
+                  "itemId": "vaccination-2-item-1",
+                  "itemTitle": "1개월 접종 항목 확인하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "official schedule row"
+                }
+              ],
+              "memo": "BCG(피내용) 1회, B형간염 2차",
+              "detail": "",
+              "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+              "sourceTrace": "official schedule row / KDCA/DDM official rows / official schedule / age phase",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "1개월 접종 항목 확인하기",
+                "checklistTitle": "1개월 접종 항목 확인하기",
+                "sheetRowLabel": "1개월 / 4주 이내",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "vaccination-3",
+              "stepTitle": "2, 4, 6개월",
+              "order": 3,
+              "itemTitle": "2/4/6개월 접종 항목 확인하기",
+              "items": [
+                {
+                  "itemId": "vaccination-3-item-1",
+                  "itemTitle": "2/4/6개월 접종 항목 확인하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "official schedule row"
+                }
+              ],
+              "memo": "DTaP 1~3차, IPV 1~3차, Hib 1~3차, PCV 1~3차, RV 1~3차, HepB 3차",
+              "detail": "",
+              "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+              "sourceTrace": "official schedule row / KDCA/DDM official rows / official schedule / age phase",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "2/4/6개월 접종 항목 확인하기",
+                "checklistTitle": "2/4/6개월 접종 항목 확인하기",
+                "sheetRowLabel": "2, 4, 6개월",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "vaccination-4",
+              "stepTitle": "12~15개월",
+              "order": 4,
+              "itemTitle": "12~15개월 접종 항목 확인하기",
+              "items": [
+                {
+                  "itemId": "vaccination-4-item-1",
+                  "itemTitle": "12~15개월 접종 항목 확인하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "official schedule row"
+                }
+              ],
+              "memo": "Hib 4차, PCV 4차, MMR 1차, 수두 1회",
+              "detail": "",
+              "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+              "sourceTrace": "official schedule row / KDCA/DDM official rows / official schedule / age phase",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "12~15개월 접종 항목 확인하기",
+                "checklistTitle": "12~15개월 접종 항목 확인하기",
+                "sheetRowLabel": "12~15개월",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "vaccination-5",
+              "stepTitle": "12~23개월",
+              "order": 5,
+              "itemTitle": "12~23개월 접종 항목 확인하기",
+              "items": [
+                {
+                  "itemId": "vaccination-5-item-1",
+                  "itemTitle": "12~23개월 접종 항목 확인하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "official schedule row"
+                }
+              ],
+              "memo": "A형간염 1~2차, 일본뇌염 IJEV/LJEV 일정",
+              "detail": "",
+              "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+              "sourceTrace": "official schedule row / KDCA/DDM official rows / official schedule / age phase",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "12~23개월 접종 항목 확인하기",
+                "checklistTitle": "12~23개월 접종 항목 확인하기",
+                "sheetRowLabel": "12~23개월",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "vaccination-6",
+              "stepTitle": "4~6세",
+              "order": 6,
+              "itemTitle": "4~6세 접종 항목 확인하기",
+              "items": [
+                {
+                  "itemId": "vaccination-6-item-1",
+                  "itemTitle": "4~6세 접종 항목 확인하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "official schedule row"
+                }
+              ],
+              "memo": "DTaP 5차, IPV 4차, MMR 2차",
+              "detail": "",
+              "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+              "sourceTrace": "official schedule row / KDCA/DDM official rows / official schedule / age phase",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "4~6세 접종 항목 확인하기",
+                "checklistTitle": "4~6세 접종 항목 확인하기",
+                "sheetRowLabel": "4~6세",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "vaccination-7",
+              "stepTitle": "11~12세 / 12세",
+              "order": 7,
+              "itemTitle": "11~12세 접종 항목 확인하기",
+              "items": [
+                {
+                  "itemId": "vaccination-7-item-1",
+                  "itemTitle": "11~12세 접종 항목 확인하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "official schedule row"
+                }
+              ],
+              "memo": "Tdap 6차, IJEV 5차, HPV 1차(12세 여아)",
+              "detail": "",
+              "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+              "sourceTrace": "official schedule row / KDCA/DDM official rows / official schedule / age phase",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "11~12세 접종 항목 확인하기",
+                "checklistTitle": "11~12세 접종 항목 확인하기",
+                "sheetRowLabel": "11~12세 / 12세",
+                "memoShouldIncludeSource": true
+              }
+            }
+          ],
+          "counts": {
+            "steps": 7,
+            "items": 7
+          }
+        }
+      ],
+      "counts": {
+        "flows": 1,
+        "steps": 7,
+        "items": 7,
+        "sourceRows": 1
+      }
+    },
+    {
+      "bundleId": "moving-map",
+      "sourceNo": 7,
+      "title": "이사 준비",
+      "category": "moving",
+      "categoryLabel": "이사 준비",
+      "categoryPattern": "preparation project / D-day",
+      "appPattern": "d_day_timeline",
+      "status": "ready_draft",
+      "userFacingStatus": "바로 시작 가능",
+      "appExposure": "can_show_as_draft",
+      "sourceUrls": [
+        "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363"
+      ],
+      "recommendedFlowId": "moving-dday",
+      "setupFields": [
+        {
+          "key": "movingDate",
+          "label": "이사일",
+          "type": "date",
+          "required": true,
+          "scope": "setup"
+        }
+      ],
+      "executionFields": [
+        {
+          "key": "completion",
+          "label": "완료 여부",
+          "type": "check_state",
+          "required": false,
+          "scope": "execution"
+        },
+        {
+          "key": "memo",
+          "label": "메모",
+          "type": "memo",
+          "required": false,
+          "scope": "execution"
+        }
+      ],
+      "sourceRows": [
+        {
+          "sourceRowId": "moving-ajd",
+          "title": "AJD 이사 D-day 표",
+          "detail": "D-30, D-10, D-3, D-1, 이사 당일",
+          "sourceTrace": "AJD article table",
+          "sourceUrl": ""
+        }
+      ],
+      "flows": [
+        {
+          "flowId": "moving-dday",
+          "slug": "moving-dday",
+          "title": "이사 D-day 준비",
+          "pattern": "preparation timeline",
+          "order": 1,
+          "recommended": true,
+          "defaultDestination": "calendar_checklist",
+          "sourceTrace": "AJD table rows",
+          "setupFields": [
+            {
+              "key": "movingDate",
+              "label": "이사일",
+              "type": "date",
+              "required": true,
+              "scope": "setup"
+            }
+          ],
+          "executionFields": [
+            {
+              "key": "completion",
+              "label": "완료 여부",
+              "type": "check_state",
+              "required": false,
+              "scope": "execution"
+            },
+            {
+              "key": "memo",
+              "label": "메모",
+              "type": "memo",
+              "required": false,
+              "scope": "execution"
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "moving-d30",
+              "stepTitle": "D-30",
+              "order": 1,
+              "itemTitle": "이사/청소와 위탁 예약하기",
+              "items": [
+                {
+                  "itemId": "moving-d30-item-1",
+                  "itemTitle": "이사/청소와 위탁 예약하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "AJD D-30 table rows"
+                },
+                {
+                  "itemId": "moving-d30-item-2",
+                  "itemTitle": "집 점검과 정리 시작하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "AJD D-30 table rows"
+                }
+              ],
+              "memo": "세부: 포장이사/반포장이사, 하자 수리, 물건 정리, 전학 수속, 유아/노약자/반려동물 위탁, 이사/청소 견적",
+              "detail": "",
+              "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+              "sourceTrace": "AJD D-30 table rows / AJD table rows / preparation project / D-day",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이사/청소와 위탁 예약하기",
+                "checklistTitle": "이사/청소와 위탁 예약하기",
+                "sheetRowLabel": "D-30",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "moving-d10",
+              "stepTitle": "D-10",
+              "order": 2,
+              "itemTitle": "주소/예약/폐기물 처리하기",
+              "items": [
+                {
+                  "itemId": "moving-d10-item-1",
+                  "itemTitle": "주소/예약/폐기물 처리하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "AJD D-10 table rows"
+                },
+                {
+                  "itemId": "moving-d10-item-2",
+                  "itemTitle": "이전 설치와 배치 준비하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "AJD D-10 table rows"
+                }
+              ],
+              "memo": "세부: 주소 변경, 배달 중지, 전출 신고, 엘리베이터/사다리차, 쓰레기봉투, 열쇠/리모컨, 냉장고 비우기, 폐기물, 도배/장판, 가구 배치도, 인터넷/정수기",
+              "detail": "",
+              "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+              "sourceTrace": "AJD D-10 table rows / AJD table rows / preparation project / D-day",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "주소/예약/폐기물 처리하기",
+                "checklistTitle": "주소/예약/폐기물 처리하기",
+                "sheetRowLabel": "D-10",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "moving-d3",
+              "stepTitle": "D-3",
+              "order": 3,
+              "itemTitle": "철거/서류/당일 물건 준비하기",
+              "items": [
+                {
+                  "itemId": "moving-d3-item-1",
+                  "itemTitle": "철거/서류/당일 물건 준비하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "AJD D-3 table rows"
+                }
+              ],
+              "memo": "세부: 도시가스 철거/설치, 자동이체 해지, 세탁기 물 빼기, 전세권 서류, 이사 당일 물건",
+              "detail": "",
+              "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+              "sourceTrace": "AJD D-3 table rows / AJD table rows / preparation project / D-day",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "철거/서류/당일 물건 준비하기",
+                "checklistTitle": "철거/서류/당일 물건 준비하기",
+                "sheetRowLabel": "D-3",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "moving-d1",
+              "stepTitle": "D-1",
+              "order": 4,
+              "itemTitle": "이사 전날 최종 확인하기",
+              "items": [
+                {
+                  "itemId": "moving-d1-item-1",
+                  "itemTitle": "이사 전날 최종 확인하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "AJD D-1 table rows"
+                }
+              ],
+              "memo": "세부: 일정 확인, 이체 한도, 주차공간, 귀중품, 잔금, 입주증, 어항/수조, 가전가구 사진",
+              "detail": "",
+              "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+              "sourceTrace": "AJD D-1 table rows / AJD table rows / preparation project / D-day",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "이사 전날 최종 확인하기",
+                "checklistTitle": "이사 전날 최종 확인하기",
+                "sheetRowLabel": "D-1",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "moving-day",
+              "stepTitle": "이사 당일",
+              "order": 5,
+              "itemTitle": "출발지 정산과 반납하기",
+              "items": [
+                {
+                  "itemId": "moving-day-item-1",
+                  "itemTitle": "출발지 정산과 반납하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "AJD D-Day table rows"
+                },
+                {
+                  "itemId": "moving-day-item-2",
+                  "itemTitle": "도착지 정산과 전입 처리하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "AJD D-Day table rows"
+                }
+              ],
+              "memo": "세부: 전기/가스/관리비, 장기수선충당금, 잔여 짐, 문단속/열쇠, 분실/파손, 통신 설치, 도어락, 잔금/중개료, 명의 변경, 가스 설치, 전입신고/확정일자",
+              "detail": "",
+              "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+              "sourceTrace": "AJD D-Day table rows / AJD table rows / preparation project / D-day",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "출발지 정산과 반납하기",
+                "checklistTitle": "출발지 정산과 반납하기",
+                "sheetRowLabel": "이사 당일",
+                "memoShouldIncludeSource": true
+              }
+            }
+          ],
+          "counts": {
+            "steps": 5,
+            "items": 8
+          }
+        }
+      ],
+      "counts": {
+        "flows": 1,
+        "steps": 5,
+        "items": 8,
+        "sourceRows": 1
+      }
+    },
+    {
+      "bundleId": "wedding-map",
+      "sourceNo": 8,
+      "title": "결혼 준비",
+      "category": "wedding",
+      "categoryLabel": "결혼 준비",
+      "categoryPattern": "preparation project / purchase comparison",
+      "appPattern": "preparation_timeline_and_vendor_board",
+      "status": "ready_draft",
+      "userFacingStatus": "바로 시작 가능",
+      "appExposure": "can_show_as_draft",
+      "sourceUrls": [
+        "https://blog.naver.com/wilklove/223518896995",
+        "https://gongysd.com/wedding-notion/?bmode=view&idx=167989966"
+      ],
+      "recommendedFlowId": "wedding-timeline",
+      "setupFields": [
+        {
+          "key": "weddingDate",
+          "label": "결혼식일",
+          "type": "date",
+          "required": true,
+          "scope": "setup"
+        }
+      ],
+      "executionFields": [
+        {
+          "key": "completion",
+          "label": "완료 여부",
+          "type": "check_state",
+          "required": false,
+          "scope": "execution"
+        },
+        {
+          "key": "memo",
+          "label": "메모",
+          "type": "memo",
+          "required": false,
+          "scope": "execution"
+        }
+      ],
+      "sourceRows": [
+        {
+          "sourceRowId": "wedding-naver",
+          "title": "결혼 준비 1년 타임라인",
+          "detail": "12개월 전, 10개월 전, 본식 직전 등",
+          "sourceTrace": "Naver PostView body",
+          "sourceUrl": ""
+        }
+      ],
+      "flows": [
+        {
+          "flowId": "wedding-timeline",
+          "slug": "wedding-timeline",
+          "title": "결혼 준비 1년 타임라인",
+          "pattern": "preparation timeline",
+          "order": 1,
+          "recommended": true,
+          "defaultDestination": "calendar_checklist",
+          "sourceTrace": "Naver timeline rows",
+          "setupFields": [
+            {
+              "key": "weddingDate",
+              "label": "결혼식일",
+              "type": "date",
+              "required": true,
+              "scope": "setup"
+            }
+          ],
+          "executionFields": [
+            {
+              "key": "completion",
+              "label": "완료 여부",
+              "type": "check_state",
+              "required": false,
+              "scope": "execution"
+            },
+            {
+              "key": "memo",
+              "label": "메모",
+              "type": "memo",
+              "required": false,
+              "scope": "execution"
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "wedding-12m",
+              "stepTitle": "12개월 전",
+              "order": 1,
+              "itemTitle": "웨딩홀 계약 준비하기",
+              "items": [
+                {
+                  "itemId": "wedding-12m-item-1",
+                  "itemTitle": "웨딩홀 계약 준비하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "Naver wedding timeline"
+                },
+                {
+                  "itemId": "wedding-12m-item-2",
+                  "itemTitle": "플래너/스냅 업체 후보 정하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "Naver wedding timeline"
+                }
+              ],
+              "memo": "세부: 결혼식 날짜와 예산 논의, 웨딩홀 리스트, 방문/견적 상담, 웨딩플래너 상담/계약, 본식 스냅/DVD, 아이폰 스냅",
+              "detail": "",
+              "sourceUrl": "https://blog.naver.com/wilklove/223518896995",
+              "sourceTrace": "Naver wedding timeline / Naver timeline rows / preparation project / purchase comparison",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "웨딩홀 계약 준비하기",
+                "checklistTitle": "웨딩홀 계약 준비하기",
+                "sheetRowLabel": "12개월 전",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "wedding-10m",
+              "stepTitle": "10개월 전",
+              "order": 2,
+              "itemTitle": "스드메 계약 준비하기",
+              "items": [
+                {
+                  "itemId": "wedding-10m-item-1",
+                  "itemTitle": "스드메 계약 준비하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "Naver wedding timeline"
+                },
+                {
+                  "itemId": "wedding-10m-item-2",
+                  "itemTitle": "사회자/축가 일정 잡기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "Naver wedding timeline"
+                }
+              ],
+              "memo": "세부: 촬영 날짜, 드레스 투어, 가봉 날짜, 꽃장식, 헤어변형, 식전영상 자료 가능 여부",
+              "detail": "",
+              "sourceUrl": "https://blog.naver.com/wilklove/223518896995",
+              "sourceTrace": "Naver wedding timeline / Naver timeline rows / preparation project / purchase comparison",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "스드메 계약 준비하기",
+                "checklistTitle": "스드메 계약 준비하기",
+                "sheetRowLabel": "10개월 전",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "wedding-outfit",
+              "stepTitle": "예복/혼주/촬영 준비",
+              "order": 3,
+              "itemTitle": "예복/혼주/촬영 업체 정하기",
+              "items": [
+                {
+                  "itemId": "wedding-outfit-item-1",
+                  "itemTitle": "예복/혼주/촬영 업체 정하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "Naver body heading rows"
+                }
+              ],
+              "memo": "세부: 신랑 예복, 양가 혼주 메이크업, 촬영용 드레스 가봉, 부케, 신부관리",
+              "detail": "",
+              "sourceUrl": "https://blog.naver.com/wilklove/223518896995",
+              "sourceTrace": "Naver body heading rows / Naver timeline rows / preparation project / purchase comparison",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "예복/혼주/촬영 업체 정하기",
+                "checklistTitle": "예복/혼주/촬영 업체 정하기",
+                "sheetRowLabel": "예복/혼주/촬영 준비",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "wedding-honeymoon",
+              "stepTitle": "촬영/신혼여행/혼수",
+              "order": 4,
+              "itemTitle": "촬영/신혼여행/혼수 후보 정하기",
+              "items": [
+                {
+                  "itemId": "wedding-honeymoon-item-1",
+                  "itemTitle": "촬영/신혼여행/혼수 후보 정하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "Naver body heading rows"
+                }
+              ],
+              "memo": "세부: 스튜디오 촬영, 신혼여행 예약, 가전/가구 리스트, 혼주 한복, 결혼반지 견적, 신랑/신부관리",
+              "detail": "",
+              "sourceUrl": "https://blog.naver.com/wilklove/223518896995",
+              "sourceTrace": "Naver body heading rows / Naver timeline rows / preparation project / purchase comparison",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "촬영/신혼여행/혼수 후보 정하기",
+                "checklistTitle": "촬영/신혼여행/혼수 후보 정하기",
+                "sheetRowLabel": "촬영/신혼여행/혼수",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "wedding-final",
+              "stepTitle": "본식 직전",
+              "order": 5,
+              "itemTitle": "본식 최종 확인하기",
+              "items": [
+                {
+                  "itemId": "wedding-final-item-1",
+                  "itemTitle": "본식 최종 확인하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "Naver body heading rows"
+                }
+              ],
+              "memo": "세부: 참석자, 드레스 최종 가봉, 웨딩홀 시식, 답례품, 포토부스, 부케, 신혼여행 최종 체크",
+              "detail": "",
+              "sourceUrl": "https://blog.naver.com/wilklove/223518896995",
+              "sourceTrace": "Naver body heading rows / Naver timeline rows / preparation project / purchase comparison",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "본식 최종 확인하기",
+                "checklistTitle": "본식 최종 확인하기",
+                "sheetRowLabel": "본식 직전",
+                "memoShouldIncludeSource": true
+              }
+            }
+          ],
+          "counts": {
+            "steps": 5,
+            "items": 7
+          }
+        },
+        {
+          "flowId": "wedding-vendor-board",
+          "slug": "wedding-vendor-board",
+          "title": "결혼 업체 후보 보드",
+          "pattern": "purchase comparison",
+          "order": 2,
+          "recommended": false,
+          "defaultDestination": "calendar_checklist",
+          "sourceTrace": "Gongysd category headings",
+          "setupFields": [],
+          "executionFields": [
+            {
+              "key": "memo",
+              "label": "메모",
+              "type": "memo",
+              "required": false,
+              "scope": "execution"
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "wedding-vendors",
+              "stepTitle": "업체 후보 정리",
+              "order": 1,
+              "itemTitle": "업체 후보와 견적 메모하기",
+              "items": [
+                {
+                  "itemId": "wedding-vendors-item-1",
+                  "itemTitle": "업체 후보와 견적 메모하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "Gongysd headings"
+                }
+              ],
+              "memo": "대상: 웨딩홀, 상견례, 웨딩플래너, 스드메, 드레스 투어, 혼주 메이크업, 청첩장, 웨딩관리",
+              "detail": "",
+              "sourceUrl": "https://blog.naver.com/wilklove/223518896995",
+              "sourceTrace": "Gongysd headings / Gongysd category headings / preparation project / purchase comparison",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "업체 후보와 견적 메모하기",
+                "checklistTitle": "업체 후보와 견적 메모하기",
+                "sheetRowLabel": "업체 후보 정리",
+                "memoShouldIncludeSource": true
+              }
+            }
+          ],
+          "counts": {
+            "steps": 1,
+            "items": 1
+          }
+        }
+      ],
+      "counts": {
+        "flows": 2,
+        "steps": 6,
+        "items": 8,
+        "sourceRows": 1
+      }
+    },
+    {
+      "bundleId": "homefit-map",
+      "sourceNo": 9,
+      "title": "Allblanc 홈트 루틴",
+      "category": "fitness_video",
+      "categoryLabel": "영상 운동 루틴",
+      "categoryPattern": "single follow-along video / resource routine",
+      "appPattern": "video_routine_map",
+      "status": "partial_draft",
+      "userFacingStatus": "일부 보강 후 시작",
+      "appExposure": "show_with_source_notice",
+      "sourceUrls": [
+        "https://youtube.com/@allblanctv"
+      ],
+      "recommendedFlowId": "homefit-morning-2w",
+      "setupFields": [
+        {
+          "key": "startDate",
+          "label": "시작일",
+          "type": "date",
+          "required": true,
+          "scope": "setup"
+        },
+        {
+          "key": "targetWeekdays",
+          "label": "반복 요일",
+          "type": "weekday_multi",
+          "required": false,
+          "scope": "setup"
+        }
+      ],
+      "executionFields": [
+        {
+          "key": "completion",
+          "label": "완료 여부",
+          "type": "check_state",
+          "required": false,
+          "scope": "execution"
+        },
+        {
+          "key": "memo",
+          "label": "메모",
+          "type": "memo",
+          "required": false,
+          "scope": "execution"
+        }
+      ],
+      "sourceRows": [
+        {
+          "sourceRowId": "homefit-video-01",
+          "title": "5 MIN HOME WORKOUT YOU CAN DO EVERY MORNING",
+          "detail": "매일 아침 5분 전신 홈트레이닝",
+          "sourceTrace": "YouTube channel page video title",
+          "sourceUrl": "https://www.youtube.com/watch?v=fLLScgWQcHc"
+        },
+        {
+          "sourceRowId": "homefit-video-02",
+          "title": "노점프 홈트 후보",
+          "detail": "제목/설명 재확인 필요",
+          "sourceTrace": "candidate URL",
+          "sourceUrl": "https://www.youtube.com/watch?v=2dail5Imi04"
+        },
+        {
+          "sourceRowId": "homefit-video-03",
+          "title": "하체 홈트 후보",
+          "detail": "제목/설명 재확인 필요",
+          "sourceTrace": "candidate URL",
+          "sourceUrl": "https://www.youtube.com/watch?v=UEPkHmW_2FU"
+        }
+      ],
+      "flows": [
+        {
+          "flowId": "homefit-morning-2w",
+          "slug": "homefit-morning-2w",
+          "title": "아침 5분 홈트 2주 루틴",
+          "pattern": "video routine",
+          "order": 1,
+          "recommended": true,
+          "defaultDestination": "routine_checklist",
+          "sourceTrace": "Allblanc video row",
+          "setupFields": [
+            {
+              "key": "startDate",
+              "label": "시작일",
+              "type": "date",
+              "required": true,
+              "scope": "setup"
+            },
+            {
+              "key": "targetWeekdays",
+              "label": "반복 요일",
+              "type": "weekday_multi",
+              "required": false,
+              "scope": "setup"
+            }
+          ],
+          "executionFields": [
+            {
+              "key": "completion",
+              "label": "완료 여부",
+              "type": "check_state",
+              "required": false,
+              "scope": "execution"
+            },
+            {
+              "key": "memo",
+              "label": "메모",
+              "type": "memo",
+              "required": false,
+              "scope": "execution"
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "homefit-morning-day",
+              "stepTitle": "반복일",
+              "order": 1,
+              "itemTitle": "오늘 영상 따라하기",
+              "items": [
+                {
+                  "itemId": "homefit-morning-day-item-1",
+                  "itemTitle": "오늘 영상 따라하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "video row"
+                }
+              ],
+              "memo": "영상: 5 MIN HOME WORKOUT YOU CAN DO EVERY MORNING\nURL: https://www.youtube.com/watch?v=fLLScgWQcHc",
+              "detail": "",
+              "sourceUrl": "https://youtube.com/@allblanctv",
+              "sourceTrace": "video row / Allblanc video row / single follow-along video / resource routine",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "오늘 영상 따라하기",
+                "checklistTitle": "오늘 영상 따라하기",
+                "sheetRowLabel": "반복일",
+                "memoShouldIncludeSource": true
+              }
+            }
+          ],
+          "counts": {
+            "steps": 1,
+            "items": 1
+          }
+        },
+        {
+          "flowId": "homefit-video-queue",
+          "slug": "homefit-video-queue",
+          "title": "홈트 영상 큐",
+          "pattern": "resource routine",
+          "order": 2,
+          "recommended": false,
+          "defaultDestination": "routine_checklist",
+          "sourceTrace": "candidate video rows",
+          "setupFields": [
+            {
+              "key": "startDate",
+              "label": "시작일",
+              "type": "date",
+              "required": true,
+              "scope": "setup"
+            },
+            {
+              "key": "targetWeekdays",
+              "label": "반복 요일",
+              "type": "weekday_multi",
+              "required": false,
+              "scope": "setup"
+            }
+          ],
+          "executionFields": [
+            {
+              "key": "completion",
+              "label": "완료 여부",
+              "type": "check_state",
+              "required": false,
+              "scope": "execution"
+            },
+            {
+              "key": "memo",
+              "label": "메모",
+              "type": "memo",
+              "required": false,
+              "scope": "execution"
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "homefit-video-01",
+              "stepTitle": "영상 1",
+              "order": 1,
+              "itemTitle": "오늘 영상 따라하기",
+              "items": [
+                {
+                  "itemId": "homefit-video-01-item-1",
+                  "itemTitle": "오늘 영상 따라하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "candidate video row"
+                }
+              ],
+              "memo": "5 MIN HOME WORKOUT YOU CAN DO EVERY MORNING\nhttps://www.youtube.com/watch?v=fLLScgWQcHc",
+              "detail": "",
+              "sourceUrl": "https://youtube.com/@allblanctv",
+              "sourceTrace": "candidate video row / candidate video rows / single follow-along video / resource routine",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "오늘 영상 따라하기",
+                "checklistTitle": "오늘 영상 따라하기",
+                "sheetRowLabel": "영상 1",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "homefit-video-02",
+              "stepTitle": "영상 2",
+              "order": 2,
+              "itemTitle": "오늘 영상 따라하기",
+              "items": [
+                {
+                  "itemId": "homefit-video-02-item-1",
+                  "itemTitle": "오늘 영상 따라하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "candidate video row"
+                }
+              ],
+              "memo": "노점프 홈트 후보\nhttps://www.youtube.com/watch?v=2dail5Imi04\n제목/설명 재확인 필요",
+              "detail": "",
+              "sourceUrl": "https://youtube.com/@allblanctv",
+              "sourceTrace": "candidate video row / candidate video rows / single follow-along video / resource routine",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "오늘 영상 따라하기",
+                "checklistTitle": "오늘 영상 따라하기",
+                "sheetRowLabel": "영상 2",
+                "memoShouldIncludeSource": true
+              }
+            },
+            {
+              "stepId": "homefit-video-03",
+              "stepTitle": "영상 3",
+              "order": 3,
+              "itemTitle": "오늘 영상 따라하기",
+              "items": [
+                {
+                  "itemId": "homefit-video-03-item-1",
+                  "itemTitle": "오늘 영상 따라하기",
+                  "detail": "",
+                  "sourceRowIds": [],
+                  "sourceTrace": "candidate video row"
+                }
+              ],
+              "memo": "하체 홈트 후보\nhttps://www.youtube.com/watch?v=UEPkHmW_2FU\n제목/설명 재확인 필요",
+              "detail": "",
+              "sourceUrl": "https://youtube.com/@allblanctv",
+              "sourceTrace": "candidate video row / candidate video rows / single follow-along video / resource routine",
+              "sourceRows": [],
+              "exportHints": {
+                "calendarTitle": "오늘 영상 따라하기",
+                "checklistTitle": "오늘 영상 따라하기",
+                "sheetRowLabel": "영상 3",
+                "memoShouldIncludeSource": true
+              }
+            }
+          ],
+          "counts": {
+            "steps": 3,
+            "items": 3
+          }
+        }
+      ],
+      "counts": {
+        "flows": 2,
+        "steps": 4,
+        "items": 4,
+        "sourceRows": 3
+      }
+    }
+  ],
+  "totals": {
+    "bundles": 9,
+    "flows": 19,
+    "steps": 91,
+    "items": 96
+  }
+}

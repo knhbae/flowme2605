@@ -1,0 +1,3325 @@
+{
+  "generatedAt": "2026-07-01T00:00:00+09:00",
+  "scope": "planning-only; no app implementation",
+  "conversionRules": [
+    "원문 row/표/첨부/영상 URL에서 확인된 항목만 Item으로 둔다.",
+    "사용자 기록은 캘린더/투두 수준 필드로 제한한다.",
+    "source가 부족하면 Park, 보류, source import 필요로 표시한다.",
+    "사용자용 Flow 콘텐츠와 내부 검토 문구를 분리한다.",
+    "generic memoHint는 사용하지 않는다."
+  ],
+  "metrics": {
+    "maps": 9,
+    "executableFlows": 15,
+    "steps": 79,
+    "items": 334,
+    "genericMemoHint": 0
+  },
+  "sources": {
+    "funmom": "https://funmom.tistory.com/",
+    "opic": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+    "baby": "https://blog.naver.com/01695258757/222768860919",
+    "reading": "https://blog.naver.com/naristyle87/222978131890",
+    "newCar": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+    "vaccination": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+    "moving": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+    "weddingNaver": "https://blog.naver.com/wilklove/223518896995",
+    "weddingGongysd": "https://gongysd.com/wedding-notion/?bmode=view&idx=167989966",
+    "homefit": "https://youtube.com/@allblanctv"
+  },
+  "maps": [
+    {
+      "id": "funmom-article-source-park",
+      "sourceNo": 1,
+      "title": "펀맘 자료 큐 Park",
+      "status": "park",
+      "classification": "Park -> article-level Flow 후보",
+      "urls": [
+        "https://funmom.tistory.com/"
+      ],
+      "gate": {
+        "decision": "사이트 전체는 단일 Flow가 아니라 Park다.",
+        "reason": "홈/카테고리에서는 자료 묶음과 글 URL은 확인되지만, 주간 실행 순서와 목표 달성 조건은 원문 row로 고정되어 있지 않다.",
+        "flowMeRole": "자료 URL, 나이/난이도, 과목 태그를 article row로 import한 뒤 주간 프린트 큐를 만들 수 있다."
+      },
+      "sourceRows": [
+        {
+          "label": "카테고리",
+          "value": "색칠공부 236 / 미로찾기게임 162 / 한글공부 276 / 수학공부 189 / 영어공부 73",
+          "sourceTrace": "funmom homepage category tree",
+          "url": ""
+        },
+        {
+          "label": "한글 후보",
+          "value": "ㅡ+ㅍ 기본받침 글자쓰기, 한글 문장쓰기 연습장, 글씨쓰기 연습 가정학습지",
+          "sourceTrace": "funmom category parsed article links",
+          "url": ""
+        },
+        {
+          "label": "수학 후보",
+          "value": "수 가르기, 10 이하 덧셈, 저학년 덧셈 연습장",
+          "sourceTrace": "funmom category parsed article links",
+          "url": ""
+        },
+        {
+          "label": "미로 후보",
+          "value": "유아용 미로찾기 활동지, 쉬운 미로찾기, 4~5세 유아 미로찾기",
+          "sourceTrace": "funmom category parsed article links",
+          "url": ""
+        },
+        {
+          "label": "색칠 후보",
+          "value": "공룡/공주/여아 색칠공부 도안",
+          "sourceTrace": "funmom category parsed article links",
+          "url": ""
+        }
+      ],
+      "publicContent": {
+        "flows": []
+      },
+      "candidateFlows": [
+        "5~6세 한글 프린트 큐: 실제 article URL, 나이, 자료명, 출력 여부가 import된 뒤 생성",
+        "4~5세 미로 프린트 큐: 난이도/나이 표기가 확인된 article만 묶기",
+        "초등 저학년 연산 프린트 큐: 연산 종류와 문제 수가 확인된 article만 묶기"
+      ],
+      "review": {
+        "removed": [
+          "주간 루틴을 임의 생성한 item",
+          "자료를 고르라는 generic task",
+          "나이/난이도 미확인 글의 실행 Step"
+        ],
+        "nextImport": [
+          "article별 제목",
+          "article URL",
+          "나이/난이도",
+          "학습 목표",
+          "출력 자료 존재 여부"
+        ]
+      }
+    },
+    {
+      "id": "opic-mock-test-plan",
+      "sourceNo": 2,
+      "title": "오픽 모의고사 2주/1달 계획",
+      "status": "ready",
+      "classification": "Flow Map",
+      "urls": [
+        "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95"
+      ],
+      "gate": {
+        "decision": "첨부 XLSX/PDF의 날짜 row가 있어 실행 Flow로 가능하다.",
+        "reason": "2주/1달 계획표 시트에 회차, 연습/복습, 오픽현타, 부족한 점 보완, 휴식 row가 확인됐다.",
+        "flowMeRole": "회차별 연습일을 캘린더에 깔고, 녹음 파일/막힌 질문/보완 표현만 기록하게 한다."
+      },
+      "sourceRows": [
+        {
+          "label": "첨부",
+          "value": "오픽 모의고사 공부 계획표_오픽만수르.xlsx",
+          "sourceTrace": "downloaded output/content-source-downloads/2026-07-01/opic-plan.xlsx",
+          "url": ""
+        },
+        {
+          "label": "2주 시트",
+          "value": "1~10회차 연습, 오픽현타 & 보완, 회차 복습, 정리, 휴식",
+          "sourceTrace": "XLSX sheet 2주 코스",
+          "url": ""
+        },
+        {
+          "label": "1달 시트",
+          "value": "각 회차를 3번씩 반복 연습, 회차별 오픽현타/부족한 점 보완",
+          "sourceTrace": "XLSX sheet 1달 코스",
+          "url": ""
+        }
+      ],
+      "publicContent": {
+        "flows": [
+          {
+            "id": "opic-two-week",
+            "title": "오픽 모의고사 2주 계획",
+            "kind": "calendar",
+            "sourceTrace": "XLSX sheet 2주 코스",
+            "steps": [
+              {
+                "title": "D+1 1회차 연습",
+                "sourceTrace": "XLSX 2주 코스 row: D+1",
+                "items": [
+                  {
+                    "title": "1회차 연습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 day row"
+                  },
+                  {
+                    "title": "오픽현타 & 보완",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "1회차 복습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "녹음 파일 위치 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 5. 녹음하기: 모의고사 시작과 동시에 녹음"
+                  },
+                  {
+                    "title": "막힌 질문 / 다시 말할 표현 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 4. 오픽 현타, 5. 녹음하기"
+                  }
+                ]
+              },
+              {
+                "title": "D+2 2회차 연습",
+                "sourceTrace": "XLSX 2주 코스 row: D+2",
+                "items": [
+                  {
+                    "title": "2회차 연습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 day row"
+                  },
+                  {
+                    "title": "오픽현타 & 보완",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "2회차 복습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "녹음 파일 위치 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 5. 녹음하기: 모의고사 시작과 동시에 녹음"
+                  },
+                  {
+                    "title": "막힌 질문 / 다시 말할 표현 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 4. 오픽 현타, 5. 녹음하기"
+                  }
+                ]
+              },
+              {
+                "title": "D+3 3회차 연습",
+                "sourceTrace": "XLSX 2주 코스 row: D+3",
+                "items": [
+                  {
+                    "title": "3회차 연습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 day row"
+                  },
+                  {
+                    "title": "오픽현타 & 보완",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "3회차 복습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "녹음 파일 위치 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 5. 녹음하기: 모의고사 시작과 동시에 녹음"
+                  },
+                  {
+                    "title": "막힌 질문 / 다시 말할 표현 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 4. 오픽 현타, 5. 녹음하기"
+                  }
+                ]
+              },
+              {
+                "title": "D+4 4회차 연습",
+                "sourceTrace": "XLSX 2주 코스 row: D+4",
+                "items": [
+                  {
+                    "title": "4회차 연습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 day row"
+                  },
+                  {
+                    "title": "오픽현타 & 보완",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "4회차 복습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "녹음 파일 위치 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 5. 녹음하기: 모의고사 시작과 동시에 녹음"
+                  },
+                  {
+                    "title": "막힌 질문 / 다시 말할 표현 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 4. 오픽 현타, 5. 녹음하기"
+                  }
+                ]
+              },
+              {
+                "title": "D+5 5회차 연습",
+                "sourceTrace": "XLSX 2주 코스 row: D+5",
+                "items": [
+                  {
+                    "title": "5회차 연습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 day row"
+                  },
+                  {
+                    "title": "오픽현타 & 보완",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "5회차 복습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "녹음 파일 위치 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 5. 녹음하기: 모의고사 시작과 동시에 녹음"
+                  },
+                  {
+                    "title": "막힌 질문 / 다시 말할 표현 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 4. 오픽 현타, 5. 녹음하기"
+                  }
+                ]
+              },
+              {
+                "title": "D+6 1~5회차 정리",
+                "sourceTrace": "XLSX 2주 코스 row: D+6",
+                "items": [
+                  {
+                    "title": "1~5회차 정리",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 day row"
+                  },
+                  {
+                    "title": "부족한 점 보완",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "복습 row 보완",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  }
+                ]
+              },
+              {
+                "title": "D+7 휴식",
+                "sourceTrace": "XLSX 2주 코스 row: D+7",
+                "items": [
+                  {
+                    "title": "휴식",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 day row"
+                  }
+                ]
+              },
+              {
+                "title": "D+8 6회차 연습",
+                "sourceTrace": "XLSX 2주 코스 row: D+8",
+                "items": [
+                  {
+                    "title": "6회차 연습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 day row"
+                  },
+                  {
+                    "title": "오픽현타 & 보완",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "6회차 복습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "녹음 파일 위치 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 5. 녹음하기: 모의고사 시작과 동시에 녹음"
+                  },
+                  {
+                    "title": "막힌 질문 / 다시 말할 표현 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 4. 오픽 현타, 5. 녹음하기"
+                  }
+                ]
+              },
+              {
+                "title": "D+9 7회차 연습",
+                "sourceTrace": "XLSX 2주 코스 row: D+9",
+                "items": [
+                  {
+                    "title": "7회차 연습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 day row"
+                  },
+                  {
+                    "title": "오픽현타 & 보완",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "7회차 복습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "녹음 파일 위치 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 5. 녹음하기: 모의고사 시작과 동시에 녹음"
+                  },
+                  {
+                    "title": "막힌 질문 / 다시 말할 표현 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 4. 오픽 현타, 5. 녹음하기"
+                  }
+                ]
+              },
+              {
+                "title": "D+10 8회차 연습",
+                "sourceTrace": "XLSX 2주 코스 row: D+10",
+                "items": [
+                  {
+                    "title": "8회차 연습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 day row"
+                  },
+                  {
+                    "title": "오픽현타 & 보완",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "8회차 복습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "녹음 파일 위치 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 5. 녹음하기: 모의고사 시작과 동시에 녹음"
+                  },
+                  {
+                    "title": "막힌 질문 / 다시 말할 표현 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 4. 오픽 현타, 5. 녹음하기"
+                  }
+                ]
+              },
+              {
+                "title": "D+11 9회차 연습",
+                "sourceTrace": "XLSX 2주 코스 row: D+11",
+                "items": [
+                  {
+                    "title": "9회차 연습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 day row"
+                  },
+                  {
+                    "title": "오픽현타 & 보완",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "9회차 복습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "녹음 파일 위치 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 5. 녹음하기: 모의고사 시작과 동시에 녹음"
+                  },
+                  {
+                    "title": "막힌 질문 / 다시 말할 표현 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 4. 오픽 현타, 5. 녹음하기"
+                  }
+                ]
+              },
+              {
+                "title": "D+12 10회차 연습",
+                "sourceTrace": "XLSX 2주 코스 row: D+12",
+                "items": [
+                  {
+                    "title": "10회차 연습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 day row"
+                  },
+                  {
+                    "title": "오픽현타 & 보완",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "10회차 복습",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "녹음 파일 위치 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 5. 녹음하기: 모의고사 시작과 동시에 녹음"
+                  },
+                  {
+                    "title": "막힌 질문 / 다시 말할 표현 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "원문 4. 오픽 현타, 5. 녹음하기"
+                  }
+                ]
+              },
+              {
+                "title": "D+13 6~10회차 정리",
+                "sourceTrace": "XLSX 2주 코스 row: D+13",
+                "items": [
+                  {
+                    "title": "6~10회차 정리",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 day row"
+                  },
+                  {
+                    "title": "부족한 점 보완",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  },
+                  {
+                    "title": "복습 row 보완",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 sub row"
+                  }
+                ]
+              },
+              {
+                "title": "D+14 휴식",
+                "sourceTrace": "XLSX 2주 코스 row: D+14",
+                "items": [
+                  {
+                    "title": "휴식",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 2주 코스 day row"
+                  }
+                ]
+              }
+            ],
+            "setupInputs": [
+              "시작일",
+              "모의고사 영상 채널/목록",
+              "하루 공부 가능 시간"
+            ]
+          },
+          {
+            "id": "opic-one-month",
+            "title": "오픽 모의고사 1달 계획",
+            "kind": "calendar",
+            "sourceTrace": "XLSX sheet 1달 코스",
+            "steps": [
+              {
+                "title": "1주차",
+                "sourceTrace": "XLSX 1달 코스 1주차",
+                "items": [
+                  {
+                    "title": "1회차 연습 / 1회차 복습 / 1회차 복습 / 2회차 연습 / 2회차 복습 / 2회차 복습 / 휴식",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 1달 코스 week row"
+                  },
+                  {
+                    "title": "각 연습/복습 칸에 오픽현타 기록",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 1달 코스 sub row"
+                  },
+                  {
+                    "title": "각 연습/복습 칸에 부족한 점 보완 기록",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 1달 코스 sub row"
+                  }
+                ]
+              },
+              {
+                "title": "2주차",
+                "sourceTrace": "XLSX 1달 코스 2주차",
+                "items": [
+                  {
+                    "title": "3회차 연습 / 3회차 복습 / 3회차 복습 / 4회차 연습 / 4회차 복습 / 4회차 복습 / 휴식",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 1달 코스 week row"
+                  },
+                  {
+                    "title": "각 연습/복습 칸에 오픽현타 기록",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 1달 코스 sub row"
+                  },
+                  {
+                    "title": "각 연습/복습 칸에 부족한 점 보완 기록",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 1달 코스 sub row"
+                  }
+                ]
+              },
+              {
+                "title": "3주차",
+                "sourceTrace": "XLSX 1달 코스 3주차",
+                "items": [
+                  {
+                    "title": "5회차 연습 / 5회차 복습 / 5회차 복습 / 6회차 연습 / 6회차 복습 / 6회차 복습 / 휴식",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 1달 코스 week row"
+                  },
+                  {
+                    "title": "각 연습/복습 칸에 오픽현타 기록",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 1달 코스 sub row"
+                  },
+                  {
+                    "title": "각 연습/복습 칸에 부족한 점 보완 기록",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 1달 코스 sub row"
+                  }
+                ]
+              },
+              {
+                "title": "4주차",
+                "sourceTrace": "XLSX 1달 코스 4주차",
+                "items": [
+                  {
+                    "title": "7회차 연습 / 7회차 복습 / 7회차 복습 / 8회차 연습 / 8회차 복습 / 8회차 복습 / 휴식",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 1달 코스 week row"
+                  },
+                  {
+                    "title": "각 연습/복습 칸에 오픽현타 기록",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 1달 코스 sub row"
+                  },
+                  {
+                    "title": "각 연습/복습 칸에 부족한 점 보완 기록",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 1달 코스 sub row"
+                  }
+                ]
+              },
+              {
+                "title": "5주차",
+                "sourceTrace": "XLSX 1달 코스 5주차",
+                "items": [
+                  {
+                    "title": "9회차 연습 / 9회차 복습 / 9회차 복습 / 10회차 연습 / 10회차 복습 / 10회차 복습 / 휴식",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 1달 코스 week row"
+                  },
+                  {
+                    "title": "각 연습/복습 칸에 오픽현타 기록",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 1달 코스 sub row"
+                  },
+                  {
+                    "title": "각 연습/복습 칸에 부족한 점 보완 기록",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "XLSX 1달 코스 sub row"
+                  }
+                ]
+              }
+            ],
+            "setupInputs": [
+              "시작일",
+              "모의고사 10회차 영상 목록"
+            ]
+          }
+        ]
+      },
+      "review": {
+        "removed": [
+          "회차마다 동일한 3개 item 자동 생성",
+          "원문에 없는 시험 절차 item",
+          "generic memoHint"
+        ],
+        "memoPolicy": "막힌 질문, 녹음 파일 위치, 다시 말할 표현, 보완할 문법/시제만 기록한다."
+      }
+    },
+    {
+      "id": "baby-food-initial-plan",
+      "sourceNo": 3,
+      "title": "초기 이유식 식단표",
+      "status": "ready",
+      "classification": "Flow Map",
+      "urls": [
+        "https://blog.naver.com/01695258757/222768860919"
+      ],
+      "gate": {
+        "decision": "암호 첨부 PDF row가 확인되어 실행 Flow로 가능하다.",
+        "reason": "150/160/170/180일 시작 식단표와 큐브 재고표가 다운로드/복호화됐고, D+n 구간, 메뉴, NEW 재료, 먹은양 row가 확인됐다.",
+        "flowMeRole": "시작일 기준으로 D+n 식단을 캘린더에 깔고, 먹은 양/알레르기/큐브 재고만 기록하게 한다."
+      },
+      "sourceRows": [
+        {
+          "label": "첨부 ZIP",
+          "value": "초기식단표 ZIP password 211111",
+          "sourceTrace": "Naver attachment download",
+          "url": ""
+        },
+        {
+          "label": "식단 PDF",
+          "value": "baby-150.pdf, baby-160.pdf, baby-170.pdf, baby-180.pdf",
+          "sourceTrace": "pdfplumber password 211111",
+          "url": ""
+        },
+        {
+          "label": "큐브 PDF",
+          "value": "큐브 재료 / 만든 날짜 / 1개 용량 / 큐브 개수",
+          "sourceTrace": "baby-cube.pdf",
+          "url": ""
+        }
+      ],
+      "publicContent": {
+        "flows": [
+          {
+            "id": "baby-food-150-start",
+            "title": "150일 시작 초기 이유식 식단표",
+            "kind": "calendar-sheet",
+            "sourceTrace": "첨부 PDF baby-150.pdf, password 211111",
+            "steps": [
+              {
+                "title": "D+150~155",
+                "sourceTrace": "baby-150.pdf table block D+150~155",
+                "items": [
+                  {
+                    "title": "식단 구간: D+150~D+155",
+                    "detail": "D+150~155",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+150~155"
+                  },
+                  {
+                    "title": "제공 메뉴: 쌀 -> 쌀오트밀",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+150~155"
+                  },
+                  {
+                    "title": "NEW 재료: 쌀, 오트밀",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+150~155"
+                  },
+                  {
+                    "title": "간식: X",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+150~155"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+156~161",
+                "sourceTrace": "baby-150.pdf table block D+156~161",
+                "items": [
+                  {
+                    "title": "식단 구간: D+156~D+161",
+                    "detail": "D+156~161",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+156~161"
+                  },
+                  {
+                    "title": "제공 메뉴: 쌀오트밀 + 애호박 / 애호박청경채",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+156~161"
+                  },
+                  {
+                    "title": "NEW 재료: 애호박, 청경채",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+156~161"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+162~167",
+                "sourceTrace": "baby-150.pdf table block D+162~167",
+                "items": [
+                  {
+                    "title": "식단 구간: D+162~D+167",
+                    "detail": "D+162~167",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+162~167"
+                  },
+                  {
+                    "title": "제공 메뉴: 애호박비타민 / 청경채양배추",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+162~167"
+                  },
+                  {
+                    "title": "NEW 재료: 비타민, 양배추",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+162~167"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+168~173",
+                "sourceTrace": "baby-150.pdf table block D+168~173",
+                "items": [
+                  {
+                    "title": "식단 구간: D+168~D+173",
+                    "detail": "D+168~173",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+168~173"
+                  },
+                  {
+                    "title": "제공 메뉴: 양배추브로콜리 / 비타민감자",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+168~173"
+                  },
+                  {
+                    "title": "NEW 재료: 브로콜리, 감자",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+168~173"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+174~179",
+                "sourceTrace": "baby-150.pdf table block D+174~179",
+                "items": [
+                  {
+                    "title": "식단 구간: D+174~D+179",
+                    "detail": "D+174~179",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+174~179"
+                  },
+                  {
+                    "title": "제공 메뉴: 브로콜리고구마 / 브로콜리단호박",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+174~179"
+                  },
+                  {
+                    "title": "NEW 재료: 고구마, 단호박",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+174~179"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+180~185",
+                "sourceTrace": "baby-150.pdf table block D+180~185",
+                "items": [
+                  {
+                    "title": "식단 구간: D+180~D+185",
+                    "detail": "D+180~185",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+180~185"
+                  },
+                  {
+                    "title": "제공 메뉴: 소고기청경채단호박 / 소고기브로콜리오이",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+180~185"
+                  },
+                  {
+                    "title": "NEW 재료: 소고기, 오이",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+180~185"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+186~191",
+                "sourceTrace": "baby-150.pdf table block D+186~191",
+                "items": [
+                  {
+                    "title": "식단 구간: D+186~D+191",
+                    "detail": "D+186~191",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+186~191"
+                  },
+                  {
+                    "title": "제공 메뉴: 소고기오이배 / 소고기청경채사과",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+186~191"
+                  },
+                  {
+                    "title": "NEW 재료: 배, 사과",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+186~191"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+192~197",
+                "sourceTrace": "baby-150.pdf table block D+192~197",
+                "items": [
+                  {
+                    "title": "식단 구간: D+192~D+197",
+                    "detail": "D+192~197",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+192~197"
+                  },
+                  {
+                    "title": "제공 메뉴: 소고기양배추단호박완두콩 / 소고기브로콜리청경채당근",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+192~197"
+                  },
+                  {
+                    "title": "NEW 재료: 완두콩, 당근",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-150.pdf table block D+192~197"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              }
+            ],
+            "setupInputs": [
+              "아기 생일 또는 D+150 시작일",
+              "하루 1회/2회 제공 여부"
+            ]
+          },
+          {
+            "id": "baby-food-160-start",
+            "title": "160일 시작 초기 이유식 식단표",
+            "kind": "calendar-sheet",
+            "sourceTrace": "첨부 PDF baby-160.pdf, password 211111",
+            "steps": [
+              {
+                "title": "D+160~165",
+                "sourceTrace": "baby-160.pdf table block D+160~165",
+                "items": [
+                  {
+                    "title": "식단 구간: D+160~D+165",
+                    "detail": "D+160~165",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf table block D+160~165"
+                  },
+                  {
+                    "title": "제공 메뉴: 쌀 -> 쌀오트밀",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf table block D+160~165"
+                  },
+                  {
+                    "title": "NEW 재료: 쌀, 오트밀",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf table block D+160~165"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+166~171",
+                "sourceTrace": "baby-160.pdf table block D+166~171",
+                "items": [
+                  {
+                    "title": "식단 구간: D+166~D+171",
+                    "detail": "D+166~171",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf table block D+166~171"
+                  },
+                  {
+                    "title": "제공 메뉴: 애호박 / 애호박청경채",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf table block D+166~171"
+                  },
+                  {
+                    "title": "NEW 재료: 애호박, 청경채",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf table block D+166~171"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+172~177",
+                "sourceTrace": "baby-160.pdf table block D+172~177",
+                "items": [
+                  {
+                    "title": "식단 구간: D+172~D+177",
+                    "detail": "D+172~177",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf table block D+172~177"
+                  },
+                  {
+                    "title": "제공 메뉴: 애호박비타민 / 청경채양배추",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf table block D+172~177"
+                  },
+                  {
+                    "title": "NEW 재료: 비타민, 양배추",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf table block D+172~177"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+178~183",
+                "sourceTrace": "baby-160.pdf table block D+178~183",
+                "items": [
+                  {
+                    "title": "식단 구간: D+178~D+183",
+                    "detail": "D+178~183",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf table block D+178~183"
+                  },
+                  {
+                    "title": "제공 메뉴: 청경채고구마 / 소고기애호박",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf table block D+178~183"
+                  },
+                  {
+                    "title": "NEW 재료: 고구마, 소고기",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf table block D+178~183"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+184~189",
+                "sourceTrace": "baby-160.pdf extracted row group",
+                "items": [
+                  {
+                    "title": "식단 구간: D+184~D+189",
+                    "detail": "D+184~189",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf extracted row group"
+                  },
+                  {
+                    "title": "제공 메뉴: 소고기애호박브로콜리 / 소고기브로콜리감자",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf extracted row group"
+                  },
+                  {
+                    "title": "NEW 재료: 브로콜리, 감자",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf extracted row group"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+190~195",
+                "sourceTrace": "baby-160.pdf extracted row group",
+                "items": [
+                  {
+                    "title": "식단 구간: D+190~D+195",
+                    "detail": "D+190~195",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf extracted row group"
+                  },
+                  {
+                    "title": "제공 메뉴: 소고기양배추단호박 / 소고기감자오이",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf extracted row group"
+                  },
+                  {
+                    "title": "NEW 재료: 양배추, 단호박, 오이",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf extracted row group"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+196 이후",
+                "sourceTrace": "baby-160.pdf later rows partially extracted",
+                "items": [
+                  {
+                    "title": "식단 구간: 후속 구간",
+                    "detail": "D+196 이후",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf later rows partially extracted"
+                  },
+                  {
+                    "title": "제공 메뉴: 소고기 기반 토핑 조합",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf later rows partially extracted"
+                  },
+                  {
+                    "title": "NEW 재료: 후속 NEW는 PDF row 추가 검수 필요",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf later rows partially extracted"
+                  },
+                  {
+                    "title": "후속 일자는 source row 추가 import 필요",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-160.pdf later rows partially extracted"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              }
+            ],
+            "setupInputs": [
+              "아기 생일 또는 D+160 시작일",
+              "하루 제공 횟수"
+            ]
+          },
+          {
+            "id": "baby-food-170-start",
+            "title": "170일 시작 초기 이유식 식단표",
+            "kind": "calendar-sheet",
+            "sourceTrace": "첨부 PDF baby-170.pdf, password 211111",
+            "steps": [
+              {
+                "title": "D+170~175",
+                "sourceTrace": "baby-170.pdf table block D+170~175",
+                "items": [
+                  {
+                    "title": "식단 구간: D+170~D+175",
+                    "detail": "D+170~175",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-170.pdf table block D+170~175"
+                  },
+                  {
+                    "title": "제공 메뉴: 쌀 -> 쌀오트밀",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-170.pdf table block D+170~175"
+                  },
+                  {
+                    "title": "NEW 재료: 쌀, 오트밀",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-170.pdf table block D+170~175"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+176~181",
+                "sourceTrace": "baby-170.pdf table block D+176~181",
+                "items": [
+                  {
+                    "title": "식단 구간: D+176~D+181",
+                    "detail": "D+176~181",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-170.pdf table block D+176~181"
+                  },
+                  {
+                    "title": "제공 메뉴: 애호박 / 소고기애호박",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-170.pdf table block D+176~181"
+                  },
+                  {
+                    "title": "NEW 재료: 애호박, 소고기",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-170.pdf table block D+176~181"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+182~187",
+                "sourceTrace": "baby-170.pdf table block D+182~187",
+                "items": [
+                  {
+                    "title": "식단 구간: D+182~D+187",
+                    "detail": "D+182~187",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-170.pdf table block D+182~187"
+                  },
+                  {
+                    "title": "제공 메뉴: 소고기애호박청경채 / 소고기청경채오이",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-170.pdf table block D+182~187"
+                  },
+                  {
+                    "title": "NEW 재료: 청경채, 오이",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-170.pdf table block D+182~187"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+188~193",
+                "sourceTrace": "baby-170.pdf table block D+188~193",
+                "items": [
+                  {
+                    "title": "식단 구간: D+188~D+193",
+                    "detail": "D+188~193",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-170.pdf table block D+188~193"
+                  },
+                  {
+                    "title": "제공 메뉴: 소고기애호박브로콜리 / 소고기브로콜리양배추",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-170.pdf table block D+188~193"
+                  },
+                  {
+                    "title": "NEW 재료: 브로콜리, 양배추",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-170.pdf table block D+188~193"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+194 이후",
+                "sourceTrace": "baby-170.pdf later rows",
+                "items": [
+                  {
+                    "title": "식단 구간: D+194 이후",
+                    "detail": "D+194 이후",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-170.pdf later rows"
+                  },
+                  {
+                    "title": "제공 메뉴: 오전 메뉴 기준, 2회 제공 시 저녁 메뉴 병행",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-170.pdf later rows"
+                  },
+                  {
+                    "title": "NEW 재료: 당근, 사과, 단호박, 바나나, 완두콩, 달걀노른자",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-170.pdf later rows"
+                  },
+                  {
+                    "title": "하루 1회면 오전 메뉴만 사용",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-170.pdf later rows"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              }
+            ],
+            "setupInputs": [
+              "아기 생일 또는 D+170 시작일",
+              "하루 1회/2회 제공 여부"
+            ]
+          },
+          {
+            "id": "baby-food-180-start",
+            "title": "180일 시작 초기 이유식 식단표",
+            "kind": "calendar-sheet",
+            "sourceTrace": "첨부 PDF baby-180.pdf, password 211111",
+            "steps": [
+              {
+                "title": "D+180~185",
+                "sourceTrace": "baby-180.pdf table block D+180~185",
+                "items": [
+                  {
+                    "title": "식단 구간: D+180~D+185",
+                    "detail": "D+180~185",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-180.pdf table block D+180~185"
+                  },
+                  {
+                    "title": "제공 메뉴: 쌀 + D+183부터 소고기",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-180.pdf table block D+180~185"
+                  },
+                  {
+                    "title": "NEW 재료: 쌀, 소고기",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-180.pdf table block D+180~185"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+186~191",
+                "sourceTrace": "baby-180.pdf table block D+186~191",
+                "items": [
+                  {
+                    "title": "식단 구간: D+186~D+191",
+                    "detail": "D+186~191",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-180.pdf table block D+186~191"
+                  },
+                  {
+                    "title": "제공 메뉴: 쌀오트밀 + 소고기 / 소고기애호박",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-180.pdf table block D+186~191"
+                  },
+                  {
+                    "title": "NEW 재료: 오트밀, 애호박",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-180.pdf table block D+186~191"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+192~197",
+                "sourceTrace": "baby-180.pdf table block D+192~197",
+                "items": [
+                  {
+                    "title": "식단 구간: D+192~D+197",
+                    "detail": "D+192~197",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-180.pdf table block D+192~197"
+                  },
+                  {
+                    "title": "제공 메뉴: 소고기애호박청경채 / 소고기청경채브로콜리",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-180.pdf table block D+192~197"
+                  },
+                  {
+                    "title": "NEW 재료: 청경채, 브로콜리",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-180.pdf table block D+192~197"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+198~203",
+                "sourceTrace": "baby-180.pdf table block D+198~203",
+                "items": [
+                  {
+                    "title": "식단 구간: D+198~D+203",
+                    "detail": "D+198~203",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-180.pdf table block D+198~203"
+                  },
+                  {
+                    "title": "제공 메뉴: 소고기브로콜리양배추 / 소고기청경채당근",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-180.pdf table block D+198~203"
+                  },
+                  {
+                    "title": "NEW 재료: 양배추, 단호박, 당근, 사과",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-180.pdf table block D+198~203"
+                  },
+                  {
+                    "title": "간식: 단호박퓌레, 사과",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-180.pdf table block D+198~203"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              },
+              {
+                "title": "D+204 이후",
+                "sourceTrace": "baby-180.pdf later rows",
+                "items": [
+                  {
+                    "title": "식단 구간: D+204 이후",
+                    "detail": "D+204 이후",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-180.pdf later rows"
+                  },
+                  {
+                    "title": "제공 메뉴: 오전 메뉴 기준, 2회 제공 시 저녁 메뉴 병행",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-180.pdf later rows"
+                  },
+                  {
+                    "title": "NEW 재료: 완두콩, 달걀노른자",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-180.pdf later rows"
+                  },
+                  {
+                    "title": "하루 1회면 오전 메뉴만 사용",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-180.pdf later rows"
+                  },
+                  {
+                    "title": "먹은 양 / 알레르기 반응만 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력"
+                  }
+                ],
+                "recordFields": [
+                  "먹은 양",
+                  "알레르기 반응",
+                  "거부/보류",
+                  "다음 제공 여부"
+                ]
+              }
+            ],
+            "setupInputs": [
+              "아기 생일 또는 D+180 시작일",
+              "하루 1회/2회 제공 여부"
+            ]
+          },
+          {
+            "id": "baby-food-cube-inventory",
+            "title": "초기 이유식 큐브 재고표",
+            "kind": "sheet",
+            "sourceTrace": "첨부 PDF baby-cube.pdf",
+            "steps": [
+              {
+                "title": "큐브 재고 row 만들기",
+                "sourceTrace": "baby-cube.pdf table: 큐브 재료 / 만든 날짜 / 1개 용량 / 큐브 개수",
+                "items": [
+                  {
+                    "title": "필드: 큐브 재료",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-cube.pdf header"
+                  },
+                  {
+                    "title": "필드: 만든 날짜",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-cube.pdf header"
+                  },
+                  {
+                    "title": "필드: 1개 용량",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-cube.pdf header"
+                  },
+                  {
+                    "title": "필드: 큐브 개수",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-cube.pdf header"
+                  },
+                  {
+                    "title": "재료 row: 쌀, 오트밀, 소고기, 애호박, 청경채, 오이, 브로콜리, 양배추, 당근, 단호박, 완두콩, 달걀노른자",
+                    "detail": "",
+                    "type": "source_file_row",
+                    "sourceTrace": "baby-cube.pdf material rows"
+                  }
+                ]
+              }
+            ],
+            "setupInputs": [
+              "큐브 만든 날짜",
+              "큐브당 g/ml",
+              "남은 개수"
+            ]
+          }
+        ]
+      },
+      "review": {
+        "removed": [
+          "원문에 없는 장보기/조리법 Step",
+          "음식 알레르기 판단 조언",
+          "매일 임의로 만든 재료 item"
+        ],
+        "limitation": "PDF에는 메뉴와 큐브 표는 있지만 조리법/구매량은 없다. 조리/소분 Flow는 별도 레시피 source import 후에만 가능하다."
+      }
+    },
+    {
+      "id": "reading-system-hold",
+      "sourceNo": 4,
+      "title": "독서 기록/독서 시스템",
+      "status": "hold",
+      "classification": "보류",
+      "urls": [
+        "https://blog.naver.com/naristyle87/222978131890"
+      ],
+      "gate": {
+        "decision": "책 1권 기록 Flow로는 보류한다.",
+        "reason": "원문은 독서기록 템플릿 row가 아니라 개인 독서 시스템/목표 글이다. 책 1권별 기록 필드가 확인되지 않았다.",
+        "flowMeRole": "현재는 습관/목표 메모 후보까지만 가능하고, 앱에 바로 넣을 실행 Flow로 만들면 사용자가 다시 설계해야 한다."
+      },
+      "sourceRows": [
+        {
+          "label": "시스템",
+          "value": "오전 1시간: 읽고 쓰는 시간",
+          "sourceTrace": "Naver PostView body",
+          "url": ""
+        },
+        {
+          "label": "HOW TO",
+          "value": "정해진 시간 취침, 일어나면 책상에 앉기, 폰 멀리 두기, 읽고 쓰는 일만 하기",
+          "sourceTrace": "Naver PostView body",
+          "url": ""
+        },
+        {
+          "label": "취침 전",
+          "value": "잠자리에 누워 전자책 읽기",
+          "sourceTrace": "Naver PostView body",
+          "url": ""
+        },
+        {
+          "label": "월간 계획",
+          "value": "매달 초 장르별로 5권 리스트업",
+          "sourceTrace": "Naver PostView body",
+          "url": ""
+        },
+        {
+          "label": "구매 규칙",
+          "value": "1권 반 읽으면 1권 사기",
+          "sourceTrace": "Naver PostView body",
+          "url": ""
+        },
+        {
+          "label": "연간 목표",
+          "value": "책 70권 읽기",
+          "sourceTrace": "Naver PostView body",
+          "url": ""
+        }
+      ],
+      "publicContent": {
+        "flows": []
+      },
+      "candidateFlows": [
+        "독서 습관 체크 Flow는 가능하지만, 사용자가 그대로 따라 할 책별 기록 Flow는 아님",
+        "책 1권 기록 템플릿을 만들려면 책 제목/저자/시작일/완독일/발췌/감상 같은 별도 source가 필요"
+      ],
+      "review": {
+        "removed": [
+          "월 4권 독서 루틴",
+          "책별 기록 item 임의 생성",
+          "리뷰 작성 세부 Step 임의 생성"
+        ],
+        "nextImport": [
+          "실제 독서노트 템플릿",
+          "책 1권 기록 필드",
+          "완독/리뷰 기준"
+        ]
+      }
+    },
+    {
+      "id": "new-car-purchase-checklist",
+      "sourceNo": 5,
+      "title": "초보자 신차 구매 절차",
+      "status": "ready",
+      "classification": "Flow",
+      "urls": [
+        "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners"
+      ],
+      "gate": {
+        "decision": "7단계 체크 Flow로 가능하다.",
+        "reason": "원문에 예산, 구매방법, 견적/협상, 계약, 출고/인수, 등록, 보험까지 단계가 확인된다.",
+        "flowMeRole": "각 단계에서 금액, 견적, 계약 조건, 출고 점검, 보험 시작일만 기록하게 한다."
+      },
+      "sourceRows": [
+        {
+          "label": "절차",
+          "value": "예산 설정 -> 구매 방법 -> 견적/협상 -> 계약 -> 출고/인수 -> 등록 -> 보험",
+          "sourceTrace": "Getcha article headings",
+          "url": ""
+        },
+        {
+          "label": "비용",
+          "value": "옵션 200~500만원, 등록비 차량가 7~8%, 보험료 연 100~200만원",
+          "sourceTrace": "Getcha article budget section",
+          "url": ""
+        },
+        {
+          "label": "계약",
+          "value": "모델/색상/옵션, 할인/최종 금액, 계약금/잔금, 출고 예정일, 취소/환불 조건",
+          "sourceTrace": "Getcha contract section",
+          "url": ""
+        }
+      ],
+      "publicContent": {
+        "flows": [
+          {
+            "id": "new-car-basic",
+            "title": "신차 구매 7단계",
+            "kind": "checklist",
+            "sourceTrace": "Getcha 7-step article",
+            "steps": [
+              {
+                "title": "1. 예산 설정 및 차량 선택",
+                "sourceTrace": "Getcha 1단계",
+                "items": [
+                  {
+                    "title": "차량 본체 가격 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha budget row"
+                  },
+                  {
+                    "title": "옵션 비용 200~500만원 추가 여부 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha budget row"
+                  },
+                  {
+                    "title": "등록 비용 7~8% 반영",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha budget row"
+                  },
+                  {
+                    "title": "보험료 연 100~200만원 예상",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha budget row"
+                  },
+                  {
+                    "title": "출퇴근/가족/레저 등 용도 기준 차종 비교",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha vehicle selection section"
+                  }
+                ]
+              },
+              {
+                "title": "2. 구매 방법 결정",
+                "sourceTrace": "Getcha 2단계",
+                "items": [
+                  {
+                    "title": "현금 구매 여부 결정",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha cash row"
+                  },
+                  {
+                    "title": "할부 금리와 월 납입금 비교",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha installment row"
+                  },
+                  {
+                    "title": "장기렌트/리스 초기 비용과 세금 혜택 검토",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha rent/lease row"
+                  }
+                ]
+              },
+              {
+                "title": "3. 견적 받기 및 할인 협상",
+                "sourceTrace": "Getcha 3단계",
+                "items": [
+                  {
+                    "title": "여러 딜러 견적 비교",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha multiple quote section"
+                  },
+                  {
+                    "title": "월말/분기말 할인 가능성 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha negotiation tip"
+                  },
+                  {
+                    "title": "경쟁 브랜드 견적서 제시 여부 체크",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha negotiation tip"
+                  },
+                  {
+                    "title": "무상 옵션, 사은품, 출고 기간까지 비교",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha negotiation section"
+                  }
+                ]
+              },
+              {
+                "title": "4. 계약 체결",
+                "sourceTrace": "Getcha 4단계",
+                "items": [
+                  {
+                    "title": "모델명, 색상, 옵션 목록 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha contract checklist"
+                  },
+                  {
+                    "title": "할인 내역, 최종 결제 금액, 계약금/잔금 일정 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha contract checklist"
+                  },
+                  {
+                    "title": "출고 예정일과 지연 조건 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha contract checklist"
+                  },
+                  {
+                    "title": "취소/환불 조건 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha contract checklist"
+                  },
+                  {
+                    "title": "신분증, 인감증명서, 주민등록등본, 소득 증빙 준비",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha document row"
+                  }
+                ]
+              },
+              {
+                "title": "5. 출고 및 차량 인수",
+                "sourceTrace": "Getcha 5단계",
+                "items": [
+                  {
+                    "title": "외관 흠집/찌그러짐/도색 불량 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha delivery inspection"
+                  },
+                  {
+                    "title": "시트, 대시보드, 트림 상태 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha delivery inspection"
+                  },
+                  {
+                    "title": "에어컨, 오디오, 내비게이션, 버튼 작동 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha delivery inspection"
+                  },
+                  {
+                    "title": "보증서, 정비 매뉴얼, 차량 등록증 수령 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha delivery inspection"
+                  }
+                ]
+              },
+              {
+                "title": "6. 차량 등록",
+                "sourceTrace": "Getcha registration step",
+                "items": [
+                  {
+                    "title": "취득세/등록비 납부 여부 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha registration/budget rows"
+                  },
+                  {
+                    "title": "차량 등록증 수령 여부 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha delivery document row"
+                  }
+                ]
+              },
+              {
+                "title": "7. 보험 시작 확인",
+                "sourceTrace": "Getcha insurance row",
+                "items": [
+                  {
+                    "title": "자동차보험 시작일 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha insurance row"
+                  },
+                  {
+                    "title": "운전 경력별 보험료 견적 기록",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Getcha insurance row"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "review": {
+        "removed": [
+          "딜러에게 문의하기 같은 빈 item",
+          "원문에 없는 세부 서류 확장",
+          "구매 후 관리 루틴"
+        ],
+        "memoPolicy": "딜러명, 견적 링크, 금액, 계약금/잔금, 출고 예정일만 기록한다."
+      }
+    },
+    {
+      "id": "child-vaccination-standard-schedule",
+      "sourceNo": 6,
+      "title": "영유아/어린이 표준 예방접종",
+      "status": "partial",
+      "classification": "Flow Map",
+      "urls": [
+        "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+        "https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&menuLv=1",
+        "https://www.ddm.go.kr/health/contents.do?key=1230"
+      ],
+      "gate": {
+        "decision": "공식 row 기반 일정 Flow로 가능하지만 의료 판단은 제외한다.",
+        "reason": "KHMS 원문은 설명형이고, 실제 row는 질병관리청/보건소 표준 예방접종 일정표에서 확인했다.",
+        "flowMeRole": "월령별 접종 후보를 보여주고 접종일/기관/메모만 받는다. 지연/누락 판단은 의사 상담으로 보낸다."
+      },
+      "sourceRows": [
+        {
+          "label": "공식 일정",
+          "value": "질병관리청 표준 예방접종 일정표, 최종검토일 2024-01-15",
+          "sourceTrace": "KDCA NIP standard schedule page",
+          "url": ""
+        },
+        {
+          "label": "2026 자료",
+          "value": "2026 표준예방접종일정표 자료 게시 확인",
+          "sourceTrace": "KDCA related downloads 2026-01-22",
+          "url": ""
+        },
+        {
+          "label": "주의",
+          "value": "DTaP, IPV, Hib, PCV, IJEV는 지연 시 일정/횟수가 달라질 수 있음",
+          "sourceTrace": "KDCA child NIP page",
+          "url": ""
+        },
+        {
+          "label": "지원 백신",
+          "value": "HepB, BCG, DTaP, IPV, Hib, PCV, MMR, VAR, HepA, IJEV/LJEV, HPV, IIV 등",
+          "sourceTrace": "DDM health center schedule",
+          "url": ""
+        }
+      ],
+      "publicContent": {
+        "flows": [
+          {
+            "id": "child-vaccination-standard",
+            "title": "표준 예방접종 일정 추적",
+            "kind": "calendar-medical-record",
+            "sourceTrace": "KDCA/DDM official rows",
+            "steps": [
+              {
+                "title": "출생시",
+                "sourceTrace": "DDM schedule row",
+                "items": [
+                  {
+                    "title": "B형간염(HepB) 1차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 출생시"
+                  }
+                ]
+              },
+              {
+                "title": "1개월 / 4주 이내",
+                "sourceTrace": "DDM schedule row",
+                "items": [
+                  {
+                    "title": "결핵(BCG, 피내용) 1회",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 1개월"
+                  },
+                  {
+                    "title": "B형간염(HepB) 2차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 1개월"
+                  },
+                  {
+                    "title": "BCG 경피용은 국가예방접종 지원 제외 확인",
+                    "detail": "",
+                    "type": "caution",
+                    "sourceTrace": "DDM/KDCA support note"
+                  }
+                ]
+              },
+              {
+                "title": "2, 4, 6개월",
+                "sourceTrace": "DDM schedule row",
+                "items": [
+                  {
+                    "title": "DTaP 1~3차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 2/4/6개월"
+                  },
+                  {
+                    "title": "IPV 1~3차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 2/4/6개월"
+                  },
+                  {
+                    "title": "Hib 1~3차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 2/4/6개월"
+                  },
+                  {
+                    "title": "PCV 1~3차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 2/4/6개월"
+                  },
+                  {
+                    "title": "RV 1~3차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 2/4/6개월"
+                  },
+                  {
+                    "title": "HepB 3차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 2/4/6개월"
+                  }
+                ]
+              },
+              {
+                "title": "12~15개월",
+                "sourceTrace": "DDM schedule row",
+                "items": [
+                  {
+                    "title": "Hib 4차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 12~15개월"
+                  },
+                  {
+                    "title": "PCV 4차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 12~15개월"
+                  },
+                  {
+                    "title": "MMR 1차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 12~15개월"
+                  },
+                  {
+                    "title": "수두(VAR) 1회",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 12~15개월"
+                  }
+                ]
+              },
+              {
+                "title": "12~23개월",
+                "sourceTrace": "DDM schedule row",
+                "items": [
+                  {
+                    "title": "A형간염(HepA) 1~2차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 12~23개월"
+                  },
+                  {
+                    "title": "일본뇌염 불활성화백신(IJEV) 1~2차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 12~23개월"
+                  },
+                  {
+                    "title": "일본뇌염 약독화생백신(LJEV) 1차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 12~23개월"
+                  }
+                ]
+              },
+              {
+                "title": "15~18개월",
+                "sourceTrace": "DDM schedule row",
+                "items": [
+                  {
+                    "title": "DTaP 4차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 15~18개월"
+                  }
+                ]
+              },
+              {
+                "title": "24~35개월",
+                "sourceTrace": "DDM schedule row",
+                "items": [
+                  {
+                    "title": "IJEV 3차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 24~35개월"
+                  },
+                  {
+                    "title": "LJEV 2차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 24~35개월"
+                  }
+                ]
+              },
+              {
+                "title": "4~6세",
+                "sourceTrace": "DDM schedule row",
+                "items": [
+                  {
+                    "title": "DTaP 5차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 4~6세"
+                  },
+                  {
+                    "title": "IPV 4차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 4~6세"
+                  },
+                  {
+                    "title": "MMR 2차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 4~6세"
+                  }
+                ]
+              },
+              {
+                "title": "6세",
+                "sourceTrace": "DDM schedule row",
+                "items": [
+                  {
+                    "title": "IJEV 4차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 6세"
+                  }
+                ]
+              },
+              {
+                "title": "11~12세 / 12세",
+                "sourceTrace": "DDM schedule row",
+                "items": [
+                  {
+                    "title": "Tdap 6차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 11~12세"
+                  },
+                  {
+                    "title": "IJEV 5차",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 12세"
+                  },
+                  {
+                    "title": "HPV 1차(12세 여아)",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "DDM schedule: 12세"
+                  }
+                ]
+              },
+              {
+                "title": "지연/누락 시",
+                "sourceTrace": "KDCA child NIP caution",
+                "items": [
+                  {
+                    "title": "지연 접종은 예진의사와 일정 상담",
+                    "detail": "",
+                    "type": "caution",
+                    "sourceTrace": "KDCA child NIP page"
+                  },
+                  {
+                    "title": "의료기관 방문 전 백신 보유 여부 확인",
+                    "detail": "",
+                    "type": "caution",
+                    "sourceTrace": "KDCA child NIP page"
+                  }
+                ]
+              }
+            ],
+            "recordFields": [
+              "접종일",
+              "기관명",
+              "백신명/차수",
+              "이상반응 관찰",
+              "의사 확인"
+            ]
+          }
+        ]
+      },
+      "review": {
+        "removed": [
+          "의학적 판단 item",
+          "접종 가능 여부 자동 판정",
+          "부모 행동 조언 과다 생성"
+        ],
+        "limitation": "2026 다국어 표준표 파일 자체는 목록 확인까지 했다. 앱 반영 전에는 최신 PDF row를 다시 import해야 한다."
+      }
+    },
+    {
+      "id": "moving-checklist-d-day",
+      "sourceNo": 7,
+      "title": "이사 준비 D-day 체크리스트",
+      "status": "ready",
+      "classification": "Flow",
+      "urls": [
+        "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363"
+      ],
+      "gate": {
+        "decision": "D-day 체크 Flow로 가능하다.",
+        "reason": "원문 표에서 D-30, D-10, D-3, D-1, 이사 당일 출발/도착 row와 담당 기관이 확인됐다.",
+        "flowMeRole": "날짜별 체크리스트와 기관/예약번호/정산 금액 기록을 붙인다."
+      },
+      "sourceRows": [
+        {
+          "label": "첨부",
+          "value": "PDF, XLSX, Notion 링크 존재",
+          "sourceTrace": "AJD page attachment links",
+          "url": ""
+        },
+        {
+          "label": "표",
+          "value": "D-30 / D-10 / D-3 / D-1 / 이사 당일 출발 / 이사 당일 도착",
+          "sourceTrace": "AJD article table",
+          "url": ""
+        }
+      ],
+      "publicContent": {
+        "flows": [
+          {
+            "id": "moving-d-day-checklist",
+            "title": "이사 준비 체크리스트",
+            "kind": "calendar-checklist",
+            "sourceTrace": "AJD table rows",
+            "steps": [
+              {
+                "title": "D-30",
+                "sourceTrace": "AJD table D-30",
+                "items": [
+                  {
+                    "title": "이사 방식 확인: 포장이사 / 반포장이사",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-30 row"
+                  },
+                  {
+                    "title": "이사할 집 점검 및 하자 수리 의뢰",
+                    "detail": "인테리어 업체/수리업체/관리사무소",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-30 row"
+                  },
+                  {
+                    "title": "필요 없는 물건 정리",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-30 row"
+                  },
+                  {
+                    "title": "전학 수속",
+                    "detail": "학교",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-30 row"
+                  },
+                  {
+                    "title": "유아/노약자/반려동물 위탁시설 예약",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-30 row"
+                  },
+                  {
+                    "title": "이사/청소 견적 확인 및 예약",
+                    "detail": "이사/청소 업체",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-30 row"
+                  }
+                ]
+              },
+              {
+                "title": "D-10",
+                "sourceTrace": "AJD table D-10",
+                "items": [
+                  {
+                    "title": "통장/카드/우편물 주소 변경",
+                    "detail": "금융기관/우체국",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-10 row"
+                  },
+                  {
+                    "title": "신문, 우유 등 정기 배달 중지 요청",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-10 row"
+                  },
+                  {
+                    "title": "전출 신고",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-10 row"
+                  },
+                  {
+                    "title": "엘리베이터 사전 예약 / 사다리차 주차공간 예약",
+                    "detail": "관리사무소",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-10 row"
+                  },
+                  {
+                    "title": "평수별 쓰레기봉투 준비",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-10 row"
+                  },
+                  {
+                    "title": "집 열쇠, 리모컨 찾아두기",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-10 row"
+                  },
+                  {
+                    "title": "냉장고 천천히 비우기",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-10 row"
+                  },
+                  {
+                    "title": "폐가전/대형폐기물 수거예약 및 신고",
+                    "detail": "주민센터",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-10 row"
+                  },
+                  {
+                    "title": "이사할 집에서 사용할 물건 주문 및 확인",
+                    "detail": "도배/장판 포함",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-10 row"
+                  },
+                  {
+                    "title": "가구 배치도 작성",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-10 row"
+                  },
+                  {
+                    "title": "인터넷, 정수기 이전 설치 예약",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-10 row"
+                  }
+                ]
+              },
+              {
+                "title": "D-3",
+                "sourceTrace": "AJD table D-3",
+                "items": [
+                  {
+                    "title": "도시가스 철거, 설치 예약",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-3 row"
+                  },
+                  {
+                    "title": "자동이체 해지 신청",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-3 row"
+                  },
+                  {
+                    "title": "세탁기 물 빼기",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-3 row"
+                  },
+                  {
+                    "title": "전세권 설정에 필요한 서류 준비",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-3 row"
+                  },
+                  {
+                    "title": "이사 당일 사용할 물건 따로 포장",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-3 row"
+                  }
+                ]
+              },
+              {
+                "title": "D-1",
+                "sourceTrace": "AJD table D-1",
+                "items": [
+                  {
+                    "title": "이사 일정 최종 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-1 row"
+                  },
+                  {
+                    "title": "이체 한도 증액",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-1 row"
+                  },
+                  {
+                    "title": "주차공간 확보 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-1 row"
+                  },
+                  {
+                    "title": "귀중품, 귀금속 별도 보관",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-1 row"
+                  },
+                  {
+                    "title": "잔금 결제 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-1 row"
+                  },
+                  {
+                    "title": "입주증 발급",
+                    "detail": "입주 아파트인 경우",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-1 row"
+                  },
+                  {
+                    "title": "어항, 수조관 처리",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-1 row"
+                  },
+                  {
+                    "title": "이사 시작 전 가전 가구 사진 촬영",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-1 row"
+                  }
+                ]
+              },
+              {
+                "title": "이사 당일: 출발지",
+                "sourceTrace": "AJD table D-Day departure",
+                "items": [
+                  {
+                    "title": "전기, 가스요금, 관리비 정산",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-Day departure row"
+                  },
+                  {
+                    "title": "장기수선충당금 환급 요청",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-Day departure row"
+                  },
+                  {
+                    "title": "이삿짐 반출 후 잔여 이삿짐 체크",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-Day departure row"
+                  },
+                  {
+                    "title": "문단속 및 열쇠 반납",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-Day departure row"
+                  }
+                ]
+              },
+              {
+                "title": "이사 당일: 도착지",
+                "sourceTrace": "AJD table D-Day arrival",
+                "items": [
+                  {
+                    "title": "이삿짐 분실, 파손 확인 후 비용 정산",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-Day arrival row"
+                  },
+                  {
+                    "title": "전화, 인터넷 TV 설치 후 개통",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-Day arrival row"
+                  },
+                  {
+                    "title": "도어락 비밀번호 변경",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-Day arrival row"
+                  },
+                  {
+                    "title": "잔금지급, 관리비, 중개료 정산",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-Day arrival row"
+                  },
+                  {
+                    "title": "열쇠 받기",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-Day arrival row"
+                  },
+                  {
+                    "title": "전기, 수도 명의 변경",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-Day arrival row"
+                  },
+                  {
+                    "title": "가스 설치",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-Day arrival row"
+                  },
+                  {
+                    "title": "전입신고 및 확정일자 받기",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "AJD D-Day arrival row"
+                  }
+                ]
+              }
+            ],
+            "recordFields": [
+              "업체/기관",
+              "예약번호",
+              "담당자 연락처",
+              "정산 금액",
+              "사진/서류 위치",
+              "보류 사유"
+            ]
+          }
+        ]
+      },
+      "review": {
+        "removed": [
+          "이사 팁 설명문",
+          "원문 표에 없는 포장 루틴",
+          "fallback memoHint"
+        ],
+        "memoPolicy": "기관, 예약번호, 정산 금액, 사진/서류 위치만 기록한다."
+      }
+    },
+    {
+      "id": "wedding-checklist-map",
+      "sourceNo": 8,
+      "title": "결혼 준비 체크리스트",
+      "status": "ready",
+      "classification": "Flow Map",
+      "urls": [
+        "https://blog.naver.com/wilklove/223518896995",
+        "https://gongysd.com/wedding-notion/?bmode=view&idx=167989966"
+      ],
+      "gate": {
+        "decision": "타임라인 Flow와 A-to-Z Flow를 분리하면 실행 초안으로 가능하다.",
+        "reason": "네이버 글은 개월 전 타임라인 row가 있고, 공여사들 글은 준비 카테고리 row가 있다.",
+        "flowMeRole": "타임라인은 예약 마감일 관리, A-to-Z는 업체/견적/계약금/보류 사유 기록에 사용한다."
+      },
+      "sourceRows": [
+        {
+          "label": "네이버 타임라인",
+          "value": "12개월 전: 웨딩홀, 플래너, 본식 스냅/DVD, 아이폰 스냅",
+          "sourceTrace": "Naver PostView body",
+          "url": ""
+        },
+        {
+          "label": "네이버 타임라인",
+          "value": "10개월 전: 스튜디오/드레스/메이크업, 전문 사회자/축가",
+          "sourceTrace": "Naver PostView body",
+          "url": ""
+        },
+        {
+          "label": "네이버 타임라인",
+          "value": "예복, 혼주 메이크업, 드레스 가봉, 부케, 신부관리, 스튜디오 촬영, 신혼여행, 청첩장, 식전영상, 상견례, 최종 참석자 등",
+          "sourceTrace": "Naver PostView body headings",
+          "url": ""
+        },
+        {
+          "label": "공여사들 A-to-Z",
+          "value": "웨딩홀 계약, 상견례, 웨딩플래너, 스드메, 드레스 투어, 혼주 메이크업, 청첩장, 웨딩관리",
+          "sourceTrace": "Gongysd page/search-extracted headings",
+          "url": ""
+        }
+      ],
+      "publicContent": {
+        "flows": [
+          {
+            "id": "wedding-naver-timeline",
+            "title": "결혼 준비 1년 타임라인",
+            "kind": "calendar-checklist",
+            "sourceTrace": "Naver PostView timeline rows",
+            "steps": [
+              {
+                "title": "12개월 전",
+                "sourceTrace": "Naver timeline section",
+                "items": [
+                  {
+                    "title": "웨딩홀 최종 계약",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver 12개월 전 row"
+                  },
+                  {
+                    "title": "결혼식 날짜 & 예산 논의",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver 12개월 전 checklist"
+                  },
+                  {
+                    "title": "웨딩홀 리스트 정리",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver 12개월 전 checklist"
+                  },
+                  {
+                    "title": "웨딩홀 방문 & 견적 상담",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver 12개월 전 checklist"
+                  },
+                  {
+                    "title": "웨딩플래너 업체 상담 & 계약",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver 12개월 전 row"
+                  },
+                  {
+                    "title": "결혼식 본식 스냅, DVD 계약",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver 12개월 전 row"
+                  },
+                  {
+                    "title": "아이폰 스냅 계약",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver 12개월 전 row"
+                  }
+                ]
+              },
+              {
+                "title": "10개월 전",
+                "sourceTrace": "Naver timeline section",
+                "items": [
+                  {
+                    "title": "스튜디오/드레스/메이크업 계약",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver 10개월 전 row"
+                  },
+                  {
+                    "title": "촬영 날짜, 드레스 투어, 가봉 날짜 픽스",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver 10개월 전 checklist"
+                  },
+                  {
+                    "title": "꽃장식, 헤어변형 예약 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver 10개월 전 checklist"
+                  },
+                  {
+                    "title": "식전영상용 짧은 영상 기록 가능 여부 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver 10개월 전 checklist"
+                  },
+                  {
+                    "title": "결혼식 전문 사회자, 축가 스케줄 예약",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver 10개월 전 row"
+                  }
+                ]
+              },
+              {
+                "title": "예복/혼주/촬영 준비 구간",
+                "sourceTrace": "Naver body heading rows",
+                "items": [
+                  {
+                    "title": "신랑 예복 업체 정하기",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "양가 혼주 메이크업 업체 계약",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "촬영용 드레스 가봉",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "부케 예약",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "신부관리 시작",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  }
+                ]
+              },
+              {
+                "title": "촬영/신혼여행/혼수 준비 구간",
+                "sourceTrace": "Naver body heading rows",
+                "items": [
+                  {
+                    "title": "스튜디오 촬영",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "신혼여행 예약",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "가전/가구 구매할 것 리스트 정리",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "양가 혼주 한복 업체 픽스",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "결혼반지 견적받고 리스트 정리",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "신랑/신부관리 시작",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  }
+                ]
+              },
+              {
+                "title": "청첩장/상견례/식전 준비 구간",
+                "sourceTrace": "Naver body heading rows",
+                "items": [
+                  {
+                    "title": "신혼집 준비",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "청첩장 제작",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "식전영상 준비",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "양가 상견례",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "프러포즈",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  }
+                ]
+              },
+              {
+                "title": "본식 직전 확인 구간",
+                "sourceTrace": "Naver body heading rows",
+                "items": [
+                  {
+                    "title": "최종 참석자 확인",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "본식 웨딩드레스 최종 가봉",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "웨딩홀 시식하기",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "본식 관련 준비",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "결혼식 답례품 예약",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "결혼식 포토부스 준비",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "본식 부케 최종 픽스",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  },
+                  {
+                    "title": "신혼여행 최종 체크",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Naver heading row"
+                  }
+                ]
+              }
+            ],
+            "recordFields": [
+              "업체명",
+              "견적",
+              "예약일",
+              "계약금",
+              "잔금일",
+              "보류 사유"
+            ]
+          },
+          {
+            "id": "wedding-atoz-vendor-board",
+            "title": "결혼 준비 A-to-Z 업체/견적 보드",
+            "kind": "sheet-board",
+            "sourceTrace": "Gongysd category headings",
+            "steps": [
+              {
+                "title": "업체/항목 보드",
+                "sourceTrace": "Gongysd A-to-Z headings",
+                "items": [
+                  {
+                    "title": "웨딩홀 계약",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Gongysd heading"
+                  },
+                  {
+                    "title": "상견례",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Gongysd heading"
+                  },
+                  {
+                    "title": "웨딩플래너 선정",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Gongysd heading"
+                  },
+                  {
+                    "title": "스드메 업체 선정",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Gongysd heading"
+                  },
+                  {
+                    "title": "드레스 투어",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Gongysd heading"
+                  },
+                  {
+                    "title": "혼주 메이크업 예약",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Gongysd heading"
+                  },
+                  {
+                    "title": "청첩장 준비",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Gongysd heading"
+                  },
+                  {
+                    "title": "웨딩관리",
+                    "detail": "",
+                    "type": "source_task",
+                    "sourceTrace": "Gongysd heading"
+                  }
+                ],
+                "recordFields": [
+                  "후보",
+                  "견적",
+                  "예약일",
+                  "계약금",
+                  "최종 선택",
+                  "보류 사유"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "review": {
+        "removed": [
+          "원문 항목 확인이라는 반복 item",
+          "A-to-Z와 타임라인을 한 Flow에 섞은 구조",
+          "임의 월별 준비 항목"
+        ],
+        "limitation": "공여사들 전체 중간 카테고리 6~8번은 검색/본문 추출만으로 안정 확인되지 않아 이번 초안에서 제외했다."
+      }
+    },
+    {
+      "id": "allblanc-video-routine-map",
+      "sourceNo": 9,
+      "title": "Allblanc 영상 홈트 루틴",
+      "status": "partial",
+      "classification": "Flow Map",
+      "urls": [
+        "https://youtube.com/@allblanctv"
+      ],
+      "gate": {
+        "decision": "영상 1개 = 루틴 1개 구조로 가능하다.",
+        "reason": "채널과 영상 URL/제목 단위가 확인된다. 운동 동작 세부 row는 영상 자막/설명 import 전에는 만들지 않는다.",
+        "flowMeRole": "영상 URL, 반복 요일, 완료 여부, 메모란 안내만 붙인다."
+      },
+      "sourceRows": [
+        {
+          "label": "채널",
+          "value": "Allblanc TV YouTube channel",
+          "sourceTrace": "YouTube channel page title",
+          "url": ""
+        },
+        {
+          "label": "영상",
+          "value": "5 MIN HOME WORKOUT YOU CAN DO EVERY MORNING",
+          "sourceTrace": "YouTube channel page video title",
+          "url": ""
+        },
+        {
+          "label": "영상 URL 후보",
+          "value": "fLLScgWQcHc, 2dail5Imi04, UEPkHmW_2FU",
+          "sourceTrace": "existing source candidate URLs; title recheck needed for 2 videos",
+          "url": ""
+        }
+      ],
+      "publicContent": {
+        "flows": [
+          {
+            "id": "homefit-morning-5min",
+            "title": "매일 아침 5분 전신 홈트",
+            "kind": "video-routine",
+            "sourceTrace": "YouTube video URL/title",
+            "steps": [
+              {
+                "title": "영상 1개 실행",
+                "sourceTrace": "YouTube video title",
+                "items": [
+                  {
+                    "title": "영상 제목: 5 MIN HOME WORKOUT YOU CAN DO EVERY MORNING",
+                    "detail": "",
+                    "type": "source_link",
+                    "sourceTrace": "YouTube channel page"
+                  },
+                  {
+                    "title": "영상 URL: https://www.youtube.com/watch?v=fLLScgWQcHc",
+                    "detail": "",
+                    "type": "source_link",
+                    "sourceTrace": "YouTube URL candidate"
+                  },
+                  {
+                    "title": "반복 요일 선택",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 루틴 설정 필드"
+                  },
+                  {
+                    "title": "완료 여부 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 루틴 기록 필드"
+                  },
+                  {
+                    "title": "특이사항은 메모란에 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "사용자 피드백 기준: 안전 체크만 허용"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "homefit-no-jump",
+            "title": "무릎 부담 낮춘 노점프 루틴 후보",
+            "kind": "video-routine",
+            "sourceTrace": "YouTube URL candidate, title recheck required",
+            "steps": [
+              {
+                "title": "영상 1개 실행",
+                "sourceTrace": "candidate URL source",
+                "items": [
+                  {
+                    "title": "영상 URL: https://www.youtube.com/watch?v=2dail5Imi04",
+                    "detail": "",
+                    "type": "source_link",
+                    "sourceTrace": "YouTube URL candidate"
+                  },
+                  {
+                    "title": "영상 제목/동작 요약은 영상 상세 import 후 확정",
+                    "detail": "",
+                    "type": "caution",
+                    "sourceTrace": "source import needed"
+                  },
+                  {
+                    "title": "반복 요일 / 완료 여부만 기록하고, 특이사항은 메모란에 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 루틴 기록 필드"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "homefit-lower-body",
+            "title": "하체 루틴 후보",
+            "kind": "video-routine",
+            "sourceTrace": "YouTube URL candidate, title recheck required",
+            "steps": [
+              {
+                "title": "영상 1개 실행",
+                "sourceTrace": "candidate URL source",
+                "items": [
+                  {
+                    "title": "영상 URL: https://www.youtube.com/watch?v=UEPkHmW_2FU",
+                    "detail": "",
+                    "type": "source_link",
+                    "sourceTrace": "YouTube URL candidate"
+                  },
+                  {
+                    "title": "영상 제목/동작 요약은 영상 상세 import 후 확정",
+                    "detail": "",
+                    "type": "caution",
+                    "sourceTrace": "source import needed"
+                  },
+                  {
+                    "title": "반복 요일 / 완료 여부만 기록하고, 특이사항은 메모란에 기록",
+                    "detail": "",
+                    "type": "tracking",
+                    "sourceTrace": "FlowMe 루틴 기록 필드"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "review": {
+        "removed": [
+          "영상에 없는 운동 동작 item",
+          "세트/횟수 임의 생성",
+          "식단/스트레칭 조언"
+        ],
+        "nextImport": [
+          "영상별 제목",
+          "영상 URL",
+          "영상 설명/챕터",
+          "자막 기반 동작 요약"
+        ]
+      }
+    }
+  ]
+}

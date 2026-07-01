@@ -167,6 +167,75 @@ Detail/memo/URL:
 
 Do not turn supporting detail into extra required setup fields.
 
+### 8a. Item, Field, And Memo Boundary
+
+Treat an Item as a checklist-level action, not as every fact found in the source.
+
+Use an Item only when it is both:
+
+- source-derived, and
+- worth checking as a user action inside the Step.
+
+Bundle low-level source facts into the Step detail or memo instead of turning them into separate Items. If a user would not naturally check it off, it is probably not an Item.
+
+Use a Field only when the value is needed for scheduling, sorting, filtering, export, repeat generation, or a future Step. Otherwise, keep it as memo text.
+
+Default memo contents:
+
+- source title and URL
+- source-specific details
+- optional quantities or amounts
+- condition/status notes
+- exception notes
+- phone-call or vendor notes
+- freeform user notes
+
+Do not create first-class fields for occasional notes such as pain, dizziness, reaction, eaten amount, detailed quantity, mood, or subjective condition unless the source itself is a record template and the user job is explicitly record management.
+
+Good:
+
+- Item: `오늘 영상 따라하기`
+- Memo/detail: video title, URL, length, notes
+
+- Item: `D+150~155 식단 제공하기`
+- Memo/detail: menu, new ingredients, snack note, eaten amount if the user wants to write it
+
+- Item: `2개월 접종 항목 확인하기`
+- Memo/detail: vaccine names, source URL, clinic notes
+
+Bad:
+
+- separate Items for every ingredient when the user just needs to follow one menu row
+- separate fields for pain or reaction when a memo note is enough
+- separate Items for source explanation that the user cannot complete
+
+### 8b. Park Is A Source-Row Staging State
+
+Park is not a failed Flow. Use Park when the source is a resource library, channel, archive, or broad collection whose individual rows are useful but not yet imported.
+
+Park candidates become Flow Maps by collecting source rows first, then bundling rows into time-boxed routines or resource queues.
+
+Required row metadata for resource-library Park:
+
+- source row title
+- source URL
+- category
+- target age/audience or difficulty when present
+- source-provided feature or resource type
+- whether the row has an actual printable/video/file/resource
+
+Common Park-to-Flow pattern:
+
+```text
+resource library -> article/video rows -> 2-week or 1-month routine -> one resource per day
+```
+
+Examples:
+
+- A printable worksheet site can become `2주 한글 공부`, `2주 미로찾기`, or `1달 덧셈 공부` after enough article rows are imported.
+- A workout channel can become `2주 아침 홈트`, `2주 노점프 홈트`, or `1달 전신 홈트` after enough video title/URL rows are imported.
+- A reading-system article can become a reading routine only when the user supplies the book target or the source provides a real reading template.
+
 ### 9. Sensitive Sources Need Stronger Boundaries
 
 For health, baby/family, legal, finance, vehicle safety, or remote-access/security content:
@@ -195,6 +264,7 @@ Do not build the UI until these questions have concrete answers:
 ```text
 Primary source:
 Source shape:
+Source row unit:
 User job:
 Natural artifact:
 Top-level inputs:
@@ -202,6 +272,7 @@ Generated item title:
 Generated date/repeat/deadline:
 Source-derived rows:
 Memo/detail/URL contents:
+Item/Field/Memo boundary:
 Completion or hold signal:
 Do-not-build boundary:
 ```
@@ -214,6 +285,7 @@ Reject or redo the conversion when any of these are true:
 
 - More than one source controls the Flow structure.
 - Checklist rows are invented to fill a UI pattern.
+- Source details are split into many Items instead of one checkable action plus memo/detail.
 - Every section has the same number of tasks without source evidence.
 - User must enter details that should come from the source or memo.
 - A one-off checklist is stretched into a multi-day timeline.

@@ -1,0 +1,83 @@
+<article style="font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; max-width:960px; margin:0 auto; padding:32px 20px; color:#0f172a; line-height:1.6;">
+  <header style="border-bottom:1px solid #e2e8f0; padding-bottom:20px; margin-bottom:24px;">
+    <p style="margin:0 0 8px; color:#2563eb; font-weight:700;">My Flow Today v2.1 단순화 설계</p>
+    <h1 style="margin:0; font-size:32px; line-height:1.25;">오늘 탭을 상태판이 아니라 실행 inbox로 정리하기</h1>
+    <p style="margin:12px 0 0; color:#475569;">대상: 모바일 <code>/my</code> Today 탭. 기준: Figma v2.1의 <code>요약 → Flow row → 필요한 detail</code> 구조.</p>
+  </header>
+
+  <section style="display:grid; gap:12px; margin-bottom:28px;">
+    <h2 style="font-size:22px; margin:0;">판단</h2>
+    <div style="border:1px solid #e2e8f0; border-radius:12px; padding:16px; background:#fff;">
+      <p style="margin:0;">기존 Today 탭은 <strong>지금 이어하기</strong> 뒤에 <strong>지난 일정 정리</strong>, <strong>오늘 완료</strong>, <strong>이번 주·다음 할 일</strong>이 모두 카드로 쌓였다. 그래서 사용자는 오늘 바로 볼 항목보다 상태 분류를 먼저 해석하게 된다. Figma v2.1 기준으로는 실패까지는 아니지만, 모바일 실행 화면으로는 정보량이 과하다.</p>
+    </div>
+  </section>
+
+  <section style="display:grid; gap:12px; margin-bottom:28px;">
+    <h2 style="font-size:22px; margin:0;">변경 원칙</h2>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px;">
+      <div style="border:1px solid #bfdbfe; border-radius:12px; padding:14px; background:#eff6ff;">
+        <strong>1. 핵심 실행 1개</strong>
+        <p style="margin:8px 0 0; color:#334155;">첫 화면은 가장 먼저 볼 Flow row 하나를 기준으로 시작한다.</p>
+      </div>
+      <div style="border:1px solid #bfdbfe; border-radius:12px; padding:14px; background:#eff6ff;">
+        <strong>2. 다음 항목 일부</strong>
+        <p style="margin:8px 0 0; color:#334155;">가까운 다음 Step 2~3개만 Flow row 스타일로 이어 보여준다.</p>
+      </div>
+      <div style="border:1px solid #bfdbfe; border-radius:12px; padding:14px; background:#eff6ff;">
+        <strong>3. 보조 상태 접힘</strong>
+        <p style="margin:8px 0 0; color:#334155;">지난 일정과 완료 항목은 큰 카드가 아니라 얇은 접힘 row로 낮춘다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:grid; gap:12px; margin-bottom:28px;">
+    <h2 style="font-size:22px; margin:0;">반영 범위</h2>
+    <table style="width:100%; border-collapse:collapse; font-size:14px;">
+      <thead>
+        <tr style="background:#f8fafc;">
+          <th style="text-align:left; border:1px solid #e2e8f0; padding:10px;">영역</th>
+          <th style="text-align:left; border:1px solid #e2e8f0; padding:10px;">변경 전</th>
+          <th style="text-align:left; border:1px solid #e2e8f0; padding:10px;">변경 후</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="border:1px solid #e2e8f0; padding:10px;">오늘 할 일 raw list</td>
+          <td style="border:1px solid #e2e8f0; padding:10px;">모바일에서도 별도 카드로 노출될 수 있음</td>
+          <td style="border:1px solid #e2e8f0; padding:10px;">모바일에서는 Flow row continuation으로 흡수</td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #e2e8f0; padding:10px;">다음 항목</td>
+          <td style="border:1px solid #e2e8f0; padding:10px;">지난 일정/완료 뒤에 있어 후순위처럼 보임</td>
+          <td style="border:1px solid #e2e8f0; padding:10px;">지금 이어하기 바로 아래에 가까운 순서로 표시</td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #e2e8f0; padding:10px;">지난 일정</td>
+          <td style="border:1px solid #e2e8f0; padding:10px;">노란 큰 카드와 flow별 preview가 주요 실행처럼 보임</td>
+          <td style="border:1px solid #e2e8f0; padding:10px;">작은 보조 row와 sheet 열기만 유지</td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #e2e8f0; padding:10px;">오늘 완료</td>
+          <td style="border:1px solid #e2e8f0; padding:10px;">별도 카드로 쌓임</td>
+          <td style="border:1px solid #e2e8f0; padding:10px;">보조 상태 row로 접힘 유지</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section style="display:grid; gap:12px; margin-bottom:28px;">
+    <h2 style="font-size:22px; margin:0;">시뮬레이션 기준</h2>
+    <ul style="margin:0; padding-left:20px; color:#334155;">
+      <li>저장한 Flow 1개: Today 첫 화면에서 가장 먼저 볼 항목이 드러나는가.</li>
+      <li>저장한 Flow 3개: 다음 항목이 2~3개로 충분하고 과하지 않은가.</li>
+      <li>저장한 Flow 8개 이상: Today가 전체 목록이 아니라 실행 inbox로 남는가.</li>
+      <li>지난 일정 있음: 보조 상태로 보이되 사용자가 무시하지 않을 정도인가.</li>
+      <li>오늘 완료 있음: 완료 내역이 실행 흐름을 가리지 않는가.</li>
+    </ul>
+  </section>
+
+  <section style="border:1px solid #e2e8f0; border-radius:12px; padding:16px; background:#f8fafc;">
+    <h2 style="font-size:22px; margin:0 0 8px;">통과 기준</h2>
+    <p style="margin:0;">모바일 390px에서 첫 화면의 주 시선이 <strong>지금 이어하기</strong>와 그 Flow row에 머물러야 한다. 지난 일정과 완료 항목은 열 수 있지만, Today 탭의 주 카드처럼 보여서는 안 된다.</p>
+  </section>
+</article>
