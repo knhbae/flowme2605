@@ -2325,6 +2325,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowActiveRowKey, setMyFlowActiveRowKey] = useState('');
   const [myFlowDetailSurface, setMyFlowDetailSurface] = useState<MyFlowView | 'post-save' | ''>('');
   const [myFlowDetailOpen, setMyFlowDetailOpen] = useState(false);
+  const [myFlowExpandedStructureSlug, setMyFlowExpandedStructureSlug] = useState('');
   const [myFlowRoutineCompletionUndo, setMyFlowRoutineCompletionUndo] = useState<MyFlowRoutineCompletionUndo | null>(null);
   const [myFlowInventoryOpen, setMyFlowInventoryOpen] = useState(false);
   const [myFlowTodayCompletedOpen, setMyFlowTodayCompletedOpen] = useState(false);
@@ -2375,6 +2376,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowActiveRowKey('');
     setMyFlowDetailSurface('');
     setMyFlowDetailOpen(false);
+    setMyFlowExpandedStructureSlug('');
     setMyFlowEditingDetailKey('');
     setMyFlowExpandedAdvancedKey('');
     setMyFlowExpandedMemoKey('');
@@ -2386,6 +2388,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowPostSaveWorkspaceOpen(true);
     closeMyFlowTransientDetail();
     setSavedView(id);
+    if (id !== 'flow') setMyFlowExpandedStructureSlug('');
     setMyFlowStatusSheet(null);
     setMyFlowInventorySheetOpen(false);
     if (id !== 'calendar' || typeof window === 'undefined' || !window.matchMedia('(max-width: 767px)').matches) return;
@@ -2429,7 +2432,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         window.setTimeout(() => {
           const nextTop = detail.getBoundingClientRect().top;
           if (nextTop > 88) window.scrollBy({ top: nextTop - 88, behavior: 'auto' });
+          const nextRect = detail.getBoundingClientRect();
+          const bottomLimit = window.innerHeight - 104;
+          if (nextRect.bottom > bottomLimit && nextRect.top > 72) {
+            window.scrollBy({ top: Math.min(nextRect.bottom - bottomLimit, nextRect.top - 72), behavior: 'auto' });
+          }
         }, 0);
+        return;
+      }
+      const bottomLimit = window.innerHeight - 104;
+      if (rect.bottom > bottomLimit && rect.top > 72) {
+        window.scrollBy({ top: Math.min(rect.bottom - bottomLimit, rect.top - 72), behavior: 'auto' });
       }
     }, 0);
   };
@@ -2498,6 +2511,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       setMyFlowActiveRowKey('');
       setMyFlowDetailSurface('');
       setMyFlowDetailOpen(false);
+      setMyFlowExpandedStructureSlug('');
       setMyFlowInventoryOpen(false);
       setMyFlowTodayCompletedOpen(false);
       setMyFlowRoutineOverflowDate('');
@@ -2578,16 +2592,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const postSaveFlows = postSaveMap
     ? savedFlows.filter((flow) => postSaveMap.flowSlugs.includes(flow.progress.slug))
     : [];
-  const postSaveRows = postSaveFlows.flatMap((flow) => flow.rows.map((row, index) => ({ flow, row, index })));
-  const getPostSavePreviewLimit = (_flow: MySavedFlow) => 1;
-  const getPostSaveStepKey = (flow: MySavedFlow, row: MyFlowRow) =>
-    row.date ? getMyFlowCalendarRowKey(flow.progress.slug, row.id, row.date) : `${flow.progress.slug}::${row.id}::none`;
-  const postSaveFirstAction = [...postSaveRows].sort((left, right) => {
-    const leftDate = left.row.date ?? '9999-12-31';
-    const rightDate = right.row.date ?? '9999-12-31';
-    const dateOrder = leftDate.localeCompare(rightDate);
-    return dateOrder === 0 ? left.index - right.index : dateOrder;
-  })[0];
   const postSaveStepCount = postSaveFlows.reduce((count, flow) => count + flow.rows.length, 0);
   const hasPostSavePanel = Boolean(postSaveMap && postSaveFlows.length > 0 && (!isMyFlowScenarioDemo || savedMapIdParam));
   const showPostSavePanel = hasPostSavePanel && !myFlowPostSaveWorkspaceOpen;
@@ -2902,11 +2906,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     calendarRows.find((row) => getMyFlowRowInstanceKey(row) === myFlowActiveRowKey) ??
     myFlowAllRows.find((row) => getMyFlowRowInstanceKey(row) === myFlowActiveRowKey) ??
     myFlowSelectedDateAllRows[0];
-  const myFlowActiveRowBelongsToPostSaveMap = Boolean(
-    showPostSavePanel &&
-    myFlowActiveRow &&
-    postSaveFlows.some((flow) => flow.progress.slug === myFlowActiveRow.flow.progress.slug),
-  );
   const myFlowSelectedDateOpenCount = myFlowSelectedDateAllRows.filter((row) => !isMyFlowRowChecked(row.flow, row)).length;
   const myFlowCalendarOpenCount = calendarScopedRows.filter((row) => !isMyFlowRowChecked(row.flow, row)).length;
   const myFlowScheduleCountByDate = calendarScopedScheduleRows.reduce<Record<string, number>>((counts, row) => {
@@ -3254,10 +3253,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const hiddenMobileInventoryCount = shouldLimitMobileLargeInventory
     ? Math.max(0, flowListVisibleFlows.length - mobileInventoryVisibleFlows.length)
     : 0;
-  const shouldShowMobileFlowCards =
+  const shouldLimitMobileFlowBoard =
     isMyFlowMobileViewport &&
-    flowListVisibleFlows.length > 0 &&
-    flowListVisibleFlows.length <= 4;
+    selectedSavedFlowSlug === 'all' &&
+    flowListVisibleFlows.length > 4 &&
+    !myFlowInventorySheetOpen;
+  const mobileFlowBoardVisibleFlows = shouldLimitMobileFlowBoard ? flowListVisibleFlows.slice(0, 4) : flowListVisibleFlows;
+  const hiddenMobileFlowBoardCount = shouldLimitMobileFlowBoard
+    ? Math.max(0, flowListVisibleFlows.length - mobileFlowBoardVisibleFlows.length)
+    : 0;
   const flowListReadyFlows = flowListVisibleFlows.filter((flow) => isMyFlowReadyContent(flow));
   const flowListSupportFlows = flowListVisibleFlows.filter((flow) => !isMyFlowReadyContent(flow));
   const shouldSeparateFlowReadiness =
@@ -3536,23 +3540,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     openMyFlowRowDetail(row, surface);
   };
 
-  const openMyFlowRowFromFlowTab = (flow: MySavedFlow, row: MyFlowRow) => {
-    if (flow.bundle.flow.structure_type === 'routine') {
-      const routineRow =
-        calendarRows.find((candidate) => candidate.flow.progress.slug === flow.progress.slug && candidate.id === row.id && !isMyFlowRowChecked(candidate.flow, candidate)) ??
-        calendarRows.find((candidate) => candidate.flow.progress.slug === flow.progress.slug && candidate.id === row.id);
-      if (routineRow) {
-        if (myFlowDetailOpen && myFlowActiveRowKey === getMyFlowRowInstanceKey(routineRow)) {
-          resetMyFlowRowDetailState();
-          return;
-        }
-        setSavedView('flow');
-        openMyFlowRowDetail(routineRow, 'flow');
-        return;
-      }
-    }
+  const getMyFlowRowForFlowTab = (flow: MySavedFlow, row: MyFlowRow): MyFlowCalendarRow => {
     const originalDate = row.date;
-    const flowRow = {
+    return {
       ...row,
       flow,
       ...(originalDate
@@ -3563,35 +3553,87 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           }
         : {}),
     };
+  };
+
+  const toggleMyFlowStructureFlow = (flow: MySavedFlow) => {
+    setSavedView('flow');
+    if (myFlowExpandedStructureSlug === flow.progress.slug) {
+      setMyFlowExpandedStructureSlug('');
+      if (myFlowActiveRow?.flow.progress.slug === flow.progress.slug) resetMyFlowRowDetailState();
+      return;
+    }
+    setMyFlowExpandedStructureSlug(flow.progress.slug);
+    if (myFlowActiveRow?.flow.progress.slug !== flow.progress.slug) resetMyFlowRowDetailState();
+  };
+
+  const openMyFlowRowFromFlowTab = (flow: MySavedFlow, row: MyFlowRow) => {
+    if (flow.bundle.flow.structure_type === 'routine') {
+      const routineRow =
+        calendarRows.find((candidate) => candidate.flow.progress.slug === flow.progress.slug && candidate.id === row.id && !isMyFlowRowChecked(candidate.flow, candidate)) ??
+        calendarRows.find((candidate) => candidate.flow.progress.slug === flow.progress.slug && candidate.id === row.id);
+      if (routineRow) {
+        if (myFlowDetailOpen && myFlowActiveRowKey === getMyFlowRowInstanceKey(routineRow)) {
+          resetMyFlowRowDetailState();
+          return;
+        }
+        setMyFlowExpandedStructureSlug(flow.progress.slug);
+        setSavedView('flow');
+        openMyFlowRowDetail(routineRow, 'flow');
+        return;
+      }
+    }
+    const flowRow = getMyFlowRowForFlowTab(flow, row);
     if (myFlowDetailOpen && myFlowActiveRowKey === getMyFlowRowInstanceKey(flowRow)) {
       resetMyFlowRowDetailState();
       return;
     }
-    setSelectedSavedFlowSlug(flow.progress.slug);
+    setMyFlowExpandedStructureSlug(flow.progress.slug);
     setSavedView('flow');
     openMyFlowRowDetail(flowRow, 'flow');
   };
 
-  const openMyFlowRowFromPostSave = (flow: MySavedFlow, row: MyFlowRow) => {
-    const originalDate = row.date;
-    const postSaveStepKey = getPostSaveStepKey(flow, row);
-    if (myFlowDetailOpen && myFlowActiveRowKey === postSaveStepKey) {
-      closeMyFlowRowDetail();
-      return;
+  const getPostSaveContinuationRow = (): MyFlowCalendarRow | null => {
+    const postSaveFlowSlugs = new Set(postSaveFlows.map((flow) => flow.progress.slug));
+    if (myFlowPrimaryContinuationRow && postSaveFlowSlugs.has(myFlowPrimaryContinuationRow.flow.progress.slug)) {
+      return myFlowPrimaryContinuationRow;
     }
-    setSelectedSavedFlowSlug('all');
-    setSavedView('today');
-    openMyFlowRowDetail({
-      ...row,
-      flow,
+    const firstPostSaveRow = postSaveFlows
+      .flatMap((flow) => flow.rows.map((row, index) => ({ flow, row, index })))
+      .sort((left, right) => {
+        const leftDate = left.row.date ?? '9999-12-31';
+        const rightDate = right.row.date ?? '9999-12-31';
+        const dateOrder = leftDate.localeCompare(rightDate);
+        return dateOrder === 0 ? left.index - right.index : dateOrder;
+      })[0];
+    if (!firstPostSaveRow) return null;
+    const originalDate = firstPostSaveRow.row.date;
+    return {
+      ...firstPostSaveRow.row,
+      flow: firstPostSaveRow.flow,
       ...(originalDate
         ? {
             originalDate,
-            calendarKey: getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate),
-            date: myFlowDateOverrides[getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate)] ?? row.date,
+            calendarKey: getMyFlowCalendarRowKey(firstPostSaveRow.flow.progress.slug, firstPostSaveRow.row.id, originalDate),
+            date: myFlowDateOverrides[getMyFlowCalendarRowKey(firstPostSaveRow.flow.progress.slug, firstPostSaveRow.row.id, originalDate)] ?? firstPostSaveRow.row.date,
           }
         : {}),
-    }, 'post-save');
+    };
+  };
+
+  const openMyFlowContinuationFromPostSave = () => {
+    const continuationRow = getPostSaveContinuationRow();
+    setMyFlowPostSaveWorkspaceOpen(true);
+    if (!continuationRow) {
+      setSelectedSavedFlowSlug('all');
+      setSavedView('flow');
+      scrollMyFlowPostSaveTargetIntoView('flow');
+      return;
+    }
+    const targetSurface: MyFlowView = visibleSavedViewTabs.some(([id]) => id === 'today') ? 'today' : 'flow';
+    setSelectedSavedFlowSlug(continuationRow.flow.progress.slug);
+    setSavedView(targetSurface);
+    openMyFlowRowDetail(continuationRow, targetSurface);
+    scrollMyFlowPostSaveTargetIntoView('flow');
   };
 
   const scrollMyFlowPostSaveTargetIntoView = (target: 'calendar' | 'checklist' | 'flow') => {
@@ -3599,14 +3641,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       const targetRef = target === 'calendar' ? myFlowCalendarCardRef.current : myFlowWorkspaceRef.current;
       targetRef?.scrollIntoView({ block: 'start', behavior: 'auto' });
     }, 0);
-  };
-
-  const openMyFlowFullViewFromPostSave = (flow: MySavedFlow) => {
-    closeMyFlowRowDetail();
-    setMyFlowPostSaveWorkspaceOpen(true);
-    setSelectedSavedFlowSlug(flow.progress.slug);
-    setSavedView('flow');
-    scrollMyFlowPostSaveTargetIntoView('flow');
   };
 
   const openMyFlowListFromPostSave = () => {
@@ -3738,7 +3772,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           }}
           data-testid="my-flow-inline-detail"
         >
-          {renderMyFlowItemDetailEditor(myFlowActiveRow, 'inline')}
+          {renderMyFlowItemDetailEditor(myFlowActiveRow, 'inline', rowDetailSurface)}
         </div>
       ) : null}
       </div>
@@ -3797,6 +3831,99 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             {visibleCompletionActionLabel}
           </button>
         </div>
+      </article>
+    );
+  };
+
+  const renderMobileContinuationFlowCard = (
+    row: MyFlowCalendarRow,
+    options: { tone?: 'primary' | 'plain'; nextLabel?: string } = {},
+  ) => {
+    const flow = row.flow;
+    const activeRowKey = myFlowActiveRow && myFlowDetailOpen ? getMyFlowRowInstanceKey(myFlowActiveRow) : '';
+    const rowKey = getMyFlowRowInstanceKey(row);
+    const isActive = myFlowDetailSurface === 'today' && activeRowKey === rowKey;
+    const checked = isMyFlowRowChecked(flow, row);
+    const color = categoryColors[flow.bundle.flow.category] ?? '#2563EB';
+    const isPrimary = options.tone === 'primary';
+    const flowContext = flow.savedMap
+      ? `${flow.savedMap.title} 안의 Flow`
+      : flow.bundle.flow.structure_type === 'routine'
+        ? '반복 Flow'
+        : flow.rows.some((candidate) => Boolean(candidate.date))
+          ? '일정 Flow'
+          : '체크 Flow';
+    const rowMeta = [
+      row.date,
+      row.timing ? formatMyFlowTimingChip(row.timing) : '',
+      getMyFlowRowDisplaySectionLabel(row),
+    ].filter(Boolean).join(' · ');
+    const flowMeta = [
+      flow.progress.title,
+      `${flow.done}/${flow.total} 완료`,
+      flowContext,
+    ].filter(Boolean).join(' · ');
+    const toneClassName = isPrimary || isActive
+      ? 'border-blue-200 bg-blue-50/50'
+      : 'border-slate-200 bg-white';
+
+    return (
+      <article
+        key={`mobile-continuation-${rowKey}`}
+        data-testid="my-flow-mobile-continuation-card"
+        data-flow-slug={flow.progress.slug}
+        className={`min-w-0 rounded-lg border px-3 py-3 shadow-sm ${toneClassName}`}
+      >
+        <button
+          type="button"
+          data-testid="my-flow-mobile-continuation-open"
+          aria-expanded={isActive}
+          className={`w-full min-w-0 rounded-md px-0 py-0 text-left transition ${
+            isActive
+              ? 'text-slate-950'
+              : isPrimary
+                ? 'text-slate-950'
+                : 'text-slate-900 hover:text-blue-800'
+          }`}
+          onClick={() => toggleMyFlowRowDetail(row, 'today')}
+        >
+          <span className="flex items-start justify-between gap-3">
+            <span className="min-w-0">
+              <span className="block text-xs font-semibold text-blue-700">{isPrimary ? '지금 실행할 Step' : options.nextLabel ?? '다음 실행 Step'}</span>
+              <span className={`mt-1 block text-base font-semibold leading-6 ${checked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
+                {getMyFlowRowDisplayTitle(row)}
+              </span>
+              <span className="mt-1 block text-xs font-semibold text-slate-500">
+                {rowMeta || getMyFlowRowDisplaySectionLabel(row) || '날짜 없는 체크 항목'}
+              </span>
+            </span>
+            <span className={`shrink-0 rounded-md px-2 py-1 text-xs font-semibold ${
+              checked
+                ? 'bg-emerald-50 text-emerald-700'
+                : isActive
+                  ? 'bg-white text-blue-700 ring-1 ring-blue-100'
+                  : 'bg-slate-100 text-slate-700'
+            }`}>
+              {checked ? '완료' : isActive ? '열림' : '열기'}
+            </span>
+          </span>
+        </button>
+        <div data-testid="my-flow-mobile-continuation-flow-context" className="mt-2 flex min-w-0 items-center gap-2 text-[11px] font-semibold text-slate-500">
+          <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: color }} />
+          <span className="min-w-0 truncate">{flowMeta}</span>
+        </div>
+        {isActive && myFlowActiveRow ? (
+          <div
+            ref={(node) => {
+              myFlowInlineDetailRef.current = node;
+              if (node) scrollMyFlowInlineDetailIntoView(node);
+            }}
+            className="mt-3"
+            data-testid="my-flow-inline-detail"
+          >
+            {renderMyFlowItemDetailEditor(myFlowActiveRow, 'inline', 'today')}
+          </div>
+        ) : null}
       </article>
     );
   };
@@ -4105,7 +4232,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     resetMyFlowRowDetailState();
   };
 
-  const renderMyFlowItemDetailEditor = (row: MyFlowCalendarRow, mode: 'inline' | 'drawer' | 'panel') => {
+  const renderMyFlowItemDetailEditor = (row: MyFlowCalendarRow, mode: 'inline' | 'drawer' | 'panel', surfaceContext: MyFlowView | 'post-save' | '' = myFlowDetailSurface || savedView) => {
     const checked = isMyFlowRowChecked(row.flow, row);
     const detail = getMyFlowRowDisplayDetail(row);
     const item = row.flow.bundle.items.find((entry) => entry.id === row.id);
@@ -4113,6 +4240,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const hasEditorChanges = hasMyFlowEditingDraft(row);
     const isDrawerMode = mode === 'drawer' || mode === 'panel';
     const isInlineMobileMode = mode === 'inline' && isMyFlowMobileViewport;
+    const isFlowTabInlineMobileMode = isInlineMobileMode && surfaceContext === 'flow';
     const useReadonlyTitleHeader = isDrawerMode || isInlineMobileMode;
     const isRoutineRow = row.flow.bundle.flow.structure_type === 'routine';
     const isProgressFlow = Boolean(row.flow.bundle.flow.tags?.includes('progress-flow'));
@@ -4370,12 +4498,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               : 'space-y-3'
         }
       >
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="min-w-0 flex-1">
+        <div className={isInlineMobileMode ? 'grid gap-3' : 'flex flex-wrap items-start justify-between gap-3'}>
+          <div className={isInlineMobileMode ? 'min-w-0' : 'min-w-0 flex-1'}>
             {useReadonlyTitleHeader || !isDetailEditing ? (
               <div>
-                <p className="text-xs font-semibold text-blue-700">확인할 항목</p>
-                <h3 className="mt-1 text-lg font-semibold leading-6 text-slate-950">{editorDraft.title}</h3>
+                <p className="text-xs font-semibold text-blue-700">{isFlowTabInlineMobileMode ? 'Step 실행' : '확인할 항목'}</p>
+                {isFlowTabInlineMobileMode ? (
+                  <p className="mt-1 text-xs font-semibold text-slate-600">아래 Item을 체크하고 완료로 표시합니다.</p>
+                ) : (
+                  <h3 className={`mt-1 font-semibold text-slate-950 ${isInlineMobileMode ? 'text-base leading-6' : 'text-lg leading-6'}`}>{editorDraft.title}</h3>
+                )}
               </div>
             ) : (
               <label className="block text-xs font-semibold text-slate-600">
@@ -4405,7 +4537,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </a>
             ) : null}
           </div>
-          <div data-testid="my-flow-routine-action-group" className="flex shrink-0 flex-wrap justify-end gap-2">
+          <div data-testid="my-flow-routine-action-group" className={`flex flex-wrap gap-2 ${isInlineMobileMode ? 'justify-start' : 'shrink-0 justify-end'}`}>
             {isRoutineRow ? (
               <span data-testid="my-flow-routine-progress-pill" className="inline-flex min-h-8 items-center rounded-md bg-emerald-50 px-2 text-xs font-black text-emerald-700">
                 {routineProgressLabel}
@@ -4426,10 +4558,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             </button>
             {!isDrawerMode ? (
               <button
-                className={`rounded-md border px-3 py-2 text-xs font-semibold ${
-                  isDetailEditing
-                    ? 'border-slate-200 bg-white text-slate-700'
-                    : 'border-blue-100 bg-white text-blue-700 hover:border-blue-300'
+                className={`rounded-md px-3 py-2 text-xs font-semibold ${
+                  isFlowTabInlineMobileMode
+                    ? isDetailEditing
+                      ? 'bg-white text-slate-700 ring-1 ring-slate-200'
+                      : 'text-blue-700 hover:bg-white'
+                    : isDetailEditing
+                      ? 'border border-slate-200 bg-white text-slate-700'
+                      : 'border border-blue-100 bg-white text-blue-700 hover:border-blue-300'
                 }`}
                 type="button"
                 data-testid="my-flow-detail-edit-toggle"
@@ -4447,7 +4583,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </button>
             ) : null}
             <button
-              className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+              className={`rounded-md px-3 py-2 text-xs font-semibold ${
+                isFlowTabInlineMobileMode
+                  ? 'text-slate-600 hover:bg-white'
+                  : 'border border-slate-200 bg-white text-slate-700'
+              }`}
               type="button"
               onClick={closeMyFlowRowDetail}
             >
@@ -4518,28 +4658,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             {typeSummary.text ? <p className="mt-2 leading-5 text-slate-600">{typeSummary.text}</p> : null}
           </section>
         ) : null}
-        {!showEditableDetailFields && (scheduleSummaryRows.length > 0 || editorDraft.memo.trim()) ? (
-          <section data-testid="my-flow-detail-read-summary" className="mt-3 grid gap-2 rounded-md bg-white px-3 py-3">
-            {scheduleSummaryRows.length > 0 ? (
-              <div>
-                <p className="text-xs font-semibold text-slate-500">일정</p>
-                <div className="mt-1 flex flex-wrap gap-1.5">
-                  {scheduleSummaryRows.map((entry) => (
-                    <span key={entry.label} className="rounded-md bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-700">
-                      {entry.label} {entry.value}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-            {editorDraft.memo.trim() ? (
-              <div>
-                <p className="text-xs font-semibold text-slate-500">메모</p>
-                <p className="mt-1 whitespace-pre-wrap rounded-md bg-slate-50 px-2 py-2 text-sm leading-6 text-slate-700">{editorDraft.memo}</p>
-              </div>
-            ) : null}
-          </section>
-        ) : null}
         {detailChecklistItems.length > 0 ? (
           <section data-testid="my-flow-item-checklist" className="mt-3 rounded-md bg-white px-3 py-3">
             <div className="flex items-center justify-between gap-3">
@@ -4565,6 +4683,54 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               })}
             </div>
           </section>
+        ) : null}
+        {!showEditableDetailFields && (scheduleSummaryRows.length > 0 || editorDraft.memo.trim()) ? (
+          isInlineMobileMode ? (
+            <details data-testid="my-flow-detail-read-summary" className="mt-3 rounded-md bg-white px-3 py-3">
+              <summary className="cursor-pointer text-xs font-semibold text-slate-700">메모·일정 보기</summary>
+              <div className="mt-3 grid gap-2">
+                {scheduleSummaryRows.length > 0 ? (
+                  <div>
+                    <p className="text-xs font-semibold text-slate-500">일정</p>
+                    <div className="mt-1 flex flex-wrap gap-1.5">
+                      {scheduleSummaryRows.map((entry) => (
+                        <span key={entry.label} className="rounded-md bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-700">
+                          {entry.label} {entry.value}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+                {editorDraft.memo.trim() ? (
+                  <div>
+                    <p className="text-xs font-semibold text-slate-500">메모</p>
+                    <p className="mt-1 whitespace-pre-wrap rounded-md bg-slate-50 px-2 py-2 text-sm leading-6 text-slate-700">{editorDraft.memo}</p>
+                  </div>
+                ) : null}
+              </div>
+            </details>
+          ) : (
+            <section data-testid="my-flow-detail-read-summary" className="mt-3 grid gap-2 rounded-md bg-white px-3 py-3">
+              {scheduleSummaryRows.length > 0 ? (
+                <div>
+                  <p className="text-xs font-semibold text-slate-500">일정</p>
+                  <div className="mt-1 flex flex-wrap gap-1.5">
+                    {scheduleSummaryRows.map((entry) => (
+                      <span key={entry.label} className="rounded-md bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-700">
+                        {entry.label} {entry.value}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+              {editorDraft.memo.trim() ? (
+                <div>
+                  <p className="text-xs font-semibold text-slate-500">메모</p>
+                  <p className="mt-1 whitespace-pre-wrap rounded-md bg-slate-50 px-2 py-2 text-sm leading-6 text-slate-700">{editorDraft.memo}</p>
+                </div>
+              ) : null}
+            </section>
+          )
         ) : null}
         {isDecisionRow && isDetailEditing ? (
           <section data-testid="my-flow-decision-fields" className="mt-3 rounded-md bg-white px-3 py-3">
@@ -4641,7 +4807,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         ) : null}
         {shouldCollapsePortableExport ? (
           <details data-testid="my-flow-detail-portable-export" className="mt-3 rounded-md bg-white px-3 py-3">
-            <summary className="cursor-pointer text-xs font-semibold text-slate-700">원문·내보내기</summary>
+            <summary className="cursor-pointer text-xs font-semibold text-slate-700">원문·내 도구로 옮기기</summary>
             {primaryLink ? (
               <a
                 data-testid="my-flow-detail-source-link"
@@ -4788,26 +4954,38 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
   const renderPostSavePanel = () => {
     if (!postSaveMap || postSaveFlows.length === 0) return null;
+    const postSaveContinuationRow = getPostSaveContinuationRow();
+    const postSaveContinuationDate = postSaveContinuationRow?.date ? `다음 ${postSaveContinuationRow.date}` : '';
+    const postSaveSummary = [
+      `${postSaveFlows.length}개 Flow`,
+      `${postSaveStepCount}개 할 일`,
+      postSaveContinuationDate,
+    ].filter(Boolean).join(' · ');
     return (
       <section data-testid="my-flow-post-save-panel" className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-4 shadow-sm">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <p className="text-sm font-semibold text-blue-700">저장됨</p>
             <h3 className="mt-1 text-xl font-semibold tracking-tight text-slate-950">{postSaveMap.title}</h3>
-            <p className="mt-1 text-sm font-semibold text-slate-600">{postSaveFlows.length}개 Flow · {postSaveStepCount}개 항목</p>
+            <p data-testid="my-flow-post-save-summary" className="mt-1 text-sm font-semibold text-slate-600">{postSaveSummary}</p>
             <p className="mt-1 text-sm text-slate-600">
-              아래에서 바로 이어서 실행합니다. 날짜별 전체 일정은 하단 캘린더 탭에서 봅니다.
+              첫 실행은 아래 내 Flow에서 이어가고, 날짜별 전체 일정은 캘린더 탭에서 봅니다.
             </p>
+            {postSaveContinuationRow ? (
+              <p className="mt-2 text-sm font-semibold text-slate-900">
+                이어서 볼 일: {getMyFlowRowDisplayTitle(postSaveContinuationRow)}
+              </p>
+            ) : null}
           </div>
           <div className="grid shrink-0 gap-2 sm:w-44">
-            {postSaveFirstAction ? (
+            {postSaveContinuationRow ? (
               <button
                 type="button"
                 data-testid="my-flow-post-save-open-first"
                 className="min-h-10 rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white"
-                onClick={() => openMyFlowRowFromPostSave(postSaveFirstAction.flow, postSaveFirstAction.row)}
+                onClick={openMyFlowContinuationFromPostSave}
               >
-                첫 항목 보기
+                지금 할 일 열기
               </button>
             ) : null}
             <button
@@ -4816,78 +4994,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               className="min-h-10 rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-800"
               onClick={openMyFlowListFromPostSave}
             >
-              Flow 탭 보기
+              전체 Flow 보기
             </button>
           </div>
-        </div>
-        <div data-testid="my-flow-post-save-flow-list" className="mt-4 grid gap-3 md:grid-cols-2">
-          {postSaveFlows.map((flow) => {
-            const previewRows = flow.rows.slice(0, getPostSavePreviewLimit(flow));
-            const hiddenCount = Math.max(0, flow.rows.length - previewRows.length);
-            return (
-              <article key={flow.progress.slug} className="rounded-md border border-blue-100 bg-white p-3">
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <h4 className="text-base font-semibold text-slate-950">{flow.progress.title}</h4>
-                    <p className="mt-1 text-xs font-semibold text-slate-500">{flow.done}/{flow.total} 완료</p>
-                  </div>
-                  <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{flow.rows.length}개 항목</span>
-                </div>
-                <div className="mt-3 grid gap-1.5">
-                  {previewRows.map((row) => {
-                    const postSaveStepKey = getPostSaveStepKey(flow, row);
-                    const detailItemCount = getMyFlowDetailChecklistItems(row.detail).length;
-                    const isProgressPreviewFlow = Boolean(flow.bundle.flow.tags?.includes('progress-flow'));
-                    const postSaveStepMeta = [
-                      !isProgressPreviewFlow && row.timing ? formatMyFlowTimingChip(row.timing) : '',
-                      row.date,
-                      !isProgressPreviewFlow ? row.section : '',
-                      detailItemCount ? `${detailItemCount}개 항목` : '',
-                    ].filter(Boolean).join(' · ');
-                    const activePostSaveStep = Boolean(
-                      myFlowActiveRowBelongsToPostSaveMap &&
-                      myFlowActiveRow &&
-                      myFlowDetailOpen &&
-                      myFlowActiveRowKey === postSaveStepKey,
-                    );
-                    return (
-                      <div key={postSaveStepKey} data-testid="my-flow-post-save-step-row" className="grid gap-1.5">
-                        <button
-                          type="button"
-                          data-testid="my-flow-post-save-step"
-                          aria-expanded={activePostSaveStep}
-                          className={`rounded-md border px-3 py-2 text-left ${
-                            activePostSaveStep
-                              ? 'border-blue-300 bg-blue-50'
-                              : 'border-slate-100 bg-slate-50 hover:border-blue-200 hover:bg-blue-50'
-                          }`}
-                          onClick={() => openMyFlowRowFromPostSave(flow, row)}
-                        >
-                          {postSaveStepMeta ? <span className="block text-xs font-semibold text-slate-500">{postSaveStepMeta}</span> : null}
-                          <span className="mt-0.5 block text-sm font-semibold text-slate-950">{getMyFlowRowDisplayTitle({ ...row, flow })}</span>
-                        </button>
-                        {activePostSaveStep && myFlowActiveRow ? (
-                          <div data-testid="my-flow-post-save-detail">
-                            {renderMyFlowItemDetailEditor(myFlowActiveRow, 'panel')}
-                          </div>
-                        ) : null}
-                      </div>
-                    );
-                  })}
-                  {hiddenCount > 0 ? (
-                    <button
-                      type="button"
-                      data-testid="my-flow-post-save-view-all"
-                      className="rounded-md border border-blue-100 bg-blue-50 px-3 py-2 text-left text-xs font-semibold text-blue-800 hover:border-blue-300 hover:bg-blue-100"
-                      onClick={() => openMyFlowFullViewFromPostSave(flow)}
-                    >
-                      나머지 {hiddenCount}개 항목 보기
-                    </button>
-                  ) : null}
-                </div>
-              </article>
-            );
-          })}
         </div>
       </section>
     );
@@ -4956,58 +5065,106 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
   const renderCompactFlowStructureRow = (flow: MySavedFlow) => {
     const nextRow = getSavedFlowNextRow(flow);
+    const structureLabel = flow.savedMap
+      ? `${flow.savedMap.title} 안의 Flow`
+      : flow.bundle.flow.structure_type === 'routine'
+        ? '반복 Flow'
+        : flow.rows.some((row) => Boolean(row.date))
+          ? '일정 Flow'
+          : '체크 Flow';
     const activeCompactRow =
       myFlowDetailSurface === 'flow' && myFlowActiveRow && myFlowDetailOpen && myFlowActiveRow.flow.progress.slug === flow.progress.slug
         ? myFlowActiveRow
         : null;
     const activeCompactKey = activeCompactRow ? getMyFlowRowInstanceKey(activeCompactRow) : '';
-    const nextRowInstanceKey = nextRow
-      ? getMyFlowRowInstanceKey({
-          ...nextRow,
-          flow,
-          ...(nextRow.date
-            ? {
-                originalDate: nextRow.date,
-                calendarKey: getMyFlowCalendarRowKey(flow.progress.slug, nextRow.id, nextRow.date),
-                date: myFlowDateOverrides[getMyFlowCalendarRowKey(flow.progress.slug, nextRow.id, nextRow.date)] ?? nextRow.date,
-              }
-            : {}),
-        })
-      : '';
-    const nextRowOpen = Boolean(nextRowInstanceKey && activeCompactKey === nextRowInstanceKey);
+    const flowExpanded = myFlowExpandedStructureSlug === flow.progress.slug || Boolean(activeCompactRow);
+    const stepRows = flow.rows.map((row) => getMyFlowRowForFlowTab(flow, row));
     return (
       <article
         key={`compact-${flow.progress.slug}`}
         data-testid="my-flow-mobile-structure-row"
         data-flow-slug={flow.progress.slug}
-        className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm"
+        className={`rounded-lg border p-3 shadow-sm ${flowExpanded ? 'border-blue-200 bg-blue-50/70' : 'border-slate-200 bg-white'}`}
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-slate-950">{flow.progress.title}</p>
-            {flow.savedMap ? <p className="mt-1 truncate text-xs font-semibold text-blue-700">{flow.savedMap.title}</p> : null}
-          </div>
-          <span className="shrink-0 rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">{flow.done}/{flow.total}</span>
-        </div>
-        {nextRow ? (
-          <button
-            type="button"
-            data-testid="my-flow-mobile-structure-open"
-            aria-expanded={nextRowOpen}
-            className={`mt-3 w-full rounded-md border px-3 py-2 text-left ${nextRowOpen ? 'border-blue-200 bg-blue-50' : 'border-transparent bg-slate-50 hover:border-blue-100 hover:bg-blue-50'}`}
-            onClick={() => openMyFlowRowFromFlowTab(flow, nextRow)}
-          >
-            <span className="block text-xs font-semibold text-slate-500">
-              {[nextRow.date, nextRow.section].filter(Boolean).join(' · ') || '다음 항목'}
+        <button
+          type="button"
+          data-testid="my-flow-mobile-structure-open"
+          aria-expanded={flowExpanded}
+          className="w-full rounded-md text-left"
+          onClick={() => toggleMyFlowStructureFlow(flow)}
+        >
+          <span className="flex items-start justify-between gap-3">
+            <span className="flex min-w-0 flex-1 gap-2">
+              <span className={`mt-1 h-2 w-2 shrink-0 rounded-full ${flowExpanded ? 'bg-blue-700' : 'bg-slate-400'}`} />
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-semibold text-slate-950">{flow.progress.title}</span>
+                <span className="mt-1 block truncate text-xs font-semibold text-slate-500">{structureLabel}</span>
+              </span>
             </span>
-            <span className="mt-1 block text-sm font-semibold text-slate-950">{nextRow.title}</span>
-          </button>
-        ) : (
-          <p className="mt-3 rounded-md bg-slate-50 px-3 py-2 text-sm text-slate-600">남은 항목이 없습니다.</p>
-        )}
-        {nextRowOpen && activeCompactRow ? (
-          <div className="mt-3" data-testid="my-flow-mobile-structure-inline-detail">
-            {renderMyFlowItemDetailEditor(activeCompactRow, 'inline')}
+            <span className={`shrink-0 rounded-md px-2 py-1 text-xs font-semibold ${flowExpanded ? 'bg-white text-blue-700 ring-1 ring-blue-100' : 'bg-slate-100 text-slate-700'}`}>
+              {flow.percent}%
+            </span>
+          </span>
+          <span className="mt-3 block h-1.5 overflow-hidden rounded-full bg-slate-200">
+            <span className="block h-full rounded-full bg-blue-700" style={{ width: `${flow.percent}%` }} />
+          </span>
+          {nextRow ? (
+            <span className="mt-3 block rounded-md bg-slate-50 px-3 py-2">
+              <span className="block text-xs font-semibold text-blue-700">{flowExpanded ? `Step ${stepRows.length}개` : '다음 Step'}</span>
+              <span className="mt-1 block text-sm font-semibold text-slate-950">{nextRow.title}</span>
+              <span className="mt-1 block text-xs font-semibold text-slate-500">
+                {[nextRow.date, nextRow.section].filter(Boolean).join(' · ') || `${flow.done}/${flow.total} 완료`}
+              </span>
+            </span>
+          ) : (
+            <span className="mt-3 block rounded-md bg-slate-50 px-3 py-2 text-sm text-slate-600">남은 항목이 없습니다.</span>
+          )}
+        </button>
+        {flowExpanded ? (
+          <div data-testid="my-flow-mobile-structure-step-list" className="mt-3 grid gap-2">
+            {stepRows.map((stepRow, index) => {
+              const stepKey = getMyFlowRowInstanceKey(stepRow);
+              const stepOpen = activeCompactKey === stepKey;
+              const stepChecked = isMyFlowRowChecked(flow, stepRow);
+              return (
+                <div key={`step-${flow.progress.slug}-${stepRow.id}-${stepRow.date ?? index}`} className="rounded-md bg-white ring-1 ring-blue-100">
+                  <button
+                    type="button"
+                    data-testid="my-flow-mobile-structure-step-row"
+                    aria-expanded={stepOpen}
+                    className={`w-full rounded-md px-3 py-2 text-left ${stepOpen ? 'bg-blue-50' : 'bg-white hover:bg-slate-50'}`}
+                    onClick={() => openMyFlowRowFromFlowTab(flow, stepRow)}
+                  >
+                    <span className="flex items-start justify-between gap-2">
+                      <span className="min-w-0">
+                        <span className="block text-[11px] font-semibold text-slate-500">Step {index + 1}</span>
+                        <span className={`mt-0.5 block text-sm font-semibold ${stepChecked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
+                          {getMyFlowRowDisplayTitle(stepRow)}
+                        </span>
+                        <span className="mt-1 block truncate text-xs font-semibold text-slate-500">
+                          {[stepRow.date, stepRow.timing ? formatMyFlowTimingChip(stepRow.timing) : '', getMyFlowRowDisplaySectionLabel(stepRow)].filter(Boolean).join(' · ') || `${flow.done}/${flow.total} 완료`}
+                        </span>
+                      </span>
+                      <span className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-semibold ${stepChecked ? 'bg-emerald-50 text-emerald-700' : stepOpen ? 'bg-white text-blue-700 ring-1 ring-blue-100' : 'bg-slate-100 text-slate-600'}`}>
+                        {stepChecked ? '완료' : stepOpen ? '열림' : '열기'}
+                      </span>
+                    </span>
+                  </button>
+                  {stepOpen && activeCompactRow ? (
+                    <div
+                      ref={(node) => {
+                        myFlowInlineDetailRef.current = node;
+                        if (node) scrollMyFlowInlineDetailIntoView(node);
+                      }}
+                      className="px-3 pb-3"
+                      data-testid="my-flow-mobile-structure-inline-detail"
+                    >
+                      {renderMyFlowItemDetailEditor(activeCompactRow, 'inline', 'flow')}
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
           </div>
         ) : null}
       </article>
@@ -5102,7 +5259,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         </div>
         {activeOverviewRow ? (
           <div className="mt-3" data-testid="my-flow-overview-inline-detail">
-            {renderMyFlowItemDetailEditor(activeOverviewRow, 'inline')}
+            {renderMyFlowItemDetailEditor(activeOverviewRow, 'inline', 'flow')}
           </div>
         ) : null}
         <div className="mt-4">
@@ -5622,19 +5779,19 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </div>
 
               {savedView === 'today' ? (
-                <div className="mb-4 grid gap-4">
+                <div className="mb-4 grid min-w-0 gap-4">
                   {!singleMobileSavedFlow ? (
-                  <section data-testid="my-flow-today-summary" className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                  <section data-testid="my-flow-today-summary" className="min-w-0 rounded-lg border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
+                    <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                       <div>
                         <p className="text-sm font-semibold text-blue-700">{isMyFlowScenarioDemo ? '데모 기준일' : '지금 이어하기'}</p>
-                        <h3 className="mt-1 text-xl font-semibold text-slate-950">{myFlowTodayDate} 기준 실행 흐름</h3>
+                        <h3 className="mt-0.5 text-lg font-semibold text-slate-950 sm:mt-1 sm:text-xl">{myFlowTodayDate} 기준 실행 흐름</h3>
                         {isMyFlowScenarioDemo ? (
-                          <p className="mt-1 inline-flex rounded-md bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-700">
+                          <p className="mt-1 inline-flex rounded-md bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700 sm:py-1">
                             실제 오늘과 다른 고정 기준일
                           </p>
                         ) : null}
-                    <p className="mt-1 text-sm text-slate-600">{myFlowTodaySummaryCopy}</p>
+                    <p className="mt-1 text-xs text-slate-600 sm:text-sm">{myFlowTodaySummaryCopy}</p>
                       </div>
                       <div className="hidden grid-cols-3 gap-2 text-center text-xs font-semibold text-slate-600 sm:grid sm:w-80">
                         <div className="rounded-md bg-slate-50 px-2 py-2">
@@ -5654,16 +5811,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   </section>
                   ) : null}
 
-                  <section data-testid="my-flow-now-section" className="rounded-lg border border-blue-200 bg-blue-50 p-4 shadow-sm">
+                  <section data-testid="my-flow-now-section" className="grid min-w-0 gap-3 rounded-lg border border-blue-100 bg-white p-3 shadow-sm sm:p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="text-sm font-semibold text-blue-700">지금 이어하기</p>
-                        <h3 className="mt-1 text-lg font-semibold text-slate-950">
-                          {myFlowPrimaryContinuationRow ? myFlowPrimaryContinuationRow.flow.progress.title : '이어갈 Step이 없습니다'}
+                        <h3 className="mt-0.5 text-base font-semibold text-slate-950 sm:mt-1 sm:text-lg">
+                          {myFlowPrimaryContinuationRow ? `${myFlowTodayDate} 먼저 할 일` : '이어갈 Step이 없습니다'}
                         </h3>
-                        <p className="mt-1 text-sm text-slate-600">
+                        <p className="mt-1 text-xs text-slate-600 sm:text-sm">
                           {myFlowPrimaryContinuationRow
-                            ? '오늘, 밀린 항목, 가까운 다음 일정 순서로 가장 먼저 볼 Step입니다.'
+                            ? '오늘 실행할 Step만 먼저 보여줍니다. 전체 구조는 Flow 탭에서 확인하세요.'
                             : '저장한 Flow에서 전체 구조를 확인하거나 새 Flow를 찾아보세요.'}
                         </p>
                       </div>
@@ -5674,13 +5831,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       ) : null}
                     </div>
                     {myFlowPrimaryContinuationRow ? (
-                      <div className="mt-3">
-                        {renderExecutionRow(myFlowPrimaryContinuationRow, { compact: true, openDetail: true, inlineDetail: true, hideFlowMeta: true, detailSurface: 'today' })}
-                      </div>
+                      renderMobileContinuationFlowCard(myFlowPrimaryContinuationRow, { tone: 'primary', nextLabel: '가장 먼저 할 일' })
                     ) : null}
                   </section>
 
-                  {showTodayOpenSection ? (
+                  {showTodayOpenSection && !isMyFlowMobileViewport ? (
                     <section data-testid="my-flow-today-list" className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
                       <div className="flex items-center justify-between gap-3">
                         <div>
@@ -5697,24 +5852,41 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     </section>
                   ) : null}
 
-                  {overdueRows.length > 0 ? (
-                    <section data-testid="my-flow-overdue-list" className="rounded-lg border border-amber-200 bg-amber-50 p-4 shadow-sm">
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  {myFlowSecondaryContinuationRows.length > 0 ? (
+                    <section data-testid="my-flow-upcoming-list" className="min-w-0 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                      <div className="flex items-center justify-between gap-3">
                         <div>
-                          <p className="text-sm font-semibold text-amber-700">지난 일정 정리</p>
-                          <h3 className="mt-1 text-lg font-semibold text-amber-950">{overdueRows.length}개 남음</h3>
-                          <p className="mt-1 text-sm text-amber-800">오늘 할 일을 가리지 않도록 접어둡니다. 필요한 일정만 열어서 완료하거나 메모하세요.</p>
+                          <p className="text-sm font-semibold text-slate-500">다음 항목</p>
+                          <h3 className="mt-1 text-lg font-semibold text-slate-950">가까운 Step만 보기</h3>
+                        </div>
+                        <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">
+                          {myFlowSecondaryContinuationRows.length}개
+                        </span>
+                      </div>
+                      <div className="mt-3 grid gap-2">
+                        {myFlowSecondaryContinuationRows.map((row) => renderMobileContinuationFlowCard(row))}
+                      </div>
+                    </section>
+                  ) : null}
+
+                  {overdueRows.length > 0 ? (
+                    <section data-testid="my-flow-overdue-list" className="min-w-0 rounded-lg border border-amber-100 bg-white p-3 shadow-sm">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-xs font-semibold text-amber-700">지난 일정 정리</p>
+                          <h3 className="mt-0.5 text-sm font-semibold text-slate-950">{overdueRows.length}개 남음</h3>
+                          <p className="mt-0.5 truncate text-xs text-slate-500">필요한 일정만 열어 완료하거나 메모합니다.</p>
                         </div>
                         <button
                           type="button"
                           data-testid="my-flow-overdue-open-sheet"
-                          className="min-h-10 shrink-0 rounded-md border border-amber-200 bg-white px-3 py-2 text-sm font-semibold text-amber-800"
+                          className="min-h-9 shrink-0 rounded-md border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800"
                           onClick={() => setMyFlowStatusSheet('overdue')}
                         >
                           지난 일정 보기
                         </button>
                       </div>
-                      {overdueSummaryPreview.length > 0 ? (
+                      {!isMyFlowMobileViewport && overdueSummaryPreview.length > 0 ? (
                         <div className="mt-3 grid gap-2">
                           {overdueSummaryPreview.map((summary) => (
                             <div key={summary.title} className="flex items-center justify-between gap-3 rounded-md bg-white px-3 py-2 text-sm ring-1 ring-amber-100">
@@ -5735,9 +5907,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   ) : null}
 
                   {todayCompletedRows.length > 0 ? (
-                    <section data-testid="my-flow-today-completed-list" className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                    <section data-testid="my-flow-today-completed-list" className="min-w-0 rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
                       <div className="flex items-center justify-between gap-3">
-                        <h3 className="text-sm font-semibold text-slate-700">오늘 완료</h3>
+                        <div>
+                          <p className="text-xs font-semibold text-slate-500">보조 상태</p>
+                          <h3 className="mt-0.5 text-sm font-semibold text-slate-800">오늘 완료</h3>
+                        </div>
                         <button
                           type="button"
                           data-testid="my-flow-today-completed-toggle"
@@ -5764,16 +5939,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       ) : null}
                     </section>
                   ) : null}
-
-                  {myFlowSecondaryContinuationRows.length > 0 ? (
-                    <section data-testid="my-flow-upcoming-list" className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-                      <h3 className="text-lg font-semibold text-slate-950">이번 주·다음 할 일</h3>
-                      <p className="mt-1 text-sm text-slate-600">전체 일정을 펼치기 전에 가까운 Step만 확인합니다.</p>
-                      <div className="mt-3 grid gap-2">
-                      {myFlowSecondaryContinuationRows.map((row) => renderExecutionRow(row, { compact: true, openDetail: true, inlineDetail: true, showFlowProgress: true, detailSurface: 'today' }))}
-                      </div>
-                    </section>
-                  ) : null}
                 </div>
               ) : null}
 
@@ -5783,34 +5948,42 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               {selectedSavedFlowSlug === 'all' && visibleSavedFlows.length > 1 ? (
                 <>
                   {isMyFlowMobileViewport ? (
-                    shouldShowMobileFlowCards ? (
-                      shouldSeparateFlowReadiness ? (
-                        renderFlowReadinessInventory()
-                      ) : shouldGroupBySavedMap ? (
-                        renderFlowInventoryGroups(flowListInventoryGroups)
+                    <div data-testid="my-flow-mobile-flow-hub" className="grid gap-3">
+                      <section data-testid="my-flow-mobile-flow-summary" className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                        <p className="text-sm font-semibold text-blue-700">저장한 구조</p>
+                        <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+                          <div className="rounded-md bg-slate-50 px-2 py-2">
+                            <p className="text-lg font-semibold text-slate-950">{flowListVisibleFlows.length}</p>
+                            <p className="text-[11px] font-semibold text-slate-500">Flow</p>
+                          </div>
+                          <div className="rounded-md bg-slate-50 px-2 py-2">
+                            <p className="text-lg font-semibold text-slate-950">{flowListVisibleFlows.reduce((sum, flow) => sum + Math.max(0, flow.total - flow.done), 0)}</p>
+                            <p className="text-[11px] font-semibold text-slate-500">남은 항목</p>
+                          </div>
+                          <div className="rounded-md bg-blue-50 px-2 py-2">
+                            <p className="text-lg font-semibold text-blue-950">{todayOpenCount}</p>
+                            <p className="text-[11px] font-semibold text-blue-700">오늘</p>
+                          </div>
+                        </div>
+                      </section>
+                      {flowListVisibleFlows.length > 0 ? (
+                        <div className="grid gap-3">
+                          {mobileFlowBoardVisibleFlows.map((flow) => renderCompactFlowStructureRow(flow))}
+                        </div>
                       ) : (
-                        <div data-testid="my-flow-mobile-card-list" className="grid gap-3">
-                          {flowListVisibleFlows.map((flow) => renderSavedFlowOverviewCard(flow))}
-                        </div>
-                      )
-                    ) : (
-                      <section data-testid="my-flow-mobile-flow-hub" className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-                        <p className="text-sm font-semibold text-blue-700">저장한 Flow</p>
-                        <h3 className="mt-1 text-lg font-semibold text-slate-950">다음 항목부터 보기</h3>
-                        <p className="mt-1 text-sm text-slate-600">가까운 다음 항목만 먼저 보고, 전체 목록은 필요할 때 엽니다.</p>
-                        <div className="mt-3 grid gap-2">
-                          {flowListVisibleFlows.slice(0, 3).map((flow) => renderCompactFlowStructureRow(flow))}
-                        </div>
+                        <p className="mt-3 rounded-md bg-slate-50 px-3 py-3 text-sm text-slate-600">조건에 맞는 Flow가 없습니다.</p>
+                      )}
+                      {hiddenMobileFlowBoardCount > 0 ? (
                         <button
                           type="button"
                           data-testid="my-flow-mobile-inventory-open"
                           className="mt-4 w-full rounded-md bg-blue-700 px-4 py-3 text-left text-sm font-semibold text-white shadow-sm"
                           onClick={() => openMyFlowFilteredInventory('all')}
                         >
-                          전체 Flow 목록 열기
+                          전체 Flow 목록 열기 · {hiddenMobileFlowBoardCount}개 더 보기
                         </button>
-                      </section>
-                    )
+                      ) : null}
+                    </div>
                   ) : null}
                   {!isMyFlowMobileViewport ? (
                   <section data-testid="my-flow-status-board" className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
@@ -5900,7 +6073,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                             </div>
                             {myFlowActiveRow && myFlowDetailOpen && getMyFlowRowInstanceKey(myFlowActiveRow) === getMyFlowRowInstanceKey(row) ? (
                               <div className="mt-3" data-testid="my-flow-priority-inline-detail">
-                                {renderMyFlowItemDetailEditor(myFlowActiveRow, 'inline')}
+                                {renderMyFlowItemDetailEditor(myFlowActiveRow, 'inline', savedView)}
                               </div>
                             ) : null}
                           </article>

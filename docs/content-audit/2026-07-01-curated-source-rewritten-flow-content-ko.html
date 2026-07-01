@@ -1,0 +1,3199 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>엄선 원컨텐츠 9개 Flow 콘텐츠 재작성 검토판</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg: #f6f7f9;
+      --paper: #ffffff;
+      --ink: #111827;
+      --muted: #4b5563;
+      --line: #d9dee7;
+      --blue: #1f5fbf;
+      --green: #0f766e;
+      --amber: #b45309;
+      --red: #b42318;
+      --violet: #6d28d9;
+    }
+    html { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.55 Arial, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; letter-spacing: 0; }
+    body { margin: 0; }
+    article { width: 100%; max-width: 920px; margin: 0 auto; padding: 18px 12px 56px; }
+    h1, h2, h3, h4, p { margin: 0; }
+    h1 { font-size: 28px; line-height: 1.15; }
+    h2 { font-size: 22px; line-height: 1.22; }
+    h3 { margin-bottom: 8px; font-size: 17px; }
+    h4 { font-size: 17px; line-height: 1.25; }
+    a { color: var(--blue); overflow-wrap: anywhere; }
+    .eyebrow { margin-bottom: 8px; color: var(--blue); font-size: 12px; font-weight: 800; }
+    .lead { margin-top: 10px; color: var(--muted); font-size: 15px; }
+    .metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 16px 0; }
+    .metric { min-height: 72px; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
+    .metric span { display: block; color: var(--muted); font-size: 12px; font-weight: 800; }
+    .metric b { display: block; margin-top: 2px; font-size: 25px; line-height: 1; }
+    .notice { margin: 12px 0; padding: 12px; border: 1px solid #f4c56b; border-radius: 10px; background: #fff8e6; color: #74430f; font-size: 14px; }
+    .nav { display: flex; gap: 7px; overflow-x: auto; padding: 4px 0 10px; margin-bottom: 8px; scrollbar-width: thin; }
+    .nav a { flex: 0 0 auto; max-width: 220px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: #1f2937; text-decoration: none; font-size: 13px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .map-card { margin: 14px 0; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); overflow: hidden; }
+    .map-card.ready { border-left: 5px solid var(--green); }
+    .map-card.partial { border-left: 5px solid var(--amber); }
+    .map-card.park, .map-card.import { border-left: 5px solid var(--violet); }
+    .map-card.hold { border-left: 5px solid var(--red); }
+    .map-head { padding: 14px; border-bottom: 1px solid var(--line); }
+    .map-kicker { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .map-kicker span { padding: 4px 8px; border-radius: 999px; background: #eef2ff; color: #273675; font-size: 12px; font-weight: 800; }
+    .map-head p { margin-top: 8px; color: var(--muted); font-size: 15px; }
+    .gate { display: grid; gap: 8px; padding: 12px 14px; background: #fafbfc; border-bottom: 1px solid var(--line); }
+    .gate div { padding: 10px; border: 1px solid #e5e7eb; border-radius: 10px; background: #fff; }
+    .gate b, .fields b, .review b, .source-row b { display: block; margin-bottom: 4px; font-size: 13px; }
+    .gate p, .source-row p, .item p { color: var(--muted); font-size: 14px; }
+    .urls { display: grid; gap: 5px; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 13px; }
+    .block { padding: 14px; border-bottom: 1px solid var(--line); }
+    .source-list { display: grid; gap: 8px; }
+    .source-row { padding: 10px; border: 1px solid #e5e7eb; border-radius: 10px; background: #fbfcfe; }
+    .source-row span { display: block; margin-top: 5px; color: #6b7280; font-size: 12px; }
+    .flow { margin: 10px 0; border: 1px solid #cfd7e5; border-radius: 10px; background: #fff; overflow: hidden; }
+    .flow summary { display: grid; gap: 3px; padding: 12px; cursor: pointer; list-style: none; }
+    .flow summary::-webkit-details-marker { display: none; }
+    .flow summary span { color: var(--blue); font-size: 12px; font-weight: 800; }
+    .flow summary strong { font-size: 18px; }
+    .flow summary em { color: var(--muted); font-size: 12px; font-style: normal; }
+    .fields { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 9px 12px; border-top: 1px solid #edf0f5; background: #f8fafc; }
+    .chip { display: inline-flex; align-items: center; min-height: 24px; padding: 3px 8px; border: 1px solid #dbe3ef; border-radius: 999px; background: #fff; color: #374151; font-size: 12px; font-weight: 700; }
+    .steps { display: grid; gap: 10px; padding: 10px; border-top: 1px solid #edf0f5; }
+    .step { border: 1px solid #e4e9f1; border-radius: 10px; overflow: hidden; background: #fff; }
+    .step-head { padding: 10px; background: #f8fafc; border-bottom: 1px solid #e4e9f1; }
+    .step-head span { display: inline-block; margin-bottom: 4px; color: var(--blue); font-size: 12px; font-weight: 800; }
+    .step-head p { margin-top: 4px; color: #667085; font-size: 12px; }
+    .items { display: grid; gap: 7px; margin: 0; padding: 10px; list-style: none; }
+    .item { display: grid; gap: 5px; padding: 10px; border: 1px solid #e5e7eb; border-radius: 9px; background: #fff; }
+    .item b { font-size: 15px; line-height: 1.32; }
+    .item span { color: #667085; font-size: 12px; }
+    .item.tracking { background: #f0fdfa; border-color: #bde6df; }
+    .item.caution { background: #fff7ed; border-color: #fed7aa; }
+    .item.source_link { background: #f5f7ff; }
+    .candidate { margin: 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
+    .candidate li { margin: 5px 0; }
+    .review { display: grid; gap: 8px; padding: 14px; background: #fffaf0; }
+    .review p { color: #5f3d13; font-size: 14px; }
+    footer { margin-top: 18px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; color: var(--muted); font-size: 14px; }
+    @media (min-width: 760px) {
+      article { padding: 28px 18px 64px; }
+      h1 { font-size: 40px; }
+      .metrics { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      .gate { grid-template-columns: 1fr 1fr; }
+      .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+    }
+    @media (max-width: 430px) {
+      html { font-size: 17px; }
+      article { padding: 14px 10px 48px; }
+      h1 { font-size: 26px; }
+      h2 { font-size: 21px; }
+      .metrics { grid-template-columns: 1fr 1fr; }
+      .metric { min-height: 68px; }
+      .metric b { font-size: 24px; }
+      .map-head, .block, .gate, .urls, .review { padding-left: 11px; padding-right: 11px; }
+      .steps { padding: 8px; }
+      .item { padding: 9px; }
+    }
+  </style>
+</head>
+<body>
+<article>
+  <header>
+    <p class="eyebrow">2026-07-01 / source-backed rewrite / planning only</p>
+    <h1>엄선 원컨텐츠 9개 Flow 콘텐츠 재작성 검토판</h1>
+    <p class="lead">원문에서 확인 가능한 row, 첨부 파일, 표, 영상 URL만 Flow Map / Flow / Step / Item으로 옮겼다. 앱 구현은 하지 않았고, 부족한 원문은 보류 또는 Park로 내렸다.</p>
+    <div class="metrics">
+      <div class="metric"><span>Map</span><b>9</b></div>
+      <div class="metric"><span>Flow</span><b>15</b></div>
+      <div class="metric"><span>Step</span><b>79</b></div>
+      <div class="metric"><span>Item</span><b>334</b></div>
+      <div class="metric"><span>generic memo</span><b>0</b></div>
+    </div>
+    <div class="notice">검토 기준: 원문 row가 없으면 item을 만들지 않았다. 기록 필드는 캘린더/투두 수준으로만 붙였고, 의료/교육/운동 판단은 원문 또는 전문가 확인 영역으로 분리했다.</div>
+    <nav class="nav"><a href="#funmom-article-source-park">1. 펀맘 자료 큐 Park</a><a href="#opic-mock-test-plan">2. 오픽 모의고사 2주/1달 계획</a><a href="#baby-food-initial-plan">3. 초기 이유식 식단표</a><a href="#reading-system-hold">4. 독서 기록/독서 시스템</a><a href="#new-car-purchase-checklist">5. 초보자 신차 구매 절차</a><a href="#child-vaccination-standard-schedule">6. 영유아/어린이 표준 예방접종</a><a href="#moving-checklist-d-day">7. 이사 준비 D-day 체크리스트</a><a href="#wedding-checklist-map">8. 결혼 준비 체크리스트</a><a href="#allblanc-video-routine-map">9. Allblanc 영상 홈트 루틴</a></nav>
+  </header>
+  <section class="map-card park" id="funmom-article-source-park">
+    <div class="map-head">
+      <div class="map-kicker">
+        <span>1. Park</span>
+        <span>Park -&gt; article-level Flow 후보</span>
+      </div>
+      <h2>펀맘 자료 큐 Park</h2>
+      <p>사이트 전체는 단일 Flow가 아니라 Park다.</p>
+    </div>
+    <div class="gate">
+      <div><b>판정 이유</b><p>홈/카테고리에서는 자료 묶음과 글 URL은 확인되지만, 주간 실행 순서와 목표 달성 조건은 원문 row로 고정되어 있지 않다.</p></div>
+      <div><b>FlowMe 역할</b><p>자료 URL, 나이/난이도, 과목 태그를 article row로 import한 뒤 주간 프린트 큐를 만들 수 있다.</p></div>
+    </div>
+    <div class="urls"><a href="https://funmom.tistory.com/">https://funmom.tistory.com/</a></div>
+    <div class="block"><h3>원문 row / 근거</h3><div class="source-list"><div class="source-row">
+        <b>카테고리</b>
+        <p>색칠공부 236 / 미로찾기게임 162 / 한글공부 276 / 수학공부 189 / 영어공부 73</p>
+        <span>funmom homepage category tree</span>
+      </div><div class="source-row">
+        <b>한글 후보</b>
+        <p>ㅡ+ㅍ 기본받침 글자쓰기, 한글 문장쓰기 연습장, 글씨쓰기 연습 가정학습지</p>
+        <span>funmom category parsed article links</span>
+      </div><div class="source-row">
+        <b>수학 후보</b>
+        <p>수 가르기, 10 이하 덧셈, 저학년 덧셈 연습장</p>
+        <span>funmom category parsed article links</span>
+      </div><div class="source-row">
+        <b>미로 후보</b>
+        <p>유아용 미로찾기 활동지, 쉬운 미로찾기, 4~5세 유아 미로찾기</p>
+        <span>funmom category parsed article links</span>
+      </div><div class="source-row">
+        <b>색칠 후보</b>
+        <p>공룡/공주/여아 색칠공부 도안</p>
+        <span>funmom category parsed article links</span>
+      </div></div></div>
+    
+    <div class="block"><h3>후보 / 보류 내용</h3><ul class="candidate"><li>5~6세 한글 프린트 큐: 실제 article URL, 나이, 자료명, 출력 여부가 import된 뒤 생성</li><li>4~5세 미로 프린트 큐: 난이도/나이 표기가 확인된 article만 묶기</li><li>초등 저학년 연산 프린트 큐: 연산 종류와 문제 수가 확인된 article만 묶기</li></ul></div>
+    <div class="review"><div><b>삭제/차단</b><span class="chip">주간 루틴을 임의 생성한 item</span><span class="chip">자료를 고르라는 generic task</span><span class="chip">나이/난이도 미확인 글의 실행 Step</span></div><div><b>다음 import</b><span class="chip">article별 제목</span><span class="chip">article URL</span><span class="chip">나이/난이도</span><span class="chip">학습 목표</span><span class="chip">출력 자료 존재 여부</span></div></div>
+  </section>
+<section class="map-card ready" id="opic-mock-test-plan">
+    <div class="map-head">
+      <div class="map-kicker">
+        <span>2. 실행 초안</span>
+        <span>Flow Map</span>
+      </div>
+      <h2>오픽 모의고사 2주/1달 계획</h2>
+      <p>첨부 XLSX/PDF의 날짜 row가 있어 실행 Flow로 가능하다.</p>
+    </div>
+    <div class="gate">
+      <div><b>판정 이유</b><p>2주/1달 계획표 시트에 회차, 연습/복습, 오픽현타, 부족한 점 보완, 휴식 row가 확인됐다.</p></div>
+      <div><b>FlowMe 역할</b><p>회차별 연습일을 캘린더에 깔고, 녹음 파일/막힌 질문/보완 표현만 기록하게 한다.</p></div>
+    </div>
+    <div class="urls"><a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95">https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95</a></div>
+    <div class="block"><h3>원문 row / 근거</h3><div class="source-list"><div class="source-row">
+        <b>첨부</b>
+        <p>오픽 모의고사 공부 계획표_오픽만수르.xlsx</p>
+        <span>downloaded output/content-source-downloads/2026-07-01/opic-plan.xlsx</span>
+      </div><div class="source-row">
+        <b>2주 시트</b>
+        <p>1~10회차 연습, 오픽현타 &amp; 보완, 회차 복습, 정리, 휴식</p>
+        <span>XLSX sheet 2주 코스</span>
+      </div><div class="source-row">
+        <b>1달 시트</b>
+        <p>각 회차를 3번씩 반복 연습, 회차별 오픽현타/부족한 점 보완</p>
+        <span>XLSX sheet 1달 코스</span>
+      </div></div></div>
+    <div class="block"><h3>실제 Flow 콘텐츠</h3><details class="flow" open>
+    <summary>
+      <span>Flow 1 · calendar</span>
+      <strong>오픽 모의고사 2주 계획</strong>
+      <em>XLSX sheet 2주 코스</em>
+    </summary>
+    <div class="fields"><b>시작 입력</b><span class="chip">시작일</span><span class="chip">모의고사 영상 채널/목록</span><span class="chip">하루 공부 가능 시간</span></div>
+    
+    <div class="steps"><section class="step">
+    <div class="step-head">
+      <span>Step 1</span>
+      <h4>D+1 1회차 연습</h4>
+      <p>XLSX 2주 코스 row: D+1</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>1회차 연습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 day row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>오픽현타 &amp; 보완</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>1회차 복습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item tracking">
+    <div>
+      <b>녹음 파일 위치 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 5. 녹음하기: 모의고사 시작과 동시에 녹음</span>
+  </li><li class="item tracking">
+    <div>
+      <b>막힌 질문 / 다시 말할 표현 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 4. 오픽 현타, 5. 녹음하기</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 2</span>
+      <h4>D+2 2회차 연습</h4>
+      <p>XLSX 2주 코스 row: D+2</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>2회차 연습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 day row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>오픽현타 &amp; 보완</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>2회차 복습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item tracking">
+    <div>
+      <b>녹음 파일 위치 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 5. 녹음하기: 모의고사 시작과 동시에 녹음</span>
+  </li><li class="item tracking">
+    <div>
+      <b>막힌 질문 / 다시 말할 표현 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 4. 오픽 현타, 5. 녹음하기</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 3</span>
+      <h4>D+3 3회차 연습</h4>
+      <p>XLSX 2주 코스 row: D+3</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>3회차 연습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 day row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>오픽현타 &amp; 보완</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>3회차 복습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item tracking">
+    <div>
+      <b>녹음 파일 위치 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 5. 녹음하기: 모의고사 시작과 동시에 녹음</span>
+  </li><li class="item tracking">
+    <div>
+      <b>막힌 질문 / 다시 말할 표현 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 4. 오픽 현타, 5. 녹음하기</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 4</span>
+      <h4>D+4 4회차 연습</h4>
+      <p>XLSX 2주 코스 row: D+4</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>4회차 연습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 day row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>오픽현타 &amp; 보완</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>4회차 복습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item tracking">
+    <div>
+      <b>녹음 파일 위치 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 5. 녹음하기: 모의고사 시작과 동시에 녹음</span>
+  </li><li class="item tracking">
+    <div>
+      <b>막힌 질문 / 다시 말할 표현 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 4. 오픽 현타, 5. 녹음하기</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 5</span>
+      <h4>D+5 5회차 연습</h4>
+      <p>XLSX 2주 코스 row: D+5</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>5회차 연습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 day row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>오픽현타 &amp; 보완</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>5회차 복습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item tracking">
+    <div>
+      <b>녹음 파일 위치 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 5. 녹음하기: 모의고사 시작과 동시에 녹음</span>
+  </li><li class="item tracking">
+    <div>
+      <b>막힌 질문 / 다시 말할 표현 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 4. 오픽 현타, 5. 녹음하기</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 6</span>
+      <h4>D+6 1~5회차 정리</h4>
+      <p>XLSX 2주 코스 row: D+6</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>1~5회차 정리</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 day row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>부족한 점 보완</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>복습 row 보완</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 7</span>
+      <h4>D+7 휴식</h4>
+      <p>XLSX 2주 코스 row: D+7</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>휴식</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 day row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 8</span>
+      <h4>D+8 6회차 연습</h4>
+      <p>XLSX 2주 코스 row: D+8</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>6회차 연습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 day row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>오픽현타 &amp; 보완</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>6회차 복습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item tracking">
+    <div>
+      <b>녹음 파일 위치 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 5. 녹음하기: 모의고사 시작과 동시에 녹음</span>
+  </li><li class="item tracking">
+    <div>
+      <b>막힌 질문 / 다시 말할 표현 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 4. 오픽 현타, 5. 녹음하기</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 9</span>
+      <h4>D+9 7회차 연습</h4>
+      <p>XLSX 2주 코스 row: D+9</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>7회차 연습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 day row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>오픽현타 &amp; 보완</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>7회차 복습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item tracking">
+    <div>
+      <b>녹음 파일 위치 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 5. 녹음하기: 모의고사 시작과 동시에 녹음</span>
+  </li><li class="item tracking">
+    <div>
+      <b>막힌 질문 / 다시 말할 표현 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 4. 오픽 현타, 5. 녹음하기</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 10</span>
+      <h4>D+10 8회차 연습</h4>
+      <p>XLSX 2주 코스 row: D+10</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>8회차 연습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 day row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>오픽현타 &amp; 보완</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>8회차 복습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item tracking">
+    <div>
+      <b>녹음 파일 위치 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 5. 녹음하기: 모의고사 시작과 동시에 녹음</span>
+  </li><li class="item tracking">
+    <div>
+      <b>막힌 질문 / 다시 말할 표현 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 4. 오픽 현타, 5. 녹음하기</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 11</span>
+      <h4>D+11 9회차 연습</h4>
+      <p>XLSX 2주 코스 row: D+11</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>9회차 연습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 day row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>오픽현타 &amp; 보완</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>9회차 복습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item tracking">
+    <div>
+      <b>녹음 파일 위치 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 5. 녹음하기: 모의고사 시작과 동시에 녹음</span>
+  </li><li class="item tracking">
+    <div>
+      <b>막힌 질문 / 다시 말할 표현 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 4. 오픽 현타, 5. 녹음하기</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 12</span>
+      <h4>D+12 10회차 연습</h4>
+      <p>XLSX 2주 코스 row: D+12</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>10회차 연습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 day row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>오픽현타 &amp; 보완</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>10회차 복습</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item tracking">
+    <div>
+      <b>녹음 파일 위치 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 5. 녹음하기: 모의고사 시작과 동시에 녹음</span>
+  </li><li class="item tracking">
+    <div>
+      <b>막힌 질문 / 다시 말할 표현 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 원문 4. 오픽 현타, 5. 녹음하기</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 13</span>
+      <h4>D+13 6~10회차 정리</h4>
+      <p>XLSX 2주 코스 row: D+13</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>6~10회차 정리</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 day row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>부족한 점 보완</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>복습 row 보완</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 sub row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 14</span>
+      <h4>D+14 휴식</h4>
+      <p>XLSX 2주 코스 row: D+14</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>휴식</b>
+      
+    </div>
+    <span>첨부 row · XLSX 2주 코스 day row</span>
+  </li></ul>
+    
+  </section></div>
+  </details><details class="flow" open>
+    <summary>
+      <span>Flow 2 · calendar</span>
+      <strong>오픽 모의고사 1달 계획</strong>
+      <em>XLSX sheet 1달 코스</em>
+    </summary>
+    <div class="fields"><b>시작 입력</b><span class="chip">시작일</span><span class="chip">모의고사 10회차 영상 목록</span></div>
+    
+    <div class="steps"><section class="step">
+    <div class="step-head">
+      <span>Step 1</span>
+      <h4>1주차</h4>
+      <p>XLSX 1달 코스 1주차</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>1회차 연습 / 1회차 복습 / 1회차 복습 / 2회차 연습 / 2회차 복습 / 2회차 복습 / 휴식</b>
+      
+    </div>
+    <span>첨부 row · XLSX 1달 코스 week row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>각 연습/복습 칸에 오픽현타 기록</b>
+      
+    </div>
+    <span>첨부 row · XLSX 1달 코스 sub row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>각 연습/복습 칸에 부족한 점 보완 기록</b>
+      
+    </div>
+    <span>첨부 row · XLSX 1달 코스 sub row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 2</span>
+      <h4>2주차</h4>
+      <p>XLSX 1달 코스 2주차</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>3회차 연습 / 3회차 복습 / 3회차 복습 / 4회차 연습 / 4회차 복습 / 4회차 복습 / 휴식</b>
+      
+    </div>
+    <span>첨부 row · XLSX 1달 코스 week row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>각 연습/복습 칸에 오픽현타 기록</b>
+      
+    </div>
+    <span>첨부 row · XLSX 1달 코스 sub row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>각 연습/복습 칸에 부족한 점 보완 기록</b>
+      
+    </div>
+    <span>첨부 row · XLSX 1달 코스 sub row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 3</span>
+      <h4>3주차</h4>
+      <p>XLSX 1달 코스 3주차</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>5회차 연습 / 5회차 복습 / 5회차 복습 / 6회차 연습 / 6회차 복습 / 6회차 복습 / 휴식</b>
+      
+    </div>
+    <span>첨부 row · XLSX 1달 코스 week row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>각 연습/복습 칸에 오픽현타 기록</b>
+      
+    </div>
+    <span>첨부 row · XLSX 1달 코스 sub row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>각 연습/복습 칸에 부족한 점 보완 기록</b>
+      
+    </div>
+    <span>첨부 row · XLSX 1달 코스 sub row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 4</span>
+      <h4>4주차</h4>
+      <p>XLSX 1달 코스 4주차</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>7회차 연습 / 7회차 복습 / 7회차 복습 / 8회차 연습 / 8회차 복습 / 8회차 복습 / 휴식</b>
+      
+    </div>
+    <span>첨부 row · XLSX 1달 코스 week row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>각 연습/복습 칸에 오픽현타 기록</b>
+      
+    </div>
+    <span>첨부 row · XLSX 1달 코스 sub row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>각 연습/복습 칸에 부족한 점 보완 기록</b>
+      
+    </div>
+    <span>첨부 row · XLSX 1달 코스 sub row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 5</span>
+      <h4>5주차</h4>
+      <p>XLSX 1달 코스 5주차</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>9회차 연습 / 9회차 복습 / 9회차 복습 / 10회차 연습 / 10회차 복습 / 10회차 복습 / 휴식</b>
+      
+    </div>
+    <span>첨부 row · XLSX 1달 코스 week row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>각 연습/복습 칸에 오픽현타 기록</b>
+      
+    </div>
+    <span>첨부 row · XLSX 1달 코스 sub row</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>각 연습/복습 칸에 부족한 점 보완 기록</b>
+      
+    </div>
+    <span>첨부 row · XLSX 1달 코스 sub row</span>
+  </li></ul>
+    
+  </section></div>
+  </details></div>
+    
+    <div class="review"><div><b>삭제/차단</b><span class="chip">회차마다 동일한 3개 item 자동 생성</span><span class="chip">원문에 없는 시험 절차 item</span><span class="chip">generic memoHint</span></div><p><b>메모 정책</b> 막힌 질문, 녹음 파일 위치, 다시 말할 표현, 보완할 문법/시제만 기록한다.</p></div>
+  </section>
+<section class="map-card ready" id="baby-food-initial-plan">
+    <div class="map-head">
+      <div class="map-kicker">
+        <span>3. 실행 초안</span>
+        <span>Flow Map</span>
+      </div>
+      <h2>초기 이유식 식단표</h2>
+      <p>암호 첨부 PDF row가 확인되어 실행 Flow로 가능하다.</p>
+    </div>
+    <div class="gate">
+      <div><b>판정 이유</b><p>150/160/170/180일 시작 식단표와 큐브 재고표가 다운로드/복호화됐고, D+n 구간, 메뉴, NEW 재료, 먹은양 row가 확인됐다.</p></div>
+      <div><b>FlowMe 역할</b><p>시작일 기준으로 D+n 식단을 캘린더에 깔고, 먹은 양/알레르기/큐브 재고만 기록하게 한다.</p></div>
+    </div>
+    <div class="urls"><a href="https://blog.naver.com/01695258757/222768860919">https://blog.naver.com/01695258757/222768860919</a></div>
+    <div class="block"><h3>원문 row / 근거</h3><div class="source-list"><div class="source-row">
+        <b>첨부 ZIP</b>
+        <p>초기식단표 ZIP password 211111</p>
+        <span>Naver attachment download</span>
+      </div><div class="source-row">
+        <b>식단 PDF</b>
+        <p>baby-150.pdf, baby-160.pdf, baby-170.pdf, baby-180.pdf</p>
+        <span>pdfplumber password 211111</span>
+      </div><div class="source-row">
+        <b>큐브 PDF</b>
+        <p>큐브 재료 / 만든 날짜 / 1개 용량 / 큐브 개수</p>
+        <span>baby-cube.pdf</span>
+      </div></div></div>
+    <div class="block"><h3>실제 Flow 콘텐츠</h3><details class="flow" open>
+    <summary>
+      <span>Flow 1 · calendar-sheet</span>
+      <strong>150일 시작 초기 이유식 식단표</strong>
+      <em>첨부 PDF baby-150.pdf, password 211111</em>
+    </summary>
+    <div class="fields"><b>시작 입력</b><span class="chip">아기 생일 또는 D+150 시작일</span><span class="chip">하루 1회/2회 제공 여부</span></div>
+    
+    <div class="steps"><section class="step">
+    <div class="step-head">
+      <span>Step 1</span>
+      <h4>D+150~155</h4>
+      <p>baby-150.pdf table block D+150~155</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+150~D+155</b>
+      <p>D+150~155</p>
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+150~155</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 쌀 -&gt; 쌀오트밀</b>
+      
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+150~155</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 쌀, 오트밀</b>
+      
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+150~155</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>간식: X</b>
+      
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+150~155</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 2</span>
+      <h4>D+156~161</h4>
+      <p>baby-150.pdf table block D+156~161</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+156~D+161</b>
+      <p>D+156~161</p>
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+156~161</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 쌀오트밀 + 애호박 / 애호박청경채</b>
+      
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+156~161</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 애호박, 청경채</b>
+      
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+156~161</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 3</span>
+      <h4>D+162~167</h4>
+      <p>baby-150.pdf table block D+162~167</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+162~D+167</b>
+      <p>D+162~167</p>
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+162~167</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 애호박비타민 / 청경채양배추</b>
+      
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+162~167</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 비타민, 양배추</b>
+      
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+162~167</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 4</span>
+      <h4>D+168~173</h4>
+      <p>baby-150.pdf table block D+168~173</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+168~D+173</b>
+      <p>D+168~173</p>
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+168~173</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 양배추브로콜리 / 비타민감자</b>
+      
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+168~173</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 브로콜리, 감자</b>
+      
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+168~173</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 5</span>
+      <h4>D+174~179</h4>
+      <p>baby-150.pdf table block D+174~179</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+174~D+179</b>
+      <p>D+174~179</p>
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+174~179</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 브로콜리고구마 / 브로콜리단호박</b>
+      
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+174~179</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 고구마, 단호박</b>
+      
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+174~179</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 6</span>
+      <h4>D+180~185</h4>
+      <p>baby-150.pdf table block D+180~185</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+180~D+185</b>
+      <p>D+180~185</p>
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+180~185</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 소고기청경채단호박 / 소고기브로콜리오이</b>
+      
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+180~185</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 소고기, 오이</b>
+      
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+180~185</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 7</span>
+      <h4>D+186~191</h4>
+      <p>baby-150.pdf table block D+186~191</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+186~D+191</b>
+      <p>D+186~191</p>
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+186~191</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 소고기오이배 / 소고기청경채사과</b>
+      
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+186~191</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 배, 사과</b>
+      
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+186~191</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 8</span>
+      <h4>D+192~197</h4>
+      <p>baby-150.pdf table block D+192~197</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+192~D+197</b>
+      <p>D+192~197</p>
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+192~197</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 소고기양배추단호박완두콩 / 소고기브로콜리청경채당근</b>
+      
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+192~197</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 완두콩, 당근</b>
+      
+    </div>
+    <span>첨부 row · baby-150.pdf table block D+192~197</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section></div>
+  </details><details class="flow" open>
+    <summary>
+      <span>Flow 2 · calendar-sheet</span>
+      <strong>160일 시작 초기 이유식 식단표</strong>
+      <em>첨부 PDF baby-160.pdf, password 211111</em>
+    </summary>
+    <div class="fields"><b>시작 입력</b><span class="chip">아기 생일 또는 D+160 시작일</span><span class="chip">하루 제공 횟수</span></div>
+    
+    <div class="steps"><section class="step">
+    <div class="step-head">
+      <span>Step 1</span>
+      <h4>D+160~165</h4>
+      <p>baby-160.pdf table block D+160~165</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+160~D+165</b>
+      <p>D+160~165</p>
+    </div>
+    <span>첨부 row · baby-160.pdf table block D+160~165</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 쌀 -&gt; 쌀오트밀</b>
+      
+    </div>
+    <span>첨부 row · baby-160.pdf table block D+160~165</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 쌀, 오트밀</b>
+      
+    </div>
+    <span>첨부 row · baby-160.pdf table block D+160~165</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 2</span>
+      <h4>D+166~171</h4>
+      <p>baby-160.pdf table block D+166~171</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+166~D+171</b>
+      <p>D+166~171</p>
+    </div>
+    <span>첨부 row · baby-160.pdf table block D+166~171</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 애호박 / 애호박청경채</b>
+      
+    </div>
+    <span>첨부 row · baby-160.pdf table block D+166~171</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 애호박, 청경채</b>
+      
+    </div>
+    <span>첨부 row · baby-160.pdf table block D+166~171</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 3</span>
+      <h4>D+172~177</h4>
+      <p>baby-160.pdf table block D+172~177</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+172~D+177</b>
+      <p>D+172~177</p>
+    </div>
+    <span>첨부 row · baby-160.pdf table block D+172~177</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 애호박비타민 / 청경채양배추</b>
+      
+    </div>
+    <span>첨부 row · baby-160.pdf table block D+172~177</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 비타민, 양배추</b>
+      
+    </div>
+    <span>첨부 row · baby-160.pdf table block D+172~177</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 4</span>
+      <h4>D+178~183</h4>
+      <p>baby-160.pdf table block D+178~183</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+178~D+183</b>
+      <p>D+178~183</p>
+    </div>
+    <span>첨부 row · baby-160.pdf table block D+178~183</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 청경채고구마 / 소고기애호박</b>
+      
+    </div>
+    <span>첨부 row · baby-160.pdf table block D+178~183</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 고구마, 소고기</b>
+      
+    </div>
+    <span>첨부 row · baby-160.pdf table block D+178~183</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 5</span>
+      <h4>D+184~189</h4>
+      <p>baby-160.pdf extracted row group</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+184~D+189</b>
+      <p>D+184~189</p>
+    </div>
+    <span>첨부 row · baby-160.pdf extracted row group</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 소고기애호박브로콜리 / 소고기브로콜리감자</b>
+      
+    </div>
+    <span>첨부 row · baby-160.pdf extracted row group</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 브로콜리, 감자</b>
+      
+    </div>
+    <span>첨부 row · baby-160.pdf extracted row group</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 6</span>
+      <h4>D+190~195</h4>
+      <p>baby-160.pdf extracted row group</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+190~D+195</b>
+      <p>D+190~195</p>
+    </div>
+    <span>첨부 row · baby-160.pdf extracted row group</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 소고기양배추단호박 / 소고기감자오이</b>
+      
+    </div>
+    <span>첨부 row · baby-160.pdf extracted row group</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 양배추, 단호박, 오이</b>
+      
+    </div>
+    <span>첨부 row · baby-160.pdf extracted row group</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 7</span>
+      <h4>D+196 이후</h4>
+      <p>baby-160.pdf later rows partially extracted</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: 후속 구간</b>
+      <p>D+196 이후</p>
+    </div>
+    <span>첨부 row · baby-160.pdf later rows partially extracted</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 소고기 기반 토핑 조합</b>
+      
+    </div>
+    <span>첨부 row · baby-160.pdf later rows partially extracted</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 후속 NEW는 PDF row 추가 검수 필요</b>
+      
+    </div>
+    <span>첨부 row · baby-160.pdf later rows partially extracted</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>후속 일자는 source row 추가 import 필요</b>
+      
+    </div>
+    <span>첨부 row · baby-160.pdf later rows partially extracted</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section></div>
+  </details><details class="flow" open>
+    <summary>
+      <span>Flow 3 · calendar-sheet</span>
+      <strong>170일 시작 초기 이유식 식단표</strong>
+      <em>첨부 PDF baby-170.pdf, password 211111</em>
+    </summary>
+    <div class="fields"><b>시작 입력</b><span class="chip">아기 생일 또는 D+170 시작일</span><span class="chip">하루 1회/2회 제공 여부</span></div>
+    
+    <div class="steps"><section class="step">
+    <div class="step-head">
+      <span>Step 1</span>
+      <h4>D+170~175</h4>
+      <p>baby-170.pdf table block D+170~175</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+170~D+175</b>
+      <p>D+170~175</p>
+    </div>
+    <span>첨부 row · baby-170.pdf table block D+170~175</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 쌀 -&gt; 쌀오트밀</b>
+      
+    </div>
+    <span>첨부 row · baby-170.pdf table block D+170~175</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 쌀, 오트밀</b>
+      
+    </div>
+    <span>첨부 row · baby-170.pdf table block D+170~175</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 2</span>
+      <h4>D+176~181</h4>
+      <p>baby-170.pdf table block D+176~181</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+176~D+181</b>
+      <p>D+176~181</p>
+    </div>
+    <span>첨부 row · baby-170.pdf table block D+176~181</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 애호박 / 소고기애호박</b>
+      
+    </div>
+    <span>첨부 row · baby-170.pdf table block D+176~181</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 애호박, 소고기</b>
+      
+    </div>
+    <span>첨부 row · baby-170.pdf table block D+176~181</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 3</span>
+      <h4>D+182~187</h4>
+      <p>baby-170.pdf table block D+182~187</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+182~D+187</b>
+      <p>D+182~187</p>
+    </div>
+    <span>첨부 row · baby-170.pdf table block D+182~187</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 소고기애호박청경채 / 소고기청경채오이</b>
+      
+    </div>
+    <span>첨부 row · baby-170.pdf table block D+182~187</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 청경채, 오이</b>
+      
+    </div>
+    <span>첨부 row · baby-170.pdf table block D+182~187</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 4</span>
+      <h4>D+188~193</h4>
+      <p>baby-170.pdf table block D+188~193</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+188~D+193</b>
+      <p>D+188~193</p>
+    </div>
+    <span>첨부 row · baby-170.pdf table block D+188~193</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 소고기애호박브로콜리 / 소고기브로콜리양배추</b>
+      
+    </div>
+    <span>첨부 row · baby-170.pdf table block D+188~193</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 브로콜리, 양배추</b>
+      
+    </div>
+    <span>첨부 row · baby-170.pdf table block D+188~193</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 5</span>
+      <h4>D+194 이후</h4>
+      <p>baby-170.pdf later rows</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+194 이후</b>
+      <p>D+194 이후</p>
+    </div>
+    <span>첨부 row · baby-170.pdf later rows</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 오전 메뉴 기준, 2회 제공 시 저녁 메뉴 병행</b>
+      
+    </div>
+    <span>첨부 row · baby-170.pdf later rows</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 당근, 사과, 단호박, 바나나, 완두콩, 달걀노른자</b>
+      
+    </div>
+    <span>첨부 row · baby-170.pdf later rows</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>하루 1회면 오전 메뉴만 사용</b>
+      
+    </div>
+    <span>첨부 row · baby-170.pdf later rows</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section></div>
+  </details><details class="flow" open>
+    <summary>
+      <span>Flow 4 · calendar-sheet</span>
+      <strong>180일 시작 초기 이유식 식단표</strong>
+      <em>첨부 PDF baby-180.pdf, password 211111</em>
+    </summary>
+    <div class="fields"><b>시작 입력</b><span class="chip">아기 생일 또는 D+180 시작일</span><span class="chip">하루 1회/2회 제공 여부</span></div>
+    
+    <div class="steps"><section class="step">
+    <div class="step-head">
+      <span>Step 1</span>
+      <h4>D+180~185</h4>
+      <p>baby-180.pdf table block D+180~185</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+180~D+185</b>
+      <p>D+180~185</p>
+    </div>
+    <span>첨부 row · baby-180.pdf table block D+180~185</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 쌀 + D+183부터 소고기</b>
+      
+    </div>
+    <span>첨부 row · baby-180.pdf table block D+180~185</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 쌀, 소고기</b>
+      
+    </div>
+    <span>첨부 row · baby-180.pdf table block D+180~185</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 2</span>
+      <h4>D+186~191</h4>
+      <p>baby-180.pdf table block D+186~191</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+186~D+191</b>
+      <p>D+186~191</p>
+    </div>
+    <span>첨부 row · baby-180.pdf table block D+186~191</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 쌀오트밀 + 소고기 / 소고기애호박</b>
+      
+    </div>
+    <span>첨부 row · baby-180.pdf table block D+186~191</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 오트밀, 애호박</b>
+      
+    </div>
+    <span>첨부 row · baby-180.pdf table block D+186~191</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 3</span>
+      <h4>D+192~197</h4>
+      <p>baby-180.pdf table block D+192~197</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+192~D+197</b>
+      <p>D+192~197</p>
+    </div>
+    <span>첨부 row · baby-180.pdf table block D+192~197</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 소고기애호박청경채 / 소고기청경채브로콜리</b>
+      
+    </div>
+    <span>첨부 row · baby-180.pdf table block D+192~197</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 청경채, 브로콜리</b>
+      
+    </div>
+    <span>첨부 row · baby-180.pdf table block D+192~197</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 4</span>
+      <h4>D+198~203</h4>
+      <p>baby-180.pdf table block D+198~203</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+198~D+203</b>
+      <p>D+198~203</p>
+    </div>
+    <span>첨부 row · baby-180.pdf table block D+198~203</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 소고기브로콜리양배추 / 소고기청경채당근</b>
+      
+    </div>
+    <span>첨부 row · baby-180.pdf table block D+198~203</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 양배추, 단호박, 당근, 사과</b>
+      
+    </div>
+    <span>첨부 row · baby-180.pdf table block D+198~203</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>간식: 단호박퓌레, 사과</b>
+      
+    </div>
+    <span>첨부 row · baby-180.pdf table block D+198~203</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 5</span>
+      <h4>D+204 이후</h4>
+      <p>baby-180.pdf later rows</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>식단 구간: D+204 이후</b>
+      <p>D+204 이후</p>
+    </div>
+    <span>첨부 row · baby-180.pdf later rows</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>제공 메뉴: 오전 메뉴 기준, 2회 제공 시 저녁 메뉴 병행</b>
+      
+    </div>
+    <span>첨부 row · baby-180.pdf later rows</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>NEW 재료: 완두콩, 달걀노른자</b>
+      
+    </div>
+    <span>첨부 row · baby-180.pdf later rows</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>하루 1회면 오전 메뉴만 사용</b>
+      
+    </div>
+    <span>첨부 row · baby-180.pdf later rows</span>
+  </li><li class="item tracking">
+    <div>
+      <b>먹은 양 / 알레르기 반응만 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 기록 필드: PDF의 먹은양 row에 붙이는 캘린더 수준 입력</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">먹은 양</span><span class="chip">알레르기 반응</span><span class="chip">거부/보류</span><span class="chip">다음 제공 여부</span></div>
+  </section></div>
+  </details><details class="flow" open>
+    <summary>
+      <span>Flow 5 · sheet</span>
+      <strong>초기 이유식 큐브 재고표</strong>
+      <em>첨부 PDF baby-cube.pdf</em>
+    </summary>
+    <div class="fields"><b>시작 입력</b><span class="chip">큐브 만든 날짜</span><span class="chip">큐브당 g/ml</span><span class="chip">남은 개수</span></div>
+    
+    <div class="steps"><section class="step">
+    <div class="step-head">
+      <span>Step 1</span>
+      <h4>큐브 재고 row 만들기</h4>
+      <p>baby-cube.pdf table: 큐브 재료 / 만든 날짜 / 1개 용량 / 큐브 개수</p>
+    </div>
+    <ul class="items"><li class="item source_file_row">
+    <div>
+      <b>필드: 큐브 재료</b>
+      
+    </div>
+    <span>첨부 row · baby-cube.pdf header</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>필드: 만든 날짜</b>
+      
+    </div>
+    <span>첨부 row · baby-cube.pdf header</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>필드: 1개 용량</b>
+      
+    </div>
+    <span>첨부 row · baby-cube.pdf header</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>필드: 큐브 개수</b>
+      
+    </div>
+    <span>첨부 row · baby-cube.pdf header</span>
+  </li><li class="item source_file_row">
+    <div>
+      <b>재료 row: 쌀, 오트밀, 소고기, 애호박, 청경채, 오이, 브로콜리, 양배추, 당근, 단호박, 완두콩, 달걀노른자</b>
+      
+    </div>
+    <span>첨부 row · baby-cube.pdf material rows</span>
+  </li></ul>
+    
+  </section></div>
+  </details></div>
+    
+    <div class="review"><div><b>삭제/차단</b><span class="chip">원문에 없는 장보기/조리법 Step</span><span class="chip">음식 알레르기 판단 조언</span><span class="chip">매일 임의로 만든 재료 item</span></div><p><b>제한</b> PDF에는 메뉴와 큐브 표는 있지만 조리법/구매량은 없다. 조리/소분 Flow는 별도 레시피 source import 후에만 가능하다.</p></div>
+  </section>
+<section class="map-card hold" id="reading-system-hold">
+    <div class="map-head">
+      <div class="map-kicker">
+        <span>4. 보류</span>
+        <span>보류</span>
+      </div>
+      <h2>독서 기록/독서 시스템</h2>
+      <p>책 1권 기록 Flow로는 보류한다.</p>
+    </div>
+    <div class="gate">
+      <div><b>판정 이유</b><p>원문은 독서기록 템플릿 row가 아니라 개인 독서 시스템/목표 글이다. 책 1권별 기록 필드가 확인되지 않았다.</p></div>
+      <div><b>FlowMe 역할</b><p>현재는 습관/목표 메모 후보까지만 가능하고, 앱에 바로 넣을 실행 Flow로 만들면 사용자가 다시 설계해야 한다.</p></div>
+    </div>
+    <div class="urls"><a href="https://blog.naver.com/naristyle87/222978131890">https://blog.naver.com/naristyle87/222978131890</a></div>
+    <div class="block"><h3>원문 row / 근거</h3><div class="source-list"><div class="source-row">
+        <b>시스템</b>
+        <p>오전 1시간: 읽고 쓰는 시간</p>
+        <span>Naver PostView body</span>
+      </div><div class="source-row">
+        <b>HOW TO</b>
+        <p>정해진 시간 취침, 일어나면 책상에 앉기, 폰 멀리 두기, 읽고 쓰는 일만 하기</p>
+        <span>Naver PostView body</span>
+      </div><div class="source-row">
+        <b>취침 전</b>
+        <p>잠자리에 누워 전자책 읽기</p>
+        <span>Naver PostView body</span>
+      </div><div class="source-row">
+        <b>월간 계획</b>
+        <p>매달 초 장르별로 5권 리스트업</p>
+        <span>Naver PostView body</span>
+      </div><div class="source-row">
+        <b>구매 규칙</b>
+        <p>1권 반 읽으면 1권 사기</p>
+        <span>Naver PostView body</span>
+      </div><div class="source-row">
+        <b>연간 목표</b>
+        <p>책 70권 읽기</p>
+        <span>Naver PostView body</span>
+      </div></div></div>
+    
+    <div class="block"><h3>후보 / 보류 내용</h3><ul class="candidate"><li>독서 습관 체크 Flow는 가능하지만, 사용자가 그대로 따라 할 책별 기록 Flow는 아님</li><li>책 1권 기록 템플릿을 만들려면 책 제목/저자/시작일/완독일/발췌/감상 같은 별도 source가 필요</li></ul></div>
+    <div class="review"><div><b>삭제/차단</b><span class="chip">월 4권 독서 루틴</span><span class="chip">책별 기록 item 임의 생성</span><span class="chip">리뷰 작성 세부 Step 임의 생성</span></div><div><b>다음 import</b><span class="chip">실제 독서노트 템플릿</span><span class="chip">책 1권 기록 필드</span><span class="chip">완독/리뷰 기준</span></div></div>
+  </section>
+<section class="map-card ready" id="new-car-purchase-checklist">
+    <div class="map-head">
+      <div class="map-kicker">
+        <span>5. 실행 초안</span>
+        <span>Flow</span>
+      </div>
+      <h2>초보자 신차 구매 절차</h2>
+      <p>7단계 체크 Flow로 가능하다.</p>
+    </div>
+    <div class="gate">
+      <div><b>판정 이유</b><p>원문에 예산, 구매방법, 견적/협상, 계약, 출고/인수, 등록, 보험까지 단계가 확인된다.</p></div>
+      <div><b>FlowMe 역할</b><p>각 단계에서 금액, 견적, 계약 조건, 출고 점검, 보험 시작일만 기록하게 한다.</p></div>
+    </div>
+    <div class="urls"><a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners">https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners</a></div>
+    <div class="block"><h3>원문 row / 근거</h3><div class="source-list"><div class="source-row">
+        <b>절차</b>
+        <p>예산 설정 -&gt; 구매 방법 -&gt; 견적/협상 -&gt; 계약 -&gt; 출고/인수 -&gt; 등록 -&gt; 보험</p>
+        <span>Getcha article headings</span>
+      </div><div class="source-row">
+        <b>비용</b>
+        <p>옵션 200~500만원, 등록비 차량가 7~8%, 보험료 연 100~200만원</p>
+        <span>Getcha article budget section</span>
+      </div><div class="source-row">
+        <b>계약</b>
+        <p>모델/색상/옵션, 할인/최종 금액, 계약금/잔금, 출고 예정일, 취소/환불 조건</p>
+        <span>Getcha contract section</span>
+      </div></div></div>
+    <div class="block"><h3>실제 Flow 콘텐츠</h3><details class="flow" open>
+    <summary>
+      <span>Flow 1 · checklist</span>
+      <strong>신차 구매 7단계</strong>
+      <em>Getcha 7-step article</em>
+    </summary>
+    
+    
+    <div class="steps"><section class="step">
+    <div class="step-head">
+      <span>Step 1</span>
+      <h4>1. 예산 설정 및 차량 선택</h4>
+      <p>Getcha 1단계</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>차량 본체 가격 확인</b>
+      
+    </div>
+    <span>원문 task · Getcha budget row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>옵션 비용 200~500만원 추가 여부 확인</b>
+      
+    </div>
+    <span>원문 task · Getcha budget row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>등록 비용 7~8% 반영</b>
+      
+    </div>
+    <span>원문 task · Getcha budget row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>보험료 연 100~200만원 예상</b>
+      
+    </div>
+    <span>원문 task · Getcha budget row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>출퇴근/가족/레저 등 용도 기준 차종 비교</b>
+      
+    </div>
+    <span>원문 task · Getcha vehicle selection section</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 2</span>
+      <h4>2. 구매 방법 결정</h4>
+      <p>Getcha 2단계</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>현금 구매 여부 결정</b>
+      
+    </div>
+    <span>원문 task · Getcha cash row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>할부 금리와 월 납입금 비교</b>
+      
+    </div>
+    <span>원문 task · Getcha installment row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>장기렌트/리스 초기 비용과 세금 혜택 검토</b>
+      
+    </div>
+    <span>원문 task · Getcha rent/lease row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 3</span>
+      <h4>3. 견적 받기 및 할인 협상</h4>
+      <p>Getcha 3단계</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>여러 딜러 견적 비교</b>
+      
+    </div>
+    <span>원문 task · Getcha multiple quote section</span>
+  </li><li class="item source_task">
+    <div>
+      <b>월말/분기말 할인 가능성 확인</b>
+      
+    </div>
+    <span>원문 task · Getcha negotiation tip</span>
+  </li><li class="item source_task">
+    <div>
+      <b>경쟁 브랜드 견적서 제시 여부 체크</b>
+      
+    </div>
+    <span>원문 task · Getcha negotiation tip</span>
+  </li><li class="item source_task">
+    <div>
+      <b>무상 옵션, 사은품, 출고 기간까지 비교</b>
+      
+    </div>
+    <span>원문 task · Getcha negotiation section</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 4</span>
+      <h4>4. 계약 체결</h4>
+      <p>Getcha 4단계</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>모델명, 색상, 옵션 목록 확인</b>
+      
+    </div>
+    <span>원문 task · Getcha contract checklist</span>
+  </li><li class="item source_task">
+    <div>
+      <b>할인 내역, 최종 결제 금액, 계약금/잔금 일정 확인</b>
+      
+    </div>
+    <span>원문 task · Getcha contract checklist</span>
+  </li><li class="item source_task">
+    <div>
+      <b>출고 예정일과 지연 조건 확인</b>
+      
+    </div>
+    <span>원문 task · Getcha contract checklist</span>
+  </li><li class="item source_task">
+    <div>
+      <b>취소/환불 조건 확인</b>
+      
+    </div>
+    <span>원문 task · Getcha contract checklist</span>
+  </li><li class="item source_task">
+    <div>
+      <b>신분증, 인감증명서, 주민등록등본, 소득 증빙 준비</b>
+      
+    </div>
+    <span>원문 task · Getcha document row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 5</span>
+      <h4>5. 출고 및 차량 인수</h4>
+      <p>Getcha 5단계</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>외관 흠집/찌그러짐/도색 불량 확인</b>
+      
+    </div>
+    <span>원문 task · Getcha delivery inspection</span>
+  </li><li class="item source_task">
+    <div>
+      <b>시트, 대시보드, 트림 상태 확인</b>
+      
+    </div>
+    <span>원문 task · Getcha delivery inspection</span>
+  </li><li class="item source_task">
+    <div>
+      <b>에어컨, 오디오, 내비게이션, 버튼 작동 확인</b>
+      
+    </div>
+    <span>원문 task · Getcha delivery inspection</span>
+  </li><li class="item source_task">
+    <div>
+      <b>보증서, 정비 매뉴얼, 차량 등록증 수령 확인</b>
+      
+    </div>
+    <span>원문 task · Getcha delivery inspection</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 6</span>
+      <h4>6. 차량 등록</h4>
+      <p>Getcha registration step</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>취득세/등록비 납부 여부 확인</b>
+      
+    </div>
+    <span>원문 task · Getcha registration/budget rows</span>
+  </li><li class="item source_task">
+    <div>
+      <b>차량 등록증 수령 여부 확인</b>
+      
+    </div>
+    <span>원문 task · Getcha delivery document row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 7</span>
+      <h4>7. 보험 시작 확인</h4>
+      <p>Getcha insurance row</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>자동차보험 시작일 확인</b>
+      
+    </div>
+    <span>원문 task · Getcha insurance row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>운전 경력별 보험료 견적 기록</b>
+      
+    </div>
+    <span>원문 task · Getcha insurance row</span>
+  </li></ul>
+    
+  </section></div>
+  </details></div>
+    
+    <div class="review"><div><b>삭제/차단</b><span class="chip">딜러에게 문의하기 같은 빈 item</span><span class="chip">원문에 없는 세부 서류 확장</span><span class="chip">구매 후 관리 루틴</span></div><p><b>메모 정책</b> 딜러명, 견적 링크, 금액, 계약금/잔금, 출고 예정일만 기록한다.</p></div>
+  </section>
+<section class="map-card partial" id="child-vaccination-standard-schedule">
+    <div class="map-head">
+      <div class="map-kicker">
+        <span>6. 부분 실행</span>
+        <span>Flow Map</span>
+      </div>
+      <h2>영유아/어린이 표준 예방접종</h2>
+      <p>공식 row 기반 일정 Flow로 가능하지만 의료 판단은 제외한다.</p>
+    </div>
+    <div class="gate">
+      <div><b>판정 이유</b><p>KHMS 원문은 설명형이고, 실제 row는 질병관리청/보건소 표준 예방접종 일정표에서 확인했다.</p></div>
+      <div><b>FlowMe 역할</b><p>월령별 접종 후보를 보여주고 접종일/기관/메모만 받는다. 지연/누락 판단은 의사 상담으로 보낸다.</p></div>
+    </div>
+    <div class="urls"><a href="https://khms.or.kr/healthy_life/prevention/vaccination_child">https://khms.or.kr/healthy_life/prevention/vaccination_child</a><a href="https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&amp;menuLv=1">https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&amp;menuLv=1</a><a href="https://www.ddm.go.kr/health/contents.do?key=1230">https://www.ddm.go.kr/health/contents.do?key=1230</a></div>
+    <div class="block"><h3>원문 row / 근거</h3><div class="source-list"><div class="source-row">
+        <b>공식 일정</b>
+        <p>질병관리청 표준 예방접종 일정표, 최종검토일 2024-01-15</p>
+        <span>KDCA NIP standard schedule page</span>
+      </div><div class="source-row">
+        <b>2026 자료</b>
+        <p>2026 표준예방접종일정표 자료 게시 확인</p>
+        <span>KDCA related downloads 2026-01-22</span>
+      </div><div class="source-row">
+        <b>주의</b>
+        <p>DTaP, IPV, Hib, PCV, IJEV는 지연 시 일정/횟수가 달라질 수 있음</p>
+        <span>KDCA child NIP page</span>
+      </div><div class="source-row">
+        <b>지원 백신</b>
+        <p>HepB, BCG, DTaP, IPV, Hib, PCV, MMR, VAR, HepA, IJEV/LJEV, HPV, IIV 등</p>
+        <span>DDM health center schedule</span>
+      </div></div></div>
+    <div class="block"><h3>실제 Flow 콘텐츠</h3><details class="flow" open>
+    <summary>
+      <span>Flow 1 · calendar-medical-record</span>
+      <strong>표준 예방접종 일정 추적</strong>
+      <em>KDCA/DDM official rows</em>
+    </summary>
+    
+    <div class="fields"><b>기록 필드</b><span class="chip">접종일</span><span class="chip">기관명</span><span class="chip">백신명/차수</span><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <div class="step-head">
+      <span>Step 1</span>
+      <h4>출생시</h4>
+      <p>DDM schedule row</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>B형간염(HepB) 1차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 출생시</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 2</span>
+      <h4>1개월 / 4주 이내</h4>
+      <p>DDM schedule row</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>결핵(BCG, 피내용) 1회</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 1개월</span>
+  </li><li class="item source_task">
+    <div>
+      <b>B형간염(HepB) 2차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 1개월</span>
+  </li><li class="item caution">
+    <div>
+      <b>BCG 경피용은 국가예방접종 지원 제외 확인</b>
+      
+    </div>
+    <span>주의/확인 · DDM/KDCA support note</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 3</span>
+      <h4>2, 4, 6개월</h4>
+      <p>DDM schedule row</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>DTaP 1~3차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 2/4/6개월</span>
+  </li><li class="item source_task">
+    <div>
+      <b>IPV 1~3차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 2/4/6개월</span>
+  </li><li class="item source_task">
+    <div>
+      <b>Hib 1~3차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 2/4/6개월</span>
+  </li><li class="item source_task">
+    <div>
+      <b>PCV 1~3차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 2/4/6개월</span>
+  </li><li class="item source_task">
+    <div>
+      <b>RV 1~3차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 2/4/6개월</span>
+  </li><li class="item source_task">
+    <div>
+      <b>HepB 3차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 2/4/6개월</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 4</span>
+      <h4>12~15개월</h4>
+      <p>DDM schedule row</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>Hib 4차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 12~15개월</span>
+  </li><li class="item source_task">
+    <div>
+      <b>PCV 4차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 12~15개월</span>
+  </li><li class="item source_task">
+    <div>
+      <b>MMR 1차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 12~15개월</span>
+  </li><li class="item source_task">
+    <div>
+      <b>수두(VAR) 1회</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 12~15개월</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 5</span>
+      <h4>12~23개월</h4>
+      <p>DDM schedule row</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>A형간염(HepA) 1~2차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 12~23개월</span>
+  </li><li class="item source_task">
+    <div>
+      <b>일본뇌염 불활성화백신(IJEV) 1~2차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 12~23개월</span>
+  </li><li class="item source_task">
+    <div>
+      <b>일본뇌염 약독화생백신(LJEV) 1차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 12~23개월</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 6</span>
+      <h4>15~18개월</h4>
+      <p>DDM schedule row</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>DTaP 4차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 15~18개월</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 7</span>
+      <h4>24~35개월</h4>
+      <p>DDM schedule row</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>IJEV 3차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 24~35개월</span>
+  </li><li class="item source_task">
+    <div>
+      <b>LJEV 2차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 24~35개월</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 8</span>
+      <h4>4~6세</h4>
+      <p>DDM schedule row</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>DTaP 5차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 4~6세</span>
+  </li><li class="item source_task">
+    <div>
+      <b>IPV 4차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 4~6세</span>
+  </li><li class="item source_task">
+    <div>
+      <b>MMR 2차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 4~6세</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 9</span>
+      <h4>6세</h4>
+      <p>DDM schedule row</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>IJEV 4차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 6세</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 10</span>
+      <h4>11~12세 / 12세</h4>
+      <p>DDM schedule row</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>Tdap 6차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 11~12세</span>
+  </li><li class="item source_task">
+    <div>
+      <b>IJEV 5차</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 12세</span>
+  </li><li class="item source_task">
+    <div>
+      <b>HPV 1차(12세 여아)</b>
+      
+    </div>
+    <span>원문 task · DDM schedule: 12세</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 11</span>
+      <h4>지연/누락 시</h4>
+      <p>KDCA child NIP caution</p>
+    </div>
+    <ul class="items"><li class="item caution">
+    <div>
+      <b>지연 접종은 예진의사와 일정 상담</b>
+      
+    </div>
+    <span>주의/확인 · KDCA child NIP page</span>
+  </li><li class="item caution">
+    <div>
+      <b>의료기관 방문 전 백신 보유 여부 확인</b>
+      
+    </div>
+    <span>주의/확인 · KDCA child NIP page</span>
+  </li></ul>
+    
+  </section></div>
+  </details></div>
+    
+    <div class="review"><div><b>삭제/차단</b><span class="chip">의학적 판단 item</span><span class="chip">접종 가능 여부 자동 판정</span><span class="chip">부모 행동 조언 과다 생성</span></div><p><b>제한</b> 2026 다국어 표준표 파일 자체는 목록 확인까지 했다. 앱 반영 전에는 최신 PDF row를 다시 import해야 한다.</p></div>
+  </section>
+<section class="map-card ready" id="moving-checklist-d-day">
+    <div class="map-head">
+      <div class="map-kicker">
+        <span>7. 실행 초안</span>
+        <span>Flow</span>
+      </div>
+      <h2>이사 준비 D-day 체크리스트</h2>
+      <p>D-day 체크 Flow로 가능하다.</p>
+    </div>
+    <div class="gate">
+      <div><b>판정 이유</b><p>원문 표에서 D-30, D-10, D-3, D-1, 이사 당일 출발/도착 row와 담당 기관이 확인됐다.</p></div>
+      <div><b>FlowMe 역할</b><p>날짜별 체크리스트와 기관/예약번호/정산 금액 기록을 붙인다.</p></div>
+    </div>
+    <div class="urls"><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363">https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363</a></div>
+    <div class="block"><h3>원문 row / 근거</h3><div class="source-list"><div class="source-row">
+        <b>첨부</b>
+        <p>PDF, XLSX, Notion 링크 존재</p>
+        <span>AJD page attachment links</span>
+      </div><div class="source-row">
+        <b>표</b>
+        <p>D-30 / D-10 / D-3 / D-1 / 이사 당일 출발 / 이사 당일 도착</p>
+        <span>AJD article table</span>
+      </div></div></div>
+    <div class="block"><h3>실제 Flow 콘텐츠</h3><details class="flow" open>
+    <summary>
+      <span>Flow 1 · calendar-checklist</span>
+      <strong>이사 준비 체크리스트</strong>
+      <em>AJD table rows</em>
+    </summary>
+    
+    <div class="fields"><b>기록 필드</b><span class="chip">업체/기관</span><span class="chip">예약번호</span><span class="chip">담당자 연락처</span><span class="chip">정산 금액</span><span class="chip">사진/서류 위치</span><span class="chip">보류 사유</span></div>
+    <div class="steps"><section class="step">
+    <div class="step-head">
+      <span>Step 1</span>
+      <h4>D-30</h4>
+      <p>AJD table D-30</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>이사 방식 확인: 포장이사 / 반포장이사</b>
+      
+    </div>
+    <span>원문 task · AJD D-30 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>이사할 집 점검 및 하자 수리 의뢰</b>
+      <p>인테리어 업체/수리업체/관리사무소</p>
+    </div>
+    <span>원문 task · AJD D-30 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>필요 없는 물건 정리</b>
+      
+    </div>
+    <span>원문 task · AJD D-30 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>전학 수속</b>
+      <p>학교</p>
+    </div>
+    <span>원문 task · AJD D-30 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>유아/노약자/반려동물 위탁시설 예약</b>
+      
+    </div>
+    <span>원문 task · AJD D-30 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>이사/청소 견적 확인 및 예약</b>
+      <p>이사/청소 업체</p>
+    </div>
+    <span>원문 task · AJD D-30 row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 2</span>
+      <h4>D-10</h4>
+      <p>AJD table D-10</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>통장/카드/우편물 주소 변경</b>
+      <p>금융기관/우체국</p>
+    </div>
+    <span>원문 task · AJD D-10 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>신문, 우유 등 정기 배달 중지 요청</b>
+      
+    </div>
+    <span>원문 task · AJD D-10 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>전출 신고</b>
+      
+    </div>
+    <span>원문 task · AJD D-10 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>엘리베이터 사전 예약 / 사다리차 주차공간 예약</b>
+      <p>관리사무소</p>
+    </div>
+    <span>원문 task · AJD D-10 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>평수별 쓰레기봉투 준비</b>
+      
+    </div>
+    <span>원문 task · AJD D-10 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>집 열쇠, 리모컨 찾아두기</b>
+      
+    </div>
+    <span>원문 task · AJD D-10 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>냉장고 천천히 비우기</b>
+      
+    </div>
+    <span>원문 task · AJD D-10 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>폐가전/대형폐기물 수거예약 및 신고</b>
+      <p>주민센터</p>
+    </div>
+    <span>원문 task · AJD D-10 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>이사할 집에서 사용할 물건 주문 및 확인</b>
+      <p>도배/장판 포함</p>
+    </div>
+    <span>원문 task · AJD D-10 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>가구 배치도 작성</b>
+      
+    </div>
+    <span>원문 task · AJD D-10 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>인터넷, 정수기 이전 설치 예약</b>
+      
+    </div>
+    <span>원문 task · AJD D-10 row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 3</span>
+      <h4>D-3</h4>
+      <p>AJD table D-3</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>도시가스 철거, 설치 예약</b>
+      
+    </div>
+    <span>원문 task · AJD D-3 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>자동이체 해지 신청</b>
+      
+    </div>
+    <span>원문 task · AJD D-3 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>세탁기 물 빼기</b>
+      
+    </div>
+    <span>원문 task · AJD D-3 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>전세권 설정에 필요한 서류 준비</b>
+      
+    </div>
+    <span>원문 task · AJD D-3 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>이사 당일 사용할 물건 따로 포장</b>
+      
+    </div>
+    <span>원문 task · AJD D-3 row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 4</span>
+      <h4>D-1</h4>
+      <p>AJD table D-1</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>이사 일정 최종 확인</b>
+      
+    </div>
+    <span>원문 task · AJD D-1 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>이체 한도 증액</b>
+      
+    </div>
+    <span>원문 task · AJD D-1 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>주차공간 확보 확인</b>
+      
+    </div>
+    <span>원문 task · AJD D-1 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>귀중품, 귀금속 별도 보관</b>
+      
+    </div>
+    <span>원문 task · AJD D-1 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>잔금 결제 확인</b>
+      
+    </div>
+    <span>원문 task · AJD D-1 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>입주증 발급</b>
+      <p>입주 아파트인 경우</p>
+    </div>
+    <span>원문 task · AJD D-1 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>어항, 수조관 처리</b>
+      
+    </div>
+    <span>원문 task · AJD D-1 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>이사 시작 전 가전 가구 사진 촬영</b>
+      
+    </div>
+    <span>원문 task · AJD D-1 row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 5</span>
+      <h4>이사 당일: 출발지</h4>
+      <p>AJD table D-Day departure</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>전기, 가스요금, 관리비 정산</b>
+      
+    </div>
+    <span>원문 task · AJD D-Day departure row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>장기수선충당금 환급 요청</b>
+      
+    </div>
+    <span>원문 task · AJD D-Day departure row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>이삿짐 반출 후 잔여 이삿짐 체크</b>
+      
+    </div>
+    <span>원문 task · AJD D-Day departure row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>문단속 및 열쇠 반납</b>
+      
+    </div>
+    <span>원문 task · AJD D-Day departure row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 6</span>
+      <h4>이사 당일: 도착지</h4>
+      <p>AJD table D-Day arrival</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>이삿짐 분실, 파손 확인 후 비용 정산</b>
+      
+    </div>
+    <span>원문 task · AJD D-Day arrival row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>전화, 인터넷 TV 설치 후 개통</b>
+      
+    </div>
+    <span>원문 task · AJD D-Day arrival row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>도어락 비밀번호 변경</b>
+      
+    </div>
+    <span>원문 task · AJD D-Day arrival row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>잔금지급, 관리비, 중개료 정산</b>
+      
+    </div>
+    <span>원문 task · AJD D-Day arrival row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>열쇠 받기</b>
+      
+    </div>
+    <span>원문 task · AJD D-Day arrival row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>전기, 수도 명의 변경</b>
+      
+    </div>
+    <span>원문 task · AJD D-Day arrival row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>가스 설치</b>
+      
+    </div>
+    <span>원문 task · AJD D-Day arrival row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>전입신고 및 확정일자 받기</b>
+      
+    </div>
+    <span>원문 task · AJD D-Day arrival row</span>
+  </li></ul>
+    
+  </section></div>
+  </details></div>
+    
+    <div class="review"><div><b>삭제/차단</b><span class="chip">이사 팁 설명문</span><span class="chip">원문 표에 없는 포장 루틴</span><span class="chip">fallback memoHint</span></div><p><b>메모 정책</b> 기관, 예약번호, 정산 금액, 사진/서류 위치만 기록한다.</p></div>
+  </section>
+<section class="map-card ready" id="wedding-checklist-map">
+    <div class="map-head">
+      <div class="map-kicker">
+        <span>8. 실행 초안</span>
+        <span>Flow Map</span>
+      </div>
+      <h2>결혼 준비 체크리스트</h2>
+      <p>타임라인 Flow와 A-to-Z Flow를 분리하면 실행 초안으로 가능하다.</p>
+    </div>
+    <div class="gate">
+      <div><b>판정 이유</b><p>네이버 글은 개월 전 타임라인 row가 있고, 공여사들 글은 준비 카테고리 row가 있다.</p></div>
+      <div><b>FlowMe 역할</b><p>타임라인은 예약 마감일 관리, A-to-Z는 업체/견적/계약금/보류 사유 기록에 사용한다.</p></div>
+    </div>
+    <div class="urls"><a href="https://blog.naver.com/wilklove/223518896995">https://blog.naver.com/wilklove/223518896995</a><a href="https://gongysd.com/wedding-notion/?bmode=view&amp;idx=167989966">https://gongysd.com/wedding-notion/?bmode=view&amp;idx=167989966</a></div>
+    <div class="block"><h3>원문 row / 근거</h3><div class="source-list"><div class="source-row">
+        <b>네이버 타임라인</b>
+        <p>12개월 전: 웨딩홀, 플래너, 본식 스냅/DVD, 아이폰 스냅</p>
+        <span>Naver PostView body</span>
+      </div><div class="source-row">
+        <b>네이버 타임라인</b>
+        <p>10개월 전: 스튜디오/드레스/메이크업, 전문 사회자/축가</p>
+        <span>Naver PostView body</span>
+      </div><div class="source-row">
+        <b>네이버 타임라인</b>
+        <p>예복, 혼주 메이크업, 드레스 가봉, 부케, 신부관리, 스튜디오 촬영, 신혼여행, 청첩장, 식전영상, 상견례, 최종 참석자 등</p>
+        <span>Naver PostView body headings</span>
+      </div><div class="source-row">
+        <b>공여사들 A-to-Z</b>
+        <p>웨딩홀 계약, 상견례, 웨딩플래너, 스드메, 드레스 투어, 혼주 메이크업, 청첩장, 웨딩관리</p>
+        <span>Gongysd page/search-extracted headings</span>
+      </div></div></div>
+    <div class="block"><h3>실제 Flow 콘텐츠</h3><details class="flow" open>
+    <summary>
+      <span>Flow 1 · calendar-checklist</span>
+      <strong>결혼 준비 1년 타임라인</strong>
+      <em>Naver PostView timeline rows</em>
+    </summary>
+    
+    <div class="fields"><b>기록 필드</b><span class="chip">업체명</span><span class="chip">견적</span><span class="chip">예약일</span><span class="chip">계약금</span><span class="chip">잔금일</span><span class="chip">보류 사유</span></div>
+    <div class="steps"><section class="step">
+    <div class="step-head">
+      <span>Step 1</span>
+      <h4>12개월 전</h4>
+      <p>Naver timeline section</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>웨딩홀 최종 계약</b>
+      
+    </div>
+    <span>원문 task · Naver 12개월 전 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>결혼식 날짜 &amp; 예산 논의</b>
+      
+    </div>
+    <span>원문 task · Naver 12개월 전 checklist</span>
+  </li><li class="item source_task">
+    <div>
+      <b>웨딩홀 리스트 정리</b>
+      
+    </div>
+    <span>원문 task · Naver 12개월 전 checklist</span>
+  </li><li class="item source_task">
+    <div>
+      <b>웨딩홀 방문 &amp; 견적 상담</b>
+      
+    </div>
+    <span>원문 task · Naver 12개월 전 checklist</span>
+  </li><li class="item source_task">
+    <div>
+      <b>웨딩플래너 업체 상담 &amp; 계약</b>
+      
+    </div>
+    <span>원문 task · Naver 12개월 전 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>결혼식 본식 스냅, DVD 계약</b>
+      
+    </div>
+    <span>원문 task · Naver 12개월 전 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>아이폰 스냅 계약</b>
+      
+    </div>
+    <span>원문 task · Naver 12개월 전 row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 2</span>
+      <h4>10개월 전</h4>
+      <p>Naver timeline section</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>스튜디오/드레스/메이크업 계약</b>
+      
+    </div>
+    <span>원문 task · Naver 10개월 전 row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>촬영 날짜, 드레스 투어, 가봉 날짜 픽스</b>
+      
+    </div>
+    <span>원문 task · Naver 10개월 전 checklist</span>
+  </li><li class="item source_task">
+    <div>
+      <b>꽃장식, 헤어변형 예약 확인</b>
+      
+    </div>
+    <span>원문 task · Naver 10개월 전 checklist</span>
+  </li><li class="item source_task">
+    <div>
+      <b>식전영상용 짧은 영상 기록 가능 여부 확인</b>
+      
+    </div>
+    <span>원문 task · Naver 10개월 전 checklist</span>
+  </li><li class="item source_task">
+    <div>
+      <b>결혼식 전문 사회자, 축가 스케줄 예약</b>
+      
+    </div>
+    <span>원문 task · Naver 10개월 전 row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 3</span>
+      <h4>예복/혼주/촬영 준비 구간</h4>
+      <p>Naver body heading rows</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>신랑 예복 업체 정하기</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>양가 혼주 메이크업 업체 계약</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>촬영용 드레스 가봉</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>부케 예약</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>신부관리 시작</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 4</span>
+      <h4>촬영/신혼여행/혼수 준비 구간</h4>
+      <p>Naver body heading rows</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>스튜디오 촬영</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>신혼여행 예약</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>가전/가구 구매할 것 리스트 정리</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>양가 혼주 한복 업체 픽스</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>결혼반지 견적받고 리스트 정리</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>신랑/신부관리 시작</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 5</span>
+      <h4>청첩장/상견례/식전 준비 구간</h4>
+      <p>Naver body heading rows</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>신혼집 준비</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>청첩장 제작</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>식전영상 준비</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>양가 상견례</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>프러포즈</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li></ul>
+    
+  </section><section class="step">
+    <div class="step-head">
+      <span>Step 6</span>
+      <h4>본식 직전 확인 구간</h4>
+      <p>Naver body heading rows</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>최종 참석자 확인</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>본식 웨딩드레스 최종 가봉</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>웨딩홀 시식하기</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>본식 관련 준비</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>결혼식 답례품 예약</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>결혼식 포토부스 준비</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>본식 부케 최종 픽스</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li><li class="item source_task">
+    <div>
+      <b>신혼여행 최종 체크</b>
+      
+    </div>
+    <span>원문 task · Naver heading row</span>
+  </li></ul>
+    
+  </section></div>
+  </details><details class="flow" open>
+    <summary>
+      <span>Flow 2 · sheet-board</span>
+      <strong>결혼 준비 A-to-Z 업체/견적 보드</strong>
+      <em>Gongysd category headings</em>
+    </summary>
+    
+    
+    <div class="steps"><section class="step">
+    <div class="step-head">
+      <span>Step 1</span>
+      <h4>업체/항목 보드</h4>
+      <p>Gongysd A-to-Z headings</p>
+    </div>
+    <ul class="items"><li class="item source_task">
+    <div>
+      <b>웨딩홀 계약</b>
+      
+    </div>
+    <span>원문 task · Gongysd heading</span>
+  </li><li class="item source_task">
+    <div>
+      <b>상견례</b>
+      
+    </div>
+    <span>원문 task · Gongysd heading</span>
+  </li><li class="item source_task">
+    <div>
+      <b>웨딩플래너 선정</b>
+      
+    </div>
+    <span>원문 task · Gongysd heading</span>
+  </li><li class="item source_task">
+    <div>
+      <b>스드메 업체 선정</b>
+      
+    </div>
+    <span>원문 task · Gongysd heading</span>
+  </li><li class="item source_task">
+    <div>
+      <b>드레스 투어</b>
+      
+    </div>
+    <span>원문 task · Gongysd heading</span>
+  </li><li class="item source_task">
+    <div>
+      <b>혼주 메이크업 예약</b>
+      
+    </div>
+    <span>원문 task · Gongysd heading</span>
+  </li><li class="item source_task">
+    <div>
+      <b>청첩장 준비</b>
+      
+    </div>
+    <span>원문 task · Gongysd heading</span>
+  </li><li class="item source_task">
+    <div>
+      <b>웨딩관리</b>
+      
+    </div>
+    <span>원문 task · Gongysd heading</span>
+  </li></ul>
+    <div class="fields"><b>기록 필드</b><span class="chip">후보</span><span class="chip">견적</span><span class="chip">예약일</span><span class="chip">계약금</span><span class="chip">최종 선택</span><span class="chip">보류 사유</span></div>
+  </section></div>
+  </details></div>
+    
+    <div class="review"><div><b>삭제/차단</b><span class="chip">원문 항목 확인이라는 반복 item</span><span class="chip">A-to-Z와 타임라인을 한 Flow에 섞은 구조</span><span class="chip">임의 월별 준비 항목</span></div><p><b>제한</b> 공여사들 전체 중간 카테고리 6~8번은 검색/본문 추출만으로 안정 확인되지 않아 이번 초안에서 제외했다.</p></div>
+  </section>
+<section class="map-card partial" id="allblanc-video-routine-map">
+    <div class="map-head">
+      <div class="map-kicker">
+        <span>9. 부분 실행</span>
+        <span>Flow Map</span>
+      </div>
+      <h2>Allblanc 영상 홈트 루틴</h2>
+      <p>영상 1개 = 루틴 1개 구조로 가능하다.</p>
+    </div>
+    <div class="gate">
+      <div><b>판정 이유</b><p>채널과 영상 URL/제목 단위가 확인된다. 운동 동작 세부 row는 영상 자막/설명 import 전에는 만들지 않는다.</p></div>
+      <div><b>FlowMe 역할</b><p>영상 URL, 반복 요일, 완료 여부, 메모란 안내만 붙인다.</p></div>
+    </div>
+    <div class="urls"><a href="https://youtube.com/@allblanctv">https://youtube.com/@allblanctv</a></div>
+    <div class="block"><h3>원문 row / 근거</h3><div class="source-list"><div class="source-row">
+        <b>채널</b>
+        <p>Allblanc TV YouTube channel</p>
+        <span>YouTube channel page title</span>
+      </div><div class="source-row">
+        <b>영상</b>
+        <p>5 MIN HOME WORKOUT YOU CAN DO EVERY MORNING</p>
+        <span>YouTube channel page video title</span>
+      </div><div class="source-row">
+        <b>영상 URL 후보</b>
+        <p>fLLScgWQcHc, 2dail5Imi04, UEPkHmW_2FU</p>
+        <span>existing source candidate URLs; title recheck needed for 2 videos</span>
+      </div></div></div>
+    <div class="block"><h3>실제 Flow 콘텐츠</h3><details class="flow" open>
+    <summary>
+      <span>Flow 1 · video-routine</span>
+      <strong>매일 아침 5분 전신 홈트</strong>
+      <em>YouTube video URL/title</em>
+    </summary>
+    
+    
+    <div class="steps"><section class="step">
+    <div class="step-head">
+      <span>Step 1</span>
+      <h4>영상 1개 실행</h4>
+      <p>YouTube video title</p>
+    </div>
+    <ul class="items"><li class="item source_link">
+    <div>
+      <b>영상 제목: 5 MIN HOME WORKOUT YOU CAN DO EVERY MORNING</b>
+      
+    </div>
+    <span>원문 링크 · YouTube channel page</span>
+  </li><li class="item source_link">
+    <div>
+      <b>영상 URL: https://www.youtube.com/watch?v=fLLScgWQcHc</b>
+      
+    </div>
+    <span>원문 링크 · YouTube URL candidate</span>
+  </li><li class="item tracking">
+    <div>
+      <b>반복 요일 선택</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 루틴 설정 필드</span>
+  </li><li class="item tracking">
+    <div>
+      <b>완료 여부 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 루틴 기록 필드</span>
+  </li><li class="item tracking">
+    <div>
+      <b>특이사항은 메모란에 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · 사용자 피드백 기준: 안전 체크만 허용</span>
+  </li></ul>
+    
+  </section></div>
+  </details><details class="flow" open>
+    <summary>
+      <span>Flow 2 · video-routine</span>
+      <strong>무릎 부담 낮춘 노점프 루틴 후보</strong>
+      <em>YouTube URL candidate, title recheck required</em>
+    </summary>
+    
+    
+    <div class="steps"><section class="step">
+    <div class="step-head">
+      <span>Step 1</span>
+      <h4>영상 1개 실행</h4>
+      <p>candidate URL source</p>
+    </div>
+    <ul class="items"><li class="item source_link">
+    <div>
+      <b>영상 URL: https://www.youtube.com/watch?v=2dail5Imi04</b>
+      
+    </div>
+    <span>원문 링크 · YouTube URL candidate</span>
+  </li><li class="item caution">
+    <div>
+      <b>영상 제목/동작 요약은 영상 상세 import 후 확정</b>
+      
+    </div>
+    <span>주의/확인 · source import needed</span>
+  </li><li class="item tracking">
+    <div>
+      <b>반복 요일 / 완료 여부만 기록하고, 특이사항은 메모란에 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 루틴 기록 필드</span>
+  </li></ul>
+    
+  </section></div>
+  </details><details class="flow" open>
+    <summary>
+      <span>Flow 3 · video-routine</span>
+      <strong>하체 루틴 후보</strong>
+      <em>YouTube URL candidate, title recheck required</em>
+    </summary>
+    
+    
+    <div class="steps"><section class="step">
+    <div class="step-head">
+      <span>Step 1</span>
+      <h4>영상 1개 실행</h4>
+      <p>candidate URL source</p>
+    </div>
+    <ul class="items"><li class="item source_link">
+    <div>
+      <b>영상 URL: https://www.youtube.com/watch?v=UEPkHmW_2FU</b>
+      
+    </div>
+    <span>원문 링크 · YouTube URL candidate</span>
+  </li><li class="item caution">
+    <div>
+      <b>영상 제목/동작 요약은 영상 상세 import 후 확정</b>
+      
+    </div>
+    <span>주의/확인 · source import needed</span>
+  </li><li class="item tracking">
+    <div>
+      <b>반복 요일 / 완료 여부만 기록하고, 특이사항은 메모란에 기록</b>
+      
+    </div>
+    <span>FlowMe 기록 · FlowMe 루틴 기록 필드</span>
+  </li></ul>
+    
+  </section></div>
+  </details></div>
+    
+    <div class="review"><div><b>삭제/차단</b><span class="chip">영상에 없는 운동 동작 item</span><span class="chip">세트/횟수 임의 생성</span><span class="chip">식단/스트레칭 조언</span></div><div><b>다음 import</b><span class="chip">영상별 제목</span><span class="chip">영상 URL</span><span class="chip">영상 설명/챕터</span><span class="chip">자막 기반 동작 요약</span></div></div>
+  </section>
+  <footer>
+    <p><b>개발 투입용 데이터 초안</b></p>
+    <p>docs\content-audit\2026-07-01-curated-source-rewritten-flow-draft-data-ko.json 에 같은 구조의 JSON을 저장했다. HTML은 JSON을 그대로 보여주지 않고, 원문 row와 generated Flow item의 대응 관계를 카드로 펼쳐 확인하도록 만들었다.</p>
+  </footer>
+</article>
+</body>
+</html>

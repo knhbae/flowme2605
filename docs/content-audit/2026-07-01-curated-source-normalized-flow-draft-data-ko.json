@@ -1,0 +1,2010 @@
+{
+  "generatedAt": "2026-07-01T00:00:00+09:00",
+  "scope": "normalized content planning only; no app implementation",
+  "ruleSummary": [
+    "Step은 원문 구조를 보존한다.",
+    "Item은 사용자가 체크할 최소 행동만 둔다.",
+    "세부 source fact, 링크, 수량, 상태, 특이사항은 memo/detail로 내린다.",
+    "먹은 양, 통증, 이상반응, 수량은 기본 Field가 아니다.",
+    "자료창고형은 Park에서 끝내지 않고 2주/1달 resource routine 후보로 승격한다."
+  ],
+  "metrics": {
+    "maps": 9,
+    "flows": 19,
+    "steps": 91,
+    "items": 96
+  },
+  "maps": [
+    {
+      "id": "funmom-study-routine-map",
+      "sourceNo": 1,
+      "title": "펀맘 공부 루틴",
+      "status": "source_import_required",
+      "categoryPattern": "resource queue / library",
+      "urls": [
+        "https://funmom.tistory.com/"
+      ],
+      "summary": "펀맘은 Park에서 끝내지 않고 article row를 묶어 2주/1달 공부 루틴 Flow Map으로 승격한다. 현재는 확인된 일부 article row 기반 초안이다.",
+      "sourceRows": [
+        {
+          "id": "funmom-h-01",
+          "title": "ㅡ+ㅍ 기본받침 글자쓰기",
+          "detail": "한글 기본받침 글자쓰기 자료",
+          "sourceTrace": "funmom 한글공부 category parsed row",
+          "url": "https://funmom.tistory.com/1155"
+        },
+        {
+          "id": "funmom-h-02",
+          "title": "한글 문장쓰기 연습장",
+          "detail": "문장쓰기 연습 자료",
+          "sourceTrace": "funmom 한글공부 category parsed row",
+          "url": "https://funmom.tistory.com/1154"
+        },
+        {
+          "id": "funmom-h-03",
+          "title": "ㅡ+ㅌ 기본받침 글자쓰기",
+          "detail": "한글 기본받침 글자쓰기 자료",
+          "sourceTrace": "funmom 한글공부 category parsed row",
+          "url": "https://funmom.tistory.com/1150"
+        },
+        {
+          "id": "funmom-h-04",
+          "title": "엄마표 한글 글씨쓰기 연습장",
+          "detail": "글씨쓰기 연습 자료",
+          "sourceTrace": "funmom 한글공부 category parsed row",
+          "url": "https://funmom.tistory.com/1148"
+        },
+        {
+          "id": "funmom-h-05",
+          "title": "글씨쓰기연습 가정학습지",
+          "detail": "가정학습지형 쓰기 자료",
+          "sourceTrace": "funmom 한글공부 category parsed row",
+          "url": "https://funmom.tistory.com/1144"
+        },
+        {
+          "id": "funmom-m-01",
+          "title": "유아용 미로찾기 활동지 프린트",
+          "detail": "유아용 미로찾기 자료",
+          "sourceTrace": "funmom 미로찾기 category parsed row",
+          "url": "https://funmom.tistory.com/1156"
+        },
+        {
+          "id": "funmom-m-02",
+          "title": "재미있는 미로찾기 활동지",
+          "detail": "미로찾기 활동지",
+          "sourceTrace": "funmom 미로찾기 category parsed row",
+          "url": "https://funmom.tistory.com/1151"
+        },
+        {
+          "id": "funmom-m-03",
+          "title": "유아용 미로찾기 프린트 도안",
+          "detail": "유아용 프린트 도안",
+          "sourceTrace": "funmom 미로찾기 category parsed row",
+          "url": "https://funmom.tistory.com/1147"
+        },
+        {
+          "id": "funmom-m-04",
+          "title": "쉬운 미로찾기 프린트",
+          "detail": "쉬운 미로 프린트",
+          "sourceTrace": "funmom 미로찾기 category parsed row",
+          "url": "https://funmom.tistory.com/1143"
+        },
+        {
+          "id": "funmom-m-05",
+          "title": "유아 미로찾기 프린트 자료",
+          "detail": "본문 설명상 4~5세 유아용",
+          "sourceTrace": "funmom 미로찾기 category parsed row",
+          "url": "https://funmom.tistory.com/1116"
+        },
+        {
+          "id": "funmom-s-01",
+          "title": "수 가르기 학습자료",
+          "detail": "수 가르기 자료",
+          "sourceTrace": "funmom 수학공부 category parsed row",
+          "url": "https://funmom.tistory.com/1149"
+        },
+        {
+          "id": "funmom-s-02",
+          "title": "수 가르기 연습문제 학습지",
+          "detail": "수 가르기 연습",
+          "sourceTrace": "funmom 수학공부 category parsed row",
+          "url": "https://funmom.tistory.com/1145"
+        },
+        {
+          "id": "funmom-s-03",
+          "title": "10 수 가르기 모으기 무료 학습지",
+          "detail": "10 수 가르기/모으기",
+          "sourceTrace": "funmom 수학공부 category parsed row",
+          "url": "https://funmom.tistory.com/1141"
+        },
+        {
+          "id": "funmom-s-04",
+          "title": "10 수 가르기 연습 문제",
+          "detail": "10 수 가르기 연습",
+          "sourceTrace": "funmom 수학공부 category parsed row",
+          "url": "https://funmom.tistory.com/1132"
+        },
+        {
+          "id": "funmom-s-05",
+          "title": "무료 덧셈 연산 학습지 프린트",
+          "detail": "덧셈 연산 프린트",
+          "sourceTrace": "funmom 수학공부 category parsed row",
+          "url": "https://funmom.tistory.com/1099"
+        },
+        {
+          "id": "funmom-s-06",
+          "title": "하루 연산 문제 학습지 프린트하기",
+          "detail": "하루 연산 문제",
+          "sourceTrace": "funmom 수학공부 category parsed row",
+          "url": "https://funmom.tistory.com/1096"
+        },
+        {
+          "id": "funmom-s-07",
+          "title": "저학년 수학 연산문제 덧셈 연습장",
+          "detail": "저학년 덧셈 연습",
+          "sourceTrace": "funmom 수학공부 category parsed row",
+          "url": "https://funmom.tistory.com/1088"
+        }
+      ],
+      "publicContent": {
+        "flows": [
+          {
+            "id": "funmom-hangul-2w",
+            "title": "펀맘 한글 2주 공부",
+            "pattern": "resource routine",
+            "sourceTrace": "funmom 한글 article rows",
+            "setupInputs": [
+              "시작일",
+              "반복 요일",
+              "완료 여부",
+              "메모"
+            ],
+            "steps": [
+              {
+                "id": "funmom-hangul-day-1",
+                "title": "Day 1",
+                "sourceTrace": "funmom 한글공부 category parsed row",
+                "items": [
+                  {
+                    "title": "오늘 자료 1개 공부하기",
+                    "detail": "자료 제목과 링크는 메모에서 확인",
+                    "sourceRowIds": [
+                      "funmom-h-01"
+                    ]
+                  }
+                ],
+                "memo": "ㅡ+ㅍ 기본받침 글자쓰기\n한글 기본받침 글자쓰기 자료\nhttps://funmom.tistory.com/1155",
+                "sourceRowIds": [
+                  "funmom-h-01"
+                ]
+              },
+              {
+                "id": "funmom-hangul-day-2",
+                "title": "Day 2",
+                "sourceTrace": "funmom 한글공부 category parsed row",
+                "items": [
+                  {
+                    "title": "오늘 자료 1개 공부하기",
+                    "detail": "자료 제목과 링크는 메모에서 확인",
+                    "sourceRowIds": [
+                      "funmom-h-02"
+                    ]
+                  }
+                ],
+                "memo": "한글 문장쓰기 연습장\n문장쓰기 연습 자료\nhttps://funmom.tistory.com/1154",
+                "sourceRowIds": [
+                  "funmom-h-02"
+                ]
+              },
+              {
+                "id": "funmom-hangul-day-3",
+                "title": "Day 3",
+                "sourceTrace": "funmom 한글공부 category parsed row",
+                "items": [
+                  {
+                    "title": "오늘 자료 1개 공부하기",
+                    "detail": "자료 제목과 링크는 메모에서 확인",
+                    "sourceRowIds": [
+                      "funmom-h-03"
+                    ]
+                  }
+                ],
+                "memo": "ㅡ+ㅌ 기본받침 글자쓰기\n한글 기본받침 글자쓰기 자료\nhttps://funmom.tistory.com/1150",
+                "sourceRowIds": [
+                  "funmom-h-03"
+                ]
+              },
+              {
+                "id": "funmom-hangul-day-4",
+                "title": "Day 4",
+                "sourceTrace": "funmom 한글공부 category parsed row",
+                "items": [
+                  {
+                    "title": "오늘 자료 1개 공부하기",
+                    "detail": "자료 제목과 링크는 메모에서 확인",
+                    "sourceRowIds": [
+                      "funmom-h-04"
+                    ]
+                  }
+                ],
+                "memo": "엄마표 한글 글씨쓰기 연습장\n글씨쓰기 연습 자료\nhttps://funmom.tistory.com/1148",
+                "sourceRowIds": [
+                  "funmom-h-04"
+                ]
+              },
+              {
+                "id": "funmom-hangul-day-5",
+                "title": "Day 5",
+                "sourceTrace": "funmom 한글공부 category parsed row",
+                "items": [
+                  {
+                    "title": "오늘 자료 1개 공부하기",
+                    "detail": "자료 제목과 링크는 메모에서 확인",
+                    "sourceRowIds": [
+                      "funmom-h-05"
+                    ]
+                  }
+                ],
+                "memo": "글씨쓰기연습 가정학습지\n가정학습지형 쓰기 자료\nhttps://funmom.tistory.com/1144",
+                "sourceRowIds": [
+                  "funmom-h-05"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "funmom-maze-2w",
+            "title": "펀맘 미로찾기 2주 공부",
+            "pattern": "resource routine",
+            "sourceTrace": "funmom 미로 article rows",
+            "setupInputs": [
+              "시작일",
+              "반복 요일",
+              "완료 여부",
+              "메모"
+            ],
+            "steps": [
+              {
+                "id": "funmom-maze-day-1",
+                "title": "Day 1",
+                "sourceTrace": "funmom 미로찾기 category parsed row",
+                "items": [
+                  {
+                    "title": "오늘 자료 1개 공부하기",
+                    "detail": "자료 제목과 링크는 메모에서 확인",
+                    "sourceRowIds": [
+                      "funmom-m-01"
+                    ]
+                  }
+                ],
+                "memo": "유아용 미로찾기 활동지 프린트\n유아용 미로찾기 자료\nhttps://funmom.tistory.com/1156",
+                "sourceRowIds": [
+                  "funmom-m-01"
+                ]
+              },
+              {
+                "id": "funmom-maze-day-2",
+                "title": "Day 2",
+                "sourceTrace": "funmom 미로찾기 category parsed row",
+                "items": [
+                  {
+                    "title": "오늘 자료 1개 공부하기",
+                    "detail": "자료 제목과 링크는 메모에서 확인",
+                    "sourceRowIds": [
+                      "funmom-m-02"
+                    ]
+                  }
+                ],
+                "memo": "재미있는 미로찾기 활동지\n미로찾기 활동지\nhttps://funmom.tistory.com/1151",
+                "sourceRowIds": [
+                  "funmom-m-02"
+                ]
+              },
+              {
+                "id": "funmom-maze-day-3",
+                "title": "Day 3",
+                "sourceTrace": "funmom 미로찾기 category parsed row",
+                "items": [
+                  {
+                    "title": "오늘 자료 1개 공부하기",
+                    "detail": "자료 제목과 링크는 메모에서 확인",
+                    "sourceRowIds": [
+                      "funmom-m-03"
+                    ]
+                  }
+                ],
+                "memo": "유아용 미로찾기 프린트 도안\n유아용 프린트 도안\nhttps://funmom.tistory.com/1147",
+                "sourceRowIds": [
+                  "funmom-m-03"
+                ]
+              },
+              {
+                "id": "funmom-maze-day-4",
+                "title": "Day 4",
+                "sourceTrace": "funmom 미로찾기 category parsed row",
+                "items": [
+                  {
+                    "title": "오늘 자료 1개 공부하기",
+                    "detail": "자료 제목과 링크는 메모에서 확인",
+                    "sourceRowIds": [
+                      "funmom-m-04"
+                    ]
+                  }
+                ],
+                "memo": "쉬운 미로찾기 프린트\n쉬운 미로 프린트\nhttps://funmom.tistory.com/1143",
+                "sourceRowIds": [
+                  "funmom-m-04"
+                ]
+              },
+              {
+                "id": "funmom-maze-day-5",
+                "title": "Day 5",
+                "sourceTrace": "funmom 미로찾기 category parsed row",
+                "items": [
+                  {
+                    "title": "오늘 자료 1개 공부하기",
+                    "detail": "자료 제목과 링크는 메모에서 확인",
+                    "sourceRowIds": [
+                      "funmom-m-05"
+                    ]
+                  }
+                ],
+                "memo": "유아 미로찾기 프린트 자료\n본문 설명상 4~5세 유아용\nhttps://funmom.tistory.com/1116",
+                "sourceRowIds": [
+                  "funmom-m-05"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "funmom-math-1m",
+            "title": "펀맘 수학 1달 공부",
+            "pattern": "resource routine",
+            "sourceTrace": "funmom 수학 article rows",
+            "setupInputs": [
+              "시작일",
+              "반복 요일",
+              "완료 여부",
+              "메모"
+            ],
+            "steps": [
+              {
+                "id": "funmom-math-day-1",
+                "title": "Day 1",
+                "sourceTrace": "funmom 수학공부 category parsed row",
+                "items": [
+                  {
+                    "title": "오늘 자료 1개 공부하기",
+                    "detail": "자료 제목과 링크는 메모에서 확인",
+                    "sourceRowIds": [
+                      "funmom-s-01"
+                    ]
+                  }
+                ],
+                "memo": "수 가르기 학습자료\n수 가르기 자료\nhttps://funmom.tistory.com/1149",
+                "sourceRowIds": [
+                  "funmom-s-01"
+                ]
+              },
+              {
+                "id": "funmom-math-day-2",
+                "title": "Day 2",
+                "sourceTrace": "funmom 수학공부 category parsed row",
+                "items": [
+                  {
+                    "title": "오늘 자료 1개 공부하기",
+                    "detail": "자료 제목과 링크는 메모에서 확인",
+                    "sourceRowIds": [
+                      "funmom-s-02"
+                    ]
+                  }
+                ],
+                "memo": "수 가르기 연습문제 학습지\n수 가르기 연습\nhttps://funmom.tistory.com/1145",
+                "sourceRowIds": [
+                  "funmom-s-02"
+                ]
+              },
+              {
+                "id": "funmom-math-day-3",
+                "title": "Day 3",
+                "sourceTrace": "funmom 수학공부 category parsed row",
+                "items": [
+                  {
+                    "title": "오늘 자료 1개 공부하기",
+                    "detail": "자료 제목과 링크는 메모에서 확인",
+                    "sourceRowIds": [
+                      "funmom-s-03"
+                    ]
+                  }
+                ],
+                "memo": "10 수 가르기 모으기 무료 학습지\n10 수 가르기/모으기\nhttps://funmom.tistory.com/1141",
+                "sourceRowIds": [
+                  "funmom-s-03"
+                ]
+              },
+              {
+                "id": "funmom-math-day-4",
+                "title": "Day 4",
+                "sourceTrace": "funmom 수학공부 category parsed row",
+                "items": [
+                  {
+                    "title": "오늘 자료 1개 공부하기",
+                    "detail": "자료 제목과 링크는 메모에서 확인",
+                    "sourceRowIds": [
+                      "funmom-s-04"
+                    ]
+                  }
+                ],
+                "memo": "10 수 가르기 연습 문제\n10 수 가르기 연습\nhttps://funmom.tistory.com/1132",
+                "sourceRowIds": [
+                  "funmom-s-04"
+                ]
+              },
+              {
+                "id": "funmom-math-day-5",
+                "title": "Day 5",
+                "sourceTrace": "funmom 수학공부 category parsed row",
+                "items": [
+                  {
+                    "title": "오늘 자료 1개 공부하기",
+                    "detail": "자료 제목과 링크는 메모에서 확인",
+                    "sourceRowIds": [
+                      "funmom-s-05"
+                    ]
+                  }
+                ],
+                "memo": "무료 덧셈 연산 학습지 프린트\n덧셈 연산 프린트\nhttps://funmom.tistory.com/1099",
+                "sourceRowIds": [
+                  "funmom-s-05"
+                ]
+              },
+              {
+                "id": "funmom-math-day-6",
+                "title": "Day 6",
+                "sourceTrace": "funmom 수학공부 category parsed row",
+                "items": [
+                  {
+                    "title": "오늘 자료 1개 공부하기",
+                    "detail": "자료 제목과 링크는 메모에서 확인",
+                    "sourceRowIds": [
+                      "funmom-s-06"
+                    ]
+                  }
+                ],
+                "memo": "하루 연산 문제 학습지 프린트하기\n하루 연산 문제\nhttps://funmom.tistory.com/1096",
+                "sourceRowIds": [
+                  "funmom-s-06"
+                ]
+              },
+              {
+                "id": "funmom-math-day-7",
+                "title": "Day 7",
+                "sourceTrace": "funmom 수학공부 category parsed row",
+                "items": [
+                  {
+                    "title": "오늘 자료 1개 공부하기",
+                    "detail": "자료 제목과 링크는 메모에서 확인",
+                    "sourceRowIds": [
+                      "funmom-s-07"
+                    ]
+                  }
+                ],
+                "memo": "저학년 수학 연산문제 덧셈 연습장\n저학년 덧셈 연습\nhttps://funmom.tistory.com/1088",
+                "sourceRowIds": [
+                  "funmom-s-07"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "review": "2주/1달을 꽉 채우려면 article row 추가 import 필요. Item은 하루 자료 1개로 유지한다."
+    },
+    {
+      "id": "opic-plan-map",
+      "sourceNo": 2,
+      "title": "오픽 모의고사 계획",
+      "status": "ready_draft",
+      "categoryPattern": "study / table-file schedule",
+      "urls": [
+        "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95"
+      ],
+      "summary": "첨부 XLSX의 2주/1달 row를 하루/주차 Step으로 옮기고, 회차 세부는 메모에 둔다.",
+      "sourceRows": [
+        {
+          "id": "opic-xlsx",
+          "title": "오픽모의고사 공부 플랜 XLSX",
+          "detail": "1달 코스, 2주 코스 시트",
+          "sourceTrace": "downloaded opic-plan.xlsx",
+          "url": ""
+        }
+      ],
+      "publicContent": {
+        "flows": [
+          {
+            "id": "opic-2w",
+            "title": "오픽 2주 모의고사",
+            "pattern": "study calendar",
+            "sourceTrace": "XLSX 2주 코스",
+            "setupInputs": [
+              "시작일",
+              "반복 요일",
+              "완료 여부",
+              "메모"
+            ],
+            "steps": [
+              {
+                "id": "opic-2w-1",
+                "title": "D+1",
+                "sourceTrace": "XLSX 2주 코스",
+                "items": [
+                  {
+                    "title": "1회차 연습 + 복습하기",
+                    "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "1회차 연습 / 오픽현타 & 보완 / 1회차 복습",
+                "sourceRowIds": []
+              },
+              {
+                "id": "opic-2w-2",
+                "title": "D+2",
+                "sourceTrace": "XLSX 2주 코스",
+                "items": [
+                  {
+                    "title": "2회차 연습 + 복습하기",
+                    "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "2회차 연습 / 오픽현타 & 보완 / 2회차 복습",
+                "sourceRowIds": []
+              },
+              {
+                "id": "opic-2w-3",
+                "title": "D+3",
+                "sourceTrace": "XLSX 2주 코스",
+                "items": [
+                  {
+                    "title": "3회차 연습 + 복습하기",
+                    "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "3회차 연습 / 오픽현타 & 보완 / 3회차 복습",
+                "sourceRowIds": []
+              },
+              {
+                "id": "opic-2w-4",
+                "title": "D+4",
+                "sourceTrace": "XLSX 2주 코스",
+                "items": [
+                  {
+                    "title": "4회차 연습 + 복습하기",
+                    "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "4회차 연습 / 오픽현타 & 보완 / 4회차 복습",
+                "sourceRowIds": []
+              },
+              {
+                "id": "opic-2w-5",
+                "title": "D+5",
+                "sourceTrace": "XLSX 2주 코스",
+                "items": [
+                  {
+                    "title": "5회차 연습 + 복습하기",
+                    "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "5회차 연습 / 오픽현타 & 보완 / 5회차 복습",
+                "sourceRowIds": []
+              },
+              {
+                "id": "opic-2w-6",
+                "title": "D+6",
+                "sourceTrace": "XLSX 2주 코스",
+                "items": [
+                  {
+                    "title": "1~5회차 정리하기",
+                    "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "1~5회차 정리 / 부족한 점 보완",
+                "sourceRowIds": []
+              },
+              {
+                "id": "opic-2w-7",
+                "title": "D+7",
+                "sourceTrace": "XLSX 2주 코스",
+                "items": [
+                  {
+                    "title": "쉬기",
+                    "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "휴식",
+                "sourceRowIds": []
+              },
+              {
+                "id": "opic-2w-8",
+                "title": "D+8",
+                "sourceTrace": "XLSX 2주 코스",
+                "items": [
+                  {
+                    "title": "6회차 연습 + 복습하기",
+                    "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "6회차 연습 / 오픽현타 & 보완 / 6회차 복습",
+                "sourceRowIds": []
+              },
+              {
+                "id": "opic-2w-9",
+                "title": "D+9",
+                "sourceTrace": "XLSX 2주 코스",
+                "items": [
+                  {
+                    "title": "7회차 연습 + 복습하기",
+                    "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "7회차 연습 / 오픽현타 & 보완 / 7회차 복습",
+                "sourceRowIds": []
+              },
+              {
+                "id": "opic-2w-10",
+                "title": "D+10",
+                "sourceTrace": "XLSX 2주 코스",
+                "items": [
+                  {
+                    "title": "8회차 연습 + 복습하기",
+                    "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "8회차 연습 / 오픽현타 & 보완 / 8회차 복습",
+                "sourceRowIds": []
+              },
+              {
+                "id": "opic-2w-11",
+                "title": "D+11",
+                "sourceTrace": "XLSX 2주 코스",
+                "items": [
+                  {
+                    "title": "9회차 연습 + 복습하기",
+                    "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "9회차 연습 / 오픽현타 & 보완 / 9회차 복습",
+                "sourceRowIds": []
+              },
+              {
+                "id": "opic-2w-12",
+                "title": "D+12",
+                "sourceTrace": "XLSX 2주 코스",
+                "items": [
+                  {
+                    "title": "10회차 연습 + 복습하기",
+                    "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "10회차 연습 / 오픽현타 & 보완 / 10회차 복습",
+                "sourceRowIds": []
+              },
+              {
+                "id": "opic-2w-13",
+                "title": "D+13",
+                "sourceTrace": "XLSX 2주 코스",
+                "items": [
+                  {
+                    "title": "6~10회차 정리하기",
+                    "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "6~10회차 정리 / 부족한 점 보완",
+                "sourceRowIds": []
+              },
+              {
+                "id": "opic-2w-14",
+                "title": "D+14",
+                "sourceTrace": "XLSX 2주 코스",
+                "items": [
+                  {
+                    "title": "쉬기",
+                    "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "휴식",
+                "sourceRowIds": []
+              }
+            ]
+          },
+          {
+            "id": "opic-1m",
+            "title": "오픽 1달 모의고사",
+            "pattern": "study calendar",
+            "sourceTrace": "XLSX 1달 코스",
+            "setupInputs": [
+              "시작일",
+              "반복 요일",
+              "완료 여부",
+              "메모"
+            ],
+            "steps": [
+              {
+                "id": "opic-1m-1",
+                "title": "1주차",
+                "sourceTrace": "XLSX 1달 코스",
+                "items": [
+                  {
+                    "title": "1~2회차 반복하기",
+                    "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "1회차 연습/복습/복습, 2회차 연습/복습/복습, 휴식",
+                "sourceRowIds": []
+              },
+              {
+                "id": "opic-1m-2",
+                "title": "2주차",
+                "sourceTrace": "XLSX 1달 코스",
+                "items": [
+                  {
+                    "title": "3~4회차 반복하기",
+                    "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "3회차 연습/복습/복습, 4회차 연습/복습/복습, 휴식",
+                "sourceRowIds": []
+              },
+              {
+                "id": "opic-1m-3",
+                "title": "3주차",
+                "sourceTrace": "XLSX 1달 코스",
+                "items": [
+                  {
+                    "title": "5~6회차 반복하기",
+                    "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "5회차 연습/복습/복습, 6회차 연습/복습/복습, 휴식",
+                "sourceRowIds": []
+              },
+              {
+                "id": "opic-1m-4",
+                "title": "4주차",
+                "sourceTrace": "XLSX 1달 코스",
+                "items": [
+                  {
+                    "title": "7~8회차 반복하기",
+                    "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "7회차 연습/복습/복습, 8회차 연습/복습/복습, 휴식",
+                "sourceRowIds": []
+              },
+              {
+                "id": "opic-1m-5",
+                "title": "5주차",
+                "sourceTrace": "XLSX 1달 코스",
+                "items": [
+                  {
+                    "title": "9~10회차 반복하기",
+                    "detail": "녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "9회차 연습/복습/복습, 10회차 연습/복습/복습, 휴식",
+                "sourceRowIds": []
+              }
+            ]
+          }
+        ]
+      },
+      "review": "영상 URL 매핑은 다음 source import. 녹음/막힌 질문은 별도 field가 아니라 메모."
+    },
+    {
+      "id": "baby-food-map",
+      "sourceNo": 3,
+      "title": "초기 이유식 식단표",
+      "status": "ready_draft",
+      "categoryPattern": "table/file schedule",
+      "urls": [
+        "https://blog.naver.com/01695258757/222768860919"
+      ],
+      "summary": "식단표 PDF row group을 Step으로 두고, Item은 구간 식단 제공 하나로 묶는다.",
+      "sourceRows": [
+        {
+          "id": "baby-files",
+          "title": "초기 이유식 PDF/큐브표",
+          "detail": "150/160/170/180일 시작 PDF, 큐브 재고표",
+          "sourceTrace": "Naver attachment password 211111",
+          "url": ""
+        }
+      ],
+      "publicContent": {
+        "flows": [
+          {
+            "id": "baby-150-start",
+            "title": "150일 시작 초기 이유식",
+            "pattern": "table/file schedule",
+            "sourceTrace": "baby-150.pdf",
+            "setupInputs": [
+              "시작일",
+              "반복 요일",
+              "완료 여부",
+              "메모"
+            ],
+            "steps": [
+              {
+                "id": "baby150-01",
+                "title": "D+150~155",
+                "sourceTrace": "baby-150.pdf D+150~155",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 쌀 -> 쌀오트밀\nNEW: 쌀, 오트밀\n간식: X",
+                "sourceRowIds": []
+              },
+              {
+                "id": "baby150-02",
+                "title": "D+156~161",
+                "sourceTrace": "baby-150.pdf D+156~161",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 쌀오트밀 + 애호박 / 애호박청경채\nNEW: 애호박, 청경채",
+                "sourceRowIds": []
+              },
+              {
+                "id": "baby150-03",
+                "title": "D+162~167",
+                "sourceTrace": "baby-150.pdf D+162~167",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 애호박비타민 / 청경채양배추\nNEW: 비타민, 양배추",
+                "sourceRowIds": []
+              },
+              {
+                "id": "baby150-04",
+                "title": "D+168~173",
+                "sourceTrace": "baby-150.pdf D+168~173",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 양배추브로콜리 / 비타민감자\nNEW: 브로콜리, 감자",
+                "sourceRowIds": []
+              },
+              {
+                "id": "baby150-05",
+                "title": "D+174~179",
+                "sourceTrace": "baby-150.pdf D+174~179",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 브로콜리고구마 / 브로콜리단호박\nNEW: 고구마, 단호박",
+                "sourceRowIds": []
+              },
+              {
+                "id": "baby150-06",
+                "title": "D+180~185",
+                "sourceTrace": "baby-150.pdf D+180~185",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 소고기청경채단호박 / 소고기브로콜리오이\nNEW: 소고기, 오이",
+                "sourceRowIds": []
+              },
+              {
+                "id": "baby150-07",
+                "title": "D+186~191",
+                "sourceTrace": "baby-150.pdf D+186~191",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 소고기오이배 / 소고기청경채사과\nNEW: 배, 사과",
+                "sourceRowIds": []
+              },
+              {
+                "id": "baby150-08",
+                "title": "D+192~197",
+                "sourceTrace": "baby-150.pdf D+192~197",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 소고기양배추단호박완두콩 / 소고기브로콜리청경채당근\nNEW: 완두콩, 당근",
+                "sourceRowIds": []
+              }
+            ]
+          },
+          {
+            "id": "baby-160-start",
+            "title": "160일 시작 초기 이유식",
+            "pattern": "table/file schedule",
+            "sourceTrace": "baby-160.pdf",
+            "setupInputs": [
+              "시작일",
+              "반복 요일",
+              "완료 여부",
+              "메모"
+            ],
+            "steps": [
+              {
+                "id": "baby160-01",
+                "title": "D+160~165",
+                "sourceTrace": "baby-160.pdf D+160~165",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 쌀 -> 쌀오트밀\nNEW: 쌀, 오트밀",
+                "sourceRowIds": []
+              },
+              {
+                "id": "baby160-02",
+                "title": "D+166~171",
+                "sourceTrace": "baby-160.pdf D+166~171",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 애호박 / 애호박청경채\nNEW: 애호박, 청경채",
+                "sourceRowIds": []
+              },
+              {
+                "id": "baby160-03",
+                "title": "D+172~177",
+                "sourceTrace": "baby-160.pdf D+172~177",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 애호박비타민 / 청경채양배추\nNEW: 비타민, 양배추",
+                "sourceRowIds": []
+              },
+              {
+                "id": "baby160-04",
+                "title": "D+178~183",
+                "sourceTrace": "baby-160.pdf D+178~183",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 청경채고구마 / 소고기애호박\nNEW: 고구마, 소고기",
+                "sourceRowIds": []
+              }
+            ]
+          },
+          {
+            "id": "baby-170-start",
+            "title": "170일 시작 초기 이유식",
+            "pattern": "table/file schedule",
+            "sourceTrace": "baby-170.pdf",
+            "setupInputs": [
+              "시작일",
+              "반복 요일",
+              "완료 여부",
+              "메모"
+            ],
+            "steps": [
+              {
+                "id": "baby170-01",
+                "title": "D+170~175",
+                "sourceTrace": "baby-170.pdf D+170~175",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 쌀 -> 쌀오트밀\nNEW: 쌀, 오트밀",
+                "sourceRowIds": []
+              },
+              {
+                "id": "baby170-02",
+                "title": "D+176~181",
+                "sourceTrace": "baby-170.pdf D+176~181",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 애호박 / 소고기애호박\nNEW: 애호박, 소고기",
+                "sourceRowIds": []
+              },
+              {
+                "id": "baby170-03",
+                "title": "D+182~187",
+                "sourceTrace": "baby-170.pdf D+182~187",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 소고기애호박청경채 / 소고기청경채오이\nNEW: 청경채, 오이",
+                "sourceRowIds": []
+              },
+              {
+                "id": "baby170-04",
+                "title": "D+188~193",
+                "sourceTrace": "baby-170.pdf D+188~193",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 소고기애호박브로콜리 / 소고기브로콜리양배추\nNEW: 브로콜리, 양배추",
+                "sourceRowIds": []
+              }
+            ]
+          },
+          {
+            "id": "baby-180-start",
+            "title": "180일 시작 초기 이유식",
+            "pattern": "table/file schedule",
+            "sourceTrace": "baby-180.pdf",
+            "setupInputs": [
+              "시작일",
+              "반복 요일",
+              "완료 여부",
+              "메모"
+            ],
+            "steps": [
+              {
+                "id": "baby180-01",
+                "title": "D+180~185",
+                "sourceTrace": "baby-180.pdf D+180~185",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 쌀 + D+183부터 소고기\nNEW: 쌀, 소고기",
+                "sourceRowIds": []
+              },
+              {
+                "id": "baby180-02",
+                "title": "D+186~191",
+                "sourceTrace": "baby-180.pdf D+186~191",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 쌀오트밀 + 소고기 / 소고기애호박\nNEW: 오트밀, 애호박",
+                "sourceRowIds": []
+              },
+              {
+                "id": "baby180-03",
+                "title": "D+192~197",
+                "sourceTrace": "baby-180.pdf D+192~197",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 소고기애호박청경채 / 소고기청경채브로콜리\nNEW: 청경채, 브로콜리",
+                "sourceRowIds": []
+              },
+              {
+                "id": "baby180-04",
+                "title": "D+198~203",
+                "sourceTrace": "baby-180.pdf D+198~203",
+                "items": [
+                  {
+                    "title": "이 구간 식단 제공하기",
+                    "detail": "메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메뉴: 소고기브로콜리양배추 / 소고기청경채당근\nNEW: 양배추, 단호박, 당근, 사과\n간식: 단호박퓌레, 사과",
+                "sourceRowIds": []
+              }
+            ]
+          },
+          {
+            "id": "baby-cube",
+            "title": "이유식 큐브 재고 메모",
+            "pattern": "memo/sheet",
+            "sourceTrace": "baby-cube.pdf",
+            "setupInputs": [
+              "메모"
+            ],
+            "steps": [
+              {
+                "id": "baby-cube-memo",
+                "title": "큐브 재고 적어두기",
+                "sourceTrace": "baby-cube.pdf",
+                "items": [
+                  {
+                    "title": "큐브 재고 메모하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "필드 원문: 큐브 재료, 만든 날짜, 1개 용량, 큐브 개수\n재료: 쌀, 오트밀, 소고기, 애호박, 청경채, 오이, 브로콜리, 양배추, 당근, 단호박, 완두콩, 달걀노른자",
+                "sourceRowIds": []
+              }
+            ]
+          }
+        ]
+      },
+      "review": "먹은 양/상태/수량은 메모. 장보기/조리/소분은 별도 레시피 source가 필요하다."
+    },
+    {
+      "id": "reading-routine-map",
+      "sourceNo": 4,
+      "title": "독서 루틴",
+      "status": "partial_draft",
+      "categoryPattern": "reading / habit routine",
+      "urls": [
+        "https://blog.naver.com/naristyle87/222978131890"
+      ],
+      "summary": "원문은 독서 기록 템플릿이 아니라 독서 시스템 글이다. 책/목표일/요일은 사용자가 정하고, FlowMe는 반복 루틴으로 만든다.",
+      "sourceRows": [
+        {
+          "id": "reading-morning",
+          "title": "오전 1시간: 읽고 쓰는 시간",
+          "detail": "책상에 앉기, 폰 멀리 두기, 읽고 쓰는 일만 하기",
+          "sourceTrace": "Naver PostView body",
+          "url": ""
+        },
+        {
+          "id": "reading-night",
+          "title": "잠들기 전 전자책 읽기",
+          "detail": "스마트폰 대신 전자책",
+          "sourceTrace": "Naver PostView body",
+          "url": ""
+        },
+        {
+          "id": "reading-plan",
+          "title": "매달 초 5권 리스트업",
+          "detail": "장르별로 5권 선택",
+          "sourceTrace": "Naver PostView body",
+          "url": ""
+        }
+      ],
+      "publicContent": {
+        "flows": [
+          {
+            "id": "reading-book-finish",
+            "title": "책 1권 완독 루틴",
+            "pattern": "user-target routine",
+            "sourceTrace": "reading system source + user target",
+            "setupInputs": [
+              "루틴 제목",
+              "책 이름 또는 URL",
+              "목표 완료일",
+              "반복 요일",
+              "메모"
+            ],
+            "steps": [
+              {
+                "id": "reading-week-1",
+                "title": "1주차",
+                "sourceTrace": "user target week",
+                "items": [
+                  {
+                    "title": "정한 책 읽기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메모에 책 이름, URL, 이번 주 읽을 범위 적기",
+                "sourceRowIds": []
+              },
+              {
+                "id": "reading-week-2",
+                "title": "2주차",
+                "sourceTrace": "user target week",
+                "items": [
+                  {
+                    "title": "정한 책 읽기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메모에 책 이름, URL, 이번 주 읽을 범위 적기",
+                "sourceRowIds": []
+              },
+              {
+                "id": "reading-week-3",
+                "title": "3주차",
+                "sourceTrace": "user target week",
+                "items": [
+                  {
+                    "title": "정한 책 읽기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메모에 책 이름, URL, 이번 주 읽을 범위 적기",
+                "sourceRowIds": []
+              },
+              {
+                "id": "reading-week-4",
+                "title": "4주차",
+                "sourceTrace": "user target week",
+                "items": [
+                  {
+                    "title": "정한 책 읽기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "메모에 책 이름, URL, 완독 메모 적기",
+                "sourceRowIds": []
+              }
+            ]
+          },
+          {
+            "id": "reading-morning-routine",
+            "title": "아침 읽고 쓰기 루틴",
+            "pattern": "habit routine",
+            "sourceTrace": "Naver 오전 1시간 section",
+            "setupInputs": [
+              "시작일",
+              "반복 요일",
+              "완료 여부",
+              "메모"
+            ],
+            "steps": [
+              {
+                "id": "reading-morning",
+                "title": "반복일",
+                "sourceTrace": "Naver 오전 1시간 section",
+                "items": [
+                  {
+                    "title": "아침에 읽고 쓰기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "세부: 책상에 앉기, 폰 멀리 두기, 읽고 쓰는 일만 하기",
+                "sourceRowIds": []
+              }
+            ]
+          }
+        ]
+      },
+      "review": "책별 기록 템플릿은 아님. 사용자가 정한 책을 루틴화하는 패턴으로 제한한다."
+    },
+    {
+      "id": "new-car-map",
+      "sourceNo": 5,
+      "title": "신차 구매",
+      "status": "ready_draft",
+      "categoryPattern": "preparation / purchase comparison",
+      "urls": [
+        "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners"
+      ],
+      "summary": "7단계는 유지하되 Item을 결정/확인 묶음으로 줄이고 세부 비용/서류는 메모에 둔다.",
+      "sourceRows": [
+        {
+          "id": "new-car-steps",
+          "title": "신차 구매 7단계",
+          "detail": "예산, 구매방법, 견적, 계약, 출고, 등록, 보험",
+          "sourceTrace": "Getcha article",
+          "url": ""
+        }
+      ],
+      "publicContent": {
+        "flows": [
+          {
+            "id": "new-car-7-step",
+            "title": "신차 구매 7단계",
+            "pattern": "purchase checklist",
+            "sourceTrace": "Getcha 7-step article",
+            "setupInputs": [
+              "구매 목표일",
+              "완료 여부",
+              "메모"
+            ],
+            "steps": [
+              {
+                "id": "car-budget",
+                "title": "1. 예산과 차종",
+                "sourceTrace": "Getcha budget section",
+                "items": [
+                  {
+                    "title": "총 구매 예산 정하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "세부: 차량 가격, 옵션 200~500만원, 등록비 7~8%, 보험료 연 100~200만원, 유지비, 용도",
+                "sourceRowIds": []
+              },
+              {
+                "id": "car-method",
+                "title": "2. 구매 방법",
+                "sourceTrace": "Getcha purchase method section",
+                "items": [
+                  {
+                    "title": "구매 방식 정하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "세부: 현금, 할부, 장기렌트, 리스",
+                "sourceRowIds": []
+              },
+              {
+                "id": "car-quotes",
+                "title": "3. 견적 비교",
+                "sourceTrace": "Getcha quote section",
+                "items": [
+                  {
+                    "title": "딜러 견적 비교하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "세부: 여러 딜러 견적, 할인, 서비스, 출고 기간",
+                "sourceRowIds": []
+              },
+              {
+                "id": "car-contract",
+                "title": "4. 계약",
+                "sourceTrace": "Getcha contract section",
+                "items": [
+                  {
+                    "title": "계약 조건 확인하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "세부: 모델, 색상, 옵션, 할인, 최종 금액, 계약금/잔금, 출고 예정일, 취소/환불",
+                "sourceRowIds": []
+              },
+              {
+                "id": "car-delivery",
+                "title": "5. 출고/인수",
+                "sourceTrace": "Getcha delivery section",
+                "items": [
+                  {
+                    "title": "차량 인수 전 확인하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "세부: 외관, 실내, 기능, 보증서/매뉴얼/등록증",
+                "sourceRowIds": []
+              },
+              {
+                "id": "car-registration",
+                "title": "6. 등록",
+                "sourceTrace": "Getcha registration section",
+                "items": [
+                  {
+                    "title": "등록과 비용 확인하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "세부: 취득세, 등록비, 차량 등록증",
+                "sourceRowIds": []
+              },
+              {
+                "id": "car-insurance",
+                "title": "7. 보험",
+                "sourceTrace": "Getcha insurance section",
+                "items": [
+                  {
+                    "title": "보험 시작 확인하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "세부: 보험 시작일, 견적, 운전 범위",
+                "sourceRowIds": []
+              }
+            ]
+          }
+        ]
+      },
+      "review": "딜러명/견적/금액은 메모. 별도 비교 앱처럼 만들지 않는다."
+    },
+    {
+      "id": "vaccination-map",
+      "sourceNo": 6,
+      "title": "영유아 예방접종",
+      "status": "partial_draft",
+      "categoryPattern": "official schedule / age phase",
+      "urls": [
+        "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+        "https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&menuLv=1"
+      ],
+      "summary": "월령별 공식 row를 확인 Step으로 두고, 백신명/기관/특이사항은 메모에 둔다.",
+      "sourceRows": [
+        {
+          "id": "vaccination-ddm-kdca",
+          "title": "공식 예방접종 일정 row",
+          "detail": "월령별 백신명/차수",
+          "sourceTrace": "KDCA/DDM official rows",
+          "url": ""
+        }
+      ],
+      "publicContent": {
+        "flows": [
+          {
+            "id": "vaccination-official",
+            "title": "월령별 예방접종 확인",
+            "pattern": "official schedule",
+            "sourceTrace": "KDCA/DDM official rows",
+            "setupInputs": [
+              "생년월일",
+              "완료 여부",
+              "메모"
+            ],
+            "steps": [
+              {
+                "id": "vaccination-1",
+                "title": "출생시",
+                "sourceTrace": "official schedule row",
+                "items": [
+                  {
+                    "title": "출생시 접종 항목 확인하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "B형간염(HepB) 1차",
+                "sourceRowIds": []
+              },
+              {
+                "id": "vaccination-2",
+                "title": "1개월 / 4주 이내",
+                "sourceTrace": "official schedule row",
+                "items": [
+                  {
+                    "title": "1개월 접종 항목 확인하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "BCG(피내용) 1회, B형간염 2차",
+                "sourceRowIds": []
+              },
+              {
+                "id": "vaccination-3",
+                "title": "2, 4, 6개월",
+                "sourceTrace": "official schedule row",
+                "items": [
+                  {
+                    "title": "2/4/6개월 접종 항목 확인하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "DTaP 1~3차, IPV 1~3차, Hib 1~3차, PCV 1~3차, RV 1~3차, HepB 3차",
+                "sourceRowIds": []
+              },
+              {
+                "id": "vaccination-4",
+                "title": "12~15개월",
+                "sourceTrace": "official schedule row",
+                "items": [
+                  {
+                    "title": "12~15개월 접종 항목 확인하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "Hib 4차, PCV 4차, MMR 1차, 수두 1회",
+                "sourceRowIds": []
+              },
+              {
+                "id": "vaccination-5",
+                "title": "12~23개월",
+                "sourceTrace": "official schedule row",
+                "items": [
+                  {
+                    "title": "12~23개월 접종 항목 확인하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "A형간염 1~2차, 일본뇌염 IJEV/LJEV 일정",
+                "sourceRowIds": []
+              },
+              {
+                "id": "vaccination-6",
+                "title": "4~6세",
+                "sourceTrace": "official schedule row",
+                "items": [
+                  {
+                    "title": "4~6세 접종 항목 확인하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "DTaP 5차, IPV 4차, MMR 2차",
+                "sourceRowIds": []
+              },
+              {
+                "id": "vaccination-7",
+                "title": "11~12세 / 12세",
+                "sourceTrace": "official schedule row",
+                "items": [
+                  {
+                    "title": "11~12세 접종 항목 확인하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "Tdap 6차, IJEV 5차, HPV 1차(12세 여아)",
+                "sourceRowIds": []
+              }
+            ]
+          }
+        ]
+      },
+      "review": "최신 공식 PDF row 재확인 필요. 의료 판단, 이상반응 field, 기관 field는 기본에서 제외하고 메모로 둔다."
+    },
+    {
+      "id": "moving-map",
+      "sourceNo": 7,
+      "title": "이사 준비",
+      "status": "ready_draft",
+      "categoryPattern": "preparation project / D-day",
+      "urls": [
+        "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363"
+      ],
+      "summary": "D-day Step은 유지하되 세부 체크리스트를 묶음 Item과 메모로 정리한다.",
+      "sourceRows": [
+        {
+          "id": "moving-ajd",
+          "title": "AJD 이사 D-day 표",
+          "detail": "D-30, D-10, D-3, D-1, 이사 당일",
+          "sourceTrace": "AJD article table",
+          "url": ""
+        }
+      ],
+      "publicContent": {
+        "flows": [
+          {
+            "id": "moving-dday",
+            "title": "이사 D-day 준비",
+            "pattern": "preparation timeline",
+            "sourceTrace": "AJD table rows",
+            "setupInputs": [
+              "이사일",
+              "완료 여부",
+              "메모"
+            ],
+            "steps": [
+              {
+                "id": "moving-d30",
+                "title": "D-30",
+                "sourceTrace": "AJD D-30 table rows",
+                "items": [
+                  {
+                    "title": "이사/청소와 위탁 예약하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  },
+                  {
+                    "title": "집 점검과 정리 시작하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "세부: 포장이사/반포장이사, 하자 수리, 물건 정리, 전학 수속, 유아/노약자/반려동물 위탁, 이사/청소 견적",
+                "sourceRowIds": []
+              },
+              {
+                "id": "moving-d10",
+                "title": "D-10",
+                "sourceTrace": "AJD D-10 table rows",
+                "items": [
+                  {
+                    "title": "주소/예약/폐기물 처리하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  },
+                  {
+                    "title": "이전 설치와 배치 준비하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "세부: 주소 변경, 배달 중지, 전출 신고, 엘리베이터/사다리차, 쓰레기봉투, 열쇠/리모컨, 냉장고 비우기, 폐기물, 도배/장판, 가구 배치도, 인터넷/정수기",
+                "sourceRowIds": []
+              },
+              {
+                "id": "moving-d3",
+                "title": "D-3",
+                "sourceTrace": "AJD D-3 table rows",
+                "items": [
+                  {
+                    "title": "철거/서류/당일 물건 준비하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "세부: 도시가스 철거/설치, 자동이체 해지, 세탁기 물 빼기, 전세권 서류, 이사 당일 물건",
+                "sourceRowIds": []
+              },
+              {
+                "id": "moving-d1",
+                "title": "D-1",
+                "sourceTrace": "AJD D-1 table rows",
+                "items": [
+                  {
+                    "title": "이사 전날 최종 확인하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "세부: 일정 확인, 이체 한도, 주차공간, 귀중품, 잔금, 입주증, 어항/수조, 가전가구 사진",
+                "sourceRowIds": []
+              },
+              {
+                "id": "moving-day",
+                "title": "이사 당일",
+                "sourceTrace": "AJD D-Day table rows",
+                "items": [
+                  {
+                    "title": "출발지 정산과 반납하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  },
+                  {
+                    "title": "도착지 정산과 전입 처리하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "세부: 전기/가스/관리비, 장기수선충당금, 잔여 짐, 문단속/열쇠, 분실/파손, 통신 설치, 도어락, 잔금/중개료, 명의 변경, 가스 설치, 전입신고/확정일자",
+                "sourceRowIds": []
+              }
+            ]
+          }
+        ]
+      },
+      "review": "업체명, 예약번호, 정산 금액은 메모. 원문 표의 세부는 Step memo로 유지한다."
+    },
+    {
+      "id": "wedding-map",
+      "sourceNo": 8,
+      "title": "결혼 준비",
+      "status": "ready_draft",
+      "categoryPattern": "preparation project / purchase comparison",
+      "urls": [
+        "https://blog.naver.com/wilklove/223518896995",
+        "https://gongysd.com/wedding-notion/?bmode=view&idx=167989966"
+      ],
+      "summary": "네이버 타임라인과 A-to-Z 업체 보드를 분리하고, 원문 항목은 묶음 Item + 메모로 이동한다.",
+      "sourceRows": [
+        {
+          "id": "wedding-naver",
+          "title": "결혼 준비 1년 타임라인",
+          "detail": "12개월 전, 10개월 전, 본식 직전 등",
+          "sourceTrace": "Naver PostView body",
+          "url": ""
+        }
+      ],
+      "publicContent": {
+        "flows": [
+          {
+            "id": "wedding-timeline",
+            "title": "결혼 준비 1년 타임라인",
+            "pattern": "preparation timeline",
+            "sourceTrace": "Naver timeline rows",
+            "setupInputs": [
+              "결혼식일",
+              "완료 여부",
+              "메모"
+            ],
+            "steps": [
+              {
+                "id": "wedding-12m",
+                "title": "12개월 전",
+                "sourceTrace": "Naver wedding timeline",
+                "items": [
+                  {
+                    "title": "웨딩홀 계약 준비하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  },
+                  {
+                    "title": "플래너/스냅 업체 후보 정하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "세부: 결혼식 날짜와 예산 논의, 웨딩홀 리스트, 방문/견적 상담, 웨딩플래너 상담/계약, 본식 스냅/DVD, 아이폰 스냅",
+                "sourceRowIds": []
+              },
+              {
+                "id": "wedding-10m",
+                "title": "10개월 전",
+                "sourceTrace": "Naver wedding timeline",
+                "items": [
+                  {
+                    "title": "스드메 계약 준비하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  },
+                  {
+                    "title": "사회자/축가 일정 잡기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "세부: 촬영 날짜, 드레스 투어, 가봉 날짜, 꽃장식, 헤어변형, 식전영상 자료 가능 여부",
+                "sourceRowIds": []
+              },
+              {
+                "id": "wedding-outfit",
+                "title": "예복/혼주/촬영 준비",
+                "sourceTrace": "Naver body heading rows",
+                "items": [
+                  {
+                    "title": "예복/혼주/촬영 업체 정하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "세부: 신랑 예복, 양가 혼주 메이크업, 촬영용 드레스 가봉, 부케, 신부관리",
+                "sourceRowIds": []
+              },
+              {
+                "id": "wedding-honeymoon",
+                "title": "촬영/신혼여행/혼수",
+                "sourceTrace": "Naver body heading rows",
+                "items": [
+                  {
+                    "title": "촬영/신혼여행/혼수 후보 정하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "세부: 스튜디오 촬영, 신혼여행 예약, 가전/가구 리스트, 혼주 한복, 결혼반지 견적, 신랑/신부관리",
+                "sourceRowIds": []
+              },
+              {
+                "id": "wedding-final",
+                "title": "본식 직전",
+                "sourceTrace": "Naver body heading rows",
+                "items": [
+                  {
+                    "title": "본식 최종 확인하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "세부: 참석자, 드레스 최종 가봉, 웨딩홀 시식, 답례품, 포토부스, 부케, 신혼여행 최종 체크",
+                "sourceRowIds": []
+              }
+            ]
+          },
+          {
+            "id": "wedding-vendor-board",
+            "title": "결혼 업체 후보 보드",
+            "pattern": "purchase comparison",
+            "sourceTrace": "Gongysd category headings",
+            "setupInputs": [
+              "메모"
+            ],
+            "steps": [
+              {
+                "id": "wedding-vendors",
+                "title": "업체 후보 정리",
+                "sourceTrace": "Gongysd headings",
+                "items": [
+                  {
+                    "title": "업체 후보와 견적 메모하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "대상: 웨딩홀, 상견례, 웨딩플래너, 스드메, 드레스 투어, 혼주 메이크업, 청첩장, 웨딩관리",
+                "sourceRowIds": []
+              }
+            ]
+          }
+        ]
+      },
+      "review": "후보/견적/계약금/보류 사유는 메모. 원문 항목을 모두 Item화하지 않는다."
+    },
+    {
+      "id": "homefit-map",
+      "sourceNo": 9,
+      "title": "Allblanc 홈트 루틴",
+      "status": "partial_draft",
+      "categoryPattern": "single follow-along video / resource routine",
+      "urls": [
+        "https://youtube.com/@allblanctv"
+      ],
+      "summary": "영상 1개를 루틴 단위로 보고, 여러 영상을 묶으면 2주/1달 홈트 Flow Map이 된다.",
+      "sourceRows": [
+        {
+          "id": "homefit-video-01",
+          "title": "5 MIN HOME WORKOUT YOU CAN DO EVERY MORNING",
+          "detail": "매일 아침 5분 전신 홈트레이닝",
+          "sourceTrace": "YouTube channel page video title",
+          "url": "https://www.youtube.com/watch?v=fLLScgWQcHc"
+        },
+        {
+          "id": "homefit-video-02",
+          "title": "노점프 홈트 후보",
+          "detail": "제목/설명 재확인 필요",
+          "sourceTrace": "candidate URL",
+          "url": "https://www.youtube.com/watch?v=2dail5Imi04"
+        },
+        {
+          "id": "homefit-video-03",
+          "title": "하체 홈트 후보",
+          "detail": "제목/설명 재확인 필요",
+          "sourceTrace": "candidate URL",
+          "url": "https://www.youtube.com/watch?v=UEPkHmW_2FU"
+        }
+      ],
+      "publicContent": {
+        "flows": [
+          {
+            "id": "homefit-morning-2w",
+            "title": "아침 5분 홈트 2주 루틴",
+            "pattern": "video routine",
+            "sourceTrace": "Allblanc video row",
+            "setupInputs": [
+              "시작일",
+              "반복 요일",
+              "완료 여부",
+              "메모"
+            ],
+            "steps": [
+              {
+                "id": "homefit-morning-day",
+                "title": "반복일",
+                "sourceTrace": "video row",
+                "items": [
+                  {
+                    "title": "오늘 영상 따라하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "영상: 5 MIN HOME WORKOUT YOU CAN DO EVERY MORNING\nURL: https://www.youtube.com/watch?v=fLLScgWQcHc",
+                "sourceRowIds": []
+              }
+            ]
+          },
+          {
+            "id": "homefit-video-queue",
+            "title": "홈트 영상 큐",
+            "pattern": "resource routine",
+            "sourceTrace": "candidate video rows",
+            "setupInputs": [
+              "시작일",
+              "반복 요일",
+              "완료 여부",
+              "메모"
+            ],
+            "steps": [
+              {
+                "id": "homefit-video-01",
+                "title": "영상 1",
+                "sourceTrace": "candidate video row",
+                "items": [
+                  {
+                    "title": "오늘 영상 따라하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "5 MIN HOME WORKOUT YOU CAN DO EVERY MORNING\nhttps://www.youtube.com/watch?v=fLLScgWQcHc",
+                "sourceRowIds": []
+              },
+              {
+                "id": "homefit-video-02",
+                "title": "영상 2",
+                "sourceTrace": "candidate video row",
+                "items": [
+                  {
+                    "title": "오늘 영상 따라하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "노점프 홈트 후보\nhttps://www.youtube.com/watch?v=2dail5Imi04\n제목/설명 재확인 필요",
+                "sourceRowIds": []
+              },
+              {
+                "id": "homefit-video-03",
+                "title": "영상 3",
+                "sourceTrace": "candidate video row",
+                "items": [
+                  {
+                    "title": "오늘 영상 따라하기",
+                    "detail": "",
+                    "sourceRowIds": []
+                  }
+                ],
+                "memo": "하체 홈트 후보\nhttps://www.youtube.com/watch?v=UEPkHmW_2FU\n제목/설명 재확인 필요",
+                "sourceRowIds": []
+              }
+            ]
+          }
+        ]
+      },
+      "review": "운동 동작/세트/통증 체크는 만들지 않는다. 제목/설명/자막 import 후 영상 큐를 확장한다."
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>내 Flow v2 실행 UX 결과</title>
+</head>
+<body style="margin:0;background:#f6f7f9;color:#0f172a;font-family:Arial,'Noto Sans KR',sans-serif;line-height:1.55">
+  <article style="max-width:1080px;margin:0 auto;padding:40px 20px 80px">
+    <header style="padding:28px;border:1px solid #e2e8f0;border-radius:14px;background:#fff">
+      <p style="margin:0 0 10px;color:#2563eb;font-weight:700">구현 결과 · 사용자 화면과 분리된 리포트</p>
+      <h1 style="margin:0;font-size:34px;line-height:1.2">내 Flow v2 실행 UX 결과</h1>
+      <p style="margin:14px 0 0;color:#475569;font-size:17px">저장 직후 화면을 짧은 확인/라우팅 배너로 줄이고, 실제 실행은 정상 내 Flow Today 또는 Flow 화면에서 열리도록 바꿨다.</p>
+    </header>
+
+    <section style="margin-top:28px;display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
+      <div style="padding:18px;border:1px solid #bbf7d0;border-radius:12px;background:#f0fdf4">
+        <h2 style="margin:0 0 8px;font-size:18px">변경 1</h2>
+        <p style="margin:0;color:#334155">post-save 미니 인벤토리와 post-save 전용 Step 상세를 제거했다.</p>
+      </div>
+      <div style="padding:18px;border:1px solid #bbf7d0;border-radius:12px;background:#f0fdf4">
+        <h2 style="margin:0 0 8px;font-size:18px">변경 2</h2>
+        <p style="margin:0;color:#334155">날짜형 Flow는 저장 후 일반 Today inline detail로 이어진다.</p>
+      </div>
+      <div style="padding:18px;border:1px solid #bbf7d0;border-radius:12px;background:#f0fdf4">
+        <h2 style="margin:0 0 8px;font-size:18px">변경 3</h2>
+        <p style="margin:0;color:#334155">날짜 없는 진도형 단일 Flow는 저장 후 일반 Flow inline detail로 이어진다.</p>
+      </div>
+    </section>
+
+    <section style="margin-top:28px;padding:24px;border:1px solid #e2e8f0;border-radius:14px;background:#fff">
+      <h2 style="margin:0 0 14px;font-size:24px">시뮬레이션 결과</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:15px">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding:10px;border-bottom:1px solid #e2e8f0">케이스</th>
+            <th style="text-align:left;padding:10px;border-bottom:1px solid #e2e8f0">기대 동작</th>
+            <th style="text-align:left;padding:10px;border-bottom:1px solid #e2e8f0">결과</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #eef2f7;font-weight:700">원룸 이사 D-30</td>
+            <td style="padding:10px;border-bottom:1px solid #eef2f7">저장 후 compact banner, `지금 할 일 열기`, normal Today detail</td>
+            <td style="padding:10px;border-bottom:1px solid #eef2f7;color:#15803d;font-weight:700">통과</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;font-weight:700">중1 수학 목차 진도표</td>
+            <td style="padding:10px">저장 후 compact banner, `지금 할 일 열기`, normal Flow detail</td>
+            <td style="padding:10px;color:#15803d;font-weight:700">통과</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section style="margin-top:28px;padding:24px;border:1px solid #e2e8f0;border-radius:14px;background:#fff">
+      <h2 style="margin:0 0 14px;font-size:24px">검증</h2>
+      <ul style="margin:0;padding-left:20px;color:#334155">
+        <li>`npm run docs:check` 통과: 14 required files, 1189 local links.</li>
+        <li>`npm test` 통과: 265 tests.</li>
+        <li>`npm run build` 통과.</li>
+        <li>Targeted Playwright 통과: 8 tests.</li>
+        <li>Full Playwright 통과: 132 tests.</li>
+        <li>모바일 직접 시뮬레이션 통과: `output/verification/my-flow-v2-mobile-simulation.log`.</li>
+      </ul>
+    </section>
+
+    <section style="margin-top:28px;padding:24px;border:1px solid #e2e8f0;border-radius:14px;background:#fff">
+      <h2 style="margin:0 0 14px;font-size:24px">남은 판단</h2>
+      <p style="margin:0;color:#475569">이 변경은 post-save와 내 Flow 실행 모델의 P0/P1 정리다. 서비스가 실제로 “선택할 만한 Flow”처럼 보이려면 별도 과제로 `/flows` 신뢰 신호, 대표 컨텐츠 수, 리뷰/사용량/완료율 같은 선택 근거가 필요하다.</p>
+      <p style="margin:14px 0 0;color:#475569">Vercel preview: <a href="https://flowme2605-17ft3mgo9-flowme.vercel.app" style="color:#2563eb;font-weight:700">https://flowme2605-17ft3mgo9-flowme.vercel.app</a></p>
+    </section>
+  </article>
+</body>
+</html>

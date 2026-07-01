@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Flow Today / Flow 역할 분리 설계</title>
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #475569;
+      --line: #e2e8f0;
+      --soft: #f8fafc;
+      --blue: #2563eb;
+      --green: #047857;
+      --amber: #b45309;
+    }
+    body {
+      margin: 0;
+      background: #f6f8fb;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+    article {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 18px 64px;
+    }
+    section {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, .04);
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: 30px; line-height: 1.2; letter-spacing: 0; }
+    h2 { font-size: 20px; line-height: 1.3; }
+    h3 { font-size: 16px; margin-bottom: 6px; }
+    .lead { color: var(--muted); font-size: 17px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .card { border: 1px solid var(--line); border-radius: 10px; background: var(--soft); padding: 14px; }
+    .tag { display: inline-flex; align-items: center; min-height: 26px; border-radius: 999px; padding: 3px 8px; font-size: 12px; font-weight: 800; }
+    .tag.blue { background: #dbeafe; color: #1d4ed8; }
+    .tag.green { background: #dcfce7; color: #047857; }
+    .tag.amber { background: #fef3c7; color: #92400e; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid var(--line); padding: 10px; text-align: left; vertical-align: top; }
+    th { background: #f8fafc; font-size: 13px; }
+    ul { margin-bottom: 0; padding-left: 20px; }
+    code { background: #eef2ff; border-radius: 5px; padding: 1px 5px; }
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+      h1 { font-size: 25px; }
+      article { padding: 20px 12px 52px; }
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <header>
+      <p class="tag blue">My Flow v2.1 follow-up</p>
+      <h1>Today / Flow 탭 역할 분리 설계</h1>
+      <p class="lead">같은 row/detail 원칙은 유지하되, Today는 실행 inbox, Flow는 저장한 구조 보기로 분리한다. 이번 수정의 목적은 두 탭이 같은 Flow 카드 반복처럼 보이는 문제를 줄이는 것이다.</p>
+    </header>
+
+    <section>
+      <h2>현재 문제</h2>
+      <div class="grid">
+        <div class="card">
+          <span class="tag amber">High</span>
+          <h3>Today도 Flow 카드처럼 보임</h3>
+          <p>Today 탭에서 Flow 제목, 진행률, progress bar가 먼저 보여서 사용자는 오늘 할 Step보다 Flow 구조 카드를 먼저 읽게 된다.</p>
+        </div>
+        <div class="card">
+          <span class="tag amber">High</span>
+          <h3>Flow 탭과 시각적 차이가 약함</h3>
+          <p>Flow 탭도 Flow row와 다음 항목을 보여주기 때문에, Today와 Flow가 같은 화면의 다른 정렬처럼 보인다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Figma v2.1 해석</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>원칙</th>
+            <th>유지</th>
+            <th>이번 분리</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>요약 → row → 필요한 detail</td>
+            <td>두 탭 모두 row를 누르면 바로 아래 detail이 열린다.</td>
+            <td>row의 주인공은 탭마다 다르게 둔다.</td>
+          </tr>
+          <tr>
+            <td>Flow 맥락 유지</td>
+            <td>Step이 어느 Flow에 속하는지는 항상 보인다.</td>
+            <td>Today에서는 Flow 맥락을 작은 보조 메타로 낮춘다.</td>
+          </tr>
+          <tr>
+            <td>정보량 축소</td>
+            <td>메모, 일정, 원문, 내보내기는 필요할 때만 연다.</td>
+            <td>Today에는 progress bar를 기본 노출하지 않는다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>탭별 새 기준</h2>
+      <div class="grid">
+        <div class="card">
+          <span class="tag green">Today</span>
+          <h3>실행 inbox</h3>
+          <ul>
+            <li>Step 제목이 카드의 주 제목이다.</li>
+            <li>날짜, 기준일, 섹션은 Step 아래에 둔다.</li>
+            <li>Flow 이름과 진행률은 작은 보조 줄로만 남긴다.</li>
+            <li>체크리스트 detail은 Step을 열었을 때만 보인다.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="tag blue">Flow</span>
+          <h3>저장 구조 보기</h3>
+          <ul>
+            <li>Flow 제목과 진행률이 row의 주 제목이다.</li>
+            <li>progress bar와 남은 항목 수를 유지한다.</li>
+            <li>다음 Step은 Flow row 안의 미리보기로 둔다.</li>
+            <li>Step detail은 열린 Flow row 아래에서만 보인다.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>반영 범위</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>영역</th>
+            <th>변경</th>
+            <th>보류</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Today 첫 카드</td>
+            <td>Flow row형 카드에서 Step 실행 카드로 변경.</td>
+            <td>완료/수정/메모 편집의 근본 정보구조 재설계.</td>
+          </tr>
+          <tr>
+            <td>Today detail</td>
+            <td>기존 detail은 유지하되 Today 맥락에서는 Step 제목을 유지.</td>
+            <td>Step scheduling metadata 확장.</td>
+          </tr>
+          <tr>
+            <td>Flow 탭</td>
+            <td>Flow row와 progress 중심 구조 유지.</td>
+            <td>Flow Map 전체 drilldown 고도화.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>완료 판단</h2>
+      <ul>
+        <li>Today 첫 화면에서 사용자가 Flow 구조보다 실행할 Step을 먼저 본다.</li>
+        <li>Flow 탭 첫 화면에서 사용자가 저장한 Flow의 진행 구조를 본다.</li>
+        <li>두 탭의 detail은 같은 컴포넌트를 써도, 진입 카드의 목적이 다르게 보인다.</li>
+        <li>모바일에서 카드 수와 설명량이 캘린더/투두 앱 수준을 넘지 않는다.</li>
+      </ul>
+    </section>
+  </article>
+</body>
+</html>

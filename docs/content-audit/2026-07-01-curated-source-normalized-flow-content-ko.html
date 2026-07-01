@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>엄선 원컨텐츠 9개 Normalized Flow 검토판</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root { --bg:#f6f7f9; --paper:#fff; --ink:#111827; --muted:#4b5563; --line:#d9dee7; --blue:#1f5fbf; --green:#0f766e; --amber:#a15c07; --violet:#6d28d9; }
+    html { margin:0; background:var(--bg); color:var(--ink); font:17px/1.55 Arial, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; letter-spacing:0; }
+    body { margin:0; }
+    article { max-width:940px; margin:0 auto; padding:18px 12px 56px; }
+    h1,h2,h3,h4,p { margin:0; }
+    h1 { font-size:28px; line-height:1.15; }
+    h2 { font-size:22px; line-height:1.25; }
+    h4 { font-size:17px; line-height:1.25; }
+    a { color:var(--blue); overflow-wrap:anywhere; }
+    .eyebrow { margin-bottom:8px; color:var(--blue); font-size:12px; font-weight:800; }
+    .lead { margin-top:10px; color:var(--muted); font-size:15px; }
+    .metrics { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:16px 0; }
+    .metric { min-height:72px; padding:10px; border:1px solid var(--line); border-radius:10px; background:var(--paper); }
+    .metric span { display:block; color:var(--muted); font-size:12px; font-weight:800; }
+    .metric b { display:block; margin-top:2px; font-size:25px; line-height:1; }
+    .notice { margin:12px 0; padding:12px; border:1px solid #f3c76f; border-radius:10px; background:#fff8e7; color:#74430f; font-size:14px; }
+    .map { margin:14px 0; border:1px solid var(--line); border-radius:12px; background:#fff; overflow:hidden; }
+    .map.ready_draft { border-left:5px solid var(--green); }
+    .map.partial_draft, .map.source_import_required { border-left:5px solid var(--amber); }
+    .map-head { padding:14px; border-bottom:1px solid var(--line); }
+    .map-head div { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+    .map-head span { padding:4px 8px; border-radius:999px; background:#eef2ff; color:#273675; font-size:12px; font-weight:800; }
+    .map-head p { margin-top:8px; color:var(--muted); font-size:15px; }
+    .urls { display:grid; gap:5px; padding:10px 14px; border-bottom:1px solid var(--line); font-size:13px; }
+    .source { border-bottom:1px solid var(--line); }
+    .source summary { padding:12px 14px; font-weight:800; cursor:pointer; }
+    .source div { display:grid; gap:8px; padding:0 14px 14px; }
+    .source section { padding:10px; border:1px solid #e5e7eb; border-radius:10px; background:#fbfcfe; }
+    .source p, .source span { display:block; color:var(--muted); font-size:13px; }
+    .flows { padding:12px; }
+    .flow { margin:10px 0; border:1px solid #cfd7e5; border-radius:10px; overflow:hidden; }
+    .flow summary { display:grid; gap:3px; padding:12px; cursor:pointer; list-style:none; background:#f8fafc; }
+    .flow summary::-webkit-details-marker { display:none; }
+    .flow summary span { color:var(--blue); font-size:12px; font-weight:800; }
+    .flow summary strong { font-size:18px; }
+    .flow summary em { color:var(--muted); font-size:12px; font-style:normal; }
+    .fields { display:flex; flex-wrap:wrap; gap:6px; align-items:center; padding:9px 12px; border-top:1px solid #edf0f5; background:#fff; }
+    .fields b { margin-right:2px; font-size:13px; }
+    .chip { display:inline-flex; min-height:24px; align-items:center; padding:3px 8px; border:1px solid #dbe3ef; border-radius:999px; background:#fff; color:#374151; font-size:12px; font-weight:800; }
+    .steps { display:grid; gap:10px; padding:10px; border-top:1px solid #edf0f5; }
+    .step { border:1px solid #e4e9f1; border-radius:10px; overflow:hidden; background:#fff; }
+    .step header { padding:10px; background:#f8fafc; border-bottom:1px solid #e4e9f1; }
+    .step header span { color:var(--blue); font-size:12px; font-weight:800; }
+    .step header p { margin-top:4px; color:#667085; font-size:12px; }
+    .step ul { display:grid; gap:7px; margin:0; padding:10px; list-style:none; }
+    .step li { padding:10px; border:1px solid #dce4ef; border-radius:9px; background:#fff; }
+    .step li p { margin-top:3px; color:var(--muted); font-size:13px; }
+    .memo { padding:10px; border-top:1px solid #edf0f5; background:#fbfcfe; }
+    .memo b { display:block; margin-bottom:5px; font-size:13px; }
+    .memo p { color:var(--muted); font-size:14px; }
+    .review { padding:12px 14px; border-top:1px solid var(--line); background:#fffaf0; }
+    .review b { display:block; margin-bottom:4px; font-size:13px; }
+    .review p { color:#5f3d13; font-size:14px; }
+    footer { margin-top:16px; padding:12px; border:1px solid var(--line); border-radius:12px; background:#fff; color:var(--muted); font-size:14px; }
+    @media (min-width:760px) { article { padding:28px 18px 64px; } h1 { font-size:40px; } .metrics { grid-template-columns:repeat(4,minmax(0,1fr)); } .steps { grid-template-columns:repeat(2,minmax(0,1fr)); align-items:start; } }
+  </style>
+</head>
+<body>
+<article>
+  <header>
+    <p class="eyebrow">2026-07-01 / normalized source-backed content / planning only</p>
+    <h1>엄선 원컨텐츠 9개 Normalized Flow 검토판</h1>
+    <p class="lead">Step은 원문 구조를 보존하고, Item은 사용자가 체크할 최소 행동만 남겼다. 세부 정보와 링크, 수량, 상태, 특이사항은 메모/상세로 내렸다.</p>
+    <div class="metrics">
+      <div class="metric"><span>Map</span><b>9</b></div>
+      <div class="metric"><span>Flow</span><b>19</b></div>
+      <div class="metric"><span>Step</span><b>91</b></div>
+      <div class="metric"><span>Item</span><b>96</b></div>
+    </div>
+    <div class="notice">새 기준: 먹은 양, 수량, 상태, 통증, 이상반응, 업체 통화 내용은 기본 Field가 아니라 메모다. Item은 체크할 행동만 둔다.</div>
+  </header>
+  <section class="map source_import_required" id="funmom-study-routine-map">
+    <header class="map-head">
+      <div><span>1. source import 필요</span><span>resource queue / library</span></div>
+      <h2>펀맘 공부 루틴</h2>
+      <p>펀맘은 Park에서 끝내지 않고 article row를 묶어 2주/1달 공부 루틴 Flow Map으로 승격한다. 현재는 확인된 일부 article row 기반 초안이다.</p>
+    </header>
+    <div class="urls"><a href="https://funmom.tistory.com/">https://funmom.tistory.com/</a></div>
+    <details class="source"><summary>원문 row 17개</summary><div><section><b>ㅡ+ㅍ 기본받침 글자쓰기</b><p>한글 기본받침 글자쓰기 자료</p><span>funmom 한글공부 category parsed row</span><a href="https://funmom.tistory.com/1155">https://funmom.tistory.com/1155</a></section><section><b>한글 문장쓰기 연습장</b><p>문장쓰기 연습 자료</p><span>funmom 한글공부 category parsed row</span><a href="https://funmom.tistory.com/1154">https://funmom.tistory.com/1154</a></section><section><b>ㅡ+ㅌ 기본받침 글자쓰기</b><p>한글 기본받침 글자쓰기 자료</p><span>funmom 한글공부 category parsed row</span><a href="https://funmom.tistory.com/1150">https://funmom.tistory.com/1150</a></section><section><b>엄마표 한글 글씨쓰기 연습장</b><p>글씨쓰기 연습 자료</p><span>funmom 한글공부 category parsed row</span><a href="https://funmom.tistory.com/1148">https://funmom.tistory.com/1148</a></section><section><b>글씨쓰기연습 가정학습지</b><p>가정학습지형 쓰기 자료</p><span>funmom 한글공부 category parsed row</span><a href="https://funmom.tistory.com/1144">https://funmom.tistory.com/1144</a></section><section><b>유아용 미로찾기 활동지 프린트</b><p>유아용 미로찾기 자료</p><span>funmom 미로찾기 category parsed row</span><a href="https://funmom.tistory.com/1156">https://funmom.tistory.com/1156</a></section><section><b>재미있는 미로찾기 활동지</b><p>미로찾기 활동지</p><span>funmom 미로찾기 category parsed row</span><a href="https://funmom.tistory.com/1151">https://funmom.tistory.com/1151</a></section><section><b>유아용 미로찾기 프린트 도안</b><p>유아용 프린트 도안</p><span>funmom 미로찾기 category parsed row</span><a href="https://funmom.tistory.com/1147">https://funmom.tistory.com/1147</a></section><section><b>쉬운 미로찾기 프린트</b><p>쉬운 미로 프린트</p><span>funmom 미로찾기 category parsed row</span><a href="https://funmom.tistory.com/1143">https://funmom.tistory.com/1143</a></section><section><b>유아 미로찾기 프린트 자료</b><p>본문 설명상 4~5세 유아용</p><span>funmom 미로찾기 category parsed row</span><a href="https://funmom.tistory.com/1116">https://funmom.tistory.com/1116</a></section><section><b>수 가르기 학습자료</b><p>수 가르기 자료</p><span>funmom 수학공부 category parsed row</span><a href="https://funmom.tistory.com/1149">https://funmom.tistory.com/1149</a></section><section><b>수 가르기 연습문제 학습지</b><p>수 가르기 연습</p><span>funmom 수학공부 category parsed row</span><a href="https://funmom.tistory.com/1145">https://funmom.tistory.com/1145</a></section><section><b>10 수 가르기 모으기 무료 학습지</b><p>10 수 가르기/모으기</p><span>funmom 수학공부 category parsed row</span><a href="https://funmom.tistory.com/1141">https://funmom.tistory.com/1141</a></section><section><b>10 수 가르기 연습 문제</b><p>10 수 가르기 연습</p><span>funmom 수학공부 category parsed row</span><a href="https://funmom.tistory.com/1132">https://funmom.tistory.com/1132</a></section><section><b>무료 덧셈 연산 학습지 프린트</b><p>덧셈 연산 프린트</p><span>funmom 수학공부 category parsed row</span><a href="https://funmom.tistory.com/1099">https://funmom.tistory.com/1099</a></section><section><b>하루 연산 문제 학습지 프린트하기</b><p>하루 연산 문제</p><span>funmom 수학공부 category parsed row</span><a href="https://funmom.tistory.com/1096">https://funmom.tistory.com/1096</a></section><section><b>저학년 수학 연산문제 덧셈 연습장</b><p>저학년 덧셈 연습</p><span>funmom 수학공부 category parsed row</span><a href="https://funmom.tistory.com/1088">https://funmom.tistory.com/1088</a></section></div></details>
+    <div class="flows"><details class="flow" open>
+    <summary><span>Flow 1 · resource routine</span><strong>펀맘 한글 2주 공부</strong><em>funmom 한글 article rows</em></summary>
+    <div class="fields"><b>사용자 입력</b><span class="chip">시작일</span><span class="chip">반복 요일</span><span class="chip">완료 여부</span><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <header><span>Step 1</span><h4>Day 1</h4><p>funmom 한글공부 category parsed row</p></header>
+    <ul><li><b>오늘 자료 1개 공부하기</b><p>자료 제목과 링크는 메모에서 확인</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>ㅡ+ㅍ 기본받침 글자쓰기</p><p>한글 기본받침 글자쓰기 자료</p><p>https://funmom.tistory.com/1155</p></div>
+  </section><section class="step">
+    <header><span>Step 2</span><h4>Day 2</h4><p>funmom 한글공부 category parsed row</p></header>
+    <ul><li><b>오늘 자료 1개 공부하기</b><p>자료 제목과 링크는 메모에서 확인</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>한글 문장쓰기 연습장</p><p>문장쓰기 연습 자료</p><p>https://funmom.tistory.com/1154</p></div>
+  </section><section class="step">
+    <header><span>Step 3</span><h4>Day 3</h4><p>funmom 한글공부 category parsed row</p></header>
+    <ul><li><b>오늘 자료 1개 공부하기</b><p>자료 제목과 링크는 메모에서 확인</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>ㅡ+ㅌ 기본받침 글자쓰기</p><p>한글 기본받침 글자쓰기 자료</p><p>https://funmom.tistory.com/1150</p></div>
+  </section><section class="step">
+    <header><span>Step 4</span><h4>Day 4</h4><p>funmom 한글공부 category parsed row</p></header>
+    <ul><li><b>오늘 자료 1개 공부하기</b><p>자료 제목과 링크는 메모에서 확인</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>엄마표 한글 글씨쓰기 연습장</p><p>글씨쓰기 연습 자료</p><p>https://funmom.tistory.com/1148</p></div>
+  </section><section class="step">
+    <header><span>Step 5</span><h4>Day 5</h4><p>funmom 한글공부 category parsed row</p></header>
+    <ul><li><b>오늘 자료 1개 공부하기</b><p>자료 제목과 링크는 메모에서 확인</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>글씨쓰기연습 가정학습지</p><p>가정학습지형 쓰기 자료</p><p>https://funmom.tistory.com/1144</p></div>
+  </section></div>
+  </details><details class="flow" open>
+    <summary><span>Flow 2 · resource routine</span><strong>펀맘 미로찾기 2주 공부</strong><em>funmom 미로 article rows</em></summary>
+    <div class="fields"><b>사용자 입력</b><span class="chip">시작일</span><span class="chip">반복 요일</span><span class="chip">완료 여부</span><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <header><span>Step 1</span><h4>Day 1</h4><p>funmom 미로찾기 category parsed row</p></header>
+    <ul><li><b>오늘 자료 1개 공부하기</b><p>자료 제목과 링크는 메모에서 확인</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>유아용 미로찾기 활동지 프린트</p><p>유아용 미로찾기 자료</p><p>https://funmom.tistory.com/1156</p></div>
+  </section><section class="step">
+    <header><span>Step 2</span><h4>Day 2</h4><p>funmom 미로찾기 category parsed row</p></header>
+    <ul><li><b>오늘 자료 1개 공부하기</b><p>자료 제목과 링크는 메모에서 확인</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>재미있는 미로찾기 활동지</p><p>미로찾기 활동지</p><p>https://funmom.tistory.com/1151</p></div>
+  </section><section class="step">
+    <header><span>Step 3</span><h4>Day 3</h4><p>funmom 미로찾기 category parsed row</p></header>
+    <ul><li><b>오늘 자료 1개 공부하기</b><p>자료 제목과 링크는 메모에서 확인</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>유아용 미로찾기 프린트 도안</p><p>유아용 프린트 도안</p><p>https://funmom.tistory.com/1147</p></div>
+  </section><section class="step">
+    <header><span>Step 4</span><h4>Day 4</h4><p>funmom 미로찾기 category parsed row</p></header>
+    <ul><li><b>오늘 자료 1개 공부하기</b><p>자료 제목과 링크는 메모에서 확인</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>쉬운 미로찾기 프린트</p><p>쉬운 미로 프린트</p><p>https://funmom.tistory.com/1143</p></div>
+  </section><section class="step">
+    <header><span>Step 5</span><h4>Day 5</h4><p>funmom 미로찾기 category parsed row</p></header>
+    <ul><li><b>오늘 자료 1개 공부하기</b><p>자료 제목과 링크는 메모에서 확인</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>유아 미로찾기 프린트 자료</p><p>본문 설명상 4~5세 유아용</p><p>https://funmom.tistory.com/1116</p></div>
+  </section></div>
+  </details><details class="flow" open>
+    <summary><span>Flow 3 · resource routine</span><strong>펀맘 수학 1달 공부</strong><em>funmom 수학 article rows</em></summary>
+    <div class="fields"><b>사용자 입력</b><span class="chip">시작일</span><span class="chip">반복 요일</span><span class="chip">완료 여부</span><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <header><span>Step 1</span><h4>Day 1</h4><p>funmom 수학공부 category parsed row</p></header>
+    <ul><li><b>오늘 자료 1개 공부하기</b><p>자료 제목과 링크는 메모에서 확인</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>수 가르기 학습자료</p><p>수 가르기 자료</p><p>https://funmom.tistory.com/1149</p></div>
+  </section><section class="step">
+    <header><span>Step 2</span><h4>Day 2</h4><p>funmom 수학공부 category parsed row</p></header>
+    <ul><li><b>오늘 자료 1개 공부하기</b><p>자료 제목과 링크는 메모에서 확인</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>수 가르기 연습문제 학습지</p><p>수 가르기 연습</p><p>https://funmom.tistory.com/1145</p></div>
+  </section><section class="step">
+    <header><span>Step 3</span><h4>Day 3</h4><p>funmom 수학공부 category parsed row</p></header>
+    <ul><li><b>오늘 자료 1개 공부하기</b><p>자료 제목과 링크는 메모에서 확인</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>10 수 가르기 모으기 무료 학습지</p><p>10 수 가르기/모으기</p><p>https://funmom.tistory.com/1141</p></div>
+  </section><section class="step">
+    <header><span>Step 4</span><h4>Day 4</h4><p>funmom 수학공부 category parsed row</p></header>
+    <ul><li><b>오늘 자료 1개 공부하기</b><p>자료 제목과 링크는 메모에서 확인</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>10 수 가르기 연습 문제</p><p>10 수 가르기 연습</p><p>https://funmom.tistory.com/1132</p></div>
+  </section><section class="step">
+    <header><span>Step 5</span><h4>Day 5</h4><p>funmom 수학공부 category parsed row</p></header>
+    <ul><li><b>오늘 자료 1개 공부하기</b><p>자료 제목과 링크는 메모에서 확인</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>무료 덧셈 연산 학습지 프린트</p><p>덧셈 연산 프린트</p><p>https://funmom.tistory.com/1099</p></div>
+  </section><section class="step">
+    <header><span>Step 6</span><h4>Day 6</h4><p>funmom 수학공부 category parsed row</p></header>
+    <ul><li><b>오늘 자료 1개 공부하기</b><p>자료 제목과 링크는 메모에서 확인</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>하루 연산 문제 학습지 프린트하기</p><p>하루 연산 문제</p><p>https://funmom.tistory.com/1096</p></div>
+  </section><section class="step">
+    <header><span>Step 7</span><h4>Day 7</h4><p>funmom 수학공부 category parsed row</p></header>
+    <ul><li><b>오늘 자료 1개 공부하기</b><p>자료 제목과 링크는 메모에서 확인</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>저학년 수학 연산문제 덧셈 연습장</p><p>저학년 덧셈 연습</p><p>https://funmom.tistory.com/1088</p></div>
+  </section></div>
+  </details></div>
+    <div class="review"><b>검토 메모</b><p>2주/1달을 꽉 채우려면 article row 추가 import 필요. Item은 하루 자료 1개로 유지한다.</p></div>
+  </section>
+<section class="map ready_draft" id="opic-plan-map">
+    <header class="map-head">
+      <div><span>2. 실행 초안</span><span>study / table-file schedule</span></div>
+      <h2>오픽 모의고사 계획</h2>
+      <p>첨부 XLSX의 2주/1달 row를 하루/주차 Step으로 옮기고, 회차 세부는 메모에 둔다.</p>
+    </header>
+    <div class="urls"><a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95">https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95</a></div>
+    <details class="source"><summary>원문 row 1개</summary><div><section><b>오픽모의고사 공부 플랜 XLSX</b><p>1달 코스, 2주 코스 시트</p><span>downloaded opic-plan.xlsx</span></section></div></details>
+    <div class="flows"><details class="flow" open>
+    <summary><span>Flow 1 · study calendar</span><strong>오픽 2주 모의고사</strong><em>XLSX 2주 코스</em></summary>
+    <div class="fields"><b>사용자 입력</b><span class="chip">시작일</span><span class="chip">반복 요일</span><span class="chip">완료 여부</span><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <header><span>Step 1</span><h4>D+1</h4><p>XLSX 2주 코스</p></header>
+    <ul><li><b>1회차 연습 + 복습하기</b><p>녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>1회차 연습 / 오픽현타 &amp; 보완 / 1회차 복습</p></div>
+  </section><section class="step">
+    <header><span>Step 2</span><h4>D+2</h4><p>XLSX 2주 코스</p></header>
+    <ul><li><b>2회차 연습 + 복습하기</b><p>녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>2회차 연습 / 오픽현타 &amp; 보완 / 2회차 복습</p></div>
+  </section><section class="step">
+    <header><span>Step 3</span><h4>D+3</h4><p>XLSX 2주 코스</p></header>
+    <ul><li><b>3회차 연습 + 복습하기</b><p>녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>3회차 연습 / 오픽현타 &amp; 보완 / 3회차 복습</p></div>
+  </section><section class="step">
+    <header><span>Step 4</span><h4>D+4</h4><p>XLSX 2주 코스</p></header>
+    <ul><li><b>4회차 연습 + 복습하기</b><p>녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>4회차 연습 / 오픽현타 &amp; 보완 / 4회차 복습</p></div>
+  </section><section class="step">
+    <header><span>Step 5</span><h4>D+5</h4><p>XLSX 2주 코스</p></header>
+    <ul><li><b>5회차 연습 + 복습하기</b><p>녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>5회차 연습 / 오픽현타 &amp; 보완 / 5회차 복습</p></div>
+  </section><section class="step">
+    <header><span>Step 6</span><h4>D+6</h4><p>XLSX 2주 코스</p></header>
+    <ul><li><b>1~5회차 정리하기</b><p>녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>1~5회차 정리 / 부족한 점 보완</p></div>
+  </section><section class="step">
+    <header><span>Step 7</span><h4>D+7</h4><p>XLSX 2주 코스</p></header>
+    <ul><li><b>쉬기</b><p>녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>휴식</p></div>
+  </section><section class="step">
+    <header><span>Step 8</span><h4>D+8</h4><p>XLSX 2주 코스</p></header>
+    <ul><li><b>6회차 연습 + 복습하기</b><p>녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>6회차 연습 / 오픽현타 &amp; 보완 / 6회차 복습</p></div>
+  </section><section class="step">
+    <header><span>Step 9</span><h4>D+9</h4><p>XLSX 2주 코스</p></header>
+    <ul><li><b>7회차 연습 + 복습하기</b><p>녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>7회차 연습 / 오픽현타 &amp; 보완 / 7회차 복습</p></div>
+  </section><section class="step">
+    <header><span>Step 10</span><h4>D+10</h4><p>XLSX 2주 코스</p></header>
+    <ul><li><b>8회차 연습 + 복습하기</b><p>녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>8회차 연습 / 오픽현타 &amp; 보완 / 8회차 복습</p></div>
+  </section><section class="step">
+    <header><span>Step 11</span><h4>D+11</h4><p>XLSX 2주 코스</p></header>
+    <ul><li><b>9회차 연습 + 복습하기</b><p>녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>9회차 연습 / 오픽현타 &amp; 보완 / 9회차 복습</p></div>
+  </section><section class="step">
+    <header><span>Step 12</span><h4>D+12</h4><p>XLSX 2주 코스</p></header>
+    <ul><li><b>10회차 연습 + 복습하기</b><p>녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>10회차 연습 / 오픽현타 &amp; 보완 / 10회차 복습</p></div>
+  </section><section class="step">
+    <header><span>Step 13</span><h4>D+13</h4><p>XLSX 2주 코스</p></header>
+    <ul><li><b>6~10회차 정리하기</b><p>녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>6~10회차 정리 / 부족한 점 보완</p></div>
+  </section><section class="step">
+    <header><span>Step 14</span><h4>D+14</h4><p>XLSX 2주 코스</p></header>
+    <ul><li><b>쉬기</b><p>녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>휴식</p></div>
+  </section></div>
+  </details><details class="flow" open>
+    <summary><span>Flow 2 · study calendar</span><strong>오픽 1달 모의고사</strong><em>XLSX 1달 코스</em></summary>
+    <div class="fields"><b>사용자 입력</b><span class="chip">시작일</span><span class="chip">반복 요일</span><span class="chip">완료 여부</span><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <header><span>Step 1</span><h4>1주차</h4><p>XLSX 1달 코스</p></header>
+    <ul><li><b>1~2회차 반복하기</b><p>녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>1회차 연습/복습/복습, 2회차 연습/복습/복습, 휴식</p></div>
+  </section><section class="step">
+    <header><span>Step 2</span><h4>2주차</h4><p>XLSX 1달 코스</p></header>
+    <ul><li><b>3~4회차 반복하기</b><p>녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>3회차 연습/복습/복습, 4회차 연습/복습/복습, 휴식</p></div>
+  </section><section class="step">
+    <header><span>Step 3</span><h4>3주차</h4><p>XLSX 1달 코스</p></header>
+    <ul><li><b>5~6회차 반복하기</b><p>녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>5회차 연습/복습/복습, 6회차 연습/복습/복습, 휴식</p></div>
+  </section><section class="step">
+    <header><span>Step 4</span><h4>4주차</h4><p>XLSX 1달 코스</p></header>
+    <ul><li><b>7~8회차 반복하기</b><p>녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>7회차 연습/복습/복습, 8회차 연습/복습/복습, 휴식</p></div>
+  </section><section class="step">
+    <header><span>Step 5</span><h4>5주차</h4><p>XLSX 1달 코스</p></header>
+    <ul><li><b>9~10회차 반복하기</b><p>녹음 파일, 막힌 질문, 다시 말할 표현은 메모에 기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>9회차 연습/복습/복습, 10회차 연습/복습/복습, 휴식</p></div>
+  </section></div>
+  </details></div>
+    <div class="review"><b>검토 메모</b><p>영상 URL 매핑은 다음 source import. 녹음/막힌 질문은 별도 field가 아니라 메모.</p></div>
+  </section>
+<section class="map ready_draft" id="baby-food-map">
+    <header class="map-head">
+      <div><span>3. 실행 초안</span><span>table/file schedule</span></div>
+      <h2>초기 이유식 식단표</h2>
+      <p>식단표 PDF row group을 Step으로 두고, Item은 구간 식단 제공 하나로 묶는다.</p>
+    </header>
+    <div class="urls"><a href="https://blog.naver.com/01695258757/222768860919">https://blog.naver.com/01695258757/222768860919</a></div>
+    <details class="source"><summary>원문 row 1개</summary><div><section><b>초기 이유식 PDF/큐브표</b><p>150/160/170/180일 시작 PDF, 큐브 재고표</p><span>Naver attachment password 211111</span></section></div></details>
+    <div class="flows"><details class="flow" open>
+    <summary><span>Flow 1 · table/file schedule</span><strong>150일 시작 초기 이유식</strong><em>baby-150.pdf</em></summary>
+    <div class="fields"><b>사용자 입력</b><span class="chip">시작일</span><span class="chip">반복 요일</span><span class="chip">완료 여부</span><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <header><span>Step 1</span><h4>D+150~155</h4><p>baby-150.pdf D+150~155</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 쌀 -&gt; 쌀오트밀</p><p>NEW: 쌀, 오트밀</p><p>간식: X</p></div>
+  </section><section class="step">
+    <header><span>Step 2</span><h4>D+156~161</h4><p>baby-150.pdf D+156~161</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 쌀오트밀 + 애호박 / 애호박청경채</p><p>NEW: 애호박, 청경채</p></div>
+  </section><section class="step">
+    <header><span>Step 3</span><h4>D+162~167</h4><p>baby-150.pdf D+162~167</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 애호박비타민 / 청경채양배추</p><p>NEW: 비타민, 양배추</p></div>
+  </section><section class="step">
+    <header><span>Step 4</span><h4>D+168~173</h4><p>baby-150.pdf D+168~173</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 양배추브로콜리 / 비타민감자</p><p>NEW: 브로콜리, 감자</p></div>
+  </section><section class="step">
+    <header><span>Step 5</span><h4>D+174~179</h4><p>baby-150.pdf D+174~179</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 브로콜리고구마 / 브로콜리단호박</p><p>NEW: 고구마, 단호박</p></div>
+  </section><section class="step">
+    <header><span>Step 6</span><h4>D+180~185</h4><p>baby-150.pdf D+180~185</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 소고기청경채단호박 / 소고기브로콜리오이</p><p>NEW: 소고기, 오이</p></div>
+  </section><section class="step">
+    <header><span>Step 7</span><h4>D+186~191</h4><p>baby-150.pdf D+186~191</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 소고기오이배 / 소고기청경채사과</p><p>NEW: 배, 사과</p></div>
+  </section><section class="step">
+    <header><span>Step 8</span><h4>D+192~197</h4><p>baby-150.pdf D+192~197</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 소고기양배추단호박완두콩 / 소고기브로콜리청경채당근</p><p>NEW: 완두콩, 당근</p></div>
+  </section></div>
+  </details><details class="flow" open>
+    <summary><span>Flow 2 · table/file schedule</span><strong>160일 시작 초기 이유식</strong><em>baby-160.pdf</em></summary>
+    <div class="fields"><b>사용자 입력</b><span class="chip">시작일</span><span class="chip">반복 요일</span><span class="chip">완료 여부</span><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <header><span>Step 1</span><h4>D+160~165</h4><p>baby-160.pdf D+160~165</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 쌀 -&gt; 쌀오트밀</p><p>NEW: 쌀, 오트밀</p></div>
+  </section><section class="step">
+    <header><span>Step 2</span><h4>D+166~171</h4><p>baby-160.pdf D+166~171</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 애호박 / 애호박청경채</p><p>NEW: 애호박, 청경채</p></div>
+  </section><section class="step">
+    <header><span>Step 3</span><h4>D+172~177</h4><p>baby-160.pdf D+172~177</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 애호박비타민 / 청경채양배추</p><p>NEW: 비타민, 양배추</p></div>
+  </section><section class="step">
+    <header><span>Step 4</span><h4>D+178~183</h4><p>baby-160.pdf D+178~183</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 청경채고구마 / 소고기애호박</p><p>NEW: 고구마, 소고기</p></div>
+  </section></div>
+  </details><details class="flow" open>
+    <summary><span>Flow 3 · table/file schedule</span><strong>170일 시작 초기 이유식</strong><em>baby-170.pdf</em></summary>
+    <div class="fields"><b>사용자 입력</b><span class="chip">시작일</span><span class="chip">반복 요일</span><span class="chip">완료 여부</span><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <header><span>Step 1</span><h4>D+170~175</h4><p>baby-170.pdf D+170~175</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 쌀 -&gt; 쌀오트밀</p><p>NEW: 쌀, 오트밀</p></div>
+  </section><section class="step">
+    <header><span>Step 2</span><h4>D+176~181</h4><p>baby-170.pdf D+176~181</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 애호박 / 소고기애호박</p><p>NEW: 애호박, 소고기</p></div>
+  </section><section class="step">
+    <header><span>Step 3</span><h4>D+182~187</h4><p>baby-170.pdf D+182~187</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 소고기애호박청경채 / 소고기청경채오이</p><p>NEW: 청경채, 오이</p></div>
+  </section><section class="step">
+    <header><span>Step 4</span><h4>D+188~193</h4><p>baby-170.pdf D+188~193</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 소고기애호박브로콜리 / 소고기브로콜리양배추</p><p>NEW: 브로콜리, 양배추</p></div>
+  </section></div>
+  </details><details class="flow" open>
+    <summary><span>Flow 4 · table/file schedule</span><strong>180일 시작 초기 이유식</strong><em>baby-180.pdf</em></summary>
+    <div class="fields"><b>사용자 입력</b><span class="chip">시작일</span><span class="chip">반복 요일</span><span class="chip">완료 여부</span><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <header><span>Step 1</span><h4>D+180~185</h4><p>baby-180.pdf D+180~185</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 쌀 + D+183부터 소고기</p><p>NEW: 쌀, 소고기</p></div>
+  </section><section class="step">
+    <header><span>Step 2</span><h4>D+186~191</h4><p>baby-180.pdf D+186~191</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 쌀오트밀 + 소고기 / 소고기애호박</p><p>NEW: 오트밀, 애호박</p></div>
+  </section><section class="step">
+    <header><span>Step 3</span><h4>D+192~197</h4><p>baby-180.pdf D+192~197</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 소고기애호박청경채 / 소고기청경채브로콜리</p><p>NEW: 청경채, 브로콜리</p></div>
+  </section><section class="step">
+    <header><span>Step 4</span><h4>D+198~203</h4><p>baby-180.pdf D+198~203</p></header>
+    <ul><li><b>이 구간 식단 제공하기</b><p>메뉴, NEW 재료, 간식, 먹은 양은 메모에서 확인/기록</p></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메뉴: 소고기브로콜리양배추 / 소고기청경채당근</p><p>NEW: 양배추, 단호박, 당근, 사과</p><p>간식: 단호박퓌레, 사과</p></div>
+  </section></div>
+  </details><details class="flow" open>
+    <summary><span>Flow 5 · memo/sheet</span><strong>이유식 큐브 재고 메모</strong><em>baby-cube.pdf</em></summary>
+    <div class="fields"><b>사용자 입력</b><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <header><span>Step 1</span><h4>큐브 재고 적어두기</h4><p>baby-cube.pdf</p></header>
+    <ul><li><b>큐브 재고 메모하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>필드 원문: 큐브 재료, 만든 날짜, 1개 용량, 큐브 개수</p><p>재료: 쌀, 오트밀, 소고기, 애호박, 청경채, 오이, 브로콜리, 양배추, 당근, 단호박, 완두콩, 달걀노른자</p></div>
+  </section></div>
+  </details></div>
+    <div class="review"><b>검토 메모</b><p>먹은 양/상태/수량은 메모. 장보기/조리/소분은 별도 레시피 source가 필요하다.</p></div>
+  </section>
+<section class="map partial_draft" id="reading-routine-map">
+    <header class="map-head">
+      <div><span>4. 부분 실행</span><span>reading / habit routine</span></div>
+      <h2>독서 루틴</h2>
+      <p>원문은 독서 기록 템플릿이 아니라 독서 시스템 글이다. 책/목표일/요일은 사용자가 정하고, FlowMe는 반복 루틴으로 만든다.</p>
+    </header>
+    <div class="urls"><a href="https://blog.naver.com/naristyle87/222978131890">https://blog.naver.com/naristyle87/222978131890</a></div>
+    <details class="source"><summary>원문 row 3개</summary><div><section><b>오전 1시간: 읽고 쓰는 시간</b><p>책상에 앉기, 폰 멀리 두기, 읽고 쓰는 일만 하기</p><span>Naver PostView body</span></section><section><b>잠들기 전 전자책 읽기</b><p>스마트폰 대신 전자책</p><span>Naver PostView body</span></section><section><b>매달 초 5권 리스트업</b><p>장르별로 5권 선택</p><span>Naver PostView body</span></section></div></details>
+    <div class="flows"><details class="flow" open>
+    <summary><span>Flow 1 · user-target routine</span><strong>책 1권 완독 루틴</strong><em>reading system source + user target</em></summary>
+    <div class="fields"><b>사용자 입력</b><span class="chip">루틴 제목</span><span class="chip">책 이름 또는 URL</span><span class="chip">목표 완료일</span><span class="chip">반복 요일</span><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <header><span>Step 1</span><h4>1주차</h4><p>user target week</p></header>
+    <ul><li><b>정한 책 읽기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메모에 책 이름, URL, 이번 주 읽을 범위 적기</p></div>
+  </section><section class="step">
+    <header><span>Step 2</span><h4>2주차</h4><p>user target week</p></header>
+    <ul><li><b>정한 책 읽기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메모에 책 이름, URL, 이번 주 읽을 범위 적기</p></div>
+  </section><section class="step">
+    <header><span>Step 3</span><h4>3주차</h4><p>user target week</p></header>
+    <ul><li><b>정한 책 읽기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메모에 책 이름, URL, 이번 주 읽을 범위 적기</p></div>
+  </section><section class="step">
+    <header><span>Step 4</span><h4>4주차</h4><p>user target week</p></header>
+    <ul><li><b>정한 책 읽기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>메모에 책 이름, URL, 완독 메모 적기</p></div>
+  </section></div>
+  </details><details class="flow" open>
+    <summary><span>Flow 2 · habit routine</span><strong>아침 읽고 쓰기 루틴</strong><em>Naver 오전 1시간 section</em></summary>
+    <div class="fields"><b>사용자 입력</b><span class="chip">시작일</span><span class="chip">반복 요일</span><span class="chip">완료 여부</span><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <header><span>Step 1</span><h4>반복일</h4><p>Naver 오전 1시간 section</p></header>
+    <ul><li><b>아침에 읽고 쓰기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>세부: 책상에 앉기, 폰 멀리 두기, 읽고 쓰는 일만 하기</p></div>
+  </section></div>
+  </details></div>
+    <div class="review"><b>검토 메모</b><p>책별 기록 템플릿은 아님. 사용자가 정한 책을 루틴화하는 패턴으로 제한한다.</p></div>
+  </section>
+<section class="map ready_draft" id="new-car-map">
+    <header class="map-head">
+      <div><span>5. 실행 초안</span><span>preparation / purchase comparison</span></div>
+      <h2>신차 구매</h2>
+      <p>7단계는 유지하되 Item을 결정/확인 묶음으로 줄이고 세부 비용/서류는 메모에 둔다.</p>
+    </header>
+    <div class="urls"><a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners">https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners</a></div>
+    <details class="source"><summary>원문 row 1개</summary><div><section><b>신차 구매 7단계</b><p>예산, 구매방법, 견적, 계약, 출고, 등록, 보험</p><span>Getcha article</span></section></div></details>
+    <div class="flows"><details class="flow" open>
+    <summary><span>Flow 1 · purchase checklist</span><strong>신차 구매 7단계</strong><em>Getcha 7-step article</em></summary>
+    <div class="fields"><b>사용자 입력</b><span class="chip">구매 목표일</span><span class="chip">완료 여부</span><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <header><span>Step 1</span><h4>1. 예산과 차종</h4><p>Getcha budget section</p></header>
+    <ul><li><b>총 구매 예산 정하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>세부: 차량 가격, 옵션 200~500만원, 등록비 7~8%, 보험료 연 100~200만원, 유지비, 용도</p></div>
+  </section><section class="step">
+    <header><span>Step 2</span><h4>2. 구매 방법</h4><p>Getcha purchase method section</p></header>
+    <ul><li><b>구매 방식 정하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>세부: 현금, 할부, 장기렌트, 리스</p></div>
+  </section><section class="step">
+    <header><span>Step 3</span><h4>3. 견적 비교</h4><p>Getcha quote section</p></header>
+    <ul><li><b>딜러 견적 비교하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>세부: 여러 딜러 견적, 할인, 서비스, 출고 기간</p></div>
+  </section><section class="step">
+    <header><span>Step 4</span><h4>4. 계약</h4><p>Getcha contract section</p></header>
+    <ul><li><b>계약 조건 확인하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>세부: 모델, 색상, 옵션, 할인, 최종 금액, 계약금/잔금, 출고 예정일, 취소/환불</p></div>
+  </section><section class="step">
+    <header><span>Step 5</span><h4>5. 출고/인수</h4><p>Getcha delivery section</p></header>
+    <ul><li><b>차량 인수 전 확인하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>세부: 외관, 실내, 기능, 보증서/매뉴얼/등록증</p></div>
+  </section><section class="step">
+    <header><span>Step 6</span><h4>6. 등록</h4><p>Getcha registration section</p></header>
+    <ul><li><b>등록과 비용 확인하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>세부: 취득세, 등록비, 차량 등록증</p></div>
+  </section><section class="step">
+    <header><span>Step 7</span><h4>7. 보험</h4><p>Getcha insurance section</p></header>
+    <ul><li><b>보험 시작 확인하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>세부: 보험 시작일, 견적, 운전 범위</p></div>
+  </section></div>
+  </details></div>
+    <div class="review"><b>검토 메모</b><p>딜러명/견적/금액은 메모. 별도 비교 앱처럼 만들지 않는다.</p></div>
+  </section>
+<section class="map partial_draft" id="vaccination-map">
+    <header class="map-head">
+      <div><span>6. 부분 실행</span><span>official schedule / age phase</span></div>
+      <h2>영유아 예방접종</h2>
+      <p>월령별 공식 row를 확인 Step으로 두고, 백신명/기관/특이사항은 메모에 둔다.</p>
+    </header>
+    <div class="urls"><a href="https://khms.or.kr/healthy_life/prevention/vaccination_child">https://khms.or.kr/healthy_life/prevention/vaccination_child</a><a href="https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&amp;menuLv=1">https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&amp;menuLv=1</a></div>
+    <details class="source"><summary>원문 row 1개</summary><div><section><b>공식 예방접종 일정 row</b><p>월령별 백신명/차수</p><span>KDCA/DDM official rows</span></section></div></details>
+    <div class="flows"><details class="flow" open>
+    <summary><span>Flow 1 · official schedule</span><strong>월령별 예방접종 확인</strong><em>KDCA/DDM official rows</em></summary>
+    <div class="fields"><b>사용자 입력</b><span class="chip">생년월일</span><span class="chip">완료 여부</span><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <header><span>Step 1</span><h4>출생시</h4><p>official schedule row</p></header>
+    <ul><li><b>출생시 접종 항목 확인하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>B형간염(HepB) 1차</p></div>
+  </section><section class="step">
+    <header><span>Step 2</span><h4>1개월 / 4주 이내</h4><p>official schedule row</p></header>
+    <ul><li><b>1개월 접종 항목 확인하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>BCG(피내용) 1회, B형간염 2차</p></div>
+  </section><section class="step">
+    <header><span>Step 3</span><h4>2, 4, 6개월</h4><p>official schedule row</p></header>
+    <ul><li><b>2/4/6개월 접종 항목 확인하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>DTaP 1~3차, IPV 1~3차, Hib 1~3차, PCV 1~3차, RV 1~3차, HepB 3차</p></div>
+  </section><section class="step">
+    <header><span>Step 4</span><h4>12~15개월</h4><p>official schedule row</p></header>
+    <ul><li><b>12~15개월 접종 항목 확인하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>Hib 4차, PCV 4차, MMR 1차, 수두 1회</p></div>
+  </section><section class="step">
+    <header><span>Step 5</span><h4>12~23개월</h4><p>official schedule row</p></header>
+    <ul><li><b>12~23개월 접종 항목 확인하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>A형간염 1~2차, 일본뇌염 IJEV/LJEV 일정</p></div>
+  </section><section class="step">
+    <header><span>Step 6</span><h4>4~6세</h4><p>official schedule row</p></header>
+    <ul><li><b>4~6세 접종 항목 확인하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>DTaP 5차, IPV 4차, MMR 2차</p></div>
+  </section><section class="step">
+    <header><span>Step 7</span><h4>11~12세 / 12세</h4><p>official schedule row</p></header>
+    <ul><li><b>11~12세 접종 항목 확인하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>Tdap 6차, IJEV 5차, HPV 1차(12세 여아)</p></div>
+  </section></div>
+  </details></div>
+    <div class="review"><b>검토 메모</b><p>최신 공식 PDF row 재확인 필요. 의료 판단, 이상반응 field, 기관 field는 기본에서 제외하고 메모로 둔다.</p></div>
+  </section>
+<section class="map ready_draft" id="moving-map">
+    <header class="map-head">
+      <div><span>7. 실행 초안</span><span>preparation project / D-day</span></div>
+      <h2>이사 준비</h2>
+      <p>D-day Step은 유지하되 세부 체크리스트를 묶음 Item과 메모로 정리한다.</p>
+    </header>
+    <div class="urls"><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363">https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363</a></div>
+    <details class="source"><summary>원문 row 1개</summary><div><section><b>AJD 이사 D-day 표</b><p>D-30, D-10, D-3, D-1, 이사 당일</p><span>AJD article table</span></section></div></details>
+    <div class="flows"><details class="flow" open>
+    <summary><span>Flow 1 · preparation timeline</span><strong>이사 D-day 준비</strong><em>AJD table rows</em></summary>
+    <div class="fields"><b>사용자 입력</b><span class="chip">이사일</span><span class="chip">완료 여부</span><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <header><span>Step 1</span><h4>D-30</h4><p>AJD D-30 table rows</p></header>
+    <ul><li><b>이사/청소와 위탁 예약하기</b></li><li><b>집 점검과 정리 시작하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>세부: 포장이사/반포장이사, 하자 수리, 물건 정리, 전학 수속, 유아/노약자/반려동물 위탁, 이사/청소 견적</p></div>
+  </section><section class="step">
+    <header><span>Step 2</span><h4>D-10</h4><p>AJD D-10 table rows</p></header>
+    <ul><li><b>주소/예약/폐기물 처리하기</b></li><li><b>이전 설치와 배치 준비하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>세부: 주소 변경, 배달 중지, 전출 신고, 엘리베이터/사다리차, 쓰레기봉투, 열쇠/리모컨, 냉장고 비우기, 폐기물, 도배/장판, 가구 배치도, 인터넷/정수기</p></div>
+  </section><section class="step">
+    <header><span>Step 3</span><h4>D-3</h4><p>AJD D-3 table rows</p></header>
+    <ul><li><b>철거/서류/당일 물건 준비하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>세부: 도시가스 철거/설치, 자동이체 해지, 세탁기 물 빼기, 전세권 서류, 이사 당일 물건</p></div>
+  </section><section class="step">
+    <header><span>Step 4</span><h4>D-1</h4><p>AJD D-1 table rows</p></header>
+    <ul><li><b>이사 전날 최종 확인하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>세부: 일정 확인, 이체 한도, 주차공간, 귀중품, 잔금, 입주증, 어항/수조, 가전가구 사진</p></div>
+  </section><section class="step">
+    <header><span>Step 5</span><h4>이사 당일</h4><p>AJD D-Day table rows</p></header>
+    <ul><li><b>출발지 정산과 반납하기</b></li><li><b>도착지 정산과 전입 처리하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>세부: 전기/가스/관리비, 장기수선충당금, 잔여 짐, 문단속/열쇠, 분실/파손, 통신 설치, 도어락, 잔금/중개료, 명의 변경, 가스 설치, 전입신고/확정일자</p></div>
+  </section></div>
+  </details></div>
+    <div class="review"><b>검토 메모</b><p>업체명, 예약번호, 정산 금액은 메모. 원문 표의 세부는 Step memo로 유지한다.</p></div>
+  </section>
+<section class="map ready_draft" id="wedding-map">
+    <header class="map-head">
+      <div><span>8. 실행 초안</span><span>preparation project / purchase comparison</span></div>
+      <h2>결혼 준비</h2>
+      <p>네이버 타임라인과 A-to-Z 업체 보드를 분리하고, 원문 항목은 묶음 Item + 메모로 이동한다.</p>
+    </header>
+    <div class="urls"><a href="https://blog.naver.com/wilklove/223518896995">https://blog.naver.com/wilklove/223518896995</a><a href="https://gongysd.com/wedding-notion/?bmode=view&amp;idx=167989966">https://gongysd.com/wedding-notion/?bmode=view&amp;idx=167989966</a></div>
+    <details class="source"><summary>원문 row 1개</summary><div><section><b>결혼 준비 1년 타임라인</b><p>12개월 전, 10개월 전, 본식 직전 등</p><span>Naver PostView body</span></section></div></details>
+    <div class="flows"><details class="flow" open>
+    <summary><span>Flow 1 · preparation timeline</span><strong>결혼 준비 1년 타임라인</strong><em>Naver timeline rows</em></summary>
+    <div class="fields"><b>사용자 입력</b><span class="chip">결혼식일</span><span class="chip">완료 여부</span><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <header><span>Step 1</span><h4>12개월 전</h4><p>Naver wedding timeline</p></header>
+    <ul><li><b>웨딩홀 계약 준비하기</b></li><li><b>플래너/스냅 업체 후보 정하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>세부: 결혼식 날짜와 예산 논의, 웨딩홀 리스트, 방문/견적 상담, 웨딩플래너 상담/계약, 본식 스냅/DVD, 아이폰 스냅</p></div>
+  </section><section class="step">
+    <header><span>Step 2</span><h4>10개월 전</h4><p>Naver wedding timeline</p></header>
+    <ul><li><b>스드메 계약 준비하기</b></li><li><b>사회자/축가 일정 잡기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>세부: 촬영 날짜, 드레스 투어, 가봉 날짜, 꽃장식, 헤어변형, 식전영상 자료 가능 여부</p></div>
+  </section><section class="step">
+    <header><span>Step 3</span><h4>예복/혼주/촬영 준비</h4><p>Naver body heading rows</p></header>
+    <ul><li><b>예복/혼주/촬영 업체 정하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>세부: 신랑 예복, 양가 혼주 메이크업, 촬영용 드레스 가봉, 부케, 신부관리</p></div>
+  </section><section class="step">
+    <header><span>Step 4</span><h4>촬영/신혼여행/혼수</h4><p>Naver body heading rows</p></header>
+    <ul><li><b>촬영/신혼여행/혼수 후보 정하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>세부: 스튜디오 촬영, 신혼여행 예약, 가전/가구 리스트, 혼주 한복, 결혼반지 견적, 신랑/신부관리</p></div>
+  </section><section class="step">
+    <header><span>Step 5</span><h4>본식 직전</h4><p>Naver body heading rows</p></header>
+    <ul><li><b>본식 최종 확인하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>세부: 참석자, 드레스 최종 가봉, 웨딩홀 시식, 답례품, 포토부스, 부케, 신혼여행 최종 체크</p></div>
+  </section></div>
+  </details><details class="flow" open>
+    <summary><span>Flow 2 · purchase comparison</span><strong>결혼 업체 후보 보드</strong><em>Gongysd category headings</em></summary>
+    <div class="fields"><b>사용자 입력</b><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <header><span>Step 1</span><h4>업체 후보 정리</h4><p>Gongysd headings</p></header>
+    <ul><li><b>업체 후보와 견적 메모하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>대상: 웨딩홀, 상견례, 웨딩플래너, 스드메, 드레스 투어, 혼주 메이크업, 청첩장, 웨딩관리</p></div>
+  </section></div>
+  </details></div>
+    <div class="review"><b>검토 메모</b><p>후보/견적/계약금/보류 사유는 메모. 원문 항목을 모두 Item화하지 않는다.</p></div>
+  </section>
+<section class="map partial_draft" id="homefit-map">
+    <header class="map-head">
+      <div><span>9. 부분 실행</span><span>single follow-along video / resource routine</span></div>
+      <h2>Allblanc 홈트 루틴</h2>
+      <p>영상 1개를 루틴 단위로 보고, 여러 영상을 묶으면 2주/1달 홈트 Flow Map이 된다.</p>
+    </header>
+    <div class="urls"><a href="https://youtube.com/@allblanctv">https://youtube.com/@allblanctv</a></div>
+    <details class="source"><summary>원문 row 3개</summary><div><section><b>5 MIN HOME WORKOUT YOU CAN DO EVERY MORNING</b><p>매일 아침 5분 전신 홈트레이닝</p><span>YouTube channel page video title</span><a href="https://www.youtube.com/watch?v=fLLScgWQcHc">https://www.youtube.com/watch?v=fLLScgWQcHc</a></section><section><b>노점프 홈트 후보</b><p>제목/설명 재확인 필요</p><span>candidate URL</span><a href="https://www.youtube.com/watch?v=2dail5Imi04">https://www.youtube.com/watch?v=2dail5Imi04</a></section><section><b>하체 홈트 후보</b><p>제목/설명 재확인 필요</p><span>candidate URL</span><a href="https://www.youtube.com/watch?v=UEPkHmW_2FU">https://www.youtube.com/watch?v=UEPkHmW_2FU</a></section></div></details>
+    <div class="flows"><details class="flow" open>
+    <summary><span>Flow 1 · video routine</span><strong>아침 5분 홈트 2주 루틴</strong><em>Allblanc video row</em></summary>
+    <div class="fields"><b>사용자 입력</b><span class="chip">시작일</span><span class="chip">반복 요일</span><span class="chip">완료 여부</span><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <header><span>Step 1</span><h4>반복일</h4><p>video row</p></header>
+    <ul><li><b>오늘 영상 따라하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>영상: 5 MIN HOME WORKOUT YOU CAN DO EVERY MORNING</p><p>URL: https://www.youtube.com/watch?v=fLLScgWQcHc</p></div>
+  </section></div>
+  </details><details class="flow" open>
+    <summary><span>Flow 2 · resource routine</span><strong>홈트 영상 큐</strong><em>candidate video rows</em></summary>
+    <div class="fields"><b>사용자 입력</b><span class="chip">시작일</span><span class="chip">반복 요일</span><span class="chip">완료 여부</span><span class="chip">메모</span></div>
+    <div class="steps"><section class="step">
+    <header><span>Step 1</span><h4>영상 1</h4><p>candidate video row</p></header>
+    <ul><li><b>오늘 영상 따라하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>5 MIN HOME WORKOUT YOU CAN DO EVERY MORNING</p><p>https://www.youtube.com/watch?v=fLLScgWQcHc</p></div>
+  </section><section class="step">
+    <header><span>Step 2</span><h4>영상 2</h4><p>candidate video row</p></header>
+    <ul><li><b>오늘 영상 따라하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>노점프 홈트 후보</p><p>https://www.youtube.com/watch?v=2dail5Imi04</p><p>제목/설명 재확인 필요</p></div>
+  </section><section class="step">
+    <header><span>Step 3</span><h4>영상 3</h4><p>candidate video row</p></header>
+    <ul><li><b>오늘 영상 따라하기</b></li></ul>
+    <div class="memo"><b>메모/상세</b><p>하체 홈트 후보</p><p>https://www.youtube.com/watch?v=UEPkHmW_2FU</p><p>제목/설명 재확인 필요</p></div>
+  </section></div>
+  </details></div>
+    <div class="review"><b>검토 메모</b><p>운동 동작/세트/통증 체크는 만들지 않는다. 제목/설명/자막 import 후 영상 큐를 확장한다.</p></div>
+  </section>
+  <footer>
+    <p><b>개발 데이터</b></p>
+    <p>docs\content-audit\2026-07-01-curated-source-normalized-flow-draft-data-ko.json 에 같은 구조의 JSON을 저장했다. 이전 재작성본보다 Item 수를 줄이고 memo/detail 중심으로 재정규화한 버전이다.</p>
+  </footer>
+</article>
+</body>
+</html>
