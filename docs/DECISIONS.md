@@ -35,6 +35,66 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-06-28 - Home, Flow finding, Calendar, and My Flow use a reduced service IA for user review
+
+**Decision:** For the next user review, user-facing service surfaces use a reduced IA with four primary tabs: `홈`, `Flow 찾기`, `캘린더`, and `내 Flow`. Home is a promise and representative starting point, `/flows` is the representative catalog, `/calendar` is the schedule-first execution surface for saved dated Steps, and `/my` is the saved Flow management workspace. The homepage exposes one primary Flow Map, up to two secondary entries, and no internal review language. `/flows` exposes two Flow Map candidates plus the accepted single Flow baseline. Checklist and routine work remains inside Flow cards, Step detail, or calendar filters instead of becoming separate global tabs.
+
+**Reason:** The product looked like a mixed review shelf when Home, Flow finding, older single Flows, Flow Maps, and My Flow execution controls were shown at similar weight. User feedback also showed that duplicated CTAs and many cards made the service feel unfinished. Reducing the IA keeps the visible model near calendar/todo app complexity while preserving richer execution behavior under Step detail.
+
+**Applies to:** `/`, `/flows`, `/calendar`, `/my`, `PlatformNav`, source-backed Flow Map promotion, representative single Flow exposure, My Flow E2E, content-audit reports, and future user review previews.
+
+**Reopen when:** observed users cannot find non-representative Flow content, need direct checklist/routine tabs for repeated use, or catalog supply becomes strong enough to require a richer storefront IA.
+
+**Related docs:** [SERVICE_STRUCTURE.md](./SERVICE_STRUCTURE.md), [service IA candidate reclassification](./content-audit/2026-06-28-service-ia-candidate-reclassification-ko.html), [My Flow execution simulation](./content-audit/2026-06-28-my-flow-execution-simulation-ko.html)
+
+### 2026-06-28 - Service structure stays versioned with implementation
+
+**Decision:** Keep the current app screen feature tree, route/component ownership, and architecture map in [SERVICE_STRUCTURE.md](./SERVICE_STRUCTURE.md). Any work that adds, removes, renames, or materially changes a route, screen state, shared component boundary, data contract, persistence/export path, or review surface must update that doc in the same PR or explicitly record why no update was needed.
+
+**Reason:** FLOW now has product PoCs, research surfaces, creator/public/My Flow split, and source-backed map contracts evolving in parallel. Without a canonical service structure map, agents can keep adding screens or modules without noticing duplicated responsibilities or stale architecture assumptions.
+
+**Applies to:** app routes, `components/flow`, `lib/flow` domain modules, specs, PR history, agent workflow, and future product/service planning.
+
+**Reopen when:** route ownership and architecture are generated automatically from code with reliable human-readable summaries, or the repo adopts another canonical architecture registry.
+
+**Related docs:** [SERVICE_STRUCTURE.md](./SERVICE_STRUCTURE.md), [specs README](./specs/README.md), [harness README](./harness/README.md)
+
+### 2026-06-26 - My Flow Step export uses edited Step detail values
+
+**Decision:** My Flow Step detail should regenerate portable text and calendar `.ics` output from the currently edited Step detail values: title, date, time, repeat preset, location, memo, checked Items, completion criteria, caution, and source URL. This action belongs inside the opened Step detail as a small `내 도구로 옮기기` area, not on the first saved-map or Flow inventory surface.
+
+**Reason:** The accepted model treats Step as the minimum unit that can become calendar, todo, sheet, memo, or progress row. If a user changes a Step date or memo inside My Flow but export still uses the original source row, saved execution becomes visual-only. Keeping export controls inside Step detail preserves the Stage 0 export-first loop without making My Flow look like a full project-management workspace.
+
+**Applies to:** `/my` Step detail, source-backed saved Flow Maps, Step-level local drafts, text fallback, calendar `.ics` output, and future todo/sheet regeneration.
+
+**Reopen when:** account-backed Step persistence, bulk scheduling, direct Google Calendar/Todo/Sheet integrations, or richer recurrence rules replace the local Step export path.
+
+**Related docs:** [Creator Publish Gate and Step Contract](./specs/2026-06-26-creator-publish-step-contract/spec.md), [QA Notes](./specs/2026-06-26-creator-publish-step-contract/qa.md), [checkpoint report](./content-audit/2026-06-26-creator-publish-step-contract-ko.html)
+
+### 2026-06-26 - Saved Flow Map persistence includes Step contracts
+
+**Decision:** A saved source-backed Flow Map persistence record should keep each child Flow's Step contracts, not only child Flow metadata and Step IDs. Each Step contract carries the Step ID, title, destination, calendar metadata, text fallback, and optional source/risk metadata. The bridge snapshot used by current My Flow may remain, but the product-ready record must be rich enough for later calendar/todo/sheet regeneration and source review.
+
+**Reason:** The accepted hierarchy is `Flow Map > Flow > Step > Item`, where Step is the minimum saved/exportable unit and Item is nested checklist or text fallback. Without Step-level persistence, a saved map can look correct in the UI but lose the data needed to regenerate exports, preserve source detail, or keep user edits attached to the correct Step. This also prevents creator/public/My Flow route separation from becoming a visual-only convention.
+
+**Applies to:** source-backed Flow Map saves, `buildSourceBackedFlowMapPersistenceRecord`, My Flow saved execution, future export regeneration, creator publish gate, and source-backed route tests.
+
+**Reopen when:** account-backed persistence replaces the local bridge and defines a different durable Step schema.
+
+**Related docs:** [Creator Publish Gate and Step Contract](./specs/2026-06-26-creator-publish-step-contract/spec.md), [QA Notes](./specs/2026-06-26-creator-publish-step-contract/qa.md), [checkpoint report](./content-audit/2026-06-26-creator-publish-step-contract-ko.html)
+
+### 2026-06-25 - My Flow uses inline Step detail and route-specific CTAs
+
+**Decision:** My Flow should keep the primary execution surface close to calendar/todo/reminder apps: `오늘`, `일정`, and `Flow` are the main user mental model, while checklist/routine-specific views remain secondary execution helpers. When a user taps a Step row, the detail opens directly below that row and closes by tapping the same Step again or using the local close/save/cancel actions. Public catalog/detail, My Flow, and creator routes must use route-specific CTAs instead of sharing one generic action tree: catalog routes open candidates, public detail routes save or export, My Flow executes saved Steps, and creator routes review source rows and publish readiness.
+
+**Reason:** Recent mobile review showed that bottom-sheet detail, duplicated Flow/progress chips, and ambiguous labels such as `Flow 찾기` inside My Flow made the surface feel heavier than accepted Flow examples. Inline Step detail keeps the user in context, while route-specific CTAs prevent review/creator/catalog actions from leaking into execution screens.
+
+**Applies to:** `/my`, `/`, `/flows`, `/f/[slug]`, `/flow-maps/[map]`, `/flow-maps/[map]/creator`, My Flow E2E, route/action audit docs, future saved execution UX.
+
+**Reopen when:** observed users cannot find expanded Step detail inline, large saved inventories require a stronger management model, or creator/public/user route boundaries change with account-backed publishing.
+
+**Related docs:** [My Flow/action tree audit](./content-audit/2026-06-25-my-flow-action-tree-audit-ko.html), [Home UX cleanup backlog](./content-audit/2026-06-25-home-ux-cleanup-backlog-ko.html), [FlowMe service UX backlog](./content-audit/2026-06-19-flowme-service-ux-backlog-ko.html)
+
 ### 2026-06-25 - Homepage shows only quality-gated Flow Map candidates
 
 **Decision:** Source-backed Flow Maps should not appear on homepage or representative product surfaces just because their routes work. Homepage exposure is limited to candidates that pass the source-selection and source-to-Flow conversion gate, or to explicitly scoped review surfaces. Weak or exploratory candidates stay in PRD, content-audit, or direct-route testing until their source, conversion model, and user journey are repaired. The code-level candidate status model is `representative / candidate / revise / park / reject`, and homepage cards must use `homepageEligible` rather than a separate hardcoded candidate list.
@@ -46,6 +106,18 @@ Do not use this for:
 **Reopen when:** there is a dedicated internal evaluation page, observed user behavior supports exposing lower-confidence candidates, or the source-backed quality gate changes.
 
 **Related docs:** [Source-backed Flow Map Quality PRD](./specs/2026-06-24-source-backed-flow-map-productization/quality-prd.md), [Source-backed Flow Map candidate reassessment](./content-audit/2026-06-25-source-backed-flow-map-candidate-reassessment-ko.html), [Source-backed Flow Map productization baseline](./specs/2026-06-24-source-backed-flow-map-productization/spec.md)
+
+### 2026-06-25 - Representative catalog candidates need coherent save-to-execute paths
+
+**Decision:** Home and `/flows` should expose only candidates whose public detail, save action, and My Flow destination are coherent. Weak short Flows with broken or low-trust sources, unclear saved destinations, or review-heavy detail pages stay as direct-route/review candidates rather than representative service cards. Demotion from the catalog is not deletion; it means the candidate needs source repair or execution-path repair before promotion.
+
+**Reason:** A cleaned homepage still felt like a test shelf when representative cards linked into older detail pages or saved into unclear execution states. User review specifically flagged the used-car source as unusable and the baby-food save path as unclear. The service catalog must represent flows a user can understand, save, and continue in My Flow without seeing internal review language.
+
+**Applies to:** `/`, `/flows`, `/f/[slug]`, single-Flow save handoff, My Flow saved state, content candidate promotion, legacy candidate separation.
+
+**Reopen when:** there is a separate internal review catalog, weaker candidates gain repaired source-backed detail and saved execution surfaces, or observed users prefer broad exploration over representative quality.
+
+**Related docs:** [Home UX cleanup backlog](./content-audit/2026-06-25-home-ux-cleanup-backlog-ko.html), [Source-backed Flow Map candidate reassessment](./content-audit/2026-06-25-source-backed-flow-map-candidate-reassessment-ko.html), [Source-to-Flow conversion gate](./flow-rules/source-to-flow-conversion-gate.md)
 
 ### 2026-06-24 - My Flow shows map update notices without auto-applying source changes
 
@@ -97,7 +169,7 @@ Do not use this for:
 
 ### 2026-06-24 - Post-save My Flow screens stay confirmation-first
 
-**Decision:** After saving a public Flow Map into My Flow, the post-save surface should show a confirmation panel, the first actionable Step, and at most three Step previews per Flow. The full My Flow workspace, full Step list, calendar, and Flow inventory should open only after the user chooses a navigation action such as `Flow별 보기` or the flow-specific full-view button. Step detail should expand directly under the tapped Step and close when the same Step is tapped again.
+**Decision:** After saving a public Flow Map into My Flow, the post-save surface should show a confirmation panel, the first actionable Step, and at most three Step previews per Flow. The full My Flow workspace and Flow inventory should open only after the user chooses a navigation action such as `전체 Flow 보기` or the flow-specific full-view button. Dated schedules belong to the global `캘린더` tab, so the post-save My Flow panel should not add another `캘린더 보기` CTA. Step detail should expand directly under the tapped Step and close when the same Step is tapped again.
 
 **Reason:** Showing the saved confirmation panel and the full My Flow workspace at the same time made mobile screens feel duplicated and hard to scan. A confirmation-first surface keeps the first action clear while still letting users move into full management when they are ready. Limiting previews prevents Flow Maps, especially progress maps with many source rows, from turning the save handoff into another long review page.
 
@@ -835,23 +907,23 @@ Do not use this for:
 
 ### 2026-05-30 - Priority Flow actions name their destination
 
-**Decision:** Priority cards in the My Flow `Flow` tab should use destination-specific action copy such as `캘린더에서 열기` instead of generic `열기`. Clicking it should move the user to the Calendar tab, select the row date, and open the same editable detail.
+**Decision:** Priority cards in the My Flow `Flow` tab should use `항목 열기` and open the item detail inline under the same card. Dated schedules are reached from the global `캘린더` tab, so Flow-tab priority cards should not jump users to Calendar.
 
-**Reason:** Users should be able to predict whether a priority action opens an in-place drawer, jumps to a calendar date, or navigates to the public Flow page. The priority section is an execution surface, so its primary action should lead directly to the execution context.
+**Reason:** Users should be able to predict that a Flow-tab card opens more detail in place. After Calendar became a global primary tab, another calendar jump inside `/my` made the action tree feel duplicated.
 
 **Applies to:** `/my?demo=ux12`, Flow tab priority cards, Calendar selected-day detail, and future cross-view My Flow shortcuts.
 
-**Reopen when:** A dedicated Flow detail route replaces Calendar as the primary execution context for priority items.
+**Reopen when:** observed users cannot find dated items through the global Calendar tab, or a dedicated Flow detail route replaces inline card detail.
 
 ### 2026-05-30 - Flow tab next actions open the same item detail
 
-**Decision:** In the My Flow `Flow` tab, overview-card next actions should provide a direct `캘린더에서 열기` control for dated items. It should move to the Calendar tab, select the item's date, and open the same editable detail sheet used by Today and Calendar rows.
+**Decision:** In the My Flow `Flow` tab, overview-card next actions should use `항목 열기` for dated and non-dated items, then open the same editable detail inline under the Flow card. The global `캘린더` tab owns full dated schedule navigation.
 
-**Reason:** The Flow tab is an execution dashboard, not just an inventory. If Today and Calendar item clicks open detail but Flow-level next actions only show text or completion, users lose the consistent "inspect/edit before completing" path.
+**Reason:** The Flow tab is an execution dashboard, not just an inventory. If Flow-level next actions jump to Calendar, users lose the sense that `/my` is saved Flow management. Inline detail keeps the interaction local while preserving the same editor used by Today and Calendar rows.
 
 **Applies to:** `/my?demo=ux12`, Flow overview cards, priority cards, Calendar selected-day detail, and cross-view item opening behavior.
 
-**Reopen when:** My Flow gains a dedicated Flow-detail execution route that can host the shared item editor without jumping to Calendar.
+**Reopen when:** My Flow gains a dedicated Flow-detail execution route, or user sessions show that inline detail is less understandable than a Calendar jump.
 
 ### 2026-05-30 - My Flow date selection and item opening stay separate
 
@@ -915,9 +987,9 @@ Do not use this for:
 
 ### 2026-05-30 - Flow overview actions follow the Flow artifact destination
 
-**Decision:** My Flow overview cards should not always say `캘린더에서 열기`. Calendar/timeline/routine Flows can keep `캘린더에서 열기`, but memo-first, sheet-first, and checklist/decision Flows should use destination-specific copy such as `메모에서 열기`, `시트에서 열기`, or `체크리스트에서 열기`. Date-less checklist Flows should not show contradictory copy like `날짜 입력 없음 2026-06-03`; demo-only scheduling anchors should be labeled as demo baselines, and missing baselines should say `기준일 필요`.
+**Decision:** My Flow overview cards should not say `캘린더 보기` now that Calendar is a global primary tab. Flow-card actions should say `항목 열기`, `진도 보기`, `표 보기`, or `메모 보기` depending on what opens inline. Date-less checklist Flows should not show contradictory copy like `날짜 입력 없음 2026-06-03`; demo-only scheduling anchors should be labeled as demo baselines, and missing baselines should say `기준일 필요`.
 
-**Reason:** The Flow tab is an execution dashboard across different artifact types. A universal calendar CTA makes memo, sheet, and decision Flows look like calendar events even when the next action is actually a document, comparison, or checklist task.
+**Reason:** The Flow tab is an execution dashboard across different artifact types. A calendar CTA inside `/my` competes with the global Calendar tab and makes memo, sheet, and decision Flows look like calendar events even when the next action is actually a document, comparison, or checklist task.
 
 **Applies to:** `/my?demo=ux12`, Flow overview cards, grouped Flow inventory, date-less checklist/memo/sheet Flows, and future artifact-specific My Flow surfaces.
 
@@ -1202,3 +1274,43 @@ Do not use this for:
 **Applies to:** `/my` Flow tab, large inventories, source-backed maps mixed with individual Flows, local hidden-flow state, and future archive/account preference work.
 
 **Reopen when:** observed users expect archive to remove items from all execution surfaces or account-backed archive semantics become necessary.
+
+### 2026-06-28 - User-facing Flow surfaces need a persistent service frame and read-first Step detail
+
+**Decision:** Home, catalog, Flow Map public pages, and My Flow should share a lightweight service frame so users can tell whether they are at the service entrance, a detail page, or their saved execution space. Saved Step detail defaults to read/check/export mode. Date, time, repeat, location, and memo inputs open only after the user chooses to edit the Step.
+
+**Reason:** Mobile feedback showed that polished cards still felt like detached test artifacts without a hamburger/tab navigation frame. It also showed that My Flow detail felt like an edit form and read view at the same time. Keeping the visible surface closer to calendar/todo complexity requires a persistent frame and progressive edit controls.
+
+**Applies to:** Home landing, `/flows`, `/flow-maps/[map]`, `/my`, public card previews, saved Step detail, and future source-backed execution surfaces.
+
+**Reopen when:** observed users cannot find editing controls, or real usage shows that immediate inline editing is more important than read-first execution.
+
+### 2026-06-28 - Browse/copy, calendar execution, and saved management surfaces stay separated
+
+**Decision:** FLOW should follow a three-surface pattern: discovery/catalog pages help users choose and save a source-backed Flow, `/calendar` owns schedule-first execution for saved dated Steps, and `/my` owns saved Flow management through Today/Flow/detail views. After a Flow Map is saved, the first surface should confirm the save, show the first actionable Step, and offer `전체 Flow 보기` for structure management. Dated Steps should be found from the global `캘린더` tab rather than another My Flow CTA.
+
+**Reason:** A quick reference review showed the same split in adjacent products: template galleries such as Todoist Templates, Notion Marketplace, Trello templates, and Asana templates focus on browse/use/copy decisions, while execution products such as Todoist Today/Upcoming, Microsoft To Do My Day, and Google Calendar Tasks organize work by today, scheduled dates, and task detail after the user has captured the work. FLOW should not make Home and `/flows` feel like duplicate catalogs, and it should not make the user open a Flow inventory just to discover that saved dated Steps belong in calendar execution.
+
+**Applies to:** Home landing, `/flows`, `/flow-maps/[map]`, `/f/[slug]`, `/calendar`, `/my`, post-save panels, saved Flow inventory cards, calendar/action copy, and future creator publish handoff.
+
+**Reopen when:** users save many non-dated Flows, global calendar feels empty or redundant, or observed sessions show that Flow inventory is a better post-save landing than Today/Calendar.
+
+### 2026-06-29 - Home uses only real actions, not static button-like chips
+
+**Decision:** The Home hero should avoid static pill labels such as `찾기`, `저장`, or `오늘/캘린더에서 실행` when they are not clickable. If the concept is needed, express it in prose or in the menu tree. Primary actions should be real links or buttons.
+
+**Reason:** Mobile review showed that the product already has a persistent 4-tab frame and a menu tree. Extra pill labels looked like controls but did not do anything, weakening action predictability and repeating the problem where buttons and explanations looked mixed.
+
+**Applies to:** `HomeLanding`, future landing-page promise sections, and other service entry surfaces that summarize execution steps.
+
+**Reopen when:** observed users cannot understand the service promise without a visible step summary, or when the chips become real navigation/actions.
+
+### 2026-06-29 - Representative service screens use user-facing result copy
+
+**Decision:** Home, `/flows`, public Flow Map pages, and My Flow representative cards should avoid internal review labels such as `후보`, `검토`, `대표 노출`, `Step에 들어갈 Item`, or misleading save labels when the actual click opens a detail page. Discovery cards should describe the user result, for example `미리 보고 저장`, `저장 후 보이는 항목`, or `세부 메모 항목`. If a single Flow is promoted into the representative catalog, My Flow should treat it as executable content even if older source metadata still says `needs_review`.
+
+**Reason:** The June 29 mobile rehearsal showed that small internal labels made the service feel like a review board rather than a product. It also showed a button-result mismatch: `내 Flow로 저장` appeared on cards that opened details instead of saving. Treating representative catalog items as executable in My Flow prevents accepted baseline content, such as the jeonse Flow, from falling into a confusing `검토 필요` bucket after saving.
+
+**Applies to:** Home landing cards, `/flows` catalog copy, `/flow-maps/[map]` public detail copy, `/my` content readiness grouping, E2E copy assertions, and future representative-candidate promotion.
+
+**Reopen when:** account-backed publish status can replace local representative allowlists, or observed users need explicit quality labels on catalog cards to decide what to save.

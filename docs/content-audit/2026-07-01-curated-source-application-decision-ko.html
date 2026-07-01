@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>엄선 원컨텐츠 9개 적용 판정 리포트</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg:#f3f6fb;
+      --panel:#ffffff;
+      --ink:#111827;
+      --muted:#4b5563;
+      --line:#d7dee9;
+      --blue:#1d4ed8;
+      --green:#047857;
+      --amber:#b45309;
+      --red:#b91c1c;
+      --purple:#6d28d9;
+    }
+    html { margin:0; background:var(--bg); color:var(--ink); font-family:Arial, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; font-size:16px; line-height:1.55; }
+    body { margin:0; }
+    article { width:100%; max-width:980px; margin:0 auto; padding:18px 12px 56px; }
+    h1 { margin:0; font-size:28px; line-height:1.15; letter-spacing:0; }
+    h2 { margin:0 0 10px; font-size:21px; line-height:1.25; letter-spacing:0; }
+    h3 { margin:0 0 8px; font-size:17px; line-height:1.28; letter-spacing:0; }
+    p { margin:0; }
+    .eyebrow { margin:0 0 7px; color:var(--blue); font-size:12px; font-weight:800; }
+    .lead { margin-top:10px; color:var(--muted); font-size:15px; }
+    .bar { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; margin:16px 0; }
+    .metric { padding:11px; min-height:76px; border:1px solid var(--line); border-radius:12px; background:var(--panel); }
+    .metric span { display:block; color:var(--muted); font-size:12px; font-weight:800; }
+    .metric b { display:block; margin-top:2px; font-size:24px; line-height:1.1; }
+    .notice { margin:14px 0; padding:12px; border:1px solid #fde68a; border-radius:12px; background:#fffbeb; color:#78350f; font-size:14px; }
+    .section { margin:14px 0; padding:13px; border:1px solid var(--line); border-radius:14px; background:var(--panel); }
+    .grid { display:grid; gap:10px; }
+    .decision-card { padding:11px; border:1px solid #e5e7eb; border-radius:12px; background:#f8fafc; }
+    .decision-card strong { display:block; margin-bottom:4px; }
+    .pill { display:inline-flex; align-items:center; min-height:24px; padding:3px 8px; border-radius:999px; font-size:12px; font-weight:800; background:#eef2ff; color:#3730a3; }
+    .pill.green { background:#ecfdf5; color:var(--green); }
+    .pill.amber { background:#fffbeb; color:var(--amber); }
+    .pill.red { background:#fef2f2; color:var(--red); }
+    .pill.purple { background:#f5f3ff; color:var(--purple); }
+    .card { margin:10px 0; border:1px solid var(--line); border-radius:14px; background:#fff; overflow:hidden; }
+    .card summary { list-style:none; cursor:pointer; padding:13px; }
+    .card summary::-webkit-details-marker { display:none; }
+    .topline { display:flex; gap:8px; align-items:center; justify-content:space-between; margin-bottom:7px; color:var(--muted); font-size:12px; font-weight:800; }
+    .body { padding:0 13px 14px; }
+    .row { display:grid; gap:8px; margin-top:9px; }
+    .box { padding:10px; border:1px solid #e5e7eb; border-radius:10px; background:#f8fafc; }
+    .box b { display:block; margin-bottom:3px; }
+    .flow-list { margin:0; padding-left:18px; color:var(--muted); font-size:14px; }
+    .flow-list li { margin:3px 0; }
+    .spec { width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border:1px solid var(--line); border-radius:12px; background:#fff; font-size:14px; }
+    .spec th, .spec td { padding:9px; border-bottom:1px solid #e5e7eb; text-align:left; vertical-align:top; }
+    .spec th { background:#f8fafc; color:#374151; font-size:12px; }
+    .spec tr:last-child td { border-bottom:0; }
+    a { color:var(--blue); overflow-wrap:anywhere; }
+    code { padding:2px 5px; border-radius:5px; background:#eef2f7; color:#111827; }
+    .small { color:var(--muted); font-size:13px; }
+    @media (min-width: 760px) {
+      article { padding:28px 18px 64px; }
+      h1 { font-size:38px; }
+      .bar { grid-template-columns:repeat(4, minmax(0,1fr)); }
+      .grid.two { grid-template-columns:repeat(2, minmax(0,1fr)); }
+      .grid.three { grid-template-columns:repeat(3, minmax(0,1fr)); }
+      .row { grid-template-columns:1.1fr 1fr 1fr; }
+    }
+    @media (max-width: 420px) {
+      article { padding-left:10px; padding-right:10px; }
+      h1 { font-size:25px; }
+      .spec { display:block; overflow-x:auto; white-space:nowrap; }
+      .metric b { font-size:22px; }
+    }
+  </style>
+</head>
+<body>
+<article>
+  <header>
+    <p class="eyebrow">2026-07-01 / content expansion planning only</p>
+    <h1>엄선 원컨텐츠 9개 적용 판정 리포트</h1>
+    <p class="lead">이 문서는 개발 작업이 아니라 콘텐츠 확장 판정용 기획 산출물이다. 현재 변환안이 실제 Flow Map / Flow / Step / Item으로 들어갈 수 있는지, 무엇을 보강해야 하는지, 개발 세션에 넘길 스펙이 무엇인지 분리한다.</p>
+  </header>
+
+  <section class="bar" aria-label="요약 수량">
+    <div class="metric"><span>검토 원컨텐츠</span><b>9개</b></div>
+    <div class="metric"><span>현재 child Flow</span><b>15개</b></div>
+    <div class="metric"><span>현재 Step</span><b>70개</b></div>
+    <div class="metric"><span>이번 세션 개발</span><b>0건</b></div>
+  </section>
+
+  <section class="notice">
+    <b>판정 원칙</b><br>
+    앱에 바로 넣는다는 말은 대표 노출이나 검증 완료가 아니다. 이번 판정은 “개발 세션에 전달 가능한 콘텐츠 스펙인가”만 본다. 건강/영유아/금융 성격이 있는 후보는 source/risk 재확인 전까지 대표 노출 대상이 아니다.
+  </section>
+
+  <section class="section">
+    <h2>1차 결론</h2>
+    <div class="grid four">
+      <div class="decision-card"><span class="pill green">1차 적용 후보</span><strong>오픽, 신차, 이사, 결혼, 홈트</strong><p class="small">Flow 구조와 사용 도구가 비교적 명확하다. 개발 세션에서는 저장 후 My Flow 결과 검토가 필요하다.</p></div>
+      <div class="decision-card"><span class="pill amber">조건부 적용</span><strong>예방접종, 독서</strong><p class="small">예방접종은 공식 최신표/주의문구 재확인이 필요하다. 독서는 원문이 루틴이 아니라 기록 양식이라 “추천 루틴”이 아닌 “기록 템플릿”으로 다뤄야 한다.</p></div>
+      <div class="decision-card"><span class="pill red">보강 후 재검토</span><strong>이유식</strong><p class="small">실제 식단표 파일 row를 더 가져오기 전에는 오늘 기록/큐브 재고 수준만 가능하다.</p></div>
+      <div class="decision-card"><span class="pill purple">Park 유지</span><strong>펀맘</strong><p class="small">사이트 전체는 좋은 콘텐츠 풀이지만, 글 목록/tree/나이대 row 수집 전에는 대표 Flow보다 주간 출력 큐 실험이 맞다.</p></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>개발 핸드오프 요약</h2>
+    <table class="spec">
+      <thead>
+        <tr><th>우선순위</th><th>Map</th><th>판정</th><th>구조</th><th>목적지</th><th>다음 필요 작업</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>이사 D-30</td><td><span class="pill green">1차 적용</span></td><td>단일 timeline Flow, 5 Step</td><td>calendar + checklist</td><td>저장 후 D-day 계산과 체크리스트 export 확인</td></tr>
+        <tr><td>2</td><td>신차 구매</td><td><span class="pill green">1차 적용</span></td><td>단일 checklist Flow, 7 Step</td><td>internal check + memo</td><td>금융/가격 추천 문구가 섞이지 않는지 확인</td></tr>
+        <tr><td>3</td><td>오픽 모의고사</td><td><span class="pill green">1차 적용</span></td><td>2주 timeline + 1달 hybrid, 19 Step</td><td>calendar + sheet</td><td>회차별 영상 URL을 재생목록 기준으로 더 정교화</td></tr>
+        <tr><td>4</td><td>결혼 준비</td><td><span class="pill green">1차 적용</span></td><td>타임라인 6 Step + A-to-Z 4 Step</td><td>calendar + sheet</td><td>Naver/Gongysd 원문 row 수동 대조</td></tr>
+        <tr><td>5</td><td>Allblanc 홈트</td><td><span class="pill green">1차 적용</span></td><td>영상 1개 = routine Flow 1개, 총 3 Flow</td><td>calendar</td><td>운동 처방을 만들지 않고 제목/URL/요약만 유지</td></tr>
+        <tr><td>6</td><td>예방접종</td><td><span class="pill amber">조건부</span></td><td>공식 일정 2 Flow, 10 Step</td><td>calendar</td><td>공식 최신표, 접종 가능 여부, 병원 확인 문구 재검수</td></tr>
+        <tr><td>7</td><td>독서 기록</td><td><span class="pill amber">조건부</span></td><td>월 4권 기록 루틴, 8 Step</td><td>calendar + sheet</td><td>“독서법”이 아니라 “기록 루틴”으로 라벨 고정</td></tr>
+        <tr><td>8</td><td>이유식 식단표</td><td><span class="pill red">보강 필요</span></td><td>현재 2 Flow, 2 Step</td><td>sheet</td><td>비밀번호 파일에서 식단 row를 추출해야 함</td></tr>
+        <tr><td>9</td><td>펀맘</td><td><span class="pill purple">Park</span></td><td>주간 출력 큐 1 Flow, 6 Step</td><td>calendar + memo</td><td>카테고리 tree, 글 목록, 나이/수준 메타 수집</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <h2>후보별 판정</h2>
+
+    <details class="card" open>
+      <summary><div class="topline"><span>1/9 · Park 유지</span><span class="pill purple">보류</span></div><h3>펀맘 주간 출력 루틴</h3></summary>
+      <div class="body">
+        <div class="row">
+          <div class="box"><b>판정</b>사이트 전체는 Park. 현재는 월~토 출력 큐 실험만 유지.</div>
+          <div class="box"><b>스펙</b>1 Flow / 6 Step / calendar + memo. 사용자는 시작일과 자료 URL/나이/출력 여부만 다룬다.</div>
+          <div class="box"><b>보강</b>카테고리 tree, 글 목록, 나이/수준, 출력 자료 단위 row 수집 전까지 대표 후보 제외.</div>
+        </div>
+        <ul class="flow-list"><li>첫 실행: 월요일 색칠공부 한 장 출력</li><li>핵심 위험: 사용자가 매번 사이트를 탐색해야 하면 Flow 실패</li><li>출처: <a href="https://funmom.tistory.com/">https://funmom.tistory.com/</a></li></ul>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary><div class="topline"><span>2/9 · 1차 적용 후보</span><span class="pill green">적용</span></div><h3>오픽 모의고사 2주/1달 계획표</h3></summary>
+      <div class="body">
+        <div class="row">
+          <div class="box"><b>판정</b>XLSX 계획표가 있어 Flow Map 후보로 충분하다.</div>
+          <div class="box"><b>스펙</b>2주 계획 14 Step + 1달 반복 5 Step. 시작일 1개 입력.</div>
+          <div class="box"><b>보강</b>회차별 정확한 영상 URL 매핑을 재생목록 기반으로 추가하면 품질 상승.</div>
+        </div>
+        <ul class="flow-list"><li>첫 실행: 1일차 1회차 영상 열기, 한 회차 말하기, 막힌 표현 1개 기록</li><li>도구: 캘린더 일정 + 복습 시트</li><li>출처: <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95">오픽 모의고사 공부 방법</a></li></ul>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary><div class="topline"><span>3/9 · 보강 후 재검토</span><span class="pill red">보강</span></div><h3>이유식 식단표 기록</h3></summary>
+      <div class="body">
+        <div class="row">
+          <div class="box"><b>판정</b>파일형 원문이라 잠재력은 높지만, 현재는 실제 식단 row가 부족하다.</div>
+          <div class="box"><b>스펙</b>오늘 식단 기록 1 Step + 큐브 재고 1 Step. sheet 목적지.</div>
+          <div class="box"><b>보강</b>비밀번호 파일에서 날짜/단계/재료/양/알레르기 row를 추출해야 실제 식단표 Flow Map이 된다.</div>
+        </div>
+        <ul class="flow-list"><li>첫 실행: 오늘 D+n 식단 확인, 먹은 양, 알레르기 O/X 기록</li><li>민감도: 영유아/식이. 추천 식단을 새로 만들면 안 됨</li><li>출처: <a href="https://blog.naver.com/01695258757/222768860919">Naver 이유식 식단표</a></li></ul>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary><div class="topline"><span>4/9 · 조건부 적용</span><span class="pill amber">조건부</span></div><h3>월 4권 독서 기록 루틴</h3></summary>
+      <div class="body">
+        <div class="row">
+          <div class="box"><b>판정</b>독서 콘텐츠 자체가 아니라 기록 템플릿으로 다뤄야 한다.</div>
+          <div class="box"><b>스펙</b>월 4권 기록 루틴 1 Flow / 8 Step / calendar + sheet.</div>
+          <div class="box"><b>보강</b>책 추천, 독서법, 학습 효과 같은 원문 밖 내용을 넣지 않는다.</div>
+        </div>
+        <ul class="flow-list"><li>첫 실행: 이번 달 책 4권 고르기</li><li>완료 기준: 주차별 책 기록과 월말 완료 권수</li><li>출처: <a href="https://blog.naver.com/naristyle87/222978131890">Naver 독서 기록</a></li></ul>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary><div class="topline"><span>5/9 · 1차 적용 후보</span><span class="pill green">적용</span></div><h3>신차 구매 7단계 체크리스트</h3></summary>
+      <div class="body">
+        <div class="row">
+          <div class="box"><b>판정</b>원문 절차가 명확해 단일 checklist Flow로 적합하다.</div>
+          <div class="box"><b>스펙</b>1 Flow / 7 Step / internal check + memo.</div>
+          <div class="box"><b>보강</b>금융상품, 가격 판단, 구매 권유 문구는 제외.</div>
+        </div>
+        <ul class="flow-list"><li>첫 실행: 예산과 후보 차량 정하기</li><li>완료 기준: 계약/출고/등록/보험 확인 상태</li><li>출처: <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners">Getcha 신차 구매 절차</a></li></ul>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary><div class="topline"><span>6/9 · 조건부 적용</span><span class="pill amber">조건부</span></div><h3>아이 예방접종 일정표</h3></summary>
+      <div class="body">
+        <div class="row">
+          <div class="box"><b>판정</b>공식 일정 기반 Flow Map으로 좋지만 의료 민감 영역이다.</div>
+          <div class="box"><b>스펙</b>출생~12개월 6 Step + 추가접종/학령기 4 Step. 생년월일 입력.</div>
+          <div class="box"><b>보강</b>공식 최신표 재확인, 병원/보건소 확인 문구, 접종 가능/금기 판단 제외.</div>
+        </div>
+        <ul class="flow-list"><li>첫 실행: 출생~4주 B형간염/BCG 확인</li><li>완료 기준: 병원/공식 채널 확인 상태만 기록</li><li>출처: <a href="https://khms.or.kr/healthy_life/prevention/vaccination_child">KHMS 어린이 예방접종</a></li></ul>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary><div class="topline"><span>7/9 · 1차 적용 후보</span><span class="pill green">적용</span></div><h3>이사 D-30 체크리스트</h3></summary>
+      <div class="body">
+        <div class="row">
+          <div class="box"><b>판정</b>D-day 구조가 명확해 가장 바로 적용하기 좋은 후보.</div>
+          <div class="box"><b>스펙</b>1 Flow / 5 Step / 이사일 입력 / hybrid.</div>
+          <div class="box"><b>보강</b>기존 대표 moving-d30과 중복/차이를 정리.</div>
+        </div>
+        <ul class="flow-list"><li>첫 실행: D-30 이사 방식과 견적 예약</li><li>완료 기준: D-10, D-3, D-1, D-Day 확인 상태</li><li>출처: <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363">AJD 이사 준비 체크리스트</a></li></ul>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary><div class="topline"><span>8/9 · 1차 적용 후보</span><span class="pill green">적용</span></div><h3>결혼 준비 체크리스트 2버전</h3></summary>
+      <div class="body">
+        <div class="row">
+          <div class="box"><b>판정</b>두 원문을 섞지 않으면 Flow Map 후보로 좋다.</div>
+          <div class="box"><b>스펙</b>Naver 1년 timeline 6 Step + Gongysd A-to-Z sheet 4 Step.</div>
+          <div class="box"><b>보강</b>각 원문 row를 수동 대조해 빠진 카테고리를 확장.</div>
+        </div>
+        <ul class="flow-list"><li>첫 실행: 결혼식 날짜 입력 후 D-12개월 예산/웨딩홀 후보 정하기</li><li>완료 기준: 일정형 준비와 A-to-Z 표를 별도로 저장</li><li>출처: <a href="https://blog.naver.com/wilklove/223518896995">Naver 결혼 준비</a>, <a href="https://gongysd.com/wedding-notion/?bmode=view&idx=167989966">Gongysd 결혼 체크리스트</a></li></ul>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary><div class="topline"><span>9/9 · 1차 적용 후보</span><span class="pill green">적용</span></div><h3>Allblanc 영상별 홈트 루틴</h3></summary>
+      <div class="body">
+        <div class="row">
+          <div class="box"><b>판정</b>채널 전체는 Park지만 exact video 1개는 routine Flow 1개로 적합하다.</div>
+          <div class="box"><b>스펙</b>3 Flow / 각 1 Step / calendar. Item은 영상 제목, URL, 요약만 유지.</div>
+          <div class="box"><b>보강</b>통증/어지러움 중단 조건은 별도 안전 메모로만 두고 운동 처방은 만들지 않는다.</div>
+        </div>
+        <ul class="flow-list"><li>첫 실행: 월/수/금 아침 5분 영상 실행</li><li>완료 기준: 완료/중단 상태 기록</li><li>출처: <a href="https://youtube.com/@allblanctv">Allblanc TV</a></li></ul>
+      </div>
+    </details>
+  </section>
+
+  <section class="section">
+    <h2>소스 접근 상태</h2>
+    <table class="spec">
+      <thead><tr><th>소스</th><th>접근</th><th>구조 확인 수준</th><th>비고</th></tr></thead>
+      <tbody>
+        <tr><td>펀맘</td><td>HTTP 200</td><td>사이트/카테고리 수준</td><td>글 목록 tree 수집 필요</td></tr>
+        <tr><td>오픽</td><td>HTTP 200</td><td>본문 + XLSX 계획표 확인</td><td>회차별 영상 URL 정교화 필요</td></tr>
+        <tr><td>이유식</td><td>HTTP 200</td><td>Naver 접근 확인</td><td>첨부파일 row 추출 필요</td></tr>
+        <tr><td>독서</td><td>HTTP 200</td><td>Naver 접근 확인</td><td>기록장 성격으로만 사용</td></tr>
+        <tr><td>신차</td><td>HTTP 200</td><td>절차형 본문 확인</td><td>금융 판단 제외</td></tr>
+        <tr><td>예방접종</td><td>HTTP 200</td><td>공식 일정 본문 확인</td><td>의료 민감 재검수 필요</td></tr>
+        <tr><td>이사</td><td>HTTP 200</td><td>D-day 본문 확인</td><td>중복 대표 Flow와 비교 필요</td></tr>
+        <tr><td>결혼</td><td>HTTP 200</td><td>Naver/Gongysd 접근 확인</td><td>두 버전을 섞지 않음</td></tr>
+        <tr><td>홈트</td><td>HTTP 200</td><td>YouTube 채널 접근 확인</td><td>exact video 단위만 사용</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <h2>다음 비개발 작업</h2>
+    <ol class="flow-list">
+      <li>이유식 첨부파일 row를 식단표 단계/날짜/재료/양/주의 메모로 추출한다.</li>
+      <li>펀맘 카테고리 tree와 나이/수준 표시가 있는 글 목록을 수집한다.</li>
+      <li>예방접종은 공식 최신 일정표와 현재 10 Step을 row-by-row 대조한다.</li>
+      <li>오픽은 모의고사 재생목록에서 1~10회차 URL을 확정한다.</li>
+      <li>1차 적용 후보 5종은 개발 세션에서 저장 후 My Flow 결과만 검토한다.</li>
+    </ol>
+  </section>
+</article>
+</body>
+</html>

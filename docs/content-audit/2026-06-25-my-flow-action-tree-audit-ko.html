@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow 실행 UX와 메뉴 액션 트리 감사</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --surface: #fff;
+      --soft: #f8fafc;
+      --line: #d9e2ef;
+      --text: #101827;
+      --muted: #667085;
+      --blue: #1f5fbf;
+      --green: #0f7a4a;
+      --amber: #9a6100;
+      --red: #b42318;
+      --shadow: 0 14px 34px rgba(16, 24, 39, .08);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: linear-gradient(180deg, #fbfdff 0, var(--bg) 420px); font-size: 16px; line-height: 1.62; }
+    a { color: var(--blue); text-underline-offset: 3px; overflow-wrap: anywhere; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 44px); line-height: 1.12; letter-spacing: 0; word-break: keep-all; }
+    h2 { margin-bottom: 8px; font-size: clamp(22px, 3vw, 31px); line-height: 1.22; letter-spacing: 0; word-break: keep-all; }
+    h3 { margin-bottom: 6px; font-size: 19px; line-height: 1.28; letter-spacing: 0; word-break: keep-all; }
+    code { padding: 2px 5px; border-radius: 6px; background: #eef2f7; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .92em; }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    th, td { padding: 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #f1f5f9; color: #334155; font-size: 13px; }
+    td { color: #344054; }
+    .page { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 14px 0 64px; }
+    .topbar, .hero, .card, .table-card { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 58px; padding: 12px 16px; box-shadow: 0 1px 2px rgba(16, 24, 39, .04); }
+    .brand { color: var(--blue); font-size: 24px; font-weight: 950; text-decoration: none; }
+    .hero, .card, .table-card { margin-top: 12px; padding: 18px; box-shadow: var(--shadow); }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .desc { max-width: 900px; color: var(--muted); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip { display: inline-flex; align-items: center; min-height: 30px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--soft); color: #344054; font-size: 13px; font-weight: 850; white-space: nowrap; }
+    .chip.blue { border-color: #bfdbfe; background: #eaf2ff; color: #174ea6; }
+    .chip.green { border-color: #bde7cb; background: #e8f7ef; color: var(--green); }
+    .chip.amber { border-color: #efd08f; background: #fff6df; color: var(--amber); }
+    .chip.red { border-color: #f4b4ad; background: #fff1ef; color: var(--red); }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .metric { border: 1px solid var(--line); border-radius: 8px; background: var(--soft); padding: 14px; }
+    .metric strong { display: block; margin-top: 4px; font-size: 21px; line-height: 1.2; }
+    .metric span { color: var(--muted); font-size: 13px; font-weight: 800; }
+    .callout { margin-top: 12px; padding: 14px; border: 1px solid #bfdbfe; border-left: 6px solid var(--blue); border-radius: 8px; background: #eff6ff; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+    .ok { color: var(--green); font-weight: 900; }
+    .warn { color: var(--amber); font-weight: 900; }
+    .fix { color: var(--blue); font-weight: 900; }
+    .small { display: block; margin-top: 4px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    ul { margin: 8px 0 0; padding-left: 20px; }
+    li { margin: 4px 0; }
+    @media (max-width: 760px) {
+      .page { width: min(100% - 22px, 1180px); }
+      .grid { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .hero, .card, .table-card { padding: 14px; }
+      table { min-width: 720px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar" aria-label="문서 이동">
+      <a class="brand" href="../../">FlowMe</a>
+      <div class="chips">
+        <a class="chip" href="./2026-06-25-home-ux-cleanup-backlog-ko.html">홈 UX 백로그</a>
+        <a class="chip" href="./2026-06-19-flowme-service-ux-backlog-ko.html">서비스 UX 백로그</a>
+        <a class="chip" href="../../components/flow/AppClient.tsx">AppClient</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <p class="eyebrow">2026-06-25 · 목표 2 + 3 완료 기준</p>
+      <h1>My Flow 실행 UX와 메뉴 액션 트리 감사</h1>
+      <p class="desc">
+        이 문서는 사용자 화면이 아니라 검토용 기록입니다. 이번 목표는 저장한 Flow가 내 앱에서 캘린더/투두/리마인더 수준으로 실행되고,
+        홈·카탈로그·상세·My Flow·제작자 화면의 버튼이 각 route의 역할과 맞는지 정리하는 것입니다.
+      </p>
+      <div class="chips">
+        <span class="chip green">사용자 화면과 리뷰 분리</span>
+        <span class="chip blue">오늘 / 일정 / Flow 중심</span>
+        <span class="chip blue">Step detail inline</span>
+        <span class="chip amber">실제 사용자 검증 아님</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">이번에 정리한 원칙</p>
+      <h2>실행 표면은 Step 중심, route 버튼은 결과 중심</h2>
+      <div class="grid">
+        <div class="metric"><span>My Flow 1차 보기</span><strong>오늘 · 일정 · Flow</strong><p class="small">체크/루틴은 보조 실행 보기로 남기되, 사용자가 처음 판단할 축은 오늘 할 일과 일정, 저장 Flow 목록입니다.</p></div>
+        <div class="metric"><span>Step detail</span><strong>바로 아래 열림</strong><p class="small">모바일 하단 sheet 대신 누른 Step 아래에서 열고, 같은 Step 재클릭 또는 닫기/저장/취소로 닫힙니다.</p></div>
+        <div class="metric"><span>Route CTA</span><strong>저장/보기/관리 분리</strong><p class="small">공개 route는 저장, 카탈로그는 탐색, My Flow는 실행, creator는 source row 검토와 발행 준비에 집중합니다.</p></div>
+      </div>
+    </section>
+
+    <section class="table-card">
+      <p class="eyebrow">Route / Action Tree</p>
+      <h2>각 화면에서 사용자가 기대해야 하는 동작</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Route</th>
+              <th>사용자 목적</th>
+              <th>주요 CTA</th>
+              <th>이번 정리 판단</th>
+              <th>남은 리스크</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>/</code></td>
+              <td>서비스가 무엇인지 빠르게 이해하고 대표 후보로 진입</td>
+              <td><code>Flow 찾기</code>, <code>내 Flow</code>, 대표 카드 열기</td>
+              <td><span class="ok">정리됨</span><span class="small">홈은 모든 후보를 보여주는 평가장이 아니라 대표 후보 입구로 축소했습니다.</span></td>
+              <td>서비스 성격이 바뀌면 hero와 섹션 순서는 다시 조정해야 합니다.</td>
+            </tr>
+            <tr>
+              <td><code>/flows</code></td>
+              <td>대표 단일 Flow 후보를 둘러보고 상세로 이동</td>
+              <td><code>Flow 열기</code>, <code>내 Flow 보기</code></td>
+              <td><span class="ok">정리됨</span><span class="small">실험/레거시 후보를 대표 카탈로그에서 분리하고 3개 대표 후보만 노출합니다.</span></td>
+              <td>실제 사용수/리뷰 신호가 없어서 선택 신호는 출처·산출물·입력·항목 수 중심입니다.</td>
+            </tr>
+            <tr>
+              <td><code>/f/[slug]</code></td>
+              <td>원문 기반 Flow를 저장하거나 외부 도구로 보내기</td>
+              <td><code>내 Flow에 저장</code>, <code>내 Flow에서 보기</code>, export 버튼</td>
+              <td><span class="ok">정리됨</span><span class="small">대표 후보는 source fit, migration, conversion 설명을 숨기고 사용자 행동만 남깁니다.</span></td>
+              <td>후보별 detail 품질은 계속 source gate를 통과해야 합니다.</td>
+            </tr>
+            <tr>
+              <td><code>/flow-maps/[map]</code></td>
+              <td>큰 지도 또는 source-backed map을 보고 전체/일부 저장 판단</td>
+              <td><code>저장</code>, <code>지도 보기</code>, source link</td>
+              <td><span class="fix">기준 유지</span><span class="small">Flow Map은 단일 Flow보다 구조가 크지만 My Flow에 들어가면 Step 중심으로 가볍게 보여야 합니다.</span></td>
+              <td>map별 source row 품질과 전체 저장/일부 저장 UX는 creator gate에서 더 봐야 합니다.</td>
+            </tr>
+            <tr>
+              <td><code>/my</code></td>
+              <td>저장한 Flow를 오늘 할 일, 일정, Flow 목록에서 실행</td>
+              <td><code>오늘</code>, <code>일정</code>, <code>Flow</code>, <code>저장한 Flow 보기</code>, Step 완료/메모</td>
+              <td><span class="ok">이번 구현 대상</span><span class="small">모바일 Step detail을 하단 sheet에서 inline 확장으로 바꾸고, 탭·문구·중복 메타를 줄였습니다.</span></td>
+              <td>20개 이상 저장, export 재생성, account persistence는 별도 목표입니다.</td>
+            </tr>
+            <tr>
+              <td><code>/flow-maps/[map]/creator</code></td>
+              <td>제작자가 원문 row가 Step/Item으로 바뀌는 과정을 검토</td>
+              <td>source row 확인, draft 저장, local publish marker</td>
+              <td><span class="fix">분리 유지</span><span class="small">제작자 화면은 사용자 실행 컨트롤과 섞지 않습니다.</span></td>
+              <td>다음 목표는 creator publish gate와 version review를 더 제품적으로 만드는 일입니다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">My Flow UX 감사</p>
+      <h2>사용자 관점 리허설 결과</h2>
+      <ul>
+        <li><strong>최초 저장 후:</strong> 사용자는 먼저 <code>오늘</code> 또는 저장 완료 패널에서 첫 Step을 열어야 합니다. 전체 Flow 관리는 보조 행동입니다.</li>
+        <li><strong>오늘 탭:</strong> Step row를 누르면 바로 아래에 detail이 열리고, 완료 체크와 메모가 같은 자리에서 가능합니다.</li>
+        <li><strong>일정 탭:</strong> 날짜를 누르면 선택 날짜 영역으로 이동하고, 해당 날짜 Step은 Flow/Map 그룹 안에서 열립니다.</li>
+        <li><strong>Flow 탭:</strong> 저장 목록은 execution surface가 아니라 찾기/관리 표면입니다. 모바일에서는 많은 Flow를 바로 펼치지 않고 <code>저장한 Flow 보기</code>로 엽니다.</li>
+        <li><strong>체크/루틴 보기:</strong> 기존 기능은 유지하지만 1차 판단 축으로 과하게 밀지 않습니다. 사용자가 처음 보는 모델은 오늘·일정·Flow입니다.</li>
+      </ul>
+      <div class="callout">
+        <strong>판단:</strong> 이번 목표 범위에서는 Blocking/High UX 혼선은 줄었습니다. 다만 실제 사용자 검증은 아직 아니며, 다음 큰 목표는 creator publish gate 또는 export regeneration/account persistence 중 하나로 잡는 것이 적절합니다.
+      </div>
+    </section>
+  </main>
+</body>
+</html>

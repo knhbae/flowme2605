@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 서비스 IA와 대표 후보 재분류</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --surface: #fff;
+      --soft: #f8fafc;
+      --line: #dbe4ef;
+      --text: #111827;
+      --muted: #667085;
+      --blue: #1f5fbf;
+      --green: #0f7a4a;
+      --amber: #9a6100;
+      --red: #b42318;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: linear-gradient(180deg, #fbfdff 0, var(--bg) 420px); font-size: 16px; line-height: 1.62; }
+    a { color: var(--blue); text-underline-offset: 3px; overflow-wrap: anywhere; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 44px); line-height: 1.12; letter-spacing: 0; word-break: keep-all; }
+    h2 { margin-bottom: 8px; font-size: clamp(23px, 3vw, 32px); line-height: 1.22; letter-spacing: 0; word-break: keep-all; }
+    h3 { margin-bottom: 6px; font-size: 19px; line-height: 1.3; letter-spacing: 0; word-break: keep-all; }
+    code { padding: 2px 5px; border-radius: 6px; background: #eef2f7; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .92em; }
+    .page { width: min(1120px, calc(100% - 28px)); margin: 0 auto; padding: 16px 0 64px; }
+    .topbar, .hero, .card, .panel { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+    .topbar { display: flex; justify-content: space-between; gap: 12px; padding: 12px 16px; }
+    .brand { color: var(--blue); font-size: 24px; font-weight: 950; text-decoration: none; }
+    .hero, .card { margin-top: 12px; padding: 18px; box-shadow: 0 12px 28px rgba(16, 24, 39, .07); }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .desc { max-width: 880px; color: var(--muted); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip { display: inline-flex; min-height: 30px; align-items: center; padding: 5px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--soft); color: #344054; font-size: 13px; font-weight: 850; white-space: nowrap; }
+    .chip.blue { border-color: #bfdbfe; background: #eaf2ff; color: #174ea6; }
+    .chip.green { border-color: #bde7cb; background: #e8f7ef; color: var(--green); }
+    .chip.amber { border-color: #efd08f; background: #fff6df; color: var(--amber); }
+    .chip.red { border-color: #f4b4ad; background: #fff1ef; color: var(--red); }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .panel { padding: 14px; background: var(--soft); }
+    .panel strong { display: block; margin-bottom: 5px; }
+    .panel p { margin-bottom: 0; color: var(--muted); font-size: 14px; }
+    .flow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+    .node { min-height: 122px; border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 13px; }
+    .node b { display: block; margin-top: 7px; }
+    .node span { display: block; margin-top: 5px; color: var(--muted); font-size: 13px; font-weight: 750; }
+    .num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 999px; background: var(--blue); color: #fff; font-size: 13px; font-weight: 950; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { padding: 11px 10px; border-top: 1px solid #e6edf5; text-align: left; vertical-align: top; }
+    th { background: #f8fafc; color: #475467; font-size: 13px; font-weight: 950; }
+    td { color: #263445; font-size: 14px; }
+    .status { display: inline-flex; min-width: 92px; justify-content: center; padding: 4px 8px; border-radius: 999px; font-size: 12px; font-weight: 950; }
+    .rep { background: #e8f7ef; color: var(--green); }
+    .cand { background: #eaf2ff; color: var(--blue); }
+    .rev { background: #fff6df; color: var(--amber); }
+    .park { background: #eef2f7; color: #475467; }
+    .reject { background: #fff1ef; color: var(--red); }
+    .list { margin: 10px 0 0; padding-left: 20px; }
+    .list li + li { margin-top: 6px; }
+    @media (max-width: 860px) {
+      .page { width: min(100% - 20px, 1120px); padding-top: 10px; }
+      .topbar { flex-direction: column; }
+      .hero, .card { padding: 14px; }
+      .grid, .grid.two, .flow { grid-template-columns: 1fr; }
+      table, thead, tbody, tr, th, td { display: block; }
+      thead { display: none; }
+      tr { margin-top: 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; overflow: hidden; }
+      td { border-top: 1px solid #edf2f7; }
+      td:first-child { border-top: 0; }
+      td::before { content: attr(data-label); display: block; margin-bottom: 4px; color: #667085; font-size: 12px; font-weight: 950; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar">
+      <a class="brand" href="../../">FLOW</a>
+      <div class="chips">
+        <span class="chip blue">검토 리포트</span>
+        <span class="chip">2026-06-28</span>
+        <span class="chip amber">사용자 화면과 분리</span>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <p class="eyebrow">Service IA</p>
+      <h1>홈은 입구, Flow 찾기는 카탈로그, 내 Flow는 실행 공간</h1>
+      <p class="desc">
+        이번 정리는 사용자가 볼 PoC 화면에서 내부 평가와 후보 검토 문구를 빼고, 대표 후보만 남기는 작업이다.
+        캘린더는 글로벌 탭으로 올리지 않고 내 Flow 내부의 실행 보기로 유지한다.
+      </p>
+      <div class="chips">
+        <span class="chip green">홈: 약속 + 대표 시작점</span>
+        <span class="chip blue">Flow 찾기: 대표 후보 카탈로그</span>
+        <span class="chip">내 Flow: 오늘/캘린더/Flow</span>
+        <span class="chip amber">만들기/제작자: 보조 메뉴</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">IA Decision</p>
+      <h2>현재 노출 구조</h2>
+      <div class="flow">
+        <div class="node"><span class="num">1</span><b>홈</b><span>서비스 약속, 대표 Flow Map 1개, 보조 시작점 2개만 노출</span></div>
+        <div class="node"><span class="num">2</span><b>Flow 찾기</b><span>Flow Map과 단일 Flow를 분리한 카탈로그</span></div>
+        <div class="node"><span class="num">3</span><b>공개 상세</b><span>저장 전 inspection, 원문 링크, 저장 CTA</span></div>
+        <div class="node"><span class="num">4</span><b>내 Flow</b><span>저장 후 오늘, 캘린더, Flow 카드에서 실행</span></div>
+        <div class="node"><span class="num">5</span><b>제작자</b><span>현재는 보조 메뉴. 공개 사용자 동선과 분리</span></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">Representative Split</p>
+      <h2>대표 후보 재분류</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>후보</th>
+            <th>판정</th>
+            <th>홈/탐색 노출</th>
+            <th>이유</th>
+            <th>다음 처리</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="후보">원룸 이사 D-30</td>
+            <td data-label="판정"><span class="status rep">Representative</span></td>
+            <td data-label="노출">홈 대표 Flow Map, /flows Flow Map</td>
+            <td data-label="이유">이사일 기준 D-day가 명확하고 저장 후 캘린더/체크리스트 이유가 강함.</td>
+            <td data-label="다음 처리">대표 기준선으로 유지. 문구와 Step detail만 계속 경량화.</td>
+          </tr>
+          <tr>
+            <td data-label="후보">중1 수학 목차 진도표</td>
+            <td data-label="판정"><span class="status cand">Candidate</span></td>
+            <td data-label="노출">홈 보조 시작점, /flows Flow Map</td>
+            <td data-label="이유">Flow Map 구조 검증에 좋지만, 일정화 방식과 원문 매력도는 더 판단 필요.</td>
+            <td data-label="다음 처리">source link, optional date, 진도표 중심 UX를 다음 라운드에서 보강.</td>
+          </tr>
+          <tr>
+            <td data-label="후보">전세계약 전 서류 체크 Flow</td>
+            <td data-label="판정"><span class="status rep">Single Baseline</span></td>
+            <td data-label="노출">홈 보조 시작점, /flows 단일 Flow</td>
+            <td data-label="이유">이전 사용자 검토에서 경량 실행 UX 기준선으로 통과한 단일 Flow.</td>
+            <td data-label="다음 처리">단일 Flow 비교 기준으로 유지.</td>
+          </tr>
+          <tr>
+            <td data-label="후보">영유아 검진/접종</td>
+            <td data-label="판정"><span class="status rev">Revise</span></td>
+            <td data-label="노출">직접 route만. 홈/카탈로그 대표 제외</td>
+            <td data-label="이유">공식 일정 가치는 있지만 현재 Step action 정보성이 얕음.</td>
+            <td data-label="다음 처리">공식 표 기반 기간/준비/주의/원문 링크를 다시 모델링.</td>
+          </tr>
+          <tr>
+            <td data-label="후보">주소이전, 세금, 에어컨, 피크닉 안전 등</td>
+            <td data-label="판정"><span class="status park">Park/Reject</span></td>
+            <td data-label="노출">대표 화면 제외</td>
+            <td data-label="이유">저장 이유가 약하거나 단일 메모/링크가 더 적절함.</td>
+            <td data-label="다음 처리">카테고리 채우기용으로 고치지 않음. 강한 원문 발견 시 재검토.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">Implementation Notes</p>
+      <h2>이번 사용자용 PoC 반영 사항</h2>
+      <div class="grid">
+        <div class="panel">
+          <strong>홈 축소</strong>
+          <p>전체 카탈로그처럼 보이던 카드 묶음을 줄이고, 대표 Flow Map 1개와 보조 시작점 2개만 노출한다.</p>
+        </div>
+        <div class="panel">
+          <strong>/flows 정리</strong>
+          <p>Flow Map 2개와 단일 Flow 1개만 대표 카탈로그로 남긴다. 약한 단일 Flow는 숨긴다.</p>
+        </div>
+        <div class="panel">
+          <strong>내 Flow 단순화</strong>
+          <p>최상위 탭을 오늘/캘린더/Flow로 제한하고, 체크리스트/루틴은 Flow detail 또는 캘린더 필터 안으로 내린다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">Backlog</p>
+      <h2>업데이트된 백로그 우선순위</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>우선순위</th>
+            <th>작업</th>
+            <th>상태</th>
+            <th>이유</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="우선순위">P0</td>
+            <td data-label="작업">홈/Flow 찾기 중복 축소</td>
+            <td data-label="상태"><span class="status rep">반영</span></td>
+            <td data-label="이유">홈은 서비스 입구, /flows는 카탈로그로 역할을 분리해야 함.</td>
+          </tr>
+          <tr>
+            <td data-label="우선순위">P0</td>
+            <td data-label="작업">대표 후보 2~3개만 노출</td>
+            <td data-label="상태"><span class="status rep">반영</span></td>
+            <td data-label="이유">낮은 후보를 같이 보여주면 서비스가 검토 목록처럼 보임.</td>
+          </tr>
+          <tr>
+            <td data-label="우선순위">P0</td>
+            <td data-label="작업">내 Flow Step inline detail 토글</td>
+            <td data-label="상태"><span class="status rep">반영</span></td>
+            <td data-label="이유">클릭한 카드 아래에서 열리고 다시 누르면 닫혀야 모바일 스크롤 부담이 줄어듦.</td>
+          </tr>
+          <tr>
+            <td data-label="우선순위">P1</td>
+            <td data-label="작업">영유아 공식 일정 Flow 재작성</td>
+            <td data-label="상태"><span class="status rev">대기</span></td>
+            <td data-label="이유">저장 이유는 강하지만 현재 action item 정보성이 부족함.</td>
+          </tr>
+          <tr>
+            <td data-label="우선순위">P1</td>
+            <td data-label="작업">콘텐츠 카드 신뢰 신호 설계</td>
+            <td data-label="상태"><span class="status park">대기</span></td>
+            <td data-label="이유">사용수, 리뷰, 제작자 신뢰 같은 신호가 없으면 카탈로그 선택 이유가 약함.</td>
+          </tr>
+          <tr>
+            <td data-label="우선순위">P2</td>
+            <td data-label="작업">제작자 publish gate 강화</td>
+            <td data-label="상태"><span class="status park">다음 축</span></td>
+            <td data-label="이유">source row가 Step/Item으로 변환되는 과정을 제작자가 확인해야 함.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">Review Links</p>
+      <h2>확인할 화면</h2>
+      <ul class="list">
+        <li>사용자용 홈: <a href="../../">/</a></li>
+        <li>대표 카탈로그: <a href="../../flows">/flows</a></li>
+        <li>대표 Flow Map: <a href="../../flow-maps/moving-d30">/flow-maps/moving-d30</a></li>
+        <li>저장 후 실행 공간: <a href="../../my?demo=source-backed">/my?demo=source-backed</a></li>
+        <li>시뮬레이션 리포트: <a href="./2026-06-28-my-flow-execution-simulation-ko.html">2026-06-28-my-flow-execution-simulation-ko.html</a></li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

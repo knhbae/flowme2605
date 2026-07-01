@@ -216,7 +216,7 @@
   <main class="page">
     <nav class="topbar" aria-label="FLOW">
       <a class="brand" href="#">FLOW</a>
-      <span class="chip blue">Last updated: 2026-06-24</span>
+      <span class="chip blue">Last updated: 2026-06-30</span>
     </nav>
 
     <header class="hero">
@@ -232,11 +232,11 @@
 
     <section class="card">
       <p class="eyebrow">현재 판단</p>
-      <h2>기본 구조는 충분하고, 이제 운영 가능한 서비스 흐름을 봐야 함</h2>
+      <h2>저장 후 실행 구조는 기준선에 도달했고, 다음은 실제 관찰과 제작자 운영</h2>
       <div class="grid">
         <div class="row active"><b>작은 Flow</b><span>전세/10개 Flow 수준에서 실행 카드, 체크, 메모, URL 배치의 기준선은 잡혔습니다.</span></div>
-        <div class="row active"><b>Flow Map</b><span>중1 수학과 영유아 공식 일정으로 공개 상세, 입력, 저장, 내 Flow 실행 연결 가능성을 확인했습니다.</span></div>
-        <div class="row next"><b>다음 초점</b><span>화면 polish보다 제작자 온보딩, 저장 후 관리, 업데이트, 품질 운영을 우선 봐야 합니다.</span></div>
+        <div class="row active"><b>My Flow 실행</b><span>4탭 IA에서 캘린더를 전역 탭으로 분리하고, 내 Flow는 오늘/Flow 셸로 정리했습니다.</span></div>
+        <div class="row next"><b>다음 초점</b><span>실제 사용자 관찰, 제작자 publish gate, 원컨텐츠 품질 운영을 우선 봐야 합니다.</span></div>
       </div>
     </section>
 
@@ -278,6 +278,26 @@
           </tr>
         </thead>
         <tbody>
+          <tr>
+            <td class="status">2026-06-30</td>
+            <td><span class="chip green">완료</span></td>
+            <td><strong>My Flow 저장 후 실행 unified shell</strong><span class="small">4탭 IA 안에서 오늘/Flow/캘린더 책임 분리</span></td>
+            <td class="lane-cell"><span class="lane-tag user">사용자 UX</span><span class="lane-tag product">제품 IA</span><span class="lane-tag ops">검증</span><span class="small">post-save / today continuation / global calendar / inline Step detail</span></td>
+            <td class="completion"><span class="level baseline">서비스 기준선</span><div class="meter"><span style="width: 88%;"></span></div><span class="small">88% · 내부 QA 기준으로 P0/P1 통과. 실제 사용자 검증은 별도.</span></td>
+            <td><a href="./2026-06-30-my-flow-execution-ux-redesign-plan-ko.html">실행 UX 재설계 기획안</a><br><a href="../specs/2026-06-29-post-save-execution-ux/qa.md">QA 기록</a><br><a href="../SERVICE_STRUCTURE.md">서비스 구조</a></td>
+            <td>단일 Flow와 여러 Flow를 같은 `/my` 오늘/Flow 셸로 통일했고, 글로벌 `캘린더`가 날짜-first 실행을 담당합니다. 모바일 Flow 카드에서는 다음 Step을 먼저 보여주고, 관리성 hide/restore는 기본 모바일 경로에서 숨겼습니다.</td>
+            <td>다음은 실제 사용자 관찰 또는 제작자 publish gate 설계로 넘어간다. 새 UI를 더 붙이기보다 원컨텐츠 품질과 저장 후 재방문 행동을 본다.</td>
+          </tr>
+          <tr>
+            <td class="status">2026-06-30</td>
+            <td><span class="chip amber">평가 완료</span></td>
+            <td><strong>My Flow 복수 저장 페르소나 시뮬레이션</strong><span class="small">3개 Flow Map 저장 + 30개 Flow 대량 상태 평가</span></td>
+            <td class="lane-cell"><span class="lane-tag user">사용자 UX</span><span class="lane-tag ops">검증</span><span class="small">persona / scenario / mobile walkthrough / cognitive-load review</span></td>
+            <td class="completion"><span class="level poc">개선 필요</span><div class="meter"><span style="width: 72%;"></span></div><span class="small">72% · 구조 방향은 맞지만 실서비스 기준으로 오늘/밀림/Flow detail 밀도 개선 필요.</span></td>
+            <td><a href="./2026-06-30-my-flow-persona-simulation-review-ko.html">페르소나 시뮬레이션 평가</a><br><a href="../../output/playwright/my-flow-persona-simulation-260630.log">클릭 로그</a></td>
+            <td>이사, 중1 수학, 영유아 검진·접종을 실제 저장한 상태에서는 3개 지도/4개 하위 Flow/31개 Step이 만들어졌습니다. 방향은 맞지만 영유아 과거 일정이 오늘 탭을 덮고, Flow 탭과 Step detail에 내부 구조/편집/내보내기 정보가 한 번에 노출되어 실서비스 완성도는 부족합니다.</td>
+            <td>오늘 탭을 `지금 할 일 / 지난 일정 정리 / 다음 7일`로 다시 정리하고, Flow 탭 언어와 Step detail 기본 밀도를 줄이는 P0/P1 개선 목표로 넘긴다.</td>
+          </tr>
           <tr>
             <td class="status">2026-06-08</td>
             <td><span class="chip green">완료</span></td>
@@ -449,6 +469,26 @@
             <td>다음 후보는 source-row editing/version review 또는 saved map update review UI. 실제 creator 발행 세션은 아직 남음.</td>
           </tr>
           <tr>
+            <td class="status">2026-06-26</td>
+            <td><span class="chip green">코드 계약</span></td>
+            <td><strong>Creator publish gate + Step export contract</strong><span class="small">공개 저장, 제작자 편집, My Flow 실행, Step export 경계 고정</span></td>
+            <td class="lane-cell"><span class="lane-tag creator">제작자 UX</span><span class="lane-tag product">제품 모델</span><span class="lane-tag ops">검증</span><span class="small">public route / creator route / inline Step detail / text+ICS export</span></td>
+            <td class="completion"><span class="level done">계약 slice</span><div class="meter"><span style="width: 95%;"></span></div><span class="small">95% · saved Flow Map persistence record가 Step 계약을 보관하고, My Flow Step 상세의 수정값(title/date/time/repeat/location/memo/items/source)이 텍스트 복사와 ICS 다운로드에 반영됨. 단일 Flow 모바일에서 탭이 숨겨져도 일정 보기 진입점 유지. <code>npm run test:e2e</code> 128개 통과.</span></td>
+            <td><a href="./2026-06-26-creator-publish-step-contract-ko.html">점검 리포트</a><br><a href="../specs/2026-06-26-creator-publish-step-contract/spec.md">spec</a><br><a href="../specs/2026-06-26-creator-publish-step-contract/qa.md">QA</a><br><a href="../../lib/flow/my-flow-step-export.ts">Step export</a><br><a href="../../lib/flow/my-flow-step-export.test.ts">export tests</a><br><a href="../../tests/e2e/flow-mvp.spec.ts">E2E</a></td>
+            <td>사용자 화면을 더 무겁게 만들지 않고, Step 상세 안에서만 `내 도구로 옮기기`를 제공해 export-first 루프를 닫음. 레거시 tag filter와 public beta 문구 기대값은 대표 카탈로그 UX 기준에 맞춰 테스트에서 정리.</td>
+            <td>다음은 todo/sheet regeneration과 creator account-backed publish. 실사용 검증 전에는 validation claim 금지.</td>
+          </tr>
+          <tr>
+            <td class="status">2026-06-28</td>
+            <td><span class="chip amber">진행 중</span></td>
+            <td><strong>서비스 프레임 + 읽기 우선 My Flow 상세</strong><span class="small">홈/Flow Map/My Flow가 앱처럼 이어지는지 보강</span></td>
+            <td class="lane-cell"><span class="lane-tag user">사용자 UX</span><span class="lane-tag product">서비스 IA</span><span class="lane-tag ops">검증</span><span class="small">hamburger/tabs / Step preview / read-first detail / edit mode</span></td>
+            <td class="completion"><span class="level next-up">UX slice</span><div class="meter"><span style="width: 72%;"></span></div><span class="small">72% · 서비스 프레임, 저장 후 Step 미리보기, Flow Map Step→Item 노출, My Flow 읽기/수정 분리 반영 중. 실제 사용자 리뷰/사용수는 데이터 전까지 노출하지 않음.</span></td>
+            <td><a href="./2026-06-25-home-ux-cleanup-backlog-ko.html">홈 UX 백로그</a><br><a href="../../components/flow/PlatformNav.tsx">PlatformNav</a><br><a href="../../components/flow/SourceBackedFlowMapPage.tsx">Flow Map public</a><br><a href="../../components/flow/AppClient.tsx">My Flow</a></td>
+            <td>모바일 사용자가 홈/상세/내 Flow의 depth를 구분하고, Step을 읽은 뒤 필요할 때만 수정하는지 확인해야 함.</td>
+            <td>배포 프리뷰에서 홈 → Flow Map 상세 → 저장 → `/my` Step 상세 → 수정 → 복사/ICS까지 다시 점수화.</td>
+          </tr>
+          <tr>
             <td class="status">2026-06-24</td>
             <td><span class="chip green">완료</span></td>
             <td><strong>Source-backed UX/content simulation</strong><span class="small">제작자 → 공개 저장 → My Flow 실행을 다시 리허설</span></td>
@@ -497,6 +537,26 @@
             <td><a href="./2026-06-25-platform-ux-slice-1to4-simulation-ko.html">1~4번 리포트</a><br><a href="../specs/2026-06-24-flowme-platform-feature-planning/tasks.md">platform tasks</a><br><a href="../specs/2026-06-24-flowme-platform-feature-planning/qa.md">platform QA</a><br><a href="../../components/flow/AppClient.tsx">AppClient</a><br><a href="../../components/flow/SourceBackedFlowMapCreatorEditor.tsx">creator editor</a></td>
             <td>My Flow Step detail에서 날짜/시간/반복/장소/메모를 저장하고, 모바일 detail dialog에서도 같은 필드를 수정한다. creator page에서 로컬 발행 표시를 남기며, 업데이트 적용 시 새 child Flow만 추가하고, Flow inventory는 숨김/복귀를 지원.</td>
             <td>다음은 My Flow 편집값을 ICS/todo/sheet export에 재반영하고, creator/account-backed publish/version 모델을 설계하는 일.</td>
+          </tr>
+          <tr>
+            <td class="status">2026-06-25</td>
+            <td><span class="chip green">완료</span></td>
+            <td><strong>홈 UX 감량 백로그</strong><span class="small">대표/탐색/검토 섞임 정리</span></td>
+            <td class="lane-cell"><span class="lane-tag user">사용자 UX</span><span class="lane-tag product">제품 기준</span><span class="lane-tag ops">검증</span><span class="small">home IA / mobile density / CTA cleanup</span></td>
+            <td class="completion"><span class="level done">구현 반영</span><div class="meter"><span style="width: 86%;"></span></div><span class="small">86% · 홈/카탈로그 대표 노출은 이사 D-30, 전세계약, 초등 입학 3개로 좁혔다. 중고차·이유식 등 약한 단일 Flow는 대표에서 내리고, 전세 상세 저장→내 Flow 진입을 390px 모바일에서 확인했다. 실제 사용자 검증은 남음.</span></td>
+            <td><a href="./2026-06-25-home-ux-cleanup-backlog-ko.html">홈 UX 정리 백로그</a><br><a href="./2026-06-25-source-backed-flow-map-candidate-reassessment-ko.html">후보 재심사 리포트</a><br><a href="../../components/flow/AppClient.tsx">AppClient 홈</a></td>
+            <td>홈은 모든 후보를 보여주는 곳이 아니라, 대표 후보 몇 개만 보여주는 서비스 입구로 줄였다. `/flows`는 실험 후보 저장소가 아니라 서비스용 기본 카탈로그이며, 검토/레거시 후보는 direct-route나 리포트로 분리한다.</td>
+            <td>다음은 Vercel에서 홈→대표 후보→상세 저장→내 Flow 실행을 실제 사용자 관점으로 점수화하는 검토다. 새 후보 추가보다 기존 후보의 source gate와 저장 후 실행 경로를 먼저 본다.</td>
+          </tr>
+          <tr>
+            <td class="status">2026-06-25</td>
+            <td><span class="chip green">완료</span></td>
+            <td><strong>My Flow 실행 UX + 메뉴 액션 트리 정리</strong><span class="small">목표 2 + 3: 저장 후 실행 표면과 route CTA 감사</span></td>
+            <td class="lane-cell"><span class="lane-tag user">사용자 UX</span><span class="lane-tag product">제품 기준</span><span class="lane-tag ops">검증</span><span class="small">catalog signal / card system / action tree audit</span></td>
+            <td class="completion"><span class="level done">구현 반영</span><div class="meter"><span style="width: 88%;"></span></div><span class="small">88% · `/my`는 오늘/일정/Flow 중심으로 문구와 모바일 밀도를 줄이고, Step detail은 하단 sheet 대신 누른 row 바로 아래에서 열리게 정리. route/action tree는 별도 검토 문서로 분리. 실제 사용자 검증은 아직 아님.</span></td>
+            <td><a href="./2026-06-25-my-flow-action-tree-audit-ko.html">My Flow/action tree 감사</a><br><a href="./2026-06-25-home-ux-cleanup-backlog-ko.html">홈 UX 정리 백로그</a><br><a href="../../components/flow/AppClient.tsx">AppClient</a><br><a href="../../tests/e2e/flow-mvp.spec.ts">E2E</a></td>
+            <td>사용자용 `/my`에는 내부 리뷰 문구를 두지 않고, 검토 판단은 audit HTML에 분리한다. 공개 route는 저장/보기, 카탈로그는 탐색, My Flow는 실행, creator는 source row 검토/발행 준비로 역할을 나눈다.</td>
+            <td>다음은 creator publish gate 또는 Step 편집값을 ICS/todo/sheet export에 재반영하는 계약 중 하나를 새 목표로 잡는 것이 적절하다.</td>
           </tr>
           <tr>
             <td class="status">2026-06-21</td>
@@ -638,7 +698,9 @@
       <h2>2026-06-25</h2>
       <div class="grid two">
           <div class="row"><b>Source-backed 후보 품질 리셋</b><span>홈과 대표 제품 화면에는 <strong>이사 D-30</strong>과 <strong>중1 수학</strong>만 먼저 남기고, 영유아 검진·접종은 Revise, 추가 5개 후보는 direct-route 실험/backup/reject로 분리했습니다. 기존 “실제 원문 5개 확장”은 라우트 동작 확인 이력이지 대표 콘텐츠 통과가 아닙니다. 기준 문서: <a href="../specs/2026-06-24-source-backed-flow-map-productization/quality-prd.md">Source-backed Flow Map Quality PRD</a>, 상세 판단: <a href="./2026-06-25-source-backed-flow-map-candidate-reassessment-ko.html">후보 재심사 리포트</a>.</span></div>
-          <div class="row"><b>다음 품질 작업</b><span>우선순위는 더 많은 카드를 추가하는 것이 아니라, 원컨텐츠 선정 기준과 Flow 변환 기준을 다시 통과한 후보만 서비스 홈/사용자 화면에 남기는 것입니다. 즉시 볼 작업은 1) 영유아 재소싱 또는 Park, 2) legacy/실험 후보 분리, 3) 서비스용 설명글 감량, 4) Creator publish gate에서 source row와 사용자 Step 변환을 검토하는 화면입니다.</span></div>
+          <div class="row"><b>홈 UX 감량 구현</b><span>모바일 평가에서 홈이 후보 전시장처럼 보인 문제를 줄이기 위해 홈과 `/flows`를 대표 3개 후보 중심으로 좁혔습니다. 이사 D-30, 전세계약 전 서류 체크, 초등 입학 D-30만 서비스 카탈로그에 남기고, 중고차·이유식 등 약한 후보는 삭제하지 않고 direct-route/검토 후보로 내렸습니다. 전세 상세는 `내 Flow에 저장` 후 `/my` 실행 목록으로 이어지는 경로를 390px 모바일에서 확인했습니다. 문서: <a href="./2026-06-25-home-ux-cleanup-backlog-ko.html">홈 UX 정리 백로그</a>.</span></div>
+          <div class="row"><b>서비스 카탈로그 후속 UX</b><span>2차 피드백 기준, 홈은 깔끔해졌지만 Flow Map과 단일 Flow 카드가 서로 다른 제품처럼 보이는 점, `/flows`에서 무엇을 먼저 볼지 판단할 선택 신호가 부족한 점, 메뉴·액션 트리에 예전 route/CTA가 섞인 점이 다음 slice입니다. 리뷰/사용수는 실제 데이터가 없으면 만들지 않고, 출처 확인·산출물·항목 수·대표 선정 이유 같은 검증 가능한 신호부터 설계합니다.</span></div>
+          <div class="row"><b>다음 품질 작업</b><span>우선순위는 더 많은 카드를 추가하는 것이 아니라, 대표 후보가 원컨텐츠 선정 기준과 Flow 변환 기준, 저장 후 실행 경로를 모두 통과하는지 확인하는 것입니다. 즉시 볼 작업은 1) 대표 후보 3개 Vercel 점수화, 2) legacy/실험 후보 inventory 분리, 3) 서비스용 설명글 감량, 4) Creator publish gate에서 source row와 사용자 Step 변환을 검토하는 화면입니다.</span></div>
           <div class="row"><b>실제 원문 기반 Flow 5개 확장</b><span>인터넷우체국 주거이전 우편물, KISA 스미싱 대응, 국세청 연말정산 간편제출, 삼성전자서비스 에어컨 필터 청소, 식약처 나들이 식중독 예방을 source-backed Flow Map으로 추가했습니다. 각 Flow는 primary source 1개, 입력 0~1개, Step/Item fallback, source URL, 저장 후 My Flow snapshot/persistence record를 갖습니다. 리포트: <a href="./2026-06-25-five-real-source-flow-expansion-ko.html">2026-06-25 실제 원문 5개 확장</a>.</span></div>
           <div class="row"><b>Platform UX slice 1~4</b><span>Step detail에 날짜/시간/반복/장소/메모를 저장하고, creator draft는 로컬 발행 표시까지 진행하며, source-backed map update apply는 새 child Flow를 추가하되 기존 체크/메모를 지우지 않도록 바꿨습니다. Flow inventory는 숨김/복귀를 지원하지만 Today/Calendar 실행 데이터는 유지합니다. 모바일 390px 저장→수정→재방문 테스트에서 Step 필드 누락과 4px overflow를 발견해 수정했습니다. 리포트: <a href="./2026-06-25-platform-ux-slice-1to4-simulation-ko.html">2026-06-25 1~4번 리포트</a>.</span></div>
           <div class="row"><b>Saved map update notice</b><span>저장한 source-backed Flow Map snapshot을 현재 map 정의와 다시 비교해 version/source row 변경 가능성이 있으면 Flow 탭에 낮은 톤의 업데이트 확인 notice를 보여줍니다. 기존 Step과 체크 상태는 자동 변경하지 않고, 공개 지도 링크와 같은 버전쌍에 대한 숨김 동작만 제공합니다. source-backed update-review E2E로 확인했습니다.</span></div>

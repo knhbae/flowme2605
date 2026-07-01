@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>엄선 원컨텐츠 9개 Source-to-Flow 변환 기획 리포트</title>
+  <style>
+    * { box-sizing: border-box; }
+    a { overflow-wrap: anywhere; }
+    @media (max-width: 760px) {
+      body {
+        background: #f8fafc !important;
+        font-size: 15px !important;
+      }
+      article {
+        width: 100% !important;
+        padding: 10px 10px 44px !important;
+      }
+      article > header,
+      article > section {
+        margin-top: 10px !important;
+        padding: 14px !important;
+        border-radius: 8px !important;
+        box-shadow: none !important;
+      }
+      h1 {
+        font-size: 23px !important;
+        line-height: 1.25 !important;
+      }
+      h2 {
+        font-size: 19px !important;
+        line-height: 1.32 !important;
+      }
+      h3 {
+        font-size: 18px !important;
+        line-height: 1.34 !important;
+      }
+      p,
+      li,
+      td,
+      th {
+        font-size: 14px !important;
+      }
+      [style*="display:grid"] {
+        grid-template-columns: 1fr !important;
+        gap: 9px !important;
+      }
+      [style*="padding:14px"] {
+        padding: 12px !important;
+      }
+      [style*="padding:16px"] {
+        padding: 14px !important;
+      }
+      [style*="display:flex"] {
+        gap: 6px !important;
+      }
+      [style*="border-radius:999px"] {
+        max-width: 100% !important;
+        align-items: flex-start !important;
+        white-space: normal !important;
+        line-height: 1.35 !important;
+      }
+      table {
+        display: block !important;
+        width: 100% !important;
+        overflow-x: auto !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        background: #fff !important;
+        -webkit-overflow-scrolling: touch;
+      }
+      thead,
+      tbody {
+        display: table !important;
+        min-width: 600px !important;
+        width: 100% !important;
+      }
+      th,
+      td {
+        min-width: 128px !important;
+        padding: 9px !important;
+        vertical-align: top !important;
+      }
+      td:first-child,
+      th:first-child {
+        min-width: 88px !important;
+      }
+      ul,
+      ol {
+        padding-left: 18px !important;
+      }
+      footer {
+        padding: 0 6px !important;
+      }
+    }
+  </style>
+</head>
+<body style="margin:0;background:#f7f9fc;color:#0f172a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',system-ui,sans-serif;line-height:1.62;">
+  <article style="width:min(1180px,calc(100% - 32px));margin:0 auto;padding:32px 0 72px;">
+    <header style="border:1px solid #dbe3ef;border-radius:8px;background:#fff;padding:24px;box-shadow:0 12px 28px rgba(15,23,42,.06);">
+      <p style="margin:0 0 8px;color:#2563eb;font-size:14px;font-weight:800;">2026-06-29 · 원컨텐츠 기반 Flow 변환 기획</p>
+      <h1 style="margin:0;font-size:34px;line-height:1.2;letter-spacing:0;word-break:keep-all;">엄선 원컨텐츠 9개를 Flow Map / Flow / Step / Item으로 자르는 초안</h1>
+      <p style="margin:12px 0 0;max-width:880px;color:#475569;font-size:16px;">이 문서는 실제 URL과 첨부 파일을 먼저 확인한 뒤, 현재 FlowMe의 Source-to-Flow Conversion Gate와 <strong>Flow Map &gt; Flow &gt; Step &gt; Item</strong> 기준으로 변환 방향만 정리한 기획 리포트입니다. 앱 구현, seed 추가, 라우트 수정, 공개 노출 판단은 포함하지 않습니다.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;">
+        <span style="display:inline-flex;align-items:center;border:1px solid #bfdbfe;border-radius:999px;background:#eff6ff;color:#1d4ed8;padding:5px 10px;font-size:13px;font-weight:800;">실제 URL 열람</span>
+        <span style="display:inline-flex;align-items:center;border:1px solid #bbf7d0;border-radius:999px;background:#f0fdf4;color:#15803d;padding:5px 10px;font-size:13px;font-weight:800;">첨부 파일 일부 확인</span>
+        <span style="display:inline-flex;align-items:center;border:1px solid #fde68a;border-radius:999px;background:#fffbeb;color:#92400e;padding:5px 10px;font-size:13px;font-weight:800;">기획안만 작성</span>
+        <span style="display:inline-flex;align-items:center;border:1px solid #fecaca;border-radius:999px;background:#fff1f2;color:#be123c;padding:5px 10px;font-size:13px;font-weight:800;">사용자 검증 아님</span>
+      </div>
+    </header>
+
+    <section style="margin-top:16px;border:1px solid #dbe3ef;border-radius:8px;background:#fff;padding:22px;">
+      <h2 style="margin:0 0 12px;font-size:24px;letter-spacing:0;">판정 기준</h2>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;">
+        <div style="border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;padding:14px;">
+          <p style="margin:0 0 6px;color:#64748b;font-size:13px;font-weight:800;">Gate</p>
+          <h3 style="margin:0 0 6px;font-size:18px;">원문 모양이 먼저</h3>
+          <p style="margin:0;color:#475569;font-size:14px;">사이트, 글, 표, 영상, 재생목록, 파일 중 무엇이 원본 spine인지 먼저 정하고, UI 컴포넌트나 항목 수를 나중에 정합니다.</p>
+        </div>
+        <div style="border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;padding:14px;">
+          <p style="margin:0 0 6px;color:#64748b;font-size:13px;font-weight:800;">사용자 입력</p>
+          <h3 style="margin:0 0 6px;font-size:18px;">캘린더/투두 수준</h3>
+          <p style="margin:0;color:#475569;font-size:14px;">생년월일, 시작일, 시험 준비 시작일, 이사일, 결혼식 날짜처럼 산출물 생성에 필요한 값만 상단 입력으로 둡니다.</p>
+        </div>
+        <div style="border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;padding:14px;">
+          <p style="margin:0 0 6px;color:#64748b;font-size:13px;font-weight:800;">계층</p>
+          <h3 style="margin:0 0 6px;font-size:18px;">Step은 최소 실행 단위</h3>
+          <p style="margin:0;color:#475569;font-size:14px;">Step은 캘린더 일정, 할 일, 시트 row, 진도 row가 될 수 있어야 합니다. Item은 Step 안의 메모, URL, 기준, 체크 행입니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:16px;border:1px solid #dbe3ef;border-radius:8px;background:#fff;padding:22px;">
+      <h2 style="margin:0 0 12px;font-size:24px;letter-spacing:0;">모바일 빠른 결론</h2>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
+        <div style="border:1px solid #bbf7d0;border-radius:8px;background:#f0fdf4;padding:14px;">
+          <p style="margin:0 0 6px;color:#15803d;font-size:13px;font-weight:800;">바로 Flow 후보</p>
+          <h3 style="margin:0 0 6px;font-size:18px;">이사, 오픽, 이유식</h3>
+          <p style="margin:0;color:#334155;font-size:14px;">원문 row와 사용자 입력값이 분명합니다. 이사는 D-day, 오픽은 2주/1달 시트, 이유식은 시작일별 식단표가 spine입니다.</p>
+        </div>
+        <div style="border:1px solid #bfdbfe;border-radius:8px;background:#eff6ff;padding:14px;">
+          <p style="margin:0 0 6px;color:#1d4ed8;font-size:13px;font-weight:800;">버전형 후보</p>
+          <h3 style="margin:0 0 6px;font-size:18px;">결혼, 신차 구매</h3>
+          <p style="margin:0;color:#334155;font-size:14px;">결혼은 원문별 타임라인/체크리스트 버전을 분리하고, 신차 구매는 구매 방식별 버전으로 나누는 편이 안전합니다.</p>
+        </div>
+        <div style="border:1px solid #fde68a;border-radius:8px;background:#fffbeb;padding:14px;">
+          <p style="margin:0 0 6px;color:#92400e;font-size:13px;font-weight:800;">공식/민감 주의</p>
+          <h3 style="margin:0 0 6px;font-size:18px;">영유아 예방접종</h3>
+          <p style="margin:0;color:#334155;font-size:14px;">공식 일정표 row만 사용하고, 접종 판단이나 지연접종 해석은 병원/공식 확인으로 내려야 합니다.</p>
+        </div>
+        <div style="border:1px solid #fecaca;border-radius:8px;background:#fff1f2;padding:14px;">
+          <p style="margin:0 0 6px;color:#be123c;font-size:13px;font-weight:800;">전체 단위는 보류</p>
+          <h3 style="margin:0 0 6px;font-size:18px;">펀맘 전체, 올블랑 채널</h3>
+          <p style="margin:0;color:#334155;font-size:14px;">사이트/채널 전체는 너무 넓습니다. 카테고리 하나 또는 재생목록 하나를 골라야 FlowMe gate를 통과합니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:16px;border:1px solid #dbe3ef;border-radius:8px;background:#fff;padding:22px;">
+      <h2 style="margin:0 0 12px;font-size:24px;letter-spacing:0;">전체 판정 요약</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;">
+        <thead>
+          <tr>
+            <th style="padding:10px;border-bottom:1px solid #dbe3ef;text-align:left;color:#334155;background:#f8fafc;">#</th>
+            <th style="padding:10px;border-bottom:1px solid #dbe3ef;text-align:left;color:#334155;background:#f8fafc;">원컨텐츠</th>
+            <th style="padding:10px;border-bottom:1px solid #dbe3ef;text-align:left;color:#334155;background:#f8fafc;">원문 형태</th>
+            <th style="padding:10px;border-bottom:1px solid #dbe3ef;text-align:left;color:#334155;background:#f8fafc;">FlowMe 판정</th>
+            <th style="padding:10px;border-bottom:1px solid #dbe3ef;text-align:left;color:#334155;background:#f8fafc;">우선 산출물</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;font-weight:800;">1</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">펀맘 육아/학습 자료실</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">사이트형 creator collection</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">채널 Park, 카테고리별 Map 후보</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">진도표/자료 bucket</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;font-weight:800;">2</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">오픽 모의고사 공부 방법</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">글 + XLSX 2개 코스</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">Flow Map 후보</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">calendar + sheet</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;font-weight:800;">3</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">초기 이유식 식단표</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">글 + ZIP/PDF/HWP 식단표</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">민감 카테고리 Flow Map 후보</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">sheet/log + 일부 calendar</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;font-weight:800;">4</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">독서 시스템/기록</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">개인 루틴 글</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">단일 Routine + Log Flow 후보</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">memo + routine + sheet</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;font-weight:800;">5</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">신차 구매 절차</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">7단계 절차 글</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">단일 Process Flow 후보</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">checklist + comparison sheet</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;font-weight:800;">6</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">영유아 예방접종</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">공식 일정표 이미지 + KDCA 링크</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">공식 schedule Flow Map 후보</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">calendar + table</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;font-weight:800;">7</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">이사 체크리스트</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">D-day 글 + XLSX 이미지 첨부</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">대표 Flow Map 후보</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">timeline + checklist</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;font-weight:800;">8</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">결혼 체크리스트 2종</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">타임라인 글 + A to Z 글</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">버전형 Flow Map family</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">timeline + sheet</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;font-weight:800;">9</td>
+            <td style="padding:10px;">올블랑 홈트레이닝 YouTube</td>
+            <td style="padding:10px;">채널 + 재생목록 + 영상</td>
+            <td style="padding:10px;">채널 Park, playlist Map / video Flow</td>
+            <td style="padding:10px;">routine calendar</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section style="margin-top:16px;border:1px solid #dbe3ef;border-radius:8px;background:#fff;padding:22px;">
+      <h2 style="margin:0 0 12px;font-size:24px;letter-spacing:0;">사용자용 컨텐츠 초안과 내부 검토 메모</h2>
+      <p style="margin:0 0 14px;color:#475569;">아래에서 <strong>사용자용 초안</strong>은 실제 화면에 들어갈 수 있는 말이고, <strong>검토 메모</strong>는 제작자/기획자가 보는 내부 판단입니다. 두 층은 앱 구현 시 반드시 분리해야 합니다.</p>
+
+      <section style="border:1px solid #e2e8f0;border-radius:8px;background:#fbfdff;padding:16px;margin-top:12px;">
+        <h3 style="margin:0 0 8px;font-size:20px;">1. 펀맘 육아 공부 컨텐츠방</h3>
+        <p style="margin:0 0 8px;color:#475569;">확인 URL: <a href="https://funmom.tistory.com/" style="color:#2563eb;">https://funmom.tistory.com/</a></p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="border:1px solid #dbeafe;border-radius:8px;background:#eff6ff;padding:14px;">
+            <p style="margin:0 0 6px;color:#1d4ed8;font-weight:800;">사용자용 초안</p>
+            <p style="margin:0;color:#334155;">“아이 수준에 맞는 프린트 자료를 고르고, 이번 주에 풀 자료만 저장합니다.”</p>
+            <ul style="margin:8px 0 0;padding-left:20px;color:#334155;">
+              <li>상위 화면: 학습 자료 고르기</li>
+              <li>자료 단위: 한글 쓰기, 수 가르기, 유아 미로찾기 같은 카테고리별 진도표</li>
+              <li>저장 단위: 오늘 프린트할 자료 또는 이번 주 자료 묶음</li>
+            </ul>
+          </div>
+          <div style="border:1px solid #fed7aa;border-radius:8px;background:#fff7ed;padding:14px;">
+            <p style="margin:0 0 6px;color:#9a3412;font-weight:800;">검토 메모</p>
+            <p style="margin:0;color:#334155;">홈에서 확인한 tree는 색칠공부 236, 미로찾기 162, 한글공부 276, 수학공부 189, 영어공부 73 등으로 넓습니다. 사이트 전체를 하나의 Flow로 만들면 “한 사용자 job”이 흐려지므로 채널 수준은 Park입니다. 첫 PoC는 `한글공부/받침있는 글자쓰기`처럼 한 카테고리를 골라 Progress Flow Map으로 자르는 편이 안전합니다.</p>
+          </div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;margin-top:12px;font-size:14px;">
+          <tbody>
+            <tr><td style="width:180px;padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">구조 판정</td><td style="padding:9px;border-top:1px solid #e2e8f0;">Creator Channel Collection. 대표 Flow는 아직 Park, 카테고리별 Flow Map 후보.</td></tr>
+            <tr><td style="padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Step 후보</td><td style="padding:9px;border-top:1px solid #e2e8f0;">원문 카테고리/글 제목에서 온 자료 row. 예: 유아용 미로찾기 활동지, 받침 글자쓰기, 수 가르기 학습자료.</td></tr>
+            <tr><td style="padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Item 후보</td><td style="padding:9px;border-top:1px solid #e2e8f0;">원본 URL, 프린트 여부, 난이도/연령 단서, 메모. 연령이 원문에 없으면 추정하지 않습니다.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section style="border:1px solid #e2e8f0;border-radius:8px;background:#fbfdff;padding:16px;margin-top:12px;">
+        <h3 style="margin:0 0 8px;font-size:20px;">2. 오픽 모의고사 공부 방법</h3>
+        <p style="margin:0 0 8px;color:#475569;">확인 URL: <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" style="color:#2563eb;">mansour.tistory.com 오픽 모의고사 공부 방법</a></p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="border:1px solid #dbeafe;border-radius:8px;background:#eff6ff;padding:14px;">
+            <p style="margin:0 0 6px;color:#1d4ed8;font-weight:800;">사용자용 초안</p>
+            <p style="margin:0;color:#334155;">“2주 코스 또는 1달 코스를 고르고, 시작일 기준으로 모의고사 회차별 연습/복습 일정을 만듭니다.”</p>
+            <ul style="margin:8px 0 0;padding-left:20px;color:#334155;">
+              <li>입력: 시작일, 코스 선택</li>
+              <li>첫 행동: 1회차 연습 일정을 캘린더에 넣고, 부족한 점 보완 칸을 시트에 둡니다.</li>
+              <li>완료 기준: 해당 회차 연습, 오픽현타/보완, 복습 여부가 표시됨.</li>
+            </ul>
+          </div>
+          <div style="border:1px solid #fed7aa;border-radius:8px;background:#fff7ed;padding:14px;">
+            <p style="margin:0 0 6px;color:#9a3412;font-weight:800;">검토 메모</p>
+            <p style="margin:0;color:#334155;">첨부 XLSX를 다운로드해 확인했습니다. 시트는 `1달 코스`와 `2주 코스` 두 개이고, 1달 코스는 10회차를 3번씩 반복, 2주 코스는 하루 2회차씩 반복하는 표 구조입니다. 원문 row가 충분하므로 Progress/Timeline Map으로 적합합니다.</p>
+          </div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;margin-top:12px;font-size:14px;">
+          <tbody>
+            <tr><td style="width:180px;padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Conversion decision</td><td style="padding:9px;border-top:1px solid #e2e8f0;">Flow Map: 오픽 모의고사 준비 맵 → Flow: 2주 코스 / 1달 코스 → Step: 날짜별 회차 연습/복습 row → Item: 오픽현타, 부족한 점 보완, 체크, 원문 링크.</td></tr>
+            <tr><td style="padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Primary destination</td><td style="padding:9px;border-top:1px solid #e2e8f0;">hybrid. 캘린더는 날짜 알림, 시트는 회차/보완/복습 상태 관리.</td></tr>
+            <tr><td style="padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Do not build</td><td style="padding:9px;border-top:1px solid #e2e8f0;">오픽 답변 문장, 점수 예측, 학습법 효과 보장을 새로 만들지 않습니다.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section style="border:1px solid #e2e8f0;border-radius:8px;background:#fbfdff;padding:16px;margin-top:12px;">
+        <h3 style="margin:0 0 8px;font-size:20px;">3. 이유식 식단표</h3>
+        <p style="margin:0 0 8px;color:#475569;">확인 URL: <a href="https://blog.naver.com/01695258757/222768860919" style="color:#2563eb;">https://blog.naver.com/01695258757/222768860919</a></p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="border:1px solid #dbeafe;border-radius:8px;background:#eff6ff;padding:14px;">
+            <p style="margin:0 0 6px;color:#1d4ed8;font-weight:800;">사용자용 초안</p>
+            <p style="margin:0;color:#334155;">“아기 시작일 버전을 고르고, 날짜별 식단과 새 재료 체크를 시트로 받습니다.”</p>
+            <ul style="margin:8px 0 0;padding-left:20px;color:#334155;">
+              <li>입력: 아기 생년월일 또는 이유식 시작일, 시작 버전 150/160/170/174/180일</li>
+              <li>주요 화면: 오늘 식단, 새 재료, 알레르기 체크, 먹은 양</li>
+              <li>내보내기: 식단 시트, 새 재료 체크 캘린더, 큐브 재고표</li>
+            </ul>
+          </div>
+          <div style="border:1px solid #fed7aa;border-radius:8px;background:#fff7ed;padding:14px;">
+            <p style="margin:0 0 6px;color:#9a3412;font-weight:800;">검토 메모</p>
+            <p style="margin:0;color:#334155;">본문에서 파일 비밀번호 `211111`과 첨부 위치를 확인했고, ZIP을 해당 비밀번호로 열었습니다. ZIP에는 150/160/170/180일 시작 HWP/PDF, 174일 따라하기 버전, 큐브재고표가 들어 있습니다. PDF는 날짜, 베이스죽, 토핑반찬, 간식, NEW 알레르기 O/X, 먹은 양 row를 제공합니다.</p>
+          </div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;margin-top:12px;font-size:14px;">
+          <tbody>
+            <tr><td style="width:180px;padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Conversion decision</td><td style="padding:9px;border-top:1px solid #e2e8f0;">민감 카테고리 Flow Map: 초기 이유식 식단표 → Flow: 시작일 버전별 식단표 / 큐브 재고표 → Step: D+n 날짜 row 또는 재료 재고 row → Item: 베이스, 토핑, 간식, NEW, 알레르기 체크, 먹은 양.</td></tr>
+            <tr><td style="padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Primary destination</td><td style="padding:9px;border-top:1px solid #e2e8f0;">sheet/log. 캘린더는 새 재료 시도일 같은 보조 알림만.</td></tr>
+            <tr><td style="padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Source/risk</td><td style="padding:9px;border-top:1px solid #e2e8f0;">블로그/제작자 식단표이므로 공식 의료 조언처럼 보이면 안 됩니다. 알레르기 반응, 질환, 성장 상태는 전문가 상담/공식 안내 확인 문구를 Step detail에 둡니다.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section style="border:1px solid #e2e8f0;border-radius:8px;background:#fbfdff;padding:16px;margin-top:12px;">
+        <h3 style="margin:0 0 8px;font-size:20px;">4. 독서 기록 / 독서 시스템</h3>
+        <p style="margin:0 0 8px;color:#475569;">확인 URL: <a href="https://blog.naver.com/naristyle87/222978131890" style="color:#2563eb;">https://blog.naver.com/naristyle87/222978131890</a></p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="border:1px solid #dbeafe;border-radius:8px;background:#eff6ff;padding:14px;">
+            <p style="margin:0 0 6px;color:#1d4ed8;font-weight:800;">사용자용 초안</p>
+            <p style="margin:0;color:#334155;">“매달 읽을 책 5권을 고르고, 아침 읽고 쓰기와 자기 전 전자책 읽기를 반복합니다.”</p>
+            <ul style="margin:8px 0 0;padding-left:20px;color:#334155;">
+              <li>입력: 시작일, 아침 읽고 쓰는 시간, 이번 달 책 목록</li>
+              <li>주요 기록: 오늘 읽음/씀, 잠들기 전 전자책, 완독 수, 구매 규칙 메모</li>
+              <li>완료 기준: 월말에 읽은 책, 리뷰/메모, 다음 달 책 목록이 남음.</li>
+            </ul>
+          </div>
+          <div style="border:1px solid #fed7aa;border-radius:8px;background:#fff7ed;padding:14px;">
+            <p style="margin:0 0 6px;color:#9a3412;font-weight:800;">검토 메모</p>
+            <p style="margin:0;color:#334155;">원문은 `오전 1시간`, `잠들기 직전 전자책`, `매달 초 5권 뽑기`, `1권 반당 1권 사기`, `책 70권 읽기` 같은 개인 시스템입니다. 책 자체의 목차나 순서가 아니므로 Flow Map보다 단일 Routine + Log Flow가 맞습니다.</p>
+          </div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;margin-top:12px;font-size:14px;">
+          <tbody>
+            <tr><td style="width:180px;padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Conversion decision</td><td style="padding:9px;border-top:1px solid #e2e8f0;">Single Flow. Step: 월초 책 5권 고르기, 아침 읽고 쓰기, 잠들기 전 전자책 읽기, 완독/구매 규칙 기록. Item: 책 제목, 장르, 완료 여부, 리뷰 링크, 구매 보류 메모.</td></tr>
+            <tr><td style="padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Primary destination</td><td style="padding:9px;border-top:1px solid #e2e8f0;">memo + routine + light sheet.</td></tr>
+            <tr><td style="padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Do not build</td><td style="padding:9px;border-top:1px solid #e2e8f0;">독서법 코칭 앱, 추천 알고리즘, 책 리뷰 자동 생성으로 확장하지 않습니다.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section style="border:1px solid #e2e8f0;border-radius:8px;background:#fbfdff;padding:16px;margin-top:12px;">
+        <h3 style="margin:0 0 8px;font-size:20px;">5. 신차 구매</h3>
+        <p style="margin:0 0 8px;color:#475569;">확인 URL: <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" style="color:#2563eb;">https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners</a></p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="border:1px solid #dbeafe;border-radius:8px;background:#eff6ff;padding:14px;">
+            <p style="margin:0 0 6px;color:#1d4ed8;font-weight:800;">사용자용 초안</p>
+            <p style="margin:0;color:#334155;">“차량 선택부터 출고 확인, 등록, 보험까지 구매 단계별로 빠뜨릴 항목을 체크합니다.”</p>
+            <ul style="margin:8px 0 0;padding-left:20px;color:#334155;">
+              <li>입력: 구매 시작일, 출고 예정일, 구매 방식</li>
+              <li>주요 Step: 예산/차량, 구매 방식, 견적/협상, 계약, 출고/인수, 등록, 보험</li>
+              <li>완료 기준: 계약서 조건, 차량 상태, 등록/보험 완료 여부가 기록됨.</li>
+            </ul>
+          </div>
+          <div style="border:1px solid #fed7aa;border-radius:8px;background:#fff7ed;padding:14px;">
+            <p style="margin:0 0 6px;color:#9a3412;font-weight:800;">검토 메모</p>
+            <p style="margin:0;color:#334155;">원문은 2026-01-01 수정 글이며 1단계 예산/차량 선택부터 7단계 보험 가입까지 절차가 분명합니다. 금융/계약 성격이 있으므로 견적 비교와 확인 체크를 돕되, FLOW가 구매 결정을 내려주는 화면으로 만들면 안 됩니다.</p>
+          </div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;margin-top:12px;font-size:14px;">
+          <tbody>
+            <tr><td style="width:180px;padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Conversion decision</td><td style="padding:9px;border-top:1px solid #e2e8f0;">Single Process Flow. 케이스별 확장은 버전으로 분리: 현금 구매, 할부, 장기렌트/리스.</td></tr>
+            <tr><td style="padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Primary destination</td><td style="padding:9px;border-top:1px solid #e2e8f0;">checklist + comparison sheet. 날짜가 필요한 것은 출고 예정일, 등록 기한, 보험 가입 확인 정도입니다.</td></tr>
+            <tr><td style="padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Source/risk</td><td style="padding:9px;border-top:1px solid #e2e8f0;">취득세, 보험, 등록 기한 같은 값은 원문 근거와 공식 확인 링크를 분리해야 합니다. 비용 절감/최저가 보장은 금지합니다.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section style="border:1px solid #e2e8f0;border-radius:8px;background:#fbfdff;padding:16px;margin-top:12px;">
+        <h3 style="margin:0 0 8px;font-size:20px;">6. 영유아 예방접종</h3>
+        <p style="margin:0 0 8px;color:#475569;">확인 URL: <a href="https://khms.or.kr/healthy_life/prevention/vaccination_child" style="color:#2563eb;">https://khms.or.kr/healthy_life/prevention/vaccination_child</a></p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="border:1px solid #dbeafe;border-radius:8px;background:#eff6ff;padding:14px;">
+            <p style="margin:0 0 6px;color:#1d4ed8;font-weight:800;">사용자용 초안</p>
+            <p style="margin:0;color:#334155;">“아이 생년월일을 넣고, 국가예방접종 일정과 다음 접종 준비 항목을 캘린더로 확인합니다.”</p>
+            <ul style="margin:8px 0 0;padding-left:20px;color:#334155;">
+              <li>입력: 아이 생년월일</li>
+              <li>주요 화면: 다음 접종, 전체 일정표, 접종 전 확인 메모</li>
+              <li>완료 기준: 접종 완료/보류/병원 확인 필요 중 하나가 기록됨.</li>
+            </ul>
+          </div>
+          <div style="border:1px solid #fed7aa;border-radius:8px;background:#fff7ed;padding:14px;">
+            <p style="margin:0 0 6px;color:#9a3412;font-weight:800;">검토 메모</p>
+            <p style="margin:0;color:#334155;">KHMS 원문은 `어린이 표준예방접종 일정표`, `각 백신의 최소 접종간격`, `미접종 소아의 예방접종 일정표`, `지연시 예방접종(7~18세)` 이미지를 제공하고 질병관리청 예방접종도우미 링크로 연결합니다. 의료 민감도가 높으므로 공식 schedule row를 그대로 쓰고, 해석/판단은 병원/공식 확인으로 넘겨야 합니다.</p>
+          </div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;margin-top:12px;font-size:14px;">
+          <tbody>
+            <tr><td style="width:180px;padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Conversion decision</td><td style="padding:9px;border-top:1px solid #e2e8f0;">Official Schedule Flow Map. Flow: 국가예방접종, 기타 예방접종, 접종간격/지연접종 참고. Step: 백신-차수-권장 월령 row. Item: 백신명, 차수, 월령 범위, 공식 링크, 병원 확인 메모.</td></tr>
+            <tr><td style="padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Primary destination</td><td style="padding:9px;border-top:1px solid #e2e8f0;">calendar + table. 생년월일 기준으로 월령 창을 계산하되, 실제 접종 가능 여부는 의료기관 확인.</td></tr>
+            <tr><td style="padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Do not build</td><td style="padding:9px;border-top:1px solid #e2e8f0;">접종 여부 판단, 금기 판단, 지연접종 처방, 의학적 해석을 FLOW가 대신하지 않습니다.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section style="border:1px solid #e2e8f0;border-radius:8px;background:#fbfdff;padding:16px;margin-top:12px;">
+        <h3 style="margin:0 0 8px;font-size:20px;">7. 이사 체크리스트</h3>
+        <p style="margin:0 0 8px;color:#475569;">확인 URL: <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" style="color:#2563eb;">ajd.co.kr 이사 준비 체크리스트</a></p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="border:1px solid #dbeafe;border-radius:8px;background:#eff6ff;padding:14px;">
+            <p style="margin:0 0 6px;color:#1d4ed8;font-weight:800;">사용자용 초안</p>
+            <p style="margin:0;color:#334155;">“이사일을 넣으면 D-30, D-10, D-3, D-1, 이사 당일 체크가 날짜별로 정리됩니다.”</p>
+            <ul style="margin:8px 0 0;padding-left:20px;color:#334155;">
+              <li>입력: 이사일</li>
+              <li>주요 Step: 이사 방식 확인, 견적 예약, 주소 변경, 도시가스/자동이체, 잔금/귀중품, D-Day 정산/전입신고</li>
+              <li>완료 기준: 날짜별 항목이 완료/보류/문의 필요로 표시됨.</li>
+            </ul>
+          </div>
+          <div style="border:1px solid #fed7aa;border-radius:8px;background:#fff7ed;padding:14px;">
+            <p style="margin:0 0 6px;color:#9a3412;font-weight:800;">검토 메모</p>
+            <p style="margin:0;color:#334155;">원문은 D-30/D-10/D-3/D-1/D-Day 표와 기관 열을 제공합니다. 첨부 XLSX는 셀 데이터가 아니라 큰 PNG 이미지 1장으로 구성되어 있어 자동 row import에는 부적합합니다. 기획 기준은 기사 본문 표를 우선합니다.</p>
+          </div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;margin-top:12px;font-size:14px;">
+          <tbody>
+            <tr><td style="width:180px;padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Conversion decision</td><td style="padding:9px;border-top:1px solid #e2e8f0;">대표 Timeline Flow Map 후보. Flow: D-30 준비, D-10 주소/예약, D-3 설비/서류, D-1 최종확인, D-Day 출발지/도착지. Step: 원문 표의 일정-항목-관할기관 row.</td></tr>
+            <tr><td style="padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Primary destination</td><td style="padding:9px;border-top:1px solid #e2e8f0;">hybrid. 캘린더 마감 + 체크리스트 + 시트.</td></tr>
+            <tr><td style="padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Source/risk</td><td style="padding:9px;border-top:1px solid #e2e8f0;">부동산/전입/잔금/전세권 설정은 지역과 계약별 차이가 있으므로 공식/기관 확인 링크를 별도 detail로 둡니다.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section style="border:1px solid #e2e8f0;border-radius:8px;background:#fbfdff;padding:16px;margin-top:12px;">
+        <h3 style="margin:0 0 8px;font-size:20px;">8. 결혼 체크리스트</h3>
+        <p style="margin:0 0 8px;color:#475569;">확인 URL: <a href="https://blog.naver.com/wilklove/223518896995" style="color:#2563eb;">네이버 결혼준비 타임라인</a> · <a href="https://gongysd.com/wedding-notion/?bmode=view&idx=167989966" style="color:#2563eb;">공여사들 결혼준비 체크리스트</a></p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="border:1px solid #dbeafe;border-radius:8px;background:#eff6ff;padding:14px;">
+            <p style="margin:0 0 6px;color:#1d4ed8;font-weight:800;">사용자용 초안</p>
+            <p style="margin:0;color:#334155;">“결혼식 날짜를 넣고, 12개월 전부터 본식 한 달 전까지 준비 항목을 일정표로 받습니다.”</p>
+            <ul style="margin:8px 0 0;padding-left:20px;color:#334155;">
+              <li>입력: 결혼식 날짜</li>
+              <li>타임라인 버전: 12개월 전, 10개월 전, 7개월 전, 6개월 전, 3개월 전, 1개월 전</li>
+              <li>A to Z 버전: 웨딩홀, 상견례, 플래너, 스드메, 드레스, 예복, 예물, 웨딩촬영 등 단계별 체크</li>
+            </ul>
+          </div>
+          <div style="border:1px solid #fed7aa;border-radius:8px;background:#fff7ed;padding:14px;">
+            <p style="margin:0 0 6px;color:#9a3412;font-weight:800;">검토 메모</p>
+            <p style="margin:0;color:#334155;">두 원문을 하나의 구조로 섞으면 one-primary-source 원칙을 깨뜨립니다. 네이버 글은 D-day timeline, 공여사들 글은 A to Z process checklist로 각각 유지하고, 상위에는 `결혼준비 버전 선택` family만 둡니다.</p>
+          </div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;margin-top:12px;font-size:14px;">
+          <tbody>
+            <tr><td style="width:180px;padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Conversion decision</td><td style="padding:9px;border-top:1px solid #e2e8f0;">Flow Map family. Flow A: 네이버 1년 타임라인. Flow B: 공여사들 A to Z 체크리스트. Step은 각 원문의 시간대/항목 row에서만 생성.</td></tr>
+            <tr><td style="padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Primary destination</td><td style="padding:9px;border-top:1px solid #e2e8f0;">timeline + sheet. 본식 날짜 기준 calendar, 업체 비교는 sheet/memo.</td></tr>
+            <tr><td style="padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Do not build</td><td style="padding:9px;border-top:1px solid #e2e8f0;">두 글의 항목을 합쳐 “완벽한 결혼준비 100개”로 만들지 않습니다. 원문별 버전 차이를 보존합니다.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section style="border:1px solid #e2e8f0;border-radius:8px;background:#fbfdff;padding:16px;margin-top:12px;">
+        <h3 style="margin:0 0 8px;font-size:20px;">9. 유튜브 홈트레이닝 - Allblanc TV</h3>
+        <p style="margin:0 0 8px;color:#475569;">확인 URL: <a href="https://youtube.com/@allblanctv" style="color:#2563eb;">https://youtube.com/@allblanctv</a></p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="border:1px solid #dbeafe;border-radius:8px;background:#eff6ff;padding:14px;">
+            <p style="margin:0 0 6px;color:#1d4ed8;font-weight:800;">사용자용 초안</p>
+            <p style="margin:0;color:#334155;">“운동 영상을 이번 주 운동 일정으로 저장하고, 실행 후 강도와 몸 상태만 기록합니다.”</p>
+            <ul style="margin:8px 0 0;padding-left:20px;color:#334155;">
+              <li>영상 1개: 단일 Routine Flow</li>
+              <li>재생목록 1개: 여러 영상의 Routine/Progress Flow Map</li>
+              <li>입력: 시작일, 운동 요일/시간, 반복 종료일</li>
+            </ul>
+          </div>
+          <div style="border:1px solid #fed7aa;border-radius:8px;background:#fff7ed;padding:14px;">
+            <p style="margin:0 0 6px;color:#9a3412;font-weight:800;">검토 메모</p>
+            <p style="margin:0;color:#334155;">채널 페이지에서 홈트레이닝/타바타/챌린지 성격과 재생목록을 확인했습니다. 재생목록에는 `7 Days Abs Challenge`, `Allblanc Yoga`, `Allblanc Beginner Workout`, `Allblanc HIIT`, `HOME WALKING for Beginner`, `Allblanc Stretching` 같은 묶음이 보입니다. 채널 전체는 Park이고, 정확한 영상/재생목록을 선택한 뒤 원문 제목과 링크를 Step에 넣어야 합니다.</p>
+          </div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;margin-top:12px;font-size:14px;">
+          <tbody>
+            <tr><td style="width:180px;padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Conversion decision</td><td style="padding:9px;border-top:1px solid #e2e8f0;">Channel Park. Playlist = Flow Map, video = single Routine Flow. Step: 영상 제목/회차. Item: 원본 영상 URL, 준비, 운동 후 기록, 중단 조건.</td></tr>
+            <tr><td style="padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Primary destination</td><td style="padding:9px;border-top:1px solid #e2e8f0;">calendar. 반복 운동 일정과 영상 URL을 각 일정 설명에 포함.</td></tr>
+            <tr><td style="padding:9px;border-top:1px solid #e2e8f0;font-weight:800;">Do not build</td><td style="padding:9px;border-top:1px solid #e2e8f0;">영상에 없는 동작 순서, 운동 효과, 칼로리, 난이도 판정을 만들지 않습니다.</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </section>
+
+    <section style="margin-top:16px;border:1px solid #dbe3ef;border-radius:8px;background:#fff;padding:22px;">
+      <h2 style="margin:0 0 12px;font-size:24px;letter-spacing:0;">우선순위 제안</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;">
+        <thead>
+          <tr>
+            <th style="padding:10px;border-bottom:1px solid #dbe3ef;text-align:left;color:#334155;background:#f8fafc;">우선순위</th>
+            <th style="padding:10px;border-bottom:1px solid #dbe3ef;text-align:left;color:#334155;background:#f8fafc;">대상</th>
+            <th style="padding:10px;border-bottom:1px solid #dbe3ef;text-align:left;color:#334155;background:#f8fafc;">이유</th>
+            <th style="padding:10px;border-bottom:1px solid #dbe3ef;text-align:left;color:#334155;background:#f8fafc;">다음 확인</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;font-weight:800;color:#15803d;">1</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">이사 체크리스트</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">D-day 구조, 원문 row, 사용자 입력이 모두 명확합니다.</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">현재 `moving-d30` 기준과 비교해 중복/개선 항목 정리.</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;font-weight:800;color:#15803d;">2</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">오픽 모의고사</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">첨부 XLSX의 2주/1달 코스가 source-derived progress rows를 제공합니다.</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">시험일 기준으로 재계산할지, 시작일 기준만 둘지 결정.</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;font-weight:800;color:#15803d;">3</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">이유식 식단표</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">다운로드/비밀번호/시작일별 PDF가 확인되었고, sheet/log 가치가 높습니다.</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">민감 문구와 공식 기준 링크를 분리한 후 검토.</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;font-weight:800;color:#1d4ed8;">4</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">결혼 타임라인</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">결혼식 날짜 anchor가 강하고, 여러 원문 버전이 장점이 됩니다.</td>
+            <td style="padding:10px;border-bottom:1px solid #edf2f7;">원문별 버전 분리 정책을 먼저 확정.</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;font-weight:800;color:#92400e;">보류</td>
+            <td style="padding:10px;">펀맘 전체, 올블랑 채널 전체</td>
+            <td style="padding:10px;">채널/사이트 전체는 사용자 job이 넓어 one-source-one-job gate를 통과하기 어렵습니다.</td>
+            <td style="padding:10px;">구체 카테고리 또는 재생목록 하나를 선택.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section style="margin-top:16px;border:1px solid #dbe3ef;border-radius:8px;background:#fff;padding:22px;">
+      <h2 style="margin:0 0 12px;font-size:24px;letter-spacing:0;">출처 확인 로그</h2>
+      <ul style="margin:0;padding-left:20px;color:#475569;">
+        <li style="margin:6px 0;">펀맘 홈: 카테고리 tree와 글 수 확인. 색칠공부, 미로찾기, 한글공부, 수학공부, 영어공부, 엄마표 홈스쿨, 엄마표 양식으로 나뉨.</li>
+        <li style="margin:6px 0;">오픽 글: XLSX 첨부 다운로드 성공. `1달 코스` A1:Q30, `2주 코스` A1:Q15 구조 확인.</li>
+        <li style="margin:6px 0;">이유식 글: 네이버 모바일 원문 열람, 파일 비밀번호 `211111`, ZIP 다운로드/해제 성공. PDF 텍스트에서 D+n 식단표 row 확인.</li>
+        <li style="margin:6px 0;">독서 글: 오전 1시간, 잠들기 직전 전자책, 월초 5권, 구매 규칙, 연간 70권 목표 단서 확인.</li>
+        <li style="margin:6px 0;">신차 글: 1단계 예산/차량 선택부터 7단계 보험 가입까지 절차 확인. 마지막 수정일 2026-01-01로 표기됨.</li>
+        <li style="margin:6px 0;">예방접종 글: KHMS 일정표 이미지 5개와 질병관리청 예방접종도우미 링크 확인. 첫 표 이미지는 백신/차수/월령 grid 구조.</li>
+        <li style="margin:6px 0;">이사 글: D-30/D-10/D-3/D-1/D-Day 표와 첨부 다운로드 확인. XLSX 내부는 셀 데이터가 아니라 이미지 기반 체크리스트.</li>
+        <li style="margin:6px 0;">결혼 글 2종: 네이버 1년 timeline과 공여사들 단계형 A to Z 체크리스트 확인. 공여사들 URL은 일반 웹 fetch 403 후 브라우저 User-Agent로 200 응답 확인.</li>
+        <li style="margin:6px 0;">Allblanc TV: 채널/재생목록 페이지에서 홈트레이닝 채널 설명과 playlist 제목 단서 확인.</li>
+      </ul>
+    </section>
+
+    <section style="margin-top:16px;border:1px solid #dbe3ef;border-radius:8px;background:#fff;padding:22px;">
+      <h2 style="margin:0 0 12px;font-size:24px;letter-spacing:0;">검토 때 결정할 질문</h2>
+      <ol style="margin:0;padding-left:22px;color:#475569;">
+        <li style="margin:7px 0;">첫 구현 후보를 이사, 오픽, 이유식 중 어디로 둘 것인가?</li>
+        <li style="margin:7px 0;">오픽은 `시작일`만 받을 것인가, `시험일`을 받아 역산할 것인가?</li>
+        <li style="margin:7px 0;">이유식은 creator 식단표로 둘 것인가, 공식 이유식 원칙 링크를 보조 출처로 붙일 것인가?</li>
+        <li style="margin:7px 0;">결혼은 한 원문 버전씩 따로 만들 것인가, 버전 선택형 Map family를 먼저 보여줄 것인가?</li>
+        <li style="margin:7px 0;">채널/사이트형 원문은 creator-channel 페이지로 먼저 실험할 것인가, 특정 카테고리/재생목록 하나만 Flow로 만들 것인가?</li>
+      </ol>
+    </section>
+
+    <footer style="margin-top:16px;color:#64748b;font-size:13px;">
+      이 리포트는 기획 검토용입니다. 여기에 적힌 후보는 공개 후보, 검증 후보, 구현 완료 상태가 아닙니다.
+    </footer>
+  </article>
+</body>
+</html>

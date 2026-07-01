@@ -1,0 +1,1884 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>엄선 원컨텐츠 9개 FlowMe 상세 변환 스펙</title>
+  <style>
+    * { box-sizing: border-box; }
+    html { background: #f6f8fb; }
+    body {
+      margin: 0;
+      color: #111827;
+      background: #f6f8fb;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+      line-height: 1.62;
+    }
+    article {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 72px;
+    }
+    header,
+    section {
+      border: 1px solid #d9e2ef;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 12px 26px rgba(15, 23, 42, .055);
+    }
+    header { padding: 26px; }
+    section { margin-top: 16px; padding: 22px; }
+    h1, h2, h3, h4 { margin: 0; letter-spacing: 0; word-break: keep-all; }
+    h1 { font-size: 34px; line-height: 1.2; }
+    h2 { font-size: 24px; line-height: 1.28; }
+    h3 { font-size: 20px; line-height: 1.34; }
+    h4 { font-size: 16px; line-height: 1.38; }
+    p { margin: 0; }
+    a { color: #2563eb; overflow-wrap: anywhere; }
+    ul, ol { margin: 8px 0 0; padding-left: 21px; }
+    li { margin: 5px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #e5edf6;
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      color: #334155;
+      background: #f8fafc;
+      font-weight: 800;
+    }
+    .muted { color: #64748b; }
+    .lead { max-width: 920px; margin-top: 12px; color: #475569; font-size: 16px; }
+    .eyebrow { margin-bottom: 8px; color: #2563eb; font-size: 14px; font-weight: 900; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid #bfdbfe;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      padding: 5px 10px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .chip.green { border-color: #bbf7d0; background: #f0fdf4; color: #15803d; }
+    .chip.amber { border-color: #fde68a; background: #fffbeb; color: #92400e; }
+    .chip.red { border-color: #fecaca; background: #fff1f2; color: #be123c; }
+    .grid { display: grid; gap: 12px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #fbfdff;
+      padding: 14px;
+    }
+    .card.blue { border-color: #bfdbfe; background: #eff6ff; }
+    .card.green { border-color: #bbf7d0; background: #f0fdf4; }
+    .card.amber { border-color: #fde68a; background: #fffbeb; }
+    .card.red { border-color: #fecaca; background: #fff1f2; }
+    .label {
+      margin-bottom: 6px;
+      color: #475569;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .blue .label { color: #1d4ed8; }
+    .green .label { color: #15803d; }
+    .amber .label { color: #92400e; }
+    .red .label { color: #be123c; }
+    .source {
+      margin-top: 8px;
+      color: #475569;
+      font-size: 14px;
+    }
+    .spec {
+      border: 1px solid #d9e2ef;
+      border-radius: 8px;
+      background: #fff;
+      padding: 18px;
+      margin-top: 14px;
+    }
+    .spec-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid #e5edf6;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+    }
+    .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: #111827;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 900;
+      flex: 0 0 auto;
+    }
+    .title-line { display: flex; align-items: center; gap: 10px; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #334155;
+      padding: 4px 9px;
+      font-size: 12px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+    .tag.ready { background: #dcfce7; color: #166534; }
+    .tag.caution { background: #fef3c7; color: #92400e; }
+    .tag.park { background: #fee2e2; color: #991b1b; }
+    .table-wrap { margin-top: 12px; }
+    .rubric span {
+      display: inline-block;
+      margin: 3px 4px 3px 0;
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      background: #fff;
+      padding: 3px 8px;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .text-flow {
+      border: 1px solid #d9e2ef;
+      border-radius: 8px;
+      background: #fbfdff;
+      padding: 14px;
+    }
+    .text-flow pre {
+      margin: 10px 0 0;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #f8fafc;
+      color: #0f172a;
+      padding: 12px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .data-stack {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .readiness-board {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .readiness-lane {
+      border: 1px solid #d9e2ef;
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+      min-height: 100%;
+    }
+    .readiness-lane.ready { border-top: 4px solid #22c55e; }
+    .readiness-lane.import { border-top: 4px solid #f59e0b; }
+    .readiness-lane.park { border-top: 4px solid #ef4444; }
+    .lane-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .lane-item {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #f8fafc;
+      padding: 10px;
+    }
+    .lane-item strong {
+      display: block;
+      color: #0f172a;
+      line-height: 1.35;
+    }
+    .lane-item span {
+      display: block;
+      margin-top: 4px;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .data-preview {
+      border: 1px solid #d9e2ef;
+      border-radius: 8px;
+      background: #fbfdff;
+      padding: 12px 14px;
+    }
+    .data-preview summary {
+      cursor: pointer;
+      color: #0f172a;
+      font-weight: 900;
+      line-height: 1.45;
+    }
+    .data-preview summary span {
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .data-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .data-meta span {
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      background: #fff;
+      color: #334155;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .map-canvas {
+      margin-top: 12px;
+      display: grid;
+      gap: 12px;
+    }
+    .map-node,
+    .flow-node,
+    .step-node,
+    .decision-node {
+      border: 1px solid #d9e2ef;
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+    }
+    .map-node {
+      border-color: #bfdbfe;
+      background: #eff6ff;
+    }
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .flow-node {
+      border-color: #cbd5e1;
+      background: #fff;
+      position: relative;
+    }
+    .flow-title,
+    .step-title {
+      color: #0f172a;
+      font-weight: 900;
+      line-height: 1.35;
+      word-break: keep-all;
+    }
+    .node-label {
+      color: #2563eb;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .step-road {
+      display: grid;
+      gap: 8px;
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: step;
+    }
+    .step-node {
+      display: grid;
+      gap: 8px;
+      background: #fbfdff;
+      position: relative;
+      padding-left: 42px;
+      min-height: 64px;
+    }
+    .step-node::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 12px;
+      top: 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      background: #111827;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .step-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .step-meta span,
+    .item-chip {
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      background: #fff;
+      color: #334155;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+    .step-meta .date { border-color: #bfdbfe; color: #1d4ed8; background: #eff6ff; }
+    .step-meta .sheet { border-color: #bbf7d0; color: #15803d; background: #f0fdf4; }
+    .step-meta .risk { border-color: #fecaca; color: #be123c; background: #fff1f2; }
+    .item-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .decision-node {
+      border-style: dashed;
+      background: #fffbeb;
+      border-color: #fde68a;
+    }
+    .visual-note {
+      margin-top: 8px;
+      color: #475569;
+      font-size: 13px;
+    }
+    .source-badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #334155;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 850;
+    }
+    footer {
+      margin-top: 18px;
+      color: #64748b;
+      font-size: 13px;
+    }
+    @media (max-width: 760px) {
+      body { font-size: 15px; }
+      article {
+        width: 100%;
+        padding: 10px 10px 44px;
+      }
+      header,
+      section,
+      .spec {
+        margin-top: 10px;
+        padding: 14px;
+        border-radius: 8px;
+        box-shadow: none;
+      }
+      header { margin-top: 0; }
+      h1 { font-size: 23px; line-height: 1.25; }
+      h2 { font-size: 19px; line-height: 1.32; }
+      h3 { font-size: 18px; line-height: 1.34; }
+      h4 { font-size: 15px; }
+      p, li, td, th { font-size: 14px; }
+      .lead { font-size: 14px; }
+      .grid.two,
+      .grid.three,
+      .readiness-board,
+      .flow-grid { grid-template-columns: 1fr; }
+      .chips { gap: 6px; }
+      .chip,
+      .tag {
+        max-width: 100%;
+        white-space: normal;
+        line-height: 1.35;
+      }
+      .spec-head {
+        display: block;
+      }
+      .title-line {
+        align-items: flex-start;
+      }
+      .spec-head .chips {
+        margin-top: 10px;
+      }
+      table {
+        display: block;
+        overflow-x: auto;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: #fff;
+        -webkit-overflow-scrolling: touch;
+      }
+      thead,
+      tbody {
+        display: table;
+        min-width: 620px;
+        width: 100%;
+      }
+      th, td {
+        min-width: 132px;
+        padding: 9px;
+      }
+      td:first-child,
+      th:first-child {
+        min-width: 96px;
+      }
+      ul, ol { padding-left: 18px; }
+      .data-preview { padding: 11px; }
+      .data-preview summary span {
+        display: inline-flex;
+        margin: 4px 4px 0 0;
+      }
+      .step-node { padding-left: 38px; }
+      .step-meta span,
+      .item-chip { font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <header>
+      <p class="eyebrow">2026-06-30 · 검토용 상세 스펙 · 앱 구현 아님</p>
+      <h1>엄선 원컨텐츠 9개를 Flow Map / Flow / Step / Item으로 변환하는 일괄 검토안</h1>
+      <p class="lead">이 문서는 이전 원문 확인 결과를 바탕으로 9개 원컨텐츠를 한꺼번에 검토하기 위한 상세 변환 스펙입니다. 실제 앱 코드, seed 데이터, 공개 라우트, 자동 생성 로직은 만들지 않았습니다. 목적은 “무엇을 만들지”보다 “원문 구조를 어디까지 보존하고 무엇을 만들지 않을지”를 먼저 합의하는 것입니다.</p>
+      <div class="chips">
+        <span class="chip green">Source-to-Flow Gate 기준</span>
+        <span class="chip">Flow Map > Flow > Step > Item</span>
+        <span class="chip amber">사용자 입력은 날짜/선택/메모 수준</span>
+        <span class="chip red">원문에 없는 단계 생성 금지</span>
+      </div>
+    </header>
+
+    <section>
+      <h2>한꺼번에 볼 결론</h2>
+      <div class="grid three" style="margin-top:12px;">
+        <div class="card green">
+          <p class="label">먼저 구현해도 되는 상세 후보</p>
+          <h3>이사, 오픽, 신차</h3>
+          <p class="source">원문에 일정/절차 spine이 뚜렷합니다. 특히 이사는 D-day 구조라 FlowMe의 calendar + checklist 검증에 가장 가깝습니다.</p>
+        </div>
+        <div class="card amber">
+          <p class="label">수요는 크지만 가드레일 선행</p>
+          <h3>이유식, 예방접종, 홈트</h3>
+          <p class="source">건강/육아/운동 영역입니다. 일정과 기록은 만들 수 있지만 처방, 효과, 의료 판단, 동작 순서 추정은 금지해야 합니다.</p>
+        </div>
+        <div class="card red">
+          <p class="label">전체 단위는 Park</p>
+          <h3>펀맘 전체, Allblanc 채널</h3>
+          <p class="source">사이트/채널 전체는 너무 넓습니다. 카테고리 하나 또는 플레이리스트 하나를 고른 뒤에야 Flow Map으로 내려올 수 있습니다.</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>검토 대상</th>
+              <th>판정</th>
+              <th>1차 산출물</th>
+              <th>허용 입력</th>
+              <th>검토 결정</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>펀맘 육아 공부</td>
+              <td>Channel Park</td>
+              <td>카테고리별 Map 후보 목록</td>
+              <td>아이 나이, 카테고리 선택</td>
+              <td>전체 변환 보류</td>
+            </tr>
+            <tr>
+              <td>오픽 모의고사</td>
+              <td>Flow Map</td>
+              <td>2주/1달 코스 Map</td>
+              <td>시작일, 코스 선택</td>
+              <td>상세 제작 가능</td>
+            </tr>
+            <tr>
+              <td>이유식 식단표</td>
+              <td>민감 Flow Map</td>
+              <td>시작일수별 식단 로그</td>
+              <td>시작일, 시작 일수 버전</td>
+              <td>가드레일 후 제작</td>
+            </tr>
+            <tr>
+              <td>독서 기록</td>
+              <td>Routine + Log Flow</td>
+              <td>월간 독서 기록표</td>
+              <td>시작일, 목표 권수</td>
+              <td>작게 제작 가능</td>
+            </tr>
+            <tr>
+              <td>신차 구매</td>
+              <td>Process Flow</td>
+              <td>7단계 구매 체크</td>
+              <td>구매 방식, 목표일</td>
+              <td>버전 분리 필요</td>
+            </tr>
+            <tr>
+              <td>영유아 예방접종</td>
+              <td>공식 Schedule Map</td>
+              <td>생년월일 기반 일정표</td>
+              <td>생년월일</td>
+              <td>의료 판단 제외</td>
+            </tr>
+            <tr>
+              <td>이사 체크리스트</td>
+              <td>Timeline Flow Map</td>
+              <td>D-30부터 D-Day까지</td>
+              <td>이사일</td>
+              <td>1순위 후보</td>
+            </tr>
+            <tr>
+              <td>결혼 체크리스트</td>
+              <td>Flow Map Family</td>
+              <td>원문별 버전 선택</td>
+              <td>결혼식 날짜, 버전 선택</td>
+              <td>두 원문 병합 금지</td>
+            </tr>
+            <tr>
+              <td>Allblanc YouTube</td>
+              <td>Channel Park</td>
+              <td>Playlist Map / Video Flow</td>
+              <td>시작일, 반복 요일</td>
+              <td>플레이리스트 선택 후 제작</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>공통 변환 게이트</h2>
+      <div class="grid three" style="margin-top:12px;">
+        <div class="card">
+          <p class="label">1. 목적지 먼저</p>
+          <p>calendar, sheet, memo, internal check, hybrid 중 어디로 옮겨야 사용자가 바로 실행하는지 먼저 고릅니다. 화면 구조는 그 다음입니다.</p>
+        </div>
+        <div class="card">
+          <p class="label">2. 원문 spine 보존</p>
+          <p>원문에 날짜, 회차, 표, 단계, 영상, 플레이리스트가 있으면 그것만 Step 후보로 씁니다. 부족한 단계는 설명으로 채우지 않습니다.</p>
+        </div>
+        <div class="card">
+          <p class="label">3. 위험 분리</p>
+          <p>공식 정보, 창작자 경험, 주의/중단 조건을 분리합니다. 육아, 건강, 금융, 차량, 운동 영역은 보장 문구를 쓰지 않습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>텍스트형 Flow Map / Flow 컨텐츠 샘플</h2>
+      <p class="lead">피드백을 반영해 “샘플용 문장”보다 실제 들어갈 항목이 보이도록 다시 줄였습니다. 원문 row가 아직 필요한 후보는 Flow처럼 꾸미지 않고, 어떤 row를 더 가져와야 하는지 그대로 표시합니다.</p>
+      <div class="grid two" style="margin-top:12px;">
+        <div class="text-flow">
+          <p class="label">1. 펀맘 육아 공부 컨텐츠방</p>
+          <h3>Park / 카테고리 선택</h3>
+          <pre>사용자용 텍스트
+제목: 이번 주 펀맘 프린트 학습지 고르기
+입력: 아이 나이, 이번 주에 쓸 카테고리
+
+Flow가 아니라 Park
+1. 색칠공부
+2. 미로찾기게임
+3. 한글공부
+4. 수학공부
+5. 영어공부
+6. 엄마표 홈스쿨/양식
+
+사용자가 저장하는 항목
+- 자료 제목
+- 원문 URL
+- 원문에 표시된 대상 나이/난이도
+- 프린트 여부
+
+검토 메모
+사이트 전체를 Flow로 만들지 않는다. 첫 구현은 카테고리 하나의 실제 글 목록을 가져온 뒤 만든다.</pre>
+        </div>
+
+        <div class="text-flow">
+          <p class="label">2. 오픽 모의고사 공부 방법</p>
+          <h3>모의고사 1회 실행 Flow</h3>
+          <pre>사용자용 텍스트
+제목: 오픽 모의고사 영상 복습표
+입력: 시작일, 모의고사 영상 URL
+
+Step 1: 영상과 날짜 넣기
+Item: 영상 URL
+Item: 실행 날짜
+
+Step 2: 모의고사 실행하고 녹음하기
+Item: 녹음 파일
+Item: 완료 체크
+
+Step 3: 막힌 질문과 보완할 답변 적기
+Item: 막힌 질문
+Item: 보완할 표현
+
+Step 4: 다음 회차로 반복하기
+Item: 다음 영상 URL
+Item: 재도전 날짜
+
+검토 메모
+첨부 XLSX의 2주/1달 코스는 날짜 확장용이다. 사용자 화면의 Item은 영상, 녹음, 막힌 질문, 보완 메모만 둔다.</pre>
+        </div>
+
+        <div class="text-flow">
+          <p class="label">3. 이유식 식단표</p>
+          <h3>식단 row 기록 Flow</h3>
+          <pre>사용자용 텍스트
+제목: 초기 이유식 식단 기록표
+입력: 시작일, 원문 식단표 버전
+
+Step: 오늘 식단 row 기록
+Item: 원문 식단 row
+Item: 먹은 양
+Item: 알레르기 O/X
+
+원문 파일에서 확인된 열
+D+n / 베이스죽 / 토핑반찬 / 간식 / NEW / 알레르기 O/X / 먹은 양
+
+주의
+이 식단표는 원문 파일을 기록표로 옮긴 것입니다. 알레르기, 분량, 시작 가능 여부는 보호자가 공식 안내나 전문가에게 확인해야 합니다.
+
+검토 메모
+사용자 Item을 많이 만들지 않는다. 베이스죽/토핑반찬/간식은 원문 row 내부 필드로 보존한다.</pre>
+        </div>
+
+        <div class="text-flow">
+          <p class="label">4. 독서 기록</p>
+          <h3>재설계 필요 / 기록표</h3>
+          <pre>사용자용 텍스트
+제목: 독서 기록장
+입력: 이번 달, 읽을 책
+
+Flow: 월간 독서 기록표
+
+Step 1: 월초 읽을 책 후보 적기
+Item: 후보 책 5권
+Item: 보유/구매 후보
+
+Step 2: 책 한 권 기록하기
+Item: 책 제목
+Item: 읽기 상태
+Item: 메모 한 줄
+
+Step 3: 월말 권수만 세기
+Item: 이번 달 읽은 책 수
+Item: 연간 누적
+
+검토 메모
+오전 1시간/잠들기 전 전자책은 사용자가 그대로 따라 할 Step으로 만들기 약하다. seed 전 재검토한다.</pre>
+        </div>
+
+        <div class="text-flow">
+          <p class="label">5. 신차 구매 체크리스트</p>
+          <h3>Process Flow 텍스트 샘플</h3>
+          <pre>사용자용 텍스트
+제목: 신차 구매 7단계 체크리스트
+입력: 구매 방식, 목표 구매일
+
+Step 1: 예산과 차량 선택
+Item: 예산 범위 메모
+Item: 후보 차량 메모
+
+Step 2: 구매 방식 결정
+Item: 현금/할부/리스/장기렌트 중 선택
+
+Step 3: 견적과 협상
+Item: 받은 견적 링크 또는 메모
+
+Step 4: 계약
+Step 5: 출고와 검수
+Step 6: 등록
+Step 7: 보험
+
+검토 메모
+금융상품 추천, 보험 추천, 최저가 보장은 제외한다.</pre>
+        </div>
+
+        <div class="text-flow">
+          <p class="label">6. 영유아 예방 접종</p>
+          <h3>공식 일정 row Map</h3>
+          <pre>사용자용 텍스트
+제목: 아이 예방접종 일정표
+입력: 아이 생년월일
+
+Flow 1: 출생~12개월 표준 일정
+Step: 출생~4주
+Item: B형간염 1차
+Item: BCG 1회
+
+Step: 2개월
+Item: DTaP 1차
+Item: IPV 1차
+Item: Hib 1차
+Item: PCV 1차
+Item: RV 1차
+
+Step: 4개월 / 6개월 / 12~15개월
+Item: 공식 표 row를 그대로 import
+
+Flow 2: 추가접종과 학령기 일정
+Step: 15~18개월 / 24~35개월 / 4~6세 / 11~12세
+Item: 공식 표 row를 그대로 import
+
+주의
+FLOW는 날짜 정리와 기록만 돕습니다. 실제 접종 가능 여부, 지연 접종, 금기 판단은 병원 또는 공식 채널에서 확인해야 합니다.
+
+검토 메모
+단일 Step으로는 검토가 안 된다. 공식 일정 row 그룹을 Flow/Step으로 보여주되, 정확한 seed는 공식 row import 후 확정한다.</pre>
+        </div>
+
+        <div class="text-flow">
+          <p class="label">7. 이사 체크리스트</p>
+          <h3>Timeline Flow Map 텍스트 샘플</h3>
+          <pre>사용자용 텍스트
+제목: 이사 D-30 체크리스트
+입력: 이사일
+
+Flow: 기본 이사 준비
+Step: D-30
+Item: 이사 방식 확인
+Item: 견적 예약
+
+Step: D-10
+Item: 주소 변경
+Item: 자동이체 확인
+
+Step: D-3
+Item: 장비/서류 확인
+
+Step: D-1
+Item: 최종 점검
+
+Step: D-Day
+Item: 정산
+Item: 전입 관련 확인
+
+검토 메모
+본문 표 기준으로만 만든다. 첨부 XLSX는 이미지 파일이므로 row import 근거로 쓰지 않는다.</pre>
+        </div>
+
+        <div class="text-flow">
+          <p class="label">8. 결혼 체크리스트</p>
+          <h3>Flow Map Family 텍스트 샘플</h3>
+          <pre>사용자용 텍스트
+제목: 결혼 준비 체크리스트 버전 선택
+입력: 결혼식 날짜, 원문 버전
+
+Flow A: Naver 1년 타임라인
+Step: D-12개월
+Step: D-10개월
+Step: D-7개월
+Step: D-6개월
+Step: D-3개월
+Step: D-1개월
+
+Flow B: Gongysd A-to-Z 체크리스트
+Step: 웨딩홀
+Step: 상견례
+Step: 플래너
+Step: 스드메
+
+검토 메모
+두 원문을 하나로 합치지 않는다. 사용자는 버전을 고르고, 각 Flow는 자기 원문만 따른다.</pre>
+        </div>
+
+        <div class="text-flow">
+          <p class="label">9. Allblanc TV 홈트레이닝</p>
+          <h3>Video Flow 텍스트 샘플</h3>
+          <pre>사용자용 텍스트
+제목: Allblanc 영상 1개 홈트 저장
+입력: 영상 URL, 반복 요일/시간
+
+Flow: 선택한 영상 1개 실행
+Step: 원본 영상 열고 완료 체크하기
+Item: 원본 영상 URL
+Item: 반복 요일/시간
+Item: 완료 체크
+
+Flow Map 후보
+- 7 Days Abs Challenge
+- Allblanc Yoga
+- Allblanc Beginner Workout
+- Allblanc HIIT
+- HOME WALKING for Beginner
+- Allblanc Stretching
+
+주의
+강도, 통증 여부, 다음 조정은 기본 Item이 아니라 주의/메모로 분리한다. 영상에 없는 동작 순서, 세트 수, 효과, 칼로리는 만들지 않는다.</pre>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>9개 상세 스펙</h2>
+
+      <section class="spec">
+        <div class="spec-head">
+          <div>
+            <div class="title-line"><span class="num">1</span><h3>펀맘 육아 공부 컨텐츠방</h3></div>
+            <p class="source">확인 URL: <a href="https://funmom.tistory.com/">https://funmom.tistory.com/</a></p>
+          </div>
+          <div class="chips">
+            <span class="tag park">Channel Park</span>
+            <span class="tag caution">카테고리 선택 전 보류</span>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card blue">
+            <p class="label">사용자 화면 초안</p>
+            <h4>이번 주 프린트 학습지 하나 고르기</h4>
+            <p class="source">카테고리 하나를 고르고, 이번 주에 쓸 자료만 저장합니다. 자료별 나이/순서 정보가 원문에 있으면 그 값만 표시합니다.</p>
+            <ul>
+              <li>첫 행동: 카테고리 하나 선택</li>
+              <li>저장 단위: 자료 묶음 또는 단일 자료</li>
+              <li>완료 기준: 이번 주에 쓸 자료를 골라 메모/프린트 링크에 보관</li>
+            </ul>
+          </div>
+          <div class="card amber">
+            <p class="label">내부 검토 메모</p>
+            <p>사이트 전체는 하나의 Flow로 만들 수 없습니다. 확인된 tree는 창의공부, 미로찾기, 한글공부, 수학공부, 영어공부 같은 큰 카테고리 단위입니다. 나이와 순서는 개별 글마다 다를 수 있으므로 batch spec에서 임의 연령대를 만들면 안 됩니다.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><th>Conversion decision</th><td>Channel Collection Park. 카테고리 하나를 고르면 그때 Flow Map 후보로 승격합니다.</td></tr>
+              <tr><th>User need</th><td>As a parent preparing printable learning material, I need to pick age-fit worksheets from one category, so that I can use only the next usable material this week.</td></tr>
+              <tr><th>Content shape</th><td>블로그 사이트형 creator collection. 원문 spine은 카테고리 tree와 개별 글 제목/나이/자료 순서입니다.</td></tr>
+              <tr><th>Primary destination</th><td>memo + sheet. 자료 링크, 대상 나이, 출력/사용 여부를 기록하는 형태가 우선입니다.</td></tr>
+              <tr><th>Structure</th><td>Park > Category Flow Map > Material Flow. 현재 단계에서는 Park만 확정합니다.</td></tr>
+              <tr><th>Action count</th><td>미정. 선택한 카테고리의 실제 글 수와 순서가 확인된 뒤에만 산정합니다.</td></tr>
+              <tr><th>Playbook</th><td>Creator Channel Collection. 예외: 사이트 전체를 대표 Flow로 만들지 않습니다.</td></tr>
+              <tr><th>Flow Map > Flow > Step > Item</th><td>Map: 특정 카테고리. Flow: 이번 주 자료 묶음. Step: 원문 글/자료 row. Item: 원문 URL, 나이 표시, 준비 메모, 사용 체크.</td></tr>
+              <tr><th>Do not build</th><td>원문에 없는 나이 순서, 발달 단계, 학습 효과, 주간 커리큘럼을 만들지 않습니다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="source rubric"><strong>Rubric 초안:</strong> <span>User Need 3</span><span>Execution 2</span><span>Fidelity 3</span><span>Portability 3</span><span>Safety 4</span> 최저 보완: 카테고리 하나를 골라 source row를 재확인해야 합니다.</p>
+      </section>
+
+      <section class="spec">
+        <div class="spec-head">
+          <div>
+            <div class="title-line"><span class="num">2</span><h3>오픽 모의고사 공부 방법</h3></div>
+            <p class="source">확인 URL: <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95">mansour.tistory.com 오픽 모의고사 공부 방법</a></p>
+          </div>
+          <div class="chips">
+            <span class="tag ready">Flow Map</span>
+            <span class="tag ready">상세 제작 가능</span>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card blue">
+            <p class="label">사용자 화면 초안</p>
+            <h4>2주 또는 1달 오픽 모의고사 회차표 받기</h4>
+            <p class="source">코스와 시작일을 고르면 회차별 연습, 복습, 보완, 휴식 일정이 캘린더와 진행표로 나뉩니다.</p>
+            <ul>
+              <li>첫 행동: 2주 코스 또는 1달 코스 선택</li>
+              <li>완료 기준: 오늘 회차의 연습/복습/보완 여부를 체크</li>
+              <li>저장 위치: 캘린더 일정 + 회차별 학습표</li>
+            </ul>
+          </div>
+          <div class="card amber">
+            <p class="label">내부 검토 메모</p>
+            <p>첨부 XLSX에서 1달 코스와 2주 코스가 확인되었습니다. 1달 코스는 10회차를 반복하는 구조이고, 2주 코스는 하루 2회차 흐름입니다. 행에 있는 연습, 복습, 오픽현타, 부족한 점 보완, 휴식, 정리/휴식만 Step/Item 후보로 씁니다.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><th>Conversion decision</th><td>Flow Map. Flow는 2주 코스와 1달 코스로 분리합니다.</td></tr>
+              <tr><th>User need</th><td>As an OPIC learner preparing with mock tests, I need a source-derived course table, so that I can follow the next practice round without rebuilding the spreadsheet.</td></tr>
+              <tr><th>Content shape</th><td>블로그 글 + XLSX 학습 계획표. 원문 spine은 sheet 행/열입니다.</td></tr>
+              <tr><th>Primary destination</th><td>hybrid. 캘린더는 오늘 할 회차 알림, sheet는 회차 진행과 보완 메모입니다.</td></tr>
+              <tr><th>Structure</th><td>Flow Map > Course Flow > Daily/Round Step > Practice Item.</td></tr>
+              <tr><th>Action count</th><td>2주 코스는 sheet row 기준, 1달 코스는 10회차 반복 row 기준. 정확한 item 수는 원본 XLSX row import 후 고정합니다.</td></tr>
+              <tr><th>Playbook</th><td>Exam / Certification Prep + Study Progress Table. 예외: 시험 접수/시험일 체크리스트는 원문에 없으므로 넣지 않습니다.</td></tr>
+              <tr><th>Flow Map > Flow > Step > Item</th><td>Map: 오픽 모의고사 코스. Flow: 2주/1달. Step: 날짜 또는 회차. Item: 연습, 복습, 오픽현타, 부족한 점 보완, 휴식, 정리/휴식, 메모.</td></tr>
+              <tr><th>Allowed input</th><td>시작일, 코스 선택, 회차 상태, 부족한 점 메모, 복습 여부.</td></tr>
+              <tr><th>Do not build</th><td>예상 등급 보장, 시험 전략 추가, 원문에 없는 주제별 스크립트, 자동 채점.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="source rubric"><strong>Rubric 초안:</strong> <span>User Need 5</span><span>Execution 4</span><span>Fidelity 5</span><span>Portability 5</span><span>Safety 4</span> 최저 보완: 캘린더 제목과 sheet row 이름을 짧게 다듬어야 합니다.</p>
+      </section>
+
+      <section class="spec">
+        <div class="spec-head">
+          <div>
+            <div class="title-line"><span class="num">3</span><h3>이유식 식단표</h3></div>
+            <p class="source">확인 URL: <a href="https://blog.naver.com/01695258757/222768860919">https://blog.naver.com/01695258757/222768860919</a></p>
+          </div>
+          <div class="chips">
+            <span class="tag caution">민감 Flow Map</span>
+            <span class="tag caution">가드레일 선행</span>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card blue">
+            <p class="label">사용자 화면 초안</p>
+            <h4>시작 일수에 맞춰 이유식 식단 로그 만들기</h4>
+            <p class="source">150일, 160일, 170일, 180일 시작 버전 중 하나를 고르고 식단표 row를 따라 먹은 양과 알레르기 반응 여부를 기록합니다.</p>
+            <ul>
+              <li>첫 행동: 시작일과 시작 일수 버전 선택</li>
+              <li>기록 필드: 베이스죽, 토핑반찬, 간식, NEW 식재료, 알레르기 O/X, 먹은 양</li>
+              <li>완료 기준: 오늘 row의 섭취량과 관찰 메모 입력</li>
+            </ul>
+          </div>
+          <div class="card amber">
+            <p class="label">내부 검토 메모</p>
+            <p>첨부 ZIP/PDF/HWP와 비밀번호 211111을 확인했습니다. PDF 텍스트에는 날짜 D+n, 베이스죽, 토핑반찬, 간식, NEW, 알레르기 O/X, 먹은 양 구조가 있습니다. 식단 자체를 의학적 권장으로 보이면 안 됩니다.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><th>Conversion decision</th><td>Baby/Family sensitive Flow Map. 시작 일수별 식단표를 별도 Flow로 둡니다.</td></tr>
+              <tr><th>User need</th><td>As a caregiver starting baby food, I need a source table I can log against, so that I can track what was offered and what reaction I observed.</td></tr>
+              <tr><th>Content shape</th><td>Naver blog + password-protected downloadable files. 원문 spine은 식단표 row입니다.</td></tr>
+              <tr><th>Primary destination</th><td>sheet/log + partial calendar. 기록표가 중심이고 NEW 식재료 관찰일만 캘린더 보조로 씁니다.</td></tr>
+              <tr><th>Structure</th><td>Flow Map > Start-day Flow > Daily Meal Step > Food/Observation Item.</td></tr>
+              <tr><th>Action count</th><td>파일의 row 수 기준. 이 검토안에서는 row를 새로 만들지 않고 column contract만 확정합니다.</td></tr>
+              <tr><th>Playbook</th><td>Baby / Family / Health Logistics. 예외: 의료/영양 처방이 아니라 식단표 실행 로그로 제한합니다.</td></tr>
+              <tr><th>Flow Map > Flow > Step > Item</th><td>Map: 초기 이유식 식단표. Flow: 150/160/170/180일 시작, 174일 따라하기, 큐브 재고. Step: D+n 날짜 row. Item: 베이스죽, 토핑반찬, 간식, NEW 여부, 알레르기 O/X, 먹은 양, 메모.</td></tr>
+              <tr><th>Allowed input</th><td>아기 시작일, 선택 버전, 먹은 양, 관찰 메모, 알레르기 O/X 기록.</td></tr>
+              <tr><th>Do not build</th><td>월령별 처방, 알레르기 판단, 분량 추천, 병원 상담 대체, 원문 메뉴의 자동 수정.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="source rubric"><strong>Rubric 초안:</strong> <span>User Need 5</span><span>Execution 4</span><span>Fidelity 5</span><span>Portability 4</span><span>Safety 3</span> 최저 보완: 공식 이유식 안내 링크와 중단/상담 문구를 별도 층으로 붙여야 합니다.</p>
+      </section>
+
+      <section class="spec">
+        <div class="spec-head">
+          <div>
+            <div class="title-line"><span class="num">4</span><h3>독서 기록</h3></div>
+            <p class="source">확인 URL: <a href="https://blog.naver.com/naristyle87/222978131890">https://blog.naver.com/naristyle87/222978131890</a></p>
+          </div>
+          <div class="chips">
+            <span class="tag ready">Routine + Log</span>
+            <span class="tag">작게 제작 가능</span>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card blue">
+            <p class="label">사용자 화면 초안</p>
+            <h4>오전 읽고 쓰기와 취침 전 전자책 루틴 기록</h4>
+            <p class="source">아침 1시간 읽고 쓰기, 자기 전 전자책, 월초 5권 고르기 같은 원문 루틴을 반복 일정과 기록표로 저장합니다.</p>
+            <ul>
+              <li>첫 행동: 오늘 읽을 책과 읽을 시간 선택</li>
+              <li>기록 필드: 책 제목, 읽은 시간, 쓴 메모, 다음 책</li>
+              <li>완료 기준: 오늘 루틴 실행 여부와 한 줄 메모 기록</li>
+            </ul>
+          </div>
+          <div class="card amber">
+            <p class="label">내부 검토 메모</p>
+            <p>원문은 개인 루틴 글입니다. 확인된 요소는 오전 1시간 읽고 쓰기, 잠들기 직전 전자책, 월초 5권, 1권 반당 1권 사기, 책 70권입니다. 일반적인 독서법을 보태지 않고 이 루틴만 변환합니다.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><th>Conversion decision</th><td>Single Routine + Log Flow. Flow Map까지 확장하지 않습니다.</td></tr>
+              <tr><th>User need</th><td>As a reader trying a creator routine, I need a light repeat plan and reading log, so that I can test whether the routine fits my day.</td></tr>
+              <tr><th>Content shape</th><td>개인 경험형 블로그 글. 원문 spine은 반복 루틴과 월간 구매/목표 규칙입니다.</td></tr>
+              <tr><th>Primary destination</th><td>memo + routine + sheet. 반복 일정과 기록표를 함께 둡니다.</td></tr>
+              <tr><th>Structure</th><td>Routine Flow > Habit Step > Log Item.</td></tr>
+              <tr><th>Action count</th><td>5개 source-derived habit: 오전 읽고 쓰기, 취침 전 전자책, 월초 5권 고르기, 1권 반당 1권 사기, 연간 70권 카운트.</td></tr>
+              <tr><th>Playbook</th><td>Generic routine/log conversion. 예외: 동기부여 문구와 독서법 조언은 추가하지 않습니다.</td></tr>
+              <tr><th>Flow Map > Flow > Step > Item</th><td>Map: 없음. Flow: 월간 독서 기록표. Step: 후보 책 적기, 책 한 권 기록하기, 월말 권수 세기. Item: 책 제목, 읽기 상태, 메모 한 줄, 월간/연간 권수.</td></tr>
+              <tr><th>Allowed input</th><td>시작일, 반복 시간, 목표 권수, 책 제목, 오늘 메모.</td></tr>
+              <tr><th>Do not build</th><td>독서 효율 보장, 책 추천 알고리즘, 원문에 없는 회고 질문 세트.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="source rubric"><strong>Rubric 초안:</strong> <span>User Need 4</span><span>Execution 4</span><span>Fidelity 4</span><span>Portability 4</span><span>Safety 5</span> 최저 보완: “70권” 목표를 사용자에게 강제하지 않도록 기본값/수정 가능 처리가 필요합니다.</p>
+      </section>
+
+      <section class="spec">
+        <div class="spec-head">
+          <div>
+            <div class="title-line"><span class="num">5</span><h3>신차 구매 체크리스트</h3></div>
+            <p class="source">확인 URL: <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners">Getcha 신차 구매 절차 가이드</a></p>
+          </div>
+          <div class="chips">
+            <span class="tag ready">Process Flow</span>
+            <span class="tag caution">금융/계약 주의</span>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card blue">
+            <p class="label">사용자 화면 초안</p>
+            <h4>신차 구매 7단계 체크리스트 받기</h4>
+            <p class="source">예산과 구매 방식을 고르고, 차량 선택부터 보험 가입까지 단계별로 완료 상태를 기록합니다.</p>
+            <ul>
+              <li>첫 행동: 구매 방식 선택</li>
+              <li>주요 단계: 예산/차량, 구매 방식, 견적/협상, 계약, 출고/검수, 등록, 보험</li>
+              <li>완료 기준: 각 단계의 확인 자료와 남은 문의를 기록</li>
+            </ul>
+          </div>
+          <div class="card amber">
+            <p class="label">내부 검토 메모</p>
+            <p>원문은 7단계 절차형 글입니다. 현금/할부/리스/장기렌트 같은 구매 방식별 버전이 필요합니다. 가격 절감, 최저가, 금융 조건 유리함을 보장하면 안 됩니다.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><th>Conversion decision</th><td>Single Process Flow with version branches by purchase method.</td></tr>
+              <tr><th>User need</th><td>As a first-time new-car buyer, I need a staged checklist, so that I know which decision or document to handle next.</td></tr>
+              <tr><th>Content shape</th><td>절차형 블로그 가이드. 원문 spine은 1-7단계입니다.</td></tr>
+              <tr><th>Primary destination</th><td>checklist + comparison sheet. 단계 체크와 견적 비교가 중심입니다.</td></tr>
+              <tr><th>Structure</th><td>Process Flow > Purchase Step > Decision/Document Item.</td></tr>
+              <tr><th>Action count</th><td>7 source-defined steps.</td></tr>
+              <tr><th>Playbook</th><td>Checklist / administrative process. 예외: 금융 계산 자동화는 하지 않습니다.</td></tr>
+              <tr><th>Flow Map > Flow > Step > Item</th><td>Map: 선택 사항. Flow: 신차 구매 기본형. Step: 예산/차량 선택, 구매 방식 결정, 견적/협상, 계약, 출고/검수, 등록, 보험. Item: 확인 자료, 문의처, 견적 링크, 상태, 메모.</td></tr>
+              <tr><th>Allowed input</th><td>구매 목표일, 구매 방식, 후보 차량, 견적 메모, 완료 상태.</td></tr>
+              <tr><th>Do not build</th><td>최저가 추천, 금융상품 추천, 보험 추천, 법적/재무 판단 자동화.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="source rubric"><strong>Rubric 초안:</strong> <span>User Need 5</span><span>Execution 4</span><span>Fidelity 4</span><span>Portability 4</span><span>Safety 3</span> 최저 보완: 구매 방식별 분기와 금융/보험 주의문구를 명확히 분리해야 합니다.</p>
+      </section>
+
+      <section class="spec">
+        <div class="spec-head">
+          <div>
+            <div class="title-line"><span class="num">6</span><h3>영유아 예방 접종</h3></div>
+            <p class="source">확인 URL: <a href="https://khms.or.kr/healthy_life/prevention/vaccination_child">https://khms.or.kr/healthy_life/prevention/vaccination_child</a></p>
+          </div>
+          <div class="chips">
+            <span class="tag caution">Official Schedule Map</span>
+            <span class="tag caution">의료 판단 제외</span>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card blue">
+            <p class="label">사용자 화면 초안</p>
+            <h4>아이 생년월일로 예방접종 일정표 확인</h4>
+            <p class="source">생년월일을 입력하면 표준예방접종 일정 row를 날짜 범위로 바꿔 보여주고, 접종 가능 여부는 병원/공식 채널에서 확인하도록 남깁니다.</p>
+            <ul>
+              <li>첫 행동: 아이 생년월일 입력</li>
+              <li>표시 항목: 백신명, 차수, 권장 월령, 일정 범위, 공식 링크</li>
+              <li>완료 기준: 접종 완료/보류/병원 확인 필요 중 하나로 기록</li>
+            </ul>
+          </div>
+          <div class="card amber">
+            <p class="label">내부 검토 메모</p>
+            <p>원문은 표준예방접종 일정, 최소 접종간격, 미접종 소아 일정, 지연 시 예방접종 이미지와 질병관리청 링크를 제공합니다. 이 스펙은 공식 schedule row를 옮기는 것이며 접종 가능 여부 판단을 하지 않습니다.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><th>Conversion decision</th><td>Official Schedule Flow Map. 공식 일정표를 source fact로만 사용합니다.</td></tr>
+              <tr><th>User need</th><td>As a caregiver tracking child vaccination logistics, I need a birth-date-based schedule view, so that I can prepare questions and appointments with an official source open.</td></tr>
+              <tr><th>Content shape</th><td>공식/기관 안내 페이지 + schedule images + KDCA link.</td></tr>
+              <tr><th>Primary destination</th><td>calendar + table. 날짜 알림과 전체 표가 함께 필요합니다.</td></tr>
+              <tr><th>Structure</th><td>Flow Map > Schedule Flow > Vaccine/Dose Step > Appointment/Status Item.</td></tr>
+              <tr><th>Action count</th><td>공식 표의 백신명/차수/권장 월령 row 수 기준. 이 검토안에서 임의 row를 만들지 않습니다.</td></tr>
+              <tr><th>Playbook</th><td>Baby / Family / Health Logistics. 예외: 의료 판단, 누락 접종 해석, 금기 판단은 제외합니다.</td></tr>
+              <tr><th>Flow Map > Flow > Step > Item</th><td>Map: 영유아 예방접종. Flow: 표준 일정, 최소간격 참고, 미접종/지연 참고. Step: 백신-차수-월령 row. Item: 공식 링크, 병원 확인 메모, 완료/보류 상태.</td></tr>
+              <tr><th>Allowed input</th><td>아이 생년월일, 접종 완료/보류 상태, 병원 확인 메모.</td></tr>
+              <tr><th>Do not build</th><td>접종 가능 여부 판단, 누락 접종 처방, 금기/부작용 판단, 병원 대신 상담.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="source rubric"><strong>Rubric 초안:</strong> <span>User Need 5</span><span>Execution 4</span><span>Fidelity 4</span><span>Portability 5</span><span>Safety 3</span> 최저 보완: 공식 출처와 “병원 확인 필요” 상태를 화면 상단에서 분리 표시해야 합니다.</p>
+      </section>
+
+      <section class="spec">
+        <div class="spec-head">
+          <div>
+            <div class="title-line"><span class="num">7</span><h3>이사 체크리스트</h3></div>
+            <p class="source">확인 URL: <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363">AJD 이사 준비 체크리스트</a></p>
+          </div>
+          <div class="chips">
+            <span class="tag ready">Timeline Flow Map</span>
+            <span class="tag ready">1순위 후보</span>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card blue">
+            <p class="label">사용자 화면 초안</p>
+            <h4>이사일 기준 D-30 체크리스트 받기</h4>
+            <p class="source">이사일을 넣으면 D-30, D-10, D-3, D-1, D-Day 체크가 날짜별 일정과 체크리스트로 나뉩니다.</p>
+            <ul>
+              <li>첫 행동: 이사일 입력</li>
+              <li>주요 Step: 이사 방식 확인, 견적 예약, 주소 변경, 자동이체, 요금/폐기물, 최종 확인, D-Day 정산/인입신고</li>
+              <li>완료 기준: 날짜별 항목이 완료/보류/문의 필요로 표시</li>
+            </ul>
+          </div>
+          <div class="card amber">
+            <p class="label">내부 검토 메모</p>
+            <p>원문은 D-30/D-10/D-3/D-1/D-Day 표를 제공합니다. 첨부 XLSX는 실제 셀 데이터가 아니라 이미지 기반 파일이므로 본문 표를 기준으로 삼습니다. 기존 moving-d30과 비교해 중복/누락을 검토해야 합니다.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><th>Conversion decision</th><td>Timeline Flow Map. 첫 구현 후보로 가장 적합합니다.</td></tr>
+              <tr><th>User need</th><td>As a person preparing to move, I need a D-day checklist, so that each deadline appears before the move date without scanning a long article.</td></tr>
+              <tr><th>Content shape</th><td>D-day checklist article + image-based XLSX attachment.</td></tr>
+              <tr><th>Primary destination</th><td>hybrid. calendar deadlines + checklist + sheet export.</td></tr>
+              <tr><th>Structure</th><td>Flow Map > Moving Flow > D-day Step > Task Item.</td></tr>
+              <tr><th>Action count</th><td>원문 D-day 구간과 각 구간의 표 row 기준. 검토안에서는 구간만 확정하고 세부 row는 구현 전 재대조합니다.</td></tr>
+              <tr><th>Playbook</th><td>Moving / Administrative Timeline. 예외: 지역/계약별 법적 해석은 넣지 않습니다.</td></tr>
+              <tr><th>Flow Map > Flow > Step > Item</th><td>Map: 이사 준비. Flow: 기본 이사 D-30. Step: D-30, D-10, D-3, D-1, D-Day. Item: 원문 항목, 담당 기관/업체, 문의 메모, 완료 상태.</td></tr>
+              <tr><th>Allowed input</th><td>이사일, 현재/새 주소 별칭, 업체 메모, 완료 상태.</td></tr>
+              <tr><th>Do not build</th><td>세금/계약 판단, 지역별 법정 신고 자동 판단, 비용 절감 보장, 원문 표에 없는 체크리스트 확장.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="source rubric"><strong>Rubric 초안:</strong> <span>User Need 5</span><span>Execution 5</span><span>Fidelity 4</span><span>Portability 5</span><span>Safety 4</span> 최저 보완: 기존 moving-d30과 source row를 대조해 중복과 이름을 정리해야 합니다.</p>
+      </section>
+
+      <section class="spec">
+        <div class="spec-head">
+          <div>
+            <div class="title-line"><span class="num">8</span><h3>결혼 체크리스트</h3></div>
+            <p class="source">확인 URL: <a href="https://blog.naver.com/wilklove/223518896995">Naver 결혼 준비 타임라인</a> · <a href="https://gongysd.com/wedding-notion/?bmode=view&idx=167989966">공여사들 결혼 준비 체크리스트</a></p>
+          </div>
+          <div class="chips">
+            <span class="tag ready">Flow Map Family</span>
+            <span class="tag caution">원문별 버전 분리</span>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card blue">
+            <p class="label">사용자 화면 초안</p>
+            <h4>결혼식 날짜 기준 준비 버전 고르기</h4>
+            <p class="source">결혼식 날짜를 넣고, 1년 타임라인 버전 또는 A-to-Z 체크리스트 버전 중 하나를 선택합니다.</p>
+            <ul>
+              <li>첫 행동: 결혼식 날짜와 원문 버전 선택</li>
+              <li>타임라인 버전: D-12, D-10, D-7, D-6, D-3, D-1 구간</li>
+              <li>A-to-Z 버전: 웨딩홀, 상견례, 플래너, 스드메 등 항목별 체크</li>
+            </ul>
+          </div>
+          <div class="card amber">
+            <p class="label">내부 검토 메모</p>
+            <p>두 원문을 하나로 합쳐 “완성형 결혼 준비”처럼 만들면 source fidelity가 깨집니다. 상위 Map family에서 버전을 고르게 하고, 각 Flow는 원문 하나만 primary source로 잡아야 합니다.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><th>Conversion decision</th><td>Versioned Flow Map Family. 원문별 Flow를 분리합니다.</td></tr>
+              <tr><th>User need</th><td>As a couple preparing a wedding, I need a versioned checklist from one chosen source, so that the preparation dates and vendor tasks stay reviewable.</td></tr>
+              <tr><th>Content shape</th><td>Naver timeline article + Gongysd A-to-Z checklist article.</td></tr>
+              <tr><th>Primary destination</th><td>timeline + sheet. 결혼식 날짜 기반 calendar와 업체/결정 sheet가 함께 필요합니다.</td></tr>
+              <tr><th>Structure</th><td>Flow Map Family > Source Version Flow > Period/Category Step > Task Item.</td></tr>
+              <tr><th>Action count</th><td>Naver 버전은 D-12/D-10/D-7/D-6/D-3/D-1 구간. Gongysd 버전은 원문 카테고리 항목 수 기준.</td></tr>
+              <tr><th>Playbook</th><td>Moving / Administrative Timeline + checklist. 예외: 여러 원문을 한 Flow의 단계로 합치지 않습니다.</td></tr>
+              <tr><th>Flow Map > Flow > Step > Item</th><td>Map: 결혼 준비 버전 선택. Flow A: Naver 1년 타임라인. Flow B: Gongysd A-to-Z. Step: 각 원문의 기간 또는 카테고리. Item: 업체/결정/예약/메모/완료 상태.</td></tr>
+              <tr><th>Allowed input</th><td>결혼식 날짜, 버전 선택, 업체명, 견적/예약 메모, 완료 상태.</td></tr>
+              <tr><th>Do not build</th><td>두 원문 병합형 만능 체크리스트, 예산 최적화, 업체 추천, 원문에 없는 순서 보정.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="source rubric"><strong>Rubric 초안:</strong> <span>User Need 5</span><span>Execution 4</span><span>Fidelity 4</span><span>Portability 5</span><span>Safety 4</span> 최저 보완: 첫 구현은 버전 하나만 고르고 나머지는 Map 선택지로 두어야 합니다.</p>
+      </section>
+
+      <section class="spec">
+        <div class="spec-head">
+          <div>
+            <div class="title-line"><span class="num">9</span><h3>유튜브 홈트레이닝 - Allblanc TV</h3></div>
+            <p class="source">확인 URL: <a href="https://youtube.com/@allblanctv">https://youtube.com/@allblanctv</a></p>
+          </div>
+          <div class="chips">
+            <span class="tag park">Channel Park</span>
+            <span class="tag caution">Playlist 선택 필요</span>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card blue">
+            <p class="label">사용자 화면 초안</p>
+            <h4>영상 하나를 이번 주 홈트 루틴으로 저장</h4>
+            <p class="source">영상 또는 플레이리스트를 고르고, 반복 요일과 시간을 정해 캘린더에 저장합니다. 운동 순서는 원본 영상 링크를 열어 따라갑니다.</p>
+            <ul>
+              <li>영상 1개: 단일 Routine Flow</li>
+              <li>플레이리스트 1개: 여러 영상 Routine Flow Map</li>
+              <li>완료 기준: 원본 영상 URL과 반복 요일/시간, 완료 체크가 남음</li>
+            </ul>
+          </div>
+          <div class="card amber">
+            <p class="label">내부 검토 메모</p>
+            <p>채널에서 7 Days Abs Challenge, Allblanc Yoga, Allblanc Beginner Workout, Allblanc HIIT, HOME WALKING for Beginner, Allblanc Stretching 같은 플레이리스트가 확인되었습니다. 채널 전체는 Park입니다. 영상의 동작 순서를 추정하지 않고 영상 링크를 Step의 원본으로 둡니다.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><th>Conversion decision</th><td>Channel Park. Playlist = Flow Map, video = single Routine Flow.</td></tr>
+              <tr><th>User need</th><td>As a person following a workout video, I need the exact video scheduled with a completion log, so that I can repeat it without copying the workout plan manually.</td></tr>
+              <tr><th>Content shape</th><td>YouTube channel + playlists + individual videos.</td></tr>
+              <tr><th>Primary destination</th><td>calendar. 반복 운동 일정과 영상 URL이 각 이벤트에 있어야 합니다.</td></tr>
+              <tr><th>Structure</th><td>Park > Playlist Flow Map > Video Routine Flow > Reminder Item.</td></tr>
+              <tr><th>Action count</th><td>영상 1개는 1 action. 플레이리스트는 영상 수 기준. 채널 전체는 산정하지 않습니다.</td></tr>
+              <tr><th>Playbook</th><td>Single Fitness Video / Multi-Video Sequence. 예외: 동작명, 세트 수, 칼로리를 원문에서 추출하지 못하면 만들지 않습니다.</td></tr>
+              <tr><th>Flow Map > Flow > Step > Item</th><td>Map: 선택한 플레이리스트. Flow: 영상 하나. Step: 영상 시청/실행. Item: 원본 영상 URL, 반복 요일/시간, 완료 체크.</td></tr>
+              <tr><th>Allowed input</th><td>영상 URL, 시작일, 반복 요일, 시간, 완료 여부, 한 줄 메모.</td></tr>
+              <tr><th>Do not build</th><td>운동 효과 보장, 칼로리 추정, 동작 순서 창작, 의학적 운동 처방.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="source rubric"><strong>Rubric 초안:</strong> <span>User Need 4</span><span>Execution 4</span><span>Fidelity 3</span><span>Portability 5</span><span>Safety 3</span> 최저 보완: 첫 Flow는 플레이리스트가 아니라 영상 1개부터 선택해야 source fidelity가 안정적입니다.</p>
+      </section>
+    </section>
+
+    <section>
+      <h2>개발 투입용 데이터 파일</h2>
+      <p class="lead">아래 JSON은 현재 코드의 source-backed Flow Map 계약에 맞춰 개발자가 바로 fixture, seed, importer 작업에 넘길 수 있게 정리한 데이터 패킷입니다. 앱에는 아직 연결하지 않았고, 정확한 row 재파싱이 필요한 후보는 `implementationStatus`로 분리했습니다.</p>
+      <div class="grid two" style="margin-top:12px;">
+        <div class="card green">
+          <p class="label">파일</p>
+          <h3><a href="./2026-06-30-curated-source-flow-dev-data-ko.json">2026-06-30-curated-source-flow-dev-data-ko.json</a></h3>
+          <p class="source">9개 record, map/flow/step/item 계약, public/myFlow/creator에 필요한 source/risk metadata를 포함합니다.</p>
+        </div>
+        <div class="card blue">
+          <p class="label">바로 seed 가능한 후보</p>
+          <h3>이사, 신차</h3>
+          <p class="source">독서는 피드백 반영 후 `reshape_before_seed`로 낮췄습니다. 오픽, 이유식, 예방접종은 source row import 후 실제 Step으로 확장해야 합니다.</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>후보</th>
+              <th>상태</th>
+              <th>다음 작업</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>이사 D-30<br><span class="source-badge">curated-ajd-moving-d30</span></td>
+              <td><span class="tag ready">바로 seed 후보</span></td>
+              <td>기존 moving-d30과 중복 비교 후 source-backed fixture로 추가</td>
+            </tr>
+            <tr>
+              <td>신차 구매<br><span class="source-badge">curated-new-car-purchase-guide</span></td>
+              <td><span class="tag ready">바로 seed 후보</span></td>
+              <td>금융/보험 주의문구를 public detail 상단에 고정</td>
+            </tr>
+            <tr>
+              <td>독서 기록<br><span class="source-badge">curated-reading-routine-log</span></td>
+              <td><span class="tag caution">재설계 필요</span></td>
+              <td>월간 독서 기록표로 사용자 검토 후 seed 여부 결정</td>
+            </tr>
+            <tr>
+              <td>오픽 모의고사<br><span class="source-badge">curated-opic-mock-course</span></td>
+              <td><span class="tag caution">XLSX import</span></td>
+              <td>XLSX row 재파싱 후 dayOffset Step으로 확장</td>
+            </tr>
+            <tr>
+              <td>이유식 식단표<br><span class="source-badge">curated-baby-food-meal-log</span></td>
+              <td><span class="tag caution">PDF/HWP import</span></td>
+              <td>PDF/HWP 식단 row를 재추출하고 medical caution 분리</td>
+            </tr>
+            <tr>
+              <td>영유아 예방접종<br><span class="source-badge">curated-child-vaccination-schedule</span></td>
+              <td><span class="tag caution">공식표 import</span></td>
+              <td>공식 schedule row 구조화 후 review-before-apply 유지</td>
+            </tr>
+            <tr>
+              <td>결혼 체크리스트<br><span class="source-badge">curated-wedding-checklist-family</span></td>
+              <td><span class="tag caution">버전 선택</span></td>
+              <td>Naver timeline 버전 하나부터 제한 구현</td>
+            </tr>
+            <tr>
+              <td>Allblanc 홈트<br><span class="source-badge">curated-allblanc-workout-park</span></td>
+              <td><span class="tag park">Park skeleton</span></td>
+              <td>실제 영상 URL 1개 선택 후 단일 Routine Flow로 치환</td>
+            </tr>
+            <tr>
+              <td>펀맘 학습자료<br><span class="source-badge">curated-funmom-learning-park</span></td>
+              <td><span class="tag park">Park skeleton</span></td>
+              <td>카테고리 하나의 글 목록과 대상 나이 row를 추가 수집</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Flow Map 시각 검토 보드</h2>
+      <p class="lead">JSON 필드 대신 실제 검토 순서에 맞춰 봅니다. 위에서 아래로 Flow Map, Flow, Step, Item이 내려가며, 작은 배지는 개발자가 나중에 seed/import로 옮길 때 필요한 상태만 남겼습니다.</p>
+      <div class="grid three" style="margin-top:12px;">
+        <div class="card green">
+          <p class="label">전체 패킷</p>
+          <h3>9 records · 13 flows · 53 steps</h3>
+          <p class="source">Flow Map &gt; Flow &gt; Step &gt; Item 구조로 검토 가능한 최소 단위까지 쪼갰습니다.</p>
+        </div>
+        <div class="card blue">
+          <p class="label">바로 seed 후보</p>
+          <h3>2 maps · 12 steps</h3>
+          <p class="source">이사 D-30과 신차 구매만 바로 fixture 후보로 둡니다. 독서는 기록표로 재설계합니다.</p>
+        </div>
+        <div class="card amber">
+          <p class="label">추가 import 필요</p>
+          <h3>7 maps</h3>
+          <p class="source">오픽, 이유식, 예방접종은 row import가 필요하고, 독서는 재설계, 결혼은 버전 선택, 펀맘/Allblanc는 Park skeleton입니다.</p>
+        </div>
+      </div>
+      <div class="readiness-board">
+        <div class="readiness-lane ready">
+          <p class="label">바로 seed 후보</p>
+          <div class="lane-list">
+            <div class="lane-item"><strong>이사 D-30 준비</strong><span>1 Flow · 5 Step · 날짜형</span></div>
+            <div class="lane-item"><strong>신차 구매 기본형</strong><span>1 Flow · 7 Step · 체크리스트형</span></div>
+          </div>
+        </div>
+        <div class="readiness-lane import">
+          <p class="label">row import / 재설계 후 seed</p>
+          <div class="lane-list">
+            <div class="lane-item"><strong>오픽 모의고사 복습표</strong><span>실행 Flow + XLSX row 확장</span></div>
+            <div class="lane-item"><strong>이유식 식단/큐브 기록</strong><span>PDF/HWP row 추출 필요</span></div>
+            <div class="lane-item"><strong>영유아 예방접종</strong><span>공식 표 row 구조화 필요</span></div>
+            <div class="lane-item"><strong>독서 기록장</strong><span>루틴이 아니라 기록표로 재설계</span></div>
+            <div class="lane-item"><strong>결혼 체크리스트</strong><span>원문별 버전 선택 필요</span></div>
+          </div>
+        </div>
+        <div class="readiness-lane park">
+          <p class="label">Park skeleton</p>
+          <div class="lane-list">
+            <div class="lane-item"><strong>펀맘 학습자료</strong><span>사이트 전체는 Park, 카테고리부터 선택</span></div>
+            <div class="lane-item"><strong>Allblanc 홈트레이닝</strong><span>채널 전체는 Park, 영상 1개가 Flow</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>검토 축</th>
+              <th>현재 데이터</th>
+              <th>승인 전 확인</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>사용자 입력</td>
+              <td>이사일, 시작일, 결혼식 날짜, 아이 생년월일, 반복 요일, 메모, 선택값</td>
+              <td>캘린더/투두 앱 수준을 넘는 상담형 입력은 제외</td>
+            </tr>
+            <tr>
+              <td>민감 리스크</td>
+              <td>예방접종 medical_sensitive, 신차 financial_sensitive, 이유식 medical_sensitive</td>
+              <td>공식/원문 링크와 주의문구를 Step과 분리해서 노출</td>
+            </tr>
+            <tr>
+              <td>원문 충실도</td>
+              <td>원문에서 확인한 날짜/카테고리/row 이름만 Step 또는 Item으로 사용</td>
+              <td>추정한 효과, 순서, 세부 행동은 seed 전 제거 또는 원문 row로 대체</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="data-stack">
+        <details class="data-preview" open>
+          <summary>curated-ajd-moving-d30 <span class="tag ready">ready_to_seed</span></summary>
+          <div class="data-meta">
+            <span>source: AJD 이사 준비 체크리스트</span>
+            <span>input: 이사일(end_date)</span>
+            <span>flow: 1</span>
+            <span>steps: 5</span>
+          </div>
+          <div class="map-canvas">
+            <div class="map-node">
+              <p class="node-label">Flow Map</p>
+              <p class="flow-title">이사 D-30 체크리스트</p>
+              <p class="visual-note">사용자는 이사일만 넣고, D-30부터 D-Day까지 캘린더에 옮길 수 있어야 합니다.</p>
+            </div>
+            <div class="flow-node">
+              <p class="node-label">Flow</p>
+              <p class="flow-title">이사 D-30 준비</p>
+              <ol class="step-road">
+                <li class="step-node">
+                  <p class="step-title">이사 방식과 견적 예약</p>
+                  <div class="step-meta"><span class="date">D-30</span><span>캘린더</span></div>
+                  <div class="item-row"><span class="item-chip">이사 방식 확인</span><span class="item-chip">견적 후보 메모</span><span class="item-chip">업체 연락처</span></div>
+                </li>
+                <li class="step-node">
+                  <p class="step-title">주소 변경과 예약 상태 확인</p>
+                  <div class="step-meta"><span class="date">D-10</span><span>캘린더</span></div>
+                  <div class="item-row"><span class="item-chip">주소 변경 대상</span><span class="item-chip">자동이체</span><span class="item-chip">예약 상태</span></div>
+                </li>
+                <li class="step-node">
+                  <p class="step-title">장비와 서류 확인</p>
+                  <div class="step-meta"><span class="date">D-3</span><span>캘린더</span></div>
+                  <div class="item-row"><span class="item-chip">장비/준비물</span><span class="item-chip">필요 서류</span><span class="item-chip">문의 항목</span></div>
+                </li>
+                <li class="step-node">
+                  <p class="step-title">최종 점검</p>
+                  <div class="step-meta"><span class="date">D-1</span><span>캘린더</span></div>
+                  <div class="item-row"><span class="item-chip">짐/귀중품</span><span class="item-chip">요금/폐기물</span><span class="item-chip">당일 연락처</span></div>
+                </li>
+                <li class="step-node">
+                  <p class="step-title">정산과 전입 관련 확인</p>
+                  <div class="step-meta"><span class="date">D-Day</span><span>캘린더</span></div>
+                  <div class="item-row"><span class="item-chip">정산</span><span class="item-chip">전입 관련 확인</span><span class="item-chip">현장 보류 메모</span></div>
+                </li>
+              </ol>
+            </div>
+          </div>
+        </details>
+
+        <details class="data-preview" open>
+          <summary>curated-new-car-purchase-guide <span class="tag ready">ready_to_seed</span></summary>
+          <div class="data-meta">
+            <span>source: Getcha 신차 구매 절차</span>
+            <span>input: 구매 목표일/구매 방식 메모</span>
+            <span>flow: 1</span>
+            <span>steps: 7</span>
+          </div>
+          <div class="map-canvas">
+            <div class="map-node">
+              <p class="node-label">Flow Map</p>
+              <p class="flow-title">신차 구매 7단계 체크리스트</p>
+              <p class="visual-note">구매 결정을 대신하지 않고, 사용자가 비교·계약·검수 상태를 놓치지 않게 정리합니다.</p>
+            </div>
+            <div class="flow-node">
+              <p class="node-label">Flow</p>
+              <p class="flow-title">신차 구매 기본형</p>
+              <ol class="step-road">
+                <li class="step-node">
+                  <p class="step-title">예산과 차량 선택</p>
+                  <div class="step-meta"><span>체크리스트</span></div>
+                  <div class="item-row"><span class="item-chip">예산 범위</span><span class="item-chip">후보 차량</span><span class="item-chip">필수 조건</span></div>
+                </li>
+                <li class="step-node">
+                  <p class="step-title">구매 방식 결정</p>
+                  <div class="step-meta"><span>체크리스트</span><span class="risk">금융 주의</span></div>
+                  <div class="item-row"><span class="item-chip">구매 방식</span><span class="item-chip">확인 조건</span><span class="item-chip">문의 내용</span></div>
+                </li>
+                <li class="step-node">
+                  <p class="step-title">견적과 협상 메모</p>
+                  <div class="step-meta"><span class="sheet">시트</span></div>
+                  <div class="item-row"><span class="item-chip">딜러/채널</span><span class="item-chip">견적 링크</span><span class="item-chip">포함 조건</span></div>
+                </li>
+                <li class="step-node">
+                  <p class="step-title">계약 확인</p>
+                  <div class="step-meta"><span>체크리스트</span></div>
+                  <div class="item-row"><span class="item-chip">계약서</span><span class="item-chip">계약금</span><span class="item-chip">남은 문의</span></div>
+                </li>
+                <li class="step-node">
+                  <p class="step-title">출고와 검수</p>
+                  <div class="step-meta"><span>체크리스트</span></div>
+                  <div class="item-row"><span class="item-chip">출고 예정일</span><span class="item-chip">검수 확인</span><span class="item-chip">인수 보류 여부</span></div>
+                </li>
+                <li class="step-node">
+                  <p class="step-title">등록 확인</p>
+                  <div class="step-meta"><span>체크리스트</span></div>
+                  <div class="item-row"><span class="item-chip">등록 진행</span><span class="item-chip">번호판/서류</span><span class="item-chip">보류 사항</span></div>
+                </li>
+                <li class="step-node">
+                  <p class="step-title">보험 가입 확인</p>
+                  <div class="step-meta"><span>체크리스트</span><span class="risk">보험 조언 아님</span></div>
+                  <div class="item-row"><span class="item-chip">가입 여부</span><span class="item-chip">보험 시작일</span><span class="item-chip">확인 메모</span></div>
+                </li>
+              </ol>
+            </div>
+          </div>
+        </details>
+
+        <details class="data-preview" open>
+          <summary>curated-reading-routine-log <span class="tag caution">reshape_before_seed</span></summary>
+          <div class="data-meta">
+            <span>source: Naver 독서 기록</span>
+            <span>input: 이번 달/읽을 책/메모</span>
+            <span>flow: 1</span>
+            <span>steps: 3</span>
+          </div>
+          <div class="map-canvas">
+            <div class="map-node">
+              <p class="node-label">Flow Map</p>
+              <p class="flow-title">독서 기록장</p>
+              <p class="visual-note">원문의 개인 루틴을 그대로 따라 하는 Flow는 약합니다. 사용자가 쓸 수 있는 기록표로만 재설계합니다.</p>
+            </div>
+            <div class="flow-node">
+              <p class="node-label">Flow</p>
+              <p class="flow-title">월간 독서 기록표</p>
+              <ol class="step-road">
+                <li class="step-node">
+                  <p class="step-title">월초 읽을 책 후보 적기</p>
+                  <div class="step-meta"><span class="sheet">시트</span></div>
+                  <div class="item-row"><span class="item-chip">후보 책 5권</span><span class="item-chip">보유/구매 후보</span><span class="item-chip">우선순위</span></div>
+                </li>
+                <li class="step-node">
+                  <p class="step-title">책 한 권 기록하기</p>
+                  <div class="step-meta"><span class="sheet">시트</span></div>
+                  <div class="item-row"><span class="item-chip">책 제목</span><span class="item-chip">읽기 상태</span><span class="item-chip">메모 한 줄</span></div>
+                </li>
+                <li class="step-node">
+                  <p class="step-title">월말 권수만 세기</p>
+                  <div class="step-meta"><span class="sheet">시트</span></div>
+                  <div class="item-row"><span class="item-chip">이번 달 읽은 책 수</span><span class="item-chip">연간 누적</span><span class="item-chip">다음 달 후보</span></div>
+                </li>
+              </ol>
+            </div>
+            <div class="decision-node">
+              <p class="step-title">재설계 이유</p>
+              <p class="visual-note">오전 1시간, 잠들기 전 전자책, 1권 반당 1권 사기는 개인 습관이라 범용 실행 Step으로 약합니다. seed 전 사용자 검토가 필요합니다.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="data-preview">
+          <summary>curated-opic-mock-course <span class="tag caution">xlsx row import 필요</span></summary>
+          <div class="data-meta">
+            <span>source: Mansour 오픽 모의고사 XLSX</span>
+            <span>input: 시작일/영상 URL/코스 선택</span>
+            <span>flows: 2</span>
+            <span>steps: 9</span>
+          </div>
+          <div class="map-canvas">
+            <div class="map-node">
+              <p class="node-label">Flow Map</p>
+              <p class="flow-title">오픽 모의고사 영상 복습표</p>
+              <p class="visual-note">원문 글의 공부 방법은 영상 1개 실행과 복습 기록으로 만들고, 첨부 XLSX는 2주/1달 일정 확장에만 씁니다.</p>
+            </div>
+            <div class="flow-grid">
+              <div class="flow-node">
+                <p class="node-label">Flow A</p>
+                <p class="flow-title">모의고사 영상 1개 복습</p>
+                <ol class="step-road">
+                  <li class="step-node">
+                    <p class="step-title">영상과 날짜 넣기</p>
+                    <div class="step-meta"><span class="sheet">시트</span></div>
+                    <div class="item-row"><span class="item-chip">영상 URL</span><span class="item-chip">영상 번호</span><span class="item-chip">실행 날짜</span></div>
+                  </li>
+                  <li class="step-node">
+                    <p class="step-title">시험 화면 차이 확인</p>
+                    <div class="step-meta"><span>메모</span></div>
+                    <div class="item-row"><span class="item-chip">Play</span><span class="item-chip">Replay/Next</span><span class="item-chip">자막 없음</span></div>
+                  </li>
+                  <li class="step-node">
+                    <p class="step-title">모의고사 실행하고 녹음</p>
+                    <div class="step-meta"><span class="date">캘린더</span></div>
+                    <div class="item-row"><span class="item-chip">원본 영상 URL</span><span class="item-chip">녹음 파일</span><span class="item-chip">완료 체크</span></div>
+                  </li>
+                  <li class="step-node">
+                    <p class="step-title">막힌 질문과 보완할 답변</p>
+                    <div class="step-meta"><span class="sheet">시트</span></div>
+                    <div class="item-row"><span class="item-chip">막힌 질문</span><span class="item-chip">부족한 표현</span><span class="item-chip">보완 답변</span></div>
+                  </li>
+                  <li class="step-node">
+                    <p class="step-title">녹음 셀프 피드백</p>
+                    <div class="step-meta"><span class="sheet">시트</span></div>
+                    <div class="item-row"><span class="item-chip">내용/문맥</span><span class="item-chip">표현</span><span class="item-chip">발음/속도/억양</span></div>
+                  </li>
+                  <li class="step-node">
+                    <p class="step-title">다음 문제 예측</p>
+                    <div class="step-meta"><span>메모</span></div>
+                    <div class="item-row"><span class="item-chip">콤보 번호</span><span class="item-chip">예상 유형</span><span class="item-chip">떠올린 답변</span></div>
+                  </li>
+                  <li class="step-node">
+                    <p class="step-title">다음 회차로 반복</p>
+                    <div class="step-meta"><span class="date">캘린더</span></div>
+                    <div class="item-row"><span class="item-chip">재도전 회차</span><span class="item-chip">보완 완료</span><span class="item-chip">휴식/정리</span></div>
+                  </li>
+                </ol>
+              </div>
+              <div class="flow-node">
+                <p class="node-label">Flow B</p>
+                <p class="flow-title">2주/1달 계획표 row import</p>
+                <ol class="step-road">
+                  <li class="step-node">
+                    <p class="step-title">2주 코스 row</p>
+                    <div class="step-meta"><span class="sheet">XLSX</span></div>
+                    <div class="item-row"><span class="item-chip">하루 2회차</span><span class="item-chip">오픽현타 & 보완</span><span class="item-chip">복습</span><span class="item-chip">정리/휴식</span></div>
+                  </li>
+                  <li class="step-node">
+                    <p class="step-title">1달 코스 row</p>
+                    <div class="step-meta"><span class="sheet">XLSX</span></div>
+                    <div class="item-row"><span class="item-chip">연습</span><span class="item-chip">복습</span><span class="item-chip">오픽현타</span><span class="item-chip">부족한 점 보완</span><span class="item-chip">휴식</span></div>
+                  </li>
+                </ol>
+              </div>
+            </div>
+            <div class="decision-node">
+              <p class="step-title">다음 작업</p>
+              <p class="visual-note">XLSX의 날짜/회차 row를 재파싱해 template Step을 실제 dayOffset Step으로 확장합니다.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="data-preview">
+          <summary>curated-baby-food-meal-log <span class="tag caution">pdf/hwp row import 필요</span></summary>
+          <div class="data-meta">
+            <span>source: Naver 이유식 ZIP/PDF/HWP</span>
+            <span>input: 시작일/아기 월령/먹은 양 메모</span>
+            <span>flows: 2</span>
+            <span>steps: 2</span>
+          </div>
+          <div class="map-canvas">
+            <div class="map-node">
+              <p class="node-label">Flow Map</p>
+              <p class="flow-title">초기 이유식 식단표 기록</p>
+              <p class="visual-note">식단 조언이 아니라 원문 식단표 row를 보고 먹은 양과 반응만 기록하는 용도입니다.</p>
+            </div>
+            <div class="flow-grid">
+              <div class="flow-node">
+                <p class="node-label">Flow A</p>
+                <p class="flow-title">150일 시작 이유식 식단표</p>
+                <ol class="step-road">
+                  <li class="step-node">
+                    <p class="step-title">오늘 식단 row 기록</p>
+                    <div class="step-meta"><span class="date">시작일+n</span><span class="sheet">시트</span><span class="risk">의학 조언 아님</span></div>
+                    <div class="item-row"><span class="item-chip">원문 식단 row</span><span class="item-chip">먹은 양</span><span class="item-chip">알레르기 O/X</span></div>
+                  </li>
+                </ol>
+              </div>
+              <div class="flow-node">
+                <p class="node-label">Flow B</p>
+                <p class="flow-title">이유식 큐브 재고 기록</p>
+                <ol class="step-road">
+                  <li class="step-node">
+                    <p class="step-title">큐브 재고 row</p>
+                    <div class="step-meta"><span class="sheet">시트</span></div>
+                    <div class="item-row"><span class="item-chip">재료명</span><span class="item-chip">남은 수량</span><span class="item-chip">만든 날짜</span></div>
+                  </li>
+                </ol>
+              </div>
+            </div>
+            <div class="decision-node">
+              <p class="step-title">다음 작업</p>
+              <p class="visual-note">원문 파일 열은 D+n / 베이스죽 / 토핑반찬 / 간식 / NEW / 알레르기 O/X / 먹은 양입니다. 화면에는 식단 row, 먹은 양, 알레르기 O/X만 우선 보입니다.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="data-preview">
+          <summary>curated-child-vaccination-schedule <span class="tag caution">official row import 필요</span></summary>
+          <div class="data-meta">
+            <span>source: KHMS 영유아 예방접종</span>
+            <span>input: 아이 생년월일</span>
+            <span>flows: 2</span>
+            <span>steps: 10 official row groups</span>
+          </div>
+          <div class="map-canvas">
+            <div class="map-node">
+              <p class="node-label">Flow Map</p>
+              <p class="flow-title">아이 예방접종 일정표</p>
+              <p class="visual-note">공식 표를 아이 생년월일 기준 일정으로 옮기는 구조입니다. 접종 가능 여부 판단은 의료기관 확인으로 분리합니다.</p>
+            </div>
+            <div class="flow-grid">
+              <div class="flow-node">
+                <p class="node-label">Flow A</p>
+                <p class="flow-title">출생~12개월 표준 일정</p>
+                <ol class="step-road">
+                  <li class="step-node">
+                    <p class="step-title">출생~4주</p>
+                    <div class="step-meta"><span class="date">생년월일 기준</span><span class="risk">의료 민감</span></div>
+                    <div class="item-row"><span class="item-chip">B형간염 1차</span><span class="item-chip">BCG 1회</span><span class="item-chip">병원 확인</span></div>
+                  </li>
+                  <li class="step-node">
+                    <p class="step-title">2개월</p>
+                    <div class="step-meta"><span class="date">생후 2개월</span><span class="risk">의료 민감</span></div>
+                    <div class="item-row"><span class="item-chip">DTaP 1차</span><span class="item-chip">IPV 1차</span><span class="item-chip">Hib 1차</span><span class="item-chip">PCV 1차</span><span class="item-chip">RV 1차</span></div>
+                  </li>
+                  <li class="step-node">
+                    <p class="step-title">4개월 / 6개월 / 12~15개월</p>
+                    <div class="step-meta"><span class="date">월령 그룹</span><span class="risk">의료 민감</span></div>
+                    <div class="item-row"><span class="item-chip">공식 표 row import</span><span class="item-chip">완료/보류</span><span class="item-chip">병원 확인 메모</span></div>
+                  </li>
+                </ol>
+              </div>
+              <div class="flow-node">
+                <p class="node-label">Flow B</p>
+                <p class="flow-title">추가접종과 학령기 일정</p>
+                <ol class="step-road">
+                  <li class="step-node">
+                    <p class="step-title">15~18개월 / 24~35개월</p>
+                    <div class="step-meta"><span class="date">월령 범위</span><span class="risk">의료 민감</span></div>
+                    <div class="item-row"><span class="item-chip">DTaP 추가</span><span class="item-chip">Hib/PCV 추가</span><span class="item-chip">일본뇌염</span></div>
+                  </li>
+                  <li class="step-node">
+                    <p class="step-title">4~6세 / 11~12세</p>
+                    <div class="step-meta"><span class="date">연령 범위</span><span class="risk">의료 민감</span></div>
+                    <div class="item-row"><span class="item-chip">DTaP/IPV/MMR 추가</span><span class="item-chip">Tdap/Td</span><span class="item-chip">HPV 대상 확인</span></div>
+                  </li>
+                </ol>
+              </div>
+            </div>
+            <div class="decision-node">
+              <p class="step-title">다음 작업</p>
+              <p class="visual-note">정확한 백신별 날짜와 대상 여부는 공식 row import 후 확정합니다. 사용자는 방문 준비와 완료/보류 기록만 합니다.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="data-preview">
+          <summary>curated-wedding-checklist-family <span class="tag caution">versioned family</span></summary>
+          <div class="data-meta">
+            <span>sources: Naver + Gongysd</span>
+            <span>input: 결혼식 날짜/버전 선택</span>
+            <span>flows: 2</span>
+            <span>steps: 10</span>
+          </div>
+          <div class="map-canvas">
+            <div class="map-node">
+              <p class="node-label">Flow Map</p>
+              <p class="flow-title">결혼 준비 체크리스트 버전 선택</p>
+              <p class="visual-note">두 원문을 합치지 않습니다. 사용자가 결혼식 날짜와 원문 버전을 고른 뒤 해당 Flow만 가져갑니다.</p>
+            </div>
+            <div class="flow-grid">
+              <div class="flow-node">
+                <p class="node-label">Flow A · Naver</p>
+                <p class="flow-title">결혼 준비 1년 타임라인</p>
+                <ol class="step-road">
+                  <li class="step-node">
+                    <p class="step-title">D-12개월 준비 항목 확인</p>
+                    <div class="step-meta"><span class="date">결혼식-12개월</span><span>캘린더</span></div>
+                    <div class="item-row"><span class="item-chip">원문 항목</span><span class="item-chip">업체/예약 메모</span><span class="item-chip">보류 항목</span></div>
+                  </li>
+                  <li class="step-node">
+                    <p class="step-title">D-10개월 준비 항목 확인</p>
+                    <div class="step-meta"><span class="date">결혼식-10개월</span><span>캘린더</span></div>
+                    <div class="item-row"><span class="item-chip">원문 항목</span><span class="item-chip">예약/비교</span><span class="item-chip">보류 항목</span></div>
+                  </li>
+                  <li class="step-node">
+                    <p class="step-title">D-7 / D-6 / D-3 / D-1개월</p>
+                    <div class="step-meta"><span class="date">월 단위</span><span>캘린더</span></div>
+                    <div class="item-row"><span class="item-chip">원문 월 단위만 보존</span><span class="item-chip">확정/보류 메모</span></div>
+                  </li>
+                </ol>
+              </div>
+              <div class="flow-node">
+                <p class="node-label">Flow B · Gongysd</p>
+                <p class="flow-title">결혼 준비 A-to-Z</p>
+                <ol class="step-road">
+                  <li class="step-node">
+                    <p class="step-title">웨딩홀 확인</p>
+                    <div class="step-meta"><span class="sheet">시트</span></div>
+                    <div class="item-row"><span class="item-chip">후보</span><span class="item-chip">견적/예약 메모</span><span class="item-chip">상태</span></div>
+                  </li>
+                  <li class="step-node">
+                    <p class="step-title">상견례 확인</p>
+                    <div class="step-meta"><span class="sheet">시트</span></div>
+                    <div class="item-row"><span class="item-chip">일정</span><span class="item-chip">장소</span><span class="item-chip">상태</span></div>
+                  </li>
+                  <li class="step-node">
+                    <p class="step-title">플래너 / 스드메 확인</p>
+                    <div class="step-meta"><span class="sheet">시트</span></div>
+                    <div class="item-row"><span class="item-chip">플래너 후보</span><span class="item-chip">스튜디오</span><span class="item-chip">드레스</span><span class="item-chip">메이크업</span></div>
+                  </li>
+                </ol>
+              </div>
+            </div>
+            <div class="decision-node">
+              <p class="step-title">검토 결정</p>
+              <p class="visual-note">첫 구현은 Naver 타임라인 버전 하나만 고르는 편이 안전합니다. 여러 원문을 섞은 “완성형 결혼 Flow”는 만들지 않습니다.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="data-preview">
+          <summary>curated-allblanc-workout-park <span class="tag park">park skeleton</span></summary>
+          <div class="data-meta">
+            <span>source: Allblanc TV YouTube channel</span>
+            <span>input: 영상 URL/반복 요일/시간</span>
+            <span>flow: 1 template</span>
+            <span>steps: 1</span>
+          </div>
+          <div class="map-canvas">
+            <div class="map-node">
+              <p class="node-label">Park</p>
+              <p class="flow-title">Allblanc 영상 1개 홈트 저장</p>
+              <p class="visual-note">채널 전체는 너무 넓습니다. 플레이리스트를 Flow Map으로, 영상 1개를 Routine Flow로 봅니다.</p>
+            </div>
+            <div class="flow-node">
+              <p class="node-label">Flow Template</p>
+              <p class="flow-title">선택한 영상 1개 실행 Flow</p>
+              <ol class="step-road">
+                <li class="step-node">
+                  <p class="step-title">원본 영상 열고 완료 체크하기</p>
+                  <div class="step-meta"><span class="date">사용자 선택 요일</span><span>캘린더</span><span class="risk">운동 주의</span></div>
+                  <div class="item-row"><span class="item-chip">원본 영상 URL</span><span class="item-chip">반복 요일/시간</span><span class="item-chip">완료 체크</span></div>
+                </li>
+              </ol>
+            </div>
+            <div class="decision-node">
+              <p class="step-title">플레이리스트 후보</p>
+              <div class="item-row" style="margin-top:8px;"><span class="item-chip">7 Days Abs Challenge</span><span class="item-chip">Allblanc Yoga</span><span class="item-chip">Beginner Workout</span><span class="item-chip">HIIT</span><span class="item-chip">HOME WALKING</span><span class="item-chip">Stretching</span></div>
+              <p class="visual-note">강도나 통증 여부는 기본 Item이 아니라 주의/메모로 분리합니다. 동작 순서, 세트 수, 운동 효과는 영상별 row 추출 전에는 만들지 않습니다.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="data-preview">
+          <summary>curated-funmom-learning-park <span class="tag park">park skeleton</span></summary>
+          <div class="data-meta">
+            <span>source: Funmom Tistory</span>
+            <span>input: 아이 나이/이번 주 사용 메모</span>
+            <span>flow: 1 category picker</span>
+            <span>steps: 6 category rows</span>
+          </div>
+          <div class="map-canvas">
+            <div class="map-node">
+              <p class="node-label">Park</p>
+              <p class="flow-title">이번 주 펀맘 프린트 학습지 고르기</p>
+              <p class="visual-note">사이트 전체를 단일 Flow로 만들지 않습니다. 카테고리 하나를 골라 글 목록과 대상 나이를 row로 수집합니다.</p>
+            </div>
+            <div class="flow-node">
+              <p class="node-label">Flow Candidate</p>
+              <p class="flow-title">카테고리에서 자료 1개 고르기</p>
+              <ol class="step-road">
+                <li class="step-node">
+                  <p class="step-title">창의공부</p>
+                  <div class="step-meta"><span>메모</span></div>
+                  <div class="item-row"><span class="item-chip">글 제목</span><span class="item-chip">원문 URL</span><span class="item-chip">대상 나이</span><span class="item-chip">사용 여부</span></div>
+                </li>
+                <li class="step-node">
+                  <p class="step-title">미로찾기</p>
+                  <div class="step-meta"><span>메모</span></div>
+                  <div class="item-row"><span class="item-chip">글 제목</span><span class="item-chip">순서/난이도</span><span class="item-chip">사용 여부</span></div>
+                </li>
+                <li class="step-node">
+                  <p class="step-title">한글공부 / 수학공부 / 영어공부</p>
+                  <div class="step-meta"><span>메모</span></div>
+                  <div class="item-row"><span class="item-chip">글 제목</span><span class="item-chip">원문 순서</span><span class="item-chip">대상 나이</span><span class="item-chip">이번 주 사용</span></div>
+                </li>
+              </ol>
+            </div>
+            <div class="decision-node">
+              <p class="step-title">다음 작업</p>
+              <p class="visual-note">첫 구현은 “카테고리 하나”만 골라 실제 글 목록, 대상 나이, 원문 순서를 확인한 뒤 Flow Map으로 확장합니다.</p>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section>
+      <h2>일괄 검토에서 결정할 질문</h2>
+      <ol>
+        <li>첫 구현을 이사로 확정할지, 오픽/신차처럼 source row가 강한 후보와 비교할지 결정합니다.</li>
+        <li>민감 카테고리에서 공식 링크와 creator source를 화면상 별도 블록으로 고정할지 결정합니다.</li>
+        <li>Park 판정 대상은 전체 사이트/채널 페이지를 만들지, 아니면 카테고리/플레이리스트 하나를 바로 고를지 결정합니다.</li>
+        <li>결혼처럼 다중 원문이 있는 경우 “버전 선택 Map”을 우선 만들고 각 원문 Flow를 별도 관리할지 결정합니다.</li>
+        <li>구현 승인 전, 이 문서의 각 후보가 Draft only인지 Public MVP 후보인지 다시 rubric으로 잘라냅니다.</li>
+      </ol>
+    </section>
+
+    <footer>
+      이 문서는 기획 검토용입니다. 원문 확인은 이전 9개 source audit 과정에서 수행되었고, 이 파일은 그 결과를 FlowMe 구조로 정리한 상세 변환 스펙입니다. 공개 후보, 검증 후보, 구현 완료 상태가 아닙니다.
+    </footer>
+  </article>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow 실행 UX 재설계 기획안</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #0f172a;
+      --muted: #475569;
+      --line: #dbe3ef;
+      --soft: #f8fafc;
+      --blue: #2563eb;
+      --green: #047857;
+      --amber: #b45309;
+    }
+    body {
+      margin: 0;
+      background: #eef3f8;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+    article {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 32px 18px 48px;
+    }
+    header, section {
+      margin: 0 0 18px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    }
+    header {
+      padding: 28px;
+    }
+    section {
+      padding: 22px;
+    }
+    h1, h2, h3, p {
+      margin: 0;
+    }
+    h1 {
+      font-size: clamp(28px, 4vw, 42px);
+      letter-spacing: 0;
+      line-height: 1.15;
+    }
+    h2 {
+      margin-bottom: 12px;
+      font-size: 22px;
+    }
+    h3 {
+      margin: 16px 0 8px;
+      font-size: 17px;
+    }
+    p {
+      color: var(--muted);
+    }
+    .eyebrow {
+      margin-bottom: 8px;
+      color: var(--blue);
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .lead {
+      margin-top: 14px;
+      max-width: 760px;
+      font-size: 17px;
+    }
+    .grid {
+      display: grid;
+      gap: 12px;
+    }
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--soft);
+      padding: 16px;
+    }
+    .card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+    .pill {
+      display: inline-flex;
+      margin: 0 6px 6px 0;
+      border-radius: 999px;
+      background: #eaf2ff;
+      padding: 5px 10px;
+      color: #1d4ed8;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .decision {
+      border-left: 4px solid var(--blue);
+      background: #f8fbff;
+    }
+    .warning {
+      border-left: 4px solid var(--amber);
+      background: #fffaf0;
+    }
+    .ok {
+      border-left: 4px solid var(--green);
+      background: #f0fdf4;
+    }
+    ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+    li + li {
+      margin-top: 6px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f1f5f9;
+      color: #334155;
+      font-weight: 800;
+    }
+    code {
+      border-radius: 6px;
+      background: #eef2ff;
+      padding: 2px 5px;
+      color: #3730a3;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 0.92em;
+    }
+    @media (max-width: 720px) {
+      article {
+        padding: 18px 12px 36px;
+      }
+      header, section {
+        border-radius: 10px;
+        padding: 18px;
+      }
+      .grid.two, .grid.three {
+        grid-template-columns: 1fr;
+      }
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+<body>
+<article>
+  <header>
+    <p class="eyebrow">2026-06-30 · 기획/설계 문서</p>
+    <h1>My Flow 실행 UX 재설계 기획안</h1>
+    <p class="lead">목표는 저장한 Flow를 사용자가 다시 열었을 때 “오늘 무엇을 하면 되는지”, “날짜별 일정은 어디서 보는지”, “전체 Flow 구조는 어디서 관리하는지”를 캘린더/투두 앱 수준의 복잡도로 이해하게 만드는 것이다.</p>
+  </header>
+
+  <section>
+    <h2>리서치 기준</h2>
+    <div class="grid three">
+      <div class="card">
+        <strong>Apple Reminders</strong>
+        <p>Today, Scheduled, All 같은 스마트 목록으로 날짜 실행과 전체 목록을 분리한다. 사용자는 내부 데이터 구조를 알 필요가 없다.</p>
+      </div>
+      <div class="card">
+        <strong>Todoist</strong>
+        <p>Today는 오늘 할 일을, Upcoming은 예정 일을, Projects는 전체 구조를 담당한다. 오늘 화면은 모든 프로젝트의 오늘 할 일을 모아준다.</p>
+      </div>
+      <div class="card">
+        <strong>Microsoft To Do</strong>
+        <p>My Day는 하루 실행에 집중하고, Planned/List는 일정과 목록 관리를 담당한다. 실행 표면과 보관 표면을 섞지 않는다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>이번 판단</h2>
+    <div class="grid two">
+      <div class="card decision">
+        <strong>4탭 IA 유지</strong>
+        <p><code>홈 / Flow 찾기 / 캘린더 / 내 Flow</code>를 유지한다. 캘린더는 전역 실행 탭이고, 내 Flow 안에 다시 캘린더 탭을 두지 않는다.</p>
+      </div>
+      <div class="card decision">
+        <strong>내 Flow는 2표면만 둔다</strong>
+        <p><code>오늘</code>은 지금 실행할 Step, <code>Flow</code>는 저장한 Flow 구조와 다음 Step을 본다. 단일 Flow와 여러 Flow 모두 같은 규칙을 쓴다.</p>
+      </div>
+      <div class="card decision">
+        <strong>Step은 최소 실행 단위</strong>
+        <p>기본 카드에는 제목, 날짜, 소속 Flow, 진행 정도만 둔다. Item/detail은 Step을 눌렀을 때 같은 자리 아래에 열린다.</p>
+      </div>
+      <div class="card decision">
+        <strong>저장 직후도 같은 셸 사용</strong>
+        <p>저장 완료 화면을 별도 모드로 만들지 않는다. 얇은 저장 완료 배너 뒤에 동일한 내 Flow 실행 셸을 보여준다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>현재 문제</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>영역</th>
+          <th>문제</th>
+          <th>사용자 영향</th>
+          <th>수정 방향</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>저장 직후</td>
+          <td>저장 완료 패널이 내 Flow와 다른 화면처럼 보임</td>
+          <td>저장 후 어디서 이어서 쓰는지 헷갈림</td>
+          <td>저장 완료 배너 + 동일한 오늘/Flow 구조</td>
+        </tr>
+        <tr>
+          <td>단일 Flow</td>
+          <td>모바일에서 로컬 탭을 숨기고 별도 버튼을 씀</td>
+          <td>Flow가 1개일 때와 여러 개일 때 규칙이 달라짐</td>
+          <td>항상 오늘/Flow 탭을 유지</td>
+        </tr>
+        <tr>
+          <td>Flow 탭</td>
+          <td>Flow 카드가 정보와 버튼을 많이 노출함</td>
+          <td>관리 화면처럼 보이고 실행 우선순위가 흐려짐</td>
+          <td>다음 항목 중심, 부가 정보는 접기</td>
+        </tr>
+        <tr>
+          <td>캘린더</td>
+          <td>저장 후 첫 일정이 아닌 빈 날짜가 선택될 수 있음</td>
+          <td>저장한 일정이 없는 것처럼 보임</td>
+          <td>가장 가까운 저장 Step 날짜를 기본 선택</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>화면 규칙</h2>
+    <div class="grid three">
+      <div class="card ok">
+        <strong>오늘 탭</strong>
+        <p>지금 이어할 Step 1개를 가장 먼저 보여준다. 오늘 항목이 없으면 “이번 주·다음 할 일”을 바로 이어서 보여준다.</p>
+      </div>
+      <div class="card ok">
+        <strong>캘린더 탭</strong>
+        <p>날짜가 있는 Step의 전역 실행 탭이다. 날짜를 누르면 그날 항목이 캘린더 바로 아래 가까운 위치에서 열린다.</p>
+      </div>
+      <div class="card ok">
+        <strong>Flow 탭</strong>
+        <p>저장한 Flow별 진행과 다음 Step만 먼저 보여준다. 전체 Step 목록은 필요할 때 펼친다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>사용자 저니 시뮬레이션</h2>
+    <h3>1. 처음 저장한 사용자</h3>
+    <ul>
+      <li>Flow 찾기에서 이사 D-30을 열고 이사일을 입력한다.</li>
+      <li>저장 후 내 Flow로 이동한다.</li>
+      <li>얇은 저장 완료 배너와 “지금 이어하기” 카드가 보인다.</li>
+      <li>첫 Step을 누르면 같은 자리 아래에 체크/메모/detail이 열린다.</li>
+      <li>전체 구조가 필요하면 Flow 탭으로 간다.</li>
+    </ul>
+    <h3>2. 며칠 뒤 재방문한 사용자</h3>
+    <ul>
+      <li>하단 캘린더 탭으로 들어가 날짜별 일정을 확인한다.</li>
+      <li>내 Flow로 돌아오면 오늘 또는 가까운 다음 Step을 이어서 본다.</li>
+      <li>전체 체크리스트를 보고 싶을 때만 Flow 탭에서 해당 Flow를 펼친다.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>구현 범위</h2>
+    <div>
+      <span class="pill">P0 저장 후 동일 셸</span>
+      <span class="pill">P0 단일/다중 Flow 탭 통일</span>
+      <span class="pill">P1 Flow 카드 밀도 축소</span>
+      <span class="pill">P1 캘린더 기본 날짜 보정</span>
+      <span class="pill">P1 시뮬레이션/E2E 갱신</span>
+    </div>
+    <div class="card warning">
+      <strong>이번에 하지 않는 것</strong>
+      <p>리뷰/사용 수/추천 알고리즘, 세부 Item 수정 UX, 대량 Flow 필터 고도화, 제작자 publish gate 상세 편집은 다음 단계로 둔다.</p>
+    </div>
+  </section>
+</article>
+</body>
+</html>

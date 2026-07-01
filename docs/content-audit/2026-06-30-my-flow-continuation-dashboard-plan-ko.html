@@ -1,0 +1,110 @@
+<article lang="ko" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #111827; line-height: 1.65; max-width: 980px; margin: 0 auto; padding: 32px 20px 56px; background: #f8fafc;">
+  <header style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 28px; box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);">
+    <p style="margin: 0 0 8px; color: #2563eb; font-weight: 800;">My Flow 실행 UX 재정리</p>
+    <h1 style="margin: 0; font-size: 34px; line-height: 1.2; letter-spacing: 0;">오늘만 보는 화면이 아니라, 저장한 Flow를 이어서 실행하는 화면</h1>
+    <p style="margin: 16px 0 0; color: #4b5563; font-size: 16px;">작성일: 2026-06-30 · 범위: 내 Flow 기본 화면, 저장 후 실행, 캘린더/전체 Flow 역할 분리</p>
+  </header>
+
+  <section style="margin-top: 24px; display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+    <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 20px;">
+      <h2 style="margin: 0 0 10px; font-size: 20px;">현재 혼란</h2>
+      <p style="margin: 0; color: #4b5563;">모바일에서 오늘 항목이 비면 “오늘 남은 일정이나 루틴이 없습니다”가 중심에 보여, 사용자가 저장한 Flow 전체나 다음 Step을 어디서 이어야 하는지 헷갈린다.</p>
+    </div>
+    <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 20px;">
+      <h2 style="margin: 0 0 10px; font-size: 20px;">판단</h2>
+      <p style="margin: 0; color: #4b5563;">내 Flow는 오늘 전용 탭이 아니라 저장한 Flow의 실행 허브다. 오늘이 비어도 다음 할 일과 전체 Flow로 이어져야 한다.</p>
+    </div>
+    <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 20px;">
+      <h2 style="margin: 0 0 10px; font-size: 20px;">UI 원칙</h2>
+      <p style="margin: 0; color: #4b5563;">전체 체크리스트를 기본으로 다 펼치지 않는다. Step 하나는 캘린더/투두에 들어가는 최소 항목이고, Item은 Step을 열었을 때 보인다.</p>
+    </div>
+  </section>
+
+  <section style="margin-top: 24px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 24px;">
+    <h2 style="margin: 0 0 14px; font-size: 24px;">외부 서비스에서 가져온 기준</h2>
+    <div style="display: grid; gap: 12px;">
+      <p style="margin: 0; color: #374151;"><strong>Apple Reminders</strong>: Today, Scheduled, All 같은 스마트 목록으로 오늘/예정/전체를 분리한다. Today는 오늘과 밀린 일을 보는 집중 영역이다.</p>
+      <p style="margin: 0; color: #374151;"><strong>Todoist</strong>: Today는 오늘 할 일을 집중해서 계획하는 화면이고, Upcoming은 다음 일정을 미리 보는 화면이다.</p>
+      <p style="margin: 0; color: #374151;"><strong>Microsoft To Do</strong>: My Day와 My Tasks를 분리해 하루 집중과 전체 작업 모음을 함께 둔다.</p>
+      <p style="margin: 0; color: #374151;"><strong>Google Calendar/Tasks</strong>: 일정 안에서 Task를 만들고 관리하지만, 모든 작업 목록은 별도 Task 맥락으로도 접근할 수 있다.</p>
+    </div>
+    <p style="margin: 16px 0 0; color: #6b7280; font-size: 14px;">적용 결론: FlowMe도 오늘, 다음 일정, 전체 Flow를 한 덩어리로 섞지 말고, 기본 화면에서는 “지금 이어하기”를 우선한다.</p>
+  </section>
+
+  <section style="margin-top: 24px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 24px;">
+    <h2 style="margin: 0 0 16px; font-size: 24px;">새 정보 구조</h2>
+    <ol style="margin: 0; padding-left: 22px; color: #374151;">
+      <li style="margin-bottom: 10px;"><strong>지금 이어하기</strong>: 오늘 남은 Step이 있으면 오늘 Step, 없으면 밀린 Step, 없으면 가장 가까운 다음 Step을 보여준다.</li>
+      <li style="margin-bottom: 10px;"><strong>오늘 할 일</strong>: 오늘 날짜에 실제로 남은 일정/루틴이 있을 때만 보인다. 비어 있음 문구를 중심 카드로 만들지 않는다.</li>
+      <li style="margin-bottom: 10px;"><strong>이번 주·다음 할 일</strong>: 가까운 예정 Step을 2~4개만 보여준다. 전체 일정은 글로벌 캘린더 탭에서 본다.</li>
+      <li style="margin-bottom: 10px;"><strong>저장한 Flow</strong>: 전체 체크리스트/Step 목록과 진행률은 Flow 카드 안에서 필요할 때 연다.</li>
+      <li><strong>캘린더</strong>: 날짜 선택과 날짜별 Step 실행은 글로벌 캘린더 탭이 담당한다.</li>
+    </ol>
+  </section>
+
+  <section style="margin-top: 24px; display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+    <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 20px;">
+      <p style="margin: 0 0 8px; color: #dc2626; font-weight: 800;">Before</p>
+      <h3 style="margin: 0 0 10px; font-size: 20px;">오늘 중심 빈 상태</h3>
+      <ul style="margin: 0; padding-left: 18px; color: #4b5563;">
+        <li>오늘 남은 일이 없으면 화면이 끊긴다.</li>
+        <li>저장한 Flow 카드와 오늘 카드의 관계가 약하다.</li>
+        <li>전체 체크리스트가 어디 있는지 추론해야 한다.</li>
+      </ul>
+    </div>
+    <div style="background: #fff; border: 1px solid #bfdbfe; border-radius: 16px; padding: 20px;">
+      <p style="margin: 0 0 8px; color: #2563eb; font-weight: 800;">After</p>
+      <h3 style="margin: 0 0 10px; font-size: 20px;">이어하기 중심</h3>
+      <ul style="margin: 0; padding-left: 18px; color: #4b5563;">
+        <li>오늘이 비어도 다음 Step이 바로 보인다.</li>
+        <li>전체 Flow는 “저장한 Flow” 영역에서 찾는다.</li>
+        <li>Item/detail은 Step을 열었을 때만 나온다.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section style="margin-top: 24px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 24px;">
+    <h2 style="margin: 0 0 14px; font-size: 24px;">제품 반영 기준</h2>
+    <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
+      <thead>
+        <tr>
+          <th style="text-align: left; padding: 10px; border-bottom: 1px solid #e5e7eb;">항목</th>
+          <th style="text-align: left; padding: 10px; border-bottom: 1px solid #e5e7eb;">결정</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;">내 Flow 첫 화면</td>
+          <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;">오늘 전용이 아니라 “지금 이어하기” 대시보드</td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;">전체 체크리스트</td>
+          <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;">기본 노출 금지. Flow 상세/Step detail에서 필요할 때 열기</td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;">오늘이 비어 있을 때</td>
+          <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;">빈 문구보다 다음 Step 또는 가까운 예정 Step 표시</td>
+        </tr>
+        <tr>
+          <td style="padding: 10px;">캘린더</td>
+          <td style="padding: 10px;">글로벌 탭으로 유지. My Flow 내부 CTA 중복은 줄임</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section style="margin-top: 24px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 16px; padding: 24px;">
+    <h2 style="margin: 0 0 10px; font-size: 24px;">이번 구현에서 볼 것</h2>
+    <ul style="margin: 0; padding-left: 18px; color: #1f2937;">
+      <li>모바일에서 오늘이 비어도 다음 실행 Step이 보이는가?</li>
+      <li>오늘/다음/저장한 Flow의 역할이 분리되어 보이는가?</li>
+      <li>전체 체크리스트가 기본 화면에 과하게 펼쳐지지 않는가?</li>
+      <li>Step을 누르면 바로 아래에서 Item/detail을 확인할 수 있는가?</li>
+      <li>글로벌 캘린더 탭과 My Flow가 서로 중복 CTA를 만들지 않는가?</li>
+    </ul>
+  </section>
+
+  <footer style="margin-top: 24px; color: #6b7280; font-size: 14px;">
+    참고: Apple Reminders, Todoist, Microsoft To Do, Google Calendar/Tasks의 오늘/예정/전체 작업 분리 패턴을 참고했다. 이 문서는 사용자용 화면이 아니라 검토용 기획 문서다.
+  </footer>
+</article>

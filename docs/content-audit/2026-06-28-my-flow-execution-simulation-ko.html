@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Flow 실행 UX 시뮬레이션</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --surface: #fff;
+      --soft: #f8fafc;
+      --line: #dbe4ef;
+      --text: #111827;
+      --muted: #667085;
+      --blue: #1f5fbf;
+      --green: #0f7a4a;
+      --amber: #9a6100;
+      --red: #b42318;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: linear-gradient(180deg, #fbfdff 0, var(--bg) 420px); font-size: 16px; line-height: 1.62; }
+    a { color: var(--blue); text-underline-offset: 3px; overflow-wrap: anywhere; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 44px); line-height: 1.12; letter-spacing: 0; word-break: keep-all; }
+    h2 { margin-bottom: 8px; font-size: clamp(23px, 3vw, 32px); line-height: 1.22; letter-spacing: 0; word-break: keep-all; }
+    h3 { margin-bottom: 6px; font-size: 19px; line-height: 1.3; letter-spacing: 0; word-break: keep-all; }
+    code { padding: 2px 5px; border-radius: 6px; background: #eef2f7; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .92em; }
+    .page { width: min(1120px, calc(100% - 28px)); margin: 0 auto; padding: 16px 0 64px; }
+    .topbar, .hero, .card, .panel { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+    .topbar { display: flex; justify-content: space-between; gap: 12px; padding: 12px 16px; }
+    .brand { color: var(--blue); font-size: 24px; font-weight: 950; text-decoration: none; }
+    .hero, .card { margin-top: 12px; padding: 18px; box-shadow: 0 12px 28px rgba(16, 24, 39, .07); }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .desc { max-width: 880px; color: var(--muted); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip { display: inline-flex; min-height: 30px; align-items: center; padding: 5px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--soft); color: #344054; font-size: 13px; font-weight: 850; white-space: nowrap; }
+    .chip.blue { border-color: #bfdbfe; background: #eaf2ff; color: #174ea6; }
+    .chip.green { border-color: #bde7cb; background: #e8f7ef; color: var(--green); }
+    .chip.amber { border-color: #efd08f; background: #fff6df; color: var(--amber); }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .panel { padding: 14px; background: var(--soft); }
+    .panel strong { display: block; margin-bottom: 5px; }
+    .panel p { margin-bottom: 0; color: var(--muted); font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { padding: 11px 10px; border-top: 1px solid #e6edf5; text-align: left; vertical-align: top; }
+    th { background: #f8fafc; color: #475467; font-size: 13px; font-weight: 950; }
+    td { color: #263445; font-size: 14px; }
+    .sev { display: inline-flex; min-width: 84px; justify-content: center; padding: 4px 8px; border-radius: 999px; font-size: 12px; font-weight: 950; }
+    .ok { background: #e8f7ef; color: var(--green); }
+    .mid { background: #fff6df; color: var(--amber); }
+    .low { background: #eef2f7; color: #475467; }
+    .steps { margin: 10px 0 0; padding-left: 20px; }
+    .steps li + li { margin-top: 6px; }
+    @media (max-width: 860px) {
+      .page { width: min(100% - 20px, 1120px); padding-top: 10px; }
+      .topbar { flex-direction: column; }
+      .hero, .card { padding: 14px; }
+      .grid, .grid.two { grid-template-columns: 1fr; }
+      table, thead, tbody, tr, th, td { display: block; }
+      thead { display: none; }
+      tr { margin-top: 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; overflow: hidden; }
+      td { border-top: 1px solid #edf2f7; }
+      td:first-child { border-top: 0; }
+      td::before { content: attr(data-label); display: block; margin-bottom: 4px; color: #667085; font-size: 12px; font-weight: 950; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar">
+      <a class="brand" href="../../">FLOW</a>
+      <div class="chips">
+        <span class="chip blue">시뮬레이션 리포트</span>
+        <span class="chip">2026-06-28</span>
+        <span class="chip amber">실제 사용자 화면과 분리</span>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <p class="eyebrow">Simulation Goal</p>
+      <h1>저장 후 사용자가 어디서 무엇을 해야 하는지 검증</h1>
+      <p class="desc">
+        이번 리허설은 실제 사용자 화면을 클릭한다고 가정하고, 저장한 Flow가 1개, 3개, 8개 이상일 때
+        오늘/캘린더/Flow 구조가 캘린더·투두 앱 수준의 복잡도 안에 머무는지 확인했다.
+      </p>
+      <div class="chips">
+        <span class="chip green">Blocking/High 없음 목표</span>
+        <span class="chip">모바일 우선</span>
+        <span class="chip">원문 기반 후보만 대표 노출</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">Personas</p>
+      <h2>시뮬레이션 페르소나</h2>
+      <div class="grid">
+        <div class="panel">
+          <strong>생활 전환 사용자</strong>
+          <p>이사 체크리스트를 보고 날짜 기준으로 저장한다. 다음 방문 때 오늘 할 일을 먼저 찾고 싶다.</p>
+        </div>
+        <div class="panel">
+          <strong>학습 관리 사용자</strong>
+          <p>중1 수학 목차를 내 진도표로 저장한다. 처음부터 일정 입력을 강요받고 싶지 않다.</p>
+        </div>
+        <div class="panel">
+          <strong>고밀도 저장 사용자</strong>
+          <p>여러 Flow와 루틴이 섞여 있다. 그래도 첫 화면은 오늘 할 일 중심이어야 한다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">Journey Rehearsal</p>
+      <h2>사용자 저니별 결과</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>저니</th>
+            <th>시뮬레이션</th>
+            <th>판정</th>
+            <th>반영한 개선</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="저니">홈에서 시작</td>
+            <td data-label="시뮬레이션">서비스 약속을 읽고 대표 이사 Flow Map, 중1 수학, 전세 단일 Flow 중 하나로 이동.</td>
+            <td data-label="판정"><span class="sev ok">통과</span></td>
+            <td data-label="개선">홈에서 전체 후보 목록을 제거하고, 대표 시작점만 남김.</td>
+          </tr>
+          <tr>
+            <td data-label="저니">Flow 찾기</td>
+            <td data-label="시뮬레이션">Flow Map과 단일 Flow를 구분해서 보고, 저장 전 공개 상세로 진입.</td>
+            <td data-label="판정"><span class="sev ok">통과</span></td>
+            <td data-label="개선">단일 Flow 대표 후보를 전세 1개로 축소. 약한 후보는 대표 화면에서 제외.</td>
+          </tr>
+          <tr>
+            <td data-label="저니">저장 직후</td>
+            <td data-label="시뮬레이션">저장 완료 후 첫 Step을 확인하고, 전체 Flow 또는 캘린더로 이동.</td>
+            <td data-label="판정"><span class="sev ok">통과</span></td>
+            <td data-label="개선">post-save 화면은 확인 우선. 전체 관리 화면은 사용자가 열 때만 보여줌.</td>
+          </tr>
+          <tr>
+            <td data-label="저니">내 Flow 1개</td>
+            <td data-label="시뮬레이션">탭을 숨기고 오늘 할 일 중심으로 바로 실행.</td>
+            <td data-label="판정"><span class="sev ok">통과</span></td>
+            <td data-label="개선">모바일 단일 저장 상태에서는 불필요한 최상위 탭을 숨김.</td>
+          </tr>
+          <tr>
+            <td data-label="저니">내 Flow 3개</td>
+            <td data-label="시뮬레이션">오늘/캘린더/Flow 탭으로 이동하고, Step detail을 클릭한 자리에서 열어봄.</td>
+            <td data-label="판정"><span class="sev ok">통과</span></td>
+            <td data-label="개선">Flow 카드의 다음 Step을 누르면 같은 카드 아래 detail이 열리고, 다시 누르면 닫힘.</td>
+          </tr>
+          <tr>
+            <td data-label="저니">내 Flow 8개 이상</td>
+            <td data-label="시뮬레이션">오늘은 우선순위, 캘린더는 날짜, Flow는 목록/필터로 이동.</td>
+            <td data-label="판정"><span class="sev mid">보류</span></td>
+            <td data-label="개선">체크리스트/루틴 최상위 탭은 제거. 다만 고밀도 목록의 검색/신뢰 신호는 후속 백로그.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">UX Review</p>
+      <h2>UX 디자이너 관점 평가</h2>
+      <div class="grid two">
+        <div class="panel">
+          <strong>좋아진 점</strong>
+          <ul class="steps">
+            <li>홈과 카탈로그가 같은 화면처럼 보이던 문제가 줄었다.</li>
+            <li>내 Flow의 최상위 개념이 오늘/캘린더/Flow로 단순해졌다.</li>
+            <li>Step detail이 클릭한 카드 아래에서 열려 모바일 스크롤 부담이 줄었다.</li>
+            <li>사용자 화면에 내부 평가, 후보 점수, 검토 문구가 노출되지 않는다.</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <strong>아직 남은 문제</strong>
+          <ul class="steps">
+            <li>콘텐츠 선택 이유를 뒷받침할 사용수, 리뷰, 제작자 신뢰 신호가 부족하다.</li>
+            <li>중1 수학은 구조 검증에는 좋지만, 사용자가 실제로 공부하고 싶게 만드는 원문/학습 매력이 약하다.</li>
+            <li>영유아 검진/접종은 대표 후보로 올리기 전에 공식 표 기반 Step 정보가 더 필요하다.</li>
+            <li>고밀도 저장 상태의 Flow 목록은 검색, 숨김, 완료 그룹의 상품화 판단이 더 필요하다.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">Decision</p>
+      <h2>다음 사용자 검토 전 판단 기준</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>질문</th>
+            <th>이번 상태</th>
+            <th>사용자 검토에서 볼 점</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="질문">서비스 입구처럼 보이는가?</td>
+            <td data-label="상태"><span class="sev ok">개선됨</span></td>
+            <td data-label="검토">홈에서 무엇을 눌러야 할지 5초 안에 보이는지.</td>
+          </tr>
+          <tr>
+            <td data-label="질문">저장 후 다음 액션이 명확한가?</td>
+            <td data-label="상태"><span class="sev ok">개선됨</span></td>
+            <td data-label="검토">저장 완료 후 첫 Step, 전체 보기, 캘린더 보기의 차이가 보이는지.</td>
+          </tr>
+          <tr>
+            <td data-label="질문">복잡도가 캘린더/투두 수준인가?</td>
+            <td data-label="상태"><span class="sev ok">대체로 통과</span></td>
+            <td data-label="검토">체크/루틴/지도 용어가 화면 위로 과하게 올라오지 않는지.</td>
+          </tr>
+          <tr>
+            <td data-label="질문">대표 콘텐츠가 납득되는가?</td>
+            <td data-label="상태"><span class="sev mid">부분 통과</span></td>
+            <td data-label="검토">이사, 중1 수학, 전세만 보고도 서비스 가능성이 보이는지.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">Verification Targets</p>
+      <h2>클릭 검증 대상</h2>
+      <ul class="steps">
+        <li><a href="../../">홈</a>: 대표 시작점만 보이고 검토 문구가 없는지.</li>
+        <li><a href="../../flows">Flow 찾기</a>: Flow Map과 단일 Flow가 카탈로그처럼 정리됐는지.</li>
+        <li><a href="../../flow-maps/moving-d30">원룸 이사 D-30</a>: 저장 전 사용자가 무엇을 얻는지 보이는지.</li>
+        <li><a href="../../my?demo=source-backed">내 Flow 원문 기반 데모</a>: Flow 탭에서 Step detail이 같은 카드 아래 열리는지.</li>
+        <li><a href="./2026-06-28-service-ia-candidate-reclassification-ko.html">IA/후보 재분류 리포트</a>: 대표 후보와 보류 후보가 분리됐는지.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

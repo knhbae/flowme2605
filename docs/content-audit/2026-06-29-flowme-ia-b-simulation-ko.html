@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2026-06-29 FlowMe 4탭 IA 시뮬레이션</title>
+  <style>
+    body { margin: 0; background: #f8fafc; color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.65; }
+    main { max-width: 1040px; margin: 0 auto; padding: 40px 20px 72px; }
+    h1 { margin: 0; font-size: 30px; line-height: 1.25; letter-spacing: -0.02em; }
+    h2 { margin: 32px 0 12px; font-size: 21px; }
+    h3 { margin: 18px 0 8px; font-size: 17px; }
+    p { margin: 8px 0; color: #475569; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; background: #fff; border-radius: 12px; overflow: hidden; }
+    th, td { border-bottom: 1px solid #e2e8f0; padding: 12px; text-align: left; vertical-align: top; font-size: 14px; }
+    th { background: #f1f5f9; color: #334155; font-size: 13px; }
+    .card { margin-top: 18px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; padding: 22px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05); }
+    .pass { display: inline-block; border-radius: 999px; background: #dcfce7; color: #166534; padding: 3px 9px; font-size: 12px; font-weight: 800; }
+    .watch { display: inline-block; border-radius: 999px; background: #fef3c7; color: #92400e; padding: 3px 9px; font-size: 12px; font-weight: 800; }
+    ul { margin: 8px 0 0; padding-left: 20px; }
+    li { margin: 7px 0; }
+    code { border-radius: 6px; background: #eef2ff; padding: 2px 5px; color: #1d4ed8; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>FlowMe 4탭 IA 시뮬레이션 리포트</h1>
+    <p>대상: <code>/ia-compare/b</code>. 목적은 4탭 구조가 저장 후 실행과 보관/관리를 더 명확히 나누는지 확인하는 것입니다.</p>
+
+    <section class="card">
+      <h2>결론</h2>
+      <p><span class="pass">B안은 계속 볼 가치가 있음</span></p>
+      <p>B안은 저장 직후 사용자를 캘린더로 보내는 흐름이 A안보다 직접적입니다. `내 Flow`가 실행 탭 묶음이 아니라 저장한 Flow 관리 공간으로 읽혀, 여러 Flow가 쌓일 때 역할 분리가 더 명확합니다.</p>
+      <p>다만 4탭이 최종 결정은 아닙니다. 실제 제품 반영 전에 홈/Flow 찾기 중복, 빈 캘린더 상태, 대량 저장 상태를 더 실데이터에 가깝게 봐야 합니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>시뮬레이션</h2>
+      <table>
+        <thead>
+          <tr><th>저니</th><th>관찰</th><th>판정</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>처음 진입</td>
+            <td>홈은 `따라 할 콘텐츠를 내 일정으로`라는 약속과 이사 추천 카드 1개를 보여줍니다.</td>
+            <td><span class="pass">통과</span> 이전 문구보다 덜 설명적입니다.</td>
+          </tr>
+          <tr>
+            <td>Flow 찾기</td>
+            <td>3개 대표 콘텐츠를 고르고, 상세에서 저장 결과와 항목 수를 확인합니다.</td>
+            <td><span class="pass">통과</span> Flow Map/단일 Flow는 뱃지 수준으로만 남습니다.</td>
+          </tr>
+          <tr>
+            <td>저장 직후</td>
+            <td>`저장하고 캘린더 보기`를 누르면 캘린더 탭으로 이동하고 첫 실행 항목 detail이 열린 상태입니다.</td>
+            <td><span class="pass">통과</span> 저장 후 다음 행동이 A안보다 명확합니다.</td>
+          </tr>
+          <tr>
+            <td>세부 항목 열기/닫기</td>
+            <td>항목을 다시 누르면 detail이 닫히고, 다시 누르면 같은 자리에서 열립니다.</td>
+            <td><span class="pass">통과</span> 스크롤 하단에 detail이 열리는 문제를 피합니다.</td>
+          </tr>
+          <tr>
+            <td>내 Flow</td>
+            <td>내 Flow는 저장한 Flow의 전체 구조, 원문, 진행률, 실행 보기 버튼을 보여줍니다.</td>
+            <td><span class="pass">통과</span> 실행은 캘린더, 관리는 내 Flow로 역할이 갈립니다.</td>
+          </tr>
+          <tr>
+            <td>대량 저장 가정</td>
+            <td>현재 PoC는 2개 저장까지 클릭 검증했습니다. 8개 이상은 기존 UX20 자료와 별도 비교가 필요합니다.</td>
+            <td><span class="watch">추가 필요</span> 최종 결정 전 대량 상태가 필요합니다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>UX 판단</h2>
+      <ul>
+        <li><strong>Execution Clarity:</strong> B안이 더 높습니다. 저장 후 캘린더가 실행 목적지가 됩니다.</li>
+        <li><strong>Cognitive Load:</strong> 4탭이 늘어나지만, 내 Flow 내부 탭이 줄어 전체 구조는 오히려 덜 꼬입니다.</li>
+        <li><strong>Portability:</strong> 캘린더에 들어가는 항목과 내 Flow에 남는 구조가 분리되어 export/ICS 사고와 더 잘 맞습니다.</li>
+        <li><strong>Copy Specificity:</strong> 사용자 화면에서는 `Step`보다 `항목`을 쓰는 쪽이 낫습니다. 내부 문서와 제작자 화면에서는 Step 용어를 유지할 수 있습니다.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>다음 개선</h2>
+      <ul>
+        <li>B안에 저장한 Flow 8개 이상 상태를 추가해 캘린더와 내 Flow가 버티는지 본다.</li>
+        <li>캘린더 빈 상태에서 Flow 찾기로 자연스럽게 이동하는지 본다.</li>
+        <li>현재 제품 `/my`에 바로 적용하지 말고, 한 번 더 실제 대표 콘텐츠 후보가 정리된 뒤 글로벌 탭 결정을 한다.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

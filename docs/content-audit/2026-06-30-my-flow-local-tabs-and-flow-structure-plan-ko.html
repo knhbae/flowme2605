@@ -1,0 +1,98 @@
+<article style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #0f172a; line-height: 1.65; max-width: 1080px; margin: 0 auto; padding: 32px 20px 56px; background: #f8fafc;">
+  <header style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 28px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);">
+    <p style="margin: 0 0 8px; color: #2563eb; font-weight: 800;">2026-06-30 · My Flow IA follow-up</p>
+    <h1 style="margin: 0; font-size: 32px; line-height: 1.18;">내 Flow 로컬 탭과 Flow 탭 구조 재정리</h1>
+    <p style="margin: 14px 0 0; color: #475569; font-size: 17px;">질문: 하단 전역 캘린더가 있는데, 내 Flow 상단 탭에도 캘린더가 필요할까? 결론은 <strong>아니오</strong>. 캘린더는 전역 실행 탭으로 두고, 내 Flow의 로컬 탭은 오늘 실행과 저장한 Flow 구조 관리에 집중한다.</p>
+  </header>
+
+  <section style="margin-top: 18px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+    <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 14px; padding: 18px;">
+      <p style="margin: 0; color: #1d4ed8; font-weight: 800;">결정</p>
+      <h2 style="margin: 6px 0 0; font-size: 22px;">내 Flow 로컬 탭은 오늘 / Flow</h2>
+      <p style="margin: 10px 0 0; color: #334155;">날짜 중심 실행은 전역 캘린더가 맡고, 내 Flow는 지금 이어할 항목과 저장한 Flow 구조를 보여준다.</p>
+    </div>
+    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px;">
+      <p style="margin: 0; color: #475569; font-weight: 800;">Flow 탭 역할</p>
+      <h2 style="margin: 6px 0 0; font-size: 22px;">보관함이 아니라 구조별 이어보기</h2>
+      <p style="margin: 10px 0 0; color: #475569;">저장한 Flow별 진행률, 다음 항목, 열린 detail만 보여준다. 전체 목록과 검색은 필요할 때 열도록 둔다.</p>
+    </div>
+    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px;">
+      <p style="margin: 0; color: #475569; font-weight: 800;">복잡도 기준</p>
+      <h2 style="margin: 6px 0 0; font-size: 22px;">캘린더/투두 앱 수준</h2>
+      <p style="margin: 10px 0 0; color: #475569;">기본 카드에는 제목, 진행률, 다음 항목만 둔다. Item, memo, source, edit/export는 Step/detail을 열 때만 보인다.</p>
+    </div>
+  </section>
+
+  <section style="margin-top: 22px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 22px;">
+    <h2 style="margin: 0; font-size: 24px;">레퍼런스 비교</h2>
+    <p style="margin: 10px 0 0; color: #475569;">인접 서비스는 대체로 시간 기준 실행 화면과 구조 기준 보관 화면을 분리한다. FlowMe도 같은 원칙을 따른다.</p>
+    <div style="margin-top: 16px; display: grid; gap: 12px;">
+      <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+        <strong>Apple Reminders</strong>
+        <p style="margin: 6px 0 0; color: #475569;">오늘, 예정, 목록처럼 시간 기준과 리스트 기준을 나눠 접근한다. FlowMe의 전역 캘린더는 시간 기준, 내 Flow는 저장 구조에 해당한다.</p>
+        <a href="https://support.apple.com/guide/reminders/welcome/mac" style="color: #2563eb; font-weight: 700;">Apple Reminders User Guide</a>
+      </div>
+      <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+        <strong>Microsoft To Do</strong>
+        <p style="margin: 6px 0 0; color: #475569;">My Day/Planned처럼 날짜 실행 표면을 제공하고, 별도 목록에서 사용자가 저장한 일을 관리한다.</p>
+        <a href="https://support.microsoft.com/en-us/todo" style="color: #2563eb; font-weight: 700;">Microsoft To Do help</a>
+      </div>
+      <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+        <strong>Todoist / Things류의 기본 패턴</strong>
+        <p style="margin: 6px 0 0; color: #475569;">Today/Upcoming은 실행 시점, Projects/Areas는 구조 관리다. FlowMe의 `Flow` 탭은 프로젝트 보드가 아니라 저장한 Flow 구조를 찾고 다음 항목을 여는 가벼운 목록이어야 한다.</p>
+        <a href="https://todoist.com/help" style="color: #2563eb; font-weight: 700;">Todoist help</a>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top: 22px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 22px;">
+    <h2 style="margin: 0; font-size: 24px;">비교안</h2>
+    <table style="margin-top: 14px; width: 100%; border-collapse: collapse; background: #ffffff;">
+      <thead>
+        <tr>
+          <th style="text-align: left; border-bottom: 1px solid #e2e8f0; padding: 10px;">안</th>
+          <th style="text-align: left; border-bottom: 1px solid #e2e8f0; padding: 10px;">구조</th>
+          <th style="text-align: left; border-bottom: 1px solid #e2e8f0; padding: 10px;">판단</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="border-bottom: 1px solid #e2e8f0; padding: 10px; font-weight: 800;">A</td>
+          <td style="border-bottom: 1px solid #e2e8f0; padding: 10px;">내 Flow 로컬 탭: 오늘 / 캘린더 / Flow</td>
+          <td style="border-bottom: 1px solid #e2e8f0; padding: 10px;">하단 전역 캘린더와 중복된다. 사용자는 어떤 캘린더를 눌러야 하는지 학습해야 한다.</td>
+        </tr>
+        <tr>
+          <td style="border-bottom: 1px solid #e2e8f0; padding: 10px; font-weight: 800;">B</td>
+          <td style="border-bottom: 1px solid #e2e8f0; padding: 10px;">전역 탭: 홈 / Flow 찾기 / 캘린더 / 내 Flow, 내 Flow 로컬 탭: 오늘 / Flow</td>
+          <td style="border-bottom: 1px solid #e2e8f0; padding: 10px;">권장. 날짜 실행과 저장 구조의 역할이 분리된다.</td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; font-weight: 800;">C</td>
+          <td style="padding: 10px;">내 Flow 로컬 탭 없이 단일 대시보드</td>
+          <td style="padding: 10px;">저장 Flow가 1개일 때는 좋지만, 3개 이상부터 구조 찾기가 어려워진다.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section style="margin-top: 22px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 22px;">
+    <h2 style="margin: 0; font-size: 24px;">반영할 화면 구조</h2>
+    <ol style="margin: 12px 0 0; padding-left: 22px; color: #334155;">
+      <li><strong>오늘 탭:</strong> 지금 이어할 항목 1개, 이번 주·다음 할 일, 오늘 완료 접기. 사용자가 바로 체크할 수 있는 실행 표면.</li>
+      <li><strong>Flow 탭:</strong> 저장한 Flow별 진행률과 다음 항목. 4개 이하라면 카드로 바로 보여주고, 많으면 상위 3개만 보여준 뒤 전체 목록을 bottom sheet로 연다.</li>
+      <li><strong>캘린더:</strong> 전역 `/calendar`에서 날짜별 실행. 날짜를 누르면 가까운 위치에 해당 날짜 항목이 보이고, 항목 detail은 그 자리에서 열린다.</li>
+      <li><strong>Step/detail:</strong> 기본 카드에는 정보량을 줄이고, Item/checklist/source/memo/edit/export는 열었을 때만 보인다.</li>
+    </ol>
+  </section>
+
+  <section style="margin-top: 22px; background: #0f172a; color: #f8fafc; border-radius: 16px; padding: 22px;">
+    <h2 style="margin: 0; font-size: 24px;">이번 개발 반영</h2>
+    <ul style="margin: 12px 0 0; padding-left: 22px;">
+      <li>`/my` 로컬 상단 탭에서 `캘린더` 제거.</li>
+      <li>`/calendar`를 전역 일정 실행 표면으로 유지.</li>
+      <li>모바일 `Flow` 탭의 빈 허브형 문구를 줄이고, 상위 3개 Flow의 다음 항목을 바로 보여준다.</li>
+      <li>전체 목록, 검색, 필터는 `전체 Flow 목록 열기`로 분리.</li>
+      <li>테스트는 `/my` 로컬 캘린더 클릭이 아니라 `/calendar` 경로를 검증하도록 수정.</li>
+    </ul>
+  </section>
+</article>

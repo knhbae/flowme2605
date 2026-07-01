@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 홈 UX 정리 백로그</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --surface: #fff;
+      --soft: #f8fafc;
+      --line: #d9e2ef;
+      --text: #101827;
+      --muted: #667085;
+      --blue: #1f5fbf;
+      --green: #0f7a4a;
+      --amber: #9a6100;
+      --red: #b42318;
+      --purple: #6d28d9;
+      --shadow: 0 14px 34px rgba(16, 24, 39, .08);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #fbfdff 0, var(--bg) 430px);
+      font-size: 16px;
+      line-height: 1.62;
+    }
+    a { color: var(--blue); text-underline-offset: 3px; overflow-wrap: anywhere; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 44px); line-height: 1.12; letter-spacing: 0; word-break: keep-all; }
+    h2 { margin-bottom: 8px; font-size: clamp(23px, 3vw, 32px); line-height: 1.22; letter-spacing: 0; word-break: keep-all; }
+    h3 { margin-bottom: 6px; font-size: 20px; line-height: 1.28; letter-spacing: 0; word-break: keep-all; }
+    code { padding: 2px 5px; border-radius: 6px; background: #eef2f7; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .92em; }
+    .page { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 14px 0 64px; }
+    .topbar, .hero, .card, .lane, .table-card, .task, .callout {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 58px;
+      padding: 12px 16px;
+      box-shadow: 0 1px 2px rgba(16, 24, 39, .04);
+    }
+    .brand { color: var(--blue); font-size: 24px; font-weight: 950; text-decoration: none; }
+    .hero, .card, .table-card, .callout { margin-top: 12px; padding: 18px; box-shadow: var(--shadow); }
+    .eyebrow { margin-bottom: 6px; color: var(--blue); font-size: 13px; font-weight: 950; }
+    .desc { max-width: 900px; color: var(--muted); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #344054;
+      font-size: 13px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+    .chip.blue { border-color: #bfdbfe; background: #eaf2ff; color: #174ea6; }
+    .chip.green { border-color: #bde7cb; background: #e8f7ef; color: var(--green); }
+    .chip.amber { border-color: #efd08f; background: #fff6df; color: var(--amber); }
+    .chip.red { border-color: #f4b4ad; background: #fff1ef; color: var(--red); }
+    .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+      padding: 14px;
+    }
+    .metric strong { display: block; font-size: 30px; line-height: 1.1; }
+    .metric span { display: block; margin-top: 6px; color: var(--muted); font-size: 13px; font-weight: 750; }
+    .section-title { margin-top: 28px; }
+    .score-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+    .score {
+      min-height: 104px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    .score b, .score span { display: block; }
+    .score b { font-size: 24px; line-height: 1.1; }
+    .score span { margin-top: 6px; color: var(--muted); font-size: 13px; font-weight: 750; }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .lane { padding: 12px; background: #fff; }
+    .lane h3 { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 17px; }
+    .dot { width: 10px; height: 10px; border-radius: 999px; background: var(--blue); }
+    .dot.red { background: var(--red); }
+    .dot.amber { background: var(--amber); }
+    .dot.green { background: var(--green); }
+    .dot.purple { background: var(--purple); }
+    .task {
+      margin-top: 10px;
+      padding: 12px;
+      background: var(--soft);
+      box-shadow: 0 1px 2px rgba(16, 24, 39, .04);
+    }
+    .task strong { display: block; margin-bottom: 4px; }
+    .task p { margin-bottom: 0; color: var(--muted); font-size: 14px; }
+    .task .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .mini {
+      display: inline-flex;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid #e4eaf2;
+      color: #475467;
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .step {
+      position: relative;
+      min-height: 132px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #fff, #f8fafc);
+    }
+    .step::after {
+      content: "";
+      position: absolute;
+      right: -10px;
+      top: 48%;
+      width: 10px;
+      border-top: 2px solid #cbd5e1;
+    }
+    .step:last-child::after { display: none; }
+    .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 950;
+    }
+    .step b { display: block; margin-top: 9px; font-size: 16px; line-height: 1.28; }
+    .step span { display: block; margin-top: 6px; color: var(--muted); font-size: 13px; font-weight: 750; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td {
+      padding: 11px 10px;
+      border-top: 1px solid #e6edf5;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f8fafc; color: #475467; font-size: 13px; font-weight: 950; }
+    td { color: #263445; font-size: 14px; }
+    .status {
+      display: inline-flex;
+      min-width: 76px;
+      justify-content: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 950;
+    }
+    .next { background: #fff1ef; color: var(--red); }
+    .todo { background: #fff6df; color: var(--amber); }
+    .later { background: #eef2f7; color: #475467; }
+    .done { background: #e8f7ef; color: var(--green); }
+    .rule-list { margin: 10px 0 0; padding-left: 20px; }
+    .rule-list li + li { margin-top: 7px; }
+    .callout { border-left: 6px solid var(--blue); }
+    @media (max-width: 920px) {
+      .page { width: min(100% - 20px, 1180px); padding-top: 10px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .hero, .card, .table-card, .callout { padding: 14px; }
+      .grid, .grid.two, .score-grid, .board, .flow { grid-template-columns: 1fr; }
+      .step::after { display: none; }
+      table, thead, tbody, tr, th, td { display: block; }
+      thead { display: none; }
+      tr { margin-top: 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; overflow: hidden; }
+      td { border-top: 1px solid #edf2f7; }
+      td:first-child { border-top: 0; }
+      td::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 4px;
+        color: #667085;
+        font-size: 12px;
+        font-weight: 950;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar">
+      <a class="brand" href="../../">FlowMe</a>
+      <div class="chips">
+        <span class="chip blue">홈 UX 정리 백로그</span>
+        <span class="chip">2026-06-25</span>
+        <span class="chip amber">모바일 우선</span>
+        <a class="chip green" href="https://flowme2605-8z13xs141-flowme.vercel.app">Vercel preview</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <p class="eyebrow">왜 지금 이상해 보이는가</p>
+      <h1>홈이 서비스 대표 화면이 아니라 후보 전시장처럼 보이고 있다</h1>
+      <p class="desc">
+        전세와 5개 Flow 상세 화면은 괜찮았지만, 홈에서는 대표 Flow Map, 단일 Flow, 추천 카드, 제작 CTA, 실험 후보의 흔적이 같은 무게로 섞였다.
+        따라서 먼저 컨텐츠를 더 만들기보다 홈의 역할을 줄이고, 대표·탐색·검토 화면을 분리해야 한다. 2차 모바일 피드백에서는
+        서비스처럼 보이기 시작했지만 Flow Map과 단일 Flow의 시각 패턴 차이, 카탈로그에서 무엇을 고를지 알려주는 신호 부족,
+        메뉴·액션 트리의 오래된 흔적이 남은 것으로 정리됐다.
+      </p>
+      <div class="grid">
+        <div class="metric"><strong>2.0</strong><span>첫 화면 방향성</span></div>
+        <div class="metric"><strong>2.0</strong><span>대표 후보 노출</span></div>
+        <div class="metric"><strong>2.5</strong><span>모바일 밀도</span></div>
+        <div class="metric"><strong>P0</strong><span>홈 IA 감량 필요</span></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>홈의 새 역할</h2>
+      <div class="grid two">
+        <div>
+          <h3>홈은 이것만 해야 한다</h3>
+          <ul class="rule-list">
+            <li>FlowMe가 무엇을 하는 서비스인지 5초 안에 보여준다.</li>
+            <li>대표 예시 1~2개만 눌러보게 한다.</li>
+            <li>제작자 CTA는 한 번만 명확하게 둔다.</li>
+            <li>나머지 탐색은 `/flows`, `/content-flows`, 내부 리포트로 보낸다.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>홈에서 빼야 한다</h3>
+          <ul class="rule-list">
+            <li>후보, 베타, 출처 연결, 운영 중 같은 내부 평가 문구.</li>
+            <li>같은 Flow가 여러 카드 묶음에서 반복 노출되는 구조.</li>
+            <li>미리보기 박스와 버튼이 카드마다 붙어 있는 긴 목록.</li>
+            <li>단일 Flow와 Flow Map이 같은 무게로 섞이는 추천 전시장.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-title">
+      <h2>작업 순서</h2>
+      <p class="desc">한 번에 예쁘게 고치기보다, 사용자가 보는 정보량을 줄이는 순서로 닫는다.</p>
+      <div class="flow">
+        <div class="step">
+          <span class="num">1</span>
+          <b>홈 IA 줄이기</b>
+          <span>상단 예시 카드와 추천 Flow 반복을 정리한다.</span>
+        </div>
+        <div class="step">
+          <span class="num">2</span>
+          <b>대표 예시 1~2개</b>
+          <span>Flow Map 중심으로 한 번만 강하게 보여준다.</span>
+        </div>
+        <div class="step">
+          <span class="num">3</span>
+          <b>단일 Flow 낮추기</b>
+          <span>보조 섹션 또는 전체 보기로 보낸다.</span>
+        </div>
+        <div class="step">
+          <span class="num">4</span>
+          <b>CTA 3개 이하</b>
+          <span>둘러보기, 만들기, 대표 예시 열기만 남긴다.</span>
+        </div>
+        <div class="step">
+          <span class="num">5</span>
+          <b>모바일 리허설</b>
+          <span>첫 화면, 스크롤, 저장 후 경로를 다시 점수화한다.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="table-card section-title">
+      <h2>우선순위 백로그</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>순서</th>
+            <th>작업</th>
+            <th>상태</th>
+            <th>성공 기준</th>
+            <th>검증</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="순서">P0-1</td>
+            <td data-label="작업"><strong>홈에서 중복 카드 묶음 제거</strong><br>상단 예시 카드와 아래 추천 Flow가 같은 후보를 반복하지 않게 만든다.</td>
+            <td data-label="상태"><span class="status done">Done</span></td>
+            <td data-label="성공 기준">모바일 첫 스크롤 안에 대표 예시가 1번만 보인다.</td>
+            <td data-label="검증">390px screenshot + 홈 E2E</td>
+          </tr>
+          <tr>
+            <td data-label="순서">P0-2</td>
+            <td data-label="작업"><strong>홈 첫 섹션을 대표 Flow Map 쇼케이스로 변경</strong><br>이사 D-30 또는 중1 수학 중 하나를 크게, 다른 하나를 보조로 둔다.</td>
+            <td data-label="상태"><span class="status done">Done</span></td>
+            <td data-label="성공 기준">사용자가 첫 화면에서 “원문을 실행 Flow로 저장한다”를 이해한다.</td>
+            <td data-label="검증">사용자 점수 4점 목표</td>
+          </tr>
+          <tr>
+            <td data-label="순서">P0-3</td>
+            <td data-label="작업"><strong>사용자 화면 내부 문구 감량</strong><br>후보, 베타, 출처 연결, 운영 중 같은 문구를 홈에서 제거하거나 낮춘다.</td>
+            <td data-label="상태"><span class="status done">Done</span></td>
+            <td data-label="성공 기준">홈 카드가 검토 페이지처럼 읽히지 않는다.</td>
+            <td data-label="검증">copy scan</td>
+          </tr>
+          <tr>
+            <td data-label="순서">P1-1</td>
+            <td data-label="작업"><strong>단일 Flow는 대표 기준 통과분만 남기기</strong><br>중고차, 이유식처럼 원문·저장 후 실행 경로가 약한 후보는 홈/카탈로그 대표가 아니라 direct-route 또는 검토 후보로 보낸다.</td>
+            <td data-label="상태"><span class="status done">Done</span></td>
+            <td data-label="성공 기준">Flow Map과 단일 Flow가 같은 무게로 경쟁하지 않고, 대표 단일 Flow는 저장 후 My Flow에서 바로 실행된다.</td>
+            <td data-label="검증">모바일 스크롤 밀도 확인</td>
+          </tr>
+          <tr>
+            <td data-label="순서">P1-2</td>
+            <td data-label="작업"><strong>CTA 우선순위 정리</strong><br>홈 CTA는 대표 예시 열기와 Flow 둘러보기로 제한하고, 제작 CTA는 Creator gate가 정리될 때까지 사용자 홈에서 내린다.</td>
+            <td data-label="상태"><span class="status done">Done</span></td>
+            <td data-label="성공 기준">버튼 이름과 결과가 예측 가능하고, 카드마다 버튼이 반복되지 않는다.</td>
+            <td data-label="검증">첫 클릭 시나리오</td>
+          </tr>
+          <tr>
+            <td data-label="순서">P2-1</td>
+            <td data-label="작업"><strong>탐색/검토 화면 분리 강화</strong><br>많은 후보, 실험 후보, 품질 리포트는 홈이 아니라 별도 탐색/리포트 화면에서만 다룬다.</td>
+            <td data-label="상태"><span class="status done">Done</span></td>
+            <td data-label="성공 기준">홈은 서비스 소개, `/flows`는 실행 후보 탐색, 문서는 검토 역할로 분리된다.</td>
+            <td data-label="검증">route map review</td>
+          </tr>
+          <tr>
+            <td data-label="순서">P1-3</td>
+            <td data-label="작업"><strong>Flow Map과 단일 Flow 카드 패턴 정렬</strong><br>지도형과 바로 실행형의 차이는 유지하되, 같은 서비스 안의 카드처럼 보이도록 제목, 메타, CTA, 여백 규칙을 맞춘다.</td>
+            <td data-label="상태"><span class="status done">Done</span></td>
+            <td data-label="성공 기준">사용자는 두 타입의 차이는 이해하지만, 디자인이 따로 만든 화면처럼 느껴지지 않는다.</td>
+            <td data-label="검증">390px screenshot + 홈/flows E2E</td>
+          </tr>
+          <tr>
+            <td data-label="순서">P1-4</td>
+            <td data-label="작업"><strong>카탈로그 선택 신호 추가</strong><br>리뷰/사용수 같은 가짜 지표를 만들지 않고, 실제로 있는 신호만 쓴다. 예: 출처 확인, 저장 후 산출물, 항목 수, 마지막 업데이트, 대표 선정 이유.</td>
+            <td data-label="상태"><span class="status done">Done</span></td>
+            <td data-label="성공 기준">`/flows`에서 사용자가 “왜 이 3개를 봐야 하는지”를 카드만 보고 판단할 수 있다.</td>
+            <td data-label="검증">카드 신호 E2E + 사용자 점수화 필요</td>
+          </tr>
+          <tr>
+            <td data-label="순서">P2-2</td>
+            <td data-label="작업"><strong>메뉴·액션 트리 감사</strong><br>홈, `/flows`, `/f/[slug]`, Flow Map, `/my`, creator route의 상단 메뉴와 버튼을 route map으로 정리하고, 오래된 CTA나 결과가 불명확한 버튼을 분리한다.</td>
+            <td data-label="상태"><span class="status todo">Partial</span></td>
+            <td data-label="성공 기준">각 버튼은 결과 화면을 예측할 수 있고, 사용자용/제작자용/검토용 route가 섞이지 않는다.</td>
+            <td data-label="검증">대표 경로 E2E 통과, 전체 route map 감사 남음</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card section-title">
+      <h2>작업판</h2>
+      <div class="board">
+        <div class="lane">
+          <h3><span class="dot red"></span>이번에 바로</h3>
+          <div class="task">
+            <strong>홈 카드 수 줄이기</strong>
+            <p>반복되는 추천 묶음을 없애고 대표 Flow Map 중심으로 재배치.</p>
+            <div class="meta"><span class="mini">P0</span><span class="mini">mobile</span></div>
+          </div>
+          <div class="task">
+            <strong>검토 문구 제거</strong>
+            <p>후보/베타/운영 문구를 사용자 홈에서 감량.</p>
+            <div class="meta"><span class="mini">copy</span><span class="mini">service screen</span></div>
+          </div>
+        </div>
+        <div class="lane">
+          <h3><span class="dot amber"></span>다음 slice</h3>
+          <div class="task">
+            <strong>카탈로그 선택 신호</strong>
+            <p>출처 확인, 산출물, 항목 수, 대표 선정 이유처럼 실제 근거가 있는 정보만 카드에 남김.</p>
+            <div class="meta"><span class="mini">catalog</span><span class="mini">signal</span></div>
+          </div>
+          <div class="task">
+            <strong>Flow Map / Flow 카드 정렬</strong>
+            <p>서로 다른 타입은 유지하되 같은 서비스 카드 체계로 보이도록 패턴을 맞춤.</p>
+            <div class="meta"><span class="mini">visual IA</span><span class="mini">mobile</span></div>
+          </div>
+        </div>
+        <div class="lane">
+          <h3><span class="dot blue"></span>검증</h3>
+          <div class="task">
+            <strong>모바일 390px 리허설</strong>
+            <p>첫 화면 방향성, 대표 후보 노출, 카드 반복 여부를 다시 점수화.</p>
+            <div class="meta"><span class="mini">Playwright</span><span class="mini">screenshot</span></div>
+          </div>
+          <div class="task">
+            <strong>첫 클릭 시나리오</strong>
+            <p>아무것도 모르는 사용자가 첫 클릭을 어디로 할지 확인.</p>
+            <div class="meta"><span class="mini">scenario</span></div>
+          </div>
+        </div>
+        <div class="lane">
+          <h3><span class="dot green"></span>보류</h3>
+          <div class="task">
+            <strong>새 대표 컨텐츠 추가</strong>
+            <p>카탈로그 선택 신호와 메뉴 트리가 정리되기 전에는 더 많은 대표 후보를 추가하지 않는다.</p>
+            <div class="meta"><span class="mini">blocked</span></div>
+          </div>
+          <div class="task">
+            <strong>Creator gate 화면 고도화</strong>
+            <p>홈 서비스 화면과 섞이지 않게 다음 별도 목표로 둔다.</p>
+            <div class="meta"><span class="mini">later</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="table-card section-title">
+      <h2>재평가 질문</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>목표 점수</th>
+            <th>질문</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="항목">첫 화면 방향성</td>
+            <td data-label="목표 점수">4 / 5</td>
+            <td data-label="질문">스크롤 전 “원문을 실행 Flow로 저장한다”가 보이는가?</td>
+          </tr>
+          <tr>
+            <td data-label="항목">대표 후보 노출</td>
+            <td data-label="목표 점수">4 / 5</td>
+            <td data-label="질문">대표 Flow Map 1~2개가 중심이고, 다른 후보가 같은 무게로 경쟁하지 않는가?</td>
+          </tr>
+          <tr>
+            <td data-label="항목">Flow Map / 단일 Flow 구분</td>
+            <td data-label="목표 점수">3.5 / 5</td>
+            <td data-label="질문">사용자가 깊은 개념을 몰라도 “지도형”과 “바로 실행형”의 차이를 감으로 이해하는가?</td>
+          </tr>
+          <tr>
+            <td data-label="항목">설명글과 문구</td>
+            <td data-label="목표 점수">4 / 5</td>
+            <td data-label="질문">서비스 홈처럼 보이고, 검토 리포트처럼 보이지 않는가?</td>
+          </tr>
+          <tr>
+            <td data-label="항목">모바일 밀도</td>
+            <td data-label="목표 점수">4 / 5</td>
+            <td data-label="질문">카드·뱃지·버튼이 투두/캘린더 앱 수준의 정보량을 넘지 않는가?</td>
+          </tr>
+          <tr>
+            <td data-label="항목">카탈로그 선택 신호</td>
+            <td data-label="목표 점수">4 / 5</td>
+            <td data-label="질문">카드만 보고 “저장하면 무엇이 생기고, 첫 실행은 무엇이며, 내 상황에 왜 쓸 만한지”를 알 수 있는가?</td>
+          </tr>
+          <tr>
+            <td data-label="항목">메뉴·액션 트리</td>
+            <td data-label="목표 점수">4 / 5</td>
+            <td data-label="질문">버튼을 누르면 사용자가 기대한 화면으로 가고, 사용자용/제작자용/검토용 route가 섞이지 않는가?</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card section-title">
+      <h2>2차 모바일 피드백 반영</h2>
+      <div class="grid two">
+        <div>
+          <h3>좋아진 점</h3>
+          <ul class="rule-list">
+            <li>홈은 이전보다 서비스처럼 보이기 시작했다.</li>
+            <li>`/flows`는 덜 산만하고 대표 후보만 보는 방향이 맞다.</li>
+            <li>전세 상세의 저장 액션과 저장 후 `/my` 진입은 자연스럽다.</li>
+            <li>검토 문구와 설명 과다는 상당히 줄었다.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>아직 남은 판단</h3>
+          <ul class="rule-list">
+            <li>Flow Map 카드와 단일 Flow 카드가 서로 다른 제품처럼 보이지 않게 맞춘다.</li>
+            <li>카탈로그의 “선택 신호”는 모호한 표현이므로, 저장 후 산출물·첫 실행·내 상황 적합성으로 다시 묻는다.</li>
+            <li>메뉴와 액션 트리는 별도 route map으로 감사해야 한다. 예전 기능과 새 서비스 표면이 섞인 흔적이 남아 있다.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-title">
+      <h2>3차 사용자 피드백 메모</h2>
+      <div class="grid two">
+        <div>
+          <h3>현재 판단</h3>
+          <ul class="rule-list">
+            <li>홈은 그럭저럭 서비스 입구처럼 보인다. 다만 FlowMe의 최종 성격이 creator platform, content catalog, personal execution app 중 어디에 더 가까워지는지에 따라 다시 손봐야 한다.</li>
+            <li>전세 상세에서 저장 후 `/my`로 이어지는 흐름은 자연스럽다.</li>
+            <li>탭 구성은 나쁘지 않지만, iOS/Android 표준 앱 패턴과 웹 서비스 패턴 사이에서 아직 약간 비표준처럼 느껴진다.</li>
+            <li>버튼과 설명의 혼선은 완전히 사라지진 않았지만, 전체적으로는 나쁘지 않은 상태다.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>다음에 볼 것</h3>
+          <ul class="rule-list">
+            <li>“왜 이 Flow를 골라야 하는가”라는 질문은 모호했다. 앞으로는 “저장하면 어떤 산출물이 생기고, 첫 실행이 무엇인지”로 평가한다.</li>
+            <li>My Flow 탭은 기능을 더 붙이기 전에 캘린더/투두 앱의 표준 행동과 비교해, 웹이더라도 자연스러운 navigation·detail expansion 규칙을 먼저 정한다.</li>
+            <li>홈은 지금 더 다듬기보다, 다음 큰 포지셔닝 판단이 생길 때 재조정한다.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-title">
+      <h2>4차 모바일 피드백 반영 방향</h2>
+      <div class="grid two">
+        <div>
+          <h3>이번에 바로 반영</h3>
+          <ul class="rule-list">
+            <li>홈, `/flows`, `/flow-maps/[map]`, `/my`에 같은 서비스 프레임을 둔다. 모바일은 햄버거, 데스크톱은 탭형 상단 이동으로 보여준다.</li>
+            <li>Flow Map과 단일 Flow 카드는 검토용 `대표 이유`보다 `저장 후 보이는 Step`을 우선 보여준다.</li>
+            <li>Flow Map 공개 상세는 Step 아래 Item 일부를 보여줘 저장 뒤 생길 세부 항목을 예측할 수 있게 한다.</li>
+            <li>My Flow Step 상세는 읽기/체크/내보내기 기본 화면과 날짜·시간·반복·메모 수정 화면을 분리한다.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>남길 백로그</h3>
+          <ul class="rule-list">
+            <li>리뷰, 저장 수, 현재 사용 중 신호는 중요하지만 실제 데이터가 생기기 전에는 UI에 가짜 지표로 넣지 않는다.</li>
+            <li>Flow Map 아래 Flow가 1개뿐이면 홈에서 타입 구분은 약하게 보일 수 있다. 컨텐츠 수가 늘 때 다시 정보 구조를 조정한다.</li>
+            <li>카드 수는 더 줄일 여지가 있다. 다음 검토에서는 “서비스 입구”와 “카탈로그”의 역할을 다시 분리해서 본다.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-title">
+      <h2>5차 IA / 저장 후 실행 피드백 반영</h2>
+      <div class="grid two">
+        <div>
+          <h3>이번에 바로 반영</h3>
+          <ul class="rule-list">
+            <li>유사 서비스 리서치 기준을 반영했다. 템플릿/콘텐츠 갤러리는 탐색과 저장 판단에 집중하고, 저장 후 실행은 오늘/캘린더/프로젝트 상세로 분리한다.</li>
+            <li>`/flows` 상단의 중복 `내 Flow 보기` CTA를 제거했다. 하단 탭이 이미 전역 D0 이동을 담당하기 때문이다.</li>
+            <li>Flow Map 저장 직후 기본 관점을 `Flow별 보기`가 아니라 첫 Step과 `오늘/캘린더` 실행 관점으로 바꿨다.</li>
+            <li>`캘린더에서 열기` 문구는 `캘린더 보기`로 낮췄다. 사용자가 캘린더에 처음 넣는 동작처럼 오해하지 않게 하기 위함이다.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>남길 백로그</h3>
+          <ul class="rule-list">
+            <li>홈은 아직 `/flows`와 비슷하게 보일 수 있다. 다음 큰 포지셔닝 판단에서 홈을 서비스 설명, 대표 사용 사례, 최근/추천 진입 중심으로 다시 잡는다.</li>
+            <li>Flow Map과 단일 Flow의 차이를 사용자에게 강하게 설명할 필요는 없다. 대신 저장 후 생기는 결과와 첫 실행 Step으로 차이를 느끼게 한다.</li>
+            <li>캘린더는 전역 탭으로 올리지 않는다. 저장한 Step이 충분히 많아지고 사용자가 전역 캘린더를 기대한다는 증거가 생기면 다시 검토한다.</li>
+            <li>컨텐츠 수는 더 늘려야 판단이 쉬워진다. 다만 기준을 통과한 대표 후보만 추가하고, 약한 후보는 카탈로그 대표로 올리지 않는다.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="callout section-title">
+      <h2>이번 구현 반영</h2>
+      <p class="desc">
+        1차 감량 뒤 사용자 검토에서 “홈은 줄었지만 상세·저장 경로와 예전 후보가 아직 섞인다”는 문제가 확인됐다.
+        그래서 홈과 `/flows`를 다시 대표 서비스 카탈로그 기준으로 좁혔다. 대표 노출은 이사 D-30, 전세계약 전 서류 체크,
+        초등 입학 D-30 세 후보만 남겼고, 중고차·이유식처럼 원문/저장 후 실행 경로가 약한 후보는 삭제하지 않고
+        direct-route 또는 검토 후보로 내렸다. 전세 상세에는 `내 Flow에 저장` → `/my` 실행 확인 경로를 붙이고,
+        사용자 화면의 후보/베타/적합도/전환 방식 문구는 숨겼다.
+        최신 preview는 <a href="https://flowme2605-8z13xs141-flowme.vercel.app">https://flowme2605-8z13xs141-flowme.vercel.app</a> 이다.
+      </p>
+      <div class="chips">
+        <span class="chip green">P0-1 카드 반복 제거</span>
+        <span class="chip green">P0-2 대표 Flow Map 쇼케이스</span>
+        <span class="chip green">P0-3 검토 문구 감량</span>
+        <span class="chip green">P2-1 탐색/검토 분리</span>
+        <span class="chip green">단일 Flow 저장 경로 확인</span>
+        <span class="chip">390px 모바일 홈→상세→내 Flow 리허설</span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -12,6 +12,11 @@ import {
   additionalSourceBackedMyFlowBundles,
   additionalSourceBackedMyFlowMaps,
 } from './source-backed-expansion-260625';
+import {
+  curatedSourceBackedFlowMapQualityDecisions,
+  curatedSourceBackedMyFlowBundles,
+  curatedSourceBackedMyFlowMaps,
+} from './source-backed-curated-260630';
 
 export type SourceBackedStepDestination = 'calendar' | 'todo' | 'checklist' | 'sheet' | 'memo' | 'progress';
 export type SourceBackedFlowMapCreatorEditableField =
@@ -103,6 +108,17 @@ export type SourceBackedFlowMapSavedSnapshot = {
   sourceCheckedAtByFlow: Record<string, string | undefined>;
 };
 
+export type SourceBackedFlowMapStepBinding = {
+  stepId: string;
+  title: string;
+  destination: SourceBackedStepDestination;
+  calendar: SourceBackedMyFlowRow['calendar'];
+  textFallback: SourceBackedMyFlowRow['textFallback'];
+  sourceUrl?: string;
+  sourceType?: SourceType;
+  riskLevel?: RiskLevel;
+};
+
 export type SourceBackedFlowMapChildBinding = {
   slug: string;
   flowId: string;
@@ -118,6 +134,7 @@ export type SourceBackedFlowMapChildBinding = {
   stepCount: number;
   itemFallbackCount: number;
   stepIds: string[];
+  steps: SourceBackedFlowMapStepBinding[];
 };
 
 export type SourceBackedFlowMapPersistenceRecord = {
@@ -210,7 +227,7 @@ export type SourceBackedFlowMapPublishPackage = {
       slug: string;
       title: string;
       destination: PrimaryDestination;
-      steps: { id: string; title: string; detailItemCount: number }[];
+      steps: { id: string; title: string; detailItemCount: number; detailItems: string[] }[];
     }[];
   };
   myFlow: {
@@ -295,6 +312,7 @@ export const sourceBackedFlowMapQualityDecisions: Record<string, SourceBackedFlo
     reason: 'Generic safety tips do not create a strong save or revisit reason.',
     nextAction: 'Do not promote unless tied to a concrete event-prep source with clear checklist ownership.',
   },
+  ...curatedSourceBackedFlowMapQualityDecisions,
 };
 
 export function getSourceBackedFlowMapSnapshotStorageKey(mapId: string): string {
@@ -624,6 +642,7 @@ export const sourceBackedMyFlowMaps: SourceBackedMyFlowMap[] = [
     ],
   },
   ...additionalSourceBackedMyFlowMaps,
+  ...curatedSourceBackedMyFlowMaps,
 ];
 
 export const sourceBackedMyFlowBundles: FlowBundle[] = [
@@ -845,6 +864,7 @@ export const sourceBackedMyFlowBundles: FlowBundle[] = [
     itemDetails: Object.values(vaccinationDetails),
   },
   ...additionalSourceBackedMyFlowBundles,
+  ...curatedSourceBackedMyFlowBundles,
 ];
 
 export function mergeSourceBackedMyFlowBundles(bundles: FlowBundle[]): FlowBundle[] {
@@ -925,6 +945,17 @@ export function buildSourceBackedFlowMapPersistenceRecord(
   const updateAssessment = assessSourceBackedFlowMapUpdate(snapshot);
   const childFlows = getMapChildBundles(map).map((bundle) => {
     const rows = buildSourceBackedMyFlowRows(bundle);
+    const steps = rows.map((row) => ({
+      stepId: row.stepId,
+      title: row.title,
+      destination: row.destination,
+      calendar: row.calendar,
+      textFallback: row.textFallback,
+      ...(row.sourceUrl ? { sourceUrl: row.sourceUrl } : {}),
+      ...(row.sourceType ? { sourceType: row.sourceType } : {}),
+      ...(row.riskLevel ? { riskLevel: row.riskLevel } : {}),
+    } satisfies SourceBackedFlowMapStepBinding));
+
     return {
       slug: bundle.flow.slug,
       flowId: bundle.flow.id,
@@ -939,10 +970,8 @@ export function buildSourceBackedFlowMapPersistenceRecord(
       sourceCheckedAt: bundle.flow.source_checked_at,
       stepCount: bundle.items.length,
       itemFallbackCount: rows.reduce((total, row) => total + (row.textFallback.items?.length ?? 0), 0),
-      stepIds: bundle.items
-        .slice()
-        .sort((a, b) => a.order - b.order)
-        .map((item) => item.id),
+      stepIds: steps.map((step) => step.stepId),
+      steps,
     } satisfies SourceBackedFlowMapChildBinding;
   });
 
@@ -1126,7 +1155,7 @@ export function buildSourceBackedFlowMapPublishPackage(mapId: string): SourceBac
       sourceUrl: map.sourceUrl,
       setupInputs: map.setupInput ? [map.setupInput.label] : [],
       setupInput: map.setupInput,
-      primaryCta: { label: '전체 지도 저장', href: '/my' },
+      primaryCta: { label: '전체 저장', href: '/my' },
       secondaryCtas: childBundles.map((bundle) => ({ label: `${bundle.flow.title}만 저장`, href: '/my' })),
       artifacts: map.artifacts,
       childFlows: childBundles.map((bundle) => ({
@@ -1136,16 +1165,20 @@ export function buildSourceBackedFlowMapPublishPackage(mapId: string): SourceBac
         steps: bundle.items
           .slice()
           .sort((a, b) => a.order - b.order)
-          .map((item) => ({
-            id: item.id,
-            title: item.title,
-            detailItemCount: extractDetailItems(getItemDetail(bundle, item.id))?.length ?? 0,
-          })),
+          .map((item) => {
+            const detailItems = extractDetailItems(getItemDetail(bundle, item.id)) ?? [];
+            return {
+              id: item.id,
+              title: item.title,
+              detailItemCount: detailItems.length,
+              detailItems,
+            };
+          }),
       })),
     },
     myFlow: {
       surface: 'my_flow_saved',
-      demoHref: '/my?demo=source-backed',
+      demoHref: `/my?demo=source-backed&savedMap=${encodeURIComponent(map.id)}`,
       groupedAs: map.userLabel,
       savedSlugs: childBundles.map((bundle) => bundle.flow.slug),
       visibleTabs: ['오늘', '캘린더', 'Flow', '체크', '루틴'],

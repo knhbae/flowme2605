@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2026-06-29 FlowMe 남은 작업 정리</title>
+</head>
+<body style="margin:0;background:#f8fafc;color:#0f172a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',system-ui,sans-serif;line-height:1.62;">
+  <article style="width:min(1080px,calc(100% - 32px));margin:0 auto;padding:34px 0 72px;">
+    <header style="border:1px solid #dbe3ef;border-radius:8px;background:#fff;padding:24px;box-shadow:0 12px 28px rgba(15,23,42,.06);">
+      <p style="margin:0 0 8px;color:#2563eb;font-size:14px;font-weight:800;">2026-06-29 · 서비스 UX 남은 작업 정리</p>
+      <h1 style="margin:0;font-size:34px;line-height:1.2;letter-spacing:0;">사용자용 실행 화면과 creator gate 분리 기준선</h1>
+      <p style="margin:12px 0 0;max-width:780px;color:#475569;font-size:16px;">목표는 홈, Flow 찾기, 공개 Flow 상세, 저장 후 내 Flow, 제작자 gate가 서로 섞이지 않도록 현재 제품 라우트 기준선을 고정하는 것입니다. 이 문서는 검토/인수인계용이며 사용자용 화면에는 노출하지 않습니다.</p>
+    </header>
+
+    <section style="margin-top:16px;border:1px solid #dbe3ef;border-radius:8px;background:#fff;padding:22px;">
+      <h2 style="margin:0 0 12px;font-size:24px;">이번에 정리한 기준</h2>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;">
+        <div style="border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;padding:14px;">
+          <p style="margin:0;color:#64748b;font-size:13px;font-weight:800;">사용자 IA</p>
+          <h3 style="margin:6px 0 6px;font-size:18px;">홈 / Flow 찾기 / 캘린더 / 내 Flow</h3>
+          <p style="margin:0;color:#475569;font-size:14px;">홈은 입구와 메뉴 트리, Flow 찾기는 저장할 콘텐츠 카탈로그, 캘린더는 날짜 실행 표면, 내 Flow는 저장한 Flow 관리로 둡니다.</p>
+        </div>
+        <div style="border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;padding:14px;">
+          <p style="margin:0;color:#64748b;font-size:13px;font-weight:800;">사용자 문구</p>
+          <h3 style="margin:6px 0 6px;font-size:18px;">내부 모델 숨김</h3>
+          <p style="margin:0;color:#475569;font-size:14px;">사용자 화면은 큰 흐름, 항목, 일정, 체크, 전체 저장 중심으로 말합니다.</p>
+        </div>
+        <div style="border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;padding:14px;">
+          <p style="margin:0;color:#64748b;font-size:13px;font-weight:800;">제작자 gate</p>
+          <h3 style="margin:6px 0 6px;font-size:18px;">Source row → Step/Item</h3>
+          <p style="margin:0;color:#475569;font-size:14px;">제작자 화면에서는 변환 계약을 보여주되, 사용자 실행 화면과 섞지 않습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:16px;border:1px solid #dbe3ef;border-radius:8px;background:#fff;padding:22px;">
+      <h2 style="margin:0 0 12px;font-size:24px;">현재 라우트별 판정</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;">
+        <thead>
+          <tr>
+            <th style="padding:12px;border-bottom:1px solid #dbe3ef;text-align:left;color:#334155;">라우트</th>
+            <th style="padding:12px;border-bottom:1px solid #dbe3ef;text-align:left;color:#334155;">역할</th>
+            <th style="padding:12px;border-bottom:1px solid #dbe3ef;text-align:left;color:#334155;">현재 기준</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;font-weight:800;">/</td>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;">서비스 입구</td>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;">대표 시작점과 메뉴 트리만 노출합니다. 전체 카탈로그나 검토 후보 목록으로 만들지 않습니다.</td>
+          </tr>
+          <tr>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;font-weight:800;">/flows</td>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;">저장할 Flow 탐색</td>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;">이사, 중1 수학, 전세 같은 대표 후보 중심입니다. 약한 후보는 Park/Legacy로 분리합니다.</td>
+          </tr>
+          <tr>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;font-weight:800;">/flow-maps/[map]</td>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;">공개 저장 전 화면</td>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;">원문, 입력값, 저장 결과를 예측할 수 있게 하되 내부 평가 문구를 넣지 않습니다.</td>
+          </tr>
+          <tr>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;font-weight:800;">/calendar</td>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;">일정 실행 화면</td>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;">저장된 날짜형 항목을 월간 캘린더에서 바로 확인합니다. 일정이 없어도 빈 캘린더를 보여주고 내부 view 탭은 숨겨 중복을 줄입니다.</td>
+          </tr>
+          <tr>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;font-weight:800;">/my</td>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;">저장 후 실행 공간</td>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;">저장 직후 첫 항목과 전체 Flow 보기로 나눕니다. 날짜가 있는 항목은 글로벌 캘린더 탭에서 확인하므로 내 Flow 안에는 캘린더 보기 CTA를 반복하지 않습니다.</td>
+          </tr>
+          <tr>
+            <td style="padding:12px;font-weight:800;">/flow-maps/[map]/creator</td>
+            <td style="padding:12px;">제작자 검토</td>
+            <td style="padding:12px;">원문 행이 사용자 Step/Item으로 바뀌는지 확인합니다. 저장 후 화면 링크는 해당 map의 My Flow preview로 연결합니다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section style="margin-top:16px;border:1px solid #dbe3ef;border-radius:8px;background:#fff;padding:22px;">
+      <h2 style="margin:0 0 12px;font-size:24px;">메뉴 트리</h2>
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;">
+        <div style="border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;padding:14px;">
+          <p style="margin:0;color:#64748b;font-size:13px;font-weight:800;">홈</p>
+          <h3 style="margin:6px 0 6px;font-size:18px;">서비스 입구</h3>
+          <p style="margin:0;color:#475569;font-size:14px;">무엇을 하는 서비스인지 보여주고, 사용자가 Flow 찾기·캘린더·내 Flow·만들기로 갈 수 있게 합니다.</p>
+        </div>
+        <div style="border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;padding:14px;">
+          <p style="margin:0;color:#64748b;font-size:13px;font-weight:800;">Flow 찾기</p>
+          <h3 style="margin:6px 0 6px;font-size:18px;">저장할 콘텐츠 선택</h3>
+          <p style="margin:0;color:#475569;font-size:14px;">대표 Flow와 Flow Map을 보고 저장합니다. 홈과 달리 카탈로그 성격을 갖습니다.</p>
+        </div>
+        <div style="border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;padding:14px;">
+          <p style="margin:0;color:#64748b;font-size:13px;font-weight:800;">캘린더</p>
+          <h3 style="margin:6px 0 6px;font-size:18px;">날짜가 있는 Step 실행</h3>
+          <p style="margin:0;color:#475569;font-size:14px;">저장한 일정이 있으면 월간 캘린더에 배치하고, 없으면 빈 캘린더로 상태를 보여줍니다.</p>
+        </div>
+        <div style="border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;padding:14px;">
+          <p style="margin:0;color:#64748b;font-size:13px;font-weight:800;">내 Flow</p>
+          <h3 style="margin:6px 0 6px;font-size:18px;">저장한 Flow 관리</h3>
+          <p style="margin:0;color:#475569;font-size:14px;">오늘 할 일과 Flow별 보관 상태를 보고, 항목은 누른 자리에서 열고 닫습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:16px;border:1px solid #dbe3ef;border-radius:8px;background:#fff;padding:22px;">
+      <h2 style="margin:0 0 12px;font-size:24px;">대표 후보와 보류 후보</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="border:1px solid #bfdbfe;border-radius:8px;background:#eff6ff;padding:14px;">
+          <h3 style="margin:0 0 8px;font-size:18px;color:#1d4ed8;">대표 노출</h3>
+          <p style="margin:0;color:#334155;">이사 D-30, 중1 수학, 전세 Flow를 기준 후보로 봅니다. 저장 이유와 산출물이 비교적 명확합니다.</p>
+        </div>
+        <div style="border:1px solid #fde68a;border-radius:8px;background:#fffbeb;padding:14px;">
+          <h3 style="margin:0 0 8px;font-size:18px;color:#92400e;">Revise / Park</h3>
+          <p style="margin:0;color:#334155;">영유아 검진/접종은 공식 표 기반 구조는 있으나 대표 노출 전 정보 밀도와 의료 민감도 문구를 더 봐야 합니다. 추가 5개 실험 후보는 카탈로그 대표로 올리지 않습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:16px;border:1px solid #dbe3ef;border-radius:8px;background:#fff;padding:22px;">
+      <h2 style="margin:0 0 12px;font-size:24px;">남은 일</h2>
+      <ul style="margin:0;padding-left:20px;color:#475569;">
+        <li style="margin:7px 0;">홈 히어로에서 버튼처럼 보이던 비클릭 칩은 제거했습니다. 실제 이동은 대표 카드, 메뉴 트리, 하단 4탭으로만 처리합니다.</li>
+        <li style="margin:7px 0;">실제 사용자 행동 데이터 없이 검증 완료라고 표현하지 않습니다.</li>
+        <li style="margin:7px 0;">계정 기반 creator publish, 승인, 버전 배포는 아직 local draft/publish marker 밖에 없습니다.</li>
+        <li style="margin:7px 0;">저장된 Step의 캘린더/할 일/시트 재생성은 더 강한 데이터 계약으로 다음 단계에서 다룹니다.</li>
+        <li style="margin:7px 0;">홈에 리뷰, 사용 수, creator 신뢰 신호를 붙일지는 대표 콘텐츠 품질이 더 올라간 뒤 결정합니다.</li>
+      </ul>
+    </section>
+
+    <section style="margin-top:16px;border:1px solid #dbe3ef;border-radius:8px;background:#fff;padding:22px;">
+      <h2 style="margin:0 0 12px;font-size:24px;">검증 상태</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;">
+        <tbody>
+          <tr>
+            <td style="width:210px;padding:12px;border-bottom:1px solid #edf2f7;font-weight:800;">source-backed unit</td>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;">통과 · 17개 테스트</td>
+          </tr>
+          <tr>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;font-weight:800;">docs:check</td>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;">통과 · required files 14개, local links 1177개</td>
+          </tr>
+          <tr>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;font-weight:800;">npm test</td>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;">통과 · 263개 테스트</td>
+          </tr>
+          <tr>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;font-weight:800;">build</td>
+            <td style="padding:12px;border-bottom:1px solid #edf2f7;">통과 · Next.js production build</td>
+          </tr>
+          <tr>
+            <td style="padding:12px;font-weight:800;">targeted E2E</td>
+            <td style="padding:12px;">통과 · 홈, 4탭 IA, 제품 IA, source-backed 저장, My Flow 모바일 7개 타겟 테스트</td>
+          </tr>
+          <tr>
+            <td style="padding:12px;font-weight:800;">Vercel preview</td>
+            <td style="padding:12px;">통과 · <a href="https://flowme2605-4f173zqr9-flowme.vercel.app" style="color:#2563eb;font-weight:800;">4탭 기준 preview 열기</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="margin:12px 0 0;color:#475569;">실제 사용자 행동 데이터가 아니므로 제품 검증 완료로 표현하지 않습니다.</p>
+    </section>
+  </article>
+</body>
+</html>
