@@ -2080,6 +2080,30 @@ function getMyFlowDetailChecklistItems(detail?: FlowItemDetail): string[] {
     .filter(Boolean);
 }
 
+function compactMyFlowInlineActionHint(text?: string): string | undefined {
+  const firstLine = text
+    ?.split(/\r?\n/)
+    .map((line) => line.trim())
+    .find((line) => line && !/^[-*]\s+/.test(line));
+  if (!firstLine) return undefined;
+  const actionOnly = firstLine
+    .replace(/^실행:\s*/, '')
+    .split(/\s+기록:\s*/)[0]
+    .trim();
+  if (!actionOnly) return undefined;
+  return actionOnly.length > 120 ? `${actionOnly.slice(0, 117)}...` : actionOnly;
+}
+
+function getMyFlowInlineActionHint(detail?: FlowItemDetail, item?: FlowItem): string | undefined {
+  if (getMyFlowDetailChecklistItems(detail).length > 0) return undefined;
+  return (
+    compactMyFlowInlineActionHint(detail?.how) ||
+    compactMyFlowInlineActionHint(item?.description) ||
+    compactMyFlowInlineActionHint(visibleCompletionCriteria(detail)) ||
+    compactMyFlowInlineActionHint(detail?.why)
+  );
+}
+
 function formatMyFlowDetailMemo(detail: FlowItemDetail, row?: MyFlowRow, item?: FlowItem): string {
   const checklistItems = getMyFlowDetailChecklistItems(detail);
   const parts = [
@@ -2142,6 +2166,7 @@ type MyFlowRoutineCalendarIcon = {
 
 const MY_FLOW_ROUTINE_ICON_LIMIT = 2;
 const MY_FLOW_CALENDAR_SCHEDULE_EVENT_LIMIT = 2;
+const MY_FLOW_MOBILE_STRUCTURE_STEP_PREVIEW_LIMIT = 5;
 type MyFlowRoutineIconKind = 'study' | 'running' | 'workout' | 'meal' | 'maintenance' | 'routine';
 
 function getMyFlowCalendarRowKey(flowSlug: string, rowId: string, originalDate: string): string {
@@ -2326,6 +2351,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowDetailSurface, setMyFlowDetailSurface] = useState<MyFlowView | 'post-save' | ''>('');
   const [myFlowDetailOpen, setMyFlowDetailOpen] = useState(false);
   const [myFlowExpandedStructureSlug, setMyFlowExpandedStructureSlug] = useState('');
+  const [myFlowExpandedStructureStepSlug, setMyFlowExpandedStructureStepSlug] = useState('');
   const [myFlowRoutineCompletionUndo, setMyFlowRoutineCompletionUndo] = useState<MyFlowRoutineCompletionUndo | null>(null);
   const [myFlowInventoryOpen, setMyFlowInventoryOpen] = useState(false);
   const [myFlowTodayCompletedOpen, setMyFlowTodayCompletedOpen] = useState(false);
@@ -2377,6 +2403,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowDetailSurface('');
     setMyFlowDetailOpen(false);
     setMyFlowExpandedStructureSlug('');
+    setMyFlowExpandedStructureStepSlug('');
     setMyFlowEditingDetailKey('');
     setMyFlowExpandedAdvancedKey('');
     setMyFlowExpandedMemoKey('');
@@ -2512,6 +2539,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       setMyFlowDetailSurface('');
       setMyFlowDetailOpen(false);
       setMyFlowExpandedStructureSlug('');
+      setMyFlowExpandedStructureStepSlug('');
       setMyFlowInventoryOpen(false);
       setMyFlowTodayCompletedOpen(false);
       setMyFlowRoutineOverflowDate('');
@@ -2604,8 +2632,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const shouldGroupFlowInventory = savedFlows.length >= 20 || isMyFlowScenarioDemo;
   const showMyFlowSidebar = savedFlows.length > 1 && savedFlows.length < 20 && savedView === 'flow';
   const showFlowInventory = !shouldCollapseFlowInventory || myFlowInventoryOpen;
-  const singleSavedFlow = savedFlows.length === 1 ? savedFlows[0] : null;
-  const showMyFlowScopeControl = !isMyFlowMobileViewport;
+  const showMyFlowScopeControl = !isMyFlowMobileViewport && savedFlows.length > 1;
   const getSavedFlowNextRow = (flow: MySavedFlow) =>
     flow.rows.find((row) => !isMyFlowRowChecked(flow, row)) ?? flow.rows[0];
   const getMyFlowRoutineWeekdays = (flow: MySavedFlow) =>
@@ -2831,6 +2858,28 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   }, []).slice(0, 4);
   const myFlowPrimaryContinuationRow = myFlowContinuationRows[0] ?? null;
   const myFlowPrimaryContinuationKey = myFlowPrimaryContinuationRow ? getMyFlowRowInstanceKey(myFlowPrimaryContinuationRow) : '';
+  const myFlowPrimaryContinuationIsToday = Boolean(myFlowPrimaryContinuationRow?.date && myFlowPrimaryContinuationRow.date === myFlowTodayDate);
+  const myFlowPrimaryContinuationIsFuture = Boolean(myFlowPrimaryContinuationRow?.date && myFlowPrimaryContinuationRow.date > myFlowTodayDate);
+  const myFlowNowEyebrow = myFlowPrimaryContinuationIsToday ? '오늘 실행' : myFlowPrimaryContinuationIsFuture ? '다음 할 일' : '지금 이어하기';
+  const myFlowNowTitle = myFlowPrimaryContinuationRow
+    ? myFlowPrimaryContinuationIsToday
+      ? `${myFlowTodayDate} 오늘 할 일`
+      : myFlowPrimaryContinuationIsFuture
+        ? `${myFlowPrimaryContinuationRow.date} 예정 Step`
+        : `${myFlowTodayDate} 먼저 할 일`
+    : '이어갈 Step이 없습니다';
+  const myFlowNowHelp = myFlowPrimaryContinuationRow
+    ? myFlowPrimaryContinuationIsToday
+      ? '오늘 실행할 Step만 먼저 보여줍니다. 전체 구조는 Flow 탭에서 확인하세요.'
+      : myFlowPrimaryContinuationIsFuture
+        ? '오늘 남은 일은 없습니다. 가장 가까운 예정 Step만 먼저 보여줍니다.'
+        : '밀린 항목 중 가장 먼저 정리할 Step을 보여줍니다.'
+    : '저장한 Flow에서 전체 구조를 확인하거나 새 Flow를 찾아보세요.';
+  const myFlowPrimaryContinuationLabel = myFlowPrimaryContinuationIsToday
+    ? '오늘 실행할 Step'
+    : myFlowPrimaryContinuationIsFuture
+      ? '다음 실행 Step'
+      : '밀린 Step';
   const myFlowSecondaryContinuationRows = [
     ...todayOpenRows,
     ...upcomingRows,
@@ -3304,14 +3353,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const flowListSupportGroups = buildMyFlowInventoryGroups(flowListSupportFlows, true);
   const flowListInventoryGroups = buildMyFlowInventoryGroups(flowListVisibleFlows);
   const shouldGroupBySavedMap = flowListVisibleFlows.some((flow) => Boolean(flow.savedMap));
-  const singleMobileSavedFlow = isMyFlowMobileViewport && savedFlows.length === 1 ? savedFlows[0] : null;
-  const singleMobileHasDatedRows = singleMobileSavedFlow
-    ? singleMobileSavedFlow.bundle.flow.structure_type === 'routine' || singleMobileSavedFlow.rows.some((row) => Boolean(row.date))
-    : false;
   const visibleSavedViewTabs = savedViewTabs.filter(([id]) => {
     if (!isCalendarSurface && id === 'calendar') return false;
-    if (!singleMobileSavedFlow) return true;
-    if (id === 'today') return singleMobileHasDatedRows;
     return true;
   });
   const primarySavedViewTabIds = new Set(['today', 'flow']);
@@ -3377,15 +3420,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       if (savedView !== 'calendar') setSavedView('calendar');
       return;
     }
-    if (singleMobileSavedFlow) {
-      const singleMobileDefaultView = singleMobileHasDatedRows ? 'today' : 'flow';
-      if (visibleSavedViewTabs.some(([id]) => id === savedView)) return;
-      if (savedView !== singleMobileDefaultView) setSavedView(singleMobileDefaultView);
-      return;
-    }
     if (visibleSavedViewTabs.some(([id]) => id === savedView)) return;
     setSavedView(visibleSavedViewTabs[0]?.[0] ?? 'today');
-  }, [isCalendarSurface, savedView, singleMobileHasDatedRows, singleMobileSavedFlow, visibleSavedViewTabs]);
+  }, [isCalendarSurface, savedView, visibleSavedViewTabs]);
 
   useEffect(() => {
     if (!showPostSavePanel || !savedMapIdParam || myFlowHandledSavedMapId === savedMapIdParam) return;
@@ -3559,10 +3596,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setSavedView('flow');
     if (myFlowExpandedStructureSlug === flow.progress.slug) {
       setMyFlowExpandedStructureSlug('');
+      setMyFlowExpandedStructureStepSlug('');
       if (myFlowActiveRow?.flow.progress.slug === flow.progress.slug) resetMyFlowRowDetailState();
       return;
     }
     setMyFlowExpandedStructureSlug(flow.progress.slug);
+    setMyFlowExpandedStructureStepSlug('');
     if (myFlowActiveRow?.flow.progress.slug !== flow.progress.slug) resetMyFlowRowDetailState();
   };
 
@@ -3837,7 +3876,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
   const renderMobileContinuationFlowCard = (
     row: MyFlowCalendarRow,
-    options: { tone?: 'primary' | 'plain'; nextLabel?: string } = {},
+    options: { tone?: 'primary' | 'plain'; primaryLabel?: string; nextLabel?: string } = {},
   ) => {
     const flow = row.flow;
     const activeRowKey = myFlowActiveRow && myFlowDetailOpen ? getMyFlowRowInstanceKey(myFlowActiveRow) : '';
@@ -3889,7 +3928,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         >
           <span className="flex items-start justify-between gap-3">
             <span className="min-w-0">
-              <span className="block text-xs font-semibold text-blue-700">{isPrimary ? '지금 실행할 Step' : options.nextLabel ?? '다음 실행 Step'}</span>
+              <span className="block text-xs font-semibold text-blue-700">{isPrimary ? options.primaryLabel ?? '지금 실행할 Step' : options.nextLabel ?? '다음 실행 Step'}</span>
               <span className={`mt-1 block text-base font-semibold leading-6 ${checked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
                 {getMyFlowRowDisplayTitle(row)}
               </span>
@@ -4266,6 +4305,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const routineWeekdays = routineRuleDraft.weekdays ?? [];
     const isSingleOccurrenceRoutineScope = routineRuleDraft.scope === 'this';
     const detailChecklistItems = getMyFlowDetailChecklistItems(detail);
+    const hasDetailChecklistItems = detailChecklistItems.length > 0;
+    const inlineActionHint = getMyFlowInlineActionHint(detail, item);
     const detailChecklistLabel = row.flow.bundle.flow.tags?.includes('progress-flow') ? '개념 항목' : '확인 항목';
     const detailChecklistState = myFlowStepItemChecks[getMyFlowRowInstanceKey(row)] ?? {};
     const attachmentLabel = item?.photo_filename_pattern;
@@ -4296,6 +4337,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     };
     const canDownloadPortableCalendar = canBuildMyFlowStepIcs(portableExportInput);
     const hasExpandableMemo = editorDraft.memo.trim().length > 0;
+    const inlineDetailHeaderLabel = hasDetailChecklistItems ? '확인할 항목' : '실행할 일';
     const detailCompletionActionLabel = isRoutineRow
       ? (checked ? '이번 항목 완료 취소' : '이번 항목 완료')
       : (checked ? '완료 취소' : '완료 체크');
@@ -4502,9 +4544,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           <div className={isInlineMobileMode ? 'min-w-0' : 'min-w-0 flex-1'}>
             {useReadonlyTitleHeader || !isDetailEditing ? (
               <div>
-                <p className="text-xs font-semibold text-blue-700">{isFlowTabInlineMobileMode ? 'Step 실행' : '확인할 항목'}</p>
-                {isFlowTabInlineMobileMode ? (
-                  <p className="mt-1 text-xs font-semibold text-slate-600">아래 Item을 체크하고 완료로 표시합니다.</p>
+                <p className="text-xs font-semibold text-blue-700">{isInlineMobileMode ? inlineDetailHeaderLabel : '확인할 항목'}</p>
+                {isInlineMobileMode ? (
+                  <>
+                    <h3 className="mt-1 text-base font-semibold leading-6 text-slate-950">{editorDraft.title}</h3>
+                    {hasDetailChecklistItems ? (
+                      <p className="mt-1 text-xs font-semibold text-slate-600">필요한 항목만 체크하고 완료로 표시하세요.</p>
+                    ) : null}
+                  </>
                 ) : (
                   <h3 className={`mt-1 font-semibold text-slate-950 ${isInlineMobileMode ? 'text-base leading-6' : 'text-lg leading-6'}`}>{editorDraft.title}</h3>
                 )}
@@ -4556,7 +4603,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               ) : null}
               {detailCompletionVisibleLabel}
             </button>
-            {!isDrawerMode ? (
+            {!isDrawerMode && !isInlineMobileMode ? (
               <button
                 className={`rounded-md px-3 py-2 text-xs font-semibold ${
                   isFlowTabInlineMobileMode
@@ -4611,6 +4658,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               방금 완료 취소
             </button>
           </div>
+        ) : null}
+        {isInlineMobileMode && inlineActionHint ? (
+          <section data-testid="my-flow-inline-action-hint" className="mt-3 rounded-md bg-white px-3 py-3">
+            <p className="text-xs font-semibold text-slate-500">바로 할 일</p>
+            <p className="mt-1 text-sm font-semibold leading-6 text-slate-800">{inlineActionHint}</p>
+          </section>
         ) : null}
         {hasEditorChanges ? (
           <div className="mt-3 flex flex-col gap-2 rounded-md border border-blue-100 bg-white px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
@@ -4687,7 +4740,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         {!showEditableDetailFields && (scheduleSummaryRows.length > 0 || editorDraft.memo.trim()) ? (
           isInlineMobileMode ? (
             <details data-testid="my-flow-detail-read-summary" className="mt-3 rounded-md bg-white px-3 py-3">
-              <summary className="cursor-pointer text-xs font-semibold text-slate-700">메모·일정 보기</summary>
+              <summary className="cursor-pointer text-xs font-semibold text-slate-700">메모·일정</summary>
               <div className="mt-3 grid gap-2">
                 {scheduleSummaryRows.length > 0 ? (
                   <div>
@@ -4706,6 +4759,24 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     <p className="text-xs font-semibold text-slate-500">메모</p>
                     <p className="mt-1 whitespace-pre-wrap rounded-md bg-slate-50 px-2 py-2 text-sm leading-6 text-slate-700">{editorDraft.memo}</p>
                   </div>
+                ) : null}
+                {!isDrawerMode ? (
+                  <button
+                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-left text-xs font-semibold text-blue-700"
+                    type="button"
+                    data-testid="my-flow-detail-edit-toggle"
+                    aria-pressed={isDetailEditing}
+                    onClick={() => {
+                      if (isDetailEditing) {
+                        cancelMyFlowEditingDraft(row);
+                        setMyFlowEditingDetailKey('');
+                        return;
+                      }
+                      setMyFlowEditingDetailKey(portableExportKey);
+                    }}
+                  >
+                    {isDetailEditing ? '수정 취소' : '메모/일정 수정'}
+                  </button>
                 ) : null}
               </div>
             </details>
@@ -4807,7 +4878,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         ) : null}
         {shouldCollapsePortableExport ? (
           <details data-testid="my-flow-detail-portable-export" className="mt-3 rounded-md bg-white px-3 py-3">
-            <summary className="cursor-pointer text-xs font-semibold text-slate-700">원문·내 도구로 옮기기</summary>
+            <summary className="cursor-pointer text-xs font-semibold text-slate-700">원문·복사</summary>
             {primaryLink ? (
               <a
                 data-testid="my-flow-detail-source-link"
@@ -4820,7 +4891,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </a>
             ) : null}
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-              <p className="text-xs font-semibold text-slate-700">내 도구로 옮기기</p>
+              <p className="text-xs font-semibold text-slate-700">다른 앱에 붙여넣기</p>
               <span className="text-[11px] font-semibold text-slate-500">
                 {canDownloadPortableCalendar ? '텍스트 · 캘린더' : '텍스트'}
               </span>
@@ -5079,6 +5150,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const activeCompactKey = activeCompactRow ? getMyFlowRowInstanceKey(activeCompactRow) : '';
     const flowExpanded = myFlowExpandedStructureSlug === flow.progress.slug || Boolean(activeCompactRow);
     const stepRows = flow.rows.map((row) => getMyFlowRowForFlowTab(flow, row));
+    const stepEntries = stepRows.map((row, index) => ({ row, index }));
+    const allStepsVisible = myFlowExpandedStructureStepSlug === flow.progress.slug;
+    const shouldLimitStepRows = stepEntries.length > MY_FLOW_MOBILE_STRUCTURE_STEP_PREVIEW_LIMIT && !allStepsVisible;
+    const visibleStepEntries = shouldLimitStepRows
+      ? stepEntries.slice(0, MY_FLOW_MOBILE_STRUCTURE_STEP_PREVIEW_LIMIT)
+      : stepEntries;
+    const hiddenStepCount = stepEntries.length - visibleStepEntries.length;
     return (
       <article
         key={`compact-${flow.progress.slug}`}
@@ -5108,21 +5186,21 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           <span className="mt-3 block h-1.5 overflow-hidden rounded-full bg-slate-200">
             <span className="block h-full rounded-full bg-blue-700" style={{ width: `${flow.percent}%` }} />
           </span>
-          {nextRow ? (
+          {nextRow && !flowExpanded ? (
             <span className="mt-3 block rounded-md bg-slate-50 px-3 py-2">
-              <span className="block text-xs font-semibold text-blue-700">{flowExpanded ? `Step ${stepRows.length}개` : '다음 Step'}</span>
+              <span className="block text-xs font-semibold text-blue-700">다음 Step</span>
               <span className="mt-1 block text-sm font-semibold text-slate-950">{nextRow.title}</span>
               <span className="mt-1 block text-xs font-semibold text-slate-500">
                 {[nextRow.date, nextRow.section].filter(Boolean).join(' · ') || `${flow.done}/${flow.total} 완료`}
               </span>
             </span>
-          ) : (
+          ) : !nextRow ? (
             <span className="mt-3 block rounded-md bg-slate-50 px-3 py-2 text-sm text-slate-600">남은 항목이 없습니다.</span>
-          )}
+          ) : null}
         </button>
         {flowExpanded ? (
           <div data-testid="my-flow-mobile-structure-step-list" className="mt-3 grid gap-2">
-            {stepRows.map((stepRow, index) => {
+            {visibleStepEntries.map(({ row: stepRow, index }) => {
               const stepKey = getMyFlowRowInstanceKey(stepRow);
               const stepOpen = activeCompactKey === stepKey;
               const stepChecked = isMyFlowRowChecked(flow, stepRow);
@@ -5165,6 +5243,28 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 </div>
               );
             })}
+            {hiddenStepCount > 0 ? (
+              <button
+                type="button"
+                data-testid="my-flow-mobile-structure-show-all"
+                className="rounded-md border border-blue-100 bg-white px-3 py-2 text-left text-sm font-semibold text-blue-700"
+                onClick={() => setMyFlowExpandedStructureStepSlug(flow.progress.slug)}
+              >
+                전체 Step 보기 · {hiddenStepCount}개 더
+              </button>
+            ) : allStepsVisible && stepEntries.length > MY_FLOW_MOBILE_STRUCTURE_STEP_PREVIEW_LIMIT ? (
+              <button
+                type="button"
+                data-testid="my-flow-mobile-structure-collapse"
+                className="rounded-md border border-slate-200 bg-white px-3 py-2 text-left text-sm font-semibold text-slate-700"
+                onClick={() => {
+                  setMyFlowExpandedStructureStepSlug('');
+                  resetMyFlowRowDetailState();
+                }}
+              >
+                주요 Step만 보기
+              </button>
+            ) : null}
           </div>
         ) : null}
       </article>
@@ -5623,9 +5723,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           <p className="mt-1 text-sm text-gray-600 sm:mt-2 sm:text-base">
             {isCalendarSurface
               ? '저장한 Flow의 날짜가 있는 항목을 캘린더에서 바로 확인합니다.'
-              : savedFlows.length === 1
-                ? '저장한 Flow를 지금 이어할 Step부터 봅니다.'
-                : '저장한 Flow가 많아도 지금 이어할 일부터 봅니다.'}
+              : '저장한 Flow를 지금 이어할 일부터 봅니다.'}
           </p>
         </div>
         <div className="hidden flex-wrap gap-2 sm:flex">
@@ -5666,7 +5764,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
       {savedFlows.length > 0 ? (
         <section className="mb-6">
-          <div className="mb-2 flex flex-wrap items-end justify-between gap-3 sm:mb-3">
+          <div className={`mb-2 flex-wrap items-end justify-between gap-3 sm:mb-3 ${isCalendarSurface ? 'flex' : 'hidden sm:flex'}`}>
             <div>
               <p className="text-sm font-semibold text-blue-700">{myFlowWorkspaceHeader.eyebrow}</p>
               <div className="flex flex-wrap items-center gap-2">
@@ -5715,13 +5813,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             ) : null}
             <div className="min-w-0">
               <div className="mb-4 rounded-lg border border-slate-200 bg-white p-2 shadow-sm sm:flex sm:items-end sm:justify-between sm:gap-3">
-                {singleSavedFlow && !isMyFlowMobileViewport ? (
-                  <div data-testid="my-flow-single-summary" className="min-w-0 rounded-md bg-slate-50 px-3 py-2 sm:w-80">
-                    <p className="text-xs font-semibold text-slate-500">저장한 Flow</p>
-                    <p className="mt-1 truncate text-sm font-semibold text-slate-950">{singleSavedFlow.progress.title}</p>
-                    <p className="mt-1 text-xs font-semibold text-blue-700">{singleSavedFlow.done}/{singleSavedFlow.total} 완료</p>
-                  </div>
-                ) : showMyFlowScopeControl ? (
+                {showMyFlowScopeControl ? (
                   <div className="min-w-0 sm:w-72">
                     <label className="mb-1 block text-xs font-semibold text-slate-500" htmlFor="my-flow-scope">
                       보기 범위
@@ -5780,7 +5872,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
               {savedView === 'today' ? (
                 <div className="mb-4 grid min-w-0 gap-4">
-                  {!singleMobileSavedFlow ? (
                   <section data-testid="my-flow-today-summary" className="min-w-0 rounded-lg border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
                     <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                       <div>
@@ -5809,19 +5900,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       </div>
                     </div>
                   </section>
-                  ) : null}
 
                   <section data-testid="my-flow-now-section" className="grid min-w-0 gap-3 rounded-lg border border-blue-100 bg-white p-3 shadow-sm sm:p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="text-sm font-semibold text-blue-700">지금 이어하기</p>
+                        <p className="text-sm font-semibold text-blue-700">{myFlowNowEyebrow}</p>
                         <h3 className="mt-0.5 text-base font-semibold text-slate-950 sm:mt-1 sm:text-lg">
-                          {myFlowPrimaryContinuationRow ? `${myFlowTodayDate} 먼저 할 일` : '이어갈 Step이 없습니다'}
+                          {myFlowNowTitle}
                         </h3>
                         <p className="mt-1 text-xs text-slate-600 sm:text-sm">
-                          {myFlowPrimaryContinuationRow
-                            ? '오늘 실행할 Step만 먼저 보여줍니다. 전체 구조는 Flow 탭에서 확인하세요.'
-                            : '저장한 Flow에서 전체 구조를 확인하거나 새 Flow를 찾아보세요.'}
+                          {myFlowNowHelp}
                         </p>
                       </div>
                       {myFlowPrimaryContinuationRow ? (
@@ -5831,7 +5919,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       ) : null}
                     </div>
                     {myFlowPrimaryContinuationRow ? (
-                      renderMobileContinuationFlowCard(myFlowPrimaryContinuationRow, { tone: 'primary', nextLabel: '가장 먼저 할 일' })
+                      renderMobileContinuationFlowCard(myFlowPrimaryContinuationRow, { tone: 'primary', primaryLabel: myFlowPrimaryContinuationLabel })
                     ) : null}
                   </section>
 
@@ -5945,24 +6033,23 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           {savedView === 'flow' ? (
             <div className="grid gap-4">
               {selectedSavedFlowSlug === 'all' ? renderMyFlowMapUpdateNotices() : null}
-              {selectedSavedFlowSlug === 'all' && visibleSavedFlows.length > 1 ? (
+              {selectedSavedFlowSlug === 'all' && visibleSavedFlows.length > 0 ? (
                 <>
                   {isMyFlowMobileViewport ? (
                     <div data-testid="my-flow-mobile-flow-hub" className="grid gap-3">
-                      <section data-testid="my-flow-mobile-flow-summary" className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-                        <p className="text-sm font-semibold text-blue-700">저장한 구조</p>
-                        <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-                          <div className="rounded-md bg-slate-50 px-2 py-2">
-                            <p className="text-lg font-semibold text-slate-950">{flowListVisibleFlows.length}</p>
-                            <p className="text-[11px] font-semibold text-slate-500">Flow</p>
-                          </div>
-                          <div className="rounded-md bg-slate-50 px-2 py-2">
-                            <p className="text-lg font-semibold text-slate-950">{flowListVisibleFlows.reduce((sum, flow) => sum + Math.max(0, flow.total - flow.done), 0)}</p>
-                            <p className="text-[11px] font-semibold text-slate-500">남은 항목</p>
-                          </div>
-                          <div className="rounded-md bg-blue-50 px-2 py-2">
-                            <p className="text-lg font-semibold text-blue-950">{todayOpenCount}</p>
-                            <p className="text-[11px] font-semibold text-blue-700">오늘</p>
+                      <section data-testid="my-flow-mobile-flow-summary" className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 shadow-sm">
+                        <div className="flex items-center justify-between gap-3">
+                          <p className="shrink-0 text-sm font-semibold text-blue-700">저장한 구조</p>
+                          <div className="flex min-w-0 flex-wrap justify-end gap-1.5 text-[11px] font-semibold">
+                            <span className="rounded-md bg-slate-50 px-2 py-1 text-slate-700">
+                              {flowListVisibleFlows.length} Flow
+                            </span>
+                            <span className="rounded-md bg-slate-50 px-2 py-1 text-slate-700">
+                              {flowListVisibleFlows.reduce((sum, flow) => sum + Math.max(0, flow.total - flow.done), 0)} 남음
+                            </span>
+                            <span className="rounded-md bg-blue-50 px-2 py-1 text-blue-700">
+                              오늘 {todayOpenCount}
+                            </span>
                           </div>
                         </div>
                       </section>

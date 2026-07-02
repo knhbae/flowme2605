@@ -309,7 +309,7 @@ test('my flow workspace separates copied or drafted flows from public discovery'
 
   await page.goto('/my');
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
-  await expect(page.getByTestId('my-flow-single-summary')).toContainText('이사 D-30 준비 Flow');
+  await expect(page.getByTestId('my-flow-single-summary')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-scope-select')).toHaveCount(0);
   await page.getByTestId('my-flow-view-flow').click();
   await expect(page.getByTestId('my-flow-overview-card')).toHaveAttribute('data-flow-slug', 'moving-d30-basic');
@@ -1235,19 +1235,17 @@ test('source-backed single progress map opens step detail on mobile My Flow', as
 
   await page.getByTestId('my-flow-post-save-open-first').click();
   await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
-  await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-pressed', 'true');
-  const mathCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-middle-school-math-1"]');
-  const flowDetail = mathCard.getByTestId('my-flow-overview-inline-detail');
+  const flowDetail = page.locator('[data-testid="my-flow-item-detail"]:visible').first();
   await expect(flowDetail).toBeVisible();
-  await expect(flowDetail.getByTestId('my-flow-item-detail')).toContainText('Step 실행');
+  await expect(flowDetail).not.toContainText('Step 실행');
+  await expect(flowDetail).not.toContainText('Item');
+  await expect(flowDetail).toContainText('확인할 항목');
   const itemChecklist = flowDetail.getByTestId('my-flow-item-checklist');
   await expect(itemChecklist).toContainText('거듭제곱');
-  await expect(flowDetail.getByTestId('my-flow-detail-read-summary')).toContainText('메모·일정 보기');
-  await expect(flowDetail.getByTestId('my-flow-detail-portable-export')).toContainText('원문·내 도구로 옮기기');
+  await expect(flowDetail.getByTestId('my-flow-detail-read-summary')).toContainText('메모·일정');
+  await expect(flowDetail.getByTestId('my-flow-detail-portable-export')).toContainText('원문·복사');
   await itemChecklist.getByLabel('거듭제곱').check();
   await expect(itemChecklist).toContainText('1/8');
-  await mathCard.getByTestId('my-flow-next-action-open').click();
-  await expect(flowDetail).toHaveCount(0);
 });
 
 test('source-backed moving map saves one dated timeline into My Flow calendar', async ({ page }) => {
@@ -1550,6 +1548,7 @@ test('my flow step detail saves portable calendar task fields', async ({ page })
 
   const detail = movingCard.getByTestId('my-flow-overview-inline-detail').getByTestId('my-flow-item-detail');
   await expect(detail).toBeVisible();
+  await detail.getByText('메모·일정').click();
   await detail.getByTestId('my-flow-detail-edit-toggle').click();
   await detail.getByTestId('my-flow-detail-date-input').fill('2026-06-24');
   await detail.locator('input[type="time"]').fill('09:30');
@@ -1614,6 +1613,7 @@ test('my flow mobile saved map edit and revisit keeps step detail lightweight', 
   expect(detailBox!.y).toBeGreaterThanOrEqual(0);
   await expect.poll(async () => (await detail.boundingBox())?.y ?? 9999).toBeLessThan(844);
 
+  await detail.getByText('메모·일정').click();
   await detail.getByTestId('my-flow-detail-edit-toggle').click();
   await expect(detail.getByTestId('my-flow-detail-repeat-input')).toBeVisible();
   await detail.getByTestId('my-flow-detail-date-input').fill('2026-06-25');
@@ -2016,7 +2016,7 @@ test('my flow mobile keeps single saved flow in the same today and flow shell', 
 
   await page.goto('/my');
 
-  await expect(page.getByText('저장한 Flow를 지금 이어할 Step부터 봅니다.')).toBeVisible();
+  await expect(page.getByText('저장한 Flow를 지금 이어할 일부터 봅니다.')).toBeVisible();
   await expect(page.getByTestId('my-flow-now-section')).toContainText('지금 이어하기');
   await expect(page.getByTestId('my-flow-single-summary')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-single-continue')).toHaveCount(0);
@@ -2029,7 +2029,11 @@ test('my flow mobile keeps single saved flow in the same today and flow shell', 
   await expect(page.getByTestId('my-flow-overdue-list')).toContainText('지난 일정 정리');
   await expect(page.getByTestId('my-flow-overdue-open-sheet')).toBeVisible();
   await page.getByTestId('my-flow-view-flow').click();
-  await expect(page.getByTestId('my-flow-overview-card')).toHaveAttribute('data-flow-slug', 'moving-d30-basic');
+  await expect(page.getByTestId('my-flow-mobile-flow-summary')).toContainText('저장한 구조');
+  await expect(page.getByTestId('my-flow-mobile-flow-summary')).toContainText('1');
+  await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(1);
+  await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveAttribute('data-flow-slug', 'moving-d30-basic');
+  await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-hide-toggle')).toHaveCount(0);
 
   await page.goto('/my?demo=ux12');
@@ -2053,17 +2057,27 @@ test('my flow mobile item opens editable detail inline from today page', async (
 
   const firstRunnableRow = page.getByTestId('my-flow-now-section').getByTestId('my-flow-mobile-continuation-card').first();
   await expect(firstRunnableRow).toBeVisible();
-  await expect(firstRunnableRow).toContainText('지금 실행할 Step');
+  await expect(page.getByTestId('my-flow-now-section')).toContainText('다음 할 일');
+  await expect(page.getByTestId('my-flow-now-section')).toContainText('가장 가까운 예정 Step');
+  await expect(firstRunnableRow).toContainText('다음 실행 Step');
+  await expect(firstRunnableRow).not.toContainText('지금 실행할 Step');
   await expect(firstRunnableRow).not.toContainText(/\d+%/);
   await expect(firstRunnableRow.getByTestId('my-flow-mobile-continuation-flow-context')).toContainText('완료');
   await firstRunnableRow.getByTestId('my-flow-mobile-continuation-open').click();
   const mobileDetail = firstRunnableRow.getByTestId('my-flow-item-detail');
   await expect(mobileDetail).toBeVisible();
-  await expect(mobileDetail).toContainText('확인할 항목');
+  await expect(mobileDetail).not.toContainText('Step 실행');
+  await expect(mobileDetail).not.toContainText('Item');
+  await expect(mobileDetail).not.toContainText('할 일 상태');
+  await expect(mobileDetail).toContainText('실행할 일');
+  await expect(mobileDetail.getByTestId('my-flow-inline-action-hint')).toBeVisible();
+  await expect(mobileDetail.getByTestId('my-flow-inline-action-hint')).toContainText('풀 회차 수, 목표 점수, 재풀이 날짜를 정합니다.');
   await expect(mobileDetail.getByLabel('제목')).toHaveCount(0);
   await expect(mobileDetail.getByRole('button', { name: '완료 체크' })).toHaveCount(1);
   await expect(mobileDetail.getByRole('button', { name: '이번 항목 완료' })).toHaveCount(0);
-  await mobileDetail.getByTestId('my-flow-detail-edit-toggle').click();
+  await expect(mobileDetail.getByRole('button', { name: '수정', exact: true })).toHaveCount(0);
+  await mobileDetail.getByText('메모·일정').click();
+  await mobileDetail.getByRole('button', { name: '메모/일정 수정' }).click();
   const originalMemo = await mobileDetail.getByLabel('메모').inputValue();
   await mobileDetail.getByLabel('메모').fill('모바일에서 취소할 실행 메모');
   await expect(mobileDetail.getByRole('button', { name: '변경 취소' })).toBeVisible();
@@ -2071,13 +2085,15 @@ test('my flow mobile item opens editable detail inline from today page', async (
   await expect(mobileDetail).toHaveCount(0);
 
   await firstRunnableRow.getByRole('button').first().click();
-  await mobileDetail.getByTestId('my-flow-detail-edit-toggle').click();
+  await mobileDetail.getByText('메모·일정').click();
+  await mobileDetail.getByRole('button', { name: '메모/일정 수정' }).click();
   await expect(mobileDetail.getByLabel('메모')).toHaveValue(originalMemo);
   await mobileDetail.getByLabel('메모').fill('모바일에서 수정한 실행 메모');
   await mobileDetail.getByRole('button', { name: '변경 저장' }).click();
   await expect(mobileDetail).toHaveCount(0);
   await firstRunnableRow.getByRole('button').first().click();
-  await mobileDetail.getByTestId('my-flow-detail-edit-toggle').click();
+  await mobileDetail.getByText('메모·일정').click();
+  await mobileDetail.getByRole('button', { name: '메모/일정 수정' }).click();
   await expect(mobileDetail.getByLabel('메모')).toHaveValue('모바일에서 수정한 실행 메모');
 });
 
@@ -2112,6 +2128,7 @@ test('my flow mobile calendar keeps date selection separate and gives events usa
   await expect(mobileDetail).toBeVisible();
   await expect(mobileDetail).toContainText('필기와 실기 시험 범위 나누기');
   await expect(mobileDetail.getByLabel('제목')).toHaveCount(0);
+  await mobileDetail.getByText('메모·일정').click();
   await mobileDetail.getByTestId('my-flow-detail-edit-toggle').click();
   await expect(mobileDetail.getByLabel('메모')).toBeVisible();
   await mobileDetail.getByRole('button', { name: '닫기', exact: true }).click();
@@ -2201,10 +2218,15 @@ test('my flow mobile status board opens actionable flow lists', async ({ page })
   const firstStructureRow = page.getByTestId('my-flow-mobile-structure-row').first();
   await firstStructureRow.getByTestId('my-flow-mobile-structure-open').click();
   await expect(firstStructureRow.getByTestId('my-flow-mobile-structure-step-list')).toBeVisible();
-  expect(await firstStructureRow.getByTestId('my-flow-mobile-structure-step-row').count()).toBeGreaterThan(1);
+  await expect(firstStructureRow.getByTestId('my-flow-mobile-structure-open')).not.toContainText(/Step \d+개/);
+  await expect(firstStructureRow.getByTestId('my-flow-mobile-structure-step-row')).toHaveCount(5);
+  await expect(firstStructureRow.getByTestId('my-flow-mobile-structure-show-all')).toContainText('전체 Step');
   await expect(firstStructureRow.getByTestId('my-flow-item-detail')).toHaveCount(0);
   await firstStructureRow.getByTestId('my-flow-mobile-structure-step-row').first().click();
   await expect(firstStructureRow.getByTestId('my-flow-item-detail')).toBeVisible();
+  await expect(firstStructureRow.getByTestId('my-flow-item-detail')).toContainText('실행할 일');
+  await expect(firstStructureRow.getByTestId('my-flow-inline-action-hint')).toBeVisible();
+  await expect(firstStructureRow.getByTestId('my-flow-inline-action-hint')).toContainText('방문 전날 가방에 준비물을 넣고');
   await expect(page.getByTestId('my-flow-mobile-inventory-open')).toContainText('전체 Flow 목록 열기');
   await expect(page.getByTestId('my-flow-status-overdue')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-status-next')).toHaveCount(0);
