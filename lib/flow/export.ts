@@ -697,7 +697,7 @@ function buildIcsEntries(bundle: FlowBundle, anchor?: string): IcsEntry[] {
       start: addDays(new Date(anchor), item.day_offset ?? 0),
       durationDays: Math.max(item.duration_days ?? 1, 1),
       timing: getItemTimingLabel(item),
-      actionGuide: detail?.how,
+      actionGuide: [detail?.why, detail?.how].filter(Boolean).join('\n'),
       completionCriteria: detail?.completion_criteria,
       links: linkList(detail),
       dateWindow: item.date_window && startDate && endDate

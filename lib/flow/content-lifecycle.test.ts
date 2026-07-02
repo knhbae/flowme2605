@@ -5,6 +5,7 @@ import {
   classifyFlowLifecycle,
   summarizeFlowLifecycle,
 } from './content-lifecycle';
+import { isCuratedSourceAppSeedBundle } from './curated-source-app-seed-meta';
 import { seedBundles } from './seed-flows';
 import { getSourceFitAudit } from './source-fit';
 
@@ -51,7 +52,7 @@ test('final promotion QA keeps only the computer skills route representative eli
 });
 
 test('lifecycle classification separates generated previews and audited needs-review fixes', () => {
-  const preview = seedBundles.find((entry) => entry.flow.source_status === 'preview');
+  const preview = seedBundles.find((entry) => entry.flow.id.startsWith('flow-preview-'));
   assert.ok(preview);
 
   const auditedNeedsReview = bundleBySlug('business-registration-basic');
@@ -65,6 +66,17 @@ test('lifecycle classification separates generated previews and audited needs-re
   assert.equal(auditedReview.bucket, 'fix');
   assert.ok(auditedReview.reason.includes('source-fit'));
   assert.ok(auditedReview.nextAction.includes('공식 확인'));
+});
+
+test('lifecycle classification keeps curated source app seed in the fix bucket without preview pollution', () => {
+  const curated = seedBundles.find(isCuratedSourceAppSeedBundle);
+  assert.ok(curated);
+
+  const review = classifyFlowLifecycle(curated);
+
+  assert.equal(review.bucket, 'fix');
+  assert.equal(review.reviewLevel, 'curated_source_app_seed');
+  assert.equal(review.publicHandling, 'curated_seed');
 });
 
 test('lifecycle summary covers every seed bundle exactly once', () => {

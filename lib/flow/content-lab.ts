@@ -1,6 +1,7 @@
 import { AnchorType, FlowBundle, StructureType } from './types';
 import { getSourceFitSummary } from './source-fit';
 import { summarizeContentInventory } from './content-inventory';
+import { isCuratedSourceAppSeedBundle } from './curated-source-app-seed-meta';
 import {
   getNaturalArtifactAudit,
   summarizeNaturalArtifactAuditCoverage,
@@ -356,7 +357,9 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   const convertedPilotBundles = bundles.filter((bundle) => convertedPilotSlugList.includes(bundle.flow.slug));
   const expansionCandidates = expansionCreatorLabs.flatMap((creator) => creator.candidates);
   const previewGeneratedBundles = bundles.filter((bundle) => bundle.flow.id.startsWith('flow-preview-'));
-  const realSourceBundles = bundles.filter((bundle) => bundle.flow.source_status === 'real');
+  const realSourceBundles = bundles.filter(
+    (bundle) => bundle.flow.source_status === 'real' && !isCuratedSourceAppSeedBundle(bundle),
+  );
   const broadRealSourceBundles = realSourceBundles.filter((bundle) => bundle.flow.source_precision === 'broad');
   const hiddenBroadRealSourceBundles = broadRealSourceBundles.filter(
     (bundle) => getNaturalArtifactAudit(bundle.flow.slug)?.decision === 'replace_or_hide_source',
@@ -412,6 +415,7 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
     sourceBackedInventoryReviewedCount: inventorySummary.sourceBackedReviewedCount,
     manualSourceFitAuditedCount: inventorySummary.manualSourceFitCount,
     derivedRealSourceReviewedCount: inventorySummary.derivedRealSourceCount,
+    curatedSourceAppSeedInventoryCount: inventorySummary.curatedSourceAppSeedCount,
     sourceNeedsReviewInventoryCount: inventorySummary.sourceNeedsReviewCount,
     previewCandidateFlowCount: inventorySummary.generatedPreviewCandidateCount,
     legacyAccessibleFlowCount: inventorySummary.legacyAccessibleCount,

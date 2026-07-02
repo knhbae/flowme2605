@@ -8,6 +8,7 @@ import {
   scoreSourceFit,
   sourceFitAudits,
 } from './source-fit';
+import { isCuratedSourceAppSeedBundle } from './curated-source-app-seed-meta';
 import { seedBundles } from './seed-flows';
 
 test('source-fit scoring clamps each dimension to its maximum and returns a 0-100 score', () => {
@@ -107,7 +108,7 @@ test('computer skills final QA promotes the route to representative source fit',
 test('source-fit audits cover every real-source route after manual promotion pass', () => {
   const auditedSlugs = new Set(sourceFitAudits.map((audit) => audit.slug));
   const realSourceSlugs = seedBundles
-    .filter((bundle) => bundle.flow.source_status === 'real')
+    .filter((bundle) => bundle.flow.source_status === 'real' && !isCuratedSourceAppSeedBundle(bundle))
     .map((bundle) => bundle.flow.slug);
 
   assert.equal(realSourceSlugs.length, 40);

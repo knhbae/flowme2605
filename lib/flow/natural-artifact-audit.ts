@@ -1,5 +1,6 @@
 import type { FlowBundle } from './types';
 import type { NaturalArtifactSimulation } from './source-fit';
+import { isCuratedSourceAppSeedBundle } from './curated-source-app-seed-meta';
 
 export type NaturalArtifactAuditDecision =
   | 'promote_to_manual_source_fit'
@@ -1649,7 +1650,9 @@ export function getNaturalArtifactAudit(slug: string): RealSourceNaturalArtifact
 export function summarizeNaturalArtifactAuditCoverage(
   bundles: FlowBundle[],
 ): NaturalArtifactAuditCoverageSummary {
-  const realSourceBundles = bundles.filter((bundle) => bundle.flow.source_status === 'real');
+  const realSourceBundles = bundles.filter(
+    (bundle) => bundle.flow.source_status === 'real' && !isCuratedSourceAppSeedBundle(bundle),
+  );
   const auditedSlugs = new Set(realSourceNaturalArtifactAudits.map((audit) => audit.slug));
   const auditedCategoryCounts: Record<string, number> = {};
   const decisionCounts: DecisionCounts = { ...emptyDecisionCounts };

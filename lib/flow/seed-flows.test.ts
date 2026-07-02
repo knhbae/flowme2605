@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import curatedSourceAppSeed from '../../docs/content-audit/2026-07-01-curated-source-app-seed-v1.json';
 import {
   getCreatorChannelSummaries,
   previewCreatorChannels,
@@ -8,6 +9,10 @@ import {
 import { inferPrimaryDestination } from './destination';
 import { seedBundles } from './seed-flows';
 import { virtualUsers } from './users';
+
+const curatedSourceAppSeedFlowSlugs = curatedSourceAppSeed.contentBundles.flatMap((bundle) =>
+  bundle.flows.map((flow) => flow.slug),
+);
 
 test('seed pack contains public Korean Flow bundles across practical categories', () => {
   assert.ok(seedBundles.length >= 231);
@@ -54,6 +59,26 @@ test('seed pack contains public Korean Flow bundles across practical categories'
   assert.ok(seedBundles.some((bundle) => bundle.flow.title === '초기 이유식 메뉴·레시피 Flow'));
   assert.ok(seedBundles.some((bundle) => bundle.flow.title === '해외여행 출국 준비 Flow'));
   assert.ok(seedBundles.some((bundle) => bundle.flow.title === '연말정산 서류 준비 Flow'));
+});
+
+test('curated source app seed bundles are part of the canonical seed pack', () => {
+  assert.equal(curatedSourceAppSeed.contentBundles.length, 9);
+  assert.equal(curatedSourceAppSeedFlowSlugs.length, curatedSourceAppSeed.totals.flows);
+
+  const seedBySlug = new Map(seedBundles.map((bundle) => [bundle.flow.slug, bundle]));
+  assert.deepEqual(
+    curatedSourceAppSeedFlowSlugs.filter((slug) => !seedBySlug.has(slug)),
+    [],
+  );
+
+  for (const contentBundle of curatedSourceAppSeed.contentBundles) {
+    const recommended = seedBySlug.get(contentBundle.recommendedFlowId);
+    assert.ok(recommended, contentBundle.bundleId);
+    assert.equal(recommended.flow.tags?.includes('curated-source-app-seed'), true, contentBundle.bundleId);
+    assert.equal(recommended.flow.tags?.includes(`flow-map:${contentBundle.bundleId}`), true, contentBundle.bundleId);
+    assert.equal(recommended.itemDetails?.length, recommended.items.length, contentBundle.bundleId);
+    assert.ok(recommended.items.length >= 1, contentBundle.bundleId);
+  }
 });
 
 test('baby food seed keeps meal slots, recipes, caution, and reaction-log affordance data', () => {
@@ -1116,7 +1141,9 @@ test('real source-backed channel batch covers every preview channel', () => {
 });
 
 test('real source-backed flows include precision and tailored executable details', () => {
-  const real = seedBundles.filter((bundle) => bundle.flow.source_status === 'real');
+  const real = seedBundles.filter(
+    (bundle) => bundle.flow.source_status === 'real' && !bundle.flow.tags?.includes('curated-source-app-seed'),
+  );
   assert.ok(real.length >= 20);
   const customRealSourceItemCounts = new Map<string, number>([
     ['real-fitvely-diet-record-routine', 3],

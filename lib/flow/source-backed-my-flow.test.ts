@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import curatedSourceAppSeed from '../../docs/content-audit/2026-07-01-curated-source-app-seed-v1.json';
 import { buildIcsCalendar, buildWorkbookSheets } from './export';
+import { seedBundles } from './seed-flows';
 import {
   assessProgressStepNeed,
   assessSourceBackedFlowMapUpdate,
@@ -71,6 +73,9 @@ const curatedFlowSlugs = [
   'curated-allblanc-no-jump-cardio',
   'curated-allblanc-lower-body',
 ];
+
+const curatedSourceAppSeedBundleIds = curatedSourceAppSeed.contentBundles.map((bundle) => bundle.bundleId);
+const curatedSourceAppSeedRecommendedFlowSlugs = curatedSourceAppSeed.contentBundles.map((bundle) => bundle.recommendedFlowId);
 
 test('source-backed quality decisions separate homepage candidates from direct-route experiments', () => {
   assert.deepEqual(
@@ -172,6 +177,23 @@ test('source-backed My Flow bundles can be merged into a product bundle list wit
   assert.equal(merged.filter((bundle) => bundle.flow.slug === existing.flow.slug).length, 1);
   assert.ok(merged.some((bundle) => bundle.flow.slug === 'local-draft'));
   assert.ok(merged.some((bundle) => bundle.flow.slug === 'source-backed-middle-school-math-1'));
+});
+
+test('curated source app seed uses canonical seed bundles without source-backed merge duplicates', () => {
+  const seedSlugs = new Set(seedBundles.map((bundle) => bundle.flow.slug));
+  assert.deepEqual(
+    curatedSourceAppSeedRecommendedFlowSlugs.filter((slug) => !seedSlugs.has(slug)),
+    [],
+  );
+
+  const merged = mergeSourceBackedMyFlowBundles(seedBundles);
+  for (const slug of curatedSourceAppSeedRecommendedFlowSlugs) {
+    assert.equal(
+      merged.filter((bundle) => bundle.flow.slug === slug).length,
+      1,
+      slug,
+    );
+  }
 });
 
 test('source-backed Flow Map metadata keeps parent map separate from the executable Flow rows', () => {
@@ -317,6 +339,7 @@ test('source-backed Flow Map publish package separates creator, public, and my f
       'baby-health-schedule',
       ...addedMapIds,
       ...curatedMapIds,
+      ...curatedSourceAppSeedBundleIds,
     ],
   );
 });
@@ -407,6 +430,99 @@ test('curated source expansion maps produce app-ready direct-route packages with
     assert.ok(rows.length >= 1, slug);
     assert.ok(rows.every((row) => row.sourceUrl?.startsWith('https://')), slug);
   }
+});
+
+test('curated source app seed exposes nine source-backed maps without homepage promotion', () => {
+  assert.equal(curatedSourceAppSeed.contentBundles.length, 9);
+  assert.deepEqual(curatedSourceAppSeed.totals, {
+    bundles: 9,
+    flows: 19,
+    steps: 91,
+    items: 96,
+  });
+
+  const maps = sourceBackedMyFlowMaps.filter((map) => curatedSourceAppSeedBundleIds.includes(map.id));
+  assert.deepEqual(maps.map((map) => map.id), curatedSourceAppSeedBundleIds);
+
+  for (const seedBundle of curatedSourceAppSeed.contentBundles) {
+    const decision = getSourceBackedFlowMapQualityDecision(seedBundle.bundleId);
+    const publishPackage = buildSourceBackedFlowMapPublishPackage(seedBundle.bundleId);
+
+    assert.equal(decision.homepageEligible, false, seedBundle.bundleId);
+    assert.equal(decision.directRouteEnabled, true, seedBundle.bundleId);
+    assert.ok(publishPackage, seedBundle.bundleId);
+    assert.equal(publishPackage.public.categoryLabel, seedBundle.categoryLabel);
+    assert.equal(publishPackage.public.userFacingStatus, seedBundle.userFacingStatus);
+    assert.equal(publishPackage.public.recommendedFlowSlug, seedBundle.recommendedFlowId);
+    assert.deepEqual(publishPackage.public.counts, seedBundle.counts);
+    assert.equal(publishPackage.public.childFlows.length, seedBundle.flows.length, seedBundle.bundleId);
+    assert.ok(publishPackage.public.childFlows.some((flow) => flow.slug === seedBundle.recommendedFlowId));
+    assert.ok(publishPackage.public.sourceUrl.startsWith('https://'), seedBundle.bundleId);
+    assert.doesNotMatch(
+      [
+        publishPackage.public.title,
+        publishPackage.public.summary,
+        publishPackage.public.primaryCta.label,
+        publishPackage.public.categoryLabel,
+        publishPackage.public.userFacingStatus,
+        ...publishPackage.public.artifacts,
+      ].join(' '),
+      /source_import_required|partial_draft|ready_draft|review|audit|기획|검수/i,
+      seedBundle.bundleId,
+    );
+  }
+});
+
+test('curated source app seed converts each recommended Flow into executable source-backed rows', () => {
+  for (const seedBundle of curatedSourceAppSeed.contentBundles) {
+    const seedFlow = seedBundle.flows.find((flow) => flow.flowId === seedBundle.recommendedFlowId);
+    assert.ok(seedFlow, seedBundle.bundleId);
+
+    const bundle = bundleBySlug(seedBundle.recommendedFlowId);
+    const rows = buildSourceBackedMyFlowRows(bundle);
+
+    assert.equal(bundle.flow.tags?.includes('curated-source-app-seed'), true, seedBundle.bundleId);
+    assert.ok(bundle.flow.tags?.includes(`flow-map:${seedBundle.bundleId}`), seedBundle.bundleId);
+    assert.equal(bundle.items.length, seedFlow.steps.length, seedBundle.bundleId);
+    assert.equal(rows.length, seedFlow.steps.length, seedBundle.bundleId);
+    assert.ok(rows.every((row) => row.sourceUrl?.startsWith('https://')), seedBundle.bundleId);
+    assert.ok(rows.every((row) => row.textFallback.items && row.textFallback.items.length >= 1), seedBundle.bundleId);
+    assert.ok(rows.every((row) => row.textFallback.memoHint === undefined), seedBundle.bundleId);
+  }
+});
+
+test('curated source app seed preserves Step memo, detail, sourceUrl, and sourceTrace in exports', () => {
+  const moving = bundleBySlug('moving-dday');
+  const rows = buildSourceBackedMyFlowRows(moving);
+
+  assert.equal(moving.flow.anchor_type, 'end_date');
+  assert.equal(moving.flow.primary_destination, 'hybrid');
+  assert.equal(rows.length, 5);
+
+  const first = rows[0];
+  assert.equal(first.mapId, 'moving-map');
+  assert.equal(first.title, '이사/청소와 위탁 예약하기');
+  assert.equal(first.calendar.mode, 'anchor_offset');
+  assert.equal(first.calendar.anchorType, 'end_date');
+  assert.equal(first.calendar.dayOffset, -30);
+  assert.deepEqual(first.textFallback.items, ['이사/청소와 위탁 예약하기', '집 점검과 정리 시작하기']);
+  assert.match(first.textFallback.description, /포장이사\/반포장이사/);
+  assert.match(first.textFallback.description, /AJD D-30 table rows/);
+  assert.ok(first.textFallback.url?.startsWith('https://'));
+
+  const ics = buildIcsCalendar(moving, {}, '2026-07-22');
+  const unfoldedIcs = ics.replace(/\r\n /g, '');
+  assert.match(unfoldedIcs, /SUMMARY:이사 D-day 준비 - 이사\/청소와 위탁 예약하기/);
+  assert.match(unfoldedIcs, /DTSTART;VALUE=DATE:20260622/);
+  assert.match(unfoldedIcs, /AJD D-30 table rows/);
+
+  const sheets = buildWorkbookSheets(moving, {}, '2026-07-22');
+  const detail = sheets.find((sheet) => sheet.name === '상세');
+  assert.ok(detail);
+  assert.ok(
+    detail.rows.some((row) => row.map(String).join('\n').includes('AJD D-30 table rows')),
+    'sourceTrace should be present in workbook detail rows',
+  );
 });
 
 test('curated source expansion preserves source-specific row counts and sensitive boundaries', () => {
