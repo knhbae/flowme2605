@@ -1,5 +1,13 @@
 # 2026-07-02 Next Session Goal - Service Readiness
 
+## Current merged baseline
+
+- Current branch after handoff: `main`.
+- Merged PR: https://github.com/knhbae/flowme2605/pull/117
+- Merge commit: `ec84009` (`Merge My Flow v2.1 handoff`).
+- Local validation before merge: `npm run docs:check`, `npm test`, and `npm run build` passed.
+- This is still automated/browser QA and planning handoff evidence only. It is not real user validation.
+
 아래 블록을 새 세션에서 그대로 복사해 시작한다.
 
 ```text
