@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-02 - URL-to-Flow uses lookup before AI generation
+
+**Decision:** The URL-to-Flow entry should check for an existing canonical URL conversion before using AI or creating a new Flow draft. If a Flow already exists for the same URL, FLOW should show that result first and let the user reuse it, change options, edit/fork it into a personal version, or continue to My Flow/export. AI extraction or new conversion work is the fallback when no suitable existing Flow exists or when the user explicitly chooses to revise.
+
+**Reason:** AI generation cost should stay low, and repeated URLs should compound into reusable product value rather than re-running extraction every time. Lookup-first also creates a realistic growth loop: users create Flow links from source content, other users reuse or fork them, and the shared Flow link can eventually flow back to the original creator or content owner.
+
+**Applies to:** URL input, URL canonicalization, duplicate URL handling, source-to-Flow conversion, Flow draft creation, edit/fork UX, My Flow save handoff, export destination previews, future creator/source adoption, and cache/version data models.
+
+**Reopen when:** canonical URL matching proves unreliable, stale converted Flows cause user harm or confusion, AI extraction becomes cheap enough that lookup no longer matters, or observed users strongly prefer fresh regeneration over reusing prior conversions.
+
+**Related docs:** [Flow usage entry backlog](./content-audit/2026-07-02-flow-usage-entry-backlog-ko.md), [Flow usage entry board](./content-audit/2026-07-02-flow-usage-entry-backlog-ko.html), [Source-to-Flow conversion gate](./flow-rules/source-to-flow-conversion-gate.md)
+
 ### 2026-07-02 - P0 tooling is applied through workflow routing rules
 
 **Decision:** Apply high-priority tooling by routing work through the existing P0 tool lanes in [TOOLING.md](./TOOLING.md), rather than installing more tools by default. The P0 lanes are FLOW repo skills, Playwright/browser QA, GitHub workflow tools, Figma/UX design tools, and Build Web Apps/Vercel/shadcn for real frontend implementation and preview work.
