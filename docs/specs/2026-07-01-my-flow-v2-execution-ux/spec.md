@@ -67,6 +67,7 @@ P1:
 - Rewrite post-save copy in user language.
 - Keep Flow full structure behind `전체 Flow 보기`.
 - Keep Step detail read-first; edit/export controls should remain secondary.
+- On mobile, Step detail defaults to the Step title, date, completion state, and checklist. If there is no checklist, it must still show one concise source-backed `바로 할 일` hint before memo/export support rows. Memo, schedule, source, copy/export, and edit actions are collapsed support information.
 - Update E2E assertions to match the lighter post-save model.
 
 Deferred:
@@ -82,6 +83,8 @@ Deferred:
 - The post-save screen does not render a second inventory list.
 - The normal `/my` Today workspace remains visible after saving.
 - The primary post-save action opens the normal Today Step detail.
-- The Flow view is the only place where full saved structure is exposed by default.
+- The Flow view is the place where saved structure is managed, but long Step lists are previewed first and expanded only on request.
+- Mobile Step detail does not expose internal `Step`/`Item` wording, generic `수정`, `할 일 상태`, or export controls in the primary action row.
+- Today labels future-only queues as `다음 할 일` / scheduled work rather than presenting future Steps as due today.
 - `/calendar` remains the only global calendar tab.
 - Mobile screen density stays near calendar/todo app complexity.
