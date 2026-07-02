@@ -20,16 +20,19 @@ This harness adapts the ideas from `junu0723/claude-harness` for this project wi
 
 ## FLOW Harness Shape
 
-FlowMe uses six durable memory layers:
+FlowMe uses seven durable memory layers:
 
 1. `AGENTS.md` and `agent.md` define how agents enter the repo and which product constraints are non-negotiable.
 2. `docs/STATUS.md`, `docs/ROADMAP.md`, and `docs/IDEAS.md` keep current health, committed direction, and deferred context separate.
 3. `docs/PRODUCT_PRINCIPLES.md` keeps durable product vision, UX direction, and feature filters that should survive across chats.
 4. `docs/SERVICE_STRUCTURE.md` keeps the current app screen feature tree, route/component ownership, and architecture map versioned with implementation.
-5. `docs/specs/` holds committed multi-step specs before implementation, with stage fit, natural artifact, source/risk, and verification gates.
-6. `docs/pr-history/` records what actually changed, how it was verified, and what remains after PR-sized work.
+5. `docs/TOOLING.md` keeps P0 skill/plugin/tool routing, adoption triggers, and verification lanes explicit.
+6. `docs/specs/` holds committed multi-step specs before implementation, with stage fit, natural artifact, source/risk, and verification gates.
+7. `docs/pr-history/` records what actually changed, how it was verified, and what remains after PR-sized work.
 
 The goal is not more paperwork. The goal is to keep Stage 0 focused on measurable execution behavior: open, anchor input, copy/export, check, and feedback.
+
+For backlog or planning material that humans are expected to act on, provide an HTML workboard view as the primary review surface. Markdown specs, task files, status notes, and audit documents can remain the source/evidence layer, but the actionable view should show priority, status, next action, done-when, verification, and source links in one scannable page.
 
 ## Compatibility Position
 
@@ -54,6 +57,7 @@ References: [OpenAI Codex AGENTS.md](https://developers.openai.com/codex/guides/
 | [../ROADMAP.md](../ROADMAP.md) | Upcoming versions and backlog index |
 | [../PRODUCT_PRINCIPLES.md](../PRODUCT_PRINCIPLES.md) | Durable product vision, UX direction, and feature filters |
 | [../SERVICE_STRUCTURE.md](../SERVICE_STRUCTURE.md) | Current app screen feature tree, route/component ownership, and architecture map |
+| [../TOOLING.md](../TOOLING.md) | P0 tool, skill, plugin routing policy and verification lanes |
 | [../IDEAS.md](../IDEAS.md) | Deferred ideas and conversation context worth preserving |
 | [../specs/README.md](../specs/README.md) | Durable feature, content, security, and harness specs |
 | [../REFERENCE.md](../REFERENCE.md) | External UX/UI and productivity-method references |

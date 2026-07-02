@@ -1,8 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import curatedSourceAppSeed from '../../docs/content-audit/2026-07-01-curated-source-app-seed-v1.json';
 import {
+  cloneSeedBundles,
   clearFlowLocalProgress,
   getActiveFlowProgress,
+  getBundles,
   getMyFlowStepItemChecks,
   getSavedFlowMapIndexByFlowSlug,
   mergeSeedBundles,
@@ -11,6 +14,10 @@ import {
   saveMyFlowStepItemChecks,
 } from './storage';
 import { FlowBundle } from './types';
+
+const curatedSourceAppSeedFlowSlugs = curatedSourceAppSeed.contentBundles.flatMap((bundle) =>
+  bundle.flows.map((flow) => flow.slug),
+);
 
 function bundle(id: string, slug: string, title: string): FlowBundle {
   return {
@@ -49,6 +56,68 @@ test('storage merge keeps local drafts while adding newly shipped seed flows', (
   );
   assert.equal(merged[0].flow.title, 'Updated seed from deployment');
   assert.equal(merged[2].flow.title, 'My local draft');
+});
+
+test('getBundles migrates curated source app seed flows into existing local storage', () => {
+  const store = new Map<string, string>();
+  const localStorage = {
+    get length() {
+      return store.size;
+    },
+    key: (index: number) => Array.from(store.keys())[index] ?? null,
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => store.set(key, value),
+    removeItem: (key: string) => store.delete(key),
+  };
+  const previousWindow = globalThis.window;
+  const previousLocalStorage = globalThis.localStorage;
+  Object.defineProperty(globalThis, 'window', {
+    configurable: true,
+    value: { localStorage },
+  });
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    value: localStorage,
+  });
+
+  try {
+    localStorage.setItem(
+      'flow_builder_mvp_bundles_v11',
+      JSON.stringify([bundle('flow-local-draft', 'my-draft', 'My local draft')]),
+    );
+
+    const migrated = getBundles();
+    const migratedSlugs = new Set(migrated.map((entry) => entry.flow.slug));
+    assert.deepEqual(
+      curatedSourceAppSeedFlowSlugs.filter((slug) => !migratedSlugs.has(slug)),
+      [],
+    );
+    assert.ok(migratedSlugs.has('my-draft'));
+
+    const persisted = JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]') as FlowBundle[];
+    const persistedSlugs = new Set(persisted.map((entry) => entry.flow.slug));
+    assert.deepEqual(
+      curatedSourceAppSeedFlowSlugs.filter((slug) => !persistedSlugs.has(slug)),
+      [],
+    );
+  } finally {
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: previousWindow,
+    });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: previousLocalStorage,
+    });
+  }
+});
+
+test('cloneSeedBundles includes curated source app seed flows without source-backed merge', () => {
+  const clonedSlugs = new Set(cloneSeedBundles().map((entry) => entry.flow.slug));
+  assert.deepEqual(
+    curatedSourceAppSeedFlowSlugs.filter((slug) => !clonedSlugs.has(slug)),
+    [],
+  );
 });
 
 test('saved flow record normalization keeps explicit save metadata', () => {

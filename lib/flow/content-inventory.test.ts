@@ -4,6 +4,7 @@ import {
   reviewContentInventory,
   summarizeContentInventory,
 } from './content-inventory';
+import { isCuratedSourceAppSeedBundle } from './curated-source-app-seed-meta';
 import { seedBundles } from './seed-flows';
 
 function bundleBySlug(slug: string) {
@@ -42,7 +43,7 @@ test('inventory review keeps exact health videos in source review after manual a
 });
 
 test('inventory review labels generated channel flows as preview candidates', () => {
-  const preview = seedBundles.find((entry) => entry.flow.source_status === 'preview');
+  const preview = seedBundles.find((entry) => entry.flow.id.startsWith('flow-preview-'));
   assert.ok(preview);
 
   const review = reviewContentInventory(preview);
@@ -51,6 +52,18 @@ test('inventory review labels generated channel flows as preview candidates', ()
   assert.equal(review.decision, 'preview_candidate');
   assert.equal(review.publicHandling, 'preview_candidate');
   assert.equal(review.score, 0);
+});
+
+test('inventory review separates curated source app seed from legacy source-fit coverage', () => {
+  const curated = seedBundles.find(isCuratedSourceAppSeedBundle);
+  assert.ok(curated);
+
+  const review = reviewContentInventory(curated);
+
+  assert.equal(review.level, 'curated_source_app_seed');
+  assert.equal(review.decision, 'curated_source_app_seed');
+  assert.equal(review.publicHandling, 'curated_seed');
+  assert.ok(review.score > 0);
 });
 
 test('inventory review promotes remaining needs-review routes to manual source-fit', () => {
@@ -75,6 +88,7 @@ test('inventory summary covers all current seed bundles', () => {
   );
   assert.equal(summary.manualSourceFitCount, 90);
   assert.equal(summary.derivedRealSourceCount, 0);
+  assert.equal(summary.curatedSourceAppSeedCount, 19);
   // 2026-06-01 공식출처 배치(24개) + 크리에이터·블로그 배치(20개) = 44개가 needs_review로 추가됨.
   assert.equal(summary.sourceNeedsReviewCount, 44);
   assert.equal(summary.legacyAccessibleCount, 0);

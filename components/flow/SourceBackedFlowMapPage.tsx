@@ -46,6 +46,17 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
         <p className="text-sm font-semibold text-blue-700">큰 흐름</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{publicSurface.title}</h1>
         <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">{publicSurface.summary}</p>
+        {publicSurface.userFacingStatus || publicSurface.categoryLabel || publicSurface.counts ? (
+          <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
+            {publicSurface.categoryLabel ? <span className="rounded-md bg-slate-100 px-2.5 py-1 text-slate-700">{publicSurface.categoryLabel}</span> : null}
+            {publicSurface.userFacingStatus ? <span className="rounded-md bg-blue-50 px-2.5 py-1 text-blue-700">{publicSurface.userFacingStatus}</span> : null}
+            {publicSurface.counts ? (
+              <span className="rounded-md bg-slate-100 px-2.5 py-1 text-slate-700">
+                {publicSurface.counts.flows}개 흐름 · {publicSurface.counts.steps}단계 · {publicSurface.counts.items}개 체크
+              </span>
+            ) : null}
+          </div>
+        ) : null}
         <div className="mt-5 flex flex-wrap gap-2">
           <SourceBackedFlowMapSaveButton
             mapId={map.id}
@@ -56,7 +67,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
             setupInput={publicSurface.setupInput}
           />
           <a className="inline-flex min-h-11 w-full items-center justify-center rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700 sm:w-auto" href={map.sourceUrl} target="_blank" rel="noreferrer">
-            원문 열기
+            원문 보기
           </a>
         </div>
       </section>
@@ -84,31 +95,53 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <h3 className="text-lg font-semibold text-slate-950">{flow.title}</h3>
-                  <p className="mt-1 text-xs font-semibold text-slate-500">Step {flow.steps.length}개</p>
+                  <p className="mt-1 text-xs font-semibold text-slate-500">{flow.steps.length}단계</p>
                 </div>
-                <span className="rounded-md bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">
-                  {destinationLabel[flow.destination] ?? flow.destination}
-                </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-md bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">
+                    {destinationLabel[flow.destination] ?? flow.destination}
+                  </span>
+                  <Link className="rounded-md border border-blue-100 bg-white px-2.5 py-1 text-xs font-semibold text-blue-700 hover:border-blue-300" href={`/f/${flow.slug}`}>
+                    바로 시작
+                  </Link>
+                </div>
               </div>
               <div className="mt-3 grid gap-2">
                 {flow.steps.map((step) => (
                   <div key={step.id} className="rounded-md border border-slate-100 bg-slate-50 px-3 py-3">
-                    <p className="text-sm font-semibold text-slate-950">{step.title}</p>
+                    {step.stepTitle ? <p className="text-xs font-semibold text-slate-500">{step.stepTitle}</p> : null}
+                    <p className="mt-1 text-sm font-semibold text-slate-950">{step.title}</p>
                     {step.detailItems.length > 0 ? (
                       <details open data-testid="flow-map-public-step-items" className="mt-2 rounded-md border border-slate-200 bg-white px-3 py-2.5">
-                        <summary className="cursor-pointer text-xs font-semibold text-slate-600">세부 메모 항목 {step.detailItems.length}개</summary>
+                        <summary className="cursor-pointer text-xs font-semibold text-slate-600">체크 {step.detailItems.length}개</summary>
                         <ul className="mt-2 grid gap-1.5 text-[13px] font-medium leading-5 text-slate-700">
                           {step.detailItems.map((item) => (
                             <li key={item} className="flex gap-1.5">
-                              <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-slate-400" aria-hidden="true" />
+                              <span className="mt-0.5 shrink-0 text-slate-400" aria-hidden="true">□</span>
                               <span>{item}</span>
                             </li>
                           ))}
                         </ul>
                       </details>
                     ) : (
-                      <p className="mt-1 text-xs font-semibold text-slate-500">하위 항목 {step.detailItemCount}개</p>
+                      <p className="mt-1 text-xs font-semibold text-slate-500">하위 체크 {step.detailItemCount}개</p>
                     )}
+                    {step.memo || step.sourceTrace || step.sourceUrl ? (
+                      <details className="mt-2 rounded-md border border-slate-200 bg-white px-3 py-2.5">
+                        <summary className="cursor-pointer text-xs font-semibold text-slate-600">메모 · 원문</summary>
+                        {step.memo ? <p className="mt-2 whitespace-pre-wrap break-words text-[13px] leading-5 text-slate-700">{step.memo}</p> : null}
+                        {step.sourceTrace ? (
+                          <p className="mt-2 whitespace-pre-wrap break-words text-[12px] font-medium leading-5 text-slate-500">
+                            원문 근거: {step.sourceTrace}
+                          </p>
+                        ) : null}
+                        {step.sourceUrl ? (
+                          <a className="mt-2 inline-flex min-h-8 items-center rounded-md border border-blue-100 bg-white px-2.5 py-1 text-xs font-semibold text-blue-700 hover:border-blue-300" href={step.sourceUrl} target="_blank" rel="noreferrer">
+                            이 단계 원문 보기
+                          </a>
+                        ) : null}
+                      </details>
+                    ) : null}
                   </div>
                 ))}
               </div>

@@ -35,6 +35,42 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-02 - URL-to-Flow uses lookup before AI generation
+
+**Decision:** The URL-to-Flow entry should check for an existing canonical URL conversion before using AI or creating a new Flow draft. If a Flow already exists for the same URL, FLOW should show that result first and let the user reuse it, change options, edit/fork it into a personal version, or continue to My Flow/export. AI extraction or new conversion work is the fallback when no suitable existing Flow exists or when the user explicitly chooses to revise.
+
+**Reason:** AI generation cost should stay low, and repeated URLs should compound into reusable product value rather than re-running extraction every time. Lookup-first also creates a realistic growth loop: users create Flow links from source content, other users reuse or fork them, and the shared Flow link can eventually flow back to the original creator or content owner.
+
+**Applies to:** URL input, URL canonicalization, duplicate URL handling, source-to-Flow conversion, Flow draft creation, edit/fork UX, My Flow save handoff, export destination previews, future creator/source adoption, and cache/version data models.
+
+**Reopen when:** canonical URL matching proves unreliable, stale converted Flows cause user harm or confusion, AI extraction becomes cheap enough that lookup no longer matters, or observed users strongly prefer fresh regeneration over reusing prior conversions.
+
+**Related docs:** [Flow usage entry backlog](./content-audit/2026-07-02-flow-usage-entry-backlog-ko.md), [Flow usage entry board](./content-audit/2026-07-02-flow-usage-entry-backlog-ko.html), [Source-to-Flow conversion gate](./flow-rules/source-to-flow-conversion-gate.md)
+
+### 2026-07-02 - P0 tooling is applied through workflow routing rules
+
+**Decision:** Apply high-priority tooling by routing work through the existing P0 tool lanes in [TOOLING.md](./TOOLING.md), rather than installing more tools by default. The P0 lanes are FLOW repo skills, Playwright/browser QA, GitHub workflow tools, Figma/UX design tools, and Build Web Apps/Vercel/shadcn for real frontend implementation and preview work.
+
+**Reason:** The current environment already has the highest-priority planning, design, frontend, browser QA, and GitHub capabilities available. The bigger risk is inconsistent use: design work without design QA, frontend changes without browser verification, source conversion without FLOW skill guidance, or PR work without current GitHub evidence. A repo-level routing policy makes the available tools operational across future sessions.
+
+**Applies to:** `AGENTS.md`, [harness README](./harness/README.md), [specs README](./specs/README.md), source-to-FLOW conversion, frontend route work, HTML workboards, PR conflict work, design-system handoff, and future tool/plugin adoption.
+
+**Reopen when:** a P0 tool is removed from the working environment, an external planner becomes the canonical workboard, or a P1 candidate has enough concrete project demand to become a default lane.
+
+**Related docs:** [TOOLING.md](./TOOLING.md), [tooling/plugin review](./content-audit/2026-07-02-tooling-plugin-review-ko.html), [backlog workboard](./content-audit/2026-07-02-backlog-workboard-ko.html)
+
+### 2026-07-02 - Backlog users need an HTML workboard view
+
+**Decision:** Backlog material that humans are expected to review or use for planning must have a readable HTML workboard view. Markdown specs, task files, `STATUS.md`, `ROADMAP.md`, and content-audit notes may remain as source and evidence, but the operational user-facing view should be an HTML page that shows current work, next work, blocked/deferred work, recent done items, priority, status, done-when, verification, and source links in one scannable surface.
+
+**Reason:** The current backlog knowledge is rich but spread across Markdown specs, status notes, HTML audits, and task files. For actual planning, users get confused when they must compare multiple text documents. FLOW backlog management should follow the same product principle as FLOW itself: reduce cognitive load by giving people a concrete, visual working surface first and deeper evidence only through links.
+
+**Applies to:** backlog dashboards, service-readiness reviews, content-audit planning pages, future `BACKLOG.md` or workboard data, `docs/harness/README.md`, and any session handoff intended for human planning.
+
+**Reopen when:** a different project-management system becomes the canonical human workboard and the repo only needs machine-readable exports or archive evidence.
+
+**Related docs:** [harness README](./harness/README.md), [SERVICE_STRUCTURE.md](./SERVICE_STRUCTURE.md), [Flow usage entry backlog](./content-audit/2026-07-02-flow-usage-entry-backlog-ko.md)
+
 ### 2026-06-28 - Home, Flow finding, Calendar, and My Flow use a reduced service IA for user review
 
 **Decision:** For the next user review, user-facing service surfaces use a reduced IA with four primary tabs: `홈`, `Flow 찾기`, `캘린더`, and `내 Flow`. Home is a promise and representative starting point, `/flows` is the representative catalog, `/calendar` is the schedule-first execution surface for saved dated Steps, and `/my` is the saved Flow management workspace. The homepage exposes one primary Flow Map, up to two secondary entries, and no internal review language. `/flows` exposes two Flow Map candidates plus the accepted single Flow baseline. Checklist and routine work remains inside Flow cards, Step detail, or calendar filters instead of becoming separate global tabs.

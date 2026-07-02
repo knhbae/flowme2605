@@ -29,6 +29,7 @@ import {
   buildSourceBackedFlowMapPersistenceRecord,
   buildSourceBackedFlowMapSavedSnapshot,
   buildSourceBackedFlowMapPublishPackage,
+  getCuratedSourceAppSeedFlowMaps,
   getSourceBackedHomepageFlowMaps,
   getSourceBackedMyFlowMapForBundle,
   getSourceBackedFlowMapPersistenceStorageKey,
@@ -122,7 +123,7 @@ const categoryPresets = [
 
 const riskLabels: Record<RiskLevel, string> = {
   low: '낮은 위험',
-  medium: '주의 필요',
+  medium: '확인하며 진행',
   medical_sensitive: '의료 주의',
   financial_sensitive: '재정 주의',
 };
@@ -259,9 +260,9 @@ function FlowMigrationStatus({ bundle }: { bundle: FlowBundle }) {
 
   return (
     <section className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-950">
-      <p className="font-semibold">새 실행모델로 전환 중</p>
+      <p className="font-semibold">저장 후 일정과 체크로 이어집니다</p>
       <p className="mt-1">
-        전체 항목은 그대로 이용할 수 있어요. 다만 일부 Flow는 후보 비교표, 루틴 회차, 월별 달력 같은 새 UX 기준으로 순차 보강 중입니다.
+        전체 항목은 그대로 볼 수 있고, 날짜가 있거나 반복되는 일은 캘린더와 체크 목록에서 이어서 확인할 수 있어요.
       </p>
     </section>
   );
@@ -731,12 +732,13 @@ function DirectoryFlowCard({ bundle }: { bundle: FlowBundle }) {
   const signals = [
     { label: '산출물', value: getCatalogDestinationLabel(bundle) },
     { label: '입력', value: getAnchorLabel(bundle) },
-    { label: '항목', value: `${getFlowItemCount(bundle)}개` },
+    { label: '체크', value: `${getFlowItemCount(bundle)}개` },
     { label: '근거', value: getCatalogSourceSignal(bundle) },
   ];
 
   return (
     <Link
+      data-testid="single-flow-catalog-card"
       aria-label={bundle.flow.title}
       className="block h-full rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:border-blue-300 hover:shadow-md"
       href={`/f/${bundle.flow.slug}`}
@@ -744,10 +746,10 @@ function DirectoryFlowCard({ bundle }: { bundle: FlowBundle }) {
       <article className="flex h-full flex-col justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-1.5 text-xs font-semibold">
-            <span className="rounded-full bg-blue-50 px-2 py-0.5 text-blue-700">하나만 저장</span>
+            <span className="rounded-full bg-blue-50 px-2 py-0.5 text-blue-700">한 개만 저장</span>
             <span className="rounded-full bg-gray-100 px-2 py-0.5 text-gray-700">{getStructureLabel(bundle)}</span>
           </div>
-          <h2 className="mt-3 text-lg font-semibold leading-snug text-gray-950">{bundle.flow.title}</h2>
+          <h3 className="mt-3 text-lg font-semibold leading-snug text-gray-950">{bundle.flow.title}</h3>
           <p className="mt-2 line-clamp-2 text-sm leading-6 text-gray-600">{getFlowResultText(bundle)}</p>
           <div className="mt-3 grid grid-cols-2 gap-2">
             {signals.map((signal) => (
@@ -761,8 +763,8 @@ function DirectoryFlowCard({ bundle }: { bundle: FlowBundle }) {
             <div className="mt-3 rounded-md bg-slate-50 px-3 py-2">
               <p className="text-[11px] font-semibold text-slate-500">저장 후 보이는 항목</p>
               <ul className="mt-1 grid gap-1 text-xs font-semibold leading-5 text-slate-800">
-                {previewStepTitles.map((title) => (
-                  <li key={title} className="truncate">· {title}</li>
+                {previewStepTitles.map((title, index) => (
+                  <li key={`${bundle.flow.id}-${index}-${title}`} className="truncate">· {title}</li>
                 ))}
               </ul>
             </div>
@@ -774,7 +776,7 @@ function DirectoryFlowCard({ bundle }: { bundle: FlowBundle }) {
         </div>
         <div className="flex items-center justify-between border-t border-gray-100 pt-3 text-sm">
           <span className="font-semibold text-gray-600">{bundle.flow.category}</span>
-          <span className="font-semibold text-blue-700">Flow 열기</span>
+          <span className="font-semibold text-blue-700">바로 시작</span>
         </div>
       </article>
     </Link>
@@ -941,128 +943,141 @@ export function FlowList() {
       <section data-testid="flow-map-catalog-section" className="mb-8 rounded-xl border border-blue-100 bg-blue-50/40 p-4 md:p-5">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-blue-700">큰 흐름</p>
-            <h2 className="mt-1 text-2xl font-semibold text-gray-950">여러 항목을 한 번에 저장</h2>
+            <p className="text-sm font-semibold text-blue-700">저장할 콘텐츠</p>
+            <h2 className="mt-1 text-2xl font-semibold text-gray-950">내 상황에 맞는 Flow 고르기</h2>
+            <p className="mt-1 text-sm leading-6 text-blue-900/75">여러 단계 묶음과 한 개만 저장할 Flow를 같은 카드 방식으로 비교합니다.</p>
           </div>
-          <span className="text-sm font-semibold text-blue-700">{homeFlowMapBaselineLinks.length}개 흐름</span>
+          <span className="text-sm font-semibold text-blue-700">{flowMapCatalogLinks.length + filtered.length}개 콘텐츠</span>
         </div>
-        <div className="grid gap-3 md:grid-cols-2">
-          {homeFlowMapBaselineLinks.map((item) => (
-            <Link
+        {showCatalogFilters ? (
+          <div className="mb-4 rounded-lg border border-blue-100 bg-white p-4">
+            <div className="mb-4 flex flex-wrap gap-2">
+              {quickTags.map((item) => (
+                <Link
+                  key={item}
+                  className={`rounded-full border px-3 py-1.5 text-sm font-semibold ${tag === item ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`}
+                  href={`/flows?tag=${encodeURIComponent(item)}`}
+                >
+                  #{item}
+                </Link>
+              ))}
+            </div>
+            <details className="rounded-md border border-gray-200 bg-gray-50 px-3 py-2">
+              <summary className="cursor-pointer text-sm font-semibold text-gray-700">한 개만 저장할 Flow 필터</summary>
+              <div className="mt-4 grid gap-4 md:grid-cols-3">
+                <label className="space-y-2">
+                  <span className="text-sm font-semibold text-gray-700">태그</span>
+                  <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2" value={tag} onChange={(event) => setTag(event.target.value)}>
+                    {tags.map((item) => (
+                      <option key={item} value={item}>{item}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="space-y-2">
+                  <span className="text-sm font-semibold text-gray-700">카테고리</span>
+                  <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2" value={category} onChange={(event) => setCategory(event.target.value)}>
+                    {categories.map((item) => (
+                      <option key={item} value={item}>{item}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="space-y-2">
+                  <span className="text-sm font-semibold text-gray-700">진행 방식</span>
+                  <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2" value={structure} onChange={(event) => setStructure(event.target.value)}>
+                    {structures.map((item) => (
+                      <option key={item} value={item}>{item}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="space-y-2">
+                  <span className="text-sm font-semibold text-gray-700">정렬</span>
+                  <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2" value={sort} onChange={(event) => setSort(event.target.value as typeof sort)}>
+                    <option value="popular">인기순</option>
+                    <option value="recent">최신순</option>
+                  </select>
+                </label>
+              </div>
+            </details>
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-gray-500">
+              <span>{filtered.length}개 한 개짜리 Flow</span>
+              {tag !== '전체' ? <span className="rounded-full bg-blue-50 px-2 py-1 font-medium text-blue-700">#{tag}</span> : null}
+              {category !== '전체' ? <span className="rounded-full bg-gray-50 px-2 py-1 font-medium text-gray-700">{category}</span> : null}
+            </div>
+          </div>
+        ) : null}
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {flowMapCatalogLinks.map((item) => (
+            <article
               key={item.id}
               data-testid="flow-map-catalog-card"
-              className="block rounded-lg border border-blue-100 bg-white p-4 shadow-sm transition hover:border-blue-300 hover:shadow-md"
-              href={`/flow-maps/${item.id}`}
+              data-source-kind={item.sourceKind}
+              className="flex min-w-0 flex-col rounded-lg border border-blue-100 bg-white p-4 shadow-sm"
             >
               <div className="flex flex-wrap items-center gap-1.5 text-xs font-semibold">
-                <span className="rounded-full bg-blue-50 px-2 py-0.5 text-blue-700">큰 흐름</span>
-                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-gray-700">{item.note}</span>
+                <span className="rounded-full bg-blue-50 px-2 py-0.5 text-blue-700">{item.categoryLabel}</span>
+                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-gray-700">{item.userFacingStatus}</span>
               </div>
               <h3 className="mt-3 text-lg font-semibold leading-snug text-gray-950">{item.title}</h3>
-              <p className="mt-2 line-clamp-2 text-sm leading-6 text-gray-600">{item.summary}</p>
-              <div className="mt-3 grid grid-cols-3 gap-2">
-                <div className="rounded-md bg-gray-50 px-2.5 py-2">
-                  <p className="text-[11px] font-semibold text-gray-500">입력</p>
-                  <p className="mt-0.5 truncate text-xs font-semibold text-gray-900">{item.input}</p>
+              <p className="mt-2 line-clamp-3 text-sm leading-6 text-gray-600">{item.summary}</p>
+              <dl className="mt-3 grid grid-cols-3 divide-x divide-gray-100 rounded-md border border-gray-100 bg-gray-50 text-xs">
+                <div className="min-w-0 px-2.5 py-2">
+                  <dt className="font-semibold text-gray-500">흐름</dt>
+                  <dd className="mt-0.5 truncate font-semibold text-gray-900">{item.counts.flows}개</dd>
                 </div>
-                <div className="rounded-md bg-gray-50 px-2.5 py-2">
-                  <p className="text-[11px] font-semibold text-gray-500">구성</p>
-                  <p className="mt-0.5 truncate text-xs font-semibold text-gray-900">{item.flowCount}개 Flow</p>
+                <div className="min-w-0 px-2.5 py-2">
+                  <dt className="font-semibold text-gray-500">단계</dt>
+                  <dd className="mt-0.5 truncate font-semibold text-gray-900">{item.counts.steps}단계</dd>
                 </div>
-                <div className="rounded-md bg-gray-50 px-2.5 py-2">
-                  <p className="text-[11px] font-semibold text-gray-500">저장</p>
-                  <p className="mt-0.5 truncate text-xs font-semibold text-gray-900">{item.artifact}</p>
+                <div className="min-w-0 px-2.5 py-2">
+                  <dt className="font-semibold text-gray-500">체크</dt>
+                  <dd className="mt-0.5 truncate font-semibold text-gray-900">{item.counts.items}개</dd>
                 </div>
+              </dl>
+              <div className="mt-3 rounded-md bg-slate-50 px-3 py-2">
+                <p className="text-[11px] font-semibold text-slate-500">권장 Flow</p>
+                <p className="mt-1 truncate text-sm font-semibold text-slate-900">{item.recommendedFlowTitle}</p>
               </div>
               {item.previewSteps.length > 0 ? (
                 <div className="mt-3 rounded-md bg-slate-50 px-3 py-2">
                   <p className="text-[11px] font-semibold text-slate-500">저장 후 보이는 항목</p>
                   <ul className="mt-1 grid gap-1 text-xs font-semibold leading-5 text-slate-800">
-                    {item.previewSteps.map((step) => (
-                      <li key={step} className="truncate">· {step}</li>
+                    {item.previewSteps.map((step, index) => (
+                      <li key={`${item.id}-${index}-${step}`} className="truncate">· {step}</li>
                     ))}
                   </ul>
                 </div>
               ) : null}
-              <div className="mt-3 border-t border-gray-100 pt-3 text-sm font-semibold text-blue-700">전체 보기</div>
-            </Link>
+              <div className="mt-auto flex flex-wrap gap-2 border-t border-gray-100 pt-3">
+                <Link
+                  data-testid="flow-map-detail-link"
+                  className="inline-flex min-h-10 flex-[1_1_8rem] items-center justify-center rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-800"
+                  href={`/flow-maps/${item.id}`}
+                >
+                  저장 전 보기
+                </Link>
+                <Link
+                  data-testid="flow-map-recommended-flow-link"
+                  className="inline-flex min-h-10 flex-[1_1_8rem] items-center justify-center rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300"
+                  href={`/f/${item.recommendedFlowSlug}`}
+                >
+                  바로 시작
+                </Link>
+                <a
+                  data-testid="flow-map-source-link"
+                  className="inline-flex min-h-10 flex-[1_1_8rem] items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:border-blue-300 hover:text-blue-700"
+                  href={item.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  원문 보기{item.sourceUrlCount > 1 ? ` · ${item.sourceUrlCount}개` : ''}
+                </a>
+              </div>
+            </article>
+          ))}
+          {filtered.map((bundle) => (
+            <DirectoryFlowCard key={bundle.flow.id} bundle={bundle} />
           ))}
         </div>
-      </section>
-
-      <section data-testid="single-flow-catalog-section">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <p className="text-sm font-semibold text-gray-500">하나만 저장</p>
-            <h2 className="mt-1 text-2xl font-semibold text-gray-950">하나만 저장해도 되는 콘텐츠</h2>
-          </div>
-          <span className="text-sm font-semibold text-gray-500">{filtered.length}개 Flow</span>
-        </div>
-
-      {showCatalogFilters ? (
-        <section className="mb-6 rounded-lg border border-gray-200 bg-white p-4">
-          <div className="mb-4 flex flex-wrap gap-2">
-            {quickTags.map((item) => (
-              <Link
-                key={item}
-                className={`rounded-full border px-3 py-1.5 text-sm font-semibold ${tag === item ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`}
-                href={`/flows?tag=${encodeURIComponent(item)}`}
-              >
-                #{item}
-              </Link>
-            ))}
-          </div>
-          <details className="rounded-md border border-gray-200 bg-gray-50 px-3 py-2">
-            <summary className="cursor-pointer text-sm font-semibold text-gray-700">필터 조정</summary>
-            <div className="mt-4 grid gap-4 md:grid-cols-3">
-              <label className="space-y-2">
-                <span className="text-sm font-semibold text-gray-700">태그</span>
-                <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2" value={tag} onChange={(event) => setTag(event.target.value)}>
-                  {tags.map((item) => (
-                    <option key={item} value={item}>{item}</option>
-                  ))}
-                </select>
-              </label>
-              <label className="space-y-2">
-                <span className="text-sm font-semibold text-gray-700">카테고리</span>
-                <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2" value={category} onChange={(event) => setCategory(event.target.value)}>
-                  {categories.map((item) => (
-                    <option key={item} value={item}>{item}</option>
-                  ))}
-                </select>
-              </label>
-              <label className="space-y-2">
-                <span className="text-sm font-semibold text-gray-700">Flow 방식</span>
-                <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2" value={structure} onChange={(event) => setStructure(event.target.value)}>
-                  {structures.map((item) => (
-                    <option key={item} value={item}>{item}</option>
-                  ))}
-                </select>
-              </label>
-              <label className="space-y-2">
-                <span className="text-sm font-semibold text-gray-700">정렬</span>
-                <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2" value={sort} onChange={(event) => setSort(event.target.value as typeof sort)}>
-                  <option value="popular">인기순</option>
-                  <option value="recent">최신순</option>
-                </select>
-              </label>
-            </div>
-          </details>
-          <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-gray-500">
-            <span>{filtered.length}개 Flow</span>
-            {tag !== '전체' ? <span className="rounded-full bg-blue-50 px-2 py-1 font-medium text-blue-700">#{tag}</span> : null}
-            {category !== '전체' ? <span className="rounded-full bg-gray-50 px-2 py-1 font-medium text-gray-700">{category}</span> : null}
-          </div>
-        </section>
-      ) : (
-        <p className="mb-4 text-sm font-semibold text-gray-500">{filtered.length}개 하나만 저장</p>
-      )}
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((bundle) => (
-          <DirectoryFlowCard key={bundle.flow.id} bundle={bundle} />
-        ))}
-      </div>
       </section>
     </main>
   );
@@ -1216,23 +1231,91 @@ const homeFlowMapBaselineLinks = getSourceBackedHomepageFlowMaps().map((map) => 
     reason: '큰 구조가 있는 원문을 실행 흐름으로 저장',
   };
   const publishPackage = buildSourceBackedFlowMapPublishPackage(map.id);
+  const childFlows = publishPackage?.public.childFlows ?? [];
+  const recommendedFlowSlug = map.recommendedFlowSlug ?? map.flowSlugs[0] ?? map.id;
+  const recommendedFlow = childFlows.find((flow) => flow.slug === recommendedFlowSlug) ?? childFlows[0];
+  const counts = getFlowMapCatalogCounts(map.flowSlugs.length, publishPackage, map.counts);
   const previewSteps =
-    publishPackage?.public.childFlows
+    childFlows
       .flatMap((flow) => flow.steps.slice(0, 2).map((step) => step.title))
-      .slice(0, 3) ?? [];
+      .slice(0, 3);
   return {
     id: map.id,
     title: display.title,
     summary: display.summary,
+    categoryLabel: display.note,
+    userFacingStatus: '바로 저장 가능',
     input: map.setupInput?.label ?? '입력 없음',
     artifact: map.artifacts[0] ?? '저장 항목',
     note: display.note,
     reason: display.reason,
     flowCount: map.flowSlugs.length,
+    counts,
+    recommendedFlowSlug: recommendedFlowSlug,
+    recommendedFlowTitle: recommendedFlow?.title ?? recommendedFlowSlug,
+    sourceUrl: map.sourceUrl,
+    sourceUrlCount: map.sourceUrlCount ?? 1,
     sourceSignal: '원문 연결',
     previewSteps,
+    sourceKind: 'representative',
   };
 });
+
+const curatedSourceAppSeedCatalogLinks = getCuratedSourceAppSeedFlowMaps().map((map) => {
+  const publishPackage = buildSourceBackedFlowMapPublishPackage(map.id);
+  const childFlows = publishPackage?.public.childFlows ?? [];
+  const recommendedFlowSlug = map.recommendedFlowSlug ?? map.flowSlugs[0] ?? map.id;
+  const recommendedFlow = childFlows.find((flow) => flow.slug === recommendedFlowSlug) ?? childFlows[0];
+  const counts = getFlowMapCatalogCounts(map.flowSlugs.length, publishPackage, map.counts);
+  const previewSteps =
+    childFlows
+      .flatMap((flow) => flow.steps.slice(0, 1).map((step) => step.title))
+      .slice(0, 3);
+  return {
+    id: map.id,
+    title: map.title,
+    summary: map.summary,
+    categoryLabel: map.categoryLabel ?? '콘텐츠',
+    userFacingStatus: map.userFacingStatus ?? '확인 가능',
+    input: map.setupInput?.label ?? '입력 없음',
+    artifact: map.artifacts[0] ?? '저장 항목',
+    note: map.categoryLabel ?? '콘텐츠',
+    reason: map.summary,
+    flowCount: map.flowSlugs.length,
+    counts,
+    recommendedFlowSlug,
+    recommendedFlowTitle: recommendedFlow?.title ?? recommendedFlowSlug,
+    sourceUrl: map.sourceUrl,
+    sourceUrlCount: map.sourceUrlCount ?? 1,
+    sourceSignal: '원문 연결',
+    previewSteps,
+    sourceKind: 'curated-source',
+  };
+});
+
+const flowMapCatalogLinks = [
+  ...homeFlowMapBaselineLinks,
+  ...curatedSourceAppSeedCatalogLinks.filter(
+    (item) => !homeFlowMapBaselineLinks.some((homeItem) => homeItem.id === item.id),
+  ),
+];
+
+function getFlowMapCatalogCounts(
+  fallbackFlowCount: number,
+  publishPackage: ReturnType<typeof buildSourceBackedFlowMapPublishPackage>,
+  explicitCounts?: { flows: number; steps: number; items: number; sourceRows?: number },
+) {
+  if (explicitCounts) return explicitCounts;
+  const childFlows = publishPackage?.public.childFlows ?? [];
+  return {
+    flows: fallbackFlowCount,
+    steps: childFlows.reduce((sum, flow) => sum + flow.steps.length, 0),
+    items: childFlows.reduce(
+      (sum, flow) => sum + flow.steps.reduce((stepSum, step) => stepSum + step.detailItemCount, 0),
+      0,
+    ),
+  };
+}
 
 export function HomeLanding() {
   const primaryMap = homeFlowMapBaselineLinks[0];
@@ -1297,7 +1380,7 @@ export function HomeLanding() {
               {[
                 { label: '입력', value: primaryMap.input },
                 { label: '저장', value: primaryMap.artifact },
-                { label: '구성', value: `${primaryMap.flowCount}개 Flow` },
+                { label: '구성', value: `${primaryMap.flowCount}개 흐름` },
               ].map((signal) => (
                 <div key={signal.label} className="rounded-md bg-white/80 px-2.5 py-2">
                   <p className="text-[11px] font-semibold text-slate-500">{signal.label}</p>
@@ -2137,10 +2220,11 @@ function getMyFlowRowDisplaySectionLabel(row: MyFlowCalendarRow): string {
   const section = row.section.trim();
   const timing = row.timing?.trim() ?? '';
   if (!section) return '';
+  const normalizeUserLabel = (value: string) => value.replace(/\bStep\b/g, '단계').replace(/\bItem\b/g, '체크');
   if (timing && section.startsWith(timing)) {
-    return section.slice(timing.length).trim() || section;
+    return normalizeUserLabel(section.slice(timing.length).trim() || section);
   }
-  return section.replace(/^D(?:-\d+|\+\d+(?:~D\+\d+)?|-Day|Day)\s+/i, '').trim() || section;
+  return normalizeUserLabel(section.replace(/^D(?:-\d+|\+\d+(?:~D\+\d+)?|-Day|Day)\s+/i, '').trim() || section);
 }
 
 function getMyFlowExecutionFlowTitle(title: string): string {
@@ -2823,11 +2907,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const todayOpenCount = todayOpenRows.length;
   const myFlowTodaySummaryCopy =
     todayOpenCount > 0
-      ? '오늘 남은 Step을 먼저 처리하고, 전체 구조는 저장한 Flow에서 봅니다.'
+      ? '오늘 남은 할 일을 먼저 처리하고, 전체 구조는 저장한 Flow에서 봅니다.'
       : overdueRows.length > 0
         ? `오늘 남은 일은 없습니다. 지난 일정 ${overdueRows.length}개는 접어서 정리합니다.`
         : upcomingRows.length > 0
-          ? '오늘 남은 일은 없습니다. 가장 가까운 다음 Step부터 이어서 봅니다.'
+          ? '오늘 남은 일은 없습니다. 가장 가까운 다음 할 일부터 이어서 봅니다.'
           : '남은 실행 항목이 없습니다. 저장한 Flow에서 전체 구조를 확인하세요.';
   const routineNextRows = Array.from(
     calendarRoutineRows
@@ -2865,21 +2949,21 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     ? myFlowPrimaryContinuationIsToday
       ? `${myFlowTodayDate} 오늘 할 일`
       : myFlowPrimaryContinuationIsFuture
-        ? `${myFlowPrimaryContinuationRow.date} 예정 Step`
+        ? `${myFlowPrimaryContinuationRow.date} 예정 할 일`
         : `${myFlowTodayDate} 먼저 할 일`
-    : '이어갈 Step이 없습니다';
+    : '이어갈 할 일이 없습니다';
   const myFlowNowHelp = myFlowPrimaryContinuationRow
     ? myFlowPrimaryContinuationIsToday
-      ? '오늘 실행할 Step만 먼저 보여줍니다. 전체 구조는 Flow 탭에서 확인하세요.'
+      ? '오늘 실행할 할 일만 먼저 보여줍니다. 전체 구조는 Flow 탭에서 확인하세요.'
       : myFlowPrimaryContinuationIsFuture
-        ? '오늘 남은 일은 없습니다. 가장 가까운 예정 Step만 먼저 보여줍니다.'
-        : '밀린 항목 중 가장 먼저 정리할 Step을 보여줍니다.'
+        ? '오늘 남은 일은 없습니다. 가장 가까운 예정 할 일만 먼저 보여줍니다.'
+        : '밀린 항목 중 가장 먼저 정리할 할 일을 보여줍니다.'
     : '저장한 Flow에서 전체 구조를 확인하거나 새 Flow를 찾아보세요.';
   const myFlowPrimaryContinuationLabel = myFlowPrimaryContinuationIsToday
-    ? '오늘 실행할 Step'
+    ? '오늘 할 일'
     : myFlowPrimaryContinuationIsFuture
-      ? '다음 실행 Step'
-      : '밀린 Step';
+      ? '다음 할 일'
+      : '밀린 할 일';
   const myFlowSecondaryContinuationRows = [
     ...todayOpenRows,
     ...upcomingRows,
@@ -3385,7 +3469,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return {
         eyebrow: '저장한 Flow',
         title: '저장한 Flow',
-        help: 'Flow별 진행률과 다음 항목만 먼저 보고, 필요한 detail은 열어서 확인합니다.',
+        help: '저장한 흐름별 진행률과 다음 항목만 먼저 보고, 필요한 상세는 열어서 확인합니다.',
       };
     }
     if (savedView === 'checklist') {
@@ -3398,14 +3482,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     if (savedView === 'routine') {
       return {
         eyebrow: '루틴 보기',
-        title: '반복 Flow',
+        title: '반복 흐름',
         help: '반복되는 항목은 오늘 실행과 다음 날짜 중심으로 봅니다.',
       };
     }
     return {
       eyebrow: '내 실행 공간',
       title: '저장한 Flow',
-      help: '지금 이어할 Step부터 보고, 전체 Flow는 필요할 때 엽니다.',
+      help: '지금 이어할 할 일부터 보고, 전체 구조는 필요할 때 엽니다.',
     };
   })();
 
@@ -3886,12 +3970,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const color = categoryColors[flow.bundle.flow.category] ?? '#2563EB';
     const isPrimary = options.tone === 'primary';
     const flowContext = flow.savedMap
-      ? `${flow.savedMap.title} 안의 Flow`
+      ? `${flow.savedMap.title} 묶음`
       : flow.bundle.flow.structure_type === 'routine'
-        ? '반복 Flow'
+        ? '반복 흐름'
         : flow.rows.some((candidate) => Boolean(candidate.date))
-          ? '일정 Flow'
-          : '체크 Flow';
+          ? '일정 흐름'
+          : '체크 흐름';
     const rowMeta = [
       row.date,
       row.timing ? formatMyFlowTimingChip(row.timing) : '',
@@ -3928,7 +4012,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         >
           <span className="flex items-start justify-between gap-3">
             <span className="min-w-0">
-              <span className="block text-xs font-semibold text-blue-700">{isPrimary ? options.primaryLabel ?? '지금 실행할 Step' : options.nextLabel ?? '다음 실행 Step'}</span>
+              <span className="block text-xs font-semibold text-blue-700">{isPrimary ? options.primaryLabel ?? '지금 할 일' : options.nextLabel ?? '다음 할 일'}</span>
               <span className={`mt-1 block text-base font-semibold leading-6 ${checked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
                 {getMyFlowRowDisplayTitle(row)}
               </span>
@@ -5026,9 +5110,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const renderPostSavePanel = () => {
     if (!postSaveMap || postSaveFlows.length === 0) return null;
     const postSaveContinuationRow = getPostSaveContinuationRow();
-    const postSaveContinuationDate = postSaveContinuationRow?.date ? `다음 ${postSaveContinuationRow.date}` : '';
+    const postSaveContinuationDate = postSaveContinuationRow?.date
+      ? postSaveContinuationRow.date < myFlowTodayDate
+        ? `지난 일정 ${postSaveContinuationRow.date}`
+        : postSaveContinuationRow.date === myFlowTodayDate
+          ? `오늘 할 일 ${postSaveContinuationRow.date}`
+          : `다음 일정 ${postSaveContinuationRow.date}`
+      : '';
     const postSaveSummary = [
-      `${postSaveFlows.length}개 Flow`,
+      `${postSaveFlows.length}개 흐름`,
       `${postSaveStepCount}개 할 일`,
       postSaveContinuationDate,
     ].filter(Boolean).join(' · ');
@@ -5137,12 +5227,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const renderCompactFlowStructureRow = (flow: MySavedFlow) => {
     const nextRow = getSavedFlowNextRow(flow);
     const structureLabel = flow.savedMap
-      ? `${flow.savedMap.title} 안의 Flow`
+      ? `${flow.savedMap.title} 묶음`
       : flow.bundle.flow.structure_type === 'routine'
-        ? '반복 Flow'
+        ? '반복 흐름'
         : flow.rows.some((row) => Boolean(row.date))
-          ? '일정 Flow'
-          : '체크 Flow';
+          ? '일정 흐름'
+          : '체크 흐름';
     const activeCompactRow =
       myFlowDetailSurface === 'flow' && myFlowActiveRow && myFlowDetailOpen && myFlowActiveRow.flow.progress.slug === flow.progress.slug
         ? myFlowActiveRow
@@ -5188,7 +5278,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           </span>
           {nextRow && !flowExpanded ? (
             <span className="mt-3 block rounded-md bg-slate-50 px-3 py-2">
-              <span className="block text-xs font-semibold text-blue-700">다음 Step</span>
+              <span className="block text-xs font-semibold text-blue-700">다음 할 일</span>
               <span className="mt-1 block text-sm font-semibold text-slate-950">{nextRow.title}</span>
               <span className="mt-1 block text-xs font-semibold text-slate-500">
                 {[nextRow.date, nextRow.section].filter(Boolean).join(' · ') || `${flow.done}/${flow.total} 완료`}
@@ -5215,7 +5305,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   >
                     <span className="flex items-start justify-between gap-2">
                       <span className="min-w-0">
-                        <span className="block text-[11px] font-semibold text-slate-500">Step {index + 1}</span>
+                        <span className="block text-[11px] font-semibold text-slate-500">단계 {index + 1}</span>
                         <span className={`mt-0.5 block text-sm font-semibold ${stepChecked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
                           {getMyFlowRowDisplayTitle(stepRow)}
                         </span>
@@ -5250,7 +5340,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 className="rounded-md border border-blue-100 bg-white px-3 py-2 text-left text-sm font-semibold text-blue-700"
                 onClick={() => setMyFlowExpandedStructureStepSlug(flow.progress.slug)}
               >
-                전체 Step 보기 · {hiddenStepCount}개 더
+                전체 단계 보기 · {hiddenStepCount}개 더
               </button>
             ) : allStepsVisible && stepEntries.length > MY_FLOW_MOBILE_STRUCTURE_STEP_PREVIEW_LIMIT ? (
               <button
@@ -5262,7 +5352,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   resetMyFlowRowDetailState();
                 }}
               >
-                주요 Step만 보기
+                주요 단계만 보기
               </button>
             ) : null}
           </div>
@@ -5945,7 +6035,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       <div className="flex items-center justify-between gap-3">
                         <div>
                           <p className="text-sm font-semibold text-slate-500">다음 항목</p>
-                          <h3 className="mt-1 text-lg font-semibold text-slate-950">가까운 Step만 보기</h3>
+                          <h3 className="mt-1 text-lg font-semibold text-slate-950">가까운 할 일만 보기</h3>
                         </div>
                         <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">
                           {myFlowSecondaryContinuationRows.length}개
@@ -5986,7 +6076,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                           ))}
                           {hiddenOverdueFlowCount > 0 ? (
                             <p className="rounded-md bg-white px-3 py-2 text-xs font-semibold text-amber-800 ring-1 ring-amber-100">
-                              외 {hiddenOverdueFlowCount}개 Flow에 지난 일정이 있습니다.
+                              외 {hiddenOverdueFlowCount}개 흐름에 지난 일정이 있습니다.
                             </p>
                           ) : null}
                         </div>
@@ -6080,7 +6170,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         <h3 className="mt-1 text-lg font-semibold text-slate-950">진행 중인 Flow를 한눈에 확인하세요</h3>
                         <p className="mt-1 text-sm text-slate-600">다음 실행, 진행률, 밀림을 먼저 보고 전체 목록은 필요할 때 펼칩니다.</p>
                       </div>
-                      <span className="w-fit rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{visibleSavedFlows.length}개 Flow</span>
+                      <span className="w-fit rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{visibleSavedFlows.length}개 흐름</span>
                     </div>
                     <div className="mt-4 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
                       <button
@@ -6270,7 +6360,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     </h3>
                   </div>
                   <div className="flex flex-wrap gap-2 text-xs font-semibold">
-                    <span className="rounded-md bg-slate-100 px-2 py-1 text-slate-600">{visibleSavedFlows.length}개 Flow</span>
+                    <span className="rounded-md bg-slate-100 px-2 py-1 text-slate-600">{visibleSavedFlows.length}개 흐름</span>
                     {showMyFlowCalendarScopeFilter ? <span className="rounded-md bg-slate-100 px-2 py-1 text-slate-600">{myFlowCalendarScopeLabel} 표시</span> : null}
                     <span className="rounded-md bg-blue-50 px-2 py-1 text-blue-700">{myFlowCalendarOpenCount}개 남음</span>
                   </div>
@@ -6517,7 +6607,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       <h3 className="mt-1 text-lg font-semibold text-slate-950">체크할 Flow를 먼저 선택하세요</h3>
                       <p className="mt-1 text-sm text-slate-600">전체 체크리스트를 한 번에 펼치지 않고 Flow별 남은 항목부터 보여줍니다.</p>
                     </div>
-                    <span className="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">{checklistFlowRows.length}개 Flow</span>
+                    <span className="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">{checklistFlowRows.length}개 흐름</span>
                   </div>
                   <div className="mt-4 grid gap-2 md:grid-cols-2">
                     {visibleChecklistPickerRows.map(({ flow, rows }) => {
@@ -6550,7 +6640,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       aria-expanded={myFlowChecklistPickerOpen}
                       onClick={() => setMyFlowChecklistPickerOpen((open) => !open)}
                     >
-                      {myFlowChecklistPickerOpen ? '체크 Flow 접기' : `체크 Flow 더 보기 ${hiddenChecklistPickerCount}개`}
+                      {myFlowChecklistPickerOpen ? '체크 흐름 접기' : `체크 흐름 더 보기 ${hiddenChecklistPickerCount}개`}
                     </button>
                   ) : null}
                 </section>
@@ -6661,7 +6751,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             ) : (
               <div className="rounded-lg border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-600">
                 <h3 className="text-lg font-semibold text-slate-950">저장된 루틴 Flow가 없습니다</h3>
-                <p className="mt-2">반복 Flow를 저장하면 요일별 루틴과 완료 여부가 여기에 모입니다.</p>
+                <p className="mt-2">반복 흐름을 저장하면 요일별 루틴과 완료 여부가 여기에 모입니다.</p>
               </div>
             )
           ) : null}
@@ -7775,7 +7865,7 @@ function PublishSuccessPanel({ bundle }: { bundle: FlowBundle }) {
 
 export function PublicFlow({ slug }: { slug: string }) {
   const { bundles, persist } = useBundles();
-  const [bundle, setBundle] = useState<FlowBundle | null>(() => cloneSeedBundles().find((item) => item.flow.slug === slug) ?? null);
+  const [bundle, setBundle] = useState<FlowBundle | null>(() => mergeSourceBackedMyFlowBundles(cloneSeedBundles()).find((item) => item.flow.slug === slug) ?? null);
   const [anchor, setAnchor] = useState('');
   const [anchorMode, setAnchorMode] = useState<AnchorMode>('custom');
   const [checks, setChecks] = useState<Record<string, boolean>>({});
@@ -7794,7 +7884,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [savedFlowAt, setSavedFlowAt] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    const found = getBundles().find((item) => item.flow.slug === slug) ?? null;
+    const found = mergeSourceBackedMyFlowBundles(getBundles()).find((item) => item.flow.slug === slug) ?? null;
     const storedAnchor = getStoredAnchor(slug);
     const hasStoredAnchor = Boolean(storedAnchor.anchor) || storedAnchor.mode !== 'custom';
     const defaultAnchorMode: AnchorMode = found && found.flow.anchor_type !== 'none' ? 'example' : 'custom';

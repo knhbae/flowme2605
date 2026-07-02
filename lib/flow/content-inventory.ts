@@ -1,19 +1,22 @@
 import { getSourceFitAudit, type SourceFitDecision } from './source-fit';
+import { isCuratedSourceAppSeedBundle } from './curated-source-app-seed-meta';
 import type { FlowBundle, SourcePrecision, SourceType } from './types';
 
 export type ContentInventoryLevel =
   | 'manual_source_fit'
   | 'derived_real_source'
+  | 'curated_source_app_seed'
   | 'source_needs_review'
   | 'generated_preview_candidate'
   | 'legacy_accessible';
 
-export type ContentInventoryDecision = SourceFitDecision | 'preview_candidate' | 'legacy_accessible';
+export type ContentInventoryDecision = SourceFitDecision | 'curated_source_app_seed' | 'preview_candidate' | 'legacy_accessible';
 
 export type ContentInventoryPublicHandling =
   | 'representative_eligible'
   | 'source_review'
   | 'catalog_preview'
+  | 'curated_seed'
   | 'preview_candidate'
   | 'legacy_accessible'
   | 'hidden';
@@ -37,6 +40,7 @@ export type ContentInventorySummary = {
   legacyAccessibleCount: number;
   manualSourceFitCount: number;
   derivedRealSourceCount: number;
+  curatedSourceAppSeedCount: number;
   sourceNeedsReviewCount: number;
   realSourceReviewedCount: number;
   sourceBackedReviewedCount: number;
@@ -49,6 +53,7 @@ export type ContentInventorySummary = {
 const emptyLevelCounts: Record<ContentInventoryLevel, number> = {
   manual_source_fit: 0,
   derived_real_source: 0,
+  curated_source_app_seed: 0,
   source_needs_review: 0,
   generated_preview_candidate: 0,
   legacy_accessible: 0,
@@ -58,6 +63,7 @@ const emptyHandlingCounts: Record<ContentInventoryPublicHandling, number> = {
   representative_eligible: 0,
   source_review: 0,
   catalog_preview: 0,
+  curated_seed: 0,
   preview_candidate: 0,
   legacy_accessible: 0,
   hidden: 0,
@@ -142,6 +148,20 @@ export function reviewContentInventory(bundle: FlowBundle): ContentInventoryRevi
     };
   }
 
+  if (isCuratedSourceAppSeedBundle(bundle)) {
+    return {
+      slug: bundle.flow.slug,
+      title: bundle.flow.title,
+      level: 'curated_source_app_seed',
+      decision: 'curated_source_app_seed',
+      score: scoreDerivedReview(bundle),
+      sourcePrecision: bundle.flow.source_precision ?? 'none',
+      publicHandling: 'curated_seed',
+      reason: 'Curated source app seed로 편입된 handoff Flow입니다. 기존 manual source-fit audit coverage와 별도로 추적합니다.',
+      nextAction: 'Flow Map route, recommended Flow open, Step/Item/memo/source 표시, 저장 및 export 동작을 seed QA로 확인합니다.',
+    };
+  }
+
   if (bundle.flow.source_status === 'preview') {
     return {
       slug: bundle.flow.slug,
@@ -217,10 +237,15 @@ export function summarizeContentInventory(bundles: FlowBundle[]): ContentInvento
   const realSourceReviewedCount = reviews.filter(
     (review, index) =>
       bundles[index]?.flow.source_status === 'real' &&
+      !isCuratedSourceAppSeedBundle(bundles[index] as FlowBundle) &&
       (review.level === 'manual_source_fit' || review.level === 'derived_real_source'),
   ).length;
-  const realSourceCount = bundles.filter((bundle) => bundle.flow.source_status === 'real').length;
-  const previewSourceCount = bundles.filter((bundle) => bundle.flow.source_status === 'preview').length;
+  const realSourceCount = bundles.filter(
+    (bundle) => bundle.flow.source_status === 'real' && !isCuratedSourceAppSeedBundle(bundle),
+  ).length;
+  const previewSourceCount = bundles.filter(
+    (bundle) => bundle.flow.source_status === 'preview' && !isCuratedSourceAppSeedBundle(bundle),
+  ).length;
 
   return {
     totalCount: bundles.length,
@@ -229,6 +254,7 @@ export function summarizeContentInventory(bundles: FlowBundle[]): ContentInvento
     legacyAccessibleCount: levelCounts.legacy_accessible,
     manualSourceFitCount: levelCounts.manual_source_fit,
     derivedRealSourceCount: levelCounts.derived_real_source,
+    curatedSourceAppSeedCount: levelCounts.curated_source_app_seed,
     sourceNeedsReviewCount: levelCounts.source_needs_review,
     realSourceReviewedCount,
     sourceBackedReviewedCount:

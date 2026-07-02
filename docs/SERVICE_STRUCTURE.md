@@ -1,6 +1,6 @@
 # FLOW Service Structure
 
-Last updated: 2026-06-30  
+Last updated: 2026-07-02  
 Status: Living baseline. Keep this current with implementation PRs.
 
 This document is the canonical map of the current app surface, screen feature tree, and service architecture. It is not validation evidence by itself. Use it to keep product PoCs, research surfaces, creator tools, public routes, My Flow execution, and shared domain modules from drifting apart.
@@ -49,7 +49,7 @@ This is the user-facing sitemap rule for service-frame work. The route table abo
 | P0 | Run dated saved work | `캘린더` | `/calendar` | Primary tab or top nav item | This is the fastest way back to scheduled Steps after users save dated Flows. |
 | P0 | Manage saved work | `내 Flow` | `/my` | Primary tab or top nav item | This owns Today, saved Flow, saved Map, Step detail, checks, memo, and export regeneration. |
 | P1 | Understand the service promise | `홈` | `/` | Primary nav item, but not a dense catalog | Home should frame the product and route users to Flow finding or My Flow. It should not become a full content lab. |
-| P1 | Inspect a public Flow before saving | Flow title / `전체 보기` / `Flow 열기` | `/flow-maps/[map]`, `/f/[slug]` | Deep link from catalog/home/card | These are content detail pages, not global tabs. |
+| P1 | Inspect a public Flow before saving | Flow title / `저장 전 보기` / `바로 시작` | `/flow-maps/[map]`, `/f/[slug]` | Deep link from catalog/home/card | These are content detail pages, not global tabs. |
 | P2 | Create from my own content | `만들기` or `제작자` | `/flows/new`, future creator publish path | Secondary action, not always in bottom tabs | Creation is important for the platform, but early user tests should not let it compete with browse and run. |
 | P2 | Browse creators/channels | `제작자` / `채널` | `/creators`, `/u/[creator]` | Secondary nav or menu item | Useful when creator supply is strong. Do not promote ahead of representative Flow quality. |
 | Internal | Review and convert source content | `콘텐츠 검토`, `Flow Lab` | `/content-flows`, `/flow-lab` | Hidden from public nav | These are planning/QA surfaces and should not appear in the normal service frame. |
@@ -84,8 +84,8 @@ Desktop can use a top nav with the same priority order. It should not expose mor
 
 - The service frame now uses primary `홈 / Flow 찾기 / 캘린더 / 내 Flow` navigation, with creation and creator browsing kept in a secondary menu.
 - Home shows the service promise, one primary representative Flow Map, and the menu tree for `Flow 찾기 / 캘린더 / 내 Flow / 만들기`; it should not become a second full catalog.
-- `/flows` is the catalog. Current representative exposure is two Flow Map candidates and one single Flow baseline. It should not carry a duplicate persistent `내 Flow 보기` CTA that competes with the global bottom tab, except in contextual post-save or empty-state moments.
-- `/flows` now separates Flow Map candidates from single Flow candidates, but still needs richer filtering, source-backed status, and eventually honest review/usage signals.
+- `/flows` is the catalog. Current exposure is one integrated content catalog with the existing 2 representative maps, 9 source-backed curated maps, and 1 single Flow baseline in the same card grid. It should not carry a duplicate persistent `내 Flow 보기` CTA that competes with the global bottom tab, except in contextual post-save or empty-state moments.
+- `/flows` now distinguishes multi-Flow map candidates and one-Flow candidates by card badges such as `한 개만 저장`, not by separate curated-source/seed or one-off sections. Catalog card controls use `저장 전 보기`, `바로 시작`, and `원문 보기`; counts use user terms such as `흐름`, `단계`, and `체크`. It still needs richer filtering, source-backed status, and eventually honest review/usage signals.
 - Home and `/flows` should use result-oriented user copy. Avoid internal review labels such as `후보`, `검토`, or `대표 노출` on normal user surfaces; keep those labels in creator, content-lab, or report pages.
 - A single Flow that is intentionally promoted into the representative catalog should not appear as `검토 필요` in `/my`; otherwise the user sees a service recommendation become a warning after saving.
 - `/calendar` should open the saved calendar surface directly and hide duplicate page-local view tabs.
@@ -115,7 +115,8 @@ Use this as the next product-route baseline until user evidence reopens it.
 - `/flow-maps/[map]/creator` is a creator/review surface. It may expose source-row-to-`Step`/`Item` contract language because creators need to verify the conversion.
 - `/flow-maps/[map]`, `/flows`, `/`, and `/my` are user-facing surfaces. They should prefer user vocabulary such as `큰 흐름`, `항목`, `일정`, `체크`, `진도표`, and `전체 저장`.
 - Creator preview links for the saved result should point to a map-specific My Flow preview, such as `/my?demo=source-backed&savedMap=middle-school-math-1`, instead of a generic source-backed demo.
-- Public and My Flow links should say `전체 보기` or destination-specific labels, not `지도 보기`, unless the user explicitly needs map structure language.
+- Public and My Flow links should say `저장 전 보기`, `전체 보기`, `바로 시작`, or destination-specific labels, not `지도 보기`, unless the user explicitly needs map structure language.
+- Public Flow detail should not expose operation or migration labels such as `새 실행모델로 전환 중`; explain the saved outcome in user terms such as schedule, checklist, memo, and source instead.
 - The creator draft/publish marker is local-only. Do not describe it as real publishing, marketplace approval, or validation evidence until account-backed publish exists.
 
 ### Do Not Expose As Primary Nav Yet
@@ -137,7 +138,7 @@ These may remain directly accessible for testing or development, but they should
 | Product UI | `components/flow/AppClient.tsx` and focused `components/flow/*` files | Own visible interaction, screen state, user-facing copy, and handoff between public, creator, and My Flow surfaces. |
 | Source-backed map UI | `SourceBackedFlowMapPage.tsx`, `SourceBackedFlowMapCreatorEditor.tsx`, `SourceBackedFlowMapSaveButton.tsx` | Keep source-backed public inspection, creator publish editing, and save-to-My-Flow actions separate. |
 | Artifact UI | `ArtifactWorkbench.tsx`, `ArtifactPreview.tsx` | Render and edit user artifacts without mixing them into source evidence or review-only notes. |
-| Domain model | `lib/flow/types.ts`, `seed-flows.ts`, `execution-model.ts`, `source-backed-my-flow.ts` | Define Flow, Flow Map, Step, publish package, and execution assumptions. |
+| Domain model | `lib/flow/types.ts`, `seed-flows.ts`, `curated-source-app-seed.ts`, `execution-model.ts`, `source-backed-my-flow.ts` | Define Flow, Flow Map, Step, publish package, source-backed seed adapters, and execution assumptions. |
 | Parsing and time | `parser.ts`, `date.ts`, `recurrence.ts`, `destination.ts` | Normalize user input, dates, recurrence, and artifact destinations. |
 | Persistence and export | `storage.ts`, `export.ts`, `my-flow-step-export.ts`, `artifact-plan.ts`, `artifact-fields.ts` | Save local records and regenerate text, calendar, workbook, and Step-detail exports from edited state. |
 | Review and evidence | `content-lab.ts`, `source-fit.ts`, `source-review-priority.ts`, `natural-artifact-audit.ts`, `observed-session-*` | Keep QA, source/risk labels, observed sessions, and internal review evidence out of public validation claims. |
@@ -152,6 +153,7 @@ These may remain directly accessible for testing or development, but they should
 - My Flow owns saved user state, edited Step details, and regenerated exports.
 - Research surfaces under `/content-flows` and `/flow-lab` remain internal until a spec or decision promotes a behavior into the service tree.
 - Shared domain changes belong in `lib/flow/` tests first. UI changes should consume those contracts rather than duplicating conversion logic in components.
+- Curated source app handoff bundles enter the canonical `seedBundles` path through `seed-flows.ts`. `source-backed-my-flow.ts` keeps Flow Map, publish-package, and saved-map metadata for those same child Flow slugs, and its runtime merge helper should stay a dedupe fallback rather than the only seed attachment path.
 
 ## Related Docs
 

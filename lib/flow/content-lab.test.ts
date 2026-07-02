@@ -140,6 +140,7 @@ test('content lab exposes full content inventory coverage', () => {
   assert.equal(summary.realSourceInventoryReviewedCount, summary.realSourceFlowCount);
   assert.equal(summary.manualSourceFitAuditedCount, 90);
   assert.equal(summary.derivedRealSourceReviewedCount, 0);
+  assert.equal(summary.curatedSourceAppSeedInventoryCount, 19);
   assert.equal(
     summary.sourceBackedInventoryReviewedCount,
     summary.manualSourceFitAuditedCount + summary.derivedRealSourceReviewedCount + summary.sourceNeedsReviewInventoryCount,
@@ -178,7 +179,7 @@ test('content lab exposes lifecycle buckets for keep, fix, preview, and removal 
   assert.equal(summary.lifecycleBucketCounts.preview_only, summary.previewGeneratedFlowCount);
   assert.equal(summary.lifecycleBucketCounts.remove_candidate, 0);
   // Merged branch adds the 260601 official/creator batches on top of the current source-fit queue.
-  assert.equal(summary.lifecycleBucketCounts.fix, 118);
+  assert.equal(summary.lifecycleBucketCounts.fix, 118 + summary.curatedSourceAppSeedInventoryCount);
   assert.deepEqual(summary.lifecycleHideSlugs, ['real-fitvely-weekly-body-check']);
   assert.ok(summary.lifecycleFixSlugs.includes('real-sinagong-computer-d30-study'));
   assert.ok(summary.lifecycleFixSlugs.includes('driver-license-renewal-check'));

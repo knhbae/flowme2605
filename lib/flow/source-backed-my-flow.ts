@@ -17,6 +17,11 @@ import {
   curatedSourceBackedMyFlowBundles,
   curatedSourceBackedMyFlowMaps,
 } from './source-backed-curated-260630';
+import {
+  curatedSourceAppSeedFlowBundles,
+  curatedSourceAppSeedFlowMapQualityDecisions,
+  curatedSourceAppSeedFlowMaps,
+} from './curated-source-app-seed';
 
 export type SourceBackedStepDestination = 'calendar' | 'todo' | 'checklist' | 'sheet' | 'memo' | 'progress';
 export type SourceBackedFlowMapCreatorEditableField =
@@ -94,6 +99,16 @@ export type SourceBackedMyFlowMap = {
     defaultValue?: string;
   };
   flowSlugs: string[];
+  categoryLabel?: string;
+  userFacingStatus?: string;
+  recommendedFlowSlug?: string;
+  counts?: {
+    flows: number;
+    steps: number;
+    items: number;
+    sourceRows?: number;
+  };
+  sourceUrlCount?: number;
 };
 
 export type SourceBackedFlowMapSavedSnapshot = {
@@ -223,11 +238,25 @@ export type SourceBackedFlowMapPublishPackage = {
     primaryCta: { label: string; href: string };
     secondaryCtas: { label: string; href: string }[];
     artifacts: string[];
+    categoryLabel?: string;
+    userFacingStatus?: string;
+    recommendedFlowSlug?: string;
+    counts?: SourceBackedMyFlowMap['counts'];
+    sourceUrlCount?: number;
     childFlows: {
       slug: string;
       title: string;
       destination: PrimaryDestination;
-      steps: { id: string; title: string; detailItemCount: number; detailItems: string[] }[];
+      steps: {
+        id: string;
+        title: string;
+        stepTitle?: string;
+        memo?: string;
+        sourceUrl?: string;
+        sourceTrace?: string;
+        detailItemCount: number;
+        detailItems: string[];
+      }[];
     }[];
   };
   myFlow: {
@@ -313,6 +342,7 @@ export const sourceBackedFlowMapQualityDecisions: Record<string, SourceBackedFlo
     nextAction: 'Do not promote unless tied to a concrete event-prep source with clear checklist ownership.',
   },
   ...curatedSourceBackedFlowMapQualityDecisions,
+  ...curatedSourceAppSeedFlowMapQualityDecisions,
 };
 
 export function getSourceBackedFlowMapSnapshotStorageKey(mapId: string): string {
@@ -643,6 +673,7 @@ export const sourceBackedMyFlowMaps: SourceBackedMyFlowMap[] = [
   },
   ...additionalSourceBackedMyFlowMaps,
   ...curatedSourceBackedMyFlowMaps,
+  ...curatedSourceAppSeedFlowMaps,
 ];
 
 export const sourceBackedMyFlowBundles: FlowBundle[] = [
@@ -865,6 +896,7 @@ export const sourceBackedMyFlowBundles: FlowBundle[] = [
   },
   ...additionalSourceBackedMyFlowBundles,
   ...curatedSourceBackedMyFlowBundles,
+  ...curatedSourceAppSeedFlowBundles,
 ];
 
 export function mergeSourceBackedMyFlowBundles(bundles: FlowBundle[]): FlowBundle[] {
@@ -903,6 +935,10 @@ export function listSourceBackedFlowMapQualityDecisions(): SourceBackedFlowMapQu
 
 export function getSourceBackedHomepageFlowMaps(): SourceBackedMyFlowMap[] {
   return sourceBackedMyFlowMaps.filter((map) => getSourceBackedFlowMapQualityDecision(map.id).homepageEligible);
+}
+
+export function getCuratedSourceAppSeedFlowMaps(): SourceBackedMyFlowMap[] {
+  return sourceBackedMyFlowMaps.filter((map) => Boolean(map.recommendedFlowSlug && map.userFacingStatus && map.counts));
 }
 
 export function buildSourceBackedFlowMapSavedSnapshot(
@@ -1158,6 +1194,11 @@ export function buildSourceBackedFlowMapPublishPackage(mapId: string): SourceBac
       primaryCta: { label: '전체 저장', href: '/my' },
       secondaryCtas: childBundles.map((bundle) => ({ label: `${bundle.flow.title}만 저장`, href: '/my' })),
       artifacts: map.artifacts,
+      categoryLabel: map.categoryLabel,
+      userFacingStatus: map.userFacingStatus,
+      recommendedFlowSlug: map.recommendedFlowSlug,
+      counts: map.counts,
+      sourceUrlCount: map.sourceUrlCount,
       childFlows: childBundles.map((bundle) => ({
         slug: bundle.flow.slug,
         title: bundle.flow.title,
@@ -1166,10 +1207,13 @@ export function buildSourceBackedFlowMapPublishPackage(mapId: string): SourceBac
           .slice()
           .sort((a, b) => a.order - b.order)
           .map((item) => {
-            const detailItems = extractDetailItems(getItemDetail(bundle, item.id)) ?? [];
+            const detail = getItemDetail(bundle, item.id);
+            const detailItems = extractDetailItems(detail) ?? [];
+            const seedMeta = extractSeedStepMeta(detail, item);
             return {
               id: item.id,
               title: item.title,
+              ...seedMeta,
               detailItemCount: detailItems.length,
               detailItems,
             };
@@ -1226,6 +1270,7 @@ export function buildSourceBackedMyFlowRows(bundle: FlowBundle): SourceBackedMyF
     .map((item) => {
       const detail = getItemDetail(bundle, item.id);
       const sourceUrl = detail?.links?.[0]?.url ?? bundle.flow.source_url;
+      const includeMemoHint = !bundle.flow.tags?.includes('curated-source-app-seed');
       return {
         stepId: item.id,
         flowId: item.flow_id,
@@ -1241,7 +1286,7 @@ export function buildSourceBackedMyFlowRows(bundle: FlowBundle): SourceBackedMyF
           title: item.title,
           description: item.description ?? detail?.why ?? bundle.flow.description ?? '',
           items: extractDetailItems(detail),
-          memoHint: getMemoHint(bundle, item),
+          ...(includeMemoHint ? { memoHint: getMemoHint(bundle, item) } : {}),
           url: sourceUrl,
           doneWhen: detail?.completion_criteria,
         },
@@ -1332,6 +1377,34 @@ function extractDetailItems(detail?: FlowItemDetail): string[] | undefined {
     .map((line) => line.replace(/^[-*]\s*/, '').trim())
     .filter(Boolean);
   return items.length ? items : undefined;
+}
+
+function extractSeedStepMeta(
+  detail: FlowItemDetail | undefined,
+  item: FlowItem,
+): {
+  stepTitle?: string;
+  memo?: string;
+  sourceUrl?: string;
+  sourceTrace?: string;
+} {
+  const sourceText = detail?.why ?? item.description ?? '';
+  if (!sourceText) return {};
+
+  const lines = sourceText.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  const stepTitle = lines.find((line) => line.startsWith('Step: '))?.slice('Step: '.length);
+  const sourceTrace = lines.find((line) => line.startsWith('원문 근거: '))?.slice('원문 근거: '.length);
+  const memo = lines
+    .filter((line) => !line.startsWith('Step: ') && !line.startsWith('원문 근거: '))
+    .join('\n');
+  const sourceUrl = detail?.links?.[0]?.url;
+
+  return {
+    ...(stepTitle ? { stepTitle } : {}),
+    ...(memo ? { memo } : {}),
+    ...(sourceUrl ? { sourceUrl } : {}),
+    ...(sourceTrace ? { sourceTrace } : {}),
+  };
 }
 
 function getMemoHint(bundle: FlowBundle, item: FlowItem): string {

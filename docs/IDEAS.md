@@ -39,6 +39,16 @@ Capture the idea during the same session when it could influence future product 
 
 ## Ideas
 
+### 2026-07-02 - Flow usage entry backlog
+
+**Idea:** Treat FLOW as a URL-first, multi-entry execution layer: users paste a source URL, reuse an existing Flow when the same URL was already converted, change options, edit/fork the Flow if it does not fit, continue execution in My Flow, export to existing tools, and later promote a personal draft or shared link into a broader Flow. Lightweight memo planning remains a second entry point for daily use. These entry points should converge into the same `Flow / Step / Item / Memo / Source / Export` model instead of becoming separate products. Detailed backlog: [Flow 활용 입구 백로그](./content-audit/2026-07-02-flow-usage-entry-backlog-ko.md), with a readable HTML board at [Flow 활용 입구 백로그 보드](./content-audit/2026-07-02-flow-usage-entry-backlog-ko.html).
+
+**Why not now:** Stage 0 still needs to keep the current 4-tab IA and My Flow v2.1 baseline stable while proving representative source-backed content, export/check behavior, and honest trust signals. URL ingestion, duplicate-URL reuse, edit/fork UX, memo-to-Flow, sharing, versioning, and creator expansion should be sequenced as backlog items rather than implemented all at once.
+
+**Revisit when:** a thin URL-first PoC is needed, representative content quality is strong enough for Home/Flow finding, users show repeated copy/export/check or saved-Flow return behavior, or a PoC is needed to compare URL conversion, duplicate URL reuse, edit/fork, and memo-based planning under one execution model.
+
+**Source context:** 2026-07-02 product discussion: user clarified that external FlowMe links probably will not exist at first; a more realistic first loop is URL-to-Flow, reuse prior conversions for duplicate URLs, allow option changes or user edits, then let shared/comment links flow back toward the original content owner. The user also noted that easy editing UX matters because the current app is too fixed, and that lightweight memo-to-Flow remains important for daily use and spread.
+
 ### 2026-07-01 - Lightweight daily memo intake
 
 **Idea:** Let users start from the lightweight daily memo behavior they already keep in a notes app: write and revise today's tasks in plain language, then let FLOW convert that memo into suggested times, missing checks, related Flows, reminders, and later experience records. The product should preserve the speed and low pressure of a scratchpad while adding tracking and guidance that a normal memo app cannot provide.
