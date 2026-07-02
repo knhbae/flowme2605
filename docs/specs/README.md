@@ -52,6 +52,7 @@ Every FlowMe spec should answer these gates before implementation starts:
 - **Source/risk boundary:** How official facts, creator experience, user edits, and cautions stay separate.
 - **Natural artifact:** What a user would naturally create outside FLOW with realistic input values.
 - **Service structure impact:** Which route, screen tree branch, component boundary, data/export contract, or persistence path changes, and whether [../SERVICE_STRUCTURE.md](../SERVICE_STRUCTURE.md) must be updated.
+- **Tooling and verification lane:** Which P0 skill, plugin, or tool lane from [../TOOLING.md](../TOOLING.md) should guide the work, and which verification path proves it.
 - **Verification:** Which docs, unit, build, E2E, browser, content, or security checks prove the change.
 
 ## Promotion Rules
@@ -62,6 +63,7 @@ Every FlowMe spec should answer these gates before implementation starts:
 - When promoting an idea, carry forward the original "why not now" risk and update it into a concrete stage-fit statement, scope boundary, or non-goal.
 - When a spec settles a reusable policy while planning, add or link the durable rule in [../DECISIONS.md](../DECISIONS.md) so later work can inherit it without rereading the whole spec.
 - When implementation changes a route, shared component boundary, data/export contract, persistence path, or recurring review surface, update [../SERVICE_STRUCTURE.md](../SERVICE_STRUCTURE.md) in the same PR or record why no update was needed.
+- When planning changes a repeated skill, plugin, QA, PR, design, or implementation workflow, update [../TOOLING.md](../TOOLING.md) in the same PR or record why no update was needed.
 - Keep [../ROADMAP.md](../ROADMAP.md) short; link to the spec instead of copying details.
 - Record implementation evidence in [../pr-history/README.md](../pr-history/README.md) and the matching PR history entry.
 - Update [../STATUS.md](../STATUS.md) only for current health, focus, or recently completed changes.
