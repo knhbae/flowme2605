@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flow 활용 입구 백로그</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg: #f5f7fb;
+      --paper: #ffffff;
+      --ink: #172033;
+      --muted: #5d6678;
+      --line: #dbe2ec;
+      --blue: #2457a6;
+      --green: #0f766e;
+      --amber: #a15c07;
+      --red: #b42318;
+      --violet: #6d28d9;
+      --slate: #334155;
+    }
+    html {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 16px/1.55 Arial, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      letter-spacing: 0;
+    }
+    body { margin: 0; }
+    article {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 22px 14px 56px;
+    }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: 34px; line-height: 1.16; letter-spacing: 0; }
+    h2 { font-size: 22px; line-height: 1.25; }
+    h3 { font-size: 16px; line-height: 1.3; }
+    a { color: var(--blue); overflow-wrap: anywhere; }
+    .eyebrow {
+      margin-bottom: 8px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .lead {
+      max-width: 880px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .chip.blue { border-color: #b9cff1; background: #eef5ff; color: var(--blue); }
+    .chip.green { border-color: #a7d8d1; background: #ecfdf5; color: var(--green); }
+    .chip.amber { border-color: #efd092; background: #fff8e7; color: var(--amber); }
+    .chip.red { border-color: #efb0a9; background: #fff1f0; color: var(--red); }
+    .hero {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+    .summary {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .metric {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+    }
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .metric b {
+      display: block;
+      margin-top: 4px;
+      font-size: 18px;
+    }
+    .section {
+      margin-top: 14px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .section-head p {
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .flow-line {
+      display: grid;
+      gap: 8px;
+    }
+    .flow-step {
+      position: relative;
+      padding: 12px;
+      border: 1px solid #dfe6f1;
+      border-left: 5px solid var(--blue);
+      border-radius: 8px;
+      background: #fbfcff;
+    }
+    .flow-step b {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+    .flow-step p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .priority-grid,
+    .card-grid,
+    .tool-grid {
+      display: grid;
+      gap: 10px;
+    }
+    .priority,
+    .card,
+    .tool {
+      border: 1px solid #dfe6f1;
+      border-radius: 8px;
+      background: #fbfcff;
+      overflow: hidden;
+    }
+    .priority header,
+    .card header,
+    .tool header {
+      padding: 11px 12px;
+      border-bottom: 1px solid #e5eaf2;
+      background: #f8fafc;
+    }
+    .priority header span,
+    .card header span,
+    .tool header span {
+      display: inline-block;
+      margin-bottom: 4px;
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .priority .body,
+    .card .body,
+    .tool .body {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+    }
+    .body p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 23px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: #eef2f7;
+      color: #475569;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .tag.now { background: #ecfdf5; color: var(--green); }
+    .tag.next { background: #fff8e7; color: var(--amber); }
+    .tag.later { background: #f6f2ff; color: var(--violet); }
+    .tag.hold { background: #fff1f0; color: var(--red); }
+    .compact-list {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .compact-list li { margin: 4px 0; }
+    .model-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 13px;
+    }
+    .model-table th,
+    .model-table td {
+      padding: 10px;
+      border-bottom: 1px solid #e5eaf2;
+      text-align: left;
+      vertical-align: top;
+    }
+    .model-table th {
+      background: #f8fafc;
+      color: var(--slate);
+      font-size: 12px;
+    }
+    .model-table tr:last-child td { border-bottom: 0; }
+    .warning {
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid #efb0a9;
+      border-radius: 8px;
+      background: #fff1f0;
+      color: #7f1d1d;
+      font-size: 13px;
+    }
+    footer {
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    @media (min-width: 760px) {
+      article { padding: 30px 18px 72px; }
+      h1 { font-size: 42px; }
+      .summary { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .flow-line { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+      .priority-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .tool-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+<article>
+  <header class="hero">
+    <p class="eyebrow">2026-07-02 / product backlog board</p>
+    <h1>Flow 활용 입구 백로그</h1>
+    <p class="lead">직접 URL 입력, 중복 URL 재사용, 옵션 선택, 수정/fork, My Flow 실행, 기존 도구 export, 개인 메모, 공유/댓글 루프를 하나의 실행 모델로 묶는 백로그다. 이 문서는 구현 계획이 아니라, 다음 URL-first PoC와 메모/수정 UX를 정할 때 보는 제품 방향판이다.</p>
+    <div class="toolbar">
+      <a class="chip blue" href="./2026-07-02-flow-usage-entry-backlog-ko.md">Markdown 원본</a>
+      <a class="chip green" href="../IDEAS.md">IDEAS 인덱스</a>
+      <a class="chip amber" href="./2026-06-19-flowme-wide-project-backlog-ko.html">전체 프로젝트 백로그</a>
+      <a class="chip" href="./2026-06-19-flowme-service-ux-backlog-ko.html">서비스 UX 백로그</a>
+    </div>
+    <div class="summary">
+      <div class="metric"><span>초기 입구</span><b>URL-first</b></div>
+      <div class="metric"><span>공통 모델</span><b>Flow</b></div>
+      <div class="metric"><span>우선순위</span><b>Now / Next / Later</b></div>
+      <div class="metric"><span>검증 상태</span><b>미검증</b></div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>한 줄 판단</h2>
+      <p>초기에는 원컨텐츠에 FlowMe 링크가 붙어 있다고 보기 어렵다. 사용자가 URL을 넣어 Flow를 만들고, 같은 URL이면 기존 Flow를 재사용하거나 수정/fork한 뒤, 그 공유 링크가 원컨텐츠 쪽으로 되돌아가는 루프를 먼저 본다.</p>
+    </div>
+    <div class="flow-line">
+      <div class="flow-step">
+        <b>1. URL 입력</b>
+        <p>사용자가 블로그/유튜브/사이트 URL을 FlowMe에 붙여넣는다.</p>
+      </div>
+      <div class="flow-step">
+        <b>2. 기존 Flow 확인</b>
+        <p>같은 URL로 만든 Flow가 있으면 먼저 보여준다.</p>
+      </div>
+      <div class="flow-step">
+        <b>3. 옵션/수정</b>
+        <p>시작일, 반복, Step, Item, 메모를 내 상황에 맞게 고친다.</p>
+      </div>
+      <div class="flow-step">
+        <b>4. 실행/내보내기</b>
+        <p>My Flow에서 쓰거나 캘린더, 투두, 시트, Markdown으로 내보낸다.</p>
+      </div>
+      <div class="flow-step">
+        <b>5. 개인 메모</b>
+        <p>메모장식 계획도 같은 Flow 초안 모델로 정리한다.</p>
+      </div>
+      <div class="flow-step">
+        <b>6. 원문으로 회귀</b>
+        <p>공유/댓글 링크를 통해 원컨텐츠 주인도 Flow를 발견할 수 있다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>지금 볼 우선순위</h2>
+      <p>모든 것을 한 번에 만들지 않는다. URL-first 획득, 중복 URL 재사용, 쉬운 수정 UX, 기존 도구 export, My Flow 기준선부터 본다.</p>
+    </div>
+    <div class="priority-grid">
+      <div class="priority">
+        <header><span>NOW</span><h3>현재 작업에 바로 연결</h3></header>
+        <div class="body">
+          <p>URL을 넣었을 때 기존 Flow를 찾고, 초안을 만들고, 내 상황에 맞게 고친 뒤 실행/export하는 데 필요한 항목.</p>
+          <div class="tag-row">
+            <span class="tag now">FUB-03 URL 변환</span>
+            <span class="tag now">FUB-06 중복 URL</span>
+            <span class="tag now">FUB-11 수정 UX</span>
+            <span class="tag now">FUB-02 export 품질</span>
+            <span class="tag now">FUB-08 My Flow</span>
+          </div>
+        </div>
+      </div>
+      <div class="priority">
+        <header><span>NEXT</span><h3>다음 PoC 후보</h3></header>
+        <div class="body">
+          <p>Flow를 일상화하고 퍼뜨리는 루프를 본다. 개인 메모, 공유 승격, 신뢰 신호, 실행 기록이 핵심이다.</p>
+          <div class="tag-row">
+            <span class="tag next">FUB-04 메모</span>
+            <span class="tag next">FUB-05 공유 승격</span>
+            <span class="tag next">FUB-10 신뢰 신호</span>
+            <span class="tag next">FUB-07 footprint</span>
+          </div>
+        </div>
+      </div>
+      <div class="priority">
+        <header><span>LATER</span><h3>계정/사용 기록 이후</h3></header>
+        <div class="body">
+          <p>원컨텐츠 주인이나 제작자가 직접 FlowMe 링크를 붙이는 단계는 사용자 생성/공유 루프 이후에 본다.</p>
+          <div class="tag-row">
+            <span class="tag later">FUB-01 외부 링크</span>
+            <span class="tag later">FUB-09 Flow Pack</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>공통 모델</h2>
+      <p>입구는 늘어나도 데이터와 UX의 중심 단위는 분리하지 않는다. 모든 입구는 아래 모델로 모인다.</p>
+    </div>
+    <table class="model-table">
+      <thead>
+        <tr>
+          <th>단위</th>
+          <th>역할</th>
+          <th>외부 도구로 내려갈 때</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Flow</strong></td><td>저장하거나 공유하는 실행 묶음</td><td>캘린더 묶음, 체크리스트, 시트, 메모 문서, 공유 링크</td></tr>
+        <tr><td><strong>Step</strong></td><td>캘린더/투두/시트에 저장되는 최소 실행 단위</td><td>일정, 할 일, 시트 행, 체크리스트 heading</td></tr>
+        <tr><td><strong>Item</strong></td><td>Step 안의 체크/메모/detail</td><td>하위 체크, 본문 텍스트, 메모 fallback</td></tr>
+        <tr><td><strong>Memo</strong></td><td>배경, 원문 링크, 옵션, 예외, 개인 기록</td><td>Notion/Obsidian 본문, 일정 설명, 시트 note</td></tr>
+        <tr><td><strong>Source</strong></td><td>원문, 제작자, 버전, 변환 근거</td><td>링크, 출처 표기, 업데이트 참고</td></tr>
+        <tr><td><strong>Export</strong></td><td>사용자가 기존 도구로 옮기는 결과</td><td>ICS, CSV/XLSX, Markdown, plain text, clipboard</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>기존 도구 기준선</h2>
+      <p>FLOW의 화면과 출력은 사용자가 이미 쓰는 도구보다 무겁게 느껴지면 안 된다.</p>
+    </div>
+    <div class="tool-grid">
+      <div class="tool">
+        <header><span>Calendar</span><h3>날짜와 반복</h3></header>
+        <div class="body"><p>짧은 제목, 날짜, 반복, 설명, 원문 URL이 중요하다.</p></div>
+      </div>
+      <div class="tool">
+        <header><span>Todo</span><h3>오늘 할 일</h3></header>
+        <div class="body"><p>한 줄 action, 완료 기준, 미룬 항목, 메모 fallback이 중요하다.</p></div>
+      </div>
+      <div class="tool">
+        <header><span>Sheet</span><h3>행과 상태</h3></header>
+        <div class="body"><p>행/열, 날짜, 상태, 비교, source row가 중요하다.</p></div>
+      </div>
+      <div class="tool">
+        <header><span>Memo</span><h3>맥락과 수정</h3></header>
+        <div class="body"><p>원문 링크, 체크리스트, 회고, 자유 메모, Markdown 구조가 중요하다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>백로그 카드</h2>
+      <p>각 카드는 지금 당장 구현하라는 뜻이 아니라, 다음 작업에서 빠뜨리지 않을 제품 축이다.</p>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <header><span>FUB-01 / LATER</span><h3>외부 컨텐츠의 FlowMe 링크 진입</h3></header>
+        <div class="body">
+          <p>처음부터 원컨텐츠에 FlowMe 링크가 붙어 있다고 보지 않는다. 사용자가 URL로 만든 Flow가 공유/댓글로 되돌아가며 열리는 후행 유통 루프다.</p>
+          <div class="tag-row"><span class="tag later">external link</span><span class="tag">distribution</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <header><span>FUB-02 / NOW</span><h3>기존 도구별 export 품질 기준</h3></header>
+        <div class="body">
+          <p>Calendar, Todo, Sheet, Markdown destination마다 좋은 출력 기준을 따로 둔다.</p>
+          <div class="tag-row"><span class="tag now">destination fit</span><span class="tag">Step export</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <header><span>FUB-03 / NOW</span><h3>직접 URL을 Flow 초안으로 변환</h3></header>
+        <div class="body">
+          <p>사용자가 URL을 붙여넣으면 기존 변환 결과를 먼저 찾고, 없거나 마음에 들지 않으면 source row 확인 후 Flow 초안을 만든다.</p>
+          <div class="tag-row"><span class="tag now">URL-first</span><span class="tag">source gate</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <header><span>FUB-04 / NEXT</span><h3>메모형 계획을 Flow 초안으로 정리</h3></header>
+        <div class="body">
+          <p>평소처럼 쓴 메모를 강제 폼으로 바꾸지 않고 날짜 후보, 할 일 후보, 누락 항목을 제안한다.</p>
+          <div class="tag-row"><span class="tag next">memo intake</span><span class="tag">scratchpad</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <header><span>FUB-05 / NEXT</span><h3>개인 Flow 초안에서 공유 Flow로 승격</h3></header>
+        <div class="body">
+          <p>개인 메모와 공개 Flow를 분리하고, 실행하며 수정한 초안을 공유 가능 상태로 정리한다.</p>
+          <div class="tag-row"><span class="tag next">share</span><span class="tag">promotion</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <header><span>FUB-06 / NOW</span><h3>중복 URL, 버전, 내 복사본의 관계</h3></header>
+        <div class="body">
+          <p>같은 URL이면 기존 Flow를 보여주고, 옵션만 바꾸기, 내 버전으로 수정, 원본 유지, fork 관계를 분리한다.</p>
+          <div class="tag-row"><span class="tag now">duplicate URL</span><span class="tag">fork</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <header><span>FUB-07 / LATER</span><h3>실행 기록이 Flow 개선으로 돌아오는 루프</h3></header>
+        <div class="body">
+          <p>저장, export, check, 날짜 수정, 메모, 재방문을 검증으로 과장하지 않고 footprint로 축적한다.</p>
+          <div class="tag-row"><span class="tag later">footprint</span><span class="tag">evidence</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <header><span>FUB-08 / NOW</span><h3>My Flow는 저장 후 계속 쓰는 곳으로 유지</h3></header>
+        <div class="body">
+          <p>My Flow는 저장한 Flow의 실행 inbox와 구조 관리 공간이다. URL/메모에서 온 Flow를 쓰려면 Step, Item, 날짜, 메모를 쉽게 수정할 수 있어야 한다.</p>
+          <div class="tag-row"><span class="tag now">Today</span><span class="tag">Flow</span><span class="tag">Calendar</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <header><span>FUB-11 / NOW</span><h3>Flow 수정 UX와 fork/edit 경험</h3></header>
+        <div class="body">
+          <p>생성된 Flow가 대체로 맞지만 내 상황과 다를 때, 전체 editor 없이 시작일, Step, Item, 메모, export destination을 고치고 내 버전으로 저장한다.</p>
+          <div class="tag-row"><span class="tag now">edit</span><span class="tag">fork</span><span class="tag">options</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <header><span>FUB-09 / LATER</span><h3>제작자/채널/Flow Pack 확장</h3></header>
+        <div class="body">
+          <p>Flow Pack은 flat bundle이 아니라 parent Flow 아래 child Flow가 있는 Flow of Flows로 다룬다.</p>
+          <div class="tag-row"><span class="tag later">creator</span><span class="tag">Flow Pack</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <header><span>FUB-10 / NOW</span><h3>신뢰 신호와 선택 기준</h3></header>
+        <div class="body">
+          <p>fake social proof 대신 원문 출처, 제작자 맥락, 저장 후 결과, 입력 수, Step 수, 업데이트일을 보여준다.</p>
+          <div class="tag-row"><span class="tag now">trust</span><span class="tag">catalog</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>지금 만들지 않을 것</h2>
+      <p>아래 항목은 방향성에는 포함되지만, 현재 기준선에서는 과하게 앞당기지 않는다.</p>
+    </div>
+    <ul class="compact-list">
+      <li>완전한 Notion/Obsidian 대체 workspace</li>
+      <li>자동 공개 발행</li>
+      <li>원컨텐츠 주인이 처음부터 FlowMe 링크를 붙여줄 것이라는 가정</li>
+      <li>Google Calendar, Todoist, Notion, Sheets 직접 계정 연동</li>
+      <li>fake review, fake active-use count, 검증되지 않은 사용량 신호</li>
+      <li>marketplace, 결제, 토큰, creator monetization</li>
+      <li>민감 영역에서 FLOW가 의료/법률/재무 판단을 대신하는 기능</li>
+    </ul>
+    <div class="warning">주의: 이 문서는 백로그 보드다. 자동 QA, preview, 또는 이 문서 자체를 실제 사용자 검증으로 부르지 않는다.</div>
+  </section>
+
+  <footer>
+    <p>다음 작업에서는 URL-first 흐름을 기준으로 FUB-03, FUB-06, FUB-11, FUB-02, FUB-08을 먼저 확인한다. 메모/공유 승격은 같은 Flow 모델로 수렴하는지 텍스트 모델부터 만든다.</p>
+  </footer>
+</article>
+</body>
+</html>

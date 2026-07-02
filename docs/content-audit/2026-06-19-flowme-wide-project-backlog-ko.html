@@ -187,7 +187,7 @@
   <main class="page">
     <nav class="topbar" aria-label="FLOW">
       <a class="brand" href="#">FLOW</a>
-      <span class="chip blue">Last updated: 2026-06-26</span>
+      <span class="chip blue">Last updated: 2026-07-02</span>
     </nav>
 
     <header class="hero">
@@ -197,7 +197,7 @@
       <div class="grid">
         <div class="priority-card"><strong>지금의 기준</strong><span>content → anchor → artifact preview → copy/export → check → feedback</span></div>
         <div class="priority-card"><strong>무겁지 않게 보는 법</strong><span>상세 기획은 각 탭 안에 넣고, 첫 화면은 우선순위와 경계만 봅니다.</span></div>
-        <div class="priority-card"><strong>별도 상세 문서</strong><span><a href="./2026-06-19-flowme-service-ux-backlog-ko.html">서비스 UX 백로그</a>는 제작자/공개/내 Flow 연결을 다룹니다.</span></div>
+        <div class="priority-card"><strong>별도 상세 문서</strong><span><a href="./2026-06-19-flowme-service-ux-backlog-ko.html">서비스 UX 백로그</a>는 제작자/공개/내 Flow 연결을 다룹니다. <a href="./2026-07-02-flow-usage-entry-backlog-ko.html">Flow 활용 입구 백로그</a>는 URL-first 변환, 중복 URL 재사용, 수정/fork, 메모, My Flow, export, 공유 루프를 한 축으로 봅니다.</span></div>
       </div>
     </header>
 
@@ -205,6 +205,7 @@
       <a class="tab primary" href="#overview">전체</a>
       <a class="tab" href="#coverage">커버리지</a>
       <a class="tab" href="#now">지금 볼 일</a>
+      <a class="tab" href="#flow-usage">Flow 활용 입구</a>
       <a class="tab" href="#stage0">Stage 0</a>
       <a class="tab" href="#source">Source-to-Flow</a>
       <a class="tab" href="#myflow">My Flow</a>
@@ -221,7 +222,18 @@
         <div class="lane-card source"><i class="lane-number">2</i><b>Source-to-Flow</b><span>원컨텐츠 하나가 자연스러운 캘린더, 체크리스트, 시트, 메모로 바뀌는지 봅니다.</span></div>
         <div class="lane-card myflow"><i class="lane-number">3</i><b>My Flow 관리</b><span>저장한 Flow가 1개에서 여러 개로 늘어날 때 오늘 할 일과 이어보기를 어떻게 관리할지 봅니다.</span></div>
         <div class="lane-card creator"><i class="lane-number">4</i><b>Creator Map</b><span>제작자가 큰 경험 지도를 만들고 작은 Flow를 채우는 플랫폼 가능성을 봅니다.</span></div>
-        <div class="lane-card future"><i class="lane-number">5</i><b>장기 플랫폼</b><span>URL ingestion, creator page, activity signal, QR, marketplace는 Stage 0 이후로 둡니다.</span></div>
+        <div class="lane-card future"><i class="lane-number">5</i><b>장기 플랫폼</b><span>원컨텐츠 주인의 공식 채택, creator page, activity signal, QR, marketplace는 Stage 0 이후로 둡니다.</span></div>
+      </div>
+    </section>
+
+    <section class="card" id="flow-usage">
+      <p class="eyebrow">2026-07-02 추가 축</p>
+      <h2>Flow 활용 입구를 한 모델로 묶어 본다</h2>
+      <p class="desc">사용자는 처음부터 원컨텐츠에 붙은 FlowMe 링크로만 들어오지 않는다. 더 현실적인 시작점은 사용자가 URL을 붙여넣고, 같은 URL의 기존 Flow를 재사용하거나, 마음에 들지 않는 부분을 수정/fork하는 흐름이다. 개인 메모, 저장한 My Flow, 기존 도구 export, 공유/댓글 루프도 같은 실행 모델로 수렴해야 한다. 상세 보드는 <a href="./2026-07-02-flow-usage-entry-backlog-ko.html">Flow 활용 입구 백로그</a>에서 관리한다.</p>
+      <div class="grid">
+        <div class="priority-card"><strong>Now</strong><span>직접 URL 변환, 중복 URL 재사용, 수정/fork UX, export 품질, My Flow 기준선을 현재 서비스 UX 작업과 함께 본다.</span></div>
+        <div class="priority-card"><strong>Next</strong><span>메모형 계획, 개인 초안에서 공유 Flow로 승격, 신뢰 신호, 실행 footprint가 같은 Flow 모델로 수렴하는지 본다.</span></div>
+        <div class="priority-card"><strong>Later</strong><span>원컨텐츠 주인이 공식 FlowMe 링크를 붙이는 단계와 Creator Flow Pack은 사용자 생성/공유 루프 이후에 본다.</span></div>
       </div>
     </section>
 
@@ -256,6 +268,12 @@
             <td><span class="chip amber">압축 반영</span></td>
             <td>장기 플랫폼 탭에 보류 아이디어로 묶음.</td>
             <td>URL cache, similar-flow activity, Obsidian-like workspace는 장기 플랫폼 표에 보강 필요.</td>
+          </tr>
+          <tr>
+            <td><strong>Flow 활용 입구 백로그</strong><span class="small">URL-first, 중복 URL, 수정/fork, 메모, My Flow, export</span></td>
+            <td><span class="chip green">반영</span></td>
+            <td>별도 축으로 추가하고, URL 입력을 1차 획득 모델로 재정렬한 뒤 서비스 UX 백로그와 전체 프로젝트 백로그에서 모두 연결되도록 반영.</td>
+            <td>다음 작업에서 FUB-03/FUB-06/FUB-11/FUB-02/FUB-08을 실제 화면 기준으로 점검해야 함.</td>
           </tr>
           <tr>
             <td><strong>My Flow 실행 허브 spec/논의</strong><span class="small">0개, 1개, 2-5개, 6개 이상, 20개 이상</span></td>

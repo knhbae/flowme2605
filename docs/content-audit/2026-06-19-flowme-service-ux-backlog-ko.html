@@ -216,7 +216,7 @@
   <main class="page">
     <nav class="topbar" aria-label="FLOW">
       <a class="brand" href="#">FLOW</a>
-      <span class="chip blue">Last updated: 2026-06-30</span>
+      <span class="chip blue">Last updated: 2026-07-02</span>
     </nav>
 
     <header class="hero">
@@ -227,6 +227,7 @@
         <span class="chip blue">질문</span>
         <span class="chip green">현재 판단</span>
         <span class="chip amber">다음 산출물</span>
+        <a class="chip blue" href="./2026-07-02-flow-usage-entry-backlog-ko.html">Flow 활용 입구</a>
       </div>
     </header>
 
@@ -237,6 +238,17 @@
         <div class="row active"><b>작은 Flow</b><span>전세/10개 Flow 수준에서 실행 카드, 체크, 메모, URL 배치의 기준선은 잡혔습니다.</span></div>
         <div class="row active"><b>My Flow 실행</b><span>4탭 IA에서 캘린더를 전역 탭으로 분리하고, 내 Flow는 오늘/Flow 셸로 정리했습니다.</span></div>
         <div class="row next"><b>다음 초점</b><span>실제 사용자 관찰, 제작자 publish gate, 원컨텐츠 품질 운영을 우선 봐야 합니다.</span></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">2026-07-02 업데이트</p>
+      <h2>Flow 활용 입구는 서비스 UX 백로그 안에서 같이 본다</h2>
+      <p class="desc">새 산출물을 별도로 흩뜨리기보다, 직접 URL 입력, 중복 URL Flow 재사용, 옵션 선택, 수정/fork, 개인 메모, My Flow 실행, 기존 도구 export, 공유/댓글 루프를 서비스 UX 연결부로 흡수합니다. 상세 보드는 <a href="./2026-07-02-flow-usage-entry-backlog-ko.html">Flow 활용 입구 백로그</a>에서 보고, 이 문서에서는 사용자 여정과 다음 우선순위만 추적합니다.</p>
+      <div class="grid">
+        <div class="row next"><b>URL-first 획득</b><span>사용자가 URL을 넣으면 같은 URL의 기존 Flow를 먼저 찾고, 없으면 source row 확인 후 초안을 만듭니다.</span></div>
+        <div class="row next"><b>옵션/수정/fork</b><span>시작일, 반복, Step, Item, 메모, export destination을 캘린더/투두 detail 수준으로 고칠 수 있어야 합니다.</span></div>
+        <div class="row active"><b>저장 후 이어쓰기</b><span>My Flow v2.1 기준선은 유지하고, URL/메모에서 온 Flow도 같은 오늘·Flow·캘린더 구조로 들어오게 봅니다.</span></div>
       </div>
     </section>
 
@@ -611,6 +623,14 @@
             <td>원문, 제작자, Flow 목록, 전체 저장, 일부 저장만 먼저 보여주는 방향이 맞습니다.</td>
             <td class="status"><span class="chip red">P0</span></td>
             <td>Public Flow Map detail v1</td>
+            <td><span class="chip blue">Next</span></td>
+          </tr>
+          <tr>
+            <td><strong>Flow 활용 입구</strong><span class="small">URL-first / 중복 URL / 수정 / 메모 / export</span></td>
+            <td>사용자가 URL로 Flow를 만들고, 기존 URL Flow를 재사용하거나 수정해도 같은 저장·실행 UX로 이어지는가?</td>
+            <td>초기 획득은 외부 컨텐츠에 FlowMe 링크가 붙어 있는 상태보다 URL 입력이 현실적입니다. 중복 URL 재사용, 옵션 변경, 수정/fork가 `Flow / Step / Item / Memo / Source / Export` 모델로 수렴해야 합니다. 상세 보드는 <a href="./2026-07-02-flow-usage-entry-backlog-ko.html">Flow 활용 입구 백로그</a>로 분리했습니다.</td>
+            <td class="status"><span class="chip red">P0/P1</span></td>
+            <td>URL-first 얇은 PoC, 중복 URL 상태, 수정/fork UX, export destination 샘플</td>
             <td><span class="chip blue">Next</span></td>
           </tr>
           <tr>
