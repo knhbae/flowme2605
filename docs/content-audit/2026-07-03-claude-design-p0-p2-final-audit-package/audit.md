@@ -37,9 +37,17 @@
 - fixed layer: public detail의 mobile export bar는 하단 4탭 위로 올라와 16px 이상 간격을 둔다.
 - `route-evidence.json`에는 `/f/vehicle-inspection-prep`의 `navVisible: true`, `activeMobileTab: "Flow 찾기"`가 기록된다.
 
+## P3-04 특수 workbench visual polish
+
+- 결론: 특수 public Flow workbench는 기능/데이터 구조를 바꾸지 않고 공통 FlowMe visual rhythm에 맞췄다.
+- `ArtifactWorkbench`의 보조 카드, source bridge, table/card wrapper는 `#FAFAF8` 배경, `#E7E4DD` border, 16px card radius를 기준으로 정리했다.
+- 공개 detail의 mobile export sheet/bar와 export-first hero는 `#3654FF` primary, 12px action radius, 조용한 secondary button 톤으로 맞췄다.
+- source-fit 안내는 일반 사용자 화면에서 `대표 노출`, 점수, `보강 기준`을 보여주지 않고 `원문 확인 중`/`근거 확인 중` 같은 사용자용 안내로 낮췄다.
+- seed conversion note에서 visible surface로 올라올 수 있는 `audit`, `대표 노출`, 구조형 `묶음` 표현을 사용자 언어로 바꿨다.
+
 ## Route evidence
 
-모바일 390 x 844 viewport에서 route sanity check를 수행했다. 저장 후 route는 `/flow-maps/moving-d30`에서 실제 저장을 수행한 같은 브라우저 컨텍스트로 캡처했다. 모든 route에서 horizontal overflow는 0건이고, ASCII 내부 검토어 스캔 결과는 0건이다. P3-02 이후 `07-post-save-my-flow-mobile.png`와 `08-calendar-after-save-mobile.png`는 compact 화면 기준으로 재생성했고, P3-03 이후 `05-public-vehicle-inspection-mobile.png`는 app shell 기준으로 재생성했다.
+모바일 390 x 844 viewport에서 route sanity check를 수행했다. 저장 후 route는 `/flow-maps/moving-d30`에서 실제 저장을 수행한 같은 브라우저 컨텍스트로 캡처했다. 모든 route에서 horizontal overflow는 0건이고, 내부 검토/운영어 스캔 결과는 0건이다. P3-02 이후 `07-post-save-my-flow-mobile.png`와 `08-calendar-after-save-mobile.png`는 compact 화면 기준으로 재생성했고, P3-03 이후 `05-public-vehicle-inspection-mobile.png`는 app shell 기준으로 재생성했다. P3-04 이후 `09`~`12` screenshot은 특수 public workbench visual polish 기준으로 추가했다.
 
 | Route | 상태 | H1 | Screenshot | 비고 |
 | --- | --- | --- | --- | --- |
@@ -51,6 +59,10 @@
 | `/my` | clean localStorage | 내 Flow | [06-my-empty-mobile.png](./screenshots/06-my-empty-mobile.png) | true empty CTA 단일화 |
 | `/my?savedMap=moving-d30` | after saving moving-d30 with 2026-07-22 | 내 Flow | [07-post-save-my-flow-mobile.png](./screenshots/07-post-save-my-flow-mobile.png) | post-save 첫 실행 항목 유지 |
 | `/calendar` | after saving moving-d30 with 2026-07-22 | 캘린더 | [08-calendar-after-save-mobile.png](./screenshots/08-calendar-after-save-mobile.png) | schedule-first agenda 유지 |
+| `/f/moving-d30-basic` | clean localStorage | 원룸 이사 D-30 Flow | [09-public-moving-basic-mobile.png](./screenshots/09-public-moving-basic-mobile.png) | export-first hero, mobile export bar 토큰 확인 |
+| `/f/computer-skills-d30-study` | clean localStorage | 컴퓨터활용능력 D-30 학습 Flow | [10-public-computer-skills-mobile.png](./screenshots/10-public-computer-skills-mobile.png) | study workbench 카드 토큰 확인 |
+| `/f/new-car-delivery-check` | clean localStorage | 신차 인수 점검 Flow | [11-public-new-car-mobile.png](./screenshots/11-public-new-car-mobile.png) | hold/source/status 카드 톤 정리 |
+| `/f/used-car-buying-check` | clean localStorage | 중고차 구매 점검 Flow | [12-public-used-car-mobile.png](./screenshots/12-public-used-car-mobile.png) | decision/source bridge 카드 톤 정리 |
 
 자세한 수치는 [route-evidence.json](./route-evidence.json)에 있다.
 
@@ -62,6 +74,7 @@
 - P3-02 density targeted Playwright subset: 2 passed
 - P3-02 source-backed post-save regression subset: 6 passed
 - P3-03 public detail shell/save/export targeted Playwright subset: 8 passed
+- P3-04 special public workbench visual rhythm: 1 passed
 - P0/P2 regression targeted Playwright subset: 7 passed
 - P0~P2 final targeted Playwright subset: 9 passed
   - design token rhythm
@@ -81,7 +94,7 @@
 
 | 우선순위 | 항목 | 설명 | 다음 판단 |
 | --- | --- | --- | --- |
-| Low | 특수 workbench visual polish | 공통 토큰은 정리됐지만, 일부 특수 workbench/실험성 화면은 기존 slate/blue utility class가 남아 있을 수 있다. 주요 사용자 route 회귀는 발견하지 않았다. | 다음 visual QA에서 범위를 별도 산정 |
+| Closed | 특수 workbench visual polish | 지정된 public workbench route의 카드/버튼/chip 톤과 내부 운영 문구 노출을 P3-04 evidence로 닫았다. 범위 밖 creator/content-lab 실험 화면의 내부 class는 유지한다. | 추가 Claude Design 리뷰에서 새 이슈가 나오면 P4로 분리 |
 
 ## Claude 재검토 요청
 

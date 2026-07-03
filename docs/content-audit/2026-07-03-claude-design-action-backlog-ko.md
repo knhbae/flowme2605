@@ -67,6 +67,7 @@ Claude Design 리뷰의 결론은 새 기능 추가가 아니라 위계 압축�
 - 2026-07-03: P3-01을 재검증했다. final audit package의 저장 후 My Flow/Calendar 빈 화면 증거는 앱 저장 버그가 아니라 저장된 브라우저 컨텍스트를 유지하지 못한 evidence 생성 오류로 판별했다. 전용 evidence 캡처 스크립트를 추가하고, `/my?savedMap=moving-d30` 첫 실행 항목과 `/calendar` 저장 agenda가 보이는 screenshot/JSON을 재생성했다.
 - 2026-07-03: P3-02를 처리했다. 저장 후 My Flow 배너에서 반복 설명/카운트/지난 일정 요약을 줄이고 첫 실행 항목과 `먼저 열기` 행동을 먼저 보이게 했다. Calendar 선택일 카드에서는 모바일 기준 `선택한 날짜`, `0개 루틴`, 단일 일정의 `1개 · 1개 남음` 카운트를 숨겼다. 07/08 screenshot과 route-evidence JSON을 compact 기준으로 재생성했다.
 - 2026-07-04: P3-03을 처리했다. `/f/[slug]` 공개 Flow 상세는 공유 링크로 직접 들어올 수 있지만 정상 앱 경로에서는 `Flow 찾기` 아래의 D2 상세라는 정책으로 정리했다. 전용 public shell을 제거하고 공통 `PlatformNav`를 붙여 모바일 하단 4탭과 `Flow 찾기` active 상태가 보이게 했으며, public mobile export bar는 하단 탭 위로 분리했다. 05 screenshot과 route-evidence JSON을 app shell 기준으로 재생성했다.
+- 2026-07-04: P3-04를 처리했다. `/f/moving-d30-basic`, `/f/computer-skills-d30-study`, `/f/new-car-delivery-check`, `/f/used-car-buying-check`의 특수 public workbench 카드/버튼/chip 톤을 FlowMe 공통 토큰에 맞췄다. source-fit 안내의 `대표 노출`, 점수, 보강 기준 같은 내부 운영 문구를 사용자용 `원문 확인 중`/`근거 확인 중` 문장으로 낮추고, seed conversion note의 `audit`/`묶음` 노출 가능 문구를 정리했다. 09~12 screenshot과 route-evidence JSON을 P3-04 기준으로 추가한다.
 
 ## P1 - P0 후 이어서 해결
 
@@ -89,6 +90,15 @@ Claude Design 리뷰의 결론은 새 기능 추가가 아니라 위계 압축�
 | P2-03 | fixed layer | 완료 - safe-area, sticky 저장 CTA, My Flow/Calendar bottom spacing을 정리하고 overlap 회귀 테스트를 추가했다. |
 | P2-04 | 저장 목록 요약 | 완료 - 0개 칩과 중복 진행 칩을 숨기고, 저장 콘텐츠 카드는 `n/n 완료` + 진행바로 통일했다. |
 | P2-05 | 디자인 토큰 | 완료 - 주요 색, 카드 radius/padding, 버튼 hierarchy를 FlowMe 토큰 기준으로 통일했다. |
+
+## P3 - Claude Design Review Board 후속
+
+| ID | 영역 | 작업 |
+| --- | --- | --- |
+| P3-01 | 저장 evidence 재검증 | 완료 - My Flow/Calendar 빈 상태 screenshot은 앱 버그가 아니라 evidence 생성 오류로 판별하고 재생성했다. |
+| P3-02 | 저장 후 화면 밀도 | 완료 - 저장 배너와 Calendar 선택일 카드의 반복 설명/카운트를 줄였다. |
+| P3-03 | 공개 Flow 상세 shell | 완료 - `/f/[slug]`를 `Flow 찾기` 하위 app shell 기준으로 정리했다. |
+| P3-04 | 특수 workbench visual polish | 완료 - 지정 public workbench route의 카드/버튼/chip 톤과 내부 운영 문구 노출을 마감했다. |
 
 ## 검증 기준
 

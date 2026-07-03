@@ -32,6 +32,14 @@
 - fixed layer: public detail의 mobile export bar는 하단 4탭 위로 올라와 겹치지 않는다.
 - `route-evidence.json`에서 `/f/vehicle-inspection-prep`의 `navVisible: true`, `activeMobileTab: "Flow 찾기"`를 확인한다.
 
+## P3-04 특수 workbench visual polish
+
+- 결론: P0~P3-03 구조 기준선은 유지하고, 특수 public Flow workbench의 카드/버튼/chip 톤만 공통 FlowMe 토큰에 맞췄다.
+- 적용 route: `/f/moving-d30-basic`, `/f/computer-skills-d30-study`, `/f/new-car-delivery-check`, `/f/used-car-buying-check`.
+- 적용 기준: `#FAFAF8` app background, `#E7E4DD` border, `#3654FF` primary, 16px card radius, 12px action radius.
+- 사용자 화면에서 `audit`, `대표 노출`, `묶음` 같은 내부 운영 문구가 보이지 않도록 source-fit 안내와 seed 메타 문장을 정리했다.
+- `route-evidence.json`의 `visualChecks`와 09~12 screenshot에서 P3-04 대상 route를 확인한다.
+
 ```powershell
 npm.cmd run build
 # 별도 터미널에서 실행한 채 유지

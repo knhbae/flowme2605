@@ -277,27 +277,19 @@ function FlowSourceFitStatus({ bundle }: { bundle: FlowBundle }) {
   if (!audit || audit.decision === 'keep_representative') return null;
 
   const isPreviewOnly = audit.decision === 'catalog_preview_only';
-  const title = isPreviewOnly ? '원본 재검토 중' : '대표 노출 전 보강 중';
+  const title = isPreviewOnly ? '원문 확인 중' : '근거 확인 중';
   const body = isPreviewOnly
-    ? '이 Flow는 직접 열람은 가능하지만, 원본과 제목/구성이 맞는지 다시 확인하기 전까지 대표 추천에서는 제외합니다.'
-    : '원본은 FLOW로 만들 가치가 있지만, 반복 주기·캘린더 반영·항목 설명을 보강한 뒤 대표 추천에 올립니다.';
+    ? '저장하기 전에 원문 링크와 실행 항목이 내 상황에 맞는지 한 번 확인하세요.'
+    : '실행 항목은 볼 수 있지만, 일부 조건은 원문 기준을 확인하며 사용하는 것이 좋습니다.';
 
   return (
     <section
-      className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950"
+      className="mt-4 rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-4 text-sm leading-6 text-[#4A4842]"
       data-decision={audit.decision}
       data-testid="source-fit-status"
     >
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="font-semibold">{title}</p>
-          <p className="mt-1">{body}</p>
-        </div>
-        <span className="rounded-md border border-amber-300 bg-white px-2.5 py-1 text-xs font-semibold text-amber-800">
-          적합도 {audit.score}/100
-        </span>
-      </div>
-      <p className="mt-2 text-xs text-amber-800">보강 기준: {audit.contentAction}</p>
+      <p className="font-semibold text-[#1B1A17]">{title}</p>
+      <p className="mt-1">{body}</p>
     </section>
   );
 }
@@ -8476,14 +8468,14 @@ export function PublicFlow({ slug }: { slug: string }) {
 
       {!hideSharedPublicFooter ? (
         <>
-          <section className="my-5 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <section className="my-5 rounded-2xl border border-[#E7E4DD] bg-white p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)]">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <Link className="text-sm font-semibold text-slate-950 underline-offset-2 hover:text-blue-700 hover:underline" href={getCreatorPath(bundle)}>
+                <Link className="text-sm font-semibold text-[#1B1A17] underline-offset-2 hover:text-[#3654FF] hover:underline" href={getCreatorPath(bundle)}>
                   by {getCreatorName(bundle)}
                 </Link>
-                {getCreatorRole(bundle) ? <p className="mt-1 text-sm text-slate-500">{getCreatorRole(bundle)}</p> : null}
-                {getCreatorNote(bundle) ? <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">{getCreatorNote(bundle)}</p> : null}
+                {getCreatorRole(bundle) ? <p className="mt-1 text-sm text-[#6E6B64]">{getCreatorRole(bundle)}</p> : null}
+                {getCreatorNote(bundle) ? <p className="mt-2 max-w-2xl text-sm leading-6 text-[#6E6B64]">{getCreatorNote(bundle)}</p> : null}
               </div>
             </div>
           </section>
@@ -8497,60 +8489,60 @@ export function PublicFlow({ slug }: { slug: string }) {
       {showMobileExportSheet && !compactJeonsePage ? (
         <div className="fixed inset-0 z-30 md:hidden" data-testid="mobile-export-sheet" role="dialog" aria-modal="true" aria-labelledby="mobile-export-title">
           <button className="absolute inset-0 bg-slate-950/35" aria-label="배경" onClick={() => setShowMobileExportSheet(false)} />
-          <section className="absolute inset-x-0 bottom-0 rounded-t-lg border-t border-slate-200 bg-white p-5 shadow-[0_-16px_40px_rgba(15,23,42,0.18)]">
-            <div className="mx-auto h-1.5 w-12 rounded-full bg-slate-200" />
+          <section className="absolute inset-x-0 bottom-0 rounded-t-2xl border-t border-[#E7E4DD] bg-white p-5 shadow-[0_-16px_40px_rgba(27,26,23,0.16)]">
+            <div className="mx-auto h-1.5 w-12 rounded-full bg-[#E7E4DD]" />
             <div className="mt-4 flex items-start justify-between gap-4">
               <div>
-                <h2 id="mobile-export-title" className="text-lg font-semibold text-slate-950">어디로 가져갈까요</h2>
-                <p className="mt-1 text-sm text-slate-600">
+                <h2 id="mobile-export-title" className="text-lg font-semibold text-[#1B1A17]">어디로 가져갈까요</h2>
+                <p className="mt-1 text-sm text-[#6E6B64]">
                   {getMobileExportSheetSummary(bundle, displayAnchor, executableCount)}
                 </p>
               </div>
-              <button className="shrink-0 whitespace-nowrap rounded-md border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-700" onClick={() => setShowMobileExportSheet(false)}>
+              <button className="shrink-0 whitespace-nowrap rounded-xl border border-[#D8D5CD] px-3 py-1.5 text-sm font-semibold text-[#6E6B64]" onClick={() => setShowMobileExportSheet(false)}>
                 닫기
               </button>
             </div>
             <div className="mt-5 grid gap-2">
               {showCalendarExportAction ? (
-                <button data-testid="mobile-export-calendar" aria-label={`${FLOW_EXPORT_LABELS.calendarFile}: ${bundle.flow.title} .ics 일정`} className="flex items-center gap-3 rounded-md bg-blue-50 px-4 py-3 text-left text-sm font-semibold text-slate-950 disabled:text-slate-400" disabled={done === 0} onClick={downloadCalendar}>
-                  <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-blue-500 bg-white" />
+                <button data-testid="mobile-export-calendar" aria-label={`${FLOW_EXPORT_LABELS.calendarFile}: ${bundle.flow.title} .ics 일정`} className="flex items-center gap-3 rounded-xl bg-[#EEF1FF] px-4 py-3 text-left text-sm font-semibold text-[#1B1A17] disabled:text-[#A7A39A]" disabled={done === 0} onClick={downloadCalendar}>
+                  <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-[#3654FF] bg-white" />
                   <span className="flex-1">
                     <span className="block">{FLOW_EXPORT_LABELS.calendarFile}</span>
-                    <span className="mt-0.5 block text-xs font-medium text-slate-500">구글 · 애플 · .ics 파일</span>
+                    <span className="mt-0.5 block text-xs font-medium text-[#6E6B64]">구글 · 애플 · .ics 파일</span>
                   </span>
-                  <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-slate-400" />
+                  <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-[#6E6B64]" />
                 </button>
               ) : null}
-              <button data-testid="mobile-export-excel" aria-label={`${FLOW_EXPORT_LABELS.sheetFile}: ${bundle.flow.title} .xlsx 실행 시트`} className="flex items-center gap-3 rounded-md bg-slate-50 px-4 py-3 text-left text-sm font-semibold text-slate-950 disabled:text-slate-400" disabled={done === 0} onClick={downloadExcel}>
-                <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-slate-400 bg-white" />
+              <button data-testid="mobile-export-excel" aria-label={`${FLOW_EXPORT_LABELS.sheetFile}: ${bundle.flow.title} .xlsx 실행 시트`} className="flex items-center gap-3 rounded-xl bg-[#FAFAF8] px-4 py-3 text-left text-sm font-semibold text-[#1B1A17] disabled:text-[#A7A39A]" disabled={done === 0} onClick={downloadExcel}>
+                <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-[#6E6B64] bg-white" />
                 <span className="flex-1">
                   <span className="block">{FLOW_EXPORT_LABELS.sheetFile}</span>
-                  <span className="mt-0.5 block text-xs font-medium text-slate-500">진도표와 메모 시트</span>
+                  <span className="mt-0.5 block text-xs font-medium text-[#6E6B64]">진도표와 메모 시트</span>
                 </span>
-                <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-slate-400" />
+                <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-[#6E6B64]" />
               </button>
-              <button data-testid="mobile-export-copy" aria-label={`${FLOW_EXPORT_LABELS.memoCopy}: ${bundle.flow.title} 실행 메모`} className="flex items-center gap-3 rounded-md bg-slate-50 px-4 py-3 text-left text-sm font-semibold text-slate-950 disabled:text-slate-400" disabled={done === 0} onClick={copy}>
-                <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-slate-400 bg-white" />
+              <button data-testid="mobile-export-copy" aria-label={`${FLOW_EXPORT_LABELS.memoCopy}: ${bundle.flow.title} 실행 메모`} className="flex items-center gap-3 rounded-xl bg-[#FAFAF8] px-4 py-3 text-left text-sm font-semibold text-[#1B1A17] disabled:text-[#A7A39A]" disabled={done === 0} onClick={copy}>
+                <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-[#6E6B64] bg-white" />
                 <span className="flex-1">
                   <span className="block">{FLOW_EXPORT_LABELS.memoCopy}</span>
-                  <span className="mt-0.5 block text-xs font-medium text-slate-500">노션 · 카카오톡 · 메모장</span>
+                  <span className="mt-0.5 block text-xs font-medium text-[#6E6B64]">노션 · 카카오톡 · 메모장</span>
                 </span>
-                <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-slate-400" />
+                <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-[#6E6B64]" />
               </button>
-              <div className="my-1 h-px bg-slate-100" />
-              <button className="flex items-center gap-3 rounded-md border border-slate-200 px-4 py-3 text-left text-sm font-semibold text-slate-800" onClick={copyToEditableDraft}>
-                <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-slate-400 bg-slate-50" />
+              <div className="my-1 h-px bg-[#E7E4DD]" />
+              <button className="flex items-center gap-3 rounded-xl border border-[#D8D5CD] px-4 py-3 text-left text-sm font-semibold text-[#1B1A17]" onClick={copyToEditableDraft}>
+                <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-[#6E6B64] bg-[#FAFAF8]" />
                 <span className="flex-1">
                   <span className="block">내 버전으로 편집</span>
-                  <span className="mt-0.5 block text-xs font-medium text-slate-500">저장 후 내용 수정</span>
+                  <span className="mt-0.5 block text-xs font-medium text-[#6E6B64]">저장 후 내용 수정</span>
                 </span>
-                <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-slate-400" />
+                <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-[#6E6B64]" />
               </button>
             </div>
             <div className="mt-3 min-h-5 text-sm">
-              {copyState ? <span className="text-green-700">{copyState}</span> : null}
-              {downloadState ? <span className="text-blue-700">{downloadState}</span> : null}
-              {calendarState ? <span className="text-blue-700">{calendarState}</span> : null}
+              {copyState ? <span className="text-[#1F8A5B]">{copyState}</span> : null}
+              {downloadState ? <span className="text-[#3654FF]">{downloadState}</span> : null}
+              {calendarState ? <span className="text-[#3654FF]">{calendarState}</span> : null}
             </div>
           </section>
         </div>
@@ -8565,29 +8557,29 @@ export function PublicFlow({ slug }: { slug: string }) {
           <div className="flex items-center gap-3">
             <div className="min-w-0 flex-1">
               <div className="mb-1 flex items-center justify-between text-sm">
-                <span className="font-medium text-slate-600">진행률</span>
+                <span className="font-medium text-[#6E6B64]">진행률</span>
                 <span className="font-semibold">{done} / {executableCount}</span>
               </div>
-              <div className="h-2 overflow-hidden rounded-full bg-slate-200">
-                <div className="h-full bg-blue-700" style={{ width: `${executableCount > 0 ? Math.round((done / executableCount) * 100) : 0}%` }} />
+              <div className="h-2 overflow-hidden rounded-full bg-[#E7E4DD]">
+                <div className="h-full bg-[#3654FF]" style={{ width: `${executableCount > 0 ? Math.round((done / executableCount) * 100) : 0}%` }} />
               </div>
             </div>
             {showPublicSaveAction ? (
               savedFlowAt ? (
-                <Link className="shrink-0 rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm" href="/my">
+                <Link className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" href="/my">
                   내 Flow에서 보기
                 </Link>
               ) : (
-                <button className="shrink-0 rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm" onClick={saveToMyFlow}>
+                <button className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" onClick={saveToMyFlow}>
                   내 Flow에 저장
                 </button>
               )
             ) : showExportFirstHero ? (
-              <button className="shrink-0 rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm" onClick={() => setShowMobileExportSheet(true)}>
+              <button className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" onClick={() => setShowMobileExportSheet(true)}>
                 내 도구로 가져가기
               </button>
             ) : (
-              <button className="shrink-0 rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm" onClick={() => setShowMobileExportSheet(true)}>
+              <button className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" onClick={() => setShowMobileExportSheet(true)}>
                 {mobileStickyCtaLabel}
               </button>
             )}
@@ -8730,30 +8722,30 @@ function ExportFirstHero({
   const sourceText = bundle.flow.source_title ? `${bundle.items.length}개 항목 · ${bundle.flow.source_title}` : `${bundle.items.length}개 항목`;
 
   return (
-    <section aria-label="Export-first flow hero" className="my-6 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-5">
+    <section aria-label="Export-first flow hero" className="my-6 rounded-2xl border border-[#E7E4DD] bg-white p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)] md:p-5">
       <div className="grid gap-5 md:grid-cols-[1.08fr_0.92fr] md:items-start">
         <div>
-          <h2 className="text-2xl font-bold tracking-normal text-slate-950 md:text-3xl">{bundle.flow.title}</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">{sourceText}</p>
+          <h2 className="text-2xl font-bold tracking-normal text-[#1B1A17] md:text-3xl">{bundle.flow.title}</h2>
+          <p className="mt-2 text-sm leading-6 text-[#6E6B64]">{sourceText}</p>
 
-          <div className="mt-5 rounded-lg border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm font-semibold text-gray-700">이렇게 캘린더에 들어갑니다</p>
+          <div className="mt-5 rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-4">
+            <p className="text-sm font-semibold text-[#4A4842]">이렇게 캘린더에 들어갑니다</p>
             <div className="mt-3 space-y-2">
               {previewEntries.map((entry) => (
                 <div key={entry.id} className="grid grid-cols-[3.2rem_5.8rem_1fr] items-baseline gap-2 text-sm">
-                  <span className="font-semibold text-slate-500">{entry.timing}</span>
-                  <span className="font-medium text-slate-600">{entry.startDate}</span>
-                  <span className="min-w-0 text-slate-950">{entry.title}</span>
+                  <span className="font-semibold text-[#6E6B64]">{entry.timing}</span>
+                  <span className="font-medium text-[#6E6B64]">{entry.startDate}</span>
+                  <span className="min-w-0 text-[#1B1A17]">{entry.title}</span>
                 </div>
               ))}
             </div>
-            {remainingCount > 0 ? <p className="mt-3 text-xs font-medium text-slate-500">+ 나머지 {remainingCount}개 항목</p> : null}
+            {remainingCount > 0 ? <p className="mt-3 text-xs font-medium text-[#6E6B64]">+ 나머지 {remainingCount}개 항목</p> : null}
           </div>
         </div>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-[0_1px_0_rgba(15,23,42,0.03)]">
-          <p className="text-sm font-semibold text-slate-800">{getSetupStepTitle(bundle)}</p>
-          <p className="mt-1 text-sm leading-6 text-slate-600">{getSetupStepDescription(bundle)}</p>
+        <div className="rounded-2xl border border-[#E7E4DD] bg-white p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)]">
+          <p className="text-sm font-semibold text-[#1B1A17]">{getSetupStepTitle(bundle)}</p>
+          <p className="mt-1 text-sm leading-6 text-[#6E6B64]">{getSetupStepDescription(bundle)}</p>
           <div className="mt-4">
             <AnchorInput
               bundle={bundle}
@@ -8768,14 +8760,14 @@ function ExportFirstHero({
           </div>
           <div className="mt-4" data-testid="moving-save-actions">
             {savedFlowAt ? (
-              <div className="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-950">
+              <div className="rounded-2xl border border-[#DCEBDD] bg-[#EAF7F0] p-3 text-sm text-[#1B1A17]">
                 <p className="font-semibold">내 Flow에 담았어요</p>
-                <p className="mt-1 text-xs leading-5 text-emerald-800">이제 FLOW 안에서 체크하거나 외부 도구로도 보낼 수 있습니다.</p>
+                <p className="mt-1 text-xs leading-5 text-[#1F8A5B]">이제 FLOW 안에서 체크하거나 외부 도구로도 보낼 수 있습니다.</p>
               </div>
             ) : null}
             {savedFlowAt ? (
               <Link
-                className="mt-3 flex w-full items-center justify-center rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-800"
+                className="mt-3 flex w-full items-center justify-center rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
                 href="/my"
               >
                 내 Flow에서 보기
@@ -8783,26 +8775,26 @@ function ExportFirstHero({
             ) : (
               <button
                 type="button"
-                className="w-full rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-800"
+                className="w-full rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
                 onClick={onSaveToMyFlow}
               >
                 내 Flow에 저장
               </button>
             )}
             <div className="mt-2 grid gap-2 sm:grid-cols-3">
-              <button className="rounded-md border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700" type="button" onClick={onDownloadCalendar}>
+              <button className="rounded-xl border border-[#D8D5CD] bg-white px-3 py-2.5 text-sm font-semibold text-[#1B1A17] hover:border-[#3654FF]/40 hover:text-[#3654FF]" type="button" onClick={onDownloadCalendar}>
                 {FLOW_EXPORT_LABELS.calendarFile}
               </button>
-              <button className="rounded-md border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700" type="button" onClick={onDownloadExcel}>
+              <button className="rounded-xl border border-[#D8D5CD] bg-white px-3 py-2.5 text-sm font-semibold text-[#1B1A17] hover:border-[#3654FF]/40 hover:text-[#3654FF]" type="button" onClick={onDownloadExcel}>
                 {FLOW_EXPORT_LABELS.sheetFile}
               </button>
-              <button className="rounded-md border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700" type="button" onClick={onCopyText}>
+              <button className="rounded-xl border border-[#D8D5CD] bg-white px-3 py-2.5 text-sm font-semibold text-[#1B1A17] hover:border-[#3654FF]/40 hover:text-[#3654FF]" type="button" onClick={onCopyText}>
                 {FLOW_EXPORT_LABELS.memoCopy}
               </button>
             </div>
           </div>
           {displayAnchor ? (
-            <p className="mt-2 text-center text-xs font-medium text-slate-500">
+            <p className="mt-2 text-center text-xs font-medium text-[#6E6B64]">
               {compactDateLabel(previewEntries[0]?.startDate ?? displayAnchor)}부터 {bundle.items.length}개 항목을 옮깁니다.
             </p>
           ) : null}

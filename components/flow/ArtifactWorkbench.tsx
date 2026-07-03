@@ -98,6 +98,12 @@ const FLOWME_TITLE_CLASS = 'text-base font-semibold text-[#1B1A17]';
 const FLOWME_PROGRESS_CHIP_CLASS = 'rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 text-xs font-semibold text-[#6E6B64]';
 const FLOWME_BUTTON_PRIMARY_CLASS = 'rounded-xl bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8] disabled:bg-[#C9C6BE]';
 const FLOWME_BUTTON_SECONDARY_CLASS = 'rounded-xl border border-[#D8D5CD] bg-white px-3 py-2 text-sm font-semibold text-[#1B1A17] hover:border-[#3654FF]/40 hover:text-[#3654FF] disabled:border-[#E7E4DD] disabled:text-[#A7A39A]';
+const FLOWME_DISCLOSURE_CLASS = 'mt-2 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2 text-sm';
+const FLOWME_SUPPORT_CARD_CLASS = 'rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-4';
+const FLOWME_COMPACT_SUPPORT_CARD_CLASS = 'rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-3';
+const FLOWME_TABLE_CARD_CLASS = 'overflow-x-auto rounded-2xl border border-[#E7E4DD] bg-white shadow-[0_1px_0_rgba(27,26,23,0.03)]';
+const FLOWME_TABLE_HEADER_CLASS = 'border-b border-[#E7E4DD] px-3 py-3';
+const FLOWME_TABLE_HEAD_CLASS = 'bg-[#FAFAF8] text-xs font-semibold text-[#6E6B64]';
 
 export function ArtifactWorkbench({
   bundle,
@@ -292,7 +298,7 @@ function ArtifactExportStatus({ actions }: { actions?: ArtifactExportActions }) 
   if (!actions || (!actions.copyState && !actions.downloadState && !actions.calendarState)) return null;
 
   return (
-    <div className="mt-2 text-sm font-semibold text-blue-700">
+    <div className="mt-2 text-sm font-semibold text-[#3654FF]">
       {[actions.copyState, actions.downloadState, actions.calendarState].filter(Boolean).join(' · ')}
     </div>
   );
@@ -346,9 +352,9 @@ function WorkbenchDetailDisclosure({ detail }: { detail?: WorkbenchItemDetail })
   if (!detail?.why && !detail?.how && !detail?.completion_criteria && !detail?.caution && !detail?.links?.length) return null;
 
   return (
-    <details className="mt-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
-      <summary className="cursor-pointer font-semibold text-blue-700">자세히</summary>
-      <div className="mt-2 space-y-2 leading-6 text-slate-700">
+    <details className={FLOWME_DISCLOSURE_CLASS}>
+      <summary className="cursor-pointer font-semibold text-[#3654FF]">자세히</summary>
+      <div className="mt-2 space-y-2 leading-6 text-[#4A4842]">
         {detail.how ? <p><b>실행:</b> {detail.how}</p> : null}
         {detail.completion_criteria ? <p><b>완료:</b> {detail.completion_criteria}</p> : null}
         {detail.why ? <p><b>이유:</b> {detail.why}</p> : null}
@@ -356,7 +362,7 @@ function WorkbenchDetailDisclosure({ detail }: { detail?: WorkbenchItemDetail })
         {detail.links?.length ? (
           <div className="flex flex-wrap gap-2 pt-1">
             {detail.links.map((link) => (
-              <a key={`${link.label}-${link.url}`} className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:border-blue-300 hover:text-blue-700" href={link.url} target="_blank" rel="noreferrer">
+              <a key={`${link.label}-${link.url}`} className="rounded-xl border border-[#D8D5CD] bg-white px-2 py-1 text-xs font-semibold text-[#6E6B64] hover:border-[#3654FF]/40 hover:text-[#3654FF]" href={link.url} target="_blank" rel="noreferrer">
                 {link.label}
               </a>
             ))}
@@ -1165,18 +1171,18 @@ function MobileComparisonSummaryCard({ rows, comparison }: { rows: ArtifactCompa
   if (!previewRows.length) return null;
 
   return (
-    <div data-testid="mobile-comparison-summary-card" className="m-3 rounded-md border border-slate-200 bg-slate-50 p-3 md:hidden">
-      <p className="text-xs font-semibold text-blue-700">먼저 채울 후보</p>
-      <h4 className="mt-1 text-sm font-semibold text-gray-950">{primaryCandidate} 먼저 채우기</h4>
+    <div data-testid="mobile-comparison-summary-card" className={`m-3 ${FLOWME_COMPACT_SUPPORT_CARD_CLASS} md:hidden`}>
+      <p className="text-xs font-semibold text-[#3654FF]">먼저 채울 후보</p>
+      <h4 className="mt-1 text-sm font-semibold text-[#1B1A17]">{primaryCandidate} 먼저 채우기</h4>
       <dl className="mt-2 grid gap-2 text-sm">
         {previewRows.map((row, index) => (
-          <div key={row.id} className="rounded-md bg-white px-3 py-2">
-            <dt className="text-xs font-semibold text-gray-500">비교 항목 {index + 1}</dt>
-            <dd className="mt-1 text-gray-800" aria-label={row.title}>아래 표에서 작성</dd>
+          <div key={row.id} className="rounded-xl border border-[#E7E4DD] bg-white px-3 py-2">
+            <dt className="text-xs font-semibold text-[#6E6B64]">비교 항목 {index + 1}</dt>
+            <dd className="mt-1 text-[#1B1A17]" aria-label={row.title}>아래 표에서 작성</dd>
           </div>
         ))}
       </dl>
-      <p className="mt-2 text-xs font-medium text-blue-800">전체 후보 비교는 아래 표에서 이어서 작성하고, 기록은 시트로 받을 수 있습니다.</p>
+      <p className="mt-2 text-xs font-medium text-[#3654FF]">전체 후보 비교는 아래 표에서 이어서 작성하고, 기록은 시트로 받을 수 있습니다.</p>
     </div>
   );
 }
@@ -1196,17 +1202,17 @@ function ProofMemoCard({
   const description = metadata?.groupDescription ?? '견적, 계약금, 잔금, 보상 기준을 흩어진 캡처 대신 한곳에 남겨둡니다.';
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-      <p className="text-sm font-semibold text-blue-700">{eyebrow}</p>
-      <h3 className="mt-1 text-base font-semibold text-gray-950">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-gray-600">{description}</p>
+    <div className={FLOWME_SUPPORT_CARD_CLASS}>
+      <p className={FLOWME_EYEBROW_CLASS}>{eyebrow}</p>
+      <h3 className={FLOWME_TITLE_CLASS}>{title}</h3>
+      <p className="mt-2 text-sm leading-6 text-[#6E6B64]">{description}</p>
       <div className="mt-3 space-y-3">
         {fields.map((field) => (
           <label key={field.id} className="block">
-            <span className="text-sm font-semibold text-gray-800">{field.label}</span>
+            <span className="text-sm font-semibold text-[#1B1A17]">{field.label}</span>
             <textarea
               aria-label={field.label}
-              className="mt-1 min-h-16 w-full resize-y rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800"
+              className="mt-1 min-h-16 w-full resize-y rounded-xl border border-[#D8D5CD] bg-white px-3 py-2 text-sm text-[#1B1A17] outline-none focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15"
               placeholder={field.placeholder}
               value={workbenchState.memoCards?.[field.id] ?? ''}
               onChange={(event) => onWorkbenchChange(updateMemoCard(workbenchState, field.id, event.currentTarget.value))}
@@ -1243,23 +1249,23 @@ function LogTableCard({
       data-source-kind={table.sourceKind ?? undefined}
       data-read-only-columns={table.readOnlyColumnIds?.join(',') ?? undefined}
       data-user-editable-columns={table.userEditableColumnIds?.join(',') ?? undefined}
-      className="overflow-x-auto rounded-lg border border-slate-200 bg-white"
+      className={FLOWME_TABLE_CARD_CLASS}
     >
-      <div className="border-b border-slate-100 px-3 py-3">
+      <div className={FLOWME_TABLE_HEADER_CLASS}>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-blue-700">{table.eyebrow}</p>
-            <h3 className="mt-1 text-base font-semibold text-slate-950">{table.title}</h3>
+            <p className={FLOWME_EYEBROW_CLASS}>{table.eyebrow}</p>
+            <h3 className={FLOWME_TITLE_CLASS}>{table.title}</h3>
           </div>
           <ArtifactExportButtons actions={exportActions} kinds={exportKinds} mobileArtifactLabel={mobileArtifactLabel} mobileKinds={mobileKinds} />
         </div>
         <ArtifactExportStatus actions={exportActions} />
-        <p className="mt-2 text-sm leading-6 text-slate-600">{table.description}</p>
+        <p className="mt-2 text-sm leading-6 text-[#6E6B64]">{table.description}</p>
         {isWaterPurifier ? <WaterPurifierSourceBridge /> : null}
         {table.sourceKind === 'source_derived' ? <MobileStudyLogSummaryCard table={table} /> : <MobileLogSummaryCard table={table} />}
       </div>
       <table className="min-w-[760px] text-left text-sm">
-        <thead className="bg-slate-50 text-xs font-semibold text-slate-600">
+        <thead className={FLOWME_TABLE_HEAD_CLASS}>
           <tr>
             <th className="px-3 py-2">항목</th>
             {table.columns.map((column) => (
@@ -1269,8 +1275,8 @@ function LogTableCard({
         </thead>
         <tbody>
           {table.rows.map((row) => (
-            <tr key={row.id} className="border-t border-slate-100">
-              <th className="px-3 py-3 text-sm font-semibold text-slate-900">{row.label}</th>
+            <tr key={row.id} className="border-t border-[#E7E4DD]">
+              <th className="px-3 py-3 text-sm font-semibold text-[#1B1A17]">{row.label}</th>
               {table.columns.map((column) => {
                 const isReadOnly = table.readOnlyColumnIds?.includes(column.id) ?? false;
                 const value = isReadOnly ? row.defaultValues?.[column.id] ?? '' : workbenchState.logRows[row.id]?.[column.id] ?? row.defaultValues?.[column.id] ?? '';
@@ -1280,14 +1286,14 @@ function LogTableCard({
                     {isReadOnly ? (
                       <div
                         data-testid={`artifact-readonly-cell-${row.id}-${column.id}`}
-                        className="min-w-36 rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-sm leading-5 text-slate-700"
+                        className="min-w-36 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-2 py-1.5 text-sm leading-5 text-[#4A4842]"
                       >
                         {value || '-'}
                       </div>
                     ) : (
                       <input
                         aria-label={`${row.label} / ${column.label}`}
-                        className="w-full min-w-28 rounded-md border border-slate-200 px-2 py-1.5 text-sm text-slate-800"
+                        className="w-full min-w-28 rounded-xl border border-[#D8D5CD] px-2 py-1.5 text-sm text-[#1B1A17] outline-none focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15"
                         placeholder={column.placeholder}
                         value={value}
                         onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, row.id, column.id, event.currentTarget.value))}
@@ -1306,15 +1312,15 @@ function LogTableCard({
 
 function WaterPurifierSourceBridge() {
   return (
-    <div data-testid="water-purifier-source-bridge" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3 text-sm leading-6 text-blue-950">
-      <p className="text-xs font-semibold text-blue-700">원문에서 옮긴 필터 주기</p>
+    <div data-testid="water-purifier-source-bridge" className={`mt-3 ${FLOWME_COMPACT_SUPPORT_CARD_CLASS} text-sm leading-6 text-[#1B1A17]`}>
+      <p className="text-xs font-semibold text-[#3654FF]">원문에서 옮긴 필터 주기</p>
       <div className="mt-2 grid gap-1 sm:grid-cols-2">
         <p><b>침전</b> 원문 3~6개월</p>
         <p><b>프리카본</b> 원문 6~12개월</p>
         <p><b>RO/나노</b> 원문 12~24개월</p>
         <p><b>후카본</b> 원문 9~12개월</p>
       </div>
-      <p className="mt-2 text-xs leading-5 text-blue-800">코크/출수구 청소, 자가 살균, 물맛·냄새 확인은 필터 교체일과 별도 상태 메모로 남깁니다.</p>
+      <p className="mt-2 text-xs leading-5 text-[#6E6B64]">코크/출수구 청소, 자가 살균, 물맛·냄새 확인은 필터 교체일과 별도 상태 메모로 남깁니다.</p>
     </div>
   );
 }
@@ -1330,22 +1336,22 @@ function MobileStudyLogSummaryCard({ table }: { table: ArtifactLogTable }) {
       data-testid="mobile-study-log-summary-card"
       data-source-row-count={String(table.rows.length)}
       data-editable-column-count={String(editableColumns.length)}
-      className="mt-3 rounded-md border border-slate-200 bg-slate-50 p-3 md:hidden"
+      className={`mt-3 ${FLOWME_COMPACT_SUPPORT_CARD_CLASS} md:hidden`}
     >
-      <p className="text-xs font-semibold text-blue-700">원문 기준표 요약</p>
-      <h4 className="mt-1 text-sm font-semibold text-gray-950">{table.rows.length}개 원문 행을 먼저 옮겼습니다</h4>
+      <p className="text-xs font-semibold text-[#3654FF]">원문 기준표 요약</p>
+      <h4 className="mt-1 text-sm font-semibold text-[#1B1A17]">{table.rows.length}개 원문 행을 먼저 옮겼습니다</h4>
       <div className="mt-2 grid gap-2 text-sm">
-        <div data-testid="study-summary-first-source-row" className="rounded-md bg-white px-3 py-2">
-          <p className="text-xs font-semibold text-gray-500">원문 기준 첫 행</p>
-          <p className="mt-1 font-medium text-gray-900">{firstRow.label}</p>
-          <p className="mt-1 text-gray-700">{firstRow.defaultValues?.scope ?? '-'}</p>
+        <div data-testid="study-summary-first-source-row" className="rounded-xl border border-[#E7E4DD] bg-white px-3 py-2">
+          <p className="text-xs font-semibold text-[#6E6B64]">원문 기준 첫 행</p>
+          <p className="mt-1 font-medium text-[#1B1A17]">{firstRow.label}</p>
+          <p className="mt-1 text-[#4A4842]">{firstRow.defaultValues?.scope ?? '-'}</p>
         </div>
-        <div data-testid="study-summary-editable-fields" className="rounded-md bg-white px-3 py-2">
-          <p className="text-xs font-semibold text-gray-500">내가 채울 칸</p>
-          <p className="mt-1 text-gray-800">{editableColumns.map((column) => column.label).join(' / ')}</p>
+        <div data-testid="study-summary-editable-fields" className="rounded-xl border border-[#E7E4DD] bg-white px-3 py-2">
+          <p className="text-xs font-semibold text-[#6E6B64]">내가 채울 칸</p>
+          <p className="mt-1 text-[#1B1A17]">{editableColumns.map((column) => column.label).join(' / ')}</p>
         </div>
       </div>
-      <p className="mt-2 text-xs font-medium text-blue-800">원문 범위는 고정하고, 목표일·상태·메모만 내가 채웁니다.</p>
+      <p className="mt-2 text-xs font-medium text-[#3654FF]">원문 범위는 고정하고, 목표일·상태·메모만 내가 채웁니다.</p>
     </div>
   );
 }
@@ -1358,18 +1364,18 @@ function MobileLogSummaryCard({ table }: { table: ArtifactLogTable }) {
   if (!firstRow) return null;
 
   return (
-    <div data-testid="mobile-artifact-summary-card" className="mt-3 rounded-md border border-slate-200 bg-slate-50 p-3 md:hidden">
-      <p className="text-xs font-semibold text-blue-700">{isWaterPurifier ? '가장 먼저 확인할 필터' : '먼저 채울 행'}</p>
-      <h4 className="mt-1 text-sm font-semibold text-gray-950">{firstRow.label}</h4>
+    <div data-testid="mobile-artifact-summary-card" className={`mt-3 ${FLOWME_COMPACT_SUPPORT_CARD_CLASS} md:hidden`}>
+      <p className="text-xs font-semibold text-[#3654FF]">{isWaterPurifier ? '가장 먼저 확인할 필터' : '먼저 채울 행'}</p>
+      <h4 className="mt-1 text-sm font-semibold text-[#1B1A17]">{firstRow.label}</h4>
       <dl className="mt-2 grid gap-2 text-sm">
         {previewColumns.map((column) => (
-          <div key={column.id} className="rounded-md bg-white px-3 py-2">
-            <dt className="text-xs font-semibold text-gray-500">{column.label}</dt>
-            <dd className="mt-1 text-gray-800">{firstRow.defaultValues?.[column.id] || column.placeholder || '-'}</dd>
+          <div key={column.id} className="rounded-xl border border-[#E7E4DD] bg-white px-3 py-2">
+            <dt className="text-xs font-semibold text-[#6E6B64]">{column.label}</dt>
+            <dd className="mt-1 text-[#1B1A17]">{firstRow.defaultValues?.[column.id] || column.placeholder || '-'}</dd>
           </div>
         ))}
       </dl>
-      <p className="mt-2 text-xs font-medium text-blue-800">
+      <p className="mt-2 text-xs font-medium text-[#3654FF]">
         {isWaterPurifier ? '필터별 날짜와 상태는 아래 표에서 이어서 관리합니다.' : '전체 행은 아래 표에서 확인하고, 기록은 시트로 받을 수 있습니다.'}
       </p>
     </div>
@@ -1459,10 +1465,10 @@ function DecisionWorkbench({
         {bundle.flow.warning ? <RiskBoundaryCard bundle={bundle} /> : null}
         <HoldSectionCard bundle={bundle} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
         {memoFields.length ? <ProofMemoCard fields={memoFields} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} /> : null}
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-          <p className="text-sm font-semibold text-blue-700">현장에서 바로 체크</p>
-          <h3 className="mt-1 text-base font-semibold text-gray-950">현장 체크리스트</h3>
-          <ul className="mt-3 space-y-2 text-sm text-gray-700">
+        <div className={FLOWME_SUPPORT_CARD_CLASS}>
+          <p className={FLOWME_EYEBROW_CLASS}>현장에서 바로 체크</p>
+          <h3 className={FLOWME_TITLE_CLASS}>현장 체크리스트</h3>
+          <ul className="mt-3 space-y-2 text-sm text-[#4A4842]">
             {checklistItems.slice(0, 5).map((item) => (
               <li key={item.id}>
                 <label className="flex gap-2">
@@ -1486,9 +1492,9 @@ function DecisionWorkbench({
 
 function RiskBoundaryCard({ bundle }: { bundle: FlowBundle }) {
   return (
-    <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
-      <p className="text-sm font-semibold text-amber-900">{riskBoundaryTitle(bundle)}</p>
-      <p className="mt-1 text-sm leading-6 text-amber-950">{bundle.flow.warning}</p>
+    <div className={`${FLOWME_COMPACT_SUPPORT_CARD_CLASS} bg-[#FFF7E8]`}>
+      <p className="text-sm font-semibold text-[#8A5A12]">{riskBoundaryTitle(bundle)}</p>
+      <p className="mt-1 text-sm leading-6 text-[#4A4842]">{bundle.flow.warning}</p>
     </div>
   );
 }
@@ -1499,9 +1505,9 @@ function StopPrincipleCards({ bundle }: { bundle: FlowBundle }) {
   return (
     <div className="mb-4 space-y-3">
       {bundle.flow.stop_conditions?.length ? (
-        <section data-testid="flow-stop-conditions" className="rounded-lg border border-red-200 bg-red-50 p-3">
-          <p className="text-sm font-semibold text-red-800">중단·상담 기준</p>
-          <ul className="mt-2 space-y-1 text-sm leading-6 text-red-950">
+        <section data-testid="flow-stop-conditions" className={`${FLOWME_COMPACT_SUPPORT_CARD_CLASS} bg-[#FFF5F2]`}>
+          <p className="text-sm font-semibold text-[#A13E2E]">중단·상담 기준</p>
+          <ul className="mt-2 space-y-1 text-sm leading-6 text-[#4A4842]">
             {bundle.flow.stop_conditions.map((condition) => (
               <li key={condition}>- {condition}</li>
             ))}
@@ -1509,9 +1515,9 @@ function StopPrincipleCards({ bundle }: { bundle: FlowBundle }) {
         </section>
       ) : null}
       {bundle.flow.principles?.length ? (
-        <section data-testid="flow-principles" className="rounded-lg border border-blue-200 bg-blue-50 p-3">
-          <p className="text-sm font-semibold text-blue-800">기록 원칙</p>
-          <ul className="mt-2 space-y-1 text-sm leading-6 text-blue-950">
+        <section data-testid="flow-principles" className={FLOWME_COMPACT_SUPPORT_CARD_CLASS}>
+          <p className="text-sm font-semibold text-[#3654FF]">기록 원칙</p>
+          <ul className="mt-2 space-y-1 text-sm leading-6 text-[#4A4842]">
             {bundle.flow.principles.map((principle) => (
               <li key={principle}>- {principle}</li>
             ))}
@@ -1536,24 +1542,24 @@ function HoldSectionCard({
   const fields = getHoldMemoFields(bundle);
 
   return (
-    <section data-testid="flow-hold-section" className="rounded-lg border border-red-200 bg-red-50 p-3">
-      <p className="text-sm font-semibold text-red-800">{section.title}</p>
-      <ul className="mt-2 space-y-1 text-sm leading-6 text-red-950">
+    <section data-testid="flow-hold-section" className={`${FLOWME_COMPACT_SUPPORT_CARD_CLASS} bg-[#FFF5F2]`}>
+      <p className="text-sm font-semibold text-[#A13E2E]">{section.title}</p>
+      <ul className="mt-2 space-y-1 text-sm leading-6 text-[#4A4842]">
         {section.reasons.map((reason) => (
           <li key={reason}>- {reason}</li>
         ))}
       </ul>
-      <p className="mt-2 text-sm leading-6 text-red-950">{section.consequence}</p>
-      <p className="mt-2 rounded-md bg-white px-3 py-2 text-xs font-semibold text-red-800">{section.memo_template}</p>
+      <p className="mt-2 text-sm leading-6 text-[#4A4842]">{section.consequence}</p>
+      <p className="mt-2 rounded-xl border border-[#E7E4DD] bg-white px-3 py-2 text-xs font-semibold text-[#A13E2E]">{section.memo_template}</p>
       {fields.length ? (
         <div data-testid="flow-hold-memo-card" className="mt-3 grid gap-3">
           {fields.map((field) => (
-            <label key={field.id} className="grid gap-1 text-sm font-semibold text-red-950">
+            <label key={field.id} className="grid gap-1 text-sm font-semibold text-[#1B1A17]">
               {field.label}
               <textarea
                 data-testid={`flow-hold-field-${field.id}`}
                 aria-label={field.label}
-                className="min-h-20 rounded-md border border-red-200 bg-white px-3 py-2 text-sm font-normal text-gray-900 outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100"
+                className="min-h-20 rounded-xl border border-[#D8D5CD] bg-white px-3 py-2 text-sm font-normal text-[#1B1A17] outline-none focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15"
                 placeholder={field.placeholder}
                 value={workbenchState.memoCards?.[field.id] ?? ''}
                 onChange={(event) => onWorkbenchChange(updateMemoCard(workbenchState, field.id, event.currentTarget.value))}
@@ -2854,10 +2860,10 @@ function UsedCarDecisionResultCard({
   const decisions = ['구매 진행', '보류', '거절'];
 
   return (
-    <section data-testid="used-car-decision-result-card" className="mt-3 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-950">
-      <p className="text-xs font-semibold text-amber-800">점검 후 판단</p>
-      <h4 className="mt-1 text-sm font-semibold text-amber-950">현장 체크가 끝나면 구매/보류/거절 중 하나만 남깁니다</h4>
-      <p className="mt-1 text-xs leading-5 text-amber-900">
+    <section data-testid="used-car-decision-result-card" className={`mt-3 ${FLOWME_COMPACT_SUPPORT_CARD_CLASS} bg-[#FFF7E8] text-sm leading-6 text-[#4A4842]`}>
+      <p className="text-xs font-semibold text-[#8A5A12]">점검 후 판단</p>
+      <h4 className="mt-1 text-sm font-semibold text-[#1B1A17]">현장 체크가 끝나면 구매/보류/거절 중 하나만 남깁니다</h4>
+      <p className="mt-1 text-xs leading-5 text-[#6E6B64]">
         사진 저장은 필수가 아닙니다. 공식 조회, 정비소 점검, 판매자 설명이 맞지 않으면 아래 보류 메모에 이유만 남깁니다.
       </p>
       <div className="mt-3 grid gap-2 sm:grid-cols-3">
@@ -2866,8 +2872,8 @@ function UsedCarDecisionResultCard({
             key={decision}
             type="button"
             aria-pressed={selectedDecision === decision}
-            className={`min-h-10 rounded-md border px-3 text-sm font-semibold ${
-              selectedDecision === decision ? 'border-amber-700 bg-amber-700 text-white' : 'border-amber-200 bg-white text-amber-900'
+            className={`min-h-10 rounded-xl border px-3 text-sm font-semibold ${
+              selectedDecision === decision ? 'border-[#8A5A12] bg-[#8A5A12] text-white' : 'border-[#E7E4DD] bg-white text-[#1B1A17]'
             }`}
             onClick={() => onWorkbenchChange(updateMemoCard(workbenchState, 'usedCarDecision', decision))}
           >
@@ -2881,19 +2887,19 @@ function UsedCarDecisionResultCard({
 
 function UsedCarSourceBridge({ sourceUrl }: { sourceUrl?: string }) {
   return (
-    <div data-testid="used-car-source-bridge" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3 text-sm leading-6 text-blue-950">
+    <div data-testid="used-car-source-bridge" className={`mt-3 ${FLOWME_COMPACT_SUPPORT_CARD_CLASS} text-sm leading-6 text-[#1B1A17]`}>
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <p className="text-xs font-semibold text-blue-700">원문에서 옮긴 점검 순서</p>
-          <p className="mt-1 text-blue-900">조회 → 낮 시간 방문 → 외관/타이어/침수 → 엔진/시동/변속/제동 → 서류/정비소 → 계약 조건 순서로 확인합니다.</p>
+          <p className="text-xs font-semibold text-[#3654FF]">원문에서 옮긴 점검 순서</p>
+          <p className="mt-1 text-[#1B1A17]">조회 → 낮 시간 방문 → 외관/타이어/침수 → 엔진/시동/변속/제동 → 서류/정비소 → 계약 조건 순서로 확인합니다.</p>
         </div>
         {sourceUrl ? (
-          <a className="shrink-0 rounded-md border border-blue-200 bg-white px-2 py-1 text-xs font-semibold text-blue-800" href={sourceUrl} target="_blank" rel="noreferrer">
+          <a className="shrink-0 rounded-xl border border-[#D8D5CD] bg-white px-2 py-1 text-xs font-semibold text-[#3654FF]" href={sourceUrl} target="_blank" rel="noreferrer">
             원문 보기
           </a>
         ) : null}
       </div>
-      <p className="mt-2 text-xs leading-5 text-blue-800">사진은 필수 입력이 아니라 필요할 때만 메모합니다. 구매 판단은 공식 조회와 전문가 점검 결과를 우선합니다.</p>
+      <p className="mt-2 text-xs leading-5 text-[#6E6B64]">사진은 필수 입력이 아니라 필요할 때만 메모합니다. 구매 판단은 공식 조회와 전문가 점검 결과를 우선합니다.</p>
     </div>
   );
 }

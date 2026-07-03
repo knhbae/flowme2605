@@ -180,6 +180,48 @@ test('main user routes keep the FlowMe design token rhythm', async ({ page }) =>
   await expect(exportButton).toHaveCSS('border-radius', '12px');
 });
 
+test('special public workbench routes keep the FlowMe visual rhythm', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  for (const route of [
+    '/f/vehicle-inspection-prep',
+    '/f/moving-d30-basic',
+    '/f/computer-skills-d30-study',
+    '/f/new-car-delivery-check',
+    '/f/used-car-buying-check',
+  ]) {
+    await page.goto(route);
+    await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(250, 250, 248)');
+    await expect(page.getByTestId('platform-mobile-tabs')).toBeVisible();
+    await expectNoInternalUserSurfaceCopy(page.locator('body'));
+    const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+    expect(scrollWidth).toBeLessThanOrEqual(390);
+  }
+
+  await page.goto('/f/moving-d30-basic');
+  const exportFirstHero = page.getByRole('region', { name: 'Export-first flow hero' });
+  await expect(exportFirstHero).toHaveCSS('border-color', 'rgb(231, 228, 221)');
+  await expect(exportFirstHero).toHaveCSS('border-radius', '16px');
+  await expect(exportFirstHero.getByRole('button', { name: '내 Flow에 저장' })).toHaveCSS('border-radius', '12px');
+
+  await page.goto('/f/new-car-delivery-check');
+  const newCarWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(newCarWorkbench.getByTestId('flow-hold-section')).toHaveCSS('border-color', 'rgb(231, 228, 221)');
+  await expect(newCarWorkbench.getByTestId('flow-hold-section')).toHaveCSS('border-radius', '16px');
+  await expect(newCarWorkbench.getByTestId('artifact-list-card')).toHaveCSS('border-radius', '16px');
+
+  await page.goto('/f/used-car-buying-check');
+  const usedCarWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(usedCarWorkbench.getByTestId('used-car-source-bridge')).toHaveCSS('border-color', 'rgb(231, 228, 221)');
+  await expect(usedCarWorkbench.getByTestId('used-car-source-bridge')).toHaveCSS('border-radius', '16px');
+  await expect(usedCarWorkbench.getByTestId('used-car-decision-result-card')).toHaveCSS('border-radius', '16px');
+
+  await page.goto('/f/computer-skills-d30-study');
+  const studyWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(studyWorkbench.getByTestId('artifact-calendar-card')).toHaveCSS('border-radius', '16px');
+  await expect(studyWorkbench.getByTestId('artifact-list-card')).toHaveCSS('border-radius', '16px');
+});
+
 test('public flow detail stays inside the Flow finding app shell', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/vehicle-inspection-prep');

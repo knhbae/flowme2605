@@ -11,6 +11,9 @@ const baseURL = process.env.FLOWME_EVIDENCE_BASE_URL ?? 'http://127.0.0.1:3104';
 const viewport = { width: 390, height: 844 };
 
 const internalTerms = [
+  /묶음/,
+  /검수\s*필요/,
+  /정리\s*필요/,
   /\bdemo\b/i,
   /데모/,
   /\breview\b/i,
@@ -25,8 +28,13 @@ const internalTerms = [
   /지도\s+루틴/,
   /\bbundle\b/i,
   /\breadiness\b/i,
-  /검수\s*필요/,
-  /정리\s*필요/,
+  /대표\s*후보/,
+  /샘플\s*후보/,
+  /보류\s*후보/,
+  /삭제\s*후보/,
+  /대표\s*노출/,
+  /내부\s*검토/,
+  /검토\s*상태/,
   /\bStep\b/,
   /\bItem\b/,
 ];
@@ -38,6 +46,10 @@ const cleanRoutes = [
   { route: '/flow-maps/middle-school-math-1', screenshot: '04-flow-map-math-mobile.png' },
   { route: '/f/vehicle-inspection-prep', screenshot: '05-public-vehicle-inspection-mobile.png' },
   { route: '/my', screenshot: '06-my-empty-mobile.png' },
+  { route: '/f/moving-d30-basic', screenshot: '09-public-moving-basic-mobile.png' },
+  { route: '/f/computer-skills-d30-study', screenshot: '10-public-computer-skills-mobile.png' },
+  { route: '/f/new-car-delivery-check', screenshot: '11-public-new-car-mobile.png' },
+  { route: '/f/used-car-buying-check', screenshot: '12-public-used-car-mobile.png' },
 ];
 
 function getLaunchOptions() {
@@ -66,6 +78,16 @@ async function capture(page, route, state, screenshotName) {
       .map((term) => term.source);
     const firstButton = document.querySelector('button, a')?.textContent?.trim() ?? '';
     const activeMobileTab = document.querySelector('[data-testid="platform-mobile-tabs"] [aria-current="page"]')?.textContent?.trim() ?? '';
+    function readStyle(selector) {
+      const element = document.querySelector(selector);
+      if (!element) return null;
+      const style = getComputedStyle(element);
+      return {
+        borderColor: style.borderColor,
+        borderRadius: style.borderTopLeftRadius,
+        backgroundColor: style.backgroundColor,
+      };
+    }
     return {
       route: input.route,
       state: input.state,
@@ -80,6 +102,16 @@ async function capture(page, route, state, screenshotName) {
       h1: document.querySelector('h1')?.textContent?.trim() ?? '',
       firstButton,
       matchedTerms,
+      visualChecks: {
+        exportFirstHero: readStyle('[aria-label="Export-first flow hero"]'),
+        artifactWorkbench: readStyle('[aria-label="Flow artifact workbench"]'),
+        holdSection: readStyle('[data-testid="flow-hold-section"]'),
+        artifactListCard: readStyle('[data-testid="artifact-list-card"]'),
+        artifactCalendarCard: readStyle('[data-testid="artifact-calendar-card"]'),
+        usedCarSourceBridge: readStyle('[data-testid="used-car-source-bridge"]'),
+        usedCarDecisionResultCard: readStyle('[data-testid="used-car-decision-result-card"]'),
+        mobileExportBar: readStyle('[data-testid="mobile-export-bar"]'),
+      },
     };
   }, {
     route,
@@ -177,6 +209,7 @@ try {
       summary: 'The app save loop writes the expected localStorage records and renders saved My Flow/Calendar state. The previous final audit screenshots lost the saved browser context.',
       p3_02: 'Post-save My Flow and Calendar evidence uses compact action-first copy without repeated saved counts, stale date summaries, selected-date labels, or zero routine counts.',
       p3_03: 'Public single Flow detail now uses the shared FlowMe app shell, keeps Flow finding active, and keeps mobile export actions separated from the global bottom tabs.',
+      p3_04: 'Special public workbench routes keep the shared FlowMe visual rhythm: warm app background, 16px cards, 12px actions, quiet support cards, and no visible internal operation copy.',
     },
     evidence: [...cleanEvidence, ...postSaveEvidence],
   };
