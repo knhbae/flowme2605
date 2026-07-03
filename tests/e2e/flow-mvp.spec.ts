@@ -64,15 +64,23 @@ test('home presents FLOW as an executable content platform', async ({ page }) =>
 });
 
 test('flow list exposes the seed and online-sourced flows', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flows');
 
-  await expect(page.getByRole('heading', { name: '저장할 실행 콘텐츠' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '무엇을 저장할까요?' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '저장할 실행 콘텐츠' })).toHaveCount(0);
   const flowMapCatalog = page.getByTestId('flow-map-catalog-section');
   await expect(flowMapCatalog).toBeVisible();
-  await expect(flowMapCatalog.getByRole('heading', { name: '내 상황에 맞는 콘텐츠 고르기' })).toBeVisible();
+  await expect(flowMapCatalog.getByRole('heading', { name: '내 상황에 맞는 콘텐츠 고르기' })).toHaveCount(0);
   await expect(flowMapCatalog.getByTestId('flow-map-catalog-card')).toHaveCount(11);
   await expect(flowMapCatalog.locator('[data-testid="flow-map-catalog-card"][data-source-kind="curated-source"]')).toHaveCount(9);
   await expect(flowMapCatalog.getByTestId('single-flow-catalog-card')).toHaveCount(1);
+  const firstCatalogCard = flowMapCatalog.getByTestId('flow-map-catalog-card').first();
+  const firstCatalogCardTop = await firstCatalogCard.evaluate((element) => element.getBoundingClientRect().top);
+  expect(firstCatalogCardTop).toBeLessThan(480);
+  await expect(firstCatalogCard.getByTestId('flow-card-primary-action')).toHaveText('저장 전 보기');
+  await expect(firstCatalogCard.getByTestId('flow-map-recommended-flow-link')).toHaveCount(0);
+  await expect(firstCatalogCard.getByTestId('flow-map-source-link')).toHaveCount(0);
   await expect(flowMapCatalog.locator('a[href="/flow-maps/moving-d30"]')).toBeVisible();
   await expect(flowMapCatalog.locator('a[href="/flow-maps/middle-school-math-1"]')).toBeVisible();
   await expect(flowMapCatalog.locator('a[href="/flow-maps/moving-map"]')).toBeVisible();
@@ -92,13 +100,11 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(page.getByRole('heading', { name: '이직 전 리스크 점검 Flow' })).toHaveCount(0);
 
   const jeonseCard = page.locator('a[href="/f/jeonse-contract-precheck-docs"]');
-  await expect(jeonseCard.getByText('한 개만 저장')).toBeVisible();
   await expect(jeonseCard.getByText('주거/계약전점검')).toBeVisible();
-  await expect(jeonseCard.getByText('체크리스트형')).toBeVisible();
   await expect(jeonseCard).toContainText('계약 예정일 입력만 넣으면 캘린더 + 체크로 저장');
-  await expect(jeonseCard.getByText('먼저 확인할 일')).toBeVisible();
-  await expect(jeonseCard.getByText('원문 연결')).toBeVisible();
-  await expect(jeonseCard.getByText('캘린더 + 체크').first()).toBeVisible();
+  await expect(jeonseCard.getByText('먼저 할 일')).toBeVisible();
+  await expect(jeonseCard.getByText('원문 연결')).toHaveCount(0);
+  await expect(jeonseCard.getByTestId('flow-card-primary-action')).toHaveText('저장 전 보기');
   await expect(page.getByText('베타 운영 중').first()).toHaveCount(0);
   await expect(page.getByText('미리보기').first()).toHaveCount(0);
   await expect(page.getByText('출력:').first()).toHaveCount(0);
@@ -113,25 +119,23 @@ test('curated source cards are integrated into Flow finding and open the recomme
   await expect(page.getByTestId('curated-source-catalog-section')).toHaveCount(0);
   await expect(curatedCards).toHaveCount(9);
   await expect(catalog).toContainText('펀맘 공부 루틴');
-  await expect(catalog).toContainText('확인하며 사용');
+  await expect(catalog).not.toContainText('확인하며 사용');
   await expect(catalog).not.toContainText('자료 보강 후 시작');
-  await expect(catalog).toContainText('먼저 확인할 일');
+  await expect(catalog).toContainText('먼저 할 일');
 
   const movingCard = curatedCards.filter({ hasText: '이사 준비' });
   await expect(movingCard.getByTestId('flow-map-detail-link')).toHaveAttribute('href', '/flow-maps/moving-map');
   await expect(movingCard.getByTestId('flow-map-detail-link')).toHaveText('저장 전 보기');
-  await expect(movingCard.getByTestId('flow-map-recommended-flow-link')).toHaveAttribute('href', '/f/moving-dday');
-  await expect(movingCard.getByTestId('flow-map-recommended-flow-link')).toHaveText('바로 시작');
-  await expect(movingCard.getByTestId('flow-map-source-link')).toHaveAttribute('href', /ajd\.co\.kr/);
+  await expect(movingCard.getByTestId('flow-map-recommended-flow-link')).toHaveCount(0);
+  await expect(movingCard.getByTestId('flow-map-source-link')).toHaveCount(0);
 
-  await movingCard.getByTestId('flow-map-recommended-flow-link').scrollIntoViewIfNeeded();
+  await movingCard.getByTestId('flow-map-detail-link').scrollIntoViewIfNeeded();
   await Promise.all([
-    page.waitForURL('**/f/moving-dday', { timeout: 15_000 }),
-    movingCard.getByTestId('flow-map-recommended-flow-link').click(),
+    page.waitForURL('**/flow-maps/moving-map', { timeout: 15_000 }),
+    movingCard.getByTestId('flow-map-detail-link').click(),
   ]);
-  await expect(page.getByTestId('flow-public-shell')).toBeVisible();
-  await expect(page.getByRole('heading', { name: '이사 D-day 준비' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '이사/청소와 위탁 예약하기' })).toBeVisible();
+  await expect(page.getByTestId('flow-map-public')).toBeVisible();
+  await expect(page.getByRole('link', { name: '바로 시작' }).first()).toHaveAttribute('href', '/f/moving-dday');
 });
 
 test('flow finding search and intent chips narrow commercial catalog cards', async ({ page }) => {
@@ -265,10 +269,10 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(page.getByTestId('my-flow-view-calendar')).toHaveCount(0);
 
   await page.goto('/flows');
-  await expect(page.getByRole('heading', { name: '저장할 실행 콘텐츠' })).toBeVisible();
-  await expect(page.getByTestId('flow-map-catalog-section').getByRole('heading', { name: '내 상황에 맞는 콘텐츠 고르기' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '무엇을 저장할까요?' })).toBeVisible();
+  await expect(page.getByTestId('flow-map-catalog-section').getByRole('heading', { name: '내 상황에 맞는 콘텐츠 고르기' })).toHaveCount(0);
   await expect(page.locator('body')).not.toContainText('Flow Map');
-  await expect(page.getByText('한 개만 저장').first()).toBeVisible();
+  await expect(page.getByText('한 개만 저장').first()).toHaveCount(0);
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
 
   await page.goto('/flow-maps/moving-d30');
@@ -421,7 +425,7 @@ test('moving restart exports edited items and gates flow save', async ({ page })
 test('flow discovery keeps legacy tag queries out of the representative catalog surface', async ({ page }) => {
   await page.goto('/flows?tag=돈이%20걸린%20결정');
 
-  await expect(page.getByRole('heading', { name: '저장할 실행 콘텐츠' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '무엇을 저장할까요?' })).toBeVisible();
   await expect(page.getByTestId('flow-map-catalog-section').getByTestId('single-flow-catalog-card')).toHaveCount(1);
   await expect(page.getByText('필터 조정')).toHaveCount(0);
   await expect(page.getByLabel('태그')).toHaveCount(0);

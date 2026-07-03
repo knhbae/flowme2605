@@ -450,7 +450,7 @@ function matchesCatalogIntent(searchText: string, intent: CatalogIntent): boolea
 }
 
 function getCatalogScaleText(counts: { flows?: number; steps: number; items: number }): string {
-  return `${counts.steps}개 할 일 · ${counts.items}개 체크`;
+  return `할 일 ${counts.steps}개`;
 }
 
 function getCatalogFirstTask(previewSteps: string[], fallback: string): string {
@@ -472,22 +472,6 @@ function getCatalogPromiseText(input: string, artifact: string): string {
   const artifactParticle = getInstrumentParticle(artifact);
   if (input === '입력 없음') return `${artifact}${artifactParticle} 바로 저장`;
   return `${input}만 넣으면 ${artifact}${artifactParticle} 저장`;
-}
-
-function getCatalogReadinessLabel(status: string): string {
-  if (status.includes('보강')) return '확인하며 사용';
-  if (status.includes('바로 저장')) return '바로 시작 가능';
-  if (status.includes('시작')) return status;
-  if (status.includes('가능')) return status;
-  return '확인 가능';
-}
-
-function getCatalogSummaryText(summary: string): string {
-  return summary
-    .replace(/^(자료 보강 후 시작|일부 보강 후 시작|바로 시작 가능)\.\s*/, '')
-    .replace(/\s*\d+개 묶음,\s*/g, ' ')
-    .replace(/\s*\d+개 묶음 ·\s*/g, ' ')
-    .replace(/\s*\d+개 묶음\s*/g, ' ');
 }
 
 function isJeonsePrecheckFlow(bundle: FlowBundle): boolean {
@@ -820,35 +804,33 @@ function DirectoryFlowCard({ bundle }: { bundle: FlowBundle }) {
     <Link
       data-testid="single-flow-catalog-card"
       aria-label={bundle.flow.title}
-      className="block h-full rounded-2xl border border-[#E7E4DD] bg-white p-4 transition hover:border-[#3654FF]/40 hover:shadow-[0_8px_24px_rgba(27,26,23,0.06)]"
+      className="block h-full rounded-2xl border border-[#E7E4DD] bg-white p-3.5 transition hover:border-[#3654FF]/40 hover:shadow-[0_8px_24px_rgba(27,26,23,0.06)]"
       href={`/f/${bundle.flow.slug}`}
     >
-      <article className="flex h-full min-w-0 flex-col justify-between gap-4">
+      <article className="flex h-full min-w-0 flex-col justify-between gap-2.5">
         <div>
-          <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-semibold text-[#6E6B64]">
-            <span>{bundle.flow.category}</span>
-            <span aria-hidden="true">·</span>
-            <span>한 개만 저장</span>
-            <span aria-hidden="true">·</span>
-            <span>{getCatalogSourceSignal(bundle)}</span>
+          <div className="flex items-center justify-between gap-2 text-[11px] font-semibold text-[#8A857B]">
+            <span className="min-w-0 truncate">{bundle.flow.category}</span>
+            <span data-testid="flow-card-support-meta" className="shrink-0 text-[#8A857B]">
+              체크 {count}개
+            </span>
           </div>
-          <h3 className="mt-3 break-keep text-lg font-semibold leading-snug text-[#1B1A17]">{bundle.flow.title}</h3>
-          <p className="mt-2 break-keep text-sm font-semibold leading-6 text-[#3654FF]">{promise}</p>
-          <p className="mt-1 line-clamp-2 break-keep text-sm leading-6 text-[#6E6B64]">{getFlowResultText(bundle)}</p>
-          <div className="mt-3 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2.5">
-            <p className="text-[11px] font-semibold text-[#6E6B64]">먼저 확인할 일</p>
-            <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{firstTask}</p>
-          </div>
-          <div className="mt-3 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold text-[#8A857B]">
-            <span>{artifact}</span>
-            <span aria-hidden="true">·</span>
-            <span>{getStructureLabel(bundle)}</span>
-            <span aria-hidden="true">·</span>
-            <span>{count}개 체크</span>
+          <h3 className="mt-2 break-keep text-base font-semibold leading-snug text-[#1B1A17] sm:text-lg">{bundle.flow.title}</h3>
+          <p className="mt-1 break-keep text-sm font-semibold leading-5 text-[#3654FF]">{promise}</p>
+          <div className="mt-2 rounded-xl bg-[#FAFAF8] px-3 py-2">
+            <p className="line-clamp-1 text-sm font-semibold text-[#1B1A17]">
+              <span className="mr-1 text-[11px] text-[#6E6B64]">먼저 할 일</span>
+              {firstTask}
+            </p>
           </div>
         </div>
-        <div className="grid gap-2 border-t border-[#E7E4DD] pt-3 text-sm">
-          <span className="inline-flex min-h-10 items-center justify-center rounded-xl bg-[#3654FF] px-3 py-2 font-semibold text-white">저장 전 보기</span>
+        <div className="pt-1 text-sm">
+          <span
+            data-testid="flow-card-primary-action"
+            className="inline-flex min-h-10 w-full items-center justify-center rounded-xl bg-[#3654FF] px-3 py-2 font-semibold text-white"
+          >
+            저장 전 보기
+          </span>
         </div>
       </article>
     </Link>
@@ -925,62 +907,37 @@ function getChildFlowCatalogSearchText(
 
 function FlowMapCatalogCard({ item }: { item: FlowMapCatalogLink }) {
   const firstTask = getCatalogFirstTask(item.previewSteps, item.recommendedFlowTitle);
-  const sourceLabel = item.sourceUrlCount > 1 ? `원문 ${item.sourceUrlCount}개` : '원문';
   const promise = getCatalogPromiseText(item.input, item.artifact);
-  const readinessLabel = getCatalogReadinessLabel(item.userFacingStatus);
-  const summary = getCatalogSummaryText(item.summary);
+  const scaleText = getCatalogScaleText(item.counts);
 
   return (
     <article
       data-testid="flow-map-catalog-card"
       data-source-kind={item.sourceKind}
-      className="flex min-w-0 flex-col rounded-2xl border border-[#E7E4DD] bg-white p-4 transition hover:border-[#3654FF]/40 hover:shadow-[0_8px_24px_rgba(27,26,23,0.06)]"
+      className="flex min-w-0 flex-col rounded-2xl border border-[#E7E4DD] bg-white p-3.5 transition hover:border-[#3654FF]/40 hover:shadow-[0_8px_24px_rgba(27,26,23,0.06)]"
     >
-      <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-semibold text-[#6E6B64]">
-        <span>{item.categoryLabel}</span>
-        <span aria-hidden="true">·</span>
-        <span>{readinessLabel}</span>
-        <span aria-hidden="true">·</span>
-        <span>{item.sourceSignal}</span>
+      <div className="flex items-center justify-between gap-2 text-[11px] font-semibold text-[#8A857B]">
+        <span className="min-w-0 truncate">{item.categoryLabel}</span>
+        <span data-testid="flow-card-support-meta" className="shrink-0 text-[#8A857B]">
+          {scaleText}
+        </span>
       </div>
-      <h3 className="mt-3 break-keep text-lg font-semibold leading-snug text-[#1B1A17]">{item.title}</h3>
-      <p className="mt-2 break-keep text-sm font-semibold leading-6 text-[#3654FF]">{promise}</p>
-      <p className="mt-1 line-clamp-2 break-keep text-sm leading-6 text-[#6E6B64]">{summary}</p>
-      <div className="mt-3 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2.5">
-        <p className="text-[11px] font-semibold text-[#6E6B64]">먼저 확인할 일</p>
-        <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{firstTask}</p>
+      <h3 className="mt-2 break-keep text-base font-semibold leading-snug text-[#1B1A17] sm:text-lg">{item.title}</h3>
+      <p className="mt-1 break-keep text-sm font-semibold leading-5 text-[#3654FF]">{promise}</p>
+      <div className="mt-2 rounded-xl bg-[#FAFAF8] px-3 py-2">
+        <p className="line-clamp-1 text-sm font-semibold text-[#1B1A17]">
+          <span className="mr-1 text-[11px] text-[#6E6B64]">먼저 할 일</span>
+          {firstTask}
+        </p>
       </div>
-      <div className="mt-3 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold text-[#8A857B]">
-        <span>{getCatalogScaleText(item.counts)}</span>
-        <span aria-hidden="true">·</span>
-        <span>{sourceLabel}</span>
-      </div>
-      <div className="mt-auto grid gap-2 border-t border-[#E7E4DD] pt-3">
+      <div className="mt-auto pt-3">
         <Link
           data-testid="flow-map-detail-link"
-          className="inline-flex min-h-10 items-center justify-center rounded-xl bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white hover:bg-[#2945E8]"
+          className="inline-flex min-h-10 w-full items-center justify-center rounded-xl bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white hover:bg-[#2945E8]"
           href={`/flow-maps/${item.id}`}
         >
-          저장 전 보기
+          <span data-testid="flow-card-primary-action">저장 전 보기</span>
         </Link>
-        <div className="flex min-h-8 items-center justify-center gap-4 text-sm font-semibold">
-          <Link
-            data-testid="flow-map-recommended-flow-link"
-            className="text-[#3654FF] underline-offset-2 hover:underline"
-            href={`/f/${item.recommendedFlowSlug}`}
-          >
-            바로 시작
-          </Link>
-          <a
-            data-testid="flow-map-source-link"
-            className="text-[#6E6B64] underline-offset-2 hover:text-[#3654FF] hover:underline"
-            href={item.sourceUrl}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {sourceLabel}
-          </a>
-        </div>
       </div>
     </article>
   );
@@ -1148,31 +1105,23 @@ export function FlowList() {
     <main className="min-h-screen bg-[#FAFAF8] px-5 py-6 pb-28 md:py-8 md:pb-8">
       <div className="mx-auto max-w-6xl">
       <PlatformNav />
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-sm font-semibold text-[#6E6B64]">Flow 찾기</p>
-          <h1 className="mt-1 break-keep text-3xl font-semibold tracking-tight text-[#1B1A17]">저장할 실행 콘텐츠</h1>
-          <p className="mt-2 break-keep text-[#6E6B64]">무엇을 넣으면 어떤 일정과 체크가 생기는지 먼저 봅니다.</p>
-        </div>
-      </div>
-
       <section data-testid="flow-map-catalog-section" className="mb-8">
-        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="text-sm font-semibold text-[#3654FF]">저장할 콘텐츠</p>
-            <h2 className="mt-1 break-keep text-2xl font-semibold text-[#1B1A17]">내 상황에 맞는 콘텐츠 고르기</h2>
-            <p className="mt-1 break-keep text-sm leading-6 text-[#6E6B64]">카드에서 저장 결과와 먼저 할 일을 확인합니다.</p>
+        <div data-testid="flow-catalog-hero" className="mb-3">
+          <p className="text-sm font-semibold text-[#6E6B64]">Flow 찾기</p>
+          <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
+            <h1 className="break-keep text-2xl font-semibold tracking-tight text-[#1B1A17] sm:text-3xl">무엇을 저장할까요?</h1>
+            <span className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-[#3654FF] ring-1 ring-[#E7E4DD]">
+              {hasCatalogFilter ? `${visibleCatalogCount}/${totalCatalogCount}개 콘텐츠` : `${totalCatalogCount}개 콘텐츠`}
+            </span>
           </div>
-          <span className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-[#3654FF] ring-1 ring-[#E7E4DD]">
-            {hasCatalogFilter ? `${visibleCatalogCount}/${totalCatalogCount}개 콘텐츠` : `${totalCatalogCount}개 콘텐츠`}
-          </span>
+          <p className="mt-1 break-keep text-sm leading-6 text-[#6E6B64]">저장하면 일정과 체크리스트가 생깁니다.</p>
         </div>
-        <div className="mb-4 grid gap-3 rounded-2xl border border-[#E7E4DD] bg-white p-4">
-          <label className="space-y-2">
-            <span className="text-sm font-semibold text-[#1B1A17]">검색</span>
+        <div className="mb-3 grid gap-2">
+          <label>
+            <span className="sr-only">검색</span>
             <input
               data-testid="flow-catalog-search"
-              className="min-h-11 w-full rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none placeholder:text-[#A09B91] focus:border-[#3654FF] focus:bg-white focus:ring-2 focus:ring-[#3654FF]/10"
+              className="min-h-11 w-full rounded-xl border border-[#E7E4DD] bg-white px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none placeholder:text-[#A09B91] focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/10"
               value={catalogQuery}
               onChange={(event) => setCatalogQuery(event.target.value)}
               placeholder="이사, 공부, 식단, 체크리스트"
