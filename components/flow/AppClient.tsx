@@ -1537,9 +1537,9 @@ export function HomeLanding() {
           <p className="mt-4 max-w-2xl break-keep text-base leading-7 text-gray-600 md:text-lg md:leading-8">
             블로그, 유튜브, 공식 안내에서 따라 할 부분만 골라 일정과 체크리스트로 저장합니다.
           </p>
-          <div className="mt-5 hidden flex-wrap gap-3 sm:flex md:mt-7">
-            <Link className="rounded-xl bg-[#3654FF] px-5 py-3 text-sm font-semibold text-white hover:bg-[#2945E8]" href="/flows">
-              Flow 찾기
+          <div className="mt-5 flex flex-wrap gap-3 md:mt-7">
+            <Link className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[#3654FF] px-5 py-3 text-sm font-semibold text-white hover:bg-[#2945E8] sm:w-auto" href="/flows">
+              콘텐츠 고르러 가기
             </Link>
           </div>
         </div>

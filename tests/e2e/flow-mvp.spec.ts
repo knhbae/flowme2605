@@ -13,7 +13,7 @@ test('home presents FLOW as an executable content platform', async ({ page }) =>
   await expect(page.getByRole('heading', { name: '콘텐츠를 일정과 할 일로 저장' })).toBeVisible();
   await expect(page.getByText('서비스 구조')).toHaveCount(0);
   await expect(page.getByText('짧은 단일 Flow')).toHaveCount(0);
-  await expect(page.getByRole('link', { name: 'Flow 찾기' }).nth(1)).toBeVisible();
+  await expect(page.getByRole('link', { name: '콘텐츠 고르러 가기' })).toHaveAttribute('href', '/flows');
   await expect(page.getByRole('link', { name: '내 콘텐츠로 Flow 만들기' })).toHaveCount(0);
   await expect(page.getByRole('link', { name: '#D-Day 준비' })).toHaveCount(0);
   await expect(page.getByText('원룸 이사 D-30').first()).toBeVisible();
@@ -223,6 +223,8 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(mobileTabs.getByRole('link', { name: '캘린더' })).toHaveAttribute('href', '/calendar');
   await expect(page.getByText('대표 Flow Map')).toHaveCount(0);
   await expect(page.getByTestId('home-primary-flow-card')).toHaveAttribute('href', '/flow-maps/moving-d30');
+  await expect(page.getByRole('link', { name: '콘텐츠 고르러 가기' })).toBeVisible();
+  await expect(page.getByRole('link', { name: '콘텐츠 고르러 가기' })).toHaveAttribute('href', '/flows');
 
   await page.goto('/calendar');
   await expect(page.getByRole('heading', { level: 1, name: '캘린더' })).toBeVisible();
@@ -246,7 +248,14 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await page.goto('/flow-maps/moving-d30');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
+  await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveText('저장하고 시작');
+  await page.getByTestId('flow-map-anchor-input').fill('');
+  await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveText('이사일 입력');
+  await page.getByTestId('flow-map-save-all-mobile').click();
+  await expect(page.getByTestId('flow-map-anchor-input')).toBeFocused();
+  await expect(page.getByText('저장하려면 날짜를 입력해 주세요.')).toBeVisible();
   await page.getByTestId('flow-map-anchor-input').fill('2026-07-22');
+  await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveText('저장하고 시작');
   await page.getByTestId('flow-map-save-all-mobile').click();
   await expect(page).toHaveURL('/my?savedMap=moving-d30');
   const movingPostSave = page.getByTestId('my-flow-post-save-panel');

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   buildSourceBackedFlowMapPersistenceRecord,
   buildSourceBackedFlowMapSavedSnapshot,
@@ -33,13 +33,17 @@ function getUserFacingSetupHint(hint: string): string {
 export function SourceBackedFlowMapSaveButton({ mapId, savedFlows, setupInput }: SourceBackedFlowMapSaveButtonProps) {
   const [anchor, setAnchor] = useState(setupInput?.defaultValue ?? '');
   const [showRequired, setShowRequired] = useState(false);
+  const anchorInputRef = useRef<HTMLInputElement>(null);
   const needsAnchor = Boolean(setupInput);
   const saveButtonLabel = '전체 저장하고 시작';
+  const mobileSaveButtonLabel = needsAnchor && !anchor ? `${setupInput?.label ?? '날짜'} 입력` : needsAnchor ? '저장하고 시작' : saveButtonLabel;
   const setupInputHint = setupInput ? getUserFacingSetupHint(setupInput.hint) : '';
 
   const saveMap = () => {
     if (needsAnchor && !anchor) {
       setShowRequired(true);
+      anchorInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      window.setTimeout(() => anchorInputRef.current?.focus(), 120);
       return;
     }
 
@@ -71,8 +75,9 @@ export function SourceBackedFlowMapSaveButton({ mapId, savedFlows, setupInput }:
           {setupInput.label}
           <input
             aria-label={setupInput.label}
-            className="min-h-11 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2 text-base font-semibold text-slate-950 outline-none focus:border-[#3654FF] focus:bg-white focus:ring-2 focus:ring-[#3654FF]/10"
+            className={`min-h-11 rounded-xl border bg-[#FAFAF8] px-3 py-2 text-base font-semibold text-slate-950 outline-none focus:bg-white focus:ring-2 ${showRequired ? 'border-red-500 ring-2 ring-red-100 focus:border-red-500 focus:ring-red-100' : 'border-[#E7E4DD] focus:border-[#3654FF] focus:ring-[#3654FF]/10'}`}
             data-testid="flow-map-anchor-input"
+            ref={anchorInputRef}
             type="date"
             value={anchor}
             onChange={(event) => {
@@ -93,7 +98,7 @@ export function SourceBackedFlowMapSaveButton({ mapId, savedFlows, setupInput }:
             {needsAnchor ? (anchor ? `${setupInput?.label} 입력됨` : `${setupInput?.label} 필요`) : `${savedFlows.length}개 묶음 저장`}
           </p>
           <button className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-[#3654FF] px-4 py-2 text-sm font-semibold text-white" data-testid="flow-map-save-all-mobile" type="button" onClick={saveMap}>
-            {saveButtonLabel}
+            {mobileSaveButtonLabel}
           </button>
         </div>
       </div>
