@@ -178,6 +178,7 @@
     <a class="chip" href="../2026-07-03-claude-design-action-backlog-ko.md">Backlog source</a>
     <span class="chip green">P0~P2 closed</span>
     <span class="chip green">P3-01 rechecked</span>
+    <span class="chip green">P3-03 app shell</span>
     <span class="chip amber">390px evidence</span>
   </div>
 
@@ -194,7 +195,7 @@
       </div>
       <div class="card">
         <h3>검증 상태</h3>
-        <p>모바일 390px route evidence, P3-01 직접 subset 2건, P0/P2 회귀 subset 6건, full test/docs/build 검증 통과를 확보했다.</p>
+        <p>모바일 390px route evidence, P3-01/P3-02/P3-03 targeted subset, P0/P2 회귀 subset, full test/docs/build 검증 통과를 확보했다.</p>
       </div>
     </div>
   </section>
@@ -231,6 +232,24 @@
       <div class="card">
         <h3>Evidence</h3>
         <p>`route-evidence.json`의 compact checks와 07/08 screenshot을 다시 생성했다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>P3-03 공개 Flow 상세 shell 정리</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>정책 결론</h3>
+        <p>`/f/[slug]`는 공유 진입을 허용하지만, 일반 서비스 구조에서는 `Flow 찾기` 아래의 공개 상세 화면으로 본다.</p>
+      </div>
+      <div class="card">
+        <h3>UI 적용</h3>
+        <p>전용 public shell을 제거하고 공통 `PlatformNav`를 붙였다. 모바일에서는 하단 4탭과 `Flow 찾기` active 상태가 보인다.</p>
+      </div>
+      <div class="card">
+        <h3>Fixed layer</h3>
+        <p>public detail의 mobile export bar를 하단 4탭 위로 올려 저장/export 행동과 전역 탭이 겹치지 않게 했다.</p>
       </div>
     </div>
   </section>
@@ -284,7 +303,6 @@
     <table>
       <thead><tr><th>우선순위</th><th>항목</th><th>판단 요청</th></tr></thead>
       <tbody>
-        <tr><td data-label="우선순위" class="risk-medium">Medium</td><td data-label="항목">Public Flow detail app shell</td><td data-label="판단 요청">`/f/vehicle-inspection-prep` 모바일 evidence에서 하단 4탭 nav가 보이지 않는다. 공유 전용 shell로 둘지, app shell에 맞출지 결정이 필요하다.</td></tr>
         <tr><td data-label="우선순위" class="risk-low">Low</td><td data-label="항목">특수 workbench polish</td><td data-label="판단 요청">공통 토큰은 정리됐지만 특수 workbench 일부는 다음 visual QA에서 추가 정리가 필요할 수 있다.</td></tr>
       </tbody>
     </table>

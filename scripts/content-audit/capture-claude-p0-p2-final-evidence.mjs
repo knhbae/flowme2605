@@ -65,6 +65,7 @@ async function capture(page, route, state, screenshotName) {
       .filter((term) => textLines.some((line) => new RegExp(term.source, term.flags).test(line)))
       .map((term) => term.source);
     const firstButton = document.querySelector('button, a')?.textContent?.trim() ?? '';
+    const activeMobileTab = document.querySelector('[data-testid="platform-mobile-tabs"] [aria-current="page"]')?.textContent?.trim() ?? '';
     return {
       route: input.route,
       state: input.state,
@@ -75,6 +76,7 @@ async function capture(page, route, state, screenshotName) {
       noHorizontalOverflow: document.documentElement.scrollWidth <= document.documentElement.clientWidth,
       bodyBg: getComputedStyle(document.body).backgroundColor,
       navVisible: Boolean(document.querySelector('[data-testid="platform-mobile-tabs"]')),
+      activeMobileTab,
       h1: document.querySelector('h1')?.textContent?.trim() ?? '',
       firstButton,
       matchedTerms,
@@ -174,6 +176,7 @@ try {
       b1Conclusion: 'evidence_generation_error',
       summary: 'The app save loop writes the expected localStorage records and renders saved My Flow/Calendar state. The previous final audit screenshots lost the saved browser context.',
       p3_02: 'Post-save My Flow and Calendar evidence uses compact action-first copy without repeated saved counts, stale date summaries, selected-date labels, or zero routine counts.',
+      p3_03: 'Public single Flow detail now uses the shared FlowMe app shell, keeps Flow finding active, and keeps mobile export actions separated from the global bottom tabs.',
     },
     evidence: [...cleanEvidence, ...postSaveEvidence],
   };

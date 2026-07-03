@@ -180,6 +180,24 @@ test('main user routes keep the FlowMe design token rhythm', async ({ page }) =>
   await expect(exportButton).toHaveCSS('border-radius', '12px');
 });
 
+test('public flow detail stays inside the Flow finding app shell', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/vehicle-inspection-prep');
+
+  await expect(page.getByRole('heading', { name: '자동차검사 D-14 준비 Flow' })).toBeVisible();
+  const mobileTabs = page.getByTestId('platform-mobile-tabs');
+  await expect(mobileTabs).toBeVisible();
+  await expect(mobileTabs.locator('a')).toHaveCount(4);
+  await expect(mobileTabs.getByRole('link', { name: 'Flow 찾기' })).toHaveAttribute('aria-current', 'page');
+  await expect(page.getByTestId('flow-public-shell')).toHaveCount(0);
+  await expectNoInternalUserSurfaceCopy(page.locator('body'));
+
+  await page.evaluate(() => window.scrollTo(0, 700));
+  const mobileExportBar = page.getByTestId('mobile-export-bar');
+  await expect(mobileExportBar).toBeVisible();
+  await expectVerticalGap(mobileExportBar, mobileTabs, 16);
+});
+
 test('curated source cards are integrated into Flow finding and open the recommended Flow', async ({ page }) => {
   await page.goto('/flows');
 
@@ -3388,12 +3406,14 @@ test('public detail rebrand keeps a tool-first shell without mobile overflow', a
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/f/moving-d30-basic');
 
-  await expect(page.getByTestId('flow-public-shell')).toBeVisible();
-  await expect(page.getByTestId('flow-public-search')).toBeVisible();
+  await expect(page.getByTestId('platform-nav')).toBeVisible();
+  await expect(page.getByTestId('platform-primary-tabs').getByRole('link', { name: 'Flow 찾기' })).toHaveAttribute('aria-current', 'page');
+  await expect(page.getByTestId('flow-public-shell')).toHaveCount(0);
+  await expect(page.getByTestId('flow-public-search')).toHaveCount(0);
   await expect(page.getByLabel('Flow artifact workbench')).toBeVisible();
   await expect(page.getByTestId('flow-desktop-workbench-layout')).toBeVisible();
 
-  const shellBox = await page.getByTestId('flow-public-shell').boundingBox();
+  const shellBox = await page.getByTestId('platform-nav').boundingBox();
   const workbenchBox = await page.getByLabel('Flow artifact workbench').boundingBox();
   expect(shellBox).not.toBeNull();
   expect(workbenchBox).not.toBeNull();

@@ -66,6 +66,7 @@ Claude Design 리뷰의 결론은 새 기능 추가가 아니라 위계 압축�
 - P0~P2 최종 감사 패키지: [Claude Design P0~P2 final audit package](./2026-07-03-claude-design-p0-p2-final-audit-package/README.md)
 - 2026-07-03: P3-01을 재검증했다. final audit package의 저장 후 My Flow/Calendar 빈 화면 증거는 앱 저장 버그가 아니라 저장된 브라우저 컨텍스트를 유지하지 못한 evidence 생성 오류로 판별했다. 전용 evidence 캡처 스크립트를 추가하고, `/my?savedMap=moving-d30` 첫 실행 항목과 `/calendar` 저장 agenda가 보이는 screenshot/JSON을 재생성했다.
 - 2026-07-03: P3-02를 처리했다. 저장 후 My Flow 배너에서 반복 설명/카운트/지난 일정 요약을 줄이고 첫 실행 항목과 `먼저 열기` 행동을 먼저 보이게 했다. Calendar 선택일 카드에서는 모바일 기준 `선택한 날짜`, `0개 루틴`, 단일 일정의 `1개 · 1개 남음` 카운트를 숨겼다. 07/08 screenshot과 route-evidence JSON을 compact 기준으로 재생성했다.
+- 2026-07-04: P3-03을 처리했다. `/f/[slug]` 공개 Flow 상세는 공유 링크로 직접 들어올 수 있지만 정상 앱 경로에서는 `Flow 찾기` 아래의 D2 상세라는 정책으로 정리했다. 전용 public shell을 제거하고 공통 `PlatformNav`를 붙여 모바일 하단 4탭과 `Flow 찾기` active 상태가 보이게 했으며, public mobile export bar는 하단 탭 위로 분리했다. 05 screenshot과 route-evidence JSON을 app shell 기준으로 재생성했다.
 
 ## P1 - P0 후 이어서 해결
 

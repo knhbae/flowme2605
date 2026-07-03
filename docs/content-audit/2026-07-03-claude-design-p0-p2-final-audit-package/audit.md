@@ -29,9 +29,17 @@
 - Calendar 선택일 카드에서는 모바일 기준 `선택한 날짜`, `0개 루틴`, 단일 일정의 `1개 · 1개 남음` 카운트를 숨겼다.
 - `route-evidence.json`에는 `hasCompactPostSavePanel: true`, `hasCompactAgendaHeader: true`가 기록된다.
 
+## P3-03 공개 Flow 상세 shell 정리
+
+- 결론: `/f/[slug]` 공개 Flow 상세는 공유 링크로 직접 들어올 수 있지만, 일반 앱 구조에서는 `Flow 찾기` 아래의 D2 상세 화면이다.
+- 적용: `/f/[slug]`의 전용 public shell을 제거하고 공통 `PlatformNav`를 렌더한다.
+- 모바일 390px: 하단 4탭이 보이며 `Flow 찾기`가 active 상태로 표시된다.
+- fixed layer: public detail의 mobile export bar는 하단 4탭 위로 올라와 16px 이상 간격을 둔다.
+- `route-evidence.json`에는 `/f/vehicle-inspection-prep`의 `navVisible: true`, `activeMobileTab: "Flow 찾기"`가 기록된다.
+
 ## Route evidence
 
-모바일 390 x 844 viewport에서 route sanity check를 수행했다. 저장 후 route는 `/flow-maps/moving-d30`에서 실제 저장을 수행한 같은 브라우저 컨텍스트로 캡처했다. 모든 route에서 horizontal overflow는 0건이고, ASCII 내부 검토어 스캔 결과는 0건이다. P3-02 이후 `07-post-save-my-flow-mobile.png`와 `08-calendar-after-save-mobile.png`는 compact 화면 기준으로 재생성했다.
+모바일 390 x 844 viewport에서 route sanity check를 수행했다. 저장 후 route는 `/flow-maps/moving-d30`에서 실제 저장을 수행한 같은 브라우저 컨텍스트로 캡처했다. 모든 route에서 horizontal overflow는 0건이고, ASCII 내부 검토어 스캔 결과는 0건이다. P3-02 이후 `07-post-save-my-flow-mobile.png`와 `08-calendar-after-save-mobile.png`는 compact 화면 기준으로 재생성했고, P3-03 이후 `05-public-vehicle-inspection-mobile.png`는 app shell 기준으로 재생성했다.
 
 | Route | 상태 | H1 | Screenshot | 비고 |
 | --- | --- | --- | --- | --- |
@@ -39,7 +47,7 @@
 | `/flows` | clean localStorage | 무엇을 저장할까요? | [02-flows-mobile.png](./screenshots/02-flows-mobile.png) | 통합 카드 목록 유지 |
 | `/flow-maps/moving-d30` | clean localStorage | 원룸 이사 D-30 일정 지도 | [03-flow-map-moving-mobile.png](./screenshots/03-flow-map-moving-mobile.png) | 저장 전 hero 압축 유지 |
 | `/flow-maps/middle-school-math-1` | clean localStorage | 중1 수학 목차 진도표 | [04-flow-map-math-mobile.png](./screenshots/04-flow-map-math-mobile.png) | 날짜 없는 콘텐츠 fallback 유지 |
-| `/f/vehicle-inspection-prep` | clean localStorage | 자동차검사 D-14 준비 Flow | [05-public-vehicle-inspection-mobile.png](./screenshots/05-public-vehicle-inspection-mobile.png) | public single Flow shell은 하단 4탭이 보이지 않음 |
+| `/f/vehicle-inspection-prep` | clean localStorage | 자동차검사 D-14 준비 Flow | [05-public-vehicle-inspection-mobile.png](./screenshots/05-public-vehicle-inspection-mobile.png) | 공통 app shell 사용, `Flow 찾기` active |
 | `/my` | clean localStorage | 내 Flow | [06-my-empty-mobile.png](./screenshots/06-my-empty-mobile.png) | true empty CTA 단일화 |
 | `/my?savedMap=moving-d30` | after saving moving-d30 with 2026-07-22 | 내 Flow | [07-post-save-my-flow-mobile.png](./screenshots/07-post-save-my-flow-mobile.png) | post-save 첫 실행 항목 유지 |
 | `/calendar` | after saving moving-d30 with 2026-07-22 | 캘린더 | [08-calendar-after-save-mobile.png](./screenshots/08-calendar-after-save-mobile.png) | schedule-first agenda 유지 |
@@ -53,7 +61,8 @@
 - P3-01 targeted Playwright subset: 2 passed
 - P3-02 density targeted Playwright subset: 2 passed
 - P3-02 source-backed post-save regression subset: 6 passed
-- P0/P2 regression targeted Playwright subset: 6 passed
+- P3-03 public detail shell/save/export targeted Playwright subset: 8 passed
+- P0/P2 regression targeted Playwright subset: 7 passed
 - P0~P2 final targeted Playwright subset: 9 passed
   - design token rhythm
   - internal operation labels
@@ -72,7 +81,6 @@
 
 | 우선순위 | 항목 | 설명 | 다음 판단 |
 | --- | --- | --- | --- |
-| Medium | Public Flow detail app shell | `/f/vehicle-inspection-prep` route는 모바일 route evidence에서 하단 4탭 nav가 보이지 않았다. 단일 공개 Flow 공유 화면 의도일 수 있으나, 4탭 IA 일관성을 엄격히 보면 다음 루프에서 정책 판단이 필요하다. | Claude Design에게 public detail을 app shell에 맞출지, 공유 전용 shell로 유지할지 확인 요청 |
 | Low | 특수 workbench visual polish | 공통 토큰은 정리됐지만, 일부 특수 workbench/실험성 화면은 기존 slate/blue utility class가 남아 있을 수 있다. 주요 사용자 route 회귀는 발견하지 않았다. | 다음 visual QA에서 범위를 별도 산정 |
 
 ## Claude 재검토 요청

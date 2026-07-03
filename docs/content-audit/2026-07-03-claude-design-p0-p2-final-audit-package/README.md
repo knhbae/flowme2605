@@ -24,6 +24,14 @@
 - Calendar 선택일 카드에서는 모바일 기준 `선택한 날짜`, `0개 루틴`, 단일 일정의 `1개 · 1개 남음` 카운트를 숨겼다.
 - `route-evidence.json`의 `hasCompactPostSavePanel`, `hasCompactAgendaHeader`로 compact 상태를 확인한다.
 
+## P3-03 공개 Flow 상세 shell 정리
+
+- 결론: `/f/[slug]`는 공유 링크로 직접 들어올 수 있지만, 서비스 구조상 `Flow 찾기` 아래의 공개 상세 화면으로 본다.
+- 적용: 전용 public shell을 제거하고 공통 `PlatformNav`를 사용한다.
+- 모바일: 하단 4탭이 보이고 `Flow 찾기`가 active 상태로 표시된다.
+- fixed layer: public detail의 mobile export bar는 하단 4탭 위로 올라와 겹치지 않는다.
+- `route-evidence.json`에서 `/f/vehicle-inspection-prep`의 `navVisible: true`, `activeMobileTab: "Flow 찾기"`를 확인한다.
+
 ```powershell
 npm.cmd run build
 # 별도 터미널에서 실행한 채 유지

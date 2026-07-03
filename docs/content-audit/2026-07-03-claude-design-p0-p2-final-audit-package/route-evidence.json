@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-03T14:53:26.146Z",
+  "generatedAt": "2026-07-03T15:17:31.789Z",
   "baseURL": "http://127.0.0.1:3104",
   "viewport": {
     "width": 390,
@@ -8,7 +8,8 @@
   "finding": {
     "b1Conclusion": "evidence_generation_error",
     "summary": "The app save loop writes the expected localStorage records and renders saved My Flow/Calendar state. The previous final audit screenshots lost the saved browser context.",
-    "p3_02": "Post-save My Flow and Calendar evidence uses compact action-first copy without repeated saved counts, stale date summaries, selected-date labels, or zero routine counts."
+    "p3_02": "Post-save My Flow and Calendar evidence uses compact action-first copy without repeated saved counts, stale date summaries, selected-date labels, or zero routine counts.",
+    "p3_03": "Public single Flow detail now uses the shared FlowMe app shell, keeps Flow finding active, and keeps mobile export actions separated from the global bottom tabs."
   },
   "evidence": [
     {
@@ -21,6 +22,7 @@
       "noHorizontalOverflow": true,
       "bodyBg": "rgb(250, 250, 248)",
       "navVisible": true,
+      "activeMobileTab": "홈",
       "h1": "콘텐츠를 일정과 할 일로 저장",
       "firstButton": "FLOW",
       "matchedTerms": []
@@ -35,6 +37,7 @@
       "noHorizontalOverflow": true,
       "bodyBg": "rgb(250, 250, 248)",
       "navVisible": true,
+      "activeMobileTab": "Flow 찾기",
       "h1": "무엇을 저장할까요?",
       "firstButton": "FLOW",
       "matchedTerms": []
@@ -49,6 +52,7 @@
       "noHorizontalOverflow": true,
       "bodyBg": "rgb(250, 250, 248)",
       "navVisible": true,
+      "activeMobileTab": "Flow 찾기",
       "h1": "원룸 이사 D-30 일정 지도",
       "firstButton": "FLOW",
       "matchedTerms": []
@@ -63,6 +67,7 @@
       "noHorizontalOverflow": true,
       "bodyBg": "rgb(250, 250, 248)",
       "navVisible": true,
+      "activeMobileTab": "Flow 찾기",
       "h1": "중1 수학 목차 진도표",
       "firstButton": "FLOW",
       "matchedTerms": []
@@ -76,7 +81,8 @@
       "scrollWidth": 390,
       "noHorizontalOverflow": true,
       "bodyBg": "rgb(250, 250, 248)",
-      "navVisible": false,
+      "navVisible": true,
+      "activeMobileTab": "Flow 찾기",
       "h1": "자동차검사 D-14 준비 Flow",
       "firstButton": "FLOW",
       "matchedTerms": []
@@ -91,6 +97,7 @@
       "noHorizontalOverflow": true,
       "bodyBg": "rgb(250, 250, 248)",
       "navVisible": true,
+      "activeMobileTab": "내 Flow",
       "h1": "내 Flow",
       "firstButton": "FLOW",
       "matchedTerms": []
@@ -105,6 +112,7 @@
       "noHorizontalOverflow": true,
       "bodyBg": "rgb(250, 250, 248)",
       "navVisible": true,
+      "activeMobileTab": "내 Flow",
       "h1": "내 Flow",
       "firstButton": "FLOW",
       "matchedTerms": [],
@@ -132,6 +140,7 @@
       "noHorizontalOverflow": true,
       "bodyBg": "rgb(250, 250, 248)",
       "navVisible": true,
+      "activeMobileTab": "캘린더",
       "h1": "캘린더",
       "firstButton": "FLOW",
       "matchedTerms": [],

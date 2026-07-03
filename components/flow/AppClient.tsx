@@ -8255,22 +8255,9 @@ export function PublicFlow({ slug }: { slug: string }) {
     ) : null;
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-3 pb-28 text-slate-950 md:px-6 md:py-6 md:pb-10">
+    <main className="min-h-screen bg-[#FAFAF8] px-4 py-3 pb-40 text-slate-950 md:px-6 md:py-6 md:pb-10">
       <div className="mx-auto max-w-7xl">
-        <div data-testid="flow-public-shell" className={`mb-3 flex min-h-12 items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-sm md:min-h-14 md:px-4 md:py-3 ${compactJeonsePage ? 'md:mb-3' : 'md:mb-4'}`}>
-          <Link className="text-xl font-black tracking-normal text-blue-700 md:text-2xl" href="/flows" aria-label="FLOW 홈">
-            FLOW
-          </Link>
-          <div className={`${compactJeonsePage ? 'hidden' : 'hidden min-w-0 flex-1 justify-center md:flex'}`}>
-            <div data-testid="flow-public-search" className="flex w-full max-w-md items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500">
-              <span aria-hidden="true" className="text-slate-400">⌕</span>
-              <span className="truncate">Flow, 캘린더, 시트, 메모 검색</span>
-            </div>
-          </div>
-          <Link className={compactJeonsePage ? 'rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:border-blue-300 hover:text-blue-700' : 'rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-800'} href="/my">
-            내 Flow
-          </Link>
-        </div>
+        <PlatformNav />
 
         <header data-testid="public-flow-hero" className={compactJeonsePage ? 'rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm md:px-5 md:py-4' : 'rounded-2xl border border-[#E7E4DD] bg-white px-4 py-4 shadow-[0_8px_24px_rgba(27,26,23,0.05)] md:px-6 md:py-5'}>
           <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-500">
@@ -8572,7 +8559,7 @@ export function PublicFlow({ slug }: { slug: string }) {
       <div
         data-testid="mobile-export-bar"
         aria-hidden={!showMobileExportActions}
-        className={`fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white/95 px-4 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.10)] backdrop-blur transition duration-200 md:hidden ${showMobileExportActions ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}
+        className={`fixed inset-x-4 bottom-[calc(9.75rem+env(safe-area-inset-bottom))] z-20 rounded-2xl border border-[#E7E4DD] bg-white/95 px-4 py-3 shadow-[0_14px_36px_rgba(27,26,23,0.14)] backdrop-blur transition duration-200 md:hidden ${showMobileExportActions ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}
       >
         <div className="mx-auto max-w-5xl">
           <div className="flex items-center gap-3">
