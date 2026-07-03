@@ -153,7 +153,7 @@ test('curated source save lands in My Flow with user-facing overdue copy', async
   await page.evaluate(() => window.localStorage.clear());
 
   await page.getByLabel('이사일').fill('2026-07-31');
-  await page.getByRole('button', { name: '전체 저장하고 시작' }).click();
+  await page.getByTestId('flow-map-save-all-mobile').click();
   await expect(page).toHaveURL('/my?savedMap=moving-map');
 
   const postSavePanel = page.getByTestId('my-flow-post-save-panel');
@@ -272,6 +272,13 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   const mathPostSave = page.getByTestId('my-flow-post-save-panel');
   await expect(mathPostSave).toContainText('8개 할 일');
   await expect(mathPostSave).not.toContainText('8개 Step');
+  const mathNowSection = page.getByTestId('my-flow-now-section');
+  await expect(mathNowSection).toContainText('소인수분해');
+  await expect(mathNowSection).not.toContainText('남은 할 일이 없습니다');
+  await expect(mathNowSection.getByTestId('my-flow-mobile-continuation-card').first()).toHaveAttribute(
+    'data-flow-slug',
+    'source-backed-middle-school-math-1',
+  );
   await mathPostSave.getByTestId('my-flow-post-save-open-first').click();
   await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-now-section').getByTestId('my-flow-inline-detail')).toBeVisible();
@@ -1327,7 +1334,7 @@ test('source-backed single progress map opens step detail on mobile My Flow', as
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flow-maps/middle-school-math-1');
 
-  await page.getByRole('button', { name: '전체 저장하고 시작' }).click();
+  await page.getByTestId('flow-map-save-all-mobile').click();
   await expect(page).toHaveURL('/my?savedMap=middle-school-math-1');
   await expect(page.getByTestId('my-flow-post-save-panel')).toBeVisible();
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
@@ -1361,7 +1368,7 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
   await expect(publicMap).toContainText('견적 후보 2-3곳을 열고 연락처를 메모합니다.');
 
   await page.getByLabel('이사일').fill('2026-07-22');
-  await page.getByRole('button', { name: '전체 저장하고 시작' }).click();
+  await page.getByTestId('flow-map-save-all-mobile').click();
   await expect(page).toHaveURL('/my?savedMap=moving-d30');
   await expect(page.getByTestId('my-flow-demo-badge')).toHaveCount(0);
 
@@ -1465,7 +1472,7 @@ test('source-backed baby health map remains visible on mobile Flow tab after sav
   await page.goto('/flow-maps/baby-health-schedule');
 
   await page.getByLabel('아이 생년월일').fill('2026-01-15');
-  await page.getByRole('button', { name: '전체 저장하고 시작' }).click();
+  await page.getByTestId('flow-map-save-all-mobile').click();
   await expect(page).toHaveURL('/my?savedMap=baby-health-schedule');
   await expect(page.getByTestId('my-flow-post-save-panel')).toContainText('영유아 검진·접종 일정 지도');
   await page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-view-flow').click();

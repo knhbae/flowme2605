@@ -3082,14 +3082,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const todayOpenScheduleRows = todayScheduleRows.filter((row) => !isMyFlowRowChecked(row.flow, row));
   const todayOpenRoutineRows = todayRoutineRows.filter((row) => !isMyFlowRowChecked(row.flow, row));
   const todayOpenCount = todayOpenRows.length;
-  const myFlowTodaySummaryCopy =
-    todayOpenCount > 0
-      ? '오늘 할 일을 먼저 처리하고, 전체 목록은 전체 탭에서 봅니다.'
-      : overdueRows.length > 0
-        ? `오늘 남은 일은 없습니다. 지난 일정 ${overdueRows.length}개는 접어서 정리합니다.`
-        : upcomingRows.length > 0
-          ? '오늘 남은 일은 없습니다. 가장 가까운 다음 할 일부터 이어서 봅니다.'
-          : '남은 할 일이 없습니다. 저장한 콘텐츠의 전체 목록을 확인하세요.';
   const routineNextRows = Array.from(
     calendarRoutineRows
       .filter((row) => row.date && row.date >= myFlowTodayDate && !isMyFlowRowChecked(row.flow, row))
@@ -3106,7 +3098,35 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return { ...row, flow };
     })
     .filter((row): row is MyFlowCalendarRow => Boolean(row));
+  const postSaveFlowSlugSet = new Set(postSaveFlows.map((flow) => flow.progress.slug));
+  const postSaveContinuationRows = showPostSavePanel
+    ? [
+        ...todayOpenRows,
+        ...upcomingRows,
+        ...routineNextRows,
+        ...myFlowFallbackNextRows,
+        ...overdueRows,
+      ].reduce<MyFlowCalendarRow[]>((rows, row) => {
+        if (!postSaveFlowSlugSet.has(row.flow.progress.slug)) return rows;
+        const key = getMyFlowRowInstanceKey(row);
+        if (rows.some((existing) => getMyFlowRowInstanceKey(existing) === key)) return rows;
+        rows.push(row);
+        return rows;
+      }, []).slice(0, 1)
+    : [];
+  const postSavePrimaryContinuationRow = postSaveContinuationRows[0] ?? null;
+  const myFlowTodaySummaryCopy =
+    todayOpenCount > 0
+      ? '오늘 할 일을 먼저 처리하고, 전체 목록은 전체 탭에서 봅니다.'
+      : overdueRows.length > 0
+        ? `오늘 남은 일은 없습니다. 지난 일정 ${overdueRows.length}개는 접어서 정리합니다.`
+        : upcomingRows.length > 0
+          ? '오늘 남은 일은 없습니다. 가장 가까운 다음 할 일부터 이어서 봅니다.'
+          : postSavePrimaryContinuationRow || myFlowFallbackNextRows.length > 0
+            ? '오늘 날짜에 걸린 일은 없습니다. 저장한 콘텐츠의 다음 항목을 먼저 보여줍니다.'
+            : '남은 할 일이 없습니다. 저장한 콘텐츠의 전체 목록을 확인하세요.';
   const myFlowContinuationRows = [
+    ...postSaveContinuationRows,
     ...todayOpenRows,
     ...upcomingRows,
     ...routineNextRows,
@@ -3893,6 +3913,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
 
   const getPostSaveContinuationRow = (): MyFlowCalendarRow | null => {
+    if (postSavePrimaryContinuationRow) return postSavePrimaryContinuationRow;
     const postSaveFlowSlugs = new Set(postSaveFlows.map((flow) => flow.progress.slug));
     if (myFlowPrimaryContinuationRow && postSaveFlowSlugs.has(myFlowPrimaryContinuationRow.flow.progress.slug)) {
       return myFlowPrimaryContinuationRow;
