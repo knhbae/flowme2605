@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { toContentDisplayTitle } from '@/lib/flow/display-title';
 import { buildSourceBackedFlowMapPublishPackage } from '@/lib/flow/source-backed-my-flow';
 import { PlatformNav } from './PlatformNav';
 import { SourceBackedFlowMapSaveButton } from './SourceBackedFlowMapSaveButton';
@@ -50,6 +51,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
   const firstFlow = publicSurface.childFlows[0];
   const firstStep = firstFlow?.steps[0];
   const firstStepDetail = firstStep?.detailItems[0];
+  const displayTitle = toContentDisplayTitle(publicSurface.title);
   const resultText = publicSurface.artifacts.join(' + ') || '할 일';
   const resultPromise = publicSurface.setupInput
     ? `${publicSurface.setupInput.label}만 넣으면 저장됩니다: ${resultText}`
@@ -61,7 +63,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
       <PlatformNav />
       <section data-testid="flow-map-hero" className="rounded-2xl border border-[#E7E4DD] bg-white p-4 sm:p-6">
         <p className="text-sm font-semibold text-[#3654FF]">저장 전 보기</p>
-        <h1 className="mt-1 break-keep text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">{publicSurface.title}</h1>
+        <h1 className="mt-1 break-keep text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">{displayTitle}</h1>
         <p data-testid="flow-map-result-promise" className="mt-2 break-keep text-sm font-semibold leading-6 text-[#3654FF] sm:text-base">
           {resultPromise}
         </p>
@@ -116,7 +118,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
             <article key={flow.slug} className="rounded-2xl border border-[#E7E4DD] bg-white p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-950">{flow.title}</h3>
+                  <h3 className="text-lg font-semibold text-slate-950">{toContentDisplayTitle(flow.title)}</h3>
                   <p className="mt-1 text-xs font-semibold text-[#6E6B64]">{flow.steps.length}개 할 일</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">

@@ -17,6 +17,7 @@ import { inferPrimaryDestination } from '@/lib/flow/destination';
 import { getRepresentativeFlowSlugs, normalizeExecutionModel, type FlowExportTarget } from '@/lib/flow/execution-model';
 import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
 import { FLOW_EXPORT_FEEDBACK, FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
+import { toContentDisplayTitle } from '@/lib/flow/display-title';
 import {
   buildMyFlowStepIcs,
   buildMyFlowStepPortableText,
@@ -692,6 +693,7 @@ function FlowCard({
   editable?: boolean;
   onCopy?: (bundle: FlowBundle) => void;
 }) {
+  const displayTitle = toContentDisplayTitle(bundle.flow.title);
   const count = getFlowItemCount(bundle);
   const color = categoryColors[bundle.flow.category] ?? '#6B7280';
   const previewItems = getFlowPreviewItems(bundle, variant === 'compact' ? 3 : 4);
@@ -718,7 +720,7 @@ function FlowCard({
         <div>
           <h2 className="text-lg font-semibold leading-snug text-gray-950">
             <Link className="underline-offset-4 hover:text-blue-700 hover:underline" href={`/f/${bundle.flow.slug}`}>
-              {bundle.flow.title}
+              {displayTitle}
             </Link>
           </h2>
           <p className="mt-2 line-clamp-3 text-sm leading-6 text-gray-600">{getFlowResultText(bundle)}</p>
@@ -775,6 +777,7 @@ function FlowCard({
 }
 
 function DirectoryFlowCard({ bundle }: { bundle: FlowBundle }) {
+  const displayTitle = toContentDisplayTitle(bundle.flow.title);
   const previewStepTitles = getFlowPreviewStepTitles(bundle);
   const count = getFlowItemCount(bundle);
   const input = getAnchorLabel(bundle);
@@ -785,7 +788,7 @@ function DirectoryFlowCard({ bundle }: { bundle: FlowBundle }) {
   return (
     <Link
       data-testid="single-flow-catalog-card"
-      aria-label={bundle.flow.title}
+      aria-label={displayTitle}
       className="block h-full rounded-2xl border border-[#E7E4DD] bg-white p-3.5 transition hover:border-[#3654FF]/40 hover:shadow-[0_8px_24px_rgba(27,26,23,0.06)]"
       href={`/f/${bundle.flow.slug}`}
     >
@@ -797,7 +800,7 @@ function DirectoryFlowCard({ bundle }: { bundle: FlowBundle }) {
               체크 {count}개
             </span>
           </div>
-          <h3 className="mt-2 break-keep text-base font-semibold leading-snug text-[#1B1A17] sm:text-lg">{bundle.flow.title}</h3>
+          <h3 className="mt-2 break-keep text-base font-semibold leading-snug text-[#1B1A17] sm:text-lg">{displayTitle}</h3>
           <p className="mt-1 break-keep text-sm font-semibold leading-5 text-[#3654FF]">{promise}</p>
           <div className="mt-2 rounded-xl bg-[#FAFAF8] px-3 py-2">
             <p className="line-clamp-1 text-sm font-semibold text-[#1B1A17]">
@@ -1301,7 +1304,7 @@ export function CreatorDirectory() {
                       className="block rounded-md bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-700"
                       href={`/f/${bundle.flow.slug}`}
                     >
-                      {bundle.flow.title}
+                      {toContentDisplayTitle(bundle.flow.title)}
                     </Link>
                   ))}
                 </div>
@@ -1348,7 +1351,7 @@ const homeFlowMapBaselineLinks = getSourceBackedHomepageFlowMaps().map((map) => 
       .slice(0, 3);
   return {
     id: map.id,
-    title: display.title,
+    title: toContentDisplayTitle(display.title),
     summary: display.summary,
     categoryLabel: display.note,
     userFacingStatus: '바로 저장 가능',
@@ -1359,7 +1362,7 @@ const homeFlowMapBaselineLinks = getSourceBackedHomepageFlowMaps().map((map) => 
     flowCount: map.flowSlugs.length,
     counts,
     recommendedFlowSlug: recommendedFlowSlug,
-    recommendedFlowTitle: recommendedFlow?.title ?? recommendedFlowSlug,
+    recommendedFlowTitle: toContentDisplayTitle(recommendedFlow?.title ?? recommendedFlowSlug),
     sourceUrl: map.sourceUrl,
     sourceUrlCount: map.sourceUrlCount ?? 1,
     sourceSignal: '원문 연결',
@@ -1381,7 +1384,7 @@ const curatedSourceAppSeedCatalogLinks = getCuratedSourceAppSeedFlowMaps().map((
       .slice(0, 3);
   return {
     id: map.id,
-    title: map.title,
+    title: toContentDisplayTitle(map.title),
     summary: map.summary,
     categoryLabel: map.categoryLabel ?? '콘텐츠',
     userFacingStatus: map.userFacingStatus ?? '확인 가능',
@@ -1392,7 +1395,7 @@ const curatedSourceAppSeedCatalogLinks = getCuratedSourceAppSeedFlowMaps().map((
     flowCount: map.flowSlugs.length,
     counts,
     recommendedFlowSlug,
-    recommendedFlowTitle: recommendedFlow?.title ?? recommendedFlowSlug,
+    recommendedFlowTitle: toContentDisplayTitle(recommendedFlow?.title ?? recommendedFlowSlug),
     sourceUrl: map.sourceUrl,
     sourceUrlCount: map.sourceUrlCount ?? 1,
     sourceSignal: '원문 연결',
@@ -2349,10 +2352,12 @@ function getMyFlowRowDisplaySectionLabel(row: MyFlowCalendarRow): string {
 }
 
 function getMyFlowExecutionFlowTitle(title: string): string {
-  return title
-    .replace(/\s+D(?:-\d+|\+\d+(?:~D\+\d+)?|-Day|Day)\s+/i, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  return toContentDisplayTitle(
+    title
+      .replace(/\s+D(?:-\d+|\+\d+(?:~D\+\d+)?|-Day|Day)\s+/i, ' ')
+      .replace(/\s+/g, ' ')
+      .trim(),
+  );
 }
 
 type MyFlowCalendarRow = MyFlowRow & {
@@ -3182,7 +3187,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         label: savedMap
           ? (kind === 'routine' ? '저장한 루틴' : '저장한 일정')
           : (kind === 'routine' ? '루틴' : '일정'),
-        title: savedMap?.title ?? getMyFlowExecutionFlowTitle(row.flow.progress.title),
+        title: toContentDisplayTitle(savedMap?.title ?? getMyFlowExecutionFlowTitle(row.flow.progress.title)),
         rows: [row],
         ...(savedMap ? { savedMap } : {}),
       });
@@ -3490,7 +3495,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             return {
               key: getMyFlowRowInstanceKey(row),
               title: getMyFlowRowDisplayTitle(row),
-              flowTitle: row.flow.progress.title,
+              flowTitle: getMyFlowExecutionFlowTitle(row.flow.progress.title),
               color,
               iconKind: getMyFlowRoutineIconKind(row),
             };
@@ -3795,7 +3800,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       if (selectedSavedFlowSlug === flow.progress.slug) setSelectedSavedFlowSlug('all');
       return;
     }
-    if (typeof window !== 'undefined' && !window.confirm(`${flow.progress.title} 저장 기록을 이 브라우저에서 지울까요?`)) return;
+    if (typeof window !== 'undefined' && !window.confirm(`${getMyFlowExecutionFlowTitle(flow.progress.title)} 저장 기록을 이 브라우저에서 지울까요?`)) return;
     clearFlowLocalProgress(flow.progress.slug);
     refreshSavedFlowState();
   };
@@ -4151,7 +4156,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const color = categoryColors[flow.bundle.flow.category] ?? '#2563EB';
     const isPrimary = options.tone === 'primary';
     const flowContext = flow.savedMap
-      ? flow.savedMap.title
+      ? toContentDisplayTitle(flow.savedMap.title)
       : flow.bundle.flow.structure_type === 'routine'
         ? '반복 흐름'
         : flow.rows.some((candidate) => Boolean(candidate.date))
@@ -4163,7 +4168,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       getMyFlowRowDisplaySectionLabel(row),
     ].filter(Boolean).join(' · ');
     const flowMeta = [
-      flow.progress.title,
+      getMyFlowExecutionFlowTitle(flow.progress.title),
       `${flow.done}/${flow.total} 완료`,
       flowContext,
     ].filter(Boolean).join(' · ');
@@ -5299,7 +5304,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
               <span className="rounded-full bg-[#EEF1FF] px-2.5 py-1 text-[#3654FF]">저장됨</span>
-              <span className="break-keep text-[#6E6B64]">{postSaveMap.title}</span>
+              <span className="break-keep text-[#6E6B64]">{toContentDisplayTitle(postSaveMap.title)}</span>
             </div>
             <h3 className="mt-2 break-keep text-lg font-semibold tracking-tight text-slate-950 sm:text-xl">
               {postSaveHeading}
@@ -5331,6 +5336,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
 
   const renderFlowListRow = (flow: MySavedFlow) => {
+    const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
+    const savedMapTitle = flow.savedMap ? toContentDisplayTitle(flow.savedMap.title) : '';
     const nextRow = getSavedFlowNextRow(flow);
     const color = categoryColors[flow.bundle.flow.category] ?? '#2563EB';
     const nextActionLabel = getMyFlowOpenActionLabel(flow.bundle);
@@ -5352,14 +5359,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h4 className="truncate text-base font-semibold text-slate-950">{flow.progress.title}</h4>
+                  <h4 className="truncate text-base font-semibold text-slate-950">{flowTitle}</h4>
                   {showContentReadinessBadge ? (
                     <span data-testid="my-flow-content-readiness" className="rounded-md bg-white px-2 py-1 text-xs font-semibold text-amber-800 ring-1 ring-amber-200">
                       {contentReadiness.label}
                     </span>
                   ) : null}
                 </div>
-                {flow.savedMap ? <p className="mt-1 text-xs font-semibold text-blue-700">{flow.savedMap.title}</p> : null}
+                {savedMapTitle ? <p className="mt-1 text-xs font-semibold text-blue-700">{savedMapTitle}</p> : null}
                 <p className="mt-1 text-xs font-semibold text-slate-500">{flow.meta}</p>
               </div>
               <div className="flex shrink-0 items-center gap-2">
@@ -5392,10 +5399,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
 
   const renderCompactFlowStructureRow = (flow: MySavedFlow) => {
+    const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
     const nextRow = getSavedFlowNextRow(flow);
     const progressSummary = `${flow.done}/${flow.total} 완료`;
     const structureLabel = flow.savedMap
-      ? flow.savedMap.title
+      ? toContentDisplayTitle(flow.savedMap.title)
       : flow.bundle.flow.structure_type === 'routine'
         ? '반복 흐름'
         : flow.rows.some((row) => Boolean(row.date))
@@ -5433,7 +5441,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <span className="flex min-w-0 flex-1 gap-2">
               <span className={`mt-1 h-2 w-2 shrink-0 rounded-full ${flowExpanded ? 'bg-blue-700' : 'bg-slate-400'}`} />
               <span className="min-w-0">
-                <span className="block truncate text-sm font-semibold text-slate-950">{flow.progress.title}</span>
+                <span className="block truncate text-sm font-semibold text-slate-950">{flowTitle}</span>
                 <span className="mt-1 block truncate text-xs font-semibold text-slate-500">{structureLabel}</span>
               </span>
             </span>
@@ -5533,6 +5541,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
 
   const renderSavedFlowOverviewCard = (flow: MySavedFlow) => {
+    const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
+    const savedMapTitle = flow.savedMap ? toContentDisplayTitle(flow.savedMap.title) : '';
     const nextRow = getSavedFlowNextRow(flow);
     const progressSummary = `${flow.done}/${flow.total} 완료`;
     const anchorDisplay = getMyFlowAnchorDisplay(flow.bundle, flow.anchor, myFlowDemoMode);
@@ -5565,7 +5575,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="min-w-0 text-xl font-semibold tracking-tight text-slate-950">{flow.progress.title}</h3>
+              <h3 className="min-w-0 text-xl font-semibold tracking-tight text-slate-950">{flowTitle}</h3>
               {showContentReadinessBadge ? (
                 <span data-testid="my-flow-content-readiness" className="rounded-md bg-white px-2 py-1 text-xs font-semibold text-amber-800 ring-1 ring-amber-200">
                   {contentReadiness.label}
@@ -5577,7 +5587,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             ) : null}
             {flow.savedMap ? (
               <p data-testid="my-flow-map-context" className="mt-2 w-fit rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">
-                저장한 콘텐츠 · {flow.savedMap.title}
+                저장한 콘텐츠 · {savedMapTitle}
               </p>
             ) : null}
             {anchorDisplay ? (
@@ -5671,7 +5681,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className={`text-xs font-semibold ${isMapGroup ? 'text-blue-700' : 'text-slate-500'}`}>{isMapGroup ? '저장한 콘텐츠' : group.label}</p>
-                <h4 className="mt-1 text-base font-semibold text-slate-950">{group.title}</h4>
+                <h4 className="mt-1 text-base font-semibold text-slate-950">{toContentDisplayTitle(group.title)}</h4>
                 <p className="mt-1 text-xs font-semibold text-slate-600">{group.flows.length}개 목록 · {done}/{total} 완료</p>
               </div>
               {group.savedMap ? (
@@ -5745,7 +5755,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     refreshSavedFlowState();
   };
 
-  const getMyFlowUpdateRowTitle = (slug: string) => myFlowBundles.find((entry) => entry.flow.slug === slug)?.flow.title ?? slug;
+  const getMyFlowUpdateRowTitle = (slug: string) => toContentDisplayTitle(myFlowBundles.find((entry) => entry.flow.slug === slug)?.flow.title ?? slug);
 
   const renderMyFlowMapUpdateNotices = () => {
     if (myFlowMapUpdateNotices.length === 0 && myFlowAppliedMapUpdateId) {
@@ -5978,7 +5988,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       data-testid={`my-flow-filter-${flow.progress.slug}`}
                       onClick={() => setSelectedSavedFlowSlug(flow.progress.slug)}
                     >
-                      <span className="block text-sm font-semibold">{flow.progress.title}</span>
+                      <span className="block text-sm font-semibold">{getMyFlowExecutionFlowTitle(flow.progress.title)}</span>
                       <span className="mt-1 block text-xs font-semibold text-blue-700">{flow.done}/{flow.total} 완료</span>
                     </button>
                   ))}
@@ -6003,7 +6013,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       <option value="all">전체 Flow</option>
                       {savedFlows.map((flow) => (
                         <option key={flow.progress.slug} value={flow.progress.slug}>
-                          {flow.progress.title}
+                          {getMyFlowExecutionFlowTitle(flow.progress.title)}
                         </option>
                       ))}
                     </select>
@@ -6448,7 +6458,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   <div className="min-w-0">
                     <p className="text-xs font-semibold text-blue-700">캘린더 기준</p>
                     <h3 className="mt-1 truncate text-lg font-semibold text-slate-950">
-                      {selectedSavedFlowSlug === 'all' ? '전체 일정' : visibleSavedFlows[0]?.progress.title}
+                      {selectedSavedFlowSlug === 'all' ? '전체 일정' : getMyFlowExecutionFlowTitle(visibleSavedFlows[0]?.progress.title ?? '')}
                     </h3>
                   </div>
                   <div className="flex flex-wrap gap-2 text-xs font-semibold">
@@ -6646,7 +6656,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                           <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
                             <div className="min-w-0">
                               <p className={`text-xs font-semibold ${group.savedMap ? 'text-blue-700' : 'text-slate-500'}`}>{group.label}</p>
-                              <h4 className="mt-0.5 truncate text-sm font-semibold text-slate-950">{group.title}</h4>
+                              <h4 className="mt-0.5 truncate text-sm font-semibold text-slate-950">{toContentDisplayTitle(group.title)}</h4>
                             </div>
                             {group.rows.length > 1 || groupOpenCount !== group.rows.length ? (
                               <span className="rounded-md bg-white px-2 py-1 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
@@ -6699,7 +6709,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold text-blue-700">체크 실행</p>
-                      <h3 className="mt-1 text-lg font-semibold text-slate-950">체크할 Flow를 먼저 선택하세요</h3>
+                      <h3 className="mt-1 text-lg font-semibold text-slate-950">체크할 콘텐츠를 먼저 선택하세요</h3>
                       <p className="mt-1 text-sm text-slate-600">전체 체크리스트를 한 번에 펼치지 않고 Flow별 남은 항목부터 보여줍니다.</p>
                     </div>
                     <span className="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">{checklistFlowRows.length}개 콘텐츠</span>
@@ -6711,7 +6721,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         <article key={flow.progress.slug} data-testid="my-flow-checklist-summary-card" className="rounded-md border border-slate-200 bg-slate-50 p-3">
                           <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0">
-                              <h4 className="truncate text-sm font-semibold text-slate-950">{flow.progress.title}</h4>
+                              <h4 className="truncate text-sm font-semibold text-slate-950">{getMyFlowExecutionFlowTitle(flow.progress.title)}</h4>
                               <p className="mt-1 text-xs font-semibold text-blue-700">{flow.meta}</p>
                             </div>
                             <span className="shrink-0 rounded-md bg-white px-2 py-1 text-xs font-semibold text-slate-600">{openCount}개 남음</span>
@@ -6744,7 +6754,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <section key={flow.progress.slug} data-testid="my-flow-checklist-detail-section" className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <h3 className="text-lg font-semibold text-slate-950">{flow.progress.title}</h3>
+                      <h3 className="text-lg font-semibold text-slate-950">{getMyFlowExecutionFlowTitle(flow.progress.title)}</h3>
                       <p className="mt-1 text-sm font-semibold text-blue-700">{flow.meta}</p>
                     </div>
                     <button className="rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-800" type="button" onClick={() => completeSavedFlow(flow)}>
@@ -6807,7 +6817,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
                         <h3 className="text-lg font-semibold text-slate-950">주간 루틴</h3>
-                        <p className="mt-1 text-sm font-semibold text-blue-700">{flow.progress.title}</p>
+                        <p className="mt-1 text-sm font-semibold text-blue-700">{getMyFlowExecutionFlowTitle(flow.progress.title)}</p>
                         <p className="mt-1 text-sm font-semibold text-slate-600">{flow.meta}</p>
                       </div>
                       <span className="rounded-md bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">{flow.percent}%</span>
@@ -8028,6 +8038,7 @@ export function PublicFlow({ slug }: { slug: string }) {
 
   if (!bundle) return <main className="p-8">Flow를 찾을 수 없습니다.</main>;
 
+  const publicDisplayTitle = toContentDisplayTitle(bundle.flow.title);
   const displayAnchor = getPreviewAnchor(bundle, anchorMode, anchor);
   const views = getPublicViews(bundle, Boolean(displayAnchor));
   const activeView = views.some((item) => item.id === view) ? view : 'list';
@@ -8263,7 +8274,7 @@ export function PublicFlow({ slug }: { slug: string }) {
               </>
             ) : null}
           </div>
-          <h1 className={compactJeonsePage ? 'mt-2 max-w-3xl text-2xl font-bold tracking-normal text-slate-950 md:text-3xl' : 'mt-2 max-w-4xl text-2xl font-bold tracking-normal text-slate-950 md:mt-3 md:text-4xl'}>{bundle.flow.title}</h1>
+          <h1 className={compactJeonsePage ? 'mt-2 max-w-3xl text-2xl font-bold tracking-normal text-slate-950 md:text-3xl' : 'mt-2 max-w-4xl text-2xl font-bold tracking-normal text-slate-950 md:mt-3 md:text-4xl'}>{publicDisplayTitle}</h1>
           {showPublicHeroSetup ? (
             <section className={compactJeonsePage ? 'mt-3 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2.5' : 'mt-3 rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-3'}>
               <p data-testid="public-flow-result-promise" className="break-keep text-sm font-semibold leading-6 text-[#3654FF]">{publicHeroPromise}</p>
@@ -8504,7 +8515,7 @@ export function PublicFlow({ slug }: { slug: string }) {
             </div>
             <div className="mt-5 grid gap-2">
               {showCalendarExportAction ? (
-                <button data-testid="mobile-export-calendar" aria-label={`${FLOW_EXPORT_LABELS.calendarFile}: ${bundle.flow.title} .ics 일정`} className="flex items-center gap-3 rounded-xl bg-[#EEF1FF] px-4 py-3 text-left text-sm font-semibold text-[#1B1A17] disabled:text-[#A7A39A]" disabled={done === 0} onClick={downloadCalendar}>
+                <button data-testid="mobile-export-calendar" aria-label={`${FLOW_EXPORT_LABELS.calendarFile}: ${publicDisplayTitle} .ics 일정`} className="flex items-center gap-3 rounded-xl bg-[#EEF1FF] px-4 py-3 text-left text-sm font-semibold text-[#1B1A17] disabled:text-[#A7A39A]" disabled={done === 0} onClick={downloadCalendar}>
                   <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-[#3654FF] bg-white" />
                   <span className="flex-1">
                     <span className="block">{FLOW_EXPORT_LABELS.calendarFile}</span>
@@ -8513,7 +8524,7 @@ export function PublicFlow({ slug }: { slug: string }) {
                   <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-[#6E6B64]" />
                 </button>
               ) : null}
-              <button data-testid="mobile-export-excel" aria-label={`${FLOW_EXPORT_LABELS.sheetFile}: ${bundle.flow.title} .xlsx 실행 시트`} className="flex items-center gap-3 rounded-xl bg-[#FAFAF8] px-4 py-3 text-left text-sm font-semibold text-[#1B1A17] disabled:text-[#A7A39A]" disabled={done === 0} onClick={downloadExcel}>
+              <button data-testid="mobile-export-excel" aria-label={`${FLOW_EXPORT_LABELS.sheetFile}: ${publicDisplayTitle} .xlsx 실행 시트`} className="flex items-center gap-3 rounded-xl bg-[#FAFAF8] px-4 py-3 text-left text-sm font-semibold text-[#1B1A17] disabled:text-[#A7A39A]" disabled={done === 0} onClick={downloadExcel}>
                 <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-[#6E6B64] bg-white" />
                 <span className="flex-1">
                   <span className="block">{FLOW_EXPORT_LABELS.sheetFile}</span>
@@ -8521,7 +8532,7 @@ export function PublicFlow({ slug }: { slug: string }) {
                 </span>
                 <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-[#6E6B64]" />
               </button>
-              <button data-testid="mobile-export-copy" aria-label={`${FLOW_EXPORT_LABELS.memoCopy}: ${bundle.flow.title} 실행 메모`} className="flex items-center gap-3 rounded-xl bg-[#FAFAF8] px-4 py-3 text-left text-sm font-semibold text-[#1B1A17] disabled:text-[#A7A39A]" disabled={done === 0} onClick={copy}>
+              <button data-testid="mobile-export-copy" aria-label={`${FLOW_EXPORT_LABELS.memoCopy}: ${publicDisplayTitle} 실행 메모`} className="flex items-center gap-3 rounded-xl bg-[#FAFAF8] px-4 py-3 text-left text-sm font-semibold text-[#1B1A17] disabled:text-[#A7A39A]" disabled={done === 0} onClick={copy}>
                 <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-[#6E6B64] bg-white" />
                 <span className="flex-1">
                   <span className="block">{FLOW_EXPORT_LABELS.memoCopy}</span>
@@ -8717,6 +8728,7 @@ function ExportFirstHero({
   onDownloadCalendar: () => void;
   onCopyText: () => void;
 }) {
+  const displayTitle = toContentDisplayTitle(bundle.flow.title);
   const previewEntries = getExportFirstPreviewEntries(bundle, displayAnchor);
   const remainingCount = Math.max(getScheduleEntries(bundle, displayAnchor).length - previewEntries.length, 0);
   const sourceText = bundle.flow.source_title ? `${bundle.items.length}개 항목 · ${bundle.flow.source_title}` : `${bundle.items.length}개 항목`;
@@ -8725,7 +8737,7 @@ function ExportFirstHero({
     <section aria-label="Export-first flow hero" className="my-6 rounded-2xl border border-[#E7E4DD] bg-white p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)] md:p-5">
       <div className="grid gap-5 md:grid-cols-[1.08fr_0.92fr] md:items-start">
         <div>
-          <h2 className="text-2xl font-bold tracking-normal text-[#1B1A17] md:text-3xl">{bundle.flow.title}</h2>
+          <h2 className="text-2xl font-bold tracking-normal text-[#1B1A17] md:text-3xl">{displayTitle}</h2>
           <p className="mt-2 text-sm leading-6 text-[#6E6B64]">{sourceText}</p>
 
           <div className="mt-5 rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-4">
@@ -9780,7 +9792,7 @@ function RoutineMonthRenderer({
                     {occurrence ? (
                       <div className="mt-2 rounded border border-blue-100 bg-white p-2 text-xs leading-4">
                         <p className="font-semibold text-blue-700">{occurrence.sessionIndex}회차</p>
-                        <p className="mt-1 font-medium text-gray-800">{bundle.flow.title}</p>
+                        <p className="mt-1 font-medium text-gray-800">{toContentDisplayTitle(bundle.flow.title)}</p>
                         {sessionSummary.map((summary) => (
                           <p key={summary} className="mt-1 text-gray-500">{summary}</p>
                         ))}
