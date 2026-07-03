@@ -3565,6 +3565,22 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const hiddenMobileFlowBoardCount = shouldLimitMobileFlowBoard
     ? Math.max(0, flowListVisibleFlows.length - mobileFlowBoardVisibleFlows.length)
     : 0;
+  const mobileFlowRemainingCount = flowListVisibleFlows.reduce((sum, flow) => sum + Math.max(0, flow.total - flow.done), 0);
+  const mobileFlowSummaryChips = [
+    todayOpenCount > 0
+      ? { label: `오늘 ${todayOpenCount}`, className: 'bg-[#EEF1FF] text-[#3654FF]' }
+      : null,
+    upcomingRows.length > 0
+      ? { label: `다음 ${upcomingRows.length}`, className: 'bg-[#ECF7F1] text-[#1F8A5B]' }
+      : null,
+    overdueRows.length > 0
+      ? { label: `밀림 ${overdueRows.length}`, className: 'bg-[#FFF4ED] text-[#D6462E]' }
+      : null,
+  ].filter((chip): chip is { label: string; className: string } => Boolean(chip));
+  const mobileFlowSummaryText =
+    mobileFlowRemainingCount > 0
+      ? `${flowListVisibleFlows.length}개 저장 · ${mobileFlowRemainingCount}개 남음`
+      : `${flowListVisibleFlows.length}개 저장 · 모두 완료`;
   const flowListReadyFlows = flowListVisibleFlows.filter((flow) => isMyFlowReadyContent(flow));
   const flowListSupportFlows = flowListVisibleFlows.filter((flow) => !isMyFlowReadyContent(flow));
   const shouldSeparateFlowReadiness =
@@ -5400,6 +5416,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
   const renderCompactFlowStructureRow = (flow: MySavedFlow) => {
     const nextRow = getSavedFlowNextRow(flow);
+    const progressSummary = `${flow.done}/${flow.total} 완료`;
     const structureLabel = flow.savedMap
       ? flow.savedMap.title
       : flow.bundle.flow.structure_type === 'routine'
@@ -5443,19 +5460,22 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <span className="mt-1 block truncate text-xs font-semibold text-slate-500">{structureLabel}</span>
               </span>
             </span>
-            <span className={`shrink-0 rounded-md px-2 py-1 text-xs font-semibold ${flowExpanded ? 'bg-white text-blue-700 ring-1 ring-blue-100' : 'bg-slate-100 text-slate-700'}`}>
-              {flow.percent}%
+            <span
+              data-testid="my-flow-mobile-structure-progress"
+              className={`shrink-0 rounded-md px-2 py-1 text-xs font-semibold ${flowExpanded ? 'bg-white text-blue-700 ring-1 ring-blue-100' : 'bg-slate-100 text-slate-700'}`}
+            >
+              {progressSummary}
             </span>
           </span>
           <span className="mt-3 block h-1.5 overflow-hidden rounded-full bg-slate-200">
-            <span className="block h-full rounded-full bg-blue-700" style={{ width: `${flow.percent}%` }} />
+            <span className="block h-full rounded-full bg-blue-700" style={{ width: `${flow.percent}%` }} aria-hidden="true" />
           </span>
           {nextRow && !flowExpanded ? (
             <span className="mt-3 block rounded-md bg-slate-50 px-3 py-2">
               <span className="block text-xs font-semibold text-blue-700">다음 할 일</span>
               <span className="mt-1 block text-sm font-semibold text-slate-950">{nextRow.title}</span>
               <span className="mt-1 block text-xs font-semibold text-slate-500">
-                {[nextRow.date, nextRow.section].filter(Boolean).join(' · ') || `${flow.done}/${flow.total} 완료`}
+                {[nextRow.date, nextRow.section].filter(Boolean).join(' · ') || progressSummary}
               </span>
             </span>
           ) : !nextRow ? (
@@ -5484,7 +5504,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                           {getMyFlowRowDisplayTitle(stepRow)}
                         </span>
                         <span className="mt-1 block truncate text-xs font-semibold text-slate-500">
-                          {[stepRow.date, stepRow.timing ? formatMyFlowTimingChip(stepRow.timing) : '', getMyFlowRowDisplaySectionLabel(stepRow)].filter(Boolean).join(' · ') || `${flow.done}/${flow.total} 완료`}
+                          {[stepRow.date, stepRow.timing ? formatMyFlowTimingChip(stepRow.timing) : '', getMyFlowRowDisplaySectionLabel(stepRow)].filter(Boolean).join(' · ') || progressSummary}
                         </span>
                       </span>
                       <span className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-semibold ${stepChecked ? 'bg-emerald-50 text-emerald-700' : stepOpen ? 'bg-white text-blue-700 ring-1 ring-blue-100' : 'bg-slate-100 text-slate-600'}`}>
@@ -5537,6 +5557,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
   const renderSavedFlowOverviewCard = (flow: MySavedFlow) => {
     const nextRow = getSavedFlowNextRow(flow);
+    const progressSummary = `${flow.done}/${flow.total} 완료`;
     const anchorDisplay = getMyFlowAnchorDisplay(flow.bundle, flow.anchor, myFlowDemoMode);
     const nextActionLabel = getMyFlowOpenActionLabel(flow.bundle);
     const typeCounts = flow.bundle.flow.tags?.includes('progress-flow') ? [] : getMyFlowTypeCounts(flow.rows);
@@ -5568,7 +5589,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="min-w-0 text-xl font-semibold tracking-tight text-slate-950">{flow.progress.title}</h3>
-              <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{flow.done}/{flow.total} 완료</span>
               {showContentReadinessBadge ? (
                 <span data-testid="my-flow-content-readiness" className="rounded-md bg-white px-2 py-1 text-xs font-semibold text-amber-800 ring-1 ring-amber-200">
                   {contentReadiness.label}
@@ -5628,10 +5648,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         ) : null}
         <div className="mt-4">
           <div className="flex items-center justify-between gap-3 text-xs font-semibold text-slate-700">
-            <span>진행률</span>
-            <span className="text-slate-950">{flow.percent}%</span>
+            <span>진행</span>
+            <span data-testid="my-flow-overview-progress-summary" className="text-slate-950">{progressSummary}</span>
           </div>
-          <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200">
+          <div
+            data-testid="my-flow-overview-progress-bar"
+            className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200"
+            aria-label={`진행 ${progressSummary}`}
+            role="img"
+          >
             <div className="h-full bg-blue-700" style={{ width: `${flow.percent}%` }} />
           </div>
         </div>
@@ -6217,20 +6242,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       <section data-testid="my-flow-mobile-flow-summary" className="rounded-2xl border border-[#E7E4DD] bg-white px-3 py-2.5 shadow-sm">
                         <div className="flex items-center justify-between gap-3">
                           <p className="shrink-0 text-sm font-semibold text-[#3654FF]">저장한 콘텐츠</p>
-                          <div className="flex min-w-0 flex-wrap justify-end gap-1.5 text-[11px] font-semibold">
-                            <span className="rounded-md bg-[#EEF1FF] px-2 py-1 text-[#3654FF]">
-                              오늘 {todayOpenCount}
-                            </span>
-                            <span className="rounded-md bg-[#ECF7F1] px-2 py-1 text-[#1F8A5B]">
-                              다음 {upcomingRows.length}
-                            </span>
-                            <span className="rounded-md bg-[#FFF4ED] px-2 py-1 text-[#D6462E]">
-                              밀림 {overdueRows.length}
-                            </span>
-                          </div>
+                          {mobileFlowSummaryChips.length > 0 ? (
+                            <div className="flex min-w-0 flex-wrap justify-end gap-1.5 text-[11px] font-semibold">
+                              {mobileFlowSummaryChips.map((chip) => (
+                                <span key={chip.label} className={`rounded-md px-2 py-1 ${chip.className}`}>
+                                  {chip.label}
+                                </span>
+                              ))}
+                            </div>
+                          ) : null}
                         </div>
                         <p className="mt-2 truncate text-xs font-semibold text-[#6E6B64]">
-                          {flowListVisibleFlows.length}개 저장 · {flowListVisibleFlows.reduce((sum, flow) => sum + Math.max(0, flow.total - flow.done), 0)}개 남음
+                          {mobileFlowSummaryText}
                         </p>
                       </section>
                       {flowListVisibleFlows.length > 0 ? (
