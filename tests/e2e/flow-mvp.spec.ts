@@ -224,6 +224,33 @@ test('special public workbench routes keep the FlowMe visual rhythm', async ({ p
   const studyWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
   await expect(studyWorkbench.getByTestId('artifact-calendar-card')).toHaveCSS('border-radius', '16px');
   await expect(studyWorkbench.getByTestId('artifact-list-card')).toHaveCSS('border-radius', '16px');
+
+  await page.goto('/f/fridge-cleanout-weekly-plan');
+  const spreadsheetWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(spreadsheetWorkbench.getByTestId('artifact-log-table-spreadsheet')).toHaveCSS('border-color', 'rgb(231, 228, 221)');
+  await expect(spreadsheetWorkbench.getByTestId('artifact-log-table-spreadsheet')).toHaveCSS('border-radius', '16px');
+  await expect(spreadsheetWorkbench.getByTestId('mobile-artifact-summary-card')).toHaveCSS('border-radius', '16px');
+
+  await page.goto('/f/baby-food-menu-recipe');
+  const babyFoodWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(babyFoodWorkbench.getByTestId('artifact-calendar-card')).toHaveCSS('border-color', 'rgb(231, 228, 221)');
+  await expect(babyFoodWorkbench.getByTestId('artifact-calendar-card')).toHaveCSS('border-radius', '16px');
+  await expect(babyFoodWorkbench.getByTestId('meal-source-bridge')).toHaveCSS('border-color', 'rgb(231, 228, 221)');
+  await expect(babyFoodWorkbench.getByTestId('meal-source-bridge')).toHaveCSS('border-radius', '16px');
+
+  await page.goto('/f/real-thankyou-bubu-home-workout-starter');
+  const exactVideoWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(exactVideoWorkbench.getByTestId('exact-video-source-bridge')).toHaveCSS('border-color', 'rgb(231, 228, 221)');
+  await expect(exactVideoWorkbench.getByTestId('exact-video-source-bridge')).toHaveCSS('border-radius', '16px');
+  await expect(exactVideoWorkbench.getByTestId('exact-video-result-card')).toHaveCSS('border-color', 'rgb(231, 228, 221)');
+  await expect(exactVideoWorkbench.getByTestId('exact-video-result-card')).toHaveCSS('border-radius', '16px');
+
+  await page.goto('/f/washer-tub-clean-monthly');
+  const maintenanceWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(maintenanceWorkbench.getByTestId('maintenance-routine-next-card')).toHaveCSS('border-radius', '16px');
+  await expect(maintenanceWorkbench.getByTestId('maintenance-routine-checklist-card')).toHaveCSS('border-radius', '16px');
+  await expect(maintenanceWorkbench.getByTestId('maintenance-source-bridge')).toHaveCSS('border-color', 'rgb(231, 228, 221)');
+  await expect(maintenanceWorkbench.getByTestId('maintenance-source-bridge')).toHaveCSS('border-radius', '16px');
 });
 
 test('public flow detail uses a share shell until it saves into My Flow', async ({ page }) => {
@@ -1307,7 +1334,7 @@ test('calendar route opens the nearest saved schedule instead of an empty today'
   await expect(selectedDay.locator('h3')).not.toContainText(/\d{4}-\d{2}-\d{2}/);
   await expect(selectedDay).not.toContainText('이 날짜에 등록된 일정이 없습니다.');
   const selectedDateGroup = selectedDay.getByTestId('my-flow-selected-date-group').first();
-  await expect(selectedDateGroup).toContainText('이사 준비 Flow');
+  await expect(selectedDateGroup).toContainText('이사 준비');
   await expect(selectedDateGroup).toContainText('2개 · 2개 남음');
   await expect(page.locator('.fc-daygrid-day[data-date="2026-06-03"]')).toHaveClass(/my-flow-calendar-selected-date/);
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
@@ -1336,7 +1363,7 @@ test('calendar route keeps the first agenda and light day cells in the mobile vi
   await expect(selectedDay.locator('h3')).toContainText('7월 12일');
   const selectedDayBox = await selectedDay.boundingBox();
   expect(selectedDayBox?.y ?? 9999).toBeLessThan(540);
-  await expect(selectedDay.getByTestId('my-flow-selected-date-group').first()).toContainText('이사 준비 Flow');
+  await expect(selectedDay.getByTestId('my-flow-selected-date-group').first()).toContainText('이사 준비');
 
   const scheduleContent = page.locator('.fc-daygrid-day[data-date="2026-07-12"] [data-testid="my-flow-calendar-schedule-content"]').first();
   await expect(scheduleContent).toBeVisible();
