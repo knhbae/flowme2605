@@ -101,7 +101,7 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
 
   const jeonseCard = page.locator('a[href="/f/jeonse-contract-precheck-docs"]');
   await expect(jeonseCard.getByText('주거/계약전점검')).toBeVisible();
-  await expect(jeonseCard).toContainText('계약 예정일 입력만 넣으면 캘린더 + 체크로 저장');
+  await expect(jeonseCard).toContainText('계약 예정일만 넣으면 저장됩니다: 캘린더 + 체크');
   await expect(jeonseCard.getByText('먼저 할 일')).toBeVisible();
   await expect(jeonseCard.getByText('원문 연결')).toHaveCount(0);
   await expect(jeonseCard.getByTestId('flow-card-primary-action')).toHaveText('저장 전 보기');
@@ -354,6 +354,58 @@ test('representative single flow saves into My Flow execution space', async ({ p
   await expect(page).toHaveURL(/\/my/);
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
   await expect(page.getByText('전세계약 전 서류 체크 Flow').first()).toBeVisible();
+});
+
+test('public single Flow detail keeps input save and first action in the mobile hero', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/jeonse-contract-precheck-docs');
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
+
+  const hero = page.getByTestId('public-flow-hero');
+  await expect(hero).toBeVisible();
+  await expect(hero.getByRole('heading', { name: '전세계약 전 서류 체크 Flow' })).toBeVisible();
+  await expect(hero.getByTestId('public-flow-result-promise')).toBeVisible();
+  await expect(hero.getByTestId('public-flow-primary-setup')).toBeVisible();
+  await expect(hero.getByTestId('public-flow-primary-setup').locator('input[type="date"]')).toBeVisible();
+  await expect(hero.getByTestId('public-flow-first-action-preview')).toContainText('시세와 등기부등본 권리관계 확인하기');
+  await expect(hero.getByTestId('public-flow-save-actions').getByRole('button', { name: '내 Flow에 저장' })).toBeVisible();
+  await expectNoInternalUserSurfaceCopy(hero);
+
+  const inputTop = await hero.getByTestId('public-flow-primary-setup').evaluate((element) => element.getBoundingClientRect().top);
+  const firstActionTop = await hero.getByTestId('public-flow-first-action-preview').evaluate((element) => element.getBoundingClientRect().top);
+  const saveTop = await hero.getByTestId('public-flow-save-actions').evaluate((element) => element.getBoundingClientRect().top);
+  const heroBottom = await hero.evaluate((element) => element.getBoundingClientRect().bottom);
+
+  expect(inputTop).toBeLessThan(560);
+  expect(firstActionTop).toBeLessThan(680);
+  expect(saveTop).toBeLessThan(760);
+  expect(heroBottom).toBeLessThan(820);
+
+  await hero.getByTestId('public-flow-save-actions').getByRole('button', { name: '내 Flow에 저장' }).click();
+  await expect(hero.getByTestId('public-flow-save-actions').getByRole('link', { name: '내 Flow에서 보기' })).toBeVisible();
+});
+
+test('public no-anchor Flow detail shows the first action without a setup detour on mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/used-car-buying-check');
+
+  const hero = page.getByTestId('public-flow-hero');
+  await expect(hero).toBeVisible();
+  await expect(hero.getByRole('heading', { name: '중고차 구매 현장 점검 Flow' })).toBeVisible();
+  await expect(hero.getByTestId('public-flow-result-promise')).toBeVisible();
+  await expect(hero.getByTestId('public-flow-primary-setup')).toContainText('입력 없이');
+  await expect(hero.getByTestId('public-flow-primary-setup').locator('input[type="date"]')).toHaveCount(0);
+  await expect(hero.getByTestId('public-flow-first-action-preview')).toContainText('총예산을 차량가');
+  await expectNoInternalUserSurfaceCopy(hero);
+
+  const firstActionTop = await hero.getByTestId('public-flow-first-action-preview').evaluate((element) => element.getBoundingClientRect().top);
+  const heroBottom = await hero.evaluate((element) => element.getBoundingClientRect().bottom);
+  const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
+
+  expect(firstActionTop).toBeLessThan(720);
+  expect(heroBottom).toBeLessThan(820);
+  expect(hasHorizontalOverflow).toBe(false);
 });
 
 test('moving restart route starts from move date setup', async ({ page }) => {

@@ -53,6 +53,7 @@ Claude Design 리뷰의 결론은 새 기능 추가가 아니라 위계 압축�
 - 2026-07-03: P0-04를 처리했다. My Flow Today/Now와 캘린더 선택일 제목은 상태/사용자 날짜 포맷 중심으로 바꾸고, 내부 ISO 날짜는 data/input 값으로만 유지했다. targeted Playwright 날짜 copy subset 통과.
 - 2026-07-03: P0-05를 처리했다. 일반 사용자 라우트의 `묶음`, `검수 필요`, `정리 필요`, demo/source-backed/review/audit/Step/Item 노출을 금지어 스캔으로 고정하고, catalog/public map/post-save/My Flow 표면 카운트를 `할 일/체크/콘텐츠` 중심으로 낮췄다. targeted Playwright user-surface text scan 및 source-backed 저장 subset 통과.
 - 2026-07-03: P1-01, P1-02를 처리했다. `/flows`의 이중 헤더를 `무엇을 저장할까요?` 한 벌로 합치고, 카드는 카테고리/제목/결과 약속/먼저 할 일/CTA 하나 중심으로 압축했다. 390px 확인 결과 첫 카드 top 349px, 카드 높이 199px, 가로 overflow 0건이었다. targeted Playwright `/flows` subset 통과.
+- 2026-07-03: P1-03을 처리했다. `/f/[slug]` 공개 Flow 상세 hero를 결과 약속/필요 입력/먼저 할 일/저장 CTA 중심으로 압축하고, 입력 없는 Flow는 별도 setup 우회 없이 `입력 없이` 상태와 첫 행동을 hero 안에서 보여준다. 390px 확인 결과 `jeonse-contract-precheck-docs`는 입력 top 236px, 먼저 할 일 top 444px, 저장 CTA top 517px이고, `used-car-buying-check`는 먼저 할 일 top 285px, 가로 overflow 0건이었다. targeted Playwright public Flow detail subset 통과.
 - 2026-07-03: P1-04를 처리했다. `/flow-maps/[map]` hero를 제목/결과 약속/결과 칩/입력/먼저 할 일 중심으로 압축하고, `저장되는 결과물` 전폭 카드 3장은 제거했다. 390px 확인 결과 `moving-d30`, `middle-school-math-1`, `moving-map` 모두 첫 할 일이 첫 뷰포트 안에 있고 가로 overflow 0건이었다. targeted Playwright source-backed map subset 통과.
 
 ## P1 - P0 후 이어서 해결
@@ -61,7 +62,7 @@ Claude Design 리뷰의 결론은 새 기능 추가가 아니라 위계 압축�
 | --- | --- | --- |
 | P1-01 | Flow 찾기 헤더 | 완료 - 이중 헤더를 `무엇을 저장할까요?` 한 벌로 통합하고 첫 카드가 더 빨리 보이게 했다. |
 | P1-02 | Flow 찾기 카드 | 완료 - 카드 정보를 카테고리, 제목, 결과 약속, 먼저 할 일, CTA 하나로 압축했다. |
-| P1-03 | 공개 Flow 상세 hero | 제목, 결과 한 줄, 입력, CTA, 먼저 할 일이 한 뷰포트에 들어오게 재구성한다. |
+| P1-03 | 공개 Flow 상세 hero | 완료 - 제목, 결과 한 줄, 입력, CTA, 먼저 할 일이 한 뷰포트에 들어오게 재구성했다. |
 | P1-04 | Flow Map 상세 hero | 완료 - `저장되는 결과물` 카드 3장을 인라인 칩으로 낮추고 입력/저장 동선을 압축했다. |
 | P1-05 | My Flow Today | 첫 슬롯을 항상 오늘/밀린/다음 중 실행 가능한 행동으로 둔다. 빈 상태 문구는 캡션으로 낮춘다. |
 | P1-06 | 캘린더 | 이중 헤더 제거, 숫자+dot 셀, 가장 가까운 일정일 기본 선택, agenda 고정으로 schedule-first화한다. |

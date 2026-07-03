@@ -457,21 +457,10 @@ function getCatalogFirstTask(previewSteps: string[], fallback: string): string {
   return previewSteps[0] ?? fallback;
 }
 
-function getInstrumentParticle(value: string): '로' | '으로' {
-  const last = value.trim().at(-1);
-  if (!last) return '로';
-  const code = last.charCodeAt(0);
-  if (code >= 0xac00 && code <= 0xd7a3) {
-    const finalConsonantIndex = (code - 0xac00) % 28;
-    return finalConsonantIndex !== 0 && finalConsonantIndex !== 8 ? '으로' : '로';
-  }
-  return '로';
-}
-
 function getCatalogPromiseText(input: string, artifact: string): string {
-  const artifactParticle = getInstrumentParticle(artifact);
-  if (input === '입력 없음') return `${artifact}${artifactParticle} 바로 저장`;
-  return `${input}만 넣으면 ${artifact}${artifactParticle} 저장`;
+  if (input.includes('없음')) return `바로 저장됩니다: ${artifact}`;
+  const inputLabel = input.endsWith(' 입력') ? input.slice(0, -3) : input;
+  return `${inputLabel}만 넣으면 저장됩니다: ${artifact}`;
 }
 
 function isJeonsePrecheckFlow(bundle: FlowBundle): boolean {
@@ -8126,6 +8115,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const publicHeroArtifact = getCatalogDestinationLabel(bundle);
   const publicHeroPromise = getCatalogPromiseText(publicHeroInput, publicHeroArtifact);
   const publicHeroFirstTask = getCatalogFirstTask(getFlowPreviewStepTitles(bundle), getCatalogReason(bundle));
+  const showPublicHeroSetup = !showTodayExecution && !showExportFirstHero && (showPublicSaveAction || bundle.flow.anchor_type === 'none');
 
   const toggle = (id: string) => {
     setChecks((value) => {
@@ -8238,6 +8228,45 @@ export function PublicFlow({ slug }: { slug: string }) {
     }
     document.querySelector('[aria-label="Flow artifact workbench"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
+  const renderPublicSaveActions = () =>
+    showPublicSaveAction ? (
+      <div data-testid="public-flow-save-actions" className="grid gap-2 sm:max-w-sm">
+        {savedFlowAt ? (
+          <Link className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]" href="/my">
+            내 Flow에서 보기
+          </Link>
+        ) : (
+          <button
+            type="button"
+            className="min-h-11 rounded-xl bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
+            onClick={saveToMyFlow}
+          >
+            내 Flow에 저장
+          </button>
+        )}
+        {bundle.flow.source_url ? (
+          <a className="inline-flex min-h-8 items-center justify-center text-sm font-semibold text-[#6E6B64] underline-offset-2 hover:text-[#3654FF] hover:underline" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
+            원문은 아래에서 확인
+          </a>
+        ) : null}
+      </div>
+    ) : null;
+  const renderPublicHeroSetup = () => {
+    if (!showPublicHeroSetup) return null;
+    if (bundle.flow.anchor_type === 'none') {
+      return (
+        <div data-testid="public-flow-primary-setup" className="rounded-xl bg-white px-3 py-2.5 ring-1 ring-[#E7E4DD]">
+          <p className="text-[11px] font-semibold text-[#8A857B]">필요한 입력</p>
+          <p className="mt-1 text-sm font-semibold text-[#1B1A17]">입력 없이 바로 확인합니다.</p>
+        </div>
+      );
+    }
+    return (
+      <div data-testid="public-flow-primary-setup" className="rounded-xl bg-white px-3 py-3 ring-1 ring-[#E7E4DD]">
+        <AnchorInput bundle={bundle} anchor={anchor} displayAnchor={displayAnchor} mode={anchorMode} onModeChange={setAnchorMode} onChange={setAnchor} weekdays={weekdaySelection} onWeekdaysChange={setWeekdaySelection} />
+      </div>
+    );
+  };
   const renderArtifactWorkbench = () => (
     <ArtifactWorkbench
       bundle={bundle}
@@ -8265,7 +8294,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   );
   const showCalendarExportAction = canExportCalendar && bundle.flow.primary_destination !== 'internal_check';
   const renderSetupSection = () =>
-    !showTodayExecution && !showExportFirstHero ? (
+    !showTodayExecution && !showExportFirstHero && !showPublicHeroSetup ? (
       <section className={compactJeonsePage ? 'my-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-4' : 'my-6 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-5'}>
         <div className={compactJeonsePage ? 'grid gap-3' : 'grid gap-4'}>
           <div className={compactJeonsePage ? '' : 'rounded-lg border border-slate-200 bg-slate-50 p-4'}>
@@ -8298,7 +8327,7 @@ export function PublicFlow({ slug }: { slug: string }) {
           </Link>
         </div>
 
-        <header className={compactJeonsePage ? 'rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm md:px-5 md:py-4' : 'rounded-2xl border border-[#E7E4DD] bg-white px-4 py-4 shadow-[0_8px_24px_rgba(27,26,23,0.05)] md:px-6 md:py-5'}>
+        <header data-testid="public-flow-hero" className={compactJeonsePage ? 'rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm md:px-5 md:py-4' : 'rounded-2xl border border-[#E7E4DD] bg-white px-4 py-4 shadow-[0_8px_24px_rgba(27,26,23,0.05)] md:px-6 md:py-5'}>
           <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-500">
             <span>{bundle.flow.category}</span>
             <span aria-hidden="true">·</span>
@@ -8311,14 +8340,21 @@ export function PublicFlow({ slug }: { slug: string }) {
             ) : null}
           </div>
           <h1 className={compactJeonsePage ? 'mt-2 max-w-3xl text-2xl font-bold tracking-normal text-slate-950 md:text-3xl' : 'mt-2 max-w-4xl text-2xl font-bold tracking-normal text-slate-950 md:mt-3 md:text-4xl'}>{bundle.flow.title}</h1>
-          {compactJeonsePage ? (
-            <section className="mt-3 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2.5">
-              <p className="break-keep text-sm font-semibold leading-6 text-[#3654FF]">{publicHeroPromise}</p>
-              <p className="mt-1 line-clamp-1 text-xs font-semibold text-[#6E6B64]">먼저 할 일: {publicHeroFirstTask}</p>
+          {showPublicHeroSetup ? (
+            <section className={compactJeonsePage ? 'mt-3 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2.5' : 'mt-3 rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-3'}>
+              <p data-testid="public-flow-result-promise" className="break-keep text-sm font-semibold leading-6 text-[#3654FF]">{publicHeroPromise}</p>
+              <div className="mt-3 grid gap-2 md:grid-cols-[minmax(0,1fr)_minmax(220px,0.8fr)] md:items-start">
+                {renderPublicHeroSetup()}
+                <div data-testid="public-flow-first-action-preview" className="rounded-xl bg-white px-3 py-2.5 ring-1 ring-[#E7E4DD]">
+                  <p className="text-[11px] font-semibold text-[#8A857B]">먼저 할 일</p>
+                  <p className="mt-1 line-clamp-2 break-keep text-sm font-semibold text-[#1B1A17]">{publicHeroFirstTask}</p>
+                </div>
+              </div>
+              {showPublicSaveAction ? <div className="mt-3">{renderPublicSaveActions()}</div> : null}
             </section>
           ) : (
             <section className="mt-3 rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-3">
-              <p className="break-keep text-sm font-semibold leading-6 text-[#3654FF]">{publicHeroPromise}</p>
+              <p data-testid="public-flow-result-promise" className="break-keep text-sm font-semibold leading-6 text-[#3654FF]">{publicHeroPromise}</p>
               <div className="mt-3 grid gap-2 sm:grid-cols-3">
                 <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-[#E7E4DD]">
                   <p className="text-[11px] font-semibold text-[#8A857B]">입력</p>
@@ -8328,7 +8364,7 @@ export function PublicFlow({ slug }: { slug: string }) {
                   <p className="text-[11px] font-semibold text-[#8A857B]">저장 결과</p>
                   <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicHeroArtifact}</p>
                 </div>
-                <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-[#E7E4DD]">
+                <div data-testid="public-flow-first-action-preview" className="rounded-xl bg-white px-3 py-2 ring-1 ring-[#E7E4DD]">
                   <p className="text-[11px] font-semibold text-[#8A857B]">먼저 할 일</p>
                   <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicHeroFirstTask}</p>
                 </div>
@@ -8351,26 +8387,7 @@ export function PublicFlow({ slug }: { slug: string }) {
             </>
           )}
           {showPublicSaveAction ? (
-            <div data-testid="public-flow-save-actions" className="mt-4 grid gap-2 sm:max-w-sm">
-              {savedFlowAt ? (
-                <Link className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]" href="/my">
-                  내 Flow에서 보기
-                </Link>
-              ) : (
-                <button
-                  type="button"
-                  className="min-h-11 rounded-xl bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
-                  onClick={saveToMyFlow}
-                >
-                  내 Flow에 저장
-                </button>
-              )}
-              {bundle.flow.source_url ? (
-                <a className="inline-flex min-h-8 items-center justify-center text-sm font-semibold text-[#6E6B64] underline-offset-2 hover:text-[#3654FF] hover:underline" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
-                  원문은 아래에서 확인
-                </a>
-              ) : null}
-            </div>
+            !showPublicHeroSetup ? <div className="mt-4">{renderPublicSaveActions()}</div> : null
           ) : null}
         </header>
 
