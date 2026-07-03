@@ -2324,6 +2324,16 @@ function formatMyFlowMonthHeading(date: string): string {
   return `${year}년 ${Number(month)}월`;
 }
 
+function formatMyFlowDisplayDate(date: string, options: { includeWeekday?: boolean } = {}): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
+  if (!match) return date;
+  const [, year, month, day] = match;
+  const label = `${Number(month)}월 ${Number(day)}일`;
+  if (!options.includeWeekday) return label;
+  const weekday = ['일', '월', '화', '수', '목', '금', '토'][new Date(Number(year), Number(month) - 1, Number(day)).getDay()];
+  return `${label} (${weekday})`;
+}
+
 function addMyFlowMonths(date: string, count: number): string {
   const current = new Date(`${getMyFlowMonthStart(date)}T00:00:00`);
   current.setMonth(current.getMonth() + count);
@@ -3144,10 +3154,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const myFlowNowEyebrow = myFlowPrimaryContinuationIsToday ? '오늘 실행' : myFlowPrimaryContinuationIsFuture ? '다음 할 일' : '지금 이어하기';
   const myFlowNowTitle = myFlowPrimaryContinuationRow
     ? myFlowPrimaryContinuationIsToday
-      ? `${myFlowTodayDate} 오늘 할 일`
+      ? '오늘 할 일'
       : myFlowPrimaryContinuationIsFuture
-        ? `${myFlowPrimaryContinuationRow.date} 예정 할 일`
-        : `${myFlowTodayDate} 먼저 할 일`
+        ? '다음 할 일'
+        : '밀린 할 일'
     : '이어갈 할 일이 없습니다';
   const myFlowNowHelp = myFlowPrimaryContinuationRow
     ? myFlowPrimaryContinuationIsToday
@@ -3995,6 +4005,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const displayTiming = options.kind === 'routine' ? '' : formatMyFlowTimingChip(row.timing ?? '');
     const timingAccessibilityLabel = options.kind === 'routine' ? undefined : getMyFlowTimingChipLabel(row.timing ?? '');
     const displaySection = getMyFlowRowDisplaySectionLabel(row);
+    const displayDate = row.date ? formatMyFlowDisplayDate(row.date) : '';
+    const rowDateMeta = options.kind === 'routine' && !options.showRoutineDate ? '루틴' : displayDate;
     const flowChipLabel = getMyFlowFlowChipLabel(row.flow);
     const showFlowChip = !options.minimalMeta && !options.hideFlowMeta && (options.showFlowProgress || visibleSavedFlows.length > 1 || Boolean(row.flow.savedMap));
     const flowProgressLabel = getMyFlowFlowProgressLabel(row.flow);
@@ -4058,7 +4070,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <span className={rowDotClassName} style={{ backgroundColor: color }} />
             <span className="min-w-0 flex-1">
               <span className="flex flex-wrap items-center gap-1 text-xs font-semibold text-slate-500 sm:gap-1.5">
-                <span data-testid="my-flow-row-date-meta" className={options.hideDateMeta ? 'hidden sm:inline' : undefined}>{options.kind === 'routine' && !options.showRoutineDate ? '루틴' : row.date}</span>
+                <span data-testid="my-flow-row-date-meta" className={options.hideDateMeta ? 'hidden sm:inline' : undefined}>{rowDateMeta}</span>
                 {displayTiming ? <span data-testid="my-flow-row-timing-chip" aria-label={timingAccessibilityLabel} title={timingAccessibilityLabel} className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">{displayTiming}</span> : null}
                 {!options.minimalMeta && displaySection ? <span data-testid="my-flow-row-section-label">{displaySection}</span> : null}
                 {showFlowChip ? <span data-testid="my-flow-row-flow-chip" className="max-w-full truncate rounded bg-blue-50 px-1.5 py-0.5 text-[10px] text-blue-700">{flowChipLabel}</span> : null}
@@ -4125,7 +4137,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           <span className={rowDotClassName} style={{ backgroundColor: color }} />
           <span className="min-w-0 flex-1">
               <span className="flex flex-wrap items-center gap-1 text-xs font-semibold text-slate-500 sm:gap-1.5">
-                <span data-testid="my-flow-row-date-meta" className={options.hideDateMeta ? 'hidden sm:inline' : undefined}>{options.kind === 'routine' && !options.showRoutineDate ? '루틴' : row.date}</span>
+                <span data-testid="my-flow-row-date-meta" className={options.hideDateMeta ? 'hidden sm:inline' : undefined}>{rowDateMeta}</span>
                 {displayTiming ? <span data-testid="my-flow-row-timing-chip" aria-label={timingAccessibilityLabel} title={timingAccessibilityLabel} className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">{displayTiming}</span> : null}
                 {!options.minimalMeta && displaySection ? <span data-testid="my-flow-row-section-label">{displaySection}</span> : null}
                 {showFlowChip ? <span data-testid="my-flow-row-flow-chip" className="max-w-full truncate rounded bg-blue-50 px-1.5 py-0.5 text-[10px] text-blue-700">{flowChipLabel}</span> : null}
@@ -4175,7 +4187,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           ? '일정 흐름'
           : '체크 흐름';
     const rowMeta = [
-      row.date,
+      row.date ? formatMyFlowDisplayDate(row.date) : '',
       row.timing ? formatMyFlowTimingChip(row.timing) : '',
       getMyFlowRowDisplaySectionLabel(row),
     ].filter(Boolean).join(' · ');
@@ -4849,7 +4861,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </label>
             )}
             <p className="mt-2 flex flex-wrap items-center gap-1.5 text-xs font-semibold text-slate-600">
-              {row.date ? <span>{row.date}</span> : null}
+              {row.date ? <span>{formatMyFlowDisplayDate(row.date)}</span> : null}
               {!isRoutineRow && timing ? <span data-testid="my-flow-detail-timing-chip" aria-label={getMyFlowTimingChipLabel(timing)} title={getMyFlowTimingChipLabel(timing)} className="rounded bg-white px-1.5 py-0.5 text-[10px] text-slate-600">{formatMyFlowTimingChip(timing)}</span> : null}
               {visibleDetailSection ? <span data-testid="my-flow-detail-section-label">{visibleDetailSection}</span> : null}
               {showDetailFlowChip ? <span data-testid="my-flow-detail-flow-chip" className="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] text-blue-700">{detailFlowChipLabel}</span> : null}
@@ -5997,7 +6009,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       </section>
       <section data-testid="my-flow-calendar-selected-day" className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <p className="text-xs font-semibold text-slate-500">선택한 날짜</p>
-        <h2 className="mt-1 text-lg font-semibold text-slate-950">{myFlowSelectedDate}</h2>
+        <h2 className="mt-1 text-lg font-semibold text-slate-950">{formatMyFlowDisplayDate(myFlowSelectedDate, { includeWeekday: true })}</h2>
         <p className="mt-3 rounded-md bg-slate-50 px-3 py-3 text-sm text-slate-600">이 날짜에 등록된 일정이 없습니다.</p>
       </section>
     </section>
@@ -6166,7 +6178,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                       <div>
                         <p className="text-sm font-semibold text-blue-700">{isMyFlowScenarioDemo ? '데모 기준일' : '지금 이어하기'}</p>
-                        <h3 className="mt-0.5 text-lg font-semibold text-slate-950 sm:mt-1 sm:text-xl">{myFlowTodayDate} 기준 할 일</h3>
+                        <h3 className="mt-0.5 text-lg font-semibold text-slate-950 sm:mt-1 sm:text-xl">오늘 할 일</h3>
+                        <p data-testid="my-flow-today-date-meta" className="mt-1 text-xs font-semibold text-slate-500">
+                          {formatMyFlowDisplayDate(myFlowTodayDate, { includeWeekday: true })}
+                        </p>
                         {isMyFlowScenarioDemo ? (
                           <p className="mt-1 inline-flex rounded-md bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700 sm:py-1">
                             실제 오늘과 다른 고정 기준일
@@ -6204,7 +6219,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       </div>
                       {myFlowPrimaryContinuationRow ? (
                         <span className="shrink-0 rounded-md bg-white px-2 py-1 text-xs font-semibold text-blue-700 ring-1 ring-blue-100">
-                          {myFlowPrimaryContinuationRow.date ?? '날짜 없음'}
+                          {myFlowPrimaryContinuationRow.date ? formatMyFlowDisplayDate(myFlowPrimaryContinuationRow.date) : '날짜 없음'}
                         </span>
                       ) : null}
                     </div>
@@ -6433,7 +6448,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                           >
                             <div className="flex flex-wrap items-center gap-2">
                               <span className={`rounded-md border px-2 py-1 text-xs font-semibold ${className}`}>{label}</span>
-                              {row.date ? <span className="text-xs font-semibold text-slate-500">{row.date}</span> : null}
+                              {row.date ? <span className="text-xs font-semibold text-slate-500">{formatMyFlowDisplayDate(row.date)}</span> : null}
                               {row.timing && row.flow.bundle.flow.structure_type !== 'routine' ? (
                                 <span aria-label={getMyFlowTimingChipLabel(row.timing)} title={getMyFlowTimingChipLabel(row.timing)} className="rounded bg-white px-1.5 py-0.5 text-[10px] font-semibold text-slate-600">{formatMyFlowTimingChip(row.timing)}</span>
                               ) : null}
@@ -6728,7 +6743,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 className="rounded-lg border border-slate-200 bg-white p-2 shadow-sm sm:p-4"
               >
                 <p className="text-xs font-semibold text-slate-500">선택한 날짜</p>
-                <h3 className="mt-1 text-lg font-semibold text-slate-950">{myFlowSelectedDate}</h3>
+                <h3 className="mt-1 text-lg font-semibold text-slate-950">{formatMyFlowDisplayDate(myFlowSelectedDate, { includeWeekday: true })}</h3>
                 <p className="mt-1 text-xs font-semibold text-slate-500">
                   {showMyFlowCalendarScopeFilter ? `${myFlowCalendarScopeLabel} · ` : ''}{myFlowSelectedDateRows.length}개 일정 · {myFlowSelectedDateRoutineRows.length}개 루틴 · {myFlowSelectedDateOpenCount}개 남음
                 </p>
@@ -7003,7 +7018,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   className="rounded-lg border border-slate-200 bg-slate-50 p-3"
                 >
                   <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-500">
-                    {row.date ? <span>{row.date}</span> : null}
+                    {row.date ? <span>{formatMyFlowDisplayDate(row.date)}</span> : null}
                     {row.timing && row.flow.bundle.flow.structure_type !== 'routine' ? (
                       <span className="rounded bg-white px-1.5 py-0.5 text-[10px] text-slate-600">{formatMyFlowTimingChip(row.timing)}</span>
                     ) : null}
