@@ -2835,7 +2835,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const postSaveFlows = postSaveMap
     ? savedFlows.filter((flow) => postSaveMap.flowSlugs.includes(flow.progress.slug))
     : [];
-  const postSaveStepCount = postSaveFlows.reduce((count, flow) => count + flow.rows.length, 0);
   const hasPostSavePanel = Boolean(postSaveMap && postSaveFlows.length > 0 && (!isMyFlowScenarioDemo || savedMapIdParam));
   const showPostSavePanel = hasPostSavePanel && !myFlowPostSaveWorkspaceOpen;
   const showMyFlowWorkspace = savedFlows.length > 0;
@@ -5299,34 +5298,20 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const renderPostSavePanel = () => {
     if (!postSaveMap || postSaveFlows.length === 0) return null;
     const postSaveContinuationRow = getPostSaveContinuationRow();
-    const postSaveContinuationDate = postSaveContinuationRow?.date
-      ? postSaveContinuationRow.date < myFlowTodayDate
-        ? `지난 일정 ${postSaveContinuationRow.date}`
-        : postSaveContinuationRow.date === myFlowTodayDate
-          ? `오늘 할 일 ${postSaveContinuationRow.date}`
-          : `다음 일정 ${postSaveContinuationRow.date}`
-      : '';
-    const postSaveSummary = [
-      `${postSaveStepCount}개 할 일`,
-      postSaveContinuationDate,
-    ].filter(Boolean).join(' · ');
+    const postSaveHeading = postSaveContinuationRow
+      ? getMyFlowRowDisplayTitle(postSaveContinuationRow)
+      : '저장한 내용을 확인하세요';
     return (
-      <section data-testid="my-flow-post-save-panel" className="mb-4 rounded-2xl border border-[#E7E4DD] bg-white p-4 shadow-[0_8px_24px_rgba(27,26,23,0.05)]">
+      <section data-testid="my-flow-post-save-panel" className="mb-4 rounded-2xl border border-[#E7E4DD] bg-white p-3 shadow-[0_8px_24px_rgba(27,26,23,0.05)] sm:p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
               <span className="rounded-full bg-[#EEF1FF] px-2.5 py-1 text-[#3654FF]">저장됨</span>
               <span className="break-keep text-[#6E6B64]">{postSaveMap.title}</span>
             </div>
-            <h3 className="mt-1 break-keep text-xl font-semibold tracking-tight text-slate-950">
-              {postSaveContinuationRow ? '먼저 할 일부터 열어보세요' : '저장한 내용을 확인하세요'}
+            <h3 className="mt-2 break-keep text-lg font-semibold tracking-tight text-slate-950 sm:text-xl">
+              {postSaveHeading}
             </h3>
-            {postSaveContinuationRow ? (
-              <p className="mt-3 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-slate-900">
-                {getMyFlowRowDisplayTitle(postSaveContinuationRow)}
-              </p>
-            ) : null}
-            <p data-testid="my-flow-post-save-summary" className="mt-2 text-sm font-semibold text-[#6E6B64]">{postSaveSummary}</p>
           </div>
           <div className="grid shrink-0 gap-2 sm:w-44">
             {postSaveContinuationRow ? (
@@ -5336,7 +5321,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 className="min-h-10 rounded-xl bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white"
                 onClick={openMyFlowContinuationFromPostSave}
               >
-                먼저 할 일 열기
+                먼저 열기
               </button>
             ) : null}
             <button
@@ -5345,7 +5330,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               className="min-h-10 rounded-xl border border-[#E7E4DD] bg-white px-3 py-2 text-sm font-semibold text-[#3654FF]"
               onClick={openMyFlowListFromPostSave}
             >
-              전체 할 일 보기
+              전체 보기
             </button>
           </div>
         </div>
@@ -6078,9 +6063,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         <h3 className="mt-0.5 text-base font-semibold text-slate-950 sm:mt-1 sm:text-lg">
                           {myFlowNowTitle}
                         </h3>
-                        <p className="mt-1 text-xs text-slate-600 sm:text-sm">
-                          {myFlowNowHelp}
-                        </p>
+                        {!isMyFlowMobileViewport ? (
+                          <p className="mt-1 text-xs text-slate-600 sm:text-sm">
+                            {myFlowNowHelp}
+                          </p>
+                        ) : null}
                       </div>
                       {myFlowPrimaryContinuationRow ? (
                         <span className="shrink-0 rounded-md bg-white px-2 py-1 text-xs font-semibold text-blue-700 ring-1 ring-blue-100">
@@ -6637,11 +6624,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 data-schedule-overflow-date={myFlowScheduleOverflowDate === myFlowSelectedDate ? myFlowScheduleOverflowDate : undefined}
                 className="order-1 rounded-lg border border-slate-200 bg-white p-2 shadow-sm sm:p-4 lg:order-2"
               >
-                <p className="text-xs font-semibold text-slate-500">선택한 날짜</p>
                 <h3 className="mt-1 text-lg font-semibold text-slate-950">{formatMyFlowDisplayDate(myFlowSelectedDate, { includeWeekday: true })}</h3>
-                <p className="mt-1 text-xs font-semibold text-slate-500">
-                  {showMyFlowCalendarScopeFilter ? `${myFlowCalendarScopeLabel} · ` : ''}{myFlowSelectedDateRows.length}개 일정 · {myFlowSelectedDateRoutineRows.length}개 루틴 · {myFlowSelectedDateOpenCount}개 남음
-                </p>
+                {!isMyFlowMobileViewport ? (
+                  <p className="mt-1 text-xs font-semibold text-slate-500">
+                    {showMyFlowCalendarScopeFilter ? `${myFlowCalendarScopeLabel} · ` : ''}{myFlowSelectedDateRows.length}개 일정 · {myFlowSelectedDateRoutineRows.length}개 루틴 · {myFlowSelectedDateOpenCount}개 남음
+                  </p>
+                ) : null}
                 {myFlowRoutineOverflowDate === myFlowSelectedDate && myFlowSelectedDateRoutineOverflowCount > 0 ? (
                   <p data-testid="my-flow-selected-day-overflow-note" className="mt-2 rounded-md bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700">
                     +{myFlowSelectedDateRoutineOverflowCount} 루틴 포함
@@ -6668,9 +6656,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                               <p className={`text-xs font-semibold ${group.savedMap ? 'text-blue-700' : 'text-slate-500'}`}>{group.label}</p>
                               <h4 className="mt-0.5 truncate text-sm font-semibold text-slate-950">{group.title}</h4>
                             </div>
-                            <span className="rounded-md bg-white px-2 py-1 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
-                              {group.rows.length}개 · {groupOpenCount}개 남음
-                            </span>
+                            {group.rows.length > 1 || groupOpenCount !== group.rows.length ? (
+                              <span className="rounded-md bg-white px-2 py-1 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
+                                {group.rows.length}개 · {groupOpenCount}개 남음
+                              </span>
+                            ) : null}
                           </div>
                           <div className="grid gap-1.5">
                             {group.rows.map((row) => renderExecutionRow(row, {

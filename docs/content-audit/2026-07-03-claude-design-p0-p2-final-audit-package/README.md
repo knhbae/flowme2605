@@ -17,6 +17,13 @@
 - 현재 `08-calendar-after-save-mobile.png`는 실제 저장 후 가장 가까운 일정 agenda를 보여준다.
 - 재생성 스크립트: [`scripts/content-audit/capture-claude-p0-p2-final-evidence.mjs`](../../../scripts/content-audit/capture-claude-p0-p2-final-evidence.mjs)
 
+## P3-02 화면 밀도 정리
+
+- 저장 후 My Flow 배너는 `저장됨`, 콘텐츠명, 첫 실행 항목, `먼저 열기`/`전체 보기`만 남겼다.
+- 배너에서 `먼저 할 일부터 열어보세요`, `5개 할 일`, `지난 일정 ...` 같은 반복 설명/카운트는 제거했다.
+- Calendar 선택일 카드에서는 모바일 기준 `선택한 날짜`, `0개 루틴`, 단일 일정의 `1개 · 1개 남음` 카운트를 숨겼다.
+- `route-evidence.json`의 `hasCompactPostSavePanel`, `hasCompactAgendaHeader`로 compact 상태를 확인한다.
+
 ```powershell
 npm.cmd run build
 # 별도 터미널에서 실행한 채 유지

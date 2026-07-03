@@ -21,9 +21,17 @@
 - 현재 evidence: `/my?savedMap=moving-d30`는 `이사 방식과 견적 후보 정하기` 첫 실행 항목을 보여주고, `/calendar`는 `7월 8일 (수)` 선택일 agenda와 `입주청소와 대형폐기물 일정 확인`을 보여준다.
 - 고정 장치: `tests/e2e/flow-mvp.spec.ts`에 저장 후 My Flow/Calendar가 true empty state로 회귀하지 않는 assertion을 추가했고, `scripts/content-audit/capture-claude-p0-p2-final-evidence.mjs`로 같은 브라우저 컨텍스트에서 저장 후 증거를 재생성한다.
 
+## P3-02 화면 밀도 정리
+
+- 저장 후 My Flow 배너는 확인/라우터 역할로 낮췄다. 이제 `저장됨`, 콘텐츠명, 첫 실행 항목, `먼저 열기`, `전체 보기`만 먼저 보인다.
+- 배너의 반복 설명과 중복 카운트인 `먼저 할 일부터 열어보세요`, `5개 할 일`, `지난 일정 ...`은 제거했다.
+- My Flow Today 첫 카드의 모바일 도움말 문장은 숨기고, 항목 제목과 `열기` 행동을 더 먼저 읽히게 했다.
+- Calendar 선택일 카드에서는 모바일 기준 `선택한 날짜`, `0개 루틴`, 단일 일정의 `1개 · 1개 남음` 카운트를 숨겼다.
+- `route-evidence.json`에는 `hasCompactPostSavePanel: true`, `hasCompactAgendaHeader: true`가 기록된다.
+
 ## Route evidence
 
-모바일 390 x 844 viewport에서 route sanity check를 수행했다. 저장 후 route는 `/flow-maps/moving-d30`에서 실제 저장을 수행한 같은 브라우저 컨텍스트로 캡처했다. 모든 route에서 horizontal overflow는 0건이고, ASCII 내부 검토어 스캔 결과는 0건이다.
+모바일 390 x 844 viewport에서 route sanity check를 수행했다. 저장 후 route는 `/flow-maps/moving-d30`에서 실제 저장을 수행한 같은 브라우저 컨텍스트로 캡처했다. 모든 route에서 horizontal overflow는 0건이고, ASCII 내부 검토어 스캔 결과는 0건이다. P3-02 이후 `07-post-save-my-flow-mobile.png`와 `08-calendar-after-save-mobile.png`는 compact 화면 기준으로 재생성했다.
 
 | Route | 상태 | H1 | Screenshot | 비고 |
 | --- | --- | --- | --- | --- |
@@ -43,6 +51,8 @@
 - 모바일 390px route evidence: 생성 완료
 - P3-01 저장 루프 evidence: 앱 버그 아님, evidence 생성 오류로 판별
 - P3-01 targeted Playwright subset: 2 passed
+- P3-02 density targeted Playwright subset: 2 passed
+- P3-02 source-backed post-save regression subset: 6 passed
 - P0/P2 regression targeted Playwright subset: 6 passed
 - P0~P2 final targeted Playwright subset: 9 passed
   - design token rhythm

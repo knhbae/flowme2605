@@ -256,8 +256,8 @@ test('curated source save lands in My Flow with user-facing overdue copy', async
 
   const postSavePanel = page.getByTestId('my-flow-post-save-panel');
   await expect(postSavePanel).not.toContainText('묶음');
-  await expect(postSavePanel).toContainText('5개 할 일');
-  await expect(postSavePanel).toContainText('지난 일정 2026-07-01');
+  await expect(postSavePanel).not.toContainText('5개 할 일');
+  await expect(postSavePanel).not.toContainText('지난 일정 2026-07-01');
   await expect(postSavePanel).not.toContainText('다음 2026-07-01');
 
   const nowSection = page.getByTestId('my-flow-now-section');
@@ -365,15 +365,17 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
   const movingPostSave = page.getByTestId('my-flow-post-save-panel');
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
-  await expect(movingPostSave).toContainText('5개 할 일');
-  await expect(movingPostSave).toContainText('이사 방식과 견적 후보 정하기');
+  await expect(movingPostSave.getByRole('heading', { name: '이사 방식과 견적 후보 정하기' })).toBeVisible();
+  await expect(movingPostSave).not.toContainText('먼저 할 일부터 열어보세요');
+  await expect(movingPostSave).not.toContainText('지난 일정');
   await expect(movingPostSave).not.toContainText('5개 Step');
-  await expect(movingPostSave.getByTestId('my-flow-post-save-open-first')).toContainText('먼저 할 일 열기');
+  await expect(movingPostSave.getByTestId('my-flow-post-save-open-first')).toContainText('먼저 열기');
   await expect(movingPostSave.getByTestId('my-flow-post-save-view-all')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-today-summary').locator('h3')).not.toContainText(/\d{4}-\d{2}-\d{2}/);
   await expect(page.getByTestId('my-flow-today-summary').locator('h3')).not.toContainText('기준 할 일');
   await expect(page.getByTestId('my-flow-now-section').locator('h3')).not.toContainText(/\d{4}-\d{2}-\d{2}/);
   await expect(page.getByTestId('my-flow-now-section').locator('h3')).toContainText('밀린 할 일');
+  await expect(page.getByTestId('my-flow-now-section')).not.toContainText('밀린 할 일 중 먼저 정리할 항목입니다.');
   await movingPostSave.getByTestId('my-flow-post-save-view-flow').click();
   await expect(page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="source-backed-moving-d30"]')).toBeVisible();
 
@@ -383,7 +385,8 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(page).toHaveURL('/my?savedMap=middle-school-math-1');
   const mathPostSave = page.getByTestId('my-flow-post-save-panel');
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
-  await expect(mathPostSave).toContainText('8개 할 일');
+  await expect(mathPostSave.getByRole('heading', { name: '1. 소인수분해' })).toBeVisible();
+  await expect(mathPostSave).not.toContainText('8개 할 일');
   await expect(mathPostSave).not.toContainText('8개 Step');
   const mathNowSection = page.getByTestId('my-flow-now-section');
   await expect(mathNowSection).toContainText('소인수분해');
@@ -496,9 +499,14 @@ test('mobile fixed layers keep save actions and final content separated', async 
   await page.goto('/calendar');
   await expect(page.getByTestId('my-flow-empty-state')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
+  const selectedDay = page.getByTestId('my-flow-calendar-selected-day');
+  await expect(selectedDay).toContainText('7월 8일 (수)');
+  await expect(selectedDay).not.toContainText('선택한 날짜');
+  await expect(selectedDay).not.toContainText('0개 루틴');
   const selectedDateGroup = page.getByTestId('my-flow-selected-date-group').first();
   await expect(selectedDateGroup).toContainText('원룸 이사 D-30 일정 지도');
   await expect(selectedDateGroup).toContainText('입주청소와 대형폐기물 일정 확인');
+  await expect(selectedDateGroup).not.toContainText('1개 · 1개 남음');
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
   await expectElementClearsFixedLayer(page.getByTestId('my-flow-calendar-card'), page.getByTestId('platform-mobile-tabs'), 16);
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
@@ -1632,9 +1640,9 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   await expect(page.getByTestId('my-flow-demo-badge')).toHaveCount(0);
   const postSavePanel = page.getByTestId('my-flow-post-save-panel');
   await expect(postSavePanel).toContainText('저장됨');
-  await expect(postSavePanel.getByRole('heading', { name: '먼저 할 일부터 열어보세요' })).toBeVisible();
+  await expect(postSavePanel.getByRole('heading', { name: '1. 소인수분해' })).toBeVisible();
   await expect(postSavePanel).toContainText('중1 수학 목차 진도표');
-  await expect(postSavePanel).toContainText('8개 할 일');
+  await expect(postSavePanel).not.toContainText('8개 할 일');
   await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(0);
   await expect(postSavePanel.getByTestId('my-flow-post-save-view-all')).toHaveCount(0);
   await postSavePanel.getByTestId('my-flow-post-save-open-first').click();
@@ -1762,7 +1770,7 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
 
   const postSavePanel = page.getByTestId('my-flow-post-save-panel');
   await expect(postSavePanel).toContainText('원룸 이사 D-30 일정 지도');
-  await expect(postSavePanel).toContainText('5개 할 일');
+  await expect(postSavePanel).not.toContainText('5개 할 일');
   await expect(postSavePanel).not.toContainText('묶음');
   await expect(postSavePanel).toContainText('이사 방식과 견적 후보 정하기');
   await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(0);
@@ -1781,7 +1789,7 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
   const selectedDateGroup = page.getByTestId('my-flow-selected-date-group').first();
   await expect(selectedDateGroup).toContainText('저장한 일정');
   await expect(selectedDateGroup).toContainText('원룸 이사 D-30 일정 지도');
-  await expect(selectedDateGroup).toContainText('1개 · 1개 남음');
+  await expect(selectedDateGroup).not.toContainText('1개 · 1개 남음');
   await expect(selectedDateGroup.getByTestId('my-flow-row-flow-chip')).toHaveCount(0);
   await expect(selectedDateGroup.getByTestId('my-flow-row-progress-chip')).toHaveCount(0);
 
@@ -1819,7 +1827,7 @@ test('source-backed baby health map saves input-bearing official schedule flows 
   await expect(page.getByTestId('my-flow-demo-badge')).toHaveCount(0);
   const postSavePanel = page.getByTestId('my-flow-post-save-panel');
   await expect(postSavePanel).toContainText('영유아 검진·접종 일정 지도');
-  await expect(postSavePanel).toContainText('18개 할 일');
+  await expect(postSavePanel).not.toContainText('18개 할 일');
   await expect(postSavePanel).not.toContainText('묶음');
   await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(0);
   await expect(postSavePanel.getByTestId('my-flow-post-save-view-all')).toHaveCount(0);
@@ -2033,7 +2041,7 @@ test('source-backed creator saved preview opens the requested My Flow map demo',
 
   const postSavePanel = page.getByTestId('my-flow-post-save-panel');
   await expect(postSavePanel).toContainText('영유아 검진·접종 일정 지도');
-  await expect(postSavePanel).toContainText('18개 할 일');
+  await expect(postSavePanel).not.toContainText('18개 할 일');
   await expect(postSavePanel).not.toContainText('묶음');
   await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(0);
 });
