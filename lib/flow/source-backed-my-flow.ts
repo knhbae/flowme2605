@@ -1191,7 +1191,7 @@ export function buildSourceBackedFlowMapPublishPackage(mapId: string): SourceBac
       sourceUrl: map.sourceUrl,
       setupInputs: map.setupInput ? [map.setupInput.label] : [],
       setupInput: map.setupInput,
-      primaryCta: { label: '전체 저장', href: '/my' },
+      primaryCta: { label: '전체 저장하고 시작', href: '/my' },
       secondaryCtas: childBundles.map((bundle) => ({ label: `${bundle.flow.title}만 저장`, href: '/my' })),
       artifacts: map.artifacts,
       categoryLabel: map.categoryLabel,

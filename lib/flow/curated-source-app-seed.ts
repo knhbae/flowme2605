@@ -195,14 +195,14 @@ function getSetupInput(bundle: SeedBundle): SourceBackedMyFlowMap['setupInput'] 
   if (!setup) return undefined;
   return {
     label: setup.label,
-    hint: `${setup.label} 기준으로 seed Step을 날짜나 반복 흐름에 맞춰 저장합니다.`,
+    hint: `${setup.label} 기준으로 원문 항목을 날짜나 반복 흐름에 맞춰 저장합니다.`,
   };
 }
 
 function buildMapSummary(bundle: SeedBundle): string {
-  const flowLabel = `${bundle.counts.flows}개 Flow`;
-  const stepLabel = `${bundle.counts.steps}개 Step`;
-  return `${bundle.userFacingStatus}. ${bundle.categoryLabel} 원문을 ${flowLabel}, ${stepLabel}으로 옮겨 저장하고 실행할 수 있습니다.`;
+  const flowLabel = `${bundle.counts.flows}개 묶음`;
+  const itemLabel = `${bundle.counts.steps}개 할 일`;
+  return `${bundle.userFacingStatus}. ${bundle.categoryLabel} 원문을 ${flowLabel}, ${itemLabel}로 옮겨 저장하고 실행할 수 있습니다.`;
 }
 
 function sourceTitle(bundle: SeedBundle): string {
@@ -268,7 +268,7 @@ function parseStepTiming(step: SeedStep, order: number, anchorType: AnchorType, 
 
 function buildStepDescription(step: SeedStep): string {
   return [
-    `Step: ${step.stepTitle}`,
+    `원문 항목: ${step.stepTitle}`,
     step.memo,
     step.detail,
     step.sourceTrace ? `원문 근거: ${step.sourceTrace}` : '',
@@ -343,7 +343,7 @@ function buildFlowBundle(bundle: SeedBundle, flow: SeedFlow): FlowBundle {
       id: `flow-curated-source-app-${flow.flowId}`,
       slug: flow.slug,
       title: flow.title,
-      description: `${bundle.title} 원문에서 ${flow.steps.length}개 Step을 옮긴 Flow입니다.`,
+      description: `${bundle.title} 원문에서 ${flow.steps.length}개 할 일을 옮겨 저장한 콘텐츠입니다.`,
       category: bundle.categoryLabel,
       structure_type: structureType,
       anchor_type: anchorType,
@@ -354,9 +354,9 @@ function buildFlowBundle(bundle: SeedBundle, flow: SeedFlow): FlowBundle {
       source_precision: flowSourceUrl ? 'exact' : 'broad',
       primary_destination: primaryDestination,
       setup_anchor_label: setupInput?.label,
-      setup_anchor_hint: setupInput ? `${setupInput.label} 기준으로 seed Step을 배치합니다.` : undefined,
+      setup_anchor_hint: setupInput ? `${setupInput.label} 기준으로 원문 항목을 배치합니다.` : undefined,
       source_checked_at: generatedAt,
-      conversion_note: '원문 구조를 Step과 체크 항목으로 옮겼습니다.',
+      conversion_note: '원문 구조를 할 일과 체크 항목으로 옮겼습니다.',
       risk_level: riskLevel,
       warning:
         riskLevel === 'medical_sensitive'
@@ -376,7 +376,7 @@ function buildFlowBundle(bundle: SeedBundle, flow: SeedFlow): FlowBundle {
       {
         id: sectionId,
         flow_id: `flow-curated-source-app-${flow.flowId}`,
-        title: '원문 Step',
+        title: '원문 항목',
         order: 0,
       },
     ],

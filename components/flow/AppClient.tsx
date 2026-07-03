@@ -315,19 +315,30 @@ function SourceContentCard({ bundle, className = 'mt-5' }: { bundle: FlowBundle;
 
   return (
     <section data-testid="flow-source-card" className={`${className} rounded-lg border border-slate-200 bg-white p-4 shadow-sm`}>
-      <p className="text-sm font-semibold text-slate-700">이 Flow는 아래 콘텐츠를 기반으로</p>
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-        <div className="min-w-0">
-          <h2 className="text-base font-semibold text-slate-950">{bundle.flow.source_title ?? '원본 콘텐츠'}</h2>
-          <p className="mt-1 text-sm text-slate-500">{sourceMeta.join(' · ')}</p>
-          {bundle.flow.conversion_note && !hideConversionNote ? <p className="mt-2 text-sm leading-6 text-slate-600">Flow 전환 방식: {bundle.flow.conversion_note}</p> : null}
+      <details>
+        <summary className="cursor-pointer list-none">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-slate-700">원문과 근거</p>
+              <h2 className="mt-1 break-keep text-base font-semibold text-slate-950">{bundle.flow.source_title ?? '원본 콘텐츠'}</h2>
+              <p className="mt-1 break-all text-xs font-semibold text-slate-500">{sourceMeta.join(' · ')}</p>
+            </div>
+            <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-600">
+              열기
+            </span>
+          </div>
+        </summary>
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3">
+          <div className="min-w-0">
+            {bundle.flow.conversion_note && !hideConversionNote ? <p className="text-sm leading-6 text-slate-600">원문에서 옮긴 방식: {bundle.flow.conversion_note}</p> : null}
         </div>
         {bundle.flow.source_url ? (
           <a className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
             원문 보기
           </a>
         ) : null}
-      </div>
+        </div>
+      </details>
     </section>
   );
 }
@@ -407,6 +418,73 @@ function getCatalogSourceSignal(bundle: FlowBundle): string {
 
 function getCatalogReason(bundle: FlowBundle): string {
   return representativeReasonBySlug[bundle.flow.slug] ?? `${getCatalogDestinationLabel(bundle)}로 그대로 저장 가능`;
+}
+
+type CatalogIntent = 'all' | 'moving' | 'study' | 'family' | 'purchase' | 'routine';
+
+const catalogIntentFilters: { id: CatalogIntent; label: string; terms: string[] }[] = [
+  { id: 'all', label: '전체', terms: [] },
+  { id: 'moving', label: '이사/계약', terms: ['이사', '계약', '전세', '입주', '웨딩', '결혼'] },
+  { id: 'study', label: '공부', terms: ['공부', '학습', '수학', '오픽', '시험', '진도', '독서'] },
+  { id: 'family', label: '아이/건강', terms: ['아이', '아기', '영유아', '이유식', '건강', '예방접종', '출생'] },
+  { id: 'purchase', label: '구매/생활', terms: ['구매', '신차', '중고차', '차량', '생활', '청소', '냉장고'] },
+  { id: 'routine', label: '루틴', terms: ['루틴', '반복', '운동', '홈트', '요일', '매일'] },
+];
+
+function normalizeCatalogText(value: string): string {
+  return value.toLowerCase().replace(/\s+/g, '');
+}
+
+function matchesCatalogQuery(searchText: string, query: string): boolean {
+  const normalizedQuery = normalizeCatalogText(query.trim());
+  if (!normalizedQuery) return true;
+  return normalizeCatalogText(searchText).includes(normalizedQuery);
+}
+
+function matchesCatalogIntent(searchText: string, intent: CatalogIntent): boolean {
+  if (intent === 'all') return true;
+  const filter = catalogIntentFilters.find((item) => item.id === intent);
+  if (!filter) return true;
+  const normalizedText = normalizeCatalogText(searchText);
+  return filter.terms.some((term) => normalizedText.includes(normalizeCatalogText(term)));
+}
+
+function getCatalogScaleText(counts: { flows?: number; steps: number; items: number }): string {
+  const flowText = counts.flows && counts.flows > 1 ? `${counts.flows}개 묶음 · ` : '';
+  return `${flowText}${counts.steps}개 할 일 · ${counts.items}개 체크`;
+}
+
+function getCatalogFirstTask(previewSteps: string[], fallback: string): string {
+  return previewSteps[0] ?? fallback;
+}
+
+function getInstrumentParticle(value: string): '로' | '으로' {
+  const last = value.trim().at(-1);
+  if (!last) return '로';
+  const code = last.charCodeAt(0);
+  if (code >= 0xac00 && code <= 0xd7a3) {
+    const finalConsonantIndex = (code - 0xac00) % 28;
+    return finalConsonantIndex !== 0 && finalConsonantIndex !== 8 ? '으로' : '로';
+  }
+  return '로';
+}
+
+function getCatalogPromiseText(input: string, artifact: string): string {
+  const artifactParticle = getInstrumentParticle(artifact);
+  if (input === '입력 없음') return `${artifact}${artifactParticle} 바로 저장`;
+  return `${input}만 넣으면 ${artifact}${artifactParticle} 저장`;
+}
+
+function getCatalogReadinessLabel(status: string): string {
+  if (status.includes('보강')) return '확인하며 사용';
+  if (status.includes('바로 저장')) return '바로 시작 가능';
+  if (status.includes('시작')) return status;
+  if (status.includes('가능')) return status;
+  return '확인 가능';
+}
+
+function getCatalogSummaryText(summary: string): string {
+  return summary.replace(/^(자료 보강 후 시작|일부 보강 후 시작|바로 시작 가능)\.\s*/, '');
 }
 
 function isJeonsePrecheckFlow(bundle: FlowBundle): boolean {
@@ -729,57 +807,179 @@ function FlowCard({
 
 function DirectoryFlowCard({ bundle }: { bundle: FlowBundle }) {
   const previewStepTitles = getFlowPreviewStepTitles(bundle);
-  const signals = [
-    { label: '산출물', value: getCatalogDestinationLabel(bundle) },
-    { label: '입력', value: getAnchorLabel(bundle) },
-    { label: '체크', value: `${getFlowItemCount(bundle)}개` },
-    { label: '근거', value: getCatalogSourceSignal(bundle) },
-  ];
+  const count = getFlowItemCount(bundle);
+  const input = getAnchorLabel(bundle);
+  const artifact = getCatalogDestinationLabel(bundle);
+  const firstTask = getCatalogFirstTask(previewStepTitles, getCatalogReason(bundle));
+  const promise = getCatalogPromiseText(input, artifact);
 
   return (
     <Link
       data-testid="single-flow-catalog-card"
       aria-label={bundle.flow.title}
-      className="block h-full rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:border-blue-300 hover:shadow-md"
+      className="block h-full rounded-2xl border border-[#E7E4DD] bg-white p-4 transition hover:border-[#3654FF]/40 hover:shadow-[0_8px_24px_rgba(27,26,23,0.06)]"
       href={`/f/${bundle.flow.slug}`}
     >
-      <article className="flex h-full flex-col justify-between gap-4">
+      <article className="flex h-full min-w-0 flex-col justify-between gap-4">
         <div>
-          <div className="flex flex-wrap items-center gap-1.5 text-xs font-semibold">
-            <span className="rounded-full bg-blue-50 px-2 py-0.5 text-blue-700">한 개만 저장</span>
-            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-gray-700">{getStructureLabel(bundle)}</span>
+          <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-semibold text-[#6E6B64]">
+            <span>{bundle.flow.category}</span>
+            <span aria-hidden="true">·</span>
+            <span>한 개만 저장</span>
+            <span aria-hidden="true">·</span>
+            <span>{getCatalogSourceSignal(bundle)}</span>
           </div>
-          <h3 className="mt-3 text-lg font-semibold leading-snug text-gray-950">{bundle.flow.title}</h3>
-          <p className="mt-2 line-clamp-2 text-sm leading-6 text-gray-600">{getFlowResultText(bundle)}</p>
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            {signals.map((signal) => (
-              <div key={signal.label} className="rounded-md bg-gray-50 px-2.5 py-2">
-                <p className="text-[11px] font-semibold text-gray-500">{signal.label}</p>
-                <p className="mt-0.5 truncate text-xs font-semibold text-gray-900">{signal.value}</p>
-              </div>
-            ))}
+          <h3 className="mt-3 break-keep text-lg font-semibold leading-snug text-[#1B1A17]">{bundle.flow.title}</h3>
+          <p className="mt-2 break-keep text-sm font-semibold leading-6 text-[#3654FF]">{promise}</p>
+          <p className="mt-1 line-clamp-2 break-keep text-sm leading-6 text-[#6E6B64]">{getFlowResultText(bundle)}</p>
+          <div className="mt-3 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2.5">
+            <p className="text-[11px] font-semibold text-[#6E6B64]">먼저 확인할 일</p>
+            <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{firstTask}</p>
           </div>
-          {previewStepTitles.length > 0 ? (
-            <div className="mt-3 rounded-md bg-slate-50 px-3 py-2">
-              <p className="text-[11px] font-semibold text-slate-500">저장 후 보이는 항목</p>
-              <ul className="mt-1 grid gap-1 text-xs font-semibold leading-5 text-slate-800">
-                {previewStepTitles.map((title, index) => (
-                  <li key={`${bundle.flow.id}-${index}-${title}`} className="truncate">· {title}</li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <p className="mt-3 rounded-md bg-slate-50 px-3 py-2 text-xs font-semibold leading-5 text-slate-700">
-              저장 후 바로 확인할 항목으로 열립니다.
-            </p>
-          )}
+          <div className="mt-3 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold text-[#8A857B]">
+            <span>{artifact}</span>
+            <span aria-hidden="true">·</span>
+            <span>{getStructureLabel(bundle)}</span>
+            <span aria-hidden="true">·</span>
+            <span>{count}개 체크</span>
+          </div>
         </div>
-        <div className="flex items-center justify-between border-t border-gray-100 pt-3 text-sm">
-          <span className="font-semibold text-gray-600">{bundle.flow.category}</span>
-          <span className="font-semibold text-blue-700">바로 시작</span>
+        <div className="grid gap-2 border-t border-[#E7E4DD] pt-3 text-sm">
+          <span className="inline-flex min-h-10 items-center justify-center rounded-xl bg-[#3654FF] px-3 py-2 font-semibold text-white">저장 전 보기</span>
         </div>
       </article>
     </Link>
+  );
+}
+
+type FlowMapCatalogLink = {
+  id: string;
+  title: string;
+  summary: string;
+  categoryLabel: string;
+  userFacingStatus: string;
+  input: string;
+  artifact: string;
+  counts: { flows: number; steps: number; items: number; sourceRows?: number };
+  recommendedFlowSlug: string;
+  recommendedFlowTitle: string;
+  sourceUrl: string;
+  sourceUrlCount: number;
+  sourceSignal: string;
+  previewSteps: string[];
+  searchText: string;
+  sourceKind: string;
+};
+
+function getFlowMapCatalogSearchText(item: FlowMapCatalogLink): string {
+  return [
+    item.title,
+    item.summary,
+    item.categoryLabel,
+    item.userFacingStatus,
+    item.input,
+    item.artifact,
+    item.recommendedFlowTitle,
+    item.sourceSignal,
+    item.searchText,
+    ...item.previewSteps,
+  ].join(' ');
+}
+
+function getBundleCatalogSearchText(bundle: FlowBundle): string {
+  return [
+    bundle.flow.title,
+    getFlowResultText(bundle),
+    bundle.flow.category,
+    getStructureLabel(bundle),
+    getAnchorLabel(bundle),
+    getCatalogDestinationLabel(bundle),
+    getCatalogSourceSignal(bundle),
+    getCatalogReason(bundle),
+    ...getFlowTags(bundle),
+    ...getFlowPreviewStepTitles(bundle),
+  ].join(' ');
+}
+
+function getChildFlowCatalogSearchText(
+  childFlows: {
+    slug: string;
+    title: string;
+    destination?: string;
+    steps: { title: string; stepTitle?: string; detailItems?: string[] }[];
+  }[],
+): string {
+  return childFlows
+    .flatMap((flow) => [
+      flow.slug,
+      flow.title,
+      flow.destination,
+      ...flow.steps.flatMap((step) => [step.title, step.stepTitle, ...(step.detailItems ?? [])]),
+    ])
+    .filter(Boolean)
+    .join(' ');
+}
+
+function FlowMapCatalogCard({ item }: { item: FlowMapCatalogLink }) {
+  const firstTask = getCatalogFirstTask(item.previewSteps, item.recommendedFlowTitle);
+  const sourceLabel = item.sourceUrlCount > 1 ? `원문 ${item.sourceUrlCount}개` : '원문';
+  const promise = getCatalogPromiseText(item.input, item.artifact);
+  const readinessLabel = getCatalogReadinessLabel(item.userFacingStatus);
+  const summary = getCatalogSummaryText(item.summary);
+
+  return (
+    <article
+      data-testid="flow-map-catalog-card"
+      data-source-kind={item.sourceKind}
+      className="flex min-w-0 flex-col rounded-2xl border border-[#E7E4DD] bg-white p-4 transition hover:border-[#3654FF]/40 hover:shadow-[0_8px_24px_rgba(27,26,23,0.06)]"
+    >
+      <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-semibold text-[#6E6B64]">
+        <span>{item.categoryLabel}</span>
+        <span aria-hidden="true">·</span>
+        <span>{readinessLabel}</span>
+        <span aria-hidden="true">·</span>
+        <span>{item.sourceSignal}</span>
+      </div>
+      <h3 className="mt-3 break-keep text-lg font-semibold leading-snug text-[#1B1A17]">{item.title}</h3>
+      <p className="mt-2 break-keep text-sm font-semibold leading-6 text-[#3654FF]">{promise}</p>
+      <p className="mt-1 line-clamp-2 break-keep text-sm leading-6 text-[#6E6B64]">{summary}</p>
+      <div className="mt-3 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2.5">
+        <p className="text-[11px] font-semibold text-[#6E6B64]">먼저 확인할 일</p>
+        <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{firstTask}</p>
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold text-[#8A857B]">
+        <span>{getCatalogScaleText(item.counts)}</span>
+        <span aria-hidden="true">·</span>
+        <span>{sourceLabel}</span>
+      </div>
+      <div className="mt-auto grid gap-2 border-t border-[#E7E4DD] pt-3">
+        <Link
+          data-testid="flow-map-detail-link"
+          className="inline-flex min-h-10 items-center justify-center rounded-xl bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white hover:bg-[#2945E8]"
+          href={`/flow-maps/${item.id}`}
+        >
+          저장 전 보기
+        </Link>
+        <div className="flex min-h-8 items-center justify-center gap-4 text-sm font-semibold">
+          <Link
+            data-testid="flow-map-recommended-flow-link"
+            className="text-[#3654FF] underline-offset-2 hover:underline"
+            href={`/f/${item.recommendedFlowSlug}`}
+          >
+            바로 시작
+          </Link>
+          <a
+            data-testid="flow-map-source-link"
+            className="text-[#6E6B64] underline-offset-2 hover:text-[#3654FF] hover:underline"
+            href={item.sourceUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {sourceLabel}
+          </a>
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -909,11 +1109,12 @@ export function FlowList() {
   const [tag, setTag] = useState(initialTag);
   const [structure, setStructure] = useState('전체');
   const [sort, setSort] = useState<'popular' | 'recent'>('popular');
+  const [catalogQuery, setCatalogQuery] = useState('');
+  const [catalogIntent, setCatalogIntent] = useState<CatalogIntent>('all');
   const directoryBundles = bundles.filter(isPublicDirectoryBundle);
   const showCatalogFilters = directoryBundles.length > 6;
   const categories = ['전체', ...Array.from(new Set(directoryBundles.map((bundle) => bundle.flow.category)))];
   const tags = ['전체', ...Array.from(new Set(directoryBundles.flatMap((bundle) => getFlowTags(bundle))))];
-  const quickTags = ['블로그 따라하기', 'D-Day 준비', '매일 루틴', '돈이 걸린 결정', '공식확인'];
   const structures = ['전체', '날짜 역산형', '반복 루틴형', '체크리스트형', '식단·레시피형'];
   const effectiveCategory = showCatalogFilters ? category : '전체';
   const effectiveTag = showCatalogFilters ? tag : '전체';
@@ -929,156 +1130,128 @@ export function FlowList() {
       if (sort === 'recent') return new Date(b.flow.updated_at).getTime() - new Date(a.flow.updated_at).getTime();
       return (b.flow.usage_count ?? 0) - (a.flow.usage_count ?? 0);
     });
+  const visibleFlowMapCatalogLinks = flowMapCatalogLinks.filter((item) => {
+    const searchText = getFlowMapCatalogSearchText(item);
+    return matchesCatalogQuery(searchText, catalogQuery) && matchesCatalogIntent(searchText, catalogIntent);
+  });
+  const visibleDirectoryBundles = filtered.filter((bundle) => {
+    const searchText = getBundleCatalogSearchText(bundle);
+    return matchesCatalogQuery(searchText, catalogQuery) && matchesCatalogIntent(searchText, catalogIntent);
+  });
+  const visibleCatalogCount = visibleFlowMapCatalogLinks.length + visibleDirectoryBundles.length;
+  const totalCatalogCount = flowMapCatalogLinks.length + filtered.length;
+  const hasCatalogFilter = catalogQuery.trim().length > 0 || catalogIntent !== 'all';
   return (
-    <main className="mx-auto max-w-6xl px-5 py-8 pb-28 md:pb-8">
+    <main className="min-h-screen bg-[#FAFAF8] px-5 py-6 pb-28 md:py-8 md:pb-8">
+      <div className="mx-auto max-w-6xl">
       <PlatformNav />
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm font-medium text-gray-500">Flow 찾기</p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight">저장해서 실행할 Flow</h1>
-          <p className="mt-2 text-gray-600">콘텐츠를 일정, 체크리스트, 진도표로 옮길 수 있는 것만 모았습니다.</p>
+          <p className="text-sm font-semibold text-[#6E6B64]">Flow 찾기</p>
+          <h1 className="mt-1 break-keep text-3xl font-semibold tracking-tight text-[#1B1A17]">저장할 실행 콘텐츠</h1>
+          <p className="mt-2 break-keep text-[#6E6B64]">무엇을 넣으면 어떤 일정과 체크가 생기는지 먼저 봅니다.</p>
         </div>
       </div>
 
-      <section data-testid="flow-map-catalog-section" className="mb-8 rounded-xl border border-blue-100 bg-blue-50/40 p-4 md:p-5">
+      <section data-testid="flow-map-catalog-section" className="mb-8">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-blue-700">저장할 콘텐츠</p>
-            <h2 className="mt-1 text-2xl font-semibold text-gray-950">내 상황에 맞는 Flow 고르기</h2>
-            <p className="mt-1 text-sm leading-6 text-blue-900/75">여러 단계 묶음과 한 개만 저장할 Flow를 같은 카드 방식으로 비교합니다.</p>
+            <p className="text-sm font-semibold text-[#3654FF]">저장할 콘텐츠</p>
+            <h2 className="mt-1 break-keep text-2xl font-semibold text-[#1B1A17]">내 상황에 맞는 콘텐츠 고르기</h2>
+            <p className="mt-1 break-keep text-sm leading-6 text-[#6E6B64]">카드에서 저장 결과와 먼저 할 일을 확인합니다.</p>
           </div>
-          <span className="text-sm font-semibold text-blue-700">{flowMapCatalogLinks.length + filtered.length}개 콘텐츠</span>
+          <span className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-[#3654FF] ring-1 ring-[#E7E4DD]">
+            {hasCatalogFilter ? `${visibleCatalogCount}/${totalCatalogCount}개 콘텐츠` : `${totalCatalogCount}개 콘텐츠`}
+          </span>
+        </div>
+        <div className="mb-4 grid gap-3 rounded-2xl border border-[#E7E4DD] bg-white p-4">
+          <label className="space-y-2">
+            <span className="text-sm font-semibold text-[#1B1A17]">검색</span>
+            <input
+              data-testid="flow-catalog-search"
+              className="min-h-11 w-full rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none placeholder:text-[#A09B91] focus:border-[#3654FF] focus:bg-white focus:ring-2 focus:ring-[#3654FF]/10"
+              value={catalogQuery}
+              onChange={(event) => setCatalogQuery(event.target.value)}
+              placeholder="이사, 공부, 식단, 체크리스트"
+            />
+          </label>
+          <div className="flex flex-wrap gap-2" aria-label="상황별 콘텐츠 필터">
+            {catalogIntentFilters.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={`rounded-full border px-3 py-1.5 text-sm font-semibold ${
+                  catalogIntent === item.id ? 'border-[#1B1A17] bg-[#1B1A17] text-white' : 'border-[#E7E4DD] bg-white text-[#6E6B64]'
+                }`}
+                aria-pressed={catalogIntent === item.id}
+                onClick={() => setCatalogIntent(item.id)}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
         </div>
         {showCatalogFilters ? (
-          <div className="mb-4 rounded-lg border border-blue-100 bg-white p-4">
-            <div className="mb-4 flex flex-wrap gap-2">
-              {quickTags.map((item) => (
-                <Link
-                  key={item}
-                  className={`rounded-full border px-3 py-1.5 text-sm font-semibold ${tag === item ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`}
-                  href={`/flows?tag=${encodeURIComponent(item)}`}
-                >
-                  #{item}
-                </Link>
-              ))}
-            </div>
-            <details className="rounded-md border border-gray-200 bg-gray-50 px-3 py-2">
-              <summary className="cursor-pointer text-sm font-semibold text-gray-700">한 개만 저장할 Flow 필터</summary>
+          <div className="mb-4 rounded-2xl border border-[#E7E4DD] bg-white p-4">
+            <details className="rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2">
+              <summary className="cursor-pointer text-sm font-semibold text-[#1B1A17]">필터 열기</summary>
               <div className="mt-4 grid gap-4 md:grid-cols-3">
                 <label className="space-y-2">
-                  <span className="text-sm font-semibold text-gray-700">태그</span>
-                  <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2" value={tag} onChange={(event) => setTag(event.target.value)}>
+                  <span className="text-sm font-semibold text-[#6E6B64]">태그</span>
+                  <select className="w-full rounded-xl border border-[#E7E4DD] bg-white px-3 py-2" value={tag} onChange={(event) => setTag(event.target.value)}>
                     {tags.map((item) => (
                       <option key={item} value={item}>{item}</option>
                     ))}
                   </select>
                 </label>
                 <label className="space-y-2">
-                  <span className="text-sm font-semibold text-gray-700">카테고리</span>
-                  <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2" value={category} onChange={(event) => setCategory(event.target.value)}>
+                  <span className="text-sm font-semibold text-[#6E6B64]">카테고리</span>
+                  <select className="w-full rounded-xl border border-[#E7E4DD] bg-white px-3 py-2" value={category} onChange={(event) => setCategory(event.target.value)}>
                     {categories.map((item) => (
                       <option key={item} value={item}>{item}</option>
                     ))}
                   </select>
                 </label>
                 <label className="space-y-2">
-                  <span className="text-sm font-semibold text-gray-700">진행 방식</span>
-                  <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2" value={structure} onChange={(event) => setStructure(event.target.value)}>
+                  <span className="text-sm font-semibold text-[#6E6B64]">진행 방식</span>
+                  <select className="w-full rounded-xl border border-[#E7E4DD] bg-white px-3 py-2" value={structure} onChange={(event) => setStructure(event.target.value)}>
                     {structures.map((item) => (
                       <option key={item} value={item}>{item}</option>
                     ))}
                   </select>
                 </label>
                 <label className="space-y-2">
-                  <span className="text-sm font-semibold text-gray-700">정렬</span>
-                  <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2" value={sort} onChange={(event) => setSort(event.target.value as typeof sort)}>
+                  <span className="text-sm font-semibold text-[#6E6B64]">정렬</span>
+                  <select className="w-full rounded-xl border border-[#E7E4DD] bg-white px-3 py-2" value={sort} onChange={(event) => setSort(event.target.value as typeof sort)}>
                     <option value="popular">인기순</option>
                     <option value="recent">최신순</option>
                   </select>
                 </label>
               </div>
             </details>
-            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-gray-500">
-              <span>{filtered.length}개 한 개짜리 Flow</span>
-              {tag !== '전체' ? <span className="rounded-full bg-blue-50 px-2 py-1 font-medium text-blue-700">#{tag}</span> : null}
-              {category !== '전체' ? <span className="rounded-full bg-gray-50 px-2 py-1 font-medium text-gray-700">{category}</span> : null}
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-[#6E6B64]">
+              <span>{visibleDirectoryBundles.length}/{filtered.length}개 한 개만 저장</span>
+              {tag !== '전체' ? <span className="rounded-full bg-[#EEF1FF] px-2 py-1 font-medium text-[#3654FF]">#{tag}</span> : null}
+              {category !== '전체' ? <span className="rounded-full bg-[#FAFAF8] px-2 py-1 font-medium text-[#1B1A17]">{category}</span> : null}
             </div>
           </div>
         ) : null}
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {flowMapCatalogLinks.map((item) => (
-            <article
-              key={item.id}
-              data-testid="flow-map-catalog-card"
-              data-source-kind={item.sourceKind}
-              className="flex min-w-0 flex-col rounded-lg border border-blue-100 bg-white p-4 shadow-sm"
-            >
-              <div className="flex flex-wrap items-center gap-1.5 text-xs font-semibold">
-                <span className="rounded-full bg-blue-50 px-2 py-0.5 text-blue-700">{item.categoryLabel}</span>
-                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-gray-700">{item.userFacingStatus}</span>
-              </div>
-              <h3 className="mt-3 text-lg font-semibold leading-snug text-gray-950">{item.title}</h3>
-              <p className="mt-2 line-clamp-3 text-sm leading-6 text-gray-600">{item.summary}</p>
-              <dl className="mt-3 grid grid-cols-3 divide-x divide-gray-100 rounded-md border border-gray-100 bg-gray-50 text-xs">
-                <div className="min-w-0 px-2.5 py-2">
-                  <dt className="font-semibold text-gray-500">흐름</dt>
-                  <dd className="mt-0.5 truncate font-semibold text-gray-900">{item.counts.flows}개</dd>
-                </div>
-                <div className="min-w-0 px-2.5 py-2">
-                  <dt className="font-semibold text-gray-500">단계</dt>
-                  <dd className="mt-0.5 truncate font-semibold text-gray-900">{item.counts.steps}단계</dd>
-                </div>
-                <div className="min-w-0 px-2.5 py-2">
-                  <dt className="font-semibold text-gray-500">체크</dt>
-                  <dd className="mt-0.5 truncate font-semibold text-gray-900">{item.counts.items}개</dd>
-                </div>
-              </dl>
-              <div className="mt-3 rounded-md bg-slate-50 px-3 py-2">
-                <p className="text-[11px] font-semibold text-slate-500">권장 Flow</p>
-                <p className="mt-1 truncate text-sm font-semibold text-slate-900">{item.recommendedFlowTitle}</p>
-              </div>
-              {item.previewSteps.length > 0 ? (
-                <div className="mt-3 rounded-md bg-slate-50 px-3 py-2">
-                  <p className="text-[11px] font-semibold text-slate-500">저장 후 보이는 항목</p>
-                  <ul className="mt-1 grid gap-1 text-xs font-semibold leading-5 text-slate-800">
-                    {item.previewSteps.map((step, index) => (
-                      <li key={`${item.id}-${index}-${step}`} className="truncate">· {step}</li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
-              <div className="mt-auto flex flex-wrap gap-2 border-t border-gray-100 pt-3">
-                <Link
-                  data-testid="flow-map-detail-link"
-                  className="inline-flex min-h-10 flex-[1_1_8rem] items-center justify-center rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-800"
-                  href={`/flow-maps/${item.id}`}
-                >
-                  저장 전 보기
-                </Link>
-                <Link
-                  data-testid="flow-map-recommended-flow-link"
-                  className="inline-flex min-h-10 flex-[1_1_8rem] items-center justify-center rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300"
-                  href={`/f/${item.recommendedFlowSlug}`}
-                >
-                  바로 시작
-                </Link>
-                <a
-                  data-testid="flow-map-source-link"
-                  className="inline-flex min-h-10 flex-[1_1_8rem] items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:border-blue-300 hover:text-blue-700"
-                  href={item.sourceUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  원문 보기{item.sourceUrlCount > 1 ? ` · ${item.sourceUrlCount}개` : ''}
-                </a>
-              </div>
-            </article>
+          {visibleFlowMapCatalogLinks.map((item) => (
+            <FlowMapCatalogCard key={item.id} item={item} />
           ))}
-          {filtered.map((bundle) => (
+          {visibleDirectoryBundles.map((bundle) => (
             <DirectoryFlowCard key={bundle.flow.id} bundle={bundle} />
           ))}
         </div>
+        {visibleCatalogCount === 0 ? (
+          <div className="mt-4 rounded-2xl border border-[#E7E4DD] bg-white p-5 text-sm text-[#6E6B64]">
+            <p className="font-semibold text-[#1B1A17]">맞는 콘텐츠가 없습니다.</p>
+            <p className="mt-1">검색어나 상황 필터를 줄이면 다시 볼 수 있습니다.</p>
+          </div>
+        ) : null}
       </section>
+      </div>
     </main>
   );
 }
@@ -1257,6 +1430,7 @@ const homeFlowMapBaselineLinks = getSourceBackedHomepageFlowMaps().map((map) => 
     sourceUrlCount: map.sourceUrlCount ?? 1,
     sourceSignal: '원문 연결',
     previewSteps,
+    searchText: [map.title, map.userLabel, map.sourceTitle, ...map.artifacts, getChildFlowCatalogSearchText(childFlows)].filter(Boolean).join(' '),
     sourceKind: 'representative',
   };
 });
@@ -1289,6 +1463,7 @@ const curatedSourceAppSeedCatalogLinks = getCuratedSourceAppSeedFlowMaps().map((
     sourceUrlCount: map.sourceUrlCount ?? 1,
     sourceSignal: '원문 연결',
     previewSteps,
+    searchText: [map.title, map.userLabel, map.sourceTitle, ...map.artifacts, getChildFlowCatalogSearchText(childFlows)].filter(Boolean).join(' '),
     sourceKind: 'curated-source',
   };
 });
@@ -1324,34 +1499,35 @@ export function HomeLanding() {
       id: 'find',
       label: 'Flow 찾기',
       title: '저장할 콘텐츠 고르기',
-      summary: '대표 Flow와 큰 흐름을 보고 내 일정이나 체크리스트로 저장합니다.',
+      summary: '내 일정이나 체크리스트로 옮길 콘텐츠를 고릅니다.',
       href: '/flows',
     },
     {
       id: 'calendar',
       label: '캘린더',
       title: '날짜가 있는 항목 실행',
-      summary: '저장한 Flow 중 날짜가 있는 Step을 월간 캘린더에서 확인합니다.',
+      summary: '날짜가 있는 할 일을 월간 일정에서 확인합니다.',
       href: '/calendar',
     },
     {
       id: 'my',
       label: '내 Flow',
-      title: '저장한 Flow 관리',
-      summary: '오늘 할 일, 전체 Flow, 원문 링크와 메모를 이어서 봅니다.',
+      title: '오늘 할 일 이어가기',
+      summary: '오늘/다음/밀린 할 일과 원문 메모를 이어서 봅니다.',
       href: '/my',
     },
     {
       id: 'create',
       label: '만들기',
       title: '내 콘텐츠를 Flow로 정리',
-      summary: '제작자는 원문 구조가 Step과 Item으로 바뀌는지 확인합니다.',
+      summary: '원문을 붙여 일정이나 체크 항목으로 정리합니다.',
       href: '/flows/new',
     },
   ];
 
   return (
-    <main className="mx-auto max-w-6xl px-5 py-8 pb-28 md:pb-12">
+    <main className="min-h-screen bg-[#FAFAF8] px-5 py-6 pb-28 md:py-8 md:pb-12">
+      <div className="mx-auto max-w-6xl">
       <PlatformNav />
       <section className="grid gap-6 py-6 md:py-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
         <div className="max-w-2xl">
@@ -1362,7 +1538,7 @@ export function HomeLanding() {
             블로그, 유튜브, 공식 안내에서 따라 할 부분만 골라 일정과 체크리스트로 저장합니다.
           </p>
           <div className="mt-5 hidden flex-wrap gap-3 sm:flex md:mt-7">
-            <Link className="rounded-md bg-[#2563EB] px-5 py-3 text-sm font-semibold text-white" href="/flows">
+            <Link className="rounded-xl bg-[#3654FF] px-5 py-3 text-sm font-semibold text-white hover:bg-[#2945E8]" href="/flows">
               Flow 찾기
             </Link>
           </div>
@@ -1370,34 +1546,34 @@ export function HomeLanding() {
         {primaryMap ? (
           <Link
             data-testid="home-primary-flow-card"
-            className="block rounded-xl border border-blue-100 bg-blue-50/60 p-4 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 md:p-5"
+            className="block rounded-2xl border border-[#E7E4DD] bg-white p-4 transition hover:border-[#3654FF]/40 hover:shadow-[0_8px_24px_rgba(27,26,23,0.06)] md:p-5"
             href={`/flow-maps/${primaryMap.id}`}
           >
-            <p className="text-sm font-semibold text-blue-700">대표 흐름</p>
+            <p className="text-sm font-semibold text-[#3654FF]">추천 콘텐츠</p>
             <h2 className="mt-2 text-2xl font-semibold leading-snug text-slate-950">{primaryMap.title}</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-700">{primaryMap.summary}</p>
+            <p className="mt-2 break-keep text-sm leading-6 text-[#6E6B64]">{primaryMap.summary}</p>
             <div className="mt-4 grid grid-cols-3 gap-2">
               {[
                 { label: '입력', value: primaryMap.input },
                 { label: '저장', value: primaryMap.artifact },
-                { label: '구성', value: `${primaryMap.flowCount}개 흐름` },
+                { label: '결과', value: `${primaryMap.flowCount}개 묶음` },
               ].map((signal) => (
-                <div key={signal.label} className="rounded-md bg-white/80 px-2.5 py-2">
-                  <p className="text-[11px] font-semibold text-slate-500">{signal.label}</p>
+                <div key={signal.label} className="rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-2.5 py-2">
+                  <p className="text-[11px] font-semibold text-[#6E6B64]">{signal.label}</p>
                   <p className="mt-0.5 truncate text-xs font-semibold text-slate-950">{signal.value}</p>
                 </div>
               ))}
             </div>
-            <p className="mt-4 border-t border-blue-100 pt-3 text-sm font-semibold text-blue-700">전체 보기</p>
+            <p className="mt-4 border-t border-[#E7E4DD] pt-3 text-sm font-semibold text-[#3654FF]">저장 전 보기</p>
           </Link>
         ) : null}
       </section>
 
-      <section data-testid="home-menu-tree-section" className="mt-2 rounded-xl border border-gray-200 bg-white p-4 shadow-sm md:p-5">
+      <section data-testid="home-menu-tree-section" className="mt-2 rounded-2xl border border-[#E7E4DD] bg-white p-4 md:p-5">
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-semibold text-blue-700">메뉴 트리</p>
-            <h2 className="mt-1 text-2xl font-semibold text-gray-950">어디서 무엇을 하는지</h2>
+            <p className="text-sm font-semibold text-[#3654FF]">시작 경로</p>
+            <h2 className="mt-1 text-2xl font-semibold text-gray-950">고르고 저장하고 이어가기</h2>
           </div>
         </div>
         <div className="mt-4 grid gap-3 md:grid-cols-4">
@@ -1405,16 +1581,17 @@ export function HomeLanding() {
             <Link
               key={item.id}
               data-testid="home-menu-tree-card"
-              className="block rounded-lg border border-gray-200 bg-slate-50 p-4 text-left transition hover:border-blue-300 hover:bg-white hover:shadow-sm"
+              className="block rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] p-4 text-left transition hover:border-[#3654FF]/40 hover:bg-white"
               href={item.href}
             >
-              <p className="text-xs font-semibold text-blue-700">{index + 1}. {item.label}</p>
+              <p className="text-xs font-semibold text-[#3654FF]">{index + 1}. {item.label}</p>
               <h3 className="mt-2 text-base font-semibold leading-6 text-gray-950">{item.title}</h3>
-              <p className="mt-2 text-sm leading-5 text-gray-600">{item.summary}</p>
+              <p className="mt-2 break-keep text-sm leading-5 text-[#6E6B64]">{item.summary}</p>
             </Link>
           ))}
         </div>
       </section>
+      </div>
     </main>
   );
 }
@@ -1968,9 +2145,9 @@ function getMyFlowContentReadiness(flow: MySavedFlow): MyFlowContentReadiness {
   const sourceStatus = flow.bundle.flow.source_status;
   const sourceBacked = flow.progress.slug.startsWith('source-backed-') || Boolean(flow.bundle.flow.tags?.includes('source-backed'));
   if (flow.savedMap || sourceBacked || sourceStatus === 'real' || serviceCatalogFlowSlugs.has(flow.progress.slug)) return { kind: 'ready', label: '실행 가능' };
-  if (sourceStatus === 'preview') return { kind: 'preview', label: '샘플 후보', groupLabel: '샘플/실험 Flow' };
-  if (sourceStatus === 'needs_review') return { kind: 'review', label: '검토 필요', groupLabel: '정리 필요 Flow' };
-  return { kind: 'legacy', label: '이전 기준', groupLabel: '이전 기준 Flow' };
+  if (sourceStatus === 'preview') return { kind: 'preview', label: '원문 확인', groupLabel: '확인 후 실행' };
+  if (sourceStatus === 'needs_review') return { kind: 'review', label: '정리 필요', groupLabel: '확인 후 실행' };
+  return { kind: 'legacy', label: '예전 저장', groupLabel: '예전 저장 콘텐츠' };
 }
 
 function isMyFlowReadyContent(flow: MySavedFlow): boolean {
@@ -1979,9 +2156,9 @@ function isMyFlowReadyContent(flow: MySavedFlow): boolean {
 
 function getMyFlowContentReadinessNote(readiness: MyFlowContentReadiness): string {
   if (readiness.kind === 'ready') return '내 Flow에서 실행할 수 있습니다.';
-  if (readiness.kind === 'review') return '원문 구조나 실행 항목을 다시 정리해야 하는 Flow입니다.';
-  if (readiness.kind === 'preview') return '샘플 후보입니다. 실제 실행 전 원문 확인이 필요합니다.';
-  return '예전 기준으로 저장된 Flow입니다. 새 기준 컨텐츠와 구분해서 봅니다.';
+  if (readiness.kind === 'review') return '원문과 할 일을 한 번 확인한 뒤 실행하세요.';
+  if (readiness.kind === 'preview') return '원문을 확인한 뒤 내 일정에 맞게 실행하세요.';
+  return '예전 저장 방식입니다. 새 콘텐츠와 구분해서 봅니다.';
 }
 
 function getMyFlowRoutineDays(bundle: FlowBundle): string[] {
@@ -2468,7 +2645,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const savedViewTabs = [
     ['today', '오늘'],
     ['calendar', '캘린더'],
-    ['flow', 'Flow'],
+    ['flow', '전체'],
   ] as const;
   const checklistFilterTabs = [
     ['all', '전체'],
@@ -2907,12 +3084,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const todayOpenCount = todayOpenRows.length;
   const myFlowTodaySummaryCopy =
     todayOpenCount > 0
-      ? '오늘 남은 할 일을 먼저 처리하고, 전체 구조는 저장한 Flow에서 봅니다.'
+      ? '오늘 할 일을 먼저 처리하고, 전체 목록은 전체 탭에서 봅니다.'
       : overdueRows.length > 0
         ? `오늘 남은 일은 없습니다. 지난 일정 ${overdueRows.length}개는 접어서 정리합니다.`
         : upcomingRows.length > 0
           ? '오늘 남은 일은 없습니다. 가장 가까운 다음 할 일부터 이어서 봅니다.'
-          : '남은 실행 항목이 없습니다. 저장한 Flow에서 전체 구조를 확인하세요.';
+          : '남은 할 일이 없습니다. 저장한 콘텐츠의 전체 목록을 확인하세요.';
   const routineNextRows = Array.from(
     calendarRoutineRows
       .filter((row) => row.date && row.date >= myFlowTodayDate && !isMyFlowRowChecked(row.flow, row))
@@ -2954,11 +3131,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     : '이어갈 할 일이 없습니다';
   const myFlowNowHelp = myFlowPrimaryContinuationRow
     ? myFlowPrimaryContinuationIsToday
-      ? '오늘 실행할 할 일만 먼저 보여줍니다. 전체 구조는 Flow 탭에서 확인하세요.'
+      ? '체크할 항목만 열어 완료합니다. 전체 목록은 전체 탭에서 봅니다.'
       : myFlowPrimaryContinuationIsFuture
-        ? '오늘 남은 일은 없습니다. 가장 가까운 예정 할 일만 먼저 보여줍니다.'
-        : '밀린 항목 중 가장 먼저 정리할 할 일을 보여줍니다.'
-    : '저장한 Flow에서 전체 구조를 확인하거나 새 Flow를 찾아보세요.';
+        ? '필요하면 열어서 체크와 메모를 확인합니다.'
+        : '밀린 할 일 중 먼저 정리할 항목입니다.'
+    : '저장한 콘텐츠의 전체 목록을 확인하거나 새 콘텐츠를 찾아보세요.';
   const myFlowPrimaryContinuationLabel = myFlowPrimaryContinuationIsToday
     ? '오늘 할 일'
     : myFlowPrimaryContinuationIsFuture
@@ -3453,15 +3630,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const myFlowWorkspaceHeader = (() => {
     if (showPostSavePanel) {
       return {
-        eyebrow: '저장 완료',
-        title: '저장한 Flow',
+        eyebrow: '저장됨',
+        title: '먼저 할 일',
         help: '바로 이어서 실행합니다.',
       };
     }
     if (savedView === 'calendar') {
       return {
         eyebrow: '내 Flow',
-        title: '캘린더',
+        title: '월간 일정',
         help: '날짜별 항목을 보고 필요한 것만 열어봅니다.',
       };
     }
@@ -4975,7 +5152,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </a>
             ) : null}
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-              <p className="text-xs font-semibold text-slate-700">다른 앱에 붙여넣기</p>
+              <p className="text-xs font-semibold text-slate-700">내보낼 형식</p>
               <span className="text-[11px] font-semibold text-slate-500">
                 {canDownloadPortableCalendar ? '텍스트 · 캘린더' : '텍스트'}
               </span>
@@ -4987,7 +5164,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
                 onClick={() => copyMyFlowStepPortableText(portableExportInput, portableExportKey)}
               >
-                메모앱에 복사
+                메모로 복사
               </button>
               {canDownloadPortableCalendar ? (
                 <button
@@ -5022,7 +5199,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
                 onClick={() => copyMyFlowStepPortableText(portableExportInput, portableExportKey)}
               >
-                메모앱에 복사
+                메모로 복사
               </button>
               {canDownloadPortableCalendar ? (
                 <button
@@ -5118,44 +5295,46 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           : `다음 일정 ${postSaveContinuationRow.date}`
       : '';
     const postSaveSummary = [
-      `${postSaveFlows.length}개 흐름`,
+      `${postSaveFlows.length}개 묶음`,
       `${postSaveStepCount}개 할 일`,
       postSaveContinuationDate,
     ].filter(Boolean).join(' · ');
     return (
-      <section data-testid="my-flow-post-save-panel" className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-4 shadow-sm">
+      <section data-testid="my-flow-post-save-panel" className="mb-4 rounded-2xl border border-[#E7E4DD] bg-white p-4 shadow-[0_8px_24px_rgba(27,26,23,0.05)]">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-blue-700">저장됨</p>
-            <h3 className="mt-1 text-xl font-semibold tracking-tight text-slate-950">{postSaveMap.title}</h3>
-            <p data-testid="my-flow-post-save-summary" className="mt-1 text-sm font-semibold text-slate-600">{postSaveSummary}</p>
-            <p className="mt-1 text-sm text-slate-600">
-              첫 실행은 아래 내 Flow에서 이어가고, 날짜별 전체 일정은 캘린더 탭에서 봅니다.
-            </p>
+            <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
+              <span className="rounded-full bg-[#EEF1FF] px-2.5 py-1 text-[#3654FF]">저장됨</span>
+              <span className="break-keep text-[#6E6B64]">{postSaveMap.title}</span>
+            </div>
+            <h3 className="mt-1 break-keep text-xl font-semibold tracking-tight text-slate-950">
+              {postSaveContinuationRow ? '먼저 할 일부터 열어보세요' : '저장한 내용을 확인하세요'}
+            </h3>
             {postSaveContinuationRow ? (
-              <p className="mt-2 text-sm font-semibold text-slate-900">
-                이어서 볼 일: {getMyFlowRowDisplayTitle(postSaveContinuationRow)}
+              <p className="mt-3 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-slate-900">
+                {getMyFlowRowDisplayTitle(postSaveContinuationRow)}
               </p>
             ) : null}
+            <p data-testid="my-flow-post-save-summary" className="mt-2 text-sm font-semibold text-[#6E6B64]">{postSaveSummary}</p>
           </div>
           <div className="grid shrink-0 gap-2 sm:w-44">
             {postSaveContinuationRow ? (
               <button
                 type="button"
                 data-testid="my-flow-post-save-open-first"
-                className="min-h-10 rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white"
+                className="min-h-10 rounded-xl bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white"
                 onClick={openMyFlowContinuationFromPostSave}
               >
-                지금 할 일 열기
+                먼저 할 일 열기
               </button>
             ) : null}
             <button
               type="button"
               data-testid="my-flow-post-save-view-flow"
-              className="min-h-10 rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-800"
+              className="min-h-10 rounded-xl border border-[#E7E4DD] bg-white px-3 py-2 text-sm font-semibold text-[#3654FF]"
               onClick={openMyFlowListFromPostSave}
             >
-              전체 Flow 보기
+              전체 할 일 보기
             </button>
           </div>
         </div>
@@ -5689,7 +5868,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           <div className="mb-3 flex items-center justify-between gap-3">
             <div>
               <p className="text-xs font-semibold text-blue-700">실행 가능</p>
-              <h4 className="text-base font-semibold text-slate-950">바로 이어서 볼 Flow</h4>
+              <h4 className="text-base font-semibold text-slate-950">바로 이어서 볼 콘텐츠</h4>
             </div>
             <span className="rounded-md bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">{flowListReadyFlows.length}개</span>
           </div>
@@ -5701,12 +5880,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs font-semibold text-amber-800">정리 필요</p>
-              <h4 className="text-base font-semibold text-amber-950">확인 후 실행할 Flow</h4>
+              <h4 className="text-base font-semibold text-amber-950">확인 후 실행할 콘텐츠</h4>
             </div>
             <span className="rounded-md bg-white px-2 py-1 text-xs font-semibold text-amber-800 ring-1 ring-amber-200">{flowListSupportFlows.length}개</span>
           </div>
           <p className="mt-1 text-sm font-medium text-amber-900">
-            예전 기준, 샘플 후보, 원문 검토 전 Flow는 실행 가능 Flow와 구분해서 둡니다.
+            원문이나 저장 형식 확인이 필요한 콘텐츠는 바로 실행할 콘텐츠와 구분합니다.
           </p>
           <div className="mt-3">
             {renderFlowInventoryGroups(flowListSupportGroups)}
@@ -5813,7 +5992,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           <p className="mt-1 text-sm text-gray-600 sm:mt-2 sm:text-base">
             {isCalendarSurface
               ? '저장한 Flow의 날짜가 있는 항목을 캘린더에서 바로 확인합니다.'
-              : '저장한 Flow를 지금 이어할 일부터 봅니다.'}
+              : '오늘, 다음, 밀린 할 일을 먼저 봅니다.'}
           </p>
         </div>
         <div className="hidden flex-wrap gap-2 sm:flex">
@@ -5966,7 +6145,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                       <div>
                         <p className="text-sm font-semibold text-blue-700">{isMyFlowScenarioDemo ? '데모 기준일' : '지금 이어하기'}</p>
-                        <h3 className="mt-0.5 text-lg font-semibold text-slate-950 sm:mt-1 sm:text-xl">{myFlowTodayDate} 기준 실행 흐름</h3>
+                        <h3 className="mt-0.5 text-lg font-semibold text-slate-950 sm:mt-1 sm:text-xl">{myFlowTodayDate} 기준 할 일</h3>
                         {isMyFlowScenarioDemo ? (
                           <p className="mt-1 inline-flex rounded-md bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700 sm:py-1">
                             실제 오늘과 다른 고정 기준일
@@ -6076,7 +6255,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                           ))}
                           {hiddenOverdueFlowCount > 0 ? (
                             <p className="rounded-md bg-white px-3 py-2 text-xs font-semibold text-amber-800 ring-1 ring-amber-100">
-                              외 {hiddenOverdueFlowCount}개 흐름에 지난 일정이 있습니다.
+                              외 {hiddenOverdueFlowCount}개 콘텐츠에 지난 일정이 있습니다.
                             </p>
                           ) : null}
                         </div>
@@ -6127,21 +6306,24 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <>
                   {isMyFlowMobileViewport ? (
                     <div data-testid="my-flow-mobile-flow-hub" className="grid gap-3">
-                      <section data-testid="my-flow-mobile-flow-summary" className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 shadow-sm">
+                      <section data-testid="my-flow-mobile-flow-summary" className="rounded-2xl border border-[#E7E4DD] bg-white px-3 py-2.5 shadow-sm">
                         <div className="flex items-center justify-between gap-3">
-                          <p className="shrink-0 text-sm font-semibold text-blue-700">저장한 구조</p>
+                          <p className="shrink-0 text-sm font-semibold text-[#3654FF]">저장한 콘텐츠</p>
                           <div className="flex min-w-0 flex-wrap justify-end gap-1.5 text-[11px] font-semibold">
-                            <span className="rounded-md bg-slate-50 px-2 py-1 text-slate-700">
-                              {flowListVisibleFlows.length} Flow
-                            </span>
-                            <span className="rounded-md bg-slate-50 px-2 py-1 text-slate-700">
-                              {flowListVisibleFlows.reduce((sum, flow) => sum + Math.max(0, flow.total - flow.done), 0)} 남음
-                            </span>
-                            <span className="rounded-md bg-blue-50 px-2 py-1 text-blue-700">
+                            <span className="rounded-md bg-[#EEF1FF] px-2 py-1 text-[#3654FF]">
                               오늘 {todayOpenCount}
+                            </span>
+                            <span className="rounded-md bg-[#ECF7F1] px-2 py-1 text-[#1F8A5B]">
+                              다음 {upcomingRows.length}
+                            </span>
+                            <span className="rounded-md bg-[#FFF4ED] px-2 py-1 text-[#D6462E]">
+                              밀림 {overdueRows.length}
                             </span>
                           </div>
                         </div>
+                        <p className="mt-2 truncate text-xs font-semibold text-[#6E6B64]">
+                          {flowListVisibleFlows.length}개 저장 · {flowListVisibleFlows.reduce((sum, flow) => sum + Math.max(0, flow.total - flow.done), 0)}개 남음
+                        </p>
                       </section>
                       {flowListVisibleFlows.length > 0 ? (
                         <div className="grid gap-3">
@@ -6170,7 +6352,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         <h3 className="mt-1 text-lg font-semibold text-slate-950">진행 중인 Flow를 한눈에 확인하세요</h3>
                         <p className="mt-1 text-sm text-slate-600">다음 실행, 진행률, 밀림을 먼저 보고 전체 목록은 필요할 때 펼칩니다.</p>
                       </div>
-                      <span className="w-fit rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{visibleSavedFlows.length}개 흐름</span>
+                      <span className="w-fit rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{visibleSavedFlows.length}개 콘텐츠</span>
                     </div>
                     <div className="mt-4 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
                       <button
@@ -6360,7 +6542,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     </h3>
                   </div>
                   <div className="flex flex-wrap gap-2 text-xs font-semibold">
-                    <span className="rounded-md bg-slate-100 px-2 py-1 text-slate-600">{visibleSavedFlows.length}개 흐름</span>
+                    <span className="rounded-md bg-slate-100 px-2 py-1 text-slate-600">{visibleSavedFlows.length}개 콘텐츠</span>
                     {showMyFlowCalendarScopeFilter ? <span className="rounded-md bg-slate-100 px-2 py-1 text-slate-600">{myFlowCalendarScopeLabel} 표시</span> : null}
                     <span className="rounded-md bg-blue-50 px-2 py-1 text-blue-700">{myFlowCalendarOpenCount}개 남음</span>
                   </div>
@@ -6607,7 +6789,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       <h3 className="mt-1 text-lg font-semibold text-slate-950">체크할 Flow를 먼저 선택하세요</h3>
                       <p className="mt-1 text-sm text-slate-600">전체 체크리스트를 한 번에 펼치지 않고 Flow별 남은 항목부터 보여줍니다.</p>
                     </div>
-                    <span className="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">{checklistFlowRows.length}개 흐름</span>
+                    <span className="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">{checklistFlowRows.length}개 콘텐츠</span>
                   </div>
                   <div className="mt-4 grid gap-2 md:grid-cols-2">
                     {visibleChecklistPickerRows.map(({ flow, rows }) => {
@@ -7953,6 +8135,10 @@ export function PublicFlow({ slug }: { slug: string }) {
   const primaryDestination = inferPrimaryDestination(bundle);
   const holdSignalCount = getHoldSignalCount(bundle, workbenchState);
   const mobileStickyCtaLabel = getMobileStickyCtaLabel(bundle, canExportCalendar, holdSignalCount);
+  const publicHeroInput = getAnchorLabel(bundle);
+  const publicHeroArtifact = getCatalogDestinationLabel(bundle);
+  const publicHeroPromise = getCatalogPromiseText(publicHeroInput, publicHeroArtifact);
+  const publicHeroFirstTask = getCatalogFirstTask(getFlowPreviewStepTitles(bundle), getCatalogReason(bundle));
 
   const toggle = (id: string) => {
     setChecks((value) => {
@@ -8125,20 +8311,44 @@ export function PublicFlow({ slug }: { slug: string }) {
           </Link>
         </div>
 
-        <header className={compactJeonsePage ? 'rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm md:px-5 md:py-4' : 'rounded-lg border border-slate-200 bg-white px-4 py-4 shadow-sm md:px-6 md:py-5'}>
-          <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+        <header className={compactJeonsePage ? 'rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm md:px-5 md:py-4' : 'rounded-2xl border border-[#E7E4DD] bg-white px-4 py-4 shadow-[0_8px_24px_rgba(27,26,23,0.05)] md:px-6 md:py-5'}>
+          <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-500">
             <span>{bundle.flow.category}</span>
             <span aria-hidden="true">·</span>
             <span>{getPublicFlowKindLabel(bundle)}</span>
             {bundle.flow.source_title && !compactJeonsePage ? (
               <>
                 <span aria-hidden="true">·</span>
-                <span>{bundle.flow.source_title}</span>
+                <span>{getCatalogSourceSignal(bundle)}</span>
               </>
             ) : null}
           </div>
           <h1 className={compactJeonsePage ? 'mt-2 max-w-3xl text-2xl font-bold tracking-normal text-slate-950 md:text-3xl' : 'mt-2 max-w-4xl text-2xl font-bold tracking-normal text-slate-950 md:mt-3 md:text-4xl'}>{bundle.flow.title}</h1>
-          {bundle.flow.description ? <p className={compactJeonsePage ? 'mt-2 max-w-2xl text-sm leading-6 text-slate-600 md:text-base md:leading-7' : 'mt-2 max-w-3xl text-base leading-6 text-slate-600 md:mt-3 md:leading-7'}>{bundle.flow.description}</p> : null}
+          {compactJeonsePage ? (
+            <section className="mt-3 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2.5">
+              <p className="break-keep text-sm font-semibold leading-6 text-[#3654FF]">{publicHeroPromise}</p>
+              <p className="mt-1 line-clamp-1 text-xs font-semibold text-[#6E6B64]">먼저 할 일: {publicHeroFirstTask}</p>
+            </section>
+          ) : (
+            <section className="mt-3 rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-3">
+              <p className="break-keep text-sm font-semibold leading-6 text-[#3654FF]">{publicHeroPromise}</p>
+              <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-[#E7E4DD]">
+                  <p className="text-[11px] font-semibold text-[#8A857B]">입력</p>
+                  <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicHeroInput}</p>
+                </div>
+                <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-[#E7E4DD]">
+                  <p className="text-[11px] font-semibold text-[#8A857B]">저장 결과</p>
+                  <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicHeroArtifact}</p>
+                </div>
+                <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-[#E7E4DD]">
+                  <p className="text-[11px] font-semibold text-[#8A857B]">먼저 할 일</p>
+                  <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicHeroFirstTask}</p>
+                </div>
+              </div>
+            </section>
+          )}
+          {bundle.flow.description ? <p className={compactJeonsePage ? 'mt-2 max-w-2xl text-sm leading-6 text-slate-600 md:text-base md:leading-7' : 'mt-3 max-w-3xl text-sm leading-6 text-slate-600 md:text-base md:leading-7'}>{bundle.flow.description}</p> : null}
           {compactJeonsePage ? (
             <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold">
               <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-700">D-3 / D-Day / D+1</span>
@@ -8154,23 +8364,23 @@ export function PublicFlow({ slug }: { slug: string }) {
             </>
           )}
           {showPublicSaveAction ? (
-            <div data-testid="public-flow-save-actions" className="mt-4 flex flex-wrap gap-2">
+            <div data-testid="public-flow-save-actions" className="mt-4 grid gap-2 sm:max-w-sm">
               {savedFlowAt ? (
-                <Link className="rounded-md bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-800" href="/my">
+                <Link className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]" href="/my">
                   내 Flow에서 보기
                 </Link>
               ) : (
                 <button
                   type="button"
-                  className="rounded-md bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-800"
+                  className="min-h-11 rounded-xl bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
                   onClick={saveToMyFlow}
                 >
                   내 Flow에 저장
                 </button>
               )}
               {bundle.flow.source_url ? (
-                <a className="rounded-md border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
-                  원문 보기
+                <a className="inline-flex min-h-8 items-center justify-center text-sm font-semibold text-[#6E6B64] underline-offset-2 hover:text-[#3654FF] hover:underline" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
+                  원문은 아래에서 확인
                 </a>
               ) : null}
             </div>
@@ -8366,27 +8576,27 @@ export function PublicFlow({ slug }: { slug: string }) {
             </div>
             <div className="mt-5 grid gap-2">
               {showCalendarExportAction ? (
-                <button data-testid="mobile-export-calendar" aria-label={`캘린더에 추가: ${bundle.flow.title} 일정`} className="flex items-center gap-3 rounded-md bg-blue-50 px-4 py-3 text-left text-sm font-semibold text-slate-950 disabled:text-slate-400" disabled={done === 0} onClick={downloadCalendar}>
+                <button data-testid="mobile-export-calendar" aria-label={`캘린더 파일 받기: ${bundle.flow.title} .ics 일정`} className="flex items-center gap-3 rounded-md bg-blue-50 px-4 py-3 text-left text-sm font-semibold text-slate-950 disabled:text-slate-400" disabled={done === 0} onClick={downloadCalendar}>
                   <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-blue-500 bg-white" />
                   <span className="flex-1">
-                    <span className="block">캘린더에 추가</span>
+                    <span className="block">캘린더 파일 받기</span>
                     <span className="mt-0.5 block text-xs font-medium text-slate-500">구글 · 애플 · .ics 파일</span>
                   </span>
                   <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-slate-400" />
                 </button>
               ) : null}
-              <button data-testid="mobile-export-excel" aria-label={`엑셀로 받기: ${bundle.flow.title} 실행 기록 시트`} className="flex items-center gap-3 rounded-md bg-slate-50 px-4 py-3 text-left text-sm font-semibold text-slate-950 disabled:text-slate-400" disabled={done === 0} onClick={downloadExcel}>
+              <button data-testid="mobile-export-excel" aria-label={`시트로 받기: ${bundle.flow.title} .xlsx 실행 시트`} className="flex items-center gap-3 rounded-md bg-slate-50 px-4 py-3 text-left text-sm font-semibold text-slate-950 disabled:text-slate-400" disabled={done === 0} onClick={downloadExcel}>
                 <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-slate-400 bg-white" />
                 <span className="flex-1">
-                  <span className="block">엑셀로 받기</span>
+                  <span className="block">시트로 받기</span>
                   <span className="mt-0.5 block text-xs font-medium text-slate-500">진도표와 메모 시트</span>
                 </span>
                 <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-slate-400" />
               </button>
-              <button data-testid="mobile-export-copy" aria-label={`텍스트 복사: ${bundle.flow.title} 실행 메모`} className="flex items-center gap-3 rounded-md bg-slate-50 px-4 py-3 text-left text-sm font-semibold text-slate-950 disabled:text-slate-400" disabled={done === 0} onClick={copy}>
+              <button data-testid="mobile-export-copy" aria-label={`메모로 복사: ${bundle.flow.title} 실행 메모`} className="flex items-center gap-3 rounded-md bg-slate-50 px-4 py-3 text-left text-sm font-semibold text-slate-950 disabled:text-slate-400" disabled={done === 0} onClick={copy}>
                 <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-slate-400 bg-white" />
                 <span className="flex-1">
-                  <span className="block">텍스트 복사</span>
+                  <span className="block">메모로 복사</span>
                   <span className="mt-0.5 block text-xs font-medium text-slate-500">노션 · 카카오톡 · 메모장</span>
                 </span>
                 <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-slate-400" />
@@ -8437,15 +8647,9 @@ export function PublicFlow({ slug }: { slug: string }) {
                 </button>
               )
             ) : showExportFirstHero ? (
-              savedFlowAt ? (
-                <Link className="shrink-0 rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm" href="/my">
-                  내 Flow에서 관리하기
-                </Link>
-              ) : (
-                <button className="shrink-0 rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm" onClick={saveToMyFlow}>
-                  내 Flow에 저장
-                </button>
-              )
+              <button className="shrink-0 rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm" onClick={() => setShowMobileExportSheet(true)}>
+                내 도구로 가져가기
+              </button>
             ) : (
               <button className="shrink-0 rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm" onClick={() => setShowMobileExportSheet(true)}>
                 {mobileStickyCtaLabel}
@@ -8638,7 +8842,7 @@ function ExportFirstHero({
                 className="mt-3 flex w-full items-center justify-center rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-800"
                 href="/my"
               >
-                내 Flow에서 관리하기
+                내 Flow에서 보기
               </Link>
             ) : (
               <button
@@ -8651,13 +8855,13 @@ function ExportFirstHero({
             )}
             <div className="mt-2 grid gap-2 sm:grid-cols-3">
               <button className="rounded-md border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700" type="button" onClick={onDownloadCalendar}>
-                캘린더로 보내기
+                캘린더 파일 받기
               </button>
               <button className="rounded-md border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700" type="button" onClick={onDownloadExcel}>
-                엑셀 실행표 받기
+                시트로 받기
               </button>
               <button className="rounded-md border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700" type="button" onClick={onCopyText}>
-                체크리스트 복사
+                메모로 복사
               </button>
             </div>
           </div>

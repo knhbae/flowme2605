@@ -1,6 +1,6 @@
 # FLOW Service Structure
 
-Last updated: 2026-07-02  
+Last updated: 2026-07-03
 Status: Living baseline. Keep this current with implementation PRs.
 
 This document is the canonical map of the current app surface, screen feature tree, and service architecture. It is not validation evidence by itself. Use it to keep product PoCs, research surfaces, creator tools, public routes, My Flow execution, and shared domain modules from drifting apart.
@@ -21,14 +21,14 @@ If a PR does not update this file, the PR history entry should say why the servi
 
 | Route | Current role | Primary component | Shared modules |
 | --- | --- | --- | --- |
-| `/` | Home and discovery entry. Surfaces representative or quality-gated Flow entry points. | `HomeLanding` in `components/flow/AppClient.tsx` | `seed-flows`, `execution-model`, `source-fit`, `source-backed-my-flow` |
-| `/flows` | Browse seeded/public Flow candidates. | `FlowList` in `components/flow/AppClient.tsx` | `seed-flows`, `types`, `execution-model` |
-| `/f/[slug]` | Public Flow execution/detail route for a single slug. | `PublicFlow` in `components/flow/AppClient.tsx` | `seed-flows`, `parser`, `export`, `storage`, `artifact-plan` |
+| `/` | Home and discovery entry. Surfaces one representative save path and a small number of secondary starts without exposing conversion mechanics first. | `HomeLanding` in `components/flow/AppClient.tsx` | `seed-flows`, `execution-model`, `source-fit`, `source-backed-my-flow` |
+| `/flows` | Browse seeded/public content candidates with search, intent chips, and action-first catalog cards. Cards show title, required input/result, first action, trust/status, and CTA; source/detail stays secondary. | `FlowList` in `components/flow/AppClient.tsx` | `seed-flows`, `types`, `execution-model`, `source-backed-my-flow` |
+| `/f/[slug]` | Public Flow execution/detail route for a single slug. Leads with input-to-result promise, first action, one primary save CTA, and keeps source/detail/memo below or collapsed. | `PublicFlow` in `components/flow/AppClient.tsx` | `seed-flows`, `parser`, `export`, `storage`, `artifact-plan` |
 | `/flows/new` | Manual Flow authoring entry. | `NewFlow` in `components/flow/AppClient.tsx` | `parser`, `types`, `storage` |
 | `/flows/[id]/edit` | Saved/manual Flow editing entry. | `Editor` in `components/flow/AppClient.tsx` | `storage`, `parser`, `types` |
 | `/calendar` | Global calendar execution entry for saved dated Steps. Reuses My Flow's calendar surface but starts from schedule-first context. | `MyFlows` with `surface="calendar"` | `storage`, `source-backed-my-flow`, `my-flow-step-export`, `export` |
-| `/my` | User's saved Flow management and execution workspace. Owns Today/Flow/Map/Step-detail interaction and export regeneration; dated execution is also exposed through `/calendar`. | `MyFlows` in `components/flow/AppClient.tsx` | `storage`, `source-backed-my-flow`, `my-flow-step-export`, `export`, `artifact-fields` |
-| `/flow-maps/[map]` | Source-backed public Flow Map route. Lets a user inspect and save a publishable map before My Flow execution. | `SourceBackedFlowMapPublicPage` in `components/flow/SourceBackedFlowMapPage.tsx` | `source-backed-my-flow`, `storage` through save action |
+| `/my` | User's saved Flow execution hub. Today/next/overdue actions come before inventory; detail owns memo/source/export regeneration. Dated execution is also exposed through `/calendar`. | `MyFlows` in `components/flow/AppClient.tsx` | `storage`, `source-backed-my-flow`, `my-flow-step-export`, `export`, `artifact-fields` |
+| `/flow-maps/[map]` | Source-backed public save route. Lets a user inspect what will be saved, keep source/detail behind supporting areas, and save into My Flow execution. | `SourceBackedFlowMapPublicPage` in `components/flow/SourceBackedFlowMapPage.tsx` | `source-backed-my-flow`, `storage` through save action |
 | `/flow-maps/[map]/creator` | Creator-side publish review and Step contract editing route. | `SourceBackedFlowMapCreatorEditor` | `source-backed-my-flow` |
 | `/creators` | Creator directory. | `CreatorDirectory` in `components/flow/AppClient.tsx` | `creator-channel-preview`, `users` |
 | `/u/[creator]` | Creator profile/channel surface. | `CreatorProfile` in `components/flow/AppClient.tsx` | `creator-channel-preview`, `users` |
@@ -85,17 +85,21 @@ Desktop can use a top nav with the same priority order. It should not expose mor
 - The service frame now uses primary `홈 / Flow 찾기 / 캘린더 / 내 Flow` navigation, with creation and creator browsing kept in a secondary menu.
 - Home shows the service promise, one primary representative Flow Map, and the menu tree for `Flow 찾기 / 캘린더 / 내 Flow / 만들기`; it should not become a second full catalog.
 - `/flows` is the catalog. Current exposure is one integrated content catalog with the existing 2 representative maps, 9 source-backed curated maps, and 1 single Flow baseline in the same card grid. It should not carry a duplicate persistent `내 Flow 보기` CTA that competes with the global bottom tab, except in contextual post-save or empty-state moments.
-- `/flows` now distinguishes multi-Flow map candidates and one-Flow candidates by card badges such as `한 개만 저장`, not by separate curated-source/seed or one-off sections. Catalog card controls use `저장 전 보기`, `바로 시작`, and `원문 보기`; counts use user terms such as `흐름`, `단계`, and `체크`. It still needs richer filtering, source-backed status, and eventually honest review/usage signals.
+- `/flows` now distinguishes multi-Flow map candidates and one-Flow candidates inside a single integrated catalog, not by separate curated-source/seed or one-off sections. The catalog has a plain search field, quick situation chips, and compact decision-first cards that lead with an input-to-result promise, then one `먼저 할 일` preview. Category, status, scale, and source are quiet one-line metadata rather than heavy chips. Catalog card controls use one strong `저장 전 보기` action with quieter `바로 시작` and `원문` links. It still needs real usage/trust signals once account-backed use exists.
 - Home and `/flows` should use result-oriented user copy. Avoid internal review labels such as `후보`, `검토`, or `대표 노출` on normal user surfaces; keep those labels in creator, content-lab, or report pages.
 - A single Flow that is intentionally promoted into the representative catalog should not appear as `검토 필요` in `/my`; otherwise the user sees a service recommendation become a warning after saving.
 - `/calendar` should open the saved calendar surface directly and hide duplicate page-local view tabs.
-- `/my` should open as a saved-work continuation dashboard, not as a today-only empty state. Its page-local tabs should stay to `오늘` and `Flow`; `캘린더` belongs to the global primary tab, not another My Flow local tab. Single saved Flow and many saved Flows should use the same local tab rule so the user does not learn a different interface after saving the first Flow.
+- `/calendar` should keep the route title as `캘린더`, while the inner calendar card uses a job label such as `월간 일정` so the first viewport does not repeat the same heading.
+- `/my` should open as a saved-work continuation dashboard, not as a today-only empty state. Its page-local tabs should stay to `오늘` and `전체`; `캘린더` belongs to the global primary tab, not another My Flow local tab. Single saved Flow and many saved Flows should use the same local tab rule so the user does not learn a different interface after saving the first Flow.
 - `/my` Today should show the user's immediate execution queue first. If a real today item exists, label it as today's work; if today is empty, label the first future item as `다음 할 일` instead of implying it is due today. Flow name/progress stays as secondary context and overdue/completed status stays compact. Full Flow/checklist structure stays available on demand through Flow cards or Step detail.
-- `/my` Flow should stay Flow-first: saved Flow title, structure/progress, next Step preview, and the Step list come before any Step detail. Tapping a Flow row opens a limited Step list first; the collapsed next-Step preview is removed while the list is open so the same Step is not repeated. Long Step lists expand only after an explicit full-list action. Tapping a specific Step row opens Step detail. Today and Flow may share row/detail components, but they should not look like the same card for the same job.
+- `/my` 전체 should stay saved-content-first: saved Flow title, progress, next item preview, and the item list come before any item detail. Tapping a saved content row opens a limited item list first; the collapsed next-item preview is removed while the list is open so the same item is not repeated. Long item lists expand only after an explicit full-list action. Tapping a specific item row opens item detail. Today and 전체 may share row/detail components, but they should not look like the same card for the same job.
 - `/my` should keep read-first Step detail and avoid mixing input/edit controls into default viewing. Mobile Step detail should show the Step title, date, completion state, and checklist first. When a Step has no checklist, show one concise `바로 할 일` hint from the source-backed detail before the collapsed support rows. Memo, schedule, source, copy/export, and edit actions stay collapsed. It remains the saved-work management space; checklist and routine work stays inside Flow cards or Step detail instead of pushing users back into calendar navigation.
-- In `/my` Flow view, a Step action opens detail inline under the same Flow card and tapping the same Step action again closes it.
-- In `/my` Flow view, mobile cards should show the next Step before full inventory or list-management controls. Hide/restore is an inventory preference for larger management states, not a default mobile action for a single saved Flow.
-- After saving a Flow Map, `/my` should show a compact saved banner and the same Today/Flow workspace underneath. The saved banner may show saved counts, one `지금 할 일 열기` action, and one `전체 Flow 보기` action, but it should not render a second mini inventory or Step detail inside the banner. Dated content is available from the global `캘린더` tab, so `/my` should not repeat `캘린더 보기` CTAs.
+- In `/my` 전체 view, an item action opens detail inline under the same saved-content card and tapping the same item action again closes it.
+- In `/my` 전체 view, mobile cards should show the next item before full inventory or list-management controls. Hide/restore is an inventory preference for larger management states, not a default mobile action for a single saved Flow.
+- After saving a Flow Map, `/my` should show a compact saved banner and the same Today/전체 workspace underneath. The saved banner may show saved counts, one `먼저 할 일 열기` action, and one `전체 할 일 보기` action, but it should not render a second mini inventory or item detail inside the banner. Dated content is available from the global `캘린더` tab, so `/my` should not repeat `캘린더 보기` CTAs.
+- Source-backed public Flow Map pages should show one short per-step checklist preview and keep the full checklist plus memo/source detail behind expanders. Users need to scan the map before saving without reading every source row at once.
+- Public single Flow detail pages should show the required input, saved result, first action, and save CTA before source context. Source title, conversion note, memo, and warning context remain available as `원문과 근거` or supporting sections instead of competing with the first action.
+- Export-first public Flow pages should avoid duplicate mobile save pressure. The sticky mobile bar may open a single export sheet, while the inline artifact area keeps save, calendar, sheet, and text actions.
 - Creator and internal review surfaces need secondary placement until the public creator workflow is ready.
 
 ### IA v3 Product-Route Working Design
@@ -104,7 +108,7 @@ Use this as the next product-route baseline until user evidence reopens it.
 
 - Keep the primary service frame at `홈 / Flow 찾기 / 캘린더 / 내 Flow`.
 - Promote `캘린더` to a global primary tab because saved dated Steps are a core return path, not only a nested management view.
-- Make `/calendar` schedule-first and make `/my` feel less like inventory by default: `/my` lands on `오늘`, uses `Flow` as the saved-structure manager, and does not repeat a local `캘린더` tab.
+- Make `/calendar` schedule-first and make `/my` feel less like inventory by default: `/my` lands on `오늘`, uses `전체` as the saved-content manager, and does not repeat a local `캘린더` tab.
 - After a user saves dated content, route them to the first actionable item inside the normal My Flow shell. The post-save banner should be a confirmation/router only; the actual Step detail opens in the normal Today or Flow surface. The global `캘린더` tab is the clear path for full dated schedules, and it should default to the nearest saved dated Step instead of an unrelated empty date when saved rows are available.
 - Hide internal hierarchy words from normal discovery copy. `Flow Map`, `Step`, and `Item` can exist in source contracts, creator tools, tests, and reports, but user-facing discovery should say `큰 흐름`, `항목`, `일정`, `체크`, or `진도표` when that is enough.
 - Home should explain the service and show one representative starting point plus a small number of secondary starts. `/flows` owns catalog browsing.
@@ -113,7 +117,7 @@ Use this as the next product-route baseline until user evidence reopens it.
 ### Creator Publish Gate v1 Baseline
 
 - `/flow-maps/[map]/creator` is a creator/review surface. It may expose source-row-to-`Step`/`Item` contract language because creators need to verify the conversion.
-- `/flow-maps/[map]`, `/flows`, `/`, and `/my` are user-facing surfaces. They should prefer user vocabulary such as `큰 흐름`, `항목`, `일정`, `체크`, `진도표`, and `전체 저장`.
+- `/flow-maps/[map]`, `/flows`, `/`, and `/my` are user-facing surfaces. They should prefer user vocabulary such as `콘텐츠`, `묶음`, `항목`, `할 일`, `일정`, `체크`, `진도표`, and `전체 저장하고 시작`.
 - Creator preview links for the saved result should point to a map-specific My Flow preview, such as `/my?demo=source-backed&savedMap=middle-school-math-1`, instead of a generic source-backed demo.
 - Public and My Flow links should say `저장 전 보기`, `전체 보기`, `바로 시작`, or destination-specific labels, not `지도 보기`, unless the user explicitly needs map structure language.
 - Public Flow detail should not expose operation or migration labels such as `새 실행모델로 전환 중`; explain the saved outcome in user terms such as schedule, checklist, memo, and source instead.

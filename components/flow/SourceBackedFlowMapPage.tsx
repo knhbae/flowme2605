@@ -20,15 +20,17 @@ const destinationLabel: Record<string, string> = {
 
 function NotFoundMap() {
   return (
-    <main className="mx-auto max-w-3xl px-5 py-8">
+    <main className="min-h-screen bg-[#FAFAF8] px-5 py-8">
+      <div className="mx-auto max-w-3xl">
       <PlatformNav />
-      <section className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center">
+      <section className="rounded-2xl border border-dashed border-[#E7E4DD] bg-white p-8 text-center">
         <h1 className="text-2xl font-semibold text-slate-950">콘텐츠를 찾을 수 없습니다</h1>
         <p className="mt-2 text-sm text-slate-600">다른 공개 Flow나 내 Flow 데모를 확인해 주세요.</p>
-        <Link className="mt-5 inline-flex rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white" href="/my?demo=source-backed">
+        <Link className="mt-5 inline-flex rounded-xl bg-[#3654FF] px-4 py-2 text-sm font-semibold text-white" href="/my?demo=source-backed">
           내 Flow 보기
         </Link>
       </section>
+      </div>
     </main>
   );
 }
@@ -40,19 +42,20 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
   const { map, public: publicSurface } = publishPackage;
 
   return (
-    <main data-testid="flow-map-public" className="mx-auto max-w-5xl px-4 py-5 pb-36 sm:px-5 sm:py-8 sm:pb-16">
+    <main data-testid="flow-map-public" className="min-h-screen bg-[#FAFAF8] px-4 py-5 pb-36 sm:px-5 sm:py-8 sm:pb-16">
+      <div className="mx-auto max-w-5xl">
       <PlatformNav />
-      <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-        <p className="text-sm font-semibold text-blue-700">큰 흐름</p>
+      <section className="rounded-2xl border border-[#E7E4DD] bg-white p-5 sm:p-6">
+        <p className="text-sm font-semibold text-[#3654FF]">저장 전 보기</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{publicSurface.title}</h1>
-        <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">{publicSurface.summary}</p>
+        <p className="mt-3 max-w-2xl break-keep text-base leading-7 text-[#6E6B64]">{publicSurface.summary}</p>
         {publicSurface.userFacingStatus || publicSurface.categoryLabel || publicSurface.counts ? (
           <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
-            {publicSurface.categoryLabel ? <span className="rounded-md bg-slate-100 px-2.5 py-1 text-slate-700">{publicSurface.categoryLabel}</span> : null}
-            {publicSurface.userFacingStatus ? <span className="rounded-md bg-blue-50 px-2.5 py-1 text-blue-700">{publicSurface.userFacingStatus}</span> : null}
+            {publicSurface.categoryLabel ? <span className="rounded-full bg-[#F1F0EC] px-2.5 py-1 text-[#1B1A17]">{publicSurface.categoryLabel}</span> : null}
+            {publicSurface.userFacingStatus ? <span className="rounded-full bg-white px-2.5 py-1 text-[#6E6B64] ring-1 ring-[#E7E4DD]">{publicSurface.userFacingStatus}</span> : null}
             {publicSurface.counts ? (
-              <span className="rounded-md bg-slate-100 px-2.5 py-1 text-slate-700">
-                {publicSurface.counts.flows}개 흐름 · {publicSurface.counts.steps}단계 · {publicSurface.counts.items}개 체크
+              <span className="rounded-full bg-[#FAFAF8] px-2.5 py-1 text-[#6E6B64]">
+                {publicSurface.counts.flows}개 묶음 · {publicSurface.counts.steps}개 할 일 · {publicSurface.counts.items}개 체크
               </span>
             ) : null}
           </div>
@@ -74,60 +77,65 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
 
       <section className="mt-4 grid gap-2 sm:grid-cols-3">
         {publicSurface.artifacts.map((artifact) => (
-          <div key={artifact} className="rounded-lg border border-blue-100 bg-blue-50 px-4 py-3">
-            <p className="text-xs font-semibold text-blue-700">저장되는 결과물</p>
+          <div key={artifact} className="rounded-2xl border border-[#E7E4DD] bg-white px-4 py-3">
+            <p className="text-xs font-semibold text-[#6E6B64]">저장되는 결과물</p>
             <p className="mt-1 text-sm font-semibold text-slate-950">{artifact}</p>
           </div>
         ))}
       </section>
 
-      <section className="mt-5 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+      <section className="mt-5 rounded-2xl border border-[#E7E4DD] bg-white p-4 sm:p-5">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-slate-500">원문</p>
+            <p className="text-sm font-semibold text-[#6E6B64]">원문과 실행 항목</p>
             <h2 className="mt-1 text-xl font-semibold text-slate-950">{publicSurface.sourceTitle}</h2>
           </div>
-          <p className="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{publicSurface.setupInput ? '입력 1개' : '입력 없음'}</p>
+          <p className="rounded-full bg-[#FAFAF8] px-2.5 py-1 text-xs font-semibold text-[#6E6B64]">{publicSurface.setupInput ? '입력 1개' : '입력 없음'}</p>
         </div>
         <div className="mt-4 grid gap-4">
           {publicSurface.childFlows.map((flow) => (
-            <article key={flow.slug} className="rounded-lg border border-slate-200 bg-white p-4">
+            <article key={flow.slug} className="rounded-2xl border border-[#E7E4DD] bg-white p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <h3 className="text-lg font-semibold text-slate-950">{flow.title}</h3>
-                  <p className="mt-1 text-xs font-semibold text-slate-500">{flow.steps.length}단계</p>
+                  <p className="mt-1 text-xs font-semibold text-[#6E6B64]">{flow.steps.length}개 할 일</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-md bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">
+                  <span className="rounded-full bg-[#EEF1FF] px-2.5 py-1 text-xs font-semibold text-[#3654FF]">
                     {destinationLabel[flow.destination] ?? flow.destination}
                   </span>
-                  <Link className="rounded-md border border-blue-100 bg-white px-2.5 py-1 text-xs font-semibold text-blue-700 hover:border-blue-300" href={`/f/${flow.slug}`}>
+                  <Link className="rounded-full border border-[#E7E4DD] bg-white px-2.5 py-1 text-xs font-semibold text-[#3654FF] hover:border-[#3654FF]/40" href={`/f/${flow.slug}`}>
                     바로 시작
                   </Link>
                 </div>
               </div>
               <div className="mt-3 grid gap-2">
                 {flow.steps.map((step) => (
-                  <div key={step.id} className="rounded-md border border-slate-100 bg-slate-50 px-3 py-3">
-                    {step.stepTitle ? <p className="text-xs font-semibold text-slate-500">{step.stepTitle}</p> : null}
+                  <div key={step.id} className="rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-3">
+                    {step.stepTitle ? <p className="text-xs font-semibold text-[#6E6B64]">{step.stepTitle}</p> : null}
                     <p className="mt-1 text-sm font-semibold text-slate-950">{step.title}</p>
                     {step.detailItems.length > 0 ? (
-                      <details open data-testid="flow-map-public-step-items" className="mt-2 rounded-md border border-slate-200 bg-white px-3 py-2.5">
-                        <summary className="cursor-pointer text-xs font-semibold text-slate-600">체크 {step.detailItems.length}개</summary>
-                        <ul className="mt-2 grid gap-1.5 text-[13px] font-medium leading-5 text-slate-700">
-                          {step.detailItems.map((item) => (
-                            <li key={item} className="flex gap-1.5">
-                              <span className="mt-0.5 shrink-0 text-slate-400" aria-hidden="true">□</span>
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </details>
+                      <>
+                        <p className="mt-2 rounded-md bg-white px-3 py-2 text-[13px] font-medium leading-5 text-slate-700">
+                          첫 체크: {step.detailItems[0]}
+                        </p>
+                        <details data-testid="flow-map-public-step-items" className="mt-2 rounded-xl border border-[#E7E4DD] bg-white px-3 py-2.5">
+                          <summary className="cursor-pointer text-xs font-semibold text-slate-600">체크 {step.detailItems.length}개 열기</summary>
+                          <ul className="mt-2 grid gap-1.5 text-[13px] font-medium leading-5 text-slate-700">
+                            {step.detailItems.map((item) => (
+                              <li key={item} className="flex gap-1.5">
+                                <span className="mt-0.5 shrink-0 text-slate-400" aria-hidden="true">□</span>
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </details>
+                      </>
                     ) : (
                       <p className="mt-1 text-xs font-semibold text-slate-500">하위 체크 {step.detailItemCount}개</p>
                     )}
                     {step.memo || step.sourceTrace || step.sourceUrl ? (
-                      <details className="mt-2 rounded-md border border-slate-200 bg-white px-3 py-2.5">
+                      <details className="mt-2 rounded-xl border border-[#E7E4DD] bg-white px-3 py-2.5">
                         <summary className="cursor-pointer text-xs font-semibold text-slate-600">메모 · 원문</summary>
                         {step.memo ? <p className="mt-2 whitespace-pre-wrap break-words text-[13px] leading-5 text-slate-700">{step.memo}</p> : null}
                         {step.sourceTrace ? (
@@ -136,7 +144,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
                           </p>
                         ) : null}
                         {step.sourceUrl ? (
-                          <a className="mt-2 inline-flex min-h-8 items-center rounded-md border border-blue-100 bg-white px-2.5 py-1 text-xs font-semibold text-blue-700 hover:border-blue-300" href={step.sourceUrl} target="_blank" rel="noreferrer">
+                          <a className="mt-2 inline-flex min-h-8 items-center rounded-md border border-[#E7E4DD] bg-white px-2.5 py-1 text-xs font-semibold text-[#3654FF] hover:border-[#3654FF]/40" href={step.sourceUrl} target="_blank" rel="noreferrer">
                             이 단계 원문 보기
                           </a>
                         ) : null}
@@ -149,6 +157,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
           ))}
         </div>
       </section>
+      </div>
     </main>
   );
 }
