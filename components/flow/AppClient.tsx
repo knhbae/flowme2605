@@ -5890,93 +5890,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     </div>
   );
 
-  const renderEmptyCalendarSurface = () => (
-    <section data-testid="my-flow-calendar-empty-surface" className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1.45fr)_minmax(300px,0.75fr)]">
-      <section data-testid="my-flow-calendar-card" className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h2 className="text-lg font-semibold text-slate-950">월간 일정</h2>
-            <p className="mt-1 text-sm text-slate-600">저장된 일정이 생기면 이 달력에 표시됩니다.</p>
-          </div>
-          <span className="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">0개 일정</span>
-        </div>
-        <div className="mt-4 flex items-center justify-between gap-2 rounded-lg bg-slate-50 p-2">
-          <button
-            type="button"
-            aria-label="이전 달"
-            onClick={() => moveMyFlowCalendarMonth(addMyFlowMonths(myFlowVisibleMonth, -1))}
-            className="min-h-9 rounded-md bg-white px-3 text-sm font-bold text-slate-700"
-          >
-            이전
-          </button>
-          <div className="text-center">
-            <h3 className="text-base font-black text-slate-950">{formatMyFlowMonthHeading(myFlowVisibleMonth)}</h3>
-            <label className="sr-only" htmlFor="my-flow-empty-month-picker">월 선택</label>
-            <input
-              id="my-flow-empty-month-picker"
-              data-testid="my-flow-month-picker"
-              aria-label="월 선택"
-              className="mt-1 min-h-8 rounded-md border border-slate-200 bg-white px-2 text-xs font-bold text-slate-700"
-              type="month"
-              value={myFlowVisibleMonth.slice(0, 7)}
-              onChange={(event) => {
-                if (!event.target.value) return;
-                moveMyFlowCalendarMonth(`${event.target.value}-01`);
-              }}
-            />
-          </div>
-          <button
-            type="button"
-            aria-label="다음 달"
-            onClick={() => moveMyFlowCalendarMonth(addMyFlowMonths(myFlowVisibleMonth, 1))}
-            className="min-h-9 rounded-md bg-white px-3 text-sm font-bold text-slate-700"
-          >
-            다음
-          </button>
-        </div>
-        <div data-testid="my-flow-empty-calendar-grid" className="mt-3 rounded-xl border border-slate-200 bg-white p-1">
-          <div className="grid grid-cols-7 text-center text-[11px] font-bold text-slate-500">
-            {['일', '월', '화', '수', '목', '금', '토'].map((day) => (
-              <div key={day} className="py-2">{day}</div>
-            ))}
-          </div>
-          <div className="grid grid-cols-7 overflow-hidden rounded-lg border border-slate-100">
-            {calendarCells.map((cell, index) => {
-              const date = cell ? formatMyFlowLocalDate(cell) : '';
-              const selected = date === myFlowSelectedDate;
-              return (
-                <button
-                  key={date || `empty-${index}`}
-                  type="button"
-                  disabled={!cell}
-                  aria-pressed={selected}
-                  className={`min-h-14 border-b border-r border-slate-100 px-1 py-1 text-left text-sm font-semibold ${
-                    !cell
-                      ? 'bg-slate-50 text-slate-300'
-                      : selected
-                        ? 'bg-blue-50 text-blue-800 ring-2 ring-inset ring-blue-300'
-                        : 'bg-white text-slate-700'
-                  }`}
-                  onClick={() => {
-                    if (!date) return;
-                    setMyFlowSelectedDate(date);
-                  }}
-                >
-                  {cell ? cell.getDate() : ''}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-      <section data-testid="my-flow-calendar-selected-day" className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-        <p className="text-xs font-semibold text-slate-500">선택한 날짜</p>
-        <h2 className="mt-1 text-lg font-semibold text-slate-950">{formatMyFlowDisplayDate(myFlowSelectedDate, { includeWeekday: true })}</h2>
-        <p className="mt-3 rounded-md bg-slate-50 px-3 py-3 text-sm text-slate-600">이 날짜에 등록된 일정이 없습니다.</p>
-      </section>
-    </section>
-  );
-
   return (
     <main className={`mx-auto max-w-6xl px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:px-5 md:pb-8 ${isCalendarSurface ? 'py-3 sm:py-6' : 'py-4 sm:py-8'}`}>
       <PlatformNav />
@@ -5990,41 +5903,36 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               : '오늘, 다음, 밀린 할 일을 먼저 봅니다.'}
           </p>
         </div>
-        <div className="hidden flex-wrap gap-2 sm:flex">
-          <Link className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-800" href={`/u/${currentUser.slug}`}>
-            스튜디오
-          </Link>
-          <Link className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white" href="/flows">
-            Flow 찾기
-          </Link>
-        </div>
+        {savedFlows.length > 0 ? (
+          <div className="hidden flex-wrap gap-2 sm:flex">
+            <Link className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-800" href={`/u/${currentUser.slug}`}>
+              스튜디오
+            </Link>
+            <Link className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white" href="/flows">
+              Flow 찾기
+            </Link>
+          </div>
+        ) : null}
       </div>
 
       {savedFlows.length === 0 ? (
-        <section data-testid="my-flow-empty-state" className="rounded-lg border border-dashed border-slate-300 bg-white p-6 shadow-sm">
-          <p className="text-sm font-semibold text-blue-700">{isCalendarSurface ? '빈 캘린더' : '첫 Flow를 저장하세요'}</p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
-            {isCalendarSurface ? '아직 등록된 일정이 없습니다' : '아직 실행 중인 Flow가 없습니다'}
+        <section data-testid="my-flow-empty-state" className="rounded-xl border border-dashed border-slate-300 bg-white p-5 shadow-sm sm:p-6">
+          <p className="text-sm font-semibold text-blue-700">{isCalendarSurface ? '저장한 일정 없음' : '저장한 콘텐츠 없음'}</p>
+          <h2 className="mt-2 break-keep text-2xl font-semibold tracking-tight text-slate-950">
+            {isCalendarSurface ? '일정이 생길 콘텐츠를 먼저 고르세요' : '저장할 콘텐츠를 먼저 고르세요'}
           </h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+          <p className="mt-2 max-w-xl break-keep text-sm leading-6 text-slate-600">
             {isCalendarSurface
-              ? '날짜가 있는 콘텐츠를 저장하면 이 캘린더에 일정이 표시됩니다.'
-              : '저장한 Flow가 생기면 오늘 할 일, 일정, Flow 목록을 여기에서 이어서 봅니다.'}
+              ? '날짜가 있는 콘텐츠를 저장하면 가장 가까운 일정부터 보여줍니다.'
+              : '하나를 저장하면 오늘, 다음, 밀린 할 일이 여기에서 바로 이어집니다.'}
           </p>
-          <div className="mt-5 flex flex-wrap gap-2">
-            <Link className="inline-flex min-h-10 items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white" href="/flows">
-              Flow 찾기
+          <div className="mt-5">
+            <Link className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-blue-700 px-4 py-2 text-sm font-semibold text-white sm:w-auto" href="/flows">
+              콘텐츠 고르러 가기
             </Link>
-            {!isCalendarSurface ? (
-              <Link className="inline-flex min-h-10 items-center justify-center rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800" href="/flows/new">
-                새 Flow 만들기
-              </Link>
-            ) : null}
           </div>
         </section>
       ) : null}
-
-      {isCalendarSurface && savedFlows.length === 0 ? renderEmptyCalendarSurface() : null}
 
       {savedFlows.length > 0 ? (
         <section className="mb-6">

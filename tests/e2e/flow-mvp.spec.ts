@@ -287,9 +287,11 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await page.goto('/calendar');
   await expect(page.getByRole('heading', { level: 1, name: '캘린더' })).toBeVisible();
   await expect(page.getByTestId('platform-mobile-tabs').getByRole('link', { name: '캘린더' })).toHaveAttribute('aria-current', 'page');
-  await expect(page.getByTestId('my-flow-empty-state')).toContainText('아직 등록된 일정이 없습니다');
-  await expect(page.getByTestId('my-flow-calendar-empty-surface')).toBeVisible();
-  await expect(page.getByTestId('my-flow-calendar-card')).toContainText('0개 일정');
+  await expect(page.getByTestId('my-flow-empty-state')).toContainText('일정이 생길 콘텐츠를 먼저 고르세요');
+  await expect(page.getByTestId('my-flow-empty-state').getByRole('link', { name: '콘텐츠 고르러 가기' })).toHaveAttribute('href', '/flows');
+  await expect(page.getByTestId('my-flow-empty-state').getByRole('link')).toHaveCount(1);
+  await expect(page.getByTestId('my-flow-calendar-empty-surface')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-calendar-card')).toHaveCount(0);
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
 
   await page.goto('/calendar?demo=source-backed');
@@ -358,6 +360,34 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await page.getByTestId('public-flow-save-actions').getByRole('link', { name: '내 Flow에서 보기' }).click();
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
   await expect(page.getByTestId('my-flow-now-section')).toContainText('전세계약 전 서류 체크 Flow');
+});
+
+test('my flow and calendar true empty states offer one content-picking action', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(() => window.localStorage.clear());
+
+  await page.goto('/my');
+  const myEmptyState = page.getByTestId('my-flow-empty-state');
+  await expect(myEmptyState).toBeVisible();
+  await expect(myEmptyState).toContainText('저장할 콘텐츠를 먼저 고르세요');
+  await expect(myEmptyState.getByRole('link', { name: '콘텐츠 고르러 가기' })).toHaveAttribute('href', '/flows');
+  await expect(myEmptyState.getByRole('link')).toHaveCount(1);
+  await expect(myEmptyState.getByRole('button')).toHaveCount(0);
+  await expect(myEmptyState).not.toContainText('새 Flow 만들기');
+  await expect(myEmptyState).not.toContainText('Flow 찾기');
+  await expect(page.getByTestId('my-flow-workspace')).toHaveCount(0);
+  await expectNoInternalUserSurfaceCopy(page.locator('body'));
+
+  await page.goto('/calendar');
+  const calendarEmptyState = page.getByTestId('my-flow-empty-state');
+  await expect(calendarEmptyState).toBeVisible();
+  await expect(calendarEmptyState).toContainText('일정이 생길 콘텐츠를 먼저 고르세요');
+  await expect(calendarEmptyState.getByRole('link', { name: '콘텐츠 고르러 가기' })).toHaveAttribute('href', '/flows');
+  await expect(calendarEmptyState.getByRole('link')).toHaveCount(1);
+  await expect(calendarEmptyState.getByRole('button')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-calendar-empty-surface')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-calendar-card')).toHaveCount(0);
+  await expectNoInternalUserSurfaceCopy(page.locator('body'));
 });
 
 test('main user routes keep internal operation labels off the visible surface', async ({ page }) => {
@@ -592,9 +622,10 @@ test('my flow workspace separates copied or drafted flows from public discovery'
   await expect(page.getByText('사용자가 곧 제작자입니다')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '내 Flow 스튜디오' })).toHaveCount(0);
   await expect(page.getByText('아직 만든 내 버전이 없습니다')).toHaveCount(0);
-  await expect(page.getByRole('link', { name: '스튜디오' })).toHaveAttribute('href', '/u/my-flow-studio');
+  await expect(page.getByRole('link', { name: '스튜디오' })).toHaveCount(0);
   await expect(page.getByTestId('my-flow-empty-state')).toBeVisible();
-  await expect(page.getByTestId('my-flow-empty-state').getByRole('link', { name: 'Flow 찾기' })).toHaveAttribute('href', '/flows');
+  await expect(page.getByTestId('my-flow-empty-state').getByRole('link', { name: '콘텐츠 고르러 가기' })).toHaveAttribute('href', '/flows');
+  await expect(page.getByTestId('my-flow-empty-state').getByRole('link')).toHaveCount(1);
   await expect(page.getByTestId('my-flow-workspace')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-scope-select')).toHaveCount(0);
 
@@ -1690,7 +1721,7 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
   await expect(page.getByTestId('my-flow-calendar-selected-day').locator('h3')).not.toContainText(/\d{4}-\d{2}-\d{2}/);
   await expect(page.getByTestId('my-flow-calendar-selected-day').locator('h3')).toContainText(/\d{1,2}월 \d{1,2}일/);
   const selectedDateGroup = page.getByTestId('my-flow-selected-date-group').first();
-  await expect(selectedDateGroup).toContainText('지도 일정');
+  await expect(selectedDateGroup).toContainText('저장한 일정');
   await expect(selectedDateGroup).toContainText('원룸 이사 D-30 일정 지도');
   await expect(selectedDateGroup).toContainText('1개 · 1개 남음');
   await expect(selectedDateGroup.getByTestId('my-flow-row-flow-chip')).toHaveCount(0);

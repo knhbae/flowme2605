@@ -60,6 +60,7 @@ Claude Design 리뷰의 결론은 새 기능 추가가 아니라 위계 압축�
 - 2026-07-03: P1-07을 처리했다. 일반 사용자 라우트(`/`, `/flows`, `/flow-maps/*`, `/f/*`, `/my`, `/calendar`) 금지어 스캔을 보강해 `Flow Map`, `Flow 일정`, `지도 일정`, demo/review/audit/source-backed/sourceTrace/Step/Item 계열 문구가 보이지 않게 고정했다. `후보`는 `견적 후보` 같은 실제 사용자 행동을 막지 않도록 대표/샘플/보류/삭제 후보 같은 내부 상태 패턴만 잡는다. `/calendar`의 `전체 Flow 일정`, `저장한 Flow의 날짜...`, 선택일 그룹 `지도 일정`/`Flow 일정`은 `전체 일정`, `저장한 콘텐츠`, `저장한 일정`/`일정`으로 낮췄다. targeted Playwright user-route internal-copy scan 통과.
 - 2026-07-03: P2-03을 처리했다. 모바일 하단 탭은 safe-area를 반영하고, Flow Map sticky 저장 CTA는 하단 탭 위로 16px 이상 떨어지도록 올렸다. `/flow-maps/[map]`의 하단 padding은 CTA+탭 조합을 기준으로 재계산했고, `/my`와 `/calendar`는 중복 bottom padding을 줄여 마지막 콘텐츠가 탭에 가려지지 않게 했다. targeted Playwright fixed-layer overlap scan은 RED에서 sticky/탭 간격 10px로 실패했고, 수정 후 `/flow-maps/moving-d30`, `/flow-maps/middle-school-math-1`, `/my?savedMap=moving-d30`, `/calendar` 통과.
 - 2026-07-03: P2-01을 처리했다. public Flow artifact workbench, exact-video export, My Flow Step detail, mobile export sheet, restart prototype의 버튼/피드백 라벨을 `캘린더 파일 받기`, `시트로 받기`, `메모로 복사`, `체크리스트 복사`와 결과형 피드백으로 통일했다. targeted Playwright export label subset은 RED 후 통과했고, 기존 export 파일 생성 로직은 바꾸지 않았다.
+- 2026-07-03: P2-02를 처리했다. `/my`와 `/calendar`의 true empty state는 설명형 달력/보조 CTA를 제거하고 `콘텐츠 고르러 가기` 단일 CTA로 정리했다. 저장된 콘텐츠가 있는 상태에서는 기존 Today/Calendar 실행 워크스페이스를 유지한다. targeted Playwright true empty subset은 RED 후 통과했다.
 
 ## P1 - P0 후 이어서 해결
 
@@ -78,7 +79,7 @@ Claude Design 리뷰의 결론은 새 기능 추가가 아니라 위계 압축�
 | ID | 영역 | 작업 |
 | --- | --- | --- |
 | P2-01 | Export copy | 완료 - export 라벨과 피드백을 결과 중심 상수로 통일했다. |
-| P2-02 | 빈 상태 | My Flow 빈 상태 CTA를 `콘텐츠 고르러 가기` 하나로 정리한다. |
+| P2-02 | 빈 상태 | 완료 - My Flow/캘린더 true empty CTA를 `콘텐츠 고르러 가기` 하나로 정리했다. |
 | P2-03 | fixed layer | 완료 - safe-area, sticky 저장 CTA, My Flow/Calendar bottom spacing을 정리하고 overlap 회귀 테스트를 추가했다. |
 | P2-04 | 저장 목록 요약 | 0개 칩 숨김, 진행바 + n/n 하나로 정리한다. |
 | P2-05 | 디자인 토큰 | 주요 색, 카드 radius/padding, 버튼 hierarchy를 통일한다. |
