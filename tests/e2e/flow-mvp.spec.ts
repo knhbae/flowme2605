@@ -361,9 +361,12 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveText('저장하고 시작');
   await page.getByTestId('flow-map-save-all-mobile').click();
   await expect(page).toHaveURL('/my?savedMap=moving-d30');
+  await expect(page.getByTestId('my-flow-empty-state')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
   const movingPostSave = page.getByTestId('my-flow-post-save-panel');
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
   await expect(movingPostSave).toContainText('5개 할 일');
+  await expect(movingPostSave).toContainText('이사 방식과 견적 후보 정하기');
   await expect(movingPostSave).not.toContainText('5개 Step');
   await expect(movingPostSave.getByTestId('my-flow-post-save-open-first')).toContainText('먼저 할 일 열기');
   await expect(movingPostSave.getByTestId('my-flow-post-save-view-all')).toHaveCount(0);
@@ -491,7 +494,11 @@ test('mobile fixed layers keep save actions and final content separated', async 
   await expectElementClearsFixedLayer(page.getByTestId('my-flow-workspace'), page.getByTestId('platform-mobile-tabs'), 16);
 
   await page.goto('/calendar');
+  await expect(page.getByTestId('my-flow-empty-state')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
+  const selectedDateGroup = page.getByTestId('my-flow-selected-date-group').first();
+  await expect(selectedDateGroup).toContainText('원룸 이사 D-30 일정 지도');
+  await expect(selectedDateGroup).toContainText('입주청소와 대형폐기물 일정 확인');
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
   await expectElementClearsFixedLayer(page.getByTestId('my-flow-calendar-card'), page.getByTestId('platform-mobile-tabs'), 16);
   await expectNoInternalUserSurfaceCopy(page.locator('body'));

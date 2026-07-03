@@ -1,8 +1,13 @@
 {
-  "generatedAt": "2026-07-03T12:56:29.741Z",
+  "generatedAt": "2026-07-03T14:26:21.936Z",
+  "baseURL": "http://127.0.0.1:3104",
   "viewport": {
     "width": 390,
     "height": 844
+  },
+  "finding": {
+    "b1Conclusion": "evidence_generation_error",
+    "summary": "The app save loop writes the expected localStorage records and renders saved My Flow/Calendar state. The previous final audit screenshots lost the saved browser context."
   },
   "evidence": [
     {
@@ -101,7 +106,19 @@
       "navVisible": true,
       "h1": "내 Flow",
       "firstButton": "FLOW",
-      "matchedTerms": []
+      "matchedTerms": [],
+      "postSaveChecks": {
+        "storageKeysAfterSave": [
+          "flow:map:persistence:moving-d30",
+          "flow:map:saved:moving-d30",
+          "flow:meta:last-visit",
+          "flow:saved:source-backed-moving-d30",
+          "flow_builder_mvp_bundles_v11"
+        ],
+        "hasPostSavePanel": true,
+        "hasFirstTask": true,
+        "hasTrueEmptyState": false
+      }
     },
     {
       "route": "/calendar",
@@ -115,7 +132,12 @@
       "navVisible": true,
       "h1": "캘린더",
       "firstButton": "FLOW",
-      "matchedTerms": []
+      "matchedTerms": [],
+      "postSaveChecks": {
+        "hasCalendarCard": true,
+        "hasAgenda": true,
+        "hasTrueEmptyState": false
+      }
     }
   ]
 }

@@ -177,6 +177,7 @@
     <a class="chip" href="./route-evidence.json">Route evidence JSON</a>
     <a class="chip" href="../2026-07-03-claude-design-action-backlog-ko.md">Backlog source</a>
     <span class="chip green">P0~P2 closed</span>
+    <span class="chip green">P3-01 rechecked</span>
     <span class="chip amber">390px evidence</span>
   </div>
 
@@ -193,7 +194,25 @@
       </div>
       <div class="card">
         <h3>검증 상태</h3>
-        <p>모바일 390px route evidence, targeted Playwright 9건, full test/docs/build 검증 통과를 확보했다.</p>
+        <p>모바일 390px route evidence, P3-01 직접 subset 2건, P0/P2 회귀 subset 6건, full test/docs/build 검증 통과를 확보했다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>P3-01 재검증 결론</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>원인</h3>
+        <p>저장 후 My Flow와 캘린더가 비어 보였던 기존 증거는 앱 버그가 아니라 저장된 브라우저 상태를 유지하지 못한 evidence 생성 오류였다.</p>
+      </div>
+      <div class="card">
+        <h3>현재 증거</h3>
+        <p>`/my?savedMap=moving-d30`는 첫 실행 항목을 보여주고, `/calendar`는 저장된 일정 agenda를 보여준다.</p>
+      </div>
+      <div class="card">
+        <h3>고정 장치</h3>
+        <p>저장 후 true empty state 회귀를 막는 Playwright assertion과 전용 evidence 재생성 스크립트를 추가했다.</p>
       </div>
     </div>
   </section>

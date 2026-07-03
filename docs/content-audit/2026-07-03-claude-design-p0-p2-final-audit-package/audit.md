@@ -13,9 +13,17 @@
 | P1 | 완료 | `/flows`, `/flow-maps/[map]`, `/f/[slug]`, `/my`, `/calendar`의 첫 화면을 행동/결과 중심으로 압축했다. |
 | P2 | 완료 | export 라벨, true empty state, fixed layer, 진행 표시, 디자인 토큰 마감을 정리했다. |
 
+## P3-01 재검증 결론
+
+- 결론: 앱 저장/복원 버그가 아니라 final audit evidence 생성 오류였다.
+- 원인: 이전 `07-post-save-my-flow-mobile.png`, `08-calendar-after-save-mobile.png` 캡처는 실제 저장 후 브라우저 localStorage 상태를 유지하지 못한 상태에서 생성된 것으로 보인다.
+- 재현 결과: 모바일 390px에서 `/flow-maps/moving-d30`에 이사일 `2026-07-22`를 입력하고 저장하면 `flow:saved:source-backed-moving-d30`, `flow:map:saved:moving-d30` 등 저장 키가 기록된다.
+- 현재 evidence: `/my?savedMap=moving-d30`는 `이사 방식과 견적 후보 정하기` 첫 실행 항목을 보여주고, `/calendar`는 `7월 8일 (수)` 선택일 agenda와 `입주청소와 대형폐기물 일정 확인`을 보여준다.
+- 고정 장치: `tests/e2e/flow-mvp.spec.ts`에 저장 후 My Flow/Calendar가 true empty state로 회귀하지 않는 assertion을 추가했고, `scripts/content-audit/capture-claude-p0-p2-final-evidence.mjs`로 같은 브라우저 컨텍스트에서 저장 후 증거를 재생성한다.
+
 ## Route evidence
 
-모바일 390 x 844 viewport에서 route sanity check를 수행했다. 모든 route에서 horizontal overflow는 0건이고, ASCII 내부 검토어 스캔 결과는 0건이다.
+모바일 390 x 844 viewport에서 route sanity check를 수행했다. 저장 후 route는 `/flow-maps/moving-d30`에서 실제 저장을 수행한 같은 브라우저 컨텍스트로 캡처했다. 모든 route에서 horizontal overflow는 0건이고, ASCII 내부 검토어 스캔 결과는 0건이다.
 
 | Route | 상태 | H1 | Screenshot | 비고 |
 | --- | --- | --- | --- | --- |
@@ -33,7 +41,10 @@
 ## Verification snapshot
 
 - 모바일 390px route evidence: 생성 완료
-- targeted Playwright subset: 9 passed
+- P3-01 저장 루프 evidence: 앱 버그 아님, evidence 생성 오류로 판별
+- P3-01 targeted Playwright subset: 2 passed
+- P0/P2 regression targeted Playwright subset: 6 passed
+- P0~P2 final targeted Playwright subset: 9 passed
   - design token rhythm
   - internal operation labels
   - fixed layers

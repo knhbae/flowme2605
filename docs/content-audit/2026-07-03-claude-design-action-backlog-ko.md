@@ -64,6 +64,7 @@ Claude Design 리뷰의 결론은 새 기능 추가가 아니라 위계 압축�
 - 2026-07-03: P2-04를 처리했다. My Flow 저장 콘텐츠 카드의 제목 옆 중복 진행 칩과 모바일 저장 요약의 `오늘 0`/`다음 0`/`밀림 0` 칩을 제거하고, 카드 진행 상태는 `n/n 완료` 텍스트 + 진행바 하나로 통일했다. targeted Playwright My Flow 저장 목록/모바일 subset은 RED 후 최신 빌드 기준으로 통과했다.
 - 2026-07-03: P2-05를 처리했다. 전역 FlowMe 색상 토큰, 상단/하단 4탭 nav, public artifact workbench 카드/버튼/chip 톤을 `#FAFAF8`, `#E7E4DD`, `#3654FF`, 16px card radius, 12px button radius 기준으로 정리했다. targeted Playwright design token rhythm은 RED 후 통과했고, 모바일 390px route evidence에서 주요 route의 가로 overflow 0건을 확인했다.
 - P0~P2 최종 감사 패키지: [Claude Design P0~P2 final audit package](./2026-07-03-claude-design-p0-p2-final-audit-package/README.md)
+- 2026-07-03: P3-01을 재검증했다. final audit package의 저장 후 My Flow/Calendar 빈 화면 증거는 앱 저장 버그가 아니라 저장된 브라우저 컨텍스트를 유지하지 못한 evidence 생성 오류로 판별했다. 전용 evidence 캡처 스크립트를 추가하고, `/my?savedMap=moving-d30` 첫 실행 항목과 `/calendar` 저장 agenda가 보이는 screenshot/JSON을 재생성했다.
 
 ## P1 - P0 후 이어서 해결
 

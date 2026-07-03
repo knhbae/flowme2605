@@ -10,6 +10,21 @@
 4. [screenshots](./screenshots/) - 주요 route 모바일 390px screenshot
 5. [prompt-ko.md](./prompt-ko.md) - Claude Design 재검토 요청 프롬프트
 
+## P3-01 저장 증거 재검증
+
+- 결론: `06-my-empty-mobile.png`와 기존 `07-post-save-my-flow-mobile.png`가 같아 보였던 문제는 앱 저장 버그가 아니라 evidence 생성 오류였다.
+- 현재 `07-post-save-my-flow-mobile.png`는 실제 저장 후 My Flow 첫 실행 항목을 보여준다.
+- 현재 `08-calendar-after-save-mobile.png`는 실제 저장 후 가장 가까운 일정 agenda를 보여준다.
+- 재생성 스크립트: [`scripts/content-audit/capture-claude-p0-p2-final-evidence.mjs`](../../../scripts/content-audit/capture-claude-p0-p2-final-evidence.mjs)
+
+```powershell
+npm.cmd run build
+# 별도 터미널에서 실행한 채 유지
+npm.cmd run start -- -p 3104
+# 다른 터미널에서 실행
+node scripts\content-audit\capture-claude-p0-p2-final-evidence.mjs
+```
+
 ## 관련 기준 문서
 
 - [Claude Design 실행 백로그](../2026-07-03-claude-design-action-backlog-ko.md)
