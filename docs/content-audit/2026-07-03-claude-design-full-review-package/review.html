@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 전체 UX/UI 검토 보드</title>
+  <style>
+    :root {
+      --bg: #f6f4ef;
+      --paper: #ffffff;
+      --ink: #171717;
+      --muted: #666a73;
+      --line: #e5e2da;
+      --blue: #3654ff;
+      --soft: #eef2ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 18px 56px;
+    }
+    h1 {
+      margin: 8px 0 12px;
+      font-size: clamp(30px, 5vw, 56px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+    h2 {
+      margin: 0 0 12px;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+    p { margin: 0; }
+    .eyebrow {
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .lead {
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+    .section {
+      margin-top: 28px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      padding: 22px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      padding: 16px;
+    }
+    .card p, li {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .shot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 18px;
+    }
+    figure {
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      overflow: hidden;
+    }
+    figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #f8fafc;
+    }
+    figcaption {
+      border-top: 1px solid var(--line);
+      padding: 12px 14px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    code {
+      border-radius: 6px;
+      background: var(--soft);
+      padding: 2px 5px;
+      color: #243bd1;
+      font-size: 0.92em;
+    }
+    ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      padding: 7px 10px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">FlowMe 전체 UX/UI 검토 보드</p>
+    <h1>소스와 실제 모바일 화면을 같이 보는 검토 패키지</h1>
+    <p class="lead">
+      FlowMe는 콘텐츠를 읽는 서비스가 아니라, 콘텐츠를 저장하고 일정/체크/시트/메모로 실행하는 앱입니다.
+      이 보드는 Claude Design이 소스 구조와 모바일 렌더링을 함께 보면서 우선순위 높은 UX/UI 문제를 찾기 위한 자료입니다.
+    </p>
+    <div class="pill-row">
+      <span class="pill">홈</span>
+      <span class="pill">Flow 찾기</span>
+      <span class="pill">캘린더</span>
+      <span class="pill">내 Flow</span>
+      <span class="pill">390px 모바일</span>
+      <span class="pill">소스 우선 검토</span>
+    </div>
+
+    <section class="section">
+      <h2>검토할 핵심</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>서비스 이해</h3>
+          <p>처음 온 사용자가 FlowMe가 무엇을 해주는지, 어디를 누르면 되는지 5초 안에 이해하는지 봅니다.</p>
+        </div>
+        <div class="card">
+          <h3>저장 후 실행</h3>
+          <p>저장 완료가 끝처럼 보이지 않고 My Flow에서 오늘/다음 할 일이 먼저 보이는지 봅니다.</p>
+        </div>
+        <div class="card">
+          <h3>정보 밀도</h3>
+          <p>카드, 버튼, 설명, source/detail/memo가 상용 앱 대비 과한지 봅니다.</p>
+        </div>
+        <div class="card">
+          <h3>내부 모델 분리</h3>
+          <p>Flow Map, Step, Item, review, audit 같은 내부 언어가 사용자 화면에 새지 않는지 봅니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>소스 진입점</h2>
+      <ul>
+        <li><code>components/flow/AppClient.tsx</code>: 홈, Flow 찾기, 공개 Flow 상세, My Flow, 캘린더의 대부분 UI</li>
+        <li><code>components/flow/SourceBackedFlowMapPage.tsx</code>: source-backed Flow Map 상세</li>
+        <li><code>components/flow/SourceBackedFlowMapSaveButton.tsx</code>: Flow Map 저장 후 My Flow 이동</li>
+        <li><code>lib/flow/source-backed-my-flow.ts</code>: source-backed 저장/실행 구조</li>
+        <li><code>lib/flow/my-flow-step-export.ts</code>: My Flow detail/export 구조</li>
+        <li><code>docs/SERVICE_STRUCTURE.md</code>: 현재 서비스 구조와 IA 기준선</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>모바일 화면 증거</h2>
+      <div class="shot-grid">
+        <figure><img src="screenshots/01-home-mobile.png" alt="홈 모바일" /><figcaption>01 홈</figcaption></figure>
+        <figure><img src="screenshots/02-flow-finding-mobile.png" alt="Flow 찾기 모바일" /><figcaption>02 Flow 찾기</figcaption></figure>
+        <figure><img src="screenshots/03-flow-map-moving-mobile.png" alt="이사 Flow Map 상세" /><figcaption>03 Flow Map 상세 - 이사</figcaption></figure>
+        <figure><img src="screenshots/04-flow-map-math-mobile.png" alt="수학 Flow Map 상세" /><figcaption>04 Flow Map 상세 - 중1 수학</figcaption></figure>
+        <figure><img src="screenshots/05-public-jeonse-mobile.png" alt="전세계약 공개 Flow" /><figcaption>05 공개 Flow - 전세계약</figcaption></figure>
+        <figure><img src="screenshots/06-public-moving-single-mobile.png" alt="이사 공개 Flow" /><figcaption>06 공개 Flow - 이사</figcaption></figure>
+        <figure><img src="screenshots/07-my-empty-mobile.png" alt="My Flow 빈 상태" /><figcaption>07 My Flow 빈 상태</figcaption></figure>
+        <figure><img src="screenshots/08-my-flow-today-demo-mobile.png" alt="My Flow 오늘" /><figcaption>08 My Flow 오늘</figcaption></figure>
+        <figure><img src="screenshots/09-my-flow-saved-list-demo-mobile.png" alt="My Flow 저장 목록" /><figcaption>09 My Flow 저장 목록</figcaption></figure>
+        <figure><img src="screenshots/10-post-save-my-flow-mobile.png" alt="저장 직후 My Flow" /><figcaption>10 저장 직후 My Flow</figcaption></figure>
+        <figure><img src="screenshots/11-calendar-demo-mobile.png" alt="캘린더" /><figcaption>11 캘린더</figcaption></figure>
+        <figure><img src="screenshots/12-content-flows-internal-mobile.png" alt="내부 콘텐츠 검토" /><figcaption>12 내부 콘텐츠 검토</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>요청 출력</h2>
+      <p>Blocking / High / Medium / Low로 나누고, 각 항목마다 문제, 근거 화면 또는 소스 파일, 사용자 혼란, 수정 방향, 기대 효과를 적어주세요.</p>
+    </section>
+  </main>
+</body>
+</html>
