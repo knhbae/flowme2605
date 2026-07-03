@@ -16,6 +16,7 @@ import { addDays, formatDate, getRangeEnd } from '@/lib/flow/date';
 import { inferPrimaryDestination } from '@/lib/flow/destination';
 import { getRepresentativeFlowSlugs, normalizeExecutionModel, type FlowExportTarget } from '@/lib/flow/execution-model';
 import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
+import { FLOW_EXPORT_FEEDBACK, FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
 import {
   buildMyFlowStepIcs,
   buildMyFlowStepPortableText,
@@ -355,7 +356,7 @@ function FlowWarningCard({ bundle, className = 'mt-5' }: { bundle: FlowBundle; c
 
 const exportTargetLabels: Record<FlowExportTarget, string> = {
   memo: '메모',
-  sheet: '엑셀',
+  sheet: '시트',
   calendar: '캘린더',
   todo: '투두',
 };
@@ -5134,7 +5135,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         ) : null}
         {shouldCollapsePortableExport ? (
           <details data-testid="my-flow-detail-portable-export" className="mt-3 rounded-md bg-white px-3 py-3">
-            <summary className="cursor-pointer text-xs font-semibold text-slate-700">원문·복사</summary>
+            <summary className="cursor-pointer text-xs font-semibold text-slate-700">원문·내 도구</summary>
             {primaryLink ? (
               <a
                 data-testid="my-flow-detail-source-link"
@@ -5147,7 +5148,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </a>
             ) : null}
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-              <p className="text-xs font-semibold text-slate-700">내보낼 형식</p>
+              <p className="text-xs font-semibold text-slate-700">내 도구로 옮기기</p>
               <span className="text-[11px] font-semibold text-slate-500">
                 {canDownloadPortableCalendar ? '텍스트 · 캘린더' : '텍스트'}
               </span>
@@ -5159,7 +5160,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
                 onClick={() => copyMyFlowStepPortableText(portableExportInput, portableExportKey)}
               >
-                메모로 복사
+                {FLOW_EXPORT_LABELS.memoCopy}
               </button>
               {canDownloadPortableCalendar ? (
                 <button
@@ -5168,14 +5169,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   className="rounded-md bg-slate-950 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-800"
                   onClick={() => downloadMyFlowStepCalendar(portableExportInput, portableExportKey, `${row.flow.progress.slug}-${row.id}`)}
                 >
-                  캘린더 파일 받기
+                  {FLOW_EXPORT_LABELS.calendarFile}
                 </button>
               ) : null}
               {myFlowStepCopiedKey === portableExportKey ? (
-                <span data-testid="my-flow-detail-copy-feedback" className="inline-flex min-h-8 items-center rounded-md bg-emerald-50 px-2 text-[11px] font-semibold text-emerald-700">복사됨</span>
+                <span data-testid="my-flow-detail-copy-feedback" className="inline-flex min-h-8 items-center rounded-md bg-emerald-50 px-2 text-[11px] font-semibold text-emerald-700">{FLOW_EXPORT_FEEDBACK.memoCopied}</span>
               ) : null}
               {myFlowStepDownloadedKey === portableExportKey ? (
-                <span data-testid="my-flow-detail-download-feedback" className="inline-flex min-h-8 items-center rounded-md bg-blue-50 px-2 text-[11px] font-semibold text-blue-700">받기 완료</span>
+                <span data-testid="my-flow-detail-download-feedback" className="inline-flex min-h-8 items-center rounded-md bg-blue-50 px-2 text-[11px] font-semibold text-blue-700">{FLOW_EXPORT_FEEDBACK.calendarReady}</span>
               ) : null}
             </div>
           </details>
@@ -5194,7 +5195,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
                 onClick={() => copyMyFlowStepPortableText(portableExportInput, portableExportKey)}
               >
-                메모로 복사
+                {FLOW_EXPORT_LABELS.memoCopy}
               </button>
               {canDownloadPortableCalendar ? (
                 <button
@@ -5203,14 +5204,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   className="rounded-md bg-slate-950 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-800"
                   onClick={() => downloadMyFlowStepCalendar(portableExportInput, portableExportKey, `${row.flow.progress.slug}-${row.id}`)}
                 >
-                  캘린더 파일 받기
+                  {FLOW_EXPORT_LABELS.calendarFile}
                 </button>
               ) : null}
               {myFlowStepCopiedKey === portableExportKey ? (
-                <span data-testid="my-flow-detail-copy-feedback" className="inline-flex min-h-8 items-center rounded-md bg-emerald-50 px-2 text-[11px] font-semibold text-emerald-700">복사됨</span>
+                <span data-testid="my-flow-detail-copy-feedback" className="inline-flex min-h-8 items-center rounded-md bg-emerald-50 px-2 text-[11px] font-semibold text-emerald-700">{FLOW_EXPORT_FEEDBACK.memoCopied}</span>
               ) : null}
               {myFlowStepDownloadedKey === portableExportKey ? (
-                <span data-testid="my-flow-detail-download-feedback" className="inline-flex min-h-8 items-center rounded-md bg-blue-50 px-2 text-[11px] font-semibold text-blue-700">받기 완료</span>
+                <span data-testid="my-flow-detail-download-feedback" className="inline-flex min-h-8 items-center rounded-md bg-blue-50 px-2 text-[11px] font-semibold text-blue-700">{FLOW_EXPORT_FEEDBACK.calendarReady}</span>
               ) : null}
             </div>
           </section>
@@ -8181,7 +8182,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     const text = buildText(bundle, checks, displayAnchor, itemStates, comparisonState, workbenchState);
     try {
       await navigator.clipboard.writeText(text);
-      setCopyState('복사됨');
+      setCopyState(FLOW_EXPORT_FEEDBACK.memoCopied);
     } catch {
       const textarea = document.createElement('textarea');
       textarea.value = text;
@@ -8192,12 +8193,12 @@ export function PublicFlow({ slug }: { slug: string }) {
       textarea.select();
       const copied = document.execCommand('copy');
       document.body.removeChild(textarea);
-      setCopyState(copied ? '복사됨' : '복사 실패');
+      setCopyState(copied ? FLOW_EXPORT_FEEDBACK.memoCopied : FLOW_EXPORT_FEEDBACK.copyFailed);
     }
     window.setTimeout(() => setCopyState(''), 1600);
   };
   const downloadExcel = async () => {
-    setDownloadState('생성 중');
+    setDownloadState(FLOW_EXPORT_FEEDBACK.sheetPreparing);
     const sheets = buildWorkbookSheets(bundle, checks, displayAnchor, {
       weekdays: weekdaySelection,
       reactionLogs,
@@ -8214,11 +8215,11 @@ export function PublicFlow({ slug }: { slug: string }) {
     link.download = `${bundle.flow.slug}.xlsx`;
     link.click();
     window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-    setDownloadState('완료');
+    setDownloadState(FLOW_EXPORT_FEEDBACK.sheetReady);
     window.setTimeout(() => setDownloadState(''), 1600);
   };
   const downloadCalendar = () => {
-    setCalendarState('생성 중');
+    setCalendarState(FLOW_EXPORT_FEEDBACK.calendarPreparing);
     const ics = hasDatedCalendarSchedule(bundle)
       ? buildIcsCalendar(bundle, checks, displayAnchor, itemStates)
       : buildCalendarIcs(bundle, displayAnchor, weekdaySelection);
@@ -8228,7 +8229,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     link.download = `${bundle.flow.slug}.ics`;
     link.click();
     window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-    setCalendarState('완료');
+    setCalendarState(FLOW_EXPORT_FEEDBACK.calendarReady);
     window.setTimeout(() => setCalendarState(''), 1600);
   };
   const copyToEditableDraft = () => {
@@ -8491,7 +8492,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         <section className="my-5 rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-700 shadow-sm">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <p>
-              <span className="font-semibold">진행 상황은 이 브라우저에 자동 저장됩니다.</span> 다른 기기에서 보거나 백업하려면 엑셀 실행표를 받아두세요.
+              <span className="font-semibold">진행 상황은 이 브라우저에 자동 저장됩니다.</span> 다른 기기에서 보거나 백업하려면 시트 파일을 받아두세요.
             </p>
             <button
               className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700"
@@ -8603,27 +8604,27 @@ export function PublicFlow({ slug }: { slug: string }) {
             </div>
             <div className="mt-5 grid gap-2">
               {showCalendarExportAction ? (
-                <button data-testid="mobile-export-calendar" aria-label={`캘린더 파일 받기: ${bundle.flow.title} .ics 일정`} className="flex items-center gap-3 rounded-md bg-blue-50 px-4 py-3 text-left text-sm font-semibold text-slate-950 disabled:text-slate-400" disabled={done === 0} onClick={downloadCalendar}>
+                <button data-testid="mobile-export-calendar" aria-label={`${FLOW_EXPORT_LABELS.calendarFile}: ${bundle.flow.title} .ics 일정`} className="flex items-center gap-3 rounded-md bg-blue-50 px-4 py-3 text-left text-sm font-semibold text-slate-950 disabled:text-slate-400" disabled={done === 0} onClick={downloadCalendar}>
                   <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-blue-500 bg-white" />
                   <span className="flex-1">
-                    <span className="block">캘린더 파일 받기</span>
+                    <span className="block">{FLOW_EXPORT_LABELS.calendarFile}</span>
                     <span className="mt-0.5 block text-xs font-medium text-slate-500">구글 · 애플 · .ics 파일</span>
                   </span>
                   <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-slate-400" />
                 </button>
               ) : null}
-              <button data-testid="mobile-export-excel" aria-label={`시트로 받기: ${bundle.flow.title} .xlsx 실행 시트`} className="flex items-center gap-3 rounded-md bg-slate-50 px-4 py-3 text-left text-sm font-semibold text-slate-950 disabled:text-slate-400" disabled={done === 0} onClick={downloadExcel}>
+              <button data-testid="mobile-export-excel" aria-label={`${FLOW_EXPORT_LABELS.sheetFile}: ${bundle.flow.title} .xlsx 실행 시트`} className="flex items-center gap-3 rounded-md bg-slate-50 px-4 py-3 text-left text-sm font-semibold text-slate-950 disabled:text-slate-400" disabled={done === 0} onClick={downloadExcel}>
                 <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-slate-400 bg-white" />
                 <span className="flex-1">
-                  <span className="block">시트로 받기</span>
+                  <span className="block">{FLOW_EXPORT_LABELS.sheetFile}</span>
                   <span className="mt-0.5 block text-xs font-medium text-slate-500">진도표와 메모 시트</span>
                 </span>
                 <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-slate-400" />
               </button>
-              <button data-testid="mobile-export-copy" aria-label={`메모로 복사: ${bundle.flow.title} 실행 메모`} className="flex items-center gap-3 rounded-md bg-slate-50 px-4 py-3 text-left text-sm font-semibold text-slate-950 disabled:text-slate-400" disabled={done === 0} onClick={copy}>
+              <button data-testid="mobile-export-copy" aria-label={`${FLOW_EXPORT_LABELS.memoCopy}: ${bundle.flow.title} 실행 메모`} className="flex items-center gap-3 rounded-md bg-slate-50 px-4 py-3 text-left text-sm font-semibold text-slate-950 disabled:text-slate-400" disabled={done === 0} onClick={copy}>
                 <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-slate-400 bg-white" />
                 <span className="flex-1">
-                  <span className="block">메모로 복사</span>
+                  <span className="block">{FLOW_EXPORT_LABELS.memoCopy}</span>
                   <span className="mt-0.5 block text-xs font-medium text-slate-500">노션 · 카카오톡 · 메모장</span>
                 </span>
                 <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 border-r border-t border-slate-400" />
@@ -8760,14 +8761,14 @@ function getMobileStickyCtaLabel(bundle: FlowBundle, canExportCalendar: boolean,
     return `보류 ${holdSignalCount}건 포함 .xlsx`;
   }
   if (bundle.flow.slug === 'moving-d30-basic') return '내 Flow에 저장';
-  if (bundle.flow.slug === 'computer-skills-d30-study') return '시트·캘린더로 받기';
+  if (bundle.flow.slug === 'computer-skills-d30-study') return '시트·캘린더 파일 받기';
   if (bundle.flow.slug === 'diet-habit-2week') return '수면 체크표 .xlsx 받기';
   if (bundle.flow.slug === 'new-car-delivery-check') return '증거표 .xlsx 받기';
   if (bundle.flow.primary_destination === 'internal_check') return '체크리스트로 쓰기';
-  if (bundle.flow.primary_destination === 'hybrid') return canExportCalendar ? '시트·캘린더로 받기' : '시트·메모로 받기';
-  if (bundle.flow.primary_destination === 'calendar' || canExportCalendar) return '캘린더 .ics 받기';
-  if (bundle.flow.primary_destination === 'sheet') return '시트 .xlsx 받기';
-  if (bundle.flow.primary_destination === 'memo') return '메모로 복사하기';
+  if (bundle.flow.primary_destination === 'hybrid') return canExportCalendar ? '시트·캘린더 파일 받기' : '시트·메모로 복사';
+  if (bundle.flow.primary_destination === 'calendar' || canExportCalendar) return FLOW_EXPORT_LABELS.calendarFile;
+  if (bundle.flow.primary_destination === 'sheet') return FLOW_EXPORT_LABELS.sheetFile;
+  if (bundle.flow.primary_destination === 'memo') return FLOW_EXPORT_LABELS.memoCopy;
   return '내 도구로 가져가기';
 }
 
@@ -8882,13 +8883,13 @@ function ExportFirstHero({
             )}
             <div className="mt-2 grid gap-2 sm:grid-cols-3">
               <button className="rounded-md border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700" type="button" onClick={onDownloadCalendar}>
-                캘린더 파일 받기
+                {FLOW_EXPORT_LABELS.calendarFile}
               </button>
               <button className="rounded-md border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700" type="button" onClick={onDownloadExcel}>
-                시트로 받기
+                {FLOW_EXPORT_LABELS.sheetFile}
               </button>
               <button className="rounded-md border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700" type="button" onClick={onCopyText}>
-                메모로 복사
+                {FLOW_EXPORT_LABELS.memoCopy}
               </button>
             </div>
           </div>
@@ -10644,13 +10645,13 @@ function ExactVideoToolPreview({
               <p className="text-sm font-semibold text-gray-950">가져가기</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 <button className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white" onClick={onDownloadCalendar}>
-                  캘린더에 넣기 · .ics
+                  {FLOW_EXPORT_LABELS.calendarFile}
                 </button>
                 <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={onDownloadExcel}>
-                  시트로 받기 · .xlsx
+                  {FLOW_EXPORT_LABELS.sheetFile}
                 </button>
                 <button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold" onClick={onCopyText}>
-                  메모/노션에 복사
+                  {FLOW_EXPORT_LABELS.memoCopy}
                 </button>
               </div>
               <div className="mt-2 flex flex-wrap gap-3 text-sm">

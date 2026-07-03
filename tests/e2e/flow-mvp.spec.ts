@@ -735,8 +735,8 @@ test('fitness exact video flow keeps the execution panel minimal', async ({ page
   await expect(page.getByText('한눈에 보는 전체 루트')).toHaveCount(0);
   await expect(page.getByText('이번 주 루틴 설정')).toHaveCount(0);
   await expect(page.getByText('출처와 주의 정보')).toHaveCount(0);
-  await expect(exactTool.getByRole('button', { name: '캘린더에 넣기 · .ics' })).toBeVisible();
-  await expect(exactTool.getByRole('button', { name: '시트로 받기 · .xlsx' })).toBeVisible();
+  await expect(exactTool.getByRole('button', { name: '캘린더 파일 받기' })).toBeVisible();
+  await expect(exactTool.getByRole('button', { name: '시트로 받기' })).toBeVisible();
   await expect(page.getByRole('button', { name: '초보' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '절반' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '전체 루틴' })).toHaveCount(0);
@@ -744,12 +744,12 @@ test('fitness exact video flow keeps the execution panel minimal', async ({ page
   await expect(page.getByText('weekly')).toHaveCount(0);
 
   const calendarDownloadPromise = page.waitForEvent('download');
-  await exactTool.getByRole('button', { name: '캘린더에 넣기 · .ics' }).click();
+  await exactTool.getByRole('button', { name: '캘린더 파일 받기' }).click();
   const calendarDownload = await calendarDownloadPromise;
   expect(calendarDownload.suggestedFilename()).toBe('real-thankyou-bubu-video-full-body-no-jump.ics');
 
   const excelDownloadPromise = page.waitForEvent('download');
-  await exactTool.getByRole('button', { name: '시트로 받기 · .xlsx' }).click();
+  await exactTool.getByRole('button', { name: '시트로 받기' }).click();
   const excelDownload = await excelDownloadPromise;
   expect(excelDownload.suggestedFilename()).toBe('real-thankyou-bubu-video-full-body-no-jump.xlsx');
 });
@@ -767,8 +767,8 @@ test('former broad ThankyouBUBU routes now render as one exact-video action', as
   await expect(page.getByText('주 3회 운동 요일 선택')).toHaveCount(0);
   await expect(page.getByRole('link', { name: /영상 열기/ })).toBeVisible();
   const exactTool = page.getByRole('region', { name: '영상 반복 캘린더 설정' });
-  await expect(exactTool.getByRole('button', { name: '캘린더에 넣기 · .ics' })).toBeVisible();
-  await expect(exactTool.getByRole('button', { name: '시트로 받기 · .xlsx' })).toBeVisible();
+  await expect(exactTool.getByRole('button', { name: '캘린더 파일 받기' })).toBeVisible();
+  await expect(exactTool.getByRole('button', { name: '시트로 받기' })).toBeVisible();
 });
 
 test('diet exact video flow uses application language instead of workout scheduling', async ({ page }) => {
@@ -792,8 +792,8 @@ test('diet exact video flow uses application language instead of workout schedul
   await expect(workbench.getByLabel('적용 후 기록 / 적용 후 반응')).toBeVisible();
   await expect(workbench.getByLabel('적용 후 기록 / 유지/중단 결정')).toBeVisible();
   const exactTool = page.getByRole('region', { name: '영상 반복 캘린더 설정' });
-  await expect(exactTool.getByRole('button', { name: '시트로 받기 · .xlsx' })).toBeVisible();
-  await expect(exactTool.getByRole('button', { name: '메모/노션에 복사' })).toBeVisible();
+  await expect(exactTool.getByRole('button', { name: '시트로 받기' })).toBeVisible();
+  await expect(exactTool.getByRole('button', { name: '메모로 복사' })).toBeVisible();
 });
 
 test('workout programming exact video starts from a decision table before weekly plan', async ({ page }) => {
@@ -809,8 +809,8 @@ test('workout programming exact video starts from a decision table before weekly
   await expect(page.getByText('선택 기준 반영').first()).toBeVisible();
   await expect(page.getByText('운동표에 이미 들어간 기준')).toHaveCount(0);
   const exactTool = page.getByRole('region', { name: '영상 반복 캘린더 설정' });
-  await expect(exactTool.getByRole('button', { name: '캘린더에 넣기 · .ics' })).toBeVisible();
-  await expect(exactTool.getByRole('button', { name: '시트로 받기 · .xlsx' })).toBeVisible();
+  await expect(exactTool.getByRole('button', { name: '캘린더 파일 받기' })).toBeVisible();
+  await expect(exactTool.getByRole('button', { name: '시트로 받기' })).toBeVisible();
 });
 
 test('FITVELY diet record route starts from a source-rule observation sheet', async ({ page }) => {
@@ -953,8 +953,8 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await expect(page.getByRole('button', { name: '월별 달력' })).toHaveCount(0);
   await expect(page.getByText('내보내기와 백업')).toHaveCount(0);
   let workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(workbench.getByRole('button', { name: '엑셀로 받기' })).toBeVisible();
-  await expect(workbench.getByRole('button', { name: '엑셀로 받기' })).toBeDisabled();
+  await expect(workbench.getByRole('button', { name: '시트로 받기' })).toBeVisible();
+  await expect(workbench.getByRole('button', { name: '시트로 받기' })).toBeDisabled();
   await expect(page.getByText('by FLOW 큐레이션팀')).toBeVisible();
   await expect(page.getByText('베타 운영 중').first()).toHaveCount(0);
   await page.getByLabel('이사일').fill('2026-07-15');
@@ -979,7 +979,7 @@ test('public moving flow calculates dates and updates progress', async ({ page }
 
   const downloadPromise = page.waitForEvent('download');
   workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await workbench.getByRole('button', { name: '엑셀로 받기' }).click();
+  await workbench.getByRole('button', { name: '시트로 받기' }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe('moving-d30-basic.xlsx');
 });
@@ -1643,7 +1643,7 @@ test('source-backed single progress map opens step detail on mobile My Flow', as
   const itemChecklist = flowDetail.getByTestId('my-flow-item-checklist');
   await expect(itemChecklist).toContainText('거듭제곱');
   await expect(flowDetail.getByTestId('my-flow-detail-read-summary')).toContainText('메모·일정');
-  await expect(flowDetail.getByTestId('my-flow-detail-portable-export')).toContainText('원문·복사');
+  await expect(flowDetail.getByTestId('my-flow-detail-portable-export')).toContainText('원문·내 도구');
   await itemChecklist.getByLabel('거듭제곱').check();
   await expect(itemChecklist).toContainText('1/8');
 });
@@ -1976,16 +1976,19 @@ test('my flow step detail saves portable calendar task fields', async ({ page })
   await page.goto('/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-06');
   const movedEvent = page.locator('.fc-daygrid-day[data-date="2026-06-24"] .fc-event').first();
-  await expect(movedEvent).toContainText('이사 방식');
+  await expect(movedEvent).toHaveAttribute('title', /이사 방식/);
   await movedEvent.click();
   const restoredDetail = page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail');
   await expect(restoredDetail).toBeVisible();
   await expect(restoredDetail.getByTestId('my-flow-detail-portable-export')).toBeVisible();
+  await expect(restoredDetail.getByTestId('my-flow-detail-copy-portable-text')).toHaveText('메모로 복사');
+  await expect(restoredDetail.getByTestId('my-flow-detail-download-ics')).toHaveText('캘린더 파일 받기');
   await restoredDetail.getByTestId('my-flow-detail-copy-portable-text').click();
-  await expect(restoredDetail.getByTestId('my-flow-detail-copy-feedback')).toContainText('복사됨');
+  await expect(restoredDetail.getByTestId('my-flow-detail-copy-feedback')).toContainText('메모 복사됨');
   const downloadPromise = page.waitForEvent('download');
   await restoredDetail.getByTestId('my-flow-detail-download-ics').click();
   const download = await downloadPromise;
+  await expect(restoredDetail.getByTestId('my-flow-detail-download-feedback')).toContainText('캘린더 파일 받음');
   const downloadPath = await download.path();
   expect(downloadPath).toBeTruthy();
   const ics = fs.readFileSync(downloadPath!, 'utf8');
@@ -2717,17 +2720,17 @@ test('computer skills final QA exports checklist and calendar without study prog
   let studyWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
   const listCard = studyWorkbench.getByTestId('artifact-list-card');
   const calendarCard = studyWorkbench.getByTestId('artifact-calendar-card');
-  await expect(listCard.getByRole('button', { name: '엑셀로 받기' })).toBeEnabled();
-  await expect(calendarCard.getByRole('button', { name: '캘린더 받기' })).toBeEnabled();
+  await expect(listCard.getByRole('button', { name: '시트로 받기' })).toBeEnabled();
+  await expect(calendarCard.getByRole('button', { name: '캘린더 파일 받기' })).toBeEnabled();
 
   const excelDownloadPromise = page.waitForEvent('download');
-  await listCard.getByRole('button', { name: '엑셀로 받기' }).click();
+  await listCard.getByRole('button', { name: '시트로 받기' }).click();
   const excelDownload = await excelDownloadPromise;
   expect(excelDownload.suggestedFilename()).toBe('computer-skills-d30-study.xlsx');
 
   const calendarDownloadPromise = page.waitForEvent('download');
   studyWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await studyWorkbench.getByTestId('artifact-calendar-card').getByRole('button', { name: '캘린더 받기' }).click();
+  await studyWorkbench.getByTestId('artifact-calendar-card').getByRole('button', { name: '캘린더 파일 받기' }).click();
   const calendarDownload = await calendarDownloadPromise;
   expect(calendarDownload.suggestedFilename()).toBe('computer-skills-d30-study.ics');
 });
@@ -2744,10 +2747,10 @@ test('risk-boundary QA exports new-car evidence memo and diet observation sheet'
   await holdSection.getByTestId('flow-hold-field-new-car-delivery-check-hold-confirmation').fill('dealer confirmed scratch and will send written repair date');
   await holdSection.getByTestId('flow-hold-field-new-car-delivery-check-hold-next-check').fill('do not sign until repair memo is attached');
   await workbench.locator('input[type="checkbox"]').first().check();
-  await expect(workbench.getByRole('button', { name: '엑셀로 받기' })).toBeEnabled();
+  await expect(workbench.getByRole('button', { name: '시트로 받기' })).toBeEnabled();
 
   let excelDownloadPromise = page.waitForEvent('download');
-  await workbench.getByRole('button', { name: '엑셀로 받기' }).click();
+  await workbench.getByRole('button', { name: '시트로 받기' }).click();
   let excelDownload = await excelDownloadPromise;
   expect(excelDownload.suggestedFilename()).toBe('new-car-delivery-check.xlsx');
 
@@ -2760,10 +2763,10 @@ test('risk-boundary QA exports new-car evidence memo and diet observation sheet'
   await expect(workbench.getByTestId('artifact-log-table-spreadsheet')).toHaveCount(0);
   await workbench.getByLabel(/캘린더 회차 체크:/).first().check();
   const dietCalendarCard = workbench.getByTestId('artifact-calendar-card');
-  await expect(dietCalendarCard.getByRole('button', { name: '시트로 받기 · .xlsx' })).toBeEnabled();
+  await expect(dietCalendarCard.getByRole('button', { name: '시트로 받기' })).toBeEnabled();
 
   excelDownloadPromise = page.waitForEvent('download');
-  await dietCalendarCard.getByRole('button', { name: '시트로 받기 · .xlsx' }).click();
+  await dietCalendarCard.getByRole('button', { name: '시트로 받기' }).click();
   excelDownload = await excelDownloadPromise;
   expect(excelDownload.suggestedFilename()).toBe('diet-habit-2week.xlsx');
 });
@@ -3023,7 +3026,7 @@ test('routine desktop uses session grid and session log artifacts', async ({ pag
   await expect(sessionGrid.getByText(/1주차/).first()).toBeVisible();
 
   await expect(sessionLog).toBeVisible();
-  await expect(sessionLog.getByRole('button', { name: '시트로 받기 · .xlsx' })).toBeVisible();
+  await expect(sessionLog.getByRole('button', { name: '시트로 받기' })).toBeVisible();
 
   await expect(todayCard).toBeVisible();
 
@@ -3092,8 +3095,8 @@ test('no-anchor checklist skips date setup and hides calendar export', async ({ 
   await expect(page.getByText('이 Flow는 날짜 입력이 필요 없는 체크리스트입니다.')).toBeVisible();
   await expect(page.getByText('표에 필요한 값을 채우고, 확인이 끝난 행만 완료로 표시하세요.')).toBeVisible();
   const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(workbench.getByRole('button', { name: '캘린더 받기' })).not.toBeVisible();
-  await expect(workbench.getByRole('button', { name: '메모/노션에 복사' })).toBeVisible();
+  await expect(workbench.getByRole('button', { name: '캘린더 파일 받기' })).not.toBeVisible();
+  await expect(workbench.getByRole('button', { name: '체크리스트 복사' })).toBeVisible();
 });
 
 test('used-car checklist shows decision preview instead of calendar by default', async ({ page }) => {
@@ -3200,10 +3203,10 @@ test('artifact workbench exposes export actions next to the natural artifact', a
   const movingListCard = workbench.getByTestId('artifact-list-card');
   const movingCalendarCard = workbench.getByTestId('artifact-calendar-card');
   await expect(workbench).toBeVisible();
-  await expect(movingListCard.getByRole('button', { name: '메모/노션에 복사' })).toBeVisible();
-  await expect(movingListCard.getByRole('button', { name: '엑셀로 받기' })).toBeVisible();
+  await expect(movingListCard.getByRole('button', { name: '체크리스트 복사' })).toBeVisible();
+  await expect(movingListCard.getByRole('button', { name: '시트로 받기' })).toBeVisible();
   await expect(movingListCard.getByRole('button', { name: '내 버전' })).toBeVisible();
-  await expect(movingCalendarCard.getByRole('button', { name: '캘린더 받기' })).toBeVisible();
+  await expect(movingCalendarCard.getByRole('button', { name: '캘린더 파일 받기' })).toBeVisible();
   await expect(workbench.getByText('실행판에서 체크한 내용을 내 도구로 옮깁니다.')).toHaveCount(0);
 
   await page.goto('/f/computer-skills-d30-study');
@@ -3212,8 +3215,8 @@ test('artifact workbench exposes export actions next to the natural artifact', a
   const studyCalendarCard = workbench.getByTestId('artifact-calendar-card');
   await expect(workbench).toBeVisible();
   await expect(workbench.getByTestId('artifact-log-table-study-chapter-progress')).toHaveCount(0);
-  await expect(studyListCard.getByRole('button', { name: '엑셀로 받기' })).toBeVisible();
-  await expect(studyCalendarCard.getByRole('button', { name: '캘린더 받기' })).toBeVisible();
+  await expect(studyListCard.getByRole('button', { name: '시트로 받기' })).toBeVisible();
+  await expect(studyCalendarCard.getByRole('button', { name: '캘린더 파일 받기' })).toBeVisible();
 });
 
 test('moving desktop shows calendar artifact before execution list', async ({ page }) => {
@@ -3313,9 +3316,9 @@ test('mobile export sheet remains available from the sticky fallback', async ({ 
 
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   const mobileBar = page.getByTestId('mobile-export-bar');
-  await expect(mobileBar.getByRole('button', { name: '시트·캘린더로 받기' })).toBeVisible();
+  await expect(mobileBar.getByRole('button', { name: '시트·캘린더 파일 받기' })).toBeVisible();
 
-  await mobileBar.getByRole('button', { name: '시트·캘린더로 받기' }).click();
+  await mobileBar.getByRole('button', { name: '시트·캘린더 파일 받기' }).click();
   const sheet = page.getByTestId('mobile-export-sheet');
   await expect(sheet.getByRole('heading', { name: '어디로 가져갈까요' })).toBeVisible();
   await expect(sheet.getByRole('button', { name: '시트로 받기' })).toBeEnabled();
@@ -3328,7 +3331,7 @@ test('validation fix surfaces route-specific anchors, safety panels, and mobile 
   await page.goto('/f/computer-skills-d30-study');
   await expect(page.getByLabel('시험일')).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-  await expect(page.getByTestId('mobile-export-bar').getByRole('button', { name: '시트·캘린더로 받기' })).toBeVisible();
+  await expect(page.getByTestId('mobile-export-bar').getByRole('button', { name: '시트·캘린더 파일 받기' })).toBeVisible();
 
   await page.goto('/f/diet-habit-2week');
   await expect(page.locator('input[type="date"]').first()).toBeVisible();
@@ -3375,7 +3378,7 @@ test('mobile workbench exposes destination CTAs on the first artifact cards', as
   await expect(listCard.getByTestId('mobile-artifact-export-excel')).toBeVisible();
   await expect(listCard.getByTestId('mobile-artifact-export-excel')).toHaveAttribute('aria-label', /시트로 받기: .*실행 리스트/);
   await expect(calendarCard.getByTestId('mobile-artifact-export-calendar')).toBeVisible();
-  await expect(calendarCard.getByTestId('mobile-artifact-export-calendar')).toHaveAttribute('aria-label', /캘린더로 받기: .*월간 캘린더/);
+  await expect(calendarCard.getByTestId('mobile-artifact-export-calendar')).toHaveAttribute('aria-label', /캘린더 파일 받기: .*월간 캘린더/);
 
   await page.goto('/f/computer-skills-d30-study');
   workbench = page.getByLabel('Flow artifact workbench');
@@ -3386,7 +3389,7 @@ test('mobile workbench exposes destination CTAs on the first artifact cards', as
   await expect(studyListCard.getByTestId('mobile-artifact-export-excel')).toBeVisible();
   await expect(studyListCard.getByTestId('mobile-artifact-export-excel')).toHaveAttribute('aria-label', /시트로 받기: .*실행 리스트/);
   await expect(studyCalendarCard.getByTestId('mobile-artifact-export-calendar')).toBeVisible();
-  await expect(studyCalendarCard.getByTestId('mobile-artifact-export-calendar')).toHaveAttribute('aria-label', /캘린더로 받기: .*월간 캘린더/);
+  await expect(studyCalendarCard.getByTestId('mobile-artifact-export-calendar')).toHaveAttribute('aria-label', /캘린더 파일 받기: .*월간 캘린더/);
 
   await page.goto('/f/diet-habit-2week');
   workbench = page.getByLabel('Flow artifact workbench');
@@ -3940,7 +3943,7 @@ test('promoted content-flow service routes preserve executable source cues', asy
       await expect(workbench.getByTestId('jeonse-selected-event-card')).toContainText('계약서 정보 확인');
       await workbench.getByTestId('jeonse-source-bridge').getByRole('button', { name: /D\+1/ }).click();
       await expect(workbench.getByTestId('jeonse-selected-event-card')).toContainText('입주 후 보호 절차');
-      await expect(workbench).toContainText('캘린더에 넣기');
+      await expect(workbench).toContainText('캘린더 파일 받기');
       await workbench.getByRole('tab', { name: '전체 보기' }).click();
       await expect(workbench.getByTestId('jeonse-all-items')).toContainText('전체 체크 항목 7개');
       await expect(workbench.getByTestId('jeonse-all-items')).toContainText('0/2 완료');

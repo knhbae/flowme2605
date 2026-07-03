@@ -13,6 +13,7 @@ import {
   type ArtifactMemoField,
 } from '@/lib/flow/artifact-fields';
 import { addDays, formatDate, getRangeEnd } from '@/lib/flow/date';
+import { FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
 import { timingLabel } from '@/lib/flow/parser';
 import type { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState } from '@/lib/flow/types';
 
@@ -200,28 +201,28 @@ function ArtifactExportButtons({ actions, kinds, labels = {}, mobileArtifactLabe
         if (kind === 'copy') {
           return (
             <button key={kind} className="rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 disabled:bg-slate-300" disabled={disabled} title={disabledTitle} onClick={actions.onCopyText}>
-              {labels.copy ?? '메모/노션에 복사'}
+              {labels.copy ?? FLOW_EXPORT_LABELS.checklistCopy}
             </button>
           );
         }
         if (kind === 'excel') {
           return (
             <button key={kind} className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700 disabled:border-slate-200 disabled:text-slate-400" disabled={disabled} title={disabledTitle} onClick={actions.onDownloadExcel}>
-              {labels.excel ?? '엑셀로 받기'}
+              {labels.excel ?? FLOW_EXPORT_LABELS.sheetFile}
             </button>
           );
         }
         if (kind === 'calendar' && actions.canExportCalendar) {
           return (
             <button key={kind} className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700 disabled:border-slate-200 disabled:text-slate-400" disabled={disabled} title={disabledTitle} onClick={actions.onDownloadCalendar}>
-              {labels.calendar ?? '캘린더 받기'}
+              {labels.calendar ?? FLOW_EXPORT_LABELS.calendarFile}
             </button>
           );
         }
         if (kind === 'draft') {
           return (
             <button key={kind} className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700" onClick={actions.onCopyToEditableDraft}>
-              {labels.draft ?? '내 버전'}
+              {labels.draft ?? FLOW_EXPORT_LABELS.editableDraft}
             </button>
           );
         }
@@ -242,10 +243,10 @@ function renderMobileArtifactExportButton(kind: ArtifactExportActionKind, action
   if (kind === 'calendar' && !actions.canExportCalendar) return null;
 
   const config = {
-    copy: { label: '텍스트 복사', aria: `텍스트 복사: ${artifactLabel}`, onClick: actions.onCopyText, disabled },
-    excel: { label: '시트로 받기', aria: `시트로 받기: ${artifactLabel}`, onClick: actions.onDownloadExcel, disabled },
-    calendar: { label: '캘린더로 받기', aria: `캘린더로 받기: ${artifactLabel}`, onClick: actions.onDownloadCalendar, disabled },
-    draft: { label: '내 버전', aria: `내 버전 만들기: ${artifactLabel}`, onClick: actions.onCopyToEditableDraft, disabled: false },
+    copy: { label: FLOW_EXPORT_LABELS.checklistCopy, aria: `${FLOW_EXPORT_LABELS.checklistCopy}: ${artifactLabel}`, onClick: actions.onCopyText, disabled },
+    excel: { label: FLOW_EXPORT_LABELS.sheetFile, aria: `${FLOW_EXPORT_LABELS.sheetFile}: ${artifactLabel}`, onClick: actions.onDownloadExcel, disabled },
+    calendar: { label: FLOW_EXPORT_LABELS.calendarFile, aria: `${FLOW_EXPORT_LABELS.calendarFile}: ${artifactLabel}`, onClick: actions.onDownloadCalendar, disabled },
+    draft: { label: FLOW_EXPORT_LABELS.editableDraft, aria: `내 버전 만들기: ${artifactLabel}`, onClick: actions.onCopyToEditableDraft, disabled: false },
   }[kind];
 
   return (
@@ -600,12 +601,12 @@ function MealReactionWorkbench({
             </div>
             <button
               data-testid="meal-reaction-sheet-export"
-              aria-label={`시트로 받기: ${todayReactionSlot.menu_title} 오늘 먹은 양 반응 기록`}
+              aria-label={`${FLOW_EXPORT_LABELS.sheetFile}: ${todayReactionSlot.menu_title} 오늘 먹은 양 반응 기록`}
               className="shrink-0 rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-800"
               type="button"
               onClick={exportActions?.onDownloadExcel}
             >
-              시트로 받기
+              {FLOW_EXPORT_LABELS.sheetFile}
             </button>
           </div>
           <div data-testid="meal-reaction-summary-card" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3">
@@ -692,7 +693,7 @@ function MealReactionWorkbench({
                 <p className="text-sm font-semibold text-blue-700">먹은 뒤 기록</p>
                 <h3 className="mt-1 text-base font-semibold text-gray-950">반응 기록표</h3>
               </div>
-              <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} />
+              <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} labels={{ copy: FLOW_EXPORT_LABELS.memoCopy }} />
             </div>
             <ArtifactExportStatus actions={exportActions} />
             <p className="mt-2 text-sm leading-6 text-gray-600">레시피 평가는 뒤로 미루고, 먹은 양과 이상 반응을 먼저 남깁니다.</p>
@@ -923,7 +924,7 @@ function RoutineOccurrenceCalendar({
             <ArtifactExportButtons
               actions={exportActions}
               kinds={['calendar', 'excel', 'draft']}
-              labels={{ calendar: '캘린더에 넣기 · .ics', excel: '시트로 받기 · .xlsx', draft: '편집' }}
+              labels={{ calendar: FLOW_EXPORT_LABELS.calendarFile, excel: FLOW_EXPORT_LABELS.sheetFile, draft: '편집' }}
             />
           </div>
         </div>
@@ -1014,7 +1015,7 @@ function RoutineSessionLogCard({
         <ArtifactExportButtons
           actions={exportActions}
           kinds={['copy', 'excel', 'draft']}
-          labels={{ copy: '오늘 기록 복사', excel: '시트로 받기 · .xlsx', draft: '편집' }}
+          labels={{ copy: FLOW_EXPORT_LABELS.memoCopy, excel: FLOW_EXPORT_LABELS.sheetFile, draft: '편집' }}
         />
       </div>
       <ArtifactExportStatus actions={exportActions} />
@@ -1100,7 +1101,7 @@ function ComparisonTable({
           <h3 className="mt-1 text-base font-semibold text-gray-950">{title}</h3>
         </div>
         <div className="flex flex-wrap justify-end gap-2">
-          <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} mobileArtifactLabel={mobileArtifactLabel} mobileKinds={['excel']} />
+          <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} labels={{ copy: FLOW_EXPORT_LABELS.memoCopy }} mobileArtifactLabel={mobileArtifactLabel} mobileKinds={['excel']} />
           <button className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-800" onClick={() => onComparisonChange(addComparisonCandidate(comparison))}>
             후보 추가
           </button>
@@ -2044,12 +2045,13 @@ function SpreadsheetWorkbench({
               <p className="text-sm font-semibold text-blue-700">기록표</p>
               <h3 className="mt-1 text-base font-semibold text-gray-950">{title}</h3>
             </div>
-            <ArtifactExportButtons
-              actions={exportActions}
-              kinds={['copy', 'excel', 'draft']}
-              mobileArtifactLabel={getMobileArtifactLabel(bundle, 'spreadsheet_log')}
-              mobileKinds={['excel']}
-            />
+              <ArtifactExportButtons
+                actions={exportActions}
+                kinds={['copy', 'excel', 'draft']}
+                labels={{ copy: FLOW_EXPORT_LABELS.memoCopy }}
+                mobileArtifactLabel={getMobileArtifactLabel(bundle, 'spreadsheet_log')}
+                mobileKinds={['excel']}
+              />
           </div>
           <ArtifactExportStatus actions={exportActions} />
           <p className="mt-2 text-sm leading-6 text-gray-600">{description}</p>
@@ -2203,7 +2205,7 @@ function MaintenanceRoutineWorkbench({
         <ArtifactExportButtons
           actions={exportActions}
           kinds={['calendar', 'copy', 'draft']}
-          labels={{ calendar: '캘린더로 받기', copy: '관리 메모 복사', draft: '내 버전' }}
+          labels={{ calendar: FLOW_EXPORT_LABELS.calendarFile, copy: FLOW_EXPORT_LABELS.memoCopy, draft: FLOW_EXPORT_LABELS.editableDraft }}
         />
         <ArtifactExportStatus actions={exportActions} />
       </section>
@@ -2508,7 +2510,7 @@ function JeonseContractWorkbench({
               disabled={!exportActions?.canExportCalendar}
               onClick={exportActions?.onDownloadCalendar}
             >
-              캘린더에 넣기
+              {FLOW_EXPORT_LABELS.calendarFile}
             </button>
           </section>
         </>

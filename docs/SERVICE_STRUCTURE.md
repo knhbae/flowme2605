@@ -102,7 +102,7 @@ Desktop can use a top nav with the same priority order. It should not expose mor
 - After saving a Flow Map, `/my` should show a compact saved banner and the same Today/전체 workspace underneath. The saved banner may show saved counts, one `먼저 할 일 열기` action, and one `전체 할 일 보기` action, but it should not render a second mini inventory or item detail inside the banner. Dated content is available from the global `캘린더` tab, so `/my` should not repeat `캘린더 보기` CTAs.
 - Source-backed public Flow Map pages should show the result promise, required input, save action, and first action preview before the source section. Full checklist plus memo/source detail stay behind expanders so users can scan the map before saving without reading every source row at once.
 - Public single Flow detail pages should show the result promise, required input or no-input state, first action, and save CTA before source context. Source title, conversion note, memo, and warning context remain available as `원문과 근거` or supporting sections instead of competing with the first action.
-- Export-first public Flow pages should avoid duplicate mobile save pressure. The sticky mobile bar may open a single export sheet, while the inline artifact area keeps save, calendar, sheet, and text actions.
+- Export-first public Flow pages should avoid duplicate mobile save pressure. The sticky mobile bar may open a single export sheet, while the inline artifact area keeps save, calendar, sheet, memo, and checklist actions. User-facing export labels should stay outcome-first: `캘린더 파일 받기`, `시트로 받기`, `메모로 복사`, and `체크리스트 복사`.
 - Creator and internal review surfaces need secondary placement until the public creator workflow is ready.
 
 ### IA v3 Product-Route Working Design
@@ -147,7 +147,7 @@ These may remain directly accessible for testing or development, but they should
 | Artifact UI | `ArtifactWorkbench.tsx`, `ArtifactPreview.tsx` | Render and edit user artifacts without mixing them into source evidence or review-only notes. |
 | Domain model | `lib/flow/types.ts`, `seed-flows.ts`, `curated-source-app-seed.ts`, `execution-model.ts`, `source-backed-my-flow.ts` | Define Flow, Flow Map, Step, publish package, source-backed seed adapters, and execution assumptions. |
 | Parsing and time | `parser.ts`, `date.ts`, `recurrence.ts`, `destination.ts` | Normalize user input, dates, recurrence, and artifact destinations. |
-| Persistence and export | `storage.ts`, `export.ts`, `my-flow-step-export.ts`, `artifact-plan.ts`, `artifact-fields.ts` | Save local records and regenerate text, calendar, workbook, and Step-detail exports from edited state. |
+| Persistence and export | `storage.ts`, `export.ts`, `my-flow-step-export.ts`, `export-labels.ts`, `artifact-plan.ts`, `artifact-fields.ts` | Save local records and regenerate text, calendar, workbook, Step-detail exports, and shared result-first export labels from edited state. |
 | Review and evidence | `content-lab.ts`, `source-fit.ts`, `source-review-priority.ts`, `natural-artifact-audit.ts`, `observed-session-*` | Keep QA, source/risk labels, observed sessions, and internal review evidence out of public validation claims. |
 | Content conversion | `korean-flow-content-*`, `content-inventory.ts`, `content-lifecycle.ts`, `flow-content-selection-audit.ts` | Convert and audit source content before it becomes public or saved Flow Map material. |
 | API boundary | `app/api/content-flow-review/route.ts` | Server-side review endpoint for content-flow review workflows. |

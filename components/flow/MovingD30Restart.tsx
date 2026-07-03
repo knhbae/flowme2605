@@ -17,6 +17,7 @@ import {
   type MovingRestartItem,
   updateMovingRestartItem,
 } from '@/lib/flow/moving-d30-restart';
+import { FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
 
 const defaultMoveDate = '2026-06-27';
 
@@ -239,7 +240,7 @@ export function MovingD30Restart() {
     const { buildXlsxBuffer } = await import('@/lib/flow/export');
     const buffer = await buildXlsxBuffer(buildMovingRestartSheets(items));
     downloadBlob('moving-d30-flow.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer);
-    setFeedback('엑셀 실행표를 만들었습니다');
+    setFeedback(`${FLOW_EXPORT_LABELS.sheetFile} 완료`);
   }
 
   function isDemoLoggedIn() {
@@ -523,7 +524,7 @@ export function MovingD30Restart() {
           <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
             <h2 className="text-lg font-bold">내 도구로 가져가기</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              수정한 일정 기준으로 캘린더, 체크리스트, 엑셀, FlowMe 저장을 선택합니다.
+              수정한 일정 기준으로 캘린더 파일, 체크리스트, 시트, FlowMe 저장을 선택합니다.
             </p>
             <div className="mt-4 grid gap-2">
               <button
@@ -531,21 +532,21 @@ export function MovingD30Restart() {
                 onClick={downloadCalendar}
                 className="min-h-12 rounded-2xl bg-blue-600 px-4 text-sm font-bold text-white"
               >
-                캘린더에 넣기
+                {FLOW_EXPORT_LABELS.calendarFile}
               </button>
               <button
                 type="button"
                 onClick={copyChecklist}
                 className="min-h-11 rounded-2xl bg-slate-100 px-4 text-sm font-bold text-slate-700"
               >
-                체크리스트 복사
+                {FLOW_EXPORT_LABELS.checklistCopy}
               </button>
               <button
                 type="button"
                 onClick={() => void downloadSheet()}
                 className="min-h-11 rounded-2xl bg-slate-100 px-4 text-sm font-bold text-slate-700"
               >
-                엑셀 실행표
+                {FLOW_EXPORT_LABELS.sheetFile}
               </button>
               <button
                 type="button"
@@ -707,21 +708,21 @@ export function MovingD30Restart() {
             onClick={downloadCalendar}
             className="min-h-11 rounded-2xl bg-blue-600 px-4 text-sm font-bold text-white"
           >
-            캘린더에 넣기
+            {FLOW_EXPORT_LABELS.calendarFile}
           </button>
           <button
             type="button"
             onClick={() => void downloadSheet()}
             className="min-h-11 rounded-2xl bg-slate-100 px-3 text-sm font-bold text-slate-700"
           >
-            엑셀
+            {FLOW_EXPORT_LABELS.sheetFile}
           </button>
           <button
             type="button"
             onClick={copyChecklist}
             className="min-h-11 rounded-2xl bg-slate-100 px-3 text-sm font-bold text-slate-700"
           >
-            복사
+            {FLOW_EXPORT_LABELS.checklistCopy}
           </button>
         </div>
       </div>
