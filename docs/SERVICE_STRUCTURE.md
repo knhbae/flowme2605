@@ -112,14 +112,14 @@ Use this as the next product-route baseline until user evidence reopens it.
 - Promote `캘린더` to a global primary tab because saved dated Steps are a core return path, not only a nested management view.
 - Make `/calendar` schedule-first and make `/my` feel less like inventory by default: `/my` lands on `오늘`, uses `전체` as the saved-content manager, and does not repeat a local `캘린더` tab.
 - After a user saves dated content, route them to the first actionable item inside the normal My Flow shell. The post-save banner should be a confirmation/router only; the actual Step detail opens in the normal Today or Flow surface. The global `캘린더` tab is the clear path for full dated schedules, and it should default to the nearest saved dated Step instead of an unrelated empty date when saved rows are available.
-- Hide internal hierarchy words from normal discovery copy. `Flow Map`, `Step`, and `Item` can exist in source contracts, creator tools, tests, and reports, but user-facing discovery should say `큰 흐름`, `항목`, `일정`, `체크`, or `진도표` when that is enough.
+- Hide internal hierarchy words from normal discovery copy. `Flow Map`, `Step`, and `Item` can exist in source contracts, creator tools, tests, and reports, but user-facing discovery should say `콘텐츠`, `항목`, `일정`, `체크`, or `진도표` when that is enough. User-route regression scans cover `/`, `/flows`, `/flow-maps/*`, `/f/*`, `/my`, and `/calendar`; internal status words such as demo/review/audit/source-backed/sourceTrace/readiness and candidate-state labels stay in creator or review routes.
 - Home should explain the service and show one representative starting point plus a small number of secondary starts. `/flows` owns catalog browsing.
 - Reopen the 4-tab decision only if observed users treat `캘린더` as redundant with `/my`, or if dated saved content remains too sparse for a global schedule entry.
 
 ### Creator Publish Gate v1 Baseline
 
 - `/flow-maps/[map]/creator` is a creator/review surface. It may expose source-row-to-`Step`/`Item` contract language because creators need to verify the conversion.
-- `/flow-maps/[map]`, `/flows`, `/`, and `/my` are user-facing surfaces. They should prefer user vocabulary such as `콘텐츠`, `묶음`, `항목`, `할 일`, `일정`, `체크`, `진도표`, and `전체 저장하고 시작`.
+- `/flow-maps/[map]`, `/flows`, `/`, `/calendar`, and `/my` are user-facing surfaces. They should prefer user vocabulary such as `콘텐츠`, `저장한 콘텐츠`, `항목`, `할 일`, `일정`, `체크`, `진도표`, and `저장하고 시작`.
 - Creator preview links for the saved result should point to a map-specific My Flow preview, such as `/my?demo=source-backed&savedMap=middle-school-math-1`, instead of a generic source-backed demo.
 - Public and My Flow links should say `저장 전 보기`, `전체 보기`, `바로 시작`, or destination-specific labels, not `지도 보기`, unless the user explicitly needs map structure language.
 - Public Flow detail should not expose operation or migration labels such as `새 실행모델로 전환 중`; explain the saved outcome in user terms such as schedule, checklist, memo, and source instead.

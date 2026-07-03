@@ -13,6 +13,19 @@ const userSurfaceInternalTerms = [
   /sourceTrace/,
   /partial_draft/,
   /source_import_required/,
+  /\bFlow Map\b/,
+  /Flow\s+일정/,
+  /지도\s+일정/,
+  /지도\s+루틴/,
+  /\bbundle\b/i,
+  /\breadiness\b/i,
+  /대표\s*후보/,
+  /샘플\s*후보/,
+  /보류\s*후보/,
+  /삭제\s*후보/,
+  /대표\s*노출/,
+  /내부\s*검토/,
+  /검토\s*상태/,
   /\bStep\b/,
   /\bItem\b/,
 ];
@@ -159,7 +172,8 @@ test('curated source Flow Map stays readable at 390px with step memo and source 
   await page.goto('/flow-maps/moving-map');
 
   const publicMap = page.getByTestId('flow-map-public');
-  await expect(publicMap).toContainText('5개 할 일 · 8개 체크');
+  await expect(publicMap).toContainText('할 일 5개');
+  await expect(publicMap).toContainText('체크리스트');
   await expect(publicMap).not.toContainText('묶음');
   await expect(publicMap.getByRole('link', { name: '바로 시작' })).toHaveAttribute('href', '/f/moving-dday');
   await expect(publicMap.getByTestId('flow-map-public-step-items').first()).toContainText('이사/청소와 위탁 예약하기');
@@ -328,6 +342,41 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await page.getByTestId('public-flow-save-actions').getByRole('link', { name: '내 Flow에서 보기' }).click();
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
   await expect(page.getByTestId('my-flow-now-section')).toContainText('전세계약 전 서류 체크 Flow');
+});
+
+test('main user routes keep internal operation labels off the visible surface', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  for (const route of [
+    '/',
+    '/flows',
+    '/flow-maps/moving-d30',
+    '/flow-maps/middle-school-math-1',
+    '/f/jeonse-contract-precheck-docs',
+    '/my',
+    '/calendar',
+  ]) {
+    await page.goto(route);
+    await expectNoInternalUserSurfaceCopy(page.locator('body'));
+  }
+
+  await page.goto('/flow-maps/moving-d30');
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
+  await page.getByTestId('flow-map-anchor-input').fill('2026-07-22');
+  await page.getByTestId('flow-map-save-all-mobile').click();
+  await expect(page).toHaveURL('/my?savedMap=moving-d30');
+  await expectNoInternalUserSurfaceCopy(page.locator('body'));
+
+  await page.goto('/calendar');
+  await expectNoInternalUserSurfaceCopy(page.locator('body'));
+  const selectedDateGroup = page.getByTestId('my-flow-selected-date-group').first();
+  await expect(selectedDateGroup).toBeVisible();
+  await expect(selectedDateGroup).not.toContainText(/Flow\s+일정|지도\s+일정|지도\s+루틴/);
+
+  await page.goto('/flow-maps/middle-school-math-1/creator');
+  const creatorMap = page.getByTestId('flow-map-creator');
+  await expect(creatorMap).toContainText('사용자에게 저장될 Step');
 });
 
 test('flow card title opens the public execution page', async ({ page }) => {

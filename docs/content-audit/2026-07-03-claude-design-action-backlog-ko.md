@@ -57,6 +57,7 @@ Claude Design 리뷰의 결론은 새 기능 추가가 아니라 위계 압축�
 - 2026-07-03: P1-04를 처리했다. `/flow-maps/[map]` hero를 제목/결과 약속/결과 칩/입력/먼저 할 일 중심으로 압축하고, `저장되는 결과물` 전폭 카드 3장은 제거했다. 390px 확인 결과 `moving-d30`, `middle-school-math-1`, `moving-map` 모두 첫 할 일이 첫 뷰포트 안에 있고 가로 overflow 0건이었다. targeted Playwright source-backed map subset 통과.
 - 2026-07-03: P1-05를 처리했다. `/my` Today의 첫 슬롯을 요약 카드보다 위로 올리고 실행 후보를 오늘, 밀린, 다음, 날짜 없는 첫 항목 순으로 정렬했다. 빈 상태 문구는 `남은 할 일이 없습니다`가 아니라 보조 요약으로 낮췄고, 날짜 없는 진도형 콘텐츠는 `먼저 할 일`로 표시한다. 390px 확인 결과 `moving-d30-basic`은 실행 슬롯 top 295px, 요약 top 535px, overflow 0건이고, `middle-school-math-1` 저장 직후는 `먼저 할 일` 카드가 보였다.
 - 2026-07-03: P1-06을 처리했다. `/calendar` 기본 선택은 오늘 일정이 없을 때 가장 가까운 미래 일정일, 미래가 없으면 가장 가까운 밀린 일정일을 선택한다. 모바일에서는 선택일 agenda를 월간 달력보다 먼저 보여주고, 달력 셀은 긴 제목 대신 dot/count 중심으로 낮췄다. 390px 확인 결과 미래 일정 anchor는 agenda top 163px, calendar grid top 745px, 과거 일정만 있는 상태는 agenda top 163px, calendar grid top 573px, 가로 overflow 0건이었다. targeted Playwright calendar subset 통과.
+- 2026-07-03: P1-07을 처리했다. 일반 사용자 라우트(`/`, `/flows`, `/flow-maps/*`, `/f/*`, `/my`, `/calendar`) 금지어 스캔을 보강해 `Flow Map`, `Flow 일정`, `지도 일정`, demo/review/audit/source-backed/sourceTrace/Step/Item 계열 문구가 보이지 않게 고정했다. `후보`는 `견적 후보` 같은 실제 사용자 행동을 막지 않도록 대표/샘플/보류/삭제 후보 같은 내부 상태 패턴만 잡는다. `/calendar`의 `전체 Flow 일정`, `저장한 Flow의 날짜...`, 선택일 그룹 `지도 일정`/`Flow 일정`은 `전체 일정`, `저장한 콘텐츠`, `저장한 일정`/`일정`으로 낮췄다. targeted Playwright user-route internal-copy scan 통과.
 
 ## P1 - P0 후 이어서 해결
 
@@ -68,7 +69,7 @@ Claude Design 리뷰의 결론은 새 기능 추가가 아니라 위계 압축�
 | P1-04 | Flow Map 상세 hero | 완료 - `저장되는 결과물` 카드 3장을 인라인 칩으로 낮추고 입력/저장 동선을 압축했다. |
 | P1-05 | My Flow Today | 완료 - 첫 실행 슬롯을 요약보다 위로 올리고 오늘/밀린/다음/날짜 없는 첫 항목 순으로 정렬했다. |
 | P1-06 | 캘린더 | 완료 - 가장 가까운 일정일을 기본 선택하고 모바일에서 선택일 agenda를 먼저 보이며, 셀은 dot/count 중심으로 낮췄다. |
-| P1-07 | 사용자/내부 문구 분리 | demo, 검수, 후보, review/audit 문구가 사용자 라우트에 나오지 않게 회귀 테스트를 추가한다. |
+| P1-07 | 사용자/내부 문구 분리 | 완료 - 사용자 라우트 금지어 스캔을 보강하고 캘린더/My Flow의 구조형 라벨을 사용자 일정 언어로 낮췄다. |
 
 ## P2 - 일관성 정리
 

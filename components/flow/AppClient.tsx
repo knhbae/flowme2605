@@ -3188,8 +3188,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         key,
         kind,
         label: savedMap
-          ? (kind === 'routine' ? '지도 루틴' : '지도 일정')
-          : (kind === 'routine' ? '루틴 Flow' : 'Flow 일정'),
+          ? (kind === 'routine' ? '저장한 루틴' : '저장한 일정')
+          : (kind === 'routine' ? '루틴' : '일정'),
         title: savedMap?.title ?? getMyFlowExecutionFlowTitle(row.flow.progress.title),
         rows: [row],
         ...(savedMap ? { savedMap } : {}),
@@ -5985,7 +5985,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           <h1 className={`${isCalendarSurface ? 'mt-0.5 text-2xl' : 'mt-1 text-2xl sm:text-3xl'} font-semibold tracking-tight`}>{isCalendarSurface ? '캘린더' : '내 Flow'}</h1>
           <p className={`${isCalendarSurface ? 'hidden sm:block' : 'sm:mt-2 sm:text-base'} mt-1 text-sm text-gray-600`}>
             {isCalendarSurface
-              ? '저장한 Flow의 날짜가 있는 항목을 캘린더에서 바로 확인합니다.'
+              ? '저장한 콘텐츠의 날짜가 있는 항목을 바로 확인합니다.'
               : '오늘, 다음, 밀린 할 일을 먼저 봅니다.'}
           </p>
         </div>
@@ -6007,7 +6007,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
             {isCalendarSurface
-              ? '날짜가 있는 Flow를 저장하면 이 캘린더에 일정이 표시됩니다.'
+              ? '날짜가 있는 콘텐츠를 저장하면 이 캘린더에 일정이 표시됩니다.'
               : '저장한 Flow가 생기면 오늘 할 일, 일정, Flow 목록을 여기에서 이어서 봅니다.'}
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
@@ -6537,7 +6537,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   <div className="min-w-0">
                     <p className="text-xs font-semibold text-blue-700">캘린더 기준</p>
                     <h3 className="mt-1 truncate text-lg font-semibold text-slate-950">
-                      {selectedSavedFlowSlug === 'all' ? '전체 Flow 일정' : visibleSavedFlows[0]?.progress.title}
+                      {selectedSavedFlowSlug === 'all' ? '전체 일정' : visibleSavedFlows[0]?.progress.title}
                     </h3>
                   </div>
                   <div className="flex flex-wrap gap-2 text-xs font-semibold">
@@ -6931,7 +6931,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </div>
             ) : (
               <div className="rounded-lg border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-600">
-                <h3 className="text-lg font-semibold text-slate-950">저장된 루틴 Flow가 없습니다</h3>
+                <h3 className="text-lg font-semibold text-slate-950">저장된 루틴이 없습니다</h3>
                 <p className="mt-2">반복 흐름을 저장하면 요일별 루틴과 완료 여부가 여기에 모입니다.</p>
               </div>
             )
