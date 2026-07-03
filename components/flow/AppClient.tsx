@@ -450,8 +450,7 @@ function matchesCatalogIntent(searchText: string, intent: CatalogIntent): boolea
 }
 
 function getCatalogScaleText(counts: { flows?: number; steps: number; items: number }): string {
-  const flowText = counts.flows && counts.flows > 1 ? `${counts.flows}개 묶음 · ` : '';
-  return `${flowText}${counts.steps}개 할 일 · ${counts.items}개 체크`;
+  return `${counts.steps}개 할 일 · ${counts.items}개 체크`;
 }
 
 function getCatalogFirstTask(previewSteps: string[], fallback: string): string {
@@ -484,7 +483,11 @@ function getCatalogReadinessLabel(status: string): string {
 }
 
 function getCatalogSummaryText(summary: string): string {
-  return summary.replace(/^(자료 보강 후 시작|일부 보강 후 시작|바로 시작 가능)\.\s*/, '');
+  return summary
+    .replace(/^(자료 보강 후 시작|일부 보강 후 시작|바로 시작 가능)\.\s*/, '')
+    .replace(/\s*\d+개 묶음,\s*/g, ' ')
+    .replace(/\s*\d+개 묶음 ·\s*/g, ' ')
+    .replace(/\s*\d+개 묶음\s*/g, ' ');
 }
 
 function isJeonsePrecheckFlow(bundle: FlowBundle): boolean {
@@ -1268,7 +1271,7 @@ function StatCard({ label, value, compact = false }: { label: string; value: str
 function getSourceStatusLabel(bundle: FlowBundle) {
   if (bundle.flow.source_status === 'real') return '실제 원본';
   if (bundle.flow.source_status === 'preview') return '샘플 후보';
-  if (bundle.flow.source_status === 'needs_review') return '검수 필요';
+  if (bundle.flow.source_status === 'needs_review') return '원문 확인';
   return bundle.flow.source_url ? '출처 연결' : '초안';
 }
 
@@ -1556,7 +1559,7 @@ export function HomeLanding() {
               {[
                 { label: '입력', value: primaryMap.input },
                 { label: '저장', value: primaryMap.artifact },
-                { label: '결과', value: `${primaryMap.flowCount}개 묶음` },
+                { label: '결과', value: `${primaryMap.counts.steps}개 할 일` },
               ].map((signal) => (
                 <div key={signal.label} className="rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-2.5 py-2">
                   <p className="text-[11px] font-semibold text-[#6E6B64]">{signal.label}</p>
@@ -2146,7 +2149,7 @@ function getMyFlowContentReadiness(flow: MySavedFlow): MyFlowContentReadiness {
   const sourceBacked = flow.progress.slug.startsWith('source-backed-') || Boolean(flow.bundle.flow.tags?.includes('source-backed'));
   if (flow.savedMap || sourceBacked || sourceStatus === 'real' || serviceCatalogFlowSlugs.has(flow.progress.slug)) return { kind: 'ready', label: '실행 가능' };
   if (sourceStatus === 'preview') return { kind: 'preview', label: '원문 확인', groupLabel: '확인 후 실행' };
-  if (sourceStatus === 'needs_review') return { kind: 'review', label: '정리 필요', groupLabel: '확인 후 실행' };
+  if (sourceStatus === 'needs_review') return { kind: 'review', label: '원문 확인', groupLabel: '확인 후 실행' };
   return { kind: 'legacy', label: '예전 저장', groupLabel: '예전 저장 콘텐츠' };
 }
 
@@ -4180,7 +4183,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const color = categoryColors[flow.bundle.flow.category] ?? '#2563EB';
     const isPrimary = options.tone === 'primary';
     const flowContext = flow.savedMap
-      ? `${flow.savedMap.title} 묶음`
+      ? flow.savedMap.title
       : flow.bundle.flow.structure_type === 'routine'
         ? '반복 흐름'
         : flow.rows.some((candidate) => Boolean(candidate.date))
@@ -5328,7 +5331,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           : `다음 일정 ${postSaveContinuationRow.date}`
       : '';
     const postSaveSummary = [
-      `${postSaveFlows.length}개 묶음`,
       `${postSaveStepCount}개 할 일`,
       postSaveContinuationDate,
     ].filter(Boolean).join(' · ');
@@ -5439,7 +5441,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const renderCompactFlowStructureRow = (flow: MySavedFlow) => {
     const nextRow = getSavedFlowNextRow(flow);
     const structureLabel = flow.savedMap
-      ? `${flow.savedMap.title} 묶음`
+      ? flow.savedMap.title
       : flow.bundle.flow.structure_type === 'routine'
         ? '반복 흐름'
         : flow.rows.some((row) => Boolean(row.date))
@@ -5618,7 +5620,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             ) : null}
             {flow.savedMap ? (
               <p data-testid="my-flow-map-context" className="mt-2 w-fit rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">
-                묶음 · {flow.savedMap.title}
+                저장한 콘텐츠 · {flow.savedMap.title}
               </p>
             ) : null}
             {anchorDisplay ? (
@@ -5706,7 +5708,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           >
             <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className={`text-xs font-semibold ${isMapGroup ? 'text-blue-700' : 'text-slate-500'}`}>{isMapGroup ? '저장한 묶음' : group.label}</p>
+                <p className={`text-xs font-semibold ${isMapGroup ? 'text-blue-700' : 'text-slate-500'}`}>{isMapGroup ? '저장한 콘텐츠' : group.label}</p>
                 <h4 className="mt-1 text-base font-semibold text-slate-950">{group.title}</h4>
                 <p className="mt-1 text-xs font-semibold text-slate-600">{group.flows.length}개 목록 · {done}/{total} 완료</p>
               </div>
@@ -5912,7 +5914,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         <section data-testid="my-flow-review-section" className="rounded-lg border border-amber-200 bg-amber-50/60 p-3">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold text-amber-800">정리 필요</p>
+              <p className="text-xs font-semibold text-amber-800">원문 확인</p>
               <h4 className="text-base font-semibold text-amber-950">확인 후 실행할 콘텐츠</h4>
             </div>
             <span className="rounded-md bg-white px-2 py-1 text-xs font-semibold text-amber-800 ring-1 ring-amber-200">{flowListSupportFlows.length}개</span>

@@ -44,13 +44,14 @@ Claude Design 리뷰의 결론은 새 기능 추가가 아니라 위계 압축�
 | P0-02 | 완료 | 저장 직후 My Flow | 배너는 먼저 할 일을 열라고 하는데 워크스페이스는 남은 일이 없다고 말한다. | post-save 진입 시 첫 슬롯을 방금 저장한 콘텐츠의 먼저 할 일로 맞춘다. 날짜 없는 콘텐츠도 첫 항목 fallback을 보여준다. | 저장 직후 배너와 첫 카드가 같은 항목을 가리키고, `남은 할 일이 없습니다`가 먼저 나오지 않는다. | source-backed 저장 e2e 통과 |
 | P0-03 | 완료 | Flow Map 상세 저장 | 필수 입력은 상단, 저장 CTA는 하단 sticky라 미입력 시 feedback이 끊긴다. | 미입력 sticky 버튼은 `이사일 입력`; 클릭 시 입력으로 스크롤/포커스/하이라이트. 입력 후 `저장하고 시작`. | 미입력 클릭 후 input이 포커스되고, 입력 후 저장이 `/my?savedMap=...`로 이동한다. | targeted e2e 통과 |
 | P0-04 | 완료 | 날짜 copy | ISO 날짜와 `기준 할 일`이 사용자 제목처럼 노출된다. | 사용자 날짜 포맷터를 두고 `M월 D일 (요일)`, `오늘/다음/밀린 할 일`로 통일한다. | 사용자 화면에서 `YYYY-MM-DD 기준 할 일` 같은 제목이 사라진다. | targeted e2e 통과 |
-| P0-05 | 다음 | 내부 계층 언어 | `묶음`, `~Flow`, `검수 필요`, demo 문구가 사용자 표면에 남는다. | 사용자 표면 카운트는 `할 일 N개` 중심으로 낮추고, demo/readiness 배지는 일반 경로에서 숨긴다. | 사용자 라우트에서 금지어 스캔 0건을 목표로 한다. 단, 브랜드/탭명 `Flow`는 별도 판단한다. | e2e text scan |
+| P0-05 | 완료 | 내부 계층 언어 | `묶음`, `~Flow`, `검수 필요`, demo 문구가 사용자 표면에 남는다. | 사용자 표면 카운트는 `할 일 N개` 중심으로 낮추고, demo/readiness 배지는 일반 경로에서 숨긴다. | 사용자 라우트에서 금지어 스캔 0건을 목표로 한다. 단, 브랜드/탭명 `Flow`는 별도 판단한다. | targeted e2e text scan 통과 |
 
 ### 진행 메모
 
 - 2026-07-03: P0-01, P0-03을 먼저 처리했다. `npm run build`, `npm.cmd run docs:check`, targeted Playwright `home presents|product IA v2` 통과.
 - 2026-07-03: P0-02를 처리했다. post-save 진입 중 My Flow 첫 슬롯이 방금 저장한 map의 먼저 할 일을 우선 표시하고, 날짜 없는 콘텐츠는 fallback 항목을 빈 상태보다 먼저 보여준다. targeted Playwright `product IA v2` 통과.
 - 2026-07-03: P0-04를 처리했다. My Flow Today/Now와 캘린더 선택일 제목은 상태/사용자 날짜 포맷 중심으로 바꾸고, 내부 ISO 날짜는 data/input 값으로만 유지했다. targeted Playwright 날짜 copy subset 통과.
+- 2026-07-03: P0-05를 처리했다. 일반 사용자 라우트의 `묶음`, `검수 필요`, `정리 필요`, demo/source-backed/review/audit/Step/Item 노출을 금지어 스캔으로 고정하고, catalog/public map/post-save/My Flow 표면 카운트를 `할 일/체크/콘텐츠` 중심으로 낮췄다. targeted Playwright user-surface text scan 및 source-backed 저장 subset 통과.
 
 ## P1 - P0 후 이어서 해결
 

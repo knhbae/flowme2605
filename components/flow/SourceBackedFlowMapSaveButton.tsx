@@ -95,7 +95,7 @@ export function SourceBackedFlowMapSaveButton({ mapId, savedFlows, setupInput }:
       <div className="fixed inset-x-3 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-30 rounded-2xl border border-[#E7E4DD] bg-white/95 p-2 shadow-[0_12px_36px_rgba(27,26,23,0.14)] backdrop-blur sm:hidden" data-testid="flow-map-mobile-sticky-save">
         <div className="flex items-center gap-2">
           <p className="min-w-0 flex-1 px-1 text-xs font-semibold leading-5 text-slate-600">
-            {needsAnchor ? (anchor ? `${setupInput?.label} 입력됨` : `${setupInput?.label} 필요`) : `${savedFlows.length}개 묶음 저장`}
+            {needsAnchor ? (anchor ? `${setupInput?.label} 입력됨` : `${setupInput?.label} 필요`) : savedFlows.length > 1 ? `${savedFlows.length}개 콘텐츠 저장` : '콘텐츠 저장'}
           </p>
           <button className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-[#3654FF] px-4 py-2 text-sm font-semibold text-white" data-testid="flow-map-save-all-mobile" type="button" onClick={saveMap}>
             {mobileSaveButtonLabel}

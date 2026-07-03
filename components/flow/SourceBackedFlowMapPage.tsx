@@ -18,6 +18,13 @@ const destinationLabel: Record<string, string> = {
   todo: '할 일',
 };
 
+function getUserFacingMapSummary(summary: string): string {
+  return summary
+    .replace(/\s*\d+개 묶음,\s*/g, ' ')
+    .replace(/\s*\d+개 묶음 ·\s*/g, ' ')
+    .replace(/\s*\d+개 묶음\s*/g, ' ');
+}
+
 function NotFoundMap() {
   return (
     <main className="min-h-screen bg-[#FAFAF8] px-5 py-8">
@@ -48,14 +55,14 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
       <section className="rounded-2xl border border-[#E7E4DD] bg-white p-5 sm:p-6">
         <p className="text-sm font-semibold text-[#3654FF]">저장 전 보기</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{publicSurface.title}</h1>
-        <p className="mt-3 max-w-2xl break-keep text-base leading-7 text-[#6E6B64]">{publicSurface.summary}</p>
+        <p className="mt-3 max-w-2xl break-keep text-base leading-7 text-[#6E6B64]">{getUserFacingMapSummary(publicSurface.summary)}</p>
         {publicSurface.userFacingStatus || publicSurface.categoryLabel || publicSurface.counts ? (
           <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
             {publicSurface.categoryLabel ? <span className="rounded-full bg-[#F1F0EC] px-2.5 py-1 text-[#1B1A17]">{publicSurface.categoryLabel}</span> : null}
             {publicSurface.userFacingStatus ? <span className="rounded-full bg-white px-2.5 py-1 text-[#6E6B64] ring-1 ring-[#E7E4DD]">{publicSurface.userFacingStatus}</span> : null}
             {publicSurface.counts ? (
               <span className="rounded-full bg-[#FAFAF8] px-2.5 py-1 text-[#6E6B64]">
-                {publicSurface.counts.flows}개 묶음 · {publicSurface.counts.steps}개 할 일 · {publicSurface.counts.items}개 체크
+                {publicSurface.counts.steps}개 할 일 · {publicSurface.counts.items}개 체크
               </span>
             ) : null}
           </div>
