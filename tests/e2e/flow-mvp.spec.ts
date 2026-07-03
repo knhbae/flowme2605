@@ -298,7 +298,7 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(page.getByTestId('my-flow-today-summary').locator('h3')).not.toContainText(/\d{4}-\d{2}-\d{2}/);
   await expect(page.getByTestId('my-flow-today-summary').locator('h3')).not.toContainText('기준 할 일');
   await expect(page.getByTestId('my-flow-now-section').locator('h3')).not.toContainText(/\d{4}-\d{2}-\d{2}/);
-  await expect(page.getByTestId('my-flow-now-section').locator('h3')).toContainText('다음 할 일');
+  await expect(page.getByTestId('my-flow-now-section').locator('h3')).toContainText('밀린 할 일');
   await movingPostSave.getByTestId('my-flow-post-save-view-flow').click();
   await expect(page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="source-backed-moving-d30"]')).toBeVisible();
 
@@ -959,6 +959,38 @@ test('my flow management uses today and flow locally while calendar is global', 
   await expect(page.getByTestId('my-flow-overview-card')).toContainText('1/24');
 });
 
+test('my flow today puts the executable slot before the summary on mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.clock.install({ time: new Date('2026-07-03T09:00:00+09:00') });
+  await page.addInitScript(() => {
+    const savedAt = '2026-07-03T00:00:00.000Z';
+    localStorage.setItem('flow:saved:moving-d30-basic', JSON.stringify({
+      slug: 'moving-d30-basic',
+      savedAt,
+      selectedArtifactMode: 'calendar',
+      anchor: '2026-07-22',
+    }));
+    localStorage.setItem('flow:moving-d30-basic:anchorDate', JSON.stringify({
+      mode: 'custom',
+      anchor: '2026-07-22',
+    }));
+  });
+
+  await page.goto('/my');
+
+  const nowSection = page.getByTestId('my-flow-now-section');
+  const summary = page.getByTestId('my-flow-today-summary');
+  await expect(nowSection).toBeVisible();
+  await expect(summary).toBeVisible();
+  await expect(nowSection.locator('h3')).toContainText('밀린 할 일');
+  await expect(nowSection).not.toContainText('남은 할 일이 없습니다');
+  await expect(summary).not.toContainText('남은 할 일이 없습니다');
+  await expect(nowSection.getByTestId('my-flow-mobile-continuation-card').first()).toHaveAttribute('data-flow-slug', 'moving-d30-basic');
+  const nowBox = await nowSection.boundingBox();
+  const summaryBox = await summary.boundingBox();
+  expect(nowBox?.y ?? 0).toBeLessThan(summaryBox?.y ?? 0);
+});
+
 test('my flow filters narrow saved calendar checklist and routine management', async ({ page }) => {
   await page.addInitScript(() => {
     const savedAt = '2026-05-27T00:00:00.000Z';
@@ -1009,7 +1041,7 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(page.getByTestId('my-flow-today-summary').locator('h3')).toContainText('오늘 할 일');
   await expect(page.getByTestId('my-flow-today-summary').getByTestId('my-flow-today-date-meta')).toContainText('5월 28일');
   await expect(page.getByTestId('my-flow-today-summary')).toContainText('실제 오늘과 다른 고정 기준일');
-  await expect(page.getByTestId('my-flow-today-summary')).toContainText('지난 일정 2개는 접어서 정리합니다.');
+  await expect(page.getByTestId('my-flow-today-summary')).toContainText('밀린 일정 2개가 있습니다. 첫 항목부터 정리합니다.');
   await expect(page.getByTestId('my-flow-today-list')).toHaveCount(0);
   const overdueSectionBox = await page.getByTestId('my-flow-overdue-list').boundingBox();
   const completedSectionBox = await page.getByTestId('my-flow-today-completed-list').boundingBox();
@@ -1438,6 +1470,8 @@ test('source-backed single progress map opens step detail on mobile My Flow', as
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
   await expect(page.getByTestId('my-flow-post-save-view-flow')).toBeVisible();
   await expect(page.getByTestId('my-flow-view-flow')).toBeVisible();
+  await expect(page.getByTestId('my-flow-now-section').locator('h3')).toContainText('먼저 할 일');
+  await expect(page.getByTestId('my-flow-now-section').locator('h3')).not.toContainText('밀린 할 일');
 
   await page.getByTestId('my-flow-post-save-open-first').click();
   await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
@@ -1481,14 +1515,14 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
   await expect(postSavePanel).toContainText('원룸 이사 D-30 일정 지도');
   await expect(postSavePanel).toContainText('5개 할 일');
   await expect(postSavePanel).not.toContainText('묶음');
-  await expect(postSavePanel).toContainText('입주청소와 대형폐기물 일정 확인');
+  await expect(postSavePanel).toContainText('이사 방식과 견적 후보 정하기');
   await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(0);
   await expect(postSavePanel.getByTestId('my-flow-post-save-view-all')).toHaveCount(0);
 
   await postSavePanel.getByTestId('my-flow-post-save-open-first').click();
   const nowSection = page.getByTestId('my-flow-now-section');
   await expect(nowSection.getByTestId('my-flow-inline-detail')).toContainText('확인 항목');
-  await expect(nowSection.getByTestId('my-flow-inline-detail')).toContainText('입주청소가 필요하면 예약 가능일을 확인합니다.');
+  await expect(nowSection.getByTestId('my-flow-inline-detail')).toContainText('견적 후보 2-3곳을 열고 연락처를 메모합니다.');
 
   await page.getByTestId('platform-mobile-tabs').getByRole('link', { name: '캘린더' }).click();
   const calendarCard = page.getByTestId('my-flow-calendar-card');
@@ -2231,7 +2265,7 @@ test('my flow mobile keeps single saved flow in the same today and flow shell', 
   await page.goto('/my');
 
   await expect(page.getByText('오늘, 다음, 밀린 할 일을 먼저 봅니다.')).toBeVisible();
-  await expect(page.getByTestId('my-flow-now-section')).toContainText('지금 이어하기');
+  await expect(page.getByTestId('my-flow-now-section')).toContainText('밀린 할 일');
   await expect(page.getByTestId('my-flow-single-summary')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-single-continue')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-single-show-flow')).toHaveCount(0);

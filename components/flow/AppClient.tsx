@@ -3049,15 +3049,21 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return { ...row, flow };
     })
     .filter((row): row is MyFlowCalendarRow => Boolean(row));
+  const myFlowFallbackFutureRows = myFlowFallbackNextRows.filter((row) => row.date && row.date > myFlowTodayDate);
+  const myFlowFallbackUndatedRows = myFlowFallbackNextRows.filter((row) => !row.date);
+  const myFlowFallbackPastRows = myFlowFallbackNextRows.filter((row) => row.date && row.date < myFlowTodayDate);
+  const myFlowExecutionCandidateRows = [
+    ...todayOpenRows,
+    ...overdueRows,
+    ...upcomingRows,
+    ...routineNextRows,
+    ...myFlowFallbackFutureRows,
+    ...myFlowFallbackUndatedRows,
+    ...myFlowFallbackPastRows,
+  ];
   const postSaveFlowSlugSet = new Set(postSaveFlows.map((flow) => flow.progress.slug));
   const postSaveContinuationRows = showPostSavePanel
-    ? [
-        ...todayOpenRows,
-        ...upcomingRows,
-        ...routineNextRows,
-        ...myFlowFallbackNextRows,
-        ...overdueRows,
-      ].reduce<MyFlowCalendarRow[]>((rows, row) => {
+    ? myFlowExecutionCandidateRows.reduce<MyFlowCalendarRow[]>((rows, row) => {
         if (!postSaveFlowSlugSet.has(row.flow.progress.slug)) return rows;
         const key = getMyFlowRowInstanceKey(row);
         if (rows.some((existing) => getMyFlowRowInstanceKey(existing) === key)) return rows;
@@ -3070,19 +3076,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     todayOpenCount > 0
       ? '오늘 할 일을 먼저 처리하고, 전체 목록은 전체 탭에서 봅니다.'
       : overdueRows.length > 0
-        ? `오늘 남은 일은 없습니다. 지난 일정 ${overdueRows.length}개는 접어서 정리합니다.`
+        ? `밀린 일정 ${overdueRows.length}개가 있습니다. 첫 항목부터 정리합니다.`
         : upcomingRows.length > 0
-          ? '오늘 남은 일은 없습니다. 가장 가까운 다음 할 일부터 이어서 봅니다.'
+          ? '오늘 일정은 없고, 가장 가까운 다음 할 일을 보여줍니다.'
           : postSavePrimaryContinuationRow || myFlowFallbackNextRows.length > 0
-            ? '오늘 날짜에 걸린 일은 없습니다. 저장한 콘텐츠의 다음 항목을 먼저 보여줍니다.'
-            : '남은 할 일이 없습니다. 저장한 콘텐츠의 전체 목록을 확인하세요.';
+            ? '오늘 일정은 없고, 저장한 콘텐츠의 첫 할 일을 보여줍니다.'
+            : '지금 이어갈 항목은 없습니다. 전체 목록에서 저장한 콘텐츠를 확인하세요.';
   const myFlowContinuationRows = [
     ...postSaveContinuationRows,
-    ...todayOpenRows,
-    ...upcomingRows,
-    ...routineNextRows,
-    ...myFlowFallbackNextRows,
-    ...overdueRows,
+    ...myFlowExecutionCandidateRows,
   ].reduce<MyFlowCalendarRow[]>((rows, row) => {
     if (rows.some((existing) => getMyFlowRowInstanceKey(existing) === getMyFlowRowInstanceKey(row))) return rows;
     rows.push(row);
@@ -3091,32 +3093,49 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const myFlowPrimaryContinuationRow = myFlowContinuationRows[0] ?? null;
   const myFlowPrimaryContinuationKey = myFlowPrimaryContinuationRow ? getMyFlowRowInstanceKey(myFlowPrimaryContinuationRow) : '';
   const myFlowPrimaryContinuationIsToday = Boolean(myFlowPrimaryContinuationRow?.date && myFlowPrimaryContinuationRow.date === myFlowTodayDate);
+  const myFlowPrimaryContinuationIsOverdue = Boolean(myFlowPrimaryContinuationRow?.date && myFlowPrimaryContinuationRow.date < myFlowTodayDate);
   const myFlowPrimaryContinuationIsFuture = Boolean(myFlowPrimaryContinuationRow?.date && myFlowPrimaryContinuationRow.date > myFlowTodayDate);
-  const myFlowNowEyebrow = myFlowPrimaryContinuationIsToday ? '오늘 실행' : myFlowPrimaryContinuationIsFuture ? '다음 할 일' : '지금 이어하기';
+  const myFlowNowEyebrow = !myFlowPrimaryContinuationRow
+    ? '지금 이어하기'
+    : myFlowPrimaryContinuationIsToday
+      ? '오늘 실행'
+      : myFlowPrimaryContinuationIsOverdue
+        ? '밀린 할 일'
+        : myFlowPrimaryContinuationIsFuture
+          ? '다음 할 일'
+          : '먼저 할 일';
   const myFlowNowTitle = myFlowPrimaryContinuationRow
     ? myFlowPrimaryContinuationIsToday
       ? '오늘 할 일'
-      : myFlowPrimaryContinuationIsFuture
-        ? '다음 할 일'
-        : '밀린 할 일'
+      : myFlowPrimaryContinuationIsOverdue
+        ? '밀린 할 일'
+        : myFlowPrimaryContinuationIsFuture
+          ? '다음 할 일'
+          : '먼저 할 일'
     : '이어갈 할 일이 없습니다';
   const myFlowNowHelp = myFlowPrimaryContinuationRow
     ? myFlowPrimaryContinuationIsToday
       ? '체크할 항목만 열어 완료합니다. 전체 목록은 전체 탭에서 봅니다.'
-      : myFlowPrimaryContinuationIsFuture
-        ? '필요하면 열어서 체크와 메모를 확인합니다.'
-        : '밀린 할 일 중 먼저 정리할 항목입니다.'
+      : myFlowPrimaryContinuationIsOverdue
+        ? '밀린 할 일 중 먼저 정리할 항목입니다.'
+        : myFlowPrimaryContinuationIsFuture
+          ? '필요하면 열어서 체크와 메모를 확인합니다.'
+          : '날짜가 없어도 저장한 콘텐츠의 첫 항목부터 바로 열 수 있습니다.'
     : '저장한 콘텐츠의 전체 목록을 확인하거나 새 콘텐츠를 찾아보세요.';
   const myFlowPrimaryContinuationLabel = myFlowPrimaryContinuationIsToday
     ? '오늘 할 일'
-    : myFlowPrimaryContinuationIsFuture
-      ? '다음 할 일'
-      : '밀린 할 일';
+    : myFlowPrimaryContinuationIsOverdue
+      ? '밀린 할 일'
+      : myFlowPrimaryContinuationIsFuture
+        ? '다음 할 일'
+        : '먼저 할 일';
   const myFlowSecondaryContinuationRows = [
     ...todayOpenRows,
+    ...overdueRows,
     ...upcomingRows,
     ...routineNextRows,
-    ...myFlowFallbackNextRows,
+    ...myFlowFallbackFutureRows,
+    ...myFlowFallbackUndatedRows,
   ].reduce<MyFlowCalendarRow[]>((rows, row) => {
     const key = getMyFlowRowInstanceKey(row);
     if (key === myFlowPrimaryContinuationKey) return rows;
@@ -6114,6 +6133,28 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
               {savedView === 'today' ? (
                 <div className="mb-4 grid min-w-0 gap-4">
+                  <section data-testid="my-flow-now-section" className="grid min-w-0 gap-3 rounded-lg border border-blue-100 bg-white p-3 shadow-sm sm:p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-blue-700">{myFlowNowEyebrow}</p>
+                        <h3 className="mt-0.5 text-base font-semibold text-slate-950 sm:mt-1 sm:text-lg">
+                          {myFlowNowTitle}
+                        </h3>
+                        <p className="mt-1 text-xs text-slate-600 sm:text-sm">
+                          {myFlowNowHelp}
+                        </p>
+                      </div>
+                      {myFlowPrimaryContinuationRow ? (
+                        <span className="shrink-0 rounded-md bg-white px-2 py-1 text-xs font-semibold text-blue-700 ring-1 ring-blue-100">
+                          {myFlowPrimaryContinuationRow.date ? formatMyFlowDisplayDate(myFlowPrimaryContinuationRow.date) : '날짜 없음'}
+                        </span>
+                      ) : null}
+                    </div>
+                    {myFlowPrimaryContinuationRow ? (
+                      renderMobileContinuationFlowCard(myFlowPrimaryContinuationRow, { tone: 'primary', primaryLabel: myFlowPrimaryContinuationLabel })
+                    ) : null}
+                  </section>
+
                   <section data-testid="my-flow-today-summary" className="min-w-0 rounded-lg border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
                     <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                       <div>
@@ -6144,28 +6185,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         </div>
                       </div>
                     </div>
-                  </section>
-
-                  <section data-testid="my-flow-now-section" className="grid min-w-0 gap-3 rounded-lg border border-blue-100 bg-white p-3 shadow-sm sm:p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-sm font-semibold text-blue-700">{myFlowNowEyebrow}</p>
-                        <h3 className="mt-0.5 text-base font-semibold text-slate-950 sm:mt-1 sm:text-lg">
-                          {myFlowNowTitle}
-                        </h3>
-                        <p className="mt-1 text-xs text-slate-600 sm:text-sm">
-                          {myFlowNowHelp}
-                        </p>
-                      </div>
-                      {myFlowPrimaryContinuationRow ? (
-                        <span className="shrink-0 rounded-md bg-white px-2 py-1 text-xs font-semibold text-blue-700 ring-1 ring-blue-100">
-                          {myFlowPrimaryContinuationRow.date ? formatMyFlowDisplayDate(myFlowPrimaryContinuationRow.date) : '날짜 없음'}
-                        </span>
-                      ) : null}
-                    </div>
-                    {myFlowPrimaryContinuationRow ? (
-                      renderMobileContinuationFlowCard(myFlowPrimaryContinuationRow, { tone: 'primary', primaryLabel: myFlowPrimaryContinuationLabel })
-                    ) : null}
                   </section>
 
                   {showTodayOpenSection && !isMyFlowMobileViewport ? (
