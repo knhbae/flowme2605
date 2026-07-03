@@ -89,6 +89,15 @@ const mobileArtifactCtaSlugs = new Set(['moving-d30-basic', 'computer-skills-d30
 const mealCalendarOnlySlugs = new Set(['baby-food-menu-recipe']);
 const checkOnlyRoutineSlugs = new Set(['diet-habit-2week', 'real-thankyou-bubu-home-workout-starter', 'real-fitvely-diet-record-routine']);
 const maintenanceRoutineSlugs = new Set(['washer-tub-clean-monthly', 'monstera-care-routine']);
+const FLOWME_SURFACE_CARD_CLASS = 'rounded-2xl border border-[#E7E4DD] bg-white p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)]';
+const FLOWME_WORKBENCH_CARD_CLASS = `${FLOWME_SURFACE_CARD_CLASS} md:p-5`;
+const FLOWME_PANEL_CARD_CLASS = 'rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-4';
+const FLOWME_INNER_ROW_CLASS = 'rounded-xl border border-[#E7E4DD] bg-white px-3 py-2 text-sm shadow-[0_1px_0_rgba(27,26,23,0.03)]';
+const FLOWME_EYEBROW_CLASS = 'text-sm font-semibold text-[#3654FF]';
+const FLOWME_TITLE_CLASS = 'text-base font-semibold text-[#1B1A17]';
+const FLOWME_PROGRESS_CHIP_CLASS = 'rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 text-xs font-semibold text-[#6E6B64]';
+const FLOWME_BUTTON_PRIMARY_CLASS = 'rounded-xl bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8] disabled:bg-[#C9C6BE]';
+const FLOWME_BUTTON_SECONDARY_CLASS = 'rounded-xl border border-[#D8D5CD] bg-white px-3 py-2 text-sm font-semibold text-[#1B1A17] hover:border-[#3654FF]/40 hover:text-[#3654FF] disabled:border-[#E7E4DD] disabled:text-[#A7A39A]';
 
 export function ArtifactWorkbench({
   bundle,
@@ -109,14 +118,14 @@ export function ArtifactWorkbench({
   const isJeonsePrecheck = bundle.flow.slug === 'jeonse-contract-precheck-docs';
 
   return (
-    <section aria-label="Flow artifact workbench" className={isJeonsePrecheck ? 'my-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-5' : 'my-6 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-5'}>
+    <section aria-label="Flow artifact workbench" className={isJeonsePrecheck ? `my-4 ${FLOWME_WORKBENCH_CARD_CLASS}` : `my-6 ${FLOWME_WORKBENCH_CARD_CLASS}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-blue-700">{isJeonsePrecheck ? '계약 일정' : '내 실행판'}</p>
-          <h2 className={isJeonsePrecheck ? 'mt-1 text-xl font-bold tracking-normal text-slate-950 md:text-2xl' : 'mt-1 text-2xl font-bold tracking-normal text-slate-950'}>{surfaceTitle(plan.primarySurface, bundle)}</h2>
-          {isJeonsePrecheck ? null : <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">{surfaceDescription(plan.primarySurface, bundle)}</p>}
+          <p className={FLOWME_EYEBROW_CLASS}>{isJeonsePrecheck ? '계약 일정' : '내 실행판'}</p>
+          <h2 className={isJeonsePrecheck ? 'mt-1 text-xl font-bold tracking-normal text-[#1B1A17] md:text-2xl' : 'mt-1 text-2xl font-bold tracking-normal text-[#1B1A17]'}>{surfaceTitle(plan.primarySurface, bundle)}</h2>
+          {isJeonsePrecheck ? null : <p className="mt-2 max-w-2xl text-sm leading-6 text-[#6E6B64]">{surfaceDescription(plan.primarySurface, bundle)}</p>}
         </div>
-        <span className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
+        <span className={FLOWME_PROGRESS_CHIP_CLASS}>
           {done}/{total} 완료
         </span>
       </div>
@@ -200,28 +209,28 @@ function ArtifactExportButtons({ actions, kinds, labels = {}, mobileArtifactLabe
       {kinds.map((kind) => {
         if (kind === 'copy') {
           return (
-            <button key={kind} className="rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 disabled:bg-slate-300" disabled={disabled} title={disabledTitle} onClick={actions.onCopyText}>
+            <button key={kind} className={FLOWME_BUTTON_PRIMARY_CLASS} disabled={disabled} title={disabledTitle} onClick={actions.onCopyText}>
               {labels.copy ?? FLOW_EXPORT_LABELS.checklistCopy}
             </button>
           );
         }
         if (kind === 'excel') {
           return (
-            <button key={kind} className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700 disabled:border-slate-200 disabled:text-slate-400" disabled={disabled} title={disabledTitle} onClick={actions.onDownloadExcel}>
+            <button key={kind} className={FLOWME_BUTTON_SECONDARY_CLASS} disabled={disabled} title={disabledTitle} onClick={actions.onDownloadExcel}>
               {labels.excel ?? FLOW_EXPORT_LABELS.sheetFile}
             </button>
           );
         }
         if (kind === 'calendar' && actions.canExportCalendar) {
           return (
-            <button key={kind} className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700 disabled:border-slate-200 disabled:text-slate-400" disabled={disabled} title={disabledTitle} onClick={actions.onDownloadCalendar}>
+            <button key={kind} className={FLOWME_BUTTON_SECONDARY_CLASS} disabled={disabled} title={disabledTitle} onClick={actions.onDownloadCalendar}>
               {labels.calendar ?? FLOW_EXPORT_LABELS.calendarFile}
             </button>
           );
         }
         if (kind === 'draft') {
           return (
-            <button key={kind} className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700" onClick={actions.onCopyToEditableDraft}>
+            <button key={kind} className={`${FLOWME_BUTTON_SECONDARY_CLASS} bg-[#FAFAF8]`} onClick={actions.onCopyToEditableDraft}>
               {labels.draft ?? FLOW_EXPORT_LABELS.editableDraft}
             </button>
           );
@@ -254,7 +263,7 @@ function renderMobileArtifactExportButton(kind: ArtifactExportActionKind, action
       key={kind}
       data-testid={`mobile-artifact-export-${kind}`}
       aria-label={config.aria}
-      className="w-full rounded-md border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700 disabled:border-slate-200 disabled:text-slate-400"
+      className={`${FLOWME_BUTTON_SECONDARY_CLASS} w-full py-2.5`}
       disabled={config.disabled}
       title={config.disabled ? disabledTitle : undefined}
       type="button"
@@ -440,12 +449,12 @@ function TimelineWorkbench({
       {bundle.flow.slug === 'plank-30-day-challenge' ? <PlankChallengeSourceBridge sourceUrl={bundle.flow.source_url} /> : null}
       <div className="grid gap-4 lg:grid-cols-[1.05fr_1fr]">
         <MiniMonthCalendar title="월간 캘린더" eyebrow="캘린더" month={month} rows={rows} exportActions={exportActions} mobileArtifactLabel={getMobileArtifactLabel(bundle, 'month_calendar')} />
-        <div data-testid="artifact-list-card" className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+        <div data-testid="artifact-list-card" className={FLOWME_PANEL_CARD_CLASS}>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-blue-700">{shouldShowFullSourceTable ? '원문 표' : '체크리스트'}</p>
-              <h3 className="text-base font-semibold text-slate-950">{shouldShowFullSourceTable ? '30일 실행표' : '실행 리스트'}</h3>
-              {shouldShowFullSourceTable ? <p className="mt-1 text-xs font-medium text-slate-500">Day 1부터 Day 30까지 원문 순서를 모두 보여줍니다.</p> : null}
+              <p className={FLOWME_EYEBROW_CLASS}>{shouldShowFullSourceTable ? '원문 표' : '체크리스트'}</p>
+              <h3 className={FLOWME_TITLE_CLASS}>{shouldShowFullSourceTable ? '30일 실행표' : '실행 리스트'}</h3>
+              {shouldShowFullSourceTable ? <p className="mt-1 text-xs font-medium text-[#6E6B64]">Day 1부터 Day 30까지 원문 순서를 모두 보여줍니다.</p> : null}
             </div>
             <ArtifactExportButtons
               actions={exportActions}
@@ -459,17 +468,17 @@ function TimelineWorkbench({
             {listRows.map((row) => {
               const detail = getWorkbenchItemDetail(bundle, row.id);
               return (
-                <div key={row.id} className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+                <div key={row.id} className={FLOWME_INNER_ROW_CLASS}>
                   <label className="grid grid-cols-[22px_92px_1fr] gap-3">
                     <input
                       aria-label={`실행판 체크: ${row.title}`}
-                      className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-700"
+                      className="mt-0.5 h-4 w-4 rounded border-[#D8D5CD] text-[#3654FF]"
                       checked={Boolean(checks[row.id])}
                       onChange={() => onToggleItem(row.id)}
                       type="checkbox"
                     />
-                    <span className="font-mono text-xs font-semibold text-blue-700">{row.startDate ? `${row.timing} · ${row.startDate.slice(5)}` : row.timing}</span>
-                    <span className={`font-medium ${checks[row.id] ? 'text-slate-400 line-through' : 'text-slate-800'}`}>{row.title}</span>
+                    <span className="font-mono text-xs font-semibold text-[#3654FF]">{row.startDate ? `${row.timing} · ${row.startDate.slice(5)}` : row.timing}</span>
+                    <span className={`font-medium ${checks[row.id] ? 'text-[#A7A39A] line-through' : 'text-[#1B1A17]'}`}>{row.title}</span>
                   </label>
                   <WorkbenchDetailDisclosure detail={detail} />
                 </div>
@@ -830,19 +839,19 @@ function MiniMonthCalendar({
 }) {
   const days = getMonthCalendarDays(month || formatDate(new Date()).slice(0, 7));
   return (
-    <div data-testid="artifact-calendar-card" className="rounded-lg border border-slate-200 bg-white p-4 shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+    <div data-testid="artifact-calendar-card" className={FLOWME_SURFACE_CARD_CLASS}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          {eyebrow ? <p className="text-sm font-semibold text-blue-700">{eyebrow}</p> : null}
-          <h3 className="text-base font-semibold text-slate-950">{title}</h3>
+          {eyebrow ? <p className={FLOWME_EYEBROW_CLASS}>{eyebrow}</p> : null}
+          <h3 className={FLOWME_TITLE_CLASS}>{title}</h3>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
-          <span className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-sm font-semibold text-slate-600">{month}</span>
+          <span className="rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 text-sm font-semibold text-[#6E6B64]">{month}</span>
           <ArtifactExportButtons actions={exportActions} kinds={['calendar']} mobileArtifactLabel={mobileArtifactLabel} mobileKinds={['calendar']} />
         </div>
       </div>
       <ArtifactExportStatus actions={exportActions} />
-      <div className="mt-3 grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-500">
+      <div className="mt-3 grid grid-cols-7 gap-1 text-center text-xs font-semibold text-[#6E6B64]">
         {weekdayOrder.map((day) => (
           <span key={day}>{day}</span>
         ))}
@@ -851,14 +860,14 @@ function MiniMonthCalendar({
         {days.map((date, index) => {
           const dayRows = date ? rows.filter((row) => row.startDate === date) : [];
           return (
-            <div key={`${month}-${index}`} className={`min-h-16 rounded-md border p-1 text-xs ${date ? 'border-slate-200 bg-slate-50' : 'border-slate-100 bg-slate-50/60'}`}>
-              {date ? <p className="font-semibold text-slate-600">{date.slice(8)}</p> : null}
+            <div key={`${month}-${index}`} className={`min-h-16 rounded-xl border p-1 text-xs ${date ? 'border-[#E7E4DD] bg-[#FAFAF8]' : 'border-[#EEEAE2] bg-[#FAFAF8]/60'}`}>
+              {date ? <p className="font-semibold text-[#6E6B64]">{date.slice(8)}</p> : null}
               {dayRows.slice(0, 2).map((row) => (
-                <p key={row.id} className={`mt-1 truncate rounded px-1 py-0.5 text-left text-[11px] font-medium ${doneIds?.has(row.id) ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-blue-700'}`}>
+                <p key={row.id} className={`mt-1 truncate rounded-lg px-1 py-0.5 text-left text-[11px] font-medium ${doneIds?.has(row.id) ? 'bg-[#EAF7F0] text-[#1F8A5B]' : 'bg-white text-[#3654FF]'}`}>
                   {doneIds?.has(row.id) ? '완료 ' : ''}{row.title}
                 </p>
               ))}
-              {dayRows.length > 2 ? <p className="mt-1 text-[11px] text-slate-500">+{dayRows.length - 2}</p> : null}
+              {dayRows.length > 2 ? <p className="mt-1 text-[11px] text-[#6E6B64]">+{dayRows.length - 2}</p> : null}
             </div>
           );
         })}
@@ -911,16 +920,16 @@ function RoutineOccurrenceCalendar({
   );
 
   return (
-    <section aria-label="반복 캘린더 미리보기" data-testid="artifact-calendar-card" className="min-w-0 rounded-lg border border-slate-200 bg-white p-4 shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+    <section aria-label="반복 캘린더 미리보기" data-testid="artifact-calendar-card" className={`min-w-0 ${FLOWME_SURFACE_CARD_CLASS}`}>
       <div data-testid="routine-session-grid-card">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-blue-700">{eyebrow}</p>
-            <h3 className="text-base font-semibold text-slate-950">{title}</h3>
-            <p className="mt-1 text-sm text-slate-600">{description}</p>
+            <p className={FLOWME_EYEBROW_CLASS}>{eyebrow}</p>
+            <h3 className={FLOWME_TITLE_CLASS}>{title}</h3>
+            <p className="mt-1 text-sm text-[#6E6B64]">{description}</p>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
-            <span className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-sm font-semibold text-slate-600">{month}</span>
+            <span className="rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 text-sm font-semibold text-[#6E6B64]">{month}</span>
             <ArtifactExportButtons
               actions={exportActions}
               kinds={['calendar', 'excel', 'draft']}
@@ -930,9 +939,9 @@ function RoutineOccurrenceCalendar({
         </div>
         <ArtifactExportStatus actions={exportActions} />
         <div className="mt-3 flex flex-wrap gap-2 text-sm">
-          <span className="rounded-md border border-blue-100 bg-blue-50 px-3 py-1 font-semibold text-blue-700">{isHomeWorkout ? '주 3회 홈트' : isMealCheck ? '식사별 체크' : occurrenceSummary}</span>
-          <span className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 font-semibold text-slate-700">{isHomeWorkout ? '완료 체크만' : isMealCheck ? '아침·점심·저녁' : '주차 × 요일 회차표'}</span>
-          {currentRow ? <span className="rounded-md border border-amber-200 bg-amber-50 px-3 py-1 font-semibold text-amber-800">현재 {currentRow.title}</span> : null}
+          <span className="rounded-full border border-[#DDE3FF] bg-[#EEF1FF] px-3 py-1 font-semibold text-[#3654FF]">{isHomeWorkout ? '주 3회 홈트' : isMealCheck ? '식사별 체크' : occurrenceSummary}</span>
+          <span className="rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 font-semibold text-[#6E6B64]">{isHomeWorkout ? '완료 체크만' : isMealCheck ? '아침·점심·저녁' : '주차 × 요일 회차표'}</span>
+          {currentRow ? <span className="rounded-full border border-[#F0D8AE] bg-[#FFF7E8] px-3 py-1 font-semibold text-[#8A5A12]">현재 {currentRow.title}</span> : null}
         </div>
         <div className="mt-3 grid grid-cols-[64px_repeat(7,minmax(0,1fr))] gap-1 text-center text-xs font-semibold text-slate-500">
           <span />
@@ -2375,9 +2384,9 @@ function ChecklistWorkbench({
   return (
     <div className="space-y-4">
       {!putChecklistFirst ? holdSection : null}
-      <div data-testid="artifact-list-card" className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+      <div data-testid="artifact-list-card" className={FLOWME_PANEL_CARD_CLASS}>
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <h3 className="text-base font-semibold text-slate-950">{listTitle}</h3>
+          <h3 className={FLOWME_TITLE_CLASS}>{listTitle}</h3>
           <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} />
         </div>
         <ArtifactExportStatus actions={exportActions} />
@@ -2389,16 +2398,16 @@ function ChecklistWorkbench({
           {visibleItems.map((item) => {
             const detail = getWorkbenchItemDetail(bundle, item.id);
             return (
-              <div key={item.id} className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+              <div key={item.id} className={FLOWME_INNER_ROW_CLASS}>
                 <label className="flex gap-2">
                   <input
                     aria-label={`실행판 체크: ${item.title}`}
-                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-700"
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-[#D8D5CD] text-[#3654FF]"
                     checked={Boolean(checks[item.id])}
                     onChange={() => onToggleItem(item.id)}
                     type="checkbox"
                   />
-                  <span className={`font-medium ${checks[item.id] ? 'text-slate-400 line-through' : 'text-slate-800'}`}>{item.title}</span>
+                  <span className={`font-medium ${checks[item.id] ? 'text-[#A7A39A] line-through' : 'text-[#1B1A17]'}`}>{item.title}</span>
                 </label>
                 <WorkbenchDetailDisclosure detail={detail} />
               </div>

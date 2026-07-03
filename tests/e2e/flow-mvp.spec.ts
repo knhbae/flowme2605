@@ -140,6 +140,46 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(page.getByRole('button', { name: '내 버전 만들기' })).toHaveCount(0);
 });
 
+test('main user routes keep the FlowMe design token rhythm', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/flows');
+
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(250, 250, 248)');
+
+  const mobileTabs = page.getByTestId('platform-mobile-tabs');
+  await expect(mobileTabs).toBeVisible();
+  await expect(mobileTabs).toHaveCSS('border-color', 'rgb(231, 228, 221)');
+  await expect(mobileTabs).toHaveCSS('border-radius', '16px');
+  await expect(mobileTabs.getByRole('link', { name: 'Flow 찾기' })).toHaveCSS('background-color', 'rgb(27, 26, 23)');
+
+  const firstCatalogCard = page.getByTestId('flow-map-catalog-card').first();
+  await expect(firstCatalogCard).toHaveCSS('border-color', 'rgb(231, 228, 221)');
+  await expect(firstCatalogCard).toHaveCSS('border-radius', '16px');
+  await expect(firstCatalogCard.getByTestId('flow-map-detail-link')).toHaveCSS('background-color', 'rgb(54, 84, 255)');
+  await expect(firstCatalogCard.getByTestId('flow-map-detail-link')).toHaveCSS('border-radius', '12px');
+
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await page.goto('/f/vehicle-inspection-prep');
+
+  const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(workbench).toBeVisible();
+  await expect(workbench).toHaveCSS('border-color', 'rgb(231, 228, 221)');
+  await expect(workbench).toHaveCSS('border-radius', '16px');
+
+  const listCard = workbench.getByTestId('artifact-list-card').first();
+  await expect(listCard).toHaveCSS('border-color', 'rgb(231, 228, 221)');
+  await expect(listCard).toHaveCSS('border-radius', '16px');
+
+  const calendarCard = workbench.getByTestId('artifact-calendar-card').first();
+  await expect(calendarCard).toHaveCSS('border-color', 'rgb(231, 228, 221)');
+  await expect(calendarCard).toHaveCSS('border-radius', '16px');
+
+  const exportButton = workbench
+    .getByRole('button', { name: /메모로 복사|체크리스트 복사|캘린더 파일 받기|시트로 받기/ })
+    .first();
+  await expect(exportButton).toHaveCSS('border-radius', '12px');
+});
+
 test('curated source cards are integrated into Flow finding and open the recommended Flow', async ({ page }) => {
   await page.goto('/flows');
 
