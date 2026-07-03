@@ -193,7 +193,8 @@ test('special public workbench routes keep the FlowMe visual rhythm', async ({ p
   ]) {
     await page.goto(route);
     await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(250, 250, 248)');
-    await expect(page.getByTestId('platform-mobile-tabs')).toBeVisible();
+    await expect(page.getByTestId('flow-public-shell')).toBeVisible();
+    await expect(page.getByTestId('platform-mobile-tabs')).toHaveCount(0);
     await expectNoInternalUserSurfaceCopy(page.locator('body'));
     const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
     expect(scrollWidth).toBeLessThanOrEqual(390);
@@ -223,23 +224,24 @@ test('special public workbench routes keep the FlowMe visual rhythm', async ({ p
   await expect(studyWorkbench.getByTestId('artifact-list-card')).toHaveCSS('border-radius', '16px');
 });
 
-test('public flow detail stays inside the Flow finding app shell', async ({ page }) => {
+test('public flow detail uses a share shell until it saves into My Flow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/vehicle-inspection-prep');
 
   await expect(page.getByRole('heading', { name: '자동차검사 D-14 준비' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '자동차검사 D-14 준비 Flow' })).toHaveCount(0);
-  const mobileTabs = page.getByTestId('platform-mobile-tabs');
-  await expect(mobileTabs).toBeVisible();
-  await expect(mobileTabs.locator('a')).toHaveCount(4);
-  await expect(mobileTabs.getByRole('link', { name: 'Flow 찾기' })).toHaveAttribute('aria-current', 'page');
-  await expect(page.getByTestId('flow-public-shell')).toHaveCount(0);
+  await expect(page.getByTestId('flow-public-shell')).toBeVisible();
+  await expect(page.getByTestId('platform-mobile-tabs')).toHaveCount(0);
+  await expect(page.locator('input[type="date"]')).toHaveCount(1);
+  const stickySave = page.getByTestId('public-flow-mobile-save-cta');
+  await expect(stickySave.getByRole('button', { name: '내 Flow에 저장' })).toBeVisible();
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
 
-  await page.evaluate(() => window.scrollTo(0, 700));
-  const mobileExportBar = page.getByTestId('mobile-export-bar');
-  await expect(mobileExportBar).toBeVisible();
-  await expectVerticalGap(mobileExportBar, mobileTabs, 16);
+  await stickySave.getByRole('button', { name: '내 Flow에 저장' }).click();
+  await expect(stickySave.getByRole('link', { name: '내 Flow에서 보기' })).toHaveAttribute('href', '/my');
+  await stickySave.getByRole('link', { name: '내 Flow에서 보기' }).click();
+  await expect(page).toHaveURL('/my');
+  await expect(page.getByTestId('platform-mobile-tabs')).toBeVisible();
 });
 
 test('curated source cards are integrated into Flow finding and open the recommended Flow', async ({ page }) => {
@@ -644,22 +646,23 @@ test('public single Flow detail keeps input save and first action in the mobile 
   await expect(hero.getByTestId('public-flow-result-promise')).toBeVisible();
   await expect(hero.getByTestId('public-flow-primary-setup')).toBeVisible();
   await expect(hero.getByTestId('public-flow-primary-setup').locator('input[type="date"]')).toBeVisible();
+  await expect(page.locator('input[type="date"]')).toHaveCount(1);
   await expect(hero.getByTestId('public-flow-first-action-preview')).toContainText('시세와 등기부등본 권리관계 확인하기');
-  await expect(hero.getByTestId('public-flow-save-actions').getByRole('button', { name: '내 Flow에 저장' })).toBeVisible();
+  await expect(hero.getByTestId('public-flow-save-actions')).toBeHidden();
+  const stickySave = page.getByTestId('public-flow-mobile-save-cta');
+  await expect(stickySave.getByRole('button', { name: '내 Flow에 저장' })).toBeVisible();
   await expectNoInternalUserSurfaceCopy(hero);
 
   const inputTop = await hero.getByTestId('public-flow-primary-setup').evaluate((element) => element.getBoundingClientRect().top);
   const firstActionTop = await hero.getByTestId('public-flow-first-action-preview').evaluate((element) => element.getBoundingClientRect().top);
-  const saveTop = await hero.getByTestId('public-flow-save-actions').evaluate((element) => element.getBoundingClientRect().top);
   const heroBottom = await hero.evaluate((element) => element.getBoundingClientRect().bottom);
 
   expect(inputTop).toBeLessThan(560);
   expect(firstActionTop).toBeLessThan(680);
-  expect(saveTop).toBeLessThan(760);
-  expect(heroBottom).toBeLessThan(820);
+  expect(heroBottom).toBeLessThan(760);
 
-  await hero.getByTestId('public-flow-save-actions').getByRole('button', { name: '내 Flow에 저장' }).click();
-  await expect(hero.getByTestId('public-flow-save-actions').getByRole('link', { name: '내 Flow에서 보기' })).toBeVisible();
+  await stickySave.getByRole('button', { name: '내 Flow에 저장' }).click();
+  await expect(stickySave.getByRole('link', { name: '내 Flow에서 보기' })).toBeVisible();
 });
 
 test('public no-anchor Flow detail shows the first action without a setup detour on mobile', async ({ page }) => {
@@ -3497,14 +3500,13 @@ test('public detail rebrand keeps a tool-first shell without mobile overflow', a
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/f/moving-d30-basic');
 
-  await expect(page.getByTestId('platform-nav')).toBeVisible();
-  await expect(page.getByTestId('platform-primary-tabs').getByRole('link', { name: 'Flow 찾기' })).toHaveAttribute('aria-current', 'page');
-  await expect(page.getByTestId('flow-public-shell')).toHaveCount(0);
+  await expect(page.getByTestId('flow-public-shell')).toBeVisible();
+  await expect(page.getByTestId('platform-nav')).toHaveCount(0);
   await expect(page.getByTestId('flow-public-search')).toHaveCount(0);
   await expect(page.getByLabel('Flow artifact workbench')).toBeVisible();
   await expect(page.getByTestId('flow-desktop-workbench-layout')).toBeVisible();
 
-  const shellBox = await page.getByTestId('platform-nav').boundingBox();
+  const shellBox = await page.getByTestId('flow-public-shell').boundingBox();
   const workbenchBox = await page.getByLabel('Flow artifact workbench').boundingBox();
   expect(shellBox).not.toBeNull();
   expect(workbenchBox).not.toBeNull();
@@ -3513,6 +3515,8 @@ test('public detail rebrand keeps a tool-first shell without mobile overflow', a
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/moving-d30-basic');
 
+  await expect(page.getByTestId('flow-public-shell')).toBeVisible();
+  await expect(page.getByTestId('platform-mobile-tabs')).toHaveCount(0);
   const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
   expect(hasHorizontalOverflow).toBe(false);
 });

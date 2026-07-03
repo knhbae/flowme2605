@@ -1,6 +1,6 @@
 # FLOW Service Structure
 
-Last updated: 2026-07-03
+Last updated: 2026-07-04
 Status: Living baseline. Keep this current with implementation PRs.
 
 This document is the canonical map of the current app surface, screen feature tree, and service architecture. It is not validation evidence by itself. Use it to keep product PoCs, research surfaces, creator tools, public routes, My Flow execution, and shared domain modules from drifting apart.
@@ -23,7 +23,7 @@ If a PR does not update this file, the PR history entry should say why the servi
 | --- | --- | --- | --- |
 | `/` | Home and discovery entry. Surfaces one representative save path and a small number of secondary starts without exposing conversion mechanics first. | `HomeLanding` in `components/flow/AppClient.tsx` | `seed-flows`, `execution-model`, `source-fit`, `source-backed-my-flow` |
 | `/flows` | Browse seeded/public content candidates with search, intent chips, and action-first catalog cards. Cards show title, required input/result, first action, trust/status, and CTA; source/detail stays secondary. | `FlowList` in `components/flow/AppClient.tsx` | `seed-flows`, `types`, `execution-model`, `source-backed-my-flow` |
-| `/f/[slug]` | Public Flow execution/detail route for a single slug. Leads with input-to-result promise, required input or no-input state, first action preview, one primary save CTA when available, and keeps source/detail/memo below or collapsed. | `PublicFlow` in `components/flow/AppClient.tsx` | `seed-flows`, `parser`, `export`, `storage`, `artifact-plan` |
+| `/f/[slug]` | Public Flow execution/detail route for a single slug. It is a share-entry shell before save, not the persistent 4-tab app shell. It leads with input-to-result promise, required input or no-input state, first action preview, one primary `내 Flow에 저장` CTA when available, and continues into `/my` after save. Source/detail/memo stay below or collapsed. | `PublicFlow` in `components/flow/AppClient.tsx` | `seed-flows`, `parser`, `export`, `storage`, `artifact-plan` |
 | `/flows/new` | Manual Flow authoring entry. | `NewFlow` in `components/flow/AppClient.tsx` | `parser`, `types`, `storage` |
 | `/flows/[id]/edit` | Saved/manual Flow editing entry. | `Editor` in `components/flow/AppClient.tsx` | `storage`, `parser`, `types` |
 | `/calendar` | Global calendar execution entry for saved dated Steps. Reuses My Flow's calendar surface but starts from schedule-first context. | `MyFlows` with `surface="calendar"` | `storage`, `source-backed-my-flow`, `my-flow-step-export`, `export` |
@@ -61,8 +61,9 @@ Mobile should use a simple app-like frame:
 - Bottom or top primary tabs: `홈`, `Flow 찾기`, `캘린더`, `내 Flow`.
 - Hamburger or secondary menu: `만들기`, `제작자`, `Flow Lab`, `콘텐츠 검토`, docs/debug links.
 - Keep `캘린더` as a global primary tab. It may reuse the same My Flow calendar component, but the entry point should feel like a schedule-first execution surface rather than an inventory view.
-- Detail pages should keep the same frame but highlight their owning section:
-  - `/flow-maps/[map]` and `/f/[slug]` belong under `Flow 찾기`.
+- Detail pages should keep the same frame but highlight their owning section, except for share-entry public single Flow pages.
+  - `/flow-maps/[map]` belongs under `Flow 찾기`.
+  - `/f/[slug]` is a share-entry exception before save: it shows a slim FlowMe shell and one primary `내 Flow에 저장` CTA instead of the persistent 4-tab shell. After save, `/my` resumes the normal app shell.
   - `/calendar` belongs under `캘린더`.
   - `/my` detail states belong under `내 Flow`.
   - Creator edit/review routes belong under `만들기` or a secondary creator menu, not public discovery.
@@ -101,7 +102,7 @@ Desktop can use a top nav with the same priority order. It should not expose mor
 - Mobile fixed layers should stay predictable: the global bottom tabs include safe-area spacing, Flow Map sticky save sits above the tabs with visible separation, and `/flow-maps/*`, `/my`, and `/calendar` keep enough bottom padding so final content is not hidden behind fixed controls.
 - After saving a Flow Map, `/my` should show a compact saved banner and the same Today/전체 workspace underneath. The saved banner may show saved counts, one `먼저 할 일 열기` action, and one `전체 할 일 보기` action, but it should not render a second mini inventory or item detail inside the banner. Dated content is available from the global `캘린더` tab, so `/my` should not repeat `캘린더 보기` CTAs.
 - Source-backed public Flow Map pages should show the result promise, required input, save action, and first action preview before the source section. Full checklist plus memo/source detail stay behind expanders so users can scan the map before saving without reading every source row at once.
-- Public single Flow detail pages should show the result promise, required input or no-input state, first action, and save CTA before source context. Source title, conversion note, memo, and warning context remain available as `원문과 근거` or supporting sections instead of competing with the first action.
+- Public single Flow detail pages should use the share-entry shell before save and show the result promise, required input or no-input state, first action, and one primary save CTA before source context. Source title, conversion note, memo, and warning context remain available as `원문과 근거` or supporting sections instead of competing with the first action.
 - Export-first public Flow pages should avoid duplicate mobile save pressure. The sticky mobile bar may open a single export sheet, while the inline artifact area keeps save, calendar, sheet, memo, and checklist actions. User-facing export labels should stay outcome-first: `캘린더 파일 받기`, `시트로 받기`, `메모로 복사`, and `체크리스트 복사`.
 - Creator and internal review surfaces need secondary placement until the public creator workflow is ready.
 

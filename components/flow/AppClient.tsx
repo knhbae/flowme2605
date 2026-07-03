@@ -177,6 +177,7 @@ const flowCreatorDisplayOverrideSlugs = new Set([
 ]);
 const serviceCatalogFlowSlugs = new Set([
   'jeonse-contract-precheck-docs',
+  'vehicle-inspection-prep',
 ]);
 const publicServiceFlowStatusHiddenSlugs = new Set([
   'moving-d30-basic',
@@ -8055,7 +8056,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const hideSharedPublicFooter = shouldHideSharedPublicFooter(bundle);
   const compactJeonsePage = isJeonsePrecheckFlow(bundle);
   const showPublicSaveAction = serviceCatalogFlowSlugs.has(bundle.flow.slug) && !showExportFirstHero;
-  const showMobileExportActions = showMobileActions && !compactJeonsePage;
+  const showMobileExportActions = showMobileActions && !compactJeonsePage && !showPublicSaveAction;
   const primaryDestination = inferPrimaryDestination(bundle);
   const holdSignalCount = getHoldSignalCount(bundle, workbenchState);
   const mobileStickyCtaLabel = getMobileStickyCtaLabel(bundle, canExportCalendar, holdSignalCount);
@@ -8178,7 +8179,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   };
   const renderPublicSaveActions = () =>
     showPublicSaveAction ? (
-      <div data-testid="public-flow-save-actions" className="grid gap-2 sm:max-w-sm">
+      <div data-testid="public-flow-save-actions" className="hidden gap-2 sm:grid sm:max-w-sm">
         {savedFlowAt ? (
           <Link className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]" href="/my">
             내 Flow에서 보기
@@ -8197,6 +8198,29 @@ export function PublicFlow({ slug }: { slug: string }) {
             원문은 아래에서 확인
           </a>
         ) : null}
+      </div>
+    ) : null;
+  const renderPublicMobileSaveCta = () =>
+    showPublicSaveAction ? (
+      <div
+        data-testid="public-flow-mobile-save-cta"
+        className="fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-40 rounded-2xl border border-[#E7E4DD] bg-white/95 p-3 shadow-[0_14px_36px_rgba(27,26,23,0.14)] backdrop-blur sm:hidden"
+      >
+        <div className="flex items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-semibold text-[#8A857B]">{savedFlowAt ? '저장됨' : '공유 콘텐츠'}</p>
+            <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicDisplayTitle}</p>
+          </div>
+          {savedFlowAt ? (
+            <Link className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" href="/my">
+              내 Flow에서 보기
+            </Link>
+          ) : (
+            <button className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" type="button" onClick={saveToMyFlow}>
+              내 Flow에 저장
+            </button>
+          )}
+        </div>
       </div>
     ) : null;
   const renderPublicHeroSetup = () => {
@@ -8260,7 +8284,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   return (
     <main className="min-h-screen bg-[#FAFAF8] px-4 py-3 pb-40 text-slate-950 md:px-6 md:py-6 md:pb-10">
       <div className="mx-auto max-w-7xl">
-        <PlatformNav />
+        <PublicFlowShareShell savedFlowAt={savedFlowAt} />
 
         <header data-testid="public-flow-hero" className={compactJeonsePage ? 'rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm md:px-5 md:py-4' : 'rounded-2xl border border-[#E7E4DD] bg-white px-4 py-4 shadow-[0_8px_24px_rgba(27,26,23,0.05)] md:px-6 md:py-5'}>
           <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-500">
@@ -8597,8 +8621,32 @@ export function PublicFlow({ slug }: { slug: string }) {
           </div>
         </div>
       </div>
+      {renderPublicMobileSaveCta()}
       </div>
     </main>
+  );
+}
+
+function PublicFlowShareShell({ savedFlowAt }: { savedFlowAt?: string }) {
+  return (
+    <nav
+      aria-label="공유 콘텐츠"
+      data-testid="flow-public-shell"
+      className="mb-4 flex min-h-12 items-center justify-between gap-3 rounded-2xl border border-[#E7E4DD] bg-white/95 px-4 py-2.5 shadow-[0_1px_0_rgba(27,26,23,0.03)] backdrop-blur md:mb-6"
+    >
+      <Link className="inline-flex min-h-9 items-center text-lg font-semibold tracking-tight text-[#1B1A17]" href="/">
+        FLOW
+      </Link>
+      {savedFlowAt ? (
+        <Link className="inline-flex min-h-9 items-center rounded-xl border border-[#E7E4DD] px-3 text-sm font-semibold text-[#6E6B64] hover:text-[#3654FF]" href="/my">
+          내 Flow에서 보기
+        </Link>
+      ) : (
+        <Link className="inline-flex min-h-9 items-center rounded-xl border border-[#E7E4DD] px-3 text-sm font-semibold text-[#6E6B64] hover:text-[#3654FF]" href="/flows">
+          콘텐츠 더 보기
+        </Link>
+      )}
+    </nav>
   );
 }
 
