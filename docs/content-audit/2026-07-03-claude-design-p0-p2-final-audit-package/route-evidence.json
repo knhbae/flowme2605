@@ -1,0 +1,121 @@
+{
+  "generatedAt": "2026-07-03T12:56:29.741Z",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "evidence": [
+    {
+      "route": "/",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/01-home-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "h1": "콘텐츠를 일정과 할 일로 저장",
+      "firstButton": "FLOW",
+      "matchedTerms": []
+    },
+    {
+      "route": "/flows",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/02-flows-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "h1": "무엇을 저장할까요?",
+      "firstButton": "FLOW",
+      "matchedTerms": []
+    },
+    {
+      "route": "/flow-maps/moving-d30",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/03-flow-map-moving-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "h1": "원룸 이사 D-30 일정 지도",
+      "firstButton": "FLOW",
+      "matchedTerms": []
+    },
+    {
+      "route": "/flow-maps/middle-school-math-1",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/04-flow-map-math-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "h1": "중1 수학 목차 진도표",
+      "firstButton": "FLOW",
+      "matchedTerms": []
+    },
+    {
+      "route": "/f/vehicle-inspection-prep",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/05-public-vehicle-inspection-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": false,
+      "h1": "자동차검사 D-14 준비 Flow",
+      "firstButton": "FLOW",
+      "matchedTerms": []
+    },
+    {
+      "route": "/my",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/06-my-empty-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "h1": "내 Flow",
+      "firstButton": "FLOW",
+      "matchedTerms": []
+    },
+    {
+      "route": "/my?savedMap=moving-d30",
+      "state": "after saving moving-d30 with 2026-07-22",
+      "screenshot": "screenshots/07-post-save-my-flow-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "h1": "내 Flow",
+      "firstButton": "FLOW",
+      "matchedTerms": []
+    },
+    {
+      "route": "/calendar",
+      "state": "after saving moving-d30 with 2026-07-22",
+      "screenshot": "screenshots/08-calendar-after-save-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "h1": "캘린더",
+      "firstButton": "FLOW",
+      "matchedTerms": []
+    }
+  ]
+}

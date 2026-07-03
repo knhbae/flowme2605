@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe Claude Design P0-P2 Final Audit</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg: #fafaF8;
+      --paper: #ffffff;
+      --ink: #171717;
+      --muted: #6f6b63;
+      --line: #e7e4dd;
+      --blue: #3654ff;
+      --green: #1f8a5b;
+      --amber: #a15c07;
+      --red: #d6462e;
+      --soft: #f4f3ef;
+    }
+    html {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 16px/1.55 Arial, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      letter-spacing: 0;
+    }
+    body { margin: 0; }
+    article {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px 14px 64px;
+    }
+    h1, h2, h3, p { margin: 0; }
+    h1 { max-width: 900px; font-size: 34px; line-height: 1.12; }
+    h2 { font-size: 22px; line-height: 1.25; }
+    h3 { font-size: 16px; line-height: 1.3; }
+    a { color: var(--blue); overflow-wrap: anywhere; }
+    .eyebrow {
+      margin-bottom: 8px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .lead {
+      max-width: 860px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .toolbar, .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .chip.blue { border-color: #c5ccff; background: #eef2ff; color: var(--blue); }
+    .chip.green { border-color: #b7dfcf; background: #edf9f3; color: var(--green); }
+    .chip.amber { border-color: #ffd99a; background: #fff7e7; color: var(--amber); }
+    .hero, .section {
+      margin-top: 18px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--paper);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .card {
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+    .card p {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    table {
+      width: 100%;
+      margin-top: 12px;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: var(--soft); color: #4f4b45; font-size: 12px; text-transform: uppercase; }
+    tr:last-child td { border-bottom: 0; }
+    .shot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 14px;
+      margin-top: 12px;
+    }
+    figure {
+      margin: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+    }
+    figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: var(--soft);
+    }
+    figcaption {
+      padding: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .note {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .risk-medium { color: var(--amber); font-weight: 800; }
+    .risk-low { color: var(--green); font-weight: 800; }
+    @media (max-width: 720px) {
+      h1 { font-size: 28px; }
+      table, tbody, tr, td { display: block; width: 100%; }
+      thead { display: none; }
+      tr { border-bottom: 1px solid var(--line); }
+      td { border-bottom: 0; padding: 8px 10px; }
+      td::before {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 800;
+        content: attr(data-label);
+      }
+    }
+  </style>
+</head>
+<body>
+<article>
+  <p class="eyebrow">FlowMe UX/UI final audit</p>
+  <h1>Claude Design P0~P2 개선 루프 재검토 패키지</h1>
+  <p class="lead">
+    새 기능 추가 없이 홈, Flow 찾기, 공개 Flow 상세, Flow Map 상세, My Flow, 캘린더, export UX의 기준선 유지 여부를 점검했다.
+    Claude Design에게는 이 문서와 소스 링크를 기준으로 남은 이슈와 다음 루프 우선순위를 다시 판단해 달라고 요청한다.
+  </p>
+  <div class="toolbar">
+    <a class="chip blue" href="./audit.md">Audit MD</a>
+    <a class="chip blue" href="./prompt-ko.md">Claude prompt</a>
+    <a class="chip" href="./route-evidence.json">Route evidence JSON</a>
+    <a class="chip" href="../2026-07-03-claude-design-action-backlog-ko.md">Backlog source</a>
+    <span class="chip green">P0~P2 closed</span>
+    <span class="chip amber">390px evidence</span>
+  </div>
+
+  <section class="hero">
+    <h2>감사 결론</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>유지된 기준선</h3>
+        <p>4탭 IA, seed/source-backed 구조, 저장-실행-export 흐름은 바꾸지 않았다.</p>
+      </div>
+      <div class="card">
+        <h3>개선된 표면</h3>
+        <p>첫 화면은 행동/결과 중심으로 압축했고, source/detail/memo는 보조 확인 구조로 낮췄다.</p>
+      </div>
+      <div class="card">
+        <h3>검증 상태</h3>
+        <p>모바일 390px route evidence, targeted Playwright 9건, full test/docs/build 검증 통과를 확보했다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>P0~P2 닫힘 요약</h2>
+    <table>
+      <thead><tr><th>범위</th><th>상태</th><th>요약</th></tr></thead>
+      <tbody>
+        <tr><td data-label="범위">P0</td><td data-label="상태">완료</td><td data-label="요약">저장 직후 첫 실행 항목, 날짜 copy, 내부 제작 문구 노출 방지, 필수 입력 feedback 정리.</td></tr>
+        <tr><td data-label="범위">P1</td><td data-label="상태">완료</td><td data-label="요약">Flow 찾기, 상세 hero, My Flow 첫 슬롯, 캘린더 agenda-first 구조 정리.</td></tr>
+        <tr><td data-label="범위">P2</td><td data-label="상태">완료</td><td data-label="요약">Export label, true empty state, fixed layer, 저장 카드 진행 표시, 디자인 토큰 마감.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <h2>Route 감사</h2>
+    <table>
+      <thead><tr><th>Route</th><th>H1</th><th>Evidence</th><th>판단</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Route">/</td><td data-label="H1">콘텐츠를 일정과 할 일로 저장</td><td data-label="Evidence"><a href="./screenshots/01-home-mobile.png">screenshot</a></td><td data-label="판단">첫 행동과 4탭 기준선 유지.</td></tr>
+        <tr><td data-label="Route">/flows</td><td data-label="H1">무엇을 저장할까요?</td><td data-label="Evidence"><a href="./screenshots/02-flows-mobile.png">screenshot</a></td><td data-label="판단">통합 카드 목록과 낮은 카드 밀도 유지.</td></tr>
+        <tr><td data-label="Route">/flow-maps/moving-d30</td><td data-label="H1">원룸 이사 D-30 일정 지도</td><td data-label="Evidence"><a href="./screenshots/03-flow-map-moving-mobile.png">screenshot</a></td><td data-label="판단">입력, 저장 CTA, 먼저 할 일 흐름 유지.</td></tr>
+        <tr><td data-label="Route">/flow-maps/middle-school-math-1</td><td data-label="H1">중1 수학 목차 진도표</td><td data-label="Evidence"><a href="./screenshots/04-flow-map-math-mobile.png">screenshot</a></td><td data-label="판단">날짜 없는 콘텐츠도 저장 전 판단 가능.</td></tr>
+        <tr><td data-label="Route">/f/vehicle-inspection-prep</td><td data-label="H1">자동차검사 D-14 준비 Flow</td><td data-label="Evidence"><a href="./screenshots/05-public-vehicle-inspection-mobile.png">screenshot</a></td><td data-label="판단">공개 단일 상세 shell 정책은 추가 판단 필요.</td></tr>
+        <tr><td data-label="Route">/my</td><td data-label="H1">내 Flow</td><td data-label="Evidence"><a href="./screenshots/06-my-empty-mobile.png">screenshot</a></td><td data-label="판단">true empty CTA 단일화 유지.</td></tr>
+        <tr><td data-label="Route">/my?savedMap=moving-d30</td><td data-label="H1">내 Flow</td><td data-label="Evidence"><a href="./screenshots/07-post-save-my-flow-mobile.png">screenshot</a></td><td data-label="판단">저장 후 첫 실행 항목 기준선 유지.</td></tr>
+        <tr><td data-label="Route">/calendar</td><td data-label="H1">캘린더</td><td data-label="Evidence"><a href="./screenshots/08-calendar-after-save-mobile.png">screenshot</a></td><td data-label="판단">저장된 일정 agenda-first 기준선 유지.</td></tr>
+      </tbody>
+    </table>
+    <p class="note">모든 route에서 horizontal overflow는 0건이고, ASCII 내부 검토어 스캔 결과는 0건이다.</p>
+  </section>
+
+  <section class="section">
+    <h2>모바일 증거</h2>
+    <div class="shot-grid">
+      <figure><img src="./screenshots/01-home-mobile.png" alt="Home mobile screenshot"><figcaption>/</figcaption></figure>
+      <figure><img src="./screenshots/02-flows-mobile.png" alt="Flows mobile screenshot"><figcaption>/flows</figcaption></figure>
+      <figure><img src="./screenshots/03-flow-map-moving-mobile.png" alt="Moving map mobile screenshot"><figcaption>/flow-maps/moving-d30</figcaption></figure>
+      <figure><img src="./screenshots/04-flow-map-math-mobile.png" alt="Math map mobile screenshot"><figcaption>/flow-maps/middle-school-math-1</figcaption></figure>
+      <figure><img src="./screenshots/05-public-vehicle-inspection-mobile.png" alt="Public Flow mobile screenshot"><figcaption>/f/vehicle-inspection-prep</figcaption></figure>
+      <figure><img src="./screenshots/06-my-empty-mobile.png" alt="My Flow empty mobile screenshot"><figcaption>/my</figcaption></figure>
+      <figure><img src="./screenshots/07-post-save-my-flow-mobile.png" alt="My Flow post save mobile screenshot"><figcaption>/my?savedMap=moving-d30</figcaption></figure>
+      <figure><img src="./screenshots/08-calendar-after-save-mobile.png" alt="Calendar mobile screenshot"><figcaption>/calendar</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>남은 리스크</h2>
+    <table>
+      <thead><tr><th>우선순위</th><th>항목</th><th>판단 요청</th></tr></thead>
+      <tbody>
+        <tr><td data-label="우선순위" class="risk-medium">Medium</td><td data-label="항목">Public Flow detail app shell</td><td data-label="판단 요청">`/f/vehicle-inspection-prep` 모바일 evidence에서 하단 4탭 nav가 보이지 않는다. 공유 전용 shell로 둘지, app shell에 맞출지 결정이 필요하다.</td></tr>
+        <tr><td data-label="우선순위" class="risk-low">Low</td><td data-label="항목">특수 workbench polish</td><td data-label="판단 요청">공통 토큰은 정리됐지만 특수 workbench 일부는 다음 visual QA에서 추가 정리가 필요할 수 있다.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <h2>Claude에게 요청할 산출물</h2>
+    <div class="grid">
+      <div class="card"><h3>이슈 목록</h3><p>Blocking / High / Medium / Low로 route별 이슈를 다시 나눠 달라.</p></div>
+      <div class="card"><h3>다음 루프 범위</h3><p>바로 개발 가능한 UI/copy/구조 작업만 추려 달라.</p></div>
+      <div class="card"><h3>유지 기준선</h3><p>바꾸면 안 되는 4탭 IA, 저장/실행/export, source 보존 기준을 명시해 달라.</p></div>
+    </div>
+  </section>
+</article>
+</body>
+</html>

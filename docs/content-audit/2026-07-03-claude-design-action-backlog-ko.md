@@ -5,7 +5,7 @@
 ## 상태
 
 - 문서 유형: UX/UI 실행 백로그
-- 구현 상태: 진행 전 정리
+- 구현 상태: P0~P2 구현 및 마감 감사 패키지 정리 완료
 - 기준 브랜치: `codex/flowme-uxui-second-loop`
 - 원본 리뷰:
   - [claude-design-review-2026-07-03.md](https://github.com/knhbae/flowme2605/blob/main/claude-design-review-2026-07-03.md)
@@ -62,6 +62,8 @@ Claude Design 리뷰의 결론은 새 기능 추가가 아니라 위계 압축�
 - 2026-07-03: P2-01을 처리했다. public Flow artifact workbench, exact-video export, My Flow Step detail, mobile export sheet, restart prototype의 버튼/피드백 라벨을 `캘린더 파일 받기`, `시트로 받기`, `메모로 복사`, `체크리스트 복사`와 결과형 피드백으로 통일했다. targeted Playwright export label subset은 RED 후 통과했고, 기존 export 파일 생성 로직은 바꾸지 않았다.
 - 2026-07-03: P2-02를 처리했다. `/my`와 `/calendar`의 true empty state는 설명형 달력/보조 CTA를 제거하고 `콘텐츠 고르러 가기` 단일 CTA로 정리했다. 저장된 콘텐츠가 있는 상태에서는 기존 Today/Calendar 실행 워크스페이스를 유지한다. targeted Playwright true empty subset은 RED 후 통과했다.
 - 2026-07-03: P2-04를 처리했다. My Flow 저장 콘텐츠 카드의 제목 옆 중복 진행 칩과 모바일 저장 요약의 `오늘 0`/`다음 0`/`밀림 0` 칩을 제거하고, 카드 진행 상태는 `n/n 완료` 텍스트 + 진행바 하나로 통일했다. targeted Playwright My Flow 저장 목록/모바일 subset은 RED 후 최신 빌드 기준으로 통과했다.
+- 2026-07-03: P2-05를 처리했다. 전역 FlowMe 색상 토큰, 상단/하단 4탭 nav, public artifact workbench 카드/버튼/chip 톤을 `#FAFAF8`, `#E7E4DD`, `#3654FF`, 16px card radius, 12px button radius 기준으로 정리했다. targeted Playwright design token rhythm은 RED 후 통과했고, 모바일 390px route evidence에서 주요 route의 가로 overflow 0건을 확인했다.
+- P0~P2 최종 감사 패키지: [Claude Design P0~P2 final audit package](./2026-07-03-claude-design-p0-p2-final-audit-package/README.md)
 
 ## P1 - P0 후 이어서 해결
 
@@ -83,7 +85,7 @@ Claude Design 리뷰의 결론은 새 기능 추가가 아니라 위계 압축�
 | P2-02 | 빈 상태 | 완료 - My Flow/캘린더 true empty CTA를 `콘텐츠 고르러 가기` 하나로 정리했다. |
 | P2-03 | fixed layer | 완료 - safe-area, sticky 저장 CTA, My Flow/Calendar bottom spacing을 정리하고 overlap 회귀 테스트를 추가했다. |
 | P2-04 | 저장 목록 요약 | 완료 - 0개 칩과 중복 진행 칩을 숨기고, 저장 콘텐츠 카드는 `n/n 완료` + 진행바로 통일했다. |
-| P2-05 | 디자인 토큰 | 주요 색, 카드 radius/padding, 버튼 hierarchy를 통일한다. |
+| P2-05 | 디자인 토큰 | 완료 - 주요 색, 카드 radius/padding, 버튼 hierarchy를 FlowMe 토큰 기준으로 통일했다. |
 
 ## 검증 기준
 
