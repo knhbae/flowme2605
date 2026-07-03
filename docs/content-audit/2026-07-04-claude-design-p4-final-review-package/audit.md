@@ -37,6 +37,15 @@
 - My Flow post-save true empty state: 노출 안 됨
 - Calendar after-save true empty state: 노출 안 됨
 
+## Scenario evidence
+
+route별 첫 화면만으로는 저장 전후 흐름을 판단하기 어려워, [scenario-review.html](./scenario-review.html)과 [scenario-guide.md](./scenario-guide.md)를 추가했다.
+
+- 시나리오 수: 6개
+- scenario screenshot 수: 24장
+- 포함 흐름: 홈 → Flow 찾기, 이사 Flow Map 저장 → My Flow → Calendar, 공개 Flow 저장 → My Flow, 날짜 없는 콘텐츠 저장, 여러 콘텐츠 저장 상태, 특수 workbench/export
+- scenario validation: 내부 문구 0건, 콘텐츠 제목 끝 `Flow` 접미 0건, horizontal overflow 0건
+
 ## Route evidence
 
 | Route | 상태 | H1 | shell/nav | Screenshot | Overflow |
@@ -68,6 +77,7 @@
 이 패키지는 screenshot/evidence 생성과 최종 명령 검증까지 수행한 결과다.
 
 - 모바일 390px evidence 생성: 15개 screenshot, `route-evidence.json` validation passed
+- 모바일 390px scenario evidence 생성: 24개 screenshot, `scenario-evidence.json` validation passed
 - P4 관련 targeted Playwright E2E: 11 passed
 - `npm.cmd test`: 276 passed
 - `npm.cmd run docs:check`: passed, 14 required files and 1298 local links

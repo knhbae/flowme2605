@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe P4 Scenario Screenshots</title>
+  <style>
+    :root { --bg:#FAFAF8; --surface:#fff; --text:#1B1A17; --muted:#6E6B64; --border:#E7E4DD; --action:#3654FF; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    main { max-width:1200px; margin:0 auto; padding:32px 20px 64px; }
+    h1 { margin:0; font-size:clamp(30px,5vw,56px); line-height:1.05; letter-spacing:0; }
+    h2 { margin:42px 0 16px; font-size:24px; }
+    p { color:var(--muted); line-height:1.65; }
+    a { color:var(--action); font-weight:700; }
+    .hero { display:grid; gap:12px; margin-bottom:24px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); gap:18px; }
+    .card { border:1px solid var(--border); border-radius:18px; background:var(--surface); padding:14px; box-shadow:0 1px 0 rgba(27,26,23,.03); }
+    .meta { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
+    .meta span { border:1px solid var(--border); border-radius:999px; background:#FAFAF8; padding:4px 8px; color:var(--muted); font-size:12px; font-weight:700; }
+    img { width:100%; border:1px solid var(--border); border-radius:14px; background:#F3F1EC; }
+    dl { display:grid; gap:8px; margin:12px 0 0; }
+    dl div { display:flex; justify-content:space-between; gap:12px; border-top:1px solid var(--border); padding-top:8px; font-size:13px; }
+    dt { color:var(--muted); }
+    dd { margin:0; font-weight:700; text-align:right; }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <p><strong>FlowMe P4 Scenario Screenshots</strong></p>
+      <h1>Claude Design 재검토용 시나리오 캡처</h1>
+      <p>route별 첫 화면이 아니라 사용자가 실제로 들어오고, 저장하고, My Flow와 Calendar에서 실행하는 흐름을 모바일 390px 기준으로 이어서 캡처했습니다.</p>
+      <p><a href="./scenario-guide.md">scenario-guide.md</a> · <a href="./scenario-evidence.json">scenario-evidence.json</a> · <a href="./review.html">route review</a></p>
+    </header>
+    <section><h2>s01. 처음 온 사용자: 홈에서 Flow 찾기로 이동</h2><div class="grid">
+          <article class="card">
+            <div class="meta"><span>홈 첫 진입</span><span>/</span></div>
+            <img src="scenario-screenshots/s01-01-home-entry.png" alt="홈 첫 진입" />
+            <p>처음 온 사용자가 핵심 행동과 대표 추천 콘텐츠를 보는 화면</p>
+            <dl>
+              <div><dt>Shell</dt><dd>4-tab · 홈</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        
+          <article class="card">
+            <div class="meta"><span>Flow 찾기 상단</span><span>/flows</span></div>
+            <img src="scenario-screenshots/s01-02-flow-finding-top.png" alt="Flow 찾기 상단" />
+            <p>홈 CTA 이후 통합 콘텐츠 목록 상단</p>
+            <dl>
+              <div><dt>Shell</dt><dd>4-tab · Flow 찾기</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        
+          <article class="card">
+            <div class="meta"><span>첫 콘텐츠 카드</span><span>/flows</span></div>
+            <img src="scenario-screenshots/s01-03-first-content-card.png" alt="첫 콘텐츠 카드" />
+            <p>카드의 제목, 결과 약속, 먼저 할 일, CTA를 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>4-tab · Flow 찾기</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        </div></section><section><h2>s02. 날짜 있는 Flow Map 저장: 이사 D-30</h2><div class="grid">
+          <article class="card">
+            <div class="meta"><span>이사 Flow Map 저장 전</span><span>/flow-maps/moving-d30</span></div>
+            <img src="scenario-screenshots/s02-01-moving-map-before-input.png" alt="이사 Flow Map 저장 전" />
+            <p>입력, 저장 결과, 먼저 할 일이 한 화면에 보이는지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>4-tab · Flow 찾기</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        
+          <article class="card">
+            <div class="meta"><span>이사일 입력 후</span><span>/flow-maps/moving-d30</span></div>
+            <img src="scenario-screenshots/s02-02-moving-map-date-entered.png" alt="이사일 입력 후" />
+            <p>날짜 입력 후 저장 CTA와 결과 예측이 유지되는지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>4-tab · Flow 찾기</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        
+          <article class="card">
+            <div class="meta"><span>저장 후 My Flow</span><span>/my?savedMap=moving-d30</span></div>
+            <img src="scenario-screenshots/s02-03-post-save-my-flow.png" alt="저장 후 My Flow" />
+            <p>저장 완료보다 첫 실행 항목이 먼저 보이는지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>4-tab · 내 Flow</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        
+          <article class="card">
+            <div class="meta"><span>첫 실행 항목 열기</span><span>/my?savedMap=moving-d30</span></div>
+            <img src="scenario-screenshots/s02-04-first-task-detail.png" alt="첫 실행 항목 열기" />
+            <p>체크 항목과 상세/메모가 과하게 노출되지 않는지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>4-tab · 내 Flow</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        
+          <article class="card">
+            <div class="meta"><span>저장 후 캘린더 첫 agenda</span><span>/calendar</span></div>
+            <img src="scenario-screenshots/s02-05-calendar-first-agenda.png" alt="저장 후 캘린더 첫 agenda" />
+            <p>가장 가까운 일정 agenda가 먼저 보이는지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>4-tab · 캘린더</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        
+          <article class="card">
+            <div class="meta"><span>이사일 선택</span><span>/calendar</span></div>
+            <img src="scenario-screenshots/s02-06-calendar-move-day-selected.png" alt="이사일 선택" />
+            <p>월간 달력에서 다른 저장 일정으로 이동했을 때 agenda가 이해되는지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>4-tab · 캘린더</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        </div></section><section><h2>s03. 공유 링크 공개 Flow 저장: 자동차검사</h2><div class="grid">
+          <article class="card">
+            <div class="meta"><span>공유 Flow 저장 전</span><span>/f/vehicle-inspection-prep</span></div>
+            <img src="scenario-screenshots/s03-01-public-flow-before-input.png" alt="공유 Flow 저장 전" />
+            <p>공유 shell과 저장 CTA가 주 행동으로 보이는지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>Share shell</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        
+          <article class="card">
+            <div class="meta"><span>공유 Flow 날짜 입력</span><span>/f/vehicle-inspection-prep</span></div>
+            <img src="scenario-screenshots/s03-02-public-flow-date-entered.png" alt="공유 Flow 날짜 입력" />
+            <p>입력 UI가 한 곳의 주 입력으로 보이는지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>Share shell</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        
+          <article class="card">
+            <div class="meta"><span>공유 Flow 저장 완료</span><span>/f/vehicle-inspection-prep</span></div>
+            <img src="scenario-screenshots/s03-03-public-flow-after-save.png" alt="공유 Flow 저장 완료" />
+            <p>저장 후 같은 공유 화면에서 다음 이동이 명확한지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>Share shell</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        
+          <article class="card">
+            <div class="meta"><span>공유 Flow 저장 후 My Flow</span><span>/my</span></div>
+            <img src="scenario-screenshots/s03-04-public-flow-my-flow.png" alt="공유 Flow 저장 후 My Flow" />
+            <p>공유 shell에서 앱 shell 실행 허브로 이어지는지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>4-tab · 내 Flow</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        </div></section><section><h2>s04. 날짜 없는 Flow Map 저장: 중1 수학</h2><div class="grid">
+          <article class="card">
+            <div class="meta"><span>날짜 없는 콘텐츠 저장 전</span><span>/flow-maps/middle-school-math-1</span></div>
+            <img src="scenario-screenshots/s04-01-math-map-before-save.png" alt="날짜 없는 콘텐츠 저장 전" />
+            <p>기준일 없이도 저장할 콘텐츠와 첫 행동을 이해할 수 있는지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>4-tab · Flow 찾기</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        
+          <article class="card">
+            <div class="meta"><span>날짜 없는 콘텐츠 저장 후</span><span>/my?savedMap=middle-school-math-1</span></div>
+            <img src="scenario-screenshots/s04-02-math-post-save-my-flow.png" alt="날짜 없는 콘텐츠 저장 후" />
+            <p>빈 상태 대신 첫 실행 항목이 보이는지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>4-tab · 내 Flow</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        
+          <article class="card">
+            <div class="meta"><span>날짜 없는 콘텐츠 첫 항목 열기</span><span>/my?savedMap=middle-school-math-1</span></div>
+            <img src="scenario-screenshots/s04-03-math-first-task-open.png" alt="날짜 없는 콘텐츠 첫 항목 열기" />
+            <p>진도/체크 실행 구조가 바로 보이는지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>4-tab · 내 Flow</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        </div></section><section><h2>s05. 반복 사용자: 여러 콘텐츠 저장 후 My Flow</h2><div class="grid">
+          <article class="card">
+            <div class="meta"><span>여러 콘텐츠 저장 후 진입</span><span>/my?savedMap=middle-school-math-1</span></div>
+            <img src="scenario-screenshots/s05-01-multiple-post-save.png" alt="여러 콘텐츠 저장 후 진입" />
+            <p>방금 저장한 콘텐츠의 첫 실행 항목과 기존 저장 항목이 충돌하지 않는지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>4-tab · 내 Flow</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        
+          <article class="card">
+            <div class="meta"><span>My Flow 전체 보기</span><span>/my?savedMap=middle-school-math-1</span></div>
+            <img src="scenario-screenshots/s05-02-my-flow-all-content.png" alt="My Flow 전체 보기" />
+            <p>반복 사용자가 저장 콘텐츠와 다음 할 일을 빠르게 구분하는지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>4-tab · 내 Flow</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        </div></section><section><h2>s06. 특수 workbench/export 화면</h2><div class="grid">
+          <article class="card">
+            <div class="meta"><span>export-first 공개 화면</span><span>/f/moving-d30-basic</span></div>
+            <img src="scenario-screenshots/s06-01-export-first-moving.png" alt="export-first 공개 화면" />
+            <p>이사일 입력 후 캘린더/시트 결과를 예측할 수 있는지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>Share shell</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        
+          <article class="card">
+            <div class="meta"><span>모바일 export 선택지</span><span>/f/moving-d30-basic</span></div>
+            <img src="scenario-screenshots/s06-02-mobile-export-sheet.png" alt="모바일 export 선택지" />
+            <p>캘린더 파일/시트/메모 결과 라벨이 예측 가능한지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>Share shell</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        
+          <article class="card">
+            <div class="meta"><span>이유식 메뉴 캘린더</span><span>/f/baby-food-menu-recipe</span></div>
+            <img src="scenario-screenshots/s06-03-baby-food-menu-calendar.png" alt="이유식 메뉴 캘린더" />
+            <p>시작일 기준 식단표와 원문 기준이 보조 정보로 정리되는지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>Share shell</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        
+          <article class="card">
+            <div class="meta"><span>냉장고 파먹기 시트</span><span>/f/fridge-cleanout-weekly-plan</span></div>
+            <img src="scenario-screenshots/s06-04-fridge-sheet-workbench.png" alt="냉장고 파먹기 시트" />
+            <p>sheet형 실행 화면이 주요 카드 톤과 맞는지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>Share shell</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        
+          <article class="card">
+            <div class="meta"><span>정확한 영상 source/result</span><span>/f/real-thankyou-bubu-home-workout-starter</span></div>
+            <img src="scenario-screenshots/s06-05-home-workout-source-result.png" alt="정확한 영상 source/result" />
+            <p>영상 근거와 실행 결과 카드가 조용한 보조 위계인지 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>Share shell</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        
+          <article class="card">
+            <div class="meta"><span>세탁기 통세척 관리 루틴</span><span>/f/washer-tub-clean-monthly</span></div>
+            <img src="scenario-screenshots/s06-06-washer-maintenance-routine.png" alt="세탁기 통세척 관리 루틴" />
+            <p>관리 루틴 카드와 source bridge visual polish를 확인</p>
+            <dl>
+              <div><dt>Shell</dt><dd>Share shell</dd></div>
+              <div><dt>Overflow</dt><dd>OK</dd></div>
+              <div><dt>Internal</dt><dd>0</dd></div>
+              <div><dt>Flow suffix</dt><dd>0</dd></div>
+            </dl>
+          </article>
+        </div></section>
+  </main>
+</body>
+</html>
