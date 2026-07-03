@@ -177,6 +177,9 @@ const flowCreatorDisplayOverrideSlugs = new Set([
 ]);
 const serviceCatalogFlowSlugs = new Set([
   'jeonse-contract-precheck-docs',
+]);
+const publicSaveActionFlowSlugs = new Set([
+  ...serviceCatalogFlowSlugs,
   'vehicle-inspection-prep',
 ]);
 const publicServiceFlowStatusHiddenSlugs = new Set([
@@ -1096,7 +1099,7 @@ export function FlowList() {
           <p className="text-sm font-semibold text-[#6E6B64]">Flow 찾기</p>
           <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
             <h1 className="break-keep text-2xl font-semibold tracking-tight text-[#1B1A17] sm:text-3xl">무엇을 저장할까요?</h1>
-            <span className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-[#3654FF] ring-1 ring-[#E7E4DD]">
+            <span data-testid="flow-catalog-count" className="text-sm font-semibold text-[#8A857B]">
               {hasCatalogFilter ? `${visibleCatalogCount}/${totalCatalogCount}개 콘텐츠` : `${totalCatalogCount}개 콘텐츠`}
             </span>
           </div>
@@ -1432,36 +1435,6 @@ function getFlowMapCatalogCounts(
 
 export function HomeLanding() {
   const primaryMap = homeFlowMapBaselineLinks[0];
-  const homeMenuTree = [
-    {
-      id: 'find',
-      label: 'Flow 찾기',
-      title: '저장할 콘텐츠 고르기',
-      summary: '내 일정이나 체크리스트로 옮길 콘텐츠를 고릅니다.',
-      href: '/flows',
-    },
-    {
-      id: 'calendar',
-      label: '캘린더',
-      title: '날짜가 있는 항목 실행',
-      summary: '날짜가 있는 할 일을 월간 일정에서 확인합니다.',
-      href: '/calendar',
-    },
-    {
-      id: 'my',
-      label: '내 Flow',
-      title: '오늘 할 일 이어가기',
-      summary: '오늘/다음/밀린 할 일과 원문 메모를 이어서 봅니다.',
-      href: '/my',
-    },
-    {
-      id: 'create',
-      label: '만들기',
-      title: '내 콘텐츠를 Flow로 정리',
-      summary: '원문을 붙여 일정이나 체크 항목으로 정리합니다.',
-      href: '/flows/new',
-    },
-  ];
 
   return (
     <main className="min-h-screen bg-[#FAFAF8] px-5 py-6 pb-28 md:py-8 md:pb-12">
@@ -1480,6 +1453,14 @@ export function HomeLanding() {
               콘텐츠 고르러 가기
             </Link>
           </div>
+          <div data-testid="home-secondary-actions" className="mt-3 flex flex-wrap gap-3 text-sm font-semibold">
+            <Link className="text-[#6E6B64] underline-offset-2 hover:text-[#3654FF] hover:underline" href="/my">
+              저장한 콘텐츠 보기
+            </Link>
+            <Link className="text-[#6E6B64] underline-offset-2 hover:text-[#3654FF] hover:underline" href="/calendar">
+              캘린더 보기
+            </Link>
+          </div>
         </div>
         {primaryMap ? (
           <Link
@@ -1490,45 +1471,14 @@ export function HomeLanding() {
             <p className="text-sm font-semibold text-[#3654FF]">추천 콘텐츠</p>
             <h2 className="mt-2 text-2xl font-semibold leading-snug text-slate-950">{primaryMap.title}</h2>
             <p className="mt-2 break-keep text-sm leading-6 text-[#6E6B64]">{primaryMap.summary}</p>
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              {[
-                { label: '입력', value: primaryMap.input },
-                { label: '저장', value: primaryMap.artifact },
-                { label: '결과', value: `${primaryMap.counts.steps}개 할 일` },
-              ].map((signal) => (
-                <div key={signal.label} className="rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-2.5 py-2">
-                  <p className="text-[11px] font-semibold text-[#6E6B64]">{signal.label}</p>
-                  <p className="mt-0.5 truncate text-xs font-semibold text-slate-950">{signal.value}</p>
-                </div>
-              ))}
-            </div>
+            <p data-testid="home-primary-flow-promise" className="mt-4 rounded-xl bg-[#FAFAF8] px-3 py-2.5 text-sm font-semibold leading-5 text-[#1B1A17]">
+              이사일만 넣으면 D-30 일정 · 할 일 {primaryMap.counts.steps}개
+            </p>
             <p className="mt-4 border-t border-[#E7E4DD] pt-3 text-sm font-semibold text-[#3654FF]">저장 전 보기</p>
           </Link>
         ) : null}
       </section>
 
-      <section data-testid="home-menu-tree-section" className="mt-2 rounded-2xl border border-[#E7E4DD] bg-white p-4 md:p-5">
-        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="text-sm font-semibold text-[#3654FF]">시작 경로</p>
-            <h2 className="mt-1 text-2xl font-semibold text-gray-950">고르고 저장하고 이어가기</h2>
-          </div>
-        </div>
-        <div className="mt-4 grid gap-3 md:grid-cols-4">
-          {homeMenuTree.map((item, index) => (
-            <Link
-              key={item.id}
-              data-testid="home-menu-tree-card"
-              className="block rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] p-4 text-left transition hover:border-[#3654FF]/40 hover:bg-white"
-              href={item.href}
-            >
-              <p className="text-xs font-semibold text-[#3654FF]">{index + 1}. {item.label}</p>
-              <h3 className="mt-2 text-base font-semibold leading-6 text-gray-950">{item.title}</h3>
-              <p className="mt-2 break-keep text-sm leading-5 text-[#6E6B64]">{item.summary}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
       </div>
     </main>
   );
@@ -8055,7 +8005,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const showDesktopReferenceRail = shouldUseDesktopReferenceRail(bundle);
   const hideSharedPublicFooter = shouldHideSharedPublicFooter(bundle);
   const compactJeonsePage = isJeonsePrecheckFlow(bundle);
-  const showPublicSaveAction = serviceCatalogFlowSlugs.has(bundle.flow.slug) && !showExportFirstHero;
+  const showPublicSaveAction = publicSaveActionFlowSlugs.has(bundle.flow.slug) && !showExportFirstHero;
   const showMobileExportActions = showMobileActions && !compactJeonsePage && !showPublicSaveAction;
   const primaryDestination = inferPrimaryDestination(bundle);
   const holdSignalCount = getHoldSignalCount(bundle, workbenchState);
