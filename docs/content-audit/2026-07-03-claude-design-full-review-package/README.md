@@ -8,9 +8,10 @@
 
 1. [prompt-ko.md](./prompt-ko.md)
 2. [source-review-map.md](./source-review-map.md)
-3. [review.html](./review.html)
-4. [screenshots/](./screenshots/)
-5. 필요 시 아래 핵심 소스 파일 직접 확인
+3. [deliverables.md](./deliverables.md)
+4. [review.html](./review.html)
+5. [screenshots/](./screenshots/)
+6. 필요 시 아래 핵심 소스 파일 직접 확인
 
 ## 핵심 소스 파일
 
@@ -67,7 +68,18 @@
 
 ## 요청 출력
 
-Claude Design에는 Blocking / High / Medium / Low로 나누어 다음 형식으로 달라고 요청합니다.
+Claude Design에는 평가에서 끝내지 말고 개선 방향과 구현 가능한 산출물까지 요청합니다.
+
+필수 산출물:
+
+1. 전체 UX 진단
+2. Blocking / High / Medium / Low 우선순위
+3. 화면별 revised UX spec
+4. Flow 찾기 카드 redesign spec
+5. My Flow 실행 허브 redesign spec
+6. export/source/memo 영역 정리안
+7. 개발자가 바로 작업할 수 있는 구현 체크리스트
+8. 수정 후 검증 기준
 
 - 문제
 - 근거 화면 또는 소스 파일
