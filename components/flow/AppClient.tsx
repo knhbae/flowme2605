@@ -5977,7 +5977,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   );
 
   return (
-    <main className={`mx-auto max-w-6xl px-4 pb-40 sm:px-5 md:pb-8 ${isCalendarSurface ? 'py-3 sm:py-6' : 'py-4 sm:py-8'}`}>
+    <main className={`mx-auto max-w-6xl px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:px-5 md:pb-8 ${isCalendarSurface ? 'py-3 sm:py-6' : 'py-4 sm:py-8'}`}>
       <PlatformNav />
       <div className={`flex flex-wrap items-end justify-between gap-4 ${isCalendarSurface ? 'mb-3 sm:mb-5' : 'mb-5 sm:mb-8'}`}>
         <div>
@@ -6547,7 +6547,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   </div>
                 </div>
               </section>
-              <div className="grid gap-3 pb-36 sm:pb-0 lg:grid-cols-[minmax(0,1.45fr)_minmax(340px,0.75fr)]">
+              <div className="grid gap-3 pb-0 lg:grid-cols-[minmax(0,1.45fr)_minmax(340px,0.75fr)]">
               <section ref={myFlowCalendarCardRef} data-testid="my-flow-calendar-card" className="order-2 rounded-lg border border-slate-200 bg-white p-1 shadow-sm sm:p-4 lg:order-1">
                 <div className="hidden items-start justify-between gap-3 sm:flex">
                   <div>

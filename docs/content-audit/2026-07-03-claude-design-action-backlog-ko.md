@@ -58,6 +58,7 @@ Claude Design 리뷰의 결론은 새 기능 추가가 아니라 위계 압축�
 - 2026-07-03: P1-05를 처리했다. `/my` Today의 첫 슬롯을 요약 카드보다 위로 올리고 실행 후보를 오늘, 밀린, 다음, 날짜 없는 첫 항목 순으로 정렬했다. 빈 상태 문구는 `남은 할 일이 없습니다`가 아니라 보조 요약으로 낮췄고, 날짜 없는 진도형 콘텐츠는 `먼저 할 일`로 표시한다. 390px 확인 결과 `moving-d30-basic`은 실행 슬롯 top 295px, 요약 top 535px, overflow 0건이고, `middle-school-math-1` 저장 직후는 `먼저 할 일` 카드가 보였다.
 - 2026-07-03: P1-06을 처리했다. `/calendar` 기본 선택은 오늘 일정이 없을 때 가장 가까운 미래 일정일, 미래가 없으면 가장 가까운 밀린 일정일을 선택한다. 모바일에서는 선택일 agenda를 월간 달력보다 먼저 보여주고, 달력 셀은 긴 제목 대신 dot/count 중심으로 낮췄다. 390px 확인 결과 미래 일정 anchor는 agenda top 163px, calendar grid top 745px, 과거 일정만 있는 상태는 agenda top 163px, calendar grid top 573px, 가로 overflow 0건이었다. targeted Playwright calendar subset 통과.
 - 2026-07-03: P1-07을 처리했다. 일반 사용자 라우트(`/`, `/flows`, `/flow-maps/*`, `/f/*`, `/my`, `/calendar`) 금지어 스캔을 보강해 `Flow Map`, `Flow 일정`, `지도 일정`, demo/review/audit/source-backed/sourceTrace/Step/Item 계열 문구가 보이지 않게 고정했다. `후보`는 `견적 후보` 같은 실제 사용자 행동을 막지 않도록 대표/샘플/보류/삭제 후보 같은 내부 상태 패턴만 잡는다. `/calendar`의 `전체 Flow 일정`, `저장한 Flow의 날짜...`, 선택일 그룹 `지도 일정`/`Flow 일정`은 `전체 일정`, `저장한 콘텐츠`, `저장한 일정`/`일정`으로 낮췄다. targeted Playwright user-route internal-copy scan 통과.
+- 2026-07-03: P2-03을 처리했다. 모바일 하단 탭은 safe-area를 반영하고, Flow Map sticky 저장 CTA는 하단 탭 위로 16px 이상 떨어지도록 올렸다. `/flow-maps/[map]`의 하단 padding은 CTA+탭 조합을 기준으로 재계산했고, `/my`와 `/calendar`는 중복 bottom padding을 줄여 마지막 콘텐츠가 탭에 가려지지 않게 했다. targeted Playwright fixed-layer overlap scan은 RED에서 sticky/탭 간격 10px로 실패했고, 수정 후 `/flow-maps/moving-d30`, `/flow-maps/middle-school-math-1`, `/my?savedMap=moving-d30`, `/calendar` 통과.
 
 ## P1 - P0 후 이어서 해결
 
@@ -77,7 +78,7 @@ Claude Design 리뷰의 결론은 새 기능 추가가 아니라 위계 압축�
 | --- | --- | --- |
 | P2-01 | Export copy | export 라벨 3종을 상수화한다. |
 | P2-02 | 빈 상태 | My Flow 빈 상태 CTA를 `콘텐츠 고르러 가기` 하나로 정리한다. |
-| P2-03 | fixed layer | 하단 탭과 sticky 저장 바가 2층으로 겹치지 않게 정리한다. |
+| P2-03 | fixed layer | 완료 - safe-area, sticky 저장 CTA, My Flow/Calendar bottom spacing을 정리하고 overlap 회귀 테스트를 추가했다. |
 | P2-04 | 저장 목록 요약 | 0개 칩 숨김, 진행바 + n/n 하나로 정리한다. |
 | P2-05 | 디자인 토큰 | 주요 색, 카드 radius/padding, 버튼 hierarchy를 통일한다. |
 

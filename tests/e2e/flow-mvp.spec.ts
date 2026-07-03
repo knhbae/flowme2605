@@ -36,6 +36,22 @@ async function expectNoInternalUserSurfaceCopy(locator: Locator) {
   }
 }
 
+async function expectVerticalGap(upper: Locator, lower: Locator, minGap = 16) {
+  const upperBox = await upper.boundingBox();
+  const lowerBox = await lower.boundingBox();
+  expect(upperBox).not.toBeNull();
+  expect(lowerBox).not.toBeNull();
+  expect(lowerBox!.y - (upperBox!.y + upperBox!.height)).toBeGreaterThanOrEqual(minGap);
+}
+
+async function expectElementClearsFixedLayer(content: Locator, layer: Locator, minGap = 16) {
+  const contentBox = await content.boundingBox();
+  const layerBox = await layer.boundingBox();
+  expect(contentBox).not.toBeNull();
+  expect(layerBox).not.toBeNull();
+  expect(contentBox!.y + contentBox!.height).toBeLessThanOrEqual(layerBox!.y - minGap);
+}
+
 test('home presents FLOW as an executable content platform', async ({ page }) => {
   await page.goto('/');
 
@@ -377,6 +393,38 @@ test('main user routes keep internal operation labels off the visible surface', 
   await page.goto('/flow-maps/middle-school-math-1/creator');
   const creatorMap = page.getByTestId('flow-map-creator');
   await expect(creatorMap).toContainText('사용자에게 저장될 Step');
+});
+
+test('mobile fixed layers keep save actions and final content separated', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  for (const route of ['/flow-maps/moving-d30', '/flow-maps/middle-school-math-1']) {
+    await page.goto(route);
+    await expect(page.getByTestId('flow-map-public')).toBeVisible();
+    const mobileTabs = page.getByTestId('platform-mobile-tabs');
+    const stickySave = page.getByTestId('flow-map-mobile-sticky-save');
+    await expect(stickySave).toBeVisible();
+    await expectVerticalGap(stickySave, mobileTabs, 16);
+
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    const finalFlowMapArticle = page.getByTestId('flow-map-public').locator('article').last();
+    await expectElementClearsFixedLayer(finalFlowMapArticle, stickySave, 16);
+  }
+
+  await page.goto('/flow-maps/moving-d30');
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
+  await page.getByTestId('flow-map-anchor-input').fill('2026-07-22');
+  await page.getByTestId('flow-map-save-all-mobile').click();
+  await expect(page).toHaveURL('/my?savedMap=moving-d30');
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await expectElementClearsFixedLayer(page.getByTestId('my-flow-workspace'), page.getByTestId('platform-mobile-tabs'), 16);
+
+  await page.goto('/calendar');
+  await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await expectElementClearsFixedLayer(page.getByTestId('my-flow-calendar-card'), page.getByTestId('platform-mobile-tabs'), 16);
+  await expectNoInternalUserSurfaceCopy(page.locator('body'));
 });
 
 test('flow card title opens the public execution page', async ({ page }) => {

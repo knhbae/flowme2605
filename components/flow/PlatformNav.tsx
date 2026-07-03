@@ -116,7 +116,7 @@ export function PlatformNav() {
       </nav>
 
       <nav
-        className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-4 gap-1 rounded-xl border border-slate-200 bg-white/95 p-1 shadow-lg backdrop-blur sm:hidden"
+        className="fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-40 grid grid-cols-4 gap-1 rounded-xl border border-slate-200 bg-white/95 p-1 shadow-lg backdrop-blur sm:hidden"
         aria-label="주요 화면"
         data-testid="platform-mobile-tabs"
       >
