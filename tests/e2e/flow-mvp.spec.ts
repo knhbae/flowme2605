@@ -1266,11 +1266,18 @@ test('my flow source-backed demo stays lightweight on mobile inventory', async (
 });
 
 test('source-backed flow map public page stays save-before focused', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flow-maps/middle-school-math-1');
 
   const publicMap = page.getByTestId('flow-map-public');
   await expect(publicMap).toBeVisible();
   await expect(publicMap.getByRole('heading', { name: '중1 수학 목차 진도표' })).toBeVisible();
+  await expect(publicMap.getByTestId('flow-map-result-promise')).toBeVisible();
+  await expect(publicMap.getByTestId('flow-map-result-chips')).toBeVisible();
+  await expect(publicMap.getByTestId('flow-map-first-action-preview')).toContainText('소인수분해');
+  await expect(publicMap).not.toContainText('저장되는 결과물');
+  const firstActionTop = await publicMap.getByTestId('flow-map-first-action-preview').evaluate((element) => element.getBoundingClientRect().top);
+  expect(firstActionTop).toBeLessThan(720);
   await expect(publicMap).toContainText('Mathbang 중1 수학 목차');
   await expect(publicMap).toContainText('소인수분해');
   await expect(publicMap).toContainText('정수와 유리수');
@@ -1402,6 +1409,13 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
   const publicMap = page.getByTestId('flow-map-public');
   await expect(publicMap.getByRole('heading', { name: '원룸 이사 D-30 일정 지도' })).toBeVisible();
   await expect(publicMap.getByLabel('이사일')).toBeVisible();
+  await expect(publicMap.getByTestId('flow-map-result-chips')).toBeVisible();
+  await expect(publicMap.getByTestId('flow-map-first-action-preview')).toContainText('이사 방식과 견적 후보 정하기');
+  await expect(publicMap).not.toContainText('저장되는 결과물');
+  const anchorTop = await publicMap.getByTestId('flow-map-anchor-input').evaluate((element) => element.getBoundingClientRect().top);
+  const firstActionTop = await publicMap.getByTestId('flow-map-first-action-preview').evaluate((element) => element.getBoundingClientRect().top);
+  expect(anchorTop).toBeLessThan(500);
+  expect(firstActionTop).toBeLessThan(760);
   await expect(publicMap).toContainText('원룸 이사 D-30 준비');
   await expect(publicMap).toContainText('이사 방식과 견적 후보 정하기');
   await expect(publicMap).toContainText('견적 후보 2-3곳을 열고 연락처를 메모합니다.');

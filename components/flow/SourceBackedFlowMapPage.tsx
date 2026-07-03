@@ -47,27 +47,38 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
   if (!publishPackage) return <NotFoundMap />;
 
   const { map, public: publicSurface } = publishPackage;
+  const firstFlow = publicSurface.childFlows[0];
+  const firstStep = firstFlow?.steps[0];
+  const firstStepDetail = firstStep?.detailItems[0];
+  const resultText = publicSurface.artifacts.join(' + ') || '할 일';
+  const resultPromise = publicSurface.setupInput
+    ? `${publicSurface.setupInput.label}만 넣으면 저장됩니다: ${resultText}`
+    : `바로 저장됩니다: ${resultText}`;
 
   return (
     <main data-testid="flow-map-public" className="min-h-screen bg-[#FAFAF8] px-4 py-5 pb-36 sm:px-5 sm:py-8 sm:pb-16">
       <div className="mx-auto max-w-5xl">
       <PlatformNav />
-      <section className="rounded-2xl border border-[#E7E4DD] bg-white p-5 sm:p-6">
+      <section data-testid="flow-map-hero" className="rounded-2xl border border-[#E7E4DD] bg-white p-4 sm:p-6">
         <p className="text-sm font-semibold text-[#3654FF]">저장 전 보기</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{publicSurface.title}</h1>
-        <p className="mt-3 max-w-2xl break-keep text-base leading-7 text-[#6E6B64]">{getUserFacingMapSummary(publicSurface.summary)}</p>
-        {publicSurface.userFacingStatus || publicSurface.categoryLabel || publicSurface.counts ? (
-          <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
-            {publicSurface.categoryLabel ? <span className="rounded-full bg-[#F1F0EC] px-2.5 py-1 text-[#1B1A17]">{publicSurface.categoryLabel}</span> : null}
-            {publicSurface.userFacingStatus ? <span className="rounded-full bg-white px-2.5 py-1 text-[#6E6B64] ring-1 ring-[#E7E4DD]">{publicSurface.userFacingStatus}</span> : null}
-            {publicSurface.counts ? (
-              <span className="rounded-full bg-[#FAFAF8] px-2.5 py-1 text-[#6E6B64]">
-                {publicSurface.counts.steps}개 할 일 · {publicSurface.counts.items}개 체크
-              </span>
-            ) : null}
-          </div>
-        ) : null}
-        <div className="mt-5 flex flex-wrap gap-2">
+        <h1 className="mt-1 break-keep text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">{publicSurface.title}</h1>
+        <p data-testid="flow-map-result-promise" className="mt-2 break-keep text-sm font-semibold leading-6 text-[#3654FF] sm:text-base">
+          {resultPromise}
+        </p>
+        <div data-testid="flow-map-result-chips" className="mt-3 flex flex-wrap gap-1.5 text-[11px] font-semibold text-[#6E6B64]">
+          {publicSurface.categoryLabel ? <span className="rounded-full bg-[#F1F0EC] px-2.5 py-1 text-[#1B1A17]">{publicSurface.categoryLabel}</span> : null}
+          {publicSurface.artifacts.map((artifact) => (
+            <span key={artifact} className="rounded-full bg-[#FAFAF8] px-2.5 py-1 text-[#6E6B64]">
+              {artifact}
+            </span>
+          ))}
+          {publicSurface.counts ? (
+            <span className="rounded-full bg-white px-2.5 py-1 text-[#8A857B] ring-1 ring-[#E7E4DD]">
+              할 일 {publicSurface.counts.steps}개
+            </span>
+          ) : null}
+        </div>
+        <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(280px,0.85fr)] md:items-start">
           <SourceBackedFlowMapSaveButton
             mapId={map.id}
             savedFlows={publicSurface.childFlows.map((flow) => ({
@@ -76,19 +87,14 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
             }))}
             setupInput={publicSurface.setupInput}
           />
-          <a className="inline-flex min-h-11 w-full items-center justify-center rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700 sm:w-auto" href={map.sourceUrl} target="_blank" rel="noreferrer">
-            원문 보기
-          </a>
+          {firstStep ? (
+            <div data-testid="flow-map-first-action-preview" className="rounded-xl bg-[#FAFAF8] px-3 py-3">
+              <p className="text-[11px] font-semibold text-[#6E6B64]">먼저 할 일</p>
+              <h2 className="mt-1 line-clamp-2 break-keep text-sm font-semibold text-slate-950">{firstStep.title}</h2>
+              {firstStepDetail ? <p className="mt-1 line-clamp-2 break-keep text-xs font-medium leading-5 text-slate-600">{firstStepDetail}</p> : null}
+            </div>
+          ) : null}
         </div>
-      </section>
-
-      <section className="mt-4 grid gap-2 sm:grid-cols-3">
-        {publicSurface.artifacts.map((artifact) => (
-          <div key={artifact} className="rounded-2xl border border-[#E7E4DD] bg-white px-4 py-3">
-            <p className="text-xs font-semibold text-[#6E6B64]">저장되는 결과물</p>
-            <p className="mt-1 text-sm font-semibold text-slate-950">{artifact}</p>
-          </div>
-        ))}
       </section>
 
       <section className="mt-5 rounded-2xl border border-[#E7E4DD] bg-white p-4 sm:p-5">
@@ -96,8 +102,14 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
           <div>
             <p className="text-sm font-semibold text-[#6E6B64]">원문과 실행 항목</p>
             <h2 className="mt-1 text-xl font-semibold text-slate-950">{publicSurface.sourceTitle}</h2>
+            <p className="mt-1 max-w-2xl break-keep text-sm leading-6 text-[#6E6B64]">{getUserFacingMapSummary(publicSurface.summary)}</p>
           </div>
-          <p className="rounded-full bg-[#FAFAF8] px-2.5 py-1 text-xs font-semibold text-[#6E6B64]">{publicSurface.setupInput ? '입력 1개' : '입력 없음'}</p>
+          <div className="flex flex-wrap gap-2">
+            <p className="rounded-full bg-[#FAFAF8] px-2.5 py-1 text-xs font-semibold text-[#6E6B64]">{publicSurface.setupInput ? '입력 1개' : '입력 없음'}</p>
+            <a data-testid="flow-map-source-link" className="rounded-full border border-[#E7E4DD] bg-white px-2.5 py-1 text-xs font-semibold text-[#3654FF] hover:border-[#3654FF]/40" href={map.sourceUrl} target="_blank" rel="noreferrer">
+              원문 보기
+            </a>
+          </div>
         </div>
         <div className="mt-4 grid gap-4">
           {publicSurface.childFlows.map((flow) => (
