@@ -2515,14 +2515,16 @@ function findFirstMyFlowDateInMonth(rows: MyFlowCalendarRow[], monthDate: string
 }
 
 function findMyFlowDefaultFocusDate(rows: MyFlowCalendarRow[], todayDate: string, fallbackDate: string): string {
-  const datedRows = rows
-    .map((row) => row.date)
-    .filter((date): date is string => Boolean(date))
-    .sort();
+  const datedRows = Array.from(
+    new Set(rows
+      .map((row) => row.date)
+      .filter((date): date is string => Boolean(date))),
+  ).sort();
+  if (datedRows.length === 0) return getMyFlowMonthStart(fallbackDate);
+  if (datedRows.includes(todayDate)) return todayDate;
   const nextDate = datedRows.find((date) => date >= todayDate);
   if (nextDate) return nextDate;
-  if (datedRows.length > 0) return todayDate;
-  return getMyFlowMonthStart(fallbackDate);
+  return datedRows[datedRows.length - 1] ?? getMyFlowMonthStart(fallbackDate);
 }
 
 type MyFlowView = 'today' | 'calendar' | 'flow' | 'checklist' | 'routine';
@@ -3617,6 +3619,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     primarySavedViewTabs.length === 3 ? 'grid-cols-3' :
     'grid-cols-4';
   const showSavedViewTabs = !isCalendarSurface && visibleSavedViewTabs.length > 0;
+  const showMyFlowWorkspaceControls = showMyFlowScopeControl || showSavedViewTabs;
   const myFlowWorkspaceHeader = (() => {
     if (showPostSavePanel) {
       return {
@@ -4363,20 +4366,19 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       );
     }
     const itemCountOnDate = Number(info.event.extendedProps.itemCountOnDate ?? 1);
-    const itemTitle = String(info.event.extendedProps.itemTitle ?? info.event.title);
-    const shortTitle = String(info.event.extendedProps.shortTitle ?? info.event.title);
     const checked = Boolean(info.event.extendedProps.checked);
     const color = String(info.event.extendedProps.color ?? '#2563EB');
+    const scheduleLabel = itemCountOnDate > 1 ? `${itemCountOnDate}개` : '일정';
 
     return (
-      <span data-testid="my-flow-calendar-schedule-content" className="flex min-w-0 items-start gap-0.5">
+      <span data-testid="my-flow-calendar-schedule-content" className="flex min-w-0 items-center gap-1">
         <span
           data-testid="my-flow-calendar-schedule-rail"
-          className="mt-0.5 h-4 w-[3px] shrink-0 rounded-full"
+          className="h-2.5 w-2.5 shrink-0 rounded-full"
           style={{ backgroundColor: checked ? '#94A3B8' : color }}
         />
-        <span className={`${checked ? 'text-slate-400 line-through' : 'text-slate-950'} ${itemCountOnDate === 1 ? 'line-clamp-2 whitespace-normal text-[10px] font-semibold leading-tight' : 'block truncate text-[10px] font-semibold'}`}>
-          {itemCountOnDate === 1 ? itemTitle : shortTitle}
+        <span className={`truncate text-[10px] font-black leading-none ${checked ? 'text-slate-400 line-through' : 'text-slate-700'}`}>
+          {scheduleLabel}
         </span>
       </span>
     );
@@ -5892,7 +5894,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       <section data-testid="my-flow-calendar-card" className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-slate-950">월간 캘린더</h2>
+            <h2 className="text-lg font-semibold text-slate-950">월간 일정</h2>
             <p className="mt-1 text-sm text-slate-600">저장된 일정이 생기면 이 달력에 표시됩니다.</p>
           </div>
           <span className="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">0개 일정</span>
@@ -5975,13 +5977,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   );
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-4 pb-40 sm:px-5 sm:py-8 md:pb-8">
+    <main className={`mx-auto max-w-6xl px-4 pb-40 sm:px-5 md:pb-8 ${isCalendarSurface ? 'py-3 sm:py-6' : 'py-4 sm:py-8'}`}>
       <PlatformNav />
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-4 sm:mb-8">
+      <div className={`flex flex-wrap items-end justify-between gap-4 ${isCalendarSurface ? 'mb-3 sm:mb-5' : 'mb-5 sm:mb-8'}`}>
         <div>
-          <p className="text-sm font-medium text-gray-500">{isCalendarSurface ? '일정 보기' : '내 실행 공간'}</p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">{isCalendarSurface ? '캘린더' : '내 Flow'}</h1>
-          <p className="mt-1 text-sm text-gray-600 sm:mt-2 sm:text-base">
+          <p className={isCalendarSurface ? 'text-xs font-semibold text-blue-700' : 'text-sm font-medium text-gray-500'}>{isCalendarSurface ? '일정 보기' : '내 실행 공간'}</p>
+          <h1 className={`${isCalendarSurface ? 'mt-0.5 text-2xl' : 'mt-1 text-2xl sm:text-3xl'} font-semibold tracking-tight`}>{isCalendarSurface ? '캘린더' : '내 Flow'}</h1>
+          <p className={`${isCalendarSurface ? 'hidden sm:block' : 'sm:mt-2 sm:text-base'} mt-1 text-sm text-gray-600`}>
             {isCalendarSurface
               ? '저장한 Flow의 날짜가 있는 항목을 캘린더에서 바로 확인합니다.'
               : '오늘, 다음, 밀린 할 일을 먼저 봅니다.'}
@@ -6025,7 +6027,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
       {savedFlows.length > 0 ? (
         <section className="mb-6">
-          <div className={`mb-2 flex-wrap items-end justify-between gap-3 sm:mb-3 ${isCalendarSurface ? 'flex' : 'hidden sm:flex'}`}>
+          <div className={`mb-2 flex-wrap items-end justify-between gap-3 sm:mb-3 ${isCalendarSurface ? 'hidden lg:flex' : 'hidden sm:flex'}`}>
             <div>
               <p className="text-sm font-semibold text-blue-700">{myFlowWorkspaceHeader.eyebrow}</p>
               <div className="flex flex-wrap items-center gap-2">
@@ -6073,6 +6075,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </aside>
             ) : null}
             <div className="min-w-0">
+              {showMyFlowWorkspaceControls ? (
               <div className="mb-4 rounded-lg border border-slate-200 bg-white p-2 shadow-sm sm:flex sm:items-end sm:justify-between sm:gap-3">
                 {showMyFlowScopeControl ? (
                   <div className="min-w-0 sm:w-72">
@@ -6130,6 +6133,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   </div>
                 ) : null}
               </div>
+              ) : null}
 
               {savedView === 'today' ? (
                 <div className="mb-4 grid min-w-0 gap-4">
@@ -6544,11 +6548,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 </div>
               </section>
               <div className="grid gap-3 pb-36 sm:pb-0 lg:grid-cols-[minmax(0,1.45fr)_minmax(340px,0.75fr)]">
-              <section ref={myFlowCalendarCardRef} data-testid="my-flow-calendar-card" className="rounded-lg border border-slate-200 bg-white p-1 shadow-sm sm:p-4">
+              <section ref={myFlowCalendarCardRef} data-testid="my-flow-calendar-card" className="order-2 rounded-lg border border-slate-200 bg-white p-1 shadow-sm sm:p-4 lg:order-1">
                 <div className="hidden items-start justify-between gap-3 sm:flex">
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-950">월간 캘린더</h3>
-                    <p className="mt-1 hidden text-sm text-slate-600 sm:block">일정은 짧게, 루틴은 아이콘으로 표시합니다.</p>
+                    <h3 className="text-lg font-semibold text-slate-950">월간 일정</h3>
+                    <p className="mt-1 hidden text-sm text-slate-600 sm:block">일정은 점으로, 루틴은 아이콘으로 표시합니다.</p>
                   </div>
                   <div className="hidden flex-wrap gap-2 sm:flex">
                     <span className="rounded-md bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">{monthCalendarRows.filter((row) => row.flow.bundle.flow.structure_type !== 'routine').length}개 일정</span>
@@ -6699,7 +6703,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 data-testid="my-flow-calendar-selected-day"
                 data-overflow-date={myFlowRoutineOverflowDate === myFlowSelectedDate ? myFlowRoutineOverflowDate : undefined}
                 data-schedule-overflow-date={myFlowScheduleOverflowDate === myFlowSelectedDate ? myFlowScheduleOverflowDate : undefined}
-                className="rounded-lg border border-slate-200 bg-white p-2 shadow-sm sm:p-4"
+                className="order-1 rounded-lg border border-slate-200 bg-white p-2 shadow-sm sm:p-4 lg:order-2"
               >
                 <p className="text-xs font-semibold text-slate-500">선택한 날짜</p>
                 <h3 className="mt-1 text-lg font-semibold text-slate-950">{formatMyFlowDisplayDate(myFlowSelectedDate, { includeWeekday: true })}</h3>

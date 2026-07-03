@@ -991,6 +991,69 @@ test('my flow today puts the executable slot before the summary on mobile', asyn
   expect(nowBox?.y ?? 0).toBeLessThan(summaryBox?.y ?? 0);
 });
 
+test('calendar route opens the nearest saved schedule instead of an empty today', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.clock.install({ time: new Date('2026-07-03T09:00:00+09:00') });
+  await page.addInitScript(() => {
+    const savedAt = '2026-07-03T00:00:00.000Z';
+    localStorage.setItem('flow:saved:moving-d30-basic', JSON.stringify({
+      slug: 'moving-d30-basic',
+      savedAt,
+      selectedArtifactMode: 'calendar',
+      anchor: '2026-06-02',
+    }));
+    localStorage.setItem('flow:moving-d30-basic:anchorDate', JSON.stringify({
+      mode: 'custom',
+      anchor: '2026-06-02',
+    }));
+  });
+
+  await page.goto('/calendar');
+
+  const selectedDay = page.getByTestId('my-flow-calendar-selected-day');
+  await expect(selectedDay.locator('h3')).toContainText('6월 3일');
+  await expect(selectedDay.locator('h3')).not.toContainText(/\d{4}-\d{2}-\d{2}/);
+  await expect(selectedDay).not.toContainText('이 날짜에 등록된 일정이 없습니다.');
+  const selectedDateGroup = selectedDay.getByTestId('my-flow-selected-date-group').first();
+  await expect(selectedDateGroup).toContainText('이사 준비 Flow');
+  await expect(selectedDateGroup).toContainText('2개 · 2개 남음');
+  await expect(page.locator('.fc-daygrid-day[data-date="2026-06-03"]')).toHaveClass(/my-flow-calendar-selected-date/);
+  await expectNoInternalUserSurfaceCopy(page.locator('body'));
+});
+
+test('calendar route keeps the first agenda and light day cells in the mobile viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.clock.install({ time: new Date('2026-07-03T09:00:00+09:00') });
+  await page.addInitScript(() => {
+    const savedAt = '2026-07-03T00:00:00.000Z';
+    localStorage.setItem('flow:saved:moving-d30-basic', JSON.stringify({
+      slug: 'moving-d30-basic',
+      savedAt,
+      selectedArtifactMode: 'calendar',
+      anchor: '2026-07-22',
+    }));
+    localStorage.setItem('flow:moving-d30-basic:anchorDate', JSON.stringify({
+      mode: 'custom',
+      anchor: '2026-07-22',
+    }));
+  });
+
+  await page.goto('/calendar');
+
+  const selectedDay = page.getByTestId('my-flow-calendar-selected-day');
+  await expect(selectedDay.locator('h3')).toContainText('7월 12일');
+  const selectedDayBox = await selectedDay.boundingBox();
+  expect(selectedDayBox?.y ?? 9999).toBeLessThan(540);
+  await expect(selectedDay.getByTestId('my-flow-selected-date-group').first()).toContainText('이사 준비 Flow');
+
+  const scheduleContent = page.locator('.fc-daygrid-day[data-date="2026-07-12"] [data-testid="my-flow-calendar-schedule-content"]').first();
+  await expect(scheduleContent).toBeVisible();
+  await expect(scheduleContent).not.toContainText('이사 방식과 견적 후보 정하기');
+  const scheduleContentText = (await scheduleContent.innerText()).trim();
+  expect(scheduleContentText.length).toBeLessThanOrEqual(6);
+  await expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
+});
+
 test('my flow filters narrow saved calendar checklist and routine management', async ({ page }) => {
   await page.addInitScript(() => {
     const savedAt = '2026-05-27T00:00:00.000Z';
@@ -1172,7 +1235,7 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail')).toBeVisible();
   await page.getByTestId('my-flow-calendar-selected-day').getByRole('button', { name: '닫기', exact: true }).click();
   await expect(page.locator('.fc-daygrid-day[data-date="2026-06-03"] [data-testid="my-flow-routine-overflow"]')).toContainText('+3');
-  await page.locator('.fc-daygrid-day[data-date="2026-05-28"]').click();
+  await page.locator('.fc-daygrid-day[data-date="2026-05-28"]').getByTestId('my-flow-calendar-date-button').click();
   const selectedCalendarRow = page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="scheduled_task"]').first();
   await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('컴퓨터활용능력 학습 Flow');
   await expect(selectedCalendarRow).not.toContainText('컴퓨터활용능력 학습 Flow');
@@ -2353,8 +2416,11 @@ test('my flow mobile calendar keeps date selection separate and gives events usa
   expect(calendarCardBox?.x ?? 9999).toBeGreaterThanOrEqual(0);
   expect((calendarCardBox?.x ?? 9999) + (calendarCardBox?.width ?? 0)).toBeLessThanOrEqual(390);
   expect(calendarCardBox?.width ?? 0).toBeGreaterThanOrEqual(350);
+  const initialSelectedDayBox = await page.getByTestId('my-flow-calendar-selected-day').boundingBox();
+  expect(initialSelectedDayBox?.y ?? 9999).toBeLessThan(260);
   const calendarTop = await page.locator('.fc').boundingBox();
-  expect(calendarTop?.y ?? 9999).toBeLessThan(540);
+  expect(calendarTop?.y ?? 0).toBeGreaterThan(initialSelectedDayBox?.y ?? 0);
+  expect(calendarTop?.y ?? 9999).toBeLessThan(844);
   expect(calendarTop?.x ?? 9999).toBeGreaterThanOrEqual(0);
   expect((calendarTop?.x ?? 9999) + (calendarTop?.width ?? 0)).toBeLessThanOrEqual(390);
   expect(calendarTop?.width ?? 0).toBeGreaterThanOrEqual(330);
