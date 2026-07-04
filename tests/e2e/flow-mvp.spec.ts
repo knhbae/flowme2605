@@ -40,6 +40,12 @@ async function expectNoUserFacingRawIsoDate(locator: Locator) {
   await expect(locator).not.toContainText(/\b\d{4}-\d{2}-\d{2}\b/);
 }
 
+async function expectNoVisibleSourceBrandSlug(locator: Locator) {
+  const visibleText = await locator.innerText();
+  expect(visibleText).not.toMatch(/\bAJD\s+(?:[가-힣A-Z0-9]|D-)/i);
+  expect(visibleText).not.toMatch(/\bMathbang\s+[가-힣A-Z0-9]/i);
+}
+
 async function expectTextOccurrenceAtMost(locator: Locator, text: string, maxCount: number) {
   const content = await locator.innerText();
   expect(content.split(text).length - 1).toBeLessThanOrEqual(maxCount);
@@ -616,12 +622,15 @@ test('main user routes keep internal operation labels off the visible surface', 
     '/flows',
     '/flow-maps/moving-d30',
     '/flow-maps/middle-school-math-1',
+    '/f/moving-d30-basic',
     '/f/jeonse-contract-precheck-docs',
+    '/restart/moving-d30',
     '/my',
     '/calendar',
   ]) {
     await page.goto(route);
     await expectNoInternalUserSurfaceCopy(page.locator('body'));
+    await expectNoVisibleSourceBrandSlug(page.locator('body'));
   }
 
   await page.goto('/flow-maps/moving-d30');
@@ -631,9 +640,11 @@ test('main user routes keep internal operation labels off the visible surface', 
   await page.getByTestId('flow-map-save-all-mobile').click();
   await expect(page).toHaveURL('/my?savedMap=moving-d30');
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
+  await expectNoVisibleSourceBrandSlug(page.locator('body'));
 
   await page.goto('/calendar');
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
+  await expectNoVisibleSourceBrandSlug(page.locator('body'));
   const selectedDateGroup = page.getByTestId('my-flow-selected-date-group').first();
   await expect(selectedDateGroup).toBeVisible();
   await expect(selectedDateGroup).not.toContainText(/Flow\s+일정|지도\s+일정|지도\s+루틴/);
@@ -925,10 +936,12 @@ test('moving restart route starts from move date setup', async ({ page }) => {
   await expect(page.getByRole('heading', { name: '이사 D-30 준비' })).toBeVisible();
   await expect(page.getByLabel('이사일')).toBeVisible();
   await expect(page.getByRole('button', { name: '일정 만들기' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'AJD 이사할 때 체크리스트 상세 정리' })).toHaveAttribute(
+  await expect(page.getByRole('link', { name: '이사할 때 체크리스트 상세 정리' })).toHaveAttribute(
     'href',
     /ajd\.co\.kr\/contents\/basic-tip\/detail/,
   );
+  await expect(page.getByTestId('moving-source-section')).not.toContainText('AJD');
+  await expectNoVisibleSourceBrandSlug(page.locator('body'));
   await expect(page.getByRole('link', { name: '정부24 전입신고 민원안내 및 신청' })).toHaveAttribute(
     'href',
     /gov\.kr\/mw\/AA020InfoCappView\.do/,
@@ -2115,6 +2128,7 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
   await expect(publicMap).toContainText('원룸 이사 D-30 준비');
   await expect(publicMap).toContainText('이사 방식과 견적 후보 정하기');
   await expect(publicMap).toContainText('견적 후보 2-3곳을 열고 연락처를 메모합니다.');
+  await expectNoVisibleSourceBrandSlug(publicMap);
 
   await page.getByLabel('이사일').fill('2026-07-22');
   await page.getByTestId('flow-map-save-all-mobile').click();
@@ -2126,9 +2140,10 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
   await expect(postSavePanel).not.toContainText('원룸 이사 D-30 일정 지도');
   await expect(postSavePanel).not.toContainText('5개 할 일');
   await expect(postSavePanel).not.toContainText('묶음');
-  await expect(postSavePanel).toContainText('이사 방식과 견적 후보 정하기');
+  await expect(postSavePanel).not.toContainText('이사 방식과 견적 후보 정하기');
   await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(0);
   await expect(postSavePanel.getByTestId('my-flow-post-save-view-all')).toHaveCount(0);
+  await expectNoVisibleSourceBrandSlug(postSavePanel);
 
   await postSavePanel.getByTestId('my-flow-post-save-open-first').click();
   const nowSection = page.getByTestId('my-flow-now-section');
@@ -2138,6 +2153,7 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
   await page.getByTestId('my-flow-view-flow').click();
   const movingOverviewCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
   await expect(movingOverviewCard).toBeVisible();
+  await expectNoVisibleSourceBrandSlug(movingOverviewCard);
   await expect(movingOverviewCard).not.toContainText(/\b2026-\d{2}-\d{2}\b/);
   await expect(movingOverviewCard).toContainText('6월 22일');
 
@@ -2149,6 +2165,7 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
   const selectedDateGroup = page.getByTestId('my-flow-selected-date-group').first();
   await expect(selectedDateGroup).toContainText('저장한 일정');
   await expect(selectedDateGroup).toContainText('원룸 이사 D-30 일정');
+  await expectNoVisibleSourceBrandSlug(selectedDateGroup);
   await expect(selectedDateGroup).not.toContainText('원룸 이사 D-30 일정 지도');
   await expect(selectedDateGroup).not.toContainText('1개 · 1개 남음');
   await expect(selectedDateGroup.getByTestId('my-flow-row-flow-chip')).toHaveCount(0);

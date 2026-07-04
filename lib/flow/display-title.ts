@@ -18,5 +18,5 @@ export function toUserFacingMapTitle(title: string): string {
 export function toUserFacingSourceTitle(title: string): string {
   const value = title.replace(/\s+/g, ' ').trim();
   if (!value) return '';
-  return value.replace(/^Mathbang\s+/iu, '').trim();
+  return value.replace(/^(Mathbang|AJD)\s+/iu, '').trim();
 }

@@ -24,5 +24,6 @@ test('toUserFacingMapTitle hides internal map wording in saved content labels', 
 test('toUserFacingSourceTitle removes slug-like source prefixes without changing source data', () => {
   assert.equal(toUserFacingSourceTitle('Mathbang 중1 수학 목차'), '중1 수학 목차');
   assert.equal(toUserFacingSourceTitle('Mathbang 중1 목차'), '중1 목차');
-  assert.equal(toUserFacingSourceTitle('AJD 이사 준비 체크리스트'), 'AJD 이사 준비 체크리스트');
+  assert.equal(toUserFacingSourceTitle('AJD 이사 준비 체크리스트'), '이사 준비 체크리스트');
+  assert.equal(toUserFacingSourceTitle('AJD 이사할 때 체크리스트 상세 정리'), '이사할 때 체크리스트 상세 정리');
 });

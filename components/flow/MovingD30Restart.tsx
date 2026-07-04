@@ -17,6 +17,7 @@ import {
   type MovingRestartItem,
   updateMovingRestartItem,
 } from '@/lib/flow/moving-d30-restart';
+import { toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import { FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
 
 const defaultMoveDate = '2026-06-27';
@@ -589,7 +590,7 @@ export function MovingD30Restart() {
                 rel="noreferrer"
                 target="_blank"
               >
-                AJD 이사할 때 체크리스트 상세 정리
+                {toUserFacingSourceTitle('AJD 이사할 때 체크리스트 상세 정리')}
               </a>
               <a
                 className="mt-2 block rounded-2xl bg-slate-50 p-3 text-sm font-semibold leading-6 text-slate-700 hover:bg-slate-100"
