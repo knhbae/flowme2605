@@ -816,10 +816,11 @@ function DirectoryFlowCard({ bundle }: { bundle: FlowBundle }) {
         <div className="pt-1 text-sm">
           <span
             data-testid="flow-card-primary-action"
-            className="inline-flex min-h-10 w-full items-center justify-center rounded-xl bg-[#3654FF] px-3 py-2 font-semibold text-white"
+            className="inline-flex items-center gap-1 rounded-lg py-1 text-sm font-semibold text-[#3654FF]"
           >
-            저장 전 보기
+            열어보기
           </span>
+          <span aria-hidden="true" className="ml-1 text-[#3654FF]">›</span>
         </div>
       </article>
     </Link>
@@ -922,10 +923,11 @@ function FlowMapCatalogCard({ item }: { item: FlowMapCatalogLink }) {
       <div className="mt-auto pt-3">
         <Link
           data-testid="flow-map-detail-link"
-          className="inline-flex min-h-10 w-full items-center justify-center rounded-xl bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white hover:bg-[#2945E8]"
+          className="inline-flex items-center gap-1 rounded-lg py-1 text-sm font-semibold text-[#3654FF] hover:text-[#2945E8]"
           href={`/flow-maps/${item.id}`}
         >
-          <span data-testid="flow-card-primary-action">저장 전 보기</span>
+          <span data-testid="flow-card-primary-action">열어보기</span>
+          <span aria-hidden="true">›</span>
         </Link>
       </div>
     </article>

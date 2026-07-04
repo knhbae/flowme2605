@@ -41,6 +41,14 @@ async function expectTextOccurrenceAtMost(locator: Locator, text: string, maxCou
   expect(content.split(text).length - 1).toBeLessThanOrEqual(maxCount);
 }
 
+async function expectCompactCatalogAction(card: Locator, action: Locator) {
+  const cardBox = await card.boundingBox();
+  const actionBox = await action.boundingBox();
+  expect(cardBox).not.toBeNull();
+  expect(actionBox).not.toBeNull();
+  expect(actionBox!.width).toBeLessThan(cardBox!.width * 0.55);
+}
+
 async function expectVerticalGap(upper: Locator, lower: Locator, minGap = 16) {
   const upperBox = await upper.boundingBox();
   const lowerBox = await lower.boundingBox();
@@ -116,7 +124,8 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   const firstCatalogCard = flowMapCatalog.getByTestId('flow-map-catalog-card').first();
   const firstCatalogCardTop = await firstCatalogCard.evaluate((element) => element.getBoundingClientRect().top);
   expect(firstCatalogCardTop).toBeLessThan(480);
-  await expect(firstCatalogCard.getByTestId('flow-card-primary-action')).toHaveText('저장 전 보기');
+  await expect(firstCatalogCard.getByTestId('flow-card-primary-action')).toHaveText('열어보기');
+  await expectCompactCatalogAction(firstCatalogCard, firstCatalogCard.getByTestId('flow-map-detail-link'));
   await expect(firstCatalogCard.getByTestId('flow-map-recommended-flow-link')).toHaveCount(0);
   await expect(firstCatalogCard.getByTestId('flow-map-source-link')).toHaveCount(0);
   await expect(flowMapCatalog.locator('a[href="/flow-maps/moving-d30"]')).toBeVisible();
@@ -145,7 +154,8 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(jeonseCard).toContainText('계약 예정일만 넣으면 저장됩니다: 캘린더 + 체크');
   await expect(jeonseCard.getByText('먼저 할 일')).toBeVisible();
   await expect(jeonseCard.getByText('원문 연결')).toHaveCount(0);
-  await expect(jeonseCard.getByTestId('flow-card-primary-action')).toHaveText('저장 전 보기');
+  await expect(jeonseCard.getByTestId('flow-card-primary-action')).toHaveText('열어보기');
+  await expectCompactCatalogAction(jeonseCard, jeonseCard.getByTestId('flow-card-primary-action'));
   await expect(page.getByText('베타 운영 중').first()).toHaveCount(0);
   await expect(page.getByText('미리보기').first()).toHaveCount(0);
   await expect(page.getByText('출력:').first()).toHaveCount(0);
@@ -167,8 +177,8 @@ test('main user routes keep the FlowMe design token rhythm', async ({ page }) =>
   const firstCatalogCard = page.getByTestId('flow-map-catalog-card').first();
   await expect(firstCatalogCard).toHaveCSS('border-color', 'rgb(231, 228, 221)');
   await expect(firstCatalogCard).toHaveCSS('border-radius', '16px');
-  await expect(firstCatalogCard.getByTestId('flow-map-detail-link')).toHaveCSS('background-color', 'rgb(54, 84, 255)');
-  await expect(firstCatalogCard.getByTestId('flow-map-detail-link')).toHaveCSS('border-radius', '12px');
+  await expect(firstCatalogCard.getByTestId('flow-map-detail-link')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(firstCatalogCard.getByTestId('flow-map-detail-link')).toHaveCSS('color', 'rgb(54, 84, 255)');
 
   await page.setViewportSize({ width: 1024, height: 900 });
   await page.goto('/f/vehicle-inspection-prep');
@@ -299,7 +309,8 @@ test('curated source cards are integrated into Flow finding and open the recomme
 
   const movingCard = curatedCards.filter({ hasText: '이사 준비' });
   await expect(movingCard.getByTestId('flow-map-detail-link')).toHaveAttribute('href', '/flow-maps/moving-map');
-  await expect(movingCard.getByTestId('flow-map-detail-link')).toHaveText('저장 전 보기');
+  await expect(movingCard.getByTestId('flow-card-primary-action')).toHaveText('열어보기');
+  await expectCompactCatalogAction(movingCard, movingCard.getByTestId('flow-map-detail-link'));
   await expect(movingCard.getByTestId('flow-map-recommended-flow-link')).toHaveCount(0);
   await expect(movingCard.getByTestId('flow-map-source-link')).toHaveCount(0);
 
