@@ -61,6 +61,14 @@ async function expectVerticalGap(upper: Locator, lower: Locator, minGap = 16) {
   expect(lowerBox!.y - (upperBox!.y + upperBox!.height)).toBeGreaterThanOrEqual(minGap);
 }
 
+async function expectVerticalGapAtMost(upper: Locator, lower: Locator, maxGap = 4) {
+  const upperBox = await upper.boundingBox();
+  const lowerBox = await lower.boundingBox();
+  expect(upperBox).not.toBeNull();
+  expect(lowerBox).not.toBeNull();
+  expect(lowerBox!.y - (upperBox!.y + upperBox!.height)).toBeLessThanOrEqual(maxGap);
+}
+
 async function expectElementClearsFixedLayer(content: Locator, layer: Locator, minGap = 16) {
   const contentBox = await content.boundingBox();
   const layerBox = await layer.boundingBox();
@@ -638,8 +646,9 @@ test('mobile fixed layers keep save actions and final content separated', async 
     const mobileTabs = page.getByTestId('platform-mobile-tabs');
     const stickySave = page.getByTestId('flow-map-mobile-sticky-save');
     await expect(stickySave).toBeVisible();
-    await expectVerticalGap(stickySave, mobileTabs, 8);
-    await expectFixedLayerFootprintAtMost([stickySave, mobileTabs], 124);
+    await expectVerticalGap(stickySave, mobileTabs, 0);
+    await expectVerticalGapAtMost(stickySave, mobileTabs, 4);
+    await expectFixedLayerFootprintAtMost([stickySave, mobileTabs], 120);
 
     await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
     const finalFlowMapArticle = page.getByTestId('flow-map-public').locator('article').last();
