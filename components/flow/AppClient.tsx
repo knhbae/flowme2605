@@ -17,7 +17,7 @@ import { inferPrimaryDestination } from '@/lib/flow/destination';
 import { getRepresentativeFlowSlugs, normalizeExecutionModel, type FlowExportTarget } from '@/lib/flow/execution-model';
 import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
 import { FLOW_EXPORT_FEEDBACK, FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
-import { toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
+import { FLOW_ENTRY_DETAIL_CTA_LABEL, toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import {
   buildMyFlowStepIcs,
   buildMyFlowStepPortableText,
@@ -818,7 +818,7 @@ function DirectoryFlowCard({ bundle }: { bundle: FlowBundle }) {
             data-testid="flow-card-primary-action"
             className="inline-flex items-center gap-1 rounded-lg py-1 text-sm font-semibold text-[#3654FF]"
           >
-            열어보기
+            {FLOW_ENTRY_DETAIL_CTA_LABEL}
           </span>
           <span aria-hidden="true" className="ml-1 text-[#3654FF]">›</span>
         </div>
@@ -926,7 +926,7 @@ function FlowMapCatalogCard({ item }: { item: FlowMapCatalogLink }) {
           className="inline-flex items-center gap-1 rounded-lg py-1 text-sm font-semibold text-[#3654FF] hover:text-[#2945E8]"
           href={`/flow-maps/${item.id}`}
         >
-          <span data-testid="flow-card-primary-action">열어보기</span>
+          <span data-testid="flow-card-primary-action">{FLOW_ENTRY_DETAIL_CTA_LABEL}</span>
           <span aria-hidden="true">›</span>
         </Link>
       </div>
@@ -1455,14 +1455,6 @@ export function HomeLanding() {
               콘텐츠 고르러 가기
             </Link>
           </div>
-          <div data-testid="home-secondary-actions" className="mt-3 flex flex-wrap gap-3 text-sm font-semibold">
-            <Link className="text-[#6E6B64] underline-offset-2 hover:text-[#3654FF] hover:underline" href="/my">
-              저장한 콘텐츠 보기
-            </Link>
-            <Link className="text-[#6E6B64] underline-offset-2 hover:text-[#3654FF] hover:underline" href="/calendar">
-              캘린더 보기
-            </Link>
-          </div>
         </div>
         {primaryMap ? (
           <Link
@@ -1476,7 +1468,7 @@ export function HomeLanding() {
             <p data-testid="home-primary-flow-promise" className="mt-4 rounded-xl bg-[#FAFAF8] px-3 py-2.5 text-sm font-semibold leading-5 text-[#1B1A17]">
               이사일만 넣으면 D-30 일정 · 할 일 {primaryMap.counts.steps}개
             </p>
-            <p className="mt-4 border-t border-[#E7E4DD] pt-3 text-sm font-semibold text-[#3654FF]">저장 전 보기</p>
+            <p className="mt-4 border-t border-[#E7E4DD] pt-3 text-sm font-semibold text-[#3654FF]">{FLOW_ENTRY_DETAIL_CTA_LABEL}</p>
           </Link>
         ) : null}
       </section>

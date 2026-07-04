@@ -1,3 +1,5 @@
+export const FLOW_ENTRY_DETAIL_CTA_LABEL = '열어보기';
+
 export function toContentDisplayTitle(title: string): string {
   const value = title.replace(/\s+/g, ' ').trim();
   if (!value) return '';

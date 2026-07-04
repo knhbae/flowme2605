@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
+import { FLOW_ENTRY_DETAIL_CTA_LABEL, toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import { buildSourceBackedFlowMapPublishPackage } from '@/lib/flow/source-backed-my-flow';
 import { PlatformNav } from './PlatformNav';
 import { SourceBackedFlowMapSaveButton } from './SourceBackedFlowMapSaveButton';
@@ -62,7 +62,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
       <div className="mx-auto max-w-5xl">
       <PlatformNav />
       <section data-testid="flow-map-hero" className="rounded-2xl border border-[#E7E4DD] bg-white p-4 sm:p-6">
-        <p className="text-sm font-semibold text-[#3654FF]">저장 전 보기</p>
+        <p className="text-sm font-semibold text-[#3654FF]">{FLOW_ENTRY_DETAIL_CTA_LABEL}</p>
         <h1 className="mt-1 break-keep text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">{displayTitle}</h1>
         <p data-testid="flow-map-result-promise" className="mt-2 break-keep text-sm font-semibold leading-6 text-[#3654FF] sm:text-base">
           {resultPromise}

@@ -136,9 +136,12 @@ test('home presents FLOW as an executable content platform', async ({ page }) =>
   await expect(primaryCard).toContainText('이사일만 넣으면');
   await expect(primaryCard).toContainText('D-30 일정');
   await expect(primaryCard).toContainText('할 일');
+  await expect(primaryCard).toContainText('열어보기');
+  await expect(primaryCard).not.toContainText('저장 전 보기');
   await expect(primaryCard.getByTestId('home-card-signal')).toHaveCount(0);
-  await expect(page.getByTestId('home-secondary-actions')).toBeVisible();
-  await expect(page.getByTestId('home-secondary-actions').getByRole('link', { name: '저장한 콘텐츠 보기' })).toHaveAttribute('href', '/my');
+  await expect(page.getByTestId('home-secondary-actions')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: '저장한 콘텐츠 보기' })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: '캘린더 보기' })).toHaveCount(0);
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
 });
 
@@ -472,8 +475,11 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(mobileTabs.getByRole('link', { name: '캘린더' })).toHaveAttribute('href', '/calendar');
   await expect(page.getByText('대표 Flow Map')).toHaveCount(0);
   await expect(page.getByTestId('home-primary-flow-card')).toHaveAttribute('href', '/flow-maps/moving-d30');
+  await expect(page.getByTestId('home-primary-flow-card')).toContainText('열어보기');
+  await expect(page.getByTestId('home-primary-flow-card')).not.toContainText('저장 전 보기');
   await expect(page.getByRole('link', { name: '콘텐츠 고르러 가기' })).toBeVisible();
   await expect(page.getByRole('link', { name: '콘텐츠 고르러 가기' })).toHaveAttribute('href', '/flows');
+  await expect(page.getByTestId('home-secondary-actions')).toHaveCount(0);
 
   await page.goto('/calendar');
   await expect(page.getByRole('heading', { level: 1, name: '캘린더' })).toBeVisible();
@@ -1931,6 +1937,8 @@ test('source-backed flow map public page stays save-before focused', async ({ pa
   await expect(publicMap.getByTestId('flow-map-result-promise')).toBeVisible();
   await expect(publicMap.getByTestId('flow-map-result-chips')).toBeVisible();
   await expect(publicMap.getByTestId('flow-map-first-action-preview')).toContainText('소인수분해');
+  await expect(publicMap.getByTestId('flow-map-hero')).toContainText('열어보기');
+  await expect(publicMap.getByTestId('flow-map-hero')).not.toContainText('저장 전 보기');
   await expect(publicMap).not.toContainText('저장되는 결과물');
   const firstActionTop = await publicMap.getByTestId('flow-map-first-action-preview').evaluate((element) => element.getBoundingClientRect().top);
   expect(firstActionTop).toBeLessThan(720);
