@@ -4121,6 +4121,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         key={`mobile-continuation-${rowKey}`}
         data-testid="my-flow-mobile-continuation-card"
         data-flow-slug={flow.progress.slug}
+        data-row-key={rowKey}
         className={`min-w-0 rounded-lg border px-3 py-3 shadow-sm ${toneClassName}`}
       >
         <button
@@ -6845,6 +6846,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <article
                   key={`${myFlowStatusSheet}-${row.flow.progress.slug}-${row.id}-${row.date ?? 'row'}`}
                   data-testid="my-flow-status-sheet-row"
+                  data-flow-slug={row.flow.progress.slug}
+                  data-row-key={getMyFlowRowInstanceKey(row)}
                   className="rounded-lg border border-slate-200 bg-slate-50 p-3"
                 >
                   <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-500">

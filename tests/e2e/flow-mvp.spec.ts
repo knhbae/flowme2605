@@ -1546,6 +1546,74 @@ test('my flow today puts the executable slot before the summary on mobile', asyn
   expect(nowBox?.y ?? 0).toBeLessThan(summaryBox?.y ?? 0);
 });
 
+test('my flow today dedupes rows when today overdue and next queues coexist on mobile', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.clock.install({ time: new Date('2026-05-28T09:00:00+09:00') });
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    const savedAt = '2026-05-28T00:00:00.000Z';
+    const saveFlow = (slug: string, anchor?: string) => {
+      window.localStorage.setItem(`flow:saved:${slug}`, JSON.stringify({
+        slug,
+        savedAt,
+        selectedArtifactMode: 'calendar',
+        ...(anchor ? { anchor } : {}),
+      }));
+      if (anchor) {
+        window.localStorage.setItem(`flow:${slug}:anchorDate`, JSON.stringify({
+          mode: 'custom',
+          anchor,
+        }));
+      }
+    };
+
+    saveFlow('moving-d30-basic', '2026-06-26');
+    saveFlow('computer-skills-d30-study', '2026-06-27');
+    saveFlow('used-car-buying-check');
+  });
+
+  await page.goto('/my');
+
+  const nowSection = page.getByTestId('my-flow-now-section');
+  const upcomingSection = page.getByTestId('my-flow-upcoming-list');
+  const overdueSection = page.getByTestId('my-flow-overdue-list');
+  await expect(nowSection).toBeVisible();
+  await expect(upcomingSection).toBeVisible();
+  await expect(overdueSection).toBeVisible();
+  await expect(nowSection.getByTestId('my-flow-mobile-continuation-card').first()).toHaveAttribute('data-flow-slug', 'computer-skills-d30-study');
+  await expect(upcomingSection.getByTestId('my-flow-mobile-continuation-card').first()).toBeVisible();
+  await expect(overdueSection.getByTestId('my-flow-overdue-open-sheet')).toBeVisible();
+
+  const visibleQueueKeys = await page
+    .locator(
+      '[data-testid="my-flow-now-section"] [data-testid="my-flow-mobile-continuation-card"], ' +
+      '[data-testid="my-flow-upcoming-list"] [data-testid="my-flow-mobile-continuation-card"]',
+    )
+    .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-row-key')).filter(Boolean));
+  expect(visibleQueueKeys.length).toBeGreaterThanOrEqual(2);
+  expect(new Set(visibleQueueKeys).size).toBe(visibleQueueKeys.length);
+
+  await overdueSection.getByTestId('my-flow-overdue-open-sheet').click();
+  const overdueSheet = page.getByTestId('my-flow-status-sheet');
+  await expect(overdueSheet).toBeVisible();
+  const overdueKeys = await overdueSheet
+    .getByTestId('my-flow-status-sheet-row')
+    .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-row-key')).filter(Boolean));
+  expect(overdueKeys.length).toBeGreaterThan(0);
+  const allQueueKeys = [...visibleQueueKeys, ...overdueKeys];
+  expect(new Set(allQueueKeys).size).toBe(allQueueKeys.length);
+  await testInfo.attach('p7-02-my-flow-multi-queue-row-keys', {
+    body: JSON.stringify({ visibleQueueKeys, overdueKeys }, null, 2),
+    contentType: 'application/json',
+  });
+
+  await overdueSheet.getByRole('button', { name: '닫기', exact: true }).click();
+  await expectTextOccurrenceAtMost(nowSection, '필기와 실기 시험 범위 나누기', 1);
+  await expectTextOccurrenceAtMost(nowSection, '오늘 할 일', 1);
+  await expectNoUserFacingRawIsoDate(page.locator('body'));
+  await expectNoInternalUserSurfaceCopy(page.locator('body'));
+});
+
 test('calendar route opens the nearest saved schedule instead of an empty today', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.clock.install({ time: new Date('2026-07-03T09:00:00+09:00') });

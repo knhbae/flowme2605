@@ -1,0 +1,81 @@
+{
+  "generatedAt": "2026-07-04T13:53:28.624Z",
+  "route": "/my",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "fixedNow": "2026-05-28T09:00:00+09:00",
+  "fixture": [
+    {
+      "slug": "moving-d30-basic",
+      "anchor": "2026-06-26",
+      "purpose": "overdue and upcoming dated tasks"
+    },
+    {
+      "slug": "computer-skills-d30-study",
+      "anchor": "2026-06-27",
+      "purpose": "today dated task"
+    },
+    {
+      "slug": "used-car-buying-check",
+      "purpose": "undated fallback saved content"
+    }
+  ],
+  "screenshots": [
+    "screenshots/my-flow-multi-queue-fullpage.png",
+    "screenshots/my-flow-multi-queue-overdue-sheet.png"
+  ],
+  "queueEvidence": {
+    "visibleQueue": [
+      {
+        "rowKey": "computer-skills-d30-study::flow-computer-skills-d30-study-item-0::2026-05-28",
+        "flowSlug": "computer-skills-d30-study",
+        "text": "필기와 실기 시험 범위 나누기5월 28일 · 기준 D-30 · 범위 쪼개기열기컴퓨터활용능력 학습 · 0/9 완료 · 일정 흐름"
+      },
+      {
+        "rowKey": "computer-skills-d30-study::flow-computer-skills-d30-study-item-1::2026-05-28",
+        "flowSlug": "computer-skills-d30-study",
+        "text": "다음 할 일매일 공부 가능한 시간 블록 정하기5월 28일 · 기준 D-30 · 범위 쪼개기열기컴퓨터활용능력 학습 · 0/9 완료 · 일정 흐름"
+      },
+      {
+        "rowKey": "computer-skills-d30-study::flow-computer-skills-d30-study-item-2::2026-05-30",
+        "flowSlug": "computer-skills-d30-study",
+        "text": "다음 할 일기출 회독 목표 정하기5월 30일 · 기준 D-28 · 범위 쪼개기열기컴퓨터활용능력 학습 · 0/9 완료 · 일정 흐름"
+      },
+      {
+        "rowKey": "used-car-buying-check::flow-used-car-buying-item-0::none",
+        "flowSlug": "used-car-buying-check",
+        "text": "다음 할 일총예산을 차량가, 이전비, 보험료, 정비비로 나누기예산과 후보 정리열기중고차 구매 현장 점검 · 0/15 완료 · 체크 흐름"
+      }
+    ],
+    "overdueQueue": [
+      {
+        "rowKey": "moving-d30-basic::flow-moving-item-0::2026-05-27",
+        "flowSlug": "moving-d30-basic",
+        "text": "5월 27일기준 D-30이사 준비이사 방식 정하기항목 열기"
+      },
+      {
+        "rowKey": "moving-d30-basic::flow-moving-item-1::2026-05-27",
+        "flowSlug": "moving-d30-basic",
+        "text": "5월 27일기준 D-30이사 준비이사할 집 하자 점검하기항목 열기"
+      },
+      {
+        "rowKey": "moving-d30-basic::flow-moving-item-2::2026-05-27",
+        "flowSlug": "moving-d30-basic",
+        "text": "5월 27일기준 D-30이사 준비필요 없는 물건 정리하기항목 열기"
+      },
+      {
+        "rowKey": "moving-d30-basic::flow-moving-item-3::2026-05-27",
+        "flowSlug": "moving-d30-basic",
+        "text": "5월 27일기준 D-30이사 준비이사/청소 업체 견적 받고 예약하기항목 열기"
+      }
+    ],
+    "visibleQueueCount": 4,
+    "overdueQueueCount": 4,
+    "duplicateRowKeyCount": 0
+  },
+  "textScan": {
+    "rawIsoMatches": []
+  }
+}
