@@ -8282,7 +8282,7 @@ export function PublicFlow({ slug }: { slug: string }) {
             </div>
           ) : (
             <>
-              <FlowHeroMeta bundle={bundle} hideAnchorStart={showPublicHeroSetup} />
+              <FlowHeroMeta bundle={bundle} hideAnchorStart={showPublicHeroSetup || showMobileWorkbenchFirst} />
               <div className="mt-3 md:mt-4">
                 <FlowBadges bundle={bundle} />
               </div>

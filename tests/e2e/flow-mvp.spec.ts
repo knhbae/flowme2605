@@ -878,6 +878,24 @@ test('fridge cleanout mobile starts with one active inventory row before the ful
   await expect(workbench.getByTestId('fridge-mobile-full-sheet-table').locator('tbody tr')).toHaveCount(7);
 });
 
+test('special workbench routes do not repeat setup as an inline start CTA', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  const routes = [
+    '/f/fridge-cleanout-weekly-plan',
+    '/f/washer-tub-clean-monthly',
+    '/f/new-car-delivery-check',
+    '/f/used-car-buying-check',
+  ];
+
+  for (const route of routes) {
+    await page.goto(route);
+
+    await expect(page.getByLabel('Flow artifact workbench')).toBeVisible();
+    await expect(page.getByText(/입력으로 시작/)).toHaveCount(0);
+  }
+});
+
 test('public no-anchor Flow detail shows the first action without a setup detour on mobile', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/used-car-buying-check');
@@ -1964,12 +1982,13 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   await expect(page.getByTestId('my-flow-demo-badge')).toHaveCount(0);
   const postSavePanel = page.getByTestId('my-flow-post-save-panel');
   await expect(postSavePanel).toContainText('저장됨');
-  await expect(postSavePanel.getByRole('heading', { name: '1. 소인수분해' })).toBeVisible();
+  await expect(postSavePanel.getByRole('heading', { name: '1. 소인수분해' })).toHaveCount(0);
   await expect(postSavePanel).toContainText('중1 수학 목차 진도표');
   await expect(postSavePanel).not.toContainText('Mathbang');
   await expect(postSavePanel).not.toContainText('8개 할 일');
   await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(0);
   await expect(postSavePanel.getByTestId('my-flow-post-save-view-all')).toHaveCount(0);
+  await expectTextOccurrenceAtMost(page.getByTestId('my-flow-now-section'), '1. 소인수분해', 1);
   await postSavePanel.getByTestId('my-flow-post-save-open-first').click();
   await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
   const todayDetail = page.getByTestId('my-flow-now-section').getByTestId('my-flow-inline-detail');
