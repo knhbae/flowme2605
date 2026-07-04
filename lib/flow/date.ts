@@ -19,6 +19,15 @@ export function formatKoreanShortDate(value: string | Date, options: { includeWe
   return `${label} (${weekdays[date.getDay()]})`;
 }
 
+export function formatUserFacingScheduleDate(
+  value: string | Date,
+  options: { includeWeekday?: boolean; offsetLabel?: string } = {},
+) {
+  const dateLabel = formatKoreanShortDate(value, { includeWeekday: options.includeWeekday ?? true });
+  const offsetLabel = options.offsetLabel?.trim();
+  return offsetLabel ? `${dateLabel} · ${offsetLabel}` : dateLabel;
+}
+
 function parseIsoDate(value: string) {
   const match = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (!match) return null;

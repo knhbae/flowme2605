@@ -17,6 +17,7 @@ import {
   type MovingRestartItem,
   updateMovingRestartItem,
 } from '@/lib/flow/moving-d30-restart';
+import { formatUserFacingScheduleDate } from '@/lib/flow/date';
 import { toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import { FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
 
@@ -267,6 +268,10 @@ export function MovingD30Restart() {
     setFeedback('내 Flow에 저장했습니다');
   }
 
+  function focusExportPanel() {
+    document.getElementById('moving-restart-export-panel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
   return (
     <main className="min-h-screen bg-slate-100 px-2 py-3 pb-28 text-slate-950 sm:px-4 sm:py-8 lg:pb-8">
       <div className="mx-auto grid max-w-6xl gap-5 lg:grid-cols-[1fr_340px]">
@@ -315,7 +320,7 @@ export function MovingD30Restart() {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-xs font-bold text-blue-700">
-                        {item.offsetLabel} · {item.date}
+                        {formatUserFacingScheduleDate(item.date, { offsetLabel: item.offsetLabel })}
                       </p>
                       <h3 className="mt-1 text-sm font-black text-slate-950">{item.title}</h3>
                     </div>
@@ -394,7 +399,7 @@ export function MovingD30Restart() {
               className="mt-3 rounded-2xl border border-slate-200 bg-white p-3 sm:hidden"
             >
               <p className="text-xs font-bold text-slate-500">선택한 날짜</p>
-              <h3 className="mt-1 text-base font-black text-slate-950">{selectedDate}</h3>
+              <h3 className="mt-1 text-base font-black text-slate-950">{formatUserFacingScheduleDate(selectedDate)}</h3>
               {selectedDateItems.length > 0 ? (
                 <div className="mt-3 grid gap-2">
                   {selectedDateItems.map((item) => (
@@ -495,7 +500,7 @@ export function MovingD30Restart() {
                     {item.offsetLabel}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-500">{item.date}</p>
+                    <p className="text-sm font-semibold text-slate-500">{formatUserFacingScheduleDate(item.date)}</p>
                     <h3 className="mt-1 text-base font-bold">{item.title}</h3>
                     <p className="mt-1 text-sm leading-6 text-slate-600">{item.memo}</p>
                   </div>
@@ -522,7 +527,7 @@ export function MovingD30Restart() {
         </section>
 
         <aside className="space-y-4">
-          <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+          <section id="moving-restart-export-panel" className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
             <h2 className="text-lg font-bold">내 도구로 가져가기</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
               수정한 일정 기준으로 캘린더 파일, 체크리스트, 시트, FlowMe 저장을 선택합니다.
@@ -703,27 +708,13 @@ export function MovingD30Restart() {
         data-testid="moving-mobile-export-actions"
         className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 px-3 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.12)] backdrop-blur lg:hidden"
       >
-        <div className="mx-auto grid max-w-sm grid-cols-[1fr_auto_auto] gap-2">
+        <div className="mx-auto grid max-w-sm grid-cols-[1fr] gap-2">
           <button
             type="button"
-            onClick={downloadCalendar}
+            onClick={focusExportPanel}
             className="min-h-11 rounded-2xl bg-blue-600 px-4 text-sm font-bold text-white"
           >
-            {FLOW_EXPORT_LABELS.calendarFile}
-          </button>
-          <button
-            type="button"
-            onClick={() => void downloadSheet()}
-            className="min-h-11 rounded-2xl bg-slate-100 px-3 text-sm font-bold text-slate-700"
-          >
-            {FLOW_EXPORT_LABELS.sheetFile}
-          </button>
-          <button
-            type="button"
-            onClick={copyChecklist}
-            className="min-h-11 rounded-2xl bg-slate-100 px-3 text-sm font-bold text-slate-700"
-          >
-            {FLOW_EXPORT_LABELS.checklistCopy}
+            내 도구로 가져가기
           </button>
         </div>
       </div>

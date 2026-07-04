@@ -138,6 +138,7 @@ Use this as the next product-route baseline until user evidence reopens it.
 - `/flows/[id]/edit`
 
 These may remain directly accessible for testing or development, but they should not shape the normal user's mental model.
+Prototype or restart routes must pass the same display gate before promotion: no raw ISO dates in rendered user text, no duplicated export CTA sets, and no internal review/source-backed labels on the visible surface.
 
 ## Architecture Map
 

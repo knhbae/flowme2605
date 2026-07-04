@@ -1,5 +1,6 @@
 ﻿import fs from 'node:fs';
 import { expect, type Locator, test } from '@playwright/test';
+import { FLOW_EXPORT_LABELS } from '../../lib/flow/export-labels';
 
 const userSurfaceInternalTerms = [
   /묶음/,
@@ -949,6 +950,7 @@ test('moving restart route starts from move date setup', async ({ page }) => {
   await expect(page.getByRole('region', { name: '이사 D-30 캘린더' })).toBeVisible();
   await expect(page.locator('.fc')).toBeVisible();
   await expect(page.locator('.fc-event').first()).toBeVisible();
+  await expect(page.locator('body')).not.toContainText(/\b\d{4}-\d{2}-\d{2}\b/);
 });
 
 test('moving restart edits items before export', async ({ page }) => {
@@ -961,7 +963,8 @@ test('moving restart edits items before export', async ({ page }) => {
   await page.getByLabel('항목 메모').fill('인터넷 이전 설치는 오전 시간으로 예약');
   await page.getByRole('button', { name: '항목 저장' }).click();
 
-  await expect(page.getByText('2026-06-18')).toBeVisible();
+  await expect(page.getByText('6월 18일 (목)')).toBeVisible();
+  await expect(page.locator('body')).not.toContainText(/\b\d{4}-\d{2}-\d{2}\b/);
   await expect(page.getByText('인터넷 이전 설치는 오전 시간으로 예약')).toBeVisible();
 
   await page.getByRole('button', { name: '항목 추가' }).click();
@@ -985,7 +988,8 @@ test('moving restart exports edited items and gates flow save', async ({ page })
 
   await page.getByRole('button', { name: '체크리스트 복사' }).click();
   await expect(page.getByText('체크리스트를 만들었습니다')).toBeVisible();
-  await expect(page.getByText('2026-06-18')).toBeVisible();
+  await expect(page.getByText('6월 18일 (목)')).toBeVisible();
+  await expect(page.locator('body')).not.toContainText(/\b\d{4}-\d{2}-\d{2}\b/);
 
   await page.getByRole('button', { name: '내 Flow로 저장' }).click();
   await expect(page.getByRole('dialog', { name: '내 Flow로 저장할까요?' })).toBeVisible();
@@ -996,6 +1000,22 @@ test('moving restart exports edited items and gates flow save', async ({ page })
   await page.getByRole('button', { name: '내 Flow로 저장' }).click();
   await expect(page.getByText('내 Flow에 저장했습니다')).toBeVisible();
   await expect(page.getByRole('link', { name: '내 Flow에서 보기' })).toHaveAttribute('href', '/my');
+});
+
+test('moving restart mobile uses one export entry and friendly date text', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/restart/moving-d30');
+
+  await expect(page.getByTestId('moving-mobile-next-tasks').getByText('5월 28일 (목) · D-30').first()).toBeVisible();
+  await expect(page.locator('body')).not.toContainText(/\b\d{4}-\d{2}-\d{2}\b/);
+
+  const mobileExportActions = page.getByTestId('moving-mobile-export-actions');
+  await expect(mobileExportActions.getByRole('button')).toHaveCount(1);
+  await expect(mobileExportActions.getByRole('button', { name: '내 도구로 가져가기' })).toBeVisible();
+
+  await mobileExportActions.getByRole('button', { name: '내 도구로 가져가기' }).click();
+  await expect(page.locator('#moving-restart-export-panel')).toBeInViewport();
+  await expect(page.locator('#moving-restart-export-panel').getByRole('button', { name: FLOW_EXPORT_LABELS.calendarFile })).toBeVisible();
 });
 
 test('flow discovery keeps legacy tag queries out of the representative catalog surface', async ({ page }) => {
