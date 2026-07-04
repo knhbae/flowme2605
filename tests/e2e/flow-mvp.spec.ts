@@ -47,6 +47,23 @@ async function expectNoVisibleSourceBrandSlug(locator: Locator) {
   expect(visibleText).not.toMatch(/\bMathbang\s+[가-힣A-Z0-9]/i);
 }
 
+async function expectNoUserFacingDisplayLeakage(locator: Locator) {
+  const visibleText = await locator.innerText();
+  const lines = visibleText
+    .split(/\n+/)
+    .map((line) => line.replace(/\s+/g, ' ').trim())
+    .filter(Boolean);
+  const allowedFlowLines = new Set(['Flow', '내 Flow', 'Flow 찾기', 'FlowMe', '내 Flow에 저장', '내 Flow에서 보기']);
+  const trailingFlowLines = lines.filter((line) => /[\p{L}\p{N})\]]\s*Flow$/u.test(line) && !allowedFlowLines.has(line));
+  expect(trailingFlowLines).toEqual([]);
+  expect(visibleText).not.toMatch(/일정\s*지도|저장한\s*지도|지도\s*일정|지도\s*루틴/);
+}
+
+async function expectNoHorizontalOverflow(page: { evaluate: <T>(pageFunction: () => T | Promise<T>) => Promise<T> }) {
+  const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
+  expect(hasHorizontalOverflow).toBe(false);
+}
+
 async function expectTextOccurrenceAtMost(locator: Locator, text: string, maxCount: number) {
   const content = await locator.innerText();
   expect(content.split(text).length - 1).toBeLessThanOrEqual(maxCount);
@@ -689,6 +706,68 @@ test('main user routes keep internal operation labels off the visible surface', 
   await page.goto('/flow-maps/middle-school-math-1/creator');
   const creatorMap = page.getByTestId('flow-map-creator');
   await expect(creatorMap).toContainText('사용자에게 저장될 Step');
+});
+
+test('p7 guardrail keeps user routes clean and restart prototype in its own bucket', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  const userRoutes = [
+    '/',
+    '/flows',
+    '/flow-maps/moving-d30',
+    '/flow-maps/middle-school-math-1',
+    '/f/vehicle-inspection-prep',
+    '/f/moving-d30-basic',
+    '/f/fridge-cleanout-weekly-plan',
+    '/f/washer-tub-clean-monthly',
+    '/my',
+    '/calendar',
+  ];
+
+  for (const route of userRoutes) {
+    await page.goto(route);
+    const body = page.locator('body');
+    await expectNoInternalUserSurfaceCopy(body);
+    await expectNoVisibleSourceBrandSlug(body);
+    await expectNoUserFacingDisplayLeakage(body);
+    await expectNoUserFacingRawIsoDate(body);
+    await expectNoHorizontalOverflow(page);
+  }
+
+  await page.goto('/flow-maps/moving-d30');
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
+  await page.getByTestId('flow-map-anchor-input').fill('2026-07-22');
+  await page.getByTestId('flow-map-save-all-mobile').click();
+  await expect(page).toHaveURL('/my?savedMap=moving-d30');
+  const movingMyFlow = page.locator('body');
+  await expectNoInternalUserSurfaceCopy(movingMyFlow);
+  await expectNoVisibleSourceBrandSlug(movingMyFlow);
+  await expectNoUserFacingDisplayLeakage(movingMyFlow);
+  await expectNoUserFacingRawIsoDate(movingMyFlow);
+  await expectTextOccurrenceAtMost(page.getByTestId('my-flow-now-section'), '이사 방식과 견적 후보 정하기', 1);
+  await expectNoHorizontalOverflow(page);
+
+  await page.goto('/calendar');
+  const calendarBody = page.locator('body');
+  await expectNoInternalUserSurfaceCopy(calendarBody);
+  await expectNoVisibleSourceBrandSlug(calendarBody);
+  await expectNoUserFacingDisplayLeakage(calendarBody);
+  await expectNoUserFacingRawIsoDate(calendarBody);
+  await expectNoHorizontalOverflow(page);
+
+  await page.goto('/restart/moving-d30');
+  const restartBody = page.locator('body');
+  await expectNoUserFacingRawIsoDate(restartBody);
+  await expectNoVisibleSourceBrandSlug(restartBody);
+  await expectNoHorizontalOverflow(page);
+  await expect(page.getByTestId('moving-mobile-export-actions').getByRole('button')).toHaveCount(1);
+  await expect(page.getByTestId('moving-mobile-export-actions').getByRole('button', { name: '내 도구로 가져가기' })).toBeVisible();
+
+  await testInfo.attach('p7-06-guardrail-route-buckets', {
+    body: JSON.stringify({ userRoutes, prototypeRoutes: ['/restart/moving-d30'] }, null, 2),
+    contentType: 'application/json',
+  });
 });
 
 test('mobile fixed layers keep save actions and final content separated', async ({ page }) => {
