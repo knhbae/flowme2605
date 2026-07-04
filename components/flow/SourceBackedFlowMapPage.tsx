@@ -58,7 +58,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
     : `바로 저장됩니다: ${resultText}`;
 
   return (
-    <main data-testid="flow-map-public" className="min-h-screen bg-[#FAFAF8] px-4 py-5 pb-[calc(10.5rem+env(safe-area-inset-bottom))] sm:px-5 sm:py-8 sm:pb-16">
+    <main data-testid="flow-map-public" className="flowme-mobile-map-save-clearance min-h-screen bg-[#FAFAF8] px-4 py-5 sm:px-5 sm:py-8 sm:pb-16">
       <div className="mx-auto max-w-5xl">
       <PlatformNav />
       <section data-testid="flow-map-hero" className="rounded-2xl border border-[#E7E4DD] bg-white p-4 sm:p-6">

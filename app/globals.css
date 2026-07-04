@@ -13,6 +13,7 @@
   --flowme-trust: #1f8a5b;
   --flowme-mobile-tab-clearance: calc(6.5rem + env(safe-area-inset-bottom));
   --flowme-mobile-save-clearance: calc(8.5rem + env(safe-area-inset-bottom));
+  --flowme-mobile-map-save-clearance: calc(9rem + env(safe-area-inset-bottom));
   --flowme-mobile-export-clearance: calc(16rem + env(safe-area-inset-bottom));
 }
 
@@ -30,6 +31,10 @@ body {
     padding-bottom: var(--flowme-mobile-save-clearance);
   }
 
+  .flowme-mobile-map-save-clearance {
+    padding-bottom: var(--flowme-mobile-map-save-clearance);
+  }
+
   .flowme-mobile-export-clearance {
     padding-bottom: var(--flowme-mobile-export-clearance);
   }
@@ -37,6 +42,7 @@ body {
 
 @media (min-width: 768px) {
   .flowme-mobile-save-clearance,
+  .flowme-mobile-map-save-clearance,
   .flowme-mobile-export-clearance {
     padding-bottom: 2.5rem;
   }

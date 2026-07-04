@@ -69,6 +69,27 @@ async function expectElementClearsFixedLayer(content: Locator, layer: Locator, m
   expect(contentBox!.y + contentBox!.height).toBeLessThanOrEqual(layerBox!.y - minGap);
 }
 
+async function expectElementClearsFixedLayerGroup(content: Locator, layers: Locator[], minGap = 16) {
+  const contentBox = await content.boundingBox();
+  const layerBoxes = await Promise.all(layers.map((layer) => layer.boundingBox()));
+  expect(contentBox).not.toBeNull();
+  for (const layerBox of layerBoxes) {
+    expect(layerBox).not.toBeNull();
+  }
+  const layerTop = Math.min(...layerBoxes.map((box) => box!.y));
+  expect(contentBox!.y + contentBox!.height).toBeLessThanOrEqual(layerTop - minGap);
+}
+
+async function expectFixedLayerFootprintAtMost(layers: Locator[], maxHeight: number) {
+  const layerBoxes = await Promise.all(layers.map((layer) => layer.boundingBox()));
+  for (const layerBox of layerBoxes) {
+    expect(layerBox).not.toBeNull();
+  }
+  const top = Math.min(...layerBoxes.map((box) => box!.y));
+  const bottom = Math.max(...layerBoxes.map((box) => box!.y + box!.height));
+  expect(bottom - top).toBeLessThanOrEqual(maxHeight);
+}
+
 async function scrollElementToViewportEnd(locator: Locator) {
   await locator.evaluate((element) => element.scrollIntoView({ block: 'end', inline: 'nearest' }));
 }
@@ -617,11 +638,12 @@ test('mobile fixed layers keep save actions and final content separated', async 
     const mobileTabs = page.getByTestId('platform-mobile-tabs');
     const stickySave = page.getByTestId('flow-map-mobile-sticky-save');
     await expect(stickySave).toBeVisible();
-    await expectVerticalGap(stickySave, mobileTabs, 16);
+    await expectVerticalGap(stickySave, mobileTabs, 8);
+    await expectFixedLayerFootprintAtMost([stickySave, mobileTabs], 124);
 
     await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
     const finalFlowMapArticle = page.getByTestId('flow-map-public').locator('article').last();
-    await expectElementClearsFixedLayer(finalFlowMapArticle, stickySave, 16);
+    await expectElementClearsFixedLayerGroup(finalFlowMapArticle, [stickySave, mobileTabs], 16);
   }
 
   await page.goto('/flow-maps/moving-d30');
@@ -655,6 +677,11 @@ test('mobile fixed layers keep save actions and final content separated', async 
   const publicSetup = page.getByTestId('public-flow-primary-setup');
   await scrollElementToViewportEnd(publicSetup);
   await expectElementClearsFixedLayer(publicSetup, publicSaveCta, 16);
+  const publicFinalCard = (await page.getByTestId('flow-warning-card').count()) > 0
+    ? page.getByTestId('flow-warning-card').last()
+    : page.getByTestId('flow-source-card').last();
+  await scrollElementToViewportEnd(publicFinalCard);
+  await expectElementClearsFixedLayer(publicFinalCard, publicSaveCta, 16);
 
   for (const route of ['/f/fridge-cleanout-weekly-plan', '/f/washer-tub-clean-monthly']) {
     await page.goto(route);
