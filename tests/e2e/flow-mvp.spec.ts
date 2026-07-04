@@ -1614,6 +1614,100 @@ test('my flow today dedupes rows when today overdue and next queues coexist on m
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
 });
 
+test('my flow long saved list keeps final mobile rows and actions above fixed navigation', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.clock.install({ time: new Date('2026-05-28T09:00:00+09:00') });
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    const savedAt = '2026-05-28T00:00:00.000Z';
+    const saveFlow = (slug: string, selectedArtifactMode: 'calendar' | 'checklist' | 'sheet', anchor?: string) => {
+      window.localStorage.setItem(`flow:saved:${slug}`, JSON.stringify({
+        slug,
+        savedAt,
+        selectedArtifactMode,
+        ...(anchor ? { anchor } : {}),
+      }));
+      if (anchor) {
+        window.localStorage.setItem(`flow:${slug}:anchorDate`, JSON.stringify({
+          mode: 'custom',
+          anchor,
+        }));
+      }
+    };
+
+    saveFlow('moving-d30-basic', 'calendar', '2026-06-26');
+    saveFlow('computer-skills-d30-study', 'calendar', '2026-06-27');
+    saveFlow('home-workout-20min', 'calendar', '2026-05-27');
+    saveFlow('baby-food-menu-recipe', 'sheet', '2026-05-28');
+    saveFlow('used-car-buying-check', 'checklist');
+    saveFlow('new-car-delivery-check', 'checklist');
+  });
+
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+
+  const mobileTabs = page.getByTestId('platform-mobile-tabs');
+  const mobileHub = page.getByTestId('my-flow-mobile-flow-hub');
+  await expect(mobileHub).toBeVisible();
+  await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(4);
+  await expect(page.getByTestId('my-flow-mobile-inventory-open')).toContainText('2개 더 보기');
+
+  const inventoryOpenButton = page.getByTestId('my-flow-mobile-inventory-open');
+  await inventoryOpenButton.scrollIntoViewIfNeeded();
+  await expectElementClearsFixedLayer(inventoryOpenButton, mobileTabs, 12);
+
+  const lastCompactRow = page.getByTestId('my-flow-mobile-structure-row').last();
+  await lastCompactRow.scrollIntoViewIfNeeded();
+  await lastCompactRow.getByTestId('my-flow-mobile-structure-open').click();
+  await expect(lastCompactRow.getByTestId('my-flow-mobile-structure-step-list')).toBeVisible();
+  await expect(lastCompactRow.getByTestId('my-flow-mobile-structure-step-row').first()).toBeVisible();
+  await lastCompactRow.getByTestId('my-flow-mobile-structure-step-row').first().click();
+  const compactInlineDetail = lastCompactRow.getByTestId('my-flow-mobile-structure-inline-detail');
+  await expect(compactInlineDetail).toBeVisible();
+  await expectElementClearsFixedLayer(compactInlineDetail, mobileTabs, 12);
+
+  await inventoryOpenButton.click();
+  const inventorySheet = page.getByTestId('my-flow-inventory-sheet');
+  const inventoryPanel = inventorySheet.locator('section');
+  await expect(inventorySheet).toBeVisible();
+  await expect(inventorySheet.getByTestId('my-flow-group-row')).toHaveCount(6);
+  await inventorySheet.getByTestId('my-flow-group-row').last().scrollIntoViewIfNeeded();
+
+  const lastInventoryRow = inventorySheet.getByTestId('my-flow-group-row').last();
+  const lastInventoryAction = lastInventoryRow.getByRole('button').first();
+  const lastInventorySource = lastInventoryRow.getByRole('link').first();
+  await expect(lastInventoryAction).toBeVisible();
+  await expect(lastInventorySource).toBeVisible();
+
+  const panelBox = await inventoryPanel.boundingBox();
+  const rowBox = await lastInventoryRow.boundingBox();
+  const actionBox = await lastInventoryAction.boundingBox();
+  const sourceBox = await lastInventorySource.boundingBox();
+  expect(panelBox).not.toBeNull();
+  expect(rowBox).not.toBeNull();
+  expect(actionBox).not.toBeNull();
+  expect(sourceBox).not.toBeNull();
+  expect(rowBox!.y + rowBox!.height).toBeLessThanOrEqual(panelBox!.y + panelBox!.height - 12);
+  expect(actionBox!.y + actionBox!.height).toBeLessThanOrEqual(panelBox!.y + panelBox!.height - 12);
+  expect(sourceBox!.y + sourceBox!.height).toBeLessThanOrEqual(panelBox!.y + panelBox!.height - 12);
+
+  await testInfo.attach('p7-03-my-flow-long-list-clearance', {
+    body: JSON.stringify({
+      savedCount: 6,
+      visibleMobileStructureRows: 4,
+      inventorySheetRows: 6,
+      inventoryOpenButtonClearsTabs: true,
+      lastInventoryRowBottomGap: Math.round(panelBox!.y + panelBox!.height - (rowBox!.y + rowBox!.height)),
+      lastInventoryActionBottomGap: Math.round(panelBox!.y + panelBox!.height - (actionBox!.y + actionBox!.height)),
+      lastInventorySourceBottomGap: Math.round(panelBox!.y + panelBox!.height - (sourceBox!.y + sourceBox!.height)),
+    }, null, 2),
+    contentType: 'application/json',
+  });
+
+  await expectNoUserFacingRawIsoDate(page.locator('body'));
+  await expectNoInternalUserSurfaceCopy(page.locator('body'));
+});
+
 test('calendar route opens the nearest saved schedule instead of an empty today', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.clock.install({ time: new Date('2026-07-03T09:00:00+09:00') });

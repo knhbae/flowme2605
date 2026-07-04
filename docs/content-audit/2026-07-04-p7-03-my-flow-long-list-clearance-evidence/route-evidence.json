@@ -1,0 +1,109 @@
+{
+  "generatedAt": "2026-07-04T14:38:42.464Z",
+  "route": "/my",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "fixedNow": "2026-05-28T09:00:00+09:00",
+  "fixture": [
+    {
+      "slug": "moving-d30-basic",
+      "mode": "calendar",
+      "anchor": "2026-06-26",
+      "purpose": "dated moving tasks"
+    },
+    {
+      "slug": "computer-skills-d30-study",
+      "mode": "calendar",
+      "anchor": "2026-06-27",
+      "purpose": "dated study tasks"
+    },
+    {
+      "slug": "home-workout-20min",
+      "mode": "calendar",
+      "anchor": "2026-05-27",
+      "purpose": "routine saved content"
+    },
+    {
+      "slug": "baby-food-menu-recipe",
+      "mode": "sheet",
+      "anchor": "2026-05-28",
+      "purpose": "sheet/routine-like saved content"
+    },
+    {
+      "slug": "used-car-buying-check",
+      "mode": "checklist",
+      "purpose": "undated checklist fallback"
+    },
+    {
+      "slug": "new-car-delivery-check",
+      "mode": "checklist",
+      "purpose": "undated checklist saved content"
+    }
+  ],
+  "screenshots": [
+    "screenshots/my-flow-5plus-flow-list-top.png",
+    "screenshots/my-flow-5plus-flow-list-bottom.png",
+    "screenshots/my-flow-5plus-inline-detail-open.png",
+    "screenshots/my-flow-5plus-inventory-sheet-top.png",
+    "screenshots/my-flow-5plus-inventory-sheet-bottom.png"
+  ],
+  "result": {
+    "conclusion": "P7-03 was an evidence gap, not an app bottom-clearance bug.",
+    "savedCount": 6,
+    "visibleMobileStructureRowsBeforeSheet": 4,
+    "backgroundStructureRowsAfterSheetOpen": 6,
+    "inventorySheetRows": 6,
+    "hiddenInventoryCountLabelVisible": "전체 Flow 목록 열기 · 2개 더 보기",
+    "rawIsoMatches": []
+  },
+  "clearance": {
+    "platformMobileTabs": {
+      "x": 12,
+      "y": 774,
+      "width": 366,
+      "height": 58,
+      "bottom": 832
+    },
+    "inventoryOpenButton": {
+      "x": 16,
+      "y": 672,
+      "width": 358,
+      "height": 44,
+      "bottom": 716
+    },
+    "inventoryOpenButtonClearsTabsPx": 58,
+    "inventoryPanel": {
+      "x": 0,
+      "y": 118,
+      "width": 390,
+      "height": 726,
+      "bottom": 844
+    },
+    "lastInventoryRow": {
+      "x": 16,
+      "y": 608,
+      "width": 358,
+      "height": 220,
+      "bottom": 828
+    },
+    "lastInventoryAction": {
+      "x": 53,
+      "y": 777,
+      "width": 87,
+      "height": 38,
+      "bottom": 815
+    },
+    "lastInventorySource": {
+      "x": 148,
+      "y": 777,
+      "width": 90,
+      "height": 38,
+      "bottom": 815
+    },
+    "lastInventoryRowBottomGapPx": 16,
+    "lastInventoryActionBottomGapPx": 29,
+    "lastInventorySourceBottomGapPx": 29
+  }
+}
