@@ -1998,16 +1998,18 @@ function SpreadsheetWorkbench({
   const rows = Array.from({ length: 7 }, (_, index) => formatDate(addDays(new Date(start), index)));
   const showRiskBoundary = bundle.flow.risk_level === 'medical_sensitive' && Boolean(bundle.flow.warning);
   const spreadsheetColumns = getSpreadsheetColumns(bundle);
+  const isFridgeCleanout = bundle.flow.slug === 'fridge-cleanout-weekly-plan';
+  const [showFridgeFullSheet, setShowFridgeFullSheet] = useState(false);
   const title =
     bundle.flow.slug === 'diet-habit-2week'
       ? '관찰 기록표'
-      : bundle.flow.slug === 'fridge-cleanout-weekly-plan'
+      : isFridgeCleanout
         ? '7일 재고 소진표'
         : '날짜별 기록표';
   const description =
     bundle.flow.slug === 'diet-habit-2week'
       ? '감량 결과를 판단하지 않고 식사, 수면, 활동, 컨디션, 중단/상담 조건을 같은 줄에 남깁니다.'
-      : bundle.flow.slug === 'fridge-cleanout-weekly-plan'
+      : isFridgeCleanout
         ? '냉장고 지도에서 고른 재료, 메뉴 후보, 장보기 보류 상태만 기록합니다. 절약액이나 영양 균형은 계산하지 않습니다.'
         : '날짜별로 남길 기록 값을 먼저 정리합니다.';
   const routeSpecificMemoTitle =
@@ -2079,33 +2081,44 @@ function SpreadsheetWorkbench({
           <p className="mt-2 text-sm leading-6 text-[#6E6B64]">{description}</p>
           <MobileSpreadsheetSummaryCard date={rows[0]} columns={spreadsheetColumns} bundle={bundle} />
         </div>
-        <table className="min-w-[760px] text-left text-sm">
-          <thead className={FLOWME_TABLE_HEAD_CLASS}>
-            <tr>
-              {['날짜', ...spreadsheetColumns].map((column) => (
-                <th key={column} className="px-3 py-2">{column}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((date) => (
-              <tr key={date} className="border-t border-[#E7E4DD]">
-                <td className="px-3 py-3 font-semibold text-[#1B1A17]">{date}</td>
-                {spreadsheetColumns.map((column) => (
-                  <td key={`${date}-${column}`} className="px-2 py-2">
-                    <input
-                      aria-label={`${date} ${column}`}
-                      className={`w-full min-w-28 ${FLOWME_SMALL_INPUT_CLASS}`}
-                      placeholder={spreadsheetPlaceholder(column)}
-                      value={workbenchState.logRows[date]?.[column] ?? ''}
-                      onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, date, column, event.currentTarget.value))}
-                    />
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {isFridgeCleanout ? (
+          <>
+            <FridgeMobileActiveRowCard
+              date={rows[0]}
+              columns={spreadsheetColumns.filter((column) => column !== '메모')}
+              workbenchState={workbenchState}
+              onWorkbenchChange={onWorkbenchChange}
+            />
+            <details
+              data-testid="fridge-full-sheet-disclosure"
+              className="mx-3 mb-3 mt-3 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2 text-sm"
+              open={showFridgeFullSheet}
+              onToggle={(event) => setShowFridgeFullSheet(event.currentTarget.open)}
+            >
+              <summary className="cursor-pointer list-none font-semibold text-[#3654FF]">
+                전체 7일 표 보기
+                <span className="ml-2 text-xs font-medium text-[#6E6B64]">필요할 때만 펼치기</span>
+              </summary>
+              {showFridgeFullSheet ? (
+                <div data-testid="fridge-mobile-full-sheet-table" className="mt-3 overflow-x-auto">
+                  <SpreadsheetLogTable
+                    rows={rows}
+                    columns={spreadsheetColumns}
+                    workbenchState={workbenchState}
+                    onWorkbenchChange={onWorkbenchChange}
+                  />
+                </div>
+              ) : null}
+            </details>
+          </>
+        ) : (
+          <SpreadsheetLogTable
+            rows={rows}
+            columns={spreadsheetColumns}
+            workbenchState={workbenchState}
+            onWorkbenchChange={onWorkbenchChange}
+          />
+        )}
       </div>
       <div className={FLOWME_SUPPORT_CARD_CLASS}>
         <StopPrincipleCards bundle={bundle} />
@@ -2313,12 +2326,93 @@ function MaintenanceRoutineWorkbench({
   );
 }
 
+function SpreadsheetLogTable({
+  rows,
+  columns,
+  workbenchState,
+  onWorkbenchChange,
+}: {
+  rows: string[];
+  columns: string[];
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
+}) {
+  return (
+    <table className="min-w-[760px] text-left text-sm">
+      <thead className={FLOWME_TABLE_HEAD_CLASS}>
+        <tr>
+          {['날짜', ...columns].map((column) => (
+            <th key={column} className="px-3 py-2">{column}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((date) => (
+          <tr key={date} className="border-t border-[#E7E4DD]">
+            <td className="px-3 py-3 font-semibold text-[#1B1A17]">{date}</td>
+            {columns.map((column) => (
+              <td key={`${date}-${column}`} className="px-2 py-2">
+                <input
+                  aria-label={`${date} ${column}`}
+                  className={`w-full min-w-28 ${FLOWME_SMALL_INPUT_CLASS}`}
+                  placeholder={spreadsheetPlaceholder(column)}
+                  value={workbenchState.logRows[date]?.[column] ?? ''}
+                  onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, date, column, event.currentTarget.value))}
+                />
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function FridgeMobileActiveRowCard({
+  date,
+  columns,
+  workbenchState,
+  onWorkbenchChange,
+}: {
+  date: string;
+  columns: string[];
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
+}) {
+  return (
+    <div data-testid="fridge-mobile-active-row" className="mx-3 mt-3 rounded-2xl border border-[#D8ECE1] bg-[#F4FBF7] p-3 md:hidden">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold text-[#1F8A5B]">오늘 먼저 기록</p>
+          <h4 className="mt-1 text-sm font-semibold text-[#1B1A17]">재고 행 · {formatKoreanShortDate(date)}</h4>
+        </div>
+        <span className="rounded-full border border-[#D8ECE1] bg-white px-2 py-1 text-xs font-semibold text-[#1F8A5B]">오늘 행</span>
+      </div>
+      <div className="mt-3 grid gap-2">
+        {columns.map((column) => (
+          <label key={column} className="grid gap-1 text-sm font-semibold text-[#1B1A17]">
+            <span>{column}</span>
+            <input
+              aria-label={`오늘 재고 행 ${column}`}
+              className={`w-full font-normal ${FLOWME_SMALL_INPUT_CLASS}`}
+              placeholder={spreadsheetPlaceholder(column)}
+              value={workbenchState.logRows[date]?.[column] ?? ''}
+              onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, date, column, event.currentTarget.value))}
+            />
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function MobileSpreadsheetSummaryCard({ date, columns, bundle }: { date: string; columns: string[]; bundle: FlowBundle }) {
+  const isFridgeCleanout = bundle.flow.slug === 'fridge-cleanout-weekly-plan';
   const previewColumns = columns.slice(0, 3);
   const title =
     bundle.flow.slug === 'diet-habit-2week'
       ? '오늘 관찰 행'
-      : bundle.flow.slug === 'fridge-cleanout-weekly-plan'
+      : isFridgeCleanout
         ? '오늘 재고 행'
         : '오늘 기록 행';
 
@@ -2326,15 +2420,19 @@ function MobileSpreadsheetSummaryCard({ date, columns, bundle }: { date: string;
     <div data-testid="mobile-artifact-summary-card" className={`mt-3 md:hidden ${FLOWME_COMPACT_SUPPORT_CARD_CLASS}`}>
       <p className="text-xs font-semibold text-[#3654FF]">먼저 채울 행</p>
       <h4 className="mt-1 text-sm font-semibold text-[#1B1A17]">{title} · {formatKoreanShortDate(date)}</h4>
-      <dl className="mt-2 grid gap-2 text-sm">
-        {previewColumns.map((column) => (
-          <div key={column} className={FLOWME_INNER_ROW_CLASS}>
-            <dt className="text-xs font-semibold text-[#6E6B64]">{column}</dt>
-            <dd className="mt-1 text-[#1B1A17]">{spreadsheetPlaceholder(column)}</dd>
-          </div>
-        ))}
-      </dl>
-      <p className="mt-2 text-xs font-medium text-[#3654FF]">전체 행은 아래 표에서 확인하고, 기록은 시트로 받을 수 있습니다.</p>
+      {isFridgeCleanout ? (
+        <p className="mt-2 text-sm leading-6 text-[#6E6B64]">우선 재료와 메뉴 후보부터 적고, 나머지 날짜는 필요할 때만 펼칩니다.</p>
+      ) : (
+        <dl className="mt-2 grid gap-2 text-sm">
+          {previewColumns.map((column) => (
+            <div key={column} className={FLOWME_INNER_ROW_CLASS}>
+              <dt className="text-xs font-semibold text-[#6E6B64]">{column}</dt>
+              <dd className="mt-1 text-[#1B1A17]">{spreadsheetPlaceholder(column)}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      <p className="mt-2 text-xs font-medium text-[#3654FF]">{isFridgeCleanout ? '기록 결과는 시트로 받을 수 있습니다.' : '전체 행은 아래 표에서 확인하고, 기록은 시트로 받을 수 있습니다.'}</p>
     </div>
   );
 }

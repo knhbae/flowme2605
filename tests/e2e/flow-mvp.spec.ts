@@ -650,8 +650,11 @@ test('mobile fixed layers keep save actions and final content separated', async 
   for (const route of ['/f/fridge-cleanout-weekly-plan', '/f/washer-tub-clean-monthly']) {
     await page.goto(route);
     const mobileExportBar = page.getByTestId('mobile-export-bar');
+    if (route.includes('fridge-cleanout')) {
+      await page.getByTestId('fridge-full-sheet-disclosure').locator('summary').click();
+    }
     const finalWorkbenchTarget = route.includes('fridge-cleanout')
-      ? page.getByTestId('artifact-log-table-spreadsheet').locator('tbody tr').last()
+      ? page.getByTestId('fridge-mobile-full-sheet-table').locator('tbody tr').last()
       : page.getByTestId('maintenance-routine-next-card').locator('label').last();
     await scrollElementToViewportEnd(finalWorkbenchTarget);
     await expect(mobileExportBar).toBeVisible();
@@ -794,6 +797,34 @@ test('special workbench date labels avoid raw ISO dates in primary mobile cards'
   const fridgeSummary = page.getByTestId('mobile-artifact-summary-card');
   await expect(fridgeSummary).toContainText(/월 \d+일/);
   await expectNoUserFacingRawIsoDate(fridgeSummary);
+});
+
+test('fridge cleanout mobile starts with one active inventory row before the full sheet', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/fridge-cleanout-weekly-plan');
+
+  const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  const sheetCard = workbench.getByTestId('artifact-log-table-spreadsheet');
+  await expect(sheetCard).toBeVisible();
+
+  const activeRow = workbench.getByTestId('fridge-mobile-active-row');
+  await expect(activeRow).toBeVisible();
+  await expect(activeRow).toContainText('우선 재료');
+  await expect(activeRow).toContainText('메뉴 후보');
+  await expect(activeRow).toContainText('장보기 보류');
+  await expect(activeRow).toContainText('상태');
+  await expect(activeRow.locator('input, textarea, select')).toHaveCount(4);
+
+  const visibleRowsBeforeOpen = await sheetCard.locator('tbody tr').evaluateAll((rows) =>
+    rows.filter((row) => row.getClientRects().length > 0).length,
+  );
+  expect(visibleRowsBeforeOpen).toBeLessThanOrEqual(1);
+
+  const fullSheet = workbench.getByTestId('fridge-full-sheet-disclosure');
+  await expect(fullSheet).toBeVisible();
+  await fullSheet.locator('summary').click();
+  await expect(workbench.getByTestId('fridge-mobile-full-sheet-table')).toBeVisible();
+  await expect(workbench.getByTestId('fridge-mobile-full-sheet-table').locator('tbody tr')).toHaveCount(7);
 });
 
 test('public no-anchor Flow detail shows the first action without a setup detour on mobile', async ({ page }) => {
