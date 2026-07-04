@@ -3059,8 +3059,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           : '먼저 할 일';
   const getMyFlowRowDraft = (row: MyFlowCalendarRow) => myFlowItemDrafts[getMyFlowRowInstanceKey(row)] ?? {};
   const getMyFlowRowDisplayTitle = (row: MyFlowCalendarRow) => toUserFacingSourceTitle(getMyFlowRowDraft(row).title ?? row.title);
+  const myFlowNowVisibleCount = myFlowPrimaryContinuationRow ? 1 : 0;
   const myFlowNowTitle = myFlowPrimaryContinuationRow
-    ? getMyFlowRowDisplayTitle(myFlowPrimaryContinuationRow)
+    ? myFlowPrimaryContinuationIsToday
+      ? `${myFlowNowVisibleCount}개 남음`
+      : myFlowPrimaryContinuationIsOverdue
+        ? `${myFlowNowVisibleCount}개 밀림`
+        : myFlowPrimaryContinuationIsFuture
+          ? `${myFlowNowVisibleCount}개 예정`
+          : `${myFlowNowVisibleCount}개 대기`
     : '이어갈 할 일이 없습니다';
   const myFlowNowHelp = myFlowPrimaryContinuationRow
     ? myFlowPrimaryContinuationIsToday
@@ -4756,10 +4763,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           <div className={isInlineMobileMode ? 'min-w-0' : 'min-w-0 flex-1'}>
             {useReadonlyTitleHeader || !isDetailEditing ? (
               <div>
-                <p className="text-xs font-semibold text-blue-700">{isInlineMobileMode ? inlineDetailHeaderLabel : '확인할 항목'}</p>
+                {isInlineMobileMode && hasDetailChecklistItems ? null : (
+                  <p className="text-xs font-semibold text-blue-700">{isInlineMobileMode ? inlineDetailHeaderLabel : '확인할 항목'}</p>
+                )}
                 {isInlineMobileMode ? (
                   <>
-                    <h3 className="mt-1 text-base font-semibold leading-6 text-slate-950">{editorDraft.title}</h3>
                     {hasDetailChecklistItems ? (
                       <p className="mt-1 text-xs font-semibold text-slate-600">필요한 항목만 체크하고 완료로 표시하세요.</p>
                     ) : null}
@@ -5239,7 +5247,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     if (!postSaveMap || postSaveFlows.length === 0) return null;
     const postSaveContinuationRow = getPostSaveContinuationRow();
     const postSaveHeading = postSaveContinuationRow
-      ? getMyFlowRowDisplayTitle(postSaveContinuationRow)
+      ? '내 Flow에 저장했습니다'
       : '저장한 내용을 확인하세요';
     return (
       <section data-testid="my-flow-post-save-panel" className="mb-4 rounded-2xl border border-[#E7E4DD] bg-white p-3 shadow-[0_8px_24px_rgba(27,26,23,0.05)] sm:p-4">
