@@ -12,7 +12,7 @@ import {
   type ArtifactLogTable,
   type ArtifactMemoField,
 } from '@/lib/flow/artifact-fields';
-import { addDays, formatDate, getRangeEnd } from '@/lib/flow/date';
+import { addDays, formatDate, formatKoreanShortDate, getRangeEnd } from '@/lib/flow/date';
 import { FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
 import { timingLabel } from '@/lib/flow/parser';
 import type { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState } from '@/lib/flow/types';
@@ -2207,17 +2207,18 @@ function MaintenanceRoutineWorkbench({
           {occurrenceDates.map((date, index) => {
             const key = `maintenance:${bundle.flow.slug}:${date}`;
             const state = workbenchState.occurrences[key] ?? {};
+            const dateLabel = formatKoreanShortDate(date, { includeWeekday: true });
             return (
               <label key={key} className={`rounded-xl border px-3 py-2 text-sm ${state.done ? 'border-[#D8ECE1] bg-[#EAF7F0] text-[#1F8A5B]' : 'border-[#E7E4DD] bg-white text-[#1B1A17]'}`}>
                 <span className="flex items-center gap-2">
                   <input
-                    aria-label={`관리일 완료: ${date}`}
+                    aria-label={`관리일 완료: ${dateLabel}`}
                     className={FLOWME_CHECKBOX_CLASS}
                     checked={Boolean(state.done)}
                     onChange={(event) => onWorkbenchChange(updateOccurrenceDone(workbenchState, key, event.currentTarget.checked))}
                     type="checkbox"
                   />
-                  <span className="font-mono text-xs font-semibold text-[#3654FF]">{date}</span>
+                  <span className="text-xs font-semibold text-[#3654FF]">{dateLabel}</span>
                   <span className="font-semibold">{index === 0 ? '이번 관리일' : `${index + 1}번째 관리일`}</span>
                 </span>
               </label>
@@ -2324,7 +2325,7 @@ function MobileSpreadsheetSummaryCard({ date, columns, bundle }: { date: string;
   return (
     <div data-testid="mobile-artifact-summary-card" className={`mt-3 md:hidden ${FLOWME_COMPACT_SUPPORT_CARD_CLASS}`}>
       <p className="text-xs font-semibold text-[#3654FF]">먼저 채울 행</p>
-      <h4 className="mt-1 text-sm font-semibold text-[#1B1A17]">{title} · {date}</h4>
+      <h4 className="mt-1 text-sm font-semibold text-[#1B1A17]">{title} · {formatKoreanShortDate(date)}</h4>
       <dl className="mt-2 grid gap-2 text-sm">
         {previewColumns.map((column) => (
           <div key={column} className={FLOWME_INNER_ROW_CLASS}>

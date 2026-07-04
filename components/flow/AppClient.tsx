@@ -12,7 +12,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { ArtifactWorkbench } from './ArtifactWorkbench';
 import { ArtifactPreview } from './ArtifactPreview';
 import { PlatformNav } from './PlatformNav';
-import { addDays, formatDate, getRangeEnd } from '@/lib/flow/date';
+import { addDays, formatDate, formatKoreanShortDate, getRangeEnd } from '@/lib/flow/date';
 import { inferPrimaryDestination } from '@/lib/flow/destination';
 import { getRepresentativeFlowSlugs, normalizeExecutionModel, type FlowExportTarget } from '@/lib/flow/execution-model';
 import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
@@ -8177,7 +8177,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     }
     return (
       <div data-testid="public-flow-primary-setup" className="rounded-xl bg-white px-3 py-3 ring-1 ring-[#E7E4DD]">
-        <AnchorInput bundle={bundle} anchor={anchor} displayAnchor={displayAnchor} mode={anchorMode} onModeChange={setAnchorMode} onChange={setAnchor} weekdays={weekdaySelection} onWeekdaysChange={setWeekdaySelection} />
+        <AnchorInput bundle={bundle} anchor={anchor} displayAnchor={displayAnchor} mode={anchorMode} onModeChange={setAnchorMode} onChange={setAnchor} weekdays={weekdaySelection} onWeekdaysChange={setWeekdaySelection} compactSecondaryActions />
       </div>
     );
   };
@@ -8626,8 +8626,7 @@ function shouldUseDesktopReferenceRail(bundle: FlowBundle) {
 
 function compactDateLabel(value: string) {
   if (!value) return '';
-  const [, month, day] = value.split('-');
-  return month && day ? `${Number(month)}/${Number(day)}` : value;
+  return formatKoreanShortDate(value);
 }
 
 function getExportFirstPreviewEntries(bundle: FlowBundle, anchor: string): ScheduleEntry[] {
@@ -8736,7 +8735,7 @@ function ExportFirstHero({
               {previewEntries.map((entry) => (
                 <div key={entry.id} className="grid grid-cols-[3.2rem_5.8rem_1fr] items-baseline gap-2 text-sm">
                   <span className="font-semibold text-[#6E6B64]">{entry.timing}</span>
-                  <span className="font-medium text-[#6E6B64]">{entry.startDate}</span>
+                  <span className="font-medium text-[#6E6B64]">{formatKoreanShortDate(entry.startDate)}</span>
                   <span className="min-w-0 text-[#1B1A17]">{entry.title}</span>
                 </div>
               ))}
@@ -8758,6 +8757,7 @@ function ExportFirstHero({
               onChange={onAnchorChange}
               weekdays={weekdays}
               onWeekdaysChange={onWeekdaysChange}
+              compactSecondaryActions
             />
           </div>
           <div className="mt-4" data-testid="moving-save-actions">
@@ -8815,6 +8815,7 @@ function AnchorInput({
   onChange,
   weekdays,
   onWeekdaysChange,
+  compactSecondaryActions = false,
 }: {
   bundle: FlowBundle;
   anchor: string;
@@ -8824,6 +8825,7 @@ function AnchorInput({
   onChange: (value: string) => void;
   weekdays: string[];
   onWeekdaysChange: (value: string[]) => void;
+  compactSecondaryActions?: boolean;
 }) {
   if (bundle.flow.anchor_type === 'none') {
     const noAnchorInstruction =
@@ -8842,8 +8844,21 @@ function AnchorInput({
   const earliestOffset = getEarliestOffset(bundle);
   const isPast = daysUntil !== null && daysUntil < 0;
   const isClose = daysUntil !== null && earliestOffset < 0 && daysUntil >= 0 && daysUntil < Math.abs(earliestOffset);
+  const selectedDateLabel = anchor ? formatKoreanShortDate(anchor, { includeWeekday: true }) : '';
+  const displayAnchorLabel = displayAnchor ? formatKoreanShortDate(displayAnchor, { includeWeekday: true }) : '';
 
   if (isJeonsePrecheckFlow(bundle)) {
+    const secondaryActions = (
+      <div className="grid grid-cols-2 gap-2">
+        <button className={`rounded-md border px-3 py-2 text-left text-sm font-semibold ${mode === 'undecided' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-700'}`} type="button" onClick={() => onModeChange('undecided')}>
+          날짜 미정
+        </button>
+        <button className={`rounded-md border px-3 py-2 text-left text-sm font-semibold ${mode === 'example' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-700'}`} type="button" onClick={() => onModeChange('example')}>
+          예시 보기
+        </button>
+      </div>
+    );
+
     return (
       <div className="space-y-3">
         <label className="block space-y-2">
@@ -8868,26 +8883,37 @@ function AnchorInput({
             </button>
           </div>
         </label>
-        <div className="grid grid-cols-2 gap-2">
-          <button className={`rounded-md border px-3 py-2 text-left text-sm font-semibold ${mode === 'undecided' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-700'}`} type="button" onClick={() => onModeChange('undecided')}>
-            날짜 미정
-          </button>
-          <button className={`rounded-md border px-3 py-2 text-left text-sm font-semibold ${mode === 'example' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-700'}`} type="button" onClick={() => onModeChange('example')}>
-            예시 보기
-          </button>
-        </div>
+        {compactSecondaryActions ? (
+          <details className="rounded-xl border border-[#E7E4DD] bg-white px-3 py-2 text-sm">
+            <summary className="cursor-pointer text-xs font-semibold text-[#6E6B64]">다른 방법</summary>
+            <div className="mt-2">{secondaryActions}</div>
+          </details>
+        ) : (
+          secondaryActions
+        )}
         {mode === 'custom' && anchor ? (
           <p className={`rounded-md border px-3 py-2 text-sm ${isPast ? 'border-red-200 bg-red-50 text-red-800' : isClose ? 'border-amber-200 bg-amber-50 text-amber-900' : 'border-emerald-200 bg-emerald-50 text-emerald-800'}`}>
-            {isPast ? `${label}이 이미 지났어요.` : `${label} ${anchor} 기준으로 일정이 조정됐습니다.`}
+            {isPast ? `${label}이 이미 지났어요.` : `${label} ${selectedDateLabel} 기준으로 일정이 조정됐습니다.`}
           </p>
         ) : mode === 'example' ? (
-          <p className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">예시 날짜 {displayAnchor}로 미리 봅니다.</p>
+          <p className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">예시 날짜 {displayAnchorLabel}로 미리 봅니다.</p>
         ) : mode === 'undecided' ? (
           <p className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">날짜를 정하면 모든 일정이 다시 계산됩니다.</p>
         ) : null}
       </div>
     );
   }
+
+  const secondaryActions = (
+    <div className="grid gap-2 sm:grid-cols-2">
+      <button className={`rounded-md border px-3 py-2 text-left text-sm font-semibold ${mode === 'undecided' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`} type="button" onClick={() => onModeChange('undecided')}>
+        아직 날짜가 안 정해졌어요
+      </button>
+      <button className={`rounded-md border px-3 py-2 text-left text-sm font-semibold ${mode === 'example' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`} type="button" onClick={() => onModeChange('example')}>
+        그냥 예시로 둘러볼게요
+      </button>
+    </div>
+  );
 
   return (
     <div className="space-y-4">
@@ -8913,33 +8939,35 @@ function AnchorInput({
           </button>
         </div>
       </label>
-      <div className="flex items-center gap-3 text-xs font-semibold text-gray-400">
-        <span className="h-px flex-1 bg-gray-200" />
-        또는
-        <span className="h-px flex-1 bg-gray-200" />
-      </div>
-      <div className="grid gap-2 sm:grid-cols-2">
-        <button className={`rounded-md border px-3 py-2 text-left text-sm font-semibold ${mode === 'undecided' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`} type="button" onClick={() => onModeChange('undecided')}>
-          아직 날짜가 안 정해졌어요
-        </button>
-        <button className={`rounded-md border px-3 py-2 text-left text-sm font-semibold ${mode === 'example' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`} type="button" onClick={() => onModeChange('example')}>
-          그냥 예시로 둘러볼게요
-        </button>
-      </div>
+      {compactSecondaryActions ? (
+        <details className="rounded-xl border border-[#E7E4DD] bg-white px-3 py-2 text-sm">
+          <summary className="cursor-pointer text-xs font-semibold text-[#6E6B64]">다른 방법</summary>
+          <div className="mt-2">{secondaryActions}</div>
+        </details>
+      ) : (
+        <>
+          <div className="flex items-center gap-3 text-xs font-semibold text-gray-400">
+            <span className="h-px flex-1 bg-gray-200" />
+            또는
+            <span className="h-px flex-1 bg-gray-200" />
+          </div>
+          {secondaryActions}
+        </>
+      )}
       {mode === 'custom' && anchor ? (
         <div className={`rounded-md border p-3 text-sm ${isPast ? 'border-red-200 bg-red-50 text-red-800' : isClose ? 'border-amber-200 bg-amber-50 text-amber-900' : 'border-emerald-200 bg-emerald-50 text-emerald-800'}`}>
           {isPast ? (
             `${label}이 이미 지났어요. 다른 날짜를 입력하시겠어요?`
           ) : (
             <>
-              <span className="font-semibold">{label}: {anchor}</span>
+              <span className="font-semibold">{label}: {selectedDateLabel}</span>
               {daysUntil !== null ? ` (D-${daysUntil})` : ''} 으로 모든 항목이 자동 조정됐어요.
               {isClose ? ` ${label}까지 ${daysUntil}일밖에 남지 않아 일부 초기 단계는 빠르게 처리하거나 건너뛸 수 있어요.` : null}
             </>
           )}
         </div>
       ) : mode === 'example' ? (
-        <p className="rounded-md border border-gray-200 bg-white p-3 text-sm text-gray-600">예시 날짜로 미리보기 · {label} {displayAnchor}</p>
+        <p className="rounded-md border border-gray-200 bg-white p-3 text-sm text-gray-600">예시 날짜로 미리보기 · {label} {displayAnchorLabel}</p>
       ) : mode === 'undecided' ? (
         <p className="rounded-md border border-gray-200 bg-white p-3 text-sm text-gray-600">날짜 없이 항목만 먼저 둘러봅니다. 날짜를 넣으면 모든 일정이 다시 계산됩니다.</p>
       ) : null}

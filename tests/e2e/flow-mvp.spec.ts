@@ -36,6 +36,10 @@ async function expectNoInternalUserSurfaceCopy(locator: Locator) {
   }
 }
 
+async function expectNoUserFacingRawIsoDate(locator: Locator) {
+  await expect(locator).not.toContainText(/\b\d{4}-\d{2}-\d{2}\b/);
+}
+
 async function expectTextOccurrenceAtMost(locator: Locator, text: string, maxCount: number) {
   const content = (await locator.textContent()) ?? '';
   expect(content.split(text).length - 1).toBeLessThanOrEqual(maxCount);
@@ -283,6 +287,8 @@ test('public flow detail uses a share shell until it saves into My Flow', async 
   await expect(page.getByTestId('platform-mobile-tabs')).toHaveCount(0);
   await expect(page.locator('input[type="date"]')).toHaveCount(1);
   await expect(hero.getByTestId('public-flow-primary-setup')).toBeVisible();
+  await expect(hero.getByRole('button', { name: '아직 날짜가 안 정해졌어요' })).toBeHidden();
+  await expect(hero.getByRole('button', { name: '그냥 예시로 둘러볼게요' })).toBeHidden();
   await expect(hero).not.toContainText('검사일 입력으로 시작');
   const stickySave = page.getByTestId('public-flow-mobile-save-cta');
   await expect(stickySave.getByRole('button', { name: '내 Flow에 저장' })).toBeVisible();
@@ -637,9 +643,9 @@ test('mobile fixed layers keep save actions and final content separated', async 
   await page.goto('/f/vehicle-inspection-prep');
   const publicSaveCta = page.getByTestId('public-flow-mobile-save-cta');
   await expect(publicSaveCta).toBeVisible();
-  const publicExampleButton = page.getByRole('button', { name: '그냥 예시로 둘러볼게요' });
-  await scrollElementToViewportEnd(publicExampleButton);
-  await expectElementClearsFixedLayer(publicExampleButton, publicSaveCta, 16);
+  const publicSetup = page.getByTestId('public-flow-primary-setup');
+  await scrollElementToViewportEnd(publicSetup);
+  await expectElementClearsFixedLayer(publicSetup, publicSaveCta, 16);
 
   for (const route of ['/f/fridge-cleanout-weekly-plan', '/f/washer-tub-clean-monthly']) {
     await page.goto(route);
@@ -722,6 +728,8 @@ test('public single Flow detail keeps input save and first action in the mobile 
   await expect(hero.getByTestId('public-flow-result-promise')).toBeVisible();
   await expect(hero.getByTestId('public-flow-primary-setup')).toBeVisible();
   await expect(hero.getByTestId('public-flow-primary-setup').locator('input[type="date"]')).toBeVisible();
+  await expect(hero.getByRole('button', { name: '날짜 미정' })).toBeHidden();
+  await expect(hero.getByRole('button', { name: '예시 보기' })).toBeHidden();
   await expect(page.locator('input[type="date"]')).toHaveCount(1);
   await expect(hero).not.toContainText('계약 예정일 입력으로 시작');
   await expect(hero.getByTestId('public-flow-first-action-preview')).toContainText('시세와 등기부등본 권리관계 확인하기');
@@ -740,6 +748,52 @@ test('public single Flow detail keeps input save and first action in the mobile 
 
   await stickySave.getByRole('button', { name: '내 Flow에 저장' }).click();
   await expect(stickySave.getByRole('link', { name: '내 Flow에서 보기' })).toBeVisible();
+});
+
+test('public save setup keeps secondary date choices quiet and formats user-facing dates', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await page.goto('/f/vehicle-inspection-prep');
+  const vehicleSetup = page.getByTestId('public-flow-primary-setup');
+  await expect(vehicleSetup).toBeVisible();
+  await expect(vehicleSetup.getByRole('button', { name: '입력' })).toBeVisible();
+  await expect(vehicleSetup.getByRole('button', { name: '아직 날짜가 안 정해졌어요' })).toBeHidden();
+  await expect(vehicleSetup.getByRole('button', { name: '그냥 예시로 둘러볼게요' })).toBeHidden();
+  await vehicleSetup.locator('input[type="date"]').fill('2026-07-17');
+  await vehicleSetup.getByRole('button', { name: '입력' }).click();
+  await expect(vehicleSetup).toContainText('7월 17일');
+  await expectNoUserFacingRawIsoDate(vehicleSetup);
+
+  await page.goto('/f/jeonse-contract-precheck-docs');
+  const jeonseSetup = page.getByTestId('public-flow-primary-setup');
+  await expect(jeonseSetup).toBeVisible();
+  await expect(jeonseSetup.getByRole('button', { name: '적용' })).toBeVisible();
+  await expect(jeonseSetup.getByRole('button', { name: '날짜 미정' })).toBeHidden();
+  await expect(jeonseSetup.getByRole('button', { name: '예시 보기' })).toBeHidden();
+  await jeonseSetup.locator('input[type="date"]').fill('2026-07-17');
+  await jeonseSetup.getByRole('button', { name: '적용' }).click();
+  await expect(jeonseSetup).toContainText('7월 17일');
+  await expectNoUserFacingRawIsoDate(jeonseSetup);
+
+  await page.goto('/f/moving-d30-basic');
+  const movingSetup = page.getByRole('region', { name: 'Export-first flow hero' });
+  await expect(movingSetup.getByRole('button', { name: '입력' })).toBeVisible();
+  await expect(movingSetup.getByRole('button', { name: '아직 날짜가 안 정해졌어요' })).toBeHidden();
+  await expect(movingSetup.getByRole('button', { name: '그냥 예시로 둘러볼게요' })).toBeHidden();
+});
+
+test('special workbench date labels avoid raw ISO dates in primary mobile cards', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await page.goto('/f/washer-tub-clean-monthly');
+  const washerNextCard = page.getByTestId('maintenance-routine-next-card');
+  await expect(washerNextCard).toContainText(/월 \d+일/);
+  await expectNoUserFacingRawIsoDate(washerNextCard);
+
+  await page.goto('/f/fridge-cleanout-weekly-plan');
+  const fridgeSummary = page.getByTestId('mobile-artifact-summary-card');
+  await expect(fridgeSummary).toContainText(/월 \d+일/);
+  await expectNoUserFacingRawIsoDate(fridgeSummary);
 });
 
 test('public no-anchor Flow detail shows the first action without a setup detour on mobile', async ({ page }) => {
