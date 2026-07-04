@@ -1418,6 +1418,52 @@ const flowMapCatalogLinks = [
   ),
 ];
 
+const HOME_RECOMMENDATION_LIMIT = 3;
+const homeRecommendedFlowMapLinks = homeFlowMapBaselineLinks.slice(0, HOME_RECOMMENDATION_LIMIT);
+
+function getHomeRecommendationPromise(item: FlowMapCatalogLink): string {
+  const inputLabel = item.input === '입력 없음' ? '입력 없이' : `${item.input}만 넣으면`;
+  const countSuffix = item.input === '입력 없음' || item.counts.steps <= 0 ? '' : ` · 할 일 ${item.counts.steps}개`;
+  return `${inputLabel} ${item.artifact}${countSuffix}`;
+}
+
+function HomeRecommendationCard({ item, variant = 'secondary' }: { item: FlowMapCatalogLink; variant?: 'primary' | 'secondary' }) {
+  const promise = getHomeRecommendationPromise(item);
+  const firstTask = getCatalogFirstTask(item.previewSteps, item.recommendedFlowTitle);
+  const isPrimary = variant === 'primary';
+
+  return (
+    <Link
+      data-testid={isPrimary ? 'home-primary-flow-card' : 'home-secondary-flow-card'}
+      data-home-recommendation-card="true"
+      className={[
+        'block rounded-2xl border border-[#E7E4DD] bg-white transition hover:border-[#3654FF]/40 hover:shadow-[0_8px_24px_rgba(27,26,23,0.06)]',
+        isPrimary ? 'p-4 md:p-5' : 'p-3.5',
+      ].join(' ')}
+      href={`/flow-maps/${item.id}`}
+    >
+      <p className="text-[11px] font-semibold text-[#8A857B]">{item.categoryLabel}</p>
+      <h2 className={isPrimary ? 'mt-2 text-2xl font-semibold leading-snug text-[#1B1A17]' : 'mt-1.5 text-base font-semibold leading-snug text-[#1B1A17]'}>
+        {item.title}
+      </h2>
+      <p
+        data-testid={isPrimary ? 'home-primary-flow-promise' : undefined}
+        className={isPrimary ? 'mt-3 rounded-xl bg-[#FAFAF8] px-3 py-2.5 text-sm font-semibold leading-5 text-[#1B1A17]' : 'mt-2 break-keep text-sm font-semibold leading-5 text-[#3654FF]'}
+      >
+        {promise}
+      </p>
+      {isPrimary ? (
+        <p className="mt-2 break-keep text-sm leading-6 text-[#6E6B64]">{item.summary}</p>
+      ) : (
+        <p className="mt-2 line-clamp-1 break-keep text-sm leading-5 text-[#6E6B64]">{firstTask}</p>
+      )}
+      <p className={isPrimary ? 'mt-4 border-t border-[#E7E4DD] pt-3 text-sm font-semibold text-[#3654FF]' : 'mt-3 text-sm font-semibold text-[#3654FF]'}>
+        {FLOW_ENTRY_DETAIL_CTA_LABEL}
+      </p>
+    </Link>
+  );
+}
+
 function getFlowMapCatalogCounts(
   fallbackFlowCount: number,
   publishPackage: ReturnType<typeof buildSourceBackedFlowMapPublishPackage>,
@@ -1436,7 +1482,7 @@ function getFlowMapCatalogCounts(
 }
 
 export function HomeLanding() {
-  const primaryMap = homeFlowMapBaselineLinks[0];
+  const [primaryMap, ...secondaryMaps] = homeRecommendedFlowMapLinks;
 
   return (
     <main className="min-h-screen bg-[#FAFAF8] px-5 py-6 pb-28 md:py-8 md:pb-12">
@@ -1456,21 +1502,20 @@ export function HomeLanding() {
             </Link>
           </div>
         </div>
-        {primaryMap ? (
-          <Link
-            data-testid="home-primary-flow-card"
-            className="block rounded-2xl border border-[#E7E4DD] bg-white p-4 transition hover:border-[#3654FF]/40 hover:shadow-[0_8px_24px_rgba(27,26,23,0.06)] md:p-5"
-            href={`/flow-maps/${primaryMap.id}`}
-          >
-            <p className="text-sm font-semibold text-[#3654FF]">추천 콘텐츠</p>
-            <h2 className="mt-2 text-2xl font-semibold leading-snug text-slate-950">{primaryMap.title}</h2>
-            <p className="mt-2 break-keep text-sm leading-6 text-[#6E6B64]">{primaryMap.summary}</p>
-            <p data-testid="home-primary-flow-promise" className="mt-4 rounded-xl bg-[#FAFAF8] px-3 py-2.5 text-sm font-semibold leading-5 text-[#1B1A17]">
-              이사일만 넣으면 D-30 일정 · 할 일 {primaryMap.counts.steps}개
-            </p>
-            <p className="mt-4 border-t border-[#E7E4DD] pt-3 text-sm font-semibold text-[#3654FF]">{FLOW_ENTRY_DETAIL_CTA_LABEL}</p>
-          </Link>
-        ) : null}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-sm font-semibold text-[#3654FF]">바로 시작</p>
+            <p className="text-xs font-medium text-[#8A857B]">{homeRecommendedFlowMapLinks.length}개 추천</p>
+          </div>
+          {primaryMap ? <HomeRecommendationCard item={primaryMap} variant="primary" /> : null}
+          {secondaryMaps.length > 0 ? (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {secondaryMaps.map((map) => (
+                <HomeRecommendationCard key={map.id} item={map} />
+              ))}
+            </div>
+          ) : null}
+        </div>
       </section>
 
       </div>

@@ -125,7 +125,7 @@ test('home presents FLOW as an executable content platform', async ({ page }) =>
   await expect(page.getByRole('link', { name: '내 콘텐츠로 Flow 만들기' })).toHaveCount(0);
   await expect(page.getByRole('link', { name: '#D-Day 준비' })).toHaveCount(0);
   await expect(page.getByText('원룸 이사 D-30').first()).toBeVisible();
-  await expect(page.getByText('중1 수학 목차 진도').first()).toHaveCount(0);
+  await expect(page.getByText('중1 수학 목차 진도').first()).toBeVisible();
   await expect(page.getByText('전세계약 전 서류 체크 Flow').first()).toHaveCount(0);
   await expect(page.getByText('중고차 구매 현장 점검 Flow').first()).toHaveCount(0);
   await expect(page.getByText('초기 이유식 메뉴·레시피 Flow').first()).toHaveCount(0);
@@ -138,6 +138,8 @@ test('home presents FLOW as an executable content platform', async ({ page }) =>
   await expect(page.getByTestId('home-menu-tree-section')).toHaveCount(0);
   await expect(page.getByText('시작 경로')).toHaveCount(0);
   await expect(page.getByText('날짜가 있는 항목 실행')).toHaveCount(0);
+  const recommendationCards = page.locator('[data-home-recommendation-card="true"]');
+  await expect(recommendationCards).toHaveCount(2);
   const primaryCard = page.getByTestId('home-primary-flow-card');
   await expect(primaryCard).toHaveAttribute('href', '/flow-maps/moving-d30');
   await expect(primaryCard).toContainText('이사일만 넣으면');
@@ -145,11 +147,43 @@ test('home presents FLOW as an executable content platform', async ({ page }) =>
   await expect(primaryCard).toContainText('할 일');
   await expect(primaryCard).toContainText('열어보기');
   await expect(primaryCard).not.toContainText('저장 전 보기');
+  const mathCard = recommendationCards.filter({ hasText: '중1 수학 목차 진도' });
+  await expect(mathCard).toHaveAttribute('href', '/flow-maps/middle-school-math-1');
+  await expect(mathCard).toContainText('입력 없이');
+  await expect(mathCard).toContainText('진도표');
+  await expect(mathCard).toContainText('열어보기');
+  await expect(mathCard).not.toContainText('저장 전 보기');
   await expect(primaryCard.getByTestId('home-card-signal')).toHaveCount(0);
   await expect(page.getByTestId('home-secondary-actions')).toHaveCount(0);
   await expect(page.getByRole('link', { name: '저장한 콘텐츠 보기' })).toHaveCount(0);
   await expect(page.getByRole('link', { name: '캘린더 보기' })).toHaveCount(0);
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
+});
+
+test('home recommended starts open detail pages and save into My Flow', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.evaluate(() => window.localStorage.clear());
+
+  await Promise.all([
+    page.waitForURL('**/flow-maps/moving-d30', { timeout: 15_000 }),
+    page.locator('[data-home-recommendation-card="true"]').filter({ hasText: '원룸 이사 D-30' }).click(),
+  ]);
+  await expect(page.getByTestId('flow-map-public')).toBeVisible();
+  await page.getByTestId('flow-map-anchor-input').fill('2026-07-31');
+  await page.getByTestId('flow-map-save-all-mobile').click();
+  await expect(page).toHaveURL('/my?savedMap=moving-d30');
+  await expect(page.getByTestId('my-flow-now-section')).toContainText('이사 방식과 견적 후보 정하기');
+
+  await page.goto('/');
+  await Promise.all([
+    page.waitForURL('**/flow-maps/middle-school-math-1', { timeout: 15_000 }),
+    page.locator('[data-home-recommendation-card="true"]').filter({ hasText: '중1 수학 목차 진도' }).click(),
+  ]);
+  await expect(page.getByTestId('flow-map-public')).toBeVisible();
+  await page.getByTestId('flow-map-save-all-mobile').click();
+  await expect(page).toHaveURL('/my?savedMap=middle-school-math-1');
+  await expect(page.getByTestId('my-flow-now-section')).toContainText('1. 소인수분해');
 });
 
 test('flow list exposes the seed and online-sourced flows', async ({ page }) => {
@@ -484,6 +518,8 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(page.getByTestId('home-primary-flow-card')).toHaveAttribute('href', '/flow-maps/moving-d30');
   await expect(page.getByTestId('home-primary-flow-card')).toContainText('열어보기');
   await expect(page.getByTestId('home-primary-flow-card')).not.toContainText('저장 전 보기');
+  await expect(page.locator('[data-home-recommendation-card="true"]')).toHaveCount(2);
+  await expect(page.locator('[data-home-recommendation-card="true"]').filter({ hasText: '중1 수학 목차 진도' })).toHaveAttribute('href', '/flow-maps/middle-school-math-1');
   await expect(page.getByRole('link', { name: '콘텐츠 고르러 가기' })).toBeVisible();
   await expect(page.getByRole('link', { name: '콘텐츠 고르러 가기' })).toHaveAttribute('href', '/flows');
   await expect(page.getByTestId('home-secondary-actions')).toHaveCount(0);
