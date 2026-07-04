@@ -1914,6 +1914,7 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   await expect(postSavePanel).toContainText('저장됨');
   await expect(postSavePanel.getByRole('heading', { name: '1. 소인수분해' })).toBeVisible();
   await expect(postSavePanel).toContainText('중1 수학 목차 진도표');
+  await expect(postSavePanel).not.toContainText('Mathbang');
   await expect(postSavePanel).not.toContainText('8개 할 일');
   await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(0);
   await expect(postSavePanel.getByTestId('my-flow-post-save-view-all')).toHaveCount(0);
@@ -1922,12 +1923,14 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   const todayDetail = page.getByTestId('my-flow-now-section').getByTestId('my-flow-inline-detail');
   await expect(todayDetail).toContainText('개념 항목');
   await expect(todayDetail).toContainText('거듭제곱');
+  await expect(todayDetail).not.toContainText('Mathbang');
 
   await page.getByTestId('my-flow-view-flow').click();
   const mathCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-middle-school-math-1"]');
   await expect(mathCard).toBeVisible();
   await expect(mathCard).toContainText('단원별 개념 진도');
   await expect(mathCard.getByTestId('my-flow-map-context')).toContainText('중1 수학 목차 진도표');
+  await expect(mathCard).not.toContainText('Mathbang');
   await expect(mathCard).toContainText('0/8');
   await expect(mathCard.getByRole('link', { name: '원문 보기' })).toHaveAttribute('href', '/flow-maps/middle-school-math-1');
 
@@ -1935,6 +1938,7 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-pressed', 'true');
   const detailSection = mathCard.getByTestId('my-flow-overview-inline-detail');
   await expect(detailSection.getByTestId('my-flow-item-detail')).toBeVisible();
+  await expect(detailSection).not.toContainText('Mathbang');
   const itemChecklist = detailSection.getByTestId('my-flow-item-checklist');
   await expect(itemChecklist).toContainText('거듭제곱');
   await itemChecklist.getByLabel('거듭제곱').check();
@@ -2056,6 +2060,12 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
   const nowSection = page.getByTestId('my-flow-now-section');
   await expect(nowSection.getByTestId('my-flow-inline-detail')).toContainText('확인 항목');
   await expect(nowSection.getByTestId('my-flow-inline-detail')).toContainText('견적 후보 2-3곳을 열고 연락처를 메모합니다.');
+
+  await page.getByTestId('my-flow-view-flow').click();
+  const movingOverviewCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
+  await expect(movingOverviewCard).toBeVisible();
+  await expect(movingOverviewCard).not.toContainText(/\b2026-\d{2}-\d{2}\b/);
+  await expect(movingOverviewCard).toContainText('6월 22일');
 
   await page.getByTestId('platform-mobile-tabs').getByRole('link', { name: '캘린더' }).click();
   const calendarCard = page.getByTestId('my-flow-calendar-card');

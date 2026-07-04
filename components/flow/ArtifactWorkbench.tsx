@@ -371,7 +371,7 @@ function WorkbenchDetailDisclosure({ detail }: { detail?: WorkbenchItemDetail })
           <div className="flex flex-wrap gap-2 pt-1">
             {detail.links.map((link) => (
               <a key={`${link.label}-${link.url}`} className="rounded-xl border border-[#D8D5CD] bg-white px-2 py-1 text-xs font-semibold text-[#6E6B64] hover:border-[#3654FF]/40 hover:text-[#3654FF]" href={link.url} target="_blank" rel="noreferrer">
-                {link.label}
+                {toUserFacingSourceTitle(link.label)}
               </a>
             ))}
           </div>

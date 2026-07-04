@@ -306,8 +306,8 @@ function SourceContentCard({ bundle, className = 'mt-5' }: { bundle: FlowBundle;
   const hideConversionNote = serviceCatalogFlowSlugs.has(bundle.flow.slug);
   const sourceMeta = [
     domain,
-    bundle.flow.source_checked_at ? `${bundle.flow.source_checked_at} 확인` : null,
-    bundle.flow.updated_at ? `${formatDate(new Date(bundle.flow.updated_at))} 업데이트` : null,
+    bundle.flow.source_checked_at ? `${formatMyFlowDisplayDate(bundle.flow.source_checked_at)} 확인` : null,
+    bundle.flow.updated_at ? `${formatMyFlowDisplayDate(formatDate(new Date(bundle.flow.updated_at)))} 업데이트` : null,
     getSourcePrecisionLabel(bundle),
   ].filter(Boolean);
 
@@ -1543,8 +1543,9 @@ const myFlowChecklistDestinationSlugs = new Set(['used-car-buying-check', 'new-c
 
 function getMyFlowAnchorDisplay(bundle: FlowBundle, anchor: string, demoMode: MyFlowDemoMode | null): string | null {
   if (!anchor) return null;
-  if (bundle.flow.anchor_type === 'none') return `${demoMode ? '데모 기준일' : '기준일'} ${anchor}`;
-  return `${getAnchorInputLabel(bundle)} ${anchor}`;
+  const displayAnchor = /^\d{4}-\d{2}-\d{2}$/.test(anchor) ? formatMyFlowDisplayDate(anchor) : anchor;
+  if (bundle.flow.anchor_type === 'none') return `${demoMode ? '데모 기준일' : '기준일'} ${displayAnchor}`;
+  return `${getAnchorInputLabel(bundle)} ${displayAnchor}`;
 }
 
 function getMyFlowOpenActionLabel(bundle: FlowBundle): string {
@@ -2297,7 +2298,7 @@ function getMyFlowRowDisplaySectionLabel(row: MyFlowCalendarRow): string {
   const section = row.section.trim();
   const timing = row.timing?.trim() ?? '';
   if (!section) return '';
-  const normalizeUserLabel = (value: string) => value.replace(/\bStep\b/g, '단계').replace(/\bItem\b/g, '체크');
+  const normalizeUserLabel = (value: string) => toUserFacingSourceTitle(value.replace(/\bStep\b/g, '단계').replace(/\bItem\b/g, '체크'));
   if (timing && section.startsWith(timing)) {
     return normalizeUserLabel(section.slice(timing.length).trim() || section);
   }
@@ -3057,7 +3058,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           ? '다음 할 일'
           : '먼저 할 일';
   const getMyFlowRowDraft = (row: MyFlowCalendarRow) => myFlowItemDrafts[getMyFlowRowInstanceKey(row)] ?? {};
-  const getMyFlowRowDisplayTitle = (row: MyFlowCalendarRow) => getMyFlowRowDraft(row).title ?? row.title;
+  const getMyFlowRowDisplayTitle = (row: MyFlowCalendarRow) => toUserFacingSourceTitle(getMyFlowRowDraft(row).title ?? row.title);
   const myFlowNowTitle = myFlowPrimaryContinuationRow
     ? getMyFlowRowDisplayTitle(myFlowPrimaryContinuationRow)
     : '이어갈 할 일이 없습니다';
@@ -4539,7 +4540,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       repeatPreset: editorDraft.repeatPreset,
       location: editorDraft.location,
       memo: editorDraft.memo,
-      sourceLabel: primaryLink?.label,
+      sourceLabel: primaryLink ? toUserFacingSourceTitle(primaryLink.label) : undefined,
       sourceUrl: primaryLink?.url,
       items: detailChecklistItems,
       checkedItems: detailChecklistState,
@@ -4791,7 +4792,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 target="_blank"
                 rel="noreferrer"
               >
-                {primaryLink.label}
+                {toUserFacingSourceTitle(primaryLink.label)}
               </a>
             ) : null}
           </div>
@@ -5098,7 +5099,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 target="_blank"
                 rel="noreferrer"
               >
-                {primaryLink.label}
+                {toUserFacingSourceTitle(primaryLink.label)}
               </a>
             ) : null}
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
@@ -5184,7 +5185,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <div className="mt-1 flex flex-wrap gap-2">
                   {advancedLinks.map((link) => (
                     <a key={`${link.label}-${link.url}`} className="rounded-md border border-slate-200 bg-white px-2 py-1 text-blue-700" href={link.url} target="_blank" rel="noreferrer">
-                      {link.label}
+                      {toUserFacingSourceTitle(link.label)}
                     </a>
                   ))}
                 </div>
@@ -5220,7 +5221,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     <div className="mt-1 flex flex-wrap gap-2">
                       {advancedLinks.map((link) => (
                         <a key={`${link.label}-${link.url}`} className="rounded-md border border-slate-200 px-2 py-1 text-blue-700" href={link.url} target="_blank" rel="noreferrer">
-                          {link.label}
+                          {toUserFacingSourceTitle(link.label)}
                         </a>
                       ))}
                     </div>
@@ -5402,7 +5403,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <span className="block text-xs font-semibold text-blue-700">다음 할 일</span>
               <span className="mt-1 block text-sm font-semibold text-slate-950">{nextRow.title}</span>
               <span className="mt-1 block text-xs font-semibold text-slate-500">
-                {[nextRow.date, nextRow.section].filter(Boolean).join(' · ') || progressSummary}
+                {[nextRow.date ? formatMyFlowDisplayDate(nextRow.date) : '', nextRow.section ? toUserFacingSourceTitle(nextRow.section) : ''].filter(Boolean).join(' · ') || progressSummary}
               </span>
             </span>
           ) : !nextRow ? (
@@ -5431,7 +5432,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                           {getMyFlowRowDisplayTitle(stepRow)}
                         </span>
                         <span className="mt-1 block truncate text-xs font-semibold text-slate-500">
-                          {[stepRow.date, stepRow.timing ? formatMyFlowTimingChip(stepRow.timing) : '', getMyFlowRowDisplaySectionLabel(stepRow)].filter(Boolean).join(' · ') || progressSummary}
+                          {[stepRow.date ? formatMyFlowDisplayDate(stepRow.date) : '', stepRow.timing ? formatMyFlowTimingChip(stepRow.timing) : '', getMyFlowRowDisplaySectionLabel(stepRow)].filter(Boolean).join(' · ') || progressSummary}
                         </span>
                       </span>
                       <span className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-semibold ${stepChecked ? 'bg-emerald-50 text-emerald-700' : stepOpen ? 'bg-white text-blue-700 ring-1 ring-blue-100' : 'bg-slate-100 text-slate-600'}`}>
@@ -5554,7 +5555,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           {nextRow ? (
             <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="min-w-0">
-              <p className="text-xs font-semibold text-slate-500">{[nextRow.timing ? formatMyFlowTimingChip(nextRow.timing) : '', nextRow.date, nextRow.section].filter(Boolean).join(' · ')}</p>
+              <p className="text-xs font-semibold text-slate-500">{[nextRow.timing ? formatMyFlowTimingChip(nextRow.timing) : '', nextRow.date ? formatMyFlowDisplayDate(nextRow.date) : '', nextRow.section ? toUserFacingSourceTitle(nextRow.section) : ''].filter(Boolean).join(' · ')}</p>
               <p className="mt-0.5 font-semibold text-slate-950">{nextRow.title}</p>
               </div>
               <button
@@ -9915,7 +9916,7 @@ function ItemDetailContent({ detail }: { detail?: FlowItemDetail }) {
             <div className="mt-2 flex flex-wrap gap-2">
               {detail.links.map((link) => (
                 <a key={`${link.label}-${link.url}`} className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:border-blue-300 hover:text-blue-700" href={link.url} target="_blank" rel="noreferrer">
-                  {linkTypeLabels[link.type] ?? '링크'} · {link.label}
+                  {linkTypeLabels[link.type] ?? '링크'} · {toUserFacingSourceTitle(link.label)}
                 </a>
               ))}
             </div>
