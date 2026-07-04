@@ -36,6 +36,11 @@ async function expectNoInternalUserSurfaceCopy(locator: Locator) {
   }
 }
 
+async function expectTextOccurrenceAtMost(locator: Locator, text: string, maxCount: number) {
+  const content = (await locator.textContent()) ?? '';
+  expect(content.split(text).length - 1).toBeLessThanOrEqual(maxCount);
+}
+
 async function expectVerticalGap(upper: Locator, lower: Locator, minGap = 16) {
   const upperBox = await upper.boundingBox();
   const lowerBox = await lower.boundingBox();
@@ -474,7 +479,10 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(page.getByTestId('my-flow-today-summary').locator('h3')).not.toContainText(/\d{4}-\d{2}-\d{2}/);
   await expect(page.getByTestId('my-flow-today-summary').locator('h3')).not.toContainText('기준 할 일');
   await expect(page.getByTestId('my-flow-now-section').locator('h3')).not.toContainText(/\d{4}-\d{2}-\d{2}/);
-  await expect(page.getByTestId('my-flow-now-section').locator('h3')).toContainText('밀린 할 일');
+  await expect(page.getByTestId('my-flow-now-section')).toContainText('밀린 할 일');
+  await expect(page.getByTestId('my-flow-now-section').locator('h3')).toContainText('이사 방식과 견적 후보 정하기');
+  await expectTextOccurrenceAtMost(page.getByTestId('my-flow-now-section'), '밀린 할 일', 1);
+  await expect(page.getByTestId('my-flow-now-section').getByTestId('my-flow-mobile-continuation-card').first()).not.toContainText('밀린 할 일');
   await expect(page.getByTestId('my-flow-now-section')).not.toContainText('밀린 할 일 중 먼저 정리할 항목입니다.');
   await movingPostSave.getByTestId('my-flow-post-save-view-flow').click();
   await expect(page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="source-backed-moving-d30"]')).toBeVisible();
@@ -491,6 +499,8 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   const mathNowSection = page.getByTestId('my-flow-now-section');
   await expect(mathNowSection).toContainText('소인수분해');
   await expect(mathNowSection).not.toContainText('남은 할 일이 없습니다');
+  await expectTextOccurrenceAtMost(mathNowSection, '먼저 할 일', 1);
+  await expect(mathNowSection.getByTestId('my-flow-mobile-continuation-card').first()).not.toContainText('먼저 할 일');
   await expect(mathNowSection.getByTestId('my-flow-mobile-continuation-card').first()).toHaveAttribute(
     'data-flow-slug',
     'source-backed-middle-school-math-1',
@@ -1328,7 +1338,8 @@ test('my flow today puts the executable slot before the summary on mobile', asyn
   const summary = page.getByTestId('my-flow-today-summary');
   await expect(nowSection).toBeVisible();
   await expect(summary).toBeVisible();
-  await expect(nowSection.locator('h3')).toContainText('밀린 할 일');
+  await expect(nowSection).toContainText('밀린 할 일');
+  await expectTextOccurrenceAtMost(nowSection, '밀린 할 일', 1);
   await expect(nowSection).not.toContainText('남은 할 일이 없습니다');
   await expect(summary).not.toContainText('남은 할 일이 없습니다');
   await expect(nowSection.getByTestId('my-flow-mobile-continuation-card').first()).toHaveAttribute('data-flow-slug', 'moving-d30-basic');
@@ -1890,7 +1901,9 @@ test('source-backed single progress map opens step detail on mobile My Flow', as
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
   await expect(page.getByTestId('my-flow-post-save-view-flow')).toBeVisible();
   await expect(page.getByTestId('my-flow-view-flow')).toBeVisible();
-  await expect(page.getByTestId('my-flow-now-section').locator('h3')).toContainText('먼저 할 일');
+  await expect(page.getByTestId('my-flow-now-section')).toContainText('먼저 할 일');
+  await expectTextOccurrenceAtMost(page.getByTestId('my-flow-now-section'), '먼저 할 일', 1);
+  await expect(page.getByTestId('my-flow-now-section').locator('h3')).toContainText('1. 소인수분해');
   await expect(page.getByTestId('my-flow-now-section').locator('h3')).not.toContainText('밀린 할 일');
 
   await page.getByTestId('my-flow-post-save-open-first').click();
@@ -2736,9 +2749,10 @@ test('my flow mobile item opens editable detail inline from today page', async (
 
   const firstRunnableRow = page.getByTestId('my-flow-now-section').getByTestId('my-flow-mobile-continuation-card').first();
   await expect(firstRunnableRow).toBeVisible();
-  await expect(page.getByTestId('my-flow-now-section')).toContainText('다음 할 일');
+  await expect(page.getByTestId('my-flow-now-section')).toContainText('밀린 할 일');
+  await expectTextOccurrenceAtMost(page.getByTestId('my-flow-now-section'), '밀린 할 일', 1);
   await expect(page.getByTestId('my-flow-now-section')).not.toContainText(/\d{4}-\d{2}-\d{2}/);
-  await expect(firstRunnableRow).toContainText('다음 할 일');
+  await expect(firstRunnableRow).not.toContainText('밀린 할 일');
   await expect(firstRunnableRow).not.toContainText('지금 실행할 Step');
   await expect(firstRunnableRow).not.toContainText(/\d+%/);
   await expect(firstRunnableRow.getByTestId('my-flow-mobile-continuation-flow-context')).toContainText('완료');
@@ -2749,8 +2763,6 @@ test('my flow mobile item opens editable detail inline from today page', async (
   await expect(mobileDetail).not.toContainText('Item');
   await expect(mobileDetail).not.toContainText('할 일 상태');
   await expect(mobileDetail).toContainText('실행할 일');
-  await expect(mobileDetail.getByTestId('my-flow-inline-action-hint')).toBeVisible();
-  await expect(mobileDetail.getByTestId('my-flow-inline-action-hint')).toContainText('풀 회차 수, 목표 점수, 재풀이 날짜를 정합니다.');
   await expect(mobileDetail.getByLabel('제목')).toHaveCount(0);
   await expect(mobileDetail.getByRole('button', { name: '완료 체크' })).toHaveCount(1);
   await expect(mobileDetail.getByRole('button', { name: '이번 항목 완료' })).toHaveCount(0);

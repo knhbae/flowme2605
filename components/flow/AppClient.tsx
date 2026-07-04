@@ -3054,14 +3054,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         : myFlowPrimaryContinuationIsFuture
           ? '다음 할 일'
           : '먼저 할 일';
+  const getMyFlowRowDraft = (row: MyFlowCalendarRow) => myFlowItemDrafts[getMyFlowRowInstanceKey(row)] ?? {};
+  const getMyFlowRowDisplayTitle = (row: MyFlowCalendarRow) => getMyFlowRowDraft(row).title ?? row.title;
   const myFlowNowTitle = myFlowPrimaryContinuationRow
-    ? myFlowPrimaryContinuationIsToday
-      ? '오늘 할 일'
-      : myFlowPrimaryContinuationIsOverdue
-        ? '밀린 할 일'
-        : myFlowPrimaryContinuationIsFuture
-          ? '다음 할 일'
-          : '먼저 할 일'
+    ? getMyFlowRowDisplayTitle(myFlowPrimaryContinuationRow)
     : '이어갈 할 일이 없습니다';
   const myFlowNowHelp = myFlowPrimaryContinuationRow
     ? myFlowPrimaryContinuationIsToday
@@ -3072,13 +3068,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           ? '필요하면 열어서 체크와 메모를 확인합니다.'
           : '날짜가 없어도 저장한 콘텐츠의 첫 항목부터 바로 열 수 있습니다.'
     : '저장한 콘텐츠의 전체 목록을 확인하거나 새 콘텐츠를 찾아보세요.';
-  const myFlowPrimaryContinuationLabel = myFlowPrimaryContinuationIsToday
-    ? '오늘 할 일'
-    : myFlowPrimaryContinuationIsOverdue
-      ? '밀린 할 일'
-      : myFlowPrimaryContinuationIsFuture
-        ? '다음 할 일'
-        : '먼저 할 일';
   const myFlowSecondaryContinuationRows = [
     ...todayOpenRows,
     ...overdueRows,
@@ -3177,8 +3166,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     groups.set(row.date, rows);
     return groups;
   }, new Map<string, MyFlowCalendarRow[]>());
-  const getMyFlowRowDraft = (row: MyFlowCalendarRow) => myFlowItemDrafts[getMyFlowRowInstanceKey(row)] ?? {};
-  const getMyFlowRowDisplayTitle = (row: MyFlowCalendarRow) => getMyFlowRowDraft(row).title ?? row.title;
   const getMyFlowRowDisplayDetail = (row: MyFlowCalendarRow): FlowItemDetail => {
     const draft = getMyFlowRowDraft(row);
     return {
@@ -4097,7 +4084,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
   const renderMobileContinuationFlowCard = (
     row: MyFlowCalendarRow,
-    options: { tone?: 'primary' | 'plain'; primaryLabel?: string; nextLabel?: string } = {},
+    options: { tone?: 'primary' | 'plain'; primaryLabel?: string; nextLabel?: string; hideLeadLabel?: boolean } = {},
   ) => {
     const flow = row.flow;
     const activeRowKey = myFlowActiveRow && myFlowDetailOpen ? getMyFlowRowInstanceKey(myFlowActiveRow) : '';
@@ -4149,7 +4136,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         >
           <span className="flex items-start justify-between gap-3">
             <span className="min-w-0">
-              <span className="block text-xs font-semibold text-blue-700">{isPrimary ? options.primaryLabel ?? '지금 할 일' : options.nextLabel ?? '다음 할 일'}</span>
+              {options.hideLeadLabel ? null : (
+                <span className="block text-xs font-semibold text-blue-700">{isPrimary ? options.primaryLabel ?? '지금 할 일' : options.nextLabel ?? '다음 할 일'}</span>
+              )}
               <span className={`mt-1 block text-base font-semibold leading-6 ${checked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
                 {getMyFlowRowDisplayTitle(row)}
               </span>
@@ -6029,7 +6018,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       ) : null}
                     </div>
                     {myFlowPrimaryContinuationRow ? (
-                      renderMobileContinuationFlowCard(myFlowPrimaryContinuationRow, { tone: 'primary', primaryLabel: myFlowPrimaryContinuationLabel })
+                      renderMobileContinuationFlowCard(myFlowPrimaryContinuationRow, { tone: 'primary', hideLeadLabel: true })
                     ) : null}
                   </section>
 
