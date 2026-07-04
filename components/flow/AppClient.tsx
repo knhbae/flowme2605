@@ -248,13 +248,13 @@ function FlowBadges({ bundle, showStatus = false }: { bundle: FlowBundle; showSt
   );
 }
 
-function FlowHeroMeta({ bundle }: { bundle: FlowBundle }) {
+function FlowHeroMeta({ bundle, hideAnchorStart = false }: { bundle: FlowBundle; hideAnchorStart?: boolean }) {
   const anchorLabel = getHeroStartLabel(bundle);
   return (
     <div className="mt-4 flex flex-wrap gap-2 text-sm">
       <span className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 font-semibold text-slate-800">{getFlowDurationLabel(bundle)}</span>
       <span className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 font-semibold text-slate-800">{getFlowCountLabel(bundle)}</span>
-      <span className="rounded-md border border-blue-100 bg-blue-50 px-3 py-1.5 font-semibold text-blue-700">{anchorLabel}</span>
+      {!hideAnchorStart ? <span className="rounded-md border border-blue-100 bg-blue-50 px-3 py-1.5 font-semibold text-blue-700">{anchorLabel}</span> : null}
     </div>
   );
 }
@@ -8290,7 +8290,7 @@ export function PublicFlow({ slug }: { slug: string }) {
             </div>
           ) : (
             <>
-              <FlowHeroMeta bundle={bundle} />
+              <FlowHeroMeta bundle={bundle} hideAnchorStart={showPublicHeroSetup} />
               <div className="mt-3 md:mt-4">
                 <FlowBadges bundle={bundle} />
               </div>

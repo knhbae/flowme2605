@@ -261,11 +261,14 @@ test('public flow detail uses a share shell until it saves into My Flow', async 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/vehicle-inspection-prep');
 
+  const hero = page.getByTestId('public-flow-hero');
   await expect(page.getByRole('heading', { name: '자동차검사 D-14 준비' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '자동차검사 D-14 준비 Flow' })).toHaveCount(0);
   await expect(page.getByTestId('flow-public-shell')).toBeVisible();
   await expect(page.getByTestId('platform-mobile-tabs')).toHaveCount(0);
   await expect(page.locator('input[type="date"]')).toHaveCount(1);
+  await expect(hero.getByTestId('public-flow-primary-setup')).toBeVisible();
+  await expect(hero).not.toContainText('검사일 입력으로 시작');
   const stickySave = page.getByTestId('public-flow-mobile-save-cta');
   await expect(stickySave.getByRole('button', { name: '내 Flow에 저장' })).toBeVisible();
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
@@ -699,6 +702,7 @@ test('public single Flow detail keeps input save and first action in the mobile 
   await expect(hero.getByTestId('public-flow-primary-setup')).toBeVisible();
   await expect(hero.getByTestId('public-flow-primary-setup').locator('input[type="date"]')).toBeVisible();
   await expect(page.locator('input[type="date"]')).toHaveCount(1);
+  await expect(hero).not.toContainText('계약 예정일 입력으로 시작');
   await expect(hero.getByTestId('public-flow-first-action-preview')).toContainText('시세와 등기부등본 권리관계 확인하기');
   await expect(hero.getByTestId('public-flow-save-actions')).toBeHidden();
   const stickySave = page.getByTestId('public-flow-mobile-save-cta');
