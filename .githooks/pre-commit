@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+
+if [ "$FLOW_SKIP_HOOKS" = "1" ] || [ "$FLOW_SKIP_PRE_COMMIT" = "1" ]; then
+  echo "Skipping pre-commit hook."
+  exit 0
+fi
+
+npm run docs:check

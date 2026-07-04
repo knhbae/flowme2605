@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-04 - Verification hooks stay repo-level and tool-agnostic
+
+**Decision:** Use repository-level automation for the default verification hooks: local Git hooks installed by `npm run hooks:install`, plus GitHub Actions CI on pull requests and pushes to `main`. The local pre-commit hook runs `npm run docs:check`, the local pre-push hook runs `npm run verify`, and GitHub CI runs both core verification and Playwright E2E. Do not make Claude Code or Codex runtime hooks the canonical enforcement layer.
+
+**Reason:** FLOW is intentionally shared between Codex, Claude Code, and humans. Tool-specific runtime hooks would make one agent environment canonical again. Native Git hooks and GitHub CI protect the repo regardless of which tool changed the files, while keeping local hooks light enough that planning and docs work stays fast.
+
+**Applies to:** `.githooks/`, `.github/workflows/ci.yml`, `package.json` scripts, [TOOLING.md](./TOOLING.md), harness workflow, PR readiness, skill sync checks, docs checks, build checks, and Playwright E2E verification.
+
+**Reopen when:** Git hooks become too noisy for normal work, CI runtime becomes too expensive, the repo adopts another central CI provider, or a specific agent runtime becomes the only supported editing environment.
+
+**Related docs:** [TOOLING.md](./TOOLING.md), [harness README](./harness/README.md)
+
 ### 2026-07-02 - URL-to-Flow uses lookup before AI generation
 
 **Decision:** The URL-to-Flow entry should check for an existing canonical URL conversion before using AI or creating a new Flow draft. If a Flow already exists for the same URL, FLOW should show that result first and let the user reuse it, change options, edit/fork it into a personal version, or continue to My Flow/export. AI extraction or new conversion work is the fallback when no suitable existing Flow exists or when the user explicitly chooses to revise.
