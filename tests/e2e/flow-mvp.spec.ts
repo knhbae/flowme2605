@@ -52,6 +52,10 @@ async function expectElementClearsFixedLayer(content: Locator, layer: Locator, m
   expect(contentBox!.y + contentBox!.height).toBeLessThanOrEqual(layerBox!.y - minGap);
 }
 
+async function scrollElementToViewportEnd(locator: Locator) {
+  await locator.evaluate((element) => element.scrollIntoView({ block: 'end', inline: 'nearest' }));
+}
+
 test('home presents FLOW as an executable content platform', async ({ page }) => {
   await page.goto('/');
 
@@ -495,8 +499,9 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await page.goto('/f/jeonse-contract-precheck-docs');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
-  await page.getByTestId('public-flow-save-actions').getByRole('button', { name: '내 Flow에 저장' }).click();
-  await page.getByTestId('public-flow-save-actions').getByRole('link', { name: '내 Flow에서 보기' }).click();
+  const publicMobileSaveActions = page.getByTestId('public-flow-mobile-save-cta');
+  await publicMobileSaveActions.getByRole('button', { name: '내 Flow에 저장' }).click();
+  await publicMobileSaveActions.getByRole('link', { name: '내 Flow에서 보기' }).click();
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
   await expect(page.getByTestId('my-flow-now-section')).toContainText('전세계약 전 서류 체크');
   await expect(page.getByTestId('my-flow-now-section')).not.toContainText('전세계약 전 서류 체크 Flow');
@@ -604,6 +609,24 @@ test('mobile fixed layers keep save actions and final content separated', async 
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
   await expectElementClearsFixedLayer(page.getByTestId('my-flow-calendar-card'), page.getByTestId('platform-mobile-tabs'), 16);
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
+
+  await page.goto('/f/vehicle-inspection-prep');
+  const publicSaveCta = page.getByTestId('public-flow-mobile-save-cta');
+  await expect(publicSaveCta).toBeVisible();
+  const publicExampleButton = page.getByRole('button', { name: '그냥 예시로 둘러볼게요' });
+  await scrollElementToViewportEnd(publicExampleButton);
+  await expectElementClearsFixedLayer(publicExampleButton, publicSaveCta, 16);
+
+  for (const route of ['/f/fridge-cleanout-weekly-plan', '/f/washer-tub-clean-monthly']) {
+    await page.goto(route);
+    const mobileExportBar = page.getByTestId('mobile-export-bar');
+    const finalWorkbenchTarget = route.includes('fridge-cleanout')
+      ? page.getByTestId('artifact-log-table-spreadsheet').locator('tbody tr').last()
+      : page.getByTestId('maintenance-routine-next-card').locator('label').last();
+    await scrollElementToViewportEnd(finalWorkbenchTarget);
+    await expect(mobileExportBar).toBeVisible();
+    await expectElementClearsFixedLayer(finalWorkbenchTarget, mobileExportBar, 16);
+  }
 });
 
 test('flow card title opens the public execution page', async ({ page }) => {

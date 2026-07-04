@@ -8015,6 +8015,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const publicHeroPromise = getCatalogPromiseText(publicHeroInput, publicHeroArtifact);
   const publicHeroFirstTask = getCatalogFirstTask(getFlowPreviewStepTitles(bundle), getCatalogReason(bundle));
   const showPublicHeroSetup = !showTodayExecution && !showExportFirstHero && (showPublicSaveAction || bundle.flow.anchor_type === 'none');
+  const publicMobileClearanceClass = showPublicSaveAction ? 'flowme-mobile-save-clearance' : 'flowme-mobile-export-clearance';
 
   const toggle = (id: string) => {
     setChecks((value) => {
@@ -8232,7 +8233,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     ) : null;
 
   return (
-    <main className="min-h-screen bg-[#FAFAF8] px-4 py-3 pb-40 text-slate-950 md:px-6 md:py-6 md:pb-10">
+    <main className={`min-h-screen bg-[#FAFAF8] px-4 py-3 text-slate-950 md:px-6 md:py-6 ${publicMobileClearanceClass}`}>
       <div className="mx-auto max-w-7xl">
         <PublicFlowShareShell savedFlowAt={savedFlowAt} />
 
