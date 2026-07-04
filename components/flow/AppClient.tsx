@@ -17,7 +17,7 @@ import { inferPrimaryDestination } from '@/lib/flow/destination';
 import { getRepresentativeFlowSlugs, normalizeExecutionModel, type FlowExportTarget } from '@/lib/flow/execution-model';
 import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
 import { FLOW_EXPORT_FEEDBACK, FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
-import { toContentDisplayTitle } from '@/lib/flow/display-title';
+import { toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import {
   buildMyFlowStepIcs,
   buildMyFlowStepPortableText,
@@ -318,7 +318,7 @@ function SourceContentCard({ bundle, className = 'mt-5' }: { bundle: FlowBundle;
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="text-sm font-semibold text-slate-700">원문과 근거</p>
-              <h2 className="mt-1 break-keep text-base font-semibold text-slate-950">{bundle.flow.source_title ?? '원본 콘텐츠'}</h2>
+              <h2 className="mt-1 break-keep text-base font-semibold text-slate-950">{bundle.flow.source_title ? toUserFacingSourceTitle(bundle.flow.source_title) : '원본 콘텐츠'}</h2>
               <p className="mt-1 break-all text-xs font-semibold text-slate-500">{sourceMeta.join(' · ')}</p>
             </div>
             <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-600">
@@ -1840,7 +1840,7 @@ function isMyFlowRowChecked(flow: MySavedFlow, row: MyFlowRow): boolean {
 }
 
 function getMyFlowSavedMapTitle(flow: MySavedFlow): string {
-  return flow.savedMap?.title ?? flow.demoGroup ?? '';
+  return flow.savedMap ? toUserFacingMapTitle(flow.savedMap.title) : flow.demoGroup ?? '';
 }
 
 function getMyFlowFlowPathLabel(flow: MySavedFlow): string {
@@ -1991,7 +1991,7 @@ function getMyFlowMapUpdateNotice(snapshot: SavedFlowMapSnapshot): MyFlowMapUpda
     return {
       mapId: snapshot.mapId,
       title: snapshot.title,
-      label: '지도 원문 확인 필요',
+      label: '원문 확인 필요',
       tone: 'amber',
       status: assessment.status,
       canApplyAutomatically: assessment.canApplyAutomatically,
@@ -2094,8 +2094,8 @@ const MY_FLOW_UX20_DEMO_FIXTURES: MyFlowDemoFixture[] = [
 ];
 
 const MY_FLOW_SOURCE_BACKED_DEMO_FIXTURES: MyFlowDemoFixture[] = [
-  { slug: 'source-backed-moving-d30', anchor: '2026-07-22', completedCount: 0, group: '이사 D-30 지도', note: 'D-day 일정' },
-  { slug: 'source-backed-middle-school-math-1', completedCount: 0, group: '중1 수학 지도', note: '진도형 Flow' },
+  { slug: 'source-backed-moving-d30', anchor: '2026-07-22', completedCount: 0, group: '이사 D-30 일정', note: 'D-day 일정' },
+  { slug: 'source-backed-middle-school-math-1', completedCount: 0, group: '중1 수학 진도', note: '진도표' },
 ];
 
 const MY_FLOW_LEGACY_DEMO_FIXTURES = MY_FLOW_UX12_DEMO_FIXTURES;
@@ -2934,7 +2934,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const myFlowCalendarScopeOptions: Array<{ id: MyFlowCalendarScope; label: string; count: number }> = [
     { id: 'all', label: '전체', count: myFlowCalendarScopeMonthCounts.all },
     ...(myFlowCalendarScopeTotalCounts.map > 0 && myFlowCalendarScopeTotalCounts.map < myFlowCalendarScopeTotalCounts.all
-      ? [{ id: 'map' as const, label: '지도', count: myFlowCalendarScopeMonthCounts.map }]
+      ? [{ id: 'map' as const, label: '저장한 일정', count: myFlowCalendarScopeMonthCounts.map }]
       : []),
     ...(myFlowCalendarScopeTotalCounts.schedule > 0 && myFlowCalendarScopeTotalCounts.schedule < myFlowCalendarScopeTotalCounts.all
       ? [{ id: 'schedule' as const, label: '일정', count: myFlowCalendarScopeMonthCounts.schedule }]
@@ -3129,7 +3129,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         label: savedMap
           ? (kind === 'routine' ? '저장한 루틴' : '저장한 일정')
           : (kind === 'routine' ? '루틴' : '일정'),
-        title: toContentDisplayTitle(savedMap?.title ?? getMyFlowExecutionFlowTitle(row.flow.progress.title)),
+        title: savedMap ? toUserFacingMapTitle(savedMap.title) : toContentDisplayTitle(getMyFlowExecutionFlowTitle(row.flow.progress.title)),
         rows: [row],
         ...(savedMap ? { savedMap } : {}),
       });
@@ -3544,7 +3544,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         const key: string = savedMap
           ? `map:${savedMapId}`
           : `group:${fallbackGroupTitle}`;
-        const label: string = savedMap ? '저장한 지도' : supportMode && readiness ? fallbackGroupTitle : isMyFlowScenarioDemo ? '묶음' : '분류';
+        const label: string = savedMap ? '저장한 콘텐츠' : supportMode && readiness ? fallbackGroupTitle : isMyFlowScenarioDemo ? '묶음' : '분류';
         const title: string = savedMap?.title || fallbackGroupTitle;
         let group = groups.get(key);
         if (!group) {
@@ -4096,7 +4096,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const color = categoryColors[flow.bundle.flow.category] ?? '#2563EB';
     const isPrimary = options.tone === 'primary';
     const flowContext = flow.savedMap
-      ? toContentDisplayTitle(flow.savedMap.title)
+      ? toUserFacingMapTitle(flow.savedMap.title)
       : flow.bundle.flow.structure_type === 'routine'
         ? '반복 흐름'
         : flow.rows.some((candidate) => Boolean(candidate.date))
@@ -5246,7 +5246,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
               <span className="rounded-full bg-[#EEF1FF] px-2.5 py-1 text-[#3654FF]">저장됨</span>
-              <span className="break-keep text-[#6E6B64]">{toContentDisplayTitle(postSaveMap.title)}</span>
+              <span className="break-keep text-[#6E6B64]">{toUserFacingMapTitle(postSaveMap.title)}</span>
             </div>
             <h3 className="mt-2 break-keep text-lg font-semibold tracking-tight text-slate-950 sm:text-xl">
               {postSaveHeading}
@@ -5279,7 +5279,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
   const renderFlowListRow = (flow: MySavedFlow) => {
     const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
-    const savedMapTitle = flow.savedMap ? toContentDisplayTitle(flow.savedMap.title) : '';
+    const savedMapTitle = flow.savedMap ? toUserFacingMapTitle(flow.savedMap.title) : '';
     const nextRow = getSavedFlowNextRow(flow);
     const color = categoryColors[flow.bundle.flow.category] ?? '#2563EB';
     const nextActionLabel = getMyFlowOpenActionLabel(flow.bundle);
@@ -5345,7 +5345,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const nextRow = getSavedFlowNextRow(flow);
     const progressSummary = `${flow.done}/${flow.total} 완료`;
     const structureLabel = flow.savedMap
-      ? toContentDisplayTitle(flow.savedMap.title)
+      ? toUserFacingMapTitle(flow.savedMap.title)
       : flow.bundle.flow.structure_type === 'routine'
         ? '반복 흐름'
         : flow.rows.some((row) => Boolean(row.date))
@@ -5484,7 +5484,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
   const renderSavedFlowOverviewCard = (flow: MySavedFlow) => {
     const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
-    const savedMapTitle = flow.savedMap ? toContentDisplayTitle(flow.savedMap.title) : '';
+    const savedMapTitle = flow.savedMap ? toUserFacingMapTitle(flow.savedMap.title) : '';
     const nextRow = getSavedFlowNextRow(flow);
     const progressSummary = `${flow.done}/${flow.total} 완료`;
     const anchorDisplay = getMyFlowAnchorDisplay(flow.bundle, flow.anchor, myFlowDemoMode);
@@ -5623,7 +5623,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className={`text-xs font-semibold ${isMapGroup ? 'text-blue-700' : 'text-slate-500'}`}>{isMapGroup ? '저장한 콘텐츠' : group.label}</p>
-                <h4 className="mt-1 text-base font-semibold text-slate-950">{toContentDisplayTitle(group.title)}</h4>
+                <h4 className="mt-1 text-base font-semibold text-slate-950">{group.savedMap ? toUserFacingMapTitle(group.title) : toContentDisplayTitle(group.title)}</h4>
                 <p className="mt-1 text-xs font-semibold text-slate-600">{group.flows.length}개 목록 · {done}/{total} 완료</p>
               </div>
               {group.savedMap ? (
@@ -5714,7 +5714,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="text-xs font-semibold text-amber-800">업데이트 확인</p>
-            <h4 className="text-base font-semibold text-amber-950">저장한 지도에 다시 볼 내용이 있습니다</h4>
+            <h4 className="text-base font-semibold text-amber-950">저장한 콘텐츠에 다시 볼 내용이 있습니다</h4>
             <p className="mt-1 text-sm font-medium text-amber-900">기존 항목은 그대로 두고, 원문이나 일정 변경 가능성만 따로 확인합니다.</p>
           </div>
           <span className="rounded-md bg-white px-2 py-1 text-xs font-semibold text-amber-800 ring-1 ring-amber-200">{myFlowMapUpdateNotices.length}개</span>
@@ -5729,7 +5729,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     <span className={`rounded-md px-2 py-1 text-xs font-semibold ${notice.tone === 'amber' ? 'bg-amber-100 text-amber-900' : 'bg-slate-100 text-slate-700'}`}>
                       {notice.label}
                     </span>
-                    <h5 className="mt-2 text-sm font-semibold text-slate-950">{notice.title}</h5>
+                    <h5 className="mt-2 text-sm font-semibold text-slate-950">{toUserFacingMapTitle(notice.title)}</h5>
                     <p className="mt-1 text-xs font-semibold text-slate-500">
                       영향 Flow {notice.affectedCount}개 · {notice.canApplyAutomatically ? '확인 후 바로 반영 가능' : '검토 후 반영'}
                     </p>
@@ -6359,7 +6359,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                           <div className="mb-3 flex items-center justify-between gap-3">
                             <div>
                               <p className="text-xs font-semibold text-slate-500">
-                                {flows.some((flow) => flow.savedMap) ? '저장한 지도' : isMyFlowScenarioDemo ? '데모 묶음' : '분류'}
+                                {flows.some((flow) => flow.savedMap) ? '저장한 콘텐츠' : isMyFlowScenarioDemo ? '데모 묶음' : '분류'}
                               </p>
                               <h4 className="text-base font-semibold text-slate-950">{group}</h4>
                             </div>
@@ -6598,7 +6598,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                           <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
                             <div className="min-w-0">
                               <p className={`text-xs font-semibold ${group.savedMap ? 'text-blue-700' : 'text-slate-500'}`}>{group.label}</p>
-                              <h4 className="mt-0.5 truncate text-sm font-semibold text-slate-950">{toContentDisplayTitle(group.title)}</h4>
+                              <h4 className="mt-0.5 truncate text-sm font-semibold text-slate-950">{group.savedMap ? toUserFacingMapTitle(group.title) : toContentDisplayTitle(group.title)}</h4>
                             </div>
                             {group.rows.length > 1 || groupOpenCount !== group.rows.length ? (
                               <span className="rounded-md bg-white px-2 py-1 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
@@ -8720,7 +8720,7 @@ function ExportFirstHero({
   const displayTitle = toContentDisplayTitle(bundle.flow.title);
   const previewEntries = getExportFirstPreviewEntries(bundle, displayAnchor);
   const remainingCount = Math.max(getScheduleEntries(bundle, displayAnchor).length - previewEntries.length, 0);
-  const sourceText = bundle.flow.source_title ? `${bundle.items.length}개 항목 · ${bundle.flow.source_title}` : `${bundle.items.length}개 항목`;
+  const sourceText = bundle.flow.source_title ? `${bundle.items.length}개 항목 · ${toUserFacingSourceTitle(bundle.flow.source_title)}` : `${bundle.items.length}개 항목`;
 
   return (
     <section aria-label="Export-first flow hero" className="my-6 rounded-2xl border border-[#E7E4DD] bg-white p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)] md:p-5">

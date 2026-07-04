@@ -13,6 +13,7 @@ import {
   type ArtifactMemoField,
 } from '@/lib/flow/artifact-fields';
 import { addDays, formatDate, formatKoreanShortDate, getRangeEnd } from '@/lib/flow/date';
+import { toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import { FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
 import { timingLabel } from '@/lib/flow/parser';
 import type { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState } from '@/lib/flow/types';
@@ -1840,7 +1841,7 @@ function RoutineWorkbench({
 function ExactVideoSourceBridge({ bundle }: { bundle: FlowBundle }) {
   const detail = bundle.itemDetails?.[0];
   const sourceUrl = bundle.flow.source_url;
-  const sourceTitle = bundle.flow.source_title ?? '원본 영상';
+  const sourceTitle = bundle.flow.source_title ? toUserFacingSourceTitle(bundle.flow.source_title) : '원본 영상';
   const cues =
     bundle.flow.slug === 'real-thankyou-bubu-home-workout-starter'
       ? ['점프 없음', '눕는 동작 없음', '반복 없음', '토크 없음']

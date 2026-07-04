@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { toContentDisplayTitle } from '@/lib/flow/display-title';
+import { toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import { buildSourceBackedFlowMapPublishPackage } from '@/lib/flow/source-backed-my-flow';
 import { PlatformNav } from './PlatformNav';
 import { SourceBackedFlowMapSaveButton } from './SourceBackedFlowMapSaveButton';
@@ -51,7 +51,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
   const firstFlow = publicSurface.childFlows[0];
   const firstStep = firstFlow?.steps[0];
   const firstStepDetail = firstStep?.detailItems[0];
-  const displayTitle = toContentDisplayTitle(publicSurface.title);
+  const displayTitle = toUserFacingMapTitle(publicSurface.title);
   const resultText = publicSurface.artifacts.join(' + ') || '할 일';
   const resultPromise = publicSurface.setupInput
     ? `${publicSurface.setupInput.label}만 넣으면 저장됩니다: ${resultText}`
@@ -103,7 +103,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="text-sm font-semibold text-[#6E6B64]">원문과 실행 항목</p>
-            <h2 className="mt-1 text-xl font-semibold text-slate-950">{publicSurface.sourceTitle}</h2>
+            <h2 className="mt-1 text-xl font-semibold text-slate-950">{toUserFacingSourceTitle(publicSurface.sourceTitle)}</h2>
             <p className="mt-1 max-w-2xl break-keep text-sm leading-6 text-[#6E6B64]">{getUserFacingMapSummary(publicSurface.summary)}</p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -133,7 +133,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
               <div className="mt-3 grid gap-2">
                 {flow.steps.map((step) => (
                   <div key={step.id} className="rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-3">
-                    {step.stepTitle ? <p className="text-xs font-semibold text-[#6E6B64]">{step.stepTitle}</p> : null}
+                    {step.stepTitle ? <p className="text-xs font-semibold text-[#6E6B64]">{toUserFacingSourceTitle(step.stepTitle)}</p> : null}
                     <p className="mt-1 text-sm font-semibold text-slate-950">{step.title}</p>
                     {step.detailItems.length > 0 ? (
                       <>
