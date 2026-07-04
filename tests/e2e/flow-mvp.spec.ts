@@ -4019,6 +4019,35 @@ test('public detail rebrand keeps a tool-first shell without mobile overflow', a
   expect(hasHorizontalOverflow).toBe(false);
 });
 
+test('public share shell keeps browse link secondary before save', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  for (const route of [
+    '/f/vehicle-inspection-prep',
+    '/f/moving-d30-basic',
+    '/f/fridge-cleanout-weekly-plan',
+    '/f/washer-tub-clean-monthly',
+    '/f/new-car-delivery-check',
+    '/f/used-car-buying-check',
+  ]) {
+    await page.goto(route);
+
+    const shell = page.getByTestId('flow-public-shell');
+    const browseLink = shell.getByTestId('flow-public-secondary-browse-link');
+    await expect(shell).toBeVisible();
+    await expect(browseLink).toHaveText('콘텐츠 더 보기');
+    await expect(browseLink).toHaveAttribute('href', '/flows');
+    await expect(browseLink).toHaveCSS('border-top-width', '0px');
+    await expect(browseLink).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(browseLink).toHaveCSS('font-size', '12px');
+
+    const saveButton = page.getByRole('button', { name: '내 Flow에 저장' }).first();
+    if ((await saveButton.count()) > 0 && (await saveButton.isVisible())) {
+      await expect(saveButton).toHaveCSS('background-color', 'rgb(54, 84, 255)');
+    }
+  }
+});
+
 test('mobile export sheet remains available from the sticky fallback', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/computer-skills-d30-study');

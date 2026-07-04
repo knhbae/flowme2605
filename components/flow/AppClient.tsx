@@ -8633,7 +8633,11 @@ function PublicFlowShareShell({ savedFlowAt }: { savedFlowAt?: string }) {
           내 Flow에서 보기
         </Link>
       ) : (
-        <Link className="inline-flex min-h-9 items-center rounded-xl border border-[#E7E4DD] px-3 text-sm font-semibold text-[#6E6B64] hover:text-[#3654FF]" href="/flows">
+        <Link
+          data-testid="flow-public-secondary-browse-link"
+          className="inline-flex min-h-9 items-center px-1 text-xs font-semibold text-[#8A857B] underline-offset-4 hover:text-[#3654FF] hover:underline"
+          href="/flows"
+        >
           콘텐츠 더 보기
         </Link>
       )}
