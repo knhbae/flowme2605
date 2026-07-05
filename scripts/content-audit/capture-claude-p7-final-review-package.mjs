@@ -7,7 +7,10 @@ import { chromium } from '@playwright/test';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..', '..');
-const packageName = '2026-07-05-claude-design-p7-final-review-package';
+const packageName = process.env.FLOWME_EVIDENCE_PACKAGE_NAME || '2026-07-05-claude-design-p7-final-review-package';
+const reviewCycle = process.env.FLOWME_EVIDENCE_REVIEW_CYCLE || (packageName.includes('-p8-') ? 'P8' : 'P7');
+const nextBacklogCycle = process.env.FLOWME_EVIDENCE_NEXT_BACKLOG || (reviewCycle === 'P8' ? 'P9' : 'P8');
+const captureScriptName = process.env.FLOWME_EVIDENCE_CAPTURE_SCRIPT || 'capture-claude-p7-final-review-package.mjs';
 const outputDir = path.join(repoRoot, 'docs', 'content-audit', packageName);
 const screenshotsDir = path.join(outputDir, 'screenshots');
 const viewport = { width: 390, height: 844 };
@@ -614,6 +617,21 @@ async function scanPage(page, options = {}) {
         workbenchRowDetailCount: document.querySelectorAll('[data-testid="artifact-list-card"] details').length,
         workbenchRowDetailSourceLinkCount: document.querySelectorAll('[data-testid="artifact-list-card"] details a[href]').length,
         workbenchSourceAccessLinkCount: document.querySelectorAll('[data-testid="flow-source-card"] a[href], [data-testid="used-car-source-bridge"] a[href], [data-testid="maintenance-source-bridge"] a[href]').length,
+        publicPrimarySetupVisible: Boolean(document.querySelector('[data-testid="public-flow-primary-setup"]')),
+        publicBrowseLinkFocusable: (() => {
+          const element = document.querySelector('[data-testid="flow-public-secondary-browse-link"]');
+          if (!element) return false;
+          const style = window.getComputedStyle(element);
+          const rect = element.getBoundingClientRect();
+          return (
+            element.getAttribute('aria-hidden') !== 'true'
+            && element.getAttribute('tabindex') !== '-1'
+            && style.display !== 'none'
+            && style.visibility !== 'hidden'
+            && rect.width > 0
+            && rect.height > 0
+          );
+        })(),
         restartScheduleDateCheck: {
           firstThreeDateLabels: restartFirstThreeDateLabels,
           firstThreeTitles: restartNextTaskTitles.slice(0, 3),
@@ -644,6 +662,7 @@ function summarizeEvidence(records) {
   const normal = records.filter((record) => !record.prototypeBucket);
   const fieldChecklistSourceDensity = records.filter((record) => record.category === 'field-checklist-source-density');
   const restart = records.filter((record) => record.prototypeBucket);
+  const publicShareRoutes = normal.filter((record) => record.publicShellVisible);
   const restartSourceFrame = records.find((record) => record.id === '22-restart-moving-source-export-mobile');
   const restartBottomFrame = records.find((record) => record.id === '23-restart-moving-bottom-mobile');
   const restartScheduleFrame = records.find((record) => record.id === '24-restart-moving-full-schedule-mobile')
@@ -675,6 +694,11 @@ function summarizeEvidence(records) {
     fieldWorkbenchRowDetailSourceLinkCount: fieldChecklistSourceDensity.reduce((sum, record) => sum + (record.markers.workbenchRowDetailSourceLinkCount ?? 0), 0),
     fieldWorkbenchSourceAccessLinkCount: fieldChecklistSourceDensity.reduce((sum, record) => sum + (record.markers.workbenchSourceAccessLinkCount ?? 0), 0),
     fieldWorkbenchOpenDetailCounts: fieldChecklistSourceDensity.map((record) => record.markers.workbenchRowDetailCount ?? 0),
+    publicShareRouteCount: publicShareRoutes.length,
+    publicShareSecondaryBrowseFocusableHitCount: publicShareRoutes.filter((record) => record.markers.publicBrowseLinkFocusable).length,
+    publicSharePrimaryPathVisibleCount: publicShareRoutes.filter((record) =>
+      record.primarySaveActionVisible || record.markers.publicPrimarySetupVisible,
+    ).length,
     restartPrototypeRawIsoHitCount: restart.reduce((sum, record) => sum + record.rawIsoLines.length, 0),
     restartPrototypeRawRouteSlugHitCount: restart.reduce((sum, record) => sum + (record.prototypeDisplayGateHits?.rawRouteSlugHits?.length ?? 0), 0),
     restartPrototypeEnglishWeekdayHitCount: restart.reduce((sum, record) => sum + (record.prototypeDisplayGateHits?.englishWeekdayHits?.length ?? 0), 0),
@@ -703,7 +727,7 @@ function summarizeEvidence(records) {
 }
 
 function renderReadme(evidence) {
-  return `# FlowMe Claude Design P7 Final Review Package
+  return `# FlowMe Claude Design ${reviewCycle} Final Review Package
 
 - Generated: ${evidence.generatedAt}
 - Branch: \`${branchName}\`
@@ -712,7 +736,7 @@ function renderReadme(evidence) {
 - Package commit ref: \`${evidence.packageCommitRef}\`
 - Viewport: ${viewport.width}x${viewport.height}
 
-This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, the P8-02 restart/prototype promotion gate, the P8-03/P8-04 My Flow overdue label/status corrections, the P8-05/P8-06/P8-08 evidence/package metadata cleanup, the P8-07 restart date-display decision, and the P8-09 field-checklist source-density rule.
+This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, the P8-02 restart/prototype promotion gate, the P8-03/P8-04 My Flow overdue label/status corrections, the P8-05/P8-06/P8-08 evidence/package metadata cleanup, the P8-07 restart date-display decision, the P8-09 field-checklist source-density rule, and the P8-10 public share CTA/tab-order rule.
 
 ## Files
 
@@ -734,6 +758,9 @@ This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, t
 - Normal route horizontal overflow count: ${evidence.summary.normalRouteHorizontalOverflowCount}
 - Field workbench row-detail source link count: ${evidence.summary.fieldWorkbenchRowDetailSourceLinkCount}
 - Field workbench source access link count: ${evidence.summary.fieldWorkbenchSourceAccessLinkCount}
+- Public share route count: ${evidence.summary.publicShareRouteCount}
+- Public share secondary browse focusable hits: ${evidence.summary.publicShareSecondaryBrowseFocusableHitCount}
+- Public share primary path visible count: ${evidence.summary.publicSharePrimaryPathVisibleCount}
 - Restart prototype raw ISO hits: ${evidence.summary.restartPrototypeRawIsoHitCount}
 - Restart prototype raw route slug hits: ${evidence.summary.restartPrototypeRawRouteSlugHitCount}
 - Restart prototype English weekday hits: ${evidence.summary.restartPrototypeEnglishWeekdayHitCount}
@@ -747,7 +774,9 @@ This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, t
 
 - [Source root](${githubBase})
 - [E2E guardrails](${githubBase}/tests/e2e/flow-mvp.spec.ts)
-- [Capture script](${githubBase}/scripts/content-audit/capture-claude-p7-final-review-package.mjs)
+- [Workbench source density E2E](${githubBase}/tests/e2e/workbench-source-density.spec.ts)
+- [Public share CTA/tab-order E2E](${githubBase}/tests/e2e/public-share-cta-order.spec.ts)
+- [Capture script](${githubBase}/scripts/content-audit/${captureScriptName})
 `;
 }
 
@@ -756,11 +785,11 @@ function renderAudit(evidence) {
     `| ${record.id} | \`${record.route}\` | ${record.label} | ${record.noHorizontalOverflow ? 'OK' : 'Overflow'} | ${record.internalHits.length} | ${record.sourceSlugHits.length} | ${record.rawIsoLines.length} |`
   )).join('\n');
 
-  return `# Claude Design P7 Guardrail Audit
+  return `# Claude Design ${reviewCycle} Guardrail Audit
 
 ## Scope
 
-P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata, P8-07 confirms the \`/restart/moving-d30\` first-three-row date repetition as an intentional D-30 milestone group rather than a date-distribution bug, and P8-09 lowers repeated row-level source links in field checklist workbenches. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
+P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata, P8-07 confirms the \`/restart/moving-d30\` first-three-row date repetition as an intentional D-30 milestone group rather than a date-distribution bug, P8-09 lowers repeated row-level source links in field checklist workbenches, and P8-10 keeps public share browse navigation out of the pre-save primary tab path. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
 
 ## Baselines Covered
 
@@ -777,6 +806,7 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 - P8-07: \`/restart/moving-d30\` first three visible rows share the same D-30 date because all three source rows are D-30 milestones; full schedule/export rows remain distributed across later dates.
 - P8-08: UI baseline commit and package generation commit metadata are separated.
 - P8-09: field checklist row details keep execution criteria/details, but repeated row-level source links are suppressed; source access remains available in the source/reference area.
+- P8-10: public \`/f/[slug]\` share shells keep \`콘텐츠 더 보기\` as a secondary visual link and remove it from the pre-save keyboard/tab path, so the primary save/input path remains first.
 
 ## Summary
 
@@ -819,6 +849,13 @@ The restart source/export frame and bottom frame must remain distinct:
 - source/reference access link count: ${evidence.summary.fieldWorkbenchSourceAccessLinkCount}
 - open detail counts: ${JSON.stringify(evidence.summary.fieldWorkbenchOpenDetailCounts)}
 
+## Public Share CTA / Tab Order
+
+- public share route count: ${evidence.summary.publicShareRouteCount}
+- secondary browse focusable hits: ${evidence.summary.publicShareSecondaryBrowseFocusableHitCount}
+- primary save/input path visible count: ${evidence.summary.publicSharePrimaryPathVisibleCount}
+- expected: \`콘텐츠 더 보기\` may remain visually as a quiet secondary link, but it should not be in the pre-save tab path before \`내 Flow에 저장\` or the input/setup path.
+
 ## Commit Metadata
 
 - UI baseline commit: \`${evidence.uiBaselineCommit}\`
@@ -833,11 +870,11 @@ The restart source/export frame and bottom frame must remain distinct:
 }
 
 function renderPrompt(evidence) {
-  return `아래 GitHub 소스/문서/screenshot만 보고 FlowMe P7 마감 상태를 다시 검토해주세요. Vercel preview는 볼 수 없다는 전제로 검토해주세요.
+  return `아래 GitHub 소스/문서/screenshot만 보고 FlowMe ${reviewCycle} 마감 상태를 다시 검토해주세요. Vercel preview는 볼 수 없다는 전제로 검토해주세요.
 
 검토 기준:
 1. P7-01~P7-05가 실제 화면 기준으로 유지되는지 확인
-2. P7-06 guardrail이 충분한지 확인
+2. P7-06/P8-01 guardrail 일반화가 충분한지 확인
 3. P8-05/P8-06/P8-08의 evidence cleanup이 충분한지 확인
    - /restart source/export frame과 bottom frame이 서로 다른 scroll position/screenshot인지
    - My Flow 반복 라벨 카운터가 실제 queue/section label surface를 세는지
@@ -854,15 +891,20 @@ function renderPrompt(evidence) {
 6. P8-09 field checklist workbench source-density guardrail이 충분한지 확인
    - new-car / used-car row detail source link count가 0인지
    - source/reference access link count가 0보다 크게 유지되는지
-7. 단순 평가로 끝내지 말고, 필요하면 다음 backlog를 Blocking/High/Medium/Low로 작성
+7. P8-10 public share CTA/tab-order guardrail이 충분한지 확인
+   - 공개 /f 저장 전 화면에서 \`내 Flow에 저장\` 또는 입력/setup path가 primary인지
+   - \`콘텐츠 더 보기\`가 시각적으로도 tab order/accessibility에서도 보조 링크로만 남는지
+8. 단순 평가로 끝내지 말고, 필요하면 다음 backlog를 Blocking/High/Medium/Low로 작성
 
 주요 링크:
-- P7 review package README: ${githubBase}/docs/content-audit/${packageName}/README.md
+- ${reviewCycle} review package README: ${githubBase}/docs/content-audit/${packageName}/README.md
 - Audit markdown: ${githubBase}/docs/content-audit/${packageName}/audit.md
 - Review HTML: ${githubBase}/docs/content-audit/${packageName}/review.html
 - Route evidence JSON: ${githubBase}/docs/content-audit/${packageName}/route-evidence.json
 - Screenshots folder: ${githubBase}/docs/content-audit/${packageName}/screenshots
 - E2E guardrails: ${githubBase}/tests/e2e/flow-mvp.spec.ts
+- Workbench source density E2E: ${githubBase}/tests/e2e/workbench-source-density.spec.ts
+- Public share CTA/tab-order E2E: ${githubBase}/tests/e2e/public-share-cta-order.spec.ts
 
 현재 guardrail scan 요약:
 \`\`\`json
@@ -872,7 +914,7 @@ ${JSON.stringify(evidence.summary, null, 2)}
 요청 산출물:
 1. route별 UX/UI 문제 목록
 2. Blocking/High/Medium/Low 우선순위
-3. 바로 개발 가능한 P8 backlog
+3. 바로 개발 가능한 ${nextBacklogCycle} backlog
 4. 유지해야 할 기준선
 5. 화면별 구체 수정 지시
 `;
@@ -900,7 +942,7 @@ function renderHtml(evidence) {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FlowMe P7 Final Review Package</title>
+  <title>FlowMe ${reviewCycle} Final Review Package</title>
   <style>
     :root { color-scheme: light; --bg: #fafaf8; --ink: #171717; --muted: #6b675f; --line: #e7e4dd; --brand: #3654ff; }
     body { margin: 0; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
@@ -925,8 +967,8 @@ function renderHtml(evidence) {
 </head>
 <body>
   <main>
-    <h1>FlowMe P7 Final Review Package</h1>
-    <p class="lead">P7-01~P7-05 기준선을 P7-06/P8-01/P8-02 guardrail, P8-03/P8-04 My Flow 라벨 검증, P8-05/P8-06/P8-08 evidence cleanup으로 고정하기 위한 모바일 390px screenshot/evidence 패키지입니다.</p>
+    <h1>FlowMe ${reviewCycle} Final Review Package</h1>
+    <p class="lead">P7-01~P7-05 기준선을 P7-06/P8-01/P8-02 guardrail, P8-03/P8-04 My Flow 라벨 검증, P8-05/P8-06/P8-08 evidence cleanup, P8-09 workbench source-density, P8-10 public share CTA/tab-order 기준으로 고정하기 위한 모바일 390px screenshot/evidence 패키지입니다.</p>
     <p class="meta">UI baseline commit: ${escapeHtml(evidence.uiBaselineCommit)} · Package generated from: ${escapeHtml(evidence.packageGeneratedFromCommit)} · Package commit ref: ${escapeHtml(evidence.packageCommitRef)}</p>
     <section class="summary">
       <div class="stat"><b>${evidence.summary.totalScreenshots}</b><span>screenshots</span></div>
@@ -945,6 +987,7 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.restartPrototypeFullScheduleUniqueDateLabelCount}</b><span>restart full schedule dates</span></div>
       <div class="stat"><b>${evidence.summary.fieldWorkbenchRowDetailSourceLinkCount}</b><span>field row source links</span></div>
       <div class="stat"><b>${evidence.summary.fieldWorkbenchSourceAccessLinkCount}</b><span>field source access links</span></div>
+      <div class="stat"><b>${evidence.summary.publicShareSecondaryBrowseFocusableHitCount}</b><span>public browse focus hits</span></div>
     </section>
     <section class="grid">
       ${cards}
