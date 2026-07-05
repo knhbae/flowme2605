@@ -2,7 +2,7 @@
 
 ## Scope
 
-P7-06 closes the review loop after P7-01 to P7-05. It does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
+P7-06 closes the review loop after P7-01 to P7-05, and P8-01 generalizes the same guardrails for new seed/source/route additions. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
 
 ## Baselines Covered
 
@@ -11,7 +11,7 @@ P7-06 closes the review loop after P7-01 to P7-05. It does not add a feature. It
 - P7-03: My Flow 5+ saved list bottom clearance is verified.
 - P7-04: Home shows a small curated recommendation set, not a single fixed experiment.
 - P7-05: Public `/f` browse links remain secondary to `내 Flow에 저장`.
-- P7-06: Normal route scan buckets stay at zero for internal labels, source slugs, structural title suffixes, raw ISO dates, and mobile overflow.
+- P7-06/P8-01: Normal route scan buckets stay at zero for internal labels, dynamic source slug leaks, structural title suffixes, raw ISO dates, first-task repetition, and mobile overflow.
 
 ## Summary
 
@@ -22,6 +22,7 @@ P7-06 closes the review loop after P7-01 to P7-05. It does not add a feature. It
   "normalRouteSourceSlugHitCount": 0,
   "normalRouteStructuralDisplayHitCount": 0,
   "normalRouteRawIsoHitCount": 0,
+  "normalRouteFirstTaskRepetitionHitCount": 0,
   "normalRouteHorizontalOverflowCount": 0,
   "restartPrototypeRawIsoHitCount": 0,
   "restartPrototypeHorizontalOverflowCount": 0,

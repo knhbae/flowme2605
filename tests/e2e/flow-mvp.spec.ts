@@ -1,6 +1,14 @@
 ﻿import fs from 'node:fs';
 import { expect, type Locator, test } from '@playwright/test';
 import { FLOW_EXPORT_LABELS } from '../../lib/flow/export-labels';
+import { seedBundles } from '../../lib/flow/seed-flows';
+import { getCuratedSourceAppSeedFlowMaps, getSourceBackedHomepageFlowMaps } from '../../lib/flow/source-backed-my-flow';
+import {
+  collectSourceSlugSignals,
+  findFirstTaskRepetitionHits,
+  normalizeGuardrailLines,
+  scanUserSurfaceGuardrails,
+} from '../../lib/flow/user-surface-guardrails';
 
 const userSurfaceInternalTerms = [
   /묶음/,
@@ -31,6 +39,12 @@ const userSurfaceInternalTerms = [
   /\bItem\b/,
 ];
 
+const userFacingSourceSlugSignals = collectSourceSlugSignals([
+  ...seedBundles,
+  ...getSourceBackedHomepageFlowMaps(),
+  ...getCuratedSourceAppSeedFlowMaps(),
+]);
+
 async function expectNoInternalUserSurfaceCopy(locator: Locator) {
   for (const term of userSurfaceInternalTerms) {
     await expect(locator).not.toContainText(term);
@@ -38,25 +52,22 @@ async function expectNoInternalUserSurfaceCopy(locator: Locator) {
 }
 
 async function expectNoUserFacingRawIsoDate(locator: Locator) {
-  await expect(locator).not.toContainText(/\b\d{4}-\d{2}-\d{2}\b/);
+  const result = scanUserSurfaceGuardrails({ primaryLines: await getLocatorLines(locator) });
+  expect(result.rawIsoDateHits).toEqual([]);
 }
 
 async function expectNoVisibleSourceBrandSlug(locator: Locator) {
-  const visibleText = await locator.innerText();
-  expect(visibleText).not.toMatch(/\bAJD\s+(?:[가-힣A-Z0-9]|D-)/i);
-  expect(visibleText).not.toMatch(/\bMathbang\s+[가-힣A-Z0-9]/i);
+  const result = scanUserSurfaceGuardrails({
+    primaryLines: await getLocatorLines(locator),
+    sourceSlugSignals: userFacingSourceSlugSignals,
+  });
+  expect(result.sourceSlugHits).toEqual([]);
 }
 
 async function expectNoUserFacingDisplayLeakage(locator: Locator) {
-  const visibleText = await locator.innerText();
-  const lines = visibleText
-    .split(/\n+/)
-    .map((line) => line.replace(/\s+/g, ' ').trim())
-    .filter(Boolean);
-  const allowedFlowLines = new Set(['Flow', '내 Flow', 'Flow 찾기', 'FlowMe', '내 Flow에 저장', '내 Flow에서 보기']);
-  const trailingFlowLines = lines.filter((line) => /[\p{L}\p{N})\]]\s*Flow$/u.test(line) && !allowedFlowLines.has(line));
-  expect(trailingFlowLines).toEqual([]);
-  expect(visibleText).not.toMatch(/일정\s*지도|저장한\s*지도|지도\s*일정|지도\s*루틴/);
+  const result = scanUserSurfaceGuardrails({ primaryLines: await getLocatorLines(locator) });
+  expect(result.trailingFlowSuffixHits).toEqual([]);
+  expect(result.structuralDisplayHits).toEqual([]);
 }
 
 async function expectNoHorizontalOverflow(page: { evaluate: <T>(pageFunction: () => T | Promise<T>) => Promise<T> }) {
@@ -67,6 +78,35 @@ async function expectNoHorizontalOverflow(page: { evaluate: <T>(pageFunction: ()
 async function expectTextOccurrenceAtMost(locator: Locator, text: string, maxCount: number) {
   const content = await locator.innerText();
   expect(content.split(text).length - 1).toBeLessThanOrEqual(maxCount);
+}
+
+async function getLocatorLines(locator: Locator) {
+  const visibleText = await locator.innerText();
+  return normalizeGuardrailLines(visibleText.split(/\n+/));
+}
+
+async function getFirstContinuationTitle(section: Locator) {
+  const titleLocator = section.getByTestId('my-flow-mobile-continuation-title').first();
+  if (await titleLocator.count()) {
+    await expect(titleLocator).toBeVisible();
+    return (await titleLocator.innerText()).replace(/\s+/g, ' ').trim();
+  }
+
+  const card = section.getByTestId('my-flow-mobile-continuation-card').first();
+  await expect(card).toBeVisible();
+  const lines = await getLocatorLines(card);
+  const title = lines.find((line) =>
+    line.length > 1 &&
+    !/먼저 할 일|밀린 할 일|다음 할 일|열기|열림|완료|날짜 없음|\d+\/\d+|^\d{1,2}월 \d{1,2}일/.test(line),
+  );
+  expect(title).toBeTruthy();
+  return title as string;
+}
+
+async function expectFirstContinuationTitleNotRepeated(section: Locator) {
+  const title = await getFirstContinuationTitle(section);
+  const hits = findFirstTaskRepetitionHits(await getLocatorLines(section), title, { maxCount: 1 });
+  expect(hits).toEqual([]);
 }
 
 async function expectCompactCatalogAction(card: Locator, action: Locator) {
@@ -594,7 +634,7 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(page.getByTestId('my-flow-now-section').locator('h3')).not.toContainText(/\d{4}-\d{2}-\d{2}/);
   await expect(page.getByTestId('my-flow-now-section')).toContainText('밀린 할 일');
   await expect(page.getByTestId('my-flow-now-section').locator('h3')).not.toContainText('이사 방식과 견적 후보 정하기');
-  await expectTextOccurrenceAtMost(page.getByTestId('my-flow-now-section'), '이사 방식과 견적 후보 정하기', 1);
+  await expectFirstContinuationTitleNotRepeated(page.getByTestId('my-flow-now-section'));
   await expectTextOccurrenceAtMost(page.getByTestId('my-flow-now-section'), '밀린 할 일', 1);
   await expect(page.getByTestId('my-flow-now-section').getByTestId('my-flow-mobile-continuation-card').first()).not.toContainText('밀린 할 일');
   await expect(page.getByTestId('my-flow-now-section')).not.toContainText('밀린 할 일 중 먼저 정리할 항목입니다.');
@@ -627,7 +667,7 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(page.getByTestId('my-flow-now-section').getByTestId('my-flow-inline-detail')).toBeVisible();
   await expect(page.getByTestId('my-flow-inline-detail')).not.toContainText('확인할 항목');
   await expect(page.getByTestId('my-flow-inline-detail')).toContainText(/확인 항목|개념 항목/);
-  await expectTextOccurrenceAtMost(page.getByTestId('my-flow-now-section'), '1. 소인수분해', 1);
+  await expectFirstContinuationTitleNotRepeated(page.getByTestId('my-flow-now-section'));
 
   await page.goto('/f/jeonse-contract-precheck-docs');
   await page.evaluate(() => window.localStorage.clear());
@@ -745,7 +785,7 @@ test('p7 guardrail keeps user routes clean and restart prototype in its own buck
   await expectNoVisibleSourceBrandSlug(movingMyFlow);
   await expectNoUserFacingDisplayLeakage(movingMyFlow);
   await expectNoUserFacingRawIsoDate(movingMyFlow);
-  await expectTextOccurrenceAtMost(page.getByTestId('my-flow-now-section'), '이사 방식과 견적 후보 정하기', 1);
+  await expectFirstContinuationTitleNotRepeated(page.getByTestId('my-flow-now-section'));
   await expectNoHorizontalOverflow(page);
 
   await page.goto('/calendar');
@@ -2298,7 +2338,7 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   await expect(postSavePanel).not.toContainText('8개 할 일');
   await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(0);
   await expect(postSavePanel.getByTestId('my-flow-post-save-view-all')).toHaveCount(0);
-  await expectTextOccurrenceAtMost(page.getByTestId('my-flow-now-section'), '1. 소인수분해', 1);
+  await expectFirstContinuationTitleNotRepeated(page.getByTestId('my-flow-now-section'));
   await postSavePanel.getByTestId('my-flow-post-save-open-first').click();
   await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
   const todayDetail = page.getByTestId('my-flow-now-section').getByTestId('my-flow-inline-detail');
@@ -2387,7 +2427,7 @@ test('source-backed single progress map opens step detail on mobile My Flow', as
   await expect(page.getByTestId('my-flow-now-section')).toContainText('먼저 할 일');
   await expectTextOccurrenceAtMost(page.getByTestId('my-flow-now-section'), '먼저 할 일', 1);
   await expect(page.getByTestId('my-flow-now-section').locator('h3')).not.toContainText('1. 소인수분해');
-  await expectTextOccurrenceAtMost(page.getByTestId('my-flow-now-section'), '1. 소인수분해', 1);
+  await expectFirstContinuationTitleNotRepeated(page.getByTestId('my-flow-now-section'));
   await expect(page.getByTestId('my-flow-now-section').locator('h3')).not.toContainText('밀린 할 일');
 
   await page.getByTestId('my-flow-post-save-open-first').click();
@@ -2398,7 +2438,7 @@ test('source-backed single progress map opens step detail on mobile My Flow', as
   await expect(flowDetail).not.toContainText('Item');
   await expect(flowDetail).not.toContainText('확인할 항목');
   await expect(flowDetail).toContainText(/확인 항목|개념 항목/);
-  await expectTextOccurrenceAtMost(page.getByTestId('my-flow-now-section'), '1. 소인수분해', 1);
+  await expectFirstContinuationTitleNotRepeated(page.getByTestId('my-flow-now-section'));
   const itemChecklist = flowDetail.getByTestId('my-flow-item-checklist');
   await expect(itemChecklist).toContainText('거듭제곱');
   await expect(flowDetail.getByTestId('my-flow-detail-read-summary')).toContainText('메모·일정');
@@ -5291,4 +5331,37 @@ test('baby food feedback route keeps menu calendar and recipe details in the wor
   await expect(page.getByText('반응 기록')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '전체 할 일' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '월별 달력' })).toHaveCount(0);
+});
+
+test('url-first p0 lab previews hit review miss and memo states without public nav exposure', async ({ page }) => {
+  await page.goto('/flow-lab/url-first-p0');
+
+  await expect(page.getByRole('heading', { name: 'URL-first P0 실험' })).toBeVisible();
+  await expect(page.getByTestId('url-first-result-card')).toContainText('상태 hit');
+  await expect(page.getByTestId('url-first-result-card')).toContainText('/flow-maps/moving-d30');
+  await expect(page.getByTestId('url-first-export-preview')).toContainText('moving-d30-flow.ics');
+  await expect(page.getByTestId('url-first-export-preview')).toContainText('Markdown');
+  await expect(page.getByTestId('url-first-export-preview')).toContainText('checklist');
+  await expect(page.getByTestId('url-first-my-flow-calendar-preview')).toContainText('실제 저장 없음');
+  await expect(page.locator('body')).not.toContainText(/추천\s*\d+명|저장\s*\d+명|사용\s*\d+명/);
+
+  await page.getByRole('button', { name: '자동차검사 needs_review' }).click();
+  await expect(page.getByTestId('url-first-result-card')).toContainText('상태 needs_review');
+  await expect(page.getByTestId('url-first-gate')).toContainText('원문 확인 전에는 캘린더 파일을 만들지 않습니다.');
+  await expect(page.getByTestId('url-first-result-card')).toContainText('저장 미리보기만');
+
+  await page.getByRole('button', { name: '알 수 없는 URL' }).click();
+  await expect(page.getByTestId('url-first-result-card')).toContainText('상태 miss');
+  await expect(page.getByTestId('url-first-result-card')).toContainText('AI 생성 disabled');
+
+  await page.getByRole('button', { name: '메모 초안' }).click();
+  await expect(page.getByTestId('url-first-result-card')).toContainText('상태 memo_draft');
+  await expect(page.getByTestId('url-first-recommendation')).toContainText('원룸 이사 D-30 일정 지도');
+  await expect(page.getByTestId('url-first-export-preview')).toContainText('private-memo-draft.ics');
+
+  for (const route of ['/', '/flows', '/my', '/calendar']) {
+    await page.goto(route);
+    await expect(page.locator('a[href="/flow-lab/url-first-p0"]')).toHaveCount(0);
+    await expect(page.getByText('URL-first P0 실험')).toHaveCount(0);
+  }
 });

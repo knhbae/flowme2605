@@ -33,7 +33,7 @@ const forbiddenInternalTerms = [
   /\bItem\b/,
 ];
 
-const sourceSlugTerms = [/\bAJD\b/, /\bMathbang\b/];
+const sourceSlugSignals = getDynamicSourceSlugSignals();
 const structuralDisplayTerms = [/일정\s*지도/, /저장한\s*지도/, /지도\s*일정/, /지도\s*루틴/];
 const rawIsoDatePattern = /\b20\d{2}-\d{2}-\d{2}\b/;
 const allowedFlowSuffixLines = new Set(['Flow', '내 Flow', 'Flow 찾기', 'FlowMe', '내 Flow에 저장', '내 Flow에서 보기']);
@@ -189,6 +189,32 @@ function getCommandOutput(command, args) {
   }
 }
 
+function getDynamicSourceSlugSignals() {
+  const command = process.platform === 'win32' ? 'cmd.exe' : 'npx';
+  const script = [
+    "import { seedBundles } from './lib/flow/seed-flows';",
+    "import { getCuratedSourceAppSeedFlowMaps, getSourceBackedHomepageFlowMaps } from './lib/flow/source-backed-my-flow';",
+    "import { collectSourceSlugSignals } from './lib/flow/user-surface-guardrails';",
+    'console.log(JSON.stringify(collectSourceSlugSignals([...seedBundles, ...getSourceBackedHomepageFlowMaps(), ...getCuratedSourceAppSeedFlowMaps()])));',
+  ].join(' ');
+  const args = process.platform === 'win32'
+    ? ['/c', 'npx.cmd', 'tsx', '-e', script]
+    : ['tsx', '-e', script];
+
+  try {
+    const output = execFileSync(command, args, {
+      cwd: repoRoot,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+    }).trim();
+    const parsed = JSON.parse(output);
+    return Array.isArray(parsed) ? parsed.filter((value) => typeof value === 'string') : [];
+  } catch (error) {
+    console.warn(`Falling back to no dynamic source slug signals: ${error instanceof Error ? error.message : String(error)}`);
+    return [];
+  }
+}
+
 function getLaunchOptions() {
   const envPath = process.env.PLAYWRIGHT_CHROME_EXECUTABLE_PATH;
   const windowsChromePath = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
@@ -324,6 +350,79 @@ async function scanPage(page, options = {}) {
       .split(/\n+/)
       .map((line) => line.replace(/\s+/g, ' ').trim())
       .filter(Boolean);
+    const sourceContextSelector = [
+      '[data-testid*="source" i]',
+      '[data-testid*="trace" i]',
+      '[data-testid*="reference" i]',
+      '[data-testid*="origin" i]',
+      'a[href^="http"]',
+    ].join(',');
+    const scanTextSelector = [
+      'h1',
+      'h2',
+      'h3',
+      'h4',
+      'h5',
+      'p',
+      'span',
+      'button',
+      'a',
+      'label',
+      'summary',
+      'li',
+      'td',
+      'th',
+      'dt',
+      'dd',
+    ].join(',');
+    const normalizeLine = (line) => line.replace(/\s+/g, ' ').trim();
+    const isVisible = (element) => {
+      const style = window.getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0;
+    };
+    const hasNestedScanText = (element) =>
+      Array.from(element.children).some((child) => child.matches(scanTextSelector) || child.querySelector(scanTextSelector));
+    const uniqueLines = (values) => Array.from(new Set(values.map(normalizeLine).filter(Boolean)));
+    const collectElementLines = (root) => {
+      if (!root) return [];
+      return uniqueLines(Array.from(root.querySelectorAll(scanTextSelector)).filter((element) => isVisible(element) && !hasNestedScanText(element)).map((element) => element.textContent ?? ''));
+    };
+    const primaryLines = [];
+    const sourceLines = [];
+    for (const element of Array.from(document.body.querySelectorAll(scanTextSelector)).filter((element) => isVisible(element) && !hasNestedScanText(element))) {
+      const text = normalizeLine(element.textContent ?? '');
+      if (!text) continue;
+      if (element.closest(sourceContextSelector)) {
+        sourceLines.push(text);
+      } else {
+        primaryLines.push(text);
+      }
+    }
+    const normalizedPrimaryLines = uniqueLines(primaryLines);
+    const normalizedSourceLines = uniqueLines(sourceLines);
+    const matchesAgainstLines = (targetLines, patterns) => patterns.flatMap((pattern) => {
+      const regex = new RegExp(pattern.source, pattern.flags);
+      return targetLines.filter((line) => regex.test(line)).map((line) => ({ pattern: pattern.label, line }));
+    });
+    const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const sourceSlugHits = normalizedPrimaryLines.flatMap((line) =>
+      payload.sourceSlugSignals
+        .filter((signal) => {
+          const regex = new RegExp(`(^|[^\\p{L}\\p{N}_])${escapeRegExp(signal)}(?=$|\\s|[가-힣]|D-)`, 'iu');
+          return regex.test(line);
+        })
+        .map((signal) => ({ signal, line })),
+    );
+    const findRepeatedTitleHits = (targetLines, title, maxCount) => {
+      const normalizedTitle = normalizeLine(title);
+      if (!normalizedTitle) return [];
+      const matchingLines = targetLines.filter((line) => line.includes(normalizedTitle));
+      if (matchingLines.length <= maxCount) return [];
+      return [{ title: normalizedTitle, count: matchingLines.length, extraLines: matchingLines.slice(maxCount) }];
+    };
+    const firstTaskTitle = normalizeLine(document.querySelector('[data-testid="my-flow-now-section"] [data-testid="my-flow-mobile-continuation-title"]')?.textContent ?? '');
+    const nowSectionLines = collectElementLines(document.querySelector('[data-testid="my-flow-now-section"]'));
 
     const matches = (patterns) => patterns.flatMap((pattern) => {
       const regex = new RegExp(pattern.source, pattern.flags);
@@ -331,13 +430,13 @@ async function scanPage(page, options = {}) {
     });
 
     const rawIsoDateRegex = new RegExp(payload.rawIsoDatePattern);
-    const rawIsoLines = lines
-      .filter((line) => rawIsoDateRegex.test(line))
-      .filter((line) => !/source|원문|근거|https?:|\.com|\.kr|\.net|data-testid/i.test(line));
+    const rawIsoLines = normalizedPrimaryLines.filter((line) => rawIsoDateRegex.test(line));
 
-    const flowSuffixLines = lines
+    const flowSuffixLines = normalizedPrimaryLines
       .filter((line) => /[\p{L}\p{N})\]]\s*Flow$/u.test(line))
       .filter((line) => !payload.allowedFlowSuffixLines.includes(line));
+    const structuralDisplayHits = matchesAgainstLines(normalizedPrimaryLines, payload.structuralDisplayTerms);
+    const firstTaskRepetitionHits = firstTaskTitle ? findRepeatedTitleHits(nowSectionLines, firstTaskTitle, 1) : [];
 
     const rectFor = (selector) => {
       const element = document.querySelector(selector);
@@ -373,13 +472,14 @@ async function scanPage(page, options = {}) {
       browseLinkSecondaryCandidate: clickableLabels.includes('콘텐츠 더 보기'),
       firstClickableLabels: clickableLabels,
       internalHits: matches(payload.forbiddenInternalTerms),
-      sourceSlugHits: matches(payload.sourceSlugTerms),
-      structuralDisplayHits: matches(payload.structuralDisplayTerms),
+      sourceSlugSignals: payload.sourceSlugSignals,
+      sourceSlugHits,
+      structuralDisplayHits,
       rawIsoLines,
       flowSuffixLines,
+      firstTaskRepetitionHits,
       repetitionCounts: {
-        movingFirstTaskTitle: countText('이사 방식과 견적 후보 정하기'),
-        mathFirstTaskTitle: countText('1. 소인수분해'),
+        firstTaskTitle: firstTaskTitle ? countText(firstTaskTitle) : 0,
         firstTaskLabel: countText('먼저 할 일'),
         overdueLabel: countText('밀린 할 일'),
         nextTaskLabel: countText('다음 할 일'),
@@ -408,8 +508,8 @@ async function scanPage(page, options = {}) {
     rawIsoDatePattern: rawIsoDatePattern.source,
     allowedFlowSuffixLines: Array.from(allowedFlowSuffixLines),
     forbiddenInternalTerms: forbiddenInternalTerms.map((term) => ({ label: term.toString(), source: term.source, flags: term.flags })),
-    sourceSlugTerms: sourceSlugTerms.map((term) => ({ label: term.toString(), source: term.source, flags: term.flags })),
     structuralDisplayTerms: structuralDisplayTerms.map((term) => ({ label: term.toString(), source: term.source, flags: term.flags })),
+    sourceSlugSignals,
   });
 }
 
@@ -422,6 +522,7 @@ function summarizeEvidence(records) {
     normalRouteSourceSlugHitCount: normal.reduce((sum, record) => sum + record.sourceSlugHits.length, 0),
     normalRouteStructuralDisplayHitCount: normal.reduce((sum, record) => sum + record.structuralDisplayHits.length + record.flowSuffixLines.length, 0),
     normalRouteRawIsoHitCount: normal.reduce((sum, record) => sum + record.rawIsoLines.length, 0),
+    normalRouteFirstTaskRepetitionHitCount: normal.reduce((sum, record) => sum + (record.firstTaskRepetitionHits?.length ?? 0), 0),
     normalRouteHorizontalOverflowCount: normal.filter((record) => !record.noHorizontalOverflow).length,
     restartPrototypeRawIsoHitCount: restart.reduce((sum, record) => sum + record.rawIsoLines.length, 0),
     restartPrototypeHorizontalOverflowCount: restart.filter((record) => !record.noHorizontalOverflow).length,
@@ -437,7 +538,7 @@ function renderReadme(evidence) {
 - Commit: \`${commit}\`
 - Viewport: ${viewport.width}x${viewport.height}
 
-This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails.
+This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails and the P8-01 generalized scan rules.
 
 ## Files
 
@@ -453,6 +554,7 @@ This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails.
 - Normal route source slug hits: ${evidence.summary.normalRouteSourceSlugHitCount}
 - Normal route trailing Flow/map phrase hits: ${evidence.summary.normalRouteStructuralDisplayHitCount}
 - Normal route raw ISO hits: ${evidence.summary.normalRouteRawIsoHitCount}
+- Normal route first task repetition hits: ${evidence.summary.normalRouteFirstTaskRepetitionHitCount}
 - Normal route horizontal overflow count: ${evidence.summary.normalRouteHorizontalOverflowCount}
 - Restart prototype raw ISO hits: ${evidence.summary.restartPrototypeRawIsoHitCount}
 
@@ -473,7 +575,7 @@ function renderAudit(evidence) {
 
 ## Scope
 
-P7-06 closes the review loop after P7-01 to P7-05. It does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
+P7-06 closes the review loop after P7-01 to P7-05, and P8-01 generalizes the same guardrails for new seed/source/route additions. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
 
 ## Baselines Covered
 
@@ -482,7 +584,7 @@ P7-06 closes the review loop after P7-01 to P7-05. It does not add a feature. It
 - P7-03: My Flow 5+ saved list bottom clearance is verified.
 - P7-04: Home shows a small curated recommendation set, not a single fixed experiment.
 - P7-05: Public \`/f\` browse links remain secondary to \`내 Flow에 저장\`.
-- P7-06: Normal route scan buckets stay at zero for internal labels, source slugs, structural title suffixes, raw ISO dates, and mobile overflow.
+- P7-06/P8-01: Normal route scan buckets stay at zero for internal labels, dynamic source slug leaks, structural title suffixes, raw ISO dates, first-task repetition, and mobile overflow.
 
 ## Summary
 
@@ -519,7 +621,7 @@ function renderPrompt(evidence) {
 1. P7-01~P7-05가 실제 화면 기준으로 유지되는지 확인
 2. P7-06 guardrail이 충분한지 확인
 3. 정상 사용자 route에서 아래 회귀가 다시 생길 위험이 있는지 확인
-   - AJD, Mathbang 같은 source slug가 제목/부제/주요 문구로 노출
+   - seed/source metadata에서 동적으로 추출되는 source slug가 제목/부제/주요 문구로 노출
    - 콘텐츠 제목 끝 Flow 접미
    - 일정 지도, 저장한 지도 같은 내부 구조형 표현
    - raw ISO 날짜
@@ -597,12 +699,13 @@ function renderHtml(evidence) {
 <body>
   <main>
     <h1>FlowMe P7 Final Review Package</h1>
-    <p class="lead">P7-01~P7-05 개선 기준선을 P7-06 guardrail로 고정하기 위한 모바일 390px screenshot/evidence 패키지입니다.</p>
+    <p class="lead">P7-01~P7-05 개선 기준선을 P7-06/P8-01 guardrail로 고정하기 위한 모바일 390px screenshot/evidence 패키지입니다.</p>
     <section class="summary">
       <div class="stat"><b>${evidence.summary.totalScreenshots}</b><span>screenshots</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteInternalHitCount}</b><span>normal internal hits</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteSourceSlugHitCount}</b><span>normal source slug hits</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteRawIsoHitCount}</b><span>normal raw ISO hits</span></div>
+      <div class="stat"><b>${evidence.summary.normalRouteFirstTaskRepetitionHitCount}</b><span>first task repeats</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeRawIsoHitCount}</b><span>restart raw ISO hits</span></div>
     </section>
     <section class="grid">

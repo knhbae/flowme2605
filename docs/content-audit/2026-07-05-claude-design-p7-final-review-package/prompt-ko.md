@@ -4,7 +4,7 @@
 1. P7-01~P7-05가 실제 화면 기준으로 유지되는지 확인
 2. P7-06 guardrail이 충분한지 확인
 3. 정상 사용자 route에서 아래 회귀가 다시 생길 위험이 있는지 확인
-   - AJD, Mathbang 같은 source slug가 제목/부제/주요 문구로 노출
+   - seed/source metadata에서 동적으로 추출되는 source slug가 제목/부제/주요 문구로 노출
    - 콘텐츠 제목 끝 Flow 접미
    - 일정 지도, 저장한 지도 같은 내부 구조형 표현
    - raw ISO 날짜
@@ -30,6 +30,7 @@
   "normalRouteSourceSlugHitCount": 0,
   "normalRouteStructuralDisplayHitCount": 0,
   "normalRouteRawIsoHitCount": 0,
+  "normalRouteFirstTaskRepetitionHitCount": 0,
   "normalRouteHorizontalOverflowCount": 0,
   "restartPrototypeRawIsoHitCount": 0,
   "restartPrototypeHorizontalOverflowCount": 0,

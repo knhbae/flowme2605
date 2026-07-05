@@ -4187,7 +4187,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               {options.hideLeadLabel ? null : (
                 <span className="block text-xs font-semibold text-blue-700">{isPrimary ? options.primaryLabel ?? '지금 할 일' : options.nextLabel ?? '다음 할 일'}</span>
               )}
-              <span className={`mt-1 block text-base font-semibold leading-6 ${checked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
+              <span data-testid="my-flow-mobile-continuation-title" className={`mt-1 block text-base font-semibold leading-6 ${checked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
                 {getMyFlowRowDisplayTitle(row)}
               </span>
               <span className="mt-1 block text-xs font-semibold text-slate-500">
