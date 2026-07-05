@@ -546,6 +546,37 @@ async function scanPage(page, options = {}) {
       .map((element) => element.textContent?.replace(/\s+/g, ' ').trim() ?? '')
       .filter(Boolean)
       .slice(0, 18);
+    const isVisibleInteractiveElement = (element) => {
+      const style = window.getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return (
+        element.getAttribute('aria-hidden') !== 'true'
+        && element.getAttribute('tabindex') !== '-1'
+        && !element.hasAttribute('disabled')
+        && element.getAttribute('aria-disabled') !== 'true'
+        && style.display !== 'none'
+        && style.visibility !== 'hidden'
+        && rect.width > 0
+        && rect.height > 0
+      );
+    };
+    const focusableEntries = Array.from(document.querySelectorAll('a[href], button, input, textarea, select, [tabindex]'))
+      .filter((element) => isVisibleInteractiveElement(element))
+      .map((element) => ({
+        text: element.textContent?.replace(/\s+/g, ' ').trim() ?? '',
+        href: element instanceof HTMLAnchorElement ? element.getAttribute('href') ?? '' : '',
+        testId: element.dataset.testid ?? element.closest('[data-testid]')?.dataset.testid ?? '',
+      }));
+    const publicBrowseLinkFocusableIndex = focusableEntries.findIndex((entry) => entry.testId === 'flow-public-secondary-browse-link');
+    const publicPrimaryPathFocusableIndex = focusableEntries.findIndex((entry) =>
+      [
+        'public-flow-mobile-save-cta',
+        'public-flow-primary-setup',
+        'moving-save-actions',
+      ].includes(entry.testId)
+      || entry.text.includes('내 Flow에 저장')
+      || entry.text.includes('내 도구로 가져가기'),
+    );
     const restartNextTaskDateLabels = Array.from(document.querySelectorAll('[data-testid="moving-mobile-next-tasks"] article p'))
       .map((element) => normalizeLine(element.textContent ?? ''))
       .filter(Boolean);
@@ -572,9 +603,10 @@ async function scanPage(page, options = {}) {
       noHorizontalOverflow: document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2,
       navVisible: Boolean(document.querySelector('[data-testid="platform-mobile-tabs"]')),
       publicShellVisible: Boolean(document.querySelector('[data-testid="flow-public-shell"]')),
-      primarySaveActionVisible: Boolean(document.querySelector('[data-testid="public-flow-mobile-save-cta"], [data-testid="public-flow-save-actions"], [data-testid="flow-map-mobile-sticky-save"]')),
+      primarySaveActionVisible: Boolean(document.querySelector('[data-testid="public-flow-mobile-save-cta"], [data-testid="public-flow-save-actions"], [data-testid="moving-save-actions"], [data-testid="flow-map-mobile-sticky-save"]')),
       browseLinkSecondaryCandidate: clickableLabels.includes('콘텐츠 더 보기'),
       firstClickableLabels: clickableLabels,
+      firstFocusableLabels: focusableEntries.map((entry) => entry.text).filter(Boolean).slice(0, 18),
       internalHits: matches(payload.forbiddenInternalTerms),
       sourceSlugSignals: payload.sourceSlugSignals,
       sourceSlugHits,
@@ -618,20 +650,12 @@ async function scanPage(page, options = {}) {
         workbenchRowDetailSourceLinkCount: document.querySelectorAll('[data-testid="artifact-list-card"] details a[href]').length,
         workbenchSourceAccessLinkCount: document.querySelectorAll('[data-testid="flow-source-card"] a[href], [data-testid="used-car-source-bridge"] a[href], [data-testid="maintenance-source-bridge"] a[href]').length,
         publicPrimarySetupVisible: Boolean(document.querySelector('[data-testid="public-flow-primary-setup"]')),
-        publicBrowseLinkFocusable: (() => {
-          const element = document.querySelector('[data-testid="flow-public-secondary-browse-link"]');
-          if (!element) return false;
-          const style = window.getComputedStyle(element);
-          const rect = element.getBoundingClientRect();
-          return (
-            element.getAttribute('aria-hidden') !== 'true'
-            && element.getAttribute('tabindex') !== '-1'
-            && style.display !== 'none'
-            && style.visibility !== 'hidden'
-            && rect.width > 0
-            && rect.height > 0
-          );
-        })(),
+        publicBrowseLinkFocusable: publicBrowseLinkFocusableIndex >= 0,
+        publicBrowseLinkFocusableIndex,
+        publicPrimaryPathFocusableIndex,
+        publicBrowseLinkAfterPrimary: publicBrowseLinkFocusableIndex >= 0
+          && publicPrimaryPathFocusableIndex >= 0
+          && publicBrowseLinkFocusableIndex > publicPrimaryPathFocusableIndex,
         restartScheduleDateCheck: {
           firstThreeDateLabels: restartFirstThreeDateLabels,
           firstThreeTitles: restartNextTaskTitles.slice(0, 3),
@@ -695,7 +719,14 @@ function summarizeEvidence(records) {
     fieldWorkbenchSourceAccessLinkCount: fieldChecklistSourceDensity.reduce((sum, record) => sum + (record.markers.workbenchSourceAccessLinkCount ?? 0), 0),
     fieldWorkbenchOpenDetailCounts: fieldChecklistSourceDensity.map((record) => record.markers.workbenchRowDetailCount ?? 0),
     publicShareRouteCount: publicShareRoutes.length,
-    publicShareSecondaryBrowseFocusableHitCount: publicShareRoutes.filter((record) => record.markers.publicBrowseLinkFocusable).length,
+    publicShareSecondaryBrowseFocusableCount: publicShareRoutes.filter((record) => record.markers.publicBrowseLinkFocusable).length,
+    publicShareSecondaryBrowseAfterPrimaryCount: publicShareRoutes.filter((record) => record.markers.publicBrowseLinkAfterPrimary).length,
+    publicShareSecondaryBrowseBeforePrimaryCount: publicShareRoutes.filter((record) =>
+      record.markers.publicBrowseLinkFocusableIndex >= 0
+      && record.markers.publicPrimaryPathFocusableIndex >= 0
+      && record.markers.publicBrowseLinkFocusableIndex <= record.markers.publicPrimaryPathFocusableIndex,
+    ).length,
+    publicSharePrimaryPathFocusableCount: publicShareRoutes.filter((record) => record.markers.publicPrimaryPathFocusableIndex >= 0).length,
     publicSharePrimaryPathVisibleCount: publicShareRoutes.filter((record) =>
       record.primarySaveActionVisible || record.markers.publicPrimarySetupVisible,
     ).length,
@@ -736,7 +767,7 @@ function renderReadme(evidence) {
 - Package commit ref: \`${evidence.packageCommitRef}\`
 - Viewport: ${viewport.width}x${viewport.height}
 
-This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, the P8-02 restart/prototype promotion gate, the P8-03/P8-04 My Flow overdue label/status corrections, the P8-05/P8-06/P8-08 evidence/package metadata cleanup, the P8-07 restart date-display decision, the P8-09 field-checklist source-density rule, and the P8-10 public share CTA/tab-order rule.
+This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, the P8-02 restart/prototype promotion gate, the P8-03/P8-04 My Flow overdue label/status corrections, the P8-05/P8-06/P8-08 evidence/package metadata cleanup, the P8-07 restart date-display decision, the P8-09 field-checklist source-density rule, and the P8-10/P9-02 public share CTA/tab-order rule.
 
 ## Files
 
@@ -759,7 +790,10 @@ This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, t
 - Field workbench row-detail source link count: ${evidence.summary.fieldWorkbenchRowDetailSourceLinkCount}
 - Field workbench source access link count: ${evidence.summary.fieldWorkbenchSourceAccessLinkCount}
 - Public share route count: ${evidence.summary.publicShareRouteCount}
-- Public share secondary browse focusable hits: ${evidence.summary.publicShareSecondaryBrowseFocusableHitCount}
+- Public share secondary browse focusable count: ${evidence.summary.publicShareSecondaryBrowseFocusableCount}
+- Public share secondary browse after-primary count: ${evidence.summary.publicShareSecondaryBrowseAfterPrimaryCount}
+- Public share secondary browse before-primary count: ${evidence.summary.publicShareSecondaryBrowseBeforePrimaryCount}
+- Public share primary path focusable count: ${evidence.summary.publicSharePrimaryPathFocusableCount}
 - Public share primary path visible count: ${evidence.summary.publicSharePrimaryPathVisibleCount}
 - Restart prototype raw ISO hits: ${evidence.summary.restartPrototypeRawIsoHitCount}
 - Restart prototype raw route slug hits: ${evidence.summary.restartPrototypeRawRouteSlugHitCount}
@@ -789,7 +823,7 @@ function renderAudit(evidence) {
 
 ## Scope
 
-P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata, P8-07 confirms the \`/restart/moving-d30\` first-three-row date repetition as an intentional D-30 milestone group rather than a date-distribution bug, P8-09 lowers repeated row-level source links in field checklist workbenches, and P8-10 keeps public share browse navigation out of the pre-save primary tab path. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
+P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata, P8-07 confirms the \`/restart/moving-d30\` first-three-row date repetition as an intentional D-30 milestone group rather than a date-distribution bug, P8-09 lowers repeated row-level source links in field checklist workbenches, and P8-10/P9-02 keeps public share browse navigation accessible but after the primary save/input path. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
 
 ## Baselines Covered
 
@@ -806,7 +840,7 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 - P8-07: \`/restart/moving-d30\` first three visible rows share the same D-30 date because all three source rows are D-30 milestones; full schedule/export rows remain distributed across later dates.
 - P8-08: UI baseline commit and package generation commit metadata are separated.
 - P8-09: field checklist row details keep execution criteria/details, but repeated row-level source links are suppressed; source access remains available in the source/reference area.
-- P8-10: public \`/f/[slug]\` share shells keep \`콘텐츠 더 보기\` as a secondary visual link and remove it from the pre-save keyboard/tab path, so the primary save/input path remains first.
+- P8-10/P9-02: public \`/f/[slug]\` share screens keep \`콘텐츠 더 보기\` as an accessible secondary link, but place it after the primary save/input path in DOM/tab order.
 
 ## Summary
 
@@ -852,9 +886,12 @@ The restart source/export frame and bottom frame must remain distinct:
 ## Public Share CTA / Tab Order
 
 - public share route count: ${evidence.summary.publicShareRouteCount}
-- secondary browse focusable hits: ${evidence.summary.publicShareSecondaryBrowseFocusableHitCount}
+- secondary browse focusable count: ${evidence.summary.publicShareSecondaryBrowseFocusableCount}
+- secondary browse after-primary count: ${evidence.summary.publicShareSecondaryBrowseAfterPrimaryCount}
+- secondary browse before-primary count: ${evidence.summary.publicShareSecondaryBrowseBeforePrimaryCount}
+- primary save/input path focusable count: ${evidence.summary.publicSharePrimaryPathFocusableCount}
 - primary save/input path visible count: ${evidence.summary.publicSharePrimaryPathVisibleCount}
-- expected: \`콘텐츠 더 보기\` may remain visually as a quiet secondary link, but it should not be in the pre-save tab path before \`내 Flow에 저장\` or the input/setup path.
+- expected: \`콘텐츠 더 보기\` remains keyboard/screen-reader reachable as a quiet secondary link, but it should follow \`내 Flow에 저장\` or the input/setup path.
 
 ## Commit Metadata
 
@@ -987,7 +1024,7 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.restartPrototypeFullScheduleUniqueDateLabelCount}</b><span>restart full schedule dates</span></div>
       <div class="stat"><b>${evidence.summary.fieldWorkbenchRowDetailSourceLinkCount}</b><span>field row source links</span></div>
       <div class="stat"><b>${evidence.summary.fieldWorkbenchSourceAccessLinkCount}</b><span>field source access links</span></div>
-      <div class="stat"><b>${evidence.summary.publicShareSecondaryBrowseFocusableHitCount}</b><span>public browse focus hits</span></div>
+      <div class="stat"><b>${evidence.summary.publicShareSecondaryBrowseBeforePrimaryCount}</b><span>public browse before primary</span></div>
     </section>
     <section class="grid">
       ${cards}

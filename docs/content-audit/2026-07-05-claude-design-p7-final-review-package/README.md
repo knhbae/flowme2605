@@ -1,13 +1,13 @@
 # FlowMe Claude Design P7 Final Review Package
 
-- Generated: 2026-07-05T05:51:02.848Z
+- Generated: 2026-07-05T12:14:54.773Z
 - Branch: `codex/flowme-uxui-second-loop`
-- UI baseline commit: `c2f65c9`
-- Package generated from commit: `c2f65c9`
+- UI baseline commit: `958a612`
+- Package generated from commit: `958a612`
 - Package commit ref: `git commit containing this generated package`
 - Viewport: 390x844
 
-This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, the P8-02 restart/prototype promotion gate, the P8-03/P8-04 My Flow overdue label/status corrections, the P8-05/P8-06/P8-08 evidence/package metadata cleanup, the P8-07 restart date-display decision, and the P8-09 field-checklist source-density rule.
+This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, the P8-02 restart/prototype promotion gate, the P8-03/P8-04 My Flow overdue label/status corrections, the P8-05/P8-06/P8-08 evidence/package metadata cleanup, the P8-07 restart date-display decision, the P8-09 field-checklist source-density rule, and the P8-10/P9-02 public share CTA/tab-order rule.
 
 ## Files
 
@@ -29,6 +29,12 @@ This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, t
 - Normal route horizontal overflow count: 0
 - Field workbench row-detail source link count: 0
 - Field workbench source access link count: 5
+- Public share route count: 9
+- Public share secondary browse focusable count: 9
+- Public share secondary browse after-primary count: 5
+- Public share secondary browse before-primary count: 0
+- Public share primary path focusable count: 5
+- Public share primary path visible count: 7
 - Restart prototype raw ISO hits: 0
 - Restart prototype raw route slug hits: 0
 - Restart prototype English weekday hits: 0
@@ -42,4 +48,6 @@ This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, t
 
 - [Source root](https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp)
 - [E2E guardrails](https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/tests/e2e/flow-mvp.spec.ts)
+- [Workbench source density E2E](https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/tests/e2e/workbench-source-density.spec.ts)
+- [Public share CTA/tab-order E2E](https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/tests/e2e/public-share-cta-order.spec.ts)
 - [Capture script](https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/scripts/content-audit/capture-claude-p7-final-review-package.mjs)

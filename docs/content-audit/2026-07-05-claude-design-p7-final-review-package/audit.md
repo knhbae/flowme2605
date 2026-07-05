@@ -2,7 +2,7 @@
 
 ## Scope
 
-P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata, P8-07 confirms the `/restart/moving-d30` first-three-row date repetition as an intentional D-30 milestone group rather than a date-distribution bug, and P8-09 lowers repeated row-level source links in field checklist workbenches. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
+P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata, P8-07 confirms the `/restart/moving-d30` first-three-row date repetition as an intentional D-30 milestone group rather than a date-distribution bug, P8-09 lowers repeated row-level source links in field checklist workbenches, and P8-10/P9-02 keeps public share browse navigation accessible but after the primary save/input path. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
 
 ## Baselines Covered
 
@@ -19,14 +19,15 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 - P8-07: `/restart/moving-d30` first three visible rows share the same D-30 date because all three source rows are D-30 milestones; full schedule/export rows remain distributed across later dates.
 - P8-08: UI baseline commit and package generation commit metadata are separated.
 - P8-09: field checklist row details keep execution criteria/details, but repeated row-level source links are suppressed; source access remains available in the source/reference area.
+- P8-10/P9-02: public `/f/[slug]` share screens keep `콘텐츠 더 보기` as an accessible secondary link, but place it after the primary save/input path in DOM/tab order.
 
 ## Summary
 
 ```json
 {
   "totalScreenshots": 26,
-  "uiBaselineCommit": "c2f65c9",
-  "packageGeneratedFromCommit": "c2f65c9",
+  "uiBaselineCommit": "958a612",
+  "packageGeneratedFromCommit": "958a612",
   "packageCommitRef": "git commit containing this generated package",
   "normalRouteInternalHitCount": 0,
   "normalRouteSourceSlugHitCount": 0,
@@ -43,6 +44,12 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
     10,
     15
   ],
+  "publicShareRouteCount": 9,
+  "publicShareSecondaryBrowseFocusableCount": 9,
+  "publicShareSecondaryBrowseAfterPrimaryCount": 5,
+  "publicShareSecondaryBrowseBeforePrimaryCount": 0,
+  "publicSharePrimaryPathFocusableCount": 5,
+  "publicSharePrimaryPathVisibleCount": 7,
   "restartPrototypeRawIsoHitCount": 0,
   "restartPrototypeRawRouteSlugHitCount": 0,
   "restartPrototypeEnglishWeekdayHitCount": 0,
@@ -141,10 +148,20 @@ The restart source/export frame and bottom frame must remain distinct:
 - source/reference access link count: 5
 - open detail counts: [10,15]
 
+## Public Share CTA / Tab Order
+
+- public share route count: 9
+- secondary browse focusable count: 9
+- secondary browse after-primary count: 5
+- secondary browse before-primary count: 0
+- primary save/input path focusable count: 5
+- primary save/input path visible count: 7
+- expected: `콘텐츠 더 보기` remains keyboard/screen-reader reachable as a quiet secondary link, but it should follow `내 Flow에 저장` or the input/setup path.
+
 ## Commit Metadata
 
-- UI baseline commit: `c2f65c9`
-- Package generated from commit: `c2f65c9`
+- UI baseline commit: `958a612`
+- Package generated from commit: `958a612`
 - Package commit ref: `git commit containing this generated package`
 
 ## Residual Risk

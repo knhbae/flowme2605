@@ -8280,6 +8280,7 @@ export function PublicFlow({ slug }: { slug: string }) {
 
   return (
     <main className={`min-h-screen bg-[#FAFAF8] px-4 py-3 text-slate-950 md:px-6 md:py-6 ${publicMobileClearanceClass}`}>
+      {renderPublicMobileSaveCta()}
       <div className="mx-auto max-w-7xl">
         <PublicFlowShareShell savedFlowAt={savedFlowAt} />
 
@@ -8618,7 +8619,7 @@ export function PublicFlow({ slug }: { slug: string }) {
           </div>
         </div>
       </div>
-      {renderPublicMobileSaveCta()}
+      {!savedFlowAt ? <PublicFlowSecondaryBrowseLink /> : null}
       </div>
     </main>
   );
@@ -8639,17 +8640,23 @@ function PublicFlowShareShell({ savedFlowAt }: { savedFlowAt?: string }) {
           내 Flow에서 보기
         </Link>
       ) : (
-        <Link
-          data-testid="flow-public-secondary-browse-link"
-          aria-hidden="true"
-          className="inline-flex min-h-9 items-center px-1 text-xs font-semibold text-[#8A857B] underline-offset-4 hover:text-[#3654FF] hover:underline"
-          href="/flows"
-          tabIndex={-1}
-        >
-          콘텐츠 더 보기
-        </Link>
+        <span className="text-xs font-semibold text-[#8A857B]">공유 화면</span>
       )}
     </nav>
+  );
+}
+
+function PublicFlowSecondaryBrowseLink() {
+  return (
+    <div className="mt-3 flex justify-end">
+      <Link
+        data-testid="flow-public-secondary-browse-link"
+        className="inline-flex min-h-9 items-center px-1 text-xs font-semibold text-[#8A857B] underline-offset-4 hover:text-[#3654FF] hover:underline"
+        href="/flows"
+      >
+        콘텐츠 더 보기
+      </Link>
+    </div>
   );
 }
 

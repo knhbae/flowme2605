@@ -2,7 +2,7 @@
 
 검토 기준:
 1. P7-01~P7-05가 실제 화면 기준으로 유지되는지 확인
-2. P7-06 guardrail이 충분한지 확인
+2. P7-06/P8-01 guardrail 일반화가 충분한지 확인
 3. P8-05/P8-06/P8-08의 evidence cleanup이 충분한지 확인
    - /restart source/export frame과 bottom frame이 서로 다른 scroll position/screenshot인지
    - My Flow 반복 라벨 카운터가 실제 queue/section label surface를 세는지
@@ -19,7 +19,10 @@
 6. P8-09 field checklist workbench source-density guardrail이 충분한지 확인
    - new-car / used-car row detail source link count가 0인지
    - source/reference access link count가 0보다 크게 유지되는지
-7. 단순 평가로 끝내지 말고, 필요하면 다음 backlog를 Blocking/High/Medium/Low로 작성
+7. P8-10 public share CTA/tab-order guardrail이 충분한지 확인
+   - 공개 /f 저장 전 화면에서 `내 Flow에 저장` 또는 입력/setup path가 primary인지
+   - `콘텐츠 더 보기`가 시각적으로도 tab order/accessibility에서도 보조 링크로만 남는지
+8. 단순 평가로 끝내지 말고, 필요하면 다음 backlog를 Blocking/High/Medium/Low로 작성
 
 주요 링크:
 - P7 review package README: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/docs/content-audit/2026-07-05-claude-design-p7-final-review-package/README.md
@@ -28,13 +31,15 @@
 - Route evidence JSON: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/docs/content-audit/2026-07-05-claude-design-p7-final-review-package/route-evidence.json
 - Screenshots folder: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/docs/content-audit/2026-07-05-claude-design-p7-final-review-package/screenshots
 - E2E guardrails: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/tests/e2e/flow-mvp.spec.ts
+- Workbench source density E2E: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/tests/e2e/workbench-source-density.spec.ts
+- Public share CTA/tab-order E2E: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/tests/e2e/public-share-cta-order.spec.ts
 
 현재 guardrail scan 요약:
 ```json
 {
   "totalScreenshots": 26,
-  "uiBaselineCommit": "c2f65c9",
-  "packageGeneratedFromCommit": "c2f65c9",
+  "uiBaselineCommit": "958a612",
+  "packageGeneratedFromCommit": "958a612",
   "packageCommitRef": "git commit containing this generated package",
   "normalRouteInternalHitCount": 0,
   "normalRouteSourceSlugHitCount": 0,
@@ -51,6 +56,12 @@
     10,
     15
   ],
+  "publicShareRouteCount": 9,
+  "publicShareSecondaryBrowseFocusableCount": 9,
+  "publicShareSecondaryBrowseAfterPrimaryCount": 5,
+  "publicShareSecondaryBrowseBeforePrimaryCount": 0,
+  "publicSharePrimaryPathFocusableCount": 5,
+  "publicSharePrimaryPathVisibleCount": 7,
   "restartPrototypeRawIsoHitCount": 0,
   "restartPrototypeRawRouteSlugHitCount": 0,
   "restartPrototypeEnglishWeekdayHitCount": 0,

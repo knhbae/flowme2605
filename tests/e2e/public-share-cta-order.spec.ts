@@ -40,7 +40,7 @@ async function collectFocusableEntries(page: Page) {
       .map((element) => ({
         text: (element.textContent ?? '').replace(/\s+/g, ' ').trim(),
         href: element instanceof HTMLAnchorElement ? element.getAttribute('href') ?? '' : '',
-        testId: element.dataset.testid ?? '',
+        testId: element.dataset.testid ?? element.closest<HTMLElement>('[data-testid]')?.dataset.testid ?? '',
       }));
   });
 }
@@ -54,18 +54,19 @@ test.describe('public share shell secondary browse order', () => {
     '/f/new-car-delivery-check',
     '/f/used-car-buying-check',
   ]) {
-    test(`${route} keeps browse navigation out of the pre-save primary tab path`, async ({ page }) => {
+    test(`${route} keeps browse navigation reachable after the save path`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(route);
 
       const shell = page.getByTestId('flow-public-shell');
-      const browseLink = shell.getByTestId('flow-public-secondary-browse-link');
+      const browseLink = page.getByTestId('flow-public-secondary-browse-link');
 
       await expect(shell).toBeVisible();
+      await expect(browseLink).toBeVisible();
       await expect(browseLink).toHaveText('콘텐츠 더 보기');
       await expect(browseLink).toHaveAttribute('href', '/flows');
-      await expect(browseLink).toHaveAttribute('tabindex', '-1');
-      await expect(browseLink).toHaveAttribute('aria-hidden', 'true');
+      await expect(browseLink).not.toHaveAttribute('tabindex', '-1');
+      await expect(browseLink).not.toHaveAttribute('aria-hidden', 'true');
 
       const focusableEntries = await collectFocusableEntries(page);
       const browseIndex = focusableEntries.findIndex(
@@ -81,7 +82,10 @@ test.describe('public share shell secondary browse order', () => {
       if (['/f/vehicle-inspection-prep', '/f/moving-d30-basic'].includes(route)) {
         expect(primaryIndex).toBeGreaterThanOrEqual(0);
       }
-      expect(browseIndex).toBe(-1);
+      expect(browseIndex).toBeGreaterThanOrEqual(0);
+      if (primaryIndex >= 0) {
+        expect(browseIndex).toBeGreaterThan(primaryIndex);
+      }
     });
   }
 });
