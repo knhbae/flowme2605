@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync, spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import crypto from 'node:crypto';
 import { chromium } from '@playwright/test';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -11,7 +12,9 @@ const outputDir = path.join(repoRoot, 'docs', 'content-audit', packageName);
 const screenshotsDir = path.join(outputDir, 'screenshots');
 const viewport = { width: 390, height: 844 };
 const branchName = getCommandOutput('git', ['branch', '--show-current']) || 'codex/flowme-uxui-second-loop';
-const commit = getCommandOutput('git', ['rev-parse', '--short', 'HEAD']) || 'unknown';
+const uiBaselineCommit = getCommandOutput('git', ['rev-parse', '--short', 'HEAD']) || 'unknown';
+const packageGeneratedFromCommit = uiBaselineCommit;
+const packageCommitRef = process.env.FLOWME_EVIDENCE_PACKAGE_COMMIT || 'git commit containing this generated package';
 const baseURL = process.env.FLOWME_EVIDENCE_BASE_URL || `http://127.0.0.1:${process.env.FLOWME_EVIDENCE_PORT || '3221'}`;
 const shouldStartServer = !process.env.FLOWME_EVIDENCE_BASE_URL;
 const githubBase = `https://github.com/knhbae/flowme2605/blob/${branchName}/flow-mvp`;
@@ -148,16 +151,17 @@ async function main() {
       category: 'prototype-restart',
       prototypeBucket: true,
     });
-    await page.getByTestId('moving-source-section').scrollIntoViewIfNeeded();
+    await scrollRestartSourceExportIntoEvidenceFrame(page);
     await captureCurrent(page, '22-restart-moving-source-export-mobile.png', 'Restart prototype source and export hierarchy', {
       category: 'prototype-restart',
       prototypeBucket: true,
+      scrollPurpose: 'source-export-mid-frame',
     });
-    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-    await settle(page);
+    await scrollToPageBottom(page);
     await captureCurrent(page, '23-restart-moving-bottom-mobile.png', 'Restart prototype bottom clearance', {
       category: 'prototype-restart',
       prototypeBucket: true,
+      scrollPurpose: 'true-page-bottom',
     });
   } finally {
     await browser.close();
@@ -168,7 +172,10 @@ async function main() {
     generatedAt: new Date().toISOString(),
     packageName,
     branchName,
-    commit,
+    uiBaselineCommit,
+    packageGeneratedFromCommit,
+    packageCommitRef,
+    commit: uiBaselineCommit,
     viewport,
     baseURL,
     summary: summarizeEvidence(scenarioRecords),
@@ -313,9 +320,8 @@ async function captureBottom(page, route, file, label) {
   await resetStorage(page);
   await page.goto(route);
   await settle(page);
-  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-  await settle(page);
-  await captureCurrent(page, file, label, { category: 'bottom-clearance', route });
+  await scrollToPageBottom(page);
+  await captureCurrent(page, file, label, { category: 'bottom-clearance', route, scrollPurpose: 'true-page-bottom' });
 }
 
 async function captureRoute(page, route, file, label, options = {}) {
@@ -328,14 +334,36 @@ async function captureCurrent(page, file, label, options = {}) {
   await settle(page);
   const screenshotPath = path.join(screenshotsDir, file);
   await page.screenshot({ path: screenshotPath, fullPage: false });
+  const screenshotBuffer = fs.readFileSync(screenshotPath);
   const scan = await scanPage(page, options);
   scenarioRecords.push({
     id: file.replace(/\.png$/, ''),
     label,
     route: scan.url,
     screenshot: `screenshots/${file}`,
+    screenshotBytes: screenshotBuffer.length,
+    screenshotHash: crypto.createHash('sha256').update(screenshotBuffer).digest('hex'),
     ...scan,
   });
+}
+
+async function scrollToPageBottom(page) {
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await settle(page);
+}
+
+async function scrollRestartSourceExportIntoEvidenceFrame(page) {
+  await page.getByTestId('moving-source-section').waitFor({ state: 'visible' });
+  await page.evaluate(() => {
+    const target = document.querySelector('[data-testid="moving-source-section"]');
+    if (!target) return;
+    const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    const targetTop = target.getBoundingClientRect().top + window.scrollY;
+    const preferred = Math.max(0, targetTop - Math.round(window.innerHeight * 0.35));
+    const separatedFromBottom = Math.max(0, maxScroll - Math.round(window.innerHeight * 0.35));
+    window.scrollTo(0, Math.min(preferred, separatedFromBottom));
+  });
+  await settle(page);
 }
 
 async function openOverdueSheet(page) {
@@ -427,6 +455,15 @@ async function scanPage(page, options = {}) {
     };
     const firstTaskTitle = normalizeLine(document.querySelector('[data-testid="my-flow-now-section"] [data-testid="my-flow-mobile-continuation-title"]')?.textContent ?? '');
     const nowSectionLines = collectElementLines(document.querySelector('[data-testid="my-flow-now-section"]'));
+    const myFlowQueueLabelLines = uniqueLines([
+      '[data-testid="my-flow-now-section"]',
+      '[data-testid="my-flow-upcoming-list"]',
+      '[data-testid="my-flow-overdue-list"]',
+      '[data-testid="my-flow-status-sheet"]',
+      '[data-testid="my-flow-today-summary"]',
+      '[data-testid="my-flow-status-board"]',
+      '[data-testid="my-flow-priority-section"]',
+    ].flatMap((selector) => collectElementLines(document.querySelector(selector))));
 
     const matches = (patterns) => patterns.flatMap((pattern) => {
       const regex = new RegExp(pattern.source, pattern.flags);
@@ -464,6 +501,7 @@ async function scanPage(page, options = {}) {
     };
 
     const countText = (needle) => lines.filter((line) => line.includes(needle)).length;
+    const countLabelText = (needle) => myFlowQueueLabelLines.filter((line) => line.includes(needle)).length;
     const clickableLabels = Array.from(document.querySelectorAll('button, a'))
       .map((element) => element.textContent?.replace(/\s+/g, ' ').trim() ?? '')
       .filter(Boolean)
@@ -474,6 +512,7 @@ async function scanPage(page, options = {}) {
       prototypeBucket: Boolean(payload.options.prototypeBucket),
       url: window.location.pathname + window.location.search,
       h1: document.querySelector('h1')?.textContent?.trim() ?? '',
+      scrollPurpose: payload.options.scrollPurpose ?? null,
       scrollY: Math.round(window.scrollY),
       scrollHeight: document.documentElement.scrollHeight,
       scrollWidth: document.documentElement.scrollWidth,
@@ -499,11 +538,12 @@ async function scanPage(page, options = {}) {
         duplicateExportEntryHits: prototypeDuplicateExportEntryHits,
       },
       repetitionCounts: {
-        firstTaskTitle: firstTaskTitle ? countText(firstTaskTitle) : 0,
-        firstTaskLabel: countText('먼저 할 일'),
-        overdueLabel: countText('지난 할 일'),
-        legacyOverdueLabels: countText('밀린 할 일') + countText('지난 일정') + countText('밀림'),
-        nextTaskLabel: countText('다음 할 일'),
+        countScope: 'my-flow-queue-label-surfaces',
+        firstTaskTitle: firstTaskTitle ? nowSectionLines.filter((line) => line.includes(firstTaskTitle)).length : 0,
+        firstTaskLabel: countLabelText('먼저 할 일'),
+        overdueLabel: countLabelText('지난 할 일'),
+        legacyOverdueLabels: countLabelText('밀린 할 일') + countLabelText('지난 일정') + countLabelText('밀림'),
+        nextTaskLabel: countLabelText('다음 할 일'),
         checkItemsLong: countText('확인할 항목'),
         checkItemsShort: countText('확인 항목'),
       },
@@ -541,13 +581,26 @@ async function scanPage(page, options = {}) {
 function summarizeEvidence(records) {
   const normal = records.filter((record) => !record.prototypeBucket);
   const restart = records.filter((record) => record.prototypeBucket);
+  const restartSourceFrame = records.find((record) => record.id === '22-restart-moving-source-export-mobile');
+  const restartBottomFrame = records.find((record) => record.id === '23-restart-moving-bottom-mobile');
   return {
     totalScreenshots: records.length,
+    uiBaselineCommit,
+    packageGeneratedFromCommit,
+    packageCommitRef,
     normalRouteInternalHitCount: normal.reduce((sum, record) => sum + record.internalHits.length, 0),
     normalRouteSourceSlugHitCount: normal.reduce((sum, record) => sum + record.sourceSlugHits.length, 0),
     normalRouteStructuralDisplayHitCount: normal.reduce((sum, record) => sum + record.structuralDisplayHits.length + record.flowSuffixLines.length, 0),
     normalRouteRawIsoHitCount: normal.reduce((sum, record) => sum + record.rawIsoLines.length, 0),
     normalRouteFirstTaskRepetitionHitCount: normal.reduce((sum, record) => sum + (record.firstTaskRepetitionHits?.length ?? 0), 0),
+    normalRouteQueueLabelScope: 'my-flow-queue-label-surfaces',
+    normalRouteQueueLabelCount: normal.reduce((sum, record) =>
+      sum
+      + (record.repetitionCounts?.firstTaskLabel ?? 0)
+      + (record.repetitionCounts?.overdueLabel ?? 0)
+      + (record.repetitionCounts?.nextTaskLabel ?? 0),
+    0),
+    normalRouteLegacyOverdueLabelCount: normal.reduce((sum, record) => sum + (record.repetitionCounts?.legacyOverdueLabels ?? 0), 0),
     normalRouteHorizontalOverflowCount: normal.filter((record) => !record.noHorizontalOverflow).length,
     restartPrototypeRawIsoHitCount: restart.reduce((sum, record) => sum + record.rawIsoLines.length, 0),
     restartPrototypeRawRouteSlugHitCount: restart.reduce((sum, record) => sum + (record.prototypeDisplayGateHits?.rawRouteSlugHits?.length ?? 0), 0),
@@ -557,6 +610,14 @@ function summarizeEvidence(records) {
     restartPrototypeHorizontalOverflowCount: restart.filter((record) => !record.noHorizontalOverflow).length,
     restartPrototypeInlineExportButtonCounts: restart.map((record) => record.markers.restartInlineExportButtons),
     restartPrototypeExportButtonCounts: restart.map((record) => record.markers.restartMobileExportButtons),
+    restartPrototypeSourceBottomFramesDistinct: Boolean(
+      restartSourceFrame
+      && restartBottomFrame
+      && restartSourceFrame.scrollY !== restartBottomFrame.scrollY
+      && restartSourceFrame.screenshotHash !== restartBottomFrame.screenshotHash,
+    ),
+    restartPrototypeSourceExportScrollY: restartSourceFrame?.scrollY ?? null,
+    restartPrototypeBottomScrollY: restartBottomFrame?.scrollY ?? null,
   };
 }
 
@@ -565,10 +626,12 @@ function renderReadme(evidence) {
 
 - Generated: ${evidence.generatedAt}
 - Branch: \`${branchName}\`
-- Commit: \`${commit}\`
+- UI baseline commit: \`${evidence.uiBaselineCommit}\`
+- Package generated from commit: \`${evidence.packageGeneratedFromCommit}\`
+- Package commit ref: \`${evidence.packageCommitRef}\`
 - Viewport: ${viewport.width}x${viewport.height}
 
-This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, the P8-02 restart/prototype promotion gate, and the P8-03/P8-04 My Flow overdue label/status corrections.
+This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, the P8-02 restart/prototype promotion gate, the P8-03/P8-04 My Flow overdue label/status corrections, and the P8-05/P8-06/P8-08 evidence/package metadata cleanup.
 
 ## Files
 
@@ -585,12 +648,15 @@ This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, t
 - Normal route trailing Flow/map phrase hits: ${evidence.summary.normalRouteStructuralDisplayHitCount}
 - Normal route raw ISO hits: ${evidence.summary.normalRouteRawIsoHitCount}
 - Normal route first task repetition hits: ${evidence.summary.normalRouteFirstTaskRepetitionHitCount}
+- Normal route queue label scope: ${evidence.summary.normalRouteQueueLabelScope}
+- Normal route legacy overdue label hits: ${evidence.summary.normalRouteLegacyOverdueLabelCount}
 - Normal route horizontal overflow count: ${evidence.summary.normalRouteHorizontalOverflowCount}
 - Restart prototype raw ISO hits: ${evidence.summary.restartPrototypeRawIsoHitCount}
 - Restart prototype raw route slug hits: ${evidence.summary.restartPrototypeRawRouteSlugHitCount}
 - Restart prototype English weekday hits: ${evidence.summary.restartPrototypeEnglishWeekdayHitCount}
 - Restart prototype mixed export-language hits: ${evidence.summary.restartPrototypeMixedExportLanguageHitCount}
 - Restart prototype duplicate export-entry hits: ${evidence.summary.restartPrototypeDuplicateExportEntryHitCount}
+- Restart source/export and bottom frames distinct: ${evidence.summary.restartPrototypeSourceBottomFramesDistinct}
 
 ## GitHub Links
 
@@ -609,7 +675,7 @@ function renderAudit(evidence) {
 
 ## Scope
 
-P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, and P8-03/P8-04 fix My Flow overdue labeling/status accuracy. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
+P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, and P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
 
 ## Baselines Covered
 
@@ -621,6 +687,9 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 - P7-06/P8-01: Normal route scan buckets stay at zero for internal labels, dynamic source slug leaks, structural title suffixes, raw ISO dates, first-task repetition, and mobile overflow.
 - P8-02: Restart/prototype routes must also avoid raw route slugs, English weekday labels, mixed export-language copy, and duplicate export entry points before promotion.
 - P8-03/P8-04: My Flow uses \`지난 할 일\` consistently for overdue work, and past rows in the saved-content list are not labeled as \`다음 할 일\`.
+- P8-05: Restart source/export and true-bottom frames are captured at separate scroll positions and carry screenshot hashes.
+- P8-06: My Flow label repetition counters use \`my-flow-queue-label-surfaces\`, not full page body text.
+- P8-08: UI baseline commit and package generation commit metadata are separated.
 
 ## Summary
 
@@ -646,6 +715,18 @@ ${rows}
 - no source brand slug as title/subtitle copy
 - no horizontal overflow at 390px
 
+The restart source/export frame and bottom frame must remain distinct:
+
+- source/export scrollY: ${evidence.summary.restartPrototypeSourceExportScrollY}
+- bottom scrollY: ${evidence.summary.restartPrototypeBottomScrollY}
+- distinct hash/scroll evidence: ${evidence.summary.restartPrototypeSourceBottomFramesDistinct ? 'yes' : 'no'}
+
+## Commit Metadata
+
+- UI baseline commit: \`${evidence.uiBaselineCommit}\`
+- Package generated from commit: \`${evidence.packageGeneratedFromCommit}\`
+- Package commit ref: \`${evidence.packageCommitRef}\`
+
 ## Residual Risk
 
 - This package is screenshot and E2E evidence, not a replacement for a live device review.
@@ -659,7 +740,11 @@ function renderPrompt(evidence) {
 검토 기준:
 1. P7-01~P7-05가 실제 화면 기준으로 유지되는지 확인
 2. P7-06 guardrail이 충분한지 확인
-3. 정상 사용자 route에서 아래 회귀가 다시 생길 위험이 있는지 확인
+3. P8-05/P8-06/P8-08의 evidence cleanup이 충분한지 확인
+   - /restart source/export frame과 bottom frame이 서로 다른 scroll position/screenshot인지
+   - My Flow 반복 라벨 카운터가 실제 queue/section label surface를 세는지
+   - UI baseline commit과 package generation metadata가 헷갈리지 않는지
+4. 정상 사용자 route에서 아래 회귀가 다시 생길 위험이 있는지 확인
    - seed/source metadata에서 동적으로 추출되는 source slug가 제목/부제/주요 문구로 노출
    - 콘텐츠 제목 끝 Flow 접미
    - 일정 지도, 저장한 지도 같은 내부 구조형 표현
@@ -667,8 +752,8 @@ function renderPrompt(evidence) {
    - My Flow 첫 할 일 제목 반복
    - 모바일 390px 좌우 overflow
    - 하단 fixed/sticky가 마지막 버튼/행/agenda를 가림
-4. /restart/moving-d30 prototype bucket을 별도 관리하는 기준이 충분한지 확인
-5. 단순 평가로 끝내지 말고, 필요하면 P8 backlog를 Blocking/High/Medium/Low로 작성
+5. /restart/moving-d30 prototype bucket을 별도 관리하는 기준이 충분한지 확인
+6. 단순 평가로 끝내지 말고, 필요하면 다음 backlog를 Blocking/High/Medium/Low로 작성
 
 주요 링크:
 - P7 review package README: ${githubBase}/docs/content-audit/${packageName}/README.md
@@ -703,6 +788,8 @@ function renderHtml(evidence) {
         <div><dt>internal</dt><dd>${record.internalHits.length}</dd></div>
         <div><dt>source slug</dt><dd>${record.sourceSlugHits.length}</dd></div>
         <div><dt>raw ISO</dt><dd>${record.rawIsoLines.length}</dd></div>
+        <div><dt>scroll</dt><dd>${record.scrollY}</dd></div>
+        <div><dt>purpose</dt><dd>${escapeHtml(record.scrollPurpose ?? '-')}</dd></div>
       </dl>
     </article>
   `).join('\n');
@@ -729,7 +816,7 @@ function renderHtml(evidence) {
     .card h2 { margin: 6px 0 12px; font-size: 17px; }
     .meta { color: var(--muted); font-size: 12px; }
     img { width: 100%; border-radius: 12px; border: 1px solid var(--line); background: #f6f4ef; }
-    dl { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0 0; }
+    dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0 0; }
     dl div { border-radius: 10px; background: #f6f4ef; padding: 8px; }
     dt { color: var(--muted); font-size: 11px; }
     dd { margin: 2px 0 0; font-weight: 700; }
@@ -738,18 +825,21 @@ function renderHtml(evidence) {
 <body>
   <main>
     <h1>FlowMe P7 Final Review Package</h1>
-    <p class="lead">P7-01~P7-05 개선 기준선을 P7-06/P8-01/P8-02 guardrail과 P8-03/P8-04 My Flow 라벨/상태 검증으로 고정하기 위한 모바일 390px screenshot/evidence 패키지입니다.</p>
+    <p class="lead">P7-01~P7-05 기준선을 P7-06/P8-01/P8-02 guardrail, P8-03/P8-04 My Flow 라벨 검증, P8-05/P8-06/P8-08 evidence cleanup으로 고정하기 위한 모바일 390px screenshot/evidence 패키지입니다.</p>
+    <p class="meta">UI baseline commit: ${escapeHtml(evidence.uiBaselineCommit)} · Package generated from: ${escapeHtml(evidence.packageGeneratedFromCommit)} · Package commit ref: ${escapeHtml(evidence.packageCommitRef)}</p>
     <section class="summary">
       <div class="stat"><b>${evidence.summary.totalScreenshots}</b><span>screenshots</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteInternalHitCount}</b><span>normal internal hits</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteSourceSlugHitCount}</b><span>normal source slug hits</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteRawIsoHitCount}</b><span>normal raw ISO hits</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteFirstTaskRepetitionHitCount}</b><span>first task repeats</span></div>
+      <div class="stat"><b>${evidence.summary.normalRouteLegacyOverdueLabelCount}</b><span>legacy overdue labels</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeRawIsoHitCount}</b><span>restart raw ISO hits</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeRawRouteSlugHitCount}</b><span>restart route slug hits</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeEnglishWeekdayHitCount}</b><span>restart English weekday hits</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeMixedExportLanguageHitCount}</b><span>restart mixed export hits</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeDuplicateExportEntryHitCount}</b><span>restart duplicate export entries</span></div>
+      <div class="stat"><b>${evidence.summary.restartPrototypeSourceBottomFramesDistinct ? 'yes' : 'no'}</b><span>restart source/bottom distinct</span></div>
     </section>
     <section class="grid">
       ${cards}

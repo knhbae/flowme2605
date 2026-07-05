@@ -2,7 +2,7 @@
 
 ## Scope
 
-P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, and P8-03/P8-04 fix My Flow overdue labeling/status accuracy. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
+P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, and P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
 
 ## Baselines Covered
 
@@ -14,17 +14,26 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 - P7-06/P8-01: Normal route scan buckets stay at zero for internal labels, dynamic source slug leaks, structural title suffixes, raw ISO dates, first-task repetition, and mobile overflow.
 - P8-02: Restart/prototype routes must also avoid raw route slugs, English weekday labels, mixed export-language copy, and duplicate export entry points before promotion.
 - P8-03/P8-04: My Flow uses `지난 할 일` consistently for overdue work, and past rows in the saved-content list are not labeled as `다음 할 일`.
+- P8-05: Restart source/export and true-bottom frames are captured at separate scroll positions and carry screenshot hashes.
+- P8-06: My Flow label repetition counters use `my-flow-queue-label-surfaces`, not full page body text.
+- P8-08: UI baseline commit and package generation commit metadata are separated.
 
 ## Summary
 
 ```json
 {
   "totalScreenshots": 23,
+  "uiBaselineCommit": "4cc5cb6",
+  "packageGeneratedFromCommit": "4cc5cb6",
+  "packageCommitRef": "git commit containing this generated package",
   "normalRouteInternalHitCount": 0,
   "normalRouteSourceSlugHitCount": 0,
   "normalRouteStructuralDisplayHitCount": 0,
   "normalRouteRawIsoHitCount": 0,
   "normalRouteFirstTaskRepetitionHitCount": 0,
+  "normalRouteQueueLabelScope": "my-flow-queue-label-surfaces",
+  "normalRouteQueueLabelCount": 8,
+  "normalRouteLegacyOverdueLabelCount": 0,
   "normalRouteHorizontalOverflowCount": 0,
   "restartPrototypeRawIsoHitCount": 0,
   "restartPrototypeRawRouteSlugHitCount": 0,
@@ -41,7 +50,10 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
     1,
     1,
     1
-  ]
+  ],
+  "restartPrototypeSourceBottomFramesDistinct": true,
+  "restartPrototypeSourceExportScrollY": 1118,
+  "restartPrototypeBottomScrollY": 1413
 }
 ```
 
@@ -84,6 +96,18 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 - no duplicated primary export entry labels
 - no source brand slug as title/subtitle copy
 - no horizontal overflow at 390px
+
+The restart source/export frame and bottom frame must remain distinct:
+
+- source/export scrollY: 1118
+- bottom scrollY: 1413
+- distinct hash/scroll evidence: yes
+
+## Commit Metadata
+
+- UI baseline commit: `4cc5cb6`
+- Package generated from commit: `4cc5cb6`
+- Package commit ref: `git commit containing this generated package`
 
 ## Residual Risk
 
