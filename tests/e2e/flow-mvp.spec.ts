@@ -308,6 +308,209 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(page.getByRole('button', { name: '내 버전 만들기' })).toHaveCount(0);
 });
 
+test('flow finding URL lookup reuses existing source-backed Flows first', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/flows');
+
+  const lookup = page.getByTestId('flow-url-lookup-entry');
+  await expect(lookup).toBeVisible({ timeout: 15_000 });
+  await lookup.getByLabel('원문 URL').fill('https://mathbang.net/13?utm_source=share');
+  await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+
+  const result = page.getByTestId('flow-url-lookup-result');
+  await expect(result).toBeVisible();
+  await expect(result).toContainText('이미 만들어진 Flow가 있어요');
+  await expect(result).toContainText('중1 수학');
+  await expect(result.getByRole('link', { name: '저장 전 보기' })).toHaveAttribute('href', '/flow-maps/middle-school-math-1');
+  await expect(result).toContainText('캘린더');
+  await expect(result).toContainText('Markdown');
+  await expect(result).toContainText('My Flow');
+  await expect(result).not.toContainText('source-backed');
+
+  await lookup.getByLabel('원문 URL').fill('https://flowme.local/f/vehicle-inspection-prep?utm_campaign=share');
+  await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+  await expect(result).toContainText('원문 확인');
+  await expect(result.getByRole('link', { name: '미리보기 열기' })).toHaveAttribute('href', '/f/vehicle-inspection-prep');
+  await expect(result).toContainText('저장 대기');
+  await expect(result).not.toContainText('My Flow');
+
+  await lookup.getByLabel('원문 URL').fill('https://example.com/some-plan?utm_source=newsletter');
+  await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+  await expect(result).toContainText('아직 Flow화되지 않은 URL입니다');
+  await expect(result).toContainText('요청 대기');
+  await expect(result).toContainText('저장 대기');
+  await expect(result).not.toContainText('이미 만들어진 Flow가 있어요');
+  await expectNoHorizontalOverflow(page);
+});
+
+test('flow finding URL lookup starts a hit with date, option, My Flow save, and markdown export', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/flows');
+  await page.evaluate(() => window.localStorage.clear());
+
+  const lookup = page.getByTestId('flow-url-lookup-entry');
+  await expect(lookup).toBeVisible({ timeout: 15_000 });
+  await lookup.getByLabel('원문 URL').fill('https://mathbang.net/13?utm_source=share');
+  await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+
+  const result = page.getByTestId('flow-url-lookup-result');
+  await expect(result).toContainText('이미 만들어진 Flow가 있어요');
+  await expect(result.getByLabel('시작일')).toBeVisible();
+  await result.getByLabel('시작일').fill('2026-07-15');
+  await result.getByLabel('내보내기 방식').selectOption('markdown');
+
+  const markdownDownloadPromise = page.waitForEvent('download');
+  await result.getByRole('button', { name: 'Markdown 받기' }).click();
+  const markdownDownload = await markdownDownloadPromise;
+  expect(markdownDownload.suggestedFilename()).toBe('middle-school-math-1-flow.md');
+  const markdownPath = await markdownDownload.path();
+  expect(markdownPath).toBeTruthy();
+  const markdown = fs.readFileSync(markdownPath!, 'utf8');
+  expect(markdown).toContain('2026-07-15');
+  expect(markdown).toContain('middle-school-math-1');
+
+  await result.getByRole('button', { name: '시작하기' }).click();
+  await expect(page).toHaveURL(/\/my\?savedMap=middle-school-math-1/);
+  await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
+  await expect(page.getByTestId('my-flow-now-section')).toContainText('소인수분해');
+
+  const savedState = await page.evaluate(() => ({
+    snapshot: JSON.parse(window.localStorage.getItem('flow:map:saved:middle-school-math-1') || 'null'),
+    savedKeys: Object.keys(window.localStorage).filter((key) => key.startsWith('flow:saved:')),
+    savedRecord: JSON.parse(window.localStorage.getItem('flow:saved:source-backed-middle-school-math-1') || 'null'),
+  }));
+  expect(savedState.snapshot.anchor).toBe('2026-07-15');
+  expect(savedState.savedKeys.length).toBeGreaterThan(0);
+  expect(savedState.savedRecord.anchor).toBe('2026-07-15');
+  expect(savedState.savedRecord.selectedArtifactMode).toBe('checklist');
+
+  await page.goto('/flows');
+  const lookupAfterSave = page.getByTestId('flow-url-lookup-entry');
+  await lookupAfterSave.getByLabel('원문 URL').fill('https://flowme.local/f/vehicle-inspection-prep?utm_campaign=share');
+  await lookupAfterSave.getByRole('button', { name: 'Flow 찾기' }).click();
+  const blockedResult = page.getByTestId('flow-url-lookup-result');
+  await expect(blockedResult).toContainText('저장 대기');
+  await expect(blockedResult.getByLabel('시작일')).toHaveCount(0);
+  await expect(blockedResult.getByRole('button', { name: '시작하기' })).toHaveCount(0);
+  await expectNoHorizontalOverflow(page);
+});
+
+test('flow finding URL lookup starts a lightweight customized personal copy', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/flows');
+  await page.evaluate(() => window.localStorage.clear());
+
+  const lookup = page.getByTestId('flow-url-lookup-entry');
+  await expect(lookup).toBeVisible({ timeout: 15_000 });
+  await lookup.getByLabel('원문 URL').fill('https://mathbang.net/13?utm_source=share');
+  await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+
+  const result = page.getByTestId('flow-url-lookup-result');
+  await expect(result).toContainText('이미 만들어진 Flow가 있어요');
+  await result.getByRole('button', { name: '조금 고쳐 시작' }).click();
+
+  const customPanel = result.getByTestId('flow-url-custom-start-panel');
+  await expect(customPanel).toBeVisible();
+  await customPanel.getByLabel('저장 이름').fill('시험 전 소인수분해만');
+  const stepBoxes = customPanel.locator('input[type="checkbox"]');
+  const stepCount = await stepBoxes.count();
+  expect(stepCount).toBeGreaterThan(1);
+  for (let index = 1; index < stepCount; index += 1) {
+    await stepBoxes.nth(index).uncheck();
+  }
+
+  await result.getByLabel('시작일').fill('2026-07-15');
+  await result.getByLabel('내보내기 방식').selectOption('markdown');
+
+  const markdownDownloadPromise = page.waitForEvent('download');
+  await result.getByRole('button', { name: 'Markdown 받기' }).click();
+  const markdownDownload = await markdownDownloadPromise;
+  expect(markdownDownload.suggestedFilename()).toBe('middle-school-math-1-flow.md');
+  const markdownPath = await markdownDownload.path();
+  expect(markdownPath).toBeTruthy();
+  const markdown = fs.readFileSync(markdownPath!, 'utf8');
+  expect(markdown).toContain('시험 전 소인수분해만');
+  expect(markdown).toContain('1. 소인수분해');
+  expect(markdown).not.toContain('2. 정수와 유리수');
+
+  await result.getByRole('button', { name: '시작하기' }).click();
+  await expect(page).toHaveURL(/\/my\?savedMap=middle-school-math-1/);
+  await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
+  await expect(page.getByTestId('my-flow-workspace')).toContainText('시험 전 소인수분해만');
+  await page.getByTestId('my-flow-view-flow').click();
+
+  const personalFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-middle-school-math-1"]');
+  await expect(personalFlow).toBeVisible();
+  await expect(personalFlow.getByTestId('my-flow-map-context')).toContainText('시험 전 소인수분해만');
+  await expect(personalFlow.getByTestId('my-flow-personal-copy-badge')).toContainText('개인 사본');
+  await expect(personalFlow.getByTestId('my-flow-overview-progress-summary')).toContainText('0/1 완료');
+  await expect(personalFlow.getByTestId('my-flow-next-action')).toContainText('소인수분해');
+  await expect(personalFlow.getByTestId('my-flow-next-action')).not.toContainText('정수와 유리수');
+  const excludedSteps = personalFlow.getByTestId('my-flow-excluded-steps');
+  await expect(excludedSteps).toContainText('제외됨');
+  await expect(excludedSteps).toContainText('정수와 유리수');
+
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: 'http://127.0.0.1:3104' });
+  await personalFlow.getByTestId('my-flow-next-action-open').click();
+  const personalDetail = personalFlow.getByTestId('my-flow-overview-inline-detail').getByTestId('my-flow-item-detail');
+  await expect(personalDetail).toBeVisible();
+  await expect(personalDetail).toContainText('소인수분해');
+  await expect(personalDetail).not.toContainText('정수와 유리수');
+  await personalDetail.getByTestId('my-flow-detail-copy-portable-text').click();
+  await expect(personalDetail.getByTestId('my-flow-detail-copy-feedback')).toContainText('메모 복사됨');
+  const copiedMarkdown = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copiedMarkdown).toContain('Flow: 시험 전 소인수분해만');
+  expect(copiedMarkdown).toContain('소인수분해');
+  expect(copiedMarkdown).not.toContain('정수와 유리수');
+
+  const savedState = await page.evaluate(() => ({
+    snapshot: JSON.parse(window.localStorage.getItem('flow:map:saved:middle-school-math-1') || 'null'),
+    persistence: JSON.parse(window.localStorage.getItem('flow:map:persistence:middle-school-math-1') || 'null'),
+    itemStates: JSON.parse(window.localStorage.getItem('flow_builder_mvp_item_state_source-backed-middle-school-math-1') || '{}'),
+    savedRecord: JSON.parse(window.localStorage.getItem('flow:saved:source-backed-middle-school-math-1') || 'null'),
+  }));
+  expect(savedState.snapshot.title).toBe('시험 전 소인수분해만');
+  expect(savedState.snapshot.stepCountsByFlow['source-backed-middle-school-math-1']).toBe(1);
+  expect(savedState.persistence.map.title).toBe('시험 전 소인수분해만');
+  expect(savedState.persistence.childFlows[0].steps.map((step: { stepId: string }) => step.stepId)).toEqual(['math-prime-factorization']);
+  expect(savedState.itemStates['math-integers-rationals'].skipped).toBe(true);
+  expect(savedState.itemStates['math-integers-rationals'].note).toBe('excluded_on_start');
+  expect(savedState.itemStates['math-prime-factorization']).toBeUndefined();
+  expect(savedState.savedRecord.anchor).toBe('2026-07-15');
+  expect(savedState.savedRecord.selectedArtifactMode).toBe('checklist');
+
+  await page.evaluate(() => {
+    const key = 'flow:map:saved:middle-school-math-1';
+    const snapshot = JSON.parse(window.localStorage.getItem(key) || 'null');
+    snapshot.version = '2026-01-01.old';
+    window.localStorage.setItem(key, JSON.stringify(snapshot));
+  });
+  await page.reload();
+  await page.getByTestId('my-flow-view-flow').click();
+  const updateReview = page.getByTestId('my-flow-map-update-review');
+  await expect(updateReview).toBeVisible();
+  await updateReview.getByTestId('my-flow-map-update-apply').click();
+  await expect(page.getByTestId('my-flow-map-update-applied')).toContainText('새 기준으로 표시했습니다');
+
+  const updatedState = await page.evaluate(() => ({
+    snapshot: JSON.parse(window.localStorage.getItem('flow:map:saved:middle-school-math-1') || 'null'),
+    persistence: JSON.parse(window.localStorage.getItem('flow:map:persistence:middle-school-math-1') || 'null'),
+    itemStates: JSON.parse(window.localStorage.getItem('flow_builder_mvp_item_state_source-backed-middle-school-math-1') || '{}'),
+  }));
+  expect(updatedState.snapshot.title).toBe('시험 전 소인수분해만');
+  expect(updatedState.snapshot.stepCountsByFlow['source-backed-middle-school-math-1']).toBe(1);
+  expect(updatedState.snapshot.personalCopy.source).toBe('url_first_custom_start');
+  expect(updatedState.persistence.map.title).toBe('시험 전 소인수분해만');
+  expect(updatedState.persistence.childFlows[0].steps.map((step: { stepId: string }) => step.stepId)).toEqual(['math-prime-factorization']);
+  expect(updatedState.itemStates['math-integers-rationals'].skipped).toBe(true);
+  expect(updatedState.itemStates['math-integers-rationals'].note).toBe('excluded_on_start');
+
+  await page.reload();
+  await page.getByTestId('my-flow-view-flow').click();
+  await expect(page.getByTestId('my-flow-map-update-review')).toHaveCount(0);
+  await expectNoHorizontalOverflow(page);
+});
+
 test('main user routes keep the FlowMe design token rhythm', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flows');
@@ -1175,7 +1378,24 @@ test('moving restart mobile uses one export entry and friendly date text', async
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/restart/moving-d30');
 
-  await expect(page.getByTestId('moving-mobile-next-tasks').getByText('5월 28일 (목) · D-30').first()).toBeVisible();
+  const mobileNextTasks = page.getByTestId('moving-mobile-next-tasks');
+  const nextTaskDateLabels = await mobileNextTasks.locator('article p').allInnerTexts();
+  expect(nextTaskDateLabels).toEqual([
+    '5월 28일 (목) · D-30',
+    '5월 28일 (목) · D-30',
+    '5월 28일 (목) · D-30',
+  ]);
+  await expect(mobileNextTasks).toContainText('이사 방식과 업체 후보 정하기');
+  await expect(mobileNextTasks).toContainText('이사할 집 하자 사진 남기기');
+  await expect(mobileNextTasks).toContainText('버릴 물건과 대형폐기물 정리');
+  await page.getByTestId('moving-mobile-full-schedule').locator('button').nth(1).click();
+  const fullSchedule = page.getByTestId('moving-full-schedule-list');
+  await expect(fullSchedule).toBeVisible();
+  await expect(fullSchedule).toContainText('5월 28일 (목)');
+  await expect(fullSchedule).toContainText('6월 17일 (수)');
+  await expect(fullSchedule).toContainText('6월 26일 (금)');
+  await expect(fullSchedule).toContainText('6월 27일 (토)');
+  await expect(fullSchedule).toContainText('6월 28일 (일)');
   await expect(page.locator('body')).not.toContainText(/\b\d{4}-\d{2}-\d{2}\b/);
 
   const mobileExportActions = page.getByTestId('moving-mobile-export-actions');

@@ -29,9 +29,9 @@
 현재 guardrail scan 요약:
 ```json
 {
-  "totalScreenshots": 23,
-  "uiBaselineCommit": "4cc5cb6",
-  "packageGeneratedFromCommit": "4cc5cb6",
+  "totalScreenshots": 24,
+  "uiBaselineCommit": "0b4147d",
+  "packageGeneratedFromCommit": "0b4147d",
   "packageCommitRef": "git commit containing this generated package",
   "normalRouteInternalHitCount": 0,
   "normalRouteSourceSlugHitCount": 0,
@@ -51,16 +51,32 @@
   "restartPrototypeInlineExportButtonCounts": [
     4,
     4,
+    4,
     4
   ],
   "restartPrototypeExportButtonCounts": [
     1,
     1,
+    1,
     1
   ],
   "restartPrototypeSourceBottomFramesDistinct": true,
-  "restartPrototypeSourceExportScrollY": 1118,
-  "restartPrototypeBottomScrollY": 1413
+  "restartPrototypeSourceExportScrollY": 2846,
+  "restartPrototypeBottomScrollY": 3141,
+  "restartPrototypeFirstThreeSameD30Milestone": true,
+  "restartPrototypeFirstThreeDateLabels": [
+    "5월 28일 (목) · D-30",
+    "5월 28일 (목) · D-30",
+    "5월 28일 (목) · D-30"
+  ],
+  "restartPrototypeFirstThreeTitles": [
+    "버릴 물건과 대형폐기물 정리",
+    "이사 방식과 업체 후보 정하기",
+    "이사할 집 하자 사진 남기기"
+  ],
+  "restartPrototypeFullScheduleUniqueDateLabelCount": 5,
+  "restartPrototypeFullScheduleUniqueOffsetLabelCount": 5,
+  "restartPrototypeDateDistributionJudgment": "intentional-d30-milestone-group"
 }
 ```
 

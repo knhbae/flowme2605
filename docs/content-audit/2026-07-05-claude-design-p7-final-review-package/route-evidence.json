@@ -1,20 +1,20 @@
 {
-  "generatedAt": "2026-07-05T02:26:51.208Z",
+  "generatedAt": "2026-07-05T04:39:41.689Z",
   "packageName": "2026-07-05-claude-design-p7-final-review-package",
   "branchName": "codex/flowme-uxui-second-loop",
-  "uiBaselineCommit": "4cc5cb6",
-  "packageGeneratedFromCommit": "4cc5cb6",
+  "uiBaselineCommit": "0b4147d",
+  "packageGeneratedFromCommit": "0b4147d",
   "packageCommitRef": "git commit containing this generated package",
-  "commit": "4cc5cb6",
+  "commit": "0b4147d",
   "viewport": {
     "width": 390,
     "height": 844
   },
   "baseURL": "http://127.0.0.1:3221",
   "summary": {
-    "totalScreenshots": 23,
-    "uiBaselineCommit": "4cc5cb6",
-    "packageGeneratedFromCommit": "4cc5cb6",
+    "totalScreenshots": 24,
+    "uiBaselineCommit": "0b4147d",
+    "packageGeneratedFromCommit": "0b4147d",
     "packageCommitRef": "git commit containing this generated package",
     "normalRouteInternalHitCount": 0,
     "normalRouteSourceSlugHitCount": 0,
@@ -34,16 +34,32 @@
     "restartPrototypeInlineExportButtonCounts": [
       4,
       4,
+      4,
       4
     ],
     "restartPrototypeExportButtonCounts": [
       1,
       1,
+      1,
       1
     ],
     "restartPrototypeSourceBottomFramesDistinct": true,
-    "restartPrototypeSourceExportScrollY": 1118,
-    "restartPrototypeBottomScrollY": 1413
+    "restartPrototypeSourceExportScrollY": 2846,
+    "restartPrototypeBottomScrollY": 3141,
+    "restartPrototypeFirstThreeSameD30Milestone": true,
+    "restartPrototypeFirstThreeDateLabels": [
+      "5월 28일 (목) · D-30",
+      "5월 28일 (목) · D-30",
+      "5월 28일 (목) · D-30"
+    ],
+    "restartPrototypeFirstThreeTitles": [
+      "버릴 물건과 대형폐기물 정리",
+      "이사 방식과 업체 후보 정하기",
+      "이사할 집 하자 사진 남기기"
+    ],
+    "restartPrototypeFullScheduleUniqueDateLabelCount": 5,
+    "restartPrototypeFullScheduleUniqueOffsetLabelCount": 5,
+    "restartPrototypeDateDistributionJudgment": "intentional-d30-milestone-group"
   },
   "scenarios": [
     {
@@ -137,7 +153,18 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -235,7 +262,18 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -337,7 +375,18 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -439,7 +488,18 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -541,7 +601,18 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -642,7 +713,18 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -740,7 +822,18 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -838,7 +931,18 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -931,7 +1035,18 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -1027,7 +1142,18 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -1125,7 +1251,18 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -1223,7 +1360,18 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -1319,7 +1467,18 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -1417,7 +1576,18 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -1513,7 +1683,18 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -1611,7 +1792,18 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -1709,7 +1901,18 @@
         "statusSheetRows": 4,
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -1807,7 +2010,18 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -1905,7 +2119,18 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -2003,7 +2228,18 @@
         "statusSheetRows": 0,
         "inventoryRows": 6,
         "restartInlineExportButtons": 0,
-        "restartMobileExportButtons": 0
+        "restartMobileExportButtons": 0,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [],
+          "firstThreeTitles": [],
+          "firstThreeSameDateLabel": null,
+          "firstThreeSameD30Milestone": false,
+          "fullScheduleDateLabels": [],
+          "fullScheduleOffsetLabels": [],
+          "fullScheduleUniqueDateLabelCount": 0,
+          "fullScheduleUniqueOffsetLabelCount": 0,
+          "fullScheduleHasDistributedDates": false
+        }
       }
     },
     {
@@ -2097,7 +2333,163 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 4,
-        "restartMobileExportButtons": 1
+        "restartMobileExportButtons": 1,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [
+            "5월 28일 (목) · D-30",
+            "5월 28일 (목) · D-30",
+            "5월 28일 (목) · D-30"
+          ],
+          "firstThreeTitles": [
+            "버릴 물건과 대형폐기물 정리",
+            "이사 방식과 업체 후보 정하기",
+            "이사할 집 하자 사진 남기기"
+          ],
+          "firstThreeSameDateLabel": "5월 28일 (목) · D-30",
+          "firstThreeSameD30Milestone": true,
+          "fullScheduleDateLabels": [
+            "5월 28일 (목)",
+            "6월 17일 (수)",
+            "6월 26일 (금)",
+            "6월 27일 (토)",
+            "6월 28일 (일)"
+          ],
+          "fullScheduleOffsetLabels": [
+            "D-30",
+            "D-10",
+            "D-1",
+            "D-Day",
+            "D+1"
+          ],
+          "fullScheduleUniqueDateLabelCount": 5,
+          "fullScheduleUniqueOffsetLabelCount": 5,
+          "fullScheduleHasDistributedDates": true
+        }
+      }
+    },
+    {
+      "id": "24-restart-moving-full-schedule-mobile",
+      "label": "Restart prototype full schedule date distribution",
+      "route": "/restart/moving-d30",
+      "screenshot": "screenshots/24-restart-moving-full-schedule-mobile.png",
+      "screenshotBytes": 28968,
+      "screenshotHash": "b51d1bfb47c55c76e88a9e98d1eca6771446e66ca7235e43ae5920e45fc8fa8b",
+      "category": "prototype-restart",
+      "prototypeBucket": true,
+      "url": "/restart/moving-d30",
+      "h1": "이사 D-30 준비",
+      "scrollPurpose": "full-schedule-date-distribution",
+      "scrollY": 1636,
+      "scrollHeight": 3985,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "viewportHeight": 844,
+      "noHorizontalOverflow": true,
+      "navVisible": false,
+      "publicShellVisible": false,
+      "primarySaveActionVisible": false,
+      "browseLinkSecondaryCandidate": false,
+      "firstClickableLabels": [
+        "일정 만들기",
+        "수정",
+        "수정",
+        "수정",
+        "이전",
+        "기준월",
+        "다음",
+        "일",
+        "월",
+        "화",
+        "수",
+        "목",
+        "금",
+        "토",
+        "31",
+        "1",
+        "2",
+        "3"
+      ],
+      "internalHits": [],
+      "sourceSlugSignals": [
+        "AJD",
+        "AnyDesk",
+        "CDC",
+        "honeulstudio",
+        "HUG",
+        "KKday",
+        "Mathbang",
+        "RTMS",
+        "velog",
+        "Zoom"
+      ],
+      "sourceSlugHits": [],
+      "structuralDisplayHits": [],
+      "rawIsoLines": [],
+      "flowSuffixLines": [],
+      "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
+      "repetitionCounts": {
+        "countScope": "my-flow-queue-label-surfaces",
+        "firstTaskTitle": 0,
+        "firstTaskLabel": 0,
+        "overdueLabel": 0,
+        "legacyOverdueLabels": 0,
+        "nextTaskLabel": 0,
+        "checkItemsLong": 0,
+        "checkItemsShort": 0
+      },
+      "fixedRects": {
+        "platformMobileTabs": null,
+        "flowMapStickySave": null,
+        "publicMobileSaveCta": null,
+        "mobileExportBar": null
+      },
+      "markers": {
+        "homeRecommendationCards": 0,
+        "catalogCards": 0,
+        "postSavePanel": false,
+        "myFlowNowSection": false,
+        "calendarSelectedDay": false,
+        "statusSheetRows": 0,
+        "inventoryRows": 0,
+        "restartInlineExportButtons": 4,
+        "restartMobileExportButtons": 1,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [
+            "5월 28일 (목) · D-30",
+            "5월 28일 (목) · D-30",
+            "5월 28일 (목) · D-30"
+          ],
+          "firstThreeTitles": [
+            "버릴 물건과 대형폐기물 정리",
+            "이사 방식과 업체 후보 정하기",
+            "이사할 집 하자 사진 남기기"
+          ],
+          "firstThreeSameDateLabel": "5월 28일 (목) · D-30",
+          "firstThreeSameD30Milestone": true,
+          "fullScheduleDateLabels": [
+            "5월 28일 (목)",
+            "6월 17일 (수)",
+            "6월 26일 (금)",
+            "6월 27일 (토)",
+            "6월 28일 (일)"
+          ],
+          "fullScheduleOffsetLabels": [
+            "D-30",
+            "D-10",
+            "D-1",
+            "D-Day",
+            "D+1"
+          ],
+          "fullScheduleUniqueDateLabelCount": 5,
+          "fullScheduleUniqueOffsetLabelCount": 5,
+          "fullScheduleHasDistributedDates": true
+        }
       }
     },
     {
@@ -2105,15 +2497,15 @@
       "label": "Restart prototype source and export hierarchy",
       "route": "/restart/moving-d30",
       "screenshot": "screenshots/22-restart-moving-source-export-mobile.png",
-      "screenshotBytes": 29432,
-      "screenshotHash": "c5a1e6715e7153402c9f88bb09dfe7fb5b65b48b7ee7349290a56bbfdf96247c",
+      "screenshotBytes": 28739,
+      "screenshotHash": "b760e0d350a589317e329a8d98a6b7dab126cc98945cb577ea1b0dac709d1adf",
       "category": "prototype-restart",
       "prototypeBucket": true,
       "url": "/restart/moving-d30",
       "h1": "이사 D-30 준비",
       "scrollPurpose": "source-export-mid-frame",
-      "scrollY": 1118,
-      "scrollHeight": 2257,
+      "scrollY": 2846,
+      "scrollHeight": 3985,
       "scrollWidth": 390,
       "clientWidth": 390,
       "viewportHeight": 844,
@@ -2191,7 +2583,38 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 4,
-        "restartMobileExportButtons": 1
+        "restartMobileExportButtons": 1,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [
+            "5월 28일 (목) · D-30",
+            "5월 28일 (목) · D-30",
+            "5월 28일 (목) · D-30"
+          ],
+          "firstThreeTitles": [
+            "버릴 물건과 대형폐기물 정리",
+            "이사 방식과 업체 후보 정하기",
+            "이사할 집 하자 사진 남기기"
+          ],
+          "firstThreeSameDateLabel": "5월 28일 (목) · D-30",
+          "firstThreeSameD30Milestone": true,
+          "fullScheduleDateLabels": [
+            "5월 28일 (목)",
+            "6월 17일 (수)",
+            "6월 26일 (금)",
+            "6월 27일 (토)",
+            "6월 28일 (일)"
+          ],
+          "fullScheduleOffsetLabels": [
+            "D-30",
+            "D-10",
+            "D-1",
+            "D-Day",
+            "D+1"
+          ],
+          "fullScheduleUniqueDateLabelCount": 5,
+          "fullScheduleUniqueOffsetLabelCount": 5,
+          "fullScheduleHasDistributedDates": true
+        }
       }
     },
     {
@@ -2199,15 +2622,15 @@
       "label": "Restart prototype bottom clearance",
       "route": "/restart/moving-d30",
       "screenshot": "screenshots/23-restart-moving-bottom-mobile.png",
-      "screenshotBytes": 27403,
-      "screenshotHash": "09f1736b467d8c9ffbe63db60fed8582b2ebbee5aa07bf1bd0840c7c578bdc62",
+      "screenshotBytes": 28181,
+      "screenshotHash": "250e67edcfcca4aa2ecedcc7e0b7a7ba0b70df11f646a97291342c05eaefb9c5",
       "category": "prototype-restart",
       "prototypeBucket": true,
       "url": "/restart/moving-d30",
       "h1": "이사 D-30 준비",
       "scrollPurpose": "true-page-bottom",
-      "scrollY": 1413,
-      "scrollHeight": 2257,
+      "scrollY": 3141,
+      "scrollHeight": 3985,
       "scrollWidth": 390,
       "clientWidth": 390,
       "viewportHeight": 844,
@@ -2285,7 +2708,38 @@
         "statusSheetRows": 0,
         "inventoryRows": 0,
         "restartInlineExportButtons": 4,
-        "restartMobileExportButtons": 1
+        "restartMobileExportButtons": 1,
+        "restartScheduleDateCheck": {
+          "firstThreeDateLabels": [
+            "5월 28일 (목) · D-30",
+            "5월 28일 (목) · D-30",
+            "5월 28일 (목) · D-30"
+          ],
+          "firstThreeTitles": [
+            "버릴 물건과 대형폐기물 정리",
+            "이사 방식과 업체 후보 정하기",
+            "이사할 집 하자 사진 남기기"
+          ],
+          "firstThreeSameDateLabel": "5월 28일 (목) · D-30",
+          "firstThreeSameD30Milestone": true,
+          "fullScheduleDateLabels": [
+            "5월 28일 (목)",
+            "6월 17일 (수)",
+            "6월 26일 (금)",
+            "6월 27일 (토)",
+            "6월 28일 (일)"
+          ],
+          "fullScheduleOffsetLabels": [
+            "D-30",
+            "D-10",
+            "D-1",
+            "D-Day",
+            "D+1"
+          ],
+          "fullScheduleUniqueDateLabelCount": 5,
+          "fullScheduleUniqueOffsetLabelCount": 5,
+          "fullScheduleHasDistributedDates": true
+        }
       }
     }
   ]

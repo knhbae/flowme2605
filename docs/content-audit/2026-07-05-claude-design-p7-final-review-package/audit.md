@@ -2,7 +2,7 @@
 
 ## Scope
 
-P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, and P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
+P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata, and P8-07 confirms the `/restart/moving-d30` first-three-row date repetition as an intentional D-30 milestone group rather than a date-distribution bug. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
 
 ## Baselines Covered
 
@@ -16,15 +16,16 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 - P8-03/P8-04: My Flow uses `지난 할 일` consistently for overdue work, and past rows in the saved-content list are not labeled as `다음 할 일`.
 - P8-05: Restart source/export and true-bottom frames are captured at separate scroll positions and carry screenshot hashes.
 - P8-06: My Flow label repetition counters use `my-flow-queue-label-surfaces`, not full page body text.
+- P8-07: `/restart/moving-d30` first three visible rows share the same D-30 date because all three source rows are D-30 milestones; full schedule/export rows remain distributed across later dates.
 - P8-08: UI baseline commit and package generation commit metadata are separated.
 
 ## Summary
 
 ```json
 {
-  "totalScreenshots": 23,
-  "uiBaselineCommit": "4cc5cb6",
-  "packageGeneratedFromCommit": "4cc5cb6",
+  "totalScreenshots": 24,
+  "uiBaselineCommit": "0b4147d",
+  "packageGeneratedFromCommit": "0b4147d",
   "packageCommitRef": "git commit containing this generated package",
   "normalRouteInternalHitCount": 0,
   "normalRouteSourceSlugHitCount": 0,
@@ -44,16 +45,32 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
   "restartPrototypeInlineExportButtonCounts": [
     4,
     4,
+    4,
     4
   ],
   "restartPrototypeExportButtonCounts": [
     1,
     1,
+    1,
     1
   ],
   "restartPrototypeSourceBottomFramesDistinct": true,
-  "restartPrototypeSourceExportScrollY": 1118,
-  "restartPrototypeBottomScrollY": 1413
+  "restartPrototypeSourceExportScrollY": 2846,
+  "restartPrototypeBottomScrollY": 3141,
+  "restartPrototypeFirstThreeSameD30Milestone": true,
+  "restartPrototypeFirstThreeDateLabels": [
+    "5월 28일 (목) · D-30",
+    "5월 28일 (목) · D-30",
+    "5월 28일 (목) · D-30"
+  ],
+  "restartPrototypeFirstThreeTitles": [
+    "버릴 물건과 대형폐기물 정리",
+    "이사 방식과 업체 후보 정하기",
+    "이사할 집 하자 사진 남기기"
+  ],
+  "restartPrototypeFullScheduleUniqueDateLabelCount": 5,
+  "restartPrototypeFullScheduleUniqueOffsetLabelCount": 5,
+  "restartPrototypeDateDistributionJudgment": "intentional-d30-milestone-group"
 }
 ```
 
@@ -82,6 +99,7 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 | 19-my-long-list-bottom-mobile | `/my` | My Flow 5+ list bottom before sheet | OK | 0 | 0 | 0 |
 | 20-my-long-list-inventory-bottom-mobile | `/my` | My Flow 5+ inventory sheet bottom clearance | OK | 0 | 0 | 0 |
 | 21-restart-moving-top-mobile | `/restart/moving-d30` | Restart prototype top with user date format | OK | 0 | 0 | 0 |
+| 24-restart-moving-full-schedule-mobile | `/restart/moving-d30` | Restart prototype full schedule date distribution | OK | 0 | 0 | 0 |
 | 22-restart-moving-source-export-mobile | `/restart/moving-d30` | Restart prototype source and export hierarchy | OK | 0 | 0 | 0 |
 | 23-restart-moving-bottom-mobile | `/restart/moving-d30` | Restart prototype bottom clearance | OK | 0 | 0 | 0 |
 
@@ -99,14 +117,19 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 
 The restart source/export frame and bottom frame must remain distinct:
 
-- source/export scrollY: 1118
-- bottom scrollY: 1413
+- source/export scrollY: 2846
+- bottom scrollY: 3141
 - distinct hash/scroll evidence: yes
+- first-three date labels: ["5월 28일 (목) · D-30","5월 28일 (목) · D-30","5월 28일 (목) · D-30"]
+- first-three row titles: ["버릴 물건과 대형폐기물 정리","이사 방식과 업체 후보 정하기","이사할 집 하자 사진 남기기"]
+- full schedule unique date labels: 5
+- full schedule unique offset labels: 5
+- date distribution judgment: intentional-d30-milestone-group
 
 ## Commit Metadata
 
-- UI baseline commit: `4cc5cb6`
-- Package generated from commit: `4cc5cb6`
+- UI baseline commit: `0b4147d`
+- Package generated from commit: `0b4147d`
 - Package commit ref: `git commit containing this generated package`
 
 ## Residual Risk

@@ -151,6 +151,14 @@ async function main() {
       category: 'prototype-restart',
       prototypeBucket: true,
     });
+    await page.getByTestId('moving-mobile-full-schedule').locator('button').nth(1).click();
+    await settle(page);
+    await page.getByTestId('moving-full-schedule-list').scrollIntoViewIfNeeded();
+    await captureCurrent(page, '24-restart-moving-full-schedule-mobile.png', 'Restart prototype full schedule date distribution', {
+      category: 'prototype-restart',
+      prototypeBucket: true,
+      scrollPurpose: 'full-schedule-date-distribution',
+    });
     await scrollRestartSourceExportIntoEvidenceFrame(page);
     await captureCurrent(page, '22-restart-moving-source-export-mobile.png', 'Restart prototype source and export hierarchy', {
       category: 'prototype-restart',
@@ -502,10 +510,24 @@ async function scanPage(page, options = {}) {
 
     const countText = (needle) => lines.filter((line) => line.includes(needle)).length;
     const countLabelText = (needle) => myFlowQueueLabelLines.filter((line) => line.includes(needle)).length;
+    const collectText = (selector) => uniqueLines(
+      Array.from(document.querySelectorAll(selector)).map((element) => element.textContent ?? ''),
+    );
     const clickableLabels = Array.from(document.querySelectorAll('button, a'))
       .map((element) => element.textContent?.replace(/\s+/g, ' ').trim() ?? '')
       .filter(Boolean)
       .slice(0, 18);
+    const restartNextTaskDateLabels = Array.from(document.querySelectorAll('[data-testid="moving-mobile-next-tasks"] article p'))
+      .map((element) => normalizeLine(element.textContent ?? ''))
+      .filter(Boolean);
+    const restartNextTaskTitles = collectText('[data-testid="moving-mobile-next-tasks"] article h3');
+    const restartFullScheduleDateLabels = collectText('[data-testid="moving-full-schedule-list"] article > div:nth-child(2) > p:first-child');
+    const restartFullScheduleOffsetLabels = collectText('[data-testid="moving-full-schedule-list"] article > div:first-child');
+    const restartFullScheduleUniqueDateLabels = uniqueLines(restartFullScheduleDateLabels);
+    const restartFullScheduleUniqueOffsetLabels = uniqueLines(restartFullScheduleOffsetLabels);
+    const restartFirstThreeDateLabels = restartNextTaskDateLabels.slice(0, 3);
+    const restartFirstThreeSameDateLabel = restartFirstThreeDateLabels.length === 3
+      && restartFirstThreeDateLabels.every((label) => label === restartFirstThreeDateLabels[0]);
 
     return {
       category: payload.options.category ?? 'route',
@@ -563,6 +585,17 @@ async function scanPage(page, options = {}) {
         inventoryRows: document.querySelectorAll('[data-testid="my-flow-group-row"]').length,
         restartInlineExportButtons: document.querySelectorAll('#moving-restart-export-panel button').length,
         restartMobileExportButtons: document.querySelectorAll('[data-testid="moving-mobile-export-actions"] button').length,
+        restartScheduleDateCheck: {
+          firstThreeDateLabels: restartFirstThreeDateLabels,
+          firstThreeTitles: restartNextTaskTitles.slice(0, 3),
+          firstThreeSameDateLabel: restartFirstThreeSameDateLabel ? restartFirstThreeDateLabels[0] : null,
+          firstThreeSameD30Milestone: restartFirstThreeSameDateLabel && /D-30/.test(restartFirstThreeDateLabels[0] ?? ''),
+          fullScheduleDateLabels: restartFullScheduleDateLabels,
+          fullScheduleOffsetLabels: restartFullScheduleOffsetLabels,
+          fullScheduleUniqueDateLabelCount: restartFullScheduleUniqueDateLabels.length,
+          fullScheduleUniqueOffsetLabelCount: restartFullScheduleUniqueOffsetLabels.length,
+          fullScheduleHasDistributedDates: restartFullScheduleUniqueDateLabels.length > 1 && restartFullScheduleUniqueOffsetLabels.length > 1,
+        },
       },
     };
   }, {
@@ -583,6 +616,13 @@ function summarizeEvidence(records) {
   const restart = records.filter((record) => record.prototypeBucket);
   const restartSourceFrame = records.find((record) => record.id === '22-restart-moving-source-export-mobile');
   const restartBottomFrame = records.find((record) => record.id === '23-restart-moving-bottom-mobile');
+  const restartScheduleFrame = records.find((record) => record.id === '24-restart-moving-full-schedule-mobile')
+    ?? records.find((record) => record.id === '21-restart-moving-top-mobile');
+  const restartScheduleDateCheck = restartScheduleFrame?.markers?.restartScheduleDateCheck ?? {};
+  const restartFirstThreeSameD30Milestone = Boolean(
+    restartScheduleDateCheck.firstThreeSameD30Milestone
+    && restartScheduleDateCheck.fullScheduleHasDistributedDates,
+  );
   return {
     totalScreenshots: records.length,
     uiBaselineCommit,
@@ -618,6 +658,14 @@ function summarizeEvidence(records) {
     ),
     restartPrototypeSourceExportScrollY: restartSourceFrame?.scrollY ?? null,
     restartPrototypeBottomScrollY: restartBottomFrame?.scrollY ?? null,
+    restartPrototypeFirstThreeSameD30Milestone: restartFirstThreeSameD30Milestone,
+    restartPrototypeFirstThreeDateLabels: restartScheduleDateCheck.firstThreeDateLabels ?? [],
+    restartPrototypeFirstThreeTitles: restartScheduleDateCheck.firstThreeTitles ?? [],
+    restartPrototypeFullScheduleUniqueDateLabelCount: restartScheduleDateCheck.fullScheduleUniqueDateLabelCount ?? 0,
+    restartPrototypeFullScheduleUniqueOffsetLabelCount: restartScheduleDateCheck.fullScheduleUniqueOffsetLabelCount ?? 0,
+    restartPrototypeDateDistributionJudgment: restartFirstThreeSameD30Milestone
+      ? 'intentional-d30-milestone-group'
+      : 'needs-date-display-review',
   };
 }
 
@@ -631,7 +679,7 @@ function renderReadme(evidence) {
 - Package commit ref: \`${evidence.packageCommitRef}\`
 - Viewport: ${viewport.width}x${viewport.height}
 
-This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, the P8-02 restart/prototype promotion gate, the P8-03/P8-04 My Flow overdue label/status corrections, and the P8-05/P8-06/P8-08 evidence/package metadata cleanup.
+This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, the P8-02 restart/prototype promotion gate, the P8-03/P8-04 My Flow overdue label/status corrections, the P8-05/P8-06/P8-08 evidence/package metadata cleanup, and the P8-07 restart date-display decision.
 
 ## Files
 
@@ -657,6 +705,8 @@ This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, t
 - Restart prototype mixed export-language hits: ${evidence.summary.restartPrototypeMixedExportLanguageHitCount}
 - Restart prototype duplicate export-entry hits: ${evidence.summary.restartPrototypeDuplicateExportEntryHitCount}
 - Restart source/export and bottom frames distinct: ${evidence.summary.restartPrototypeSourceBottomFramesDistinct}
+- Restart first 3 rows are one D-30 milestone group: ${evidence.summary.restartPrototypeFirstThreeSameD30Milestone}
+- Restart full schedule unique date labels: ${evidence.summary.restartPrototypeFullScheduleUniqueDateLabelCount}
 
 ## GitHub Links
 
@@ -675,7 +725,7 @@ function renderAudit(evidence) {
 
 ## Scope
 
-P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, and P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
+P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata, and P8-07 confirms the \`/restart/moving-d30\` first-three-row date repetition as an intentional D-30 milestone group rather than a date-distribution bug. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
 
 ## Baselines Covered
 
@@ -689,6 +739,7 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 - P8-03/P8-04: My Flow uses \`지난 할 일\` consistently for overdue work, and past rows in the saved-content list are not labeled as \`다음 할 일\`.
 - P8-05: Restart source/export and true-bottom frames are captured at separate scroll positions and carry screenshot hashes.
 - P8-06: My Flow label repetition counters use \`my-flow-queue-label-surfaces\`, not full page body text.
+- P8-07: \`/restart/moving-d30\` first three visible rows share the same D-30 date because all three source rows are D-30 milestones; full schedule/export rows remain distributed across later dates.
 - P8-08: UI baseline commit and package generation commit metadata are separated.
 
 ## Summary
@@ -720,6 +771,11 @@ The restart source/export frame and bottom frame must remain distinct:
 - source/export scrollY: ${evidence.summary.restartPrototypeSourceExportScrollY}
 - bottom scrollY: ${evidence.summary.restartPrototypeBottomScrollY}
 - distinct hash/scroll evidence: ${evidence.summary.restartPrototypeSourceBottomFramesDistinct ? 'yes' : 'no'}
+- first-three date labels: ${JSON.stringify(evidence.summary.restartPrototypeFirstThreeDateLabels)}
+- first-three row titles: ${JSON.stringify(evidence.summary.restartPrototypeFirstThreeTitles)}
+- full schedule unique date labels: ${evidence.summary.restartPrototypeFullScheduleUniqueDateLabelCount}
+- full schedule unique offset labels: ${evidence.summary.restartPrototypeFullScheduleUniqueOffsetLabelCount}
+- date distribution judgment: ${evidence.summary.restartPrototypeDateDistributionJudgment}
 
 ## Commit Metadata
 
@@ -792,7 +848,7 @@ function renderHtml(evidence) {
         <div><dt>purpose</dt><dd>${escapeHtml(record.scrollPurpose ?? '-')}</dd></div>
       </dl>
     </article>
-  `).join('\n');
+  `.replace(/[ \t]+$/gm, '').trim()).join('\n\n');
 
   return `<!doctype html>
 <html lang="ko">
@@ -840,6 +896,8 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.restartPrototypeMixedExportLanguageHitCount}</b><span>restart mixed export hits</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeDuplicateExportEntryHitCount}</b><span>restart duplicate export entries</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeSourceBottomFramesDistinct ? 'yes' : 'no'}</b><span>restart source/bottom distinct</span></div>
+      <div class="stat"><b>${evidence.summary.restartPrototypeFirstThreeSameD30Milestone ? 'yes' : 'no'}</b><span>restart first 3 = D-30 group</span></div>
+      <div class="stat"><b>${evidence.summary.restartPrototypeFullScheduleUniqueDateLabelCount}</b><span>restart full schedule dates</span></div>
     </section>
     <section class="grid">
       ${cards}
