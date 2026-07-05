@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from './display-title';
+import { seedBundles } from './seed-flows';
+import {
+  getCuratedSourceAppSeedFlowMaps,
+  getSourceBackedHomepageFlowMaps,
+} from './source-backed-my-flow';
 import {
   collectSourceSlugSignals,
   findFirstTaskRepetitionHits,
@@ -95,6 +100,50 @@ test('scanUserSurfaceGuardrails checks source slugs only in primary text', () =>
   assert.deepEqual(leaked.sourceSlugHits, [{ signal: 'DeskLab', line: 'DeskLab 이사 D-30 일정' }]);
 });
 
+test('scanUserSurfaceGuardrails catches source slugs followed by punctuation', () => {
+  const result = scanUserSurfaceGuardrails({
+    primaryLines: [
+      'DeskLab· moving schedule',
+      'Mathbang) math checklist',
+      'KKday, travel prep',
+      'AJD. move checklist',
+      'ajd.co.kr source detail',
+    ],
+    sourceSlugSignals: ['DeskLab', 'Mathbang', 'KKday', 'AJD'],
+  });
+
+  assert.deepEqual(result.sourceSlugHits, [
+    { signal: 'DeskLab', line: 'DeskLab· moving schedule' },
+    { signal: 'Mathbang', line: 'Mathbang) math checklist' },
+    { signal: 'KKday', line: 'KKday, travel prep' },
+    { signal: 'AJD', line: 'AJD. move checklist' },
+  ]);
+});
+
+test('canonical seed and source-backed user-facing text pass display guardrails without route registration', () => {
+  const subjects = [
+    ...seedBundles,
+    ...getSourceBackedHomepageFlowMaps(),
+    ...getCuratedSourceAppSeedFlowMaps(),
+  ];
+  const sourceSlugSignals = collectSourceSlugSignals(subjects);
+  const failures = subjects.flatMap((subject) => {
+    const primaryLines = collectUserFacingSeedLines(subject);
+    const result = scanUserSurfaceGuardrails({ primaryLines, sourceSlugSignals });
+    const label = getSeedSubjectLabel(subject);
+
+    return [
+      ...result.sourceSlugHits.map((hit) => `${label} source slug ${hit.signal}: ${hit.line}`),
+      ...result.structuralDisplayHits.map((line) => `${label} structural: ${line}`),
+      ...result.trailingFlowSuffixHits.map((line) => `${label} trailing Flow: ${line}`),
+      ...result.rawIsoDateHits.map((line) => `${label} raw ISO: ${line}`),
+    ];
+  });
+
+  assert.ok(subjects.length > 200);
+  assert.deepEqual(failures, []);
+});
+
 test('scanUserSurfaceGuardrails does not waive raw ISO dates because a primary line says source', () => {
   const result = scanUserSurfaceGuardrails({
     primaryLines: ['원문 기준일 2026-07-17에 시작합니다.'],
@@ -125,6 +174,67 @@ test('findFirstTaskRepetitionHits uses the rendered first task title instead of 
     { title: 'Future task title', count: 2, extraLines: ['Future task title'] },
   ]);
 });
+
+function collectUserFacingSeedLines(subject: unknown): string[] {
+  const record = isRecord(subject) ? subject : {};
+  if (isRecord(record.flow)) return collectFlowBundleUserFacingLines(record);
+  return collectSourceBackedMapUserFacingLines(record);
+}
+
+function collectFlowBundleUserFacingLines(bundle: Record<string, unknown>): string[] {
+  const flow = isRecord(bundle.flow) ? bundle.flow : {};
+  const lines = [
+    toContentDisplayTitle(asText(flow.title)),
+    asText(flow.setup_anchor_label),
+    asText(flow.setup_anchor_hint),
+  ];
+
+  for (const item of asArray(bundle.items)) {
+    if (!isRecord(item)) continue;
+    lines.push(
+      asText(item.title),
+      asText(item.repeat_rule),
+    );
+  }
+
+  return normalizeTestLines(lines);
+}
+
+function collectSourceBackedMapUserFacingLines(map: Record<string, unknown>): string[] {
+  const setupInput = isRecord(map.setupInput) ? map.setupInput : {};
+  return normalizeTestLines([
+    toUserFacingMapTitle(asText(map.title)),
+    asText(map.userLabel),
+    asText(map.categoryLabel),
+    asText(map.userFacingStatus),
+    asText(map.summary),
+    ...asArray(map.artifacts).map(asText),
+    asText(setupInput.label),
+    asText(setupInput.hint),
+  ]);
+}
+
+function getSeedSubjectLabel(subject: unknown): string {
+  if (!isRecord(subject)) return 'unknown';
+  if (isRecord(subject.flow)) return asText(subject.flow.slug) || asText(subject.flow.title) || 'flow-bundle';
+  return asText(subject.id) || asText(subject.title) || 'source-backed-map';
+}
+
+function normalizeTestLines(lines: string[]): string[] {
+  return lines.map((line) => line.replace(/\s+/g, ' ').trim()).filter(Boolean);
+}
+
+function asText(value: unknown): string {
+  return typeof value === 'string' ? value : '';
+}
+
+function asArray(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : [];
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object';
+}
 
 test('scanPrototypeRouteGuardrails flags prototype-only display gate leaks', () => {
   const result = scanPrototypeRouteGuardrails({

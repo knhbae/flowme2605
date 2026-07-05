@@ -136,7 +136,10 @@ export function findSourceSlugHits(primaryLines: string[], sourceSlugSignals: st
 
   for (const line of normalizedLines) {
     for (const signal of normalizedSignals) {
-      const regex = new RegExp(`(^|[^\\p{L}\\p{N}_])${escapeRegExp(signal)}(?=$|\\s|[가-힣]|D-)`, 'iu');
+      const regex = new RegExp(
+        `(^|[^\\p{L}\\p{N}_])${escapeRegExp(signal)}(?=$|\\s|\\p{Script=Hangul}|D-|\\.(?![\\p{L}\\p{N}_])|[^\\p{L}\\p{N}_\\s.])`,
+        'iu',
+      );
       if (regex.test(line)) {
         hits.push({ signal, line });
       }
