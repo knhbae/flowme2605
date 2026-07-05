@@ -76,16 +76,37 @@ test.describe('public share shell secondary browse order', () => {
         (entry) =>
           entry.testId === 'public-flow-primary-setup' ||
           entry.testId === 'public-flow-mobile-save-cta' ||
+          entry.testId === 'public-flow-save-actions' ||
+          entry.testId === 'moving-save-actions' ||
           entry.text.includes('내 Flow에 저장'),
       );
 
-      if (['/f/vehicle-inspection-prep', '/f/moving-d30-basic'].includes(route)) {
-        expect(primaryIndex).toBeGreaterThanOrEqual(0);
-      }
       expect(browseIndex).toBeGreaterThanOrEqual(0);
-      if (primaryIndex >= 0) {
-        expect(browseIndex).toBeGreaterThan(primaryIndex);
-      }
+      expect(primaryIndex).toBeGreaterThanOrEqual(0);
+      expect(browseIndex).toBeGreaterThan(primaryIndex);
     });
   }
+
+  test('input-free workbench save path remains keyboard reachable and leads to My Flow', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/f/new-car-delivery-check');
+    await page.evaluate(() => window.localStorage.clear());
+    await page.reload();
+
+    const setup = page.getByTestId('public-flow-primary-setup');
+    await expect(setup).toBeVisible();
+    await expect(setup.locator('input[type="date"]')).toHaveCount(0);
+
+    const saveButton = setup.getByRole('button', { name: '내 Flow에 저장' });
+    await expect(saveButton).toBeVisible();
+    await saveButton.focus();
+    await expect(saveButton).toBeFocused();
+    await saveButton.click();
+
+    const myFlowLink = setup.getByRole('link', { name: '내 Flow에서 보기' });
+    await expect(myFlowLink).toBeVisible();
+    await myFlowLink.click();
+    await expect(page).toHaveURL(/\/my/);
+    await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
+  });
 });

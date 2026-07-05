@@ -539,11 +539,14 @@ async function scanPage(page, options = {}) {
         href: element instanceof HTMLAnchorElement ? element.getAttribute('href') ?? '' : '',
         testId: element.dataset.testid ?? element.closest('[data-testid]')?.dataset.testid ?? '',
       }));
+    const hasVisibleElement = (selector) =>
+      Array.from(document.querySelectorAll(selector)).some((element) => isVisible(element));
     const publicBrowseLinkFocusableIndex = focusableEntries.findIndex((entry) => entry.testId === 'flow-public-secondary-browse-link');
     const publicPrimaryPathFocusableIndex = focusableEntries.findIndex((entry) =>
       [
         'public-flow-mobile-save-cta',
         'public-flow-primary-setup',
+        'public-flow-save-actions',
         'moving-save-actions',
       ].includes(entry.testId)
       || entry.text.includes('내 Flow에 저장')
@@ -580,7 +583,7 @@ async function scanPage(page, options = {}) {
       noHorizontalOverflow: document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2,
       navVisible: Boolean(document.querySelector('[data-testid="platform-mobile-tabs"]')),
       publicShellVisible: Boolean(document.querySelector('[data-testid="flow-public-shell"]')),
-      primarySaveActionVisible: Boolean(document.querySelector('[data-testid="public-flow-mobile-save-cta"], [data-testid="public-flow-save-actions"], [data-testid="moving-save-actions"], [data-testid="flow-map-mobile-sticky-save"]')),
+      primarySaveActionVisible: hasVisibleElement('[data-testid="public-flow-mobile-save-cta"], [data-testid="public-flow-save-actions"], [data-testid="moving-save-actions"], [data-testid="flow-map-mobile-sticky-save"]'),
       browseLinkSecondaryCandidate: clickableLabels.includes('콘텐츠 더 보기'),
       firstClickableLabels: clickableLabels,
       firstFocusableLabels: focusableEntries.map((entry) => entry.text).filter(Boolean).slice(0, 18),
@@ -635,7 +638,7 @@ async function scanPage(page, options = {}) {
         workbenchRowDetailCount: document.querySelectorAll('[data-testid="artifact-list-card"] details').length,
         workbenchRowDetailSourceLinkCount: document.querySelectorAll('[data-testid="artifact-list-card"] details a[href]').length,
         workbenchSourceAccessLinkCount: document.querySelectorAll('[data-testid="flow-source-card"] a[href], [data-testid="used-car-source-bridge"] a[href], [data-testid="maintenance-source-bridge"] a[href]').length,
-        publicPrimarySetupVisible: Boolean(document.querySelector('[data-testid="public-flow-primary-setup"]')),
+        publicPrimarySetupVisible: hasVisibleElement('[data-testid="public-flow-primary-setup"]'),
         publicBrowseLinkFocusable: publicBrowseLinkFocusableIndex >= 0,
         publicBrowseLinkFocusableIndex,
         publicPrimaryPathFocusableIndex,

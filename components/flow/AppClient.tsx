@@ -8229,6 +8229,24 @@ export function PublicFlow({ slug }: { slug: string }) {
         <div data-testid="public-flow-primary-setup" className="rounded-xl bg-white px-3 py-2.5 ring-1 ring-[#E7E4DD]">
           <p className="text-[11px] font-semibold text-[#8A857B]">필요한 입력</p>
           <p className="mt-1 text-sm font-semibold text-[#1B1A17]">입력 없이 바로 확인합니다.</p>
+          <div data-testid="public-flow-save-actions" className="mt-3">
+            {savedFlowAt ? (
+              <Link
+                className="inline-flex min-h-10 w-full items-center justify-center rounded-xl bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
+                href="/my"
+              >
+                내 Flow에서 보기
+              </Link>
+            ) : (
+              <button
+                type="button"
+                className="min-h-10 w-full rounded-xl bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
+                onClick={saveToMyFlow}
+              >
+                내 Flow에 저장
+              </button>
+            )}
+          </div>
         </div>
       );
     }
@@ -8266,7 +8284,10 @@ export function PublicFlow({ slug }: { slug: string }) {
   const showCalendarExportAction = canExportCalendar && bundle.flow.primary_destination !== 'internal_check';
   const renderSetupSection = () =>
     !showTodayExecution && !showExportFirstHero && !showPublicHeroSetup ? (
-      <section className={compactJeonsePage ? 'my-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-4' : 'my-6 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-5'}>
+      <section
+        data-testid="public-flow-primary-setup"
+        className={compactJeonsePage ? 'my-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-4' : 'my-6 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-5'}
+      >
         <div className={compactJeonsePage ? 'grid gap-3' : 'grid gap-4'}>
           <div className={compactJeonsePage ? '' : 'rounded-lg border border-slate-200 bg-slate-50 p-4'}>
             <p className="text-sm font-semibold text-blue-700">{getSetupStepTitle(bundle)}</p>
