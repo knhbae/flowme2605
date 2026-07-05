@@ -8,8 +8,10 @@ import { chromium } from '@playwright/test';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..', '..');
 const packageName = process.env.FLOWME_EVIDENCE_PACKAGE_NAME || '2026-07-05-claude-design-p7-final-review-package';
-const reviewCycle = process.env.FLOWME_EVIDENCE_REVIEW_CYCLE || (packageName.includes('-p8-') ? 'P8' : 'P7');
-const nextBacklogCycle = process.env.FLOWME_EVIDENCE_NEXT_BACKLOG || (reviewCycle === 'P8' ? 'P9' : 'P8');
+const packageCycleMatch = packageName.match(/-p(\d+)-/i);
+const inferredReviewCycle = packageCycleMatch ? `P${packageCycleMatch[1]}` : 'P7';
+const reviewCycle = process.env.FLOWME_EVIDENCE_REVIEW_CYCLE || inferredReviewCycle;
+const nextBacklogCycle = process.env.FLOWME_EVIDENCE_NEXT_BACKLOG || `P${Number(reviewCycle.replace(/^P/i, '')) + 1}`;
 const captureScriptName = process.env.FLOWME_EVIDENCE_CAPTURE_SCRIPT || 'capture-claude-p7-final-review-package.mjs';
 const outputDir = path.join(repoRoot, 'docs', 'content-audit', packageName);
 const screenshotsDir = path.join(outputDir, 'screenshots');
@@ -41,6 +43,7 @@ const forbiddenInternalTerms = [
 
 const sourceSlugSignals = getDynamicSourceSlugSignals();
 const structuralDisplayTerms = [
+  /\bsource\s*trace\b/i,
   /일정\s*지도/,
   /저장한\s*지도/,
   /지도\s*일정/,
@@ -196,6 +199,8 @@ async function main() {
   const evidence = {
     generatedAt: new Date().toISOString(),
     packageName,
+    reviewCycle,
+    nextBacklogCycle,
     branchName,
     uiBaselineCommit,
     packageGeneratedFromCommit,
@@ -799,6 +804,8 @@ function renderReadme(evidence) {
 
 This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, the P8-02 restart/prototype promotion gate, the P8-03/P8-04 My Flow overdue label/status corrections, the P8-05/P8-06/P8-08 evidence/package metadata cleanup, the P8-07 restart date-display decision, the P8-09 field-checklist source-density rule, and the P8-10/P9-02 public share CTA/tab-order rule.
 
+For P9, it additionally closes P9-01 to P9-07: data-driven guardrail coverage, accessible public browse-link ordering, My Flow structural-copy cleanup, source-slug punctuation scanning, restart/prototype English UI gate expansion, restart D-30 milestone grouping, and direct guardrail helper unit tests.
+
 ## Files
 
 - [audit.md](./audit.md)
@@ -856,7 +863,7 @@ function renderAudit(evidence) {
 
 ## Scope
 
-P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata, P8-07 confirms the \`/restart/moving-d30\` first-three-row date repetition as an intentional D-30 milestone group rather than a date-distribution bug, P8-09 lowers repeated row-level source links in field checklist workbenches, and P8-10/P9-02 keeps public share browse navigation accessible but after the primary save/input path. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
+P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata, P8-07 confirms the \`/restart/moving-d30\` first-three-row date repetition as an intentional D-30 milestone group rather than a date-distribution bug, P8-09 lowers repeated row-level source links in field checklist workbenches, and P8-10/P9-02 keeps public share browse navigation accessible but after the primary save/input path. P9-01 to P9-07 then close the remaining guardrail coverage, accessibility ordering, structural-copy, punctuation, prototype gate, restart grouping, and guardrail-unit-test gaps. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
 
 ## Baselines Covered
 
@@ -874,6 +881,9 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 - P8-08: UI baseline commit and package generation commit metadata are separated.
 - P8-09: field checklist row details keep execution criteria/details, but repeated row-level source links are suppressed; source access remains available in the source/reference area.
 - P8-10/P9-02: public \`/f/[slug]\` share screens keep \`콘텐츠 더 보기\` as an accessible secondary link, but place it after the primary save/input path in DOM/tab order.
+- P9-01/P9-04/P9-05/P9-07: guardrail coverage is data-driven, source slug punctuation and prototype English UI classes are covered, and helper-level positive/negative unit tests lock the rules.
+- P9-03: My Flow structural terms such as \`Flow 상태판\` are removed from user-facing copy and covered by structural-display guardrails.
+- P9-06: restart full schedule groups same-day D-30 items under a visible milestone heading instead of repeating the date as unexplained row text.
 
 ## Summary
 
@@ -984,6 +994,10 @@ function renderPrompt(evidence) {
 ${JSON.stringify(evidence.summary, null, 2)}
 \`\`\`
 
+8. P9-01~P9-07 마감 기준이 충분한지 확인
+   - seed/source 데이터 기반 guardrail coverage가 새 콘텐츠 추가에도 회귀를 잡을 수 있는지
+   - source slug punctuation, prototype English UI gate, My Flow structural copy, restart D-30 milestone grouping, guardrail helper unit tests가 충분히 닫혔는지
+
 요청 산출물:
 1. route별 UX/UI 문제 목록
 2. Blocking/High/Medium/Low 우선순위
@@ -1041,7 +1055,7 @@ function renderHtml(evidence) {
 <body>
   <main>
     <h1>FlowMe ${reviewCycle} Final Review Package</h1>
-    <p class="lead">P7-01~P7-05 기준선을 P7-06/P8-01/P8-02 guardrail, P8-03/P8-04 My Flow 라벨 검증, P8-05/P8-06/P8-08 evidence cleanup, P8-09 workbench source-density, P8-10 public share CTA/tab-order 기준으로 고정하기 위한 모바일 390px screenshot/evidence 패키지입니다.</p>
+    <p class="lead">P7/P8 기준선 위에 P9-01~P9-07 guardrail coverage, 접근성 순서, My Flow 구조어, prototype gate, restart milestone grouping, helper unit test 기준을 고정하기 위한 모바일 390px screenshot/evidence 패키지입니다.</p>
     <p class="meta">UI baseline commit: ${escapeHtml(evidence.uiBaselineCommit)} · Package generated from: ${escapeHtml(evidence.packageGeneratedFromCommit)} · Package commit ref: ${escapeHtml(evidence.packageCommitRef)}</p>
     <section class="summary">
       <div class="stat"><b>${evidence.summary.totalScreenshots}</b><span>screenshots</span></div>
