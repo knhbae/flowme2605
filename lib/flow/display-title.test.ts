@@ -155,11 +155,31 @@ test('scanUserSurfaceGuardrails does not waive raw ISO dates because a primary l
 
 test('scanUserSurfaceGuardrails finds structural title leaks and keeps allowed Flow labels', () => {
   const result = scanUserSurfaceGuardrails({
-    primaryLines: ['Flow 찾기', '내 Flow에 저장', '원룸 이사 D-30 일정 지도', '자동차검사 준비 Flow'],
+    primaryLines: [
+      'Flow 찾기',
+      '내 Flow에 저장',
+      '홈 추천 큐레이션',
+      '결혼 업체 후보 보드',
+      '홈트 영상 큐',
+      '원룸 이사 D-30 일정 지도',
+      '자동차검사 준비 Flow',
+      'Flow 상태판',
+      'Flow 보드',
+      'Flow 패널',
+      '실행 큐',
+      'source 트레이스',
+    ],
     sourceLines: [],
   });
 
-  assert.deepEqual(result.structuralDisplayHits, ['원룸 이사 D-30 일정 지도']);
+  assert.deepEqual(result.structuralDisplayHits, [
+    '원룸 이사 D-30 일정 지도',
+    'Flow 상태판',
+    'Flow 보드',
+    'Flow 패널',
+    '실행 큐',
+    'source 트레이스',
+  ]);
   assert.deepEqual(result.trailingFlowSuffixHits, ['자동차검사 준비 Flow']);
 });
 

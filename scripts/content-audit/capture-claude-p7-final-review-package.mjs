@@ -40,7 +40,17 @@ const forbiddenInternalTerms = [
 ];
 
 const sourceSlugSignals = getDynamicSourceSlugSignals();
-const structuralDisplayTerms = [/일정\s*지도/, /저장한\s*지도/, /지도\s*일정/, /지도\s*루틴/];
+const structuralDisplayTerms = [
+  /일정\s*지도/,
+  /저장한\s*지도/,
+  /지도\s*일정/,
+  /지도\s*루틴/,
+  /(?:Flow\s*)?상태판/u,
+  /Flow\s*보드/u,
+  /Flow\s*패널/u,
+  /실행\s*큐/u,
+  /(?:source|소스|내부)\s*트레이스/iu,
+];
 const rawIsoDatePattern = /\b20\d{2}-\d{2}-\d{2}\b/;
 const prototypeRawRouteSlugPattern = /\b(?:restart|prototype)\s*\/\s*[a-z0-9][a-z0-9-]*\b|\/restart\/[a-z0-9][a-z0-9-]*/i;
 const prototypeEnglishWeekdayPattern = /\b(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)\b/;

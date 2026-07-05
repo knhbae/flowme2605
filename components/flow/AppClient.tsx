@@ -6263,7 +6263,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   <section data-testid="my-flow-status-board" className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                       <div>
-                        <p className="text-sm font-semibold text-blue-700">Flow 상태판</p>
+                        <p className="text-sm font-semibold text-blue-700">저장한 콘텐츠 정리</p>
                         <h3 className="mt-1 text-lg font-semibold text-slate-950">진행 중인 Flow를 한눈에 확인하세요</h3>
                         <p className="mt-1 text-sm text-slate-600">다음 실행, 진행률, 지난 할 일을 먼저 보고 전체 목록은 필요할 때 펼칩니다.</p>
                       </div>
@@ -6866,7 +6866,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           className="fixed inset-0 z-50 bg-slate-950/40"
           role="dialog"
           aria-modal="true"
-          aria-label={myFlowStatusSheet === 'overdue' ? '지난 할 일' : '다음 실행 Flow'}
+          aria-label={myFlowStatusSheet === 'overdue' ? '지난 할 일' : '다음 할 일'}
           data-testid="my-flow-status-sheet"
         >
           <button
@@ -6879,9 +6879,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-slate-300" />
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-sm font-semibold text-blue-700">Flow 상태판</p>
+                <p className="text-sm font-semibold text-blue-700">
+                  {myFlowStatusSheet === 'overdue' ? '놓친 항목 정리' : '다가오는 항목 정리'}
+                </p>
                 <h3 className="mt-1 text-xl font-semibold text-slate-950">
-                  {myFlowStatusSheet === 'overdue' ? '지난 할 일' : '다음 실행 Flow'}
+                  {myFlowStatusSheet === 'overdue' ? '지난 할 일' : '다음 할 일'}
                 </h3>
               </div>
               <button

@@ -52,6 +52,11 @@ const STRUCTURAL_DISPLAY_PATTERNS = [
   /저장한\s*지도/u,
   /지도\s*일정/u,
   /지도\s*루틴/u,
+  /(?:Flow\s*)?상태판/u,
+  /Flow\s*보드/u,
+  /Flow\s*패널/u,
+  /실행\s*큐/u,
+  /(?:source|소스|내부)\s*트레이스/iu,
 ];
 
 const ALLOWED_TRAILING_FLOW_LINES = new Set([
