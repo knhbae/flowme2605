@@ -8641,8 +8641,10 @@ function PublicFlowShareShell({ savedFlowAt }: { savedFlowAt?: string }) {
       ) : (
         <Link
           data-testid="flow-public-secondary-browse-link"
+          aria-hidden="true"
           className="inline-flex min-h-9 items-center px-1 text-xs font-semibold text-[#8A857B] underline-offset-4 hover:text-[#3654FF] hover:underline"
           href="/flows"
+          tabIndex={-1}
         >
           콘텐츠 더 보기
         </Link>
