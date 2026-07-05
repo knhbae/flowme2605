@@ -2,7 +2,7 @@
 
 ## Scope
 
-P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata, and P8-07 confirms the `/restart/moving-d30` first-three-row date repetition as an intentional D-30 milestone group rather than a date-distribution bug. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
+P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata, P8-07 confirms the `/restart/moving-d30` first-three-row date repetition as an intentional D-30 milestone group rather than a date-distribution bug, and P8-09 lowers repeated row-level source links in field checklist workbenches. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
 
 ## Baselines Covered
 
@@ -18,14 +18,15 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 - P8-06: My Flow label repetition counters use `my-flow-queue-label-surfaces`, not full page body text.
 - P8-07: `/restart/moving-d30` first three visible rows share the same D-30 date because all three source rows are D-30 milestones; full schedule/export rows remain distributed across later dates.
 - P8-08: UI baseline commit and package generation commit metadata are separated.
+- P8-09: field checklist row details keep execution criteria/details, but repeated row-level source links are suppressed; source access remains available in the source/reference area.
 
 ## Summary
 
 ```json
 {
-  "totalScreenshots": 24,
-  "uiBaselineCommit": "0b4147d",
-  "packageGeneratedFromCommit": "0b4147d",
+  "totalScreenshots": 26,
+  "uiBaselineCommit": "c2f65c9",
+  "packageGeneratedFromCommit": "c2f65c9",
   "packageCommitRef": "git commit containing this generated package",
   "normalRouteInternalHitCount": 0,
   "normalRouteSourceSlugHitCount": 0,
@@ -36,6 +37,12 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
   "normalRouteQueueLabelCount": 8,
   "normalRouteLegacyOverdueLabelCount": 0,
   "normalRouteHorizontalOverflowCount": 0,
+  "fieldWorkbenchRowDetailSourceLinkCount": 0,
+  "fieldWorkbenchSourceAccessLinkCount": 5,
+  "fieldWorkbenchOpenDetailCounts": [
+    10,
+    15
+  ],
   "restartPrototypeRawIsoHitCount": 0,
   "restartPrototypeRawRouteSlugHitCount": 0,
   "restartPrototypeEnglishWeekdayHitCount": 0,
@@ -90,6 +97,8 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 | 10-workbench-washer-mobile | `/f/washer-tub-clean-monthly` | Washer workbench | OK | 0 | 0 | 0 |
 | 11-workbench-new-car-mobile | `/f/new-car-delivery-check` | New car checklist workbench | OK | 0 | 0 | 0 |
 | 12-workbench-used-car-mobile | `/f/used-car-buying-check` | Used car checklist workbench | OK | 0 | 0 | 0 |
+| 25-workbench-new-car-open-details-mobile | `/f/new-car-delivery-check` | New car checklist row details without repeated source links | OK | 0 | 0 | 0 |
+| 26-workbench-used-car-open-details-mobile | `/f/used-car-buying-check` | Used car checklist row details without repeated source links | OK | 0 | 0 | 0 |
 | 13-post-save-my-moving-mobile | `/my?savedMap=moving-d30` | Post-save My Flow for moving map | OK | 0 | 0 | 0 |
 | 14-calendar-after-moving-save-mobile | `/calendar` | Calendar agenda-first after moving save | OK | 0 | 0 | 0 |
 | 15-post-save-my-math-mobile | `/my?savedMap=middle-school-math-1` | Post-save My Flow for undated math content | OK | 0 | 0 | 0 |
@@ -126,10 +135,16 @@ The restart source/export frame and bottom frame must remain distinct:
 - full schedule unique offset labels: 5
 - date distribution judgment: intentional-d30-milestone-group
 
+## Field Checklist Source Density
+
+- row detail source link count: 0
+- source/reference access link count: 5
+- open detail counts: [10,15]
+
 ## Commit Metadata
 
-- UI baseline commit: `0b4147d`
-- Package generated from commit: `0b4147d`
+- UI baseline commit: `c2f65c9`
+- Package generated from commit: `c2f65c9`
 - Package commit ref: `git commit containing this generated package`
 
 ## Residual Risk

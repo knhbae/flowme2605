@@ -153,7 +153,7 @@ async function main() {
       category: 'prototype-restart',
       prototypeBucket: true,
     });
-    await page.getByTestId('moving-mobile-full-schedule').locator('button').nth(1).click();
+    await page.getByTestId('moving-mobile-full-schedule').locator(':scope > button').last().click();
     await settle(page);
     await page.getByTestId('moving-full-schedule-list').scrollIntoViewIfNeeded();
     await captureCurrent(page, '24-restart-moving-full-schedule-mobile.png', 'Restart prototype full schedule date distribution', {

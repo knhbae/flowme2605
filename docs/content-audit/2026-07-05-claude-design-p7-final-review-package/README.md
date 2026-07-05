@@ -1,13 +1,13 @@
 # FlowMe Claude Design P7 Final Review Package
 
-- Generated: 2026-07-05T04:39:41.689Z
+- Generated: 2026-07-05T05:51:02.848Z
 - Branch: `codex/flowme-uxui-second-loop`
-- UI baseline commit: `0b4147d`
-- Package generated from commit: `0b4147d`
+- UI baseline commit: `c2f65c9`
+- Package generated from commit: `c2f65c9`
 - Package commit ref: `git commit containing this generated package`
 - Viewport: 390x844
 
-This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, the P8-02 restart/prototype promotion gate, the P8-03/P8-04 My Flow overdue label/status corrections, the P8-05/P8-06/P8-08 evidence/package metadata cleanup, and the P8-07 restart date-display decision.
+This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, the P8-02 restart/prototype promotion gate, the P8-03/P8-04 My Flow overdue label/status corrections, the P8-05/P8-06/P8-08 evidence/package metadata cleanup, the P8-07 restart date-display decision, and the P8-09 field-checklist source-density rule.
 
 ## Files
 
@@ -27,6 +27,8 @@ This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, t
 - Normal route queue label scope: my-flow-queue-label-surfaces
 - Normal route legacy overdue label hits: 0
 - Normal route horizontal overflow count: 0
+- Field workbench row-detail source link count: 0
+- Field workbench source access link count: 5
 - Restart prototype raw ISO hits: 0
 - Restart prototype raw route slug hits: 0
 - Restart prototype English weekday hits: 0

@@ -16,7 +16,10 @@
    - 모바일 390px 좌우 overflow
    - 하단 fixed/sticky가 마지막 버튼/행/agenda를 가림
 5. /restart/moving-d30 prototype bucket을 별도 관리하는 기준이 충분한지 확인
-6. 단순 평가로 끝내지 말고, 필요하면 다음 backlog를 Blocking/High/Medium/Low로 작성
+6. P8-09 field checklist workbench source-density guardrail이 충분한지 확인
+   - new-car / used-car row detail source link count가 0인지
+   - source/reference access link count가 0보다 크게 유지되는지
+7. 단순 평가로 끝내지 말고, 필요하면 다음 backlog를 Blocking/High/Medium/Low로 작성
 
 주요 링크:
 - P7 review package README: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/docs/content-audit/2026-07-05-claude-design-p7-final-review-package/README.md
@@ -29,9 +32,9 @@
 현재 guardrail scan 요약:
 ```json
 {
-  "totalScreenshots": 24,
-  "uiBaselineCommit": "0b4147d",
-  "packageGeneratedFromCommit": "0b4147d",
+  "totalScreenshots": 26,
+  "uiBaselineCommit": "c2f65c9",
+  "packageGeneratedFromCommit": "c2f65c9",
   "packageCommitRef": "git commit containing this generated package",
   "normalRouteInternalHitCount": 0,
   "normalRouteSourceSlugHitCount": 0,
@@ -42,6 +45,12 @@
   "normalRouteQueueLabelCount": 8,
   "normalRouteLegacyOverdueLabelCount": 0,
   "normalRouteHorizontalOverflowCount": 0,
+  "fieldWorkbenchRowDetailSourceLinkCount": 0,
+  "fieldWorkbenchSourceAccessLinkCount": 5,
+  "fieldWorkbenchOpenDetailCounts": [
+    10,
+    15
+  ],
   "restartPrototypeRawIsoHitCount": 0,
   "restartPrototypeRawRouteSlugHitCount": 0,
   "restartPrototypeEnglishWeekdayHitCount": 0,
