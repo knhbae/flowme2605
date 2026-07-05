@@ -78,6 +78,8 @@ async function expectNoPrototypeDisplayGateLeakage(locator: Locator, exportEntry
   });
   expect(result.rawRouteSlugHits).toEqual([]);
   expect(result.englishWeekdayHits).toEqual([]);
+  expect(result.englishUiVerbHits).toEqual([]);
+  expect(result.englishMonthTimeHits).toEqual([]);
   expect(result.mixedExportLanguageHits).toEqual([]);
   expect(result.duplicateExportEntryHits).toEqual([]);
 }

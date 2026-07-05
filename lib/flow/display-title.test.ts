@@ -261,6 +261,14 @@ test('scanPrototypeRouteGuardrails flags prototype-only display gate leaks', () 
     primaryLines: [
       'restart / moving-d30',
       'Sun',
+      'download file',
+      'copy checklist',
+      'sync calendar',
+      'import rows',
+      'Jan 12',
+      '9:00 AM',
+      '파일 받기',
+      '체크리스트 복사',
       '날짜를 편집한 뒤 export합니다.',
       '내 도구로 가져가기',
       '내 도구로 가져가기',
@@ -270,6 +278,13 @@ test('scanPrototypeRouteGuardrails flags prototype-only display gate leaks', () 
 
   assert.deepEqual(result.rawRouteSlugHits, ['restart / moving-d30']);
   assert.deepEqual(result.englishWeekdayHits, ['Sun']);
+  assert.deepEqual(result.englishUiVerbHits, [
+    'download file',
+    'copy checklist',
+    'sync calendar',
+    'import rows',
+  ]);
+  assert.deepEqual(result.englishMonthTimeHits, ['Jan 12', '9:00 AM']);
   assert.deepEqual(result.mixedExportLanguageHits, ['날짜를 편집한 뒤 export합니다.']);
   assert.deepEqual(result.duplicateExportEntryHits, [
     { label: '내 도구로 가져가기', count: 2 },

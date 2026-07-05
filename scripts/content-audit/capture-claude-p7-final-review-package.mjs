@@ -54,6 +54,8 @@ const structuralDisplayTerms = [
 const rawIsoDatePattern = /\b20\d{2}-\d{2}-\d{2}\b/;
 const prototypeRawRouteSlugPattern = /\b(?:restart|prototype)\s*\/\s*[a-z0-9][a-z0-9-]*\b|\/restart\/[a-z0-9][a-z0-9-]*/i;
 const prototypeEnglishWeekdayPattern = /\b(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)\b/;
+const prototypeEnglishUiVerbPattern = /\b(?:download|copy|sync|import)\b/i;
+const prototypeEnglishMonthTimePattern = /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\b|\b(?:AM|PM)\b/;
 const prototypeMixedExportLanguagePattern = /\bexport\b|export(?=[\uAC00-\uD7A3\s.,!?])/i;
 const allowedFlowSuffixLines = new Set(['Flow', '내 Flow', 'Flow 찾기', 'FlowMe', '내 Flow에 저장', '내 Flow에서 보기']);
 
@@ -527,6 +529,8 @@ async function scanPage(page, options = {}) {
     const firstTaskRepetitionHits = firstTaskTitle ? findRepeatedTitleHits(nowSectionLines, firstTaskTitle, 1) : [];
     const prototypeRawRouteSlugRegex = new RegExp(payload.prototypeRawRouteSlugPattern, 'i');
     const prototypeEnglishWeekdayRegex = new RegExp(payload.prototypeEnglishWeekdayPattern);
+    const prototypeEnglishUiVerbRegex = new RegExp(payload.prototypeEnglishUiVerbPattern, 'i');
+    const prototypeEnglishMonthTimeRegex = new RegExp(payload.prototypeEnglishMonthTimePattern);
     const prototypeMixedExportLanguageRegex = new RegExp(payload.prototypeMixedExportLanguagePattern, 'i');
     const prototypeExportEntryLabels = Array.from(document.querySelectorAll('[data-testid="moving-mobile-export-actions"] button'))
       .map((element) => normalizeLine(element.textContent ?? ''))
@@ -627,6 +631,8 @@ async function scanPage(page, options = {}) {
       prototypeDisplayGateHits: {
         rawRouteSlugHits: normalizedPrimaryLines.filter((line) => prototypeRawRouteSlugRegex.test(line)),
         englishWeekdayHits: normalizedPrimaryLines.filter((line) => prototypeEnglishWeekdayRegex.test(line)),
+        englishUiVerbHits: normalizedPrimaryLines.filter((line) => prototypeEnglishUiVerbRegex.test(line)),
+        englishMonthTimeHits: normalizedPrimaryLines.filter((line) => prototypeEnglishMonthTimeRegex.test(line)),
         mixedExportLanguageHits: normalizedPrimaryLines.filter((line) => prototypeMixedExportLanguageRegex.test(line)),
         duplicateExportEntryHits: prototypeDuplicateExportEntryHits,
       },
@@ -684,6 +690,8 @@ async function scanPage(page, options = {}) {
     rawIsoDatePattern: rawIsoDatePattern.source,
     prototypeRawRouteSlugPattern: prototypeRawRouteSlugPattern.source,
     prototypeEnglishWeekdayPattern: prototypeEnglishWeekdayPattern.source,
+    prototypeEnglishUiVerbPattern: prototypeEnglishUiVerbPattern.source,
+    prototypeEnglishMonthTimePattern: prototypeEnglishMonthTimePattern.source,
     prototypeMixedExportLanguagePattern: prototypeMixedExportLanguagePattern.source,
     allowedFlowSuffixLines: Array.from(allowedFlowSuffixLines),
     forbiddenInternalTerms: forbiddenInternalTerms.map((term) => ({ label: term.toString(), source: term.source, flags: term.flags })),
@@ -743,6 +751,8 @@ function summarizeEvidence(records) {
     restartPrototypeRawIsoHitCount: restart.reduce((sum, record) => sum + record.rawIsoLines.length, 0),
     restartPrototypeRawRouteSlugHitCount: restart.reduce((sum, record) => sum + (record.prototypeDisplayGateHits?.rawRouteSlugHits?.length ?? 0), 0),
     restartPrototypeEnglishWeekdayHitCount: restart.reduce((sum, record) => sum + (record.prototypeDisplayGateHits?.englishWeekdayHits?.length ?? 0), 0),
+    restartPrototypeEnglishUiVerbHitCount: restart.reduce((sum, record) => sum + (record.prototypeDisplayGateHits?.englishUiVerbHits?.length ?? 0), 0),
+    restartPrototypeEnglishMonthTimeHitCount: restart.reduce((sum, record) => sum + (record.prototypeDisplayGateHits?.englishMonthTimeHits?.length ?? 0), 0),
     restartPrototypeMixedExportLanguageHitCount: restart.reduce((sum, record) => sum + (record.prototypeDisplayGateHits?.mixedExportLanguageHits?.length ?? 0), 0),
     restartPrototypeDuplicateExportEntryHitCount: restart.reduce((sum, record) => sum + (record.prototypeDisplayGateHits?.duplicateExportEntryHits?.length ?? 0), 0),
     restartPrototypeHorizontalOverflowCount: restart.filter((record) => !record.noHorizontalOverflow).length,
@@ -808,6 +818,8 @@ This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, t
 - Restart prototype raw ISO hits: ${evidence.summary.restartPrototypeRawIsoHitCount}
 - Restart prototype raw route slug hits: ${evidence.summary.restartPrototypeRawRouteSlugHitCount}
 - Restart prototype English weekday hits: ${evidence.summary.restartPrototypeEnglishWeekdayHitCount}
+- Restart prototype English UI verb hits: ${evidence.summary.restartPrototypeEnglishUiVerbHitCount}
+- Restart prototype English month/time hits: ${evidence.summary.restartPrototypeEnglishMonthTimeHitCount}
 - Restart prototype mixed export-language hits: ${evidence.summary.restartPrototypeMixedExportLanguageHitCount}
 - Restart prototype duplicate export-entry hits: ${evidence.summary.restartPrototypeDuplicateExportEntryHitCount}
 - Restart source/export and bottom frames distinct: ${evidence.summary.restartPrototypeSourceBottomFramesDistinct}
@@ -843,7 +855,7 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 - P7-04: Home shows a small curated recommendation set, not a single fixed experiment.
 - P7-05: Public \`/f\` browse links remain secondary to \`내 Flow에 저장\`.
 - P7-06/P8-01: Normal route scan buckets stay at zero for internal labels, dynamic source slug leaks, structural title suffixes, raw ISO dates, first-task repetition, and mobile overflow.
-- P8-02: Restart/prototype routes must also avoid raw route slugs, English weekday labels, mixed export-language copy, and duplicate export entry points before promotion.
+- P8-02/P9-05: Restart/prototype routes must also avoid raw route slugs, English weekday/month-time labels, English UI verbs, mixed export-language copy, and duplicate export entry points before promotion.
 - P8-03/P8-04: My Flow uses \`지난 할 일\` consistently for overdue work, and past rows in the saved-content list are not labeled as \`다음 할 일\`.
 - P8-05: Restart source/export and true-bottom frames are captured at separate scroll positions and carry screenshot hashes.
 - P8-06: My Flow label repetition counters use \`my-flow-queue-label-surfaces\`, not full page body text.
@@ -871,6 +883,8 @@ ${rows}
 - no user-facing raw ISO dates
 - no raw route slug such as \`restart / moving-d30\`
 - no English weekday labels such as \`Sun Mon Tue\`
+- no English month/time labels such as \`Jan\`, \`Feb\`, \`AM\`, or \`PM\`
+- no English UI verbs such as \`download\`, \`copy\`, \`sync\`, or \`import\`
 - no mixed export-language copy such as \`export\` plus Korean copy
 - no duplicated primary export entry labels
 - no source brand slug as title/subtitle copy
@@ -1027,6 +1041,8 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.restartPrototypeRawIsoHitCount}</b><span>restart raw ISO hits</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeRawRouteSlugHitCount}</b><span>restart route slug hits</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeEnglishWeekdayHitCount}</b><span>restart English weekday hits</span></div>
+      <div class="stat"><b>${evidence.summary.restartPrototypeEnglishUiVerbHitCount}</b><span>restart English UI verb hits</span></div>
+      <div class="stat"><b>${evidence.summary.restartPrototypeEnglishMonthTimeHitCount}</b><span>restart English month/time hits</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeMixedExportLanguageHitCount}</b><span>restart mixed export hits</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeDuplicateExportEntryHitCount}</b><span>restart duplicate export entries</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeSourceBottomFramesDistinct ? 'yes' : 'no'}</b><span>restart source/bottom distinct</span></div>

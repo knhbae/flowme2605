@@ -38,6 +38,8 @@ export type PrototypeRouteGuardrailInput = {
 export type PrototypeRouteGuardrailResult = {
   rawRouteSlugHits: string[];
   englishWeekdayHits: string[];
+  englishUiVerbHits: string[];
+  englishMonthTimeHits: string[];
   mixedExportLanguageHits: string[];
   duplicateExportEntryHits: DuplicatePrototypeExportEntryHit[];
 };
@@ -45,6 +47,8 @@ export type PrototypeRouteGuardrailResult = {
 const RAW_ISO_DATE_PATTERN = /\b20\d{2}-\d{2}-\d{2}\b/u;
 const RAW_PROTOTYPE_ROUTE_SLUG_PATTERN = /\b(?:restart|prototype)\s*\/\s*[a-z0-9][a-z0-9-]*\b|\/restart\/[a-z0-9][a-z0-9-]*/iu;
 const ENGLISH_WEEKDAY_PATTERN = /\b(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)\b/u;
+const PROTOTYPE_ENGLISH_UI_VERB_PATTERN = /\b(?:download|copy|sync|import)\b/iu;
+const PROTOTYPE_ENGLISH_MONTH_TIME_PATTERN = /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\b|\b(?:AM|PM)\b/u;
 const MIXED_EXPORT_LANGUAGE_PATTERN = /\bexport\b|export(?=[\p{Script=Hangul}\s.,!?])/iu;
 const STRUCTURAL_DISPLAY_PATTERNS = [
   /\bFlow Map\b/iu,
@@ -178,6 +182,14 @@ export function findPrototypeEnglishWeekdayHits(primaryLines: string[]): string[
   return normalizeGuardrailLines(primaryLines).filter((line) => ENGLISH_WEEKDAY_PATTERN.test(line));
 }
 
+export function findPrototypeEnglishUiVerbHits(primaryLines: string[]): string[] {
+  return normalizeGuardrailLines(primaryLines).filter((line) => PROTOTYPE_ENGLISH_UI_VERB_PATTERN.test(line));
+}
+
+export function findPrototypeEnglishMonthTimeHits(primaryLines: string[]): string[] {
+  return normalizeGuardrailLines(primaryLines).filter((line) => PROTOTYPE_ENGLISH_MONTH_TIME_PATTERN.test(line));
+}
+
 export function findPrototypeMixedExportLanguageHits(primaryLines: string[]): string[] {
   return normalizeGuardrailLines(primaryLines).filter((line) => MIXED_EXPORT_LANGUAGE_PATTERN.test(line));
 }
@@ -256,6 +268,8 @@ export function scanPrototypeRouteGuardrails(input: PrototypeRouteGuardrailInput
   return {
     rawRouteSlugHits: findPrototypeRawRouteSlugHits(primaryLines),
     englishWeekdayHits: findPrototypeEnglishWeekdayHits(primaryLines),
+    englishUiVerbHits: findPrototypeEnglishUiVerbHits(primaryLines),
+    englishMonthTimeHits: findPrototypeEnglishMonthTimeHits(primaryLines),
     mixedExportLanguageHits: findPrototypeMixedExportLanguageHits(primaryLines),
     duplicateExportEntryHits: findDuplicatePrototypeExportEntryHits(primaryLines, input.exportEntryLabels),
   };
