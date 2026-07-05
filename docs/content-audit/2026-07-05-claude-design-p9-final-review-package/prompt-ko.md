@@ -25,21 +25,21 @@
 8. 단순 평가로 끝내지 말고, 필요하면 다음 backlog를 Blocking/High/Medium/Low로 작성
 
 주요 링크:
-- P9 review package README: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/docs/content-audit/2026-07-05-claude-design-p9-final-review-package/README.md
-- Audit markdown: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/docs/content-audit/2026-07-05-claude-design-p9-final-review-package/audit.md
-- Review HTML: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/docs/content-audit/2026-07-05-claude-design-p9-final-review-package/review.html
-- Route evidence JSON: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/docs/content-audit/2026-07-05-claude-design-p9-final-review-package/route-evidence.json
-- Screenshots folder: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/docs/content-audit/2026-07-05-claude-design-p9-final-review-package/screenshots
-- E2E guardrails: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/tests/e2e/flow-mvp.spec.ts
-- Workbench source density E2E: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/tests/e2e/workbench-source-density.spec.ts
-- Public share CTA/tab-order E2E: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/tests/e2e/public-share-cta-order.spec.ts
+- P9 review package README: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/docs/content-audit/2026-07-05-claude-design-p9-final-review-package/README.md
+- Audit markdown: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/docs/content-audit/2026-07-05-claude-design-p9-final-review-package/audit.md
+- Review HTML: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/docs/content-audit/2026-07-05-claude-design-p9-final-review-package/review.html
+- Route evidence JSON: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/docs/content-audit/2026-07-05-claude-design-p9-final-review-package/route-evidence.json
+- Screenshots folder: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/docs/content-audit/2026-07-05-claude-design-p9-final-review-package/screenshots
+- E2E guardrails: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/tests/e2e/flow-mvp.spec.ts
+- Workbench source density E2E: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/tests/e2e/workbench-source-density.spec.ts
+- Public share CTA/tab-order E2E: https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/tests/e2e/public-share-cta-order.spec.ts
 
 현재 guardrail scan 요약:
 ```json
 {
   "totalScreenshots": 26,
-  "uiBaselineCommit": "decd1a8",
-  "packageGeneratedFromCommit": "decd1a8",
+  "uiBaselineCommit": "f668e74",
+  "packageGeneratedFromCommit": "f668e74",
   "packageCommitRef": "git commit containing this generated package",
   "normalRouteInternalHitCount": 0,
   "normalRouteSourceSlugHitCount": 0,

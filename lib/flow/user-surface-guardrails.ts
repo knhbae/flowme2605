@@ -100,6 +100,14 @@ const SOURCE_SIGNAL_STOP_WORDS = new Set([
   'WWW',
 ]);
 
+const SOURCE_SLUG_PREFIX_SOURCE = String.raw`(^|[^\p{L}\p{N}_])`;
+const SOURCE_SLUG_BOUNDARY_SOURCE = String.raw`(?=$|\s|\p{Script=Hangul}|D-|\.(?![\p{L}\p{N}_])|[^\p{L}\p{N}_\s.])`;
+
+export const USER_SURFACE_GUARDRAIL_RUNTIME = {
+  sourceSlugPrefixSource: SOURCE_SLUG_PREFIX_SOURCE,
+  sourceSlugBoundarySource: SOURCE_SLUG_BOUNDARY_SOURCE,
+} as const;
+
 export function normalizeGuardrailLine(line: string): string {
   return line.replace(/\s+/g, ' ').trim();
 }
@@ -146,10 +154,7 @@ export function findSourceSlugHits(primaryLines: string[], sourceSlugSignals: st
 
   for (const line of normalizedLines) {
     for (const signal of normalizedSignals) {
-      const regex = new RegExp(
-        `(^|[^\\p{L}\\p{N}_])${escapeRegExp(signal)}(?=$|\\s|\\p{Script=Hangul}|D-|\\.(?![\\p{L}\\p{N}_])|[^\\p{L}\\p{N}_\\s.])`,
-        'iu',
-      );
+      const regex = createSourceSlugHitRegex(signal);
       if (regex.test(line)) {
         hits.push({ signal, line });
       }
@@ -157,6 +162,10 @@ export function findSourceSlugHits(primaryLines: string[], sourceSlugSignals: st
   }
 
   return hits;
+}
+
+export function createSourceSlugHitRegex(signal: string): RegExp {
+  return new RegExp(`${SOURCE_SLUG_PREFIX_SOURCE}${escapeRegExp(signal)}${SOURCE_SLUG_BOUNDARY_SOURCE}`, 'iu');
 }
 
 export function findStructuralDisplayHits(primaryLines: string[]): string[] {

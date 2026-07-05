@@ -29,8 +29,8 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 ```json
 {
   "totalScreenshots": 26,
-  "uiBaselineCommit": "decd1a8",
-  "packageGeneratedFromCommit": "decd1a8",
+  "uiBaselineCommit": "f668e74",
+  "packageGeneratedFromCommit": "f668e74",
   "packageCommitRef": "git commit containing this generated package",
   "normalRouteInternalHitCount": 0,
   "normalRouteSourceSlugHitCount": 0,
@@ -169,8 +169,8 @@ The restart source/export frame and bottom frame must remain distinct:
 
 ## Commit Metadata
 
-- UI baseline commit: `decd1a8`
-- Package generated from commit: `decd1a8`
+- UI baseline commit: `f668e74`
+- Package generated from commit: `f668e74`
 - Package commit ref: `git commit containing this generated package`
 
 ## Residual Risk

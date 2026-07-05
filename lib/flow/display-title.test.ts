@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import test from 'node:test';
 import { toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from './display-title';
 import { seedBundles } from './seed-flows';
@@ -10,6 +12,7 @@ import {
   collectSourceSlugSignals,
   collectSourceSlugSignalsFromLines,
   countLineOccurrences,
+  createSourceSlugHitRegex,
   findDuplicatePrototypeExportEntryHits,
   findFirstTaskRepetitionHits,
   findPrototypeEnglishMonthTimeHits,
@@ -25,6 +28,7 @@ import {
   normalizeGuardrailLines,
   scanPrototypeRouteGuardrails,
   scanUserSurfaceGuardrails,
+  USER_SURFACE_GUARDRAIL_RUNTIME,
 } from './user-surface-guardrails';
 
 test('toContentDisplayTitle removes trailing Flow from content titles only', () => {
@@ -132,6 +136,31 @@ test('scanUserSurfaceGuardrails catches source slugs followed by punctuation', (
     { signal: 'KKday', line: 'KKday, travel prep' },
     { signal: 'AJD', line: 'AJD. move checklist' },
   ]);
+});
+
+test('source slug regex source is exported as the capture-script runtime rule', () => {
+  assert.ok(USER_SURFACE_GUARDRAIL_RUNTIME.sourceSlugBoundarySource.includes('\\p{Script=Hangul}'));
+  assert.ok(USER_SURFACE_GUARDRAIL_RUNTIME.sourceSlugBoundarySource.includes('D-'));
+  assert.ok(USER_SURFACE_GUARDRAIL_RUNTIME.sourceSlugBoundarySource.includes('(?![\\p{L}\\p{N}_])'));
+
+  const regex = createSourceSlugHitRegex('DeskLab');
+  assert.equal(regex.test('DeskLab· moving schedule'), true);
+  assert.equal(regex.test('DeskLab) moving schedule'), true);
+  assert.equal(regex.test('DeskLab. moving schedule'), true);
+  assert.equal(regex.test('DeskLabsource moving schedule'), false);
+});
+
+test('capture script does not keep stale source slug or GitHub path copies', () => {
+  const script = fs.readFileSync(
+    path.join(process.cwd(), 'scripts', 'content-audit', 'capture-claude-p7-final-review-package.mjs'),
+    'utf8',
+  );
+
+  assert.ok(script.includes('scanUserSurfaceGuardrails'));
+  assert.ok(script.includes('scanPrototypeRouteGuardrails'));
+  assert.ok(script.includes('findFirstTaskRepetitionHits'));
+  assert.equal(script.includes('(?=$|\\s|[가-힣]|D-)'), false);
+  assert.equal(script.includes('blob/${branchName}/flow-mvp'), false);
 });
 
 test('user surface guardrail helpers lock positive and negative display cases', () => {

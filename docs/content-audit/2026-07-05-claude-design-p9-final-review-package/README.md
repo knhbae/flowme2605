@@ -1,9 +1,9 @@
 # FlowMe Claude Design P9 Final Review Package
 
-- Generated: 2026-07-05T14:09:53.261Z
+- Generated: 2026-07-05T21:18:25.567Z
 - Branch: `codex/flowme-uxui-second-loop`
-- UI baseline commit: `decd1a8`
-- Package generated from commit: `decd1a8`
+- UI baseline commit: `f668e74`
+- Package generated from commit: `f668e74`
 - Package commit ref: `git commit containing this generated package`
 - Viewport: 390x844
 
@@ -51,8 +51,8 @@ For P9, it additionally closes P9-01 to P9-07: data-driven guardrail coverage, a
 
 ## GitHub Links
 
-- [Source root](https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp)
-- [E2E guardrails](https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/tests/e2e/flow-mvp.spec.ts)
-- [Workbench source density E2E](https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/tests/e2e/workbench-source-density.spec.ts)
-- [Public share CTA/tab-order E2E](https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/tests/e2e/public-share-cta-order.spec.ts)
-- [Capture script](https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/flow-mvp/scripts/content-audit/capture-claude-p7-final-review-package.mjs)
+- [Source root](https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop)
+- [E2E guardrails](https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/tests/e2e/flow-mvp.spec.ts)
+- [Workbench source density E2E](https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/tests/e2e/workbench-source-density.spec.ts)
+- [Public share CTA/tab-order E2E](https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/tests/e2e/public-share-cta-order.spec.ts)
+- [Capture script](https://github.com/knhbae/flowme2605/blob/codex/flowme-uxui-second-loop/scripts/content-audit/capture-claude-p7-final-review-package.mjs)

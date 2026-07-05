@@ -1,12 +1,22 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync, spawn } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import crypto from 'node:crypto';
 import { chromium } from '@playwright/test';
+import { tsImport } from 'tsx/esm/api';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..', '..');
+const guardrailModule = await tsImport(
+  pathToFileURL(path.join(repoRoot, 'lib', 'flow', 'user-surface-guardrails.ts')).href,
+  import.meta.url,
+);
+const {
+  findFirstTaskRepetitionHits,
+  scanPrototypeRouteGuardrails,
+  scanUserSurfaceGuardrails,
+} = guardrailModule;
 const packageName = process.env.FLOWME_EVIDENCE_PACKAGE_NAME || '2026-07-05-claude-design-p7-final-review-package';
 const packageCycleMatch = packageName.match(/-p(\d+)-/i);
 const inferredReviewCycle = packageCycleMatch ? `P${packageCycleMatch[1]}` : 'P7';
@@ -22,7 +32,7 @@ const packageGeneratedFromCommit = uiBaselineCommit;
 const packageCommitRef = process.env.FLOWME_EVIDENCE_PACKAGE_COMMIT || 'git commit containing this generated package';
 const baseURL = process.env.FLOWME_EVIDENCE_BASE_URL || `http://127.0.0.1:${process.env.FLOWME_EVIDENCE_PORT || '3221'}`;
 const shouldStartServer = !process.env.FLOWME_EVIDENCE_BASE_URL;
-const githubBase = `https://github.com/knhbae/flowme2605/blob/${branchName}/flow-mvp`;
+const githubBase = `https://github.com/knhbae/flowme2605/blob/${branchName}`;
 
 const forbiddenInternalTerms = [
   /\bdemo\b/i,
@@ -42,25 +52,6 @@ const forbiddenInternalTerms = [
 ];
 
 const sourceSlugSignals = getDynamicSourceSlugSignals();
-const structuralDisplayTerms = [
-  /\bsource\s*trace\b/i,
-  /일정\s*지도/,
-  /저장한\s*지도/,
-  /지도\s*일정/,
-  /지도\s*루틴/,
-  /(?:Flow\s*)?상태판/u,
-  /Flow\s*보드/u,
-  /Flow\s*패널/u,
-  /실행\s*큐/u,
-  /(?:source|소스|내부)\s*트레이스/iu,
-];
-const rawIsoDatePattern = /\b20\d{2}-\d{2}-\d{2}\b/;
-const prototypeRawRouteSlugPattern = /\b(?:restart|prototype)\s*\/\s*[a-z0-9][a-z0-9-]*\b|\/restart\/[a-z0-9][a-z0-9-]*/i;
-const prototypeEnglishWeekdayPattern = /\b(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)\b/;
-const prototypeEnglishUiVerbPattern = /\b(?:download|copy|sync|import)\b/i;
-const prototypeEnglishMonthTimePattern = /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\b|\b(?:AM|PM)\b/;
-const prototypeMixedExportLanguagePattern = /\bexport\b|export(?=[\uAC00-\uD7A3\s.,!?])/i;
-const allowedFlowSuffixLines = new Set(['Flow', '내 Flow', 'Flow 찾기', 'FlowMe', '내 Flow에 저장', '내 Flow에서 보기']);
 
 const now = '2026-05-28T09:00:00+09:00';
 
@@ -429,7 +420,7 @@ async function captureWorkbenchOpenDetails(page, route, file, label) {
 }
 
 async function scanPage(page, options = {}) {
-  return page.evaluate((payload) => {
+  const pageScan = await page.evaluate((payload) => {
     const bodyText = document.body.innerText;
     const lines = bodyText
       .split(/\n+/)
@@ -485,28 +476,7 @@ async function scanPage(page, options = {}) {
       }
     }
     const normalizedPrimaryLines = uniqueLines(primaryLines);
-    const countedPrimaryLines = primaryLines.map(normalizeLine).filter(Boolean);
     const normalizedSourceLines = uniqueLines(sourceLines);
-    const matchesAgainstLines = (targetLines, patterns) => patterns.flatMap((pattern) => {
-      const regex = new RegExp(pattern.source, pattern.flags);
-      return targetLines.filter((line) => regex.test(line)).map((line) => ({ pattern: pattern.label, line }));
-    });
-    const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const sourceSlugHits = normalizedPrimaryLines.flatMap((line) =>
-      payload.sourceSlugSignals
-        .filter((signal) => {
-          const regex = new RegExp(`(^|[^\\p{L}\\p{N}_])${escapeRegExp(signal)}(?=$|\\s|[가-힣]|D-)`, 'iu');
-          return regex.test(line);
-        })
-        .map((signal) => ({ signal, line })),
-    );
-    const findRepeatedTitleHits = (targetLines, title, maxCount) => {
-      const normalizedTitle = normalizeLine(title);
-      if (!normalizedTitle) return [];
-      const matchingLines = targetLines.filter((line) => line.includes(normalizedTitle));
-      if (matchingLines.length <= maxCount) return [];
-      return [{ title: normalizedTitle, count: matchingLines.length, extraLines: matchingLines.slice(maxCount) }];
-    };
     const firstTaskTitle = normalizeLine(document.querySelector('[data-testid="my-flow-now-section"] [data-testid="my-flow-mobile-continuation-title"]')?.textContent ?? '');
     const nowSectionLines = collectElementLines(document.querySelector('[data-testid="my-flow-now-section"]'));
     const myFlowQueueLabelLines = uniqueLines([
@@ -524,26 +494,9 @@ async function scanPage(page, options = {}) {
       return lines.filter((line) => regex.test(line)).map((line) => ({ pattern: pattern.label, line }));
     });
 
-    const rawIsoDateRegex = new RegExp(payload.rawIsoDatePattern);
-    const rawIsoLines = normalizedPrimaryLines.filter((line) => rawIsoDateRegex.test(line));
-
-    const flowSuffixLines = normalizedPrimaryLines
-      .filter((line) => /[\p{L}\p{N})\]]\s*Flow$/u.test(line))
-      .filter((line) => !payload.allowedFlowSuffixLines.includes(line));
-    const structuralDisplayHits = matchesAgainstLines(normalizedPrimaryLines, payload.structuralDisplayTerms);
-    const firstTaskRepetitionHits = firstTaskTitle ? findRepeatedTitleHits(nowSectionLines, firstTaskTitle, 1) : [];
-    const prototypeRawRouteSlugRegex = new RegExp(payload.prototypeRawRouteSlugPattern, 'i');
-    const prototypeEnglishWeekdayRegex = new RegExp(payload.prototypeEnglishWeekdayPattern);
-    const prototypeEnglishUiVerbRegex = new RegExp(payload.prototypeEnglishUiVerbPattern, 'i');
-    const prototypeEnglishMonthTimeRegex = new RegExp(payload.prototypeEnglishMonthTimePattern);
-    const prototypeMixedExportLanguageRegex = new RegExp(payload.prototypeMixedExportLanguagePattern, 'i');
     const prototypeExportEntryLabels = Array.from(document.querySelectorAll('[data-testid="moving-mobile-export-actions"] button'))
       .map((element) => normalizeLine(element.textContent ?? ''))
       .filter(Boolean);
-    const prototypeDuplicateExportEntryHits = Array.from(new Set(prototypeExportEntryLabels)).flatMap((label) => {
-      const count = countedPrimaryLines.filter((line) => line.includes(label)).length;
-      return count > 1 ? [{ label, count }] : [];
-    });
 
     const rectFor = (selector) => {
       const element = document.querySelector(selector);
@@ -633,18 +586,25 @@ async function scanPage(page, options = {}) {
       firstFocusableLabels: focusableEntries.map((entry) => entry.text).filter(Boolean).slice(0, 18),
       internalHits: matches(payload.forbiddenInternalTerms),
       sourceSlugSignals: payload.sourceSlugSignals,
-      sourceSlugHits,
-      structuralDisplayHits,
-      rawIsoLines,
-      flowSuffixLines,
-      firstTaskRepetitionHits,
+      sourceSlugHits: [],
+      structuralDisplayHits: [],
+      rawIsoLines: [],
+      flowSuffixLines: [],
+      firstTaskRepetitionHits: [],
       prototypeDisplayGateHits: {
-        rawRouteSlugHits: normalizedPrimaryLines.filter((line) => prototypeRawRouteSlugRegex.test(line)),
-        englishWeekdayHits: normalizedPrimaryLines.filter((line) => prototypeEnglishWeekdayRegex.test(line)),
-        englishUiVerbHits: normalizedPrimaryLines.filter((line) => prototypeEnglishUiVerbRegex.test(line)),
-        englishMonthTimeHits: normalizedPrimaryLines.filter((line) => prototypeEnglishMonthTimeRegex.test(line)),
-        mixedExportLanguageHits: normalizedPrimaryLines.filter((line) => prototypeMixedExportLanguageRegex.test(line)),
-        duplicateExportEntryHits: prototypeDuplicateExportEntryHits,
+        rawRouteSlugHits: [],
+        englishWeekdayHits: [],
+        englishUiVerbHits: [],
+        englishMonthTimeHits: [],
+        mixedExportLanguageHits: [],
+        duplicateExportEntryHits: [],
+      },
+      guardrailRuntimeInputs: {
+        normalizedPrimaryLines,
+        normalizedSourceLines,
+        nowSectionLines,
+        firstTaskTitle,
+        prototypeExportEntryLabels,
       },
       repetitionCounts: {
         countScope: 'my-flow-queue-label-surfaces',
@@ -699,17 +659,45 @@ async function scanPage(page, options = {}) {
     };
   }, {
     options,
-    rawIsoDatePattern: rawIsoDatePattern.source,
-    prototypeRawRouteSlugPattern: prototypeRawRouteSlugPattern.source,
-    prototypeEnglishWeekdayPattern: prototypeEnglishWeekdayPattern.source,
-    prototypeEnglishUiVerbPattern: prototypeEnglishUiVerbPattern.source,
-    prototypeEnglishMonthTimePattern: prototypeEnglishMonthTimePattern.source,
-    prototypeMixedExportLanguagePattern: prototypeMixedExportLanguagePattern.source,
-    allowedFlowSuffixLines: Array.from(allowedFlowSuffixLines),
     forbiddenInternalTerms: forbiddenInternalTerms.map((term) => ({ label: term.toString(), source: term.source, flags: term.flags })),
-    structuralDisplayTerms: structuralDisplayTerms.map((term) => ({ label: term.toString(), source: term.source, flags: term.flags })),
     sourceSlugSignals,
   });
+
+  const { guardrailRuntimeInputs, ...record } = pageScan;
+  const primaryLines = guardrailRuntimeInputs?.normalizedPrimaryLines ?? [];
+  const nowSectionLines = guardrailRuntimeInputs?.nowSectionLines ?? [];
+  const firstTaskTitle = guardrailRuntimeInputs?.firstTaskTitle ?? '';
+  const userSurfaceGuardrails = scanUserSurfaceGuardrails({
+    primaryLines,
+    sourceSlugSignals,
+  });
+  const prototypeRouteGuardrails = scanPrototypeRouteGuardrails({
+    primaryLines,
+    exportEntryLabels: guardrailRuntimeInputs?.prototypeExportEntryLabels ?? [],
+  });
+  const firstTaskRepetitionHits = firstTaskTitle
+    ? findFirstTaskRepetitionHits(nowSectionLines, firstTaskTitle, { maxCount: 1 })
+    : [];
+
+  return {
+    ...record,
+    sourceSlugSignals: userSurfaceGuardrails.sourceSlugSignals,
+    sourceSlugHits: userSurfaceGuardrails.sourceSlugHits,
+    structuralDisplayHits: userSurfaceGuardrails.structuralDisplayHits.map((line) => ({
+      pattern: 'user-surface-guardrails',
+      line,
+    })),
+    rawIsoLines: userSurfaceGuardrails.rawIsoDateHits,
+    flowSuffixLines: userSurfaceGuardrails.trailingFlowSuffixHits,
+    firstTaskRepetitionHits,
+    prototypeDisplayGateHits: prototypeRouteGuardrails,
+    repetitionCounts: {
+      ...record.repetitionCounts,
+      firstTaskTitle: firstTaskTitle
+        ? nowSectionLines.filter((line) => line.includes(firstTaskTitle)).length
+        : 0,
+    },
+  };
 }
 
 function summarizeEvidence(records) {
