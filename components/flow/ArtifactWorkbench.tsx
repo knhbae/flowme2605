@@ -356,8 +356,16 @@ function getWorkbenchItemDetail(bundle: FlowBundle, itemId: string): WorkbenchIt
   return bundle.itemDetails?.find((detail) => detail.item_id === itemId);
 }
 
-function WorkbenchDetailDisclosure({ detail }: { detail?: WorkbenchItemDetail }) {
-  if (!detail?.why && !detail?.how && !detail?.completion_criteria && !detail?.caution && !detail?.links?.length) return null;
+function WorkbenchDetailDisclosure({
+  detail,
+  showSourceLinks = true,
+}: {
+  detail?: WorkbenchItemDetail;
+  showSourceLinks?: boolean;
+}) {
+  if (!detail) return null;
+  const visibleLinks = showSourceLinks ? detail.links ?? [] : [];
+  if (!detail.why && !detail.how && !detail.completion_criteria && !detail.caution && !visibleLinks.length) return null;
 
   return (
     <details className={FLOWME_DISCLOSURE_CLASS}>
@@ -367,9 +375,9 @@ function WorkbenchDetailDisclosure({ detail }: { detail?: WorkbenchItemDetail })
         {detail.completion_criteria ? <p><b>완료:</b> {detail.completion_criteria}</p> : null}
         {detail.why ? <p><b>이유:</b> {detail.why}</p> : null}
         {detail.caution ? <p className="text-amber-800"><b>주의:</b> {detail.caution}</p> : null}
-        {detail.links?.length ? (
+        {visibleLinks.length ? (
           <div className="flex flex-wrap gap-2 pt-1">
-            {detail.links.map((link) => (
+            {visibleLinks.map((link) => (
               <a key={`${link.label}-${link.url}`} className="rounded-xl border border-[#D8D5CD] bg-white px-2 py-1 text-xs font-semibold text-[#6E6B64] hover:border-[#3654FF]/40 hover:text-[#3654FF]" href={link.url} target="_blank" rel="noreferrer">
                 {toUserFacingSourceTitle(link.label)}
               </a>
@@ -494,7 +502,7 @@ function TimelineWorkbench({
                     <span className="font-mono text-xs font-semibold text-[#3654FF]">{row.startDate ? `${row.timing} · ${row.startDate.slice(5)}` : row.timing}</span>
                     <span className={`font-medium ${checks[row.id] ? 'text-[#A7A39A] line-through' : 'text-[#1B1A17]'}`}>{row.title}</span>
                   </label>
-                  <WorkbenchDetailDisclosure detail={detail} />
+                  <WorkbenchDetailDisclosure detail={detail} showSourceLinks={false} />
                 </div>
               );
             })}
@@ -2274,7 +2282,7 @@ function MaintenanceRoutineWorkbench({
                     {isLongCycle ? <span className="ml-2 rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-[#8A5A12]">1~2년마다</span> : null}
                   </span>
                 </label>
-                <WorkbenchDetailDisclosure detail={detail} />
+                <WorkbenchDetailDisclosure detail={detail} showSourceLinks={false} />
               </div>
             );
           })}
@@ -2522,7 +2530,7 @@ function ChecklistWorkbench({
                   />
                   <span className={`font-medium ${checks[item.id] ? 'text-[#A7A39A] line-through' : 'text-[#1B1A17]'}`}>{item.title}</span>
                 </label>
-                <WorkbenchDetailDisclosure detail={detail} />
+                <WorkbenchDetailDisclosure detail={detail} showSourceLinks={false} />
               </div>
             );
           })}

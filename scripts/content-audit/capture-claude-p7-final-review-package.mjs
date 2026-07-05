@@ -100,6 +100,8 @@ async function main() {
     await captureCleanRoute(page, '/f/washer-tub-clean-monthly', '10-workbench-washer-mobile.png', 'Washer workbench');
     await captureCleanRoute(page, '/f/new-car-delivery-check', '11-workbench-new-car-mobile.png', 'New car checklist workbench');
     await captureCleanRoute(page, '/f/used-car-buying-check', '12-workbench-used-car-mobile.png', 'Used car checklist workbench');
+    await captureWorkbenchOpenDetails(page, '/f/new-car-delivery-check', '25-workbench-new-car-open-details-mobile.png', 'New car checklist row details without repeated source links');
+    await captureWorkbenchOpenDetails(page, '/f/used-car-buying-check', '26-workbench-used-car-open-details-mobile.png', 'Used car checklist row details without repeated source links');
 
     await setSavedFlows(page, savedFixtures.moving);
     await captureRoute(page, '/my?savedMap=moving-d30', '13-post-save-my-moving-mobile.png', 'Post-save My Flow for moving map', {
@@ -382,6 +384,30 @@ async function openOverdueSheet(page) {
   }
 }
 
+async function captureWorkbenchOpenDetails(page, route, file, label) {
+  await page.goto(route);
+  await settle(page);
+  const listCard = page.getByTestId('artifact-list-card');
+  await listCard.waitFor({ state: 'visible' });
+  await listCard.scrollIntoViewIfNeeded();
+  await settle(page);
+
+  const summaries = listCard.locator('details summary');
+  const count = await summaries.count();
+  for (let index = 0; index < count; index += 1) {
+    const summary = summaries.nth(index);
+    await summary.scrollIntoViewIfNeeded();
+    await summary.click();
+  }
+  await settle(page);
+
+  await captureCurrent(page, file, label, {
+    category: 'field-checklist-source-density',
+    route,
+    scrollPurpose: 'open-row-details-source-density',
+  });
+}
+
 async function scanPage(page, options = {}) {
   return page.evaluate((payload) => {
     const bodyText = document.body.innerText;
@@ -585,6 +611,9 @@ async function scanPage(page, options = {}) {
         inventoryRows: document.querySelectorAll('[data-testid="my-flow-group-row"]').length,
         restartInlineExportButtons: document.querySelectorAll('#moving-restart-export-panel button').length,
         restartMobileExportButtons: document.querySelectorAll('[data-testid="moving-mobile-export-actions"] button').length,
+        workbenchRowDetailCount: document.querySelectorAll('[data-testid="artifact-list-card"] details').length,
+        workbenchRowDetailSourceLinkCount: document.querySelectorAll('[data-testid="artifact-list-card"] details a[href]').length,
+        workbenchSourceAccessLinkCount: document.querySelectorAll('[data-testid="flow-source-card"] a[href], [data-testid="used-car-source-bridge"] a[href], [data-testid="maintenance-source-bridge"] a[href]').length,
         restartScheduleDateCheck: {
           firstThreeDateLabels: restartFirstThreeDateLabels,
           firstThreeTitles: restartNextTaskTitles.slice(0, 3),
@@ -613,6 +642,7 @@ async function scanPage(page, options = {}) {
 
 function summarizeEvidence(records) {
   const normal = records.filter((record) => !record.prototypeBucket);
+  const fieldChecklistSourceDensity = records.filter((record) => record.category === 'field-checklist-source-density');
   const restart = records.filter((record) => record.prototypeBucket);
   const restartSourceFrame = records.find((record) => record.id === '22-restart-moving-source-export-mobile');
   const restartBottomFrame = records.find((record) => record.id === '23-restart-moving-bottom-mobile');
@@ -642,6 +672,9 @@ function summarizeEvidence(records) {
     0),
     normalRouteLegacyOverdueLabelCount: normal.reduce((sum, record) => sum + (record.repetitionCounts?.legacyOverdueLabels ?? 0), 0),
     normalRouteHorizontalOverflowCount: normal.filter((record) => !record.noHorizontalOverflow).length,
+    fieldWorkbenchRowDetailSourceLinkCount: fieldChecklistSourceDensity.reduce((sum, record) => sum + (record.markers.workbenchRowDetailSourceLinkCount ?? 0), 0),
+    fieldWorkbenchSourceAccessLinkCount: fieldChecklistSourceDensity.reduce((sum, record) => sum + (record.markers.workbenchSourceAccessLinkCount ?? 0), 0),
+    fieldWorkbenchOpenDetailCounts: fieldChecklistSourceDensity.map((record) => record.markers.workbenchRowDetailCount ?? 0),
     restartPrototypeRawIsoHitCount: restart.reduce((sum, record) => sum + record.rawIsoLines.length, 0),
     restartPrototypeRawRouteSlugHitCount: restart.reduce((sum, record) => sum + (record.prototypeDisplayGateHits?.rawRouteSlugHits?.length ?? 0), 0),
     restartPrototypeEnglishWeekdayHitCount: restart.reduce((sum, record) => sum + (record.prototypeDisplayGateHits?.englishWeekdayHits?.length ?? 0), 0),
@@ -679,7 +712,7 @@ function renderReadme(evidence) {
 - Package commit ref: \`${evidence.packageCommitRef}\`
 - Viewport: ${viewport.width}x${viewport.height}
 
-This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, the P8-02 restart/prototype promotion gate, the P8-03/P8-04 My Flow overdue label/status corrections, the P8-05/P8-06/P8-08 evidence/package metadata cleanup, and the P8-07 restart date-display decision.
+This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, the P8-02 restart/prototype promotion gate, the P8-03/P8-04 My Flow overdue label/status corrections, the P8-05/P8-06/P8-08 evidence/package metadata cleanup, the P8-07 restart date-display decision, and the P8-09 field-checklist source-density rule.
 
 ## Files
 
@@ -699,6 +732,8 @@ This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, t
 - Normal route queue label scope: ${evidence.summary.normalRouteQueueLabelScope}
 - Normal route legacy overdue label hits: ${evidence.summary.normalRouteLegacyOverdueLabelCount}
 - Normal route horizontal overflow count: ${evidence.summary.normalRouteHorizontalOverflowCount}
+- Field workbench row-detail source link count: ${evidence.summary.fieldWorkbenchRowDetailSourceLinkCount}
+- Field workbench source access link count: ${evidence.summary.fieldWorkbenchSourceAccessLinkCount}
 - Restart prototype raw ISO hits: ${evidence.summary.restartPrototypeRawIsoHitCount}
 - Restart prototype raw route slug hits: ${evidence.summary.restartPrototypeRawRouteSlugHitCount}
 - Restart prototype English weekday hits: ${evidence.summary.restartPrototypeEnglishWeekdayHitCount}
@@ -725,7 +760,7 @@ function renderAudit(evidence) {
 
 ## Scope
 
-P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata, and P8-07 confirms the \`/restart/moving-d30\` first-three-row date repetition as an intentional D-30 milestone group rather than a date-distribution bug. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
+P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata, P8-07 confirms the \`/restart/moving-d30\` first-three-row date repetition as an intentional D-30 milestone group rather than a date-distribution bug, and P8-09 lowers repeated row-level source links in field checklist workbenches. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
 
 ## Baselines Covered
 
@@ -741,6 +776,7 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 - P8-06: My Flow label repetition counters use \`my-flow-queue-label-surfaces\`, not full page body text.
 - P8-07: \`/restart/moving-d30\` first three visible rows share the same D-30 date because all three source rows are D-30 milestones; full schedule/export rows remain distributed across later dates.
 - P8-08: UI baseline commit and package generation commit metadata are separated.
+- P8-09: field checklist row details keep execution criteria/details, but repeated row-level source links are suppressed; source access remains available in the source/reference area.
 
 ## Summary
 
@@ -777,6 +813,12 @@ The restart source/export frame and bottom frame must remain distinct:
 - full schedule unique offset labels: ${evidence.summary.restartPrototypeFullScheduleUniqueOffsetLabelCount}
 - date distribution judgment: ${evidence.summary.restartPrototypeDateDistributionJudgment}
 
+## Field Checklist Source Density
+
+- row detail source link count: ${evidence.summary.fieldWorkbenchRowDetailSourceLinkCount}
+- source/reference access link count: ${evidence.summary.fieldWorkbenchSourceAccessLinkCount}
+- open detail counts: ${JSON.stringify(evidence.summary.fieldWorkbenchOpenDetailCounts)}
+
 ## Commit Metadata
 
 - UI baseline commit: \`${evidence.uiBaselineCommit}\`
@@ -809,7 +851,10 @@ function renderPrompt(evidence) {
    - 모바일 390px 좌우 overflow
    - 하단 fixed/sticky가 마지막 버튼/행/agenda를 가림
 5. /restart/moving-d30 prototype bucket을 별도 관리하는 기준이 충분한지 확인
-6. 단순 평가로 끝내지 말고, 필요하면 다음 backlog를 Blocking/High/Medium/Low로 작성
+6. P8-09 field checklist workbench source-density guardrail이 충분한지 확인
+   - new-car / used-car row detail source link count가 0인지
+   - source/reference access link count가 0보다 크게 유지되는지
+7. 단순 평가로 끝내지 말고, 필요하면 다음 backlog를 Blocking/High/Medium/Low로 작성
 
 주요 링크:
 - P7 review package README: ${githubBase}/docs/content-audit/${packageName}/README.md
@@ -898,6 +943,8 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.restartPrototypeSourceBottomFramesDistinct ? 'yes' : 'no'}</b><span>restart source/bottom distinct</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeFirstThreeSameD30Milestone ? 'yes' : 'no'}</b><span>restart first 3 = D-30 group</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeFullScheduleUniqueDateLabelCount}</b><span>restart full schedule dates</span></div>
+      <div class="stat"><b>${evidence.summary.fieldWorkbenchRowDetailSourceLinkCount}</b><span>field row source links</span></div>
+      <div class="stat"><b>${evidence.summary.fieldWorkbenchSourceAccessLinkCount}</b><span>field source access links</span></div>
     </section>
     <section class="grid">
       ${cards}
