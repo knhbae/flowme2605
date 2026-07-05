@@ -2,7 +2,7 @@
 
 ## Scope
 
-P7-06 closes the review loop after P7-01 to P7-05, and P8-01 generalizes the same guardrails for new seed/source/route additions. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
+P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, and P8-02 expands the restart/prototype promotion gate. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
 
 ## Baselines Covered
 
@@ -12,6 +12,7 @@ P7-06 closes the review loop after P7-01 to P7-05, and P8-01 generalizes the sam
 - P7-04: Home shows a small curated recommendation set, not a single fixed experiment.
 - P7-05: Public `/f` browse links remain secondary to `내 Flow에 저장`.
 - P7-06/P8-01: Normal route scan buckets stay at zero for internal labels, dynamic source slug leaks, structural title suffixes, raw ISO dates, first-task repetition, and mobile overflow.
+- P8-02: Restart/prototype routes must also avoid raw route slugs, English weekday labels, mixed export-language copy, and duplicate export entry points before promotion.
 
 ## Summary
 
@@ -25,7 +26,16 @@ P7-06 closes the review loop after P7-01 to P7-05, and P8-01 generalizes the sam
   "normalRouteFirstTaskRepetitionHitCount": 0,
   "normalRouteHorizontalOverflowCount": 0,
   "restartPrototypeRawIsoHitCount": 0,
+  "restartPrototypeRawRouteSlugHitCount": 0,
+  "restartPrototypeEnglishWeekdayHitCount": 0,
+  "restartPrototypeMixedExportLanguageHitCount": 0,
+  "restartPrototypeDuplicateExportEntryHitCount": 0,
   "restartPrototypeHorizontalOverflowCount": 0,
+  "restartPrototypeInlineExportButtonCounts": [
+    4,
+    4,
+    4
+  ],
   "restartPrototypeExportButtonCounts": [
     1,
     1,
@@ -67,7 +77,10 @@ P7-06 closes the review loop after P7-01 to P7-05, and P8-01 generalizes the sam
 `/restart/moving-d30` remains outside the primary 4-tab IA. It is tracked as a prototype route, but it must still pass the display gate before any future promotion:
 
 - no user-facing raw ISO dates
-- no duplicated primary export button sets
+- no raw route slug such as `restart / moving-d30`
+- no English weekday labels such as `Sun Mon Tue`
+- no mixed export-language copy such as `export` plus Korean copy
+- no duplicated primary export entry labels
 - no source brand slug as title/subtitle copy
 - no horizontal overflow at 390px
 

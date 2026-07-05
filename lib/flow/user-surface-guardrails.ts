@@ -25,7 +25,27 @@ export type UserSurfaceGuardrailResult = {
   firstTaskRepetitionHits: FirstTaskRepetitionHit[];
 };
 
+export type DuplicatePrototypeExportEntryHit = {
+  label: string;
+  count: number;
+};
+
+export type PrototypeRouteGuardrailInput = {
+  primaryLines: string[];
+  exportEntryLabels?: string[];
+};
+
+export type PrototypeRouteGuardrailResult = {
+  rawRouteSlugHits: string[];
+  englishWeekdayHits: string[];
+  mixedExportLanguageHits: string[];
+  duplicateExportEntryHits: DuplicatePrototypeExportEntryHit[];
+};
+
 const RAW_ISO_DATE_PATTERN = /\b20\d{2}-\d{2}-\d{2}\b/u;
+const RAW_PROTOTYPE_ROUTE_SLUG_PATTERN = /\b(?:restart|prototype)\s*\/\s*[a-z0-9][a-z0-9-]*\b|\/restart\/[a-z0-9][a-z0-9-]*/iu;
+const ENGLISH_WEEKDAY_PATTERN = /\b(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)\b/u;
+const MIXED_EXPORT_LANGUAGE_PATTERN = /\bexport\b|export(?=[\p{Script=Hangul}\s.,!?])/iu;
 const STRUCTURAL_DISPLAY_PATTERNS = [
   /\bFlow Map\b/iu,
   /일정\s*지도/u,
@@ -142,6 +162,31 @@ export function findRawIsoDateHits(primaryLines: string[]): string[] {
   return normalizeGuardrailLines(primaryLines).filter((line) => RAW_ISO_DATE_PATTERN.test(line));
 }
 
+export function findPrototypeRawRouteSlugHits(primaryLines: string[]): string[] {
+  return normalizeGuardrailLines(primaryLines).filter((line) => RAW_PROTOTYPE_ROUTE_SLUG_PATTERN.test(line));
+}
+
+export function findPrototypeEnglishWeekdayHits(primaryLines: string[]): string[] {
+  return normalizeGuardrailLines(primaryLines).filter((line) => ENGLISH_WEEKDAY_PATTERN.test(line));
+}
+
+export function findPrototypeMixedExportLanguageHits(primaryLines: string[]): string[] {
+  return normalizeGuardrailLines(primaryLines).filter((line) => MIXED_EXPORT_LANGUAGE_PATTERN.test(line));
+}
+
+export function findDuplicatePrototypeExportEntryHits(
+  primaryLines: string[],
+  exportEntryLabels: string[] = [],
+): DuplicatePrototypeExportEntryHit[] {
+  const normalizedLines = normalizeGuardrailLines(primaryLines);
+  const labels = Array.from(new Set(exportEntryLabels.map(normalizeGuardrailLine).filter(Boolean)));
+
+  return labels.flatMap((label) => {
+    const count = normalizedLines.filter((line) => line.includes(label)).length;
+    return count > 1 ? [{ label, count }] : [];
+  });
+}
+
 export function countLineOccurrences(lines: string[], needle: string): number {
   const normalizedNeedle = normalizeGuardrailLine(needle);
   if (!normalizedNeedle) return 0;
@@ -194,6 +239,17 @@ export function scanUserSurfaceGuardrails(input: UserSurfaceGuardrailInput): Use
     firstTaskRepetitionHits: (input.firstTaskTitles ?? []).flatMap((title) =>
       findFirstTaskRepetitionHits(primaryLines, title, { maxCount: 1 }),
     ),
+  };
+}
+
+export function scanPrototypeRouteGuardrails(input: PrototypeRouteGuardrailInput): PrototypeRouteGuardrailResult {
+  const primaryLines = normalizeGuardrailLines(input.primaryLines);
+
+  return {
+    rawRouteSlugHits: findPrototypeRawRouteSlugHits(primaryLines),
+    englishWeekdayHits: findPrototypeEnglishWeekdayHits(primaryLines),
+    mixedExportLanguageHits: findPrototypeMixedExportLanguageHits(primaryLines),
+    duplicateExportEntryHits: findDuplicatePrototypeExportEntryHits(primaryLines, input.exportEntryLabels),
   };
 }
 

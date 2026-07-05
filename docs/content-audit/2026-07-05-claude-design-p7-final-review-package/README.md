@@ -1,11 +1,11 @@
 # FlowMe Claude Design P7 Final Review Package
 
-- Generated: 2026-07-05T00:08:05.690Z
+- Generated: 2026-07-05T00:58:20.748Z
 - Branch: `codex/flowme-uxui-second-loop`
-- Commit: `28736b8`
+- Commit: `2c907a7`
 - Viewport: 390x844
 
-This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails and the P8-01 generalized scan rules.
+This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, and the P8-02 restart/prototype promotion gate.
 
 ## Files
 
@@ -24,6 +24,10 @@ This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails an
 - Normal route first task repetition hits: 0
 - Normal route horizontal overflow count: 0
 - Restart prototype raw ISO hits: 0
+- Restart prototype raw route slug hits: 0
+- Restart prototype English weekday hits: 0
+- Restart prototype mixed export-language hits: 0
+- Restart prototype duplicate export-entry hits: 0
 
 ## GitHub Links
 

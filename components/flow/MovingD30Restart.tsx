@@ -22,6 +22,7 @@ import { toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import { FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
 
 const defaultMoveDate = '2026-06-27';
+const KOREAN_WEEKDAY_SHORT = ['일', '월', '화', '수', '목', '금', '토'];
 
 function sortItems(items: MovingRestartItem[]) {
   return items.slice().sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title));
@@ -276,7 +277,7 @@ export function MovingD30Restart() {
     <main className="min-h-screen bg-slate-100 px-2 py-3 pb-28 text-slate-950 sm:px-4 sm:py-8 lg:pb-8">
       <div className="mx-auto grid max-w-6xl gap-5 lg:grid-cols-[1fr_340px]">
         <section className="rounded-2xl border border-slate-200 bg-white px-3 py-4 shadow-sm sm:rounded-[28px] sm:p-6">
-          <p className="text-sm font-semibold text-blue-600">restart / moving-d30</p>
+          <p className="text-sm font-semibold text-blue-600">이사 준비 · 다시 시작</p>
           <h1 className="mt-3 text-4xl font-bold tracking-normal">이사 D-30 준비</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
             이사일을 넣으면 웹 체크리스트가 날짜별 캘린더와 실행표로 바뀝니다.
@@ -342,7 +343,7 @@ export function MovingD30Restart() {
               <div>
                 <h2 className="text-lg font-bold">생성된 캘린더</h2>
                 <p className="mt-1 text-sm leading-6 text-slate-600 sm:block">
-                  날짜를 끌어 옮기거나 아래 일정에서 편집한 뒤 export합니다.
+                  날짜를 끌어 옮기거나 아래 일정에서 편집한 뒤 내보냅니다.
                 </p>
               </div>
               <p className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
@@ -385,6 +386,7 @@ export function MovingD30Restart() {
                 initialView="dayGridMonth"
                 initialDate={visibleMonth}
                 headerToolbar={false}
+                dayHeaderContent={(args) => KOREAN_WEEKDAY_SHORT[args.date.getDay()]}
                 height="auto"
                 editable
                 events={events}
@@ -528,7 +530,7 @@ export function MovingD30Restart() {
 
         <aside className="space-y-4">
           <section id="moving-restart-export-panel" className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-lg font-bold">내 도구로 가져가기</h2>
+            <h2 className="text-lg font-bold">내보낼 파일</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
               수정한 일정 기준으로 캘린더 파일, 체크리스트, 시트, FlowMe 저장을 선택합니다.
             </p>
@@ -714,7 +716,7 @@ export function MovingD30Restart() {
             onClick={focusExportPanel}
             className="min-h-11 rounded-2xl bg-blue-600 px-4 text-sm font-bold text-white"
           >
-            내 도구로 가져가기
+            파일 받기 옵션
           </button>
         </div>
       </div>

@@ -36,6 +36,9 @@ const forbiddenInternalTerms = [
 const sourceSlugSignals = getDynamicSourceSlugSignals();
 const structuralDisplayTerms = [/일정\s*지도/, /저장한\s*지도/, /지도\s*일정/, /지도\s*루틴/];
 const rawIsoDatePattern = /\b20\d{2}-\d{2}-\d{2}\b/;
+const prototypeRawRouteSlugPattern = /\b(?:restart|prototype)\s*\/\s*[a-z0-9][a-z0-9-]*\b|\/restart\/[a-z0-9][a-z0-9-]*/i;
+const prototypeEnglishWeekdayPattern = /\b(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)\b/;
+const prototypeMixedExportLanguagePattern = /\bexport\b|export(?=[\uAC00-\uD7A3\s.,!?])/i;
 const allowedFlowSuffixLines = new Set(['Flow', '내 Flow', 'Flow 찾기', 'FlowMe', '내 Flow에 저장', '내 Flow에서 보기']);
 
 const now = '2026-05-28T09:00:00+09:00';
@@ -400,6 +403,7 @@ async function scanPage(page, options = {}) {
       }
     }
     const normalizedPrimaryLines = uniqueLines(primaryLines);
+    const countedPrimaryLines = primaryLines.map(normalizeLine).filter(Boolean);
     const normalizedSourceLines = uniqueLines(sourceLines);
     const matchesAgainstLines = (targetLines, patterns) => patterns.flatMap((pattern) => {
       const regex = new RegExp(pattern.source, pattern.flags);
@@ -437,6 +441,16 @@ async function scanPage(page, options = {}) {
       .filter((line) => !payload.allowedFlowSuffixLines.includes(line));
     const structuralDisplayHits = matchesAgainstLines(normalizedPrimaryLines, payload.structuralDisplayTerms);
     const firstTaskRepetitionHits = firstTaskTitle ? findRepeatedTitleHits(nowSectionLines, firstTaskTitle, 1) : [];
+    const prototypeRawRouteSlugRegex = new RegExp(payload.prototypeRawRouteSlugPattern, 'i');
+    const prototypeEnglishWeekdayRegex = new RegExp(payload.prototypeEnglishWeekdayPattern);
+    const prototypeMixedExportLanguageRegex = new RegExp(payload.prototypeMixedExportLanguagePattern, 'i');
+    const prototypeExportEntryLabels = Array.from(document.querySelectorAll('[data-testid="moving-mobile-export-actions"] button'))
+      .map((element) => normalizeLine(element.textContent ?? ''))
+      .filter(Boolean);
+    const prototypeDuplicateExportEntryHits = Array.from(new Set(prototypeExportEntryLabels)).flatMap((label) => {
+      const count = countedPrimaryLines.filter((line) => line.includes(label)).length;
+      return count > 1 ? [{ label, count }] : [];
+    });
 
     const rectFor = (selector) => {
       const element = document.querySelector(selector);
@@ -478,6 +492,12 @@ async function scanPage(page, options = {}) {
       rawIsoLines,
       flowSuffixLines,
       firstTaskRepetitionHits,
+      prototypeDisplayGateHits: {
+        rawRouteSlugHits: normalizedPrimaryLines.filter((line) => prototypeRawRouteSlugRegex.test(line)),
+        englishWeekdayHits: normalizedPrimaryLines.filter((line) => prototypeEnglishWeekdayRegex.test(line)),
+        mixedExportLanguageHits: normalizedPrimaryLines.filter((line) => prototypeMixedExportLanguageRegex.test(line)),
+        duplicateExportEntryHits: prototypeDuplicateExportEntryHits,
+      },
       repetitionCounts: {
         firstTaskTitle: firstTaskTitle ? countText(firstTaskTitle) : 0,
         firstTaskLabel: countText('먼저 할 일'),
@@ -500,12 +520,16 @@ async function scanPage(page, options = {}) {
         calendarSelectedDay: Boolean(document.querySelector('[data-testid="my-flow-calendar-selected-day"]')),
         statusSheetRows: document.querySelectorAll('[data-testid="my-flow-status-sheet-row"]').length,
         inventoryRows: document.querySelectorAll('[data-testid="my-flow-group-row"]').length,
+        restartInlineExportButtons: document.querySelectorAll('#moving-restart-export-panel button').length,
         restartMobileExportButtons: document.querySelectorAll('[data-testid="moving-mobile-export-actions"] button').length,
       },
     };
   }, {
     options,
     rawIsoDatePattern: rawIsoDatePattern.source,
+    prototypeRawRouteSlugPattern: prototypeRawRouteSlugPattern.source,
+    prototypeEnglishWeekdayPattern: prototypeEnglishWeekdayPattern.source,
+    prototypeMixedExportLanguagePattern: prototypeMixedExportLanguagePattern.source,
     allowedFlowSuffixLines: Array.from(allowedFlowSuffixLines),
     forbiddenInternalTerms: forbiddenInternalTerms.map((term) => ({ label: term.toString(), source: term.source, flags: term.flags })),
     structuralDisplayTerms: structuralDisplayTerms.map((term) => ({ label: term.toString(), source: term.source, flags: term.flags })),
@@ -525,7 +549,12 @@ function summarizeEvidence(records) {
     normalRouteFirstTaskRepetitionHitCount: normal.reduce((sum, record) => sum + (record.firstTaskRepetitionHits?.length ?? 0), 0),
     normalRouteHorizontalOverflowCount: normal.filter((record) => !record.noHorizontalOverflow).length,
     restartPrototypeRawIsoHitCount: restart.reduce((sum, record) => sum + record.rawIsoLines.length, 0),
+    restartPrototypeRawRouteSlugHitCount: restart.reduce((sum, record) => sum + (record.prototypeDisplayGateHits?.rawRouteSlugHits?.length ?? 0), 0),
+    restartPrototypeEnglishWeekdayHitCount: restart.reduce((sum, record) => sum + (record.prototypeDisplayGateHits?.englishWeekdayHits?.length ?? 0), 0),
+    restartPrototypeMixedExportLanguageHitCount: restart.reduce((sum, record) => sum + (record.prototypeDisplayGateHits?.mixedExportLanguageHits?.length ?? 0), 0),
+    restartPrototypeDuplicateExportEntryHitCount: restart.reduce((sum, record) => sum + (record.prototypeDisplayGateHits?.duplicateExportEntryHits?.length ?? 0), 0),
     restartPrototypeHorizontalOverflowCount: restart.filter((record) => !record.noHorizontalOverflow).length,
+    restartPrototypeInlineExportButtonCounts: restart.map((record) => record.markers.restartInlineExportButtons),
     restartPrototypeExportButtonCounts: restart.map((record) => record.markers.restartMobileExportButtons),
   };
 }
@@ -538,7 +567,7 @@ function renderReadme(evidence) {
 - Commit: \`${commit}\`
 - Viewport: ${viewport.width}x${viewport.height}
 
-This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails and the P8-01 generalized scan rules.
+This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, and the P8-02 restart/prototype promotion gate.
 
 ## Files
 
@@ -557,6 +586,10 @@ This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails an
 - Normal route first task repetition hits: ${evidence.summary.normalRouteFirstTaskRepetitionHitCount}
 - Normal route horizontal overflow count: ${evidence.summary.normalRouteHorizontalOverflowCount}
 - Restart prototype raw ISO hits: ${evidence.summary.restartPrototypeRawIsoHitCount}
+- Restart prototype raw route slug hits: ${evidence.summary.restartPrototypeRawRouteSlugHitCount}
+- Restart prototype English weekday hits: ${evidence.summary.restartPrototypeEnglishWeekdayHitCount}
+- Restart prototype mixed export-language hits: ${evidence.summary.restartPrototypeMixedExportLanguageHitCount}
+- Restart prototype duplicate export-entry hits: ${evidence.summary.restartPrototypeDuplicateExportEntryHitCount}
 
 ## GitHub Links
 
@@ -575,7 +608,7 @@ function renderAudit(evidence) {
 
 ## Scope
 
-P7-06 closes the review loop after P7-01 to P7-05, and P8-01 generalizes the same guardrails for new seed/source/route additions. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
+P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, and P8-02 expands the restart/prototype promotion gate. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
 
 ## Baselines Covered
 
@@ -585,6 +618,7 @@ P7-06 closes the review loop after P7-01 to P7-05, and P8-01 generalizes the sam
 - P7-04: Home shows a small curated recommendation set, not a single fixed experiment.
 - P7-05: Public \`/f\` browse links remain secondary to \`내 Flow에 저장\`.
 - P7-06/P8-01: Normal route scan buckets stay at zero for internal labels, dynamic source slug leaks, structural title suffixes, raw ISO dates, first-task repetition, and mobile overflow.
+- P8-02: Restart/prototype routes must also avoid raw route slugs, English weekday labels, mixed export-language copy, and duplicate export entry points before promotion.
 
 ## Summary
 
@@ -603,7 +637,10 @@ ${rows}
 \`/restart/moving-d30\` remains outside the primary 4-tab IA. It is tracked as a prototype route, but it must still pass the display gate before any future promotion:
 
 - no user-facing raw ISO dates
-- no duplicated primary export button sets
+- no raw route slug such as \`restart / moving-d30\`
+- no English weekday labels such as \`Sun Mon Tue\`
+- no mixed export-language copy such as \`export\` plus Korean copy
+- no duplicated primary export entry labels
 - no source brand slug as title/subtitle copy
 - no horizontal overflow at 390px
 
@@ -707,6 +744,10 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.normalRouteRawIsoHitCount}</b><span>normal raw ISO hits</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteFirstTaskRepetitionHitCount}</b><span>first task repeats</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeRawIsoHitCount}</b><span>restart raw ISO hits</span></div>
+      <div class="stat"><b>${evidence.summary.restartPrototypeRawRouteSlugHitCount}</b><span>restart route slug hits</span></div>
+      <div class="stat"><b>${evidence.summary.restartPrototypeEnglishWeekdayHitCount}</b><span>restart English weekday hits</span></div>
+      <div class="stat"><b>${evidence.summary.restartPrototypeMixedExportLanguageHitCount}</b><span>restart mixed export hits</span></div>
+      <div class="stat"><b>${evidence.summary.restartPrototypeDuplicateExportEntryHitCount}</b><span>restart duplicate export entries</span></div>
     </section>
     <section class="grid">
       ${cards}

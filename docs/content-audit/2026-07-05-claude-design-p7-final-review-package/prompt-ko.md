@@ -33,7 +33,16 @@
   "normalRouteFirstTaskRepetitionHitCount": 0,
   "normalRouteHorizontalOverflowCount": 0,
   "restartPrototypeRawIsoHitCount": 0,
+  "restartPrototypeRawRouteSlugHitCount": 0,
+  "restartPrototypeEnglishWeekdayHitCount": 0,
+  "restartPrototypeMixedExportLanguageHitCount": 0,
+  "restartPrototypeDuplicateExportEntryHitCount": 0,
   "restartPrototypeHorizontalOverflowCount": 0,
+  "restartPrototypeInlineExportButtonCounts": [
+    4,
+    4,
+    4
+  ],
   "restartPrototypeExportButtonCounts": [
     1,
     1,

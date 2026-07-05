@@ -7,6 +7,7 @@ import {
   collectSourceSlugSignals,
   findFirstTaskRepetitionHits,
   normalizeGuardrailLines,
+  scanPrototypeRouteGuardrails,
   scanUserSurfaceGuardrails,
 } from '../../lib/flow/user-surface-guardrails';
 
@@ -68,6 +69,17 @@ async function expectNoUserFacingDisplayLeakage(locator: Locator) {
   const result = scanUserSurfaceGuardrails({ primaryLines: await getLocatorLines(locator) });
   expect(result.trailingFlowSuffixHits).toEqual([]);
   expect(result.structuralDisplayHits).toEqual([]);
+}
+
+async function expectNoPrototypeDisplayGateLeakage(locator: Locator, exportEntryLabels: string[] = []) {
+  const result = scanPrototypeRouteGuardrails({
+    primaryLines: await getLocatorLines(locator),
+    exportEntryLabels,
+  });
+  expect(result.rawRouteSlugHits).toEqual([]);
+  expect(result.englishWeekdayHits).toEqual([]);
+  expect(result.mixedExportLanguageHits).toEqual([]);
+  expect(result.duplicateExportEntryHits).toEqual([]);
 }
 
 async function expectNoHorizontalOverflow(page: { evaluate: <T>(pageFunction: () => T | Promise<T>) => Promise<T> }) {
@@ -800,9 +812,11 @@ test('p7 guardrail keeps user routes clean and restart prototype in its own buck
   const restartBody = page.locator('body');
   await expectNoUserFacingRawIsoDate(restartBody);
   await expectNoVisibleSourceBrandSlug(restartBody);
+  const restartExportEntryLabel = await page.getByTestId('moving-mobile-export-actions').getByRole('button').innerText();
+  await expectNoPrototypeDisplayGateLeakage(restartBody, [restartExportEntryLabel]);
   await expectNoHorizontalOverflow(page);
   await expect(page.getByTestId('moving-mobile-export-actions').getByRole('button')).toHaveCount(1);
-  await expect(page.getByTestId('moving-mobile-export-actions').getByRole('button', { name: '내 도구로 가져가기' })).toBeVisible();
+  await expect(page.getByTestId('moving-mobile-export-actions').getByRole('button', { name: '파일 받기 옵션' })).toBeVisible();
 
   await testInfo.attach('p7-06-guardrail-route-buckets', {
     body: JSON.stringify({ userRoutes, prototypeRoutes: ['/restart/moving-d30'] }, null, 2),
@@ -1166,9 +1180,11 @@ test('moving restart mobile uses one export entry and friendly date text', async
 
   const mobileExportActions = page.getByTestId('moving-mobile-export-actions');
   await expect(mobileExportActions.getByRole('button')).toHaveCount(1);
-  await expect(mobileExportActions.getByRole('button', { name: '내 도구로 가져가기' })).toBeVisible();
+  const restartExportEntryLabel = await mobileExportActions.getByRole('button').innerText();
+  await expectNoPrototypeDisplayGateLeakage(page.locator('body'), [restartExportEntryLabel]);
+  await expect(mobileExportActions.getByRole('button', { name: '파일 받기 옵션' })).toBeVisible();
 
-  await mobileExportActions.getByRole('button', { name: '내 도구로 가져가기' }).click();
+  await mobileExportActions.getByRole('button', { name: '파일 받기 옵션' }).click();
   await expect(page.locator('#moving-restart-export-panel')).toBeInViewport();
   await expect(page.locator('#moving-restart-export-panel').getByRole('button', { name: FLOW_EXPORT_LABELS.calendarFile })).toBeVisible();
 });

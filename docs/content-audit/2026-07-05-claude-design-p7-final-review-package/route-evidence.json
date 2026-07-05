@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-07-05T00:08:05.690Z",
+  "generatedAt": "2026-07-05T00:58:20.748Z",
   "packageName": "2026-07-05-claude-design-p7-final-review-package",
   "branchName": "codex/flowme-uxui-second-loop",
-  "commit": "28736b8",
+  "commit": "2c907a7",
   "viewport": {
     "width": 390,
     "height": 844
@@ -17,7 +17,16 @@
     "normalRouteFirstTaskRepetitionHitCount": 0,
     "normalRouteHorizontalOverflowCount": 0,
     "restartPrototypeRawIsoHitCount": 0,
+    "restartPrototypeRawRouteSlugHitCount": 0,
+    "restartPrototypeEnglishWeekdayHitCount": 0,
+    "restartPrototypeMixedExportLanguageHitCount": 0,
+    "restartPrototypeDuplicateExportEntryHitCount": 0,
     "restartPrototypeHorizontalOverflowCount": 0,
+    "restartPrototypeInlineExportButtonCounts": [
+      4,
+      4,
+      4
+    ],
     "restartPrototypeExportButtonCounts": [
       1,
       1,
@@ -78,6 +87,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 0,
         "firstTaskLabel": 0,
@@ -104,6 +119,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -164,6 +180,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 0,
         "firstTaskLabel": 12,
@@ -190,6 +212,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -250,6 +273,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
@@ -280,6 +309,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -340,6 +370,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
@@ -370,6 +406,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -430,6 +467,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
@@ -460,6 +503,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -519,6 +563,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
@@ -549,6 +599,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -609,6 +660,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
@@ -635,6 +692,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -695,6 +753,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
@@ -721,6 +785,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -776,6 +841,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
@@ -802,6 +873,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -860,6 +932,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
@@ -886,6 +964,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -946,6 +1025,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
@@ -972,6 +1057,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -1032,6 +1118,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
@@ -1058,6 +1150,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -1116,6 +1209,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 1,
         "firstTaskLabel": 0,
@@ -1142,6 +1241,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -1202,6 +1302,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 0,
         "firstTaskLabel": 0,
@@ -1228,6 +1334,7 @@
         "calendarSelectedDay": true,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -1286,6 +1393,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 1,
         "firstTaskLabel": 1,
@@ -1312,6 +1425,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -1372,6 +1486,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 1,
         "firstTaskLabel": 0,
@@ -1398,6 +1518,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -1458,6 +1579,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 1,
         "firstTaskLabel": 0,
@@ -1484,6 +1611,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 4,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -1544,6 +1672,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 0,
         "firstTaskLabel": 0,
@@ -1570,6 +1704,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -1630,6 +1765,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 0,
         "firstTaskLabel": 0,
@@ -1656,6 +1797,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -1716,6 +1858,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 0,
         "firstTaskLabel": 0,
@@ -1742,6 +1890,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 6,
+        "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0
       }
     },
@@ -1772,13 +1921,13 @@
         "이전",
         "기준월",
         "다음",
-        "Sun",
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat",
+        "일",
+        "월",
+        "화",
+        "수",
+        "목",
+        "금",
+        "토",
         "31",
         "1",
         "2",
@@ -1802,6 +1951,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 0,
         "firstTaskLabel": 0,
@@ -1824,6 +1979,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 4,
         "restartMobileExportButtons": 1
       }
     },
@@ -1854,13 +2010,13 @@
         "이전",
         "기준월",
         "다음",
-        "Sun",
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat",
+        "일",
+        "월",
+        "화",
+        "수",
+        "목",
+        "금",
+        "토",
         "31",
         "1",
         "2",
@@ -1884,6 +2040,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 0,
         "firstTaskLabel": 0,
@@ -1906,6 +2068,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 4,
         "restartMobileExportButtons": 1
       }
     },
@@ -1936,13 +2099,13 @@
         "이전",
         "기준월",
         "다음",
-        "Sun",
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat",
+        "일",
+        "월",
+        "화",
+        "수",
+        "목",
+        "금",
+        "토",
         "31",
         "1",
         "2",
@@ -1966,6 +2129,12 @@
       "rawIsoLines": [],
       "flowSuffixLines": [],
       "firstTaskRepetitionHits": [],
+      "prototypeDisplayGateHits": {
+        "rawRouteSlugHits": [],
+        "englishWeekdayHits": [],
+        "mixedExportLanguageHits": [],
+        "duplicateExportEntryHits": []
+      },
       "repetitionCounts": {
         "firstTaskTitle": 0,
         "firstTaskLabel": 0,
@@ -1988,6 +2157,7 @@
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
         "inventoryRows": 0,
+        "restartInlineExportButtons": 4,
         "restartMobileExportButtons": 1
       }
     }

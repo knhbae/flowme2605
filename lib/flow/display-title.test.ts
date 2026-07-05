@@ -4,6 +4,7 @@ import { toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } 
 import {
   collectSourceSlugSignals,
   findFirstTaskRepetitionHits,
+  scanPrototypeRouteGuardrails,
   scanUserSurfaceGuardrails,
 } from './user-surface-guardrails';
 
@@ -122,5 +123,25 @@ test('findFirstTaskRepetitionHits uses the rendered first task title instead of 
 
   assert.deepEqual(hits, [
     { title: 'Future task title', count: 2, extraLines: ['Future task title'] },
+  ]);
+});
+
+test('scanPrototypeRouteGuardrails flags prototype-only display gate leaks', () => {
+  const result = scanPrototypeRouteGuardrails({
+    primaryLines: [
+      'restart / moving-d30',
+      'Sun',
+      '날짜를 편집한 뒤 export합니다.',
+      '내 도구로 가져가기',
+      '내 도구로 가져가기',
+    ],
+    exportEntryLabels: ['내 도구로 가져가기'],
+  });
+
+  assert.deepEqual(result.rawRouteSlugHits, ['restart / moving-d30']);
+  assert.deepEqual(result.englishWeekdayHits, ['Sun']);
+  assert.deepEqual(result.mixedExportLanguageHits, ['날짜를 편집한 뒤 export합니다.']);
+  assert.deepEqual(result.duplicateExportEntryHits, [
+    { label: '내 도구로 가져가기', count: 2 },
   ]);
 });
