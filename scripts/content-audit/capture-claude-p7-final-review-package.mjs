@@ -501,7 +501,8 @@ async function scanPage(page, options = {}) {
       repetitionCounts: {
         firstTaskTitle: firstTaskTitle ? countText(firstTaskTitle) : 0,
         firstTaskLabel: countText('먼저 할 일'),
-        overdueLabel: countText('밀린 할 일'),
+        overdueLabel: countText('지난 할 일'),
+        legacyOverdueLabels: countText('밀린 할 일') + countText('지난 일정') + countText('밀림'),
         nextTaskLabel: countText('다음 할 일'),
         checkItemsLong: countText('확인할 항목'),
         checkItemsShort: countText('확인 항목'),
@@ -567,7 +568,7 @@ function renderReadme(evidence) {
 - Commit: \`${commit}\`
 - Viewport: ${viewport.width}x${viewport.height}
 
-This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, and the P8-02 restart/prototype promotion gate.
+This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, the P8-02 restart/prototype promotion gate, and the P8-03/P8-04 My Flow overdue label/status corrections.
 
 ## Files
 
@@ -608,7 +609,7 @@ function renderAudit(evidence) {
 
 ## Scope
 
-P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, and P8-02 expands the restart/prototype promotion gate. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
+P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, and P8-03/P8-04 fix My Flow overdue labeling/status accuracy. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
 
 ## Baselines Covered
 
@@ -619,6 +620,7 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 - P7-05: Public \`/f\` browse links remain secondary to \`내 Flow에 저장\`.
 - P7-06/P8-01: Normal route scan buckets stay at zero for internal labels, dynamic source slug leaks, structural title suffixes, raw ISO dates, first-task repetition, and mobile overflow.
 - P8-02: Restart/prototype routes must also avoid raw route slugs, English weekday labels, mixed export-language copy, and duplicate export entry points before promotion.
+- P8-03/P8-04: My Flow uses \`지난 할 일\` consistently for overdue work, and past rows in the saved-content list are not labeled as \`다음 할 일\`.
 
 ## Summary
 
@@ -736,7 +738,7 @@ function renderHtml(evidence) {
 <body>
   <main>
     <h1>FlowMe P7 Final Review Package</h1>
-    <p class="lead">P7-01~P7-05 개선 기준선을 P7-06/P8-01 guardrail로 고정하기 위한 모바일 390px screenshot/evidence 패키지입니다.</p>
+    <p class="lead">P7-01~P7-05 개선 기준선을 P7-06/P8-01/P8-02 guardrail과 P8-03/P8-04 My Flow 라벨/상태 검증으로 고정하기 위한 모바일 390px screenshot/evidence 패키지입니다.</p>
     <section class="summary">
       <div class="stat"><b>${evidence.summary.totalScreenshots}</b><span>screenshots</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteInternalHitCount}</b><span>normal internal hits</span></div>

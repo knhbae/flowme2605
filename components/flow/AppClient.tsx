@@ -2963,6 +2963,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     schedule: calendarScheduleRows.length,
     routine: calendarRoutineRows.length,
   };
+  const getMyFlowRowStatusLabel = (row?: { date?: string } | null) => {
+    if (!row?.date) return '먼저 할 일';
+    if (row.date < myFlowTodayDate) return '지난 할 일';
+    if (row.date === myFlowTodayDate) return '오늘 할 일';
+    return '다음 할 일';
+  };
   const myFlowCalendarScopeMonthCounts: Record<MyFlowCalendarScope, number> = {
     all: monthAllCalendarRows.length,
     map: monthAllCalendarRows.filter((row) => Boolean(row.flow.savedMap)).length,
@@ -3066,7 +3072,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     todayOpenCount > 0
       ? '오늘 할 일을 먼저 처리하고, 전체 목록은 전체 탭에서 봅니다.'
       : overdueRows.length > 0
-        ? `밀린 일정 ${overdueRows.length}개가 있습니다. 첫 항목부터 정리합니다.`
+        ? `지난 할 일 ${overdueRows.length}개가 있습니다. 첫 항목부터 정리합니다.`
         : upcomingRows.length > 0
           ? '오늘 일정은 없고, 가장 가까운 다음 할 일을 보여줍니다.'
           : postSavePrimaryContinuationRow || myFlowFallbackNextRows.length > 0
@@ -3090,7 +3096,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     : myFlowPrimaryContinuationIsToday
       ? '오늘 실행'
       : myFlowPrimaryContinuationIsOverdue
-        ? '밀린 할 일'
+        ? '지난 할 일'
         : myFlowPrimaryContinuationIsFuture
           ? '다음 할 일'
           : '먼저 할 일';
@@ -3101,7 +3107,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     ? myFlowPrimaryContinuationIsToday
       ? `${myFlowNowVisibleCount}개 남음`
       : myFlowPrimaryContinuationIsOverdue
-        ? `${myFlowNowVisibleCount}개 밀림`
+        ? `지난 할 일 ${myFlowNowVisibleCount}개`
         : myFlowPrimaryContinuationIsFuture
           ? `${myFlowNowVisibleCount}개 예정`
           : `${myFlowNowVisibleCount}개 대기`
@@ -3110,7 +3116,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     ? myFlowPrimaryContinuationIsToday
       ? '체크할 항목만 열어 완료합니다. 전체 목록은 전체 탭에서 봅니다.'
       : myFlowPrimaryContinuationIsOverdue
-        ? '밀린 할 일 중 먼저 정리할 항목입니다.'
+        ? '지난 할 일 중 먼저 정리할 항목입니다.'
         : myFlowPrimaryContinuationIsFuture
           ? '필요하면 열어서 체크와 메모를 확인합니다.'
           : '날짜가 없어도 저장한 콘텐츠의 첫 항목부터 바로 열 수 있습니다.'
@@ -3229,7 +3235,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     return [
       { label: '오늘 실행', rows: todayOpenRows, className: 'border-blue-200 bg-blue-50 text-blue-800' },
       { label: '다음 7일', rows: upcomingRows, className: 'border-emerald-200 bg-emerald-50 text-emerald-800' },
-      { label: '지난 일정', rows: overdueRows, className: 'border-amber-200 bg-amber-50 text-amber-800' },
+      { label: '지난 할 일', rows: overdueRows, className: 'border-amber-200 bg-amber-50 text-amber-800' },
     ].flatMap((group) =>
       group.rows.flatMap((row) => {
         const slug = row.flow.progress.slug;
@@ -3555,7 +3561,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       ? { label: `다음 ${upcomingRows.length}`, className: 'bg-[#ECF7F1] text-[#1F8A5B]' }
       : null,
     overdueRows.length > 0
-      ? { label: `밀림 ${overdueRows.length}`, className: 'bg-[#FFF4ED] text-[#D6462E]' }
+      ? { label: `지난 할 일 ${overdueRows.length}`, className: 'bg-[#FFF4ED] text-[#D6462E]' }
       : null,
   ].filter((chip): chip is { label: string; className: string } => Boolean(chip));
   const mobileFlowSummaryText =
@@ -5365,7 +5371,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             </div>
             {nextRow ? (
               <div className="mt-3 rounded-md bg-slate-50 px-3 py-2">
-                <p className="text-xs font-semibold text-slate-500">다음 실행</p>
+                <p className="text-xs font-semibold text-slate-500">{getMyFlowRowStatusLabel(nextRow)}</p>
                 <p className="mt-1 text-sm font-semibold text-slate-950">{nextRow.title}</p>
               </div>
             ) : null}
@@ -5446,7 +5452,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           </span>
           {nextRow && !flowExpanded ? (
             <span className="mt-3 block rounded-md bg-slate-50 px-3 py-2">
-              <span className="block text-xs font-semibold text-blue-700">다음 할 일</span>
+              <span className="block text-xs font-semibold text-blue-700">{getMyFlowRowStatusLabel(nextRow)}</span>
               <span className="mt-1 block text-sm font-semibold text-slate-950">{nextRow.title}</span>
               <span className="mt-1 block text-xs font-semibold text-slate-500">
                 {[nextRow.date ? formatMyFlowDisplayDate(nextRow.date) : '', nextRow.section ? toUserFacingSourceTitle(nextRow.section) : ''].filter(Boolean).join(' · ') || progressSummary}
@@ -5597,7 +5603,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           </div>
         </div>
         <div data-testid="my-flow-next-action" className={`mt-4 rounded-md border px-3 py-3 ${nextActionToneClass}`}>
-          <p className={`text-xs font-semibold ${showContentReadinessBadge ? 'text-slate-600' : 'text-blue-700'}`}>다음에 볼 항목</p>
+          <p className={`text-xs font-semibold ${showContentReadinessBadge ? 'text-slate-600' : 'text-blue-700'}`}>{nextRow ? getMyFlowRowStatusLabel(nextRow) : '다음에 볼 항목'}</p>
           {nextRow ? (
             <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="min-w-0">
@@ -5901,7 +5907,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           <p className={`${isCalendarSurface ? 'hidden sm:block' : 'sm:mt-2 sm:text-base'} mt-1 text-sm text-gray-600`}>
             {isCalendarSurface
               ? '저장한 콘텐츠의 날짜가 있는 항목을 바로 확인합니다.'
-              : '오늘, 다음, 밀린 할 일을 먼저 봅니다.'}
+              : '오늘, 다음, 지난 할 일을 먼저 봅니다.'}
           </p>
         </div>
         {savedFlows.length > 0 ? (
@@ -5925,7 +5931,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           <p className="mt-2 max-w-xl break-keep text-sm leading-6 text-slate-600">
             {isCalendarSurface
               ? '날짜가 있는 콘텐츠를 저장하면 가장 가까운 일정부터 보여줍니다.'
-              : '하나를 저장하면 오늘, 다음, 밀린 할 일이 여기에서 바로 이어집니다.'}
+              : '하나를 저장하면 오늘, 다음, 지난 할 일이 여기에서 바로 이어집니다.'}
           </p>
           <div className="mt-5">
             <Link className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-blue-700 px-4 py-2 text-sm font-semibold text-white sm:w-auto" href="/flows">
@@ -6097,7 +6103,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         </div>
                         <div className="rounded-md bg-slate-50 px-2 py-2">
                           <p className="text-lg font-semibold text-slate-950">{overdueRows.length}</p>
-                          <p>밀림</p>
+                          <p>지난 할 일</p>
                         </div>
                       </div>
                     </div>
@@ -6141,7 +6147,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     <section data-testid="my-flow-overdue-list" className="min-w-0 rounded-lg border border-amber-100 bg-white p-3 shadow-sm">
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0">
-                          <p className="text-xs font-semibold text-amber-700">지난 일정 정리</p>
+                          <p className="text-xs font-semibold text-amber-700">지난 할 일</p>
                           <h3 className="mt-0.5 text-sm font-semibold text-slate-950">{overdueRows.length}개 남음</h3>
                           <p className="mt-0.5 truncate text-xs text-slate-500">필요한 일정만 열어 완료하거나 메모합니다.</p>
                         </div>
@@ -6151,7 +6157,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                           className="min-h-9 shrink-0 rounded-md border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800"
                           onClick={() => setMyFlowStatusSheet('overdue')}
                         >
-                          지난 일정 보기
+                          지난 할 일 보기
                         </button>
                       </div>
                       {!isMyFlowMobileViewport && overdueSummaryPreview.length > 0 ? (
@@ -6166,7 +6172,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                           ))}
                           {hiddenOverdueFlowCount > 0 ? (
                             <p className="rounded-md bg-white px-3 py-2 text-xs font-semibold text-amber-800 ring-1 ring-amber-100">
-                              외 {hiddenOverdueFlowCount}개 콘텐츠에 지난 일정이 있습니다.
+                              외 {hiddenOverdueFlowCount}개 콘텐츠에 지난 할 일이 있습니다.
                             </p>
                           ) : null}
                         </div>
@@ -6259,7 +6265,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       <div>
                         <p className="text-sm font-semibold text-blue-700">Flow 상태판</p>
                         <h3 className="mt-1 text-lg font-semibold text-slate-950">진행 중인 Flow를 한눈에 확인하세요</h3>
-                        <p className="mt-1 text-sm text-slate-600">다음 실행, 진행률, 밀림을 먼저 보고 전체 목록은 필요할 때 펼칩니다.</p>
+                        <p className="mt-1 text-sm text-slate-600">다음 실행, 진행률, 지난 할 일을 먼저 보고 전체 목록은 필요할 때 펼칩니다.</p>
                       </div>
                       <span className="w-fit rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{visibleSavedFlows.length}개 콘텐츠</span>
                     </div>
@@ -6292,7 +6298,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         className="rounded-md bg-amber-50 px-3 py-2 text-left transition hover:bg-white hover:ring-2 hover:ring-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-200"
                         onClick={() => setMyFlowStatusSheet('overdue')}
                       >
-                        <p className="text-xs font-semibold text-amber-700">밀림</p>
+                        <p className="text-xs font-semibold text-amber-700">지난 할 일</p>
                         <p className="mt-1 text-xl font-semibold text-amber-950">{myFlowStatusOverdueRows.length}</p>
                       </button>
                     </div>
@@ -6307,7 +6313,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       </div>
                       <div className="flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
                         <span className="rounded-md bg-slate-100 px-2 py-1">오늘 남음 {todayOpenCount}</span>
-                        <span className="rounded-md bg-amber-50 px-2 py-1 text-amber-700">밀림 {overdueRows.length}</span>
+                        <span className="rounded-md bg-amber-50 px-2 py-1 text-amber-700">지난 할 일 {overdueRows.length}</span>
                         <span className="rounded-md bg-emerald-50 px-2 py-1 text-emerald-700">7일 안 {upcomingRows.length}</span>
                       </div>
                     </div>
@@ -6860,7 +6866,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           className="fixed inset-0 z-50 bg-slate-950/40"
           role="dialog"
           aria-modal="true"
-          aria-label={myFlowStatusSheet === 'overdue' ? '지난 일정' : '다음 실행 Flow'}
+          aria-label={myFlowStatusSheet === 'overdue' ? '지난 할 일' : '다음 실행 Flow'}
           data-testid="my-flow-status-sheet"
         >
           <button
@@ -6875,7 +6881,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <div>
                 <p className="text-sm font-semibold text-blue-700">Flow 상태판</p>
                 <h3 className="mt-1 text-xl font-semibold text-slate-950">
-                  {myFlowStatusSheet === 'overdue' ? '지난 일정' : '다음 실행 Flow'}
+                  {myFlowStatusSheet === 'overdue' ? '지난 할 일' : '다음 실행 Flow'}
                 </h3>
               </div>
               <button

@@ -2,7 +2,7 @@
 
 ## Scope
 
-P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, and P8-02 expands the restart/prototype promotion gate. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
+P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, and P8-03/P8-04 fix My Flow overdue labeling/status accuracy. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
 
 ## Baselines Covered
 
@@ -13,6 +13,7 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 - P7-05: Public `/f` browse links remain secondary to `내 Flow에 저장`.
 - P7-06/P8-01: Normal route scan buckets stay at zero for internal labels, dynamic source slug leaks, structural title suffixes, raw ISO dates, first-task repetition, and mobile overflow.
 - P8-02: Restart/prototype routes must also avoid raw route slugs, English weekday labels, mixed export-language copy, and duplicate export entry points before promotion.
+- P8-03/P8-04: My Flow uses `지난 할 일` consistently for overdue work, and past rows in the saved-content list are not labeled as `다음 할 일`.
 
 ## Summary
 

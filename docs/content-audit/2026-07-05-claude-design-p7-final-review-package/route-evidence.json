@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-07-05T00:58:20.748Z",
+  "generatedAt": "2026-07-05T01:40:30.926Z",
   "packageName": "2026-07-05-claude-design-p7-final-review-package",
   "branchName": "codex/flowme-uxui-second-loop",
-  "commit": "2c907a7",
+  "commit": "bec4e2c",
   "viewport": {
     "width": 390,
     "height": 844
@@ -97,6 +97,7 @@
         "firstTaskTitle": 0,
         "firstTaskLabel": 0,
         "overdueLabel": 0,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 0,
         "checkItemsLong": 0,
         "checkItemsShort": 0
@@ -133,7 +134,7 @@
       "url": "/flows",
       "h1": "무엇을 저장할까요?",
       "scrollY": 0,
-      "scrollHeight": 2865,
+      "scrollHeight": 2983,
       "scrollWidth": 390,
       "clientWidth": 390,
       "viewportHeight": 844,
@@ -154,13 +155,13 @@
         "Flow 찾기",
         "캘린더",
         "내 Flow",
+        "Flow 찾기",
         "전체",
         "이사/계약",
         "공부",
         "아이/건강",
         "구매/생활",
-        "루틴",
-        "열어보기›"
+        "루틴"
       ],
       "internalHits": [],
       "sourceSlugSignals": [
@@ -190,6 +191,7 @@
         "firstTaskTitle": 0,
         "firstTaskLabel": 12,
         "overdueLabel": 0,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 0,
         "checkItemsLong": 0,
         "checkItemsShort": 0
@@ -283,6 +285,7 @@
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
         "overdueLabel": 0,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 0,
         "checkItemsLong": 0,
         "checkItemsShort": 0
@@ -380,6 +383,7 @@
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
         "overdueLabel": 0,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 0,
         "checkItemsLong": 0,
         "checkItemsShort": 0
@@ -477,6 +481,7 @@
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
         "overdueLabel": 0,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 0,
         "checkItemsLong": 0,
         "checkItemsShort": 0
@@ -573,6 +578,7 @@
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
         "overdueLabel": 0,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 0,
         "checkItemsLong": 0,
         "checkItemsShort": 0
@@ -670,6 +676,7 @@
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
         "overdueLabel": 0,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 0,
         "checkItemsLong": 0,
         "checkItemsShort": 0
@@ -763,6 +770,7 @@
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
         "overdueLabel": 0,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 0,
         "checkItemsLong": 0,
         "checkItemsShort": 0
@@ -851,6 +859,7 @@
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
         "overdueLabel": 0,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 0,
         "checkItemsLong": 0,
         "checkItemsShort": 0
@@ -942,6 +951,7 @@
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
         "overdueLabel": 0,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 0,
         "checkItemsLong": 0,
         "checkItemsShort": 0
@@ -1035,6 +1045,7 @@
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
         "overdueLabel": 0,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 0,
         "checkItemsLong": 0,
         "checkItemsShort": 0
@@ -1128,6 +1139,7 @@
         "firstTaskTitle": 0,
         "firstTaskLabel": 1,
         "overdueLabel": 0,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 0,
         "checkItemsLong": 0,
         "checkItemsShort": 0
@@ -1219,6 +1231,7 @@
         "firstTaskTitle": 1,
         "firstTaskLabel": 0,
         "overdueLabel": 1,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 1,
         "checkItemsLong": 0,
         "checkItemsShort": 0
@@ -1312,6 +1325,7 @@
         "firstTaskTitle": 0,
         "firstTaskLabel": 0,
         "overdueLabel": 0,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 0,
         "checkItemsLong": 0,
         "checkItemsShort": 0
@@ -1403,6 +1417,7 @@
         "firstTaskTitle": 1,
         "firstTaskLabel": 1,
         "overdueLabel": 1,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 0,
         "checkItemsLong": 0,
         "checkItemsShort": 0
@@ -1495,7 +1510,8 @@
       "repetitionCounts": {
         "firstTaskTitle": 1,
         "firstTaskLabel": 0,
-        "overdueLabel": 1,
+        "overdueLabel": 3,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 3,
         "checkItemsLong": 0,
         "checkItemsShort": 0
@@ -1588,7 +1604,8 @@
       "repetitionCounts": {
         "firstTaskTitle": 1,
         "firstTaskLabel": 0,
-        "overdueLabel": 1,
+        "overdueLabel": 4,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 3,
         "checkItemsLong": 0,
         "checkItemsShort": 0
@@ -1680,9 +1697,10 @@
       },
       "repetitionCounts": {
         "firstTaskTitle": 0,
-        "firstTaskLabel": 0,
-        "overdueLabel": 1,
-        "nextTaskLabel": 4,
+        "firstTaskLabel": 2,
+        "overdueLabel": 3,
+        "legacyOverdueLabels": 0,
+        "nextTaskLabel": 0,
         "checkItemsLong": 0,
         "checkItemsShort": 0
       },
@@ -1773,9 +1791,10 @@
       },
       "repetitionCounts": {
         "firstTaskTitle": 0,
-        "firstTaskLabel": 0,
-        "overdueLabel": 1,
-        "nextTaskLabel": 4,
+        "firstTaskLabel": 2,
+        "overdueLabel": 3,
+        "legacyOverdueLabels": 0,
+        "nextTaskLabel": 0,
         "checkItemsLong": 0,
         "checkItemsShort": 0
       },
@@ -1866,9 +1885,10 @@
       },
       "repetitionCounts": {
         "firstTaskTitle": 0,
-        "firstTaskLabel": 0,
-        "overdueLabel": 1,
-        "nextTaskLabel": 6,
+        "firstTaskLabel": 6,
+        "overdueLabel": 4,
+        "legacyOverdueLabels": 0,
+        "nextTaskLabel": 0,
         "checkItemsLong": 0,
         "checkItemsShort": 0
       },
@@ -1961,6 +1981,7 @@
         "firstTaskTitle": 0,
         "firstTaskLabel": 0,
         "overdueLabel": 0,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 1,
         "checkItemsLong": 0,
         "checkItemsShort": 0
@@ -2050,6 +2071,7 @@
         "firstTaskTitle": 0,
         "firstTaskLabel": 0,
         "overdueLabel": 0,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 1,
         "checkItemsLong": 0,
         "checkItemsShort": 0
@@ -2139,6 +2161,7 @@
         "firstTaskTitle": 0,
         "firstTaskLabel": 0,
         "overdueLabel": 0,
+        "legacyOverdueLabels": 0,
         "nextTaskLabel": 1,
         "checkItemsLong": 0,
         "checkItemsShort": 0
