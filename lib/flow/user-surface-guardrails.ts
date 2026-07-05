@@ -52,6 +52,7 @@ const PROTOTYPE_ENGLISH_MONTH_TIME_PATTERN = /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|A
 const MIXED_EXPORT_LANGUAGE_PATTERN = /\bexport\b|export(?=[\p{Script=Hangul}\s.,!?])/iu;
 const STRUCTURAL_DISPLAY_PATTERNS = [
   /\bFlow Map\b/iu,
+  /\bsource\s*trace\b/iu,
   /일정\s*지도/u,
   /저장한\s*지도/u,
   /지도\s*일정/u,

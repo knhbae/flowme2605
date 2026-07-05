@@ -8,7 +8,21 @@ import {
 } from './source-backed-my-flow';
 import {
   collectSourceSlugSignals,
+  collectSourceSlugSignalsFromLines,
+  countLineOccurrences,
+  findDuplicatePrototypeExportEntryHits,
   findFirstTaskRepetitionHits,
+  findPrototypeEnglishMonthTimeHits,
+  findPrototypeEnglishUiVerbHits,
+  findPrototypeEnglishWeekdayHits,
+  findPrototypeMixedExportLanguageHits,
+  findPrototypeRawRouteSlugHits,
+  findRawIsoDateHits,
+  findSourceSlugHits,
+  findStructuralDisplayHits,
+  findTrailingFlowSuffixHits,
+  normalizeGuardrailLine,
+  normalizeGuardrailLines,
   scanPrototypeRouteGuardrails,
   scanUserSurfaceGuardrails,
 } from './user-surface-guardrails';
@@ -118,6 +132,56 @@ test('scanUserSurfaceGuardrails catches source slugs followed by punctuation', (
     { signal: 'KKday', line: 'KKday, travel prep' },
     { signal: 'AJD', line: 'AJD. move checklist' },
   ]);
+});
+
+test('user surface guardrail helpers lock positive and negative display cases', () => {
+  assert.equal(normalizeGuardrailLine('  first   line  '), 'first line');
+  assert.deepEqual(normalizeGuardrailLines(['  first   line  ', '   ']), ['first line']);
+  assert.deepEqual(collectSourceSlugSignalsFromLines(['DeskLab D-30 table rows', 'plain source']), ['DeskLab']);
+
+  assert.deepEqual(findSourceSlugHits(['DeskLab. moving schedule', 'Plain moving schedule'], ['DeskLab']), [
+    { signal: 'DeskLab', line: 'DeskLab. moving schedule' },
+  ]);
+  assert.deepEqual(findSourceSlugHits(['Plain moving schedule'], ['DeskLab']), []);
+
+  assert.deepEqual(findStructuralDisplayHits(['Flow Map', 'source trace', 'Plain title']), [
+    'Flow Map',
+    'source trace',
+  ]);
+  assert.deepEqual(findStructuralDisplayHits(['Plain title']), []);
+
+  assert.deepEqual(findTrailingFlowSuffixHits(['Moving Flow', 'FlowMe', 'Flow']), ['Moving Flow']);
+  assert.deepEqual(findTrailingFlowSuffixHits(['FlowMe', 'Flow']), []);
+
+  assert.deepEqual(findRawIsoDateHits(['Starts 2026-07-17', 'July 17']), ['Starts 2026-07-17']);
+  assert.deepEqual(findRawIsoDateHits(['July 17']), []);
+
+  assert.equal(countLineOccurrences(['alpha alpha', 'beta alpha'], 'alpha'), 3);
+  assert.equal(countLineOccurrences(['alpha'], ''), 0);
+});
+
+test('prototype guardrail helpers lock positive and negative display cases', () => {
+  assert.deepEqual(findPrototypeRawRouteSlugHits(['restart / moving-d30', 'Moving restart']), [
+    'restart / moving-d30',
+  ]);
+  assert.deepEqual(findPrototypeRawRouteSlugHits(['Moving restart']), []);
+
+  assert.deepEqual(findPrototypeEnglishWeekdayHits(['Sun', 'Sunday', '일요일']), ['Sun']);
+  assert.deepEqual(findPrototypeEnglishWeekdayHits(['Sunday', '일요일']), []);
+
+  assert.deepEqual(findPrototypeEnglishUiVerbHits(['download file', 'downloaded file']), ['download file']);
+  assert.deepEqual(findPrototypeEnglishUiVerbHits(['downloaded file']), []);
+
+  assert.deepEqual(findPrototypeEnglishMonthTimeHits(['Jan 12', '9 PM', 'January']), ['Jan 12', '9 PM']);
+  assert.deepEqual(findPrototypeEnglishMonthTimeHits(['January']), []);
+
+  assert.deepEqual(findPrototypeMixedExportLanguageHits(['export file', 'exported file']), ['export file']);
+  assert.deepEqual(findPrototypeMixedExportLanguageHits(['exported file']), []);
+
+  assert.deepEqual(findDuplicatePrototypeExportEntryHits(['Calendar file', 'Calendar file'], ['Calendar file']), [
+    { label: 'Calendar file', count: 2 },
+  ]);
+  assert.deepEqual(findDuplicatePrototypeExportEntryHits(['Calendar file'], ['Calendar file']), []);
 });
 
 test('canonical seed and source-backed user-facing text pass display guardrails without route registration', () => {
