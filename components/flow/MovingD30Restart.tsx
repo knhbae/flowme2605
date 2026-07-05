@@ -61,6 +61,23 @@ function getCalendarShortTitle(title: string) {
   return title.split(/\s+/).slice(0, 2).join(' ');
 }
 
+function groupScheduleMilestones(items: MovingRestartItem[]) {
+  return items.reduce<Array<{ date: string; offsetLabel: string; items: MovingRestartItem[] }>>((groups, item) => {
+    const last = groups.at(-1);
+    if (last && last.date === item.date && last.offsetLabel === item.offsetLabel) {
+      last.items.push(item);
+      return groups;
+    }
+
+    groups.push({ date: item.date, offsetLabel: item.offsetLabel, items: [item] });
+    return groups;
+  }, []);
+}
+
+function getMilestoneHeading(group: { offsetLabel: string; items: MovingRestartItem[] }) {
+  return group.items.length > 1 ? `${group.offsetLabel} 마일스톤 ${group.items.length}개` : group.offsetLabel;
+}
+
 export function MovingD30Restart() {
   const [moveDate, setMoveDate] = useState(defaultMoveDate);
   const [items, setItems] = useState(() => generateMovingRestartItems(defaultMoveDate));
@@ -84,6 +101,7 @@ export function MovingD30Restart() {
   const [newMemo, setNewMemo] = useState('');
 
   const sortedItems = useMemo(() => sortItems(items), [items]);
+  const scheduleGroups = useMemo(() => groupScheduleMilestones(sortedItems), [sortedItems]);
   const selectedItem = items.find((item) => item.id === selectedId);
   const selectedDateItems = sortedItems.filter((item) => item.date === selectedDate);
   const nextItems = sortedItems.slice(0, 3);
@@ -496,33 +514,50 @@ export function MovingD30Restart() {
               data-testid="moving-full-schedule-list"
               className={`mt-3 divide-y divide-slate-100 rounded-3xl border border-slate-200 ${showFullSchedule ? 'block' : 'hidden lg:block'}`}
             >
-              {sortedItems.map((item) => (
-                <article key={item.id} className="grid gap-3 p-4 sm:grid-cols-[64px_1fr_auto] sm:items-center">
-                  <div className="grid h-12 place-items-center rounded-2xl bg-blue-50 text-sm font-bold text-blue-700">
-                    {item.offsetLabel}
+              {scheduleGroups.map((group) => (
+                <section
+                  key={`${group.date}-${group.offsetLabel}`}
+                  data-testid="moving-schedule-date-group"
+                  className="bg-white"
+                >
+                  <div
+                    data-testid="moving-schedule-date-group-heading"
+                    className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-4 py-3"
+                  >
+                    <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700">
+                      {getMilestoneHeading(group)}
+                    </span>
+                    <span className="text-sm font-semibold text-slate-500">
+                      {formatUserFacingScheduleDate(group.date)}
+                    </span>
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold text-slate-500">{formatUserFacingScheduleDate(item.date)}</p>
-                    <h3 className="mt-1 text-base font-bold">{item.title}</h3>
-                    <p className="mt-1 text-sm leading-6 text-slate-600">{item.memo}</p>
+                  <div className="divide-y divide-slate-100">
+                    {group.items.map((item) => (
+                      <article key={item.id} className="grid gap-3 p-4 sm:grid-cols-[1fr_auto] sm:items-center">
+                        <div>
+                          <h3 className="text-base font-bold">{item.title}</h3>
+                          <p className="mt-1 text-sm leading-6 text-slate-600">{item.memo}</p>
+                        </div>
+                        <div className="flex flex-wrap gap-2 sm:justify-end">
+                          <button
+                            type="button"
+                            onClick={() => toggleDone(item.id)}
+                            className="min-h-10 rounded-2xl bg-slate-100 px-3 text-sm font-bold text-slate-700"
+                          >
+                            {item.done ? '완료됨' : '완료'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => startEdit(item.id)}
+                            className="min-h-10 rounded-2xl bg-slate-100 px-3 text-sm font-bold text-slate-700"
+                          >
+                            {item.title} 편집
+                          </button>
+                        </div>
+                      </article>
+                    ))}
                   </div>
-                  <div className="flex flex-wrap gap-2 sm:justify-end">
-                    <button
-                      type="button"
-                      onClick={() => toggleDone(item.id)}
-                      className="min-h-10 rounded-2xl bg-slate-100 px-3 text-sm font-bold text-slate-700"
-                    >
-                      {item.done ? '완료됨' : '완료'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => startEdit(item.id)}
-                      className="min-h-10 rounded-2xl bg-slate-100 px-3 text-sm font-bold text-slate-700"
-                    >
-                      {item.title} 편집
-                    </button>
-                  </div>
-                </article>
+                </section>
               ))}
             </div>
           </section>

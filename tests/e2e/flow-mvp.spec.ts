@@ -1393,6 +1393,10 @@ test('moving restart mobile uses one export entry and friendly date text', async
   await page.getByTestId('moving-mobile-full-schedule').locator('button').nth(1).click();
   const fullSchedule = page.getByTestId('moving-full-schedule-list');
   await expect(fullSchedule).toBeVisible();
+  await expect(fullSchedule).toContainText('D-30 마일스톤 3개');
+  const firstScheduleGroup = fullSchedule.getByTestId('moving-schedule-date-group').first();
+  await expect(firstScheduleGroup.getByTestId('moving-schedule-date-group-heading')).toContainText('5월 28일 (목)');
+  await expect(firstScheduleGroup.locator('article')).toHaveCount(3);
   await expect(fullSchedule).toContainText('5월 28일 (목)');
   await expect(fullSchedule).toContainText('6월 17일 (수)');
   await expect(fullSchedule).toContainText('6월 26일 (금)');

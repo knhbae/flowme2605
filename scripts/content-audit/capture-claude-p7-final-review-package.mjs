@@ -595,10 +595,15 @@ async function scanPage(page, options = {}) {
       .map((element) => normalizeLine(element.textContent ?? ''))
       .filter(Boolean);
     const restartNextTaskTitles = collectText('[data-testid="moving-mobile-next-tasks"] article h3');
-    const restartFullScheduleDateLabels = collectText('[data-testid="moving-full-schedule-list"] article > div:nth-child(2) > p:first-child');
-    const restartFullScheduleOffsetLabels = collectText('[data-testid="moving-full-schedule-list"] article > div:first-child');
+    const restartFullScheduleGroupHeadings = collectText('[data-testid="moving-schedule-date-group-heading"]');
+    const restartFullScheduleDateLabels = collectText('[data-testid="moving-schedule-date-group-heading"] span:nth-child(2)');
+    const restartFullScheduleOffsetLabels = collectText('[data-testid="moving-schedule-date-group-heading"] span:first-child')
+      .map((label) => label.replace(/\s*마일스톤\s+\d+개\s*$/, ''));
     const restartFullScheduleUniqueDateLabels = uniqueLines(restartFullScheduleDateLabels);
     const restartFullScheduleUniqueOffsetLabels = uniqueLines(restartFullScheduleOffsetLabels);
+    const restartD30MilestoneGroupHeadingVisible = restartFullScheduleGroupHeadings.some((heading) =>
+      /D-30.*마일스톤\s+3개/.test(heading),
+    );
     const restartFirstThreeDateLabels = restartNextTaskDateLabels.slice(0, 3);
     const restartFirstThreeSameDateLabel = restartFirstThreeDateLabels.length === 3
       && restartFirstThreeDateLabels.every((label) => label === restartFirstThreeDateLabels[0]);
@@ -679,6 +684,8 @@ async function scanPage(page, options = {}) {
           firstThreeSameD30Milestone: restartFirstThreeSameDateLabel && /D-30/.test(restartFirstThreeDateLabels[0] ?? ''),
           fullScheduleDateLabels: restartFullScheduleDateLabels,
           fullScheduleOffsetLabels: restartFullScheduleOffsetLabels,
+          fullScheduleGroupHeadings: restartFullScheduleGroupHeadings,
+          d30MilestoneGroupHeadingVisible: restartD30MilestoneGroupHeadingVisible,
           fullScheduleUniqueDateLabelCount: restartFullScheduleUniqueDateLabels.length,
           fullScheduleUniqueOffsetLabelCount: restartFullScheduleUniqueOffsetLabels.length,
           fullScheduleHasDistributedDates: restartFullScheduleUniqueDateLabels.length > 1 && restartFullScheduleUniqueOffsetLabels.length > 1,
@@ -767,6 +774,9 @@ function summarizeEvidence(records) {
     restartPrototypeSourceExportScrollY: restartSourceFrame?.scrollY ?? null,
     restartPrototypeBottomScrollY: restartBottomFrame?.scrollY ?? null,
     restartPrototypeFirstThreeSameD30Milestone: restartFirstThreeSameD30Milestone,
+    restartPrototypeD30MilestoneGroupHeadingVisible: Boolean(
+      restartScheduleDateCheck.d30MilestoneGroupHeadingVisible,
+    ),
     restartPrototypeFirstThreeDateLabels: restartScheduleDateCheck.firstThreeDateLabels ?? [],
     restartPrototypeFirstThreeTitles: restartScheduleDateCheck.firstThreeTitles ?? [],
     restartPrototypeFullScheduleUniqueDateLabelCount: restartScheduleDateCheck.fullScheduleUniqueDateLabelCount ?? 0,
@@ -824,6 +834,7 @@ This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, t
 - Restart prototype duplicate export-entry hits: ${evidence.summary.restartPrototypeDuplicateExportEntryHitCount}
 - Restart source/export and bottom frames distinct: ${evidence.summary.restartPrototypeSourceBottomFramesDistinct}
 - Restart first 3 rows are one D-30 milestone group: ${evidence.summary.restartPrototypeFirstThreeSameD30Milestone}
+- Restart D-30 milestone group heading visible: ${evidence.summary.restartPrototypeD30MilestoneGroupHeadingVisible}
 - Restart full schedule unique date labels: ${evidence.summary.restartPrototypeFullScheduleUniqueDateLabelCount}
 
 ## GitHub Links
@@ -859,7 +870,7 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 - P8-03/P8-04: My Flow uses \`지난 할 일\` consistently for overdue work, and past rows in the saved-content list are not labeled as \`다음 할 일\`.
 - P8-05: Restart source/export and true-bottom frames are captured at separate scroll positions and carry screenshot hashes.
 - P8-06: My Flow label repetition counters use \`my-flow-queue-label-surfaces\`, not full page body text.
-- P8-07: \`/restart/moving-d30\` first three visible rows share the same D-30 date because all three source rows are D-30 milestones; full schedule/export rows remain distributed across later dates.
+- P8-07/P9-06: \`/restart/moving-d30\` first three visible rows share the same D-30 date because all three source rows are D-30 milestones; the full schedule now labels that cluster as a D-30 milestone group and later dates remain distributed.
 - P8-08: UI baseline commit and package generation commit metadata are separated.
 - P8-09: field checklist row details keep execution criteria/details, but repeated row-level source links are suppressed; source access remains available in the source/reference area.
 - P8-10/P9-02: public \`/f/[slug]\` share screens keep \`콘텐츠 더 보기\` as an accessible secondary link, but place it after the primary save/input path in DOM/tab order.
@@ -897,6 +908,7 @@ The restart source/export frame and bottom frame must remain distinct:
 - distinct hash/scroll evidence: ${evidence.summary.restartPrototypeSourceBottomFramesDistinct ? 'yes' : 'no'}
 - first-three date labels: ${JSON.stringify(evidence.summary.restartPrototypeFirstThreeDateLabels)}
 - first-three row titles: ${JSON.stringify(evidence.summary.restartPrototypeFirstThreeTitles)}
+- D-30 milestone group heading visible: ${evidence.summary.restartPrototypeD30MilestoneGroupHeadingVisible ? 'yes' : 'no'}
 - full schedule unique date labels: ${evidence.summary.restartPrototypeFullScheduleUniqueDateLabelCount}
 - full schedule unique offset labels: ${evidence.summary.restartPrototypeFullScheduleUniqueOffsetLabelCount}
 - date distribution judgment: ${evidence.summary.restartPrototypeDateDistributionJudgment}
@@ -1047,6 +1059,7 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.restartPrototypeDuplicateExportEntryHitCount}</b><span>restart duplicate export entries</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeSourceBottomFramesDistinct ? 'yes' : 'no'}</b><span>restart source/bottom distinct</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeFirstThreeSameD30Milestone ? 'yes' : 'no'}</b><span>restart first 3 = D-30 group</span></div>
+      <div class="stat"><b>${evidence.summary.restartPrototypeD30MilestoneGroupHeadingVisible ? 'yes' : 'no'}</b><span>restart D-30 group heading</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeFullScheduleUniqueDateLabelCount}</b><span>restart full schedule dates</span></div>
       <div class="stat"><b>${evidence.summary.fieldWorkbenchRowDetailSourceLinkCount}</b><span>field row source links</span></div>
       <div class="stat"><b>${evidence.summary.fieldWorkbenchSourceAccessLinkCount}</b><span>field source access links</span></div>
