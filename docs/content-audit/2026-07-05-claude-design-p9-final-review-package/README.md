@@ -1,9 +1,9 @@
 # FlowMe Claude Design P9 Final Review Package
 
-- Generated: 2026-07-05T21:18:25.567Z
+- Generated: 2026-07-05T22:16:05.514Z
 - Branch: `codex/flowme-uxui-second-loop`
-- UI baseline commit: `f668e74`
-- Package generated from commit: `f668e74`
+- UI baseline commit: `706b67f`
+- Package generated from commit: `706b67f`
 - Package commit ref: `git commit containing this generated package`
 - Viewport: 390x844
 
@@ -33,10 +33,10 @@ For P9, it additionally closes P9-01 to P9-07: data-driven guardrail coverage, a
 - Field workbench source access link count: 5
 - Public share route count: 9
 - Public share secondary browse focusable count: 9
-- Public share secondary browse after-primary count: 5
+- Public share secondary browse after-primary count: 9
 - Public share secondary browse before-primary count: 0
-- Public share primary path focusable count: 5
-- Public share primary path visible count: 7
+- Public share primary path focusable count: 9
+- Public share primary path visible count: 9
 - Restart prototype raw ISO hits: 0
 - Restart prototype raw route slug hits: 0
 - Restart prototype English weekday hits: 0

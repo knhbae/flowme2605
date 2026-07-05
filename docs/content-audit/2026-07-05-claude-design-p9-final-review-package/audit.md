@@ -29,8 +29,8 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
 ```json
 {
   "totalScreenshots": 26,
-  "uiBaselineCommit": "f668e74",
-  "packageGeneratedFromCommit": "f668e74",
+  "uiBaselineCommit": "706b67f",
+  "packageGeneratedFromCommit": "706b67f",
   "packageCommitRef": "git commit containing this generated package",
   "normalRouteInternalHitCount": 0,
   "normalRouteSourceSlugHitCount": 0,
@@ -49,10 +49,10 @@ P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same gu
   ],
   "publicShareRouteCount": 9,
   "publicShareSecondaryBrowseFocusableCount": 9,
-  "publicShareSecondaryBrowseAfterPrimaryCount": 5,
+  "publicShareSecondaryBrowseAfterPrimaryCount": 9,
   "publicShareSecondaryBrowseBeforePrimaryCount": 0,
-  "publicSharePrimaryPathFocusableCount": 5,
-  "publicSharePrimaryPathVisibleCount": 7,
+  "publicSharePrimaryPathFocusableCount": 9,
+  "publicSharePrimaryPathVisibleCount": 9,
   "restartPrototypeRawIsoHitCount": 0,
   "restartPrototypeRawRouteSlugHitCount": 0,
   "restartPrototypeEnglishWeekdayHitCount": 0,
@@ -161,16 +161,16 @@ The restart source/export frame and bottom frame must remain distinct:
 
 - public share route count: 9
 - secondary browse focusable count: 9
-- secondary browse after-primary count: 5
+- secondary browse after-primary count: 9
 - secondary browse before-primary count: 0
-- primary save/input path focusable count: 5
-- primary save/input path visible count: 7
+- primary save/input path focusable count: 9
+- primary save/input path visible count: 9
 - expected: `콘텐츠 더 보기` remains keyboard/screen-reader reachable as a quiet secondary link, but it should follow `내 Flow에 저장` or the input/setup path.
 
 ## Commit Metadata
 
-- UI baseline commit: `f668e74`
-- Package generated from commit: `f668e74`
+- UI baseline commit: `706b67f`
+- Package generated from commit: `706b67f`
 - Package commit ref: `git commit containing this generated package`
 
 ## Residual Risk
