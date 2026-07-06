@@ -9,6 +9,11 @@ export type FirstTaskRepetitionHit = {
   extraLines: string[];
 };
 
+export type InternalCopyHit = {
+  pattern: string;
+  line: string;
+};
+
 export type UserSurfaceInputValue = {
   label?: string;
   inputType?: string;
@@ -37,6 +42,7 @@ export type UserSurfaceGuardrailInput = {
 };
 
 export type UserSurfaceGuardrailResult = {
+  internalCopyHits: InternalCopyHit[];
   sourceSlugSignals: string[];
   sourceSlugHits: SourceSlugHit[];
   structuralDisplayHits: string[];
@@ -85,6 +91,23 @@ const STRUCTURAL_DISPLAY_PATTERNS = [
   /(?:위|아래)\s*카드에서/u,
   /카드에서\s*(?:엽니다|봅니다|확인합니다)/u,
   /(?:전체\s*)?탭에서\s*(?:엽니다|봅니다|확인합니다)/u,
+];
+
+const INTERNAL_COPY_PATTERNS: Array<{ label: string; pattern: RegExp }> = [
+  { label: String.raw`\bdemo\b`, pattern: /\bdemo\b/iu },
+  { label: '데모', pattern: /데모/u },
+  { label: String.raw`\breview\b`, pattern: /\breview\b/iu },
+  { label: String.raw`\baudit\b`, pattern: /\baudit\b/iu },
+  { label: 'source-backed', pattern: /source-backed/iu },
+  { label: 'sourceTrace', pattern: /sourceTrace/u },
+  { label: 'partial_draft', pattern: /partial_draft/u },
+  { label: 'source_import_required', pattern: /source_import_required/u },
+  { label: '검토 필요', pattern: /검토\s*필요/u },
+  { label: '정리 필요', pattern: /정리\s*필요/u },
+  { label: '후보 콘텐츠', pattern: /후보\s*콘텐츠/u },
+  { label: String.raw`\bFlow Map\b`, pattern: /\bFlow Map\b/iu },
+  { label: String.raw`\bStep\b`, pattern: /\bStep\b/iu },
+  { label: String.raw`\bItem\b`, pattern: /\bItem\b/iu },
 ];
 
 const ALLOWED_TRAILING_FLOW_LINES = new Set([
@@ -194,6 +217,14 @@ export function createSourceSlugHitRegex(signal: string): RegExp {
 export function findStructuralDisplayHits(primaryLines: string[]): string[] {
   return normalizeGuardrailLines(primaryLines).filter((line) =>
     STRUCTURAL_DISPLAY_PATTERNS.some((pattern) => pattern.test(line)),
+  );
+}
+
+export function findInternalCopyHits(primaryLines: string[]): InternalCopyHit[] {
+  return normalizeGuardrailLines(primaryLines).flatMap((line) =>
+    INTERNAL_COPY_PATTERNS
+      .filter(({ pattern }) => pattern.test(line))
+      .map(({ label }) => ({ pattern: label, line })),
   );
 }
 
@@ -313,6 +344,7 @@ export function scanUserSurfaceGuardrails(input: UserSurfaceGuardrailInput): Use
     : collectSourceSlugSignalsFromLines(sourceLines);
 
   return {
+    internalCopyHits: findInternalCopyHits(primaryLines),
     sourceSlugSignals,
     sourceSlugHits: findSourceSlugHits(primaryLines, sourceSlugSignals),
     structuralDisplayHits: findStructuralDisplayHits(primaryLines),

@@ -1256,6 +1256,7 @@ test('fridge cleanout mobile starts with one active inventory row before the ful
 
   const activeRow = workbench.getByTestId('fridge-mobile-active-row');
   await expect(activeRow).toBeVisible();
+  await expect(activeRow.getByTestId('fridge-active-row-title')).toHaveCSS('-webkit-line-clamp', '2');
   await expect(activeRow).toContainText('우선 재료');
   await expect(activeRow).toContainText('메뉴 후보');
   await expect(activeRow).toContainText('장보기 보류');
@@ -1289,6 +1290,21 @@ test('special workbench routes do not repeat setup as an inline start CTA', asyn
 
     await expect(page.getByLabel('Flow artifact workbench')).toBeVisible();
     await expect(page.getByText(/입력으로 시작/)).toHaveCount(0);
+  }
+});
+
+test('fridge and washer setup path is a visible input action before browse navigation', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  for (const route of ['/f/fridge-cleanout-weekly-plan', '/f/washer-tub-clean-monthly']) {
+    await page.goto(route);
+
+    const setup = page.getByTestId('public-flow-primary-setup');
+    await expect(setup).toBeVisible();
+    await expect(setup.getByTestId('public-flow-anchor-action-row')).toBeVisible();
+    await expect(setup.getByTestId('public-flow-anchor-input')).toBeVisible();
+    await expect(setup.getByRole('button', { name: '입력' })).toBeVisible();
+    await expect(page.getByTestId('flow-public-secondary-browse-link')).toBeVisible();
   }
 });
 

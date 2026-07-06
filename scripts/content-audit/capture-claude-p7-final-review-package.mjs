@@ -14,6 +14,7 @@ const guardrailModule = await tsImport(
 );
 const {
   findFirstTaskRepetitionHits,
+  findInternalCopyHits,
   scanRawIsoInputValues,
   scanPrototypeRouteGuardrails,
   scanUserSurfaceGuardrails,
@@ -34,23 +35,6 @@ const packageCommitRef = process.env.FLOWME_EVIDENCE_PACKAGE_COMMIT || 'git comm
 const baseURL = process.env.FLOWME_EVIDENCE_BASE_URL || `http://127.0.0.1:${process.env.FLOWME_EVIDENCE_PORT || '3221'}`;
 const shouldStartServer = !process.env.FLOWME_EVIDENCE_BASE_URL;
 const githubBase = `https://github.com/knhbae/flowme2605/blob/${branchName}`;
-
-const forbiddenInternalTerms = [
-  /\bdemo\b/i,
-  /데모/,
-  /\breview\b/i,
-  /\baudit\b/i,
-  /source-backed/i,
-  /sourceTrace/,
-  /partial_draft/,
-  /source_import_required/,
-  /검수 필요/,
-  /정리 필요/,
-  /후보 콘텐츠/,
-  /\bFlow Map\b/,
-  /\bStep\b/,
-  /\bItem\b/,
-];
 
 const sourceSlugSignals = getDynamicSourceSlugSignals();
 
@@ -91,7 +75,12 @@ async function main() {
 
   const server = await startServerIfNeeded();
   const browser = await chromium.launch(getLaunchOptions());
-  const context = await browser.newContext({ baseURL, viewport });
+  const context = await browser.newContext({
+    baseURL,
+    viewport,
+    locale: 'ko-KR',
+    timezoneId: 'Asia/Seoul',
+  });
   const page = await context.newPage();
 
   try {
@@ -493,11 +482,6 @@ async function scanPage(page, options = {}) {
       '[data-testid="my-flow-priority-section"]',
     ].flatMap((selector) => collectElementLines(document.querySelector(selector))));
 
-    const matches = (patterns) => patterns.flatMap((pattern) => {
-      const regex = new RegExp(pattern.source, pattern.flags);
-      return lines.filter((line) => regex.test(line)).map((line) => ({ pattern: pattern.label, line }));
-    });
-
     const prototypeExportEntryLabels = Array.from(document.querySelectorAll('[data-testid="moving-mobile-export-actions"] button'))
       .map((element) => normalizeLine(element.textContent ?? ''))
       .filter(Boolean);
@@ -749,6 +733,58 @@ async function scanPage(page, options = {}) {
         hits: hits.slice(0, 5),
       };
     };
+    const collectWorkbenchRepeatedDetailSentences = () => {
+      const lines = Array.from(document.querySelectorAll('[data-testid="artifact-list-card"] details p'))
+        .filter((element) => isVisible(element))
+        .map((element) => normalizeLine(element.textContent ?? ''))
+        .filter((line) => /^주의\s*:/u.test(line))
+        .filter(Boolean);
+      const counts = lines.reduce((map, line) => {
+        map.set(line, (map.get(line) ?? 0) + 1);
+        return map;
+      }, new Map());
+      const repeated = Array.from(counts.entries())
+        .filter(([, count]) => count > 1)
+        .map(([line, count]) => ({ line, count }));
+
+      return {
+        checkedSentenceCount: lines.length,
+        repeatedSentenceCount: repeated.reduce((sum, item) => sum + item.count - 1, 0),
+        repeatedSentences: repeated.slice(0, 5),
+      };
+    };
+    const collectPublicWorkbenchExportLabels = () => {
+      const buttons = Array.from(document.querySelectorAll([
+        '[data-testid^="mobile-artifact-export-"]',
+        '[data-testid="mobile-export-bar"] button',
+        '[data-testid="mobile-export-sheet"] button',
+      ].join(',')))
+        .filter((element) => isVisibleInteractiveElement(element))
+        .map((element) => ({
+          testId: getElementTestId(element),
+          visibleLabel: getVisibleLabel(element),
+          accessibleName: getAccessibleNameCandidate(element),
+        }))
+        .filter((entry) => entry.visibleLabel);
+      const byVisibleLabel = buttons.reduce((map, entry) => {
+        map.set(entry.visibleLabel, [...(map.get(entry.visibleLabel) ?? []), entry]);
+        return map;
+      }, new Map());
+      const duplicateVisibleLabels = Array.from(byVisibleLabel.entries())
+        .filter(([, entries]) => entries.length > 1)
+        .map(([visibleLabel, entries]) => ({
+          visibleLabel,
+          count: entries.length,
+          accessibleNames: uniqueLines(entries.map((entry) => entry.accessibleName)).slice(0, 5),
+        }));
+
+      return {
+        buttonCount: buttons.length,
+        duplicateVisibleLabelCount: duplicateVisibleLabels.length,
+        duplicateVisibleLabels,
+        samples: buttons.slice(0, 8),
+      };
+    };
     const publicBrowseLinkFocusableIndex = focusableEntries.findIndex((entry) => entry.testId === 'flow-public-secondary-browse-link');
     const publicPrimaryPathFocusableIndex = focusableEntries.findIndex((entry) =>
       [
@@ -795,7 +831,7 @@ async function scanPage(page, options = {}) {
       browseLinkSecondaryCandidate: clickableLabels.includes('콘텐츠 더 보기'),
       firstClickableLabels: clickableLabels,
       firstFocusableLabels: focusableEntries.map((entry) => entry.text).filter(Boolean).slice(0, 18),
-      internalHits: matches(payload.forbiddenInternalTerms),
+      internalHits: [],
       sourceSlugSignals: payload.sourceSlugSignals,
       sourceSlugHits: [],
       structuralDisplayHits: [],
@@ -846,6 +882,8 @@ async function scanPage(page, options = {}) {
         rowControlAccessibleNames: getRowControlAccessibleNames(),
         inventoryProgressMetrics: collectInventoryProgressMetrics(),
         inventoryHeaderMetrics: collectInventoryHeaderMetrics(),
+        workbenchRepeatedDetailSentences: collectWorkbenchRepeatedDetailSentences(),
+        publicWorkbenchExportLabels: collectPublicWorkbenchExportLabels(),
         inventoryRows: document.querySelectorAll('[data-testid="my-flow-group-row"]').length,
         restartInlineExportButtons: document.querySelectorAll('#moving-restart-export-panel button').length,
         restartMobileExportButtons: document.querySelectorAll('[data-testid="moving-mobile-export-actions"] button').length,
@@ -876,7 +914,6 @@ async function scanPage(page, options = {}) {
     };
   }, {
     options,
-    forbiddenInternalTerms: forbiddenInternalTerms.map((term) => ({ label: term.toString(), source: term.source, flags: term.flags })),
     sourceSlugSignals,
   });
 
@@ -885,6 +922,7 @@ async function scanPage(page, options = {}) {
   const nowSectionLines = guardrailRuntimeInputs?.nowSectionLines ?? [];
   const firstTaskTitle = guardrailRuntimeInputs?.firstTaskTitle ?? '';
   const rawIsoInputValueScan = scanRawIsoInputValues(guardrailRuntimeInputs?.inputValues ?? []);
+  const internalHits = findInternalCopyHits(primaryLines);
   const userSurfaceGuardrails = scanUserSurfaceGuardrails({
     primaryLines,
     sourceSlugSignals,
@@ -899,6 +937,7 @@ async function scanPage(page, options = {}) {
 
   return {
     ...record,
+    internalHits,
     sourceSlugSignals: userSurfaceGuardrails.sourceSlugSignals,
     sourceSlugHits: userSurfaceGuardrails.sourceSlugHits,
     structuralDisplayHits: userSurfaceGuardrails.structuralDisplayHits.map((line) => ({
@@ -995,6 +1034,12 @@ function summarizeEvidence(records) {
     fieldWorkbenchRowDetailSourceLinkCount: fieldChecklistSourceDensity.reduce((sum, record) => sum + (record.markers.workbenchRowDetailSourceLinkCount ?? 0), 0),
     fieldWorkbenchSourceAccessLinkCount: fieldChecklistSourceDensity.reduce((sum, record) => sum + (record.markers.workbenchSourceAccessLinkCount ?? 0), 0),
     fieldWorkbenchOpenDetailCounts: fieldChecklistSourceDensity.map((record) => record.markers.workbenchRowDetailCount ?? 0),
+    fieldWorkbenchRepeatedDetailSentenceCount: fieldChecklistSourceDensity.reduce((sum, record) =>
+      sum + (record.markers.workbenchRepeatedDetailSentences?.repeatedSentenceCount ?? 0),
+    0),
+    publicWorkbenchDuplicateExportVisibleLabelCount: publicShareRoutes.reduce((sum, record) =>
+      sum + (record.markers.publicWorkbenchExportLabels?.duplicateVisibleLabelCount ?? 0),
+    0),
     publicShareRouteCount: publicShareRoutes.length,
     publicShareSecondaryBrowseFocusableCount: publicShareRoutes.filter((record) => record.markers.publicBrowseLinkFocusable).length,
     publicShareSecondaryBrowseAfterPrimaryCount: publicShareRoutes.filter((record) => record.markers.publicBrowseLinkAfterPrimary).length,
@@ -1073,6 +1118,8 @@ P11-02 adds JSON-level evidence markers for the P10-03/P10-04/P10-05 claims: \`c
 
 P11-04/P11-09 reduce My Flow inventory metric noise. Each saved-content row exposes one primary progress label, and the mobile all-tab header avoids large total remaining-count copy. The capture output records \`inventoryProgressMetrics\` and \`inventoryHeaderMetrics\` so duplicate progress metrics and large remaining-count headers can be judged from JSON markers.
 
+P11-05/P11-06 keep the capture pipeline aligned with the canonical guardrail library and make native date input exemptions traceable by test id. P11-07/P11-10 keep fridge/washer setup paths measurable and allow the fridge first-action title to wrap to two lines on mobile. P11-08/P11-11 lower repeated field-checklist detail caution copy and extend public workbench export-label evidence so duplicate visible export entry points are caught.
+
 ## Files
 
 - [audit.md](./audit.md)
@@ -1101,6 +1148,8 @@ P11-04/P11-09 reduce My Flow inventory metric noise. Each saved-content row expo
 - Normal route horizontal overflow count: ${evidence.summary.normalRouteHorizontalOverflowCount}
 - Field workbench row-detail source link count: ${evidence.summary.fieldWorkbenchRowDetailSourceLinkCount}
 - Field workbench source access link count: ${evidence.summary.fieldWorkbenchSourceAccessLinkCount}
+- Field workbench repeated detail caution count: ${evidence.summary.fieldWorkbenchRepeatedDetailSentenceCount}
+- Public workbench duplicate export visible-label count: ${evidence.summary.publicWorkbenchDuplicateExportVisibleLabelCount}
 - Public share route count: ${evidence.summary.publicShareRouteCount}
 - Public share secondary browse focusable count: ${evidence.summary.publicShareSecondaryBrowseFocusableCount}
 - Public share secondary browse after-primary count: ${evidence.summary.publicShareSecondaryBrowseAfterPrimaryCount}
@@ -1150,6 +1199,8 @@ P11-02 keeps the UI unchanged and strengthens the evidence layer. The capture ou
 
 P11-04/P11-09 lower My Flow inventory density without changing progress calculations. Inventory rows keep a single visible progress label, the mobile all-tab header avoids large total remaining-count copy, and \`inventoryProgressMetrics\`/\`inventoryHeaderMetrics\` markers make those claims auditable from JSON.
 
+P11-05/P11-06 keep capture/evidence rules centralized and traceable: internal-copy scans use the canonical guardrail helper, the browser context is Korean locale/Asia-Seoul timezone, and date inputs carry stable test ids for native raw ISO exemption evidence. P11-07/P11-10 keep fridge/washer setup paths visible and measurable, and the fridge first-action title can wrap to two lines. P11-08/P11-11 move repeated field-checklist caution copy into a common note and record public workbench export visible-label duplication as JSON evidence.
+
 ## Baselines Covered
 
 - P7-01: \`/restart/moving-d30\` uses user-facing date text and a quieter export hierarchy.
@@ -1179,6 +1230,9 @@ P11-04/P11-09 lower My Flow inventory density without changing progress calculat
 - P11-01: My Flow overdue status sheets group shared date/content/timing metadata once per group.
 - P11-02: continuation actionable state, Calendar/status-sheet group metadata, and row-control accessible-name samples are recorded as route-evidence markers.
 - P11-04/P11-09: My Flow inventory rows avoid duplicate progress metrics, and the mobile all-tab header avoids large total remaining-count copy.
+- P11-05/P11-06: capture guardrail logic stays canonical, locale/timezone are fixed, and native date input exemptions include concrete test ids.
+- P11-07/P11-10: fridge/washer setup paths are visible/focusable evidence targets, and the fridge first-action title supports two-line mobile wrapping.
+- P11-08/P11-11: field checklist repeated caution copy is common-note only, and public workbench export labels do not duplicate as ambiguous visible entry points.
 
 ## Summary
 
@@ -1356,7 +1410,7 @@ function renderHtml(evidence) {
 <body>
   <main>
     <h1>FlowMe ${reviewCycle} Final Review Package</h1>
-    <p class="lead">P7/P8/P9 기준선 위에 P10-01~P10-07 guardrail 단일화, public share primary path, My Flow continuation, Calendar group header, 짧은 컨트롤 라벨, GitHub link base, input value raw ISO 정책을 고정하기 위한 모바일 390px screenshot/evidence 패키지입니다.</p>
+    <p class="lead">P7/P8/P9/P10 기준선 위에 P11-01~P11-11 My Flow group header, continuation/status copy, inventory density, capture guardrail traceability, fridge/washer setup affordance, field-checklist detail density, public workbench export label evidence를 고정하기 위한 모바일 390px screenshot/evidence 패키지입니다.</p>
     <p class="meta">UI baseline commit: ${escapeHtml(evidence.uiBaselineCommit)} · Package generated from: ${escapeHtml(evidence.packageGeneratedFromCommit)} · Package commit ref: ${escapeHtml(evidence.packageCommitRef)}</p>
     <section class="summary">
       <div class="stat"><b>${evidence.summary.totalScreenshots}</b><span>screenshots</span></div>
@@ -1373,6 +1427,8 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.normalRouteRowControlAccessibleNameSampleCount}</b><span>row control a11y samples</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteRowControlAccessibleNameContextCount}</b><span>row control samples with context</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteLegacyOverdueLabelCount}</b><span>legacy overdue labels</span></div>
+      <div class="stat"><b>${evidence.summary.fieldWorkbenchRepeatedDetailSentenceCount}</b><span>field repeated caution</span></div>
+      <div class="stat"><b>${evidence.summary.publicWorkbenchDuplicateExportVisibleLabelCount}</b><span>public export label duplicates</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeRawIsoHitCount}</b><span>restart raw ISO hits</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeInputRawIsoHitCount}</b><span>restart input ISO hits</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeInputRawIsoExemptCount}</b><span>restart input ISO exempt</span></div>

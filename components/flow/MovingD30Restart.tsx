@@ -307,6 +307,7 @@ export function MovingD30Restart() {
           <div className="mt-2 flex flex-col gap-3 sm:flex-row">
             <input
               id="moving-restart-date"
+              data-testid="moving-restart-date-input"
               aria-label="이사일"
               type="date"
               value={moveDate}
@@ -477,6 +478,7 @@ export function MovingD30Restart() {
                 </label>
                 <input
                   id="moving-new-date"
+                  data-testid="moving-new-date-input"
                   aria-label="새 항목 날짜"
                   type="date"
                   value={newDate}
@@ -667,6 +669,7 @@ export function MovingD30Restart() {
                 </label>
                 <input
                   id="moving-edit-date"
+                  data-testid="moving-edit-date-input"
                   aria-label="항목 날짜"
                   type="date"
                   value={draftDate}
@@ -797,6 +800,7 @@ export function MovingD30Restart() {
             </label>
             <input
               id="moving-mobile-edit-date"
+              data-testid="moving-mobile-edit-date-input"
               aria-label="항목 날짜"
               type="date"
               value={draftDate}

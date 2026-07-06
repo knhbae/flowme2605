@@ -15,6 +15,7 @@ import {
   createSourceSlugHitRegex,
   findDuplicatePrototypeExportEntryHits,
   findFirstTaskRepetitionHits,
+  findInternalCopyHits,
   findPrototypeEnglishMonthTimeHits,
   findPrototypeEnglishUiVerbHits,
   findPrototypeEnglishWeekdayHits,
@@ -161,6 +162,9 @@ test('capture script does not keep stale source slug or GitHub path copies', () 
   assert.ok(script.includes('scanPrototypeRouteGuardrails'));
   assert.ok(script.includes('scanRawIsoInputValues'));
   assert.ok(script.includes('findFirstTaskRepetitionHits'));
+  assert.ok(script.includes('findInternalCopyHits'));
+  assert.equal(script.includes('const forbiddenInternalTerms'), false);
+  assert.equal(script.includes('forbiddenInternalTerms:'), false);
   assert.equal(script.includes('(?=$|\\s|[가-힣]|D-)'), false);
   assert.equal(script.includes('blob/${branchName}/flow-mvp'), false);
 });
@@ -207,6 +211,16 @@ test('user surface guardrail helpers lock positive and negative display cases', 
 
   assert.equal(countLineOccurrences(['alpha alpha', 'beta alpha'], 'alpha'), 3);
   assert.equal(countLineOccurrences(['alpha'], ''), 0);
+  assert.deepEqual(
+    findInternalCopyHits(['demo route', 'source-backed state', 'Flow Map shell', 'Step row', 'Item detail', 'plain title']),
+    [
+      { pattern: '\\bdemo\\b', line: 'demo route' },
+      { pattern: 'source-backed', line: 'source-backed state' },
+      { pattern: '\\bFlow Map\\b', line: 'Flow Map shell' },
+      { pattern: '\\bStep\\b', line: 'Step row' },
+      { pattern: '\\bItem\\b', line: 'Item detail' },
+    ],
+  );
 });
 
 test('prototype guardrail helpers lock positive and negative display cases', () => {

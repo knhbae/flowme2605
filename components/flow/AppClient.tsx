@@ -9115,8 +9115,9 @@ function AnchorInput({
       <div className="space-y-3">
         <label className="block space-y-2">
           <span className="text-sm font-semibold text-slate-950">{label}</span>
-          <div className="flex gap-2">
+          <div data-testid="public-flow-anchor-action-row" className="flex gap-2">
             <input
+              data-testid="public-flow-anchor-input"
               aria-label={label}
               className="min-w-0 flex-1 rounded-md border border-slate-300 px-3 py-2"
               type="date"
@@ -9171,8 +9172,9 @@ function AnchorInput({
     <div className="space-y-4">
       <label className="block space-y-2">
         <span className="text-sm font-semibold">{label}</span>
-        <div className="flex flex-wrap gap-2">
+        <div data-testid="public-flow-anchor-action-row" className="flex flex-wrap gap-2">
           <input
+            data-testid="public-flow-anchor-input"
             aria-label={label}
             className="min-w-[220px] flex-1 rounded-md border border-gray-300 px-3 py-2"
             type="date"

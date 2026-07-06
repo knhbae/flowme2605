@@ -266,9 +266,9 @@ function renderMobileArtifactExportButton(kind: ArtifactExportActionKind, action
   if (kind === 'calendar' && !actions.canExportCalendar) return null;
 
   const config = {
-    copy: { label: FLOW_EXPORT_LABELS.checklistCopy, aria: `${FLOW_EXPORT_LABELS.checklistCopy}: ${artifactLabel}`, onClick: actions.onCopyText, disabled },
-    excel: { label: FLOW_EXPORT_LABELS.sheetFile, aria: `${FLOW_EXPORT_LABELS.sheetFile}: ${artifactLabel}`, onClick: actions.onDownloadExcel, disabled },
-    calendar: { label: FLOW_EXPORT_LABELS.calendarFile, aria: `${FLOW_EXPORT_LABELS.calendarFile}: ${artifactLabel}`, onClick: actions.onDownloadCalendar, disabled },
+    copy: { label: `${artifactLabel} 복사`, aria: `${FLOW_EXPORT_LABELS.checklistCopy}: ${artifactLabel}`, onClick: actions.onCopyText, disabled },
+    excel: { label: `${artifactLabel} 받기`, aria: `${FLOW_EXPORT_LABELS.sheetFile}: ${artifactLabel}`, onClick: actions.onDownloadExcel, disabled },
+    calendar: { label: `${artifactLabel} 받기`, aria: `${FLOW_EXPORT_LABELS.calendarFile}: ${artifactLabel}`, onClick: actions.onDownloadCalendar, disabled },
     draft: { label: FLOW_EXPORT_LABELS.editableDraft, aria: `내 버전 만들기: ${artifactLabel}`, onClick: actions.onCopyToEditableDraft, disabled: false },
   }[kind];
 
@@ -359,13 +359,16 @@ function getWorkbenchItemDetail(bundle: FlowBundle, itemId: string): WorkbenchIt
 function WorkbenchDetailDisclosure({
   detail,
   showSourceLinks = true,
+  suppressedCaution,
 }: {
   detail?: WorkbenchItemDetail;
   showSourceLinks?: boolean;
+  suppressedCaution?: string;
 }) {
   if (!detail) return null;
   const visibleLinks = showSourceLinks ? detail.links ?? [] : [];
-  if (!detail.why && !detail.how && !detail.completion_criteria && !detail.caution && !visibleLinks.length) return null;
+  const caution = detail.caution && detail.caution !== suppressedCaution ? detail.caution : '';
+  if (!detail.why && !detail.how && !detail.completion_criteria && !caution && !visibleLinks.length) return null;
 
   return (
     <details className={FLOWME_DISCLOSURE_CLASS}>
@@ -374,7 +377,7 @@ function WorkbenchDetailDisclosure({
         {detail.how ? <p><b>실행:</b> {detail.how}</p> : null}
         {detail.completion_criteria ? <p><b>완료:</b> {detail.completion_criteria}</p> : null}
         {detail.why ? <p><b>이유:</b> {detail.why}</p> : null}
-        {detail.caution ? <p className="text-amber-800"><b>주의:</b> {detail.caution}</p> : null}
+        {caution ? <p className="text-amber-800"><b>주의:</b> {caution}</p> : null}
         {visibleLinks.length ? (
           <div className="flex flex-wrap gap-2 pt-1">
             {visibleLinks.map((link) => (
@@ -1201,6 +1204,17 @@ function MobileComparisonSummaryCard({ rows, comparison }: { rows: ArtifactCompa
       <p className="mt-2 text-xs font-medium text-[#3654FF]">전체 후보 비교는 아래 표에서 이어서 작성하고, 기록은 시트로 받을 수 있습니다.</p>
     </div>
   );
+}
+
+function getRepeatedWorkbenchCaution(details: Array<WorkbenchItemDetail | undefined>): string | undefined {
+  const counts = new Map<string, number>();
+  for (const detail of details) {
+    const caution = detail?.caution?.trim();
+    if (!caution) continue;
+    counts.set(caution, (counts.get(caution) ?? 0) + 1);
+  }
+
+  return [...counts.entries()].find(([, count]) => count > 1)?.[0];
 }
 
 function ProofMemoCard({
@@ -2393,7 +2407,7 @@ function FridgeMobileActiveRowCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold text-[#1F8A5B]">오늘 먼저 기록</p>
-          <h4 className="mt-1 text-sm font-semibold text-[#1B1A17]">재고 행 · {formatKoreanShortDate(date)}</h4>
+          <h4 data-testid="fridge-active-row-title" className="mt-1 line-clamp-2 break-keep text-sm font-semibold leading-5 text-[#1B1A17]">재고 행 · {formatKoreanShortDate(date)}</h4>
         </div>
         <span className="rounded-full border border-[#D8ECE1] bg-white px-2 py-1 text-xs font-semibold text-[#1F8A5B]">오늘 행</span>
       </div>
@@ -2501,6 +2515,8 @@ function ChecklistWorkbench({
   const holdSection = workbenchState && onWorkbenchChange ? <HoldSectionCard bundle={bundle} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} /> : null;
   const putChecklistFirst = bundle.flow.slug === 'used-car-buying-check';
   const visibleItems = getExecutableItems(bundle).slice(0, bundle.flow.slug === 'used-car-buying-check' ? bundle.items.length : 10);
+  const visibleDetails = visibleItems.map((item) => getWorkbenchItemDetail(bundle, item.id));
+  const repeatedCaution = getRepeatedWorkbenchCaution(visibleDetails);
 
   return (
     <div className="space-y-4">
@@ -2512,12 +2528,18 @@ function ChecklistWorkbench({
         </div>
         <ArtifactExportStatus actions={exportActions} />
         {bundle.flow.slug === 'used-car-buying-check' ? <UsedCarSourceBridge sourceUrl={bundle.flow.source_url} /> : null}
+        {repeatedCaution ? (
+          <div data-testid="workbench-common-detail-caution" className="mt-3 rounded-xl border border-[#F1DDB8] bg-[#FFF9EC] px-3 py-2 text-sm leading-6 text-[#5F4115]">
+            <p className="font-semibold text-[#8A5A12]">공통 주의</p>
+            <p className="mt-1">{repeatedCaution}</p>
+          </div>
+        ) : null}
         {bundle.flow.slug === 'used-car-buying-check' && workbenchState && onWorkbenchChange ? (
           <UsedCarDecisionResultCard workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
         ) : null}
         <div className="mt-3 grid gap-2 md:grid-cols-2">
-          {visibleItems.map((item) => {
-            const detail = getWorkbenchItemDetail(bundle, item.id);
+          {visibleItems.map((item, index) => {
+            const detail = visibleDetails[index];
             return (
               <div key={item.id} className={FLOWME_INNER_ROW_CLASS}>
                 <label className="flex gap-2">
@@ -2530,7 +2552,7 @@ function ChecklistWorkbench({
                   />
                   <span className={`font-medium ${checks[item.id] ? 'text-[#A7A39A] line-through' : 'text-[#1B1A17]'}`}>{item.title}</span>
                 </label>
-                <WorkbenchDetailDisclosure detail={detail} showSourceLinks={false} />
+                <WorkbenchDetailDisclosure detail={detail} showSourceLinks={false} suppressedCaution={repeatedCaution} />
               </div>
             );
           })}
