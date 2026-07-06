@@ -332,6 +332,9 @@ test('scanUserSurfaceGuardrails finds structural title leaks and keeps allowed F
       'Flow 패널',
       '실행 큐',
       'source 트레이스',
+      '위 카드에서 오늘 할 일을 바로 엽니다.',
+      '전체 탭에서 봅니다.',
+      '아래 카드에서 다음 할 일을 확인합니다.',
     ],
     sourceLines: [],
   });
@@ -343,6 +346,9 @@ test('scanUserSurfaceGuardrails finds structural title leaks and keeps allowed F
     'Flow 패널',
     '실행 큐',
     'source 트레이스',
+    '위 카드에서 오늘 할 일을 바로 엽니다.',
+    '전체 탭에서 봅니다.',
+    '아래 카드에서 다음 할 일을 확인합니다.',
   ]);
   assert.deepEqual(result.trailingFlowSuffixHits, ['자동차검사 준비 Flow']);
 });

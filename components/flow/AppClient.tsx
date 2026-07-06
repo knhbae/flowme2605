@@ -3099,16 +3099,23 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     : [];
   const postSavePrimaryContinuationRow = postSaveContinuationRows[0] ?? null;
   const hasMyFlowContinuationCandidate = postSaveContinuationRows.length > 0 || myFlowExecutionCandidateRows.length > 0;
+  const myFlowNextDatedSummaryRow = [
+    ...upcomingRows,
+    ...routineNextRows,
+    ...myFlowFallbackFutureRows,
+  ].find((row) => row.date && row.date > myFlowTodayDate);
   const myFlowTodaySummaryCopy =
     todayOpenCount > 0
-      ? '위 카드에서 오늘 할 일을 바로 엽니다. 전체 목록은 전체 탭에서 봅니다.'
+      ? `오늘 ${todayOpenCount}개 남았어요.`
       : overdueRows.length > 0
-        ? `지난 할 일 ${overdueRows.length}개 중 첫 항목을 위 카드에서 엽니다.`
-        : upcomingRows.length > 0
-          ? '오늘 일정은 없고, 가까운 다음 할 일을 위 카드에서 엽니다.'
+        ? `오늘 예정된 할 일은 없고 지난 할 일 ${overdueRows.length}개가 남았어요.`
+        : myFlowNextDatedSummaryRow?.date
+          ? `오늘 예정된 할 일이 없어요. 다음 할 일은 ${formatMyFlowDisplayDate(myFlowNextDatedSummaryRow.date)}이에요.`
           : hasMyFlowContinuationCandidate
-            ? '저장한 콘텐츠의 첫 할 일을 위 카드에서 엽니다.'
-            : '전체 목록에서 저장한 콘텐츠를 확인하세요.';
+            ? '오늘 예정된 일정은 없어요. 먼저 열 항목이 준비되어 있어요.'
+            : visibleSavedFlows.length > 0
+              ? '오늘 예정된 일정은 없어요.'
+              : '저장한 콘텐츠가 아직 없어요.';
   const myFlowContinuationRows = [
     ...postSaveContinuationRows,
     ...myFlowExecutionCandidateRows,
@@ -3145,7 +3152,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     : '이어갈 할 일이 없습니다';
   const myFlowNowHelp = myFlowPrimaryContinuationRow
     ? myFlowPrimaryContinuationIsToday
-      ? '체크할 항목만 열어 완료합니다. 전체 목록은 전체 탭에서 봅니다.'
+      ? '체크할 항목을 열어 완료합니다.'
       : myFlowPrimaryContinuationIsOverdue
         ? '먼저 정리할 항목입니다.'
         : myFlowPrimaryContinuationIsFuture

@@ -82,6 +82,9 @@ const STRUCTURAL_DISPLAY_PATTERNS = [
   /Flow\s*패널/u,
   /실행\s*큐/u,
   /(?:source|소스|내부)\s*트레이스/iu,
+  /(?:위|아래)\s*카드에서/u,
+  /카드에서\s*(?:엽니다|봅니다|확인합니다)/u,
+  /(?:전체\s*)?탭에서\s*(?:엽니다|봅니다|확인합니다)/u,
 ];
 
 const ALLOWED_TRAILING_FLOW_LINES = new Set([

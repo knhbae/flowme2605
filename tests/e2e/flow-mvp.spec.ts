@@ -2263,7 +2263,9 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(page.getByTestId('my-flow-today-summary').locator('h3')).toContainText('오늘 할 일');
   await expect(page.getByTestId('my-flow-today-summary').getByTestId('my-flow-today-date-meta')).toContainText('5월 28일');
   await expect(page.getByTestId('my-flow-today-summary')).toContainText('실제 오늘과 다른 고정 기준일');
-  await expect(page.getByTestId('my-flow-today-summary')).toContainText('지난 할 일 2개 중 첫 항목을 위 카드에서 엽니다.');
+  await expect(page.getByTestId('my-flow-today-summary')).toContainText('오늘 예정된 할 일은 없고 지난 할 일 2개가 남았어요.');
+  await expect(page.getByTestId('my-flow-today-summary')).not.toContainText('위 카드에서');
+  await expect(page.getByTestId('my-flow-now-section')).not.toContainText('전체 탭에서');
   await expect(page.getByTestId('my-flow-today-list')).toHaveCount(0);
   const overdueSectionBox = await page.getByTestId('my-flow-overdue-list').boundingBox();
   const completedSectionBox = await page.getByTestId('my-flow-today-completed-list').boundingBox();
