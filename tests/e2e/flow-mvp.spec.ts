@@ -1,5 +1,5 @@
 ﻿import fs from 'node:fs';
-import { expect, type Locator, test } from '@playwright/test';
+import { expect, type Locator, type Page, test } from '@playwright/test';
 import { FLOW_EXPORT_LABELS } from '../../lib/flow/export-labels';
 import { seedBundles } from '../../lib/flow/seed-flows';
 import { getCuratedSourceAppSeedFlowMaps, getSourceBackedHomepageFlowMaps } from '../../lib/flow/source-backed-my-flow';
@@ -121,6 +121,14 @@ async function expectFirstContinuationTitleNotRepeated(section: Locator) {
   const title = await getFirstContinuationTitle(section);
   const hits = findFirstTaskRepetitionHits(await getLocatorLines(section), title, { maxCount: 1 });
   expect(hits).toEqual([]);
+}
+
+async function expectTodaySummaryIsQuietSupport(page: Page) {
+  const summary = page.getByTestId('my-flow-today-summary');
+  await expect(summary).toBeVisible();
+  await expect(summary).not.toContainText('지금 이어하기');
+  await expect(summary).not.toContainText('보여줍니다');
+  await expect(summary).not.toContainText('이어갈 할 일이 없습니다');
 }
 
 async function expectCompactCatalogAction(card: Locator, action: Locator) {
@@ -848,6 +856,7 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(movingPostSave.getByTestId('my-flow-post-save-view-all')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-today-summary').locator('h3')).not.toContainText(/\d{4}-\d{2}-\d{2}/);
   await expect(page.getByTestId('my-flow-today-summary').locator('h3')).not.toContainText('기준 할 일');
+  await expectTodaySummaryIsQuietSupport(page);
   await expect(page.getByTestId('my-flow-now-section').locator('h3')).not.toContainText(/\d{4}-\d{2}-\d{2}/);
   await expect(page.getByTestId('my-flow-now-section')).toContainText('지난 할 일');
   await expect(page.getByTestId('my-flow-now-section').locator('h3')).not.toContainText('이사 방식과 견적 후보 정하기');
@@ -870,6 +879,7 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(mathPostSave).not.toContainText('8개 Step');
   const mathNowSection = page.getByTestId('my-flow-now-section');
   await expect(mathNowSection).toContainText('소인수분해');
+  await expectTodaySummaryIsQuietSupport(page);
   await expect(mathNowSection.locator('h3')).not.toContainText('1. 소인수분해');
   await expectTextOccurrenceAtMost(mathNowSection, '1. 소인수분해', 1);
   await expect(mathNowSection).not.toContainText('남은 할 일이 없습니다');
@@ -1933,6 +1943,7 @@ test('my flow today puts the executable slot before the summary on mobile', asyn
   const summary = page.getByTestId('my-flow-today-summary');
   await expect(nowSection).toBeVisible();
   await expect(summary).toBeVisible();
+  await expectTodaySummaryIsQuietSupport(page);
   await expect(nowSection).toContainText('지난 할 일');
   await expectTextOccurrenceAtMost(nowSection, '지난 할 일', 1);
   await expect(nowSection).not.toContainText('남은 할 일이 없습니다');
@@ -1975,6 +1986,7 @@ test('my flow today dedupes rows when today overdue and next queues coexist on m
   const upcomingSection = page.getByTestId('my-flow-upcoming-list');
   const overdueSection = page.getByTestId('my-flow-overdue-list');
   await expect(nowSection).toBeVisible();
+  await expectTodaySummaryIsQuietSupport(page);
   await expect(upcomingSection).toBeVisible();
   await expect(overdueSection).toBeVisible();
   await expect(overdueSection).toContainText('지난 할 일');

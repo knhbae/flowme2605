@@ -3068,16 +3068,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       }, []).slice(0, 1)
     : [];
   const postSavePrimaryContinuationRow = postSaveContinuationRows[0] ?? null;
+  const hasMyFlowContinuationCandidate = postSaveContinuationRows.length > 0 || myFlowExecutionCandidateRows.length > 0;
   const myFlowTodaySummaryCopy =
     todayOpenCount > 0
-      ? '오늘 할 일을 먼저 처리하고, 전체 목록은 전체 탭에서 봅니다.'
+      ? '위 카드에서 오늘 할 일을 바로 엽니다. 전체 목록은 전체 탭에서 봅니다.'
       : overdueRows.length > 0
-        ? `지난 할 일 ${overdueRows.length}개가 있습니다. 첫 항목부터 정리합니다.`
+        ? `지난 할 일 ${overdueRows.length}개 중 첫 항목을 위 카드에서 엽니다.`
         : upcomingRows.length > 0
-          ? '오늘 일정은 없고, 가장 가까운 다음 할 일을 보여줍니다.'
-          : postSavePrimaryContinuationRow || myFlowFallbackNextRows.length > 0
-            ? '오늘 일정은 없고, 저장한 콘텐츠의 첫 할 일을 보여줍니다.'
-            : '지금 이어갈 항목은 없습니다. 전체 목록에서 저장한 콘텐츠를 확인하세요.';
+          ? '오늘 일정은 없고, 가까운 다음 할 일을 위 카드에서 엽니다.'
+          : hasMyFlowContinuationCandidate
+            ? '저장한 콘텐츠의 첫 할 일을 위 카드에서 엽니다.'
+            : '전체 목록에서 저장한 콘텐츠를 확인하세요.';
   const myFlowContinuationRows = [
     ...postSaveContinuationRows,
     ...myFlowExecutionCandidateRows,
@@ -3107,7 +3108,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     ? myFlowPrimaryContinuationIsToday
       ? `${myFlowNowVisibleCount}개 남음`
       : myFlowPrimaryContinuationIsOverdue
-        ? `지난 할 일 ${myFlowNowVisibleCount}개`
+        ? `${myFlowNowVisibleCount}개 남음`
         : myFlowPrimaryContinuationIsFuture
           ? `${myFlowNowVisibleCount}개 예정`
           : `${myFlowNowVisibleCount}개 대기`
@@ -3116,7 +3117,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     ? myFlowPrimaryContinuationIsToday
       ? '체크할 항목만 열어 완료합니다. 전체 목록은 전체 탭에서 봅니다.'
       : myFlowPrimaryContinuationIsOverdue
-        ? '지난 할 일 중 먼저 정리할 항목입니다.'
+        ? '먼저 정리할 항목입니다.'
         : myFlowPrimaryContinuationIsFuture
           ? '필요하면 열어서 체크와 메모를 확인합니다.'
           : '날짜가 없어도 저장한 콘텐츠의 첫 항목부터 바로 열 수 있습니다.'
@@ -6080,7 +6081,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   <section data-testid="my-flow-today-summary" className="min-w-0 rounded-lg border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
                     <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                       <div>
-                        <p className="text-sm font-semibold text-blue-700">{isMyFlowScenarioDemo ? '데모 기준일' : '지금 이어하기'}</p>
+                        <p className="text-sm font-semibold text-blue-700">{isMyFlowScenarioDemo ? '데모 기준일' : '오늘 상태'}</p>
                         <h3 className="mt-0.5 text-lg font-semibold text-slate-950 sm:mt-1 sm:text-xl">오늘 할 일</h3>
                         <p data-testid="my-flow-today-date-meta" className="mt-1 text-xs font-semibold text-slate-500">
                           {formatMyFlowDisplayDate(myFlowTodayDate, { includeWeekday: true })}
