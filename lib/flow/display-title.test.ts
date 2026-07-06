@@ -21,6 +21,7 @@ import {
   findPrototypeMixedExportLanguageHits,
   findPrototypeRawRouteSlugHits,
   findRawIsoDateHits,
+  scanRawIsoInputValues,
   findSourceSlugHits,
   findStructuralDisplayHits,
   findTrailingFlowSuffixHits,
@@ -158,6 +159,7 @@ test('capture script does not keep stale source slug or GitHub path copies', () 
 
   assert.ok(script.includes('scanUserSurfaceGuardrails'));
   assert.ok(script.includes('scanPrototypeRouteGuardrails'));
+  assert.ok(script.includes('scanRawIsoInputValues'));
   assert.ok(script.includes('findFirstTaskRepetitionHits'));
   assert.equal(script.includes('(?=$|\\s|[가-힣]|D-)'), false);
   assert.equal(script.includes('blob/${branchName}/flow-mvp'), false);
@@ -244,6 +246,61 @@ test('scanUserSurfaceGuardrails does not waive raw ISO dates because a primary l
   });
 
   assert.deepEqual(result.rawIsoDateHits, ['원문 기준일 2026-07-17에 시작합니다.']);
+});
+
+test('scanRawIsoInputValues separates native date values from user-visible input leaks', () => {
+  const result = scanRawIsoInputValues([
+    {
+      label: '이사일',
+      inputType: 'date',
+      value: '2026-06-27',
+      testId: 'moving-restart-date',
+    },
+    {
+      label: '검색어',
+      inputType: 'text',
+      value: '2026-07-17',
+      testId: 'visible-search',
+    },
+    {
+      label: '메모',
+      inputType: 'textarea',
+      value: '원문 2026-07-18',
+      testId: 'visible-note',
+    },
+    {
+      label: '사용자용 날짜',
+      inputType: 'date',
+      value: '2026년 7월 17일',
+      testId: 'friendly-date',
+    },
+  ]);
+
+  assert.deepEqual(result.rawIsoInputValueExemptions, [
+    {
+      label: '이사일',
+      inputType: 'date',
+      value: '2026-06-27',
+      testId: 'moving-restart-date',
+      reason: 'native-date-input-value',
+    },
+  ]);
+  assert.deepEqual(result.rawIsoInputValueHits, [
+    {
+      label: '검색어',
+      inputType: 'text',
+      value: '2026-07-17',
+      testId: 'visible-search',
+      reason: 'user-visible-input-value',
+    },
+    {
+      label: '메모',
+      inputType: 'textarea',
+      value: '원문 2026-07-18',
+      testId: 'visible-note',
+      reason: 'user-visible-input-value',
+    },
+  ]);
 });
 
 test('scanUserSurfaceGuardrails finds structural title leaks and keeps allowed Flow labels', () => {

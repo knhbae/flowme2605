@@ -1,15 +1,17 @@
 # FlowMe Claude Design P9 Final Review Package
 
-- Generated: 2026-07-05T22:16:05.514Z
+- Generated: 2026-07-06T08:34:09.183Z
 - Branch: `codex/flowme-uxui-second-loop`
-- UI baseline commit: `706b67f`
-- Package generated from commit: `706b67f`
+- UI baseline commit: `bf8d485`
+- Package generated from commit: `bf8d485`
 - Package commit ref: `git commit containing this generated package`
 - Viewport: 390x844
 
 This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, the P8-02 restart/prototype promotion gate, the P8-03/P8-04 My Flow overdue label/status corrections, the P8-05/P8-06/P8-08 evidence/package metadata cleanup, the P8-07 restart date-display decision, the P8-09 field-checklist source-density rule, and the P8-10/P9-02 public share CTA/tab-order rule.
 
 For P9, it additionally closes P9-01 to P9-07: data-driven guardrail coverage, accessible public browse-link ordering, My Flow structural-copy cleanup, source-slug punctuation scanning, restart/prototype English UI gate expansion, restart D-30 milestone grouping, and direct guardrail helper unit tests.
+
+For P10-07, the scan separates raw ISO visible text from raw ISO input values. Native `input[type=date]` ISO values are treated as technical browser control values and recorded in an explicit exemption bucket; non-date input values with raw ISO remain guardrail hits.
 
 ## Files
 
@@ -25,6 +27,8 @@ For P9, it additionally closes P9-01 to P9-07: data-driven guardrail coverage, a
 - Normal route source slug hits: 0
 - Normal route trailing Flow/map phrase hits: 0
 - Normal route raw ISO hits: 0
+- Normal route input raw ISO hits: 0
+- Normal route native date input raw ISO exemptions: 2
 - Normal route first task repetition hits: 0
 - Normal route queue label scope: my-flow-queue-label-surfaces
 - Normal route legacy overdue label hits: 0
@@ -38,6 +42,8 @@ For P9, it additionally closes P9-01 to P9-07: data-driven guardrail coverage, a
 - Public share primary path focusable count: 9
 - Public share primary path visible count: 9
 - Restart prototype raw ISO hits: 0
+- Restart prototype input raw ISO hits: 0
+- Restart prototype native date input raw ISO exemptions: 4
 - Restart prototype raw route slug hits: 0
 - Restart prototype English weekday hits: 0
 - Restart prototype English UI verb hits: 0

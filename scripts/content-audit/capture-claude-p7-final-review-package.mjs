@@ -14,6 +14,7 @@ const guardrailModule = await tsImport(
 );
 const {
   findFirstTaskRepetitionHits,
+  scanRawIsoInputValues,
   scanPrototypeRouteGuardrails,
   scanUserSurfaceGuardrails,
 } = guardrailModule;
@@ -303,6 +304,7 @@ function stopServer(server) {
 async function settle(page) {
   await page.locator('body').waitFor({ state: 'visible' });
   await page.waitForLoadState('networkidle').catch(() => undefined);
+  await page.waitForFunction(() => !document.body.innerText.includes('Flow를 불러오는 중입니다.'), null, { timeout: 10_000 }).catch(() => undefined);
   await page.waitForTimeout(250);
 }
 
@@ -497,6 +499,31 @@ async function scanPage(page, options = {}) {
     const prototypeExportEntryLabels = Array.from(document.querySelectorAll('[data-testid="moving-mobile-export-actions"] button'))
       .map((element) => normalizeLine(element.textContent ?? ''))
       .filter(Boolean);
+    const labelForControl = (element) => {
+      const explicitLabel = element.id
+        ? Array.from(document.querySelectorAll('label')).find((label) => label.htmlFor === element.id)
+        : null;
+      return normalizeLine(
+        element.getAttribute('aria-label')
+          ?? explicitLabel?.textContent
+          ?? element.closest('label')?.textContent
+          ?? element.getAttribute('placeholder')
+          ?? element.getAttribute('name')
+          ?? element.id
+          ?? '',
+      );
+    };
+    const inputValues = Array.from(document.querySelectorAll('input, textarea, select'))
+      .filter((element) => isVisible(element))
+      .map((element) => ({
+        label: labelForControl(element),
+        inputType: element instanceof HTMLInputElement
+          ? (element.getAttribute('type') ?? 'text')
+          : element.tagName.toLowerCase(),
+        value: 'value' in element ? element.value : '',
+        testId: element.dataset.testid ?? element.closest('[data-testid]')?.dataset.testid ?? '',
+      }))
+      .filter((entry) => entry.value);
 
     const rectFor = (selector) => {
       const element = document.querySelector(selector);
@@ -608,6 +635,7 @@ async function scanPage(page, options = {}) {
         nowSectionLines,
         firstTaskTitle,
         prototypeExportEntryLabels,
+        inputValues,
       },
       repetitionCounts: {
         countScope: 'my-flow-queue-label-surfaces',
@@ -670,6 +698,7 @@ async function scanPage(page, options = {}) {
   const primaryLines = guardrailRuntimeInputs?.normalizedPrimaryLines ?? [];
   const nowSectionLines = guardrailRuntimeInputs?.nowSectionLines ?? [];
   const firstTaskTitle = guardrailRuntimeInputs?.firstTaskTitle ?? '';
+  const rawIsoInputValueScan = scanRawIsoInputValues(guardrailRuntimeInputs?.inputValues ?? []);
   const userSurfaceGuardrails = scanUserSurfaceGuardrails({
     primaryLines,
     sourceSlugSignals,
@@ -691,6 +720,8 @@ async function scanPage(page, options = {}) {
       line,
     })),
     rawIsoLines: userSurfaceGuardrails.rawIsoDateHits,
+    rawIsoInputValueHits: rawIsoInputValueScan.rawIsoInputValueHits,
+    rawIsoInputValueExemptions: rawIsoInputValueScan.rawIsoInputValueExemptions,
     flowSuffixLines: userSurfaceGuardrails.trailingFlowSuffixHits,
     firstTaskRepetitionHits,
     prototypeDisplayGateHits: prototypeRouteGuardrails,
@@ -726,6 +757,8 @@ function summarizeEvidence(records) {
     normalRouteSourceSlugHitCount: normal.reduce((sum, record) => sum + record.sourceSlugHits.length, 0),
     normalRouteStructuralDisplayHitCount: normal.reduce((sum, record) => sum + record.structuralDisplayHits.length + record.flowSuffixLines.length, 0),
     normalRouteRawIsoHitCount: normal.reduce((sum, record) => sum + record.rawIsoLines.length, 0),
+    normalRouteInputRawIsoHitCount: normal.reduce((sum, record) => sum + (record.rawIsoInputValueHits?.length ?? 0), 0),
+    normalRouteInputRawIsoExemptCount: normal.reduce((sum, record) => sum + (record.rawIsoInputValueExemptions?.length ?? 0), 0),
     normalRouteFirstTaskRepetitionHitCount: normal.reduce((sum, record) => sum + (record.firstTaskRepetitionHits?.length ?? 0), 0),
     normalRouteQueueLabelScope: 'my-flow-queue-label-surfaces',
     normalRouteQueueLabelCount: normal.reduce((sum, record) =>
@@ -752,6 +785,18 @@ function summarizeEvidence(records) {
       record.primarySaveActionVisible || record.markers.publicPrimarySetupVisible,
     ).length,
     restartPrototypeRawIsoHitCount: restart.reduce((sum, record) => sum + record.rawIsoLines.length, 0),
+    restartPrototypeInputRawIsoHitCount: restart.reduce((sum, record) => sum + (record.rawIsoInputValueHits?.length ?? 0), 0),
+    restartPrototypeInputRawIsoExemptCount: restart.reduce((sum, record) => sum + (record.rawIsoInputValueExemptions?.length ?? 0), 0),
+    restartPrototypeInputRawIsoExemptions: restart.flatMap((record) =>
+      (record.rawIsoInputValueExemptions ?? []).map((hit) => ({
+        route: record.url,
+        scrollPurpose: record.scrollPurpose,
+        label: hit.label,
+        inputType: hit.inputType,
+        testId: hit.testId ?? '',
+        reason: hit.reason,
+      })),
+    ),
     restartPrototypeRawRouteSlugHitCount: restart.reduce((sum, record) => sum + (record.prototypeDisplayGateHits?.rawRouteSlugHits?.length ?? 0), 0),
     restartPrototypeEnglishWeekdayHitCount: restart.reduce((sum, record) => sum + (record.prototypeDisplayGateHits?.englishWeekdayHits?.length ?? 0), 0),
     restartPrototypeEnglishUiVerbHitCount: restart.reduce((sum, record) => sum + (record.prototypeDisplayGateHits?.englishUiVerbHits?.length ?? 0), 0),
@@ -797,6 +842,8 @@ This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, t
 
 For P9, it additionally closes P9-01 to P9-07: data-driven guardrail coverage, accessible public browse-link ordering, My Flow structural-copy cleanup, source-slug punctuation scanning, restart/prototype English UI gate expansion, restart D-30 milestone grouping, and direct guardrail helper unit tests.
 
+For P10-07, the scan separates raw ISO visible text from raw ISO input values. Native \`input[type=date]\` ISO values are treated as technical browser control values and recorded in an explicit exemption bucket; non-date input values with raw ISO remain guardrail hits.
+
 ## Files
 
 - [audit.md](./audit.md)
@@ -811,6 +858,8 @@ For P9, it additionally closes P9-01 to P9-07: data-driven guardrail coverage, a
 - Normal route source slug hits: ${evidence.summary.normalRouteSourceSlugHitCount}
 - Normal route trailing Flow/map phrase hits: ${evidence.summary.normalRouteStructuralDisplayHitCount}
 - Normal route raw ISO hits: ${evidence.summary.normalRouteRawIsoHitCount}
+- Normal route input raw ISO hits: ${evidence.summary.normalRouteInputRawIsoHitCount}
+- Normal route native date input raw ISO exemptions: ${evidence.summary.normalRouteInputRawIsoExemptCount}
 - Normal route first task repetition hits: ${evidence.summary.normalRouteFirstTaskRepetitionHitCount}
 - Normal route queue label scope: ${evidence.summary.normalRouteQueueLabelScope}
 - Normal route legacy overdue label hits: ${evidence.summary.normalRouteLegacyOverdueLabelCount}
@@ -824,6 +873,8 @@ For P9, it additionally closes P9-01 to P9-07: data-driven guardrail coverage, a
 - Public share primary path focusable count: ${evidence.summary.publicSharePrimaryPathFocusableCount}
 - Public share primary path visible count: ${evidence.summary.publicSharePrimaryPathVisibleCount}
 - Restart prototype raw ISO hits: ${evidence.summary.restartPrototypeRawIsoHitCount}
+- Restart prototype input raw ISO hits: ${evidence.summary.restartPrototypeInputRawIsoHitCount}
+- Restart prototype native date input raw ISO exemptions: ${evidence.summary.restartPrototypeInputRawIsoExemptCount}
 - Restart prototype raw route slug hits: ${evidence.summary.restartPrototypeRawRouteSlugHitCount}
 - Restart prototype English weekday hits: ${evidence.summary.restartPrototypeEnglishWeekdayHitCount}
 - Restart prototype English UI verb hits: ${evidence.summary.restartPrototypeEnglishUiVerbHitCount}
@@ -847,7 +898,7 @@ For P9, it additionally closes P9-01 to P9-07: data-driven guardrail coverage, a
 
 function renderAudit(evidence) {
   const rows = evidence.scenarios.map((record) => (
-    `| ${record.id} | \`${record.route}\` | ${record.label} | ${record.noHorizontalOverflow ? 'OK' : 'Overflow'} | ${record.internalHits.length} | ${record.sourceSlugHits.length} | ${record.rawIsoLines.length} |`
+    `| ${record.id} | \`${record.route}\` | ${record.label} | ${record.noHorizontalOverflow ? 'OK' : 'Overflow'} | ${record.internalHits.length} | ${record.sourceSlugHits.length} | ${record.rawIsoLines.length} | ${record.rawIsoInputValueHits?.length ?? 0} | ${record.rawIsoInputValueExemptions?.length ?? 0} |`
   )).join('\n');
 
   return `# Claude Design ${reviewCycle} Guardrail Audit
@@ -855,6 +906,8 @@ function renderAudit(evidence) {
 ## Scope
 
 P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata, P8-07 confirms the \`/restart/moving-d30\` first-three-row date repetition as an intentional D-30 milestone group rather than a date-distribution bug, P8-09 lowers repeated row-level source links in field checklist workbenches, and P8-10/P9-02 keeps public share browse navigation accessible but after the primary save/input path. P9-01 to P9-07 then close the remaining guardrail coverage, accessibility ordering, structural-copy, punctuation, prototype gate, restart grouping, and guardrail-unit-test gaps. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
+
+P10-07 extends the same evidence gate to input values: visible text raw ISO remains a failure, non-date input values with raw ISO remain a failure, and native \`input[type=date]\` values are recorded separately as technical browser control exemptions.
 
 ## Baselines Covered
 
@@ -884,8 +937,8 @@ ${JSON.stringify(evidence.summary, null, 2)}
 
 ## Scenario Matrix
 
-| ID | Route | Scenario | Width | Internal | Source slug | Raw ISO |
-| --- | --- | --- | --- | ---: | ---: | ---: |
+| ID | Route | Scenario | Width | Internal | Source slug | Raw ISO | Input ISO | Native date input exempt |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: |
 ${rows}
 
 ## Restart Prototype Bucket
@@ -901,6 +954,7 @@ ${rows}
 - no duplicated primary export entry labels
 - no source brand slug as title/subtitle copy
 - no horizontal overflow at 390px
+- native \`input[type=date]\` values may remain ISO as technical browser control values, but they are recorded in an explicit exemption bucket and must not appear as primary label/help/card text
 
 The restart source/export frame and bottom frame must remain distinct:
 
@@ -913,6 +967,10 @@ The restart source/export frame and bottom frame must remain distinct:
 - full schedule unique date labels: ${evidence.summary.restartPrototypeFullScheduleUniqueDateLabelCount}
 - full schedule unique offset labels: ${evidence.summary.restartPrototypeFullScheduleUniqueOffsetLabelCount}
 - date distribution judgment: ${evidence.summary.restartPrototypeDateDistributionJudgment}
+- visible raw ISO hit count: ${evidence.summary.restartPrototypeRawIsoHitCount}
+- input raw ISO hit count: ${evidence.summary.restartPrototypeInputRawIsoHitCount}
+- native date input ISO exemption count: ${evidence.summary.restartPrototypeInputRawIsoExemptCount}
+- native date input ISO exemptions: ${JSON.stringify(evidence.summary.restartPrototypeInputRawIsoExemptions)}
 
 ## Field Checklist Source Density
 
@@ -1009,6 +1067,8 @@ function renderHtml(evidence) {
         <div><dt>internal</dt><dd>${record.internalHits.length}</dd></div>
         <div><dt>source slug</dt><dd>${record.sourceSlugHits.length}</dd></div>
         <div><dt>raw ISO</dt><dd>${record.rawIsoLines.length}</dd></div>
+        <div><dt>input ISO</dt><dd>${record.rawIsoInputValueHits?.length ?? 0}</dd></div>
+        <div><dt>input ISO exempt</dt><dd>${record.rawIsoInputValueExemptions?.length ?? 0}</dd></div>
         <div><dt>scroll</dt><dd>${record.scrollY}</dd></div>
         <div><dt>purpose</dt><dd>${escapeHtml(record.scrollPurpose ?? '-')}</dd></div>
       </dl>
@@ -1053,9 +1113,13 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.normalRouteInternalHitCount}</b><span>normal internal hits</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteSourceSlugHitCount}</b><span>normal source slug hits</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteRawIsoHitCount}</b><span>normal raw ISO hits</span></div>
+      <div class="stat"><b>${evidence.summary.normalRouteInputRawIsoHitCount}</b><span>normal input ISO hits</span></div>
+      <div class="stat"><b>${evidence.summary.normalRouteInputRawIsoExemptCount}</b><span>normal input ISO exempt</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteFirstTaskRepetitionHitCount}</b><span>first task repeats</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteLegacyOverdueLabelCount}</b><span>legacy overdue labels</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeRawIsoHitCount}</b><span>restart raw ISO hits</span></div>
+      <div class="stat"><b>${evidence.summary.restartPrototypeInputRawIsoHitCount}</b><span>restart input ISO hits</span></div>
+      <div class="stat"><b>${evidence.summary.restartPrototypeInputRawIsoExemptCount}</b><span>restart input ISO exempt</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeRawRouteSlugHitCount}</b><span>restart route slug hits</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeEnglishWeekdayHitCount}</b><span>restart English weekday hits</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeEnglishUiVerbHitCount}</b><span>restart English UI verb hits</span></div>

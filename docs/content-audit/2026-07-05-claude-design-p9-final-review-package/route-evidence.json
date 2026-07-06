@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-05T22:16:05.514Z",
+  "generatedAt": "2026-07-06T08:34:09.183Z",
   "packageName": "2026-07-05-claude-design-p9-final-review-package",
   "reviewCycle": "P9",
   "nextBacklogCycle": "P10",
   "branchName": "codex/flowme-uxui-second-loop",
-  "uiBaselineCommit": "706b67f",
-  "packageGeneratedFromCommit": "706b67f",
+  "uiBaselineCommit": "bf8d485",
+  "packageGeneratedFromCommit": "bf8d485",
   "packageCommitRef": "git commit containing this generated package",
-  "commit": "706b67f",
+  "commit": "bf8d485",
   "viewport": {
     "width": 390,
     "height": 844
@@ -15,13 +15,15 @@
   "baseURL": "http://127.0.0.1:3221",
   "summary": {
     "totalScreenshots": 26,
-    "uiBaselineCommit": "706b67f",
-    "packageGeneratedFromCommit": "706b67f",
+    "uiBaselineCommit": "bf8d485",
+    "packageGeneratedFromCommit": "bf8d485",
     "packageCommitRef": "git commit containing this generated package",
     "normalRouteInternalHitCount": 0,
     "normalRouteSourceSlugHitCount": 0,
     "normalRouteStructuralDisplayHitCount": 0,
     "normalRouteRawIsoHitCount": 0,
+    "normalRouteInputRawIsoHitCount": 0,
+    "normalRouteInputRawIsoExemptCount": 2,
     "normalRouteFirstTaskRepetitionHitCount": 0,
     "normalRouteQueueLabelScope": "my-flow-queue-label-surfaces",
     "normalRouteQueueLabelCount": 8,
@@ -40,6 +42,42 @@
     "publicSharePrimaryPathFocusableCount": 9,
     "publicSharePrimaryPathVisibleCount": 9,
     "restartPrototypeRawIsoHitCount": 0,
+    "restartPrototypeInputRawIsoHitCount": 0,
+    "restartPrototypeInputRawIsoExemptCount": 4,
+    "restartPrototypeInputRawIsoExemptions": [
+      {
+        "route": "/restart/moving-d30",
+        "scrollPurpose": null,
+        "label": "이사일",
+        "inputType": "date",
+        "testId": "",
+        "reason": "native-date-input-value"
+      },
+      {
+        "route": "/restart/moving-d30",
+        "scrollPurpose": "full-schedule-date-distribution",
+        "label": "이사일",
+        "inputType": "date",
+        "testId": "",
+        "reason": "native-date-input-value"
+      },
+      {
+        "route": "/restart/moving-d30",
+        "scrollPurpose": "source-export-mid-frame",
+        "label": "이사일",
+        "inputType": "date",
+        "testId": "",
+        "reason": "native-date-input-value"
+      },
+      {
+        "route": "/restart/moving-d30",
+        "scrollPurpose": "true-page-bottom",
+        "label": "이사일",
+        "inputType": "date",
+        "testId": "",
+        "reason": "native-date-input-value"
+      }
+    ],
     "restartPrototypeRawRouteSlugHitCount": 0,
     "restartPrototypeEnglishWeekdayHitCount": 0,
     "restartPrototypeEnglishUiVerbHitCount": 0,
@@ -206,22 +244,24 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "02-flows-mobile",
       "label": "Flow catalog scan with lightweight CTAs",
       "route": "/flows",
       "screenshot": "screenshots/02-flows-mobile.png",
-      "screenshotBytes": 36865,
-      "screenshotHash": "f58c4b47f4ad16e949cc72890d30e600613361aa4c7af7360e76b7346e4848c3",
+      "screenshotBytes": 37724,
+      "screenshotHash": "675b17024b33ada4e4e7e5555312bca25c431aef4dc9d7bdf7f386a6af733231",
       "category": "normal-user-route",
       "prototypeBucket": false,
       "url": "/flows",
       "h1": "무엇을 저장할까요?",
       "scrollPurpose": null,
       "scrollY": 0,
-      "scrollHeight": 2865,
+      "scrollHeight": 2983,
       "scrollWidth": 390,
       "clientWidth": 390,
       "viewportHeight": 844,
@@ -242,13 +282,13 @@
         "Flow 찾기",
         "캘린더",
         "내 Flow",
+        "Flow 찾기",
         "전체",
         "이사/계약",
         "공부",
         "아이/건강",
         "구매/생활",
-        "루틴",
-        "열어보기›"
+        "루틴"
       ],
       "firstFocusableLabels": [
         "FLOW",
@@ -258,13 +298,13 @@
         "Flow 찾기",
         "캘린더",
         "내 Flow",
+        "Flow 찾기",
         "전체",
         "이사/계약",
         "공부",
         "아이/건강",
         "구매/생활",
         "루틴",
-        "열어보기›",
         "열어보기›",
         "열어보기›",
         "열어보기›",
@@ -347,7 +387,9 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "03-flow-map-moving-top-mobile",
@@ -489,7 +531,17 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": [
+        {
+          "label": "이사일",
+          "inputType": "date",
+          "value": "2026-07-22",
+          "testId": "flow-map-anchor-input",
+          "reason": "native-date-input-value"
+        }
+      ]
     },
     {
       "id": "04-flow-map-moving-bottom-mobile",
@@ -631,7 +683,17 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": [
+        {
+          "label": "이사일",
+          "inputType": "date",
+          "value": "2026-07-22",
+          "testId": "flow-map-anchor-input",
+          "reason": "native-date-input-value"
+        }
+      ]
     },
     {
       "id": "05-flow-map-math-mobile",
@@ -776,7 +838,9 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "06-public-vehicle-mobile",
@@ -911,7 +975,9 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "07-public-moving-mobile",
@@ -1047,7 +1113,9 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "08-public-moving-bottom-mobile",
@@ -1183,7 +1251,9 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "09-workbench-fridge-mobile",
@@ -1310,7 +1380,9 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "10-workbench-washer-mobile",
@@ -1438,7 +1510,9 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "11-workbench-new-car-mobile",
@@ -1561,7 +1635,9 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "12-workbench-used-car-mobile",
@@ -1692,7 +1768,9 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "25-workbench-new-car-open-details-mobile",
@@ -1815,7 +1893,9 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "26-workbench-used-car-open-details-mobile",
@@ -1946,15 +2026,17 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "13-post-save-my-moving-mobile",
       "label": "Post-save My Flow for moving map",
       "route": "/my?savedMap=moving-d30",
       "screenshot": "screenshots/13-post-save-my-moving-mobile.png",
-      "screenshotBytes": 26009,
-      "screenshotHash": "ab7493b93daf00dd670f3e2811266c2c10d48fda65b0b400ca3b5c57d5ac7ecf",
+      "screenshotBytes": 25526,
+      "screenshotHash": "f95469f30172f032dbeaedd8f2a6e6939fa3927f7f7dc915200e1bda0381a833",
       "category": "saved-state",
       "prototypeBucket": false,
       "url": "/my?savedMap=moving-d30",
@@ -2077,22 +2159,24 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "14-calendar-after-moving-save-mobile",
       "label": "Calendar agenda-first after moving save",
       "route": "/calendar",
       "screenshot": "screenshots/14-calendar-after-moving-save-mobile.png",
-      "screenshotBytes": 38198,
-      "screenshotHash": "b4272d1d134989772c24ac8b5a70de3b57b485f7d0cab9c26372100ddd66841a",
+      "screenshotBytes": 34846,
+      "screenshotHash": "5a839d146d2e62cf004e8c08d1339a092ab73c56666e3dab23b70d917a50330c",
       "category": "saved-state",
       "prototypeBucket": false,
       "url": "/calendar",
       "h1": "캘린더",
       "scrollPurpose": null,
       "scrollY": 0,
-      "scrollHeight": 1212,
+      "scrollHeight": 1161,
       "scrollWidth": 390,
       "clientWidth": 390,
       "viewportHeight": 844,
@@ -2218,15 +2302,17 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "15-post-save-my-math-mobile",
       "label": "Post-save My Flow for undated math content",
       "route": "/my?savedMap=middle-school-math-1",
       "screenshot": "screenshots/15-post-save-my-math-mobile.png",
-      "screenshotBytes": 24861,
-      "screenshotHash": "dd22203ba811310060f8cf960df97a528f351553ffc78f50b7a291dd73e3264b",
+      "screenshotBytes": 24370,
+      "screenshotHash": "fd3702288e881062fa9f1dfa505f87afbc35a159d44c8b6ce2e8fd4f6c784310",
       "category": "saved-state",
       "prototypeBucket": false,
       "url": "/my?savedMap=middle-school-math-1",
@@ -2349,22 +2435,24 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "16-my-multi-queue-mobile",
       "label": "My Flow with today overdue next queues",
       "route": "/my",
       "screenshot": "screenshots/16-my-multi-queue-mobile.png",
-      "screenshotBytes": 34023,
-      "screenshotHash": "3860b3e881c89848faaac5bda45ad69817175e116b240f5c9354e4ea48a7c905",
+      "screenshotBytes": 34283,
+      "screenshotHash": "ba2f03f9620dbe0eb5a9ddf79e3741e21f1ab9f228cd0b3eb3ec32499c4f3e2f",
       "category": "multi-queue",
       "prototypeBucket": false,
       "url": "/my",
       "h1": "내 Flow",
       "scrollPurpose": null,
       "scrollY": 0,
-      "scrollHeight": 1388,
+      "scrollHeight": 1404,
       "scrollWidth": 390,
       "clientWidth": 390,
       "viewportHeight": 844,
@@ -2486,22 +2574,24 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "17-my-multi-queue-overdue-sheet-mobile",
       "label": "My Flow overdue sheet dedupe evidence",
       "route": "/my",
       "screenshot": "screenshots/17-my-multi-queue-overdue-sheet-mobile.png",
-      "screenshotBytes": 29203,
-      "screenshotHash": "79ddf6de839a268dc6b529b68d86fa70f26dc5738de7716b4c104482121f6bff",
+      "screenshotBytes": 28444,
+      "screenshotHash": "cf35831b37f4d48f4b2e8fbbae16a56ae429ce33ee77bb9805393dd608ace439",
       "category": "multi-queue",
       "prototypeBucket": false,
       "url": "/my",
       "h1": "내 Flow",
       "scrollPurpose": null,
-      "scrollY": 544,
-      "scrollHeight": 1388,
+      "scrollY": 560,
+      "scrollHeight": 1404,
       "scrollWidth": 390,
       "clientWidth": 390,
       "viewportHeight": 844,
@@ -2546,9 +2636,9 @@
         "다음 할 일총예산을 차량가, 이전비, 보험료, 정비비로 나누기예산과 후보 정리열기",
         "지난 할 일 보기",
         "닫기",
-        "항목 열기",
-        "항목 열기",
-        "항목 열기"
+        "열기",
+        "열기",
+        "열기"
       ],
       "internalHits": [],
       "sourceSlugSignals": [
@@ -2627,7 +2717,9 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "18-my-long-list-top-mobile",
@@ -2764,7 +2856,9 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "19-my-long-list-bottom-mobile",
@@ -2901,15 +2995,17 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "20-my-long-list-inventory-bottom-mobile",
       "label": "My Flow 5+ inventory sheet bottom clearance",
       "route": "/my",
       "screenshot": "screenshots/20-my-long-list-inventory-bottom-mobile.png",
-      "screenshotBytes": 33285,
-      "screenshotHash": "2f23c34c4b001ff29ba430b9f97dee7453e8ff32809a23f910be7a1932f0dbbe",
+      "screenshotBytes": 32615,
+      "screenshotHash": "8d4fa95d1624a47a6ece19b94646c3fa8fd6c381f4b92cd84e61df1e9225b8b7",
       "category": "long-list",
       "prototypeBucket": false,
       "url": "/my",
@@ -3042,7 +3138,9 @@
           "fullScheduleUniqueOffsetLabelCount": 0,
           "fullScheduleHasDistributedDates": false
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": []
     },
     {
       "id": "21-restart-moving-top-mobile",
@@ -3205,15 +3303,25 @@
           "fullScheduleUniqueOffsetLabelCount": 5,
           "fullScheduleHasDistributedDates": true
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": [
+        {
+          "label": "이사일",
+          "inputType": "date",
+          "value": "2026-06-27",
+          "testId": "",
+          "reason": "native-date-input-value"
+        }
+      ]
     },
     {
       "id": "24-restart-moving-full-schedule-mobile",
       "label": "Restart prototype full schedule date distribution",
       "route": "/restart/moving-d30",
       "screenshot": "screenshots/24-restart-moving-full-schedule-mobile.png",
-      "screenshotBytes": 34249,
-      "screenshotHash": "808d5444f69b5d7e7835170d12114c7a7c45185f04c035b193b1b871aa83d235",
+      "screenshotBytes": 30118,
+      "screenshotHash": "e761b48151db3399452e57cd7ea7eae40b7c8af7bcf636cc62784fd5ad751703",
       "category": "prototype-restart",
       "prototypeBucket": true,
       "url": "/restart/moving-d30",
@@ -3265,9 +3373,9 @@
         "항목 추가",
         "전체 일정 접기",
         "완료",
-        "버릴 물건과 대형폐기물 정리 편집",
+        "편집",
         "완료",
-        "이사 방식과 업체 후보 정하기 편집"
+        "편집"
       ],
       "internalHits": [],
       "sourceSlugSignals": [
@@ -3368,15 +3476,25 @@
           "fullScheduleUniqueOffsetLabelCount": 5,
           "fullScheduleHasDistributedDates": true
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": [
+        {
+          "label": "이사일",
+          "inputType": "date",
+          "value": "2026-06-27",
+          "testId": "",
+          "reason": "native-date-input-value"
+        }
+      ]
     },
     {
       "id": "22-restart-moving-source-export-mobile",
       "label": "Restart prototype source and export hierarchy",
       "route": "/restart/moving-d30",
       "screenshot": "screenshots/22-restart-moving-source-export-mobile.png",
-      "screenshotBytes": 30712,
-      "screenshotHash": "cb9256cadc539354640bb7870665476d11b2e007375682b8f2ff54401661b59b",
+      "screenshotBytes": 27667,
+      "screenshotHash": "a89afbcd195b8d4741d4e505a0c33a251cdb2e4500b265b34b860183650faec2",
       "category": "prototype-restart",
       "prototypeBucket": true,
       "url": "/restart/moving-d30",
@@ -3428,9 +3546,9 @@
         "항목 추가",
         "전체 일정 접기",
         "완료",
-        "버릴 물건과 대형폐기물 정리 편집",
+        "편집",
         "완료",
-        "이사 방식과 업체 후보 정하기 편집"
+        "편집"
       ],
       "internalHits": [],
       "sourceSlugSignals": [
@@ -3531,15 +3649,25 @@
           "fullScheduleUniqueOffsetLabelCount": 5,
           "fullScheduleHasDistributedDates": true
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": [
+        {
+          "label": "이사일",
+          "inputType": "date",
+          "value": "2026-06-27",
+          "testId": "",
+          "reason": "native-date-input-value"
+        }
+      ]
     },
     {
       "id": "23-restart-moving-bottom-mobile",
       "label": "Restart prototype bottom clearance",
       "route": "/restart/moving-d30",
       "screenshot": "screenshots/23-restart-moving-bottom-mobile.png",
-      "screenshotBytes": 27819,
-      "screenshotHash": "c8f3ee105908032a964b885d92c6101b9fa4ecb0feb3c20ff846b4372326c199",
+      "screenshotBytes": 26901,
+      "screenshotHash": "ae7e4e189d2b3a977176e3300ca59d3c76d84d0eabc0b287086d1dfe9f27689b",
       "category": "prototype-restart",
       "prototypeBucket": true,
       "url": "/restart/moving-d30",
@@ -3591,9 +3719,9 @@
         "항목 추가",
         "전체 일정 접기",
         "완료",
-        "버릴 물건과 대형폐기물 정리 편집",
+        "편집",
         "완료",
-        "이사 방식과 업체 후보 정하기 편집"
+        "편집"
       ],
       "internalHits": [],
       "sourceSlugSignals": [
@@ -3694,7 +3822,17 @@
           "fullScheduleUniqueOffsetLabelCount": 5,
           "fullScheduleHasDistributedDates": true
         }
-      }
+      },
+      "rawIsoInputValueHits": [],
+      "rawIsoInputValueExemptions": [
+        {
+          "label": "이사일",
+          "inputType": "date",
+          "value": "2026-06-27",
+          "testId": "",
+          "reason": "native-date-input-value"
+        }
+      ]
     }
   ]
 }

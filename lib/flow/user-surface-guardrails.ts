@@ -9,6 +9,26 @@ export type FirstTaskRepetitionHit = {
   extraLines: string[];
 };
 
+export type UserSurfaceInputValue = {
+  label?: string;
+  inputType?: string;
+  value?: string;
+  testId?: string;
+};
+
+export type RawIsoInputValueHit = {
+  label: string;
+  inputType: string;
+  value: string;
+  testId?: string;
+  reason: 'native-date-input-value' | 'user-visible-input-value';
+};
+
+export type RawIsoInputValueScanResult = {
+  rawIsoInputValueHits: RawIsoInputValueHit[];
+  rawIsoInputValueExemptions: RawIsoInputValueHit[];
+};
+
 export type UserSurfaceGuardrailInput = {
   primaryLines: string[];
   sourceLines?: string[];
@@ -182,6 +202,35 @@ export function findTrailingFlowSuffixHits(primaryLines: string[]): string[] {
 
 export function findRawIsoDateHits(primaryLines: string[]): string[] {
   return normalizeGuardrailLines(primaryLines).filter((line) => RAW_ISO_DATE_PATTERN.test(line));
+}
+
+export function scanRawIsoInputValues(inputValues: UserSurfaceInputValue[]): RawIsoInputValueScanResult {
+  const rawIsoInputValueHits: RawIsoInputValueHit[] = [];
+  const rawIsoInputValueExemptions: RawIsoInputValueHit[] = [];
+
+  for (const input of inputValues) {
+    const value = normalizeGuardrailLine(input.value ?? '');
+    if (!RAW_ISO_DATE_PATTERN.test(value)) continue;
+
+    const inputType = normalizeGuardrailLine(input.inputType ?? '').toLowerCase();
+    const hit: RawIsoInputValueHit = {
+      label: normalizeGuardrailLine(input.label ?? ''),
+      inputType,
+      value,
+      testId: input.testId,
+      reason: inputType === 'date' && /^20\d{2}-\d{2}-\d{2}$/u.test(value)
+        ? 'native-date-input-value'
+        : 'user-visible-input-value',
+    };
+
+    if (hit.reason === 'native-date-input-value') {
+      rawIsoInputValueExemptions.push(hit);
+    } else {
+      rawIsoInputValueHits.push(hit);
+    }
+  }
+
+  return { rawIsoInputValueHits, rawIsoInputValueExemptions };
 }
 
 export function findPrototypeRawRouteSlugHits(primaryLines: string[]): string[] {

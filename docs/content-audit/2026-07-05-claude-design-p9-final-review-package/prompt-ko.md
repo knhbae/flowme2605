@@ -38,13 +38,15 @@
 ```json
 {
   "totalScreenshots": 26,
-  "uiBaselineCommit": "706b67f",
-  "packageGeneratedFromCommit": "706b67f",
+  "uiBaselineCommit": "bf8d485",
+  "packageGeneratedFromCommit": "bf8d485",
   "packageCommitRef": "git commit containing this generated package",
   "normalRouteInternalHitCount": 0,
   "normalRouteSourceSlugHitCount": 0,
   "normalRouteStructuralDisplayHitCount": 0,
   "normalRouteRawIsoHitCount": 0,
+  "normalRouteInputRawIsoHitCount": 0,
+  "normalRouteInputRawIsoExemptCount": 2,
   "normalRouteFirstTaskRepetitionHitCount": 0,
   "normalRouteQueueLabelScope": "my-flow-queue-label-surfaces",
   "normalRouteQueueLabelCount": 8,
@@ -63,6 +65,42 @@
   "publicSharePrimaryPathFocusableCount": 9,
   "publicSharePrimaryPathVisibleCount": 9,
   "restartPrototypeRawIsoHitCount": 0,
+  "restartPrototypeInputRawIsoHitCount": 0,
+  "restartPrototypeInputRawIsoExemptCount": 4,
+  "restartPrototypeInputRawIsoExemptions": [
+    {
+      "route": "/restart/moving-d30",
+      "scrollPurpose": null,
+      "label": "이사일",
+      "inputType": "date",
+      "testId": "",
+      "reason": "native-date-input-value"
+    },
+    {
+      "route": "/restart/moving-d30",
+      "scrollPurpose": "full-schedule-date-distribution",
+      "label": "이사일",
+      "inputType": "date",
+      "testId": "",
+      "reason": "native-date-input-value"
+    },
+    {
+      "route": "/restart/moving-d30",
+      "scrollPurpose": "source-export-mid-frame",
+      "label": "이사일",
+      "inputType": "date",
+      "testId": "",
+      "reason": "native-date-input-value"
+    },
+    {
+      "route": "/restart/moving-d30",
+      "scrollPurpose": "true-page-bottom",
+      "label": "이사일",
+      "inputType": "date",
+      "testId": "",
+      "reason": "native-date-input-value"
+    }
+  ],
   "restartPrototypeRawRouteSlugHitCount": 0,
   "restartPrototypeEnglishWeekdayHitCount": 0,
   "restartPrototypeEnglishUiVerbHitCount": 0,
