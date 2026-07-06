@@ -549,9 +549,11 @@ export function MovingD30Restart() {
                           <button
                             type="button"
                             onClick={() => startEdit(item.id)}
+                            aria-label={`${item.title} 편집`}
+                            title={`${item.title} 편집`}
                             className="min-h-10 rounded-2xl bg-slate-100 px-3 text-sm font-bold text-slate-700"
                           >
-                            {item.title} 편집
+                            편집
                           </button>
                         </div>
                       </article>

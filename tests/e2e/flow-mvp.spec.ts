@@ -1342,7 +1342,9 @@ test('moving restart edits items before export', async ({ page }) => {
   await page.getByLabel('이사일').fill('2026-06-27');
   await page.getByRole('button', { name: '일정 만들기' }).click();
 
-  await page.getByRole('button', { name: '주소 변경과 정기 서비스 정리 편집' }).click();
+  const addressEditButton = page.getByRole('button', { name: '주소 변경과 정기 서비스 정리 편집' });
+  await expect(addressEditButton).toHaveText('편집');
+  await addressEditButton.click();
   await page.getByLabel('항목 날짜').fill('2026-06-18');
   await page.getByLabel('항목 메모').fill('인터넷 이전 설치는 오전 시간으로 예약');
   await page.getByRole('button', { name: '항목 저장' }).click();
@@ -1357,7 +1359,9 @@ test('moving restart edits items before export', async ({ page }) => {
   await page.getByRole('button', { name: '새 항목 저장' }).click();
   await expect(page.getByRole('heading', { name: '관리사무소 엘리베이터 예약' })).toBeVisible();
 
-  await page.getByRole('button', { name: '버릴 물건과 대형폐기물 정리 편집' }).click();
+  const disposalEditButton = page.getByRole('button', { name: '버릴 물건과 대형폐기물 정리 편집' });
+  await expect(disposalEditButton).toHaveText('편집');
+  await disposalEditButton.click();
   await page.getByRole('button', { name: '항목 삭제' }).click();
   await expect(page.getByText('버릴 물건과 대형폐기물 정리')).toHaveCount(0);
 });
@@ -1407,6 +1411,8 @@ test('moving restart mobile uses one export entry and friendly date text', async
   const firstScheduleGroup = fullSchedule.getByTestId('moving-schedule-date-group').first();
   await expect(firstScheduleGroup.getByTestId('moving-schedule-date-group-heading')).toContainText('5월 28일 (목)');
   await expect(firstScheduleGroup.locator('article')).toHaveCount(3);
+  const firstScheduleEditButton = firstScheduleGroup.getByRole('button', { name: '이사 방식과 업체 후보 정하기 편집' });
+  await expect(firstScheduleEditButton).toHaveText('편집');
   await expect(fullSchedule).toContainText('5월 28일 (목)');
   await expect(fullSchedule).toContainText('6월 17일 (수)');
   await expect(fullSchedule).toContainText('6월 26일 (금)');
@@ -2013,6 +2019,10 @@ test('my flow today dedupes rows when today overdue and next queues coexist on m
     .getByTestId('my-flow-status-sheet-row')
     .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-row-key')).filter(Boolean));
   expect(overdueKeys.length).toBeGreaterThan(0);
+  const overdueOpenButton = overdueSheet.getByTestId('my-flow-status-sheet-row').first().getByRole('button', { name: /열기$/ });
+  await expect(overdueOpenButton).toHaveText('열기');
+  await expect(overdueOpenButton).toHaveAttribute('aria-label', /.+ 열기$/);
+  await expect(overdueOpenButton).not.toContainText('항목 열기');
   const allQueueKeys = [...visibleQueueKeys, ...overdueKeys];
   expect(new Set(allQueueKeys).size).toBe(allQueueKeys.length);
   await testInfo.attach('p7-02-my-flow-multi-queue-row-keys', {
@@ -2276,14 +2286,17 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(prioritySection).toContainText('7일 안 3');
   await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').first()).toContainText('다음 7일');
   await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').first()).toContainText('컴퓨터활용능력 학습');
-  await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').first().getByRole('button', { name: '항목 열기' })).toBeVisible();
+  const firstPriorityOpen = prioritySection.locator('[data-testid="my-flow-priority-card"]').first().locator('button').filter({ hasText: '열기' });
+  await expect(firstPriorityOpen).toHaveText('열기');
+  await expect(firstPriorityOpen).toHaveAttribute('aria-label', /.+ 열기$/);
+  await expect(firstPriorityOpen).not.toContainText('항목 열기');
   await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').nth(1)).toContainText('다음 7일');
   await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').nth(1)).toContainText('초기 이유식 메뉴·레시피');
-  await prioritySection.locator('[data-testid="my-flow-priority-card"]').first().getByRole('button', { name: '항목 열기' }).click();
+  await firstPriorityOpen.click();
   await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-pressed', 'true');
   await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').first().getByTestId('my-flow-priority-inline-detail')).toContainText('기출 회독 목표 정하기');
   await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').first().getByRole('button', { name: '완료 체크' })).toBeVisible();
-  await prioritySection.locator('[data-testid="my-flow-priority-card"]').first().getByRole('button', { name: '항목 열기' }).click();
+  await firstPriorityOpen.click();
   await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').first().getByTestId('my-flow-priority-inline-detail')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-inventory-toggle')).toContainText('전체 Flow 보기');
@@ -2297,7 +2310,8 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(firstOverviewCard.getByTestId('my-flow-type-counts')).toContainText('메모');
   await expect(firstOverviewCard.getByTestId('my-flow-type-counts')).not.toContainText('증빙');
   await expect(firstOverviewCard.getByTestId('my-flow-type-counts')).not.toContainText('기록');
-  await expect(firstOverviewCard.getByRole('button', { name: '항목 열기' })).toBeVisible();
+  await expect(firstOverviewCard.getByTestId('my-flow-next-action-open')).toHaveText('열기');
+  await expect(firstOverviewCard.getByTestId('my-flow-next-action-open')).toHaveAttribute('aria-label', /.+ 열기$/);
   await firstOverviewCard.getByTestId('my-flow-next-action-open').click();
   await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-pressed', 'true');
   await expect(firstOverviewCard.getByTestId('my-flow-overview-inline-detail')).toContainText('필요 없는 물건 정리하기');
@@ -2530,7 +2544,8 @@ test('my flow source-backed demo renders bridge bundles without publishing them 
   await expect(movingCard.getByTestId('my-flow-overview-progress-summary')).toContainText('0/5 완료');
   await expect(movingCard.getByTestId('my-flow-overview-progress-bar')).toBeVisible();
   await expect(movingCard).not.toContainText('0%');
-  await expect(movingCard.getByRole('button', { name: '항목 열기' })).toBeVisible();
+  await expect(movingCard.getByTestId('my-flow-next-action-open')).toHaveText('열기');
+  await expect(movingCard.getByTestId('my-flow-next-action-open')).toHaveAttribute('aria-label', /.+ 열기$/);
 
   const mathCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-middle-school-math-1"]');
   await expect(mathCard).toContainText('단원별 개념 진도');

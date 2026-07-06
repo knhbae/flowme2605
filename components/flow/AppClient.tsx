@@ -1588,10 +1588,18 @@ function getMyFlowAnchorDisplay(bundle: FlowBundle, anchor: string, demoMode: My
 function getMyFlowOpenActionLabel(bundle: FlowBundle): string {
   if (bundle.flow.tags?.includes('progress-flow')) return '진도 보기';
   const destination = inferPrimaryDestination(bundle);
-  if (myFlowChecklistDestinationSlugs.has(bundle.flow.slug) || destination === 'internal_check') return '항목 열기';
+  if (myFlowChecklistDestinationSlugs.has(bundle.flow.slug) || destination === 'internal_check') return '열기';
   if (destination === 'sheet') return '표 보기';
   if (destination === 'memo') return '메모 보기';
-  return '항목 열기';
+  return '열기';
+}
+
+function getMyFlowOpenActionAriaLabel(title: string, actionLabel: string): string {
+  const displayTitle = toUserFacingSourceTitle(title).trim();
+  const displayAction = actionLabel.trim();
+  if (!displayTitle) return displayAction || '열기';
+  if (!displayAction) return displayTitle;
+  return `${displayTitle} ${displayAction}`;
 }
 
 type MyFlowExecutionItemType =
@@ -5404,6 +5412,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <button
                 className="min-h-9 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300"
                 type="button"
+                aria-label={nextRow ? getMyFlowOpenActionAriaLabel(nextRow.title, nextActionLabel) : getMyFlowOpenActionAriaLabel(flowTitle, nextActionLabel)}
                 onClick={() => (nextRow ? openMyFlowRowFromFlowTab(flow, nextRow) : setSelectedSavedFlowSlug(flow.progress.slug))}
               >
                 {nextActionLabel}
@@ -5639,6 +5648,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 type="button"
                 data-testid="my-flow-next-action-open"
                 className={`min-h-9 shrink-0 rounded-md px-3 py-2 text-xs font-semibold ${showContentReadinessBadge ? 'border border-slate-200 bg-white text-slate-800' : 'bg-blue-700 text-white'}`}
+                aria-label={getMyFlowOpenActionAriaLabel(nextRow.title, nextActionLabel)}
                 onClick={() => openMyFlowRowFromFlowTab(flow, nextRow)}
               >
                 {nextActionLabel}
@@ -6361,13 +6371,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                             <p className="mt-1 text-base font-semibold text-slate-950">{getMyFlowRowDisplayTitle(row)}</p>
                             <div className="mt-3 flex flex-wrap gap-2">
                               <button
-                                className="rounded-md bg-blue-700 px-3 py-2 text-xs font-semibold text-white"
+                                className="rounded-md border border-blue-100 bg-white px-3 py-2 text-xs font-semibold text-blue-700 hover:border-blue-300"
                                 type="button"
+                                aria-label={getMyFlowOpenActionAriaLabel(getMyFlowRowDisplayTitle(row), getMyFlowOpenActionLabel(row.flow.bundle))}
                                 onClick={() => {
                                   toggleMyFlowRowDetail(row);
                                 }}
                               >
-                                항목 열기
+                                {getMyFlowOpenActionLabel(row.flow.bundle)}
                               </button>
                             </div>
                             {myFlowActiveRow && myFlowDetailOpen && getMyFlowRowInstanceKey(myFlowActiveRow) === getMyFlowRowInstanceKey(row) ? (
@@ -6958,7 +6969,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   <p className="mt-1 text-base font-semibold text-slate-950">{getMyFlowRowDisplayTitle(row)}</p>
                   <button
                     type="button"
-                    className="mt-3 min-h-9 rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white"
+                    className="mt-3 min-h-9 rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300"
+                    aria-label={getMyFlowOpenActionAriaLabel(getMyFlowRowDisplayTitle(row), getMyFlowOpenActionLabel(row.flow.bundle))}
                     onClick={() => {
                       setMyFlowStatusSheet(null);
                       openMyFlowRowFromFlowTab(row.flow, row);
