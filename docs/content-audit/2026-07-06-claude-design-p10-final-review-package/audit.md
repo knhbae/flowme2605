@@ -8,6 +8,8 @@ P10-01 to P10-07 close the current review loop: capture uses the canonical `user
 
 P10-07 extends the same evidence gate to input values: visible text raw ISO remains a failure, non-date input values with raw ISO remain a failure, and native `input[type=date]` values are recorded separately as technical browser control exemptions.
 
+P11-02 keeps the UI unchanged and strengthens the evidence layer. The capture output now records `continuationActionable`, `agendaGroupMeta`, and `rowControlAccessibleNames` so P10-03/P10-04/P10-05 can be reviewed from JSON markers as well as screenshots. Calendar agenda groups and My Flow status-sheet groups use the same marker shape.
+
 ## Baselines Covered
 
 - P7-01: `/restart/moving-d30` uses user-facing date text and a quieter export hierarchy.
@@ -34,14 +36,16 @@ P10-07 extends the same evidence gate to input values: visible text raw ISO rema
 - P10-05: restart/My Flow visible row controls stay short, while accessible labels preserve the row title and action context.
 - P10-06: generated GitHub links use the repository root base and avoid duplicate `/flow-mvp` path segments.
 - P10-07: visible raw ISO text, raw ISO input hits, and native date input exemptions are counted separately.
+- P11-01: My Flow overdue status sheets group shared date/content/timing metadata once per group.
+- P11-02: continuation actionable state, Calendar/status-sheet group metadata, and row-control accessible-name samples are recorded as route-evidence markers.
 
 ## Summary
 
 ```json
 {
   "totalScreenshots": 26,
-  "uiBaselineCommit": "24a7760",
-  "packageGeneratedFromCommit": "24a7760",
+  "uiBaselineCommit": "105bf6c",
+  "packageGeneratedFromCommit": "105bf6c",
   "packageCommitRef": "git commit containing this generated package",
   "normalRouteInternalHitCount": 0,
   "normalRouteSourceSlugHitCount": 0,
@@ -50,6 +54,15 @@ P10-07 extends the same evidence gate to input values: visible text raw ISO rema
   "normalRouteInputRawIsoHitCount": 0,
   "normalRouteInputRawIsoExemptCount": 2,
   "normalRouteFirstTaskRepetitionHitCount": 0,
+  "normalRouteContinuationActionableCount": 4,
+  "normalRouteContinuationExplanationOnlyCount": 0,
+  "normalRouteAgendaGroupMetaCount": 2,
+  "normalRouteAgendaGroupRepeatedDateMetaRowCount": 0,
+  "normalRouteAgendaGroupRepeatedTimingMetaRowCount": 0,
+  "normalRouteStatusSheetGroupMetaCount": 1,
+  "normalRouteStatusSheetUngroupedRowCount": 0,
+  "normalRouteRowControlAccessibleNameSampleCount": 4,
+  "normalRouteRowControlAccessibleNameContextCount": 4,
   "normalRouteQueueLabelScope": "my-flow-queue-label-surfaces",
   "normalRouteQueueLabelCount": 8,
   "normalRouteLegacyOverdueLabelCount": 0,
@@ -223,8 +236,8 @@ The restart source/export frame and bottom frame must remain distinct:
 
 ## Commit Metadata
 
-- UI baseline commit: `24a7760`
-- Package generated from commit: `24a7760`
+- UI baseline commit: `105bf6c`
+- Package generated from commit: `105bf6c`
 - Package commit ref: `git commit containing this generated package`
 
 ## Residual Risk

@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-06T10:27:57.812Z",
+  "generatedAt": "2026-07-06T12:41:41.250Z",
   "packageName": "2026-07-06-claude-design-p10-final-review-package",
   "reviewCycle": "P10",
   "nextBacklogCycle": "P11",
   "branchName": "codex/flowme-uxui-second-loop",
-  "uiBaselineCommit": "24a7760",
-  "packageGeneratedFromCommit": "24a7760",
+  "uiBaselineCommit": "105bf6c",
+  "packageGeneratedFromCommit": "105bf6c",
   "packageCommitRef": "git commit containing this generated package",
-  "commit": "24a7760",
+  "commit": "105bf6c",
   "viewport": {
     "width": 390,
     "height": 844
@@ -15,8 +15,8 @@
   "baseURL": "http://127.0.0.1:3221",
   "summary": {
     "totalScreenshots": 26,
-    "uiBaselineCommit": "24a7760",
-    "packageGeneratedFromCommit": "24a7760",
+    "uiBaselineCommit": "105bf6c",
+    "packageGeneratedFromCommit": "105bf6c",
     "packageCommitRef": "git commit containing this generated package",
     "normalRouteInternalHitCount": 0,
     "normalRouteSourceSlugHitCount": 0,
@@ -25,6 +25,15 @@
     "normalRouteInputRawIsoHitCount": 0,
     "normalRouteInputRawIsoExemptCount": 2,
     "normalRouteFirstTaskRepetitionHitCount": 0,
+    "normalRouteContinuationActionableCount": 4,
+    "normalRouteContinuationExplanationOnlyCount": 0,
+    "normalRouteAgendaGroupMetaCount": 2,
+    "normalRouteAgendaGroupRepeatedDateMetaRowCount": 0,
+    "normalRouteAgendaGroupRepeatedTimingMetaRowCount": 0,
+    "normalRouteStatusSheetGroupMetaCount": 1,
+    "normalRouteStatusSheetUngroupedRowCount": 0,
+    "normalRouteRowControlAccessibleNameSampleCount": 4,
+    "normalRouteRowControlAccessibleNameContextCount": 4,
     "normalRouteQueueLabelScope": "my-flow-queue-label-surfaces",
     "normalRouteQueueLabelCount": 8,
     "normalRouteLegacyOverdueLabelCount": 0,
@@ -220,6 +229,34 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -363,6 +400,34 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -507,6 +572,34 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -659,6 +752,34 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -814,6 +935,34 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -951,6 +1100,34 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -1089,6 +1266,34 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -1227,6 +1432,34 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -1356,6 +1589,34 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -1486,6 +1747,34 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -1611,6 +1900,34 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -1744,6 +2061,34 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -1869,6 +2214,34 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -2002,6 +2375,34 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -2135,6 +2536,34 @@
         "myFlowNowSection": true,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": true,
+          "cardVisible": true,
+          "controlVisible": true,
+          "controlFocusable": true,
+          "explanationOnly": false,
+          "targetTitle": "이사 방식 정하기",
+          "flowContext": "이사 준비 · 0/24 완료 · 일정 흐름",
+          "visibleLabel": "이사 방식 정하기6월 22일 · 기준 D-30 · 큰 준비열기",
+          "accessibleName": "이사 방식 정하기6월 22일 · 기준 D-30 · 큰 준비열기",
+          "flowSlug": "moving-d30-basic",
+          "rowKey": "moving-d30-basic::flow-moving-item-0::2026-06-22"
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -2278,6 +2707,81 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": true,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": true,
+            "groupCount": 1,
+            "groups": [
+              {
+                "headerText": "일정이사 준비4개 · 4개 남음",
+                "rowCount": 4,
+                "repeatedDateMetaRowCount": 0,
+                "repeatedTimingMetaRowCount": 0,
+                "repeatedSectionMetaRowCount": 0,
+                "repeatedFlowMetaRowCount": 0,
+                "rowMeta": [
+                  {
+                    "textSample": "이사 방식 정하기",
+                    "dateTextCount": 0,
+                    "timingTextCount": 0,
+                    "visibleDateMetaCount": 0,
+                    "visibleTimingChipCount": 0,
+                    "visibleSectionLabelCount": 0,
+                    "visibleFlowChipCount": 0
+                  },
+                  {
+                    "textSample": "이사할 집 하자 점검하기",
+                    "dateTextCount": 0,
+                    "timingTextCount": 0,
+                    "visibleDateMetaCount": 0,
+                    "visibleTimingChipCount": 0,
+                    "visibleSectionLabelCount": 0,
+                    "visibleFlowChipCount": 0
+                  },
+                  {
+                    "textSample": "필요 없는 물건 정리하기",
+                    "dateTextCount": 0,
+                    "timingTextCount": 0,
+                    "visibleDateMetaCount": 0,
+                    "visibleTimingChipCount": 0,
+                    "visibleSectionLabelCount": 0,
+                    "visibleFlowChipCount": 0
+                  },
+                  {
+                    "textSample": "이사/청소 업체 견적 받고 예약하기",
+                    "dateTextCount": 0,
+                    "timingTextCount": 0,
+                    "visibleDateMetaCount": 0,
+                    "visibleTimingChipCount": 0,
+                    "visibleSectionLabelCount": 0,
+                    "visibleFlowChipCount": 0
+                  }
+                ]
+              }
+            ]
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -2411,6 +2915,34 @@
         "myFlowNowSection": true,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": true,
+          "cardVisible": true,
+          "controlVisible": true,
+          "controlFocusable": true,
+          "explanationOnly": false,
+          "targetTitle": "1. 소인수분해",
+          "flowContext": "단원별 개념 진도 · 0/8 완료 · 체크 흐름",
+          "visibleLabel": "1. 소인수분해중1 목차열기",
+          "accessibleName": "1. 소인수분해중1 목차열기",
+          "flowSlug": "source-backed-middle-school-math-1",
+          "rowKey": "source-backed-middle-school-math-1::math-prime-factorization::none"
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -2550,6 +3082,34 @@
         "myFlowNowSection": true,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": true,
+          "cardVisible": true,
+          "controlVisible": true,
+          "controlFocusable": true,
+          "explanationOnly": false,
+          "targetTitle": "필기와 실기 시험 범위 나누기",
+          "flowContext": "컴퓨터활용능력 학습 · 0/9 완료 · 일정 흐름",
+          "visibleLabel": "필기와 실기 시험 범위 나누기5월 28일 · 기준 D-30 · 범위 쪼개기열기",
+          "accessibleName": "필기와 실기 시험 범위 나누기5월 28일 · 기준 D-30 · 범위 쪼개기열기",
+          "flowSlug": "computer-skills-d30-study",
+          "rowKey": "computer-skills-d30-study::flow-computer-skills-d30-study-item-0::2026-05-28"
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -2583,8 +3143,8 @@
       "label": "My Flow overdue sheet dedupe evidence",
       "route": "/my",
       "screenshot": "screenshots/17-my-multi-queue-overdue-sheet-mobile.png",
-      "screenshotBytes": 28444,
-      "screenshotHash": "cf35831b37f4d48f4b2e8fbbae16a56ae429ce33ee77bb9805393dd608ace439",
+      "screenshotBytes": 27532,
+      "screenshotHash": "7404b287669cdb5302eca40697c717b06fa4b3a3ec66ebdacfddeab09d28b0da",
       "category": "multi-queue",
       "prototypeBucket": false,
       "url": "/my",
@@ -2693,6 +3253,110 @@
         "myFlowNowSection": true,
         "calendarSelectedDay": false,
         "statusSheetRows": 4,
+        "continuationActionable": {
+          "sectionVisible": true,
+          "cardVisible": true,
+          "controlVisible": true,
+          "controlFocusable": true,
+          "explanationOnly": false,
+          "targetTitle": "필기와 실기 시험 범위 나누기",
+          "flowContext": "컴퓨터활용능력 학습 · 0/9 완료 · 일정 흐름",
+          "visibleLabel": "필기와 실기 시험 범위 나누기5월 28일 · 기준 D-30 · 범위 쪼개기열기",
+          "accessibleName": "필기와 실기 시험 범위 나누기5월 28일 · 기준 D-30 · 범위 쪼개기열기",
+          "flowSlug": "computer-skills-d30-study",
+          "rowKey": "computer-skills-d30-study::flow-computer-skills-d30-study-item-0::2026-05-28"
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": true,
+            "groupCount": 1,
+            "groups": [
+              {
+                "headerText": "5월 27일·이사 준비·기준 D-30·4개",
+                "rowCount": 4,
+                "repeatedDateMetaRowCount": 0,
+                "repeatedTimingMetaRowCount": 0,
+                "repeatedSectionMetaRowCount": 0,
+                "repeatedFlowMetaRowCount": 0,
+                "rowMeta": [
+                  {
+                    "textSample": "이사 방식 정하기 열기",
+                    "dateTextCount": 0,
+                    "timingTextCount": 0,
+                    "visibleDateMetaCount": 0,
+                    "visibleTimingChipCount": 0,
+                    "visibleSectionLabelCount": 0,
+                    "visibleFlowChipCount": 0
+                  },
+                  {
+                    "textSample": "이사할 집 하자 점검하기 열기",
+                    "dateTextCount": 0,
+                    "timingTextCount": 0,
+                    "visibleDateMetaCount": 0,
+                    "visibleTimingChipCount": 0,
+                    "visibleSectionLabelCount": 0,
+                    "visibleFlowChipCount": 0
+                  },
+                  {
+                    "textSample": "필요 없는 물건 정리하기 열기",
+                    "dateTextCount": 0,
+                    "timingTextCount": 0,
+                    "visibleDateMetaCount": 0,
+                    "visibleTimingChipCount": 0,
+                    "visibleSectionLabelCount": 0,
+                    "visibleFlowChipCount": 0
+                  },
+                  {
+                    "textSample": "이사/청소 업체 견적 받고 예약하기 열기",
+                    "dateTextCount": 0,
+                    "timingTextCount": 0,
+                    "visibleDateMetaCount": 0,
+                    "visibleTimingChipCount": 0,
+                    "visibleSectionLabelCount": 0,
+                    "visibleFlowChipCount": 0
+                  }
+                ]
+              }
+            ],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [
+          {
+            "surface": "my-flow-status-sheet",
+            "testId": "my-flow-status-sheet-row",
+            "visibleLabel": "열기",
+            "accessibleName": "이사 방식 정하기 · 5월 27일 · 이사 준비 · 기준 D-30 열기",
+            "hasContext": true
+          },
+          {
+            "surface": "my-flow-status-sheet",
+            "testId": "my-flow-status-sheet-row",
+            "visibleLabel": "열기",
+            "accessibleName": "이사할 집 하자 점검하기 · 5월 27일 · 이사 준비 · 기준 D-30 열기",
+            "hasContext": true
+          },
+          {
+            "surface": "my-flow-status-sheet",
+            "testId": "my-flow-status-sheet-row",
+            "visibleLabel": "열기",
+            "accessibleName": "필요 없는 물건 정리하기 · 5월 27일 · 이사 준비 · 기준 D-30 열기",
+            "hasContext": true
+          },
+          {
+            "surface": "my-flow-status-sheet",
+            "testId": "my-flow-status-sheet-row",
+            "visibleLabel": "열기",
+            "accessibleName": "이사/청소 업체 견적 받고 예약하기 · 5월 27일 · 이사 준비 · 기준 D-30 열기",
+            "hasContext": true
+          }
+        ],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -2832,6 +3496,34 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -2971,6 +3663,34 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -3114,6 +3834,34 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [],
         "inventoryRows": 6,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -3253,6 +4001,56 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [
+          {
+            "surface": "restart-next-tasks",
+            "testId": "moving-mobile-next-tasks",
+            "visibleLabel": "수정",
+            "accessibleName": "버릴 물건과 대형폐기물 정리 수정",
+            "hasContext": true
+          },
+          {
+            "surface": "restart-next-tasks",
+            "testId": "moving-mobile-next-tasks",
+            "visibleLabel": "수정",
+            "accessibleName": "이사 방식과 업체 후보 정하기 수정",
+            "hasContext": true
+          },
+          {
+            "surface": "restart-next-tasks",
+            "testId": "moving-mobile-next-tasks",
+            "visibleLabel": "수정",
+            "accessibleName": "이사할 집 하자 사진 남기기 수정",
+            "hasContext": true
+          }
+        ],
         "inventoryRows": 0,
         "restartInlineExportButtons": 4,
         "restartMobileExportButtons": 1,
@@ -3426,6 +4224,70 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [
+          {
+            "surface": "restart-next-tasks",
+            "testId": "moving-mobile-next-tasks",
+            "visibleLabel": "수정",
+            "accessibleName": "버릴 물건과 대형폐기물 정리 수정",
+            "hasContext": true
+          },
+          {
+            "surface": "restart-next-tasks",
+            "testId": "moving-mobile-next-tasks",
+            "visibleLabel": "수정",
+            "accessibleName": "이사 방식과 업체 후보 정하기 수정",
+            "hasContext": true
+          },
+          {
+            "surface": "restart-next-tasks",
+            "testId": "moving-mobile-next-tasks",
+            "visibleLabel": "수정",
+            "accessibleName": "이사할 집 하자 사진 남기기 수정",
+            "hasContext": true
+          },
+          {
+            "surface": "restart-full-schedule",
+            "testId": "moving-schedule-date-group",
+            "visibleLabel": "완료",
+            "accessibleName": "완료",
+            "hasContext": false
+          },
+          {
+            "surface": "restart-full-schedule",
+            "testId": "moving-schedule-date-group",
+            "visibleLabel": "편집",
+            "accessibleName": "버릴 물건과 대형폐기물 정리 편집",
+            "hasContext": true
+          }
+        ],
         "inventoryRows": 0,
         "restartInlineExportButtons": 4,
         "restartMobileExportButtons": 1,
@@ -3599,6 +4461,70 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [
+          {
+            "surface": "restart-next-tasks",
+            "testId": "moving-mobile-next-tasks",
+            "visibleLabel": "수정",
+            "accessibleName": "버릴 물건과 대형폐기물 정리 수정",
+            "hasContext": true
+          },
+          {
+            "surface": "restart-next-tasks",
+            "testId": "moving-mobile-next-tasks",
+            "visibleLabel": "수정",
+            "accessibleName": "이사 방식과 업체 후보 정하기 수정",
+            "hasContext": true
+          },
+          {
+            "surface": "restart-next-tasks",
+            "testId": "moving-mobile-next-tasks",
+            "visibleLabel": "수정",
+            "accessibleName": "이사할 집 하자 사진 남기기 수정",
+            "hasContext": true
+          },
+          {
+            "surface": "restart-full-schedule",
+            "testId": "moving-schedule-date-group",
+            "visibleLabel": "완료",
+            "accessibleName": "완료",
+            "hasContext": false
+          },
+          {
+            "surface": "restart-full-schedule",
+            "testId": "moving-schedule-date-group",
+            "visibleLabel": "편집",
+            "accessibleName": "버릴 물건과 대형폐기물 정리 편집",
+            "hasContext": true
+          }
+        ],
         "inventoryRows": 0,
         "restartInlineExportButtons": 4,
         "restartMobileExportButtons": 1,
@@ -3772,6 +4698,70 @@
         "myFlowNowSection": false,
         "calendarSelectedDay": false,
         "statusSheetRows": 0,
+        "continuationActionable": {
+          "sectionVisible": false,
+          "cardVisible": false,
+          "controlVisible": false,
+          "controlFocusable": false,
+          "explanationOnly": false,
+          "targetTitle": "",
+          "flowContext": "",
+          "visibleLabel": "",
+          "accessibleName": "",
+          "flowSlug": "",
+          "rowKey": ""
+        },
+        "agendaGroupMeta": {
+          "calendarSelectedDay": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": []
+          },
+          "myFlowStatusSheet": {
+            "visible": false,
+            "groupCount": 0,
+            "groups": [],
+            "ungroupedRowCount": 0,
+            "ungroupedRowMeta": []
+          }
+        },
+        "rowControlAccessibleNames": [
+          {
+            "surface": "restart-next-tasks",
+            "testId": "moving-mobile-next-tasks",
+            "visibleLabel": "수정",
+            "accessibleName": "버릴 물건과 대형폐기물 정리 수정",
+            "hasContext": true
+          },
+          {
+            "surface": "restart-next-tasks",
+            "testId": "moving-mobile-next-tasks",
+            "visibleLabel": "수정",
+            "accessibleName": "이사 방식과 업체 후보 정하기 수정",
+            "hasContext": true
+          },
+          {
+            "surface": "restart-next-tasks",
+            "testId": "moving-mobile-next-tasks",
+            "visibleLabel": "수정",
+            "accessibleName": "이사할 집 하자 사진 남기기 수정",
+            "hasContext": true
+          },
+          {
+            "surface": "restart-full-schedule",
+            "testId": "moving-schedule-date-group",
+            "visibleLabel": "완료",
+            "accessibleName": "완료",
+            "hasContext": false
+          },
+          {
+            "surface": "restart-full-schedule",
+            "testId": "moving-schedule-date-group",
+            "visibleLabel": "편집",
+            "accessibleName": "버릴 물건과 대형폐기물 정리 편집",
+            "hasContext": true
+          }
+        ],
         "inventoryRows": 0,
         "restartInlineExportButtons": 4,
         "restartMobileExportButtons": 1,

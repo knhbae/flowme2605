@@ -1,9 +1,9 @@
 # FlowMe Claude Design P10 Final Review Package
 
-- Generated: 2026-07-06T10:27:57.812Z
+- Generated: 2026-07-06T12:41:41.250Z
 - Branch: `codex/flowme-uxui-second-loop`
-- UI baseline commit: `24a7760`
-- Package generated from commit: `24a7760`
+- UI baseline commit: `105bf6c`
+- Package generated from commit: `105bf6c`
 - Package commit ref: `git commit containing this generated package`
 - Viewport: 390x844
 
@@ -14,6 +14,8 @@ It also keeps the P9-01 to P9-07 coverage closed: data-driven guardrail coverage
 For P10, this package closes P10-01 to P10-07: guardrail/capture canonicalization, public share primary save/setup path evidence, actionable My Flow continuation, Calendar agenda group-header density, shorter visible control labels with accessible names, GitHub link-base cleanup, and visible-text/input-value raw ISO separation.
 
 For P10-07 specifically, the scan separates raw ISO visible text from raw ISO input values. Native `input[type=date]` ISO values are treated as technical browser control values and recorded in an explicit exemption bucket; non-date input values with raw ISO remain guardrail hits.
+
+P11-02 adds JSON-level evidence markers for the P10-03/P10-04/P10-05 claims: `continuationActionable`, `agendaGroupMeta`, and `rowControlAccessibleNames`. Claude Design can now judge the continuation row, Calendar/My Flow group metadata, and short visible labels with preserved accessible names from `route-evidence.json` without relying only on screenshots.
 
 ## Files
 
@@ -32,6 +34,12 @@ For P10-07 specifically, the scan separates raw ISO visible text from raw ISO in
 - Normal route input raw ISO hits: 0
 - Normal route native date input raw ISO exemptions: 2
 - Normal route first task repetition hits: 0
+- Normal route continuation actionable count: 4
+- Normal route continuation explanation-only count: 0
+- Normal route agenda/status group marker count: 2
+- Normal route agenda/status repeated date meta rows: 0
+- Normal route row control accessible name samples: 4
+- Normal route row control samples with context: 4
 - Normal route queue label scope: my-flow-queue-label-surfaces
 - Normal route legacy overdue label hits: 0
 - Normal route horizontal overflow count: 0
