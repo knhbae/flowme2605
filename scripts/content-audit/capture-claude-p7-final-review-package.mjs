@@ -468,10 +468,12 @@ async function scanPage(page, options = {}) {
     };
     const primaryLines = [];
     const sourceLines = [];
+    const isExplicitSourceEvidenceLine = (text) =>
+      /^원문\s*근거[:：]/u.test(text) && /https?:\/\//iu.test(text);
     for (const element of Array.from(document.body.querySelectorAll(scanTextSelector)).filter((element) => isVisible(element) && !hasNestedScanText(element))) {
       const text = normalizeLine(element.textContent ?? '');
       if (!text) continue;
-      if (element.closest(sourceContextSelector)) {
+      if (element.closest(sourceContextSelector) || isExplicitSourceEvidenceLine(text)) {
         sourceLines.push(text);
       } else {
         primaryLines.push(text);
@@ -568,6 +570,137 @@ async function scanPage(page, options = {}) {
       }));
     const hasVisibleElement = (selector) =>
       Array.from(document.querySelectorAll(selector)).some((element) => isVisible(element));
+    const getElementTestId = (element) => element?.dataset?.testid ?? element?.closest?.('[data-testid]')?.dataset?.testid ?? '';
+    const getAccessibleNameCandidate = (element) => normalizeLine(
+      element?.getAttribute?.('aria-label')
+        ?? element?.getAttribute?.('title')
+        ?? element?.textContent
+        ?? '',
+    );
+    const getVisibleLabel = (element) => normalizeLine(element?.textContent ?? '');
+    const getSurfaceName = (element) => {
+      if (element.closest('[data-testid="my-flow-now-section"]')) return 'my-flow-now-section';
+      if (element.closest('[data-testid="my-flow-status-sheet"]')) return 'my-flow-status-sheet';
+      if (element.closest('[data-testid="my-flow-calendar-selected-day"]')) return 'calendar-selected-day';
+      if (element.closest('[data-testid="moving-mobile-next-tasks"]')) return 'restart-next-tasks';
+      if (element.closest('[data-testid="moving-full-schedule-list"]')) return 'restart-full-schedule';
+      if (element.closest('[data-testid="moving-calendar-selected-day"]')) return 'restart-calendar-selected-day';
+      return 'route';
+    };
+    const rowActionPattern = /^(?:열기|수정|완료|편집)$/u;
+    const getRowControlAccessibleNames = () =>
+      Array.from(document.querySelectorAll([
+        '[data-testid="my-flow-now-section"] button',
+        '[data-testid="my-flow-status-sheet"] button',
+        '[data-testid="my-flow-calendar-selected-day"] article button',
+        '[data-testid="moving-mobile-next-tasks"] button',
+        '[data-testid="moving-full-schedule-list"] button',
+        '[data-testid="moving-calendar-selected-day"] button',
+      ].join(',')))
+        .filter((element) => isVisibleInteractiveElement(element))
+        .map((element) => {
+          const visibleLabel = getVisibleLabel(element);
+          const accessibleName = getAccessibleNameCandidate(element);
+          return {
+            surface: getSurfaceName(element),
+            testId: getElementTestId(element),
+            visibleLabel,
+            accessibleName,
+            hasContext: Boolean(accessibleName && visibleLabel && accessibleName !== visibleLabel),
+          };
+        })
+        .filter((entry) => rowActionPattern.test(entry.visibleLabel))
+        .slice(0, 5);
+    const collectContinuationActionable = () => {
+      const section = document.querySelector('[data-testid="my-flow-now-section"]');
+      const card = section?.querySelector('[data-testid="my-flow-mobile-continuation-card"]') ?? null;
+      const control = card?.querySelector('[data-testid="my-flow-mobile-continuation-open"]') ?? null;
+      const title = normalizeLine(card?.querySelector('[data-testid="my-flow-mobile-continuation-title"]')?.textContent ?? '');
+      const flowContext = normalizeLine(card?.querySelector('[data-testid="my-flow-mobile-continuation-flow-context"]')?.textContent ?? '');
+      const sectionVisible = Boolean(section && isVisible(section));
+      const cardVisible = Boolean(card && isVisible(card));
+      const controlVisible = Boolean(control && isVisible(control));
+      const controlFocusable = Boolean(control && isVisibleInteractiveElement(control));
+
+      return {
+        sectionVisible,
+        cardVisible,
+        controlVisible,
+        controlFocusable,
+        explanationOnly: sectionVisible && (!cardVisible || !controlFocusable || !title),
+        targetTitle: title,
+        flowContext,
+        visibleLabel: getVisibleLabel(control),
+        accessibleName: getAccessibleNameCandidate(control),
+        flowSlug: card?.dataset.flowSlug ?? '',
+        rowKey: card?.dataset.rowKey ?? '',
+      };
+    };
+    const rowDateTextPattern = /\d{1,2}\s*월\s*\d{1,2}\s*일/u;
+    const rowTimingTextPattern = /\bD(?:-\d+|\+\d+|-Day)\b/u;
+    const summarizeRowMeta = (row) => {
+      const text = collectElementLines(row).join(' ');
+      const visibleDateMetaCount = Array.from(row.querySelectorAll('[data-testid="my-flow-row-date-meta"]')).filter((element) => isVisible(element)).length;
+      const visibleTimingChipCount = Array.from(row.querySelectorAll('[data-testid="my-flow-row-timing-chip"], [data-testid="my-flow-status-sheet-group-timing-chip"]')).filter((element) => isVisible(element)).length;
+      const visibleSectionLabelCount = Array.from(row.querySelectorAll('[data-testid="my-flow-row-section-label"]')).filter((element) => isVisible(element)).length;
+      const visibleFlowChipCount = Array.from(row.querySelectorAll('[data-testid="my-flow-row-flow-chip"]')).filter((element) => isVisible(element)).length;
+
+      return {
+        textSample: text.slice(0, 140),
+        dateTextCount: rowDateTextPattern.test(text) ? 1 : 0,
+        timingTextCount: rowTimingTextPattern.test(text) ? 1 : 0,
+        visibleDateMetaCount,
+        visibleTimingChipCount,
+        visibleSectionLabelCount,
+        visibleFlowChipCount,
+      };
+    };
+    const summarizeAgendaGroup = (group, rowSelector) => {
+      const headerText = normalizeLine((
+        group.querySelector(':scope > div')?.textContent
+        ?? group.querySelector('[data-testid="my-flow-selected-date-group-meta"]')?.textContent
+        ?? ''
+      ));
+      const rows = Array.from(group.querySelectorAll(rowSelector)).filter((element) => isVisible(element));
+      const rowMeta = rows.map(summarizeRowMeta);
+      return {
+        headerText,
+        rowCount: rows.length,
+        repeatedDateMetaRowCount: rowMeta.filter((row) => row.visibleDateMetaCount > 0 || row.dateTextCount > 0).length,
+        repeatedTimingMetaRowCount: rowMeta.filter((row) => row.visibleTimingChipCount > 0 || row.timingTextCount > 0).length,
+        repeatedSectionMetaRowCount: rowMeta.filter((row) => row.visibleSectionLabelCount > 0).length,
+        repeatedFlowMetaRowCount: rowMeta.filter((row) => row.visibleFlowChipCount > 0).length,
+        rowMeta: rowMeta.slice(0, 5),
+      };
+    };
+    const collectAgendaGroupMeta = () => {
+      const calendarRoot = document.querySelector('[data-testid="my-flow-calendar-selected-day"]');
+      const calendarGroups = Array.from(calendarRoot?.querySelectorAll('[data-testid="my-flow-selected-date-group"]') ?? [])
+        .filter((element) => isVisible(element))
+        .map((group) => summarizeAgendaGroup(group, '[data-testid="my-flow-execution-row-shell"] > article, article[data-item-type]'));
+      const statusRoot = document.querySelector('[data-testid="my-flow-status-sheet"]');
+      const statusGroups = Array.from(statusRoot?.querySelectorAll('[data-testid="my-flow-status-sheet-group"]') ?? [])
+        .filter((element) => isVisible(element))
+        .map((group) => summarizeAgendaGroup(group, '[data-testid="my-flow-status-sheet-row"]'));
+      const ungroupedStatusRows = statusGroups.length
+        ? []
+        : Array.from(statusRoot?.querySelectorAll('[data-testid="my-flow-status-sheet-row"]') ?? []).filter((element) => isVisible(element));
+
+      return {
+        calendarSelectedDay: {
+          visible: Boolean(calendarRoot && isVisible(calendarRoot)),
+          groupCount: calendarGroups.length,
+          groups: calendarGroups,
+        },
+        myFlowStatusSheet: {
+          visible: Boolean(statusRoot && isVisible(statusRoot)),
+          groupCount: statusGroups.length,
+          groups: statusGroups,
+          ungroupedRowCount: ungroupedStatusRows.length,
+          ungroupedRowMeta: ungroupedStatusRows.map(summarizeRowMeta).slice(0, 5),
+        },
+      };
+    };
     const publicBrowseLinkFocusableIndex = focusableEntries.findIndex((entry) => entry.testId === 'flow-public-secondary-browse-link');
     const publicPrimaryPathFocusableIndex = focusableEntries.findIndex((entry) =>
       [
@@ -660,6 +793,9 @@ async function scanPage(page, options = {}) {
         myFlowNowSection: Boolean(document.querySelector('[data-testid="my-flow-now-section"]')),
         calendarSelectedDay: Boolean(document.querySelector('[data-testid="my-flow-calendar-selected-day"]')),
         statusSheetRows: document.querySelectorAll('[data-testid="my-flow-status-sheet-row"]').length,
+        continuationActionable: collectContinuationActionable(),
+        agendaGroupMeta: collectAgendaGroupMeta(),
+        rowControlAccessibleNames: getRowControlAccessibleNames(),
         inventoryRows: document.querySelectorAll('[data-testid="my-flow-group-row"]').length,
         restartInlineExportButtons: document.querySelectorAll('#moving-restart-export-panel button').length,
         restartMobileExportButtons: document.querySelectorAll('[data-testid="moving-mobile-export-actions"] button').length,
@@ -748,6 +884,12 @@ function summarizeEvidence(records) {
     restartScheduleDateCheck.firstThreeSameD30Milestone
     && restartScheduleDateCheck.fullScheduleHasDistributedDates,
   );
+  const getAgendaGroups = (record) => [
+    ...(record.markers?.agendaGroupMeta?.calendarSelectedDay?.groups ?? []),
+    ...(record.markers?.agendaGroupMeta?.myFlowStatusSheet?.groups ?? []),
+  ];
+  const countAgendaGroupRows = (record, field) =>
+    getAgendaGroups(record).reduce((sum, group) => sum + (group[field] ?? 0), 0);
   return {
     totalScreenshots: records.length,
     uiBaselineCommit,
@@ -760,6 +902,31 @@ function summarizeEvidence(records) {
     normalRouteInputRawIsoHitCount: normal.reduce((sum, record) => sum + (record.rawIsoInputValueHits?.length ?? 0), 0),
     normalRouteInputRawIsoExemptCount: normal.reduce((sum, record) => sum + (record.rawIsoInputValueExemptions?.length ?? 0), 0),
     normalRouteFirstTaskRepetitionHitCount: normal.reduce((sum, record) => sum + (record.firstTaskRepetitionHits?.length ?? 0), 0),
+    normalRouteContinuationActionableCount: normal.filter((record) =>
+      Boolean(record.markers?.continuationActionable?.controlFocusable),
+    ).length,
+    normalRouteContinuationExplanationOnlyCount: normal.filter((record) =>
+      Boolean(record.markers?.continuationActionable?.explanationOnly),
+    ).length,
+    normalRouteAgendaGroupMetaCount: normal.reduce((sum, record) => sum + getAgendaGroups(record).length, 0),
+    normalRouteAgendaGroupRepeatedDateMetaRowCount: normal.reduce((sum, record) =>
+      sum + countAgendaGroupRows(record, 'repeatedDateMetaRowCount'),
+    0),
+    normalRouteAgendaGroupRepeatedTimingMetaRowCount: normal.reduce((sum, record) =>
+      sum + countAgendaGroupRows(record, 'repeatedTimingMetaRowCount'),
+    0),
+    normalRouteStatusSheetGroupMetaCount: normal.reduce((sum, record) =>
+      sum + (record.markers?.agendaGroupMeta?.myFlowStatusSheet?.groupCount ?? 0),
+    0),
+    normalRouteStatusSheetUngroupedRowCount: normal.reduce((sum, record) =>
+      sum + (record.markers?.agendaGroupMeta?.myFlowStatusSheet?.ungroupedRowCount ?? 0),
+    0),
+    normalRouteRowControlAccessibleNameSampleCount: normal.reduce((sum, record) =>
+      sum + (record.markers?.rowControlAccessibleNames?.length ?? 0),
+    0),
+    normalRouteRowControlAccessibleNameContextCount: normal.reduce((sum, record) =>
+      sum + (record.markers?.rowControlAccessibleNames ?? []).filter((sample) => sample.hasContext).length,
+    0),
     normalRouteQueueLabelScope: 'my-flow-queue-label-surfaces',
     normalRouteQueueLabelCount: normal.reduce((sum, record) =>
       sum
@@ -846,6 +1013,8 @@ For P10, this package closes P10-01 to P10-07: guardrail/capture canonicalizatio
 
 For P10-07 specifically, the scan separates raw ISO visible text from raw ISO input values. Native \`input[type=date]\` ISO values are treated as technical browser control values and recorded in an explicit exemption bucket; non-date input values with raw ISO remain guardrail hits.
 
+P11-02 adds JSON-level evidence markers for the P10-03/P10-04/P10-05 claims: \`continuationActionable\`, \`agendaGroupMeta\`, and \`rowControlAccessibleNames\`. Claude Design can now judge the continuation row, Calendar/My Flow group metadata, and short visible labels with preserved accessible names from \`route-evidence.json\` without relying only on screenshots.
+
 ## Files
 
 - [audit.md](./audit.md)
@@ -863,6 +1032,12 @@ For P10-07 specifically, the scan separates raw ISO visible text from raw ISO in
 - Normal route input raw ISO hits: ${evidence.summary.normalRouteInputRawIsoHitCount}
 - Normal route native date input raw ISO exemptions: ${evidence.summary.normalRouteInputRawIsoExemptCount}
 - Normal route first task repetition hits: ${evidence.summary.normalRouteFirstTaskRepetitionHitCount}
+- Normal route continuation actionable count: ${evidence.summary.normalRouteContinuationActionableCount}
+- Normal route continuation explanation-only count: ${evidence.summary.normalRouteContinuationExplanationOnlyCount}
+- Normal route agenda/status group marker count: ${evidence.summary.normalRouteAgendaGroupMetaCount}
+- Normal route agenda/status repeated date meta rows: ${evidence.summary.normalRouteAgendaGroupRepeatedDateMetaRowCount}
+- Normal route row control accessible name samples: ${evidence.summary.normalRouteRowControlAccessibleNameSampleCount}
+- Normal route row control samples with context: ${evidence.summary.normalRouteRowControlAccessibleNameContextCount}
 - Normal route queue label scope: ${evidence.summary.normalRouteQueueLabelScope}
 - Normal route legacy overdue label hits: ${evidence.summary.normalRouteLegacyOverdueLabelCount}
 - Normal route horizontal overflow count: ${evidence.summary.normalRouteHorizontalOverflowCount}
@@ -913,6 +1088,8 @@ P10-01 to P10-07 close the current review loop: capture uses the canonical \`use
 
 P10-07 extends the same evidence gate to input values: visible text raw ISO remains a failure, non-date input values with raw ISO remain a failure, and native \`input[type=date]\` values are recorded separately as technical browser control exemptions.
 
+P11-02 keeps the UI unchanged and strengthens the evidence layer. The capture output now records \`continuationActionable\`, \`agendaGroupMeta\`, and \`rowControlAccessibleNames\` so P10-03/P10-04/P10-05 can be reviewed from JSON markers as well as screenshots. Calendar agenda groups and My Flow status-sheet groups use the same marker shape.
+
 ## Baselines Covered
 
 - P7-01: \`/restart/moving-d30\` uses user-facing date text and a quieter export hierarchy.
@@ -939,6 +1116,8 @@ P10-07 extends the same evidence gate to input values: visible text raw ISO rema
 - P10-05: restart/My Flow visible row controls stay short, while accessible labels preserve the row title and action context.
 - P10-06: generated GitHub links use the repository root base and avoid duplicate \`/flow-mvp\` path segments.
 - P10-07: visible raw ISO text, raw ISO input hits, and native date input exemptions are counted separately.
+- P11-01: My Flow overdue status sheets group shared date/content/timing metadata once per group.
+- P11-02: continuation actionable state, Calendar/status-sheet group metadata, and row-control accessible-name samples are recorded as route-evidence markers.
 
 ## Summary
 
@@ -1126,6 +1305,12 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.normalRouteInputRawIsoHitCount}</b><span>normal input ISO hits</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteInputRawIsoExemptCount}</b><span>normal input ISO exempt</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteFirstTaskRepetitionHitCount}</b><span>first task repeats</span></div>
+      <div class="stat"><b>${evidence.summary.normalRouteContinuationActionableCount}</b><span>continuation actionable</span></div>
+      <div class="stat"><b>${evidence.summary.normalRouteContinuationExplanationOnlyCount}</b><span>continuation explanation-only</span></div>
+      <div class="stat"><b>${evidence.summary.normalRouteAgendaGroupMetaCount}</b><span>agenda/status groups</span></div>
+      <div class="stat"><b>${evidence.summary.normalRouteAgendaGroupRepeatedDateMetaRowCount}</b><span>repeated date meta rows</span></div>
+      <div class="stat"><b>${evidence.summary.normalRouteRowControlAccessibleNameSampleCount}</b><span>row control a11y samples</span></div>
+      <div class="stat"><b>${evidence.summary.normalRouteRowControlAccessibleNameContextCount}</b><span>row control samples with context</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteLegacyOverdueLabelCount}</b><span>legacy overdue labels</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeRawIsoHitCount}</b><span>restart raw ISO hits</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeInputRawIsoHitCount}</b><span>restart input ISO hits</span></div>

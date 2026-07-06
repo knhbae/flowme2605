@@ -346,6 +346,7 @@ export function MovingD30Restart() {
                     <button
                       type="button"
                       onClick={() => startEdit(item.id)}
+                      aria-label={`${item.title} 수정`}
                       className="shrink-0 rounded-xl bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700"
                     >
                       수정

@@ -165,6 +165,20 @@ test('capture script does not keep stale source slug or GitHub path copies', () 
   assert.equal(script.includes('blob/${branchName}/flow-mvp'), false);
 });
 
+test('capture script exposes P11 evidence markers for actionable rows and accessible controls', () => {
+  const script = fs.readFileSync(
+    path.join(process.cwd(), 'scripts', 'content-audit', 'capture-claude-p7-final-review-package.mjs'),
+    'utf8',
+  );
+
+  assert.ok(script.includes('continuationActionable'));
+  assert.ok(script.includes('agendaGroupMeta'));
+  assert.ok(script.includes('rowControlAccessibleNames'));
+  assert.ok(script.includes('normalRouteContinuationActionableCount'));
+  assert.ok(script.includes('normalRouteAgendaGroupMetaCount'));
+  assert.ok(script.includes('normalRouteRowControlAccessibleNameSampleCount'));
+});
+
 test('user surface guardrail helpers lock positive and negative display cases', () => {
   assert.equal(normalizeGuardrailLine('  first   line  '), 'first line');
   assert.deepEqual(normalizeGuardrailLines(['  first   line  ', '   ']), ['first line']);
