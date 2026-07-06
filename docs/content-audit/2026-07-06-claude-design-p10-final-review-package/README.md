@@ -1,9 +1,9 @@
 # FlowMe Claude Design P10 Final Review Package
 
-- Generated: 2026-07-06T13:24:15.785Z
+- Generated: 2026-07-06T14:14:26.831Z
 - Branch: `codex/flowme-uxui-second-loop`
-- UI baseline commit: `ffab3c3`
-- Package generated from commit: `ffab3c3`
+- UI baseline commit: `0866dd6`
+- Package generated from commit: `0866dd6`
 - Package commit ref: `git commit containing this generated package`
 - Viewport: 390x844
 
@@ -16,6 +16,8 @@ For P10, this package closes P10-01 to P10-07: guardrail/capture canonicalizatio
 For P10-07 specifically, the scan separates raw ISO visible text from raw ISO input values. Native `input[type=date]` ISO values are treated as technical browser control values and recorded in an explicit exemption bucket; non-date input values with raw ISO remain guardrail hits.
 
 P11-02 adds JSON-level evidence markers for the P10-03/P10-04/P10-05 claims: `continuationActionable`, `agendaGroupMeta`, and `rowControlAccessibleNames`. Claude Design can now judge the continuation row, Calendar/My Flow group metadata, and short visible labels with preserved accessible names from `route-evidence.json` without relying only on screenshots.
+
+P11-04/P11-09 reduce My Flow inventory metric noise. Each saved-content row exposes one primary progress label, and the mobile all-tab header avoids large total remaining-count copy. The capture output records `inventoryProgressMetrics` and `inventoryHeaderMetrics` so duplicate progress metrics and large remaining-count headers can be judged from JSON markers.
 
 ## Files
 

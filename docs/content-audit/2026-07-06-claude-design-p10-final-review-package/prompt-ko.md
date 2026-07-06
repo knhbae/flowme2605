@@ -40,8 +40,8 @@
 ```json
 {
   "totalScreenshots": 26,
-  "uiBaselineCommit": "ffab3c3",
-  "packageGeneratedFromCommit": "ffab3c3",
+  "uiBaselineCommit": "0866dd6",
+  "packageGeneratedFromCommit": "0866dd6",
   "packageCommitRef": "git commit containing this generated package",
   "normalRouteInternalHitCount": 0,
   "normalRouteSourceSlugHitCount": 0,
@@ -59,6 +59,8 @@
   "normalRouteStatusSheetUngroupedRowCount": 0,
   "normalRouteRowControlAccessibleNameSampleCount": 4,
   "normalRouteRowControlAccessibleNameContextCount": 4,
+  "normalRouteInventoryDuplicateProgressMetricCount": 0,
+  "normalRouteInventoryHeaderLargeRemainingCount": 0,
   "normalRouteQueueLabelScope": "my-flow-queue-label-surfaces",
   "normalRouteQueueLabelCount": 9,
   "normalRouteLegacyOverdueLabelCount": 0,

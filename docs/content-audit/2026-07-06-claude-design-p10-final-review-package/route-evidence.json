@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-06T13:24:15.785Z",
+  "generatedAt": "2026-07-06T14:14:26.831Z",
   "packageName": "2026-07-06-claude-design-p10-final-review-package",
   "reviewCycle": "P10",
   "nextBacklogCycle": "P11",
   "branchName": "codex/flowme-uxui-second-loop",
-  "uiBaselineCommit": "ffab3c3",
-  "packageGeneratedFromCommit": "ffab3c3",
+  "uiBaselineCommit": "0866dd6",
+  "packageGeneratedFromCommit": "0866dd6",
   "packageCommitRef": "git commit containing this generated package",
-  "commit": "ffab3c3",
+  "commit": "0866dd6",
   "viewport": {
     "width": 390,
     "height": 844
@@ -15,8 +15,8 @@
   "baseURL": "http://127.0.0.1:3221",
   "summary": {
     "totalScreenshots": 26,
-    "uiBaselineCommit": "ffab3c3",
-    "packageGeneratedFromCommit": "ffab3c3",
+    "uiBaselineCommit": "0866dd6",
+    "packageGeneratedFromCommit": "0866dd6",
     "packageCommitRef": "git commit containing this generated package",
     "normalRouteInternalHitCount": 0,
     "normalRouteSourceSlugHitCount": 0,
@@ -34,6 +34,8 @@
     "normalRouteStatusSheetUngroupedRowCount": 0,
     "normalRouteRowControlAccessibleNameSampleCount": 4,
     "normalRouteRowControlAccessibleNameContextCount": 4,
+    "normalRouteInventoryDuplicateProgressMetricCount": 0,
+    "normalRouteInventoryHeaderLargeRemainingCount": 0,
     "normalRouteQueueLabelScope": "my-flow-queue-label-surfaces",
     "normalRouteQueueLabelCount": 9,
     "normalRouteLegacyOverdueLabelCount": 0,
@@ -257,6 +259,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -428,6 +440,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -600,6 +622,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -780,6 +812,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -963,6 +1005,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -1128,6 +1180,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -1294,6 +1356,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -1460,6 +1532,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -1617,6 +1699,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -1775,6 +1867,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -1928,6 +2030,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -2089,6 +2201,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -2242,6 +2364,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -2403,6 +2535,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -2564,6 +2706,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -2782,6 +2934,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -2943,6 +3105,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -3110,6 +3282,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -3357,6 +3539,16 @@
             "hasContext": true
           }
         ],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -3390,8 +3582,8 @@
       "label": "My Flow 5+ saved list top",
       "route": "/my",
       "screenshot": "screenshots/18-my-long-list-top-mobile.png",
-      "screenshotBytes": 31799,
-      "screenshotHash": "1fc211db558020bd604ade52ce1d4277c0d97a0b656bafba17b044f2f72c5888",
+      "screenshotBytes": 31515,
+      "screenshotHash": "ce81ecd42e5dfa9270178daec2e36ad84da0b134a2b27b6f626a4f0f0bf65f76",
       "category": "long-list",
       "prototypeBucket": false,
       "url": "/my",
@@ -3524,6 +3716,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 1,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -3691,6 +3893,16 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 1,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -3724,8 +3936,8 @@
       "label": "My Flow 5+ inventory sheet bottom clearance",
       "route": "/my",
       "screenshot": "screenshots/20-my-long-list-inventory-bottom-mobile.png",
-      "screenshotBytes": 32615,
-      "screenshotHash": "8d4fa95d1624a47a6ece19b94646c3fa8fd6c381f4b92cd84e61df1e9225b8b7",
+      "screenshotBytes": 31243,
+      "screenshotHash": "a20c28cea3d1854a9abb21178dac89bc0fa307ca8ac4b088f65fa7f4adbc52b5",
       "category": "long-list",
       "prototypeBucket": false,
       "url": "/my",
@@ -3862,6 +4074,71 @@
           }
         },
         "rowControlAccessibleNames": [],
+        "inventoryProgressMetrics": {
+          "rowCount": 6,
+          "duplicateProgressMetricCount": 0,
+          "rows": [
+            {
+              "flowSlug": "moving-d30-basic",
+              "textSample": "이사 준비 예전 저장 이사일 6월 26일 0/24 완료 지난 할 일 이사 방식 정하기 열기 Flow 보기",
+              "completeMetricCount": 0,
+              "ratioMetricCount": 1,
+              "percentMetricCount": 0,
+              "metricCount": 1,
+              "duplicateProgressMetricCount": 0
+            },
+            {
+              "flowSlug": "baby-food-menu-recipe",
+              "textSample": "초기 이유식 메뉴·레시피 원문 확인 이유식 시작일 5월 28일 0/33 완료 오늘 할 일 쌀미음 열기 Flow 보기",
+              "completeMetricCount": 0,
+              "ratioMetricCount": 1,
+              "percentMetricCount": 0,
+              "metricCount": 1,
+              "duplicateProgressMetricCount": 0
+            },
+            {
+              "flowSlug": "home-workout-20min",
+              "textSample": "하루 20분 전신 홈트 예전 저장 운동 시작일 5월 27일 0/18 완료 먼저 할 일 제자리 걷기 1분 열기 Flow 보기",
+              "completeMetricCount": 0,
+              "ratioMetricCount": 1,
+              "percentMetricCount": 0,
+              "metricCount": 1,
+              "duplicateProgressMetricCount": 0
+            },
+            {
+              "flowSlug": "used-car-buying-check",
+              "textSample": "중고차 구매 현장 점검 예전 저장 0/15 완료 먼저 할 일 총예산을 차량가, 이전비, 보험료, 정비비로 나누기 열기 Flow 보기",
+              "completeMetricCount": 0,
+              "ratioMetricCount": 1,
+              "percentMetricCount": 0,
+              "metricCount": 1,
+              "duplicateProgressMetricCount": 0
+            },
+            {
+              "flowSlug": "new-car-delivery-check",
+              "textSample": "신차 인수 점검 원문 확인 0/12 완료 먼저 할 일 계약서 옵션과 최종 견적 다시 확인하기 열기 Flow 보기",
+              "completeMetricCount": 0,
+              "ratioMetricCount": 1,
+              "percentMetricCount": 0,
+              "metricCount": 1,
+              "duplicateProgressMetricCount": 0
+            },
+            {
+              "flowSlug": "computer-skills-d30-study",
+              "textSample": "컴퓨터활용능력 학습 원문 확인 시험일 6월 27일 0/9 완료 오늘 할 일 필기와 실기 시험 범위 나누기 열기 Flow 보기",
+              "completeMetricCount": 0,
+              "ratioMetricCount": 1,
+              "percentMetricCount": 0,
+              "metricCount": 1,
+              "duplicateProgressMetricCount": 0
+            }
+          ]
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 1,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 6,
         "restartInlineExportButtons": 0,
         "restartMobileExportButtons": 0,
@@ -4051,6 +4328,16 @@
             "hasContext": true
           }
         ],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 4,
         "restartMobileExportButtons": 1,
@@ -4288,6 +4575,16 @@
             "hasContext": true
           }
         ],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 4,
         "restartMobileExportButtons": 1,
@@ -4525,6 +4822,16 @@
             "hasContext": true
           }
         ],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 4,
         "restartMobileExportButtons": 1,
@@ -4762,6 +5069,16 @@
             "hasContext": true
           }
         ],
+        "inventoryProgressMetrics": {
+          "rowCount": 0,
+          "duplicateProgressMetricCount": 0,
+          "rows": []
+        },
+        "inventoryHeaderMetrics": {
+          "checkedSurfaceCount": 0,
+          "largeRemainingCount": 0,
+          "hits": []
+        },
         "inventoryRows": 0,
         "restartInlineExportButtons": 4,
         "restartMobileExportButtons": 1,

@@ -10,6 +10,8 @@ P10-07 extends the same evidence gate to input values: visible text raw ISO rema
 
 P11-02 keeps the UI unchanged and strengthens the evidence layer. The capture output now records `continuationActionable`, `agendaGroupMeta`, and `rowControlAccessibleNames` so P10-03/P10-04/P10-05 can be reviewed from JSON markers as well as screenshots. Calendar agenda groups and My Flow status-sheet groups use the same marker shape.
 
+P11-04/P11-09 lower My Flow inventory density without changing progress calculations. Inventory rows keep a single visible progress label, the mobile all-tab header avoids large total remaining-count copy, and `inventoryProgressMetrics`/`inventoryHeaderMetrics` markers make those claims auditable from JSON.
+
 ## Baselines Covered
 
 - P7-01: `/restart/moving-d30` uses user-facing date text and a quieter export hierarchy.
@@ -38,14 +40,15 @@ P11-02 keeps the UI unchanged and strengthens the evidence layer. The capture ou
 - P10-07: visible raw ISO text, raw ISO input hits, and native date input exemptions are counted separately.
 - P11-01: My Flow overdue status sheets group shared date/content/timing metadata once per group.
 - P11-02: continuation actionable state, Calendar/status-sheet group metadata, and row-control accessible-name samples are recorded as route-evidence markers.
+- P11-04/P11-09: My Flow inventory rows avoid duplicate progress metrics, and the mobile all-tab header avoids large total remaining-count copy.
 
 ## Summary
 
 ```json
 {
   "totalScreenshots": 26,
-  "uiBaselineCommit": "ffab3c3",
-  "packageGeneratedFromCommit": "ffab3c3",
+  "uiBaselineCommit": "0866dd6",
+  "packageGeneratedFromCommit": "0866dd6",
   "packageCommitRef": "git commit containing this generated package",
   "normalRouteInternalHitCount": 0,
   "normalRouteSourceSlugHitCount": 0,
@@ -63,6 +66,8 @@ P11-02 keeps the UI unchanged and strengthens the evidence layer. The capture ou
   "normalRouteStatusSheetUngroupedRowCount": 0,
   "normalRouteRowControlAccessibleNameSampleCount": 4,
   "normalRouteRowControlAccessibleNameContextCount": 4,
+  "normalRouteInventoryDuplicateProgressMetricCount": 0,
+  "normalRouteInventoryHeaderLargeRemainingCount": 0,
   "normalRouteQueueLabelScope": "my-flow-queue-label-surfaces",
   "normalRouteQueueLabelCount": 9,
   "normalRouteLegacyOverdueLabelCount": 0,
@@ -236,8 +241,8 @@ The restart source/export frame and bottom frame must remain distinct:
 
 ## Commit Metadata
 
-- UI baseline commit: `ffab3c3`
-- Package generated from commit: `ffab3c3`
+- UI baseline commit: `0866dd6`
+- Package generated from commit: `0866dd6`
 - Package commit ref: `git commit containing this generated package`
 
 ## Residual Risk
