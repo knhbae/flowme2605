@@ -2342,6 +2342,28 @@ function getMyFlowRowDisplaySectionLabel(row: MyFlowCalendarRow): string {
   return normalizeUserLabel(section.replace(/^D(?:-\d+|\+\d+(?:~D\+\d+)?|-Day|Day)\s+/i, '').trim() || section);
 }
 
+function getMyFlowAgendaSharedMeta(rows: MyFlowCalendarRow[], kind: 'routine' | 'schedule') {
+  if (rows.length < 2) return {};
+
+  const timingValues = kind === 'routine' ? [] : rows.map((row) => row.timing?.trim() ?? '');
+  const sharedTimingValue = timingValues.length > 0 && timingValues.every((value) => value && value === timingValues[0])
+    ? timingValues[0]
+    : '';
+  const sectionValues = rows.map((row) => getMyFlowRowDisplaySectionLabel(row));
+  const sharedSection = sectionValues.every((value) => value && value === sectionValues[0])
+    ? sectionValues[0]
+    : '';
+
+  return {
+    timing: sharedTimingValue
+      ? {
+          label: formatMyFlowTimingChip(sharedTimingValue),
+          accessibilityLabel: getMyFlowTimingChipLabel(sharedTimingValue),
+        }
+      : undefined,
+    section: sharedSection || undefined,
+  };
+}
 function getMyFlowExecutionFlowTitle(title: string): string {
   return toContentDisplayTitle(
     title
@@ -3960,6 +3982,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       minimalMeta?: boolean;
       showRoutineDate?: boolean;
       hideDateMeta?: boolean;
+      hideTimingMeta?: boolean;
+      hideSectionMeta?: boolean;
       hideFlowMeta?: boolean;
       showFlowProgress?: boolean;
       detailSurface?: MyFlowView;
@@ -3970,9 +3994,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const activeRowKey = myFlowActiveRow && myFlowDetailOpen ? getMyFlowRowInstanceKey(myFlowActiveRow) : '';
     const isActive = Boolean(activeRowKey) && getMyFlowRowInstanceKey(row) === activeRowKey;
     const displayTitle = getMyFlowRowDisplayTitle(row);
-    const displayTiming = options.kind === 'routine' ? '' : formatMyFlowTimingChip(row.timing ?? '');
-    const timingAccessibilityLabel = options.kind === 'routine' ? undefined : getMyFlowTimingChipLabel(row.timing ?? '');
-    const displaySection = getMyFlowRowDisplaySectionLabel(row);
+    const displayTiming = options.kind === 'routine' || options.hideTimingMeta ? '' : formatMyFlowTimingChip(row.timing ?? '');
+    const timingAccessibilityLabel = options.kind === 'routine' || options.hideTimingMeta ? undefined : getMyFlowTimingChipLabel(row.timing ?? '');
+    const displaySection = options.hideSectionMeta ? '' : getMyFlowRowDisplaySectionLabel(row);
     const displayDate = row.date ? formatMyFlowDisplayDate(row.date) : '';
     const rowDateMeta = options.kind === 'routine' && !options.showRoutineDate ? '루틴' : displayDate;
     const flowChipLabel = getMyFlowFlowChipLabel(row.flow);
@@ -4114,7 +4138,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <span className={`mt-1 block font-semibold ${checked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
               {displayTitle}
             </span>
-            {!options.compact && row.timing ? <span className="mt-1 block text-xs text-slate-500">{formatMyFlowTimingChip(row.timing)}</span> : null}
+            {!options.compact && !options.hideTimingMeta && row.timing ? <span className="mt-1 block text-xs text-slate-500">{formatMyFlowTimingChip(row.timing)}</span> : null}
           </span>
         </button>
         <div className="flex shrink-0 flex-col items-end justify-center gap-1">
@@ -6643,6 +6667,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     {myFlowSelectedDateGroups.map((group) => {
                       const groupOpenCount = group.rows.filter((row) => !isMyFlowRowChecked(row.flow, row)).length;
                       const groupHasMultipleFlows = new Set(group.rows.map((row) => row.flow.progress.slug)).size > 1;
+                      const sharedMeta = getMyFlowAgendaSharedMeta(group.rows, group.kind);
                       return (
                         <section
                           key={group.key}
@@ -6660,6 +6685,23 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                               </span>
                             ) : null}
                           </div>
+                          {sharedMeta.timing || sharedMeta.section ? (
+                            <div data-testid="my-flow-selected-date-group-meta" className="mb-2 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold text-slate-500">
+                              {sharedMeta.timing ? (
+                                <span
+                                  data-testid="my-flow-group-timing-chip"
+                                  aria-label={sharedMeta.timing.accessibilityLabel}
+                                  title={sharedMeta.timing.accessibilityLabel}
+                                  className="rounded bg-white px-1.5 py-0.5 text-slate-600 ring-1 ring-slate-200"
+                                >
+                                  {sharedMeta.timing.label}
+                                </span>
+                              ) : null}
+                              {sharedMeta.section ? (
+                                <span data-testid="my-flow-group-section-label">{sharedMeta.section}</span>
+                              ) : null}
+                            </div>
+                          ) : null}
                           <div className="grid gap-1.5">
                             {group.rows.map((row) => renderExecutionRow(row, {
                               kind: group.kind,
@@ -6667,6 +6709,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                               openDetail: true,
                               inlineDetail: true,
                               hideDateMeta: true,
+                              hideTimingMeta: Boolean(sharedMeta.timing),
+                              hideSectionMeta: Boolean(sharedMeta.section),
                               hideFlowMeta: !groupHasMultipleFlows,
                               showFlowProgress: groupHasMultipleFlows,
                               detailSurface: 'calendar',

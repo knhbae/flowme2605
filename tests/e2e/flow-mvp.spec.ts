@@ -2150,6 +2150,11 @@ test('calendar route opens the nearest saved schedule instead of an empty today'
   const selectedDateGroup = selectedDay.getByTestId('my-flow-selected-date-group').first();
   await expect(selectedDateGroup).toContainText('이사 준비');
   await expect(selectedDateGroup).toContainText('2개 · 2개 남음');
+  await expect(selectedDateGroup.getByTestId('my-flow-selected-date-group-meta')).toHaveCount(1);
+  await expect(selectedDateGroup.getByTestId('my-flow-group-timing-chip')).toContainText('기준 D+1');
+  await expect(selectedDateGroup.getByTestId('my-flow-group-section-label')).toContainText('행정 마무리');
+  await expect(selectedDateGroup.getByTestId('my-flow-row-timing-chip')).toHaveCount(0);
+  await expect(selectedDateGroup.getByTestId('my-flow-row-section-label')).toHaveCount(0);
   await expect(page.locator('.fc-daygrid-day[data-date="2026-06-03"]')).toHaveClass(/my-flow-calendar-selected-date/);
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
 });
@@ -2237,7 +2242,7 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(page.getByTestId('my-flow-today-summary').locator('h3')).toContainText('오늘 할 일');
   await expect(page.getByTestId('my-flow-today-summary').getByTestId('my-flow-today-date-meta')).toContainText('5월 28일');
   await expect(page.getByTestId('my-flow-today-summary')).toContainText('실제 오늘과 다른 고정 기준일');
-  await expect(page.getByTestId('my-flow-today-summary')).toContainText('지난 할 일 2개가 있습니다. 첫 항목부터 정리합니다.');
+  await expect(page.getByTestId('my-flow-today-summary')).toContainText('지난 할 일 2개 중 첫 항목을 위 카드에서 엽니다.');
   await expect(page.getByTestId('my-flow-today-list')).toHaveCount(0);
   const overdueSectionBox = await page.getByTestId('my-flow-overdue-list').boundingBox();
   const completedSectionBox = await page.getByTestId('my-flow-today-completed-list').boundingBox();
@@ -2373,9 +2378,12 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   const selectedCalendarRow = page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="scheduled_task"]').first();
   await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('컴퓨터활용능력 학습');
   await expect(selectedCalendarRow).not.toContainText('컴퓨터활용능력 학습 Flow');
-  await expect(selectedCalendarRow.getByTestId('my-flow-row-timing-chip')).toContainText('기준 D-30');
-  await expect(selectedCalendarRow.getByTestId('my-flow-row-timing-chip')).toHaveAttribute('aria-label', 'Flow 기준 D-30');
-  await expect(selectedCalendarRow.getByTestId('my-flow-row-section-label')).toContainText('범위 쪼개기');
+  const selectedCalendarGroup = selectedCalendarRow.locator('xpath=ancestor::*[@data-testid="my-flow-selected-date-group"][1]');
+  await expect(selectedCalendarGroup.getByTestId('my-flow-group-timing-chip')).toContainText('기준 D-30');
+  await expect(selectedCalendarGroup.getByTestId('my-flow-group-timing-chip')).toHaveAttribute('aria-label', 'Flow 기준 D-30');
+  await expect(selectedCalendarGroup.getByTestId('my-flow-group-section-label')).toContainText('범위 쪼개기');
+  await expect(selectedCalendarRow.getByTestId('my-flow-row-timing-chip')).toHaveCount(0);
+  await expect(selectedCalendarRow.getByTestId('my-flow-row-section-label')).toHaveCount(0);
   await expect(selectedCalendarRow.getByRole('button', { name: '완료 취소' })).toBeVisible();
   await selectedCalendarRow.getByRole('button').first().click();
   const selectedCalendarDetail = page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail');
