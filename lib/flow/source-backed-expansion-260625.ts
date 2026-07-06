@@ -348,7 +348,7 @@ export const additionalSourceBackedMyFlowBundles: FlowBundle[] = [
       }),
     ],
     itemDetails: [
-      detail('aircon-clean-repeat', '원문은 약 2주에 한 번 또는 필터 청소 알림 시 청소를 안내합니다.', [
+      detail('aircon-clean-repeat', '원문은 약 2주에 한 번 또는 필터 청소 알림 시 청소를 안내합니다.\nsourceTrace: Samsung Service solution 28524 - ceiling air conditioner 1-way filter cleaning and care method; repeat about every 2 weeks or when the filter cleaning alert appears.', [
         '운전을 정지하고 보조전원스위치 끄기',
         '그릴을 손으로 잡고 열어 필터 분리',
         '진공청소기나 부드러운 솔로 먼지 제거',

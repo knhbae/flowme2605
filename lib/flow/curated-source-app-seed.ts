@@ -110,6 +110,65 @@ type StepTiming = Pick<FlowItem, 'day_offset' | 'duration_days' | 'date_window'>
 
 const curatedSourceAppSeed = curatedSourceAppSeedJson as unknown as CuratedSourceAppSeed;
 const generatedAt = curatedSourceAppSeed.generatedAt || '2026-07-01T00:00:00.000Z';
+const duplicateCanonicalUrlLookupHoldMapIds = new Set([
+  'funmom-study-routine-map',
+  'opic-plan-map',
+  'reading-routine-map',
+  'new-car-map',
+  'homefit-map',
+  'moving-map',
+  'vaccination-map',
+  'wedding-map',
+]);
+const duplicateCanonicalUrlLookupHoldNotes: Record<string, { reason: string; nextAction: string }> = {
+  'funmom-study-routine-map': {
+    reason: 'Source import required map shares a broad canonical URL with a more specific curated source-backed map.',
+    nextAction:
+      'Keep the published map available by direct route, but hold URL lookup until sourceUrl is narrowed or merged into the canonical representative.',
+  },
+  'opic-plan-map': {
+    reason:
+      'Legacy curated source app seed shares the same canonical source URL and execution shape with the stronger curated-opic-mock-course map.',
+    nextAction:
+      'Keep the published map available by direct route, but hold URL lookup so curated-opic-mock-course owns the canonical default hit.',
+  },
+  'reading-routine-map': {
+    reason:
+      'Legacy reading routine app seed shares the same Naver source URL with the stronger curated-reading-routine-log monthly execution structure.',
+    nextAction:
+      'Keep the published map available by direct route, but hold URL lookup so curated-reading-routine-log owns the canonical reading routine default hit while sourceTrace cleanup remains separate.',
+  },
+  'new-car-map': {
+    reason:
+      'Legacy curated source app seed shares the same Getcha source URL and 7-step purchase shape with the stronger curated-new-car-purchase-guide map.',
+    nextAction:
+      'Keep the published map available by direct route, but hold URL lookup so curated-new-car-purchase-guide owns the canonical default hit.',
+  },
+  'homefit-map': {
+    reason:
+      'Legacy Allblanc channel map shares a broad YouTube channel URL with the stronger curated-allblanc-workout-park exact-video map.',
+    nextAction:
+      'Keep the published map available by direct route, but hold URL lookup so curated-allblanc-workout-park owns the broad channel default hit.',
+  },
+  'moving-map': {
+    reason:
+      'Legacy moving app seed shares the same AJD source URL and D-day moving checklist job with the stronger curated-ajd-moving-d30 map.',
+    nextAction:
+      'Keep the published map available by direct route, but hold URL lookup so curated-ajd-moving-d30 owns the canonical AJD moving default hit.',
+  },
+  'vaccination-map': {
+    reason:
+      'Legacy vaccination app seed shares the same official KHMS source URL and medical-sensitive baby vaccination schedule job with the stronger curated-child-vaccination-schedule map.',
+    nextAction:
+      'Keep the published map available by direct route, but hold URL lookup so curated-child-vaccination-schedule owns the official vaccination default hit with review-before-apply handling.',
+  },
+  'wedding-map': {
+    reason:
+      'Legacy wedding app seed shares the same Naver source URL with the stronger curated-wedding-checklist-family map and its separated timeline/checklist child Flows.',
+    nextAction:
+      'Keep the published map available by direct route, but hold URL lookup so curated-wedding-checklist-family owns the canonical wedding default hit while sourceTrace cleanup remains separate.',
+  },
+};
 
 function findPrimaryDateSetup(fields: SeedSetupField[] = []): SeedSetupField | undefined {
   return fields.find((field) => field.type === 'date');
@@ -394,10 +453,14 @@ export const curatedSourceAppSeedFlowMapQualityDecisions: Record<string, SourceB
         mapId: bundle.bundleId,
         status: getQualityStatus(bundle.status),
         homepageEligible: false,
-        directRouteEnabled: true,
+        directRouteEnabled: !duplicateCanonicalUrlLookupHoldMapIds.has(bundle.bundleId),
         productScore: getQualityScore(bundle.status),
-        reason: `${bundle.userFacingStatus} 상태의 curated source app seed입니다.`,
-        nextAction: '사용자 화면에서는 상태 문구와 원문 링크를 유지하고, 앱 실행 경로로만 노출합니다.',
+        reason: duplicateCanonicalUrlLookupHoldNotes[bundle.bundleId]
+          ? duplicateCanonicalUrlLookupHoldNotes[bundle.bundleId].reason
+          : `${bundle.userFacingStatus} 상태의 curated source app seed입니다.`,
+        nextAction: duplicateCanonicalUrlLookupHoldNotes[bundle.bundleId]
+          ? duplicateCanonicalUrlLookupHoldNotes[bundle.bundleId].nextAction
+          : '사용자 화면에서는 상태 문구와 원문 링크를 유지하고, 앱 실행 경로로만 노출합니다.',
       } satisfies SourceBackedFlowMapQualityDecision,
     ]),
   );

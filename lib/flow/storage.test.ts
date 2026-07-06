@@ -241,6 +241,40 @@ test('saved flow map snapshots index child flows back to their parent map', () =
     },
   );
 
+  assert.deepEqual(
+    normalizeSavedFlowMapSnapshot({
+      mapId: 'middle-school-math-1',
+      title: 'personal-only',
+      version: '2026-06-24.1',
+      savedAt: '2026-07-05T00:00:00.000Z',
+      anchor: '2026-07-15',
+      flowSlugs: ['source-backed-middle-school-math-1'],
+      stepCountsByFlow: {
+        'source-backed-middle-school-math-1': 1,
+      },
+      personalCopy: {
+        source: 'url_first_custom_start',
+        originalTitle: 'Middle school math',
+        includedStepIdsByFlow: {
+          'source-backed-middle-school-math-1': ['math-prime-factorization'],
+        },
+        excludedStepIdsByFlow: {
+          'source-backed-middle-school-math-1': ['math-integers-rationals'],
+        },
+      },
+    })?.personalCopy,
+    {
+      source: 'url_first_custom_start',
+      originalTitle: 'Middle school math',
+      includedStepIdsByFlow: {
+        'source-backed-middle-school-math-1': ['math-prime-factorization'],
+      },
+      excludedStepIdsByFlow: {
+        'source-backed-middle-school-math-1': ['math-integers-rationals'],
+      },
+    },
+  );
+
   const store = new Map<string, string>();
   const localStorage = {
     get length() {

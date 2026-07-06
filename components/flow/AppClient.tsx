@@ -8,7 +8,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import FullCalendar from '@fullcalendar/react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { ArtifactWorkbench } from './ArtifactWorkbench';
 import { ArtifactPreview } from './ArtifactPreview';
 import { PlatformNav } from './PlatformNav';
@@ -19,8 +19,10 @@ import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, bui
 import { FLOW_EXPORT_FEEDBACK, FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
 import { FLOW_ENTRY_DETAIL_CTA_LABEL, toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import {
+  buildMyFlowStepChecklistText,
   buildMyFlowStepIcs,
   buildMyFlowStepPortableText,
+  buildMyFlowStepSheetTsv,
   canBuildMyFlowStepIcs,
   type MyFlowPortableStepExportInput,
 } from '@/lib/flow/my-flow-step-export';
@@ -28,7 +30,10 @@ import { getCreatorChannelSummaries } from '@/lib/flow/creator-channel-preview';
 import { getSourceFitAudit } from '@/lib/flow/source-fit';
 import {
   assessSourceBackedFlowMapUpdate,
+  buildSourceBackedFlowMapPersonalCopyAdjustment,
+  buildSourceBackedFlowMapPersistenceRecordUpdate,
   buildSourceBackedFlowMapPersistenceRecord,
+  buildSourceBackedFlowMapSavedSnapshotUpdate,
   buildSourceBackedFlowMapSavedSnapshot,
   buildSourceBackedFlowMapPublishPackage,
   getCuratedSourceAppSeedFlowMaps,
@@ -42,6 +47,24 @@ import {
 } from '@/lib/flow/source-backed-my-flow';
 import { parseTextFlow, serializeTextFlow, timingLabel } from '@/lib/flow/parser';
 import { expandRoutineOccurrences, getRoutineWeekdayLabels } from '@/lib/flow/recurrence';
+import { buildUrlFirstStartPackage, lookupUrlFirstP0Input, type UrlFirstExportMode, type UrlFirstLookupResult } from '@/lib/flow/url-first-lookup';
+import {
+  buildUrlFirstSupplyCandidateProductionMarkdown,
+  buildUrlFirstSupplyCandidate,
+  getUrlFirstSupplyCandidateAvailability,
+  normalizeUrlFirstSupplyCandidates,
+  recordUrlFirstSupplyCandidateLookup,
+  removeUrlFirstSupplyCandidate,
+  updateUrlFirstSupplyCandidate,
+  upsertUrlFirstSupplyCandidate,
+  URL_FIRST_SUPPLY_CANDIDATE_PRODUCTION_CHECKLIST,
+  URL_FIRST_SUPPLY_CANDIDATES_STORAGE_KEY,
+  type UrlFirstSupplyCandidate,
+  type UrlFirstSupplyCandidateRemoveResult,
+  type UrlFirstSupplyCandidateUpdateInput,
+  type UrlFirstSupplyCandidateUpdateResult,
+  type UrlFirstSupplyCandidateUpsertResult,
+} from '@/lib/flow/url-first-supply-queue';
 import {
   clearFlowLocalProgress,
   type ActiveFlowProgress,
@@ -1051,6 +1074,708 @@ function useBundles() {
   return { bundles, persist };
 }
 
+const urlFirstExportModeLabels: Record<UrlFirstExportMode, string> = {
+  calendar: '캘린더',
+  markdown: 'Markdown',
+  checklist: '체크리스트',
+};
+
+function getUrlLookupStatusLabel(result: UrlFirstLookupResult): string {
+  if (result.status === 'hit' && result.sourceStatus === 'needs_review') return '원문 확인 필요';
+  if (result.status === 'hit') return '기존 Flow';
+  if (result.status === 'needs_review') return '원문 확인 필요';
+  return '아직 없음';
+}
+
+function getUrlSupplyCandidateStatusLabel(candidate: UrlFirstSupplyCandidate): string {
+  return candidate.status === 'needs_review_request' ? '원문 확인 보강 요청' : '새 Flow 제작 요청';
+}
+
+function getUrlSupplyCandidateQueueLabel(candidate: UrlFirstSupplyCandidate): string {
+  return candidate.status === 'needs_review_request' ? '원문 확인 대기' : '제작 대기';
+}
+
+function getUrlSupplyCandidateAvailabilityLabel(candidate: UrlFirstSupplyCandidate): string {
+  const availability = getUrlFirstSupplyCandidateAvailability(candidate);
+  if (availability.state === 'executable') return '이제 실행 가능';
+  if (availability.state === 'needs_review') return '원문 확인 대기';
+  return '제작 대기';
+}
+
+function getUrlSupplyCandidateLastLookupLabel(candidate: UrlFirstSupplyCandidate): string {
+  if (!candidate.lastLookup) return '아직 없음';
+  const flowReference = candidate.lastLookup.flowMapId ?? candidate.lastLookup.flowSlug ?? candidate.lastLookup.routeHref;
+  return [candidate.lastLookup.status, candidate.lastLookup.checkedAt, flowReference].filter(Boolean).join(', ');
+}
+
+function FlowUrlLookupResult({
+  result,
+  supplyCandidates,
+  onSaveSupplyCandidate,
+}: {
+  result: UrlFirstLookupResult;
+  supplyCandidates: UrlFirstSupplyCandidate[];
+  onSaveSupplyCandidate: (candidate: UrlFirstSupplyCandidate) => UrlFirstSupplyCandidateUpsertResult;
+}) {
+  const primaryActionLabel = result.status === 'hit' && result.canSaveToMyFlow ? '저장 전 보기' : result.routeHref ? '미리보기 열기' : '요청 대기';
+  const exportModes = result.exportModes.map((mode) => urlFirstExportModeLabels[mode]);
+  const sourceBackedStartPackage = useMemo(
+    () => (result.flowMapId ? buildSourceBackedFlowMapPublishPackage(result.flowMapId) : undefined),
+    [result.flowMapId],
+  );
+  const stepOptions = useMemo(
+    () =>
+      sourceBackedStartPackage?.public.childFlows.flatMap((flow) =>
+        flow.steps.map((step) => ({
+          id: step.id,
+          title: step.title,
+          flowSlug: flow.slug,
+          flowTitle: flow.title,
+        })),
+      ) ?? [],
+    [sourceBackedStartPackage],
+  );
+  const defaultSavedTitle = sourceBackedStartPackage?.map.title ?? result.title;
+  const stepOptionKey = stepOptions.map((step) => step.id).join('|');
+  const [startDate, setStartDate] = useState('');
+  const [selectedExportMode, setSelectedExportMode] = useState<UrlFirstExportMode>('calendar');
+  const [startMode, setStartMode] = useState<'direct' | 'custom'>('direct');
+  const [customTitle, setCustomTitle] = useState(defaultSavedTitle);
+  const [includedStepIds, setIncludedStepIds] = useState<string[]>(() => stepOptions.map((step) => step.id));
+  const [startFeedback, setStartFeedback] = useState('');
+  const existingSupplyCandidate = result.canonicalUrl ? supplyCandidates.find((candidate) => candidate.canonicalUrl === result.canonicalUrl) : undefined;
+  const [candidateTitle, setCandidateTitle] = useState('');
+  const [candidateMemo, setCandidateMemo] = useState('');
+  const [candidateFeedback, setCandidateFeedback] = useState('');
+  const canStart = result.status === 'hit' && result.canSaveToMyFlow;
+  const canRequestSupplyCandidate = result.status === 'miss' || result.status === 'needs_review';
+
+  useEffect(() => {
+    setStartDate('');
+    setSelectedExportMode('calendar');
+    setStartMode('direct');
+    setCustomTitle(defaultSavedTitle);
+    setIncludedStepIds(stepOptions.map((step) => step.id));
+    setStartFeedback('');
+    setCandidateTitle(existingSupplyCandidate?.title ?? '');
+    setCandidateMemo(existingSupplyCandidate?.memo ?? '');
+    setCandidateFeedback('');
+  }, [result.canonicalUrl, result.flowMapId, result.flowSlug, defaultSavedTitle, stepOptionKey, existingSupplyCandidate?.title, existingSupplyCandidate?.memo]);
+
+  const buildStartPackage = () =>
+    buildUrlFirstStartPackage(result, {
+      startDate,
+      exportMode: selectedExportMode,
+      ...(startMode === 'custom' ? { customTitle, includedStepIds } : {}),
+    });
+
+  const downloadMarkdownExport = () => {
+    const startPackage = buildStartPackage();
+    if (startPackage.status !== 'ready' || !startPackage.markdownExport) {
+      setStartFeedback(startPackage.gate?.reason ?? '시작일을 먼저 입력해 주세요.');
+      return;
+    }
+
+    const blob = new Blob([startPackage.markdownExport.content], { type: 'text/markdown;charset=utf-8' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = startPackage.markdownExport.filename;
+    link.click();
+    URL.revokeObjectURL(url);
+    setStartFeedback('Markdown 받음');
+  };
+
+  const startFlowFromLookup = () => {
+    const startPackage = buildStartPackage();
+    if (startPackage.status !== 'ready') {
+      setStartFeedback(startPackage.gate?.reason ?? '시작일을 먼저 입력해 주세요.');
+      return;
+    }
+
+    startPackage.savedFlows.forEach((flow) => {
+      saveFlowRecord(flow.slug, {
+        selectedArtifactMode: flow.selectedArtifactMode,
+        ...(flow.anchor ? { anchor: flow.anchor } : {}),
+      });
+      if (flow.anchor) saveStoredAnchor(flow.slug, { mode: 'custom', anchor: flow.anchor });
+    });
+    Object.entries(startPackage.itemStatesByFlowSlug ?? {}).forEach(([slug, itemStates]) => {
+      saveItemStates(slug, {
+        ...getItemStates(slug),
+        ...itemStates,
+      });
+    });
+    if (startPackage.flowMapId && startPackage.savedMapSnapshot) {
+      window.localStorage.setItem(getSourceBackedFlowMapSnapshotStorageKey(startPackage.flowMapId), JSON.stringify(startPackage.savedMapSnapshot));
+    }
+    if (startPackage.flowMapId && startPackage.persistenceRecord) {
+      window.localStorage.setItem(getSourceBackedFlowMapPersistenceStorageKey(startPackage.flowMapId), JSON.stringify(startPackage.persistenceRecord));
+    }
+    window.location.href = startPackage.targetHref ?? '/my';
+  };
+
+  const saveSupplyCandidate = () => {
+    const candidate = buildUrlFirstSupplyCandidate(result, {
+      title: candidateTitle,
+      memo: candidateMemo,
+    });
+    if (!candidate) {
+      setCandidateFeedback('저장할 URL 후보를 확인해 주세요.');
+      return;
+    }
+    const upserted = onSaveSupplyCandidate(candidate);
+    setCandidateTitle(upserted.candidate.title);
+    setCandidateMemo(upserted.candidate.memo);
+    setCandidateFeedback(upserted.created ? '제작 후보에 저장됨' : '이미 저장한 제작 후보입니다');
+  };
+
+  return (
+    <section
+      data-testid="flow-url-lookup-result"
+      className="mt-3 rounded-2xl border border-[#DDE6D8] bg-[#F7FBF4] p-3.5 text-sm text-[#1B1A17]"
+    >
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="rounded-full border border-[#BFD9B8] bg-white px-2.5 py-1 text-xs font-semibold text-[#176D5D]">
+          {getUrlLookupStatusLabel(result)}
+        </span>
+        <span className="text-xs font-semibold text-[#6E6B64]">AI 자동 생성 없이 먼저 찾아봤어요</span>
+      </div>
+      <h2 className="mt-2 break-keep text-lg font-semibold leading-snug text-[#1B1A17]">{result.title}</h2>
+      <p className="mt-1 break-keep leading-6 text-[#5F6A5A]">{result.summary}</p>
+
+      <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
+        <div className="min-w-0">
+          <p className="text-xs font-semibold text-[#6E6B64]">옮길 수 있는 형태</p>
+          <div className="mt-1 flex flex-wrap gap-1.5">
+            {exportModes.length > 0 ? (
+              exportModes.map((label) => (
+                <span key={label} className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[#3654FF]">
+                  {label}
+                </span>
+              ))
+            ) : (
+              <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[#8A6B18]">확인 후 열기</span>
+            )}
+            {result.canSaveToMyFlow ? (
+              <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[#176D5D]">My Flow</span>
+            ) : (
+              <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[#8A6B18]">저장 대기</span>
+            )}
+          </div>
+          <p className="mt-2 line-clamp-1 text-xs font-semibold text-[#6E6B64]">
+            {result.preview.myFlow[0] ?? '저장 후 이어서 실행할 수 있습니다.'}
+          </p>
+        </div>
+        {result.routeHref ? (
+          <Link
+            className="inline-flex min-h-10 items-center justify-center rounded-xl bg-[#1B1A17] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2F2D29]"
+            href={result.routeHref}
+          >
+            {primaryActionLabel}
+          </Link>
+        ) : (
+          <span className="inline-flex min-h-10 items-center justify-center rounded-xl border border-[#E7E4DD] bg-white px-4 py-2 text-sm font-semibold text-[#6E6B64]">
+            {primaryActionLabel}
+          </span>
+        )}
+      </div>
+
+      {canStart ? (
+        <div data-testid="flow-url-start-panel" className="mt-3 grid gap-3 rounded-xl border border-[#DDE6D8] bg-white p-3 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,0.8fr)_auto] sm:items-end">
+          <div className="grid grid-cols-2 gap-1 rounded-lg bg-[#F7FBF4] p-1 sm:col-span-3" aria-label="시작 방식">
+            {[
+              { mode: 'direct' as const, label: '그대로 시작' },
+              { mode: 'custom' as const, label: '조금 고쳐 시작' },
+            ].map((item) => (
+              <button
+                key={item.mode}
+                type="button"
+                data-testid={`flow-url-start-mode-${item.mode}`}
+                aria-pressed={startMode === item.mode}
+                className={`min-h-9 rounded-md px-2 py-1.5 text-xs font-semibold transition ${
+                  startMode === item.mode ? 'bg-[#176D5D] text-white shadow-sm' : 'text-[#176D5D] hover:bg-white'
+                }`}
+                onClick={() => {
+                  setStartMode(item.mode);
+                  setStartFeedback('');
+                }}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+          {startMode === 'custom' ? (
+            <div data-testid="flow-url-custom-start-panel" className="grid gap-3 rounded-lg border border-[#E7E4DD] bg-[#FAFAF8] p-3 sm:col-span-3">
+              <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+                저장 이름
+                <input
+                  aria-label="저장 이름"
+                  className="min-h-10 rounded-lg border border-[#C9DBC4] bg-white px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+                  value={customTitle}
+                  maxLength={80}
+                  onChange={(event) => {
+                    setCustomTitle(event.target.value);
+                    setStartFeedback('');
+                  }}
+                />
+              </label>
+              {stepOptions.length > 0 ? (
+                <fieldset className="grid gap-2">
+                  <legend className="text-xs font-semibold text-[#176D5D]">포함할 Step</legend>
+                  <div className="grid max-h-56 gap-1.5 overflow-auto pr-1 sm:grid-cols-2">
+                    {stepOptions.map((step) => {
+                      const checked = includedStepIds.includes(step.id);
+                      return (
+                        <label key={step.id} className="flex min-h-10 items-start gap-2 rounded-md bg-white px-2.5 py-2 text-xs font-semibold leading-5 text-[#1B1A17]">
+                          <input
+                            className="mt-0.5 h-4 w-4 shrink-0"
+                            type="checkbox"
+                            aria-label={`포함: ${step.title}`}
+                            checked={checked}
+                            onChange={(event) => {
+                              setIncludedStepIds((current) =>
+                                event.target.checked
+                                  ? Array.from(new Set([...current, step.id]))
+                                  : current.filter((id) => id !== step.id),
+                              );
+                              setStartFeedback('');
+                            }}
+                          />
+                          <span className="min-w-0 break-keep">{step.title}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+              ) : null}
+            </div>
+          ) : null}
+          <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+            시작일
+            <input
+              data-testid="url-first-start-date-input"
+              aria-label="시작일"
+              className="min-h-10 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+              type="date"
+              value={startDate}
+              onChange={(event) => {
+                setStartDate(event.target.value);
+                setStartFeedback('');
+              }}
+            />
+          </label>
+          <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+            내보내기 방식
+            <select
+              aria-label="내보내기 방식"
+              className="min-h-10 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+              value={selectedExportMode}
+              onChange={(event) => {
+                setSelectedExportMode(event.target.value as UrlFirstExportMode);
+                setStartFeedback('');
+              }}
+            >
+              <option value="calendar">캘린더</option>
+              <option value="markdown">Markdown</option>
+              <option value="checklist">체크리스트</option>
+            </select>
+          </label>
+          <div className="flex flex-wrap gap-2 sm:justify-end">
+            <button
+              type="button"
+              className="min-h-10 rounded-lg border border-[#DDE6D8] bg-[#F7FBF4] px-3 py-2 text-sm font-semibold text-[#176D5D] hover:border-[#176D5D]/40"
+              onClick={downloadMarkdownExport}
+            >
+              Markdown 받기
+            </button>
+            <button
+              type="button"
+              className="min-h-10 rounded-lg bg-[#176D5D] px-3 py-2 text-sm font-semibold text-white hover:bg-[#115246]"
+              onClick={startFlowFromLookup}
+            >
+              시작하기
+            </button>
+          </div>
+          {startFeedback ? (
+            <p className="text-xs font-semibold text-[#3654FF] sm:col-span-3">{startFeedback}</p>
+          ) : null}
+        </div>
+      ) : null}
+
+      {canRequestSupplyCandidate ? (
+        <section data-testid="flow-url-supply-request" className="mt-3 rounded-xl border border-[#E7E4DD] bg-white p-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm font-semibold text-[#1B1A17]">제작 후보로 남기기</p>
+            <span className="rounded-full bg-[#FFF7E0] px-2.5 py-1 text-[11px] font-semibold text-[#8A6B18]">아직 실행 가능한 Flow 아님</span>
+          </div>
+          <p className="mt-1 break-keep text-xs font-semibold leading-5 text-[#6E6B64]">
+            AI 생성 없이 URL과 메모만 저장합니다. 같은 원문이면 기존 요청을 다시 보여줍니다.
+          </p>
+          {existingSupplyCandidate ? (
+            <div data-testid="flow-url-supply-existing" className="mt-3 rounded-lg bg-[#F7FBF4] px-3 py-2 text-xs leading-5 text-[#5F6A5A]">
+              <p className="font-semibold text-[#176D5D]">이미 저장한 제작 후보</p>
+              <p className="mt-1 font-semibold text-[#1B1A17]">{existingSupplyCandidate.title}</p>
+              {existingSupplyCandidate.memo ? <p className="mt-1">{existingSupplyCandidate.memo}</p> : null}
+              <p className="mt-1 font-semibold text-[#8A6B18]">아직 실행 가능한 Flow 아님 · {getUrlSupplyCandidateStatusLabel(existingSupplyCandidate)}</p>
+            </div>
+          ) : (
+            <form
+              data-testid="flow-url-supply-candidate-form"
+              className="mt-3 grid gap-2"
+              onSubmit={(event) => {
+                event.preventDefault();
+                saveSupplyCandidate();
+              }}
+            >
+              <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+                후보 제목
+                <input
+                  aria-label="후보 제목"
+                  className="min-h-10 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+                  value={candidateTitle}
+                  maxLength={80}
+                  placeholder="어떤 Flow로 만들고 싶나요?"
+                  onChange={(event) => setCandidateTitle(event.target.value)}
+                />
+              </label>
+              <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+                후보 메모
+                <textarea
+                  aria-label="후보 메모"
+                  className="min-h-20 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+                  value={candidateMemo}
+                  maxLength={240}
+                  placeholder="원문에서 따라 하고 싶은 부분이나 필요한 결과물을 적어두세요."
+                  onChange={(event) => setCandidateMemo(event.target.value)}
+                />
+              </label>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="submit"
+                  className="min-h-10 rounded-lg bg-[#176D5D] px-3 py-2 text-sm font-semibold text-white hover:bg-[#115246]"
+                >
+                  제작 후보로 저장
+                </button>
+                <span className="text-xs font-semibold text-[#6E6B64]">AI 호출 0회 · 로컬 저장</span>
+              </div>
+            </form>
+          )}
+          {candidateFeedback ? <p className="mt-2 text-xs font-semibold text-[#3654FF]">{candidateFeedback}</p> : null}
+        </section>
+      ) : null}
+
+      {result.gate ? (
+        <p className="mt-3 rounded-xl bg-white px-3 py-2 text-xs font-semibold leading-5 text-[#8A6B18]">
+          {result.gate.reason}
+        </p>
+      ) : null}
+    </section>
+  );
+}
+
+function FlowUrlLookupEntry({
+  input,
+  result,
+  supplyCandidates,
+  onInputChange,
+  onSubmit,
+  onSaveSupplyCandidate,
+}: {
+  input: string;
+  result: UrlFirstLookupResult | null;
+  supplyCandidates: UrlFirstSupplyCandidate[];
+  onInputChange: (value: string) => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onSaveSupplyCandidate: (candidate: UrlFirstSupplyCandidate) => UrlFirstSupplyCandidateUpsertResult;
+}) {
+  return (
+    <section
+      data-testid="flow-url-lookup-entry"
+      className="mb-4 rounded-2xl border border-[#DDE6D8] bg-[#F7FBF4] p-3.5 shadow-[0_8px_20px_rgba(27,26,23,0.04)]"
+    >
+      <form className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2" onSubmit={onSubmit}>
+        <label className="min-w-0">
+          <span className="text-xs font-semibold text-[#176D5D]">원문 URL</span>
+          <input
+            className="mt-1 min-h-11 w-full rounded-xl border border-[#C9DBC4] bg-white px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none placeholder:text-[#A09B91] focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+            value={input}
+            onChange={(event) => onInputChange(event.target.value)}
+            placeholder="블로그, 유튜브, 공식 안내 URL 붙여넣기"
+            type="url"
+          />
+        </label>
+        <button
+          type="submit"
+          className="min-h-11 rounded-xl bg-[#176D5D] px-4 py-2 text-sm font-semibold text-white hover:bg-[#115246]"
+        >
+          Flow 찾기
+        </button>
+      </form>
+      {result ? <FlowUrlLookupResult result={result} supplyCandidates={supplyCandidates} onSaveSupplyCandidate={onSaveSupplyCandidate} /> : null}
+    </section>
+  );
+}
+
+function FlowUrlSupplyCandidateCard({
+  candidate,
+  onRequeryCandidate,
+  onUpdateCandidate,
+  onRemoveCandidate,
+}: {
+  candidate: UrlFirstSupplyCandidate;
+  onRequeryCandidate: (candidate: UrlFirstSupplyCandidate) => void;
+  onUpdateCandidate: (canonicalUrl: string, input: UrlFirstSupplyCandidateUpdateInput) => UrlFirstSupplyCandidateUpdateResult;
+  onRemoveCandidate: (canonicalUrl: string) => UrlFirstSupplyCandidateRemoveResult;
+}) {
+  const availability = getUrlFirstSupplyCandidateAvailability(candidate);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(candidate.title);
+  const [editMemo, setEditMemo] = useState(candidate.memo);
+  const [feedback, setFeedback] = useState('');
+  const [showProductionInfo, setShowProductionInfo] = useState(false);
+  const executable = availability.state === 'executable';
+  const productionMarkdown = buildUrlFirstSupplyCandidateProductionMarkdown(candidate);
+  const productionStatusNote = executable
+    ? '이미 실행 가능한 Flow가 있으므로 새 제작보다 기존 hit 시작 흐름을 우선합니다.'
+    : '아직 실행 가능한 Flow가 아니므로 사람이 원문을 확인한 뒤 Flow seed/content로 옮깁니다.';
+
+  useEffect(() => {
+    setEditTitle(candidate.title);
+    setEditMemo(candidate.memo);
+    setFeedback('');
+    setIsEditing(false);
+  }, [candidate.canonicalUrl, candidate.title, candidate.memo]);
+
+  const copyProductionMarkdown = async () => {
+    try {
+      await navigator.clipboard.writeText(productionMarkdown);
+      setFeedback('제작용 Markdown 복사됨');
+    } catch {
+      const textarea = document.createElement('textarea');
+      textarea.value = productionMarkdown;
+      textarea.setAttribute('readonly', 'true');
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      const copied = document.execCommand('copy');
+      document.body.removeChild(textarea);
+      setFeedback(copied ? '제작용 Markdown 복사됨' : '복사하지 못했습니다.');
+    }
+  };
+
+  const saveEdits = () => {
+    const updated = onUpdateCandidate(candidate.canonicalUrl, {
+      title: editTitle,
+      memo: editMemo,
+    });
+    if (!updated.updated || !updated.candidate) {
+      setFeedback('수정할 후보를 찾지 못했습니다.');
+      return;
+    }
+    setEditTitle(updated.candidate.title);
+    setEditMemo(updated.candidate.memo);
+    setIsEditing(false);
+    setFeedback('수정 저장됨');
+  };
+
+  const removeCandidate = () => {
+    const removed = onRemoveCandidate(candidate.canonicalUrl);
+    if (!removed.removed) setFeedback('삭제할 후보를 찾지 못했습니다.');
+  };
+
+  return (
+    <article className="rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2">
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-[#176D5D]">{getUrlSupplyCandidateStatusLabel(candidate)}</span>
+        <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${executable ? 'bg-[#E7F6EC] text-[#176D5D]' : 'bg-[#FFF7E0] text-[#8A6B18]'}`}>
+          {getUrlSupplyCandidateAvailabilityLabel(candidate)}
+        </span>
+        <span className="text-[11px] font-semibold text-[#8A857B]">{candidate.savedAt.slice(0, 10)}</span>
+      </div>
+      <p className="mt-1 break-keep text-sm font-semibold text-[#1B1A17]">{candidate.title}</p>
+      {candidate.memo ? <p className="mt-1 line-clamp-2 text-xs font-semibold leading-5 text-[#6E6B64]">{candidate.memo}</p> : null}
+      <p className="mt-1 break-all text-[11px] font-semibold text-[#8A857B]">{candidate.canonicalUrl}</p>
+      <p className="mt-1 text-[11px] font-semibold text-[#8A6B18]">
+        {executable ? '같은 URL의 Flow가 생겼습니다. 다시 조회하면 시작 흐름으로 이어집니다.' : `아직 실행 가능한 Flow 아님 · ${getUrlSupplyCandidateQueueLabel(candidate)}`}
+      </p>
+
+      {isEditing ? (
+        <form
+          className="mt-3 grid gap-2 rounded-lg border border-[#E7E4DD] bg-white p-2"
+          onSubmit={(event) => {
+            event.preventDefault();
+            saveEdits();
+          }}
+        >
+          <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+            후보 제목 수정
+            <input
+              aria-label="후보 제목 수정"
+              className="min-h-10 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+              value={editTitle}
+              maxLength={80}
+              onChange={(event) => setEditTitle(event.target.value)}
+            />
+          </label>
+          <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+            후보 메모 수정
+            <textarea
+              aria-label="후보 메모 수정"
+              className="min-h-20 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+              value={editMemo}
+              maxLength={240}
+              onChange={(event) => setEditMemo(event.target.value)}
+            />
+          </label>
+          <div className="flex flex-wrap gap-2">
+            <button type="submit" className="min-h-9 rounded-lg bg-[#176D5D] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#115246]">
+              수정 저장
+            </button>
+            <button
+              type="button"
+              className="min-h-9 rounded-lg border border-[#E7E4DD] bg-white px-3 py-1.5 text-xs font-semibold text-[#6E6B64]"
+              onClick={() => {
+                setEditTitle(candidate.title);
+                setEditMemo(candidate.memo);
+                setIsEditing(false);
+                setFeedback('');
+              }}
+            >
+              취소
+            </button>
+          </div>
+        </form>
+      ) : (
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            type="button"
+            className="min-h-9 rounded-lg border border-[#DDE6D8] bg-white px-3 py-1.5 text-xs font-semibold text-[#176D5D]"
+            onClick={() => {
+              setShowProductionInfo((current) => !current);
+              setFeedback('');
+            }}
+          >
+            {showProductionInfo ? '제작용 정보 닫기' : '제작용 정보 보기'}
+          </button>
+          <a
+            className="inline-flex min-h-9 items-center rounded-lg border border-[#E7E4DD] bg-white px-3 py-1.5 text-xs font-semibold text-[#176D5D]"
+            href={candidate.originalUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            원 URL 열기
+          </a>
+          <button
+            type="button"
+            className="min-h-9 rounded-lg border border-[#DDE6D8] bg-white px-3 py-1.5 text-xs font-semibold text-[#176D5D]"
+            onClick={() => onRequeryCandidate(candidate)}
+          >
+            {executable ? 'Flow 결과로 이동' : '다시 조회'}
+          </button>
+          <button
+            type="button"
+            className="min-h-9 rounded-lg border border-[#E7E4DD] bg-white px-3 py-1.5 text-xs font-semibold text-[#6E6B64]"
+            onClick={() => {
+              setIsEditing(true);
+              setFeedback('');
+            }}
+          >
+            제목/메모 수정
+          </button>
+          <button
+            type="button"
+            className="min-h-9 rounded-lg border border-[#F0D1C6] bg-white px-3 py-1.5 text-xs font-semibold text-[#A64224]"
+            onClick={removeCandidate}
+          >
+            삭제
+          </button>
+        </div>
+      )}
+      {showProductionInfo ? (
+        <div data-testid="flow-url-supply-production-handoff" className="mt-3 rounded-lg border border-[#DDE6D8] bg-white p-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 className="text-xs font-semibold text-[#1B1A17]">제작용 정보</h3>
+            <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${executable ? 'bg-[#E7F6EC] text-[#176D5D]' : 'bg-[#FFF7E0] text-[#8A6B18]'}`}>
+              {getUrlSupplyCandidateAvailabilityLabel(candidate)}
+            </span>
+          </div>
+          <dl className="mt-2 grid gap-1.5 text-[11px] leading-5 text-[#6E6B64]">
+            <div>
+              <dt className="font-semibold text-[#1B1A17]">Canonical URL</dt>
+              <dd className="break-all">{candidate.canonicalUrl}</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-[#1B1A17]">원 URL</dt>
+              <dd className="break-all">{candidate.originalUrl}</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-[#1B1A17]">사용자 제목/메모</dt>
+              <dd>{candidate.title}{candidate.memo ? ` · ${candidate.memo}` : ''}</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-[#1B1A17]">마지막 다시 조회</dt>
+              <dd>{getUrlSupplyCandidateLastLookupLabel(candidate)}</dd>
+            </div>
+          </dl>
+          <p className="mt-2 rounded-lg bg-[#FAFAF8] px-2.5 py-2 text-[11px] font-semibold leading-5 text-[#6E6B64]">{productionStatusNote}</p>
+          <ul className="mt-2 grid gap-1 text-[11px] font-semibold leading-5 text-[#1B1A17]">
+            {URL_FIRST_SUPPLY_CANDIDATE_PRODUCTION_CHECKLIST.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span aria-hidden="true" className="mt-1 h-3 w-3 rounded-sm border border-[#C9DBC4] bg-white" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <button
+            type="button"
+            className="mt-3 min-h-9 rounded-lg bg-[#176D5D] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#115246]"
+            onClick={copyProductionMarkdown}
+          >
+            제작용 Markdown 복사
+          </button>
+        </div>
+      ) : null}
+      {feedback ? <p className="mt-2 text-xs font-semibold text-[#3654FF]">{feedback}</p> : null}
+    </article>
+  );
+}
+
+function FlowUrlSupplyCandidateList({
+  candidates,
+  onRequeryCandidate,
+  onUpdateCandidate,
+  onRemoveCandidate,
+}: {
+  candidates: UrlFirstSupplyCandidate[];
+  onRequeryCandidate: (candidate: UrlFirstSupplyCandidate) => void;
+  onUpdateCandidate: (canonicalUrl: string, input: UrlFirstSupplyCandidateUpdateInput) => UrlFirstSupplyCandidateUpdateResult;
+  onRemoveCandidate: (canonicalUrl: string) => UrlFirstSupplyCandidateRemoveResult;
+}) {
+  if (candidates.length === 0) return null;
+
+  return (
+    <section data-testid="flow-url-supply-candidate-list" className="mb-4 rounded-2xl border border-[#E7E4DD] bg-white p-3.5">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-sm font-semibold text-[#1B1A17]">내가 요청한 후보</h2>
+        <span className="rounded-full bg-[#FFF7E0] px-2.5 py-1 text-[11px] font-semibold text-[#8A6B18]">아직 실행 가능한 Flow 아님</span>
+      </div>
+      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+        {candidates.map((candidate) => (
+          <FlowUrlSupplyCandidateCard
+            key={candidate.canonicalUrl}
+            candidate={candidate}
+            onRequeryCandidate={onRequeryCandidate}
+            onUpdateCandidate={onUpdateCandidate}
+            onRemoveCandidate={onRemoveCandidate}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function FlowList() {
   const { bundles } = useBundles();
   const searchParams = useSearchParams();
@@ -1062,6 +1787,9 @@ export function FlowList() {
   const [sort, setSort] = useState<'popular' | 'recent'>('popular');
   const [catalogQuery, setCatalogQuery] = useState('');
   const [catalogIntent, setCatalogIntent] = useState<CatalogIntent>('all');
+  const [urlLookupInput, setUrlLookupInput] = useState('');
+  const [urlLookupResult, setUrlLookupResult] = useState<UrlFirstLookupResult | null>(null);
+  const [urlSupplyCandidates, setUrlSupplyCandidates] = useState<UrlFirstSupplyCandidate[]>([]);
   const directoryBundles = bundles.filter(isPublicDirectoryBundle);
   const showCatalogFilters = directoryBundles.length > 6;
   const categories = ['전체', ...Array.from(new Set(directoryBundles.map((bundle) => bundle.flow.category)))];
@@ -1092,6 +1820,60 @@ export function FlowList() {
   const visibleCatalogCount = visibleFlowMapCatalogLinks.length + visibleDirectoryBundles.length;
   const totalCatalogCount = flowMapCatalogLinks.length + filtered.length;
   const hasCatalogFilter = catalogQuery.trim().length > 0 || catalogIntent !== 'all';
+
+  function handleUrlLookupSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setUrlLookupResult(lookupUrlFirstP0Input(urlLookupInput));
+  }
+
+  function persistUrlSupplyCandidates(candidates: UrlFirstSupplyCandidate[]) {
+    setUrlSupplyCandidates(candidates);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(URL_FIRST_SUPPLY_CANDIDATES_STORAGE_KEY, JSON.stringify(candidates));
+    }
+  }
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const candidates = normalizeUrlFirstSupplyCandidates(JSON.parse(window.localStorage.getItem(URL_FIRST_SUPPLY_CANDIDATES_STORAGE_KEY) || '[]'));
+      setUrlSupplyCandidates(candidates);
+      window.localStorage.setItem(URL_FIRST_SUPPLY_CANDIDATES_STORAGE_KEY, JSON.stringify(candidates));
+    } catch {
+      setUrlSupplyCandidates([]);
+      window.localStorage.setItem(URL_FIRST_SUPPLY_CANDIDATES_STORAGE_KEY, JSON.stringify([]));
+    }
+  }, []);
+
+  function handleSaveSupplyCandidate(candidate: UrlFirstSupplyCandidate): UrlFirstSupplyCandidateUpsertResult {
+    const upserted = upsertUrlFirstSupplyCandidate(urlSupplyCandidates, candidate);
+    persistUrlSupplyCandidates(upserted.candidates);
+    return upserted;
+  }
+
+  function handleRequerySupplyCandidate(candidate: UrlFirstSupplyCandidate) {
+    const lookup = lookupUrlFirstP0Input(candidate.canonicalUrl);
+    setUrlLookupInput(candidate.canonicalUrl);
+    setUrlLookupResult(lookup);
+    const recorded = recordUrlFirstSupplyCandidateLookup(urlSupplyCandidates, candidate.canonicalUrl, lookup);
+    if (recorded.updated) persistUrlSupplyCandidates(recorded.candidates);
+    if (typeof window !== 'undefined') {
+      document.querySelector('[data-testid="flow-url-lookup-entry"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  function handleUpdateSupplyCandidate(canonicalUrl: string, input: UrlFirstSupplyCandidateUpdateInput): UrlFirstSupplyCandidateUpdateResult {
+    const updated = updateUrlFirstSupplyCandidate(urlSupplyCandidates, canonicalUrl, input);
+    if (updated.updated) persistUrlSupplyCandidates(updated.candidates);
+    return updated;
+  }
+
+  function handleRemoveSupplyCandidate(canonicalUrl: string): UrlFirstSupplyCandidateRemoveResult {
+    const removed = removeUrlFirstSupplyCandidate(urlSupplyCandidates, canonicalUrl);
+    if (removed.removed) persistUrlSupplyCandidates(removed.candidates);
+    return removed;
+  }
+
   return (
     <main className="min-h-screen bg-[#FAFAF8] px-5 py-6 pb-28 md:py-8 md:pb-8">
       <div className="mx-auto max-w-6xl">
@@ -1107,6 +1889,20 @@ export function FlowList() {
           </div>
           <p className="mt-1 break-keep text-sm leading-6 text-[#6E6B64]">저장하면 일정과 체크리스트가 생깁니다.</p>
         </div>
+        <FlowUrlLookupEntry
+          input={urlLookupInput}
+          result={urlLookupResult}
+          supplyCandidates={urlSupplyCandidates}
+          onInputChange={setUrlLookupInput}
+          onSubmit={handleUrlLookupSubmit}
+          onSaveSupplyCandidate={handleSaveSupplyCandidate}
+        />
+        <FlowUrlSupplyCandidateList
+          candidates={urlSupplyCandidates}
+          onRequeryCandidate={handleRequerySupplyCandidate}
+          onUpdateCandidate={handleUpdateSupplyCandidate}
+          onRemoveCandidate={handleRemoveSupplyCandidate}
+        />
         <div className="mb-3 grid gap-2">
           <label>
             <span className="sr-only">검색</span>
@@ -1538,7 +2334,9 @@ type MySavedFlow = {
   bundle: FlowBundle;
   anchor: string;
   checks: Record<string, boolean>;
+  itemStates: Record<string, FlowItemState>;
   rows: MyFlowRow[];
+  excludedRows: MyFlowRow[];
   done: number;
   total: number;
   percent: number;
@@ -1546,6 +2344,14 @@ type MySavedFlow = {
   savedMap?: SavedFlowMapSnapshot;
   demoGroup?: string;
   demoNote?: string;
+};
+
+type MyFlowPersonalCopySettingsDraft = {
+  flowSlug: string;
+  title: string;
+  anchor: string;
+  includedStepIds: string[];
+  feedback?: string;
 };
 
 type MyFlowInventoryGroup = {
@@ -1912,6 +2718,14 @@ function getMyFlowSourceLinkLabel(flow: MySavedFlow): string {
   return flow.savedMap || getSourceBackedMyFlowMapForBundle(flow.bundle) ? '전체 보기' : 'Flow 보기';
 }
 
+function isMyFlowPersonalSavedCopy(flow: MySavedFlow): boolean {
+  return Boolean(flow.savedMap?.personalCopy || flow.excludedRows.length > 0);
+}
+
+function getMyFlowPortableExportFlowTitle(flow: MySavedFlow): string {
+  return flow.savedMap?.personalCopy ? toUserFacingMapTitle(flow.savedMap.title) : getMyFlowExecutionFlowTitle(flow.progress.title);
+}
+
 type MyFlowContentReadiness = {
   kind: 'ready' | 'review' | 'preview' | 'legacy';
   label: string;
@@ -1979,6 +2793,7 @@ function toSourceBackedSavedSnapshot(snapshot: SavedFlowMapSnapshot): SourceBack
     stepCountsByFlow: snapshot.stepCountsByFlow ?? {},
     riskLevelsByFlow: (snapshot.riskLevelsByFlow ?? {}) as SourceBackedFlowMapSavedSnapshot['riskLevelsByFlow'],
     sourceCheckedAtByFlow: snapshot.sourceCheckedAtByFlow ?? {},
+    ...(snapshot.personalCopy ? { personalCopy: snapshot.personalCopy } : {}),
   };
 }
 
@@ -2023,7 +2838,7 @@ function buildMyFlowMapUpdateComparisonRows(
 
 function getMyFlowMapUpdateNotice(snapshot: SavedFlowMapSnapshot): MyFlowMapUpdateNotice | undefined {
   const sourceSnapshot = toSourceBackedSavedSnapshot(snapshot);
-  const currentSnapshot = buildSourceBackedFlowMapSavedSnapshot(snapshot.mapId, {
+  const currentSnapshot = buildSourceBackedFlowMapSavedSnapshotUpdate(sourceSnapshot, {
     savedAt: snapshot.savedAt,
     ...(snapshot.anchor ? { anchor: snapshot.anchor } : {}),
   });
@@ -2372,6 +3187,7 @@ function getMyFlowAgendaSharedMeta(rows: MyFlowCalendarRow[], kind: 'routine' | 
     section: sharedSection || undefined,
   };
 }
+
 function getMyFlowExecutionFlowTitle(title: string): string {
   return toContentDisplayTitle(
     title
@@ -2601,7 +3417,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowHandledSavedMapId, setMyFlowHandledSavedMapId] = useState('');
   const [myFlowPostSaveWorkspaceOpen, setMyFlowPostSaveWorkspaceOpen] = useState(false);
   const [myFlowStepCopiedKey, setMyFlowStepCopiedKey] = useState('');
+  const [myFlowStepCopiedLabel, setMyFlowStepCopiedLabel] = useState<string>(FLOW_EXPORT_FEEDBACK.memoCopied);
   const [myFlowStepDownloadedKey, setMyFlowStepDownloadedKey] = useState('');
+  const [myFlowPersonalCopySettingsDraft, setMyFlowPersonalCopySettingsDraft] = useState<MyFlowPersonalCopySettingsDraft | null>(null);
   const [isMyFlowMobileViewport, setIsMyFlowMobileViewport] = useState(false);
   const [myFlowDemoMode, setMyFlowDemoMode] = useState<MyFlowDemoMode | null>(null);
   const [myFlowRoutineIconLimit, setMyFlowRoutineIconLimit] = useState(MY_FLOW_ROUTINE_ICON_LIMIT);
@@ -2633,6 +3451,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   ] as const;
   const closeMyFlowTransientDetail = () => {
     setMyFlowActiveRowKey('');
+    setMyFlowPersonalCopySettingsDraft(null);
     setMyFlowDetailSurface('');
     setMyFlowDetailOpen(false);
     setMyFlowExpandedStructureSlug('');
@@ -2785,6 +3604,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       setMyFlowDismissedMapUpdates({});
       setMyFlowExpandedMapUpdateId('');
       setMyFlowAppliedMapUpdateId('');
+      setMyFlowPersonalCopySettingsDraft(null);
       return;
     }
     if (demoMode === 'legacy') seedMyFlowDemoState(myFlowBundles);
@@ -2805,11 +3625,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       const demoFixture = demoFixtureBySlug.get(progress.slug);
       const anchor = progress.anchor ?? '';
       const checks = checksBySlug[progress.slug] ?? {};
-      const rows = getMyFlowRows(progressBundle, anchor);
+      const itemStates = getItemStates(progress.slug);
+      const allRows = getMyFlowRows(progressBundle, anchor);
+      const excludedRows = allRows.filter((row) => isUrlFirstStartExcludedItemState(itemStates, row.id));
+      const rows = allRows.filter((row) => !isUrlFirstStartExcludedItemState(itemStates, row.id));
       const executableIds = getExecutableCheckIds(progressBundle, anchor);
       const savedMap = savedFlowMapBySlug[progress.slug];
-      const total = Math.max(executableIds.filter((id) => !isItemStateSkipped(getItemStates(progress.slug), id)).length, progress.total);
-      const done = executableIds.filter((id) => checks[id] && !isItemStateSkipped(getItemStates(progress.slug), id)).length;
+      const total = Math.max(executableIds.filter((id) => !isItemStateSkipped(itemStates, id)).length, progress.total);
+      const done = executableIds.filter((id) => checks[id] && !isItemStateSkipped(itemStates, id)).length;
       const anchorDisplay = getMyFlowAnchorDisplay(progressBundle, anchor, myFlowDemoMode);
       const meta = [
         anchorDisplay,
@@ -2821,7 +3644,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         bundle: progressBundle,
         anchor,
         checks,
+        itemStates,
         rows,
+        excludedRows,
         done,
         total,
         percent: total ? Math.round((done / total) * 100) : 0,
@@ -3466,11 +4291,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     discardMyFlowEditingDraft(row);
     closeMyFlowRowDetail();
   };
-  const copyMyFlowStepPortableText = async (input: MyFlowPortableStepExportInput, key: string) => {
-    const text = buildMyFlowStepPortableText(input);
+  const copyMyFlowStepText = async (text: string, key: string, feedback: string) => {
     try {
       await navigator.clipboard.writeText(text);
       setMyFlowStepCopiedKey(key);
+      setMyFlowStepCopiedLabel(feedback);
     } catch {
       const textarea = document.createElement('textarea');
       textarea.value = text;
@@ -3482,8 +4307,21 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       const copied = document.execCommand('copy');
       document.body.removeChild(textarea);
       setMyFlowStepCopiedKey(copied ? key : '');
+      setMyFlowStepCopiedLabel(copied ? feedback : '');
     }
-    window.setTimeout(() => setMyFlowStepCopiedKey(''), 1600);
+    window.setTimeout(() => {
+      setMyFlowStepCopiedKey('');
+      setMyFlowStepCopiedLabel(FLOW_EXPORT_FEEDBACK.memoCopied);
+    }, 1600);
+  };
+  const copyMyFlowStepPortableText = async (input: MyFlowPortableStepExportInput, key: string) => {
+    await copyMyFlowStepText(buildMyFlowStepPortableText(input), key, FLOW_EXPORT_FEEDBACK.memoCopied);
+  };
+  const copyMyFlowStepChecklistText = async (input: MyFlowPortableStepExportInput, key: string) => {
+    await copyMyFlowStepText(buildMyFlowStepChecklistText(input), key, '체크리스트 복사됨');
+  };
+  const copyMyFlowStepSheetRow = async (input: MyFlowPortableStepExportInput, key: string) => {
+    await copyMyFlowStepText(buildMyFlowStepSheetTsv(input), key, '시트 행 복사됨');
   };
   const downloadMyFlowStepCalendar = (input: MyFlowPortableStepExportInput, key: string, fileBase: string) => {
     if (!canBuildMyFlowStepIcs(input)) return;
@@ -3967,6 +4805,116 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowExpandedStructureSlug(flow.progress.slug);
     setSavedView('flow');
     openMyFlowRowDetail(flowRow, 'flow');
+  };
+
+  const getMyFlowPersonalCopyStepRows = (flow: MySavedFlow): MyFlowRow[] => {
+    const seen = new Set<string>();
+    return getMyFlowRows(flow.bundle, flow.anchor).filter((row) => {
+      const id = baseStateId(row.id);
+      if (seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    });
+  };
+
+  const getMyFlowPersonalCopyIncludedStepIds = (flow: MySavedFlow): string[] => {
+    const allStepIds = getMyFlowPersonalCopyStepRows(flow).map((row) => baseStateId(row.id));
+    const allStepIdSet = new Set(allStepIds);
+    const savedIncluded = flow.savedMap?.personalCopy?.includedStepIdsByFlow[flow.progress.slug] ?? [];
+    const included = savedIncluded.filter((id) => allStepIdSet.has(id));
+    return included.length > 0 ? included : allStepIds.filter((id) => !isUrlFirstStartExcludedItemState(flow.itemStates, id));
+  };
+
+  const openMyFlowPersonalCopySettings = (flow: MySavedFlow) => {
+    if (!flow.savedMap?.personalCopy) return;
+    setMyFlowExpandedStructureSlug(flow.progress.slug);
+    setMyFlowPersonalCopySettingsDraft({
+      flowSlug: flow.progress.slug,
+      title: toUserFacingMapTitle(flow.savedMap.title),
+      anchor: flow.anchor,
+      includedStepIds: getMyFlowPersonalCopyIncludedStepIds(flow),
+    });
+  };
+
+  const updateMyFlowPersonalCopySettingsDraft = (patch: Partial<Omit<MyFlowPersonalCopySettingsDraft, 'flowSlug'>>) => {
+    setMyFlowPersonalCopySettingsDraft((current) => (current ? { ...current, ...patch, feedback: patch.feedback ?? '' } : current));
+  };
+
+  const toggleMyFlowPersonalCopyStep = (stepId: string, checked: boolean) => {
+    setMyFlowPersonalCopySettingsDraft((current) => {
+      if (!current) return current;
+      const nextIncluded = checked
+        ? Array.from(new Set([...current.includedStepIds, stepId]))
+        : current.includedStepIds.filter((id) => id !== stepId);
+      return {
+        ...current,
+        includedStepIds: nextIncluded,
+        feedback: '',
+      };
+    });
+  };
+
+  const saveMyFlowPersonalCopySettings = (flow: MySavedFlow) => {
+    if (typeof window === 'undefined' || !flow.savedMap?.personalCopy || myFlowPersonalCopySettingsDraft?.flowSlug !== flow.progress.slug) return;
+
+    const stepRows = getMyFlowPersonalCopyStepRows(flow);
+    const allStepIds = stepRows.map((row) => baseStateId(row.id));
+    const allStepIdSet = new Set(allStepIds);
+    const includedStepIds = myFlowPersonalCopySettingsDraft.includedStepIds.filter((id) => allStepIdSet.has(id));
+    if (includedStepIds.length === 0) {
+      updateMyFlowPersonalCopySettingsDraft({ feedback: '최소 1개 Step을 포함해야 합니다.' });
+      return;
+    }
+
+    const sourceSnapshot = toSourceBackedSavedSnapshot(flow.savedMap);
+    const adjusted = buildSourceBackedFlowMapPersonalCopyAdjustment(sourceSnapshot, {
+      title: myFlowPersonalCopySettingsDraft.title,
+      anchor: myFlowPersonalCopySettingsDraft.anchor,
+      savedAt: new Date().toISOString(),
+      includedStepIdsByFlow: {
+        ...sourceSnapshot.personalCopy?.includedStepIdsByFlow,
+        [flow.progress.slug]: includedStepIds,
+      },
+    });
+    if (!adjusted) {
+      updateMyFlowPersonalCopySettingsDraft({ feedback: '저장할 수 있는 Step을 확인해 주세요.' });
+      return;
+    }
+
+    window.localStorage.setItem(getSourceBackedFlowMapSnapshotStorageKey(adjusted.snapshot.mapId), JSON.stringify(adjusted.snapshot));
+    window.localStorage.setItem(getSourceBackedFlowMapPersistenceStorageKey(adjusted.snapshot.mapId), JSON.stringify(adjusted.persistenceRecord));
+
+    const includedStepIdSet = new Set(includedStepIds);
+    const nextItemStates = { ...getItemStates(flow.progress.slug) };
+    allStepIds.forEach((stepId) => {
+      if (includedStepIdSet.has(stepId)) {
+        const state = nextItemStates[stepId];
+        if (state?.note === 'excluded_on_start') {
+          const cleanedState: FlowItemState = { ...state };
+          delete cleanedState.skipped;
+          delete cleanedState.note;
+          if (Object.keys(cleanedState).length > 0) nextItemStates[stepId] = cleanedState;
+          else delete nextItemStates[stepId];
+        }
+        return;
+      }
+      nextItemStates[stepId] = {
+        ...nextItemStates[stepId],
+        skipped: true,
+        note: 'excluded_on_start',
+      };
+    });
+    saveItemStates(flow.progress.slug, nextItemStates);
+
+    const savedRecord = getSavedFlowRecord(flow.progress.slug);
+    saveFlowRecord(flow.progress.slug, {
+      selectedArtifactMode: savedRecord?.selectedArtifactMode ?? 'checklist',
+      ...(adjusted.snapshot.anchor ? { anchor: adjusted.snapshot.anchor } : {}),
+    });
+    saveStoredAnchor(flow.progress.slug, { mode: 'custom', anchor: adjusted.snapshot.anchor ?? '' });
+    resetMyFlowRowDetailState();
+    setMyFlowPersonalCopySettingsDraft(null);
+    refreshSavedFlowState();
   };
 
   const getPostSaveContinuationRow = (): MyFlowCalendarRow | null => {
@@ -4664,7 +5612,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const isDetailEditing = !isDrawerMode && myFlowEditingDetailKey === portableExportKey;
     const showEditableDetailFields = isDrawerMode || isDetailEditing;
     const portableExportInput: MyFlowPortableStepExportInput = {
-      flowTitle: getMyFlowExecutionFlowTitle(row.flow.progress.title),
+      flowTitle: getMyFlowPortableExportFlowTitle(row.flow),
       stepId: portableExportKey,
       stepTitle: editorDraft.title,
       sectionTitle: visibleDetailSection,
@@ -4681,6 +5629,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       caution: detail.caution,
     };
     const canDownloadPortableCalendar = canBuildMyFlowStepIcs(portableExportInput);
+    const portableExportSummary = canDownloadPortableCalendar ? '메모 · 체크리스트 · 시트 행 · 캘린더' : '메모 · 체크리스트 · 시트 행 · 날짜 필요';
+    const showPersonalCopyPortableExportNote = Boolean(row.flow.savedMap?.personalCopy);
     const hasExpandableMemo = editorDraft.memo.trim().length > 0;
     const inlineDetailHeaderLabel = hasDetailChecklistItems ? '확인할 항목' : '실행할 일';
     const detailCompletionActionLabel = isRoutineRow
@@ -5239,9 +6189,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
               <p className="text-xs font-semibold text-slate-700">내 도구로 옮기기</p>
               <span className="text-[11px] font-semibold text-slate-500">
-                {canDownloadPortableCalendar ? '텍스트 · 캘린더' : '텍스트'}
+                {portableExportSummary}
               </span>
             </div>
+            {showPersonalCopyPortableExportNote ? (
+              <p data-testid="my-flow-detail-personal-copy-export-note" className="mt-2 rounded-md bg-blue-50 px-2 py-1.5 text-[11px] font-semibold leading-5 text-blue-700">
+                원본 출처는 유지하고, 복사/파일은 내 개인 사본 기준으로 만듭니다.
+              </p>
+            ) : null}
             <div className="mt-2 flex flex-wrap gap-2">
               <button
                 type="button"
@@ -5250,6 +6205,22 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 onClick={() => copyMyFlowStepPortableText(portableExportInput, portableExportKey)}
               >
                 {FLOW_EXPORT_LABELS.memoCopy}
+              </button>
+              <button
+                type="button"
+                data-testid="my-flow-detail-copy-checklist-text"
+                className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
+                onClick={() => copyMyFlowStepChecklistText(portableExportInput, portableExportKey)}
+              >
+                체크리스트 복사
+              </button>
+              <button
+                type="button"
+                data-testid="my-flow-detail-copy-sheet-row"
+                className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
+                onClick={() => copyMyFlowStepSheetRow(portableExportInput, portableExportKey)}
+              >
+                시트 행 복사
               </button>
               {canDownloadPortableCalendar ? (
                 <button
@@ -5260,9 +6231,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 >
                   {FLOW_EXPORT_LABELS.calendarFile}
                 </button>
-              ) : null}
+              ) : (
+                <button
+                  type="button"
+                  data-testid="my-flow-detail-calendar-unavailable"
+                  className="cursor-not-allowed rounded-md bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-400"
+                  disabled
+                >
+                  날짜 필요
+                </button>
+              )}
               {myFlowStepCopiedKey === portableExportKey ? (
-                <span data-testid="my-flow-detail-copy-feedback" className="inline-flex min-h-8 items-center rounded-md bg-emerald-50 px-2 text-[11px] font-semibold text-emerald-700">{FLOW_EXPORT_FEEDBACK.memoCopied}</span>
+                <span data-testid="my-flow-detail-copy-feedback" className="inline-flex min-h-8 items-center rounded-md bg-emerald-50 px-2 text-[11px] font-semibold text-emerald-700">{myFlowStepCopiedLabel}</span>
               ) : null}
               {myFlowStepDownloadedKey === portableExportKey ? (
                 <span data-testid="my-flow-detail-download-feedback" className="inline-flex min-h-8 items-center rounded-md bg-blue-50 px-2 text-[11px] font-semibold text-blue-700">{FLOW_EXPORT_FEEDBACK.calendarReady}</span>
@@ -5274,9 +6254,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-xs font-semibold text-slate-700">내 도구로 옮기기</p>
               <span className="text-[11px] font-semibold text-slate-500">
-                {canDownloadPortableCalendar ? '텍스트 · 캘린더' : '텍스트'}
+                {portableExportSummary}
               </span>
             </div>
+            {showPersonalCopyPortableExportNote ? (
+              <p data-testid="my-flow-detail-personal-copy-export-note" className="mt-2 rounded-md bg-blue-50 px-2 py-1.5 text-[11px] font-semibold leading-5 text-blue-700">
+                원본 출처는 유지하고, 복사/파일은 내 개인 사본 기준으로 만듭니다.
+              </p>
+            ) : null}
             <div className="mt-2 flex flex-wrap gap-2">
               <button
                 type="button"
@@ -5285,6 +6270,22 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 onClick={() => copyMyFlowStepPortableText(portableExportInput, portableExportKey)}
               >
                 {FLOW_EXPORT_LABELS.memoCopy}
+              </button>
+              <button
+                type="button"
+                data-testid="my-flow-detail-copy-checklist-text"
+                className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
+                onClick={() => copyMyFlowStepChecklistText(portableExportInput, portableExportKey)}
+              >
+                체크리스트 복사
+              </button>
+              <button
+                type="button"
+                data-testid="my-flow-detail-copy-sheet-row"
+                className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
+                onClick={() => copyMyFlowStepSheetRow(portableExportInput, portableExportKey)}
+              >
+                시트 행 복사
               </button>
               {canDownloadPortableCalendar ? (
                 <button
@@ -5295,9 +6296,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 >
                   {FLOW_EXPORT_LABELS.calendarFile}
                 </button>
-              ) : null}
+              ) : (
+                <button
+                  type="button"
+                  data-testid="my-flow-detail-calendar-unavailable"
+                  className="cursor-not-allowed rounded-md bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-400"
+                  disabled
+                >
+                  날짜 필요
+                </button>
+              )}
               {myFlowStepCopiedKey === portableExportKey ? (
-                <span data-testid="my-flow-detail-copy-feedback" className="inline-flex min-h-8 items-center rounded-md bg-emerald-50 px-2 text-[11px] font-semibold text-emerald-700">{FLOW_EXPORT_FEEDBACK.memoCopied}</span>
+                <span data-testid="my-flow-detail-copy-feedback" className="inline-flex min-h-8 items-center rounded-md bg-emerald-50 px-2 text-[11px] font-semibold text-emerald-700">{myFlowStepCopiedLabel}</span>
               ) : null}
               {myFlowStepDownloadedKey === portableExportKey ? (
                 <span data-testid="my-flow-detail-download-feedback" className="inline-flex min-h-8 items-center rounded-md bg-blue-50 px-2 text-[11px] font-semibold text-blue-700">{FLOW_EXPORT_FEEDBACK.calendarReady}</span>
@@ -5412,6 +6422,106 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     );
   };
 
+  const renderMyFlowPersonalCopySettings = (flow: MySavedFlow) => {
+    if (!flow.savedMap?.personalCopy || myFlowPersonalCopySettingsDraft?.flowSlug !== flow.progress.slug) return null;
+
+    const stepRows = getMyFlowPersonalCopyStepRows(flow);
+    const includedStepIdSet = new Set(myFlowPersonalCopySettingsDraft.includedStepIds);
+    return (
+      <form
+        data-testid="my-flow-personal-copy-settings"
+        className="mt-3 grid gap-3 rounded-md border border-blue-100 bg-white px-3 py-3 text-sm"
+        onSubmit={(event) => {
+          event.preventDefault();
+          saveMyFlowPersonalCopySettings(flow);
+        }}
+      >
+        <div className="grid gap-2 sm:grid-cols-2">
+          <label className="grid gap-1 text-xs font-semibold text-slate-700">
+            저장 이름
+            <input
+              aria-label="저장 이름"
+              className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              value={myFlowPersonalCopySettingsDraft.title}
+              maxLength={80}
+              onChange={(event) => updateMyFlowPersonalCopySettingsDraft({ title: event.target.value })}
+            />
+          </label>
+          <label className="grid gap-1 text-xs font-semibold text-slate-700">
+            시작일
+            <input
+              data-testid="my-flow-personal-copy-start-date-input"
+              aria-label="시작일"
+              className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              type="date"
+              value={myFlowPersonalCopySettingsDraft.anchor}
+              onChange={(event) => updateMyFlowPersonalCopySettingsDraft({ anchor: event.target.value })}
+            />
+          </label>
+        </div>
+        <fieldset className="grid gap-2">
+          <legend className="text-xs font-semibold text-slate-700">포함할 Step</legend>
+          <div className="grid max-h-56 gap-1.5 overflow-auto pr-1 sm:grid-cols-2">
+            {stepRows.map((row) => {
+              const stepId = baseStateId(row.id);
+              return (
+                <label key={`personal-copy-step-${flow.progress.slug}-${stepId}`} className="flex min-h-10 items-start gap-2 rounded-md bg-slate-50 px-2.5 py-2 text-xs font-semibold leading-5 text-slate-800">
+                  <input
+                    className="mt-0.5 h-4 w-4 shrink-0"
+                    type="checkbox"
+                    checked={includedStepIdSet.has(stepId)}
+                    onChange={(event) => toggleMyFlowPersonalCopyStep(stepId, event.target.checked)}
+                  />
+                  <span className="min-w-0 break-keep">{toUserFacingSourceTitle(row.title)}</span>
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
+        {myFlowPersonalCopySettingsDraft.feedback ? (
+          <p className="text-xs font-semibold text-amber-700">{myFlowPersonalCopySettingsDraft.feedback}</p>
+        ) : null}
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end">
+          <button
+            type="button"
+            className="min-h-9 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700"
+            onClick={() => setMyFlowPersonalCopySettingsDraft(null)}
+          >
+            취소
+          </button>
+          <button
+            type="submit"
+            className="min-h-9 rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={myFlowPersonalCopySettingsDraft.includedStepIds.length === 0}
+          >
+            저장
+          </button>
+        </div>
+      </form>
+    );
+  };
+
+  const renderMyFlowExcludedSteps = (flow: MySavedFlow) => {
+    if (flow.excludedRows.length === 0) return null;
+    return (
+      <section data-testid="my-flow-excluded-steps" className="mt-3 rounded-md bg-slate-50 px-3 py-2 text-sm">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-xs font-semibold text-slate-500">제외됨</p>
+          <span className="rounded-md bg-white px-2 py-1 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
+            {flow.excludedRows.length}개
+          </span>
+        </div>
+        <ul className="mt-2 grid gap-1 text-xs font-semibold text-slate-600">
+          {flow.excludedRows.map((row) => (
+            <li key={`excluded-${flow.progress.slug}-${row.id}`} data-testid="my-flow-excluded-step-row" className="truncate">
+              {toUserFacingSourceTitle(row.title)}
+            </li>
+          ))}
+        </ul>
+      </section>
+    );
+  };
+
   const renderFlowListRow = (flow: MySavedFlow) => {
     const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
     const savedMapTitle = flow.savedMap ? toUserFacingMapTitle(flow.savedMap.title) : '';
@@ -5484,6 +6594,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const renderCompactFlowStructureRow = (flow: MySavedFlow) => {
     const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
     const nextRow = getSavedFlowNextRow(flow);
+    const personalSavedCopy = isMyFlowPersonalSavedCopy(flow);
     const progressSummary = `${flow.done}/${flow.total} 완료`;
     const structureLabel = flow.savedMap
       ? toUserFacingMapTitle(flow.savedMap.title)
@@ -5538,6 +6649,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           <span className="mt-3 block h-1.5 overflow-hidden rounded-full bg-slate-200">
             <span className="block h-full rounded-full bg-blue-700" style={{ width: `${flow.percent}%` }} aria-hidden="true" />
           </span>
+          {personalSavedCopy ? (
+            <span data-testid="my-flow-personal-copy-badge" className="mt-2 inline-flex w-fit rounded-md bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">
+              개인 사본
+            </span>
+          ) : null}
           {nextRow && !flowExpanded ? (
             <span className="mt-3 block rounded-md bg-slate-50 px-3 py-2">
               <span className="block text-xs font-semibold text-blue-700">{getMyFlowRowStatusLabel(nextRow)}</span>
@@ -5550,6 +6666,19 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <span className="mt-3 block rounded-md bg-slate-50 px-3 py-2 text-sm text-slate-600">남은 항목이 없습니다.</span>
           ) : null}
         </button>
+        {personalSavedCopy ? (
+          <div className="mt-2 flex flex-wrap gap-2">
+            <button
+              type="button"
+              data-testid="my-flow-personal-copy-settings-open"
+              className="inline-flex min-h-8 items-center justify-center rounded-md border border-blue-100 bg-white px-2.5 py-1.5 text-xs font-semibold text-blue-700 hover:border-blue-300"
+              onClick={() => openMyFlowPersonalCopySettings(flow)}
+            >
+              설정 조정
+            </button>
+          </div>
+        ) : null}
+        {renderMyFlowPersonalCopySettings(flow)}
         {flowExpanded ? (
           <div data-testid="my-flow-mobile-structure-step-list" className="mt-3 grid gap-2">
             {visibleStepEntries.map(({ row: stepRow, index }) => {
@@ -5619,6 +6748,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             ) : null}
           </div>
         ) : null}
+        {flowExpanded ? renderMyFlowExcludedSteps(flow) : null}
       </article>
     );
   };
@@ -5626,6 +6756,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const renderSavedFlowOverviewCard = (flow: MySavedFlow) => {
     const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
     const savedMapTitle = flow.savedMap ? toUserFacingMapTitle(flow.savedMap.title) : '';
+    const personalSavedCopy = isMyFlowPersonalSavedCopy(flow);
     const nextRow = getSavedFlowNextRow(flow);
     const progressSummary = `${flow.done}/${flow.total} 완료`;
     const anchorDisplay = getMyFlowAnchorDisplay(flow.bundle, flow.anchor, myFlowDemoMode);
@@ -5669,9 +6800,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <p className="mt-2 text-xs font-semibold text-amber-800">{getMyFlowContentReadinessNote(contentReadiness)}</p>
             ) : null}
             {flow.savedMap ? (
-              <p data-testid="my-flow-map-context" className="mt-2 w-fit rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">
-                저장한 콘텐츠 · {savedMapTitle}
-              </p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <p data-testid="my-flow-map-context" className="w-fit rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">
+                  저장한 콘텐츠 · {savedMapTitle}
+                </p>
+                {personalSavedCopy ? (
+                  <p data-testid="my-flow-personal-copy-badge" className="w-fit rounded-md bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">
+                    개인 사본
+                  </p>
+                ) : null}
+              </div>
             ) : null}
             {anchorDisplay ? (
               <p className="mt-2 w-fit rounded-md bg-slate-100 px-2 py-1 text-sm font-semibold text-slate-700">
@@ -5688,8 +6826,19 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 ))}
               </div>
             ) : null}
+            {personalSavedCopy ? (
+              <button
+                type="button"
+                data-testid="my-flow-personal-copy-settings-open"
+                className="mt-3 inline-flex min-h-9 items-center justify-center rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300"
+                onClick={() => openMyFlowPersonalCopySettings(flow)}
+              >
+                설정 조정
+              </button>
+            ) : null}
           </div>
         </div>
+        {renderMyFlowPersonalCopySettings(flow)}
         <div data-testid="my-flow-next-action" className={`mt-4 rounded-md border px-3 py-3 ${nextActionToneClass}`}>
           <p className={`text-xs font-semibold ${showContentReadinessBadge ? 'text-slate-600' : 'text-blue-700'}`}>{nextRow ? getMyFlowRowStatusLabel(nextRow) : '다음에 볼 항목'}</p>
           {nextRow ? (
@@ -5731,6 +6880,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <div className="h-full bg-blue-700" style={{ width: `${flow.percent}%` }} />
           </div>
         </div>
+        {renderMyFlowExcludedSteps(flow)}
         <div className={`mt-4 grid gap-2 ${showHideToggle ? 'sm:grid-cols-[minmax(0,1fr)_auto]' : ''}`}>
           <Link className="inline-flex min-h-10 w-full items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300" href={sourceHref}>
                 {flow.savedMap ? '원문 보기' : sourceLabel}
@@ -5806,17 +6956,35 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     if (typeof window === 'undefined' || notice.status === 'map_missing') return;
 
     const savedAt = new Date().toISOString();
-    const snapshot = buildSourceBackedFlowMapSavedSnapshot(notice.mapId, {
+    const storedSnapshot = (() => {
+      try {
+        const raw = window.localStorage.getItem(getSourceBackedFlowMapSnapshotStorageKey(notice.mapId));
+        return raw ? toSourceBackedSavedSnapshot(JSON.parse(raw) as SavedFlowMapSnapshot) : undefined;
+      } catch {
+        return undefined;
+      }
+    })();
+    const snapshot = storedSnapshot
+      ? buildSourceBackedFlowMapSavedSnapshotUpdate(storedSnapshot, {
+          savedAt,
+          ...(notice.anchor ? { anchor: notice.anchor } : {}),
+        })
+      : buildSourceBackedFlowMapSavedSnapshot(notice.mapId, {
       savedAt,
       ...(notice.anchor ? { anchor: notice.anchor } : {}),
-    });
+        });
     if (!snapshot) return;
 
     window.localStorage.setItem(getSourceBackedFlowMapSnapshotStorageKey(notice.mapId), JSON.stringify(snapshot));
-    const persistenceRecord = buildSourceBackedFlowMapPersistenceRecord(notice.mapId, {
-      savedAt,
-      ...(notice.anchor ? { anchor: notice.anchor } : {}),
-    });
+    const persistenceRecord = storedSnapshot
+      ? buildSourceBackedFlowMapPersistenceRecordUpdate(storedSnapshot, {
+          savedAt,
+          ...(notice.anchor ? { anchor: notice.anchor } : {}),
+        })
+      : buildSourceBackedFlowMapPersistenceRecord(notice.mapId, {
+          savedAt,
+          ...(notice.anchor ? { anchor: notice.anchor } : {}),
+        });
     if (persistenceRecord) {
       window.localStorage.setItem(getSourceBackedFlowMapPersistenceStorageKey(notice.mapId), JSON.stringify(persistenceRecord));
     }
@@ -9531,6 +10699,11 @@ function baseStateId(id: string): string {
 
 function isItemStateSkipped(itemStates: Record<string, FlowItemState>, id: string): boolean {
   return Boolean(itemStates[baseStateId(id)]?.skipped);
+}
+
+function isUrlFirstStartExcludedItemState(itemStates: Record<string, FlowItemState>, id: string): boolean {
+  const state = itemStates[baseStateId(id)];
+  return Boolean(state?.skipped && state.note === 'excluded_on_start');
 }
 
 function getPublicViews(bundle: FlowBundle, hasScheduleAnchor = false): { id: PublicView; label: string }[] {

@@ -35,6 +35,66 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-05 - Planning insights are captured into the repo doc graph
+
+**Decision:** During FlowMe product, source, content, creator, or community planning, important insights and direction changes must be saved in the repo doc graph during the same session instead of remaining only in chat. Use `docs/DECISIONS.md` for settled rules, `docs/IDEAS.md` for exploratory directions, `docs/content-audit/` for source/research/review artifacts, `docs/specs/` for approved multi-step work, and `docs/STATUS.md` for active blockers or temporary next-up notes.
+
+**Reason:** Recent content expansion planning produced reusable axes such as demand validation, creator promotion fit, community remix fit, trust anchors, and source-import gates. These affect future source scouting and app-canary selection but can be lost if they stay only in the transcript.
+
+**Applies to:** content source scouting, demand validation, creator/community loop research, URL-first acquisition, edit/fork UX planning, source-to-Flow conversion rules, app seed handoff preparation, and future agent handoffs.
+
+**Reopen when:** a separate product knowledge system becomes canonical, the repo doc graph becomes too noisy for planning work, or the team changes the memory split between decisions, ideas, specs, status, and audit artifacts.
+
+**Related docs:** [IDEAS.md](./IDEAS.md)
+
+### 2026-07-05 - URL misses become local production candidate requests
+
+**Decision:** When `/flows` URL lookup returns `miss` or `needs_review`, the user may save the URL as a local `제작 후보` request keyed by canonical URL. The request stores only canonical URL, original URL, user title, user memo, request status, saved date, and optional last lookup result. Duplicate canonical URLs must show the existing local request instead of creating another row. The user may later reopen the request list, open the original URL, re-run canonical lookup, edit title/memo, delete the local row, or open a `제작용 정보` handoff panel. If the canonical URL later resolves to an executable `hit`, `/flows` marks the candidate as `이제 실행 가능` and moves the user into the normal hit result/start flow. The `제작용 Markdown` handoff may structure the stored request, lookup state, and manual conversion checklist for later human Flow seed/content work, but it must not call AI, crawl the source, generate seed data, create admin workflow, write server/account data, or imply public demand/validation. These requests are not executable Flows until resolved, not public demand counts, not server/account data, and not evidence that a source has been converted or validated.
+
+**Reason:** The URL-first loop should collect real user supply signals without spending AI generation cost or pretending a missing/needs-review source is ready to run. A local candidate queue preserves intent for the user, lets the user return to the same source later, and creates a handoff point for source review, concierge conversion, or AI fallback when cost/quality gates exist. The handoff panel makes that review work easier without crossing into automatic production.
+
+**Applies to:** `/flows` URL lookup miss/needs_review result states, `/flows` requested-candidate list, `lib/flow/url-first-supply-queue.ts`, localStorage candidate queue, candidate revisit/resolved-hit handoff, candidate-to-production handoff Markdown, future source conversion queues, and future AI fallback gates.
+
+**Reopen when:** account-backed request queues, admin review, source crawling, AI draft generation, automatic seed creation, creator/source-owner notifications, or real aggregate demand metrics are introduced.
+
+**Related docs:** [URL lookup production slice spec](./specs/2026-07-05-url-lookup-production-slice/spec.md), [URL lookup production slice QA](./specs/2026-07-05-url-lookup-production-slice/qa.md), [SERVICE_STRUCTURE.md](./SERVICE_STRUCTURE.md)
+
+### 2026-07-05 - URL production candidates close through manual source-backed registration
+
+**Decision:** A saved URL production candidate becomes executable only when a human adds or verifies source-backed Flow seed/content for the same canonical source URL and the source-backed quality decision allows direct-route lookup. Manual source-backed registration must check canonical URL, original/source URL, sourceTrace, Step split, date/relative/repeat rules, risk/execution blockers, and the `directRouteEnabled`/`reject` decision before URL lookup exposure. `/flows` then resolves the candidate through the existing URL lookup path as a normal `hit`, shows it as executable in the local candidate list, and routes the user into the same start/export/My Flow flow used by other hits. Reject-status source-backed maps are excluded from this URL lookup registry even if they remain in internal research data.
+
+**Reason:** This closes the candidate handoff loop without adding AI generation, crawling, admin workflow, account/server queues, or automatic seed creation. The production work remains source-reviewed and human-owned, while users who saved a candidate can later benefit from the same canonical URL once a Flow exists.
+
+**Applies to:** `/flows` URL lookup, local production candidates, candidate-to-production Markdown handoff, `lib/flow/url-first-lookup.ts`, `lib/flow/url-first-supply-queue.ts`, `lib/flow/source-backed-my-flow.ts`, source-backed quality decisions, source-backed manual registration QA, and future manual Flow seed/content registration work.
+
+**Reopen when:** account-backed queues, administrator review, automatic source extraction, AI draft generation, or a richer source-backed publishing lifecycle replaces local candidate rows and static source-backed registration.
+
+**Related docs:** [URL lookup production slice spec](./specs/2026-07-05-url-lookup-production-slice/spec.md), [URL lookup production slice QA](./specs/2026-07-05-url-lookup-production-slice/qa.md), [SERVICE_STRUCTURE.md](./SERVICE_STRUCTURE.md)
+
+### 2026-07-05 - Local Next production build uses build-scoped TypeScript config
+
+**Decision:** Keep the committed production build on direct `next build` and point Next at `./tsconfig.next.json` through `next.config.ts`. Do not disable the default webpack build worker for the current Next 15.3.8 baseline.
+
+**Reason:** During URL-first candidate management verification on Windows, repeated `npm.cmd run build` runs passed TypeScript checks but could fail when stale `.next` output or leftover build processes were present. Rechecking from a clean `.next` state showed that direct `next build` passes when the default build worker remains enabled, while `experimental.webpackBuildWorker=false` can exit silently during compile and leave partial `.next` output. The durable committed change is the build-scoped `tsconfig.next.json`, which keeps production build typechecking focused on app/runtime files while `npm test` remains the test-file gate.
+
+**Applies to:** `next.config.ts`, `tsconfig.next.json`, local production build verification, CI parity checks if CI uses the same Next version, and future build-failure debugging.
+
+**Reopen when:** Next.js is upgraded, CI needs a different typecheck boundary, or repeated clean direct builds fail with evidence that a cleanup wrapper or worker setting solves a reproducible problem.
+
+**Related docs:** [URL lookup production slice QA](./specs/2026-07-05-url-lookup-production-slice/qa.md), [TOOLING.md](./TOOLING.md)
+
+### 2026-07-05 - URL custom starts become personal My Flow copies
+
+**Decision:** When a user chooses a lightweight custom start from URL lookup, the saved result is treated as the user's personal My Flow copy. The personal saved title, included Step ids, excluded Step ids, and local item state must remain attached to that copy. My Flow may expose a quiet personal-copy settings entry for saved name, start date, and Step include/exclude changes only; it must not become a full editor or version-management UI. Step detail export for a personal copy uses the personal title, adjusted date, included Step content, and current Step detail values for memo/Markdown, checklist text, sheet-row TSV, and dated calendar `.ics` output while retaining the original source link. Source-backed map updates may refresh current source metadata and newly available source rows, but applying an update must not overwrite the user's personal title, selected Steps, excluded Steps, start date, or saved execution state.
+
+**Reason:** The URL-first model works only if users can lightly adapt an existing converted Flow without editing the original or losing their changes when the source changes. This keeps Stage 0 lighter than a full editor/version system while making the saved copy feel like a real personal plan.
+
+**Applies to:** `/flows` URL lookup custom start, `/my` saved Flow execution and personal-copy settings, source-backed saved-map snapshots, source-backed persistence records, Step detail export regeneration, map update assessment/apply behavior, and future edit/fork UX.
+
+**Reopen when:** account-backed version history, row-level merge conflicts, or a full personal Flow editor exists and can show explicit overwrite/merge choices.
+
+**Related docs:** [URL lookup production slice spec](./specs/2026-07-05-url-lookup-production-slice/spec.md), [URL lookup production slice QA](./specs/2026-07-05-url-lookup-production-slice/qa.md), [SERVICE_STRUCTURE.md](./SERVICE_STRUCTURE.md)
+
 ### 2026-07-04 - Verification hooks stay repo-level and tool-agnostic
 
 **Decision:** Use repository-level automation for the default verification hooks: local Git hooks installed by `npm run hooks:install`, plus GitHub Actions CI on pull requests and pushes to `main`. The local pre-commit hook runs `npm run docs:check`, the local pre-push hook runs `npm run verify`, and GitHub CI runs both core verification and Playwright E2E. Do not make Claude Code or Codex runtime hooks the canonical enforcement layer.
