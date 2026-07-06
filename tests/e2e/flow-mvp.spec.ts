@@ -2083,6 +2083,8 @@ test('my flow long saved list keeps final mobile rows and actions above fixed na
   const mobileTabs = page.getByTestId('platform-mobile-tabs');
   const mobileHub = page.getByTestId('my-flow-mobile-flow-hub');
   await expect(mobileHub).toBeVisible();
+  await expect(page.getByTestId('my-flow-mobile-flow-summary')).toContainText(/\d+개 저장/);
+  await expect(page.getByTestId('my-flow-mobile-flow-summary')).not.toContainText(/\d+개 남음/);
   await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(4);
   await expect(page.getByTestId('my-flow-mobile-inventory-open')).toContainText('2개 더 보기');
   const overdueCompactRow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="moving-d30-basic"]');
@@ -2108,6 +2110,10 @@ test('my flow long saved list keeps final mobile rows and actions above fixed na
   const inventoryPanel = inventorySheet.locator('section');
   await expect(inventorySheet).toBeVisible();
   await expect(inventorySheet.getByTestId('my-flow-group-row')).toHaveCount(6);
+  const firstInventoryRow = inventorySheet.getByTestId('my-flow-group-row').first();
+  await expect(firstInventoryRow).toContainText(/\d+\/\d+ 완료/);
+  await expect(firstInventoryRow).not.toContainText(/\b\d+\/\d+\b(?!\s*완료)/);
+  await expect(firstInventoryRow).not.toContainText(/\b\d+%\b/);
   await inventorySheet.getByTestId('my-flow-group-row').last().scrollIntoViewIfNeeded();
 
   const lastInventoryRow = inventorySheet.getByTestId('my-flow-group-row').last();

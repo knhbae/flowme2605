@@ -3636,7 +3636,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const hiddenMobileFlowBoardCount = shouldLimitMobileFlowBoard
     ? Math.max(0, flowListVisibleFlows.length - mobileFlowBoardVisibleFlows.length)
     : 0;
-  const mobileFlowRemainingCount = flowListVisibleFlows.reduce((sum, flow) => sum + Math.max(0, flow.total - flow.done), 0);
   const mobileFlowSummaryChips = [
     todayOpenCount > 0
       ? { label: `오늘 ${todayOpenCount}`, className: 'bg-[#EEF1FF] text-[#3654FF]' }
@@ -3648,10 +3647,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       ? { label: `지난 할 일 ${overdueRows.length}`, className: 'bg-[#FFF4ED] text-[#D6462E]' }
       : null,
   ].filter((chip): chip is { label: string; className: string } => Boolean(chip));
-  const mobileFlowSummaryText =
-    mobileFlowRemainingCount > 0
-      ? `${flowListVisibleFlows.length}개 저장 · ${mobileFlowRemainingCount}개 남음`
-      : `${flowListVisibleFlows.length}개 저장 · 모두 완료`;
+  const mobileFlowSummaryText = `${flowListVisibleFlows.length}개 저장`;
   const flowListReadyFlows = flowListVisibleFlows.filter((flow) => isMyFlowReadyContent(flow));
   const flowListSupportFlows = flowListVisibleFlows.filter((flow) => !isMyFlowReadyContent(flow));
   const shouldSeparateFlowReadiness =
@@ -5426,6 +5422,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const sourceLabel = getMyFlowSourceLinkLabel(flow);
     const contentReadiness = getMyFlowContentReadiness(flow);
     const showContentReadinessBadge = !isMyFlowScenarioDemo && contentReadiness.kind !== 'ready';
+    const inventoryMeta = [
+      getMyFlowAnchorDisplay(flow.bundle, flow.anchor, myFlowDemoMode),
+      flow.progress.skipped ? `${flow.progress.skipped}개 제외` : null,
+    ].filter(Boolean).join(' · ');
 
     return (
       <article
@@ -5448,11 +5448,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   ) : null}
                 </div>
                 {savedMapTitle ? <p className="mt-1 text-xs font-semibold text-blue-700">{savedMapTitle}</p> : null}
-                <p className="mt-1 text-xs font-semibold text-slate-500">{flow.meta}</p>
+                {inventoryMeta ? <p className="mt-1 text-xs font-semibold text-slate-500">{inventoryMeta}</p> : null}
               </div>
               <div className="flex shrink-0 items-center gap-2">
-                <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">{flow.done}/{flow.total}</span>
-                <span className="rounded-md bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">{flow.percent}%</span>
+                <span data-testid="my-flow-inventory-progress-summary" className="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">
+                  {flow.done}/{flow.total} 완료
+                </span>
               </div>
             </div>
             {nextRow ? (

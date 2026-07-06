@@ -174,9 +174,13 @@ test('capture script exposes P11 evidence markers for actionable rows and access
   assert.ok(script.includes('continuationActionable'));
   assert.ok(script.includes('agendaGroupMeta'));
   assert.ok(script.includes('rowControlAccessibleNames'));
+  assert.ok(script.includes('inventoryProgressMetrics'));
+  assert.ok(script.includes('inventoryHeaderMetrics'));
   assert.ok(script.includes('normalRouteContinuationActionableCount'));
   assert.ok(script.includes('normalRouteAgendaGroupMetaCount'));
   assert.ok(script.includes('normalRouteRowControlAccessibleNameSampleCount'));
+  assert.ok(script.includes('normalRouteInventoryDuplicateProgressMetricCount'));
+  assert.ok(script.includes('normalRouteInventoryHeaderLargeRemainingCount'));
 });
 
 test('user surface guardrail helpers lock positive and negative display cases', () => {

@@ -701,6 +701,54 @@ async function scanPage(page, options = {}) {
         },
       };
     };
+    const progressCompletePattern = /\b\d+\s*\/\s*\d+\s*완료\b/gu;
+    const progressRatioPattern = /\b\d+\s*\/\s*\d+\b/gu;
+    const progressPercentPattern = /\b\d+\s*%\b/gu;
+    const summarizeInventoryProgressMetrics = (row) => {
+      const text = collectElementLines(row).join(' ').replace(/\s+/g, ' ').trim();
+      const completeMatches = text.match(progressCompletePattern) ?? [];
+      const textWithoutCompleteMetrics = text.replace(progressCompletePattern, ' ');
+      const ratioMatches = textWithoutCompleteMetrics.match(progressRatioPattern) ?? [];
+      const percentMatches = textWithoutCompleteMetrics.match(progressPercentPattern) ?? [];
+      const metricCount = completeMatches.length + ratioMatches.length + percentMatches.length;
+
+      return {
+        flowSlug: row.dataset.flowSlug ?? '',
+        textSample: text.slice(0, 140),
+        completeMetricCount: completeMatches.length,
+        ratioMetricCount: ratioMatches.length,
+        percentMetricCount: percentMatches.length,
+        metricCount,
+        duplicateProgressMetricCount: Math.max(0, metricCount - 1),
+      };
+    };
+    const collectInventoryProgressMetrics = () => {
+      const rows = Array.from(document.querySelectorAll('[data-testid="my-flow-group-row"], [data-testid="my-flow-overview-card"]'))
+        .filter((element) => isVisible(element));
+      const rowMetrics = rows.map(summarizeInventoryProgressMetrics);
+
+      return {
+        rowCount: rows.length,
+        duplicateProgressMetricCount: rowMetrics.reduce((sum, row) => sum + row.duplicateProgressMetricCount, 0),
+        rows: rowMetrics.filter((row) => row.metricCount > 0 || row.textSample).slice(0, 8),
+      };
+    };
+    const collectInventoryHeaderMetrics = () => {
+      const largeRemainingPattern = /\b\d+\s*개\s*남음\b/u;
+      const headerElements = Array.from(document.querySelectorAll([
+        '[data-testid="my-flow-mobile-flow-summary"]',
+        '[data-testid="my-flow-overview-summary"]',
+      ].join(','))).filter((element) => isVisible(element));
+      const hits = headerElements
+        .map((element) => normalizeLine(element.textContent ?? ''))
+        .filter((line) => largeRemainingPattern.test(line));
+
+      return {
+        checkedSurfaceCount: headerElements.length,
+        largeRemainingCount: hits.length,
+        hits: hits.slice(0, 5),
+      };
+    };
     const publicBrowseLinkFocusableIndex = focusableEntries.findIndex((entry) => entry.testId === 'flow-public-secondary-browse-link');
     const publicPrimaryPathFocusableIndex = focusableEntries.findIndex((entry) =>
       [
@@ -796,6 +844,8 @@ async function scanPage(page, options = {}) {
         continuationActionable: collectContinuationActionable(),
         agendaGroupMeta: collectAgendaGroupMeta(),
         rowControlAccessibleNames: getRowControlAccessibleNames(),
+        inventoryProgressMetrics: collectInventoryProgressMetrics(),
+        inventoryHeaderMetrics: collectInventoryHeaderMetrics(),
         inventoryRows: document.querySelectorAll('[data-testid="my-flow-group-row"]').length,
         restartInlineExportButtons: document.querySelectorAll('#moving-restart-export-panel button').length,
         restartMobileExportButtons: document.querySelectorAll('[data-testid="moving-mobile-export-actions"] button').length,
@@ -927,6 +977,12 @@ function summarizeEvidence(records) {
     normalRouteRowControlAccessibleNameContextCount: normal.reduce((sum, record) =>
       sum + (record.markers?.rowControlAccessibleNames ?? []).filter((sample) => sample.hasContext).length,
     0),
+    normalRouteInventoryDuplicateProgressMetricCount: normal.reduce((sum, record) =>
+      sum + (record.markers?.inventoryProgressMetrics?.duplicateProgressMetricCount ?? 0),
+    0),
+    normalRouteInventoryHeaderLargeRemainingCount: normal.reduce((sum, record) =>
+      sum + (record.markers?.inventoryHeaderMetrics?.largeRemainingCount ?? 0),
+    0),
     normalRouteQueueLabelScope: 'my-flow-queue-label-surfaces',
     normalRouteQueueLabelCount: normal.reduce((sum, record) =>
       sum
@@ -1015,6 +1071,8 @@ For P10-07 specifically, the scan separates raw ISO visible text from raw ISO in
 
 P11-02 adds JSON-level evidence markers for the P10-03/P10-04/P10-05 claims: \`continuationActionable\`, \`agendaGroupMeta\`, and \`rowControlAccessibleNames\`. Claude Design can now judge the continuation row, Calendar/My Flow group metadata, and short visible labels with preserved accessible names from \`route-evidence.json\` without relying only on screenshots.
 
+P11-04/P11-09 reduce My Flow inventory metric noise. Each saved-content row exposes one primary progress label, and the mobile all-tab header avoids large total remaining-count copy. The capture output records \`inventoryProgressMetrics\` and \`inventoryHeaderMetrics\` so duplicate progress metrics and large remaining-count headers can be judged from JSON markers.
+
 ## Files
 
 - [audit.md](./audit.md)
@@ -1090,6 +1148,8 @@ P10-07 extends the same evidence gate to input values: visible text raw ISO rema
 
 P11-02 keeps the UI unchanged and strengthens the evidence layer. The capture output now records \`continuationActionable\`, \`agendaGroupMeta\`, and \`rowControlAccessibleNames\` so P10-03/P10-04/P10-05 can be reviewed from JSON markers as well as screenshots. Calendar agenda groups and My Flow status-sheet groups use the same marker shape.
 
+P11-04/P11-09 lower My Flow inventory density without changing progress calculations. Inventory rows keep a single visible progress label, the mobile all-tab header avoids large total remaining-count copy, and \`inventoryProgressMetrics\`/\`inventoryHeaderMetrics\` markers make those claims auditable from JSON.
+
 ## Baselines Covered
 
 - P7-01: \`/restart/moving-d30\` uses user-facing date text and a quieter export hierarchy.
@@ -1118,6 +1178,7 @@ P11-02 keeps the UI unchanged and strengthens the evidence layer. The capture ou
 - P10-07: visible raw ISO text, raw ISO input hits, and native date input exemptions are counted separately.
 - P11-01: My Flow overdue status sheets group shared date/content/timing metadata once per group.
 - P11-02: continuation actionable state, Calendar/status-sheet group metadata, and row-control accessible-name samples are recorded as route-evidence markers.
+- P11-04/P11-09: My Flow inventory rows avoid duplicate progress metrics, and the mobile all-tab header avoids large total remaining-count copy.
 
 ## Summary
 
