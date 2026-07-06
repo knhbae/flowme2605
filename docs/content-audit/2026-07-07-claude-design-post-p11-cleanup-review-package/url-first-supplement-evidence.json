@@ -1,0 +1,102 @@
+{
+  "generatedAt": "2026-07-06T23:00:58.366Z",
+  "packageName": "2026-07-07-claude-design-post-p11-cleanup-review-package",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "baseURL": "http://127.0.0.1:3224",
+  "screenshotCount": 6,
+  "scenarios": [
+    {
+      "id": "27-url-first-hit-mobile",
+      "label": "URL-first hit result on /flows",
+      "route": "/flows",
+      "screenshot": "screenshots/27-url-first-hit-mobile.png",
+      "screenshotBytes": 45199,
+      "screenshotHash": "a758b02075bf7ba282772290d6ef132bfba432dc205a8d1e379b7a7fc2542b1f",
+      "noHorizontalOverflow": true,
+      "title": "",
+      "h1": "무엇을 저장할까요?",
+      "scrollHeight": 3596,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "bodyTextLength": 1316
+    },
+    {
+      "id": "28-url-first-custom-start-mobile",
+      "label": "URL-first lightweight custom start panel",
+      "route": "/flows",
+      "screenshot": "screenshots/28-url-first-custom-start-mobile.png",
+      "screenshotBytes": 39913,
+      "screenshotHash": "8fbd7f0862b3d3c066f623e3ce272328d2f78cd31a6b9fccbb22be1d26f603cb",
+      "noHorizontalOverflow": true,
+      "title": "",
+      "h1": "무엇을 저장할까요?",
+      "scrollHeight": 3946,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "bodyTextLength": 1419
+    },
+    {
+      "id": "29-url-first-miss-candidate-form-mobile",
+      "label": "URL-first miss candidate form",
+      "route": "/flows",
+      "screenshot": "screenshots/29-url-first-miss-candidate-form-mobile.png",
+      "screenshotBytes": 48432,
+      "screenshotHash": "34ac52436a56a8bf69ec9abc057af3dede254681dca2eea10bf8832fa405dc5d",
+      "noHorizontalOverflow": true,
+      "title": "",
+      "h1": "무엇을 저장할까요?",
+      "scrollHeight": 3678,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "bodyTextLength": 1360
+    },
+    {
+      "id": "30-url-first-candidate-handoff-mobile",
+      "label": "URL-first candidate list and production handoff",
+      "route": "/flows",
+      "screenshot": "screenshots/30-url-first-candidate-handoff-mobile.png",
+      "screenshotBytes": 47953,
+      "screenshotHash": "672061d35221a758fb3016bed1f80a8ee7bf66f55d7a70582001f105d846a52f",
+      "noHorizontalOverflow": true,
+      "title": "",
+      "h1": "무엇을 저장할까요?",
+      "scrollHeight": 4094,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "bodyTextLength": 1854
+    },
+    {
+      "id": "31-url-first-p0-lab-mobile",
+      "label": "Internal URL-first P0 lab overview",
+      "route": "/flow-lab/url-first-p0",
+      "screenshot": "screenshots/31-url-first-p0-lab-mobile.png",
+      "screenshotBytes": 41380,
+      "screenshotHash": "ed248e53f4635e500e9a3ef25db53fc5e524dca74599c2683d11b900591e870a",
+      "noHorizontalOverflow": true,
+      "title": "URL-first P0 Lab | FlowMe",
+      "h1": "URL-first P0 실험",
+      "scrollHeight": 2188,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "bodyTextLength": 986
+    },
+    {
+      "id": "32-source-backed-manual-registration-report-mobile",
+      "label": "Source-backed manual registration QA report",
+      "route": "docs/content-audit/2026-07-06-source-backed-manual-registration-qa-ko.html",
+      "screenshot": "screenshots/32-source-backed-manual-registration-report-mobile.png",
+      "screenshotBytes": 43042,
+      "screenshotHash": "4f29166f311003f4ec777bdb959d61772512ac068bbdb6b319caca8bb7f3266f",
+      "noHorizontalOverflow": true,
+      "title": "수동 Flow 등록 QA 리포트",
+      "h1": "수동 Flow 등록 QA 리포트",
+      "scrollHeight": 7704,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "bodyTextLength": 7431
+    }
+  ]
+}

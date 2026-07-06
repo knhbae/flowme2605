@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe Post-P11 Claude Design Review Intake</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #1b1a17;
+        --muted: #6e6b64;
+        --line: #e7e4dd;
+        --paper: #fafaf8;
+        --soft: #f7fbf4;
+        --blue: #3654ff;
+        --green: #176d5d;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.55;
+      }
+      main {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 32px 20px 48px;
+      }
+      h1,
+      h2,
+      h3 {
+        letter-spacing: 0;
+        line-height: 1.2;
+      }
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(28px, 4vw, 48px);
+      }
+      h2 {
+        margin: 36px 0 14px;
+        font-size: 22px;
+      }
+      h3 {
+        margin: 0 0 8px;
+        font-size: 16px;
+      }
+      a {
+        color: var(--blue);
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .hero {
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 24px;
+      }
+      .meta,
+      .risk {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 16px 0 0;
+      }
+      .chip {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: white;
+        padding: 6px 10px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 14px;
+      }
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: white;
+        padding: 16px;
+      }
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .links {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 10px;
+      }
+      .metric {
+        border: 1px solid #dde6d8;
+        border-radius: 14px;
+        background: var(--soft);
+        padding: 14px;
+      }
+      .metric strong {
+        display: block;
+        font-size: 22px;
+      }
+      .metric span {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .shots {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 14px;
+      }
+      figure {
+        margin: 0;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        overflow: hidden;
+        background: white;
+      }
+      figure img {
+        display: block;
+        width: 100%;
+        height: 260px;
+        object-fit: cover;
+        object-position: top center;
+        background: #f2f0ea;
+      }
+      figcaption {
+        padding: 10px 12px 12px;
+        font-size: 13px;
+        font-weight: 800;
+      }
+      figcaption span {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+      code {
+        border-radius: 6px;
+        background: #eeece6;
+        padding: 2px 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <h1>FlowMe Post-P11 Review Intake</h1>
+        <p>
+          Claude Design이 GitHub 소스, 문서, route evidence, 모바일 screenshot만 보고 P12 backlog를 산출할 수 있도록 정리한 진입점입니다.
+        </p>
+        <div class="meta">
+          <span class="chip">Branch: codex/flowme-uxui-second-loop</span>
+          <span class="chip">UI baseline: fcd96e4</span>
+          <span class="chip">Viewport: 390x844</span>
+          <span class="chip">Screenshots: 32</span>
+          <span class="chip">Next backlog: P12</span>
+        </div>
+      </section>
+
+      <h2>Core Links</h2>
+      <section class="grid">
+        <article class="card">
+          <h3>Review Source</h3>
+          <ul class="links">
+            <li><a href="./README.md">README.md</a></li>
+            <li><a href="./review-brief-ko.md">review-brief-ko.md</a></li>
+            <li><a href="./audit.md">audit.md</a></li>
+            <li><a href="./review.html">review.html</a></li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Evidence</h3>
+          <ul class="links">
+            <li><a href="./route-evidence.json">route-evidence.json</a></li>
+            <li><a href="./url-first-supplement-evidence.json">url-first-supplement-evidence.json</a></li>
+            <li><a href="./screenshots/">screenshots/</a></li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Copy-Paste Prompt</h3>
+          <p><a href="./prompt-copy-ko.md">prompt-copy-ko.md</a> 파일을 그대로 Claude Design에 붙여넣으면 됩니다.</p>
+        </article>
+      </section>
+
+      <h2>Guardrail Snapshot</h2>
+      <section class="summary">
+        <div class="metric"><strong>0</strong><span>normal internal/source/structural/raw ISO hits</span></div>
+        <div class="metric"><strong>9 / 9</strong><span>public share primary path visible/focusable</span></div>
+        <div class="metric"><strong>0</strong><span>browse before-primary count</span></div>
+        <div class="metric"><strong>0</strong><span>first task repetition hits</span></div>
+        <div class="metric"><strong>0</strong><span>inventory duplicate progress metrics</span></div>
+        <div class="metric"><strong>true</strong><span>restart source/export vs bottom distinct</span></div>
+      </section>
+
+      <h2>Scenario Screenshots</h2>
+      <section class="shots">
+        <figure><a href="./screenshots/01-home-mobile.png"><img src="./screenshots/01-home-mobile.png" alt="Home mobile" /></a><figcaption>01 Home<span>첫 진입</span></figcaption></figure>
+        <figure><a href="./screenshots/02-flows-mobile.png"><img src="./screenshots/02-flows-mobile.png" alt="Flow finding mobile" /></a><figcaption>02 Flow 찾기<span>탐색/URL-first entry</span></figcaption></figure>
+        <figure><a href="./screenshots/03-flow-map-moving-top-mobile.png"><img src="./screenshots/03-flow-map-moving-top-mobile.png" alt="Moving map top" /></a><figcaption>03 Flow Map 상단<span>moving-d30</span></figcaption></figure>
+        <figure><a href="./screenshots/04-flow-map-moving-bottom-mobile.png"><img src="./screenshots/04-flow-map-moving-bottom-mobile.png" alt="Moving map bottom" /></a><figcaption>04 Flow Map 하단<span>sticky/nav clearance</span></figcaption></figure>
+        <figure><a href="./screenshots/05-flow-map-math-mobile.png"><img src="./screenshots/05-flow-map-math-mobile.png" alt="Math map" /></a><figcaption>05 수학 Flow Map<span>date-less save path</span></figcaption></figure>
+        <figure><a href="./screenshots/06-public-vehicle-mobile.png"><img src="./screenshots/06-public-vehicle-mobile.png" alt="Vehicle public flow" /></a><figcaption>06 Public vehicle<span>공유 저장 path</span></figcaption></figure>
+        <figure><a href="./screenshots/07-public-moving-mobile.png"><img src="./screenshots/07-public-moving-mobile.png" alt="Moving public flow" /></a><figcaption>07 Public moving<span>공유 저장 상단</span></figcaption></figure>
+        <figure><a href="./screenshots/08-public-moving-bottom-mobile.png"><img src="./screenshots/08-public-moving-bottom-mobile.png" alt="Moving public bottom" /></a><figcaption>08 Public moving bottom<span>하단 clearance</span></figcaption></figure>
+        <figure><a href="./screenshots/09-workbench-fridge-mobile.png"><img src="./screenshots/09-workbench-fridge-mobile.png" alt="Fridge workbench" /></a><figcaption>09 Fridge workbench<span>setup/action path</span></figcaption></figure>
+        <figure><a href="./screenshots/10-workbench-washer-mobile.png"><img src="./screenshots/10-workbench-washer-mobile.png" alt="Washer workbench" /></a><figcaption>10 Washer workbench<span>setup/action path</span></figcaption></figure>
+        <figure><a href="./screenshots/11-workbench-new-car-mobile.png"><img src="./screenshots/11-workbench-new-car-mobile.png" alt="New car workbench" /></a><figcaption>11 New car workbench<span>field checklist</span></figcaption></figure>
+        <figure><a href="./screenshots/12-workbench-used-car-mobile.png"><img src="./screenshots/12-workbench-used-car-mobile.png" alt="Used car workbench" /></a><figcaption>12 Used car workbench<span>field checklist</span></figcaption></figure>
+        <figure><a href="./screenshots/13-post-save-my-moving-mobile.png"><img src="./screenshots/13-post-save-my-moving-mobile.png" alt="My Flow moving post save" /></a><figcaption>13 My Flow saved moving<span>저장 직후</span></figcaption></figure>
+        <figure><a href="./screenshots/14-calendar-after-moving-save-mobile.png"><img src="./screenshots/14-calendar-after-moving-save-mobile.png" alt="Calendar after save" /></a><figcaption>14 Calendar<span>agenda-first</span></figcaption></figure>
+        <figure><a href="./screenshots/15-post-save-my-math-mobile.png"><img src="./screenshots/15-post-save-my-math-mobile.png" alt="My Flow math post save" /></a><figcaption>15 My Flow saved math<span>date-less fallback</span></figcaption></figure>
+        <figure><a href="./screenshots/16-my-multi-queue-mobile.png"><img src="./screenshots/16-my-multi-queue-mobile.png" alt="My Flow multi queue" /></a><figcaption>16 My Flow queue<span>today/past/next</span></figcaption></figure>
+        <figure><a href="./screenshots/17-my-multi-queue-overdue-sheet-mobile.png"><img src="./screenshots/17-my-multi-queue-overdue-sheet-mobile.png" alt="Overdue status sheet" /></a><figcaption>17 지난 할 일 sheet<span>group header</span></figcaption></figure>
+        <figure><a href="./screenshots/18-my-long-list-top-mobile.png"><img src="./screenshots/18-my-long-list-top-mobile.png" alt="My Flow long list top" /></a><figcaption>18 Long list top<span>5+ saved</span></figcaption></figure>
+        <figure><a href="./screenshots/19-my-long-list-bottom-mobile.png"><img src="./screenshots/19-my-long-list-bottom-mobile.png" alt="My Flow long list bottom" /></a><figcaption>19 Long list bottom<span>bottom clearance</span></figcaption></figure>
+        <figure><a href="./screenshots/20-my-long-list-inventory-bottom-mobile.png"><img src="./screenshots/20-my-long-list-inventory-bottom-mobile.png" alt="Inventory bottom" /></a><figcaption>20 Inventory bottom<span>detail/source/export access</span></figcaption></figure>
+        <figure><a href="./screenshots/21-restart-moving-top-mobile.png"><img src="./screenshots/21-restart-moving-top-mobile.png" alt="Restart top" /></a><figcaption>21 Restart top<span>prototype gate</span></figcaption></figure>
+        <figure><a href="./screenshots/24-restart-moving-full-schedule-mobile.png"><img src="./screenshots/24-restart-moving-full-schedule-mobile.png" alt="Restart full schedule" /></a><figcaption>24 Restart schedule<span>D-30 grouping</span></figcaption></figure>
+        <figure><a href="./screenshots/22-restart-moving-source-export-mobile.png"><img src="./screenshots/22-restart-moving-source-export-mobile.png" alt="Restart source export" /></a><figcaption>22 Restart source/export<span>middle frame</span></figcaption></figure>
+        <figure><a href="./screenshots/23-restart-moving-bottom-mobile.png"><img src="./screenshots/23-restart-moving-bottom-mobile.png" alt="Restart bottom" /></a><figcaption>23 Restart bottom<span>true bottom</span></figcaption></figure>
+        <figure><a href="./screenshots/25-workbench-new-car-open-details-mobile.png"><img src="./screenshots/25-workbench-new-car-open-details-mobile.png" alt="New car open details" /></a><figcaption>25 New car details<span>source density</span></figcaption></figure>
+        <figure><a href="./screenshots/26-workbench-used-car-open-details-mobile.png"><img src="./screenshots/26-workbench-used-car-open-details-mobile.png" alt="Used car open details" /></a><figcaption>26 Used car details<span>source density</span></figcaption></figure>
+        <figure><a href="./screenshots/27-url-first-hit-mobile.png"><img src="./screenshots/27-url-first-hit-mobile.png" alt="URL-first hit" /></a><figcaption>27 URL-first hit<span>canonical lookup</span></figcaption></figure>
+        <figure><a href="./screenshots/28-url-first-custom-start-mobile.png"><img src="./screenshots/28-url-first-custom-start-mobile.png" alt="URL-first custom start" /></a><figcaption>28 URL-first custom<span>personal start</span></figcaption></figure>
+        <figure><a href="./screenshots/29-url-first-miss-candidate-form-mobile.png"><img src="./screenshots/29-url-first-miss-candidate-form-mobile.png" alt="URL-first miss" /></a><figcaption>29 URL-first miss<span>candidate form</span></figcaption></figure>
+        <figure><a href="./screenshots/30-url-first-candidate-handoff-mobile.png"><img src="./screenshots/30-url-first-candidate-handoff-mobile.png" alt="URL-first handoff" /></a><figcaption>30 Candidate handoff<span>manual production info</span></figcaption></figure>
+        <figure><a href="./screenshots/31-url-first-p0-lab-mobile.png"><img src="./screenshots/31-url-first-p0-lab-mobile.png" alt="URL-first lab" /></a><figcaption>31 URL-first lab<span>internal QA</span></figcaption></figure>
+        <figure><a href="./screenshots/32-source-backed-manual-registration-report-mobile.png"><img src="./screenshots/32-source-backed-manual-registration-report-mobile.png" alt="Manual registration report" /></a><figcaption>32 Manual registration QA<span>source-backed report</span></figcaption></figure>
+      </section>
+
+      <h2>Review Request</h2>
+      <p>
+        Claude Design에는 <a href="./prompt-copy-ko.md">prompt-copy-ko.md</a>의 텍스트를 그대로 붙여넣고, Blocking / High / Medium / Low 기준의 P12 backlog를 요청합니다.
+      </p>
+    </main>
+  </body>
+</html>
