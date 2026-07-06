@@ -840,9 +840,11 @@ function renderReadme(evidence) {
 
 This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, the P8-02 restart/prototype promotion gate, the P8-03/P8-04 My Flow overdue label/status corrections, the P8-05/P8-06/P8-08 evidence/package metadata cleanup, the P8-07 restart date-display decision, the P8-09 field-checklist source-density rule, and the P8-10/P9-02 public share CTA/tab-order rule.
 
-For P9, it additionally closes P9-01 to P9-07: data-driven guardrail coverage, accessible public browse-link ordering, My Flow structural-copy cleanup, source-slug punctuation scanning, restart/prototype English UI gate expansion, restart D-30 milestone grouping, and direct guardrail helper unit tests.
+It also keeps the P9-01 to P9-07 coverage closed: data-driven guardrail coverage, accessible public browse-link ordering, My Flow structural-copy cleanup, source-slug punctuation scanning, restart/prototype English UI gate expansion, restart D-30 milestone grouping, and direct guardrail helper unit tests.
 
-For P10-07, the scan separates raw ISO visible text from raw ISO input values. Native \`input[type=date]\` ISO values are treated as technical browser control values and recorded in an explicit exemption bucket; non-date input values with raw ISO remain guardrail hits.
+For P10, this package closes P10-01 to P10-07: guardrail/capture canonicalization, public share primary save/setup path evidence, actionable My Flow continuation, Calendar agenda group-header density, shorter visible control labels with accessible names, GitHub link-base cleanup, and visible-text/input-value raw ISO separation.
+
+For P10-07 specifically, the scan separates raw ISO visible text from raw ISO input values. Native \`input[type=date]\` ISO values are treated as technical browser control values and recorded in an explicit exemption bucket; non-date input values with raw ISO remain guardrail hits.
 
 ## Files
 
@@ -905,7 +907,9 @@ function renderAudit(evidence) {
 
 ## Scope
 
-P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata, P8-07 confirms the \`/restart/moving-d30\` first-three-row date repetition as an intentional D-30 milestone group rather than a date-distribution bug, P8-09 lowers repeated row-level source links in field checklist workbenches, and P8-10/P9-02 keeps public share browse navigation accessible but after the primary save/input path. P9-01 to P9-07 then close the remaining guardrail coverage, accessibility ordering, structural-copy, punctuation, prototype gate, restart grouping, and guardrail-unit-test gaps. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
+P7-06 closes the review loop after P7-01 to P7-05. P8-01 generalizes the same guardrails for new seed/source/route additions, P8-02 expands the restart/prototype promotion gate, P8-03/P8-04 fix My Flow overdue labeling/status accuracy, P8-05/P8-06/P8-08 clean up evidence duplication, label-count scope, and commit metadata, P8-07 confirms the \`/restart/moving-d30\` first-three-row date repetition as an intentional D-30 milestone group rather than a date-distribution bug, P8-09 lowers repeated row-level source links in field checklist workbenches, and P8-10/P9-02 keeps public share browse navigation accessible but after the primary save/input path. P9-01 to P9-07 then close the remaining guardrail coverage, accessibility ordering, structural-copy, punctuation, prototype gate, restart grouping, and guardrail-unit-test gaps.
+
+P10-01 to P10-07 close the current review loop: capture uses the canonical \`user-surface-guardrails.ts\` rules, public share workbenches expose a visible/focusable primary save/setup path, My Flow continuation cards remain actionable, Calendar same-day agenda metadata is grouped, repeated visible control labels stay short while aria labels retain context, GitHub package links use the correct base, and raw ISO input values are separated from visible text. This does not add a feature. It freezes the current UX baselines with screenshots, route scans, and E2E guardrails.
 
 P10-07 extends the same evidence gate to input values: visible text raw ISO remains a failure, non-date input values with raw ISO remain a failure, and native \`input[type=date]\` values are recorded separately as technical browser control exemptions.
 
@@ -928,6 +932,13 @@ P10-07 extends the same evidence gate to input values: visible text raw ISO rema
 - P9-01/P9-04/P9-05/P9-07: guardrail coverage is data-driven, source slug punctuation and prototype English UI classes are covered, and helper-level positive/negative unit tests lock the rules.
 - P9-03: My Flow structural terms such as \`Flow 상태판\` are removed from user-facing copy and covered by structural-display guardrails.
 - P9-06: restart full schedule groups same-day D-30 items under a visible milestone heading instead of repeating the date as unexplained row text.
+- P10-01: capture/package evidence uses the canonical \`lib/flow/user-surface-guardrails.ts\` implementation rather than copied regex rules.
+- P10-02: public \`/f/[slug]\` workbenches keep \`내 Flow에 저장\` or setup/input as visible, focusable primary paths before \`콘텐츠 더 보기\`.
+- P10-03: My Flow \`지금 이어하기\` evidence is tied to an actionable first row, not an explanation-only card.
+- P10-04: Calendar selected-day agenda groups shared same-day metadata in the group header instead of repeating chips on every row.
+- P10-05: restart/My Flow visible row controls stay short, while accessible labels preserve the row title and action context.
+- P10-06: generated GitHub links use the repository root base and avoid duplicate \`/flow-mvp\` path segments.
+- P10-07: visible raw ISO text, raw ISO input hits, and native date input exemptions are counted separately.
 
 ## Summary
 
@@ -1005,28 +1016,30 @@ function renderPrompt(evidence) {
   return `아래 GitHub 소스/문서/screenshot만 보고 FlowMe ${reviewCycle} 마감 상태를 다시 검토해주세요. Vercel preview는 볼 수 없다는 전제로 검토해주세요.
 
 검토 기준:
-1. P7-01~P7-05가 실제 화면 기준으로 유지되는지 확인
-2. P7-06/P8-01 guardrail 일반화가 충분한지 확인
-3. P8-05/P8-06/P8-08의 evidence cleanup이 충분한지 확인
-   - /restart source/export frame과 bottom frame이 서로 다른 scroll position/screenshot인지
-   - My Flow 반복 라벨 카운터가 실제 queue/section label surface를 세는지
-   - UI baseline commit과 package generation metadata가 헷갈리지 않는지
-4. 정상 사용자 route에서 아래 회귀가 다시 생길 위험이 있는지 확인
+1. P4~P9 기준선이 P10 이후에도 실제 화면 기준으로 유지되는지 확인
+2. P10-01 guardrail/capture 정본 단일화가 충분한지 확인
+3. P10-02 공개 /f workbench primary save/setup path evidence가 충분한지 확인
+   - \`내 Flow에 저장\` 또는 입력/setup path가 visible/focusable primary인지
+   - \`콘텐츠 더 보기\`가 접근 가능하지만 primary 뒤의 보조 탐색인지
+4. P10-03 My Flow \`지금 이어하기\`가 explanation-only card로 보이지 않는지 확인
+5. P10-04 Calendar selected-day agenda에서 같은 날짜의 공통 metadata/chip이 과하게 반복되지 않는지 확인
+6. P10-05 restart/My Flow row control label이 짧게 보이고 aria-label에는 전체 맥락이 보존되는지 확인
+7. P10-06 GitHub link base가 실제 repository path에서 열리는지 확인
+8. P10-07 raw ISO evidence가 visible text, user-visible input hit, native date input exemption을 올바르게 분리하는지 확인
+9. 정상 사용자 route에서 아래 회귀가 다시 생길 위험이 있는지 확인
    - seed/source metadata에서 동적으로 추출되는 source slug가 제목/부제/주요 문구로 노출
    - 콘텐츠 제목 끝 Flow 접미
    - 일정 지도, 저장한 지도 같은 내부 구조형 표현
    - raw ISO 날짜
+   - non-date input value의 raw ISO 날짜
    - My Flow 첫 할 일 제목 반복
    - 모바일 390px 좌우 overflow
    - 하단 fixed/sticky가 마지막 버튼/행/agenda를 가림
-5. /restart/moving-d30 prototype bucket을 별도 관리하는 기준이 충분한지 확인
-6. P8-09 field checklist workbench source-density guardrail이 충분한지 확인
+10. /restart/moving-d30 prototype bucket을 별도 관리하는 기준이 충분한지 확인
+11. P8-09 field checklist workbench source-density guardrail이 충분한지 확인
    - new-car / used-car row detail source link count가 0인지
    - source/reference access link count가 0보다 크게 유지되는지
-7. P8-10 public share CTA/tab-order guardrail이 충분한지 확인
-   - 공개 /f 저장 전 화면에서 \`내 Flow에 저장\` 또는 입력/setup path가 primary인지
-   - \`콘텐츠 더 보기\`가 시각적으로도 tab order/accessibility에서도 보조 링크로만 남는지
-8. 단순 평가로 끝내지 말고, 필요하면 다음 backlog를 Blocking/High/Medium/Low로 작성
+12. 단순 평가로 끝내지 말고, 필요하면 다음 backlog를 Blocking/High/Medium/Low로 작성
 
 주요 링크:
 - ${reviewCycle} review package README: ${githubBase}/docs/content-audit/${packageName}/README.md
@@ -1043,16 +1056,13 @@ function renderPrompt(evidence) {
 ${JSON.stringify(evidence.summary, null, 2)}
 \`\`\`
 
-8. P9-01~P9-07 마감 기준이 충분한지 확인
-   - seed/source 데이터 기반 guardrail coverage가 새 콘텐츠 추가에도 회귀를 잡을 수 있는지
-   - source slug punctuation, prototype English UI gate, My Flow structural copy, restart D-30 milestone grouping, guardrail helper unit tests가 충분히 닫혔는지
-
 요청 산출물:
 1. route별 UX/UI 문제 목록
 2. Blocking/High/Medium/Low 우선순위
 3. 바로 개발 가능한 ${nextBacklogCycle} backlog
 4. 유지해야 할 기준선
 5. 화면별 구체 수정 지시
+6. evidence가 부족한 시나리오
 `;
 }
 
@@ -1106,7 +1116,7 @@ function renderHtml(evidence) {
 <body>
   <main>
     <h1>FlowMe ${reviewCycle} Final Review Package</h1>
-    <p class="lead">P7/P8 기준선 위에 P9-01~P9-07 guardrail coverage, 접근성 순서, My Flow 구조어, prototype gate, restart milestone grouping, helper unit test 기준을 고정하기 위한 모바일 390px screenshot/evidence 패키지입니다.</p>
+    <p class="lead">P7/P8/P9 기준선 위에 P10-01~P10-07 guardrail 단일화, public share primary path, My Flow continuation, Calendar group header, 짧은 컨트롤 라벨, GitHub link base, input value raw ISO 정책을 고정하기 위한 모바일 390px screenshot/evidence 패키지입니다.</p>
     <p class="meta">UI baseline commit: ${escapeHtml(evidence.uiBaselineCommit)} · Package generated from: ${escapeHtml(evidence.packageGeneratedFromCommit)} · Package commit ref: ${escapeHtml(evidence.packageCommitRef)}</p>
     <section class="summary">
       <div class="stat"><b>${evidence.summary.totalScreenshots}</b><span>screenshots</span></div>

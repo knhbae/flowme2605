@@ -4,13 +4,13 @@
 기준 repo: `D:\flowme2605\flow-mvp`  
 기준 branch: `codex/flowme-uxui-second-loop`  
 Claude 원문: `claude_work/FlowMe UXUI 전체 검토8.zip` 안의 `FlowMe UX 재검토 P9 마감 (P10 백로그).dc.html`  
-현재 evidence: `docs/content-audit/2026-07-05-claude-design-p9-final-review-package/`
+현재 evidence: `docs/content-audit/2026-07-06-claude-design-p10-final-review-package/`
 
 ## 목적
 
 이 문서는 Claude Design P10 백로그를 한 번에 개발하기 위한 작업 지시서가 아니라, 이후 작업을 안전하게 단계별 `/goal`로 실행하기 위한 실행 계획이다.
 
-이번 문서 작성 범위에서는 앱 UI, 테스트 코드, seed/source-backed 데이터, 저장/실행/export 스키마를 수정하지 않는다. P10-01, P10-02, P10-06은 이미 완료된 항목으로 표시하고, 남은 P10 항목은 Claude Design 원문 기준으로 분리한다.
+이번 문서는 처음 작성 당시 앱 UI, 테스트 코드, seed/source-backed 데이터, 저장/실행/export 스키마를 수정하지 않고 P10을 단계별 `/goal`로 쪼개기 위한 실행 계획이었다. 이후 P10-01부터 P10-07까지 순차 처리했고, 현재 마감 감사 기준은 최신 P10 final review package다.
 
 ## 현재 P10 상태 요약
 
@@ -18,13 +18,13 @@ Claude 원문: `claude_work/FlowMe UXUI 전체 검토8.zip` 안의 `FlowMe UX �
 | --- | --- | --- | --- | --- |
 | P10-01 | High | 완료 | evidence capture가 `lib/flow/user-surface-guardrails.ts` 정본을 사용하도록 단일화 | `1349fec Unify user surface guardrail capture rules` |
 | P10-02 | High | 완료 | 공개 `/f/[slug]` workbench 저장/setup primary path가 focusable/visible/evidence에 잡히도록 정리 | `706b67f`, `29b04f9` |
-| P10-03 | Medium | 남음 | My Flow `지금 이어하기` 카드가 행동 없는 설명 카드처럼 보이지 않게 정리 | Claude P10 원문 s13/s15/s16 지적 |
-| P10-04 | Medium | 남음 | `/calendar` 같은 날 agenda에서 반복 칩을 날짜 그룹 헤더로 올려 밀도 정리 | Claude P10 원문 s14 지적 |
-| P10-05 | Low | 남음 | restart 일정 행과 My Flow 시트의 반복 컨트롤 라벨을 `편집`/`열기` 중심으로 축소 | Claude P10 원문 s17/s22/s24 지적 |
+| P10-03 | Medium | 완료 | My Flow `지금 이어하기` 카드가 행동 없는 설명 카드처럼 보이지 않게 정리 | `971757a Fix My Flow continuation summary copy` |
+| P10-04 | Medium | 완료 | `/calendar` 같은 날 agenda에서 반복 칩을 날짜 그룹 헤더로 올려 밀도 정리 | `6fa1f45 Refine calendar agenda group metadata` |
+| P10-05 | Low | 완료 | restart 일정 행과 My Flow 시트의 반복 컨트롤 라벨을 `편집`/`열기` 중심으로 축소 | `bf8d485 Tighten repeated control labels` |
 | P10-06 | Low | 완료 | P9/P10 package GitHub link base의 `/flow-mvp` 중복/404 리스크 제거 | `1349fec` 및 P9 package 링크 확인 |
-| P10-07 | Low | 남음 | visible input value까지 raw ISO 스캔 범위를 확장하고 restart date input 표기/면제 기준 결정 | Claude P10 원문 s21 지적 |
+| P10-07 | Low | 완료 | visible input value까지 raw ISO 스캔 범위를 확장하고 restart date input 표기/면제 기준 결정 | `24a7760 Track input ISO values in evidence guardrails` |
 
-항목 누락 점검: Claude Design P10 원문에서 확인된 P10 항목은 `P10-01`부터 `P10-07`까지 7개다. 현재 문서에서 7개 모두 상태를 부여했다.
+항목 누락 점검: Claude Design P10 원문에서 확인된 P10 항목은 `P10-01`부터 `P10-07`까지 7개다. 현재 마감 기준에서는 7개 모두 완료 상태이며, 최신 evidence package는 P11 백로그 산출 요청용이다.
 
 ## 유지해야 할 기준선
 
@@ -175,8 +175,8 @@ P10-01, P10-02, P10-06은 완료 상태이므로 재작업하지 않는다. 다�
 
 ## P10-03 실행 계획
 
-상태: 남음  
-우선순위: Medium  
+상태: 완료
+우선순위: Medium
 권장 순서: 1
 
 목표:
@@ -247,8 +247,8 @@ P10-01, P10-02, P10-06은 완료 상태이므로 재작업하지 않는다. 다�
 
 ## P10-04 실행 계획
 
-상태: 남음  
-우선순위: Medium  
+상태: 완료
+우선순위: Medium
 권장 순서: 2
 
 목표:
@@ -312,8 +312,8 @@ P10-01, P10-02, P10-06은 완료 상태이므로 재작업하지 않는다. 다�
 
 ## P10-05 실행 계획
 
-상태: 남음  
-우선순위: Low  
+상태: 완료
+우선순위: Low
 권장 순서: 3
 
 목표:
@@ -419,8 +419,8 @@ P10-01, P10-02, P10-06은 완료 상태이므로 재작업하지 않는다. 다�
 
 ## P10-07 실행 계획
 
-상태: 남음  
-우선순위: Low  
+상태: 완료
+우선순위: Low
 권장 순서: 4
 
 목표:
@@ -604,7 +604,7 @@ Claude Design P10 백로그의 P10-07을 해결한다. evidence/capture 스캔�
 
 ## P10 마감 package 후보
 
-남은 P10-03/P10-04/P10-05/P10-07을 모두 처리한 뒤 별도 목표로 진행한다.
+P10-03/P10-04/P10-05/P10-07 처리 후 별도 목표로 진행한 마감 감사 항목이다.
 
 ```text
 /goal
@@ -626,8 +626,8 @@ Claude Design P10 백로그 P10-01~P10-07 개선 루프를 마감 감사한다. 
 ## 이번 계획 문서 검증 체크리스트
 
 - P10 항목: `P10-01`부터 `P10-07`까지 모두 포함.
-- 완료 상태: `P10-01`, `P10-02`, `P10-06`.
-- 남은 상태: `P10-03`, `P10-04`, `P10-05`, `P10-07`.
-- 권장 순서: P10-03 → P10-04 → P10-05 → P10-07 → P10 마감 package.
-- 실행 방식: 한 번에 묶지 않고 단계별 `/goal` 권장.
-- 이번 문서 작성에서는 앱 UI, 테스트 코드, seed/source-backed 데이터, 저장/실행/export 스키마를 수정하지 않음.
+- 완료 상태: `P10-01`, `P10-02`, `P10-03`, `P10-04`, `P10-05`, `P10-06`, `P10-07`.
+- 남은 상태: 없음.
+- 실제 실행 순서: P10-03 → P10-04 → P10-05 → P10-07 → P10 마감 package.
+- 실행 방식: 한 번에 묶지 않고 단계별 `/goal`로 처리했으며, 마감 package에서 최신 evidence를 다시 생성함.
+- 이 계획 문서 작성 자체에서는 앱 UI, 테스트 코드, seed/source-backed 데이터, 저장/실행/export 스키마를 수정하지 않았고, 이후 각 P10 항목은 별도 커밋으로 처리함.
