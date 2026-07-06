@@ -3281,11 +3281,57 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   })();
   const myFlowStatusOverdueRows = overdueRows.slice(0, 6);
   const myFlowStatusNextRows = [...todayOpenRows, ...upcomingRows].slice(0, 6);
+  const myFlowStatusOverdueGroups = Array.from(
+    myFlowStatusOverdueRows.reduce<
+      Map<
+        string,
+        {
+          key: string;
+          dateLabel: string;
+          title: string;
+          timingLabel?: string;
+          timingAriaLabel?: string;
+          rows: MyFlowCalendarRow[];
+        }
+      >
+    >((groups, row) => {
+      const dateLabel = row.date ? formatMyFlowDisplayDate(row.date) : '날짜 없음';
+      const title = getMyFlowFlowChipLabel(row.flow);
+      const timingValue = row.flow.bundle.flow.structure_type !== 'routine' ? (row.timing ?? '') : '';
+      const timingLabel = timingValue ? formatMyFlowTimingChip(timingValue) : undefined;
+      const timingAriaLabel = timingValue ? getMyFlowTimingChipLabel(timingValue) : undefined;
+      const savedContentKey = row.flow.savedMap?.mapId ?? row.flow.progress.slug;
+      const key = `${row.date ?? 'none'}-${savedContentKey}-${timingValue || 'no-timing'}`;
+      const existing = groups.get(key);
+      if (existing) {
+        existing.rows.push(row);
+        return groups;
+      }
+      groups.set(key, {
+        key,
+        dateLabel,
+        title,
+        ...(timingLabel ? { timingLabel } : {}),
+        ...(timingAriaLabel ? { timingAriaLabel } : {}),
+        rows: [row],
+      });
+      return groups;
+    }, new Map()).values(),
+  );
   const myFlowStatusOpenFlowCount = visibleSavedFlows.filter((flow) => flow.done < flow.total).length;
   const myFlowStatusAveragePercent = visibleSavedFlows.length
     ? Math.round(visibleSavedFlows.reduce((sum, flow) => sum + flow.percent, 0) / visibleSavedFlows.length)
     : 0;
   const myFlowStatusNextActionCount = myFlowStatusNextRows.length;
+  const getMyFlowStatusSheetOpenAriaLabel = (
+    row: MyFlowCalendarRow,
+    group?: { dateLabel: string; title: string; timingLabel?: string },
+  ) => {
+    const contextTitle = group
+      ? [getMyFlowRowDisplayTitle(row), group.dateLabel, group.title, group.timingLabel].filter(Boolean).join(' · ')
+      : getMyFlowRowDisplayTitle(row);
+    return getMyFlowOpenActionAriaLabel(contextTitle, getMyFlowOpenActionLabel(row.flow.bundle));
+  };
   const updateMyFlowItemDraft = (row: MyFlowCalendarRow, patch: MyFlowItemDraft) => {
     const key = getMyFlowRowInstanceKey(row);
     setMyFlowItemDrafts((current) => {
@@ -6950,8 +6996,58 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 닫기
               </button>
             </div>
-            <div className="mt-4 grid gap-2">
-              {(myFlowStatusSheet === 'overdue' ? myFlowStatusOverdueRows : myFlowStatusNextRows).map((row) => (
+            <div className="mt-4 grid gap-3">
+              {myFlowStatusSheet === 'overdue' ? myFlowStatusOverdueGroups.map((group) => (
+                <section
+                  key={`overdue-group-${group.key}`}
+                  data-testid="my-flow-status-sheet-group"
+                  className="rounded-xl border border-amber-100 bg-amber-50/70 p-2.5"
+                >
+                  <div className="flex flex-wrap items-center gap-2 px-1 text-xs font-semibold text-amber-800">
+                    <span>{group.dateLabel}</span>
+                    <span aria-hidden="true">·</span>
+                    <span>{group.title}</span>
+                    {group.timingLabel ? (
+                      <>
+                        <span aria-hidden="true">·</span>
+                        <span
+                          className="rounded bg-white/80 px-1.5 py-0.5 text-[10px] text-amber-800"
+                          data-testid="my-flow-status-sheet-group-timing-chip"
+                          aria-label={group.timingAriaLabel}
+                        >
+                          {group.timingLabel}
+                        </span>
+                      </>
+                    ) : null}
+                    <span aria-hidden="true">·</span>
+                    <span>{group.rows.length}개</span>
+                  </div>
+                  <div className="mt-2 grid gap-2">
+                    {group.rows.map((row) => (
+                      <article
+                        key={`overdue-${row.flow.progress.slug}-${row.id}-${row.date ?? 'row'}`}
+                        data-testid="my-flow-status-sheet-row"
+                        data-flow-slug={row.flow.progress.slug}
+                        data-row-key={getMyFlowRowInstanceKey(row)}
+                        className="rounded-lg border border-amber-100 bg-white p-3"
+                      >
+                        <p className="text-base font-semibold text-slate-950">{getMyFlowRowDisplayTitle(row)}</p>
+                        <button
+                          type="button"
+                          className="mt-3 min-h-9 rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300"
+                          aria-label={getMyFlowStatusSheetOpenAriaLabel(row, group)}
+                          onClick={() => {
+                            setMyFlowStatusSheet(null);
+                            openMyFlowRowFromFlowTab(row.flow, row);
+                          }}
+                        >
+                          {getMyFlowOpenActionLabel(row.flow.bundle)}
+                        </button>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+              )) : myFlowStatusNextRows.map((row) => (
                 <article
                   key={`${myFlowStatusSheet}-${row.flow.progress.slug}-${row.id}-${row.date ?? 'row'}`}
                   data-testid="my-flow-status-sheet-row"
@@ -6970,7 +7066,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   <button
                     type="button"
                     className="mt-3 min-h-9 rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300"
-                    aria-label={getMyFlowOpenActionAriaLabel(getMyFlowRowDisplayTitle(row), getMyFlowOpenActionLabel(row.flow.bundle))}
+                    aria-label={getMyFlowStatusSheetOpenAriaLabel(row)}
                     onClick={() => {
                       setMyFlowStatusSheet(null);
                       openMyFlowRowFromFlowTab(row.flow, row);

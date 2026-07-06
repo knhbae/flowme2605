@@ -2015,14 +2015,25 @@ test('my flow today dedupes rows when today overdue and next queues coexist on m
   await expect(overdueSheet).toBeVisible();
   await expect(overdueSheet).toContainText('지난 할 일');
   await expect(overdueSheet).not.toContainText(/밀린 할 일|지난 일정|밀림/);
+  const overdueGroups = overdueSheet.getByTestId('my-flow-status-sheet-group');
+  await expect(overdueGroups.first()).toBeVisible();
+  await expect(overdueGroups.first()).toContainText('5월 27일');
+  await expect(overdueGroups.first()).toContainText('기준 D-30');
+  await expect(overdueGroups.first()).toContainText('이사 준비');
+  await expectTextOccurrenceAtMost(overdueGroups.first(), '5월 27일', 1);
+  await expectTextOccurrenceAtMost(overdueGroups.first(), '기준 D-30', 1);
+  const firstOverdueGroupRow = overdueGroups.first().getByTestId('my-flow-status-sheet-row').first();
+  await expect(firstOverdueGroupRow).not.toContainText('5월 27일');
+  await expect(firstOverdueGroupRow).not.toContainText('기준 D-30');
+  await expect(firstOverdueGroupRow).not.toContainText('이사 준비');
   const overdueKeys = await overdueSheet
     .getByTestId('my-flow-status-sheet-row')
     .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-row-key')).filter(Boolean));
   expect(overdueKeys.length).toBeGreaterThan(0);
-  const overdueOpenButton = overdueSheet.getByTestId('my-flow-status-sheet-row').first().getByRole('button', { name: /열기$/ });
-  await expect(overdueOpenButton).toHaveText('열기');
-  await expect(overdueOpenButton).toHaveAttribute('aria-label', /.+ 열기$/);
-  await expect(overdueOpenButton).not.toContainText('항목 열기');
+  const firstOverdueSheetOpen = firstOverdueGroupRow.locator('button').filter({ hasText: '열기' });
+  await expect(firstOverdueSheetOpen).toHaveText('열기');
+  await expect(firstOverdueSheetOpen).toHaveAttribute('aria-label', /5월 27일.*이사 준비.*기준 D-30.*열기$/);
+  await expect(firstOverdueSheetOpen).not.toContainText('항목 열기');
   const allQueueKeys = [...visibleQueueKeys, ...overdueKeys];
   expect(new Set(allQueueKeys).size).toBe(allQueueKeys.length);
   await testInfo.attach('p7-02-my-flow-multi-queue-row-keys', {
