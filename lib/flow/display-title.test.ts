@@ -187,6 +187,20 @@ test('capture script exposes P11 evidence markers for actionable rows and access
   assert.ok(script.includes('normalRouteInventoryHeaderLargeRemainingCount'));
 });
 
+test('capture script exposes flow-lab prototype bucket and internal QA link markers', () => {
+  const script = fs.readFileSync(
+    path.join(process.cwd(), 'scripts', 'content-audit', 'capture-claude-p7-final-review-package.mjs'),
+    'utf8',
+  );
+
+  assert.ok(script.includes('prototype-flow-lab'));
+  assert.ok(script.includes('flowLabPrototypeRouteCount'));
+  assert.ok(script.includes('flowLabPrototypeGuardrailHitCount'));
+  assert.ok(script.includes('flowLabPrototypeNoindex'));
+  assert.ok(script.includes('flowLabPrototypeLinkedFromUserNavCount'));
+  assert.ok(script.includes('manualRegistrationQaUserLinkCount'));
+});
+
 test('user surface guardrail helpers lock positive and negative display cases', () => {
   assert.equal(normalizeGuardrailLine('  first   line  '), 'first line');
   assert.deepEqual(normalizeGuardrailLines(['  first   line  ', '   ']), ['first line']);

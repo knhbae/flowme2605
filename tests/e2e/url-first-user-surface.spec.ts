@@ -75,3 +75,26 @@ test('URL-first miss and saved-candidate states hide production-only wording fro
   await expect(candidateCard.getByTestId('flow-url-supply-production-handoff')).toBeVisible();
   await expectCleanUrlFirstUserSurface(candidateCard);
 });
+
+test('URL-first lab stays prototype-gated and absent from user navigation', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  const userRoutes = [
+    '/',
+    '/flows',
+    '/my',
+    '/calendar',
+    '/f/vehicle-inspection-prep',
+    '/flow-maps/moving-d30',
+  ];
+
+  for (const route of userRoutes) {
+    await page.goto(route);
+    await expect(page.locator('a[href="/flow-lab/url-first-p0"], a[href^="/flow-lab/url-first-p0?"]')).toHaveCount(0);
+    await expect(page.locator('a[href*="source-backed-manual-registration"]')).toHaveCount(0);
+  }
+
+  await page.goto('/flow-lab/url-first-p0');
+  await expect(page.getByTestId('url-first-p0-lab')).toBeVisible();
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
+});

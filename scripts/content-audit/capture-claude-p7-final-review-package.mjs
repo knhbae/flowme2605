@@ -176,6 +176,12 @@ async function main() {
       prototypeBucket: true,
       scrollPurpose: 'true-page-bottom',
     });
+
+    await captureRoute(page, '/flow-lab/url-first-p0', '31-flow-lab-url-first-p0-mobile.png', 'URL-first lab prototype bucket gate', {
+      category: 'prototype-flow-lab',
+      prototypeBucket: true,
+      scrollPurpose: 'prototype-flow-lab-top',
+    });
   } finally {
     await browser.close();
     stopServer(server);
@@ -916,6 +922,25 @@ async function scanPage(page, options = {}) {
       || entry.text.includes('내 Flow에 저장')
       || entry.text.includes('내 도구로 가져가기'),
     );
+    const anchorHrefs = Array.from(document.querySelectorAll('a[href]')).map((anchor) => {
+      const rawHref = anchor.getAttribute('href') ?? '';
+      try {
+        const url = new URL(rawHref, window.location.href);
+        return {
+          rawHref,
+          pathname: url.pathname,
+          href: url.href,
+        };
+      } catch {
+        return {
+          rawHref,
+          pathname: rawHref,
+          href: rawHref,
+        };
+      }
+    });
+    const countAnchors = (predicate) => anchorHrefs.filter(predicate).length;
+    const metaRobots = normalizeLine(document.querySelector('meta[name="robots"]')?.getAttribute('content') ?? '');
     const restartNextTaskDateLabels = Array.from(document.querySelectorAll('[data-testid="moving-mobile-next-tasks"] article p'))
       .map((element) => normalizeLine(element.textContent ?? ''))
       .filter(Boolean);
@@ -1019,6 +1044,12 @@ async function scanPage(page, options = {}) {
         publicBrowseLinkAfterPrimary: publicBrowseLinkFocusableIndex >= 0
           && publicPrimaryPathFocusableIndex >= 0
           && publicBrowseLinkFocusableIndex > publicPrimaryPathFocusableIndex,
+        metaRobots,
+        flowLabPrototypeLinkCount: countAnchors((anchor) => anchor.pathname === '/flow-lab/url-first-p0'),
+        manualRegistrationQaLinkCount: countAnchors((anchor) =>
+          anchor.href.includes('source-backed-manual-registration')
+          || anchor.rawHref.includes('source-backed-manual-registration'),
+        ),
         restartScheduleDateCheck: {
           firstThreeDateLabels: restartFirstThreeDateLabels,
           firstThreeTitles: restartNextTaskTitles.slice(0, 3),
@@ -1083,9 +1114,11 @@ async function scanPage(page, options = {}) {
 
 function summarizeEvidence(records) {
   const normal = records.filter((record) => !record.prototypeBucket);
+  const prototypes = records.filter((record) => record.prototypeBucket);
   const fieldChecklistSourceDensity = records.filter((record) => record.category === 'field-checklist-source-density');
   const urlFirst = normal.filter((record) => record.category === 'url-first');
-  const restart = records.filter((record) => record.prototypeBucket);
+  const restart = prototypes.filter((record) => record.category === 'prototype-restart');
+  const flowLab = prototypes.filter((record) => record.category === 'prototype-flow-lab');
   const publicShareRoutes = normal.filter((record) => record.publicShellVisible);
   const restartSourceFrame = records.find((record) => record.id === '22-restart-moving-source-export-mobile');
   const restartBottomFrame = records.find((record) => record.id === '23-restart-moving-bottom-mobile');
@@ -1102,6 +1135,13 @@ function summarizeEvidence(records) {
   ];
   const countAgendaGroupRows = (record, field) =>
     getAgendaGroups(record).reduce((sum, group) => sum + (group[field] ?? 0), 0);
+  const countPrototypeDisplayGateHits = (record) =>
+    (record.prototypeDisplayGateHits?.rawRouteSlugHits?.length ?? 0)
+    + (record.prototypeDisplayGateHits?.englishWeekdayHits?.length ?? 0)
+    + (record.prototypeDisplayGateHits?.englishUiVerbHits?.length ?? 0)
+    + (record.prototypeDisplayGateHits?.englishMonthTimeHits?.length ?? 0)
+    + (record.prototypeDisplayGateHits?.mixedExportLanguageHits?.length ?? 0)
+    + (record.prototypeDisplayGateHits?.duplicateExportEntryHits?.length ?? 0);
   return {
     totalScreenshots: records.length,
     uiBaselineCommit,
@@ -1153,6 +1193,16 @@ function summarizeEvidence(records) {
     urlFirstNormalRawIsoHitCount: urlFirst.reduce((sum, record) => sum + record.rawIsoLines.length, 0),
     urlFirstNormalInputRawIsoHitCount: urlFirst.reduce((sum, record) => sum + (record.rawIsoInputValueHits?.length ?? 0), 0),
     urlFirstMarkerVisibleCount: urlFirst.filter((record) => record.markers?.urlFirst?.resultVisible || record.markers?.urlFirst?.candidateListVisible).length,
+    flowLabPrototypeRouteCount: flowLab.length,
+    flowLabPrototypeBucket: flowLab.length > 0 && flowLab.every((record) => record.prototypeBucket),
+    flowLabPrototypeGuardrailHitCount: flowLab.reduce((sum, record) => sum + countPrototypeDisplayGateHits(record), 0),
+    flowLabPrototypeNoindex: flowLab.length > 0 && flowLab.every((record) => /noindex/i.test(record.markers?.metaRobots ?? '')),
+    flowLabPrototypeMetaRobots: flowLab.map((record) => ({
+      route: record.url,
+      metaRobots: record.markers?.metaRobots ?? '',
+    })),
+    flowLabPrototypeLinkedFromUserNavCount: normal.reduce((sum, record) => sum + (record.markers?.flowLabPrototypeLinkCount ?? 0), 0),
+    manualRegistrationQaUserLinkCount: normal.reduce((sum, record) => sum + (record.markers?.manualRegistrationQaLinkCount ?? 0), 0),
     normalRouteQueueLabelScope: 'my-flow-queue-label-surfaces',
     normalRouteQueueLabelCount: normal.reduce((sum, record) =>
       sum
@@ -1253,6 +1303,8 @@ P11-05/P11-06 keep the capture pipeline aligned with the canonical guardrail lib
 
 P12-01~P12-04 add the URL-first first-execution slice to the normal user-route guardrail set. The package captures hit, custom-start, miss, and saved-candidate states on \`/flows\` and records URL-first-specific buckets for internal copy, dynamic source slug, structural title, raw ISO text, and input raw ISO hits. These scenarios should remain at zero while preserving canonical lookup, source-backed reuse, and non-executable local candidate storage.
 
+P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registration QA outside the normal user route set. The flow-lab route is captured as a prototype bucket with noindex metadata, and normal user routes record zero links to the flow-lab lab or internal manual-registration QA report.
+
 ## Files
 
 - [audit.md](./audit.md)
@@ -1284,6 +1336,12 @@ P12-01~P12-04 add the URL-first first-execution slice to the normal user-route g
 - URL-first raw ISO hits: ${evidence.summary.urlFirstNormalRawIsoHitCount}
 - URL-first input raw ISO hits: ${evidence.summary.urlFirstNormalInputRawIsoHitCount}
 - URL-first visible marker count: ${evidence.summary.urlFirstMarkerVisibleCount}
+- Flow-lab prototype route count: ${evidence.summary.flowLabPrototypeRouteCount}
+- Flow-lab prototype bucket: ${evidence.summary.flowLabPrototypeBucket}
+- Flow-lab prototype noindex: ${evidence.summary.flowLabPrototypeNoindex}
+- Flow-lab prototype linked from user nav count: ${evidence.summary.flowLabPrototypeLinkedFromUserNavCount}
+- Flow-lab prototype display-gate hit count: ${evidence.summary.flowLabPrototypeGuardrailHitCount}
+- Manual registration QA user route link count: ${evidence.summary.manualRegistrationQaUserLinkCount}
 - Normal route queue label scope: ${evidence.summary.normalRouteQueueLabelScope}
 - Normal route legacy overdue label hits: ${evidence.summary.normalRouteLegacyOverdueLabelCount}
 - Normal route horizontal overflow count: ${evidence.summary.normalRouteHorizontalOverflowCount}
@@ -1344,6 +1402,8 @@ P11-05/P11-06 keep capture/evidence rules centralized and traceable: internal-co
 
 P12-01~P12-04 bring URL-first hit/custom-start/miss/candidate states into the normal user-route capture schema. The same guardrail buckets now cover \`/flows\` URL-first user surfaces, including source slug leakage such as \`Mathbang\`, raw ISO dates in candidate cards, production-only copy such as \`Canonical URL\`/\`handoff\`, and roadmap/queue/pipeline wording such as \`P0\`, \`대기열\`, or \`파이프라인\`.
 
+P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registration QA outside the normal user route set. The flow-lab route is captured as a prototype bucket with noindex metadata, and normal user routes record zero links to the flow-lab lab or internal manual-registration QA report.
+
 ## Baselines Covered
 
 - P7-01: \`/restart/moving-d30\` uses user-facing date text and a quieter export hierarchy.
@@ -1377,6 +1437,7 @@ P12-01~P12-04 bring URL-first hit/custom-start/miss/candidate states into the no
 - P11-07/P11-10: fridge/washer setup paths are visible/focusable evidence targets, and the fridge first-action title supports two-line mobile wrapping.
 - P11-08/P11-11: field checklist repeated caution copy is common-note only, and public workbench export labels do not duplicate as ambiguous visible entry points.
 - P12-01/P12-04: URL-first hit, custom-start, miss, and candidate states are captured as normal user-route scenarios and must keep URL-first internal/source/raw-ISO buckets at zero.
+- P12-05/P12-10: \`/flow-lab/url-first-p0\` stays in a prototype/internal bucket with noindex metadata, and manual registration QA remains docs-only with no normal user-route links.
 
 ## Summary
 
@@ -1420,6 +1481,18 @@ The restart source/export frame and bottom frame must remain distinct:
 - input raw ISO hit count: ${evidence.summary.restartPrototypeInputRawIsoHitCount}
 - native date input ISO exemption count: ${evidence.summary.restartPrototypeInputRawIsoExemptCount}
 - native date input ISO exemptions: ${JSON.stringify(evidence.summary.restartPrototypeInputRawIsoExemptions)}
+
+## Flow Lab Prototype Bucket
+
+\`/flow-lab/url-first-p0\` remains outside the primary 4-tab IA and normal user-route guardrail bucket:
+
+- prototype route count: ${evidence.summary.flowLabPrototypeRouteCount}
+- prototype bucket marker: ${evidence.summary.flowLabPrototypeBucket ? 'yes' : 'no'}
+- noindex metadata: ${evidence.summary.flowLabPrototypeNoindex ? 'yes' : 'no'}
+- meta robots records: ${JSON.stringify(evidence.summary.flowLabPrototypeMetaRobots)}
+- display-gate hit count while in prototype bucket: ${evidence.summary.flowLabPrototypeGuardrailHitCount}
+- links from normal user routes to flow-lab: ${evidence.summary.flowLabPrototypeLinkedFromUserNavCount}
+- links from normal user routes to manual registration QA docs: ${evidence.summary.manualRegistrationQaUserLinkCount}
 
 ## Field Checklist Source Density
 
@@ -1586,6 +1659,10 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.restartPrototypeFirstThreeSameD30Milestone ? 'yes' : 'no'}</b><span>restart first 3 = D-30 group</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeD30MilestoneGroupHeadingVisible ? 'yes' : 'no'}</b><span>restart D-30 group heading</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeFullScheduleUniqueDateLabelCount}</b><span>restart full schedule dates</span></div>
+      <div class="stat"><b>${evidence.summary.flowLabPrototypeRouteCount}</b><span>flow-lab prototype routes</span></div>
+      <div class="stat"><b>${evidence.summary.flowLabPrototypeNoindex ? 'yes' : 'no'}</b><span>flow-lab noindex</span></div>
+      <div class="stat"><b>${evidence.summary.flowLabPrototypeLinkedFromUserNavCount}</b><span>flow-lab user nav links</span></div>
+      <div class="stat"><b>${evidence.summary.manualRegistrationQaUserLinkCount}</b><span>manual QA user links</span></div>
       <div class="stat"><b>${evidence.summary.fieldWorkbenchRowDetailSourceLinkCount}</b><span>field row source links</span></div>
       <div class="stat"><b>${evidence.summary.fieldWorkbenchSourceAccessLinkCount}</b><span>field source access links</span></div>
       <div class="stat"><b>${evidence.summary.publicShareSecondaryBrowseBeforePrimaryCount}</b><span>public browse before primary</span></div>
