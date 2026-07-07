@@ -1374,6 +1374,7 @@ function FlowUrlLookupResult({
           <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
             내보내기 방식
             <select
+              data-testid="url-first-export-mode-select"
               aria-label="내보내기 방식"
               className="min-h-10 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
               value={selectedExportMode}
@@ -1390,6 +1391,7 @@ function FlowUrlLookupResult({
           <div className="flex flex-wrap gap-2 sm:justify-end">
             <button
               type="button"
+              data-testid="url-first-memo-document-download"
               className="min-h-10 rounded-lg border border-[#DDE6D8] bg-[#F7FBF4] px-3 py-2 text-sm font-semibold text-[#176D5D] hover:border-[#176D5D]/40"
               onClick={downloadMarkdownExport}
             >

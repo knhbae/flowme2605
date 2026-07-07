@@ -363,15 +363,63 @@ async function lookupUrlFirstInput(page, url) {
   await settle(page);
 }
 
+async function collectUrlFirstExportModeEvidence(page) {
+  const result = page.getByTestId('flow-url-lookup-result');
+  const select = result.getByTestId('url-first-export-mode-select');
+  if (!(await select.count())) return [];
+
+  const options = await select.locator('option').evaluateAll((nodes) =>
+    nodes.map((node) => ({
+      value: node.value,
+      label: node.textContent?.replace(/\s+/g, ' ').trim() ?? '',
+    })),
+  );
+  const originalValue = await select.inputValue();
+  const records = [];
+
+  for (const option of options) {
+    await select.selectOption(option.value);
+    await settle(page);
+    const textLines = (await result.innerText())
+      .split(/\n+/)
+      .map((line) => line.replace(/\s+/g, ' ').trim())
+      .filter(Boolean);
+    const visibleMarkdownLines = Array.from(new Set(textLines.filter((line) => /\bMarkdown\b/i.test(line))));
+    const visibleButtons = await result.locator('button').evaluateAll((buttons) =>
+      buttons
+        .filter((button) => {
+          const style = window.getComputedStyle(button);
+          const rect = button.getBoundingClientRect();
+          return style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0;
+        })
+        .map((button) => button.textContent?.replace(/\s+/g, ' ').trim() ?? '')
+        .filter(Boolean),
+    );
+    records.push({
+      exportMode: option.value,
+      optionLabel: option.label,
+      visibleMarkdownHitCount: visibleMarkdownLines.length,
+      visibleMarkdownLines,
+      visibleButtons,
+    });
+  }
+
+  await select.selectOption(originalValue);
+  await settle(page);
+  return records;
+}
+
 async function captureUrlFirstHit(page) {
   await resetStorage(page);
   await lookupUrlFirstInput(page, 'https://mathbang.net/13?utm_source=share');
   await page.getByTestId('url-first-start-date-input').fill('2026-07-17');
   await settle(page);
+  const urlFirstExportModeEvidence = await collectUrlFirstExportModeEvidence(page);
   await captureCurrent(page, '27-url-first-hit-mobile.png', 'URL-first hit result on Flow finding', {
     category: 'url-first',
     route: '/flows',
     urlFirstState: 'hit',
+    urlFirstExportModeEvidence,
   });
 }
 
@@ -382,10 +430,12 @@ async function captureUrlFirstCustomStart(page) {
   await page.getByTestId('flow-url-custom-start-panel').waitFor({ state: 'visible' });
   await page.getByTestId('url-first-start-date-input').fill('2026-07-17');
   await settle(page);
+  const urlFirstExportModeEvidence = await collectUrlFirstExportModeEvidence(page);
   await captureCurrent(page, '28-url-first-custom-start-mobile.png', 'URL-first lightweight custom start panel', {
     category: 'url-first',
     route: '/flows',
     urlFirstState: 'custom-start',
+    urlFirstExportModeEvidence,
   });
 }
 
@@ -935,6 +985,7 @@ async function scanPage(page, options = {}) {
         requestDetailVisible: Boolean(requestDetail && isVisible(requestDetail)),
         visibleMarkdownHitCount: visibleMarkdownLines.length,
         visibleMarkdownLines,
+        exportModeEvidence: payload.options.urlFirstExportModeEvidence ?? [],
         startDateInput: startDateInput
           ? {
               visible: isVisible(startDateInput),
@@ -1179,6 +1230,14 @@ function summarizeEvidence(records) {
     + (record.prototypeDisplayGateHits?.englishMonthTimeHits?.length ?? 0)
     + (record.prototypeDisplayGateHits?.mixedExportLanguageHits?.length ?? 0)
     + (record.prototypeDisplayGateHits?.duplicateExportEntryHits?.length ?? 0);
+  const urlFirstExportModeEvidence = urlFirst.flatMap((record) =>
+    (record.markers?.urlFirst?.exportModeEvidence ?? []).map((modeEvidence) => ({
+      recordId: record.id,
+      route: record.route,
+      state: record.urlFirstState,
+      ...modeEvidence,
+    })),
+  );
   return {
     totalScreenshots: records.length,
     uiBaselineCommit,
@@ -1242,6 +1301,26 @@ function summarizeEvidence(records) {
       (record.markers?.urlFirst?.visibleMarkdownLines ?? []).map((line) => ({
         route: record.route,
         state: record.urlFirstState,
+        line,
+      })),
+    ),
+    urlFirstExportModeEvidenceCount: urlFirstExportModeEvidence.length,
+    urlFirstExportModesCaptured: urlFirstExportModeEvidence.map((modeEvidence) => ({
+      route: modeEvidence.route,
+      state: modeEvidence.state,
+      exportMode: modeEvidence.exportMode,
+      optionLabel: modeEvidence.optionLabel,
+      visibleButtons: modeEvidence.visibleButtons,
+    })),
+    urlFirstExportModeVisibleMarkdownHitCount: urlFirstExportModeEvidence.reduce(
+      (sum, modeEvidence) => sum + (modeEvidence.visibleMarkdownHitCount ?? 0),
+      0,
+    ),
+    urlFirstExportModeVisibleMarkdownHits: urlFirstExportModeEvidence.flatMap((modeEvidence) =>
+      (modeEvidence.visibleMarkdownLines ?? []).map((line) => ({
+        route: modeEvidence.route,
+        state: modeEvidence.state,
+        exportMode: modeEvidence.exportMode,
         line,
       })),
     ),
@@ -1414,6 +1493,8 @@ P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registrat
 - URL-first input raw ISO hits: ${evidence.summary.urlFirstNormalInputRawIsoHitCount}
 - URL-first native date input raw ISO exemptions: ${evidence.summary.urlFirstNormalInputRawIsoExemptCount}
 - URL-first visible Markdown hits: ${evidence.summary.urlFirstVisibleMarkdownHitCount}
+- URL-first export mode evidence count: ${evidence.summary.urlFirstExportModeEvidenceCount}
+- URL-first export mode visible Markdown hits: ${evidence.summary.urlFirstExportModeVisibleMarkdownHitCount}
 - URL-first start date input visible count: ${evidence.summary.urlFirstStartDateInputVisibleCount}
 - URL-first visible marker count: ${evidence.summary.urlFirstMarkerVisibleCount}
 - Flow-lab prototype route count: ${evidence.summary.flowLabPrototypeRouteCount}
@@ -1720,6 +1801,7 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.normalRouteInputRawIsoHitCount}</b><span>normal input ISO hits</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteInputRawIsoExemptCount}</b><span>normal input ISO exempt</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstVisibleMarkdownHitCount}</b><span>URL-first Markdown hits</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstExportModeVisibleMarkdownHitCount}</b><span>URL-first mode Markdown hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstNormalInputRawIsoExemptCount}</b><span>URL-first input ISO exempt</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstStartDateInputVisibleCount}</b><span>URL-first date inputs</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteFirstTaskRepetitionHitCount}</b><span>first task repeats</span></div>

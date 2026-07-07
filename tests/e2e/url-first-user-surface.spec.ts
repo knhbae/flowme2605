@@ -38,6 +38,18 @@ async function lookupUrl(page: Page, url: string) {
   await expect(page.getByTestId('flow-url-lookup-result')).toBeVisible();
 }
 
+async function expectUrlFirstExportModesAvoidTechnicalFormatLabels(result: Locator) {
+  const exportModeSelect = result.getByTestId('url-first-export-mode-select');
+  await expect(exportModeSelect).toBeVisible();
+
+  for (const mode of ['calendar', 'markdown', 'checklist']) {
+    await exportModeSelect.selectOption(mode);
+    await expect(result.getByTestId('url-first-memo-document-download')).toHaveText('메모 문서 받기');
+    await expect(result).not.toContainText('Markdown');
+    await expectCleanUrlFirstUserSurface(result);
+  }
+}
+
 test('URL-first hit and custom-start states stay inside normal user-surface guardrails', async ({ page }) => {
   await openFlowFinding(page);
   await lookupUrl(page, 'https://mathbang.net/13?utm_source=share');
@@ -50,12 +62,14 @@ test('URL-first hit and custom-start states stay inside normal user-surface guar
   await expect(startDateInput).toBeVisible();
   await expect(startDateInput).toHaveAttribute('type', 'date');
   await expectCleanUrlFirstUserSurface(result);
+  await expectUrlFirstExportModesAvoidTechnicalFormatLabels(result);
 
   await result.getByRole('button', { name: '조금 고쳐 시작' }).click();
   const customPanel = result.getByTestId('flow-url-custom-start-panel');
   await expect(customPanel).toBeVisible();
   await expect(result).not.toContainText('Markdown');
   await expectCleanUrlFirstUserSurface(result);
+  await expectUrlFirstExportModesAvoidTechnicalFormatLabels(result);
 });
 
 test('URL-first miss and saved-candidate states hide production-only wording from user surface', async ({ page }) => {

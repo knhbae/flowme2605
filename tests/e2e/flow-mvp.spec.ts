@@ -333,7 +333,8 @@ test('flow finding URL lookup reuses existing source-backed Flows first', async 
   await expect(result).toContainText('중1 수학');
   await expect(result.getByRole('link', { name: '저장 전 보기' })).toHaveAttribute('href', '/flow-maps/middle-school-math-1');
   await expect(result).toContainText('캘린더');
-  await expect(result).toContainText('Markdown');
+  await expect(result).toContainText('메모 문서');
+  await expect(result).not.toContainText('Markdown');
   await expect(result).toContainText('내 Flow');
   await expect(result).not.toContainText('source-backed');
 
@@ -642,7 +643,7 @@ test('flow finding URL lookup starts a hit with date, option, My Flow save, and 
   await result.getByLabel('내보내기 방식').selectOption('markdown');
 
   const markdownDownloadPromise = page.waitForEvent('download');
-  await result.getByRole('button', { name: 'Markdown 받기' }).click();
+  await result.getByRole('button', { name: '메모 문서 받기' }).click();
   const markdownDownload = await markdownDownloadPromise;
   expect(markdownDownload.suggestedFilename()).toBe('middle-school-math-1-flow.md');
   const markdownPath = await markdownDownload.path();
@@ -710,7 +711,7 @@ test('flow finding URL lookup starts a lightweight customized personal copy', as
   await result.getByLabel('내보내기 방식').selectOption('markdown');
 
   const markdownDownloadPromise = page.waitForEvent('download');
-  await result.getByRole('button', { name: 'Markdown 받기' }).click();
+  await result.getByRole('button', { name: '메모 문서 받기' }).click();
   const markdownDownload = await markdownDownloadPromise;
   expect(markdownDownload.suggestedFilename()).toBe('middle-school-math-1-flow.md');
   const markdownPath = await markdownDownload.path();
