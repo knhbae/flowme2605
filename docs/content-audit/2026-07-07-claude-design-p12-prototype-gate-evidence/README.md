@@ -1,9 +1,9 @@
 # FlowMe Claude Design P12 Final Review Package
 
-- Generated: 2026-07-07T06:55:24.975Z
+- Generated: 2026-07-07T08:16:45.910Z
 - Branch: `codex/flowme-uxui-second-loop`
-- UI baseline commit: `df119ff`
-- Package generated from commit: `df119ff`
+- UI baseline commit: `06d4c9d`
+- Package generated from commit: `06d4c9d`
 - Package commit ref: `git commit containing this generated package`
 - Viewport: 390x844
 
@@ -69,6 +69,9 @@ P12-05/P12-10 keep `/flow-lab/url-first-p0` and source-backed manual registratio
 - Field workbench source access link count: 5
 - Field workbench repeated detail caution count: 0
 - Public workbench duplicate export visible-label count: 0
+- Public workbench sticky first-action count: 9
+- Public workbench sticky first-action save/setup count: 9
+- Public workbench sticky first-action non-primary labels: 0
 - Public share route count: 9
 - Public share secondary browse focusable count: 9
 - Public share secondary browse after-primary count: 9

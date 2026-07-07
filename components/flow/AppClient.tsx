@@ -9379,8 +9379,6 @@ export function PublicFlow({ slug }: { slug: string }) {
   const showPublicSaveAction = publicSaveActionFlowSlugs.has(bundle.flow.slug) && !showExportFirstHero;
   const showMobileExportActions = showMobileActions && !compactJeonsePage && !showPublicSaveAction;
   const primaryDestination = inferPrimaryDestination(bundle);
-  const holdSignalCount = getHoldSignalCount(bundle, workbenchState);
-  const mobileStickyCtaLabel = getMobileStickyCtaLabel(bundle, canExportCalendar, holdSignalCount);
   const publicHeroInput = getAnchorLabel(bundle);
   const publicHeroArtifact = getCatalogDestinationLabel(bundle);
   const publicHeroPromise = getCatalogPromiseText(publicHeroInput, publicHeroArtifact);
@@ -9943,23 +9941,17 @@ export function PublicFlow({ slug }: { slug: string }) {
                 <div className="h-full bg-[#3654FF]" style={{ width: `${executableCount > 0 ? Math.round((done / executableCount) * 100) : 0}%` }} />
               </div>
             </div>
-            {showPublicSaveAction ? (
-              savedFlowAt ? (
-                <Link className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" href="/my">
-                  내 Flow에서 보기
-                </Link>
-              ) : (
-                <button className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" onClick={saveToMyFlow}>
-                  내 Flow에 저장
-                </button>
-              )
-            ) : showExportFirstHero ? (
-              <button className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" onClick={() => setShowMobileExportSheet(true)}>
-                내 도구로 가져가기
-              </button>
+            {savedFlowAt ? (
+              <Link className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" href="/my">
+                내 Flow에서 보기
+              </Link>
             ) : (
-              <button className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" onClick={() => setShowMobileExportSheet(true)}>
-                {mobileStickyCtaLabel}
+              <button
+                type="button"
+                className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm"
+                onClick={saveToMyFlow}
+              >
+                내 Flow에 저장
               </button>
             )}
           </div>
@@ -10068,38 +10060,6 @@ function getMobileExportSheetSummary(bundle: FlowBundle, anchor: string, executa
   if (bundle.flow.slug === 'moving-d30-basic' && anchor) return `이사일 ${anchor} 기준 ${executableCount}개 항목`;
   if (anchor) return `${anchor} 기준 ${executableCount}개 항목`;
   return `${executableCount}개 항목`;
-}
-
-function getMobileStickyCtaLabel(bundle: FlowBundle, canExportCalendar: boolean, holdSignalCount = 0): string {
-  if ((bundle.flow.slug === 'new-car-delivery-check' || bundle.flow.slug === 'used-car-buying-check') && holdSignalCount > 0) {
-    return `보류 ${holdSignalCount}건 포함 .xlsx`;
-  }
-  if (bundle.flow.slug === 'moving-d30-basic') return '내 Flow에 저장';
-  if (bundle.flow.slug === 'computer-skills-d30-study') return '시트·캘린더 파일 받기';
-  if (bundle.flow.slug === 'diet-habit-2week') return '수면 체크표 .xlsx 받기';
-  if (bundle.flow.slug === 'new-car-delivery-check') return '증거표 .xlsx 받기';
-  if (bundle.flow.primary_destination === 'internal_check') return '체크리스트로 쓰기';
-  if (bundle.flow.primary_destination === 'hybrid') return canExportCalendar ? '시트·캘린더 파일 받기' : '시트·메모로 복사';
-  if (bundle.flow.primary_destination === 'calendar' || canExportCalendar) return FLOW_EXPORT_LABELS.calendarFile;
-  if (bundle.flow.primary_destination === 'sheet') return FLOW_EXPORT_LABELS.sheetFile;
-  if (bundle.flow.primary_destination === 'memo') return FLOW_EXPORT_LABELS.memoCopy;
-  return '내 도구로 가져가기';
-}
-
-function getHoldSignalCount(bundle: FlowBundle, workbenchState: FlowWorkbenchState): number {
-  if (!bundle.flow.hold_section) return 0;
-  return Object.entries(workbenchState.memoCards ?? {}).filter(([id, value]) => isHoldMemoField(bundle, id) && value.trim()).length;
-}
-
-function isHoldMemoField(bundle: FlowBundle, id: string): boolean {
-  if (id.startsWith(`${bundle.flow.slug}-hold-`)) return true;
-  if (bundle.flow.slug === 'new-car-delivery-check') {
-    return ['new-car-photo-files', 'new-car-dealer-confirmation', 'new-car-handover-boundary'].includes(id);
-  }
-  if (bundle.flow.slug === 'used-car-buying-check') {
-    return ['used-car-proof-files', 'used-car-expert-check', 'used-car-buy-hold-memo'].includes(id);
-  }
-  return false;
 }
 
 function ExportFirstHero({

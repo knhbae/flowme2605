@@ -40,8 +40,8 @@
 ```json
 {
   "totalScreenshots": 31,
-  "uiBaselineCommit": "df119ff",
-  "packageGeneratedFromCommit": "df119ff",
+  "uiBaselineCommit": "06d4c9d",
+  "packageGeneratedFromCommit": "06d4c9d",
   "packageCommitRef": "git commit containing this generated package",
   "normalRouteInternalHitCount": 0,
   "normalRouteSourceSlugHitCount": 0,
@@ -98,6 +98,9 @@
   ],
   "fieldWorkbenchRepeatedDetailSentenceCount": 0,
   "publicWorkbenchDuplicateExportVisibleLabelCount": 0,
+  "publicWorkbenchStickyFirstActionCount": 9,
+  "publicWorkbenchStickyFirstActionSaveOrSetupCount": 9,
+  "publicWorkbenchStickyFirstActionNonPrimaryLabels": [],
   "publicShareRouteCount": 9,
   "publicShareSecondaryBrowseFocusableCount": 9,
   "publicShareSecondaryBrowseAfterPrimaryCount": 9,

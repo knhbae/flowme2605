@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-07T06:55:24.975Z",
+  "generatedAt": "2026-07-07T08:16:45.910Z",
   "packageName": "2026-07-07-claude-design-p12-prototype-gate-evidence",
   "reviewCycle": "P12",
   "nextBacklogCycle": "P13",
   "branchName": "codex/flowme-uxui-second-loop",
-  "uiBaselineCommit": "df119ff",
-  "packageGeneratedFromCommit": "df119ff",
+  "uiBaselineCommit": "06d4c9d",
+  "packageGeneratedFromCommit": "06d4c9d",
   "packageCommitRef": "git commit containing this generated package",
-  "commit": "df119ff",
+  "commit": "06d4c9d",
   "viewport": {
     "width": 390,
     "height": 844
@@ -15,8 +15,8 @@
   "baseURL": "http://127.0.0.1:3221",
   "summary": {
     "totalScreenshots": 31,
-    "uiBaselineCommit": "df119ff",
-    "packageGeneratedFromCommit": "df119ff",
+    "uiBaselineCommit": "06d4c9d",
+    "packageGeneratedFromCommit": "06d4c9d",
     "packageCommitRef": "git commit containing this generated package",
     "normalRouteInternalHitCount": 0,
     "normalRouteSourceSlugHitCount": 0,
@@ -73,6 +73,9 @@
     ],
     "fieldWorkbenchRepeatedDetailSentenceCount": 0,
     "publicWorkbenchDuplicateExportVisibleLabelCount": 0,
+    "publicWorkbenchStickyFirstActionCount": 9,
+    "publicWorkbenchStickyFirstActionSaveOrSetupCount": 9,
+    "publicWorkbenchStickyFirstActionNonPrimaryLabels": [],
     "publicShareRouteCount": 9,
     "publicShareSecondaryBrowseFocusableCount": 9,
     "publicShareSecondaryBrowseAfterPrimaryCount": 9,
@@ -304,6 +307,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -509,6 +514,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -714,6 +721,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -919,6 +928,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -1124,6 +1135,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -1329,6 +1342,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -1535,6 +1550,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -1749,6 +1766,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -1966,6 +1985,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -2165,11 +2186,19 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 1,
+          "stickyFirstAction": {
+            "testId": "mobile-export-bar",
+            "surface": "mobileSticky",
+            "visibleLabel": "내 Flow에 저장",
+            "accessibleName": "내 Flow에 저장"
+          },
+          "stickyFirstActionSaveOrSetup": true,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": [
             {
               "testId": "mobile-export-bar",
+              "surface": "mobileSticky",
               "visibleLabel": "내 Flow에 저장",
               "accessibleName": "내 Flow에 저장"
             }
@@ -2270,7 +2299,7 @@
         "확인",
         "by FLOW 큐레이션팀",
         "원문 보기",
-        "내 도구로 가져가기",
+        "내 Flow에 저장",
         "콘텐츠 더 보기"
       ],
       "internalHits": [],
@@ -2371,13 +2400,21 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 1,
+          "stickyFirstAction": {
+            "testId": "mobile-export-bar",
+            "surface": "mobileSticky",
+            "visibleLabel": "내 Flow에 저장",
+            "accessibleName": "내 Flow에 저장"
+          },
+          "stickyFirstActionSaveOrSetup": true,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": [
             {
               "testId": "mobile-export-bar",
-              "visibleLabel": "내 도구로 가져가기",
-              "accessibleName": "내 도구로 가져가기"
+              "surface": "mobileSticky",
+              "visibleLabel": "내 Flow에 저장",
+              "accessibleName": "내 Flow에 저장"
             }
           ]
         },
@@ -2426,8 +2463,8 @@
       "label": "Public moving bottom sticky clearance",
       "route": "/f/moving-d30-basic",
       "screenshot": "screenshots/08-public-moving-bottom-mobile.png",
-      "screenshotBytes": 25666,
-      "screenshotHash": "da8f07ff3540d6c664b82fd8040a267b02af516a6c21b9f1d23ac20507977fac",
+      "screenshotBytes": 25890,
+      "screenshotHash": "e24d762a79cc7a4a406d52bbce74106c0ebbeeaa44aa21af7563fa16060e3ea0",
       "category": "bottom-clearance",
       "prototypeBucket": false,
       "urlFirstState": null,
@@ -2476,7 +2513,7 @@
         "확인",
         "by FLOW 큐레이션팀",
         "원문 보기",
-        "내 도구로 가져가기",
+        "내 Flow에 저장",
         "콘텐츠 더 보기"
       ],
       "internalHits": [],
@@ -2577,13 +2614,21 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 1,
+          "stickyFirstAction": {
+            "testId": "mobile-export-bar",
+            "surface": "mobileSticky",
+            "visibleLabel": "내 Flow에 저장",
+            "accessibleName": "내 Flow에 저장"
+          },
+          "stickyFirstActionSaveOrSetup": true,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": [
             {
               "testId": "mobile-export-bar",
-              "visibleLabel": "내 도구로 가져가기",
-              "accessibleName": "내 도구로 가져가기"
+              "surface": "mobileSticky",
+              "visibleLabel": "내 Flow에 저장",
+              "accessibleName": "내 Flow에 저장"
             }
           ]
         },
@@ -2662,7 +2707,7 @@
         "확인",
         "by FLOW 큐레이션팀",
         "원문 보기",
-        "캘린더 파일 받기",
+        "내 Flow에 저장",
         "콘텐츠 더 보기"
       ],
       "firstFocusableLabels": [
@@ -2673,7 +2718,7 @@
         "확인",
         "by FLOW 큐레이션팀",
         "원문 보기",
-        "캘린더 파일 받기",
+        "내 Flow에 저장",
         "콘텐츠 더 보기"
       ],
       "internalHits": [],
@@ -2774,13 +2819,21 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 1,
+          "stickyFirstAction": {
+            "testId": "mobile-export-bar",
+            "surface": "mobileSticky",
+            "visibleLabel": "내 Flow에 저장",
+            "accessibleName": "내 Flow에 저장"
+          },
+          "stickyFirstActionSaveOrSetup": true,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": [
             {
               "testId": "mobile-export-bar",
-              "visibleLabel": "캘린더 파일 받기",
-              "accessibleName": "캘린더 파일 받기"
+              "surface": "mobileSticky",
+              "visibleLabel": "내 Flow에 저장",
+              "accessibleName": "내 Flow에 저장"
             }
           ]
         },
@@ -2859,7 +2912,7 @@
         "확인",
         "by 생활 루틴 코치",
         "원문 보기",
-        "캘린더 파일 받기",
+        "내 Flow에 저장",
         "콘텐츠 더 보기"
       ],
       "firstFocusableLabels": [
@@ -2871,7 +2924,7 @@
         "확인",
         "by 생활 루틴 코치",
         "원문 보기",
-        "캘린더 파일 받기",
+        "내 Flow에 저장",
         "콘텐츠 더 보기"
       ],
       "internalHits": [],
@@ -2972,13 +3025,21 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 1,
+          "stickyFirstAction": {
+            "testId": "mobile-export-bar",
+            "surface": "mobileSticky",
+            "visibleLabel": "내 Flow에 저장",
+            "accessibleName": "내 Flow에 저장"
+          },
+          "stickyFirstActionSaveOrSetup": true,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": [
             {
               "testId": "mobile-export-bar",
-              "visibleLabel": "캘린더 파일 받기",
-              "accessibleName": "캘린더 파일 받기"
+              "surface": "mobileSticky",
+              "visibleLabel": "내 Flow에 저장",
+              "accessibleName": "내 Flow에 저장"
             }
           ]
         },
@@ -3055,7 +3116,7 @@
         "확인",
         "by 차근차근 모빌리티",
         "원문 보기",
-        "증거표 .xlsx 받기",
+        "내 Flow에 저장",
         "콘텐츠 더 보기"
       ],
       "firstFocusableLabels": [
@@ -3064,7 +3125,7 @@
         "확인",
         "by 차근차근 모빌리티",
         "원문 보기",
-        "증거표 .xlsx 받기",
+        "내 Flow에 저장",
         "콘텐츠 더 보기"
       ],
       "internalHits": [],
@@ -3165,13 +3226,21 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 1,
+          "stickyFirstAction": {
+            "testId": "mobile-export-bar",
+            "surface": "mobileSticky",
+            "visibleLabel": "내 Flow에 저장",
+            "accessibleName": "내 Flow에 저장"
+          },
+          "stickyFirstActionSaveOrSetup": true,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": [
             {
               "testId": "mobile-export-bar",
-              "visibleLabel": "증거표 .xlsx 받기",
-              "accessibleName": "증거표 .xlsx 받기"
+              "surface": "mobileSticky",
+              "visibleLabel": "내 Flow에 저장",
+              "accessibleName": "내 Flow에 저장"
             }
           ]
         },
@@ -3252,7 +3321,7 @@
         "확인",
         "by 차근차근 모빌리티",
         "원문 보기",
-        "내 도구로 가져가기",
+        "내 Flow에 저장",
         "콘텐츠 더 보기"
       ],
       "firstFocusableLabels": [
@@ -3265,7 +3334,7 @@
         "확인",
         "by 차근차근 모빌리티",
         "원문 보기",
-        "내 도구로 가져가기",
+        "내 Flow에 저장",
         "콘텐츠 더 보기"
       ],
       "internalHits": [],
@@ -3366,13 +3435,21 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 1,
+          "stickyFirstAction": {
+            "testId": "mobile-export-bar",
+            "surface": "mobileSticky",
+            "visibleLabel": "내 Flow에 저장",
+            "accessibleName": "내 Flow에 저장"
+          },
+          "stickyFirstActionSaveOrSetup": true,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": [
             {
               "testId": "mobile-export-bar",
-              "visibleLabel": "내 도구로 가져가기",
-              "accessibleName": "내 도구로 가져가기"
+              "surface": "mobileSticky",
+              "visibleLabel": "내 Flow에 저장",
+              "accessibleName": "내 Flow에 저장"
             }
           ]
         },
@@ -3421,8 +3498,8 @@
       "label": "New car checklist row details without repeated source links",
       "route": "/f/new-car-delivery-check",
       "screenshot": "screenshots/25-workbench-new-car-open-details-mobile.png",
-      "screenshotBytes": 43751,
-      "screenshotHash": "106058337a70db703a1d2d6312057a5d52228b66bbba531dd68d5ef0141e0574",
+      "screenshotBytes": 43787,
+      "screenshotHash": "803929b2f66a56878469a9df913e473b2f6a8c0fb23bb44ebdd844b79d3ecb87",
       "category": "field-checklist-source-density",
       "prototypeBucket": false,
       "urlFirstState": null,
@@ -3449,7 +3526,7 @@
         "확인",
         "by 차근차근 모빌리티",
         "원문 보기",
-        "증거표 .xlsx 받기",
+        "내 Flow에 저장",
         "콘텐츠 더 보기"
       ],
       "firstFocusableLabels": [
@@ -3458,7 +3535,7 @@
         "확인",
         "by 차근차근 모빌리티",
         "원문 보기",
-        "증거표 .xlsx 받기",
+        "내 Flow에 저장",
         "콘텐츠 더 보기"
       ],
       "internalHits": [],
@@ -3559,13 +3636,21 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 1,
+          "stickyFirstAction": {
+            "testId": "mobile-export-bar",
+            "surface": "mobileSticky",
+            "visibleLabel": "내 Flow에 저장",
+            "accessibleName": "내 Flow에 저장"
+          },
+          "stickyFirstActionSaveOrSetup": true,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": [
             {
               "testId": "mobile-export-bar",
-              "visibleLabel": "증거표 .xlsx 받기",
-              "accessibleName": "증거표 .xlsx 받기"
+              "surface": "mobileSticky",
+              "visibleLabel": "내 Flow에 저장",
+              "accessibleName": "내 Flow에 저장"
             }
           ]
         },
@@ -3614,8 +3699,8 @@
       "label": "Used car checklist row details without repeated source links",
       "route": "/f/used-car-buying-check",
       "screenshot": "screenshots/26-workbench-used-car-open-details-mobile.png",
-      "screenshotBytes": 44122,
-      "screenshotHash": "b96d30ebbba4eadbe7127aff0cec211692d00c2b0700b79b3610ca5f83704dbf",
+      "screenshotBytes": 44427,
+      "screenshotHash": "90cff1e3c48ea9682d013764453ed77d6b7f09bda6052036bf017b1ad487f446",
       "category": "field-checklist-source-density",
       "prototypeBucket": false,
       "urlFirstState": null,
@@ -3646,7 +3731,7 @@
         "확인",
         "by 차근차근 모빌리티",
         "원문 보기",
-        "내 도구로 가져가기",
+        "내 Flow에 저장",
         "콘텐츠 더 보기"
       ],
       "firstFocusableLabels": [
@@ -3659,7 +3744,7 @@
         "확인",
         "by 차근차근 모빌리티",
         "원문 보기",
-        "내 도구로 가져가기",
+        "내 Flow에 저장",
         "콘텐츠 더 보기"
       ],
       "internalHits": [],
@@ -3760,13 +3845,21 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 1,
+          "stickyFirstAction": {
+            "testId": "mobile-export-bar",
+            "surface": "mobileSticky",
+            "visibleLabel": "내 Flow에 저장",
+            "accessibleName": "내 Flow에 저장"
+          },
+          "stickyFirstActionSaveOrSetup": true,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": [
             {
               "testId": "mobile-export-bar",
-              "visibleLabel": "내 도구로 가져가기",
-              "accessibleName": "내 도구로 가져가기"
+              "surface": "mobileSticky",
+              "visibleLabel": "내 Flow에 저장",
+              "accessibleName": "내 Flow에 저장"
             }
           ]
         },
@@ -3961,6 +4054,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -4213,6 +4308,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -4408,6 +4505,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -4609,6 +4708,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -4890,6 +4991,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -5091,6 +5194,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -5292,6 +5397,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -5552,6 +5659,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -5775,6 +5884,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -6046,6 +6157,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -6317,6 +6430,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -6588,6 +6703,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []
@@ -6838,6 +6955,8 @@
         },
         "publicWorkbenchExportLabels": {
           "buttonCount": 0,
+          "stickyFirstAction": null,
+          "stickyFirstActionSaveOrSetup": false,
           "duplicateVisibleLabelCount": 0,
           "duplicateVisibleLabels": [],
           "samples": []

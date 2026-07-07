@@ -58,8 +58,8 @@ P12-05/P12-10 keep `/flow-lab/url-first-p0` and source-backed manual registratio
 ```json
 {
   "totalScreenshots": 31,
-  "uiBaselineCommit": "df119ff",
-  "packageGeneratedFromCommit": "df119ff",
+  "uiBaselineCommit": "06d4c9d",
+  "packageGeneratedFromCommit": "06d4c9d",
   "packageCommitRef": "git commit containing this generated package",
   "normalRouteInternalHitCount": 0,
   "normalRouteSourceSlugHitCount": 0,
@@ -116,6 +116,9 @@ P12-05/P12-10 keep `/flow-lab/url-first-p0` and source-backed manual registratio
   ],
   "fieldWorkbenchRepeatedDetailSentenceCount": 0,
   "publicWorkbenchDuplicateExportVisibleLabelCount": 0,
+  "publicWorkbenchStickyFirstActionCount": 9,
+  "publicWorkbenchStickyFirstActionSaveOrSetupCount": 9,
+  "publicWorkbenchStickyFirstActionNonPrimaryLabels": [],
   "publicShareRouteCount": 9,
   "publicShareSecondaryBrowseFocusableCount": 9,
   "publicShareSecondaryBrowseAfterPrimaryCount": 9,
@@ -296,8 +299,8 @@ The restart source/export frame and bottom frame must remain distinct:
 
 ## Commit Metadata
 
-- UI baseline commit: `df119ff`
-- Package generated from commit: `df119ff`
+- UI baseline commit: `06d4c9d`
+- Package generated from commit: `06d4c9d`
 - Package commit ref: `git commit containing this generated package`
 
 ## Residual Risk

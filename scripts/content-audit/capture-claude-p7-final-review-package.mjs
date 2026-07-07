@@ -864,16 +864,31 @@ async function scanPage(page, options = {}) {
     const collectPublicWorkbenchExportLabels = () => {
       const buttons = Array.from(document.querySelectorAll([
         '[data-testid^="mobile-artifact-export-"]',
+        '[data-testid="mobile-export-bar"] a',
         '[data-testid="mobile-export-bar"] button',
         '[data-testid="mobile-export-sheet"] button',
       ].join(',')))
         .filter((element) => isVisibleInteractiveElement(element))
-        .map((element) => ({
-          testId: getElementTestId(element),
-          visibleLabel: getVisibleLabel(element),
-          accessibleName: getAccessibleNameCandidate(element),
-        }))
+        .map((element) => {
+          const testId = getElementTestId(element);
+          const surface = element.closest('[data-testid="mobile-export-bar"]')
+            ? 'mobileSticky'
+            : element.closest('[data-testid="mobile-export-sheet"]')
+              ? 'mobileExportSheet'
+              : 'mobileArtifactExport';
+
+          return {
+            testId,
+            surface,
+            visibleLabel: getVisibleLabel(element),
+            accessibleName: getAccessibleNameCandidate(element),
+          };
+        })
         .filter((entry) => entry.visibleLabel);
+      const stickyFirstAction = buttons.find((entry) => entry.surface === 'mobileSticky') ?? null;
+      const stickyFirstActionSaveOrSetup = Boolean(
+        stickyFirstAction && /내 Flow에 저장|내 Flow에서 보기/u.test(stickyFirstAction.visibleLabel),
+      );
       const byVisibleLabel = buttons.reduce((map, entry) => {
         map.set(entry.visibleLabel, [...(map.get(entry.visibleLabel) ?? []), entry]);
         return map;
@@ -888,6 +903,8 @@ async function scanPage(page, options = {}) {
 
       return {
         buttonCount: buttons.length,
+        stickyFirstAction,
+        stickyFirstActionSaveOrSetup,
         duplicateVisibleLabelCount: duplicateVisibleLabels.length,
         duplicateVisibleLabels,
         samples: buttons.slice(0, 8),
@@ -1221,6 +1238,22 @@ function summarizeEvidence(records) {
     publicWorkbenchDuplicateExportVisibleLabelCount: publicShareRoutes.reduce((sum, record) =>
       sum + (record.markers.publicWorkbenchExportLabels?.duplicateVisibleLabelCount ?? 0),
     0),
+    publicWorkbenchStickyFirstActionCount: publicShareRoutes.filter((record) =>
+      Boolean(record.markers.publicWorkbenchExportLabels?.stickyFirstAction),
+    ).length,
+    publicWorkbenchStickyFirstActionSaveOrSetupCount: publicShareRoutes.filter((record) =>
+      Boolean(record.markers.publicWorkbenchExportLabels?.stickyFirstActionSaveOrSetup),
+    ).length,
+    publicWorkbenchStickyFirstActionNonPrimaryLabels: publicShareRoutes
+      .filter((record) =>
+        record.markers.publicWorkbenchExportLabels?.stickyFirstAction
+        && !record.markers.publicWorkbenchExportLabels?.stickyFirstActionSaveOrSetup,
+      )
+      .map((record) => ({
+        route: record.url,
+        label: record.markers.publicWorkbenchExportLabels.stickyFirstAction.visibleLabel,
+        testId: record.markers.publicWorkbenchExportLabels.stickyFirstAction.testId,
+      })),
     publicShareRouteCount: publicShareRoutes.length,
     publicShareSecondaryBrowseFocusableCount: publicShareRoutes.filter((record) => record.markers.publicBrowseLinkFocusable).length,
     publicShareSecondaryBrowseAfterPrimaryCount: publicShareRoutes.filter((record) => record.markers.publicBrowseLinkAfterPrimary).length,
@@ -1349,6 +1382,9 @@ P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registrat
 - Field workbench source access link count: ${evidence.summary.fieldWorkbenchSourceAccessLinkCount}
 - Field workbench repeated detail caution count: ${evidence.summary.fieldWorkbenchRepeatedDetailSentenceCount}
 - Public workbench duplicate export visible-label count: ${evidence.summary.publicWorkbenchDuplicateExportVisibleLabelCount}
+- Public workbench sticky first-action count: ${evidence.summary.publicWorkbenchStickyFirstActionCount}
+- Public workbench sticky first-action save/setup count: ${evidence.summary.publicWorkbenchStickyFirstActionSaveOrSetupCount}
+- Public workbench sticky first-action non-primary labels: ${evidence.summary.publicWorkbenchStickyFirstActionNonPrimaryLabels.length}
 - Public share route count: ${evidence.summary.publicShareRouteCount}
 - Public share secondary browse focusable count: ${evidence.summary.publicShareSecondaryBrowseFocusableCount}
 - Public share secondary browse after-primary count: ${evidence.summary.publicShareSecondaryBrowseAfterPrimaryCount}
