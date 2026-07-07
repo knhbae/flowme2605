@@ -6387,7 +6387,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
-              <span className="rounded-full bg-[#EEF1FF] px-2.5 py-1 text-[#3654FF]">저장됨</span>
+              <span data-testid="my-flow-post-save-confirmation" className="rounded-full bg-[#EEF1FF] px-2.5 py-1 text-[#3654FF]">내 Flow에 저장됨</span>
               <span className="break-keep text-[#6E6B64]">{toUserFacingMapTitle(postSaveMap.title)}</span>
             </div>
             <h3 className="mt-2 break-keep text-lg font-semibold tracking-tight text-slate-950 sm:text-xl">

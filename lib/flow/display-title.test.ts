@@ -190,6 +190,20 @@ test('capture script exposes P11 evidence markers for actionable rows and access
   assert.ok(script.includes('normalRouteInventoryHeaderLargeRemainingCount'));
 });
 
+test('capture script exposes P13 wide viewport and post-save confirmation markers', () => {
+  const script = fs.readFileSync(
+    path.join(process.cwd(), 'scripts', 'content-audit', 'capture-claude-p7-final-review-package.mjs'),
+    'utf8',
+  );
+
+  assert.ok(script.includes('wideViewportEvidenceCount'));
+  assert.ok(script.includes('wideViewportRoutesCaptured'));
+  assert.ok(script.includes('wideViewportHorizontalOverflowCount'));
+  assert.ok(script.includes('postSaveConfirmationVisible'));
+  assert.ok(script.includes('postSaveConfirmationText'));
+  assert.ok(script.includes('postSaveConfirmationRepeatsFirstTaskTitle'));
+});
+
 test('capture script exposes flow-lab prototype bucket and internal QA link markers', () => {
   const script = fs.readFileSync(
     path.join(process.cwd(), 'scripts', 'content-audit', 'capture-claude-p7-final-review-package.mjs'),

@@ -1336,6 +1336,8 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
   const movingPostSave = page.getByTestId('my-flow-post-save-panel');
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
+  await expect(movingPostSave.getByTestId('my-flow-post-save-confirmation')).toHaveText('내 Flow에 저장됨');
+  await expect(movingPostSave.getByTestId('my-flow-post-save-confirmation')).not.toContainText('이사 방식과 견적 후보 정하기');
   await expect(movingPostSave).toContainText('원룸 이사 D-30 일정');
   await expect(movingPostSave.getByRole('heading')).not.toContainText('이사 방식과 견적 후보 정하기');
   await expect(movingPostSave).not.toContainText('먼저 할 일부터 열어보세요');
@@ -1362,6 +1364,8 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(page).toHaveURL('/my?savedMap=middle-school-math-1');
   const mathPostSave = page.getByTestId('my-flow-post-save-panel');
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
+  await expect(mathPostSave.getByTestId('my-flow-post-save-confirmation')).toHaveText('내 Flow에 저장됨');
+  await expect(mathPostSave.getByTestId('my-flow-post-save-confirmation')).not.toContainText('1. 소인수분해');
   await expect(mathPostSave).toContainText('중1 수학 목차 진도표');
   await expect(mathPostSave.getByRole('heading')).not.toContainText('1. 소인수분해');
   await expect(mathPostSave).not.toContainText('8개 할 일');

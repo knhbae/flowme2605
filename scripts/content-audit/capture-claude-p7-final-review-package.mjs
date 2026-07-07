@@ -39,6 +39,7 @@ const captureScriptName = process.env.FLOWME_EVIDENCE_CAPTURE_SCRIPT || 'capture
 const outputDir = path.join(repoRoot, 'docs', 'content-audit', packageName);
 const screenshotsDir = path.join(outputDir, 'screenshots');
 const viewport = { width: 390, height: 844 };
+const wideViewport = { width: 1024, height: 768 };
 const branchName = getCommandOutput('git', ['branch', '--show-current']) || 'codex/flowme-uxui-second-loop';
 const uiBaselineCommit = getCommandOutput('git', ['rev-parse', '--short', 'HEAD']) || 'unknown';
 const packageGeneratedFromCommit = uiBaselineCommit;
@@ -125,8 +126,8 @@ async function main() {
     await captureWorkbenchOpenDetails(page, '/f/new-car-delivery-check', '25-workbench-new-car-open-details-mobile.png', 'New car checklist row details without repeated source links');
     await captureWorkbenchOpenDetails(page, '/f/used-car-buying-check', '26-workbench-used-car-open-details-mobile.png', 'Used car checklist row details without repeated source links');
 
-    await setSavedFlows(page, savedFixtures.moving);
-    await captureRoute(page, '/my?savedMap=moving-d30', '13-post-save-my-moving-mobile.png', 'Post-save My Flow for moving map', {
+    await saveFlowMapThroughUi(page, '/flow-maps/moving-d30', 'moving-d30', '2026-07-22');
+    await captureCurrent(page, '13-post-save-my-moving-mobile.png', 'Post-save My Flow for moving map', {
       category: 'saved-state',
       firstTaskTitle: '이사 방식과 견적 후보 정하기',
     });
@@ -134,8 +135,8 @@ async function main() {
       category: 'saved-state',
     });
 
-    await setSavedFlows(page, savedFixtures.math);
-    await captureRoute(page, '/my?savedMap=middle-school-math-1', '15-post-save-my-math-mobile.png', 'Post-save My Flow for undated math content', {
+    await saveFlowMapThroughUi(page, '/flow-maps/middle-school-math-1', 'middle-school-math-1');
+    await captureCurrent(page, '15-post-save-my-math-mobile.png', 'Post-save My Flow for undated math content', {
       category: 'saved-state',
       firstTaskTitle: '1. 소인수분해',
     });
@@ -206,6 +207,7 @@ async function main() {
       prototypeTier: 'internal-console',
       scrollPurpose: 'prototype-flow-lab-top',
     });
+    await captureWideViewportEvidence(page);
   } finally {
     await browser.close();
     stopServer(server);
@@ -222,6 +224,7 @@ async function main() {
     packageCommitRef,
     commit: uiBaselineCommit,
     viewport,
+    wideViewport,
     baseURL,
     summary: summarizeEvidence(scenarioRecords),
     scenarios: scenarioRecords,
@@ -357,9 +360,36 @@ async function setSavedFlows(page, flows) {
   }, flows);
 }
 
-async function captureCleanRoute(page, route, file, label) {
+async function captureCleanRoute(page, route, file, label, options = {}) {
   await resetStorage(page);
-  await captureRoute(page, route, file, label, { category: 'normal-user-route' });
+  await captureRoute(page, route, file, label, { category: 'normal-user-route', ...options });
+}
+
+async function captureWideViewportEvidence(page) {
+  await page.setViewportSize(wideViewport);
+  await captureCleanRoute(page, '/', '32-home-wide.png', 'Home wide viewport spot check', {
+    category: 'wide-viewport',
+    wideViewport: true,
+  });
+  await captureCleanRoute(page, '/flows', '33-flows-wide.png', 'Flow finding wide viewport spot check', {
+    category: 'wide-viewport',
+    wideViewport: true,
+  });
+  await captureCleanRoute(page, '/flow-maps/moving-d30', '34-flow-map-moving-wide.png', 'Moving map wide viewport spot check', {
+    category: 'wide-viewport',
+    wideViewport: true,
+  });
+  await captureCleanRoute(page, '/f/vehicle-inspection-prep', '35-public-vehicle-wide.png', 'Public share wide viewport spot check', {
+    category: 'wide-viewport',
+    wideViewport: true,
+  });
+  await saveFlowMapThroughUi(page, '/flow-maps/moving-d30', 'moving-d30', '2026-07-22');
+  await captureCurrent(page, '36-post-save-my-moving-wide.png', 'Post-save My Flow wide viewport spot check', {
+    category: 'wide-viewport',
+    wideViewport: true,
+  });
+  await page.setViewportSize(viewport);
+  await settle(page);
 }
 
 async function captureBottom(page, route, file, label) {
@@ -374,6 +404,24 @@ async function captureRoute(page, route, file, label, options = {}) {
   await page.goto(route);
   await settle(page);
   await captureCurrent(page, file, label, { ...options, route });
+}
+
+async function saveFlowMapThroughUi(page, route, mapId, anchor = '') {
+  await resetStorage(page);
+  await page.goto(route);
+  await settle(page);
+  const anchorInput = page.getByTestId('flow-map-anchor-input');
+  if (anchor && (await anchorInput.count())) {
+    await anchorInput.fill(anchor);
+  }
+  const desktopSaveButton = page.getByTestId('flow-map-save-all');
+  const mobileSaveButton = page.getByTestId('flow-map-save-all-mobile');
+  const saveButton = await desktopSaveButton.isVisible().catch(() => false)
+    ? desktopSaveButton
+    : mobileSaveButton;
+  await saveButton.click();
+  await page.waitForURL(`**/my?savedMap=${mapId}`, { timeout: 15_000 });
+  await settle(page);
 }
 
 async function lookupUrlFirstInput(page, url) {
@@ -876,6 +924,17 @@ async function scanPage(page, options = {}) {
         rowKey: card?.dataset.rowKey ?? '',
       };
     };
+    const collectPostSaveConfirmation = () => {
+      const element = document.querySelector('[data-testid="my-flow-post-save-confirmation"]');
+      const text = normalizeLine(element?.textContent ?? '');
+
+      return {
+        visible: Boolean(element && isVisible(element)),
+        text,
+        repeatsFirstTaskTitle: Boolean(text && firstTaskTitle && text.includes(firstTaskTitle)),
+        firstTaskTitle,
+      };
+    };
     const rowDateTextPattern = /\d{1,2}\s*월\s*\d{1,2}\s*일/u;
     const rowTimingTextPattern = /\bD(?:-\d+|\+\d+|-Day)\b/u;
     const summarizeRowMeta = (row) => {
@@ -1153,6 +1212,7 @@ async function scanPage(page, options = {}) {
       urlFirstScenarioName: payload.options.urlFirstScenarioName ?? null,
       urlFirstState: payload.options.urlFirstState ?? null,
       urlFirstTriggerUrl: payload.options.urlFirstTriggerUrl ?? null,
+      wideViewport: Boolean(payload.options.wideViewport),
       url: window.location.pathname + window.location.search,
       h1: document.querySelector('h1')?.textContent?.trim() ?? '',
       scrollPurpose: payload.options.scrollPurpose ?? null,
@@ -1160,6 +1220,7 @@ async function scanPage(page, options = {}) {
       scrollHeight: document.documentElement.scrollHeight,
       scrollWidth: document.documentElement.scrollWidth,
       clientWidth: document.documentElement.clientWidth,
+      viewportWidth: window.innerWidth,
       viewportHeight: window.innerHeight,
       noHorizontalOverflow: document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2,
       navVisible: Boolean(document.querySelector('[data-testid="platform-mobile-tabs"]')),
@@ -1215,6 +1276,7 @@ async function scanPage(page, options = {}) {
         calendarSelectedDay: Boolean(document.querySelector('[data-testid="my-flow-calendar-selected-day"]')),
         statusSheetRows: document.querySelectorAll('[data-testid="my-flow-status-sheet-row"]').length,
         continuationActionable: collectContinuationActionable(),
+        postSaveConfirmation: collectPostSaveConfirmation(),
         agendaGroupMeta: collectAgendaGroupMeta(),
         rowControlAccessibleNames: getRowControlAccessibleNames(),
         inventoryProgressMetrics: collectInventoryProgressMetrics(),
@@ -1318,6 +1380,8 @@ function summarizeEvidence(records) {
   const restart = prototypes.filter((record) => record.category === 'prototype-restart');
   const flowLab = prototypes.filter((record) => record.category === 'prototype-flow-lab');
   const publicShareRoutes = normal.filter((record) => record.publicShellVisible);
+  const wideViewportRecords = records.filter((record) => record.wideViewport || record.category === 'wide-viewport');
+  const postSaveConfirmationRecords = normal.filter((record) => record.markers?.postSaveConfirmation?.visible);
   const restartSourceFrame = records.find((record) => record.id === '22-restart-moving-source-export-mobile');
   const restartBottomFrame = records.find((record) => record.id === '23-restart-moving-bottom-mobile');
   const restartScheduleFrame = records.find((record) => record.id === '24-restart-moving-full-schedule-mobile')
@@ -1391,6 +1455,29 @@ function summarizeEvidence(records) {
     uiBaselineCommit,
     packageGeneratedFromCommit,
     packageCommitRef,
+    wideViewportEvidenceCount: wideViewportRecords.length,
+    wideViewportWidth: wideViewport.width,
+    wideViewportRoutesCaptured: wideViewportRecords.map((record) => ({
+      id: record.id,
+      route: record.url,
+      viewportWidth: record.viewportWidth,
+      noHorizontalOverflow: record.noHorizontalOverflow,
+    })),
+    wideViewportHorizontalOverflowCount: wideViewportRecords.filter((record) => !record.noHorizontalOverflow).length,
+    postSaveConfirmationVisible: postSaveConfirmationRecords.length > 0,
+    postSaveConfirmationText: Array.from(new Set(postSaveConfirmationRecords.map((record) => record.markers?.postSaveConfirmation?.text).filter(Boolean))),
+    postSaveConfirmationRepeatsFirstTaskTitle: postSaveConfirmationRecords.some((record) =>
+      Boolean(record.markers?.postSaveConfirmation?.repeatsFirstTaskTitle),
+    ),
+    postSaveConfirmationEvidence: normal
+      .filter((record) => record.markers?.postSaveConfirmation?.visible || record.url.includes('savedMap='))
+      .map((record) => ({
+        id: record.id,
+        route: record.url,
+        visible: Boolean(record.markers?.postSaveConfirmation?.visible),
+        text: record.markers?.postSaveConfirmation?.text ?? '',
+        repeatsFirstTaskTitle: Boolean(record.markers?.postSaveConfirmation?.repeatsFirstTaskTitle),
+      })),
     normalRouteInternalHitCount: normal.reduce((sum, record) => sum + record.internalHits.length, 0),
     normalRouteSourceSlugHitCount: normal.reduce((sum, record) => sum + record.sourceSlugHits.length, 0),
     normalRouteStructuralDisplayHitCount: normal.reduce((sum, record) => sum + record.structuralDisplayHits.length + record.flowSuffixLines.length, 0),
@@ -1653,6 +1740,7 @@ function renderReadme(evidence) {
 - Package generated from commit: \`${evidence.packageGeneratedFromCommit}\`
 - Package commit ref: \`${evidence.packageCommitRef}\`
 - Viewport: ${viewport.width}x${viewport.height}
+- Wide viewport spot check: ${wideViewport.width}x${wideViewport.height}
 
 This package freezes the P7-01 to P7-05 UX/UI baselines with P7-06 guardrails, the P8-01 generalized scan rules, the P8-02 restart/prototype promotion gate, the P8-03/P8-04 My Flow overdue label/status corrections, the P8-05/P8-06/P8-08 evidence/package metadata cleanup, the P8-07 restart date-display decision, the P8-09 field-checklist source-density rule, and the P8-10/P9-02 public share CTA/tab-order rule.
 
@@ -1671,6 +1759,10 @@ P11-05/P11-06 keep the capture pipeline aligned with the canonical guardrail lib
 P12-01~P12-04 add the URL-first first-execution slice to the normal user-route guardrail set. The package captures hit, custom-start, miss, and saved-candidate states on \`/flows\` and records URL-first-specific buckets for internal copy, dynamic source slug, structural title, raw ISO text, and input raw ISO hits. These scenarios should remain at zero while preserving canonical lookup, source-backed reuse, and non-executable local candidate storage.
 
 P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registration QA outside the normal user route set. P13-03 splits the old prototype bucket into two tiers: \`/restart/moving-d30\` is a release-preview route that must keep display-gate hits at zero before promotion, while \`/flow-lab/url-first-p0\` is an internal-console route where lab labels are allowed only inside the noindex, non-nav-linked console.
+
+P13-04/P13-07 make URL-first evidence reproducible as a state-by-control matrix. Hit and custom-start scenarios now record export-mode scan rows for calendar/markdown/checklist, all URL-first states record their trigger URL, and the candidate detail scenario records both expanded-request evidence and the resolved-hit candidate branch.
+
+P13-05/P13-06 add a wide-viewport spot-check slice and a measured post-save confirmation signal. The package records >=768px captures for core routes and confirms \`/my?savedMap=...\` shows a short saved confirmation without repeating the first task title.
 
 ## Files
 
@@ -1695,6 +1787,13 @@ P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registrat
 - Normal route agenda/status repeated date meta rows: ${evidence.summary.normalRouteAgendaGroupRepeatedDateMetaRowCount}
 - Normal route row control accessible name samples: ${evidence.summary.normalRouteRowControlAccessibleNameSampleCount}
 - Normal route row control samples with context: ${evidence.summary.normalRouteRowControlAccessibleNameContextCount}
+- Wide viewport evidence count: ${evidence.summary.wideViewportEvidenceCount}
+- Wide viewport width: ${evidence.summary.wideViewportWidth}
+- Wide viewport horizontal overflow count: ${evidence.summary.wideViewportHorizontalOverflowCount}
+- Wide viewport routes captured: ${JSON.stringify(evidence.summary.wideViewportRoutesCaptured)}
+- Post-save confirmation visible: ${evidence.summary.postSaveConfirmationVisible}
+- Post-save confirmation text: ${JSON.stringify(evidence.summary.postSaveConfirmationText)}
+- Post-save confirmation repeats first task title: ${evidence.summary.postSaveConfirmationRepeatsFirstTaskTitle}
 - URL-first normal scenarios captured: ${evidence.summary.urlFirstScenarioCount}
 - URL-first states captured: ${JSON.stringify(evidence.summary.urlFirstStatesCaptured)}
 - URL-first scenario trigger URL count: ${evidence.summary.urlFirstScenarioTriggerUrlCount}
@@ -1799,6 +1898,8 @@ P12-01~P12-04 bring URL-first hit/custom-start/miss/candidate states into the no
 P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registration QA outside the normal user route set. P13-03 makes the prototype bucket policy explicit: \`/restart/moving-d30\` is release-preview and must keep user-display gate hits at zero, while \`/flow-lab/url-first-p0\` is internal-console and may show lab labels only inside a noindex route with zero normal-route links.
 
 P13-04/P13-07 make URL-first evidence reproducible as a state-by-control matrix. Hit and custom-start scenarios now record export-mode scan rows for calendar/markdown/checklist, all URL-first states record their trigger URL, and the candidate detail scenario records both expanded-request evidence and the resolved-hit candidate branch.
+
+P13-05/P13-06 add wide viewport spot checks and a post-save confirmation marker. The audit records the wide-route list, wide overflow count, and whether the saved confirmation repeats the first task title.
 
 ## Baselines Covered
 
@@ -2068,6 +2169,10 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.normalRouteAgendaGroupRepeatedDateMetaRowCount}</b><span>repeated date meta rows</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteRowControlAccessibleNameSampleCount}</b><span>row control a11y samples</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteRowControlAccessibleNameContextCount}</b><span>row control samples with context</span></div>
+      <div class="stat"><b>${evidence.summary.wideViewportEvidenceCount}</b><span>wide viewport captures</span></div>
+      <div class="stat"><b>${evidence.summary.wideViewportHorizontalOverflowCount}</b><span>wide overflow hits</span></div>
+      <div class="stat"><b>${evidence.summary.postSaveConfirmationVisible ? 'yes' : 'no'}</b><span>post-save confirmation</span></div>
+      <div class="stat"><b>${evidence.summary.postSaveConfirmationRepeatsFirstTaskTitle ? 'yes' : 'no'}</b><span>post-save repeats task</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteLegacyOverdueLabelCount}</b><span>legacy overdue labels</span></div>
       <div class="stat"><b>${evidence.summary.fieldWorkbenchRepeatedDetailSentenceCount}</b><span>field repeated caution</span></div>
       <div class="stat"><b>${evidence.summary.publicWorkbenchDuplicateExportVisibleLabelCount}</b><span>public export label duplicates</span></div>
