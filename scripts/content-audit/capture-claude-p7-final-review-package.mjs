@@ -88,6 +88,10 @@ async function main() {
 
     await captureCleanRoute(page, '/', '01-home-mobile.png', 'Home entry and lightweight recommendations');
     await captureCleanRoute(page, '/flows', '02-flows-mobile.png', 'Flow catalog scan with lightweight CTAs');
+    await captureUrlFirstHit(page);
+    await captureUrlFirstCustomStart(page);
+    await captureUrlFirstMissCandidateForm(page);
+    await captureUrlFirstCandidateDetail(page);
     await captureCleanRoute(page, '/flow-maps/moving-d30', '03-flow-map-moving-top-mobile.png', 'Moving map save screen top');
     await captureBottom(page, '/flow-maps/moving-d30', '04-flow-map-moving-bottom-mobile.png', 'Moving map bottom sticky clearance');
     await captureCleanRoute(page, '/flow-maps/middle-school-math-1', '05-flow-map-math-mobile.png', 'Math source-backed map screen');
@@ -340,6 +344,104 @@ async function captureRoute(page, route, file, label, options = {}) {
   await page.goto(route);
   await settle(page);
   await captureCurrent(page, file, label, { ...options, route });
+}
+
+async function lookupUrlFirstInput(page, url) {
+  await page.goto('/flows');
+  await settle(page);
+  const lookup = page.getByTestId('flow-url-lookup-entry');
+  await lookup.waitFor({ state: 'visible' });
+  await lookup.getByLabel('원문 URL').fill(url);
+  await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+  await page.getByTestId('flow-url-lookup-result').waitFor({ state: 'visible' });
+  await settle(page);
+}
+
+async function captureUrlFirstHit(page) {
+  await resetStorage(page);
+  await lookupUrlFirstInput(page, 'https://mathbang.net/13?utm_source=share');
+  await captureCurrent(page, '27-url-first-hit-mobile.png', 'URL-first hit result on Flow finding', {
+    category: 'url-first',
+    route: '/flows',
+    urlFirstState: 'hit',
+  });
+}
+
+async function captureUrlFirstCustomStart(page) {
+  await resetStorage(page);
+  await lookupUrlFirstInput(page, 'https://mathbang.net/13?utm_source=share');
+  await page.getByTestId('flow-url-start-mode-custom').click();
+  await page.getByTestId('flow-url-custom-start-panel').waitFor({ state: 'visible' });
+  await settle(page);
+  await captureCurrent(page, '28-url-first-custom-start-mobile.png', 'URL-first lightweight custom start panel', {
+    category: 'url-first',
+    route: '/flows',
+    urlFirstState: 'custom-start',
+  });
+}
+
+async function captureUrlFirstMissCandidateForm(page) {
+  await resetStorage(page);
+  await lookupUrlFirstInput(page, 'https://example.com/source-to-convert?utm_source=review');
+  await page.getByTestId('flow-url-supply-candidate-form').waitFor({ state: 'visible' });
+  await captureCurrent(page, '29-url-first-miss-candidate-form-mobile.png', 'URL-first miss candidate form', {
+    category: 'url-first',
+    route: '/flows',
+    urlFirstState: 'miss',
+  });
+}
+
+async function captureUrlFirstCandidateDetail(page) {
+  await resetStorage(page);
+  await page.goto('/flows');
+  await page.evaluate(() => {
+    window.localStorage.setItem(
+      'flow:url-first:supply-candidates',
+      JSON.stringify([
+        {
+          canonicalUrl: 'https://example.com/source-to-convert',
+          originalUrl: 'https://example.com/source-to-convert?utm_source=review',
+          title: '새로 보고 싶은 준비 체크리스트',
+          memo: 'URL에서 따라 할 순서만 남겨두고 싶음',
+          status: 'miss_request',
+          savedAt: '2026-07-07T00:00:00.000Z',
+          lastLookup: {
+            status: 'miss',
+            title: '아직 준비된 Flow가 없어요',
+            checkedAt: '2026-07-07T00:00:00.000Z',
+            canSaveToMyFlow: false,
+          },
+        },
+        {
+          canonicalUrl: 'https://mathbang.net/13',
+          originalUrl: 'https://mathbang.net/13?utm_source=share',
+          title: '이제 실행 가능한 수학 후보',
+          memo: '후보가 기존 콘텐츠로 닫힌 상태',
+          status: 'miss_request',
+          savedAt: '2026-07-07T00:00:00.000Z',
+          lastLookup: {
+            status: 'hit',
+            title: '이미 만들어진 Flow가 있어요',
+            checkedAt: '2026-07-07T00:00:00.000Z',
+            canSaveToMyFlow: true,
+            flowMapId: 'middle-school-math-1',
+            routeHref: '/flow-maps/middle-school-math-1',
+          },
+        },
+      ]),
+    );
+  });
+  await page.reload();
+  await settle(page);
+  const candidateList = page.getByTestId('flow-url-supply-candidate-list');
+  await candidateList.waitFor({ state: 'visible' });
+  await candidateList.locator('article').filter({ hasText: '새로 보고 싶은 준비 체크리스트' }).getByRole('button', { name: '요청 내용 보기' }).click();
+  await settle(page);
+  await captureCurrent(page, '30-url-first-candidate-detail-mobile.png', 'URL-first saved candidate request detail', {
+    category: 'url-first',
+    route: '/flows',
+    urlFirstState: 'candidate',
+  });
 }
 
 async function captureCurrent(page, file, label, options = {}) {
@@ -785,6 +887,24 @@ async function scanPage(page, options = {}) {
         samples: buttons.slice(0, 8),
       };
     };
+    const collectUrlFirstMarkers = () => {
+      const lookupResult = document.querySelector('[data-testid="flow-url-lookup-result"]');
+      const customStart = document.querySelector('[data-testid="flow-url-custom-start-panel"]');
+      const supplyForm = document.querySelector('[data-testid="flow-url-supply-candidate-form"]');
+      const candidateList = document.querySelector('[data-testid="flow-url-supply-candidate-list"]');
+      const requestDetail = document.querySelector('[data-testid="flow-url-supply-production-handoff"]');
+      const resultText = normalizeLine(lookupResult?.textContent ?? '');
+
+      return {
+        resultVisible: Boolean(lookupResult && isVisible(lookupResult)),
+        customStartVisible: Boolean(customStart && isVisible(customStart)),
+        supplyFormVisible: Boolean(supplyForm && isVisible(supplyForm)),
+        candidateListVisible: Boolean(candidateList && isVisible(candidateList)),
+        requestDetailVisible: Boolean(requestDetail && isVisible(requestDetail)),
+        hasHitResult: /이미 .*Flow/.test(resultText),
+        hasMissResult: /아직 .*Flow/.test(resultText) && Boolean(supplyForm && isVisible(supplyForm)),
+      };
+    };
     const publicBrowseLinkFocusableIndex = focusableEntries.findIndex((entry) => entry.testId === 'flow-public-secondary-browse-link');
     const publicPrimaryPathFocusableIndex = focusableEntries.findIndex((entry) =>
       [
@@ -816,6 +936,7 @@ async function scanPage(page, options = {}) {
     return {
       category: payload.options.category ?? 'route',
       prototypeBucket: Boolean(payload.options.prototypeBucket),
+      urlFirstState: payload.options.urlFirstState ?? null,
       url: window.location.pathname + window.location.search,
       h1: document.querySelector('h1')?.textContent?.trim() ?? '',
       scrollPurpose: payload.options.scrollPurpose ?? null,
@@ -884,6 +1005,7 @@ async function scanPage(page, options = {}) {
         inventoryHeaderMetrics: collectInventoryHeaderMetrics(),
         workbenchRepeatedDetailSentences: collectWorkbenchRepeatedDetailSentences(),
         publicWorkbenchExportLabels: collectPublicWorkbenchExportLabels(),
+        urlFirst: collectUrlFirstMarkers(),
         inventoryRows: document.querySelectorAll('[data-testid="my-flow-group-row"]').length,
         restartInlineExportButtons: document.querySelectorAll('#moving-restart-export-panel button').length,
         restartMobileExportButtons: document.querySelectorAll('[data-testid="moving-mobile-export-actions"] button').length,
@@ -962,6 +1084,7 @@ async function scanPage(page, options = {}) {
 function summarizeEvidence(records) {
   const normal = records.filter((record) => !record.prototypeBucket);
   const fieldChecklistSourceDensity = records.filter((record) => record.category === 'field-checklist-source-density');
+  const urlFirst = normal.filter((record) => record.category === 'url-first');
   const restart = records.filter((record) => record.prototypeBucket);
   const publicShareRoutes = normal.filter((record) => record.publicShellVisible);
   const restartSourceFrame = records.find((record) => record.id === '22-restart-moving-source-export-mobile');
@@ -1022,6 +1145,14 @@ function summarizeEvidence(records) {
     normalRouteInventoryHeaderLargeRemainingCount: normal.reduce((sum, record) =>
       sum + (record.markers?.inventoryHeaderMetrics?.largeRemainingCount ?? 0),
     0),
+    urlFirstScenarioCount: urlFirst.length,
+    urlFirstStatesCaptured: urlFirst.map((record) => record.urlFirstState ?? record.id),
+    urlFirstNormalInternalHitCount: urlFirst.reduce((sum, record) => sum + record.internalHits.length, 0),
+    urlFirstNormalSourceSlugHitCount: urlFirst.reduce((sum, record) => sum + record.sourceSlugHits.length, 0),
+    urlFirstNormalStructuralDisplayHitCount: urlFirst.reduce((sum, record) => sum + record.structuralDisplayHits.length + record.flowSuffixLines.length, 0),
+    urlFirstNormalRawIsoHitCount: urlFirst.reduce((sum, record) => sum + record.rawIsoLines.length, 0),
+    urlFirstNormalInputRawIsoHitCount: urlFirst.reduce((sum, record) => sum + (record.rawIsoInputValueHits?.length ?? 0), 0),
+    urlFirstMarkerVisibleCount: urlFirst.filter((record) => record.markers?.urlFirst?.resultVisible || record.markers?.urlFirst?.candidateListVisible).length,
     normalRouteQueueLabelScope: 'my-flow-queue-label-surfaces',
     normalRouteQueueLabelCount: normal.reduce((sum, record) =>
       sum
@@ -1120,6 +1251,8 @@ P11-04/P11-09 reduce My Flow inventory metric noise. Each saved-content row expo
 
 P11-05/P11-06 keep the capture pipeline aligned with the canonical guardrail library and make native date input exemptions traceable by test id. P11-07/P11-10 keep fridge/washer setup paths measurable and allow the fridge first-action title to wrap to two lines on mobile. P11-08/P11-11 lower repeated field-checklist detail caution copy and extend public workbench export-label evidence so duplicate visible export entry points are caught.
 
+P12-01~P12-04 add the URL-first first-execution slice to the normal user-route guardrail set. The package captures hit, custom-start, miss, and saved-candidate states on \`/flows\` and records URL-first-specific buckets for internal copy, dynamic source slug, structural title, raw ISO text, and input raw ISO hits. These scenarios should remain at zero while preserving canonical lookup, source-backed reuse, and non-executable local candidate storage.
+
 ## Files
 
 - [audit.md](./audit.md)
@@ -1143,6 +1276,14 @@ P11-05/P11-06 keep the capture pipeline aligned with the canonical guardrail lib
 - Normal route agenda/status repeated date meta rows: ${evidence.summary.normalRouteAgendaGroupRepeatedDateMetaRowCount}
 - Normal route row control accessible name samples: ${evidence.summary.normalRouteRowControlAccessibleNameSampleCount}
 - Normal route row control samples with context: ${evidence.summary.normalRouteRowControlAccessibleNameContextCount}
+- URL-first normal scenarios captured: ${evidence.summary.urlFirstScenarioCount}
+- URL-first states captured: ${JSON.stringify(evidence.summary.urlFirstStatesCaptured)}
+- URL-first internal copy hits: ${evidence.summary.urlFirstNormalInternalHitCount}
+- URL-first source slug hits: ${evidence.summary.urlFirstNormalSourceSlugHitCount}
+- URL-first structural/trailing title hits: ${evidence.summary.urlFirstNormalStructuralDisplayHitCount}
+- URL-first raw ISO hits: ${evidence.summary.urlFirstNormalRawIsoHitCount}
+- URL-first input raw ISO hits: ${evidence.summary.urlFirstNormalInputRawIsoHitCount}
+- URL-first visible marker count: ${evidence.summary.urlFirstMarkerVisibleCount}
 - Normal route queue label scope: ${evidence.summary.normalRouteQueueLabelScope}
 - Normal route legacy overdue label hits: ${evidence.summary.normalRouteLegacyOverdueLabelCount}
 - Normal route horizontal overflow count: ${evidence.summary.normalRouteHorizontalOverflowCount}
@@ -1201,6 +1342,8 @@ P11-04/P11-09 lower My Flow inventory density without changing progress calculat
 
 P11-05/P11-06 keep capture/evidence rules centralized and traceable: internal-copy scans use the canonical guardrail helper, the browser context is Korean locale/Asia-Seoul timezone, and date inputs carry stable test ids for native raw ISO exemption evidence. P11-07/P11-10 keep fridge/washer setup paths visible and measurable, and the fridge first-action title can wrap to two lines. P11-08/P11-11 move repeated field-checklist caution copy into a common note and record public workbench export visible-label duplication as JSON evidence.
 
+P12-01~P12-04 bring URL-first hit/custom-start/miss/candidate states into the normal user-route capture schema. The same guardrail buckets now cover \`/flows\` URL-first user surfaces, including source slug leakage such as \`Mathbang\`, raw ISO dates in candidate cards, production-only copy such as \`Canonical URL\`/\`handoff\`, and roadmap/queue/pipeline wording such as \`P0\`, \`대기열\`, or \`파이프라인\`.
+
 ## Baselines Covered
 
 - P7-01: \`/restart/moving-d30\` uses user-facing date text and a quieter export hierarchy.
@@ -1233,6 +1376,7 @@ P11-05/P11-06 keep capture/evidence rules centralized and traceable: internal-co
 - P11-05/P11-06: capture guardrail logic stays canonical, locale/timezone are fixed, and native date input exemptions include concrete test ids.
 - P11-07/P11-10: fridge/washer setup paths are visible/focusable evidence targets, and the fridge first-action title supports two-line mobile wrapping.
 - P11-08/P11-11: field checklist repeated caution copy is common-note only, and public workbench export labels do not duplicate as ambiguous visible entry points.
+- P12-01/P12-04: URL-first hit, custom-start, miss, and candidate states are captured as normal user-route scenarios and must keep URL-first internal/source/raw-ISO buckets at zero.
 
 ## Summary
 

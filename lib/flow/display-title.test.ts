@@ -371,6 +371,31 @@ test('scanUserSurfaceGuardrails finds structural title leaks and keeps allowed F
   assert.deepEqual(result.trailingFlowSuffixHits, ['자동차검사 준비 Flow']);
 });
 
+test('scanUserSurfaceGuardrails flags URL-first roadmap and production handoff wording', () => {
+  const result = scanUserSurfaceGuardrails({
+    primaryLines: [
+      'P0에서는 새 Flow를 만들지 않고 대기열로 넘깁니다.',
+      'P12 URL-first 파이프라인 확인',
+      'Canonical URL https://example.com/source-to-convert',
+      'Claude review용 URL-first 후보 handoff 예시',
+      '제작용 정보 보기',
+      'Flow 찾기',
+      '내 Flow에 저장',
+    ],
+  });
+
+  assert.deepEqual(result.internalCopyHits, [
+    { pattern: String.raw`\bP\d+\b`, line: 'P0에서는 새 Flow를 만들지 않고 대기열로 넘깁니다.' },
+    { pattern: '대기열', line: 'P0에서는 새 Flow를 만들지 않고 대기열로 넘깁니다.' },
+    { pattern: String.raw`\bP\d+\b`, line: 'P12 URL-first 파이프라인 확인' },
+    { pattern: '파이프라인', line: 'P12 URL-first 파이프라인 확인' },
+    { pattern: 'Canonical URL', line: 'Canonical URL https://example.com/source-to-convert' },
+    { pattern: String.raw`\breview\b`, line: 'Claude review용 URL-first 후보 handoff 예시' },
+    { pattern: String.raw`\bhandoff\b`, line: 'Claude review용 URL-first 후보 handoff 예시' },
+    { pattern: '제작용 정보', line: '제작용 정보 보기' },
+  ]);
+});
+
 test('findFirstTaskRepetitionHits uses the rendered first task title instead of fixed strings', () => {
   const hits = findFirstTaskRepetitionHits(
     ['저장됨', '오늘 할 일', 'Future task title', 'Future task title', '먼저 열기'],

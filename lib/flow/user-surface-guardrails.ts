@@ -94,10 +94,16 @@ const STRUCTURAL_DISPLAY_PATTERNS = [
 ];
 
 const INTERNAL_COPY_PATTERNS: Array<{ label: string; pattern: RegExp }> = [
+  { label: String.raw`\bP\d+\b`, pattern: /\bP\d+\b/iu },
   { label: String.raw`\bdemo\b`, pattern: /\bdemo\b/iu },
   { label: '데모', pattern: /데모/u },
   { label: String.raw`\breview\b`, pattern: /\breview\b/iu },
   { label: String.raw`\baudit\b`, pattern: /\baudit\b/iu },
+  { label: String.raw`\bhandoff\b`, pattern: /\bhandoff\b/iu },
+  { label: 'Canonical URL', pattern: /\bCanonical\s+URL\b/iu },
+  { label: '제작용 정보', pattern: /제작용\s*정보/u },
+  { label: '대기열', pattern: /대기열/u },
+  { label: '파이프라인', pattern: /파이프라인/u },
   { label: 'source-backed', pattern: /source-backed/iu },
   { label: 'sourceTrace', pattern: /sourceTrace/u },
   { label: 'partial_draft', pattern: /partial_draft/u },

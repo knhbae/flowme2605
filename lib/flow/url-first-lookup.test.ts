@@ -201,7 +201,7 @@ test('needs_review content is preview-only and blocks export/save', () => {
   assert.equal(result.aiGeneration.enabled, false);
 });
 
-test('unknown URL stays a miss with AI generation disabled for P0', () => {
+test('unknown URL stays a miss with user-facing disabled-generation copy', () => {
   const result = lookupUrlFirstP0Input('https://example.com/some-plan?utm_source=newsletter');
 
   assert.equal(result.status, 'miss');
@@ -210,7 +210,9 @@ test('unknown URL stays a miss with AI generation disabled for P0', () => {
   assert.deepEqual(result.exportModes, []);
   assert.equal(result.canSaveToMyFlow, false);
   assert.equal(result.aiGeneration.enabled, false);
-  assert.match(result.aiGeneration.reason, /P0/);
+  assert.match(result.aiGeneration.reason, /기존 Flow를 먼저 찾아보고/);
+  assert.doesNotMatch(result.aiGeneration.reason, /\bP\d+\b/);
+  assert.doesNotMatch(result.summary, /대기열|파이프라인|\bP\d+\b/);
 });
 
 test('memo draft remains private and recommends an existing moving Flow', () => {

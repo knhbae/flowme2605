@@ -7,6 +7,7 @@ import {
   type SourceBackedFlowMapSavedSnapshot,
   type SourceBackedMyFlowMap,
 } from './source-backed-my-flow';
+import { toUserFacingMapTitle, toUserFacingSourceTitle } from './display-title';
 import type { FlowItemState } from './types';
 
 export const AJD_MOVING_SOURCE_URL =
@@ -106,7 +107,7 @@ const TRACKING_QUERY_KEYS = new Set(['fbclid', 'gclid']);
 
 const aiDisabledForP0: UrlFirstAiGenerationState = {
   enabled: false,
-  reason: 'P0에서는 비용을 낮추기 위해 AI 초안 생성은 켜지 않습니다. 먼저 기존 Flow 검색과 중복 확인만 수행합니다.',
+  reason: '지금은 기존 Flow를 먼저 찾아보고, 새로 필요한 URL은 요청으로 남깁니다.',
 };
 
 const movingHitPreview: UrlFirstPreview = {
@@ -138,7 +139,7 @@ const missPreview: UrlFirstPreview = {
   calendar: [],
   markdown: [],
   checklist: [],
-  myFlow: ['중복 URL이 없어서 아직 저장 가능한 Flow가 없습니다.', 'P0에서는 URL을 수집하고 사람이 먼저 Flow 후보를 검토합니다.'],
+  myFlow: ['아직 저장 가능한 Flow가 없어요.', 'URL과 메모를 남겨두면 준비 상태로 보관합니다.'],
 };
 
 const memoDraftPreview: UrlFirstPreview = {
@@ -172,18 +173,19 @@ function getSourceBackedPreviewRows(map: SourceBackedMyFlowMap): string[] {
       .flatMap((flow) => flow.steps.map((step) => step.title))
       .filter(Boolean)
       .slice(0, 3) ?? [];
-  return rows.length > 0 ? rows : [`${map.title} 저장 전 보기`];
+  return rows.length > 0 ? rows : [`${toUserFacingMapTitle(map.title)} 저장 전 보기`];
 }
 
 function buildSourceBackedPreview(map: SourceBackedMyFlowMap): UrlFirstPreview {
   const rows = getSourceBackedPreviewRows(map);
+  const displayMapTitle = toUserFacingMapTitle(map.title);
   return {
     calendarFilename: `${map.id}-flow.ics`,
     markdownFilename: `${map.id}-flow.md`,
     calendar: rows,
-    markdown: [`# ${map.title}`, ...rows.map((row) => `- [ ] ${row}`)],
+    markdown: [`# ${displayMapTitle}`, ...rows.map((row) => `- [ ] ${row}`)],
     checklist: rows,
-    myFlow: [`${map.title} 저장 후 오늘/전체에서 이어보기`, '일정이 있는 항목은 캘린더에서도 확인'],
+    myFlow: [`${displayMapTitle} 저장 후 오늘/전체에서 이어보기`, '일정이 있는 항목은 캘린더에서도 확인'],
   };
 }
 
@@ -192,15 +194,16 @@ function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap): UrlFirstLo
 
   const sourceStatus = getSourceBackedMapSourceStatus(map);
   const canUseDirectly = sourceStatus === 'real';
-  const sourceLabel = map.sourceTitle ?? map.userLabel ?? map.title;
+  const sourceLabel = toUserFacingSourceTitle(map.sourceTitle ?? map.userLabel ?? map.title);
+  const displayMapTitle = toUserFacingMapTitle(map.title);
 
   return {
     status: 'hit',
     inputKind: 'url',
     title: canUseDirectly ? '이미 만들어진 Flow가 있어요' : '기존 Flow가 있지만 확인이 필요해요',
     summary: canUseDirectly
-      ? `${sourceLabel} 기준으로 ${map.title}을 재사용합니다. 필요한 옵션만 바꾸고 저장 전 확인할 수 있습니다.`
-      : `${sourceLabel} 기준의 Flow가 있지만 아직 보강이 필요한 상태입니다. 저장과 export 전에 원문 확인이 필요합니다.`,
+      ? `${sourceLabel} 기준으로 저장 가능한 콘텐츠를 찾았어요. 필요한 옵션만 바꾸고 저장 전 확인할 수 있습니다.`
+      : `${sourceLabel} 기준의 콘텐츠가 있지만 아직 보강이 필요한 상태입니다. 저장과 export 전에 원문 확인이 필요합니다.`,
     sourceStatus,
     sourceLabel,
     sourceCheckedAt: formatSourceCheckedAt(map.updatedAt),
@@ -245,9 +248,9 @@ const explicitLookupTemplatesByCanonicalUrl = new Map<string, UrlFirstLookupTemp
       status: 'hit',
       inputKind: 'url',
       title: '이미 변환된 Flow가 있어요',
-      summary: '같은 원문 URL 기준으로 curated AJD 이사 D-30 Flow를 재사용합니다. 시작일 옵션만 바꾸고 바로 미리볼 수 있습니다.',
+      summary: '같은 원문 URL 기준으로 이사 D-30 Flow를 재사용합니다. 시작일 옵션만 바꾸고 바로 미리볼 수 있습니다.',
       sourceStatus: 'real',
-      sourceLabel: 'AJD 이사 준비 체크리스트',
+      sourceLabel: toUserFacingSourceTitle('AJD 이사 준비 체크리스트'),
       sourceCheckedAt: '2026-06-23',
       routeHref: '/flow-maps/curated-ajd-moving-d30',
       flowMapId: 'curated-ajd-moving-d30',
@@ -358,7 +361,7 @@ function buildMiss(input: string, canonicalUrl?: string): UrlFirstLookupResult {
     canonicalUrl,
     displayUrl: canonicalUrl ?? input.trim(),
     title: '아직 Flow화되지 않은 URL입니다',
-    summary: '중복 URL이 없어서 바로 제공할 Flow가 없습니다. P0에서는 AI 생성 대신 URL 수집과 사람 검토 대기열로 넘깁니다.',
+    summary: '아직 준비된 Flow가 없어요. URL과 메모를 남겨두면 준비 상태로 보관합니다.',
     sourceStatus: 'missing',
     exportModes: [],
     canExport: false,

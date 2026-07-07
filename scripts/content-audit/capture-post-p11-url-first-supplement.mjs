@@ -83,8 +83,8 @@ async function captureUrlFirstCandidateHandoff(context) {
         {
           canonicalUrl: 'https://example.com/source-to-convert',
           originalUrl: 'https://example.com/source-to-convert?utm_source=review',
-          title: '제작 준비 후보',
-          memo: 'Claude review용 URL-first 후보 handoff 예시',
+          title: '새로 보고 싶은 준비 체크리스트',
+          memo: 'URL에서 따라 할 순서를 남겨둔 예시',
           status: 'miss_request',
           savedAt: '2026-07-07T00:00:00.000Z',
           lastLookup: {
@@ -115,8 +115,8 @@ async function captureUrlFirstCandidateHandoff(context) {
   await page.reload();
   const candidateList = page.getByTestId('flow-url-supply-candidate-list');
   await candidateList.waitFor({ state: 'visible' });
-  await candidateList.locator('article').filter({ hasText: '제작 준비 후보' }).locator('button').first().click();
-  await capture(page, '30-url-first-candidate-handoff-mobile', 'URL-first candidate list and production handoff', '/flows');
+  await candidateList.locator('article').filter({ hasText: '새로 보고 싶은 준비 체크리스트' }).getByRole('button', { name: '요청 내용 보기' }).click();
+  await capture(page, '30-url-first-candidate-handoff-mobile', 'URL-first candidate list and request detail', '/flows');
   await page.close();
 }
 
