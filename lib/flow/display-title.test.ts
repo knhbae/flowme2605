@@ -201,6 +201,18 @@ test('capture script exposes flow-lab prototype bucket and internal QA link mark
   assert.ok(script.includes('manualRegistrationQaUserLinkCount'));
 });
 
+test('capture script exposes URL-first file-format and input ISO markers', () => {
+  const script = fs.readFileSync(
+    path.join(process.cwd(), 'scripts', 'content-audit', 'capture-claude-p7-final-review-package.mjs'),
+    'utf8',
+  );
+
+  assert.ok(script.includes('urlFirstVisibleMarkdownHitCount'));
+  assert.ok(script.includes('urlFirstNormalInputRawIsoExemptCount'));
+  assert.ok(script.includes('urlFirstStartDateInputVisibleCount'));
+  assert.ok(script.includes('url-first-start-date-input'));
+});
+
 test('user surface guardrail helpers lock positive and negative display cases', () => {
   assert.equal(normalizeGuardrailLine('  first   line  '), 'first line');
   assert.deepEqual(normalizeGuardrailLines(['  first   line  ', '   ']), ['first line']);

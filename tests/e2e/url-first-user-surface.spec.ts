@@ -45,11 +45,16 @@ test('URL-first hit and custom-start states stay inside normal user-surface guar
   const result = page.getByTestId('flow-url-lookup-result');
   await expect(result).toContainText('이미 만들어진 Flow가 있어요');
   await expect(result).not.toContainText('Mathbang');
+  await expect(result).not.toContainText('Markdown');
+  const startDateInput = result.getByTestId('url-first-start-date-input');
+  await expect(startDateInput).toBeVisible();
+  await expect(startDateInput).toHaveAttribute('type', 'date');
   await expectCleanUrlFirstUserSurface(result);
 
   await result.getByRole('button', { name: '조금 고쳐 시작' }).click();
   const customPanel = result.getByTestId('flow-url-custom-start-panel');
   await expect(customPanel).toBeVisible();
+  await expect(result).not.toContainText('Markdown');
   await expectCleanUrlFirstUserSurface(result);
 });
 

@@ -366,6 +366,8 @@ async function lookupUrlFirstInput(page, url) {
 async function captureUrlFirstHit(page) {
   await resetStorage(page);
   await lookupUrlFirstInput(page, 'https://mathbang.net/13?utm_source=share');
+  await page.getByTestId('url-first-start-date-input').fill('2026-07-17');
+  await settle(page);
   await captureCurrent(page, '27-url-first-hit-mobile.png', 'URL-first hit result on Flow finding', {
     category: 'url-first',
     route: '/flows',
@@ -378,6 +380,7 @@ async function captureUrlFirstCustomStart(page) {
   await lookupUrlFirstInput(page, 'https://mathbang.net/13?utm_source=share');
   await page.getByTestId('flow-url-start-mode-custom').click();
   await page.getByTestId('flow-url-custom-start-panel').waitFor({ state: 'visible' });
+  await page.getByTestId('url-first-start-date-input').fill('2026-07-17');
   await settle(page);
   await captureCurrent(page, '28-url-first-custom-start-mobile.png', 'URL-first lightweight custom start panel', {
     category: 'url-first',
@@ -917,6 +920,12 @@ async function scanPage(page, options = {}) {
       const candidateList = document.querySelector('[data-testid="flow-url-supply-candidate-list"]');
       const requestDetail = document.querySelector('[data-testid="flow-url-supply-production-handoff"]');
       const resultText = normalizeLine(lookupResult?.textContent ?? '');
+      const urlFirstRoots = [lookupResult, customStart, supplyForm, candidateList, requestDetail].filter(Boolean);
+      const visibleMarkdownLines = uniqueLines(urlFirstRoots.flatMap((root) => collectElementLines(root)))
+        .filter((line) => /\bMarkdown\b/i.test(line));
+      const startDateInput = lookupResult?.querySelector('[data-testid="url-first-start-date-input"]')
+        ?? document.querySelector('[data-testid="url-first-start-date-input"]');
+      const startDateInputValue = startDateInput && 'value' in startDateInput ? startDateInput.value : '';
 
       return {
         resultVisible: Boolean(lookupResult && isVisible(lookupResult)),
@@ -924,6 +933,17 @@ async function scanPage(page, options = {}) {
         supplyFormVisible: Boolean(supplyForm && isVisible(supplyForm)),
         candidateListVisible: Boolean(candidateList && isVisible(candidateList)),
         requestDetailVisible: Boolean(requestDetail && isVisible(requestDetail)),
+        visibleMarkdownHitCount: visibleMarkdownLines.length,
+        visibleMarkdownLines,
+        startDateInput: startDateInput
+          ? {
+              visible: isVisible(startDateInput),
+              testId: getElementTestId(startDateInput),
+              inputType: startDateInput.getAttribute('type') ?? '',
+              valuePresent: Boolean(startDateInputValue),
+              rawIsoValuePresent: /^20\d{2}-\d{2}-\d{2}$/u.test(startDateInputValue),
+            }
+          : null,
         hasHitResult: /이미 .*Flow/.test(resultText),
         hasMissResult: /아직 .*Flow/.test(resultText) && Boolean(supplyForm && isVisible(supplyForm)),
       };
@@ -1209,6 +1229,30 @@ function summarizeEvidence(records) {
     urlFirstNormalStructuralDisplayHitCount: urlFirst.reduce((sum, record) => sum + record.structuralDisplayHits.length + record.flowSuffixLines.length, 0),
     urlFirstNormalRawIsoHitCount: urlFirst.reduce((sum, record) => sum + record.rawIsoLines.length, 0),
     urlFirstNormalInputRawIsoHitCount: urlFirst.reduce((sum, record) => sum + (record.rawIsoInputValueHits?.length ?? 0), 0),
+    urlFirstNormalInputRawIsoExemptCount: urlFirst.reduce((sum, record) => sum + (record.rawIsoInputValueExemptions?.length ?? 0), 0),
+    urlFirstInputRawIsoExemptions: urlFirst.flatMap((record) =>
+      (record.rawIsoInputValueExemptions ?? []).map((hit) => ({
+        route: record.route,
+        state: record.urlFirstState,
+        ...hit,
+      })),
+    ),
+    urlFirstVisibleMarkdownHitCount: urlFirst.reduce((sum, record) => sum + (record.markers?.urlFirst?.visibleMarkdownHitCount ?? 0), 0),
+    urlFirstVisibleMarkdownHits: urlFirst.flatMap((record) =>
+      (record.markers?.urlFirst?.visibleMarkdownLines ?? []).map((line) => ({
+        route: record.route,
+        state: record.urlFirstState,
+        line,
+      })),
+    ),
+    urlFirstStartDateInputVisibleCount: urlFirst.filter((record) => record.markers?.urlFirst?.startDateInput?.visible).length,
+    urlFirstStartDateInputMarkers: urlFirst
+      .map((record) => ({
+        route: record.route,
+        state: record.urlFirstState,
+        ...(record.markers?.urlFirst?.startDateInput ?? {}),
+      }))
+      .filter((entry) => entry.testId),
     urlFirstMarkerVisibleCount: urlFirst.filter((record) => record.markers?.urlFirst?.resultVisible || record.markers?.urlFirst?.candidateListVisible).length,
     flowLabPrototypeRouteCount: flowLab.length,
     flowLabPrototypeBucket: flowLab.length > 0 && flowLab.every((record) => record.prototypeBucket),
@@ -1368,6 +1412,9 @@ P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registrat
 - URL-first structural/trailing title hits: ${evidence.summary.urlFirstNormalStructuralDisplayHitCount}
 - URL-first raw ISO hits: ${evidence.summary.urlFirstNormalRawIsoHitCount}
 - URL-first input raw ISO hits: ${evidence.summary.urlFirstNormalInputRawIsoHitCount}
+- URL-first native date input raw ISO exemptions: ${evidence.summary.urlFirstNormalInputRawIsoExemptCount}
+- URL-first visible Markdown hits: ${evidence.summary.urlFirstVisibleMarkdownHitCount}
+- URL-first start date input visible count: ${evidence.summary.urlFirstStartDateInputVisibleCount}
 - URL-first visible marker count: ${evidence.summary.urlFirstMarkerVisibleCount}
 - Flow-lab prototype route count: ${evidence.summary.flowLabPrototypeRouteCount}
 - Flow-lab prototype bucket: ${evidence.summary.flowLabPrototypeBucket}
@@ -1672,6 +1719,9 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.normalRouteRawIsoHitCount}</b><span>normal raw ISO hits</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteInputRawIsoHitCount}</b><span>normal input ISO hits</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteInputRawIsoExemptCount}</b><span>normal input ISO exempt</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstVisibleMarkdownHitCount}</b><span>URL-first Markdown hits</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstNormalInputRawIsoExemptCount}</b><span>URL-first input ISO exempt</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstStartDateInputVisibleCount}</b><span>URL-first date inputs</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteFirstTaskRepetitionHitCount}</b><span>first task repeats</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteContinuationActionableCount}</b><span>continuation actionable</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteContinuationExplanationOnlyCount}</b><span>continuation explanation-only</span></div>

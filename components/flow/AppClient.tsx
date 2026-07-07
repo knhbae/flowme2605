@@ -1076,7 +1076,7 @@ function useBundles() {
 
 const urlFirstExportModeLabels: Record<UrlFirstExportMode, string> = {
   calendar: '캘린더',
-  markdown: 'Markdown',
+  markdown: '메모 문서',
   checklist: '체크리스트',
 };
 
@@ -1189,7 +1189,7 @@ function FlowUrlLookupResult({
     link.download = startPackage.markdownExport.filename;
     link.click();
     URL.revokeObjectURL(url);
-    setStartFeedback('Markdown 받음');
+    setStartFeedback(`${urlFirstExportModeLabels.markdown} 받음`);
   };
 
   const startFlowFromLookup = () => {
@@ -1383,7 +1383,7 @@ function FlowUrlLookupResult({
               }}
             >
               <option value="calendar">캘린더</option>
-              <option value="markdown">Markdown</option>
+              <option value="markdown">{urlFirstExportModeLabels.markdown}</option>
               <option value="checklist">체크리스트</option>
             </select>
           </label>
@@ -1393,7 +1393,7 @@ function FlowUrlLookupResult({
               className="min-h-10 rounded-lg border border-[#DDE6D8] bg-[#F7FBF4] px-3 py-2 text-sm font-semibold text-[#176D5D] hover:border-[#176D5D]/40"
               onClick={downloadMarkdownExport}
             >
-              Markdown 받기
+              {urlFirstExportModeLabels.markdown} 받기
             </button>
             <button
               type="button"
