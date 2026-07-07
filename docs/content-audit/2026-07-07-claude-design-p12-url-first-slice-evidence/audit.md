@@ -16,6 +16,8 @@ P11-05/P11-06 keep capture/evidence rules centralized and traceable: internal-co
 
 P12-01~P12-04 bring URL-first hit/custom-start/miss/candidate states into the normal user-route capture schema. The same guardrail buckets now cover `/flows` URL-first user surfaces, including source slug leakage such as `Mathbang`, raw ISO dates in candidate cards, production-only copy such as `Canonical URL`/`handoff`, and roadmap/queue/pipeline wording such as `P0`, `대기열`, or `파이프라인`.
 
+P12-05/P12-10 keep `/flow-lab/url-first-p0` and source-backed manual registration QA outside the normal user route set. The flow-lab route is captured as a prototype bucket with noindex metadata, and normal user routes record zero links to the flow-lab lab or internal manual-registration QA report.
+
 ## Baselines Covered
 
 - P7-01: `/restart/moving-d30` uses user-facing date text and a quieter export hierarchy.
@@ -49,21 +51,22 @@ P12-01~P12-04 bring URL-first hit/custom-start/miss/candidate states into the no
 - P11-07/P11-10: fridge/washer setup paths are visible/focusable evidence targets, and the fridge first-action title supports two-line mobile wrapping.
 - P11-08/P11-11: field checklist repeated caution copy is common-note only, and public workbench export labels do not duplicate as ambiguous visible entry points.
 - P12-01/P12-04: URL-first hit, custom-start, miss, and candidate states are captured as normal user-route scenarios and must keep URL-first internal/source/raw-ISO buckets at zero.
+- P12-05/P12-10: `/flow-lab/url-first-p0` stays in a prototype/internal bucket with noindex metadata, and manual registration QA remains docs-only with no normal user-route links.
 
 ## Summary
 
 ```json
 {
-  "totalScreenshots": 30,
-  "uiBaselineCommit": "17faacf",
-  "packageGeneratedFromCommit": "17faacf",
+  "totalScreenshots": 31,
+  "uiBaselineCommit": "caf6845",
+  "packageGeneratedFromCommit": "caf6845",
   "packageCommitRef": "git commit containing this generated package",
   "normalRouteInternalHitCount": 0,
   "normalRouteSourceSlugHitCount": 0,
   "normalRouteStructuralDisplayHitCount": 0,
   "normalRouteRawIsoHitCount": 0,
   "normalRouteInputRawIsoHitCount": 0,
-  "normalRouteInputRawIsoExemptCount": 2,
+  "normalRouteInputRawIsoExemptCount": 4,
   "normalRouteFirstTaskRepetitionHitCount": 0,
   "normalRouteContinuationActionableCount": 4,
   "normalRouteContinuationExplanationOnlyCount": 0,
@@ -88,7 +91,63 @@ P12-01~P12-04 bring URL-first hit/custom-start/miss/candidate states into the no
   "urlFirstNormalStructuralDisplayHitCount": 0,
   "urlFirstNormalRawIsoHitCount": 0,
   "urlFirstNormalInputRawIsoHitCount": 0,
+  "urlFirstNormalInputRawIsoExemptCount": 2,
+  "urlFirstInputRawIsoExemptions": [
+    {
+      "route": "/flows",
+      "state": "hit",
+      "label": "시작일",
+      "inputType": "date",
+      "value": "2026-07-17",
+      "testId": "url-first-start-date-input",
+      "reason": "native-date-input-value"
+    },
+    {
+      "route": "/flows",
+      "state": "custom-start",
+      "label": "시작일",
+      "inputType": "date",
+      "value": "2026-07-17",
+      "testId": "url-first-start-date-input",
+      "reason": "native-date-input-value"
+    }
+  ],
+  "urlFirstVisibleMarkdownHitCount": 0,
+  "urlFirstVisibleMarkdownHits": [],
+  "urlFirstStartDateInputVisibleCount": 2,
+  "urlFirstStartDateInputMarkers": [
+    {
+      "route": "/flows",
+      "state": "hit",
+      "visible": true,
+      "testId": "url-first-start-date-input",
+      "inputType": "date",
+      "valuePresent": true,
+      "rawIsoValuePresent": true
+    },
+    {
+      "route": "/flows",
+      "state": "custom-start",
+      "visible": true,
+      "testId": "url-first-start-date-input",
+      "inputType": "date",
+      "valuePresent": true,
+      "rawIsoValuePresent": true
+    }
+  ],
   "urlFirstMarkerVisibleCount": 4,
+  "flowLabPrototypeRouteCount": 1,
+  "flowLabPrototypeBucket": true,
+  "flowLabPrototypeGuardrailHitCount": 1,
+  "flowLabPrototypeNoindex": true,
+  "flowLabPrototypeMetaRobots": [
+    {
+      "route": "/flow-lab/url-first-p0",
+      "metaRobots": "noindex, nofollow"
+    }
+  ],
+  "flowLabPrototypeLinkedFromUserNavCount": 0,
+  "manualRegistrationQaUserLinkCount": 0,
   "normalRouteQueueLabelScope": "my-flow-queue-label-surfaces",
   "normalRouteQueueLabelCount": 9,
   "normalRouteLegacyOverdueLabelCount": 0,
@@ -101,6 +160,9 @@ P12-01~P12-04 bring URL-first hit/custom-start/miss/candidate states into the no
   ],
   "fieldWorkbenchRepeatedDetailSentenceCount": 0,
   "publicWorkbenchDuplicateExportVisibleLabelCount": 0,
+  "publicWorkbenchStickyFirstActionCount": 9,
+  "publicWorkbenchStickyFirstActionSaveOrSetupCount": 9,
+  "publicWorkbenchStickyFirstActionNonPrimaryLabels": [],
   "publicShareRouteCount": 9,
   "publicShareSecondaryBrowseFocusableCount": 9,
   "publicShareSecondaryBrowseAfterPrimaryCount": 9,
@@ -190,8 +252,8 @@ P12-01~P12-04 bring URL-first hit/custom-start/miss/candidate states into the no
 | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: |
 | 01-home-mobile | `/` | Home entry and lightweight recommendations | OK | 0 | 0 | 0 | 0 | 0 |
 | 02-flows-mobile | `/flows` | Flow catalog scan with lightweight CTAs | OK | 0 | 0 | 0 | 0 | 0 |
-| 27-url-first-hit-mobile | `/flows` | URL-first hit result on Flow finding | OK | 0 | 0 | 0 | 0 | 0 |
-| 28-url-first-custom-start-mobile | `/flows` | URL-first lightweight custom start panel | OK | 0 | 0 | 0 | 0 | 0 |
+| 27-url-first-hit-mobile | `/flows` | URL-first hit result on Flow finding | OK | 0 | 0 | 0 | 0 | 1 |
+| 28-url-first-custom-start-mobile | `/flows` | URL-first lightweight custom start panel | OK | 0 | 0 | 0 | 0 | 1 |
 | 29-url-first-miss-candidate-form-mobile | `/flows` | URL-first miss candidate form | OK | 0 | 0 | 0 | 0 | 0 |
 | 30-url-first-candidate-detail-mobile | `/flows` | URL-first saved candidate request detail | OK | 0 | 0 | 0 | 0 | 0 |
 | 03-flow-map-moving-top-mobile | `/flow-maps/moving-d30` | Moving map save screen top | OK | 0 | 0 | 0 | 0 | 1 |
@@ -218,6 +280,7 @@ P12-01~P12-04 bring URL-first hit/custom-start/miss/candidate states into the no
 | 24-restart-moving-full-schedule-mobile | `/restart/moving-d30` | Restart prototype full schedule date distribution | OK | 0 | 0 | 0 | 0 | 1 |
 | 22-restart-moving-source-export-mobile | `/restart/moving-d30` | Restart prototype source and export hierarchy | OK | 0 | 0 | 0 | 0 | 1 |
 | 23-restart-moving-bottom-mobile | `/restart/moving-d30` | Restart prototype bottom clearance | OK | 0 | 0 | 0 | 0 | 1 |
+| 31-flow-lab-url-first-p0-mobile | `/flow-lab/url-first-p0` | URL-first lab prototype bucket gate | OK | 3 | 2 | 1 | 0 | 0 |
 
 ## Restart Prototype Bucket
 
@@ -250,6 +313,18 @@ The restart source/export frame and bottom frame must remain distinct:
 - native date input ISO exemption count: 4
 - native date input ISO exemptions: [{"route":"/restart/moving-d30","scrollPurpose":null,"label":"이사일","inputType":"date","testId":"moving-restart-date-input","reason":"native-date-input-value"},{"route":"/restart/moving-d30","scrollPurpose":"full-schedule-date-distribution","label":"이사일","inputType":"date","testId":"moving-restart-date-input","reason":"native-date-input-value"},{"route":"/restart/moving-d30","scrollPurpose":"source-export-mid-frame","label":"이사일","inputType":"date","testId":"moving-restart-date-input","reason":"native-date-input-value"},{"route":"/restart/moving-d30","scrollPurpose":"true-page-bottom","label":"이사일","inputType":"date","testId":"moving-restart-date-input","reason":"native-date-input-value"}]
 
+## Flow Lab Prototype Bucket
+
+`/flow-lab/url-first-p0` remains outside the primary 4-tab IA and normal user-route guardrail bucket:
+
+- prototype route count: 1
+- prototype bucket marker: yes
+- noindex metadata: yes
+- meta robots records: [{"route":"/flow-lab/url-first-p0","metaRobots":"noindex, nofollow"}]
+- display-gate hit count while in prototype bucket: 1
+- links from normal user routes to flow-lab: 0
+- links from normal user routes to manual registration QA docs: 0
+
 ## Field Checklist Source Density
 
 - row detail source link count: 0
@@ -268,8 +343,8 @@ The restart source/export frame and bottom frame must remain distinct:
 
 ## Commit Metadata
 
-- UI baseline commit: `17faacf`
-- Package generated from commit: `17faacf`
+- UI baseline commit: `caf6845`
+- Package generated from commit: `caf6845`
 - Package commit ref: `git commit containing this generated package`
 
 ## Residual Risk

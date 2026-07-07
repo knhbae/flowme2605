@@ -1,9 +1,9 @@
 # FlowMe Claude Design P12 Final Review Package
 
-- Generated: 2026-07-07T06:06:09.981Z
+- Generated: 2026-07-07T08:45:24.639Z
 - Branch: `codex/flowme-uxui-second-loop`
-- UI baseline commit: `17faacf`
-- Package generated from commit: `17faacf`
+- UI baseline commit: `caf6845`
+- Package generated from commit: `caf6845`
 - Package commit ref: `git commit containing this generated package`
 - Viewport: 390x844
 
@@ -23,6 +23,8 @@ P11-05/P11-06 keep the capture pipeline aligned with the canonical guardrail lib
 
 P12-01~P12-04 add the URL-first first-execution slice to the normal user-route guardrail set. The package captures hit, custom-start, miss, and saved-candidate states on `/flows` and records URL-first-specific buckets for internal copy, dynamic source slug, structural title, raw ISO text, and input raw ISO hits. These scenarios should remain at zero while preserving canonical lookup, source-backed reuse, and non-executable local candidate storage.
 
+P12-05/P12-10 keep `/flow-lab/url-first-p0` and source-backed manual registration QA outside the normal user route set. The flow-lab route is captured as a prototype bucket with noindex metadata, and normal user routes record zero links to the flow-lab lab or internal manual-registration QA report.
+
 ## Files
 
 - [audit.md](./audit.md)
@@ -38,7 +40,7 @@ P12-01~P12-04 add the URL-first first-execution slice to the normal user-route g
 - Normal route trailing Flow/map phrase hits: 0
 - Normal route raw ISO hits: 0
 - Normal route input raw ISO hits: 0
-- Normal route native date input raw ISO exemptions: 2
+- Normal route native date input raw ISO exemptions: 4
 - Normal route first task repetition hits: 0
 - Normal route continuation actionable count: 4
 - Normal route continuation explanation-only count: 0
@@ -53,7 +55,16 @@ P12-01~P12-04 add the URL-first first-execution slice to the normal user-route g
 - URL-first structural/trailing title hits: 0
 - URL-first raw ISO hits: 0
 - URL-first input raw ISO hits: 0
+- URL-first native date input raw ISO exemptions: 2
+- URL-first visible Markdown hits: 0
+- URL-first start date input visible count: 2
 - URL-first visible marker count: 4
+- Flow-lab prototype route count: 1
+- Flow-lab prototype bucket: true
+- Flow-lab prototype noindex: true
+- Flow-lab prototype linked from user nav count: 0
+- Flow-lab prototype display-gate hit count: 1
+- Manual registration QA user route link count: 0
 - Normal route queue label scope: my-flow-queue-label-surfaces
 - Normal route legacy overdue label hits: 0
 - Normal route horizontal overflow count: 0
@@ -61,6 +72,9 @@ P12-01~P12-04 add the URL-first first-execution slice to the normal user-route g
 - Field workbench source access link count: 5
 - Field workbench repeated detail caution count: 0
 - Public workbench duplicate export visible-label count: 0
+- Public workbench sticky first-action count: 9
+- Public workbench sticky first-action save/setup count: 9
+- Public workbench sticky first-action non-primary labels: 0
 - Public share route count: 9
 - Public share secondary browse focusable count: 9
 - Public share secondary browse after-primary count: 9

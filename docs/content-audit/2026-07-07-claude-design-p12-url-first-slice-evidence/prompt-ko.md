@@ -39,16 +39,16 @@
 현재 guardrail scan 요약:
 ```json
 {
-  "totalScreenshots": 30,
-  "uiBaselineCommit": "17faacf",
-  "packageGeneratedFromCommit": "17faacf",
+  "totalScreenshots": 31,
+  "uiBaselineCommit": "caf6845",
+  "packageGeneratedFromCommit": "caf6845",
   "packageCommitRef": "git commit containing this generated package",
   "normalRouteInternalHitCount": 0,
   "normalRouteSourceSlugHitCount": 0,
   "normalRouteStructuralDisplayHitCount": 0,
   "normalRouteRawIsoHitCount": 0,
   "normalRouteInputRawIsoHitCount": 0,
-  "normalRouteInputRawIsoExemptCount": 2,
+  "normalRouteInputRawIsoExemptCount": 4,
   "normalRouteFirstTaskRepetitionHitCount": 0,
   "normalRouteContinuationActionableCount": 4,
   "normalRouteContinuationExplanationOnlyCount": 0,
@@ -73,7 +73,63 @@
   "urlFirstNormalStructuralDisplayHitCount": 0,
   "urlFirstNormalRawIsoHitCount": 0,
   "urlFirstNormalInputRawIsoHitCount": 0,
+  "urlFirstNormalInputRawIsoExemptCount": 2,
+  "urlFirstInputRawIsoExemptions": [
+    {
+      "route": "/flows",
+      "state": "hit",
+      "label": "시작일",
+      "inputType": "date",
+      "value": "2026-07-17",
+      "testId": "url-first-start-date-input",
+      "reason": "native-date-input-value"
+    },
+    {
+      "route": "/flows",
+      "state": "custom-start",
+      "label": "시작일",
+      "inputType": "date",
+      "value": "2026-07-17",
+      "testId": "url-first-start-date-input",
+      "reason": "native-date-input-value"
+    }
+  ],
+  "urlFirstVisibleMarkdownHitCount": 0,
+  "urlFirstVisibleMarkdownHits": [],
+  "urlFirstStartDateInputVisibleCount": 2,
+  "urlFirstStartDateInputMarkers": [
+    {
+      "route": "/flows",
+      "state": "hit",
+      "visible": true,
+      "testId": "url-first-start-date-input",
+      "inputType": "date",
+      "valuePresent": true,
+      "rawIsoValuePresent": true
+    },
+    {
+      "route": "/flows",
+      "state": "custom-start",
+      "visible": true,
+      "testId": "url-first-start-date-input",
+      "inputType": "date",
+      "valuePresent": true,
+      "rawIsoValuePresent": true
+    }
+  ],
   "urlFirstMarkerVisibleCount": 4,
+  "flowLabPrototypeRouteCount": 1,
+  "flowLabPrototypeBucket": true,
+  "flowLabPrototypeGuardrailHitCount": 1,
+  "flowLabPrototypeNoindex": true,
+  "flowLabPrototypeMetaRobots": [
+    {
+      "route": "/flow-lab/url-first-p0",
+      "metaRobots": "noindex, nofollow"
+    }
+  ],
+  "flowLabPrototypeLinkedFromUserNavCount": 0,
+  "manualRegistrationQaUserLinkCount": 0,
   "normalRouteQueueLabelScope": "my-flow-queue-label-surfaces",
   "normalRouteQueueLabelCount": 9,
   "normalRouteLegacyOverdueLabelCount": 0,
@@ -86,6 +142,9 @@
   ],
   "fieldWorkbenchRepeatedDetailSentenceCount": 0,
   "publicWorkbenchDuplicateExportVisibleLabelCount": 0,
+  "publicWorkbenchStickyFirstActionCount": 9,
+  "publicWorkbenchStickyFirstActionSaveOrSetupCount": 9,
+  "publicWorkbenchStickyFirstActionNonPrimaryLabels": [],
   "publicShareRouteCount": 9,
   "publicShareSecondaryBrowseFocusableCount": 9,
   "publicShareSecondaryBrowseAfterPrimaryCount": 9,
