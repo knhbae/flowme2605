@@ -21,6 +21,8 @@ import {
   findPrototypeEnglishWeekdayHits,
   findPrototypeMixedExportLanguageHits,
   findPrototypeRawRouteSlugHits,
+  getPrototypeRouteTier,
+  getPrototypeRouteTierPolicy,
   findRawIsoDateHits,
   scanRawIsoInputValues,
   findSourceSlugHits,
@@ -195,11 +197,41 @@ test('capture script exposes flow-lab prototype bucket and internal QA link mark
   );
 
   assert.ok(script.includes('prototype-flow-lab'));
+  assert.ok(script.includes('prototypeReleasePreviewRouteCount'));
+  assert.ok(script.includes('prototypeReleasePreviewGuardrailHitCount'));
+  assert.ok(script.includes('prototypeInternalConsoleRouteCount'));
+  assert.ok(script.includes('prototypeInternalConsoleGuardrailHitCount'));
+  assert.ok(script.includes('prototypeInternalConsoleAllowedDisplayGateHitCount'));
+  assert.ok(script.includes('flowLabPrototypeTier'));
+  assert.ok(script.includes('flowLabPrototypeInternalConsoleContextVisible'));
   assert.ok(script.includes('flowLabPrototypeRouteCount'));
   assert.ok(script.includes('flowLabPrototypeGuardrailHitCount'));
   assert.ok(script.includes('flowLabPrototypeNoindex'));
   assert.ok(script.includes('flowLabPrototypeLinkedFromUserNavCount'));
   assert.ok(script.includes('manualRegistrationQaUserLinkCount'));
+});
+
+test('prototype route tier policy separates release preview from internal console', () => {
+  assert.equal(getPrototypeRouteTier('/restart/moving-d30'), 'release-preview');
+  assert.equal(getPrototypeRouteTier('/restart/moving-d30?edit=true'), 'release-preview');
+  assert.equal(getPrototypeRouteTier('/flow-lab/url-first-p0'), 'internal-console');
+  assert.equal(getPrototypeRouteTier('/flow-lab/url-first-p0?sample=hit'), 'internal-console');
+  assert.equal(getPrototypeRouteTier('/flows'), null);
+
+  assert.deepEqual(getPrototypeRouteTierPolicy('release-preview'), {
+    tier: 'release-preview',
+    label: '출시 전 미리보기',
+    allowInternalDisplayGateHits: false,
+    requiresNoindex: false,
+    requiresNoUserNavLinks: true,
+  });
+  assert.deepEqual(getPrototypeRouteTierPolicy('internal-console'), {
+    tier: 'internal-console',
+    label: '내부 실험 콘솔',
+    allowInternalDisplayGateHits: true,
+    requiresNoindex: true,
+    requiresNoUserNavLinks: true,
+  });
 });
 
 test('capture script exposes URL-first file-format and input ISO markers', () => {

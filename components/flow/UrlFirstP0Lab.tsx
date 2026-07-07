@@ -195,7 +195,12 @@ export function UrlFirstP0Lab() {
     <main className="min-h-screen bg-slate-100 px-4 py-8 text-slate-950 sm:px-6 lg:px-8" data-testid="url-first-p0-lab">
       <div className="mx-auto max-w-6xl space-y-6">
         <header className="space-y-3">
-          <p className="text-sm font-black text-blue-700">내부 실험 route /flow-lab/url-first-p0</p>
+          <p
+            className="text-sm font-black text-blue-700"
+            data-testid="url-first-p0-lab-internal-console-context"
+          >
+            내부 실험 콘솔 · 정상 사용자 메뉴에 연결하지 않는 검증 화면
+          </p>
           <h1 className="max-w-4xl text-4xl font-black tracking-normal text-slate-950">URL-first P0 실험</h1>
           <p className="max-w-3xl text-sm leading-6 text-slate-600">
             원문 URL을 먼저 canonical lookup으로 찾고, 중복이면 기존 Flow를 재사용합니다. P0에서는 AI 생성과 실제 저장을 켜지 않고 상태 판정과 결과 예측만 확인합니다.

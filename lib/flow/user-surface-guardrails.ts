@@ -75,6 +75,16 @@ export type PrototypeRouteGuardrailResult = {
   duplicateExportEntryHits: DuplicatePrototypeExportEntryHit[];
 };
 
+export type PrototypeRouteTier = 'release-preview' | 'internal-console';
+
+export type PrototypeRouteTierPolicy = {
+  tier: PrototypeRouteTier;
+  label: string;
+  allowInternalDisplayGateHits: boolean;
+  requiresNoindex: boolean;
+  requiresNoUserNavLinks: boolean;
+};
+
 const RAW_ISO_DATE_PATTERN = /\b20\d{2}-\d{2}-\d{2}\b/u;
 const RAW_PROTOTYPE_ROUTE_SLUG_PATTERN = /\b(?:restart|prototype)\s*\/\s*[a-z0-9][a-z0-9-]*\b|\/restart\/[a-z0-9][a-z0-9-]*/iu;
 const ENGLISH_WEEKDAY_PATTERN = /\b(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)\b/u;
@@ -165,6 +175,33 @@ export const USER_SURFACE_GUARDRAIL_RUNTIME = {
   sourceSlugPrefixSource: SOURCE_SLUG_PREFIX_SOURCE,
   sourceSlugBoundarySource: SOURCE_SLUG_BOUNDARY_SOURCE,
 } as const;
+
+export function getPrototypeRouteTier(route: string): PrototypeRouteTier | null {
+  const pathname = normalizeRoutePathname(route);
+  if (pathname.startsWith('/restart/')) return 'release-preview';
+  if (pathname.startsWith('/flow-lab/')) return 'internal-console';
+  return null;
+}
+
+export function getPrototypeRouteTierPolicy(tier: PrototypeRouteTier): PrototypeRouteTierPolicy {
+  if (tier === 'release-preview') {
+    return {
+      tier,
+      label: '출시 전 미리보기',
+      allowInternalDisplayGateHits: false,
+      requiresNoindex: false,
+      requiresNoUserNavLinks: true,
+    };
+  }
+
+  return {
+    tier,
+    label: '내부 실험 콘솔',
+    allowInternalDisplayGateHits: true,
+    requiresNoindex: true,
+    requiresNoUserNavLinks: true,
+  };
+}
 
 export function normalizeGuardrailLine(line: string): string {
   return line.replace(/\s+/g, ' ').trim();
@@ -455,4 +492,12 @@ function isAllowedAsciiSignal(signal: string): boolean {
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function normalizeRoutePathname(route: string): string {
+  try {
+    return new URL(route, 'https://flowme.local').pathname;
+  } catch {
+    return route.split(/[?#]/u)[0] ?? route;
+  }
 }

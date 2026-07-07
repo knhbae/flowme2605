@@ -1,5 +1,9 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
-import { scanUserFacingOutputGuardrails, scanUserSurfaceGuardrails } from '../../lib/flow/user-surface-guardrails';
+import {
+  scanPrototypeRouteGuardrails,
+  scanUserFacingOutputGuardrails,
+  scanUserSurfaceGuardrails,
+} from '../../lib/flow/user-surface-guardrails';
 
 const urlFirstSourceSlugSignals = ['AJD', 'DeskLab', 'Mathbang'];
 
@@ -137,5 +141,22 @@ test('URL-first lab stays prototype-gated and absent from user navigation', asyn
 
   await page.goto('/flow-lab/url-first-p0');
   await expect(page.getByTestId('url-first-p0-lab')).toBeVisible();
+  await expect(page.getByTestId('url-first-p0-lab-internal-console-context')).toContainText('내부 실험 콘솔');
+  await expect(page.getByTestId('url-first-p0-lab-internal-console-context')).toContainText('정상 사용자 메뉴에 연결하지 않는');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
+
+  await page.goto('/restart/moving-d30');
+  const restartBodyLines = await getLocatorLines(page.locator('body'));
+  const restartExportEntryLabel = await page.getByTestId('moving-mobile-export-actions').getByRole('button').innerText();
+  const restartGate = scanPrototypeRouteGuardrails({
+    primaryLines: restartBodyLines,
+    exportEntryLabels: [restartExportEntryLabel],
+  });
+  expect(restartGate.rawRouteSlugHits).toEqual([]);
+  expect(restartGate.englishWeekdayHits).toEqual([]);
+  expect(restartGate.englishUiVerbHits).toEqual([]);
+  expect(restartGate.englishMonthTimeHits).toEqual([]);
+  expect(restartGate.mixedExportLanguageHits).toEqual([]);
+  expect(restartGate.duplicateExportEntryHits).toEqual([]);
+  await expect(page.getByTestId('url-first-p0-lab-internal-console-context')).toHaveCount(0);
 });

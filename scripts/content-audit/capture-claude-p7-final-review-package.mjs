@@ -15,6 +15,8 @@ const guardrailModule = await tsImport(
 const {
   findFirstTaskRepetitionHits,
   findInternalCopyHits,
+  getPrototypeRouteTier,
+  getPrototypeRouteTierPolicy,
   scanRawIsoInputValues,
   scanPrototypeRouteGuardrails,
   scanUserFacingOutputGuardrails,
@@ -164,6 +166,7 @@ async function main() {
     await captureRoute(page, '/restart/moving-d30', '21-restart-moving-top-mobile.png', 'Restart prototype top with user date format', {
       category: 'prototype-restart',
       prototypeBucket: true,
+      prototypeTier: 'release-preview',
     });
     await page.getByTestId('moving-mobile-full-schedule').locator(':scope > button').last().click();
     await settle(page);
@@ -171,24 +174,28 @@ async function main() {
     await captureCurrent(page, '24-restart-moving-full-schedule-mobile.png', 'Restart prototype full schedule date distribution', {
       category: 'prototype-restart',
       prototypeBucket: true,
+      prototypeTier: 'release-preview',
       scrollPurpose: 'full-schedule-date-distribution',
     });
     await scrollRestartSourceExportIntoEvidenceFrame(page);
     await captureCurrent(page, '22-restart-moving-source-export-mobile.png', 'Restart prototype source and export hierarchy', {
       category: 'prototype-restart',
       prototypeBucket: true,
+      prototypeTier: 'release-preview',
       scrollPurpose: 'source-export-mid-frame',
     });
     await scrollToPageBottom(page);
     await captureCurrent(page, '23-restart-moving-bottom-mobile.png', 'Restart prototype bottom clearance', {
       category: 'prototype-restart',
       prototypeBucket: true,
+      prototypeTier: 'release-preview',
       scrollPurpose: 'true-page-bottom',
     });
 
     await captureRoute(page, '/flow-lab/url-first-p0', '31-flow-lab-url-first-p0-mobile.png', 'URL-first lab prototype bucket gate', {
       category: 'prototype-flow-lab',
       prototypeBucket: true,
+      prototypeTier: 'internal-console',
       scrollPurpose: 'prototype-flow-lab-top',
     });
   } finally {
@@ -1094,6 +1101,7 @@ async function scanPage(page, options = {}) {
     return {
       category: payload.options.category ?? 'route',
       prototypeBucket: Boolean(payload.options.prototypeBucket),
+      prototypeTier: payload.options.prototypeTier ?? null,
       urlFirstState: payload.options.urlFirstState ?? null,
       url: window.location.pathname + window.location.search,
       h1: document.querySelector('h1')?.textContent?.trim() ?? '',
@@ -1178,6 +1186,7 @@ async function scanPage(page, options = {}) {
           && publicPrimaryPathFocusableIndex >= 0
           && publicBrowseLinkFocusableIndex > publicPrimaryPathFocusableIndex,
         metaRobots,
+        flowLabInternalConsoleContextVisible: hasVisibleElement('[data-testid="url-first-p0-lab-internal-console-context"]'),
         flowLabPrototypeLinkCount: countAnchors((anchor) => anchor.pathname === '/flow-lab/url-first-p0'),
         manualRegistrationQaLinkCount: countAnchors((anchor) =>
           anchor.href.includes('source-backed-manual-registration')
@@ -1217,12 +1226,16 @@ async function scanPage(page, options = {}) {
     primaryLines,
     exportEntryLabels: guardrailRuntimeInputs?.prototypeExportEntryLabels ?? [],
   });
+  const prototypeTier = record.prototypeTier ?? getPrototypeRouteTier(record.url);
+  const prototypeTierPolicy = prototypeTier ? getPrototypeRouteTierPolicy(prototypeTier) : null;
   const firstTaskRepetitionHits = firstTaskTitle
     ? findFirstTaskRepetitionHits(nowSectionLines, firstTaskTitle, { maxCount: 1 })
     : [];
 
   return {
     ...record,
+    prototypeTier,
+    prototypeTierPolicy,
     internalHits,
     sourceSlugSignals: userSurfaceGuardrails.sourceSlugSignals,
     sourceSlugHits: userSurfaceGuardrails.sourceSlugHits,
@@ -1248,6 +1261,8 @@ async function scanPage(page, options = {}) {
 function summarizeEvidence(records) {
   const normal = records.filter((record) => !record.prototypeBucket);
   const prototypes = records.filter((record) => record.prototypeBucket);
+  const releasePreviewPrototypes = prototypes.filter((record) => record.prototypeTier === 'release-preview');
+  const internalConsolePrototypes = prototypes.filter((record) => record.prototypeTier === 'internal-console');
   const fieldChecklistSourceDensity = records.filter((record) => record.category === 'field-checklist-source-density');
   const urlFirst = normal.filter((record) => record.category === 'url-first');
   const restart = prototypes.filter((record) => record.category === 'prototype-restart');
@@ -1275,6 +1290,19 @@ function summarizeEvidence(records) {
     + (record.prototypeDisplayGateHits?.englishMonthTimeHits?.length ?? 0)
     + (record.prototypeDisplayGateHits?.mixedExportLanguageHits?.length ?? 0)
     + (record.prototypeDisplayGateHits?.duplicateExportEntryHits?.length ?? 0);
+  const countPrototypeSurfaceGuardrailHits = (record) =>
+    (record.internalHits?.length ?? 0)
+    + (record.sourceSlugHits?.length ?? 0)
+    + (record.structuralDisplayHits?.length ?? 0)
+    + (record.flowSuffixLines?.length ?? 0)
+    + (record.rawIsoLines?.length ?? 0)
+    + (record.rawIsoInputValueHits?.length ?? 0)
+    + countPrototypeDisplayGateHits(record)
+    + (record.noHorizontalOverflow ? 0 : 1);
+  const countUnexpectedPrototypeTierHits = (record) =>
+    record.prototypeTierPolicy?.allowInternalDisplayGateHits
+      ? 0
+      : countPrototypeSurfaceGuardrailHits(record);
   const urlFirstExportModeEvidence = urlFirst.flatMap((record) =>
     (record.markers?.urlFirst?.exportModeEvidence ?? []).map((modeEvidence) => ({
       recordId: record.id,
@@ -1407,14 +1435,46 @@ function summarizeEvidence(records) {
       }))
       .filter((entry) => entry.testId),
     urlFirstMarkerVisibleCount: urlFirst.filter((record) => record.markers?.urlFirst?.resultVisible || record.markers?.urlFirst?.candidateListVisible).length,
+    prototypeReleasePreviewRouteCount: releasePreviewPrototypes.length,
+    prototypeReleasePreviewGuardrailHitCount: releasePreviewPrototypes.reduce(
+      (sum, record) => sum + countPrototypeSurfaceGuardrailHits(record),
+      0,
+    ),
+    prototypeReleasePreviewUnexpectedGuardrailHitCount: releasePreviewPrototypes.reduce(
+      (sum, record) => sum + countUnexpectedPrototypeTierHits(record),
+      0,
+    ),
+    prototypeInternalConsoleRouteCount: internalConsolePrototypes.length,
+    prototypeInternalConsoleGuardrailHitCount: internalConsolePrototypes.reduce(
+      (sum, record) => sum + countPrototypeSurfaceGuardrailHits(record),
+      0,
+    ),
+    prototypeInternalConsoleAllowedDisplayGateHitCount: internalConsolePrototypes.reduce(
+      (sum, record) => sum + countPrototypeSurfaceGuardrailHits(record),
+      0,
+    ),
+    prototypeInternalConsoleUnexpectedGuardrailHitCount: internalConsolePrototypes.reduce(
+      (sum, record) => sum + countUnexpectedPrototypeTierHits(record),
+      0,
+    ),
+    prototypeInternalConsoleContextVisibleCount: internalConsolePrototypes.filter((record) =>
+      Boolean(record.markers?.flowLabInternalConsoleContextVisible),
+    ).length,
     flowLabPrototypeRouteCount: flowLab.length,
+    flowLabPrototypeTier: flowLab[0]?.prototypeTier ?? null,
+    flowLabPrototypeTierPolicy: flowLab[0]?.prototypeTierPolicy ?? null,
     flowLabPrototypeBucket: flowLab.length > 0 && flowLab.every((record) => record.prototypeBucket),
     flowLabPrototypeGuardrailHitCount: flowLab.reduce((sum, record) => sum + countPrototypeDisplayGateHits(record), 0),
+    flowLabPrototypeAllowedDisplayGateHitCount: flowLab.reduce((sum, record) => sum + countPrototypeSurfaceGuardrailHits(record), 0),
+    flowLabPrototypeUnexpectedGuardrailHitCount: flowLab.reduce((sum, record) => sum + countUnexpectedPrototypeTierHits(record), 0),
     flowLabPrototypeNoindex: flowLab.length > 0 && flowLab.every((record) => /noindex/i.test(record.markers?.metaRobots ?? '')),
     flowLabPrototypeMetaRobots: flowLab.map((record) => ({
       route: record.url,
       metaRobots: record.markers?.metaRobots ?? '',
     })),
+    flowLabPrototypeInternalConsoleContextVisible: flowLab.length > 0 && flowLab.every((record) =>
+      Boolean(record.markers?.flowLabInternalConsoleContextVisible),
+    ),
     flowLabPrototypeLinkedFromUserNavCount: normal.reduce((sum, record) => sum + (record.markers?.flowLabPrototypeLinkCount ?? 0), 0),
     manualRegistrationQaUserLinkCount: normal.reduce((sum, record) => sum + (record.markers?.manualRegistrationQaLinkCount ?? 0), 0),
     normalRouteQueueLabelScope: 'my-flow-queue-label-surfaces',
@@ -1533,7 +1593,7 @@ P11-05/P11-06 keep the capture pipeline aligned with the canonical guardrail lib
 
 P12-01~P12-04 add the URL-first first-execution slice to the normal user-route guardrail set. The package captures hit, custom-start, miss, and saved-candidate states on \`/flows\` and records URL-first-specific buckets for internal copy, dynamic source slug, structural title, raw ISO text, and input raw ISO hits. These scenarios should remain at zero while preserving canonical lookup, source-backed reuse, and non-executable local candidate storage.
 
-P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registration QA outside the normal user route set. The flow-lab route is captured as a prototype bucket with noindex metadata, and normal user routes record zero links to the flow-lab lab or internal manual-registration QA report.
+P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registration QA outside the normal user route set. P13-03 splits the old prototype bucket into two tiers: \`/restart/moving-d30\` is a release-preview route that must keep display-gate hits at zero before promotion, while \`/flow-lab/url-first-p0\` is an internal-console route where lab labels are allowed only inside the noindex, non-nav-linked console.
 
 ## Files
 
@@ -1574,11 +1634,22 @@ P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registrat
 - URL-first candidate internal handoff preserved: ${evidence.summary.urlFirstCandidateInternalHandoffPreserved}
 - URL-first start date input visible count: ${evidence.summary.urlFirstStartDateInputVisibleCount}
 - URL-first visible marker count: ${evidence.summary.urlFirstMarkerVisibleCount}
+- Prototype release-preview route count: ${evidence.summary.prototypeReleasePreviewRouteCount}
+- Prototype release-preview guardrail hits: ${evidence.summary.prototypeReleasePreviewGuardrailHitCount}
+- Prototype internal-console route count: ${evidence.summary.prototypeInternalConsoleRouteCount}
+- Prototype internal-console guardrail hits: ${evidence.summary.prototypeInternalConsoleGuardrailHitCount}
+- Prototype internal-console allowed display-gate hits: ${evidence.summary.prototypeInternalConsoleAllowedDisplayGateHitCount}
+- Prototype internal-console unexpected guardrail hits: ${evidence.summary.prototypeInternalConsoleUnexpectedGuardrailHitCount}
+- Prototype internal-console context visible count: ${evidence.summary.prototypeInternalConsoleContextVisibleCount}
 - Flow-lab prototype route count: ${evidence.summary.flowLabPrototypeRouteCount}
+- Flow-lab prototype tier: ${evidence.summary.flowLabPrototypeTier}
 - Flow-lab prototype bucket: ${evidence.summary.flowLabPrototypeBucket}
 - Flow-lab prototype noindex: ${evidence.summary.flowLabPrototypeNoindex}
 - Flow-lab prototype linked from user nav count: ${evidence.summary.flowLabPrototypeLinkedFromUserNavCount}
 - Flow-lab prototype display-gate hit count: ${evidence.summary.flowLabPrototypeGuardrailHitCount}
+- Flow-lab prototype allowed display-gate hit count: ${evidence.summary.flowLabPrototypeAllowedDisplayGateHitCount}
+- Flow-lab prototype unexpected guardrail hit count: ${evidence.summary.flowLabPrototypeUnexpectedGuardrailHitCount}
+- Flow-lab prototype internal-console context visible: ${evidence.summary.flowLabPrototypeInternalConsoleContextVisible}
 - Manual registration QA user route link count: ${evidence.summary.manualRegistrationQaUserLinkCount}
 - Normal route queue label scope: ${evidence.summary.normalRouteQueueLabelScope}
 - Normal route legacy overdue label hits: ${evidence.summary.normalRouteLegacyOverdueLabelCount}
@@ -1643,7 +1714,7 @@ P11-05/P11-06 keep capture/evidence rules centralized and traceable: internal-co
 
 P12-01~P12-04 bring URL-first hit/custom-start/miss/candidate states into the normal user-route capture schema. The same guardrail buckets now cover \`/flows\` URL-first user surfaces, including source slug leakage such as \`Mathbang\`, raw ISO dates in candidate cards, production-only copy such as \`Canonical URL\`/\`handoff\`, and roadmap/queue/pipeline wording such as \`P0\`, \`대기열\`, or \`파이프라인\`.
 
-P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registration QA outside the normal user route set. The flow-lab route is captured as a prototype bucket with noindex metadata, and normal user routes record zero links to the flow-lab lab or internal manual-registration QA report.
+P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registration QA outside the normal user route set. P13-03 makes the prototype bucket policy explicit: \`/restart/moving-d30\` is release-preview and must keep user-display gate hits at zero, while \`/flow-lab/url-first-p0\` is internal-console and may show lab labels only inside a noindex route with zero normal-route links.
 
 ## Baselines Covered
 
@@ -1678,7 +1749,7 @@ P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registrat
 - P11-07/P11-10: fridge/washer setup paths are visible/focusable evidence targets, and the fridge first-action title supports two-line mobile wrapping.
 - P11-08/P11-11: field checklist repeated caution copy is common-note only, and public workbench export labels do not duplicate as ambiguous visible entry points.
 - P12-01/P12-04: URL-first hit, custom-start, miss, and candidate states are captured as normal user-route scenarios and must keep URL-first internal/source/raw-ISO buckets at zero.
-- P12-05/P12-10: \`/flow-lab/url-first-p0\` stays in a prototype/internal bucket with noindex metadata, and manual registration QA remains docs-only with no normal user-route links.
+- P12-05/P12-10/P13-03: \`/restart/moving-d30\` and \`/flow-lab/url-first-p0\` stay out of normal navigation, but their prototype tiers are separate. Restart is \`release-preview\` with a zero-hit display gate; flow-lab is \`internal-console\` with noindex, zero user-nav links, visible internal-console context, and allowed lab-label hits.
 
 ## Summary
 
@@ -1694,7 +1765,7 @@ ${rows}
 
 ## Restart Prototype Bucket
 
-\`/restart/moving-d30\` remains outside the primary 4-tab IA. It is tracked as a prototype route, but it must still pass the display gate before any future promotion:
+\`/restart/moving-d30\` remains outside the primary 4-tab IA. It is tracked as prototype tier \`release-preview\`, so it must still pass the display gate before any future promotion:
 
 - no user-facing raw ISO dates
 - no raw route slug such as \`restart / moving-d30\`
@@ -1723,15 +1794,31 @@ The restart source/export frame and bottom frame must remain distinct:
 - native date input ISO exemption count: ${evidence.summary.restartPrototypeInputRawIsoExemptCount}
 - native date input ISO exemptions: ${JSON.stringify(evidence.summary.restartPrototypeInputRawIsoExemptions)}
 
-## Flow Lab Prototype Bucket
+## Prototype Tier Split
 
-\`/flow-lab/url-first-p0\` remains outside the primary 4-tab IA and normal user-route guardrail bucket:
+- release-preview route count: ${evidence.summary.prototypeReleasePreviewRouteCount}
+- release-preview guardrail hits: ${evidence.summary.prototypeReleasePreviewGuardrailHitCount}
+- release-preview unexpected guardrail hits: ${evidence.summary.prototypeReleasePreviewUnexpectedGuardrailHitCount}
+- internal-console route count: ${evidence.summary.prototypeInternalConsoleRouteCount}
+- internal-console guardrail hits: ${evidence.summary.prototypeInternalConsoleGuardrailHitCount}
+- internal-console allowed display-gate hits: ${evidence.summary.prototypeInternalConsoleAllowedDisplayGateHitCount}
+- internal-console unexpected guardrail hits: ${evidence.summary.prototypeInternalConsoleUnexpectedGuardrailHitCount}
+- internal-console context visible count: ${evidence.summary.prototypeInternalConsoleContextVisibleCount}
+
+## Flow Lab Internal Console Bucket
+
+\`/flow-lab/url-first-p0\` remains outside the primary 4-tab IA and normal user-route guardrail bucket. It is tracked as prototype tier \`${evidence.summary.flowLabPrototypeTier}\`, where P0/HIT/needs_review/canonical-style lab labels are allowed only because the route is a noindex internal console with no normal user-route links:
 
 - prototype route count: ${evidence.summary.flowLabPrototypeRouteCount}
+- prototype tier: ${evidence.summary.flowLabPrototypeTier}
+- prototype tier policy: ${JSON.stringify(evidence.summary.flowLabPrototypeTierPolicy)}
 - prototype bucket marker: ${evidence.summary.flowLabPrototypeBucket ? 'yes' : 'no'}
 - noindex metadata: ${evidence.summary.flowLabPrototypeNoindex ? 'yes' : 'no'}
 - meta robots records: ${JSON.stringify(evidence.summary.flowLabPrototypeMetaRobots)}
 - display-gate hit count while in prototype bucket: ${evidence.summary.flowLabPrototypeGuardrailHitCount}
+- allowed display-gate hit count while in internal console: ${evidence.summary.flowLabPrototypeAllowedDisplayGateHitCount}
+- unexpected guardrail hit count: ${evidence.summary.flowLabPrototypeUnexpectedGuardrailHitCount}
+- internal-console context visible: ${evidence.summary.flowLabPrototypeInternalConsoleContextVisible ? 'yes' : 'no'}
 - links from normal user routes to flow-lab: ${evidence.summary.flowLabPrototypeLinkedFromUserNavCount}
 - links from normal user routes to manual registration QA docs: ${evidence.summary.manualRegistrationQaUserLinkCount}
 
@@ -1787,7 +1874,10 @@ function renderPrompt(evidence) {
    - My Flow 첫 할 일 제목 반복
    - 모바일 390px 좌우 overflow
    - 하단 fixed/sticky가 마지막 버튼/행/agenda를 가림
-10. /restart/moving-d30 prototype bucket을 별도 관리하는 기준이 충분한지 확인
+10. prototype tier 분리가 충분한지 확인
+   - /restart/moving-d30 = release-preview, display gate 0
+   - /flow-lab/url-first-p0 = internal-console, noindex + user nav link 0 + 내부 콘솔 맥락 visible
+   - internal-console hit가 정상 route 또는 release-preview hit와 섞이지 않는지
 11. P8-09 field checklist workbench source-density guardrail이 충분한지 확인
    - new-car / used-car row detail source link count가 0인지
    - source/reference access link count가 0보다 크게 유지되는지
@@ -1905,8 +1995,15 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.restartPrototypeFirstThreeSameD30Milestone ? 'yes' : 'no'}</b><span>restart first 3 = D-30 group</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeD30MilestoneGroupHeadingVisible ? 'yes' : 'no'}</b><span>restart D-30 group heading</span></div>
       <div class="stat"><b>${evidence.summary.restartPrototypeFullScheduleUniqueDateLabelCount}</b><span>restart full schedule dates</span></div>
+      <div class="stat"><b>${evidence.summary.prototypeReleasePreviewRouteCount}</b><span>release-preview prototypes</span></div>
+      <div class="stat"><b>${evidence.summary.prototypeReleasePreviewGuardrailHitCount}</b><span>release-preview hits</span></div>
+      <div class="stat"><b>${evidence.summary.prototypeInternalConsoleRouteCount}</b><span>internal-console prototypes</span></div>
+      <div class="stat"><b>${evidence.summary.prototypeInternalConsoleGuardrailHitCount}</b><span>internal-console hits</span></div>
+      <div class="stat"><b>${evidence.summary.prototypeInternalConsoleUnexpectedGuardrailHitCount}</b><span>internal-console unexpected hits</span></div>
       <div class="stat"><b>${evidence.summary.flowLabPrototypeRouteCount}</b><span>flow-lab prototype routes</span></div>
+      <div class="stat"><b>${escapeHtml(evidence.summary.flowLabPrototypeTier ?? '-')}</b><span>flow-lab tier</span></div>
       <div class="stat"><b>${evidence.summary.flowLabPrototypeNoindex ? 'yes' : 'no'}</b><span>flow-lab noindex</span></div>
+      <div class="stat"><b>${evidence.summary.flowLabPrototypeInternalConsoleContextVisible ? 'yes' : 'no'}</b><span>flow-lab context</span></div>
       <div class="stat"><b>${evidence.summary.flowLabPrototypeLinkedFromUserNavCount}</b><span>flow-lab user nav links</span></div>
       <div class="stat"><b>${evidence.summary.manualRegistrationQaUserLinkCount}</b><span>manual QA user links</span></div>
       <div class="stat"><b>${evidence.summary.fieldWorkbenchRowDetailSourceLinkCount}</b><span>field row source links</span></div>
