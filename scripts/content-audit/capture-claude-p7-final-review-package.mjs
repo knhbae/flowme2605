@@ -28,6 +28,7 @@ const supplyQueueModule = await tsImport(
 );
 const {
   buildUrlFirstSupplyCandidateProductionMarkdown,
+  getUrlFirstSupplyCandidateAvailability,
 } = supplyQueueModule;
 const packageName = process.env.FLOWME_EVIDENCE_PACKAGE_NAME || '2026-07-05-claude-design-p7-final-review-package';
 const packageCycleMatch = packageName.match(/-p(\d+)-/i);
@@ -49,6 +50,13 @@ const githubBase = `https://github.com/knhbae/flowme2605/blob/${branchName}`;
 const sourceSlugSignals = getDynamicSourceSlugSignals();
 
 const now = '2026-05-28T09:00:00+09:00';
+const urlFirstTriggerUrls = {
+  hit: 'https://mathbang.net/13?utm_source=share',
+  customStart: 'https://mathbang.net/13?utm_source=share',
+  miss: 'https://example.com/source-to-convert?utm_source=review',
+  candidate: 'https://example.com/source-to-convert?utm_source=review',
+  resolvedCandidate: 'https://mathbang.net/13?utm_source=share',
+};
 
 const savedFixtures = {
   moving: [
@@ -413,6 +421,7 @@ async function collectUrlFirstExportModeEvidence(page) {
     );
     records.push({
       exportMode: option.value,
+      exportModeScanned: true,
       optionLabel: option.label,
       visibleMarkdownHitCount: visibleMarkdownLines.length,
       visibleMarkdownLines,
@@ -427,21 +436,23 @@ async function collectUrlFirstExportModeEvidence(page) {
 
 async function captureUrlFirstHit(page) {
   await resetStorage(page);
-  await lookupUrlFirstInput(page, 'https://mathbang.net/13?utm_source=share');
+  await lookupUrlFirstInput(page, urlFirstTriggerUrls.hit);
   await page.getByTestId('url-first-start-date-input').fill('2026-07-17');
   await settle(page);
   const urlFirstExportModeEvidence = await collectUrlFirstExportModeEvidence(page);
   await captureCurrent(page, '27-url-first-hit-mobile.png', 'URL-first hit result on Flow finding', {
     category: 'url-first',
     route: '/flows',
+    urlFirstScenarioName: 'hit-default-start',
     urlFirstState: 'hit',
+    urlFirstTriggerUrl: urlFirstTriggerUrls.hit,
     urlFirstExportModeEvidence,
   });
 }
 
 async function captureUrlFirstCustomStart(page) {
   await resetStorage(page);
-  await lookupUrlFirstInput(page, 'https://mathbang.net/13?utm_source=share');
+  await lookupUrlFirstInput(page, urlFirstTriggerUrls.customStart);
   await page.getByTestId('flow-url-start-mode-custom').click();
   await page.getByTestId('flow-url-custom-start-panel').waitFor({ state: 'visible' });
   await page.getByTestId('url-first-start-date-input').fill('2026-07-17');
@@ -450,26 +461,30 @@ async function captureUrlFirstCustomStart(page) {
   await captureCurrent(page, '28-url-first-custom-start-mobile.png', 'URL-first lightweight custom start panel', {
     category: 'url-first',
     route: '/flows',
+    urlFirstScenarioName: 'hit-custom-start',
     urlFirstState: 'custom-start',
+    urlFirstTriggerUrl: urlFirstTriggerUrls.customStart,
     urlFirstExportModeEvidence,
   });
 }
 
 async function captureUrlFirstMissCandidateForm(page) {
   await resetStorage(page);
-  await lookupUrlFirstInput(page, 'https://example.com/source-to-convert?utm_source=review');
+  await lookupUrlFirstInput(page, urlFirstTriggerUrls.miss);
   await page.getByTestId('flow-url-supply-candidate-form').waitFor({ state: 'visible' });
   await captureCurrent(page, '29-url-first-miss-candidate-form-mobile.png', 'URL-first miss candidate form', {
     category: 'url-first',
     route: '/flows',
+    urlFirstScenarioName: 'miss-candidate-form',
     urlFirstState: 'miss',
+    urlFirstTriggerUrl: urlFirstTriggerUrls.miss,
   });
 }
 
 async function captureUrlFirstCandidateDetail(page) {
   const pendingCandidateFixture = {
     canonicalUrl: 'https://example.com/source-to-convert',
-    originalUrl: 'https://example.com/source-to-convert?utm_source=review',
+    originalUrl: urlFirstTriggerUrls.candidate,
     title: '새로 보고 싶은 준비 체크리스트',
     memo: 'URL에서 따라 할 순서만 남겨두고 싶음',
     status: 'miss_request',
@@ -479,6 +494,22 @@ async function captureUrlFirstCandidateDetail(page) {
       title: '아직 준비된 Flow가 없어요',
       checkedAt: '2026-07-07T00:00:00.000Z',
       canSaveToMyFlow: false,
+    },
+  };
+  const resolvedCandidateFixture = {
+    canonicalUrl: 'https://mathbang.net/13',
+    originalUrl: urlFirstTriggerUrls.resolvedCandidate,
+    title: '이미 실행 가능한 수학 후보',
+    memo: '후보가 기존 콘텐츠로 연결된 상태',
+    status: 'miss_request',
+    savedAt: '2026-07-07T00:00:00.000Z',
+    lastLookup: {
+      status: 'hit',
+      title: '이미 만들어진 콘텐츠가 있어요',
+      checkedAt: '2026-07-07T00:00:00.000Z',
+      canSaveToMyFlow: true,
+      flowMapId: 'middle-school-math-1',
+      routeHref: '/flow-maps/middle-school-math-1',
     },
   };
   await resetStorage(page);
@@ -515,10 +546,23 @@ async function captureUrlFirstCandidateDetail(page) {
   await pendingCandidateCard.getByRole('button', { name: '요청 내용 보기' }).click();
   await settle(page);
   const urlFirstCandidateUserCopyEvidence = await collectUrlFirstCandidateUserCopyEvidence(page, pendingCandidateCard, pendingCandidateFixture);
+  const resolvedCandidateAvailability = getUrlFirstSupplyCandidateAvailability(resolvedCandidateFixture);
+  const urlFirstCandidateResolvedHitScenario = {
+    captured: true,
+    triggerUrl: resolvedCandidateFixture.originalUrl,
+    canonicalUrl: resolvedCandidateFixture.canonicalUrl,
+    availabilityState: resolvedCandidateAvailability.state,
+    lastLookupStatus: resolvedCandidateFixture.lastLookup?.status ?? null,
+    routeHref: resolvedCandidateAvailability.lookup?.routeHref ?? resolvedCandidateFixture.lastLookup?.routeHref ?? null,
+  };
   await captureCurrent(page, '30-url-first-candidate-detail-mobile.png', 'URL-first saved candidate request detail', {
     category: 'url-first',
     route: '/flows',
+    urlFirstScenarioName: 'candidate-detail-expanded',
     urlFirstState: 'candidate',
+    urlFirstTriggerUrl: urlFirstTriggerUrls.candidate,
+    urlFirstCandidateExpandedDetailCaptured: true,
+    urlFirstCandidateResolvedHitScenario,
     urlFirstCandidateUserCopyEvidence,
   });
 }
@@ -1029,6 +1073,8 @@ async function scanPage(page, options = {}) {
       const startDateInputValue = startDateInput && 'value' in startDateInput ? startDateInput.value : '';
 
       return {
+        scenarioName: payload.options.urlFirstScenarioName ?? null,
+        triggerUrl: payload.options.urlFirstTriggerUrl ?? null,
         resultVisible: Boolean(lookupResult && isVisible(lookupResult)),
         customStartVisible: Boolean(customStart && isVisible(customStart)),
         supplyFormVisible: Boolean(supplyForm && isVisible(supplyForm)),
@@ -1038,6 +1084,8 @@ async function scanPage(page, options = {}) {
         visibleMarkdownLines,
         exportModeEvidence: payload.options.urlFirstExportModeEvidence ?? [],
         candidateUserCopyEvidence: payload.options.urlFirstCandidateUserCopyEvidence ?? null,
+        candidateExpandedDetailCaptured: Boolean(payload.options.urlFirstCandidateExpandedDetailCaptured ?? (requestDetail && isVisible(requestDetail))),
+        candidateResolvedHitScenario: payload.options.urlFirstCandidateResolvedHitScenario ?? null,
         startDateInput: startDateInput
           ? {
               visible: isVisible(startDateInput),
@@ -1102,7 +1150,9 @@ async function scanPage(page, options = {}) {
       category: payload.options.category ?? 'route',
       prototypeBucket: Boolean(payload.options.prototypeBucket),
       prototypeTier: payload.options.prototypeTier ?? null,
+      urlFirstScenarioName: payload.options.urlFirstScenarioName ?? null,
       urlFirstState: payload.options.urlFirstState ?? null,
+      urlFirstTriggerUrl: payload.options.urlFirstTriggerUrl ?? null,
       url: window.location.pathname + window.location.search,
       h1: document.querySelector('h1')?.textContent?.trim() ?? '',
       scrollPurpose: payload.options.scrollPurpose ?? null,
@@ -1319,6 +1369,23 @@ function summarizeEvidence(records) {
       ...(record.markers?.urlFirst?.candidateUserCopyEvidence ?? {}),
     }))
     .filter((entry) => entry.copiedTextHash);
+  const urlFirstScenarioTriggers = urlFirst
+    .map((record) => ({
+      recordId: record.id,
+      route: record.route,
+      state: record.urlFirstState,
+      scenarioName: record.urlFirstScenarioName ?? record.markers?.urlFirst?.scenarioName ?? null,
+      triggerUrl: record.urlFirstTriggerUrl ?? record.markers?.urlFirst?.triggerUrl ?? null,
+    }))
+    .filter((entry) => entry.triggerUrl);
+  const urlFirstCandidateResolvedHitScenarios = urlFirst
+    .map((record) => ({
+      recordId: record.id,
+      route: record.route,
+      state: record.urlFirstState,
+      ...(record.markers?.urlFirst?.candidateResolvedHitScenario ?? {}),
+    }))
+    .filter((entry) => entry.captured !== undefined || entry.availabilityState);
   return {
     totalScreenshots: records.length,
     uiBaselineCommit,
@@ -1364,6 +1431,8 @@ function summarizeEvidence(records) {
     0),
     urlFirstScenarioCount: urlFirst.length,
     urlFirstStatesCaptured: urlFirst.map((record) => record.urlFirstState ?? record.id),
+    urlFirstScenarioTriggerUrlCount: urlFirstScenarioTriggers.length,
+    urlFirstScenarioTriggers,
     urlFirstNormalInternalHitCount: urlFirst.reduce((sum, record) => sum + record.internalHits.length, 0),
     urlFirstNormalSourceSlugHitCount: urlFirst.reduce((sum, record) => sum + record.sourceSlugHits.length, 0),
     urlFirstNormalStructuralDisplayHitCount: urlFirst.reduce((sum, record) => sum + record.structuralDisplayHits.length + record.flowSuffixLines.length, 0),
@@ -1386,10 +1455,12 @@ function summarizeEvidence(records) {
       })),
     ),
     urlFirstExportModeEvidenceCount: urlFirstExportModeEvidence.length,
+    urlFirstExportModeScannedCount: urlFirstExportModeEvidence.filter((modeEvidence) => modeEvidence.exportModeScanned).length,
     urlFirstExportModesCaptured: urlFirstExportModeEvidence.map((modeEvidence) => ({
       route: modeEvidence.route,
       state: modeEvidence.state,
       exportMode: modeEvidence.exportMode,
+      exportModeScanned: Boolean(modeEvidence.exportModeScanned),
       optionLabel: modeEvidence.optionLabel,
       visibleButtons: modeEvidence.visibleButtons,
     })),
@@ -1426,6 +1497,12 @@ function summarizeEvidence(records) {
     })),
     urlFirstCandidateInternalHandoffPreserved: urlFirstCandidateUserCopyEvidence.length > 0
       && urlFirstCandidateUserCopyEvidence.every((entry) => entry.internalHandoffPreserved === true),
+    urlFirstCandidateExpandedDetailCaptured: urlFirst.some((record) =>
+      Boolean(record.markers?.urlFirst?.candidateExpandedDetailCaptured),
+    ),
+    urlFirstCandidateResolvedHitScenarioCaptured: urlFirstCandidateResolvedHitScenarios.some((entry) => entry.captured),
+    urlFirstCandidateResolvedHitScenarioStatus: urlFirstCandidateResolvedHitScenarios.find((entry) => entry.captured)?.availabilityState ?? 'not-captured',
+    urlFirstCandidateResolvedHitScenarios,
     urlFirstStartDateInputVisibleCount: urlFirst.filter((record) => record.markers?.urlFirst?.startDateInput?.visible).length,
     urlFirstStartDateInputMarkers: urlFirst
       .map((record) => ({
@@ -1620,6 +1697,7 @@ P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registrat
 - Normal route row control samples with context: ${evidence.summary.normalRouteRowControlAccessibleNameContextCount}
 - URL-first normal scenarios captured: ${evidence.summary.urlFirstScenarioCount}
 - URL-first states captured: ${JSON.stringify(evidence.summary.urlFirstStatesCaptured)}
+- URL-first scenario trigger URL count: ${evidence.summary.urlFirstScenarioTriggerUrlCount}
 - URL-first internal copy hits: ${evidence.summary.urlFirstNormalInternalHitCount}
 - URL-first source slug hits: ${evidence.summary.urlFirstNormalSourceSlugHitCount}
 - URL-first structural/trailing title hits: ${evidence.summary.urlFirstNormalStructuralDisplayHitCount}
@@ -1628,10 +1706,14 @@ P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registrat
 - URL-first native date input raw ISO exemptions: ${evidence.summary.urlFirstNormalInputRawIsoExemptCount}
 - URL-first visible Markdown hits: ${evidence.summary.urlFirstVisibleMarkdownHitCount}
 - URL-first export mode evidence count: ${evidence.summary.urlFirstExportModeEvidenceCount}
+- URL-first export mode scanned count: ${evidence.summary.urlFirstExportModeScannedCount}
 - URL-first export mode visible Markdown hits: ${evidence.summary.urlFirstExportModeVisibleMarkdownHitCount}
 - URL-first candidate user-copy evidence count: ${evidence.summary.urlFirstCandidateUserCopyEvidenceCount}
 - URL-first candidate user-copy internal hits: ${evidence.summary.urlFirstCandidateUserCopyInternalHitCount}
 - URL-first candidate internal handoff preserved: ${evidence.summary.urlFirstCandidateInternalHandoffPreserved}
+- URL-first candidate expanded detail captured: ${evidence.summary.urlFirstCandidateExpandedDetailCaptured}
+- URL-first candidate resolved-hit scenario captured: ${evidence.summary.urlFirstCandidateResolvedHitScenarioCaptured}
+- URL-first candidate resolved-hit scenario status: ${evidence.summary.urlFirstCandidateResolvedHitScenarioStatus}
 - URL-first start date input visible count: ${evidence.summary.urlFirstStartDateInputVisibleCount}
 - URL-first visible marker count: ${evidence.summary.urlFirstMarkerVisibleCount}
 - Prototype release-preview route count: ${evidence.summary.prototypeReleasePreviewRouteCount}
@@ -1716,6 +1798,8 @@ P12-01~P12-04 bring URL-first hit/custom-start/miss/candidate states into the no
 
 P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registration QA outside the normal user route set. P13-03 makes the prototype bucket policy explicit: \`/restart/moving-d30\` is release-preview and must keep user-display gate hits at zero, while \`/flow-lab/url-first-p0\` is internal-console and may show lab labels only inside a noindex route with zero normal-route links.
 
+P13-04/P13-07 make URL-first evidence reproducible as a state-by-control matrix. Hit and custom-start scenarios now record export-mode scan rows for calendar/markdown/checklist, all URL-first states record their trigger URL, and the candidate detail scenario records both expanded-request evidence and the resolved-hit candidate branch.
+
 ## Baselines Covered
 
 - P7-01: \`/restart/moving-d30\` uses user-facing date text and a quieter export hierarchy.
@@ -1750,6 +1834,7 @@ P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registrat
 - P11-08/P11-11: field checklist repeated caution copy is common-note only, and public workbench export labels do not duplicate as ambiguous visible entry points.
 - P12-01/P12-04: URL-first hit, custom-start, miss, and candidate states are captured as normal user-route scenarios and must keep URL-first internal/source/raw-ISO buckets at zero.
 - P12-05/P12-10/P13-03: \`/restart/moving-d30\` and \`/flow-lab/url-first-p0\` stay out of normal navigation, but their prototype tiers are separate. Restart is \`release-preview\` with a zero-hit display gate; flow-lab is \`internal-console\` with noindex, zero user-nav links, visible internal-console context, and allowed lab-label hits.
+- P13-04/P13-07: URL-first route evidence records trigger URLs, export-mode scan rows, candidate expanded detail, and the resolved-hit candidate branch so state reproduction does not depend on screenshot interpretation alone.
 
 ## Summary
 
@@ -1967,9 +2052,13 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.normalRouteRawIsoHitCount}</b><span>normal raw ISO hits</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteInputRawIsoHitCount}</b><span>normal input ISO hits</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteInputRawIsoExemptCount}</b><span>normal input ISO exempt</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstScenarioTriggerUrlCount}</b><span>URL-first trigger URLs</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstExportModeScannedCount}</b><span>URL-first mode scans</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstVisibleMarkdownHitCount}</b><span>URL-first Markdown hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstExportModeVisibleMarkdownHitCount}</b><span>URL-first mode Markdown hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstCandidateUserCopyInternalHitCount}</b><span>URL-first copy output hits</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstCandidateExpandedDetailCaptured ? 'yes' : 'no'}</b><span>candidate detail expanded</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstCandidateResolvedHitScenarioStatus}</b><span>resolved candidate status</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstNormalInputRawIsoExemptCount}</b><span>URL-first input ISO exempt</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstStartDateInputVisibleCount}</b><span>URL-first date inputs</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteFirstTaskRepetitionHitCount}</b><span>first task repeats</span></div>

@@ -250,6 +250,21 @@ test('capture script exposes URL-first file-format and input ISO markers', () =>
   assert.ok(script.includes('urlFirstCandidateInternalHandoffPreserved'));
 });
 
+test('capture script exposes URL-first control-matrix reproducibility markers', () => {
+  const script = fs.readFileSync(
+    path.join(process.cwd(), 'scripts', 'content-audit', 'capture-claude-p7-final-review-package.mjs'),
+    'utf8',
+  );
+
+  assert.ok(script.includes('urlFirstScenarioTriggerUrlCount'));
+  assert.ok(script.includes('urlFirstScenarioTriggers'));
+  assert.ok(script.includes('triggerUrl'));
+  assert.ok(script.includes('exportModeScanned'));
+  assert.ok(script.includes('urlFirstCandidateExpandedDetailCaptured'));
+  assert.ok(script.includes('urlFirstCandidateResolvedHitScenarioCaptured'));
+  assert.ok(script.includes('urlFirstCandidateResolvedHitScenarioStatus'));
+});
+
 test('user surface guardrail helpers lock positive and negative display cases', () => {
   assert.equal(normalizeGuardrailLine('  first   line  '), 'first line');
   assert.deepEqual(normalizeGuardrailLines(['  first   line  ', '   ']), ['first line']);
