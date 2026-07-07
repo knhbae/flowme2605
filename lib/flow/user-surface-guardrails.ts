@@ -51,6 +51,11 @@ export type UserSurfaceGuardrailResult = {
   firstTaskRepetitionHits: FirstTaskRepetitionHit[];
 };
 
+export type UserFacingOutputGuardrailInput = {
+  text: string;
+  sourceSlugSignals?: string[];
+};
+
 export type DuplicatePrototypeExportEntryHit = {
   label: string;
   count: number;
@@ -101,6 +106,7 @@ const INTERNAL_COPY_PATTERNS: Array<{ label: string; pattern: RegExp }> = [
   { label: String.raw`\baudit\b`, pattern: /\baudit\b/iu },
   { label: String.raw`\bhandoff\b`, pattern: /\bhandoff\b/iu },
   { label: 'Canonical URL', pattern: /\bCanonical\s+URL\b/iu },
+  { label: 'Original URL', pattern: /\bOriginal\s+URL\b/iu },
   { label: '제작용 정보', pattern: /제작용\s*정보/u },
   { label: '대기열', pattern: /대기열/u },
   { label: '파이프라인', pattern: /파이프라인/u },
@@ -360,6 +366,17 @@ export function scanUserSurfaceGuardrails(input: UserSurfaceGuardrailInput): Use
       findFirstTaskRepetitionHits(primaryLines, title, { maxCount: 1 }),
     ),
   };
+}
+
+export function scanUserFacingOutputGuardrails(input: UserFacingOutputGuardrailInput): UserSurfaceGuardrailResult {
+  return scanUserSurfaceGuardrails({
+    primaryLines: input.text.split(/\r?\n/u).map(stripUrlValuesForOutputGuardrail),
+    sourceSlugSignals: input.sourceSlugSignals,
+  });
+}
+
+function stripUrlValuesForOutputGuardrail(line: string): string {
+  return line.replace(/https?:\/\/\S+/giu, '<url>');
 }
 
 export function scanPrototypeRouteGuardrails(input: PrototypeRouteGuardrailInput): PrototypeRouteGuardrailResult {

@@ -612,11 +612,17 @@ test('flow finding production candidates expose a production handoff markdown wi
   await pendingCard.getByRole('button', { name: '요청 정리본 복사' }).click();
   await expect(pendingCard).toContainText('요청 정리본 복사됨');
   const copiedMarkdown = await page.evaluate(() => navigator.clipboard.readText());
-  expect(copiedMarkdown).toContain('# Flow 제작 후보 handoff');
-  expect(copiedMarkdown).toContain('Canonical URL: https://example.com/production-ready');
-  expect(copiedMarkdown).toContain('Original URL: https://example.com/production-ready?utm_source=user');
-  expect(copiedMarkdown).toContain('AI/크롤링: 사용하지 않음');
-  expect(copiedMarkdown).toContain('- [ ] Step으로 나눌 수 있는 실행 단위인지 확인');
+  expect(copiedMarkdown).toContain('# 요청 정리본');
+  expect(copiedMarkdown).toContain('요청 준비 후보');
+  expect(copiedMarkdown).toContain('원문을 보고 따라 하고 싶어서 남김');
+  expect(copiedMarkdown).toContain('https://example.com/production-ready?utm_source=user');
+  expect(copiedMarkdown).toContain('아직 실행 가능한 Flow가 없어 요청 내용을 보관했어요.');
+  expect(copiedMarkdown).not.toContain('handoff');
+  expect(copiedMarkdown).not.toContain('Canonical URL');
+  expect(copiedMarkdown).not.toContain('Original URL');
+  expect(copiedMarkdown).not.toContain('Step');
+  expect(copiedMarkdown).not.toContain('sourceTrace');
+  expect(copiedMarkdown).not.toContain('source-backed');
 
   const resolvedCard = candidateList.locator('article').filter({ hasText: '이제 변환된 수학 후보' });
   await expect(resolvedCard).toContainText('이제 실행 가능');

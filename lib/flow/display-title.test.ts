@@ -29,6 +29,7 @@ import {
   normalizeGuardrailLine,
   normalizeGuardrailLines,
   scanPrototypeRouteGuardrails,
+  scanUserFacingOutputGuardrails,
   scanUserSurfaceGuardrails,
   USER_SURFACE_GUARDRAIL_RUNTIME,
 } from './user-surface-guardrails';
@@ -211,6 +212,10 @@ test('capture script exposes URL-first file-format and input ISO markers', () =>
   assert.ok(script.includes('urlFirstNormalInputRawIsoExemptCount'));
   assert.ok(script.includes('urlFirstStartDateInputVisibleCount'));
   assert.ok(script.includes('url-first-start-date-input'));
+  assert.ok(script.includes('scanUserFacingOutputGuardrails'));
+  assert.ok(script.includes('urlFirstCandidateUserCopyEvidenceCount'));
+  assert.ok(script.includes('urlFirstCandidateUserCopyInternalHitCount'));
+  assert.ok(script.includes('urlFirstCandidateInternalHandoffPreserved'));
 });
 
 test('user surface guardrail helpers lock positive and negative display cases', () => {
@@ -247,6 +252,36 @@ test('user surface guardrail helpers lock positive and negative display cases', 
       { pattern: '\\bItem\\b', line: 'Item detail' },
     ],
   );
+});
+
+test('user-facing output guardrails scan clipboard and download strings with the same internal-copy rules', () => {
+  const dirtyOutput = [
+    '# Flow 제작 후보 handoff',
+    '- Canonical URL: https://example.com/procedure',
+    '- Original URL: https://example.com/procedure?utm_source=user',
+    '- [ ] Step으로 나눌 수 있는 실행 단위인지 확인',
+    '- sourceTrace에 남길 출처를 분리',
+  ].join('\n');
+  const cleanOutput = [
+    '# 요청 정리본',
+    '- 원문 링크: https://example.com/procedure?utm_source=review',
+    '- 요청 제목: 새로 보고 싶은 준비 체크리스트',
+    '- 현재 상태: 아직 실행 가능한 Flow가 없어 요청 내용을 보관했어요.',
+  ].join('\n');
+
+  const dirtyResult = scanUserFacingOutputGuardrails({ text: dirtyOutput });
+  assert.deepEqual(dirtyResult.internalCopyHits.map((hit) => hit.pattern), [
+    '\\bhandoff\\b',
+    'Canonical URL',
+    'Original URL',
+    '\\bStep\\b',
+    'sourceTrace',
+  ]);
+
+  const cleanResult = scanUserFacingOutputGuardrails({ text: cleanOutput });
+  assert.deepEqual(cleanResult.internalCopyHits, []);
+  assert.deepEqual(cleanResult.rawIsoDateHits, []);
+  assert.deepEqual(cleanResult.structuralDisplayHits, []);
 });
 
 test('prototype guardrail helpers lock positive and negative display cases', () => {

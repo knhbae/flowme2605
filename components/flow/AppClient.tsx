@@ -49,7 +49,7 @@ import { parseTextFlow, serializeTextFlow, timingLabel } from '@/lib/flow/parser
 import { expandRoutineOccurrences, getRoutineWeekdayLabels } from '@/lib/flow/recurrence';
 import { buildUrlFirstStartPackage, lookupUrlFirstP0Input, type UrlFirstExportMode, type UrlFirstLookupResult } from '@/lib/flow/url-first-lookup';
 import {
-  buildUrlFirstSupplyCandidateProductionMarkdown,
+  buildUrlFirstSupplyCandidateUserSummaryMarkdown,
   buildUrlFirstSupplyCandidate,
   getUrlFirstSupplyCandidateAvailability,
   normalizeUrlFirstSupplyCandidates,
@@ -1543,7 +1543,7 @@ function FlowUrlSupplyCandidateCard({
   const [feedback, setFeedback] = useState('');
   const [showProductionInfo, setShowProductionInfo] = useState(false);
   const executable = availability.state === 'executable';
-  const productionMarkdown = buildUrlFirstSupplyCandidateProductionMarkdown(candidate);
+  const userSummaryMarkdown = buildUrlFirstSupplyCandidateUserSummaryMarkdown(candidate);
   const productionStatusNote = executable
     ? '같은 URL로 저장 가능한 Flow가 준비됐어요. 다시 조회하면 바로 시작할 수 있어요.'
     : '아직 바로 실행할 수 없어 원문과 요청 내용을 보관합니다.';
@@ -1555,13 +1555,13 @@ function FlowUrlSupplyCandidateCard({
     setIsEditing(false);
   }, [candidate.canonicalUrl, candidate.title, candidate.memo]);
 
-  const copyProductionMarkdown = async () => {
+  const copyUserSummaryMarkdown = async () => {
     try {
-      await navigator.clipboard.writeText(productionMarkdown);
+      await navigator.clipboard.writeText(userSummaryMarkdown);
       setFeedback('요청 정리본 복사됨');
     } catch {
       const textarea = document.createElement('textarea');
-      textarea.value = productionMarkdown;
+      textarea.value = userSummaryMarkdown;
       textarea.setAttribute('readonly', 'true');
       textarea.style.position = 'fixed';
       textarea.style.opacity = '0';
@@ -1727,7 +1727,8 @@ function FlowUrlSupplyCandidateCard({
           <button
             type="button"
             className="mt-3 min-h-9 rounded-lg bg-[#176D5D] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#115246]"
-            onClick={copyProductionMarkdown}
+            data-testid="flow-url-supply-user-summary-copy"
+            onClick={copyUserSummaryMarkdown}
           >
             요청 정리본 복사
           </button>

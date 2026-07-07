@@ -3,6 +3,7 @@ import test from 'node:test';
 import { lookupUrlFirstP0Input } from './url-first-lookup';
 import {
   buildUrlFirstSupplyCandidateProductionMarkdown,
+  buildUrlFirstSupplyCandidateUserSummaryMarkdown,
   buildUrlFirstSupplyCandidate,
   getUrlFirstSupplyCandidateAvailability,
   normalizeUrlFirstSupplyCandidates,
@@ -267,6 +268,41 @@ test('candidate production markdown packages source request, status, last lookup
   assert.match(markdown, /- \[ \] sourceTrace에 남길 출처\/근거를 분리/);
   assert.match(markdown, /- \[ \] 실행 불가\/위험\/민감 콘텐츠 여부 확인/);
   assert.match(markdown, /가볍게 따라 하고 싶은 루틴/);
+});
+
+test('candidate user summary markdown omits production-only handoff wording', () => {
+  const candidate = {
+    canonicalUrl: 'https://example.com/procedure',
+    originalUrl: 'https://example.com/procedure?utm_source=user',
+    title: '따라 하고 싶은 신차 인수 체크',
+    memo: '가볍게 따라 하고 싶은 루틴',
+    status: 'miss_request' as const,
+    savedAt: '2026-07-05T06:30:00.000Z',
+    lastLookup: {
+      status: 'miss' as const,
+      title: '아직 Flow화되지 않은 URL입니다',
+      checkedAt: '2026-07-05T07:00:00.000Z',
+      canSaveToMyFlow: false,
+    },
+  };
+
+  const markdown = buildUrlFirstSupplyCandidateUserSummaryMarkdown(candidate);
+
+  assert.match(markdown, /^# 요청 정리본/m);
+  assert.match(markdown, /원문 링크: https:\/\/example\.com\/procedure\?utm_source=user/);
+  assert.match(markdown, /요청 제목: 따라 하고 싶은 신차 인수 체크/);
+  assert.match(markdown, /요청 메모: 가볍게 따라 하고 싶은 루틴/);
+  assert.match(markdown, /저장일: 7월 5일/);
+  assert.match(markdown, /현재 상태: 아직 실행 가능한 Flow가 없어 요청 내용을 보관했어요\./);
+  assert.match(markdown, /마지막 확인: 7월 5일 · 아직 준비 전이에요/);
+  assert.doesNotMatch(markdown, /handoff/i);
+  assert.doesNotMatch(markdown, /Canonical URL/i);
+  assert.doesNotMatch(markdown, /Original URL/i);
+  assert.doesNotMatch(markdown, /\bStep\b/i);
+  assert.doesNotMatch(markdown, /\bItem\b/i);
+  assert.doesNotMatch(markdown, /sourceTrace/);
+  assert.doesNotMatch(markdown, /source-backed/i);
+  assert.doesNotMatch(markdown, /20\d{2}-\d{2}-\d{2}/);
 });
 
 test('resolved candidate production markdown prioritizes existing hit flow over new production', () => {

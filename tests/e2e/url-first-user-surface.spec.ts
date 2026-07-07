@@ -1,5 +1,5 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
-import { scanUserSurfaceGuardrails } from '../../lib/flow/user-surface-guardrails';
+import { scanUserFacingOutputGuardrails, scanUserSurfaceGuardrails } from '../../lib/flow/user-surface-guardrails';
 
 const urlFirstSourceSlugSignals = ['AJD', 'DeskLab', 'Mathbang'];
 
@@ -23,8 +23,22 @@ async function expectCleanUrlFirstUserSurface(locator: Locator) {
   expect(result.rawIsoDateHits).toEqual([]);
 }
 
+function expectCleanUserFacingOutput(text: string) {
+  const result = scanUserFacingOutputGuardrails({
+    text,
+    sourceSlugSignals: urlFirstSourceSlugSignals,
+  });
+
+  expect(result.internalCopyHits).toEqual([]);
+  expect(result.sourceSlugHits).toEqual([]);
+  expect(result.structuralDisplayHits).toEqual([]);
+  expect(result.trailingFlowSuffixHits).toEqual([]);
+  expect(result.rawIsoDateHits).toEqual([]);
+}
+
 async function openFlowFinding(page: Page) {
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto('/flows');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
@@ -93,6 +107,14 @@ test('URL-first miss and saved-candidate states hide production-only wording fro
   await candidateCard.getByRole('button', { name: '요청 내용 보기' }).click();
   await expect(candidateCard.getByTestId('flow-url-supply-production-handoff')).toBeVisible();
   await expectCleanUrlFirstUserSurface(candidateCard);
+
+  await candidateCard.getByTestId('flow-url-supply-user-summary-copy').click();
+  await expect(candidateCard).toContainText('요청 정리본 복사됨');
+  const copiedText = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copiedText).toContain('# 요청 정리본');
+  expect(copiedText).toContain('새로 보고 싶은 준비 체크리스트');
+  expect(copiedText).toContain('URL에서 따라 할 순서만 남겨두고 싶음');
+  expectCleanUserFacingOutput(copiedText);
 });
 
 test('URL-first lab stays prototype-gated and absent from user navigation', async ({ page }) => {

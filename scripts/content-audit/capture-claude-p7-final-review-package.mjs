@@ -17,8 +17,16 @@ const {
   findInternalCopyHits,
   scanRawIsoInputValues,
   scanPrototypeRouteGuardrails,
+  scanUserFacingOutputGuardrails,
   scanUserSurfaceGuardrails,
 } = guardrailModule;
+const supplyQueueModule = await tsImport(
+  pathToFileURL(path.join(repoRoot, 'lib', 'flow', 'url-first-supply-queue.ts')).href,
+  import.meta.url,
+);
+const {
+  buildUrlFirstSupplyCandidateProductionMarkdown,
+} = supplyQueueModule;
 const packageName = process.env.FLOWME_EVIDENCE_PACKAGE_NAME || '2026-07-05-claude-design-p7-final-review-package';
 const packageCycleMatch = packageName.match(/-p(\d+)-/i);
 const inferredReviewCycle = packageCycleMatch ? `P${packageCycleMatch[1]}` : 'P7';
@@ -80,6 +88,7 @@ async function main() {
     viewport,
     locale: 'ko-KR',
     timezoneId: 'Asia/Seoul',
+    permissions: ['clipboard-read', 'clipboard-write'],
   });
   const page = await context.newPage();
 
@@ -451,26 +460,27 @@ async function captureUrlFirstMissCandidateForm(page) {
 }
 
 async function captureUrlFirstCandidateDetail(page) {
+  const pendingCandidateFixture = {
+    canonicalUrl: 'https://example.com/source-to-convert',
+    originalUrl: 'https://example.com/source-to-convert?utm_source=review',
+    title: '새로 보고 싶은 준비 체크리스트',
+    memo: 'URL에서 따라 할 순서만 남겨두고 싶음',
+    status: 'miss_request',
+    savedAt: '2026-07-07T00:00:00.000Z',
+    lastLookup: {
+      status: 'miss',
+      title: '아직 준비된 Flow가 없어요',
+      checkedAt: '2026-07-07T00:00:00.000Z',
+      canSaveToMyFlow: false,
+    },
+  };
   await resetStorage(page);
   await page.goto('/flows');
-  await page.evaluate(() => {
+  await page.evaluate((pendingCandidate) => {
     window.localStorage.setItem(
       'flow:url-first:supply-candidates',
       JSON.stringify([
-        {
-          canonicalUrl: 'https://example.com/source-to-convert',
-          originalUrl: 'https://example.com/source-to-convert?utm_source=review',
-          title: '새로 보고 싶은 준비 체크리스트',
-          memo: 'URL에서 따라 할 순서만 남겨두고 싶음',
-          status: 'miss_request',
-          savedAt: '2026-07-07T00:00:00.000Z',
-          lastLookup: {
-            status: 'miss',
-            title: '아직 준비된 Flow가 없어요',
-            checkedAt: '2026-07-07T00:00:00.000Z',
-            canSaveToMyFlow: false,
-          },
-        },
+        pendingCandidate,
         {
           canonicalUrl: 'https://mathbang.net/13',
           originalUrl: 'https://mathbang.net/13?utm_source=share',
@@ -489,18 +499,52 @@ async function captureUrlFirstCandidateDetail(page) {
         },
       ]),
     );
-  });
+  }, pendingCandidateFixture);
   await page.reload();
   await settle(page);
   const candidateList = page.getByTestId('flow-url-supply-candidate-list');
   await candidateList.waitFor({ state: 'visible' });
-  await candidateList.locator('article').filter({ hasText: '새로 보고 싶은 준비 체크리스트' }).getByRole('button', { name: '요청 내용 보기' }).click();
+  const pendingCandidateCard = candidateList.locator('article').filter({ hasText: '새로 보고 싶은 준비 체크리스트' });
+  await pendingCandidateCard.getByRole('button', { name: '요청 내용 보기' }).click();
   await settle(page);
+  const urlFirstCandidateUserCopyEvidence = await collectUrlFirstCandidateUserCopyEvidence(page, pendingCandidateCard, pendingCandidateFixture);
   await captureCurrent(page, '30-url-first-candidate-detail-mobile.png', 'URL-first saved candidate request detail', {
     category: 'url-first',
     route: '/flows',
     urlFirstState: 'candidate',
+    urlFirstCandidateUserCopyEvidence,
   });
+}
+
+async function collectUrlFirstCandidateUserCopyEvidence(page, candidateCard, candidateFixture) {
+  await candidateCard.getByTestId('flow-url-supply-user-summary-copy').click();
+  await candidateCard.getByText('요청 정리본 복사됨').waitFor({ state: 'visible' });
+  const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+  const guardrailResult = scanUserFacingOutputGuardrails({
+    text: clipboardText,
+    sourceSlugSignals,
+  });
+  const forbiddenHits = [
+    ...guardrailResult.internalCopyHits.map((hit) => ({ type: 'internalCopy', ...hit })),
+    ...guardrailResult.sourceSlugHits.map((hit) => ({ type: 'sourceSlug', ...hit })),
+    ...guardrailResult.structuralDisplayHits.map((line) => ({ type: 'structuralDisplay', line })),
+    ...guardrailResult.trailingFlowSuffixHits.map((line) => ({ type: 'trailingFlowSuffix', line })),
+    ...guardrailResult.rawIsoDateHits.map((line) => ({ type: 'rawIsoDate', line })),
+  ];
+  const internalHandoff = buildUrlFirstSupplyCandidateProductionMarkdown(candidateFixture);
+
+  return {
+    buttonVisible: await candidateCard.getByTestId('flow-url-supply-user-summary-copy').isVisible(),
+    copiedTextLength: clipboardText.length,
+    copiedTextHash: crypto.createHash('sha256').update(clipboardText).digest('hex'),
+    sample: clipboardText.slice(0, 500),
+    forbiddenHitCount: forbiddenHits.length,
+    forbiddenHits,
+    internalHandoffPreserved: /Canonical URL/u.test(internalHandoff)
+      && /Original URL/u.test(internalHandoff)
+      && /\bStep\b/u.test(internalHandoff)
+      && /sourceTrace/u.test(internalHandoff),
+  };
 }
 
 async function captureCurrent(page, file, label, options = {}) {
@@ -986,6 +1030,7 @@ async function scanPage(page, options = {}) {
         visibleMarkdownHitCount: visibleMarkdownLines.length,
         visibleMarkdownLines,
         exportModeEvidence: payload.options.urlFirstExportModeEvidence ?? [],
+        candidateUserCopyEvidence: payload.options.urlFirstCandidateUserCopyEvidence ?? null,
         startDateInput: startDateInput
           ? {
               visible: isVisible(startDateInput),
@@ -1238,6 +1283,14 @@ function summarizeEvidence(records) {
       ...modeEvidence,
     })),
   );
+  const urlFirstCandidateUserCopyEvidence = urlFirst
+    .map((record) => ({
+      recordId: record.id,
+      route: record.route,
+      state: record.urlFirstState,
+      ...(record.markers?.urlFirst?.candidateUserCopyEvidence ?? {}),
+    }))
+    .filter((entry) => entry.copiedTextHash);
   return {
     totalScreenshots: records.length,
     uiBaselineCommit,
@@ -1324,6 +1377,27 @@ function summarizeEvidence(records) {
         line,
       })),
     ),
+    urlFirstCandidateUserCopyEvidenceCount: urlFirstCandidateUserCopyEvidence.length,
+    urlFirstCandidateUserCopyInternalHitCount: urlFirstCandidateUserCopyEvidence.reduce(
+      (sum, entry) => sum + (entry.forbiddenHitCount ?? 0),
+      0,
+    ),
+    urlFirstCandidateUserCopyForbiddenHits: urlFirstCandidateUserCopyEvidence.flatMap((entry) =>
+      (entry.forbiddenHits ?? []).map((hit) => ({
+        route: entry.route,
+        state: entry.state,
+        ...hit,
+      })),
+    ),
+    urlFirstCandidateUserCopySamples: urlFirstCandidateUserCopyEvidence.map((entry) => ({
+      route: entry.route,
+      state: entry.state,
+      copiedTextLength: entry.copiedTextLength,
+      copiedTextHash: entry.copiedTextHash,
+      sample: entry.sample,
+    })),
+    urlFirstCandidateInternalHandoffPreserved: urlFirstCandidateUserCopyEvidence.length > 0
+      && urlFirstCandidateUserCopyEvidence.every((entry) => entry.internalHandoffPreserved === true),
     urlFirstStartDateInputVisibleCount: urlFirst.filter((record) => record.markers?.urlFirst?.startDateInput?.visible).length,
     urlFirstStartDateInputMarkers: urlFirst
       .map((record) => ({
@@ -1495,6 +1569,9 @@ P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registrat
 - URL-first visible Markdown hits: ${evidence.summary.urlFirstVisibleMarkdownHitCount}
 - URL-first export mode evidence count: ${evidence.summary.urlFirstExportModeEvidenceCount}
 - URL-first export mode visible Markdown hits: ${evidence.summary.urlFirstExportModeVisibleMarkdownHitCount}
+- URL-first candidate user-copy evidence count: ${evidence.summary.urlFirstCandidateUserCopyEvidenceCount}
+- URL-first candidate user-copy internal hits: ${evidence.summary.urlFirstCandidateUserCopyInternalHitCount}
+- URL-first candidate internal handoff preserved: ${evidence.summary.urlFirstCandidateInternalHandoffPreserved}
 - URL-first start date input visible count: ${evidence.summary.urlFirstStartDateInputVisibleCount}
 - URL-first visible marker count: ${evidence.summary.urlFirstMarkerVisibleCount}
 - Flow-lab prototype route count: ${evidence.summary.flowLabPrototypeRouteCount}
@@ -1802,6 +1879,7 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.normalRouteInputRawIsoExemptCount}</b><span>normal input ISO exempt</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstVisibleMarkdownHitCount}</b><span>URL-first Markdown hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstExportModeVisibleMarkdownHitCount}</b><span>URL-first mode Markdown hits</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstCandidateUserCopyInternalHitCount}</b><span>URL-first copy output hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstNormalInputRawIsoExemptCount}</b><span>URL-first input ISO exempt</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstStartDateInputVisibleCount}</b><span>URL-first date inputs</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteFirstTaskRepetitionHitCount}</b><span>first task repeats</span></div>

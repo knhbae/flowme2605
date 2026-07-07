@@ -1,3 +1,4 @@
+import { formatKoreanShortDate } from './date';
 import { lookupUrlFirstP0Input, type UrlFirstLookupResult } from './url-first-lookup';
 
 export const URL_FIRST_SUPPLY_CANDIDATES_STORAGE_KEY = 'flow:url-first:supply-candidates';
@@ -265,6 +266,43 @@ function getLastLookupSummary(candidate: UrlFirstSupplyCandidate): string {
   if (!candidate.lastLookup) return '아직 없음';
   const flowReference = candidate.lastLookup.flowMapId ?? candidate.lastLookup.flowSlug ?? candidate.lastLookup.routeHref;
   return [candidate.lastLookup.status, candidate.lastLookup.checkedAt, flowReference].filter(Boolean).join(', ');
+}
+
+function getUserFacingLastLookupLabel(candidate: UrlFirstSupplyCandidate): string {
+  if (!candidate.lastLookup) return '아직 다시 확인하지 않았어요.';
+  const statusLabel: Record<UrlFirstSupplyCandidateLastLookupStatus, string> = {
+    hit: candidate.lastLookup.canSaveToMyFlow ? '시작할 수 있는 콘텐츠가 준비됐어요' : '비슷한 콘텐츠 확인이 필요해요',
+    needs_review: '원문 확인이 더 필요해요',
+    miss: '아직 준비 전이에요',
+    memo_draft: '메모 초안으로 이어질 수 있어요',
+  };
+  return `${formatKoreanShortDate(candidate.lastLookup.checkedAt)} · ${statusLabel[candidate.lastLookup.status]}`;
+}
+
+function getUserFacingCandidateStatusNote(candidate: UrlFirstSupplyCandidate): string {
+  const availability = getUrlFirstSupplyCandidateAvailability(candidate);
+  if (availability.state === 'executable') return '같은 원문으로 바로 시작할 수 있는 Flow가 준비됐어요.';
+  if (availability.state === 'needs_review') return '원문 확인이 더 필요해 요청 내용을 보관했어요.';
+  return '아직 실행 가능한 Flow가 없어 요청 내용을 보관했어요.';
+}
+
+export function buildUrlFirstSupplyCandidateUserSummaryMarkdown(candidate: UrlFirstSupplyCandidate): string {
+  const normalized = normalizeCandidate(candidate);
+  if (!normalized) return '';
+
+  return [
+    '# 요청 정리본',
+    '',
+    `- 원문 링크: ${normalized.originalUrl}`,
+    `- 요청 제목: ${normalized.title}`,
+    `- 요청 메모: ${normalized.memo || '없음'}`,
+    `- 저장일: ${formatKoreanShortDate(normalized.savedAt)}`,
+    `- 현재 상태: ${getUserFacingCandidateStatusNote(normalized)}`,
+    `- 마지막 확인: ${getUserFacingLastLookupLabel(normalized)}`,
+    '',
+    '필요하면 이 내용을 바탕으로 FlowMe에서 다시 찾아보거나 요청 내용을 수정할 수 있어요.',
+    '',
+  ].join('\n');
 }
 
 export function buildUrlFirstSupplyCandidateProductionMarkdown(candidate: UrlFirstSupplyCandidate): string {
