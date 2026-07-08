@@ -208,10 +208,17 @@ async function main() {
       prototypeTier: 'internal-console',
       scrollPurpose: 'prototype-flow-lab-top',
     });
-    await captureCleanRoute(page, '/u/my-flow-studio', '39-creator-profile-my-flow-studio-mobile.png', 'Creator profile studio mobile surface', {
+    await captureMyStudioProfileRoute(page, '39-creator-profile-my-flow-studio-mobile.png', 'Creator profile studio mobile surface with filled local content', {
       category: 'creator-profile',
       creatorProfileTier: 'creator-profile',
+      creatorProfileKind: 'current-user-studio',
       scrollPurpose: 'creator-profile-mobile-top',
+    });
+    await captureCleanRoute(page, '/u/flow-curation-team', '41-creator-profile-flow-curation-team-mobile.png', 'Filled public creator profile mobile surface', {
+      category: 'creator-profile',
+      creatorProfileTier: 'creator-profile',
+      creatorProfileKind: 'public-channel',
+      scrollPurpose: 'creator-profile-public-mobile-top',
     });
     await captureWideViewportEvidence(page);
     await collectUserNavLeakScanEvidence(page);
@@ -368,6 +375,56 @@ async function setSavedFlows(page, flows) {
   }, flows);
 }
 
+async function setMyStudioProfileContentFixture(page) {
+  await resetStorage(page);
+  await page.goto('/flows');
+  await settle(page);
+  await page.evaluate(() => {
+    const bundlesKey = 'flow_builder_mvp_bundles_v11';
+    const sourceBundles = JSON.parse(window.localStorage.getItem(bundlesKey) ?? '[]');
+    const makeStudioBundle = (slug, nextSlug, titleSuffix, status, usageCount, copyCount) => {
+      const source = sourceBundles.find((bundle) => bundle?.flow?.slug === slug);
+      if (!source) throw new Error(`Missing seed bundle for ${slug}`);
+      const next = JSON.parse(JSON.stringify(source));
+      const nextId = `flow-my-studio-${nextSlug}`;
+      next.flow.id = nextId;
+      next.flow.slug = nextSlug;
+      next.flow.title = `${next.flow.title} ${titleSuffix}`;
+      next.flow.status = status;
+      next.flow.owner_user_id = 'user-my-studio';
+      next.flow.creator_name = '나의 스튜디오';
+      next.flow.creator_role = '내가 저장하고 만든 실행 콘텐츠';
+      next.flow.creator_note = '내가 쓰기 좋게 정리한 콘텐츠만 모아 둡니다.';
+      next.flow.usage_count = usageCount;
+      next.flow.copy_count = copyCount;
+      next.sections = next.sections.map((section) => ({ ...section, flow_id: nextId }));
+      next.items = next.items.map((item) => ({ ...item, flow_id: nextId }));
+      return next;
+    };
+    const fixtureSlugs = new Set([
+      'my-studio-moving-d30',
+      'my-studio-computer-study',
+      'my-studio-vehicle-check',
+      'my-studio-moving-copy',
+      'my-studio-draft-note',
+    ]);
+    const kept = sourceBundles.filter((bundle) => !fixtureSlugs.has(bundle?.flow?.slug ?? ''));
+    const fixtures = [
+      makeStudioBundle('moving-d30-basic', 'my-studio-moving-d30', '정리본', 'published', 18, 5),
+      makeStudioBundle('computer-skills-d30-study', 'my-studio-computer-study', '정리본', 'published', 12, 4),
+      makeStudioBundle('vehicle-inspection-prep', 'my-studio-vehicle-check', '정리본', 'published', 9, 3),
+      makeStudioBundle('moving-d30-basic', 'my-studio-moving-copy', '사본', 'published', 2, 1),
+      makeStudioBundle('used-car-buying-check', 'my-studio-draft-note', '초안', 'draft', 0, 0),
+    ];
+    window.localStorage.setItem(bundlesKey, JSON.stringify([...kept, ...fixtures]));
+  });
+}
+
+async function captureMyStudioProfileRoute(page, file, label, options = {}) {
+  await setMyStudioProfileContentFixture(page);
+  await captureRoute(page, '/u/my-flow-studio', file, label, options);
+}
+
 async function captureCleanRoute(page, route, file, label, options = {}) {
   await resetStorage(page);
   await captureRoute(page, route, file, label, { category: 'normal-user-route', ...options });
@@ -408,11 +465,19 @@ async function captureWideViewportEvidence(page) {
     category: 'wide-viewport',
     wideViewport: true,
   });
-  await captureCleanRoute(page, '/u/my-flow-studio', '40-creator-profile-my-flow-studio-wide.png', 'Creator profile studio wide surface', {
+  await captureMyStudioProfileRoute(page, '40-creator-profile-my-flow-studio-wide.png', 'Creator profile studio wide surface with filled local content', {
     category: 'wide-viewport',
     creatorProfileTier: 'creator-profile',
+    creatorProfileKind: 'current-user-studio',
     wideViewport: true,
     scrollPurpose: 'creator-profile-wide-top',
+  });
+  await captureCleanRoute(page, '/u/flow-curation-team', '42-creator-profile-flow-curation-team-wide.png', 'Filled public creator profile wide surface', {
+    category: 'wide-viewport',
+    creatorProfileTier: 'creator-profile',
+    creatorProfileKind: 'public-channel',
+    wideViewport: true,
+    scrollPurpose: 'creator-profile-public-wide-top',
   });
   await page.setViewportSize(viewport);
   await settle(page);
@@ -1372,6 +1437,12 @@ async function scanPage(page, options = {}) {
       '[data-testid="public-flow-mobile-save-cta"]',
       '[data-testid="my-flow-now-section"]',
     ].some((selector) => hasVisibleElement(selector));
+    const creatorProfileContentCards = Array.from(document.querySelectorAll('[data-testid="creator-profile-content-card"]'));
+    const creatorProfileContentStatuses = creatorProfileContentCards
+      .map((element) => normalizeLine(element.getAttribute('data-flow-status') ?? ''))
+      .filter(Boolean);
+    const creatorProfileHeading = normalizeLine(document.querySelector('[data-testid="creator-profile-surface"] h1')?.textContent ?? '');
+    const creatorProfileEmptySummaryVisible = isCreatorProfileRoute && /0개\s*표시\s*\/\s*전체\s*0개/u.test(document.body.innerText);
 
     return {
       category: payload.options.category ?? 'route',
@@ -1475,8 +1546,14 @@ async function scanPage(page, options = {}) {
         },
         creatorProfile: isCreatorProfileRoute ? {
           tier: payload.options.creatorProfileTier ?? 'creator-profile',
+          kind: payload.options.creatorProfileKind ?? null,
           surfaceVisible: hasVisibleElement('[data-testid="creator-profile-surface"]'),
           noindex: /noindex/i.test(metaRobots),
+          heading: creatorProfileHeading,
+          contentCardCount: creatorProfileContentCards.length,
+          draftContentCardCount: creatorProfileContentStatuses.filter((status) => status === 'draft').length,
+          publishedContentCardCount: creatorProfileContentStatuses.filter((status) => status === 'published').length,
+          emptySummaryVisible: creatorProfileEmptySummaryVisible,
           policy: 'user-facing secondary surface outside the 4-tab IA; normal user-surface guardrails apply',
         } : null,
         flowLabInternalConsoleContextVisible: hasVisibleElement('[data-testid="url-first-p0-lab-internal-console-context"]'),
@@ -1619,7 +1696,8 @@ function summarizeEvidence(records) {
     || record.markers?.creatorProfile?.tier === 'creator-profile'
     || record.url.startsWith('/u/'),
   );
-  const myFlowStudioEntryRecords = records.filter((record) => record.url.startsWith('/my'));
+  const studioEntryAllowedRoutePrefixes = ['/my', '/calendar'];
+  const studioEntryVisibleRecords = records.filter((record) => Boolean(record.markers?.studioEntry?.visible));
   const postSaveConfirmationRecords = normal.filter((record) => record.markers?.postSaveConfirmation?.visible);
   const restartSourceFrame = records.find((record) => record.id === '22-restart-moving-source-export-mobile');
   const restartBottomFrame = records.find((record) => record.id === '23-restart-moving-bottom-mobile');
@@ -1649,13 +1727,26 @@ function summarizeEvidence(records) {
       destinationTier: destination.destinationTier,
     })),
   );
+  const studioEntryPlacementEvidence = studioEntryVisibleRecords.map((record) => ({
+    recordId: record.id,
+    route: record.url,
+    viewportWidth: record.viewportWidth,
+    allowed: studioEntryAllowedRoutePrefixes.some((prefix) => record.url.startsWith(prefix)),
+    destinations: record.markers?.studioEntry?.destinations ?? [],
+  }));
   const creatorProfileEvidence = creatorProfileRecords.map((record) => ({
     recordId: record.id,
     route: record.url,
     viewportWidth: record.viewportWidth,
     tier: record.creatorProfileTier ?? record.markers?.creatorProfile?.tier ?? 'creator-profile',
+    kind: record.markers?.creatorProfile?.kind ?? null,
     noindex: Boolean(record.markers?.creatorProfile?.noindex),
     surfaceVisible: Boolean(record.markers?.creatorProfile?.surfaceVisible),
+    heading: record.markers?.creatorProfile?.heading ?? '',
+    contentCardCount: record.markers?.creatorProfile?.contentCardCount ?? 0,
+    draftContentCardCount: record.markers?.creatorProfile?.draftContentCardCount ?? 0,
+    publishedContentCardCount: record.markers?.creatorProfile?.publishedContentCardCount ?? 0,
+    emptySummaryVisible: Boolean(record.markers?.creatorProfile?.emptySummaryVisible),
     internalHitCount: record.internalHits.length,
     sourceSlugHitCount: record.sourceSlugHits.length,
     structuralDisplayHitCount: record.structuralDisplayHits.length + record.flowSuffixLines.length,
@@ -1792,27 +1883,35 @@ function summarizeEvidence(records) {
     studioNavDestination: uniqueStudioDestinations[0]?.pathname ?? null,
     studioNavDestinationTier: uniqueStudioDestinations[0]?.destinationTier ?? null,
     studioNavDestinationEvidence,
+    studioEntryAllowedRoutePrefixes,
+    studioEntryPlacementEvidence,
+    studioEntryUnexpectedRouteCount: studioEntryPlacementEvidence.filter((entry) => !entry.allowed).length,
     studioEntryVisibleByViewport: sumByViewport(
-      myFlowStudioEntryRecords,
+      studioEntryVisibleRecords,
       (record) => (record.markers?.studioEntry?.visible ? 1 : 0),
     ),
     studioEntryReachableByViewport: sumByViewport(
-      myFlowStudioEntryRecords,
+      studioEntryVisibleRecords,
       (record) => (record.markers?.studioEntry?.reachable ? 1 : 0),
     ),
     studioEntryDestination: uniqueStudioDestinations[0]?.pathname ?? null,
     studioEntryDestinationTier: uniqueStudioDestinations[0]?.destinationTier ?? null,
-    studioEntryPolicy: 'visible as a My Flow page action when saved content exists; creator profile remains outside the 4-tab IA',
+    studioEntryPolicy: 'visible as a saved-work header action on /my and /calendar when saved content exists; creator profile remains outside the 4-tab IA',
     creatorProfileRouteCount: creatorProfileRecords.length,
     creatorProfileViewportWidths: Array.from(new Set(creatorProfileRecords.map((record) => record.viewportWidth))).sort((a, b) => a - b),
     creatorProfileTier: 'creator-profile',
-    creatorProfilePolicy: 'user-facing secondary surface outside the 4-tab IA; not a fifth tab; normal user-surface guardrails apply',
+    creatorProfilePolicy: 'user-facing secondary surface outside the 4-tab IA; not a fifth tab; current-user studio is noindex, public creator channels may be indexable; normal user-surface guardrails apply',
     creatorProfileNoindex: creatorProfileEvidence.map((entry) => ({
       recordId: entry.recordId,
       route: entry.route,
       viewportWidth: entry.viewportWidth,
       noindex: entry.noindex,
     })),
+    creatorProfileFilledRouteCount: creatorProfileEvidence.filter((entry) => entry.contentCardCount > 0).length,
+    creatorProfileEmptyRouteCount: creatorProfileEvidence.filter((entry) => entry.contentCardCount === 0 || entry.emptySummaryVisible).length,
+    creatorProfileContentCardCount: creatorProfileEvidence.reduce((sum, entry) => sum + entry.contentCardCount, 0),
+    creatorProfileDraftContentCardCount: creatorProfileEvidence.reduce((sum, entry) => sum + entry.draftContentCardCount, 0),
+    creatorProfilePublishedContentCardCount: creatorProfileEvidence.reduce((sum, entry) => sum + entry.publishedContentCardCount, 0),
     creatorProfileGuardrailHitCount: creatorProfileEvidence.reduce((sum, entry) =>
       sum
       + entry.internalHitCount
@@ -2230,10 +2329,16 @@ P14-05/P14-06 soften URL-first candidate/miss/hit copy that was technically clea
 - Studio nav destination tier: ${evidence.summary.studioNavDestinationTier ?? '-'}
 - Studio entry visible by viewport: ${JSON.stringify(evidence.summary.studioEntryVisibleByViewport)}
 - Studio entry reachable by viewport: ${JSON.stringify(evidence.summary.studioEntryReachableByViewport)}
+- Studio entry policy: ${evidence.summary.studioEntryPolicy}
+- Studio entry unexpected route count: ${evidence.summary.studioEntryUnexpectedRouteCount}
 - Creator profile route count: ${evidence.summary.creatorProfileRouteCount}
 - Creator profile viewport widths: ${JSON.stringify(evidence.summary.creatorProfileViewportWidths)}
 - Creator profile tier: ${evidence.summary.creatorProfileTier}
 - Creator profile guardrail hits: ${evidence.summary.creatorProfileGuardrailHitCount}
+- Creator profile filled route count: ${evidence.summary.creatorProfileFilledRouteCount}
+- Creator profile empty route count: ${evidence.summary.creatorProfileEmptyRouteCount}
+- Creator profile content card count: ${evidence.summary.creatorProfileContentCardCount}
+- Creator profile draft content card count: ${evidence.summary.creatorProfileDraftContentCardCount}
 - Creator profile policy: ${evidence.summary.creatorProfilePolicy}
 - User nav leak scan route count: ${evidence.summary.userNavLeakScanRouteCount}
 - User nav leak scan viewports: ${JSON.stringify(evidence.summary.userNavLeakScanViewports)}

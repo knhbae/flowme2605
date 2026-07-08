@@ -106,6 +106,56 @@ async function seedResolvedUrlFirstCandidate(page: Page) {
   await expect(page.getByTestId('flow-url-supply-candidate-list')).toBeVisible();
 }
 
+async function seedMyStudioCreatorProfileContent(page: Page) {
+  await page.goto('/flows');
+  await page.evaluate(() => {
+    const bundlesKey = 'flow_builder_mvp_bundles_v11';
+    const sourceBundles = JSON.parse(localStorage.getItem(bundlesKey) ?? '[]');
+    const makeStudioBundle = (
+      slug: string,
+      nextSlug: string,
+      titleSuffix: string,
+      status: 'published' | 'draft',
+      usageCount: number,
+      copyCount: number,
+    ) => {
+      const source = sourceBundles.find((bundle: { flow?: { slug?: string } }) => bundle.flow?.slug === slug);
+      if (!source) throw new Error(`Missing seed bundle for ${slug}`);
+      const next = JSON.parse(JSON.stringify(source));
+      const nextId = `flow-my-studio-${nextSlug}`;
+      next.flow.id = nextId;
+      next.flow.slug = nextSlug;
+      next.flow.title = `${next.flow.title} ${titleSuffix}`;
+      next.flow.status = status;
+      next.flow.owner_user_id = 'user-my-studio';
+      next.flow.creator_name = '나의 스튜디오';
+      next.flow.creator_role = '내가 저장하고 만든 실행 콘텐츠';
+      next.flow.creator_note = '내가 쓰기 좋게 정리한 콘텐츠만 모아 둡니다.';
+      next.flow.usage_count = usageCount;
+      next.flow.copy_count = copyCount;
+      next.sections = next.sections.map((section: { flow_id: string }) => ({ ...section, flow_id: nextId }));
+      next.items = next.items.map((item: { flow_id: string }) => ({ ...item, flow_id: nextId }));
+      return next;
+    };
+    const fixtureSlugs = new Set([
+      'my-studio-moving-d30',
+      'my-studio-computer-study',
+      'my-studio-vehicle-check',
+      'my-studio-moving-copy',
+      'my-studio-draft-note',
+    ]);
+    const kept = sourceBundles.filter((bundle: { flow?: { slug?: string } }) => !fixtureSlugs.has(bundle.flow?.slug ?? ''));
+    const fixtures = [
+      makeStudioBundle('moving-d30-basic', 'my-studio-moving-d30', '정리본', 'published', 18, 5),
+      makeStudioBundle('computer-skills-d30-study', 'my-studio-computer-study', '정리본', 'published', 12, 4),
+      makeStudioBundle('vehicle-inspection-prep', 'my-studio-vehicle-check', '정리본', 'published', 9, 3),
+      makeStudioBundle('moving-d30-basic', 'my-studio-moving-copy', '사본', 'published', 2, 1),
+      makeStudioBundle('used-car-buying-check', 'my-studio-draft-note', '초안', 'draft', 0, 0),
+    ];
+    localStorage.setItem(bundlesKey, JSON.stringify([...kept, ...fixtures]));
+  });
+}
+
 async function expectUrlFirstExportModesAvoidTechnicalFormatLabels(result: Locator) {
   const exportModeSelect = result.getByTestId('url-first-export-mode-select');
   await expect(exportModeSelect).toBeVisible();
@@ -238,6 +288,13 @@ test('URL-first lab stays prototype-gated and absent from user navigation', asyn
   await expect(mobileStudioLink).toBeVisible();
   await expect(mobileStudioLink).toHaveAttribute('href', /^\/u\/[^?#]+$/);
 
+  await page.goto('/calendar');
+  const calendarStudioLink = page.getByRole('link', { name: '스튜디오' });
+  await expect(calendarStudioLink).toBeVisible();
+  await expect(calendarStudioLink).toHaveAttribute('href', /^\/u\/[^?#]+$/);
+
+  await seedMyStudioCreatorProfileContent(page);
+
   for (const viewport of [
     { width: 390, height: 844 },
     { width: 1024, height: 768 },
@@ -245,13 +302,27 @@ test('URL-first lab stays prototype-gated and absent from user navigation', asyn
     await page.setViewportSize(viewport);
     await page.goto('/u/my-flow-studio');
     await expect(page.getByTestId('creator-profile-surface')).toBeVisible();
-    await expect(page.getByRole('heading', { name: '내 Flow 스튜디오' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: '나의 스튜디오' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: '내 Flow 스튜디오' })).toHaveCount(0);
+    await expect(page.getByText('채널 콘텐츠')).toHaveCount(0);
+    await expect(page.getByText('공개 콘텐츠', { exact: true })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: '전체', exact: true })).toHaveCount(0);
+    await expect(page.getByTestId('creator-profile-content-card')).toHaveCount(5);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
     await expect(page.getByText('My Creator Profile')).toHaveCount(0);
     await expect(page.getByText('Exact Source')).toHaveCount(0);
     await expect(page.getByText('Published Flows')).toHaveCount(0);
     await expectCleanCreatorProfileSurface(page.locator('body'));
     await expectNoHorizontalOverflow(page);
   }
+
+  await page.goto('/u/flow-curation-team');
+  await expect(page.getByTestId('creator-profile-surface')).toBeVisible();
+  const publicCreatorRobots = await page.locator('meta[name="robots"]').getAttribute('content');
+  expect(publicCreatorRobots ?? '').not.toMatch(/noindex/i);
+  expect(await page.getByTestId('creator-profile-content-card').count()).toBeGreaterThanOrEqual(3);
+  await expect(page.getByText('채널 콘텐츠')).toHaveCount(0);
+  await expectCleanCreatorProfileSurface(page.locator('body'));
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flow-lab/url-first-p0');

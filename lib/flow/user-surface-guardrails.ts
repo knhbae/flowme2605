@@ -101,6 +101,7 @@ const STRUCTURAL_DISPLAY_PATTERNS = [
   /(?:Flow\s*)?상태판/u,
   /Flow\s*보드/u,
   /Flow\s*패널/u,
+  /채널\s*콘텐츠/u,
   /실행\s*큐/u,
   /(?:source|소스|내부)\s*트레이스/iu,
   /(?:위|아래)\s*카드에서/u,

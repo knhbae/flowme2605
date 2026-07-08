@@ -580,6 +580,38 @@ function getFlowResultText(bundle: FlowBundle): string {
   return '단계별 확인 항목을 하나씩 실행합니다.';
 }
 
+function escapeRegexValue(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function getBundleSourceDisplaySignals(bundle: FlowBundle): string[] {
+  const signals = new Set<string>();
+  const sourceTitleToken = bundle.flow.source_title?.trim().match(/^([A-Za-z][A-Za-z0-9._-]{1,40})(?=\s|["'@]|$)/u)?.[1];
+  if (sourceTitleToken) signals.add(sourceTitleToken);
+  const sourceTitleAcronym = bundle.flow.source_title?.match(/\(([A-Z][A-Z0-9]{1,20})\)/u)?.[1];
+  if (sourceTitleAcronym) signals.add(sourceTitleAcronym);
+
+  if (bundle.flow.source_url) {
+    try {
+      const host = new URL(bundle.flow.source_url).hostname.replace(/^www\./i, '');
+      const primaryHostToken = host.split('.')[0];
+      if (/^[A-Za-z][A-Za-z0-9-]{1,40}$/u.test(primaryHostToken)) signals.add(primaryHostToken);
+    } catch {
+      // Ignore malformed source URLs in old local drafts.
+    }
+  }
+
+  return Array.from(signals).sort((a, b) => b.length - a.length);
+}
+
+function getUserFacingFlowResultText(bundle: FlowBundle): string {
+  const original = getFlowResultText(bundle).trim();
+  const sanitized = getBundleSourceDisplaySignals(bundle).reduce((value, signal) => {
+    return value.replace(new RegExp(`^${escapeRegexValue(signal)}\\s*`, 'iu'), '').trim();
+  }, original);
+  return sanitized || original;
+}
+
 function getFlowItemCount(bundle: FlowBundle): number {
   return bundle.flow.content_type === 'meal_plan' ? bundle.mealSlots?.length ?? 0 : bundle.items.length;
 }
@@ -677,7 +709,9 @@ function normalizeCreatorSlug(slug: string): string {
 }
 
 function getFlowTags(bundle: FlowBundle): string[] {
-  return bundle.flow.tags ?? [];
+  return (bundle.flow.tags ?? []).filter(
+    (tag) => !/source[-_\s]*backed|^recommended-flow:|^source[-_]?import|needs[_-]?review|source[-_]?trace/i.test(tag),
+  );
 }
 
 function cloneBundleForEditing(bundle: FlowBundle): FlowBundle {
@@ -751,7 +785,7 @@ function FlowCard({
               {displayTitle}
             </Link>
           </h2>
-          <p className="mt-2 line-clamp-3 text-sm leading-6 text-gray-600">{getFlowResultText(bundle)}</p>
+          <p className="mt-2 line-clamp-3 text-sm leading-6 text-gray-600">{getUserFacingFlowResultText(bundle)}</p>
           <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-gray-500">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-700">
               {getCreatorAvatar(bundle)}
@@ -8368,7 +8402,8 @@ export function CreatorProfile({ slug }: { slug: string }) {
     if (user) return creator?.id === user.id;
     return normalizeCreatorSlug(creator?.slug ?? creatorSlug(getCreatorName(bundle))) === normalized;
   }).sort((a, b) => getCreatorBundlePriority(a) - getCreatorBundlePriority(b));
-  const [categoryFilter, setCategoryFilter] = useState('전체');
+  const allCategoryLabel = '모든 주제';
+  const [categoryFilter, setCategoryFilter] = useState(allCategoryLabel);
   const [sourceFilter, setSourceFilter] = useState<'all' | 'real' | 'preview'>('all');
   const [libraryQuery, setLibraryQuery] = useState('');
   const first = creatorBundles[0];
@@ -8376,10 +8411,10 @@ export function CreatorProfile({ slug }: { slug: string }) {
   const totalUsage = creatorBundles.reduce((sum, bundle) => sum + (bundle.flow.usage_count ?? 0), 0);
   const totalCopies = creatorBundles.reduce((sum, bundle) => sum + (bundle.flow.copy_count ?? 0), 0);
   const categories = Array.from(new Set(creatorBundles.map((bundle) => bundle.flow.category))).slice(0, 6);
-  const allCategories = ['전체', ...Array.from(new Set(creatorBundles.map((bundle) => bundle.flow.category)))];
+  const allCategories = [allCategoryLabel, ...Array.from(new Set(creatorBundles.map((bundle) => bundle.flow.category)))];
   const normalizedLibraryQuery = libraryQuery.trim().toLowerCase();
   const visibleCreatorBundles = creatorBundles
-    .filter((bundle) => (categoryFilter === '전체' ? true : bundle.flow.category === categoryFilter))
+    .filter((bundle) => (categoryFilter === allCategoryLabel ? true : bundle.flow.category === categoryFilter))
     .filter((bundle) => {
       if (sourceFilter === 'real') return bundle.flow.source_status === 'real';
       if (sourceFilter === 'preview') return bundle.flow.source_status === 'preview';
@@ -8436,7 +8471,7 @@ export function CreatorProfile({ slug }: { slug: string }) {
         </div>
         <div className="mt-5 grid gap-3 sm:grid-cols-3">
           <div className="rounded-lg bg-gray-50 p-4">
-            <p className="text-sm text-gray-500">공개 콘텐츠</p>
+            <p className="text-sm text-gray-500">콘텐츠</p>
             <p className="mt-1 text-2xl font-semibold">{creatorBundles.length}</p>
           </div>
           <div className="rounded-lg bg-gray-50 p-4">
@@ -8495,8 +8530,12 @@ export function CreatorProfile({ slug }: { slug: string }) {
       <section className="mt-8">
         <div className="mb-4 flex items-end justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold text-gray-500">공개 콘텐츠</p>
-            <h2 className="text-2xl font-semibold">채널 콘텐츠</h2>
+            <p className="text-sm font-semibold text-gray-500">
+              {profile?.is_current_user ? '내가 만든 콘텐츠' : '저장 가능한 콘텐츠'}
+            </p>
+            <h2 className="text-2xl font-semibold">
+              {profile?.is_current_user ? '스튜디오 콘텐츠' : '만든 콘텐츠'}
+            </h2>
             <p className="mt-1 text-sm text-gray-600">
               {visibleCreatorBundles.length}개 표시 / 전체 {creatorBundles.length}개
             </p>
@@ -8514,7 +8553,7 @@ export function CreatorProfile({ slug }: { slug: string }) {
         </label>
         <div className="mb-3 flex flex-wrap gap-2">
           {[
-            ['all', '전체'],
+            ['all', '모두 보기'],
             ['real', '원문 확인'],
             ['preview', '샘플'],
           ].map(([key, label]) => (
@@ -8550,7 +8589,9 @@ export function CreatorProfile({ slug }: { slug: string }) {
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {visibleCreatorBundles.map((bundle) => (
-            <FlowCard key={bundle.flow.id} bundle={bundle} />
+            <div key={bundle.flow.id} data-testid="creator-profile-content-card" data-flow-status={bundle.flow.status}>
+              <FlowCard bundle={bundle} />
+            </div>
           ))}
         </div>
       </section>
