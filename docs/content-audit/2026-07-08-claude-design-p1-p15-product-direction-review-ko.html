@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claude Design P1~P15 제품 방향 종합 리뷰</title>
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --panel: #fffdfa;
+      --ink: #26231f;
+      --muted: #6f6a60;
+      --line: #e2ddd2;
+      --green: #236544;
+      --amber: #946c16;
+      --red: #b13a24;
+      --blue: #245b8f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.65;
+    }
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 56px;
+    }
+    .hero, section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 24px;
+      margin-bottom: 18px;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+      gap: 22px;
+      align-items: start;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.08; letter-spacing: 0; margin-bottom: 14px; }
+    h2 { font-size: 22px; margin-bottom: 14px; }
+    h3 { font-size: 16px; margin-bottom: 8px; }
+    .lede { color: var(--muted); font-size: 16px; }
+    .decision {
+      border-left: 5px solid var(--green);
+      padding: 14px 16px;
+      background: #edf6ef;
+      border-radius: 12px;
+      font-weight: 700;
+    }
+    .meta {
+      display: grid;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: #eee8dc;
+      color: #4d473f;
+      font-weight: 700;
+      font-size: 12px;
+      margin: 0 6px 6px 0;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      background: #fff;
+    }
+    .card strong { color: var(--ink); }
+    .small { font-size: 13px; color: var(--muted); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      font-size: 14px;
+    }
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+      padding: 10px 12px;
+    }
+    th { background: #f0ebe0; }
+    tr:last-child td { border-bottom: 0; }
+    code {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      background: #f0ede7;
+      border-radius: 6px;
+      padding: 1px 5px;
+      font-size: .94em;
+    }
+    pre {
+      white-space: pre-wrap;
+      background: #1f1d1a;
+      color: #f2eee5;
+      border-radius: 14px;
+      padding: 18px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    a { color: var(--blue); }
+    .keep { border-top: 4px solid var(--green); }
+    .review { border-top: 4px solid var(--amber); }
+    .risk { border-top: 4px solid var(--red); }
+    ul { padding-left: 20px; }
+    @media (max-width: 840px) {
+      main { width: min(100% - 20px, 1180px); padding-top: 20px; }
+      .hero, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+      .hero, section { padding: 18px; border-radius: 14px; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <article class="hero">
+    <div>
+      <p class="badge">2026-07-08</p>
+      <p class="badge">P1~P15 종합</p>
+      <p class="badge">제품 방향 리뷰</p>
+      <h1>FlowMe는 아직 creator platform보다 action compiler가 중심이다</h1>
+      <p class="lede">P1~P15는 화면 polish 누적이 아니라, 외부 콘텐츠를 실행 가능한 artifact로 바꾸고 My Flow/Calendar에서 이어가는 구조를 고정한 과정이었다. P16은 이 축을 버리는 단계가 아니라, 새로 열린 creator/studio 표면이 이 축에 붙어도 되는지 검증하는 단계로 읽어야 한다.</p>
+      <p class="decision">추천: 4탭 IA와 개인 실행 도구 중심을 유지한다. `/u/my-flow-studio`와 creator/profile은 5번째 탭이 아니라 secondary surface로 검증한다.</p>
+    </div>
+    <aside class="meta card">
+      <strong>출력</strong>
+      <span>유지 기준선 / 재검토 기준선 / 사용자 여정 평가 / 방향 선택지 / 추천 방향 / 다음 goal 후보</span>
+      <strong>읽은 기준</strong>
+      <span>PRODUCT_PRINCIPLES, SERVICE_STRUCTURE, DECISIONS, IDEAS, P0~P15 review packages, P16 Claude feedback</span>
+      <strong>핵심 판단</strong>
+      <span>P16-01~P16-03은 feature expansion이 아니라 creator/studio policy verification으로 묶어야 한다.</span>
+    </aside>
+  </article>
+
+  <section>
+    <h2>1. P1~P15가 만든 흐름</h2>
+    <table>
+      <thead><tr><th>구간</th><th>제품적으로 닫힌 것</th><th>남은 판단</th></tr></thead>
+      <tbody>
+        <tr><td>P1~P3</td><td>첫 진입, Flow finding, Flow Map, public `/f`, My Flow, Calendar의 기본 shell과 post-save 흐름 정리. 4탭 IA가 기준선으로 자리 잡음.</td><td>자동화/browser QA이지 real validation은 아님.</td></tr>
+        <tr><td>P4~P6</td><td>public `/f` 공유 shell, 저장 CTA 위계, sticky clearance, My Flow 반복/중복, source/slug 노출, restart prototype 표시 품질 정리.</td><td>public `/f`는 계속 share-entry shell로 유지해야 함.</td></tr>
+        <tr><td>P7~P10</td><td>guardrail 일반화, prototype bucket, raw ISO/input exemption, My Flow label/status, Calendar group header, public share tab order, evidence metadata 정리.</td><td>guardrail은 목적이 아니라 제품 판단을 돕는 안전장치다.</td></tr>
+        <tr><td>P11~P13</td><td>URL-first 4상태, candidate copy output, export mode별 Markdown 비노출, trigger URL/control matrix, wide spot evidence, post-save confirmation.</td><td>URL-first는 핵심 entry로 강하지만 miss/candidate는 아직 실행 가능 Flow가 아니다.</td></tr>
+        <tr><td>P14~P15</td><td>wide guardrail/layout sanity, `/u/my-flow-studio` creator-profile tier, studio entry marker, candidate resolved card copy marker.</td><td>creator/profile은 새 축 후보지만, 현재 evidence는 빈 surface 검증에 가깝다.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>2. 사용자 여정 평가</h2>
+    <div class="grid-3">
+      <div class="card keep"><h3>Flow 찾기 / URL-first</h3><p>강한 핵심 entry. 사용자는 URL을 붙여 기존 준비를 찾고, 없으면 비실행 후보로 남긴다. AI 생성기가 아니라 lookup-first action compiler로 유지해야 한다.</p></div>
+      <div class="card keep"><h3>public `/f` 저장</h3><p>공유 진입 저장 shell로 안정화됐다. 저장/setup path가 primary이고 export와 browse는 보조다. 4탭 shell로 강제 편입하지 않는다.</p></div>
+      <div class="card keep"><h3>My Flow / Calendar</h3><p>실행 허브와 dated execution tab의 역할이 분리됐다. 모바일 기준은 좋고, wide layout은 방향 확정 뒤 투자할 영역이다.</p></div>
+      <div class="card keep"><h3>Export 가치</h3><p>calendar/sheet/memo/checklist로 가져가는 능력은 여전히 핵심 가치다. FlowMe를 기존 도구와 경쟁시키기보다 보완하는 방향을 유지한다.</p></div>
+      <div class="card review"><h3>Creator / Studio</h3><p>`/u/my-flow-studio`는 secondary surface로 남겨야 한다. 실제 콘텐츠가 있는 profile 검증 전에는 핵심 축으로 승격하지 않는다.</p></div>
+      <div class="card review"><h3>Evidence / Guardrail</h3><p>많이 좋아졌지만 수치 자체가 목표가 되면 안 된다. route-evidence는 제품 방향 결정을 돕는 보조 증거다.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. 유지할 기준선</h2>
+    <div class="grid-2">
+      <div class="card keep">
+        <h3>제품/IA</h3>
+        <ul>
+          <li>4탭 IA: Home / Flow 찾기 / Calendar / My Flow</li>
+          <li>Home은 promise, `/flows`는 catalog + URL-first</li>
+          <li>public `/f/[slug]`는 공유 저장 shell</li>
+          <li>My Flow는 saved execution hub</li>
+          <li>Calendar는 dated Step의 global execution tab</li>
+        </ul>
+      </div>
+      <div class="card keep">
+        <h3>Guardrail / route tier</h3>
+        <ul>
+          <li>normal route guardrail 0</li>
+          <li>visible Markdown 0, raw ISO visible text 0</li>
+          <li>candidate user copy internal hit 0</li>
+          <li>`/restart`는 release-preview</li>
+          <li>`/flow-lab`는 internal-console, user nav link 0</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>4. 재검토할 기준선</h2>
+    <table>
+      <thead><tr><th>항목</th><th>이유</th><th>다음 판단</th></tr></thead>
+      <tbody>
+        <tr><td>`/u/my-flow-studio`</td><td>creator-profile인지 내 스튜디오인지 공개 채널인지 섞여 있고, 현재 evidence는 빈 상태 중심.</td><td>실제 콘텐츠 있는 profile을 캡처한 뒤 secondary surface 정책 결정.</td></tr>
+        <tr><td>스튜디오 진입점</td><td>정책은 My Flow action인데 Calendar에도 보이며, viewport별 노출 수가 다름.</td><td>My Flow only 또는 My Flow + Calendar 중 택일.</td></tr>
+        <tr><td>My Flow wide</td><td>모바일 기준은 좋지만 desktop에서 단일 컬럼 확장처럼 보일 수 있음.</td><td>P16-01~03 뒤 layout 투자 여부 결정.</td></tr>
+        <tr><td>public `/f` wide preview</td><td>저장 primary는 좋지만 preview 열이 비어 보일 수 있음.</td><td>저장 판단에 도움이 되는 preview만 보강.</td></tr>
+        <tr><td>실사용 검증</td><td>대부분 automated/browser QA.</td><td>validated 표현 금지, 관찰 세션 전에는 internal QA로만 표현.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>5. 방향 선택지</h2>
+    <div class="grid-3">
+      <div class="card">
+        <h3>A. 개인 실행 도구 집중</h3>
+        <p>URL/콘텐츠를 실행 artifact로 바꾸는 축에만 집중한다. 가장 선명하지만 creator growth loop는 늦어진다.</p>
+      </div>
+      <div class="card risk">
+        <h3>B. creator/channel 플랫폼 전환</h3>
+        <p>creator-profile을 적극 키운다. 장기 가능성은 있지만 Stage 0 원칙과 4탭 IA를 흐릴 위험이 크다.</p>
+      </div>
+      <div class="card keep">
+        <h3>C. 실행 도구 중심 + 보조 studio</h3>
+        <p>추천. 개인 실행 도구 중심을 유지하고 creator/studio는 supply/reuse secondary surface로 검증한다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>6. 다음 goal 후보</h2>
+    <p>P16 전체를 바로 밀기보다 P16-01~P16-03을 policy/evidence slice로 묶는다. 이 slice가 끝난 뒤 실제 화면을 보고 P16-04/P16-05 wide layout 투자 여부를 결정한다.</p>
+    <pre>/goal
+D:\flowme2605\flow-mvp 기준으로 진행해줘.
+
+목표:
+Claude Design P16 백로그의 P16-01/P16-02/P16-03을 "creator/studio 정책 검증 slice"로 해결한다. 새 기능을 크게 추가하지 않고, `/u/my-flow-studio`와 `/u/[creator]`를 실제 콘텐츠가 있는 creator-profile 상태로 캡처·스캔해 빈 방 guardrail 0 문제를 닫고, 내 스튜디오/공개 채널/creator-profile의 IA·copy·noindex 정책과 `스튜디오` 진입점 배치를 명확히 한다. 4탭 IA와 개인 실행 도구 중심 방향은 유지하며, creator/studio는 5번째 탭이 아니라 보조 표면으로만 검증한다.
+
+완료 기준:
+- filled creator-profile 390px/1024px screenshot/evidence
+- creator-profile noindex/public policy 명확화
+- studio entry visible/reachable/destination marker 정합
+- normal route guardrail 0, URL-first visible Markdown 0, candidate user copy internal hit 0 유지
+- P16-04/P16-05를 진행해도 되는지 판단</pre>
+  </section>
+
+  <section>
+    <h2>7. 눈검수 질문</h2>
+    <ul>
+      <li>FlowMe가 여전히 외부 콘텐츠를 내 실행 artifact로 바꾸는 도구로 보이는가?</li>
+      <li>My Flow와 Calendar가 saved execution의 중심으로 보이는가?</li>
+      <li>Studio/creator가 보조 표면으로 보이는가, 새 핵심 서비스처럼 보이는가?</li>
+      <li>사용자는 URL을 넣으면 무엇을 얻는지 바로 이해하는가?</li>
+      <li>Export가 부가 기능이 아니라 core value로 보이는가?</li>
+      <li>Guardrail/evidence 수치가 제품 판단을 돕고 있는가, 아니면 수치 자체가 목표가 되고 있는가?</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

@@ -20,6 +20,38 @@ const allblancMorningWorkoutUrl = 'https://www.youtube.com/watch?v=fLLScgWQcHc';
 const allblancNoJumpWorkoutUrl = 'https://www.youtube.com/watch?v=2dail5Imi04';
 const allblancLowerBodyWorkoutUrl = 'https://www.youtube.com/watch?v=UEPkHmW_2FU';
 
+function newCarSourceTrace(stepId: string): string {
+  return `Getcha new car purchase guide ${newCarSourceUrl} - source purchase step: ${stepId}`;
+}
+
+function movingSourceTrace(stepId: string): string {
+  return `AJD moving checklist article ${movingSourceUrl} - curated D-30 moving step: ${stepId}`;
+}
+
+function opicSourceTrace(rowGroup: 'workbook two-week' | 'workbook one-month', stepId: string, rowLabel: string): string {
+  return `Mansour OPIC mock course article ${opicSourceUrl} - ${rowGroup} row: ${stepId} ${rowLabel}`;
+}
+
+function weddingNaverSourceTrace(stepId: string, rowLabel: string): string {
+  return `Naver wedding timeline article ${weddingNaverSourceUrl} - timeline period row: ${stepId} ${rowLabel}`;
+}
+
+function weddingGongysdSourceTrace(stepId: string, rowLabel: string): string {
+  return `Gongysd wedding checklist article ${weddingGongysdSourceUrl} - A-to-Z category row: ${stepId} ${rowLabel}`;
+}
+
+function allblancSourceTrace(videoUrl: string, stepId: string, rowLabel: string): string {
+  return `Allblanc exact video source ${videoUrl} - video row: ${stepId} ${rowLabel}`;
+}
+
+function childVaccinationSourceTrace(stepId: string, rowLabel: string): string {
+  return `KHMS child vaccination official schedule ${vaccinationSourceUrl} - schedule row: ${stepId} ${rowLabel}`;
+}
+
+function funmomSourceTrace(stepId: string, rowLabel: string): string {
+  return `Funmom learning material category park ${funmomSourceUrl} - source row: ${stepId} ${rowLabel}`;
+}
+
 type CuratedFlowSeed = Omit<Flow, 'created_at' | 'updated_at' | 'status' | 'content_type'> &
   Partial<Pick<Flow, 'status' | 'content_type' | 'created_at' | 'updated_at'>>;
 
@@ -41,6 +73,7 @@ type CuratedStep = {
   how: string[];
   doneWhen: string;
   caution?: string;
+  sourceTrace?: string;
 };
 
 function lines(items: string[]): string {
@@ -76,9 +109,10 @@ function bundle(flow: CuratedFlowSeed, sections: FlowBundle['sections'], steps: 
       return item;
     }),
     itemDetails: steps.map((step) => {
+      const why = [step.why, step.sourceTrace ? `sourceTrace: ${step.sourceTrace}` : ''].filter(Boolean).join('\n');
       const detail: FlowItemDetail = {
         item_id: step.id,
-        why: step.why,
+        why,
         how: lines(step.how),
         completion_criteria: step.doneWhen,
         ...(step.caution ? { caution: step.caution } : {}),
@@ -126,10 +160,12 @@ export const curatedSourceBackedFlowMapQualityDecisions: Record<string, SourceBa
     mapId: 'curated-baby-food-meal-log',
     status: 'revise',
     homepageEligible: false,
-    directRouteEnabled: true,
+    directRouteEnabled: false,
     productScore: 5.4,
-    reason: 'The source file columns are useful for a record sheet, but the actual PDF/HWP rows are not fully seeded yet.',
-    nextAction: 'Keep only daily row and cube-stock record fields until each menu row is imported.',
+    reason:
+      'The source file columns are useful for a record sheet, but the actual PDF/HWP rows are not fully seeded yet and the source-traced baby-food-map already owns the same source URL.',
+    nextAction:
+      'Keep this map directly publishable for review, but hold URL lookup until its sourceTrace rows are completed or it is merged into baby-food-map.',
   },
   'curated-reading-routine-log': {
     mapId: 'curated-reading-routine-log',
@@ -396,6 +432,7 @@ export const curatedSourceBackedMyFlowBundles: FlowBundle[] = [
       how: Array.isArray(how) ? how.map(String) : [String(how)],
       doneWhen: `${String(title)} 활동과 반응 메모가 끝났습니다.`,
       sourceUrl: funmomSourceUrl,
+      sourceTrace: funmomSourceTrace(String(id), String(title)),
     })),
   ),
   bundle(
@@ -448,6 +485,7 @@ export const curatedSourceBackedMyFlowBundles: FlowBundle[] = [
       how: how as string[],
       doneWhen: `${String(title)}의 영상 실행과 보완 메모가 끝났습니다.`,
       sourceUrl: opicYoutubeSourceUrl,
+      sourceTrace: opicSourceTrace('workbook two-week', String(id), String(roundLabel)),
     })),
   ),
   bundle(
@@ -491,6 +529,7 @@ export const curatedSourceBackedMyFlowBundles: FlowBundle[] = [
       how: how as string[],
       doneWhen: `${String(title)} 범위의 반복 회차와 휴식이 표시되었습니다.`,
       sourceUrl: opicYoutubeSourceUrl,
+      sourceTrace: opicSourceTrace('workbook one-month', String(id), String(title)),
     })),
   ),
   bundle(
@@ -615,6 +654,7 @@ export const curatedSourceBackedMyFlowBundles: FlowBundle[] = [
       how: how as string[],
       doneWhen: `${String(title)} 기록이 남았습니다.`,
       sourceUrl: readingSourceUrl,
+      sourceTrace: `Naver reading log article ${readingSourceUrl} - monthly four-book reading record step: ${String(title)}`,
     })),
   ),
   bundle(
@@ -658,6 +698,7 @@ export const curatedSourceBackedMyFlowBundles: FlowBundle[] = [
       doneWhen: String(doneWhen),
       caution: '상품 추천, 가격 판단, 법적/재무 판단은 하지 않습니다.',
       sourceUrl: newCarSourceUrl,
+      sourceTrace: newCarSourceTrace(String(id)),
     })),
   ),
   bundle(
@@ -705,6 +746,7 @@ export const curatedSourceBackedMyFlowBundles: FlowBundle[] = [
       doneWhen: `${String(title)} 확인 상태가 기록되었습니다.`,
       caution: '접종 가능 여부와 지연 접종은 의료기관에서 확인합니다.',
       sourceUrl: vaccinationSourceUrl,
+      sourceTrace: childVaccinationSourceTrace(String(id), String(title)),
       linkType: 'official' as const,
     })),
   ),
@@ -751,6 +793,7 @@ export const curatedSourceBackedMyFlowBundles: FlowBundle[] = [
       doneWhen: `${String(title)} 확인 상태가 기록되었습니다.`,
       caution: '접종 가능 여부와 지연 접종은 의료기관에서 확인합니다.',
       sourceUrl: vaccinationSourceUrl,
+      sourceTrace: childVaccinationSourceTrace(String(id), String(title)),
       linkType: 'official' as const,
     })),
   ),
@@ -801,6 +844,7 @@ export const curatedSourceBackedMyFlowBundles: FlowBundle[] = [
       how: how as string[],
       doneWhen: `${String(title)} 상태가 기록되었습니다.`,
       sourceUrl: movingSourceUrl,
+      sourceTrace: movingSourceTrace(String(id)),
     })),
   ),
   bundle(
@@ -845,6 +889,7 @@ export const curatedSourceBackedMyFlowBundles: FlowBundle[] = [
       how: how as string[],
       doneWhen: `${String(title)} 메모가 남았습니다.`,
       sourceUrl: weddingNaverSourceUrl,
+      sourceTrace: weddingNaverSourceTrace(String(id), String(title)),
     })),
   ),
   bundle(
@@ -883,6 +928,7 @@ export const curatedSourceBackedMyFlowBundles: FlowBundle[] = [
       how: how as string[],
       doneWhen: `${String(title)} 상태가 기록되었습니다.`,
       sourceUrl: weddingGongysdSourceUrl,
+      sourceTrace: weddingGongysdSourceTrace(String(id), String(title)),
     })),
   ),
   bundle(
@@ -924,6 +970,7 @@ export const curatedSourceBackedMyFlowBundles: FlowBundle[] = [
         doneWhen: '아침 5분 홈트 완료 또는 중단 상태가 기록되었습니다.',
         caution: '영상에 없는 칼로리, 감량 효과, 운동 처방을 만들지 않습니다.',
         sourceUrl: allblancMorningWorkoutUrl,
+        sourceTrace: allblancSourceTrace(allblancMorningWorkoutUrl, 'allblanc-morning-run', '5 MIN HOME WORKOUT YOU CAN DO EVERY MORNING'),
         linkType: 'creator',
       },
     ],
@@ -967,6 +1014,7 @@ export const curatedSourceBackedMyFlowBundles: FlowBundle[] = [
         doneWhen: '노점프 유산소 완료 또는 중단 상태가 기록되었습니다.',
         caution: '영상에 없는 칼로리, 감량 효과, 운동 처방을 만들지 않습니다.',
         sourceUrl: allblancNoJumpWorkoutUrl,
+        sourceTrace: allblancSourceTrace(allblancNoJumpWorkoutUrl, 'allblanc-no-jump-run', 'NO JUMPING CARDIO WORKOUT'),
         linkType: 'creator',
       },
     ],
@@ -1010,6 +1058,7 @@ export const curatedSourceBackedMyFlowBundles: FlowBundle[] = [
         doneWhen: '하체 홈트 완료 또는 중단 상태가 기록되었습니다.',
         caution: '영상에 없는 칼로리, 감량 효과, 운동 처방을 만들지 않습니다.',
         sourceUrl: allblancLowerBodyWorkoutUrl,
+        sourceTrace: allblancSourceTrace(allblancLowerBodyWorkoutUrl, 'allblanc-lower-body-run', 'Allblanc lower body workout'),
         linkType: 'creator',
       },
     ],

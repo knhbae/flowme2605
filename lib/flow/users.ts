@@ -7,11 +7,11 @@ export const virtualUsers: FlowUser[] = [
   {
     id: CURRENT_USER_ID,
     slug: 'my-flow-studio',
-    name: '내 Flow 스튜디오',
-    role: '실행 콘텐츠 제작자',
-    bio: '공개 Flow를 복사하거나 직접 작성해 내 실행 방식으로 다듬는 현재 사용자입니다.',
+    name: '나의 스튜디오',
+    role: '내가 저장하고 만든 실행 콘텐츠',
+    bio: '저장한 콘텐츠를 내 상황에 맞게 고치고, 다시 쓸 수 있는 실행 콘텐츠로 모아 둡니다.',
     avatar_initial: '나',
-    specialty_tags: ['내 콘텐츠', '복사본', '초안'],
+    specialty_tags: ['내가 만든 콘텐츠', '복사본', '초안'],
     is_current_user: true,
   },
   {

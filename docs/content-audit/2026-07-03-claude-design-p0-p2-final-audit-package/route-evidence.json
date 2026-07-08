@@ -1,0 +1,428 @@
+{
+  "generatedAt": "2026-07-03T15:50:42.086Z",
+  "baseURL": "http://127.0.0.1:3104",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "finding": {
+    "b1Conclusion": "evidence_generation_error",
+    "summary": "The app save loop writes the expected localStorage records and renders saved My Flow/Calendar state. The previous final audit screenshots lost the saved browser context.",
+    "p3_02": "Post-save My Flow and Calendar evidence uses compact action-first copy without repeated saved counts, stale date summaries, selected-date labels, or zero routine counts.",
+    "p3_03": "Public single Flow detail now uses the shared FlowMe app shell, keeps Flow finding active, and keeps mobile export actions separated from the global bottom tabs.",
+    "p3_04": "Special public workbench routes keep the shared FlowMe visual rhythm: warm app background, 16px cards, 12px actions, quiet support cards, and no visible internal operation copy."
+  },
+  "evidence": [
+    {
+      "route": "/",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/01-home-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "activeMobileTab": "홈",
+      "h1": "콘텐츠를 일정과 할 일로 저장",
+      "firstButton": "FLOW",
+      "matchedTerms": [],
+      "visualChecks": {
+        "exportFirstHero": null,
+        "artifactWorkbench": null,
+        "holdSection": null,
+        "artifactListCard": null,
+        "artifactCalendarCard": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": null
+      }
+    },
+    {
+      "route": "/flows",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/02-flows-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "activeMobileTab": "Flow 찾기",
+      "h1": "무엇을 저장할까요?",
+      "firstButton": "FLOW",
+      "matchedTerms": [],
+      "visualChecks": {
+        "exportFirstHero": null,
+        "artifactWorkbench": null,
+        "holdSection": null,
+        "artifactListCard": null,
+        "artifactCalendarCard": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": null
+      }
+    },
+    {
+      "route": "/flow-maps/moving-d30",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/03-flow-map-moving-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "activeMobileTab": "Flow 찾기",
+      "h1": "원룸 이사 D-30 일정 지도",
+      "firstButton": "FLOW",
+      "matchedTerms": [],
+      "visualChecks": {
+        "exportFirstHero": null,
+        "artifactWorkbench": null,
+        "holdSection": null,
+        "artifactListCard": null,
+        "artifactCalendarCard": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": null
+      }
+    },
+    {
+      "route": "/flow-maps/middle-school-math-1",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/04-flow-map-math-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "activeMobileTab": "Flow 찾기",
+      "h1": "중1 수학 목차 진도표",
+      "firstButton": "FLOW",
+      "matchedTerms": [],
+      "visualChecks": {
+        "exportFirstHero": null,
+        "artifactWorkbench": null,
+        "holdSection": null,
+        "artifactListCard": null,
+        "artifactCalendarCard": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": null
+      }
+    },
+    {
+      "route": "/f/vehicle-inspection-prep",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/05-public-vehicle-inspection-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "activeMobileTab": "Flow 찾기",
+      "h1": "자동차검사 D-14 준비 Flow",
+      "firstButton": "FLOW",
+      "matchedTerms": [],
+      "visualChecks": {
+        "exportFirstHero": null,
+        "artifactWorkbench": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "holdSection": null,
+        "artifactListCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(250, 250, 248)"
+        },
+        "artifactCalendarCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        }
+      }
+    },
+    {
+      "route": "/my",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/06-my-empty-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "activeMobileTab": "내 Flow",
+      "h1": "내 Flow",
+      "firstButton": "FLOW",
+      "matchedTerms": [],
+      "visualChecks": {
+        "exportFirstHero": null,
+        "artifactWorkbench": null,
+        "holdSection": null,
+        "artifactListCard": null,
+        "artifactCalendarCard": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": null
+      }
+    },
+    {
+      "route": "/f/moving-d30-basic",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/09-public-moving-basic-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "activeMobileTab": "Flow 찾기",
+      "h1": "이사 D-30 준비 Flow",
+      "firstButton": "FLOW",
+      "matchedTerms": [],
+      "visualChecks": {
+        "exportFirstHero": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "artifactWorkbench": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "holdSection": null,
+        "artifactListCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(250, 250, 248)"
+        },
+        "artifactCalendarCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        }
+      }
+    },
+    {
+      "route": "/f/computer-skills-d30-study",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/10-public-computer-skills-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "activeMobileTab": "Flow 찾기",
+      "h1": "컴퓨터활용능력 D-30 학습 Flow",
+      "firstButton": "FLOW",
+      "matchedTerms": [],
+      "visualChecks": {
+        "exportFirstHero": null,
+        "artifactWorkbench": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "holdSection": null,
+        "artifactListCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(250, 250, 248)"
+        },
+        "artifactCalendarCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        }
+      }
+    },
+    {
+      "route": "/f/new-car-delivery-check",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/11-public-new-car-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "activeMobileTab": "Flow 찾기",
+      "h1": "신차 인수 점검 Flow",
+      "firstButton": "FLOW",
+      "matchedTerms": [],
+      "visualChecks": {
+        "exportFirstHero": null,
+        "artifactWorkbench": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "holdSection": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 245, 242)"
+        },
+        "artifactListCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(250, 250, 248)"
+        },
+        "artifactCalendarCard": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        }
+      }
+    },
+    {
+      "route": "/f/used-car-buying-check",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/12-public-used-car-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "activeMobileTab": "Flow 찾기",
+      "h1": "중고차 구매 현장 점검 Flow",
+      "firstButton": "FLOW",
+      "matchedTerms": [],
+      "visualChecks": {
+        "exportFirstHero": null,
+        "artifactWorkbench": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "holdSection": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 245, 242)"
+        },
+        "artifactListCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(250, 250, 248)"
+        },
+        "artifactCalendarCard": null,
+        "usedCarSourceBridge": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(250, 250, 248)"
+        },
+        "usedCarDecisionResultCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 247, 232)"
+        },
+        "mobileExportBar": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        }
+      }
+    },
+    {
+      "route": "/my?savedMap=moving-d30",
+      "state": "after saving moving-d30 with 2026-07-22",
+      "screenshot": "screenshots/07-post-save-my-flow-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "activeMobileTab": "내 Flow",
+      "h1": "내 Flow",
+      "firstButton": "FLOW",
+      "matchedTerms": [],
+      "visualChecks": {
+        "exportFirstHero": null,
+        "artifactWorkbench": null,
+        "holdSection": null,
+        "artifactListCard": null,
+        "artifactCalendarCard": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": null
+      },
+      "postSaveChecks": {
+        "storageKeysAfterSave": [
+          "flow:map:persistence:moving-d30",
+          "flow:map:saved:moving-d30",
+          "flow:meta:last-visit",
+          "flow:saved:source-backed-moving-d30",
+          "flow_builder_mvp_bundles_v11"
+        ],
+        "hasPostSavePanel": true,
+        "hasFirstTask": true,
+        "hasTrueEmptyState": false,
+        "hasCompactPostSavePanel": true
+      }
+    },
+    {
+      "route": "/calendar",
+      "state": "after saving moving-d30 with 2026-07-22",
+      "screenshot": "screenshots/08-calendar-after-save-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "activeMobileTab": "캘린더",
+      "h1": "캘린더",
+      "firstButton": "FLOW",
+      "matchedTerms": [],
+      "visualChecks": {
+        "exportFirstHero": null,
+        "artifactWorkbench": null,
+        "holdSection": null,
+        "artifactListCard": null,
+        "artifactCalendarCard": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": null
+      },
+      "postSaveChecks": {
+        "hasCalendarCard": true,
+        "hasAgenda": true,
+        "hasTrueEmptyState": false,
+        "hasCompactAgendaHeader": true
+      }
+    }
+  ]
+}

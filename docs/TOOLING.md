@@ -63,6 +63,25 @@ Before starting non-trivial work, answer:
 | PR conflict, CI, or review response | GitHub/gh inspection plus the failing check reproduced or explained |
 | Deployment or shareable preview | Build and preview/deploy verification; label it QA evidence unless observed users validated it |
 
+## Automation Gates
+
+Use repository-level automation before tool-specific runtime hooks.
+
+| Gate | Scope | Command |
+|------|-------|---------|
+| Local pre-commit hook | Fast docs and skill drift check before each commit | `npm run docs:check` |
+| Local pre-push hook | Core code confidence before publishing a branch | `npm run verify` |
+| GitHub CI core job | Pull requests and pushes to `main` | `npm run verify` |
+| GitHub CI E2E job | Pull requests and pushes to `main` | `npm run build`, `npx playwright install --with-deps chromium`, `npm run test:e2e` |
+
+Install local Git hooks with:
+
+```powershell
+npm run hooks:install
+```
+
+The hooks use native Git `core.hooksPath` and do not add a package dependency. Use `FLOW_SKIP_HOOKS=1` only for emergency bypasses, and record why verification was skipped.
+
 ## Related Documents
 
 - [Tooling/plugin review](./content-audit/2026-07-02-tooling-plugin-review-ko.html)

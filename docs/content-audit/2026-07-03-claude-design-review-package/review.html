@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe UX/UI 2차 개선 검토 패키지</title>
+  <style>
+    :root {
+      --bg: #fafaf8;
+      --paper: #ffffff;
+      --ink: #1b1a17;
+      --muted: #6e6b64;
+      --line: #e7e4dd;
+      --blue: #3654ff;
+      --green: #1f8a5b;
+      --red: #d6462e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      line-height: 1.55;
+    }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 40px 24px 72px;
+    }
+    header {
+      margin-bottom: 28px;
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    h1 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+    h2 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      line-height: 1.3;
+    }
+    h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      line-height: 1.35;
+    }
+    p { margin: 0; }
+    .intro {
+      max-width: 760px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+    .section {
+      margin-top: 28px;
+      padding: 20px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+    }
+    .note {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #f3f1ec;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .screens {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      align-items: start;
+    }
+    figure {
+      margin: 0;
+      padding: 14px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(27, 26, 23, 0.05);
+    }
+    figure img {
+      display: block;
+      width: 100%;
+      max-width: 390px;
+      margin: 0 auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    figcaption {
+      margin-top: 12px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .caption-title {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+      font-weight: 700;
+    }
+    ul {
+      margin: 10px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+    li + li { margin-top: 4px; }
+    .tagrow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #eef1ff;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    code {
+      padding: 1px 5px;
+      border-radius: 5px;
+      background: #f3f1ec;
+      color: var(--ink);
+    }
+    @media (max-width: 640px) {
+      main { padding: 28px 16px 56px; }
+      h1 { font-size: 28px; }
+      .section { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">FlowMe UX/UI 2차 개선 검토 패키지</p>
+      <h1>Flow를 찾고, 저장하고, 첫 할 일을 여는 경험 검토</h1>
+      <p class="intro">
+        Vercel 링크 접속이 어려운 상황을 대비해 실제 390px 모바일 화면을 첨부합니다.
+        이 패키지는 디자인 검토용이며, 구현 검증은 별도 로컬 자동 테스트로 통과했습니다.
+      </p>
+      <div class="tagrow">
+        <span class="tag">모바일 390px</span>
+        <span class="tag">Flow 찾기</span>
+        <span class="tag">공개 Flow 상세</span>
+        <span class="tag">저장 후 My Flow</span>
+        <span class="tag">Export 라벨</span>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2>서비스 전제</h2>
+      <div class="grid">
+        <div class="note">FlowMe는 설명형 콘텐츠 사이트가 아니라, 콘텐츠를 일정/체크/시트/메모로 저장하고 실행하는 앱입니다.</div>
+        <div class="note">4탭 IA는 유지합니다: 홈 / Flow 찾기 / 캘린더 / 내 Flow.</div>
+        <div class="note">사용자는 Flow/Step/Item 같은 내부 모델을 몰라도 써야 합니다.</div>
+        <div class="note">원문/source/detail/memo는 필요할 때 확인 가능해야 하지만 첫 화면을 방해하면 안 됩니다.</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>이번 개선 내용</h2>
+      <ul>
+        <li><code>/flows</code> 카드의 badge와 metadata를 줄이고, 제목 -> 입력/결과 -> 먼저 할 일 -> CTA 위계로 정리했습니다.</li>
+        <li><code>/f/[slug]</code> 상단에 입력값, 저장 결과, 먼저 할 일을 추가했습니다.</li>
+        <li>source 영역은 "원문과 근거" 접힘 구조로 낮췄습니다.</li>
+        <li>저장 후 My Flow는 "저장됨" 상태보다 첫 할 일을 먼저 보이게 했습니다.</li>
+        <li>export 라벨을 "캘린더 파일 받기 / 시트로 받기 / 메모로 복사"처럼 결과 중심으로 맞췄습니다.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>검토 요청</h2>
+      <ul>
+        <li>현재 화면이 상용 실행 앱처럼 보이는지 평가해주세요.</li>
+        <li>여전히 설명형/기획서형으로 보이는 부분을 찾아주세요.</li>
+        <li>카드 정보량이 아직 많은지, 더 줄이거나 접어야 할 항목을 제안해주세요.</li>
+        <li>공개 Flow 상세 상단에서 "무엇을 넣으면 무엇이 생기는지"가 충분히 보이는지 봐주세요.</li>
+        <li>저장 후 My Flow에서 첫 사용자가 다음 행동을 바로 이해하는지 봐주세요.</li>
+        <li>Blocking / High / Medium / Low로 나누고, 문제 / 이유 / 수정 방향 / 기대 효과를 적어주세요.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>모바일 화면</h2>
+      <div class="screens">
+        <figure>
+          <img src="screenshots/01-flows-mobile.png" alt="Flow 찾기 모바일 화면" />
+          <figcaption>
+            <span class="caption-title">01. Flow 찾기</span>
+            카드 상단 metadata를 조용한 한 줄로 낮추고, 제목 / 입력-결과 / 먼저 할 일 / CTA 흐름을 유지했습니다.
+          </figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/02-public-jeonse-mobile.png" alt="전세계약 공개 Flow 상세 모바일 화면" />
+          <figcaption>
+            <span class="caption-title">02. 공개 Flow 상세 - 전세계약</span>
+            compact 상세에서도 계약 예정일 입력, 저장 결과, 먼저 할 일을 상단에 보이게 했습니다.
+          </figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/03-public-moving-mobile.png" alt="이사 D-30 공개 Flow 상세 모바일 화면" />
+          <figcaption>
+            <span class="caption-title">03. 공개 Flow 상세 - 이사 D-30</span>
+            입력, 저장 결과, 먼저 할 일 3개 박스를 상단에 배치했습니다. 아래에는 export-first preview가 이어집니다.
+          </figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/04-post-save-my-flow-mobile.png" alt="저장 후 My Flow 모바일 화면" />
+          <figcaption>
+            <span class="caption-title">04. 저장 후 My Flow</span>
+            저장 완료를 상태칩으로 낮추고, 첫 할 일과 "먼저 할 일 열기"를 주 행동으로 올렸습니다.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

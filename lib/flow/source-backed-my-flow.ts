@@ -121,6 +121,14 @@ export type SourceBackedFlowMapSavedSnapshot = {
   stepCountsByFlow: Record<string, number>;
   riskLevelsByFlow: Record<string, RiskLevel | undefined>;
   sourceCheckedAtByFlow: Record<string, string | undefined>;
+  personalCopy?: SourceBackedFlowMapPersonalCopy;
+};
+
+export type SourceBackedFlowMapPersonalCopy = {
+  source: 'url_first_custom_start';
+  originalTitle?: string;
+  includedStepIdsByFlow: Record<string, string[]>;
+  excludedStepIdsByFlow: Record<string, string[]>;
 };
 
 export type SourceBackedFlowMapStepBinding = {
@@ -178,6 +186,12 @@ export type SourceBackedFlowMapPersistenceRecord = {
   };
   childFlows: SourceBackedFlowMapChildBinding[];
   updateAssessment: SourceBackedFlowMapUpdateAssessment;
+  personalCopy?: SourceBackedFlowMapPersonalCopy;
+};
+
+export type SourceBackedFlowMapPersonalCopyAdjustment = {
+  snapshot: SourceBackedFlowMapSavedSnapshot;
+  persistenceRecord: SourceBackedFlowMapPersistenceRecord;
 };
 
 export type SourceBackedFlowMapUpdateAssessment = {
@@ -266,6 +280,49 @@ export type SourceBackedFlowMapPublishPackage = {
     savedSlugs: string[];
     visibleTabs: string[];
   };
+};
+
+export const SOURCE_BACKED_MANUAL_REGISTRATION_CHECKLIST = [
+  'canonical URL: normalize the production lookup key before adding a Flow.',
+  'original/source URL: preserve the exact pasted source URL separately from the canonical key.',
+  'sourceTrace: every executable Step must keep the source row/section evidence, not just a generic source link.',
+  'Step split: split only source-backed actions that a user can actually do, copy, or schedule.',
+  'date/relative/repeat: record absolute dates, anchor offsets, date windows, and repeat rules explicitly.',
+  'risk/sensitive/execution blocker: reject or hold unsafe, sensitive, one-off, or non-executable content.',
+  'quality decision: directRouteEnabled is required for URL lookup; reject always blocks a hit.',
+];
+
+export type SourceBackedManualRegistrationIssueCode =
+  | 'duplicate_canonical_source_url'
+  | 'empty_registered_steps'
+  | 'missing_source_trace'
+  | 'missing_source_url';
+
+export type SourceBackedManualRegistrationIssue = {
+  code: SourceBackedManualRegistrationIssueCode;
+  severity: 'error' | 'warning';
+  message: string;
+  mapIds: string[];
+  flowSlugs?: string[];
+  stepIds?: string[];
+};
+
+export type SourceBackedManualRegistrationReadinessReport = {
+  checklist: string[];
+  lookupableMapIds: string[];
+  blockedMapIds: string[];
+  issues: SourceBackedManualRegistrationIssue[];
+};
+
+export type SourceBackedManualRegistrationReadinessOptions = {
+  maps?: SourceBackedMyFlowMap[];
+  bundles?: FlowBundle[];
+  decisions?: Record<string, SourceBackedFlowMapQualityDecision>;
+};
+
+export type UrlFirstLookupableSourceBackedFlowMapOptions = {
+  maps?: SourceBackedMyFlowMap[];
+  decisions?: Record<string, SourceBackedFlowMapQualityDecision>;
 };
 
 export const sourceBackedFlowMapQualityDecisions: Record<string, SourceBackedFlowMapQualityDecision> = {
@@ -363,38 +420,54 @@ const babyHealthCheckupInfoUrl =
 const babyVaccinationScheduleUrl = 'https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&menuLv=1';
 const babyVaccinationLookupUrl = 'https://nip.kdca.go.kr/irhp/mngm/goVcntMngm.do?menuCd=313&menuLv=3';
 
+function movingSourceTrace(stepId: string): string {
+  return `sourceTrace: AJD moving checklist article ${movingSourceUrl} - ${stepId}`;
+}
+
+function mathSourceTrace(stepId: string, orderLabel: string): string {
+  return `sourceTrace: Mathbang middle-school math table of contents ${mathSourceUrl} - ${orderLabel} ${stepId}`;
+}
+
+function babyHealthCheckupSourceTrace(stepId: string, period: string): string {
+  return `sourceTrace: EasyLaw infant health checkup official schedule ${babyHealthCheckupSourceUrl} - checkup row: ${stepId} ${period}`;
+}
+
+function babyVaccinationSourceTrace(stepId: string, period: string): string {
+  return `sourceTrace: KDCA child vaccination official schedule ${babyVaccinationScheduleUrl} - vaccination row: ${stepId} ${period}`;
+}
+
 const movingDetails: Record<string, FlowItemDetail> = {
   'moving-method-quotes': {
     item_id: 'moving-method-quotes',
-    why: '짐 양과 예산에 맞는 이사 방식을 먼저 정해야 견적 비교가 가능합니다.',
+    why: ['짐 양과 예산에 맞는 이사 방식을 먼저 정해야 견적 비교가 가능합니다.', movingSourceTrace('moving-method-quotes')].join('\n'),
     how: ['이사 방식 1개를 정합니다.', '견적 후보 2-3곳을 열고 연락처를 메모합니다.', '포함 범위와 예상 비용을 짧게 남깁니다.'].map((item) => `- ${item}`).join('\n'),
     completion_criteria: '견적 후보 2-3곳과 연락처, 비용 범위가 메모됐습니다.',
     links: [{ label: 'AJD 이사 준비 체크리스트', url: movingSourceUrl, type: 'reference' }],
   },
   'moving-cleaning-waste': {
     item_id: 'moving-cleaning-waste',
-    why: '입주청소와 대형폐기물은 예약/수거일이 이사일과 충돌할 수 있습니다.',
+    why: ['입주청소와 대형폐기물은 예약/수거일이 이사일과 충돌할 수 있습니다.', movingSourceTrace('moving-cleaning-waste')].join('\n'),
     how: ['입주청소가 필요하면 예약 가능일을 확인합니다.', '대형폐기물 신고 가능 품목과 수거일을 확인합니다.', '예약처와 신고 번호를 메모합니다.'].map((item) => `- ${item}`).join('\n'),
     completion_criteria: '예약일, 수거일, 신고 번호가 메모됐습니다.',
     links: [{ label: 'AJD 이사 준비 체크리스트', url: movingSourceUrl, type: 'reference' }],
   },
   'moving-address-admin': {
     item_id: 'moving-address-admin',
-    why: '주소 변경과 관리사무소 공유는 이사 당일 동선과 우편물 누락을 줄입니다.',
+    why: ['주소 변경과 관리사무소 공유는 이사 당일 동선과 우편물 누락을 줄입니다.', movingSourceTrace('moving-address-admin')].join('\n'),
     how: ['관리사무소에 이사 시간과 차량 동선을 공유합니다.', '자주 쓰는 배송 계정 주소 변경 대상을 확인합니다.', '우편물 주소 변경이 필요한 곳을 메모합니다.'].map((item) => `- ${item}`).join('\n'),
     completion_criteria: '관리사무소 공유와 주소 변경 대상 메모가 끝났습니다.',
     links: [{ label: 'AJD 이사 준비 체크리스트', url: movingSourceUrl, type: 'reference' }],
   },
   'moving-meter-photos': {
     item_id: 'moving-meter-photos',
-    why: '계량기와 집 상태 사진은 정산과 하자 확인 때 다시 볼 근거가 됩니다.',
+    why: ['계량기와 집 상태 사진은 정산과 하자 확인 때 다시 볼 근거가 됩니다.', movingSourceTrace('moving-meter-photos')].join('\n'),
     how: ['전기, 가스, 수도 계량기를 촬영합니다.', '현관, 욕실, 창문, 콘센트 주변 상태를 촬영합니다.', '사진 위치나 공유 여부만 짧게 메모합니다.'].map((item) => `- ${item}`).join('\n'),
     completion_criteria: '계량기와 주요 공간 사진 위치가 메모됐습니다.',
     links: [{ label: 'AJD 이사 준비 체크리스트', url: movingSourceUrl, type: 'reference' }],
   },
   'moving-move-day-admin': {
     item_id: 'moving-move-day-admin',
-    why: '이사 당일 처리해야 하는 행정/정산 항목은 놓치면 다시 확인해야 합니다.',
+    why: ['이사 당일 처리해야 하는 행정/정산 항목은 놓치면 다시 확인해야 합니다.', movingSourceTrace('moving-move-day-admin')].join('\n'),
     how: ['잔금/정산 확인 내용을 메모합니다.', '전입신고와 확정일자 확인 필요 여부를 체크합니다.', '처리 결과나 다시 볼 링크만 남깁니다.'].map((item) => `- ${item}`).join('\n'),
     completion_criteria: '정산 메모와 행정 확인 결과가 남았습니다.',
     links: [
@@ -544,7 +617,10 @@ const mathDetails: Record<string, FlowItemDetail> = Object.fromEntries(
     unit.id,
     {
       item_id: unit.id,
-      why: `원문 목차의 ${unit.orderLabel} ${unit.title} 단원입니다. 하위 개념 ${unit.concepts.length}개를 읽은 만큼 체크합니다.`,
+      why: [
+        `원문 목차의 ${unit.orderLabel} ${unit.title} 단원입니다. 하위 개념 ${unit.concepts.length}개를 읽은 만큼 체크합니다.`,
+        mathSourceTrace(unit.id, unit.orderLabel),
+      ].join('\n'),
       how: unit.concepts.map((concept) => `- ${concept}`).join('\n'),
       completion_criteria: '이 단원의 하위 개념을 확인했고, 다시 볼 개념이 있으면 메모했습니다.',
       links: [{ label: 'Mathbang 중1 수학 목차에서 보기', url: mathSourceUrl, type: 'reference' }],
@@ -581,7 +657,10 @@ const healthCheckupDetails: Record<string, FlowItemDetail> = Object.fromEntries(
     window.id,
     {
       item_id: window.id,
-      why: `${window.period}에 해당하는 ${window.title} 기간을 놓치지 않기 위한 공식 일정 항목입니다.`,
+      why: [
+        `${window.period}에 해당하는 ${window.title} 기간을 놓치지 않기 위한 공식 일정 항목입니다.`,
+        babyHealthCheckupSourceTrace(window.id, window.period),
+      ].join('\n'),
       how: [
         `${window.title} 대상 기간이 ${window.period}인지 공식 안내에서 확인합니다.`,
         `${window.memoFocus}만 짧게 남깁니다.`,
@@ -602,7 +681,10 @@ const vaccinationDetails: Record<string, FlowItemDetail> = Object.fromEntries(
     window.id,
     {
       item_id: window.id,
-      why: `${window.period}에 아이 표준예방접종일을 공식 조회하기 위한 일정 항목입니다.`,
+      why: [
+        `${window.period}에 아이 표준예방접종일을 공식 조회하기 위한 일정 항목입니다.`,
+        babyVaccinationSourceTrace(window.id, window.period),
+      ].join('\n'),
       how: [
         '예방접종도우미에서 아이 생년월일 기준 표준예방접종일을 확인합니다.',
         '접종기관, 예약 여부, 예진표 작성 여부만 메모합니다.',
@@ -941,6 +1023,194 @@ export function getCuratedSourceAppSeedFlowMaps(): SourceBackedMyFlowMap[] {
   return sourceBackedMyFlowMaps.filter((map) => Boolean(map.recommendedFlowSlug && map.userFacingStatus && map.counts));
 }
 
+function getSourceBackedQualityDecisionForRegistration(
+  mapId: string,
+  decisions?: Record<string, SourceBackedFlowMapQualityDecision>,
+): SourceBackedFlowMapQualityDecision {
+  return decisions?.[mapId] ?? getSourceBackedFlowMapQualityDecision(mapId);
+}
+
+export function isUrlFirstLookupableSourceBackedFlowMap(
+  map: SourceBackedMyFlowMap,
+  options: { decisions?: Record<string, SourceBackedFlowMapQualityDecision> } = {},
+): boolean {
+  const decision = getSourceBackedQualityDecisionForRegistration(map.id, options.decisions);
+  return Boolean(map.sourceUrl?.trim()) && decision.directRouteEnabled && decision.status !== 'reject';
+}
+
+export function getUrlFirstLookupableSourceBackedFlowMaps(
+  options: UrlFirstLookupableSourceBackedFlowMapOptions = {},
+): SourceBackedMyFlowMap[] {
+  const maps = options.maps ?? sourceBackedMyFlowMaps;
+  return maps.filter((map) => isUrlFirstLookupableSourceBackedFlowMap(map, { decisions: options.decisions }));
+}
+
+export function assessSourceBackedManualRegistrationReadiness(
+  options: SourceBackedManualRegistrationReadinessOptions = {},
+): SourceBackedManualRegistrationReadinessReport {
+  const maps = options.maps ?? sourceBackedMyFlowMaps;
+  const bundles = options.bundles ?? sourceBackedMyFlowBundles;
+  const bundleBySlug = new Map(bundles.map((bundle) => [bundle.flow.slug, bundle]));
+  const issues: SourceBackedManualRegistrationIssue[] = [];
+
+  const lookupableMaps = getUrlFirstLookupableSourceBackedFlowMaps({
+    maps,
+    decisions: options.decisions,
+  });
+  const sourceUrlGroups = new Map<string, SourceBackedMyFlowMap[]>();
+
+  for (const map of lookupableMaps) {
+    const canonicalUrl = canonicalizeManualRegistrationSourceUrl(map.sourceUrl);
+    const group = sourceUrlGroups.get(canonicalUrl) ?? [];
+    group.push(map);
+    sourceUrlGroups.set(canonicalUrl, group);
+  }
+
+  for (const duplicateMaps of sourceUrlGroups.values()) {
+    if (duplicateMaps.length < 2) continue;
+    issues.push({
+      code: 'duplicate_canonical_source_url',
+      severity: 'error',
+      message: 'Multiple URL-first source-backed maps share the same canonical source URL.',
+      mapIds: uniqueStrings(duplicateMaps.map((map) => map.id)),
+    });
+  }
+
+  for (const map of maps) {
+    const decision = getSourceBackedQualityDecisionForRegistration(map.id, options.decisions);
+    const shouldBeLookupable = decision.directRouteEnabled && decision.status !== 'reject';
+    const childBundles = map.flowSlugs.map((slug) => bundleBySlug.get(slug)).filter((bundle): bundle is FlowBundle => Boolean(bundle));
+    const childStepCount = childBundles.reduce((sum, bundle) => sum + bundle.items.length, 0);
+
+    if (shouldBeLookupable && !map.sourceUrl?.trim()) {
+      issues.push({
+        code: 'missing_source_url',
+        severity: 'error',
+        message: 'directRouteEnabled source-backed maps need a sourceUrl before URL lookup can hit them.',
+        mapIds: [map.id],
+      });
+    }
+
+    if (shouldBeLookupable && childStepCount === 0) {
+      issues.push({
+        code: 'empty_registered_steps',
+        severity: 'error',
+        message: 'A source-backed Flow must contain at least one executable Step before registration.',
+        mapIds: [map.id],
+        flowSlugs: map.flowSlugs,
+      });
+    }
+
+    const missingSourceTraceSteps = childBundles.flatMap((bundle) =>
+      bundle.items.flatMap((item) => {
+        const detail = getItemDetail(bundle, item.id);
+        return hasManualRegistrationSourceTrace(detail) ? [] : [item.id];
+      }),
+    );
+
+    if (shouldBeLookupable && missingSourceTraceSteps.length > 0) {
+      issues.push({
+        code: 'missing_source_trace',
+        severity: 'error',
+        message: 'Every executable Step needs sourceTrace evidence before source-backed registration.',
+        mapIds: [map.id],
+        flowSlugs: childBundles.map((bundle) => bundle.flow.slug),
+        stepIds: missingSourceTraceSteps,
+      });
+    }
+  }
+
+  const blockedMapIds = uniqueStrings(issues.flatMap((issue) => issue.mapIds));
+
+  return {
+    checklist: [...SOURCE_BACKED_MANUAL_REGISTRATION_CHECKLIST],
+    lookupableMapIds: lookupableMaps.map((map) => map.id),
+    blockedMapIds,
+    issues: collapseManualRegistrationIssues(issues),
+  };
+}
+
+export function canonicalizeManualRegistrationSourceUrl(sourceUrl: string): string {
+  const trimmed = sourceUrl.trim();
+  if (!trimmed) return '';
+
+  try {
+    const url = new URL(trimmed);
+    url.hash = '';
+    url.hostname = url.hostname.toLowerCase();
+
+    for (const key of [...url.searchParams.keys()]) {
+      if (/^utm_/i.test(key) || ['fbclid', 'gclid'].includes(key.toLowerCase())) {
+        url.searchParams.delete(key);
+      }
+    }
+
+    const sortedParams = [...url.searchParams.entries()].sort(([left], [right]) => left.localeCompare(right));
+    url.search = '';
+    for (const [key, value] of sortedParams) {
+      url.searchParams.append(key, value);
+    }
+
+    if (url.pathname.length > 1) {
+      url.pathname = url.pathname.replace(/\/+$/, '');
+    }
+
+    return url.toString();
+  } catch {
+    return trimmed;
+  }
+}
+
+function hasManualRegistrationSourceTrace(detail?: FlowItemDetail): boolean {
+  const text = [detail?.why, detail?.how, detail?.caution].filter(Boolean).join('\n');
+  return /(^|\n)\s*(sourceTrace|source trace|원문 근거)\s*[:：]/i.test(text);
+}
+
+function uniqueStrings(items: string[]): string[] {
+  return [...new Set(items)];
+}
+
+function collapseManualRegistrationIssues(
+  issues: SourceBackedManualRegistrationIssue[],
+): SourceBackedManualRegistrationIssue[] {
+  const grouped = new Map<SourceBackedManualRegistrationIssueCode, SourceBackedManualRegistrationIssue>();
+
+  for (const issue of issues) {
+    const current = grouped.get(issue.code);
+    if (!current) {
+      grouped.set(issue.code, normalizeManualRegistrationIssue(issue));
+      continue;
+    }
+
+    grouped.set(issue.code, normalizeManualRegistrationIssue({
+      code: current.code,
+      severity: current.severity,
+      message: current.message,
+      mapIds: uniqueStrings([...current.mapIds, ...issue.mapIds]),
+      flowSlugs: uniqueStrings([...(current.flowSlugs ?? []), ...(issue.flowSlugs ?? [])]),
+      stepIds: uniqueStrings([...(current.stepIds ?? []), ...(issue.stepIds ?? [])]),
+    }));
+  }
+
+  return [...grouped.values()];
+}
+
+function normalizeManualRegistrationIssue(
+  issue: SourceBackedManualRegistrationIssue,
+): SourceBackedManualRegistrationIssue {
+  const normalized: SourceBackedManualRegistrationIssue = {
+    code: issue.code,
+    severity: issue.severity,
+    message: issue.message,
+    mapIds: uniqueStrings(issue.mapIds),
+  };
+  const flowSlugs = issue.flowSlugs ? uniqueStrings(issue.flowSlugs) : [];
+  const stepIds = issue.stepIds ? uniqueStrings(issue.stepIds) : [];
+  if (flowSlugs.length > 0) normalized.flowSlugs = flowSlugs;
+  if (stepIds.length > 0) normalized.stepIds = stepIds;
+  return normalized;
+}
+
 export function buildSourceBackedFlowMapSavedSnapshot(
   mapId: string,
   options: { savedAt?: string; anchor?: string } = {},
@@ -964,6 +1234,117 @@ export function buildSourceBackedFlowMapSavedSnapshot(
     riskLevelsByFlow,
     sourceCheckedAtByFlow,
   };
+}
+
+function pickSourceBackedRecordValues<T>(record: Record<string, T>, keys: string[]): Record<string, T> {
+  return Object.fromEntries(keys.flatMap((key) => (key in record ? [[key, record[key]]] : [])));
+}
+
+function projectSourceBackedSnapshotForPersonalCopy(
+  snapshot: SourceBackedFlowMapSavedSnapshot,
+  personalCopy?: SourceBackedFlowMapPersonalCopy,
+  options: { title?: string } = {},
+): SourceBackedFlowMapSavedSnapshot {
+  if (!personalCopy) return options.title ? { ...snapshot, title: options.title } : snapshot;
+
+  const publishPackage = buildSourceBackedFlowMapPublishPackage(snapshot.mapId);
+  if (!publishPackage) {
+    return {
+      ...snapshot,
+      title: options.title ?? snapshot.title,
+      personalCopy,
+    };
+  }
+
+  const selectedFlowSlugs: string[] = [];
+  const stepCountsByFlow: Record<string, number> = {};
+  const includedStepIdsByFlow: Record<string, string[]> = {};
+  const excludedStepIdsByFlow: Record<string, string[]> = {};
+
+  publishPackage.public.childFlows.forEach((flow) => {
+    const currentStepIds = flow.steps.map((step) => step.id);
+    const currentStepIdSet = new Set(currentStepIds);
+    const includedStepIds = (personalCopy.includedStepIdsByFlow[flow.slug] ?? [])
+      .filter((stepId) => currentStepIdSet.has(stepId));
+    const excludedStepIds = currentStepIds.filter((stepId) => !includedStepIds.includes(stepId));
+
+    if (includedStepIds.length === 0) return;
+    selectedFlowSlugs.push(flow.slug);
+    stepCountsByFlow[flow.slug] = includedStepIds.length;
+    includedStepIdsByFlow[flow.slug] = includedStepIds;
+    excludedStepIdsByFlow[flow.slug] = excludedStepIds;
+  });
+
+  return {
+    ...snapshot,
+    title: options.title ?? snapshot.title,
+    flowSlugs: selectedFlowSlugs,
+    stepCountsByFlow,
+    riskLevelsByFlow: pickSourceBackedRecordValues(snapshot.riskLevelsByFlow, selectedFlowSlugs),
+    sourceCheckedAtByFlow: pickSourceBackedRecordValues(snapshot.sourceCheckedAtByFlow, selectedFlowSlugs),
+    personalCopy: {
+      ...personalCopy,
+      includedStepIdsByFlow,
+      excludedStepIdsByFlow,
+    },
+  };
+}
+
+function projectSourceBackedPersistenceRecordForPersonalCopy(
+  record: SourceBackedFlowMapPersistenceRecord,
+  personalCopy?: SourceBackedFlowMapPersonalCopy,
+  options: { title?: string } = {},
+): SourceBackedFlowMapPersistenceRecord {
+  if (!personalCopy) {
+    return options.title
+      ? {
+          ...record,
+          map: {
+            ...record.map,
+            title: options.title,
+          },
+        }
+      : record;
+  }
+
+  const childFlows = record.childFlows
+    .map((child) => {
+      const includedStepIds = new Set(personalCopy.includedStepIdsByFlow[child.slug] ?? []);
+      const steps = child.steps.filter((step) => includedStepIds.has(step.stepId));
+      return {
+        ...child,
+        stepCount: steps.length,
+        itemFallbackCount: steps.reduce((total, step) => total + (step.textFallback.items?.length ?? 0), 0),
+        stepIds: steps.map((step) => step.stepId),
+        steps,
+      };
+    })
+    .filter((child) => child.steps.length > 0);
+
+  return {
+    ...record,
+    map: {
+      ...record.map,
+      title: options.title ?? record.map.title,
+    },
+    childFlows,
+    personalCopy,
+  };
+}
+
+export function buildSourceBackedFlowMapSavedSnapshotUpdate(
+  saved: SourceBackedFlowMapSavedSnapshot,
+  options: { savedAt?: string; anchor?: string } = {},
+): SourceBackedFlowMapSavedSnapshot | undefined {
+  const current = buildSourceBackedFlowMapSavedSnapshot(saved.mapId, {
+    savedAt: options.savedAt,
+    anchor: options.anchor ?? saved.anchor,
+  });
+  if (!current) return undefined;
+
+  return projectSourceBackedSnapshotForPersonalCopy(current, saved.personalCopy, {
+    title: saved.personalCopy ? saved.title : current.title,
+  });
 }
 
 export function buildSourceBackedFlowMapPersistenceRecord(
@@ -1044,12 +1425,73 @@ export function buildSourceBackedFlowMapPersistenceRecord(
   };
 }
 
+export function buildSourceBackedFlowMapPersistenceRecordUpdate(
+  saved: SourceBackedFlowMapSavedSnapshot,
+  options: { savedAt?: string; anchor?: string } = {},
+): SourceBackedFlowMapPersistenceRecord | undefined {
+  const record = buildSourceBackedFlowMapPersistenceRecord(saved.mapId, {
+    savedAt: options.savedAt,
+    anchor: options.anchor ?? saved.anchor,
+  });
+  if (!record) return undefined;
+
+  return projectSourceBackedPersistenceRecordForPersonalCopy(record, saved.personalCopy, {
+    title: saved.personalCopy ? saved.title : record.map.title,
+  });
+}
+
+export function buildSourceBackedFlowMapPersonalCopyAdjustment(
+  saved: SourceBackedFlowMapSavedSnapshot,
+  options: {
+    title?: string;
+    anchor?: string;
+    savedAt?: string;
+    includedStepIdsByFlow: Record<string, string[]>;
+  },
+): SourceBackedFlowMapPersonalCopyAdjustment | undefined {
+  if (!saved.personalCopy) return undefined;
+
+  const hasAnchorOption = Object.prototype.hasOwnProperty.call(options, 'anchor');
+  const nextTitle = options.title?.trim() || saved.title;
+  const nextAnchor = hasAnchorOption ? options.anchor?.trim() : saved.anchor;
+  const draft: SourceBackedFlowMapSavedSnapshot = {
+    ...saved,
+    title: nextTitle,
+    personalCopy: {
+      ...saved.personalCopy,
+      includedStepIdsByFlow: options.includedStepIdsByFlow,
+    },
+  };
+  if (nextAnchor) {
+    draft.anchor = nextAnchor;
+  } else if (hasAnchorOption) {
+    delete draft.anchor;
+  }
+
+  const snapshot = buildSourceBackedFlowMapSavedSnapshotUpdate(draft, {
+    savedAt: options.savedAt,
+    ...(hasAnchorOption ? { anchor: nextAnchor } : {}),
+  });
+  if (!snapshot || snapshot.flowSlugs.length === 0) return undefined;
+
+  const persistenceRecord = buildSourceBackedFlowMapPersistenceRecordUpdate(snapshot, {
+    savedAt: snapshot.savedAt,
+    ...(snapshot.anchor ? { anchor: snapshot.anchor } : {}),
+  });
+  if (!persistenceRecord || persistenceRecord.childFlows.length === 0) return undefined;
+
+  return {
+    snapshot,
+    persistenceRecord,
+  };
+}
+
 export function assessSourceBackedFlowMapUpdate(saved: SourceBackedFlowMapSavedSnapshot): SourceBackedFlowMapUpdateAssessment {
-  const current = buildSourceBackedFlowMapSavedSnapshot(saved.mapId, {
+  const currentBase = buildSourceBackedFlowMapSavedSnapshot(saved.mapId, {
     savedAt: saved.savedAt,
     ...(saved.anchor ? { anchor: saved.anchor } : {}),
   });
-  if (!current) {
+  if (!currentBase) {
     return {
       status: 'map_missing',
       userAction: 'reconnect_source',
@@ -1059,6 +1501,9 @@ export function assessSourceBackedFlowMapUpdate(saved: SourceBackedFlowMapSavedS
       affectedFlows: saved.flowSlugs,
     };
   }
+  const current = projectSourceBackedSnapshotForPersonalCopy(currentBase, saved.personalCopy, {
+    title: saved.personalCopy ? saved.title : currentBase.title,
+  });
 
   const affectedFlows = Array.from(new Set([...saved.flowSlugs, ...current.flowSlugs])).filter((slug) => {
     return (
@@ -1191,7 +1636,7 @@ export function buildSourceBackedFlowMapPublishPackage(mapId: string): SourceBac
       sourceUrl: map.sourceUrl,
       setupInputs: map.setupInput ? [map.setupInput.label] : [],
       setupInput: map.setupInput,
-      primaryCta: { label: '전체 저장', href: '/my' },
+      primaryCta: { label: '전체 저장하고 시작', href: '/my' },
       secondaryCtas: childBundles.map((bundle) => ({ label: `${bundle.flow.title}만 저장`, href: '/my' })),
       artifacts: map.artifacts,
       categoryLabel: map.categoryLabel,
@@ -1393,9 +1838,9 @@ function extractSeedStepMeta(
 
   const lines = sourceText.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
   const stepTitle = lines.find((line) => line.startsWith('Step: '))?.slice('Step: '.length);
-  const sourceTrace = lines.find((line) => line.startsWith('원문 근거: '))?.slice('원문 근거: '.length);
+  const sourceTrace = lines.map(readSeedSourceTraceLine).find(Boolean);
   const memo = lines
-    .filter((line) => !line.startsWith('Step: ') && !line.startsWith('원문 근거: '))
+    .filter((line) => !line.startsWith('Step: ') && !isSeedSourceTraceLine(line))
     .join('\n');
   const sourceUrl = detail?.links?.[0]?.url;
 
@@ -1405,6 +1850,16 @@ function extractSeedStepMeta(
     ...(sourceUrl ? { sourceUrl } : {}),
     ...(sourceTrace ? { sourceTrace } : {}),
   };
+}
+
+function isSeedSourceTraceLine(line: string): boolean {
+  return line.startsWith('원문 근거: ') || /^source\s*trace\s*[:：]\s*/i.test(line);
+}
+
+function readSeedSourceTraceLine(line: string): string | undefined {
+  if (line.startsWith('원문 근거: ')) return line.slice('원문 근거: '.length).trim();
+  const asciiMatch = line.match(/^source\s*trace\s*[:：]\s*(.+)$/i);
+  return asciiMatch?.[1]?.trim();
 }
 
 function getMemoHint(bundle: FlowBundle, item: FlowItem): string {

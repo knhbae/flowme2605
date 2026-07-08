@@ -1,0 +1,1149 @@
+{
+  "generatedAt": "2026-07-03T21:47:28.432Z",
+  "packageName": "2026-07-04-claude-design-p4-final-review-package",
+  "branchName": "codex/flowme-uxui-second-loop",
+  "baselineCommit": "f1bfcf2",
+  "baseURL": "http://127.0.0.1:3104",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "policy": {
+    "p4_01": "User-facing content title rendering hides trailing Flow suffix while preserving FlowMe, Flow finding, and My Flow labels.",
+    "p4_02_p4_03": "Public /f/[slug] remains a share shell before save; save leads to /my where the 4-tab app shell resumes.",
+    "p4_04": "Home remains a lightweight entry with one primary route into content finding.",
+    "p4_05": "Special workbench routes use the shared FlowMe warm background, borders, radius, and button hierarchy."
+  },
+  "evidence": [
+    {
+      "route": "/",
+      "label": "Home",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/01-home-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "publicShellVisible": false,
+      "activeMobileTab": "홈",
+      "h1": "콘텐츠를 일정과 할 일로 저장",
+      "firstActions": [
+        "FLOW",
+        "홈",
+        "Flow 찾기",
+        "캘린더",
+        "내 Flow",
+        "Flow 만들기내 콘텐츠를 실행형 Flow로 정리",
+        "크리에이터 보기공개된 콘텐츠 제작자 둘러보기",
+        "홈",
+        "Flow 찾기",
+        "캘린더"
+      ],
+      "matchedInternalTerms": [],
+      "flowSuffixLines": [],
+      "visibleMarkers": {
+        "hasHomePrimaryCard": true,
+        "hasCatalogCard": false,
+        "hasPublicSaveCta": false,
+        "hasFlowMapStickySave": false,
+        "hasPostSavePanel": false,
+        "hasMyFlowWorkspace": false,
+        "hasCalendarCard": false,
+        "hasSelectedDateGroup": false
+      },
+      "visualChecks": {
+        "publicShell": null,
+        "platformMobileTabs": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        },
+        "flowMapCatalogCard": null,
+        "exportFirstHero": null,
+        "artifactWorkbench": null,
+        "holdSection": null,
+        "artifactListCard": null,
+        "artifactCalendarCard": null,
+        "artifactSpreadsheet": null,
+        "mealSourceBridge": null,
+        "exactVideoSourceBridge": null,
+        "exactVideoResultCard": null,
+        "maintenanceRoutineNextCard": null,
+        "maintenanceSourceBridge": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": null
+      }
+    },
+    {
+      "route": "/flows",
+      "label": "Flow finding",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/02-flows-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "publicShellVisible": false,
+      "activeMobileTab": "Flow 찾기",
+      "h1": "무엇을 저장할까요?",
+      "firstActions": [
+        "FLOW",
+        "홈",
+        "Flow 찾기",
+        "캘린더",
+        "내 Flow",
+        "Flow 만들기내 콘텐츠를 실행형 Flow로 정리",
+        "크리에이터 보기공개된 콘텐츠 제작자 둘러보기",
+        "홈",
+        "Flow 찾기",
+        "캘린더"
+      ],
+      "matchedInternalTerms": [],
+      "flowSuffixLines": [],
+      "visibleMarkers": {
+        "hasHomePrimaryCard": false,
+        "hasCatalogCard": true,
+        "hasPublicSaveCta": false,
+        "hasFlowMapStickySave": false,
+        "hasPostSavePanel": false,
+        "hasMyFlowWorkspace": false,
+        "hasCalendarCard": false,
+        "hasSelectedDateGroup": false
+      },
+      "visualChecks": {
+        "publicShell": null,
+        "platformMobileTabs": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        },
+        "flowMapCatalogCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "exportFirstHero": null,
+        "artifactWorkbench": null,
+        "holdSection": null,
+        "artifactListCard": null,
+        "artifactCalendarCard": null,
+        "artifactSpreadsheet": null,
+        "mealSourceBridge": null,
+        "exactVideoSourceBridge": null,
+        "exactVideoResultCard": null,
+        "maintenanceRoutineNextCard": null,
+        "maintenanceSourceBridge": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": null
+      }
+    },
+    {
+      "route": "/f/vehicle-inspection-prep",
+      "label": "Public share flow",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/03-public-vehicle-inspection-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": false,
+      "publicShellVisible": true,
+      "activeMobileTab": "",
+      "h1": "자동차검사 D-14 준비",
+      "firstActions": [
+        "FLOW",
+        "콘텐츠 더 보기",
+        "입력",
+        "아직 날짜가 안 정해졌어요",
+        "그냥 예시로 둘러볼게요",
+        "내 Flow에 저장",
+        "원문은 아래에서 확인",
+        "캘린더 파일 받기",
+        "체크리스트 복사",
+        "시트로 받기"
+      ],
+      "matchedInternalTerms": [],
+      "flowSuffixLines": [],
+      "visibleMarkers": {
+        "hasHomePrimaryCard": false,
+        "hasCatalogCard": false,
+        "hasPublicSaveCta": true,
+        "hasFlowMapStickySave": false,
+        "hasPostSavePanel": false,
+        "hasMyFlowWorkspace": false,
+        "hasCalendarCard": false,
+        "hasSelectedDateGroup": false
+      },
+      "visualChecks": {
+        "publicShell": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        },
+        "platformMobileTabs": null,
+        "flowMapCatalogCard": null,
+        "exportFirstHero": null,
+        "artifactWorkbench": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "holdSection": null,
+        "artifactListCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(250, 250, 248)"
+        },
+        "artifactCalendarCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "artifactSpreadsheet": null,
+        "mealSourceBridge": null,
+        "exactVideoSourceBridge": null,
+        "exactVideoResultCard": null,
+        "maintenanceRoutineNextCard": null,
+        "maintenanceSourceBridge": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        }
+      }
+    },
+    {
+      "route": "/f/moving-d30-basic",
+      "label": "Public moving workbench",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/04-public-moving-basic-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": false,
+      "publicShellVisible": true,
+      "activeMobileTab": "",
+      "h1": "이사 D-30 준비",
+      "firstActions": [
+        "FLOW",
+        "콘텐츠 더 보기",
+        "입력",
+        "아직 날짜가 안 정해졌어요",
+        "그냥 예시로 둘러볼게요",
+        "내 Flow에 저장",
+        "캘린더 파일 받기",
+        "시트로 받기",
+        "메모로 복사",
+        "캘린더 파일 받기"
+      ],
+      "matchedInternalTerms": [],
+      "flowSuffixLines": [],
+      "visibleMarkers": {
+        "hasHomePrimaryCard": false,
+        "hasCatalogCard": false,
+        "hasPublicSaveCta": false,
+        "hasFlowMapStickySave": false,
+        "hasPostSavePanel": false,
+        "hasMyFlowWorkspace": false,
+        "hasCalendarCard": false,
+        "hasSelectedDateGroup": false
+      },
+      "visualChecks": {
+        "publicShell": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        },
+        "platformMobileTabs": null,
+        "flowMapCatalogCard": null,
+        "exportFirstHero": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "artifactWorkbench": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "holdSection": null,
+        "artifactListCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(250, 250, 248)"
+        },
+        "artifactCalendarCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "artifactSpreadsheet": null,
+        "mealSourceBridge": null,
+        "exactVideoSourceBridge": null,
+        "exactVideoResultCard": null,
+        "maintenanceRoutineNextCard": null,
+        "maintenanceSourceBridge": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        }
+      }
+    },
+    {
+      "route": "/f/computer-skills-d30-study",
+      "label": "Public study workbench",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/05-public-computer-skills-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": false,
+      "publicShellVisible": true,
+      "activeMobileTab": "",
+      "h1": "컴퓨터활용능력 D-30 학습",
+      "firstActions": [
+        "FLOW",
+        "콘텐츠 더 보기",
+        "입력",
+        "아직 날짜가 안 정해졌어요",
+        "그냥 예시로 둘러볼게요",
+        "캘린더 파일 받기",
+        "캘린더 파일 받기",
+        "체크리스트 복사",
+        "시트로 받기",
+        "내 버전"
+      ],
+      "matchedInternalTerms": [],
+      "flowSuffixLines": [],
+      "visibleMarkers": {
+        "hasHomePrimaryCard": false,
+        "hasCatalogCard": false,
+        "hasPublicSaveCta": false,
+        "hasFlowMapStickySave": false,
+        "hasPostSavePanel": false,
+        "hasMyFlowWorkspace": false,
+        "hasCalendarCard": false,
+        "hasSelectedDateGroup": false
+      },
+      "visualChecks": {
+        "publicShell": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        },
+        "platformMobileTabs": null,
+        "flowMapCatalogCard": null,
+        "exportFirstHero": null,
+        "artifactWorkbench": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "holdSection": null,
+        "artifactListCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(250, 250, 248)"
+        },
+        "artifactCalendarCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "artifactSpreadsheet": null,
+        "mealSourceBridge": null,
+        "exactVideoSourceBridge": null,
+        "exactVideoResultCard": null,
+        "maintenanceRoutineNextCard": null,
+        "maintenanceSourceBridge": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        }
+      }
+    },
+    {
+      "route": "/f/new-car-delivery-check",
+      "label": "Public new car workbench",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/06-public-new-car-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": false,
+      "publicShellVisible": true,
+      "activeMobileTab": "",
+      "h1": "신차 인수 점검",
+      "firstActions": [
+        "FLOW",
+        "콘텐츠 더 보기",
+        "체크리스트 복사",
+        "시트로 받기",
+        "내 버전",
+        "겟차 신차 검수 체크리스트 가이드",
+        "겟차 신차 검수 체크리스트 가이드",
+        "겟차 신차 검수 체크리스트 가이드",
+        "겟차 신차 검수 체크리스트 가이드",
+        "겟차 신차 검수 체크리스트 가이드"
+      ],
+      "matchedInternalTerms": [],
+      "flowSuffixLines": [],
+      "visibleMarkers": {
+        "hasHomePrimaryCard": false,
+        "hasCatalogCard": false,
+        "hasPublicSaveCta": false,
+        "hasFlowMapStickySave": false,
+        "hasPostSavePanel": false,
+        "hasMyFlowWorkspace": false,
+        "hasCalendarCard": false,
+        "hasSelectedDateGroup": false
+      },
+      "visualChecks": {
+        "publicShell": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        },
+        "platformMobileTabs": null,
+        "flowMapCatalogCard": null,
+        "exportFirstHero": null,
+        "artifactWorkbench": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "holdSection": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 245, 242)"
+        },
+        "artifactListCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(250, 250, 248)"
+        },
+        "artifactCalendarCard": null,
+        "artifactSpreadsheet": null,
+        "mealSourceBridge": null,
+        "exactVideoSourceBridge": null,
+        "exactVideoResultCard": null,
+        "maintenanceRoutineNextCard": null,
+        "maintenanceSourceBridge": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        }
+      }
+    },
+    {
+      "route": "/f/used-car-buying-check",
+      "label": "Public used car workbench",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/07-public-used-car-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": false,
+      "publicShellVisible": true,
+      "activeMobileTab": "",
+      "h1": "중고차 구매 현장 점검",
+      "firstActions": [
+        "FLOW",
+        "콘텐츠 더 보기",
+        "체크리스트 복사",
+        "시트로 받기",
+        "내 버전",
+        "원문 보기",
+        "구매 진행",
+        "보류",
+        "거절",
+        "중고차 구매 체크리스트 가이드"
+      ],
+      "matchedInternalTerms": [],
+      "flowSuffixLines": [],
+      "visibleMarkers": {
+        "hasHomePrimaryCard": false,
+        "hasCatalogCard": false,
+        "hasPublicSaveCta": false,
+        "hasFlowMapStickySave": false,
+        "hasPostSavePanel": false,
+        "hasMyFlowWorkspace": false,
+        "hasCalendarCard": false,
+        "hasSelectedDateGroup": false
+      },
+      "visualChecks": {
+        "publicShell": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        },
+        "platformMobileTabs": null,
+        "flowMapCatalogCard": null,
+        "exportFirstHero": null,
+        "artifactWorkbench": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "holdSection": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 245, 242)"
+        },
+        "artifactListCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(250, 250, 248)"
+        },
+        "artifactCalendarCard": null,
+        "artifactSpreadsheet": null,
+        "mealSourceBridge": null,
+        "exactVideoSourceBridge": null,
+        "exactVideoResultCard": null,
+        "maintenanceRoutineNextCard": null,
+        "maintenanceSourceBridge": null,
+        "usedCarSourceBridge": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(250, 250, 248)"
+        },
+        "usedCarDecisionResultCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 247, 232)"
+        },
+        "mobileExportBar": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        }
+      }
+    },
+    {
+      "route": "/f/baby-food-menu-recipe",
+      "label": "Public baby food workbench",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/08-public-baby-food-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": false,
+      "publicShellVisible": true,
+      "activeMobileTab": "",
+      "h1": "초기 이유식 메뉴·레시피",
+      "firstActions": [
+        "FLOW",
+        "콘텐츠 더 보기",
+        "입력",
+        "아직 날짜가 안 정해졌어요",
+        "그냥 예시로 둘러볼게요",
+        "캘린더 파일 받기",
+        "원문 보기",
+        "원문 보기",
+        "확인",
+        "by 초기 이유식 기록맘"
+      ],
+      "matchedInternalTerms": [],
+      "flowSuffixLines": [],
+      "visibleMarkers": {
+        "hasHomePrimaryCard": false,
+        "hasCatalogCard": false,
+        "hasPublicSaveCta": false,
+        "hasFlowMapStickySave": false,
+        "hasPostSavePanel": false,
+        "hasMyFlowWorkspace": false,
+        "hasCalendarCard": false,
+        "hasSelectedDateGroup": false
+      },
+      "visualChecks": {
+        "publicShell": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        },
+        "platformMobileTabs": null,
+        "flowMapCatalogCard": null,
+        "exportFirstHero": null,
+        "artifactWorkbench": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "holdSection": null,
+        "artifactListCard": null,
+        "artifactCalendarCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "artifactSpreadsheet": null,
+        "mealSourceBridge": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(250, 250, 248)"
+        },
+        "exactVideoSourceBridge": null,
+        "exactVideoResultCard": null,
+        "maintenanceRoutineNextCard": null,
+        "maintenanceSourceBridge": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        }
+      }
+    },
+    {
+      "route": "/f/real-thankyou-bubu-home-workout-starter",
+      "label": "Public exact video workbench",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/09-public-home-workout-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": false,
+      "publicShellVisible": true,
+      "activeMobileTab": "",
+      "h1": "ThankyouBUBU 홈트 시작",
+      "firstActions": [
+        "FLOW",
+        "콘텐츠 더 보기",
+        "캘린더 파일 받기",
+        "시트로 받기",
+        "편집",
+        "완료",
+        "강도 낮춤",
+        "휴식으로 변경",
+        "원본 영상 열기",
+        "확인"
+      ],
+      "matchedInternalTerms": [],
+      "flowSuffixLines": [],
+      "visibleMarkers": {
+        "hasHomePrimaryCard": false,
+        "hasCatalogCard": false,
+        "hasPublicSaveCta": false,
+        "hasFlowMapStickySave": false,
+        "hasPostSavePanel": false,
+        "hasMyFlowWorkspace": false,
+        "hasCalendarCard": false,
+        "hasSelectedDateGroup": false
+      },
+      "visualChecks": {
+        "publicShell": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        },
+        "platformMobileTabs": null,
+        "flowMapCatalogCard": null,
+        "exportFirstHero": null,
+        "artifactWorkbench": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "holdSection": null,
+        "artifactListCard": null,
+        "artifactCalendarCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "artifactSpreadsheet": null,
+        "mealSourceBridge": null,
+        "exactVideoSourceBridge": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(250, 250, 248)"
+        },
+        "exactVideoResultCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(234, 247, 240)"
+        },
+        "maintenanceRoutineNextCard": null,
+        "maintenanceSourceBridge": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        }
+      }
+    },
+    {
+      "route": "/f/fridge-cleanout-weekly-plan",
+      "label": "Public sheet workbench",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/10-public-fridge-cleanout-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": false,
+      "publicShellVisible": true,
+      "activeMobileTab": "",
+      "h1": "냉장고 파먹기 7일 재고 소진",
+      "firstActions": [
+        "FLOW",
+        "콘텐츠 더 보기",
+        "입력",
+        "아직 날짜가 안 정해졌어요",
+        "그냥 예시로 둘러볼게요",
+        "메모로 복사",
+        "시트로 받기",
+        "내 버전",
+        "시트로 받기",
+        "확인"
+      ],
+      "matchedInternalTerms": [],
+      "flowSuffixLines": [],
+      "visibleMarkers": {
+        "hasHomePrimaryCard": false,
+        "hasCatalogCard": false,
+        "hasPublicSaveCta": false,
+        "hasFlowMapStickySave": false,
+        "hasPostSavePanel": false,
+        "hasMyFlowWorkspace": false,
+        "hasCalendarCard": false,
+        "hasSelectedDateGroup": false
+      },
+      "visualChecks": {
+        "publicShell": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        },
+        "platformMobileTabs": null,
+        "flowMapCatalogCard": null,
+        "exportFirstHero": null,
+        "artifactWorkbench": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "holdSection": null,
+        "artifactListCard": null,
+        "artifactCalendarCard": null,
+        "artifactSpreadsheet": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "mealSourceBridge": null,
+        "exactVideoSourceBridge": null,
+        "exactVideoResultCard": null,
+        "maintenanceRoutineNextCard": null,
+        "maintenanceSourceBridge": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        }
+      }
+    },
+    {
+      "route": "/f/washer-tub-clean-monthly",
+      "label": "Public maintenance workbench",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/11-public-washer-clean-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": false,
+      "publicShellVisible": true,
+      "activeMobileTab": "",
+      "h1": "세탁기 통세척 월간 관리",
+      "firstActions": [
+        "FLOW",
+        "콘텐츠 더 보기",
+        "입력",
+        "아직 날짜가 안 정해졌어요",
+        "그냥 예시로 둘러볼게요",
+        "캘린더 파일 받기",
+        "메모로 복사",
+        "내 버전",
+        "세탁기 통세척 방법 참고",
+        "세탁기 통세척 방법 참고"
+      ],
+      "matchedInternalTerms": [],
+      "flowSuffixLines": [],
+      "visibleMarkers": {
+        "hasHomePrimaryCard": false,
+        "hasCatalogCard": false,
+        "hasPublicSaveCta": false,
+        "hasFlowMapStickySave": false,
+        "hasPostSavePanel": false,
+        "hasMyFlowWorkspace": false,
+        "hasCalendarCard": false,
+        "hasSelectedDateGroup": false
+      },
+      "visualChecks": {
+        "publicShell": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        },
+        "platformMobileTabs": null,
+        "flowMapCatalogCard": null,
+        "exportFirstHero": null,
+        "artifactWorkbench": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(255, 255, 255)"
+        },
+        "holdSection": null,
+        "artifactListCard": null,
+        "artifactCalendarCard": null,
+        "artifactSpreadsheet": null,
+        "mealSourceBridge": null,
+        "exactVideoSourceBridge": null,
+        "exactVideoResultCard": null,
+        "maintenanceRoutineNextCard": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(250, 250, 248)"
+        },
+        "maintenanceSourceBridge": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgb(250, 250, 248)"
+        },
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        }
+      }
+    },
+    {
+      "route": "/flow-maps/moving-d30",
+      "label": "Flow map moving",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/12-flow-map-moving-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "publicShellVisible": false,
+      "activeMobileTab": "Flow 찾기",
+      "h1": "원룸 이사 D-30 일정 지도",
+      "firstActions": [
+        "FLOW",
+        "홈",
+        "Flow 찾기",
+        "캘린더",
+        "내 Flow",
+        "Flow 만들기내 콘텐츠를 실행형 Flow로 정리",
+        "크리에이터 보기공개된 콘텐츠 제작자 둘러보기",
+        "홈",
+        "Flow 찾기",
+        "캘린더"
+      ],
+      "matchedInternalTerms": [],
+      "flowSuffixLines": [],
+      "visibleMarkers": {
+        "hasHomePrimaryCard": false,
+        "hasCatalogCard": false,
+        "hasPublicSaveCta": false,
+        "hasFlowMapStickySave": true,
+        "hasPostSavePanel": false,
+        "hasMyFlowWorkspace": false,
+        "hasCalendarCard": false,
+        "hasSelectedDateGroup": false
+      },
+      "visualChecks": {
+        "publicShell": null,
+        "platformMobileTabs": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        },
+        "flowMapCatalogCard": null,
+        "exportFirstHero": null,
+        "artifactWorkbench": null,
+        "holdSection": null,
+        "artifactListCard": null,
+        "artifactCalendarCard": null,
+        "artifactSpreadsheet": null,
+        "mealSourceBridge": null,
+        "exactVideoSourceBridge": null,
+        "exactVideoResultCard": null,
+        "maintenanceRoutineNextCard": null,
+        "maintenanceSourceBridge": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": null
+      }
+    },
+    {
+      "route": "/flow-maps/middle-school-math-1",
+      "label": "Flow map math",
+      "state": "clean localStorage",
+      "screenshot": "screenshots/13-flow-map-math-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "publicShellVisible": false,
+      "activeMobileTab": "Flow 찾기",
+      "h1": "중1 수학 목차 진도표",
+      "firstActions": [
+        "FLOW",
+        "홈",
+        "Flow 찾기",
+        "캘린더",
+        "내 Flow",
+        "Flow 만들기내 콘텐츠를 실행형 Flow로 정리",
+        "크리에이터 보기공개된 콘텐츠 제작자 둘러보기",
+        "홈",
+        "Flow 찾기",
+        "캘린더"
+      ],
+      "matchedInternalTerms": [],
+      "flowSuffixLines": [],
+      "visibleMarkers": {
+        "hasHomePrimaryCard": false,
+        "hasCatalogCard": false,
+        "hasPublicSaveCta": false,
+        "hasFlowMapStickySave": true,
+        "hasPostSavePanel": false,
+        "hasMyFlowWorkspace": false,
+        "hasCalendarCard": false,
+        "hasSelectedDateGroup": false
+      },
+      "visualChecks": {
+        "publicShell": null,
+        "platformMobileTabs": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        },
+        "flowMapCatalogCard": null,
+        "exportFirstHero": null,
+        "artifactWorkbench": null,
+        "holdSection": null,
+        "artifactListCard": null,
+        "artifactCalendarCard": null,
+        "artifactSpreadsheet": null,
+        "mealSourceBridge": null,
+        "exactVideoSourceBridge": null,
+        "exactVideoResultCard": null,
+        "maintenanceRoutineNextCard": null,
+        "maintenanceSourceBridge": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": null
+      }
+    },
+    {
+      "route": "/my?savedMap=moving-d30",
+      "label": "Post-save My Flow",
+      "state": "after saving moving-d30 with 2026-07-22",
+      "screenshot": "screenshots/14-post-save-my-flow-moving-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "publicShellVisible": false,
+      "activeMobileTab": "내 Flow",
+      "h1": "내 Flow",
+      "firstActions": [
+        "FLOW",
+        "홈",
+        "Flow 찾기",
+        "캘린더",
+        "내 Flow",
+        "Flow 만들기내 콘텐츠를 실행형 Flow로 정리",
+        "크리에이터 보기공개된 콘텐츠 제작자 둘러보기",
+        "홈",
+        "Flow 찾기",
+        "캘린더"
+      ],
+      "matchedInternalTerms": [],
+      "flowSuffixLines": [],
+      "visibleMarkers": {
+        "hasHomePrimaryCard": false,
+        "hasCatalogCard": false,
+        "hasPublicSaveCta": false,
+        "hasFlowMapStickySave": false,
+        "hasPostSavePanel": true,
+        "hasMyFlowWorkspace": true,
+        "hasCalendarCard": false,
+        "hasSelectedDateGroup": false
+      },
+      "visualChecks": {
+        "publicShell": null,
+        "platformMobileTabs": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        },
+        "flowMapCatalogCard": null,
+        "exportFirstHero": null,
+        "artifactWorkbench": null,
+        "holdSection": null,
+        "artifactListCard": null,
+        "artifactCalendarCard": null,
+        "artifactSpreadsheet": null,
+        "mealSourceBridge": null,
+        "exactVideoSourceBridge": null,
+        "exactVideoResultCard": null,
+        "maintenanceRoutineNextCard": null,
+        "maintenanceSourceBridge": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": null
+      },
+      "postSaveChecks": {
+        "storageKeysAfterSave": [
+          "flow:map:persistence:moving-d30",
+          "flow:map:saved:moving-d30",
+          "flow:meta:last-visit",
+          "flow:saved:source-backed-moving-d30",
+          "flow_builder_mvp_bundles_v11"
+        ],
+        "hasPostSavePanel": true,
+        "hasMyFlowWorkspace": true,
+        "hasFirstTask": true,
+        "hasTrueEmptyState": false,
+        "hasCompactPostSavePanel": true
+      }
+    },
+    {
+      "route": "/calendar",
+      "label": "Post-save Calendar",
+      "state": "after saving moving-d30 with 2026-07-22",
+      "screenshot": "screenshots/15-calendar-after-save-mobile.png",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "noHorizontalOverflow": true,
+      "bodyBg": "rgb(250, 250, 248)",
+      "navVisible": true,
+      "publicShellVisible": false,
+      "activeMobileTab": "캘린더",
+      "h1": "캘린더",
+      "firstActions": [
+        "FLOW",
+        "홈",
+        "Flow 찾기",
+        "캘린더",
+        "내 Flow",
+        "Flow 만들기내 콘텐츠를 실행형 Flow로 정리",
+        "크리에이터 보기공개된 콘텐츠 제작자 둘러보기",
+        "홈",
+        "Flow 찾기",
+        "캘린더"
+      ],
+      "matchedInternalTerms": [],
+      "flowSuffixLines": [],
+      "visibleMarkers": {
+        "hasHomePrimaryCard": false,
+        "hasCatalogCard": false,
+        "hasPublicSaveCta": false,
+        "hasFlowMapStickySave": false,
+        "hasPostSavePanel": false,
+        "hasMyFlowWorkspace": true,
+        "hasCalendarCard": true,
+        "hasSelectedDateGroup": true
+      },
+      "visualChecks": {
+        "publicShell": null,
+        "platformMobileTabs": {
+          "borderColor": "rgb(231, 228, 221)",
+          "borderRadius": "16px",
+          "backgroundColor": "rgba(255, 255, 255, 0.95)"
+        },
+        "flowMapCatalogCard": null,
+        "exportFirstHero": null,
+        "artifactWorkbench": null,
+        "holdSection": null,
+        "artifactListCard": null,
+        "artifactCalendarCard": null,
+        "artifactSpreadsheet": null,
+        "mealSourceBridge": null,
+        "exactVideoSourceBridge": null,
+        "exactVideoResultCard": null,
+        "maintenanceRoutineNextCard": null,
+        "maintenanceSourceBridge": null,
+        "usedCarSourceBridge": null,
+        "usedCarDecisionResultCard": null,
+        "mobileExportBar": null
+      },
+      "postSaveChecks": {
+        "hasCalendarCard": true,
+        "hasSelectedDateGroup": true,
+        "hasAgenda": true,
+        "hasTrueEmptyState": false,
+        "hasCompactAgendaHeader": true
+      }
+    }
+  ],
+  "validation": {
+    "passed": true,
+    "failures": []
+  }
+}

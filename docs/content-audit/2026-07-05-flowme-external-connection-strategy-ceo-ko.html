@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 외부 연결/경쟁 전략 CEO 보고서</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f6f8;
+      --paper: #ffffff;
+      --ink: #15191f;
+      --muted: #5f6b7a;
+      --line: #d8e0e8;
+      --soft: #eef3f7;
+      --green: #176d5d;
+      --blue: #245ea8;
+      --amber: #9a5a00;
+      --red: #a73434;
+      --violet: #5b4aa3;
+      --shadow: 0 14px 34px rgba(21, 25, 31, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      line-height: 1.55;
+    }
+
+    a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    code { border-radius: 4px; background: #e8edf3; padding: 1px 5px; }
+
+    .page {
+      width: min(1240px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 64px;
+    }
+
+    header, section {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    header { padding: 30px; }
+    section { margin-top: 18px; padding: 24px; }
+
+    h1, h2, h3 { margin: 0; line-height: 1.22; letter-spacing: 0; }
+    h1 { max-width: 980px; font-size: clamp(30px, 4.2vw, 52px); }
+    h2 { margin-bottom: 14px; font-size: 25px; }
+    h3 { margin-bottom: 8px; font-size: 18px; }
+    p { margin: 0 0 12px; }
+
+    .lead {
+      max-width: 960px;
+      margin-top: 16px;
+      color: #334155;
+      font-size: 18px;
+    }
+
+    .meta, .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .meta { margin-top: 20px; }
+
+    .pill, .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .pill {
+      min-height: 28px;
+      padding: 4px 10px;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      color: #334155;
+      font-size: 13px;
+    }
+
+    .tag {
+      min-height: 24px;
+      margin: 2px 3px 2px 0;
+      padding: 2px 8px;
+      background: var(--soft);
+      color: #334155;
+      font-size: 12px;
+    }
+
+    .p0 { background: #e8f6ef; color: var(--green); }
+    .p1 { background: #edf3ff; color: var(--blue); }
+    .p2 { background: #f1eeff; color: var(--violet); }
+    .hold { background: #fff4df; color: var(--amber); }
+    .no { background: #fff0f0; color: var(--red); }
+
+    .decision {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .decision-main {
+      border-left: 5px solid var(--green);
+      border-radius: 8px;
+      background: #eef8f4;
+      padding: 18px;
+    }
+
+    .decision-main b {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 17px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat {
+      min-height: 110px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .card p, .small { color: var(--muted); font-size: 14px; }
+
+    .map {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .map-cell {
+      min-height: 148px;
+      border: 1px solid #cbd8e5;
+      border-radius: 8px;
+      background: #f8fbfd;
+      padding: 14px;
+    }
+
+    .map-cell strong { display: block; margin-bottom: 6px; }
+    .map-cell span { display: block; color: var(--muted); font-size: 13px; }
+
+    .position {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .position .lane {
+      min-height: 210px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .lane ul, .source-list { margin: 10px 0 0; padding-left: 18px; }
+    .lane li, .source-list li { margin: 6px 0; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th { background: var(--soft); color: #334155; }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 250px 1fr 64px;
+      gap: 10px;
+      align-items: center;
+      margin: 10px 0;
+      font-size: 14px;
+    }
+
+    .bar {
+      height: 12px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e5e9ef;
+    }
+
+    .bar > i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--green), var(--blue));
+    }
+
+    .quote {
+      margin-top: 12px;
+      border-left: 5px solid var(--blue);
+      border-radius: 8px;
+      background: #eef4ff;
+      padding: 18px;
+      font-size: 18px;
+      font-weight: 850;
+    }
+
+    .callout {
+      border-left: 5px solid var(--amber);
+      border-radius: 8px;
+      background: #fff8ea;
+      padding: 16px;
+    }
+
+    .source-list {
+      columns: 2;
+      column-gap: 28px;
+    }
+
+    @media (max-width: 980px) {
+      .page { width: min(100% - 20px, 1240px); padding-top: 14px; }
+      header, section { padding: 18px; }
+      section { overflow-x: auto; }
+      .decision, .grid, .grid.two, .grid.four, .position { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .map { grid-template-columns: 1fr; }
+      .bar-row { grid-template-columns: 1fr; gap: 5px; }
+      table { width: max-content; min-width: 100%; max-width: none; white-space: nowrap; }
+      th, td { min-width: 170px; white-space: normal; }
+      .source-list { columns: 1; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .page { width: 100%; padding: 0; }
+      header, section { box-shadow: none; break-inside: avoid; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <h1>FlowMe는 외부 앱과 경쟁하지 말고, 외부 앱으로 실행을 보내야 한다</h1>
+      <p class="lead">URL-first 이후의 핵심 전략은 연결 대상 앱을 많이 붙이는 것이 아니다. FlowMe는 웹 콘텐츠를 실행 가능한 구조로 바꾸는 앞단 레이어가 되고, Calendar / Todo / Note / Sheet / Automation / Creator / AI agent 생태계에는 단계적으로 붙는다.</p>
+      <div class="meta">
+        <span class="pill">작성일 2026-07-05</span>
+        <span class="pill">전략기획 보고서</span>
+        <span class="pill">외부 공식 출처 확인</span>
+        <span class="pill">구현 확장 아님</span>
+      </div>
+
+      <div class="decision">
+        <div class="decision-main">
+          <b>CEO 결론: FlowMe의 포지션은 “source-to-execution compiler”다.</b>
+          <p>FlowMe는 Google Calendar, Todoist, Notion, Obsidian, Zapier, Motion 같은 제품을 대체하지 않는다. 사용자가 이미 보고 있는 URL을 Flow로 바꾸고, 그 결과를 사용자의 기존 도구로 보내는 전환/연결 레이어가 된다.</p>
+          <p class="small">따라서 P0는 direct OAuth가 아니라 portable export와 source trust다. 직접 통합은 반복 사용 증거가 쌓인 뒤 P1/P2로 이동한다.</p>
+        </div>
+        <div class="stats">
+          <div class="stat"><strong>7</strong><span>외부 도구군 분석</span></div>
+          <div class="stat"><strong>14</strong><span>주요 서비스/플랫폼 검토</span></div>
+          <div class="stat"><strong>3</strong><span>P0 연결축: Calendar, Note, Checklist</span></div>
+          <div class="stat"><strong>0</strong><span>P0 direct OAuth 권장</span></div>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <h2>1. 한 문장 포지셔닝</h2>
+      <div class="quote">FlowMe는 웹의 계획·체크리스트·영상·공식 안내를 사용자의 캘린더, 노트, 체크리스트, 시트로 옮기는 실행 변환 레이어다.</div>
+      <div class="position">
+        <div class="lane">
+          <h3>정면 경쟁하지 않음</h3>
+          <ul>
+            <li>캘린더 앱</li>
+            <li>투두 앱</li>
+            <li>노트/워크스페이스</li>
+            <li>AI 자동 스케줄러</li>
+          </ul>
+        </div>
+        <div class="lane">
+          <h3>붙어서 이김</h3>
+          <ul>
+            <li>URL을 실행 구조로 변환</li>
+            <li>source trust와 version 관리</li>
+            <li>Calendar/Markdown/checklist export</li>
+            <li>My Flow에서 이어서 재-export</li>
+          </ul>
+        </div>
+        <div class="lane">
+          <h3>나중에 확장</h3>
+          <ul>
+            <li>Calendar feed / Google API</li>
+            <li>Todoist / Notion direct push</li>
+            <li>Zapier/MCP connector</li>
+            <li>Creator backlink package</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>2. 외부 연결 맵</h2>
+      <div class="map" aria-label="FlowMe external connection map">
+        <div class="map-cell"><strong>Calendar</strong><span>Google Calendar, Outlook, Apple Calendar. P0는 `.ics`; P1은 calendar feed/API.</span><span class="tag p0">P0 export</span></div>
+        <div class="map-cell"><strong>Todo</strong><span>Todoist, Microsoft To Do, Google Tasks. P0는 checklist; P1은 Todoist API/MCP.</span><span class="tag p1">P1 API</span></div>
+        <div class="map-cell"><strong>Note</strong><span>Obsidian, Notion, Readwise. P0는 Markdown; P1은 templates/API.</span><span class="tag p0">P0 Markdown</span></div>
+        <div class="map-cell"><strong>Sheet</strong><span>Google Sheets, CSV. P0는 table/CSV copy; API는 반복 후.</span><span class="tag p1">P1 sheet</span></div>
+        <div class="map-cell"><strong>Automation</strong><span>Zapier, MCP. 강하지만 P0 사용 증거 전에는 과하다.</span><span class="tag p2">P2 connector</span></div>
+        <div class="map-cell"><strong>Creator</strong><span>YouTube, 블로그, 브랜드 원문. Flow는 원문 방문/구매/예약으로 되돌아가게 한다.</span><span class="tag p1">P1 backlink</span></div>
+        <div class="map-cell"><strong>AI Agent</strong><span>ChatGPT, Claude, Cursor, MCP clients. FlowMe API가 생긴 뒤 연결한다.</span><span class="tag p2">P2 API</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>3. 서비스별 전략 판단</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>도구군</th>
+            <th>대표 서비스</th>
+            <th>현재 생태계 신호</th>
+            <th>FlowMe 관계</th>
+            <th>우선순위</th>
+            <th>결정</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Calendar</td>
+            <td>Google Calendar, Outlook, Apple Calendar</td>
+            <td>Google Calendar는 task를 calendar에서 만들고 관리할 수 있고, Outlook은 My Day에서 일정과 To Do를 함께 보여준다.</td>
+            <td>정면 경쟁하지 않는다. Flow Step을 일정 파일/설명/원문 링크로 보낸다.</td>
+            <td><span class="tag p0">P0</span></td>
+            <td>`.ics` export 먼저. API/OAuth는 P1.</td>
+          </tr>
+          <tr>
+            <td>Todo</td>
+            <td>Todoist, Microsoft To Do, Google Tasks</td>
+            <td>Todoist는 calendar layout/time blocking을 강화하고, Todoist API/MCP도 제공한다.</td>
+            <td>FlowMe는 task manager가 아니라 source-derived checklist/task generator다.</td>
+            <td><span class="tag p1">P1</span></td>
+            <td>P0는 checklist copy. Todoist API/MCP는 반복 증거 후.</td>
+          </tr>
+          <tr>
+            <td>Note</td>
+            <td>Obsidian, Notion, Readwise</td>
+            <td>Obsidian Web Clipper와 Readwise export는 metadata/Markdown 기반 저장을 강화한다. Notion은 workspace/calendar 통합을 강화한다.</td>
+            <td>FlowMe는 노트 앱이 아니라 실행 가능한 Markdown package를 만든다.</td>
+            <td><span class="tag p0">P0</span></td>
+            <td>Markdown export와 frontmatter/profile을 우선.</td>
+          </tr>
+          <tr>
+            <td>Sheet</td>
+            <td>Google Sheets, CSV</td>
+            <td>Google Sheets API는 spreadsheet read/write/formatting을 지원한다.</td>
+            <td>진도표, 식단표, 비교표 Flow에서 강하다. 모든 Flow의 기본 목적지는 아니다.</td>
+            <td><span class="tag p1">P1</span></td>
+            <td>P0는 CSV/table copy. Sheets API는 sheet형 canary 후.</td>
+          </tr>
+          <tr>
+            <td>Automation</td>
+            <td>Zapier, MCP</td>
+            <td>Zapier MCP는 AI tools가 9,000+ 앱과 30,000+ actions를 쓰게 한다. MCP는 AI 앱과 외부 시스템 연결 표준이다.</td>
+            <td>FlowMe가 API/connector로 붙을 장기 채널이다. P0 제품가치는 아니다.</td>
+            <td><span class="tag p2">P2</span></td>
+            <td>표준 export 반복 전에는 보류.</td>
+          </tr>
+          <tr>
+            <td>Creator platform</td>
+            <td>YouTube, 블로그, 브랜드/커머스 원문</td>
+            <td>커뮤니티/제작자 루프 분석에서 creator backlink 유인이 큰 후보가 확인됐다.</td>
+            <td>FlowMe는 원문을 대체하지 않고 실행 전환 후 원문 방문/구매/예약으로 돌려보낸다.</td>
+            <td><span class="tag p1">P1</span></td>
+            <td>P0 canary가 쌓인 뒤 creator backlink package.</td>
+          </tr>
+          <tr>
+            <td>AI scheduler</td>
+            <td>Motion, Reclaim, Sunsama</td>
+            <td>Motion/Reclaim은 자동 time-blocking, Sunsama는 daily planning과 calendar integration에 강하다.</td>
+            <td>FlowMe가 이들과 정면 경쟁하면 제품 경계가 커진다. 대신 AI scheduler가 먹을 수 있는 구조화 Step을 만든다.</td>
+            <td><span class="tag hold">보류</span></td>
+            <td>자동 스케줄러는 만들지 않는다. structured export만 준비.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>4. 우선순위 매트릭스</h2>
+      <div class="bar-row"><strong>Calendar `.ics` export</strong><div class="bar"><i style="width:96%"></i></div><b>96</b></div>
+      <div class="bar-row"><strong>Markdown / Obsidian export</strong><div class="bar"><i style="width:90%"></i></div><b>90</b></div>
+      <div class="bar-row"><strong>Checklist copy</strong><div class="bar"><i style="width:88%"></i></div><b>88</b></div>
+      <div class="bar-row"><strong>Source/version/trust metadata</strong><div class="bar"><i style="width:86%"></i></div><b>86</b></div>
+      <div class="bar-row"><strong>Google Sheets / CSV profile</strong><div class="bar"><i style="width:74%"></i></div><b>74</b></div>
+      <div class="bar-row"><strong>Todoist / task API</strong><div class="bar"><i style="width:70%"></i></div><b>70</b></div>
+      <div class="bar-row"><strong>Creator backlink package</strong><div class="bar"><i style="width:68%"></i></div><b>68</b></div>
+      <div class="bar-row"><strong>Zapier / MCP connector</strong><div class="bar"><i style="width:61%"></i></div><b>61</b></div>
+      <div class="bar-row"><strong>AI auto-scheduling</strong><div class="bar"><i style="width:42%"></i></div><b>42</b></div>
+      <table>
+        <thead><tr><th>점수 기준</th><th>비중</th><th>판단 질문</th></tr></thead>
+        <tbody>
+          <tr><td>URL-first 적합도</td><td>30</td><td>URL hit 결과에서 바로 이어질 수 있는가?</td></tr>
+          <tr><td>사용성 임팩트</td><td>25</td><td>사용자의 기존 도구 사용 습관을 덜 방해하는가?</td></tr>
+          <tr><td>사업 자산</td><td>20</td><td>source DB, 재사용, creator backlink, retention을 만드는가?</td></tr>
+          <tr><td>구현/운영 리스크</td><td>15</td><td>권한, 개인정보, 동기화 오류, 유지보수 부담이 낮은가?</td></tr>
+          <tr><td>차별화</td><td>10</td><td>Calendar/Notion/Todoist가 직접 하지 않는 영역인가?</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>5. P0/P1/P2 로드맵</h2>
+      <table>
+        <thead><tr><th>단계</th><th>연결 전략</th><th>해야 할 것</th><th>하지 않을 것</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="tag p0">P0</span></td>
+            <td>Portable export</td>
+            <td>Calendar `.ics`, Markdown, checklist copy, source URL/checked date/caution 포함</td>
+            <td>Google/Todoist/Notion OAuth, AI auto-scheduling, Zapier/MCP</td>
+          </tr>
+          <tr>
+            <td><span class="tag p1">P1</span></td>
+            <td>Profiled export + light API</td>
+            <td>Markdown frontmatter, CSV/sheet profile, calendar feed, Todoist/Notion 후보 API, creator backlink</td>
+            <td>full workspace, marketplace, automated two-way sync</td>
+          </tr>
+          <tr>
+            <td><span class="tag p2">P2</span></td>
+            <td>Connectors and agents</td>
+            <td>Zapier/MCP connector, FlowMe API, AI fallback queue, mobile share sheet</td>
+            <td>source trust와 export 반복 전 대규모 integration</td>
+          </tr>
+          <tr>
+            <td><span class="tag no">Do not build</span></td>
+            <td>Wrong competition</td>
+            <td>없음</td>
+            <td>Motion/Reclaim식 자동 스케줄러, Notion 대체 workspace, fake usage proof</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>6. 전략 재배치</h2>
+      <div class="grid four">
+        <div class="card">
+          <h3>Memo-to-Flow</h3>
+          <p><span class="tag p1">P1/P2</span></p>
+          <p>일상 사용과 retention에는 중요하다. 다만 URL-first와 export-first가 작동한 뒤 같은 Flow/Step/Item 모델로 합류해야 한다.</p>
+        </div>
+        <div class="card">
+          <h3>Creator/community</h3>
+          <p><span class="tag p1">P1</span></p>
+          <p>원문 대체가 아니라 backlink, fork, remix, creator 유지보수 유인을 만든다. canary 검증 뒤 시작한다.</p>
+        </div>
+        <div class="card">
+          <h3>Source trust</h3>
+          <p><span class="tag p0">P0</span></p>
+          <p>외부 연결의 기반이다. source status, reviewed date, version, snapshot 없이는 export와 connector를 넓히면 안 된다.</p>
+        </div>
+        <div class="card">
+          <h3>Export pack</h3>
+          <p><span class="tag p0">P0</span></p>
+          <p>FlowMe가 외부 도구와 붙는 첫 방식이다. API보다 먼저 사용자에게 실제 가치를 증명한다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>7. 임원 의사결정 항목</h2>
+      <div class="grid two">
+        <div class="card">
+          <h3>이번에 결정</h3>
+          <p>1. FlowMe는 외부 생산성 앱 대체재가 아니라 실행 변환 레이어다.</p>
+          <p>2. P0 연결은 `.ics + Markdown + checklist` export로 시작한다.</p>
+          <p>3. Google/Todoist/Notion API는 P1 이후로 보류한다.</p>
+          <p>4. Zapier/MCP는 FlowMe API와 반복 export 증거가 생긴 뒤 검토한다.</p>
+        </div>
+        <div class="card">
+          <h3>다음 전략 질문</h3>
+          <p>1. Export pack v1의 정확한 필드와 포맷은 무엇인가?</p>
+          <p>2. canary 8~12개 중 sheet형 후보를 P0에 포함할 것인가?</p>
+          <p>3. creator backlink를 어느 후보에서 처음 실험할 것인가?</p>
+          <p>4. FlowMe API/connector의 최소 단위는 Flow인가 Step인가?</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>8. 관련 근거</h2>
+      <ul class="source-list">
+        <li><a href="./2026-07-05-url-first-p0-ceo-report-ko.html">FlowMe URL-first P0 CEO 보고서</a></li>
+        <li><a href="./2026-07-05-url-first-strategy-master-plan-ko.md">FlowMe URL-first 전략 마스터 플랜</a></li>
+        <li><a href="./2026-07-04-productivity-connectivity-priority-research-ko.md">생산성 도구 연결성 우선순위 리서치</a></li>
+        <li><a href="./2026-07-05-web-source-community-creator-loop-review-ko.md">웹 소스 커뮤니티/제작자 루프 검증</a></li>
+        <li><a href="../DECISIONS.md">DECISIONS</a></li>
+        <li><a href="../IDEAS.md">IDEAS</a></li>
+        <li><a href="../SERVICE_STRUCTURE.md">SERVICE_STRUCTURE</a></li>
+        <li><a href="https://support.google.com/calendar/answer/9901136?co=GENIE.Platform%3DDesktop&hl=en">Google Calendar Tasks Help</a></li>
+        <li><a href="https://developers.google.com/workspace/calendar/api/guides/create-events">Google Calendar API - Create events</a></li>
+        <li><a href="https://support.microsoft.com/en-us/outlook/calendar/use-my-day-with-to-do-in-outlook">Microsoft Outlook My Day with To Do</a></li>
+        <li><a href="https://www.todoist.com/help/articles/time-blocking-in-todoist-d6Pf1uTpc">Todoist time blocking</a></li>
+        <li><a href="https://developer.todoist.com/api/v1/">Todoist API / MCP</a></li>
+        <li><a href="https://www.notion.com/product/calendar">Notion Calendar</a></li>
+        <li><a href="https://developers.notion.com/guides/get-started/overview">Notion API overview</a></li>
+        <li><a href="https://obsidian.md/clipper">Obsidian Web Clipper</a></li>
+        <li><a href="https://obsidian.md/help/uri">Obsidian URI</a></li>
+        <li><a href="https://docs.readwise.io/reader/docs/faqs/exporting">Readwise Reader export</a></li>
+        <li><a href="https://docs.readwise.io/readwise/docs/exporting-highlights/markdown-csv">Readwise Markdown/CSV export</a></li>
+        <li><a href="https://developers.google.com/workspace/sheets/api/guides/concepts">Google Sheets API overview</a></li>
+        <li><a href="https://zapier.com/mcp">Zapier MCP</a></li>
+        <li><a href="https://modelcontextprotocol.io/docs/getting-started/intro">Model Context Protocol intro</a></li>
+        <li><a href="https://www.usemotion.com/">Motion</a></li>
+        <li><a href="https://reclaim.ai/">Reclaim</a></li>
+        <li><a href="https://www.sunsama.com/">Sunsama</a></li>
+        <li><a href="https://help.sunsama.com/docs/integrations/calendar/">Sunsama calendar integrations</a></li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

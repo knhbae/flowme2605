@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 서비스·플랫폼 전략 리포트</title>
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #647184;
+      --line: #d9e0ea;
+      --paper: #ffffff;
+      --soft: #f5f7fa;
+      --blue: #1f5f99;
+      --teal: #0f7477;
+      --green: #146c43;
+      --amber: #9a5c00;
+      --red: #a42734;
+      --shadow: 0 12px 28px rgba(23, 32, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #eef2f6;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Arial, sans-serif;
+      line-height: 1.55;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 28px 20px 60px; }
+
+    .hero {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      background: linear-gradient(135deg, #ffffff 0%, #f0f8f8 52%, #f7f8fb 100%);
+      padding: 30px;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+    h1, h2, h3 { margin: 0; letter-spacing: 0; }
+    h1 {
+      max-width: 980px;
+      font-size: clamp(32px, 4.8vw, 54px);
+      line-height: 1.08;
+      font-weight: 860;
+    }
+    .lead {
+      max-width: 940px;
+      margin: 18px 0 0;
+      color: #304052;
+      font-size: 18px;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 14px;
+      margin-top: 22px;
+    }
+    .box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.92);
+      padding: 18px;
+    }
+    .box strong { display: block; margin-bottom: 8px; font-size: 15px; }
+    .box p { margin: 0; color: #344256; }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .metric {
+      min-height: 108px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+    }
+    .metric b { display: block; font-size: 30px; line-height: 1.1; }
+    .metric span { display: block; margin-top: 8px; color: var(--muted); font-size: 13px; }
+
+    section {
+      margin-top: 22px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    h2 { font-size: 24px; line-height: 1.2; }
+    .note { max-width: 720px; margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: #fff;
+      color: #344256;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .tag.green { color: var(--green); border-color: #b8dcc8; background: #effaf3; }
+    .tag.amber { color: var(--amber); border-color: #efd09f; background: #fff8eb; }
+    .tag.red { color: var(--red); border-color: #efb7be; background: #fff1f3; }
+    .tag.blue { color: var(--blue); border-color: #bed4ee; background: #f1f6fd; }
+    .tag.teal { color: var(--teal); border-color: #b9dddf; background: #effafa; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+      padding: 16px;
+    }
+    .card h3 { font-size: 17px; margin-bottom: 8px; }
+    .card p { margin: 0; color: #344256; }
+
+    .market-map {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr 1fr;
+      gap: 14px;
+      align-items: stretch;
+    }
+    .market-col {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 16px;
+      min-height: 250px;
+    }
+    .market-col.center {
+      background: #effafa;
+      border-color: #b9dddf;
+    }
+    .market-col h3 { font-size: 18px; margin-bottom: 10px; }
+    .market-col ul { margin: 0; padding-left: 18px; color: #344256; }
+    .market-col li { margin: 8px 0; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 14px;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 10px;
+      text-align: left;
+      vertical-align: top;
+      overflow-wrap: anywhere;
+    }
+    th {
+      background: #f0f4f8;
+      color: #344256;
+      font-size: 12px;
+    }
+    tr:last-child td { border-bottom: 0; }
+
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      counter-reset: phase;
+    }
+    .phase {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 18px;
+      min-height: 225px;
+    }
+    .phase::before {
+      counter-increment: phase;
+      content: counter(phase);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: #fff;
+      font-weight: 850;
+      margin-bottom: 10px;
+    }
+    .phase h3 { font-size: 18px; margin-bottom: 8px; }
+    .phase p { margin: 0; color: #344256; }
+
+    .refs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .refs a {
+      display: block;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 880px) {
+      .wrap { padding: 14px 10px 36px; }
+      .hero, section { padding: 18px; }
+      .hero-grid, .metrics, .grid-2, .grid-3, .market-map, .roadmap, .refs { grid-template-columns: 1fr; }
+      .section-head { display: block; }
+      .tag { margin-top: 10px; }
+      table { display: block; overflow-x: auto; }
+      th, td { min-width: 150px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <div class="meta">
+        <span>FlowMe Service & Platform Strategy</span>
+        <span>2026-07-07</span>
+        <span>CEO 보고용</span>
+      </div>
+      <h1>FlowMe는 생산성 앱이 아니라, 실행으로 이어지는 플랫폼이어야 한다</h1>
+      <p class="lead">
+        FlowMe가 이길 곳은 캘린더, 할 일 앱, 노트 앱, 자동화 도구를 또 하나 만드는 시장이 아니다.
+        사람들이 이미 보고 있는 글, 영상, 공식 안내, 경험담을 실제 일정·체크리스트·기록으로 바꿔
+        기존 도구에 연결해주는 실행 플랫폼이 되어야 한다.
+      </p>
+
+      <div class="hero-grid">
+        <div class="box">
+          <strong>한 문장 전략</strong>
+          <p>
+            <b>FlowMe는 “좋은 정보”와 “실제 실행” 사이의 빈칸을 메우는 서비스다.</b>
+            정보는 웹과 커뮤니티에 있고, 실행은 캘린더·할 일·문서·시트에 있다.
+            FlowMe는 그 사이에서 구조화, 신뢰 확인, 내보내기, 저장을 담당한다.
+          </p>
+        </div>
+        <div class="box">
+          <strong>이 보고서에서 바로잡은 것</strong>
+          <p>
+            URL-first는 전체 전략이 아니라 첫 진입 방식이다. 전체 전략의 중심은
+            “어떤 플랫폼으로 자리 잡을 것인가”와 “어떤 서비스에 붙어서 성장할 것인가”다.
+          </p>
+        </div>
+      </div>
+
+      <div class="metrics">
+        <div class="metric">
+          <b>7</b>
+          <span>분석한 외부 도구군: Calendar, Todo, Note, Sheet, Automation, Creator, AI agent.</span>
+        </div>
+        <div class="metric">
+          <b>11</b>
+          <span>공식/주요 근거 페이지 확인: Calendar, Todo, Note, Sheet, Automation, AI agent 등.</span>
+        </div>
+        <div class="metric">
+          <b>3</b>
+          <span>공식 수치 근거가 있는 큰 신호: Zapier, Reclaim, automation ecosystem.</span>
+        </div>
+        <div class="metric">
+          <b>0</b>
+          <span>초기 정면승부 대상: Calendar/Notion/Todoist/Zapier와 직접 경쟁하지 않는다.</span>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>1. FlowMe의 시장 위치</h2>
+          <p class="note">FlowMe는 정보 앱도, 일정 앱도, 자동화 앱도 아니다. 이 세 영역 사이의 변환 지점에 있다.</p>
+        </div>
+        <span class="tag teal">positioning</span>
+      </div>
+
+      <div class="market-map">
+        <div class="market-col">
+          <h3>정보가 있는 곳</h3>
+          <ul>
+            <li>블로그, 영상, 공식 안내, 커뮤니티 글</li>
+            <li>Notion, Obsidian, Readwise 같은 지식·노트 도구</li>
+            <li>문제: 읽고 저장해도 실행으로 잘 이어지지 않는다</li>
+          </ul>
+        </div>
+        <div class="market-col center">
+          <h3>FlowMe가 맡을 곳</h3>
+          <ul>
+            <li>정보를 단계·일정·체크리스트로 바꾼다</li>
+            <li>출처와 주의사항을 함께 남긴다</li>
+            <li>사용자의 기존 도구로 옮긴다</li>
+            <li>반복 실행 기록을 모아 더 좋은 Flow를 만든다</li>
+          </ul>
+        </div>
+        <div class="market-col">
+          <h3>실행이 일어나는 곳</h3>
+          <ul>
+            <li>Google Calendar, Outlook Calendar</li>
+            <li>Todoist, Sunsama, Motion, Reclaim</li>
+            <li>Google Sheets, Notion, Zapier, AI agent 도구</li>
+            <li>문제: 실행 형식은 있지만 좋은 원본을 실행형으로 바꾸는 층이 약하다</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>2. 경쟁하지 말고 붙어야 할 서비스</h2>
+          <p class="note">초기 FlowMe는 기존 생산성 도구를 대체하지 않는다. 사용자가 이미 쓰는 곳으로 Flow를 보내야 한다.</p>
+        </div>
+        <span class="tag green">connect first</span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:16%">도구군</th>
+            <th style="width:24%">대표 서비스</th>
+            <th style="width:26%">FlowMe와의 관계</th>
+            <th style="width:34%">전략 판단</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Calendar</td>
+            <td>Google Calendar, Outlook</td>
+            <td>가장 먼저 붙을 실행 목적지</td>
+            <td>일정을 새 앱 안에 가두지 말고 캘린더 파일과 피드로 내보낸다.</td>
+          </tr>
+          <tr>
+            <td>Todo</td>
+            <td>Todoist</td>
+            <td>체크리스트 목적지이자 부분 경쟁자</td>
+            <td>할 일 관리 전체를 뺏지 말고, “원본 정보에서 실행 항목을 만들어주는 앞단”을 맡는다.</td>
+          </tr>
+          <tr>
+            <td>Note / Workspace</td>
+            <td>Notion, Obsidian, Readwise</td>
+            <td>정보 저장·지식 관리 목적지</td>
+            <td>문서 앱이 되려 하지 말고, 실행 전환 요약과 Markdown export로 붙는다.</td>
+          </tr>
+          <tr>
+            <td>Sheet / Tracking</td>
+            <td>Google Sheets</td>
+            <td>진행 기록과 표형 Flow의 목적지</td>
+            <td>일정형이 아닌 기록·진행률 Flow는 시트로 확장한다.</td>
+          </tr>
+          <tr>
+            <td>Automation</td>
+            <td>Zapier</td>
+            <td>나중의 배포·자동화 채널</td>
+            <td>초기에는 직접 자동화 플랫폼과 경쟁하지 않고, 반복 사용이 확인된 뒤 연결한다.</td>
+          </tr>
+          <tr>
+            <td>Smart Planner</td>
+            <td>Motion, Reclaim, Sunsama</td>
+            <td>사용자의 하루를 배치하는 경쟁 인접군</td>
+            <td>시간 최적화 경쟁은 피하고, “무엇을 실행할지 구조화”하는 앞단에 집중한다.</td>
+          </tr>
+          <tr>
+            <td>AI Agent</td>
+            <td>MCP, agent ecosystem</td>
+            <td>미래 확장 채널</td>
+            <td>agent가 도구를 호출하는 시대에는 FlowMe가 신뢰 가능한 실행 템플릿 공급자가 될 수 있다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>3. FlowMe가 이길 포지션</h2>
+          <p class="note">정면승부를 피하고, 기존 앱들이 비워둔 변환·신뢰·이동 영역을 차지한다.</p>
+        </div>
+        <span class="tag blue">winning wedge</span>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <h3>1. 실행 변환</h3>
+          <p>글·영상·공식 안내를 “언제, 무엇을, 어떤 순서로 할지”가 보이는 실행 단위로 바꾼다.</p>
+        </div>
+        <div class="card">
+          <h3>2. 신뢰 표시</h3>
+          <p>출처, 확인일, 위험 영역, 주의 문구를 남겨 의료·법률·재무 같은 민감 주제를 조심스럽게 다룬다.</p>
+        </div>
+        <div class="card">
+          <h3>3. 도구 연결</h3>
+          <p>사용자를 새 도구 안에 묶기보다 캘린더, 문서, 체크리스트, 시트로 옮겨 실행하게 한다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>4. 서비스·플랫폼 성장 로드맵</h2>
+          <p class="note">P0/P1/P2 같은 내부 용어 대신, 경영진이 볼 수 있는 성장 단계로 정리했다.</p>
+        </div>
+        <span class="tag amber">roadmap</span>
+      </div>
+
+      <div class="roadmap">
+        <div class="phase">
+          <h3>1단계: 연결 레이어</h3>
+          <p>
+            사용자가 본 URL이나 자료에서 바로 시작한다. FlowMe는 실행 단위로 바꾸고,
+            캘린더·문서·체크리스트로 내보낸다. 목표는 “새 앱을 쓰게 만들기”가 아니라
+            “바로 실행하게 만들기”다.
+          </p>
+        </div>
+        <div class="phase">
+          <h3>2단계: 반복 사용 레이어</h3>
+          <p>
+            자주 쓰는 Flow가 My Flow에 쌓이고, 개인 상황에 맞게 가볍게 조정된다.
+            카테고리별로 어떤 Flow가 실제 실행으로 이어지는지 데이터가 생긴다.
+          </p>
+        </div>
+        <div class="phase">
+          <h3>3단계: 플랫폼 레이어</h3>
+          <p>
+            creator, community, automation, AI agent가 FlowMe의 실행형 Flow를 가져다 쓴다.
+            FlowMe는 실행 템플릿과 출처 신뢰 정보를 공급하는 플랫폼이 된다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>5. 주장별 근거 매트릭스</h2>
+          <p class="note">아래 표는 리포트의 핵심 주장을 근거 유형, 수치/관찰, 신뢰도와 연결한다. 공식 수치가 없는 곳은 추론으로 표시했다.</p>
+        </div>
+        <span class="tag green">evidence matrix</span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:24%">전략 주장</th>
+            <th style="width:24%">근거 자료</th>
+            <th style="width:24%">수치/관찰</th>
+            <th style="width:14%">근거 유형</th>
+            <th style="width:14%">신뢰도</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>FlowMe는 캘린더를 대체하지 말고 실행 일정을 내보내야 한다.</td>
+            <td>Google Calendar 공식 제품 페이지, Microsoft Outlook Calendar 공식 안내</td>
+            <td>두 서비스 모두 일정, 회의, 공유 캘린더, 그룹 일정처럼 이미 실행 시간 관리의 중심 기능을 제공한다.</td>
+            <td>공식 제품/지원 문서</td>
+            <td><span class="tag green">높음</span></td>
+          </tr>
+          <tr>
+            <td>할 일 앱과 정면 경쟁하기보다 실행 항목을 만들어주는 앞단을 맡아야 한다.</td>
+            <td>Todoist 공식 제품 페이지 및 Calendar integrations 페이지</td>
+            <td>Todoist는 due date, calendar view, recurring tasks, Outlook/Reclaim/Sunsama 연동을 제공한다.</td>
+            <td>공식 제품/연동 문서</td>
+            <td><span class="tag green">높음</span></td>
+          </tr>
+          <tr>
+            <td>Notion/Obsidian/Readwise와는 문서·지식 관리가 아니라 실행 전환으로 차별화해야 한다.</td>
+            <td>Notion 공식 제품 페이지, Readwise Reader 공식 제품 페이지, Obsidian Markdown/local notes 관련 공개 자료</td>
+            <td>Notion은 workspace/docs/projects/AI agents를, Readwise는 하이라이트와 Notion/Obsidian/Evernote export를 강조한다.</td>
+            <td>공식 제품 문서 + 공개 제품 설명</td>
+            <td><span class="tag amber">중간</span></td>
+          </tr>
+          <tr>
+            <td>자동화 플랫폼과 초기 정면승부하면 범위가 과해진다.</td>
+            <td>Zapier 공식 홈페이지, Zapier press/about 페이지</td>
+            <td>Zapier는 9,000개 이상 앱 연결, 3.4M+ businesses, 81B automated tasks, 25M Zaps, Fortune 1000의 69% 사용을 공개한다.</td>
+            <td>공식 수치</td>
+            <td><span class="tag green">높음</span></td>
+          </tr>
+          <tr>
+            <td>Motion/Reclaim/Sunsama와는 시간 배치 경쟁보다 실행 전환 앞단에 집중해야 한다.</td>
+            <td>Motion 공식 페이지, Reclaim 공식 페이지, Sunsama 공식 사용 가이드</td>
+            <td>Motion은 AI project/task scheduling, Reclaim은 Google/Outlook 기반 task/habit scheduling, Sunsama는 daily/weekly planning과 URL task 추가를 제공한다.</td>
+            <td>공식 제품/도움말 문서</td>
+            <td><span class="tag green">높음</span></td>
+          </tr>
+          <tr>
+            <td>AI agent 시대에는 FlowMe가 신뢰 가능한 실행 템플릿 공급자가 될 수 있다.</td>
+            <td>Model Context Protocol 공식 소개, Zapier Agents 공식 페이지</td>
+            <td>MCP는 AI applications가 data sources/tools/workflows에 연결되는 표준으로 설명되고, Zapier는 AI agents와 9,000+ app 연결을 강조한다.</td>
+            <td>공식 기술/제품 문서</td>
+            <td><span class="tag amber">중간</span></td>
+          </tr>
+          <tr>
+            <td>FlowMe의 핵심 기회는 “좋은 정보”와 “실제 실행” 사이의 변환 지점이다.</td>
+            <td>위 도구군 전체 비교 + 기존 FlowMe URL-first/외부 연결 전략 부록</td>
+            <td>대부분의 기존 도구는 일정·작업·문서·자동화 목적지는 강하지만, 외부 원본을 검증된 실행 Flow로 바꾸는 전용 레이어는 약하다.</td>
+            <td>복합 비교에 따른 전략적 추론</td>
+            <td><span class="tag amber">중간</span></td>
+          </tr>
+          <tr>
+            <td>초기 연결 방식은 direct API보다 파일/문서/체크리스트가 적절하다.</td>
+            <td>Zapier/Reclaim/Motion/Notion 등 연결형 서비스의 범위와 기존 FlowMe export 전략 부록</td>
+            <td>계정 연동과 자동화 플랫폼은 강력하지만 초기 제품 검증 범위를 크게 키운다. 파일형 내보내기는 빠른 검증에 적합하다.</td>
+            <td>공식 기능 관찰 + 제품 전략 추론</td>
+            <td><span class="tag amber">중간</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>6. 숫자로 보는 외부 생태계 신호</h2>
+          <p class="note">숫자는 공개적으로 확인 가능한 것만 넣었다. 사용량·시장 규모처럼 별도 조사가 필요한 값은 임의로 추정하지 않았다.</p>
+        </div>
+        <span class="tag blue">public signals</span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:22%">신호</th>
+            <th style="width:18%">수치</th>
+            <th style="width:34%">의미</th>
+            <th style="width:26%">FlowMe 판단</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Zapier 연결 생태계</td>
+            <td>9,000+ apps</td>
+            <td>자동화 시장은 이미 거대한 앱 연결 네트워크 중심으로 형성되어 있다.</td>
+            <td>초기에는 Zapier와 경쟁하지 말고, 반복 사용이 보이면 자동화 채널로 붙는다.</td>
+          </tr>
+          <tr>
+            <td>Zapier business footprint</td>
+            <td>3.4M+ businesses</td>
+            <td>업무 자동화 수요는 넓지만, 그만큼 정면승부 비용도 크다.</td>
+            <td>FlowMe는 자동화 이전의 “실행 Flow 생성”에 집중한다.</td>
+          </tr>
+          <tr>
+            <td>Zapier accumulated activity</td>
+            <td>81B automated tasks, 25M Zaps</td>
+            <td>사용자는 도구 간 연결을 실제 업무 자동화로 계속 확장하고 있다.</td>
+            <td>FlowMe도 장기적으로 자동화 입력이 될 수 있지만, 초기에는 템플릿 품질이 먼저다.</td>
+          </tr>
+          <tr>
+            <td>Reclaim time promise</td>
+            <td>40% more time</td>
+            <td>스마트 캘린더는 “시간 배치” 가치 제안으로 경쟁한다.</td>
+            <td>FlowMe는 시간 최적화보다 “무엇을 실행할지 구조화”하는 앞단에 선다.</td>
+          </tr>
+          <tr>
+            <td>Reclaim scheduling claim</td>
+            <td>524% more meeting availability, 15.3% faster booking</td>
+            <td>일정 최적화 시장은 이미 성과 수치 중심으로 경쟁한다.</td>
+            <td>FlowMe가 같은 KPI로 경쟁하면 불리하다. 실행 전환 지표를 따로 잡아야 한다.</td>
+          </tr>
+          <tr>
+            <td>분석 대상 도구군</td>
+            <td>7 groups / 11+ services</td>
+            <td>Calendar, Todo, Note, Sheet, Automation, Smart Planner, AI agent가 모두 연결 후보로 확인됐다.</td>
+            <td>FlowMe는 단일 앱 대체가 아니라 다중 목적지 연결 전략이 맞다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>7. 아직 근거가 약한 주장</h2>
+          <p class="note">아래 항목은 현재 전략적 추론이다. 다음 라운드에서 사용자 조사나 제품 실험으로 보강해야 한다.</p>
+        </div>
+        <span class="tag red">needs validation</span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30%">주장</th>
+            <th style="width:31%">현재 근거</th>
+            <th style="width:39%">추가로 필요한 검증</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>사용자는 URL에서 바로 실행 Flow를 만들고 싶어 한다.</td>
+            <td>기존 FlowMe 전략 문서와 product direction. 외부 시장 수치로 직접 증명되지는 않음.</td>
+            <td>사용자 인터뷰, URL paste 실험, export 클릭률, My Flow 저장률.</td>
+          </tr>
+          <tr>
+            <td>파일형 내보내기가 direct API보다 초기 검증에 충분하다.</td>
+            <td>개발 범위와 연결 비용 관점의 전략 판단.</td>
+            <td>캘린더 파일/Markdown/checklist를 실제로 가져다 쓰는지 관찰.</td>
+          </tr>
+          <tr>
+            <td>FlowMe가 creator/community 플랫폼으로 확장될 수 있다.</td>
+            <td>기존 web-source/community-loop 검토와 외부 creator 도구 흐름.</td>
+            <td>creator가 Flow를 배포할 유인이 있는지, 사용자가 fork/remix하는지 실험.</td>
+          </tr>
+          <tr>
+            <td>AI agent 생태계에서 FlowMe가 실행 템플릿 공급자가 될 수 있다.</td>
+            <td>MCP/Zapier Agents 같은 연결 표준과 agent tooling 확산.</td>
+            <td>FlowMe Flow가 agent tool/action format으로 쓰일 실제 시나리오 검증.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>8. 지금 결정할 것</h2>
+          <p class="note">CEO가 결정해야 할 것은 기능 목록이 아니라 서비스 포지션과 연결 순서다.</p>
+        </div>
+        <span class="tag red">CEO decision</span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:24%">결정</th>
+            <th style="width:31%">추천안</th>
+            <th style="width:24%">대안</th>
+            <th style="width:21%">리스크</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>FlowMe의 포지션</td>
+            <td>생산성 앱이 아니라 “정보를 실행으로 바꾸는 연결 플랫폼”으로 정의한다.</td>
+            <td>캘린더/할 일/노트 앱 중 하나로 포지셔닝한다.</td>
+            <td>기존 대형 앱과 정면 경쟁하게 된다.</td>
+          </tr>
+          <tr>
+            <td>초기 연결 방식</td>
+            <td>캘린더 파일, Markdown, 체크리스트처럼 계정 연동 없이 바로 쓰는 방식을 우선한다.</td>
+            <td>처음부터 Google/Notion/Todoist API를 붙인다.</td>
+            <td>개발 범위가 커지고 검증 속도가 늦어진다.</td>
+          </tr>
+          <tr>
+            <td>AI와 자동화</td>
+            <td>AI는 나중의 보조 수단으로 두고, 먼저 신뢰 가능한 실행 Flow를 만든다.</td>
+            <td>AI가 모든 Flow를 바로 생성하게 한다.</td>
+            <td>민감 영역에서 신뢰와 책임 문제가 커진다.</td>
+          </tr>
+          <tr>
+            <td>플랫폼 확장</td>
+            <td>반복 사용과 검증 사례가 쌓인 뒤 creator, automation, agent 채널로 확장한다.</td>
+            <td>처음부터 marketplace나 agent 플랫폼을 만든다.</td>
+            <td>공급과 수요가 검증되기 전에 구조가 과해진다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>9. 다음 보고/실행 기준</h2>
+          <p class="note">이후 문서는 내부 개발어를 줄이고, 아래 기준으로 작성해야 한다.</p>
+        </div>
+        <span class="tag teal">reporting rule</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>보고서 본문에 남길 말</h3>
+          <p>시장 위치, 사용자 문제, 붙어야 할 서비스, 경쟁하지 않을 영역, 성장 단계, CEO 결정.</p>
+        </div>
+        <div class="card">
+          <h3>부록으로 뺄 말</h3>
+          <p>URL lookup 세부 구현, 테스트 이름, 내부 상태값, 개발 파일명, 작업 분할표, QA 세부 명령.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>근거와 부록</h2>
+          <p class="note">외부 서비스 정보는 2026-07-07 기준 공식/주요 페이지를 확인했다. 수치 근거는 공개 페이지에 명시된 것만 사용했다.</p>
+        </div>
+        <span class="tag blue">sources</span>
+      </div>
+
+      <div class="refs">
+        <a href="https://workspace.google.com/products/calendar/">Google Calendar 공식 제품 페이지</a>
+        <a href="https://support.microsoft.com/en-us/outlook/calendar/introduction-to-the-outlook-calendar">Microsoft Outlook Calendar 공식 안내</a>
+        <a href="https://www.todoist.com/">Todoist 공식 제품 페이지</a>
+        <a href="https://www.notion.com/">Notion 공식 제품 페이지</a>
+        <a href="https://workspace.google.com/products/sheets/">Google Sheets 공식 제품 페이지</a>
+        <a href="https://zapier.com/">Zapier 공식 제품 페이지</a>
+        <a href="https://zapier.com/press">Zapier press/about 수치 근거</a>
+        <a href="https://zapier.com/about">Zapier about 수치 근거</a>
+        <a href="https://www.usemotion.com/">Motion 공식 제품 페이지</a>
+        <a href="https://reclaim.ai/">Reclaim 공식 제품 페이지</a>
+        <a href="https://www.todoist.com/integrations/apps/reclaim">Todoist/Reclaim 공식 연동 페이지</a>
+        <a href="https://help.sunsama.com/docs/usage-guides/tasks/task-management/">Sunsama 공식 사용 가이드</a>
+        <a href="https://readwise.io/read">Readwise Reader 공식 제품 페이지</a>
+        <a href="https://modelcontextprotocol.io/docs/getting-started/intro">Model Context Protocol 공식 소개</a>
+        <a href="./2026-07-05-flowme-url-first-executive-report-ceo-ko.html">기존 URL-first Executive Report 부록</a>
+        <a href="./2026-07-05-flowme-external-connection-strategy-ceo-ko.html">기존 외부 연결/경쟁 전략 부록</a>
+        <a href="./2026-07-06-flowme-url-first-decision-memo-ceo-ko.html">기존 URL-first Decision Memo 부록</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

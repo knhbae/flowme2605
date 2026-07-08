@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe URL-first Executive Report</title>
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #657184;
+      --line: #d9e0ea;
+      --paper: #ffffff;
+      --soft: #f5f7fa;
+      --blue: #1f5f99;
+      --teal: #0f7477;
+      --green: #146c43;
+      --amber: #9b5c00;
+      --red: #a42734;
+      --shadow: 0 12px 28px rgba(23, 32, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #eef2f6;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Arial, sans-serif;
+      line-height: 1.55;
+    }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 20px 60px; }
+
+    .hero {
+      background: linear-gradient(135deg, #ffffff 0%, #f1f8f8 52%, #f7f8fb 100%);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 30px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    h1, h2, h3 { margin: 0; letter-spacing: 0; }
+    h1 {
+      max-width: 920px;
+      font-size: clamp(32px, 4.8vw, 54px);
+      line-height: 1.07;
+      font-weight: 860;
+    }
+
+    .lead {
+      max-width: 900px;
+      margin: 18px 0 0;
+      color: #304052;
+      font-size: 18px;
+    }
+
+    .answer {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 14px;
+    }
+
+    .answer-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.92);
+      padding: 18px;
+    }
+
+    .answer-box strong { display: block; margin-bottom: 8px; font-size: 15px; }
+    .answer-box p { margin: 0; color: #344256; }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .metric {
+      min-height: 104px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .metric b { display: block; font-size: 30px; line-height: 1.1; }
+    .metric span { display: block; margin-top: 8px; color: var(--muted); font-size: 13px; }
+
+    section {
+      margin-top: 22px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    h2 { font-size: 24px; line-height: 1.2; }
+    .note { margin: 4px 0 0; max-width: 680px; color: var(--muted); font-size: 14px; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: #fff;
+      color: #344256;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .tag.green { color: var(--green); border-color: #b8dcc8; background: #effaf3; }
+    .tag.amber { color: var(--amber); border-color: #efd09f; background: #fff8eb; }
+    .tag.red { color: var(--red); border-color: #efb7be; background: #fff1f3; }
+    .tag.blue { color: var(--blue); border-color: #bed4ee; background: #f1f6fd; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+      padding: 16px;
+    }
+
+    .card h3 { font-size: 17px; margin-bottom: 8px; }
+    .card p { margin: 0; color: #344256; }
+
+    .map {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(130px, 1fr));
+      gap: 10px;
+    }
+
+    .map-step {
+      position: relative;
+      min-height: 132px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .map-step:not(:last-child)::after {
+      content: ">";
+      position: absolute;
+      right: -10px;
+      top: 43%;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .map-step b { display: block; margin-bottom: 6px; }
+    .map-step span { display: block; color: var(--muted); font-size: 13px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 14px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 10px;
+      text-align: left;
+      vertical-align: top;
+      overflow-wrap: anywhere;
+    }
+
+    th {
+      background: #f0f4f8;
+      color: #344256;
+      font-size: 12px;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .decision-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      counter-reset: decisions;
+    }
+
+    .decision-card {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 18px;
+      min-height: 164px;
+    }
+
+    .decision-card::before {
+      counter-increment: decisions;
+      content: counter(decisions);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: #fff;
+      font-weight: 850;
+      margin-bottom: 10px;
+    }
+
+    .decision-card h3 { font-size: 17px; margin-bottom: 8px; }
+    .decision-card p { margin: 0; color: #344256; }
+
+    .refs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .refs a {
+      display: block;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 880px) {
+      .wrap { padding: 14px 10px 36px; }
+      .hero, section { padding: 18px; }
+      .answer, .metrics, .grid-2, .grid-3, .map, .decision-list, .refs { grid-template-columns: 1fr; }
+      .section-head { display: block; }
+      .tag { margin-top: 10px; }
+      .map-step:not(:last-child)::after { display: none; }
+      table { display: block; overflow-x: auto; }
+      th, td { min-width: 150px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <div class="meta">
+        <span>FlowMe Executive Report</span>
+        <span>2026-07-05</span>
+        <span>5분 요약</span>
+      </div>
+      <h1>FlowMe는 URL을 실행 가능한 Flow로 바꾸는 연결 레이어다</h1>
+      <p class="lead">
+        지금 결정해야 할 방향은 명확하다. FlowMe는 AI가 계획을 새로 만들어주는 앱으로 시작하지 않는다.
+        사용자가 이미 보고 있는 URL을 출발점으로 기존 Flow를 찾아주고, 출처 신뢰 정보를 붙여,
+        캘린더·문서·체크리스트로 바로 옮기게 하는 제품으로 먼저 검증한다.
+      </p>
+
+      <div class="answer">
+        <div class="answer-box">
+          <strong>한 문장 결론</strong>
+          <p>
+            <b>URL-first → 신뢰 가능한 Flow 찾기 → portable export → My Flow 저장</b>이 P0다.
+            Home 개편, direct OAuth/API, AI-first 생성, full editor는 지금 하지 않는다.
+          </p>
+        </div>
+        <div class="answer-box">
+          <strong>이번 보고서의 역할</strong>
+          <p>
+            기존 상세 보고서를 새로 쓰는 것이 아니라, CEO가 판단할 핵심만 하나로 압축한 최종 요약본이다.
+          </p>
+        </div>
+      </div>
+
+      <div class="metrics">
+        <div class="metric">
+          <b>1</b>
+          <span>우선 진입점: 사용자가 본 URL을 `/flows`에 넣는 것.</span>
+        </div>
+        <div class="metric">
+          <b>3</b>
+          <span>P0 export: `.ics`, Markdown, checklist.</span>
+        </div>
+        <div class="metric">
+          <b>12</b>
+          <span>검증 canary: P0-now 4, P1-review 6, P2-hold 2.</span>
+        </div>
+        <div class="metric">
+          <b>3</b>
+          <span>CEO가 지금 결정할 항목 수.</span>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>1. FlowMe는 무엇인가</h2>
+          <p class="note">복잡한 설명을 줄이면 FlowMe의 현재 포지션은 아래 한 줄이다.</p>
+        </div>
+        <span class="tag green">position</span>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <h3>사용자 입장</h3>
+          <p>“좋은 글이나 안내를 봤는데, 내가 바로 실행할 수 있는 일정과 체크리스트로 바꾸고 싶다.”</p>
+        </div>
+        <div class="card">
+          <h3>FlowMe의 역할</h3>
+          <p>URL을 받아 기존 Flow를 찾아주고, 출처와 주의사항을 붙인 뒤 내 도구로 옮기게 한다.</p>
+        </div>
+        <div class="card">
+          <h3>초기 승부처</h3>
+          <p>새로운 앱 습관을 강요하지 않고, 사용자가 이미 쓰는 캘린더·문서·체크리스트에 붙는다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>2. 전략 지도</h2>
+          <p class="note">CEO가 봐야 할 전체 흐름은 이 다섯 단계다.</p>
+        </div>
+        <span class="tag blue">strategy map</span>
+      </div>
+
+      <div class="map">
+        <div class="map-step">
+          <b>URL을 넣는다</b>
+          <span>Home이나 AI prompt가 아니라 `/flows`의 URL lookup이 첫 검증 루프다.</span>
+        </div>
+        <div class="map-step">
+          <b>기존 Flow를 찾는다</b>
+          <span>새로 생성하기 전에 이미 검토된 source-backed Flow를 재사용한다.</span>
+        </div>
+        <div class="map-step">
+          <b>출처 신뢰를 붙인다</b>
+          <span>source, 확인일, 위험도, 주의 문구를 숨기지 않는다.</span>
+        </div>
+        <div class="map-step">
+          <b>내 도구로 옮긴다</b>
+          <span>캘린더 파일, Markdown, 체크리스트로 바로 가져간다.</span>
+        </div>
+        <div class="map-step">
+          <b>Canary로 검증한다</b>
+          <span>12개 후보로 hit, review, hold 상태를 검증한다.</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>3. 해야 할 것과 하지 말 것</h2>
+          <p class="note">전략이 어려워진 이유는 할 일과 하지 않을 일이 섞였기 때문이다. P0는 아래처럼 좁힌다.</p>
+        </div>
+        <span class="tag amber">focus</span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:50%">해야 할 것</th>
+            <th style="width:50%">지금 하지 말 것</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>URL을 넣으면 기존 Flow를 먼저 찾아준다.</td>
+            <td>AI가 새 계획을 먼저 생성하게 하지 않는다.</td>
+          </tr>
+          <tr>
+            <td>출처, 확인일, 위험도, 주의 문구를 함께 보여준다.</td>
+            <td>검증되지 않은 정보를 확정 조언처럼 보이게 하지 않는다.</td>
+          </tr>
+          <tr>
+            <td>`.ics`, Markdown, checklist로 기존 도구에 붙는다.</td>
+            <td>초기부터 Google/Notion/Todoist OAuth를 붙이지 않는다.</td>
+          </tr>
+          <tr>
+            <td>P0-now 4개 canary로 실제 실행 루프를 검증한다.</td>
+            <td>12개 전체를 한 번에 제품화하려 하지 않는다.</td>
+          </tr>
+          <tr>
+            <td>My Flow 저장은 사용자의 실행 기록으로 남긴다.</td>
+            <td>Home redesign, full editor, fake usage를 섞지 않는다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>4. 외부 연결 우선순위</h2>
+          <p class="note">FlowMe는 모든 생산성 앱과 경쟁하지 않는다. 먼저 export로 붙고, API는 나중에 판단한다.</p>
+        </div>
+        <span class="tag green">connect, not compete</span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:18%">우선순위</th>
+            <th style="width:30%">연결 방식</th>
+            <th style="width:32%">대상</th>
+            <th style="width:20%">이유</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag green">P0</span></td>
+            <td>portable export</td>
+            <td>Calendar `.ics`, Markdown, checklist</td>
+            <td>계정 연동 없이 바로 검증 가능하다.</td>
+          </tr>
+          <tr>
+            <td><span class="tag amber">P1</span></td>
+            <td>가벼운 확장</td>
+            <td>CSV/sheet, calendar feed, Todoist/Notion 후보</td>
+            <td>P0 사용 증거가 생긴 뒤 붙인다.</td>
+          </tr>
+          <tr>
+            <td><span class="tag blue">P2</span></td>
+            <td>platform / agent</td>
+            <td>Zapier, MCP/agent, direct automation</td>
+            <td>데이터와 반복 사용이 확인된 뒤 검토한다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>5. Canary 12 요약</h2>
+          <p class="note">Canary 12는 콘텐츠 목록이 아니라 전략 검증 장치다. CEO 보고에서는 전체 상세보다 운영 분류가 중요하다.</p>
+        </div>
+        <span class="tag blue">12 candidates</span>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <h3>P0-now 4개</h3>
+          <p>바로 실행 루프를 검증한다. 이사, 차량구매/점검, 예방접종, 에어컨필터처럼 일정·체크리스트·주의 문구가 분명한 후보를 우선한다.</p>
+        </div>
+        <div class="card">
+          <h3>P1-review 6개</h3>
+          <p>좋은 후보지만 source/import 권리, 민감 문구, creator/community 운영 기준을 더 확인해야 한다.</p>
+        </div>
+        <div class="card">
+          <h3>P2-hold 2개</h3>
+          <p>비교와 백업 목적이다. P0 성공 기준에 넣지 않고 export/save도 열지 않는다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>6. 지금 필요한 결정 3개</h2>
+          <p class="note">이 세 가지가 승인되면 다음 개발 세션으로 넘길 수 있다.</p>
+        </div>
+        <span class="tag red">CEO decision</span>
+      </div>
+
+      <div class="decision-list">
+        <div class="decision-card">
+          <h3>URL-first를 P0 진입점으로 승인</h3>
+          <p>FlowMe의 첫 검증 루프는 Home 개편이나 AI 생성이 아니라 `/flows` URL lookup이다.</p>
+        </div>
+        <div class="decision-card">
+          <h3>Export Pack v1을 P0 연결 방식으로 승인</h3>
+          <p>초기에는 direct API보다 `.ics`, Markdown, checklist로 기존 도구에 붙는다.</p>
+        </div>
+        <div class="decision-card">
+          <h3>Trust와 잠금 원칙 승인</h3>
+          <p>민감 영역은 출처·확인일·주의 문구를 붙이고, 검토 전 후보는 저장/export를 잠근다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>7. 다음 단계</h2>
+          <p class="note">이 보고서 이후 새 전략을 더 쓰기보다, 개발 세션 handoff를 좁게 시작해야 한다.</p>
+        </div>
+        <span class="tag amber">handoff</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>전략 세션 종료 조건</h3>
+          <p>위 3개 결정이 승인되면 전략은 충분하다. 이후에는 “추가 기획”이 아니라 “좁은 개발 handoff”가 필요하다.</p>
+        </div>
+        <div class="card">
+          <h3>개발 세션 시작 조건</h3>
+          <p>현재 변경 흐름과 충돌하지 않도록 작업 소유권을 확인하고, Canary 정책 → `/flows` 연결 → export/trust → QA 순서로 진행한다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>근거 문서</h2>
+          <p class="note">아래 상세 보고서들은 이 Executive Report의 부록이다. 본문은 판단용, 링크는 근거용이다.</p>
+        </div>
+        <span class="tag blue">appendix</span>
+      </div>
+
+      <div class="refs">
+        <a href="./2026-07-05-url-first-p0-ceo-report-ko.html">URL-first P0 CEO 보고서</a>
+        <a href="./2026-07-05-flowme-external-connection-strategy-ceo-ko.html">외부 연결/경쟁 전략 보고서</a>
+        <a href="./2026-07-05-flowme-export-pack-v1-strategy-ceo-ko.html">Export Pack v1 전략 보고서</a>
+        <a href="./2026-07-05-flowme-source-version-trust-ledger-ceo-ko.html">source/version/trust 보고서</a>
+        <a href="./2026-07-05-flowme-canary-12-p0-portfolio-ceo-ko.html">Canary 12 포트폴리오 보고서</a>
+        <a href="./2026-07-05-flowme-canary-12-url-first-p0-execution-scenarios-ceo-ko.html">Canary 12 실행 시나리오 보고서</a>
+        <a href="./2026-07-05-flowme-canary-12-p0-implementation-slice-qa-scorecard-ceo-ko.html">Implementation / QA scorecard 보고서</a>
+        <a href="./2026-07-05-flowme-canary-12-strategy-dependency-handoff-ceo-ko.html">전략 의존성 / handoff 보고서</a>
+        <a href="../specs/2026-07-05-url-lookup-production-slice/spec.md">URL lookup production slice spec</a>
+        <a href="../specs/2026-07-05-url-lookup-production-slice/qa.md">URL lookup production slice QA</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

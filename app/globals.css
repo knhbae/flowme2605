@@ -1,9 +1,51 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+:root {
+  --flowme-bg: #fafaf8;
+  --flowme-surface: #ffffff;
+  --flowme-text: #1b1a17;
+  --flowme-muted: #6e6b64;
+  --flowme-border: #e7e4dd;
+  --flowme-soft: #f3f1ec;
+  --flowme-action: #3654ff;
+  --flowme-action-hover: #2945e8;
+  --flowme-trust: #1f8a5b;
+  --flowme-mobile-tab-clearance: calc(6.5rem + env(safe-area-inset-bottom));
+  --flowme-mobile-save-clearance: calc(8.5rem + env(safe-area-inset-bottom));
+  --flowme-mobile-map-save-clearance: calc(9rem + env(safe-area-inset-bottom));
+  --flowme-mobile-export-clearance: calc(16rem + env(safe-area-inset-bottom));
+}
+
 body {
-  background: #f8fafc;
-  color: #0f172a;
+  background: var(--flowme-bg);
+  color: var(--flowme-text);
+}
+
+@media (max-width: 767px) {
+  html {
+    scroll-padding-bottom: var(--flowme-mobile-export-clearance);
+  }
+
+  .flowme-mobile-save-clearance {
+    padding-bottom: var(--flowme-mobile-save-clearance);
+  }
+
+  .flowme-mobile-map-save-clearance {
+    padding-bottom: var(--flowme-mobile-map-save-clearance);
+  }
+
+  .flowme-mobile-export-clearance {
+    padding-bottom: var(--flowme-mobile-export-clearance);
+  }
+}
+
+@media (min-width: 768px) {
+  .flowme-mobile-save-clearance,
+  .flowme-mobile-map-save-clearance,
+  .flowme-mobile-export-clearance {
+    padding-bottom: 2.5rem;
+  }
 }
 
 /* ==========================================
@@ -166,11 +208,11 @@ body {
 
 /* My Flow calendar density */
 .fc {
-  --fc-border-color: #e2e8f0;
-  --fc-page-bg-color: #ffffff;
-  --fc-neutral-bg-color: #f8fafc;
-  --fc-today-bg-color: #eff6ff;
-  color: #0f172a;
+  --fc-border-color: var(--flowme-border);
+  --fc-page-bg-color: var(--flowme-surface);
+  --fc-neutral-bg-color: var(--flowme-bg);
+  --fc-today-bg-color: #eef1ff;
+  color: var(--flowme-text);
   font-size: 12px;
 }
 
@@ -181,7 +223,7 @@ body {
 
 .fc .fc-col-header-cell-cushion {
   padding: 6px 0;
-  color: #475569;
+  color: var(--flowme-muted);
   font-size: 11px;
   font-weight: 800;
 }
@@ -197,20 +239,20 @@ body {
 
 .fc .fc-daygrid-day-number {
   padding: 3px 3px 1px;
-  color: #334155;
+  color: var(--flowme-text);
   font-size: 11px;
   font-weight: 800;
 }
 
 .fc .my-flow-calendar-selected-date .fc-daygrid-day-frame {
-  background: #dbeafe;
-  box-shadow: inset 0 0 0 2px #2563eb;
+  background: #eef1ff;
+  box-shadow: inset 0 0 0 2px var(--flowme-action);
 }
 
 .fc .my-flow-calendar-selected-date .fc-daygrid-day-number {
   margin: 1px;
   border-radius: 999px;
-  background: #2563eb;
+  background: var(--flowme-action);
   color: #ffffff;
 }
 
@@ -246,13 +288,13 @@ body {
 
 .fc .fc-daygrid-event:hover,
 .fc .fc-daygrid-event:focus-visible {
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18);
+  box-shadow: 0 0 0 2px rgba(54, 84, 255, 0.18);
   transform: translateY(-1px);
 }
 
 .fc .fc-daygrid-event.my-flow-calendar-active-event {
-  border-color: #2563eb !important;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.24);
+  border-color: var(--flowme-action) !important;
+  box-shadow: 0 0 0 2px rgba(54, 84, 255, 0.24);
 }
 
 @media (max-width: 640px) {
@@ -261,12 +303,12 @@ body {
   }
 
   .fc .fc-daygrid-day-frame {
-    min-height: 70px;
+    min-height: 52px;
     padding: 1px;
   }
 
   .fc .fc-col-header-cell-cushion {
-    padding: 5px 0;
+    padding: 3px 0;
     font-size: 10px;
   }
 
@@ -277,7 +319,7 @@ body {
 
   .fc .fc-daygrid-event {
     min-height: 28px;
-    padding: 3px 1px;
+    padding: 2px 1px;
   }
 
   .fc .fc-daygrid-event.my-flow-routine-rail-event {

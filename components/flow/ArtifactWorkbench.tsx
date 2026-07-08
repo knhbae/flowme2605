@@ -12,7 +12,9 @@ import {
   type ArtifactLogTable,
   type ArtifactMemoField,
 } from '@/lib/flow/artifact-fields';
-import { addDays, formatDate, getRangeEnd } from '@/lib/flow/date';
+import { addDays, formatDate, formatKoreanShortDate, getRangeEnd } from '@/lib/flow/date';
+import { toUserFacingSourceTitle } from '@/lib/flow/display-title';
+import { FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
 import { timingLabel } from '@/lib/flow/parser';
 import type { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState } from '@/lib/flow/types';
 
@@ -88,6 +90,28 @@ const mobileArtifactCtaSlugs = new Set(['moving-d30-basic', 'computer-skills-d30
 const mealCalendarOnlySlugs = new Set(['baby-food-menu-recipe']);
 const checkOnlyRoutineSlugs = new Set(['diet-habit-2week', 'real-thankyou-bubu-home-workout-starter', 'real-fitvely-diet-record-routine']);
 const maintenanceRoutineSlugs = new Set(['washer-tub-clean-monthly', 'monstera-care-routine']);
+const FLOWME_SURFACE_CARD_CLASS = 'rounded-2xl border border-[#E7E4DD] bg-white p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)]';
+const FLOWME_WORKBENCH_CARD_CLASS = `${FLOWME_SURFACE_CARD_CLASS} md:p-5`;
+const FLOWME_PANEL_CARD_CLASS = 'rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-4';
+const FLOWME_INNER_ROW_CLASS = 'rounded-xl border border-[#E7E4DD] bg-white px-3 py-2 text-sm shadow-[0_1px_0_rgba(27,26,23,0.03)]';
+const FLOWME_EYEBROW_CLASS = 'text-sm font-semibold text-[#3654FF]';
+const FLOWME_TITLE_CLASS = 'text-base font-semibold text-[#1B1A17]';
+const FLOWME_PROGRESS_CHIP_CLASS = 'rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 text-xs font-semibold text-[#6E6B64]';
+const FLOWME_BUTTON_PRIMARY_CLASS = 'rounded-xl bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8] disabled:bg-[#C9C6BE]';
+const FLOWME_BUTTON_SECONDARY_CLASS = 'rounded-xl border border-[#D8D5CD] bg-white px-3 py-2 text-sm font-semibold text-[#1B1A17] hover:border-[#3654FF]/40 hover:text-[#3654FF] disabled:border-[#E7E4DD] disabled:text-[#A7A39A]';
+const FLOWME_DISCLOSURE_CLASS = 'mt-2 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2 text-sm';
+const FLOWME_SUPPORT_CARD_CLASS = 'rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-4';
+const FLOWME_COMPACT_SUPPORT_CARD_CLASS = 'rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-3';
+const FLOWME_TABLE_CARD_CLASS = 'overflow-x-auto rounded-2xl border border-[#E7E4DD] bg-white shadow-[0_1px_0_rgba(27,26,23,0.03)]';
+const FLOWME_TABLE_HEADER_CLASS = 'border-b border-[#E7E4DD] px-3 py-3';
+const FLOWME_TABLE_HEAD_CLASS = 'bg-[#FAFAF8] text-xs font-semibold text-[#6E6B64]';
+const FLOWME_INPUT_CLASS = 'rounded-xl border border-[#D8D5CD] bg-white px-3 py-2 text-sm text-[#1B1A17] outline-none focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15';
+const FLOWME_SMALL_INPUT_CLASS = 'rounded-xl border border-[#D8D5CD] bg-white px-2 py-1.5 text-sm text-[#1B1A17] outline-none focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15';
+const FLOWME_CHECKBOX_CLASS = 'h-4 w-4 rounded border-[#D8D5CD] text-[#3654FF]';
+const FLOWME_SMALL_CHECKBOX_CLASS = 'h-3 w-3 rounded border-[#D8D5CD] text-[#3654FF]';
+const FLOWME_LINK_BUTTON_CLASS = 'shrink-0 rounded-xl border border-[#D8D5CD] bg-white px-3 py-1.5 text-xs font-semibold text-[#3654FF] hover:border-[#3654FF]/40';
+const FLOWME_SUCCESS_CARD_CLASS = 'rounded-2xl border border-[#E7E4DD] bg-[#EAF7F0] p-4';
+const FLOWME_WARNING_CARD_CLASS = 'rounded-2xl border border-[#F0D8AE] bg-[#FFF7E8] p-3';
 
 export function ArtifactWorkbench({
   bundle,
@@ -108,14 +132,14 @@ export function ArtifactWorkbench({
   const isJeonsePrecheck = bundle.flow.slug === 'jeonse-contract-precheck-docs';
 
   return (
-    <section aria-label="Flow artifact workbench" className={isJeonsePrecheck ? 'my-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-5' : 'my-6 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-5'}>
+    <section aria-label="Flow artifact workbench" className={isJeonsePrecheck ? `my-4 ${FLOWME_WORKBENCH_CARD_CLASS}` : `my-6 ${FLOWME_WORKBENCH_CARD_CLASS}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-blue-700">{isJeonsePrecheck ? '계약 일정' : '내 실행판'}</p>
-          <h2 className={isJeonsePrecheck ? 'mt-1 text-xl font-bold tracking-normal text-slate-950 md:text-2xl' : 'mt-1 text-2xl font-bold tracking-normal text-slate-950'}>{surfaceTitle(plan.primarySurface, bundle)}</h2>
-          {isJeonsePrecheck ? null : <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">{surfaceDescription(plan.primarySurface, bundle)}</p>}
+          <p className={FLOWME_EYEBROW_CLASS}>{isJeonsePrecheck ? '계약 일정' : '내 실행판'}</p>
+          <h2 className={isJeonsePrecheck ? 'mt-1 text-xl font-bold tracking-normal text-[#1B1A17] md:text-2xl' : 'mt-1 text-2xl font-bold tracking-normal text-[#1B1A17]'}>{surfaceTitle(plan.primarySurface, bundle)}</h2>
+          {isJeonsePrecheck ? null : <p className="mt-2 max-w-2xl text-sm leading-6 text-[#6E6B64]">{surfaceDescription(plan.primarySurface, bundle)}</p>}
         </div>
-        <span className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
+        <span className={FLOWME_PROGRESS_CHIP_CLASS}>
           {done}/{total} 완료
         </span>
       </div>
@@ -199,29 +223,29 @@ function ArtifactExportButtons({ actions, kinds, labels = {}, mobileArtifactLabe
       {kinds.map((kind) => {
         if (kind === 'copy') {
           return (
-            <button key={kind} className="rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 disabled:bg-slate-300" disabled={disabled} title={disabledTitle} onClick={actions.onCopyText}>
-              {labels.copy ?? '메모/노션에 복사'}
+            <button key={kind} className={FLOWME_BUTTON_PRIMARY_CLASS} disabled={disabled} title={disabledTitle} onClick={actions.onCopyText}>
+              {labels.copy ?? FLOW_EXPORT_LABELS.checklistCopy}
             </button>
           );
         }
         if (kind === 'excel') {
           return (
-            <button key={kind} className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700 disabled:border-slate-200 disabled:text-slate-400" disabled={disabled} title={disabledTitle} onClick={actions.onDownloadExcel}>
-              {labels.excel ?? '엑셀로 받기'}
+            <button key={kind} className={FLOWME_BUTTON_SECONDARY_CLASS} disabled={disabled} title={disabledTitle} onClick={actions.onDownloadExcel}>
+              {labels.excel ?? FLOW_EXPORT_LABELS.sheetFile}
             </button>
           );
         }
         if (kind === 'calendar' && actions.canExportCalendar) {
           return (
-            <button key={kind} className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700 disabled:border-slate-200 disabled:text-slate-400" disabled={disabled} title={disabledTitle} onClick={actions.onDownloadCalendar}>
-              {labels.calendar ?? '캘린더 받기'}
+            <button key={kind} className={FLOWME_BUTTON_SECONDARY_CLASS} disabled={disabled} title={disabledTitle} onClick={actions.onDownloadCalendar}>
+              {labels.calendar ?? FLOW_EXPORT_LABELS.calendarFile}
             </button>
           );
         }
         if (kind === 'draft') {
           return (
-            <button key={kind} className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700" onClick={actions.onCopyToEditableDraft}>
-              {labels.draft ?? '내 버전'}
+            <button key={kind} className={`${FLOWME_BUTTON_SECONDARY_CLASS} bg-[#FAFAF8]`} onClick={actions.onCopyToEditableDraft}>
+              {labels.draft ?? FLOW_EXPORT_LABELS.editableDraft}
             </button>
           );
         }
@@ -242,10 +266,10 @@ function renderMobileArtifactExportButton(kind: ArtifactExportActionKind, action
   if (kind === 'calendar' && !actions.canExportCalendar) return null;
 
   const config = {
-    copy: { label: '텍스트 복사', aria: `텍스트 복사: ${artifactLabel}`, onClick: actions.onCopyText, disabled },
-    excel: { label: '시트로 받기', aria: `시트로 받기: ${artifactLabel}`, onClick: actions.onDownloadExcel, disabled },
-    calendar: { label: '캘린더로 받기', aria: `캘린더로 받기: ${artifactLabel}`, onClick: actions.onDownloadCalendar, disabled },
-    draft: { label: '내 버전', aria: `내 버전 만들기: ${artifactLabel}`, onClick: actions.onCopyToEditableDraft, disabled: false },
+    copy: { label: `${artifactLabel} 복사`, aria: `${FLOW_EXPORT_LABELS.checklistCopy}: ${artifactLabel}`, onClick: actions.onCopyText, disabled },
+    excel: { label: `${artifactLabel} 받기`, aria: `${FLOW_EXPORT_LABELS.sheetFile}: ${artifactLabel}`, onClick: actions.onDownloadExcel, disabled },
+    calendar: { label: `${artifactLabel} 받기`, aria: `${FLOW_EXPORT_LABELS.calendarFile}: ${artifactLabel}`, onClick: actions.onDownloadCalendar, disabled },
+    draft: { label: FLOW_EXPORT_LABELS.editableDraft, aria: `내 버전 만들기: ${artifactLabel}`, onClick: actions.onCopyToEditableDraft, disabled: false },
   }[kind];
 
   return (
@@ -253,7 +277,7 @@ function renderMobileArtifactExportButton(kind: ArtifactExportActionKind, action
       key={kind}
       data-testid={`mobile-artifact-export-${kind}`}
       aria-label={config.aria}
-      className="w-full rounded-md border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700 disabled:border-slate-200 disabled:text-slate-400"
+      className={`${FLOWME_BUTTON_SECONDARY_CLASS} w-full py-2.5`}
       disabled={config.disabled}
       title={config.disabled ? disabledTitle : undefined}
       type="button"
@@ -282,7 +306,7 @@ function ArtifactExportStatus({ actions }: { actions?: ArtifactExportActions }) 
   if (!actions || (!actions.copyState && !actions.downloadState && !actions.calendarState)) return null;
 
   return (
-    <div className="mt-2 text-sm font-semibold text-blue-700">
+    <div className="mt-2 text-sm font-semibold text-[#3654FF]">
       {[actions.copyState, actions.downloadState, actions.calendarState].filter(Boolean).join(' · ')}
     </div>
   );
@@ -332,22 +356,33 @@ function getWorkbenchItemDetail(bundle: FlowBundle, itemId: string): WorkbenchIt
   return bundle.itemDetails?.find((detail) => detail.item_id === itemId);
 }
 
-function WorkbenchDetailDisclosure({ detail }: { detail?: WorkbenchItemDetail }) {
-  if (!detail?.why && !detail?.how && !detail?.completion_criteria && !detail?.caution && !detail?.links?.length) return null;
+function WorkbenchDetailDisclosure({
+  detail,
+  showSourceLinks = true,
+  suppressedCaution,
+}: {
+  detail?: WorkbenchItemDetail;
+  showSourceLinks?: boolean;
+  suppressedCaution?: string;
+}) {
+  if (!detail) return null;
+  const visibleLinks = showSourceLinks ? detail.links ?? [] : [];
+  const caution = detail.caution && detail.caution !== suppressedCaution ? detail.caution : '';
+  if (!detail.why && !detail.how && !detail.completion_criteria && !caution && !visibleLinks.length) return null;
 
   return (
-    <details className="mt-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
-      <summary className="cursor-pointer font-semibold text-blue-700">자세히</summary>
-      <div className="mt-2 space-y-2 leading-6 text-slate-700">
+    <details className={FLOWME_DISCLOSURE_CLASS}>
+      <summary className="cursor-pointer font-semibold text-[#3654FF]">자세히</summary>
+      <div className="mt-2 space-y-2 leading-6 text-[#4A4842]">
         {detail.how ? <p><b>실행:</b> {detail.how}</p> : null}
         {detail.completion_criteria ? <p><b>완료:</b> {detail.completion_criteria}</p> : null}
         {detail.why ? <p><b>이유:</b> {detail.why}</p> : null}
-        {detail.caution ? <p className="text-amber-800"><b>주의:</b> {detail.caution}</p> : null}
-        {detail.links?.length ? (
+        {caution ? <p className="text-amber-800"><b>주의:</b> {caution}</p> : null}
+        {visibleLinks.length ? (
           <div className="flex flex-wrap gap-2 pt-1">
-            {detail.links.map((link) => (
-              <a key={`${link.label}-${link.url}`} className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:border-blue-300 hover:text-blue-700" href={link.url} target="_blank" rel="noreferrer">
-                {link.label}
+            {visibleLinks.map((link) => (
+              <a key={`${link.label}-${link.url}`} className="rounded-xl border border-[#D8D5CD] bg-white px-2 py-1 text-xs font-semibold text-[#6E6B64] hover:border-[#3654FF]/40 hover:text-[#3654FF]" href={link.url} target="_blank" rel="noreferrer">
+                {toUserFacingSourceTitle(link.label)}
               </a>
             ))}
           </div>
@@ -439,12 +474,12 @@ function TimelineWorkbench({
       {bundle.flow.slug === 'plank-30-day-challenge' ? <PlankChallengeSourceBridge sourceUrl={bundle.flow.source_url} /> : null}
       <div className="grid gap-4 lg:grid-cols-[1.05fr_1fr]">
         <MiniMonthCalendar title="월간 캘린더" eyebrow="캘린더" month={month} rows={rows} exportActions={exportActions} mobileArtifactLabel={getMobileArtifactLabel(bundle, 'month_calendar')} />
-        <div data-testid="artifact-list-card" className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+        <div data-testid="artifact-list-card" className={FLOWME_PANEL_CARD_CLASS}>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-blue-700">{shouldShowFullSourceTable ? '원문 표' : '체크리스트'}</p>
-              <h3 className="text-base font-semibold text-slate-950">{shouldShowFullSourceTable ? '30일 실행표' : '실행 리스트'}</h3>
-              {shouldShowFullSourceTable ? <p className="mt-1 text-xs font-medium text-slate-500">Day 1부터 Day 30까지 원문 순서를 모두 보여줍니다.</p> : null}
+              <p className={FLOWME_EYEBROW_CLASS}>{shouldShowFullSourceTable ? '원문 표' : '체크리스트'}</p>
+              <h3 className={FLOWME_TITLE_CLASS}>{shouldShowFullSourceTable ? '30일 실행표' : '실행 리스트'}</h3>
+              {shouldShowFullSourceTable ? <p className="mt-1 text-xs font-medium text-[#6E6B64]">Day 1부터 Day 30까지 원문 순서를 모두 보여줍니다.</p> : null}
             </div>
             <ArtifactExportButtons
               actions={exportActions}
@@ -458,19 +493,19 @@ function TimelineWorkbench({
             {listRows.map((row) => {
               const detail = getWorkbenchItemDetail(bundle, row.id);
               return (
-                <div key={row.id} className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+                <div key={row.id} className={FLOWME_INNER_ROW_CLASS}>
                   <label className="grid grid-cols-[22px_92px_1fr] gap-3">
                     <input
                       aria-label={`실행판 체크: ${row.title}`}
-                      className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-700"
+                      className="mt-0.5 h-4 w-4 rounded border-[#D8D5CD] text-[#3654FF]"
                       checked={Boolean(checks[row.id])}
                       onChange={() => onToggleItem(row.id)}
                       type="checkbox"
                     />
-                    <span className="font-mono text-xs font-semibold text-blue-700">{row.startDate ? `${row.timing} · ${row.startDate.slice(5)}` : row.timing}</span>
-                    <span className={`font-medium ${checks[row.id] ? 'text-slate-400 line-through' : 'text-slate-800'}`}>{row.title}</span>
+                    <span className="font-mono text-xs font-semibold text-[#3654FF]">{row.startDate ? `${row.timing} · ${row.startDate.slice(5)}` : row.timing}</span>
+                    <span className={`font-medium ${checks[row.id] ? 'text-[#A7A39A] line-through' : 'text-[#1B1A17]'}`}>{row.title}</span>
                   </label>
-                  <WorkbenchDetailDisclosure detail={detail} />
+                  <WorkbenchDetailDisclosure detail={detail} showSourceLinks={false} />
                 </div>
               );
             })}
@@ -578,64 +613,64 @@ function MealReactionWorkbench({
   return (
     <div data-testid="meal-reaction-workbench" className="space-y-4">
       {bundle.flow.warning ? (
-        <div data-testid="meal-sensitive-warning" className="rounded-lg border border-amber-200 bg-amber-50 p-4">
-          <p className="text-sm font-semibold text-amber-900">알레르기·전문가 확인</p>
-          <p className="mt-1 text-sm leading-6 text-amber-950 md:hidden">
+        <div data-testid="meal-sensitive-warning" className={`${FLOWME_WARNING_CARD_CLASS} p-4`}>
+          <p className="text-sm font-semibold text-[#8A5A12]">알레르기·전문가 확인</p>
+          <p className="mt-1 text-sm leading-6 text-[#5F4115] md:hidden">
             아이 건강 상태, 알레르기, 시작 시기, 재료 선택은 전문가 또는 공식 정보를 확인하세요.
           </p>
-          <details className="mt-2 text-sm leading-6 text-amber-950 md:hidden">
-            <summary className="cursor-pointer font-semibold text-amber-900">주의 문구 전체 보기</summary>
+          <details className="mt-2 text-sm leading-6 text-[#5F4115] md:hidden">
+            <summary className="cursor-pointer font-semibold text-[#8A5A12]">주의 문구 전체 보기</summary>
             <p className="mt-1">{bundle.flow.warning}</p>
           </details>
-          <p className="mt-1 hidden text-sm leading-6 text-amber-950 md:block">{bundle.flow.warning}</p>
+          <p className="mt-1 hidden text-sm leading-6 text-[#5F4115] md:block">{bundle.flow.warning}</p>
         </div>
       ) : null}
       {todayReactionSlot && !calendarOnly ? (
-        <div data-testid="meal-today-reaction-card" className="rounded-lg border border-blue-200 bg-white p-4 md:hidden">
+        <div data-testid="meal-today-reaction-card" className={`${FLOWME_SURFACE_CARD_CLASS} md:hidden`}>
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-blue-700">오늘 먹은 양 기록</p>
-              <h3 className="mt-1 text-base font-semibold text-gray-950">{todayReactionSlot.menu_title}</h3>
-              <p className="mt-1 text-sm text-gray-600">{mealSlotTiming(todayReactionSlot.day_offset, todayReactionSlot.duration_days, anchor)}</p>
+              <p className={FLOWME_EYEBROW_CLASS}>오늘 먹은 양 기록</p>
+              <h3 className={FLOWME_TITLE_CLASS}>{todayReactionSlot.menu_title}</h3>
+              <p className="mt-1 text-sm text-[#6E6B64]">{mealSlotTiming(todayReactionSlot.day_offset, todayReactionSlot.duration_days, anchor)}</p>
             </div>
             <button
               data-testid="meal-reaction-sheet-export"
-              aria-label={`시트로 받기: ${todayReactionSlot.menu_title} 오늘 먹은 양 반응 기록`}
-              className="shrink-0 rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-800"
+              aria-label={`${FLOW_EXPORT_LABELS.sheetFile}: ${todayReactionSlot.menu_title} 오늘 먹은 양 반응 기록`}
+              className={FLOWME_BUTTON_SECONDARY_CLASS}
               type="button"
               onClick={exportActions?.onDownloadExcel}
             >
-              시트로 받기
+              {FLOW_EXPORT_LABELS.sheetFile}
             </button>
           </div>
-          <div data-testid="meal-reaction-summary-card" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3">
-            <p className="text-xs font-semibold text-blue-700">오늘 반응 요약</p>
+          <div data-testid="meal-reaction-summary-card" className={`mt-3 ${FLOWME_COMPACT_SUPPORT_CARD_CLASS}`}>
+            <p className="text-xs font-semibold text-[#3654FF]">오늘 반응 요약</p>
             <div className="mt-2 grid gap-2 text-sm">
-              <div data-testid="meal-summary-slot" className="rounded-md bg-white px-3 py-2">
-                <p className="text-xs font-semibold text-gray-500">오늘 식단</p>
-                <p className="mt-1 font-medium text-gray-900">{todayReactionSlot.menu_title}</p>
-                <p className="mt-1 text-gray-700">{mealSlotTiming(todayReactionSlot.day_offset, todayReactionSlot.duration_days, anchor)}</p>
+              <div data-testid="meal-summary-slot" className={FLOWME_INNER_ROW_CLASS}>
+                <p className="text-xs font-semibold text-[#6E6B64]">오늘 식단</p>
+                <p className="mt-1 font-medium text-[#1B1A17]">{todayReactionSlot.menu_title}</p>
+                <p className="mt-1 text-[#6E6B64]">{mealSlotTiming(todayReactionSlot.day_offset, todayReactionSlot.duration_days, anchor)}</p>
               </div>
-              <div data-testid="meal-summary-new-ingredients" className="rounded-md bg-white px-3 py-2">
-                <p className="text-xs font-semibold text-gray-500">새 재료</p>
-                <p className="mt-1 text-gray-800">{todayReactionSlot.new_ingredients.length ? todayReactionSlot.new_ingredients.join(', ') : '-'}</p>
+              <div data-testid="meal-summary-new-ingredients" className={FLOWME_INNER_ROW_CLASS}>
+                <p className="text-xs font-semibold text-[#6E6B64]">새 재료</p>
+                <p className="mt-1 text-[#1B1A17]">{todayReactionSlot.new_ingredients.length ? todayReactionSlot.new_ingredients.join(', ') : '-'}</p>
               </div>
-              <div data-testid="meal-summary-reaction-fields" className="rounded-md bg-white px-3 py-2">
-                <p className="text-xs font-semibold text-gray-500">먹은 뒤 기록할 것</p>
-                <p className="mt-1 text-gray-800">{mealReactionColumns.slice(0, 4).map((column) => column.label).join(' / ')}</p>
+              <div data-testid="meal-summary-reaction-fields" className={FLOWME_INNER_ROW_CLASS}>
+                <p className="text-xs font-semibold text-[#6E6B64]">먹은 뒤 기록할 것</p>
+                <p className="mt-1 text-[#1B1A17]">{mealReactionColumns.slice(0, 4).map((column) => column.label).join(' / ')}</p>
               </div>
             </div>
-            <p data-testid="meal-summary-allergy-cue" className="mt-2 text-xs font-medium text-blue-800">
+            <p data-testid="meal-summary-allergy-cue" className="mt-2 text-xs font-medium text-[#3654FF]">
               처음 먹인 뒤 특이 반응이 있으면 메모하고 전문가 확인을 우선합니다.
             </p>
           </div>
           <div className="mt-3 grid gap-2">
             {mealReactionColumns.slice(0, 4).map((column) => (
-              <label key={column.id} className="text-sm font-semibold text-gray-700">
+              <label key={column.id} className="text-sm font-semibold text-[#1B1A17]">
                 {column.label}
                 <input
                   aria-label={`${todayReactionSlot.menu_title} / ${column.label}`}
-                  className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm font-normal text-gray-800"
+                  className={`mt-1 w-full font-normal ${FLOWME_INPUT_CLASS}`}
                   placeholder={column.placeholder}
                   value={workbenchState.logRows[todayReactionSlot.id]?.[column.id] ?? ''}
                   onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, todayReactionSlot.id, column.id, event.currentTarget.value))}
@@ -646,11 +681,11 @@ function MealReactionWorkbench({
         </div>
       ) : null}
       <div className={`grid gap-4 ${calendarOnly ? '' : 'lg:grid-cols-[0.95fr_1.05fr]'}`}>
-        <div data-testid="artifact-calendar-card" className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+        <div data-testid="artifact-calendar-card" className={FLOWME_SURFACE_CARD_CLASS}>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-blue-700">식단 일정 미리보기</p>
-              <h3 className="mt-1 text-base font-semibold text-gray-950">{calendarOnly ? '시작일 기준 식단표' : '처음 6개 식단'}</h3>
+              <p className={FLOWME_EYEBROW_CLASS}>식단 일정 미리보기</p>
+              <h3 className={FLOWME_TITLE_CLASS}>{calendarOnly ? '시작일 기준 식단표' : '처음 6개 식단'}</h3>
             </div>
             <ArtifactExportButtons actions={exportActions} kinds={['calendar']} />
           </div>
@@ -661,20 +696,20 @@ function MealReactionWorkbench({
               const recipe = bundle.recipes?.find((item) => item.id === slot.recipe_id);
               const isChecked = isMealSlotChecked(slot, anchor, checks);
               return (
-                <div key={slot.id} className="rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
+                <div key={slot.id} className={FLOWME_INNER_ROW_CLASS}>
                   <label className="grid grid-cols-[22px_1fr] gap-x-3 gap-y-1 md:grid-cols-[22px_112px_1fr] md:gap-y-0">
                     <input
                       aria-label={`이유식 완료: ${slot.menu_title}`}
-                      className="row-span-2 mt-0.5 h-4 w-4 rounded border-gray-300 md:row-span-1"
+                      className={`row-span-2 mt-0.5 md:row-span-1 ${FLOWME_CHECKBOX_CLASS}`}
                       checked={isChecked}
                       onChange={() => onToggleItem(slot.id)}
                       type="checkbox"
                     />
-                    <span className="min-w-0 font-mono text-xs font-semibold text-blue-700">{mealSlotTiming(slot.day_offset, slot.duration_days, anchor)}</span>
-                    <span className={`col-start-2 min-w-0 md:col-start-auto ${isChecked ? 'text-gray-400 line-through' : 'text-gray-800'}`}>
+                    <span className="min-w-0 font-mono text-xs font-semibold text-[#3654FF]">{mealSlotTiming(slot.day_offset, slot.duration_days, anchor)}</span>
+                    <span className={`col-start-2 min-w-0 md:col-start-auto ${isChecked ? 'text-[#A7A39A] line-through' : 'text-[#1B1A17]'}`}>
                       <span className="block font-medium">{slot.menu_title}</span>
                       {slot.new_ingredients.length ? (
-                        <span className="mt-1 block text-xs text-gray-500">새 재료: {slot.new_ingredients.join(', ')}</span>
+                        <span className="mt-1 block text-xs text-[#6E6B64]">새 재료: {slot.new_ingredients.join(', ')}</span>
                       ) : null}
                     </span>
                   </label>
@@ -685,20 +720,20 @@ function MealReactionWorkbench({
           </div>
         </div>
         {!calendarOnly ? (
-        <div data-testid="meal-reaction-log-card" className="hidden overflow-x-auto rounded-lg border border-gray-200 bg-white md:block">
-          <div className="border-b border-gray-100 px-3 py-3">
+        <div data-testid="meal-reaction-log-card" className={`hidden md:block ${FLOWME_TABLE_CARD_CLASS}`}>
+          <div className={FLOWME_TABLE_HEADER_CLASS}>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-sm font-semibold text-blue-700">먹은 뒤 기록</p>
-                <h3 className="mt-1 text-base font-semibold text-gray-950">반응 기록표</h3>
+                <p className={FLOWME_EYEBROW_CLASS}>먹은 뒤 기록</p>
+                <h3 className={FLOWME_TITLE_CLASS}>반응 기록표</h3>
               </div>
-              <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} />
+              <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} labels={{ copy: FLOW_EXPORT_LABELS.memoCopy }} />
             </div>
             <ArtifactExportStatus actions={exportActions} />
-            <p className="mt-2 text-sm leading-6 text-gray-600">레시피 평가는 뒤로 미루고, 먹은 양과 이상 반응을 먼저 남깁니다.</p>
+            <p className="mt-2 text-sm leading-6 text-[#6E6B64]">레시피 평가는 뒤로 미루고, 먹은 양과 이상 반응을 먼저 남깁니다.</p>
           </div>
           <table className="min-w-[860px] text-left text-sm">
-            <thead className="bg-gray-50 text-xs font-semibold text-gray-600">
+            <thead className={FLOWME_TABLE_HEAD_CLASS}>
               <tr>
                 <th className="px-3 py-2">식단</th>
                 {mealReactionColumns.map((column) => (
@@ -708,16 +743,16 @@ function MealReactionWorkbench({
             </thead>
             <tbody>
               {reactionSlots.map((slot) => (
-                <tr key={slot.id} className="border-t border-gray-100">
-                  <th className="px-3 py-3 text-sm font-semibold text-gray-900">
+                <tr key={slot.id} className="border-t border-[#E7E4DD]">
+                  <th className="px-3 py-3 text-sm font-semibold text-[#1B1A17]">
                     <span className="block">{slot.menu_title}</span>
-                    <span className="mt-1 block text-xs font-medium text-gray-500">{mealSlotTiming(slot.day_offset, slot.duration_days, anchor)}</span>
+                    <span className="mt-1 block text-xs font-medium text-[#6E6B64]">{mealSlotTiming(slot.day_offset, slot.duration_days, anchor)}</span>
                   </th>
                   {mealReactionColumns.map((column) => (
                     <td key={`${slot.id}-${column.id}`} className="px-2 py-2">
                       <input
                         aria-label={`${slot.menu_title} / ${column.label}`}
-                        className="w-full min-w-28 rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
+                        className={`w-full min-w-28 ${FLOWME_SMALL_INPUT_CLASS}`}
                         placeholder={column.placeholder}
                         value={workbenchState.logRows[slot.id]?.[column.id] ?? ''}
                         onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, slot.id, column.id, event.currentTarget.value))}
@@ -737,22 +772,22 @@ function MealReactionWorkbench({
 
 function BabyFoodSourceBridge({ sourceUrl }: { sourceUrl?: string }) {
   return (
-    <div data-testid="meal-source-bridge" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3 text-sm leading-6 text-blue-950">
+    <div data-testid="meal-source-bridge" className={`mt-3 text-sm leading-6 text-[#1B1A17] ${FLOWME_COMPACT_SUPPORT_CARD_CLASS}`}>
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <p className="text-xs font-semibold text-blue-700">원문에서 옮긴 실행 기준</p>
+          <p className="text-xs font-semibold text-[#3654FF]">원문에서 옮긴 실행 기준</p>
           <p className="mt-1 font-semibold">시작일 입력 → 3일 단위 새 재료 → 레시피 확인 → 이상 반응은 메모 후 전문가 확인</p>
         </div>
         {sourceUrl ? (
-          <a className="shrink-0 rounded-md border border-blue-200 bg-white px-2 py-1 text-xs font-semibold text-blue-800" href={sourceUrl} target="_blank" rel="noreferrer">
+          <a className={FLOWME_LINK_BUTTON_CLASS} href={sourceUrl} target="_blank" rel="noreferrer">
             원문 보기
           </a>
         ) : null}
       </div>
-      <p className="mt-2 text-xs leading-5 text-blue-800">
+      <p className="mt-2 text-xs leading-5 text-[#6E6B64]">
         원문은 날짜를 직접 입력하는 식단표와 3일 단위 알레르기 관찰 흐름을 제공합니다. Flow에서는 건강 판단보다 캘린더 식단표와 레시피 메모를 먼저 보여줍니다.
       </p>
-      <p className="mt-1 text-xs leading-5 text-blue-800">
+      <p className="mt-1 text-xs leading-5 text-[#6E6B64]">
         쌀가루 20배죽, 불린 쌀 10배죽, 채소 손질, 6개월 전후 소고기 같은 단서는 레시피와 메모에서 확인하고 최신 공식/전문가 안내를 우선합니다.
       </p>
     </div>
@@ -769,11 +804,11 @@ function mealSlotTiming(dayOffset: number, durationDays: number, anchor: string)
 
 function RecipeDisclosure({ recipe }: { recipe: WorkbenchRecipe }) {
   return (
-    <details className="mt-2 rounded-md border border-gray-100 bg-gray-50 px-3 py-2 text-sm">
-      <summary className="cursor-pointer font-semibold text-blue-700">레시피 보기</summary>
-      <div className="mt-2 grid gap-3 leading-6 text-gray-700 md:grid-cols-2">
+    <details className={FLOWME_DISCLOSURE_CLASS}>
+      <summary className="cursor-pointer font-semibold text-[#3654FF]">레시피 보기</summary>
+      <div className="mt-2 grid gap-3 leading-6 text-[#6E6B64] md:grid-cols-2">
         <div>
-          <p className="font-semibold text-gray-900">재료</p>
+          <p className="font-semibold text-[#1B1A17]">재료</p>
           <ul className="mt-1 list-disc pl-5">
             {recipe.ingredients.map((ingredient) => (
               <li key={ingredient.name}>{ingredient.name}</li>
@@ -781,7 +816,7 @@ function RecipeDisclosure({ recipe }: { recipe: WorkbenchRecipe }) {
           </ul>
         </div>
         <div>
-          <p className="font-semibold text-gray-900">조리 방법</p>
+          <p className="font-semibold text-[#1B1A17]">조리 방법</p>
           <ol className="mt-1 list-decimal pl-5">
             {recipe.steps.map((step) => (
               <li key={step.order}>{step.text}</li>
@@ -790,7 +825,7 @@ function RecipeDisclosure({ recipe }: { recipe: WorkbenchRecipe }) {
         </div>
         {recipe.texture_note ? <p><b>분량/농도:</b> {recipe.texture_note}</p> : null}
         {recipe.storage_note ? <p><b>보관:</b> {recipe.storage_note}</p> : null}
-        {recipe.caution_note ? <p className="text-amber-800"><b>주의:</b> {recipe.caution_note}</p> : null}
+        {recipe.caution_note ? <p className="text-[#8A5A12]"><b>주의:</b> {recipe.caution_note}</p> : null}
       </div>
     </details>
   );
@@ -829,19 +864,19 @@ function MiniMonthCalendar({
 }) {
   const days = getMonthCalendarDays(month || formatDate(new Date()).slice(0, 7));
   return (
-    <div data-testid="artifact-calendar-card" className="rounded-lg border border-slate-200 bg-white p-4 shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+    <div data-testid="artifact-calendar-card" className={FLOWME_SURFACE_CARD_CLASS}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          {eyebrow ? <p className="text-sm font-semibold text-blue-700">{eyebrow}</p> : null}
-          <h3 className="text-base font-semibold text-slate-950">{title}</h3>
+          {eyebrow ? <p className={FLOWME_EYEBROW_CLASS}>{eyebrow}</p> : null}
+          <h3 className={FLOWME_TITLE_CLASS}>{title}</h3>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
-          <span className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-sm font-semibold text-slate-600">{month}</span>
+          <span className="rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 text-sm font-semibold text-[#6E6B64]">{month}</span>
           <ArtifactExportButtons actions={exportActions} kinds={['calendar']} mobileArtifactLabel={mobileArtifactLabel} mobileKinds={['calendar']} />
         </div>
       </div>
       <ArtifactExportStatus actions={exportActions} />
-      <div className="mt-3 grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-500">
+      <div className="mt-3 grid grid-cols-7 gap-1 text-center text-xs font-semibold text-[#6E6B64]">
         {weekdayOrder.map((day) => (
           <span key={day}>{day}</span>
         ))}
@@ -850,14 +885,14 @@ function MiniMonthCalendar({
         {days.map((date, index) => {
           const dayRows = date ? rows.filter((row) => row.startDate === date) : [];
           return (
-            <div key={`${month}-${index}`} className={`min-h-16 rounded-md border p-1 text-xs ${date ? 'border-slate-200 bg-slate-50' : 'border-slate-100 bg-slate-50/60'}`}>
-              {date ? <p className="font-semibold text-slate-600">{date.slice(8)}</p> : null}
+            <div key={`${month}-${index}`} className={`min-h-16 rounded-xl border p-1 text-xs ${date ? 'border-[#E7E4DD] bg-[#FAFAF8]' : 'border-[#EEEAE2] bg-[#FAFAF8]/60'}`}>
+              {date ? <p className="font-semibold text-[#6E6B64]">{date.slice(8)}</p> : null}
               {dayRows.slice(0, 2).map((row) => (
-                <p key={row.id} className={`mt-1 truncate rounded px-1 py-0.5 text-left text-[11px] font-medium ${doneIds?.has(row.id) ? 'bg-emerald-50 text-emerald-700' : 'bg-white text-blue-700'}`}>
+                <p key={row.id} className={`mt-1 truncate rounded-lg px-1 py-0.5 text-left text-[11px] font-medium ${doneIds?.has(row.id) ? 'bg-[#EAF7F0] text-[#1F8A5B]' : 'bg-white text-[#3654FF]'}`}>
                   {doneIds?.has(row.id) ? '완료 ' : ''}{row.title}
                 </p>
               ))}
-              {dayRows.length > 2 ? <p className="mt-1 text-[11px] text-slate-500">+{dayRows.length - 2}</p> : null}
+              {dayRows.length > 2 ? <p className="mt-1 text-[11px] text-[#6E6B64]">+{dayRows.length - 2}</p> : null}
             </div>
           );
         })}
@@ -910,30 +945,30 @@ function RoutineOccurrenceCalendar({
   );
 
   return (
-    <section aria-label="반복 캘린더 미리보기" data-testid="artifact-calendar-card" className="min-w-0 rounded-lg border border-slate-200 bg-white p-4 shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+    <section aria-label="반복 캘린더 미리보기" data-testid="artifact-calendar-card" className={`min-w-0 ${FLOWME_SURFACE_CARD_CLASS}`}>
       <div data-testid="routine-session-grid-card">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-blue-700">{eyebrow}</p>
-            <h3 className="text-base font-semibold text-slate-950">{title}</h3>
-            <p className="mt-1 text-sm text-slate-600">{description}</p>
+            <p className={FLOWME_EYEBROW_CLASS}>{eyebrow}</p>
+            <h3 className={FLOWME_TITLE_CLASS}>{title}</h3>
+            <p className="mt-1 text-sm text-[#6E6B64]">{description}</p>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
-            <span className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-sm font-semibold text-slate-600">{month}</span>
+            <span className="rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 text-sm font-semibold text-[#6E6B64]">{month}</span>
             <ArtifactExportButtons
               actions={exportActions}
               kinds={['calendar', 'excel', 'draft']}
-              labels={{ calendar: '캘린더에 넣기 · .ics', excel: '시트로 받기 · .xlsx', draft: '편집' }}
+              labels={{ calendar: FLOW_EXPORT_LABELS.calendarFile, excel: FLOW_EXPORT_LABELS.sheetFile, draft: '편집' }}
             />
           </div>
         </div>
         <ArtifactExportStatus actions={exportActions} />
         <div className="mt-3 flex flex-wrap gap-2 text-sm">
-          <span className="rounded-md border border-blue-100 bg-blue-50 px-3 py-1 font-semibold text-blue-700">{isHomeWorkout ? '주 3회 홈트' : isMealCheck ? '식사별 체크' : occurrenceSummary}</span>
-          <span className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 font-semibold text-slate-700">{isHomeWorkout ? '완료 체크만' : isMealCheck ? '아침·점심·저녁' : '주차 × 요일 회차표'}</span>
-          {currentRow ? <span className="rounded-md border border-amber-200 bg-amber-50 px-3 py-1 font-semibold text-amber-800">현재 {currentRow.title}</span> : null}
+          <span className="rounded-full border border-[#DDE3FF] bg-[#EEF1FF] px-3 py-1 font-semibold text-[#3654FF]">{isHomeWorkout ? '주 3회 홈트' : isMealCheck ? '식사별 체크' : occurrenceSummary}</span>
+          <span className="rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 font-semibold text-[#6E6B64]">{isHomeWorkout ? '완료 체크만' : isMealCheck ? '아침·점심·저녁' : '주차 × 요일 회차표'}</span>
+          {currentRow ? <span className="rounded-full border border-[#F0D8AE] bg-[#FFF7E8] px-3 py-1 font-semibold text-[#8A5A12]">현재 {currentRow.title}</span> : null}
         </div>
-        <div className="mt-3 grid grid-cols-[64px_repeat(7,minmax(0,1fr))] gap-1 text-center text-xs font-semibold text-slate-500">
+        <div className="mt-3 grid grid-cols-[64px_repeat(7,minmax(0,1fr))] gap-1 text-center text-xs font-semibold text-[#6E6B64]">
           <span />
           {routineGridWeekdayOrder.map((day) => (
             <span key={day}>{day}</span>
@@ -942,14 +977,14 @@ function RoutineOccurrenceCalendar({
         <div className="mt-2 grid grid-cols-[64px_repeat(7,minmax(0,1fr))] gap-1">
           {weekRows.map((week, weekIndex) => (
             <div key={`routine-week-${weekIndex}`} className="contents">
-              <div className="rounded-md border border-slate-200 bg-slate-50 p-2">
-                <p className="text-[10px] font-bold text-slate-500">{weekIndex + 1}주차</p>
-                <p className="mt-1 text-sm font-semibold text-slate-900">{weekIndex + 1}주차</p>
+              <div className="rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] p-2">
+                <p className="text-[10px] font-bold text-[#6E6B64]">{weekIndex + 1}주차</p>
+                <p className="mt-1 text-sm font-semibold text-[#1B1A17]">{weekIndex + 1}주차</p>
               </div>
               {week.map((row, dayIndex) => {
                 if (!row) {
                   return (
-                    <div key={`empty-${weekIndex}-${dayIndex}`} className="min-h-20 rounded-md border border-dashed border-slate-200 bg-slate-50/70 p-2 text-xs text-slate-400">
+                    <div key={`empty-${weekIndex}-${dayIndex}`} className="min-h-20 rounded-xl border border-dashed border-[#E7E4DD] bg-[#FAFAF8]/70 p-2 text-xs text-[#A7A39A]">
                       -
                     </div>
                   );
@@ -959,21 +994,21 @@ function RoutineOccurrenceCalendar({
                   return (
                     <label
                       key={row.id}
-                      className={`min-h-20 rounded-md border p-2 text-left text-xs ${state.done ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : isCurrent ? 'border-blue-300 bg-blue-50 text-blue-800' : 'border-slate-200 bg-white text-slate-800'}`}
+                      className={`min-h-20 rounded-xl border p-2 text-left text-xs ${state.done ? 'border-[#D8ECE1] bg-[#EAF7F0] text-[#1F8A5B]' : isCurrent ? 'border-[#3654FF] bg-[#EEF1FF] text-[#1B1A17]' : 'border-[#E7E4DD] bg-white text-[#1B1A17]'}`}
                     >
                       <span className="flex items-center justify-between gap-1">
                         <span className="font-mono text-[11px] font-semibold">{row.startDate.slice(5)}</span>
-                        {isCurrent ? <span className="rounded bg-white px-1.5 py-0.5 text-[10px] font-bold text-blue-700">현재</span> : null}
+                        {isCurrent ? <span className="rounded-lg bg-white px-1.5 py-0.5 text-[10px] font-bold text-[#3654FF]">현재</span> : null}
                       </span>
                       <input
                         aria-label={`캘린더 회차 체크: ${row.title}`}
-                        className="mt-2 h-3 w-3 rounded border-slate-300 text-blue-700"
+                        className={`mt-2 ${FLOWME_SMALL_CHECKBOX_CLASS}`}
                         checked={Boolean(state.done)}
                         onChange={(event) => onWorkbenchChange(updateOccurrenceDone(workbenchState, row.id, event.currentTarget.checked))}
                         type="checkbox"
                       />
                       <span className="ml-1 align-middle text-[11px] font-semibold">{state.done ? '완료 ' : ''}{row.title}</span>
-                      <span className="mt-1 block text-[11px] text-slate-500">{row.timing}</span>
+                      <span className="mt-1 block text-[11px] text-[#6E6B64]">{row.timing}</span>
                     </label>
                   );
                 })}
@@ -1002,25 +1037,25 @@ function RoutineSessionLogCard({
   const isSleepCheck = bundle.flow.slug === 'diet-habit-2week';
   const valueLabel = isSleepCheck ? '수면 여부' : '세트/강도';
   return (
-    <section data-testid="routine-session-log-card" className="min-w-0 rounded-lg border border-slate-200 bg-slate-50 p-4">
+    <section data-testid="routine-session-log-card" className={`min-w-0 ${FLOWME_SUPPORT_CARD_CLASS}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-blue-700">회차 기록표</p>
-          <h3 className="mt-1 text-base font-semibold text-gray-950">지난 회차 기록</h3>
-          <p className="mt-1 text-sm text-gray-600">
+          <p className={FLOWME_EYEBROW_CLASS}>회차 기록표</p>
+          <h3 className={FLOWME_TITLE_CLASS}>지난 회차 기록</h3>
+          <p className="mt-1 text-sm text-[#6E6B64]">
             {isSleepCheck ? '각 날짜가 끝나면 8시간 이상 수면 여부와 한 줄 메모를 남깁니다.' : '각 회차가 끝나면 세트/강도와 한 줄 메모를 시트로 남깁니다.'}
           </p>
         </div>
         <ArtifactExportButtons
           actions={exportActions}
           kinds={['copy', 'excel', 'draft']}
-          labels={{ copy: '오늘 기록 복사', excel: '시트로 받기 · .xlsx', draft: '편집' }}
+          labels={{ copy: FLOW_EXPORT_LABELS.memoCopy, excel: FLOW_EXPORT_LABELS.sheetFile, draft: '편집' }}
         />
       </div>
       <ArtifactExportStatus actions={exportActions} />
-      <div className="mt-3 overflow-x-auto rounded-md border border-gray-200 bg-white">
+      <div className={`mt-3 ${FLOWME_TABLE_CARD_CLASS}`}>
         <table className="min-w-[720px] text-left text-sm">
-          <thead className="bg-gray-50 text-xs font-semibold text-gray-600">
+          <thead className={FLOWME_TABLE_HEAD_CLASS}>
             <tr>
               <th className="px-3 py-2">날짜</th>
               <th className="px-3 py-2">회차</th>
@@ -1033,13 +1068,13 @@ function RoutineSessionLogCard({
             {visibleRows.map((row) => {
               const state = workbenchState.occurrences[row.id] ?? {};
               return (
-                <tr key={row.id} className="border-t border-gray-100">
-                  <td className="px-3 py-2 font-mono text-xs font-semibold text-gray-600">{row.startDate}</td>
-                  <td className="px-3 py-2 font-semibold text-gray-900">{row.title}</td>
+                <tr key={row.id} className="border-t border-[#E7E4DD]">
+                  <td className="px-3 py-2 font-mono text-xs font-semibold text-[#6E6B64]">{row.startDate}</td>
+                  <td className="px-3 py-2 font-semibold text-[#1B1A17]">{row.title}</td>
                   <td className="px-3 py-2">
                     <input
                       aria-label={`${valueLabel}: ${row.title}`}
-                      className="w-full rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
+                      className={`w-full ${FLOWME_SMALL_INPUT_CLASS}`}
                       placeholder={isSleepCheck ? '예: 8시간 이상 / 23:30 취침' : '예: 20분 / RPE 7'}
                       value={workbenchState.logRows[row.id]?.intensity ?? ''}
                       onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, row.id, 'intensity', event.currentTarget.value))}
@@ -1048,7 +1083,7 @@ function RoutineSessionLogCard({
                   <td className="px-3 py-2">
                     <input
                       aria-label={`회차 완료: ${row.title}`}
-                      className="h-4 w-4 rounded border-gray-300"
+                      className={FLOWME_CHECKBOX_CLASS}
                       checked={Boolean(state.done)}
                       onChange={(event) => onWorkbenchChange(updateOccurrenceDone(workbenchState, row.id, event.currentTarget.checked))}
                       type="checkbox"
@@ -1057,7 +1092,7 @@ function RoutineSessionLogCard({
                   <td className="px-3 py-2">
                     <input
                       aria-label={`회차 메모: ${row.title}`}
-                      className="w-full rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
+                      className={`w-full ${FLOWME_SMALL_INPUT_CLASS}`}
                       placeholder={isSleepCheck ? '다음 날 피로감, 방해 요인, 내일 수면 메모' : '컨디션, 조정한 강도, 다음 회차 메모'}
                       value={state.note ?? ''}
                       onChange={(event) => onWorkbenchChange(updateOccurrenceNote(workbenchState, row.id, event.currentTarget.value))}
@@ -1093,15 +1128,15 @@ function ComparisonTable({
   const comparison = ensureComparisonState(comparisonState);
 
   return (
-    <div data-testid="artifact-comparison-card" className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
-      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-gray-100 px-3 py-3">
+    <div data-testid="artifact-comparison-card" className={FLOWME_TABLE_CARD_CLASS}>
+      <div className={`flex flex-wrap items-start justify-between gap-3 ${FLOWME_TABLE_HEADER_CLASS}`}>
         <div>
-          <p className="text-sm font-semibold text-blue-700">{eyebrow}</p>
-          <h3 className="mt-1 text-base font-semibold text-gray-950">{title}</h3>
+          <p className={FLOWME_EYEBROW_CLASS}>{eyebrow}</p>
+          <h3 className={FLOWME_TITLE_CLASS}>{title}</h3>
         </div>
         <div className="flex flex-wrap justify-end gap-2">
-          <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} mobileArtifactLabel={mobileArtifactLabel} mobileKinds={['excel']} />
-          <button className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-800" onClick={() => onComparisonChange(addComparisonCandidate(comparison))}>
+          <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} labels={{ copy: FLOW_EXPORT_LABELS.memoCopy }} mobileArtifactLabel={mobileArtifactLabel} mobileKinds={['excel']} />
+          <button className={FLOWME_BUTTON_SECONDARY_CLASS} onClick={() => onComparisonChange(addComparisonCandidate(comparison))}>
             후보 추가
           </button>
         </div>
@@ -1109,7 +1144,7 @@ function ComparisonTable({
       <ArtifactExportStatus actions={exportActions} />
       <MobileComparisonSummaryCard rows={rows} comparison={comparison} />
       <div
-        className="grid min-w-[720px] bg-gray-50 text-xs font-semibold text-gray-600"
+        className={`grid min-w-[720px] ${FLOWME_TABLE_HEAD_CLASS}`}
         style={{ gridTemplateColumns: `minmax(220px,1.1fr) repeat(${comparison.candidates.length}, minmax(170px,1fr))` }}
       >
         <span className="px-3 py-2">비교 항목</span>
@@ -1117,7 +1152,7 @@ function ComparisonTable({
           <label key={candidate.id} className="px-3 py-2">
             <input
               aria-label={`후보 ${index + 1} 이름`}
-              className="w-full rounded-md border border-gray-200 bg-white px-2 py-1 text-sm font-semibold text-gray-900"
+              className={`w-full font-semibold ${FLOWME_SMALL_INPUT_CLASS}`}
               value={candidate.name}
               onChange={(event) => onComparisonChange(updateComparisonCandidateName(comparison, candidate.id, event.target.value))}
             />
@@ -1127,15 +1162,15 @@ function ComparisonTable({
       {rows.slice(0, 8).map((row) => (
         <div
           key={row.id}
-          className="grid min-w-[720px] border-t border-gray-100"
+          className="grid min-w-[720px] border-t border-[#E7E4DD]"
           style={{ gridTemplateColumns: `minmax(220px,1.1fr) repeat(${comparison.candidates.length}, minmax(170px,1fr))` }}
         >
-          <span className="px-3 py-3 text-sm font-medium text-gray-800">{row.title}</span>
+          <span className="px-3 py-3 text-sm font-medium text-[#1B1A17]">{row.title}</span>
           {comparison.candidates.map((candidate, index) => (
             <label key={`${row.id}-${candidate.id}`} className="px-3 py-2">
               <textarea
                 aria-label={`${row.title} / 후보 ${index + 1} 메모`}
-                className="min-h-14 w-full resize-y rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
+                className={`min-h-14 w-full resize-y ${FLOWME_SMALL_INPUT_CLASS}`}
                 placeholder="가격, 조건, 확인할 점"
                 value={comparison.notes[row.id]?.[candidate.id] ?? ''}
                 onChange={(event) => onComparisonChange(updateComparisonNote(comparison, row.id, candidate.id, event.target.value))}
@@ -1155,20 +1190,31 @@ function MobileComparisonSummaryCard({ rows, comparison }: { rows: ArtifactCompa
   if (!previewRows.length) return null;
 
   return (
-    <div data-testid="mobile-comparison-summary-card" className="m-3 rounded-md border border-slate-200 bg-slate-50 p-3 md:hidden">
-      <p className="text-xs font-semibold text-blue-700">먼저 채울 후보</p>
-      <h4 className="mt-1 text-sm font-semibold text-gray-950">{primaryCandidate} 먼저 채우기</h4>
+    <div data-testid="mobile-comparison-summary-card" className={`m-3 ${FLOWME_COMPACT_SUPPORT_CARD_CLASS} md:hidden`}>
+      <p className="text-xs font-semibold text-[#3654FF]">먼저 채울 후보</p>
+      <h4 className="mt-1 text-sm font-semibold text-[#1B1A17]">{primaryCandidate} 먼저 채우기</h4>
       <dl className="mt-2 grid gap-2 text-sm">
         {previewRows.map((row, index) => (
-          <div key={row.id} className="rounded-md bg-white px-3 py-2">
-            <dt className="text-xs font-semibold text-gray-500">비교 항목 {index + 1}</dt>
-            <dd className="mt-1 text-gray-800" aria-label={row.title}>아래 표에서 작성</dd>
+          <div key={row.id} className="rounded-xl border border-[#E7E4DD] bg-white px-3 py-2">
+            <dt className="text-xs font-semibold text-[#6E6B64]">비교 항목 {index + 1}</dt>
+            <dd className="mt-1 text-[#1B1A17]" aria-label={row.title}>아래 표에서 작성</dd>
           </div>
         ))}
       </dl>
-      <p className="mt-2 text-xs font-medium text-blue-800">전체 후보 비교는 아래 표에서 이어서 작성하고, 기록은 시트로 받을 수 있습니다.</p>
+      <p className="mt-2 text-xs font-medium text-[#3654FF]">전체 후보 비교는 아래 표에서 이어서 작성하고, 기록은 시트로 받을 수 있습니다.</p>
     </div>
   );
+}
+
+function getRepeatedWorkbenchCaution(details: Array<WorkbenchItemDetail | undefined>): string | undefined {
+  const counts = new Map<string, number>();
+  for (const detail of details) {
+    const caution = detail?.caution?.trim();
+    if (!caution) continue;
+    counts.set(caution, (counts.get(caution) ?? 0) + 1);
+  }
+
+  return [...counts.entries()].find(([, count]) => count > 1)?.[0];
 }
 
 function ProofMemoCard({
@@ -1186,17 +1232,17 @@ function ProofMemoCard({
   const description = metadata?.groupDescription ?? '견적, 계약금, 잔금, 보상 기준을 흩어진 캡처 대신 한곳에 남겨둡니다.';
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-      <p className="text-sm font-semibold text-blue-700">{eyebrow}</p>
-      <h3 className="mt-1 text-base font-semibold text-gray-950">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-gray-600">{description}</p>
+    <div className={FLOWME_SUPPORT_CARD_CLASS}>
+      <p className={FLOWME_EYEBROW_CLASS}>{eyebrow}</p>
+      <h3 className={FLOWME_TITLE_CLASS}>{title}</h3>
+      <p className="mt-2 text-sm leading-6 text-[#6E6B64]">{description}</p>
       <div className="mt-3 space-y-3">
         {fields.map((field) => (
           <label key={field.id} className="block">
-            <span className="text-sm font-semibold text-gray-800">{field.label}</span>
+            <span className="text-sm font-semibold text-[#1B1A17]">{field.label}</span>
             <textarea
               aria-label={field.label}
-              className="mt-1 min-h-16 w-full resize-y rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800"
+              className="mt-1 min-h-16 w-full resize-y rounded-xl border border-[#D8D5CD] bg-white px-3 py-2 text-sm text-[#1B1A17] outline-none focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15"
               placeholder={field.placeholder}
               value={workbenchState.memoCards?.[field.id] ?? ''}
               onChange={(event) => onWorkbenchChange(updateMemoCard(workbenchState, field.id, event.currentTarget.value))}
@@ -1233,23 +1279,23 @@ function LogTableCard({
       data-source-kind={table.sourceKind ?? undefined}
       data-read-only-columns={table.readOnlyColumnIds?.join(',') ?? undefined}
       data-user-editable-columns={table.userEditableColumnIds?.join(',') ?? undefined}
-      className="overflow-x-auto rounded-lg border border-slate-200 bg-white"
+      className={FLOWME_TABLE_CARD_CLASS}
     >
-      <div className="border-b border-slate-100 px-3 py-3">
+      <div className={FLOWME_TABLE_HEADER_CLASS}>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-blue-700">{table.eyebrow}</p>
-            <h3 className="mt-1 text-base font-semibold text-slate-950">{table.title}</h3>
+            <p className={FLOWME_EYEBROW_CLASS}>{table.eyebrow}</p>
+            <h3 className={FLOWME_TITLE_CLASS}>{table.title}</h3>
           </div>
           <ArtifactExportButtons actions={exportActions} kinds={exportKinds} mobileArtifactLabel={mobileArtifactLabel} mobileKinds={mobileKinds} />
         </div>
         <ArtifactExportStatus actions={exportActions} />
-        <p className="mt-2 text-sm leading-6 text-slate-600">{table.description}</p>
+        <p className="mt-2 text-sm leading-6 text-[#6E6B64]">{table.description}</p>
         {isWaterPurifier ? <WaterPurifierSourceBridge /> : null}
         {table.sourceKind === 'source_derived' ? <MobileStudyLogSummaryCard table={table} /> : <MobileLogSummaryCard table={table} />}
       </div>
       <table className="min-w-[760px] text-left text-sm">
-        <thead className="bg-slate-50 text-xs font-semibold text-slate-600">
+        <thead className={FLOWME_TABLE_HEAD_CLASS}>
           <tr>
             <th className="px-3 py-2">항목</th>
             {table.columns.map((column) => (
@@ -1259,8 +1305,8 @@ function LogTableCard({
         </thead>
         <tbody>
           {table.rows.map((row) => (
-            <tr key={row.id} className="border-t border-slate-100">
-              <th className="px-3 py-3 text-sm font-semibold text-slate-900">{row.label}</th>
+            <tr key={row.id} className="border-t border-[#E7E4DD]">
+              <th className="px-3 py-3 text-sm font-semibold text-[#1B1A17]">{row.label}</th>
               {table.columns.map((column) => {
                 const isReadOnly = table.readOnlyColumnIds?.includes(column.id) ?? false;
                 const value = isReadOnly ? row.defaultValues?.[column.id] ?? '' : workbenchState.logRows[row.id]?.[column.id] ?? row.defaultValues?.[column.id] ?? '';
@@ -1270,14 +1316,14 @@ function LogTableCard({
                     {isReadOnly ? (
                       <div
                         data-testid={`artifact-readonly-cell-${row.id}-${column.id}`}
-                        className="min-w-36 rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-sm leading-5 text-slate-700"
+                        className="min-w-36 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-2 py-1.5 text-sm leading-5 text-[#4A4842]"
                       >
                         {value || '-'}
                       </div>
                     ) : (
                       <input
                         aria-label={`${row.label} / ${column.label}`}
-                        className="w-full min-w-28 rounded-md border border-slate-200 px-2 py-1.5 text-sm text-slate-800"
+                        className="w-full min-w-28 rounded-xl border border-[#D8D5CD] px-2 py-1.5 text-sm text-[#1B1A17] outline-none focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15"
                         placeholder={column.placeholder}
                         value={value}
                         onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, row.id, column.id, event.currentTarget.value))}
@@ -1296,15 +1342,15 @@ function LogTableCard({
 
 function WaterPurifierSourceBridge() {
   return (
-    <div data-testid="water-purifier-source-bridge" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3 text-sm leading-6 text-blue-950">
-      <p className="text-xs font-semibold text-blue-700">원문에서 옮긴 필터 주기</p>
+    <div data-testid="water-purifier-source-bridge" className={`mt-3 ${FLOWME_COMPACT_SUPPORT_CARD_CLASS} text-sm leading-6 text-[#1B1A17]`}>
+      <p className="text-xs font-semibold text-[#3654FF]">원문에서 옮긴 필터 주기</p>
       <div className="mt-2 grid gap-1 sm:grid-cols-2">
         <p><b>침전</b> 원문 3~6개월</p>
         <p><b>프리카본</b> 원문 6~12개월</p>
         <p><b>RO/나노</b> 원문 12~24개월</p>
         <p><b>후카본</b> 원문 9~12개월</p>
       </div>
-      <p className="mt-2 text-xs leading-5 text-blue-800">코크/출수구 청소, 자가 살균, 물맛·냄새 확인은 필터 교체일과 별도 상태 메모로 남깁니다.</p>
+      <p className="mt-2 text-xs leading-5 text-[#6E6B64]">코크/출수구 청소, 자가 살균, 물맛·냄새 확인은 필터 교체일과 별도 상태 메모로 남깁니다.</p>
     </div>
   );
 }
@@ -1320,22 +1366,22 @@ function MobileStudyLogSummaryCard({ table }: { table: ArtifactLogTable }) {
       data-testid="mobile-study-log-summary-card"
       data-source-row-count={String(table.rows.length)}
       data-editable-column-count={String(editableColumns.length)}
-      className="mt-3 rounded-md border border-slate-200 bg-slate-50 p-3 md:hidden"
+      className={`mt-3 ${FLOWME_COMPACT_SUPPORT_CARD_CLASS} md:hidden`}
     >
-      <p className="text-xs font-semibold text-blue-700">원문 기준표 요약</p>
-      <h4 className="mt-1 text-sm font-semibold text-gray-950">{table.rows.length}개 원문 행을 먼저 옮겼습니다</h4>
+      <p className="text-xs font-semibold text-[#3654FF]">원문 기준표 요약</p>
+      <h4 className="mt-1 text-sm font-semibold text-[#1B1A17]">{table.rows.length}개 원문 행을 먼저 옮겼습니다</h4>
       <div className="mt-2 grid gap-2 text-sm">
-        <div data-testid="study-summary-first-source-row" className="rounded-md bg-white px-3 py-2">
-          <p className="text-xs font-semibold text-gray-500">원문 기준 첫 행</p>
-          <p className="mt-1 font-medium text-gray-900">{firstRow.label}</p>
-          <p className="mt-1 text-gray-700">{firstRow.defaultValues?.scope ?? '-'}</p>
+        <div data-testid="study-summary-first-source-row" className="rounded-xl border border-[#E7E4DD] bg-white px-3 py-2">
+          <p className="text-xs font-semibold text-[#6E6B64]">원문 기준 첫 행</p>
+          <p className="mt-1 font-medium text-[#1B1A17]">{firstRow.label}</p>
+          <p className="mt-1 text-[#4A4842]">{firstRow.defaultValues?.scope ?? '-'}</p>
         </div>
-        <div data-testid="study-summary-editable-fields" className="rounded-md bg-white px-3 py-2">
-          <p className="text-xs font-semibold text-gray-500">내가 채울 칸</p>
-          <p className="mt-1 text-gray-800">{editableColumns.map((column) => column.label).join(' / ')}</p>
+        <div data-testid="study-summary-editable-fields" className="rounded-xl border border-[#E7E4DD] bg-white px-3 py-2">
+          <p className="text-xs font-semibold text-[#6E6B64]">내가 채울 칸</p>
+          <p className="mt-1 text-[#1B1A17]">{editableColumns.map((column) => column.label).join(' / ')}</p>
         </div>
       </div>
-      <p className="mt-2 text-xs font-medium text-blue-800">원문 범위는 고정하고, 목표일·상태·메모만 내가 채웁니다.</p>
+      <p className="mt-2 text-xs font-medium text-[#3654FF]">원문 범위는 고정하고, 목표일·상태·메모만 내가 채웁니다.</p>
     </div>
   );
 }
@@ -1348,18 +1394,18 @@ function MobileLogSummaryCard({ table }: { table: ArtifactLogTable }) {
   if (!firstRow) return null;
 
   return (
-    <div data-testid="mobile-artifact-summary-card" className="mt-3 rounded-md border border-slate-200 bg-slate-50 p-3 md:hidden">
-      <p className="text-xs font-semibold text-blue-700">{isWaterPurifier ? '가장 먼저 확인할 필터' : '먼저 채울 행'}</p>
-      <h4 className="mt-1 text-sm font-semibold text-gray-950">{firstRow.label}</h4>
+    <div data-testid="mobile-artifact-summary-card" className={`mt-3 ${FLOWME_COMPACT_SUPPORT_CARD_CLASS} md:hidden`}>
+      <p className="text-xs font-semibold text-[#3654FF]">{isWaterPurifier ? '가장 먼저 확인할 필터' : '먼저 채울 행'}</p>
+      <h4 className="mt-1 text-sm font-semibold text-[#1B1A17]">{firstRow.label}</h4>
       <dl className="mt-2 grid gap-2 text-sm">
         {previewColumns.map((column) => (
-          <div key={column.id} className="rounded-md bg-white px-3 py-2">
-            <dt className="text-xs font-semibold text-gray-500">{column.label}</dt>
-            <dd className="mt-1 text-gray-800">{firstRow.defaultValues?.[column.id] || column.placeholder || '-'}</dd>
+          <div key={column.id} className="rounded-xl border border-[#E7E4DD] bg-white px-3 py-2">
+            <dt className="text-xs font-semibold text-[#6E6B64]">{column.label}</dt>
+            <dd className="mt-1 text-[#1B1A17]">{firstRow.defaultValues?.[column.id] || column.placeholder || '-'}</dd>
           </div>
         ))}
       </dl>
-      <p className="mt-2 text-xs font-medium text-blue-800">
+      <p className="mt-2 text-xs font-medium text-[#3654FF]">
         {isWaterPurifier ? '필터별 날짜와 상태는 아래 표에서 이어서 관리합니다.' : '전체 행은 아래 표에서 확인하고, 기록은 시트로 받을 수 있습니다.'}
       </p>
     </div>
@@ -1449,10 +1495,10 @@ function DecisionWorkbench({
         {bundle.flow.warning ? <RiskBoundaryCard bundle={bundle} /> : null}
         <HoldSectionCard bundle={bundle} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
         {memoFields.length ? <ProofMemoCard fields={memoFields} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} /> : null}
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-          <p className="text-sm font-semibold text-blue-700">현장에서 바로 체크</p>
-          <h3 className="mt-1 text-base font-semibold text-gray-950">현장 체크리스트</h3>
-          <ul className="mt-3 space-y-2 text-sm text-gray-700">
+        <div className={FLOWME_SUPPORT_CARD_CLASS}>
+          <p className={FLOWME_EYEBROW_CLASS}>현장에서 바로 체크</p>
+          <h3 className={FLOWME_TITLE_CLASS}>현장 체크리스트</h3>
+          <ul className="mt-3 space-y-2 text-sm text-[#4A4842]">
             {checklistItems.slice(0, 5).map((item) => (
               <li key={item.id}>
                 <label className="flex gap-2">
@@ -1476,9 +1522,9 @@ function DecisionWorkbench({
 
 function RiskBoundaryCard({ bundle }: { bundle: FlowBundle }) {
   return (
-    <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
-      <p className="text-sm font-semibold text-amber-900">{riskBoundaryTitle(bundle)}</p>
-      <p className="mt-1 text-sm leading-6 text-amber-950">{bundle.flow.warning}</p>
+    <div className={`${FLOWME_COMPACT_SUPPORT_CARD_CLASS} bg-[#FFF7E8]`}>
+      <p className="text-sm font-semibold text-[#8A5A12]">{riskBoundaryTitle(bundle)}</p>
+      <p className="mt-1 text-sm leading-6 text-[#4A4842]">{bundle.flow.warning}</p>
     </div>
   );
 }
@@ -1489,9 +1535,9 @@ function StopPrincipleCards({ bundle }: { bundle: FlowBundle }) {
   return (
     <div className="mb-4 space-y-3">
       {bundle.flow.stop_conditions?.length ? (
-        <section data-testid="flow-stop-conditions" className="rounded-lg border border-red-200 bg-red-50 p-3">
-          <p className="text-sm font-semibold text-red-800">중단·상담 기준</p>
-          <ul className="mt-2 space-y-1 text-sm leading-6 text-red-950">
+        <section data-testid="flow-stop-conditions" className={`${FLOWME_COMPACT_SUPPORT_CARD_CLASS} bg-[#FFF5F2]`}>
+          <p className="text-sm font-semibold text-[#A13E2E]">중단·상담 기준</p>
+          <ul className="mt-2 space-y-1 text-sm leading-6 text-[#4A4842]">
             {bundle.flow.stop_conditions.map((condition) => (
               <li key={condition}>- {condition}</li>
             ))}
@@ -1499,9 +1545,9 @@ function StopPrincipleCards({ bundle }: { bundle: FlowBundle }) {
         </section>
       ) : null}
       {bundle.flow.principles?.length ? (
-        <section data-testid="flow-principles" className="rounded-lg border border-blue-200 bg-blue-50 p-3">
-          <p className="text-sm font-semibold text-blue-800">기록 원칙</p>
-          <ul className="mt-2 space-y-1 text-sm leading-6 text-blue-950">
+        <section data-testid="flow-principles" className={FLOWME_COMPACT_SUPPORT_CARD_CLASS}>
+          <p className="text-sm font-semibold text-[#3654FF]">기록 원칙</p>
+          <ul className="mt-2 space-y-1 text-sm leading-6 text-[#4A4842]">
             {bundle.flow.principles.map((principle) => (
               <li key={principle}>- {principle}</li>
             ))}
@@ -1526,24 +1572,24 @@ function HoldSectionCard({
   const fields = getHoldMemoFields(bundle);
 
   return (
-    <section data-testid="flow-hold-section" className="rounded-lg border border-red-200 bg-red-50 p-3">
-      <p className="text-sm font-semibold text-red-800">{section.title}</p>
-      <ul className="mt-2 space-y-1 text-sm leading-6 text-red-950">
+    <section data-testid="flow-hold-section" className={`${FLOWME_COMPACT_SUPPORT_CARD_CLASS} bg-[#FFF5F2]`}>
+      <p className="text-sm font-semibold text-[#A13E2E]">{section.title}</p>
+      <ul className="mt-2 space-y-1 text-sm leading-6 text-[#4A4842]">
         {section.reasons.map((reason) => (
           <li key={reason}>- {reason}</li>
         ))}
       </ul>
-      <p className="mt-2 text-sm leading-6 text-red-950">{section.consequence}</p>
-      <p className="mt-2 rounded-md bg-white px-3 py-2 text-xs font-semibold text-red-800">{section.memo_template}</p>
+      <p className="mt-2 text-sm leading-6 text-[#4A4842]">{section.consequence}</p>
+      <p className="mt-2 rounded-xl border border-[#E7E4DD] bg-white px-3 py-2 text-xs font-semibold text-[#A13E2E]">{section.memo_template}</p>
       {fields.length ? (
         <div data-testid="flow-hold-memo-card" className="mt-3 grid gap-3">
           {fields.map((field) => (
-            <label key={field.id} className="grid gap-1 text-sm font-semibold text-red-950">
+            <label key={field.id} className="grid gap-1 text-sm font-semibold text-[#1B1A17]">
               {field.label}
               <textarea
                 data-testid={`flow-hold-field-${field.id}`}
                 aria-label={field.label}
-                className="min-h-20 rounded-md border border-red-200 bg-white px-3 py-2 text-sm font-normal text-gray-900 outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100"
+                className="min-h-20 rounded-xl border border-[#D8D5CD] bg-white px-3 py-2 text-sm font-normal text-[#1B1A17] outline-none focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15"
                 placeholder={field.placeholder}
                 value={workbenchState.memoCards?.[field.id] ?? ''}
                 onChange={(event) => onWorkbenchChange(updateMemoCard(workbenchState, field.id, event.currentTarget.value))}
@@ -1756,26 +1802,26 @@ function RoutineWorkbench({
         <RoutineOccurrenceCalendar bundle={bundle} month={month} rows={routineRows} weekCount={weekCount} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
         {!isCheckOnlyRoutine ? <RoutineSessionLogCard bundle={bundle} rows={rows} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} /> : null}
       </div>
-      <div data-testid="routine-today-session-card" className="order-1 min-w-0 rounded-lg border border-slate-200 bg-slate-50 p-4 lg:order-2">
-        <p className="text-sm font-semibold text-blue-700">이번 주 요약</p>
-        <h3 className="mt-1 text-base font-semibold text-gray-950">다음 회차</h3>
-        <p className="mt-2 text-sm text-gray-600">오늘 바로 볼 회차와 실행 항목을 오른쪽에 고정해 둡니다.</p>
+      <div data-testid="routine-today-session-card" className={`order-1 min-w-0 lg:order-2 ${FLOWME_SUPPORT_CARD_CLASS}`}>
+        <p className={FLOWME_EYEBROW_CLASS}>이번 주 요약</p>
+        <h3 className={FLOWME_TITLE_CLASS}>다음 회차</h3>
+        <p className="mt-2 text-sm text-[#6E6B64]">오늘 바로 볼 회차와 실행 항목을 오른쪽에 고정해 둡니다.</p>
         <div className="mt-3 hidden grid-cols-2 gap-2 text-sm lg:grid">
-          <div className="rounded-md border border-gray-200 bg-white p-3">
-            <p className="text-xs font-semibold text-gray-500">전체 회차</p>
-            <p className="mt-1 font-semibold text-gray-900">{rows.length}회</p>
+          <div className={FLOWME_INNER_ROW_CLASS}>
+            <p className="text-xs font-semibold text-[#6E6B64]">전체 회차</p>
+            <p className="mt-1 font-semibold text-[#1B1A17]">{rows.length}회</p>
           </div>
-          <div className="rounded-md border border-gray-200 bg-white p-3">
-            <p className="text-xs font-semibold text-gray-500">이번 주</p>
-            <p className="mt-1 font-semibold text-gray-900">{selectedWeekdays.length}회</p>
+          <div className={FLOWME_INNER_ROW_CLASS}>
+            <p className="text-xs font-semibold text-[#6E6B64]">이번 주</p>
+            <p className="mt-1 font-semibold text-[#1B1A17]">{selectedWeekdays.length}회</p>
           </div>
         </div>
         {next ? (
-          <div className="mt-2 rounded-md border border-gray-200 bg-white p-3">
-            <label className="flex items-center gap-2 text-sm font-semibold text-blue-700">
+          <div className={`mt-2 ${FLOWME_INNER_ROW_CLASS}`}>
+            <label className="flex items-center gap-2 text-sm font-semibold text-[#3654FF]">
               <input
                 aria-label={`다음 세션 체크: ${nextLabel}`}
-                className="h-4 w-4 rounded border-gray-300"
+                className={FLOWME_CHECKBOX_CLASS}
                 checked={Boolean(nextState.done)}
                 onChange={(event) => onWorkbenchChange(updateOccurrenceDone(workbenchState, nextKey, event.currentTarget.checked))}
                 type="checkbox"
@@ -1784,7 +1830,7 @@ function RoutineWorkbench({
             </label>
             <button
               data-testid="routine-session-record-button"
-              className="mt-3 w-full rounded-md bg-[#2563EB] px-3 py-2 text-sm font-semibold text-white sm:w-auto"
+              className={`mt-3 w-full sm:w-auto ${FLOWME_BUTTON_PRIMARY_CLASS}`}
               type="button"
               onClick={() => onWorkbenchChange(updateOccurrenceDone(workbenchState, nextKey, true))}
             >
@@ -1793,7 +1839,7 @@ function RoutineWorkbench({
             {!isCheckOnlyRoutine ? (
             <textarea
               aria-label={`다음 세션 메모: ${nextLabel}`}
-              className="mt-3 min-h-20 w-full resize-y rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-800"
+              className={`mt-3 min-h-20 w-full resize-y ${FLOWME_INPUT_CLASS}`}
               placeholder={isSleepCheck ? '잠든 시각, 8시간 이상 여부, 다음 날 피로감' : '오늘 컨디션, 조정할 강도, 다음 회차 메모'}
               value={nextState.note ?? ''}
               onChange={(event) => onWorkbenchChange(updateOccurrenceNote(workbenchState, nextKey, event.currentTarget.value))}
@@ -1801,10 +1847,10 @@ function RoutineWorkbench({
             ) : null}
           </div>
         ) : null}
-        <ul className="mt-3 space-y-2 text-sm text-gray-700">
+        <ul className="mt-3 space-y-2 text-sm text-[#6E6B64]">
           {sessionItems.map((item) => (
             <li key={item.id} className="flex gap-2">
-              <span className="text-blue-700">•</span>
+              <span className="text-[#3654FF]">•</span>
               <span>{item.title}</span>
             </li>
           ))}
@@ -1817,39 +1863,39 @@ function RoutineWorkbench({
 function ExactVideoSourceBridge({ bundle }: { bundle: FlowBundle }) {
   const detail = bundle.itemDetails?.[0];
   const sourceUrl = bundle.flow.source_url;
-  const sourceTitle = bundle.flow.source_title ?? '원본 영상';
+  const sourceTitle = bundle.flow.source_title ? toUserFacingSourceTitle(bundle.flow.source_title) : '원본 영상';
   const cues =
     bundle.flow.slug === 'real-thankyou-bubu-home-workout-starter'
       ? ['점프 없음', '눕는 동작 없음', '반복 없음', '토크 없음']
       : ['원본 영상 1개', '반복 일정', '운동 후 기록'];
 
   return (
-    <section data-testid="exact-video-source-bridge" className="rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm leading-6 text-blue-950">
+    <section data-testid="exact-video-source-bridge" className={`text-sm leading-6 text-[#1B1A17] ${FLOWME_SUPPORT_CARD_CLASS}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold text-blue-700">원문에서 옮긴 실행 기준</p>
-          <h3 className="mt-1 text-base font-semibold text-blue-950">원본 영상을 열고, 정한 요일에 1회 실행합니다</h3>
+          <p className="text-xs font-semibold text-[#3654FF]">원문에서 옮긴 실행 기준</p>
+          <h3 className={FLOWME_TITLE_CLASS}>원본 영상을 열고, 정한 요일에 1회 실행합니다</h3>
         </div>
         {sourceUrl ? (
-          <a className="shrink-0 rounded-md border border-blue-200 bg-white px-3 py-1.5 text-xs font-semibold text-blue-800" href={sourceUrl} target="_blank" rel="noreferrer">
+          <a className={FLOWME_LINK_BUTTON_CLASS} href={sourceUrl} target="_blank" rel="noreferrer">
             원본 영상 열기
           </a>
         ) : null}
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         {cues.map((cue) => (
-          <span key={cue} className="rounded-md border border-blue-200 bg-white px-2 py-1 text-xs font-semibold text-blue-800">
+          <span key={cue} className="rounded-full border border-[#DDE3FF] bg-[#EEF1FF] px-2 py-1 text-xs font-semibold text-[#3654FF]">
             {cue}
           </span>
         ))}
       </div>
-      <p className="mt-3 text-sm text-blue-900">
+      <p className="mt-3 text-sm text-[#6E6B64]">
         Flow는 영상의 동작 순서를 새로 만들지 않습니다. 캘린더에는 운동일만 넣고, 실행할 때는 원본 영상의 자세와 박자를 그대로 확인합니다.
       </p>
-      <p className="mt-2 text-xs text-blue-800">
+      <p className="mt-2 text-xs text-[#6E6B64]">
         저장 후 남길 기록: {detail?.completion_criteria ?? '완료 여부, 체감 난이도, 통증이나 어지러움, 다음 회차 강도 조정 메모'}
       </p>
-      <p className="mt-1 text-xs text-blue-700">출처: {sourceTitle}</p>
+      <p className="mt-1 text-xs text-[#3654FF]">출처: {sourceTitle}</p>
     </section>
   );
 }
@@ -1870,14 +1916,14 @@ function ExactVideoTodayResultCard({
   const resultOptions = ['완료', '강도 낮춤', '휴식으로 변경'];
 
   return (
-    <section data-testid="exact-video-result-card" className="rounded-lg border border-emerald-100 bg-emerald-50 p-4 text-sm leading-6 text-emerald-950">
+    <section data-testid="exact-video-result-card" className={`text-sm leading-6 text-[#1B1A17] ${FLOWME_SUCCESS_CARD_CLASS}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold text-emerald-700">오늘 결과</p>
-          <h3 className="mt-1 text-base font-semibold text-emerald-950">{occurrenceLabel} 실행 후 남길 것</h3>
-          <p className="mt-1 text-sm text-emerald-900">원본 영상을 열어 1회 따라 한 뒤 완료 여부와 몸 상태만 가볍게 남깁니다.</p>
+          <p className="text-xs font-semibold text-[#1F8A5B]">오늘 결과</p>
+          <h3 className={FLOWME_TITLE_CLASS}>{occurrenceLabel} 실행 후 남길 것</h3>
+          <p className="mt-1 text-sm text-[#406B55]">원본 영상을 열어 1회 따라 한 뒤 완료 여부와 몸 상태만 가볍게 남깁니다.</p>
         </div>
-        <span className="rounded-md border border-emerald-200 bg-white px-2 py-1 text-xs font-semibold text-emerald-800">운동 후 기록</span>
+        <span className="rounded-full border border-[#D8ECE1] bg-white px-2 py-1 text-xs font-semibold text-[#1F8A5B]">운동 후 기록</span>
       </div>
       <div className="mt-3 grid gap-2 sm:grid-cols-3">
         {resultOptions.map((result) => (
@@ -1885,8 +1931,8 @@ function ExactVideoTodayResultCard({
             key={result}
             type="button"
             aria-pressed={selectedResult === result}
-            className={`min-h-10 rounded-md border px-3 text-sm font-semibold ${
-              selectedResult === result ? 'border-emerald-700 bg-emerald-700 text-white' : 'border-emerald-200 bg-white text-emerald-900'
+            className={`min-h-10 rounded-xl border px-3 text-sm font-semibold ${
+              selectedResult === result ? 'border-[#1F8A5B] bg-[#1F8A5B] text-white' : 'border-[#D8ECE1] bg-white text-[#1F8A5B]'
             }`}
             onClick={() => {
               const next = updateMemoCard(workbenchState, 'exactVideoResult', result);
@@ -1897,17 +1943,17 @@ function ExactVideoTodayResultCard({
           </button>
         ))}
       </div>
-      <label className="mt-3 block text-sm font-semibold text-emerald-950">
+      <label className="mt-3 block text-sm font-semibold text-[#1B1A17]">
         몸 상태 메모
         <textarea
           aria-label="운동 후 몸 상태 메모"
-          className="mt-2 min-h-24 w-full resize-y rounded-md border border-emerald-200 bg-white px-3 py-2 text-sm font-normal text-slate-800"
+          className={`mt-2 min-h-24 w-full resize-y font-normal ${FLOWME_INPUT_CLASS}`}
           placeholder="예: 완료 / RPE 6 / 무릎 통증 없음 / 다음 회차도 같은 강도"
           value={note}
           onChange={(event) => occurrenceKeyValue ? onWorkbenchChange(updateOccurrenceNote(workbenchState, occurrenceKeyValue, event.currentTarget.value)) : undefined}
         />
       </label>
-      <p className="mt-2 text-xs text-emerald-800">통증, 어지러움, 호흡 곤란이 있으면 완료보다 중단 기록을 우선합니다.</p>
+      <p className="mt-2 text-xs text-[#406B55]">통증, 어지러움, 호흡 곤란이 있으면 완료보다 중단 기록을 우선합니다.</p>
     </section>
   );
 }
@@ -1975,16 +2021,18 @@ function SpreadsheetWorkbench({
   const rows = Array.from({ length: 7 }, (_, index) => formatDate(addDays(new Date(start), index)));
   const showRiskBoundary = bundle.flow.risk_level === 'medical_sensitive' && Boolean(bundle.flow.warning);
   const spreadsheetColumns = getSpreadsheetColumns(bundle);
+  const isFridgeCleanout = bundle.flow.slug === 'fridge-cleanout-weekly-plan';
+  const [showFridgeFullSheet, setShowFridgeFullSheet] = useState(false);
   const title =
     bundle.flow.slug === 'diet-habit-2week'
       ? '관찰 기록표'
-      : bundle.flow.slug === 'fridge-cleanout-weekly-plan'
+      : isFridgeCleanout
         ? '7일 재고 소진표'
         : '날짜별 기록표';
   const description =
     bundle.flow.slug === 'diet-habit-2week'
       ? '감량 결과를 판단하지 않고 식사, 수면, 활동, 컨디션, 중단/상담 조건을 같은 줄에 남깁니다.'
-      : bundle.flow.slug === 'fridge-cleanout-weekly-plan'
+      : isFridgeCleanout
         ? '냉장고 지도에서 고른 재료, 메뉴 후보, 장보기 보류 상태만 기록합니다. 절약액이나 영양 균형은 계산하지 않습니다.'
         : '날짜별로 남길 기록 값을 먼저 정리합니다.';
   const routeSpecificMemoTitle =
@@ -2014,18 +2062,18 @@ function SpreadsheetWorkbench({
             />
           ))}
         </div>
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+        <div className={FLOWME_SUPPORT_CARD_CLASS}>
           <StopPrincipleCards bundle={bundle} />
           {showRiskBoundary ? (
-            <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3">
-              <p className="text-sm font-semibold text-amber-900">기록 전 확인</p>
-              <p className="mt-1 text-sm leading-6 text-amber-950">{bundle.flow.warning}</p>
+            <div className={`mb-4 ${FLOWME_WARNING_CARD_CLASS}`}>
+              <p className="text-sm font-semibold text-[#8A5A12]">기록 전 확인</p>
+              <p className="mt-1 text-sm leading-6 text-[#5F4115]">{bundle.flow.warning}</p>
             </div>
           ) : null}
-          <h3 className="text-base font-semibold text-gray-950">{routeSpecificMemoTitle}</h3>
+          <h3 className={FLOWME_TITLE_CLASS}>{routeSpecificMemoTitle}</h3>
           <textarea
             aria-label={routeSpecificMemoTitle}
-            className="mt-3 min-h-32 w-full resize-y rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800"
+            className={`mt-3 min-h-32 w-full resize-y ${FLOWME_INPUT_CLASS}`}
             placeholder={routeSpecificMemoPlaceholder}
             value={workbenchState.weeklyReview ?? ''}
             onChange={(event) => onWorkbenchChange(updateWeeklyReview(workbenchState, event.currentTarget.value))}
@@ -2037,63 +2085,75 @@ function SpreadsheetWorkbench({
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1.25fr_0.75fr]">
-      <div data-testid="artifact-log-table-spreadsheet" className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
-        <div className="border-b border-gray-100 px-3 py-3">
+      <div data-testid="artifact-log-table-spreadsheet" className={FLOWME_TABLE_CARD_CLASS}>
+        <div className={FLOWME_TABLE_HEADER_CLASS}>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-blue-700">기록표</p>
-              <h3 className="mt-1 text-base font-semibold text-gray-950">{title}</h3>
+              <p className={FLOWME_EYEBROW_CLASS}>기록표</p>
+              <h3 className={FLOWME_TITLE_CLASS}>{title}</h3>
             </div>
-            <ArtifactExportButtons
-              actions={exportActions}
-              kinds={['copy', 'excel', 'draft']}
-              mobileArtifactLabel={getMobileArtifactLabel(bundle, 'spreadsheet_log')}
-              mobileKinds={['excel']}
-            />
+              <ArtifactExportButtons
+                actions={exportActions}
+                kinds={['copy', 'excel', 'draft']}
+                labels={{ copy: FLOW_EXPORT_LABELS.memoCopy }}
+                mobileArtifactLabel={getMobileArtifactLabel(bundle, 'spreadsheet_log')}
+                mobileKinds={['excel']}
+              />
           </div>
           <ArtifactExportStatus actions={exportActions} />
-          <p className="mt-2 text-sm leading-6 text-gray-600">{description}</p>
+          <p className="mt-2 text-sm leading-6 text-[#6E6B64]">{description}</p>
           <MobileSpreadsheetSummaryCard date={rows[0]} columns={spreadsheetColumns} bundle={bundle} />
         </div>
-        <table className="min-w-[760px] text-left text-sm">
-          <thead className="bg-gray-50 text-xs font-semibold text-gray-600">
-            <tr>
-              {['날짜', ...spreadsheetColumns].map((column) => (
-                <th key={column} className="px-3 py-2">{column}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((date) => (
-              <tr key={date} className="border-t border-gray-100">
-                <td className="px-3 py-3 font-semibold text-gray-900">{date}</td>
-                {spreadsheetColumns.map((column) => (
-                  <td key={`${date}-${column}`} className="px-2 py-2">
-                    <input
-                      aria-label={`${date} ${column}`}
-                      className="w-full min-w-28 rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-800"
-                      placeholder={spreadsheetPlaceholder(column)}
-                      value={workbenchState.logRows[date]?.[column] ?? ''}
-                      onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, date, column, event.currentTarget.value))}
-                    />
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {isFridgeCleanout ? (
+          <>
+            <FridgeMobileActiveRowCard
+              date={rows[0]}
+              columns={spreadsheetColumns.filter((column) => column !== '메모')}
+              workbenchState={workbenchState}
+              onWorkbenchChange={onWorkbenchChange}
+            />
+            <details
+              data-testid="fridge-full-sheet-disclosure"
+              className="mx-3 mb-3 mt-3 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2 text-sm"
+              open={showFridgeFullSheet}
+              onToggle={(event) => setShowFridgeFullSheet(event.currentTarget.open)}
+            >
+              <summary className="cursor-pointer list-none font-semibold text-[#3654FF]">
+                전체 7일 표 보기
+                <span className="ml-2 text-xs font-medium text-[#6E6B64]">필요할 때만 펼치기</span>
+              </summary>
+              {showFridgeFullSheet ? (
+                <div data-testid="fridge-mobile-full-sheet-table" className="mt-3 overflow-x-auto">
+                  <SpreadsheetLogTable
+                    rows={rows}
+                    columns={spreadsheetColumns}
+                    workbenchState={workbenchState}
+                    onWorkbenchChange={onWorkbenchChange}
+                  />
+                </div>
+              ) : null}
+            </details>
+          </>
+        ) : (
+          <SpreadsheetLogTable
+            rows={rows}
+            columns={spreadsheetColumns}
+            workbenchState={workbenchState}
+            onWorkbenchChange={onWorkbenchChange}
+          />
+        )}
       </div>
-      <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+      <div className={FLOWME_SUPPORT_CARD_CLASS}>
         <StopPrincipleCards bundle={bundle} />
         {showRiskBoundary ? (
-          <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3">
-            <p className="text-sm font-semibold text-amber-900">
+          <div className={`mb-4 ${FLOWME_WARNING_CARD_CLASS}`}>
+            <p className="text-sm font-semibold text-[#8A5A12]">
               {bundle.flow.slug === 'diet-habit-2week' ? '관찰 전 중단/상담 기준' : '기록 전 확인'}
             </p>
-            <p className="mt-1 text-sm leading-6 text-amber-950">{bundle.flow.warning}</p>
+            <p className="mt-1 text-sm leading-6 text-[#5F4115]">{bundle.flow.warning}</p>
           </div>
         ) : null}
-        <h3 className="text-base font-semibold text-gray-950">
+        <h3 className={FLOWME_TITLE_CLASS}>
           {bundle.flow.slug === 'diet-habit-2week'
             ? '주간 관찰 메모'
             : bundle.flow.slug === 'fridge-cleanout-weekly-plan'
@@ -2108,7 +2168,7 @@ function SpreadsheetWorkbench({
                 ? '장보기 전 메모'
                 : '주간 리뷰 메모'
           }
-          className="mt-3 min-h-32 w-full resize-y rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800"
+          className={`mt-3 min-h-32 w-full resize-y ${FLOWME_INPUT_CLASS}`}
           placeholder={
             bundle.flow.slug === 'diet-habit-2week'
               ? '반복된 식사 시간, 수면, 활동, 컨디션, 중단/상담 신호만 적어보세요.'
@@ -2168,32 +2228,33 @@ function MaintenanceRoutineWorkbench({
 
   return (
     <div className="grid gap-4 lg:grid-cols-[0.92fr_1.08fr]">
-      <section data-testid="maintenance-routine-next-card" className="order-2 rounded-lg border border-slate-200 bg-slate-50 p-4 lg:order-1">
+      <section data-testid="maintenance-routine-next-card" className={`order-2 lg:order-1 ${FLOWME_SUPPORT_CARD_CLASS}`}>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-blue-700">반복 관리</p>
-            <h3 className="mt-1 text-base font-semibold text-slate-950">{title}</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
+            <p className={FLOWME_EYEBROW_CLASS}>반복 관리</p>
+            <h3 className={FLOWME_TITLE_CLASS}>{title}</h3>
+            <p className="mt-2 text-sm leading-6 text-[#6E6B64]">
               시작일을 기준으로 캘린더에 넣을 관리일을 먼저 보여줍니다. 날짜마다 아래 체크리스트를 열어 확인하는 흐름입니다.
             </p>
           </div>
-          <span className="rounded-md border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">{repeatLabel}</span>
+          <span className="rounded-full border border-[#DDE3FF] bg-[#EEF1FF] px-3 py-1 text-xs font-semibold text-[#3654FF]">{repeatLabel}</span>
         </div>
         <div className="mt-4 grid gap-2">
           {occurrenceDates.map((date, index) => {
             const key = `maintenance:${bundle.flow.slug}:${date}`;
             const state = workbenchState.occurrences[key] ?? {};
+            const dateLabel = formatKoreanShortDate(date, { includeWeekday: true });
             return (
-              <label key={key} className={`rounded-md border px-3 py-2 text-sm ${state.done ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-white text-slate-800'}`}>
+              <label key={key} className={`rounded-xl border px-3 py-2 text-sm ${state.done ? 'border-[#D8ECE1] bg-[#EAF7F0] text-[#1F8A5B]' : 'border-[#E7E4DD] bg-white text-[#1B1A17]'}`}>
                 <span className="flex items-center gap-2">
                   <input
-                    aria-label={`관리일 완료: ${date}`}
-                    className="h-4 w-4 rounded border-slate-300 text-blue-700"
+                    aria-label={`관리일 완료: ${dateLabel}`}
+                    className={FLOWME_CHECKBOX_CLASS}
                     checked={Boolean(state.done)}
                     onChange={(event) => onWorkbenchChange(updateOccurrenceDone(workbenchState, key, event.currentTarget.checked))}
                     type="checkbox"
                   />
-                  <span className="font-mono text-xs font-semibold text-blue-700">{date}</span>
+                  <span className="text-xs font-semibold text-[#3654FF]">{dateLabel}</span>
                   <span className="font-semibold">{index === 0 ? '이번 관리일' : `${index + 1}번째 관리일`}</span>
                 </span>
               </label>
@@ -2203,67 +2264,67 @@ function MaintenanceRoutineWorkbench({
         <ArtifactExportButtons
           actions={exportActions}
           kinds={['calendar', 'copy', 'draft']}
-          labels={{ calendar: '캘린더로 받기', copy: '관리 메모 복사', draft: '내 버전' }}
+          labels={{ calendar: FLOW_EXPORT_LABELS.calendarFile, copy: FLOW_EXPORT_LABELS.memoCopy, draft: FLOW_EXPORT_LABELS.editableDraft }}
         />
         <ArtifactExportStatus actions={exportActions} />
       </section>
 
-      <section data-testid="maintenance-routine-checklist-card" className="order-1 rounded-lg border border-slate-200 bg-white p-4 lg:order-2">
+      <section data-testid="maintenance-routine-checklist-card" className={`order-1 lg:order-2 ${FLOWME_SURFACE_CARD_CLASS}`}>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-blue-700">날짜 안 체크리스트</p>
-            <h3 className="mt-1 text-base font-semibold text-slate-950">{isWasher ? '통세척할 때 확인할 것' : '물 주기 전에 확인할 것'}</h3>
+            <p className={FLOWME_EYEBROW_CLASS}>날짜 안 체크리스트</p>
+            <h3 className={FLOWME_TITLE_CLASS}>{isWasher ? '통세척할 때 확인할 것' : '물 주기 전에 확인할 것'}</h3>
           </div>
-          <span className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">{items.length}개</span>
+          <span className={FLOWME_PROGRESS_CHIP_CLASS}>{items.length}개</span>
         </div>
         <div className="mt-3 grid gap-2">
           {items.map((item) => {
             const detail = getWorkbenchItemDetail(bundle, item.id);
             const isLongCycle = !isWasher && item.title.includes('분갈이');
             return (
-              <div key={item.id} className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
+              <div key={item.id} className={FLOWME_INNER_ROW_CLASS}>
                 <label className="flex items-start gap-2">
                   <input
                     aria-label={`관리 체크: ${item.title}`}
-                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-700"
+                    className={`mt-0.5 shrink-0 ${FLOWME_CHECKBOX_CLASS}`}
                     checked={Boolean(checks[item.id])}
                     onChange={() => onToggleItem(item.id)}
                     type="checkbox"
                   />
-                  <span className={`min-w-0 flex-1 ${checks[item.id] ? 'text-slate-400 line-through' : 'text-slate-800'}`}>
+                  <span className={`min-w-0 flex-1 ${checks[item.id] ? 'text-[#A7A39A] line-through' : 'text-[#1B1A17]'}`}>
                     <span className="font-medium">{item.title}</span>
-                    {isLongCycle ? <span className="ml-2 rounded bg-white px-2 py-0.5 text-xs font-semibold text-amber-800">1~2년마다</span> : null}
+                    {isLongCycle ? <span className="ml-2 rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-[#8A5A12]">1~2년마다</span> : null}
                   </span>
                 </label>
-                <WorkbenchDetailDisclosure detail={detail} />
+                <WorkbenchDetailDisclosure detail={detail} showSourceLinks={false} />
               </div>
             );
           })}
         </div>
-        <div data-testid="maintenance-source-bridge" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3 text-sm leading-6 text-blue-950">
-          <p className="text-xs font-semibold text-blue-700">원문에서 옮긴 실행 단서</p>
+        <div data-testid="maintenance-source-bridge" className={`mt-3 text-sm leading-6 text-[#1B1A17] ${FLOWME_COMPACT_SUPPORT_CARD_CLASS}`}>
+          <p className="text-xs font-semibold text-[#3654FF]">원문에서 옮긴 실행 단서</p>
           <p className="mt-1 font-semibold">{sourceBridge.cues}</p>
-          <p className="mt-1 text-xs leading-5 text-blue-800">{sourceBridge.conversion}</p>
-          {'prep' in sourceBridge ? <p className="mt-2 text-xs leading-5 text-blue-900">{sourceBridge.prep}</p> : null}
-          {'cadence' in sourceBridge ? <p className="mt-1 text-xs leading-5 text-blue-900">{sourceBridge.cadence}</p> : null}
+          <p className="mt-1 text-xs leading-5 text-[#6E6B64]">{sourceBridge.conversion}</p>
+          {'prep' in sourceBridge ? <p className="mt-2 text-xs leading-5 text-[#6E6B64]">{sourceBridge.prep}</p> : null}
+          {'cadence' in sourceBridge ? <p className="mt-1 text-xs leading-5 text-[#6E6B64]">{sourceBridge.cadence}</p> : null}
           {bundle.flow.source_url ? (
-            <a className="mt-2 inline-flex text-xs font-semibold text-blue-700 underline-offset-2 hover:underline" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
+            <a className="mt-2 inline-flex text-xs font-semibold text-[#3654FF] underline-offset-2 hover:underline" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
               원문 보기
             </a>
           ) : null}
         </div>
         {!isWasher ? (
-          <div data-testid="maintenance-result-selector" className="mt-3 rounded-md border border-emerald-100 bg-emerald-50 p-3">
-            <p className="text-xs font-semibold text-emerald-700">오늘 결과</p>
-            <p className="mt-1 text-sm leading-6 text-emerald-950">체크리스트를 보고 이번 관리일의 결과만 고릅니다. 보류도 정상 결과입니다.</p>
+          <div data-testid="maintenance-result-selector" className={`mt-3 ${FLOWME_SUCCESS_CARD_CLASS}`}>
+            <p className="text-xs font-semibold text-[#1F8A5B]">오늘 결과</p>
+            <p className="mt-1 text-sm leading-6 text-[#406B55]">체크리스트를 보고 이번 관리일의 결과만 고릅니다. 보류도 정상 결과입니다.</p>
             <div className="mt-3 grid gap-2 sm:grid-cols-3">
               {maintenanceResultOptions.map((result) => (
                 <button
                   key={result}
                   type="button"
                   aria-pressed={maintenanceResult === result}
-                  className={`min-h-10 rounded-md border px-3 text-sm font-semibold ${
-                    maintenanceResult === result ? 'border-emerald-700 bg-emerald-700 text-white' : 'border-emerald-200 bg-white text-emerald-900'
+                  className={`min-h-10 rounded-xl border px-3 text-sm font-semibold ${
+                    maintenanceResult === result ? 'border-[#1F8A5B] bg-[#1F8A5B] text-white' : 'border-[#D8ECE1] bg-white text-[#1F8A5B]'
                   }`}
                   onClick={() => onWorkbenchChange(updateMemoCard(workbenchState, 'maintenanceResult', result))}
                 >
@@ -2273,11 +2334,11 @@ function MaintenanceRoutineWorkbench({
             </div>
           </div>
         ) : null}
-        <label className="mt-4 block text-sm font-semibold text-slate-800">
+        <label className="mt-4 block text-sm font-semibold text-[#1B1A17]">
           관리 메모
           <textarea
             aria-label="관리 메모"
-            className="mt-2 min-h-28 w-full resize-y rounded-md border border-slate-200 px-3 py-2 text-sm font-normal text-slate-800"
+            className={`mt-2 min-h-28 w-full resize-y font-normal ${FLOWME_INPUT_CLASS}`}
             placeholder={memoPlaceholder}
             value={workbenchState.weeklyReview ?? ''}
             onChange={(event) => onWorkbenchChange(updateWeeklyReview(workbenchState, event.currentTarget.value))}
@@ -2288,28 +2349,113 @@ function MaintenanceRoutineWorkbench({
   );
 }
 
+function SpreadsheetLogTable({
+  rows,
+  columns,
+  workbenchState,
+  onWorkbenchChange,
+}: {
+  rows: string[];
+  columns: string[];
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
+}) {
+  return (
+    <table className="min-w-[760px] text-left text-sm">
+      <thead className={FLOWME_TABLE_HEAD_CLASS}>
+        <tr>
+          {['날짜', ...columns].map((column) => (
+            <th key={column} className="px-3 py-2">{column}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((date) => (
+          <tr key={date} className="border-t border-[#E7E4DD]">
+            <td className="px-3 py-3 font-semibold text-[#1B1A17]">{date}</td>
+            {columns.map((column) => (
+              <td key={`${date}-${column}`} className="px-2 py-2">
+                <input
+                  aria-label={`${date} ${column}`}
+                  className={`w-full min-w-28 ${FLOWME_SMALL_INPUT_CLASS}`}
+                  placeholder={spreadsheetPlaceholder(column)}
+                  value={workbenchState.logRows[date]?.[column] ?? ''}
+                  onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, date, column, event.currentTarget.value))}
+                />
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function FridgeMobileActiveRowCard({
+  date,
+  columns,
+  workbenchState,
+  onWorkbenchChange,
+}: {
+  date: string;
+  columns: string[];
+  workbenchState: FlowWorkbenchState;
+  onWorkbenchChange: (state: FlowWorkbenchState) => void;
+}) {
+  return (
+    <div data-testid="fridge-mobile-active-row" className="mx-3 mt-3 rounded-2xl border border-[#D8ECE1] bg-[#F4FBF7] p-3 md:hidden">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold text-[#1F8A5B]">오늘 먼저 기록</p>
+          <h4 data-testid="fridge-active-row-title" className="mt-1 line-clamp-2 break-keep text-sm font-semibold leading-5 text-[#1B1A17]">재고 행 · {formatKoreanShortDate(date)}</h4>
+        </div>
+        <span className="rounded-full border border-[#D8ECE1] bg-white px-2 py-1 text-xs font-semibold text-[#1F8A5B]">오늘 행</span>
+      </div>
+      <div className="mt-3 grid gap-2">
+        {columns.map((column) => (
+          <label key={column} className="grid gap-1 text-sm font-semibold text-[#1B1A17]">
+            <span>{column}</span>
+            <input
+              aria-label={`오늘 재고 행 ${column}`}
+              className={`w-full font-normal ${FLOWME_SMALL_INPUT_CLASS}`}
+              placeholder={spreadsheetPlaceholder(column)}
+              value={workbenchState.logRows[date]?.[column] ?? ''}
+              onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, date, column, event.currentTarget.value))}
+            />
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function MobileSpreadsheetSummaryCard({ date, columns, bundle }: { date: string; columns: string[]; bundle: FlowBundle }) {
+  const isFridgeCleanout = bundle.flow.slug === 'fridge-cleanout-weekly-plan';
   const previewColumns = columns.slice(0, 3);
   const title =
     bundle.flow.slug === 'diet-habit-2week'
       ? '오늘 관찰 행'
-      : bundle.flow.slug === 'fridge-cleanout-weekly-plan'
+      : isFridgeCleanout
         ? '오늘 재고 행'
         : '오늘 기록 행';
 
   return (
-    <div data-testid="mobile-artifact-summary-card" className="mt-3 rounded-md border border-slate-200 bg-slate-50 p-3 md:hidden">
-      <p className="text-xs font-semibold text-blue-700">먼저 채울 행</p>
-      <h4 className="mt-1 text-sm font-semibold text-gray-950">{title} · {date}</h4>
-      <dl className="mt-2 grid gap-2 text-sm">
-        {previewColumns.map((column) => (
-          <div key={column} className="rounded-md bg-white px-3 py-2">
-            <dt className="text-xs font-semibold text-gray-500">{column}</dt>
-            <dd className="mt-1 text-gray-800">{spreadsheetPlaceholder(column)}</dd>
-          </div>
-        ))}
-      </dl>
-      <p className="mt-2 text-xs font-medium text-blue-800">전체 행은 아래 표에서 확인하고, 기록은 시트로 받을 수 있습니다.</p>
+    <div data-testid="mobile-artifact-summary-card" className={`mt-3 md:hidden ${FLOWME_COMPACT_SUPPORT_CARD_CLASS}`}>
+      <p className="text-xs font-semibold text-[#3654FF]">먼저 채울 행</p>
+      <h4 className="mt-1 text-sm font-semibold text-[#1B1A17]">{title} · {formatKoreanShortDate(date)}</h4>
+      {isFridgeCleanout ? (
+        <p className="mt-2 text-sm leading-6 text-[#6E6B64]">우선 재료와 메뉴 후보부터 적고, 나머지 날짜는 필요할 때만 펼칩니다.</p>
+      ) : (
+        <dl className="mt-2 grid gap-2 text-sm">
+          {previewColumns.map((column) => (
+            <div key={column} className={FLOWME_INNER_ROW_CLASS}>
+              <dt className="text-xs font-semibold text-[#6E6B64]">{column}</dt>
+              <dd className="mt-1 text-[#1B1A17]">{spreadsheetPlaceholder(column)}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      <p className="mt-2 text-xs font-medium text-[#3654FF]">{isFridgeCleanout ? '기록 결과는 시트로 받을 수 있습니다.' : '전체 행은 아래 표에서 확인하고, 기록은 시트로 받을 수 있습니다.'}</p>
     </div>
   );
 }
@@ -2369,36 +2515,44 @@ function ChecklistWorkbench({
   const holdSection = workbenchState && onWorkbenchChange ? <HoldSectionCard bundle={bundle} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} /> : null;
   const putChecklistFirst = bundle.flow.slug === 'used-car-buying-check';
   const visibleItems = getExecutableItems(bundle).slice(0, bundle.flow.slug === 'used-car-buying-check' ? bundle.items.length : 10);
+  const visibleDetails = visibleItems.map((item) => getWorkbenchItemDetail(bundle, item.id));
+  const repeatedCaution = getRepeatedWorkbenchCaution(visibleDetails);
 
   return (
     <div className="space-y-4">
       {!putChecklistFirst ? holdSection : null}
-      <div data-testid="artifact-list-card" className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+      <div data-testid="artifact-list-card" className={FLOWME_PANEL_CARD_CLASS}>
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <h3 className="text-base font-semibold text-slate-950">{listTitle}</h3>
+          <h3 className={FLOWME_TITLE_CLASS}>{listTitle}</h3>
           <ArtifactExportButtons actions={exportActions} kinds={['copy', 'excel', 'draft']} />
         </div>
         <ArtifactExportStatus actions={exportActions} />
         {bundle.flow.slug === 'used-car-buying-check' ? <UsedCarSourceBridge sourceUrl={bundle.flow.source_url} /> : null}
+        {repeatedCaution ? (
+          <div data-testid="workbench-common-detail-caution" className="mt-3 rounded-xl border border-[#F1DDB8] bg-[#FFF9EC] px-3 py-2 text-sm leading-6 text-[#5F4115]">
+            <p className="font-semibold text-[#8A5A12]">공통 주의</p>
+            <p className="mt-1">{repeatedCaution}</p>
+          </div>
+        ) : null}
         {bundle.flow.slug === 'used-car-buying-check' && workbenchState && onWorkbenchChange ? (
           <UsedCarDecisionResultCard workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
         ) : null}
         <div className="mt-3 grid gap-2 md:grid-cols-2">
-          {visibleItems.map((item) => {
-            const detail = getWorkbenchItemDetail(bundle, item.id);
+          {visibleItems.map((item, index) => {
+            const detail = visibleDetails[index];
             return (
-              <div key={item.id} className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+              <div key={item.id} className={FLOWME_INNER_ROW_CLASS}>
                 <label className="flex gap-2">
                   <input
                     aria-label={`실행판 체크: ${item.title}`}
-                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-700"
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-[#D8D5CD] text-[#3654FF]"
                     checked={Boolean(checks[item.id])}
                     onChange={() => onToggleItem(item.id)}
                     type="checkbox"
                   />
-                  <span className={`font-medium ${checks[item.id] ? 'text-slate-400 line-through' : 'text-slate-800'}`}>{item.title}</span>
+                  <span className={`font-medium ${checks[item.id] ? 'text-[#A7A39A] line-through' : 'text-[#1B1A17]'}`}>{item.title}</span>
                 </label>
-                <WorkbenchDetailDisclosure detail={detail} />
+                <WorkbenchDetailDisclosure detail={detail} showSourceLinks={false} suppressedCaution={repeatedCaution} />
               </div>
             );
           })}
@@ -2508,7 +2662,7 @@ function JeonseContractWorkbench({
               disabled={!exportActions?.canExportCalendar}
               onClick={exportActions?.onDownloadCalendar}
             >
-              캘린더에 넣기
+              {FLOW_EXPORT_LABELS.calendarFile}
             </button>
           </section>
         </>
@@ -2843,10 +2997,10 @@ function UsedCarDecisionResultCard({
   const decisions = ['구매 진행', '보류', '거절'];
 
   return (
-    <section data-testid="used-car-decision-result-card" className="mt-3 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-950">
-      <p className="text-xs font-semibold text-amber-800">점검 후 판단</p>
-      <h4 className="mt-1 text-sm font-semibold text-amber-950">현장 체크가 끝나면 구매/보류/거절 중 하나만 남깁니다</h4>
-      <p className="mt-1 text-xs leading-5 text-amber-900">
+    <section data-testid="used-car-decision-result-card" className={`mt-3 ${FLOWME_COMPACT_SUPPORT_CARD_CLASS} bg-[#FFF7E8] text-sm leading-6 text-[#4A4842]`}>
+      <p className="text-xs font-semibold text-[#8A5A12]">점검 후 판단</p>
+      <h4 className="mt-1 text-sm font-semibold text-[#1B1A17]">현장 체크가 끝나면 구매/보류/거절 중 하나만 남깁니다</h4>
+      <p className="mt-1 text-xs leading-5 text-[#6E6B64]">
         사진 저장은 필수가 아닙니다. 공식 조회, 정비소 점검, 판매자 설명이 맞지 않으면 아래 보류 메모에 이유만 남깁니다.
       </p>
       <div className="mt-3 grid gap-2 sm:grid-cols-3">
@@ -2855,8 +3009,8 @@ function UsedCarDecisionResultCard({
             key={decision}
             type="button"
             aria-pressed={selectedDecision === decision}
-            className={`min-h-10 rounded-md border px-3 text-sm font-semibold ${
-              selectedDecision === decision ? 'border-amber-700 bg-amber-700 text-white' : 'border-amber-200 bg-white text-amber-900'
+            className={`min-h-10 rounded-xl border px-3 text-sm font-semibold ${
+              selectedDecision === decision ? 'border-[#8A5A12] bg-[#8A5A12] text-white' : 'border-[#E7E4DD] bg-white text-[#1B1A17]'
             }`}
             onClick={() => onWorkbenchChange(updateMemoCard(workbenchState, 'usedCarDecision', decision))}
           >
@@ -2870,19 +3024,19 @@ function UsedCarDecisionResultCard({
 
 function UsedCarSourceBridge({ sourceUrl }: { sourceUrl?: string }) {
   return (
-    <div data-testid="used-car-source-bridge" className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3 text-sm leading-6 text-blue-950">
+    <div data-testid="used-car-source-bridge" className={`mt-3 ${FLOWME_COMPACT_SUPPORT_CARD_CLASS} text-sm leading-6 text-[#1B1A17]`}>
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <p className="text-xs font-semibold text-blue-700">원문에서 옮긴 점검 순서</p>
-          <p className="mt-1 text-blue-900">조회 → 낮 시간 방문 → 외관/타이어/침수 → 엔진/시동/변속/제동 → 서류/정비소 → 계약 조건 순서로 확인합니다.</p>
+          <p className="text-xs font-semibold text-[#3654FF]">원문에서 옮긴 점검 순서</p>
+          <p className="mt-1 text-[#1B1A17]">조회 → 낮 시간 방문 → 외관/타이어/침수 → 엔진/시동/변속/제동 → 서류/정비소 → 계약 조건 순서로 확인합니다.</p>
         </div>
         {sourceUrl ? (
-          <a className="shrink-0 rounded-md border border-blue-200 bg-white px-2 py-1 text-xs font-semibold text-blue-800" href={sourceUrl} target="_blank" rel="noreferrer">
+          <a className="shrink-0 rounded-xl border border-[#D8D5CD] bg-white px-2 py-1 text-xs font-semibold text-[#3654FF]" href={sourceUrl} target="_blank" rel="noreferrer">
             원문 보기
           </a>
         ) : null}
       </div>
-      <p className="mt-2 text-xs leading-5 text-blue-800">사진은 필수 입력이 아니라 필요할 때만 메모합니다. 구매 판단은 공식 조회와 전문가 점검 결과를 우선합니다.</p>
+      <p className="mt-2 text-xs leading-5 text-[#6E6B64]">사진은 필수 입력이 아니라 필요할 때만 메모합니다. 구매 판단은 공식 조회와 전문가 점검 결과를 우선합니다.</p>
     </div>
   );
 }

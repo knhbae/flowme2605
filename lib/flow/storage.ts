@@ -1,4 +1,5 @@
 import { seedBundles } from './seed-flows';
+import type { SourceBackedFlowMapPersonalCopy } from './source-backed-my-flow';
 import { FlowBundle, FlowComparisonState, FlowItemState, FlowWorkbenchState, ReactionLog } from './types';
 
 const BUNDLES_KEY = 'flow_builder_mvp_bundles_v11';
@@ -47,6 +48,7 @@ export type SavedFlowMapSnapshot = {
   stepCountsByFlow?: Record<string, number>;
   riskLevelsByFlow?: Record<string, string | undefined>;
   sourceCheckedAtByFlow?: Record<string, string | undefined>;
+  personalCopy?: SourceBackedFlowMapPersonalCopy;
 };
 
 export type MyFlowStepItemChecks = Record<string, Record<string, boolean>>;
@@ -207,6 +209,37 @@ export function saveFlowRecord(slug: string, value: Omit<SavedFlowRecord, 'slug'
   return record;
 }
 
+function normalizeStringListRecord(value: unknown): Record<string, string[]> | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+
+  const entries = Object.entries(value as Record<string, unknown>).flatMap(([key, list]) => {
+    if (!key.trim() || !Array.isArray(list)) return [];
+    const normalizedList = list.filter((item): item is string => typeof item === 'string' && Boolean(item.trim()));
+    return [[key, normalizedList] as const];
+  });
+  return Object.fromEntries(entries);
+}
+
+function normalizeSavedFlowMapPersonalCopy(value: unknown): SourceBackedFlowMapPersonalCopy | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+
+  const personalCopy = value as Partial<SourceBackedFlowMapPersonalCopy>;
+  if (personalCopy.source !== 'url_first_custom_start') return undefined;
+
+  const includedStepIdsByFlow = normalizeStringListRecord(personalCopy.includedStepIdsByFlow);
+  const excludedStepIdsByFlow = normalizeStringListRecord(personalCopy.excludedStepIdsByFlow);
+  if (!includedStepIdsByFlow || !excludedStepIdsByFlow) return undefined;
+
+  return {
+    source: 'url_first_custom_start',
+    ...(typeof personalCopy.originalTitle === 'string' && personalCopy.originalTitle.trim()
+      ? { originalTitle: personalCopy.originalTitle }
+      : {}),
+    includedStepIdsByFlow,
+    excludedStepIdsByFlow,
+  };
+}
+
 export function normalizeSavedFlowMapSnapshot(value: unknown): SavedFlowMapSnapshot | undefined {
   if (!value || typeof value !== 'object') return undefined;
   const snapshot = value as Partial<SavedFlowMapSnapshot>;
@@ -216,6 +249,7 @@ export function normalizeSavedFlowMapSnapshot(value: unknown): SavedFlowMapSnaps
   if (typeof snapshot.savedAt !== 'string' || !snapshot.savedAt.trim()) return undefined;
   if (!Array.isArray(snapshot.flowSlugs) || snapshot.flowSlugs.some((slug) => typeof slug !== 'string' || !slug.trim())) return undefined;
   const anchor = typeof snapshot.anchor === 'string' && snapshot.anchor.trim() ? snapshot.anchor : undefined;
+  const personalCopy = normalizeSavedFlowMapPersonalCopy(snapshot.personalCopy);
 
   return {
     mapId: snapshot.mapId,
@@ -227,6 +261,7 @@ export function normalizeSavedFlowMapSnapshot(value: unknown): SavedFlowMapSnaps
     ...(snapshot.stepCountsByFlow && typeof snapshot.stepCountsByFlow === 'object' ? { stepCountsByFlow: snapshot.stepCountsByFlow } : {}),
     ...(snapshot.riskLevelsByFlow && typeof snapshot.riskLevelsByFlow === 'object' ? { riskLevelsByFlow: snapshot.riskLevelsByFlow } : {}),
     ...(snapshot.sourceCheckedAtByFlow && typeof snapshot.sourceCheckedAtByFlow === 'object' ? { sourceCheckedAtByFlow: snapshot.sourceCheckedAtByFlow } : {}),
+    ...(personalCopy ? { personalCopy } : {}),
   };
 }
 

@@ -36,6 +36,7 @@ Keep the short topic stable. If the work is rescoped, update the files inside th
 
 ## Active Specs
 
+- [2026-07-05 URL Lookup Production Slice](./2026-07-05-url-lookup-production-slice/spec.md) - adds a `/flows` URL lookup entry that reuses existing source-backed Flow conversions before any AI generation.
 - [2026-07-01 My Flow v2 Execution UX](./2026-07-01-my-flow-v2-execution-ux/spec.md) - separates post-save confirmation from normal Today/Flow execution and keeps Calendar as the global dated execution tab.
 - [2026-06-29 Post-save Execution UX](./2026-06-29-post-save-execution-ux/spec.md) - planning-first redesign for Today/Next, Calendar selected-date detail, public save CTA, and Flow finding labels before implementation.
 - [2026-06-26 Creator Publish Gate and Step Contract](./2026-06-26-creator-publish-step-contract/spec.md) - separates creator/public/My Flow route responsibilities and records the saved Flow Map Step contract needed for future export regeneration.

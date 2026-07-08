@@ -17,8 +17,12 @@ import {
   type MovingRestartItem,
   updateMovingRestartItem,
 } from '@/lib/flow/moving-d30-restart';
+import { formatUserFacingScheduleDate } from '@/lib/flow/date';
+import { toUserFacingSourceTitle } from '@/lib/flow/display-title';
+import { FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
 
 const defaultMoveDate = '2026-06-27';
+const KOREAN_WEEKDAY_SHORT = ['일', '월', '화', '수', '목', '금', '토'];
 
 function sortItems(items: MovingRestartItem[]) {
   return items.slice().sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title));
@@ -57,6 +61,23 @@ function getCalendarShortTitle(title: string) {
   return title.split(/\s+/).slice(0, 2).join(' ');
 }
 
+function groupScheduleMilestones(items: MovingRestartItem[]) {
+  return items.reduce<Array<{ date: string; offsetLabel: string; items: MovingRestartItem[] }>>((groups, item) => {
+    const last = groups.at(-1);
+    if (last && last.date === item.date && last.offsetLabel === item.offsetLabel) {
+      last.items.push(item);
+      return groups;
+    }
+
+    groups.push({ date: item.date, offsetLabel: item.offsetLabel, items: [item] });
+    return groups;
+  }, []);
+}
+
+function getMilestoneHeading(group: { offsetLabel: string; items: MovingRestartItem[] }) {
+  return group.items.length > 1 ? `${group.offsetLabel} 마일스톤 ${group.items.length}개` : group.offsetLabel;
+}
+
 export function MovingD30Restart() {
   const [moveDate, setMoveDate] = useState(defaultMoveDate);
   const [items, setItems] = useState(() => generateMovingRestartItems(defaultMoveDate));
@@ -80,6 +101,7 @@ export function MovingD30Restart() {
   const [newMemo, setNewMemo] = useState('');
 
   const sortedItems = useMemo(() => sortItems(items), [items]);
+  const scheduleGroups = useMemo(() => groupScheduleMilestones(sortedItems), [sortedItems]);
   const selectedItem = items.find((item) => item.id === selectedId);
   const selectedDateItems = sortedItems.filter((item) => item.date === selectedDate);
   const nextItems = sortedItems.slice(0, 3);
@@ -239,7 +261,7 @@ export function MovingD30Restart() {
     const { buildXlsxBuffer } = await import('@/lib/flow/export');
     const buffer = await buildXlsxBuffer(buildMovingRestartSheets(items));
     downloadBlob('moving-d30-flow.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer);
-    setFeedback('엑셀 실행표를 만들었습니다');
+    setFeedback(`${FLOW_EXPORT_LABELS.sheetFile} 완료`);
   }
 
   function isDemoLoggedIn() {
@@ -265,11 +287,15 @@ export function MovingD30Restart() {
     setFeedback('내 Flow에 저장했습니다');
   }
 
+  function focusExportPanel() {
+    document.getElementById('moving-restart-export-panel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
   return (
     <main className="min-h-screen bg-slate-100 px-2 py-3 pb-28 text-slate-950 sm:px-4 sm:py-8 lg:pb-8">
       <div className="mx-auto grid max-w-6xl gap-5 lg:grid-cols-[1fr_340px]">
         <section className="rounded-2xl border border-slate-200 bg-white px-3 py-4 shadow-sm sm:rounded-[28px] sm:p-6">
-          <p className="text-sm font-semibold text-blue-600">restart / moving-d30</p>
+          <p className="text-sm font-semibold text-blue-600">이사 준비 · 다시 시작</p>
           <h1 className="mt-3 text-4xl font-bold tracking-normal">이사 D-30 준비</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
             이사일을 넣으면 웹 체크리스트가 날짜별 캘린더와 실행표로 바뀝니다.
@@ -281,6 +307,7 @@ export function MovingD30Restart() {
           <div className="mt-2 flex flex-col gap-3 sm:flex-row">
             <input
               id="moving-restart-date"
+              data-testid="moving-restart-date-input"
               aria-label="이사일"
               type="date"
               value={moveDate}
@@ -313,13 +340,14 @@ export function MovingD30Restart() {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-xs font-bold text-blue-700">
-                        {item.offsetLabel} · {item.date}
+                        {formatUserFacingScheduleDate(item.date, { offsetLabel: item.offsetLabel })}
                       </p>
                       <h3 className="mt-1 text-sm font-black text-slate-950">{item.title}</h3>
                     </div>
                     <button
                       type="button"
                       onClick={() => startEdit(item.id)}
+                      aria-label={`${item.title} 수정`}
                       className="shrink-0 rounded-xl bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700"
                     >
                       수정
@@ -335,7 +363,7 @@ export function MovingD30Restart() {
               <div>
                 <h2 className="text-lg font-bold">생성된 캘린더</h2>
                 <p className="mt-1 text-sm leading-6 text-slate-600 sm:block">
-                  날짜를 끌어 옮기거나 아래 일정에서 편집한 뒤 export합니다.
+                  날짜를 끌어 옮기거나 아래 일정에서 편집한 뒤 내보냅니다.
                 </p>
               </div>
               <p className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
@@ -378,6 +406,7 @@ export function MovingD30Restart() {
                 initialView="dayGridMonth"
                 initialDate={visibleMonth}
                 headerToolbar={false}
+                dayHeaderContent={(args) => KOREAN_WEEKDAY_SHORT[args.date.getDay()]}
                 height="auto"
                 editable
                 events={events}
@@ -392,7 +421,7 @@ export function MovingD30Restart() {
               className="mt-3 rounded-2xl border border-slate-200 bg-white p-3 sm:hidden"
             >
               <p className="text-xs font-bold text-slate-500">선택한 날짜</p>
-              <h3 className="mt-1 text-base font-black text-slate-950">{selectedDate}</h3>
+              <h3 className="mt-1 text-base font-black text-slate-950">{formatUserFacingScheduleDate(selectedDate)}</h3>
               {selectedDateItems.length > 0 ? (
                 <div className="mt-3 grid gap-2">
                   {selectedDateItems.map((item) => (
@@ -449,6 +478,7 @@ export function MovingD30Restart() {
                 </label>
                 <input
                   id="moving-new-date"
+                  data-testid="moving-new-date-input"
                   aria-label="새 항목 날짜"
                   type="date"
                   value={newDate}
@@ -487,43 +517,62 @@ export function MovingD30Restart() {
               data-testid="moving-full-schedule-list"
               className={`mt-3 divide-y divide-slate-100 rounded-3xl border border-slate-200 ${showFullSchedule ? 'block' : 'hidden lg:block'}`}
             >
-              {sortedItems.map((item) => (
-                <article key={item.id} className="grid gap-3 p-4 sm:grid-cols-[64px_1fr_auto] sm:items-center">
-                  <div className="grid h-12 place-items-center rounded-2xl bg-blue-50 text-sm font-bold text-blue-700">
-                    {item.offsetLabel}
+              {scheduleGroups.map((group) => (
+                <section
+                  key={`${group.date}-${group.offsetLabel}`}
+                  data-testid="moving-schedule-date-group"
+                  className="bg-white"
+                >
+                  <div
+                    data-testid="moving-schedule-date-group-heading"
+                    className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-4 py-3"
+                  >
+                    <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700">
+                      {getMilestoneHeading(group)}
+                    </span>
+                    <span className="text-sm font-semibold text-slate-500">
+                      {formatUserFacingScheduleDate(group.date)}
+                    </span>
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold text-slate-500">{item.date}</p>
-                    <h3 className="mt-1 text-base font-bold">{item.title}</h3>
-                    <p className="mt-1 text-sm leading-6 text-slate-600">{item.memo}</p>
+                  <div className="divide-y divide-slate-100">
+                    {group.items.map((item) => (
+                      <article key={item.id} className="grid gap-3 p-4 sm:grid-cols-[1fr_auto] sm:items-center">
+                        <div>
+                          <h3 className="text-base font-bold">{item.title}</h3>
+                          <p className="mt-1 text-sm leading-6 text-slate-600">{item.memo}</p>
+                        </div>
+                        <div className="flex flex-wrap gap-2 sm:justify-end">
+                          <button
+                            type="button"
+                            onClick={() => toggleDone(item.id)}
+                            className="min-h-10 rounded-2xl bg-slate-100 px-3 text-sm font-bold text-slate-700"
+                          >
+                            {item.done ? '완료됨' : '완료'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => startEdit(item.id)}
+                            aria-label={`${item.title} 편집`}
+                            title={`${item.title} 편집`}
+                            className="min-h-10 rounded-2xl bg-slate-100 px-3 text-sm font-bold text-slate-700"
+                          >
+                            편집
+                          </button>
+                        </div>
+                      </article>
+                    ))}
                   </div>
-                  <div className="flex flex-wrap gap-2 sm:justify-end">
-                    <button
-                      type="button"
-                      onClick={() => toggleDone(item.id)}
-                      className="min-h-10 rounded-2xl bg-slate-100 px-3 text-sm font-bold text-slate-700"
-                    >
-                      {item.done ? '완료됨' : '완료'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => startEdit(item.id)}
-                      className="min-h-10 rounded-2xl bg-slate-100 px-3 text-sm font-bold text-slate-700"
-                    >
-                      {item.title} 편집
-                    </button>
-                  </div>
-                </article>
+                </section>
               ))}
             </div>
           </section>
         </section>
 
         <aside className="space-y-4">
-          <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-lg font-bold">내 도구로 가져가기</h2>
+          <section id="moving-restart-export-panel" className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="text-lg font-bold">내보낼 파일</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              수정한 일정 기준으로 캘린더, 체크리스트, 엑셀, FlowMe 저장을 선택합니다.
+              수정한 일정 기준으로 캘린더 파일, 체크리스트, 시트, FlowMe 저장을 선택합니다.
             </p>
             <div className="mt-4 grid gap-2">
               <button
@@ -531,21 +580,21 @@ export function MovingD30Restart() {
                 onClick={downloadCalendar}
                 className="min-h-12 rounded-2xl bg-blue-600 px-4 text-sm font-bold text-white"
               >
-                캘린더에 넣기
+                {FLOW_EXPORT_LABELS.calendarFile}
               </button>
               <button
                 type="button"
                 onClick={copyChecklist}
                 className="min-h-11 rounded-2xl bg-slate-100 px-4 text-sm font-bold text-slate-700"
               >
-                체크리스트 복사
+                {FLOW_EXPORT_LABELS.checklistCopy}
               </button>
               <button
                 type="button"
                 onClick={() => void downloadSheet()}
                 className="min-h-11 rounded-2xl bg-slate-100 px-4 text-sm font-bold text-slate-700"
               >
-                엑셀 실행표
+                {FLOW_EXPORT_LABELS.sheetFile}
               </button>
               <button
                 type="button"
@@ -588,7 +637,7 @@ export function MovingD30Restart() {
                 rel="noreferrer"
                 target="_blank"
               >
-                AJD 이사할 때 체크리스트 상세 정리
+                {toUserFacingSourceTitle('AJD 이사할 때 체크리스트 상세 정리')}
               </a>
               <a
                 className="mt-2 block rounded-2xl bg-slate-50 p-3 text-sm font-semibold leading-6 text-slate-700 hover:bg-slate-100"
@@ -620,6 +669,7 @@ export function MovingD30Restart() {
                 </label>
                 <input
                   id="moving-edit-date"
+                  data-testid="moving-edit-date-input"
                   aria-label="항목 날짜"
                   type="date"
                   value={draftDate}
@@ -701,27 +751,13 @@ export function MovingD30Restart() {
         data-testid="moving-mobile-export-actions"
         className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 px-3 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.12)] backdrop-blur lg:hidden"
       >
-        <div className="mx-auto grid max-w-sm grid-cols-[1fr_auto_auto] gap-2">
+        <div className="mx-auto grid max-w-sm grid-cols-[1fr] gap-2">
           <button
             type="button"
-            onClick={downloadCalendar}
+            onClick={focusExportPanel}
             className="min-h-11 rounded-2xl bg-blue-600 px-4 text-sm font-bold text-white"
           >
-            캘린더에 넣기
-          </button>
-          <button
-            type="button"
-            onClick={() => void downloadSheet()}
-            className="min-h-11 rounded-2xl bg-slate-100 px-3 text-sm font-bold text-slate-700"
-          >
-            엑셀
-          </button>
-          <button
-            type="button"
-            onClick={copyChecklist}
-            className="min-h-11 rounded-2xl bg-slate-100 px-3 text-sm font-bold text-slate-700"
-          >
-            복사
+            파일 받기 옵션
           </button>
         </div>
       </div>
@@ -764,6 +800,7 @@ export function MovingD30Restart() {
             </label>
             <input
               id="moving-mobile-edit-date"
+              data-testid="moving-mobile-edit-date-input"
               aria-label="항목 날짜"
               type="date"
               value={draftDate}

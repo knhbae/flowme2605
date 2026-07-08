@@ -71,10 +71,14 @@ References: [OpenAI Codex AGENTS.md](https://developers.openai.com/codex/guides/
 ## Default Commands
 
 ```powershell
+npm run hooks:install
 npm run docs:check
 npm test
 npm run build
+npm run verify
 npm run test:e2e
 ```
 
 Use `npm run dev` for local manual testing at `http://localhost:3000`.
+
+Local hooks are intentionally light: pre-commit runs `npm run docs:check`; pre-push runs `npm run verify`. Full Playwright E2E remains a CI and explicit QA gate, not a mandatory local hook.

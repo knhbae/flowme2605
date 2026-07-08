@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 웹 소스 스카우트 shortlist</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --text: #17202a;
+      --muted: #667085;
+      --line: #d9dee7;
+      --blue: #1f5eff;
+      --green: #168a4a;
+      --amber: #a15c00;
+      --red: #b42318;
+      --slate: #475467;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      line-height: 1.55;
+    }
+    header {
+      padding: 20px 14px 14px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    h1 { margin: 0 0 8px; font-size: clamp(22px, 7vw, 34px); letter-spacing: 0; }
+    h2 { margin: 0 0 8px; font-size: 18px; letter-spacing: 0; }
+    p { margin: 0; }
+    main { width: min(1120px, 100%); margin: 0 auto; padding: 14px; }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      min-width: 0;
+    }
+    .stat b { display: block; font-size: 24px; }
+    .stat span { color: var(--muted); font-size: 13px; }
+    .section-title {
+      margin: 24px 0 10px;
+      font-size: 20px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 10px;
+    }
+    .card, .category, .canary {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .rank { font-weight: 700; color: var(--blue); }
+    .badge {
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+      background: #eef2ff;
+      color: var(--blue);
+    }
+    .badge.usable_after_simplification { background: #ecfdf3; color: var(--green); }
+    .badge.source_import_required { background: #fff7e6; color: var(--amber); }
+    .badge.backup { background: #f2f4f7; color: var(--slate); }
+    .badge.reject { background: #fff1f3; color: var(--red); }
+    .meta { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+    dl { margin: 0; display: grid; gap: 8px; }
+    dt { font-size: 12px; font-weight: 800; color: var(--muted); }
+    dd { margin: -6px 0 0; font-size: 14px; }
+    a {
+      display: inline-flex;
+      margin-top: 12px;
+      min-height: 40px;
+      align-items: center;
+      color: var(--blue);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+    }
+    .category p { color: var(--muted); font-size: 14px; margin-bottom: 10px; }
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+    .mini-grid span {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .mini-grid b { display: block; color: var(--text); font-size: 18px; }
+    .canary ol { margin: 0; padding-left: 22px; }
+    .canary li { margin: 0 0 10px; }
+    .canary span { display: block; color: var(--muted); font-size: 14px; }
+    @media (max-width: 520px) {
+      header { position: static; }
+      main { padding: 10px; }
+      .summary { grid-template-columns: 1fr 1fr; }
+      .cards, .categories { grid-template-columns: 1fr; }
+      .card, .category, .canary { padding: 12px; }
+      h1 { font-size: 24px; }
+      .stat b { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="meta">2026-07-04 / source scout</p>
+    <h1>FlowMe 웹 소스 스카우트 shortlist</h1>
+    <p>100개 후보 중 상위 30개를 모바일에서 먼저 훑어볼 수 있게 정리했다. 이 파일은 앱 seed가 아니라 후보 검토판이다.</p>
+  </header>
+  <main>
+    <section class="summary">
+      <div class="stat"><b>100</b><span>후보 URL</span></div>
+      <div class="stat"><b>30</b><span>상위 shortlist</span></div>
+      <div class="stat"><b>32</b><span>바로 seed 후보</span></div>
+      <div class="stat"><b>8</b><span>다음 canary 추천</span></div>
+    </section>
+    <h2 class="section-title">다음 앱 canary 후보</h2>
+    <section class="canary"><ol><li><strong>아정당 이사 준비 체크리스트</strong><span>D-day 구조와 첨부파일이 있어 기존 이사 Flow와 바로 비교 가능</span></li>
+<li><strong>질병관리청 표준 예방접종 일정표</strong><span>공식 월령 일정표라 setupField 기반 캘린더/체크리스트 검증에 좋음</span></li>
+<li><strong>오픽만수르 모의고사 공부 방법</strong><span>기존 9개 중 전환성이 높고 첨부 계획표가 있어 sourceTrace 검증에 좋음</span></li>
+<li><strong>안전운전 통합민원 면허 갱신/적성검사</strong><span>공식 준비물/수수료/면허종류 분기가 명확해 행정 Flow canary로 적합</span></li>
+<li><strong>5km 달리기 8주 프로그램</strong><span>8주 러닝 프로그램의 주차/요일 row가 뚜렷해 루틴형 Flow 검증에 좋음</span></li>
+<li><strong>일주일 다이어트 식단과 장보기 리스트</strong><span>주간 식단과 장보기 리스트 구조가 있어 식단 카테고리 확장 가능성을 확인할 수 있음</span></li>
+<li><strong>삼성 에어컨 필터 청소 방법</strong><span>제조사 공식 반복 관리 주기가 있어 가전 관리 루틴 canary로 적합</span></li>
+<li><strong>캔디데이트 면접 전날 체크리스트</strong><span>면접 하루 전이라는 선명한 목적지와 체크 항목이 있어 커리어 카테고리 검증에 좋음</span></li></ol></section>
+    <h2 class="section-title">카테고리별 판정</h2>
+    <section class="categories"><section class="category">
+      <h2>이사/주거</h2>
+      <p>D-day, 입주 전후, 방 보기, 행정 처리처럼 목적지가 뚜렷하다. 이미 앱 canary로 쓰기 좋은 후보가 많다.</p>
+      <div class="mini-grid">
+        <span><b>5</b>바로 seed 후보</span><span><b>2</b>단순화 후 사용</span><span><b>0</b>원문/파일 import 필요</span><span><b>3</b>보조 후보</span><span><b>0</b>제외</span>
+      </div>
+    </section>
+<section class="category">
+      <h2>결혼/구매</h2>
+      <p>장기 타임라인과 구매 체크리스트가 모두 존재한다. 결혼은 국내 관습 보강이 필요하고, 차량/혼수는 구매 결정 Flow로 분리하는 편이 좋다.</p>
+      <div class="mini-grid">
+        <span><b>4</b>바로 seed 후보</span><span><b>4</b>단순화 후 사용</span><span><b>1</b>원문/파일 import 필요</span><span><b>1</b>보조 후보</span><span><b>0</b>제외</span>
+      </div>
+    </section>
+<section class="category">
+      <h2>육아/교육</h2>
+      <p>공식 일정형 소스는 강하고, 블로그/첨부파일형 이유식과 펀맘은 source import가 핵심 병목이다. 파일 row 없이 Item을 만들면 다시 기획서가 된다.</p>
+      <div class="mini-grid">
+        <span><b>2</b>바로 seed 후보</span><span><b>3</b>단순화 후 사용</span><span><b>5</b>원문/파일 import 필요</span><span><b>0</b>보조 후보</span><span><b>0</b>제외</span>
+      </div>
+    </section>
+<section class="category">
+      <h2>공부/시험</h2>
+      <p>시험일, 2주/4주, 회차, 영상 링크가 있으면 강하다. 후기형 글은 루틴 row가 부족하면 backup으로 둔다.</p>
+      <div class="mini-grid">
+        <span><b>1</b>바로 seed 후보</span><span><b>4</b>단순화 후 사용</span><span><b>2</b>원문/파일 import 필요</span><span><b>3</b>보조 후보</span><span><b>0</b>제외</span>
+      </div>
+    </section>
+<section class="category">
+      <h2>정부/행정</h2>
+      <p>공식 페이지는 신뢰도와 destination이 강하지만, 인터랙티브/점검/로그인 페이지가 많아 보조 가이드와 교차 확인이 필요하다.</p>
+      <div class="mini-grid">
+        <span><b>5</b>바로 seed 후보</span><span><b>4</b>단순화 후 사용</span><span><b>1</b>원문/파일 import 필요</span><span><b>0</b>보조 후보</span><span><b>0</b>제외</span>
+      </div>
+    </section>
+<section class="category">
+      <h2>여행/캠핑</h2>
+      <p>packing checklist는 많지만 중복이 심하다. 공식 출국 절차와 여행 준비물 Flow를 분리해야 과밀해지지 않는다.</p>
+      <div class="mini-grid">
+        <span><b>3</b>바로 seed 후보</span><span><b>5</b>단순화 후 사용</span><span><b>2</b>원문/파일 import 필요</span><span><b>0</b>보조 후보</span><span><b>0</b>제외</span>
+      </div>
+    </section>
+<section class="category">
+      <h2>운동/건강</h2>
+      <p>영상 1개=루틴 1개가 단순하고 앱 구조에 잘 맞는다. 동작을 지어내지 않고 제목/URL/반복 요일 중심으로 가져가야 한다.</p>
+      <div class="mini-grid">
+        <span><b>3</b>바로 seed 후보</span><span><b>3</b>단순화 후 사용</span><span><b>2</b>원문/파일 import 필요</span><span><b>2</b>보조 후보</span><span><b>0</b>제외</span>
+      </div>
+    </section>
+<section class="category">
+      <h2>식단/요리</h2>
+      <p>요일별 식단과 장보기 리스트가 있으면 좋지만, 레시피 본문은 저작권/분량 문제가 커서 source link 중심으로 다뤄야 한다.</p>
+      <div class="mini-grid">
+        <span><b>2</b>바로 seed 후보</span><span><b>2</b>단순화 후 사용</span><span><b>2</b>원문/파일 import 필요</span><span><b>3</b>보조 후보</span><span><b>1</b>제외</span>
+      </div>
+    </section>
+<section class="category">
+      <h2>반려/식물/관리</h2>
+      <p>접종/필터청소/물주기처럼 반복 주기가 있는 후보가 좋다. 건강 판단은 메모/detail에만 두고 별도 입력 필드를 늘리지 않는다.</p>
+      <div class="mini-grid">
+        <span><b>5</b>바로 seed 후보</span><span><b>4</b>단순화 후 사용</span><span><b>0</b>원문/파일 import 필요</span><span><b>1</b>보조 후보</span><span><b>0</b>제외</span>
+      </div>
+    </section>
+<section class="category">
+      <h2>커리어/사업</h2>
+      <p>면접 D-1, 이직 준비, 사업자/통신판매업처럼 목적지가 분명한 업무형 Flow가 가능하다. 자기성찰 문항은 memo로 제한해야 한다.</p>
+      <div class="mini-grid">
+        <span><b>2</b>바로 seed 후보</span><span><b>3</b>단순화 후 사용</span><span><b>1</b>원문/파일 import 필요</span><span><b>4</b>보조 후보</span><span><b>0</b>제외</span>
+      </div>
+    </section></section>
+    <h2 class="section-title">상위 30개 후보</h2>
+    <section class="cards"><article class="card">
+      <div class="card-top">
+        <span class="rank">#1</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>질병관리청 표준 예방접종 일정표</h2>
+      <p class="meta">육아/교육 · 96점 · official_schedule</p>
+      <dl>
+        <dt>원문 구조</dt><dd>child vaccination schedule + PDF</dd>
+        <dt>수요/근거</dt><dd>열람 결과 최종검토일, 어린이 예방접종 일정표, PDF 다운로드 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>출생일 setupField 기반 월령 Flow Map으로 전환 가능</dd>
+        <dt>다음 액션</dt><dd>2026 표준표 여부 재확인 후 공식 row import</dd>
+      </dl>
+      <a href="https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&amp;menuLv=1" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#2</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>아정당 이사 준비 체크리스트</h2>
+      <p class="meta">이사/주거 · 95점 · creator_article_with_attachment</p>
+      <dl>
+        <dt>원문 구조</dt><dd>D-30/D-10/D-day checklist + XLS/PDF/Notion attachment</dd>
+        <dt>수요/근거</dt><dd>열람 결과 D-30 섹션, 이사 방식 비교표, 업체 예약 등 일정형 항목 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>이사 날짜를 setupField로 받고 D-day Flow Map으로 바로 변환 가능</dd>
+        <dt>다음 액션</dt><dd>첨부파일 row를 import해 중복/광고 항목을 제거한 canary 후보로 확정</dd>
+      </dl>
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC%21-23363" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#3</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>오픽만수르 모의고사 공부 방법</h2>
+      <p class="meta">공부/시험 · 94점 · creator_article_attachment</p>
+      <dl>
+        <dt>원문 구조</dt><dd>method sections + XLS/PDF 2-week/1-month plan</dd>
+        <dt>수요/근거</dt><dd>열람 결과 계획 세우기, 영상 개수 확인, 공부 날짜, 오픽 현타/복습, XLS/PDF 첨부 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>오픽 모의고사 루틴 Flow로 이미 강함</dd>
+        <dt>다음 액션</dt><dd>첨부 계획표 row와 영상 링크를 sourceTrace에 연결</dd>
+      </dl>
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#4</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>Planning.wedding 12개월 웨딩 타임라인</h2>
+      <p class="meta">결혼/구매 · 92점 · interactive_web_tool</p>
+      <dl>
+        <dt>원문 구조</dt><dd>12-month checklist timeline</dd>
+        <dt>수요/근거</dt><dd>열람 결과 웨딩 체크리스트 타임라인 및 맞춤 타임라인 생성 구조 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>결혼식 날짜를 setupField로 받는 장기 Flow Map 후보</dd>
+        <dt>다음 액션</dt><dd>국내 결혼 관습 항목과 충돌하는지 별도 비교 필요</dd>
+      </dl>
+      <a href="https://planning.wedding/ko/timeline/checklist" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#5</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>국립재활원 영유아 건강검진</h2>
+      <p class="meta">육아/교육 · 91점 · official_schedule</p>
+      <dl>
+        <dt>원문 구조</dt><dd>infant checkup rounds by age</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 생후 14~35일, 4~6개월 등 1차~8차 검진시기 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>출생일 기준 검진 예약/문진표 준비 Flow로 전환 가능</dd>
+        <dt>다음 액션</dt><dd>국민건강보험 최신 공식 페이지와 교차 검증</dd>
+      </dl>
+      <a href="https://www.nrc.go.kr/portal/html/content.do?depth=ph&amp;menu_cd=03_02_00_04" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#6</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>안전운전 통합민원 면허 갱신/적성검사</h2>
+      <p class="meta">정부/행정 · 91점 · official_guide</p>
+      <dl>
+        <dt>원문 구조</dt><dd>license renewal requirements by type</dd>
+        <dt>수요/근거</dt><dd>열람 결과 1종/2종 준비물, 사진 수, 수수료, 신체검사 조건 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>갱신 기한 setupField와 체크리스트 Flow로 강함</dd>
+        <dt>다음 액션</dt><dd>면허 종류별 Flow variant 분리</dd>
+      </dl>
+      <a href="https://www.safedriving.or.kr/guide/larGuide011.do?menuCode=MN-PO-1211" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#7</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>오늘의집 이사 준비 체크리스트</h2>
+      <p class="meta">이사/주거 · 90점 · creator_article</p>
+      <dl>
+        <dt>원문 구조</dt><dd>D-30/D-7/checklist sections</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 D-30, 이사 방식, 업체 계약, 냉장고 파먹기 등 세부 체크 항목 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>이사 D-day Step과 체크 Item으로 가공하기 쉽고 생활 앱 전환성이 높음</dd>
+        <dt>다음 액션</dt><dd>AJD와 비교해 중복 제거 후 보조 레퍼런스로 사용</dd>
+      </dl>
+      <a href="https://ohou.se/advices/8442" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#8</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>국세청 연말정산 체크리스트</h2>
+      <p class="meta">정부/행정 · 90점 · official_checklist</p>
+      <dl>
+        <dt>원문 구조</dt><dd>deduction checklist categories</dd>
+        <dt>수요/근거</dt><dd>열람 결과 '25년 귀속 연말정산 체크리스트와 공제 항목 카테고리 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>연말정산 자료 제출 Flow로 전환 가능</dd>
+        <dt>다음 액션</dt><dd>공제별 판단 문구는 원문 링크로 남기고 checklist만 추출</dd>
+      </dl>
+      <a href="https://call.nts.go.kr/call/cm/cntnts/cntntsView.do?cntntsId=7042&amp;mi=2764" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#9</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>Planning.wedding 출력용 결혼 체크리스트</h2>
+      <p class="meta">결혼/구매 · 89점 · printable_checklist</p>
+      <dl>
+        <dt>원문 구조</dt><dd>12-month printable checklist</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 12개월 기준 출력용 결혼식 준비 체크리스트 구조 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>엑셀/체크리스트 export와 잘 맞음</dd>
+        <dt>다음 액션</dt><dd>타임라인 버전과 중복되지 않게 printable source로 분리</dd>
+      </dl>
+      <a href="https://planning.wedding/ko/checklist/printable" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#10</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>국세청 개인 사업자등록 신청서 작성방법</h2>
+      <p class="meta">정부/행정 · 89점 · official_guide</p>
+      <dl>
+        <dt>원문 구조</dt><dd>required documents + application fields</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 사업자등록신청서, 신분증, 임대차계약서, 업종별 허가증 등 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>개인사업자 개업 Flow로 전환성이 높음</dd>
+        <dt>다음 액션</dt><dd>업종 인허가 분기만 setup/detail로 처리</dd>
+      </dl>
+      <a href="https://www.nts.go.kr/taxpayer_advocate/na/ntt/selectNttInfo.do?mi=&amp;nttSn=1302746" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#11</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>생활법령정보 이사 체크리스트</h2>
+      <p class="meta">이사/주거 · 88점 · official_legal_guide</p>
+      <dl>
+        <dt>원문 구조</dt><dd>official checklist by timing</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 이사대행 계약, 표준계약서, 주소이전, 전화이전 등 공식 행정성 항목 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>이사 Flow의 법/행정 Step 검증용 공식 소스로 적합</dd>
+        <dt>다음 액션</dt><dd>민간 체크리스트와 병합하지 말고 행정 확인 Flow로 분리 검토</dd>
+      </dl>
+      <a href="https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&amp;cciNo=1&amp;cnpClsNo=1&amp;csmSeq=666&amp;popMenu=ov" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#12</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>정부24 전입신고</h2>
+      <p class="meta">정부/행정 · 88점 · official_service</p>
+      <dl>
+        <dt>원문 구조</dt><dd>application guide + required ID</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 방문 시 신분증 지참 등 신청 요건 확인. 직접 열람은 점검 안내로 redirect됨</dd>
+        <dt>FlowMe 적합도</dt><dd>이사 Flow의 행정 Step으로 강함</dd>
+        <dt>다음 액션</dt><dd>정부24 점검 종료 후 신청서 단계 재열람</dd>
+      </dl>
+      <a href="https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000016" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#13</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>5km 달리기 8주 프로그램</h2>
+      <p class="meta">운동/건강 · 88점 · creator_program</p>
+      <dl>
+        <dt>원문 구조</dt><dd>8-week running schedule</dd>
+        <dt>수요/근거</dt><dd>열람 결과 1~5주차 주간 일정, 요일별 거리/걷기-달리기 반복 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>8주 달리기 Flow Map으로 매우 적합</dd>
+        <dt>다음 액션</dt><dd>건강 주의 문구는 detail에 남기고 과도한 기록 필드 금지</dd>
+      </dl>
+      <a href="https://holmez.tistory.com/entry/5km-%EB%8B%AC%EB%A6%AC%EA%B8%B0-8%EC%A3%BC-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#14</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>겟차 신차 구매 절차 가이드</h2>
+      <p class="meta">결혼/구매 · 87점 · brand_guide</p>
+      <dl>
+        <dt>원문 구조</dt><dd>new car purchase procedure</dd>
+        <dt>수요/근거</dt><dd>기존 엄선 소스. 신차 구매 단계와 체크리스트가 Flow 전환에 이미 적합하다고 판정됨</dd>
+        <dt>FlowMe 적합도</dt><dd>견적/계약/출고/등록/보험 Step으로 사용 가능</dd>
+        <dt>다음 액션</dt><dd>앱 canary 유지. 최신 URL 재열람 후 sourceTrace 보강</dd>
+      </dl>
+      <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#15</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>Visit Japan Web 공식</h2>
+      <p class="meta">여행/캠핑 · 87점 · official_service</p>
+      <dl>
+        <dt>원문 구조</dt><dd>entry/customs web service</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 입국심사와 세관신고에 이용하는 웹서비스 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>일본 여행 준비 Flow의 필수 외부 실행 링크</dd>
+        <dt>다음 액션</dt><dd>절차형 설명은 공식/보조 가이드 조합 필요</dd>
+      </dl>
+      <a href="https://services.digital.go.jp/ko/visit-japan-web/" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#16</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>아정당 자취 준비 리스트</h2>
+      <p class="meta">이사/주거 · 86점 · creator_article_table</p>
+      <dl>
+        <dt>원문 구조</dt><dd>category/item/note table</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 생활용품, 주방용품, 욕실용품별 필수품 표 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>입주 전 준비물 checklist Flow로 바로 사용 가능</dd>
+        <dt>다음 액션</dt><dd>품목 수가 많으므로 첫 입주/추가 구매 버전 분리</dd>
+      </dl>
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%B2%98%EC%9D%8C_%EB%8F%85%EB%A6%BD%ED%95%98%EB%8A%94_%EC%82%AC%ED%9A%8C%EC%B4%88%EB%85%84%EC%83%9D%EC%9D%84_%EC%9C%84%ED%95%9C_%EC%9E%90%EC%B7%A8_%EC%A4%80%EB%B9%84_%EB%A6%AC%EC%8A%A4%ED%8A%B8-42109" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#17</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>정부24 통신판매업 신고</h2>
+      <p class="meta">정부/행정 · 86점 · official_service</p>
+      <dl>
+        <dt>원문 구조</dt><dd>application guide + required supporting docs</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 구매안전서비스 이용확인증 등 제출서류 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>온라인 판매 시작 Flow의 행정 Step으로 적합</dd>
+        <dt>다음 액션</dt><dd>정부24 상세 항목 재열람 후 신고 Flow 후보</dd>
+      </dl>
+      <a href="https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=11300000006&amp;HighCtgCD=A09006" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#18</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>삼성 에어컨 필터 청소 방법</h2>
+      <p class="meta">반려/식물/관리 · 86점 · manufacturer_support</p>
+      <dl>
+        <dt>원문 구조</dt><dd>filter cleaning cycle + steps</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 극세 필터 4주 1회, 진공청소/물세척/그늘 건조 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>가전 관리 반복 Flow로 전환성이 높음</dd>
+        <dt>다음 액션</dt><dd>모델별 조건을 setup/detail로 분리</dd>
+      </dl>
+      <a href="https://www.samsungsvc.co.kr/solution/121273" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#19</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>생활법령정보 해외여행 출국절차</h2>
+      <p class="meta">여행/캠핑 · 84점 · official_legal_guide</p>
+      <dl>
+        <dt>원문 구조</dt><dd>departure procedure steps</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 항공권, 여권 유효기간, 세관신고, 탑승수속, 수하물 위탁 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>해외여행 공식 절차 Flow로 적합</dd>
+        <dt>다음 액션</dt><dd>공식 절차와 민간 packing Flow를 분리</dd>
+      </dl>
+      <a href="https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&amp;cciNo=1&amp;cnpClsNo=1&amp;csmSeq=894&amp;popMenu=ov" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#20</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>로얄캐닌 반려견 백신 접종 일정</h2>
+      <p class="meta">반려/식물/관리 · 84점 · brand_vet_guide</p>
+      <dl>
+        <dt>원문 구조</dt><dd>age-based dog vaccination schedule</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 6-8주, 11-13주, 15-17주, 15개월, 매년 접종 구조 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>강아지 접종 Flow의 월령 Step으로 적합</dd>
+        <dt>다음 액션</dt><dd>국내 동물병원 기준과 교차 검증</dd>
+      </dl>
+      <a href="https://www.royalcanin.com/kr/dogs/puppy/dog-vaccination-schedule" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#21</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>KB차차차 중고차 성능점검기록부 팁</h2>
+      <p class="meta">결혼/구매 · 83점 · marketplace_guide</p>
+      <dl>
+        <dt>원문 구조</dt><dd>used car performance record checklist</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 성능점검기록부 원본, 주행거리 비교, 재검 기준 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>중고차 구매 전 Flow로 전환성이 높음</dd>
+        <dt>다음 액션</dt><dd>허위매물/성능기록 확인 Flow canary 후보</dd>
+      </dl>
+      <a href="https://m.kbchachacha.com/public/web/notice/detail.kbc?postNo=110946" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#22</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>캔디데이트 면접 전날 체크리스트</h2>
+      <p class="meta">커리어/사업 · 83점 · career_article</p>
+      <dl>
+        <dt>원문 구조</dt><dd>7 pre-interview checklist sections</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 면접 장소/시간, 복장, 서류, 예상 질문/답변 점검 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>면접일 D-1 Flow로 전환성이 높음</dd>
+        <dt>다음 액션</dt><dd>서비스 홍보 문구 제거 후 체크 항목만 사용</dd>
+      </dl>
+      <a href="https://www.candidate.im/contents/blog4" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#23</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>고방 자취방 현장 방문 체크사항</h2>
+      <p class="meta">이사/주거 · 82점 · service_article</p>
+      <dl>
+        <dt>원문 구조</dt><dd>room viewing checklist</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 원룸/투룸 현장 방문 체크리스트와 주의사항 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>방 보러 가는 날 Flow로 전환성이 높음</dd>
+        <dt>다음 액션</dt><dd>계약 전 집 보기 canary로 별도 검토</dd>
+      </dl>
+      <a href="https://gobang.kr/contents/6137" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#24</span>
+        <span class="badge source_import_required">원문/파일 import 필요</span>
+      </div>
+      <h2>초기 토핑 이유식 식단표 엑셀 템플릿</h2>
+      <p class="meta">육아/교육 · 82점 · creator_article_attachment</p>
+      <dl>
+        <dt>원문 구조</dt><dd>3-4 day allergy test schedule + XLS</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 3~4일 단위 알레르기 테스트와 식단표 파일 공유 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>파일 row 확인 후 D+n 식단 Flow로 강함</dd>
+        <dt>다음 액션</dt><dd>첨부 파일을 직접 확인하기 전까지 seed 금지</dd>
+      </dl>
+      <a href="https://happybubulab.com/entry/%EB%AC%B4%EB%A3%8C-%EA%B3%B5%EC%9C%A0-%EC%B4%88%EA%B8%B0-%EC%9D%B4%EC%9C%A0%EC%8B%9D-%EC%8B%9D%EB%8B%A8%ED%91%9C-%EC%97%91%EC%85%80-%ED%85%9C%ED%94%8C%EB%A6%BF-%ED%86%A0%ED%95%91-%EC%9D%B4%EC%9C%A0%EC%8B%9D-%EC%99%84%EB%B2%BD-%EA%B0%80%EC%9D%B4%EB%93%9C" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#25</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>KKday 해외여행 준비물 체크리스트</h2>
+      <p class="meta">여행/캠핑 · 82점 · travel_article</p>
+      <dl>
+        <dt>원문 구조</dt><dd>packing checklist categories</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 필수 준비물, 유용한 준비물, 숙소 확인 후 챙길 물품, 짐싸는 팁 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>출국일 setupField 기반 여행 준비 Flow로 적합</dd>
+        <dt>다음 액션</dt><dd>상품성 링크 제거 후 품목 카테고리만 사용</dd>
+      </dl>
+      <a href="https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#26</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>빅씨스 10분 홈트 루틴 플레이리스트</h2>
+      <p class="meta">운동/건강 · 82점 · youtube_playlist</p>
+      <dl>
+        <dt>원문 구조</dt><dd>playlist of 10-minute routines</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 10분 플랭크 챌린지, 타바타 등 재생목록 구조 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>영상별 루틴 Flow Map으로 전환 가능</dd>
+        <dt>다음 액션</dt><dd>개별 영상 metadata import 필요</dd>
+      </dl>
+      <a href="https://www.youtube.com/playlist?list=PLkVCuKZG0QB4V4-6p9igSlsTbzxtbK-D0" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#27</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>핏펫 강아지 예방접종 일정</h2>
+      <p class="meta">반려/식물/관리 · 82점 · pet_health_article</p>
+      <dl>
+        <dt>원문 구조</dt><dd>puppy vaccination schedule</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 생후 6~16주 2주 간격 6회, 이후 월 1회 예방 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>반려견 입양 후 접종 Flow로 전환 가능</dd>
+        <dt>다음 액션</dt><dd>수의사/공식성 한계는 detail로 표기</dd>
+      </dl>
+      <a href="https://www.fitpetmall.com/blog/dog-vaccinations/" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#28</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>헬프미 개인사업자등록 절차 총정리</h2>
+      <p class="meta">커리어/사업 · 81점 · legaltech_guide</p>
+      <dl>
+        <dt>원문 구조</dt><dd>personal business registration documents + procedure</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 사업자등록신청서, 임대차계약서, 인허가증, 동업계약서, 자금출처 명세서 등 제출서류 표 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>개인사업자 등록 Flow의 서류/절차 Step 보강에 적합</dd>
+        <dt>다음 액션</dt><dd>국세청 공식 source와 비교해 서류/절차 누락 보강</dd>
+      </dl>
+      <a href="https://www.help-me.kr/blog/article/%EA%B0%9C%EC%9D%B8%EC%82%AC%EC%97%85%EC%9E%90%EB%93%B1%EB%A1%9D%20%EB%B0%A9%EB%B2%95%2C%20%EC%A0%88%EC%B0%A8%20%EC%B4%9D%EC%A0%95%EB%A6%AC" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#29</span>
+        <span class="badge source_import_required">원문/파일 import 필요</span>
+      </div>
+      <h2>네이버 이유식 식단표</h2>
+      <p class="meta">육아/교육 · 80점 · creator_blog_attachment</p>
+      <dl>
+        <dt>원문 구조</dt><dd>downloaded meal-plan file candidate</dd>
+        <dt>수요/근거</dt><dd>기존 엄선 소스. 댓글/다운로드 수요와 비밀번호 있는 파일형 자료로 파악됨</dd>
+        <dt>FlowMe 적합도</dt><dd>파일 row를 확인하면 이유식 D+n Flow로 전환 가능</dd>
+        <dt>다음 액션</dt><dd>네이버 첨부 다운로드/비밀번호 검증 후 판정</dd>
+      </dl>
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+<article class="card">
+      <div class="card-top">
+        <span class="rank">#30</span>
+        <span class="badge seed_candidate">바로 seed 후보</span>
+      </div>
+      <h2>빅씨스 초보 홈트 5일 챌린지</h2>
+      <p class="meta">운동/건강 · 80점 · youtube_video</p>
+      <dl>
+        <dt>원문 구조</dt><dd>single 5-day beginner routine video</dd>
+        <dt>수요/근거</dt><dd>검색 추출에서 홈트 초보 5일 프로그램/45분 영상 확인</dd>
+        <dt>FlowMe 적합도</dt><dd>5일 프로그램 Flow로 가능</dd>
+        <dt>다음 액션</dt><dd>영상 내 운동 리스트는 별도 확인 필요. 기본 Item은 영상 실행/완료만</dd>
+      </dl>
+      <a href="https://www.youtube.com/watch?v=YDZjUrnfMU4" target="_blank" rel="noreferrer">원문 열기</a>
+    </article></section>
+  </main>
+</body>
+</html>

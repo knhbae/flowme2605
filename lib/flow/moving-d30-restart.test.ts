@@ -22,6 +22,54 @@ test('moving restart generates dated items from move date offsets', () => {
   assert.equal(items.find((item) => item.id === 'moving-restart-gov24-result')?.date, '2026-06-28');
 });
 
+test('moving restart keeps the first three rows as one D-30 milestone group', () => {
+  const items = generateMovingRestartItems('2026-06-27');
+  const firstThree = items.slice(0, 3).map((item) => ({
+    date: item.date,
+    offsetLabel: item.offsetLabel,
+  }));
+
+  assert.deepEqual(firstThree, [
+    { date: '2026-05-28', offsetLabel: 'D-30' },
+    { date: '2026-05-28', offsetLabel: 'D-30' },
+    { date: '2026-05-28', offsetLabel: 'D-30' },
+  ]);
+  assert.deepEqual(
+    Array.from(new Set(items.map((item) => `${item.date} ${item.offsetLabel}`))),
+    [
+      '2026-05-28 D-30',
+      '2026-06-17 D-10',
+      '2026-06-26 D-1',
+      '2026-06-27 D-Day',
+      '2026-06-28 D+1',
+    ],
+  );
+
+  const checklist = buildMovingRestartChecklistText(items);
+  assert.match(checklist, /2026-05-28 D-30/);
+  assert.match(checklist, /2026-06-17 D-10/);
+
+  const ics = buildMovingRestartIcs(items);
+  assert.match(ics, /DTSTART;VALUE=DATE:20260528/);
+  assert.match(ics, /DESCRIPTION:.*D-30/);
+  assert.match(ics, /DTSTART;VALUE=DATE:20260617/);
+  assert.match(ics, /DESCRIPTION:.*D-10/);
+
+  const sheets = buildMovingRestartSheets(items);
+  assert.deepEqual(
+    sheets[0].rows.map((row) => `${row[2]} ${row[1]}`),
+    [
+      '2026-05-28 D-30',
+      '2026-05-28 D-30',
+      '2026-05-28 D-30',
+      '2026-06-17 D-10',
+      '2026-06-26 D-1',
+      '2026-06-27 D-Day',
+      '2026-06-28 D+1',
+    ],
+  );
+});
+
 test('moving restart edit helpers preserve user changes before export', () => {
   const original = generateMovingRestartItems('2026-06-27');
   const moved = moveMovingRestartItem(original, 'moving-restart-address-change', '2026-06-18');

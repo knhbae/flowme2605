@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>수동 Flow 등록 QA 리포트</title>
+  <style>
+    :root { color-scheme: light; --ink:#18212f; --muted:#647084; --line:#d8dee8; --bg:#f6f8fb; --panel:#ffffff; --accent:#0f766e; --warn:#b45309; --block:#991b1b; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: Arial, "Noto Sans KR", sans-serif; color:var(--ink); background:var(--bg); line-height:1.55; }
+    main { max-width:1180px; margin:0 auto; padding:32px 20px 56px; }
+    header { margin-bottom:24px; }
+    h1 { margin:0 0 8px; font-size:32px; letter-spacing:0; }
+    h2 { margin:32px 0 12px; font-size:22px; letter-spacing:0; }
+    p { margin:0 0 10px; }
+    a { color:#0f5f8c; }
+    .lede { color:var(--muted); max-width:860px; }
+    .metrics { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:10px; margin:18px 0; }
+    .metric { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; min-height:92px; }
+    .metric span { display:block; color:var(--muted); font-size:13px; }
+    .metric strong { display:block; margin-top:4px; font-size:28px; }
+    .metric small { color:var(--muted); }
+    .issue strong { color:var(--warn); }
+    .panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:18px; margin-top:12px; }
+    ol.runbook { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:10px; list-style:none; padding:0; margin:0; }
+    ol.runbook li { border:1px solid var(--line); border-radius:8px; padding:14px; background:#fbfcfe; }
+    ol.runbook b { display:block; margin-bottom:8px; }
+    ol.runbook small { color:var(--muted); }
+    .rehearsal dl { display:grid; grid-template-columns: 180px 1fr; gap:8px 14px; margin:0; }
+    .rehearsal dt { color:var(--muted); }
+    .rehearsal dd { margin:0; }
+    table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    th, td { text-align:left; vertical-align:top; padding:10px; border-bottom:1px solid var(--line); font-size:14px; }
+    th { background:#edf2f7; font-size:13px; color:#39465a; }
+    tr.registration_hold td:first-child { border-left:4px solid var(--warn); }
+    tr.qa_pass td:first-child { border-left:4px solid var(--accent); }
+    tr.lookup_blocked td:first-child { border-left:4px solid var(--block); }
+    .chip { display:inline-block; margin:0 4px 4px 0; padding:3px 7px; border-radius:999px; background:#fff7ed; color:#9a3412; border:1px solid #fed7aa; font-size:12px; }
+    .ok { color:var(--accent); font-weight:700; }
+    .note { color:var(--muted); font-size:13px; }
+    @media (max-width: 820px) {
+      main { padding:22px 12px 44px; }
+      h1 { font-size:26px; }
+      .metrics, ol.runbook { grid-template-columns:1fr; }
+      .rehearsal dl { grid-template-columns:1fr; }
+      table { display:block; overflow-x:auto; }
+      th, td { min-width:130px; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>수동 Flow 등록 QA 리포트</h1>
+    <p class="lede">현재 source-backed Flow 전체를 manual registration readiness 기준으로 점검한 운영자용 리포트입니다. 이 리포트는 AI 생성, 크롤링, 관리자 승인 UI, 서버 저장 없이 후보 Markdown에서 사람이 만든 Flow가 URL hit으로 닫히는지 확인하는 용도입니다.</p>
+    <p class="note">생성 시각: 2026-07-06T00:00:00.000+09:00</p>
+  </header>
+
+  <section>
+    <h2>현재 요약</h2>
+    <div class="metrics">
+      <div class="metric"><span>전체 source-backed Flow Map</span><strong>26</strong></div>
+      <div class="metric"><span>lookup 가능</span><strong>15</strong><small>sourceUrl + direct route + non-reject</small></div>
+      <div class="metric"><span>QA 통과</span><strong>15</strong><small>이슈 없이 등록 가능</small></div>
+      <div class="metric"><span>등록 보류</span><strong>0</strong><small>보완 후 재검사</small></div>
+    </div>
+    <div class="metrics"><div class="metric issue"><span>중복 canonical URL</span><strong>0</strong><small>0 steps</small></div><div class="metric issue"><span>sourceTrace 누락</span><strong>0</strong><small>0 steps</small></div><div class="metric issue"><span>Step 없음</span><strong>0</strong><small>0 steps</small></div><div class="metric issue"><span>sourceUrl 누락</span><strong>0</strong><small>0 steps</small></div></div>
+  </section>
+
+  <section>
+    <h2>운영 runbook</h2>
+    <div class="panel">
+      <ol class="runbook">
+    <li>
+      <b>1. 후보 Markdown 확인</b>
+      <p>canonical URL, original/source URL, 사용자 제목/메모, 마지막 lookup 상태가 분리되어 있다.</p>
+      <small>URL-first candidate handoff Markdown 또는 /flows 제작용 정보 패널</small>
+    </li>
+
+    <li>
+      <b>2. source-backed Flow 등록</b>
+      <p>sourceUrl을 가진 Flow Map, 실행 가능한 Step, sourceTrace, 날짜/상대일/반복 규칙, risk 결정을 남긴다.</p>
+      <small>source-backed map + child Flow bundle + FlowItemDetail/sourceTrace</small>
+    </li>
+
+    <li>
+      <b>3. manual registration QA 통과</b>
+      <p>중복 canonical URL, sourceTrace 누락, Step 없음, sourceUrl 누락 이슈가 없다.</p>
+      <small>assessSourceBackedManualRegistrationReadiness 결과</small>
+    </li>
+
+    <li>
+      <b>4. URL hit 확인</b>
+      <p>canonical URL lookup이 hit을 반환하고 /flow-maps/[map] 시작 흐름으로 이동한다.</p>
+      <small>lookupUrlFirstP0Input 결과와 URL lookup/start 테스트</small>
+    </li>
+  </ol>
+    </div>
+  </section>
+
+  <section>
+    <h2>샘플 리허설</h2>
+    <div class="panel rehearsal">
+      <dl>
+        <dt>후보 URL</dt><dd><a href="https://www.samsungsvc.co.kr/solution/28524">https://www.samsungsvc.co.kr/solution/28524</a></dd>
+        <dt>후보 메모</dt><dd>삼성서비스 에어컨 1way 필터 청소 안내를 2주 반복 관리 Flow로 옮기는 샘플</dd>
+        <dt>등록 Flow</dt><dd>aircon-filter-cleaning / source-backed-aircon-filter-cleaning</dd>
+        <dt>등록 전 QA</dt><dd>QA 통과 - 현재 QA 기준 통과</dd>
+        <dt>lookup 확인</dt><dd>hit / /flow-maps/aircon-filter-cleaning</dd>
+        <dt>다음 처리</dt><dd>후보 카드에서 Flow 결과로 이동한 뒤 start/export/My Flow 저장 경로를 확인한다.</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section>
+    <h2>sourceTrace remediation queue</h2>
+    <p class="note">남은 sourceTrace 누락 Flow Map을 lookup 대표 여부, productScore, Step 수, risk, 보완 난이도 기준으로 정렬합니다. 한 후보를 보완한 뒤 QA-pass로 이동하면 이 큐에서 빠집니다.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Priority / Flow Map</th>
+          <th>Lookup / UX / score</th>
+          <th>Missing Steps</th>
+          <th>Risk</th>
+          <th>Reason / next action</th>
+          <th>Source</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>중복 canonical URL 그룹</h2>
+    <p class="note">URL lookup은 canonical URL 1개에 기본 hit Flow Map 1개를 우선합니다. 나머지는 더 구체적인 sourceUrl로 좁히거나, 하나의 Flow Map으로 합치거나, directRouteEnabled=false로 보류합니다.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>원인 / canonical URL</th>
+          <th>기본 hit</th>
+          <th>보조 후보</th>
+          <th>처리 제안</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Flow Map별 QA</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Flow Map</th>
+          <th>상태</th>
+          <th>Quality</th>
+          <th>Step/sourceTrace</th>
+          <th>QA 이슈</th>
+          <th>Source</th>
+        </tr>
+      </thead>
+      <tbody>
+    <tr class="qa_pass">
+      <td><b>aircon-filter-cleaning</b><br><small>천장형 에어컨 1way 필터 청소 루틴</small></td>
+      <td>QA 통과<br><small>lookup 가능</small></td>
+      <td>park<br><small>directRouteEnabled</small></td>
+      <td>1<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://www.samsungsvc.co.kr/solution/28524">원문</a><br><small>source-backed-aircon-filter-cleaning</small></td>
+    </tr>
+
+    <tr class="qa_pass">
+      <td><b>baby-food-map</b><br><small>초기 이유식 식단표</small></td>
+      <td>QA 통과<br><small>lookup 가능</small></td>
+      <td>candidate<br><small>directRouteEnabled</small></td>
+      <td>21<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://blog.naver.com/01695258757/222768860919">원문</a><br><small>baby-150-start, baby-160-start, baby-170-start, baby-180-start, baby-cube</small></td>
+    </tr>
+
+    <tr class="qa_pass">
+      <td><b>baby-health-schedule</b><br><small>영유아 검진·접종 일정 지도</small></td>
+      <td>QA 통과<br><small>lookup 가능</small></td>
+      <td>revise<br><small>directRouteEnabled</small></td>
+      <td>18<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=1&amp;cciNo=2&amp;cnpClsNo=2&amp;csmSeq=1138&amp;popMenu=ov">원문</a><br><small>source-backed-baby-health-checkups, source-backed-baby-vaccination-schedule</small></td>
+    </tr>
+
+    <tr class="qa_pass">
+      <td><b>curated-ajd-moving-d30</b><br><small>이사 D-30 체크리스트</small></td>
+      <td>QA 통과<br><small>lookup 가능</small></td>
+      <td>candidate<br><small>directRouteEnabled</small></td>
+      <td>5<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363">원문</a><br><small>curated-ajd-moving-d30</small></td>
+    </tr>
+
+    <tr class="qa_pass">
+      <td><b>curated-allblanc-workout-park</b><br><small>Allblanc 영상별 홈트 루틴</small></td>
+      <td>QA 통과<br><small>lookup 가능</small></td>
+      <td>candidate<br><small>directRouteEnabled</small></td>
+      <td>3<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://youtube.com/@allblanctv">원문</a><br><small>curated-allblanc-morning-workout, curated-allblanc-no-jump-cardio, curated-allblanc-lower-body</small></td>
+    </tr>
+
+    <tr class="qa_pass">
+      <td><b>curated-child-vaccination-schedule</b><br><small>아이 예방접종 일정표</small></td>
+      <td>QA 통과<br><small>lookup 가능</small></td>
+      <td>revise<br><small>directRouteEnabled</small></td>
+      <td>10<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://khms.or.kr/healthy_life/prevention/vaccination_child">원문</a><br><small>curated-child-vaccination-first-year, curated-child-vaccination-booster-school-age</small></td>
+    </tr>
+
+    <tr class="qa_pass">
+      <td><b>curated-funmom-learning-park</b><br><small>펀맘 주간 출력 루틴</small></td>
+      <td>QA 통과<br><small>lookup 가능</small></td>
+      <td>park<br><small>directRouteEnabled</small></td>
+      <td>6<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://funmom.tistory.com/">원문</a><br><small>curated-funmom-weekly-print-picker</small></td>
+    </tr>
+
+    <tr class="qa_pass">
+      <td><b>curated-new-car-purchase-guide</b><br><small>신차 구매 7단계 체크리스트</small></td>
+      <td>QA 통과<br><small>lookup 가능</small></td>
+      <td>candidate<br><small>directRouteEnabled</small></td>
+      <td>7<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners">원문</a><br><small>curated-new-car-basic</small></td>
+    </tr>
+
+    <tr class="qa_pass">
+      <td><b>curated-opic-mock-course</b><br><small>오픽 모의고사 2주/1달 계획표</small></td>
+      <td>QA 통과<br><small>lookup 가능</small></td>
+      <td>candidate<br><small>directRouteEnabled</small></td>
+      <td>19<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95">원문</a><br><small>curated-opic-single-mock-review, curated-opic-course-row-import</small></td>
+    </tr>
+
+    <tr class="qa_pass">
+      <td><b>curated-reading-routine-log</b><br><small>월 4권 독서 기록 루틴</small></td>
+      <td>QA 통과<br><small>lookup 가능</small></td>
+      <td>candidate<br><small>directRouteEnabled</small></td>
+      <td>8<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://blog.naver.com/naristyle87/222978131890">원문</a><br><small>curated-reading-monthly-log</small></td>
+    </tr>
+
+    <tr class="qa_pass">
+      <td><b>curated-wedding-checklist-family</b><br><small>결혼 준비 체크리스트 버전</small></td>
+      <td>QA 통과<br><small>lookup 가능</small></td>
+      <td>candidate<br><small>directRouteEnabled</small></td>
+      <td>10<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://blog.naver.com/wilklove/223518896995">원문</a><br><small>curated-wedding-naver-timeline, curated-wedding-gongysd-atoz</small></td>
+    </tr>
+
+    <tr class="qa_pass">
+      <td><b>middle-school-math-1</b><br><small>중1 수학 목차 진도표</small></td>
+      <td>QA 통과<br><small>lookup 가능</small></td>
+      <td>candidate<br><small>directRouteEnabled</small></td>
+      <td>8<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://mathbang.net/13">원문</a><br><small>source-backed-middle-school-math-1</small></td>
+    </tr>
+
+    <tr class="qa_pass">
+      <td><b>moving-d30</b><br><small>원룸 이사 D-30 일정 지도</small></td>
+      <td>QA 통과<br><small>lookup 가능</small></td>
+      <td>representative<br><small>directRouteEnabled</small></td>
+      <td>5<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363">원문</a><br><small>source-backed-moving-d30</small></td>
+    </tr>
+
+    <tr class="qa_pass">
+      <td><b>postal-address-transfer</b><br><small>주거이전 우편물 전송 일정</small></td>
+      <td>QA 통과<br><small>lookup 가능</small></td>
+      <td>park<br><small>directRouteEnabled</small></td>
+      <td>3<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://service.epost.go.kr/front.RetrieveAddressMoveInfo.postal">원문</a><br><small>source-backed-postal-address-transfer</small></td>
+    </tr>
+
+    <tr class="qa_pass">
+      <td><b>year-end-tax-submit</b><br><small>연말정산 간소화자료 온라인 제출</small></td>
+      <td>QA 통과<br><small>lookup 가능</small></td>
+      <td>park<br><small>directRouteEnabled</small></td>
+      <td>3<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=6489&amp;nttSn=1330438">원문</a><br><small>source-backed-year-end-tax-submit</small></td>
+    </tr>
+
+    <tr class="lookup_blocked">
+      <td><b>curated-baby-food-meal-log</b><br><small>이유식 식단표 기록</small></td>
+      <td>lookup 차단</td>
+      <td>revise<br><small>directRoute disabled</small></td>
+      <td>2<br><small>sourceTrace 누락 2</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://blog.naver.com/01695258757/222768860919">원문</a><br><small>curated-baby-food-daily-meal-row, curated-baby-food-cube-stock</small></td>
+    </tr>
+
+    <tr class="lookup_blocked">
+      <td><b>funmom-study-routine-map</b><br><small>펀맘 공부 루틴</small></td>
+      <td>lookup 차단</td>
+      <td>park<br><small>directRoute disabled</small></td>
+      <td>17<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://funmom.tistory.com/">원문</a><br><small>funmom-hangul-2w, funmom-maze-2w, funmom-math-1m</small></td>
+    </tr>
+
+    <tr class="lookup_blocked">
+      <td><b>homefit-map</b><br><small>Allblanc 홈트 루틴</small></td>
+      <td>lookup 차단</td>
+      <td>revise<br><small>directRoute disabled</small></td>
+      <td>4<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://youtube.com/@allblanctv">원문</a><br><small>homefit-morning-2w, homefit-video-queue</small></td>
+    </tr>
+
+    <tr class="lookup_blocked">
+      <td><b>moving-map</b><br><small>이사 준비</small></td>
+      <td>lookup 차단</td>
+      <td>candidate<br><small>directRoute disabled</small></td>
+      <td>5<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363">원문</a><br><small>moving-dday</small></td>
+    </tr>
+
+    <tr class="lookup_blocked">
+      <td><b>new-car-map</b><br><small>신차 구매</small></td>
+      <td>lookup 차단</td>
+      <td>candidate<br><small>directRoute disabled</small></td>
+      <td>7<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners">원문</a><br><small>new-car-7-step</small></td>
+    </tr>
+
+    <tr class="lookup_blocked">
+      <td><b>opic-plan-map</b><br><small>오픽 모의고사 계획</small></td>
+      <td>lookup 차단</td>
+      <td>candidate<br><small>directRoute disabled</small></td>
+      <td>19<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95">원문</a><br><small>opic-2w, opic-1m</small></td>
+    </tr>
+
+    <tr class="lookup_blocked">
+      <td><b>picnic-food-safety</b><br><small>나들이 도시락 식중독 예방 체크</small></td>
+      <td>lookup 차단</td>
+      <td>reject<br><small>directRouteEnabled</small></td>
+      <td>3<br><small>sourceTrace 누락 3</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://www.mfds.go.kr/brd/m_827/view.do?company_cd=&amp;company_nm=&amp;itm_seq_1=0&amp;multi_itm_seq=0&amp;page=2&amp;seq=3608&amp;srchFr=&amp;srchTo=&amp;srchTp=&amp;srchWord=">원문</a><br><small>source-backed-picnic-food-safety</small></td>
+    </tr>
+
+    <tr class="lookup_blocked">
+      <td><b>reading-routine-map</b><br><small>독서 루틴</small></td>
+      <td>lookup 차단</td>
+      <td>revise<br><small>directRoute disabled</small></td>
+      <td>5<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://blog.naver.com/naristyle87/222978131890">원문</a><br><small>reading-book-finish, reading-morning-routine</small></td>
+    </tr>
+
+    <tr class="lookup_blocked">
+      <td><b>smishing-response</b><br><small>스미싱·큐싱 의심 문자 대응</small></td>
+      <td>lookup 차단</td>
+      <td>reject<br><small>directRouteEnabled</small></td>
+      <td>3<br><small>sourceTrace 누락 3</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://www.kisa.or.kr/1020601">원문</a><br><small>source-backed-smishing-response</small></td>
+    </tr>
+
+    <tr class="lookup_blocked">
+      <td><b>vaccination-map</b><br><small>영유아 예방접종</small></td>
+      <td>lookup 차단</td>
+      <td>revise<br><small>directRoute disabled</small></td>
+      <td>7<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://khms.or.kr/healthy_life/prevention/vaccination_child">원문</a><br><small>vaccination-official</small></td>
+    </tr>
+
+    <tr class="lookup_blocked">
+      <td><b>wedding-map</b><br><small>결혼 준비</small></td>
+      <td>lookup 차단</td>
+      <td>candidate<br><small>directRoute disabled</small></td>
+      <td>6<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://blog.naver.com/wilklove/223518896995">원문</a><br><small>wedding-timeline, wedding-vendor-board</small></td>
+    </tr>
+  </tbody>
+    </table>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1020" viewBox="0 0 1500 1020" role="img" aria-labelledby="title desc">
+  <title id="title">FlowMe URL-first 사용자 시뮬레이션 와이어플로우</title>
+  <desc id="desc">기존 FlowMe 앱과 실제 컨텐츠를 기준으로 URL 입력, lookup, reuse, export, My Flow, Calendar, memo-to-Flow가 이어지는 흐름</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#344054"/>
+    </marker>
+    <style>
+      .bg { fill: #f6f7f8; }
+      .panel { fill: #ffffff; stroke: #d7dde5; stroke-width: 2; rx: 16; }
+      .p0 { fill: #edf7f1; stroke: #26805a; stroke-width: 2; rx: 16; }
+      .p1 { fill: #eef5fb; stroke: #2f6fa5; stroke-width: 2; rx: 16; }
+      .p2 { fill: #fff6e8; stroke: #b66b16; stroke-width: 2; rx: 16; }
+      .warn { fill: #fff1f1; stroke: #b13a3a; stroke-width: 2; rx: 16; }
+      .title { font-family: "Segoe UI", "Noto Sans KR", Arial, sans-serif; font-size: 34px; font-weight: 800; fill: #17202a; }
+      .sub { font-family: "Segoe UI", "Noto Sans KR", Arial, sans-serif; font-size: 17px; fill: #596575; }
+      .h { font-family: "Segoe UI", "Noto Sans KR", Arial, sans-serif; font-size: 19px; font-weight: 800; fill: #17202a; }
+      .t { font-family: "Segoe UI", "Noto Sans KR", Arial, sans-serif; font-size: 15px; fill: #344054; }
+      .small { font-family: "Segoe UI", "Noto Sans KR", Arial, sans-serif; font-size: 13px; fill: #667085; }
+      .tag { font-family: "Segoe UI", "Noto Sans KR", Arial, sans-serif; font-size: 12px; font-weight: 800; fill: #ffffff; }
+      .line { stroke: #344054; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #8a95a3; stroke-width: 2; stroke-dasharray: 8 7; fill: none; marker-end: url(#arrow); }
+      .pillBlue { fill: #2f6fa5; rx: 12; }
+      .pillGreen { fill: #26805a; rx: 12; }
+      .pillOrange { fill: #b66b16; rx: 12; }
+      .pillRed { fill: #b13a3a; rx: 12; }
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="1500" height="1020"/>
+  <text class="title" x="50" y="58">FlowMe URL-first / export-first / memo-to-Flow 시뮬레이션</text>
+  <text class="sub" x="50" y="90">기존 4-tab IA와 실제 컨텐츠를 유지한 채, Claude Design이 컨텐츠가 채워진 와이어프레임을 그리도록 주는 참조 그림</text>
+
+  <rect class="panel" x="50" y="120" width="210" height="112"/>
+  <rect class="pillBlue" x="70" y="142" width="54" height="24"/>
+  <text class="tag" x="84" y="159">Home</text>
+  <text class="h" x="70" y="184">첫 진입</text>
+  <text class="t" x="70" y="209">URL 붙여넣기</text>
+  <text class="small" x="70" y="228">또는 메모로 시작</text>
+
+  <rect class="p0" x="315" y="120" width="230" height="112"/>
+  <rect class="pillGreen" x="335" y="142" width="82" height="24"/>
+  <text class="tag" x="350" y="159">Lookup</text>
+  <text class="h" x="335" y="184">canonical URL 확인</text>
+  <text class="t" x="335" y="209">중복 URL이면 재사용</text>
+  <text class="small" x="335" y="228">AI 호출 전에 검색</text>
+
+  <rect class="p0" x="600" y="62" width="245" height="116"/>
+  <rect class="pillGreen" x="620" y="84" width="44" height="24"/>
+  <text class="tag" x="632" y="101">Hit</text>
+  <text class="h" x="620" y="126">이사 준비 URL</text>
+  <text class="t" x="620" y="151">원룸 이사 D-30 일정 지도</text>
+  <text class="small" x="620" y="170">이사일 2026-08-24</text>
+
+  <rect class="p2" x="600" y="208" width="245" height="116"/>
+  <rect class="pillOrange" x="620" y="230" width="98" height="24"/>
+  <text class="tag" x="632" y="247">Low quality</text>
+  <text class="h" x="620" y="272">기존 변환은 있음</text>
+  <text class="t" x="620" y="297">원문 매칭/품질 낮음</text>
+  <text class="small" x="620" y="316">재사용 · 수정 · 재생성</text>
+
+  <rect class="warn" x="600" y="354" width="245" height="116"/>
+  <rect class="pillRed" x="620" y="376" width="50" height="24"/>
+  <text class="tag" x="633" y="393">Miss</text>
+  <text class="h" x="620" y="418">기존 Flow 없음</text>
+  <text class="t" x="620" y="443">source row 먼저 확인</text>
+  <text class="small" x="620" y="462">AI fallback은 선택지</text>
+
+  <rect class="p1" x="910" y="62" width="250" height="116"/>
+  <rect class="pillBlue" x="930" y="84" width="76" height="24"/>
+  <text class="tag" x="945" y="101">Options</text>
+  <text class="h" x="930" y="126">옵션 변경</text>
+  <text class="t" x="930" y="151">시작일 · 기간 · 강도</text>
+  <text class="small" x="930" y="170">목적지 Calendar/Todo/MD</text>
+
+  <rect class="p1" x="910" y="208" width="250" height="116"/>
+  <rect class="pillBlue" x="930" y="230" width="64" height="24"/>
+  <text class="tag" x="944" y="247">Edit</text>
+  <text class="h" x="930" y="272">thin edit / fork</text>
+  <text class="t" x="930" y="297">일부 항목·메모 수정</text>
+  <text class="small" x="930" y="316">heavy editor는 나중</text>
+
+  <rect class="warn" x="910" y="354" width="250" height="116"/>
+  <rect class="pillRed" x="930" y="376" width="78" height="24"/>
+  <text class="tag" x="943" y="393">AI gate</text>
+  <text class="h" x="930" y="418">AI 초안 만들기</text>
+  <text class="t" x="930" y="443">miss/low-quality 때만</text>
+  <text class="small" x="930" y="462">비용·품질 경고 표시</text>
+
+  <rect class="p0" x="1230" y="62" width="220" height="116"/>
+  <rect class="pillGreen" x="1250" y="84" width="72" height="24"/>
+  <text class="tag" x="1264" y="101">Export</text>
+  <text class="h" x="1250" y="126">가져가기</text>
+  <text class="t" x="1250" y="151">ICS · Todo · Markdown</text>
+  <text class="small" x="1250" y="170">Sheet/CSV preview</text>
+
+  <rect class="p0" x="1230" y="224" width="220" height="116"/>
+  <rect class="pillGreen" x="1250" y="246" width="66" height="24"/>
+  <text class="tag" x="1264" y="263">My Flow</text>
+  <text class="h" x="1250" y="288">저장 후 실행</text>
+  <text class="t" x="1250" y="313">오늘 할 일 · 전체</text>
+  <text class="small" x="1250" y="332">수정 후 재-export</text>
+
+  <rect class="p0" x="1230" y="386" width="220" height="116"/>
+  <rect class="pillGreen" x="1250" y="408" width="76" height="24"/>
+  <text class="tag" x="1264" y="425">Calendar</text>
+  <text class="h" x="1250" y="450">일정으로 복귀</text>
+  <text class="t" x="1250" y="475">가장 가까운 agenda</text>
+  <text class="small" x="1250" y="494">saved dated Steps</text>
+
+  <rect class="panel" x="50" y="600" width="275" height="138"/>
+  <rect class="pillBlue" x="70" y="622" width="90" height="24"/>
+  <text class="tag" x="82" y="639">Memo entry</text>
+  <text class="h" x="70" y="666">메모장에서 온 계획</text>
+  <text class="t" x="70" y="691">“8월 말 이사 예정...”</text>
+  <text class="small" x="70" y="714">private draft로 정리</text>
+
+  <rect class="p1" x="385" y="600" width="275" height="138"/>
+  <rect class="pillBlue" x="405" y="622" width="100" height="24"/>
+  <text class="tag" x="417" y="639">Draft Flow</text>
+  <text class="h" x="405" y="666">Calendar/Todo/MD 미리보기</text>
+  <text class="t" x="405" y="691">기존 이사 Flow 추천</text>
+  <text class="small" x="405" y="714">원문 URL 없음 trust 표시</text>
+
+  <rect class="p2" x="720" y="600" width="275" height="138"/>
+  <rect class="pillOrange" x="740" y="622" width="90" height="24"/>
+  <text class="tag" x="752" y="639">Share loop</text>
+  <text class="h" x="740" y="666">공유/comment loop</text>
+  <text class="t" x="740" y="691">원 컨텐츠 댓글에 Flow 링크</text>
+  <text class="small" x="740" y="714">source owner가 나중에 발견</text>
+
+  <rect class="panel" x="1055" y="600" width="395" height="200"/>
+  <text class="h" x="1078" y="632">Claude Design이 그려야 할 화면</text>
+  <text class="t" x="1078" y="665">1. Home URL/memo 진입</text>
+  <text class="t" x="1078" y="692">2. lookup result hit / low-quality / miss</text>
+  <text class="t" x="1078" y="719">3. 옵션 변경 + thin edit/fork</text>
+  <text class="t" x="1078" y="746">4. export panel + 비로그인/로그인 경계</text>
+  <text class="t" x="1078" y="773">5. My Flow / Calendar / adoption loop</text>
+
+  <path class="line" d="M260 176 H315"/>
+  <path class="line" d="M545 176 C570 176 575 120 600 120"/>
+  <path class="line" d="M545 176 C570 176 575 266 600 266"/>
+  <path class="line" d="M545 176 C570 176 575 412 600 412"/>
+  <path class="line" d="M845 120 H910"/>
+  <path class="line" d="M845 266 H910"/>
+  <path class="line" d="M845 412 H910"/>
+  <path class="line" d="M1160 120 H1230"/>
+  <path class="line" d="M1160 266 C1190 266 1200 282 1230 282"/>
+  <path class="line" d="M1160 412 C1192 412 1200 444 1230 444"/>
+  <path class="line" d="M1340 178 V224"/>
+  <path class="line" d="M1340 340 V386"/>
+  <path class="dash" d="M325 669 H385"/>
+  <path class="dash" d="M660 669 H720"/>
+  <path class="dash" d="M995 669 H1055"/>
+
+  <rect class="panel" x="50" y="850" width="1400" height="104"/>
+  <text class="h" x="70" y="884">원칙</text>
+  <text class="t" x="70" y="914">4-tab IA 유지 · 기존 컨텐츠 사용 · AI-first 금지 · fake usage 금지 · portable export 우선 · 비로그인 복사/다운로드 가능 · 로그인 후 My Flow 저장/수정/재-export</text>
+  <text class="small" x="70" y="938">이 그림은 고충실도 UI가 아니라 Claude에게 화면 흐름과 실제 컨텐츠 삽입 위치를 설명하는 참조용이다.</text>
+</svg>

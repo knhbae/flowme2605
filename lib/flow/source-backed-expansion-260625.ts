@@ -14,6 +14,14 @@ function lines(items: string[]): string {
   return items.map((item) => `- ${item}`).join('\n');
 }
 
+function postalAddressSourceTrace(stepId: string, rowLabel: string): string {
+  return `Korea Post address move service ${postalAddressSourceUrl} - source row: ${stepId} ${rowLabel}`;
+}
+
+function yearEndTaxSourceTrace(stepId: string, rowLabel: string): string {
+  return `NTS year-end tax simplified submission guide ${yearEndTaxSourceUrl} - source row: ${stepId} ${rowLabel}`;
+}
+
 function item(
   flowId: string,
   sectionId: string,
@@ -42,10 +50,27 @@ function detail(
   completion: string,
   sourceUrl: string,
   caution?: string,
+  sourceTrace?: string,
 ): FlowItemDetail {
+  const inferredSourceTrace =
+    sourceTrace ??
+    (itemId === 'postal-next-day-check'
+      ? postalAddressSourceTrace(itemId, 'request and payment lookup')
+      : itemId === 'postal-payment-deadline'
+        ? postalAddressSourceTrace(itemId, 'payment deadline check')
+        : itemId === 'postal-service-start'
+          ? postalAddressSourceTrace(itemId, 'service period memo')
+          : itemId === 'tax-login-months'
+            ? yearEndTaxSourceTrace(itemId, 'login and work-month check')
+            : itemId === 'tax-submit-employer'
+              ? yearEndTaxSourceTrace(itemId, 'employer selection and simplified submission')
+              : itemId === 'tax-submit-confirm'
+                ? yearEndTaxSourceTrace(itemId, 'submission confirmation memo')
+                : undefined);
+
   return {
     item_id: itemId,
-    why,
+    why: [why, inferredSourceTrace ? `sourceTrace: ${inferredSourceTrace}` : ''].filter(Boolean).join('\n'),
     how: lines(how),
     completion_criteria: completion,
     ...(caution ? { caution } : {}),
@@ -348,7 +373,7 @@ export const additionalSourceBackedMyFlowBundles: FlowBundle[] = [
       }),
     ],
     itemDetails: [
-      detail('aircon-clean-repeat', '원문은 약 2주에 한 번 또는 필터 청소 알림 시 청소를 안내합니다.', [
+      detail('aircon-clean-repeat', '원문은 약 2주에 한 번 또는 필터 청소 알림 시 청소를 안내합니다.\nsourceTrace: Samsung Service solution 28524 - ceiling air conditioner 1-way filter cleaning and care method; repeat about every 2 weeks or when the filter cleaning alert appears.', [
         '운전을 정지하고 보조전원스위치 끄기',
         '그릴을 손으로 잡고 열어 필터 분리',
         '진공청소기나 부드러운 솔로 먼지 제거',

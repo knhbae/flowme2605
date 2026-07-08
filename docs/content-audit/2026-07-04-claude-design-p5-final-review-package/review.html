@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe Claude Design P5 Final Review</title>
+  <style>
+    :root { --bg:#FAFAF8; --surface:#fff; --text:#1B1A17; --muted:#6E6B64; --border:#E7E4DD; --action:#3654FF; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    main { max-width:1200px; margin:0 auto; padding:32px 20px 64px; }
+    h1 { margin:0; font-size:clamp(32px,5vw,56px); line-height:1.04; letter-spacing:0; }
+    h2 { margin:34px 0 14px; font-size:24px; }
+    h3 { margin:8px 0 4px; font-size:18px; }
+    p { color:var(--muted); line-height:1.65; }
+    a { color:var(--action); font-weight:700; }
+    .summary { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; margin:22px 0; }
+    .pill { border:1px solid var(--border); border-radius:16px; background:var(--surface); padding:16px; }
+    .pill strong { display:block; font-size:24px; margin-bottom:4px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:18px; }
+    .card { border:1px solid var(--border); border-radius:18px; background:var(--surface); padding:14px; box-shadow:0 1px 0 rgba(27,26,23,.03); }
+    .meta { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+    .meta span { border:1px solid var(--border); border-radius:999px; background:#FAFAF8; padding:4px 8px; color:var(--muted); font-size:12px; font-weight:700; }
+    .url { margin:0 0 10px; font-size:13px; font-weight:700; }
+    img { width:100%; border:1px solid var(--border); border-radius:14px; background:#F3F1EC; }
+    dl { display:grid; gap:8px; margin:12px 0 0; }
+    dl div { display:flex; justify-content:space-between; gap:12px; border-top:1px solid var(--border); padding-top:8px; font-size:13px; }
+    dt { color:var(--muted); }
+    dd { margin:0; font-weight:700; text-align:right; }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p><strong>FlowMe Claude Design P5 Final Review</strong></p>
+      <h1>P5-01~P5-07 마감 감사 패키지</h1>
+      <p>모바일 390px 기준 route top-shot과 실제 저장 시나리오 screenshot을 함께 묶었습니다. Claude Design이 Vercel 없이 GitHub 파일만 보고 P6 backlog를 판단할 수 있게 만드는 패키지입니다.</p>
+      <p><a href="./audit.md">audit.md</a> · <a href="./route-evidence.json">route-evidence.json</a> · <a href="./prompt-ko.md">prompt-ko.md</a></p>
+    </header>
+    <section class="summary">
+      <div class="pill"><strong>41</strong><span>screenshots</span></div>
+      <div class="pill"><strong>0</strong><span>P5 display term hits</span></div>
+      <div class="pill"><strong>0</strong><span>raw ISO hits</span></div>
+      <div class="pill"><strong>0</strong><span>overflow failures</span></div>
+    </section>
+    <h2>Evidence</h2>
+    <section class="grid">
+      <article class="card">
+        <div class="meta"><span>route</span><span>route</span></div>
+        <h3>홈 첫 진입</h3>
+        <p class="url">/</p>
+        <img src="screenshots/01-home-mobile.png" alt="홈 첫 진입" />
+        <p>clean localStorage route top</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab 홈</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>route</span><span>route</span></div>
+        <h3>Flow 찾기 목록</h3>
+        <p class="url">/flows</p>
+        <img src="screenshots/02-flows-mobile.png" alt="Flow 찾기 목록" />
+        <p>clean localStorage route top</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab Flow 찾기</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>route</span><span>route</span></div>
+        <h3>Flow Map 이사 저장 전</h3>
+        <p class="url">/flow-maps/moving-d30</p>
+        <img src="screenshots/03-flow-map-moving-mobile.png" alt="Flow Map 이사 저장 전" />
+        <p>clean localStorage route top</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab Flow 찾기</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>route</span><span>route</span></div>
+        <h3>Flow Map 수학 저장 전</h3>
+        <p class="url">/flow-maps/middle-school-math-1</p>
+        <img src="screenshots/04-flow-map-math-mobile.png" alt="Flow Map 수학 저장 전" />
+        <p>clean localStorage route top</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab Flow 찾기</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>route</span><span>route</span></div>
+        <h3>공유 자동차검사</h3>
+        <p class="url">/f/vehicle-inspection-prep</p>
+        <img src="screenshots/05-public-vehicle-mobile.png" alt="공유 자동차검사" />
+        <p>clean localStorage route top</p>
+        <dl>
+          <div><dt>Shell</dt><dd>Share shell</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>route</span><span>route</span></div>
+        <h3>공유 전세계약 서류</h3>
+        <p class="url">/f/jeonse-contract-precheck-docs</p>
+        <img src="screenshots/06-public-jeonse-mobile.png" alt="공유 전세계약 서류" />
+        <p>clean localStorage route top</p>
+        <dl>
+          <div><dt>Shell</dt><dd>Share shell</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>route</span><span>route</span></div>
+        <h3>공유 이사 D-30</h3>
+        <p class="url">/f/moving-d30-basic</p>
+        <img src="screenshots/07-public-moving-mobile.png" alt="공유 이사 D-30" />
+        <p>clean localStorage route top</p>
+        <dl>
+          <div><dt>Shell</dt><dd>Share shell</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>route</span><span>route</span></div>
+        <h3>냉장고 workbench</h3>
+        <p class="url">/f/fridge-cleanout-weekly-plan</p>
+        <img src="screenshots/08-public-fridge-mobile.png" alt="냉장고 workbench" />
+        <p>clean localStorage route top</p>
+        <dl>
+          <div><dt>Shell</dt><dd>Share shell</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>route</span><span>route</span></div>
+        <h3>세탁기 workbench</h3>
+        <p class="url">/f/washer-tub-clean-monthly</p>
+        <img src="screenshots/09-public-washer-mobile.png" alt="세탁기 workbench" />
+        <p>clean localStorage route top</p>
+        <dl>
+          <div><dt>Shell</dt><dd>Share shell</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>route</span><span>route</span></div>
+        <h3>신차 인수 workbench</h3>
+        <p class="url">/f/new-car-delivery-check</p>
+        <img src="screenshots/10-public-new-car-mobile.png" alt="신차 인수 workbench" />
+        <p>clean localStorage route top</p>
+        <dl>
+          <div><dt>Shell</dt><dd>Share shell</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>route</span><span>route</span></div>
+        <h3>중고차 구매 workbench</h3>
+        <p class="url">/f/used-car-buying-check</p>
+        <img src="screenshots/11-public-used-car-mobile.png" alt="중고차 구매 workbench" />
+        <p>clean localStorage route top</p>
+        <dl>
+          <div><dt>Shell</dt><dd>Share shell</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>route</span><span>route</span></div>
+        <h3>My Flow 빈 상태</h3>
+        <p class="url">/my</p>
+        <img src="screenshots/12-my-empty-mobile.png" alt="My Flow 빈 상태" />
+        <p>clean localStorage route top</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab 내 Flow</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>route</span><span>route</span></div>
+        <h3>캘린더 빈 상태</h3>
+        <p class="url">/calendar</p>
+        <img src="screenshots/13-calendar-empty-mobile.png" alt="캘린더 빈 상태" />
+        <p>clean localStorage route top</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab 캘린더</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s01</span></div>
+        <h3>홈 첫 화면</h3>
+        <p class="url">/</p>
+        <img src="screenshots/s01-01-home-entry.png" alt="홈 첫 화면" />
+        <p>처음 온 사용자가 핵심 행동과 추천 시작점을 보는 상태</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab 홈</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s01</span></div>
+        <h3>Flow 찾기 상단</h3>
+        <p class="url">/flows</p>
+        <img src="screenshots/s01-02-flows-top.png" alt="Flow 찾기 상단" />
+        <p>콘텐츠 목록 상단과 첫 카드 노출 상태</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab Flow 찾기</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s01</span></div>
+        <h3>첫 콘텐츠 카드</h3>
+        <p class="url">/flows</p>
+        <img src="screenshots/s01-03-first-card.png" alt="첫 콘텐츠 카드" />
+        <p>카드 정보 위계와 CTA 경량화 상태</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab Flow 찾기</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s02</span></div>
+        <h3>이사 Flow Map 저장 전</h3>
+        <p class="url">/flow-maps/moving-d30</p>
+        <img src="screenshots/s02-01-moving-map-before-input.png" alt="이사 Flow Map 저장 전" />
+        <p>입력, 결과 약속, 먼저 할 일, sticky CTA 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab Flow 찾기</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s02</span></div>
+        <h3>이사일 입력 후</h3>
+        <p class="url">/flow-maps/moving-d30</p>
+        <img src="screenshots/s02-02-moving-map-date-entered.png" alt="이사일 입력 후" />
+        <p>입력 후 저장 CTA와 결과 예측 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab Flow 찾기</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s02</span></div>
+        <h3>저장 직후 My Flow</h3>
+        <p class="url">/my?savedMap=moving-d30</p>
+        <img src="screenshots/s02-03-post-save-my-flow.png" alt="저장 직후 My Flow" />
+        <p>저장 배너와 첫 실행 항목이 같은 방향을 가리키는지 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab 내 Flow</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s02</span></div>
+        <h3>첫 할 일 상세</h3>
+        <p class="url">/my?savedMap=moving-d30</p>
+        <img src="screenshots/s02-04-first-task-detail.png" alt="첫 할 일 상세" />
+        <p>체크, 메모/source/export 접근이 과하게 노출되지 않는지 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab 내 Flow</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s02</span></div>
+        <h3>저장 후 Calendar agenda</h3>
+        <p class="url">/calendar</p>
+        <img src="screenshots/s02-05-calendar-agenda.png" alt="저장 후 Calendar agenda" />
+        <p>가장 가까운 저장 일정과 agenda-first 상태 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab 캘린더</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s02</span></div>
+        <h3>Calendar 하단</h3>
+        <p class="url">/calendar</p>
+        <img src="screenshots/s02-06-calendar-bottom.png" alt="Calendar 하단" />
+        <p>하단 탭이 마지막 agenda를 가리지 않는지 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab 캘린더</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s03</span></div>
+        <h3>중1 수학 저장 전</h3>
+        <p class="url">/flow-maps/middle-school-math-1</p>
+        <img src="screenshots/s03-01-math-map-before-save.png" alt="중1 수학 저장 전" />
+        <p>Mathbang/source slug와 일정 지도 표현이 제거됐는지 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab Flow 찾기</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s03</span></div>
+        <h3>날짜 없는 콘텐츠 저장 후</h3>
+        <p class="url">/my?savedMap=middle-school-math-1</p>
+        <img src="screenshots/s03-02-math-post-save.png" alt="날짜 없는 콘텐츠 저장 후" />
+        <p>빈 상태 대신 첫 실행 항목이 보이는지 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab 내 Flow</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s03</span></div>
+        <h3>날짜 없는 첫 할 일 상세</h3>
+        <p class="url">/my?savedMap=middle-school-math-1</p>
+        <img src="screenshots/s03-03-math-first-task.png" alt="날짜 없는 첫 할 일 상세" />
+        <p>진도표 상세가 실행 가능한 형태로 열리는지 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab 내 Flow</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s04</span></div>
+        <h3>공유 자동차검사 저장 전</h3>
+        <p class="url">/f/vehicle-inspection-prep</p>
+        <img src="screenshots/s04-01-vehicle-before-input.png" alt="공유 자동차검사 저장 전" />
+        <p>공유 shell, 입력, 저장 CTA hierarchy 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>Share shell</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s04</span></div>
+        <h3>공유 자동차검사 날짜 입력 후</h3>
+        <p class="url">/f/vehicle-inspection-prep</p>
+        <img src="screenshots/s04-02-vehicle-date-entered.png" alt="공유 자동차검사 날짜 입력 후" />
+        <p>대안 버튼이 주 행동과 경쟁하지 않는지 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>Share shell</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s04</span></div>
+        <h3>공유 자동차검사 저장 완료</h3>
+        <p class="url">/f/vehicle-inspection-prep</p>
+        <img src="screenshots/s04-03-vehicle-after-save.png" alt="공유 자동차검사 저장 완료" />
+        <p>저장 완료 후 My Flow 이동 CTA와 날짜 표시 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>Share shell</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s04</span></div>
+        <h3>공유 저장 후 My Flow</h3>
+        <p class="url">/my</p>
+        <img src="screenshots/s04-04-vehicle-my-flow.png" alt="공유 저장 후 My Flow" />
+        <p>공유 shell에서 앱 shell 실행 허브로 이어지는지 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab 내 Flow</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s04</span></div>
+        <h3>공유 전세계약 서류</h3>
+        <p class="url">/f/jeonse-contract-precheck-docs</p>
+        <img src="screenshots/s04-05-jeonse-before-save.png" alt="공유 전세계약 서류" />
+        <p>공유 상세의 CTA와 source/detail 위계 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>Share shell</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s04</span></div>
+        <h3>공유 이사 D-30</h3>
+        <p class="url">/f/moving-d30-basic</p>
+        <img src="screenshots/s04-06-public-moving.png" alt="공유 이사 D-30" />
+        <p>export-first 공유 화면의 입력과 저장/export 위계 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>Share shell</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s05</span></div>
+        <h3>냉장고 workbench 첫 화면</h3>
+        <p class="url">/f/fridge-cleanout-weekly-plan</p>
+        <img src="screenshots/s05-01-fridge-top.png" alt="냉장고 workbench 첫 화면" />
+        <p>빈 시트가 폼처럼 반복되지 않고 첫 기록 단위가 보이는지 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>Share shell</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s05</span></div>
+        <h3>냉장고 시트 영역</h3>
+        <p class="url">/f/fridge-cleanout-weekly-plan</p>
+        <img src="screenshots/s05-02-fridge-sheet.png" alt="냉장고 시트 영역" />
+        <p>우선 재료/메뉴 후보/보류/상태 컬럼과 placeholder 밀도 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>Share shell</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s05</span></div>
+        <h3>냉장고 하단</h3>
+        <p class="url">/f/fridge-cleanout-weekly-plan</p>
+        <img src="screenshots/s05-03-fridge-bottom.png" alt="냉장고 하단" />
+        <p>sticky bar가 마지막 행을 가리지 않는지 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>Share shell</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s05</span></div>
+        <h3>세탁기 관리 카드</h3>
+        <p class="url">/f/washer-tub-clean-monthly</p>
+        <img src="screenshots/s05-04-washer-next-card.png" alt="세탁기 관리 카드" />
+        <p>사용자용 날짜 포맷과 관리 주기 카드 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>Share shell</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s05</span></div>
+        <h3>세탁기 하단</h3>
+        <p class="url">/f/washer-tub-clean-monthly</p>
+        <img src="screenshots/s05-05-washer-bottom.png" alt="세탁기 하단" />
+        <p>sticky bar와 마지막 콘텐츠 clearance 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>Share shell</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s05</span></div>
+        <h3>신차 인수 workbench</h3>
+        <p class="url">/f/new-car-delivery-check</p>
+        <img src="screenshots/s05-06-new-car-top.png" alt="신차 인수 workbench" />
+        <p>특수 체크 화면의 visual tone과 CTA 위계 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>Share shell</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s05</span></div>
+        <h3>중고차 구매 workbench</h3>
+        <p class="url">/f/used-car-buying-check</p>
+        <img src="screenshots/s05-07-used-car-top.png" alt="중고차 구매 workbench" />
+        <p>특수 체크 화면의 visual tone과 CTA 위계 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>Share shell</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s06</span></div>
+        <h3>여러 콘텐츠 저장 직후</h3>
+        <p class="url">/my?savedMap=middle-school-math-1</p>
+        <img src="screenshots/s06-01-multiple-post-save.png" alt="여러 콘텐츠 저장 직후" />
+        <p>방금 저장한 콘텐츠의 첫 실행 항목이 먼저 보이는지 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab 내 Flow</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s06</span></div>
+        <h3>My Flow 저장 목록</h3>
+        <p class="url">/my?savedMap=middle-school-math-1</p>
+        <img src="screenshots/s06-02-my-flow-saved-list.png" alt="My Flow 저장 목록" />
+        <p>여러 저장 콘텐츠의 n/n 완료, 진행바, 다음 할 일 스캔성 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab 내 Flow</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    
+      <article class="card">
+        <div class="meta"><span>scenario</span><span>s06</span></div>
+        <h3>My Flow 하단</h3>
+        <p class="url">/my?savedMap=middle-school-math-1</p>
+        <img src="screenshots/s06-03-my-flow-bottom.png" alt="My Flow 하단" />
+        <p>하단 탭이 마지막 저장 카드나 버튼을 가리지 않는지 확인</p>
+        <dl>
+          <div><dt>Shell</dt><dd>4-tab 내 Flow</dd></div>
+          <div><dt>Overflow</dt><dd>OK</dd></div>
+          <div><dt>P5 terms</dt><dd>0</dd></div>
+          <div><dt>ISO</dt><dd>0</dd></div>
+        </dl>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

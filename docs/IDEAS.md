@@ -39,6 +39,56 @@ Capture the idea during the same session when it could influence future product 
 
 ## Ideas
 
+### 2026-07-09 - Canonical URL aliases for same-content URL variants
+
+**Idea:** FLOW should eventually recognize cases where the same source content appears under slightly different URLs, such as tracking links, share links, tag/category query variants, mobile/desktop hosts, encoded paths, or publisher-specific aliases. The product should preserve the original submitted URL, but lookup should be able to group likely same-content URLs into a canonical source record with confidence, alias history, and a selected default Flow hit.
+
+**Why not now:** The current URL-first production slice already strips obvious tracking parameters such as `utm_*`, `fbclid`, and `gclid`, and it keeps one default hit per canonical URL. Broadly stripping parameters like `tag`, `category`, `ref`, or publisher-specific query keys could incorrectly merge distinct content. This needs domain-aware rules, source title/body fingerprints, redirect resolution, alias confidence, and an operator review path before changing lookup behavior.
+
+**Revisit when:** URL-first lookup sees repeated misses for URLs that differ only by non-content query params, manual registration QA starts flagging alias groups, source/version/trust ledger work begins, or account-backed candidate queues need server-side dedupe beyond exact canonical URL matching.
+
+**Source context:** User asked on 2026-07-09 how to handle the same content when only the URL changes slightly, such as URLs whose trailing tag or query parameter differs.
+
+### 2026-07-08 - Creator impact analytics for follower growth
+
+**Idea:** A creator or Flow author could see how people who follow their Flow are progressing or growing over time. The useful view is not raw surveillance of individual users, but opt-in and aggregated impact signals such as completion patterns, repeated returns, common added Steps, self-reported gains, confidence changes, avoided mistakes, and where followers still get stuck.
+
+**Why not now:** This needs account-backed usage records, consent boundaries, privacy-safe aggregation, event quality rules, creator/personal data separation, and careful wording so FLOW does not overclaim education, health, finance, emotional, or performance outcomes. It also depends on users first proving that they save, export, check, edit, and revisit Flows.
+
+**Revisit when:** creator publishing becomes active, user-added Step suggestions create enough feedback loops, experience value data is designed, or FLOW has enough opt-in execution records to show creator impact without exposing private user journeys.
+
+**Source context:** User idea on 2026-07-08: it would be valuable for someone who made or shared a Flow to understand how people following that Flow are growing.
+
+### 2026-07-08 - User-suggested Step additions for forked or shared Flows
+
+**Idea:** In planning-heavy categories such as travel, users often start from an existing plan and keep adding one missing checklist item or Step at a time. FLOW should let a user add those additions to a personal fork first, then optionally suggest the Step/Item back to the shared or original Flow. Thumbs-up, reuse, comments, source evidence, and creator/admin review can become promotion signals, but thumbs-up alone should not automatically change a canonical Flow.
+
+**Why not now:** This depends on the URL-first reuse/fork model, thin edit UX, source/version/trust metadata, and moderation rules. Automatic promotion from likes alone could add unsafe, duplicated, source-less, or low-quality tasks to travel, health, finance, family, or legal-adjacent Flows.
+
+**Revisit when:** designing edit/fork UX, community/creator loops, travel canary Flows, source/version/trust ledger, or a contribution review queue for user-added Steps and checklist Items.
+
+**Source context:** User noted on 2026-07-08 while planning travel that real planning keeps evolving from an existing plan by adding useful checklist items or Steps, and suggested that forked or existing Flows should accept additions that can be promoted if they receive enough positive feedback.
+
+### 2026-07-05 - Community and creator loop scoring for source research
+
+**Idea:** Extend source research beyond demand and conversion fit by scoring whether a category can produce a user/community or creator growth loop. Candidate scoring should include `userCreationFit`, `forkRemixFit`, `discussionFit`, `creatorPromotionFit`, `communityLoopFit`, and `growthLoopType`, so FlowMe can distinguish utility/trust-anchor content from creator-promoted and community-remixed content.
+
+**Why not now:** This is a research and prioritization lens, not an approved app implementation. Community editing, creator promotion surfaces, seed changes, and Flow/Step/Item data should wait until source/import rights, app-canary candidates, and the URL-first reuse/fork path are clearer.
+
+**Revisit when:** running the next web-source community/creator loop validation pass, choosing the next 5-8 app canary contents, designing creator/share/fork UX, or deciding which categories should seed early user-generated Flow creation.
+
+**Source context:** 2026-07-05 content expansion discussion after web source demand validation. The user emphasized that FlowMe needs categories where users are excited to make, revise, share, and discuss Flow content, and where creators have a reason to promote their Flow because it sends value back to the source.
+
+### 2026-07-04 - Productivity-tool connectivity research backlog
+
+**Idea:** Treat FLOW as an external-content-to-execution compiler before it becomes a full planner: URL canonical lookup and existing Flow reuse first, portable exports to calendar/todo/Markdown/sheets second, thin edit and source/version trust metadata around that loop, then My Flow continuation, AI fallback, memo-to-Flow, direct integrations, and automation connectors in later batches. Research board: [productivity connectivity priority research](./content-audit/2026-07-04-productivity-connectivity-priority-research-ko.md), with a readable HTML view at [productivity connectivity priority board](./content-audit/2026-07-04-productivity-connectivity-priority-research-ko.html).
+
+**Why not now:** The research adds backlog candidates rather than approving implementation. Direct OAuth integrations, full auto-scheduling, creator marketplace, MCP/Zapier connectors, and memo-first planning should wait until URL lookup, portable export, source trust, and thin edit behavior prove repeated use.
+
+**Revisit when:** a URL-first PoC is scoped, export destinations need to be ranked, direct integration work is proposed, or My Flow/memo-to-Flow is being reconsidered as the next retention loop after export-first evidence.
+
+**Source context:** 2026-07-04 product discussion asked to re-check FLOW's major functions against external productivity-tool connectivity, current AI/calendar/note/automation trends, business importance, usability importance, and the user's stated preference to search/reuse first so AI cost stays low.
+
 ### 2026-07-02 - Flow usage entry backlog
 
 **Idea:** Treat FLOW as a URL-first, multi-entry execution layer: users paste a source URL, reuse an existing Flow when the same URL was already converted, change options, edit/fork the Flow if it does not fit, continue execution in My Flow, export to existing tools, and later promote a personal draft or shared link into a broader Flow. Lightweight memo planning remains a second entry point for daily use. These entry points should converge into the same `Flow / Step / Item / Memo / Source / Export` model instead of becoming separate products. Detailed backlog: [Flow 활용 입구 백로그](./content-audit/2026-07-02-flow-usage-entry-backlog-ko.md), with a readable HTML board at [Flow 활용 입구 백로그 보드](./content-audit/2026-07-02-flow-usage-entry-backlog-ko.html).

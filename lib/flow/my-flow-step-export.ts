@@ -84,8 +84,67 @@ function addMinutes(date: string, time: string, minutes: number): string {
   return `${yyyy}${mm}${dd}T${hh}${min}00`;
 }
 
+function getRepeatLabel(repeatPreset?: string): string {
+  const value = clean(repeatPreset);
+  return repeatLabels[value] ?? value;
+}
+
+function formatSchedule(date?: string, time?: string): string {
+  return [clean(date), clean(time)].filter(Boolean).join(' ');
+}
+
+function formatChecklistItems(input: MyFlowPortableStepExportInput): string[] {
+  const items = (input.items ?? []).map(clean).filter(Boolean);
+  if (items.length === 0) return [`- [ ] ${clean(input.stepTitle) || 'Flow Step'}`];
+  return items.map((item, index) => `- [${input.checkedItems?.[String(index)] ? 'x' : ' '}] ${item}`);
+}
+
+function escapeTsvCell(value?: string): string {
+  return clean(value).replaceAll(/\s*\r?\n\s*/g, ' / ').replaceAll('\t', ' ');
+}
+
 export function canBuildMyFlowStepIcs(input: MyFlowPortableStepExportInput): boolean {
   return /^\d{4}-\d{2}-\d{2}$/.test(clean(input.date));
+}
+
+export function buildMyFlowStepChecklistText(input: MyFlowPortableStepExportInput): string {
+  const title = clean(input.stepTitle) || 'Flow Step';
+  const flowTitle = clean(input.flowTitle);
+  const schedule = formatSchedule(input.date, input.time);
+  const location = clean(input.location);
+  const sourceLabel = clean(input.sourceLabel);
+  const sourceUrl = clean(input.sourceUrl);
+  const lines = [title];
+
+  if (flowTitle) lines.push(`Flow: ${flowTitle}`);
+  if (schedule) lines.push(`일정: ${schedule}`);
+  if (location) lines.push(`장소: ${location}`);
+  lines.push('', '체크리스트:', ...formatChecklistItems(input));
+  if (sourceLabel || sourceUrl) lines.push('', `원문: ${[sourceLabel, sourceUrl].filter(Boolean).join(' ')}`);
+
+  return `${lines.join('\n')}\n`;
+}
+
+export function buildMyFlowStepSheetTsv(input: MyFlowPortableStepExportInput): string {
+  const checklist = formatChecklistItems(input).map((line) => line.replace(/^- /, '')).join(' | ');
+  const source = [clean(input.sourceLabel), clean(input.sourceUrl)].filter(Boolean).join(' ');
+  const header = ['Flow', 'Step', '구간', '날짜', '시간', '반복', '장소', '체크리스트', '메모', '완료 기준', '주의', '원문'];
+  const row = [
+    input.flowTitle,
+    input.stepTitle,
+    input.sectionTitle,
+    input.date,
+    input.time,
+    getRepeatLabel(input.repeatPreset),
+    input.location,
+    checklist,
+    input.memo,
+    input.completionCriteria,
+    input.caution,
+    source,
+  ].map(escapeTsvCell);
+
+  return `${header.join('\t')}\n${row.join('\t')}\n`;
 }
 
 export function buildMyFlowStepPortableText(input: MyFlowPortableStepExportInput): string {
@@ -107,7 +166,7 @@ export function buildMyFlowStepPortableText(input: MyFlowPortableStepExportInput
   if (flowTitle) lines.push(`Flow: ${flowTitle}`);
   if (sectionTitle) lines.push(`구간: ${sectionTitle}`);
   if (date || time) lines.push(`일정: ${[date, time].filter(Boolean).join(' ')}`);
-  if (repeatPreset && repeatLabels[repeatPreset]) lines.push(`반복: ${repeatLabels[repeatPreset]}`);
+  if (repeatPreset && repeatLabels[repeatPreset]) lines.push(`반복: ${getRepeatLabel(repeatPreset)}`);
   if (location) lines.push(`장소: ${location}`);
   if (items.length > 0) {
     lines.push('', '체크:');

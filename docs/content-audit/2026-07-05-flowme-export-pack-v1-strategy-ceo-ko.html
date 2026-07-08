@@ -1,0 +1,917 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe Export Pack v1 CEO 전략 보고서</title>
+  <style>
+    :root {
+      --ink: #14213d;
+      --muted: #5f697a;
+      --line: #dce2ea;
+      --paper: #f7f9fc;
+      --panel: #ffffff;
+      --green: #0f8b6f;
+      --blue: #1d5fd1;
+      --amber: #b86f00;
+      --red: #b42318;
+      --cyan: #0f766e;
+      --soft-green: #e9f8f3;
+      --soft-blue: #eaf2ff;
+      --soft-amber: #fff5df;
+      --soft-red: #fff0ed;
+      --shadow: 0 18px 45px rgba(20, 33, 61, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif;
+      line-height: 1.55;
+    }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .deck {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 52px;
+    }
+
+    .slide {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      border-radius: 14px;
+      margin: 0 0 22px;
+      padding: 26px;
+      overflow: hidden;
+    }
+
+    .hero {
+      min-height: 540px;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 28px;
+      align-items: center;
+      background:
+        linear-gradient(135deg, rgba(20, 33, 61, 0.98), rgba(14, 83, 120, 0.94)),
+        radial-gradient(circle at 80% 0%, rgba(255, 255, 255, 0.28), transparent 28%);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: rgba(255, 255, 255, 0.74);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.05;
+      letter-spacing: 0;
+      margin-bottom: 18px;
+    }
+
+    h2 {
+      font-size: 28px;
+      line-height: 1.18;
+      letter-spacing: 0;
+      margin-bottom: 8px;
+    }
+
+    h3 {
+      font-size: 18px;
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+
+    .lead {
+      font-size: 19px;
+      color: rgba(255, 255, 255, 0.86);
+      max-width: 720px;
+      margin-bottom: 24px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 18px;
+      max-width: 900px;
+    }
+
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .metric {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 16px;
+      min-height: 96px;
+    }
+
+    .metric b {
+      display: block;
+      font-size: 34px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .metric span {
+      display: block;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .loop-map {
+      display: grid;
+      gap: 12px;
+    }
+
+    .loop-node {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+
+    .loop-node strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 16px;
+    }
+
+    .loop-node span {
+      display: block;
+      color: rgba(255, 255, 255, 0.76);
+      font-size: 13px;
+    }
+
+    .arrow {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.62);
+      font-weight: 900;
+    }
+
+    .decision-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .decision-grid > *,
+    .two-col > *,
+    .roadmap > *,
+    .kpi-strip > *,
+    .source-grid > * {
+      min-width: 0;
+    }
+
+    .decision {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 16px;
+      background: #fff;
+      min-height: 150px;
+    }
+
+    .decision.p0 { border-top: 5px solid var(--green); }
+    .decision.p1 { border-top: 5px solid var(--amber); }
+    .decision.p2 { border-top: 5px solid var(--red); }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin: 12px 0 0;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--ink);
+      background: #eef2f7;
+      white-space: nowrap;
+    }
+
+    .badge.p0 { color: var(--green); background: var(--soft-green); }
+    .badge.p1 { color: var(--amber); background: var(--soft-amber); }
+    .badge.p2 { color: var(--red); background: var(--soft-red); }
+    .badge.info { color: var(--blue); background: var(--soft-blue); }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .note {
+      background: #f5f7fb;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .callout {
+      border-left: 5px solid var(--green);
+      background: var(--soft-green);
+      padding: 16px 18px;
+      border-radius: 8px;
+      margin: 18px 0 0;
+      font-weight: 800;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      margin-top: 16px;
+      max-width: 100%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 820px;
+    }
+
+    th, td {
+      padding: 12px 13px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background: #eef3f8;
+      color: #25324a;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .score {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 48px;
+      min-height: 28px;
+      border-radius: 7px;
+      background: var(--soft-blue);
+      color: var(--blue);
+      font-weight: 900;
+    }
+
+    .fit {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 10px;
+      align-items: center;
+      margin: 10px 0;
+    }
+
+    .bar {
+      height: 12px;
+      border-radius: 999px;
+      background: #e6eaf0;
+      overflow: hidden;
+    }
+
+    .bar > i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--green);
+    }
+
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .roadmap-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .roadmap-card ol, .roadmap-card ul, .links ul {
+      margin: 10px 0 0;
+      padding-left: 20px;
+    }
+
+    .roadmap-card li, .links li {
+      margin: 6px 0;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 16px 0 4px;
+    }
+
+    .kpi {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px;
+      background: #fbfcfe;
+    }
+
+    .kpi b {
+      display: block;
+      color: var(--cyan);
+      font-size: 28px;
+      line-height: 1;
+      margin-bottom: 7px;
+    }
+
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .source-grid a {
+      display: block;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px 14px;
+      background: #fbfcfe;
+      font-weight: 800;
+    }
+
+    @media (max-width: 840px) {
+      .deck { width: min(100% - 20px, 760px); padding-top: 10px; }
+      .slide { padding: 18px; border-radius: 10px; }
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .hero-metrics, .decision-grid, .two-col, .roadmap, .kpi-strip, .source-grid {
+        grid-template-columns: 1fr;
+      }
+      h1 { font-size: 36px; }
+      h2 { font-size: 23px; }
+      .lead { font-size: 16px; }
+      table { min-width: 760px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck">
+    <section class="slide hero">
+      <div>
+        <p class="eyebrow">CEO Brief · Export Pack v1 · 2026-07-05</p>
+        <h1>FlowMe의 P0 연결 전략은 “앱 연동”이 아니라 Export Pack v1이다</h1>
+        <p class="lead">URL-first로 찾은 Flow를 사용자의 기존 캘린더, 노트, 체크리스트로 즉시 옮기는 최소 실행 단위를 확정한다. P0는 `.ics`, Markdown, checklist 3개다.</p>
+        <div class="hero-metrics" aria-label="핵심 숫자">
+          <div class="metric"><b>3</b><span>P0 export 포맷</span></div>
+          <div class="metric"><b>5</b><span>검토한 Flow 형태</span></div>
+          <div class="metric"><b>12</b><span>대표 canary 기준</span></div>
+        </div>
+      </div>
+      <div class="loop-map" aria-label="URL-first export loop">
+        <div class="loop-node"><strong>1. URL lookup</strong><span>canonical source를 먼저 확인하고 hit / needs_review / miss를 나눈다.</span></div>
+        <div class="arrow">↓</div>
+        <div class="loop-node"><strong>2. Flow 선택</strong><span>검증된 hit만 시작일, artifact, export 선택으로 진입한다.</span></div>
+        <div class="arrow">↓</div>
+        <div class="loop-node"><strong>3. Export Pack v1</strong><span>캘린더 파일, Markdown, 체크리스트로 기존 도구에 옮긴다.</span></div>
+        <div class="arrow">↓</div>
+        <div class="loop-node"><strong>4. My Flow / 기존 앱</strong><span>FlowMe는 실행 구조와 출처 신뢰를 보관하고, 사용자는 익숙한 앱에서 실행한다.</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>1. 결론</h2>
+      <p class="subtitle">Export Pack v1은 “직접 연동 전 단계”가 아니라, URL-first 전략을 실제 사용자 행동으로 바꾸는 P0 제품이다.</p>
+      <div class="decision-grid">
+        <article class="decision p0">
+          <span class="badge p0">P0 확정</span>
+          <h3>.ics · Markdown · checklist</h3>
+          <p>일정형, 문서형, 할 일형 Flow를 OAuth 없이 내보낼 수 있다. URL-first hit 결과의 기본 실행 출구로 둔다.</p>
+        </article>
+        <article class="decision p1">
+          <span class="badge p1">P1 후보</span>
+          <h3>CSV / sheet · calendar feed</h3>
+          <p>progress/sheet형과 decision형에는 유용하지만, P0 기본 버튼으로 두면 범위가 커진다. artifact별 선택 노출로 검토한다.</p>
+        </article>
+        <article class="decision p2">
+          <span class="badge p2">P2 보류</span>
+          <h3>Todoist · Notion · Google direct API</h3>
+          <p>가치는 크지만 OAuth, 권한, 동기화 실패, 데이터 삭제 책임이 생긴다. 먼저 export 행동 빈도를 확인해야 한다.</p>
+        </article>
+      </div>
+      <div class="callout">CEO 결정안: P0는 “다운로드/복사 가능한 portable export”로 고정하고, direct connector는 사용 증거가 쌓인 뒤 붙인다.</div>
+    </section>
+
+    <section class="slide">
+      <h2>2. 포맷별 역할</h2>
+      <p class="subtitle">P0 포맷은 목적이 겹치면 안 된다. 각 포맷은 사용자가 이미 쓰는 도구의 한 가지 행동을 명확히 맡는다.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>포맷</th>
+              <th>우선순위</th>
+              <th>맡는 일</th>
+              <th>기본 노출 조건</th>
+              <th>보류/주의점</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>.ics</strong></td>
+              <td><span class="badge p0">P0</span></td>
+              <td>날짜, 시간, 반복, 기한이 있는 Flow를 캘린더로 옮긴다.</td>
+              <td>Calendar형, routine형, deadline이 있는 checklist형</td>
+              <td>의료/법률/재무 영역은 “확인 일정”으로 표현하고 조언처럼 쓰지 않는다.</td>
+            </tr>
+            <tr>
+              <td><strong>Markdown</strong></td>
+              <td><span class="badge p0">P0</span></td>
+              <td>출처, 주의, 단계, 메모를 한 번에 보존한다.</td>
+              <td>모든 hit Flow의 보편 fallback</td>
+              <td>너무 길면 실행성이 떨어지므로 요약, 체크 기준, 원문 링크를 앞에 둔다.</td>
+            </tr>
+            <tr>
+              <td><strong>Checklist</strong></td>
+              <td><span class="badge p0">P0</span></td>
+              <td>지금 바로 할 일을 복사해 Todo, 메모, 메신저에 붙인다.</td>
+              <td>Checklist형, decision형, travel/moving/precheck Flow</td>
+              <td>출처와 checked date가 빠지면 일반 조언처럼 보이므로 하단에 반드시 포함한다.</td>
+            </tr>
+            <tr>
+              <td><strong>CSV / sheet</strong></td>
+              <td><span class="badge p1">P1</span></td>
+              <td>progress log, 비교표, 지출/반응 기록을 시트로 옮긴다.</td>
+              <td>progress/sheet형, decision table형에서만 선택 노출</td>
+              <td>P0 전체 기본값으로 두면 QA와 필드 스키마가 커진다.</td>
+            </tr>
+            <tr>
+              <td><strong>Calendar feed</strong></td>
+              <td><span class="badge p1">P1</span></td>
+              <td>반복적으로 갱신되는 캘린더 구독 경험을 제공한다.</td>
+              <td>routine형이 반복 사용으로 증명된 뒤</td>
+              <td>취소, 변경, version drift 책임이 생긴다.</td>
+            </tr>
+            <tr>
+              <td><strong>Direct API</strong></td>
+              <td><span class="badge p2">P2</span></td>
+              <td>Todoist, Notion, Google, Outlook 등으로 직접 생성한다.</td>
+              <td>특정 destination 반복 사용이 확인된 뒤</td>
+              <td>OAuth, 권한, 삭제/중복/동기화 실패 대응이 필요하다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>3. Flow 형태별 적합성</h2>
+      <p class="subtitle">Export Pack v1은 모든 Flow를 같은 버튼으로 밀어내지 않는다. Flow 형태가 기본 export를 결정한다.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Flow 형태</th>
+              <th>기본 export</th>
+              <th>.ics</th>
+              <th>Markdown</th>
+              <th>Checklist</th>
+              <th>Sheet/CSV</th>
+              <th>판단</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Calendar형</strong><br><span class="small">이사, 예방접종, 결혼 준비</span></td>
+              <td><span class="badge p0">.ics</span></td>
+              <td><span class="score">95</span></td>
+              <td><span class="score">80</span></td>
+              <td><span class="score">72</span></td>
+              <td><span class="score">45</span></td>
+              <td>날짜/기한이 사용자 행동을 만든다. 캘린더 파일이 첫 버튼이다.</td>
+            </tr>
+            <tr>
+              <td><strong>Checklist형</strong><br><span class="small">여행 준비, 계약 전 점검</span></td>
+              <td><span class="badge p0">Checklist</span></td>
+              <td><span class="score">62</span></td>
+              <td><span class="score">84</span></td>
+              <td><span class="score">94</span></td>
+              <td><span class="score">55</span></td>
+              <td>실행 마찰이 낮아야 한다. 복사 가능한 체크리스트를 기본으로 둔다.</td>
+            </tr>
+            <tr>
+              <td><strong>Progress/sheet형</strong><br><span class="small">식단, 운동, 학습 진도</span></td>
+              <td><span class="badge p1">Sheet 후보</span></td>
+              <td><span class="score">58</span></td>
+              <td><span class="score">78</span></td>
+              <td><span class="score">82</span></td>
+              <td><span class="score">91</span></td>
+              <td>P0는 Markdown/checklist fallback, P1에서 sheet를 붙인다.</td>
+            </tr>
+            <tr>
+              <td><strong>Decision형</strong><br><span class="small">차량 구매, 제품 비교</span></td>
+              <td><span class="badge p0">Checklist + Markdown</span></td>
+              <td><span class="score">35</span></td>
+              <td><span class="score">88</span></td>
+              <td><span class="score">86</span></td>
+              <td><span class="score">83</span></td>
+              <td>표 비교는 P1 sheet가 맞지만, P0는 기준 체크와 출처 문서가 충분하다.</td>
+            </tr>
+            <tr>
+              <td><strong>Routine형</strong><br><span class="small">운동, 필터 교체, 반복 관리</span></td>
+              <td><span class="badge p0">.ics + Checklist</span></td>
+              <td><span class="score">90</span></td>
+              <td><span class="score">76</span></td>
+              <td><span class="score">88</span></td>
+              <td><span class="score">65</span></td>
+              <td>반복 일정은 캘린더, 실제 수행은 체크리스트로 나눈다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>4. Canary 12개 기준 기본 export</h2>
+      <p class="subtitle">대표 후보는 “어떤 앱과 붙을지”보다 “어떤 export가 사용자의 다음 행동을 만들지”로 재정렬했다.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Canary</th>
+              <th>Flow 형태</th>
+              <th>기본 노출</th>
+              <th>보조 노출</th>
+              <th>근거</th>
+              <th>민감/주의</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>SCOUT-001</td>
+              <td><strong>아정당 이사</strong></td>
+              <td>Calendar + Checklist</td>
+              <td><span class="badge p0">.ics</span></td>
+              <td>Checklist, Markdown</td>
+              <td>기한과 순서가 실행 핵심이다. 캘린더에 옮긴 뒤 단계 체크가 자연스럽다.</td>
+              <td>계약/비용 표현은 “확인” 중심</td>
+            </tr>
+            <tr>
+              <td>SCOUT-011</td>
+              <td><strong>Wedding 12개월</strong></td>
+              <td>Calendar</td>
+              <td><span class="badge p0">.ics</span></td>
+              <td>Markdown</td>
+              <td>장기 마일스톤형. 월별 기한이 캘린더 사용 이유가 된다.</td>
+              <td>업체 추천처럼 보이지 않게 출처 표시</td>
+            </tr>
+            <tr>
+              <td>SCOUT-021</td>
+              <td><strong>질병관리청 예방접종</strong></td>
+              <td>Trust Calendar</td>
+              <td><span class="badge p0">.ics</span></td>
+              <td>Markdown</td>
+              <td>공식 출처 기반 확인 일정. 사용자 행동은 예약/문의/확인이다.</td>
+              <td>의료 조언 금지, 공식 링크 우선</td>
+            </tr>
+            <tr>
+              <td>SCOUT-086</td>
+              <td><strong>삼성 에어컨 필터</strong></td>
+              <td>Routine + Checklist</td>
+              <td><span class="badge p0">.ics</span></td>
+              <td>Checklist</td>
+              <td>반복 리마인더와 수행 체크가 같이 필요하다.</td>
+              <td>모델별 차이 caution 필요</td>
+            </tr>
+            <tr>
+              <td>SCOUT-051</td>
+              <td><strong>KKday 여행 준비</strong></td>
+              <td>Checklist</td>
+              <td><span class="badge p0">Checklist</span></td>
+              <td>Markdown</td>
+              <td>여행 전 준비물과 예약 확인이 핵심이다. 캘린더는 기한 있는 항목에만 보조다.</td>
+              <td>상업 링크는 source label 명확화</td>
+            </tr>
+            <tr>
+              <td>SCOUT-007</td>
+              <td><strong>아정당 자취</strong></td>
+              <td>Checklist</td>
+              <td><span class="badge p0">Checklist</span></td>
+              <td>Markdown</td>
+              <td>입주 전 확인/구매/설치 항목이 중심이다.</td>
+              <td>가격/계약 조언처럼 보이지 않게 표현</td>
+            </tr>
+            <tr>
+              <td>SCOUT-017</td>
+              <td><strong>겟차 신차 구매</strong></td>
+              <td>Decision</td>
+              <td><span class="badge p0">Markdown</span></td>
+              <td>Checklist</td>
+              <td>비교 기준, 질문 목록, 출처 보존이 우선이다. sheet는 P1에서 강해진다.</td>
+              <td>재무 조언 금지, 견적 확인 문구</td>
+            </tr>
+            <tr>
+              <td>SCOUT-075</td>
+              <td><strong>오늘의집 도시락</strong></td>
+              <td>Progress/sheet</td>
+              <td><span class="badge p0">Checklist</span></td>
+              <td>Markdown, <span class="badge p1">Sheet P1</span></td>
+              <td>반복 기록은 sheet가 좋지만 P0에서는 준비/실행 체크가 더 가볍다.</td>
+              <td>영양/건강 효능 단정 금지</td>
+            </tr>
+            <tr>
+              <td>SCOUT-025</td>
+              <td><strong>초기 토핑 이유식</strong></td>
+              <td>Sheet + Calendar</td>
+              <td><span class="badge p0">Markdown</span></td>
+              <td>.ics, <span class="badge p1">Sheet P1</span></td>
+              <td>알레르기/반응 기록은 sheet가 맞지만, 민감도가 높아 출처와 caution이 먼저다.</td>
+              <td>의료/육아 조언 금지, 보호자 확인</td>
+            </tr>
+            <tr>
+              <td>SCOUT-062</td>
+              <td><strong>빅씨스 홈트</strong></td>
+              <td>Routine</td>
+              <td><span class="badge p0">.ics</span></td>
+              <td>Checklist</td>
+              <td>운동 루틴은 반복 일정과 수행 체크가 동시에 작동한다.</td>
+              <td>건강/부상 주의, 난이도 조정</td>
+            </tr>
+            <tr>
+              <td>SCOUT-031</td>
+              <td><strong>오픽만수르 학습</strong></td>
+              <td>Progress + Routine</td>
+              <td><span class="badge p0">Checklist</span></td>
+              <td>.ics, Markdown</td>
+              <td>학습 루틴은 수행 체크가 먼저이고, 일정화는 선택이다.</td>
+              <td>성과 보장 표현 금지</td>
+            </tr>
+            <tr>
+              <td>SCOUT-002</td>
+              <td><strong>오늘의집 이사</strong></td>
+              <td>Community Checklist</td>
+              <td><span class="badge p0">Checklist</span></td>
+              <td>Markdown</td>
+              <td>사용자별 fork/edit가 중요하다. 복사 가능한 체크리스트가 첫 출구다.</td>
+              <td>개인 경험과 공식 정보 구분</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>5. 최소 필드와 ledger 연결</h2>
+      <p class="subtitle">Export가 FlowMe 밖으로 나가도 “어디서 왔고, 언제 확인했고, 무엇을 완료하면 되는지”가 남아야 한다.</p>
+      <div class="two-col">
+        <div>
+          <h3>모든 P0 export 공통 필드</h3>
+          <div class="kpi-strip">
+            <div class="kpi"><b>1</b><span>title</span></div>
+            <div class="kpi"><b>2</b><span>source URL</span></div>
+            <div class="kpi"><b>3</b><span>checked date</span></div>
+            <div class="kpi"><b>4</b><span>completion</span></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>필드</th>
+                  <th>필수 이유</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>title</strong></td><td>사용자가 기존 앱에서 검색하고 구분하는 이름이다.</td></tr>
+                <tr><td><strong>date / duration</strong></td><td>.ics와 반복 루틴의 실행 시점을 만든다. 날짜가 없으면 checklist/Markdown으로 내려간다.</td></tr>
+                <tr><td><strong>source URL</strong></td><td>FlowMe 밖에서도 원문으로 돌아갈 수 있어야 한다.</td></tr>
+                <tr><td><strong>checked date</strong></td><td>출처가 언제 확인된 버전인지 보여준다.</td></tr>
+                <tr><td><strong>caution</strong></td><td>민감 영역에서 조언처럼 보이지 않게 하는 안전장치다.</td></tr>
+                <tr><td><strong>memo</strong></td><td>사용자가 자기 상황에 맞게 남긴 수정 맥락이다.</td></tr>
+                <tr><td><strong>completion</strong></td><td>완료 판정이 없으면 export가 단순 텍스트가 된다.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <h3>source/version/trust ledger 최소 항목</h3>
+          <div class="note">
+            <strong>권장 ledger key:</strong> flow_id, source_url, canonical_url, source_title, source_type, source_status, checked_at, export_generated_at, version_ref, risk_level, caution_text.
+          </div>
+          <div class="fit"><strong>출처 추적</strong><div class="bar"><i style="width: 96%"></i></div></div>
+          <div class="fit"><strong>버전 확인</strong><div class="bar"><i style="width: 88%"></i></div></div>
+          <div class="fit"><strong>민감 문구 제어</strong><div class="bar"><i style="width: 92%"></i></div></div>
+          <div class="fit"><strong>외부 앱 동기화</strong><div class="bar"><i style="width: 32%; background: var(--amber)"></i></div></div>
+          <p class="small">해석: P0는 “외부 앱에 잘 붙는 파일/텍스트”보다 “FlowMe의 출처 신뢰가 밖으로 나가도 남는 구조”가 더 중요하다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>6. 민감 영역 문구 원칙</h2>
+      <p class="subtitle">Export가 외부 앱에 들어가면 FlowMe UI의 안전 문맥이 사라진다. 따라서 파일/텍스트 안에 boundary를 남겨야 한다.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>영역</th>
+              <th>금지 느낌</th>
+              <th>권장 표현</th>
+              <th>export 처리</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>의료/건강</strong></td>
+              <td>진단, 처방, 효능 보장</td>
+              <td>공식 출처 확인, 전문가/보호자 문의, 이상 반응 기록</td>
+              <td>.ics는 “예약/확인 일정”, Markdown은 caution 상단 노출</td>
+            </tr>
+            <tr>
+              <td><strong>법률/계약</strong></td>
+              <td>법률 판단, 계약 결정 대행</td>
+              <td>서류 확인, 조건 비교, 전문가 문의 항목</td>
+              <td>Checklist 중심, 금액/계약 조언 단정 금지</td>
+            </tr>
+            <tr>
+              <td><strong>재무/구매</strong></td>
+              <td>투자/대출/구매 결정 권유</td>
+              <td>견적 확인, 비용 항목 정리, 비교 기준 기록</td>
+              <td>Markdown + checklist, sheet는 P1 decision table로 보류</td>
+            </tr>
+            <tr>
+              <td><strong>커뮤니티 경험</strong></td>
+              <td>개인 사례를 공식 가이드처럼 표현</td>
+              <td>사용자 경험 출처 표시, 본인 상황에 맞게 수정</td>
+              <td>source label과 checked date를 본문에 남김</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">운영 원칙: needs_review / miss 상태는 P0 export와 My Flow 저장 버튼을 열지 않는다. hit만 export 대상이다.</div>
+    </section>
+
+    <section class="slide">
+      <h2>7. 다음 구현 slice 제안</h2>
+      <p class="subtitle">이 보고서는 전략 확정 문서다. 구현을 새로 검증했다고 주장하지 않고, 다음 slice의 범위를 작게 제안한다.</p>
+      <div class="roadmap">
+        <article class="roadmap-card">
+          <span class="badge p0">Slice A</span>
+          <h3>Export profile 통합</h3>
+          <ol>
+            <li>Flow type별 기본 export를 계산한다.</li>
+            <li>P0 포맷 3개에 공통 field contract를 둔다.</li>
+            <li>source ledger 값을 export body에 주입한다.</li>
+          </ol>
+        </article>
+        <article class="roadmap-card">
+          <span class="badge p0">Slice B</span>
+          <h3>URL-first hit export 정리</h3>
+          <ol>
+            <li>hit에서만 `.ics`, Markdown, checklist를 보여준다.</li>
+            <li>needs_review/miss는 확인/재시도 CTA로 제한한다.</li>
+            <li>canary 12개에 기본 노출을 고정한다.</li>
+          </ol>
+        </article>
+        <article class="roadmap-card">
+          <span class="badge p1">Slice C</span>
+          <h3>Sheet/API 보류 조건</h3>
+          <ol>
+            <li>progress/sheet형에서만 CSV/sheet를 실험한다.</li>
+            <li>calendar feed는 반복 사용 증거 후 검토한다.</li>
+            <li>direct API는 destination별 수요가 확인될 때 붙인다.</li>
+          </ol>
+        </article>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>8. 현재 근거와 검증 범위</h2>
+      <p class="subtitle">아래는 이번 의사결정에 사용한 내부 근거다. 구현 검증은 기존 QA 파일과 실제 명령 결과가 있는 부분만 언급한다.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>근거</th>
+              <th>확인 내용</th>
+              <th>이번 보고서에서의 사용</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="./2026-07-05-url-first-p0-ceo-report-ko.html">URL-first P0 CEO 보고서</a></td>
+              <td>hit / needs_review / miss와 URL lookup production slice의 의사결정</td>
+              <td>hit만 export 대상으로 삼는 원칙의 근거</td>
+            </tr>
+            <tr>
+              <td><a href="./2026-07-05-flowme-external-connection-strategy-ceo-ko.html">외부 연결/경쟁 전략 보고서</a></td>
+              <td>FlowMe는 기존 도구와 정면 경쟁하지 않고 실행 구조를 보내는 layer라는 결론</td>
+              <td>direct API보다 portable export를 P0로 두는 근거</td>
+            </tr>
+            <tr>
+              <td><a href="./2026-07-05-url-first-strategy-master-plan-ko.md">전략 마스터 플랜</a></td>
+              <td>URL-first, lookup-before-AI, export-first, source trust 구조</td>
+              <td>Export Pack v1의 제품 위치 정의</td>
+            </tr>
+            <tr>
+              <td><a href="./2026-07-04-productivity-connectivity-priority-research-ko.md">생산성 연결 우선순위 리서치</a></td>
+              <td>Export pack P0, ledger P0/P1, Markdown/Obsidian P0/P1, calendar feed P1로 정리</td>
+              <td>P0/P1/P2 분리의 점수 근거</td>
+            </tr>
+            <tr>
+              <td><a href="../SERVICE_STRUCTURE.md">SERVICE_STRUCTURE.md</a></td>
+              <td>/flows, My Flow, export labels, persistence/export 모듈 설명</td>
+              <td>현재 서비스 구조와 라벨 근거</td>
+            </tr>
+            <tr>
+              <td><a href="../../lib/flow/url-first-lookup.ts">url-first-lookup.ts</a></td>
+              <td>URL-first start package의 export mode가 calendar / markdown / checklist로 좁혀져 있음</td>
+              <td>P0 포맷 3개가 현재 전략 방향과 맞는지 확인</td>
+            </tr>
+            <tr>
+              <td><a href="../../lib/flow/my-flow-step-export.ts">my-flow-step-export.ts</a></td>
+              <td>Step export가 sourceUrl, memo, completionCriteria, caution, ICS/text를 다룸</td>
+              <td>최소 필드와 ledger 연결 항목 정리</td>
+            </tr>
+            <tr>
+              <td><a href="../../lib/flow/export.ts">export.ts</a></td>
+              <td>ICS, text, workbook/sheet 생성 로직과 warning/source fields 존재</td>
+              <td>sheet는 가능하지만 P0 기본값이 아니라 P1로 분리</td>
+            </tr>
+            <tr>
+              <td><a href="../../tests/e2e/flow-mvp.spec.ts">flow-mvp.spec.ts</a></td>
+              <td>URL lookup hit에서 날짜, export option, Markdown download, My Flow save를 검증하는 E2E 존재</td>
+              <td>구현 주장은 기존 QA 근거가 있는 범위로 제한</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="source-grid links">
+        <a href="../DECISIONS.md">결정 기록: docs/DECISIONS.md</a>
+        <a href="../IDEAS.md">보류/아이디어: docs/IDEAS.md</a>
+        <a href="../../lib/flow/export-labels.ts">Export 라벨: lib/flow/export-labels.ts</a>
+        <a href="../../lib/flow/artifact-plan.ts">Artifact 계획: lib/flow/artifact-plan.ts</a>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>9. 임원 의사결정 항목</h2>
+      <p class="subtitle">이번 목표에서 닫아야 할 결정은 세 가지다.</p>
+      <div class="decision-grid">
+        <article class="decision p0">
+          <span class="badge p0">승인 요청</span>
+          <h3>P0 포맷 고정</h3>
+          <p>`.ics`, Markdown, checklist를 Export Pack v1로 확정한다.</p>
+        </article>
+        <article class="decision p1">
+          <span class="badge p1">승인 요청</span>
+          <h3>Sheet/API 보류</h3>
+          <p>CSV/sheet는 progress/decision형 P1, direct API는 P2로 둔다.</p>
+        </article>
+        <article class="decision p0">
+          <span class="badge p0">승인 요청</span>
+          <h3>Ledger 필드 필수화</h3>
+          <p>source URL, checked date, caution, completion은 모든 P0 export에 남긴다.</p>
+        </article>
+      </div>
+      <div class="callout">최종 포지션: FlowMe는 사용자가 쓰는 앱을 대체하지 않는다. 검증된 URL Flow를 실행 가능한 파일과 체크리스트로 컴파일해서 기존 앱에 붙인다.</div>
+    </section>
+  </main>
+</body>
+</html>
