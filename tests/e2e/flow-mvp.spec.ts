@@ -652,7 +652,10 @@ test('flow finding production candidates expose a production handoff markdown wi
   await expect(pendingCard).toContainText('요청 내용');
   await expect(pendingCard).not.toContainText('Canonical URL');
   await expect(pendingCard).toContainText('원문 링크 저장됨');
-  await expect(pendingCard).toContainText('마지막 다시 조회');
+  await expect(pendingCard).toContainText('내가 쓴 제목·메모');
+  await expect(pendingCard).toContainText('마지막 확인');
+  await expect(pendingCard).not.toContainText('사용자 제목/메모');
+  await expect(pendingCard).not.toContainText('마지막 다시 조회');
   await expect(pendingCard).toContainText('7월 5일 · 아직 준비 전');
   await expect(pendingCard).not.toContainText('sourceTrace');
 
@@ -674,7 +677,7 @@ test('flow finding production candidates expose a production handoff markdown wi
   const resolvedCard = candidateList.locator('article').filter({ hasText: '이제 변환된 수학 후보' });
   await expect(resolvedCard).toContainText('이제 실행 가능');
   await resolvedCard.getByRole('button', { name: '요청 내용 보기' }).click();
-  await expect(resolvedCard).toContainText('같은 URL로 저장 가능한 Flow가 준비됐어요.');
+  await expect(resolvedCard).toContainText('이미 Flow로 준비됐어요.');
   await expect(resolvedCard.getByRole('button', { name: 'Flow 결과로 이동' })).toBeVisible();
   await expectNoHorizontalOverflow(page);
 });

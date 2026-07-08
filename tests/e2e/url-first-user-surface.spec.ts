@@ -74,6 +74,8 @@ test('URL-first hit and custom-start states stay inside normal user-surface guar
 
   const result = page.getByTestId('flow-url-lookup-result');
   await expect(result).toContainText('이미 만들어진 Flow가 있어요');
+  await expect(result).toContainText('이미 만든 준비가 있는지 먼저 찾아봤어요');
+  await expect(result).not.toContainText('AI 자동 생성 없이 먼저 찾아봤어요');
   await expect(result).not.toContainText('Mathbang');
   await expect(result).not.toContainText('Markdown');
   const startDateInput = result.getByTestId('url-first-start-date-input');
@@ -96,6 +98,8 @@ test('URL-first miss and saved-candidate states hide production-only wording fro
 
   const result = page.getByTestId('flow-url-lookup-result');
   await expect(result).toContainText('아직 Flow화되지 않은 URL입니다');
+  await expect(result).toContainText('이미 만든 준비가 있는지 먼저 찾아봤어요');
+  await expect(result).not.toContainText('AI 자동 생성 없이 먼저 찾아봤어요');
   await expectCleanUrlFirstUserSurface(result);
 
   await result.getByLabel('요청 제목').fill('새로 보고 싶은 준비 체크리스트');
@@ -110,6 +114,10 @@ test('URL-first miss and saved-candidate states hide production-only wording fro
 
   await candidateCard.getByRole('button', { name: '요청 내용 보기' }).click();
   await expect(candidateCard.getByTestId('flow-url-supply-production-handoff')).toBeVisible();
+  await expect(candidateCard).toContainText('내가 쓴 제목·메모');
+  await expect(candidateCard).toContainText('마지막 확인');
+  await expect(candidateCard).not.toContainText('사용자 제목/메모');
+  await expect(candidateCard).not.toContainText('마지막 다시 조회');
   await expectCleanUrlFirstUserSurface(candidateCard);
 
   await candidateCard.getByTestId('flow-url-supply-user-summary-copy').click();

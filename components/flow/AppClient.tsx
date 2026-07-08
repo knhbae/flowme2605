@@ -1245,7 +1245,7 @@ function FlowUrlLookupResult({
         <span className="rounded-full border border-[#BFD9B8] bg-white px-2.5 py-1 text-xs font-semibold text-[#176D5D]">
           {getUrlLookupStatusLabel(result)}
         </span>
-        <span className="text-xs font-semibold text-[#6E6B64]">AI 자동 생성 없이 먼저 찾아봤어요</span>
+        <span className="text-xs font-semibold text-[#6E6B64]">이미 만든 준비가 있는지 먼저 찾아봤어요</span>
       </div>
       <h2 className="mt-2 break-keep text-lg font-semibold leading-snug text-[#1B1A17]">{result.title}</h2>
       <p className="mt-1 break-keep leading-6 text-[#5F6A5A]">{result.summary}</p>
@@ -1545,7 +1545,7 @@ function FlowUrlSupplyCandidateCard({
   const executable = availability.state === 'executable';
   const userSummaryMarkdown = buildUrlFirstSupplyCandidateUserSummaryMarkdown(candidate);
   const productionStatusNote = executable
-    ? '같은 URL로 저장 가능한 Flow가 준비됐어요. 다시 조회하면 바로 시작할 수 있어요.'
+    ? '이미 Flow로 준비됐어요. Flow 결과로 이동해 바로 시작할 수 있어요.'
     : '아직 바로 실행할 수 없어 원문과 요청 내용을 보관합니다.';
 
   useEffect(() => {
@@ -1606,7 +1606,7 @@ function FlowUrlSupplyCandidateCard({
       {candidate.memo ? <p className="mt-1 line-clamp-2 text-xs font-semibold leading-5 text-[#6E6B64]">{candidate.memo}</p> : null}
       <p className="mt-1 text-[11px] font-semibold text-[#8A857B]">원문 URL 저장됨</p>
       <p className="mt-1 text-[11px] font-semibold text-[#8A6B18]">
-        {executable ? '같은 URL의 Flow가 생겼습니다. 다시 조회하면 시작 흐름으로 이어집니다.' : `아직 실행 가능한 Flow 아님 · ${getUrlSupplyCandidateQueueLabel(candidate)}`}
+        {executable ? '이미 Flow로 준비됨 · Flow 결과로 이동해 바로 시작할 수 있어요.' : `아직 실행 가능한 Flow 아님 · ${getUrlSupplyCandidateQueueLabel(candidate)}`}
       </p>
 
       {isEditing ? (
@@ -1715,11 +1715,11 @@ function FlowUrlSupplyCandidateCard({
               <dd>원문 링크 저장됨</dd>
             </div>
             <div>
-              <dt className="font-semibold text-[#1B1A17]">사용자 제목/메모</dt>
+              <dt className="font-semibold text-[#1B1A17]">내가 쓴 제목·메모</dt>
               <dd>{candidate.title}{candidate.memo ? ` · ${candidate.memo}` : ''}</dd>
             </div>
             <div>
-              <dt className="font-semibold text-[#1B1A17]">마지막 다시 조회</dt>
+              <dt className="font-semibold text-[#1B1A17]">마지막 확인</dt>
               <dd>{getUrlSupplyCandidateLastLookupLabel(candidate)}</dd>
             </div>
           </dl>

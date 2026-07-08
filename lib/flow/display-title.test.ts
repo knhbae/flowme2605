@@ -289,6 +289,21 @@ test('capture script exposes URL-first control-matrix reproducibility markers', 
   assert.ok(script.includes('urlFirstCandidateResolvedHitScenarioStatus'));
 });
 
+test('capture script exposes URL-first user-copy tone markers', () => {
+  const script = fs.readFileSync(
+    path.join(process.cwd(), 'scripts', 'content-audit', 'capture-claude-p7-final-review-package.mjs'),
+    'utf8',
+  );
+
+  assert.ok(script.includes('urlFirstMechanismCopyOldHitCount'));
+  assert.ok(script.includes('urlFirstMechanismCopyValueHitCount'));
+  assert.ok(script.includes('urlFirstCandidateLegacySystemCopyHitCount'));
+  assert.ok(script.includes('urlFirstCandidateUserToneCopyHitCount'));
+  assert.ok(script.includes('이미 만든 준비가 있는지 먼저 찾아봤어요'));
+  assert.ok(script.includes('AI 자동 생성 없이 먼저 찾아봤어요'));
+  assert.ok(script.includes('내가 쓴 제목·메모'));
+});
+
 test('user surface guardrail helpers lock positive and negative display cases', () => {
   assert.equal(normalizeGuardrailLine('  first   line  '), 'first line');
   assert.deepEqual(normalizeGuardrailLines(['  first   line  ', '   ']), ['first line']);

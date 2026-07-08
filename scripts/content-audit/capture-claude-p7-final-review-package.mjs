@@ -1202,8 +1202,26 @@ async function scanPage(page, options = {}) {
       const requestDetail = document.querySelector('[data-testid="flow-url-supply-production-handoff"]');
       const resultText = normalizeLine(lookupResult?.textContent ?? '');
       const urlFirstRoots = [lookupResult, customStart, supplyForm, candidateList, requestDetail].filter(Boolean);
-      const visibleMarkdownLines = uniqueLines(urlFirstRoots.flatMap((root) => collectElementLines(root)))
+      const urlFirstLines = uniqueLines(urlFirstRoots.flatMap((root) => collectElementLines(root)));
+      const visibleMarkdownLines = urlFirstLines
         .filter((line) => /\bMarkdown\b/i.test(line));
+      const mechanismCopyOldLines = urlFirstLines
+        .filter((line) => line.includes('AI 자동 생성 없이 먼저 찾아봤어요'));
+      const mechanismCopyValueLines = urlFirstLines
+        .filter((line) => line.includes('이미 만든 준비가 있는지 먼저 찾아봤어요'));
+      const candidateLegacySystemCopyLines = urlFirstLines
+        .filter((line) =>
+          line.includes('사용자 제목/메모')
+          || line.includes('마지막 다시 조회')
+          || line.includes('같은 URL로 저장 가능한 Flow가 준비됐어요')
+          || line.includes('같은 URL의 Flow가 생겼습니다')
+        );
+      const candidateUserToneCopyLines = urlFirstLines
+        .filter((line) =>
+          line.includes('내가 쓴 제목·메모')
+          || line.includes('마지막 확인')
+          || line.includes('이미 Flow로 준비')
+        );
       const startDateInput = lookupResult?.querySelector('[data-testid="url-first-start-date-input"]')
         ?? document.querySelector('[data-testid="url-first-start-date-input"]');
       const startDateInputValue = startDateInput && 'value' in startDateInput ? startDateInput.value : '';
@@ -1218,6 +1236,14 @@ async function scanPage(page, options = {}) {
         requestDetailVisible: Boolean(requestDetail && isVisible(requestDetail)),
         visibleMarkdownHitCount: visibleMarkdownLines.length,
         visibleMarkdownLines,
+        mechanismCopyOldHitCount: mechanismCopyOldLines.length,
+        mechanismCopyOldLines,
+        mechanismCopyValueHitCount: mechanismCopyValueLines.length,
+        mechanismCopyValueLines,
+        candidateLegacySystemCopyHitCount: candidateLegacySystemCopyLines.length,
+        candidateLegacySystemCopyLines,
+        candidateUserToneCopyHitCount: candidateUserToneCopyLines.length,
+        candidateUserToneCopyLines,
         exportModeEvidence: payload.options.urlFirstExportModeEvidence ?? [],
         candidateUserCopyEvidence: payload.options.urlFirstCandidateUserCopyEvidence ?? null,
         candidateExpandedDetailCaptured: Boolean(payload.options.urlFirstCandidateExpandedDetailCaptured ?? (requestDetail && isVisible(requestDetail))),
@@ -1777,6 +1803,42 @@ function summarizeEvidence(records) {
         line,
       })),
     ),
+    urlFirstMechanismCopyOldHitCount: urlFirst.reduce((sum, record) => sum + (record.markers?.urlFirst?.mechanismCopyOldHitCount ?? 0), 0),
+    urlFirstMechanismCopyOldHits: urlFirst.flatMap((record) =>
+      (record.markers?.urlFirst?.mechanismCopyOldLines ?? []).map((line) => ({
+        route: record.route,
+        state: record.urlFirstState,
+        line,
+      })),
+    ),
+    urlFirstMechanismCopyValueHitCount: urlFirst.reduce((sum, record) => sum + (record.markers?.urlFirst?.mechanismCopyValueHitCount ?? 0), 0),
+    urlFirstMechanismCopyValueHits: urlFirst.flatMap((record) =>
+      (record.markers?.urlFirst?.mechanismCopyValueLines ?? []).map((line) => ({
+        route: record.route,
+        state: record.urlFirstState,
+        line,
+      })),
+    ),
+    urlFirstCandidateLegacySystemCopyHitCount: urlFirst.reduce((sum, record) =>
+      sum + (record.markers?.urlFirst?.candidateLegacySystemCopyHitCount ?? 0),
+    0),
+    urlFirstCandidateLegacySystemCopyHits: urlFirst.flatMap((record) =>
+      (record.markers?.urlFirst?.candidateLegacySystemCopyLines ?? []).map((line) => ({
+        route: record.route,
+        state: record.urlFirstState,
+        line,
+      })),
+    ),
+    urlFirstCandidateUserToneCopyHitCount: urlFirst.reduce((sum, record) =>
+      sum + (record.markers?.urlFirst?.candidateUserToneCopyHitCount ?? 0),
+    0),
+    urlFirstCandidateUserToneCopyHits: urlFirst.flatMap((record) =>
+      (record.markers?.urlFirst?.candidateUserToneCopyLines ?? []).map((line) => ({
+        route: record.route,
+        state: record.urlFirstState,
+        line,
+      })),
+    ),
     urlFirstExportModeEvidenceCount: urlFirstExportModeEvidence.length,
     urlFirstExportModeScannedCount: urlFirstExportModeEvidence.filter((modeEvidence) => modeEvidence.exportModeScanned).length,
     urlFirstExportModesCaptured: urlFirstExportModeEvidence.map((modeEvidence) => ({
@@ -2000,6 +2062,8 @@ P13-04/P13-07 make URL-first evidence reproducible as a state-by-control matrix.
 
 P13-05/P13-06 add a wide-viewport spot-check slice and a measured post-save confirmation signal. The package records >=768px captures for core routes and confirms \`/my?savedMap=...\` shows a short saved confirmation without repeating the first task title.
 
+P14-05/P14-06 soften URL-first candidate/miss/hit copy that was technically clean but operational in tone. The package now records old mechanism-copy hits, value-focused mechanism-copy hits, legacy candidate system-copy hits, and user-tone candidate copy hits so Claude Design can judge the wording from JSON as well as screenshots.
+
 ## Files
 
 - [audit.md](./audit.md)
@@ -2058,11 +2122,15 @@ P13-05/P13-06 add a wide-viewport spot-check slice and a measured post-save conf
 - URL-first input raw ISO hits: ${evidence.summary.urlFirstNormalInputRawIsoHitCount}
 - URL-first native date input raw ISO exemptions: ${evidence.summary.urlFirstNormalInputRawIsoExemptCount}
 - URL-first visible Markdown hits: ${evidence.summary.urlFirstVisibleMarkdownHitCount}
+- URL-first old mechanism-copy hits: ${evidence.summary.urlFirstMechanismCopyOldHitCount}
+- URL-first value mechanism-copy hits: ${evidence.summary.urlFirstMechanismCopyValueHitCount}
 - URL-first export mode evidence count: ${evidence.summary.urlFirstExportModeEvidenceCount}
 - URL-first export mode scanned count: ${evidence.summary.urlFirstExportModeScannedCount}
 - URL-first export mode visible Markdown hits: ${evidence.summary.urlFirstExportModeVisibleMarkdownHitCount}
 - URL-first candidate user-copy evidence count: ${evidence.summary.urlFirstCandidateUserCopyEvidenceCount}
 - URL-first candidate user-copy internal hits: ${evidence.summary.urlFirstCandidateUserCopyInternalHitCount}
+- URL-first candidate legacy system-copy hits: ${evidence.summary.urlFirstCandidateLegacySystemCopyHitCount}
+- URL-first candidate user-tone copy hits: ${evidence.summary.urlFirstCandidateUserToneCopyHitCount}
 - URL-first candidate internal handoff preserved: ${evidence.summary.urlFirstCandidateInternalHandoffPreserved}
 - URL-first candidate expanded detail captured: ${evidence.summary.urlFirstCandidateExpandedDetailCaptured}
 - URL-first candidate resolved-hit scenario captured: ${evidence.summary.urlFirstCandidateResolvedHitScenarioCaptured}
@@ -2155,6 +2223,8 @@ P13-04/P13-07 make URL-first evidence reproducible as a state-by-control matrix.
 
 P13-05/P13-06 add wide viewport spot checks and a post-save confirmation marker. P14-03 extends that evidence with wide-layout sanity markers for primary CTA visibility, visible Flow-finding link count, and home recommendation card width ratio. The audit records the wide-route list, wide overflow count, and whether the saved confirmation repeats the first task title.
 
+P14-05/P14-06 replace URL-first candidate/miss/hit wording that sounded like system operation copy with user-value copy. The audit records old mechanism-copy hits, value-focused mechanism-copy hits, legacy candidate system-copy hits, and user-tone candidate copy hits so this low-level copy polish is measurable without relying only on screenshots.
+
 ## Baselines Covered
 
 - P7-01: \`/restart/moving-d30\` uses user-facing date text and a quieter export hierarchy.
@@ -2190,6 +2260,7 @@ P13-05/P13-06 add wide viewport spot checks and a post-save confirmation marker.
 - P12-01/P12-04: URL-first hit, custom-start, miss, and candidate states are captured as normal user-route scenarios and must keep URL-first internal/source/raw-ISO buckets at zero.
 - P12-05/P12-10/P13-03: \`/restart/moving-d30\` and \`/flow-lab/url-first-p0\` stay out of normal navigation, but their prototype tiers are separate. Restart is \`release-preview\` with a zero-hit display gate; flow-lab is \`internal-console\` with noindex, zero user-nav links, visible internal-console context, and allowed lab-label hits.
 - P13-04/P13-07: URL-first route evidence records trigger URLs, export-mode scan rows, candidate expanded detail, and the resolved-hit candidate branch so state reproduction does not depend on screenshot interpretation alone.
+- P14-05/P14-06: URL-first candidate/miss/hit copy avoids system-operation wording such as \`AI 자동 생성 없이\`, \`사용자 제목/메모\`, and \`마지막 다시 조회\`, while preserving lookup, candidate storage, copy output, and export behavior.
 
 ## Summary
 
@@ -2410,8 +2481,12 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.urlFirstScenarioTriggerUrlCount}</b><span>URL-first trigger URLs</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstExportModeScannedCount}</b><span>URL-first mode scans</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstVisibleMarkdownHitCount}</b><span>URL-first Markdown hits</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstMechanismCopyOldHitCount}</b><span>old mechanism copy hits</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstMechanismCopyValueHitCount}</b><span>value copy hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstExportModeVisibleMarkdownHitCount}</b><span>URL-first mode Markdown hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstCandidateUserCopyInternalHitCount}</b><span>URL-first copy output hits</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstCandidateLegacySystemCopyHitCount}</b><span>candidate legacy copy hits</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstCandidateUserToneCopyHitCount}</b><span>candidate user-tone copy hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstCandidateExpandedDetailCaptured ? 'yes' : 'no'}</b><span>candidate detail expanded</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstCandidateResolvedHitScenarioStatus}</b><span>resolved candidate status</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstNormalInputRawIsoExemptCount}</b><span>URL-first input ISO exempt</span></div>
