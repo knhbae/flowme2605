@@ -39,6 +39,16 @@ Capture the idea during the same session when it could influence future product 
 
 ## Ideas
 
+### 2026-07-09 - Canonical URL aliases for same-content URL variants
+
+**Idea:** FLOW should eventually recognize cases where the same source content appears under slightly different URLs, such as tracking links, share links, tag/category query variants, mobile/desktop hosts, encoded paths, or publisher-specific aliases. The product should preserve the original submitted URL, but lookup should be able to group likely same-content URLs into a canonical source record with confidence, alias history, and a selected default Flow hit.
+
+**Why not now:** The current URL-first production slice already strips obvious tracking parameters such as `utm_*`, `fbclid`, and `gclid`, and it keeps one default hit per canonical URL. Broadly stripping parameters like `tag`, `category`, `ref`, or publisher-specific query keys could incorrectly merge distinct content. This needs domain-aware rules, source title/body fingerprints, redirect resolution, alias confidence, and an operator review path before changing lookup behavior.
+
+**Revisit when:** URL-first lookup sees repeated misses for URLs that differ only by non-content query params, manual registration QA starts flagging alias groups, source/version/trust ledger work begins, or account-backed candidate queues need server-side dedupe beyond exact canonical URL matching.
+
+**Source context:** User asked on 2026-07-09 how to handle the same content when only the URL changes slightly, such as URLs whose trailing tag or query parameter differs.
+
 ### 2026-07-08 - Creator impact analytics for follower growth
 
 **Idea:** A creator or Flow author could see how people who follow their Flow are progressing or growing over time. The useful view is not raw surveillance of individual users, but opt-in and aggregated impact signals such as completion patterns, repeated returns, common added Steps, self-reported gains, confidence changes, avoided mistakes, and where followers still get stuck.

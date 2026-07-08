@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claude Design 피드백 시나리오 보드 - 2026-07-09</title>
+  <style>
+    :root {
+      --bg: #f6f8fa;
+      --panel: #fff;
+      --ink: #17202a;
+      --muted: #66727d;
+      --line: #d9e1e8;
+      --green: #19734d;
+      --blue: #2364a7;
+      --amber: #9f5f00;
+      --red: #b23b35;
+      --violet: #6741a0;
+      --soft-blue: #edf5ff;
+      --soft-green: #eaf6ef;
+      --soft-amber: #fff6e5;
+      --soft-red: #fff0ef;
+      --soft-violet: #f3effa;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Arial, "Noto Sans KR", "Malgun Gothic", sans-serif;
+      line-height: 1.55;
+    }
+    article {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 18px 60px;
+    }
+    header {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 26px;
+      margin-bottom: 16px;
+    }
+    h1, h2, h3 { margin: 0; line-height: 1.2; letter-spacing: 0; }
+    h1 { font-size: 32px; }
+    h2 { font-size: 22px; margin-bottom: 12px; }
+    h3 { font-size: 16px; margin-bottom: 8px; }
+    p { margin: 8px 0 0; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code {
+      padding: 2px 5px;
+      border-radius: 4px;
+      background: #edf1f5;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.92em;
+    }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+      margin-top: 16px;
+    }
+    .lede {
+      max-width: 900px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #fbfcfe;
+      color: #344250;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 15px;
+      background: #fbfcfe;
+    }
+    .card.green { background: var(--soft-green); border-color: #b9ddca; }
+    .card.blue { background: var(--soft-blue); border-color: #bfd6f0; }
+    .card.amber { background: var(--soft-amber); border-color: #f2cf8b; }
+    .card.red { background: var(--soft-red); border-color: #efbbb8; }
+    .card.violet { background: var(--soft-violet); border-color: #d2c3eb; }
+    .label {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .label.p0 { background: var(--soft-red); color: var(--red); border: 1px solid #efbbb8; }
+    .label.p1 { background: var(--soft-amber); color: var(--amber); border: 1px solid #f2cf8b; }
+    .label.p2 { background: var(--soft-violet); color: var(--violet); border: 1px solid #d2c3eb; }
+    .label.ok { background: var(--soft-green); color: var(--green); border: 1px solid #b9ddca; }
+    .small { color: var(--muted); font-size: 13px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+    th {
+      background: #edf2f7;
+      color: #334252;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    tr:last-child td { border-bottom: 0; }
+    ol, ul { margin: 8px 0 0 20px; padding: 0; }
+    li { margin: 5px 0; }
+    .scenario {
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: 16px;
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+      margin-top: 16px;
+    }
+    .scenario:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+    .route-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .route-list code { background: #fff; border: 1px solid var(--line); }
+    .callout {
+      border-left: 4px solid var(--amber);
+      background: var(--soft-amber);
+      padding: 12px 14px;
+      margin-top: 12px;
+    }
+    @media (max-width: 900px) {
+      .grid, .grid.two, .scenario { grid-template-columns: 1fr; }
+      h1 { font-size: 25px; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+<article>
+  <header>
+    <h1>Claude Design 피드백 시나리오 보드</h1>
+    <p class="lede">
+      사용자의 최신 피드백을 Claude Design이 바로 이해할 수 있도록 시나리오, route, 판단 질문, 디자인 숙제, 우선순위로 분리한 보드다.
+      앱 구현 지시가 아니라 다음 디자인/제품 리뷰를 위한 작업 관리 표면이다.
+    </p>
+    <div class="chips">
+      <span class="chip">기준일: 2026-07-09</span>
+      <span class="chip">핵심 문장: URL/메모 -> Flow -> 내 Flow/캘린더</span>
+      <span class="chip">현재 판단: studio는 secondary</span>
+      <span class="chip">우선순위: Calendar/My Flow/public /f/URL-first</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>우선 결론</h2>
+    <div class="grid">
+      <div class="card red">
+        <span class="label p0">P0</span>
+        <h3>실행면부터 다듬기</h3>
+        <p>Calendar, My Flow, public `/f`, URL hit customization은 사용자가 이미 막힘을 느낀 핵심 실행면이다.</p>
+      </div>
+      <div class="card amber">
+        <span class="label p1">P1</span>
+        <h3>Miss -> AI 초안은 concept</h3>
+        <p>AI draft는 private draft로 시작해야 하며, canonical Flow나 public demand로 바로 승격하면 안 된다.</p>
+      </div>
+      <div class="card violet">
+        <span class="label p2">P2</span>
+        <h3>Studio는 보조 표면</h3>
+        <p>Creator/studio는 중요하지만 아직 5번째 탭이 아니다. 실제 콘텐츠 fixture로 개념 검증만 먼저 한다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>사용자 피드백 매핑</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>영역</th>
+          <th>사용자 피드백</th>
+          <th>디자인 문제</th>
+          <th>Claude Design 숙제</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Core flow</td>
+          <td>큰 흐름은 이해된다.</td>
+          <td>문장은 통하지만 실행면의 완성도가 낮으면 제품 신뢰가 떨어진다.</td>
+          <td>Home -> Flow finding -> My Flow -> Calendar가 한 문장으로 이어지는 storyboard.</td>
+        </tr>
+        <tr>
+          <td>Calendar</td>
+          <td>Flow 구분이 안 되고 색상이 같으며, `일정` 라벨이 약하다.</td>
+          <td>Calendar가 보관 데이터처럼 보이고 실행 화면으로 읽히지 않는다.</td>
+          <td>Flow별 색상/accent, event title 구조, same-day grouping, selected-day agenda 재설계.</td>
+        </tr>
+        <tr>
+          <td>URL hit</td>
+          <td>Step 제외는 되지만 수정 자유도가 낮아 보인다.</td>
+          <td>플랫폼/개인화 기대에 비해 custom start가 너무 얇다.</td>
+          <td>calendar event 수준의 lightweight edit 모델 제안.</td>
+        </tr>
+        <tr>
+          <td>URL miss</td>
+          <td>초안 만들기 -> AI 초안 -> 사용자 수정 흐름이 있으면 좋겠다.</td>
+          <td>현재 miss는 후보 저장으로 닫혀 있어 즉시 가치가 약할 수 있다.</td>
+          <td>AI draft를 private draft로 두는 P1 concept flow.</td>
+        </tr>
+        <tr>
+          <td>Public `/f`</td>
+          <td>Export가 Step 단위에 치우쳐 보이고 Flow/Step 저장 공존이 숙제다.</td>
+          <td>저장과 export의 주/보조 위계가 흔들릴 수 있다.</td>
+          <td>Flow 전체 저장, Step만 저장, 저장 전/후 export 위치 모델.</td>
+        </tr>
+        <tr>
+          <td>My Flow</td>
+          <td>오늘 할 일 체크까지 depth가 많다.</td>
+          <td>실행 허브가 아니라 inventory/detail 탐색처럼 느껴질 수 있다.</td>
+          <td>Today first action, one-tap check, Step detail hierarchy 재설계.</td>
+        </tr>
+        <tr>
+          <td>Studio</td>
+          <td>지금 키울지 기본 화면부터 고칠지 고민이다.</td>
+          <td>creator platform으로 너무 빨리 가면 action compiler 기준이 흐려진다.</td>
+          <td>secondary surface로 concept validation만 수행.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>시나리오별 디자인 요청</h2>
+    <div class="scenario">
+      <div>
+        <span class="label p0">A</span>
+        <h3>첫 방문</h3>
+        <div class="route-list"><code>/</code><code>/flows</code><code>/my</code><code>/calendar</code></div>
+      </div>
+      <div>
+        <p><strong>질문:</strong> “URL/메모를 실행 가능한 Flow로 바꾸고 내 실행 공간과 캘린더로 이어진다”가 5초 안에 보이는가?</p>
+        <p><strong>산출:</strong> 모바일 4장 이상, 데스크톱 2장 이상, CTA hierarchy 제안.</p>
+      </div>
+    </div>
+    <div class="scenario">
+      <div>
+        <span class="label p0">B</span>
+        <h3>URL hit</h3>
+        <div class="route-list"><code>/flows</code><code>/my</code><code>/calendar</code></div>
+      </div>
+      <div>
+        <p><strong>질문:</strong> 기존 Flow 재사용으로 보이는가, Step 제외만으로 충분한가, 최소 edit 범위는 어디까지인가?</p>
+        <p><strong>산출:</strong> direct start와 custom start 비교, Step/item edit 최소 모델.</p>
+      </div>
+    </div>
+    <div class="scenario">
+      <div>
+        <span class="label p1">C</span>
+        <h3>URL miss</h3>
+        <div class="route-list"><code>/flows</code><code>candidate</code><code>AI draft concept</code></div>
+      </div>
+      <div>
+        <p><strong>질문:</strong> Miss가 막힘이 아니라 이어갈 요청으로 보이는가? AI draft는 private draft로 안전하게 시작하는가?</p>
+        <p><strong>산출:</strong> miss -> candidate -> draft -> user edit -> My Flow/production handoff flow.</p>
+      </div>
+    </div>
+    <div class="scenario">
+      <div>
+        <span class="label p0">D</span>
+        <h3>Public `/f`</h3>
+        <div class="route-list"><code>/f/vehicle-inspection-prep</code><code>/f/moving-d30-basic</code></div>
+      </div>
+      <div>
+        <p><strong>질문:</strong> 공유받은 사용자가 Flow 전체 저장, Step만 저장, export 중 무엇을 언제 선택해야 하는가?</p>
+        <p><strong>산출:</strong> 저장 primary, Step-save secondary, export destination 위치 모델.</p>
+      </div>
+    </div>
+    <div class="scenario">
+      <div>
+        <span class="label p0">E</span>
+        <h3>My Flow</h3>
+        <div class="route-list"><code>/my?savedMap=moving-d30</code><code>/my?savedMap=middle-school-math-1</code></div>
+      </div>
+      <div>
+        <p><strong>질문:</strong> 오늘 할 일 체크가 첫 화면에서 바로 가능한가? 중요한 정보가 너무 깊지 않은가?</p>
+        <p><strong>산출:</strong> Today first action, one-tap check, Step detail collapsed hierarchy.</p>
+      </div>
+    </div>
+    <div class="scenario">
+      <div>
+        <span class="label p0">F</span>
+        <h3>Calendar</h3>
+        <div class="route-list"><code>/calendar</code><code>same-day multiple events</code></div>
+      </div>
+      <div>
+        <p><strong>질문:</strong> Calendar가 핵심 실행 화면처럼 보이는가? Flow 구분과 같은 날짜 다중 이벤트가 해결되는가?</p>
+        <p><strong>산출:</strong> event color/accent, Flow grouping, agenda-first mobile pattern, event title rules.</p>
+      </div>
+    </div>
+    <div class="scenario">
+      <div>
+        <span class="label p2">G</span>
+        <h3>Creator / Studio</h3>
+        <div class="route-list"><code>/u/flow-curation-team</code><code>/u/my-flow-studio</code></div>
+      </div>
+      <div>
+        <p><strong>질문:</strong> Studio는 지금 핵심 축인가, secondary surface인가? Fresh/filled 상태가 자연스러운가?</p>
+        <p><strong>산출:</strong> public creator profile, personal studio empty/filled concept, 5번째 탭 보류 판단.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>P0/P1/P2 순차 작업</h2>
+    <div class="grid">
+      <div class="card red">
+        <span class="label p0">P0</span>
+        <h3>기본 실행면</h3>
+        <ul>
+          <li>Calendar Flow 구분과 다중 이벤트 처리</li>
+          <li>My Flow 오늘 할 일 depth 축소</li>
+          <li>Public `/f` 저장/export 위계</li>
+          <li>URL hit custom start 수정 범위</li>
+        </ul>
+      </div>
+      <div class="card amber">
+        <span class="label p1">P1</span>
+        <h3>초안과 edit 모델</h3>
+        <ul>
+          <li>URL miss -> AI draft concept</li>
+          <li>calendar event 수준의 Step edit</li>
+          <li>private draft와 canonical Flow 경계</li>
+          <li>Flow/Step 저장 선택 모델</li>
+        </ul>
+      </div>
+      <div class="card violet">
+        <span class="label p2">P2</span>
+        <h3>Studio/creator</h3>
+        <ul>
+          <li>실제 콘텐츠 creator profile</li>
+          <li>fresh/filled my-flow-studio 상태</li>
+          <li>user-added Step과 creator feedback loop</li>
+          <li>5번째 탭 승격 보류</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>스크린샷 패키지 기준</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>묶음</th>
+          <th>Route/state</th>
+          <th>Viewport</th>
+          <th>목적</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Core</td><td><code>/</code>, <code>/flows</code>, <code>/my</code>, <code>/calendar</code></td><td>390, 1280</td><td>제품 문장 이해</td></tr>
+        <tr><td>URL hit</td><td>AJD moving URL hit, custom start</td><td>390, 1280</td><td>재사용과 수정 범위</td></tr>
+        <tr><td>URL miss</td><td>unknown URL miss, candidate</td><td>390</td><td>AI draft future flow</td></tr>
+        <tr><td>Public `/f`</td><td><code>/f/vehicle-inspection-prep</code>, <code>/f/moving-d30-basic</code></td><td>390, 1280</td><td>저장/export 위계</td></tr>
+        <tr><td>My Flow</td><td><code>/my?savedMap=moving-d30</code>, <code>/my?savedMap=middle-school-math-1</code></td><td>390, 1280</td><td>오늘 할 일 depth</td></tr>
+        <tr><td>Calendar</td><td>multiple saved Flow fixture</td><td>390, 1280</td><td>Flow 구분/다중 이벤트</td></tr>
+        <tr><td>Creator</td><td><code>/u/flow-curation-team</code>, <code>/u/my-flow-studio</code></td><td>390, 1280</td><td>secondary surface 판단</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      스크린샷을 새로 찍는 경우, 이 보드를 기준으로 route와 state를 먼저 맞춘다. 이미지가 없어도 Claude Design은 이 HTML과 상세 MD를 먼저 읽고 시나리오별 storyboard를 만들 수 있어야 한다.
+    </div>
+  </section>
+
+  <section>
+    <h2>관련 파일</h2>
+    <div class="grid two">
+      <div class="card blue">
+        <h3>핸드오프</h3>
+        <ul>
+          <li><a href="./2026-07-09-claude-design-feedback-scenario-handoff-ko.md">상세 MD 핸드오프</a></li>
+          <li><a href="./2026-07-07-flowme-url-memo-integrated-ux-storyboard-ko.html">URL·메모 통합 UX 스토리보드</a></li>
+          <li><a href="./2026-07-07-flowme-visual-review-guide-ko.html">눈검토 가이드</a></li>
+          <li><a href="./2026-07-08-claude-design-p1-p15-product-direction-review-ko.md">P1~P15 제품 방향 리뷰</a></li>
+        </ul>
+      </div>
+      <div class="card green">
+        <h3>기준 문서</h3>
+        <ul>
+          <li><a href="../SERVICE_STRUCTURE.md">SERVICE_STRUCTURE.md</a></li>
+          <li><a href="../DECISIONS.md">DECISIONS.md</a></li>
+          <li><a href="../IDEAS.md">IDEAS.md</a></li>
+          <li><a href="../specs/2026-07-05-url-lookup-production-slice/spec.md">URL lookup production slice spec</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</article>
+</body>
+</html>
