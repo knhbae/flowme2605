@@ -1,0 +1,743 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe Canary 12 URL-first P0 Implementation Slice & QA Scorecard</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17202a;
+      --muted: #637083;
+      --line: #d8dee8;
+      --panel: #ffffff;
+      --soft: #f6f8fb;
+      --brand: #0f6f78;
+      --brand-2: #2450a4;
+      --ok: #146c43;
+      --warn: #a35a00;
+      --risk: #a2232f;
+      --hold: #56616f;
+      --shadow: 0 10px 26px rgba(23, 32, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Arial, sans-serif;
+      color: var(--ink);
+      background: #eef2f6;
+      line-height: 1.55;
+    }
+
+    a { color: var(--brand-2); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 20px 56px; }
+
+    .hero {
+      background: linear-gradient(135deg, #ffffff 0%, #eef7f7 48%, #f5f7fb 100%);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 30px;
+    }
+
+    .eyebrow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0;
+      margin-bottom: 12px;
+    }
+
+    h1, h2, h3 { margin: 0; letter-spacing: 0; }
+    h1 {
+      max-width: 920px;
+      font-size: clamp(30px, 4.6vw, 52px);
+      line-height: 1.08;
+      font-weight: 850;
+    }
+
+    .lead {
+      max-width: 900px;
+      margin: 18px 0 0;
+      color: #344256;
+      font-size: 18px;
+    }
+
+    .decision {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: 1.35fr 0.65fr;
+      gap: 14px;
+    }
+
+    .decision-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.88);
+      padding: 18px;
+    }
+
+    .decision-box strong { display: block; font-size: 15px; margin-bottom: 8px; }
+    .decision-box p { margin: 0; color: #2d3949; }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 0 0;
+    }
+
+    .metric {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      min-height: 106px;
+    }
+
+    .metric b { display: block; font-size: 30px; line-height: 1.1; }
+    .metric span { display: block; margin-top: 7px; color: var(--muted); font-size: 13px; }
+
+    section {
+      margin-top: 22px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    h2 { font-size: 24px; line-height: 1.2; }
+    .section-note { max-width: 620px; color: var(--muted); margin: 2px 0 0; font-size: 14px; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: #fff;
+      color: #344256;
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .tag.ok { color: var(--ok); border-color: #b7dcc8; background: #effaf3; }
+    .tag.warn { color: var(--warn); border-color: #f0cd9b; background: #fff7e8; }
+    .tag.risk { color: var(--risk); border-color: #efb1b8; background: #fff1f2; }
+    .tag.hold { color: var(--hold); border-color: #cfd6df; background: #f5f7fa; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+
+    .mini {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: var(--soft);
+    }
+
+    .mini h3 { font-size: 17px; margin-bottom: 8px; }
+    .mini p { margin: 0; color: #3a4657; }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(130px, 1fr));
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .node {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+      min-height: 118px;
+    }
+
+    .node:not(:last-child)::after {
+      content: ">";
+      position: absolute;
+      right: -10px;
+      top: 42%;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .node b { display: block; margin-bottom: 6px; }
+    .node span { display: block; color: var(--muted); font-size: 13px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 14px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 10px;
+      vertical-align: top;
+      text-align: left;
+      overflow-wrap: anywhere;
+    }
+
+    th {
+      background: #f0f4f8;
+      color: #344256;
+      font-size: 12px;
+      text-transform: none;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .status-dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+      background: var(--hold);
+    }
+
+    .status-dot.ok { background: var(--ok); }
+    .status-dot.warn { background: var(--warn); }
+    .status-dot.risk { background: var(--risk); }
+
+    .slice {
+      border-left: 5px solid var(--brand);
+      background: #fbfcfe;
+    }
+
+    .slice h3 {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      font-size: 18px;
+    }
+
+    .slice ul, .checklist { margin: 10px 0 0; padding-left: 18px; }
+    .slice li, .checklist li { margin: 5px 0; }
+
+    .qa-score {
+      display: grid;
+      grid-template-columns: 110px 1fr 1fr 1fr;
+      gap: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 14px;
+    }
+
+    .qa-score div {
+      padding: 12px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .qa-score div:nth-child(4n) { border-right: 0; }
+    .qa-score div:nth-last-child(-n+4) { border-bottom: 0; }
+    .qa-score .head { background: #f0f4f8; font-weight: 800; color: #344256; }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      background: #eef2f6;
+      border: 1px solid #d9e0ea;
+      border-radius: 5px;
+      padding: 1px 5px;
+      font-size: 12px;
+    }
+
+    .refs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .refs a {
+      display: block;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #fff;
+      font-size: 13px;
+    }
+
+    @media (max-width: 860px) {
+      .wrap { padding: 14px 10px 32px; }
+      .hero, section { padding: 18px; }
+      .decision, .grid-2, .grid-3, .metrics, .flow, .refs { grid-template-columns: 1fr; }
+      .node:not(:last-child)::after { display: none; }
+      .section-head { display: block; }
+      .tag { margin-top: 10px; }
+      .qa-score { grid-template-columns: 1fr; }
+      .qa-score div { border-right: 0; }
+      table { display: block; overflow-x: auto; white-space: normal; }
+      th, td { min-width: 150px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <div class="eyebrow">
+        <span>FlowMe URL-first P0</span>
+        <span>2026-07-05</span>
+        <span>CEO + 개발 핸드오프</span>
+      </div>
+      <h1>Canary 12 전략을 이제 구현 가능한 slice와 QA scorecard로 잠근다</h1>
+      <p class="lead">
+        결론은 단순하다. 현재 `/flows` URL-first 구현은 P0 골격과 3개 hit 검증까지는 로컬에서 확인되어 있다.
+        다음 단계는 새 전략을 더 쓰는 일이 아니라, Canary 12를 기준으로 P0-now 4개 hit, P1-review 6개 lock,
+        P2-hold 2개 hold를 코드와 테스트가 같은 언어로 말하게 만드는 일이다.
+      </p>
+
+      <div class="decision">
+        <div class="decision-box">
+          <strong>이번 목표의 결정</strong>
+          <p>
+            구현은 한 번에 크게 열지 않는다. <b>Canary registry → P0-now 4 hit → Export Pack v1 → ledger/export/save QA</b>
+            순서의 4개 implementation slice로 자른다. Home redesign, OAuth/API, AI-first 생성, full editor, fake usage는 제외한다.
+          </p>
+        </div>
+        <div class="decision-box">
+          <strong>현재 상태 판단</strong>
+          <p>
+            <span class="tag warn">P0 skeleton ready</span>
+            <span class="tag risk">Canary 12 complete 아님</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="metrics">
+        <div class="metric">
+          <b>12</b>
+          <span>최종 canary 수. 운영 분류는 P0-now 4, P1-review 6, P2-hold 2.</span>
+        </div>
+        <div class="metric">
+          <b>3</b>
+          <span>현재 QA 문서가 hit로 확인한 source-backed URL 수. P0-now 4 확정 전에는 1개 gap이 남는다.</span>
+        </div>
+        <div class="metric">
+          <b>10/10</b>
+          <span><code>lib/flow/url-first-lookup.test.ts</code> 로컬 QA 기록의 unit pass 수.</span>
+        </div>
+        <div class="metric">
+          <b>4</b>
+          <span>이번 핸드오프가 제안하는 실제 구현 slice 수.</span>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>1. 현재 구현이 이미 증명한 것</h2>
+          <p class="section-note">새로 과장하지 않고, 기존 QA 문서와 코드에서 확인 가능한 사실만 CEO 보고용으로 압축했다.</p>
+        </div>
+        <span class="tag ok">evidence-based</span>
+      </div>
+
+      <div class="grid-3">
+        <div class="mini">
+          <h3>URL lookup 골격</h3>
+          <p><code>/flows</code> 상단 URL 입력, hit / needs_review / miss, AI disabled, start panel, custom start가 존재한다.</p>
+        </div>
+        <div class="mini">
+          <h3>저장과 Markdown</h3>
+          <p>hit 상태에서 날짜와 export mode를 선택하고 My Flow local persistence 및 Markdown 다운로드까지 QA 기록이 있다.</p>
+        </div>
+        <div class="mini">
+          <h3>숨은 lab route</h3>
+          <p><code>/flow-lab/url-first-p0</code>는 preview용 실험 route로 남아 있고 public nav에는 노출하지 않는 방향이다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>2. Canary 12 관점 구현 gap</h2>
+          <p class="section-note">이 표가 다음 구현의 backlog다. 여기서 초록이 아닌 항목을 완료해야 Canary 12 P0 검증이라고 말할 수 있다.</p>
+        </div>
+        <span class="tag warn">gap table</span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:18%">영역</th>
+            <th style="width:24%">현재 확인 상태</th>
+            <th style="width:28%">P0 완료 기준</th>
+            <th style="width:18%">판정</th>
+            <th style="width:12%">slice</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Canary registry</td>
+            <td>lookup 테스트는 AJD 이사, Mathbang, Naver 웨딩 중심으로 3 hit를 확인한다.</td>
+            <td>12개 canary 모두 URL, 운영 상태, risk, default artifact, export, lock reason을 한 registry에서 판정한다.</td>
+            <td><span class="status-dot warn"></span>부분</td>
+            <td>A</td>
+          </tr>
+          <tr>
+            <td>P0-now 4 hit</td>
+            <td>P0 골격은 있으나 4개 P0-now 전체가 hit로 테스트된 상태라고 보기 어렵다.</td>
+            <td>이사, 차량구매, 예방접종, 에어컨필터 4개가 hit로 열리고 export/save 가능 조건이 명확해야 한다.</td>
+            <td><span class="status-dot risk"></span>gap</td>
+            <td>B</td>
+          </tr>
+          <tr>
+            <td>P1-review 6 lock</td>
+            <td>needs_review 상태와 disabled start는 존재한다.</td>
+            <td>6개 후보별로 왜 review인지, 어떤 검토가 끝나야 unlock되는지 UI와 테스트가 분리되어야 한다.</td>
+            <td><span class="status-dot warn"></span>부분</td>
+            <td>A/D</td>
+          </tr>
+          <tr>
+            <td>P2-hold 2 hold</td>
+            <td>unknown miss와 preview-only 계열은 있으나 hold 운영 정책은 코드 레벨로 고정되어 있지 않다.</td>
+            <td>비교/백업 목적만 허용하고 export/save는 막는 P2 hold 사유가 canary별로 보여야 한다.</td>
+            <td><span class="status-dot risk"></span>gap</td>
+            <td>A/D</td>
+          </tr>
+          <tr>
+            <td>Export Pack v1</td>
+            <td>Markdown 다운로드 QA는 있다. step-level .ics/text export builder도 있다.</td>
+            <td>lookup hit 결과에서 `.ics`, Markdown, checklist가 모두 실제 사용자 동작으로 제공되어야 한다.</td>
+            <td><span class="status-dot warn"></span>부분</td>
+            <td>C</td>
+          </tr>
+          <tr>
+            <td>Ledger</td>
+            <td>source URL, checked date, risk level, version 일부가 map/snapshot/persistence에 있다.</td>
+            <td>source URL, canonical URL, source title/type/status, checked date, version, risk, caution, export date가 lookup/export/save에 일관되게 남아야 한다.</td>
+            <td><span class="status-dot warn"></span>부분</td>
+            <td>D</td>
+          </tr>
+          <tr>
+            <td>사용자 copy</td>
+            <td>AI disabled, review gate, miss 상태 copy가 존재한다.</td>
+            <td>민감 영역은 조언처럼 보이지 않고, 내부 상태어와 fake usage 없이 잠금 이유를 설명해야 한다.</td>
+            <td><span class="status-dot warn"></span>부분</td>
+            <td>D</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>3. P0 구현 흐름도</h2>
+          <p class="section-note">개발자가 따라갈 실제 loop다. 중요한 것은 hit 성공뿐 아니라 locked 상태가 절대 export/save로 새지 않는 것이다.</p>
+        </div>
+        <span class="tag ok">loop contract</span>
+      </div>
+
+      <div class="flow">
+        <div class="node">
+          <b>URL 입력</b>
+          <span><code>/flows</code>의 URL field. memo나 AI prompt가 첫 화면의 주인공이 되지 않는다.</span>
+        </div>
+        <div class="node">
+          <b>Canary registry 판정</b>
+          <span>canonical URL, source type, canary status, risk, default artifact를 결정한다.</span>
+        </div>
+        <div class="node">
+          <b>상태별 UI</b>
+          <span>hit는 start/export, review는 preview+lock, hold/miss는 대체 CTA만 노출한다.</span>
+        </div>
+        <div class="node">
+          <b>Export Pack v1</b>
+          <span>`.ics`, Markdown, checklist 중 허용된 output만 실제 동작으로 제공한다.</span>
+        </div>
+        <div class="node">
+          <b>Ledger 저장</b>
+          <span>화면, export file, My Flow 저장 기록에 같은 source/trust 필드가 남는다.</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>4. Implementation slices</h2>
+          <p class="section-note">각 slice는 독립 QA가 가능해야 한다. Slice A가 없으면 이후 구현은 case-by-case 예외 처리로 커진다.</p>
+        </div>
+        <span class="tag">handoff</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="mini slice">
+          <h3>Slice A. Canary registry 고정 <span class="tag warn">먼저</span></h3>
+          <ul>
+            <li><code>lib/flow/url-first-lookup.ts</code> 또는 신규 <code>url-first-canaries.ts</code>에 12개 canary 정책을 모은다.</li>
+            <li>각 canary에 <code>P0-now</code>, <code>P1-review</code>, <code>P2-hold</code>, source type, risk, default artifact, lock reason을 둔다.</li>
+            <li>unit test는 12개 전부가 기대 status와 export/save permission을 반환하는지 본다.</li>
+          </ul>
+        </div>
+
+        <div class="mini slice">
+          <h3>Slice B. P0-now 4개 hit 완성 <span class="tag ok">core</span></h3>
+          <ul>
+            <li>이사, 차량구매, 예방접종, 에어컨필터 4개를 실제 hit로 고정한다.</li>
+            <li>각 hit가 자연스럽게 Calendar / checklist / Markdown / My Flow로 이어지는 기본값을 가진다.</li>
+            <li>민감 canary는 hit여도 caution과 ledger가 export/save에 반드시 포함되어야 한다.</li>
+          </ul>
+        </div>
+
+        <div class="mini slice">
+          <h3>Slice C. Export Pack v1 실동작 <span class="tag warn">gap</span></h3>
+          <ul>
+            <li>현재 Markdown은 QA 기록이 있으나 lookup 결과의 `.ics`, checklist 실동작은 별도 구현이 필요하다.</li>
+            <li><code>my-flow-step-export.ts</code>, <code>export.ts</code>의 기존 builder를 재사용해 새 export 엔진을 만들지 않는다.</li>
+            <li>P1/P2/needs_review/miss에서는 export 버튼이 disabled이고 reason이 명확해야 한다.</li>
+          </ul>
+        </div>
+
+        <div class="mini slice">
+          <h3>Slice D. Ledger와 lock QA <span class="tag risk">완료 조건</span></h3>
+          <ul>
+            <li>source URL, canonical URL, source title/type/status, checked date, version, risk, caution, export date를 한 contract로 정한다.</li>
+            <li>화면 badge, export footer/description, My Flow persistence가 같은 값을 공유해야 한다.</li>
+            <li>P1-review 6개와 P2-hold 2개는 save/export가 막히는 E2E를 반드시 갖는다.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>5. 파일/모듈 영향도</h2>
+          <p class="section-note">수정 범위는 `/flows` URL-first slice 안에 묶는다. Home, OAuth, AI 생성, full editor로 번지면 이번 목표를 잃는다.</p>
+        </div>
+        <span class="tag">impact map</span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:28%">파일/모듈</th>
+            <th style="width:31%">이번 slice에서 할 일</th>
+            <th style="width:25%">QA 포인트</th>
+            <th style="width:16%">위험도</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="../../lib/flow/url-first-lookup.ts">lib/flow/url-first-lookup.ts</a></td>
+            <td>canary status, permission, export mode, ledger contract를 반환하는 중심 모듈로 정리한다.</td>
+            <td>12개 URL status snapshot unit test</td>
+            <td><span class="tag risk">높음</span></td>
+          </tr>
+          <tr>
+            <td><a href="../../components/flow/AppClient.tsx">components/flow/AppClient.tsx</a></td>
+            <td>hit/review/hold/miss UI, disabled reason, export buttons, ledger badge를 연결한다.</td>
+            <td>390px overflow, keyboard flow, disabled state</td>
+            <td><span class="tag warn">중간</span></td>
+          </tr>
+          <tr>
+            <td><a href="../../components/flow/UrlFirstP0Lab.tsx">components/flow/UrlFirstP0Lab.tsx</a></td>
+            <td>lab은 preview 비교용으로 유지하되 public product 판단의 근거로 과장하지 않는다.</td>
+            <td>public nav 미노출</td>
+            <td><span class="tag hold">낮음</span></td>
+          </tr>
+          <tr>
+            <td><a href="../../lib/flow/source-backed-my-flow.ts">lib/flow/source-backed-my-flow.ts</a>, <a href="../../lib/flow/source-backed-curated-260630.ts">source-backed-curated-260630.ts</a>, <a href="../../lib/flow/source-backed-expansion-260625.ts">source-backed-expansion-260625.ts</a></td>
+            <td>P0-now 4개에 필요한 source URL, checked date, risk, caution, version을 빠짐없이 맞춘다.</td>
+            <td>P0 hit 4개가 같은 ledger field를 갖는지 확인</td>
+            <td><span class="tag warn">중간</span></td>
+          </tr>
+          <tr>
+            <td><a href="../../lib/flow/my-flow-step-export.ts">lib/flow/my-flow-step-export.ts</a>, <a href="../../lib/flow/export.ts">lib/flow/export.ts</a></td>
+            <td>lookup 화면에서 `.ics`, Markdown, checklist를 만들 때 기존 portable/export builder를 재사용한다.</td>
+            <td>download payload에 source/caution 포함</td>
+            <td><span class="tag warn">중간</span></td>
+          </tr>
+          <tr>
+            <td><a href="../../lib/flow/url-first-lookup.test.ts">lib/flow/url-first-lookup.test.ts</a></td>
+            <td>12 canary registry, P0 4 hit, P1/P2 lock, ledger field를 unit으로 고정한다.</td>
+            <td><code>npx tsx --test</code></td>
+            <td><span class="tag ok">필수</span></td>
+          </tr>
+          <tr>
+            <td><a href="../../tests/e2e/flow-mvp.spec.ts">tests/e2e/flow-mvp.spec.ts</a></td>
+            <td>실제 `/flows`에서 P0-now hit export/save와 P1/P2 lock을 검증한다.</td>
+            <td>Playwright download/save/lock/mobile</td>
+            <td><span class="tag ok">필수</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>6. QA scorecard</h2>
+          <p class="section-note">개발 완료 후 “됐다”라고 말하려면 아래 항목을 채워야 한다. 점수는 CEO 보고용 readiness로도 그대로 쓸 수 있다.</p>
+        </div>
+        <span class="tag ok">scorecard</span>
+      </div>
+
+      <div class="qa-score" role="table" aria-label="QA scorecard">
+        <div class="head">점수</div>
+        <div class="head">통과 기준</div>
+        <div class="head">필수 증거</div>
+        <div class="head">실패 예시</div>
+
+        <div>5</div>
+        <div>12개 canary status가 unit/E2E로 고정되고, P0-now 4개는 export/save까지 실제 동작한다.</div>
+        <div>unit pass, targeted E2E pass, mobile screenshot, docs:check pass</div>
+        <div>한 canary라도 status가 모호하거나 P1/P2에서 export가 열린다.</div>
+
+        <div>4</div>
+        <div>P0-now 4개와 P1 lock은 통과하지만 P2 hold copy 또는 일부 ledger field가 보완 필요하다.</div>
+        <div>gap이 문서화되고 blocker가 아님을 확인</div>
+        <div>민감 caution이 export/save에서 빠진다.</div>
+
+        <div>3</div>
+        <div>URL-first skeleton은 동작하지만 canary 12 기준의 상태/QA coverage가 부족하다.</div>
+        <div>현재 상태에 가까움: 3 hit 중심 QA + partial ledger/export</div>
+        <div>P0-now 4 complete라고 보고한다.</div>
+
+        <div>2</div>
+        <div>demo route나 lab preview는 있으나 `/flows` product path 검증이 부족하다.</div>
+        <div>lab screenshot만 있음</div>
+        <div>public product readiness로 오해된다.</div>
+
+        <div>1</div>
+        <div>전략 문서만 있고 코드/테스트 연결이 없다.</div>
+        <div>실행 증거 없음</div>
+        <div>CEO 보고에서 구현 가능성을 판단할 수 없다.</div>
+      </div>
+
+      <table style="margin-top:16px">
+        <thead>
+          <tr>
+            <th style="width:26%">검증 명령</th>
+            <th style="width:38%">목적</th>
+            <th style="width:36%">통과 조건</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>npx tsx --test lib/flow/url-first-lookup.test.ts</code></td>
+            <td>lookup policy, P0/P1/P2 permission, ledger contract unit 검증</td>
+            <td>기존 10/10 유지 + 12 canary case 추가 pass</td>
+          </tr>
+          <tr>
+            <td><code>npx playwright test tests/e2e/flow-mvp.spec.ts -g "flow finding URL lookup"</code></td>
+            <td>`/flows`에서 hit start, custom start, Markdown, My Flow save, lock 상태 확인</td>
+            <td>P0-now 4 hit 중 대표 2개 이상 실동작 + P1/P2 lock pass</td>
+          </tr>
+          <tr>
+            <td><code>npm.cmd test</code></td>
+            <td>전체 node test 회귀 확인</td>
+            <td>기존 URL-first 외 영역 회귀 없음</td>
+          </tr>
+          <tr>
+            <td><code>npm.cmd run build</code></td>
+            <td>Next build와 type/build path 확인</td>
+            <td>production build pass</td>
+          </tr>
+          <tr>
+            <td><code>npm.cmd run docs:check</code></td>
+            <td>문서 링크와 report graph 검증</td>
+            <td>required docs와 local links pass</td>
+          </tr>
+          <tr>
+            <td>Playwright 390px + desktop screenshot</td>
+            <td>모바일/데스크톱 레이아웃, overflow, console error 확인</td>
+            <td>horizontal overflow 0, console error 0</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>7. 이번 slice 제외 범위</h2>
+          <p class="section-note">제외 범위가 선명해야 P0가 작아진다. 아래 항목은 결정적으로 유혹적이지만 이번 구현 완료 조건이 아니다.</p>
+        </div>
+        <span class="tag risk">out of scope</span>
+      </div>
+
+      <div class="grid-3">
+        <div class="mini"><h3>Home redesign</h3><p>URL-first는 `/flows` product loop에서 검증한다. Home 개편은 다음 문제다.</p></div>
+        <div class="mini"><h3>Direct API/OAuth</h3><p>Google Calendar, Notion, Todoist direct 연결은 P1/P2다. P0는 portable export다.</p></div>
+        <div class="mini"><h3>AI-first generation</h3><p>현재 방향은 lookup-first다. miss에서도 AI 생성이 곧바로 앞에 나오면 안 된다.</p></div>
+        <div class="mini"><h3>Full editor</h3><p>custom start는 허용하되 source-backed 원본 편집기까지 열지 않는다.</p></div>
+        <div class="mini"><h3>Live crawler</h3><p>P0는 검증된 source-backed map과 canary registry로 충분하다.</p></div>
+        <div class="mini"><h3>Fake usage</h3><p>usage count, 인기 척도, 검증되지 않은 성공 지표는 넣지 않는다.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>8. 결정해야 할 항목</h2>
+          <p class="section-note">이 네 가지가 승인되면 다음 목표는 실제 구현 sprint로 전환할 수 있다.</p>
+        </div>
+        <span class="tag warn">decision</span>
+      </div>
+
+      <ul class="checklist">
+        <li><b>P0-now 4개 확정:</b> 이사, 차량구매, 예방접종, 에어컨필터를 첫 구현 acceptance로 승인할지 결정한다.</li>
+        <li><b>Export Pack v1 실동작 기준:</b> lookup hit 결과에서 `.ics`, Markdown, checklist를 모두 실제 output으로 제공할지 승인한다.</li>
+        <li><b>Ledger 최소 필드:</b> 10개 필드를 화면/export/save 공통 contract로 잠글지 결정한다.</li>
+        <li><b>P1/P2 잠금 원칙:</b> review/hold canary는 preview와 reason만 제공하고 save/export를 막는 기준을 승인한다.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>근거 문서와 구현 링크</h2>
+          <p class="section-note">이 보고서는 아래 파일을 근거로 만든 핸드오프다. 새 구현 완료를 주장하려면 여기에 QA 파일이나 실제 명령 결과가 추가되어야 한다.</p>
+        </div>
+        <span class="tag">references</span>
+      </div>
+
+      <div class="refs">
+        <a href="./2026-07-05-url-first-p0-ceo-report-ko.html">URL-first P0 CEO 보고서</a>
+        <a href="./2026-07-05-flowme-export-pack-v1-strategy-ceo-ko.html">Export Pack v1 전략 보고서</a>
+        <a href="./2026-07-05-flowme-source-version-trust-ledger-ceo-ko.html">source/version/trust ledger 보고서</a>
+        <a href="./2026-07-05-flowme-canary-12-p0-portfolio-ceo-ko.html">Canary 12 포트폴리오 보고서</a>
+        <a href="./2026-07-05-flowme-canary-12-url-first-p0-execution-scenarios-ceo-ko.html">Canary 12 실행 시나리오 보고서</a>
+        <a href="./2026-07-05-url-first-strategy-master-plan-ko.md">URL-first 전략 마스터 플랜</a>
+        <a href="../specs/2026-07-05-url-lookup-production-slice/spec.md">URL lookup production slice spec</a>
+        <a href="../specs/2026-07-05-url-lookup-production-slice/qa.md">URL lookup production slice QA</a>
+        <a href="../../lib/flow/url-first-lookup.ts">URL-first lookup 구현</a>
+        <a href="../../lib/flow/url-first-lookup.test.ts">URL-first lookup unit tests</a>
+        <a href="../../tests/e2e/flow-mvp.spec.ts">Flow MVP Playwright E2E</a>
+        <a href="../SERVICE_STRUCTURE.md">Service structure</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

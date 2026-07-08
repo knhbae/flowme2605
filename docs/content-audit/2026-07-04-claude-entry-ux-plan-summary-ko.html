@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claude URL 진입 UX 기획 정리</title>
+  <style>
+    :root {
+      --ink: #1f1d1a;
+      --muted: #6f6a61;
+      --paper: #fbfaf7;
+      --panel: #ffffff;
+      --line: #e5e0d6;
+      --blue: #3654ff;
+      --green: #1f6a3e;
+      --amber: #b95000;
+      --red: #c0341d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.62;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .hero {
+      background: #20201d;
+      color: #f6f3eb;
+      padding: 44px 28px 34px;
+    }
+    .wrap { width: min(1120px, calc(100% - 36px)); margin: 0 auto; }
+    .eyebrow { margin: 0; font-size: 13px; font-weight: 800; color: rgba(246,243,235,.68); }
+    h1 {
+      margin: 14px 0 0;
+      max-width: 920px;
+      font-size: clamp(31px, 5vw, 52px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+    .lead {
+      margin: 18px 0 0;
+      max-width: 840px;
+      font-size: 16.5px;
+      color: rgba(246,243,235,.78);
+    }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border-radius: 999px;
+      padding: 5px 11px;
+      background: rgba(255,255,255,.1);
+      color: #f6f3eb;
+      font-size: 12.5px;
+      font-weight: 800;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: rgba(251,250,247,.96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+    nav .wrap { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 0; }
+    nav a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 11px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 12.5px;
+      font-weight: 800;
+    }
+    main { padding: 30px 0 54px; }
+    section { margin-top: 26px; }
+    h2 {
+      margin: 0;
+      font-size: clamp(22px, 3vw, 30px);
+      line-height: 1.22;
+      letter-spacing: 0;
+    }
+    h3 { margin: 0; font-size: 17px; line-height: 1.35; }
+    p { margin: 8px 0 0; }
+    .muted { color: var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; margin-top: 16px; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .span-12 { grid-column: span 12; }
+    .span-8 { grid-column: span 8; }
+    .span-6 { grid-column: span 6; }
+    .span-4 { grid-column: span 4; }
+    .kicker {
+      margin: 0 0 5px;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .good { color: var(--green); }
+    .warn { color: var(--amber); }
+    .bad { color: var(--red); }
+    .blue { color: var(--blue); }
+    .callout {
+      border-left: 4px solid var(--blue);
+      background: #eef1ff;
+      border-radius: 8px;
+      padding: 15px 17px;
+    }
+    .callout strong { color: #263cc5; }
+    .flowline {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .step {
+      min-height: 120px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 13px;
+    }
+    .step .num {
+      display: inline-flex;
+      align-items: center;
+      height: 23px;
+      border-radius: 999px;
+      padding: 0 8px;
+      background: #eef1ff;
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 900;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      display: table;
+    }
+    th, td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+      font-size: 14px;
+    }
+    th { background: #f3f1eb; font-size: 12px; text-transform: uppercase; color: var(--muted); }
+    tr:last-child td { border-bottom: 0; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 23px;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 11.5px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .tag-p0 { background: #fbeae5; color: var(--red); }
+    .tag-p1 { background: #fcf3e4; color: var(--amber); }
+    .tag-p2 { background: #edf3ec; color: var(--green); }
+    .tag-later { background: #f1f0ec; color: var(--muted); }
+    code {
+      border-radius: 5px;
+      background: #f1f0ec;
+      padding: 1px 5px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .92em;
+    }
+    .todo-list { margin: 10px 0 0; padding-left: 18px; }
+    .todo-list li { margin: 5px 0; }
+    footer {
+      margin-top: 34px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+    @media (max-width: 840px) {
+      .grid { grid-template-columns: 1fr; }
+      .span-8, .span-6, .span-4, .span-12 { grid-column: span 1; }
+      .flowline { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; }
+      .hero { padding: 34px 0 28px; }
+      main { padding-top: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Claude 기획 정리 · URL-first Flow 진입 · 2026-07-04</p>
+      <h1>좋은 방향이다. 다만 바로 구현하려면 더 얇게 잘라야 한다.</h1>
+      <p class="lead">
+        ZIP 안의 Claude 산출물은 현재 UI P0~P6 마감 감사와 별도의 URL-first 진입 UX 기획이 섞여 있다.
+        이 보드는 URL 기획을 제품 백로그로 옮기기 전에, 채택할 기준선과 조정할 지점, 첫 PoC 범위를 분리한다.
+      </p>
+      <div class="pills">
+        <span class="pill">URL 입력</span>
+        <span class="pill">canonical 조회</span>
+        <span class="pill">AI fallback</span>
+        <span class="pill">옵션 변경</span>
+        <span class="pill">My Flow / export</span>
+      </div>
+    </div>
+  </header>
+
+  <nav>
+    <div class="wrap">
+      <a href="#summary">결론</a>
+      <a href="#adopt">채택</a>
+      <a href="#adjust">조정</a>
+      <a href="#states">상태</a>
+      <a href="#poc">PoC</a>
+      <a href="#mapping">매핑</a>
+      <a href="#questions">결정 질문</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section id="summary">
+      <h2>요약 판단</h2>
+      <div class="grid">
+        <article class="card span-8">
+          <p class="kicker blue">Core</p>
+          <h3>Claude의 중심선은 현재 결정과 맞다.</h3>
+          <p>
+            사용자는 URL을 붙여넣고, FlowMe는 AI를 쓰기 전에 같은 canonical URL의 기존 Flow를 먼저 찾는다.
+            있으면 바로 재사용하고 옵션만 바꾼다. 없거나 품질이 낮을 때만 AI 생성 또는 생성 요청으로 간다.
+          </p>
+          <div class="flowline">
+            <div class="step"><span class="num">1</span><h3>URL 입력</h3><p class="muted">링크 또는 직접 메모를 같은 진입구에서 받는다.</p></div>
+            <div class="step"><span class="num">2</span><h3>정규화</h3><p class="muted">utm, 모바일 도메인, youtu.be 등을 하나의 key로 모은다.</p></div>
+            <div class="step"><span class="num">3</span><h3>기존 Flow</h3><p class="muted">hit이면 AI 호출 없이 preview와 쓰기 CTA를 보여준다.</p></div>
+            <div class="step"><span class="num">4</span><h3>옵션</h3><p class="muted">시작일, 강도, 목적지 등 내 실행 조건만 바꾼다.</p></div>
+            <div class="step"><span class="num">5</span><h3>실행</h3><p class="muted">My Flow 저장 또는 캘린더/Markdown export로 끝낸다.</p></div>
+          </div>
+        </article>
+        <aside class="card span-4">
+          <p class="kicker bad">Important</p>
+          <h3>바로 수정해야 할 해석</h3>
+          <p>
+            `N명이 사용`, 완주율, fork 수 같은 신호는 실제 데이터가 생기기 전까지 사용자 화면에 두면 안 된다.
+            초기에는 출처, 변환 시점, 미리보기, 입력 조건, export 결과만 보여주는 게 맞다.
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="adopt">
+      <h2>채택할 기준선</h2>
+      <table>
+        <thead><tr><th>기준</th><th>판단</th><th>이유</th></tr></thead>
+        <tbody>
+          <tr><td>재사용 우선, AI는 fallback</td><td><span class="tag tag-p0">채택</span></td><td>AI 비용을 낮추고 같은 URL의 Flow를 축적하는 현재 제품 결정과 일치한다.</td></tr>
+          <tr><td>한 화면에 한 결정</td><td><span class="tag tag-p0">채택</span></td><td>`쓰기 / 고치기 / 새로 만들기`를 동시에 강하게 묻지 않아야 첫 진입이 가볍다.</td></tr>
+          <tr><td>출처가 카드, 상세, export까지 따라감</td><td><span class="tag tag-p0">채택</span></td><td>source-backed Flow의 신뢰와 저작권 경계를 지키는 최소 조건이다.</td></tr>
+          <tr><td>저장은 실행 시작</td><td><span class="tag tag-p0">채택</span></td><td>저장 직후 빈 성공 화면이 아니라 첫 실행 항목으로 이어져야 한다.</td></tr>
+          <tr><td>메모를 같은 입력구에 붙임</td><td><span class="tag tag-p2">조건부</span></td><td>3번 사용성을 별도 앱처럼 키우기보다 같은 Flow 모델로 붙이는 방향이 좋다.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="adjust">
+      <h2>조정할 지점</h2>
+      <div class="grid">
+        <article class="card span-6">
+          <p class="kicker warn">Login</p>
+          <h3>export는 로그인 뒤로 밀지 않는 편이 낫다.</h3>
+          <p>
+            Claude는 저장/export/fork에서 로그인을 요구하는 흐름을 제안했다. 하지만 초기 획득 동선의 핵심은
+            남의 콘텐츠를 빠르게 내 도구로 가져가는 것이다. 검색, preview, 캘린더 파일 받기, Markdown 복사는
+            가능한 한 비로그인으로 열고, My Flow 저장과 fork/public 공유에서 로그인을 요구하는 편이 낫다.
+          </p>
+        </article>
+        <article class="card span-6">
+          <p class="kicker warn">AI Cost</p>
+          <h3>첫 PoC는 자동 생성 없이도 성립해야 한다.</h3>
+          <p>
+            기존 Flow가 없는 URL에서 바로 AI를 돌리는 것은 제품적으로는 자연스럽지만 비용과 품질 리스크가 있다.
+            첫 PoC는 lookup-only로 잘라도 된다. 없는 URL은 `생성 요청` 또는 concierge queue로 보내고,
+            자동 AI 생성은 비용 로그와 품질 gate가 붙은 뒤 켜는 편이 안전하다.
+          </p>
+        </article>
+        <article class="card span-6">
+          <p class="kicker warn">Source</p>
+          <h3>full snapshot은 MVP에서 무겁다.</h3>
+          <p>
+            원문 변경 감지를 위해 snapshot/hash가 필요하다는 방향은 맞다. 다만 본문 전체 저장은 저작권과 저장 비용이 크다.
+            MVP는 canonical URL, 제목, 작성자/매체, 변환 시점, 짧은 source row, hash/etag 후보 정도로 시작한다.
+          </p>
+        </article>
+        <article class="card span-6">
+          <p class="kicker warn">Edit</p>
+          <h3>무거운 fork는 나중, 얇은 개인 수정은 빨리.</h3>
+          <p>
+            diff, fork graph, 좋은 fork 승격은 Later가 맞다. 하지만 사용자가 시작일, 제목, 날짜, 메모, 체크 Item을
+            내 사본에서 고치는 얇은 편집은 P1로 당겨야 한다. 현재 앱이 고정 구조라 느껴지는 문제를 바로 줄여준다.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section id="states">
+      <h2>화면 상태 9종</h2>
+      <p class="muted">Claude의 상태 모델을 현재 제품 단계에 맞게 다시 자른 표다.</p>
+      <table>
+        <thead><tr><th>상태</th><th>목적</th><th>첫 행동</th><th>단계</th></tr></thead>
+        <tbody>
+          <tr><td>S1 URL 입력 전</td><td>입력창 하나가 화면의 주인공이 된다.</td><td>URL 붙여넣기</td><td><span class="tag tag-p0">P0</span></td></tr>
+          <tr><td>S2 분석/검색 중</td><td>AI가 아니라 기존 Flow를 먼저 찾는다는 점을 보여준다.</td><td>대기</td><td><span class="tag tag-p0">P0</span></td></tr>
+          <tr><td>S3 기존 Flow 발견</td><td>AI 없이 바로 쓸 수 있음을 보여준다.</td><td>이 Flow 쓰기</td><td><span class="tag tag-p0">P0</span></td></tr>
+          <tr><td>S4 여러 후보 발견</td><td>같은 URL의 여러 파생 Flow 중 하나를 고른다.</td><td>추천 Flow 쓰기</td><td><span class="tag tag-later">P2+</span></td></tr>
+          <tr><td>S5 새 Flow 생성 필요</td><td>기존 Flow가 없을 때만 생성 선택을 제시한다.</td><td>생성 요청 / AI로 만들기</td><td><span class="tag tag-p1">P1</span></td></tr>
+          <tr><td>S6 생성 결과 확인</td><td>원문 근거와 단계 품질을 저장 전에 확인한다.</td><td>저장 / 수정</td><td><span class="tag tag-p1">P1</span></td></tr>
+          <tr><td>S7 옵션 변경</td><td>원본은 그대로 두고 내 실행 조건만 바꾼다.</td><td>이대로 저장</td><td><span class="tag tag-p0">P0/P1</span></td></tr>
+          <tr><td>S8 수정/fork</td><td>내 사본으로 단계와 메모를 고친다.</td><td>내 사본 만들기</td><td><span class="tag tag-p1">P1/P2</span></td></tr>
+          <tr><td>S9 export/My Flow 저장</td><td>기존 도구 또는 FlowMe 실행 공간으로 보낸다.</td><td>캘린더 파일 받기 / 저장</td><td><span class="tag tag-p0">P0</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="poc">
+      <h2>추천 PoC 순서</h2>
+      <div class="grid">
+        <article class="card span-4">
+          <p class="kicker bad">P0</p>
+          <h3>lookup-only URL 진입</h3>
+          <p>AI 없이도 URL hit, 옵션 변경, export/My Flow 저장이 되는지 확인한다.</p>
+          <ul class="todo-list">
+            <li>canonical URL 정규화 함수와 테스트</li>
+            <li>seed URL과 기존 Flow/Flow Map 매핑</li>
+            <li>hit 경로 AI 호출 0회 로그</li>
+            <li>저장 후 My Flow/Calendar 첫 실행 항목</li>
+            <li>비로그인 `.ics` 또는 Markdown export</li>
+          </ul>
+        </article>
+        <article class="card span-4">
+          <p class="kicker warn">P1</p>
+          <h3>생성 요청과 얇은 편집</h3>
+          <p>없는 URL을 바로 자동 대량 생성하지 않고 품질 gate와 비용 인식을 붙인다.</p>
+          <ul class="todo-list">
+            <li>없으면 `새 Flow 생성 요청` 상태</li>
+            <li>AI 초안은 명시적 선택</li>
+            <li>원문 링크, 변환 시점, 근거 row 표시</li>
+            <li>제목, 시작일, 메모, Item 얇은 수정</li>
+          </ul>
+        </article>
+        <article class="card span-4">
+          <p class="kicker good">P2</p>
+          <h3>fork, 후보 목록, 메모 입력</h3>
+          <p>축적된 Flow가 여러 개일 때 추천/분기/개인화가 가능해진다.</p>
+          <ul class="todo-list">
+            <li>같은 canonical URL 후보 목록</li>
+            <li>좋은 fork 승격 기준</li>
+            <li>`직접 쓰기` 메모 입력 탭</li>
+            <li>Obsidian/Markdown export 확장</li>
+          </ul>
+        </article>
+      </div>
+      <div class="callout" style="margin-top:16px;">
+        <strong>추천 착수:</strong> `P0 lookup-only URL 진입`부터 한다.
+        AI 생성 없이도 제품 핵심 가설을 검증할 수 있고, 비용과 품질 리스크를 뒤로 밀 수 있다.
+      </div>
+    </section>
+
+    <section id="mapping">
+      <h2>기존 백로그와의 매핑</h2>
+      <table>
+        <thead><tr><th>Claude 항목</th><th>기존 백로그 연결</th><th>판단</th></tr></thead>
+        <tbody>
+          <tr><td>canonical 정규화 / 기존 Flow 조회</td><td>FUB-03, FUB-06</td><td><span class="tag tag-p0">P0 승격</span></td></tr>
+          <tr><td>기존 Flow 재사용 / 옵션 변경</td><td>FUB-03, FUB-02</td><td><span class="tag tag-p0">P0/P1</span></td></tr>
+          <tr><td>저장 후 실행 연결</td><td>FUB-08</td><td><span class="tag tag-p0">유지</span></td></tr>
+          <tr><td>source attribution / 원문 변경</td><td>FUB-06, source-to-flow gate</td><td><span class="tag tag-p1">metadata 먼저</span></td></tr>
+          <tr><td>수정/fork</td><td>FUB-11</td><td><span class="tag tag-p1">얇은 수정 우선</span></td></tr>
+          <tr><td>메모 직접 쓰기</td><td>FUB-04</td><td><span class="tag tag-p2">P2 후보</span></td></tr>
+          <tr><td>작성자 adoption / 원문 댓글 공유</td><td>FUB-01, FUB-09</td><td><span class="tag tag-later">Later</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="questions">
+      <h2>다음 결정 질문</h2>
+      <div class="grid">
+        <article class="card span-6">
+          <p class="kicker blue">Decision</p>
+          <ol class="todo-list">
+            <li>첫 PoC를 `lookup-only`로 자를지, `AI 초안 생성`까지 포함할지.</li>
+            <li>URL 입력 진입을 기존 `/flows` 안에 붙일지, 별도 `/flows/new` 또는 `/import`로 둘지.</li>
+            <li>비로그인 export 허용 범위를 어디까지 둘지.</li>
+            <li>canonical URL 매핑을 기존 seed 데이터에 어떻게 붙일지.</li>
+            <li>원문 snapshot을 얼마나 저장할지.</li>
+          </ol>
+        </article>
+        <article class="card span-6">
+          <p class="kicker bad">Do not build now</p>
+          <ul class="todo-list">
+            <li>fake 사용 수, fake 완주율, fake 리뷰</li>
+            <li>자동 AI 재생성</li>
+            <li>creator adoption 자동화</li>
+            <li>marketplace, 결제, 토큰</li>
+            <li>Google Calendar/Todoist/Notion 직접 계정 연동</li>
+            <li>full Obsidian 대체 workspace</li>
+            <li>무거운 diff editor</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      Source zip: <code>D:\flowme2605\flow-mvp\claude_work\FlowMe 진입점 관련 고민 01.zip</code><br>
+      Companion markdown: <a href="./2026-07-04-claude-entry-ux-plan-summary-ko.md">2026-07-04-claude-entry-ux-plan-summary-ko.md</a>
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 웹 소스 수요 검증 shortlist</title>
+  <style>
+    :root { --bg:#f7f8fa; --panel:#fff; --text:#17202a; --muted:#667085; --line:#d8dee8; --blue:#1f5eff; --green:#15803d; --amber:#a15c00; --red:#b42318; --gray:#475467; }
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;line-height:1.5} header{padding:18px 14px;background:var(--panel);border-bottom:1px solid var(--line)} main{width:min(1120px,100%);margin:0 auto;padding:12px} h1{margin:0 0 8px;font-size:clamp(22px,7vw,34px);letter-spacing:0} h2{margin:0 0 8px;font-size:18px;letter-spacing:0} p{margin:0}.meta{color:var(--muted);font-size:13px}.stats,.cards{display:grid;gap:10px}.stats{grid-template-columns:repeat(2,minmax(0,1fr));margin:12px 0}.stat,.card,.canary-box{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}.stat b{display:block;font-size:24px}.stat span{color:var(--muted);font-size:13px}.section-title{margin:24px 0 10px;font-size:20px}.cards{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.rank{color:var(--blue);font-weight:800}.badge{border-radius:999px;padding:4px 8px;font-size:12px;font-weight:800;background:#eef2ff;color:var(--blue);white-space:nowrap}.badge.strong_visible_demand{background:#ecfdf3;color:var(--green)}.badge.structure_only{background:#f2f4f7;color:var(--gray)}.badge.unknown_demand{background:#fff7e6;color:var(--amber)}.badge.weak_demand{background:#fff1f3;color:var(--red)}.scores{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:10px 0}.scores span{border:1px solid var(--line);border-radius:6px;padding:8px;color:var(--muted);font-size:12px;min-width:0}.scores b{display:block;color:var(--text);font-size:17px;overflow-wrap:anywhere} dl{margin:0;display:grid;gap:8px}dt{color:var(--muted);font-size:12px;font-weight:800}dd{margin:-6px 0 0;font-size:14px;overflow-wrap:anywhere}a{display:inline-flex;align-items:center;min-height:40px;margin-top:10px;color:var(--blue);font-weight:800;text-decoration:none}.canary-box ol{margin:0;padding-left:22px}.canary-box li{margin-bottom:10px}.canary-box span{display:block;color:var(--muted);font-size:14px}@media (max-width:520px){main{padding:10px}.cards{grid-template-columns:1fr}.card,.stat,.canary-box{padding:11px}h1{font-size:24px}.scores{grid-template-columns:1fr 1fr 1fr}}
+  </style>
+</head>
+<body>
+  <header><p class="meta">2026-07-04 / demand validation</p><h1>FlowMe 웹 소스 수요 검증</h1><p>상위 30개 URL을 다시 열어 보이는 수요와 FlowMe 변환 gate를 분리했다. 앱 seed가 아닌 검토판이다.</p></header>
+  <main>
+    <section class="stats"><div class="stat"><b>100</b><span>전체 후보</span></div><div class="stat"><b>30</b><span>재열람 URL</span></div><div class="stat"><b>4</b><span>보이는 수요 강함</span></div><div class="stat"><b>7</b><span>canary 추천</span></div></section>
+    <h2 class="section-title">Demand 기준 canary</h2><section class="canary-box"><ol><li><strong>아정당 이사 준비 체크리스트</strong><span>보이는 수요 강함 + canary 후보: 수요 신호, 최신성, copy intent, source row가 모두 강함</span></li><li><strong>삼성 에어컨 필터 청소 방법</strong><span>보이는 수요 강함 + canary 후보: 가전 관리 루틴의 대표 후보</span></li><li><strong>질병관리청 표준 예방접종 일정표</strong><span>높은 의도 추론 + canary 후보: 보이는 조회수는 없지만 공식성, PDF row, 부모의 날짜 민감도가 강함</span></li><li><strong>오픽만수르 모의고사 공부 방법</strong><span>높은 의도 추론 + canary 후보: 파일 다운로드와 시험 계획표 copy intent가 강함</span></li><li><strong>국세청 연말정산 체크리스트</strong><span>높은 의도 추론 + canary 후보: 공식성과 시즌 반복성이 강하지만 세무 판단은 원문 링크 중심</span></li><li><strong>국립재활원 영유아 건강검진</strong><span>높은 의도 추론 + canary 후보: 공식 일정성과 부모 반복 일정 수요가 강함</span></li><li><strong>안전운전 통합민원 면허 갱신/적성검사</strong><span>높은 의도 추론 + canary 후보: 공식 페이지이고 사용자가 그대로 준비물을 옮겨 적을 이유가 명확함</span></li></ol></section>
+    <h2 class="section-title">Demand 상위 30개</h2><section class="cards"><article class="card ">
+  <div class="top"><span class="rank">#1</span><span class="badge strong_visible_demand">보이는 수요 강함</span></div>
+  <h2>오늘의집 이사 준비 체크리스트</h2>
+  <p class="meta">이사/주거 · demand 97 · fit 87</p>
+  <div class="scores"><span><b>97</b>수요</span><span><b>87</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>조회 138,228 / 스크랩 11,432 / 좋아요 1,956 / 댓글 26</dd><dt>옮겨 적기 신호</dt><dd>이미지 저장 권장, D-30 checklist</dd><dt>Gate</dt><dd>canary 후보 · 본문 checklist row 있음</dd><dt>다음 액션</dt><dd>AJD와 비교해 대표/보조 source를 나눈다</dd></dl>
+  <a href="https://ohou.se/advices/8442" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card canary">
+  <div class="top"><span class="rank">#2</span><span class="badge strong_visible_demand">보이는 수요 강함</span></div>
+  <h2>아정당 이사 준비 체크리스트</h2>
+  <p class="meta">이사/주거 · demand 96 · fit 94</p>
+  <div class="scores"><span><b>96</b>수요</span><span><b>94</b>전환</span><span><b>추천</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>조회 96,510 / 스크랩 20 / PDF,XLSX,Notion</dd><dt>옮겨 적기 신호</dt><dd>엑셀, PDF, 노션 첨부와 D-day 표</dd><dt>Gate</dt><dd>canary 후보 · 본문 표와 첨부파일 row 있음</dd><dt>다음 액션</dt><dd>첨부 XLSX/PDF row를 import해 광고/견적 CTA를 제외한다</dd></dl>
+  <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC%21-23363" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card canary">
+  <div class="top"><span class="rank">#3</span><span class="badge strong_visible_demand">보이는 수요 강함</span></div>
+  <h2>삼성 에어컨 필터 청소 방법</h2>
+  <p class="meta">반려/식물/관리 · demand 86 · fit 88</p>
+  <div class="scores"><span><b>86</b>수요</span><span><b>88</b>전환</span><span><b>추천</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>조회수 31,677 / 공유 UI</dd><dt>옮겨 적기 신호</dt><dd>필터별 청소 주기와 방법</dd><dt>Gate</dt><dd>canary 후보 · 제조사 공식 주기/방법 row 있음</dd><dt>다음 액션</dt><dd>모델별 분기 없이 기본 필터 청소 루틴으로 작게 canary</dd></dl>
+  <a href="https://www.samsungsvc.co.kr/solution/121273" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card canary">
+  <div class="top"><span class="rank">#4</span><span class="badge inferred_high_intent">높은 의도 추론</span></div>
+  <h2>질병관리청 표준 예방접종 일정표</h2>
+  <p class="meta">육아/교육 · demand 84 · fit 92</p>
+  <div class="scores"><span><b>84</b>수요</span><span><b>92</b>전환</span><span><b>추천</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>조회수 unknown / 공식 PDF 다운로드 링크</dd><dt>옮겨 적기 신호</dt><dd>어린이 예방접종 일정표 PDF, 월령 row</dd><dt>Gate</dt><dd>canary 후보 · 공식 일정표 PDF 있음</dd><dt>다음 액션</dt><dd>공식 PDF row를 추출해 월령/차수/백신명만 정규화</dd></dl>
+  <a href="https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&amp;menuLv=1" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#5</span><span class="badge inferred_high_intent">높은 의도 추론</span></div>
+  <h2>초기 토핑 이유식 식단표 엑셀 템플릿</h2>
+  <p class="meta">육아/교육 · demand 84 · fit 65</p>
+  <div class="scores"><span><b>84</b>수요</span><span><b>65</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>무료 공유 / 엑셀 템플릿 / 공감·댓글 요청, 수치 unknown</dd><dt>옮겨 적기 신호</dt><dd>초기 이유식 식단표 엑셀 템플릿</dd><dt>Gate</dt><dd>source import 필요 · 파일 row 직접 확인 필요</dd><dt>다음 액션</dt><dd>첨부 엑셀 확보 후 source row/재배포 가능 범위를 확인</dd></dl>
+  <a href="https://happybubulab.com/entry/%EB%AC%B4%EB%A3%8C-%EA%B3%B5%EC%9C%A0-%EC%B4%88%EA%B8%B0-%EC%9D%B4%EC%9C%A0%EC%8B%9D-%EC%8B%9D%EB%8B%A8%ED%91%9C-%EC%97%91%EC%85%80-%ED%85%9C%ED%94%8C%EB%A6%BF-%ED%86%A0%ED%95%91-%EC%9D%B4%EC%9C%A0%EC%8B%9D-%EC%99%84%EB%B2%BD-%EA%B0%80%EC%9D%B4%EB%93%9C" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card canary">
+  <div class="top"><span class="rank">#6</span><span class="badge inferred_high_intent">높은 의도 추론</span></div>
+  <h2>오픽만수르 모의고사 공부 방법</h2>
+  <p class="meta">공부/시험 · demand 83 · fit 88</p>
+  <div class="scores"><span><b>83</b>수요</span><span><b>88</b>전환</span><span><b>추천</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>조회수 unknown / XLSX, 1달 PDF, 2주 PDF</dd><dt>옮겨 적기 신호</dt><dd>공부 계획표 엑셀/PDF와 영상자료</dd><dt>Gate</dt><dd>canary 후보 · 계획표 파일과 영상 링크 있음</dd><dt>다음 액션</dt><dd>XLSX/PDF row와 영상 링크를 확인해 회차 단위만 추출</dd></dl>
+  <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card canary">
+  <div class="top"><span class="rank">#7</span><span class="badge inferred_high_intent">높은 의도 추론</span></div>
+  <h2>국세청 연말정산 체크리스트</h2>
+  <p class="meta">정부/행정 · demand 83 · fit 86</p>
+  <div class="scores"><span><b>83</b>수요</span><span><b>86</b>전환</span><span><b>추천</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>조회수 unknown / 공식 체크리스트 / 인쇄 UI</dd><dt>옮겨 적기 신호</dt><dd>연말정산 공제 판단 checklist</dd><dt>Gate</dt><dd>canary 후보 · 공제 항목 row extraction 필요</dd><dt>다음 액션</dt><dd>공제 항목 row만 가져오고 세무 해석은 공식 링크로 남긴다</dd></dl>
+  <a href="https://call.nts.go.kr/call/cm/cntnts/cntntsView.do?cntntsId=7042&amp;mi=2764" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card canary">
+  <div class="top"><span class="rank">#8</span><span class="badge inferred_high_intent">높은 의도 추론</span></div>
+  <h2>국립재활원 영유아 건강검진</h2>
+  <p class="meta">육아/교육 · demand 82 · fit 89</p>
+  <div class="scores"><span><b>82</b>수요</span><span><b>89</b>전환</span><span><b>추천</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>조회수 unknown / 공식 월령 row</dd><dt>옮겨 적기 신호</dt><dd>생후 14일~71개월 검진 차수</dd><dt>Gate</dt><dd>canary 후보 · 검진 차수/월령/항목 row 있음</dd><dt>다음 액션</dt><dd>국민건강보험 공식 최신 페이지와 교차 확인</dd></dl>
+  <a href="https://www.nrc.go.kr/portal/html/content.do?depth=ph&amp;menu_cd=03_02_00_04" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card canary">
+  <div class="top"><span class="rank">#9</span><span class="badge inferred_high_intent">높은 의도 추론</span></div>
+  <h2>안전운전 통합민원 면허 갱신/적성검사</h2>
+  <p class="meta">정부/행정 · demand 80 · fit 86</p>
+  <div class="scores"><span><b>80</b>수요</span><span><b>86</b>전환</span><span><b>추천</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>조회수 unknown / 공식 준비물·수수료 row</dd><dt>옮겨 적기 신호</dt><dd>면허 종류별 준비물, 사진 매수, 수수료, 신청 링크</dd><dt>Gate</dt><dd>canary 후보 · 면허 종류별 준비물/수수료 row 있음</dd><dt>다음 액션</dt><dd>면허 종류별 variant를 나눌지 setupField로 처리할지 결정</dd></dl>
+  <a href="https://www.safedriving.or.kr/guide/larGuide011.do?menuCode=MN-PO-1211" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#10</span><span class="badge unknown_demand">수요 확인 필요</span></div>
+  <h2>Visit Japan Web 공식</h2>
+  <p class="meta">여행/캠핑 · demand 80 · fit 65</p>
+  <div class="scores"><span><b>80</b>수요</span><span><b>65</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>공식 서비스 존재 확인 / 본문 0 lines</dd><dt>옮겨 적기 신호</dt><dd>입국심사/세관신고 사전등록 checklist 수요</dd><dt>Gate</dt><dd>source import 필요 · 공식 URL 본문 row 미추출</dd><dt>다음 액션</dt><dd>공식 guide URL 또는 보조 가이드로 source row 확보</dd></dl>
+  <a href="https://services.digital.go.jp/ko/visit-japan-web/" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#11</span><span class="badge inferred_high_intent">높은 의도 추론</span></div>
+  <h2>KKday 해외여행 준비물 체크리스트</h2>
+  <p class="meta">여행/캠핑 · demand 79 · fit 78</p>
+  <div class="scores"><span><b>79</b>수요</span><span><b>78</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>글 조회수 unknown / 상품 100K+ 예약 등 상업 수요 신호</dd><dt>옮겨 적기 신호</dt><dd>필수/유용/숙소 확인 준비물 표</dd><dt>Gate</dt><dd>row 확인 후 seed 후보 · 준비물 목록 row 있음</dd><dt>다음 액션</dt><dd>광고 상품/예약 수치와 checklist source를 분리</dd></dl>
+  <a href="https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#12</span><span class="badge inferred_high_intent">높은 의도 추론</span></div>
+  <h2>국세청 개인 사업자등록 신청서 작성방법</h2>
+  <p class="meta">정부/행정 · demand 78 · fit 82</p>
+  <div class="scores"><span><b>78</b>수요</span><span><b>82</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>조회수 unknown / HWPX 신청서 첨부</dd><dt>옮겨 적기 신호</dt><dd>공식 신청서 HWPX와 작성 방법</dd><dt>Gate</dt><dd>row 확인 후 seed 후보 · 신청서 작성법/첨부 있음</dd><dt>다음 액션</dt><dd>서류 준비/홈택스 신청/세무서 방문 여부로 단순화</dd></dl>
+  <a href="https://www.nts.go.kr/taxpayer_advocate/na/ntt/selectNttInfo.do?mi=&amp;nttSn=1302746" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#13</span><span class="badge inferred_high_intent">높은 의도 추론</span></div>
+  <h2>생활법령정보 해외여행 출국절차</h2>
+  <p class="meta">여행/캠핑 · demand 78 · fit 82</p>
+  <div class="scores"><span><b>78</b>수요</span><span><b>82</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>조회수 unknown / 주소복사·즐겨찾기 UI</dd><dt>옮겨 적기 신호</dt><dd>공항 도착부터 탑승까지 절차 row</dd><dt>Gate</dt><dd>row 확인 후 seed 후보 · 출국 절차 8단계 row</dd><dt>다음 액션</dt><dd>공항 출국 절차 Flow 후보로 분리</dd></dl>
+  <a href="https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&amp;cciNo=1&amp;cnpClsNo=1&amp;csmSeq=894&amp;popMenu=ov" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#14</span><span class="badge inferred_high_intent">높은 의도 추론</span></div>
+  <h2>Planning.wedding 출력용 결혼 체크리스트</h2>
+  <p class="meta">결혼/구매 · demand 78 · fit 80</p>
+  <div class="scores"><span><b>78</b>수요</span><span><b>80</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>조회수 unknown / PDF, Excel, template links</dd><dt>옮겨 적기 신호</dt><dd>출력용 PDF/Excel/checklist template</dd><dt>Gate</dt><dd>row 확인 후 seed 후보 · 월별 checklist row와 PDF/Excel 링크</dd><dt>다음 액션</dt><dd>국내 결혼 source와 병합하지 말고 보조 source로 분리</dd></dl>
+  <a href="https://planning.wedding/ko/checklist/printable" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#15</span><span class="badge inferred_high_intent">높은 의도 추론</span></div>
+  <h2>빅씨스 10분 홈트 루틴 플레이리스트</h2>
+  <p class="meta">운동/건강 · demand 78 · fit 68</p>
+  <div class="scores"><span><b>78</b>수요</span><span><b>68</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>YouTube playlist / 관련 영상 2.4M views 검색 노출</dd><dt>옮겨 적기 신호</dt><dd>영상 제목/URL 반복 루틴</dd><dt>Gate</dt><dd>source import 필요 · playlist 영상 목록 import 필요</dd><dt>다음 액션</dt><dd>playlist metadata 수집 후 영상 1개=루틴 1개 구조로 정리</dd></dl>
+  <a href="https://www.youtube.com/playlist?list=PLkVCuKZG0QB4V4-6p9igSlsTbzxtbK-D0" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#16</span><span class="badge unknown_demand">수요 확인 필요</span></div>
+  <h2>예방접종도우미 아이 접종일 보기</h2>
+  <p class="meta">육아/교육 · demand 78 · fit 55</p>
+  <div class="scores"><span><b>78</b>수요</span><span><b>55</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>검색 추출에서 출생일 선택 후 표준예방접종일 확인 기능 확인</dd><dt>옮겨 적기 신호</dt><dd>birth-date based schedule lookup</dd><dt>Gate</dt><dd>source import 필요 · birth-date based schedule lookup</dd><dt>다음 액션</dt><dd>다음 demand pass에서 실제 URL을 열어 visible demand와 source row를 확인</dd></dl>
+  <a href="https://nip.kdca.go.kr/irhp/mngm/goVcntMngm.do?menuCd=313&amp;menuLv=3" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#17</span><span class="badge structure_only">구조만 좋음</span></div>
+  <h2>생활법령정보 이사 체크리스트</h2>
+  <p class="meta">이사/주거 · demand 76 · fit 82</p>
+  <div class="scores"><span><b>76</b>수요</span><span><b>82</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>조회수 unknown / 주소복사·즐겨찾기 UI</dd><dt>옮겨 적기 신호</dt><dd>공식 checklist</dd><dt>Gate</dt><dd>구조 보류 · 일정별 항목 있음</dd><dt>다음 액션</dt><dd>이사 Flow의 공식 sourceTrace로만 사용</dd></dl>
+  <a href="https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&amp;cciNo=1&amp;cnpClsNo=1&amp;csmSeq=666&amp;popMenu=ov" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#18</span><span class="badge inferred_high_intent">높은 의도 추론</span></div>
+  <h2>빅씨스 초보 홈트 5일 챌린지</h2>
+  <p class="meta">운동/건강 · demand 76 · fit 65</p>
+  <div class="scores"><span><b>76</b>수요</span><span><b>65</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>직접 open error / 검색 결과 related 346K, 1.4M views</dd><dt>옮겨 적기 신호</dt><dd>5일 홈트 챌린지 영상 루틴</dd><dt>Gate</dt><dd>source import 필요 · 영상 설명/챕터 import 필요</dd><dt>다음 액션</dt><dd>영상 metadata를 별도 수집하고 동작/통증 field를 만들지 않는다</dd></dl>
+  <a href="https://www.youtube.com/watch?v=YDZjUrnfMU4" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#19</span><span class="badge structure_only">구조만 좋음</span></div>
+  <h2>토스페이먼츠 통신판매업 신고 방법</h2>
+  <p class="meta">커리어/사업 · demand 75 · fit 78</p>
+  <div class="scores"><span><b>75</b>수요</span><span><b>78</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>조회수 unknown / 제출서류 표</dd><dt>옮겨 적기 신호</dt><dd>제출서류와 등록 절차 표</dd><dt>Gate</dt><dd>row 확인 후 seed 후보 · 서류 표 있음</dd><dt>다음 액션</dt><dd>국세청 공식 source와 차이를 비교</dd></dl>
+  <a href="https://www.tosspayments.com/blog/articles/sales-registration" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#20</span><span class="badge inferred_high_intent">높은 의도 추론</span></div>
+  <h2>강아지 예방접종 일정표 총정리</h2>
+  <p class="meta">반려/식물/관리 · demand 75 · fit 65</p>
+  <div class="scores"><span><b>75</b>수요</span><span><b>65</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>검색 추출에서 6~8주 종합백신 1차, 9~10주 2차 등 표 확인</dd><dt>옮겨 적기 신호</dt><dd>table by weeks/months</dd><dt>Gate</dt><dd>구조 보류 · table by weeks/months</dd><dt>다음 액션</dt><dd>다음 demand pass에서 실제 URL을 열어 visible demand와 source row를 확인</dd></dl>
+  <a href="https://gopetnews.tistory.com/entry/dog-vaccine-schedule" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#21</span><span class="badge unknown_demand">수요 확인 필요</span></div>
+  <h2>네이버 이유식 식단표</h2>
+  <p class="meta">육아/교육 · demand 75 · fit 45</p>
+  <div class="scores"><span><b>75</b>수요</span><span><b>45</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>Naver 본문 0 lines / 기존 scout의 댓글·다운로드 수요는 이번 열람에서 미확인</dd><dt>옮겨 적기 신호</dt><dd>이유식 식단표 파일형 source 추정</dd><dt>Gate</dt><dd>source import 필요 · Naver 본문/첨부/댓글 확인 실패</dd><dt>다음 액션</dt><dd>브라우저 로그인/첨부 접근 또는 대체 공개 식단표 확보</dd></dl>
+  <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#22</span><span class="badge inferred_high_intent">높은 의도 추론</span></div>
+  <h2>겟차 신차 구매 절차 가이드</h2>
+  <p class="meta">결혼/구매 · demand 74 · fit 84</p>
+  <div class="scores"><span><b>74</b>수요</span><span><b>84</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>조회수 unknown / 구매 단계와 최종 checklist</dd><dt>옮겨 적기 신호</dt><dd>구매 단계, 비용, 계약 확인 항목</dd><dt>Gate</dt><dd>row 확인 후 seed 후보 · 단계/비용/계약 row 있음</dd><dt>다음 액션</dt><dd>견적/계약/출고/보험 확인만 남기고 판매성 문구 제거</dd></dl>
+  <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#23</span><span class="badge structure_only">구조만 좋음</span></div>
+  <h2>로얄캐닌 반려견 백신 접종 일정</h2>
+  <p class="meta">반려/식물/관리 · demand 73 · fit 77</p>
+  <div class="scores"><span><b>73</b>수요</span><span><b>77</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>조회수 unknown / 반려견 백신 일정 row</dd><dt>옮겨 적기 신호</dt><dd>나이별 백신 일정과 매년 추가 접종</dd><dt>Gate</dt><dd>row 확인 후 seed 후보 · 월령/백신명 row 있음</dd><dt>다음 액션</dt><dd>국내 수의사/동물병원 source 보강 전 canary 제외</dd></dl>
+  <a href="https://www.royalcanin.com/kr/dogs/puppy/dog-vaccination-schedule" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#24</span><span class="badge structure_only">구조만 좋음</span></div>
+  <h2>오늘의집 일주일 도시락 식단표</h2>
+  <p class="meta">식단/요리 · demand 73 · fit 65</p>
+  <div class="scores"><span><b>73</b>수요</span><span><b>65</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>검색 추출에서 수요일 김치볶음밥/두부봉부침/깍두기, 목요일 짜장잡채밥 등 요일 구조 확인</dd><dt>옮겨 적기 신호</dt><dd>weekday lunchbox menu rows</dd><dt>Gate</dt><dd>구조 보류 · weekday lunchbox menu rows</dd><dt>다음 액션</dt><dd>다음 demand pass에서 실제 URL을 열어 visible demand와 source row를 확인</dd></dl>
+  <a href="https://ohou.se/advices/9098" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#25</span><span class="badge structure_only">구조만 좋음</span></div>
+  <h2>KIPFRI 고양이 입양 체크리스트</h2>
+  <p class="meta">반려/식물/관리 · demand 73 · fit 65</p>
+  <div class="scores"><span><b>73</b>수요</span><span><b>65</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>검색 추출에서 추가 준비물, 초기 적응, 건강검진, 중성화, 등록 확인</dd><dt>옮겨 적기 신호</dt><dd>pre/post adoption checklist</dd><dt>Gate</dt><dd>구조 보류 · pre/post adoption checklist</dd><dt>다음 액션</dt><dd>다음 demand pass에서 실제 URL을 열어 visible demand와 source row를 확인</dd></dl>
+  <a href="https://www.kipfri.com/community/news/view/b754ff6a-1935-465b-9714-d224238aa3d5" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#26</span><span class="badge unknown_demand">수요 확인 필요</span></div>
+  <h2>면접 직전 체크리스트 영상</h2>
+  <p class="meta">커리어/사업 · demand 73 · fit 55</p>
+  <div class="scores"><span><b>73</b>수요</span><span><b>55</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>검색 추출에서 회사 최신 뉴스, 자기소개 준비 등 영상 챕터 구조 확인</dd><dt>옮겨 적기 신호</dt><dd>10 pre-interview checks</dd><dt>Gate</dt><dd>source import 필요 · 10 pre-interview checks</dd><dt>다음 액션</dt><dd>다음 demand pass에서 실제 URL을 열어 visible demand와 source row를 확인</dd></dl>
+  <a href="https://www.youtube.com/watch?v=dRFkXIeEHuk" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#27</span><span class="badge structure_only">구조만 좋음</span></div>
+  <h2>5km 달리기 8주 프로그램</h2>
+  <p class="meta">운동/건강 · demand 72 · fit 82</p>
+  <div class="scores"><span><b>72</b>수요</span><span><b>82</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>조회수 unknown / 8주 프로그램 row</dd><dt>옮겨 적기 신호</dt><dd>주차/요일별 거리와 걷기/달리기 반복 row</dd><dt>Gate</dt><dd>row 확인 후 seed 후보 · 주차/요일 row 있음</dd><dt>다음 액션</dt><dd>운동 효과 보장 없이 주차/요일/거리 row만 가져오기</dd></dl>
+  <a href="https://holmez.tistory.com/entry/5km-%EB%8B%AC%EB%A6%AC%EA%B8%B0-8%EC%A3%BC-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#28</span><span class="badge strong_visible_demand">보이는 수요 강함</span></div>
+  <h2>아정당 자취 준비 리스트</h2>
+  <p class="meta">이사/주거 · demand 72 · fit 80</p>
+  <div class="scores"><span><b>72</b>수요</span><span><b>80</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>조회 10,135 / 스크랩 1</dd><dt>옮겨 적기 신호</dt><dd>자취 준비 물품 checklist</dd><dt>Gate</dt><dd>row 확인 후 seed 후보 · 품목별 리스트 있음</dd><dt>다음 액션</dt><dd>필수/나중/본가에서 가져오기 기준으로 과밀화 방지</dd></dl>
+  <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%B2%98%EC%9D%8C_%EB%8F%85%EB%A6%BD%ED%95%98%EB%8A%94_%EC%82%AC%ED%9A%8C%EC%B4%88%EB%85%84%EC%83%9D%EC%9D%84_%EC%9C%84%ED%95%9C_%EC%9E%90%EC%B7%A8_%EC%A4%80%EB%B9%84_%EB%A6%AC%EC%8A%A4%ED%8A%B8-42109" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#29</span><span class="badge structure_only">구조만 좋음</span></div>
+  <h2>핏펫 강아지 예방접종 일정</h2>
+  <p class="meta">반려/식물/관리 · demand 72 · fit 80</p>
+  <div class="scores"><span><b>72</b>수요</span><span><b>80</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>조회수 unknown / 강아지 접종 순서 row</dd><dt>옮겨 적기 신호</dt><dd>생후 주차별 접종 일정</dd><dt>Gate</dt><dd>row 확인 후 seed 후보 · 접종 차수/주차 row 있음</dd><dt>다음 액션</dt><dd>Royal Canin/수의사 source와 교차 확인</dd></dl>
+  <a href="https://www.fitpetmall.com/blog/dog-vaccinations/" target="_blank" rel="noreferrer">원문 열기</a>
+</article>
+<article class="card ">
+  <div class="top"><span class="rank">#30</span><span class="badge structure_only">구조만 좋음</span></div>
+  <h2>Planning.wedding 12개월 웨딩 타임라인</h2>
+  <p class="meta">결혼/구매 · demand 72 · fit 78</p>
+  <div class="scores"><span><b>72</b>수요</span><span><b>78</b>전환</span><span><b>보류</b>canary</span></div>
+  <dl><dt>보이는 수요</dt><dd>조회수 unknown / 무료 타임라인 생성 CTA</dd><dt>옮겨 적기 신호</dt><dd>12개월 타임라인과 월별 checklist row</dd><dt>Gate</dt><dd>구조 보류 · 월별 row 본문 노출</dd><dt>다음 액션</dt><dd>국내 결혼 원문과 비교 후 보조 source로 사용</dd></dl>
+  <a href="https://planning.wedding/ko/timeline/checklist" target="_blank" rel="noreferrer">원문 열기</a>
+</article></section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe Canary 12 URL-first P0 전략 의존성 및 Handoff 보고서</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17202a;
+      --muted: #667385;
+      --line: #d8dee8;
+      --paper: #ffffff;
+      --soft: #f6f8fb;
+      --blue: #1c5a99;
+      --teal: #0e7378;
+      --green: #146c43;
+      --amber: #a15c00;
+      --red: #a42734;
+      --gray: #5d6673;
+      --shadow: 0 12px 28px rgba(23, 32, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #eef2f6;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Arial, sans-serif;
+      line-height: 1.55;
+    }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 28px 20px 60px; }
+
+    .hero {
+      background: linear-gradient(135deg, #ffffff 0%, #f0f7f7 52%, #f7f8fb 100%);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 30px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+      margin-bottom: 12px;
+    }
+
+    h1, h2, h3 { margin: 0; letter-spacing: 0; }
+    h1 {
+      max-width: 960px;
+      font-size: clamp(30px, 4.4vw, 50px);
+      line-height: 1.08;
+      font-weight: 850;
+    }
+
+    .lead {
+      max-width: 920px;
+      margin: 18px 0 0;
+      color: #314051;
+      font-size: 18px;
+    }
+
+    .decision-row {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 14px;
+    }
+
+    .decision {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.9);
+      padding: 16px;
+    }
+
+    .decision strong { display: block; margin-bottom: 7px; }
+    .decision p { margin: 0; color: #344256; }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .metric {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-height: 108px;
+      padding: 14px;
+    }
+
+    .metric b { display: block; font-size: 30px; line-height: 1.1; }
+    .metric span { display: block; margin-top: 8px; color: var(--muted); font-size: 13px; }
+
+    section {
+      margin-top: 22px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    h2 { font-size: 24px; line-height: 1.2; }
+    .note { max-width: 720px; margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: #fff;
+      color: #344256;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .tag.green { color: var(--green); border-color: #b9ddc8; background: #effaf3; }
+    .tag.amber { color: var(--amber); border-color: #f0cf9e; background: #fff8eb; }
+    .tag.red { color: var(--red); border-color: #efb6bd; background: #fff1f3; }
+    .tag.gray { color: var(--gray); border-color: #cfd6df; background: #f5f7fa; }
+    .tag.blue { color: var(--blue); border-color: #bfd4ee; background: #f1f6fd; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+      padding: 16px;
+    }
+
+    .card h3 { font-size: 17px; margin-bottom: 8px; }
+    .card p { margin: 0; color: #344256; }
+    .card ul { margin: 10px 0 0; padding-left: 18px; }
+    .card li { margin: 5px 0; }
+
+    .dependency {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .dep-node {
+      position: relative;
+      min-height: 136px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 13px;
+    }
+
+    .dep-node:not(:last-child)::after {
+      content: ">";
+      position: absolute;
+      top: 44%;
+      right: -10px;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .dep-node b { display: block; margin-bottom: 6px; }
+    .dep-node span { display: block; color: var(--muted); font-size: 13px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 14px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 10px;
+      vertical-align: top;
+      text-align: left;
+      overflow-wrap: anywhere;
+    }
+
+    th {
+      background: #f0f4f8;
+      color: #344256;
+      font-size: 12px;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .risk-bar {
+      height: 8px;
+      border-radius: 999px;
+      background: #e0e6ef;
+      overflow: hidden;
+      margin-top: 7px;
+    }
+
+    .risk-bar span { display: block; height: 100%; }
+    .w90 { width: 90%; background: var(--red); }
+    .w75 { width: 75%; background: var(--red); }
+    .w60 { width: 60%; background: var(--amber); }
+    .w35 { width: 35%; background: var(--blue); }
+    .w20 { width: 20%; background: var(--green); }
+
+    .roadmap {
+      display: grid;
+      grid-template-columns: 84px 1fr 1fr 1fr;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .roadmap div {
+      padding: 12px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .roadmap div:nth-child(4n) { border-right: 0; }
+    .roadmap div:nth-last-child(-n+4) { border-bottom: 0; }
+    .roadmap .head { background: #f0f4f8; font-weight: 850; color: #344256; }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      background: #eef2f6;
+      border: 1px solid #d9e0ea;
+      border-radius: 5px;
+      padding: 1px 5px;
+      font-size: 12px;
+    }
+
+    .refs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .refs a {
+      display: block;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 880px) {
+      .wrap { padding: 14px 10px 36px; }
+      .hero, section { padding: 18px; }
+      .decision-row, .metrics, .grid-2, .grid-3, .dependency, .refs { grid-template-columns: 1fr; }
+      .section-head { display: block; }
+      .tag { margin-top: 10px; }
+      .dep-node:not(:last-child)::after { display: none; }
+      .roadmap { grid-template-columns: 1fr; }
+      .roadmap div { border-right: 0; }
+      table { display: block; overflow-x: auto; }
+      th, td { min-width: 150px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <div class="meta">
+        <span>FlowMe 전략 세션</span>
+        <span>2026-07-05</span>
+        <span>Canary 12 URL-first P0</span>
+      </div>
+      <h1>다음 할 일은 구현이 아니라, 구현이 충돌하지 않게 넘기는 것이다</h1>
+      <p class="lead">
+        이 보고서는 개발 계획서가 아니라 전략 handoff 문서다. URL-first, Export Pack v1, ledger, Canary 12, 실행 시나리오,
+        implementation slice를 하나의 실행 순서로 재배열하고, 현재 다른 개발 흐름과 부딪힐 수 있는 영역을 CEO/임원 관점에서 분리한다.
+      </p>
+
+      <div class="decision-row">
+        <div class="decision">
+          <strong>CEO 결론</strong>
+          <p>
+            Canary 12 전략은 유지한다. 다만 다음 개발 세션은 바로 UI를 더 고치는 것이 아니라
+            <b>worktree ownership 확인 → 정책/registry 고정 → `/flows` UI 연결 → export/ledger/storage → E2E</b>
+            순서로 직렬화해야 한다.
+          </p>
+        </div>
+        <div class="decision">
+          <strong>이번 세션 범위</strong>
+          <p><span class="tag green">전략만</span> <span class="tag red">코드 구현 없음</span> <span class="tag amber">handoff 기준 확정</span></p>
+        </div>
+      </div>
+
+      <div class="metrics">
+        <div class="metric">
+          <b>6</b>
+          <span>연결해야 할 기존 전략 보고서: URL-first, Export, ledger, Canary 12, 실행 시나리오, implementation scorecard.</span>
+        </div>
+        <div class="metric">
+          <b>4</b>
+          <span>충돌 위험이 높은 핵심 개발 파일: `/flows` UI, source-backed map, storage, E2E.</span>
+        </div>
+        <div class="metric">
+          <b>0</b>
+          <span>이번 전략 세션에서 해야 할 app code 변경 수. 보고서만 추가한다.</span>
+        </div>
+        <div class="metric">
+          <b>5</b>
+          <span>개발 handoff 전에 잠글 의존성 단계: policy, UI, export, storage, QA.</span>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>1. 전략 세션의 정확한 역할</h2>
+          <p class="note">이 방은 “무엇을 왜 어떤 순서로 넘길지”를 정하는 곳이다. 코드 변경은 별도 개발 세션에서만 한다.</p>
+        </div>
+        <span class="tag blue">session boundary</span>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <h3>전략 세션에서 한다</h3>
+          <p>제품 우선순위, 운영 상태, 위험 분류, 의존성, handoff 조건, 제외 범위를 결정한다.</p>
+        </div>
+        <div class="card">
+          <h3>전략 세션에서 하지 않는다</h3>
+          <p><code>AppClient.tsx</code>, storage, E2E, source-backed map을 직접 고쳐 구현 완료를 주장하지 않는다.</p>
+        </div>
+        <div class="card">
+          <h3>개발 세션으로 넘긴다</h3>
+          <p>registry 구현, UI 연결, export 생성, ledger 저장, Playwright E2E는 개발 세션의 책임으로 넘긴다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>2. 충돌 위험 맵</h2>
+          <p class="note">현재 변경 흐름은 이미 넓다. 다음 개발은 병렬로 덧칠하지 말고 ownership을 잡은 뒤 순서대로 들어가야 한다.</p>
+        </div>
+        <span class="tag red">collision map</span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:22%">영역</th>
+            <th style="width:26%">충돌 이유</th>
+            <th style="width:26%">전략적 처리</th>
+            <th style="width:16%">위험도</th>
+            <th style="width:10%">세션</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>/flows</code> UI<br /><a href="../../components/flow/AppClient.tsx">components/flow/AppClient.tsx</a></td>
+            <td>URL 입력, result sheet, start panel, custom start, catalog rhythm이 한 파일에 집중되어 있다.</td>
+            <td>개발 세션 전 ownership 확인. 전략 세션에서는 UI 요구사항만 확정한다.</td>
+            <td><span class="tag red">매우 높음</span><div class="risk-bar"><span class="w90"></span></div></td>
+            <td>개발</td>
+          </tr>
+          <tr>
+            <td>Source-backed map<br /><a href="../../lib/flow/source-backed-my-flow.ts">source-backed-my-flow.ts</a></td>
+            <td>source, version, risk, personal copy, update projection이 모두 연결된다.</td>
+            <td>Canary 12 정책은 먼저 문서/registry contract로 고정하고, map 구조 변경은 최소화한다.</td>
+            <td><span class="tag red">높음</span><div class="risk-bar"><span class="w75"></span></div></td>
+            <td>개발</td>
+          </tr>
+          <tr>
+            <td>Storage / My Flow<br /><a href="../../lib/flow/storage.ts">lib/flow/storage.ts</a></td>
+            <td>저장 snapshot, personal copy, excluded step 상태가 My Flow 동작과 맞물린다.</td>
+            <td>ledger 저장 필드와 user copy 변경 기준을 먼저 승인한 뒤 들어간다.</td>
+            <td><span class="tag red">높음</span><div class="risk-bar"><span class="w75"></span></div></td>
+            <td>개발</td>
+          </tr>
+          <tr>
+            <td>E2E<br /><a href="../../tests/e2e/flow-mvp.spec.ts">tests/e2e/flow-mvp.spec.ts</a></td>
+            <td>URL lookup, My Flow, mobile, export 검증이 같은 spec에 누적되고 있다.</td>
+            <td>전략 세션은 테스트 이름과 통과 기준을 정하고, 실제 test edit은 개발 세션으로 넘긴다.</td>
+            <td><span class="tag amber">중간 이상</span><div class="risk-bar"><span class="w60"></span></div></td>
+            <td>개발</td>
+          </tr>
+          <tr>
+            <td>전략/보고서<br /><code>docs/content-audit/</code></td>
+            <td>새 문서 추가는 기존 구현 파일과 충돌하지 않는다.</td>
+            <td>이번 세션은 이 영역만 수정한다.</td>
+            <td><span class="tag green">낮음</span><div class="risk-bar"><span class="w20"></span></div></td>
+            <td>전략</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>3. 전략 의존성 다이어그램</h2>
+          <p class="note">아래 순서가 바뀌면 UI, 저장, export, QA가 서로를 끌고 가면서 충돌 범위가 커진다.</p>
+        </div>
+        <span class="tag blue">dependency</span>
+      </div>
+
+      <div class="dependency">
+        <div class="dep-node">
+          <b>전략 승인</b>
+          <span>P0-now 4, P1-review 6, P2-hold 2 운영 분류와 제외 범위를 승인한다.</span>
+        </div>
+        <div class="dep-node">
+          <b>Policy / registry</b>
+          <span>Canary status, risk, default artifact, export permission, lock reason을 코드 contract로 넘긴다.</span>
+        </div>
+        <div class="dep-node">
+          <b>`/flows` UI</b>
+          <span>hit / needs_review / miss / hold 화면과 CTA를 연결한다.</span>
+        </div>
+        <div class="dep-node">
+          <b>Export Pack</b>
+          <span>`.ics`, Markdown, checklist의 실제 output과 disabled state를 확정한다.</span>
+        </div>
+        <div class="dep-node">
+          <b>Ledger / storage</b>
+          <span>source, checked date, risk, caution, version, export date를 저장과 파일에 남긴다.</span>
+        </div>
+        <div class="dep-node">
+          <b>QA / release gate</b>
+          <span>unit, targeted E2E, docs:check, build, mobile screenshot으로 완료 여부를 말한다.</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>4. 실행 순서</h2>
+          <p class="note">전략 관점의 실행 순서다. 각 단계는 이전 단계의 산출물이 없으면 시작하지 않는다.</p>
+        </div>
+        <span class="tag amber">ordered handoff</span>
+      </div>
+
+      <div class="roadmap">
+        <div class="head">순서</div>
+        <div class="head">목표</div>
+        <div class="head">완료 조건</div>
+        <div class="head">넘길 곳</div>
+
+        <div>0</div>
+        <div>현재 worktree ownership 확인</div>
+        <div>누가 어떤 파일을 소유하는지 확인하고, 전략 문서 외 수정은 멈춘다.</div>
+        <div>전략 → 개발 준비</div>
+
+        <div>1</div>
+        <div>Canary 12 정책 승인</div>
+        <div>P0-now 4, P1-review 6, P2-hold 2와 lock/export/save 원칙이 승인된다.</div>
+        <div>전략 세션</div>
+
+        <div>2</div>
+        <div>Policy / registry 구현</div>
+        <div>UI를 건드리기 전, lookup policy가 12개 canary 상태를 반환한다.</div>
+        <div>개발 세션</div>
+
+        <div>3</div>
+        <div>`/flows` UX 연결</div>
+        <div>상태별 CTA, disabled reason, preview/save/export 권한이 화면에 반영된다.</div>
+        <div>개발 세션</div>
+
+        <div>4</div>
+        <div>Export + Ledger + My Flow 저장 연결</div>
+        <div>portable export와 저장 기록에 같은 source/trust 정보가 남는다.</div>
+        <div>개발 세션</div>
+
+        <div>5</div>
+        <div>QA scorecard 통과</div>
+        <div>unit, targeted E2E, docs:check, build, mobile/desktop render 검증으로 완료를 주장한다.</div>
+        <div>개발 + QA 세션</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>5. Canary 운영 순서</h2>
+          <p class="note">12개를 한 번에 제품화하지 않는다. P0-now는 증명, P1-review는 잠금 운영, P2-hold는 비교/백업이다.</p>
+        </div>
+        <span class="tag green">portfolio order</span>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <h3>P0-now 4개</h3>
+          <p>URL-first loop, portable export, My Flow save, ledger 저장이 실제로 이어지는지 검증하는 주력 후보.</p>
+          <ul>
+            <li>이사 D-30</li>
+            <li>차량구매/점검형</li>
+            <li>예방접종/건강 민감형</li>
+            <li>에어컨필터 routine형</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>P1-review 6개</h3>
+          <p>source/import 권리, 민감 문구, creator/community 운영 기준이 정리되기 전까지 preview/lock만 허용한다.</p>
+        </div>
+        <div class="card">
+          <h3>P2-hold 2개</h3>
+          <p>제품 방향 비교와 백업 후보로 유지한다. P0 성공 조건에 넣지 않고 export/save도 열지 않는다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>6. 전략 세션 결정 vs 개발 세션 handoff</h2>
+          <p class="note">회의에서 결정할 것과 코드로 넘길 것을 섞으면 논의가 길어지고 구현 충돌이 커진다.</p>
+        </div>
+        <span class="tag blue">handoff split</span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:26%">주제</th>
+            <th style="width:37%">전략 세션에서 결정</th>
+            <th style="width:37%">개발 세션으로 넘김</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>URL-first 포지션</td>
+            <td>FlowMe의 첫 진입은 URL lookup-first이고 AI는 fallback이라는 원칙을 유지한다.</td>
+            <td>입력 필드, result sheet, route 이동, 상태 copy 구현.</td>
+          </tr>
+          <tr>
+            <td>Export Pack v1</td>
+            <td>P0는 direct API가 아니라 `.ics`, Markdown, checklist 중심 portable export로 결정한다.</td>
+            <td>파일 생성, 다운로드, checklist rendering, disabled state 구현.</td>
+          </tr>
+          <tr>
+            <td>Ledger</td>
+            <td>source/version/trust 최소 필드와 민감 영역 caution 원칙을 승인한다.</td>
+            <td>map, export, storage, My Flow snapshot에 필드를 연결한다.</td>
+          </tr>
+          <tr>
+            <td>Canary 12</td>
+            <td>P0/P1/P2 운영 분류와 lock 원칙을 승인한다.</td>
+            <td>registry, lookup policy, unit/E2E test case로 고정한다.</td>
+          </tr>
+          <tr>
+            <td>QA</td>
+            <td>어떤 증거가 있어야 “완료”라고 말할지 scorecard를 승인한다.</td>
+            <td>명령 실행, screenshot, build, E2E 결과를 남긴다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>7. 이번 전략 흐름 제외 범위</h2>
+          <p class="note">아래 항목은 제품적으로 중요할 수 있지만, Canary 12 P0 handoff를 흐리게 만든다.</p>
+        </div>
+        <span class="tag red">do not mix</span>
+      </div>
+
+      <div class="grid-3">
+        <div class="card"><h3>Home redesign</h3><p>`/flows` URL-first loop 검증 이후 별도 전략으로 다룬다.</p></div>
+        <div class="card"><h3>Direct API/OAuth</h3><p>P0는 portable export다. Calendar/Notion/Todoist direct 연결은 P1/P2다.</p></div>
+        <div class="card"><h3>AI-first generation</h3><p>URL lookup-first 원칙을 흔들지 않는다. miss에서 AI가 앞에 나오면 안 된다.</p></div>
+        <div class="card"><h3>Full editor</h3><p>light edit/fork 방향은 유지하되 원본 편집기까지 열지 않는다.</p></div>
+        <div class="card"><h3>Fake usage</h3><p>사용자 검증 없는 인기, 사용량, 성공 claim을 넣지 않는다.</p></div>
+        <div class="card"><h3>동시다발 구현</h3><p>`/flows`, storage, export, E2E를 병렬로 건드리지 않는다.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>8. 다음 handoff 문장</h2>
+          <p class="note">다음 개발 세션에 넘길 때는 아래 기준을 붙여야 전략 세션의 의도를 잃지 않는다.</p>
+        </div>
+        <span class="tag amber">copy ready</span>
+      </div>
+
+      <div class="card">
+        <h3>개발 세션 시작 조건</h3>
+        <p>
+          “이 세션은 전략 확정이 아니라 개발 세션이다. 먼저 현재 worktree ownership을 확인하고,
+          Canary 12 정책을 UI보다 먼저 고정한다. Home redesign, OAuth/API, AI-first, full editor, fake usage는 제외한다.
+          구현 완료 주장은 unit/E2E/docs:check/build/모바일 렌더링 증거가 있을 때만 한다.”
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>근거 문서와 구현 상태 링크</h2>
+          <p class="note">이 보고서는 아래 문서들을 연결해 만든 전략 handoff다. 구현 완료 여부는 QA 파일과 실제 명령 결과로만 판단한다.</p>
+        </div>
+        <span class="tag gray">references</span>
+      </div>
+
+      <div class="refs">
+        <a href="./2026-07-05-url-first-p0-ceo-report-ko.html">URL-first P0 CEO 보고서</a>
+        <a href="./2026-07-05-flowme-export-pack-v1-strategy-ceo-ko.html">Export Pack v1 전략 보고서</a>
+        <a href="./2026-07-05-flowme-source-version-trust-ledger-ceo-ko.html">source/version/trust ledger 보고서</a>
+        <a href="./2026-07-05-flowme-canary-12-p0-portfolio-ceo-ko.html">Canary 12 포트폴리오 보고서</a>
+        <a href="./2026-07-05-flowme-canary-12-url-first-p0-execution-scenarios-ceo-ko.html">Canary 12 실행 시나리오 보고서</a>
+        <a href="./2026-07-05-flowme-canary-12-p0-implementation-slice-qa-scorecard-ceo-ko.html">Implementation slice / QA scorecard 보고서</a>
+        <a href="../specs/2026-07-05-url-lookup-production-slice/spec.md">URL lookup production slice spec</a>
+        <a href="../specs/2026-07-05-url-lookup-production-slice/qa.md">URL lookup production slice QA</a>
+        <a href="../../components/flow/AppClient.tsx">/flows UI: AppClient.tsx</a>
+        <a href="../../lib/flow/url-first-lookup.ts">URL-first lookup policy</a>
+        <a href="../../lib/flow/source-backed-my-flow.ts">source-backed My Flow map</a>
+        <a href="../../tests/e2e/flow-mvp.spec.ts">Flow MVP E2E spec</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

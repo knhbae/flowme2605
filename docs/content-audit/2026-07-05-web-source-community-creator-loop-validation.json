@@ -1,0 +1,2217 @@
+{
+  "auditDate": "2026-07-05",
+  "purpose": "기존 웹 소스 스카우트/수요 검증 상위 후보를 사용자 생성/수정/공유 루프와 제작자 홍보 루프 관점으로 재분류한다.",
+  "sourceFiles": [
+    "docs/content-audit/2026-07-04-web-source-scout-candidates.json",
+    "docs/content-audit/2026-07-04-web-source-demand-validation.json",
+    "docs/content-audit/2026-07-04-content-source-expansion-plan-ko.md",
+    "docs/flow-rules/product-principles.md",
+    "docs/flow-rules/quality-rubric.md",
+    "docs/flow-rules/content-conversion-playbooks.md",
+    "docs/flow-rules/ux-copy.md"
+  ],
+  "scope": {
+    "evaluatedExistingDemandTopN": 30,
+    "additionalCandidatesExplored": 0,
+    "additionalCandidateDecision": "기존 100개 scout와 demand 상위 30개만으로 커뮤니티/제작자 루프 재분류에 필요한 카테고리 폭이 충분해 이번 산출물에는 신규 후보를 추가하지 않았다."
+  },
+  "scoringWeights": {
+    "combinedPriorityScore": "demand 22% + conversion 24% + communityLoopFit 26% + creatorPromotionFit 20% + forkRemixFit 8%",
+    "note": "공식/행정 trust anchor는 demand/conversion이 높아도 community loop가 낮으면 community canary 우선순위에서 분리했다."
+  },
+  "topCommunityLoop": [
+    "SCOUT-002",
+    "SCOUT-026",
+    "SCOUT-001",
+    "SCOUT-025",
+    "SCOUT-011",
+    "SCOUT-012",
+    "SCOUT-007",
+    "SCOUT-051",
+    "SCOUT-075",
+    "SCOUT-031",
+    "SCOUT-062",
+    "SCOUT-063"
+  ],
+  "topCreatorPromotion": [
+    "SCOUT-062",
+    "SCOUT-063",
+    "SCOUT-017",
+    "SCOUT-001",
+    "SCOUT-051",
+    "SCOUT-100",
+    "SCOUT-099",
+    "SCOUT-007",
+    "SCOUT-025",
+    "SCOUT-011",
+    "SCOUT-031",
+    "SCOUT-012"
+  ],
+  "trustAnchors": [
+    "SCOUT-021",
+    "SCOUT-023",
+    "SCOUT-086",
+    "SCOUT-045",
+    "SCOUT-044",
+    "SCOUT-047",
+    "SCOUT-054",
+    "SCOUT-003",
+    "SCOUT-055",
+    "SCOUT-085",
+    "SCOUT-022"
+  ],
+  "nextCanaryRecommendations": [
+    {
+      "rank": 1,
+      "candidateId": "SCOUT-001",
+      "title": "아정당 이사 준비 체크리스트",
+      "category": "이사/주거",
+      "combinedPriorityScore": 92,
+      "demandScore": 96,
+      "conversionFitScore": 94,
+      "communityLoopFit": 90,
+      "creatorPromotionScore": 88,
+      "condition": "canary 후보",
+      "reason": "다음 canary 우선 후보. 첨부 row import와 광고/견적 CTA 분리를 먼저 한다.",
+      "scoreComment": "합산 92: demand 96, conversion 94, community 90, creator 88를 함께 본 값이다.",
+      "communityComment": "강함: 사용자 생성, fork, 후기/수정 제안이 함께 맞물려 template exchange 후보로 볼 수 있다.",
+      "creatorComment": "강함: Flow가 원문 방문, 영상 재생, 상담/예약/구매로 되돌아가 제작자가 홍보할 유인이 크다. 유인=traffic, download, lead, booking."
+    },
+    {
+      "rank": 2,
+      "candidateId": "SCOUT-031",
+      "title": "오픽만수르 모의고사 공부 방법",
+      "category": "공부/시험",
+      "combinedPriorityScore": 83,
+      "demandScore": 83,
+      "conversionFitScore": 88,
+      "communityLoopFit": 82,
+      "creatorPromotionScore": 78,
+      "condition": "canary 후보",
+      "reason": "다음 canary 우선 후보. 첨부 계획표 row와 영상 URL만 가져온다.",
+      "scoreComment": "합산 83: demand 83, conversion 88, community 82, creator 78를 함께 본 값이다.",
+      "communityComment": "중간 이상: 반복 실행과 공유 가능성은 있으나 source import 또는 권한 확인 후 키우는 편이 안전하다.",
+      "creatorComment": "중간 이상: 원문 유입이나 신뢰/retention 효과는 있으나 Flow가 직접 매출/재생으로 이어지는 정도는 제한적이다. 유인=traffic, download, video_view, trust."
+    },
+    {
+      "rank": 3,
+      "candidateId": "SCOUT-051",
+      "title": "KKday 해외여행 준비물 체크리스트",
+      "category": "여행/캠핑",
+      "combinedPriorityScore": 83,
+      "demandScore": 79,
+      "conversionFitScore": 78,
+      "communityLoopFit": 86,
+      "creatorPromotionScore": 86,
+      "condition": "canary 후보",
+      "reason": "다음 canary 후보. 준비물 row와 상품 CTA를 분리한다.",
+      "scoreComment": "합산 83: demand 79, conversion 78, community 86, creator 86를 함께 본 값이다.",
+      "communityComment": "강함: 사용자 생성, fork, 후기/수정 제안이 함께 맞물려 template exchange 후보로 볼 수 있다.",
+      "creatorComment": "강함: Flow가 원문 방문, 영상 재생, 상담/예약/구매로 되돌아가 제작자가 홍보할 유인이 크다. 유인=traffic, booking, purchase."
+    },
+    {
+      "rank": 4,
+      "candidateId": "SCOUT-011",
+      "title": "Planning.wedding 12개월 웨딩 타임라인",
+      "category": "결혼/구매",
+      "combinedPriorityScore": 82,
+      "demandScore": 72,
+      "conversionFitScore": 78,
+      "communityLoopFit": 89,
+      "creatorPromotionScore": 82,
+      "condition": "canary 후보",
+      "reason": "결혼 timeline canary 후보. 국내/해외 기준 label을 분리한다.",
+      "scoreComment": "합산 82: demand 72, conversion 78, community 89, creator 82를 함께 본 값이다.",
+      "communityComment": "강함: 사용자 생성, fork, 후기/수정 제안이 함께 맞물려 template exchange 후보로 볼 수 있다.",
+      "creatorComment": "중간 이상: 원문 유입이나 신뢰/retention 효과는 있으나 Flow가 직접 매출/재생으로 이어지는 정도는 제한적이다. 유인=subscription, traffic, retention."
+    },
+    {
+      "rank": 5,
+      "candidateId": "SCOUT-075",
+      "title": "오늘의집 일주일 도시락 식단표",
+      "category": "식단/요리",
+      "combinedPriorityScore": 75,
+      "demandScore": 73,
+      "conversionFitScore": 65,
+      "communityLoopFit": 85,
+      "creatorPromotionScore": 72,
+      "condition": "canary 후보",
+      "reason": "식단/도시락 community canary 후보. 레시피 복제는 피한다.",
+      "scoreComment": "합산 75: demand 73, conversion 65, community 85, creator 72를 함께 본 값이다.",
+      "communityComment": "강함: 사용자 생성, fork, 후기/수정 제안이 함께 맞물려 template exchange 후보로 볼 수 있다.",
+      "creatorComment": "중간 이상: 원문 유입이나 신뢰/retention 효과는 있으나 Flow가 직접 매출/재생으로 이어지는 정도는 제한적이다. 유인=traffic, purchase, retention."
+    },
+    {
+      "rank": 6,
+      "candidateId": "SCOUT-017",
+      "title": "겟차 신차 구매 절차 가이드",
+      "category": "결혼/구매",
+      "combinedPriorityScore": 77,
+      "demandScore": 74,
+      "conversionFitScore": 84,
+      "communityLoopFit": 66,
+      "creatorPromotionScore": 90,
+      "condition": "canary 후보",
+      "reason": "brand lead canary 후보. 비용/견적 세부는 memo/detail에만 둔다.",
+      "scoreComment": "합산 77: demand 74, conversion 84, community 66, creator 90를 함께 본 값이다.",
+      "communityComment": "제한적: 사용자 상황별 수정은 일부 있지만 커뮤니티 성장 루프보다는 개별 utility가 중심이다.",
+      "creatorComment": "강함: Flow가 원문 방문, 영상 재생, 상담/예약/구매로 되돌아가 제작자가 홍보할 유인이 크다. 유인=lead, traffic, purchase."
+    },
+    {
+      "rank": 7,
+      "candidateId": "SCOUT-025",
+      "title": "초기 토핑 이유식 식단표 엑셀 템플릿",
+      "category": "육아/교육",
+      "combinedPriorityScore": 81,
+      "demandScore": 84,
+      "conversionFitScore": 65,
+      "communityLoopFit": 89,
+      "creatorPromotionScore": 82,
+      "condition": "source import/permission 확인 후 canary",
+      "reason": "source_import_required. 파일 row와 공유 허용 범위를 확인하면 canary 후보로 승격한다.",
+      "scoreComment": "합산 81: demand 84, conversion 65, community 89, creator 82를 함께 본 값이다.",
+      "communityComment": "강함: 사용자 생성, fork, 후기/수정 제안이 함께 맞물려 template exchange 후보로 볼 수 있다.",
+      "creatorComment": "중간 이상: 원문 유입이나 신뢰/retention 효과는 있으나 Flow가 직접 매출/재생으로 이어지는 정도는 제한적이다. 유인=traffic, download, subscription, trust."
+    },
+    {
+      "rank": 8,
+      "candidateId": "SCOUT-062",
+      "title": "빅씨스 10분 홈트 루틴 플레이리스트",
+      "category": "운동/건강",
+      "combinedPriorityScore": 79,
+      "demandScore": 78,
+      "conversionFitScore": 68,
+      "communityLoopFit": 80,
+      "creatorPromotionScore": 92,
+      "condition": "source import/permission 확인 후 canary",
+      "reason": "source_import_required. 영상 title/URL/길이만 가져오는 canary로 설계한다.",
+      "scoreComment": "합산 79: demand 78, conversion 68, community 80, creator 92를 함께 본 값이다.",
+      "communityComment": "중간 이상: 반복 실행과 공유 가능성은 있으나 source import 또는 권한 확인 후 키우는 편이 안전하다.",
+      "creatorComment": "강함: Flow가 원문 방문, 영상 재생, 상담/예약/구매로 되돌아가 제작자가 홍보할 유인이 크다. 유인=video_view, subscription, traffic."
+    }
+  ],
+  "validations": [
+    {
+      "candidateId": "SCOUT-002",
+      "title": "오늘의집 이사 준비 체크리스트",
+      "category": "이사/주거",
+      "sourceUrl": "https://ohou.se/advices/8442",
+      "demandScore": 97,
+      "conversionFitScore": 87,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "조회 138,228 / 스크랩 11,432 / 좋아요 1,956 / 댓글 26",
+        "comments": "조회 138,228 / 스크랩 11,432 / 좋아요 1,956 / 댓글 26",
+        "shares": "unknown",
+        "saves": "조회 138,228 / 스크랩 11,432 / 좋아요 1,956 / 댓글 26",
+        "downloads": "unknown",
+        "raw": [
+          "조회 138,228 / 스크랩 11,432 / 좋아요 1,956 / 댓글 26"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "이미지 저장 권장, D-30 checklist"
+      },
+      "sourceAvailability": {
+        "level": "strong",
+        "evidence": "본문 checklist row 있음"
+      },
+      "userCreationFit": 92,
+      "forkRemixFit": 94,
+      "discussionFit": 92,
+      "creatorPromotionFit": 76,
+      "creatorPromotionScore": 76,
+      "communityLoopFit": 94,
+      "combinedPriorityScore": 89,
+      "growthLoopType": "template_exchange",
+      "creatorType": "platform",
+      "incentiveType": [
+        "traffic",
+        "retention",
+        "purchase"
+      ],
+      "promotionAngle": "이사 전후 체크리스트를 저장하고, 필요한 인테리어/생활 팁은 오늘의집 원문에서 이어서 보세요.",
+      "backlinkValue": "high",
+      "cannibalizationRisk": "medium",
+      "permissionNeed": "medium",
+      "sourceRiskLevel": "creator",
+      "gateResult": "canary_candidate",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn0view0"
+        ]
+      },
+      "evidenceNotes": [
+        "오늘의집 원문에서 조회/스크랩/좋아요/댓글 신호와 이미지 저장 권장을 확인.",
+        "D-30/D-7/D-1/D-day 구조가 있어 자기 집, 지역, 예산에 맞게 수정하기 쉽다."
+      ],
+      "recommendedNextAction": "대표 canary보다는 AJD와 비교되는 community proof 보조 source로 사용한다.",
+      "scoreComments": {
+        "demandScore": "강함: 조회 138,228 / 스크랩 11,432 / 좋아요 1,956 / 댓글 26",
+        "conversionFitScore": "강함: 본문 checklist row 있음; 이미지 저장 권장, D-30 checklist",
+        "userCreationFit": "강함: 날짜, 예산, 가족/상황, 목표에 맞춰 사용자가 자기 버전을 새로 만들 여지가 크다.",
+        "forkRemixFit": "강함: 기간, 지역, 준비 수준, 목표별로 남의 버전을 가져와 바꾸기 쉽다.",
+        "discussionFit": "강함: 누락 항목, 더 나은 순서, 내 버전 후기 같은 댓글/수정 제안이 생기기 쉽다.",
+        "creatorPromotionFit": "중간 이상: 원문 유입이나 신뢰/retention 효과는 있으나 Flow가 직접 매출/재생으로 이어지는 정도는 제한적이다. 유인=traffic, retention, purchase.",
+        "communityLoopFit": "강함: 사용자 생성, fork, 후기/수정 제안이 함께 맞물려 template exchange 후보로 볼 수 있다.",
+        "combinedPriorityScore": "합산 89: demand 97, conversion 87, community 94, creator 76를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-001",
+      "title": "아정당 이사 준비 체크리스트",
+      "category": "이사/주거",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC%21-23363",
+      "demandScore": 96,
+      "conversionFitScore": 94,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "조회 96,510 / 스크랩 20 / PDF,XLSX,Notion",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "조회 96,510 / 스크랩 20 / PDF,XLSX,Notion",
+        "downloads": "조회 96,510 / 스크랩 20 / PDF,XLSX,Notion",
+        "raw": [
+          "조회 96,510 / 스크랩 20 / PDF,XLSX,Notion"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "strong",
+        "evidence": "엑셀, PDF, 노션 첨부와 D-day 표"
+      },
+      "sourceAvailability": {
+        "level": "strong",
+        "evidence": "본문 표와 첨부파일 row 있음"
+      },
+      "userCreationFit": 90,
+      "forkRemixFit": 92,
+      "discussionFit": 82,
+      "creatorPromotionFit": 88,
+      "creatorPromotionScore": 88,
+      "communityLoopFit": 90,
+      "combinedPriorityScore": 92,
+      "growthLoopType": "brand_lead",
+      "creatorType": "brand",
+      "incentiveType": [
+        "traffic",
+        "download",
+        "lead",
+        "booking"
+      ],
+      "promotionAngle": "이사일만 넣으면 엑셀/PDF/노션 체크리스트를 실행표로 바꿔 드립니다. 상세 견적과 파일은 원문에서 확인하세요.",
+      "backlinkValue": "high",
+      "cannibalizationRisk": "low",
+      "permissionNeed": "medium",
+      "sourceRiskLevel": "creator",
+      "gateResult": "canary_candidate",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn0view1"
+        ]
+      },
+      "evidenceNotes": [
+        "AJD 원문은 PDF/XLS/Notion 첨부와 최신 업데이트 신호가 있어 copy intent가 강하다.",
+        "Flow는 파일 다운로드/견적 CTA로 되돌려 보낼 수 있다."
+      ],
+      "recommendedNextAction": "다음 canary 우선 후보. 첨부 row import와 광고/견적 CTA 분리를 먼저 한다.",
+      "scoreComments": {
+        "demandScore": "강함: 조회 96,510 / 스크랩 20 / PDF,XLSX,Notion",
+        "conversionFitScore": "강함: 본문 표와 첨부파일 row 있음; 엑셀, PDF, 노션 첨부와 D-day 표",
+        "userCreationFit": "강함: 날짜, 예산, 가족/상황, 목표에 맞춰 사용자가 자기 버전을 새로 만들 여지가 크다.",
+        "forkRemixFit": "강함: 기간, 지역, 준비 수준, 목표별로 남의 버전을 가져와 바꾸기 쉽다.",
+        "discussionFit": "중간 이상: 실행 후기나 대체 버전 공유는 가능하지만 강한 커뮤니티 토론까지는 검증 필요.",
+        "creatorPromotionFit": "강함: Flow가 원문 방문, 영상 재생, 상담/예약/구매로 되돌아가 제작자가 홍보할 유인이 크다. 유인=traffic, download, lead, booking.",
+        "communityLoopFit": "강함: 사용자 생성, fork, 후기/수정 제안이 함께 맞물려 template exchange 후보로 볼 수 있다.",
+        "combinedPriorityScore": "합산 92: demand 96, conversion 94, community 90, creator 88를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-086",
+      "title": "삼성 에어컨 필터 청소 방법",
+      "category": "반려/식물/관리",
+      "sourceUrl": "https://www.samsungsvc.co.kr/solution/121273",
+      "demandScore": 86,
+      "conversionFitScore": 88,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "조회수 31,677 / 공유 UI",
+        "comments": "unknown",
+        "shares": "조회수 31,677 / 공유 UI",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "조회수 31,677 / 공유 UI"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "필터별 청소 주기와 방법"
+      },
+      "sourceAvailability": {
+        "level": "strong",
+        "evidence": "제조사 공식 주기/방법 row 있음"
+      },
+      "userCreationFit": 35,
+      "forkRemixFit": 42,
+      "discussionFit": 25,
+      "creatorPromotionFit": 72,
+      "creatorPromotionScore": 72,
+      "communityLoopFit": 32,
+      "combinedPriorityScore": 66,
+      "growthLoopType": "official_trust_anchor",
+      "creatorType": "brand",
+      "incentiveType": [
+        "trust",
+        "retention"
+      ],
+      "promotionAngle": "에어컨 필터 청소 주기를 캘린더에 넣고, 모델별 상세 방법은 삼성서비스 원문에서 확인하세요.",
+      "backlinkValue": "medium",
+      "cannibalizationRisk": "medium",
+      "permissionNeed": "low",
+      "sourceRiskLevel": "mixed",
+      "gateResult": "canary_candidate",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn0view2"
+        ]
+      },
+      "evidenceNotes": [
+        "제조사 공식 반복 관리 콘텐츠로 신뢰와 반복성은 강하지만 사용자 remix 여지는 낮다.",
+        "커뮤니티형 후보가 아니라 브랜드 trust/retention 후보."
+      ],
+      "recommendedNextAction": "utility trust anchor로 유지. 커뮤니티 canary에서는 제외한다.",
+      "scoreComments": {
+        "demandScore": "강함: 조회수 31,677 / 공유 UI",
+        "conversionFitScore": "강함: 제조사 공식 주기/방법 row 있음; 필터별 청소 주기와 방법",
+        "userCreationFit": "낮음: 공식 일정 또는 고정 절차 성격이 강해 사용자가 새 Flow를 만들 이유가 약하다.",
+        "forkRemixFit": "낮음: 공식 row나 고정 절차를 유지해야 하므로 fork보다 저장/확인이 맞다.",
+        "discussionFit": "낮음: 공식/민감/단발 절차라 댓글형 의견 교환보다 원문 확인이 우선이다.",
+        "creatorPromotionFit": "중간 이상: 원문 유입이나 신뢰/retention 효과는 있으나 Flow가 직접 매출/재생으로 이어지는 정도는 제한적이다. 유인=trust, retention.",
+        "communityLoopFit": "낮음: 서로 만들고 수정하는 카테고리보다 공식 확인/개인 저장/캘린더 알림 역할이 맞다.",
+        "combinedPriorityScore": "합산 66: demand 86, conversion 88, community 32, creator 72를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-021",
+      "title": "질병관리청 표준 예방접종 일정표",
+      "category": "육아/교육",
+      "sourceUrl": "https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&menuLv=1",
+      "demandScore": 84,
+      "conversionFitScore": 92,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "조회수 unknown / 공식 PDF 다운로드 링크",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "조회수 unknown / 공식 PDF 다운로드 링크",
+        "raw": [
+          "조회수 unknown / 공식 PDF 다운로드 링크"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "strong",
+        "evidence": "어린이 예방접종 일정표 PDF, 월령 row"
+      },
+      "sourceAvailability": {
+        "level": "strong",
+        "evidence": "공식 일정표 PDF 있음"
+      },
+      "userCreationFit": 20,
+      "forkRemixFit": 25,
+      "discussionFit": 20,
+      "creatorPromotionFit": 30,
+      "creatorPromotionScore": 30,
+      "communityLoopFit": 22,
+      "combinedPriorityScore": 54,
+      "growthLoopType": "official_trust_anchor",
+      "creatorType": "official",
+      "incentiveType": [
+        "trust"
+      ],
+      "promotionAngle": "출생일 기준 접종 일정을 캘린더에 옮기고 최신 기준은 예방접종도우미 원문에서 확인하세요.",
+      "backlinkValue": "medium",
+      "cannibalizationRisk": "low",
+      "permissionNeed": "low",
+      "sourceRiskLevel": "official",
+      "gateResult": "canary_candidate",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn0view3"
+        ]
+      },
+      "evidenceNotes": [
+        "공식 일정표라 conversion fit은 강하지만 사용자가 서로 버전 공유할 성격은 약하다.",
+        "민감 영역이므로 공식 row와 메모 중심이 맞다."
+      ],
+      "recommendedNextAction": "trust anchor canary로 유지하되 community/creator 루프 점수는 낮게 둔다.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 조회수 unknown / 공식 PDF 다운로드 링크",
+        "conversionFitScore": "강함: 공식 일정표 PDF 있음; 어린이 예방접종 일정표 PDF, 월령 row",
+        "userCreationFit": "낮음: 공식 일정 또는 고정 절차 성격이 강해 사용자가 새 Flow를 만들 이유가 약하다.",
+        "forkRemixFit": "낮음: 공식 row나 고정 절차를 유지해야 하므로 fork보다 저장/확인이 맞다.",
+        "discussionFit": "낮음: 공식/민감/단발 절차라 댓글형 의견 교환보다 원문 확인이 우선이다.",
+        "creatorPromotionFit": "낮음: 공식 정보 또는 utility 성격이 강해 제작자 홍보 루프보다는 trust anchor 역할이 맞다. 유인=trust.",
+        "communityLoopFit": "낮음: 서로 만들고 수정하는 카테고리보다 공식 확인/개인 저장/캘린더 알림 역할이 맞다.",
+        "combinedPriorityScore": "합산 54: demand 84, conversion 92, community 22, creator 30를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-025",
+      "title": "초기 토핑 이유식 식단표 엑셀 템플릿",
+      "category": "육아/교육",
+      "sourceUrl": "https://happybubulab.com/entry/%EB%AC%B4%EB%A3%8C-%EA%B3%B5%EC%9C%A0-%EC%B4%88%EA%B8%B0-%EC%9D%B4%EC%9C%A0%EC%8B%9D-%EC%8B%9D%EB%8B%A8%ED%91%9C-%EC%97%91%EC%85%80-%ED%85%9C%ED%94%8C%EB%A6%BF-%ED%86%A0%ED%95%91-%EC%9D%B4%EC%9C%A0%EC%8B%9D-%EC%99%84%EB%B2%BD-%EA%B0%80%EC%9D%B4%EB%93%9C",
+      "demandScore": 84,
+      "conversionFitScore": 65,
+      "visibleTrafficSignal": {
+        "observed": false,
+        "views": "무료 공유 / 엑셀 템플릿 / 공감·댓글 요청, 수치 unknown",
+        "comments": "무료 공유 / 엑셀 템플릿 / 공감·댓글 요청, 수치 unknown",
+        "shares": "무료 공유 / 엑셀 템플릿 / 공감·댓글 요청, 수치 unknown",
+        "saves": "unknown",
+        "downloads": "무료 공유 / 엑셀 템플릿 / 공감·댓글 요청, 수치 unknown",
+        "raw": [
+          "무료 공유 / 엑셀 템플릿 / 공감·댓글 요청, 수치 unknown"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "strong",
+        "evidence": "초기 이유식 식단표 엑셀 템플릿"
+      },
+      "sourceAvailability": {
+        "level": "source_import_required",
+        "evidence": "파일 row 직접 확인 필요"
+      },
+      "userCreationFit": 88,
+      "forkRemixFit": 86,
+      "discussionFit": 90,
+      "creatorPromotionFit": 82,
+      "creatorPromotionScore": 82,
+      "communityLoopFit": 89,
+      "combinedPriorityScore": 81,
+      "growthLoopType": "template_exchange",
+      "creatorType": "individual_creator",
+      "incentiveType": [
+        "traffic",
+        "download",
+        "subscription",
+        "trust"
+      ],
+      "promotionAngle": "초기 이유식 식단표를 내 아이 시작일에 맞춰 쓰고, 엑셀 원본과 설명은 제작자 글에서 받으세요.",
+      "backlinkValue": "high",
+      "cannibalizationRisk": "medium",
+      "permissionNeed": "high",
+      "sourceRiskLevel": "medical_family_sensitive",
+      "gateResult": "source_import_required",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn0view4"
+        ]
+      },
+      "evidenceNotes": [
+        "엑셀 템플릿/무료 공유 성격은 부모 간 수정, 댓글, 버전 공유 가능성이 매우 높다.",
+        "다만 파일 row와 사용 조건 확인 전에는 seed로 만들 수 없다."
+      ],
+      "recommendedNextAction": "source_import_required. 파일 row와 공유 허용 범위를 확인하면 canary 후보로 승격한다.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 무료 공유 / 엑셀 템플릿 / 공감·댓글 요청, 수치 unknown",
+        "conversionFitScore": "제한적: 파일 row 직접 확인 필요; 초기 이유식 식단표 엑셀 템플릿",
+        "userCreationFit": "강함: 날짜, 예산, 가족/상황, 목표에 맞춰 사용자가 자기 버전을 새로 만들 여지가 크다.",
+        "forkRemixFit": "강함: 기간, 지역, 준비 수준, 목표별로 남의 버전을 가져와 바꾸기 쉽다.",
+        "discussionFit": "강함: 누락 항목, 더 나은 순서, 내 버전 후기 같은 댓글/수정 제안이 생기기 쉽다.",
+        "creatorPromotionFit": "중간 이상: 원문 유입이나 신뢰/retention 효과는 있으나 Flow가 직접 매출/재생으로 이어지는 정도는 제한적이다. 유인=traffic, download, subscription, trust.",
+        "communityLoopFit": "강함: 사용자 생성, fork, 후기/수정 제안이 함께 맞물려 template exchange 후보로 볼 수 있다.",
+        "combinedPriorityScore": "합산 81: demand 84, conversion 65, community 89, creator 82를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-031",
+      "title": "오픽만수르 모의고사 공부 방법",
+      "category": "공부/시험",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "demandScore": 83,
+      "conversionFitScore": 88,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "조회수 unknown / XLSX, 1달 PDF, 2주 PDF",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "조회수 unknown / XLSX, 1달 PDF, 2주 PDF",
+        "raw": [
+          "조회수 unknown / XLSX, 1달 PDF, 2주 PDF"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "strong",
+        "evidence": "공부 계획표 엑셀/PDF와 영상자료"
+      },
+      "sourceAvailability": {
+        "level": "strong",
+        "evidence": "계획표 파일과 영상 링크 있음"
+      },
+      "userCreationFit": 78,
+      "forkRemixFit": 88,
+      "discussionFit": 76,
+      "creatorPromotionFit": 78,
+      "creatorPromotionScore": 78,
+      "communityLoopFit": 82,
+      "combinedPriorityScore": 83,
+      "growthLoopType": "template_exchange",
+      "creatorType": "individual_creator",
+      "incentiveType": [
+        "traffic",
+        "download",
+        "video_view",
+        "trust"
+      ],
+      "promotionAngle": "2주/1달 오픽 모의고사 계획을 내 시험일에 맞춰 저장하고, 계획표와 영상 링크는 원문에서 확인하세요.",
+      "backlinkValue": "high",
+      "cannibalizationRisk": "low",
+      "permissionNeed": "medium",
+      "sourceRiskLevel": "creator",
+      "gateResult": "canary_candidate",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn0view5"
+        ]
+      },
+      "evidenceNotes": [
+        "계획표 다운로드와 영상 매핑 가능성이 있어 시험 기간별 fork가 자연스럽다.",
+        "사용자는 2주/1달/시험일 기준으로 자기 버전을 만들 가능성이 높다."
+      ],
+      "recommendedNextAction": "다음 canary 우선 후보. 첨부 계획표 row와 영상 URL만 가져온다.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 조회수 unknown / XLSX, 1달 PDF, 2주 PDF",
+        "conversionFitScore": "강함: 계획표 파일과 영상 링크 있음; 공부 계획표 엑셀/PDF와 영상자료",
+        "userCreationFit": "중간 이상: 시작일, 요일, 기간, 수준 정도는 사용자가 직접 조정할 수 있다.",
+        "forkRemixFit": "강함: 기간, 지역, 준비 수준, 목표별로 남의 버전을 가져와 바꾸기 쉽다.",
+        "discussionFit": "중간 이상: 실행 후기나 대체 버전 공유는 가능하지만 강한 커뮤니티 토론까지는 검증 필요.",
+        "creatorPromotionFit": "중간 이상: 원문 유입이나 신뢰/retention 효과는 있으나 Flow가 직접 매출/재생으로 이어지는 정도는 제한적이다. 유인=traffic, download, video_view, trust.",
+        "communityLoopFit": "중간 이상: 반복 실행과 공유 가능성은 있으나 source import 또는 권한 확인 후 키우는 편이 안전하다.",
+        "combinedPriorityScore": "합산 83: demand 83, conversion 88, community 82, creator 78를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-045",
+      "title": "국세청 연말정산 체크리스트",
+      "category": "정부/행정",
+      "sourceUrl": "https://call.nts.go.kr/call/cm/cntnts/cntntsView.do?cntntsId=7042&mi=2764",
+      "demandScore": 83,
+      "conversionFitScore": 86,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "조회수 unknown / 공식 체크리스트 / 인쇄 UI",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "조회수 unknown / 공식 체크리스트 / 인쇄 UI"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "연말정산 공제 판단 checklist"
+      },
+      "sourceAvailability": {
+        "level": "source_import_required",
+        "evidence": "공제 항목 row extraction 필요"
+      },
+      "userCreationFit": 25,
+      "forkRemixFit": 30,
+      "discussionFit": 22,
+      "creatorPromotionFit": 28,
+      "creatorPromotionScore": 28,
+      "communityLoopFit": 24,
+      "combinedPriorityScore": 53,
+      "growthLoopType": "official_trust_anchor",
+      "creatorType": "official",
+      "incentiveType": [
+        "trust"
+      ],
+      "promotionAngle": "연말정산 체크 항목을 시트로 옮기고 세부 판단은 국세청 원문에서 확인하세요.",
+      "backlinkValue": "medium",
+      "cannibalizationRisk": "low",
+      "permissionNeed": "low",
+      "sourceRiskLevel": "official",
+      "gateResult": "canary_candidate",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn0view6"
+        ]
+      },
+      "evidenceNotes": [
+        "공식 세무 정보라 utility는 강하지만 사용자 remix나 댓글형 확장은 부적절하다.",
+        "세무 해석은 Flow 안에서 늘리지 않고 source link 중심으로 둔다."
+      ],
+      "recommendedNextAction": "trust anchor 후보. community canary에서는 후순위.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 조회수 unknown / 공식 체크리스트 / 인쇄 UI",
+        "conversionFitScore": "강함: 공제 항목 row extraction 필요; 연말정산 공제 판단 checklist",
+        "userCreationFit": "낮음: 공식 일정 또는 고정 절차 성격이 강해 사용자가 새 Flow를 만들 이유가 약하다.",
+        "forkRemixFit": "낮음: 공식 row나 고정 절차를 유지해야 하므로 fork보다 저장/확인이 맞다.",
+        "discussionFit": "낮음: 공식/민감/단발 절차라 댓글형 의견 교환보다 원문 확인이 우선이다.",
+        "creatorPromotionFit": "낮음: 공식 정보 또는 utility 성격이 강해 제작자 홍보 루프보다는 trust anchor 역할이 맞다. 유인=trust.",
+        "communityLoopFit": "낮음: 서로 만들고 수정하는 카테고리보다 공식 확인/개인 저장/캘린더 알림 역할이 맞다.",
+        "combinedPriorityScore": "합산 53: demand 83, conversion 86, community 24, creator 28를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-023",
+      "title": "국립재활원 영유아 건강검진",
+      "category": "육아/교육",
+      "sourceUrl": "https://www.nrc.go.kr/portal/html/content.do?depth=ph&menu_cd=03_02_00_04",
+      "demandScore": 82,
+      "conversionFitScore": 89,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "조회수 unknown / 공식 월령 row",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "조회수 unknown / 공식 월령 row"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "생후 14일~71개월 검진 차수"
+      },
+      "sourceAvailability": {
+        "level": "strong",
+        "evidence": "검진 차수/월령/항목 row 있음"
+      },
+      "userCreationFit": 28,
+      "forkRemixFit": 30,
+      "discussionFit": 24,
+      "creatorPromotionFit": 30,
+      "creatorPromotionScore": 30,
+      "communityLoopFit": 26,
+      "combinedPriorityScore": 55,
+      "growthLoopType": "official_trust_anchor",
+      "creatorType": "official",
+      "incentiveType": [
+        "trust"
+      ],
+      "promotionAngle": "아이 월령별 건강검진 일정을 캘린더에 옮기고 최신 기준은 공식 원문에서 확인하세요.",
+      "backlinkValue": "medium",
+      "cannibalizationRisk": "low",
+      "permissionNeed": "low",
+      "sourceRiskLevel": "official",
+      "gateResult": "canary_candidate",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn0view7"
+        ]
+      },
+      "evidenceNotes": [
+        "공식/기관성 일정 콘텐츠라 날짜 transfer는 강하지만 사용자 생성형 카테고리는 아니다.",
+        "부모 경험담과 공식 기준을 섞지 않아야 한다."
+      ],
+      "recommendedNextAction": "공식 육아 logistics trust anchor로 유지.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 조회수 unknown / 공식 월령 row",
+        "conversionFitScore": "강함: 검진 차수/월령/항목 row 있음; 생후 14일~71개월 검진 차수",
+        "userCreationFit": "낮음: 공식 일정 또는 고정 절차 성격이 강해 사용자가 새 Flow를 만들 이유가 약하다.",
+        "forkRemixFit": "낮음: 공식 row나 고정 절차를 유지해야 하므로 fork보다 저장/확인이 맞다.",
+        "discussionFit": "낮음: 공식/민감/단발 절차라 댓글형 의견 교환보다 원문 확인이 우선이다.",
+        "creatorPromotionFit": "낮음: 공식 정보 또는 utility 성격이 강해 제작자 홍보 루프보다는 trust anchor 역할이 맞다. 유인=trust.",
+        "communityLoopFit": "낮음: 서로 만들고 수정하는 카테고리보다 공식 확인/개인 저장/캘린더 알림 역할이 맞다.",
+        "combinedPriorityScore": "합산 55: demand 82, conversion 89, community 26, creator 30를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-044",
+      "title": "안전운전 통합민원 면허 갱신/적성검사",
+      "category": "정부/행정",
+      "sourceUrl": "https://www.safedriving.or.kr/guide/larGuide011.do?menuCode=MN-PO-1211",
+      "demandScore": 80,
+      "conversionFitScore": 86,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "조회수 unknown / 공식 준비물·수수료 row",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "조회수 unknown / 공식 준비물·수수료 row"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "면허 종류별 준비물, 사진 매수, 수수료, 신청 링크"
+      },
+      "sourceAvailability": {
+        "level": "strong",
+        "evidence": "면허 종류별 준비물/수수료 row 있음"
+      },
+      "userCreationFit": 30,
+      "forkRemixFit": 36,
+      "discussionFit": 24,
+      "creatorPromotionFit": 30,
+      "creatorPromotionScore": 30,
+      "communityLoopFit": 28,
+      "combinedPriorityScore": 54,
+      "growthLoopType": "official_trust_anchor",
+      "creatorType": "official",
+      "incentiveType": [
+        "trust"
+      ],
+      "promotionAngle": "면허 갱신/적성검사 준비물을 캘린더와 체크리스트로 옮기고, 신청은 안전운전 통합민원에서 진행하세요.",
+      "backlinkValue": "high",
+      "cannibalizationRisk": "low",
+      "permissionNeed": "low",
+      "sourceRiskLevel": "official",
+      "gateResult": "canary_candidate",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn0view8"
+        ]
+      },
+      "evidenceNotes": [
+        "공식 행정 action과 원문 회귀가 명확하지만 community remix는 낮다.",
+        "면허 종류별 분기는 setupField 수준으로 제한한다."
+      ],
+      "recommendedNextAction": "공식 행정 canary로 유지. 커뮤니티 점수는 낮게 둔다.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 조회수 unknown / 공식 준비물·수수료 row",
+        "conversionFitScore": "강함: 면허 종류별 준비물/수수료 row 있음; 면허 종류별 준비물, 사진 매수, 수수료, 신청 링크",
+        "userCreationFit": "낮음: 공식 일정 또는 고정 절차 성격이 강해 사용자가 새 Flow를 만들 이유가 약하다.",
+        "forkRemixFit": "낮음: 공식 row나 고정 절차를 유지해야 하므로 fork보다 저장/확인이 맞다.",
+        "discussionFit": "낮음: 공식/민감/단발 절차라 댓글형 의견 교환보다 원문 확인이 우선이다.",
+        "creatorPromotionFit": "낮음: 공식 정보 또는 utility 성격이 강해 제작자 홍보 루프보다는 trust anchor 역할이 맞다. 유인=trust.",
+        "communityLoopFit": "낮음: 서로 만들고 수정하는 카테고리보다 공식 확인/개인 저장/캘린더 알림 역할이 맞다.",
+        "combinedPriorityScore": "합산 54: demand 80, conversion 86, community 28, creator 30를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-055",
+      "title": "Visit Japan Web 공식",
+      "category": "여행/캠핑",
+      "sourceUrl": "https://services.digital.go.jp/ko/visit-japan-web/",
+      "demandScore": 80,
+      "conversionFitScore": 65,
+      "visibleTrafficSignal": {
+        "observed": false,
+        "views": "공식 서비스 존재 확인 / 본문 0 lines",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "공식 서비스 존재 확인 / 본문 0 lines"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "입국심사/세관신고 사전등록 checklist 수요"
+      },
+      "sourceAvailability": {
+        "level": "blocked",
+        "evidence": "공식 URL 본문 row 미추출"
+      },
+      "userCreationFit": 45,
+      "forkRemixFit": 52,
+      "discussionFit": 36,
+      "creatorPromotionFit": 42,
+      "creatorPromotionScore": 42,
+      "communityLoopFit": 44,
+      "combinedPriorityScore": 57,
+      "growthLoopType": "official_trust_anchor",
+      "creatorType": "official",
+      "incentiveType": [
+        "trust",
+        "retention"
+      ],
+      "promotionAngle": "일본 입국 전 해야 할 일을 저장하고 실제 등록은 Visit Japan Web에서 완료하세요.",
+      "backlinkValue": "high",
+      "cannibalizationRisk": "low",
+      "permissionNeed": "medium",
+      "sourceRiskLevel": "official",
+      "gateResult": "source_import_required",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn0view9"
+        ]
+      },
+      "evidenceNotes": [
+        "공식 서비스로 원문 회귀는 강하지만 row 추출이 제한적이다.",
+        "여행별 fork 여지는 있으나 공식 절차를 임의로 바꾸면 안 된다."
+      ],
+      "recommendedNextAction": "source_import_required. 공식 절차 row를 확보하기 전까지 보류.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 공식 서비스 존재 확인 / 본문 0 lines",
+        "conversionFitScore": "제한적: 공식 URL 본문 row 미추출; 입국심사/세관신고 사전등록 checklist 수요",
+        "userCreationFit": "낮음: 공식 일정 또는 고정 절차 성격이 강해 사용자가 새 Flow를 만들 이유가 약하다.",
+        "forkRemixFit": "제한적: 보조 메모나 일부 항목 수정은 가능하나 fork 자체가 핵심 사용 이유는 아니다.",
+        "discussionFit": "낮음: 공식/민감/단발 절차라 댓글형 의견 교환보다 원문 확인이 우선이다.",
+        "creatorPromotionFit": "낮음: 공식 정보 또는 utility 성격이 강해 제작자 홍보 루프보다는 trust anchor 역할이 맞다. 유인=trust, retention.",
+        "communityLoopFit": "낮음: 서로 만들고 수정하는 카테고리보다 공식 확인/개인 저장/캘린더 알림 역할이 맞다.",
+        "combinedPriorityScore": "합산 57: demand 80, conversion 65, community 44, creator 42를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-051",
+      "title": "KKday 해외여행 준비물 체크리스트",
+      "category": "여행/캠핑",
+      "sourceUrl": "https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist",
+      "demandScore": 79,
+      "conversionFitScore": 78,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "글 조회수 unknown / 상품 100K+ 예약 등 상업 수요 신호",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "글 조회수 unknown / 상품 100K+ 예약 등 상업 수요 신호"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "필수/유용/숙소 확인 준비물 표"
+      },
+      "sourceAvailability": {
+        "level": "strong",
+        "evidence": "준비물 목록 row 있음"
+      },
+      "userCreationFit": 86,
+      "forkRemixFit": 90,
+      "discussionFit": 78,
+      "creatorPromotionFit": 86,
+      "creatorPromotionScore": 86,
+      "communityLoopFit": 86,
+      "combinedPriorityScore": 83,
+      "growthLoopType": "marketplace_conversion",
+      "creatorType": "marketplace",
+      "incentiveType": [
+        "traffic",
+        "booking",
+        "purchase"
+      ],
+      "promotionAngle": "여행지와 동행자에 맞춰 준비물 체크리스트를 저장하고, eSIM/티켓/바우처는 KKday 원문에서 예약하세요.",
+      "backlinkValue": "high",
+      "cannibalizationRisk": "low",
+      "permissionNeed": "medium",
+      "sourceRiskLevel": "mixed",
+      "gateResult": "seed_candidate_after_row_extract",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn1view0"
+        ]
+      },
+      "evidenceNotes": [
+        "2026 준비물 글, 품목 표, 예약/상품 CTA가 같이 있어 marketplace conversion 루프가 강하다.",
+        "여행지/계절/동행자별 fork가 매우 자연스럽다."
+      ],
+      "recommendedNextAction": "다음 canary 후보. 준비물 row와 상품 CTA를 분리한다.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 글 조회수 unknown / 상품 100K+ 예약 등 상업 수요 신호",
+        "conversionFitScore": "중간 이상: 준비물 목록 row 있음; 필수/유용/숙소 확인 준비물 표",
+        "userCreationFit": "강함: 날짜, 예산, 가족/상황, 목표에 맞춰 사용자가 자기 버전을 새로 만들 여지가 크다.",
+        "forkRemixFit": "강함: 기간, 지역, 준비 수준, 목표별로 남의 버전을 가져와 바꾸기 쉽다.",
+        "discussionFit": "중간 이상: 실행 후기나 대체 버전 공유는 가능하지만 강한 커뮤니티 토론까지는 검증 필요.",
+        "creatorPromotionFit": "강함: Flow가 원문 방문, 영상 재생, 상담/예약/구매로 되돌아가 제작자가 홍보할 유인이 크다. 유인=traffic, booking, purchase.",
+        "communityLoopFit": "강함: 사용자 생성, fork, 후기/수정 제안이 함께 맞물려 template exchange 후보로 볼 수 있다.",
+        "combinedPriorityScore": "합산 83: demand 79, conversion 78, community 86, creator 86를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-047",
+      "title": "국세청 개인 사업자등록 신청서 작성방법",
+      "category": "정부/행정",
+      "sourceUrl": "https://www.nts.go.kr/taxpayer_advocate/na/ntt/selectNttInfo.do?mi=&nttSn=1302746",
+      "demandScore": 78,
+      "conversionFitScore": 82,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "조회수 unknown / HWPX 신청서 첨부",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "조회수 unknown / HWPX 신청서 첨부"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "공식 신청서 HWPX와 작성 방법"
+      },
+      "sourceAvailability": {
+        "level": "strong",
+        "evidence": "신청서 작성법/첨부 있음"
+      },
+      "userCreationFit": 32,
+      "forkRemixFit": 38,
+      "discussionFit": 28,
+      "creatorPromotionFit": 30,
+      "creatorPromotionScore": 30,
+      "communityLoopFit": 31,
+      "combinedPriorityScore": 54,
+      "growthLoopType": "official_trust_anchor",
+      "creatorType": "official",
+      "incentiveType": [
+        "trust"
+      ],
+      "promotionAngle": "사업자등록 준비 서류를 체크하고 신청 세부는 국세청 원문에서 확인하세요.",
+      "backlinkValue": "high",
+      "cannibalizationRisk": "low",
+      "permissionNeed": "low",
+      "sourceRiskLevel": "official",
+      "gateResult": "seed_candidate_after_row_extract",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn1view1"
+        ]
+      },
+      "evidenceNotes": [
+        "행정 절차 utility는 강하지만 사용자 버전 공유는 제한적이다.",
+        "사업 유형별 분기는 많아져도 내부 입력은 메모 수준으로 제한해야 한다."
+      ],
+      "recommendedNextAction": "사업/행정 trust anchor로 유지.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 조회수 unknown / HWPX 신청서 첨부",
+        "conversionFitScore": "중간 이상: 신청서 작성법/첨부 있음; 공식 신청서 HWPX와 작성 방법",
+        "userCreationFit": "낮음: 공식 일정 또는 고정 절차 성격이 강해 사용자가 새 Flow를 만들 이유가 약하다.",
+        "forkRemixFit": "낮음: 공식 row나 고정 절차를 유지해야 하므로 fork보다 저장/확인이 맞다.",
+        "discussionFit": "낮음: 공식/민감/단발 절차라 댓글형 의견 교환보다 원문 확인이 우선이다.",
+        "creatorPromotionFit": "낮음: 공식 정보 또는 utility 성격이 강해 제작자 홍보 루프보다는 trust anchor 역할이 맞다. 유인=trust.",
+        "communityLoopFit": "낮음: 서로 만들고 수정하는 카테고리보다 공식 확인/개인 저장/캘린더 알림 역할이 맞다.",
+        "combinedPriorityScore": "합산 54: demand 78, conversion 82, community 31, creator 30를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-054",
+      "title": "생활법령정보 해외여행 출국절차",
+      "category": "여행/캠핑",
+      "sourceUrl": "https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=894&popMenu=ov",
+      "demandScore": 78,
+      "conversionFitScore": 82,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "조회수 unknown / 주소복사·즐겨찾기 UI",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "조회수 unknown / 주소복사·즐겨찾기 UI"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "strong",
+        "evidence": "공항 도착부터 탑승까지 절차 row"
+      },
+      "sourceAvailability": {
+        "level": "strong",
+        "evidence": "출국 절차 8단계 row"
+      },
+      "userCreationFit": 36,
+      "forkRemixFit": 40,
+      "discussionFit": 26,
+      "creatorPromotionFit": 28,
+      "creatorPromotionScore": 28,
+      "communityLoopFit": 32,
+      "combinedPriorityScore": 54,
+      "growthLoopType": "official_trust_anchor",
+      "creatorType": "official",
+      "incentiveType": [
+        "trust"
+      ],
+      "promotionAngle": "출국 절차를 일정으로 옮기고 공식 세부 기준은 생활법령정보에서 확인하세요.",
+      "backlinkValue": "medium",
+      "cannibalizationRisk": "low",
+      "permissionNeed": "low",
+      "sourceRiskLevel": "official",
+      "gateResult": "seed_candidate_after_row_extract",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn1view2"
+        ]
+      },
+      "evidenceNotes": [
+        "공식 절차 sourceTrace로 좋지만 여행 커뮤니티 루프는 준비물/일정표보다 약하다.",
+        "공식 정보와 여행 경험담은 분리해야 한다."
+      ],
+      "recommendedNextAction": "여행 Flow의 공식 보조 source로 사용.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 조회수 unknown / 주소복사·즐겨찾기 UI",
+        "conversionFitScore": "중간 이상: 출국 절차 8단계 row; 공항 도착부터 탑승까지 절차 row",
+        "userCreationFit": "낮음: 공식 일정 또는 고정 절차 성격이 강해 사용자가 새 Flow를 만들 이유가 약하다.",
+        "forkRemixFit": "낮음: 공식 row나 고정 절차를 유지해야 하므로 fork보다 저장/확인이 맞다.",
+        "discussionFit": "낮음: 공식/민감/단발 절차라 댓글형 의견 교환보다 원문 확인이 우선이다.",
+        "creatorPromotionFit": "낮음: 공식 정보 또는 utility 성격이 강해 제작자 홍보 루프보다는 trust anchor 역할이 맞다. 유인=trust.",
+        "communityLoopFit": "낮음: 서로 만들고 수정하는 카테고리보다 공식 확인/개인 저장/캘린더 알림 역할이 맞다.",
+        "combinedPriorityScore": "합산 54: demand 78, conversion 82, community 32, creator 28를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-012",
+      "title": "Planning.wedding 출력용 결혼 체크리스트",
+      "category": "결혼/구매",
+      "sourceUrl": "https://planning.wedding/ko/checklist/printable",
+      "demandScore": 78,
+      "conversionFitScore": 80,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "조회수 unknown / PDF, Excel, template links",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "조회수 unknown / PDF, Excel, template links",
+        "raw": [
+          "조회수 unknown / PDF, Excel, template links"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "strong",
+        "evidence": "출력용 PDF/Excel/checklist template"
+      },
+      "sourceAvailability": {
+        "level": "strong",
+        "evidence": "월별 checklist row와 PDF/Excel 링크"
+      },
+      "userCreationFit": 88,
+      "forkRemixFit": 92,
+      "discussionFit": 80,
+      "creatorPromotionFit": 78,
+      "creatorPromotionScore": 78,
+      "communityLoopFit": 87,
+      "combinedPriorityScore": 82,
+      "growthLoopType": "template_exchange",
+      "creatorType": "platform",
+      "incentiveType": [
+        "traffic",
+        "subscription",
+        "retention"
+      ],
+      "promotionAngle": "출력용 결혼 체크리스트를 내 결혼식 날짜에 맞춰 저장하고, 원문에서 전체 타임라인을 확인하세요.",
+      "backlinkValue": "high",
+      "cannibalizationRisk": "medium",
+      "permissionNeed": "medium",
+      "sourceRiskLevel": "mixed",
+      "gateResult": "seed_candidate_after_row_extract",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn1view3"
+        ]
+      },
+      "evidenceNotes": [
+        "출력용 체크리스트 성격 자체가 copy/fork intent를 만든다.",
+        "다만 해외 기준과 국내 관습 차이를 표시해야 한다."
+      ],
+      "recommendedNextAction": "결혼 canary 후보. 국내 버전 보강 전에는 해외 기준 label을 붙인다.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 조회수 unknown / PDF, Excel, template links",
+        "conversionFitScore": "중간 이상: 월별 checklist row와 PDF/Excel 링크; 출력용 PDF/Excel/checklist template",
+        "userCreationFit": "강함: 날짜, 예산, 가족/상황, 목표에 맞춰 사용자가 자기 버전을 새로 만들 여지가 크다.",
+        "forkRemixFit": "강함: 기간, 지역, 준비 수준, 목표별로 남의 버전을 가져와 바꾸기 쉽다.",
+        "discussionFit": "중간 이상: 실행 후기나 대체 버전 공유는 가능하지만 강한 커뮤니티 토론까지는 검증 필요.",
+        "creatorPromotionFit": "중간 이상: 원문 유입이나 신뢰/retention 효과는 있으나 Flow가 직접 매출/재생으로 이어지는 정도는 제한적이다. 유인=traffic, subscription, retention.",
+        "communityLoopFit": "강함: 사용자 생성, fork, 후기/수정 제안이 함께 맞물려 template exchange 후보로 볼 수 있다.",
+        "combinedPriorityScore": "합산 82: demand 78, conversion 80, community 87, creator 78를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-062",
+      "title": "빅씨스 10분 홈트 루틴 플레이리스트",
+      "category": "운동/건강",
+      "sourceUrl": "https://www.youtube.com/playlist?list=PLkVCuKZG0QB4V4-6p9igSlsTbzxtbK-D0",
+      "demandScore": 78,
+      "conversionFitScore": 68,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "YouTube playlist / 관련 영상 2.4M views 검색 노출",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "YouTube playlist / 관련 영상 2.4M views 검색 노출"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "영상 제목/URL 반복 루틴"
+      },
+      "sourceAvailability": {
+        "level": "source_import_required",
+        "evidence": "playlist 영상 목록 import 필요"
+      },
+      "userCreationFit": 72,
+      "forkRemixFit": 84,
+      "discussionFit": 74,
+      "creatorPromotionFit": 92,
+      "creatorPromotionScore": 92,
+      "communityLoopFit": 80,
+      "combinedPriorityScore": 79,
+      "growthLoopType": "creator_promoted",
+      "creatorType": "individual_creator",
+      "incentiveType": [
+        "video_view",
+        "subscription",
+        "traffic"
+      ],
+      "promotionAngle": "이번 주 할 10분 홈트 영상을 저장하고, 자세와 전체 루틴은 빅씨스 영상에서 재생하세요.",
+      "backlinkValue": "very_high",
+      "cannibalizationRisk": "low",
+      "permissionNeed": "medium",
+      "sourceRiskLevel": "health_sensitive",
+      "gateResult": "source_import_required",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn1view4",
+          "turn3search1"
+        ]
+      },
+      "evidenceNotes": [
+        "YouTube playlist는 원문 재생으로 돌아가는 구조라 creator promotion fit이 매우 강하다.",
+        "영상 목록 import 전에는 Flow 콘텐츠를 만들지 않는다."
+      ],
+      "recommendedNextAction": "source_import_required. 영상 title/URL/길이만 가져오는 canary로 설계한다.",
+      "scoreComments": {
+        "demandScore": "중간 이상: YouTube playlist / 관련 영상 2.4M views 검색 노출",
+        "conversionFitScore": "제한적: playlist 영상 목록 import 필요; 영상 제목/URL 반복 루틴",
+        "userCreationFit": "중간 이상: 시작일, 요일, 기간, 수준 정도는 사용자가 직접 조정할 수 있다.",
+        "forkRemixFit": "중간 이상: 시작일/요일/대상 정도의 remix는 자연스럽지만 구조 전체를 바꾸는 정도는 아니다.",
+        "discussionFit": "중간 이상: 실행 후기나 대체 버전 공유는 가능하지만 강한 커뮤니티 토론까지는 검증 필요.",
+        "creatorPromotionFit": "강함: Flow가 원문 방문, 영상 재생, 상담/예약/구매로 되돌아가 제작자가 홍보할 유인이 크다. 유인=video_view, subscription, traffic.",
+        "communityLoopFit": "중간 이상: 반복 실행과 공유 가능성은 있으나 source import 또는 권한 확인 후 키우는 편이 안전하다.",
+        "combinedPriorityScore": "합산 79: demand 78, conversion 68, community 80, creator 92를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-022",
+      "title": "예방접종도우미 아이 접종일 보기",
+      "category": "육아/교육",
+      "sourceUrl": "https://nip.kdca.go.kr/irhp/mngm/goVcntMngm.do?menuCd=313&menuLv=3",
+      "demandScore": 78,
+      "conversionFitScore": 55,
+      "visibleTrafficSignal": {
+        "observed": false,
+        "views": "unknown",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "검색 추출에서 출생일 선택 후 표준예방접종일 확인 기능 확인"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "birth-date based schedule lookup"
+      },
+      "sourceAvailability": {
+        "level": "source_import_required",
+        "evidence": "birth-date based schedule lookup"
+      },
+      "userCreationFit": 18,
+      "forkRemixFit": 20,
+      "discussionFit": 18,
+      "creatorPromotionFit": 26,
+      "creatorPromotionScore": 26,
+      "communityLoopFit": 18,
+      "combinedPriorityScore": 42,
+      "growthLoopType": "official_trust_anchor",
+      "creatorType": "official",
+      "incentiveType": [
+        "trust"
+      ],
+      "promotionAngle": "아이 접종일 확인은 예방접종도우미에서 하고, Flow에는 일정 알림만 저장하세요.",
+      "backlinkValue": "high",
+      "cannibalizationRisk": "low",
+      "permissionNeed": "low",
+      "sourceRiskLevel": "official",
+      "gateResult": "source_import_required",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn1view5"
+        ]
+      },
+      "evidenceNotes": [
+        "개인 접종일 조회성 서비스라 Flow가 원문 기능을 대체하면 안 된다.",
+        "민감 개인정보/의료성 때문에 community loop로 확장하지 않는다."
+      ],
+      "recommendedNextAction": "공식 링크/일정 보조로만 둔다.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 검색 추출에서 출생일 선택 후 표준예방접종일 확인 기능 확인",
+        "conversionFitScore": "제한적: birth-date based schedule lookup; birth-date based schedule lookup",
+        "userCreationFit": "낮음: 공식 일정 또는 고정 절차 성격이 강해 사용자가 새 Flow를 만들 이유가 약하다.",
+        "forkRemixFit": "낮음: 공식 row나 고정 절차를 유지해야 하므로 fork보다 저장/확인이 맞다.",
+        "discussionFit": "낮음: 공식/민감/단발 절차라 댓글형 의견 교환보다 원문 확인이 우선이다.",
+        "creatorPromotionFit": "낮음: 공식 정보 또는 utility 성격이 강해 제작자 홍보 루프보다는 trust anchor 역할이 맞다. 유인=trust.",
+        "communityLoopFit": "낮음: 서로 만들고 수정하는 카테고리보다 공식 확인/개인 저장/캘린더 알림 역할이 맞다.",
+        "combinedPriorityScore": "합산 42: demand 78, conversion 55, community 18, creator 26를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-003",
+      "title": "생활법령정보 이사 체크리스트",
+      "category": "이사/주거",
+      "sourceUrl": "https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=666&popMenu=ov",
+      "demandScore": 76,
+      "conversionFitScore": 82,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "조회수 unknown / 주소복사·즐겨찾기 UI",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "조회수 unknown / 주소복사·즐겨찾기 UI"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "공식 checklist"
+      },
+      "sourceAvailability": {
+        "level": "strong",
+        "evidence": "일정별 항목 있음"
+      },
+      "userCreationFit": 40,
+      "forkRemixFit": 44,
+      "discussionFit": 28,
+      "creatorPromotionFit": 24,
+      "creatorPromotionScore": 24,
+      "communityLoopFit": 36,
+      "combinedPriorityScore": 54,
+      "growthLoopType": "official_trust_anchor",
+      "creatorType": "official",
+      "incentiveType": [
+        "trust"
+      ],
+      "promotionAngle": "이사 행정 체크는 생활법령정보 원문을 기준으로 확인하세요.",
+      "backlinkValue": "medium",
+      "cannibalizationRisk": "low",
+      "permissionNeed": "low",
+      "sourceRiskLevel": "official",
+      "gateResult": "structure_only",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn1view6"
+        ]
+      },
+      "evidenceNotes": [
+        "공식 sourceTrace로 신뢰 보강 역할이 크고 community loop는 낮다.",
+        "AJD/오늘의집 같은 사용자형 이사 Flow의 근거 보조로 쓰는 편이 맞다."
+      ],
+      "recommendedNextAction": "이사 대표 Flow의 공식 근거 보조 source.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 조회수 unknown / 주소복사·즐겨찾기 UI",
+        "conversionFitScore": "중간 이상: 일정별 항목 있음; 공식 checklist",
+        "userCreationFit": "낮음: 공식 일정 또는 고정 절차 성격이 강해 사용자가 새 Flow를 만들 이유가 약하다.",
+        "forkRemixFit": "낮음: 공식 row나 고정 절차를 유지해야 하므로 fork보다 저장/확인이 맞다.",
+        "discussionFit": "낮음: 공식/민감/단발 절차라 댓글형 의견 교환보다 원문 확인이 우선이다.",
+        "creatorPromotionFit": "낮음: 공식 정보 또는 utility 성격이 강해 제작자 홍보 루프보다는 trust anchor 역할이 맞다. 유인=trust.",
+        "communityLoopFit": "낮음: 서로 만들고 수정하는 카테고리보다 공식 확인/개인 저장/캘린더 알림 역할이 맞다.",
+        "combinedPriorityScore": "합산 54: demand 76, conversion 82, community 36, creator 24를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-063",
+      "title": "빅씨스 초보 홈트 5일 챌린지",
+      "category": "운동/건강",
+      "sourceUrl": "https://www.youtube.com/watch?v=YDZjUrnfMU4",
+      "demandScore": 76,
+      "conversionFitScore": 65,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "직접 open error / 검색 결과 related 346K, 1.4M views",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "직접 open error / 검색 결과 related 346K, 1.4M views"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "5일 홈트 챌린지 영상 루틴"
+      },
+      "sourceAvailability": {
+        "level": "source_import_required",
+        "evidence": "영상 설명/챕터 import 필요"
+      },
+      "userCreationFit": 70,
+      "forkRemixFit": 82,
+      "discussionFit": 72,
+      "creatorPromotionFit": 90,
+      "creatorPromotionScore": 90,
+      "communityLoopFit": 78,
+      "combinedPriorityScore": 77,
+      "growthLoopType": "creator_promoted",
+      "creatorType": "individual_creator",
+      "incentiveType": [
+        "video_view",
+        "subscription"
+      ],
+      "promotionAngle": "5일 홈트 챌린지를 요일에 맞춰 저장하고, 매일 운동은 빅씨스 영상에서 재생하세요.",
+      "backlinkValue": "very_high",
+      "cannibalizationRisk": "low",
+      "permissionNeed": "medium",
+      "sourceRiskLevel": "health_sensitive",
+      "gateResult": "source_import_required",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn3search0"
+        ]
+      },
+      "evidenceNotes": [
+        "검색 결과로 Day 1/Day 2 등 영상 sequence가 확인되어 챌린지형 fork가 가능하다.",
+        "동작 순서는 가져오지 않고 영상 제목/URL/반복 요일만 다뤄야 한다."
+      ],
+      "recommendedNextAction": "영상 목록 import 후 홈트 canary 후보. 통증/상태 필드는 만들지 않는다.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 직접 open error / 검색 결과 related 346K, 1.4M views",
+        "conversionFitScore": "제한적: 영상 설명/챕터 import 필요; 5일 홈트 챌린지 영상 루틴",
+        "userCreationFit": "중간 이상: 시작일, 요일, 기간, 수준 정도는 사용자가 직접 조정할 수 있다.",
+        "forkRemixFit": "중간 이상: 시작일/요일/대상 정도의 remix는 자연스럽지만 구조 전체를 바꾸는 정도는 아니다.",
+        "discussionFit": "중간 이상: 실행 후기나 대체 버전 공유는 가능하지만 강한 커뮤니티 토론까지는 검증 필요.",
+        "creatorPromotionFit": "강함: Flow가 원문 방문, 영상 재생, 상담/예약/구매로 되돌아가 제작자가 홍보할 유인이 크다. 유인=video_view, subscription.",
+        "communityLoopFit": "중간 이상: 반복 실행과 공유 가능성은 있으나 source import 또는 권한 확인 후 키우는 편이 안전하다.",
+        "combinedPriorityScore": "합산 77: demand 76, conversion 65, community 78, creator 90를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-099",
+      "title": "토스페이먼츠 통신판매업 신고 방법",
+      "category": "커리어/사업",
+      "sourceUrl": "https://www.tosspayments.com/blog/articles/sales-registration",
+      "demandScore": 75,
+      "conversionFitScore": 78,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "조회수 unknown / 제출서류 표",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "조회수 unknown / 제출서류 표"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "제출서류와 등록 절차 표"
+      },
+      "sourceAvailability": {
+        "level": "strong",
+        "evidence": "서류 표 있음"
+      },
+      "userCreationFit": 50,
+      "forkRemixFit": 58,
+      "discussionFit": 42,
+      "creatorPromotionFit": 84,
+      "creatorPromotionScore": 84,
+      "communityLoopFit": 52,
+      "combinedPriorityScore": 70,
+      "growthLoopType": "brand_lead",
+      "creatorType": "brand",
+      "incentiveType": [
+        "traffic",
+        "lead",
+        "trust"
+      ],
+      "promotionAngle": "통신판매업 신고 준비물을 체크하고 결제/사업 운영 정보는 토스페이먼츠 원문에서 이어서 보세요.",
+      "backlinkValue": "high",
+      "cannibalizationRisk": "low",
+      "permissionNeed": "medium",
+      "sourceRiskLevel": "mixed",
+      "gateResult": "seed_candidate_after_row_extract",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn1view8"
+        ]
+      },
+      "evidenceNotes": [
+        "브랜드가 사업자/판매자 리드를 얻을 유인은 크다.",
+        "법/행정 정보라 커뮤니티 remix보다 공식 확인과 링크 회귀가 우선이다."
+      ],
+      "recommendedNextAction": "creator promotion 강하지만 공식 source 교차 확인 후 사용.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 조회수 unknown / 제출서류 표",
+        "conversionFitScore": "중간 이상: 서류 표 있음; 제출서류와 등록 절차 표",
+        "userCreationFit": "제한적: 일부 개인화는 가능하지만 원문 구조나 브랜드/기관 안내가 주도한다.",
+        "forkRemixFit": "제한적: 보조 메모나 일부 항목 수정은 가능하나 fork 자체가 핵심 사용 이유는 아니다.",
+        "discussionFit": "낮음: 공식/민감/단발 절차라 댓글형 의견 교환보다 원문 확인이 우선이다.",
+        "creatorPromotionFit": "중간 이상: 원문 유입이나 신뢰/retention 효과는 있으나 Flow가 직접 매출/재생으로 이어지는 정도는 제한적이다. 유인=traffic, lead, trust.",
+        "communityLoopFit": "제한적: 사용자 상황별 수정은 일부 있지만 커뮤니티 성장 루프보다는 개별 utility가 중심이다.",
+        "combinedPriorityScore": "합산 70: demand 75, conversion 78, community 52, creator 84를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-083",
+      "title": "강아지 예방접종 일정표 총정리",
+      "category": "반려/식물/관리",
+      "sourceUrl": "https://gopetnews.tistory.com/entry/dog-vaccine-schedule",
+      "demandScore": 75,
+      "conversionFitScore": 65,
+      "visibleTrafficSignal": {
+        "observed": false,
+        "views": "unknown",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "검색 추출에서 6~8주 종합백신 1차, 9~10주 2차 등 표 확인"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "table by weeks/months"
+      },
+      "sourceAvailability": {
+        "level": "medium",
+        "evidence": "table by weeks/months"
+      },
+      "userCreationFit": 45,
+      "forkRemixFit": 52,
+      "discussionFit": 48,
+      "creatorPromotionFit": 58,
+      "creatorPromotionScore": 58,
+      "communityLoopFit": 48,
+      "combinedPriorityScore": 60,
+      "growthLoopType": "template_exchange",
+      "creatorType": "individual_creator",
+      "incentiveType": [
+        "traffic",
+        "trust"
+      ],
+      "promotionAngle": "강아지 접종 일정을 메모하고 세부 기준은 원문과 동물병원에서 확인하세요.",
+      "backlinkValue": "medium",
+      "cannibalizationRisk": "medium",
+      "permissionNeed": "high",
+      "sourceRiskLevel": "pet_health_sensitive",
+      "gateResult": "structure_only",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn1view9"
+        ]
+      },
+      "evidenceNotes": [
+        "반려동물 보호자 공유 가능성은 있으나 건강/의료성 위험이 크다.",
+        "국내 동물병원/공식 기준 교차 확인 없이는 canary로 올리기 어렵다."
+      ],
+      "recommendedNextAction": "source/risk high. 반려동물 health trust 보조 후보로 둔다.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 검색 추출에서 6~8주 종합백신 1차, 9~10주 2차 등 표 확인",
+        "conversionFitScore": "제한적: table by weeks/months; table by weeks/months",
+        "userCreationFit": "낮음: 공식 일정 또는 고정 절차 성격이 강해 사용자가 새 Flow를 만들 이유가 약하다.",
+        "forkRemixFit": "제한적: 보조 메모나 일부 항목 수정은 가능하나 fork 자체가 핵심 사용 이유는 아니다.",
+        "discussionFit": "낮음: 공식/민감/단발 절차라 댓글형 의견 교환보다 원문 확인이 우선이다.",
+        "creatorPromotionFit": "제한적: 브랜드/제작자 이점은 있으나 권한, 민감성, 원문 대체 위험을 먼저 봐야 한다. 유인=traffic, trust.",
+        "communityLoopFit": "낮음: 서로 만들고 수정하는 카테고리보다 공식 확인/개인 저장/캘린더 알림 역할이 맞다.",
+        "combinedPriorityScore": "합산 60: demand 75, conversion 65, community 48, creator 58를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-026",
+      "title": "네이버 이유식 식단표",
+      "category": "육아/교육",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "demandScore": 75,
+      "conversionFitScore": 45,
+      "visibleTrafficSignal": {
+        "observed": false,
+        "views": "Naver 본문 0 lines / 기존 scout의 댓글·다운로드 수요는 이번 열람에서 미확인",
+        "comments": "Naver 본문 0 lines / 기존 scout의 댓글·다운로드 수요는 이번 열람에서 미확인",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "Naver 본문 0 lines / 기존 scout의 댓글·다운로드 수요는 이번 열람에서 미확인"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "이유식 식단표 파일형 source 추정"
+      },
+      "sourceAvailability": {
+        "level": "blocked",
+        "evidence": "Naver 본문/첨부/댓글 확인 실패"
+      },
+      "userCreationFit": 88,
+      "forkRemixFit": 90,
+      "discussionFit": 92,
+      "creatorPromotionFit": 70,
+      "creatorPromotionScore": 70,
+      "communityLoopFit": 91,
+      "combinedPriorityScore": 72,
+      "growthLoopType": "template_exchange",
+      "creatorType": "individual_creator",
+      "incentiveType": [
+        "download",
+        "traffic",
+        "trust"
+      ],
+      "promotionAngle": "이유식 식단표를 내 아이 시작일에 맞춰 쓰고, 원본 파일과 비밀번호 안내는 블로그에서 확인하세요.",
+      "backlinkValue": "high",
+      "cannibalizationRisk": "medium",
+      "permissionNeed": "high",
+      "sourceRiskLevel": "medical_family_sensitive",
+      "gateResult": "source_import_required",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn2view0"
+        ]
+      },
+      "evidenceNotes": [
+        "네이버 블로그 본문은 자동 추출 제한이나 사용자 제보상 댓글/다운로드 수요와 비밀번호 공유 흐름이 강한 후보.",
+        "파일 row 확인 전에는 Flow 콘텐츠가 아니라 source import required다."
+      ],
+      "recommendedNextAction": "파일/댓글/사용허용 확인이 먼저. 확인되면 community canary 최상위권.",
+      "scoreComments": {
+        "demandScore": "중간 이상: Naver 본문 0 lines / 기존 scout의 댓글·다운로드 수요는 이번 열람에서 미확인",
+        "conversionFitScore": "낮음: Naver 본문/첨부/댓글 확인 실패; 이유식 식단표 파일형 source 추정",
+        "userCreationFit": "강함: 날짜, 예산, 가족/상황, 목표에 맞춰 사용자가 자기 버전을 새로 만들 여지가 크다.",
+        "forkRemixFit": "강함: 기간, 지역, 준비 수준, 목표별로 남의 버전을 가져와 바꾸기 쉽다.",
+        "discussionFit": "강함: 누락 항목, 더 나은 순서, 내 버전 후기 같은 댓글/수정 제안이 생기기 쉽다.",
+        "creatorPromotionFit": "중간 이상: 원문 유입이나 신뢰/retention 효과는 있으나 Flow가 직접 매출/재생으로 이어지는 정도는 제한적이다. 유인=download, traffic, trust.",
+        "communityLoopFit": "강함: 사용자 생성, fork, 후기/수정 제안이 함께 맞물려 template exchange 후보로 볼 수 있다.",
+        "combinedPriorityScore": "합산 72: demand 75, conversion 45, community 91, creator 70를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-017",
+      "title": "겟차 신차 구매 절차 가이드",
+      "category": "결혼/구매",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "demandScore": 74,
+      "conversionFitScore": 84,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "조회수 unknown / 구매 단계와 최종 checklist",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "조회수 unknown / 구매 단계와 최종 checklist"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "구매 단계, 비용, 계약 확인 항목"
+      },
+      "sourceAvailability": {
+        "level": "strong",
+        "evidence": "단계/비용/계약 row 있음"
+      },
+      "userCreationFit": 62,
+      "forkRemixFit": 70,
+      "discussionFit": 55,
+      "creatorPromotionFit": 90,
+      "creatorPromotionScore": 90,
+      "communityLoopFit": 66,
+      "combinedPriorityScore": 77,
+      "growthLoopType": "brand_lead",
+      "creatorType": "brand",
+      "incentiveType": [
+        "lead",
+        "traffic",
+        "purchase"
+      ],
+      "promotionAngle": "신차 구매 절차를 체크하고, 견적 비교는 겟차에서 바로 이어가세요.",
+      "backlinkValue": "very_high",
+      "cannibalizationRisk": "low",
+      "permissionNeed": "medium",
+      "sourceRiskLevel": "commercial",
+      "gateResult": "seed_candidate_after_row_extract",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn2view1"
+        ]
+      },
+      "evidenceNotes": [
+        "원문 말미의 견적 CTA와 차량 탐색/혜택 링크가 Flow에서 원문으로 돌아가는 강한 lead loop를 만든다.",
+        "사용자 fork는 차량/예산/구매 방식별로 가능하지만 커뮤니티 토론은 중간 수준."
+      ],
+      "recommendedNextAction": "brand lead canary 후보. 비용/견적 세부는 memo/detail에만 둔다.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 조회수 unknown / 구매 단계와 최종 checklist",
+        "conversionFitScore": "중간 이상: 단계/비용/계약 row 있음; 구매 단계, 비용, 계약 확인 항목",
+        "userCreationFit": "제한적: 일부 개인화는 가능하지만 원문 구조나 브랜드/기관 안내가 주도한다.",
+        "forkRemixFit": "중간 이상: 시작일/요일/대상 정도의 remix는 자연스럽지만 구조 전체를 바꾸는 정도는 아니다.",
+        "discussionFit": "제한적: 개인 경험 공유는 가능하나 원문 개선 토론으로 반복될 가능성은 중간 이하.",
+        "creatorPromotionFit": "강함: Flow가 원문 방문, 영상 재생, 상담/예약/구매로 되돌아가 제작자가 홍보할 유인이 크다. 유인=lead, traffic, purchase.",
+        "communityLoopFit": "제한적: 사용자 상황별 수정은 일부 있지만 커뮤니티 성장 루프보다는 개별 utility가 중심이다.",
+        "combinedPriorityScore": "합산 77: demand 74, conversion 84, community 66, creator 90를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-082",
+      "title": "로얄캐닌 반려견 백신 접종 일정",
+      "category": "반려/식물/관리",
+      "sourceUrl": "https://www.royalcanin.com/kr/dogs/puppy/dog-vaccination-schedule",
+      "demandScore": 73,
+      "conversionFitScore": 77,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "조회수 unknown / 반려견 백신 일정 row",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "조회수 unknown / 반려견 백신 일정 row"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "나이별 백신 일정과 매년 추가 접종"
+      },
+      "sourceAvailability": {
+        "level": "strong",
+        "evidence": "월령/백신명 row 있음"
+      },
+      "userCreationFit": 40,
+      "forkRemixFit": 48,
+      "discussionFit": 38,
+      "creatorPromotionFit": 68,
+      "creatorPromotionScore": 68,
+      "communityLoopFit": 42,
+      "combinedPriorityScore": 63,
+      "growthLoopType": "brand_lead",
+      "creatorType": "brand",
+      "incentiveType": [
+        "trust",
+        "purchase",
+        "lead"
+      ],
+      "promotionAngle": "반려견 접종 시기를 캘린더에 옮기고, 사료/건강 정보는 로얄캐닌 원문에서 확인하세요.",
+      "backlinkValue": "medium",
+      "cannibalizationRisk": "medium",
+      "permissionNeed": "high",
+      "sourceRiskLevel": "pet_health_sensitive",
+      "gateResult": "seed_candidate_after_row_extract",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn2view2"
+        ]
+      },
+      "evidenceNotes": [
+        "브랜드 trust/purchase 유인은 있으나 반려동물 의료성 때문에 주의가 필요하다.",
+        "맞춤 사료 찾기/동물병원 링크는 제작자 유인이나 Flow는 공식 의료 대체가 아니다."
+      ],
+      "recommendedNextAction": "반려 health 후보는 공식/수의사 기준 교차 확인 후 보류.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 조회수 unknown / 반려견 백신 일정 row",
+        "conversionFitScore": "중간 이상: 월령/백신명 row 있음; 나이별 백신 일정과 매년 추가 접종",
+        "userCreationFit": "낮음: 공식 일정 또는 고정 절차 성격이 강해 사용자가 새 Flow를 만들 이유가 약하다.",
+        "forkRemixFit": "낮음: 공식 row나 고정 절차를 유지해야 하므로 fork보다 저장/확인이 맞다.",
+        "discussionFit": "낮음: 공식/민감/단발 절차라 댓글형 의견 교환보다 원문 확인이 우선이다.",
+        "creatorPromotionFit": "제한적: 브랜드/제작자 이점은 있으나 권한, 민감성, 원문 대체 위험을 먼저 봐야 한다. 유인=trust, purchase, lead.",
+        "communityLoopFit": "낮음: 서로 만들고 수정하는 카테고리보다 공식 확인/개인 저장/캘린더 알림 역할이 맞다.",
+        "combinedPriorityScore": "합산 63: demand 73, conversion 77, community 42, creator 68를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-075",
+      "title": "오늘의집 일주일 도시락 식단표",
+      "category": "식단/요리",
+      "sourceUrl": "https://ohou.se/advices/9098",
+      "demandScore": 73,
+      "conversionFitScore": 65,
+      "visibleTrafficSignal": {
+        "observed": false,
+        "views": "unknown",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "검색 추출에서 수요일 김치볶음밥/두부봉부침/깍두기, 목요일 짜장잡채밥 등 요일 구조 확인"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "weekday lunchbox menu rows"
+      },
+      "sourceAvailability": {
+        "level": "medium",
+        "evidence": "weekday lunchbox menu rows"
+      },
+      "userCreationFit": 84,
+      "forkRemixFit": 88,
+      "discussionFit": 82,
+      "creatorPromotionFit": 72,
+      "creatorPromotionScore": 72,
+      "communityLoopFit": 85,
+      "combinedPriorityScore": 75,
+      "growthLoopType": "template_exchange",
+      "creatorType": "platform",
+      "incentiveType": [
+        "traffic",
+        "purchase",
+        "retention"
+      ],
+      "promotionAngle": "이번 주 도시락 식단표를 저장하고, 사진과 레시피 상세는 오늘의집 원문에서 확인하세요.",
+      "backlinkValue": "high",
+      "cannibalizationRisk": "medium",
+      "permissionNeed": "medium",
+      "sourceRiskLevel": "creator",
+      "gateResult": "structure_only",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn2view3"
+        ]
+      },
+      "evidenceNotes": [
+        "요일별 식단표/도시락 구조는 사용자 변형과 후기 공유가 자연스럽다.",
+        "레시피 전문을 옮기기보다 식단 row와 원문 링크 중심이어야 한다."
+      ],
+      "recommendedNextAction": "식단/도시락 community canary 후보. 레시피 복제는 피한다.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 검색 추출에서 수요일 김치볶음밥/두부봉부침/깍두기, 목요일 짜장잡채밥 등 요일 구조 확인",
+        "conversionFitScore": "제한적: weekday lunchbox menu rows; weekday lunchbox menu rows",
+        "userCreationFit": "중간 이상: 시작일, 요일, 기간, 수준 정도는 사용자가 직접 조정할 수 있다.",
+        "forkRemixFit": "강함: 기간, 지역, 준비 수준, 목표별로 남의 버전을 가져와 바꾸기 쉽다.",
+        "discussionFit": "중간 이상: 실행 후기나 대체 버전 공유는 가능하지만 강한 커뮤니티 토론까지는 검증 필요.",
+        "creatorPromotionFit": "중간 이상: 원문 유입이나 신뢰/retention 효과는 있으나 Flow가 직접 매출/재생으로 이어지는 정도는 제한적이다. 유인=traffic, purchase, retention.",
+        "communityLoopFit": "강함: 사용자 생성, fork, 후기/수정 제안이 함께 맞물려 template exchange 후보로 볼 수 있다.",
+        "combinedPriorityScore": "합산 75: demand 73, conversion 65, community 85, creator 72를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-085",
+      "title": "KIPFRI 고양이 입양 체크리스트",
+      "category": "반려/식물/관리",
+      "sourceUrl": "https://www.kipfri.com/community/news/view/b754ff6a-1935-465b-9714-d224238aa3d5",
+      "demandScore": 73,
+      "conversionFitScore": 65,
+      "visibleTrafficSignal": {
+        "observed": false,
+        "views": "unknown",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "검색 추출에서 추가 준비물, 초기 적응, 건강검진, 중성화, 등록 확인"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "pre/post adoption checklist"
+      },
+      "sourceAvailability": {
+        "level": "medium",
+        "evidence": "pre/post adoption checklist"
+      },
+      "userCreationFit": 58,
+      "forkRemixFit": 64,
+      "discussionFit": 58,
+      "creatorPromotionFit": 62,
+      "creatorPromotionScore": 62,
+      "communityLoopFit": 60,
+      "combinedPriorityScore": 65,
+      "growthLoopType": "official_trust_anchor",
+      "creatorType": "official",
+      "incentiveType": [
+        "trust",
+        "retention"
+      ],
+      "promotionAngle": "고양이 입양 전 체크할 항목을 저장하고, 기관 원문에서 입양 기준을 확인하세요.",
+      "backlinkValue": "medium",
+      "cannibalizationRisk": "low",
+      "permissionNeed": "medium",
+      "sourceRiskLevel": "mixed",
+      "gateResult": "structure_only",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn2view4"
+        ]
+      },
+      "evidenceNotes": [
+        "입양 체크리스트는 사용자 상황별 수정 여지가 있으나 커뮤니티보다 책임 있는 정보 확인이 우선이다.",
+        "기관/단체 source라 trust anchor 성격이 강하다."
+      ],
+      "recommendedNextAction": "반려 입양 checklist 후보. 민감/책임 문구를 분리한다.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 검색 추출에서 추가 준비물, 초기 적응, 건강검진, 중성화, 등록 확인",
+        "conversionFitScore": "제한적: pre/post adoption checklist; pre/post adoption checklist",
+        "userCreationFit": "제한적: 일부 개인화는 가능하지만 원문 구조나 브랜드/기관 안내가 주도한다.",
+        "forkRemixFit": "제한적: 보조 메모나 일부 항목 수정은 가능하나 fork 자체가 핵심 사용 이유는 아니다.",
+        "discussionFit": "제한적: 개인 경험 공유는 가능하나 원문 개선 토론으로 반복될 가능성은 중간 이하.",
+        "creatorPromotionFit": "제한적: 브랜드/제작자 이점은 있으나 권한, 민감성, 원문 대체 위험을 먼저 봐야 한다. 유인=trust, retention.",
+        "communityLoopFit": "제한적: 사용자 상황별 수정은 일부 있지만 커뮤니티 성장 루프보다는 개별 utility가 중심이다.",
+        "combinedPriorityScore": "합산 65: demand 73, conversion 65, community 60, creator 62를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-100",
+      "title": "면접 직전 체크리스트 영상",
+      "category": "커리어/사업",
+      "sourceUrl": "https://www.youtube.com/watch?v=dRFkXIeEHuk",
+      "demandScore": 73,
+      "conversionFitScore": 55,
+      "visibleTrafficSignal": {
+        "observed": false,
+        "views": "unknown",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "검색 추출에서 회사 최신 뉴스, 자기소개 준비 등 영상 챕터 구조 확인"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "10 pre-interview checks"
+      },
+      "sourceAvailability": {
+        "level": "source_import_required",
+        "evidence": "10 pre-interview checks"
+      },
+      "userCreationFit": 70,
+      "forkRemixFit": 76,
+      "discussionFit": 68,
+      "creatorPromotionFit": 86,
+      "creatorPromotionScore": 86,
+      "communityLoopFit": 73,
+      "combinedPriorityScore": 72,
+      "growthLoopType": "creator_promoted",
+      "creatorType": "individual_creator",
+      "incentiveType": [
+        "video_view",
+        "subscription",
+        "lead"
+      ],
+      "promotionAngle": "면접 전날 체크리스트를 저장하고, 답변 예시와 세부 설명은 원본 영상에서 확인하세요.",
+      "backlinkValue": "very_high",
+      "cannibalizationRisk": "low",
+      "permissionNeed": "medium",
+      "sourceRiskLevel": "mixed",
+      "gateResult": "source_import_required",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn2view5"
+        ]
+      },
+      "evidenceNotes": [
+        "YouTube 원문은 자동 열람 제한이 있으나 영상형 면접 체크리스트는 제작자 재생 루프가 강하다.",
+        "직무/회사/면접일별 fork 가능성이 있다."
+      ],
+      "recommendedNextAction": "영상 title/URL/챕터 확보 후 커리어 creator 후보로 재평가.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 검색 추출에서 회사 최신 뉴스, 자기소개 준비 등 영상 챕터 구조 확인",
+        "conversionFitScore": "제한적: 10 pre-interview checks; 10 pre-interview checks",
+        "userCreationFit": "중간 이상: 시작일, 요일, 기간, 수준 정도는 사용자가 직접 조정할 수 있다.",
+        "forkRemixFit": "중간 이상: 시작일/요일/대상 정도의 remix는 자연스럽지만 구조 전체를 바꾸는 정도는 아니다.",
+        "discussionFit": "제한적: 개인 경험 공유는 가능하나 원문 개선 토론으로 반복될 가능성은 중간 이하.",
+        "creatorPromotionFit": "강함: Flow가 원문 방문, 영상 재생, 상담/예약/구매로 되돌아가 제작자가 홍보할 유인이 크다. 유인=video_view, subscription, lead.",
+        "communityLoopFit": "중간 이상: 반복 실행과 공유 가능성은 있으나 source import 또는 권한 확인 후 키우는 편이 안전하다.",
+        "combinedPriorityScore": "합산 72: demand 73, conversion 55, community 73, creator 86를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-065",
+      "title": "5km 달리기 8주 프로그램",
+      "category": "운동/건강",
+      "sourceUrl": "https://holmez.tistory.com/entry/5km-%EB%8B%AC%EB%A6%AC%EA%B8%B0-8%EC%A3%BC-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8",
+      "demandScore": 72,
+      "conversionFitScore": 82,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "조회수 unknown / 8주 프로그램 row",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "조회수 unknown / 8주 프로그램 row"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "strong",
+        "evidence": "주차/요일별 거리와 걷기/달리기 반복 row"
+      },
+      "sourceAvailability": {
+        "level": "strong",
+        "evidence": "주차/요일 row 있음"
+      },
+      "userCreationFit": 76,
+      "forkRemixFit": 82,
+      "discussionFit": 64,
+      "creatorPromotionFit": 58,
+      "creatorPromotionScore": 58,
+      "communityLoopFit": 74,
+      "combinedPriorityScore": 73,
+      "growthLoopType": "user_generated",
+      "creatorType": "individual_creator",
+      "incentiveType": [
+        "traffic",
+        "trust"
+      ],
+      "promotionAngle": "8주 5km 달리기 계획을 시작일에 맞춰 저장하고, 세부 훈련표는 원문에서 확인하세요.",
+      "backlinkValue": "medium",
+      "cannibalizationRisk": "medium",
+      "permissionNeed": "medium",
+      "sourceRiskLevel": "health_sensitive",
+      "gateResult": "seed_candidate_after_row_extract",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn2view6"
+        ]
+      },
+      "evidenceNotes": [
+        "8주 프로그램은 개인 시작일/요일/목표별 fork가 쉽다.",
+        "제작자 홍보보다 사용자 루틴 생성과 후기 공유가 더 강한 후보."
+      ],
+      "recommendedNextAction": "러닝 루틴 canary 후보. 주차/요일 row만 가져온다.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 조회수 unknown / 8주 프로그램 row",
+        "conversionFitScore": "중간 이상: 주차/요일 row 있음; 주차/요일별 거리와 걷기/달리기 반복 row",
+        "userCreationFit": "중간 이상: 시작일, 요일, 기간, 수준 정도는 사용자가 직접 조정할 수 있다.",
+        "forkRemixFit": "중간 이상: 시작일/요일/대상 정도의 remix는 자연스럽지만 구조 전체를 바꾸는 정도는 아니다.",
+        "discussionFit": "제한적: 개인 경험 공유는 가능하나 원문 개선 토론으로 반복될 가능성은 중간 이하.",
+        "creatorPromotionFit": "제한적: 브랜드/제작자 이점은 있으나 권한, 민감성, 원문 대체 위험을 먼저 봐야 한다. 유인=traffic, trust.",
+        "communityLoopFit": "중간 이상: 반복 실행과 공유 가능성은 있으나 source import 또는 권한 확인 후 키우는 편이 안전하다.",
+        "combinedPriorityScore": "합산 73: demand 72, conversion 82, community 74, creator 58를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-007",
+      "title": "아정당 자취 준비 리스트",
+      "category": "이사/주거",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%B2%98%EC%9D%8C_%EB%8F%85%EB%A6%BD%ED%95%98%EB%8A%94_%EC%82%AC%ED%9A%8C%EC%B4%88%EB%85%84%EC%83%9D%EC%9D%84_%EC%9C%84%ED%95%9C_%EC%9E%90%EC%B7%A8_%EC%A4%80%EB%B9%84_%EB%A6%AC%EC%8A%A4%ED%8A%B8-42109",
+      "demandScore": 72,
+      "conversionFitScore": 80,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "조회 10,135 / 스크랩 1",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "조회 10,135 / 스크랩 1",
+        "downloads": "unknown",
+        "raw": [
+          "조회 10,135 / 스크랩 1"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "자취 준비 물품 checklist"
+      },
+      "sourceAvailability": {
+        "level": "strong",
+        "evidence": "품목별 리스트 있음"
+      },
+      "userCreationFit": 88,
+      "forkRemixFit": 92,
+      "discussionFit": 80,
+      "creatorPromotionFit": 84,
+      "creatorPromotionScore": 84,
+      "communityLoopFit": 87,
+      "combinedPriorityScore": 82,
+      "growthLoopType": "brand_lead",
+      "creatorType": "brand",
+      "incentiveType": [
+        "traffic",
+        "lead",
+        "purchase"
+      ],
+      "promotionAngle": "첫 자취 준비 리스트를 내 집 상황에 맞춰 저장하고, 인터넷/가전/생활 서비스는 원문에서 비교하세요.",
+      "backlinkValue": "high",
+      "cannibalizationRisk": "low",
+      "permissionNeed": "medium",
+      "sourceRiskLevel": "creator",
+      "gateResult": "seed_candidate_after_row_extract",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn2view7"
+        ]
+      },
+      "evidenceNotes": [
+        "자취/방보기/생활 준비는 지역, 예산, 가구 보유 상황별 fork가 매우 자연스럽다.",
+        "브랜드/서비스 lead로 돌아가는 구조도 강하다."
+      ],
+      "recommendedNextAction": "이사와 다른 생활 독립 canary 후보로 분리 검토.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 조회 10,135 / 스크랩 1",
+        "conversionFitScore": "중간 이상: 품목별 리스트 있음; 자취 준비 물품 checklist",
+        "userCreationFit": "강함: 날짜, 예산, 가족/상황, 목표에 맞춰 사용자가 자기 버전을 새로 만들 여지가 크다.",
+        "forkRemixFit": "강함: 기간, 지역, 준비 수준, 목표별로 남의 버전을 가져와 바꾸기 쉽다.",
+        "discussionFit": "중간 이상: 실행 후기나 대체 버전 공유는 가능하지만 강한 커뮤니티 토론까지는 검증 필요.",
+        "creatorPromotionFit": "중간 이상: 원문 유입이나 신뢰/retention 효과는 있으나 Flow가 직접 매출/재생으로 이어지는 정도는 제한적이다. 유인=traffic, lead, purchase.",
+        "communityLoopFit": "강함: 사용자 생성, fork, 후기/수정 제안이 함께 맞물려 template exchange 후보로 볼 수 있다.",
+        "combinedPriorityScore": "합산 82: demand 72, conversion 80, community 87, creator 84를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-081",
+      "title": "핏펫 강아지 예방접종 일정",
+      "category": "반려/식물/관리",
+      "sourceUrl": "https://www.fitpetmall.com/blog/dog-vaccinations/",
+      "demandScore": 72,
+      "conversionFitScore": 80,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "조회수 unknown / 강아지 접종 순서 row",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "조회수 unknown / 강아지 접종 순서 row"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "medium",
+        "evidence": "생후 주차별 접종 일정"
+      },
+      "sourceAvailability": {
+        "level": "strong",
+        "evidence": "접종 차수/주차 row 있음"
+      },
+      "userCreationFit": 42,
+      "forkRemixFit": 50,
+      "discussionFit": 42,
+      "creatorPromotionFit": 72,
+      "creatorPromotionScore": 72,
+      "communityLoopFit": 45,
+      "combinedPriorityScore": 65,
+      "growthLoopType": "brand_lead",
+      "creatorType": "brand",
+      "incentiveType": [
+        "purchase",
+        "trust",
+        "retention"
+      ],
+      "promotionAngle": "강아지 접종 일정을 캘린더에 넣고, 반려동물 건강 상품/정보는 핏펫 원문에서 확인하세요.",
+      "backlinkValue": "medium",
+      "cannibalizationRisk": "medium",
+      "permissionNeed": "high",
+      "sourceRiskLevel": "pet_health_sensitive",
+      "gateResult": "seed_candidate_after_row_extract",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn2view8"
+        ]
+      },
+      "evidenceNotes": [
+        "브랜드 promotion은 있으나 의료성/반려동물 건강 source risk가 높다.",
+        "사용자 댓글/후기 루프를 건강 조언으로 확장하면 안 된다."
+      ],
+      "recommendedNextAction": "반려동물 health 후보는 공식 교차 확인 전 보류.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 조회수 unknown / 강아지 접종 순서 row",
+        "conversionFitScore": "중간 이상: 접종 차수/주차 row 있음; 생후 주차별 접종 일정",
+        "userCreationFit": "낮음: 공식 일정 또는 고정 절차 성격이 강해 사용자가 새 Flow를 만들 이유가 약하다.",
+        "forkRemixFit": "제한적: 보조 메모나 일부 항목 수정은 가능하나 fork 자체가 핵심 사용 이유는 아니다.",
+        "discussionFit": "낮음: 공식/민감/단발 절차라 댓글형 의견 교환보다 원문 확인이 우선이다.",
+        "creatorPromotionFit": "중간 이상: 원문 유입이나 신뢰/retention 효과는 있으나 Flow가 직접 매출/재생으로 이어지는 정도는 제한적이다. 유인=purchase, trust, retention.",
+        "communityLoopFit": "낮음: 서로 만들고 수정하는 카테고리보다 공식 확인/개인 저장/캘린더 알림 역할이 맞다.",
+        "combinedPriorityScore": "합산 65: demand 72, conversion 80, community 45, creator 72를 함께 본 값이다."
+      }
+    },
+    {
+      "candidateId": "SCOUT-011",
+      "title": "Planning.wedding 12개월 웨딩 타임라인",
+      "category": "결혼/구매",
+      "sourceUrl": "https://planning.wedding/ko/timeline/checklist",
+      "demandScore": 72,
+      "conversionFitScore": 78,
+      "visibleTrafficSignal": {
+        "observed": true,
+        "views": "조회수 unknown / 무료 타임라인 생성 CTA",
+        "comments": "unknown",
+        "shares": "unknown",
+        "saves": "unknown",
+        "downloads": "unknown",
+        "raw": [
+          "조회수 unknown / 무료 타임라인 생성 CTA"
+        ]
+      },
+      "copyIntentSignal": {
+        "level": "strong",
+        "evidence": "12개월 타임라인과 월별 checklist row"
+      },
+      "sourceAvailability": {
+        "level": "strong",
+        "evidence": "월별 row 본문 노출"
+      },
+      "userCreationFit": 90,
+      "forkRemixFit": 94,
+      "discussionFit": 82,
+      "creatorPromotionFit": 82,
+      "creatorPromotionScore": 82,
+      "communityLoopFit": 89,
+      "combinedPriorityScore": 82,
+      "growthLoopType": "template_exchange",
+      "creatorType": "platform",
+      "incentiveType": [
+        "subscription",
+        "traffic",
+        "retention"
+      ],
+      "promotionAngle": "12개월 결혼 준비 타임라인을 결혼식 날짜에 맞춰 저장하고, 전체 계획은 planning.wedding에서 이어가세요.",
+      "backlinkValue": "high",
+      "cannibalizationRisk": "medium",
+      "permissionNeed": "medium",
+      "sourceRiskLevel": "mixed",
+      "gateResult": "structure_only",
+      "currentInspection": {
+        "openedAgainInThisPass": true,
+        "refs": [
+          "turn2view9"
+        ]
+      },
+      "evidenceNotes": [
+        "12개월 타임라인은 날짜 anchor와 버전 비교가 강하다.",
+        "지역/예산/스타일별 fork와 후기 공유가 자연스럽지만 국내 관습 차이는 표시해야 한다."
+      ],
+      "recommendedNextAction": "결혼 timeline canary 후보. 국내/해외 기준 label을 분리한다.",
+      "scoreComments": {
+        "demandScore": "중간 이상: 조회수 unknown / 무료 타임라인 생성 CTA",
+        "conversionFitScore": "중간 이상: 월별 row 본문 노출; 12개월 타임라인과 월별 checklist row",
+        "userCreationFit": "강함: 날짜, 예산, 가족/상황, 목표에 맞춰 사용자가 자기 버전을 새로 만들 여지가 크다.",
+        "forkRemixFit": "강함: 기간, 지역, 준비 수준, 목표별로 남의 버전을 가져와 바꾸기 쉽다.",
+        "discussionFit": "중간 이상: 실행 후기나 대체 버전 공유는 가능하지만 강한 커뮤니티 토론까지는 검증 필요.",
+        "creatorPromotionFit": "중간 이상: 원문 유입이나 신뢰/retention 효과는 있으나 Flow가 직접 매출/재생으로 이어지는 정도는 제한적이다. 유인=subscription, traffic, retention.",
+        "communityLoopFit": "강함: 사용자 생성, fork, 후기/수정 제안이 함께 맞물려 template exchange 후보로 볼 수 있다.",
+        "combinedPriorityScore": "합산 82: demand 72, conversion 78, community 89, creator 82를 함께 본 값이다."
+      }
+    }
+  ]
+}

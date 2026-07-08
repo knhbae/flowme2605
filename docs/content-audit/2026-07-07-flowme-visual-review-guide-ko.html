@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 눈검토 가이드</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f8fa;
+      --panel: #ffffff;
+      --ink: #18212f;
+      --muted: #647084;
+      --line: #d8dee8;
+      --accent: #0f766e;
+      --accent-soft: #e6f3f1;
+      --warn: #9a3412;
+      --warn-soft: #fff7ed;
+      --block: #991b1b;
+      --block-soft: #fef2f2;
+      --info: #1d4ed8;
+      --info-soft: #eff6ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      line-height: 1.55;
+    }
+    article {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 56px;
+    }
+    header {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 28px;
+      margin-bottom: 16px;
+    }
+    h1, h2, h3 { margin: 0; line-height: 1.2; letter-spacing: 0; }
+    h1 { font-size: 32px; }
+    h2 { font-size: 22px; margin-bottom: 12px; }
+    h3 { font-size: 17px; margin-bottom: 8px; }
+    p { margin: 8px 0 0; }
+    a { color: var(--info); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code {
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #eef2f7;
+      color: #243044;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.92em;
+    }
+    .lede { max-width: 900px; color: var(--muted); font-size: 17px; }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #fbfcfe;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 650;
+    }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+      margin-top: 16px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: #fbfcfe;
+    }
+    .card.strong { background: var(--accent-soft); border-color: #b7ddd7; }
+    .card.warn { background: var(--warn-soft); border-color: #fed7aa; }
+    .card.block { background: var(--block-soft); border-color: #fecaca; }
+    .card.info { background: var(--info-soft); border-color: #bfdbfe; }
+    .small { color: var(--muted); font-size: 13px; }
+    .step-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .step-list li {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 14px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+    }
+    .step-list li:first-child { border-top: 0; padding-top: 0; }
+    .badge {
+      display: inline-block;
+      width: fit-content;
+      border-radius: 6px;
+      padding: 4px 8px;
+      background: #eef2f7;
+      color: #344054;
+      font-size: 12px;
+      font-weight: 750;
+    }
+    .badge.ok { background: var(--accent-soft); color: var(--accent); }
+    .badge.warn { background: var(--warn-soft); color: var(--warn); }
+    .badge.block { background: var(--block-soft); color: var(--block); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    th, td {
+      border-top: 1px solid var(--line);
+      padding: 11px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { color: #344054; background: #f8fafc; font-weight: 750; }
+    ul { margin: 8px 0 0 18px; padding: 0; }
+    li + li { margin-top: 6px; }
+    .review-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .quote {
+      border-left: 4px solid var(--accent);
+      padding: 10px 12px;
+      background: #f8fafc;
+      color: #334155;
+    }
+    .path {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .path a {
+      display: block;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #ffffff;
+    }
+    .todo {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .todo label {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+    input[type="checkbox"] { margin-top: 4px; }
+    @media (max-width: 860px) {
+      article { padding: 18px 12px 36px; }
+      header, section { padding: 18px; }
+      h1 { font-size: 26px; }
+      .grid, .grid.two, .review-box { grid-template-columns: 1fr; }
+      .step-list li { grid-template-columns: 1fr; }
+      table { font-size: 13px; }
+      th, td { padding: 9px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <header>
+      <h1>FlowMe 눈검토 가이드</h1>
+      <p class="lede">
+        지금 볼 단계는 코드 QA 자체보다 사용자 흐름 판단입니다. Claude가 제안한 URL-first, export-first, My Flow/Calendar 연결, 후보 등록 루프를 현재 앱과 산출물 위에서 확인합니다.
+      </p>
+      <div class="meta">
+        <span class="chip">작성일 2026-07-07</span>
+        <span class="chip">검토 기준 Claude 제안 + 현재 구현</span>
+        <span class="chip">핵심 루프 URL -> hit/customize -> My Flow/export</span>
+        <span class="chip">상태 데이터 QA 통과 15 / 보류 0</span>
+      </div>
+    </header>
+
+    <section>
+      <h2>먼저 볼 자료</h2>
+      <div class="grid">
+        <article class="card strong">
+          <h3>1. 화면 캡처 인덱스</h3>
+          <p>가장 먼저 열 파일입니다. 모바일 화면 32장을 한 번에 훑고, 각 화면이 어떤 사용자 상태인지 봅니다.</p>
+          <div class="path">
+            <a href="./2026-07-07-claude-design-post-p11-cleanup-review-package/review-intake-ko.html">Post-P11 Review Intake 열기</a>
+          </div>
+          <p class="small">중점: 27~30번 URL-first, 13~20번 My Flow/Calendar, 32번 QA 리포트.</p>
+        </article>
+        <article class="card">
+          <h3>2. 최신 QA 리포트</h3>
+          <p>URL로 찾을 수 있는 source-backed Flow가 운영 기준을 통과했는지 확인합니다.</p>
+          <div class="path">
+            <a href="./2026-07-06-source-backed-manual-registration-qa-ko.html">수동 Flow 등록 QA 리포트 열기</a>
+          </div>
+          <p class="small">중점: QA 통과 15, 등록 보류 0, 중복 canonical URL 0, sourceTrace 누락 0.</p>
+        </article>
+        <article class="card">
+          <h3>3. Claude 제안 검토본</h3>
+          <p>원래 Claude가 제안한 URL-first 방향과 우리가 보정한 조건을 다시 봅니다.</p>
+          <div class="path">
+            <a href="./2026-07-04-claude-entry-ux-plan-summary-ko.html">Claude URL 진입 UX 정리</a>
+            <a href="./2026-07-05-claude-entry-03-review-ko.html">Claude 03 검토 보드</a>
+          </div>
+          <p class="small">중점: AI는 P0 기본 경로가 아니고, needs_review/miss는 실행 가능 Flow가 아닙니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>봐야 할 순서</h2>
+      <ol class="step-list">
+        <li>
+          <span class="badge ok">5분</span>
+          <div>
+            <h3>캡처 인덱스에서 전체 흐름만 훑기</h3>
+            <p>사용자가 처음 들어와서 <code>/flows</code>에서 URL을 넣고, hit이면 바로 시작하거나 조금 고쳐 시작할 수 있는지 봅니다. 화면이 설명보다 행동을 먼저 주는지가 핵심입니다.</p>
+          </div>
+        </li>
+        <li>
+          <span class="badge ok">10분</span>
+          <div>
+            <h3>URL-first 4장 집중 확인</h3>
+            <p><a href="./2026-07-07-claude-design-post-p11-cleanup-review-package/screenshots/27-url-first-hit-mobile.png">27 hit</a>,
+              <a href="./2026-07-07-claude-design-post-p11-cleanup-review-package/screenshots/28-url-first-custom-start-mobile.png">28 custom start</a>,
+              <a href="./2026-07-07-claude-design-post-p11-cleanup-review-package/screenshots/29-url-first-miss-candidate-form-mobile.png">29 miss candidate</a>,
+              <a href="./2026-07-07-claude-design-post-p11-cleanup-review-package/screenshots/30-url-first-candidate-handoff-mobile.png">30 handoff</a>를 봅니다.</p>
+            <p class="small">판단: hit과 후보가 헷갈리지 않는가, 그대로 시작과 조금 고쳐 시작이 구분되는가, miss가 실행 가능처럼 보이지 않는가.</p>
+          </div>
+        </li>
+        <li>
+          <span class="badge ok">10분</span>
+          <div>
+            <h3>저장 후 실행 화면 확인</h3>
+            <p><a href="./2026-07-07-claude-design-post-p11-cleanup-review-package/screenshots/13-post-save-my-moving-mobile.png">13 My Flow 저장 직후</a>,
+              <a href="./2026-07-07-claude-design-post-p11-cleanup-review-package/screenshots/14-calendar-after-moving-save-mobile.png">14 Calendar</a>,
+              <a href="./2026-07-07-claude-design-post-p11-cleanup-review-package/screenshots/16-my-multi-queue-mobile.png">16 My Flow 실행 큐</a>,
+              <a href="./2026-07-07-claude-design-post-p11-cleanup-review-package/screenshots/20-my-long-list-inventory-bottom-mobile.png">20 전체/상세</a>를 봅니다.</p>
+            <p class="small">판단: 저장이 끝이 아니라 오늘 할 일, 전체 목록, 날짜 화면, Step detail/export로 자연스럽게 이어지는가.</p>
+          </div>
+        </li>
+        <li>
+          <span class="badge warn">10분</span>
+          <div>
+            <h3>데이터/운영 리포트 확인</h3>
+            <p>QA 리포트에서 lookup 가능 15개와 lookup 차단 11개의 의미가 운영자 관점에서 이해되는지 봅니다. 사용자 화면에서 보이는 Flow와 운영 보류 Flow가 섞이지 않아야 합니다.</p>
+          </div>
+        </li>
+        <li>
+          <span class="badge warn">15분</span>
+          <div>
+            <h3>P12로 넘길 UX 결정을 고르기</h3>
+            <p>눈검토 후 바로 개발할 항목을 하나만 고릅니다. 지금 가장 유력한 후보는 <code>/flows</code> URL-first 첫 화면, URL hit/custom start, miss candidate/handoff, My Flow 저장 후 실행 연결입니다.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>화면별 검토 질문</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>화면</th>
+            <th>봐야 할 것</th>
+            <th>통과 기준</th>
+            <th>문제 신호</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>/flows</code> URL 입력</td>
+            <td>사용자가 5초 안에 URL을 붙여넣는 화면임을 아는가.</td>
+            <td>검색/카탈로그보다 URL 입력과 결과 행동이 먼저 보인다.</td>
+            <td>카드 탐색, 내부 라벨, 설명문이 URL 행동을 밀어낸다.</td>
+          </tr>
+          <tr>
+            <td>hit 결과</td>
+            <td>이미 Flow가 있음을 신뢰할 수 있고, 바로 쓸 수 있는가.</td>
+            <td>원본 출처, 시작일, 그대로 시작, 조금 고쳐 시작, export가 선명하다.</td>
+            <td>AI 생성처럼 보이거나, 추천 수/인기 수처럼 검증 안 된 신호가 보인다.</td>
+          </tr>
+          <tr>
+            <td>조금 고쳐 시작</td>
+            <td>전체 편집기가 아니라 개인 사본의 최소 설정으로 보이는가.</td>
+            <td>저장 이름, 시작일, 포함/제외 Step만 바꾼다는 경계가 보인다.</td>
+            <td>원본을 수정하는 것처럼 보이거나, fork/version 관리처럼 무거워 보인다.</td>
+          </tr>
+          <tr>
+            <td>miss/needs_review</td>
+            <td>아직 실행 가능한 Flow가 아니라 후보 저장임을 아는가.</td>
+            <td>제작 후보, 원 URL/canonical URL, 메모, 제작용 Markdown이 분리된다.</td>
+            <td>My Flow 저장, ICS export, 바로 시작이 가능한 것처럼 보인다.</td>
+          </tr>
+          <tr>
+            <td>My Flow</td>
+            <td>개인 사본이 실제 내 작업처럼 보이고 실행되는가.</td>
+            <td>Today, 전체, Step detail, 제외됨, export가 개인 수정 상태를 유지한다.</td>
+            <td>원본 Flow 설명이 개인 실행 목록보다 앞서거나, 제외 Step이 실행을 방해한다.</td>
+          </tr>
+          <tr>
+            <td>Calendar</td>
+            <td>날짜가 있는 Step이 일정으로 이어지는가.</td>
+            <td>시작일 변경이 날짜, Today, Calendar, ICS에 반영된다.</td>
+            <td>날짜 없는 콘텐츠가 빈 캘린더 오류처럼 보인다.</td>
+          </tr>
+          <tr>
+            <td>수동 등록 QA</td>
+            <td>운영자가 후보를 Flow로 만드는 기준이 보이는가.</td>
+            <td>QA 통과/lookup 차단/중복/sourceTrace/sourceUrl 상태가 행동으로 이어진다.</td>
+            <td>모든 이슈가 단순 오류처럼 보이고, 다음 처리 방법이 안 보인다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>이번에 판단할 결론</h2>
+      <div class="grid two">
+        <article class="card strong">
+          <h3>지금 확인된 것</h3>
+          <ul>
+            <li>URL-first P0는 AI 생성보다 기존 Flow 재사용이 먼저라는 방향으로 정리됐다.</li>
+            <li>source-backed 수동 등록 QA는 현재 기준으로 QA 통과 15, 등록 보류 0이다.</li>
+            <li>duplicate canonical URL 0그룹, sourceTrace 누락 0으로 운영 큐는 닫힌 상태다.</li>
+            <li>Post-P11 패키지는 모바일 390px 기준 화면 캡처 32장을 갖고 있다.</li>
+          </ul>
+        </article>
+        <article class="card warn">
+          <h3>아직 확인이 필요한 것</h3>
+          <ul>
+            <li>실제 사용자가 <code>/flows</code> 첫 화면에서 URL-first 행동을 먼저 이해하는지.</li>
+            <li>hit, needs_review, miss가 화면상으로 충분히 다르게 느껴지는지.</li>
+            <li>개인 사본과 원본/source 추적의 경계가 너무 설명적으로 보이지 않는지.</li>
+            <li>Markdown/ICS/TSV/export가 “내 도구로 옮기기”로 충분히 가볍게 보이는지.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>피드백할 때 쓰는 체크박스</h2>
+      <div class="review-box">
+        <div class="card">
+          <h3>사용자 관점</h3>
+          <div class="todo">
+            <label><input type="checkbox" /> <span>URL을 붙여넣으면 뭘 해주는 서비스인지 바로 이해된다.</span></label>
+            <label><input type="checkbox" /> <span>hit 결과에서 “그대로 시작”과 “조금 고쳐 시작”의 차이가 선명하다.</span></label>
+            <label><input type="checkbox" /> <span>My Flow 저장 후 오늘 할 일이나 전체 목록으로 이어지는 느낌이 자연스럽다.</span></label>
+            <label><input type="checkbox" /> <span>내보내기가 캘린더/메모/시트/체크리스트 중 어디로 가는지 예측된다.</span></label>
+            <label><input type="checkbox" /> <span>miss/needs_review는 아직 실행 가능하지 않다는 점이 분명하다.</span></label>
+          </div>
+        </div>
+        <div class="card">
+          <h3>제품/운영 관점</h3>
+          <div class="todo">
+            <label><input type="checkbox" /> <span>AI 생성이 기본 경로처럼 보이지 않는다.</span></label>
+            <label><input type="checkbox" /> <span>가짜 추천 수, 검증 안 된 사용량, 과한 creator marketplace 느낌이 없다.</span></label>
+            <label><input type="checkbox" /> <span>source, risk, 원본 추적은 보이지만 첫 행동을 방해하지 않는다.</span></label>
+            <label><input type="checkbox" /> <span>운영자가 후보 Markdown에서 source-backed Flow 등록으로 넘어갈 수 있다.</span></label>
+            <label><input type="checkbox" /> <span>P12에서 바로 고칠 화면이 1~2개로 좁혀진다.</span></label>
+          </div>
+        </div>
+      </div>
+      <p class="quote">
+        피드백은 “좋다/별로다”보다 “이 화면에서 내가 다음에 누를 버튼을 알겠다/모르겠다”, “이건 실행 가능한 Flow처럼 보인다/후보처럼 보인다”로 주면 바로 작업 항목으로 바꿀 수 있습니다.
+      </p>
+    </section>
+
+    <section>
+      <h2>실제 앱에서 같이 볼 경로</h2>
+      <p>라이브 화면으로 볼 때는 <code>flow-mvp</code>에서 <code>npm.cmd run dev</code> 후 아래 순서로 확인합니다.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>순서</th>
+            <th>경로</th>
+            <th>입력/상태</th>
+            <th>확인 질문</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><code>/flows</code></td>
+            <td>AJD moving URL 또는 NTS year-end-tax URL 입력</td>
+            <td>hit 결과가 기존 Flow 재사용으로 보이는가.</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><code>/flow-maps/moving-d30</code></td>
+            <td>이사일 입력 후 저장</td>
+            <td>시작 전 설정과 첫 실행 항목이 보이는가.</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><code>/my</code></td>
+            <td>저장 직후 / 개인 사본</td>
+            <td>Today, 전체, Step detail, export가 이어지는가.</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><code>/calendar</code></td>
+            <td>저장된 dated Step</td>
+            <td>날짜가 있는 Step만 일정처럼 보이는가.</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><code>/flows</code></td>
+            <td>없는 URL 입력 후 후보 저장</td>
+            <td>제작 후보와 실행 가능한 Flow가 구분되는가.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </article>
+</body>
+</html>

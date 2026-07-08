@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 전체 Production 계획 - 산출물 통합판</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --surface: #ffffff;
+      --surface-2: #f0f3f6;
+      --ink: #17202a;
+      --muted: #657384;
+      --line: #d8dee6;
+      --accent: #176d5d;
+      --accent-2: #245ea8;
+      --warn: #9a5a00;
+      --hold: #8a3157;
+      --good: #19734f;
+      --shadow: 0 10px 30px rgba(23, 32, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      line-height: 1.58;
+    }
+
+    a { color: var(--accent-2); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 64px;
+    }
+
+    header {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 10px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    h1, h2, h3 { line-height: 1.22; letter-spacing: 0; }
+    h1 { margin: 0; font-size: clamp(28px, 4vw, 44px); }
+    h2 { margin: 0 0 14px; font-size: 25px; }
+    h3 { margin: 0 0 8px; font-size: 18px; }
+    p { margin: 0 0 12px; }
+
+    .lead {
+      margin: 18px 0 0;
+      max-width: 880px;
+      color: #344253;
+      font-size: 17px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface-2);
+      color: #354457;
+      font-size: 13px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    section {
+      margin-top: 20px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .card strong { display: block; margin-bottom: 5px; }
+    .card p { color: var(--muted); font-size: 14px; }
+
+    .callout {
+      border-left: 4px solid var(--accent);
+      background: #eef7f4;
+      padding: 15px 16px;
+      border-radius: 6px;
+      margin: 16px 0;
+    }
+
+    .callout.warn {
+      border-left-color: var(--warn);
+      background: #fff6e7;
+    }
+
+    .callout.hold {
+      border-left-color: var(--hold);
+      background: #fff0f5;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    th, td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background: #eef1f5;
+      color: #2d3948;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .score {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 42px;
+      height: 30px;
+      border-radius: 999px;
+      background: #e6f5ef;
+      color: var(--good);
+      font-weight: 800;
+    }
+
+    .score.mid { background: #edf3fb; color: var(--accent-2); }
+    .score.hold { background: #fff0f5; color: var(--hold); }
+    .score.stop { background: #f4f0ed; color: #6b3b2b; }
+
+    .stage {
+      display: inline-block;
+      min-width: 48px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #17202a;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .stage.p1 { background: var(--accent-2); }
+    .stage.p2 { background: var(--warn); }
+    .stage.later { background: #667085; }
+    .stage.stop { background: #6b3b2b; }
+
+    .path {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 5px;
+      background: #f0f3f6;
+      color: #2f3a47;
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      word-break: break-all;
+    }
+
+    ol, ul { padding-left: 20px; margin: 8px 0 0; }
+    li { margin: 6px 0; }
+
+    .lane-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .small { color: var(--muted); font-size: 13px; }
+
+    .route {
+      display: grid;
+      grid-template-columns: 150px 1fr 1fr;
+      gap: 10px;
+      align-items: stretch;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .route:last-child { border-bottom: 0; }
+    .route b { color: #263442; }
+
+    footer {
+      padding: 24px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 860px) {
+      .page { width: min(100% - 20px, 720px); padding-top: 16px; }
+      header, section { padding: 18px; }
+      .grid, .grid.two, .grid.four { grid-template-columns: 1fr; }
+      .route { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; }
+      th, td { min-width: 160px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <p class="eyebrow">2026-07-05 · 전체 산출물 통합 계획</p>
+      <h1>FlowMe Production 계획: URL로 가져오고, 내 도구로 옮기고, My Flow에서 이어가기</h1>
+      <p class="lead">
+        이 문서는 Claude UX/UI 산출물, 진입점 시뮬레이션, 리서치/백로그 보드, 현재 앱 구조 문서를 합쳐
+        다음 개발 순서를 다시 정리한 실행 계획이다. 결론은 “새로운 거대한 앱”이 아니라
+        기존 4탭 구조 위에 URL 조회, portable export, source trust, My Flow continuation을 얹는 것이다.
+      </p>
+      <div class="meta">
+        <span class="pill">기준선: 4탭 IA 유지</span>
+        <span class="pill">P0: /flows URL 조회</span>
+        <span class="pill">P0: export pack v1</span>
+        <span class="pill">AI는 fallback</span>
+        <span class="pill">memo는 secondary entry</span>
+      </div>
+    </header>
+
+    <section>
+      <h2>한 줄 결론</h2>
+      <div class="callout">
+        <p>
+          다음 목표는 Home을 다시 뒤집는 것이 아니라, <strong>/flows 상단에 URL 조회/재사용 입구를 production 형태로 붙이고</strong>,
+          조회 결과에서 바로 <strong>저장 전 보기, 옵션 변경, 내 도구로 옮기기, My Flow 저장</strong>까지 이어지는
+          첫 30초 루프를 완성하는 것이다.
+        </p>
+      </div>
+      <p>
+        Claude 디자인 결과물은 버릴 것이 아니라 “화면 흐름과 상태 케이스”의 참고 자료로 쓰되, 실제 앱 반영은
+        현재 안정화된 P7 화면 기준선과 <span class="path">docs/SERVICE_STRUCTURE.md</span>의 route 책임을 우선한다.
+      </p>
+    </section>
+
+    <section>
+      <h2>참고한 산출물 지도</h2>
+      <div class="grid">
+        <article class="card">
+          <strong>Claude UX/UI P7 최종 패키지</strong>
+          <p>현재 모바일 화면 기준선과 깨지면 안 되는 copy/overflow/route guardrail을 제공한다.</p>
+          <a href="./2026-07-05-claude-design-p7-final-review-package/README.md">패키지 README</a>
+        </article>
+        <article class="card">
+          <strong>Claude 진입점 01-03</strong>
+          <p>URL hit, duplicate reuse, low-quality/miss, memo draft, special workbench 등 상태별 와이어 흐름을 제공한다.</p>
+          <a href="./2026-07-05-claude-entry-03-review-ko.md">03 검토 문서</a>
+        </article>
+        <article class="card">
+          <strong>URL-first production 검토</strong>
+          <p>첫 공개 위치는 Home보다 /flows URL lookup이며, memo draft는 보조 경로라는 결론을 기록했다.</p>
+          <a href="./2026-07-05-url-first-production-direction-review-ko.html">direction review</a>
+        </article>
+        <article class="card">
+          <strong>서비스 readiness 백로그</strong>
+          <p>현재는 internal alpha/strong PoC이며 public launch 전 P0 gap을 정리한다.</p>
+          <a href="./2026-07-05-project-readiness-backlog-review-ko.html">readiness board</a>
+        </article>
+        <article class="card">
+          <strong>생산성 연결성 리서치</strong>
+          <p>export pack, canonical lookup, Obsidian/Markdown, calendar feed, thin edit의 상대 우선순위를 제공한다.</p>
+          <a href="./2026-07-04-productivity-connectivity-priority-research-ko.html">priority research</a>
+        </article>
+        <article class="card">
+          <strong>커뮤니티/크리에이터 후보 검토</strong>
+          <p>다음 canary 5-8개와 official/trust-anchor 후보를 분리한다.</p>
+          <a href="./2026-07-05-web-source-community-creator-loop-review-ko.md">candidate review</a>
+        </article>
+        <article class="card">
+          <strong>Flow 활용 입구 백로그</strong>
+          <p>URL-first, lookup-first, duplicate reuse, edit/fork, memo-to-Flow를 하나의 모델로 묶는다.</p>
+          <a href="./2026-07-02-flow-usage-entry-backlog-ko.md">entry backlog</a>
+        </article>
+        <article class="card">
+          <strong>현재 서비스 구조</strong>
+          <p>route 책임, 4탭 IA, URL-first lab, export/persistence ownership을 고정 기준으로 제공한다.</p>
+          <a href="../SERVICE_STRUCTURE.md">SERVICE_STRUCTURE</a>
+        </article>
+        <article class="card">
+          <strong>제품 원칙</strong>
+          <p>FLOW는 productivity app replacement가 아니라 external content를 실행 artifact로 바꾸는 action compiler다.</p>
+          <a href="../PRODUCT_PRINCIPLES.md">PRODUCT_PRINCIPLES</a>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>우선순위 산정 기준</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>기준</th>
+            <th>Weight</th>
+            <th>계획에 반영하는 방식</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>첫 30초 사용성</td>
+            <td>30</td>
+            <td>사용자가 URL을 넣고 “쓸 수 있는 결과”를 즉시 확인해야 한다. 설명형 Home보다 /flows 작업 입구를 우선한다.</td>
+          </tr>
+          <tr>
+            <td>비즈니스 성장 루프</td>
+            <td>20</td>
+            <td>중복 URL 재사용, source link 공유, creator/owner가 나중에 발견할 수 있는 축적 구조를 우선한다.</td>
+          </tr>
+          <tr>
+            <td>기존 도구 연결성</td>
+            <td>20</td>
+            <td>캘린더, todo, Markdown/Obsidian, sheet로 복사/내보내기 가능한 portable export를 먼저 만든다.</td>
+          </tr>
+          <tr>
+            <td>현 앱 재사용성</td>
+            <td>15</td>
+            <td>이미 있는 4탭, My Flow, Calendar, source-backed route, URL lab 모듈 위에 얹는다.</td>
+          </tr>
+          <tr>
+            <td>비용/위험 통제</td>
+            <td>15</td>
+            <td>AI 생성은 lookup miss 또는 명시적 revise에서만 열고, fake usage count와 과장된 validation language는 금지한다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>기능 우선순위 재정렬</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>기능</th>
+            <th>Score</th>
+            <th>Stage</th>
+            <th>이유</th>
+            <th>현실적인 첫 구현</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>URL canonical lookup + 기존 Flow 재사용</td>
+            <td><span class="score">93</span></td>
+            <td><span class="stage">P0</span></td>
+            <td>사용자가 이미 본 외부 콘텐츠를 바로 실행 구조로 바꾸는 가장 현실적인 진입점이다.</td>
+            <td><span class="path">/flows</span> 상단 lookup strip, hit/needs_review/miss 상태, 기존 Flow detail 연결.</td>
+          </tr>
+          <tr>
+            <td>Export pack v1</td>
+            <td><span class="score">92</span></td>
+            <td><span class="stage">P0</span></td>
+            <td>FLOW가 캘린더/투두/메모/시트 대체제가 아니라 연결 레이어라는 가치를 즉시 보여준다.</td>
+            <td>ICS, Markdown checklist, plain clipboard, table/CSV row preview를 Step/detail 단위에 붙인다.</td>
+          </tr>
+          <tr>
+            <td>Source/version/trust 표시</td>
+            <td><span class="score">86</span></td>
+            <td><span class="stage">P0</span></td>
+            <td>URL 재사용은 stale source, 저작권, official/creator/user edit 경계가 보이지 않으면 신뢰가 무너진다.</td>
+            <td>사용자 copy는 단순하게 유지하고, source snapshot/update/needs_review는 supporting layer로 분리한다.</td>
+          </tr>
+          <tr>
+            <td>Canary content 5-8개</td>
+            <td><span class="score">84</span></td>
+            <td><span class="stage">P0</span></td>
+            <td>URL entry만 있어도 실제로 재사용할 콘텐츠가 약하면 제품이 빈 shell처럼 보인다.</td>
+            <td>이사, 시험/공부법, 여행, 웨딩, 식단/도시락, 중고차 등 source-backed 후보를 우선 정비한다.</td>
+          </tr>
+          <tr>
+            <td>My Flow / Calendar continuation</td>
+            <td><span class="score mid">82</span></td>
+            <td><span class="stage p1">P1</span></td>
+            <td>저장 후 돌아와서 계속 쓰는 경험이 retention의 핵심이지만, 현재 P7 기준선이 있어 큰 재구성은 금물이다.</td>
+            <td>post-save 첫 할 일, Calendar nearest dated row, My Flow Today/전체의 read-first detail 유지.</td>
+          </tr>
+          <tr>
+            <td>Thin options/edit</td>
+            <td><span class="score mid">79</span></td>
+            <td><span class="stage p1">P1</span></td>
+            <td>기존 Flow가 맞지 않을 때 바로 이탈하지 않게 하는 최소 수정 장치다.</td>
+            <td>시작일, 기간, 난이도, 포함/제외 정도의 얕은 옵션부터 제공하고 full editor는 뒤로 둔다.</td>
+          </tr>
+          <tr>
+            <td>Markdown/Obsidian export profile</td>
+            <td><span class="score mid">78</span></td>
+            <td><span class="stage p1">P1</span></td>
+            <td>메모장/Obsidian/Notion 사용자를 자연스럽게 흡수하는 낮은 비용의 연결성이다.</td>
+            <td>frontmatter, task list, source block, dated heading을 가진 Markdown 복사/다운로드 프로필.</td>
+          </tr>
+          <tr>
+            <td>Memo-to-Flow private draft</td>
+            <td><span class="score hold">70</span></td>
+            <td><span class="stage p2">P2</span></td>
+            <td>일상화와 확산에는 중요하지만, URL lookup/export 루프보다 먼저 만들면 제품 초점이 흐려질 수 있다.</td>
+            <td>짧은 메모를 일정/체크리스트 후보로 보여주는 private draft. 공유/공개는 별도 승격.</td>
+          </tr>
+          <tr>
+            <td>AI generation fallback</td>
+            <td><span class="score hold">67</span></td>
+            <td><span class="stage p2">P2</span></td>
+            <td>miss 상황 해결에는 필요하지만, 비용과 품질 위험 때문에 lookup 이후의 보조 액션이어야 한다.</td>
+            <td>기존 변환 없음 또는 사용자가 다시 만들기 선택 시에만 queue/request 상태로 열기.</td>
+          </tr>
+          <tr>
+            <td>Direct OAuth integrations</td>
+            <td><span class="score hold">58</span></td>
+            <td><span class="stage later">Later</span></td>
+            <td>portable export 반복 사용이 증명되기 전에는 token, sync, permissions가 제품 복잡도를 크게 올린다.</td>
+            <td>Google Calendar/Sheets direct save는 반복 export friction이 관찰된 뒤 Stage 1 후보로 재검토.</td>
+          </tr>
+          <tr>
+            <td>Fake usage count / fake review</td>
+            <td><span class="score stop">0</span></td>
+            <td><span class="stage stop">No</span></td>
+            <td>실제 사용자 증거 없이 신뢰 신호를 꾸미는 것은 제품 원칙과 검증 언어를 훼손한다.</td>
+            <td>build 금지. 실제 save/export/check/return 이벤트가 생긴 뒤 정의한다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>화면별 반영 방향</h2>
+      <div class="route">
+        <b>Home</b>
+        <div>서비스 약속과 대표 시작점만 보여준다. URL input을 메인으로 넣기보다 /flows로 보내는 CTA 수준을 유지한다.</div>
+        <div class="small">P7 Home 기준선 유지. catalog나 lab처럼 확장하지 않는다.</div>
+      </div>
+      <div class="route">
+        <b>/flows</b>
+        <div>URL 조회를 첫 작업으로 추가한다. 사용자는 source URL을 붙여 넣고 기존 Flow가 있으면 바로 reuse한다.</div>
+        <div class="small">가장 중요한 production 변경 지점. 기존 catalog grid는 아래에 유지한다.</div>
+      </div>
+      <div class="route">
+        <b>/flow-maps/[map]</b>
+        <div>저장 전 보기, 시작일/옵션, 첫 할 일, source trust를 차분히 보여주는 public save detail로 유지한다.</div>
+        <div class="small">URL hit 결과가 이 route 또는 /f detail로 연결된다.</div>
+      </div>
+      <div class="route">
+        <b>/f/[slug]</b>
+        <div>단일 Flow share-entry shell로 유지한다. 저장/내보내기 결과를 먼저 보여주고 내부 상태어는 감춘다.</div>
+        <div class="small">creator/public detail의 예외 route. persistent 4탭보다 저장 전 CTA가 우선이다.</div>
+      </div>
+      <div class="route">
+        <b>/my</b>
+        <div>저장한 일을 이어하는 execution hub로 유지한다. Today는 즉시 할 일, 전체는 저장 구조/진행 관리다.</div>
+        <div class="small">URL production 후에는 post-save banner와 첫 actionable Step 검증만 추가 확인한다.</div>
+      </div>
+      <div class="route">
+        <b>/calendar</b>
+        <div>dated Step의 schedule-first surface로 유지한다. nearest dated row와 agenda-first mobile 원칙을 지킨다.</div>
+        <div class="small">export pack의 ICS 결과와 실제 Calendar route preview가 서로 맞아야 한다.</div>
+      </div>
+      <div class="route">
+        <b>/flow-lab/url-first-p0</b>
+        <div>production 전에 hit/needs_review/miss/memo_draft 상태를 빠르게 검증하는 내부 lab으로 남긴다.</div>
+        <div class="small">좋은 코드/상태 모델은 재사용하되, lab UI를 그대로 공개하지 않는다.</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>P0 Production Plan</h2>
+      <div class="grid two">
+        <article class="card">
+          <div class="lane-title"><h3>P0-01. /flows URL lookup strip</h3><span class="stage">P0</span></div>
+          <p>기존 catalog 상단에 source URL 입력, canonicalization, duplicate hit, needs_review, miss 상태를 붙인다.</p>
+          <ul>
+            <li>주요 파일: <span class="path">components/flow/AppClient.tsx</span>, <span class="path">lib/flow/url-first-lookup.ts</span></li>
+            <li>완료 조건: URL hit가 기존 Flow detail로 이어지고, miss는 AI 실행이 아니라 대기/요청 상태로 보인다.</li>
+            <li>검증: unit test, mobile /flows Playwright, internal label/copy scan.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <div class="lane-title"><h3>P0-02. Result sheet states</h3><span class="stage">P0</span></div>
+          <p>Claude entry 03의 상태 흐름을 production copy로 재해석해 조회 결과를 한 장의 decision sheet로 보여준다.</p>
+          <ul>
+            <li>상태: hit, needs_review, miss, unsupported, memo_draft.</li>
+            <li>완료 조건: 각 상태가 하나의 primary action과 하나의 next option만 가진다.</li>
+            <li>검증: 390px 첫 화면에서 CTA와 결과 설명이 겹치지 않는다.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <div class="lane-title"><h3>P0-03. Export pack v1 QA</h3><span class="stage">P0</span></div>
+          <p>사용자가 “내 캘린더/메모/시트로 옮겼다”고 느낄 수 있는 export 결과를 route detail과 My Flow detail에 맞춘다.</p>
+          <ul>
+            <li>범위: ICS, Markdown checklist, plain copy, table/CSV row preview.</li>
+            <li>완료 조건: Step detail의 edited values가 export 결과에 반영된다.</li>
+            <li>검증: export unit test, My Flow Step detail browser check.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <div class="lane-title"><h3>P0-04. Source/trust layer</h3><span class="stage">P0</span></div>
+          <p>원문, 변환 시점, review 필요 여부, 공식/creator/user edit 경계를 사용자에게 과하게 노출하지 않고 분리한다.</p>
+          <ul>
+            <li>완료 조건: fake count 없이도 “왜 이 결과를 믿을 수 있는지” 최소 단서가 보인다.</li>
+            <li>주의: user-facing copy에서 source-backed, candidate, audit 같은 내부어는 금지한다.</li>
+            <li>검증: P7 guardrail scan과 docs/SERVICE_STRUCTURE 원칙 대조.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <div class="lane-title"><h3>P0-05. Canary content set</h3><span class="stage">P0</span></div>
+          <p>URL lookup을 보여줄 수 있는 실제 source-backed 후보 5-8개를 정비한다.</p>
+          <ul>
+            <li>우선 후보: 이사 체크리스트, 시험/공부법, 해외여행 체크리스트, 웨딩 타임라인, 주간 식단/도시락, 중고차 구매.</li>
+            <li>완료 조건: 각 후보가 natural artifact, source link, export destination, first action을 가진다.</li>
+            <li>검증: content conversion review, source/risk gate, route smoke.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <div class="lane-title"><h3>P0-06. Evidence capture</h3><span class="stage">P0</span></div>
+          <p>실제 검증 없이 “검증됨”이라고 말하지 않기 위해 save/export/check/return 관찰 계획을 붙인다.</p>
+          <ul>
+            <li>완료 조건: 첫 사용자 세션에서 기록할 질문, 관찰 포인트, 실패 기준이 문서화된다.</li>
+            <li>검증: observed-user evidence와 browser QA를 명확히 분리한다.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>P1 / P2 Roadmap</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Stage</th>
+            <th>작업</th>
+            <th>들어가는 시점</th>
+            <th>주의점</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="stage p1">P1</span></td>
+            <td>Thin edit/options</td>
+            <td>P0 URL hit가 실제로 “쓸 만하지만 약간 수정하고 싶다”는 상황을 만들 때.</td>
+            <td>처음부터 full editor를 만들지 않는다. 시작일/기간/난이도/포함 옵션부터.</td>
+          </tr>
+          <tr>
+            <td><span class="stage p1">P1</span></td>
+            <td>Markdown/Obsidian export profile</td>
+            <td>메모장/Obsidian/Notion 사용자 기준선 대응이 필요할 때.</td>
+            <td>Notion API/OAuth가 아니라 Markdown/CSV 호환 포맷부터.</td>
+          </tr>
+          <tr>
+            <td><span class="stage p1">P1</span></td>
+            <td>Calendar feed/subscription</td>
+            <td>ICS 파일 다운로드를 반복하는 friction이 보일 때.</td>
+            <td>account sync 이전의 low-touch 연결로 둔다.</td>
+          </tr>
+          <tr>
+            <td><span class="stage p2">P2</span></td>
+            <td>Memo-to-Flow private draft</td>
+            <td>URL이 없거나 개인 메모에서 시작하는 사용자가 반복적으로 보일 때.</td>
+            <td>공개 Flow 생성이 아니라 private draft와 export preview부터.</td>
+          </tr>
+          <tr>
+            <td><span class="stage p2">P2</span></td>
+            <td>AI fallback generation</td>
+            <td>canonical miss가 충분히 많고, 수동 후보 생성 병목이 커질 때.</td>
+            <td>비용 gate, queue, source attribution, revise state가 먼저 필요하다.</td>
+          </tr>
+          <tr>
+            <td><span class="stage later">Later</span></td>
+            <td>Creator/owner adoption loop</td>
+            <td>특정 source owner나 creator가 실제로 Flow 링크를 채택하려 할 때.</td>
+            <td>creator marketplace, payment, fake social proof로 앞서가지 않는다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>다음 목표 제안</h2>
+      <div class="callout">
+        <p>
+          <strong>다음 개발 목표:</strong> “/flows URL 조회 production slice”를 만든다.
+          내부 lab의 상태 모델을 재사용하고, Claude entry 03의 화면 케이스를 참고하되,
+          최종 UI는 현재 /flows catalog와 P7 guardrail에 맞춘다.
+        </p>
+      </div>
+      <ol>
+        <li><strong>스펙 생성:</strong> <span class="path">docs/specs/2026-07-05-url-lookup-production-slice/</span>에 spec/plan/tasks/qa를 만든다.</li>
+        <li><strong>UI 반영:</strong> <span class="path">/flows</span> 상단에 URL lookup strip과 result sheet를 붙인다.</li>
+        <li><strong>Export 연결:</strong> hit 결과에서 ICS/Markdown/plain copy/table preview가 보이도록 export pack v1 범위를 확정한다.</li>
+        <li><strong>Content 연결:</strong> canary 후보 중 3개 이상이 lookup hit demo로 동작하도록 source URL mapping을 정리한다.</li>
+        <li><strong>검증:</strong> <span class="path">npm.cmd run docs:check</span>, unit test, build, 390px /flows browser QA, user-route copy scan을 수행한다.</li>
+      </ol>
+      <div class="callout warn">
+        <p>
+          이 목표는 Home redesign, full editor, direct OAuth, creator marketplace, AI-first generation을 포함하지 않는다.
+          이 네 가지는 P0 결과가 실제로 반복 사용되는지 본 뒤에 열어야 한다.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2>충돌 정리</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>충돌</th>
+            <th>정리</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Claude 디자인을 그대로 앱에 적용할까?</td>
+            <td>아니다. Claude 산출물은 상태/흐름 참고자료로 쓰고, 앱 반영은 P7 baseline과 현재 route 책임에 맞게 재설계한다.</td>
+          </tr>
+          <tr>
+            <td>Home에 URL 입력을 바로 넣을까?</td>
+            <td>지금은 /flows가 맞다. Home은 약속과 대표 시작점, /flows는 실제 찾기/가져오기 작업면이다.</td>
+          </tr>
+          <tr>
+            <td>Memo-to-Flow를 먼저 만들까?</td>
+            <td>중요하지만 P2다. URL lookup/export 루프가 제품의 첫 가치와 비용 구조를 더 잘 증명한다.</td>
+          </tr>
+          <tr>
+            <td>AI를 전면에 세울까?</td>
+            <td>아니다. 먼저 찾고 재사용한다. AI는 miss/revise fallback으로 둬야 비용과 품질 위험이 낮다.</td>
+          </tr>
+          <tr>
+            <td>캘린더/투두/노션을 직접 연동할까?</td>
+            <td>아직 아니다. portable export를 먼저 증명하고, 반복 friction이 생기면 direct integration을 검토한다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+      작성 기준: 현재 repo 문서, Claude 산출물 검토 패키지, URL-first lab 방향, 2026-07-04/05 백로그 및 리서치 보드.
+      이 문서는 제품 계획 artifact이며 실제 사용자 검증 결과가 아니다.
+    </footer>
+  </main>
+</body>
+</html>

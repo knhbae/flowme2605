@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe Source / Version / Trust Ledger CEO 전략 보고서</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #617085;
+      --line: #dde5ef;
+      --paper: #f6f8fb;
+      --panel: #ffffff;
+      --navy: #172033;
+      --blue: #2856d6;
+      --green: #0f8b6f;
+      --amber: #b86f00;
+      --red: #b42318;
+      --soft-blue: #eef4ff;
+      --soft-green: #eaf8f3;
+      --soft-amber: #fff5df;
+      --soft-red: #fff0ed;
+      --shadow: 0 20px 50px rgba(23, 32, 51, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif;
+      line-height: 1.55;
+    }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .deck {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 52px;
+    }
+
+    .slide {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      margin: 0 0 22px;
+      padding: 26px;
+      overflow: hidden;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 0.9fr;
+      gap: 28px;
+      min-height: 520px;
+      align-items: center;
+      color: #fff;
+      background:
+        linear-gradient(135deg, rgba(18, 30, 50, 0.99), rgba(22, 92, 99, 0.94)),
+        radial-gradient(circle at 82% 12%, rgba(255, 255, 255, 0.24), transparent 32%);
+      border-color: transparent;
+    }
+
+    .report-meta {
+      margin: 0 0 12px;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 18px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin-bottom: 8px;
+      font-size: 28px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 8px;
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .lead {
+      max-width: 720px;
+      color: rgba(255, 255, 255, 0.86);
+      font-size: 19px;
+      margin-bottom: 24px;
+    }
+
+    .subtitle {
+      max-width: 900px;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .metric-grid,
+    .decision-grid,
+    .roadmap,
+    .source-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .metric-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 26px;
+    }
+
+    .metric,
+    .decision,
+    .roadmap-card {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .hero .metric {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      min-height: 94px;
+    }
+
+    .metric b {
+      display: block;
+      font-size: 32px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .hero .metric span { color: rgba(255, 255, 255, 0.78); }
+
+    .ledger-flow {
+      display: grid;
+      gap: 12px;
+    }
+
+    .ledger-node {
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 14px 16px;
+    }
+
+    .ledger-node strong { display: block; margin-bottom: 4px; }
+    .ledger-node span { display: block; color: rgba(255, 255, 255, 0.76); font-size: 13px; }
+
+    .decision-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 16px;
+    }
+
+    .decision.p0 { border-top: 5px solid var(--green); }
+    .decision.p1 { border-top: 5px solid var(--amber); }
+    .decision.p2 { border-top: 5px solid var(--red); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      background: #eef2f7;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .badge.p0 { color: var(--green); background: var(--soft-green); }
+    .badge.p1 { color: var(--amber); background: var(--soft-amber); }
+    .badge.p2 { color: var(--red); background: var(--soft-red); }
+    .badge.info { color: var(--blue); background: var(--soft-blue); }
+
+    .callout {
+      margin-top: 18px;
+      border-left: 5px solid var(--green);
+      border-radius: 8px;
+      background: var(--soft-green);
+      padding: 16px 18px;
+      font-weight: 900;
+    }
+
+    .table-wrap {
+      max-width: 100%;
+      margin-top: 16px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      min-width: 860px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px 13px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      background: #eef3f8;
+      color: #25324a;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .two-col > * { min-width: 0; }
+
+    .note {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #f8fafc;
+      padding: 14px 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .status-map {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .status-card {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .status-card.hit { background: var(--soft-green); border-color: #bde8dc; }
+    .status-card.review { background: var(--soft-amber); border-color: #f2d48d; }
+    .status-card.miss { background: var(--soft-red); border-color: #f3c3bd; }
+
+    .status-card ul,
+    .roadmap-card ul {
+      margin: 10px 0 0;
+      padding-left: 20px;
+    }
+
+    .status-card li,
+    .roadmap-card li {
+      margin: 6px 0;
+    }
+
+    .field-radar {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 155px 1fr 44px;
+      gap: 10px;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .bar {
+      height: 12px;
+      border-radius: 999px;
+      background: #e6eaf0;
+      overflow: hidden;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--green);
+    }
+
+    .roadmap {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 16px;
+    }
+
+    .source-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 16px;
+    }
+
+    .source-grid a {
+      display: block;
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fbfcfe;
+      padding: 12px 14px;
+      font-weight: 800;
+    }
+
+    .small { color: var(--muted); font-size: 13px; }
+
+    @media (max-width: 840px) {
+      .deck { width: min(100% - 20px, 760px); padding-top: 10px; }
+      .slide { padding: 18px; border-radius: 10px; }
+      .hero,
+      .metric-grid,
+      .decision-grid,
+      .two-col,
+      .status-map,
+      .roadmap,
+      .source-grid {
+        grid-template-columns: 1fr;
+      }
+      h1 { font-size: 35px; }
+      h2 { font-size: 23px; }
+      .lead { font-size: 16px; }
+      table { min-width: 780px; }
+      .field-row { grid-template-columns: 130px 1fr 36px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck">
+    <section class="slide hero">
+      <div>
+        <p class="report-meta">CEO Brief · Source / Version / Trust Ledger · 2026-07-05</p>
+        <h1>FlowMe의 신뢰 자산은 ledger에 쌓인다</h1>
+        <p class="lead">URL-first와 Export Pack v1을 제품으로 만들려면, Flow가 어디서 왔고 언제 확인됐고 어떤 버전으로 export됐는지가 파일 밖에서도 남아야 한다. Ledger는 P0의 신뢰 계약이다.</p>
+        <div class="metric-grid" aria-label="핵심 숫자">
+          <div class="metric"><b>10</b><span>최소 ledger 필드</span></div>
+          <div class="metric"><b>3</b><span>상태 gate</span></div>
+          <div class="metric"><b>3</b><span>P0 export 반영면</span></div>
+          <div class="metric"><b>5</b><span>민감 영역</span></div>
+        </div>
+      </div>
+      <div class="ledger-flow" aria-label="Ledger flow">
+        <div class="ledger-node"><strong>1. Canonical source</strong><span>사용자 URL을 정규화하고 기존 변환본을 먼저 찾는다.</span></div>
+        <div class="ledger-node"><strong>2. Trust gate</strong><span>hit / needs_review / miss 상태로 저장과 export 가능 범위를 나눈다.</span></div>
+        <div class="ledger-node"><strong>3. Version relation</strong><span>원본 Flow, 사용자 수정본, fork 관계를 분리한다.</span></div>
+        <div class="ledger-node"><strong>4. Export watermark</strong><span>.ics, Markdown, checklist 안에 출처/확인일/주의/완료 기준을 남긴다.</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>1. 결론</h2>
+      <p class="subtitle">Ledger는 백오피스 기록이 아니다. FlowMe가 기존 앱과 연결될 때 신뢰와 책임 경계를 유지하는 제품 기능이다.</p>
+      <div class="decision-grid">
+        <article class="decision p0">
+          <span class="badge p0">P0 확정</span>
+          <h3>최소 10개 필드</h3>
+          <p>source URL, canonical URL, title/type/status, checked date, version ref, risk, caution, export generated date를 필수 contract로 둔다.</p>
+        </article>
+        <article class="decision p0">
+          <span class="badge p0">P0 확정</span>
+          <h3>상태별 gate</h3>
+          <p>hit만 저장/export를 열고, needs_review는 미리보기, miss는 수집/요청으로 제한한다.</p>
+        </article>
+        <article class="decision p1">
+          <span class="badge p1">P1 확장</span>
+          <h3>Diff와 connector 로그</h3>
+          <p>hash, snapshot diff, API sync log는 P1/P2로 둔다. P0는 사용자가 볼 수 있는 신뢰 표식이 먼저다.</p>
+        </article>
+      </div>
+      <div class="callout">CEO 결정안: Ledger는 “나중에 데이터베이스로 정리”가 아니라 Export Pack v1과 동시에 붙는 P0 contract다.</div>
+    </section>
+
+    <section class="slide">
+      <h2>2. P0 Ledger 필드 contract</h2>
+      <p class="subtitle">필드는 많이 모으는 것이 아니라, URL-first와 export에서 빠지면 위험해지는 값만 P0로 고정한다.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>필드</th>
+              <th>P0 여부</th>
+              <th>의미</th>
+              <th>사용 위치</th>
+              <th>P1/P2 확장</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>source_url</strong></td>
+              <td><span class="badge p0">필수</span></td>
+              <td>원문으로 돌아가는 링크</td>
+              <td>URL lookup, My Flow, export body</td>
+              <td>source availability check</td>
+            </tr>
+            <tr>
+              <td><strong>canonical_url</strong></td>
+              <td><span class="badge p0">필수</span></td>
+              <td>중복 URL 재사용과 AI 비용 절감의 기준</td>
+              <td>URL-first lookup key</td>
+              <td>redirect history, canonical conflict log</td>
+            </tr>
+            <tr>
+              <td><strong>source_title</strong></td>
+              <td><span class="badge p0">필수</span></td>
+              <td>무엇을 변환했는지 사용자가 이해하는 이름</td>
+              <td>hit 결과, export header</td>
+              <td>author/site/license 분리</td>
+            </tr>
+            <tr>
+              <td><strong>source_type</strong></td>
+              <td><span class="badge p0">필수</span></td>
+              <td>official, creator, brand, community, curation 등 출처 성격</td>
+              <td>trust badge, 민감 문구</td>
+              <td>creator permission, backlink policy</td>
+            </tr>
+            <tr>
+              <td><strong>source_status</strong></td>
+              <td><span class="badge p0">필수</span></td>
+              <td>real, needs_review, missing 상태</td>
+              <td>저장/export gate</td>
+              <td>review queue SLA</td>
+            </tr>
+            <tr>
+              <td><strong>checked_at</strong></td>
+              <td><span class="badge p0">필수</span></td>
+              <td>출처가 확인된 날짜</td>
+              <td>export watermark, source card</td>
+              <td>scheduled re-check</td>
+            </tr>
+            <tr>
+              <td><strong>version_ref</strong></td>
+              <td><span class="badge p0">필수</span></td>
+              <td>Flow 변환본의 버전 참조</td>
+              <td>save snapshot, fork relation</td>
+              <td>snapshot hash, diff viewer</td>
+            </tr>
+            <tr>
+              <td><strong>risk_level</strong></td>
+              <td><span class="badge p0">필수</span></td>
+              <td>low, medium, medical, legal, financial 등 위험도</td>
+              <td>민감 영역 copy, export caution</td>
+              <td>category-specific policy rules</td>
+            </tr>
+            <tr>
+              <td><strong>caution</strong></td>
+              <td><span class="badge p0">필수</span></td>
+              <td>조언처럼 보이지 않도록 하는 주의 문구</td>
+              <td>.ics description, Markdown 상단, checklist 하단</td>
+              <td>jurisdiction/localization</td>
+            </tr>
+            <tr>
+              <td><strong>export_generated_at</strong></td>
+              <td><span class="badge p0">필수</span></td>
+              <td>파일/텍스트가 생성된 시점</td>
+              <td>export body, future support</td>
+              <td>connector sync attempt log</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>3. 상태별 처리</h2>
+      <p class="subtitle">사용자에게 내부 상태어를 크게 노출할 필요는 없지만, 제품 gate는 엄격해야 한다.</p>
+      <div class="status-map">
+        <article class="status-card hit">
+          <span class="badge p0">hit</span>
+          <h3>바로 실행 가능</h3>
+          <ul>
+            <li>canonical URL이 기존 Flow와 매칭된다.</li>
+            <li>source_status는 real이다.</li>
+            <li>저장, My Flow 시작, `.ics`, Markdown, checklist export를 연다.</li>
+            <li>export에는 source URL, checked date, caution, completion을 남긴다.</li>
+          </ul>
+        </article>
+        <article class="status-card review">
+          <span class="badge p1">needs_review</span>
+          <h3>검토 전 잠금</h3>
+          <ul>
+            <li>구조 후보는 있지만 원문 row, 일정 기준, 위험 문구가 불충분하다.</li>
+            <li>미리보기와 원문 확인 CTA만 제공한다.</li>
+            <li>저장과 export는 잠근다.</li>
+            <li>ledger에는 required_action과 reviewer note를 남긴다.</li>
+          </ul>
+        </article>
+        <article class="status-card miss">
+          <span class="badge p2">miss</span>
+          <h3>아직 변환 전</h3>
+          <ul>
+            <li>canonical URL에 연결된 Flow가 없다.</li>
+            <li>P0에서는 AI-first 생성 기대를 만들지 않는다.</li>
+            <li>수집/요청/대기열로 보낸다.</li>
+            <li>ledger에는 input URL, canonical URL, requested_at만 남긴다.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>4. Export Pack v1에 들어가는 방식</h2>
+      <p class="subtitle">Ledger는 외부 파일 안에 “작게 남는 신뢰 watermark”여야 한다. 사용자를 방해하지 않되, 출처와 경계를 잃지 않는다.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Export</th>
+              <th>반드시 들어갈 ledger</th>
+              <th>표현 위치</th>
+              <th>금지</th>
+              <th>현재 근거</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>.ics</strong></td>
+              <td>title, date, duration, source URL, checked_at, caution, completion</td>
+              <td>DESCRIPTION, URL field, event title</td>
+              <td>의료/법률/재무 행동을 “해야 함”으로 단정</td>
+              <td>`my-flow-step-export.ts`와 `export.ts`가 description/source URL/caution을 다룸</td>
+            </tr>
+            <tr>
+              <td><strong>Markdown</strong></td>
+              <td>source title, canonical/source URL, checked_at, source_status, version_ref, caution, completion</td>
+              <td>문서 상단 summary block</td>
+              <td>원문 없는 요약을 사실처럼 보이게 작성</td>
+              <td>URL-first start package가 Markdown download를 생성하고 E2E로 확인됨</td>
+            </tr>
+            <tr>
+              <td><strong>Checklist</strong></td>
+              <td>item list, completion, source URL, checked_at, caution, user memo</td>
+              <td>체크 항목 아래 footer</td>
+              <td>출처와 확인일 없는 범용 조언형 checklist</td>
+              <td>Step portable text가 checked items, memo, completion, caution, source를 다룸</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">원칙: export는 “FlowMe가 추천했다”가 아니라 “이 원문에서 확인한 실행 구조를 이 날짜에 내보냈다”라고 말해야 한다.</div>
+    </section>
+
+    <section class="slide">
+      <h2>5. 수정과 fork의 version 관계</h2>
+      <p class="subtitle">사용자 수정은 제품의 강점이지만, source-backed fact와 섞이면 신뢰가 무너진다. 두 계층을 분리한다.</p>
+      <div class="two-col">
+        <div>
+          <h3>P0 version relation</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>관계</th>
+                  <th>저장할 값</th>
+                  <th>사용자 의미</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>original</strong></td>
+                  <td>source_url, canonical_url, source_checked_at, source_status, version_ref</td>
+                  <td>원본에서 온 사실과 실행 구조</td>
+                </tr>
+                <tr>
+                  <td><strong>user edit</strong></td>
+                  <td>edited_title, edited_date, memo, checked_items, edited_at</td>
+                  <td>내 상황에 맞춘 변경</td>
+                </tr>
+                <tr>
+                  <td><strong>fork</strong></td>
+                  <td>parent_flow_id, parent_version_ref, forked_at, fork_reason</td>
+                  <td>원본을 기반으로 만든 새 개인/공유 버전</td>
+                </tr>
+                <tr>
+                  <td><strong>export</strong></td>
+                  <td>export_mode, export_generated_at, export_version_ref</td>
+                  <td>어떤 버전이 외부 앱으로 나갔는지</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <h3>필드 성숙도</h3>
+          <div class="note">현재 코드에는 source URL, source checked date, risk, caution, saved snapshot, map version이 존재한다. P0 과제는 이를 한 contract로 묶어 export와 gate에 일관되게 넣는 것이다.</div>
+          <div class="field-radar">
+            <div class="field-row"><strong>source URL</strong><div class="bar"><i style="width:96%"></i></div><b>96</b></div>
+            <div class="field-row"><strong>checked date</strong><div class="bar"><i style="width:82%"></i></div><b>82</b></div>
+            <div class="field-row"><strong>risk/caution</strong><div class="bar"><i style="width:88%"></i></div><b>88</b></div>
+            <div class="field-row"><strong>version relation</strong><div class="bar"><i style="width:62%; background: var(--amber)"></i></div><b>62</b></div>
+            <div class="field-row"><strong>snapshot diff</strong><div class="bar"><i style="width:28%; background: var(--red)"></i></div><b>28</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>6. 민감 영역 trust/caution 기준</h2>
+      <p class="subtitle">민감 영역의 핵심은 “조언을 더 잘 쓰는 것”이 아니라, 조언처럼 보이지 않게 실행 언어를 바꾸는 것이다.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>영역</th>
+              <th>risk_level</th>
+              <th>source_type 우선순위</th>
+              <th>export 문구</th>
+              <th>잠금 조건</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>의료/건강</strong></td>
+              <td>medical_sensitive</td>
+              <td>official 우선, creator/community는 참고로 제한</td>
+              <td>예약, 문의, 기록, 보호자/전문가 확인</td>
+              <td>checked_at 없음, 공식 source 불명확, 효능 보장 표현</td>
+            </tr>
+            <tr>
+              <td><strong>육아</strong></td>
+              <td>medical_sensitive 또는 medium</td>
+              <td>official/병원/공공기관 우선</td>
+              <td>관찰 기록, 준비물 확인, 상담 질문</td>
+              <td>발달/건강 판단처럼 보이는 문장</td>
+            </tr>
+            <tr>
+              <td><strong>법률/계약</strong></td>
+              <td>legal_sensitive</td>
+              <td>official/계약서/공공기관 우선</td>
+              <td>서류 확인, 조건 비교, 전문가 문의</td>
+              <td>계약 결정을 대행하는 표현</td>
+            </tr>
+            <tr>
+              <td><strong>재무/구매</strong></td>
+              <td>financial_sensitive</td>
+              <td>공식 공시, 견적서, 약관 우선</td>
+              <td>비용 항목 정리, 견적 확인, 보류 조건</td>
+              <td>투자/대출/구매 권유처럼 보이는 표현</td>
+            </tr>
+            <tr>
+              <td><strong>커뮤니티 경험</strong></td>
+              <td>medium</td>
+              <td>community/creator는 경험 출처 표시</td>
+              <td>내 상황에 맞게 수정, 원문 경험 참고</td>
+              <td>개인 후기를 공식 기준처럼 변환</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>7. P0/P1/P2 확장 관계</h2>
+      <p class="subtitle">Ledger를 먼저 고정해야 direct API, sheet, calendar feed가 나중에 안전하게 붙는다.</p>
+      <div class="roadmap">
+        <article class="roadmap-card">
+          <span class="badge p0">P0</span>
+          <h3>Visible trust contract</h3>
+          <ul>
+            <li>10개 최소 필드 확정</li>
+            <li>hit / needs_review / miss gate</li>
+            <li>Export Pack v1 watermark</li>
+            <li>민감 영역 caution rule</li>
+          </ul>
+        </article>
+        <article class="roadmap-card">
+          <span class="badge p1">P1</span>
+          <h3>Review and sheet expansion</h3>
+          <ul>
+            <li>snapshot_ref/source_hash</li>
+            <li>CSV/sheet summary fields</li>
+            <li>review queue와 re-check date</li>
+            <li>fork reason과 parent version 표시</li>
+          </ul>
+        </article>
+        <article class="roadmap-card">
+          <span class="badge p2">P2</span>
+          <h3>Connector audit trail</h3>
+          <ul>
+            <li>Todoist/Notion/Google sync log</li>
+            <li>calendar feed version drift 처리</li>
+            <li>삭제/중복/권한 실패 기록</li>
+            <li>creator permission과 backlink ledger</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>8. 현재 근거와 검증 범위</h2>
+      <p class="subtitle">이번 보고서는 전략 확정 문서다. 구현 검증은 기존 QA 파일 또는 실제 명령 결과가 있는 부분만 근거로 둔다.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>근거</th>
+              <th>확인 내용</th>
+              <th>이번 보고서에서의 사용</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="./2026-07-05-url-first-p0-ceo-report-ko.html">URL-first P0 CEO 보고서</a></td>
+              <td>source/version/trust 최소 필드와 hit gate 방향</td>
+              <td>ledger를 URL-first P0 다음 실행 목표로 확정</td>
+            </tr>
+            <tr>
+              <td><a href="./2026-07-05-flowme-external-connection-strategy-ceo-ko.html">외부 연결/경쟁 전략 보고서</a></td>
+              <td>portable export와 source trust가 direct OAuth보다 먼저라는 판단</td>
+              <td>connector 전 ledger 선행 원칙</td>
+            </tr>
+            <tr>
+              <td><a href="./2026-07-05-flowme-export-pack-v1-strategy-ceo-ko.html">Export Pack v1 전략 보고서</a></td>
+              <td>.ics, Markdown, checklist P0와 ledger 최소 항목</td>
+              <td>export watermark 범위 정의</td>
+            </tr>
+            <tr>
+              <td><a href="./2026-07-05-url-first-strategy-master-plan-ko.md">전략 마스터 플랜</a></td>
+              <td>Phase 3가 source/version/trust ledger로 정리됨</td>
+              <td>로드맵 위치 확인</td>
+            </tr>
+            <tr>
+              <td><a href="../SERVICE_STRUCTURE.md">SERVICE_STRUCTURE.md</a></td>
+              <td>/flows는 canonical lookup, hit/needs_review/miss, export gate를 담당</td>
+              <td>제품 표면과 모듈 소유권 근거</td>
+            </tr>
+            <tr>
+              <td><a href="../DECISIONS.md">DECISIONS.md</a></td>
+              <td>URL lookup-before-AI, export destination preview, Step-level persistence/export decision</td>
+              <td>ledger contract가 기존 결정과 충돌하지 않는지 확인</td>
+            </tr>
+            <tr>
+              <td><a href="../../lib/flow/types.ts">types.ts</a></td>
+              <td>Flow와 Item에 source_title, source_url, source_status, source_checked_at, risk_level, warning 존재</td>
+              <td>P0 필드 후보의 현재 모델 근거</td>
+            </tr>
+            <tr>
+              <td><a href="../../lib/flow/url-first-lookup.ts">url-first-lookup.ts</a></td>
+              <td>canonical URL, sourceStatus, sourceCheckedAt, canExport, saveMode, exportModes를 다룸</td>
+              <td>상태별 gate 설계 근거</td>
+            </tr>
+            <tr>
+              <td><a href="../../lib/flow/source-backed-my-flow.ts">source-backed-my-flow.ts</a></td>
+              <td>saved snapshot, map version, sourceCheckedAtByFlow, riskLevelsByFlow, Step binding이 존재</td>
+              <td>수정/fork/version relation의 현 구조 근거</td>
+            </tr>
+            <tr>
+              <td><a href="../../lib/flow/my-flow-step-export.ts">my-flow-step-export.ts</a></td>
+              <td>Step export가 sourceUrl, memo, checkedItems, completionCriteria, caution을 다룸</td>
+              <td>Export Pack v1에 ledger를 넣을 수 있는 현재 접점</td>
+            </tr>
+            <tr>
+              <td><a href="../../tests/e2e/flow-mvp.spec.ts">flow-mvp.spec.ts</a></td>
+              <td>URL lookup hit/review/miss, Markdown download, save record를 검증하는 테스트가 존재</td>
+              <td>구현 주장을 기존 QA 근거로 제한</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="source-grid">
+        <a href="../../lib/flow/export.ts">export.ts: ICS/text/workbook source and warning fields</a>
+        <a href="../../lib/flow/export-labels.ts">export-labels.ts: 사용자용 export 라벨</a>
+        <a href="./2026-07-04-productivity-connectivity-priority-research-ko.md">생산성 연결 우선순위 리서치</a>
+        <a href="../IDEAS.md">IDEAS.md: 보류된 direct integration 방향</a>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>9. 임원 의사결정 항목</h2>
+      <p class="subtitle">이번 목표에서 닫을 결정은 세 가지다.</p>
+      <div class="decision-grid">
+        <article class="decision p0">
+          <span class="badge p0">승인 요청</span>
+          <h3>Ledger P0 필드 승인</h3>
+          <p>10개 필드를 모든 URL-first hit와 Export Pack v1의 공통 contract로 둔다.</p>
+        </article>
+        <article class="decision p0">
+          <span class="badge p0">승인 요청</span>
+          <h3>Gate 승인</h3>
+          <p>hit만 저장/export 가능, needs_review와 miss는 잠금으로 둔다.</p>
+        </article>
+        <article class="decision p1">
+          <span class="badge p1">승인 요청</span>
+          <h3>Diff/API 보류 승인</h3>
+          <p>snapshot diff, sheet connector, calendar feed, direct API audit는 P1/P2로 둔다.</p>
+        </article>
+      </div>
+      <div class="callout">최종 포지션: FlowMe의 moat는 앱 연동 수가 아니라 “출처가 남는 실행 구조”다. Ledger가 그 구조의 원장이다.</div>
+    </section>
+  </main>
+</body>
+</html>

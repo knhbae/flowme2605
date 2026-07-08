@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe 프로젝트 완성도 및 출시 백로그 리뷰 - 2026-07-05</title>
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #5d6a73;
+      --line: #d8e0e6;
+      --paper: #f7f9fb;
+      --panel: #ffffff;
+      --green: #207a50;
+      --amber: #a15f00;
+      --red: #b23a35;
+      --blue: #245f9f;
+      --violet: #6b4aa0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Arial, "Noto Sans KR", "Malgun Gothic", sans-serif;
+      line-height: 1.55;
+    }
+    article {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 18px 56px;
+    }
+    header {
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 18px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+    h2 {
+      margin: 34px 0 12px;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin: 18px 0 8px;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+    p { margin: 8px 0; }
+    a { color: var(--blue); text-decoration-thickness: 1px; }
+    .lede {
+      max-width: 860px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .tag {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 15px;
+    }
+    .score {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1;
+      margin: 8px 0;
+    }
+    .score small {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+    .bar {
+      height: 9px;
+      border-radius: 99px;
+      background: #e7edf1;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+    .bar span {
+      display: block;
+      height: 100%;
+      background: var(--blue);
+    }
+    .bar.green span { background: var(--green); }
+    .bar.amber span { background: var(--amber); }
+    .bar.red span { background: var(--red); }
+    .bar.violet span { background: var(--violet); }
+    .label {
+      display: inline-block;
+      min-width: 76px;
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      border: 1px solid transparent;
+    }
+    .label.good { color: var(--green); background: #e8f4ee; border-color: #b7dcc9; }
+    .label.watch { color: var(--amber); background: #fff4df; border-color: #e8c175; }
+    .label.risk { color: var(--red); background: #fdebea; border-color: #efb5b2; }
+    .label.info { color: var(--blue); background: #eaf2fb; border-color: #bdd4ee; }
+    .label.hold { color: var(--violet); background: #f1ecf8; border-color: #d3c4e8; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+    th {
+      background: #eef3f7;
+      font-size: 12px;
+      color: #33424d;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+    tr:last-child td { border-bottom: 0; }
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .step {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      min-height: 132px;
+    }
+    .step.done { border-top-color: var(--green); }
+    .step.now { border-top-color: var(--amber); }
+    .step.next { border-top-color: var(--blue); }
+    .step.later { border-top-color: var(--violet); }
+    .step.blocked { border-top-color: var(--red); }
+    .small {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .callout {
+      border-left: 4px solid var(--amber);
+      background: #fff9ed;
+      padding: 12px 14px;
+      margin: 14px 0;
+    }
+    .evidence {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    ul {
+      margin: 8px 0 0 20px;
+      padding: 0;
+    }
+    li { margin: 5px 0; }
+    code {
+      background: #eef3f7;
+      border: 1px solid #d9e3ea;
+      border-radius: 4px;
+      padding: 1px 4px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.92em;
+    }
+    @media (max-width: 900px) {
+      .grid, .grid.two, .grid.three, .timeline, .evidence {
+        grid-template-columns: 1fr;
+      }
+      h1 { font-size: 24px; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+<article>
+  <header>
+    <h1>FlowMe 프로젝트 완성도 및 출시 백로그 리뷰</h1>
+    <p class="lede">
+      2026-07-05 현재 문서, 서비스 구조, 최근 백로그, 테스트 변경, 작업트리 상태를 기준으로 본 스냅샷이다.
+      점수는 실제 사용자 검증 점수가 아니라, 현재 제품/문서/자동 QA 근거로 판단한 출시 준비도다.
+    </p>
+    <div class="meta">
+      <span class="tag">기준 브랜치: <code>codex/flowme-uxui-second-loop</code></span>
+      <span class="tag">상태: 내부 알파 / 제품 PoC 강함 / 공개 출시 보류</span>
+      <span class="tag">핵심 방향: URL-first, lookup-first, export-first</span>
+      <span class="tag">주의: 실제 사용자 행동 검증 아님</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>한 줄 판정</h2>
+    <div class="callout">
+      FlowMe는 “아이디어나 화면만 있는 상태”는 아니다. 4탭 IA, source-backed Flow, My Flow, Calendar, export, 테스트/훅/CI가 이미 있다.
+      하지만 최소 출시 MVP는 아직 아니다. 가장 큰 빈칸은 <strong>첫 유입 경로(URL 입력/기존 Flow 재사용)</strong>,
+      <strong>사용자에게 바로 줄 수 있는 export pack</strong>, <strong>실사용 evidence</strong>, <strong>정리된 릴리스 백로그</strong>다.
+    </div>
+  </section>
+
+  <section>
+    <h2>완성도 스냅샷</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>프로젝트 전체</h3>
+        <div class="score">72<small>%</small></div>
+        <p class="small">제품 구조, 문서, PoC, 테스트 기반은 충분히 쌓였다.</p>
+        <div class="bar green"><span style="width:72%"></span></div>
+      </div>
+      <div class="card">
+        <h3>최소 사용 MVP</h3>
+        <div class="score">62<small>%</small></div>
+        <p class="small">저장 후 실행은 보이지만 첫 유입과 재사용 루프가 아직 얇다.</p>
+        <div class="bar amber"><span style="width:62%"></span></div>
+      </div>
+      <div class="card">
+        <h3>공개 출시 준비</h3>
+        <div class="score">40<small>%</small></div>
+        <p class="small">QA는 강해졌지만 사용자 검증, 추적, 권리/신뢰, 릴리스 정리가 부족하다.</p>
+        <div class="bar red"><span style="width:40%"></span></div>
+      </div>
+      <div class="card">
+        <h3>실사용 검증</h3>
+        <div class="score">15<small>%</small></div>
+        <p class="small">문서와 자동 QA는 많지만 관찰된 사용자 행동 데이터는 아직 낮다.</p>
+        <div class="bar violet"><span style="width:15%"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>현재 단계</h2>
+    <div class="timeline">
+      <div class="step done">
+        <span class="label good">강함</span>
+        <h3>리서치/기획 PoC</h3>
+        <p class="small">URL-first, 생산성 도구 연결, source scout, creator/community loop가 문서화되어 있다.</p>
+      </div>
+      <div class="step done">
+        <span class="label good">강함</span>
+        <h3>제품 PoC</h3>
+        <p class="small">4탭 IA, public route, Flow 찾기, My Flow, Calendar, source-backed map이 실제 앱 구조로 존재한다.</p>
+      </div>
+      <div class="step now">
+        <span class="label watch">현재</span>
+        <h3>최소 MVP</h3>
+        <p class="small">사용자가 설명 없이 시작할 URL 입력/기존 Flow 재사용/export pack이 아직 제품 루프로 묶이지 않았다.</p>
+      </div>
+      <div class="step next">
+        <span class="label info">다음</span>
+        <h3>Closed Beta</h3>
+        <p class="small">5-8개 canary 콘텐츠와 3-5명 첫 사용 세션으로 저장/export/check/재방문을 봐야 한다.</p>
+      </div>
+      <div class="step blocked">
+        <span class="label risk">보류</span>
+        <h3>Public Launch</h3>
+        <p class="small">검증 없는 social proof, AI-first 생성, 권한 불명확한 source import, 불안정한 dirty branch 상태에서는 보류.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>P0 출시 백로그</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>우선순위</th>
+          <th>작업</th>
+          <th>현재 상태</th>
+          <th>Done when</th>
+          <th>근거</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="label risk">P0</span></td>
+          <td>릴리스 보드 단일화와 dirty worktree 정리</td>
+          <td>문서/테스트 수정 6개와 Claude 산출물/리서치 파일 다수가 untracked 상태다.</td>
+          <td>출시 후보 브랜치가 커밋 단위별로 나뉘고, 임시 zip/후보 문서의 처리 방침이 정해진다.</td>
+          <td><code>git status -sb</code>, <a href="./2026-07-02-backlog-workboard-ko.html">백로그 workboard</a></td>
+        </tr>
+        <tr>
+          <td><span class="label risk">P0</span></td>
+          <td>URL 입력 -> canonical lookup -> 기존 Flow 재사용 thin slice</td>
+          <td>방향은 결정됐지만 제품 루트로 구현되지 않았다.</td>
+          <td>URL 입력, hit/miss, 기존 Flow 재사용, 옵션 변경, export preview가 한 화면 흐름으로 동작한다.</td>
+          <td><a href="./2026-07-02-flow-usage-entry-backlog-ko.md">Flow 활용 입구 백로그</a></td>
+        </tr>
+        <tr>
+          <td><span class="label watch">P0</span></td>
+          <td>Export pack: ICS, Markdown, clipboard, table/CSV</td>
+          <td>export 모듈과 Step export는 있으나 “출시용 pack”으로 묶인 QA 기준이 부족하다.</td>
+          <td>대표 3개 콘텐츠에서 Calendar/Todo/Markdown/Sheet 결과물이 각각 자연스럽게 나온다.</td>
+          <td><a href="./2026-07-04-productivity-connectivity-priority-research-ko.md">생산성 도구 연결성 리서치</a>, <code>lib/flow/export.ts</code></td>
+        </tr>
+        <tr>
+          <td><span class="label watch">P0</span></td>
+          <td>My Flow 저장 후 첫 실행 루프 확정</td>
+          <td>내부 QA와 E2E는 강하다. 다만 URL/memo에서 들어온 Flow까지 같은 기준으로 수렴하는지 봐야 한다.</td>
+          <td>저장 -> 오늘/전체 -> Step detail -> 수정 -> export 재생성 -> Calendar 확인이 모바일에서 설명 없이 통과한다.</td>
+          <td><a href="../specs/2026-07-01-my-flow-v2-execution-ux/spec.md">My Flow v2 spec</a>, <code>tests/e2e/flow-mvp.spec.ts</code></td>
+        </tr>
+        <tr>
+          <td><span class="label watch">P0</span></td>
+          <td>Canary 콘텐츠 5-8개만 앱 적용</td>
+          <td>상위 후보는 정리됐다. 앱 적용은 아직 별도 배치로 쪼개야 한다.</td>
+          <td>source row가 확인된 5-8개만 seed handoff -> 앱 적용 -> 모바일 저장/export 회귀 검증을 통과한다.</td>
+          <td><a href="./2026-07-05-web-source-community-creator-loop-review-ko.md">creator/community loop review</a></td>
+        </tr>
+        <tr>
+          <td><span class="label watch">P0</span></td>
+          <td>Source/version/trust 표시</td>
+          <td>source/risk 분리 원칙은 문서와 일부 UI에 있다. URL canonical, 버전, 검토일, 내 fork 관계는 더 필요하다.</td>
+          <td>사용자가 “원문 근거”, “내가 바꾼 부분”, “마지막 검토일”, “AI fallback 여부”를 혼동하지 않는다.</td>
+          <td><a href="../DECISIONS.md">DECISIONS</a>, <a href="../flow-rules/source-to-flow-conversion-gate.md">source-to-Flow gate</a></td>
+        </tr>
+        <tr>
+          <td><span class="label risk">P0</span></td>
+          <td>첫 사용자 evidence 수집</td>
+          <td>자동 테스트와 브라우저 QA는 많지만, 실제 사용 세션 기록은 출시 판단 근거로 부족하다.</td>
+          <td>3-5명 세션에서 URL/저장/export/check/재방문/수정이 어디서 막히는지 기록된다.</td>
+          <td><a href="../ROADMAP.md">v0.2 Evidence Capture</a>, <a href="../flow-rules/quality-gate.md">quality gate</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>MVP 범위 재정의</h2>
+    <div class="grid two">
+      <div class="card">
+        <h3>최소 출시 MVP에 반드시 포함</h3>
+        <ul>
+          <li>사용자가 URL을 붙여넣거나 대표 콘텐츠를 고르는 첫 행동</li>
+          <li>중복 URL이면 AI 생성보다 기존 Flow 재사용을 먼저 보여주는 흐름</li>
+          <li>시작일/목표일/간단 옵션 변경</li>
+          <li>Calendar, Markdown/메모, checklist, table 계열 export</li>
+          <li>내 Flow 저장 후 오늘/전체/캘린더에서 이어서 보는 루프</li>
+          <li>원문 링크, 주의 정보, 마지막 검토일, 내 수정 여부 표시</li>
+          <li>사용자 행동을 과장하지 않는 feedback/evidence 기록</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>최소 출시 MVP에서 빼도 되는 것</h3>
+        <ul>
+          <li>OAuth 기반 Google/Todoist/Notion 직접 연동</li>
+          <li>Supabase/account-backed 저장소. 단, cross-device beta를 하려면 별도 판단 필요</li>
+          <li>creator marketplace, 결제, token, asset exchange</li>
+          <li>Motion/Reclaim식 full auto-scheduling</li>
+          <li>native Expo 앱, push 알림, app store 배포</li>
+          <li>근거 없는 사용량, 리뷰 수, creator 인증 표시</li>
+          <li>무거운 editor/diff/version graph</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>주요 리스크</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>리스크</th>
+          <th>심각도</th>
+          <th>왜 문제인가</th>
+          <th>처리</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>문서와 백로그가 너무 많고 릴리스 단위가 흐림</td>
+          <td><span class="label risk">High</span></td>
+          <td>실무에서는 “다음 PR이 무엇인가”가 보여야 하는데, 현재는 연구/아이디어/앱/QA가 흩어져 있다.</td>
+          <td>릴리스 보드 하나로 P0/P1/P2, done-when, 검증 명령을 묶는다.</td>
+        </tr>
+        <tr>
+          <td>URL-first가 아직 문서 중심</td>
+          <td><span class="label risk">High</span></td>
+          <td>현재 서비스의 가장 설득력 있는 유입 모델인데, 제품에서 바로 체험하기 어렵다.</td>
+          <td>mock data라도 URL hit/miss thin slice를 먼저 만든다.</td>
+        </tr>
+        <tr>
+          <td>실사용 검증 부족</td>
+          <td><span class="label risk">High</span></td>
+          <td>자동 QA 통과와 사용자 가치 검증은 다르다.</td>
+          <td>3-5명 closed beta 관찰 세션과 event checklist를 만든다.</td>
+        </tr>
+        <tr>
+          <td>콘텐츠 권리/source import 경계</td>
+          <td><span class="label watch">Medium</span></td>
+          <td>creator/video/template 후보는 유입 가치가 크지만 가져오면 안 되는 원문 자산이 섞일 수 있다.</td>
+          <td>원문 링크/요약/실행 row만 쓰고 이미지, PDF, 유료자료, 전문 복제는 제외한다.</td>
+        </tr>
+        <tr>
+          <td>My Flow가 장기 workspace처럼 커질 위험</td>
+          <td><span class="label watch">Medium</span></td>
+          <td>Obsidian/Notion 방향은 매력적이지만 너무 빨리 만들면 source-to-execution 가치가 흐려진다.</td>
+          <td>초기에는 export-first와 저장 후 continuation에 한정한다.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>권장 작업 순서</h2>
+    <div class="grid three">
+      <div class="card">
+        <h3>이번 주</h3>
+        <ul>
+          <li>dirty worktree를 research/docs/test 단위로 나눠 정리</li>
+          <li>URL-first thin slice spec 생성</li>
+          <li>export pack QA 샘플 3개 선정</li>
+          <li>Canary seed 5-8개만 확정</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>다음 개발 배치</h3>
+        <ul>
+          <li>URL 입력 route 또는 Home 진입 모듈 구현</li>
+          <li>lookup hit/miss 상태와 reuse/edit/fork copy 구현</li>
+          <li>Calendar/Markdown/checklist/table export pack 정리</li>
+          <li>My Flow 저장 후 Step 수정/재export smoke test</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>출시 전</h3>
+        <ul>
+          <li>3-5명 첫 사용 관찰</li>
+          <li>source/trust/privacy 문구 최종 점검</li>
+          <li>모바일/데스크톱 E2E와 브라우저 QA</li>
+          <li>배포 URL, 에러/empty/loading 상태, PR/CI 녹색 확인</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>근거 문서</h2>
+    <div class="evidence">
+      <div class="card">
+        <h3>현재 제품 구조</h3>
+        <ul>
+          <li><a href="../SERVICE_STRUCTURE.md">SERVICE_STRUCTURE.md</a>: route, screen tree, architecture map</li>
+          <li><a href="../DECISIONS.md">DECISIONS.md</a>: URL lookup-first, HTML workboard, service IA, hooks policy</li>
+          <li><a href="../IDEAS.md">IDEAS.md</a>: memo intake, living experience map, Obsidian-like workspace</li>
+          <li><a href="../TOOLING.md">TOOLING.md</a>: P0 tooling lanes and verification defaults</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>최근 백로그/리서치</h3>
+        <ul>
+          <li><a href="./2026-07-02-flow-usage-entry-backlog-ko.md">Flow 활용 입구 백로그</a></li>
+          <li><a href="./2026-07-04-productivity-connectivity-priority-research-ko.md">생산성 도구 연결성 우선순위</a></li>
+          <li><a href="./2026-07-04-content-source-expansion-plan-ko.md">콘텐츠 소스 확장 계획</a></li>
+          <li><a href="./2026-07-05-web-source-community-creator-loop-review-ko.md">커뮤니티/제작자 루프 검증</a></li>
+          <li><a href="./2026-07-05-claude-simulated-wireframe-handoff-ko.md">URL-first 와이어프레임 handoff</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</article>
+</body>
+</html>

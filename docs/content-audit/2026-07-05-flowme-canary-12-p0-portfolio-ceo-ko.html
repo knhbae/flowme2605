@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe Canary 12 P0 검증 포트폴리오 CEO 보고서</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #617085;
+      --line: #dde5ef;
+      --paper: #f6f8fb;
+      --panel: #ffffff;
+      --blue: #2856d6;
+      --green: #0f8b6f;
+      --amber: #b86f00;
+      --red: #b42318;
+      --cyan: #0f766e;
+      --soft-blue: #eef4ff;
+      --soft-green: #eaf8f3;
+      --soft-amber: #fff5df;
+      --soft-red: #fff0ed;
+      --shadow: 0 20px 50px rgba(23, 32, 51, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif;
+      line-height: 1.55;
+    }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .deck {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 52px;
+    }
+
+    .slide {
+      margin: 0 0 22px;
+      padding: 26px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      min-height: 540px;
+      display: grid;
+      grid-template-columns: 1fr 0.95fr;
+      gap: 28px;
+      align-items: center;
+      color: #fff;
+      background:
+        linear-gradient(135deg, rgba(20, 31, 52, 0.99), rgba(27, 88, 94, 0.95)),
+        radial-gradient(circle at 82% 10%, rgba(255, 255, 255, 0.24), transparent 32%);
+      border-color: transparent;
+    }
+
+    .meta {
+      margin: 0 0 12px;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 18px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin-bottom: 8px;
+      font-size: 28px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 8px;
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .lead {
+      max-width: 760px;
+      color: rgba(255, 255, 255, 0.86);
+      font-size: 19px;
+      margin-bottom: 24px;
+    }
+
+    .subtitle {
+      max-width: 920px;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .metric-grid,
+    .decision-grid,
+    .shape-grid,
+    .roadmap,
+    .source-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .metric-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 24px;
+    }
+
+    .metric,
+    .decision,
+    .shape-card,
+    .roadmap-card {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .hero .metric {
+      min-height: 94px;
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .metric b {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    .hero .metric span { color: rgba(255, 255, 255, 0.78); }
+
+    .hero-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .hero-node {
+      padding: 14px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .hero-node strong { display: block; margin-bottom: 4px; }
+    .hero-node span { display: block; color: rgba(255, 255, 255, 0.76); font-size: 13px; }
+
+    .decision-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 16px; }
+    .decision.p0 { border-top: 5px solid var(--green); }
+    .decision.p1 { border-top: 5px solid var(--amber); }
+    .decision.p2 { border-top: 5px solid var(--red); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      background: #eef2f7;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .badge.p0 { color: var(--green); background: var(--soft-green); }
+    .badge.p1 { color: var(--amber); background: var(--soft-amber); }
+    .badge.p2 { color: var(--red); background: var(--soft-red); }
+    .badge.info { color: var(--blue); background: var(--soft-blue); }
+
+    .callout {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-left: 5px solid var(--green);
+      border-radius: 8px;
+      background: var(--soft-green);
+      font-weight: 900;
+    }
+
+    .table-wrap {
+      max-width: 100%;
+      margin-top: 16px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      min-width: 980px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px 13px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      background: #eef3f8;
+      color: #25324a;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .shape-grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      margin-top: 16px;
+    }
+
+    .shape-card {
+      min-height: 120px;
+      text-align: left;
+    }
+
+    .shape-card b {
+      display: block;
+      color: var(--cyan);
+      font-size: 28px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .bar-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 150px 1fr 48px;
+      gap: 10px;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .bar {
+      height: 12px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e6eaf0;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--green);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .two-col > * { min-width: 0; }
+
+    .roadmap { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 16px; }
+    .roadmap-card ul { margin: 10px 0 0; padding-left: 20px; }
+    .roadmap-card li { margin: 6px 0; }
+
+    .source-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 16px;
+    }
+
+    .source-grid a {
+      display: block;
+      min-width: 0;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fbfcfe;
+      font-weight: 800;
+    }
+
+    .small { color: var(--muted); font-size: 13px; }
+
+    @media (max-width: 980px) {
+      .shape-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 840px) {
+      .deck { width: min(100% - 20px, 760px); padding-top: 10px; }
+      .slide { padding: 18px; border-radius: 10px; }
+      .hero,
+      .metric-grid,
+      .decision-grid,
+      .shape-grid,
+      .two-col,
+      .roadmap,
+      .source-grid {
+        grid-template-columns: 1fr;
+      }
+      h1 { font-size: 35px; }
+      h2 { font-size: 23px; }
+      .lead { font-size: 16px; }
+      table { min-width: 940px; }
+      .bar-row { grid-template-columns: 125px 1fr 40px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck">
+    <section class="slide hero">
+      <div>
+        <p class="meta">CEO Brief · Canary 12 P0 Portfolio · 2026-07-05</p>
+        <h1>Canary 12개는 “콘텐츠 목록”이 아니라 P0 검증 포트폴리오다</h1>
+        <p class="lead">URL-first, Export Pack v1, source/version/trust ledger가 실제로 작동하는지 검증할 대표 후보 12개를 확정한다. 핵심은 12개를 모두 바로 넣는 것이 아니라, P0-now / P1-review / P2-hold로 운영 상태를 분리하는 것이다.</p>
+        <div class="metric-grid" aria-label="핵심 숫자">
+          <div class="metric"><b>12</b><span>최종 canary</span></div>
+          <div class="metric"><b>4</b><span>P0-now</span></div>
+          <div class="metric"><b>6</b><span>P1-review</span></div>
+          <div class="metric"><b>2</b><span>P2-hold</span></div>
+        </div>
+      </div>
+      <div class="hero-list" aria-label="Portfolio principles">
+        <div class="hero-node"><strong>1. URL-first 검증</strong><span>canonical URL이 hit, needs_review, miss로 정확히 갈라지는지 본다.</span></div>
+        <div class="hero-node"><strong>2. Export Pack 검증</strong><span>각 canary가 `.ics`, Markdown, checklist 중 무엇을 기본으로 내보내야 하는지 확인한다.</span></div>
+        <div class="hero-node"><strong>3. Ledger 검증</strong><span>source URL, checked date, risk, caution, version ref가 export 밖에서도 남는지 본다.</span></div>
+        <div class="hero-node"><strong>4. 민감 영역 검증</strong><span>의료, 재무, 육아, 계약 후보는 조언이 아니라 확인/기록/문의 문구로 제한한다.</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>1. 결론</h2>
+      <p class="subtitle">최종 canary 12개는 “넓은 콘텐츠 확장”이 아니라 P0 loop의 약점을 드러내는 테스트 세트다.</p>
+      <div class="decision-grid">
+        <article class="decision p0">
+          <span class="badge p0">P0-now</span>
+          <h3>4개 즉시 기준선</h3>
+          <p>AJD 이사, 겟차 신차, 질병관리청 예방접종, 삼성 에어컨 필터는 현재 구현/문서 근거가 강한 P0 기준선이다.</p>
+        </article>
+        <article class="decision p1">
+          <span class="badge p1">P1-review</span>
+          <h3>6개 조건부 확장</h3>
+          <p>오픽, KKday, 웨딩, 도시락, 이유식, 홈트는 row 추출, 권한, 민감 문구 확인 뒤 canary로 올린다.</p>
+        </article>
+        <article class="decision p2">
+          <span class="badge p2">P2-hold</span>
+          <h3>2개 보조 후보</h3>
+          <p>오늘의집 이사와 아정당 자취는 유용하지만 AJD 이사와 중복/인접성이 크므로 다음 배치 비교군으로 둔다.</p>
+        </article>
+      </div>
+      <div class="callout">CEO 결정안: 12개를 모두 앱에 넣지 않는다. P0-now 4개로 QA 기준선을 만들고, P1-review 6개는 source gate를 통과할 때만 승격한다.</div>
+    </section>
+
+    <section class="slide">
+      <h2>2. 유형과 상태 분포</h2>
+      <p class="subtitle">포트폴리오는 Calendar, checklist, progress/sheet, decision, routine, trust anchor를 고르게 덮어야 한다.</p>
+      <div class="shape-grid">
+        <article class="shape-card"><b>3</b><strong>Calendar형</strong><span class="small">이사, 예방접종, 웨딩</span></article>
+        <article class="shape-card"><b>3</b><strong>Checklist형</strong><span class="small">여행, 자취, 이사 보조</span></article>
+        <article class="shape-card"><b>2</b><strong>Progress/sheet형</strong><span class="small">도시락, 이유식</span></article>
+        <article class="shape-card"><b>1</b><strong>Decision형</strong><span class="small">신차 구매</span></article>
+        <article class="shape-card"><b>2</b><strong>Routine형</strong><span class="small">에어컨, 홈트</span></article>
+        <article class="shape-card"><b>2</b><strong>Trust anchor</strong><span class="small">예방접종, 에어컨</span></article>
+      </div>
+      <div class="two-col">
+        <div class="bar-list">
+          <div class="bar-row"><strong>P0-now</strong><div class="bar"><i style="width: 33%"></i></div><b>4</b></div>
+          <div class="bar-row"><strong>P1-review</strong><div class="bar"><i style="width: 50%; background: var(--amber)"></i></div><b>6</b></div>
+          <div class="bar-row"><strong>P2-hold</strong><div class="bar"><i style="width: 17%; background: var(--red)"></i></div><b>2</b></div>
+        </div>
+        <div class="bar-list">
+          <div class="bar-row"><strong>hit</strong><div class="bar"><i style="width: 33%"></i></div><b>4</b></div>
+          <div class="bar-row"><strong>needs_review</strong><div class="bar"><i style="width: 50%; background: var(--amber)"></i></div><b>6</b></div>
+          <div class="bar-row"><strong>miss/hold</strong><div class="bar"><i style="width: 17%; background: var(--red)"></i></div><b>2</b></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>3. Canary 12 최종 표</h2>
+      <p class="subtitle">각 후보는 기본 artifact, 기본 export, 운영 상태, 검증 목적이 다르다.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Canary</th>
+              <th>Source 성격</th>
+              <th>Risk</th>
+              <th>Artifact</th>
+              <th>기본 export</th>
+              <th>URL 상태</th>
+              <th>운영</th>
+              <th>검증 목적</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>SCOUT-001</td>
+              <td><strong>아정당 이사 준비 체크리스트</strong></td>
+              <td>creator/brand article + 첨부 row</td>
+              <td>medium</td>
+              <td>Calendar + Checklist</td>
+              <td><span class="badge p0">.ics</span> Checklist</td>
+              <td><span class="badge p0">hit</span></td>
+              <td><span class="badge p0">P0-now</span></td>
+              <td>D-day, URL lookup, export 3종, lead-back 기준선</td>
+            </tr>
+            <tr>
+              <td>SCOUT-017</td>
+              <td><strong>겟차 신차 구매 절차</strong></td>
+              <td>brand guide / 구매 절차</td>
+              <td>financial_sensitive</td>
+              <td>Decision + Checklist</td>
+              <td><span class="badge p0">Markdown</span> Checklist</td>
+              <td><span class="badge p0">hit</span></td>
+              <td><span class="badge p0">P0-now</span></td>
+              <td>재무/구매 caution, 결정 보류, 원문 lead-back</td>
+            </tr>
+            <tr>
+              <td>SCOUT-021</td>
+              <td><strong>질병관리청 예방접종 일정표</strong></td>
+              <td>official schedule + PDF</td>
+              <td>medical_sensitive</td>
+              <td>Trust Calendar</td>
+              <td><span class="badge p0">.ics</span> Markdown</td>
+              <td><span class="badge p0">hit</span></td>
+              <td><span class="badge p0">P0-now</span></td>
+              <td>공식 출처, 민감 영역, checked date, medical caution</td>
+            </tr>
+            <tr>
+              <td>SCOUT-086</td>
+              <td><strong>삼성 에어컨 필터 청소</strong></td>
+              <td>manufacturer support</td>
+              <td>low / mixed</td>
+              <td>Routine + Checklist</td>
+              <td><span class="badge p0">.ics</span> Checklist</td>
+              <td><span class="badge p0">hit</span></td>
+              <td><span class="badge p0">P0-now</span></td>
+              <td>반복 루틴, 제조사 trust, 2주 반복 export</td>
+            </tr>
+            <tr>
+              <td>SCOUT-031</td>
+              <td><strong>오픽만수르 모의고사 공부 방법</strong></td>
+              <td>creator article + XLS/PDF + 영상</td>
+              <td>creator</td>
+              <td>Progress + Routine</td>
+              <td><span class="badge p0">Checklist</span> Markdown</td>
+              <td><span class="badge p1">needs_review</span></td>
+              <td><span class="badge p1">P1-review</span></td>
+              <td>첨부 계획표 row import, 시험 기간 fork, progress fallback</td>
+            </tr>
+            <tr>
+              <td>SCOUT-051</td>
+              <td><strong>KKday 해외여행 준비물</strong></td>
+              <td>marketplace article</td>
+              <td>mixed / commercial</td>
+              <td>Checklist</td>
+              <td><span class="badge p0">Checklist</span> Markdown</td>
+              <td><span class="badge p1">needs_review</span></td>
+              <td><span class="badge p1">P1-review</span></td>
+              <td>상품 CTA 분리, 여행지별 fork, 체크리스트 복사</td>
+            </tr>
+            <tr>
+              <td>SCOUT-011</td>
+              <td><strong>웨딩 12개월 타임라인</strong></td>
+              <td>planning tool / creator timeline</td>
+              <td>medium</td>
+              <td>Calendar + Checklist</td>
+              <td><span class="badge p0">.ics</span> Markdown</td>
+              <td><span class="badge p1">needs_review</span></td>
+              <td><span class="badge p1">P1-review</span></td>
+              <td>긴 timeline, version 선택, 국내/해외 label 분리</td>
+            </tr>
+            <tr>
+              <td>SCOUT-075</td>
+              <td><strong>오늘의집 일주일 도시락 식단표</strong></td>
+              <td>community creator article</td>
+              <td>creator / health-adjacent</td>
+              <td>Progress/sheet</td>
+              <td><span class="badge p0">Checklist</span> Markdown</td>
+              <td><span class="badge p1">needs_review</span></td>
+              <td><span class="badge p1">P1-review</span></td>
+              <td>sheet형 후보, 레시피 복제 금지, community fork</td>
+            </tr>
+            <tr>
+              <td>SCOUT-025</td>
+              <td><strong>초기 토핑 이유식 식단표</strong></td>
+              <td>creator attachment / XLS</td>
+              <td>medical_family_sensitive</td>
+              <td>Sheet + Calendar</td>
+              <td><span class="badge p0">Markdown</span> Checklist</td>
+              <td><span class="badge p1">needs_review</span></td>
+              <td><span class="badge p1">P1-review</span></td>
+              <td>source permission, 민감 육아 caution, sheet P1 판단</td>
+            </tr>
+            <tr>
+              <td>SCOUT-062</td>
+              <td><strong>빅씨스 10분 홈트 루틴</strong></td>
+              <td>YouTube playlist / creator video</td>
+              <td>health_sensitive</td>
+              <td>Routine</td>
+              <td><span class="badge p0">.ics</span> Checklist</td>
+              <td><span class="badge p1">needs_review</span></td>
+              <td><span class="badge p1">P1-review</span></td>
+              <td>영상 title/URL import, video view-back, 건강 caution</td>
+            </tr>
+            <tr>
+              <td>SCOUT-002</td>
+              <td><strong>오늘의집 이사 체크리스트</strong></td>
+              <td>community article</td>
+              <td>creator</td>
+              <td>Checklist + Fork</td>
+              <td><span class="badge p0">Checklist</span></td>
+              <td><span class="badge p2">miss/hold</span></td>
+              <td><span class="badge p2">P2-hold</span></td>
+              <td>AJD와 비교하는 community proof 보조군</td>
+            </tr>
+            <tr>
+              <td>SCOUT-007</td>
+              <td><strong>아정당 자취 준비 리스트</strong></td>
+              <td>creator/brand article table</td>
+              <td>creator</td>
+              <td>Checklist</td>
+              <td><span class="badge p0">Checklist</span> Markdown</td>
+              <td><span class="badge p2">miss/hold</span></td>
+              <td><span class="badge p2">P2-hold</span></td>
+              <td>이사와 인접한 생활 독립 checklist 2차 배치</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>4. Ledger 커버리지</h2>
+      <p class="subtitle">12개 모두 source URL과 risk/caution이 필요하지만, P0-now와 P1-review의 필드 완성도는 다르게 본다.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>운영 그룹</th>
+              <th>필수 ledger 필드</th>
+              <th>현재 기대 수준</th>
+              <th>통과 조건</th>
+              <th>실패 시 처리</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge p0">P0-now</span></td>
+              <td>source_url, canonical_url, source_title, source_status, checked_at, version_ref, risk_level, caution, completion, export_generated_at</td>
+              <td>source-backed map 또는 curated implementation 근거 있음</td>
+              <td>hit에서 export와 My Flow 저장 가능</td>
+              <td>needs_review로 강등</td>
+            </tr>
+            <tr>
+              <td><span class="badge p1">P1-review</span></td>
+              <td>source_url, source_type, source row, permission/import note, caution, completion</td>
+              <td>후보 점수는 높지만 row/권한/민감 문구 확인 필요</td>
+              <td>원문 row와 export fallback이 확인되면 hit 승격</td>
+              <td>preview-only 유지</td>
+            </tr>
+            <tr>
+              <td><span class="badge p2">P2-hold</span></td>
+              <td>canonical_url, duplicate reason, hold reason, comparison target</td>
+              <td>중복/인접 후보라 대표 canary 아님</td>
+              <td>기존 P0 후보가 실패하거나 다른 source shape 검증 필요</td>
+              <td>URL lookup에서는 miss/hold</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>5. 민감 canary 잠금 조건</h2>
+      <p class="subtitle">민감 후보는 수요가 높아도 hit로 열기 전에 caution과 권한 조건을 먼저 통과해야 한다.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Canary</th>
+              <th>민감 영역</th>
+              <th>허용 문구</th>
+              <th>잠금 조건</th>
+              <th>기본 export</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>SCOUT-021 예방접종</td>
+              <td>의료/육아</td>
+              <td>공식 항목 확인, 병원/보건소 문의, 예약/기록</td>
+              <td>공식 source 불명확, checked_at 누락, 접종 가능 여부 단정</td>
+              <td>.ics</td>
+            </tr>
+            <tr>
+              <td>SCOUT-025 이유식</td>
+              <td>의료/육아/식단</td>
+              <td>먹은 양 기록, 알레르기 O/X 기록, 보호자/전문가 확인</td>
+              <td>식단 추천, 분량 판단, 파일 row/사용 허용 불명확</td>
+              <td>Markdown</td>
+            </tr>
+            <tr>
+              <td>SCOUT-062 홈트</td>
+              <td>건강/운동</td>
+              <td>영상 열기, 완료/중단 기록, 통증 시 중단</td>
+              <td>효과/감량 보장, 영상 목록 import 미확인</td>
+              <td>.ics</td>
+            </tr>
+            <tr>
+              <td>SCOUT-017 신차 구매</td>
+              <td>재무/계약/구매</td>
+              <td>견적 확인, 문의 메모, 결정 보류</td>
+              <td>금융상품 추천, 최저가 단정, 계약 판단 대행</td>
+              <td>Markdown</td>
+            </tr>
+            <tr>
+              <td>SCOUT-011 웨딩</td>
+              <td>계약/구매</td>
+              <td>후보 정리, 일정 확인, 보류 메모</td>
+              <td>업체 추천처럼 보이는 문구, 국내/해외 기준 혼합</td>
+              <td>.ics</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">운영 원칙: 민감 canary는 “추천”이 아니라 “확인 일정, 기록, 문의 상태”로만 export한다.</div>
+    </section>
+
+    <section class="slide">
+      <h2>6. 검증 역할 매트릭스</h2>
+      <p class="subtitle">12개 canary가 URL-first, Export Pack v1, Ledger 중 어느 기능을 검증하는지 분명히 나눈다.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>검증 축</th>
+              <th>주 canary</th>
+              <th>보조 canary</th>
+              <th>통과 신호</th>
+              <th>실패 신호</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>URL-first hit</strong></td>
+              <td>SCOUT-001, SCOUT-017, SCOUT-021, SCOUT-086</td>
+              <td>SCOUT-031</td>
+              <td>canonical URL로 기존 Flow를 찾고 export/save가 열린다.</td>
+              <td>같은 URL이 miss로 가거나 AI-first 기대를 만든다.</td>
+            </tr>
+            <tr>
+              <td><strong>needs_review gate</strong></td>
+              <td>SCOUT-025, SCOUT-062, SCOUT-075</td>
+              <td>SCOUT-051, SCOUT-011</td>
+              <td>원문 row/권한/민감 문구 전에는 저장/export가 잠긴다.</td>
+              <td>미확인 source가 My Flow나 export로 나간다.</td>
+            </tr>
+            <tr>
+              <td><strong>Export Pack v1</strong></td>
+              <td>SCOUT-001, SCOUT-086, SCOUT-051</td>
+              <td>SCOUT-031, SCOUT-017</td>
+              <td>.ics/Markdown/checklist 기본값이 artifact와 맞다.</td>
+              <td>sheet/API가 P0 범위를 밀어낸다.</td>
+            </tr>
+            <tr>
+              <td><strong>Ledger</strong></td>
+              <td>SCOUT-021, SCOUT-017, SCOUT-025</td>
+              <td>SCOUT-062, SCOUT-011</td>
+              <td>source URL, checked date, risk, caution이 export에 남는다.</td>
+              <td>원문 없는 조언형 파일이 생성된다.</td>
+            </tr>
+            <tr>
+              <td><strong>Community/fork</strong></td>
+              <td>SCOUT-002, SCOUT-075, SCOUT-025</td>
+              <td>SCOUT-007, SCOUT-011</td>
+              <td>사용자 수정/fork 이유가 source-backed fact와 분리된다.</td>
+              <td>개인 경험이 공식 기준처럼 보인다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>7. 운영 로드맵</h2>
+      <p class="subtitle">canary는 기능 추가 순서가 아니라 위험을 줄이는 운영 순서로 적용한다.</p>
+      <div class="roadmap">
+        <article class="roadmap-card">
+          <span class="badge p0">Phase A</span>
+          <h3>P0-now 4개 고정</h3>
+          <ul>
+            <li>AJD 이사, 겟차 신차, 예방접종, 에어컨 필터</li>
+            <li>hit URL lookup과 export 기본값 고정</li>
+            <li>ledger 필드가 export에 남는지 확인</li>
+          </ul>
+        </article>
+        <article class="roadmap-card">
+          <span class="badge p1">Phase B</span>
+          <h3>P1-review 6개 승격 심사</h3>
+          <ul>
+            <li>row extraction과 source permission 확인</li>
+            <li>민감 영역 caution 문구 확정</li>
+            <li>sheet형 후보는 P1 export로만 실험</li>
+          </ul>
+        </article>
+        <article class="roadmap-card">
+          <span class="badge p2">Phase C</span>
+          <h3>P2-hold 2개 보조군</h3>
+          <ul>
+            <li>오늘의집 이사는 AJD와 비교용</li>
+            <li>자취 리스트는 생활 독립 2차 배치</li>
+            <li>P0-now 실패 또는 coverage gap 때만 승격</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>8. 현재 근거와 검증 범위</h2>
+      <p class="subtitle">이번 보고서는 전략 포트폴리오 확정 문서다. 구현 검증은 기존 QA 파일 또는 실제 명령 결과가 있는 부분만 근거로 쓴다.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>근거</th>
+              <th>확인 내용</th>
+              <th>이번 보고서에서의 사용</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="./2026-07-05-url-first-p0-ceo-report-ko.html">URL-first P0 CEO 보고서</a></td>
+              <td>canary 8+4 후보, hit/needs_review/miss gate, P0 우선순위</td>
+              <td>12개 후보의 출발점</td>
+            </tr>
+            <tr>
+              <td><a href="./2026-07-05-flowme-external-connection-strategy-ceo-ko.html">외부 연결/경쟁 전략 보고서</a></td>
+              <td>P0는 direct OAuth가 아니라 portable export와 source trust</td>
+              <td>canary별 연결 대상 판단</td>
+            </tr>
+            <tr>
+              <td><a href="./2026-07-05-flowme-export-pack-v1-strategy-ceo-ko.html">Export Pack v1 보고서</a></td>
+              <td>.ics, Markdown, checklist P0와 canary별 기본 export</td>
+              <td>기본 export 컬럼 근거</td>
+            </tr>
+            <tr>
+              <td><a href="./2026-07-05-flowme-source-version-trust-ledger-ceo-ko.html">Source/version/trust ledger 보고서</a></td>
+              <td>10개 최소 ledger 필드와 상태별 gate</td>
+              <td>ledger 커버리지와 잠금 조건 근거</td>
+            </tr>
+            <tr>
+              <td><a href="./2026-07-05-web-source-community-creator-loop-validation.json">커뮤니티/제작자 루프 JSON</a></td>
+              <td>SCOUT 12개 후보의 community, creator, gate, risk, evidence 점수</td>
+              <td>P0/P1/P2 분류와 후보 유지 근거</td>
+            </tr>
+            <tr>
+              <td><a href="./2026-07-04-web-source-demand-validation.json">수요 검증 JSON</a></td>
+              <td>demand, conversion, gateResult, source shape</td>
+              <td>대표 후보 선별 근거</td>
+            </tr>
+            <tr>
+              <td><a href="../../lib/flow/source-backed-my-flow.ts">source-backed-my-flow.ts</a></td>
+              <td>moving-d30, middle-school-math, baby-health schedule, saved snapshot, version fields</td>
+              <td>현재 구현 기반 hit 후보 확인</td>
+            </tr>
+            <tr>
+              <td><a href="../../lib/flow/source-backed-curated-260630.ts">source-backed-curated-260630.ts</a></td>
+              <td>new car, AJD moving, wedding, vaccination, baby food, workout curated flows</td>
+              <td>P0-now와 P1-review 구현 근거</td>
+            </tr>
+            <tr>
+              <td><a href="../../lib/flow/source-backed-expansion-260625.ts">source-backed-expansion-260625.ts</a></td>
+              <td>aircon-filter-cleaning routine과 official source fields</td>
+              <td>SCOUT-086 P0-now 근거</td>
+            </tr>
+            <tr>
+              <td><a href="../../tests/e2e/flow-mvp.spec.ts">flow-mvp.spec.ts</a></td>
+              <td>URL lookup hit/review/miss, Markdown download, savedRecord 검증</td>
+              <td>구현 주장을 기존 QA 근거로 제한</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="source-grid">
+        <a href="../SERVICE_STRUCTURE.md">SERVICE_STRUCTURE.md: /flows와 source-backed 모듈 소유권</a>
+        <a href="../DECISIONS.md">DECISIONS.md: lookup-before-AI와 Step persistence 결정</a>
+        <a href="./2026-07-05-url-first-strategy-master-plan-ko.md">전략 마스터 플랜</a>
+        <a href="./2026-07-04-productivity-connectivity-priority-research-ko.md">생산성 연결 우선순위 리서치</a>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>9. 임원 의사결정 항목</h2>
+      <p class="subtitle">이번 목표에서 닫을 결정은 세 가지다.</p>
+      <div class="decision-grid">
+        <article class="decision p0">
+          <span class="badge p0">승인 요청</span>
+          <h3>P0-now 4개 승인</h3>
+          <p>AJD 이사, 겟차 신차, 예방접종, 에어컨 필터를 P0 QA 기준선으로 고정한다.</p>
+        </article>
+        <article class="decision p1">
+          <span class="badge p1">승인 요청</span>
+          <h3>P1-review 6개 승인</h3>
+          <p>오픽, KKday, 웨딩, 도시락, 이유식, 홈트는 source gate 후 승격한다.</p>
+        </article>
+        <article class="decision p2">
+          <span class="badge p2">승인 요청</span>
+          <h3>P2-hold 2개 승인</h3>
+          <p>오늘의집 이사와 자취 리스트는 중복/인접 후보로 다음 배치 비교군에 둔다.</p>
+        </article>
+      </div>
+      <div class="callout">최종 포지션: Canary 12는 FlowMe의 P0가 “작동한다”를 증명하는 목록이 아니라, 어디서 막아야 하고 어디서 내보내야 하는지 결정하는 운영 포트폴리오다.</div>
+    </section>
+  </main>
+</body>
+</html>
