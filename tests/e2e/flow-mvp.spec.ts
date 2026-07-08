@@ -2055,7 +2055,7 @@ test('my flow workspace separates copied or drafted flows from public discovery'
   await expect(page.getByRole('heading', { name: /이사 D-30 준비 Flow 사본/ })).toHaveCount(0);
   await page.getByRole('link', { name: '스튜디오' }).click();
   await expect(page.getByRole('heading', { name: '내 Flow 스튜디오' })).toBeVisible();
-  await expect(page.getByText('공개 Flow', { exact: true })).toBeVisible();
+  await expect(page.getByText('공개 콘텐츠', { exact: true }).first()).toBeVisible();
   await expect(page.getByText('초안').first()).toBeVisible();
   await expect(page.getByRole('heading', { name: /이사 D-30 준비 Flow 사본/ })).toBeVisible();
 });

@@ -208,6 +208,11 @@ async function main() {
       prototypeTier: 'internal-console',
       scrollPurpose: 'prototype-flow-lab-top',
     });
+    await captureCleanRoute(page, '/u/my-flow-studio', '39-creator-profile-my-flow-studio-mobile.png', 'Creator profile studio mobile surface', {
+      category: 'creator-profile',
+      creatorProfileTier: 'creator-profile',
+      scrollPurpose: 'creator-profile-mobile-top',
+    });
     await captureWideViewportEvidence(page);
     await collectUserNavLeakScanEvidence(page);
   } finally {
@@ -402,6 +407,12 @@ async function captureWideViewportEvidence(page) {
     label: 'URL-first candidate detail wide viewport guardrail spot check',
     category: 'wide-viewport',
     wideViewport: true,
+  });
+  await captureCleanRoute(page, '/u/my-flow-studio', '40-creator-profile-my-flow-studio-wide.png', 'Creator profile studio wide surface', {
+    category: 'wide-viewport',
+    creatorProfileTier: 'creator-profile',
+    wideViewport: true,
+    scrollPurpose: 'creator-profile-wide-top',
   });
   await page.setViewportSize(viewport);
   await settle(page);
@@ -1315,6 +1326,8 @@ async function scanPage(page, options = {}) {
         testId: anchor.testId,
       }));
     const metaRobots = normalizeLine(document.querySelector('meta[name="robots"]')?.getAttribute('content') ?? '');
+    const isCreatorProfileRoute = window.location.pathname.startsWith('/u/');
+    const studioEntryReachable = studioNavDestinations.some((destination) => destination.pathname.startsWith('/u/'));
     const restartNextTaskDateLabels = Array.from(document.querySelectorAll('[data-testid="moving-mobile-next-tasks"] article p'))
       .map((element) => normalizeLine(element.textContent ?? ''))
       .filter(Boolean);
@@ -1359,6 +1372,7 @@ async function scanPage(page, options = {}) {
       category: payload.options.category ?? 'route',
       prototypeBucket: Boolean(payload.options.prototypeBucket),
       prototypeTier: payload.options.prototypeTier ?? null,
+      creatorProfileTier: payload.options.creatorProfileTier ?? (isCreatorProfileRoute ? 'creator-profile' : null),
       urlFirstScenarioName: payload.options.urlFirstScenarioName ?? null,
       urlFirstState: payload.options.urlFirstState ?? null,
       urlFirstTriggerUrl: payload.options.urlFirstTriggerUrl ?? null,
@@ -1449,6 +1463,17 @@ async function scanPage(page, options = {}) {
           && publicBrowseLinkFocusableIndex > publicPrimaryPathFocusableIndex,
         metaRobots,
         studioNavDestinations,
+        studioEntry: {
+          visible: studioNavDestinations.length > 0,
+          reachable: studioEntryReachable,
+          destinations: studioNavDestinations.map((destination) => destination.pathname),
+        },
+        creatorProfile: isCreatorProfileRoute ? {
+          tier: payload.options.creatorProfileTier ?? 'creator-profile',
+          surfaceVisible: hasVisibleElement('[data-testid="creator-profile-surface"]'),
+          noindex: /noindex/i.test(metaRobots),
+          policy: 'user-facing secondary surface outside the 4-tab IA; normal user-surface guardrails apply',
+        } : null,
         flowLabInternalConsoleContextVisible: hasVisibleElement('[data-testid="url-first-p0-lab-internal-console-context"]'),
         flowLabPrototypeLinkCount: countAnchors((anchor) => anchor.pathname === '/flow-lab/url-first-p0'),
         manualRegistrationQaLinkCount: countAnchors((anchor) =>
@@ -1564,6 +1589,12 @@ function summarizeEvidence(records) {
   const publicShareRoutes = normal.filter((record) => record.publicShellVisible);
   const wideViewportRecords = records.filter((record) => record.wideViewport || record.category === 'wide-viewport');
   const wideMyFlowRecords = wideViewportRecords.filter((record) => record.url.startsWith('/my'));
+  const creatorProfileRecords = normal.filter((record) =>
+    record.creatorProfileTier === 'creator-profile'
+    || record.markers?.creatorProfile?.tier === 'creator-profile'
+    || record.url.startsWith('/u/'),
+  );
+  const myFlowStudioEntryRecords = records.filter((record) => record.url.startsWith('/my'));
   const postSaveConfirmationRecords = normal.filter((record) => record.markers?.postSaveConfirmation?.visible);
   const restartSourceFrame = records.find((record) => record.id === '22-restart-moving-source-export-mobile');
   const restartBottomFrame = records.find((record) => record.id === '23-restart-moving-bottom-mobile');
@@ -1593,6 +1624,20 @@ function summarizeEvidence(records) {
       destinationTier: destination.destinationTier,
     })),
   );
+  const creatorProfileEvidence = creatorProfileRecords.map((record) => ({
+    recordId: record.id,
+    route: record.url,
+    viewportWidth: record.viewportWidth,
+    tier: record.creatorProfileTier ?? record.markers?.creatorProfile?.tier ?? 'creator-profile',
+    noindex: Boolean(record.markers?.creatorProfile?.noindex),
+    surfaceVisible: Boolean(record.markers?.creatorProfile?.surfaceVisible),
+    internalHitCount: record.internalHits.length,
+    sourceSlugHitCount: record.sourceSlugHits.length,
+    structuralDisplayHitCount: record.structuralDisplayHits.length + record.flowSuffixLines.length,
+    rawIsoHitCount: record.rawIsoLines.length,
+    visibleMarkdownHitCount: record.markers?.urlFirst?.visibleMarkdownHitCount ?? 0,
+    noHorizontalOverflow: record.noHorizontalOverflow,
+  }));
   const uniqueStudioDestinations = Array.from(
     new Map(studioNavDestinationEvidence.map((entry) => [
       `${entry.pathname}|${entry.destinationTier}`,
@@ -1722,6 +1767,37 @@ function summarizeEvidence(records) {
     studioNavDestination: uniqueStudioDestinations[0]?.pathname ?? null,
     studioNavDestinationTier: uniqueStudioDestinations[0]?.destinationTier ?? null,
     studioNavDestinationEvidence,
+    studioEntryVisibleByViewport: sumByViewport(
+      myFlowStudioEntryRecords,
+      (record) => (record.markers?.studioEntry?.visible ? 1 : 0),
+    ),
+    studioEntryReachableByViewport: sumByViewport(
+      myFlowStudioEntryRecords,
+      (record) => (record.markers?.studioEntry?.reachable ? 1 : 0),
+    ),
+    studioEntryDestination: uniqueStudioDestinations[0]?.pathname ?? null,
+    studioEntryDestinationTier: uniqueStudioDestinations[0]?.destinationTier ?? null,
+    studioEntryPolicy: 'visible as a My Flow page action when saved content exists; creator profile remains outside the 4-tab IA',
+    creatorProfileRouteCount: creatorProfileRecords.length,
+    creatorProfileViewportWidths: Array.from(new Set(creatorProfileRecords.map((record) => record.viewportWidth))).sort((a, b) => a - b),
+    creatorProfileTier: 'creator-profile',
+    creatorProfilePolicy: 'user-facing secondary surface outside the 4-tab IA; not a fifth tab; normal user-surface guardrails apply',
+    creatorProfileNoindex: creatorProfileEvidence.map((entry) => ({
+      recordId: entry.recordId,
+      route: entry.route,
+      viewportWidth: entry.viewportWidth,
+      noindex: entry.noindex,
+    })),
+    creatorProfileGuardrailHitCount: creatorProfileEvidence.reduce((sum, entry) =>
+      sum
+      + entry.internalHitCount
+      + entry.sourceSlugHitCount
+      + entry.structuralDisplayHitCount
+      + entry.rawIsoHitCount
+      + entry.visibleMarkdownHitCount
+      + (entry.noHorizontalOverflow ? 0 : 1),
+    0),
+    creatorProfileEvidence,
     userNavLeakScanRouteCount: userNavLeakScanRecords.length,
     userNavLeakScanViewports: Array.from(new Set(userNavLeakScanRecords.map((record) => record.viewportWidth))).sort((a, b) => a - b),
     flowLabPrototypeLinkedFromUserNavCountByViewport,
@@ -2105,6 +2181,13 @@ P14-05/P14-06 soften URL-first candidate/miss/hit copy that was technically clea
 - Wide viewport routes captured: ${JSON.stringify(evidence.summary.wideViewportRoutesCaptured)}
 - Studio nav destination: ${evidence.summary.studioNavDestination ?? '-'}
 - Studio nav destination tier: ${evidence.summary.studioNavDestinationTier ?? '-'}
+- Studio entry visible by viewport: ${JSON.stringify(evidence.summary.studioEntryVisibleByViewport)}
+- Studio entry reachable by viewport: ${JSON.stringify(evidence.summary.studioEntryReachableByViewport)}
+- Creator profile route count: ${evidence.summary.creatorProfileRouteCount}
+- Creator profile viewport widths: ${JSON.stringify(evidence.summary.creatorProfileViewportWidths)}
+- Creator profile tier: ${evidence.summary.creatorProfileTier}
+- Creator profile guardrail hits: ${evidence.summary.creatorProfileGuardrailHitCount}
+- Creator profile policy: ${evidence.summary.creatorProfilePolicy}
 - User nav leak scan route count: ${evidence.summary.userNavLeakScanRouteCount}
 - User nav leak scan viewports: ${JSON.stringify(evidence.summary.userNavLeakScanViewports)}
 - Flow-lab user nav links by viewport: ${JSON.stringify(evidence.summary.flowLabPrototypeLinkedFromUserNavCountByViewport)}
@@ -2224,6 +2307,8 @@ P13-04/P13-07 make URL-first evidence reproducible as a state-by-control matrix.
 P13-05/P13-06 add wide viewport spot checks and a post-save confirmation marker. P14-03 extends that evidence with wide-layout sanity markers for primary CTA visibility, visible Flow-finding link count, and home recommendation card width ratio. The audit records the wide-route list, wide overflow count, and whether the saved confirmation repeats the first task title.
 
 P14-05/P14-06 replace URL-first candidate/miss/hit wording that sounded like system operation copy with user-value copy. The audit records old mechanism-copy hits, value-focused mechanism-copy hits, legacy candidate system-copy hits, and user-tone candidate copy hits so this low-level copy polish is measurable without relying only on screenshots.
+
+P15-01/P15-02 add the creator-profile destination behind the My Flow \`스튜디오\` link to the evidence set. \`/u/my-flow-studio\` is captured at 390px and 1024px as a user-facing secondary surface outside the 4-tab IA, normal user-surface guardrails are applied to that route, and \`studioEntryVisibleByViewport\`/\`studioEntryReachableByViewport\` record the mobile/wide entry policy.
 
 ## Baselines Covered
 
@@ -2509,6 +2594,9 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.wideViewportVisibleMarkdownHitCount}</b><span>wide Markdown hits</span></div>
       <div class="stat"><b>${escapeHtml(evidence.summary.studioNavDestination ?? '-')}</b><span>studio destination</span></div>
       <div class="stat"><b>${escapeHtml(evidence.summary.studioNavDestinationTier ?? '-')}</b><span>studio destination tier</span></div>
+      <div class="stat"><b>${evidence.summary.creatorProfileRouteCount}</b><span>creator profile captures</span></div>
+      <div class="stat"><b>${evidence.summary.creatorProfileGuardrailHitCount}</b><span>creator profile hits</span></div>
+      <div class="stat"><b>${escapeHtml(JSON.stringify(evidence.summary.studioEntryReachableByViewport))}</b><span>studio reachable by viewport</span></div>
       <div class="stat"><b>${evidence.summary.userNavLeakScanRouteCount}</b><span>nav leak scan rows</span></div>
       <div class="stat"><b>${evidence.summary.postSaveConfirmationVisible ? 'yes' : 'no'}</b><span>post-save confirmation</span></div>
       <div class="stat"><b>${evidence.summary.postSaveConfirmationRepeatsFirstTaskTitle ? 'yes' : 'no'}</b><span>post-save repeats task</span></div>

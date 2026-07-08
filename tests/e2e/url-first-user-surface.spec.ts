@@ -6,6 +6,11 @@ import {
 } from '../../lib/flow/user-surface-guardrails';
 
 const urlFirstSourceSlugSignals = ['AJD', 'DeskLab', 'Mathbang'];
+const creatorProfileSourceSlugSignals = [
+  ...urlFirstSourceSlugSignals,
+  'my-flow-studio',
+  'flow-curation-team',
+];
 
 async function getLocatorLines(locator: Locator): Promise<string[]> {
   return (await locator.innerText())
@@ -25,6 +30,23 @@ async function expectCleanUrlFirstUserSurface(locator: Locator) {
   expect(result.structuralDisplayHits).toEqual([]);
   expect(result.trailingFlowSuffixHits).toEqual([]);
   expect(result.rawIsoDateHits).toEqual([]);
+}
+
+async function expectCleanCreatorProfileSurface(locator: Locator) {
+  const result = scanUserSurfaceGuardrails({
+    primaryLines: await getLocatorLines(locator),
+    sourceSlugSignals: creatorProfileSourceSlugSignals,
+  });
+
+  expect(result.internalCopyHits).toEqual([]);
+  expect(result.sourceSlugHits).toEqual([]);
+  expect(result.structuralDisplayHits).toEqual([]);
+  expect(result.trailingFlowSuffixHits).toEqual([]);
+  expect(result.rawIsoDateHits).toEqual([]);
+}
+
+async function expectNoHorizontalOverflow(page: Page) {
+  await expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
 }
 
 function expectCleanUserFacingOutput(text: string) {
@@ -161,6 +183,27 @@ test('URL-first lab stays prototype-gated and absent from user navigation', asyn
   const studioLink = page.getByRole('link', { name: '스튜디오' });
   await expect(studioLink).toBeVisible();
   await expect(studioLink).toHaveAttribute('href', /^\/u\/[^?#]+$/);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/my?savedMap=moving-d30');
+  const mobileStudioLink = page.getByRole('link', { name: '스튜디오' });
+  await expect(mobileStudioLink).toBeVisible();
+  await expect(mobileStudioLink).toHaveAttribute('href', /^\/u\/[^?#]+$/);
+
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 1024, height: 768 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/u/my-flow-studio');
+    await expect(page.getByTestId('creator-profile-surface')).toBeVisible();
+    await expect(page.getByRole('heading', { name: '내 Flow 스튜디오' })).toBeVisible();
+    await expect(page.getByText('My Creator Profile')).toHaveCount(0);
+    await expect(page.getByText('Exact Source')).toHaveCount(0);
+    await expect(page.getByText('Published Flows')).toHaveCount(0);
+    await expectCleanCreatorProfileSurface(page.locator('body'));
+    await expectNoHorizontalOverflow(page);
+  }
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flow-lab/url-first-p0');

@@ -7165,8 +7165,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           </p>
         </div>
         {savedFlows.length > 0 ? (
-          <div className="hidden flex-wrap gap-2 sm:flex">
-            <Link className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-800" href={`/u/${currentUser.slug}`}>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-800"
+              data-testid="my-flow-studio-link"
+              href={`/u/${currentUser.slug}`}
+            >
               스튜디오
             </Link>
           </div>
@@ -8400,7 +8404,7 @@ export function CreatorProfile({ slug }: { slug: string }) {
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-5 py-8 pb-28 md:pb-8">
+    <main className="mx-auto max-w-6xl px-5 py-8 pb-28 md:pb-8" data-testid="creator-profile-surface">
       <PlatformNav />
       <header className="rounded-xl border border-gray-200 bg-white p-6">
         <div className="flex flex-wrap items-start gap-4">
@@ -8408,15 +8412,15 @@ export function CreatorProfile({ slug }: { slug: string }) {
             {profile?.avatar_initial ?? (first ? getCreatorAvatar(first) : '?')}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-blue-700">{profile?.is_current_user ? 'My Creator Profile' : 'Creator'}</p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight">{profile?.name ?? (first ? getCreatorName(first) : '제작자')}</h1>
+            <p className="text-sm font-semibold text-blue-700">{profile?.is_current_user ? '내 스튜디오' : '제작자'}</p>
+            <h1 className="mt-2 break-keep text-2xl font-semibold tracking-tight sm:text-3xl">{profile?.name ?? (first ? getCreatorName(first) : '제작자')}</h1>
             <p className="mt-2 text-gray-600">{profile?.role ?? (first ? getCreatorRole(first) : '')}</p>
             <p className="mt-3 max-w-3xl leading-7 text-gray-600">{profile?.bio ?? (first ? getCreatorNote(first) : '')}</p>
           </div>
         </div>
         <div className="mt-5 grid gap-3 sm:grid-cols-3">
           <div className="rounded-lg bg-gray-50 p-4">
-            <p className="text-sm text-gray-500">공개 Flow</p>
+            <p className="text-sm text-gray-500">공개 콘텐츠</p>
             <p className="mt-1 text-2xl font-semibold">{creatorBundles.length}</p>
           </div>
           <div className="rounded-lg bg-gray-50 p-4">
@@ -8435,9 +8439,9 @@ export function CreatorProfile({ slug }: { slug: string }) {
         </div>
         {previewSummary ? (
           <section className="mt-5 grid gap-3 sm:grid-cols-7">
-            <StatCard label="Flow 후보" value={`${previewSummary.flow_count}`} compact />
-            <StatCard label="실제 원본" value={`${previewSummary.real_flow_count}`} compact />
-            <StatCard label="샘플 후보" value={`${previewSummary.sample_candidate_count}`} compact />
+            <StatCard label="콘텐츠 준비" value={`${previewSummary.flow_count}`} compact />
+            <StatCard label="원문 확인" value={`${previewSummary.real_flow_count}`} compact />
+            <StatCard label="샘플 준비" value={`${previewSummary.sample_candidate_count}`} compact />
             <StatCard label="실행 항목" value={`${previewSummary.executable_item_count}`} compact />
             <StatCard label="원본 검토" value={`${previewSummary.source_review_count}`} compact />
             <StatCard label="수동 검토" value={`${previewSummary.manual_source_fit_count}`} compact />
@@ -8450,7 +8454,7 @@ export function CreatorProfile({ slug }: { slug: string }) {
         <section className="mt-8 border-y border-gray-200 bg-gray-50 py-5">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-emerald-700">Exact Source</p>
+              <p className="text-sm font-semibold text-emerald-700">원문 확인됨</p>
               <h2 className="mt-1 text-2xl font-semibold">실제 콘텐츠로 바로 시작</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
                 운동/다이어트 앱처럼 출처가 분명한 콘텐츠를 먼저 고르고, 오늘 실행한 기록과 다음 반복 날짜까지 남기게 구성했습니다.
@@ -8461,7 +8465,7 @@ export function CreatorProfile({ slug }: { slug: string }) {
               type="button"
               onClick={() => setSourceFilter('real')}
             >
-              실제 Flow만 보기
+              바로 시작만 보기
             </button>
           </div>
           <div className="mt-4 grid gap-4 md:grid-cols-3">
@@ -8475,8 +8479,8 @@ export function CreatorProfile({ slug }: { slug: string }) {
       <section className="mt-8">
         <div className="mb-4 flex items-end justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold text-gray-500">Published Flows</p>
-            <h2 className="text-2xl font-semibold">채널 Flow 라이브러리</h2>
+            <p className="text-sm font-semibold text-gray-500">공개 콘텐츠</p>
+            <h2 className="text-2xl font-semibold">채널 콘텐츠</h2>
             <p className="mt-1 text-sm text-gray-600">
               {visibleCreatorBundles.length}개 표시 / 전체 {creatorBundles.length}개
             </p>
@@ -8484,7 +8488,7 @@ export function CreatorProfile({ slug }: { slug: string }) {
           <Link className="text-sm font-semibold text-blue-700" href="/flows/new">내 콘텐츠로 만들기</Link>
         </div>
         <label className="mb-3 block">
-          <span className="text-sm font-semibold text-gray-700">Flow 검색</span>
+          <span className="text-sm font-semibold text-gray-700">콘텐츠 검색</span>
           <input
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
             placeholder="제목, 카테고리, 태그, 출처로 검색"
@@ -8494,9 +8498,9 @@ export function CreatorProfile({ slug }: { slug: string }) {
         </label>
         <div className="mb-3 flex flex-wrap gap-2">
           {[
-            ['all', 'All'],
-            ['real', '실제 원본'],
-            ['preview', '샘플 후보'],
+            ['all', '전체'],
+            ['real', '원문 확인'],
+            ['preview', '샘플'],
           ].map(([key, label]) => (
             <button
               key={key}
