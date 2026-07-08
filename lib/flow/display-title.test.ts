@@ -199,6 +199,14 @@ test('capture script exposes P13 wide viewport and post-save confirmation marker
   assert.ok(script.includes('wideViewportEvidenceCount'));
   assert.ok(script.includes('wideViewportRoutesCaptured'));
   assert.ok(script.includes('wideViewportHorizontalOverflowCount'));
+  assert.ok(script.includes('wideViewportGuardrailRouteCount'));
+  assert.ok(script.includes('wideViewportInternalHitCount'));
+  assert.ok(script.includes('wideViewportSourceSlugHitCount'));
+  assert.ok(script.includes('wideViewportRawIsoHitCount'));
+  assert.ok(script.includes('wideViewportVisibleMarkdownHitCount'));
+  assert.ok(script.includes('wideViewportCandidateCopyInternalHitCount'));
+  assert.ok(script.includes('studioNavDestination'));
+  assert.ok(script.includes('studioNavDestinationTier'));
   assert.ok(script.includes('postSaveConfirmationVisible'));
   assert.ok(script.includes('postSaveConfirmationText'));
   assert.ok(script.includes('postSaveConfirmationRepeatsFirstTaskTitle'));
@@ -222,7 +230,9 @@ test('capture script exposes flow-lab prototype bucket and internal QA link mark
   assert.ok(script.includes('flowLabPrototypeGuardrailHitCount'));
   assert.ok(script.includes('flowLabPrototypeNoindex'));
   assert.ok(script.includes('flowLabPrototypeLinkedFromUserNavCount'));
+  assert.ok(script.includes('flowLabPrototypeLinkedFromUserNavCountByViewport'));
   assert.ok(script.includes('manualRegistrationQaUserLinkCount'));
+  assert.ok(script.includes('manualRegistrationQaUserLinkCountByViewport'));
 });
 
 test('prototype route tier policy separates release preview from internal console', () => {

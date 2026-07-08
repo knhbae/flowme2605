@@ -122,8 +122,6 @@ test('URL-first miss and saved-candidate states hide production-only wording fro
 });
 
 test('URL-first lab stays prototype-gated and absent from user navigation', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-
   const userRoutes = [
     '/',
     '/flows',
@@ -132,13 +130,31 @@ test('URL-first lab stays prototype-gated and absent from user navigation', asyn
     '/f/vehicle-inspection-prep',
     '/flow-maps/moving-d30',
   ];
+  const userRouteViewports = [
+    { width: 390, height: 844 },
+    { width: 768, height: 844 },
+    { width: 1024, height: 768 },
+  ];
 
-  for (const route of userRoutes) {
-    await page.goto(route);
-    await expect(page.locator('a[href="/flow-lab/url-first-p0"], a[href^="/flow-lab/url-first-p0?"]')).toHaveCount(0);
-    await expect(page.locator('a[href*="source-backed-manual-registration"]')).toHaveCount(0);
+  for (const viewport of userRouteViewports) {
+    await page.setViewportSize(viewport);
+    for (const route of userRoutes) {
+      await page.goto(route);
+      await expect(page.locator('a[href="/flow-lab/url-first-p0"], a[href^="/flow-lab/url-first-p0?"]')).toHaveCount(0);
+      await expect(page.locator('a[href*="source-backed-manual-registration"]')).toHaveCount(0);
+    }
   }
 
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto('/flow-maps/moving-d30');
+  await page.getByTestId('flow-map-anchor-input').fill('2026-07-22');
+  await page.getByTestId('flow-map-save-all').click();
+  await page.waitForURL('**/my?savedMap=moving-d30');
+  const studioLink = page.getByRole('link', { name: '스튜디오' });
+  await expect(studioLink).toBeVisible();
+  await expect(studioLink).toHaveAttribute('href', /^\/u\/[^?#]+$/);
+
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flow-lab/url-first-p0');
   await expect(page.getByTestId('url-first-p0-lab')).toBeVisible();
   await expect(page.getByTestId('url-first-p0-lab-internal-console-context')).toContainText('내부 실험 콘솔');

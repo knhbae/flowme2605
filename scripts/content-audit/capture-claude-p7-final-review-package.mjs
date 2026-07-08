@@ -82,6 +82,7 @@ const savedFixtures = {
 };
 
 const scenarioRecords = [];
+const userNavLeakScanRecords = [];
 
 main().catch((error) => {
   console.error(error);
@@ -208,6 +209,7 @@ async function main() {
       scrollPurpose: 'prototype-flow-lab-top',
     });
     await captureWideViewportEvidence(page);
+    await collectUserNavLeakScanEvidence(page);
   } finally {
     await browser.close();
     stopServer(server);
@@ -227,6 +229,7 @@ async function main() {
     wideViewport,
     baseURL,
     summary: summarizeEvidence(scenarioRecords),
+    userNavLeakScans: userNavLeakScanRecords,
     scenarios: scenarioRecords,
   };
 
@@ -388,6 +391,78 @@ async function captureWideViewportEvidence(page) {
     category: 'wide-viewport',
     wideViewport: true,
   });
+  await captureUrlFirstHit(page, {
+    file: '37-url-first-hit-wide.png',
+    label: 'URL-first hit wide viewport guardrail spot check',
+    category: 'wide-viewport',
+    wideViewport: true,
+  });
+  await captureUrlFirstCandidateDetail(page, {
+    file: '38-url-first-candidate-detail-wide.png',
+    label: 'URL-first candidate detail wide viewport guardrail spot check',
+    category: 'wide-viewport',
+    wideViewport: true,
+  });
+  await page.setViewportSize(viewport);
+  await settle(page);
+}
+
+async function collectUserNavLeakScanEvidence(page) {
+  const routes = [
+    '/',
+    '/flows',
+    '/my',
+    '/calendar',
+    '/f/vehicle-inspection-prep',
+    '/flow-maps/moving-d30',
+  ];
+  const viewports = [
+    viewport,
+    { width: 768, height: 844 },
+    wideViewport,
+  ];
+
+  for (const targetViewport of viewports) {
+    await page.setViewportSize(targetViewport);
+    for (const route of routes) {
+      await resetStorage(page);
+      await page.goto(route);
+      await settle(page);
+      const scan = await page.evaluate(() => {
+        const anchors = Array.from(document.querySelectorAll('a[href]')).map((anchor) => {
+          const rawHref = anchor.getAttribute('href') ?? '';
+          try {
+            const url = new URL(rawHref, window.location.href);
+            return {
+              rawHref,
+              pathname: url.pathname,
+              href: url.href,
+            };
+          } catch {
+            return {
+              rawHref,
+              pathname: rawHref,
+              href: rawHref,
+            };
+          }
+        });
+        return {
+          flowLabPrototypeLinkCount: anchors.filter((anchor) => anchor.pathname === '/flow-lab/url-first-p0').length,
+          manualRegistrationQaLinkCount: anchors.filter((anchor) =>
+            anchor.href.includes('source-backed-manual-registration')
+            || anchor.rawHref.includes('source-backed-manual-registration'),
+          ).length,
+        };
+      });
+      userNavLeakScanRecords.push({
+        route,
+        viewportWidth: targetViewport.width,
+        viewportHeight: targetViewport.height,
+        ...scan,
+      });
+    }
+  }
+
   await page.setViewportSize(viewport);
   await settle(page);
 }
@@ -482,19 +557,20 @@ async function collectUrlFirstExportModeEvidence(page) {
   return records;
 }
 
-async function captureUrlFirstHit(page) {
+async function captureUrlFirstHit(page, captureOptions = {}) {
   await resetStorage(page);
   await lookupUrlFirstInput(page, urlFirstTriggerUrls.hit);
   await page.getByTestId('url-first-start-date-input').fill('2026-07-17');
   await settle(page);
   const urlFirstExportModeEvidence = await collectUrlFirstExportModeEvidence(page);
-  await captureCurrent(page, '27-url-first-hit-mobile.png', 'URL-first hit result on Flow finding', {
-    category: 'url-first',
+  await captureCurrent(page, captureOptions.file ?? '27-url-first-hit-mobile.png', captureOptions.label ?? 'URL-first hit result on Flow finding', {
+    category: captureOptions.category ?? 'url-first',
     route: '/flows',
     urlFirstScenarioName: 'hit-default-start',
     urlFirstState: 'hit',
     urlFirstTriggerUrl: urlFirstTriggerUrls.hit,
     urlFirstExportModeEvidence,
+    wideViewport: Boolean(captureOptions.wideViewport),
   });
 }
 
@@ -529,7 +605,7 @@ async function captureUrlFirstMissCandidateForm(page) {
   });
 }
 
-async function captureUrlFirstCandidateDetail(page) {
+async function captureUrlFirstCandidateDetail(page, captureOptions = {}) {
   const pendingCandidateFixture = {
     canonicalUrl: 'https://example.com/source-to-convert',
     originalUrl: urlFirstTriggerUrls.candidate,
@@ -603,8 +679,8 @@ async function captureUrlFirstCandidateDetail(page) {
     lastLookupStatus: resolvedCandidateFixture.lastLookup?.status ?? null,
     routeHref: resolvedCandidateAvailability.lookup?.routeHref ?? resolvedCandidateFixture.lastLookup?.routeHref ?? null,
   };
-  await captureCurrent(page, '30-url-first-candidate-detail-mobile.png', 'URL-first saved candidate request detail', {
-    category: 'url-first',
+  await captureCurrent(page, captureOptions.file ?? '30-url-first-candidate-detail-mobile.png', captureOptions.label ?? 'URL-first saved candidate request detail', {
+    category: captureOptions.category ?? 'url-first',
     route: '/flows',
     urlFirstScenarioName: 'candidate-detail-expanded',
     urlFirstState: 'candidate',
@@ -612,6 +688,7 @@ async function captureUrlFirstCandidateDetail(page) {
     urlFirstCandidateExpandedDetailCaptured: true,
     urlFirstCandidateResolvedHitScenario,
     urlFirstCandidateUserCopyEvidence,
+    wideViewport: Boolean(captureOptions.wideViewport),
   });
 }
 
@@ -1177,16 +1254,40 @@ async function scanPage(page, options = {}) {
           rawHref,
           pathname: url.pathname,
           href: url.href,
+          visible: isVisible(anchor),
+          label: normalizeLine(anchor.textContent ?? ''),
+          accessibleName: normalizeLine(anchor.getAttribute('aria-label') ?? anchor.textContent ?? ''),
+          testId: getElementTestId(anchor),
         };
       } catch {
         return {
           rawHref,
           pathname: rawHref,
           href: rawHref,
+          visible: isVisible(anchor),
+          label: normalizeLine(anchor.textContent ?? ''),
+          accessibleName: normalizeLine(anchor.getAttribute('aria-label') ?? anchor.textContent ?? ''),
+          testId: getElementTestId(anchor),
         };
       }
     });
     const countAnchors = (predicate) => anchorHrefs.filter(predicate).length;
+    const studioNavDestinations = anchorHrefs
+      .filter((anchor) =>
+        anchor.visible
+        && (
+          anchor.label === '스튜디오'
+          || anchor.accessibleName === '스튜디오'
+        ),
+      )
+      .map((anchor) => ({
+        rawHref: anchor.rawHref,
+        pathname: anchor.pathname,
+        href: anchor.href,
+        label: anchor.label,
+        accessibleName: anchor.accessibleName,
+        testId: anchor.testId,
+      }));
     const metaRobots = normalizeLine(document.querySelector('meta[name="robots"]')?.getAttribute('content') ?? '');
     const restartNextTaskDateLabels = Array.from(document.querySelectorAll('[data-testid="moving-mobile-next-tasks"] article p'))
       .map((element) => normalizeLine(element.textContent ?? ''))
@@ -1298,6 +1399,7 @@ async function scanPage(page, options = {}) {
           && publicPrimaryPathFocusableIndex >= 0
           && publicBrowseLinkFocusableIndex > publicPrimaryPathFocusableIndex,
         metaRobots,
+        studioNavDestinations,
         flowLabInternalConsoleContextVisible: hasVisibleElement('[data-testid="url-first-p0-lab-internal-console-context"]'),
         flowLabPrototypeLinkCount: countAnchors((anchor) => anchor.pathname === '/flow-lab/url-first-p0'),
         manualRegistrationQaLinkCount: countAnchors((anchor) =>
@@ -1340,6 +1442,10 @@ async function scanPage(page, options = {}) {
   });
   const prototypeTier = record.prototypeTier ?? getPrototypeRouteTier(record.url);
   const prototypeTierPolicy = prototypeTier ? getPrototypeRouteTierPolicy(prototypeTier) : null;
+  const studioNavDestinations = (record.markers?.studioNavDestinations ?? []).map((destination) => ({
+    ...destination,
+    destinationTier: getStudioNavDestinationTier(destination),
+  }));
   const firstTaskRepetitionHits = firstTaskTitle
     ? findFirstTaskRepetitionHits(nowSectionLines, firstTaskTitle, { maxCount: 1 })
     : [];
@@ -1348,6 +1454,10 @@ async function scanPage(page, options = {}) {
     ...record,
     prototypeTier,
     prototypeTierPolicy,
+    markers: {
+      ...record.markers,
+      studioNavDestinations,
+    },
     internalHits,
     sourceSlugSignals: userSurfaceGuardrails.sourceSlugSignals,
     sourceSlugHits: userSurfaceGuardrails.sourceSlugHits,
@@ -1370,6 +1480,19 @@ async function scanPage(page, options = {}) {
   };
 }
 
+function getStudioNavDestinationTier(destination) {
+  const pathname = destination?.pathname ?? '';
+  const href = `${destination?.rawHref ?? ''} ${destination?.href ?? ''}`;
+  const prototypeTier = getPrototypeRouteTier(pathname);
+  if (prototypeTier) return prototypeTier;
+  if (/source-backed-manual-registration/iu.test(href)) return 'internal-manual-registration';
+  if (pathname.startsWith('/content-flows') || pathname.startsWith('/ia-compare')) return 'internal-review';
+  if (pathname.startsWith('/u/')) return 'creator-profile';
+  if (pathname.startsWith('/flows/new') || pathname.startsWith('/flows/') && pathname.endsWith('/edit')) return 'creator-tool';
+  if (pathname.startsWith('/')) return 'normal-user-route';
+  return 'external-or-unknown';
+}
+
 function summarizeEvidence(records) {
   const normal = records.filter((record) => !record.prototypeBucket);
   const prototypes = records.filter((record) => record.prototypeBucket);
@@ -1387,9 +1510,47 @@ function summarizeEvidence(records) {
   const restartScheduleFrame = records.find((record) => record.id === '24-restart-moving-full-schedule-mobile')
     ?? records.find((record) => record.id === '21-restart-moving-top-mobile');
   const restartScheduleDateCheck = restartScheduleFrame?.markers?.restartScheduleDateCheck ?? {};
+  const wideUserSurfaceRecords = wideViewportRecords.filter((record) => !record.prototypeBucket);
   const restartFirstThreeSameD30Milestone = Boolean(
     restartScheduleDateCheck.firstThreeSameD30Milestone
     && restartScheduleDateCheck.fullScheduleHasDistributedDates,
+  );
+  const sumByViewport = (inputRecords, selectCount) =>
+    inputRecords.reduce((map, record) => {
+      const key = String(record.viewportWidth ?? viewport.width);
+      map[key] = (map[key] ?? 0) + selectCount(record);
+      return map;
+    }, {});
+  const studioNavDestinationEvidence = records.flatMap((record) =>
+    (record.markers?.studioNavDestinations ?? []).map((destination) => ({
+      recordId: record.id,
+      route: record.url,
+      viewportWidth: record.viewportWidth,
+      rawHref: destination.rawHref,
+      pathname: destination.pathname,
+      label: destination.label,
+      accessibleName: destination.accessibleName,
+      destinationTier: destination.destinationTier,
+    })),
+  );
+  const uniqueStudioDestinations = Array.from(
+    new Map(studioNavDestinationEvidence.map((entry) => [
+      `${entry.pathname}|${entry.destinationTier}`,
+      {
+        pathname: entry.pathname,
+        destinationTier: entry.destinationTier,
+        label: entry.label,
+      },
+    ])).values(),
+  );
+  const navLeakScanRecords = userNavLeakScanRecords.length > 0 ? userNavLeakScanRecords : normal;
+  const flowLabPrototypeLinkedFromUserNavCountByViewport = sumByViewport(
+    navLeakScanRecords,
+    (record) => record.flowLabPrototypeLinkCount ?? record.markers?.flowLabPrototypeLinkCount ?? 0,
+  );
+  const manualRegistrationQaUserLinkCountByViewport = sumByViewport(
+    navLeakScanRecords,
+    (record) => record.manualRegistrationQaLinkCount ?? record.markers?.manualRegistrationQaLinkCount ?? 0,
   );
   const getAgendaGroups = (record) => [
     ...(record.markers?.agendaGroupMeta?.calendarSelectedDay?.groups ?? []),
@@ -1464,6 +1625,34 @@ function summarizeEvidence(records) {
       noHorizontalOverflow: record.noHorizontalOverflow,
     })),
     wideViewportHorizontalOverflowCount: wideViewportRecords.filter((record) => !record.noHorizontalOverflow).length,
+    wideViewportGuardrailRouteCount: wideUserSurfaceRecords.length,
+    wideViewportInternalHitCount: wideUserSurfaceRecords.reduce((sum, record) => sum + record.internalHits.length, 0),
+    wideViewportSourceSlugHitCount: wideUserSurfaceRecords.reduce((sum, record) => sum + record.sourceSlugHits.length, 0),
+    wideViewportStructuralDisplayHitCount: wideUserSurfaceRecords.reduce((sum, record) => sum + record.structuralDisplayHits.length + record.flowSuffixLines.length, 0),
+    wideViewportRawIsoHitCount: wideUserSurfaceRecords.reduce((sum, record) => sum + record.rawIsoLines.length, 0),
+    wideViewportInputRawIsoHitCount: wideUserSurfaceRecords.reduce((sum, record) => sum + (record.rawIsoInputValueHits?.length ?? 0), 0),
+    wideViewportVisibleMarkdownHitCount: wideUserSurfaceRecords.reduce((sum, record) =>
+      sum
+      + (record.markers?.urlFirst?.visibleMarkdownHitCount ?? 0)
+      + (record.markers?.urlFirst?.exportModeEvidence ?? []).reduce(
+        (modeSum, modeEvidence) => modeSum + (modeEvidence.visibleMarkdownHitCount ?? 0),
+        0,
+      ),
+    0),
+    wideViewportCandidateCopyInternalHitCount: wideUserSurfaceRecords.reduce((sum, record) =>
+      sum + (record.markers?.urlFirst?.candidateUserCopyEvidence?.forbiddenHitCount ?? 0),
+    0),
+    wideViewportUrlFirstScenarioCount: wideUserSurfaceRecords.filter((record) => Boolean(record.urlFirstState)).length,
+    wideViewportUrlFirstStatesCaptured: wideUserSurfaceRecords
+      .filter((record) => Boolean(record.urlFirstState))
+      .map((record) => record.urlFirstState),
+    studioNavDestination: uniqueStudioDestinations[0]?.pathname ?? null,
+    studioNavDestinationTier: uniqueStudioDestinations[0]?.destinationTier ?? null,
+    studioNavDestinationEvidence,
+    userNavLeakScanRouteCount: userNavLeakScanRecords.length,
+    userNavLeakScanViewports: Array.from(new Set(userNavLeakScanRecords.map((record) => record.viewportWidth))).sort((a, b) => a - b),
+    flowLabPrototypeLinkedFromUserNavCountByViewport,
+    manualRegistrationQaUserLinkCountByViewport,
     postSaveConfirmationVisible: postSaveConfirmationRecords.length > 0,
     postSaveConfirmationText: Array.from(new Set(postSaveConfirmationRecords.map((record) => record.markers?.postSaveConfirmation?.text).filter(Boolean))),
     postSaveConfirmationRepeatsFirstTaskTitle: postSaveConfirmationRecords.some((record) =>
@@ -1790,7 +1979,20 @@ P13-05/P13-06 add a wide-viewport spot-check slice and a measured post-save conf
 - Wide viewport evidence count: ${evidence.summary.wideViewportEvidenceCount}
 - Wide viewport width: ${evidence.summary.wideViewportWidth}
 - Wide viewport horizontal overflow count: ${evidence.summary.wideViewportHorizontalOverflowCount}
+- Wide viewport guardrail route count: ${evidence.summary.wideViewportGuardrailRouteCount}
+- Wide viewport internal copy hits: ${evidence.summary.wideViewportInternalHitCount}
+- Wide viewport source slug hits: ${evidence.summary.wideViewportSourceSlugHitCount}
+- Wide viewport raw ISO hits: ${evidence.summary.wideViewportRawIsoHitCount}
+- Wide viewport visible Markdown hits: ${evidence.summary.wideViewportVisibleMarkdownHitCount}
+- Wide viewport candidate copy internal hits: ${evidence.summary.wideViewportCandidateCopyInternalHitCount}
+- Wide viewport URL-first states captured: ${JSON.stringify(evidence.summary.wideViewportUrlFirstStatesCaptured)}
 - Wide viewport routes captured: ${JSON.stringify(evidence.summary.wideViewportRoutesCaptured)}
+- Studio nav destination: ${evidence.summary.studioNavDestination ?? '-'}
+- Studio nav destination tier: ${evidence.summary.studioNavDestinationTier ?? '-'}
+- User nav leak scan route count: ${evidence.summary.userNavLeakScanRouteCount}
+- User nav leak scan viewports: ${JSON.stringify(evidence.summary.userNavLeakScanViewports)}
+- Flow-lab user nav links by viewport: ${JSON.stringify(evidence.summary.flowLabPrototypeLinkedFromUserNavCountByViewport)}
+- Manual QA user links by viewport: ${JSON.stringify(evidence.summary.manualRegistrationQaUserLinkCountByViewport)}
 - Post-save confirmation visible: ${evidence.summary.postSaveConfirmationVisible}
 - Post-save confirmation text: ${JSON.stringify(evidence.summary.postSaveConfirmationText)}
 - Post-save confirmation repeats first task title: ${evidence.summary.postSaveConfirmationRepeatsFirstTaskTitle}
@@ -2171,6 +2373,12 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.normalRouteRowControlAccessibleNameContextCount}</b><span>row control samples with context</span></div>
       <div class="stat"><b>${evidence.summary.wideViewportEvidenceCount}</b><span>wide viewport captures</span></div>
       <div class="stat"><b>${evidence.summary.wideViewportHorizontalOverflowCount}</b><span>wide overflow hits</span></div>
+      <div class="stat"><b>${evidence.summary.wideViewportGuardrailRouteCount}</b><span>wide guardrail routes</span></div>
+      <div class="stat"><b>${evidence.summary.wideViewportInternalHitCount}</b><span>wide internal hits</span></div>
+      <div class="stat"><b>${evidence.summary.wideViewportVisibleMarkdownHitCount}</b><span>wide Markdown hits</span></div>
+      <div class="stat"><b>${escapeHtml(evidence.summary.studioNavDestination ?? '-')}</b><span>studio destination</span></div>
+      <div class="stat"><b>${escapeHtml(evidence.summary.studioNavDestinationTier ?? '-')}</b><span>studio destination tier</span></div>
+      <div class="stat"><b>${evidence.summary.userNavLeakScanRouteCount}</b><span>nav leak scan rows</span></div>
       <div class="stat"><b>${evidence.summary.postSaveConfirmationVisible ? 'yes' : 'no'}</b><span>post-save confirmation</span></div>
       <div class="stat"><b>${evidence.summary.postSaveConfirmationRepeatsFirstTaskTitle ? 'yes' : 'no'}</b><span>post-save repeats task</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteLegacyOverdueLabelCount}</b><span>legacy overdue labels</span></div>
