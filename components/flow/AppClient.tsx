@@ -3163,7 +3163,7 @@ function getMyFlowRowDisplaySectionLabel(row: MyFlowCalendarRow): string {
 }
 
 function getMyFlowAgendaSharedMeta(rows: MyFlowCalendarRow[], kind: 'routine' | 'schedule') {
-  if (rows.length < 2) return {};
+  if (rows.length === 0) return {};
 
   const timingValues = kind === 'routine' ? [] : rows.map((row) => row.timing?.trim() ?? '');
   const sharedTimingValue = timingValues.length > 0 && timingValues.every((value) => value && value === timingValues[0])

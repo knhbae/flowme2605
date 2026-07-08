@@ -2021,6 +2021,7 @@ P13-05/P13-06 add a wide-viewport spot-check slice and a measured post-save conf
 - Normal route continuation explanation-only count: ${evidence.summary.normalRouteContinuationExplanationOnlyCount}
 - Normal route agenda/status group marker count: ${evidence.summary.normalRouteAgendaGroupMetaCount}
 - Normal route agenda/status repeated date meta rows: ${evidence.summary.normalRouteAgendaGroupRepeatedDateMetaRowCount}
+- Normal route agenda/status repeated timing meta rows: ${evidence.summary.normalRouteAgendaGroupRepeatedTimingMetaRowCount}
 - Normal route row control accessible name samples: ${evidence.summary.normalRouteRowControlAccessibleNameSampleCount}
 - Normal route row control samples with context: ${evidence.summary.normalRouteRowControlAccessibleNameContextCount}
 - Wide viewport evidence count: ${evidence.summary.wideViewportEvidenceCount}
@@ -2420,6 +2421,7 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.normalRouteContinuationExplanationOnlyCount}</b><span>continuation explanation-only</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteAgendaGroupMetaCount}</b><span>agenda/status groups</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteAgendaGroupRepeatedDateMetaRowCount}</b><span>repeated date meta rows</span></div>
+      <div class="stat"><b>${evidence.summary.normalRouteAgendaGroupRepeatedTimingMetaRowCount}</b><span>repeated timing meta rows</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteRowControlAccessibleNameSampleCount}</b><span>row control a11y samples</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteRowControlAccessibleNameContextCount}</b><span>row control samples with context</span></div>
       <div class="stat"><b>${evidence.summary.wideViewportEvidenceCount}</b><span>wide viewport captures</span></div>

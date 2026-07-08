@@ -1617,6 +1617,9 @@ test('mobile fixed layers keep save actions and final content separated', async 
   await expect(selectedDateGroup).toContainText('원룸 이사 D-30 일정');
   await expect(selectedDateGroup).not.toContainText('원룸 이사 D-30 일정 지도');
   await expect(selectedDateGroup).toContainText('입주청소와 대형폐기물 일정 확인');
+  await expect(selectedDateGroup.getByTestId('my-flow-selected-date-group-meta')).toHaveCount(1);
+  await expect(selectedDateGroup.getByTestId('my-flow-row-timing-chip')).toHaveCount(0);
+  await expect(selectedDateGroup.getByTestId('my-flow-row-section-label')).toHaveCount(0);
   await expect(selectedDateGroup).not.toContainText('1개 · 1개 남음');
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
   await expectElementClearsFixedLayer(page.getByTestId('my-flow-calendar-card'), page.getByTestId('platform-mobile-tabs'), 16);
