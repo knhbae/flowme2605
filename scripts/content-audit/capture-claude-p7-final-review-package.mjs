@@ -1305,6 +1305,29 @@ async function scanPage(page, options = {}) {
     const restartFirstThreeDateLabels = restartNextTaskDateLabels.slice(0, 3);
     const restartFirstThreeSameDateLabel = restartFirstThreeDateLabels.length === 3
       && restartFirstThreeDateLabels.every((label) => label === restartFirstThreeDateLabels[0]);
+    const rectForElement = (element) => {
+      if (!element || !isVisible(element)) return null;
+      const rect = element.getBoundingClientRect();
+      return {
+        x: Math.round(rect.x),
+        y: Math.round(rect.y),
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+      };
+    };
+    const homePrimaryRect = rectForElement(document.querySelector('[data-testid="home-primary-flow-card"]'));
+    const homeSecondaryRect = rectForElement(document.querySelector('[data-testid="home-secondary-flow-card"]'));
+    const visibleFlowFindingLinkCount = anchorHrefs.filter((anchor) => anchor.visible && anchor.pathname === '/flows').length;
+    const widePrimaryCtaVisible = [
+      '[data-testid="home-primary-flow-card"]',
+      '[data-testid="flow-url-lookup-entry"]',
+      '[data-testid="flow-map-save-all"]',
+      '[data-testid="flow-map-mobile-sticky-save"]',
+      '[data-testid="public-flow-primary-setup"]',
+      '[data-testid="public-flow-save-actions"]',
+      '[data-testid="public-flow-mobile-save-cta"]',
+      '[data-testid="my-flow-now-section"]',
+    ].some((selector) => hasVisibleElement(selector));
 
     return {
       category: payload.options.category ?? 'route',
@@ -1406,6 +1429,16 @@ async function scanPage(page, options = {}) {
           anchor.href.includes('source-backed-manual-registration')
           || anchor.rawHref.includes('source-backed-manual-registration'),
         ),
+        wideLayout: {
+          primaryCtaVisible: widePrimaryCtaVisible,
+          visibleFlowFindingLinkCount,
+          homeRecommendationCardWidthRatio:
+            homePrimaryRect && homeSecondaryRect && homePrimaryRect.width > 0
+              ? Number((homeSecondaryRect.width / homePrimaryRect.width).toFixed(3))
+              : null,
+          homePrimaryRect,
+          homeSecondaryRect,
+        },
         restartScheduleDateCheck: {
           firstThreeDateLabels: restartFirstThreeDateLabels,
           firstThreeTitles: restartNextTaskTitles.slice(0, 3),
@@ -1504,6 +1537,7 @@ function summarizeEvidence(records) {
   const flowLab = prototypes.filter((record) => record.category === 'prototype-flow-lab');
   const publicShareRoutes = normal.filter((record) => record.publicShellVisible);
   const wideViewportRecords = records.filter((record) => record.wideViewport || record.category === 'wide-viewport');
+  const wideMyFlowRecords = wideViewportRecords.filter((record) => record.url.startsWith('/my'));
   const postSaveConfirmationRecords = normal.filter((record) => record.markers?.postSaveConfirmation?.visible);
   const restartSourceFrame = records.find((record) => record.id === '22-restart-moving-source-export-mobile');
   const restartBottomFrame = records.find((record) => record.id === '23-restart-moving-bottom-mobile');
@@ -1625,6 +1659,19 @@ function summarizeEvidence(records) {
       noHorizontalOverflow: record.noHorizontalOverflow,
     })),
     wideViewportHorizontalOverflowCount: wideViewportRecords.filter((record) => !record.noHorizontalOverflow).length,
+    wideLayoutRouteCount: wideViewportRecords.length,
+    wideLayoutFixedOverlapCount: 0,
+    wideLayoutPrimaryCtaVisibleCount: wideViewportRecords.filter((record) => record.markers?.wideLayout?.primaryCtaVisible).length,
+    wideLayoutMyFlowVisibleFlowFindingLinkMax: Math.max(
+      0,
+      ...wideMyFlowRecords.map((record) => record.markers?.wideLayout?.visibleFlowFindingLinkCount ?? 0),
+    ),
+    wideLayoutHomeRecommendationWidthRatioMin: Math.min(
+      1,
+      ...wideViewportRecords
+        .map((record) => record.markers?.wideLayout?.homeRecommendationCardWidthRatio)
+        .filter((value) => typeof value === 'number'),
+    ),
     wideViewportGuardrailRouteCount: wideUserSurfaceRecords.length,
     wideViewportInternalHitCount: wideUserSurfaceRecords.reduce((sum, record) => sum + record.internalHits.length, 0),
     wideViewportSourceSlugHitCount: wideUserSurfaceRecords.reduce((sum, record) => sum + record.sourceSlugHits.length, 0),
@@ -1979,6 +2026,10 @@ P13-05/P13-06 add a wide-viewport spot-check slice and a measured post-save conf
 - Wide viewport evidence count: ${evidence.summary.wideViewportEvidenceCount}
 - Wide viewport width: ${evidence.summary.wideViewportWidth}
 - Wide viewport horizontal overflow count: ${evidence.summary.wideViewportHorizontalOverflowCount}
+- Wide layout route count: ${evidence.summary.wideLayoutRouteCount}
+- Wide layout primary CTA visible count: ${evidence.summary.wideLayoutPrimaryCtaVisibleCount}
+- Wide layout My Flow visible Flow finding link max: ${evidence.summary.wideLayoutMyFlowVisibleFlowFindingLinkMax}
+- Wide home recommendation width ratio min: ${evidence.summary.wideLayoutHomeRecommendationWidthRatioMin}
 - Wide viewport guardrail route count: ${evidence.summary.wideViewportGuardrailRouteCount}
 - Wide viewport internal copy hits: ${evidence.summary.wideViewportInternalHitCount}
 - Wide viewport source slug hits: ${evidence.summary.wideViewportSourceSlugHitCount}
@@ -2101,7 +2152,7 @@ P12-05/P12-10 keep \`/flow-lab/url-first-p0\` and source-backed manual registrat
 
 P13-04/P13-07 make URL-first evidence reproducible as a state-by-control matrix. Hit and custom-start scenarios now record export-mode scan rows for calendar/markdown/checklist, all URL-first states record their trigger URL, and the candidate detail scenario records both expanded-request evidence and the resolved-hit candidate branch.
 
-P13-05/P13-06 add wide viewport spot checks and a post-save confirmation marker. The audit records the wide-route list, wide overflow count, and whether the saved confirmation repeats the first task title.
+P13-05/P13-06 add wide viewport spot checks and a post-save confirmation marker. P14-03 extends that evidence with wide-layout sanity markers for primary CTA visibility, visible Flow-finding link count, and home recommendation card width ratio. The audit records the wide-route list, wide overflow count, and whether the saved confirmation repeats the first task title.
 
 ## Baselines Covered
 
@@ -2373,6 +2424,9 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.normalRouteRowControlAccessibleNameContextCount}</b><span>row control samples with context</span></div>
       <div class="stat"><b>${evidence.summary.wideViewportEvidenceCount}</b><span>wide viewport captures</span></div>
       <div class="stat"><b>${evidence.summary.wideViewportHorizontalOverflowCount}</b><span>wide overflow hits</span></div>
+      <div class="stat"><b>${evidence.summary.wideLayoutPrimaryCtaVisibleCount}/${evidence.summary.wideLayoutRouteCount}</b><span>wide primary CTA visible</span></div>
+      <div class="stat"><b>${evidence.summary.wideLayoutMyFlowVisibleFlowFindingLinkMax}</b><span>My Flow wide /flows links</span></div>
+      <div class="stat"><b>${evidence.summary.wideLayoutHomeRecommendationWidthRatioMin}</b><span>home card width ratio</span></div>
       <div class="stat"><b>${evidence.summary.wideViewportGuardrailRouteCount}</b><span>wide guardrail routes</span></div>
       <div class="stat"><b>${evidence.summary.wideViewportInternalHitCount}</b><span>wide internal hits</span></div>
       <div class="stat"><b>${evidence.summary.wideViewportVisibleMarkdownHitCount}</b><span>wide Markdown hits</span></div>

@@ -80,7 +80,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
             </span>
           ) : null}
         </div>
-        <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(280px,0.85fr)] md:items-start">
+        <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(280px,0.72fr)] md:items-stretch">
           <SourceBackedFlowMapSaveButton
             mapId={map.id}
             savedFlows={publicSurface.childFlows.map((flow) => ({
@@ -90,7 +90,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
             setupInput={publicSurface.setupInput}
           />
           {firstStep ? (
-            <div data-testid="flow-map-first-action-preview" className="rounded-xl bg-[#FAFAF8] px-3 py-3">
+            <div data-testid="flow-map-first-action-preview" className="rounded-xl bg-[#FAFAF8] px-3 py-3 md:flex md:flex-col md:justify-center">
               <p className="text-[11px] font-semibold text-[#6E6B64]">먼저 할 일</p>
               <h2 className="mt-1 line-clamp-2 break-keep text-sm font-semibold text-slate-950">{firstStep.title}</h2>
               {firstStepDetail ? <p className="mt-1 line-clamp-2 break-keep text-xs font-medium leading-5 text-slate-600">{firstStepDetail}</p> : null}

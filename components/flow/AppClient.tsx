@@ -2302,7 +2302,7 @@ export function HomeLanding() {
           </div>
           {primaryMap ? <HomeRecommendationCard item={primaryMap} variant="primary" /> : null}
           {secondaryMaps.length > 0 ? (
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-1">
               {secondaryMaps.map((map) => (
                 <HomeRecommendationCard key={map.id} item={map} />
               ))}
@@ -7169,9 +7169,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <Link className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-800" href={`/u/${currentUser.slug}`}>
               스튜디오
             </Link>
-            <Link className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white" href="/flows">
-              Flow 찾기
-            </Link>
           </div>
         ) : null}
       </div>
@@ -9647,9 +9644,9 @@ export function PublicFlow({ slug }: { slug: string }) {
           {showPublicHeroSetup ? (
             <section className={compactJeonsePage ? 'mt-3 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2.5' : 'mt-3 rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-3'}>
               <p data-testid="public-flow-result-promise" className="break-keep text-sm font-semibold leading-6 text-[#3654FF]">{publicHeroPromise}</p>
-              <div className="mt-3 grid gap-2 md:grid-cols-[minmax(0,1fr)_minmax(220px,0.8fr)] md:items-start">
+              <div className="mt-3 grid gap-2 md:grid-cols-[minmax(0,1fr)_minmax(220px,0.72fr)] md:items-stretch">
                 {renderPublicHeroSetup()}
-                <div data-testid="public-flow-first-action-preview" className="rounded-xl bg-white px-3 py-2.5 ring-1 ring-[#E7E4DD]">
+                <div data-testid="public-flow-first-action-preview" className="rounded-xl bg-white px-3 py-2.5 ring-1 ring-[#E7E4DD] md:flex md:flex-col md:justify-center">
                   <p className="text-[11px] font-semibold text-[#8A857B]">먼저 할 일</p>
                   <p className="mt-1 line-clamp-2 break-keep text-sm font-semibold text-[#1B1A17]">{publicHeroFirstTask}</p>
                 </div>

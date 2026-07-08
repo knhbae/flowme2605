@@ -265,6 +265,53 @@ test('home recommended starts open detail pages and save into My Flow', async ({
   await expect(page.getByTestId('my-flow-now-section')).toContainText('1. 소인수분해');
 });
 
+test('wide home and My Flow keep action columns purposeful', async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 768 });
+
+  await page.goto('/');
+  const primaryHomeCard = page.getByTestId('home-primary-flow-card');
+  const secondaryHomeCard = page.getByTestId('home-secondary-flow-card').first();
+  await expect(primaryHomeCard).toBeVisible();
+  await expect(secondaryHomeCard).toBeVisible();
+
+  const primaryHomeBox = await primaryHomeCard.boundingBox();
+  const secondaryHomeBox = await secondaryHomeCard.boundingBox();
+  expect(primaryHomeBox).not.toBeNull();
+  expect(secondaryHomeBox).not.toBeNull();
+  expect(secondaryHomeBox!.width).toBeGreaterThan(primaryHomeBox!.width * 0.8);
+  await expectNoHorizontalOverflow(page);
+
+  await page.goto('/f/vehicle-inspection-prep');
+  const publicSetup = page.getByTestId('public-flow-primary-setup');
+  const publicFirstAction = page.getByTestId('public-flow-first-action-preview');
+  await expect(publicSetup).toBeVisible();
+  await expect(publicFirstAction).toBeVisible();
+  const publicSetupBox = await publicSetup.boundingBox();
+  const publicFirstActionBox = await publicFirstAction.boundingBox();
+  expect(publicSetupBox).not.toBeNull();
+  expect(publicFirstActionBox).not.toBeNull();
+  expect(publicFirstActionBox!.height).toBeGreaterThan(publicSetupBox!.height * 0.85);
+  await expectNoHorizontalOverflow(page);
+
+  await page.goto('/flow-maps/moving-d30');
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
+  await page.getByTestId('flow-map-anchor-input').fill('2026-07-22');
+  await page.getByTestId('flow-map-save-all').click();
+  await page.waitForURL('**/my?savedMap=moving-d30', { timeout: 15_000 });
+
+  const visibleFlowFindingLinks = await page.locator('a[href="/flows"]').evaluateAll((links) =>
+    links.filter((link) => {
+      const element = link as HTMLElement;
+      const style = window.getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+    }).length,
+  );
+  expect(visibleFlowFindingLinks).toBe(1);
+  await expectNoHorizontalOverflow(page);
+});
+
 test('flow list exposes the seed and online-sourced flows', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flows');
