@@ -48,6 +48,10 @@ function childVaccinationSourceTrace(stepId: string, rowLabel: string): string {
   return `KHMS child vaccination official schedule ${vaccinationSourceUrl} - schedule row: ${stepId} ${rowLabel}`;
 }
 
+function funmomSourceTrace(stepId: string, rowLabel: string): string {
+  return `Funmom learning material category park ${funmomSourceUrl} - source row: ${stepId} ${rowLabel}`;
+}
+
 type CuratedFlowSeed = Omit<Flow, 'created_at' | 'updated_at' | 'status' | 'content_type'> &
   Partial<Pick<Flow, 'status' | 'content_type' | 'created_at' | 'updated_at'>>;
 
@@ -428,6 +432,7 @@ export const curatedSourceBackedMyFlowBundles: FlowBundle[] = [
       how: Array.isArray(how) ? how.map(String) : [String(how)],
       doneWhen: `${String(title)} 활동과 반응 메모가 끝났습니다.`,
       sourceUrl: funmomSourceUrl,
+      sourceTrace: funmomSourceTrace(String(id), String(title)),
     })),
   ),
   bundle(

@@ -1221,3 +1221,139 @@ Expected: PASS with 52/52 targeted source/report tests. `curated-child-vaccinati
 Run `npx tsx scripts\content-audit\build-source-backed-manual-registration-qa-report.ts`.
 
 Expected: report summary changes to 26 total maps, 15 lookup-eligible, 11 QA-pass, 4 registration holds, 11 lookup-blocked maps, duplicate canonical URL count stays 0 maps / 0 groups, and missing sourceTrace becomes 4 maps / 30 Steps.
+
+### Task 38: Promote Baby Health Schedule Through The SourceTrace Queue
+
+**Files:**
+- Modify: `lib/flow/source-backed-my-flow.ts`
+- Modify: `lib/flow/source-backed-my-flow.test.ts`
+- Modify: `lib/flow/source-backed-manual-registration-report.test.ts`
+- Modify: `docs/content-audit/2026-07-06-source-backed-manual-registration-qa-ko.html`
+- Modify: `docs/specs/2026-07-05-url-lookup-production-slice/spec.md`
+- Modify: `docs/specs/2026-07-05-url-lookup-production-slice/tasks.md`
+- Modify: `docs/specs/2026-07-05-url-lookup-production-slice/plan.md`
+- Modify: `docs/specs/2026-07-05-url-lookup-production-slice/qa.md`
+
+- [x] **Step 1: Add failing baby-health QA-pass coverage**
+
+Add report coverage expecting `baby-health-schedule` to leave `missing_source_trace`, become `qa_pass`, and disappear from the sourceTrace queue. Add source-backed coverage expecting all 18 official baby-health public Steps to expose sourceTrace while `baby-health-schedule` remains lookupable and keeps `review_before_apply`.
+
+Run: `npx tsx --test lib\flow\source-backed-manual-registration-report.test.ts`
+
+Expected: FAIL because `baby-health-schedule` is still blocked by 18 missing sourceTrace Steps and the report still shows 11 QA-pass / 4 registration holds / 4 sourceTrace issue maps covering 30 Steps.
+
+- [x] **Step 2: Add official baby-health sourceTrace rows**
+
+Add sourceTrace lines to the 12 `source-backed-baby-health-checkups` Steps using the existing EasyLaw health-checkup schedule source URL and to the 6 `source-backed-baby-vaccination-schedule` Steps using the existing KDCA vaccination schedule source URL. Do not crawl, AI-generate, rewrite medical Step content, add medical/parenting advice, reinterpret official schedules, merge/delete baby-health maps, or change the baby-health URL representative policy.
+
+Run: `npx tsx --test lib\flow\source-backed-my-flow.test.ts lib\flow\source-backed-manual-registration-report.test.ts`
+
+Expected: PASS with 53/53 targeted source/report tests. `baby-health-schedule` becomes QA-pass, duplicate canonical URL groups stay at 0, `review_before_apply` remains on the representative, and the first remaining queue item is `curated-funmom-learning-park`.
+
+- [x] **Step 3: Regenerate report and record QA**
+
+Run `npx tsx scripts\content-audit\build-source-backed-manual-registration-qa-report.ts`.
+
+Expected: report summary changes to 26 total maps, 15 lookup-eligible, 12 QA-pass, 3 registration holds, 11 lookup-blocked maps, duplicate canonical URL count stays 0 maps / 0 groups, and missing sourceTrace becomes 3 maps / 12 Steps.
+
+### Task 39: Promote Curated Funmom Through The SourceTrace Queue
+
+**Files:**
+- Modify: `lib/flow/source-backed-curated-260630.ts`
+- Modify: `lib/flow/source-backed-my-flow.test.ts`
+- Modify: `lib/flow/source-backed-manual-registration-report.test.ts`
+- Modify: `docs/content-audit/2026-07-06-source-backed-manual-registration-qa-ko.html`
+- Modify: `docs/specs/2026-07-05-url-lookup-production-slice/spec.md`
+- Modify: `docs/specs/2026-07-05-url-lookup-production-slice/tasks.md`
+- Modify: `docs/specs/2026-07-05-url-lookup-production-slice/plan.md`
+- Modify: `docs/specs/2026-07-05-url-lookup-production-slice/qa.md`
+
+- [x] **Step 1: Add failing Funmom QA-pass coverage**
+
+Add report coverage expecting `curated-funmom-learning-park` to leave `missing_source_trace`, become `qa_pass`, and disappear from the sourceTrace queue. Add source-backed coverage expecting all 6 weekly Funmom category-picker Steps to expose sourceTrace while `curated-funmom-learning-park` remains lookupable and `funmom-study-routine-map` remains out of URL lookup.
+
+Run: `npx tsx --test lib\flow\source-backed-manual-registration-report.test.ts`
+
+Expected: FAIL because `curated-funmom-learning-park` is still blocked by 6 missing sourceTrace Steps and the report still shows 12 QA-pass / 3 registration holds / 3 sourceTrace issue maps covering 12 Steps.
+
+- [x] **Step 2: Add Funmom sourceTrace rows**
+
+Add sourceTrace lines to the 6 `curated-funmom-weekly-print-picker` Steps using the existing Funmom source URL and Step row ids. Do not crawl, AI-generate, rewrite learning Step content, add study or curriculum advice, merge/delete Funmom Flow Maps, or change the Funmom URL representative policy.
+
+Run: `npx tsx --test lib\flow\source-backed-my-flow.test.ts lib\flow\source-backed-manual-registration-report.test.ts`
+
+Expected: PASS with 54/54 targeted source/report tests. `curated-funmom-learning-park` becomes QA-pass, `funmom-study-routine-map` remains `directRouteEnabled=false`, duplicate canonical URL groups stay at 0, and the first remaining queue item is `postal-address-transfer`.
+
+- [x] **Step 3: Regenerate report and record QA**
+
+Run `npx tsx scripts\content-audit\build-source-backed-manual-registration-qa-report.ts`.
+
+Expected: report summary changes to 26 total maps, 15 lookup-eligible, 13 QA-pass, 2 registration holds, 11 lookup-blocked maps, duplicate canonical URL count stays 0 maps / 0 groups, and missing sourceTrace becomes 2 maps / 6 Steps.
+
+### Task 40: Promote Postal Address Transfer Through The SourceTrace Queue
+
+**Files:**
+- Modify: `lib/flow/source-backed-expansion-260625.ts`
+- Modify: `lib/flow/source-backed-my-flow.test.ts`
+- Modify: `lib/flow/source-backed-manual-registration-report.test.ts`
+- Modify: `docs/content-audit/2026-07-06-source-backed-manual-registration-qa-ko.html`
+- Modify: `docs/specs/2026-07-05-url-lookup-production-slice/spec.md`
+- Modify: `docs/specs/2026-07-05-url-lookup-production-slice/tasks.md`
+- Modify: `docs/specs/2026-07-05-url-lookup-production-slice/plan.md`
+- Modify: `docs/specs/2026-07-05-url-lookup-production-slice/qa.md`
+
+- [x] **Step 1: Add failing postal QA-pass coverage**
+
+Add report coverage expecting `postal-address-transfer` to leave `missing_source_trace`, become `qa_pass`, and disappear from the sourceTrace queue. Add source-backed coverage expecting all 3 ePost postal address-transfer public Steps to expose sourceTrace while `postal-address-transfer` remains lookupable and duplicate canonical URL groups remain at 0.
+
+Run: `npx tsx --test lib\flow\source-backed-manual-registration-report.test.ts`
+
+Expected: FAIL because `postal-address-transfer` is still blocked by 3 missing sourceTrace Steps and the report still shows 13 QA-pass / 2 registration holds / 2 sourceTrace issue maps covering 6 Steps.
+
+- [x] **Step 2: Add postal address-transfer sourceTrace rows**
+
+Add sourceTrace lines to `postal-next-day-check`, `postal-payment-deadline`, and `postal-service-start` using the existing Korea Post address-transfer service source URL and Step row ids. Do not crawl, AI-generate, rewrite administrative Step content, add postal-service usage advice, add legal/administrative interpretation, merge/delete postal Flow Maps, or change the ePost URL representative policy.
+
+Run: `npx tsx --test lib\flow\source-backed-my-flow.test.ts lib\flow\source-backed-manual-registration-report.test.ts`
+
+Expected: PASS with 55/55 targeted source/report tests. `postal-address-transfer` becomes QA-pass, duplicate canonical URL groups stay at 0, and the first remaining queue item is `year-end-tax-submit`.
+
+- [x] **Step 3: Regenerate report and record QA**
+
+Run `npx tsx scripts\content-audit\build-source-backed-manual-registration-qa-report.ts`.
+
+Expected: report summary changes to 26 total maps, 15 lookup-eligible, 14 QA-pass, 1 registration hold, 11 lookup-blocked maps, duplicate canonical URL count stays 0 maps / 0 groups, and missing sourceTrace becomes 1 map / 3 Steps.
+
+### Task 41: Promote Year-end Tax Submit And Close The SourceTrace Queue
+
+**Files:**
+- Modify: `lib/flow/source-backed-expansion-260625.ts`
+- Modify: `lib/flow/source-backed-my-flow.test.ts`
+- Modify: `lib/flow/source-backed-manual-registration-report.test.ts`
+- Modify: `docs/content-audit/2026-07-06-source-backed-manual-registration-qa-ko.html`
+- Modify: `docs/specs/2026-07-05-url-lookup-production-slice/spec.md`
+- Modify: `docs/specs/2026-07-05-url-lookup-production-slice/tasks.md`
+- Modify: `docs/specs/2026-07-05-url-lookup-production-slice/plan.md`
+- Modify: `docs/specs/2026-07-05-url-lookup-production-slice/qa.md`
+
+- [x] **Step 1: Add failing year-end tax QA-pass coverage**
+
+Add report coverage expecting `year-end-tax-submit` to leave `missing_source_trace`, become `qa_pass`, and leave the sourceTrace queue empty. Add source-backed coverage expecting all 3 official NTS year-end tax public Steps to expose sourceTrace while `year-end-tax-submit` remains lookupable and duplicate canonical URL groups remain at 0.
+
+Run: `npx tsx --test lib\flow\source-backed-manual-registration-report.test.ts`
+
+Expected: FAIL because `year-end-tax-submit` is still blocked by 3 missing sourceTrace Steps and the report still shows 14 QA-pass / 1 registration hold / 1 sourceTrace issue map covering 3 Steps.
+
+- [x] **Step 2: Add official NTS sourceTrace rows**
+
+Add sourceTrace lines to `tax-login-months`, `tax-submit-employer`, and `tax-submit-confirm` using the existing NTS year-end tax simplified submission source URL and Step row ids. Do not crawl, AI-generate, rewrite tax Step content, add tax/deduction/financial advice, add legal interpretation, merge/delete year-end-tax Flow Maps, or change the NTS URL representative policy.
+
+Run: `npx tsx --test lib\flow\source-backed-my-flow.test.ts lib\flow\source-backed-manual-registration-report.test.ts`
+
+Expected: PASS with 56/56 targeted source/report tests. `year-end-tax-submit` becomes QA-pass, duplicate canonical URL groups stay at 0, and `sourceTraceQueue` is empty.
+
+- [x] **Step 3: Regenerate report and record QA**
+
+Run `npx tsx scripts\content-audit\build-source-backed-manual-registration-qa-report.ts`.
+
+Expected: report summary changes to 26 total maps, 15 lookup-eligible, 15 QA-pass, 0 registration holds, 11 lookup-blocked maps, duplicate canonical URL count stays 0 maps / 0 groups, and missing sourceTrace becomes 0 maps / 0 Steps.

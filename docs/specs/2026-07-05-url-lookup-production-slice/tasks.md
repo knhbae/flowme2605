@@ -325,6 +325,42 @@
 - [x] Regenerate the manual registration QA HTML report so QA-pass increases from 10 to 11, registration holds drop from 5 to 4, and missing sourceTrace drops from 5 maps / 40 Steps to 4 maps / 30 Steps.
 - [x] Record the ninth sourceTrace queue repair case in spec/QA evidence and confirm the next queue item is `baby-health-schedule`.
 
+## SourceTrace Remediation Queue 10 - Baby Health QA-pass
+
+- [x] Select `baby-health-schedule` from the sourceTrace remediation queue because it is the current top official baby-health URL lookup representative, medical-sensitive, review-before-apply, 18 Steps, and requires official sourceTrace completion before manual registration pass.
+- [x] Reconfirm the baby-health URL policy before editing: `baby-health-schedule` remains the EasyLaw baby-health URL lookup hit, duplicate canonical URL groups remain at 0, and `review_before_apply` stays in place.
+- [x] Add sourceTrace evidence to all 18 official baby-health Steps using only the existing official source URLs plus Step row ids: 12 `source-backed-baby-health-checkups` Steps cite the EasyLaw health-checkup schedule source and 6 `source-backed-baby-vaccination-schedule` Steps cite the KDCA vaccination schedule source.
+- [x] Verify `baby-health-schedule` moves from registration hold to QA-pass and leaves the remediation queue without adding medical/parenting advice, reinterpreting official schedules, rewriting Steps, or merging/deleting baby-health maps.
+- [x] Regenerate the manual registration QA HTML report so QA-pass increases from 11 to 12, registration holds drop from 4 to 3, and missing sourceTrace drops from 4 maps / 30 Steps to 3 maps / 12 Steps.
+- [x] Record the tenth sourceTrace queue repair case in spec/QA evidence and confirm the next queue item is `curated-funmom-learning-park`.
+
+## SourceTrace Remediation Queue 11 - Curated Funmom QA-pass
+
+- [x] Select `curated-funmom-learning-park` from the sourceTrace remediation queue because it is the current top Funmom URL lookup representative, low risk, review-before-apply, 6 Steps, and requires sourceTrace completion before manual registration pass.
+- [x] Reconfirm the Funmom URL policy before editing: `curated-funmom-learning-park` remains the Funmom URL lookup hit, `funmom-study-routine-map` remains `directRouteEnabled=false`, and duplicate canonical URL groups remain at 0.
+- [x] Add sourceTrace evidence to all 6 Funmom weekly print-picker Steps using only the existing Funmom source URL plus Step row ids.
+- [x] Verify `curated-funmom-learning-park` moves from registration hold to QA-pass and leaves the remediation queue without adding study advice, curriculum interpretation, Step rewrites, or merging/deleting Funmom maps.
+- [x] Regenerate the manual registration QA HTML report so QA-pass increases from 12 to 13, registration holds drop from 3 to 2, and missing sourceTrace drops from 3 maps / 12 Steps to 2 maps / 6 Steps.
+- [x] Record the eleventh sourceTrace queue repair case in spec/QA evidence and confirm the next queue item is `postal-address-transfer`.
+
+## SourceTrace Remediation Queue 12 - Postal Address Transfer QA-pass
+
+- [x] Select `postal-address-transfer` from the sourceTrace remediation queue because it is the current top ePost postal/address-transfer URL lookup representative, low risk, 3 Steps, and requires sourceTrace completion before manual registration pass.
+- [x] Reconfirm the postal URL policy before editing: `postal-address-transfer` remains the ePost URL lookup hit and duplicate canonical URL groups remain at 0.
+- [x] Add sourceTrace evidence to all 3 postal address-transfer Steps using only the existing ePost source URL plus Step row ids: `postal-next-day-check`, `postal-payment-deadline`, and `postal-service-start`.
+- [x] Verify `postal-address-transfer` moves from registration hold to QA-pass and leaves the remediation queue without adding administrative advice, postal-service usage advice, legal interpretation, Step rewrites, or merging/deleting postal maps.
+- [x] Regenerate the manual registration QA HTML report so QA-pass increases from 13 to 14, registration holds drop from 2 to 1, and missing sourceTrace drops from 2 maps / 6 Steps to 1 map / 3 Steps.
+- [x] Record the twelfth sourceTrace queue repair case in spec/QA evidence and confirm the next queue item is `year-end-tax-submit`.
+
+## SourceTrace Remediation Queue 13 - Year-end Tax Submit QA-pass
+
+- [x] Select `year-end-tax-submit` from the sourceTrace remediation queue because it is the final NTS year-end-tax URL lookup representative, financial-sensitive, 3 Steps, and requires official sourceTrace completion before manual registration pass.
+- [x] Reconfirm the NTS URL policy before editing: `year-end-tax-submit` remains the NTS URL lookup hit and duplicate canonical URL groups remain at 0.
+- [x] Add sourceTrace evidence to all 3 year-end tax submission Steps using only the existing official NTS source URL plus Step row ids: `tax-login-months`, `tax-submit-employer`, and `tax-submit-confirm`.
+- [x] Verify `year-end-tax-submit` moves from registration hold to QA-pass and leaves the remediation queue without adding tax advice, deduction advice, financial advice, legal interpretation, Step rewrites, or merging/deleting year-end-tax maps.
+- [x] Regenerate the manual registration QA HTML report so QA-pass increases from 14 to 15, registration holds drop from 1 to 0, and missing sourceTrace drops from 1 map / 3 Steps to 0 maps / 0 Steps.
+- [x] Record the thirteenth sourceTrace queue repair case in spec/QA evidence and confirm the sourceTrace remediation queue is empty.
+
 ## Production Build Gate Stabilization Follow-up
 
 - [x] Reproduce the earlier `npm.cmd run build` instability as transient `.next` ENOENT states after failed/interrupted local build attempts.

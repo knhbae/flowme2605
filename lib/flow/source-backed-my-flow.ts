@@ -428,6 +428,14 @@ function mathSourceTrace(stepId: string, orderLabel: string): string {
   return `sourceTrace: Mathbang middle-school math table of contents ${mathSourceUrl} - ${orderLabel} ${stepId}`;
 }
 
+function babyHealthCheckupSourceTrace(stepId: string, period: string): string {
+  return `sourceTrace: EasyLaw infant health checkup official schedule ${babyHealthCheckupSourceUrl} - checkup row: ${stepId} ${period}`;
+}
+
+function babyVaccinationSourceTrace(stepId: string, period: string): string {
+  return `sourceTrace: KDCA child vaccination official schedule ${babyVaccinationScheduleUrl} - vaccination row: ${stepId} ${period}`;
+}
+
 const movingDetails: Record<string, FlowItemDetail> = {
   'moving-method-quotes': {
     item_id: 'moving-method-quotes',
@@ -649,7 +657,10 @@ const healthCheckupDetails: Record<string, FlowItemDetail> = Object.fromEntries(
     window.id,
     {
       item_id: window.id,
-      why: `${window.period}에 해당하는 ${window.title} 기간을 놓치지 않기 위한 공식 일정 항목입니다.`,
+      why: [
+        `${window.period}에 해당하는 ${window.title} 기간을 놓치지 않기 위한 공식 일정 항목입니다.`,
+        babyHealthCheckupSourceTrace(window.id, window.period),
+      ].join('\n'),
       how: [
         `${window.title} 대상 기간이 ${window.period}인지 공식 안내에서 확인합니다.`,
         `${window.memoFocus}만 짧게 남깁니다.`,
@@ -670,7 +681,10 @@ const vaccinationDetails: Record<string, FlowItemDetail> = Object.fromEntries(
     window.id,
     {
       item_id: window.id,
-      why: `${window.period}에 아이 표준예방접종일을 공식 조회하기 위한 일정 항목입니다.`,
+      why: [
+        `${window.period}에 아이 표준예방접종일을 공식 조회하기 위한 일정 항목입니다.`,
+        babyVaccinationSourceTrace(window.id, window.period),
+      ].join('\n'),
       how: [
         '예방접종도우미에서 아이 생년월일 기준 표준예방접종일을 확인합니다.',
         '접종기관, 예약 여부, 예진표 작성 여부만 메모합니다.',

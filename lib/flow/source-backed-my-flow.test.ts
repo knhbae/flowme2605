@@ -678,6 +678,73 @@ test('source-backed expansion direct-route experiments preserve technical destin
   assert.ok(buildSourceBackedMyFlowRows(smishing).every((row) => row.calendar.mode === 'none'));
 });
 
+test('postal address transfer sourceTrace repair keeps official service rows source-traced without admin advice', () => {
+  const report = assessSourceBackedManualRegistrationReadiness();
+  const publishPackage = buildSourceBackedFlowMapPublishPackage('postal-address-transfer');
+  const lookupableIds = getUrlFirstLookupableSourceBackedFlowMaps().map((map) => map.id);
+
+  assert.ok(publishPackage);
+  assert.ok(!report.blockedMapIds.includes('postal-address-transfer'));
+  assert.ok(
+    !report.issues.some(
+      (issue) => issue.code === 'missing_source_trace' && issue.mapIds.includes('postal-address-transfer'),
+    ),
+  );
+  assert.equal(publishPackage.map.id, 'postal-address-transfer');
+  assert.equal(getSourceBackedFlowMapQualityDecision('postal-address-transfer').directRouteEnabled, true);
+  assert.ok(lookupableIds.includes('postal-address-transfer'));
+
+  const rows = buildSourceBackedMyFlowRows(bundleBySlug('source-backed-postal-address-transfer'));
+  assert.equal(rows.length, 3);
+  assert.ok(rows.every((row) => row.mapId === 'postal-address-transfer'));
+  assert.ok(rows.every((row) => row.riskLevel === 'low'));
+  assert.ok(rows.every((row) => row.sourceUrl === 'https://service.epost.go.kr/front.RetrieveAddressMoveInfo.postal'));
+
+  const detailTrace = bundleBySlug('source-backed-postal-address-transfer')
+    .itemDetails.map((detail) => detail.why)
+    .join('\n');
+  assert.match(detailTrace, /sourceTrace: Korea Post address move service/);
+  assert.match(detailTrace, /source row: postal-next-day-check/);
+  assert.match(detailTrace, /source row: postal-service-start/);
+  assert.doesNotMatch(detailTrace, /administrative advice|postal service advice|legal interpretation/i);
+});
+
+test('year-end tax sourceTrace repair keeps official NTS rows source-traced without tax advice', () => {
+  const report = assessSourceBackedManualRegistrationReadiness();
+  const publishPackage = buildSourceBackedFlowMapPublishPackage('year-end-tax-submit');
+  const lookupableIds = getUrlFirstLookupableSourceBackedFlowMaps().map((map) => map.id);
+
+  assert.ok(publishPackage);
+  assert.ok(!report.blockedMapIds.includes('year-end-tax-submit'));
+  assert.ok(
+    !report.issues.some(
+      (issue) => issue.code === 'missing_source_trace' && issue.mapIds.includes('year-end-tax-submit'),
+    ),
+  );
+  assert.equal(publishPackage.map.id, 'year-end-tax-submit');
+  assert.equal(getSourceBackedFlowMapQualityDecision('year-end-tax-submit').directRouteEnabled, true);
+  assert.ok(lookupableIds.includes('year-end-tax-submit'));
+
+  const rows = buildSourceBackedMyFlowRows(bundleBySlug('source-backed-year-end-tax-submit'));
+  assert.equal(rows.length, 3);
+  assert.ok(rows.every((row) => row.mapId === 'year-end-tax-submit'));
+  assert.ok(rows.every((row) => row.riskLevel === 'financial_sensitive'));
+  assert.ok(
+    rows.every((row) =>
+      row.sourceUrl === 'https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=6489&nttSn=1330438',
+    ),
+  );
+
+  const detailTrace = bundleBySlug('source-backed-year-end-tax-submit')
+    .itemDetails.map((detail) => detail.why)
+    .join('\n');
+  assert.match(detailTrace, /sourceTrace: NTS year-end tax simplified submission guide/);
+  assert.match(detailTrace, /source row: tax-login-months/);
+  assert.match(detailTrace, /source row: tax-submit-employer/);
+  assert.match(detailTrace, /source row: tax-submit-confirm/);
+  assert.doesNotMatch(detailTrace, /tax advice|deduction advice|financial advice|legal interpretation/i);
+});
+
 test('curated source expansion maps produce app-ready direct-route packages without homepage promotion', () => {
   const packages = listSourceBackedFlowMapPublishPackages();
   const packageIds = packages.map((item) => item.map.id);
@@ -776,6 +843,38 @@ test('source import required duplicate maps can stay published but leave URL loo
   assert.ok(!lookupableIds.includes('funmom-study-routine-map'));
   assert.ok(publishPackage);
   assert.equal(publishPackage.map.id, 'funmom-study-routine-map');
+});
+
+test('curated Funmom sourceTrace repair keeps broad category rows source-traced without study advice', () => {
+  const report = assessSourceBackedManualRegistrationReadiness();
+  const publishPackage = buildSourceBackedFlowMapPublishPackage('curated-funmom-learning-park');
+  const lookupableIds = getUrlFirstLookupableSourceBackedFlowMaps().map((map) => map.id);
+
+  assert.ok(publishPackage);
+  assert.ok(!report.blockedMapIds.includes('curated-funmom-learning-park'));
+  assert.ok(
+    !report.issues.some(
+      (issue) => issue.code === 'missing_source_trace' && issue.mapIds.includes('curated-funmom-learning-park'),
+    ),
+  );
+  assert.equal(publishPackage.map.id, 'curated-funmom-learning-park');
+  assert.equal(getSourceBackedFlowMapQualityDecision('curated-funmom-learning-park').directRouteEnabled, true);
+  assert.ok(lookupableIds.includes('curated-funmom-learning-park'));
+  assert.ok(!lookupableIds.includes('funmom-study-routine-map'));
+
+  const rows = buildSourceBackedMyFlowRows(bundleBySlug('curated-funmom-weekly-print-picker'));
+  assert.equal(rows.length, 6);
+  assert.ok(rows.every((row) => row.mapId === 'curated-funmom-learning-park'));
+  assert.ok(rows.every((row) => row.riskLevel === 'low'));
+  assert.ok(rows.every((row) => row.sourceUrl === 'https://funmom.tistory.com/'));
+
+  const detailTrace = bundleBySlug('curated-funmom-weekly-print-picker')
+    .itemDetails.map((detail) => detail.why)
+    .join('\n');
+  assert.match(detailTrace, /sourceTrace: Funmom learning material category park/);
+  assert.match(detailTrace, /source row: funmom-mon-coloring/);
+  assert.match(detailTrace, /source row: funmom-sat-review/);
+  assert.doesNotMatch(detailTrace, /학습법|교육 조언|study advice|curriculum advice/i);
 });
 
 test('legacy opic duplicate map can stay published while the curated representative owns URL lookup', () => {
@@ -1231,6 +1330,59 @@ test('source-backed baby health publish package separates input-bearing public s
   assert.ok(publishPackage.creator.sourceRows.length >= 18);
   assert.ok(publishPackage.public.childFlows.every((flow) => flow.destination === 'hybrid'));
   assert.doesNotMatch(publishPackage.public.summary, /진단|판단|처방/);
+});
+
+test('source-backed baby health sourceTrace repair keeps official schedule rows source-traced and review-gated', () => {
+  const report = assessSourceBackedManualRegistrationReadiness();
+  const publishPackage = buildSourceBackedFlowMapPublishPackage('baby-health-schedule');
+  const lookupableIds = getUrlFirstLookupableSourceBackedFlowMaps().map((map) => map.id);
+
+  assert.ok(!report.blockedMapIds.includes('baby-health-schedule'));
+  assert.ok(
+    !report.issues.some((issue) =>
+      issue.code === 'missing_source_trace' && issue.mapIds.includes('baby-health-schedule'),
+    ),
+  );
+
+  assert.ok(publishPackage);
+  assert.equal(publishPackage.map.id, 'baby-health-schedule');
+  assert.equal(publishPackage.map.updatePolicy, 'review_before_apply');
+  assert.equal(getSourceBackedFlowMapQualityDecision('baby-health-schedule').directRouteEnabled, true);
+  assert.ok(lookupableIds.includes('baby-health-schedule'));
+
+  const checkups = publishPackage.public.childFlows.find((flow) => flow.slug === 'source-backed-baby-health-checkups');
+  const vaccinations = publishPackage.public.childFlows.find(
+    (flow) => flow.slug === 'source-backed-baby-vaccination-schedule',
+  );
+  assert.ok(checkups);
+  assert.ok(vaccinations);
+  assert.equal(checkups.steps.length, 12);
+  assert.equal(vaccinations.steps.length, 6);
+
+  assert.ok(checkups.steps.every((step) => step.sourceTrace?.includes('EasyLaw infant health checkup official schedule')));
+  assert.ok(vaccinations.steps.every((step) => step.sourceTrace?.includes('KDCA child vaccination official schedule')));
+  assert.ok(checkups.steps.some((step) => step.sourceTrace?.includes('checkup row: baby-checkup-01')));
+  assert.ok(checkups.steps.some((step) => step.sourceTrace?.includes('checkup row: baby-oral-checkup-04')));
+  assert.ok(vaccinations.steps.some((step) => step.sourceTrace?.includes('vaccination row: baby-vaccination-birth')));
+  assert.ok(vaccinations.steps.some((step) => step.sourceTrace?.includes('vaccination row: baby-vaccination-18m')));
+  assert.ok(
+    checkups.steps.every((step) =>
+      step.sourceTrace?.includes(
+        'https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=1&cciNo=2&cnpClsNo=2&csmSeq=1138&popMenu=ov',
+      ),
+    ),
+  );
+  assert.ok(
+    vaccinations.steps.every((step) =>
+      step.sourceTrace?.includes('https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&menuLv=1'),
+    ),
+  );
+
+  const rows = [
+    ...buildSourceBackedMyFlowRows(bundleBySlug('source-backed-baby-health-checkups')),
+    ...buildSourceBackedMyFlowRows(bundleBySlug('source-backed-baby-vaccination-schedule')),
+  ];
+  assert.ok(rows.every((row) => row.riskLevel === 'medical_sensitive'));
 });
 
 test('source-backed Flow Map saved snapshot records package version and saved child rows', () => {

@@ -61,10 +61,10 @@
     <div class="metrics">
       <div class="metric"><span>전체 source-backed Flow Map</span><strong>26</strong></div>
       <div class="metric"><span>lookup 가능</span><strong>15</strong><small>sourceUrl + direct route + non-reject</small></div>
-      <div class="metric"><span>QA 통과</span><strong>11</strong><small>이슈 없이 등록 가능</small></div>
-      <div class="metric"><span>등록 보류</span><strong>4</strong><small>보완 후 재검사</small></div>
+      <div class="metric"><span>QA 통과</span><strong>15</strong><small>이슈 없이 등록 가능</small></div>
+      <div class="metric"><span>등록 보류</span><strong>0</strong><small>보완 후 재검사</small></div>
     </div>
-    <div class="metrics"><div class="metric issue"><span>중복 canonical URL</span><strong>0</strong><small>0 steps</small></div><div class="metric issue"><span>sourceTrace 누락</span><strong>4</strong><small>30 steps</small></div><div class="metric issue"><span>Step 없음</span><strong>0</strong><small>0 steps</small></div><div class="metric issue"><span>sourceUrl 누락</span><strong>0</strong><small>0 steps</small></div></div>
+    <div class="metrics"><div class="metric issue"><span>중복 canonical URL</span><strong>0</strong><small>0 steps</small></div><div class="metric issue"><span>sourceTrace 누락</span><strong>0</strong><small>0 steps</small></div><div class="metric issue"><span>Step 없음</span><strong>0</strong><small>0 steps</small></div><div class="metric issue"><span>sourceUrl 누락</span><strong>0</strong><small>0 steps</small></div></div>
   </section>
 
   <section>
@@ -126,43 +126,7 @@
           <th>Source</th>
         </tr>
       </thead>
-      <tbody>
-    <tr>
-      <td><b>1. baby-health-schedule</b><br><small>영유아 검진·접종 일정 지도</small></td>
-      <td>lookup representative<br><small>revise start UX / productScore 5</small></td>
-      <td>18/18<br><small>high effort</small></td>
-      <td>medical_sensitive</td>
-      <td>lookup representative; revise start UX; productScore 5; 18/18 Steps missing sourceTrace; medical_sensitive; high sourceTrace effort.<br><small>Add one sourceTrace line to every executable Step from the existing source row or section, then rerun manual registration QA.</small></td>
-      <td><a href="https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=1&amp;cciNo=2&amp;cnpClsNo=2&amp;csmSeq=1138&amp;popMenu=ov">source</a><br><small>source-backed-baby-health-checkups, source-backed-baby-vaccination-schedule</small></td>
-    </tr>
-
-    <tr>
-      <td><b>2. curated-funmom-learning-park</b><br><small>펀맘 주간 출력 루틴</small></td>
-      <td>lookup representative<br><small>park start UX / productScore 4.5</small></td>
-      <td>6/6<br><small>medium effort</small></td>
-      <td>low</td>
-      <td>lookup representative; park start UX; productScore 4.5; 6/6 Steps missing sourceTrace; low; medium sourceTrace effort.<br><small>Add one sourceTrace line to every executable Step from the existing source row or section, then rerun manual registration QA.</small></td>
-      <td><a href="https://funmom.tistory.com/">source</a><br><small>curated-funmom-weekly-print-picker</small></td>
-    </tr>
-
-    <tr>
-      <td><b>3. postal-address-transfer</b><br><small>주거이전 우편물 전송 일정</small></td>
-      <td>lookup representative<br><small>park start UX / productScore 4</small></td>
-      <td>3/3<br><small>low effort</small></td>
-      <td>low</td>
-      <td>lookup representative; park start UX; productScore 4; 3/3 Steps missing sourceTrace; low; low sourceTrace effort.<br><small>Add one sourceTrace line to every executable Step from the existing source row or section, then rerun manual registration QA.</small></td>
-      <td><a href="https://service.epost.go.kr/front.RetrieveAddressMoveInfo.postal">source</a><br><small>source-backed-postal-address-transfer</small></td>
-    </tr>
-
-    <tr>
-      <td><b>4. year-end-tax-submit</b><br><small>연말정산 간소화자료 온라인 제출</small></td>
-      <td>lookup representative<br><small>park start UX / productScore 4</small></td>
-      <td>3/3<br><small>high effort</small></td>
-      <td>financial_sensitive</td>
-      <td>lookup representative; park start UX; productScore 4; 3/3 Steps missing sourceTrace; financial_sensitive; high sourceTrace effort.<br><small>Add one sourceTrace line to every executable Step from the existing source row or section, then rerun manual registration QA.</small></td>
-      <td><a href="https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=6489&amp;nttSn=1330438">source</a><br><small>source-backed-year-end-tax-submit</small></td>
-    </tr>
-  </tbody>
+      <tbody></tbody>
     </table>
   </section>
 
@@ -196,42 +160,6 @@
         </tr>
       </thead>
       <tbody>
-    <tr class="registration_hold">
-      <td><b>baby-health-schedule</b><br><small>영유아 검진·접종 일정 지도</small></td>
-      <td>등록 보류<br><small>lookup 가능</small></td>
-      <td>revise<br><small>directRouteEnabled</small></td>
-      <td>18<br><small>sourceTrace 누락 18</small></td>
-      <td><span class="chip">sourceTrace 누락</span></td>
-      <td><a href="https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=1&amp;cciNo=2&amp;cnpClsNo=2&amp;csmSeq=1138&amp;popMenu=ov">원문</a><br><small>source-backed-baby-health-checkups, source-backed-baby-vaccination-schedule</small></td>
-    </tr>
-
-    <tr class="registration_hold">
-      <td><b>curated-funmom-learning-park</b><br><small>펀맘 주간 출력 루틴</small></td>
-      <td>등록 보류<br><small>lookup 가능</small></td>
-      <td>park<br><small>directRouteEnabled</small></td>
-      <td>6<br><small>sourceTrace 누락 6</small></td>
-      <td><span class="chip">sourceTrace 누락</span></td>
-      <td><a href="https://funmom.tistory.com/">원문</a><br><small>curated-funmom-weekly-print-picker</small></td>
-    </tr>
-
-    <tr class="registration_hold">
-      <td><b>postal-address-transfer</b><br><small>주거이전 우편물 전송 일정</small></td>
-      <td>등록 보류<br><small>lookup 가능</small></td>
-      <td>park<br><small>directRouteEnabled</small></td>
-      <td>3<br><small>sourceTrace 누락 3</small></td>
-      <td><span class="chip">sourceTrace 누락</span></td>
-      <td><a href="https://service.epost.go.kr/front.RetrieveAddressMoveInfo.postal">원문</a><br><small>source-backed-postal-address-transfer</small></td>
-    </tr>
-
-    <tr class="registration_hold">
-      <td><b>year-end-tax-submit</b><br><small>연말정산 간소화자료 온라인 제출</small></td>
-      <td>등록 보류<br><small>lookup 가능</small></td>
-      <td>park<br><small>directRouteEnabled</small></td>
-      <td>3<br><small>sourceTrace 누락 3</small></td>
-      <td><span class="chip">sourceTrace 누락</span></td>
-      <td><a href="https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=6489&amp;nttSn=1330438">원문</a><br><small>source-backed-year-end-tax-submit</small></td>
-    </tr>
-
     <tr class="qa_pass">
       <td><b>aircon-filter-cleaning</b><br><small>천장형 에어컨 1way 필터 청소 루틴</small></td>
       <td>QA 통과<br><small>lookup 가능</small></td>
@@ -248,6 +176,15 @@
       <td>21<br><small>sourceTrace 누락 0</small></td>
       <td><span class="ok">이슈 없음</span></td>
       <td><a href="https://blog.naver.com/01695258757/222768860919">원문</a><br><small>baby-150-start, baby-160-start, baby-170-start, baby-180-start, baby-cube</small></td>
+    </tr>
+
+    <tr class="qa_pass">
+      <td><b>baby-health-schedule</b><br><small>영유아 검진·접종 일정 지도</small></td>
+      <td>QA 통과<br><small>lookup 가능</small></td>
+      <td>revise<br><small>directRouteEnabled</small></td>
+      <td>18<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=1&amp;cciNo=2&amp;cnpClsNo=2&amp;csmSeq=1138&amp;popMenu=ov">원문</a><br><small>source-backed-baby-health-checkups, source-backed-baby-vaccination-schedule</small></td>
     </tr>
 
     <tr class="qa_pass">
@@ -275,6 +212,15 @@
       <td>10<br><small>sourceTrace 누락 0</small></td>
       <td><span class="ok">이슈 없음</span></td>
       <td><a href="https://khms.or.kr/healthy_life/prevention/vaccination_child">원문</a><br><small>curated-child-vaccination-first-year, curated-child-vaccination-booster-school-age</small></td>
+    </tr>
+
+    <tr class="qa_pass">
+      <td><b>curated-funmom-learning-park</b><br><small>펀맘 주간 출력 루틴</small></td>
+      <td>QA 통과<br><small>lookup 가능</small></td>
+      <td>park<br><small>directRouteEnabled</small></td>
+      <td>6<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://funmom.tistory.com/">원문</a><br><small>curated-funmom-weekly-print-picker</small></td>
     </tr>
 
     <tr class="qa_pass">
@@ -329,6 +275,24 @@
       <td>5<br><small>sourceTrace 누락 0</small></td>
       <td><span class="ok">이슈 없음</span></td>
       <td><a href="https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363">원문</a><br><small>source-backed-moving-d30</small></td>
+    </tr>
+
+    <tr class="qa_pass">
+      <td><b>postal-address-transfer</b><br><small>주거이전 우편물 전송 일정</small></td>
+      <td>QA 통과<br><small>lookup 가능</small></td>
+      <td>park<br><small>directRouteEnabled</small></td>
+      <td>3<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://service.epost.go.kr/front.RetrieveAddressMoveInfo.postal">원문</a><br><small>source-backed-postal-address-transfer</small></td>
+    </tr>
+
+    <tr class="qa_pass">
+      <td><b>year-end-tax-submit</b><br><small>연말정산 간소화자료 온라인 제출</small></td>
+      <td>QA 통과<br><small>lookup 가능</small></td>
+      <td>park<br><small>directRouteEnabled</small></td>
+      <td>3<br><small>sourceTrace 누락 0</small></td>
+      <td><span class="ok">이슈 없음</span></td>
+      <td><a href="https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=6489&amp;nttSn=1330438">원문</a><br><small>source-backed-year-end-tax-submit</small></td>
     </tr>
 
     <tr class="lookup_blocked">

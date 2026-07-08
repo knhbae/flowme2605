@@ -13,15 +13,16 @@ test('manual registration QA report summarizes lookup and hold buckets', () => {
 
   assert.equal(report.summary.totalMaps, sourceBackedMyFlowMaps.length);
   assert.ok(report.summary.lookupEligibleCount > 0);
-  assert.ok(report.summary.registrationHoldCount > 0);
+  assert.equal(report.summary.registrationHoldCount, 0);
   assert.ok(report.summary.lookupBlockedCount > 0);
   assert.equal(report.summary.issueCounts.duplicate_canonical_source_url.mapCount, 0);
-  assert.ok(report.summary.issueCounts.missing_source_trace.mapCount > 0);
+  assert.equal(report.summary.issueCounts.missing_source_trace.mapCount, 0);
+  assert.equal(report.summary.issueCounts.missing_source_trace.stepCount, 0);
   assert.equal(report.summary.issueCounts.empty_registered_steps.mapCount >= 0, true);
   assert.equal(report.summary.issueCounts.missing_source_url.mapCount >= 0, true);
-  assert.ok(report.rows.some((row) => row.status === 'registration_hold'));
+  assert.ok(!report.rows.some((row) => row.status === 'registration_hold'));
   assert.ok(!report.rows.some((row) => row.issueCodes.includes('duplicate_canonical_source_url')));
-  assert.ok(report.rows.some((row) => row.issueCodes.includes('missing_source_trace')));
+  assert.ok(!report.rows.some((row) => row.issueCodes.includes('missing_source_trace')));
 });
 
 test('manual registration QA report includes the operator runbook and sample rehearsal', () => {
@@ -70,10 +71,10 @@ test('manual registration QA report prioritizes the remaining sourceTrace remedi
     generatedAt: '2026-07-06T00:00:00.000+09:00',
   });
 
-  assert.equal(report.summary.qaPassCount, 11);
-  assert.equal(report.summary.registrationHoldCount, 4);
-  assert.equal(report.summary.issueCounts.missing_source_trace.mapCount, 4);
-  assert.equal(report.summary.issueCounts.missing_source_trace.stepCount, 30);
+  assert.equal(report.summary.qaPassCount, 15);
+  assert.equal(report.summary.registrationHoldCount, 0);
+  assert.equal(report.summary.issueCounts.missing_source_trace.mapCount, 0);
+  assert.equal(report.summary.issueCounts.missing_source_trace.stepCount, 0);
 
   const reading = report.rows.find((row) => row.mapId === 'curated-reading-routine-log');
   assert.ok(reading);
@@ -145,7 +146,39 @@ test('manual registration QA report prioritizes the remaining sourceTrace remedi
   assert.equal(vaccination.missingSourceTraceStepCount, 0);
   assert.deepEqual(vaccination.issueCodes, []);
 
-  assert.equal(report.sourceTraceQueue.length, 4);
+  const babyHealthPass = report.rows.find((row) => row.mapId === 'baby-health-schedule');
+  assert.ok(babyHealthPass);
+  assert.equal(babyHealthPass.lookupEligible, true);
+  assert.equal(babyHealthPass.qualityStatus, 'revise');
+  assert.equal(babyHealthPass.status, 'qa_pass');
+  assert.equal(babyHealthPass.missingSourceTraceStepCount, 0);
+  assert.deepEqual(babyHealthPass.issueCodes, []);
+
+  const funmomPass = report.rows.find((row) => row.mapId === 'curated-funmom-learning-park');
+  assert.ok(funmomPass);
+  assert.equal(funmomPass.lookupEligible, true);
+  assert.equal(funmomPass.qualityStatus, 'park');
+  assert.equal(funmomPass.status, 'qa_pass');
+  assert.equal(funmomPass.missingSourceTraceStepCount, 0);
+  assert.deepEqual(funmomPass.issueCodes, []);
+
+  const postalPass = report.rows.find((row) => row.mapId === 'postal-address-transfer');
+  assert.ok(postalPass);
+  assert.equal(postalPass.lookupEligible, true);
+  assert.equal(postalPass.qualityStatus, 'park');
+  assert.equal(postalPass.status, 'qa_pass');
+  assert.equal(postalPass.missingSourceTraceStepCount, 0);
+  assert.deepEqual(postalPass.issueCodes, []);
+
+  const taxPass = report.rows.find((row) => row.mapId === 'year-end-tax-submit');
+  assert.ok(taxPass);
+  assert.equal(taxPass.lookupEligible, true);
+  assert.equal(taxPass.qualityStatus, 'park');
+  assert.equal(taxPass.status, 'qa_pass');
+  assert.equal(taxPass.missingSourceTraceStepCount, 0);
+  assert.deepEqual(taxPass.issueCodes, []);
+
+  assert.equal(report.sourceTraceQueue.length, 0);
   assert.ok(!report.sourceTraceQueue.some((item) => item.mapId === 'curated-reading-routine-log'));
   assert.ok(!report.sourceTraceQueue.some((item) => item.mapId === 'moving-d30'));
   assert.ok(!report.sourceTraceQueue.some((item) => item.mapId === 'curated-ajd-moving-d30'));
@@ -155,20 +188,15 @@ test('manual registration QA report prioritizes the remaining sourceTrace remedi
   assert.ok(!report.sourceTraceQueue.some((item) => item.mapId === 'curated-wedding-checklist-family'));
   assert.ok(!report.sourceTraceQueue.some((item) => item.mapId === 'curated-allblanc-workout-park'));
   assert.ok(!report.sourceTraceQueue.some((item) => item.mapId === 'curated-child-vaccination-schedule'));
-  assert.equal(report.sourceTraceQueue[0]?.mapId, 'baby-health-schedule');
-  assert.equal(report.sourceTraceQueue[0]?.lookupRepresentative, true);
-  assert.equal(report.sourceTraceQueue[0]?.remediationEffort, 'high');
+  assert.ok(!report.sourceTraceQueue.some((item) => item.mapId === 'baby-health-schedule'));
+  assert.ok(!report.sourceTraceQueue.some((item) => item.mapId === 'curated-funmom-learning-park'));
+  assert.ok(!report.sourceTraceQueue.some((item) => item.mapId === 'postal-address-transfer'));
+  assert.ok(!report.sourceTraceQueue.some((item) => item.mapId === 'year-end-tax-submit'));
   assert.ok(report.sourceTraceQueue.every((item) => item.missingSourceTraceStepCount > 0));
-
-  const babyHealth = report.sourceTraceQueue.find((item) => item.mapId === 'baby-health-schedule');
-  assert.ok(babyHealth);
-  assert.equal(babyHealth.productScore, 5);
-  assert.equal(babyHealth.riskLevel, 'medical_sensitive');
-  assert.equal(babyHealth.remediationEffort, 'high');
 
   const html = buildSourceBackedManualRegistrationQaHtml(report);
   assert.match(html, /sourceTrace remediation queue/);
-  assert.match(html, /baby-health-schedule/);
+  assert.match(html, /year-end-tax-submit/);
 });
 
 test('manual registration QA report classifies duplicate canonical URL groups with operator actions', () => {
