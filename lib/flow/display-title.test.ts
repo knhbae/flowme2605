@@ -287,6 +287,8 @@ test('capture script exposes URL-first control-matrix reproducibility markers', 
   assert.ok(script.includes('urlFirstCandidateExpandedDetailCaptured'));
   assert.ok(script.includes('urlFirstCandidateResolvedHitScenarioCaptured'));
   assert.ok(script.includes('urlFirstCandidateResolvedHitScenarioStatus'));
+  assert.ok(script.includes('urlFirstCandidateCardTextScanned'));
+  assert.ok(script.includes('urlFirstCandidateCardLegacyStatusHitCount'));
 });
 
 test('capture script exposes URL-first user-copy tone markers', () => {
@@ -540,6 +542,23 @@ test('scanUserSurfaceGuardrails flags URL-first roadmap and production handoff w
     { pattern: String.raw`\breview\b`, line: 'Claude review용 URL-first 후보 handoff 예시' },
     { pattern: String.raw`\bhandoff\b`, line: 'Claude review용 URL-first 후보 handoff 예시' },
     { pattern: '제작용 정보', line: '제작용 정보 보기' },
+  ]);
+});
+
+test('scanUserSurfaceGuardrails flags URL-first candidate legacy state wording', () => {
+  const result = scanUserSurfaceGuardrails({
+    primaryLines: [
+      '후보가 기존 콘텐츠로 닫힌 상태',
+      '기존 콘텐츠로 연결된 상태',
+      '이제 실행 가능한 수학 후보',
+      '이미 Flow로 준비됨 · Flow 결과로 이동해 바로 시작할 수 있어요.',
+    ],
+  });
+
+  assert.deepEqual(result.internalCopyHits, [
+    { pattern: '기존 콘텐츠로 닫힌 상태', line: '후보가 기존 콘텐츠로 닫힌 상태' },
+    { pattern: '기존 콘텐츠로 닫힌 상태', line: '기존 콘텐츠로 연결된 상태' },
+    { pattern: '실행 가능한 후보 상태문', line: '이제 실행 가능한 수학 후보' },
   ]);
 });
 

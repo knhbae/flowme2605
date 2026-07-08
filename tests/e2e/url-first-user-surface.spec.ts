@@ -78,6 +78,34 @@ async function lookupUrl(page: Page, url: string) {
   await expect(page.getByTestId('flow-url-lookup-result')).toBeVisible();
 }
 
+async function seedResolvedUrlFirstCandidate(page: Page) {
+  await page.evaluate(() => {
+    window.localStorage.setItem(
+      'flow:url-first:supply-candidates',
+      JSON.stringify([
+        {
+          canonicalUrl: 'https://mathbang.net/13',
+          originalUrl: 'https://mathbang.net/13?utm_source=share',
+          title: '이제 실행 가능한 수학 후보',
+          memo: '후보가 기존 콘텐츠로 닫힌 상태',
+          status: 'miss_request',
+          savedAt: '2026-07-07T00:00:00.000Z',
+          lastLookup: {
+            status: 'hit',
+            title: '이미 만들어진 Flow가 있어요',
+            checkedAt: '2026-07-07T00:00:00.000Z',
+            canSaveToMyFlow: true,
+            flowMapId: 'middle-school-math-1',
+            routeHref: '/flow-maps/middle-school-math-1',
+          },
+        },
+      ]),
+    );
+  });
+  await page.reload();
+  await expect(page.getByTestId('flow-url-supply-candidate-list')).toBeVisible();
+}
+
 async function expectUrlFirstExportModesAvoidTechnicalFormatLabels(result: Locator) {
   const exportModeSelect = result.getByTestId('url-first-export-mode-select');
   await expect(exportModeSelect).toBeVisible();
@@ -149,6 +177,26 @@ test('URL-first miss and saved-candidate states hide production-only wording fro
   expect(copiedText).toContain('새로 보고 싶은 준비 체크리스트');
   expect(copiedText).toContain('URL에서 따라 할 순서만 남겨두고 싶음');
   expectCleanUserFacingOutput(copiedText);
+});
+
+test('URL-first resolved candidate cards hide legacy state-machine wording', async ({ page }) => {
+  await openFlowFinding(page);
+  await seedResolvedUrlFirstCandidate(page);
+
+  const candidateCard = page.getByTestId('flow-url-supply-candidate-list').locator('article').first();
+  await expect(candidateCard).toBeVisible();
+  await expect(candidateCard).toContainText('이미 Flow로 준비됨');
+  await expect(candidateCard).toContainText('Flow 결과로 이동해 바로 시작할 수 있어요');
+  await expect(candidateCard).not.toContainText('이제 실행 가능한 수학 후보');
+  await expect(candidateCard).not.toContainText('후보가 기존 콘텐츠로 닫힌 상태');
+  await expect(candidateCard).not.toContainText(/닫힌 상태|실행 가능한 .*후보/);
+  await expectCleanUrlFirstUserSurface(candidateCard);
+
+  await candidateCard.getByRole('button', { name: '요청 내용 보기' }).click();
+  await expect(candidateCard.getByTestId('flow-url-supply-production-handoff')).toBeVisible();
+  await expect(candidateCard).not.toContainText('이제 실행 가능한 수학 후보');
+  await expect(candidateCard).not.toContainText('후보가 기존 콘텐츠로 닫힌 상태');
+  await expectCleanUrlFirstUserSurface(candidateCard);
 });
 
 test('URL-first lab stays prototype-gated and absent from user navigation', async ({ page }) => {

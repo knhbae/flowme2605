@@ -108,6 +108,12 @@ const STRUCTURAL_DISPLAY_PATTERNS = [
   /(?:전체\s*)?탭에서\s*(?:엽니다|봅니다|확인합니다)/u,
 ];
 
+const URL_FIRST_LEGACY_CANDIDATE_STATE_PATTERNS: Array<{ label: string; pattern: RegExp }> = [
+  { label: '기존 콘텐츠로 닫힌 상태', pattern: /(?:후보가\s*)?기존\s*콘텐츠로\s*(?:닫힌|연결된)\s*상태/u },
+  { label: '실행 가능한 후보 상태문', pattern: /(?:이제\s*)?실행\s*가능한\s+.+\s*후보/u },
+  { label: '후보 닫힌 상태', pattern: /(?:후보|요청)\s*(?:닫힌|연결된)\s*상태/u },
+];
+
 const INTERNAL_COPY_PATTERNS: Array<{ label: string; pattern: RegExp }> = [
   { label: String.raw`\bP\d+\b`, pattern: /\bP\d+\b/iu },
   { label: String.raw`\bdemo\b`, pattern: /\bdemo\b/iu },
@@ -127,6 +133,7 @@ const INTERNAL_COPY_PATTERNS: Array<{ label: string; pattern: RegExp }> = [
   { label: '검토 필요', pattern: /검토\s*필요/u },
   { label: '정리 필요', pattern: /정리\s*필요/u },
   { label: '후보 콘텐츠', pattern: /후보\s*콘텐츠/u },
+  ...URL_FIRST_LEGACY_CANDIDATE_STATE_PATTERNS,
   { label: String.raw`\bFlow Map\b`, pattern: /\bFlow Map\b/iu },
   { label: String.raw`\bStep\b`, pattern: /\bStep\b/iu },
   { label: String.raw`\bItem\b`, pattern: /\bItem\b/iu },
@@ -205,6 +212,12 @@ export function getPrototypeRouteTierPolicy(tier: PrototypeRouteTier): Prototype
 
 export function normalizeGuardrailLine(line: string): string {
   return line.replace(/\s+/g, ' ').trim();
+}
+
+export function isLegacyUrlFirstCandidateStateCopy(value: string): boolean {
+  const normalized = normalizeGuardrailLine(value);
+  if (!normalized) return false;
+  return URL_FIRST_LEGACY_CANDIDATE_STATE_PATTERNS.some(({ pattern }) => pattern.test(normalized));
 }
 
 export function normalizeGuardrailLines(lines: string[]): string[] {

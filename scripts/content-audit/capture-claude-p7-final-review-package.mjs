@@ -1233,6 +1233,9 @@ async function scanPage(page, options = {}) {
           || line.includes('마지막 확인')
           || line.includes('이미 Flow로 준비')
         );
+      const candidateCardTextLines = candidateList
+        ? uniqueLines(Array.from(candidateList.querySelectorAll('article')).flatMap((card) => collectElementLines(card)))
+        : [];
       const startDateInput = lookupResult?.querySelector('[data-testid="url-first-start-date-input"]')
         ?? document.querySelector('[data-testid="url-first-start-date-input"]');
       const startDateInputValue = startDateInput && 'value' in startDateInput ? startDateInput.value : '';
@@ -1255,6 +1258,8 @@ async function scanPage(page, options = {}) {
         candidateLegacySystemCopyLines,
         candidateUserToneCopyHitCount: candidateUserToneCopyLines.length,
         candidateUserToneCopyLines,
+        candidateCardTextScanned: candidateCardTextLines.length > 0,
+        candidateCardTextLines: candidateCardTextLines.slice(0, 40),
         exportModeEvidence: payload.options.urlFirstExportModeEvidence ?? [],
         candidateUserCopyEvidence: payload.options.urlFirstCandidateUserCopyEvidence ?? null,
         candidateExpandedDetailCaptured: Boolean(payload.options.urlFirstCandidateExpandedDetailCaptured ?? (requestDetail && isVisible(requestDetail))),
@@ -1530,6 +1535,18 @@ async function scanPage(page, options = {}) {
     ...destination,
     destinationTier: getStudioNavDestinationTier(destination),
   }));
+  const candidateCardLines = record.markers?.urlFirst?.candidateCardTextLines ?? [];
+  const candidateCardLegacyPatternLabels = new Set([
+    '기존 콘텐츠로 닫힌 상태',
+    '실행 가능한 후보 상태문',
+    '후보 닫힌 상태',
+  ]);
+  const candidateCardGuardrails = scanUserSurfaceGuardrails({
+    primaryLines: candidateCardLines,
+    sourceSlugSignals,
+  });
+  const candidateCardLegacyStatusHits = candidateCardGuardrails.internalCopyHits
+    .filter((hit) => candidateCardLegacyPatternLabels.has(hit.pattern));
   const firstTaskRepetitionHits = firstTaskTitle
     ? findFirstTaskRepetitionHits(nowSectionLines, firstTaskTitle, { maxCount: 1 })
     : [];
@@ -1541,6 +1558,14 @@ async function scanPage(page, options = {}) {
     markers: {
       ...record.markers,
       studioNavDestinations,
+      urlFirst: record.markers?.urlFirst
+        ? {
+            ...record.markers.urlFirst,
+            candidateCardTextScanned: candidateCardLines.length > 0,
+            candidateCardLegacyStatusHitCount: candidateCardLegacyStatusHits.length,
+            candidateCardLegacyStatusHits,
+          }
+        : record.markers?.urlFirst,
     },
     internalHits,
     sourceSlugSignals: userSurfaceGuardrails.sourceSlugSignals,
@@ -1915,6 +1940,28 @@ function summarizeEvidence(records) {
         line,
       })),
     ),
+    urlFirstCandidateCardTextScanned: urlFirst.some((record) =>
+      Boolean(record.markers?.urlFirst?.candidateCardTextScanned),
+    ),
+    urlFirstCandidateCardTextSamples: urlFirst
+      .filter((record) => record.markers?.urlFirst?.candidateCardTextScanned)
+      .map((record) => ({
+        route: record.route,
+        state: record.urlFirstState,
+        scenarioName: record.urlFirstScenarioName ?? record.markers?.urlFirst?.scenarioName ?? null,
+        lines: (record.markers?.urlFirst?.candidateCardTextLines ?? []).slice(0, 24),
+      })),
+    urlFirstCandidateCardLegacyStatusHitCount: urlFirst.reduce((sum, record) =>
+      sum + (record.markers?.urlFirst?.candidateCardLegacyStatusHitCount ?? 0),
+    0),
+    urlFirstCandidateCardLegacyStatusHits: urlFirst.flatMap((record) =>
+      (record.markers?.urlFirst?.candidateCardLegacyStatusHits ?? []).map((hit) => ({
+        route: record.route,
+        state: record.urlFirstState,
+        scenarioName: record.urlFirstScenarioName ?? record.markers?.urlFirst?.scenarioName ?? null,
+        ...hit,
+      })),
+    ),
     urlFirstExportModeEvidenceCount: urlFirstExportModeEvidence.length,
     urlFirstExportModeScannedCount: urlFirstExportModeEvidence.filter((modeEvidence) => modeEvidence.exportModeScanned).length,
     urlFirstExportModesCaptured: urlFirstExportModeEvidence.map((modeEvidence) => ({
@@ -2214,6 +2261,8 @@ P14-05/P14-06 soften URL-first candidate/miss/hit copy that was technically clea
 - URL-first candidate user-copy internal hits: ${evidence.summary.urlFirstCandidateUserCopyInternalHitCount}
 - URL-first candidate legacy system-copy hits: ${evidence.summary.urlFirstCandidateLegacySystemCopyHitCount}
 - URL-first candidate user-tone copy hits: ${evidence.summary.urlFirstCandidateUserToneCopyHitCount}
+- URL-first candidate card text scanned: ${evidence.summary.urlFirstCandidateCardTextScanned}
+- URL-first candidate card legacy status hits: ${evidence.summary.urlFirstCandidateCardLegacyStatusHitCount}
 - URL-first candidate internal handoff preserved: ${evidence.summary.urlFirstCandidateInternalHandoffPreserved}
 - URL-first candidate expanded detail captured: ${evidence.summary.urlFirstCandidateExpandedDetailCaptured}
 - URL-first candidate resolved-hit scenario captured: ${evidence.summary.urlFirstCandidateResolvedHitScenarioCaptured}
@@ -2309,6 +2358,8 @@ P13-05/P13-06 add wide viewport spot checks and a post-save confirmation marker.
 P14-05/P14-06 replace URL-first candidate/miss/hit wording that sounded like system operation copy with user-value copy. The audit records old mechanism-copy hits, value-focused mechanism-copy hits, legacy candidate system-copy hits, and user-tone candidate copy hits so this low-level copy polish is measurable without relying only on screenshots.
 
 P15-01/P15-02 add the creator-profile destination behind the My Flow \`스튜디오\` link to the evidence set. \`/u/my-flow-studio\` is captured at 390px and 1024px as a user-facing secondary surface outside the 4-tab IA, normal user-surface guardrails are applied to that route, and \`studioEntryVisibleByViewport\`/\`studioEntryReachableByViewport\` record the mobile/wide entry policy.
+
+P15-03 scans URL-first candidate resolved card headline/status/body text directly. Legacy state-machine wording such as \`기존 콘텐츠로 닫힌 상태\` or \`실행 가능한 ... 후보\` is measured as candidate card legacy status hits, separate from the internal production handoff bucket.
 
 ## Baselines Covered
 
@@ -2572,6 +2623,8 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.urlFirstCandidateUserCopyInternalHitCount}</b><span>URL-first copy output hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstCandidateLegacySystemCopyHitCount}</b><span>candidate legacy copy hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstCandidateUserToneCopyHitCount}</b><span>candidate user-tone copy hits</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstCandidateCardTextScanned ? 'yes' : 'no'}</b><span>candidate card text scanned</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstCandidateCardLegacyStatusHitCount}</b><span>candidate card legacy hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstCandidateExpandedDetailCaptured ? 'yes' : 'no'}</b><span>candidate detail expanded</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstCandidateResolvedHitScenarioStatus}</b><span>resolved candidate status</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstNormalInputRawIsoExemptCount}</b><span>URL-first input ISO exempt</span></div>

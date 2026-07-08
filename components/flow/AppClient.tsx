@@ -48,6 +48,7 @@ import {
 import { parseTextFlow, serializeTextFlow, timingLabel } from '@/lib/flow/parser';
 import { expandRoutineOccurrences, getRoutineWeekdayLabels } from '@/lib/flow/recurrence';
 import { buildUrlFirstStartPackage, lookupUrlFirstP0Input, type UrlFirstExportMode, type UrlFirstLookupResult } from '@/lib/flow/url-first-lookup';
+import { isLegacyUrlFirstCandidateStateCopy } from '@/lib/flow/user-surface-guardrails';
 import {
   buildUrlFirstSupplyCandidateUserSummaryMarkdown,
   buildUrlFirstSupplyCandidate,
@@ -1114,6 +1115,19 @@ function getUrlSupplyCandidateLastLookupLabel(candidate: UrlFirstSupplyCandidate
   return `${formatKoreanShortDate(candidate.lastLookup.checkedAt)} · ${getUrlFirstLookupHistoryStatusLabel(candidate.lastLookup.status)}`;
 }
 
+function getUrlSupplyCandidateDisplayTitle(candidate: UrlFirstSupplyCandidate): string {
+  const availability = getUrlFirstSupplyCandidateAvailability(candidate);
+  if (availability.state === 'executable' && isLegacyUrlFirstCandidateStateCopy(candidate.title)) {
+    return '이미 준비된 Flow가 있어요';
+  }
+  return candidate.title;
+}
+
+function getUrlSupplyCandidateDisplayMemo(candidate: UrlFirstSupplyCandidate): string {
+  if (isLegacyUrlFirstCandidateStateCopy(candidate.memo)) return '';
+  return candidate.memo;
+}
+
 function FlowUrlLookupResult({
   result,
   supplyCandidates,
@@ -1543,6 +1557,8 @@ function FlowUrlSupplyCandidateCard({
   const [feedback, setFeedback] = useState('');
   const [showProductionInfo, setShowProductionInfo] = useState(false);
   const executable = availability.state === 'executable';
+  const displayTitle = getUrlSupplyCandidateDisplayTitle(candidate);
+  const displayMemo = getUrlSupplyCandidateDisplayMemo(candidate);
   const userSummaryMarkdown = buildUrlFirstSupplyCandidateUserSummaryMarkdown(candidate);
   const productionStatusNote = executable
     ? '이미 Flow로 준비됐어요. Flow 결과로 이동해 바로 시작할 수 있어요.'
@@ -1602,8 +1618,8 @@ function FlowUrlSupplyCandidateCard({
         </span>
         <span className="text-[11px] font-semibold text-[#8A857B]">{formatKoreanShortDate(candidate.savedAt)}</span>
       </div>
-      <p className="mt-1 break-keep text-sm font-semibold text-[#1B1A17]">{candidate.title}</p>
-      {candidate.memo ? <p className="mt-1 line-clamp-2 text-xs font-semibold leading-5 text-[#6E6B64]">{candidate.memo}</p> : null}
+      <p className="mt-1 break-keep text-sm font-semibold text-[#1B1A17]">{displayTitle}</p>
+      {displayMemo ? <p className="mt-1 line-clamp-2 text-xs font-semibold leading-5 text-[#6E6B64]">{displayMemo}</p> : null}
       <p className="mt-1 text-[11px] font-semibold text-[#8A857B]">원문 URL 저장됨</p>
       <p className="mt-1 text-[11px] font-semibold text-[#8A6B18]">
         {executable ? '이미 Flow로 준비됨 · Flow 결과로 이동해 바로 시작할 수 있어요.' : `아직 실행 가능한 Flow 아님 · ${getUrlSupplyCandidateQueueLabel(candidate)}`}
@@ -1716,7 +1732,7 @@ function FlowUrlSupplyCandidateCard({
             </div>
             <div>
               <dt className="font-semibold text-[#1B1A17]">내가 쓴 제목·메모</dt>
-              <dd>{candidate.title}{candidate.memo ? ` · ${candidate.memo}` : ''}</dd>
+              <dd>{displayTitle}{displayMemo ? ` · ${displayMemo}` : ''}</dd>
             </div>
             <div>
               <dt className="font-semibold text-[#1B1A17]">마지막 확인</dt>
