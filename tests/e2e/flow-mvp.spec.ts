@@ -2678,6 +2678,8 @@ test('my flow long saved list keeps final mobile rows and actions above fixed na
   await expect(page.getByTestId('my-flow-mobile-flow-summary')).toContainText(/\d+개 저장/);
   await expect(page.getByTestId('my-flow-mobile-flow-summary')).not.toContainText(/\d+개 남음/);
   await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(4);
+  const compactStructureTexts = (await page.getByTestId('my-flow-mobile-structure-row').allInnerTexts()).join(' ');
+  expect(compactStructureTexts).not.toMatch(/일정 흐름|체크 흐름|반복 흐름/);
   await expect(page.getByTestId('my-flow-mobile-inventory-open')).toContainText('2개 더 보기');
   const overdueCompactRow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="moving-d30-basic"]');
   await expect(overdueCompactRow).toContainText('지난 할 일');
@@ -2809,12 +2811,15 @@ test('calendar route distinguishes multiple saved flows on the same selected dat
   await page.getByTestId('my-flow-month-picker').fill('2026-06');
   await page.locator('.fc-daygrid-day[data-date="2026-06-03"]').click();
 
+  await expect(page.getByRole('heading', { name: /내 Flow 월간 일정/ })).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-calendar-card')).not.toContainText('월간 일정');
   const selectedDay = page.getByTestId('my-flow-calendar-selected-day');
   await expect(selectedDay.locator('h3')).toContainText('6월 3일');
 
   const groupTexts = (await selectedDay.getByTestId('my-flow-selected-date-group').allInnerTexts()).join(' ');
   expect(groupTexts).toContain('이사 준비');
   expect(groupTexts).toContain('컴퓨터활용능력 학습');
+  expect(groupTexts).not.toMatch(/저장한 일정|저장한 루틴|일정 흐름|체크 흐름|반복 흐름/);
 
   const flowMarkers = selectedDay.getByTestId('my-flow-selected-date-flow-marker');
   await expect(flowMarkers).toHaveCount(2);
@@ -2987,7 +2992,7 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await page.goto('/calendar?demo=ux12');
   await page.getByTestId('my-flow-month-picker').fill('2026-05');
   await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
-  await expect(page.getByText('루틴은 아이콘으로 표시합니다')).toBeVisible();
+  await expect(page.getByText('색과 라벨로 Flow를 구분하고, 반복 항목은 아이콘으로 표시합니다.')).toBeVisible();
   await expect(page.getByTestId('my-flow-routine-legend')).toContainText('운동');
   await expect(page.getByTestId('my-flow-routine-legend')).toContainText('러닝');
   await expect(page.getByTestId('my-flow-routine-legend')).toContainText('공부');
@@ -2996,11 +3001,11 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(page.getByTestId('my-flow-calendar-scope-all')).toHaveAttribute('aria-pressed', 'true');
   await page.getByTestId('my-flow-calendar-scope-routine').click();
   await expect(page.getByTestId('my-flow-calendar-scope-routine')).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('루틴 · 0개 일정');
+  await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText(/반복 항목 · \d+개 항목/);
   await expect(page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="scheduled_task"]')).toHaveCount(0);
   await page.getByTestId('my-flow-calendar-scope-schedule').click();
   await expect(page.getByTestId('my-flow-calendar-scope-schedule')).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('일정 ·');
+  await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText(/날짜 항목 · \d+개 항목/);
   await expect(page.locator('[data-testid="my-flow-routine-icon"]')).toHaveCount(0);
   await page.getByTestId('my-flow-calendar-scope-all').click();
   await expect(page.getByTestId('my-flow-calendar-scope-all')).toHaveAttribute('aria-pressed', 'true');
@@ -3086,7 +3091,7 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('6월 3일');
   await expect(page.getByTestId('my-flow-calendar-selected-day')).toHaveAttribute('data-overflow-date', '2026-06-03');
   await expect(page.getByTestId('my-flow-selected-day-overflow-note')).toContainText('+3');
-  await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('5개 루틴');
+  await expect(page.getByTestId('my-flow-selected-day-overflow-note')).toContainText('반복 항목 포함');
   await expect(page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="scheduled_task"]').first().getByRole('button', { name: '완료 체크' })).toBeVisible();
   const selectedDayRoutineRow = page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="routine_session"]').first();
   await expect(selectedDayRoutineRow.getByRole('button', { name: '이번 항목 완료' })).toBeVisible();
@@ -3445,7 +3450,8 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
   await expect(page.getByTestId('my-flow-calendar-selected-day').locator('h3')).not.toContainText(/\d{4}-\d{2}-\d{2}/);
   await expect(page.getByTestId('my-flow-calendar-selected-day').locator('h3')).toContainText(/\d{1,2}월 \d{1,2}일/);
   const selectedDateGroup = page.getByTestId('my-flow-selected-date-group').first();
-  await expect(selectedDateGroup).toContainText('저장한 일정');
+  await expect(selectedDateGroup).not.toContainText('저장한 일정');
+  await expect(selectedDateGroup).toContainText('날짜 항목');
   await expect(selectedDateGroup).toContainText('원룸 이사 D-30 일정');
   await expectNoVisibleSourceBrandSlug(selectedDateGroup);
   await expect(selectedDateGroup).not.toContainText('원룸 이사 D-30 일정 지도');

@@ -1237,6 +1237,64 @@ async function scanPage(page, options = {}) {
         },
       };
     };
+    const collectCalendarMyFlowRoleLabels = () => {
+      const visibleText = (selector) => uniqueLines(
+        Array.from(document.querySelectorAll(selector))
+          .filter((element) => isVisible(element))
+          .map((element) => element.textContent ?? ''),
+      );
+      const calendarHeadings = visibleText([
+        '[data-testid="my-flow-calendar-context"] h2',
+        '[data-testid="my-flow-calendar-context"] h3',
+        '[data-testid="my-flow-calendar-card"] h2',
+        '[data-testid="my-flow-calendar-card"] h3',
+      ].join(','));
+      const calendarScopeLabels = visibleText('[data-testid="my-flow-calendar-scope-filter"] button')
+        .map((label) => label.replace(/\d+$/u, '').trim());
+      const calendarGroupLabels = Array.from(document.querySelectorAll('[data-testid="my-flow-selected-date-group"]'))
+        .filter((element) => isVisible(element))
+        .map((group) => normalizeLine(group.querySelector('p')?.textContent ?? ''))
+        .filter(Boolean);
+      const myFlowCompactRowTexts = visibleText('[data-testid="my-flow-mobile-structure-row"]');
+      const routeLines = visibleText('main h1, main h2, main h3, main p');
+      const calendarPrimaryLabels = uniqueLines([
+        ...calendarHeadings,
+        ...calendarScopeLabels,
+        ...calendarGroupLabels,
+      ]);
+      const calendarGenericTypePatterns = [
+        /^월간\s*일정$/u,
+        /^전체\s*일정$/u,
+        /^저장한\s*(?:일정|루틴)$/u,
+        /^(?:일정|루틴)$/u,
+        /^일정\s*흐름$/u,
+      ];
+      const myFlowGenericPattern = /(?:일정|체크|반복)\s*흐름/u;
+      const calendarPrimaryGenericHits = calendarPrimaryLabels.filter((label) =>
+        calendarGenericTypePatterns.some((pattern) => pattern.test(label)),
+      );
+      const myFlowPrimaryGenericHits = myFlowCompactRowTexts.filter((line) => myFlowGenericPattern.test(line));
+
+      return {
+        calendarTitleContainsMyFlowCount: routeLines.filter((line) =>
+          /내\s*Flow.*(?:월간|일정|캘린더)/u.test(line),
+        ).length,
+        calendarPrimaryGenericTypeLabelCount: calendarPrimaryGenericHits.length,
+        calendarPrimaryGenericTypeLabelHits: calendarPrimaryGenericHits.slice(0, 8),
+        myFlowPrimaryGenericFlowLabelCount: myFlowPrimaryGenericHits.length,
+        myFlowPrimaryGenericFlowLabelHits: myFlowPrimaryGenericHits.slice(0, 8),
+        calendarTaskRoleCopyPresent: routeLines.some((line) =>
+          /날짜별\s*실행/u.test(line)
+          || /언제\s*할지\s*정해진\s*항목/u.test(line)
+          || /월간\s*날짜\s*보기/u.test(line),
+        ),
+        myFlowTaskRoleCopyPresent: routeLines.some((line) =>
+          /오늘,\s*다음,\s*지난\s*할\s*일/u.test(line)
+          || /오늘\s*할\s*일/u.test(line),
+        ),
+        calendarPrimaryLabels: calendarPrimaryLabels.slice(0, 12),
+      };
+    };
     const progressCompletePattern = /\b\d+\s*\/\s*\d+\s*완료\b/gu;
     const progressRatioPattern = /\b\d+\s*\/\s*\d+\b/gu;
     const progressPercentPattern = /\b\d+\s*%\b/gu;
@@ -1605,6 +1663,7 @@ async function scanPage(page, options = {}) {
         myFlowTodayFrame: collectMyFlowTodayFrame(),
         postSaveConfirmation: collectPostSaveConfirmation(),
         agendaGroupMeta: collectAgendaGroupMeta(),
+        calendarMyFlowRoleLabels: collectCalendarMyFlowRoleLabels(),
         rowControlAccessibleNames: getRowControlAccessibleNames(),
         inventoryProgressMetrics: collectInventoryProgressMetrics(),
         inventoryHeaderMetrics: collectInventoryHeaderMetrics(),
@@ -1866,6 +1925,8 @@ function summarizeEvidence(records) {
   ];
   const getCalendarSelectedDayMeta = (record) =>
     record.markers?.agendaGroupMeta?.calendarSelectedDay ?? {};
+  const getRoleLabelMeta = (record) =>
+    record.markers?.calendarMyFlowRoleLabels ?? {};
   const calendarSameDateFlowRecords = records.filter((record) =>
     record.p18CalendarSameDateFlowFixture || record.category === 'calendar-same-date-flow',
   );
@@ -2115,6 +2176,36 @@ function summarizeEvidence(records) {
       selectedDateGridFlowLabels: getCalendarSelectedDayMeta(record).selectedDateGridFlowLabels ?? [],
       agendaGroupByFlow: Boolean(getCalendarSelectedDayMeta(record).agendaGroupByFlow),
     })),
+    calendarTitleContainsMyFlowCount: normal.reduce((sum, record) =>
+      sum + (getRoleLabelMeta(record).calendarTitleContainsMyFlowCount ?? 0),
+    0),
+    calendarPrimaryGenericTypeLabelCount: normal.reduce((sum, record) =>
+      sum + (getRoleLabelMeta(record).calendarPrimaryGenericTypeLabelCount ?? 0),
+    0),
+    myFlowPrimaryGenericFlowLabelCount: normal.reduce((sum, record) =>
+      sum + (getRoleLabelMeta(record).myFlowPrimaryGenericFlowLabelCount ?? 0),
+    0),
+    calendarTaskRoleCopyPresent: normal.some((record) =>
+      record.url.startsWith('/calendar') && Boolean(getRoleLabelMeta(record).calendarTaskRoleCopyPresent),
+    ),
+    myFlowTaskRoleCopyPresent: normal.some((record) =>
+      record.url.startsWith('/my') && Boolean(getRoleLabelMeta(record).myFlowTaskRoleCopyPresent),
+    ),
+    calendarMyFlowRoleLabelEvidence: normal
+      .filter((record) => record.url.startsWith('/calendar') || record.url.startsWith('/my'))
+      .map((record) => ({
+        id: record.id,
+        route: record.url,
+        viewportWidth: record.viewportWidth,
+        calendarTitleContainsMyFlowCount: getRoleLabelMeta(record).calendarTitleContainsMyFlowCount ?? 0,
+        calendarPrimaryGenericTypeLabelCount: getRoleLabelMeta(record).calendarPrimaryGenericTypeLabelCount ?? 0,
+        calendarPrimaryGenericTypeLabelHits: getRoleLabelMeta(record).calendarPrimaryGenericTypeLabelHits ?? [],
+        myFlowPrimaryGenericFlowLabelCount: getRoleLabelMeta(record).myFlowPrimaryGenericFlowLabelCount ?? 0,
+        myFlowPrimaryGenericFlowLabelHits: getRoleLabelMeta(record).myFlowPrimaryGenericFlowLabelHits ?? [],
+        calendarTaskRoleCopyPresent: Boolean(getRoleLabelMeta(record).calendarTaskRoleCopyPresent),
+        myFlowTaskRoleCopyPresent: Boolean(getRoleLabelMeta(record).myFlowTaskRoleCopyPresent),
+        calendarPrimaryLabels: getRoleLabelMeta(record).calendarPrimaryLabels ?? [],
+      })),
     normalRouteStatusSheetGroupMetaCount: normal.reduce((sum, record) =>
       sum + (record.markers?.agendaGroupMeta?.myFlowStatusSheet?.groupCount ?? 0),
     0),
@@ -2445,6 +2536,10 @@ P18-01 adds a same-date multi-Flow Calendar fixture. The selected date agenda re
 
 P18-02 merges My Flow's today execution/status framing. The package records \`myFlowTodayFrameCount\`, \`myFlowTodayRemainingCountSourceCount\`, \`myFlowTodayInlineCompleteControlCount\`, \`myFlowTodayOpenBeforeCompleteRequired\`, and \`myFlowTodayGenericMetaChipCount\` so Claude Design can verify that today's work has one count source and can be completed inline without opening detail first.
 
+P18-04/P18-06 separate Calendar and My Flow role language. Calendar should read as the date-first execution surface, My Flow as the task-first execution hub, and \`calendarMyFlowRoleLabels\` records role copy plus primary generic label counts for Calendar cards/groups and My Flow compact rows.
+
+P18-04/P18-06 separate Calendar and My Flow role language. Calendar is measured as a date-first execution surface, My Flow as a task-first execution hub, and the summary records whether primary labels fall back to generic type copy such as \`월간 일정\`, \`저장한 일정\`, or \`일정 흐름\`.
+
 ## Files
 
 - [audit.md](./audit.md)
@@ -2470,6 +2565,11 @@ P18-02 merges My Flow's today execution/status framing. The package records \`my
 - Calendar same-date distinct Flow groups: ${evidence.summary.calendarSameDateDistinctFlowGroupCount}
 - Calendar same-date grid Flow labels: ${evidence.summary.calendarSameDateGridDistinctFlowLabelCount}
 - Calendar agenda grouped by Flow: ${evidence.summary.calendarAgendaGroupByFlow ? 'yes' : 'no'}
+- Calendar title contains My Flow count: ${evidence.summary.calendarTitleContainsMyFlowCount}
+- Calendar primary generic type label count: ${evidence.summary.calendarPrimaryGenericTypeLabelCount}
+- My Flow primary generic flow label count: ${evidence.summary.myFlowPrimaryGenericFlowLabelCount}
+- Calendar date-first role copy present: ${evidence.summary.calendarTaskRoleCopyPresent ? 'yes' : 'no'}
+- My Flow task-first role copy present: ${evidence.summary.myFlowTaskRoleCopyPresent ? 'yes' : 'no'}
 - My Flow today frame count: ${evidence.summary.myFlowTodayFrameCount}
 - My Flow today remaining-count sources: ${evidence.summary.myFlowTodayRemainingCountSourceCount}
 - My Flow today inline complete controls: ${evidence.summary.myFlowTodayInlineCompleteControlCount}
@@ -2675,6 +2775,7 @@ P18-02 merges My Flow's today execution/status framing. The package records \`my
 - P14-05/P14-06: URL-first candidate/miss/hit copy avoids system-operation wording such as \`AI 자동 생성 없이\`, \`사용자 제목/메모\`, and \`마지막 다시 조회\`, while preserving lookup, candidate storage, copy output, and export behavior.
 
 - P18-01/P18-02: Calendar distinguishes same-date multi-Flow work by Flow marker/group, and My Flow today work uses one frame/count source with inline completion before detail opening.
+- P18-04/P18-06: Calendar role copy is date-first, My Flow role copy is task-first, and primary Calendar/My Flow labels avoid generic type copy such as \`월간 일정\`, \`저장한 일정\`, and \`일정 흐름\`.
 
 ## Summary
 
@@ -2916,6 +3017,11 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.calendarSameDateDistinctFlowGroupCount}</b><span>calendar same-date Flow groups</span></div>
       <div class="stat"><b>${evidence.summary.calendarSameDateGridDistinctFlowLabelCount}</b><span>calendar grid Flow labels</span></div>
       <div class="stat"><b>${evidence.summary.calendarAgendaGroupByFlow ? 'yes' : 'no'}</b><span>calendar grouped by Flow</span></div>
+      <div class="stat"><b>${evidence.summary.calendarTitleContainsMyFlowCount}</b><span>calendar title My Flow hits</span></div>
+      <div class="stat"><b>${evidence.summary.calendarPrimaryGenericTypeLabelCount}</b><span>calendar generic labels</span></div>
+      <div class="stat"><b>${evidence.summary.myFlowPrimaryGenericFlowLabelCount}</b><span>My Flow generic labels</span></div>
+      <div class="stat"><b>${evidence.summary.calendarTaskRoleCopyPresent ? 'yes' : 'no'}</b><span>calendar date-first copy</span></div>
+      <div class="stat"><b>${evidence.summary.myFlowTaskRoleCopyPresent ? 'yes' : 'no'}</b><span>My Flow task-first copy</span></div>
       <div class="stat"><b>${evidence.summary.myFlowTodayFrameCount}</b><span>My Flow today frames</span></div>
       <div class="stat"><b>${evidence.summary.myFlowTodayRemainingCountSourceCount}</b><span>today count sources</span></div>
       <div class="stat"><b>${evidence.summary.myFlowTodayInlineCompleteControlCount}</b><span>today inline complete</span></div>

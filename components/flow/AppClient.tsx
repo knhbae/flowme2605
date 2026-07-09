@@ -3924,19 +3924,19 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     routine: monthAllCalendarRows.filter((row) => row.flow.bundle.flow.structure_type === 'routine').length,
   };
   const myFlowCalendarScopeOptions: Array<{ id: MyFlowCalendarScope; label: string; count: number }> = [
-    { id: 'all', label: '전체', count: myFlowCalendarScopeMonthCounts.all },
+    { id: 'all', label: '모든 Flow', count: myFlowCalendarScopeMonthCounts.all },
     ...(myFlowCalendarScopeTotalCounts.map > 0 && myFlowCalendarScopeTotalCounts.map < myFlowCalendarScopeTotalCounts.all
-      ? [{ id: 'map' as const, label: '저장한 일정', count: myFlowCalendarScopeMonthCounts.map }]
+      ? [{ id: 'map' as const, label: '저장 Flow', count: myFlowCalendarScopeMonthCounts.map }]
       : []),
     ...(myFlowCalendarScopeTotalCounts.schedule > 0 && myFlowCalendarScopeTotalCounts.schedule < myFlowCalendarScopeTotalCounts.all
-      ? [{ id: 'schedule' as const, label: '일정', count: myFlowCalendarScopeMonthCounts.schedule }]
+      ? [{ id: 'schedule' as const, label: '날짜 항목', count: myFlowCalendarScopeMonthCounts.schedule }]
       : []),
     ...(myFlowCalendarScopeTotalCounts.routine > 0
-      ? [{ id: 'routine' as const, label: '루틴', count: myFlowCalendarScopeMonthCounts.routine }]
+      ? [{ id: 'routine' as const, label: '반복 항목', count: myFlowCalendarScopeMonthCounts.routine }]
       : []),
   ];
   const showMyFlowCalendarScopeFilter = myFlowCalendarScopeOptions.length > 1;
-  const myFlowCalendarScopeLabel = myFlowCalendarScopeOptions.find((option) => option.id === myFlowCalendarScope)?.label ?? '전체';
+  const myFlowCalendarScopeLabel = myFlowCalendarScopeOptions.find((option) => option.id === myFlowCalendarScope)?.label ?? '모든 Flow';
   const moveMyFlowCalendarMonth = (nextMonth: string) => {
     setMyFlowVisibleMonth(nextMonth);
     setMyFlowSelectedDate(findFirstMyFlowDateInMonth(calendarScopedRows, nextMonth));
@@ -4137,9 +4137,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       groups.set(key, {
         key,
         kind,
-        label: savedMap
-          ? (kind === 'routine' ? '저장한 루틴' : '저장한 일정')
-          : (kind === 'routine' ? '루틴' : '일정'),
+        label: kind === 'routine' ? '반복 항목' : '날짜 항목',
         title: savedMap ? toUserFacingMapTitle(savedMap.title) : toContentDisplayTitle(getMyFlowExecutionFlowTitle(row.flow.progress.title)),
         flowMarker: getMyFlowCalendarFlowMarker(row.flow),
         rows: [row],
@@ -4495,7 +4493,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     ...Array.from(myFlowRoutineRowsByDate.entries()).map(([date, rows]) => {
       return {
         id: `routine-rail-${date}`,
-        title: `${rows.length}개 루틴`,
+        title: `${rows.length}개 반복 항목`,
         start: date,
         allDay: true,
         editable: false,
@@ -4655,9 +4653,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     }
     if (savedView === 'calendar') {
       return {
-        eyebrow: '내 Flow',
-        title: '월간 일정',
-        help: '날짜별 항목을 보고 필요한 것만 열어봅니다.',
+        eyebrow: '날짜별 실행',
+        title: '캘린더',
+        help: 'Flow별 항목을 날짜 기준으로 보고 필요한 것만 열어봅니다.',
       };
     }
     if (savedView === 'flow') {
@@ -4677,7 +4675,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     if (savedView === 'routine') {
       return {
         eyebrow: '루틴 보기',
-        title: '반복 흐름',
+        title: '반복 항목',
         help: '반복되는 항목은 오늘 실행과 다음 날짜 중심으로 봅니다.',
       };
     }
@@ -6721,10 +6719,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const structureLabel = flow.savedMap
       ? toUserFacingMapTitle(flow.savedMap.title)
       : flow.bundle.flow.structure_type === 'routine'
-        ? '반복 흐름'
+        ? `반복 항목 ${flow.total}개`
         : flow.rows.some((row) => Boolean(row.date))
-          ? '일정 흐름'
-          : '체크 흐름';
+          ? `날짜 항목 ${flow.total}개`
+          : `체크 항목 ${flow.total}개`;
     const activeCompactRow =
       myFlowDetailSurface === 'flow' && myFlowActiveRow && myFlowDetailOpen && myFlowActiveRow.flow.progress.slug === flow.progress.slug
         ? myFlowActiveRow
@@ -7281,11 +7279,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       <PlatformNav />
       <div className={`flex flex-wrap items-end justify-between gap-4 ${isCalendarSurface ? 'mb-3 sm:mb-5' : 'mb-5 sm:mb-8'}`}>
         <div>
-          <p className={isCalendarSurface ? 'text-xs font-semibold text-blue-700' : 'text-sm font-medium text-gray-500'}>{isCalendarSurface ? '일정 보기' : '내 실행 공간'}</p>
+          <p className={isCalendarSurface ? 'text-xs font-semibold text-blue-700' : 'text-sm font-medium text-gray-500'}>{isCalendarSurface ? '날짜별 실행' : '내 실행 공간'}</p>
           <h1 className={`${isCalendarSurface ? 'mt-0.5 text-2xl' : 'mt-1 text-2xl sm:text-3xl'} font-semibold tracking-tight`}>{isCalendarSurface ? '캘린더' : '내 Flow'}</h1>
           <p className={`${isCalendarSurface ? 'hidden sm:block' : 'sm:mt-2 sm:text-base'} mt-1 text-sm text-gray-600`}>
             {isCalendarSurface
-              ? '저장한 콘텐츠의 날짜가 있는 항목을 바로 확인합니다.'
+              ? '언제 할지 정해진 항목을 날짜별로 확인합니다.'
               : '오늘, 다음, 지난 할 일을 먼저 봅니다.'}
           </p>
         </div>
@@ -7304,13 +7302,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
       {savedFlows.length === 0 ? (
         <section data-testid="my-flow-empty-state" className="rounded-xl border border-dashed border-slate-300 bg-white p-5 shadow-sm sm:p-6">
-          <p className="text-sm font-semibold text-blue-700">{isCalendarSurface ? '저장한 일정 없음' : '저장한 콘텐츠 없음'}</p>
+          <p className="text-sm font-semibold text-blue-700">{isCalendarSurface ? '날짜 항목 없음' : '저장한 콘텐츠 없음'}</p>
           <h2 className="mt-2 break-keep text-2xl font-semibold tracking-tight text-slate-950">
-            {isCalendarSurface ? '일정이 생길 콘텐츠를 먼저 고르세요' : '저장할 콘텐츠를 먼저 고르세요'}
+            {isCalendarSurface ? '날짜가 있는 콘텐츠를 먼저 고르세요' : '저장할 콘텐츠를 먼저 고르세요'}
           </h2>
           <p className="mt-2 max-w-xl break-keep text-sm leading-6 text-slate-600">
             {isCalendarSurface
-              ? '날짜가 있는 콘텐츠를 저장하면 가장 가까운 일정부터 보여줍니다.'
+              ? '언제 할지 정해진 항목을 날짜별로 확인합니다.'
               : '하나를 저장하면 오늘, 다음, 지난 할 일이 여기에서 바로 이어집니다.'}
           </p>
           <div className="mt-5">
@@ -7496,7 +7494,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       <div className="flex items-center justify-between gap-3">
                         <div>
                           <h3 className="text-lg font-semibold text-slate-950">오늘 할 일</h3>
-                          <p className="mt-1 text-sm text-slate-600">{visibleTodayOpenScheduleRows.length}개 일정 · {visibleTodayOpenRoutineRows.length}개 루틴</p>
+                          <p className="mt-1 text-sm text-slate-600">{visibleTodayOpenScheduleRows.length}개 날짜 항목 · {visibleTodayOpenRoutineRows.length}개 반복 항목</p>
                         </div>
                       </div>
                       {visibleTodayOpenRows.length > 0 ? (
@@ -7836,7 +7834,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   <div className="min-w-0">
                     <p className="text-xs font-semibold text-blue-700">캘린더 기준</p>
                     <h3 className="mt-1 truncate text-lg font-semibold text-slate-950">
-                      {selectedSavedFlowSlug === 'all' ? '전체 일정' : getMyFlowExecutionFlowTitle(visibleSavedFlows[0]?.progress.title ?? '')}
+                      {selectedSavedFlowSlug === 'all' ? '전체 Flow' : getMyFlowExecutionFlowTitle(visibleSavedFlows[0]?.progress.title ?? '')}
                     </h3>
                   </div>
                   <div className="flex flex-wrap gap-2 text-xs font-semibold">
@@ -7850,12 +7848,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <section ref={myFlowCalendarCardRef} data-testid="my-flow-calendar-card" className="order-2 rounded-lg border border-slate-200 bg-white p-1 shadow-sm sm:p-4 lg:order-1">
                 <div className="hidden items-start justify-between gap-3 sm:flex">
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-950">월간 일정</h3>
-                    <p className="mt-1 hidden text-sm text-slate-600 sm:block">일정은 점으로, 루틴은 아이콘으로 표시합니다.</p>
+                    <h3 className="text-lg font-semibold text-slate-950">월간 날짜 보기</h3>
+                    <p className="mt-1 hidden text-sm text-slate-600 sm:block">색과 라벨로 Flow를 구분하고, 반복 항목은 아이콘으로 표시합니다.</p>
                   </div>
                   <div className="hidden flex-wrap gap-2 sm:flex">
-                    <span className="rounded-md bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">{monthCalendarRows.filter((row) => row.flow.bundle.flow.structure_type !== 'routine').length}개 일정</span>
-                    <span className="rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">루틴 아이콘 {monthCalendarRows.filter((row) => row.flow.bundle.flow.structure_type === 'routine').length}개</span>
+                    <span className="rounded-md bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">날짜 항목 {monthCalendarRows.filter((row) => row.flow.bundle.flow.structure_type !== 'routine').length}개</span>
+                    <span className="rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">반복 항목 {monthCalendarRows.filter((row) => row.flow.bundle.flow.structure_type === 'routine').length}개</span>
                   </div>
                 </div>
                 {showMyFlowCalendarScopeFilter ? (
@@ -8007,17 +8005,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <h3 className="mt-1 text-lg font-semibold text-slate-950">{formatMyFlowDisplayDate(myFlowSelectedDate, { includeWeekday: true })}</h3>
                 {!isMyFlowMobileViewport ? (
                   <p className="mt-1 text-xs font-semibold text-slate-500">
-                    {showMyFlowCalendarScopeFilter ? `${myFlowCalendarScopeLabel} · ` : ''}{myFlowSelectedDateRows.length}개 일정 · {myFlowSelectedDateRoutineRows.length}개 루틴 · {myFlowSelectedDateOpenCount}개 남음
+                    {showMyFlowCalendarScopeFilter ? `${myFlowCalendarScopeLabel} · ` : ''}{myFlowSelectedDateAllRows.length}개 항목 · {myFlowSelectedDateOpenCount}개 남음
                   </p>
                 ) : null}
                 {myFlowRoutineOverflowDate === myFlowSelectedDate && myFlowSelectedDateRoutineOverflowCount > 0 ? (
                   <p data-testid="my-flow-selected-day-overflow-note" className="mt-2 rounded-md bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700">
-                    +{myFlowSelectedDateRoutineOverflowCount} 루틴 포함
+                    +{myFlowSelectedDateRoutineOverflowCount} 반복 항목 포함
                   </p>
                 ) : null}
                 {myFlowScheduleOverflowDate === myFlowSelectedDate && myFlowSelectedDateScheduleOverflowCount > 0 ? (
                   <p data-testid="my-flow-selected-day-schedule-overflow-note" className="mt-2 rounded-md bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">
-                    +{myFlowSelectedDateScheduleOverflowCount} 일정 포함
+                    +{myFlowSelectedDateScheduleOverflowCount} 날짜 항목 포함
                   </p>
                 ) : null}
                 {myFlowSelectedDateAllRows.length > 0 ? (
@@ -8157,7 +8155,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       aria-expanded={myFlowChecklistPickerOpen}
                       onClick={() => setMyFlowChecklistPickerOpen((open) => !open)}
                     >
-                      {myFlowChecklistPickerOpen ? '체크 흐름 접기' : `체크 흐름 더 보기 ${hiddenChecklistPickerCount}개`}
+                      {myFlowChecklistPickerOpen ? '체크 항목 접기' : `체크 항목 더 보기 ${hiddenChecklistPickerCount}개`}
                     </button>
                   ) : null}
                 </section>
@@ -8268,7 +8266,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             ) : (
               <div className="rounded-lg border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-600">
                 <h3 className="text-lg font-semibold text-slate-950">저장된 루틴이 없습니다</h3>
-                <p className="mt-2">반복 흐름을 저장하면 요일별 루틴과 완료 여부가 여기에 모입니다.</p>
+                <p className="mt-2">반복 항목을 저장하면 요일별 실행과 완료 여부가 여기에 모입니다.</p>
               </div>
             )
           ) : null}
