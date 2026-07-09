@@ -1002,7 +1002,10 @@ test('my flow personal copy step detail exports current copy to memo checklist c
   const personalFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="curated-ajd-moving-d30"]');
   await expect(personalFlow).toBeVisible();
   await personalFlow.getByTestId('my-flow-mobile-structure-open').click();
-  await personalFlow.getByTestId('my-flow-personal-copy-settings-open').click();
+  const settingsOpen = personalFlow.getByTestId('my-flow-personal-copy-settings-open');
+  await expect(settingsOpen).toHaveText('이사일·이름 바꾸기');
+  await expect(settingsOpen).toHaveAccessibleName(/이사 준비 이사일·이름 바꾸기/);
+  await settingsOpen.click();
   const settings = personalFlow.getByTestId('my-flow-personal-copy-settings');
   await settings.getByLabel('저장 이름').fill('8월 이사 준비 사본');
   await expect(settings.getByRole('button', { name: '이사일 바꾸기' })).toBeVisible();
@@ -1029,7 +1032,10 @@ test('my flow personal copy step detail exports current copy to memo checklist c
   await expect(personalDetail).toContainText('이사 방식');
   const readSummary = personalDetail.getByTestId('my-flow-detail-read-summary');
   await readSummary.locator('summary').click();
-  await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
+  const itemEditEntry = readSummary.getByTestId('my-flow-detail-edit-toggle');
+  await expect(itemEditEntry).toHaveText('제목·날짜·메모 수정');
+  await expect(itemEditEntry).toHaveAccessibleName(/이사 방식.*제목·날짜·메모 수정/);
+  await itemEditEntry.click();
   await personalDetail.getByTestId('my-flow-detail-title-input').fill('견적 후보만 먼저 확인');
   await expect(personalDetail.getByLabel('이 할 일 날짜')).toBeVisible();
   await personalDetail.getByTestId('my-flow-detail-date-input').fill('2026-07-07');
@@ -4364,7 +4370,7 @@ test('my flow mobile item opens editable detail inline from today page', async (
   await expect(mobileDetail.getByRole('checkbox', { name: /이번 항목 완료$/ })).toHaveCount(0);
   await expect(mobileDetail.getByRole('button', { name: '수정', exact: true })).toHaveCount(0);
   await mobileDetail.getByText('메모·일정').click();
-  await mobileDetail.getByRole('button', { name: '메모/일정 수정' }).click();
+  await mobileDetail.getByRole('button', { name: /제목·날짜·메모 수정/ }).click();
   const originalMemo = await mobileDetail.getByLabel('메모').inputValue();
   await mobileDetail.getByLabel('메모').fill('모바일에서 취소할 실행 메모');
   await expect(mobileDetail.getByRole('button', { name: '변경 취소' })).toBeVisible();
@@ -4373,14 +4379,14 @@ test('my flow mobile item opens editable detail inline from today page', async (
 
   await firstRunnableRow.getByRole('button').first().click();
   await mobileDetail.getByText('메모·일정').click();
-  await mobileDetail.getByRole('button', { name: '메모/일정 수정' }).click();
+  await mobileDetail.getByRole('button', { name: /제목·날짜·메모 수정/ }).click();
   await expect(mobileDetail.getByLabel('메모')).toHaveValue(originalMemo);
   await mobileDetail.getByLabel('메모').fill('모바일에서 수정한 실행 메모');
   await mobileDetail.getByRole('button', { name: '변경 저장' }).click();
   await expect(mobileDetail).toHaveCount(0);
   await firstRunnableRow.getByRole('button').first().click();
   await mobileDetail.getByText('메모·일정').click();
-  await mobileDetail.getByRole('button', { name: '메모/일정 수정' }).click();
+  await mobileDetail.getByRole('button', { name: /제목·날짜·메모 수정/ }).click();
   await expect(mobileDetail.getByLabel('메모')).toHaveValue('모바일에서 수정한 실행 메모');
 });
 

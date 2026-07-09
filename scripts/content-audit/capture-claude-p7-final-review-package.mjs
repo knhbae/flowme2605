@@ -1259,20 +1259,38 @@ async function scanPage(page, options = {}) {
     };
     const collectDateAnchorMarkers = () => {
       const settings = document.querySelector('[data-testid="my-flow-personal-copy-settings"]');
+      const anchorSettingsOpenEntries = Array.from(document.querySelectorAll('[data-testid="my-flow-personal-copy-settings-open"]'))
+        .filter((element) => isVisibleInteractiveElement(element));
       const anchorEditEntry = settings?.querySelector('[data-testid="my-flow-anchor-edit-entry"]') ?? null;
       const anchorInput = settings?.querySelector('[data-testid="my-flow-personal-copy-start-date-input"]') ?? null;
       const anchorHelp = settings?.querySelector('[data-testid="my-flow-anchor-edit-help"]') ?? null;
       const itemDateInput = document.querySelector('[data-testid="my-flow-detail-date-input"]');
+      const itemEditEntries = Array.from(document.querySelectorAll('[data-my-flow-item-edit-entry="true"]'))
+        .filter((element) => isVisibleInteractiveElement(element));
       const anchorInputLabel = normalizeLine(anchorInput?.getAttribute('aria-label') ?? '');
       const anchorHelpText = normalizeLine(anchorHelp?.textContent ?? '');
       return {
         settingsVisible: Boolean(settings && isVisible(settings)),
+        anchorSettingsOpenVisible: anchorSettingsOpenEntries.length > 0,
+        anchorSettingsOpenLabels: anchorSettingsOpenEntries
+          .slice(0, 5)
+          .map((element) => normalizeLine(element.textContent ?? ''))
+          .filter(Boolean),
+        anchorSettingsOpenAccessibleNameSample: anchorSettingsOpenEntries
+          .slice(0, 5)
+          .map((element) => normalizeLine(getAccessibleNameCandidate(element)))
+          .filter(Boolean),
         anchorEditEntryVisible: Boolean(anchorEditEntry && isVisible(anchorEditEntry)),
         anchorEditLabel: normalizeLine(anchorEditEntry?.textContent ?? ''),
         anchorInputLabel,
         anchorHelpText,
         itemDateOverrideLabel: normalizeLine(itemDateInput?.getAttribute('aria-label') ?? ''),
         anchorVsItemOverrideCopyPresent: Boolean(anchorHelpText && /전체 일정 기준/u.test(anchorHelpText) && /해당 할 일만/u.test(anchorHelpText)),
+        itemEditEntryVisible: itemEditEntries.length > 0,
+        itemEditAccessibleNameSample: itemEditEntries
+          .slice(0, 5)
+          .map((element) => normalizeLine(getAccessibleNameCandidate(element)))
+          .filter(Boolean),
       };
     };
     const rowDateTextPattern = /\d{1,2}\s*월\s*\d{1,2}\s*일/u;
@@ -2258,19 +2276,28 @@ function summarizeEvidence(records) {
     .map((record) => ({
       recordId: record.id,
       route: record.route,
+      viewportWidth: record.viewportWidth,
+      anchorSettingsOpenVisible: Boolean(record.markers?.dateAnchor?.anchorSettingsOpenVisible),
+      anchorSettingsOpenLabels: record.markers?.dateAnchor?.anchorSettingsOpenLabels ?? [],
+      anchorSettingsOpenAccessibleNameSample: record.markers?.dateAnchor?.anchorSettingsOpenAccessibleNameSample ?? [],
       anchorEditEntryVisible: Boolean(record.markers?.dateAnchor?.anchorEditEntryVisible),
       anchorEditLabel: record.markers?.dateAnchor?.anchorEditLabel ?? '',
       anchorInputLabel: record.markers?.dateAnchor?.anchorInputLabel ?? '',
       itemDateOverrideLabel: record.markers?.dateAnchor?.itemDateOverrideLabel ?? '',
       anchorVsItemOverrideCopyPresent: Boolean(record.markers?.dateAnchor?.anchorVsItemOverrideCopyPresent),
       helpText: record.markers?.dateAnchor?.anchorHelpText ?? '',
+      itemEditEntryVisible: Boolean(record.markers?.dateAnchor?.itemEditEntryVisible),
+      itemEditAccessibleNameSample: record.markers?.dateAnchor?.itemEditAccessibleNameSample ?? [],
     }))
     .filter((entry) =>
       entry.anchorEditEntryVisible
+      || entry.anchorSettingsOpenVisible
       || entry.anchorEditLabel
+      || entry.anchorSettingsOpenLabels.length > 0
       || entry.anchorInputLabel
       || entry.itemDateOverrideLabel
-      || entry.anchorVsItemOverrideCopyPresent,
+      || entry.anchorVsItemOverrideCopyPresent
+      || entry.itemEditEntryVisible
     );
   const urlFirstCandidateResolvedHitScenarios = urlFirst
     .map((record) => ({
@@ -2762,9 +2789,22 @@ function summarizeEvidence(records) {
     urlFirstDateAnchorLabelEvidence: urlFirstDateAnchorEvidence,
     myFlowAnchorEditEntryVisible: myFlowDateAnchorEvidence.some((entry) => entry.anchorEditEntryVisible),
     myFlowAnchorEditLabels: Array.from(new Set(myFlowDateAnchorEvidence.map((entry) => entry.anchorEditLabel).filter(Boolean))),
+    myFlowAnchorSettingsOpenLabels: Array.from(new Set(myFlowDateAnchorEvidence.flatMap((entry) => entry.anchorSettingsOpenLabels).filter(Boolean))).slice(0, 5),
+    myFlowAnchorSettingsOpenAccessibleNameSamples: Array.from(new Set(myFlowDateAnchorEvidence.flatMap((entry) => entry.anchorSettingsOpenAccessibleNameSample).filter(Boolean))).slice(0, 5),
     myFlowAnchorEditEvidence: myFlowDateAnchorEvidence,
     itemDateOverrideLabels: Array.from(new Set(myFlowDateAnchorEvidence.map((entry) => entry.itemDateOverrideLabel).filter(Boolean))),
     anchorVsItemOverrideCopyPresent: myFlowDateAnchorEvidence.some((entry) => entry.anchorVsItemOverrideCopyPresent),
+    myFlowItemEditEntryVisible: myFlowDateAnchorEvidence.some((entry) => entry.itemEditEntryVisible),
+    myFlowItemEditAccessibleNameSamples: Array.from(new Set(myFlowDateAnchorEvidence.flatMap((entry) => entry.itemEditAccessibleNameSample).filter(Boolean))).slice(0, 5),
+    editEntryVisibleByViewport: myFlowDateAnchorEvidence.reduce((acc, entry) => {
+      const viewportKey = String(entry.viewportWidth ?? viewport.width);
+      const current = acc[viewportKey] ?? { anchor: 0, item: 0 };
+      acc[viewportKey] = {
+        anchor: current.anchor + (entry.anchorEditEntryVisible || entry.anchorSettingsOpenVisible ? 1 : 0),
+        item: current.item + (entry.itemEditEntryVisible ? 1 : 0),
+      };
+      return acc;
+    }, {}),
     urlFirstMarkerVisibleCount: urlFirst.filter((record) => record.markers?.urlFirst?.resultVisible || record.markers?.urlFirst?.candidateListVisible).length,
     prototypeReleasePreviewRouteCount: releasePreviewPrototypes.length,
     prototypeReleasePreviewGuardrailHitCount: releasePreviewPrototypes.reduce(
@@ -2980,6 +3020,8 @@ P19-02 keeps task completion controls unified around a row-left checkbox pattern
 
 P19-03 clarifies progress metrics in My Flow and Calendar. Whole-Flow progress uses contextual whole-Flow labels, routine counters use routine-item labels, detail checklists use checklist-context labels, and Today/Calendar rows avoid row-level whole-Flow progress chips.
 
+P19-07 keeps the post-save editing model discoverable without moving full editing into URL-first. My Flow personal copies expose Flow-wide anchor/name editing as a contextual button such as \`이사일·이름 바꾸기\`, item detail edit entries expose title/date/memo editing with row-title accessible names, and the evidence records anchor-vs-item edit entry visibility by viewport.
+
 ## Files
 
 - [audit.md](./audit.md)
@@ -3031,9 +3073,14 @@ P19-03 clarifies progress metrics in My Flow and Calendar. Whole-Flow progress u
 - Calendar selected-day remaining-count visible count: ${evidence.summary.calendarSelectedDayRemainingCountVisible}
 - Date anchor labels by Flow: ${JSON.stringify(evidence.summary.dateAnchorLabelByFlow)}
 - My Flow anchor edit entry visible: ${evidence.summary.myFlowAnchorEditEntryVisible ? 'yes' : 'no'}
+- My Flow anchor settings open labels: ${JSON.stringify(evidence.summary.myFlowAnchorSettingsOpenLabels)}
+- My Flow anchor settings open accessible names: ${JSON.stringify(evidence.summary.myFlowAnchorSettingsOpenAccessibleNameSamples)}
 - My Flow anchor edit labels: ${JSON.stringify(evidence.summary.myFlowAnchorEditLabels)}
 - Item date override labels: ${JSON.stringify(evidence.summary.itemDateOverrideLabels)}
 - Anchor vs item override copy present: ${evidence.summary.anchorVsItemOverrideCopyPresent ? 'yes' : 'no'}
+- My Flow item edit entry visible: ${evidence.summary.myFlowItemEditEntryVisible ? 'yes' : 'no'}
+- My Flow item edit accessible names: ${JSON.stringify(evidence.summary.myFlowItemEditAccessibleNameSamples)}
+- Edit entry visible by viewport: ${JSON.stringify(evidence.summary.editEntryVisibleByViewport)}
 - Normal route row control accessible name samples: ${evidence.summary.normalRouteRowControlAccessibleNameSampleCount}
 - Normal route row control samples with context: ${evidence.summary.normalRouteRowControlAccessibleNameContextCount}
 - Wide viewport evidence count: ${evidence.summary.wideViewportEvidenceCount}

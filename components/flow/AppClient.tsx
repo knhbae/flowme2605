@@ -5952,6 +5952,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const textareaClassName = `${fieldClassName} ${isMemoExpanded ? 'min-h-52' : isDrawerMode ? 'h-28 min-h-28' : 'h-20 min-h-20'} resize-y font-normal leading-6`;
     const canEditDate = Boolean(row.calendarKey || isProgressFlow);
     const itemDateOverrideLabel = getSourceBackedFlowMapDateAnchorCopy().itemOverrideLabel;
+    const itemEditButtonLabel = canEditDate ? '제목·날짜·메모 수정' : '제목·메모 수정';
+    const itemEditButtonAriaLabel = `${editorDraft.title} ${itemEditButtonLabel}`;
+    const itemEditCancelAriaLabel = `${editorDraft.title} ${itemEditButtonLabel} 취소`;
     const showTimeLocationFields = !isProgressFlow || Boolean(row.calendarKey);
     const showRepeatPresetField = !isRoutineRow && showTimeLocationFields;
     const scheduleSummaryRows = [
@@ -6208,7 +6211,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 }`}
                 type="button"
                 data-testid="my-flow-detail-edit-toggle"
+                data-my-flow-item-edit-entry="true"
                 aria-pressed={isDetailEditing}
+                aria-label={isDetailEditing ? itemEditCancelAriaLabel : itemEditButtonAriaLabel}
                 onClick={() => {
                   if (isDetailEditing) {
                     cancelMyFlowEditingDraft(row);
@@ -6218,7 +6223,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   setMyFlowEditingDetailKey(portableExportKey);
                 }}
               >
-                {isDetailEditing ? '수정 취소' : '수정'}
+                {isDetailEditing ? '수정 취소' : itemEditButtonLabel}
               </button>
             ) : null}
             <button
@@ -6357,7 +6362,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-left text-xs font-semibold text-blue-700"
                     type="button"
                     data-testid="my-flow-detail-edit-toggle"
+                    data-my-flow-item-edit-entry="true"
                     aria-pressed={isDetailEditing}
+                    aria-label={isDetailEditing ? itemEditCancelAriaLabel : itemEditButtonAriaLabel}
                     onClick={() => {
                       if (isDetailEditing) {
                         cancelMyFlowEditingDraft(row);
@@ -6367,7 +6374,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       setMyFlowEditingDetailKey(portableExportKey);
                     }}
                   >
-                    {isDetailEditing ? '수정 취소' : '메모/일정 수정'}
+                    {isDetailEditing ? '수정 취소' : itemEditButtonLabel}
                   </button>
                 ) : null}
               </div>
@@ -6911,6 +6918,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
     const nextRow = getSavedFlowNextRow(flow);
     const personalSavedCopy = isMyFlowPersonalSavedCopy(flow);
+    const personalCopyDateAnchorCopy = personalSavedCopy
+      ? getSourceBackedFlowMapDateAnchorCopy(
+          flow.savedMap?.mapId ? buildSourceBackedFlowMapPublishPackage(flow.savedMap.mapId) : getSourceBackedMyFlowMapForBundle(flow.bundle),
+        )
+      : null;
+    const personalCopySettingsLabel = personalCopyDateAnchorCopy ? `${personalCopyDateAnchorCopy.label}·이름 바꾸기` : '설정 조정';
     const progressSummary = getMyFlowFlowProgressLabel(flow);
     const structureLabel = flow.savedMap
       ? toUserFacingMapTitle(flow.savedMap.title)
@@ -6987,10 +7000,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <button
               type="button"
               data-testid="my-flow-personal-copy-settings-open"
+              aria-label={`${flowTitle} ${personalCopySettingsLabel}`}
               className="inline-flex min-h-8 items-center justify-center rounded-md border border-blue-100 bg-white px-2.5 py-1.5 text-xs font-semibold text-blue-700 hover:border-blue-300"
               onClick={() => openMyFlowPersonalCopySettings(flow)}
             >
-              설정 조정
+              {personalCopySettingsLabel}
             </button>
           </div>
         ) : null}
@@ -7073,6 +7087,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
     const savedMapTitle = flow.savedMap ? toUserFacingMapTitle(flow.savedMap.title) : '';
     const personalSavedCopy = isMyFlowPersonalSavedCopy(flow);
+    const personalCopyDateAnchorCopy = personalSavedCopy
+      ? getSourceBackedFlowMapDateAnchorCopy(
+          flow.savedMap?.mapId ? buildSourceBackedFlowMapPublishPackage(flow.savedMap.mapId) : getSourceBackedMyFlowMapForBundle(flow.bundle),
+        )
+      : null;
+    const personalCopySettingsLabel = personalCopyDateAnchorCopy ? `${personalCopyDateAnchorCopy.label}·이름 바꾸기` : '설정 조정';
     const nextRow = getSavedFlowNextRow(flow);
     const progressSummary = getMyFlowFlowProgressLabel(flow);
     const anchorDisplay = getMyFlowAnchorDisplay(flow.bundle, flow.anchor, myFlowDemoMode);
@@ -7146,10 +7166,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <button
                 type="button"
                 data-testid="my-flow-personal-copy-settings-open"
+                aria-label={`${flowTitle} ${personalCopySettingsLabel}`}
                 className="mt-3 inline-flex min-h-9 items-center justify-center rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300"
                 onClick={() => openMyFlowPersonalCopySettings(flow)}
               >
-                설정 조정
+                {personalCopySettingsLabel}
               </button>
             ) : null}
           </div>
