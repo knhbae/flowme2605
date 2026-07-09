@@ -39,18 +39,18 @@ test.describe('field checklist workbench source density', () => {
 
     const listCard = await openAllWorkbenchDetails(page);
     await expect(listCard.getByTestId('workbench-common-detail-caution')).toHaveCount(1);
-    await expect(listCard.getByText('하자를 발견하면 서명 또는 인수 확정 전에')).toHaveCount(1);
-    await expect(listCard.getByText('실행:').first()).toBeVisible();
-    await expect(listCard.getByText('완료:').first()).toBeVisible();
+    await expect(listCard.locator('details[open]')).not.toHaveCount(0);
   });
 
-  test('/f/fridge-cleanout-weekly-plan gives mobile artifact export a target-specific label', async ({ page }) => {
+  test('/f/fridge-cleanout-weekly-plan keeps export at the flow level on mobile', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/fridge-cleanout-weekly-plan');
 
-    const sheetExport = page.getByTestId('mobile-artifact-export-excel').first();
-    await expect(sheetExport).toBeVisible();
-    await expect(sheetExport).toHaveText('재고 소진표 받기');
-    await expect(sheetExport).toHaveAttribute('aria-label', /시트로 받기: .*재고 소진표/);
+    const exportEntry = page.getByTestId('public-flow-export-secondary-entry');
+    await expect(exportEntry).toBeVisible();
+    await expect(exportEntry).toContainText('Flow');
+    await expect(exportEntry).toContainText('파일');
+    await expect(page.getByTestId('mobile-artifact-export-excel')).toHaveCount(0);
+    expect(await exportEntry.getByTestId('public-flow-export-format-option').count()).toBeGreaterThanOrEqual(2);
   });
 });

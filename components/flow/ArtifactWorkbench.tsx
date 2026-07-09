@@ -13,7 +13,7 @@ import {
   type ArtifactMemoField,
 } from '@/lib/flow/artifact-fields';
 import { addDays, formatDate, formatKoreanShortDate, getRangeEnd } from '@/lib/flow/date';
-import { toUserFacingSourceTitle } from '@/lib/flow/display-title';
+import { toContentDisplayTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import { FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
 import { timingLabel } from '@/lib/flow/parser';
 import type { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState } from '@/lib/flow/types';
@@ -143,6 +143,7 @@ export function ArtifactWorkbench({
           {done}/{total} 완료
         </span>
       </div>
+      <FlowLevelExportPanel actions={exportActions} bundle={bundle} />
       <div className={isJeonsePrecheck ? 'mt-4' : 'mt-5'}>
         {plan.primarySurface === 'decision_table' ? (
           <DecisionWorkbench
@@ -210,11 +211,66 @@ export function ArtifactWorkbench({
   );
 }
 
+function FlowLevelExportPanel({ actions, bundle }: { actions?: ArtifactExportActions; bundle: FlowBundle }) {
+  if (!actions) return null;
+
+  const displayTitle = toContentDisplayTitle(bundle.flow.title);
+
+  return (
+    <section
+      data-testid="public-flow-export-secondary-entry"
+      className="mt-4 rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-3 sm:p-4"
+    >
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-xs font-semibold text-[#8A857B]">파일로 가져가기</p>
+          <h3 className="mt-1 text-base font-semibold text-[#1B1A17]">이 Flow 통째로 가져가기</h3>
+          <p className="mt-1 max-w-xl break-keep text-sm leading-6 text-[#6E6B64]">
+            저장하지 않고 캘린더·시트·메모 형식으로 받을 수 있어요.
+          </p>
+        </div>
+        <div className="grid w-full gap-2 sm:w-auto sm:grid-cols-3">
+          {actions.canExportCalendar ? (
+            <button
+              type="button"
+              data-testid="public-flow-export-format-option"
+              className={FLOWME_BUTTON_SECONDARY_CLASS}
+              aria-label={`${FLOW_EXPORT_LABELS.calendarFile}: ${displayTitle}`}
+              onClick={actions.onDownloadCalendar}
+            >
+              {FLOW_EXPORT_LABELS.calendarFile}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            data-testid="public-flow-export-format-option"
+            className={FLOWME_BUTTON_SECONDARY_CLASS}
+            aria-label={`${FLOW_EXPORT_LABELS.sheetFile}: ${displayTitle}`}
+            onClick={actions.onDownloadExcel}
+          >
+            {FLOW_EXPORT_LABELS.sheetFile}
+          </button>
+          <button
+            type="button"
+            data-testid="public-flow-export-format-option"
+            className={FLOWME_BUTTON_SECONDARY_CLASS}
+            aria-label={`${FLOW_EXPORT_LABELS.memoCopy}: ${displayTitle}`}
+            onClick={actions.onCopyText}
+          >
+            {FLOW_EXPORT_LABELS.memoCopy}
+          </button>
+        </div>
+      </div>
+      <ArtifactExportStatus actions={actions} />
+    </section>
+  );
+}
+
 function ArtifactExportButtons({ actions, kinds, labels = {}, mobileArtifactLabel, mobileKinds }: { actions?: ArtifactExportActions; kinds: ArtifactExportActionKind[]; labels?: ArtifactExportLabels; mobileArtifactLabel?: string; mobileKinds?: ArtifactExportActionKind[] }) {
   if (!actions) return null;
 
   const disabled = actions.done === 0;
-  const mobileExportKinds = mobileArtifactLabel ? mobileKinds ?? kinds : [];
+  const mobileExportKinds: ArtifactExportActionKind[] = [];
   const disabledTitle = disabled ? '항목을 하나라도 체크하면 받을 수 있어요' : undefined;
 
   return (
@@ -253,7 +309,7 @@ function ArtifactExportButtons({ actions, kinds, labels = {}, mobileArtifactLabe
         return null;
       })}
     </div>
-    {mobileArtifactLabel ? (
+    {mobileArtifactLabel && mobileExportKinds.length > 0 ? (
       <div className="mt-3 grid gap-2 sm:hidden">
         {mobileExportKinds.map((kind) => renderMobileArtifactExportButton(kind, actions, mobileArtifactLabel, disabled, disabledTitle))}
       </div>

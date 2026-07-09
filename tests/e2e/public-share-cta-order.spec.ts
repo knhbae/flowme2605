@@ -12,6 +12,15 @@ type StickyPrimaryEntry = {
   testId: string;
 };
 
+const PUBLIC_SHARE_ROUTES = [
+  '/f/vehicle-inspection-prep',
+  '/f/moving-d30-basic',
+  '/f/fridge-cleanout-weekly-plan',
+  '/f/washer-tub-clean-monthly',
+  '/f/new-car-delivery-check',
+  '/f/used-car-buying-check',
+];
+
 async function collectFocusableEntries(page: Page) {
   return page.evaluate<FocusableEntry[]>(() => {
     const selector = [
@@ -95,15 +104,54 @@ async function collectVisibleMobileStickyPrimaryEntries(page: Page) {
   });
 }
 
+type PublicFlowUnitHierarchy = {
+  exportSecondaryEntryCount: number;
+  exportFormatOptionCount: number;
+  itemLevelExportLikeLabelCount: number;
+  preSaveItemCheckboxPreviewCount: number;
+  preSavePreviewControlCount: number;
+  exportSecondaryEntryLabels: string[];
+  itemLevelExportLikeLabels: string[];
+};
+
+async function collectPublicFlowUnitHierarchy(page: Page) {
+  return page.evaluate<PublicFlowUnitHierarchy>(() => {
+    const isVisible = (element: Element) => {
+      const style = window.getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0;
+    };
+    const visibleText = (element: Element) => (element.textContent ?? '').replace(/\s+/g, ' ').trim();
+    const exportLikePattern = /(받기|복사|파일|시트|캘린더|문서|내보내기|가져가기)/;
+
+    const secondaryEntries = Array.from(document.querySelectorAll('[data-testid="public-flow-export-secondary-entry"]'))
+      .filter(isVisible);
+    const formatOptions = Array.from(document.querySelectorAll('[data-testid="public-flow-export-format-option"]'))
+      .filter(isVisible);
+    const itemLevelExportLikeLabels = Array.from(document.querySelectorAll('[data-testid^="mobile-artifact-export-"]'))
+      .filter(isVisible)
+      .map(visibleText)
+      .filter((label) => exportLikePattern.test(label));
+    const previewCheckboxes = Array.from(document.querySelectorAll('[data-testid="artifact-list-card"] input[type="checkbox"]'))
+      .filter(isVisible);
+    const previewControls = Array.from(document.querySelectorAll('[aria-label="Flow artifact workbench"] input, [aria-label="Flow artifact workbench"] textarea, [aria-label="Flow artifact workbench"] select, [aria-label="Flow artifact workbench"] button'))
+      .filter(isVisible)
+      .filter((element) => !element.closest('[data-testid="public-flow-export-secondary-entry"]'));
+
+    return {
+      exportSecondaryEntryCount: secondaryEntries.length,
+      exportFormatOptionCount: formatOptions.length,
+      itemLevelExportLikeLabelCount: itemLevelExportLikeLabels.length,
+      preSaveItemCheckboxPreviewCount: previewCheckboxes.length,
+      preSavePreviewControlCount: previewControls.length,
+      exportSecondaryEntryLabels: secondaryEntries.map(visibleText),
+      itemLevelExportLikeLabels,
+    };
+  });
+}
+
 test.describe('public share shell secondary browse order', () => {
-  for (const route of [
-    '/f/vehicle-inspection-prep',
-    '/f/moving-d30-basic',
-    '/f/fridge-cleanout-weekly-plan',
-    '/f/washer-tub-clean-monthly',
-    '/f/new-car-delivery-check',
-    '/f/used-car-buying-check',
-  ]) {
+  for (const route of PUBLIC_SHARE_ROUTES) {
     test(`${route} keeps browse navigation reachable after the save path`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(route);
@@ -148,6 +196,20 @@ test.describe('public share shell secondary browse order', () => {
       const [primaryEntry] = stickyPrimaryEntries;
       expect(primaryEntry.text).toMatch(/내 Flow에 저장|내 Flow에서 보기/);
       expect(primaryEntry.text).not.toMatch(/도구|파일|받기|복사|시트|캘린더|xlsx|ics/i);
+    });
+  }
+
+  for (const route of PUBLIC_SHARE_ROUTES) {
+    test(`${route} keeps export as a flow-level secondary action`, async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto(route);
+
+      const hierarchy = await collectPublicFlowUnitHierarchy(page);
+      expect(hierarchy.exportSecondaryEntryCount).toBe(1);
+      expect(hierarchy.exportSecondaryEntryLabels[0]).toMatch(/Flow|파일|가져가기/);
+      expect(hierarchy.exportFormatOptionCount).toBeGreaterThanOrEqual(2);
+      expect(hierarchy.itemLevelExportLikeLabelCount).toBe(0);
+      expect(hierarchy.preSavePreviewControlCount).toBeGreaterThan(0);
     });
   }
 

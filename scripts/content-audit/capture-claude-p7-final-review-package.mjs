@@ -1365,6 +1365,7 @@ async function scanPage(page, options = {}) {
     };
     const collectPublicWorkbenchExportLabels = () => {
       const buttons = Array.from(document.querySelectorAll([
+        '[data-testid="public-flow-export-secondary-entry"] button',
         '[data-testid^="mobile-artifact-export-"]',
         '[data-testid="mobile-export-bar"] a',
         '[data-testid="mobile-export-bar"] button',
@@ -1377,7 +1378,9 @@ async function scanPage(page, options = {}) {
             ? 'mobileSticky'
             : element.closest('[data-testid="mobile-export-sheet"]')
               ? 'mobileExportSheet'
-              : 'mobileArtifactExport';
+              : element.closest('[data-testid="public-flow-export-secondary-entry"]')
+                ? 'flowLevelExport'
+                : 'mobileArtifactExport';
 
           return {
             testId,
@@ -1387,6 +1390,25 @@ async function scanPage(page, options = {}) {
           };
         })
         .filter((entry) => entry.visibleLabel);
+      const exportLikeLabelPattern = /(받기|복사|파일|시트|캘린더|문서|내보내기|가져가기|諛쏄린|蹂듭궗|xlsx|ics)/iu;
+      const flowLevelSecondaryEntries = Array.from(document.querySelectorAll('[data-testid="public-flow-export-secondary-entry"]'))
+        .filter((element) => isVisible(element));
+      const flowLevelFormatOptions = buttons.filter((entry) =>
+        entry.surface === 'flowLevelExport' && entry.testId === 'public-flow-export-format-option',
+      );
+      const itemLevelExportLikeLabels = buttons
+        .filter((entry) => entry.surface === 'mobileArtifactExport')
+        .filter((entry) => exportLikeLabelPattern.test(entry.visibleLabel));
+      const workbenchPreviewControls = Array.from(document.querySelectorAll([
+        '[aria-label="Flow artifact workbench"] input',
+        '[aria-label="Flow artifact workbench"] textarea',
+        '[aria-label="Flow artifact workbench"] select',
+        '[aria-label="Flow artifact workbench"] button',
+      ].join(',')))
+        .filter((element) => isVisible(element))
+        .filter((element) => !element.closest('[data-testid="public-flow-export-secondary-entry"]'));
+      const workbenchPreviewCheckboxes = workbenchPreviewControls
+        .filter((element) => element instanceof HTMLInputElement && element.type === 'checkbox');
       const stickyFirstAction = buttons.find((entry) => entry.surface === 'mobileSticky') ?? null;
       const stickyFirstActionSaveOrSetup = Boolean(
         stickyFirstAction && /내 Flow에 저장|내 Flow에서 보기/u.test(stickyFirstAction.visibleLabel),
@@ -1407,6 +1429,13 @@ async function scanPage(page, options = {}) {
         buttonCount: buttons.length,
         stickyFirstAction,
         stickyFirstActionSaveOrSetup,
+        flowLevelSecondaryEntryCount: flowLevelSecondaryEntries.length,
+        flowLevelFormatOptionCount: flowLevelFormatOptions.length,
+        flowLevelFormatOptionLabels: flowLevelFormatOptions.map((entry) => entry.visibleLabel),
+        itemLevelExportLikeLabelCount: itemLevelExportLikeLabels.length,
+        itemLevelExportLikeLabels,
+        preSaveItemCheckboxPreviewCount: workbenchPreviewCheckboxes.length,
+        preSavePreviewControlCount: workbenchPreviewControls.length,
         duplicateVisibleLabelCount: duplicateVisibleLabels.length,
         duplicateVisibleLabels,
         samples: buttons.slice(0, 8),
@@ -2431,6 +2460,24 @@ function summarizeEvidence(records) {
     publicWorkbenchStickyFirstActionSaveOrSetupCount: publicShareRoutes.filter((record) =>
       Boolean(record.markers.publicWorkbenchExportLabels?.stickyFirstActionSaveOrSetup),
     ).length,
+    publicFlowFlowLevelSavePrimaryCount: publicShareRoutes.filter((record) =>
+      record.primarySaveActionVisible || record.markers.publicPrimarySetupVisible,
+    ).length,
+    publicFlowExportSingleSecondaryEntryCount: publicShareRoutes.filter((record) =>
+      (record.markers.publicWorkbenchExportLabels?.flowLevelSecondaryEntryCount ?? 0) === 1,
+    ).length,
+    publicFlowExportFormatOptionCount: publicShareRoutes.reduce((sum, record) =>
+      sum + (record.markers.publicWorkbenchExportLabels?.flowLevelFormatOptionCount ?? 0),
+    0),
+    publicFlowItemLevelExportLikeLabelCount: publicShareRoutes.reduce((sum, record) =>
+      sum + (record.markers.publicWorkbenchExportLabels?.itemLevelExportLikeLabelCount ?? 0),
+    0),
+    publicFlowPreSaveItemCheckboxPreviewCount: publicShareRoutes.reduce((sum, record) =>
+      sum + (record.markers.publicWorkbenchExportLabels?.preSaveItemCheckboxPreviewCount ?? 0),
+    0),
+    publicFlowPreSavePreviewControlCount: publicShareRoutes.reduce((sum, record) =>
+      sum + (record.markers.publicWorkbenchExportLabels?.preSavePreviewControlCount ?? 0),
+    0),
     publicWorkbenchStickyFirstActionNonPrimaryLabels: publicShareRoutes
       .filter((record) =>
         record.markers.publicWorkbenchExportLabels?.stickyFirstAction
@@ -2535,6 +2582,8 @@ P14-05/P14-06 soften URL-first candidate/miss/hit copy that was technically clea
 P18-01 adds a same-date multi-Flow Calendar fixture. The selected date agenda records Flow marker groups, the month grid records visible Flow labels, and the summary exposes \`calendarSameDateDistinctFlowGroupCount\`, \`calendarSameDateGridDistinctFlowLabelCount\`, and \`calendarAgendaGroupByFlow\` so Calendar Flow identity can be judged without relying only on screenshots.
 
 P18-02 merges My Flow's today execution/status framing. The package records \`myFlowTodayFrameCount\`, \`myFlowTodayRemainingCountSourceCount\`, \`myFlowTodayInlineCompleteControlCount\`, \`myFlowTodayOpenBeforeCompleteRequired\`, and \`myFlowTodayGenericMetaChipCount\` so Claude Design can verify that today's work has one count source and can be completed inline without opening detail first.
+
+P18-03 separates public share save/export/item units. Sticky public \`/f\` actions remain save/setup-first, export is recorded as one Flow-level secondary entry with format options, and item-level export-like labels are counted separately so they stay at 0.
 
 P18-04/P18-06 separate Calendar and My Flow role language. Calendar should read as the date-first execution surface, My Flow as the task-first execution hub, and \`calendarMyFlowRoleLabels\` records role copy plus primary generic label counts for Calendar cards/groups and My Flow compact rows.
 
@@ -2736,6 +2785,8 @@ P15-03 scans URL-first candidate resolved card headline/status/body text directl
 P18-01 adds a same-date multi-Flow Calendar fixture. The selected date agenda records Flow marker groups, the month grid records visible Flow labels, and the summary exposes \`calendarSameDateDistinctFlowGroupCount\`, \`calendarSameDateGridDistinctFlowLabelCount\`, and \`calendarAgendaGroupByFlow\` so Calendar Flow identity can be judged without relying only on screenshots.
 
 P18-02 merges My Flow's today execution/status framing. The package records \`myFlowTodayFrameCount\`, \`myFlowTodayRemainingCountSourceCount\`, \`myFlowTodayInlineCompleteControlCount\`, \`myFlowTodayOpenBeforeCompleteRequired\`, and \`myFlowTodayGenericMetaChipCount\` so Claude Design can verify that today's work has one count source and can be completed inline without opening detail first.
+
+P18-03 keeps public share \`/f\` save/export/item responsibilities auditable. The summary records Flow-level save primary count, one secondary export entry per public share route, export format option count, item-level export-like label count, and pre-save preview control counts.
 
 ## Baselines Covered
 

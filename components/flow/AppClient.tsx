@@ -3923,10 +3923,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     schedule: monthAllCalendarRows.filter((row) => row.flow.bundle.flow.structure_type !== 'routine').length,
     routine: monthAllCalendarRows.filter((row) => row.flow.bundle.flow.structure_type === 'routine').length,
   };
+  const myFlowCalendarAllScopeLabel = isCalendarSurface ? '모든 저장 콘텐츠' : '모든 Flow';
+  const myFlowCalendarSavedScopeLabel = isCalendarSurface ? '저장 콘텐츠' : '저장 Flow';
   const myFlowCalendarScopeOptions: Array<{ id: MyFlowCalendarScope; label: string; count: number }> = [
-    { id: 'all', label: '모든 Flow', count: myFlowCalendarScopeMonthCounts.all },
+    { id: 'all', label: myFlowCalendarAllScopeLabel, count: myFlowCalendarScopeMonthCounts.all },
     ...(myFlowCalendarScopeTotalCounts.map > 0 && myFlowCalendarScopeTotalCounts.map < myFlowCalendarScopeTotalCounts.all
-      ? [{ id: 'map' as const, label: '저장 Flow', count: myFlowCalendarScopeMonthCounts.map }]
+      ? [{ id: 'map' as const, label: myFlowCalendarSavedScopeLabel, count: myFlowCalendarScopeMonthCounts.map }]
       : []),
     ...(myFlowCalendarScopeTotalCounts.schedule > 0 && myFlowCalendarScopeTotalCounts.schedule < myFlowCalendarScopeTotalCounts.all
       ? [{ id: 'schedule' as const, label: '날짜 항목', count: myFlowCalendarScopeMonthCounts.schedule }]
@@ -3936,7 +3938,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       : []),
   ];
   const showMyFlowCalendarScopeFilter = myFlowCalendarScopeOptions.length > 1;
-  const myFlowCalendarScopeLabel = myFlowCalendarScopeOptions.find((option) => option.id === myFlowCalendarScope)?.label ?? '모든 Flow';
+  const myFlowCalendarScopeLabel = myFlowCalendarScopeOptions.find((option) => option.id === myFlowCalendarScope)?.label ?? myFlowCalendarAllScopeLabel;
   const moveMyFlowCalendarMonth = (nextMonth: string) => {
     setMyFlowVisibleMonth(nextMonth);
     setMyFlowSelectedDate(findFirstMyFlowDateInMonth(calendarScopedRows, nextMonth));
@@ -7834,7 +7836,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   <div className="min-w-0">
                     <p className="text-xs font-semibold text-blue-700">캘린더 기준</p>
                     <h3 className="mt-1 truncate text-lg font-semibold text-slate-950">
-                      {selectedSavedFlowSlug === 'all' ? '전체 Flow' : getMyFlowExecutionFlowTitle(visibleSavedFlows[0]?.progress.title ?? '')}
+                      {selectedSavedFlowSlug === 'all' ? myFlowCalendarAllScopeLabel : getMyFlowExecutionFlowTitle(visibleSavedFlows[0]?.progress.title ?? '')}
                     </h3>
                   </div>
                   <div className="flex flex-wrap gap-2 text-xs font-semibold">
