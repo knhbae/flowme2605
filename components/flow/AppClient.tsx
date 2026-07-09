@@ -44,6 +44,7 @@ import {
   mergeSourceBackedMyFlowBundles,
   type SourceBackedFlowMapUpdateAssessment,
   type SourceBackedFlowMapSavedSnapshot,
+  type SourceBackedFlowMapPersonalCopyStepOverride,
 } from '@/lib/flow/source-backed-my-flow';
 import { parseTextFlow, serializeTextFlow, timingLabel } from '@/lib/flow/parser';
 import { expandRoutineOccurrences, getRoutineWeekdayLabels } from '@/lib/flow/recurrence';
@@ -3295,6 +3296,28 @@ function getMyFlowRowInstanceKey(row: MyFlowCalendarRow): string {
   return row.calendarKey ?? `${row.flow.progress.slug}::${row.id}::${row.date ?? 'none'}`;
 }
 
+function getMyFlowPersonalCopyStepOverride(
+  flow: MySavedFlow,
+  rowId: string,
+): SourceBackedFlowMapPersonalCopyStepOverride | undefined {
+  return flow.savedMap?.personalCopy?.stepOverridesByFlow?.[flow.progress.slug]?.[baseStateId(rowId)];
+}
+
+function getMyFlowPersonalCopyStepDateOverride(flow: MySavedFlow, rowId: string): string | undefined {
+  const schedule = getMyFlowPersonalCopyStepOverride(flow, rowId)?.schedule;
+  return schedule?.mode === 'fixed_date' ? schedule.date : undefined;
+}
+
+function getMyFlowPersonalCopyStepDraft(row: MyFlowCalendarRow): MyFlowItemDraft {
+  const override = getMyFlowPersonalCopyStepOverride(row.flow, row.id);
+  if (!override) return {};
+  return {
+    ...(override.title ? { title: override.title } : {}),
+    ...(override.schedule?.mode === 'fixed_date' ? { date: override.schedule.date } : {}),
+    ...(override.userMemo ? { memo: override.userMemo } : {}),
+  };
+}
+
 function isMyFlowCalendarRowInScope(row: MyFlowCalendarRow, scope: MyFlowCalendarScope): boolean {
   if (scope === 'map') return Boolean(row.flow.savedMap);
   if (scope === 'schedule') return row.flow.bundle.flow.structure_type !== 'routine';
@@ -3839,12 +3862,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       .map((row) => {
         const originalDate = row.date ?? '';
         const calendarKey = getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate);
+        const personalDateOverride = getMyFlowPersonalCopyStepDateOverride(flow, row.id);
         return {
           ...row,
           flow,
           originalDate,
           calendarKey,
-          date: myFlowDateOverrides[calendarKey] ?? row.date,
+          date: myFlowDateOverrides[calendarKey] ?? personalDateOverride ?? row.date,
         };
       }),
   );
@@ -3853,7 +3877,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       .filter((row) => !row.date)
       .flatMap((row) => {
         const calendarKey = getMyFlowManualScheduleKey(flow.progress.slug, row.id);
-        const date = myFlowDateOverrides[calendarKey];
+        const date = myFlowDateOverrides[calendarKey] ?? getMyFlowPersonalCopyStepDateOverride(flow, row.id);
         if (!date) return [];
         return [{
           ...row,
@@ -3879,11 +3903,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     }).filter((occurrence) => !routineEndDate || occurrence.date <= routineEndDate).map((occurrence) => {
       const originalDate = occurrence.date;
       const calendarKey = getMyFlowCalendarRowKey(flow.progress.slug, nextRow.id, originalDate);
+      const personalDateOverride = getMyFlowPersonalCopyStepDateOverride(flow, nextRow.id);
       return {
         ...nextRow,
         originalDate,
         calendarKey,
-        date: myFlowDateOverrides[calendarKey] ?? originalDate,
+        date: myFlowDateOverrides[calendarKey] ?? personalDateOverride ?? originalDate,
         timing: nextRow.timing ?? `${occurrence.sessionIndex}회차 · ${occurrence.weekday}요일`,
         section: nextRow.section || '루틴',
         flow,
@@ -4058,7 +4083,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         : myFlowPrimaryContinuationIsFuture
           ? '다음 할 일'
           : '먼저 할 일';
-  const getMyFlowRowDraft = (row: MyFlowCalendarRow) => myFlowItemDrafts[getMyFlowRowInstanceKey(row)] ?? {};
+  const getMyFlowRowDraft = (row: MyFlowCalendarRow): MyFlowItemDraft => ({
+    ...(myFlowItemDrafts[getMyFlowRowInstanceKey(row)] ?? {}),
+    ...getMyFlowPersonalCopyStepDraft(row),
+  });
   const getMyFlowRowDisplayTitle = (row: MyFlowCalendarRow) => toUserFacingSourceTitle(getMyFlowRowDraft(row).title ?? row.title);
   const myFlowNowVisibleCount = myFlowPrimaryContinuationRow ? 1 : 0;
   const myFlowNowTitle = myFlowPrimaryContinuationRow
@@ -4334,7 +4362,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const item = row.flow.bundle.items.find((entry) => entry.id === row.id);
     return {
       title: editingDraft.title ?? getMyFlowRowDisplayTitle(row),
-      date: editingDraft.date ?? row.date ?? '',
+      date: editingDraft.date ?? committedDraft.date ?? row.date ?? '',
       repeatPreset: editingDraft.repeatPreset ?? committedDraft.repeatPreset ?? '',
       memo: editingDraft.memo ?? committedDraft.memo ?? formatMyFlowDetailMemo(detail, row, item),
       location: editingDraft.location ?? committedDraft.location ?? '',
@@ -4359,27 +4387,102 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     };
   };
   const hasMyFlowEditingDraft = (row: MyFlowCalendarRow) => Boolean(myFlowEditingDrafts[getMyFlowRowInstanceKey(row)]);
+  const saveMyFlowPersonalCopyStepOverlay = (row: MyFlowCalendarRow, editingDraft: MyFlowItemDraft): boolean => {
+    if (typeof window === 'undefined' || !row.flow.savedMap?.personalCopy) return false;
+
+    const sourceSnapshot = toSourceBackedSavedSnapshot(row.flow.savedMap);
+    if (!sourceSnapshot.personalCopy) return false;
+
+    const flowSlug = row.flow.progress.slug;
+    const stepId = baseStateId(row.id);
+    const currentOverridesByFlow = sourceSnapshot.personalCopy.stepOverridesByFlow ?? {};
+    const currentFlowOverrides = currentOverridesByFlow[flowSlug] ?? {};
+    const nextOverride: SourceBackedFlowMapPersonalCopyStepOverride = {
+      ...(currentFlowOverrides[stepId] ?? {}),
+    };
+    const sourceTitle = toUserFacingSourceTitle(row.title).trim();
+
+    if (Object.prototype.hasOwnProperty.call(editingDraft, 'title')) {
+      const title = editingDraft.title?.trim() ?? '';
+      if (title && title !== sourceTitle) nextOverride.title = title;
+      else delete nextOverride.title;
+    }
+    if (Object.prototype.hasOwnProperty.call(editingDraft, 'date')) {
+      const date = editingDraft.date?.trim() ?? '';
+      if (date) nextOverride.schedule = { mode: 'fixed_date', date };
+      else delete nextOverride.schedule;
+    }
+    if (Object.prototype.hasOwnProperty.call(editingDraft, 'memo')) {
+      const userMemo = editingDraft.memo?.trim() ?? '';
+      if (userMemo) nextOverride.userMemo = userMemo;
+      else delete nextOverride.userMemo;
+    }
+
+    const nextFlowOverrides = { ...currentFlowOverrides };
+    if (Object.keys(nextOverride).length > 0) {
+      nextFlowOverrides[stepId] = nextOverride;
+    } else {
+      delete nextFlowOverrides[stepId];
+    }
+    const nextOverridesByFlow = { ...currentOverridesByFlow };
+    if (Object.keys(nextFlowOverrides).length > 0) {
+      nextOverridesByFlow[flowSlug] = nextFlowOverrides;
+    } else {
+      delete nextOverridesByFlow[flowSlug];
+    }
+
+    const adjusted = buildSourceBackedFlowMapPersonalCopyAdjustment(sourceSnapshot, {
+      title: sourceSnapshot.title,
+      anchor: sourceSnapshot.anchor,
+      savedAt: new Date().toISOString(),
+      includedStepIdsByFlow: sourceSnapshot.personalCopy.includedStepIdsByFlow,
+      stepOverridesByFlow: nextOverridesByFlow,
+    });
+    if (!adjusted) return false;
+
+    window.localStorage.setItem(getSourceBackedFlowMapSnapshotStorageKey(adjusted.snapshot.mapId), JSON.stringify(adjusted.snapshot));
+    window.localStorage.setItem(getSourceBackedFlowMapPersistenceStorageKey(adjusted.snapshot.mapId), JSON.stringify(adjusted.persistenceRecord));
+    refreshSavedFlowState();
+    return true;
+  };
   const saveMyFlowEditingDraft = (row: MyFlowCalendarRow) => {
     const key = getMyFlowRowInstanceKey(row);
     const editingDraft = myFlowEditingDrafts[key];
     if (!editingDraft) return;
     const { date, ...itemDraft } = editingDraft;
-    if (Object.keys(itemDraft).length > 0) updateMyFlowItemDraft(row, itemDraft);
-    const manualScheduleKey = !row.date ? getMyFlowManualScheduleKey(row.flow.progress.slug, row.id) : '';
-    const scheduleKey = row.calendarKey ?? manualScheduleKey;
-    if (scheduleKey && date !== undefined) {
-      updateMyFlowDateOverrideState((current) => {
-        const next = { ...current };
-        if (date) {
-          next[scheduleKey] = date;
-        } else {
-          delete next[scheduleKey];
-        }
-        return next;
-      });
+    if (row.flow.savedMap?.personalCopy) {
+      const { title, memo, ...remainingItemDraft } = itemDraft;
+      const personalPatch: MyFlowItemDraft = {
+        ...(title !== undefined ? { title } : {}),
+        ...(date !== undefined ? { date } : {}),
+        ...(memo !== undefined ? { memo } : {}),
+      };
+      const savedPersonalOverlay =
+        Object.keys(personalPatch).length > 0 ? saveMyFlowPersonalCopyStepOverlay(row, personalPatch) : true;
+      if (!savedPersonalOverlay) return;
+      if (Object.keys(remainingItemDraft).length > 0) updateMyFlowItemDraft(row, remainingItemDraft);
       if (date) {
         setMyFlowSelectedDate(date);
         setMyFlowVisibleMonth(getMyFlowMonthStart(date));
+      }
+    } else {
+      if (Object.keys(itemDraft).length > 0) updateMyFlowItemDraft(row, itemDraft);
+      const manualScheduleKey = !row.date ? getMyFlowManualScheduleKey(row.flow.progress.slug, row.id) : '';
+      const scheduleKey = row.calendarKey ?? manualScheduleKey;
+      if (scheduleKey && date !== undefined) {
+        updateMyFlowDateOverrideState((current) => {
+          const next = { ...current };
+          if (date) {
+            next[scheduleKey] = date;
+          } else {
+            delete next[scheduleKey];
+          }
+          return next;
+        });
+        if (date) {
+          setMyFlowSelectedDate(date);
+          setMyFlowVisibleMonth(getMyFlowMonthStart(date));
+        }
       }
     }
     discardMyFlowEditingDraft(row);
@@ -4858,14 +4961,20 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
   const getMyFlowRowForFlowTab = (flow: MySavedFlow, row: MyFlowRow): MyFlowCalendarRow => {
     const originalDate = row.date;
+    const personalDateOverride = getMyFlowPersonalCopyStepDateOverride(flow, row.id);
+    const calendarKey = originalDate
+      ? getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate)
+      : personalDateOverride
+        ? getMyFlowManualScheduleKey(flow.progress.slug, row.id)
+        : '';
     return {
       ...row,
       flow,
-      ...(originalDate
+      ...(calendarKey
         ? {
-            originalDate,
-            calendarKey: getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate),
-            date: myFlowDateOverrides[getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate)] ?? row.date,
+            originalDate: originalDate ?? 'none',
+            calendarKey,
+            date: myFlowDateOverrides[calendarKey] ?? personalDateOverride ?? row.date,
           }
         : {}),
     };
@@ -5695,7 +5804,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const isDrawerMode = mode === 'drawer' || mode === 'panel';
     const isInlineMobileMode = mode === 'inline' && isMyFlowMobileViewport;
     const isFlowTabInlineMobileMode = isInlineMobileMode && surfaceContext === 'flow';
-    const useReadonlyTitleHeader = isDrawerMode || isInlineMobileMode;
     const isRoutineRow = row.flow.bundle.flow.structure_type === 'routine';
     const isProgressFlow = Boolean(row.flow.bundle.flow.tags?.includes('progress-flow'));
     const timing = row.timing ?? item?.repeat_rule ?? '';
@@ -5732,6 +5840,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const shouldCollapsePortableExport = isInlineMobileMode;
     const portableExportKey = getMyFlowRowInstanceKey(row);
     const isDetailEditing = !isDrawerMode && myFlowEditingDetailKey === portableExportKey;
+    const useReadonlyTitleHeader = isDrawerMode || (isInlineMobileMode && !isDetailEditing);
     const showEditableDetailFields = isDrawerMode || isDetailEditing;
     const portableExportInput: MyFlowPortableStepExportInput = {
       flowTitle: getMyFlowPortableExportFlowTitle(row.flow),
@@ -5978,6 +6087,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <label className="block text-xs font-semibold text-slate-600">
                 제목
                 <input
+                  data-testid="my-flow-detail-title-input"
                   className={fieldClassName}
                   value={editorDraft.title}
                   onChange={(event) => updateMyFlowEditingDraft(row, { title: event.target.value })}

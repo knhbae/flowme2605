@@ -1,5 +1,5 @@
 import { seedBundles } from './seed-flows';
-import type { SourceBackedFlowMapPersonalCopy } from './source-backed-my-flow';
+import type { SourceBackedFlowMapPersonalCopy, SourceBackedFlowMapPersonalCopyStepOverride } from './source-backed-my-flow';
 import { FlowBundle, FlowComparisonState, FlowItemState, FlowWorkbenchState, ReactionLog } from './types';
 
 const BUNDLES_KEY = 'flow_builder_mvp_bundles_v11';
@@ -220,6 +220,44 @@ function normalizeStringListRecord(value: unknown): Record<string, string[]> | u
   return Object.fromEntries(entries);
 }
 
+function normalizeSavedFlowMapPersonalCopyStepOverride(value: unknown): SourceBackedFlowMapPersonalCopyStepOverride | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+
+  const source = value as Partial<SourceBackedFlowMapPersonalCopyStepOverride>;
+  const normalized: SourceBackedFlowMapPersonalCopyStepOverride = {};
+  if (typeof source.title === 'string' && source.title.trim()) normalized.title = source.title.trim();
+  if (typeof source.userMemo === 'string' && source.userMemo.trim()) normalized.userMemo = source.userMemo.trim();
+  if (
+    source.schedule &&
+    typeof source.schedule === 'object' &&
+    source.schedule.mode === 'fixed_date' &&
+    typeof source.schedule.date === 'string' &&
+    /^\d{4}-\d{2}-\d{2}$/.test(source.schedule.date)
+  ) {
+    normalized.schedule = { mode: 'fixed_date', date: source.schedule.date };
+  }
+
+  return Object.keys(normalized).length > 0 ? normalized : undefined;
+}
+
+function normalizeSavedFlowMapPersonalCopyStepOverrides(
+  value: unknown,
+): Record<string, Record<string, SourceBackedFlowMapPersonalCopyStepOverride>> | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+
+  const entries = Object.entries(value as Record<string, unknown>).flatMap(([flowSlug, stepRecord]) => {
+    if (!flowSlug.trim() || !stepRecord || typeof stepRecord !== 'object') return [];
+    const stepEntries = Object.entries(stepRecord as Record<string, unknown>).flatMap(([stepId, stepOverride]) => {
+      if (!stepId.trim()) return [];
+      const normalized = normalizeSavedFlowMapPersonalCopyStepOverride(stepOverride);
+      return normalized ? [[stepId, normalized] as const] : [];
+    });
+    return stepEntries.length > 0 ? [[flowSlug, Object.fromEntries(stepEntries)] as const] : [];
+  });
+
+  return entries.length > 0 ? Object.fromEntries(entries) : undefined;
+}
+
 function normalizeSavedFlowMapPersonalCopy(value: unknown): SourceBackedFlowMapPersonalCopy | undefined {
   if (!value || typeof value !== 'object') return undefined;
 
@@ -228,6 +266,7 @@ function normalizeSavedFlowMapPersonalCopy(value: unknown): SourceBackedFlowMapP
 
   const includedStepIdsByFlow = normalizeStringListRecord(personalCopy.includedStepIdsByFlow);
   const excludedStepIdsByFlow = normalizeStringListRecord(personalCopy.excludedStepIdsByFlow);
+  const stepOverridesByFlow = normalizeSavedFlowMapPersonalCopyStepOverrides(personalCopy.stepOverridesByFlow);
   if (!includedStepIdsByFlow || !excludedStepIdsByFlow) return undefined;
 
   return {
@@ -237,6 +276,7 @@ function normalizeSavedFlowMapPersonalCopy(value: unknown): SourceBackedFlowMapP
       : {}),
     includedStepIdsByFlow,
     excludedStepIdsByFlow,
+    ...(stepOverridesByFlow ? { stepOverridesByFlow } : {}),
   };
 }
 

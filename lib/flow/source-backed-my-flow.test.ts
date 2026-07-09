@@ -1540,6 +1540,15 @@ test('source-backed Flow Map personal copy update keeps saved title and selected
           'math-data-analysis',
         ],
       },
+      stepOverridesByFlow: {
+        'source-backed-middle-school-math-1': {
+          'math-prime-factorization': {
+            title: 'Prime factorization for my test',
+            schedule: { mode: 'fixed_date' as const, date: '2026-08-03' },
+            userMemo: 'Use the worksheet examples first.',
+          },
+        },
+      },
     },
   };
 
@@ -1564,8 +1573,25 @@ test('source-backed Flow Map personal copy update keeps saved title and selected
   assert.deepEqual(updatedSnapshot.flowSlugs, ['source-backed-middle-school-math-1']);
   assert.equal(updatedSnapshot.stepCountsByFlow['source-backed-middle-school-math-1'], 1);
   assert.equal(updatedSnapshot.personalCopy?.originalTitle, snapshot.title);
+  assert.deepEqual(
+    updatedSnapshot.personalCopy?.stepOverridesByFlow?.['source-backed-middle-school-math-1']?.['math-prime-factorization'],
+    {
+      title: 'Prime factorization for my test',
+      schedule: { mode: 'fixed_date', date: '2026-08-03' },
+      userMemo: 'Use the worksheet examples first.',
+    },
+  );
   assert.equal(updatedRecord.map.title, '시험 전 소인수분해만');
   assert.deepEqual(updatedRecord.childFlows[0]?.steps.map((step) => step.stepId), ['math-prime-factorization']);
+  assert.notEqual(updatedRecord.childFlows[0]?.steps[0]?.title, 'Prime factorization for my test');
+  assert.deepEqual(
+    updatedRecord.personalCopy?.stepOverridesByFlow?.['source-backed-middle-school-math-1']?.['math-prime-factorization'],
+    {
+      title: 'Prime factorization for my test',
+      schedule: { mode: 'fixed_date', date: '2026-08-03' },
+      userMemo: 'Use the worksheet examples first.',
+    },
+  );
   assert.equal(assessSourceBackedFlowMapUpdate(updatedSnapshot).status, 'up_to_date');
 });
 
@@ -1596,6 +1622,15 @@ test('source-backed Flow Map personal copy adjustment updates title anchor and s
           'math-data-analysis',
         ],
       },
+      stepOverridesByFlow: {
+        'source-backed-middle-school-math-1': {
+          'math-prime-factorization': {
+            title: 'Old alias',
+            schedule: { mode: 'fixed_date' as const, date: '2026-07-20' },
+            userMemo: 'Old memo',
+          },
+        },
+      },
     },
   };
 
@@ -1605,6 +1640,19 @@ test('source-backed Flow Map personal copy adjustment updates title anchor and s
     savedAt: '2026-07-05T01:00:00.000Z',
     includedStepIdsByFlow: {
       'source-backed-middle-school-math-1': ['math-prime-factorization', 'math-integers-rationals'],
+    },
+    stepOverridesByFlow: {
+      'source-backed-middle-school-math-1': {
+        'math-prime-factorization': {
+          title: 'Prime factorization for my test',
+          schedule: { mode: 'fixed_date', date: '2026-08-03' },
+          userMemo: 'Use the worksheet examples first.',
+        },
+        'math-integers-rationals': {
+          title: 'Integers and rationals catch-up',
+          schedule: { mode: 'fixed_date', date: '2026-08-04' },
+        },
+      },
     },
   });
 
@@ -1624,11 +1672,33 @@ test('source-backed Flow Map personal copy adjustment updates title anchor and s
     'math-solid-figures',
     'math-data-analysis',
   ]);
+  assert.deepEqual(adjusted.snapshot.personalCopy?.stepOverridesByFlow?.['source-backed-middle-school-math-1'], {
+    'math-prime-factorization': {
+      title: 'Prime factorization for my test',
+      schedule: { mode: 'fixed_date', date: '2026-08-03' },
+      userMemo: 'Use the worksheet examples first.',
+    },
+    'math-integers-rationals': {
+      title: 'Integers and rationals catch-up',
+      schedule: { mode: 'fixed_date', date: '2026-08-04' },
+    },
+  });
   assert.equal(adjusted.persistenceRecord.map.title, 'Chapter 1 and 2 review');
   assert.deepEqual(adjusted.persistenceRecord.childFlows[0]?.steps.map((step) => step.stepId), [
     'math-prime-factorization',
     'math-integers-rationals',
   ]);
+  assert.deepEqual(adjusted.persistenceRecord.personalCopy?.stepOverridesByFlow?.['source-backed-middle-school-math-1'], {
+    'math-prime-factorization': {
+      title: 'Prime factorization for my test',
+      schedule: { mode: 'fixed_date', date: '2026-08-03' },
+      userMemo: 'Use the worksheet examples first.',
+    },
+    'math-integers-rationals': {
+      title: 'Integers and rationals catch-up',
+      schedule: { mode: 'fixed_date', date: '2026-08-04' },
+    },
+  });
   assert.equal(assessSourceBackedFlowMapUpdate(adjusted.snapshot).status, 'up_to_date');
 
   const adjustedAfterSourceUpdate = buildSourceBackedFlowMapSavedSnapshotUpdate(
@@ -1649,6 +1719,17 @@ test('source-backed Flow Map personal copy adjustment updates title anchor and s
     'math-prime-factorization',
     'math-integers-rationals',
   ]);
+  assert.deepEqual(adjustedAfterSourceUpdate.personalCopy?.stepOverridesByFlow?.['source-backed-middle-school-math-1'], {
+    'math-prime-factorization': {
+      title: 'Prime factorization for my test',
+      schedule: { mode: 'fixed_date', date: '2026-08-03' },
+      userMemo: 'Use the worksheet examples first.',
+    },
+    'math-integers-rationals': {
+      title: 'Integers and rationals catch-up',
+      schedule: { mode: 'fixed_date', date: '2026-08-04' },
+    },
+  });
 });
 
 test('source-backed Flow Map update assessment requires review for official sensitive map changes', () => {

@@ -129,6 +129,16 @@ export type SourceBackedFlowMapPersonalCopy = {
   originalTitle?: string;
   includedStepIdsByFlow: Record<string, string[]>;
   excludedStepIdsByFlow: Record<string, string[]>;
+  stepOverridesByFlow?: Record<string, Record<string, SourceBackedFlowMapPersonalCopyStepOverride>>;
+};
+
+export type SourceBackedFlowMapPersonalCopyStepOverride = {
+  title?: string;
+  schedule?: {
+    mode: 'fixed_date';
+    date: string;
+  };
+  userMemo?: string;
 };
 
 export type SourceBackedFlowMapStepBinding = {
@@ -1240,6 +1250,28 @@ function pickSourceBackedRecordValues<T>(record: Record<string, T>, keys: string
   return Object.fromEntries(keys.flatMap((key) => (key in record ? [[key, record[key]]] : [])));
 }
 
+function pickSourceBackedPersonalCopyStepOverrides(
+  personalCopy: SourceBackedFlowMapPersonalCopy,
+  includedStepIdsByFlow: Record<string, string[]>,
+): Record<string, Record<string, SourceBackedFlowMapPersonalCopyStepOverride>> | undefined {
+  const sourceOverrides = personalCopy.stepOverridesByFlow;
+  if (!sourceOverrides) return undefined;
+
+  const entries = Object.entries(includedStepIdsByFlow).flatMap(([flowSlug, stepIds]) => {
+    const overrides = sourceOverrides[flowSlug];
+    if (!overrides) return [];
+    const picked = Object.fromEntries(
+      stepIds.flatMap((stepId) => {
+        const override = overrides[stepId];
+        return override ? [[stepId, override] as const] : [];
+      }),
+    );
+    return Object.keys(picked).length > 0 ? [[flowSlug, picked] as const] : [];
+  });
+
+  return entries.length > 0 ? Object.fromEntries(entries) : undefined;
+}
+
 function projectSourceBackedSnapshotForPersonalCopy(
   snapshot: SourceBackedFlowMapSavedSnapshot,
   personalCopy?: SourceBackedFlowMapPersonalCopy,
@@ -1274,6 +1306,7 @@ function projectSourceBackedSnapshotForPersonalCopy(
     includedStepIdsByFlow[flow.slug] = includedStepIds;
     excludedStepIdsByFlow[flow.slug] = excludedStepIds;
   });
+  const stepOverridesByFlow = pickSourceBackedPersonalCopyStepOverrides(personalCopy, includedStepIdsByFlow);
 
   return {
     ...snapshot,
@@ -1283,9 +1316,11 @@ function projectSourceBackedSnapshotForPersonalCopy(
     riskLevelsByFlow: pickSourceBackedRecordValues(snapshot.riskLevelsByFlow, selectedFlowSlugs),
     sourceCheckedAtByFlow: pickSourceBackedRecordValues(snapshot.sourceCheckedAtByFlow, selectedFlowSlugs),
     personalCopy: {
-      ...personalCopy,
+      source: personalCopy.source,
+      ...(personalCopy.originalTitle ? { originalTitle: personalCopy.originalTitle } : {}),
       includedStepIdsByFlow,
       excludedStepIdsByFlow,
+      ...(stepOverridesByFlow ? { stepOverridesByFlow } : {}),
     },
   };
 }
@@ -1447,6 +1482,7 @@ export function buildSourceBackedFlowMapPersonalCopyAdjustment(
     anchor?: string;
     savedAt?: string;
     includedStepIdsByFlow: Record<string, string[]>;
+    stepOverridesByFlow?: Record<string, Record<string, SourceBackedFlowMapPersonalCopyStepOverride>>;
   },
 ): SourceBackedFlowMapPersonalCopyAdjustment | undefined {
   if (!saved.personalCopy) return undefined;
@@ -1460,6 +1496,11 @@ export function buildSourceBackedFlowMapPersonalCopyAdjustment(
     personalCopy: {
       ...saved.personalCopy,
       includedStepIdsByFlow: options.includedStepIdsByFlow,
+      ...(options.stepOverridesByFlow !== undefined
+        ? { stepOverridesByFlow: options.stepOverridesByFlow }
+        : saved.personalCopy.stepOverridesByFlow
+          ? { stepOverridesByFlow: saved.personalCopy.stepOverridesByFlow }
+          : {}),
     },
   };
   if (nextAnchor) {

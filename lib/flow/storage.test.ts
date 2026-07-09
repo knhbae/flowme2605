@@ -261,6 +261,15 @@ test('saved flow map snapshots index child flows back to their parent map', () =
         excludedStepIdsByFlow: {
           'source-backed-middle-school-math-1': ['math-integers-rationals'],
         },
+        stepOverridesByFlow: {
+          'source-backed-middle-school-math-1': {
+            'math-prime-factorization': {
+              title: 'Prime factorization for my test',
+              schedule: { mode: 'fixed_date', date: '2026-08-03' },
+              userMemo: 'Use the worksheet examples first.',
+            },
+          },
+        },
       },
     })?.personalCopy,
     {
@@ -271,6 +280,15 @@ test('saved flow map snapshots index child flows back to their parent map', () =
       },
       excludedStepIdsByFlow: {
         'source-backed-middle-school-math-1': ['math-integers-rationals'],
+      },
+      stepOverridesByFlow: {
+        'source-backed-middle-school-math-1': {
+          'math-prime-factorization': {
+            title: 'Prime factorization for my test',
+            schedule: { mode: 'fixed_date', date: '2026-08-03' },
+            userMemo: 'Use the worksheet examples first.',
+          },
+        },
       },
     },
   );

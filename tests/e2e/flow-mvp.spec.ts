@@ -1014,8 +1014,20 @@ test('my flow personal copy step detail exports current copy to memo checklist c
 
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: 'http://127.0.0.1:3104' });
   await personalFlow.getByTestId('my-flow-mobile-structure-step-row').first().click();
-  const personalDetail = personalFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
+  let personalDetail = personalFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
   await expect(personalDetail).toContainText('이사 방식');
+  const readSummary = personalDetail.getByTestId('my-flow-detail-read-summary');
+  await readSummary.locator('summary').click();
+  await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
+  await personalDetail.getByTestId('my-flow-detail-title-input').fill('견적 후보만 먼저 확인');
+  await personalDetail.getByTestId('my-flow-detail-date-input').fill('2026-07-07');
+  await personalDetail.getByTestId('my-flow-detail-memo').fill('오전 중 후보 2곳만 확인');
+  await personalDetail.getByTestId('my-flow-detail-save-changes').click();
+
+  await expect(activeSteps).toContainText('견적 후보만 먼저 확인');
+  await personalFlow.getByTestId('my-flow-mobile-structure-step-row').first().click();
+  personalDetail = personalFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
+  await expect(personalDetail).toContainText('오전 중 후보 2곳만 확인');
   const exportPanel = personalDetail.getByTestId('my-flow-detail-portable-export');
   await exportPanel.locator('summary').click();
   await expect(exportPanel.getByTestId('my-flow-detail-personal-copy-export-note')).toContainText('내 개인 사본 기준');
@@ -1023,20 +1035,23 @@ test('my flow personal copy step detail exports current copy to memo checklist c
   await exportPanel.getByTestId('my-flow-detail-copy-portable-text').click();
   let copied = await page.evaluate(() => navigator.clipboard.readText());
   expect(copied).toContain('Flow: 8월 이사 준비 사본');
-  expect(copied).toContain('일정: 2026-07-05');
-  expect(copied).toContain('이사 방식');
+  expect(copied).toContain('일정: 2026-07-07');
+  expect(copied).toContain('견적 후보만 먼저 확인');
+  expect(copied).toContain('오전 중 후보 2곳만 확인');
   expect(copied).not.toContain('주소 변경');
 
   await exportPanel.getByTestId('my-flow-detail-copy-checklist-text').click();
   copied = await page.evaluate(() => navigator.clipboard.readText());
   expect(copied).toContain('Flow: 8월 이사 준비 사본');
+  expect(copied).toContain('견적 후보만 먼저 확인');
   expect(copied).toContain('- [ ]');
   expect(copied).not.toContain('주소 변경');
 
   await exportPanel.getByTestId('my-flow-detail-copy-sheet-row').click();
   copied = await page.evaluate(() => navigator.clipboard.readText());
   expect(copied).toContain('Flow\tStep\t구간\t날짜');
-  expect(copied).toContain('8월 이사 준비 사본\tD-30: 이사 방식과 견적 예약\tD-30\t2026-07-05');
+  expect(copied).toContain('8월 이사 준비 사본\t견적 후보만 먼저 확인\tD-30\t2026-07-07');
+  expect(copied).toContain('오전 중 후보 2곳만 확인');
   expect(copied).not.toContain('주소 변경');
 
   const downloadPromise = page.waitForEvent('download');
@@ -1045,15 +1060,33 @@ test('my flow personal copy step detail exports current copy to memo checklist c
   const downloadPath = await download.path();
   expect(downloadPath).toBeTruthy();
   const ics = fs.readFileSync(downloadPath!, 'utf8');
-  expect(ics).toContain('DTSTART;VALUE=DATE:20260705');
-  expect(ics).toContain('SUMMARY:D-30: 이사 방식과 견적 예약');
+  expect(ics).toContain('DTSTART;VALUE=DATE:20260707');
+  expect(ics).toContain('SUMMARY:견적 후보만 먼저 확인');
   expect(ics).toContain('Flow: 8월 이사 준비 사본');
+  expect(ics).toContain('오전 중 후보 2곳만 확인');
   expect(ics).not.toContain('주소 변경');
+
+  const overlayState = await page.evaluate(() => ({
+    snapshot: JSON.parse(window.localStorage.getItem('flow:map:saved:curated-ajd-moving-d30') || 'null'),
+    persistence: JSON.parse(window.localStorage.getItem('flow:map:persistence:curated-ajd-moving-d30') || 'null'),
+  }));
+  const stepOverride = overlayState.snapshot.personalCopy.stepOverridesByFlow['curated-ajd-moving-d30']['moving-d30-method-quotes'];
+  expect(stepOverride).toEqual({
+    title: '견적 후보만 먼저 확인',
+    schedule: { mode: 'fixed_date', date: '2026-07-07' },
+    userMemo: '오전 중 후보 2곳만 확인',
+  });
+  expect(overlayState.persistence.personalCopy.stepOverridesByFlow['curated-ajd-moving-d30']['moving-d30-method-quotes']).toEqual(stepOverride);
+  expect(overlayState.persistence.childFlows[0].steps[0].title).toContain('이사 방식');
 
   await page.goto('/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-07');
-  const movedEvent = page.locator('.fc-daygrid-day[data-date="2026-07-05"] .fc-event').first();
-  await expect(movedEvent).toHaveAttribute('title', /이사 방식.*견적/);
+  const oldEvent = page.locator('.fc-daygrid-day[data-date="2026-07-05"] .fc-event', { hasText: '견적 후보만 먼저 확인' });
+  await expect(oldEvent).toHaveCount(0);
+  const movedEvent = page.locator('.fc-daygrid-day[data-date="2026-07-07"] .fc-event').first();
+  await expect(movedEvent).toHaveAttribute('title', /견적 후보만 먼저 확인/);
+  await movedEvent.click();
+  await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('견적 후보만 먼저 확인');
   await expectNoHorizontalOverflow(page);
 });
 
