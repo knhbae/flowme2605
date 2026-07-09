@@ -244,6 +244,14 @@ const linkTypeLabels: Record<string, string> = {
 
 const genericCompletionCriteria = '이 항목을 완료했어요.';
 
+function getPublicPreSavePreviewCheckboxLabel(label: string) {
+  return `저장 전 미리보기 선택: ${label}`;
+}
+
+function formatPublicPreSavePreviewProgress(done: number, total: number) {
+  return `미리보기 ${done}/${total} 표시`;
+}
+
 function visibleCompletionCriteria(detail?: FlowItemDetail): string | undefined {
   if (!detail?.completion_criteria || detail.completion_criteria === genericCompletionCriteria) return undefined;
   return detail.completion_criteria;
@@ -10543,8 +10551,8 @@ function AnchorInput({
   if (bundle.flow.anchor_type === 'none') {
     const noAnchorInstruction =
       bundle.flow.primary_destination === 'sheet'
-        ? '표에 필요한 값을 채우고, 확인이 끝난 행만 완료로 표시하세요.'
-        : '아래 항목을 하나씩 확인하고 완료한 것은 체크하세요.';
+        ? '저장 전에는 필요한 행을 미리 표시해 볼 수 있어요. 실제 완료 관리는 내 Flow에 저장한 뒤 이어집니다.'
+        : '저장 전에는 필요한 항목을 미리 표시해 볼 수 있어요. 실제 완료 관리는 내 Flow에 저장한 뒤 이어집니다.';
     return <div className="rounded-md bg-gray-50 p-4 text-sm text-gray-600">{noAnchorInstruction}</div>;
   }
 
@@ -11400,7 +11408,7 @@ function WeekRenderer({
                         <label key={entry.id} className="block rounded border border-gray-200 bg-white p-2 text-xs leading-4">
                           <span className="mb-1 block font-mono text-blue-700">{entry.timing}</span>
                           <span className="flex items-start gap-1.5 font-semibold">
-                            <input className="mt-0.5" type="checkbox" checked={Boolean(checks[entry.id])} onChange={() => onToggle(entry.id)} />
+                            <input aria-label={getPublicPreSavePreviewCheckboxLabel(entry.title)} className="mt-0.5" type="checkbox" checked={Boolean(checks[entry.id])} onChange={() => onToggle(entry.id)} />
                             <span>{entry.durationDays && entry.durationDays > 1 ? `${entry.title} ${entry.dayIndex}일차` : entry.title}</span>
                           </span>
                           {entry.endDate ? <span className="mt-1 block text-gray-500">~ {entry.endDate}</span> : null}
@@ -11459,7 +11467,7 @@ function MonthRenderer({
                         <label key={entry.id} className="block rounded border border-gray-200 bg-white p-2 text-xs leading-4">
                           <span className="mb-1 block font-mono text-blue-700">{entry.timing}</span>
                           <span className="flex items-start gap-1.5 font-semibold">
-                            <input className="mt-0.5" type="checkbox" checked={Boolean(checks[entry.id])} onChange={() => onToggle(entry.id)} />
+                            <input aria-label={getPublicPreSavePreviewCheckboxLabel(entry.title)} className="mt-0.5" type="checkbox" checked={Boolean(checks[entry.id])} onChange={() => onToggle(entry.id)} />
                             <span>{entry.durationDays && entry.durationDays > 1 ? `${entry.title} ${entry.dayIndex}일차` : entry.title}</span>
                           </span>
                           {entry.meta ? <span className="mt-1 block text-gray-600">{entry.meta}</span> : null}
@@ -11700,7 +11708,7 @@ function FlowItemCard({
     >
       <div className="flex gap-3">
         <input
-          aria-label={`완료: ${item.title}`}
+          aria-label={getPublicPreSavePreviewCheckboxLabel(item.title)}
           className="mt-0.5 h-5 w-5 shrink-0 rounded border-gray-300"
           type="checkbox"
           disabled={skipped}
@@ -12017,7 +12025,7 @@ function FlowOverview({
           {nextEntries.length ? nextEntries.map((entry, index) => (
             <label key={entry.id} className={`block rounded-lg border bg-white p-3 ${index === 0 ? 'border-blue-300 ring-2 ring-blue-100' : 'border-blue-100'}`}>
               <span className="flex items-start gap-3">
-                <input className="mt-1" type="checkbox" checked={isBaseEntryChecked(bundle, entry.id, anchor, checks)} onChange={() => onToggle(entry.id)} />
+                <input aria-label={getPublicPreSavePreviewCheckboxLabel(entry.title)} className="mt-1" type="checkbox" checked={isBaseEntryChecked(bundle, entry.id, anchor, checks)} onChange={() => onToggle(entry.id)} />
                 <span>
                   {index === 0 ? <span className="mb-1 inline-flex rounded-full bg-blue-600 px-2 py-0.5 text-xs font-semibold text-white">추천 다음 항목</span> : null}
                   <span className="block font-semibold">{entry.title}</span>
@@ -12054,7 +12062,7 @@ function FlowOverview({
                 <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-gray-200">
                   <div className="h-full bg-[#2563EB]" style={{ width: total ? `${Math.round((done / total) * 100)}%` : '0%' }} />
                 </div>
-                <p className="mt-2 text-xs text-gray-500">{done} / {total} 완료</p>
+                <p className="mt-2 text-xs text-gray-500">{formatPublicPreSavePreviewProgress(done, total)}</p>
               </a>
             );
           })}
@@ -12137,7 +12145,7 @@ function MealPlanRenderer({
               return (
                 <div key={slot.id} className="rounded-lg border border-gray-200 bg-white p-4">
                   <label className="flex gap-3">
-                    <input className="mt-1" type="checkbox" checked={isBaseEntryChecked(bundle, slot.id, anchor, checks)} onChange={() => onToggle(slot.id)} />
+                    <input aria-label={getPublicPreSavePreviewCheckboxLabel(slot.menu_title)} className="mt-1" type="checkbox" checked={isBaseEntryChecked(bundle, slot.id, anchor, checks)} onChange={() => onToggle(slot.id)} />
                     <span className="min-w-0 flex-1">
                       <span className="flex flex-wrap items-center gap-2 text-xs">
                         <span className="rounded-full bg-amber-50 px-2 py-1 font-mono font-semibold text-amber-700">{timingLabel(slot.day_offset, slot.duration_days)}</span>
@@ -12388,7 +12396,7 @@ function ExactVideoRenderer({
         </div>
         <div className="mt-4 rounded-lg border border-gray-200 bg-[#FAFAF8] p-4">
           <label className="flex gap-3">
-            <input className="mt-1" type="checkbox" checked={Boolean(checks[item.id])} onChange={() => onToggle(item.id)} />
+            <input aria-label={getPublicPreSavePreviewCheckboxLabel(item.title)} className="mt-1" type="checkbox" checked={Boolean(checks[item.id])} onChange={() => onToggle(item.id)} />
             <span className="min-w-0 flex-1">
               <span className="block text-base font-semibold text-gray-950">{item.title}</span>
               <DetailPreview detail={detail} />

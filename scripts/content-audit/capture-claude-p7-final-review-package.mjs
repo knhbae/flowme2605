@@ -1586,6 +1586,13 @@ async function scanPage(page, options = {}) {
         .filter((element) => !element.closest('[data-testid="public-flow-export-secondary-entry"]'));
       const workbenchPreviewCheckboxes = workbenchPreviewControls
         .filter((element) => element instanceof HTMLInputElement && element.type === 'checkbox');
+      const preSaveCheckboxLabels = workbenchPreviewCheckboxes
+        .map((element) => getAccessibleNameCandidate(element))
+        .filter(Boolean);
+      const preSaveCheckboxCompletionLikeLabels = preSaveCheckboxLabels
+        .filter((label) => /(완료|완료 체크|완료 취소|실행판 체크|회차 완료|이유식 완료|관리일 완료|관리 체크|전체 보기 체크|선택 일정 체크|단계 체크)/u.test(label));
+      const preSaveCheckboxPreviewLabels = preSaveCheckboxLabels
+        .filter((label) => /(미리보기|저장 전|선택|포함 표시|확인 표시)/u.test(label));
       const stickyFirstAction = buttons.find((entry) => entry.surface === 'mobileSticky') ?? null;
       const stickyFirstActionSaveOrSetup = Boolean(
         stickyFirstAction && /내 Flow에 저장|내 Flow에서 보기/u.test(stickyFirstAction.visibleLabel),
@@ -1611,6 +1618,11 @@ async function scanPage(page, options = {}) {
         flowLevelFormatOptionLabels: flowLevelFormatOptions.map((entry) => entry.visibleLabel),
         itemLevelExportLikeLabelCount: itemLevelExportLikeLabels.length,
         itemLevelExportLikeLabels,
+        preSaveCheckboxCount: workbenchPreviewCheckboxes.length,
+        preSaveCheckboxCompletionLikeLabelCount: preSaveCheckboxCompletionLikeLabels.length,
+        preSaveCheckboxCompletionLikeLabels,
+        preSaveCheckboxPreviewLabelCount: preSaveCheckboxPreviewLabels.length,
+        preSaveCheckboxPreviewLabels: preSaveCheckboxPreviewLabels.slice(0, 12),
         preSaveItemCheckboxPreviewCount: workbenchPreviewCheckboxes.length,
         preSavePreviewControlCount: workbenchPreviewControls.length,
         duplicateVisibleLabelCount: duplicateVisibleLabels.length,
@@ -2817,6 +2829,15 @@ function summarizeEvidence(records) {
     publicFlowItemLevelExportLikeLabelCount: publicShareRoutes.reduce((sum, record) =>
       sum + (record.markers.publicWorkbenchExportLabels?.itemLevelExportLikeLabelCount ?? 0),
     0),
+    publicPreSaveCheckboxCount: publicShareRoutes.reduce((sum, record) =>
+      sum + (record.markers.publicWorkbenchExportLabels?.preSaveCheckboxCount ?? 0),
+    0),
+    publicPreSaveCheckboxCompletionLikeLabelCount: publicShareRoutes.reduce((sum, record) =>
+      sum + (record.markers.publicWorkbenchExportLabels?.preSaveCheckboxCompletionLikeLabelCount ?? 0),
+    0),
+    publicPreSaveCheckboxPreviewLabelCount: publicShareRoutes.reduce((sum, record) =>
+      sum + (record.markers.publicWorkbenchExportLabels?.preSaveCheckboxPreviewLabelCount ?? 0),
+    0),
     publicFlowPreSaveItemCheckboxPreviewCount: publicShareRoutes.reduce((sum, record) =>
       sum + (record.markers.publicWorkbenchExportLabels?.preSaveItemCheckboxPreviewCount ?? 0),
     0),
@@ -3095,6 +3116,9 @@ P19-03 clarifies progress metrics in My Flow and Calendar. Whole-Flow progress u
 - Public workbench sticky first-action count: ${evidence.summary.publicWorkbenchStickyFirstActionCount}
 - Public workbench sticky first-action save/setup count: ${evidence.summary.publicWorkbenchStickyFirstActionSaveOrSetupCount}
 - Public workbench sticky first-action non-primary labels: ${evidence.summary.publicWorkbenchStickyFirstActionNonPrimaryLabels.length}
+- Public pre-save checkbox count: ${evidence.summary.publicPreSaveCheckboxCount}
+- Public pre-save completion-like checkbox label count: ${evidence.summary.publicPreSaveCheckboxCompletionLikeLabelCount}
+- Public pre-save preview checkbox label count: ${evidence.summary.publicPreSaveCheckboxPreviewLabelCount}
 - Public share route count: ${evidence.summary.publicShareRouteCount}
 - Public share secondary browse focusable count: ${evidence.summary.publicShareSecondaryBrowseFocusableCount}
 - Public share secondary browse after-primary count: ${evidence.summary.publicShareSecondaryBrowseAfterPrimaryCount}

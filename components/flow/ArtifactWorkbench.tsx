@@ -113,6 +113,18 @@ const FLOWME_LINK_BUTTON_CLASS = 'shrink-0 rounded-xl border border-[#D8D5CD] bg
 const FLOWME_SUCCESS_CARD_CLASS = 'rounded-2xl border border-[#E7E4DD] bg-[#EAF7F0] p-4';
 const FLOWME_WARNING_CARD_CLASS = 'rounded-2xl border border-[#F0D8AE] bg-[#FFF7E8] p-3';
 
+function getPreSavePreviewCheckboxLabel(label: string) {
+  return `저장 전 미리보기 선택: ${label}`;
+}
+
+function formatPreSavePreviewProgress(done: number, total: number) {
+  return `미리보기 ${done}/${total} 표시`;
+}
+
+function getPreSavePreviewTextClass(selected: boolean, base = 'text-[#1B1A17]') {
+  return selected ? 'text-[#3654FF]' : base;
+}
+
 export function ArtifactWorkbench({
   bundle,
   anchor,
@@ -140,7 +152,7 @@ export function ArtifactWorkbench({
           {isJeonsePrecheck ? null : <p className="mt-2 max-w-2xl text-sm leading-6 text-[#6E6B64]">{surfaceDescription(plan.primarySurface, bundle)}</p>}
         </div>
         <span className={FLOWME_PROGRESS_CHIP_CLASS}>
-          {done}/{total} 완료
+          {formatPreSavePreviewProgress(done, total)}
         </span>
       </div>
       <FlowLevelExportPanel actions={exportActions} bundle={bundle} />
@@ -405,7 +417,7 @@ function surfaceDescription(surface: string, bundle: FlowBundle): string {
   if (surface === 'timeline_calendar') return '해야 할 일을 리스트로 훑고, 같은 항목이 월간 달력에서 어느 날짜에 걸리는지 봅니다.';
   if (surface === 'memo_card') return '나중에 다시 참고할 기준과 결정 메모를 한 장으로 정리합니다.';
   if (surface === 'step_progress') return '?? ???? ????, ?? ??? ? ?? ???? ?? ???? ???.';
-  return '필요한 항목을 체크하고, 자세히에서 원문 기준과 완료 조건만 확인합니다.';
+  return '저장 전에 필요한 항목을 미리 표시하고, 자세히에서 원문 기준과 확인 기준만 봅니다.';
 }
 
 function getWorkbenchItemDetail(bundle: FlowBundle, itemId: string): WorkbenchItemDetail | undefined {
@@ -552,14 +564,14 @@ function TimelineWorkbench({
                 <div key={row.id} className={FLOWME_INNER_ROW_CLASS}>
                   <label className="grid grid-cols-[22px_92px_1fr] gap-3">
                     <input
-                      aria-label={`실행판 체크: ${row.title}`}
+                      aria-label={getPreSavePreviewCheckboxLabel(row.title)}
                       className="mt-0.5 h-4 w-4 rounded border-[#D8D5CD] text-[#3654FF]"
                       checked={Boolean(checks[row.id])}
                       onChange={() => onToggleItem(row.id)}
                       type="checkbox"
                     />
                     <span className="font-mono text-xs font-semibold text-[#3654FF]">{row.startDate ? `${row.timing} · ${row.startDate.slice(5)}` : row.timing}</span>
-                    <span className={`font-medium ${checks[row.id] ? 'text-[#A7A39A] line-through' : 'text-[#1B1A17]'}`}>{row.title}</span>
+                    <span className={`font-medium ${getPreSavePreviewTextClass(Boolean(checks[row.id]))}`}>{row.title}</span>
                   </label>
                   <WorkbenchDetailDisclosure detail={detail} showSourceLinks={false} />
                 </div>
@@ -755,14 +767,14 @@ function MealReactionWorkbench({
                 <div key={slot.id} className={FLOWME_INNER_ROW_CLASS}>
                   <label className="grid grid-cols-[22px_1fr] gap-x-3 gap-y-1 md:grid-cols-[22px_112px_1fr] md:gap-y-0">
                     <input
-                      aria-label={`이유식 완료: ${slot.menu_title}`}
+                      aria-label={getPreSavePreviewCheckboxLabel(slot.menu_title)}
                       className={`row-span-2 mt-0.5 md:row-span-1 ${FLOWME_CHECKBOX_CLASS}`}
                       checked={isChecked}
                       onChange={() => onToggleItem(slot.id)}
                       type="checkbox"
                     />
                     <span className="min-w-0 font-mono text-xs font-semibold text-[#3654FF]">{mealSlotTiming(slot.day_offset, slot.duration_days, anchor)}</span>
-                    <span className={`col-start-2 min-w-0 md:col-start-auto ${isChecked ? 'text-[#A7A39A] line-through' : 'text-[#1B1A17]'}`}>
+                    <span className={`col-start-2 min-w-0 md:col-start-auto ${getPreSavePreviewTextClass(isChecked)}`}>
                       <span className="block font-medium">{slot.menu_title}</span>
                       {slot.new_ingredients.length ? (
                         <span className="mt-1 block text-xs text-[#6E6B64]">새 재료: {slot.new_ingredients.join(', ')}</span>
@@ -945,7 +957,7 @@ function MiniMonthCalendar({
               {date ? <p className="font-semibold text-[#6E6B64]">{date.slice(8)}</p> : null}
               {dayRows.slice(0, 2).map((row) => (
                 <p key={row.id} className={`mt-1 truncate rounded-lg px-1 py-0.5 text-left text-[11px] font-medium ${doneIds?.has(row.id) ? 'bg-[#EAF7F0] text-[#1F8A5B]' : 'bg-white text-[#3654FF]'}`}>
-                  {doneIds?.has(row.id) ? '완료 ' : ''}{row.title}
+                  {doneIds?.has(row.id) ? '표시 ' : ''}{row.title}
                 </p>
               ))}
               {dayRows.length > 2 ? <p className="mt-1 text-[11px] text-[#6E6B64]">+{dayRows.length - 2}</p> : null}
@@ -982,9 +994,9 @@ function RoutineOccurrenceCalendar({
   const eyebrow = isSleepCheck ? '수면 체크 캘린더' : isHomeWorkout ? '홈트 캘린더' : isMealCheck ? '식단 체크 캘린더' : '회차 그리드';
   const title = isSleepCheck ? '14일 수면 체크' : isHomeWorkout ? '4주 홈트 체크' : isMealCheck ? '아침·점심·저녁 식단 체크' : `${occurrenceSummary} 루틴`;
   const description = isSleepCheck
-    ? '매일 8시간 이상 잤는지만 완료로 표시합니다.'
+    ? '저장 전에는 8시간 이상 잔 날을 미리 표시해 봅니다.'
     : isHomeWorkout
-      ? '운동하는 날에 홈트 완료만 표시합니다.'
+      ? '운동하는 날을 저장 전 미리 표시해 봅니다.'
       : isMealCheck
         ? '아침, 점심, 저녁 식단을 지켰는지만 표시합니다.'
         : '주차와 요일별 회차를 먼저 보고, 각 회차를 캘린더와 시트로 가져갑니다.';
@@ -1021,7 +1033,7 @@ function RoutineOccurrenceCalendar({
         <ArtifactExportStatus actions={exportActions} />
         <div className="mt-3 flex flex-wrap gap-2 text-sm">
           <span className="rounded-full border border-[#DDE3FF] bg-[#EEF1FF] px-3 py-1 font-semibold text-[#3654FF]">{isHomeWorkout ? '주 3회 홈트' : isMealCheck ? '식사별 체크' : occurrenceSummary}</span>
-          <span className="rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 font-semibold text-[#6E6B64]">{isHomeWorkout ? '완료 체크만' : isMealCheck ? '아침·점심·저녁' : '주차 × 요일 회차표'}</span>
+          <span className="rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 font-semibold text-[#6E6B64]">{isHomeWorkout ? '미리보기 표시만' : isMealCheck ? '아침·점심·저녁' : '주차 × 요일 회차표'}</span>
           {currentRow ? <span className="rounded-full border border-[#F0D8AE] bg-[#FFF7E8] px-3 py-1 font-semibold text-[#8A5A12]">현재 {currentRow.title}</span> : null}
         </div>
         <div className="mt-3 grid grid-cols-[64px_repeat(7,minmax(0,1fr))] gap-1 text-center text-xs font-semibold text-[#6E6B64]">
@@ -1057,13 +1069,13 @@ function RoutineOccurrenceCalendar({
                         {isCurrent ? <span className="rounded-lg bg-white px-1.5 py-0.5 text-[10px] font-bold text-[#3654FF]">현재</span> : null}
                       </span>
                       <input
-                        aria-label={`캘린더 회차 체크: ${row.title}`}
+                        aria-label={getPreSavePreviewCheckboxLabel(row.title)}
                         className={`mt-2 ${FLOWME_SMALL_CHECKBOX_CLASS}`}
                         checked={Boolean(state.done)}
                         onChange={(event) => onWorkbenchChange(updateOccurrenceDone(workbenchState, row.id, event.currentTarget.checked))}
                         type="checkbox"
                       />
-                      <span className="ml-1 align-middle text-[11px] font-semibold">{state.done ? '완료 ' : ''}{row.title}</span>
+                      <span className="ml-1 align-middle text-[11px] font-semibold">{state.done ? '표시 ' : ''}{row.title}</span>
                       <span className="mt-1 block text-[11px] text-[#6E6B64]">{row.timing}</span>
                     </label>
                   );
@@ -1116,7 +1128,7 @@ function RoutineSessionLogCard({
               <th className="px-3 py-2">날짜</th>
               <th className="px-3 py-2">회차</th>
               <th className="px-3 py-2">{valueLabel}</th>
-              <th className="px-3 py-2">완료</th>
+              <th className="px-3 py-2">미리보기</th>
               <th className="px-3 py-2">한 줄 메모</th>
             </tr>
           </thead>
@@ -1138,7 +1150,7 @@ function RoutineSessionLogCard({
                   </td>
                   <td className="px-3 py-2">
                     <input
-                      aria-label={`회차 완료: ${row.title}`}
+                      aria-label={getPreSavePreviewCheckboxLabel(row.title)}
                       className={FLOWME_CHECKBOX_CLASS}
                       checked={Boolean(state.done)}
                       onChange={(event) => onWorkbenchChange(updateOccurrenceDone(workbenchState, row.id, event.currentTarget.checked))}
@@ -1559,13 +1571,13 @@ function DecisionWorkbench({
               <li key={item.id}>
                 <label className="flex gap-2">
                   <input
-                    aria-label={`실행판 체크: ${item.title}`}
+                    aria-label={getPreSavePreviewCheckboxLabel(item.title)}
                     className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
                     checked={Boolean(checks[item.id])}
                     onChange={() => onToggleItem(item.id)}
                     type="checkbox"
                   />
-                  <span className={checks[item.id] ? 'text-gray-400 line-through' : ''}>{item.title}</span>
+                  <span className={checks[item.id] ? 'text-[#3654FF]' : ''}>{item.title}</span>
                 </label>
               </li>
             ))}
@@ -1876,7 +1888,7 @@ function RoutineWorkbench({
           <div className={`mt-2 ${FLOWME_INNER_ROW_CLASS}`}>
             <label className="flex items-center gap-2 text-sm font-semibold text-[#3654FF]">
               <input
-                aria-label={`다음 세션 체크: ${nextLabel}`}
+                aria-label={getPreSavePreviewCheckboxLabel(nextLabel)}
                 className={FLOWME_CHECKBOX_CLASS}
                 checked={Boolean(nextState.done)}
                 onChange={(event) => onWorkbenchChange(updateOccurrenceDone(workbenchState, nextKey, event.currentTarget.checked))}
@@ -2304,7 +2316,7 @@ function MaintenanceRoutineWorkbench({
               <label key={key} className={`rounded-xl border px-3 py-2 text-sm ${state.done ? 'border-[#D8ECE1] bg-[#EAF7F0] text-[#1F8A5B]' : 'border-[#E7E4DD] bg-white text-[#1B1A17]'}`}>
                 <span className="flex items-center gap-2">
                   <input
-                    aria-label={`관리일 완료: ${dateLabel}`}
+                    aria-label={getPreSavePreviewCheckboxLabel(dateLabel)}
                     className={FLOWME_CHECKBOX_CLASS}
                     checked={Boolean(state.done)}
                     onChange={(event) => onWorkbenchChange(updateOccurrenceDone(workbenchState, key, event.currentTarget.checked))}
@@ -2341,13 +2353,13 @@ function MaintenanceRoutineWorkbench({
               <div key={item.id} className={FLOWME_INNER_ROW_CLASS}>
                 <label className="flex items-start gap-2">
                   <input
-                    aria-label={`관리 체크: ${item.title}`}
+                    aria-label={getPreSavePreviewCheckboxLabel(item.title)}
                     className={`mt-0.5 shrink-0 ${FLOWME_CHECKBOX_CLASS}`}
                     checked={Boolean(checks[item.id])}
                     onChange={() => onToggleItem(item.id)}
                     type="checkbox"
                   />
-                  <span className={`min-w-0 flex-1 ${checks[item.id] ? 'text-[#A7A39A] line-through' : 'text-[#1B1A17]'}`}>
+                  <span className={`min-w-0 flex-1 ${getPreSavePreviewTextClass(Boolean(checks[item.id]))}`}>
                     <span className="font-medium">{item.title}</span>
                     {isLongCycle ? <span className="ml-2 rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-[#8A5A12]">1~2년마다</span> : null}
                   </span>
@@ -2600,13 +2612,13 @@ function ChecklistWorkbench({
               <div key={item.id} className={FLOWME_INNER_ROW_CLASS}>
                 <label className="flex gap-2">
                   <input
-                    aria-label={`실행판 체크: ${item.title}`}
+                    aria-label={getPreSavePreviewCheckboxLabel(item.title)}
                     className="mt-0.5 h-4 w-4 shrink-0 rounded border-[#D8D5CD] text-[#3654FF]"
                     checked={Boolean(checks[item.id])}
                     onChange={() => onToggleItem(item.id)}
                     type="checkbox"
                   />
-                  <span className={`font-medium ${checks[item.id] ? 'text-[#A7A39A] line-through' : 'text-[#1B1A17]'}`}>{item.title}</span>
+                  <span className={`font-medium ${getPreSavePreviewTextClass(Boolean(checks[item.id]))}`}>{item.title}</span>
                 </label>
                 <WorkbenchDetailDisclosure detail={detail} showSourceLinks={false} suppressedCaution={repeatedCaution} />
               </div>
@@ -2689,7 +2701,7 @@ function JeonseContractWorkbench({
                   >
                     <span className="block text-xs font-semibold text-slate-500">{formatShortKoreanDate(row.startDate)} · {row.timing}</span>
                     <span className="mt-1 block font-semibold">{jeonseEventTitle(row.timing)}</span>
-                    <span className="mt-1 block text-xs font-semibold text-slate-600">{progress.done}/{progress.total} 완료</span>
+                    <span className="mt-1 block text-xs font-semibold text-slate-600">{formatPreSavePreviewProgress(progress.done, progress.total)}</span>
                     {status ? <span className="mt-1 block text-xs font-semibold text-amber-700">{status}</span> : null}
                   </button>
                 );
@@ -2735,7 +2747,7 @@ function JeonseContractWorkbench({
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <h4 className="text-sm font-semibold text-slate-950">{group.title}</h4>
                   <span className="text-xs font-semibold text-slate-500">
-                    {group.timing} · {getJeonseProgress(group.items, checks).done}/{group.items.length} 완료
+                    {group.timing} · {formatPreSavePreviewProgress(getJeonseProgress(group.items, checks).done, group.items.length)}
                   </span>
                 </div>
                 <div className="mt-2 grid gap-2">
@@ -2744,14 +2756,14 @@ function JeonseContractWorkbench({
                     return (
                       <div key={item.id} className="border-t border-slate-100 pt-2 first:border-t-0 first:pt-0">
                         <label className="flex gap-2 text-sm font-semibold text-slate-800">
-                          <input
-                            aria-label={`전체 보기 체크: ${item.title}`}
+                            <input
+                            aria-label={getPreSavePreviewCheckboxLabel(item.title)}
                             className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-700"
                             checked={Boolean(checks[item.id])}
                             onChange={() => onToggleItem(item.id)}
                             type="checkbox"
                           />
-                          <span className={checks[item.id] ? 'text-slate-400 line-through' : ''}>{shortJeonseItemTitle(item.title)}</span>
+                          <span className={checks[item.id] ? 'text-blue-700' : ''}>{shortJeonseItemTitle(item.title)}</span>
                         </label>
                         <JeonseMemoDisclosure detail={detail} />
                       </div>
@@ -2890,7 +2902,7 @@ function JeonseSelectedEventCard({
           <p className="mt-1 text-sm font-medium text-slate-500">이 날의 체크 항목 {relatedItems.length}개</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-700">{progress.done}/{progress.total} 완료</span>
+          <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-700">{formatPreSavePreviewProgress(progress.done, progress.total)}</span>
           {status ? <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-800">{status}</span> : null}
         </div>
       </div>
@@ -2898,13 +2910,13 @@ function JeonseSelectedEventCard({
         {relatedItems.map((item) => (
           <label key={item.id} className="flex gap-2 text-sm font-semibold text-slate-800">
             <input
-              aria-label={`선택 일정 체크: ${item.title}`}
+              aria-label={getPreSavePreviewCheckboxLabel(item.title)}
               className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-700"
               checked={Boolean(checks[item.id])}
               onChange={() => onToggleItem(item.id)}
               type="checkbox"
             />
-            <span className={checks[item.id] ? 'text-slate-400 line-through' : ''}>{shortJeonseItemTitle(item.title)}</span>
+            <span className={checks[item.id] ? 'text-blue-700' : ''}>{shortJeonseItemTitle(item.title)}</span>
           </label>
         ))}
       </div>
@@ -2966,7 +2978,7 @@ function getJeonseProgress(items: FlowItem[], checks: Record<string, boolean>): 
 }
 
 function getJeonseDateStatus(row: ScheduleRow, progress: { done: number; total: number }): string {
-  if (progress.total > 0 && progress.done >= progress.total) return '확인 완료';
+  if (progress.total > 0 && progress.done >= progress.total) return '확인 표시됨';
   if (row.startDate < formatDate(new Date())) return '지난 일정 · 확인 필요';
   return '';
 }
@@ -3181,13 +3193,13 @@ function StepProgressWorkbench({
                 {stage.items.map((item) => (
                   <label key={item.id} className="flex gap-2 rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
                     <input
-                      aria-label={`단계 체크: ${item.title}`}
+                      aria-label={getPreSavePreviewCheckboxLabel(item.title)}
                       className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
                       checked={Boolean(checks[item.id])}
                       onChange={() => onToggleItem(item.id)}
                       type="checkbox"
                     />
-                    <span className={`font-medium ${checks[item.id] ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{item.title}</span>
+                    <span className={`font-medium ${checks[item.id] ? 'text-blue-700' : 'text-gray-800'}`}>{item.title}</span>
                   </label>
                 ))}
               </div>

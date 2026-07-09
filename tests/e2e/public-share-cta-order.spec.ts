@@ -108,10 +108,14 @@ type PublicFlowUnitHierarchy = {
   exportSecondaryEntryCount: number;
   exportFormatOptionCount: number;
   itemLevelExportLikeLabelCount: number;
+  preSaveCheckboxCount: number;
+  preSaveCheckboxCompletionLikeLabelCount: number;
+  preSaveCheckboxPreviewLabelCount: number;
   preSaveItemCheckboxPreviewCount: number;
   preSavePreviewControlCount: number;
   exportSecondaryEntryLabels: string[];
   itemLevelExportLikeLabels: string[];
+  preSaveCheckboxLabels: string[];
 };
 
 async function collectPublicFlowUnitHierarchy(page: Page) {
@@ -134,6 +138,14 @@ async function collectPublicFlowUnitHierarchy(page: Page) {
       .filter((label) => exportLikePattern.test(label));
     const previewCheckboxes = Array.from(document.querySelectorAll('[data-testid="artifact-list-card"] input[type="checkbox"]'))
       .filter(isVisible);
+    const publicPreSaveCheckboxes = Array.from(document.querySelectorAll('[aria-label="Flow artifact workbench"] input[type="checkbox"]'))
+      .filter(isVisible);
+    const publicPreSaveCheckboxLabels = publicPreSaveCheckboxes
+      .map((element) => element.getAttribute('aria-label') ?? '')
+      .filter(Boolean);
+    const completionLikeCheckboxLabelPattern =
+      /(완료|완료 체크|완료 취소|실행판 체크|회차 완료|이유식 완료|관리일 완료|관리 체크|전체 보기 체크|선택 일정 체크|단계 체크)/u;
+    const previewCheckboxLabelPattern = /(미리보기|저장 전|선택|포함 표시|확인 표시)/u;
     const previewControls = Array.from(document.querySelectorAll('[aria-label="Flow artifact workbench"] input, [aria-label="Flow artifact workbench"] textarea, [aria-label="Flow artifact workbench"] select, [aria-label="Flow artifact workbench"] button'))
       .filter(isVisible)
       .filter((element) => !element.closest('[data-testid="public-flow-export-secondary-entry"]'));
@@ -142,10 +154,18 @@ async function collectPublicFlowUnitHierarchy(page: Page) {
       exportSecondaryEntryCount: secondaryEntries.length,
       exportFormatOptionCount: formatOptions.length,
       itemLevelExportLikeLabelCount: itemLevelExportLikeLabels.length,
+      preSaveCheckboxCount: publicPreSaveCheckboxes.length,
+      preSaveCheckboxCompletionLikeLabelCount: publicPreSaveCheckboxLabels
+        .filter((label) => completionLikeCheckboxLabelPattern.test(label))
+        .length,
+      preSaveCheckboxPreviewLabelCount: publicPreSaveCheckboxLabels
+        .filter((label) => previewCheckboxLabelPattern.test(label))
+        .length,
       preSaveItemCheckboxPreviewCount: previewCheckboxes.length,
       preSavePreviewControlCount: previewControls.length,
       exportSecondaryEntryLabels: secondaryEntries.map(visibleText),
       itemLevelExportLikeLabels,
+      preSaveCheckboxLabels: publicPreSaveCheckboxLabels,
     };
   });
 }
@@ -210,6 +230,19 @@ test.describe('public share shell secondary browse order', () => {
       expect(hierarchy.exportFormatOptionCount).toBeGreaterThanOrEqual(2);
       expect(hierarchy.itemLevelExportLikeLabelCount).toBe(0);
       expect(hierarchy.preSavePreviewControlCount).toBeGreaterThan(0);
+    });
+  }
+
+  for (const route of PUBLIC_SHARE_ROUTES) {
+    test(`${route} treats pre-save item checkboxes as preview selection, not completion`, async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto(route);
+
+      const hierarchy = await collectPublicFlowUnitHierarchy(page);
+      expect(hierarchy.preSaveCheckboxCompletionLikeLabelCount).toBe(0);
+      if (hierarchy.preSaveCheckboxCount > 0) {
+        expect(hierarchy.preSaveCheckboxPreviewLabelCount).toBe(hierarchy.preSaveCheckboxCount);
+      }
     });
   }
 
