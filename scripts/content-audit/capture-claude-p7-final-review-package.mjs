@@ -1106,6 +1106,39 @@ async function scanPage(page, options = {}) {
         rowKey: card?.dataset.rowKey ?? '',
       };
     };
+    const collectMyFlowTodayFrame = () => {
+      const section = document.querySelector('[data-testid="my-flow-now-section"]');
+      const summary = document.querySelector('[data-testid="my-flow-today-summary"]');
+      const sectionVisible = Boolean(section && isVisible(section));
+      const summaryVisible = Boolean(summary && isVisible(summary));
+      const remainingCountElements = Array.from(document.querySelectorAll('[data-testid="my-flow-today-remaining-count"]'))
+        .filter((element) => isVisible(element));
+      const inlineCompleteControls = section
+        ? Array.from(section.querySelectorAll('[data-testid="my-flow-mobile-continuation-complete"]'))
+          .filter((element) => isVisibleInteractiveElement(element))
+        : [];
+      const todayTaskVisible = sectionVisible && inlineCompleteControls.length > 0;
+      const sectionText = sectionVisible ? normalizeLine(section?.textContent ?? '') : '';
+      const genericMetaChipCount = [
+        /일정\s*흐름/u,
+        /체크\s*흐름/u,
+        /반복\s*흐름/u,
+        /오늘\s*상태/u,
+      ].reduce((count, pattern) => count + (pattern.test(sectionText) ? 1 : 0), 0);
+
+      return {
+        sectionVisible,
+        summaryVisible,
+        frameCount: (sectionVisible ? 1 : 0) + (summaryVisible ? 1 : 0),
+        remainingCountSourceCount: remainingCountElements.length,
+        remainingCountLabels: remainingCountElements.map((element) => normalizeLine(element.textContent ?? '')).filter(Boolean),
+        inlineCompleteControlCount: inlineCompleteControls.length,
+        openBeforeCompleteRequired: todayTaskVisible && inlineCompleteControls.length === 0,
+        genericMetaChipCount,
+        firstInlineCompleteAccessibleName: getAccessibleNameCandidate(inlineCompleteControls[0]),
+        todayTaskVisible,
+      };
+    };
     const collectPostSaveConfirmation = () => {
       const element = document.querySelector('[data-testid="my-flow-post-save-confirmation"]');
       const text = normalizeLine(element?.textContent ?? '');
@@ -1569,6 +1602,7 @@ async function scanPage(page, options = {}) {
         calendarSelectedDay: Boolean(document.querySelector('[data-testid="my-flow-calendar-selected-day"]')),
         statusSheetRows: document.querySelectorAll('[data-testid="my-flow-status-sheet-row"]').length,
         continuationActionable: collectContinuationActionable(),
+        myFlowTodayFrame: collectMyFlowTodayFrame(),
         postSaveConfirmation: collectPostSaveConfirmation(),
         agendaGroupMeta: collectAgendaGroupMeta(),
         rowControlAccessibleNames: getRowControlAccessibleNames(),
@@ -2011,6 +2045,37 @@ function summarizeEvidence(records) {
     normalRouteContinuationExplanationOnlyCount: normal.filter((record) =>
       Boolean(record.markers?.continuationActionable?.explanationOnly),
     ).length,
+    myFlowTodayFrameCount: Math.max(
+      0,
+      ...normal.map((record) => record.markers?.myFlowTodayFrame?.frameCount ?? 0),
+    ),
+    myFlowTodayRemainingCountSourceCount: Math.max(
+      0,
+      ...normal.map((record) => record.markers?.myFlowTodayFrame?.remainingCountSourceCount ?? 0),
+    ),
+    myFlowTodayInlineCompleteControlCount: normal.reduce((sum, record) =>
+      sum + (record.markers?.myFlowTodayFrame?.inlineCompleteControlCount ?? 0),
+    0),
+    myFlowTodayOpenBeforeCompleteRequired: normal.some((record) =>
+      Boolean(record.markers?.myFlowTodayFrame?.openBeforeCompleteRequired),
+    ),
+    myFlowTodayGenericMetaChipCount: normal.reduce((sum, record) =>
+      sum + (record.markers?.myFlowTodayFrame?.genericMetaChipCount ?? 0),
+    0),
+    myFlowTodayFrameEvidence: normal
+      .filter((record) => record.markers?.myFlowTodayFrame?.sectionVisible || record.url.startsWith('/my'))
+      .map((record) => ({
+        id: record.id,
+        route: record.url,
+        viewportWidth: record.viewportWidth,
+        frameCount: record.markers?.myFlowTodayFrame?.frameCount ?? 0,
+        remainingCountSourceCount: record.markers?.myFlowTodayFrame?.remainingCountSourceCount ?? 0,
+        remainingCountLabels: record.markers?.myFlowTodayFrame?.remainingCountLabels ?? [],
+        inlineCompleteControlCount: record.markers?.myFlowTodayFrame?.inlineCompleteControlCount ?? 0,
+        openBeforeCompleteRequired: Boolean(record.markers?.myFlowTodayFrame?.openBeforeCompleteRequired),
+        genericMetaChipCount: record.markers?.myFlowTodayFrame?.genericMetaChipCount ?? 0,
+        firstInlineCompleteAccessibleName: record.markers?.myFlowTodayFrame?.firstInlineCompleteAccessibleName ?? '',
+      })),
     normalRouteAgendaGroupMetaCount: normal.reduce((sum, record) => sum + getAgendaGroups(record).length, 0),
     normalRouteAgendaGroupRepeatedDateMetaRowCount: normal.reduce((sum, record) =>
       sum + countAgendaGroupRows(record, 'repeatedDateMetaRowCount'),
@@ -2376,6 +2441,10 @@ P13-05/P13-06 add a wide-viewport spot-check slice and a measured post-save conf
 
 P14-05/P14-06 soften URL-first candidate/miss/hit copy that was technically clean but operational in tone. The package now records old mechanism-copy hits, value-focused mechanism-copy hits, legacy candidate system-copy hits, and user-tone candidate copy hits so Claude Design can judge the wording from JSON as well as screenshots.
 
+P18-01 adds a same-date multi-Flow Calendar fixture. The selected date agenda records Flow marker groups, the month grid records visible Flow labels, and the summary exposes \`calendarSameDateDistinctFlowGroupCount\`, \`calendarSameDateGridDistinctFlowLabelCount\`, and \`calendarAgendaGroupByFlow\` so Calendar Flow identity can be judged without relying only on screenshots.
+
+P18-02 merges My Flow's today execution/status framing. The package records \`myFlowTodayFrameCount\`, \`myFlowTodayRemainingCountSourceCount\`, \`myFlowTodayInlineCompleteControlCount\`, \`myFlowTodayOpenBeforeCompleteRequired\`, and \`myFlowTodayGenericMetaChipCount\` so Claude Design can verify that today's work has one count source and can be completed inline without opening detail first.
+
 ## Files
 
 - [audit.md](./audit.md)
@@ -2401,6 +2470,11 @@ P14-05/P14-06 soften URL-first candidate/miss/hit copy that was technically clea
 - Calendar same-date distinct Flow groups: ${evidence.summary.calendarSameDateDistinctFlowGroupCount}
 - Calendar same-date grid Flow labels: ${evidence.summary.calendarSameDateGridDistinctFlowLabelCount}
 - Calendar agenda grouped by Flow: ${evidence.summary.calendarAgendaGroupByFlow ? 'yes' : 'no'}
+- My Flow today frame count: ${evidence.summary.myFlowTodayFrameCount}
+- My Flow today remaining-count sources: ${evidence.summary.myFlowTodayRemainingCountSourceCount}
+- My Flow today inline complete controls: ${evidence.summary.myFlowTodayInlineCompleteControlCount}
+- My Flow today open-before-complete required: ${evidence.summary.myFlowTodayOpenBeforeCompleteRequired}
+- My Flow today generic meta chips: ${evidence.summary.myFlowTodayGenericMetaChipCount}
 - Normal route row control accessible name samples: ${evidence.summary.normalRouteRowControlAccessibleNameSampleCount}
 - Normal route row control samples with context: ${evidence.summary.normalRouteRowControlAccessibleNameContextCount}
 - Wide viewport evidence count: ${evidence.summary.wideViewportEvidenceCount}
@@ -2561,6 +2635,8 @@ P15-03 scans URL-first candidate resolved card headline/status/body text directl
 
 P18-01 adds a same-date multi-Flow Calendar fixture. The selected date agenda records Flow marker groups, the month grid records visible Flow labels, and the summary exposes \`calendarSameDateDistinctFlowGroupCount\`, \`calendarSameDateGridDistinctFlowLabelCount\`, and \`calendarAgendaGroupByFlow\` so Calendar Flow identity can be judged without relying only on screenshots.
 
+P18-02 merges My Flow's today execution/status framing. The package records \`myFlowTodayFrameCount\`, \`myFlowTodayRemainingCountSourceCount\`, \`myFlowTodayInlineCompleteControlCount\`, \`myFlowTodayOpenBeforeCompleteRequired\`, and \`myFlowTodayGenericMetaChipCount\` so Claude Design can verify that today's work has one count source and can be completed inline without opening detail first.
+
 ## Baselines Covered
 
 - P7-01: \`/restart/moving-d30\` uses user-facing date text and a quieter export hierarchy.
@@ -2597,6 +2673,8 @@ P18-01 adds a same-date multi-Flow Calendar fixture. The selected date agenda re
 - P12-05/P12-10/P13-03: \`/restart/moving-d30\` and \`/flow-lab/url-first-p0\` stay out of normal navigation, but their prototype tiers are separate. Restart is \`release-preview\` with a zero-hit display gate; flow-lab is \`internal-console\` with noindex, zero user-nav links, visible internal-console context, and allowed lab-label hits.
 - P13-04/P13-07: URL-first route evidence records trigger URLs, export-mode scan rows, candidate expanded detail, and the resolved-hit candidate branch so state reproduction does not depend on screenshot interpretation alone.
 - P14-05/P14-06: URL-first candidate/miss/hit copy avoids system-operation wording such as \`AI 자동 생성 없이\`, \`사용자 제목/메모\`, and \`마지막 다시 조회\`, while preserving lookup, candidate storage, copy output, and export behavior.
+
+- P18-01/P18-02: Calendar distinguishes same-date multi-Flow work by Flow marker/group, and My Flow today work uses one frame/count source with inline completion before detail opening.
 
 ## Summary
 
@@ -2838,6 +2916,10 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.calendarSameDateDistinctFlowGroupCount}</b><span>calendar same-date Flow groups</span></div>
       <div class="stat"><b>${evidence.summary.calendarSameDateGridDistinctFlowLabelCount}</b><span>calendar grid Flow labels</span></div>
       <div class="stat"><b>${evidence.summary.calendarAgendaGroupByFlow ? 'yes' : 'no'}</b><span>calendar grouped by Flow</span></div>
+      <div class="stat"><b>${evidence.summary.myFlowTodayFrameCount}</b><span>My Flow today frames</span></div>
+      <div class="stat"><b>${evidence.summary.myFlowTodayRemainingCountSourceCount}</b><span>today count sources</span></div>
+      <div class="stat"><b>${evidence.summary.myFlowTodayInlineCompleteControlCount}</b><span>today inline complete</span></div>
+      <div class="stat"><b>${evidence.summary.myFlowTodayOpenBeforeCompleteRequired ? 'yes' : 'no'}</b><span>open before complete</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteRowControlAccessibleNameSampleCount}</b><span>row control a11y samples</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteRowControlAccessibleNameContextCount}</b><span>row control samples with context</span></div>
       <div class="stat"><b>${evidence.summary.wideViewportEvidenceCount}</b><span>wide viewport captures</span></div>

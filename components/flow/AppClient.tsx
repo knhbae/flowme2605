@@ -4077,6 +4077,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           ? '필요하면 열어서 체크와 메모를 확인합니다.'
           : '날짜가 없어도 저장한 콘텐츠의 첫 항목부터 바로 열 수 있습니다.'
     : '저장한 콘텐츠의 전체 목록을 확인하거나 새 콘텐츠를 찾아보세요.';
+  const myFlowTodayUnifiedTitle = todayOpenCount > 0 ? `오늘 ${todayOpenCount}개 남음` : myFlowNowTitle;
+  const myFlowTodayUnifiedHelp = todayOpenCount > 0 ? '오늘 끝낼 항목을 바로 체크할 수 있어요.' : myFlowNowHelp;
+  const showMyFlowTodaySummary = false;
+
   const myFlowSecondaryContinuationRows = [
     ...todayOpenRows,
     ...overdueRows,
@@ -5274,15 +5278,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const rowKey = getMyFlowRowInstanceKey(row);
     const isActive = myFlowDetailSurface === 'today' && activeRowKey === rowKey;
     const checked = isMyFlowRowChecked(flow, row);
+    const rowTitle = getMyFlowRowDisplayTitle(row);
+    const completeLabel = checked ? '취소' : '완료';
+    const completeAriaLabel = `${rowTitle} ${checked ? '완료 취소' : '완료 체크'}`;
     const color = categoryColors[flow.bundle.flow.category] ?? '#2563EB';
     const isPrimary = options.tone === 'primary';
-    const flowContext = flow.savedMap
-      ? toUserFacingMapTitle(flow.savedMap.title)
-      : flow.bundle.flow.structure_type === 'routine'
-        ? '반복 흐름'
-        : flow.rows.some((candidate) => Boolean(candidate.date))
-          ? '일정 흐름'
-          : '체크 흐름';
     const rowMeta = [
       row.date ? formatMyFlowDisplayDate(row.date) : '',
       row.timing ? formatMyFlowTimingChip(row.timing) : '',
@@ -5291,7 +5291,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const flowMeta = [
       getMyFlowExecutionFlowTitle(flow.progress.title),
       `${flow.done}/${flow.total} 완료`,
-      flowContext,
     ].filter(Boolean).join(' · ');
     const toneClassName = isPrimary || isActive
       ? 'border-blue-200 bg-blue-50/50'
@@ -5324,7 +5323,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <span className="block text-xs font-semibold text-blue-700">{isPrimary ? options.primaryLabel ?? '지금 할 일' : options.nextLabel ?? '다음 할 일'}</span>
               )}
               <span data-testid="my-flow-mobile-continuation-title" className={`mt-1 block text-base font-semibold leading-6 ${checked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
-                {getMyFlowRowDisplayTitle(row)}
+                {rowTitle}
               </span>
               <span className="mt-1 block text-xs font-semibold text-slate-500">
                 {rowMeta || getMyFlowRowDisplaySectionLabel(row) || '날짜 없는 체크 항목'}
@@ -5341,6 +5340,24 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             </span>
           </span>
         </button>
+        <div className="mt-3 flex min-w-0 items-center justify-between gap-2">
+          <button
+            type="button"
+            data-testid="my-flow-mobile-continuation-complete"
+            aria-label={completeAriaLabel}
+            className={`min-h-9 shrink-0 rounded-md border px-3 py-1.5 text-xs font-semibold transition ${
+              checked
+                ? 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                : 'border-emerald-200 bg-emerald-50 text-emerald-800 hover:border-emerald-300'
+            }`}
+            onClick={(event) => {
+              event.stopPropagation();
+              toggleSavedFlowItem(flow, row.id, row);
+            }}
+          >
+            {completeLabel}
+          </button>
+        </div>
         <div data-testid="my-flow-mobile-continuation-flow-context" className="mt-2 flex min-w-0 items-center gap-2 text-[11px] font-semibold text-slate-500">
           <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: color }} />
           <span className="min-w-0 truncate">{flowMeta}</span>
@@ -7420,12 +7437,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="text-sm font-semibold text-blue-700">{myFlowNowEyebrow}</p>
-                        <h3 className="mt-0.5 text-base font-semibold text-slate-950 sm:mt-1 sm:text-lg">
-                          {myFlowNowTitle}
+                        <h3 data-testid="my-flow-today-remaining-count" className="mt-0.5 text-base font-semibold text-slate-950 sm:mt-1 sm:text-lg">
+                          {myFlowTodayUnifiedTitle}
                         </h3>
                         {!isMyFlowMobileViewport ? (
                           <p className="mt-1 text-xs text-slate-600 sm:text-sm">
-                            {myFlowNowHelp}
+                            {myFlowTodayUnifiedHelp}
                           </p>
                         ) : null}
                       </div>
@@ -7440,6 +7457,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     ) : null}
                   </section>
 
+                  {showMyFlowTodaySummary ? (
                   <section data-testid="my-flow-today-summary" className="min-w-0 rounded-lg border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
                     <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                       <div>
@@ -7471,6 +7489,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       </div>
                     </div>
                   </section>
+                  ) : null}
 
                   {showTodayOpenSection && !isMyFlowMobileViewport ? (
                     <section data-testid="my-flow-today-list" className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">

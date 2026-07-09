@@ -125,10 +125,7 @@ async function expectFirstContinuationTitleNotRepeated(section: Locator) {
 
 async function expectTodaySummaryIsQuietSupport(page: Page) {
   const summary = page.getByTestId('my-flow-today-summary');
-  await expect(summary).toBeVisible();
-  await expect(summary).not.toContainText('지금 이어하기');
-  await expect(summary).not.toContainText('보여줍니다');
-  await expect(summary).not.toContainText('이어갈 할 일이 없습니다');
+  await expect(summary).toHaveCount(0);
 }
 
 async function expectCompactCatalogAction(card: Locator, action: Locator) {
@@ -1395,8 +1392,6 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(movingPostSave).not.toContainText('5개 Step');
   await expect(movingPostSave.getByTestId('my-flow-post-save-open-first')).toContainText('먼저 열기');
   await expect(movingPostSave.getByTestId('my-flow-post-save-view-all')).toHaveCount(0);
-  await expect(page.getByTestId('my-flow-today-summary').locator('h3')).not.toContainText(/\d{4}-\d{2}-\d{2}/);
-  await expect(page.getByTestId('my-flow-today-summary').locator('h3')).not.toContainText('기준 할 일');
   await expectTodaySummaryIsQuietSupport(page);
   await expect(page.getByTestId('my-flow-now-section').locator('h3')).not.toContainText(/\d{4}-\d{2}-\d{2}/);
   await expect(page.getByTestId('my-flow-now-section')).toContainText('지난 할 일');
@@ -2510,18 +2505,51 @@ test('my flow today puts the executable slot before the summary on mobile', asyn
   await page.goto('/my');
 
   const nowSection = page.getByTestId('my-flow-now-section');
-  const summary = page.getByTestId('my-flow-today-summary');
   await expect(nowSection).toBeVisible();
-  await expect(summary).toBeVisible();
   await expectTodaySummaryIsQuietSupport(page);
   await expect(nowSection).toContainText('지난 할 일');
   await expectTextOccurrenceAtMost(nowSection, '지난 할 일', 1);
   await expect(nowSection).not.toContainText('남은 할 일이 없습니다');
-  await expect(summary).not.toContainText('남은 할 일이 없습니다');
   await expect(nowSection.getByTestId('my-flow-mobile-continuation-card').first()).toHaveAttribute('data-flow-slug', 'moving-d30-basic');
-  const nowBox = await nowSection.boundingBox();
-  const summaryBox = await summary.boundingBox();
-  expect(nowBox?.y ?? 0).toBeLessThan(summaryBox?.y ?? 0);
+  await expect(nowSection.getByTestId('my-flow-mobile-continuation-complete').first()).toBeVisible();
+});
+
+test('my flow today exposes inline completion without a separate today status frame', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.clock.install({ time: new Date('2026-06-03T09:00:00+09:00') });
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    const savedAt = '2026-06-03T00:00:00.000Z';
+    window.localStorage.setItem('flow:saved:moving-d30-basic', JSON.stringify({
+      slug: 'moving-d30-basic',
+      savedAt,
+      selectedArtifactMode: 'calendar',
+      anchor: '2026-06-02',
+    }));
+    window.localStorage.setItem('flow:moving-d30-basic:anchorDate', JSON.stringify({
+      mode: 'custom',
+      anchor: '2026-06-02',
+    }));
+  });
+
+  await page.goto('/my');
+
+  const nowSection = page.getByTestId('my-flow-now-section');
+  await expect(nowSection).toBeVisible();
+  await expect(page.getByTestId('my-flow-today-summary')).toHaveCount(0);
+  await expect(nowSection).toContainText('오늘');
+  await expect(nowSection.getByTestId('my-flow-today-remaining-count')).toHaveText(/오늘 \d+개 남음/);
+  await expect(nowSection.getByTestId('my-flow-inline-detail')).toHaveCount(0);
+
+  const firstRunnableRow = nowSection.getByTestId('my-flow-mobile-continuation-card').first();
+  const completeButton = firstRunnableRow.getByTestId('my-flow-mobile-continuation-complete');
+  await expect(completeButton).toBeVisible();
+  await expect(completeButton).toHaveText('완료');
+  await expect(completeButton).toHaveAttribute('aria-label', /완료 체크$/);
+
+  await completeButton.click();
+  await expect(nowSection.getByTestId('my-flow-inline-detail')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-today-completed-list')).toBeVisible();
 });
 
 test('my flow today dedupes rows when today overdue and next queues coexist on mobile', async ({ page }, testInfo) => {
@@ -2880,12 +2908,9 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(page.getByRole('heading', { name: '내 Flow 스튜디오' })).toHaveCount(0);
   await expect(page.getByText('아직 만든 내 버전이 없습니다')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-view-today')).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByTestId('my-flow-today-summary')).toContainText('데모 기준일');
-  await expect(page.getByTestId('my-flow-today-summary').locator('h3')).toContainText('오늘 할 일');
-  await expect(page.getByTestId('my-flow-today-summary').getByTestId('my-flow-today-date-meta')).toContainText('5월 28일');
-  await expect(page.getByTestId('my-flow-today-summary')).toContainText('실제 오늘과 다른 고정 기준일');
-  await expect(page.getByTestId('my-flow-today-summary')).toContainText('오늘 예정된 할 일은 없고 지난 할 일 2개가 남았어요.');
-  await expect(page.getByTestId('my-flow-today-summary')).not.toContainText('위 카드에서');
+  await expectTodaySummaryIsQuietSupport(page);
+  await expect(page.getByTestId('my-flow-now-section')).toBeVisible();
+  await expect(page.getByTestId('my-flow-now-section')).not.toContainText('위 카드에서');
   await expect(page.getByTestId('my-flow-now-section')).not.toContainText('전체 탭에서');
   await expect(page.getByTestId('my-flow-today-list')).toHaveCount(0);
   const overdueSectionBox = await page.getByTestId('my-flow-overdue-list').boundingBox();
