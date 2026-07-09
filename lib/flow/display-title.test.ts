@@ -319,6 +319,16 @@ test('capture script exposes URL-first miss draft gate markers', () => {
   assert.ok(script.includes('urlFirstMissCandidateCopyInternalHitCount'));
 });
 
+test('capture script scopes Calendar role-title hits to Calendar headings', () => {
+  const script = fs.readFileSync(
+    path.join(process.cwd(), 'scripts', 'content-audit', 'capture-claude-p7-final-review-package.mjs'),
+    'utf8',
+  );
+
+  assert.ok(script.includes('calendarTitleContainsMyFlowCount: calendarHeadings.filter'));
+  assert.ok(!script.includes('calendarTitleContainsMyFlowCount: routeLines.filter'));
+});
+
 test('user surface guardrail helpers lock positive and negative display cases', () => {
   assert.equal(normalizeGuardrailLine('  first   line  '), 'first line');
   assert.deepEqual(normalizeGuardrailLines(['  first   line  ', '   ']), ['first line']);

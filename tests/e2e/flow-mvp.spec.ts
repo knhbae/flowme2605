@@ -781,7 +781,8 @@ test('flow finding URL lookup starts a lightweight customized personal copy', as
   await result.getByRole('button', { name: '시작하기' }).click();
   await expect(page).toHaveURL(/\/my\?savedMap=middle-school-math-1/);
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
-  await expect(page.getByTestId('my-flow-workspace')).toContainText('시험 전 소인수분해만');
+  await expect(page.getByTestId('my-flow-post-save-confirmation')).toHaveText('내 Flow에 저장됨');
+  await expect(page.getByTestId('my-flow-workspace')).toContainText('소인수분해');
   await page.getByTestId('my-flow-view-flow').click();
 
   await expect(page.getByTestId('my-flow-map-update-review')).toHaveCount(0);

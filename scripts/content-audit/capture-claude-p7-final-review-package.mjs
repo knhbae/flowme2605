@@ -1358,7 +1358,7 @@ async function scanPage(page, options = {}) {
       const myFlowPrimaryGenericHits = myFlowCompactRowTexts.filter((line) => myFlowGenericPattern.test(line));
 
       return {
-        calendarTitleContainsMyFlowCount: routeLines.filter((line) =>
+        calendarTitleContainsMyFlowCount: calendarHeadings.filter((line) =>
           /내\s*Flow.*(?:월간|일정|캘린더)/u.test(line),
         ).length,
         calendarPrimaryGenericTypeLabelCount: calendarPrimaryGenericHits.length,
